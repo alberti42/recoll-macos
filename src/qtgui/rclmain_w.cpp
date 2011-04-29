@@ -345,25 +345,31 @@ void RclMain::initDbOpen()
     bool needindexconfig = false;
     bool nodb = false;
     string reason;
-    if (!maybeOpenDb(reason)) {
+    bool maindberror;
+    if (!maybeOpenDb(reason, true, &maindberror)) {
         nodb = true;
-	switch (QMessageBox::
-		question
-		(this, "Recoll",
-		 qApp->translate("Main", "Could not open database in ") +
-		 QString::fromLocal8Bit(theconfig->getDbDir().c_str()) +
-		 qApp->translate("Main", 
-			       ".\n"
-			       "Click Cancel if you want to edit the configuration file before indexing starts, or Ok to let it proceed."),
-		 "Ok", "Cancel", 0,   0)) {
+	if (maindberror) {
+	    switch (QMessageBox::
+		    question
+		    (this, "Recoll",
+		     qApp->translate("Main", "Could not open database in ") +
+		     QString::fromLocal8Bit(theconfig->getDbDir().c_str()) +
+		     qApp->translate("Main", 
+				     ".\n"
+				     "Click Cancel if you want to edit the configuration file before indexing starts, or Ok to let it proceed."),
+		     "Ok", "Cancel", 0,   0)) {
 
-	case 0: // Ok: indexing is going to start.
-	    start_indexing(true);
-	    break;
+	    case 0: // Ok: indexing is going to start.
+		start_indexing(true);
+		break;
 
-	case 1: // Cancel
-	    needindexconfig = true;
-	    break;
+	    case 1: // Cancel
+		needindexconfig = true;
+		break;
+	    }
+	} else {
+	    QMessageBox::warning(0, "Recoll", 
+				 tr("Could not open external index. Db not open. Check external indexes list."));
 	}
     }
 

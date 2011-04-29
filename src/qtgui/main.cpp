@@ -72,7 +72,7 @@ void startManual(const string& helpindex)
 	mainWindow->startManual(helpindex);
 }
 
-bool maybeOpenDb(string &reason, bool force)
+bool maybeOpenDb(string &reason, bool force, bool *maindberror)
 {
     if (!rcldb) {
 	reason = "Internal error: db not created";
@@ -87,9 +87,13 @@ bool maybeOpenDb(string &reason, bool force)
 	LOGDEB(("main: adding [%s]\n", it->c_str()));
 	rcldb->addQueryDb(*it);
     }
-    if (!rcldb->isopen() && !rcldb->open(Rcl::Db::DbRO)) {
+    Rcl::Db::OpenError error;
+    if (!rcldb->isopen() && !rcldb->open(Rcl::Db::DbRO, &error)) {
 	reason = "Could not open database in " + 
 	    theconfig->getDbDir() + " wait for indexing to complete?";
+	if (maindberror) {
+	    *maindberror = (error == Rcl::Db::DbOpenMainDb) ? true : false;
+	}
 	return false;
     }
     rcldb->setAbstractParams(-1, prefs.syntAbsLen, prefs.syntAbsCtx);

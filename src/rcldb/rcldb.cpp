@@ -534,8 +534,11 @@ list<string> Db::getStemmerNames()
     return res;
 }
 
-bool Db::open(OpenMode mode)
+bool Db::open(OpenMode mode, OpenError *error)
 {
+    if (error)
+	*error = DbOpenMainDb;
+
     if (m_ndb == 0 || m_config == 0) {
 	m_reason = "Null configuration or Xapian Db";
 	return false;
@@ -586,12 +589,17 @@ bool Db::open(OpenMode mode)
 	    m_ndb->xrdb = Xapian::Database(dir);
 	    for (list<string>::iterator it = m_extraDbs.begin();
 		 it != m_extraDbs.end(); it++) {
+		if (error)
+		    *error = DbOpenExtraDb;
 		LOGDEB(("Db::Open: adding query db [%s]\n", it->c_str()));
-                // Used to be non-fatal (1.13 and older) but I can't see why
+                // An error here used to be non-fatal (1.13 and older)
+                // but I can't see why
                 m_ndb->xrdb.add_database(Xapian::Database(*it));
 	    }
 	    break;
 	}
+	if (error)
+	    *error = DbOpenMainDb;
 
 	// Check index format version. Must not try to check a just created or
 	// truncated db
@@ -608,6 +616,8 @@ bool Db::open(OpenMode mode)
 	m_mode = mode;
 	m_ndb->m_isopen = true;
 	m_basedir = dir;
+	if (error)
+	    *error = DbOpenNoError;
 	return true;
     } XCATCHERROR(ermsg);
 
