@@ -1,11 +1,11 @@
 depth = ..
 include $(depth)/mk/sysconf
 
-PROGS = trcopyfile trcircache trmd5 trreadfile trfileudi trconftree \
-      wipedir smallut \
-      trfstreewalk trpathut \
-      transcode trbase64 \
-      trmimeparse trexecmd utf8iter idfile
+PROGS = trnetcon trcopyfile trcircache trmd5 trreadfile trfileudi trconftree \
+        wipedir smallut \
+        trfstreewalk trpathut \
+        transcode trbase64 \
+        trmimeparse trexecmd utf8iter idfile
 
 all: $(PROGS) $(BIGLIB)
 
@@ -53,6 +53,12 @@ trpathut : $(PATHUT_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o trpathut $(PATHUT_OBJS)  $(LIBICONV) $(LIBSYS)
 trpathut.o : pathut.cpp pathut.h
 	$(CXX) -o trpathut.o -c $(ALL_CXXFLAGS) -DTEST_PATHUT pathut.cpp
+
+NETCON_OBJS= trnetcon.o  $(BIGLIB)
+trnetcon : $(NETCON_OBJS) 
+	$(CXX) $(ALL_CXXFLAGS) -o trnetcon $(NETCON_OBJS)  $(LIBICONV) $(LIBSYS)
+trnetcon.o : netcon.cpp netcon.h
+	$(CXX) -o trnetcon.o -c $(ALL_CXXFLAGS) -DTEST_NETCON netcon.cpp
 
 FILEUDI_OBJS= trfileudi.o  $(BIGLIB)
 trfileudi : $(FILEUDI_OBJS) 

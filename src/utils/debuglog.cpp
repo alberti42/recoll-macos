@@ -335,7 +335,11 @@ DebugLog *getdbl()
     }
     DebugLog *dbl;
     if (!(dbl = (DebugLog *)pthread_getspecific(dbl_key))) {
-	dbl = new DebugLog;
+	if ((dbl = new DebugLog) == 0) {
+	    fprintf(stderr, "debuglog: new DebugLog returned 0! ");
+	    abort();
+	}
+
 	dbl->setwriter(theWriter);
 	initfiles();
 	status = pthread_setspecific(dbl_key, dbl);

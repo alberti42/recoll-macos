@@ -83,46 +83,23 @@ int Netcon::select1(int fd, int timeo, int write)
     return ret;
 }
 
-// The select loop mechanism allows several netcons to be used for io
-// in a program without blocking as long as there is data to be read
-// or written. 
-
-// Set by client callback to tell selectloop to return.
-bool Netcon::o_selectloopDoReturn;
-int  Netcon::o_selectloopReturnValue;
-
-// Other static data for the selectloop mecanism 
-// Could be declared as static members, but I don't see any advantage
-// to it as all code in this file is in Netcon:: anyway.
-
-// Map of NetconP indexed by fd
-static map<int, NetconP> polldata;
-
-// The last time we did the periodic thing
-static struct timeval lasthdlcall;
-// The call back function and its parameter
-static int (*periodichandler)(void *);
-static void *periodicparam;
-// The periodic interval
-static int periodicmillis;
-
-void Netcon::setperiodichandler(int (*handler)(void *), void *p, int ms)
+void SelectLoop::setperiodichandler(int (*handler)(void *), void *p, int ms)
 {
-    periodichandler = handler;
-    periodicparam = p;
-    periodicmillis = ms;
-    if (periodicmillis > 0)
-	gettimeofday(&lasthdlcall, 0);
+    m_periodichandler = handler;
+    m_periodicparam = p;
+    m_periodicmillis = ms;
+    if (m_periodicmillis > 0)
+	gettimeofday(&m_lasthdlcall, 0);
 }
 
 // Compute the appropriate timeout so that the select call returns in
 // time to call the periodic routine.
-static void periodictimeout(struct timeval *tv)
+void SelectLoop::periodictimeout(struct timeval *tv)
 {
     // If periodic not set, the select call times out and we loop
     // after a very long time (we'd need to pass NULL to select for an
     // infinite wait, and I'm too lazy to handle it)
-    if (periodicmillis <= 0) {
+    if (m_periodicmillis <= 0) {
 	tv->tv_sec = 10000;
 	tv->tv_usec = 0;
 	return;
@@ -130,7 +107,7 @@ static void periodictimeout(struct timeval *tv)
 
     struct timeval mtv;
     gettimeofday(&mtv, 0);
-    int millis = periodicmillis - MILLIS(lasthdlcall, mtv);
+    int millis = m_periodicmillis - MILLIS(m_lasthdlcall, mtv);
 
     // millis <= 0 means we should have already done the thing. *dont* set the 
     // tv to 0, which means no timeout at all !
@@ -142,50 +119,49 @@ static void periodictimeout(struct timeval *tv)
 
 // Check if it's time to call the handler. selectloop will return to
 // caller if it or we return 0
-static int maybecallperiodic()
+int SelectLoop::maybecallperiodic()
 {
-    if (periodicmillis <= 0)
+    if (m_periodicmillis <= 0)
 	return 1;
     struct timeval mtv;
     gettimeofday(&mtv, 0);
-    int millis = periodicmillis - MILLIS(lasthdlcall, mtv);
+    int millis = m_periodicmillis - MILLIS(m_lasthdlcall, mtv);
     if (millis <= 0) {
-	gettimeofday(&lasthdlcall, 0);
-	if (periodichandler)
-	    return periodichandler(periodicparam);
+	gettimeofday(&m_lasthdlcall, 0);
+	if (m_periodichandler)
+	    return m_periodichandler(m_periodicparam);
 	else 
 	    return 0;
     }
     return 1;
 }
 
-int Netcon::selectloop()
+int SelectLoop::doLoop()
 {
-    static int placetostart;
     for (;;) {
-	if (o_selectloopDoReturn) {
-	    o_selectloopDoReturn = false;
+	if (m_selectloopDoReturn) {
+	    m_selectloopDoReturn = false;
 	    LOGDEB(("Netcon::selectloop: returning on request\n"));
-	    return o_selectloopReturnValue;
+	    return m_selectloopReturnValue;
 	}
 	int nfds;
 	fd_set rd, wd;
 	FD_ZERO(&rd);
 	FD_ZERO(&wd);
 	
-	// Look for all descriptors in the map and set up the read and
-	// write fd_sets for select()
+	// Walk the netcon map and set up the read and write fd_sets
+	// for select()
 	nfds = 0;
-	for (map<int,NetconP>::iterator it = polldata.begin(); 
-	     it != polldata.end(); it++) {
+	for (map<int,NetconP>::iterator it = m_polldata.begin();
+	     it != m_polldata.end(); it++) {
 	    NetconP &pll = it->second;
 	    int fd  = it->first;
 	    LOGDEB2(("Selectloop: fd %d flags 0x%x\n",fd, pll->m_wantedEvents));
-	    if (pll->m_wantedEvents & NETCONPOLL_READ) {
+	    if (pll->m_wantedEvents & Netcon::NETCONPOLL_READ) {
 		FD_SET(fd, &rd);
 		nfds = MAX(nfds, fd + 1);
 	    }
-	    if (pll->m_wantedEvents & NETCONPOLL_WRITE) {
+	    if (pll->m_wantedEvents & Netcon::NETCONPOLL_WRITE) {
 		FD_SET(fd, &wd);
 		nfds = MAX(nfds, fd + 1);
 	    }
@@ -199,7 +175,7 @@ int Netcon::selectloop()
 
 	    // Just in case there would still be open fds in there
 	    // (with no r/w flags set). Should not be needed, but safer
-	    polldata.clear();
+	    m_polldata.clear();
 	    LOGDEB1(("Netcon::selectloop: no fds\n"));
 	    return 0;
 	}
@@ -217,7 +193,7 @@ int Netcon::selectloop()
 	    LOGSYSERR("Netcon::selectloop", "select", "");
 	    return -1;
 	}
-	if (periodicmillis > 0)
+	if (m_periodicmillis > 0)
 	    if (maybecallperiodic() <= 0)
 		return 1;
 
@@ -231,10 +207,10 @@ int Netcon::selectloop()
 	// map may change between 2 sweeps, so that we'd have to be smart
 	// with the iterator. As the cost per unused fd is low (just 2 bit
 	// flag tests), we keep it like this for now
-	if (placetostart >= nfds) 
-	    placetostart = 0;
+	if (m_placetostart >= nfds) 
+	    m_placetostart = 0;
 	int i, fd;
-	for (i = 0, fd = placetostart; i < nfds;i++, fd++) {
+	for (i = 0, fd = m_placetostart; i < nfds;i++, fd++) {
 	    if (fd >= nfds)
 		fd = 0;
 
@@ -247,53 +223,56 @@ int Netcon::selectloop()
 	    if (none)
 		continue;
 
-	    map<int,NetconP>::iterator it = polldata.find(fd);
-	    if (it == polldata.end()) {
+	    map<int,NetconP>::iterator it = m_polldata.find(fd);
+	    if (it == m_polldata.end()) {
 		/// This should not happen actually
 		LOGDEB2(("Netcon::selectloop: fd %d not found\n", fd));
 		continue;
 	    }
 
 	    // Next start will be one beyond last serviced (modulo nfds)
-	    placetostart = fd + 1;
+	    m_placetostart = fd + 1;
 	    NetconP &pll = it->second;
-	    if (canread && pll->cando(NETCONPOLL_READ) <= 0)
-		pll->m_wantedEvents &= ~NETCONPOLL_READ;
-	    if (canwrite && pll->cando(NETCONPOLL_WRITE) <= 0)
-		pll->m_wantedEvents &= ~NETCONPOLL_WRITE;
-	    if (!(pll->m_wantedEvents & (NETCONPOLL_WRITE|NETCONPOLL_READ))) {
+	    if (canread && pll->cando(Netcon::NETCONPOLL_READ) <= 0)
+		pll->m_wantedEvents &= ~Netcon::NETCONPOLL_READ;
+	    if (canwrite && pll->cando(Netcon::NETCONPOLL_WRITE) <= 0)
+		pll->m_wantedEvents &= ~Netcon::NETCONPOLL_WRITE;
+	    if (!(pll->m_wantedEvents & (Netcon::NETCONPOLL_WRITE|Netcon::NETCONPOLL_READ))) {
 		LOGDEB0(("Netcon::selectloop: fd %d has 0x%x mask, erasing\n", 
 			 it->first, it->second->m_wantedEvents));
-		polldata.erase(it);
+		m_polldata.erase(it);
 	    }
 	} // fd sweep
 
     } // forever loop
-    LOGERR(("Netcon::selectloop: got out of loop !\n"));
+    LOGERR(("SelectLoop::doLoop: got out of loop !\n"));
     return -1;
 }
 
 // Add a connection to the monitored set.
-int Netcon::addselcon(NetconP con, int events)
+int SelectLoop::addselcon(NetconP con, int events)
 {
     if (con.isNull()) return -1;
     LOGDEB1(("Netcon::addselcon: fd %d\n", con->m_fd));
     con->set_nonblock(1);
     con->setselevents(events);
-    polldata[con->m_fd] = con;
+    m_polldata[con->m_fd] = con;
+    con->setloop(this);
     return 0;
 }
+
 // Remove a connection from the monitored set.
-int Netcon::remselcon(NetconP con)
+int SelectLoop::remselcon(NetconP con)
 {
     if (con.isNull()) return -1;
     LOGDEB1(("Netcon::remselcon: fd %d\n", con->m_fd));
-    map<int,NetconP>::iterator it = polldata.find(con->m_fd);
-    if (it == polldata.end()) {
+    map<int,NetconP>::iterator it = m_polldata.find(con->m_fd);
+    if (it == m_polldata.end()) {
 	LOGDEB1(("Netcon::remselcon: con not found for fd %d\n", con->m_fd));
 	return -1;
     }
-    polldata.erase(it);
+    con->setloop(0);
+    m_polldata.erase(it);
     return 0;
 }
 
@@ -969,7 +948,7 @@ int main(int argc, char **argv)
 	argv++;
     }
     DebugLog::setfilename("stderr");
-    DebugLog::getdbl()->setloglevel(DEBINFO);
+    DebugLog::getdbl()->setloglevel(DEBDEB2);
 
     if (op_flags & OPT_c) {
 	if (argc != 2) {
@@ -1032,7 +1011,8 @@ public:
 	}
 	if (m_count >= 10) {
 	    fprintf(stderr, "Did 10, enough\n");
-	    Netcon::selectloopReturn(0);
+	    if (con->getloop())
+		con->getloop()->loopReturn(0);
 	}
 	return 0;
     }
@@ -1077,9 +1057,10 @@ int trycli(char *host, char *serv)
     RefCntr<NetconWorker> worker = 
 	RefCntr<NetconWorker>(new CliNetconWorker());
     clicon->setcallback(worker);
-    Netcon::addselcon(con, Netcon::NETCONPOLL_WRITE);
+    SelectLoop myloop;
+    myloop.addselcon(con, Netcon::NETCONPOLL_WRITE);
     fprintf(stderr, "client ready\n");
-    int ret = Netcon::selectloop();
+    int ret = myloop.doLoop();
     if (ret < 0) {
 	fprintf(stderr, "selectloop failed\n");
 	exit(1);
@@ -1130,6 +1111,11 @@ private:
 };
 
 class MyNetconServLis : public NetconServLis {
+public:
+    MyNetconServLis(SelectLoop &loop)
+	: NetconServLis(), m_loop(loop)
+    {
+    }
 protected:
     int cando(Netcon::Event reason) {
 	NetconServCon *con = accept();
@@ -1138,9 +1124,10 @@ protected:
 	RefCntr<NetconWorker> worker = 
 	    RefCntr<NetconWorker>(new ServNetconWorker());
 	con->setcallback(worker);
-	addselcon(NetconP(con), NETCONPOLL_READ);
+	m_loop.addselcon(NetconP(con), NETCONPOLL_READ);
 	return 1;
     }
+    SelectLoop& m_loop;
 };
 
 NetconP lis;
@@ -1158,7 +1145,8 @@ onexit(int sig)
 int tryserv(char *serv)
 {
     signal(SIGCHLD, SIG_IGN);
-    MyNetconServLis *servlis = new MyNetconServLis();
+    SelectLoop myloop;
+    MyNetconServLis *servlis = new MyNetconServLis(myloop);
     lis = NetconP(servlis);
     if (lis.isNull()) {
 	fprintf(stderr, "new NetconServLis failed\n");
@@ -1178,9 +1166,9 @@ int tryserv(char *serv)
 	fprintf(stderr, "openservice(%s) failed\n", serv);
 	return 1;
     }
-    Netcon::addselcon(lis, Netcon::NETCONPOLL_READ);
+    myloop.addselcon(lis, Netcon::NETCONPOLL_READ);
     fprintf(stderr, "openservice(%s) Ok\n", serv);
-    if (Netcon::selectloop() < 0) {
+    if (myloop.doLoop() < 0) {
 	fprintf(stderr, "selectloop failed\n");
 	exit(1);
     }

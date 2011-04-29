@@ -114,7 +114,7 @@ static void recollCleanup()
     LOGDEB2(("recollCleanup: closing database\n"));
     deleteZ(rcldb);
     deleteZ(theconfig);
-    deleteZ(thestableconfig);
+//    deleteZ(thestableconfig);
 #ifdef RCL_USE_ASPELL
     deleteZ(aspell);
 #endif

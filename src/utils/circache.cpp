@@ -76,7 +76,7 @@ static bool inflateToDynBuf(void *inp, UINT inlen, void **outpp, UINT *outlenp);
 // Entry header.
 // 3 x 32 bits sizes as hex integers + 1 x 16 bits flag + at least 1 zero
 //                          15 +             3x(9)  + 3 + 1 = 46
-const char *headerformat = "circacheSizes = %x %x %x %hx";
+static const char *headerformat = "circacheSizes = %x %x %x %hx";
 #define CIRCACHE_HEADER_SIZE 64
 
 class EntryHeaderData {
