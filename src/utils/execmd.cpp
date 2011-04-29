@@ -313,16 +313,9 @@ private:
 };
 
 
-// The netcon selectloop that doexec() uses for reading/writing would
-// be complicated to render thread-safe. Use locking to ensure only
-// one thread in there
-static PTMutexInit o_lock;
-
 int ExecCmd::doexec(const string &cmd, const list<string>& args,
 		    const string *input, string *output)
 {
-    // Only one thread allowed in here...
-    PTMutexLocker locker(o_lock);
 
     if (startExec(cmd, args, input != 0, output != 0) < 0) {
 	return -1;
@@ -330,7 +323,7 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 
     // Cleanup in case we return early
     ExecCmdRsrc e(this);
-
+    SelectLoop myloop;
     int ret = 0;
     if (input || output) {
         // Setup output
@@ -342,7 +335,7 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 	    }
 	    oclicon->setcallback(RefCntr<NetconWorker>
 				 (new ExecReader(output, m_advise)));
-	    Netcon::addselcon(m_fromcmd, Netcon::NETCONPOLL_READ);
+	    myloop.addselcon(m_fromcmd, Netcon::NETCONPOLL_READ);
 	    // Give up ownership 
 	    m_fromcmd.release();
 	} 
@@ -355,14 +348,14 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 	    }
 	    iclicon->setcallback(RefCntr<NetconWorker>
 				 (new ExecWriter(input, m_provide)));
-	    Netcon::addselcon(m_tocmd, Netcon::NETCONPOLL_WRITE);
+	    myloop.addselcon(m_tocmd, Netcon::NETCONPOLL_WRITE);
 	    // Give up ownership 
 	    m_tocmd.release();
 	}
 
         // Do the actual reading/writing/waiting
-	Netcon::setperiodichandler(0, 0, m_timeoutMs);
-	while ((ret = Netcon::selectloop()) > 0) {
+	myloop.setperiodichandler(0, 0, m_timeoutMs);
+	while ((ret = myloop.doLoop()) > 0) {
 	    LOGDEB(("ExecCmd::doexec: selectloop returned %d\n", ret));
 	    if (m_advise)
 		m_advise->newData(0);

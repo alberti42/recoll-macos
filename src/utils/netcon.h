@@ -16,7 +16,11 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include <sys/time.h>
+#include <map>
 #include "refcntr.h"
+
+using std::map;
 
 /// A set of classes to manage client-server communication over a
 /// connection-oriented network, or a pipe.
@@ -34,12 +38,14 @@
 /// Base class for all network endpoints:
 class Netcon;
 typedef RefCntr<Netcon> NetconP;
+class SelectLoop;
 
 class Netcon {
 public:
     enum Event {NETCONPOLL_READ = 0x1, NETCONPOLL_WRITE=0x2};
     Netcon() 
-	: m_peer(0), m_fd(-1), m_ownfd(true), m_didtimo(0), m_wantedEvents(0)
+	: m_peer(0), m_fd(-1), m_ownfd(true), m_didtimo(0), m_wantedEvents(0),
+	  m_loop(0)
     {}
     virtual ~Netcon();
     /// Remember whom we're talking to. We let external code do this because 
@@ -75,12 +81,41 @@ public:
     /// Clear events from current set
     int clearselevents(int evs) {return m_wantedEvents &= ~evs;}
 
+    friend class SelectLoop;
+    SelectLoop *getloop() {return m_loop;}
+
     /// Utility function for a simplified select() interface: check one fd
     /// for reading or writing, for a specified maximum number of seconds.
     static int select1(int fd, int secs, int writing = 0);
-    
-    /// The selectloop interface is used to implement parallel servers. 
-    /// All the interface is static (independant of any given object).
+
+protected:
+    char *m_peer;	// Name of the connected host
+    int   m_fd;
+    bool  m_ownfd;
+    int   m_didtimo;
+    // Used when part of the selectloop map.
+    short m_wantedEvents;
+    SelectLoop *m_loop;
+    // Method called by the selectloop when something can be done with a netcon
+    virtual int cando(Netcon::Event reason) = 0;
+    // Called when added to loop
+    virtual void setloop(SelectLoop *loop) {m_loop = loop;}
+};
+
+
+/// The selectloop interface is used to implement parallel servers. 
+// The select loop mechanism allows several netcons to be used for io
+// in a program without blocking as long as there is data to be read
+// or written. In a multithread program which is also using select, it
+// would typically make sense to have one SelectLoop active per
+// thread.
+class SelectLoop {
+public:
+    SelectLoop()
+	: m_selectloopDoReturn(false), m_selectloopReturnValue(0),
+	  m_placetostart(0), 
+	  m_periodichandler(0), m_periodicparam(0), m_periodicmillis(0)
+    {}
 
     /// Loop waiting for events on the connections and call the
     /// cando() method on the object when something happens (this will in 
@@ -88,20 +123,20 @@ public:
     /// call the periodic handler (if set) at regular intervals.
     /// @return -1 for error. 0 if no descriptors left for i/o. 1 for periodic
     ///  timeout (should call back in after processing)
-    static  int selectloop();
+    int doLoop();
+
     /// Call from data handler: make selectloop return the param value
-    static void selectloopReturn(int value) 
+    void loopReturn(int value) 
     {
-	o_selectloopDoReturn = true;
-	o_selectloopReturnValue = value;
+	m_selectloopDoReturn = true;
+	m_selectloopReturnValue = value;
     }
     /// Add a connection to be monitored (this will usually be called
     /// from the server's listen connection's accept callback)
-    static  int addselcon(NetconP con, int);
-    /// Remove a connection from the monitored set. Note that this is
-    /// automatically called from the Netcon destructor, and when EOF is
-    /// detected on a connection.
-    static  int remselcon(NetconP con);
+    int addselcon(NetconP con, int events);
+    /// Remove a connection from the monitored set. This is
+    /// automatically called when EOF is detected on a connection.
+    int remselcon(NetconP con);
 
     /// Set a function to be called periodically, or a time before return.
     /// @param handler the function to be called. 
@@ -112,35 +147,45 @@ public:
     /// @param clp client data to be passed to handler at every call.
     /// @param ms milliseconds interval between handler calls or
     ///   before return. Set to 0 for no periodic handler.
-    static  void setperiodichandler(int (*handler)(void *), void *clp, int ms);
+    void setperiodichandler(int (*handler)(void *), void *clp, int ms);
 
-protected:
-    static bool o_selectloopDoReturn;
-    static int  o_selectloopReturnValue;
-    char *m_peer;	// Name of the connected host
-    int   m_fd;
-    bool  m_ownfd;
-    int   m_didtimo;
-    // Used when part of the selectloop map.
-    short m_wantedEvents;
-    // Method called by the selectloop when something can be done with a netcon
-    virtual int cando(Netcon::Event reason) = 0;
+private:
+    // Set by client callback to tell selectloop to return.
+    bool m_selectloopDoReturn;
+    int  m_selectloopReturnValue;
+    int  m_placetostart;
+
+    // Map of NetconP indexed by fd
+    map<int, NetconP> m_polldata;
+
+    // The last time we did the periodic thing. Initialized by setperiodic()
+    struct timeval m_lasthdlcall;
+    // The call back function and its parameter
+    int (*m_periodichandler)(void *);
+    void *m_periodicparam;
+    // The periodic interval
+    int m_periodicmillis;
+    void periodictimeout(struct timeval *tv);
+    int maybecallperiodic();
 };
-
 
 ///////////////////////
 class NetconData;
 
-/// Class for the application callback routine (when in
-/// selectloop). It would be nicer to override cando() in a subclass
-/// instead of setting a callback, but this can't be done conveniently
-/// because accept() always creates a base NetconData (another way
-/// would be to pass a factory function function to the listener, to create
-/// NetconData derivatives).
+/// Class for the application callback routine (when in selectloop). 
+///
+/// This is set by the app on the NetconData by calling
+/// setcallback(). It is then called from the NetconData's cando()
+/// routine, itself called by selectloop.
+/// 
+/// It would be nicer to override cando() in a subclass instead of
+/// setting a callback, but this can't be done conveniently because
+/// accept() always creates a base NetconData (another approach would
+/// be to pass a factory function to the listener, to create
+/// NetconData derived classes).
 class NetconWorker {
 public:
     virtual ~NetconWorker() {}
-    // NetconP holds a NetconData oeuf corse
     virtual int data(NetconData *con, Netcon::Event reason) = 0;
 };
 
@@ -185,7 +230,7 @@ private:
     int m_bufbytes;	// Bytes of data.
     int m_bufsize;	// Total buffer size
     RefCntr<NetconWorker> m_user;
-    virtual int cando(Netcon::Event reason);
+    virtual int cando(Netcon::Event reason); // Selectloop slot
 };
 
 /// Network endpoint, client side.

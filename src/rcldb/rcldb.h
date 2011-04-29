@@ -95,7 +95,8 @@ class Db {
     ~Db();
 
     enum OpenMode {DbRO, DbUpd, DbTrunc};
-    bool open(OpenMode mode);
+    enum OpenError {DbOpenNoError, DbOpenMainDb, DbOpenExtraDb};
+    bool open(OpenMode mode, OpenError *error = 0);
     bool close();
     bool isopen();
 

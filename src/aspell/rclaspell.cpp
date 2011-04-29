@@ -67,14 +67,6 @@ static AspellApi aapi;
 	badnames += #NM + string(" ");					\
     }
 
-static const char *aspell_progs[] = {
-#ifdef ASPELL_PROG
-    ASPELL_PROG ,
-#endif
-    "/usr/local/bin/aspell",
-    "/usr/bin/aspell"
-};
-static const unsigned int naspellprogs = sizeof(aspell_progs) / sizeof(char*);
 static const char *aspell_lib_suffixes[] = {
   ".so",
   ".so.15",
@@ -137,12 +129,18 @@ bool Aspell::init(string &reason)
     }
 
     m_data = new AspellData;
-    for (unsigned int i = 0; i < naspellprogs; i++) {
-	if (access(aspell_progs[i], X_OK) == 0) {
-	    m_data->m_exec = aspell_progs[i];
-	    break;
-	}
+
+    const char *aspell_prog_from_env = getenv("ASPELL_PROG");
+    if (aspell_prog_from_env && access(aspell_prog_from_env, X_OK) == 0) {
+	m_data->m_exec = aspell_prog_from_env;
+#ifdef ASPELL_PROG
+    } else if (access(ASPELL_PROG, X_OK) == 0) {
+	m_data->m_exec = ASPELL_PROG;
+#endif // ASPELL_PROG
+    } else {
+	ExecCmd::which("aspell", m_data->m_exec);
     }
+
     if (m_data->m_exec.empty()) {
 	reason = "aspell program not found or not executable";
         deleteZ(m_data);
@@ -153,9 +151,8 @@ bool Aspell::init(string &reason)
     // be clever with ASPELL_PROG.
     vector<string> libdirs;
     libdirs.push_back(LIBDIR);
-#ifdef ASPELL_PROG
-    // The aspell library has to live under the same prefix as the 
-    // aspell program.
+    // If not in the standard place, the aspell library has to live
+    // under the same prefix as the aspell program.
     {
 	string aspellPrefix = path_getfather(path_getfather(m_data->m_exec));
 	// This would probably require some more tweaking on solaris/irix etc.
@@ -164,7 +161,6 @@ bool Aspell::init(string &reason)
 	if (libaspell != LIBDIR)
 	    libdirs.push_back(libaspell);
     }
-#endif
 
     reason = "Could not open shared library ";
     for (vector<string>::iterator it = libdirs.begin(); 
