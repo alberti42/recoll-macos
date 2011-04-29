@@ -88,6 +88,11 @@ void IdxThread::run()
 
 	    Pidfile pidfile(myconf->getPidfile());
 	    if (pidfile.open() != 0) {
+                // Have to sleep a little here else the main thread
+                // won't see the status change because it only tests
+                // after seeing IDXTS_NULL at least once. Better
+                // interlock needed...
+                sleep(2);
 		indexingstatus = IDXTS_ERROR;
 		indexingReason = "Indexing failed: other process active? " + 
 		    pidfile.getreason();
