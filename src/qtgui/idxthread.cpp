@@ -106,10 +106,11 @@ void IdxThread::run()
 		    indexingstatus = IDXTS_ERROR;
 		    indexingReason = "Indexing failed: " + indexer->getReason();
 		}
-		delete myconf;
 		pidfile.close();
 		delete indexer;
 	    }
+	    delete myconf;
+	    myconf = 0;
 	    rezero = false;
             action_mutex.lock();
 	}
