@@ -86,17 +86,39 @@ umask 77
 
 checkcmds groff
 
+# We need a temporary directory
+if test z"$RECOLL_TMPDIR" != z; then
+   ttdir=$RECOLL_TMPDIR
+elif test z"$TMPDIR" != z ; then
+   ttdir=$TMPDIR
+else
+   ttdir=/tmp
+fi
+tmpdir=$ttdir/rclman_tmp$$
+mkdir $tmpdir || exit 1
+mkdir $tmpdir/rclmantmp || exit 1
+
+cleanup()
+{
+    # Note that we're using a constant part (rclmantmp), that hopefully
+    # guarantees that we can't do big mistakes here.
+    rm -rf $tmpdir/rclmantmp
+    rmdir $tmpdir
+}
+    
+trap cleanup EXIT HUP QUIT INT TERM
+
 # Note: the qt preview really likes to find an <html> tag at the top
 echo '<html>'
 
 # Filter out some unwanted data when indexing
 if test X$RECOLL_FILTER_FORPREVIEW = Xyes ; then
-    groff -man -Thtml < "$infile"
+    (cd $tmpdir/rclmantmp; groff -man -Thtml) < "$infile"
 else
    # When indexing we try to avoid adding terms for the section headers, which
    # are unfortunately somewhat ill defined. We eliminate rather loosely 
    # lines containing likely section header words preceded by a tag.
-   groff -man -Thtml < "$infile" | \
+   (cd $tmpdir/rclmantmp; groff -man -Thtml) < "$infile" | \
         egrep -v \
        '>NAME|>SYNOPSIS|>DESCRIPTION|>EXIT|>OPTIONS|>DIAGNOSTICS|>SUPPORTED HARDWARE|>CONFIGURATION|>AUTHOR|>BUGS|>REPORTING BUGS|>KNOWN BUGS|>COPYRIGHT|>SEE ALSO|>HISTORY|>ENVIRONMENT|>FILES'
 fi
