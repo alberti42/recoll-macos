@@ -56,7 +56,11 @@ using namespace std;
 
 bool ParamStale::needrecompute()
 {
+    LOGDEB2(("ParamStale:: needrecompute. parent gen %d mine %d\n", 
+	     parent->m_keydirgen, savedkeydirgen));
     if (parent->m_keydirgen != savedkeydirgen) {
+	LOGDEB2(("ParamState:: needrecompute. conffile %p\n", conffile));
+
         savedkeydirgen = parent->m_keydirgen;
         string newvalue;
         if (!conffile)
@@ -64,6 +68,8 @@ bool ParamStale::needrecompute()
         conffile->get(paramname, newvalue, parent->m_keydir);
         if (newvalue.compare(savedvalue)) {
             savedvalue = newvalue;
+	    LOGDEB2(("ParamState:: needrecompute. return true newvalue [%s]\n",
+		     newvalue.c_str()));
             return true;
         }
     }
@@ -439,7 +445,9 @@ typedef multiset<SfString, SuffCmp> SuffixStore;
 
 bool RclConfig::inStopSuffixes(const string& fni)
 {
-    if (m_stopsuffixes == 0 || m_stpsuffstate.needrecompute()) {
+    LOGDEB2(("RclConfig::inStopSuffixes(%s)\n", fni.c_str()));
+    // Beware: needrecompute() needs to be called always. 2nd test stays back.
+    if (m_stpsuffstate.needrecompute() || m_stopsuffixes == 0) {
 	// Need to initialize the suffixes
         delete STOPSUFFIXES;
 	if ((m_stopsuffixes = new SuffixStore) == 0) {
