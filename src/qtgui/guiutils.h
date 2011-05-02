@@ -58,6 +58,7 @@ class PrefsPack {
     bool useDesktopOpen; 
     // Remember sort state between invocations ?
     bool keepSort;   
+    QString sortField;
     bool sortActive; 
     bool sortDesc; 
     // Abstract preferences. Building abstracts can slow result display

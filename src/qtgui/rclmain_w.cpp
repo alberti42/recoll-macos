@@ -260,8 +260,8 @@ void RclMain::init()
     connect(this, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
 	    restable, SLOT(onSortDataChanged(DocSeqSortSpec)));
 
-    connect(restable->getModel(), SIGNAL(sortColumnChanged(DocSeqSortSpec)),
-	    this, SLOT(onResTableSortBy(DocSeqSortSpec)));
+    connect(restable->getModel(), SIGNAL(sortDataChanged(DocSeqSortSpec)),
+	    this, SLOT(onSortDataChanged(DocSeqSortSpec)));
     connect(restable, SIGNAL(docEditClicked(Rcl::Doc)), 
 	    this, SLOT(startNativeViewer(Rcl::Doc)));
     connect(restable, SIGNAL(docPreviewClicked(int, Rcl::Doc, int)), 
@@ -320,11 +320,10 @@ void RclMain::init()
 	    this, SLOT(showQueryDetails()));
 
     if (prefs.keepSort && prefs.sortActive) {
-	if (prefs.sortDesc) 
-	    actionSortByDateDesc->setChecked(true);
-	else
-	    actionSortByDateAsc->setChecked(true);
-	onSortCtlChanged();
+	m_sortspec.field = (const char *)prefs.sortField.toUtf8();
+	m_sortspec.desc = prefs.sortDesc;
+	onSortDataChanged(m_sortspec);
+	emit sortDataChanged(m_sortspec);
     }
 
     // Start timer on a slow period (used for checking ^C). Will be
@@ -915,23 +914,26 @@ void RclMain::onSortCtlChanged()
 	m_sortspec.desc = false;
 	prefs.sortActive = true;
 	prefs.sortDesc = false;
+	prefs.sortField = "mtime";
     } else if (actionSortByDateDesc->isChecked()) {
 	m_sortspec.field = "mtime";
 	m_sortspec.desc = true;
 	prefs.sortActive = true;
 	prefs.sortDesc = true;
+	prefs.sortField = "mtime";
     } else {
 	prefs.sortActive = prefs.sortDesc = false;
+	prefs.sortField = "";
     }
-    LOGDEB(("RclMain::onCtlDataChanged(): emitting change signals\n"));
     if (m_source.isNotNull())
 	m_source->setSortSpec(m_sortspec);
     emit sortDataChanged(m_sortspec);
     emit applyFiltSortData();
 }
 
-void RclMain::onResTableSortBy(DocSeqSortSpec spec)
+void RclMain::onSortDataChanged(DocSeqSortSpec spec)
 {
+    LOGDEB(("RclMain::onSortDataChanged\n"));
     m_sortspecnochange = true;
     if (spec.field.compare("mtime")) {
 	actionSortByDateDesc->setChecked(false);
@@ -944,6 +946,11 @@ void RclMain::onResTableSortBy(DocSeqSortSpec spec)
     if (m_source.isNotNull())
 	m_source->setSortSpec(spec);
     m_sortspec = spec;
+
+    prefs.sortField = QString::fromUtf8(spec.field.c_str());
+    prefs.sortDesc = spec.desc;
+    prefs.sortActive = !spec.field.empty();
+
     emit applyFiltSortData();
 }
 

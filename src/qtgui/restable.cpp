@@ -368,7 +368,7 @@ void RecollModel::sort(int column, Qt::SortOrder order)
 	    spec.field = "mtime";
 	spec.desc = order == Qt::AscendingOrder ? false : true;
     } 
-    emit sortColumnChanged(spec);
+    emit sortDataChanged(spec);
 }
 
 /////////////////////////// 

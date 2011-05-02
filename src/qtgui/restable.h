@@ -65,7 +65,7 @@ public:
     friend class ResTable;
 
 signals:
-    void sortColumnChanged(DocSeqSortSpec);
+    void sortDataChanged(DocSeqSortSpec);
 
 private:
     mutable RefCntr<DocSequence> m_source;

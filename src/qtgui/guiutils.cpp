@@ -146,12 +146,21 @@ void rwSettings(bool writing)
 	       "english");
     SETTING_RW(prefs.useDesktopOpen, 
 	       "/Recoll/prefs/useDesktopOpen", Bool, true);
+
     SETTING_RW(prefs.keepSort, 
 	       "/Recoll/prefs/keepSort", Bool, false);
+    SETTING_RW(prefs.sortField, "/Recoll/prefs/sortField", String, "");
     SETTING_RW(prefs.sortActive, 
 	       "/Recoll/prefs/sortActive", Bool, false);
     SETTING_RW(prefs.sortDesc, 
 	       "/Recoll/prefs/query/sortDesc", Bool, 0);
+    if (!writing) {
+	// Handle transition from older prefs which did not store sortColumn
+	// (Active always meant sort by date).
+	if (prefs.sortActive && prefs.sortField.isNull())
+	    prefs.sortField = "mtime";
+    }
+
     SETTING_RW(prefs.queryBuildAbstract, 
 	       "/Recoll/prefs/query/buildAbstract", Bool, true);
     SETTING_RW(prefs.queryReplaceAbstract, 
