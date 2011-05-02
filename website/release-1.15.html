@@ -29,7 +29,7 @@
     
     <div class="content">
 
-      <h1>Release notes for Recoll 1.15.0/1.15.7</h1>
+      <h1>Release notes for Recoll 1.15.0/1.15.8</h1>
 
       <p><em>Notes:</em>
         <ul><li>1.15.1 is identical to 1.15.0 except for a very
@@ -43,7 +43,42 @@
         for the indication of the stemming language in the menu, fixed in
         1.15.7). If you are running 1.15.5, you probably don't need to
         upgrade.</li>
-      </ul>
+
+        <li>1.15.8 fixes quite a few bugs (see
+        the <a href="BUGS.html#b_1_15_7">BUGS</a> file) and also
+        breaks my promise to only fix bugs in minor releases because
+        it also has a few small functional improvements (which
+        actually border on the bug fix category):
+          <ul>
+            <li>Searches now allow negative directory filtering (all
+              results except from the specified directory). Other attempts
+              at still impossible negative searches
+              (ie: <span class="literal">-mime:</span>) now cause
+              explicit errors messages instead of lame results. The
+              inverted directory filtering is accessible from the query
+              language and by checking a checkbox in the advanced
+              search panel.</li> 
+
+            <li>The GUI advanced search panel now allows specifying a
+              field for each entry (ie: author/recipient, etc).</li>
+
+            <li>Added filters for .war (Konqueror web archive) and
+              .mhtm (other web archive format).</li>
+
+            <li>Result table:
+              <ul>
+                <li>The detail area now has a popup menu similar
+                  to the one in the result list (open parent, save to disk
+                  etc.).</li>
+                <li>Estimated result counts are displayed in the
+                  status line.</li> 
+                <li>Set row height according to default font size, and better 
+                  adjust row height and vertical text position in
+                  cells.</li>
+              </ul>
+            </li>
+
+          </ul>
       </p>
 
       <h2>Caveats</h2>
