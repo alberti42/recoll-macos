@@ -47,7 +47,7 @@
 
       <p><span class="application">Recoll</span> is free, open source,
 	and licensed under the GPL. The current version is
-	<a class="important" href="download.html">1.15.7</a> 
+	<a class="important" href="download.html">1.15.8</a> 
 	(<a href="release-1.15.html">Release notes</a>).</p>
 
       <h2>Features: </h2>
@@ -91,16 +91,16 @@
       <h2>News: </h2>
       <ul>
 
+        <li>2011-05-02: release 
+          <a href="download.html#source">1.15.8</a> is out with 
+          <a href="BUGS.html#b_1_15_7">bug fixes</a> and a few
+          <a href="release-1.15.html">improvements</a>.
+        </li>
+
         <li>2011-03-26: added a filter for konqueror webarchive (.war)
           format, and elementary support for mimehtml (.mhtml). These
           work with stock recoll 1.15, you just need to install the filter
           and config adjustments.</li>
-
-	<li>2011-03-10 : Recoll <a href="download.html#source">1.15.7</a> is
-	  out. This fixes a number of ennoying bugs in 1.15.2 (no need to
-	  upgrade from 1.15.5). See the <a href="release-1.15.html">Release
-	  notes</a>.
-	</li>
 
 	<li>2010-11-29 : Recoll <a href="download.html#source">1.14.4</a> is
 	  out. This is a small bugs fix release, the important <a

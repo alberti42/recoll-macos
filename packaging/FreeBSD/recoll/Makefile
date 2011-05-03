@@ -6,7 +6,7 @@
 #
 
 PORTNAME=	recoll
-PORTVERSION=	1.14.2
+PORTVERSION=	1.15.8
 CATEGORIES=	deskutils
 MASTER_SITES=	http://www.lesbonscomptes.com/recoll/
 
@@ -16,8 +16,7 @@ COMMENT=	A personal full text search package, based on QT and Xapian
 LIB_DEPENDS=	xapian.[1-2][0-9]:${PORTSDIR}/databases/xapian-core
 
 USE_QT_VER=	4
-QT_COMPONENTS=	gui qmake_build uic_build moc_build rcc_build \
-		qt3support uic3_build porting
+QT_COMPONENTS=	gui qmake_build uic_build moc_build rcc_build 
 GNU_CONFIGURE=	yes
 USE_GMAKE=	yes
 USE_ICONV=	yes

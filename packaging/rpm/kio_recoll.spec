@@ -1,5 +1,5 @@
 %define name kio_recoll
-%define version 1.15.6
+%define version 1.15.8
 %define release 0
 
 Name:           %{name}
@@ -14,7 +14,7 @@ Group:          Applications/Databases
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 License:	GPL
 
-BuildRequires: libkde4-devel zlib-devel-static libxapian-devel libuuid-devel
+BuildRequires: libkde4-devel zlib-devel libxapian-devel libuuid-devel
 Requires: recoll
 
 %description
@@ -66,5 +66,8 @@ rm -rf $RPM_BUILD_ROOT
 # ---------------------------------------------------------------------------
 
 %changelog
+* Mon May 02 2011 Jean-Francois Dockes <jfd@recoll.org> 1.15.8-0
+- Initial spec file for kio
 * Sun Mar 06 2011 Jean-Francois Dockes <jfd@recoll.org> 1.15.5-0
 - Initial spec file for kio
+
