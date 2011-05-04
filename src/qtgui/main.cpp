@@ -262,7 +262,7 @@ int main(int argc, char **argv)
     string historyfile = path_cat(theconfig->getConfDir(), "history");
     g_dynconf = new RclDynConf(historyfile);
     if (!g_dynconf || !g_dynconf->ok()) {
-	QString msg = app.translate("Main", "Configuration problem (dynconf");
+	QString msg = app.translate("Main", "\"history\" file is damaged or un(read)writeable, please check or remove it: ") + QString::fromLocal8Bit(historyfile.c_str());
 	QMessageBox::critical(0, "Recoll",  msg);
 	exit(1);
     }
