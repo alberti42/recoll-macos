@@ -132,13 +132,15 @@ bool transcode(const string &in, string &out, const string &icode,
 
 #else
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <errno.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include <string>
 #include <iostream>
 
-#include <unistd.h>
-#include <fcntl.h>
 
 using namespace std;
 

@@ -405,6 +405,9 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 }
 	
 #else // TEST_FSTREEWALK
+
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/stat.h>
 
 #include <iostream>

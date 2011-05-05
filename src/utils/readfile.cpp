@@ -191,7 +191,9 @@ bool file_scan(const string &fn, FileScanDo* doer, off_t startoffs,
 }
 
 #else // Test
+#include "autoconfig.h"
 
+#include <stdio.h>
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <unistd.h>

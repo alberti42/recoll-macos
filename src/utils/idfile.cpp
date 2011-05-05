@@ -172,6 +172,9 @@ string idFileMem(const string& data)
 
 #else
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include <string>
 #include <iostream>
 

@@ -778,6 +778,9 @@ time_t rfc2822DateToUxTime(const string& dt)
 
 #else 
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #include <string>

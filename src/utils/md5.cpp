@@ -393,6 +393,7 @@ bool MD5File(const string& filename, string &digest, string *reason)
 #else
 
 // Test driver
+#include <stdio.h>
 #include <stdlib.h>
 
 #include <string>

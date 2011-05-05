@@ -112,6 +112,8 @@ int wipedir(const string& dir, bool selfalso, bool recurse)
 
 #else // FILEUT_TEST
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/stat.h>
 
 #include "wipedir.h"

@@ -1,11 +1,9 @@
 depth = ..
 include $(depth)/mk/sysconf
 
-PROGS = trnetcon trcopyfile trcircache trmd5 trreadfile trfileudi trconftree \
-        wipedir smallut \
-        trfstreewalk trpathut \
-        transcode trbase64 \
-        trmimeparse trexecmd utf8iter idfile
+PROGS = trnetcon trcopyfile trcircache trmd5 trreadfile trfileudi \
+      trconftree wipedir smallut  trfstreewalk trpathut transcode trbase64 \
+      trmimeparse trexecmd utf8iter idfile
 
 all: $(PROGS) $(BIGLIB)
 
@@ -15,38 +13,38 @@ force:
 
 FSTREEWALK_OBJS= trfstreewalk.o fstreewalk.o $(BIGLIB)
 trfstreewalk : $(FSTREEWALK_OBJS)
-	$(CXX) -o trfstreewalk $(FSTREEWALK_OBJS) $(LIBICONV)
+	$(CXX) -o trfstreewalk $(FSTREEWALK_OBJS) $(LIBICONV) \
+	       $(LIBSYS)
 trfstreewalk.o : fstreewalk.cpp fstreewalk.h
 	$(CXX) -o trfstreewalk.o -c $(ALL_CXXFLAGS) \
 	       -DTEST_FSTREEWALK fstreewalk.cpp
 
-READFILE_OBJS= trreadfile.o readfile.o $(BIGLIB)
+READFILE_OBJS= trreadfile.o $(BIGLIB)
 trreadfile : $(READFILE_OBJS)
 	$(CXX) -o trreadfile $(READFILE_OBJS) $(LIBICONV) $(LIBSYS)
 trreadfile.o : readfile.cpp readfile.h
 	$(CXX) -o trreadfile.o -c $(ALL_CXXFLAGS) \
 	       -DTEST_READFILE readfile.cpp
 
-CIRCACHE_OBJS= trcircache.o circache.o $(BIGLIB)
+CIRCACHE_OBJS= trcircache.o $(BIGLIB)
 trcircache : $(CIRCACHE_OBJS)
-	$(CXX) -o trcircache $(CIRCACHE_OBJS) $(LIBICONV) $(LIBSYS)
+	$(CXX) -o trcircache $(CIRCACHE_OBJS) $(LIBICONV) $(LIBSYS) -lz
 trcircache.o : circache.cpp circache.h
 	$(CXX) -o trcircache.o -c $(ALL_CXXFLAGS) \
 	       -DTEST_CIRCACHE circache.cpp
 
-COPYFILE_OBJS= trcopyfile.o copyfile.o $(BIGLIB)
+COPYFILE_OBJS= trcopyfile.o $(BIGLIB)
 trcopyfile : $(COPYFILE_OBJS)
 	$(CXX) -o trcopyfile $(COPYFILE_OBJS) $(LIBICONV) $(LIBSYS)
 trcopyfile.o : copyfile.cpp copyfile.h
 	$(CXX) -o trcopyfile.o -c $(ALL_CXXFLAGS) \
 	       -DTEST_COPYFILE copyfile.cpp
 
-MD5_OBJS= trmd5.o md5.o $(BIGLIB)
+MD5_OBJS= trmd5.o $(BIGLIB)
 trmd5 : $(MD5_OBJS)
 	$(CXX) -o trmd5 $(MD5_OBJS) $(LIBICONV) $(LIBSYS)
 trmd5.o : md5.cpp md5.h
-	$(CXX) -o trmd5.o -c $(ALL_CXXFLAGS) \
-	       -DTEST_MD5 md5.cpp
+	$(CXX) -o trmd5.o -c $(ALL_CXXFLAGS) -DTEST_MD5 md5.cpp
 
 PATHUT_OBJS= trpathut.o  $(BIGLIB)
 trpathut : $(PATHUT_OBJS) 
@@ -74,21 +72,24 @@ trexecmd.o : execmd.cpp execmd.h
 
 TRANSCODE_OBJS= trtranscode.o  $(BIGLIB) 
 transcode : $(TRANSCODE_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) -o transcode $(TRANSCODE_OBJS) $(LIBICONV)
+	$(CXX) $(ALL_CXXFLAGS) -o transcode $(TRANSCODE_OBJS) \
+	       $(LIBICONV) $(LIBSYS)
 trtranscode.o : transcode.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_TRANSCODE -c -o trtranscode.o \
 	       transcode.cpp
 
 IDFILE_OBJS= tridfile.o  $(BIGLIB) 
 idfile : $(IDFILE_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) -o idfile $(IDFILE_OBJS) $(LIBICONV)
+	$(CXX) $(ALL_CXXFLAGS) -o idfile $(IDFILE_OBJS) \
+	       $(LIBICONV) $(LIBSYS)
 tridfile.o : idfile.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_IDFILE -c -o tridfile.o \
 	       idfile.cpp
 
 MIMEPARSE_OBJS= trmimeparse.o  $(BIGLIB) 
 trmimeparse : $(MIMEPARSE_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) -o trmimeparse $(MIMEPARSE_OBJS) $(LIBICONV)
+	$(CXX) $(ALL_CXXFLAGS) -o trmimeparse $(MIMEPARSE_OBJS) \
+	       $(LIBICONV) $(LIBSYS)
 trmimeparse.o : mimeparse.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_MIMEPARSE -c -o trmimeparse.o \
 	       mimeparse.cpp
@@ -102,42 +103,40 @@ trsmallut.o : smallut.cpp smallut.h
 ../lib/smallut.o: smallut.cpp smallut.h
 	cd ../lib;make smallut.o
 
-WIPEDIR_OBJS= trwipedir.o  $(BIGLIB) 
+WIPEDIR_OBJS= trwipedir.o $(BIGLIB) 
 wipedir : $(WIPEDIR_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) -o wipedir $(WIPEDIR_OBJS) -L/opt/local/lib -liconv
+	$(CXX) $(ALL_CXXFLAGS) -o wipedir $(WIPEDIR_OBJS) $(LIBICONV) $(LIBSYS)
 trwipedir.o : wipedir.cpp 
-	$(CXX) $(ALL_CXXFLAGS) -DTEST_WIPEDIR -c -o trwipedir.o \
-	       wipedir.cpp
+	$(CXX) $(ALL_CXXFLAGS) -DTEST_WIPEDIR -c -o trwipedir.o wipedir.cpp
 
 UTF8ITER_OBJS= trutf8iter.o 
 utf8iter : $(UTF8ITER_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) -o utf8iter $(UTF8ITER_OBJS) $(BIGLIB) $(LIBICONV) 
+	$(CXX) $(ALL_CXXFLAGS) -o utf8iter $(UTF8ITER_OBJS) $(BIGLIB) \
+	       $(LIBICONV) $(LIBSYS)
 trutf8iter.o : utf8iter.cpp utf8iter.h
-	$(CXX) $(ALL_CXXFLAGS) -DTEST_UTF8ITER -c -o trutf8iter.o \
-	       utf8iter.cpp
-
+	$(CXX) $(ALL_CXXFLAGS) -DTEST_UTF8ITER -c -o trutf8iter.o utf8iter.cpp
 
 CONFTREE_OBJS= trconftree.o  $(BIGLIB)
 trconftree : $(CONFTREE_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) -o trconftree $(CONFTREE_OBJS) $(LIBICONV) 
+	$(CXX) $(ALL_CXXFLAGS) -o trconftree $(CONFTREE_OBJS) \
+	       $(LIBICONV) $(LIBSYS)
 trconftree.o : conftree.cpp 
-	$(CXX) $(ALL_CXXFLAGS) -DTEST_CONFTREE -c -o trconftree.o \
-	       conftree.cpp
+	$(CXX) $(ALL_CXXFLAGS) -DTEST_CONFTREE -c -o trconftree.o conftree.cpp
 
 BASE64_OBJS= trbase64.o  $(BIGLIB)
 trbase64 : $(BASE64_OBJS) 
 	$(CXX) $(ALL_CXXFLAGS) -o trbase64 $(BASE64_OBJS)
 trbase64.o : base64.cpp 
-	$(CXX) $(ALL_CXXFLAGS) -DTEST_BASE64 -c -o trbase64.o \
-	       base64.cpp
+	$(CXX) $(ALL_CXXFLAGS) -DTEST_BASE64 -c -o trbase64.o base64.cpp
 
 X11MON_OBJS= trx11mon.o x11mon.o
 trx11mon : $(X11MON_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) -o trx11mon $(X11MON_OBJS)  -L/usr/X11R6/lib -lX11
+	$(CXX) $(ALL_CXXFLAGS) -o trx11mon $(X11MON_OBJS) -L/usr/X11R6/lib -lX11
 trx11mon.o : x11mon.cpp x11mon.h
 	$(CXX) -o trx11mon.o -c $(ALL_CXXFLAGS) -DTEST_X11MON x11mon.cpp
 x11mon.o: x11mon.cpp
 	$(CXX) -c -I/usr/X11R6/include $(ALL_CXXFLAGS) x11mon.cpp
+
 clean:
 	rm -f *.o $(PROGS)
 

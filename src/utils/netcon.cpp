@@ -888,6 +888,7 @@ NetconServLis::checkperms(void *cl, int)
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
+#include <string.h>
 
 #include "debuglog.h"
 #include "netcon.h"

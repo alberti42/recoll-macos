@@ -1189,6 +1189,7 @@ static bool inflateToDynBuf(void* inp, UINT inlen, void **outpp, UINT *outlenp)
 }
 
 #else // TEST ->
+#include "autoconfig.h"
 
 #include <stdio.h>
 #include <stdlib.h>

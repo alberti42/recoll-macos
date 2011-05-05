@@ -133,6 +133,7 @@ bool renameormove(const char *src, const char *dst, string &reason)
 
 #else 
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 

@@ -218,6 +218,7 @@ void base64_encode(const string &in, string &out)
 
 #ifdef TEST_BASE64
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "readfile.h"
 
