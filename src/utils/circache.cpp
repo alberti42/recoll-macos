@@ -1216,6 +1216,7 @@ static char usage [] =
 " -d <dirname> : dump\n"
 " -g [-i instance] [-D] <dirname> <udi>: get\n"
 "   -D: also dump data\n"
+" -e <dirname> <udi> : erase\n"
 ;
 static void
 Usage(FILE *fp = stderr)
@@ -1233,6 +1234,7 @@ static int     op_flags;
 #define OPT_i     0x40
 #define OPT_D     0x80
 #define OPT_u     0x100
+#define OPT_e     0x200
 
 int main(int argc, char **argv)
 {
@@ -1249,6 +1251,7 @@ int main(int argc, char **argv)
     while (**argv)
       switch (*(*argv)++) {
       case 'c':	op_flags |= OPT_c; break;
+      case 'e':	op_flags |= OPT_e; break;
       case 'p':	op_flags |= OPT_p; break;
       case 'g':	op_flags |= OPT_g; break;
       case 'd':	op_flags |= OPT_d; break;
@@ -1326,6 +1329,19 @@ int main(int argc, char **argv)
           cout << "Dict: [" << dic << "]" << endl;
           if (op_flags & OPT_D)
               cout << "Data: [" << data << "]" << endl;
+      }
+  } else if (op_flags & OPT_e) {
+      if (!cc.open(CirCache::CC_OPWRITE)) {
+          cerr << "Open failed: " << cc.getReason() << endl;
+          exit(1);
+      }
+      while (argc) {
+          string udi = *argv++;argc--;
+          string dic, data;
+          if (!cc.erase(udi)) {
+              cerr << "Erase failed: " << cc.getReason() << endl;
+              exit(1);
+          }
       }
   } else if (op_flags & OPT_d) {
       if (!cc.open(CirCache::CC_OPREAD)) {
