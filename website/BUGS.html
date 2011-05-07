@@ -89,24 +89,46 @@
       </ul>
 
       <h2><a name="b_1_15_7">recoll 1.15.7</a></h2> 
-        <li>Using search preview while the indexing thread is running will
-          sometimes crash the GUI or provoke other strangeness. This is
-          apparently due to insufficient protection of resources shared by
-          several threads. After recent cleanup, the problem occurs quite
-          seldom but it is not completely gone. The current and
-          unsatisfying workaround, is to avoid the situation, for example
-          by using the standalone recollindex program instead of the GUI
+      <ul>
+        <li>Using the result preview while the indexing thread is
+          running will sometimes crash the GUI or provoke other
+          strangeness. This is apparently due to insufficient
+          protection of resources shared by several threads. After
+          recent cleanup, the problem occurs quite seldom but it is
+          not completely gone. The current and unsatisfying
+          workaround, is to avoid the situation, for example by using
+          the standalone recollindex program instead of the GUI
           indexing thread.</li>
 
-        <li>The GUI preview function sometimes failed with a
+        <li>The GUI preview function sometimes fails with a
           non-sensical message about a non-related missing
           helper.</li>
 
-        <li>The ignored suffixes list (recoll_noindex) is
-          ignored in some cases.</li>
+        <li>Most operations on the parent document in the result table
+          view are not connected and do nothing.</li>
+
+        <li>The operations on the parent document in the result list
+	  right click menu (Preview and Open), do not work, they
+	  access the file's parent directory instead.</li>
 
         <li>The GUI option to remember sort state between invocations
           only works for sort by date.</li>
+
+        <li>The rclzip filter can't handle utf-8 in path names for archive
+          members. An <a href="http://www.recoll.org/filters/rclzip">
+            updated filter</a> is available. </li>
+
+        <li>The rclzip and rclchm filters can't handle archive members
+          with a colon (':') in the file name or path. The files are normally
+          indexed and can be searched for, but they can't be displayed
+          (neither opened nor previewed). There is a 
+          <a href="https://bitbucket.org/medoc/recoll/changeset/3751ea8ea179">
+            patch</a> which fixes the issue (then needs full reindex for these
+          files).</li>
+
+        <li>The ignored suffixes list (recoll_noindex) is itself
+          ignored in some cases.</li> 
+
         
         <li>The man filter creates groff temporary png files in the
           home directory.</li>
@@ -120,31 +142,17 @@
           user ends the section at this point.</li>
 
         <li>Starting the indexing thread inside the GUI while another
-          indexer (batch or real-time) was active would silently
+          indexer (batch or real-time) is active will silently
           failed. It should show an error dialog.</li>
 
         <li>When an open error occurs on an external index while
           starting the GUI, the initial indexing dialog is started,
           which is incorrect because it cannot fix the problem.</li>
 
-        <li>The operations on the parent document in the result list
-	  right click menu (Preview and Open), do not work, they
-	  access the file's parent directory instead.</li>
-
-        <li>Most operations on the parent document in the result table
-          view are not connected and do nothing.</li>
-
-        <li>The rclzip filter can't handle utf-8 in path names for archive
-          members. An <a href="http://www.recoll.org/filters/rclzip">
-            updated filter</a> is available. </li>
-
-        <li>The rclzip and rclchm filters can't handle archive members
-          with a colon (':') in the file name or path. The files are normally
-          indexed and can be searched for, but they can't be displayed
-          (neither opened nor previewed). There is a 
-          <a href="https://bitbucket.org/medoc/recoll/changeset/3751ea8ea179">
-            patch</a> which fixes the issue (then needs full reindex for these
-          files).</li>
+        <li>The result table row height is not adjusted according to
+          default font size, and the vertical position of text in cells
+          is often bad.</li>
+      </ul>
 
 
       <h2><a name="b_1_15_5">recoll 1.15.5</a></h2> 

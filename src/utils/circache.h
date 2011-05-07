@@ -58,7 +58,12 @@ public:
 
     virtual string getReason();
 
-    enum CreateFlags {CC_CRNONE=0, CC_CRUNIQUE=1, CC_CRTRUNCATE = 2};
+    enum CreateFlags {CC_CRNONE=0, 
+		      // Unique entries: erase older instances when same udi
+		      // is stored.
+		      CC_CRUNIQUE=1,
+		      // Truncate file (restart from scratch).
+		      CC_CRTRUNCATE = 2};
     virtual bool create(off_t maxsize, int flags);
 
     enum OpMode {CC_OPREAD, CC_OPWRITE};

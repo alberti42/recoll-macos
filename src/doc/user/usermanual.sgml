@@ -479,24 +479,32 @@ recoll
     <sect1 id="rcl.indexing.beaglequeue">
       <title>Using Beagle WEB browser plugins</title>
 
-      <para><application>Beagle</application> is a concurrent desktop
+      <para><application>Beagle</application> is (was?) a concurrent desktop
 	indexer, built on Lucene and the Mono project (C#), for which a
 	number of add-on browser plugins were written. These work by
 	copying visited web pages to an indexing queue directory, which the
-	indexer then processes.</para>
+	indexer then processes. Especially, there is a
+	<application>Firefox</application> extension.</para>
 
       <para>If, for any reason, you so happen to prefer &RCL; to
-	<application>Beagle</application>, you can still use
-	the browser plugins (they are written in Javascript and completely
-	independant of C#, Beagle, Lucene...). &RCL; can process the
-	<application>Beagle</application> queue directory. Of course, this
-	supposes that <application>Beagle</application> is not running,
-	else both programs will fight for the same files.</para>
+	<application>Beagle</application>, you can still use the
+	<application>Firefox</application> plugin, which is written in
+	Javascript and completely independant of C#, Beagle, Lucene..., and
+	set &RCL; to process the <application>Beagle</application> queue
+	directory. This supposes that <application>Beagle</application> is
+	not running, else both programs will fight for the same
+	files.</para>
 
       <para>This feature can be enabled in the GUI indexing configuration
 	panel, or by editing the configuration file (set
 	<literal>processbeaglequeue</literal> to 1).</para>
-      </sect1>
+
+      <para>There are more recent instructions about how to find and
+      install the <application>Firefox</application> extension on the 
+        <ulink url="https://bitbucket.org/medoc/recoll/wiki/IndexBeagleWeb">
+         Recoll wiki</ulink>.</para>
+
+    </sect1>
 
     <sect1 id="rcl.indexing.periodic">
       <title>Periodic indexing</title>

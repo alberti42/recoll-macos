@@ -141,9 +141,9 @@ ConfBeaglePanelW::ConfBeaglePanelW(QWidget *parent, ConfNull *config)
 
     ConfLink lnk2(new ConfLinkRclRep(config, "webcachedir"));
     ConfParamFNW* cp2 = 
-        new ConfParamFNW(this, lnk2, tr("Web cache directory name"),
-		     tr("The name for a directory where to store the cache "
-			"for visited web pages.<br>"
+        new ConfParamFNW(this, lnk2, tr("Web page store directory name"),
+		     tr("The name for a directory where to store the copies "
+			"of visited web pages.<br>"
                         "A non-absolute path is taken relative to the "
 			"configuration directory."), true);
     cp2->setEnabled(cp1->m_cb->isChecked());
@@ -152,7 +152,7 @@ ConfBeaglePanelW::ConfBeaglePanelW(QWidget *parent, ConfNull *config)
 
     ConfLink lnk3(new ConfLinkRclRep(config, "webcachemaxmbs"));
     ConfParamIntW *cp3 =
-        new ConfParamIntW(this, lnk3, tr("Max. size for the web cache (MB)"),
+        new ConfParamIntW(this, lnk3, tr("Max. size for the web store (MB)"),
 		      tr("Entries will be recycled once the size is reached"),
                           -1, 1000);
     cp3->setEnabled(cp1->m_cb->isChecked());
