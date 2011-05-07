@@ -14,7 +14,7 @@ Group:          Applications/Databases
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 License:	GPL
 
-BuildRequires: libkde4-devel zlib-devel libxapian-devel libuuid-devel
+BuildRequires: libkde4-devel zlib-devel xapian-core-devel libuuid-devel
 Requires: recoll
 
 %description
