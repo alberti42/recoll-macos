@@ -261,7 +261,7 @@ public:
 		continue;
 	    if ('A' <= m_input->at(0) && m_input->at(0) <= 'Z')
 		continue;
-	    if (m_input->find_first_of("0123456789.@+-,#_") != string::npos)
+	    if (m_input->find_first_of(" !\"#$%&()*+,-./0123456789:;<=>?@[\\]^_`{|}~") != string::npos)
 		continue;
 	    // Got a non-empty sort-of appropriate term, let's send it to
 	    // aspell
