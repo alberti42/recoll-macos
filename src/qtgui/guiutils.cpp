@@ -119,8 +119,11 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.showResultsAsTable, 
 	       "/Recoll/prefs/showResultsAsTable", Bool, false);
     SETTING_RW(prefs.maxhltextmbs, "/Recoll/prefs/preview/maxhltextmbs", Int, 3);
+    // This used to be plainPre in the file, but there is no gui control for 
+    // this and the initial default was wrong (true). So switched to plainPre1
+    // so that we can start again.
     SETTING_RW(prefs.previewPlainPre, 
-	       "/Recoll/prefs/preview/plainPre", Bool, true);
+	       "/Recoll/prefs/preview/plainPre1", Bool, false);
     SETTING_RW(prefs.qtermcolor, "/Recoll/prefs/qtermcolor", String, "blue");
     if (!writing && prefs.qtermcolor == "")
 	prefs.qtermcolor = "blue";
