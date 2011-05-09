@@ -19,6 +19,7 @@
 
 #include <qvariant.h>
 #include <qmainwindow.h>
+
 #include "sortseq.h"
 #include "preview_w.h"
 #include "recoll.h"
@@ -122,7 +123,6 @@ private:
     QTimer         *periodictimer;
     ResTable       *restable;
 
-    vector<TempFile>  m_tempfiles;
     vector<ExecCmd*>  m_viewers;
     map<QString, QAction*> m_stemLangToId;
     vector<string>    m_catgbutvec;

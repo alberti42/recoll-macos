@@ -475,7 +475,6 @@ bool RclMain::close()
 void RclMain::fileExit()
 {
     LOGDEB(("RclMain: fileExit\n"));
-    m_tempfiles.clear();
     // Don't save geometry if we're currently fullscreened
     if (!isFullScreen()) {
         prefs.mainwidth = width();
@@ -996,7 +995,7 @@ void RclMain::saveDocToFile(Rcl::Doc doc)
 				     QString::fromLocal8Bit(path_home().c_str())
 	    );
     string tofile((const char *)s.toLocal8Bit());
-    TempFile temp; // not used
+    TempFile temp; // not used because tofile is set.
     if (!FileInterner::idocToFile(temp, tofile, theconfig, doc)) {
 	QMessageBox::warning(0, "Recoll",
 			     tr("Cannot extract document or create "
@@ -1026,20 +1025,6 @@ static bool lookForHtmlBrowser(string &exefile)
     }
     exefile.clear();
     return false;
-}
-
-// Convert to file path if url is like file://
-static string fileurltolocalpath(string url)
-{
-    if (url.find("file://") == 0)
-        url = url.substr(7, string::npos);
-    else
-        return string();
-    string::size_type pos;
-    if ((pos = url.find_last_of("#")) != string::npos) {
-        url.erase(pos);
-    }
-    return url;
 }
 
 void RclMain::startNativeViewer(Rcl::Doc doc)
@@ -1151,7 +1136,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 	    return;
 	}
 	istempfile = true;
-	m_tempfiles.push_back(temp);
+	rememberTempFile(temp);
 	fn = temp->filename();
 	url = string("file://") + fn;
     }
@@ -1176,7 +1161,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
             }
         }
         if (!temp.isNull()) {
-            m_tempfiles.push_back(temp);
+	    rememberTempFile(temp);
             fn = temp->filename();
             url = string("file://") + fn;
         }

@@ -56,8 +56,35 @@ void snapshotConfig()
     PTMutexLocker locker(thestableconfiglock);
     thestableconfig = new RclConfig(*theconfig);
 }
-    
+
+PTMutexInit thetempfileslock;
+static vector<TempFile>  o_tempfiles;
+/* Keep an array of temporary files for deletion at exit. It happens that we
+   erase some of them before exiting (ie: when closing a preview tab), we don't 
+   reuse the array holes for now */
+void rememberTempFile(TempFile temp)
+{
+    PTMutexLocker locker(thetempfileslock);
+    o_tempfiles.push_back(temp);
+}    
+
+void forgetTempFile(string &fn)
+{
+    if (fn.empty())
+	return;
+    PTMutexLocker locker(thetempfileslock);
+    for (vector<TempFile>::iterator it = o_tempfiles.begin();
+	 it != o_tempfiles.end(); it++) {
+	if ((*it).isNotNull() && !fn.compare((*it)->filename())) {
+	    it->release();
+	}
+    }
+    fn.erase();
+}    
+
+
 Rcl::Db *rcldb;
+
 #ifdef RCL_USE_ASPELL
 Aspell *aspell;
 #endif
@@ -119,9 +146,14 @@ static void recollCleanup()
     deleteZ(rcldb);
     deleteZ(theconfig);
 //    deleteZ(thestableconfig);
+
+    PTMutexLocker locker(thetempfileslock);
+    o_tempfiles.clear();
+
 #ifdef RCL_USE_ASPELL
     deleteZ(aspell);
 #endif
+
     LOGDEB2(("recollCleanup: done\n"));
 }
 
@@ -322,4 +354,3 @@ int main(int argc, char **argv)
     }
     return app.exec();
 }
-

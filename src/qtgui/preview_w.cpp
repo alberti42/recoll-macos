@@ -33,7 +33,6 @@ using std::pair;
 #include <qprinter.h>
 #include <qprintdialog.h>
 #include <qscrollbar.h>
-
 #include <qmenu.h>
 #include <qtextedit.h>
 #include <qprogressdialog.h>
@@ -46,6 +45,8 @@ using std::pair;
 #include <qwhatsthis.h>
 #include <qapplication.h>
 #include <qclipboard.h>
+#include <qimage.h>
+#include <qurl.h>
 
 #include "debuglog.h"
 #include "pathut.h"
@@ -111,21 +112,6 @@ public:
     }
     virtual string startChunk() { return "<pre>";}
 };
-
-PreviewTextEdit::PreviewTextEdit(QWidget* parent,const char* name, Preview *pv) 
-    : QTextEdit(parent), m_preview(pv), m_dspflds(false)
-{
-    setContextMenuPolicy(Qt::CustomContextMenu);
-    setObjectName(name);
-    connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
-	    this, SLOT(createPopupMenu(const QPoint&)));
-    m_plaintorich = new PlainToRichQtPreview();
-}
-
-PreviewTextEdit::~PreviewTextEdit()
-{
-    delete m_plaintorich;
-}
 
 void Preview::init()
 {
@@ -217,6 +203,18 @@ void Preview::closeEvent(QCloseEvent *e)
     }
     prefs.pvwidth = width();
     prefs.pvheight = height();
+
+    /* Release all temporary files (but maybe none is actually set) */
+    for (int i = 0; i < pvTab->count(); i++) {
+        QWidget *tw = pvTab->widget(i);
+        if (tw) {
+	    PreviewTextEdit *edit = 
+		tw->findChild<PreviewTextEdit*>("pvEdit");
+            if (edit) {
+		forgetTempFile(edit->m_tmpfilename);
+            }
+        }
+    }
     emit previewExposed(this, m_searchId, -1);
     emit previewClosed(this);
     QWidget::closeEvent(e);
@@ -249,13 +247,13 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 	       (keyEvent->modifiers() & Qt::ShiftModifier)) {
 	LOGDEB2(("Preview::eventFilter: got Shift-Up\n"));
 	if (edit) 
-	    emit(showNext(this, m_searchId, edit->m_data.docnum));
+	    emit(showNext(this, m_searchId, edit->m_docnum));
 	return true;
     } else if (keyEvent->key() == Qt::Key_Up &&
 	       (keyEvent->modifiers() & Qt::ShiftModifier)) {
 	LOGDEB2(("Preview::eventFilter: got Shift-Down\n"));
 	if (edit) 
-	    emit(showPrev(this, m_searchId, edit->m_data.docnum));
+	    emit(showPrev(this, m_searchId, edit->m_docnum));
 	return true;
     } else if (keyEvent->key() == Qt::Key_W &&
 	       (keyEvent->modifiers() & Qt::ControlModifier)) {
@@ -459,7 +457,7 @@ void Preview::currentChanged(QWidget * tw)
     edit->installEventFilter(this);
     edit->viewport()->installEventFilter(this);
     searchTextLine->installEventFilter(this);
-    emit(previewExposed(this, m_searchId, edit->m_data.docnum));
+    emit(previewExposed(this, m_searchId, edit->m_docnum));
 }
 
 void Preview::closeCurrentTab()
@@ -469,6 +467,9 @@ void Preview::closeCurrentTab()
 	CancelCheck::instance().setCancel();
 	return;
     }
+    PreviewTextEdit *e = currentEditor();
+    if (e)
+	forgetTempFile(e->m_tmpfilename);
     if (pvTab->count() > 1) {
 	pvTab->removeTab(pvTab->currentIndex());
     } else {
@@ -528,9 +529,9 @@ void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
 
     PreviewTextEdit *e = currentEditor();
     if (e) {
-	e->m_data.url = doc.url;
-	e->m_data.ipath = doc.ipath;
-	e->m_data.docnum = docnum;
+	e->m_url = doc.url;
+	e->m_ipath = doc.ipath;
+	e->m_docnum = docnum;
     }
 }
 
@@ -549,8 +550,8 @@ bool Preview::makeDocCurrent(const Rcl::Doc& doc, int docnum, bool sametab)
         if (tw) {
 	    PreviewTextEdit *edit = 
 		tw->findChild<PreviewTextEdit*>("pvEdit");
-            if (edit && !edit->m_data.url.compare(doc.url) && 
-                !edit->m_data.ipath.compare(doc.ipath)) {
+            if (edit && !edit->m_url.compare(doc.url) && 
+                !edit->m_ipath.compare(doc.ipath)) {
                 pvTab->setCurrentIndex(i);
                 return true;
             }
@@ -586,11 +587,6 @@ void Preview::emitWordSelect(QString word)
   threads and we update a progress indicator while they proceed (but we have 
   no estimate of their total duration).
   
-  An auxiliary thread object is used for short waits. Another option would be 
-  to use signals/slots and return to the event-loop instead, but this would
-  be even more complicated, and we probably don't want the user to click on
-  things during this time anyway.
-
   It might be possible, but complicated (need modifications in
   handler) to implement a kind of bucket brigade, to have the
   beginning of the text displayed faster
@@ -601,11 +597,12 @@ class LoadThread : public QThread {
     int *statusp;
     Rcl::Doc& out;
     const Rcl::Doc& idoc;
-    string filename;
     TempDir tmpdir;
     int loglevel;
  public: 
     string missing;
+    TempFile imgtmp;
+
     LoadThread(int *stp, Rcl::Doc& odoc, const Rcl::Doc& idc) 
 	: statusp(stp), out(odoc), idoc(idc)
 	{
@@ -624,8 +621,6 @@ class LoadThread : public QThread {
 	    return;
 	}
 
-      // QMessageBox::critical(0, "Recoll", Preview::tr("File does not exist"));
-	
 	FileInterner interner(idoc, theconfig, tmpdir, 
                               FileInterner::FIF_forPreview);
 	FIMissingStore mst;
@@ -651,6 +646,7 @@ class LoadThread : public QThread {
 		    out.text = interner.get_html();
 		    out.mimetype = "text/html";
 		}
+		imgtmp = interner.get_imgtmp();
 	    } else {
 		out.mimetype = interner.getMimetype();
 		interner.getMissingExternal(&mst, missing);
@@ -692,16 +688,6 @@ class ToRichThread : public QThread {
     }
 };
 
-/* A thread to implement short waiting. There must be a better way ! */
-class WaiterThread : public QThread {
-    int ms;
- public:
-    WaiterThread(int millis) : ms(millis) {}
-    virtual void run() {
-	msleep(ms);
-    }
-};
-
 class LoadGuard {
     bool *m_bp;
 public:
@@ -728,8 +714,8 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     const int nsteps = 20;
     QProgressDialog progress(msg, tr("Cancel"), 0, nsteps, this);
     progress.setMinimumDuration(2000);
-    WaiterThread waiter(100);
 
+    ////////////////////////////////////////////////////////////////////////
     // Load and convert document
     // idoc came out of the index data (main text and other fields missing). 
     // foc is the complete one what we are going to extract from storage.
@@ -739,9 +725,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     lthr.start();
     int prog;
     for (prog = 1;;prog++) {
-	waiter.start();
-	waiter.wait();
-	if (lthr.isFinished())
+	if (lthr.wait(100))
 	    break;
 	progress.setValue(prog);
 	qApp->processEvents();
@@ -774,6 +758,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     // Reset config just in case.
     theconfig->setKeyDir("");
 
+    ////////////////////////////////////////////////////////////////////////
     // Create preview text: highlight search terms
     // We don't do the highlighting for very big texts: too long. We
     // should at least do special char escaping, in case a '&' or '<'
@@ -786,7 +771,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     list<QString> qrichlst;
     PreviewTextEdit *editor = currentEditor();
     editor->setHtml("");
-    editor->m_data.format = Qt::RichText;
+    editor->m_format = Qt::RichText;
     bool inputishtml = !fdoc.mimetype.compare("text/html");
 
 #if 0
@@ -817,8 +802,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 	rthr.start();
 
 	for (;;prog++) {
-	    waiter.start();	waiter.wait();
-	    if (rthr.isFinished())
+	    if (rthr.wait(100))
 		break;
 	    progress.setValue(nsteps);
 	    qApp->processEvents();
@@ -832,7 +816,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 	// Conversion to rich text done
 	if (CancelCheck::instance().cancelState()) {
 	    if (richlst.size() == 0 || richlst.front().length() == 0) {
-		// We cant call closeCurrentTab here as it might delete
+		// We can't call closeCurrentTab here as it might delete
 		// the object which would be a nasty surprise to our
 		// caller.
 		return false;
@@ -860,7 +844,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 	    qrichlst.push_back(qr);
 	} else {
             editor->setPlainText("");
-            editor->m_data.format = Qt::PlainText;
+            editor->m_format = Qt::PlainText;
 	    for (int pos = 0; pos < (int)qr.length(); pos += l) {
 		l = MIN(CHUNKL, qr.length() - pos);
 		qrichlst.push_back(qr.mid(pos, l));
@@ -869,6 +853,10 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     }
 #endif
 
+
+
+    ///////////////////////////////////////////////////////////
+    // Load text into editor window.
     prog = 2 * nsteps / 3;
     progress.setLabelText(tr("Loading preview text into editor"));
     qApp->processEvents();
@@ -881,7 +869,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 	editor->append(*it);
         // We need to save the rich text for printing, the editor does
         // not do it consistently for us.
-        editor->m_data.richtxt.append(*it);
+        editor->m_richtxt.append(*it);
 
 	if (progress.wasCanceled()) {
             editor->append("<b>Cancelled !</b>");
@@ -891,16 +879,54 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     }
 
     progress.close();
+    editor->m_curdsp = PreviewTextEdit::PTE_DSPTXT;
+
+    ////////////////////////////////////////////////////////////////////////
+    // Finishing steps
 
     // Maybe the text was actually empty ? Switch to fields then. Else free-up 
-    // the text memory.
+    // the text memory in the loaded document. We still have a copy of the text
+    // in editor->m_richtxt
     bool textempty = fdoc.text.empty();
     if (!textempty)
         fdoc.text.clear(); 
-    editor->m_data.fdoc = fdoc;
+    editor->m_fdoc = fdoc;
     if (textempty)
-        editor->toggleFields();
+        editor->displayFields();
 
+    // If this is an image, display it instead of the text.
+    if (!idoc.mimetype.compare(0, 6, "image/")) {
+	string fn = fileurltolocalpath(idoc.url);
+
+	// If the command wants a file but this is not a file url, or
+	// there is an ipath that it won't understand, we need a temp file:
+	theconfig->setKeyDir(path_getfather(fn));
+	if (fn.empty() || !idoc.ipath.empty()) {
+	    TempFile temp = lthr.imgtmp;
+	    if (temp.isNotNull()) {
+		LOGDEB1(("Preview: load: got temp file from internfile\n"));
+	    } else if (!FileInterner::idocToFile(temp, string(), 
+						 theconfig, idoc)) {
+		temp.release(); // just in case.
+	    }
+	    if (temp.isNotNull()) {
+		rememberTempFile(temp);
+		fn = temp->filename();
+		editor->m_tmpfilename = fn;
+	    } else {
+		editor->m_tmpfilename.erase();
+		fn.erase();
+	    }
+	}
+
+	if (!fn.empty()) {
+	    editor->m_image = QImage(fn.c_str());
+	    editor->displayImage();
+	}
+     }
+
+
+    // Position the editor so that the first search term is visible
     m_haveAnchors = editor->m_plaintorich->lastanchor != 0;
     if (searchTextLine->text().length() != 0) {
 	// If there is a current search string, perform the search
@@ -921,6 +947,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 	}
     }
 
+
     // Enter document in document history
     map<string,string>::const_iterator udit = idoc.meta.find(Rcl::Doc::keyudi);
     if (udit != idoc.meta.end())
@@ -932,50 +959,98 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     return true;
 }
 
+PreviewTextEdit::PreviewTextEdit(QWidget* parent,const char* name, Preview *pv) 
+    : QTextEdit(parent), m_preview(pv), m_dspflds(false), m_docnum(-1) 
+{
+    setContextMenuPolicy(Qt::CustomContextMenu);
+    setObjectName(name);
+    connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
+	    this, SLOT(createPopupMenu(const QPoint&)));
+    m_plaintorich = new PlainToRichQtPreview();
+}
+
+PreviewTextEdit::~PreviewTextEdit()
+{
+    delete m_plaintorich;
+}
+
 void PreviewTextEdit::createPopupMenu(const QPoint& pos)
 {
     LOGDEB1(("PreviewTextEdit::createPopupMenu()\n"));
     QMenu *popup = new QMenu(this);
-    if (!m_dspflds) {
-	popup->addAction(tr("Show fields"), this, SLOT(toggleFields()));
-    } else {
-	popup->addAction(tr("Show main text"), this, SLOT(toggleFields()));
+    switch (m_curdsp) {
+    case PTE_DSPTXT:
+	popup->addAction(tr("Show fields"), this, SLOT(displayFields()));
+	if (!m_image.isNull())
+	    popup->addAction(tr("Show image"), this, SLOT(displayImage()));
+	break;
+    case PTE_DSPFLDS:
+	popup->addAction(tr("Show main text"), this, SLOT(displayText()));
+	if (!m_image.isNull())
+	    popup->addAction(tr("Show image"), this, SLOT(displayImage()));
+	break;
+    case PTE_DSPIMG:
+    default:
+	popup->addAction(tr("Show fields"), this, SLOT(displayFields()));
+	popup->addAction(tr("Show main text"), this, SLOT(displayText()));
+	break;
     }
+    popup->addAction(tr("Select All"), this, SLOT(selectAll()));
+    popup->addAction(tr("Copy"), this, SLOT(copy()));
     popup->addAction(tr("Print"), this, SLOT(print()));
     popup->popup(mapToGlobal(pos));
 }
 
-// Either display document fields or main text
-void PreviewTextEdit::toggleFields()
+// Display main text
+void PreviewTextEdit::displayText()
 {
-    LOGDEB1(("PreviewTextEdit::toggleFields()\n"));
+    LOGDEB1(("PreviewTextEdit::displayText()\n"));
+    if (m_format == Qt::PlainText)
+	setPlainText(m_richtxt);
+    else
+	setHtml(m_richtxt);
+    m_curdsp = PTE_DSPTXT;
+}
 
-    // If currently displaying fields, switch to body text
-    if (m_dspflds) {
-	if (m_data.format == Qt::PlainText)
-	    setPlainText(m_data.richtxt);
-	else
-	    setHtml(m_data.richtxt);
-        m_dspflds = false;
-	return;
-    }
+// Display field values
+void PreviewTextEdit::displayFields()
+{
+    LOGDEB1(("PreviewTextEdit::displayFields()\n"));
 
-    // Else display fields
-    m_dspflds = true;
     QString txt = "<html><head></head><body>\n";
-    txt += "<b>" + QString::fromLocal8Bit(m_data.url.c_str());
-    if (!m_data.ipath.empty())
-	txt += "|" + QString::fromUtf8(m_data.ipath.c_str());
+    txt += "<b>" + QString::fromLocal8Bit(m_url.c_str());
+    if (!m_ipath.empty())
+	txt += "|" + QString::fromUtf8(m_ipath.c_str());
     txt += "</b><br><br>";
     txt += "<dl>\n";
-    for (map<string,string>::const_iterator it = m_data.fdoc.meta.begin();
-	 it != m_data.fdoc.meta.end(); it++) {
-	txt += "<dt>" + QString::fromUtf8(it->first.c_str()) + "</dt> " 
-	    + "<dd>" + QString::fromUtf8(escapeHtml(it->second).c_str()) 
-            + "</dd>\n";
+    for (map<string,string>::const_iterator it = m_fdoc.meta.begin();
+	 it != m_fdoc.meta.end(); it++) {
+	if (!it->second.empty())
+	    txt += "<dt>" + QString::fromUtf8(it->first.c_str()) + "</dt> " 
+		+ "<dd>" + QString::fromUtf8(escapeHtml(it->second).c_str()) 
+		+ "</dd>\n";
     }
     txt += "</dl></body></html>";
     setHtml(txt);
+    m_curdsp = PTE_DSPFLDS;
+}
+
+void PreviewTextEdit::displayImage()
+{
+    LOGDEB1(("PreviewTextEdit::displayImage()\n"));
+    if (m_image.isNull())
+	displayText();
+
+    setPlainText("");
+    if (m_image.width() > width() || 
+	m_image.height() > height()) {
+	m_image = m_image.scaled(width(), height(), Qt::KeepAspectRatio);
+    }
+    document()->addResource(QTextDocument::ImageResource, QUrl("image"), 
+			    m_image);
+    QTextCursor cursor = textCursor();
+    cursor.insertImage("image");
+    m_curdsp = PTE_DSPIMG;
 }
 
 void PreviewTextEdit::mouseDoubleClickEvent(QMouseEvent *event)

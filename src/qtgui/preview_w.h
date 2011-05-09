@@ -22,49 +22,33 @@
 #include <qvariant.h>
 #include <qwidget.h>
 #include <qtextedit.h>
+#include <qimage.h>
 
 #include "rcldb.h"
 #include "refcntr.h"
 #include "plaintorich.h"
+#include "rclmain_w.h"
 
 class QTabWidget;
 class QLabel;
 class QLineEdit;
 class QPushButton;
 class QCheckBox;
-class PreviewTextEdit;
-class Preview;
-
-// We keep a list of data associated to each tab
-class TabData {
-public:
-    string url; // filename for this tab
-    string ipath; // Internal doc path inside file
-    int docnum;  // Index of doc in db search results.
-    // doc out of internfile (previous fields come from the index) with
-    // main text erased (for space).
-    Rcl::Doc fdoc; 
-    // Saved rich (or plain actually) text: the textedit seems to
-    // sometimes (but not always) return its text stripped of tags, so
-    // this is needed (for printing for example)
-    QString  richtxt;
-    Qt::TextFormat format;
-    TabData() 
-	: docnum(-1) 
-    {}
-};
-
 class Preview;
 class PlainToRichQtPreview;
 
 class PreviewTextEdit : public QTextEdit {
-    Q_OBJECT
+    Q_OBJECT;
 public:
     PreviewTextEdit(QWidget* parent, const char* name, Preview *pv);
     virtual ~PreviewTextEdit();
     void moveToAnchor(const QString& name);
+    enum DspType {PTE_DSPTXT, PTE_DSPFLDS, PTE_DSPIMG};
+
 public slots:
-    virtual void toggleFields();
+    virtual void displayFields();
+    virtual void displayText();
+    virtual void displayImage();
     virtual void print();
     virtual void createPopupMenu(const QPoint& pos);
     friend class Preview;
@@ -74,8 +58,25 @@ protected:
 private:
     PlainToRichQtPreview *m_plaintorich;
     Preview *m_preview;
-    TabData  m_data;
     bool     m_dspflds;
+    string m_url; // filename for this tab
+    string m_ipath; // Internal doc path inside file
+    int    m_docnum;  // Index of doc in db search results.
+    // doc out of internfile (previous fields come from the index) with
+    // main text erased (for space).
+    Rcl::Doc m_fdoc; 
+    // Saved rich (or plain actually) text: the textedit seems to
+    // sometimes (but not always) return its text stripped of tags, so
+    // this is needed (for printing for example)
+    QString  m_richtxt;
+    Qt::TextFormat m_format;
+    // Temporary file name (possibly, if displaying image). The
+    // TempFile itself is kept inside main.cpp (because that's where
+    // signal cleanup happens), but we use its name to ask for release
+    // when the tab is closed.
+    string m_tmpfilename;
+    QImage m_image;
+    DspType m_curdsp;
 };
 
 
