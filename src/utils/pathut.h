@@ -55,6 +55,8 @@ extern string url_encode(const string& url,
 /// Transcode to utf-8 if possible or url encoding, for display.
 extern bool printableUrl(const string &fcharset, 
 			 const string &in, string &out);
+// Convert to file path if url is like file://
+extern string fileurltolocalpath(string url);
 
 /// Return the host+path part of an url. This is not a general
 /// routine, it does the right thing only in the recoll context

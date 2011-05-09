@@ -443,6 +443,20 @@ string url_gpath(const string& url)
     return path_canon(url.substr(colon+1));
 }
 
+// Convert to file path if url is like file://
+string fileurltolocalpath(string url)
+{
+    if (url.find("file://") == 0)
+        url = url.substr(7, string::npos);
+    else
+        return string();
+    string::size_type pos;
+    if ((pos = url.find_last_of("#")) != string::npos) {
+        url.erase(pos);
+    }
+    return url;
+}
+
 // Printable url: this is used to transcode from the system charset
 // into either utf-8 if transcoding succeeds, or url-encoded
 bool printableUrl(const string &fcharset, const string &in, string &out)
