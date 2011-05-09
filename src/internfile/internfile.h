@@ -159,6 +159,10 @@ class FileInterner {
      */
     const string& get_html() {return m_html;}
 
+    /** If we happen to be processing an image file and need a temp file,
+	we keep it around to save work for our caller, which can get it here */
+    TempFile get_imgtmp() {return m_imgtmp;}
+
     /** Extract internal document into temporary file. 
      *  This is used mainly for starting an external viewer for a
      *  subdocument (ie: mail attachment).
@@ -198,6 +202,7 @@ class FileInterner {
     string                 m_mimetype; // Mime type for [uncompressed] file
     bool                   m_forPreview;
     string                 m_html; // Possibly set-aside html text for preview
+    TempFile               m_imgtmp; // Possible reference to an image temp file
     string                 m_targetMType;
     string                 m_reachedMType; // target or text/plain
     // m_tdir and m_tfile are used only for decompressing input file if needed

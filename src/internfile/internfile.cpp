@@ -734,6 +734,13 @@ int FileInterner::addHandler()
 	    if (!(setres = newflt->set_document_file(filename))) {
 		m_tmpflgs[m_handlers.size()] = false;
 		m_tempfiles.pop_back();
+	    } else {
+		// Hack here, but really helps perfs: if we happen to
+		// create a temp file for, ie, an image attachment,
+		// keep it around for preview reuse
+		if (!mimetype.compare(0, 6, "image/")) {
+		    m_imgtmp = m_tempfiles.back();
+		}
 	    }
 	}
     }
@@ -765,6 +772,10 @@ void FileInterner::processNextDocError(Rcl::Doc &doc, string& ipath)
 FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, const string& ipath)
 {
     LOGDEB(("FileInterner::internfile. ipath [%s]\n", ipath.c_str()));
+
+    // Get rid of possible image tempfile from older call
+    m_imgtmp.release();
+
     if (m_handlers.size() < 1) {
 	// Just means the constructor failed
 	LOGDEB(("FileInterner::internfile: no handler: constructor failed\n"));
