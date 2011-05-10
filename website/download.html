@@ -265,17 +265,22 @@ gpg --export --armor  A0735AD0 | sudo apt-key add -
 
       <h3>OpenSUSE</h3>
       <blockquote>
-        <p>I now use the OpenSUSE build service to create Recoll OpenSUSE
-        packages. You just need to add the adequate repository to your
+        <p>Recoll 1.15.8 is in the KDE:Extra repository
+
+<!--
+I now use the OpenSUSE build service to create Recoll OpenSUSE packages. 
+-->
+        You just need to add the repository to your
         software sources (Yast2->software->Software repositories).<br>
-        <a href="http://download.opensuse.org/repositories/home:/dockes/">
-          Repository list (supported Suse versions)</a>. Ie for
-          OpenSUSE 11.3, you would add
-          http://download.opensuse.org/repositories/home:/dockes/openSUSE_11.3/
-          to your repositories. You will then be able to install
-          recoll and kio_recoll from the software management
-          interface. The Xapian dependancy will also be satisfied from
-          the build service repository.</p>
+        <a href="http://download.opensuse.org/repositories/KDE:/Extra/">
+          Repository list (supported Suse versions)</a>. After adding the
+          appropriate repository to your software sources, you will be
+          able to install recoll and kio_recoll from the software
+          management interface. The Xapian dependancy will also be
+          satisfied from the build service repository. Some of the older
+          repositories do not build antiword, just tell the software manager
+          to "break" recoll by installing anyway, and get antiword
+          somewhere else.</p>
       </blockquote>
 
       <h3>Mandriva</h3>
