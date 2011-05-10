@@ -29,10 +29,14 @@ application/x-bzip2 =  uncompress rcluncomp bunzip2 %f %t
 # each filter, see the exemples below (ie: msword)
 [index]
 
-# MSWORD: install wvware and restore the rcldoc version to fix the "text
-# stream of this file is too small to handle" error if it's a problem for you
-# application/msword = exec rcldoc
-application/msword = exec antiword -t -i 1 -m UTF-8;mimetype=text/plain;charset=utf-8
+# MSWORD: the rcldoc script handles a number of marginal case that raw
+# antiword won't:
+#  - with wvWare: "text stream of this file is too small to handle" 
+#  - with unrtf: rtf files disguising as doc files.
+# The default is now again to use rcldoc. Use raw antiword if speed is more
+# important for you than catching all data, 
+application/msword = exec rcldoc
+#application/msword = exec antiword -t -i 1 -m UTF-8;mimetype=text/plain;charset=utf-8
 # You can also use wvware directly but it's much slower.
 # application/msword = exec wvWare --charset=utf-8 --nographics
 

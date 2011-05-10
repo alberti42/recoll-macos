@@ -13,8 +13,9 @@ makeindex() {
   echo "Indexing" 
   recollindex -z
 }
-
+if test x$noindex = x ; then
 makeindex
+fi
 
 # Yes, we could/should use the $toptmp from shared.sh here, but what if
 # this is unset ?
