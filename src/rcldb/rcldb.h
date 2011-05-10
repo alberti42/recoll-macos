@@ -106,8 +106,25 @@ class Db {
     /** List possible stemmer names */
     static list<string> getStemmerNames();
 
+    /** Test word for spelling correction candidate: not too long, no 
+	special chars... */
+    static bool isSpellingCandidate(const string& term)
+    {
+	if (term.empty() || term.length() > 50)
+	    return false;
+	if (term.find_first_of(" !\"#$%&()*+,-./0123456789:;<=>?@[\\]^_`{|}~") 
+	    != string::npos)
+	    return false;
+	return true;
+    }
+
     /** List existing stemming databases */
     std::list<std::string> getStemLangs();
+
+#ifdef TESTING_XAPIAN_SPELL
+    /** Return spelling suggestion */
+    string getSpellingSuggestion(const string& word);
+#endif
 
     /* The next two, only for searchdata, should be somehow hidden */
     /* Return list of configured stop words */

@@ -254,14 +254,12 @@ public:
     {}
     void newData() {
 	while (m_db.termWalkNext(m_tit, *m_input)) {
-	    // Filter out terms beginning with upper case (special stuff) and 
-	    // containing numbers, or too long. Note that the 50 limit is a
-	    // byte count, so not so high if there are multibyte chars.
-	    if (m_input->empty() || m_input->length() > 50)
+	    // Prefixed terms are also somewhere else without the suffix,
+	    // skip them
+	    if (m_input->empty() || 
+		('A' <= m_input->at(0) && m_input->at(0) <= 'Z'))
 		continue;
-	    if ('A' <= m_input->at(0) && m_input->at(0) <= 'Z')
-		continue;
-	    if (m_input->find_first_of(" !\"#$%&()*+,-./0123456789:;<=>?@[\\]^_`{|}~") != string::npos)
+	    if (!Rcl::Db::isSpellingCandidate(*m_input))
 		continue;
 	    // Got a non-empty sort-of appropriate term, let's send it to
 	    // aspell

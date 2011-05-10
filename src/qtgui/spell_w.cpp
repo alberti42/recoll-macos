@@ -163,6 +163,13 @@ void SpellW::doExpand()
 	for (list<string>::const_iterator it = suggs.begin(); 
 	     it != suggs.end(); it++) 
 	    res.entries.push_back(Rcl::TermMatchEntry(*it));
+#ifdef TESTING_XAPIAN_SPELL
+	string rclsugg = rcldb->getSpellingSuggestion(expr);
+	if (!rclsugg.empty()) {
+	    res.entries.push_back(Rcl::TermMatchEntry("Xapian spelling:"));
+	    res.entries.push_back(Rcl::TermMatchEntry(rclsugg));
+	}
+#endif // TESTING_XAPIAN_SPELL
     }
 #endif
     }

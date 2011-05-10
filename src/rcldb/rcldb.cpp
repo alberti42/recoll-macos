@@ -83,6 +83,40 @@ string version_string(){
 // found in document)
 static const string rclSyntAbs("?!#@");
 
+// Only ONE field name inside the index data record differs from the
+// Rcl::Doc ones: caption<->title, for a remnant of compatibility with
+// omega
+static const string keycap("caption");
+
+// Default table for field->prefix translation.  We prefer the data
+// from rclconfig if available. Note that this is logically const
+// after initialization.  Can't use a static object to init this as
+// the static std::string objects may not be ready
+static map<string, string> fldToPrefs;
+static void initFldToPrefs() 
+{
+    fldToPrefs[Doc::keyabs] = string();
+    fldToPrefs["ext"] = "XE";
+    fldToPrefs[Doc::keyfn] = "XSFN";
+
+    fldToPrefs[keycap] = "S";
+    fldToPrefs[Doc::keytt] = "S";
+    fldToPrefs["subject"] = "S";
+
+    fldToPrefs[Doc::keyau] = "A";
+    fldToPrefs["creator"] = "A";
+    fldToPrefs["from"] = "A";
+
+    fldToPrefs[Doc::keykw] = "K";
+    fldToPrefs["keyword"] = "K";
+    fldToPrefs["tag"] = "K";
+    fldToPrefs["tags"] = "K";
+
+    fldToPrefs["xapyear"] = "Y";
+    fldToPrefs["xapyearmon"] = "M";
+    fldToPrefs["xapdate"] = "D";
+}
+
 // Compute the unique term used to link documents to their origin. 
 // "Q" + external udi
 static inline string make_uniterm(const string& udi)
@@ -130,11 +164,6 @@ bool Db::Native::subDocs(const string &udi, vector<Xapian::docid>& docids)
         return true;
     }
 }
-
-// Only ONE field name inside the index data record differs from the
-// Rcl::Doc ones: caption<->title, for a remnant of compatibility with
-// omega
-static const string keycap("caption");
 
 // Turn data record from db into document fields
 bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, 
@@ -510,6 +539,9 @@ Db::Db(RclConfig *cfp)
       m_curtxtsz(0), m_flushtxtsz(0), m_occtxtsz(0), m_occFirstCheck(1),
       m_maxFsOccupPc(0), m_mode(Db::DbRO)
 {
+    if (!fldToPrefs.size())
+	initFldToPrefs();
+
     m_ndb = new Native(this);
     if (m_config) {
 	m_config->getConfParam("maxfsoccuppc", &m_maxFsOccupPc);
@@ -759,39 +791,6 @@ bool Db::isopen()
 // reason (old config not updated ?). We use it only if the config
 // translation fails. Also we add in there fields which should be
 // indexed with no prefix (ie: abstract)
-
-// Default table. We prefer the data from rclconfig if available. Note
-// that it is logically const after initialization. This would be
-// simpler with c0xx initializer lists.
-static map<string, string> fldToPrefs;
-class InitFldToPrefs {
-public:
-    InitFldToPrefs() 
-    {
-	fldToPrefs[Doc::keyabs] = string();
-	fldToPrefs["ext"] = "XE";
-	fldToPrefs[Doc::keyfn] = "XSFN";
-
-	fldToPrefs[keycap] = "S";
-	fldToPrefs[Doc::keytt] = "S";
-	fldToPrefs["subject"] = "S";
-
-	fldToPrefs[Doc::keyau] = "A";
-	fldToPrefs["creator"] = "A";
-	fldToPrefs["from"] = "A";
-
-	fldToPrefs[Doc::keykw] = "K";
-	fldToPrefs["keyword"] = "K";
-	fldToPrefs["tag"] = "K";
-	fldToPrefs["tags"] = "K";
-
-        fldToPrefs["xapyear"] = "Y";
-        fldToPrefs["xapyearmon"] = "M";
-        fldToPrefs["xapdate"] = "D";
-    }
-};
-static InitFldToPrefs IFTP;
-
 bool Db::fieldToPrefix(const string& fld, string &pfx)
 {
     if (m_config && m_config->getFieldPrefix(fld, pfx))
@@ -810,13 +809,15 @@ bool Db::fieldToPrefix(const string& fld, string &pfx)
 // The splitter breaks text into words and adds postings to the Xapian document.
 class TextSplitDb : public TextSplit {
  public:
+    Xapian::WritableDatabase db;
     Xapian::Document &doc;   // Xapian document 
     Xapian::termpos basepos; // Base for document section
     Xapian::termpos curpos;  // Current position. Used to set basepos for the
                              // following section
     StopList &stops;
-    TextSplitDb(Xapian::Document &d, StopList &_stops) 
-	: doc(d), basepos(1), curpos(0), stops(_stops)
+    TextSplitDb(Xapian::WritableDatabase idb, 
+		Xapian::Document &d, StopList &_stops) 
+	: db(idb), doc(d), basepos(1), curpos(0), stops(_stops)
     {}
     bool takeword(const std::string &term, int pos, int, int);
     void setprefix(const string& pref) {prefix = pref;}
@@ -856,6 +857,11 @@ bool TextSplitDb::takeword(const std::string &_term, int pos, int, int)
 	// be possible to assign different weigths to doc parts (ie title)
 	// by using a higher value
 	doc.add_posting(term, pos, 1);
+#ifdef TESTING_XAPIAN_SPELL
+	if (Db::isSpellingCandidate(term)) {
+	    db.add_spelling(term);
+	}
+#endif
 	if (!prefix.empty()) {
 	    doc.add_posting(prefix + term, pos, 1);
 	}
@@ -864,6 +870,22 @@ bool TextSplitDb::takeword(const std::string &_term, int pos, int, int)
     LOGERR(("Db: xapian add_posting error %s\n", ermsg.c_str()));
     return false;
 }
+
+#ifdef TESTING_XAPIAN_SPELL
+string Db::getSpellingSuggestion(const string& word)
+{
+    if (m_ndb == 0)
+	return string();
+    string term;
+    if (!unacmaybefold(word, term, "UTF-8", true)) {
+	LOGINFO(("Db::getSpelling: unac failed for [%s]\n", word.c_str()));
+	return string();
+    }
+    if (!isSpellingCandidate(term))
+	return string();
+    return m_ndb->xrdb.get_spelling_suggestion(term);
+}
+#endif
 
 // Let our user set the parameters for abstract processing
 void Db::setAbstractParams(int idxtrunc, int syntlen, int syntctxlen)
@@ -911,7 +933,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     Doc doc = idoc;
 
     Xapian::Document newdocument;
-    TextSplitDb splitter(newdocument, m_stops);
+    TextSplitDb splitter(m_ndb->xwdb, newdocument, m_stops);
 
     // Split and index file name as document term(s)
     LOGDEB2(("Db::add: split file name [%s]\n", fn.c_str()));
