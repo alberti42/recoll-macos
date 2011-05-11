@@ -100,6 +100,7 @@ void UIPrefsDialog::setFromPrefs()
 
     keepSortCB->setChecked(prefs.keepSort);
     previewHtmlCB->setChecked(prefs.previewHtml);
+    previewPlainPreCB->setChecked(prefs.previewPlainPre);
     // Query terms color
     qtermColorLE->setText(prefs.qtermcolor);
     
@@ -203,6 +204,7 @@ void UIPrefsDialog::accept()
     prefs.useDesktopOpen = useDesktopOpenCB->isChecked();
     prefs.keepSort = keepSortCB->isChecked();
     prefs.previewHtml = previewHtmlCB->isChecked();
+    prefs.previewPlainPre = previewPlainPreCB->isChecked();
 
     prefs.syntAbsLen = syntlenSB->value();
     prefs.syntAbsCtx = syntctxSB->value();

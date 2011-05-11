@@ -274,6 +274,19 @@
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QCheckBox" name="previewPlainPreCB">
+             <property name="text">
+              <string>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html.</string>
+             </property>
+               <property name="toolTip">
+                <string>Lines in PRE text are not folded. Using BR loses indentation.</string>
+               </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
           </layout>
          </item>
         </layout>
