@@ -73,6 +73,9 @@ class ConfIndexer {
     // Indexer types. Maybe we'll have something more dynamic one day
     enum ixType {IxTNone, IxTFs=1, IxTBeagleQueue=2, 
                  IxTAll = IxTFs | IxTBeagleQueue};
+    // Misc indexing flags
+    enum IxFlag {IxFNone = 0, IxFIgnoreSkip = 1};
+
     /** Run indexers */
     bool index(bool resetbefore, ixType typestorun);
 
@@ -91,7 +94,7 @@ class ConfIndexer {
     static list<string> getStemmerNames();
 
     /** Index a list of files. No db cleaning or stemdb updating */
-    bool indexFiles(std::list<string> &files);
+    bool indexFiles(std::list<string> &files, IxFlag f = IxFNone);
 
     /** Purge a list of files. */
     bool purgeFiles(std::list<string> &files);

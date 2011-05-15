@@ -104,7 +104,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun)
     return true;
 }
 
-bool ConfIndexer::indexFiles(std::list<string>& ifiles)
+bool ConfIndexer::indexFiles(std::list<string>& ifiles, IxFlag flag)
 {
     list<string> myfiles;
     for (list<string>::const_iterator it = ifiles.begin(); 
@@ -123,7 +123,7 @@ bool ConfIndexer::indexFiles(std::list<string>& ifiles)
     if (!m_fsindexer)
         m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
     if (m_fsindexer)
-        ret = m_fsindexer->indexFiles(myfiles);
+        ret = m_fsindexer->indexFiles(myfiles, flag);
     LOGDEB2(("ConfIndexer::indexFiles: fsindexer returned %d, "
             "%d files remainining\n", ret, myfiles.size()));
 

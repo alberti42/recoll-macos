@@ -187,7 +187,7 @@ static bool matchesSkipped(const list<string>& tdl,
 /** 
  * Index individual files, out of a full tree run. No database purging
  */
-bool FsIndexer::indexFiles(list<string>& files)
+bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
 {
     if (!init())
         return false;
@@ -206,7 +206,8 @@ bool FsIndexer::indexFiles(list<string>& files)
         walker.setSkippedNames(m_config->getSkippedNames());
 
 	// Check path against indexed areas and skipped names/paths
-        if (matchesSkipped(m_tdl, walker, *it)) {
+        if (!(flag&ConfIndexer::IxFIgnoreSkip) && 
+	    matchesSkipped(m_tdl, walker, *it)) {
             it++; continue;
         }
 

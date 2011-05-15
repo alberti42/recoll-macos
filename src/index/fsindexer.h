@@ -22,6 +22,7 @@
 using std::list;
 #endif
 
+#include "indexer.h"
 #include "fstreewalk.h"
 #include "rcldb.h"
 
@@ -58,7 +59,8 @@ class FsIndexer : public FsTreeWalkerCB {
     bool index();
 
     /** Index a list of files. No db cleaning or stemdb updating */
-    bool indexFiles(list<string> &files);
+    bool indexFiles(list<string> &files, ConfIndexer::IxFlag f = 
+		    ConfIndexer::IxFNone);
 
     /** Purge a list of files. */
     bool purgeFiles(list<string> &files);

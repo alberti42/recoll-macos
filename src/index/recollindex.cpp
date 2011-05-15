@@ -60,6 +60,7 @@ static int     op_flags;
 #define OPT_x     0x800
 #define OPT_l     0x1000
 #define OPT_b     0x2000
+#define OPT_f     0x4000
 
 // Globals for atexit cleanup
 static ConfIndexer *confindexer;
@@ -130,7 +131,9 @@ bool indexfiles(RclConfig *config, list<string> &filenames)
 	return true;
     if (!makeIndexer(config))
 	return false;
-    return confindexer->indexFiles(filenames);
+    return confindexer->indexFiles(filenames, (op_flags&OPT_f) ? 
+				   ConfIndexer::IxFIgnoreSkip : 
+				   ConfIndexer::IxFNone);
 }
 
 // Delete a list of files. Same comments about call contexts as indexfiles.
@@ -185,8 +188,9 @@ static const char usage [] =
 #endif /* RCL_MONITOR */
 "recollindex -e <filename [filename ...]>\n"
 "    Purge data for individual files. No stem database updates\n"
-"recollindex -i <filename [filename ...]>\n"
+"recollindex -i [-f] <filename [filename ...]>\n"
 "    Index individual files. No database purge or stem database updates\n"
+"    -f : ignore skippedPaths and skippedNames while doing this\n"
 "recollindex -l\n"
 "    List available stemming languages\n"
 "recollindex -s <lang>\n"
@@ -244,6 +248,7 @@ int main(int argc, const char **argv)
 	    case 'D': op_flags |= OPT_D; break;
 #endif
 	    case 'e': op_flags |= OPT_e; break;
+	    case 'f': op_flags |= OPT_f; break;
 	    case 'h': op_flags |= OPT_h; break;
 	    case 'i': op_flags |= OPT_i; break;
 	    case 'l': op_flags |= OPT_l; break;
