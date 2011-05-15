@@ -31,6 +31,8 @@
 #include "refcntr.h"
 #include "smallut.h"
 
+class RclConfig;
+
 #ifndef NO_NAMESPACES
 using std::vector;
 using std::string;
@@ -113,6 +115,8 @@ public:
 
     /** Add file type for filtering results */
     void addFiletype(const string& ft) {m_filetypes.push_back(ft);}
+    /** Add file type to not wanted list */
+    void remFiletype(const string& ft) {m_nfiletypes.push_back(ft);}
 
     void setStemlang(const string& lang = "english") {m_stemlang = lang;}
 
@@ -140,6 +144,7 @@ private:
     SClType                   m_tp; // Only SCLT_AND or SCLT_OR here
     vector<SearchDataClause*> m_query;
     vector<string>            m_filetypes; // Restrict to filetypes if set.
+    vector<string>            m_nfiletypes; // Unwanted file types
     string                    m_topdir; // Restrict to subtree.
     bool                      m_topdirexcl; // Invert meaning
     bool                      m_haveDates;
@@ -150,6 +155,7 @@ private:
     string m_reason;
     bool   m_haveWildCards;
     string m_stemlang;
+    bool expandFileTypes(RclConfig *cfg, vector<string>& exptps);
     /* Copyconst and assignment private and forbidden */
     SearchData(const SearchData &) {}
     SearchData& operator=(const SearchData&) {return *this;};

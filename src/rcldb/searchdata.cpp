@@ -17,6 +17,7 @@
 
 // Handle translation from rcl's SearchData structures to Xapian Queries
 #include <stdio.h>
+#include <fnmatch.h>
 
 #include <string>
 #include <vector>
@@ -135,6 +136,35 @@ date_range_filter(int y1, int m1, int d1, int y2, int m2, int d2)
     return Xapian::Query(Xapian::Query::OP_OR, v.begin(), v.end());
 }
 
+// Expand categories and mime type wild card exps
+bool SearchData::expandFileTypes(RclConfig *cfg, vector<string>& tps)
+{
+    if (!cfg) {
+	LOGFATAL(("Db::expandFileTypes: null configuration!!\n"));
+	return false;
+    }
+    vector<string> exptps;
+    list<string> alltypes = cfg->getAllMimeTypes();
+
+    for (vector<string>::iterator it = tps.begin(); it != tps.end(); it++) {
+	if (cfg->isMimeCategory(*it)) {
+	    list<string>tps;
+	    cfg->getMimeCatTypes(*it, tps);
+	    exptps.insert(exptps.end(), tps.begin(), tps.end());
+	} else {
+	    for (list<string>::const_iterator ait = alltypes.begin();
+		 ait != alltypes.end(); ait++) {
+		if (fnmatch(it->c_str(), ait->c_str(), FNM_CASEFOLD) 
+		    != FNM_NOMATCH) {
+		    exptps.push_back(*ait);
+		}
+	    }
+	}
+    }
+    tps = exptps;
+    return true;
+}
+
 bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 {
     Xapian::Query xq;
@@ -220,30 +250,32 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 
     // Add the file type filtering clause if any
     if (!m_filetypes.empty()) {
-	vector<string> exptps;
-	exptps.reserve(m_filetypes.size());
-	// Expand categories
-	RclConfig *cfg = db.getConf();
-	for (vector<string>::iterator it = m_filetypes.begin(); 
-	     it != m_filetypes.end(); it++) {
-	    if (cfg && cfg->isMimeCategory(*it)) {
-		list<string>tps;
-		cfg->getMimeCatTypes(*it, tps);
-		exptps.insert(exptps.end(), tps.begin(), tps.end());
-	    } else {
-		exptps.push_back(*it);
-	    }
-	}
+	expandFileTypes(db.getConf(), m_filetypes);
 	    
 	Xapian::Query tq;
-	for (vector<string>::iterator it = exptps.begin(); 
-	     it != exptps.end(); it++) {
+	for (vector<string>::iterator it = m_filetypes.begin(); 
+	     it != m_filetypes.end(); it++) {
 	    string term = "T" + *it;
 	    LOGDEB0(("Adding file type term: [%s]\n", term.c_str()));
 	    tq = tq.empty() ? Xapian::Query(term) : 
 		Xapian::Query(Xapian::Query::OP_OR, tq, Xapian::Query(term));
 	}
 	xq = xq.empty() ? tq : Xapian::Query(Xapian::Query::OP_FILTER, xq, tq);
+    }
+
+    // Add the neg file type filtering clause if any
+    if (!m_nfiletypes.empty()) {
+	expandFileTypes(db.getConf(), m_nfiletypes);
+	    
+	Xapian::Query tq;
+	for (vector<string>::iterator it = m_nfiletypes.begin(); 
+	     it != m_nfiletypes.end(); it++) {
+	    string term = "T" + *it;
+	    LOGDEB0(("Adding negative file type term: [%s]\n", term.c_str()));
+	    tq = tq.empty() ? Xapian::Query(term) : 
+		Xapian::Query(Xapian::Query::OP_OR, tq, Xapian::Query(term));
+	}
+	xq = xq.empty() ? tq : Xapian::Query(Xapian::Query::OP_AND_NOT, xq, tq);
     }
 
     // Add the directory filtering clause

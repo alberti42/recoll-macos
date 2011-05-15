@@ -61,11 +61,14 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
 
 	if (!stringicmp("mime", (*it)->m_fieldspec) ||
 	    !stringicmp("format", (*it)->m_fieldspec)) {
-	    if ((*it)->m_op != WasaQuery::OP_LEAF) {
-		reason = "Negative mime/format clauses not supported yet";
+	    if ((*it)->m_op == WasaQuery::OP_LEAF) {
+		sdata->addFiletype((*it)->m_value);
+	    } else if ((*it)->m_op == WasaQuery::OP_EXCL) {
+		sdata->remFiletype((*it)->m_value);
+	    } else {
+		reason = "internal error: mime clause neither leaf not excl??";
 		return 0;
 	    }
-	    sdata->addFiletype((*it)->m_value);
 	    continue;
 	} 
 
@@ -73,8 +76,10 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
 	// categories like "audio", "presentation", etc.
 	if (!stringicmp("rclcat", (*it)->m_fieldspec) ||
 	    !stringicmp("type", (*it)->m_fieldspec)) {
-	    if ((*it)->m_op != WasaQuery::OP_LEAF) {
-		reason = "Negative rclcat/type clauses not supported yet";
+	    if ((*it)->m_op != WasaQuery::OP_LEAF && 
+		(*it)->m_op != WasaQuery::OP_EXCL) {
+		reason = "internal error: rclcat/type clause neither leaf"
+		    "nor excl??";
 		return 0;
 	    }
 	    list<string> mtypes;
@@ -82,7 +87,10 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
 		&& !mtypes.empty()) {
 		for (list<string>::iterator mit = mtypes.begin();
 		     mit != mtypes.end(); mit++) {
-		    sdata->addFiletype(*mit);
+		    if ((*it)->m_op == WasaQuery::OP_LEAF)
+			sdata->addFiletype(*mit);
+		    else
+			sdata->remFiletype(*mit);
 		}
 	    } else {
 		reason = "Unknown rclcat/type value: no mime types found";

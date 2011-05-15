@@ -239,6 +239,7 @@ media = \
       image/gif \
       image/jpeg \
       image/png \
+      image/svg+xml \
       image/tiff \
       video/mp2p \
       video/mp2t \
@@ -256,5 +257,4 @@ other = application/vnd.sun.xml.draw \
         application/vnd.sun.xml.draw.template \
         application/vnd.sun.xml.math \
         application/x-fsdirectory \
-	application/zip \
-        image/svg+xml \
+	application/zip 
