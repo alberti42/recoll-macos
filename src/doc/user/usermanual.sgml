@@ -2034,9 +2034,12 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         several values which will be OR'ed (the normal default for the
         language is AND). Ex: <literal>mime:text/plain
         mime:text/html</literal>. Specifying an explicit boolean
-        operator or negation (<literal>-</literal>) before a
+        operator before a
         <literal>mime</literal> specification is not supported and
-        will produce strange results. Note that <literal>mime</literal> is
+        will produce strange results. You can filter out certain types
+        by using negation (<literal>-mime:some/type</literal>), and you can
+        use wildcards in the value (<literal>mime:text/*</literal>).
+        Note that <literal>mime</literal> is
         the ONLY field with an OR default. You do need to use
         <literal>OR</literal> with <literal>ext</literal> terms for
         example.</para> 
