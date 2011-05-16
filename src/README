@@ -473,19 +473,23 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
 2.4. Using Beagle WEB browser plugins
 
-   Beagle is a concurrent desktop indexer, built on Lucene and the Mono
-   project (C#), for which a number of add-on browser plugins were written.
-   These work by copying visited web pages to an indexing queue directory,
-   which the indexer then processes.
+   Beagle is (was?) a concurrent desktop indexer, built on Lucene and the
+   Mono project (C#), for which a number of add-on browser plugins were
+   written. These work by copying visited web pages to an indexing queue
+   directory, which the indexer then processes. Especially, there is a
+   Firefox extension.
 
    If, for any reason, you so happen to prefer Recoll to Beagle, you can
-   still use the browser plugins (they are written in Javascript and
-   completely independant of C#, Beagle, Lucene...). Recoll can process the
-   Beagle queue directory. Of course, this supposes that Beagle is not
-   running, else both programs will fight for the same files.
+   still use the Firefox plugin, which is written in Javascript and
+   completely independant of C#, Beagle, Lucene..., and set Recoll to process
+   the Beagle queue directory. This supposes that Beagle is not running, else
+   both programs will fight for the same files.
 
    This feature can be enabled in the GUI indexing configuration panel, or by
    editing the configuration file (set processbeaglequeue to 1).
+
+   There are more recent instructions about how to find and install the
+   Firefox extension on the Recoll wiki.
 
      ----------------------------------------------------------------------
 
