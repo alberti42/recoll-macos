@@ -33,6 +33,9 @@ recollindex \- indexing command for the Recoll full text search system
 <configdir>
 ]
 .B \-i 
+[
+.B \-f
+]
 [<filename [filename ...]>]
 .br
 .B recollindex 
@@ -111,11 +114,18 @@ cannot connect to the X11 server).
 .B recollindex \-l 
 will list the names of available language stemmers.
 .PP
-The other modes are useful mainly for testing.
-.PP
 .B recollindex \-i
-will index individual files into the database. The stem expansion databases
-will not be updated. 
+will index individual files into the database. The stem expansion and
+aspell databases will not be updated. The skippedPaths and skippedNames
+configuration variables will be used, so that some files may be
+skipped. You can tell recollindex to ignore skippedPaths and skippedNames
+by setting the 
+.B
+\-f 
+option. This allows fully custom file selection for a given subtree,
+for which you would add the top directory to skippedPaths, and use any
+custom tool to generate the file list (ie: a tool from a source code
+control system). 
 .PP
 .B recollindex \-e
 will erase data for individual files from the database. The stem expansion
