@@ -84,17 +84,16 @@ void WasaQuery::describe(string &desc) const
 	desc.erase(desc.length() - 1);
     desc += ")"; 
     if (m_modifiers != 0) {
-	if (m_modifiers & WQM_BOOST)  desc += "BOOST|";
+	if (m_modifiers & WQM_BOOST)     desc += "BOOST|";
 	if (m_modifiers & WQM_CASESENS)  desc += "CASESENS|";
 	if (m_modifiers & WQM_DIACSENS)  desc += "DIACSENS|";
+	if (m_modifiers & WQM_FUZZY)     desc += "FUZZY|";
 	if (m_modifiers & WQM_NOSTEM)    desc += "NOSTEM|";
-	if (m_modifiers & WQM_BOOST)     desc += "BOOST|";
+	if (m_modifiers & WQM_PHRASESLACK) desc += "PHRASESLACK|";
 	if (m_modifiers & WQM_PROX)      desc += "PROX|";
+	if (m_modifiers & WQM_REGEX)     desc += "REGEX|";
 	if (m_modifiers & WQM_SLOPPY)    desc += "SLOPPY|";
 	if (m_modifiers & WQM_WORDS)     desc += "WORDS|";
-	if (m_modifiers & WQM_PHRASESLACK) desc += "PHRASESLACK|";
-	if (m_modifiers & WQM_REGEX)     desc += "REGEX|";
-	if (m_modifiers & WQM_FUZZY)     desc += "FUZZY|";
 	if (desc.length() > 0 && desc[desc.length()-1] == '|')
 	    desc = desc.substr(0, desc.length()-1);
     }
@@ -132,7 +131,7 @@ static const char * parserExpr =
         "(\""                        //9
           "([^\"]+)"                 //10 "A quoted term"
         "\")"                        
-        "([a-zA-Z0-9]*)"             //11 modifiers
+        "([bcCdDeflLoprsw.0-9]*)"             //11 modifiers
         "|"
         "([^[:space:]\"]+)"          //12 ANormalTerm
       ")"
@@ -152,7 +151,7 @@ static const char *matchNames[] = {
      /* 8*/   "",
      /* 9*/   "",
      /*10*/   "QUOTEDTERM",
-     /*11*/   "MODIIFIERS",
+     /*11*/   "MODIFIERS",
      /*12*/   "TERM",
 };
 #define NMATCH (sizeof(matchNames) / sizeof(char *))
@@ -328,12 +327,18 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 		unsigned int mods = 0;
 		for (unsigned int i = 0; i < strlen(match); i++) {
 		    switch (match[i]) {
-		    case 'b': mods |= WasaQuery::WQM_BOOST; break;
+		    case 'b': 
+			mods |= WasaQuery::WQM_BOOST; 
+			nclause->m_weight = 10.0;
+			break;
 		    case 'c': break;
 		    case 'C': mods |= WasaQuery::WQM_CASESENS; break;
 		    case 'd': break;
 		    case 'D': mods |= WasaQuery::WQM_DIACSENS; break;
-		    case 'e': mods |= WasaQuery::WQM_CASESENS | WasaQuery::WQM_DIACSENS |  WasaQuery::WQM_NOSTEM; break;
+		    case 'e': mods |= WasaQuery::WQM_CASESENS | 
+			    WasaQuery::WQM_DIACSENS |  
+			    WasaQuery::WQM_NOSTEM; 
+			break;
 		    case 'f': mods |= WasaQuery::WQM_FUZZY; break;
 		    case 'l': mods |= WasaQuery::WQM_NOSTEM; break;
 		    case 'L': break;
@@ -342,6 +347,19 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 		    case 'r': mods |= WasaQuery::WQM_REGEX; break;
 		    case 's': mods |= WasaQuery::WQM_SLOPPY; break;
 		    case 'w': mods |= WasaQuery::WQM_WORDS; break;
+		    case '.':case '0':case '1':case '2':case '3':case '4':
+		    case '5':case '6':case '7':case '8':case '9':
+		    {
+			int n;
+			float factor;
+			if (sscanf(match+i, "%f %n", &factor, &n)) {
+			    nclause->m_weight = factor;
+			    DPRINT((stderr, "Got factor %.2f len %d\n",
+				    factor, n));
+			}
+			if (n)
+			    i += n-1;
+		    }
 		    }
 		}
 		nclause->m_modifiers = WasaQuery::Modifier(mods);

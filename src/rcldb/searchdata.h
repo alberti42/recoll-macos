@@ -73,8 +73,8 @@ class SearchDataClause;
 class SearchData {
 public:
     SearchData(SClType tp) 
-        : m_tp(tp), m_topdirexcl(false), m_haveDates(false), 
-	  m_haveWildCards(false) 
+        : m_tp(tp), m_topdirexcl(false), m_topdirweight(1.0), 
+	  m_haveDates(false), m_haveWildCards(false) 
     {
 	if (m_tp != SCLT_OR && m_tp != SCLT_AND) 
 	    m_tp = SCLT_OR;
@@ -104,10 +104,11 @@ public:
     bool maybeAddAutoPhrase();
 
     /** Set/get top subdirectory for filtering results */
-    void setTopdir(const string& t, bool excl = false) 
+    void setTopdir(const string& t, bool excl = false, float w = 1.0) 
     {
 	m_topdir = t;
 	m_topdirexcl = excl;
+	m_topdirweight = w;
     }
 
     /** Set date span for filtering results */
@@ -147,6 +148,7 @@ private:
     vector<string>            m_nfiletypes; // Unwanted file types
     string                    m_topdir; // Restrict to subtree.
     bool                      m_topdirexcl; // Invert meaning
+    float                     m_topdirweight; // affect weight instead of filter
     bool                      m_haveDates;
     DateInterval              m_dates; // Restrict to date interval
     // Printable expanded version of the complete query, retrieved/set
@@ -167,7 +169,7 @@ public:
 
     SearchDataClause(SClType tp) 
 	: m_tp(tp), m_parentSearch(0), m_haveWildCards(0), 
-	  m_modifiers(SDCM_NONE)
+	  m_modifiers(SDCM_NONE), m_weight(1.0)
     {}
     virtual ~SearchDataClause() {}
     virtual bool toNativeQuery(Rcl::Db &db, void *, const string&) = 0;
@@ -180,7 +182,7 @@ public:
     SClType getTp() {return m_tp;}
     void setParent(SearchData *p) {m_parentSearch = p;}
     virtual void setModifiers(Modifier mod) {m_modifiers = mod;}
-
+    virtual void setWeight(float w) {m_weight = w;}
     friend class SearchData;
 
 protected:
@@ -189,6 +191,7 @@ protected:
     SearchData *m_parentSearch;
     bool        m_haveWildCards;
     Modifier    m_modifiers;
+    float       m_weight;
 private:
     SearchDataClause(const SearchDataClause&) {}
     SearchDataClause& operator=(const SearchDataClause&) {

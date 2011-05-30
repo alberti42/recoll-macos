@@ -278,7 +278,8 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 	xq = xq.empty() ? tq : Xapian::Query(Xapian::Query::OP_AND_NOT, xq, tq);
     }
 
-    // Add the directory filtering clause
+    // Add the directory filtering clause. This is a phrase of terms
+    // prefixed with the pathelt prefix XP
     if (!m_topdir.empty()) {
 	vector<string> vpath;
 	stringToTokens(m_topdir, vpath, "/");
@@ -288,10 +289,21 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 	     it != vpath.end(); it++){
 	    pvpath.push_back(pathelt_prefix + *it);
 	}
-	xq = Xapian::Query(m_topdirexcl ? 
-			   Xapian::Query::OP_AND_NOT:Xapian::Query::OP_FILTER, 
-			   xq, Xapian::Query(Xapian::Query::OP_PHRASE, 
-					     pvpath.begin(), pvpath.end()));
+	Xapian::Query::op tdop;
+	if (m_topdirweight == 1.0) {
+	    tdop = m_topdirexcl ? 
+		Xapian::Query::OP_AND_NOT : Xapian::Query::OP_FILTER;
+	} else {
+	    tdop = m_topdirexcl ? 
+		Xapian::Query::OP_AND_NOT : Xapian::Query::OP_AND_MAYBE;
+	}
+	Xapian::Query tdq = Xapian::Query(Xapian::Query::OP_PHRASE, 
+					  pvpath.begin(), pvpath.end());
+	if (m_topdirweight != 1.0)
+	    tdq = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, 
+				tdq, m_topdirweight);
+
+	xq = Xapian::Query(tdop, xq, tdq);
     }
 
     *((Xapian::Query *)d) = xq;
@@ -847,8 +859,7 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 	(m_parentSearch == 0 && !m_haveWildCards);
 
     StringToXapianQ tr(db, m_field, l_stemlang, doBoostUserTerm);
-    if (!tr.processUserString(m_text, m_reason, pqueries, 
-			      db.getStopList()))
+    if (!tr.processUserString(m_text, m_reason, pqueries, db.getStopList()))
 	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseSimple: resolved to null query\n"));
@@ -858,6 +869,9 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
     tr.getUTerms(m_uterms);
     //listVector("SearchDataClauseSimple: Uterms: ", m_uterms);
     *qp = Xapian::Query(op, pqueries.begin(), pqueries.end());
+    if  (m_weight != 1.0) {
+	*qp = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, *qp, m_weight);
+    }
     return true;
 }
 
@@ -886,6 +900,9 @@ bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p,
 	Xapian::Query tq = Xapian::Query(Xapian::Query::OP_OR, more.begin(), 
 					 more.end());
 	*qp = qp->empty() ? tq : Xapian::Query(Xapian::Query::OP_AND, *qp, tq);
+    }
+    if (m_weight != 1.0) {
+	*qp = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, *qp, m_weight);
     }
     return true;
 }
@@ -932,6 +949,9 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
     tr.getTerms(m_terms, m_groups);
     tr.getUTerms(m_uterms);
     *qp = *pqueries.begin();
+    if (m_weight != 1.0) {
+	*qp = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, *qp, m_weight);
+    }
     return true;
 }
 

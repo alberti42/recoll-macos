@@ -101,7 +101,8 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
 
 	// Filtering on location
 	if (!stringicmp("dir", (*it)->m_fieldspec)) {
-	    sdata->setTopdir((*it)->m_value, (*it)->m_op == WasaQuery::OP_EXCL);
+	    sdata->setTopdir((*it)->m_value, (*it)->m_op == WasaQuery::OP_EXCL,
+			     (*it)->m_weight);
 	    continue;
 	} 
 
@@ -174,6 +175,8 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
 	    if (mods & WasaQuery::WQM_NOSTEM) {
 		nclause->setModifiers(Rcl::SearchDataClause::SDCM_NOSTEMMING);
 	    }
+	    if ((*it)->m_weight != 1.0)
+		nclause->setWeight((*it)->m_weight);
 	    sdata->addClause(nclause);
 	}
 	    break;
@@ -203,6 +206,8 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
 	    }
 	    if ((*it)->m_modifiers & WasaQuery::WQM_NOSTEM)
 		nclause->setModifiers(Rcl::SearchDataClause::SDCM_NOSTEMMING);
+	    if ((*it)->m_weight != 1.0)
+		nclause->setWeight((*it)->m_weight);
 	    sdata->addClause(nclause);
 	    break;
 

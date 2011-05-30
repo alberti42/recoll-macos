@@ -63,7 +63,7 @@ public:
     typedef vector<WasaQuery*> subqlist_t;
 
     WasaQuery() 
-	: m_op(OP_NULL), m_modifiers(0)
+	: m_op(OP_NULL), m_modifiers(0), m_weight(1.0)
     {}
 
     ~WasaQuery();
@@ -86,6 +86,7 @@ public:
     vector<WasaQuery*> m_subs;
     
     unsigned int   m_modifiers;
+    float          m_weight;
 };
 
 /**
