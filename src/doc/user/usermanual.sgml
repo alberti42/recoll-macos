@@ -1987,7 +1987,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         results on file location (Ex:
         <literal>dir:/home/me/somedir</literal>). <literal>-dir</literal>
         also works to find results out of the specified directory, only
-        after release 1.16.</para>
+        after release 1.15.8.</para>
         </listitem>
 
         <listitem><para><literal>date</literal> for searching or filtering
