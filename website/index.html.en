@@ -91,6 +91,13 @@
       <h2>News: </h2>
       <ul>
 
+        <li>2011-05-29: release 
+          <a href="download.html#source">1.15.9</a> fixes a startup
+          crash in 1.15.8. This occurs only on some architectures, and
+          if you are not experiencing the problem (it happens every
+          time if at all), you do not need to upgrade.
+        </li>
+
         <li>2011-05-02: release 
           <a href="download.html#source">1.15.8</a> is out with 
           <a href="BUGS.html#b_1_15_7">bug fixes</a> and a few
