@@ -13,7 +13,8 @@ MASTER_SITES=	http://www.lesbonscomptes.com/recoll/
 MAINTAINER=	jf@dockes.org
 COMMENT=	A personal full text search package, based on QT and Xapian
 
-LIB_DEPENDS=	xapian.[1-2][0-9]:${PORTSDIR}/databases/xapian-core
+BUILD_DEPENDS=	xapian-core>=1.0.12:${PORTSDIR}/databases/xapian-core
+RUN_DEPENDS:=  ${BUILD_DEPENDS}
 
 USE_QT_VER=	4
 QT_COMPONENTS=	gui qmake_build uic_build moc_build rcc_build 
