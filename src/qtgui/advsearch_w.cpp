@@ -26,7 +26,6 @@
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <qwhatsthis.h>
-#include <qfiledialog.h>
 #include <qmessagebox.h>
 
 #include <list>
@@ -374,6 +373,6 @@ void AdvSearch::runSearch()
 
 void AdvSearch::browsePB_clicked()
 {
-    QString dir = QFileDialog::getExistingDirectory();
+    QString dir = myGetFileName(true);
     subtreeCMB->setEditText(dir);
 }

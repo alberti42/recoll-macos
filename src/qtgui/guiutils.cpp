@@ -27,8 +27,9 @@
 #include "base64.h"
 #include "transcode.h"
 
-#include <qsettings.h>
-#include <qstringlist.h>
+#include <QSettings>
+#include <QStringList>
+#include <QFileDialog>
 
 RclDynConf *g_dynconf;
 
@@ -323,4 +324,31 @@ void rwSettings(bool writing)
 	for (list<string>::iterator it = tl.begin(); it != tl.end(); it++)
 	    prefs.asearchSubdirHist.push_front(QString::fromUtf8(it->c_str()));
     }
+}
+
+QString myGetFileName(bool isdir, QString caption)
+{
+    LOGDEB1(("myFileDialog: isdir %d\n", isdir));
+    QFileDialog dialog(0, caption);
+
+    if (isdir) {
+	dialog.setFileMode(QFileDialog::Directory);
+	dialog.setOptions(QFileDialog::ShowDirsOnly);
+    } else {
+	dialog.setFileMode(QFileDialog::AnyFile);
+	dialog.setAcceptMode(QFileDialog::AcceptSave);
+    }
+    dialog.setViewMode(QFileDialog::List);
+    QFlags<QDir::Filter> flags = QDir::NoDotAndDotDot | QDir::Hidden; 
+    if (isdir)
+	flags |= QDir::Dirs;
+    else 
+	flags |= QDir::Dirs | QDir::Files;
+    dialog.setFilter(flags);
+
+
+    if (dialog.exec() == QDialog::Accepted) {
+        return dialog.selectedFiles().value(0);
+    }
+    return QString();
 }

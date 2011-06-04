@@ -20,7 +20,6 @@
 #include <QVBoxLayout>
 #include <QGroupBox>
 #include <QFrame>
-#include <QFileDialog>
 #include <qlayout.h>
 #include <qwidget.h>
 #include <qlabel.h>

@@ -26,41 +26,7 @@ using namespace std;
 
 #include <qglobal.h>
 #include <qobject.h>
-
-#if QT_VERSION < 0x040000
-#define QFRAME_INCLUDE <qframe.h>
-#define QFILEDIALOG_INCLUDE <qfiledialog.h>
-#define QLISTBOX_INCLUDE <qlistbox.h>
-#include <qtabdialog.h>
-#define QFILEDIALOG QFileDialog 
-#define QFRAME QFrame
-#define QHBOXLAYOUT QHBoxLayout
-#define QLISTBOX QListBox
-#define QLISTBOXITEM QListBoxItem
-#define QVBOXLAYOUT QVBoxLayout
-#define QTABDIALOG QTabDialog
-
-#else // Qt4 -> 
-
-#include <Q3HBoxLayout>
-#include <Q3VBoxLayout>
-#include <Q3TabDialog>
 #include <QFrame>
-#define QFRAME_INCLUDE <q3frame.h>
-
-#include <QFileDialog>
-#define QFILEDIALOG_INCLUDE <q3filedialog.h>
-#define QLISTBOX_INCLUDE <q3listbox.h>
-
-#define QFILEDIALOG Q3FileDialog 
-#define QFRAME Q3Frame
-#define QHBOXLAYOUT Q3HBoxLayout
-#define QLISTBOX Q3ListBox
-#define QLISTBOXITEM Q3ListBoxItem
-#define QVBOXLAYOUT Q3VBoxLayout
-#define QTABDIALOG Q3TabDialog
-#endif // QT 3/4
-
 #include <qobject.h>
 #include <qapplication.h>
 #include <qtranslator.h>
@@ -68,7 +34,6 @@ using namespace std;
 #include <qthread.h>
 #include <qtimer.h>
 #include <qlayout.h>
-#include QFRAME_INCLUDE
 #include <qwidget.h>
 #include <qlabel.h>
 

@@ -35,7 +35,6 @@
 #include <qlineedit.h>
 #include <qcheckbox.h>
 #include <qcombobox.h>
-#include <qfiledialog.h>
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <qwhatsthis.h>
@@ -355,14 +354,12 @@ void UIPrefsDialog::delExtraDbPB_clicked()
  */
 void UIPrefsDialog::addExtraDbPB_clicked()
 {
-    static QString lastdir;
+    QString input = myGetFileName(true, 
+				  tr("Select xapian index directory "
+				     "(ie: /home/buddy/.recoll/xapiandb)"));
 
-    QString input = QFileDialog::getExistingDirectory(this,
-      tr("Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)"),
-						      lastdir);
     if (input.isEmpty())
 	return;
-    lastdir = input;
 
     string dbdir = (const char *)input.toLocal8Bit();
     LOGDEB(("ExtraDbDial: got: [%s]\n", dbdir.c_str()));

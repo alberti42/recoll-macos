@@ -22,7 +22,6 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QFrame>
-#include <QFileDialog>
 #include <QListWidget>
 
 #include <qobject.h>
@@ -43,6 +42,7 @@
 #include "smallut.h"
 #include "debuglog.h"
 #include "rcldb.h"
+#include "guiutils.h"
 
 #include <list>
 using std::list;
@@ -267,10 +267,9 @@ void ConfParamFNW::loadValue()
 
 void ConfParamFNW::showBrowserDialog()
 {
-    QString s = m_isdir ?  
-	QFileDialog::getExistingDirectory() : QFileDialog::getSaveFileName();
-    if (!s.isEmpty()) 
-	m_le->setText(s);
+    QString s = myGetFileName(m_isdir);
+    if (!s.isEmpty())
+        m_le->setText(s);
 }
 
 class SmallerListWidget: public QListWidget 
@@ -400,7 +399,7 @@ void ConfParamSLW::deleteSelected()
 // "Add entry" dialog for a file name list
 void ConfParamDNLW::showInputDialog()
 {
-    QString s = QFileDialog::getExistingDirectory();
+    QString s = myGetFileName(true);
     if (!s.isEmpty()) {
 	QList<QListWidgetItem *>items = 
 	    m_lb->findItems(s, Qt::MatchFixedString|Qt::MatchCaseSensitive);
