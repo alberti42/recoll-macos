@@ -346,7 +346,7 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
     string udi;
     make_udi(fn, "", udi);
     if (!m_db->needUpdate(udi, sig)) {
-	LOGDEB(("processone: up to date: %s\n", fn.c_str()));
+	LOGDEB0(("processone: up to date: %s\n", fn.c_str()));
 	if (m_updater) {
 	    // Status bar update, abort request etc.
 	    m_updater->status.fn = fn;

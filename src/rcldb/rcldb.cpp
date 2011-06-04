@@ -1246,8 +1246,8 @@ bool Db::needUpdate(const string &udi, const string& sig)
 		     osig.c_str(), sig.c_str()));
 	    // Compare new/old sig
 	    if (sig != osig) {
-		LOGDEB(("Db::needUpdate:yes: olsig [%s] new [%s]\n",
-			osig.c_str(), sig.c_str()));
+		LOGDEB(("Db::needUpdate:yes: olsig [%s] new [%s] [%s]\n",
+			osig.c_str(), sig.c_str(), uniterm.c_str()));
 		// Db is not up to date. Let's index the file
 		return true;
 	    }
