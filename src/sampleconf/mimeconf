@@ -91,6 +91,7 @@ image/png = execm rclimg
 image/tiff = execm rclimg
 image/vnd.djvu = exec rcldjvu
 image/svg+xml = exec rclsvg
+image/x-xcf = execm rclimg
 message/rfc822 = internal
 text/calendar = execm rclics;mimetype=text/plain;charset=utf-8
 text/html  = internal 
@@ -157,12 +158,15 @@ application/x-perl = source
 application/x-shellscript = source
 audio/mpeg = sownd
 audio/x-karaoke = sownd
+image/bmp = image
 image/gif = image
 image/jpeg = image
 image/png = image
 image/tiff = image
 image/vnd.djvu = document
 image/svg+xml = drawing
+image/x-xcf = image
+image/x-xpmi = image
 message/rfc822 = message
 text/html = html
 text/plain = txt
@@ -241,6 +245,9 @@ media = \
       image/png \
       image/svg+xml \
       image/tiff \
+      image/x-xcf \
+      image/bmp \
+      image/x-xpmi \
       video/mp2p \
       video/mp2t \
       video/mp4 \

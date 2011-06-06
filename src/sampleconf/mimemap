@@ -109,6 +109,9 @@
 .gif = image/gif
 .tiff = image/tiff
 .tif  = image/tiff
+.xcf  = image/x-xcf
+.bmp = image/bmp
+.xpm = image/x-xpmi
 
 .fb2 = text/x-fictionbook
 
@@ -126,7 +129,6 @@ recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .log.gz .md5 .map \
        .o .lib .dll .a \
        .dat .bak .rdf .log .db .msf .pid \
        .gnm .gnumeric \
-       .gif .bmp .xpm \
        ,v ~ #
 
 # Special handling of .txt files inside ~/.gaim and ~/.purple directories

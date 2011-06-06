@@ -65,6 +65,10 @@ image/tiff = gwenview %f
 image/gif  = gwenview %f
 image/svg+xml = inkview %f
 image/vnd.djvu = djview %f
+image/x-xcf = gimp %f
+image/bmp = gwenview %f
+image/x-ms-bmp = gwenview %f
+image/x-xpmi = gwenview %f
 
 # Or firefox -remote "openFile(%u)"
 application/x-tex = gnuclient -q %f
