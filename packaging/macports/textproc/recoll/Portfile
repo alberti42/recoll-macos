@@ -8,7 +8,7 @@ version             1.15.9
 categories          textproc
 platforms           darwin
 license             GPL
-maintainers         medoc
+maintainers         recoll.org:jfd
 description         Desktop full text search
 long_description    Recoll is a desktop search tool based on Xapian
 homepage            http://www.recoll.org
@@ -24,4 +24,12 @@ depends_lib         port:xapian-core \
                     port:libiconv \
                     port:zlib
 
+depends_run         port:antiword \
+                    port:catdoc \
+		    port:libxslt \
+                    port:poppler \
+                    port:unrtf \
+                    port:unzip
+
+patchfiles	    patch-configure.diff patch-sampleconf-mimeview.diff
 configure.args      --without-x --disable-x11mon
