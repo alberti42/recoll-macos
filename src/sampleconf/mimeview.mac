@@ -1,0 +1,81 @@
+# @(#$Id: mimeview,v 1.16 2008-09-15 08:03:37 dockes Exp $  (C) 2004 J.F.Dockes
+
+## ##########################################
+# External viewers, launched by the recoll GUI when you click on a result
+# 'Open' link - MAC version
+# On the MAC, we basically use "open" for everything...
+
+# Mime types which we should not uncompress if they are found gzipped or
+# bzipped because the native viewer knows how to handle. These would be
+# exceptions and the list is normally empty
+#nouncompforviewmts = 
+
+[view]
+# Pseudo entry used if the 'use desktop' preference is set in the GUI
+application/x-all = open %f
+
+[view]
+
+application/x-kword = kword %f
+application/x-abiword = abiword %f
+
+application/pdf  = open %f
+application/postscript = open %f
+application/x-dvi = open %f
+
+application/x-lyx = lyx %f
+application/x-scribus = scribus %f
+
+application/msword = open %f
+application/vnd.ms-excel = open %f
+application/vnd.ms-powerpoint = open %f
+
+application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
+ open %f
+application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
+ open %f
+application/vnd.openxmlformats-officedocument.presentationml.template = \
+ open %f
+application/vnd.openxmlformats-officedocument.presentationml.presentation = \
+ open %f
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = \
+ open %f
+application/vnd.openxmlformats-officedocument.spreadsheetml.template =\
+ open %f
+application/vnd.sun.xml.calc = open %f
+application/vnd.sun.xml.calc.template = open %f
+application/vnd.sun.xml.draw = open %f
+application/vnd.sun.xml.draw.template = open %f
+application/vnd.sun.xml.impress = open %f
+application/vnd.sun.xml.impress.template = open %f
+application/vnd.sun.xml.math = open %f
+application/vnd.sun.xml.writer = open %f
+application/vnd.sun.xml.writer.global = open %f
+application/vnd.sun.xml.writer.template = open %f
+application/vnd.wordperfect = open %f
+
+application/x-chm = kchmviewer %f
+application/x-fsdirectory = open %f
+application/x-gnuinfo = xterm -e "info -f %f"
+
+application/x-flac = open %f
+audio/mpeg = open %f
+application/ogg = open %f
+
+image/jpeg = open %f
+image/png = open %f
+image/tiff = open %f
+image/gif  = open %f
+
+image/svg+xml = inkview %f
+image/vnd.djvu = djview %f
+
+application/x-tex = open %f
+text/x-tex = open %f
+text/html = open %u
+text/html|gnuinfo = rclshowinfo %F %(title)
+text/plain = open %f
+text/x-c = open %f
+text/x-c+ = open %f
+text/x-c++ = open %f
+text/x-python = idle %f

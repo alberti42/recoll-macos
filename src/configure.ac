@@ -198,39 +198,45 @@ fi
 
 AC_CHECK_FUNCS(mkdtemp)
 
-##### Look for iconv. We look for libiconv in ${libdir}, /opt/local/lib,
-##### /usr/local/lib then in libc (Linux, solaris). Note that there is no
-##### way to find libiconv in /usr/local if one exists in ${libdir} (can't
-##### do because the link will always succeed in this case so that if we
-##### put /usr/local/lib in front in this case, we may end up with using it
-##### even if no libiconv in there. We'd need a --with-libiconv= option
+##### Look for iconv. This can exist in either libc (ie: Linux, solaris) or
+##### libiconv. We'd need a --with-libiconv= option
 AC_LANG(C++)
 LIBICONV=""
 S_LDFLAGS=$LDFLAGS
-
+S_CPPFLAGS=$CPPFLAGS
 for dir in ${libdir} /opt/local/lib /usr/local/lib ;do
+  CPPFLAGS="$S_CPPFLAGS -I$dir/../include"
+
   LDFLAGS="$S_LDFLAGS -L$dir"
-  unset ac_cv_lib_iconv_iconv_open
-  AC_CHECK_LIB(iconv, iconv_open, LIBICONV="-L$dir -liconv";INCICONV=-I$dir/../include)
+  AC_TRY_LINK([#include <stdlib.h>
+#include <iconv.h>],
+      [iconv_t cd = iconv_open("","");
+       iconv(cd,NULL,NULL,NULL,NULL);
+       iconv_close(cd);],
+      LIBICONV="-L$dir";INCICONV=-I$dir/../include)
   if test A"$LIBICONV" != A ; then
      break
   fi
+
+  LDFLAGS="$S_LDFLAGS -L$dir -liconv"
+  AC_TRY_LINK([#include <stdlib.h>
+#include <iconv.h>],
+      [iconv_t cd = iconv_open("","");
+       iconv(cd,NULL,NULL,NULL,NULL);
+       iconv_close(cd);],
+      LIBICONV="-L$dir -liconv";INCICONV=-I$dir/../include)
+  if test A"$LIBICONV" != A ; then
+     break
+  fi
+
 done
 
-if test A"$LIBICONV" = A; then
-  dir=${libdir}
-  LDFLAGS="$S_LDFLAGS -L$dir"
-  unset ac_cv_lib_iconv_iconv_open
-  AC_CHECK_LIB(c, iconv_open, LIBICONV=NONE;INCICONV=-I/usr/include)
-fi
-
 LDFLAGS=$S_LDFLAGS
+CPPFLAGS=$S_CPPFLAGS
+
 if test A"$LIBICONV" = A ; then
    AC_MSG_ERROR([Cannot find iconv_open anywhere. Please install iconv])
    exit 1
-fi
-if test A"$LIBICONV" = ANONE ; then
-   LIBICONV=""
 fi
 #echo LIBICONV $LIBICONV
 #echo INCICONV $INCICONV
@@ -248,6 +254,7 @@ if test X$rcl_iconv_inbuf_const = X1 ; then
 fi
 
 
+############# Putenv
 AC_MSG_CHECKING(for type of string parameter to putenv)
 AC_TRY_COMPILE([
     #include <stdlib.h>
@@ -257,6 +264,7 @@ AC_TRY_COMPILE([
 if test X$rcl_putenv_string_const = X1 ; then
   AC_DEFINE(PUTENV_ARG_CONST, 1, [putenv parameter is const])
 fi
+
 
 #### Look for Xapian
 AC_PATH_PROG(XAPIAN_CONFIG, xapian-config, no)
