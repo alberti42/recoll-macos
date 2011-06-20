@@ -20,7 +20,7 @@
     </author>
 
     <copyright>
-      <year>2005</year>
+      <year>2005-2011</year>
       <holder role="mailto:jfd@recoll.org">Jean-Francois
       Dockes</holder>
     </copyright>
@@ -197,18 +197,18 @@
         <listitem>
           <formalpara><title>Periodic indexing:</title>
             <para>indexing takes place at discrete
-        times, by executing the <command>recollindex</command>
-        command. The typical usage is to have a nightly indexing run 
-      <link linkend="rcl.indexing.periodic.automat">programmed</link> into your
-      <command>cron</command> file.</para>
+              times, by executing the <command>recollindex</command>
+              command. The typical usage is to have a nightly indexing run 
+              <link linkend="rcl.indexing.periodic.automat">programmed</link>
+              into your <command>cron</command> file.</para>
           </formalpara>
         </listitem>
 
         <listitem>
           <formalpara><title>Real time indexing:</title>
             <para>indexing takes place as soon as a file is created or
-            changed. <command>recollindex</command> runs as a daemon
-            and uses a file system alteration monitor such as 
+              changed. <command>recollindex</command> runs as a daemon
+              and uses a file system alteration monitor such as 
               <application>inotify</application>, 
             <application>Fam</application> or
             <application>Gamin</application>
@@ -218,17 +218,16 @@
       </itemizedlist>
 
       <para>The choice between the two methods is mostly a matter of
-      preference, and they can be combined by setting up multiple
-      indexes (ie: use periodic indexing on a big documentation
-      directory, and real time indexing on a small home
-      directory). Monitoring a big file system tree can consume
-      significant system resources.<para>
+        preference, and they can be combined by setting up multiple
+        indexes (ie: use periodic indexing on a big documentation
+        directory, and real time indexing on a small home
+        directory). Monitoring a big file system tree can consume
+        significant system resources.<para>
 
       <para>&RCL; knows about quite a few different document
-      types. The parameters for document types recognition and
-      processing are set in 
-       <link linkend="rcl.indexing.config">configuration files</link>.
-      </para>
+        types. The parameters for document types recognition and
+        processing are set in 
+        <link linkend="rcl.indexing.config">configuration files</link>.</para>
 
       <para>Most file types, like HTML or word processing files, only hold
         one document. Some file types, like mail folder files or zip
@@ -236,25 +235,24 @@
         in turn be themselves compound ones. Such hierarchies can go quite
         deep, and &RCL; has no problem processing, for example, an ms-word
         document which would be an attachment to an email message part of
-        a folder file archived inside a zip file...
-      </para>
+        a folder file archived inside a zip file...</para>
 
       <para>&RCL; indexing processes plain text, HTML, openoffice
-      and e-mail files internally (a few more actually).</para>
+        and e-mail files internally (a few more actually).</para>
 
       <para>Other file types (ie: postscript, pdf, ms-word, rtf ...) 
-      need external applications for preprocessing. The list is in the
-      <link linkend="rcl.install.external"> installation</link>
-      section. After every indexing operation, &RCL; updates a list of
-      commands that would be needed for indexing existing files
-      types. This list can be displayed from the
-      <command>recoll</command> <guilabel>File</guilabel> menu. It is
-      stored in the <filename>missing</filename> text file
-      inside the configuration directory.</para>
+        need external applications for preprocessing. The list is in the
+        <link linkend="rcl.install.external"> installation</link>
+        section. After every indexing operation, &RCL; updates a list of
+        commands that would be needed for indexing existing files
+        types. This list can be displayed from the
+        <command>recoll</command> <guilabel>File</guilabel> menu. It is
+        stored in the <filename>missing</filename> text file
+        inside the configuration directory.</para>
 
       <para>Without further configuration, &RCL; will index all
-      appropriate files from your home directory, with a reasonable
-      set of defaults.</para>
+        appropriate files from your home directory, with a reasonable
+        set of defaults.</para>
 
       <para>In some cases, it may be interesting to index different
 	areas of the file system to separate databases. You can do this
@@ -323,19 +321,19 @@ recoll
         </itemizedlist>
 
       <para>The size of the index is determined by the document set size,
-      but the ratio can vary a lot. For a typical mixed
-      set of documents, the index size will often be close to
-      the data set size. In specific cases (a set of compressed
-      mbox files for example), the index can become much bigger than
-      the documents. It may also be much smaller if the documents
-      contain a lot of images or other non-indexed data (an extreme
-      example being a set of mp3 files where only the tags would be
-      indexed).</para>
+        but the ratio can vary a lot. For a typical mixed
+        set of documents, the index size will often be close to
+        the data set size. In specific cases (a set of compressed
+        mbox files for example), the index can become much bigger than
+        the documents. It may also be much smaller if the documents
+        contain a lot of images or other non-indexed data (an extreme
+        example being a set of mp3 files where only the tags would be
+        indexed).</para>
 
       <para>Of course, images, sound and video do not increase the
-      index size, which means that it will be quite typical nowadays
-      (2006), that even a big index will be negligible against the
-      total amount of data on the computer.</para>
+        index size, which means that it will be quite typical nowadays
+        (2006), that even a big index will be negligible against the
+        total amount of data on the computer.</para>
       
       <para>The index data directory (<filename>xapiandb</filename>)
 	only contains data that can be completely rebuilt by an index
@@ -385,20 +383,20 @@ recoll
         <title>Security aspects</title>
 
         <para>The &RCL; index does not hold copies of the indexed
-        documents. But it does hold enough data to allow for an almost
-        complete reconstruction. If confidential data is indexed,
-        access to the database directory should be restricted. </para>
+          documents. But it does hold enough data to allow for an almost
+          complete reconstruction. If confidential data is indexed,
+          access to the database directory should be restricted. </para>
 
         <para>As of version 1.4, &RCL; will create the configuration
-        directory with a mode of 0700 (access by owner only). As the
-        index data directory is by default a sub-directory of the
-        configuration directory, this should result in appropriate
-        protection.</para> 
+          directory with a mode of 0700 (access by owner only). As the
+          index data directory is by default a sub-directory of the
+          configuration directory, this should result in appropriate
+          protection.</para> 
 
         <para>If you use another setup, you should think of the kind
-        of protection you need for your index, set the directory
-        and files access modes appropriately, and also maybe adjust
-        the <literal>umask</literal> used during index updates.</para>
+          of protection you need for your index, set the directory
+          and files access modes appropriately, and also maybe adjust
+          the <literal>umask</literal> used during index updates.</para>
         
 
       </sect2>
@@ -409,38 +407,38 @@ recoll
       <title>Indexing configuration</title>
 
       <para>Variables set inside the 
-      <link linkend="rcl.install.config">&RCL; configuration files</link>
-      control which areas of the file system are indexed, and how
-      files are processed. These variables can be set either by
-      editing the text files or using the dialogs in the
-      <command>recoll</command> GUI.</para>
+        <link linkend="rcl.install.config">&RCL; configuration files</link>
+        control which areas of the file system are indexed, and how
+        files are processed. These variables can be set either by
+        editing the text files or using the dialogs in the
+        <command>recoll</command> GUI.</para>
 
       <para>You can also use <link linkend="rcl.search.multidb">multiple 
-      indexes</link> defined by separate configurations, typically to 
-      separate personal and shared indexes, or to take advantage of
-      the organization of your data to improve search precision.</para> 
+          indexes</link> defined by separate configurations, typically to 
+        separate personal and shared indexes, or to take advantage of
+        the organization of your data to improve search precision.</para> 
 
       <para>The first time you start <command>recoll</command>, you
-      will be asked whether or not you would like it to build the
-      index. If you want to adjust the configuration before indexing,
-      just click <guilabel>Cancel</guilabel> at this point, which will get
-      you into the configuration interface. If you exit, 
-      <filename>recoll</filename> will have created a ~/.recoll directory
-      containing empty configuration files, which you can edit by hand.</para>
+        will be asked whether or not you would like it to build the
+        index. If you want to adjust the configuration before indexing,
+        just click <guilabel>Cancel</guilabel> at this point, which will get
+        you into the configuration interface. If you exit, 
+        <filename>recoll</filename> will have created a ~/.recoll directory
+        containing empty configuration files, which you can edit by hand.</para>
 
-      <para>The configuration is documented inside the <link
-      linkend="rcl.install.config">installation chapter</link> of this
-      document, or in the recoll.conf(5) man page, but the most
-      current information will most likely be the comments inside the
-      sample file. The most immediately useful variable you may
-      interested in is probably <link
-      linkend="rcl.install.config.recollconf.topdirs">topdirs</link>,
-      which determines what subtrees get indexed.</para>
+      <para>The configuration is documented inside the 
+        <link linkend="rcl.install.config">installation chapter</link> 
+        of this document, or in the recoll.conf(5) man page, but the most
+        current information will most likely be the comments inside the
+        sample file. The most immediately useful variable you may
+        interested in is probably 
+        <link linkend="rcl.install.config.recollconf.topdirs">topdirs</link>,
+        which determines what subtrees get indexed.</para>
 
       <para>The applications needed to index file types other than
-      text, HTML or email (ie: pdf, postscript, ms-word...) are
-      described in the <link linkend="rcl.install.external">external
-      packages section</link></para>
+        text, HTML or email (ie: pdf, postscript, ms-word...) are
+        described in the <link linkend="rcl.install.external">external
+          packages section</link></para>
 
       <sect2 id="rcl.indexing.config.gui">
         <title>The indexing configuration GUI</title>
@@ -510,7 +508,7 @@ recoll
       <title>Periodic indexing</title>
 
       <sect2 id="rcl.indexing.periodic.exec">
-        <title>Starting indexing</title>
+        <title>Running indexing</title>
 
         <para>Indexing is performed either by the
           <command>recollindex</command> program, or by the
@@ -525,22 +523,22 @@ recoll
         <command>recollindex</command> command:
           <itemizedlist>
             <listitem><para>Starting the indexing thread is more convenient,
-            being just one click away.</para>
+                being just one click away.</para>
             </listitem>
             <listitem><para>The <command>recollindex</command> command has
-            more options, especially the one to reset the index
-            (<literal>-z</literal>).</para>
+                more options, especially the one to reset the index
+                (<literal>-z</literal>).</para>
             </listitem>
             <listitem><para>The <command>recollindex</command> command will
-            not take down your GUI if it crashes (a rare occurrence, but who
-            knows...)</para>
+                not take down your GUI if it crashes (a rare occurrence,
+                but who knows...)</para>
             </listitem>
             <listitem><para>The <command>recollindex</command> command uses
-            <command>setpriority/nice</command> to lower its priority while
-            indexing 
-            (it will also use <command>ionice</command> when this becomes
-            more widely available), the thread can't do it, else it would
-            also slow down the user/search interface.</para>
+                <command>setpriority/nice</command> to lower its priority while
+                indexing 
+                (it will also use <command>ionice</command> when this becomes
+                more widely available), the thread can't do it, else it would
+                also slow down the user/search interface.</para>
             </listitem>
           </itemizedlist>
           I'll let the reader decide where my heart belongs...</para>
@@ -567,7 +565,24 @@ recoll
           up to date will not need to be reindexed).</para>
 
         <para><command>recollindex</command> has a number of other options
-        which are described in its man page.</para>
+          which are described in its man page.</para>
+
+        <para>Of special interest maybe are the <literal>-i</literal> and
+          <literal>-f</literal> options. <literal>-i</literal> allows
+          indexing an explicit list of files (given as command line
+          parameters or read on stdin). <literal>-f</literal> tells
+          <command>recollindex</command> to ignore file selection
+          parameters from the configuration. Together, these options allow
+          building a custom file selection process for some area of the
+          file system, by adding the top directory to the
+          <literal>skippedPaths</literal> list and using an appropriate
+          file selection method to build the file list to be fed to
+          <literal>recollindex&nbsp;-if</literal> .</para>
+
+        <para><literal>recollindex&nbsp;-i</literal> will not descend into
+          directory parameters, but just add them as index entries. It is
+          up to the external file selection method to build the complete
+          file list.</para>
       </sect2>
 
       <sect2 id="rcl.indexing.periodic.automat">
