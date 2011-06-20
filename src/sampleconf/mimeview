@@ -71,14 +71,14 @@ image/x-ms-bmp = gwenview %f
 image/x-xpmi = gwenview %f
 
 # Or firefox -remote "openFile(%u)"
-application/x-tex = gnuclient -q %f
-text/x-tex = gnuclient -q %f
+application/x-tex = emacsclient -q %f
+text/x-tex = emacsclient -q %f
 text/html = firefox %u
 text/html|gnuinfo = rclshowinfo %F %(title)
-text/plain = gnuclient -q %f
-text/x-c = gnuclient -q %f
-text/x-c+ = gnuclient -q %f
-text/x-c++ = gnuclient -q %f
+text/plain = emacsclient -q %f
+text/x-c = emacsclient -q %f
+text/x-c+ = emacsclient -q %f
+text/x-c++ = emacsclient -q %f
 text/x-html-sidux-man = konqueror %f
 text/x-html-aptosid-man = iceweasel %f
 text/x-python = idle %f
