@@ -23,6 +23,8 @@
 #include <string>
 #include <vector>
 
+#include "pathut.h"
+
 #ifndef NO_NAMESPACES
 using namespace std;
 #endif /* NO_NAMESPACES */
@@ -110,7 +112,7 @@ static void sigcleanup(int sig)
 
 int main(int argc, char **argv)
 {
-    string dbdir = "/home/dockes/.recoll/xapiandb";
+    string dbdir = path_cat(path_home(), ".recoll/xapiandb");
     string outencoding = "ISO8859-1";
     int docid = 1;
     string aterm;
