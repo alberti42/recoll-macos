@@ -111,6 +111,10 @@ text/x-purple-html-log = internal text/html
 text/x-python = exec rclpython
 text/x-shellscript = internal text/plain
 text/x-tex = exec rcltex
+# You're probably better off letting xml be indexed as text/plain (which
+# will happen because of the default text/xxx handling. Handling it as html
+# will strip all the parameters, where most of the data often resides
+#text/xml = internal text/html
 
 ## #############################################
 # Icons to be used in the result list if required by gui config

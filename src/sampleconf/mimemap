@@ -19,6 +19,8 @@
 .pl = application/x-perl
 .sh = application/x-shellscript
 
+.xml = text/xml
+
 .rtf  = text/rtf
 
 .html = text/html

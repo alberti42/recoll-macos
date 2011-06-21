@@ -102,8 +102,8 @@ protected:
 };
 
 /**
- * Return indexing handler object for the given mime type
- * returned pointer should be deleted by caller
+ * Return indexing handler object for the given mime type. The returned 
+ * pointer should be passed to returnMimeHandler() for recycling, after use.
  * @param mtyp input mime type, ie text/plain
  * @param cfg  the recoll config object to be used
  * @param filtertypes decide if we should restrict to types in 

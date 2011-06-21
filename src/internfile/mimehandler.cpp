@@ -50,6 +50,64 @@ using namespace std;
 static multimap<string, Dijon::Filter*>  o_handlers;
 static PTMutexInit o_handlers_mutex;
 
+static const unsigned int max_handlers_cache_size = 300;
+
+/* Look for mime handler in pool */
+static Dijon::Filter *getMimeHandlerFromCache(const string& mtype)
+{
+    LOGDEB0(("getMimeHandlerFromCache: %s\n", mtype.c_str()));
+
+    PTMutexLocker locker(o_handlers_mutex);
+    map<string, Dijon::Filter *>::iterator it = o_handlers.find(mtype);
+    if (it != o_handlers.end()) {
+	Dijon::Filter *h = it->second;
+	o_handlers.erase(it);
+	LOGDEB0(("getMimeHandlerFromCache: %s found\n", mtype.c_str()));
+	return h;
+    }
+    return 0;
+}
+
+/* Return mime handler to pool */
+void returnMimeHandler(Dijon::Filter *handler)
+{
+    typedef multimap<string, Dijon::Filter*>::value_type value_type;
+    if (handler) {
+	handler->clear();
+	PTMutexLocker locker(o_handlers_mutex);
+	LOGDEB2(("returnMimeHandler: returning filter for %s cache size %d\n", 
+		 handler->get_mime_type().c_str(), o_handlers.size()));
+	// Limit pool size. It's possible for some reason that the
+	// handler was not found in the cache by getMimeHandler() and
+	// that a new handler is returned every time. We don't want
+	// the cache to grow indefinitely. We try to delete an element
+	// of the same kind, and if this fails, the first at
+	// hand. Note that going oversize *should not* normally
+	// happen, we're only being prudent.
+	if (o_handlers.size() >= max_handlers_cache_size) {
+	    map<string, Dijon::Filter *>::iterator it = 
+		o_handlers.find(handler->get_mime_type());
+	    if (it != o_handlers.end()) 
+		o_handlers.erase(it);
+	    else
+		o_handlers.erase(o_handlers.begin());
+	}
+	o_handlers.insert(value_type(handler->get_mime_type(), handler));
+    }
+}
+
+void clearMimeHandlerCache()
+{
+    LOGDEB(("clearMimeHandlerCache()\n"));
+    typedef multimap<string, Dijon::Filter*>::value_type value_type;
+    map<string, Dijon::Filter *>::iterator it;
+    PTMutexLocker locker(o_handlers_mutex);
+    for (it = o_handlers.begin(); it != o_handlers.end(); it++) {
+	delete it->second;
+    }
+    o_handlers.clear();
+}
+
 /** For mime types set as "internal" in mimeconf: 
   * create appropriate handler object. */
 static Dijon::Filter *mhFactory(RclConfig *config, const string &mime)
@@ -58,12 +116,16 @@ static Dijon::Filter *mhFactory(RclConfig *config, const string &mime)
     string lmime(mime);
     stringtolower(lmime);
     if ("text/plain" == lmime) {
+	LOGDEB2(("mhFactory(%s): returning MimeHandlerText\n", mime.c_str()));
 	return new MimeHandlerText(config, lmime);
     } else if ("text/html" == lmime) {
+	LOGDEB2(("mhFactory(%s): returning MimeHandlerHtml\n", mime.c_str()));
 	return new MimeHandlerHtml(config, lmime);
     } else if ("text/x-mail" == lmime) {
+	LOGDEB2(("mhFactory(%s): returning MimeHandlerMbox\n", mime.c_str()));
 	return new MimeHandlerMbox(config, lmime);
     } else if ("message/rfc822" == lmime) {
+	LOGDEB2(("mhFactory(%s): returning MimeHandlerMail\n", mime.c_str()));
 	return new MimeHandlerMail(config, lmime);
     } else if (lmime.find("text/") == 0) {
         // Try to handle unknown text/xx as text/plain. This
@@ -71,6 +133,7 @@ static Dijon::Filter *mhFactory(RclConfig *config, const string &mime)
         // mimeconf, not at random. For programs, for example this
         // allows indexing and previewing as text/plain (no filter
         // exec) but still opening with a specific editor.
+	LOGDEB2(("mhFactory(%s): returning MimeHandlerText(x)\n",mime.c_str()));
         return new MimeHandlerText(config, lmime); 
     } else {
 	// We should not get there. It means that "internal" was set
@@ -138,37 +201,13 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
     return h;
 }
 
-/* Return mime handler to pool */
-void returnMimeHandler(Dijon::Filter *handler)
-{
-    typedef multimap<string, Dijon::Filter*>::value_type value_type;
-    if (handler) {
-	handler->clear();
-	PTMutexLocker locker(o_handlers_mutex);
-	o_handlers.insert(value_type(handler->get_mime_type(), handler));
-    }
-}
-
-void clearMimeHandlerCache()
-{
-    typedef multimap<string, Dijon::Filter*>::value_type value_type;
-    map<string, Dijon::Filter *>::iterator it;
-    PTMutexLocker locker(o_handlers_mutex);
-    for (it = o_handlers.begin(); it != o_handlers.end(); it++) {
-	delete it->second;
-    }
-    o_handlers.clear();
-}
-
-
 /* Get handler/filter object for given mime type: */
 Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg, 
 			      bool filtertypes)
 {
-    LOGDEB2(("getMimeHandler: mtype [%s] filtertypes %d\n", 
-             mtype.c_str(), filtertypes));
+    LOGDEB(("getMimeHandler: mtype [%s] filtertypes %d\n", 
+	    mtype.c_str(), filtertypes));
     Dijon::Filter *h = 0;
-    PTMutexLocker locker(o_handlers_mutex);
 
     // Get handler definition for mime type. We do this even if an
     // appropriate handler object may be in the cache (indexed by mime
@@ -182,13 +221,10 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
     if (!hs.empty()) { // Got a handler definition line
 
         // Do we already have a handler object in the cache ?
-        map<string, Dijon::Filter *>::iterator it = o_handlers.find(mtype);
-        if (it != o_handlers.end()) {
-            h = it->second;
-            o_handlers.erase(it);
-            LOGDEB2(("getMimeHandler: found in cache\n"));
-            goto out;
-        }
+	h = getMimeHandlerFromCache(mtype);
+	if (h != 0)
+	    goto out;
+	LOGDEB2(("getMimeHandler: %s not in cache\n", mtype.c_str()));
 
 	// Not in cache. Break definition into type and name/command
         // string and instanciate handler object
@@ -206,12 +242,16 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
 	    // icon) and still use the html filter on them. This is
 	    // partly redundant with the localfields/rclaptg, but
 	    // better and the latter will probably go away at some
-	    // point in the future
+	    // point in the future.
 	    LOGDEB2(("handlertype internal, cmdstr [%s]\n", cmdstr.c_str()));
-	    if (!cmdstr.empty())
-		h = mhFactory(cfg, cmdstr);
-	    else 
+	    if (!cmdstr.empty()) {
+		// Have to redo the cache thing. Maybe we should
+		// rather just recurse instead ?
+		if ((h = getMimeHandlerFromCache(cmdstr)) == 0)
+		    h = mhFactory(cfg, cmdstr);
+	    } else {
 		h = mhFactory(cfg, mtype);
+	    }
 	    goto out;
 	} else if (!stringlowercmp("dll", handlertype)) {
 	} else {
