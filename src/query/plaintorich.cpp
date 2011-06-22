@@ -361,10 +361,11 @@ bool PlainToRich::plaintorich(const string& in,
     // Input character iterator
     Utf8Iter chariter(in);
 
-    // State variable used to limit the number of consecutive empty lines,
-    // and convert all eol to '\n'
+    // State variables used to limit the number of consecutive empty lines,
+    // convert all eol to '\n', and preserve some indentation
     int eol = 0;
     int hadcr = 0;
+    int inindent = 1;
 
     // Value for numbered anchors at each term match
     int anchoridx = 1;
@@ -425,7 +426,8 @@ bool PlainToRich::plaintorich(const string& in,
             eol++;
             continue;
         } else if (eol) {
-            // Do line break;
+            // Got non eol char in line break state. Do line break;
+	    inindent = 1;
             hadcr = 0;
             if (eol > 2)
                 eol = 2;
@@ -447,6 +449,7 @@ bool PlainToRich::plaintorich(const string& in,
 
         switch (car) {
         case '<':
+	    inindent = 0;
             if (m_inputhtml) {
                 if (!inparamvalue)
                     intag = true;
@@ -456,6 +459,7 @@ bool PlainToRich::plaintorich(const string& in,
             }
             break;
         case '>':
+	    inindent = 0;
             if (m_inputhtml) {
                 if (!inparamvalue)
                     intag = false;
@@ -463,6 +467,7 @@ bool PlainToRich::plaintorich(const string& in,
             chariter.appendchartostring(*olit);    
             break;
         case '&':
+	    inindent = 0;
             if (m_inputhtml) {
                 chariter.appendchartostring(*olit);
             } else {
@@ -470,12 +475,30 @@ bool PlainToRich::plaintorich(const string& in,
             }
             break;
         case '"':
+	    inindent = 0;
             if (m_inputhtml && intag) {
                 inparamvalue = !inparamvalue;
             }
             chariter.appendchartostring(*olit);
             break;
+
+	case ' ': 
+	    if (m_eolbr && inindent) {
+		*olit += "&nbsp;";
+	    } else {
+		chariter.appendchartostring(*olit);
+	    }
+	    break;
+	case '\t': 
+	    if (m_eolbr && inindent) {
+		*olit += "&nbsp;&nbsp;&nbsp;&nbsp;";
+	    } else {
+		chariter.appendchartostring(*olit);
+	    }
+	    break;
+
         default:
+	    inindent = 0;
             chariter.appendchartostring(*olit);
         }
 
