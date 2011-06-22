@@ -44,6 +44,7 @@ common/rclconfig.cpp
 common/rclconfig.h
 common/rclinit.cpp
 common/rclinit.h
+common/rclversion.h.in
 common/textsplit.cpp
 common/textsplit.h
 common/unacpp.cpp
@@ -397,6 +398,7 @@ sampleconf/fields
 sampleconf/mimeconf
 sampleconf/mimemap
 sampleconf/mimeview
+sampleconf/mimeview.mac
 sampleconf/recoll.conf.in
 unac/
 unac/AUTHORS
