@@ -213,6 +213,10 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
     bool usfci = false;
     cnf->getConfParam("usesystemfilecommand", &usfci);
 
+    // In general, even when the input mime type is set (when
+    // previewing), we can't use it: it's the type for the actual
+    // document, but this can be part of a compound document, and
+    // we're dealing with the top level file here.
     if (flags & FIF_doUseInputMimetype) {
         if (!imime) {
             LOGERR(("FileInterner:: told to use null imime\n"));
@@ -250,20 +254,10 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 		LOGDEB1(("FileInterner:: after ucomp: m_tdir %s, tfile %s\n", 
 			 m_tdir.dirname(), m_tfile.c_str()));
 		m_fn = m_tfile;
-
-		// Now identify the decompressed file. 
-		if ((flags & FIF_forPreview) && imime) {
-		    // In preview mode, trust the input parameter. The
-		    // file type may depend on the location, ie, for
-		    // .1->text/man, and we just moved the file, so
-		    // we'd be wrong to use mimetype().
+		// Note: still using the original file's stat. right ?
+		l_mime = mimetype(m_fn, stp, m_cfg, usfci);
+		if (l_mime.empty() && imime)
 		    l_mime = *imime;
-		} else {
-		    // Note: still using the original file's stat. right ?
-		    l_mime = mimetype(m_fn, stp, m_cfg, usfci);
-		    if (l_mime.empty() && imime)
-			l_mime = *imime;
-		}
 	    } else {
 		LOGINFO(("FileInterner:: %s over size limit %d kbs\n",
 			 m_fn.c_str(), maxkbs));
