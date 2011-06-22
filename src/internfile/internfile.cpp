@@ -250,10 +250,20 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 		LOGDEB1(("FileInterner:: after ucomp: m_tdir %s, tfile %s\n", 
 			 m_tdir.dirname(), m_tfile.c_str()));
 		m_fn = m_tfile;
-		// Note: still using the original file's stat. right ?
-		l_mime = mimetype(m_fn, stp, m_cfg, usfci);
-		if (l_mime.empty() && imime)
+
+		// Now identify the decompressed file. 
+		if ((flags & FIF_forPreview) && imime) {
+		    // In preview mode, trust the input parameter. The
+		    // file type may depend on the location, ie, for
+		    // .1->text/man, and we just moved the file, so
+		    // we'd be wrong to use mimetype().
 		    l_mime = *imime;
+		} else {
+		    // Note: still using the original file's stat. right ?
+		    l_mime = mimetype(m_fn, stp, m_cfg, usfci);
+		    if (l_mime.empty() && imime)
+			l_mime = *imime;
+		}
 	    } else {
 		LOGINFO(("FileInterner:: %s over size limit %d kbs\n",
 			 m_fn.c_str(), maxkbs));
