@@ -1,4 +1,4 @@
-AC_INIT(Recoll, 1.6)
+AC_INIT([Recoll], m4_esyscmd_s(cat VERSION))
 AC_CONFIG_HEADERS([common/autoconfig.h])
 AC_PREREQ(2.53)
 AC_CONFIG_SRCDIR(index/recollindex.cpp)
@@ -426,6 +426,8 @@ test "X$m_prefix" = "XNONE" && m_prefix=/usr/local
 m_datadir=${m_prefix}/share
 QTRECOLL_DATADIR=${m_datadir}/recoll
 
+RCLVERSION='m4_esyscmd_s(cat VERSION)'
+
 AC_SUBST(X_CFLAGS)
 AC_SUBST(X_PRE_LIBS)
 AC_SUBST(X_LIBS)
@@ -444,11 +446,15 @@ AC_SUBST(HAVE_MKDTEMP)
 AC_SUBST(NOQTMAKE)
 AC_SUBST(NOCMDLINE)
 AC_SUBST(NOPIC)
+AC_SUBST(RCLVERSION)
 
-AC_CONFIG_FILES(mk/localdefs)
+# All object files depend on localdefs which has the cc flags. Avoid
+# changing it unless necessary
+AC_CONFIG_FILES(mk/localdefs.new:mk/localdefs.in)
 AC_CONFIG_FILES(recollinstall)
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(sampleconf/recoll.conf)
+AC_CONFIG_FILES(common/rclversion.h)
 
 for d in bincimapmime index lib query
 do 
@@ -459,3 +465,10 @@ done
 (cd lib;test -f Makefile && chmod +w Makefile;sh mkMake)
 
 AC_OUTPUT
+
+if cmp -s mk/localdefs mk/localdefs.new ; then
+  rm -f mk/localdefs.new
+else
+  mv -f mk/localdefs.new mk/localdefs
+fi
+

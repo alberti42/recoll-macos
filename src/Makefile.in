@@ -11,7 +11,7 @@ mandir = @mandir@
 QMAKE = @QMAKE@
 QTGUI = @QTGUI@
 
-all: mk/sysconf common/rclversion.h
+all: mk/sysconf 
 	${MAKE} -C lib
 	${MAKE} -C index recollindex
 	@NOQTMAKE@(cd $(QTGUI); ${QMAKE} recoll.pro)
@@ -21,11 +21,7 @@ all: mk/sysconf common/rclversion.h
 mk/sysconf:
 	@echo "You need to run configure first" ; exit 1
 
-versfile=common/rclversion.h
-${versfile} : VERSION
-	echo 'static const char *rclversionstr = "'`cat VERSION`'";'>> ${versfile}
-
-static: mk/sysconf common/rclversion.h
+static: mk/sysconf
 	${MAKE} -C lib
 	rm -f index/recollindex
 	${MAKE} -C index BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic \
@@ -46,7 +42,6 @@ clean:
 	${MAKE} -C utils clean
 	@NOQTMAKE@@-${MAKE} -C $(QTGUI) clean
 	rm -f qtgui/Makefile qtgui/confgui/Makefile qtgui/recoll
-	rm -f common/rclversion.h
 	rm -f filters/rclexecm.pyc
 	rm -rf qtgui/.moc qtgui/.ui qtgui/confgui/.moc qtgui/confgui/.ui
 	rm -rf qtgui/.obj qtgui/.moc qtgui/.ui 
@@ -61,6 +56,7 @@ distclean: clean
 	   config.log config.status \
 	   recollinstall \
 	   lib/*.dep common/autoconfig.h
+	rm -f common/rclversion.h
 	rm -f index/alldeps lib/alldeps query/alldeps bincimapmime/alldeps
 	rm -rf autom4te.cache
 

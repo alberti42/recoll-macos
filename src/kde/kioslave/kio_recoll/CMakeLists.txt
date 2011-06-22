@@ -14,18 +14,13 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}")
 
 set(rcltop ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
 
-# Execute minimum recoll configuration to create autoconfig.h and version.h
+# Execute recoll configuration to create autoconfig.h and version.h and
+# generate a PIC lib
 execute_process(COMMAND ${rcltop}/configure --disable-qtgui --disable-x11mon --enable-pic --prefix=${CMAKE_INSTALL_PREFIX} --mandir=${CMAKE_INSTALL_PREFIX}/share/man
 		WORKING_DIRECTORY ${rcltop}
 )
-execute_process(COMMAND make common/rclversion.h
-		WORKING_DIRECTORY ${rcltop}
-)
-execute_process(COMMAND make 
-		WORKING_DIRECTORY ${rcltop}/lib
-)
 
-link_directories(${rcltop}/lib)
+link_directories(${rcltop}/lib ${CMAKE_INSTALL_PREFIX}/lib)
 
 include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES}
   ${rcltop}/aspell 
@@ -52,6 +47,12 @@ IF(PTHREAD_IN_LIBPTHREAD)
 ENDIF(PTHREAD_IN_LIBPTHREAD)
 
 kde4_add_plugin(kio_recoll ${kio_recoll_SRCS})
+
+add_custom_target(rcllib
+                 COMMAND make
+                 WORKING_DIRECTORY ${rcltop}/lib
+)
+add_dependencies(kio_recoll rcllib)
 
 target_link_libraries(kio_recoll rcl xapian z ${EXTRA_LIBS} ${KDE4_KIO_LIBS})
 

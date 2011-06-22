@@ -32,9 +32,7 @@ you should READ THE HELP FILE.
 Building and installing:
 =======================
 
-The directory mode is only available with KDE 4.1 and later. This
-began under KDE3 and might still be made to work, but I only built
-with KDE4 and cmake recently.
+Only tested with KDE 4.1 and later.
 
 The main Recoll installation shares its prefix with the KIO slave,
 which needs to use the KDE one. This means that, if KDE lives in /usr,
@@ -42,13 +40,19 @@ Recoll must be configured with --prefix=/usr, not /usr/local. Else
 you'll have run-time problems, the slave will not be able to find the
 Recoll configuration.
 
+!!*Notice: You cannot share a build directory between recoll and kio_recoll
+because they use different configure options for the main lib, but build it
+in the same place. The main lib "configure" is run at "cmake" time for
+kio_recoll, the build is done at "make" time.
+
+
 Recipe:
  - Make sure the KDE4 core devel packages and cmake are installed.
 
  - Extract the Recoll source.
 
  - IF Recoll is not installed yet: configure recoll with 
-   --prefix=/usr --enable-pic  (or wherever KDE lives), build and install 
+   --prefix=/usr (or wherever KDE lives), build and install 
    Recoll.
 
  - In the Recoll source, go to kde/kioslave/recoll, then build and

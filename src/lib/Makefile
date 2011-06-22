@@ -13,7 +13,7 @@ librcl.a : $(DEPS) $(OBJS) unac.o
 	ar ru librcl.a $(OBJS) unac.o
 	$(RANLIB) librcl.a
 
-unac.o : $(depth)/unac/unac.c $(depth)/unac/unac.h $
+unac.o : $(depth)/unac/unac.c $(depth)/unac/unac.h $(depth)/mk/localdefs
 	$(CC) $(ALL_CXXFLAGS) -c $(depth)/unac/unac.c
 rclaspell.o : ../aspell/rclaspell.cpp $(depth)/mk/localdefs
 	$(CXX) $(ALL_CXXFLAGS) -c ../aspell/rclaspell.cpp
