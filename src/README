@@ -8,7 +8,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    <jfd@recoll.org>
 
-   Copyright (c) 2005 Jean-Francois Dockes
+   Copyright (c) 2005-2011 Jean-Francois Dockes
 
    This document introduces full text search notions and describes the
    installation and use of the Recoll application. It currently describes
@@ -46,7 +46,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 2.5. Periodic indexing
 
-                             2.5.1. Starting indexing
+                             2.5.1. Running indexing
 
                              2.5.2. Using cron to automate indexing
 
@@ -495,7 +495,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
 2.5. Periodic indexing
 
-  2.5.1. Starting indexing
+  2.5.1. Running indexing
 
    Indexing is performed either by the recollindex program, or by the
    indexing thread inside the recoll program (use the File menu). Both
@@ -539,6 +539,18 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    recollindex has a number of other options which are described in its man
    page.
+
+   Of special interest maybe are the -i and -f options. -i allows indexing an
+   explicit list of files (given as command line parameters or read on
+   stdin). -f tells recollindex to ignore file selection parameters from the
+   configuration. Together, these options allow building a custom file
+   selection process for some area of the file system, by adding the top
+   directory to the skippedPaths list and using an appropriate file selection
+   method to build the file list to be fed to recollindex -if .
+
+   recollindex -i will not descend into directory parameters, but just add
+   them as index entries. It is up to the external file selection method to
+   build the complete file list.
 
      ----------------------------------------------------------------------
 
@@ -1569,7 +1581,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * dir for filtering the results on file location (Ex:
        dir:/home/me/somedir). -dir also works to find results out of the
-       specified directory, only after release 1.16.
+       specified directory, only after release 1.15.8.
 
      * date for searching or filtering on dates. The syntax for the argument
        is based on the ISO8601 standard for dates and time intervals. Only
@@ -1600,10 +1612,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      * mime or format for specifying the mime type. This one is quite special
        because you can specify several values which will be OR'ed (the normal
        default for the language is AND). Ex: mime:text/plain mime:text/html.
-       Specifying an explicit boolean operator or negation (-) before a mime
-       specification is not supported and will produce strange results. Note
-       that mime is the ONLY field with an OR default. You do need to use OR
-       with ext terms for example.
+       Specifying an explicit boolean operator before a mime specification is
+       not supported and will produce strange results. You can filter out
+       certain types by using negation (-mime:some/type), and you can use
+       wildcards in the value (mime:text/*). Note that mime is the ONLY field
+       with an OR default. You do need to use OR with ext terms for example.
 
      * type or rclcat for specifying the category (as in
        text/media/presentation/etc.). The classification of mime types in
