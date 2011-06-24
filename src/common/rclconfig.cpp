@@ -1110,7 +1110,9 @@ static char *thisprog;
 static char usage [] = "\n"
 "-c: check a few things in the configuration files\n"
 "[-s subkey] -q param : query parameter value\n"
+"-f : print some field data\n"
 "  : default: print parameters\n"
+
 ;
 static void
 Usage(void)
@@ -1124,6 +1126,8 @@ static int     op_flags;
 #define OPT_s	  0x2 
 #define OPT_q	  0x4 
 #define OPT_c     0x8
+#define OPT_f     0x10
+
 int main(int argc, char **argv)
 {
     string pname, skey;
@@ -1139,6 +1143,7 @@ int main(int argc, char **argv)
 	while (**argv)
 	    switch (*(*argv)++) {
 	    case 'c':	op_flags |= OPT_c; break;
+	    case 'f':	op_flags |= OPT_f; break;
 	    case 's':	op_flags |= OPT_s; if (argc < 2)  Usage();
 		skey = *(++argv);
 		argc--; 
@@ -1170,6 +1175,23 @@ int main(int argc, char **argv)
 	    exit(1);
 	}
 	printf("[%s] -> [%s]\n", pname.c_str(), value.c_str());
+    } else if (op_flags & OPT_f) {
+	set<string> stored = config->getStoredFields();
+	set<string> indexed = config->getIndexedFields();
+	cout << "Stored fields: ";
+        for (set<string>::const_iterator it = stored.begin(); 
+             it != stored.end(); it++) {
+            cout << "[" << *it << "] ";
+        }
+	cout << endl;	
+	cout << "Indexed fields: ";
+        for (set<string>::const_iterator it = indexed.begin(); 
+             it != indexed.end(); it++) {
+	    string prefix;
+	    config->getFieldPrefix(*it, prefix);
+            cout << "[" << *it << "]" << " -> [" << prefix << "] ";
+        }
+	cout << endl;	
     } else if (op_flags & OPT_c) {
         // Check that all known mime types have an icon and belong to
         // some category
