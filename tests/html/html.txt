@@ -5,3 +5,5 @@ text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/qtextedit.html]	
 2 results
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/mysqlmanualSmall.html]	[MySQL 3.23, 4.0, 4.1 Reference Manual]	1480354	bytes	
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/mysqlmanual.html]	[MySQL 3.23, 4.0, 4.1 Reference Manual]	8136414	bytes	
+1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/badhtml.html]	[bla bla "bad quotes]	236	bytes	
