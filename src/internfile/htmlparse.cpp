@@ -1,10 +1,10 @@
-/* This file was copied/updated from xapian-omega-1.0.1 and modified */
+/* This file was copied/updated from xapian-omega-1.0.1 to 1.2.6 and modified */
 
 /* htmlparse.cc: simple HTML parser for omega indexer
  *
  * Copyright 1999,2000,2001 BrightStation PLC
  * Copyright 2001 Ananova Ltd
- * Copyright 2002,2006 Olly Betts
+ * Copyright 2002,2006,2007,2008,2009,2010,2011 Olly Betts
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -29,6 +29,14 @@ using std::find_if;
 #include <stdio.h>
 #include <ctype.h>
 #include <cstring>
+
+inline void
+lowercase_string(string &str)
+{
+    for (string::iterator i = str.begin(); i != str.end(); ++i) {
+	*i = tolower(static_cast<unsigned char>(*i));
+    }
+}
 
 map<string, unsigned int> HtmlParser::named_ents;
 
@@ -73,6 +81,15 @@ inline static bool
 p_whitespaceeqgt(char c)
 {
     return isspace(static_cast<unsigned char>(c)) || c == '=' || c == '>';
+}
+
+bool
+HtmlParser::get_parameter(const string & param, string & value) const
+{
+    map<string, string>::const_iterator i = parameters.find(param);
+    if (i == parameters.end()) return false;
+    value = i->second;
+    return true;
 }
 
 HtmlParser::HtmlParser()
@@ -151,12 +168,12 @@ HtmlParser::parse_html(const string &body)
 {
     in_script = false;
 
-    map<string,string> Param;
+    parameters.clear();
     string::const_iterator start = body.begin();
 
     while (true) {
 	// Skip through until we find an HTML tag, a comment, or the end of
-	// document.  Ignore isolated occurences of `<' which don't start
+	// document.  Ignore isolated occurrences of `<' which don't start
 	// a tag or comment.	
 	string::const_iterator p = start;
 	while (true) {
@@ -166,6 +183,7 @@ HtmlParser::parse_html(const string &body)
 
 	    // Tag, closing tag, or comment (or SGML declaration).
 	    if ((!in_script && isalpha(ch)) || ch == '/' || ch == '!') break;
+
 	    if (ch == '?') {
 		// PHP code or XML declaration.
 		// XML declaration is only valid at the start of the first line.
@@ -181,7 +199,7 @@ HtmlParser::parse_html(const string &body)
 		if (decl_end == body.end()) break;
 
 		// Default charset for XML is UTF-8.
-		charset = "UTF-8";
+		charset = "utf-8";
 
 		string decl(p + 6, decl_end);
 		size_t enc = decl.find("encoding");
@@ -205,7 +223,7 @@ HtmlParser::parse_html(const string &body)
 
 		break;
 	    }
-	    p++; 
+	    p++;
 	}
 
 	// Process text up to start of tag.
@@ -286,66 +304,83 @@ HtmlParser::parse_html(const string &body)
 	    start = find_if(start, body.end(), p_nottag);
 	    string tag = body.substr(p - body.begin(), start - p);
 	    // convert tagname to lowercase
-	    for (string::iterator i = tag.begin(); i != tag.end(); ++i)
-		*i = tolower(static_cast<unsigned char>(*i));
-	       
+	    lowercase_string(tag);
+
 	    if (closing) {
-		closing_tag(tag);
+		if (!closing_tag(tag))
+		    return;
 		if (in_script && tag == "script") in_script = false;
-		   
+
 		/* ignore any bogus parameters on closing tags */
 		p = find(start, body.end(), '>');
 		if (p == body.end()) break;
 		start = p + 1;
 	    } else {
+		bool empty_element = false;
+		// FIXME: parse parameters lazily.
 		while (start < body.end() && *start != '>') {
 		    string name, value;
 
 		    p = find_if(start, body.end(), p_whitespaceeqgt);
 
-		    name = body.substr(start - body.begin(), p - start);
-		       
+		    size_t name_len = p - start;
+		    if (name_len == 1) {
+			if (*start == '/' && p < body.end() && *p == '>') {
+			    // E.g. <tag foo="bar" />
+			    start = p;
+			    empty_element = true;
+			    break;
+			}
+		    }
+
+		    name.assign(body, start - body.begin(), name_len);
+
 		    p = find_if(p, body.end(), p_notwhitespace);
-		      
+
 		    start = p;
 		    if (start != body.end() && *start == '=') {
-			int quote;
-		       
 			start = find_if(start + 1, body.end(), p_notwhitespace);
 
 			p = body.end();
-			   
-			quote = *start;
+
+			int quote = *start;
 			if (quote == '"' || quote == '\'') {
 			    start++;
 			    p = find(start, body.end(), quote);
 			}
-			   
+
 			if (p == body.end()) {
 			    // unquoted or no closing quote
 			    p = find_if(start, body.end(), p_whitespacegt);
-			    
-			    value = body.substr(start - body.begin(), p - start);
-
-			    start = find_if(p, body.end(), p_notwhitespace);
-			} else {
-			    value = body.substr(start - body.begin(), p - start);
 			}
-		       
-			if (name.size()) {
+			value.assign(body, start - body.begin(), p - start);
+			start = find_if(p, body.end(), p_notwhitespace);
+
+			if (!name.empty()) {
 			    // convert parameter name to lowercase
-			    string::iterator i;
-			    for (i = name.begin(); i != name.end(); ++i)
-				*i = tolower(static_cast<unsigned char>(*i));
+			    lowercase_string(name);
 			    // in case of multiple entries, use the first
 			    // (as Netscape does)
-			    if (Param.find(name) == Param.end())
-				Param[name] = value;
+			    parameters.insert(make_pair(name, value));
 			}
 		    }
 		}
-		opening_tag(tag, Param);
-		Param.clear();
+#if 0
+		cout << "<" << tag;
+		map<string, string>::const_iterator x;
+		for (x = parameters.begin(); x != parameters.end(); x++) {
+		    cout << " " << x->first << "=\"" << x->second << "\"";
+		}
+		cout << ">\n";
+#endif
+		if (!opening_tag(tag))
+		    return;
+		parameters.clear();
+
+		if (empty_element) {
+		    if (!closing_tag(tag))
+			return;
+		}
 
 		// In <script> tags we ignore opening tags to avoid problems
 		// with "a<b".

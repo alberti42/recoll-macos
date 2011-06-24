@@ -55,8 +55,8 @@ class MyHtmlParser : public HtmlParser {
     bool indexing_allowed;
 
     void process_text(const string &text);
-    void opening_tag(const string &tag, const map<string,string> &p);
-    void closing_tag(const string &tag);
+    bool opening_tag(const string &tag);
+    bool closing_tag(const string &tag);
     void do_eof();
     void decode_entities(string &s);
     void reset_charsets() {fromcharset = tocharset = "";}

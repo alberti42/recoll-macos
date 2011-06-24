@@ -1,4 +1,4 @@
-/* This file was copied from omega-0.8.5 and modified */
+/* This file was copied from omega-0.8.5->1.2.6 and modified */
 
 /* myhtmlparse.cc: subclass of HtmlParser for extracting text
  *
@@ -287,8 +287,8 @@ MyHtmlParser::process_text(const string &text)
     }
 }
 
-void
-MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
+bool
+MyHtmlParser::opening_tag(const string &tag)
 {
     LOGDEB2(("opening_tag: [%s]\n", tag.c_str()));
 #if 0
@@ -298,14 +298,14 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 	cout << "  " << x->first << " -> '" << x->second << "'" << endl;
     }
 #endif
-    if (tag.empty()) return;
+    if (tag.empty()) return true;
     switch (tag[0]) {
 	case 'a':
 	    if (tag == "address") pending_space = true;
 	    break;
 	case 'b':
 	    if (tag == "body") {
-		dump = "";
+		dump.resize(0);
 		in_body_tag = true;
 		break;
 	    }
@@ -351,21 +351,20 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 	    break;
 	case 'm':
 	    if (tag == "meta") {
-		map<string, string>::const_iterator i, j;
-		if ((i = p.find("content")) != p.end()) {
-		    if ((j = p.find("name")) != p.end()) {
-			string name = j->second;
+		string content;
+		if (get_parameter("content", content)) {
+		    string name;
+		    if (get_parameter("name", name)) {
 			lowercase_term(name);
 			if (name == "date") {
 			    // Yes this doesnt exist. It's output by filters
 			    // And the format isn't even standard http/html
 			    // FIXME
-			    string tmp = i->second;
-			    decode_entities(tmp);
+			    decode_entities(content);
 			    struct tm tm;
-			    if (strptime(tmp.c_str(), 
+			    if (strptime(content.c_str(), 
 					 " %Y-%m-%d %H:%M:%S ", &tm) ||
-				strptime(tmp.c_str(), 
+				strptime(content.c_str(), 
 					 "%Y-%m-%dT%H:%M:%S", &tm)
 				) {
 				char ascuxtime[100];
@@ -376,17 +375,16 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 			} else {
 			    if (!meta[name].empty())
 				meta[name] += ' ';
-			    string tmp = i->second;
-			    decode_entities(tmp);
-			    meta[name] += tmp;
+			    decode_entities(content);
+			    meta[name] += content;
 			}
-		    } else if ((j = p.find("http-equiv")) != p.end()) {
-			string hequiv = j->second;
-			lowercase_term(hequiv);
-			if (hequiv == "content-type") {
-			    string value = i->second;
+		    } 
+		    string hdr;
+		    if (get_parameter("http-equiv", hdr)) {
+			lowercase_term(hdr);
+			if (hdr == "content-type") {
 			    MimeHeaderValue p;
-			    parseMimeHeaderValue(value, p);
+			    parseMimeHeaderValue(content, p);
 			    map<string, string>::const_iterator k;
 			    if ((k = p.params.find("charset")) != 
 				p.params.end()) {
@@ -445,13 +443,14 @@ MyHtmlParser::opening_tag(const string &tag, const map<string,string> &p)
 	    if (tag == "xmp") pending_space = true;
 	    break;
     }
+    return true;
 }
 
-void
+bool
 MyHtmlParser::closing_tag(const string &tag)
 {
     LOGDEB2(("closing_tag: [%s]\n", tag.c_str()));
-    if (tag.empty()) return;
+    if (tag.empty()) return true;
     switch (tag[0]) {
 	case 'a':
 	    if (tag == "address") pending_space = true;
@@ -460,7 +459,7 @@ MyHtmlParser::closing_tag(const string &tag)
 	    if (tag == "body") {
 		LOGDEB1(("Myhtmlparse: body close tag found\n"));
 		in_body_tag = false;
-		throw true;
+		return false;
 	    }
 	    if (tag == "blockquote" || tag == "br") pending_space = true;
 	    break;
@@ -532,6 +531,7 @@ MyHtmlParser::closing_tag(const string &tag)
 	    if (tag == "xmp") pending_space = true;
 	    break;
     }
+    return true;
 }
 
 // This gets called when hitting eof. 
