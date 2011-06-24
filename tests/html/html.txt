@@ -7,3 +7,6 @@ text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/mysqlmanualSmall
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/mysqlmanual.html]	[MySQL 3.23, 4.0, 4.1 Reference Manual]	8136414	bytes	
 1 results
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/badhtml.html]	[bla bla "bad quotes]	236	bytes	
+1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/htmlfield.html]	[htmlfield.html]	137	bytes	
+testfield = testfieldvalue
