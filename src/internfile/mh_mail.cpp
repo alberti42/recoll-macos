@@ -52,6 +52,8 @@ static const string cstr_title = "title";
 static const string cstr_msgid = "msgid";
 static const string cstr_abstract = "abstract";
 
+static const string cstr_newline = "\n";
+
 MimeHandlerMail::MimeHandlerMail(RclConfig *cnf, const string &mt) 
     : RecollFilter(cnf, mt), m_bincdoc(0), m_fd(-1), m_stream(0), m_idx(-1)
 {
@@ -315,21 +317,27 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
     string transcoded;
     if (doc->h.getFirstHeader("From", hi)) {
 	rfc2047_decode(hi.getValue(), transcoded);
-	text += string("From: ") + transcoded + string("\n");
+	if (preview())
+	    text += string("From: ");
+	text += transcoded + cstr_newline;
 	if (depth == 1) {
 	    m_metaData[cstr_author] = transcoded;
 	}
     }
     if (doc->h.getFirstHeader("To", hi)) {
 	rfc2047_decode(hi.getValue(), transcoded);
-	text += string("To: ") + transcoded + string("\n");
+	if (preview())
+	    text += string("To: ");
+	text += transcoded + cstr_newline;
 	if (depth == 1) {
 	    m_metaData[cstr_recipient] = transcoded;
 	}
     }
     if (doc->h.getFirstHeader("Cc", hi)) {
 	rfc2047_decode(hi.getValue(), transcoded);
-	text += string("Cc: ") + transcoded + string("\n");
+	if (preview())
+	    text += string("Cc: ");
+	text += transcoded + cstr_newline;
 	if (depth == 1) {
 	    m_metaData[cstr_recipient] += " " + transcoded;
 	}
@@ -353,7 +361,9 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
 		LOGDEB(("rfc2822Date...: failed: [%s]\n", transcoded.c_str()));
 	    }
 	}
-	text += string("Date: ") + transcoded + string("\n");
+	if (preview())
+	    text += string("Date: ");
+	text += transcoded + cstr_newline;
     }
     if (doc->h.getFirstHeader("Subject", hi)) {
 	rfc2047_decode(hi.getValue(), transcoded);
@@ -361,7 +371,9 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
 	    m_metaData[cstr_title] = transcoded;
 	    m_subject = transcoded;
 	}
-	text += string("Subject: ") + transcoded + string("\n");
+	if (preview())
+	    text += string("Subject: ");
+	text += transcoded + cstr_newline;
     }
 
     // Check for the presence of configured additional headers and possibly

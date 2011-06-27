@@ -93,6 +93,8 @@ public:
     }
 
 protected:
+    bool preview() {return m_forPreview;}
+
     RclConfig *m_config;
     bool   m_forPreview;
     string m_dfltInputCharset;
