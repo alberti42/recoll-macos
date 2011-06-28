@@ -66,6 +66,7 @@ class ResList : public QTextBrowser
     bool getDoc(int docnum, Rcl::Doc &);
     bool displayingHistory();
     int listId() const {return m_listId;}
+    int pageFirstDocNum();
 
  public slots:
     virtual void setDocSource(RefCntr<DocSequence> nsource);
@@ -75,6 +76,7 @@ class ResList : public QTextBrowser
     virtual void resultPageBack(); // Previous page of results
     virtual void resultPageFirst(); // First page of results
     virtual void resultPageNext(); // Next (or first) page of results
+    virtual void resultPageFor(int docnum); // Page containing docnum
     virtual void displayPage(); // Display current page
     virtual void menuPreview();
     virtual void menuSaveToFile();

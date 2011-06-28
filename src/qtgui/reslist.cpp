@@ -349,28 +349,21 @@ void ResList::languageChange()
     setWindowTitle(tr("Result list"));
 }
 
-// Get document number from paragraph number
-int ResList::docnumfromparnum(int par)
+// Get document number from text block number
+int ResList::docnumfromparnum(int block)
 {
     if (m_pager->pageNumber() < 0)
 	return -1;
-    std::map<int,int>::iterator it;
 
     // Try to find the first number < input and actually in the map
     // (result blocks can be made of several text blocks)
-    while (par > 0) {
-	it = m_pageParaToReldocnums.find(par);
+    std::map<int,int>::iterator it;
+    do {
+	it = m_pageParaToReldocnums.find(block);
 	if (it != m_pageParaToReldocnums.end())
-	    break;
-	par--;
-    }
-    int dn;
-    if (it != m_pageParaToReldocnums.end()) {
-        dn = m_pager->pageNumber() * prefs.respagesize + it->second;
-    } else {
-        dn = -1;
-    }
-    return dn;
+	    return pageFirstDocNum() + it->second;
+    } while (--block >= 0);
+    return -1;
 }
 
 // Get paragraph number from document number
@@ -381,9 +374,10 @@ pair<int,int> ResList::parnumfromdocnum(int docnum)
 	LOGDEB(("parnumfromdocnum: no page return -1,-1\n"));
 	return pair<int,int>(-1,-1);
     }
-    int winfirst = m_pager->pageNumber() * prefs.respagesize;
+    int winfirst = pageFirstDocNum();
     if (docnum - winfirst < 0) {
-	LOGDEB(("parnumfromdocnum: not in win return -1,-1\n"));
+	LOGDEB(("parnumfromdocnum: docnum %d < winfirst %d return -1,-1\n",
+		docnum, winfirst));
 	return pair<int,int>(-1,-1);
     }
     docnum -= winfirst;
@@ -412,8 +406,8 @@ pair<int,int> ResList::parnumfromdocnum(int docnum)
 bool ResList::getDoc(int docnum, Rcl::Doc &doc)
 {
     LOGDEB(("ResList::getDoc: docnum %d winfirst %d\n", docnum, 
-	    m_pager->pageNumber() * prefs.respagesize));
-    int winfirst = m_pager->pageFirstDocNum();
+	    pageFirstDocNum()));
+    int winfirst = pageFirstDocNum();
     int winlast = m_pager->pageLastDocNum();
     if (docnum < 0 ||  winfirst < 0 || winlast < 0)
 	return false;
@@ -429,7 +423,7 @@ bool ResList::getDoc(int docnum, Rcl::Doc &doc)
     } else if (docnum < winlast + 1 + prefs.respagesize) {
 	resultPageNext();
     }
-    winfirst = m_pager->pageFirstDocNum();
+    winfirst = pageFirstDocNum();
     winlast = m_pager->pageLastDocNum();
     if (docnum >= winfirst && docnum <= winlast) {
 	return m_source->getDoc(docnum, doc);
@@ -517,6 +511,12 @@ void ResList::append(const QString &text)
 void ResList::resultPageNext()
 {
     m_pager->resultPageNext();
+    displayPage();
+}
+
+void ResList::resultPageFor(int docnum)
+{
+    m_pager->resultPageFor(docnum);
     displayPage();
 }
 
@@ -744,4 +744,8 @@ void ResList::menuExpand()
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc))
 	emit docExpand(doc);
+}
+int ResList::pageFirstDocNum()
+{
+    return m_pager->pageFirstDocNum();
 }
