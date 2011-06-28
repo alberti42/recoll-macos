@@ -114,6 +114,14 @@ void WasaQuery::describe(string &desc) const
 /* The master regular expression used to parse a query string
  * Sub-expressions in parenthesis are numbered from 1. Each opening
  * parenthesis increases the index, but we're not interested in all
+ * Deviations from standard:
+ *  Relation: the standard-conformant line read as (release<1.16):
+        "(:|=|<|>|<=|>=)"            //7 Relation
+    but we are not actually making use of the relation type
+    (interpreting all as ":"), and this can product unexpected results
+    as a (ie pasted) search for nonexfield=value will silently drop
+    the nonexfield part, while the user probably was not aware of
+    triggering a field search (expecting just ':' to do this).
  */
 static const char * parserExpr = 
     "(OR|\\|\\|)[[:space:]]*"        //1 OR,|| 
@@ -125,7 +133,7 @@ static const char * parserExpr =
       "("                            //5
         "([[:alpha:]][[:alnum:]:]*)" //6 Field spec: ie: "dc:title:letitre"
         "[[:space:]]*"
-        "(:|=|<|>|<=|>=)"            //7 Relation
+        "(:)"            //7 Relation
         "[[:space:]]*)?"
       "("                            //8
         "(\""                        //9
