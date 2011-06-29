@@ -493,6 +493,24 @@ void ResTable::init()
     splitter->setOrientation(Qt::Vertical);
 }
 
+int ResTable::getDetailDocNumOrTopRow()
+{
+    if (m_detaildocnum >= 0)
+	return m_detaildocnum;
+    QModelIndex modelIndex = tableView->indexAt(QPoint(0, 0));
+    return modelIndex.row();
+}
+
+void ResTable::makeRowVisible(int row)
+{
+    LOGDEB(("ResTable::showRow(%d)\n", row));
+    QModelIndex modelIndex = m_model->index(row, 0);
+    tableView->scrollTo(modelIndex, QAbstractItemView::PositionAtTop);
+    tableView->selectionModel()->clear();
+    m_detail->clear();
+    m_detaildocnum = -1;
+ }
+
 // This is called by rclmain_w prior to exiting
 void ResTable::saveColState()
 {

@@ -955,6 +955,21 @@ void RclMain::on_actionShowResultsAsTable_toggled(bool on)
     prefs.showResultsAsTable = on;
     restable->setVisible(on);
     reslist->setVisible(!on);
+    if (!on) {
+	displayingTable = false;
+	int docnum = restable->getDetailDocNumOrTopRow();
+	if (docnum >= 0)
+	    reslist->resultPageFor(docnum);
+    } else {
+	displayingTable = true;
+	int docnum = reslist->pageFirstDocNum();
+	if (docnum >= 0) {
+	    restable->makeRowVisible(docnum);
+	}
+	nextPageAction->setEnabled(false);
+	prevPageAction->setEnabled(false);
+	firstPageAction->setEnabled(false);
+    }
 }
 
 void RclMain::on_actionSortByDateAsc_toggled(bool on)
@@ -1313,7 +1328,6 @@ void RclMain::eraseDocHistory()
     }
 }
 
-
 void RclMain::eraseSearchHistory()
 {
     prefs.ssearchHistory.clear();
@@ -1336,13 +1350,16 @@ void RclMain::setUIPrefs()
 
 void RclMain::enableNextPage(bool yesno)
 {
-    nextPageAction->setEnabled(yesno);
+    if (!displayingTable)
+	nextPageAction->setEnabled(yesno);
 }
 
 void RclMain::enablePrevPage(bool yesno)
 {
-    prevPageAction->setEnabled(yesno);
-    firstPageAction->setEnabled(yesno);
+    if (!displayingTable) {
+	prevPageAction->setEnabled(yesno);
+	firstPageAction->setEnabled(yesno);
+    }
 }
 
 QString RclMain::getQueryDescription()

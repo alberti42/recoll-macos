@@ -122,6 +122,7 @@ private:
     SpellW         *spellform;
     QTimer         *periodictimer;
     ResTable       *restable;
+    bool            displayingTable;
 
     vector<ExecCmd*>  m_viewers;
     map<QString, QAction*> m_stemLangToId;

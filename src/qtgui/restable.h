@@ -113,6 +113,8 @@ public:
     virtual ~ResTable() {}
     virtual RecollModel *getModel() {return m_model;}
     virtual ResTableDetailArea* getDetailArea() {return m_detail;}
+    virtual int getDetailDocNumOrTopRow();
+
 public slots:
     virtual void onTableView_currentChanged(const QModelIndex&);
     virtual void on_tableView_entered(const QModelIndex& index);
@@ -135,6 +137,7 @@ public slots:
     virtual void addColumn();
     virtual void resetSort(); // Revert to natural (relevance) order
     virtual void linkWasClicked(const QUrl&);
+    virtual void makeRowVisible(int row);
 
 signals:
     void docPreviewClicked(int, Rcl::Doc, int);

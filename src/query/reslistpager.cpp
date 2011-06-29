@@ -91,6 +91,32 @@ void ResListPager::resultPageNext()
     m_respage = npage;
 }
 
+void ResListPager::resultPageFor(int docnum)
+{
+    if (m_docSource.isNull()) {
+	LOGDEB(("ResListPager::resultPageFor: null source\n"));
+	return;
+    }
+
+    int resCnt = m_docSource->getResCnt();
+    LOGDEB(("ResListPager::resultPageFor(%d): rescnt %d, winfirst %d\n", 
+	    docnum, resCnt, m_winfirst));
+    m_winfirst = (docnum / m_pagesize) * m_pagesize;
+
+    // Get the next page of results.
+    vector<ResListEntry> npage;
+    int pagelen = m_docSource->getSeqSlice(m_winfirst, m_pagesize, npage);
+
+    // If page was truncated, there is no next
+    m_hasNext = (pagelen == m_pagesize);
+
+    if (pagelen <= 0) {
+	m_winfirst = -1;
+	return;
+    }
+    m_respage = npage;
+}
+
 void ResListPager::displayDoc(RclConfig *config,
 			      int i, Rcl::Doc& doc, const HiliteData& hdata,
 			      const string& sh)

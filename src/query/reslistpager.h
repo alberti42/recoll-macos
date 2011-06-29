@@ -82,6 +82,7 @@ public:
 	resultPageNext();
     }
     void resultPageNext();
+    void resultPageFor(int docnum);
     void displayPage(RclConfig *);
     void displayDoc(RclConfig *, int idx, Rcl::Doc& doc, 
 		    const HiliteData& hdata, const string& sh = "");
