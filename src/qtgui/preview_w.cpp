@@ -330,6 +330,15 @@ PreviewTextEdit *Preview::currentEditor()
     return edit;
 }
 
+// Save current document to file
+void Preview::emitSaveDocToFile()
+{
+    PreviewTextEdit *ce = currentEditor();
+    if (ce && !ce->m_dbdoc.url.empty()) {
+	emit saveDocToFile(ce->m_dbdoc);
+    }
+}
+
 // Perform text search. If next is true, we look for the next match of the
 // current search, trying to advance and possibly wrapping around. If next is
 // false, the search string has been modified, we search for the new string, 
@@ -891,6 +900,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     if (!textempty)
         fdoc.text.clear(); 
     editor->m_fdoc = fdoc;
+    editor->m_dbdoc = idoc;
     if (textempty)
         editor->displayFields();
 
@@ -998,6 +1008,11 @@ void PreviewTextEdit::createPopupMenu(const QPoint& pos)
     popup->addAction(tr("Select All"), this, SLOT(selectAll()));
     popup->addAction(tr("Copy"), this, SLOT(copy()));
     popup->addAction(tr("Print"), this, SLOT(print()));
+    // Need to check ipath until we fix the internfile bug that always
+    // has it convert to html for top level docs
+    if (!m_dbdoc.url.empty() && !m_dbdoc.ipath.empty())
+	popup->addAction(tr("Save document to file"), 
+			 m_preview, SLOT(emitSaveDocToFile()));
     popup->popup(mapToGlobal(pos));
 }
 

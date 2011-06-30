@@ -51,7 +51,9 @@ public slots:
     virtual void displayImage();
     virtual void print();
     virtual void createPopupMenu(const QPoint& pos);
+
     friend class Preview;
+
 protected:
     void mouseDoubleClickEvent(QMouseEvent *);
 
@@ -65,6 +67,8 @@ private:
     // doc out of internfile (previous fields come from the index) with
     // main text erased (for space).
     Rcl::Doc m_fdoc; 
+    // The input doc out of the index/query list
+    Rcl::Doc m_dbdoc; 
     // Saved rich (or plain actually) text: the textedit seems to
     // sometimes (but not always) return its text stripped of tags, so
     // this is needed (for printing for example)
@@ -115,6 +119,7 @@ public slots:
     virtual void prevPressed();
     virtual void currentChanged(QWidget *tw);
     virtual void closeCurrentTab();
+    virtual void emitSaveDocToFile();
 
 signals:
     void previewClosed(Preview *);
@@ -123,6 +128,7 @@ signals:
     void showPrev(Preview *w, int sid, int docnum);
     void previewExposed(Preview *w, int sid, int docnum);
     void printCurrentPreviewRequest();
+    void saveDocToFile(Rcl::Doc);
 
 private:
     // Identifier of search in main window. This is used to check that

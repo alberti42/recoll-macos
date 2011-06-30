@@ -808,6 +808,8 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
 		this, SLOT(previewPrevInTab(Preview *, int, int)));
 	connect(curPreview, SIGNAL(previewExposed(Preview *, int, int)),
 		this, SLOT(previewExposed(Preview *, int, int)));
+	connect(curPreview, SIGNAL(saveDocToFile(Rcl::Doc)), 
+		this, SLOT(saveDocToFile(Rcl::Doc)));
 	curPreview->setWindowTitle(getQueryDescription());
 	curPreview->show();
     } 
