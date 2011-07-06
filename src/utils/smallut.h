@@ -47,8 +47,10 @@ struct StringIcmpPred {
 
 extern int stringlowercmp(const string& alreadylower, const string& s2);
 extern int stringuppercmp(const string& alreadyupper, const string& s2); 
+
 extern void stringtolower(string& io);
 extern string stringtolower(const string& io);
+
 // Is one string the end part of the other ?
 extern int stringisuffcmp(const string& s1, const string& s2);
 
@@ -69,8 +71,8 @@ extern bool samecharset(const string &cs1, const string &cs2);
 struct DateInterval {
     int y1;int m1;int d1; int y2;int m2;int d2;
 };
-bool parsedateinterval(const string&s, DateInterval *di);
-int monthdays(int mon, int year);
+extern bool parsedateinterval(const string&s, DateInterval *di);
+extern int monthdays(int mon, int year);
 
 /**
  * Parse input string into list of strings. 
@@ -82,19 +84,13 @@ int monthdays(int mon, int year);
  * but so are the iso-8859-x and surely others. addseps do have to be 
  * single-bytes
  */
-extern bool stringToStrings(const string& s, list<string> &tokens, 
-                            const string& addseps = "");
-extern bool stringToStrings(const string& s, vector<string> &tokens, 
-                            const string& addseps = "");
-extern bool stringToStrings(const string& s, set<string> &tokens, 
-                            const string& addseps = "");
+template <class T> bool stringToStrings(const string& s, T &tokens, 
+					const string& addseps = "");
 
 /**
  * Inverse operation:
  */
-extern void stringsToString(const list<string> &tokens, string &s);
-extern void stringsToString(const vector<string> &tokens, string &s);
-extern void stringsToString(const set<string> &tokens, string &s);
+template <class T> void stringsToString(const T &tokens, string &s);
 
 /**
  * Split input string. No handling of quoting

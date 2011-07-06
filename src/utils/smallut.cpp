@@ -281,21 +281,12 @@ template <class T> bool stringToStrings(const string &s, T &tokens,
     return true;
 }
 
-bool stringToStrings(const string &s, list<string> &tokens, 
-                     const string& as)
-{
-    return stringToStrings<list<string> >(s, tokens, as);
-}
-bool stringToStrings(const string &s, vector<string> &tokens, 
-                     const string& as)
-{
-    return stringToStrings<vector<string> >(s, tokens, as);
-}
-bool stringToStrings(const string &s, set<string> &tokens, 
-                     const string& as)
-{
-    return stringToStrings<set<string> >(s, tokens, as);
-}
+template bool stringToStrings<list<string> >(const string &, 
+					     list<string> &, const string&);
+template bool stringToStrings<vector<string> >(const string &, 
+					       vector<string> &,const string&);
+template bool stringToStrings<set<string> >(const string &,
+					    set<string> &, const string&);
 
 template <class T> void stringsToString(const T &tokens, string &s) 
 {
@@ -321,18 +312,9 @@ template <class T> void stringsToString(const T &tokens, string &s)
 	    s.append(1, '"');
     }
 }
-void stringsToString(const list<string> &tokens, string &s)
-{
-    stringsToString<list<string> >(tokens, s);
-}
-void stringsToString(const vector<string> &tokens, string &s)
-{
-    stringsToString<vector<string> >(tokens, s);
-}
-void stringsToString(const set<string> &tokens, string &s)
-{
-    stringsToString<set<string> >(tokens, s);
-}
+template void stringsToString<list<string> >(const list<string> &, string &);
+template void stringsToString<vector<string> >(const vector<string> &,string &);
+template void stringsToString<set<string> >(const set<string> &, string &);
 
 void stringToTokens(const string& str, vector<string>& tokens,
 		    const string& delims, bool skipinit)
@@ -499,7 +481,7 @@ string escapeShell(const string &in)
 }
 
 
-// Small utility to substitute printf-like percents cmds in a string
+// Substitute printf-like percent cmds inside a string
 bool pcSubst(const string& in, string& out, map<char, string>& subs)
 {
     string::const_iterator it;
