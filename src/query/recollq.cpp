@@ -42,6 +42,7 @@ using namespace std;
 #include "wipedir.h"
 #include "transcode.h"
 #include "textsplit.h"
+#include "smallut.h"
 
 bool dump_contents(RclConfig *rclconfig, TempDir& tmpdir, Rcl::Doc& idoc)
 {
@@ -76,6 +77,7 @@ static char usage [] =
 "    -d also dump file contents\n"
 "    -n <cnt> limit the maximum number of results (0->no limit, default 2000)\n"
 "    -b : basic. Just output urls, no mime types or titles\n"
+"    -Q : no result lines, just the processed query and result count\n"
 "    -m : dump the whole document meta[] array\n"
 "    -A : output the document abstracts\n"
 "    -S fld : sort by field name\n"
@@ -109,6 +111,7 @@ static int     op_flags;
 #define OPT_A     0x8000
 #define OPT_i     0x10000
 #define OPT_P     0x20000
+#define OPT_Q     0x40000
 
 int recollq(RclConfig **cfp, int argc, char **argv)
 {
@@ -149,6 +152,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             case 'o':   op_flags |= OPT_o; break;
             case 'P':   op_flags |= OPT_P; break;
             case 'q':   op_flags |= OPT_q; break;
+            case 'Q':   op_flags |= OPT_Q; break;
 	    case 'S':	op_flags |= OPT_S; if (argc < 2)  Usage();
 		sortfield = *(++argv);
 		argc--; goto b1;
@@ -259,6 +263,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     if (op_flags & OPT_S) {
 	query.setSortBy(sortfield, (op_flags & OPT_D) ? false : true);
     }
+    Chrono chron;
     query.setQuery(rq);
     int cnt = query.getResCnt();
     if (!(op_flags & OPT_b)) {
@@ -268,6 +273,8 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 	else
 	    cout << cnt << " results (printing  " << limit << " max):" << endl;
     }
+    if (op_flags & OPT_Q)
+	cout << "Query setup took " << chron.millis() << " mS" << endl;
 
     TempDir tmpdir;
     if (!tmpdir.ok()) {
@@ -275,6 +282,10 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 	    tmpdir.getreason() << endl;
 	exit(1);
     }
+
+    if (op_flags & OPT_Q)
+	exit(0);
+
     for (int i = 0; i < limit; i++) {
 	Rcl::Doc doc;
 	if (!query.getDoc(i, doc))
