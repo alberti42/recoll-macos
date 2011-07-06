@@ -49,6 +49,7 @@ static const unsigned int uniign[] = {
     0x00AB, /* LEFT-POINTING DOUBLE ANGLE QUOTATION MARK;Pi */
     0x00AC, /* NOT SIGN;Sm */
     0x00AE, /* registered sign */
+    0x00D7, /* MULTIPLICATION SIGN;Sm;0;ON;;;;;N;;;;; */
     0x1680, /*  ; White_Space # Zs       OGHAM SPACE MARK*/
     0x180E, /*  ; White_Space # Zs       MONGOLIAN VOWEL SEPARATOR*/
     0x2000, /*  ; White_Space # Zs  [11] EN QUAD..HAIR SPACE*/
@@ -79,6 +80,7 @@ static const unsigned int uniign[] = {
     0x2053, /*  ; Dash # Po       SWUNG DASH*/
     0x207B, /*  ; Dash # Sm       SUPERSCRIPT MINUS*/
     0x208B, /*  ; Dash # Sm       SUBSCRIPT MINUS*/
+    0x2192, /* RIGHTWARDS ARROW;Sm;0;ON;;;;;N;RIGHT ARROW;;;;*/
     0x2212, /*  ; Dash # Sm       MINUS SIGN*/
     0x301C, /*  ; Dash # Pd       WAVE DASH*/
     0x3030, /*  ; Dash # Pd       WAVY DASH*/
@@ -97,7 +99,11 @@ static const unsigned int uniign[] = {
     0xFF0D, /*  ; Hyphen # Pd       FULLWIDTH HYPHEN-MINUS*/
     0xFF65, /*  ; Hyphen # Pc       HALFWIDTH KATAKANA MIDDLE DOT*/
     0x00AB, /*  ; Quotation_Mark # Pi       LEFT-POINTING DOUBLE ANGLE QUOTATION MARK*/
+    0x00B0, /* DEGREE SIGN;So;0;ET;;;;;N;;;;; */
+    0x00B1, /* PLUS-MINUS SIGN;Sm;0;ET;;;;;N;PLUS-OR-MINUS SIGN;;;;*/
+    0x00B7, /* MIDDLE DOT;Po;0;ON;;;;;N;;;;;*/
     0x00BB, /*  ; Quotation_Mark # Pf       RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK*/
+    0x00BF, /*                   INVERTED QUESTION MARK;Po */
     0x2018, /*  ; Quotation_Mark # Pi       LEFT SINGLE QUOTATION MARK*/
     0x2019, /*  ; Quotation_Mark # Pf       RIGHT SINGLE QUOTATION MARK*/
     0x201A, /*  ; Quotation_Mark # Ps       SINGLE LOW-9 QUOTATION MARK*/
@@ -106,8 +112,10 @@ static const unsigned int uniign[] = {
     0x201D, /*  ; Quotation_Mark # Pf       RIGHT DOUBLE QUOTATION MARK*/
     0x201E, /*  ; Quotation_Mark # Ps       DOUBLE LOW-9 QUOTATION MARK*/
     0x201F, /*  ; Quotation_Mark # Pi       DOUBLE HIGH-REVERSED-9 QUOTATION MARK*/
+    0x2032, /* PRIME;Po;0;ET;;;;;N;;;;;*/
     0x2039, /*  ; Quotation_Mark # Pi       SINGLE LEFT-POINTING ANGLE QUOTATION MARK*/
     0x203A, /*  ; Quotation_Mark # Pf       SINGLE RIGHT-POINTING ANGLE QUOTATION MARK*/
+    0x2E2E, /* REVERSED QUESTION MARK;Po;0;ON;;;;;N;;;;; */
     0x300C, /*  ; Quotation_Mark # Ps       LEFT CORNER BRACKET*/
     0x300D, /*  ; Quotation_Mark # Pe       RIGHT CORNER BRACKET*/
     0x300E, /*  ; Quotation_Mark # Ps       LEFT WHITE CORNER BRACKET*/
@@ -167,8 +175,16 @@ static const unsigned int uniign[] = {
     0x061F, /*  ; STerm # Po       ARABIC QUESTION MARK*/
     0x06D4, /*  ; STerm # Po       ARABIC FULL STOP*/
     0x166E, /*  ; STerm # Po       CANADIAN SYLLABICS FULL STOP*/
+    0x16EB, /* RUNIC SINGLE PUNCTUATION;Po;0;L;;;;;N;;;;;*/
+    0x16EC, /* RUNIC MULTIPLE PUNCTUATION;Po;0;L;;;;;N;;;;;*/
+    0x16ED, /* RUNIC CROSS PUNCTUATION;Po;0;L;;;;;N;;;;; */
     0x1803, /*  ; STerm # Po       MONGOLIAN FULL STOP*/
     0x1809, /*  ; STerm # Po       MONGOLIAN MANCHU FULL STOP*/
+    0x2022, /* BULLET;Po;0;ON;;;;;N;;;;; */
+    0x2023, /* TRIANGULAR BULLET;Po;0;ON;;;;;N;;;;;*/
+    0x2024, /* ONE DOT LEADER;Po;0;ON;<compat> 002E;;;;N;;;;;*/
+    0x2025, /* TWO DOT LEADER;Po;0;ON;<compat> 002E 002E;;;;N;;;;; */
+    0x2026, /* HORIZONTAL ELLIPSIS;Po;0;ON;<compat> 002E 002E 002E;;;;N;;;;; */
     0x203C, /*  ; STerm # Po   [2] DOUBLE EXCLAMATION MARK..INTERROBANG*/
     0x203D, /*  ; STerm # Po   [2] DOUBLE EXCLAMATION MARK..INTERROBANG*/
     0x2047, /*  ; STerm # Po   [3] DOUBLE QUESTION MARK..EXCLAMATION QUESTION MARK*/
