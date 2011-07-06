@@ -208,11 +208,13 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
  */
 inline bool TextSplit::doemit(bool spanerase, int bp, bool spanemit)
 {
-    LOGDEB3(("TextSplit::doemit:spn [%s] sp %d wrdS %d wrdL %d spe %d bp %d "
-             "innum %d\n", m_span.c_str(), m_spanpos, m_wordStart, 
-             m_wordLen, spanerase, bp, m_inNumber));
+    LOGDEB3(("TextSplit::doemit: sper %d bp %d spem %d. spp %d wS %d wL %d "
+	    "inn %d span [%s]\n",
+	    spanerase, bp, spanemit, m_spanpos, m_wordStart, m_wordLen,
+	    m_inNumber, m_span.c_str()));
 
-    // Emit span. When splitting for query, we only emit final spans
+    // Emit span? When splitting for query, we only emit final spans
+    // (spanerase)
     bool spanemitted = false;
     if (!(m_flags & TXTS_NOSPANS) && 
         !((m_wordLen == m_span.length()) && 
@@ -223,6 +225,7 @@ inline bool TextSplit::doemit(bool spanerase, int bp, bool spanemit)
 	while (m_span.length() > 0) {
 	    switch (m_span[m_span.length()-1]) {
 	    case '.':
+	    case '-':
 	    case ',':
 	    case '@':
 	    case '\'':
@@ -250,17 +253,25 @@ inline bool TextSplit::doemit(bool spanerase, int bp, bool spanemit)
     }
 
     // Adjust state
-    m_wordpos++;
-    m_wordLen = 0;
+    if (m_wordLen) {
+	m_wordpos++;
+	m_wordLen = 0;
+    }
     if (spanerase) {
-	m_span.erase();
-	m_spanpos = m_wordpos;
-	m_wordStart = 0;
+	discardspan();
     } else {
 	m_wordStart = m_span.length();
     }
 
     return true;
+}
+
+void TextSplit::discardspan()
+{
+    m_span.erase();
+    m_spanpos = m_wordpos;
+    m_wordStart = 0;
+    m_wordLen = 0;
 }
 
 /** 
@@ -283,10 +294,14 @@ bool TextSplit::text_to_words(const string &in)
     m_wordStart = m_wordLen = m_prevpos = m_prevlen = m_wordpos = m_spanpos = 0;
     int curspanglue = 0;
 
+    // Running count of non-alphanum chars. Reset when we see one;
+    int nonalnumcnt = 0;
+
     Utf8Iter it(in);
 
     for (; !it.eof(); it++) {
 	unsigned int c = *it;
+	nonalnumcnt++;
 
 	if (c == (unsigned int)-1) {
 	    LOGERR(("Textsplit: error occured while scanning UTF-8 string\n"));
@@ -319,11 +334,13 @@ bool TextSplit::text_to_words(const string &in)
 	    if (m_wordLen == 0)
 		m_inNumber = true;
 	    m_wordLen += it.appendchartostring(m_span);
+	    nonalnumcnt = 0;
 	    break;
 
 	case SPACE:
 	SPACE:
 	    curspanglue = 0;
+	    nonalnumcnt = 0;
 	    if (m_wordLen || m_span.length()) {
 		if (!doemit(true, it.getBpos()))
 		    return false;
@@ -338,20 +355,33 @@ bool TextSplit::text_to_words(const string &in)
 	    break;
 	case '-':
 	case '+':
-	    if (m_wordLen == 0 || 
-                (m_inNumber && (m_span[m_span.length() - 1] == 'e' ||
-                                m_span[m_span.length() - 1] == 'E'))) {
+	    curspanglue = cc;
+	    if (m_wordLen == 0) {
+		if (cc == '-') {
+		    if (whatcc(it[it.getCpos()+1]) == DIGIT) {
+			// -10
+			m_inNumber = true;
+			m_wordLen += it.appendchartostring(m_span);
+		    } else {
+			goto SPACE;
+		    } 
+		} else {
+		    if (nonalnumcnt > 2) {
+			discardspan();
+		    } else {
+			m_wordStart += it.appendchartostring(m_span);
+		    }
+		}
+	    } else if (m_inNumber && (m_span[m_span.length() - 1] == 'e' ||
+				      m_span[m_span.length() - 1] == 'E')) {
 		if (whatcc(it[it.getCpos()+1]) == DIGIT) {
-		    m_inNumber = true;
 		    m_wordLen += it.appendchartostring(m_span);
 		} else {
-		    m_wordStart += it.appendchartostring(m_span);
+		    goto SPACE;
 		}
-		curspanglue = cc;
 	    } else {
 		if (!doemit(false, it.getBpos()))
 		    return false;
-		curspanglue = cc;
 		m_inNumber = false;
 		m_wordStart += it.appendchartostring(m_span);
 	    }
@@ -367,13 +397,13 @@ bool TextSplit::text_to_words(const string &in)
 		curspanglue = cc;
 		break;
 	    } else {
-		// If . inside a word, keep it, else, this is whitespace. 
+		// If . inside a word, it's spanglue, else, it's whitespace. 
 		// We also keep an initial '.' for catching .net, but this adds
 		// quite a few spurious terms !
                 // Another problem is that something like .x-errs 
 		// will be split as .x-errs, x, errs but not x-errs
 		// A final comma in a word will be removed by doemit
-		if (cc == '.') {
+		if (cc == '.' && it[it.getCpos()+1] != '.') {
                     // Check for number like .1
                     if (m_span.length() == 0 &&
                         whatcc(it[it.getCpos()+1]) == DIGIT) {
@@ -386,7 +416,7 @@ bool TextSplit::text_to_words(const string &in)
 		    if (m_wordLen) {
 			// Disputable special case: set spanemit to
 			// true when encountering a '.' while spanglue
-			// is '_'. Think of a_b.c Done because to
+			// is '_'. Think of a_b.c Done to
 			// avoid breaking stuff after changing '_'
 			// from wordchar to spanglue
 			if (!doemit(false, it.getBpos(), curspanglue == '_'))
@@ -509,6 +539,7 @@ bool TextSplit::text_to_words(const string &in)
                 m_inNumber = false;
             }
 	    m_wordLen += it.appendchartostring(m_span);
+	    nonalnumcnt = 0;
 	    break;
 	}
     }

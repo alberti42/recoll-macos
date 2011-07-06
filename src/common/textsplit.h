@@ -69,7 +69,7 @@ public:
     virtual ~TextSplit() {}
 
     /** Split text, emit words and positions. */
-    bool text_to_words(const string &in);
+    virtual bool text_to_words(const string &in);
 
     /** Process one output word: to be implemented by the actual user class */
     virtual bool takeword(const string& term, 
@@ -128,6 +128,7 @@ private:
 
     bool emitterm(bool isspan, string &term, int pos, int bs, int be);
     bool doemit(bool spanerase, int bp, bool spanemit=false);
+    void discardspan();
 };
 
 #endif /* _TEXTSPLIT_H_INCLUDED_ */
