@@ -40,14 +40,15 @@ static string usage =
     " -i docid -D : get document data for docid\n"
     " -i docid -X : delete document docid\n"
     " -i docid -b : 'rebuild' document from term positions\n"
+    " -i docid -T : term list for doc docid\n"
     " -t term -E  : term existence test\n"
     " -t term -F  : retrieve term frequency data for given term\n"
     " -t term -P  : retrieve postings for term\n"
-    " -i docid -T : term list for doc docid\n"
-    " -x          : separate each output char with a space\n"
     " -T          : list all terms\n"
-    "    -f       : precede each term in the list with its occurrence count\n"
+    "    -f       : precede each term in the list with its occurrence counts\n"
     "    -n : raw data (no [])\n"
+    "    -l : don't list prefixed terms\n"
+    " -x          : separate each output char with a space\n"
     " -s          : special mode to dump recoll stem db\n"
     " -q term [term ...] : perform AND query\n"
     "  \n\n"
@@ -61,22 +62,23 @@ Usage(void)
 }
 
 static int        op_flags;
-#define OPT_d	  0x1 
-#define OPT_e     0x2
-#define OPT_i     0x4
-#define OPT_T     0x8
-#define OPT_D     0x10
-#define OPT_t     0x20
-#define OPT_P     0x40
-#define OPT_F     0x80
-#define OPT_E     0x100
-#define OPT_b     0x200
-#define OPT_s     0x400
-#define OPT_f     0x800
+#define OPT_D     0x1
+#define OPT_E     0x2
+#define OPT_F     0x4
+#define OPT_P     0x8
+#define OPT_T     0x10
+#define OPT_X     0x20
+#define OPT_b     0x40
+#define OPT_d	  0x80 
+#define OPT_e     0x100
+#define OPT_f     0x200
+#define OPT_i     0x400
+#define OPT_n     0x800
 #define OPT_q     0x1000
-#define OPT_n     0x2000
-#define OPT_X     0x4000
+#define OPT_s     0x2000
+#define OPT_t     0x4000
 #define OPT_x     0x8000
+#define OPT_l     0x10000
 
 // Compute an exploded version of string, inserting a space between each char.
 // (no character combining possible)
@@ -144,6 +146,7 @@ int main(int argc, char **argv)
 		if (sscanf(*(++argv), "%d", &docid) != 1) Usage();
 		argc--; 
 		goto b1;
+	    case 'l':   op_flags |= OPT_l; break;
 	    case 'n':	op_flags |= OPT_n; break;
 	    case 'P':	op_flags |= OPT_P; break;
 	    case 'q':	op_flags |= OPT_q; break;
@@ -197,14 +200,23 @@ int main(int argc, char **argv)
 	    if (op_flags & OPT_i) {
 		for (term = db->termlist_begin(docid); 
 		     term != db->termlist_end(docid);term++) {
-		    cout << op << detailstring(*term) << cl << endl;
+		    const string& s = *term;
+		    if ((op_flags&OPT_l) && 
+			!s.empty() && s[0] >= 'A' && s[0] <= 'Z')
+			continue;
+		    cout << op << detailstring(s) << cl << endl;
 		}
 	    } else {
 		for (term = db->allterms_begin(); 
 		     term != db->allterms_end();term++) {
+		    const string& s = *term;
+		    if ((op_flags&OPT_l) && 
+			!s.empty() && s[0] >= 'A' && s[0] <= 'Z')
+			continue;
 		    if (op_flags & OPT_f)
-			cout << term.get_termfreq() << " ";
-		    cout << op << detailstring(*term) << cl << endl;
+			cout <<  db->get_collection_freq(*term) << " " 
+			     << term.get_termfreq() << " ";
+		    cout << op << detailstring(s) << cl << endl;
 		}
 	    }
 	} else if (op_flags & OPT_s) {
