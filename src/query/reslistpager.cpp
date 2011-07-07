@@ -177,15 +177,22 @@ void ResListPager::displayDoc(RclConfig *config,
 	sizebuf = displayableBytes(fsize);
     }
 
-    string abstract;
-    if (m_docSource.isNotNull())
-	abstract = m_docSource->getAbstract(doc);
+    string richabst;
+    bool needabstract = parFormat().find("%A") != string::npos;
+    if (needabstract && m_docSource.isNotNull()) {
+	vector<string> vabs;
+	m_docSource->getAbstract(doc, vabs);
 
-    // No need to call escapeHtml(), plaintorich handles it
-    list<string> lr;
-    m_hiliter->set_inputhtml(false);
-    m_hiliter->plaintorich(abstract, lr, hdata);
-    string richabst = lr.front();
+	for (vector<string>::const_iterator it = vabs.begin();
+	     it != vabs.end(); it++) {
+	    // No need to call escapeHtml(), plaintorich handles it
+	    list<string> lr;
+	    m_hiliter->set_inputhtml(false);
+	    m_hiliter->plaintorich(*it, lr, hdata);
+	    richabst += lr.front();
+	    richabst += absSep();
+	}
+    }
 
     // Links;
     ostringstream linksbuf;

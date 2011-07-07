@@ -93,10 +93,21 @@ class DocSequence {
     /** Get abstract for document. This is special because it may take time.
      *  The default is to return the input doc's abstract fields, but some 
      *  sequences can compute a better value (ie: docseqdb) */
-    virtual string getAbstract(Rcl::Doc& doc) {
-	return doc.meta[Rcl::Doc::keyabs];
+    virtual bool getAbstract(Rcl::Doc& doc, vector<string>& abs) {
+	abs.push_back(doc.meta[Rcl::Doc::keyabs]);
+	return true;
     }
-
+    virtual string getAbstract(Rcl::Doc& doc) {
+	vector<string> v;
+	getAbstract(doc, v);
+	string abstract;
+	for (vector<string>::const_iterator it = v.begin();
+	     it != v.end(); it++) {
+	    abstract += *it;
+	    abstract += "... ";
+	}
+	return abstract;
+    }
     virtual bool getEnclosing(Rcl::Doc&, Rcl::Doc&) = 0;
 
     /** Get estimated total count in results */
@@ -152,7 +163,13 @@ public:
     {}
     virtual ~DocSeqModifier() {}
 
-    virtual string getAbstract(Rcl::Doc& doc) 
+    virtual bool getAbstract(Rcl::Doc& doc, vector<string>& abs) 
+    {
+	if (m_seq.isNull())
+	    return false;
+	return m_seq->getAbstract(doc, abs);
+    }
+    virtual string getAbstract(Rcl::Doc& doc)
     {
 	if (m_seq.isNull())
 	    return "";

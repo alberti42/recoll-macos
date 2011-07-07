@@ -48,6 +48,8 @@ class PrefsPack {
     // Result list format string
     QString reslistformat;
     string  creslistformat;
+    // Abstract snippet separator
+    QString abssep;
     QString queryStemLang;
     int mainwidth;
     int mainheight;

@@ -113,7 +113,7 @@ public:
     virtual void suggest(const vector<string>, vector<string>&sugg) {
         sugg.clear();
     }
-
+    virtual string absSep() {return "&hellip;";}
 private:
     int                  m_pagesize;
     int                  m_newpagesize;

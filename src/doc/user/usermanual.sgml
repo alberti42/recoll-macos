@@ -1525,6 +1525,14 @@ fvwm
             described in its own section.</link></para>
             </listitem>
 
+            <listitem><anchor id="rcl.search.custom.abssep">
+            <para><guilabel>Abstract snippet separator</guilabel>:
+            for synthetic abstracts built from index data, which are
+            usually made of several snippets from different parts of the
+            document, this defines the snippet separator, an ellipsis by
+            default. </para>
+            </listitem>
+
 	    <listitem><para><guilabel>Maximum text size highlighted for
             preview</guilabel> Inserting highlights on search term inside
             the text before inserting it in the preview window involves
@@ -1754,12 +1762,10 @@ fvwm
            preview link.
         </para>
 
-        <para>Due to the way the program handles right mouse clicks in the
-        result list, if the custom formatting results in multiple
-        paragraphs per result, right clicks will only work inside the first
-        one.</para>
-
-
+          <para>It is also possible to 
+          <link linkend="rcl.search.custom.abssep">
+             define the value of the snippet separator inside the abstract
+             section</link>.</para>
       </sect3>
     </sect2>
 

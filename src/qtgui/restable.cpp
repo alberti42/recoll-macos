@@ -76,6 +76,7 @@ public:
     virtual string trans(const string& in);
     virtual const string &parFormat();
     virtual string iconPath(const string& mt);
+    virtual string absSep() {return (const char *)(prefs.abssep.toUtf8());}
 private:
     ResTable *m_parent;
 };

@@ -102,7 +102,9 @@ void UIPrefsDialog::setFromPrefs()
     previewPlainPreCB->setChecked(prefs.previewPlainPre);
     // Query terms color
     qtermColorLE->setText(prefs.qtermcolor);
-    
+    // Abstract snippet separator string
+    abssepLE->setText(prefs.abssep);
+
     // Result list font family and size
     reslistFontFamily = prefs.reslistfontfamily;
     reslistFontSize = prefs.reslistfontsize;
@@ -178,6 +180,8 @@ void UIPrefsDialog::accept()
     prefs.maxhltextmbs = maxHLTSB->value();
 
     prefs.qtermcolor = qtermColorLE->text();
+    prefs.abssep = abssepLE->text();
+
     prefs.reslistfontfamily = reslistFontFamily;
     prefs.reslistfontsize = reslistFontSize;
     prefs.reslistformat =  rlfTE->toPlainText();

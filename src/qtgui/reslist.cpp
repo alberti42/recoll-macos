@@ -76,6 +76,7 @@ public:
     virtual string pageTop();
     virtual string iconPath(const string& mt);
     virtual void suggest(const vector<string>uterms, vector<string>&sugg);
+    virtual string absSep() {return (const char *)(prefs.abssep.toUtf8());}
 private:
     ResList *m_parent;
 };

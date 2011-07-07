@@ -201,6 +201,7 @@ class Db {
     /** Build synthetic abstract for document, extracting chunks relevant for
      * the input query. This uses index data only (no access to the file) */
     bool makeDocAbstract(Doc &doc, Query *query, string& abstract);
+    bool makeDocAbstract(Doc &doc, Query *query, vector<string>& abstract);
 
     /** Get document for given udi
      *

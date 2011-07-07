@@ -71,20 +71,17 @@ int DocSequenceDb::getResCnt()
     return m_rescnt;
 }
 
-string DocSequenceDb::getAbstract(Rcl::Doc &doc)
+bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<string>& vabs)
 {
     setQuery();
-    if (!m_q->whatDb())
-	return doc.meta[Rcl::Doc::keyabs];
-    string abstract;
+    if (m_q->whatDb() &&
+	m_queryBuildAbstract && (doc.syntabs || m_queryReplaceAbstract)) {
+	m_q->whatDb()->makeDocAbstract(doc, m_q.getptr(), vabs);
+    } 
+    if (vabs.empty())
+	vabs.push_back(doc.meta[Rcl::Doc::keyabs]);
 
-     if (m_queryBuildAbstract && (doc.syntabs || m_queryReplaceAbstract)) {
-        m_q->whatDb()->makeDocAbstract(doc, m_q.getptr(), abstract);
-    } else {
-        abstract = doc.meta[Rcl::Doc::keyabs];
-    }
-
-    return abstract.empty() ? doc.meta[Rcl::Doc::keyabs] : abstract;
+    return true;
 }
 
 bool DocSequenceDb::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc) 

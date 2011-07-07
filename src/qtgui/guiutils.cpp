@@ -129,6 +129,11 @@ void rwSettings(bool writing)
     if (!writing && prefs.qtermcolor == "")
 	prefs.qtermcolor = "blue";
 
+    // Abstract snippet separator
+    SETTING_RW(prefs.abssep, "/Recoll/prefs/reslist/abssep", String,"&hellip;");
+    if (!writing && prefs.abssep == "")
+	prefs.abssep = "&hellip;";
+
     SETTING_RW(prefs.reslistfontfamily, "/Recoll/prefs/reslist/fontFamily", String,
 	       "");
     SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Int, 

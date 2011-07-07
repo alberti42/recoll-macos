@@ -91,7 +91,7 @@ class Db::Native {
     ~Native() {
     }
 
-    string makeAbstract(Xapian::docid id, Query *query);
+    vector<string> makeAbstract(Xapian::docid id, Query *query);
 
     bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc);
 

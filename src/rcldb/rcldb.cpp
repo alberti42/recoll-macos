@@ -73,6 +73,7 @@ namespace Rcl {
 #endif
 
 const string pathelt_prefix = "XP";
+static const string ellipsis("...");
 
 string version_string(){
     return string("Recoll ") + string(rclversionstr) + string(" + Xapian ") +
@@ -245,7 +246,7 @@ static void listList(const string& what, const list<string>&l)
 //
 // DatabaseModified and other general exceptions are catched and
 // possibly retried by our caller
-string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
+vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 {
     Chrono chron;
     LOGDEB2(("makeAbstract:%d: maxlen %d wWidth %d\n", chron.ms(),
@@ -259,7 +260,7 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
         noPrefixList(iterms, terms);
         if (terms.empty()) {
             LOGDEB(("makeAbstract::Empty term list\n"));
-            return string();
+            return vector<string>();
         }
     }
 //    listList("Match terms: ", terms);
@@ -353,12 +354,11 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
     // This can't happen, but would crash us
     if (totalweight == 0.0) {
 	LOGERR(("makeAbstract: 0 totalweight!\n"));
-	return string();
+	return vector<string>();
     }
 
     // This is used to mark positions overlapped by a multi-word match term
     const string occupiedmarker("?");
-    const string ellipsis("...");
 
     // Let's go populate
     for (multimap<double, string>::reverse_iterator qit = byQ.rbegin(); 
@@ -439,7 +439,7 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
     // This can happen if there are term occurences in the keywords
     // etc. but not elsewhere ?
     if (qtermposs.size() == 0) 
-	return string();
+	return vector<string>();
 
     // Walk all document's terms position lists and populate slots
     // around the query terms. We arbitrarily truncate the list to
@@ -504,8 +504,8 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
     LOGABS(("makeAbstract:%d: extracting\n", chron.millis()));
 
     // Finally build the abstract by walking the map (in order of position)
-    string abstract;
-    abstract.reserve(sparseDoc.size() * 10);
+    vector<string> vabs;
+    string chunk;
     bool incjk = false;
     for (map<unsigned int, string>::const_iterator it = sparseDoc.begin();
 	 it != sparseDoc.end(); it++) {
@@ -517,18 +517,24 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 	if (TextSplit::isCJK(*uit))
 	    newcjk = true;
 	if (!incjk || (incjk && !newcjk))
-	    abstract += " ";
+	    chunk += " ";
 	incjk = newcjk;
-	abstract += it->second;
+	if (it->second == ellipsis) {
+	    vabs.push_back(chunk);
+	    chunk.clear();
+	} else {
+	    chunk += it->second;
+	}
     }
-
+    if (!chunk.empty())
+	vabs.push_back(chunk);
     // This happens for docs with no terms (only filename) indexed? I'll fix 
     // one day (yeah)
-    if (!abstract.compare("... "))
-	abstract.clear();
+    if (vabs.size() == 1 && !vabs[0].compare("... "))
+	vabs.clear();
 
     LOGDEB2(("makeAbtract: done in %d mS\n", chron.millis()));
-    return abstract;
+    return vabs;
 }
 
 /* Rcl::Db methods ///////////////////////////////// */
@@ -1742,6 +1748,17 @@ bool Db::stemDiffers(const string& lang, const string& word,
     return true;
 }
 
+bool Db::makeDocAbstract(Doc &doc, Query *query, vector<string>& abstract)
+{
+    LOGDEB1(("Db::makeDocAbstract: exti %d\n", exti));
+    if (!m_ndb || !m_ndb->m_isopen) {
+	LOGERR(("Db::makeDocAbstract: no db\n"));
+	return false;
+    }
+    XAPTRY(abstract = m_ndb->makeAbstract(doc.xdocid, query),
+           m_ndb->xrdb, m_reason);
+    return m_reason.empty() ? true : false;
+}
 
 bool Db::makeDocAbstract(Doc &doc, Query *query, string& abstract)
 {
@@ -1750,10 +1767,14 @@ bool Db::makeDocAbstract(Doc &doc, Query *query, string& abstract)
 	LOGERR(("Db::makeDocAbstract: no db\n"));
 	return false;
     }
-
-    XAPTRY(abstract = m_ndb->makeAbstract(doc.xdocid, query),
+    vector<string> vab;
+    XAPTRY(vab = m_ndb->makeAbstract(doc.xdocid, query),
            m_ndb->xrdb, m_reason);
-
+    for (vector<string>::const_iterator it = vab.begin(); 
+	 it != vab.end(); it++) {
+	abstract.append(*it);
+	abstract.append(ellipsis);
+    }
     return m_reason.empty() ? true : false;
 }
 
