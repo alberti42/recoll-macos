@@ -406,7 +406,7 @@ BeagleQueueIndexer::processone(const string &path,
             dotdoc.fmtime = ascdate;
 
         char cbuf[100]; 
-        sprintf(cbuf, "%ld", (long)stp->st_size);
+        sprintf(cbuf, OFFTPC, stp->st_size);
         dotdoc.fbytes = cbuf;
 
         // Document signature for up to date checks: none. 
@@ -453,7 +453,7 @@ BeagleQueueIndexer::processone(const string &path,
             doc.fmtime = ascdate;
 
         char cbuf[100]; 
-        sprintf(cbuf, "%ld", (long)stp->st_size);
+        sprintf(cbuf, OFFTPC, stp->st_size);
         doc.fbytes = cbuf;
         // Document signature for up to date checks: none. 
         doc.sig = "";

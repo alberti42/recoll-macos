@@ -29,7 +29,7 @@ using std::string;
 class FileScanDo {
 public:
     virtual ~FileScanDo() {}
-    virtual bool init(unsigned int size, string *reason) = 0;
+    virtual bool init(size_t size, string *reason) = 0;
     virtual bool data(const char *buf, int cnt, string* reason) = 0;
 };
 bool file_scan(const string &filename, FileScanDo* doer, string *reason = 0);

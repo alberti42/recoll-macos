@@ -14,7 +14,11 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+
 #ifndef TEST_SMALLUT
+#ifdef HAVE_CONFIG_H
+#include "autoconfig.h"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -556,7 +560,7 @@ bool pcSubst(const string& in, string& out, map<string, string>& subs)
 }
 
 // Convert byte count into unit (KB/MB...) appropriate for display
-string displayableBytes(long size)
+string displayableBytes(off_t size)
 {
     char sizebuf[30];
     const char * unit = " B ";
@@ -568,7 +572,7 @@ string displayableBytes(long size)
 	unit = " MB ";
 	size /= (1024*1024);
     }
-    sprintf(sizebuf, "%ld%s", size, unit);
+    sprintf(sizebuf, OFFTPC "%s", size, unit);
     return string(sizebuf);
 }
 

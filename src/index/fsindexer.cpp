@@ -288,6 +288,12 @@ void FsIndexer::setlocalfields(Rcl::Doc& doc)
     }
 }
 
+static void makesig(const struct stat *stp, string& out)
+{
+    char cbuf[100]; 
+    sprintf(cbuf, OFFTPC "%ld", stp->st_size, (long)stp->RCL_STTIME);
+    out = cbuf;
+}
 
 /// This method gets called for every file and directory found by the
 /// tree walker. 
@@ -340,9 +346,8 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
     // for the uptodate check (the value computed here is checked
     // against the stored one). Changing the computation forces a full
     // reindex of course.
-    char cbuf[100]; 
-    sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->RCL_STTIME);
-    string sig = cbuf;
+    string sig;
+    makesig(stp, sig);
     string udi;
     make_udi(fn, "", udi);
     if (!m_db->needUpdate(udi, sig)) {
@@ -420,14 +425,14 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 	    doc.utf8fn = utf8fn;
 
 	char cbuf[100]; 
-	sprintf(cbuf, "%ld", (long)stp->st_size);
+	sprintf(cbuf, OFFTPC, stp->st_size);
 	doc.fbytes = cbuf;
 	// Document signature for up to date checks: concatenate
 	// m/ctime and size. Looking for changes only, no need to
 	// parseback so no need for reversible formatting. Also set,
 	// but never used, for subdocs.
-	sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->RCL_STTIME);
-	doc.sig = cbuf;
+	makesig(stp, doc.sig);
+
 	// If there was an error, ensure indexing will be
 	// retried. This is for the once missing, later installed
 	// filter case. It can make indexing much slower (if there are
@@ -473,11 +478,10 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 	fileDoc.url = string("file://") + fn;
 
 	char cbuf[100]; 
-	sprintf(cbuf, "%ld", (long)stp->st_size);
+	sprintf(cbuf, OFFTPC, stp->st_size);
 	fileDoc.fbytes = cbuf;
 	// Document signature for up to date checks.
-	sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->RCL_STTIME);
-	fileDoc.sig = cbuf;
+	makesig(stp, fileDoc.sig);
 	if (!m_db->addOrUpdate(parent_udi, "", fileDoc)) 
 	    return FsTreeWalker::FtwError;
     }

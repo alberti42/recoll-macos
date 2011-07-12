@@ -14,6 +14,9 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#ifdef HAVE_CONFIG_H
+#include "autoconfig.h"
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -163,7 +166,7 @@ void ResListPager::displayDoc(RclConfig *config,
     }
 
     // Size information. We print both doc and file if they differ a lot
-    long fsize = -1, dsize = -1;
+    off_t fsize = -1, dsize = -1;
     if (!doc.dbytes.empty())
 	dsize = atol(doc.dbytes.c_str());
     if (!doc.fbytes.empty())

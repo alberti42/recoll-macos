@@ -108,8 +108,8 @@ public:
             return -1;
         }
         if (fseeko(fp, cacheoffset(msgnum), SEEK_SET) != 0) {
-            LOGDEB0(("MboxCache::get_offsets: seek %ld errno %d\n",
-                     (long)cacheoffset(msgnum), errno));
+            LOGDEB0(("MboxCache::get_offsets: seek %lld errno %d\n",
+                     cacheoffset(msgnum), errno));
             return -1;
         }
         mbhoff_type offset = -1;

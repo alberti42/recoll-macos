@@ -109,3 +109,8 @@
 #undef _FILE_OFFSET_BITS
 #undef _LARGE_FILES
 
+#if _FILE_OFFSET_BITS == 64 || defined(__APPLE__)
+#define OFFTPC "%lld"
+#else
+#define OFFTPC "%ld"
+#endif

@@ -78,7 +78,7 @@ class FileToString : public FileScanDo {
 public:
     FileToString(string& data) : m_data(data) {}
     string& m_data;
-    bool init(unsigned int size, string *reason) {
+    bool init(size_t size, string *reason) {
 	if (size > 0)
 	    m_data.reserve(size); 
 	return true;
@@ -135,10 +135,10 @@ bool file_scan(const string &fn, FileScanDo* doer, off_t startoffs,
 	noclosing = false;
     }
 
-    if (st.st_size > 0) {
-	doer->init(st.st_size+1, reason);
-    } else if (cnttoread) {
+    if (cnttoread != (size_t)-1 && cnttoread) {
 	doer->init(cnttoread+1, reason);
+    } else if (st.st_size > 0) {
+	doer->init(st.st_size+1, reason);
     } else {
 	doer->init(0, reason);
     }

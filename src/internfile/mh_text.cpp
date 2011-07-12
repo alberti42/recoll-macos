@@ -69,11 +69,13 @@ bool MimeHandlerText::set_document_file(const string &fn)
         }
         m_pagesz = size_t(ps);
         string reason;
+	LOGDEB(("calling file_to_string\n"));
         // file_to_string() takes pagesz == size_t(-1) to mean read all.
         if (!file_to_string(fn, m_text, 0, m_pagesz, &reason)) {
             LOGERR(("MimeHandlerText: can't read file: %s\n", reason.c_str()));
             return false;
         }
+	LOGDEB(("file_to_string OK\n"));
         m_offs = m_text.length();
     }
 

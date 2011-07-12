@@ -16,6 +16,7 @@
  */
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
+
 #include <stdlib.h>
 
 #include <string>
@@ -125,7 +126,7 @@ extern string truncate_to_word(const string &input, string::size_type maxlen);
 extern void utf8truncate(string &s, int maxlen);
 
 /** Convert byte count into unit (KB/MB...) appropriate for display */
-string displayableBytes(long size);
+string displayableBytes(off_t size);
 
 /** Break big string into lines */
 string breakIntoLines(const string& in, unsigned int ll = 100, 
