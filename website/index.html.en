@@ -117,8 +117,8 @@
 	</li>
 
         <li>2010-11-20 : wrote a small script so that recoll can be
-        activated or hidden with a single keystroke on the gnome
-        desktop. See the 
+          activated or hidden with a single keystroke on the gnome
+          desktop. See the 
           <a href="http://bitbucket.org/medoc/recoll/wiki/HotRecoll">
             installation recipee here</a>.</li>
 
@@ -144,8 +144,8 @@
           <li>The <a href="http://bitbucket.org/medoc/recoll/issues">
 	      issues tracking system</a> on Bitbucket.</li>
            <li>The <a href="http://www.freelists.org/list/recoll-user">
-	       recoll-user</a> mailing list.<li>
-           <li>Direct <a href="mailto:jfd@recoll.org">email</a>.
+	       recoll-user</a> mailing list.</li>
+          <li>Direct <a href="mailto:jfd@recoll.org">email</a>.</li>
         </ul>
       </p>
 
