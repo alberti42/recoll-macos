@@ -84,6 +84,8 @@ static const unsigned int uniign[] = {
     0x2212, /*  ; Dash # Sm       MINUS SIGN*/
     0x301C, /*  ; Dash # Pd       WAVE DASH*/
     0x3030, /*  ; Dash # Pd       WAVY DASH*/
+    0xC2B6, /* PILCROW SIGN;So;0;ON;;;;;N;PARAGRAPH SIGN;;;; */
+    0xC3B7, /* DIVISION SIGN;Sm;0;ON;;;;;N;;;;; */
     0xFE31, /*  ; Dash # Pd       PRESENTATION FORM FOR VERTICAL EM DASH*/
     0xFE32, /*  ; Dash # Pd       PRESENTATION FORM FOR VERTICAL EN DASH*/
     0xFE58, /*  ; Dash # Pd       SMALL EM DASH*/
