@@ -36,6 +36,13 @@
 # For documentation, see UCD.html
 */
 static const unsigned int uniign[] = {
+    0x0021, /*  ; Terminal_Punctuation # Po       EXCLAMATION MARK*/
+    0x002C, /*  ; Terminal_Punctuation # Po       COMMA*/
+    0x002D, /*  ; Dash # Pd       HYPHEN-MINUS*/
+    0x002E, /*  ; Terminal_Punctuation # Po       FULL STOP*/
+    0x003A, /*  ; Terminal_Punctuation # Po   [2] COLON..SEMICOLON*/
+    0x003B, /*  ; Terminal_Punctuation # Po   [2] COLON..SEMICOLON*/
+    0x003F, /*  ; Terminal_Punctuation # Po       QUESTION MARK*/
     0x0085, /* NEXT LINE NEL;Cc */
     0x00A0, /* NO-BREAK SPACE; Zs */
     0x00A1, /* INVERTED EXCLAMATION MARK;Po */
@@ -46,11 +53,39 @@ static const unsigned int uniign[] = {
     0x00A6, /* BROKEN BAR;So */
     0x00A7, /* SECTION SIGN;So; */
     0x00A9, /* COPYRIGHT SIGN;So */
-    0x00AB, /* LEFT-POINTING DOUBLE ANGLE QUOTATION MARK;Pi */
+    0x00AB, /*  ; Quotation_Mark # Pi       LEFT-POINTING DOUBLE ANGLE QUOTATION MARK*/
     0x00AC, /* NOT SIGN;Sm */
+    0x00AD, /*  ; Hyphen # Cf       SOFT HYPHEN*/
     0x00AE, /* registered sign */
+    0x00B0, /* DEGREE SIGN;So;0;ET;;;;;N;;;;; */
+    0x00B1, /* PLUS-MINUS SIGN;Sm;0;ET;;;;;N;PLUS-OR-MINUS SIGN;;;;*/
+    0x00B7, /* MIDDLE DOT;Po;0;ON;;;;;N;;;;;*/
+    0x00BB, /*  ; Quotation_Mark # Pf       RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK*/
+    0x00BF, /*                   INVERTED QUESTION MARK;Po */
     0x00D7, /* MULTIPLICATION SIGN;Sm;0;ON;;;;;N;;;;; */
+    0x037E, /*  ; Terminal_Punctuation # Po       GREEK QUESTION MARK*/
+    0x0387, /*  ; Terminal_Punctuation # Po       GREEK ANO TELEIA*/
+    0x055C, /*  ; STerm # Po       ARMENIAN EXCLAMATION MARK*/
+    0x055E, /*  ; STerm # Po       ARMENIAN QUESTION MARK*/
+    0x0589, /*  ; STerm # Po       ARMENIAN FULL STOP*/
+    0x0589, /*  ; Terminal_Punctuation # Po       ARMENIAN FULL STOP*/
+    0x058A, /*  ; Dash # Pd       ARMENIAN HYPHEN*/
+    0x058A, /*  ; Hyphen # Pd       ARMENIAN HYPHEN*/
+    0x05C3, /*  ; Terminal_Punctuation # Po       HEBREW PUNCTUATION SOF PASUQ*/
+    0x060C, /*  ; Terminal_Punctuation # Po       ARABIC COMMA*/
+    0x061B, /*  ; Terminal_Punctuation # Po       ARABIC SEMICOLON*/
+    0x061F, /*  ; STerm # Po       ARABIC QUESTION MARK*/
+    0x061F, /*  ; Terminal_Punctuation # Po       ARABIC QUESTION MARK*/
+    0x06D4, /*  ; STerm # Po       ARABIC FULL STOP*/
+    0x06D4, /*  ; Terminal_Punctuation # Po       ARABIC FULL STOP*/
+    0x166E, /*  ; STerm # Po       CANADIAN SYLLABICS FULL STOP*/
     0x1680, /*  ; White_Space # Zs       OGHAM SPACE MARK*/
+    0x16EB, /* RUNIC SINGLE PUNCTUATION;Po;0;L;;;;;N;;;;;*/
+    0x16EC, /* RUNIC MULTIPLE PUNCTUATION;Po;0;L;;;;;N;;;;;*/
+    0x16ED, /* RUNIC CROSS PUNCTUATION;Po;0;L;;;;;N;;;;; */
+    0x1803, /*  ; STerm # Po       MONGOLIAN FULL STOP*/
+    0x1806, /*  ; Hyphen # Pd       MONGOLIAN TODO SOFT HYPHEN*/
+    0x1809, /*  ; STerm # Po       MONGOLIAN MANCHU FULL STOP*/
     0x180E, /*  ; White_Space # Zs       MONGOLIAN VOWEL SEPARATOR*/
     0x2000, /*  ; White_Space # Zs  [11] EN QUAD..HAIR SPACE*/
     0x2001, /*  ; White_Space # Zs  [11] EN QUAD..HAIR SPACE*/
@@ -63,49 +98,12 @@ static const unsigned int uniign[] = {
     0x2008, /*  ; White_Space # Zs  [11] EN QUAD..HAIR SPACE*/
     0x2009, /*  ; White_Space # Zs  [11] EN QUAD..HAIR SPACE*/
     0x200A, /*  ; White_Space # Zs  [11] EN QUAD..HAIR SPACE*/
-    0x2028, /*  ; White_Space # Zl       LINE SEPARATOR*/
-    0x2029, /*  ; White_Space # Zp       PARAGRAPH SEPARATOR*/
-    0x202F, /*  ; White_Space # Zs       NARROW NO-BREAK SPACE*/
-    0x205F, /*  ; White_Space # Zs       MEDIUM MATHEMATICAL SPACE*/
-    0x3000, /*  ; White_Space # Zs       IDEOGRAPHIC SPACE*/
-    0x002D, /*  ; Dash # Pd       HYPHEN-MINUS*/
-    0x058A, /*  ; Dash # Pd       ARMENIAN HYPHEN*/
-    0x1806, /*  ; Dash # Pd       MONGOLIAN TODO SOFT HYPHEN*/
-    0x2010, /*  ; Dash # Pd   [6] HYPHEN..HORIZONTAL BAR*/
-    0x2011, /*  ; Dash # Pd   [6] HYPHEN..HORIZONTAL BAR*/
+    0x2010, /*  ; Hyphen # Pd   [2] HYPHEN..NON-BREAKING HYPHEN*/
+    0x2011, /*  ; Hyphen # Pd   [2] HYPHEN..NON-BREAKING HYPHEN*/
     0x2012, /*  ; Dash # Pd   [6] HYPHEN..HORIZONTAL BAR*/
     0x2013, /*  ; Dash # Pd   [6] HYPHEN..HORIZONTAL BAR*/
     0x2014, /*  ; Dash # Pd   [6] HYPHEN..HORIZONTAL BAR*/
     0x2015, /*  ; Dash # Pd   [6] HYPHEN..HORIZONTAL BAR*/
-    0x2053, /*  ; Dash # Po       SWUNG DASH*/
-    0x207B, /*  ; Dash # Sm       SUPERSCRIPT MINUS*/
-    0x208B, /*  ; Dash # Sm       SUBSCRIPT MINUS*/
-    0x2192, /* RIGHTWARDS ARROW;Sm;0;ON;;;;;N;RIGHT ARROW;;;;*/
-    0x2212, /*  ; Dash # Sm       MINUS SIGN*/
-    0x301C, /*  ; Dash # Pd       WAVE DASH*/
-    0x3030, /*  ; Dash # Pd       WAVY DASH*/
-    0xC2B6, /* PILCROW SIGN;So;0;ON;;;;;N;PARAGRAPH SIGN;;;; */
-    0xC3B7, /* DIVISION SIGN;Sm;0;ON;;;;;N;;;;; */
-    0xFE31, /*  ; Dash # Pd       PRESENTATION FORM FOR VERTICAL EM DASH*/
-    0xFE32, /*  ; Dash # Pd       PRESENTATION FORM FOR VERTICAL EN DASH*/
-    0xFE58, /*  ; Dash # Pd       SMALL EM DASH*/
-    0xFE63, /*  ; Dash # Pd       SMALL HYPHEN-MINUS*/
-    0xFF0D, /*  ; Dash # Pd       FULLWIDTH HYPHEN-MINUS*/
-    0x00AD, /*  ; Hyphen # Cf       SOFT HYPHEN*/
-    0x058A, /*  ; Hyphen # Pd       ARMENIAN HYPHEN*/
-    0x1806, /*  ; Hyphen # Pd       MONGOLIAN TODO SOFT HYPHEN*/
-    0x2010, /*  ; Hyphen # Pd   [2] HYPHEN..NON-BREAKING HYPHEN*/
-    0x2011, /*  ; Hyphen # Pd   [2] HYPHEN..NON-BREAKING HYPHEN*/
-    0x30FB, /*  ; Hyphen # Pc       KATAKANA MIDDLE DOT*/
-    0xFE63, /*  ; Hyphen # Pd       SMALL HYPHEN-MINUS*/
-    0xFF0D, /*  ; Hyphen # Pd       FULLWIDTH HYPHEN-MINUS*/
-    0xFF65, /*  ; Hyphen # Pc       HALFWIDTH KATAKANA MIDDLE DOT*/
-    0x00AB, /*  ; Quotation_Mark # Pi       LEFT-POINTING DOUBLE ANGLE QUOTATION MARK*/
-    0x00B0, /* DEGREE SIGN;So;0;ET;;;;;N;;;;; */
-    0x00B1, /* PLUS-MINUS SIGN;Sm;0;ET;;;;;N;PLUS-OR-MINUS SIGN;;;;*/
-    0x00B7, /* MIDDLE DOT;Po;0;ON;;;;;N;;;;;*/
-    0x00BB, /*  ; Quotation_Mark # Pf       RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK*/
-    0x00BF, /*                   INVERTED QUESTION MARK;Po */
     0x2018, /*  ; Quotation_Mark # Pi       LEFT SINGLE QUOTATION MARK*/
     0x2019, /*  ; Quotation_Mark # Pf       RIGHT SINGLE QUOTATION MARK*/
     0x201A, /*  ; Quotation_Mark # Ps       SINGLE LOW-9 QUOTATION MARK*/
@@ -114,92 +112,81 @@ static const unsigned int uniign[] = {
     0x201D, /*  ; Quotation_Mark # Pf       RIGHT DOUBLE QUOTATION MARK*/
     0x201E, /*  ; Quotation_Mark # Ps       DOUBLE LOW-9 QUOTATION MARK*/
     0x201F, /*  ; Quotation_Mark # Pi       DOUBLE HIGH-REVERSED-9 QUOTATION MARK*/
-    0x2032, /* PRIME;Po;0;ET;;;;;N;;;;;*/
-    0x2039, /*  ; Quotation_Mark # Pi       SINGLE LEFT-POINTING ANGLE QUOTATION MARK*/
-    0x203A, /*  ; Quotation_Mark # Pf       SINGLE RIGHT-POINTING ANGLE QUOTATION MARK*/
-    0x2E2E, /* REVERSED QUESTION MARK;Po;0;ON;;;;;N;;;;; */
-    0x300C, /*  ; Quotation_Mark # Ps       LEFT CORNER BRACKET*/
-    0x300D, /*  ; Quotation_Mark # Pe       RIGHT CORNER BRACKET*/
-    0x300E, /*  ; Quotation_Mark # Ps       LEFT WHITE CORNER BRACKET*/
-    0x300F, /*  ; Quotation_Mark # Pe       RIGHT WHITE CORNER BRACKET*/
-    0x301D, /*  ; Quotation_Mark # Ps       REVERSED DOUBLE PRIME QUOTATION MARK*/
-    0x301E, /*  ; Quotation_Mark # Pe       DOUBLE PRIME QUOTATION MARK*/
-    0x301E, /*  ; Quotation_Mark # Pe       LOW DOUBLE PRIME QUOTATION MARK*/
-    0xFE41, /*  ; Quotation_Mark # Ps       PRESENTATION FORM FOR VERTICAL LEFT CORNER BRACKET*/
-    0xFE42, /*  ; Quotation_Mark # Pe       PRESENTATION FORM FOR VERTICAL RIGHT CORNER BRACKET*/
-    0xFE43, /*  ; Quotation_Mark # Ps       PRESENTATION FORM FOR VERTICAL LEFT WHITE CORNER BRACKET*/
-    0xFE44, /*  ; Quotation_Mark # Pe       PRESENTATION FORM FOR VERTICAL RIGHT WHITE CORNER BRACKET*/
-    0xFF02, /*  ; Quotation_Mark # Po       FULLWIDTH QUOTATION MARK*/
-    0xFF07, /*  ; Quotation_Mark # Po       FULLWIDTH APOSTROPHE*/
-    0xFF62, /*  ; Quotation_Mark # Ps       HALFWIDTH LEFT CORNER BRACKET*/
-    0xFF63, /*  ; Quotation_Mark # Pe       HALFWIDTH RIGHT CORNER BRACKET*/
-    0x0021, /*  ; Terminal_Punctuation # Po       EXCLAMATION MARK*/
-    0x002C, /*  ; Terminal_Punctuation # Po       COMMA*/
-    0x002E, /*  ; Terminal_Punctuation # Po       FULL STOP*/
-    0x003A, /*  ; Terminal_Punctuation # Po   [2] COLON..SEMICOLON*/
-    0x003B, /*  ; Terminal_Punctuation # Po   [2] COLON..SEMICOLON*/
-    0x003F, /*  ; Terminal_Punctuation # Po       QUESTION MARK*/
-    0x037E, /*  ; Terminal_Punctuation # Po       GREEK QUESTION MARK*/
-    0x0387, /*  ; Terminal_Punctuation # Po       GREEK ANO TELEIA*/
-    0x0589, /*  ; Terminal_Punctuation # Po       ARMENIAN FULL STOP*/
-    0x05C3, /*  ; Terminal_Punctuation # Po       HEBREW PUNCTUATION SOF PASUQ*/
-    0x060C, /*  ; Terminal_Punctuation # Po       ARABIC COMMA*/
-    0x061B, /*  ; Terminal_Punctuation # Po       ARABIC SEMICOLON*/
-    0x061F, /*  ; Terminal_Punctuation # Po       ARABIC QUESTION MARK*/
-    0x06D4, /*  ; Terminal_Punctuation # Po       ARABIC FULL STOP*/
-    0x2047, /*  ; Terminal_Punctuation # Po   [3] DOUBLE QUESTION MARK..EXCLAMATION QUESTION MARK*/
-    0x2048, /*  ; Terminal_Punctuation # Po   [3] DOUBLE QUESTION MARK..EXCLAMATION QUESTION MARK*/
-    0x2049, /*  ; Terminal_Punctuation # Po   [3] DOUBLE QUESTION MARK..EXCLAMATION QUESTION MARK*/
-    0xFE50, /*  ; Terminal_Punctuation # Po   [3] SMALL COMMA..SMALL FULL STOP*/
-    0xFE51, /*  ; Terminal_Punctuation # Po   [3] SMALL COMMA..SMALL FULL STOP*/
-    0xFE52, /*  ; Terminal_Punctuation # Po   [3] SMALL COMMA..SMALL FULL STOP*/
-    0xFE54, /*  ; Terminal_Punctuation # Po   [4] SMALL SEMICOLON..SMALL EXCLAMATION MARK*/
-    0xFE55, /*  ; Terminal_Punctuation # Po   [4] SMALL SEMICOLON..SMALL EXCLAMATION MARK*/
-    0xFE56, /*  ; Terminal_Punctuation # Po   [4] SMALL SEMICOLON..SMALL EXCLAMATION MARK*/
-    0xFE57, /*  ; Terminal_Punctuation # Po   [4] SMALL SEMICOLON..SMALL EXCLAMATION MARK*/
-    0xFF01, /*  ; Terminal_Punctuation # Po       FULLWIDTH EXCLAMATION MARK*/
-    0xFF0C, /*  ; Terminal_Punctuation # Po       FULLWIDTH COMMA*/
-    0xFF0E, /*  ; Terminal_Punctuation # Po       FULLWIDTH FULL STOP*/
-    0xFF1A, /*  ; Terminal_Punctuation # Po   [2] FULLWIDTH COLON..FULLWIDTH SEMICOLON*/
-    0xFF1B, /*  ; Terminal_Punctuation # Po   [2] FULLWIDTH COLON..FULLWIDTH SEMICOLON*/
-    0xFF1F, /*  ; Terminal_Punctuation # Po       FULLWIDTH QUESTION MARK*/
-    0xFF61, /*  ; Terminal_Punctuation # Po       HALFWIDTH IDEOGRAPHIC FULL STOP*/
-    0xFF64, /*  ; Terminal_Punctuation # Po       HALFWIDTH IDEOGRAPHIC COMMA*/
-
-    /* STerm means Sentence Terminal. Some of these are in Terminal_Punctuation 
-       but not all ?? */
-    0x0021, /*  ; STerm # Po       EXCLAMATION MARK*/
-    0x002E, /*  ; STerm # Po       FULL STOP*/
-    0x003F, /*  ; STerm # Po       QUESTION MARK*/
-    0x055C, /*  ; STerm # Po       ARMENIAN EXCLAMATION MARK*/
-    0x055E, /*  ; STerm # Po       ARMENIAN QUESTION MARK*/
-    0x0589, /*  ; STerm # Po       ARMENIAN FULL STOP*/
-    0x061F, /*  ; STerm # Po       ARABIC QUESTION MARK*/
-    0x06D4, /*  ; STerm # Po       ARABIC FULL STOP*/
-    0x166E, /*  ; STerm # Po       CANADIAN SYLLABICS FULL STOP*/
-    0x16EB, /* RUNIC SINGLE PUNCTUATION;Po;0;L;;;;;N;;;;;*/
-    0x16EC, /* RUNIC MULTIPLE PUNCTUATION;Po;0;L;;;;;N;;;;;*/
-    0x16ED, /* RUNIC CROSS PUNCTUATION;Po;0;L;;;;;N;;;;; */
-    0x1803, /*  ; STerm # Po       MONGOLIAN FULL STOP*/
-    0x1809, /*  ; STerm # Po       MONGOLIAN MANCHU FULL STOP*/
     0x2022, /* BULLET;Po;0;ON;;;;;N;;;;; */
     0x2023, /* TRIANGULAR BULLET;Po;0;ON;;;;;N;;;;;*/
     0x2024, /* ONE DOT LEADER;Po;0;ON;<compat> 002E;;;;N;;;;;*/
     0x2025, /* TWO DOT LEADER;Po;0;ON;<compat> 002E 002E;;;;N;;;;; */
     0x2026, /* HORIZONTAL ELLIPSIS;Po;0;ON;<compat> 002E 002E 002E;;;;N;;;;; */
+    0x2028, /*  ; White_Space # Zl       LINE SEPARATOR*/
+    0x2029, /*  ; White_Space # Zp       PARAGRAPH SEPARATOR*/
+    0x202F, /*  ; White_Space # Zs       NARROW NO-BREAK SPACE*/
+    0x2032, /* PRIME;Po;0;ET;;;;;N;;;;;*/
+    0x2039, /*  ; Quotation_Mark # Pi       SINGLE LEFT-POINTING ANGLE QUOTATION MARK*/
+    0x203A, /*  ; Quotation_Mark # Pf       SINGLE RIGHT-POINTING ANGLE QUOTATION MARK*/
     0x203C, /*  ; STerm # Po   [2] DOUBLE EXCLAMATION MARK..INTERROBANG*/
     0x203D, /*  ; STerm # Po   [2] DOUBLE EXCLAMATION MARK..INTERROBANG*/
-    0x2047, /*  ; STerm # Po   [3] DOUBLE QUESTION MARK..EXCLAMATION QUESTION MARK*/
-    0x2048, /*  ; STerm # Po   [3] DOUBLE QUESTION MARK..EXCLAMATION QUESTION MARK*/
-    0x2049, /*  ; STerm # Po   [3] DOUBLE QUESTION MARK..EXCLAMATION QUESTION MARK*/
+    0x2047, /*  ; Terminal_Punctuation # Po   [3] DOUBLE QUESTION MARK..EXCLAMATION QUESTION MARK*/
+    0x2048, /*  ; Terminal_Punctuation # Po   [3] DOUBLE QUESTION MARK..EXCLAMATION QUESTION MARK*/
+    0x2049, /*  ; Terminal_Punctuation # Po   [3] DOUBLE QUESTION MARK..EXCLAMATION QUESTION MARK*/
+    0x2053, /*  ; Dash # Po       SWUNG DASH*/
+    0x205F, /*  ; White_Space # Zs       MEDIUM MATHEMATICAL SPACE*/
+    0x207B, /*  ; Dash # Sm       SUPERSCRIPT MINUS*/
+    0x208B, /*  ; Dash # Sm       SUBSCRIPT MINUS*/
+    0x2192, /* RIGHTWARDS ARROW;Sm;0;ON;;;;;N;RIGHT ARROW;;;;*/
+    0x2212, /*  ; Dash # Sm       MINUS SIGN*/
+    0x2E2E, /* REVERSED QUESTION MARK;Po;0;ON;;;;;N;;;;; */
+    0x3000, /*  ; White_Space # Zs       IDEOGRAPHIC SPACE*/
     0x3002, /*  ; STerm # Po       IDEOGRAPHIC FULL STOP*/
+    0x300C, /*  ; Quotation_Mark # Ps       LEFT CORNER BRACKET*/
+    0x300D, /*  ; Quotation_Mark # Pe       RIGHT CORNER BRACKET*/
+    0x300E, /*  ; Quotation_Mark # Ps       LEFT WHITE CORNER BRACKET*/
+    0x300F, /*  ; Quotation_Mark # Pe       RIGHT WHITE CORNER BRACKET*/
+    0x301C, /*  ; Dash # Pd       WAVE DASH*/
+    0x301D, /*  ; Quotation_Mark # Ps       REVERSED DOUBLE PRIME QUOTATION MARK*/
+    0x301E, /*  ; Quotation_Mark # Pe       LOW DOUBLE PRIME QUOTATION MARK*/
+    0x3030, /*  ; Dash # Pd       WAVY DASH*/
+    0x30FB, /*  ; Hyphen # Pc       KATAKANA MIDDLE DOT*/
+    0xC2B6, /* PILCROW SIGN;So;0;ON;;;;;N;PARAGRAPH SIGN;;;; */
+    0xC3B7, /* DIVISION SIGN;Sm;0;ON;;;;;N;;;;; */
+    0xFE31, /*  ; Dash # Pd       PRESENTATION FORM FOR VERTICAL EM DASH*/
+    0xFE32, /*  ; Dash # Pd       PRESENTATION FORM FOR VERTICAL EN DASH*/
+    0xFE41, /*  ; Quotation_Mark # Ps       PRESENTATION FORM FOR VERTICAL LEFT CORNER BRACKET*/
+    0xFE42, /*  ; Quotation_Mark # Pe       PRESENTATION FORM FOR VERTICAL RIGHT CORNER BRACKET*/
+    0xFE43, /*  ; Quotation_Mark # Ps       PRESENTATION FORM FOR VERTICAL LEFT WHITE CORNER BRACKET*/
+    0xFE44, /*  ; Quotation_Mark # Pe       PRESENTATION FORM FOR VERTICAL RIGHT WHITE CORNER BRACKET*/
+    0xFE50, /*  ; Terminal_Punctuation # Po   [3] SMALL COMMA..SMALL FULL STOP*/
+    0xFE51, /*  ; Terminal_Punctuation # Po   [3] SMALL COMMA..SMALL FULL STOP*/
     0xFE52, /*  ; STerm # Po       SMALL FULL STOP*/
-    0xFE56, /*  ; STerm # Po       SMALL QUESTION MARK*/
-    0xFE57, /*  ; STerm # Po       SMALL EXCLAMATION MARK*/
-    0xFF01, /*  ; STerm # Po       FULLWIDTH EXCLAMATION MARK*/
-    0xFF0E, /*  ; STerm # Po       FULLWIDTH FULL STOP*/
-    0xFF1F, /*  ; STerm # Po       FULLWIDTH QUESTION MARK*/
-    0xFF61, /*  ; STerm # Po       HALFWIDTH IDEOGRAPHIC FULL STOP*/
+    0xFE52, /*  ; Terminal_Punctuation # Po   [3] SMALL COMMA..SMALL FULL STOP*/
+    0xFE54, /*  ; Terminal_Punctuation # Po   [4] SMALL SEMICOLON..SMALL EXCLAMATION MARK*/
+    0xFE55, /*  ; Terminal_Punctuation # Po   [4] SMALL SEMICOLON..SMALL EXCLAMATION MARK*/
+    0xFE56, /*  ; Terminal_Punctuation # Po   [4] SMALL SEMICOLON..SMALL EXCLAMATION MARK*/
+    0xFE57, /*  ; Terminal_Punctuation # Po   [4] SMALL SEMICOLON..SMALL EXCLAMATION MARK*/
+    0xFE58, /*  ; Dash # Pd       SMALL EM DASH*/
+    0xFE63, /*  ; Hyphen # Pd       SMALL HYPHEN-MINUS*/
+    0xFF01, /* FULLWIDTH EXCLAMATION MARK;Po;0;ON;<wide> 0021;;;;N;;;;; */
+    0xFF02, /* FULLWIDTH QUOTATION MARK;Po;0;ON;<wide> 0022;;;;N;;;;; */
+    0xFF03, /* FULLWIDTH NUMBER SIGN;Po;0;ET;<wide> 0023;;;;N;;;;; */
+    0xFF04, /* FULLWIDTH DOLLAR SIGN;Sc;0;ET;<wide> 0024;;;;N;;;;; */
+    0xFF05, /* FULLWIDTH PERCENT SIGN;Po;0;ET;<wide> 0025;;;;N;;;;; */
+    0xFF06, /* FULLWIDTH AMPERSAND;Po;0;ON;<wide> 0026;;;;N;;;;; */
+    0xFF07, /* FULLWIDTH APOSTROPHE;Po;0;ON;<wide> 0027;;;;N;;;;; */
+    0xFF08, /* FULLWIDTH LEFT PARENTHESIS;Ps;0;ON;<wide> 0028;;;;Y;FULLWIDTH OPENIN*/
+    0xFF09, /* FULLWIDTH RIGHT PARENTHESIS;Pe;0;ON;<wide> 0029;;;;Y;FULLWIDTH CLOS*/
+    0xFF0A, /* FULLWIDTH ASTERISK;Po;0;ON;<wide> 002A;;;;N;;;;; */
+    0xFF0B, /* FULLWIDTH PLUS SIGN;Sm;0;ES;<wide> 002B;;;;N;;;;; */
+    0xFF0C, /* FULLWIDTH COMMA;Po;0;CS;<wide> 002C;;;;N;;;;; */
+    0xFF0D, /* FULLWIDTH HYPHEN-MINUS;Pd;0;ES;<wide> 002D;;;;N;;;;; */
+    0xFF0E, /* FULLWIDTH FULL STOP;Po;0;CS;<wide> 002E;;;;N;FULLWIDTH PERIOD;;;; */
+    0xFF0F, /* FULLWIDTH SOLIDUS;Po;0;CS;<wide> 002F;;;;N;FULLWIDTH SLASH;;;; */
+    0xFF1A, /*  ; Terminal_Punctuation # Po   [2] FULLWIDTH COLON..FULLWIDTH SEMICOLON*/
+    0xFF1B, /*  ; Terminal_Punctuation # Po   [2] FULLWIDTH COLON..FULLWIDTH SEMICOLON*/
+    0xFF1F, /*  ; Terminal_Punctuation # Po       FULLWIDTH QUESTION MARK*/
+    0xFF61, /*  ; Terminal_Punctuation # Po       HALFWIDTH IDEOGRAPHIC FULL STOP*/
+    0xFF62, /*  ; Quotation_Mark # Ps       HALFWIDTH LEFT CORNER BRACKET*/
+    0xFF63, /*  ; Quotation_Mark # Pe       HALFWIDTH RIGHT CORNER BRACKET*/
+    0xFF64, /*  ; Terminal_Punctuation # Po       HALFWIDTH IDEOGRAPHIC COMMA*/
+    0xFF65, /*  ; Hyphen # Pc       HALFWIDTH KATAKANA MIDDLE DOT*/
 };
 
 /* Things that would visibly break a block of text, rendering obvious the need
