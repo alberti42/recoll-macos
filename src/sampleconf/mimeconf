@@ -106,6 +106,7 @@ text/x-html-sidux-man = exec rclsiduxman
 text/x-html-aptosid-man = exec rclaptosidman
 text/x-mail = internal
 text/x-man = exec rclman
+text/x-perl = internal text/plain
 text/x-purple-log = exec rclpurple
 text/x-purple-html-log = internal text/html
 text/x-python = exec rclpython
