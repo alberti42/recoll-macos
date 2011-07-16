@@ -228,6 +228,7 @@ inline bool TextSplit::doemit(bool spanerase, int bp, bool spanemit)
 	    case '-':
 	    case ',':
 	    case '@':
+	    case '_':
 	    case '\'':
 		m_span.resize(m_span.length()-1);
 		if (--bp < 0) 
@@ -357,21 +358,15 @@ bool TextSplit::text_to_words(const string &in)
 	case '+':
 	    curspanglue = cc;
 	    if (m_wordLen == 0) {
-		if (cc == '-') {
-		    if (whatcc(it[it.getCpos()+1]) == DIGIT) {
-			// -10
-			m_inNumber = true;
-			m_wordLen += it.appendchartostring(m_span);
-		    } else {
-			goto SPACE;
-		    } 
+		// + or - don't start a term except if this looks like
+		// it's going to be to be a number
+		if (whatcc(it[it.getCpos()+1]) == DIGIT) {
+		    // -10
+		    m_inNumber = true;
+		    m_wordLen += it.appendchartostring(m_span);
 		} else {
-		    if (nonalnumcnt > 2) {
-			discardspan();
-		    } else {
-			m_wordStart += it.appendchartostring(m_span);
-		    }
-		}
+		    goto SPACE;
+		} 
 	    } else if (m_inNumber && (m_span[m_span.length() - 1] == 'e' ||
 				      m_span[m_span.length() - 1] == 'E')) {
 		if (whatcc(it[it.getCpos()+1]) == DIGIT) {
@@ -580,7 +575,11 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
 	    // Return to normal handler
 	    break;
 	}
-
+	if (whatcc(c) == SPACE) {
+	    // Flush the ngram buffer and go on
+	    nchars = 0;
+	    continue;
+	}
 	if (nchars == o_CJKNgramLen) {
 	    // Offset buffer full, shift it. Might be more efficient
 	    // to have a circular one, but things are complicated
