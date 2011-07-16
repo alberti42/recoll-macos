@@ -610,7 +610,7 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 // with an ipath, not the last one which is usually text/plain
 // We also set the author and modification time from the last doc
 // which has them.
-void FileInterner::collectIpathAndMT(Rcl::Doc& doc, string& ipath) const
+void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
 {
     LOGDEB2(("FileInterner::collectIpathAndMT\n"));
     bool hasipath = false;
@@ -638,9 +638,9 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc, string& ipath) const
 		getKeyValue(docdata, keymt, doc.mimetype);
 		getKeyValue(docdata, keyfn, doc.utf8fn);
 	    }
-	    ipath += colon_hide(ipathel) + isep;
+	    doc.ipath += colon_hide(ipathel) + isep;
 	} else {
-	    ipath += isep;
+	    doc.ipath += isep;
 	}
 	getKeyValue(docdata, keyau, doc.meta[Rcl::Doc::keyau]);
 	getKeyValue(docdata, keymd, doc.dmtime);
@@ -648,14 +648,14 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc, string& ipath) const
 
     // Trim empty tail elements in ipath.
     if (hasipath) {
-	LOGDEB2(("IPATH [%s]\n", ipath.c_str()));
-	string::size_type sit = ipath.find_last_not_of(isep);
+	LOGDEB2(("IPATH [%s]\n", doc.ipath.c_str()));
+	string::size_type sit = doc.ipath.find_last_not_of(isep);
 	if (sit == string::npos)
-	    ipath.erase();
-	else if (sit < ipath.length() -1)
-	    ipath.erase(sit+1);
+	    doc.ipath.erase();
+	else if (sit < doc.ipath.length() -1)
+	    doc.ipath.erase(sit+1);
     } else {
-	ipath.erase();
+	doc.ipath.erase();
     }
 }
 
@@ -763,14 +763,14 @@ int FileInterner::addHandler()
 }
 
 // Information and debug after a next_document error
-void FileInterner::processNextDocError(Rcl::Doc &doc, string& ipath)
+void FileInterner::processNextDocError(Rcl::Doc &doc)
 {
-    collectIpathAndMT(doc, ipath);
+    collectIpathAndMT(doc);
     m_reason = m_handlers.back()->get_error();
     checkExternalMissing(m_reason, doc.mimetype);
     LOGERR(("FileInterner::internfile: next_document error "
-	    "[%s%s%s] %s %s\n", m_fn.c_str(), ipath.empty() ? "" : "|", 
-	    ipath.c_str(), doc.mimetype.c_str(), m_reason.c_str()));
+	    "[%s%s%s] %s %s\n", m_fn.c_str(), doc.ipath.empty() ? "" : "|", 
+	    doc.ipath.c_str(), doc.mimetype.c_str(), m_reason.c_str()));
 }
 
 FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, const string& ipath)
@@ -841,8 +841,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, const string& ipath
 	// might be ie an error while decoding an attachment, but we
 	// still want to process the rest of the mbox! For preview: fatal.
 	if (!m_handlers.back()->next_document()) {
-	    string oipath;
-	    processNextDocError(doc, oipath);
+	    processNextDocError(doc);
 	    if (m_forPreview) {
                 m_reason += "Requested document does not exist. ";
                 m_reason += m_handlers.back()->get_error();
@@ -902,7 +901,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, const string& ipath
     // internal to the document (by dijontorcl()) if any, so the order
     // of calls is important.
     if (!m_forPreview) {
-	collectIpathAndMT(doc, doc.ipath);
+	collectIpathAndMT(doc);
     } else {
 	doc.mimetype = m_reachedMType;
     }

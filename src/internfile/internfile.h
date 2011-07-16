@@ -236,12 +236,12 @@ class FileInterner {
 
     void tmpcleanup();
     bool dijontorcl(Rcl::Doc&);
-    void collectIpathAndMT(Rcl::Doc&, string& ipath) const;
+    void collectIpathAndMT(Rcl::Doc&) const;
     bool dataToTempFile(const string& data, const string& mt, string& fn);
     void popHandler();
     int addHandler();
     void checkExternalMissing(const string& msg, const string& mt);
-    void processNextDocError(Rcl::Doc &doc, string& ipath);
+    void processNextDocError(Rcl::Doc &doc);
 #ifdef RCL_USE_XATTR
     void reapXAttrs(const string& fn);
 #endif
