@@ -138,12 +138,6 @@ static inline string make_parentterm(const string& udi)
     return pterm;
 }
 
-static inline void leftzeropad(string& s, unsigned len)
-{
-    if (s.length() && s.length() < len)
-	s = s.insert(0, len - s.length(), '0');
-}
-
 /* See comment in class declaration: return all subdocuments of a
  * document given by its unique id. 
 */

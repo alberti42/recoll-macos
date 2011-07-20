@@ -178,6 +178,12 @@ struct TempBuf {
     char *m_buf;
 };
 
+inline void leftzeropad(string& s, unsigned len)
+{
+    if (s.length() && s.length() < len)
+	s = s.insert(0, len - s.length(), '0');
+}
+
 #ifndef deleteZ
 #define deleteZ(X) {delete X;X = 0;}
 #endif

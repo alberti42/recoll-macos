@@ -154,6 +154,16 @@ static string gengetter(const string& fld, const Rcl::Doc& doc)
     return it->second;
 }
 
+static string sizegetter(const string& fld, const Rcl::Doc& doc)
+{
+    map<string, string>::const_iterator it = doc.meta.find(fld);
+    if (it == doc.meta.end()) {
+	return string();
+    }
+    off_t size = atoll(it->second.c_str());
+    return displayableBytes(size) + " (" + it->second + ")";
+}
+
 static string dategetter(const string&, const Rcl::Doc& doc)
 {
     char datebuf[100];
@@ -162,7 +172,11 @@ static string dategetter(const string&, const Rcl::Doc& doc)
 	time_t mtime = doc.dmtime.empty() ?
 	    atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
 	struct tm *tm = localtime(&mtime);
+#ifndef sun
+	strftime(datebuf, 99, "%Y-%m-%d", tm);
+#else
 	strftime(datebuf, 99, "%x", tm);
+#endif
     }
     return datebuf;
 }
@@ -212,6 +226,8 @@ FieldGetter *RecollModel::chooseGetter(const string& field)
 	return dategetter;
     else if (!stringlowercmp("datetime", field))
 	return datetimegetter;
+    else if (!stringlowercmp("bytes", field.substr(1)))
+	return sizegetter;
     else
 	return gengetter;
 }

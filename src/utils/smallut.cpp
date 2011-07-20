@@ -562,16 +562,22 @@ bool pcSubst(const string& in, string& out, map<string, string>& subs)
 // Convert byte count into unit (KB/MB...) appropriate for display
 string displayableBytes(off_t size)
 {
-    char sizebuf[30];
-    const char * unit = " B ";
+    char sizebuf[50];
+    const char *unit;
 
-    if (size > 1024 && size < 1024*1024) {
+    if (size < 1024) {
+	unit = " B ";
+    } else if (size < 1024*1024) {
 	unit = " KB ";
 	size /= 1024;
-    } else if (size  >= 1024*1204) {
+    } else if (size < 1024*1024*1024) {
 	unit = " MB ";
 	size /= (1024*1024);
+    } else {
+	unit = " GB ";
+	size /= (1024*1024*1024);
     }
+
     sprintf(sizebuf, OFFTPC "%s", size, unit);
     return string(sizebuf);
 }

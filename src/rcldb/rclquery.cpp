@@ -54,13 +54,17 @@ static const string& docfToDatf(const string& df)
     }
 }
 
-// Sort helper class
+// Sort helper class. As Xapian sorting is lexicographic, we do some
+// special processing for special fields like dates and sizes. User
+// custom field data will have to be processed before insertion to
+// achieve equivalent results.
 class QSorter : public Xapian::Sorter {
 public:
     QSorter(const string& f) 
 	: m_fld(docfToDatf(f) + "=") 
     {
 	m_ismtime = !m_fld.compare("dmtime=");
+	m_issize = !m_fld.compare("fbytes=") || !m_fld.compare("dbytes=");
     }
 
     virtual std::string operator()(const Xapian::Document& xdoc) const 
@@ -88,14 +92,22 @@ public:
 	i2 = data.find_first_of("\n\r", i1);
 	if (i2 == string::npos)
 	    return string();
-	
+
+	string term = data.substr(i1, i2-i1);
+	if (m_ismtime) {
+	    return term;
+	} else if (m_issize) {
+	    // Left zeropad values for appropriate numeric sorting
+	    leftzeropad(term, 12);
+	    return term;
+	}
+
 	// Process data for better sorting. We should actually do the
 	// unicode thing
 	// (http://unicode.org/reports/tr10/#Introduction), but just
 	// removing accents and majuscules will remove the most
 	// glaring weirdnesses (or not, depending on your national
 	// approach to collating...)
-	string term = data.substr(i1, i2-i1);
 	string sortterm;
 	// We're not even sure the term is utf8 here (ie: url)
 	if (!unacmaybefold(term, sortterm, "UTF-8", true)) {
@@ -114,6 +126,7 @@ public:
 private:
     string m_fld;
     bool   m_ismtime;
+    bool   m_issize;
 };
 
 Query::Query(Db *db)
