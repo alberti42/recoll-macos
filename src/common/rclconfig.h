@@ -55,6 +55,16 @@ public:
     bool needrecompute();
 };
 
+// Data associated to a indexed field name: 
+struct FieldTraits {
+    string pfx; // indexing prefix, 
+    int    wdfinc; // Index time term frequency increment (default 1)
+    double boost; // Query time boost (default 1.0)
+    FieldTraits(int i, double f) {wdfinc = i; boost = f;}
+    FieldTraits() : wdfinc(1), boost(1.0) {}
+    FieldTraits(const string& s) : pfx(s), wdfinc(1), boost(1.0) {}
+};
+
 class RclConfig {
  public:
 
@@ -188,13 +198,7 @@ class RclConfig {
     bool getMimeCatTypes(const string& cat, list<string>&);
 
     /** fields: get field prefix from field name */
-    bool getFieldPrefix(const string& fldname, string &pfx);
-    /** Get implied meanings for field name (ie: author->[author, from]) */
-    bool getFieldSpecialisations(const string& fld, 
-				 list<string>& childrens, bool top = true);
-    /** Get prefixes for specialisations of field name */
-    bool getFieldSpecialisationPrefixes(const string& fld, 
-					list<string>& pfxes);
+    bool getFieldTraits(const string& fldname, const FieldTraits **);
     const set<string>& getStoredFields() {return m_storedFields;}
     set<string> getIndexedFields();
     /** Get canonic name for possible alias */
@@ -256,7 +260,7 @@ class RclConfig {
     ConfStack<ConfSimple> *mimeconf; // but their content may depend on it.
     ConfStack<ConfSimple> *mimeview; // 
     ConfStack<ConfSimple> *m_fields;
-    map<string, string>  m_fldtopfx;
+    map<string, FieldTraits>  m_fldtotraits; // Field to field params
     map<string, string>  m_aliastocanon;
     set<string>          m_storedFields;
     map<string, string>  m_xattrtofld;

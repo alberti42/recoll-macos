@@ -89,33 +89,43 @@ static const string rclSyntAbs("?!#@");
 // omega
 static const string keycap("caption");
 
-// Default table for field->prefix translation.  We prefer the data
-// from rclconfig if available. Note that this is logically const
-// after initialization.  Can't use a static object to init this as
-// the static std::string objects may not be ready
-static map<string, string> fldToPrefs;
-static void initFldToPrefs() 
+// Static/Default table for field->prefix/weight translation. 
+// This is logically const after initialization. Can't use a
+// static object to init this as the static std::string objects may
+// not be ready.
+//
+// This map is searched if a match is not found in the dynamic
+// "fields" configuration (cf: Db::fieldToTraits()), meaning that the
+// entries can be overriden in the configuration, but not
+// suppressed. 
+
+static map<string, FieldTraits> fldToTraits;
+static void initFldToTraits() 
 {
-    fldToPrefs[Doc::keyabs] = string();
-    fldToPrefs["ext"] = "XE";
-    fldToPrefs[Doc::keyfn] = "XSFN";
+    // Can't remember why "abstract" is indexed without a prefix
+    // (result: it's indexed twice actually). Maybe I'll dare change
+    // this one day
+    fldToTraits[Doc::keyabs] = FieldTraits();
 
-    fldToPrefs[keycap] = "S";
-    fldToPrefs[Doc::keytt] = "S";
-    fldToPrefs["subject"] = "S";
+    fldToTraits["ext"] = FieldTraits("XE");
+    fldToTraits[Doc::keyfn] = FieldTraits("XSFN");
 
-    fldToPrefs[Doc::keyau] = "A";
-    fldToPrefs["creator"] = "A";
-    fldToPrefs["from"] = "A";
+    fldToTraits[keycap] = FieldTraits("S");
+    fldToTraits[Doc::keytt] = FieldTraits("S");
+    fldToTraits["subject"] = FieldTraits("S");
 
-    fldToPrefs[Doc::keykw] = "K";
-    fldToPrefs["keyword"] = "K";
-    fldToPrefs["tag"] = "K";
-    fldToPrefs["tags"] = "K";
+    fldToTraits[Doc::keyau] = FieldTraits("A");
+    fldToTraits["creator"] = FieldTraits("A");
+    fldToTraits["from"] = FieldTraits("A");
 
-    fldToPrefs["xapyear"] = "Y";
-    fldToPrefs["xapyearmon"] = "M";
-    fldToPrefs["xapdate"] = "D";
+    fldToTraits[Doc::keykw] = FieldTraits("K");
+    fldToTraits["keyword"] = FieldTraits("K");
+    fldToTraits["tag"] = FieldTraits("K");
+    fldToTraits["tags"] = FieldTraits("K");
+
+    fldToTraits["xapyear"] = FieldTraits("Y");
+    fldToTraits["xapyearmon"] = FieldTraits("M");
+    fldToTraits["xapdate"] = FieldTraits("D");
 }
 
 // Compute the unique term used to link documents to their origin. 
@@ -539,8 +549,8 @@ Db::Db(RclConfig *cfp)
       m_curtxtsz(0), m_flushtxtsz(0), m_occtxtsz(0), m_occFirstCheck(1),
       m_maxFsOccupPc(0), m_mode(Db::DbRO)
 {
-    if (!fldToPrefs.size())
-	initFldToPrefs();
+    if (!fldToTraits.size())
+	initFldToTraits();
 
     m_ndb = new Native(this);
     if (m_config) {
@@ -791,17 +801,18 @@ bool Db::isopen()
 // reason (old config not updated ?). We use it only if the config
 // translation fails. Also we add in there fields which should be
 // indexed with no prefix (ie: abstract)
-bool Db::fieldToPrefix(const string& fld, string &pfx)
+bool Db::fieldToTraits(const string& fld, const FieldTraits **ftpp)
 {
-    if (m_config && m_config->getFieldPrefix(fld, pfx))
+    if (m_config && m_config->getFieldTraits(fld, ftpp))
 	return true;
 
     // No data in rclconfig? Check default values
-    map<string, string>::const_iterator it = fldToPrefs.find(fld);
-    if (it != fldToPrefs.end()) {
-	pfx = it->second;
+    map<string, FieldTraits>::const_iterator it = fldToTraits.find(fld);
+    if (it != fldToTraits.end()) {
+	*ftpp = &it->second;
 	return true;
     }
+    *ftpp = 0;
     return false;
 }
 
@@ -817,15 +828,18 @@ class TextSplitDb : public TextSplit {
     StopList &stops;
     TextSplitDb(Xapian::WritableDatabase idb, 
 		Xapian::Document &d, StopList &_stops) 
-	: db(idb), doc(d), basepos(1), curpos(0), stops(_stops)
+	: db(idb), doc(d), basepos(1), curpos(0), stops(_stops), wdfinc(1)
     {}
     bool takeword(const std::string &term, int pos, int, int);
     void setprefix(const string& pref) {prefix = pref;}
+    void setwdfinc(int i) {wdfinc = i;}
 
 private:
     // If prefix is set, we also add a posting for the prefixed terms
     // (ie: for titles, add postings for both "term" and "Sterm")
     string  prefix; 
+    // Some fields have more weight
+    int wdfinc;
 };
 
 // Get one term from the doc, remove accents and lowercase, then add posting
@@ -853,17 +867,16 @@ bool TextSplitDb::takeword(const std::string &_term, int pos, int, int)
     pos += basepos;
     string ermsg;
     try {
-	// Note: 1 is the within document frequency increment. It would 
-	// be possible to assign different weigths to doc parts (ie title)
-	// by using a higher value
-	doc.add_posting(term, pos, 1);
+	// Index without prefix, using the field-specific weighting
+	doc.add_posting(term, pos, wdfinc);
 #ifdef TESTING_XAPIAN_SPELL
 	if (Db::isSpellingCandidate(term)) {
 	    db.add_spelling(term);
 	}
 #endif
+	// Index the prefixed term.
 	if (!prefix.empty()) {
-	    doc.add_posting(prefix + term, pos, 1);
+	    doc.add_posting(prefix + term, pos, wdfinc);
 	}
 	return true;
     } XCATCHERROR(ermsg);
@@ -984,26 +997,30 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     //
     // The order has no importance, and we set a position gap of 100
     // between fields to avoid false proximity matches.
-    map<string,string>::iterator meta_it;
-    string pfx;
+    map<string, string>::iterator meta_it;
     for (meta_it = doc.meta.begin(); meta_it != doc.meta.end(); meta_it++) {
 	if (!meta_it->second.empty()) {
-	    if (!fieldToPrefix(meta_it->first, pfx)) {
+	    const FieldTraits *ftp;
+	    // We don't test for an empty prefix here. Some fields are part
+	    // of the internal conf with an empty prefix (ie: abstract).
+	    if (!fieldToTraits(meta_it->first, &ftp)) {
 		LOGDEB0(("Db::add: no prefix for field [%s], no indexing\n",
 			 meta_it->first.c_str()));
 		continue;
 	    }
-	    LOGDEB0(("Db::add: field [%s] pfx [%s]: [%s]\n", 
-		     meta_it->first.c_str(), pfx.c_str(), 
+	    LOGDEB0(("Db::add: field [%s] pfx [%s] inc %d: [%s]\n", 
+		     meta_it->first.c_str(), ftp->pfx.c_str(), ftp->wdfinc,
 		     meta_it->second.c_str()));
-	    splitter.setprefix(pfx); // Subject
+	    splitter.setprefix(ftp->pfx); // Subject
+	    splitter.setwdfinc(ftp->wdfinc);
 	    if (!splitter.text_to_words(meta_it->second))
                 LOGDEB(("Db::addOrUpdate: split failed for %s\n", 
                         meta_it->first.c_str()));
-	    splitter.setprefix(string());
 	    splitter.basepos += splitter.curpos + 100;
 	}
     }
+    splitter.setprefix(string());
+    splitter.setwdfinc(1);
 
     if (splitter.curpos < baseTextPosition)
 	splitter.basepos = baseTextPosition;
@@ -1011,7 +1028,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	splitter.basepos += splitter.curpos + 100;
 
     // Split and index body text
-    LOGDEB2(("Db::add: split body\n"));
+    LOGDEB2(("Db::add: split body: [%s]\n", doc.text.c_str()));
     if (!splitter.text_to_words(doc.text))
         LOGDEB(("Db::addOrUpdate: split failed for main text\n"));
 
@@ -1560,11 +1577,13 @@ bool Db::termMatch(MatchType typ, const string &lang,
 
     string prefix;
     if (!field.empty()) {
-	(void)fieldToPrefix(field, prefix); 
-        if (prefix.empty()) {
+	const FieldTraits *ftp = 0;
+	if (!fieldToTraits(field, &ftp) || ftp->pfx.empty()) {
             LOGDEB(("Db::termMatch: field is not indexed (no prefix): [%s]\n", 
                     field.c_str()));
-        }
+        } else {
+	    prefix = ftp->pfx;
+	}
         if (prefixp)
             *prefixp = prefix;
     }

@@ -271,7 +271,7 @@ int main(int argc, char **argv)
 	    Xapian::PostingIterator doc;
 	    for (doc = db->postlist_begin(aterm);
 		 doc != db->postlist_end(aterm); doc++) {
-		cout << *doc << " : " ;
+		cout << *doc << "(" << doc.get_wdf() << ") : " ;
 		Xapian::PositionIterator pos;
 		for (pos = doc.positionlist_begin(); 
 		     pos != doc.positionlist_end(); pos++) {

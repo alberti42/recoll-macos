@@ -24,6 +24,7 @@
 #include "refcntr.h"
 #include "rcldoc.h"
 #include "stoplist.h"
+#include "rclconfig.h"
 
 #ifndef NO_NAMESPACES
 using std::string;
@@ -130,7 +131,7 @@ class Db {
     /* Return list of configured stop words */
     const StopList& getStopList() const {return m_stops;}
     /* Field name to prefix translation (ie: author -> 'A') */
-    bool fieldToPrefix(const string& fldname, string &pfx);
+    bool fieldToTraits(const string& fldname, const FieldTraits **ftpp);
 
     /* Update-related methods ******************************************/
 

@@ -561,6 +561,7 @@ bool RclConfig::valueSplitAttributes(const string& whole, string& value,
     /* There is currently no way to escape a semi-colon */
     string::size_type semicol0 = whole.find_first_of(";");
     value = whole.substr(0, semicol0);
+    trimstring(value);
     string attrstr;
     if (semicol0 != string::npos && semicol0 < whole.size() - 1) {
         attrstr = whole.substr(semicol0+1);
@@ -602,6 +603,7 @@ void RclConfig::storeMissingHelperDesc(const string &s)
 // things for speed (theses are used a lot during indexing)
 bool RclConfig::readFieldsConfig(const string& cnferrloc)
 {
+    LOGDEB2(("RclConfig::readFieldsConfig\n"));
     m_fields = new ConfStack<ConfSimple>("fields", m_cdirs, true);
     if (m_fields == 0 || !m_fields->ok()) {
 	m_reason = string("No/bad fields file in: ") + cnferrloc;
@@ -615,16 +617,34 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
     for (list<string>::const_iterator it = tps.begin(); it != tps.end();it++) {
 	string val;
 	m_fields->get(*it, val, "prefixes");
-	m_fldtopfx[stringtolower(*it)] = val;
+	ConfSimple attrs;
+	FieldTraits ft;
+	if (!valueSplitAttributes(val, ft.pfx, attrs)) {
+	    LOGERR(("readFieldsConfig: bad config line for [%s]: [%s]\n", 
+		    it->c_str(), val.c_str()));
+	    return 0;
+	}
+	string tval;
+	if (attrs.get("wdfinc", tval))
+	    ft.wdfinc = atoi(tval.c_str());
+	if (attrs.get("boost", tval))
+	    ft.boost = atof(tval.c_str());
+	m_fldtotraits[stringtolower(*it)] = ft;
+	LOGDEB2(("readFieldsConfig: [%s] -> [%s] %d %.1f\n", 
+		it->c_str(), ft.pfx.c_str(), ft.wdfinc, ft.boost));
     }
-    // Add prefixes for aliases (build alias-to-canonic map while we're at it)
+
+    // Add prefixes for aliases  an build alias-to-canonic map while we're at it
+    // Having the aliases in the prefix map avoids an additional indirection
+    // at index time.
     tps = m_fields->getNames("aliases");
     for (list<string>::const_iterator it = tps.begin(); it != tps.end();it++) {
 	string canonic = stringtolower(*it); // canonic name
-	string pfx;
-	map<string,string>::const_iterator pit = m_fldtopfx.find(canonic);
-	if (pit != m_fldtopfx.end()) {
-	    pfx = pit->second;
+	FieldTraits ft;
+	map<string, FieldTraits>::const_iterator pit = 
+	    m_fldtotraits.find(canonic);
+	if (pit != m_fldtotraits.end()) {
+	    ft = pit->second;
 	}
 	string aliases;
 	m_fields->get(canonic, aliases, "aliases");
@@ -632,16 +652,18 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 	stringToStrings(aliases, l);
 	for (list<string>::const_iterator ait = l.begin();
 	     ait != l.end(); ait++) {
-	    if (!pfx.empty())
-		m_fldtopfx[stringtolower(*ait)] = pfx;
+	    if (pit != m_fldtotraits.end())
+		m_fldtotraits[stringtolower(*ait)] = ft;
 	    m_aliastocanon[stringtolower(*ait)] = canonic;
 	}
     }
+
 #if 0
-    for (map<string,string>::const_iterator it = m_fldtopfx.begin();
-	 it != m_fldtopfx.end(); it++) {
-	LOGDEB(("RclConfig::readFieldsConfig: [%s] => [%s]\n",
-		it->first.c_str(), it->second.c_str()));
+    for (map<string, FieldTraits>::const_iterator it = m_fldtotraits.begin();
+	 it != m_fldtotraits.end(); it++) {
+	LOGDEB(("readFieldsConfig: [%s] -> [%s] %d %.1f\n", 
+		it->c_str(), it->second.pfx.c_str(), it->second.wdfinc, 
+		it->second.boost));
     }
 #endif
 
@@ -666,19 +688,20 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
     return true;
 }
 
-// Return term indexing prefix for field name (ie: "filename" -> "XSFN")
-bool RclConfig::getFieldPrefix(const string& _fld, string &pfx)
+// Return specifics for field name:
+bool RclConfig::getFieldTraits(const string& _fld, const FieldTraits **ftpp)
 {
     string fld = fieldCanon(_fld);
-    map<string,string>::const_iterator pit = m_fldtopfx.find(fld);
-    if (pit != m_fldtopfx.end()) {
-	pfx = pit->second;
+    map<string, FieldTraits>::const_iterator pit = m_fldtotraits.find(fld);
+    if (pit != m_fldtotraits.end()) {
+	*ftpp = &pit->second;
 	LOGDEB1(("RclConfig::getFieldPrefix: [%s]->[%s]\n", 
-		 _fld.c_str(), pfx.c_str()));
+		 _fld.c_str(), ft.pfx.c_str()));
 	return true;
     } else {
 	LOGDEB1(("RclConfig::readFieldsConfig: no prefix for field [%s]\n",
 		 fld.c_str()));
+	*ftpp = 0;
 	return false;
     }
 }
@@ -692,47 +715,6 @@ set<string> RclConfig::getIndexedFields()
     list<string> sl = m_fields->getNames("prefixes");
     flds.insert(sl.begin(), sl.end());
     return flds;
-}
-
-// Return specialisations of field name for search expansion 
-// (ie: author->[author, from])
-bool RclConfig::getFieldSpecialisations(const string& fld, 
-					list<string>& children, bool top)
-{
-    if (m_fields == 0)
-        return false;
-    string sclds;
-    children.push_back(fld);
-    if (m_fields->get(fld, sclds, "specialisations")) {
-	list<string> clds;
-	stringToStrings(sclds, clds);
-	for (list<string>::const_iterator it = clds.begin();
-	     it != clds.end(); it++) {
-	    getFieldSpecialisations(*it, children, false);
-	}
-    }
-    if (top) {
-	children.sort();
-	children.unique();
-    }
-    return true;
-}
-
-// 
-bool RclConfig::getFieldSpecialisationPrefixes(const string& fld, 
-					       list<string>& pfxes)
-{
-    list<string> clds;
-    getFieldSpecialisations(fld, clds);
-    for (list<string>::const_iterator it = clds.begin();
-	 it != clds.end(); it++) {
-	string pfx;
-	if (getFieldPrefix(*it, pfx))
-	    pfxes.push_back(pfx);
-    }
-    pfxes.sort();
-    pfxes.unique();
-    return true;
 }
 
 string RclConfig::fieldCanon(const string& f)
@@ -1075,7 +1057,7 @@ void RclConfig::initFrom(const RclConfig& r)
 	mimeview = new ConfStack<ConfSimple>(*(r.mimeview));
     if (r.m_fields)
 	m_fields = new ConfStack<ConfSimple>(*(r.m_fields));
-    m_fldtopfx = r.m_fldtopfx;
+    m_fldtotraits = r.m_fldtotraits;
     m_aliastocanon = r.m_aliastocanon;
     m_storedFields = r.m_storedFields;
     m_xattrtofld = r.m_xattrtofld;

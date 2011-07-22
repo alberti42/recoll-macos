@@ -219,6 +219,7 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
                 LOGERR(("Can't retrieve index min/max dates\n"));
                 //whatever, go on.
             }
+
             if (m_dates.y1 == 0) {
                 m_dates.y1 = minyear;
                 m_dates.m1 = 1;
@@ -572,8 +573,11 @@ void StringToXapianQ::expandTerm(bool nostemexp,
     if (nostemexp && !haswild) {
 	// Neither stemming nor wildcard expansion: just the word
         string pfx;
-        if (!m_field.empty())
-            m_db.fieldToPrefix(m_field, pfx);
+	const FieldTraits *ftp;
+        if (!m_field.empty() && m_db.fieldToTraits(m_field, &ftp)) {
+	    pfx = ftp->pfx;
+	}
+	    
 	sterm = term;
         m_uterms.push_back(sterm);
 	exp.push_front(pfx+term);
