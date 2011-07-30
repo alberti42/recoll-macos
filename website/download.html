@@ -360,50 +360,13 @@ I now use the OpenSUSE build service to create Recoll OpenSUSE packages.
       <p>It seems that Recoll will sometimes find data that Spotlight
         misses (especially inside pdfs apparently, which is probably
         more to the credit of poppler than recoll itself).</p>
-      <p>There is a MacPorts Portfile available for Recoll 1.15.9. It
-        is not in the official MacPorts tree though, but you can use it
-        outside the tree anyway.</p>
-      <p>The following is based on
-      the <a href="http://guide.macports.org/#development.local-repositories">
-          the MacPort documentation</a>. Procedure:</p>
-      <ul>
-        <li>Install <a href="http://www.macports.org/">MacPorts</a>
-          if it's not there yet.</li>
-        <li>Download
-          the <a href="files/macport-recoll-1.15.9.tar.gz">recoll
-            Portfile tree (tar file)</a>.</li> 
-        <li>Decide where you want the local port tree to leave (it's
-          tiny), ie: /Users/myself/macports.</li>
-        <li>Edit /opt/local/etc/macports/sources.conf, and insert a URL
-          pointing to your local repository before the rsync one:
-<pre>
-    file:///Users/myself/macports
-    rsync://rsync.macports.org/release/ports [default]
-</pre>
-        </li>
-        <li>Extract the port tar file inside your local tree:
-<pre>
-    cd /Users/myself/macports
-    tar xvzf /path/to/the/downloaded/macport-recoll-1.15.9.tar.gz
-</pre>
-        </li>
-        <li>Use the MacPorts portindex
-          command in the local repository's directory to create or
-          update the index of the ports in your local repository:
-<pre>
-    cd ~/Users/myself/macports
-    portindex
-</pre>
-          Once the local port is added to the PortIndex, it becomes
-          available for searching or installation as with any other
-          Portfile in the MacPorts
-         tree.
-        </li>
-        <li>Install :) :
-<pre>
-    sudo port install recoll
-</pre>
-      </ul>
+      <p>Recoll is in MacPorts and really easy to install:</p>
+      <ol>
+        <li><a href="https://trac.macports.org/wiki/InstallingMacPorts">
+            Install MacPorts</a>.</li>
+        <li>Type "sudo port install recoll"</li>
+      </ol>
+
       <p>Recoll is then available from the command line. There is
         probably a way to run it in a clicky way, but some more
         advanced mac user will have to point me to it...</p>
