@@ -608,6 +608,12 @@ recoll
           have more sophisticated tools available on your
           system.</para>
 
+        <para>Please be aware that there may be differences between your
+        usual interactive command line environment and the one seen by
+        crontab commands. Especially the PATH variable may be of
+        concern. Please check the crontab manual pages about possible
+        issues.</para>
+
       </sect2>
     </sect1>
 
