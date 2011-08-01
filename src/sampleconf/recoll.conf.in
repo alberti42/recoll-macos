@@ -139,6 +139,23 @@ filtermaxseconds = 1200
 # dictionary generation by setting the following variable:
 # noaspell = 1
 
+# Timing parameters for the real time mode:
+#
+# Seconds between auxiliary databases updates (stemdb, aspell):
+# monauxinterval = 3600
+#
+# Resting time (seconds) during which we let the queue accumulate, in hope
+# that events to the same file will merge, before we start indexing:
+# monixinterval = 30
+#
+# Definitions for files which get a longer delay before reindexing is
+# allowed. This is for fast-changing files, that should only be reindexed
+# once in a while. A list of wildcardPattern:seconds pairs. The patterns
+# are matched with fnmatch(pattern, path, 0) You can quote entries containing
+# white space with double quotes. The default is empty, here follows an
+# example:
+# mondelaypatterns = *.log:20  "*with spaces.*:30"
+
 # If this is set, process the directory where Beagle Web browser plugins
 # copy visited pages for indexing. Of course, Beagle MUST NOT be running,
 # else things will behave strangely. 
