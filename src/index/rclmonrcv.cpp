@@ -128,8 +128,13 @@ void *rclMonRcvRun(void *q)
 	return 0;
     }
 
+    // Make a local copy of the configuration as it doesn't like
+    // concurrent accesses. It's ok to copy it here as the other
+    // thread will not work before we have sent events.
+    RclConfig lconfig(*queue->getConfig());
+
     // Get top directories from config 
-    list<string> tdl = queue->getConfig()->getTopdirs();
+    list<string> tdl = lconfig.getTopdirs();
     if (tdl.empty()) {
 	LOGERR(("rclMonRcvRun:: top directory list (topdirs param.) not"
 		"found in config or Directory list parse error"));
@@ -139,13 +144,13 @@ void *rclMonRcvRun(void *q)
 
     // Walk the directory trees to add watches
     FsTreeWalker walker;
-    walker.setSkippedPaths(queue->getConfig()->getDaemSkippedPaths());
-    WalkCB walkcb(queue->getConfig(), mon, queue, walker);
+    walker.setSkippedPaths(lconfig.getDaemSkippedPaths());
+    WalkCB walkcb(&lconfig, mon, queue, walker);
     for (list<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
-	queue->getConfig()->setKeyDir(*it);
+	lconfig.setKeyDir(*it);
 	// Adjust the follow symlinks options
 	bool follow;
-	if (queue->getConfig()->getConfParam("followLinks", &follow) && 
+	if (lconfig.getConfParam("followLinks", &follow) && 
 	    follow) {
 	    walker.setOpts(FsTreeWalker::FtwFollow);
 	} else {
@@ -156,10 +161,10 @@ void *rclMonRcvRun(void *q)
     }
 
     bool dobeagle = false;
-    queue->getConfig()->getConfParam("processbeaglequeue", &dobeagle);
+    lconfig.getConfParam("processbeaglequeue", &dobeagle);
     if (dobeagle) {
         string beaglequeuedir;
-        if (!queue->getConfig()->getConfParam("beaglequeuedir", beaglequeuedir))
+        if (!lconfig.getConfParam("beaglequeuedir", beaglequeuedir))
             beaglequeuedir = path_tildexpand("~/.beagle/ToIndex/");
         mon->addWatch(beaglequeuedir, true);
     }
