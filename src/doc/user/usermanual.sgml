@@ -683,6 +683,21 @@ fvwm
         your system is short on resources. Periodic indexing is
         adequate in most cases.</para>
 
+      <sect2 id="rcl.indexing.monitor.fastfiles">
+        <title>Slowing down the reindexing rate for fast changing
+        files</title>
+
+        <para>When using the real time monitor, it may happen that some
+        files need to be indexed, but change so often that they impose an
+        excessive load for the system.</para>
+
+        <para>&RCL; provides a configuration option to specify the minimum
+        time before which a file, specified by a wildcard pattern, cannot be
+        reindexed. See the <literal>mondelaypatterns</literal> parameter in
+        the <link linkend="rcl.install.config.recollconf.misc">
+         configuration section</link>.</para>
+
+      </sect2>
     </sect1>
 
   </chapter>
@@ -3561,7 +3576,6 @@ skippedPaths = ~/somedir/&lowast;.txt
         </variablelist>
        </sect3>
 
-
        <sect3 id="rcl.install.config.recollconf.misc">
 	<title>Miscellaneous parameters:</title>
 
@@ -3584,6 +3598,40 @@ skippedPaths = ~/somedir/&lowast;.txt
             daemon.</para>
             </listitem>
           </varlistentry>
+
+
+          <varlistentry><term><literal>mondelaypatterns</literal></term>
+            <listitem><para>This allows specify wildcard path patterns
+            (processed with fnmatch(3) with 0 flag), to match files which
+            change too often and for which a delay should be observed before
+            re-indexing. This is a space-separated list, each entry being a
+            pattern and a time in seconds, separated by a colon. You can
+            use double quotes if a path entry contains white
+            space. Example:</para>  
+              <programlisting>
+mondelaypatterns = *.log:20 "this one has spaces*:10"
+              </programlisting>
+            </listitem>
+           </varlistentry>
+
+          <varlistentry><term><literal>monixinterval</literal></term>
+            <listitem><para>Minimum interval (seconds) for processing the
+            indexing queue. The real time monitor does not process each
+            event when it comes in, but will wait this time for the queue
+            to accumulate to diminish overhead and in order to aggregate
+            multiple events to the same file. Default 30 S.</para>
+            </listitem>
+           </varlistentry>
+
+          <varlistentry><term><literal>monauxinterval</literal></term>
+            <listitem><para>Period (in seconds) at which the real time
+            monitor will regenerate the auxiliary databases (spelling,
+            stemming) if needed. The default is one hour.</para>
+              </listitem>
+           </varlistentry>
+
+
+
 
           <varlistentry><term><literal>filtermaxseconds</literal></term>
             <listitem><para>Maximum filter execution time, after which it

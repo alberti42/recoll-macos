@@ -29,7 +29,7 @@
  * actually a hash map indexed by file path for easy coalescing of
  * multiple events to the same file.
  */
-
+#include <time.h>
 #include <string>
 #include <map>
 
@@ -48,9 +48,18 @@ class RclMonEvent {
     enum EvType {RCLEVT_NONE, RCLEVT_MODIFY, RCLEVT_DELETE, 
 		 RCLEVT_DIRCREATE};
     string m_path;
-    string m_opath;
     EvType m_etyp;
-    RclMonEvent() : m_etyp(RCLEVT_NONE) {}
+
+    ///// For fast changing files: minimum time interval before reindex
+    // Minimum interval (from config)
+    int    m_itvsecs;
+    // Don't process this entry before:
+    time_t m_minclock; 
+    // Changed since put in purgatory after reindex
+    bool   m_needidx;
+
+    RclMonEvent() : m_etyp(RCLEVT_NONE), 
+		    m_itvsecs(0), m_minclock(0), m_needidx(false) {}
 };
 
 enum RclMonitorOption {RCLMON_NONE=0, RCLMON_NOFORK=1, RCLMON_NOX11=2};
