@@ -22,8 +22,8 @@
 #  and/or
 # caption = S ; boost = 10
 # The first line would boost the xapian "within document frequency" of
-# caption terms by a factor of 10 at indexing time. The second one (not
-# currently implemented) would automatically boost the weight of a
+# caption terms by a factor of 10 at indexing time. The second one 
+# (NOT CURRENTLY IMPLEMENTED) would automatically boost the weight of a
 # caption-based field query (ie: caption:mytitle or title:mytitle) at query
 # time.
 
