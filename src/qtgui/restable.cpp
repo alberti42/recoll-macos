@@ -32,6 +32,8 @@
 #include <QPainter>
 #include <QSplitter>
 #include <QClipboard>
+#include <QFileDialog>
+#include <QMessageBox>
 
 #include "recoll.h"
 #include "refcntr.h"
@@ -143,8 +145,9 @@ void ResTableDetailArea::createPopupMenu(const QPoint& pos)
 //// Data model methods
 ////
 
-// Routines used to extract named data from an Rcl::Doc. The basic one just uses the meta map. Others
-// (ie: the date ones) need to do a little processing
+// Routines used to extract named data from an Rcl::Doc. The basic one
+// just uses the meta map. Others (ie: the date ones) need to do a
+// little processing
 static string gengetter(const string& fld, const Rcl::Doc& doc)
 {
     map<string, string>::const_iterator it = doc.meta.find(fld);
@@ -360,6 +363,38 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
     list<string> lr;
     g_hiliter.plaintorich(m_getters[index.column()](colname, doc), lr, m_hdata);
     return QString::fromUtf8(lr.front().c_str());
+}
+
+void RecollModel::saveAsCSV(FILE *fp)
+{
+    if (m_source.isNull())
+	return;
+
+    int cols = columnCount();
+    int rows = rowCount();
+    vector<string> tokens;
+
+    for (int col = 0; col < cols; col++) {
+	QString qs = headerData(col, Qt::Horizontal,Qt::DisplayRole).toString();
+	tokens.push_back((const char *)qs.toUtf8());
+    }
+    string csv;
+    stringsToCSV(tokens, csv);
+    fprintf(fp, "%s\n", csv.c_str());
+    tokens.clear();
+
+    for (int row = 0; row < rows; row++) {
+	Rcl::Doc doc;
+	if (!m_source->getDoc(row, doc)) {
+	    continue;
+	}
+	for (int col = 0; col < cols; col++) {
+	    tokens.push_back(m_getters[col](m_fields[col], doc));
+	}
+	stringsToCSV(tokens, csv);
+	fprintf(fp, "%s\n", csv.c_str());
+	tokens.clear();
+    }
 }
 
 // This gets called when the column headers are clicked
@@ -594,6 +629,27 @@ void ResTable::resetSource()
     setDocSource(RefCntr<DocSequence>());
 }
 
+void ResTable::saveAsCSV()
+{
+    LOGDEB(("ResTable::saveAsCSV\n"));
+    if (!m_model)
+	return;
+    QString s = 
+	QFileDialog::getSaveFileName(this, //parent
+				     tr("Save table to CSV file"),
+				     QString::fromLocal8Bit(path_home().c_str())
+	    );
+    const char *tofile = s.toLocal8Bit();
+    FILE *fp = fopen(tofile, "w");
+    if (fp == 0) {
+	QMessageBox::warning(0, "Recoll", 
+			     tr("Can't open/create file: ") + s);
+	return;
+    }
+    m_model->saveAsCSV(fp);
+    fclose(fp);
+}
+
 // This is called when the sort order is changed from another widget
 void ResTable::onSortDataChanged(DocSeqSortSpec spec)
 {
@@ -804,6 +860,9 @@ void ResTable::createHeaderPopupMenu(const QPoint& pos)
     QMenu *popup = new QMenu(this);
 
     popup->addAction(tr("&Reset sort"), this, SLOT(resetSort()));
+    popup->addSeparator();
+
+    popup->addAction(tr("&Save as CSV"), this, SLOT(saveAsCSV()));
     popup->addSeparator();
 
     popup->addAction(tr("&Delete column"), this, SLOT(deleteColumn()));

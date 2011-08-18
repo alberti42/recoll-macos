@@ -42,8 +42,8 @@ public:
 				 int role = Qt::DisplayRole ) const;
     virtual QVariant data(const QModelIndex& index, 
 			   int role = Qt::DisplayRole ) const;
+    virtual void saveAsCSV(FILE *fp);
     virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
-
     // Specific methods
     virtual void readDocSource();
     virtual void setDocSource(RefCntr<DocSequence> nsource);
@@ -136,6 +136,7 @@ public slots:
     virtual void deleteColumn();
     virtual void addColumn();
     virtual void resetSort(); // Revert to natural (relevance) order
+    virtual void saveAsCSV(); 
     virtual void linkWasClicked(const QUrl&);
     virtual void makeRowVisible(int row);
 

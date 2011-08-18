@@ -94,6 +94,13 @@ template <class T> bool stringToStrings(const string& s, T &tokens,
 template <class T> void stringsToString(const T &tokens, string &s);
 
 /**
+ * Strings to CSV string. tokens containing the separator are quoted (")
+ * " inside tokens is escaped as "" ([word "quote"] =>["word ""quote"""]
+ */
+template <class T> void stringsToCSV(const T &tokens, string &s, 
+					char sep = ',');
+
+/**
  * Split input string. No handling of quoting
  */
 extern void stringToTokens(const string &s, vector<string> &tokens, 

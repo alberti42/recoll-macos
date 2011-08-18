@@ -320,6 +320,36 @@ template void stringsToString<list<string> >(const list<string> &, string &);
 template void stringsToString<vector<string> >(const vector<string> &,string &);
 template void stringsToString<set<string> >(const set<string> &, string &);
 
+template <class T> void stringsToCSV(const T &tokens, string &s, 
+				     char sep)
+{
+    s.erase();
+    for (typename T::const_iterator it = tokens.begin();
+	 it != tokens.end(); it++) {
+	bool needquotes = false;
+	if (it->empty() || 
+	    it->find_first_of(string(1, sep) + "\"\n") != string::npos)
+	    needquotes = true;
+	if (it != tokens.begin())
+	    s.append(1, sep);
+	if (needquotes)
+	    s.append(1, '"');
+	for (unsigned int i = 0; i < it->length(); i++) {
+	    char car = it->at(i);
+	    if (car == '"') {
+		s.append(2, '"');
+	    } else {
+		s.append(1, car);
+	    }
+	}
+	if (needquotes)
+	    s.append(1, '"');
+    }
+}
+template void stringsToCSV<list<string> >(const list<string> &, string &, char);
+template void stringsToCSV<vector<string> >(const vector<string> &,string &, 
+					    char);
+
 void stringToTokens(const string& str, vector<string>& tokens,
 		    const string& delims, bool skipinit)
 {
@@ -1045,7 +1075,7 @@ int main(int argc, char **argv)
         cerr << "[" << *it << "] ";
     cerr << endl;
     exit(0);
-#elif 1
+#elif 0
     if (argc <=0 ) {
         cerr << "Usage: smallut <dateinterval>" << endl;
         exit(1);
@@ -1126,7 +1156,15 @@ int main(int argc, char **argv)
     in = "a: %a title: %(title) pcpc: %% %";
     pcSubst(in, out, substs);
     cout << "After map clear: " << in << " => " << out << endl;
-
+#elif 1
+    list<string> tokens;
+    tokens.push_back("");
+    tokens.push_back("a,b");
+    tokens.push_back("simple value");
+    tokens.push_back("with \"quotes\"");
+    string out;
+    stringsToCSV(tokens, out);
+    cout << "CSV line: [" << out << "]" << endl;
 #endif
 
 }
