@@ -70,6 +70,7 @@ application/vnd.sun.xml.writer.template = exec rclsoff
 application/vnd.wordperfect = exec wpd2html;mimetype=text/html
 application/x-abiword = exec rclabw
 application/x-awk = internal text/plain
+application/x-chm = execm rclchm
 application/x-dvi = exec rcldvi
 application/x-flac = execm rclaudio
 application/x-gnuinfo = execm rclinfo
@@ -77,10 +78,10 @@ application/x-kword = exec rclkwd
 application/x-lyx = exec rcllyx
 application/x-mimehtml = internal message/rfc822
 application/x-perl = internal text/plain
+application/x-rar = execm rclrar
 application/x-scribus = exec rclscribus
 application/x-shellscript = internal text/plain
 application/x-tex = exec rcltex
-application/x-chm = execm rclchm
 application/x-webarchive = execm rclwar
 application/zip = execm rclzip;charset=default
 audio/mpeg = execm rclaudio
@@ -269,4 +270,5 @@ other = application/vnd.sun.xml.draw \
         application/vnd.sun.xml.draw.template \
         application/vnd.sun.xml.math \
         application/x-fsdirectory \
-	application/zip 
+        application/x-rar \
+	application/zip \

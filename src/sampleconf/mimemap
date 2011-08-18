@@ -44,6 +44,7 @@
 .gz = application/x-gzip
 .Z = application/x-gzip
 .bz2 = application/x-bzip2
+.rar = application/x-rar
 #.Z  = application/x-compress
 .zip = application/zip
 

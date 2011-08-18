@@ -2947,6 +2947,11 @@ while query.next >= 0 and query.next < nres:
 	<listitem><para>Zip archives need <application>Python</application>
 	(and the standard zipfile module).</para></listitem>
 
+	<listitem><para>Rar archives need
+	<application>Python</application>, the
+	<application>rarfile</application> Python module and the
+	<command>unrar</command> utility.</para></listitem>
+
 	<listitem><para>Midi karaoke files need
 	<application>Python</application> and the 
         <ulink url="http://pypi.python.org/pypi/midi/0.2.1">
