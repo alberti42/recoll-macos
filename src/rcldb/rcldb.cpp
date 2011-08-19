@@ -1134,6 +1134,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     if (!doc.meta[Doc::keytt].empty())
 	RECORD_APPEND(record, keycap, doc.meta[Doc::keytt]);
 
+    trimstring(doc.meta[Doc::keykw], " \t\r\n");
     doc.meta[Doc::keykw] = 
 	neutchars(truncate_to_word(doc.meta[Doc::keykw], 300), nc);
     if (!doc.meta[Doc::keykw].empty())
@@ -1146,6 +1147,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     bool syntabs = false;
     // Note that the map accesses by operator[] create empty entries if they
     // don't exist yet.
+    trimstring(doc.meta[Doc::keyabs], " \t\r\n");
     if (doc.meta[Doc::keyabs].empty()) {
 	syntabs = true;
 	if (!doc.text.empty())
