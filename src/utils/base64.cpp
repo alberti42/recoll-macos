@@ -23,65 +23,115 @@
 using std::string;
 #endif /* NO_NAMESPACES */
 
-//#define DEBUG_BASE64 
+#undef DEBUG_BASE64 
 #ifdef DEBUG_BASE64
 #define DPRINT(X) fprintf X
 #else
 #define DPRINT(X)
 #endif
 
-// This is adapted from FreeBSD's code.
+// This is adapted from FreeBSD's code, quite modified for performance.
+// Tests on a Mac pro 2.1G with a 166MB base64 file
+//
+// The original version used strchr to lookup the base64 value from
+// the input code:
+//   real    0m13.053s user  0m12.574s sys   0m0.471s
+// Using a direct access, 256 entries table:
+//   real    0m3.073s user   0m2.600s sys    0m0.439s
+// Using a variable to hold the array length (instead of in.length()):
+//   real    0m2.972s user   0m2.527s sys    0m0.433s
+// Using values from the table instead of isspace() (final)
+//   real    0m2.513s user   0m2.059s sys    0m0.439s
+//
+// The table has one entry per char value (0-256). Invalid base64
+// chars take value 256, whitespace 255, Pad ('=') 254. 
+// Valid char points contain their base64 value (0-63) 
+static const int b64values[] = {
+/* 0 */ 256,/* 1 */ 256,/* 2 */ 256,/* 3 */ 256,/* 4 */ 256,
+/* 5 */ 256,/* 6 */ 256,/* 7 */ 256,/* 8 */ 256,
+/*9 ht */ 255,/* 10 nl */ 255,/* 11 vt */ 255,/* 12 np/ff*/ 255,/* 13 cr */ 255,
+/* 14 */ 256,/* 15 */ 256,/* 16 */ 256,/* 17 */ 256,/* 18 */ 256,/* 19 */ 256,
+/* 20 */ 256,/* 21 */ 256,/* 22 */ 256,/* 23 */ 256,/* 24 */ 256,/* 25 */ 256,
+/* 26 */ 256,/* 27 */ 256,/* 28 */ 256,/* 29 */ 256,/* 30 */ 256,/* 31 */ 256,
+/* 32 sp  */ 255,
+/* ! */ 256,/* " */ 256,/* # */ 256,/* $ */ 256,/* % */ 256,
+/* & */ 256,/* ' */ 256,/* ( */ 256,/* ) */ 256,/* * */ 256,
+/* + */ 62,
+/* , */ 256,/* - */ 256,/* . */ 256,
+/* / */ 63,
+/* 0 */ 52,/* 1 */ 53,/* 2 */ 54,/* 3 */ 55,/* 4 */ 56,/* 5 */ 57,/* 6 */ 58,
+/* 7 */ 59,/* 8 */ 60,/* 9 */ 61,
+/* : */ 256,/* ; */ 256,/* < */ 256,
+/* = */ 254,
+/* > */ 256,/* ? */ 256,/* @ */ 256,
+/* A */ 0,/* B */ 1,/* C */ 2,/* D */ 3,/* E */ 4,/* F */ 5,/* G */ 6,/* H */ 7,
+/* I */ 8,/* J */ 9,/* K */ 10,/* L */ 11,/* M */ 12,/* N */ 13,/* O */ 14,
+/* P */ 15,/* Q */ 16,/* R */ 17,/* S */ 18,/* T */ 19,/* U */ 20,/* V */ 21,
+/* W */ 22,/* X */ 23,/* Y */ 24,/* Z */ 25,
+/* [ */ 256,/* \ */ 256,/* ] */ 256,/* ^ */ 256,/* _ */ 256,/* ` */ 256,
+/* a */ 26,/* b */ 27,/* c */ 28,/* d */ 29,/* e */ 30,/* f */ 31,/* g */ 32,
+/* h */ 33,/* i */ 34,/* j */ 35,/* k */ 36,/* l */ 37,/* m */ 38,/* n */ 39,
+/* o */ 40,/* p */ 41,/* q */ 42,/* r */ 43,/* s */ 44,/* t */ 45,/* u */ 46,
+/* v */ 47,/* w */ 48,/* x */ 49,/* y */ 50,/* z */ 51,
+/* { */ 256,/* | */ 256,/* } */ 256,/* ~ */ 256,
+256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,
+256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,
+256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,
+256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,
+256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,
+256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,256,
+256,256,256,256,256,256,256,256,
+};
 static const char Base64[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 static const char Pad64 = '=';
+
 bool base64_decode(const string& in, string& out)
 {
     int io = 0, state = 0, ch = 0;
-    const char *pos;
     unsigned int ii = 0;
     out.erase();
-    out.reserve(in.length());
+    size_t ilen = in.length();
+    out.reserve(ilen);
 
-    for (ii = 0; ii < in.length(); ii++) {
-	ch = in[ii];
-	if (isspace((unsigned char)ch))        /* Skip whitespace anywhere. */
+    for (ii = 0; ii < ilen; ii++) {
+	ch = (unsigned char)in[ii];
+	int value = b64values[ch];
+
+	if (value == 255)        /* Skip whitespace anywhere. */
 	    continue;
-
 	if (ch == Pad64)
 	    break;
-
-	pos = strchr(Base64, ch);
-	if (pos == 0) {
+	if (value == 256) {
 	    /* A non-base64 character. */
 	    DPRINT((stderr, "base64_dec: non-base64 char at pos %d\n", ii));
 	    return false;
 	}
 
-
 	switch (state) {
 	case 0:
-	    out += (pos - Base64) << 2;
+	    out += value << 2;
 	    state = 1;
 	    break;
 	case 1:
-	    out[io]   |=  (pos - Base64) >> 4;
-	    out += ((pos - Base64) & 0x0f) << 4 ;
+	    out[io]   |=  value >> 4;
+	    out += (value & 0x0f) << 4 ;
 	    io++;
 	    state = 2;
 	    break;
 	case 2:
-	    out[io]   |=  (pos - Base64) >> 2;
-	    out += ((pos - Base64) & 0x03) << 6;
+	    out[io]   |=  value >> 2;
+	    out += (value & 0x03) << 6;
 	    io++;
 	    state = 3;
 	    break;
 	case 3:
-	    out[io] |= (pos - Base64);
+	    out[io] |= value;
 	    io++;
 	    state = 0;
 	    break;
 	default:
-	    DPRINT((stderr, "base64_dec: internal!bad state!\n"));
+	    fprintf(stderr, "base64_dec: internal!bad state!\n");
 	    return false;
 	}
     }
@@ -154,7 +204,7 @@ bool base64_decode(const string& in, string& out)
     }
 
     DPRINT((stderr, "base64_dec: ret ok, io %d sz %d len %d value [%s]\n", 
-	    io, out.size(), out.length(), out.c_str()));
+	    io, (int)out.size(), (int)out.length(), out.c_str()));
     return true;
 }
 
