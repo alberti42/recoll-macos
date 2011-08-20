@@ -448,9 +448,13 @@ bool MimeHandlerMbox::next_document()
 		    // the best
 		    hademptyline = false;
 		}
-		if (!regexec(&fromregex, line, 0, 0, 0) || 
+		/* The 'F' compare is redundant but it improves performance
+		   A LOT */
+		if (line[0] == 'F' && (
+		    !regexec(&fromregex, line, 0, 0, 0) || 
 		    ((m_quirks & MBOXQUIRK_TBIRD) && 
-		     !regexec(&minifromregex, line, 0, 0, 0)) ) {
+		     !regexec(&minifromregex, line, 0, 0, 0)))
+		    ) {
 		    LOGDEB1(("MimeHandlerMbox: msgnum %d, "
 		     "From_ at line %d: [%s]\n", m_msgnum, m_lineno, line));
 		    if (storeoffsets)
@@ -562,7 +566,7 @@ int main(int argc, char **argv)
 	exit(1);
     }
     config->setKeyDir(path_getfather(filename));
-    MimeHandlerMbox mh("text/x-mail");
+    MimeHandlerMbox mh(config, "text/x-mail");
     if (!mh.set_document_file(filename)) {
 	cerr << "set_document_file failed" << endl;
 	exit(1);
