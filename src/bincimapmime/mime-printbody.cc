@@ -93,7 +93,7 @@ void Binc::MimePart::getBody(string &s,
 {
   mimeSource->reset();
   mimeSource->seek(bodystartoffsetcrlf + startoffset);
-
+  s.reserve(length);
   if (startoffset + length > bodylength)
     length = bodylength - startoffset;
 

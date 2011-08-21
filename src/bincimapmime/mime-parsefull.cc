@@ -339,8 +339,10 @@ static bool skipUntilBoundary(const string &delimiter,
     if (!delimiterqueue)
       continue;
 
-    delimiterqueue[delimiterpos++ % endpos] = c;
-
+    delimiterqueue[delimiterpos++] = c;
+    if (delimiterpos ==  endpos)
+      delimiterpos = 0;
+      
     if (compareStringToQueue(delimiterStr, delimiterqueue,
 			     delimiterpos, endpos)) {
       foundBoundary = true;
@@ -535,7 +537,6 @@ static void parseSinglePart(const string &toboundary,
     boundaryqueue = new char[endpos];
     memset(boundaryqueue, 0, endpos);
   }
-  int boundarypos = 0;
 
   *boundarysize = 0;
 
@@ -543,6 +544,7 @@ static void parseSinglePart(const string &toboundary,
   string line;
   bool toboundaryIsEmpty = (toboundary == "");
   char c;
+  int boundarypos = 0;
   while (mimeSource->getChar(&c)) {
     if (c == '\n') { ++*nbodylines; ++*nlines; }
 
@@ -550,7 +552,9 @@ static void parseSinglePart(const string &toboundary,
       continue;
 
     // find boundary
-    boundaryqueue[boundarypos++ % endpos] = c;
+    boundaryqueue[boundarypos++] = c;
+    if (boundarypos == endpos)
+      boundarypos = 0;
       
     if (compareStringToQueue(_toboundaryStr, boundaryqueue,
 			     boundarypos, endpos)) {

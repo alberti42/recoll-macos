@@ -42,9 +42,12 @@ using namespace ::std;
 inline bool compareStringToQueue(const char *s_in, char *bqueue,
 				 int pos, int size)
 {
-  for (int i = 0; i < size; ++i)
-    if (s_in[i] != bqueue[(pos + i) % size])
+  for (int i = 0; i < size; ++i)  {
+    if (s_in[i] != bqueue[pos])
       return false;
+    if (++pos == size)
+      pos = 0;
+  }
 
   return true;
 }
