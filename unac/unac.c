@@ -10438,31 +10438,6 @@ void unac_debug_callback(int level, unac_debug_print_t function, void* data)
 #define DEBUG_APPEND
 #endif /* UNAC_DEBUG_AVAILABLE */
 
-
-/*
- * If UTF-16BE exists, use it. If not, use UTF-16 and hope it is
- * encoded in big endian. This fallback is a iconv related
- * compatibility hack introduced in some GNU/Linux distributions that
- * did not know UTF-16BE.
- */
-static const char* utf16be(void)
-{
-  iconv_t cd;
-  static char* name = 0;
-
-  if(name == 0) {
-    if((cd = iconv_open("UTF-16BE", "UTF-16BE")) == (iconv_t)-1) {
-      if(debug_level >= UNAC_DEBUG_LOW) DEBUG("could not find UTF-16BE (see iconv -l), using UTF-16. If UTF-16 happens to be encoded in little endian, be prepared for an horrible mess.");
-      name = "UTF-16";
-    } else {
-      iconv_close(cd);
-      name = "UTF-16BE";
-    }
-  }
-
-  return name;
-}
-
 int unacmaybefold_string_utf16(const char* in, size_t in_length,
 		      char** outp, size_t* out_lengthp, int dofold)
 {
@@ -10586,6 +10561,10 @@ static int convert(const char* from, const char* to,
 		   const char* in, size_t in_length,
 		   char** outp, size_t* out_lengthp);
 
+static const char *utf16be = "UTF-16BE";
+static iconv_t u8tou16_cd = (iconv_t)-1;
+static iconv_t u16tou8_cd = (iconv_t)-1;
+
 /*
  * Convert buffer <in> containing string encoded in charset <from> into
  * a string in charset <to> and return it in buffer <outp>. The <outp>
@@ -10602,8 +10581,29 @@ static int convert(const char* from, const char* to,
   size_t out_remain;
   size_t out_size;
   char* out_base;
-  int from_utf16 = !strcmp(utf16be(), from);
+  int from_utf16, from_utf8, to_utf16, to_utf8, u8tou16, u16tou8;
   const char space[] = { 0x00, 0x20 };
+
+  if (!strcmp(utf16be, from)) {
+      from_utf8 = 0;
+      from_utf16 = 1;
+  } else if (!strcasecmp("UTF-8", from)) {
+      from_utf8 = 1;
+      from_utf16 = 0;
+  } else {
+      from_utf8 = from_utf16 = 0;
+  }
+  if (!strcmp(utf16be, to)) {
+      to_utf8 = 0;
+      to_utf16 = 1;
+  } else if (!strcasecmp("UTF-8", to)) {
+      to_utf8 = 1;
+      to_utf16 = 0;
+  } else {
+      to_utf8 = to_utf16 = 0;
+  }
+  u16tou8 = from_utf16 && to_utf8;
+  u8tou16 = from_utf8 && to_utf16;
 
   out_size = in_length > 0 ? in_length : 1024;
   if(*outp) {
@@ -10628,9 +10628,30 @@ static int convert(const char* from, const char* to,
   out_remain = out_size;
   out_base = out;
 
-  if((cd = iconv_open(to, from)) == (iconv_t)-1) {
-    return -1;
+  if (u8tou16) {
+      if (u8tou16_cd == (iconv_t)-1) {
+	  if((u8tou16_cd = iconv_open(to, from)) == (iconv_t)-1) {
+	      return -1;
+	  }
+      } else {
+	  iconv(u8tou16_cd, 0, 0, 0, 0);
+      }
+      cd = u8tou16_cd;
+  } else if (u16tou8) {
+      if (u16tou8_cd == (iconv_t)-1) {
+	  if((u16tou8_cd = iconv_open(to, from)) == (iconv_t)-1) {
+	      return -1;
+	  }
+      } else {
+	  iconv(u16tou8_cd, 0, 0, 0, 0);
+      }
+      cd = u16tou8_cd;
+  } else {
+      if((cd = iconv_open(to, from)) == (iconv_t)-1) {
+	  return -1;
+      }
   }
+
   do {
     if(iconv(cd, (ICONV_CONST char **) &in, &in_length, &out, &out_remain) == (size_t)-1) {
       switch(errno) {
@@ -10703,7 +10724,9 @@ static int convert(const char* from, const char* to,
       }
     }
   } while(in_length > 0);
-  iconv_close(cd);
+
+  if (!u8tou16 && !u16tou8)
+      iconv_close(cd);
 
   *outp = out_base;
   *out_lengthp = out - out_base;
@@ -10733,14 +10756,14 @@ int unacmaybefold_string(const char* charset,
     char* utf16_unaccented = 0;
     size_t utf16_unaccented_length = 0;
   
-    if(convert(charset, utf16be(), in, in_length, &utf16, &utf16_length) < 0) {
+    if(convert(charset, utf16be, in, in_length, &utf16, &utf16_length) < 0) {
       return -1;
     }
 
     unacmaybefold_string_utf16(utf16, utf16_length, &utf16_unaccented, &utf16_unaccented_length, dofold);
     free(utf16);
 
-    if(convert(utf16be(), charset, utf16_unaccented, utf16_unaccented_length, outp, out_lengthp) < 0) {
+    if(convert(utf16be, charset, utf16_unaccented, utf16_unaccented_length, outp, out_lengthp) < 0) {
       return -1;
     }
     free(utf16_unaccented);

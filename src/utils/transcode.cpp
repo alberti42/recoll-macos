@@ -37,8 +37,8 @@ using std::string;
 #endif
 
 // We gain approximately 28% exec time for word at a time conversions by
-// caching the iconv_open thing. This is probably not worth it.
-//#define ICONV_CACHE_OPEN
+// caching the iconv_open thing. 
+#define ICONV_CACHE_OPEN
 
 bool transcode(const string &in, string &out, const string &icode,
 	       const string &ocode, int *ecnt)
