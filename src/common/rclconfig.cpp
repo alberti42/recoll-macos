@@ -248,8 +248,6 @@ void RclConfig::setKeyDir(const string &dir)
 
     if (!m_conf->get("defaultcharset", defcharset, m_keydir))
 	defcharset.erase();
-
-    getConfParam("guesscharset", &guesscharset);
 }
 
 bool RclConfig::getConfParam(const string &name, int *ivp)
@@ -1065,7 +1063,6 @@ void RclConfig::initFrom(const RclConfig& r)
 	m_stopsuffixes = new SuffixStore(*((SuffixStore*)r.m_stopsuffixes));
     m_maxsufflen = r.m_maxsufflen;
     defcharset = r.defcharset;
-    guesscharset = r.guesscharset;
 
     m_stpsuffstate.init(this, mimemap, r.m_stpsuffstate.paramname);
     m_skpnstate.init(this, m_conf, r.m_skpnstate.paramname);

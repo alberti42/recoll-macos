@@ -126,8 +126,6 @@ class RclConfig {
     /** Get default charset for current keydir (was set during setKeydir) 
      * filenames are handled differently */
     const string &getDefCharset(bool filename = false);
-    /** Get guessCharset for current keydir (was set during setKeydir) */
-    bool getGuessCharset() {return guesscharset;}
 
     /** Get list of top directories. This is needed from a number of places
      * and needs some cleaning-up code. An empty list is always an error, no
@@ -273,8 +271,7 @@ class RclConfig {
     list<string> m_skpnlist;
 
     // Parameters auto-fetched on setkeydir
-    string defcharset;   // These are stored locally to avoid 
-    bool   guesscharset; // They are fetched initially or on setKeydir()
+    string defcharset;
     // Limiting set of mime types to be processed. Normally empty.
     ParamStale    m_rmtstate;
     set<string>   m_restrictMTypes; 
