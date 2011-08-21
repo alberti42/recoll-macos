@@ -40,14 +40,14 @@
       <h2>Caveats</h2>
 
 
-      <p><em>Installing over an older version</em>: 1.16 snapshots are
-      fully compatible with 1.15 indexes for now. Perform a full index
-      pass if installing over an older version. The simplest way to do
-      this is to quit all recoll programs and just delete the index
-      directory
-      (<span class="literal">rm&nbsp;-rf&nbsp;~/.recoll/xapiandb</span>). 
-      <span class="literal">recollindex&nbsp;-z</span>
-      will do the same in most cases.</p> 
+      <p><em>Installing over an older version</em>: 1.16 is
+        mostly compatible with 1.15 indexes (except for a few
+        differences for really weird terms). Perform a full index pass
+        if installing over an older version. The simplest way to do
+        this is to quit all recoll programs and just delete the index
+        directory
+        (<span class="literal">rm&nbsp;-rf&nbsp;~/.recoll/xapiandb</span>).  <span class="literal">recollindex&nbsp;-z</span>
+        will do the same in most cases.</p>
 
 
       <h2>Changes</h2>
@@ -56,19 +56,54 @@
 
       <ul>
 
-        <li>Searches now allow negative directory filtering (all
-          results except from the specified directory). Other attempts
-          at still impossible negative searches
-          (ie: <span class="literal">-mime:</span> now cause
-          explicit errors messages instead of lame results. The
-          inverted directory filtering is accessible from the query
-          language and by checking a checkbox in the advanced search panel.</li>
+        <li>We can now perform negative directory filtering (-dir:/some/dir),
+          to return all results except those from the
+          specified directory (recursive). Other attempts at still
+          impossible negative searches
+          (ie: <span class="literal">-mime:</span>) now cause explicit
+          errors messages instead of lame results. The inverted
+          directory filtering is accessible from the query language
+          and by checking a checkbox in the advanced search
+          panel.</li>
 
-        <li>The GUI advanced search panel now allows specifying a
+        <li>It is now possible to set an increased weight for indexing
+          some fields. The title fields gets a boost by default. See
+          the <tt>fields</tt> default file for details.</li>
+
+        <li>The query language allows setting weights on terms, ie,
+          as in: <tt>"important"2.5</tt> .</li>
+
+        <li>The GUI advanced search panel allows specifying a
           field for each entry (ie: author/recipient, etc).</li>
+
+        <li>It is possible to configure the result list snippet
+           separator, given as an html fragment. This is an ellipsis by
+          default (&amp;hellip;). </li>
+
+        <li>The preview window popup menu has a "save to file" entry
+          to write a subdocument (ie: mail attachement) to a file.</li>
+
+        <li>Images are displayed in preview. You can get at the fields
+          and complete extracted text using the popup menu.</li>
+
+        <li>Improved preservation of indentation for text files
+          displayed in the preview window.</li>
+
+        <li>Show hidden (dot) files in the indexing configuration
+          GUI dialogs.</li>
 
         <li>Added filters for .war (Konqueror web archive) and .mhtm (other web
           archive format).</li>
+
+        <li>Improved handling for native cjk punctuation signs.</li>
+
+        <li>Updated the list of native apps in the
+          default <tt>mimeview</tt> (ie: xv->gwenview, rox->dolphin,
+          etc.)</li>
+
+        <li>Added -f option to recollindex to ignore
+          skippedPaths/Names when used with -i. Allows the use of a
+          purely external file selection mechanism.</li>
 
         <li>Result table:
           <ul>
@@ -80,6 +115,23 @@
               adjust row height and vertical text position in
               cells.</li>
           </ul>
+        </li>
+
+        <li>Real time indexer: several configuration
+          parameters allow adjusting the timing of indexing actions:
+          <ul>
+            <li><tt>monauxinterval</tt>: the interval between auxiliary
+              databases rebuilds (stemdb, aspell).</li>
+            <li><tt>monixinterval</tt>: The waiting period
+              during which indexing events are accumulated prior to actual
+              indexing (saves work on duplicate events).</li>
+            <li><tt>mondelaypatterns</tt>: a list of file patterns for
+              which indexing should be delayed longer (quick changing
+              files like logs that should be reindexed much slower than
+              they change).</li>
+          </ul>
+          See the default configuration file for more detail.
+        </li>
 
         <li>Fixed bugs:
           <ul>
@@ -91,6 +143,15 @@
             <li>Fixed case where indexing could hang or crash after an
               error occured while indexing an archive member (which
               should have affected only the relevant document).</li>
+            <li>Real time indexer: uncontrolled concurrent access to
+              the global configuration could cause a startup crash (mostly of
+              big file trees because of timing issues).</li>
+            <li>Fixed sorting by document and file size in the result
+              table.</li> 
+            <li>Email messages for which there would be an error indexing
+              an attachment would not be indexed at all.</li>
+            <li>Text files bigger than 2 GB could not be indexed.</li>
+            <li>Fixed the handling of compressed man pages.</li>
           </ul>
         </li>
 

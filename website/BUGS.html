@@ -49,11 +49,21 @@
           use the standalone recollindex program instead of the GUI
           thread.</li>
 
+        <li>Real time indexer: uncontrolled concurrent access to
+          the global configuration can cause a startup crash (mostly of
+          big file trees because of timing issues).</li>
 
+        <li>Sorting by document and file size in the result table does
+          not work.</li>
+
+        <li>Email messages for which there would be an error indexing
+          an attachment would not be indexed at all.</li>
+        <li>Text files bigger than 2 GB can not be indexed.</li>
         <li>After an upgrade, the recoll GUI sometimes crashes on
           startup. This is fixed by removing (back it up just in case)
           ~/.config/Recoll.org/recoll.conf, the QSettings storage for
           recoll.</li> 
+        <li>Compressed man pages could not be previewed.</li>
 
         <li>Performing a full index with release 1.11 or newer, over a
           version created with a much older recoll release may
