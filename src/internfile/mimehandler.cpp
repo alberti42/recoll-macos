@@ -42,11 +42,6 @@ using namespace std;
 // handlers. There can be several instances for a given mime type
 // (think email attachment in email message: 2 rfc822 handlers are
 // needed simulteanously)
-//
-// FIXME: this is not compatible with multiple threads and a potential
-// problem in the recoll gui (indexing thread + preview request). A
-// simple lock should be enough as handlers are removed from the cache
-// while in use and multiple copies are allowed
 static multimap<string, Dijon::Filter*>  o_handlers;
 static PTMutexInit o_handlers_mutex;
 
