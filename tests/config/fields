@@ -1,0 +1,4 @@
+[prefixes]
+testfield = TSTFLD
+[stored]
+testfield=
