@@ -4,7 +4,6 @@ syntax: glob
 *.dep.stamp
 *~
 \#*
-
 src/Makefile
 src/autom4te.cache
 src/bincimapmime/alldeps
@@ -60,6 +59,7 @@ src/doc/user/usermanual.txt
 src/filters/rclexecm.pyc
 src/filters/rcllatinclass.pyc
 src/index/alldeps
+src/index/alldeps.stamp
 src/index/recollindex
 src/kde/kioslave/kio_recoll/builddir
 src/lib/alldeps
@@ -73,6 +73,7 @@ src/qtgui/Makefile
 src/qtgui/i18n/*.qm
 src/qtgui/qrc_recoll.cpp
 src/qtgui/recoll
+src/qtgui/recoll.app
 src/qtgui/recoll.pro
 src/query/alldeps
 src/query/recollq
@@ -80,5 +81,9 @@ src/query/xadump
 src/recollinstall
 src/sampleconf/rclmon.sh
 src/sampleconf/recoll.conf
+tests/config/history
+tests/config/index.pid
+tests/config/missing
+tests/config/xapiandb
 tests/indexedmimetypes/index.pid 
 website/usermanual/*
