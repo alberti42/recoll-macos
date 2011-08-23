@@ -1,2 +1,2 @@
 1 results 
-application/x-fsdirectory	[file:///home/dockes/projets/fulltext/testrecoll/emptyUniqueTerm]	[emptyUniqueTerm]	512	bytes	
+application/x-fsdirectory	[file:///Users/dockes/projets/fulltext/testrecoll/emptyUniqueTerm]	[emptyUniqueTerm]	512	bytes	

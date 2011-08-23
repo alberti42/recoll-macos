@@ -1,4 +1,4 @@
 1 results 
-application/x-empty	[file:///home/dockes/projets/fulltext/testrecoll/notypes/énervé_uniqueTerm.xfy]	[Ã©nervÃ©_uniqueTerm.xfy]	0	bytes	
+application/x-empty	[file:///Users/dockes/projets/fulltext/testrecoll/notypes/énervé_uniqueTerm.xfy]	[Ã©nervÃ©_uniqueTerm.xfy]	0	bytes	
 1 results 
-text/plain	[file:///home/dockes/projets/fulltext/testrecoll/notypes/notype1.xfx]	[notype1.xfx]	64	bytes	
+text/plain	[file:///Users/dockes/projets/fulltext/testrecoll/notypes/notype1.xfx]	[notype1.xfx]	64	bytes	

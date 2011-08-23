@@ -1,2 +1,2 @@
 1 results 
-text/plain	[file:///home/dockes/projets/fulltext/testrecoll/skipped/rlyskipped/shouldnotbeskipped.txt]	[shouldnotbeskipped.txt]	48	bytes	
+text/plain	[file:///Users/dockes/projets/fulltext/testrecoll/skipped/rlyskipped/shouldnotbeskipped.txt]	[shouldnotbeskipped.txt]	48	bytes	

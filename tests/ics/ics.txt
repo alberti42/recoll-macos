@@ -1,2 +1,2 @@
 1 results
-text/plain	[file:///home/dockes/projets/fulltext/testrecoll/ics/icsfile1.ics]	[icsfile1.ics]	557	bytes	
+text/plain	[file:///Users/dockes/projets/fulltext/testrecoll/ics/icsfile1.ics]	[icsfile1.ics]	557	bytes	
