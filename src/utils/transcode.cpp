@@ -43,8 +43,9 @@ using std::string;
 bool transcode(const string &in, string &out, const string &icode,
 	       const string &ocode, int *ecnt)
 {
+    LOGDEB(("Transcode: %s -> %s\n", icode.c_str(), ocode.c_str()));
 #ifdef ICONV_CACHE_OPEN
-    static iconv_t ic;
+    static iconv_t ic = (iconv_t)-1;
     static string cachedicode;
     static string cachedocode;
 #else 
@@ -66,17 +67,19 @@ bool transcode(const string &in, string &out, const string &icode,
 	if((ic = iconv_open(ocode.c_str(), icode.c_str())) == (iconv_t)-1) {
 	    out = string("iconv_open failed for ") + icode
 		+ " -> " + ocode;
+#ifdef ICONV_CACHE_OPEN
+	    cachedicode.erase();
+	    cachedocode.erase();
+#endif
 	    goto error;
 	}
 #ifdef ICONV_CACHE_OPEN
 	cachedicode.assign(icode);
 	cachedocode.assign(ocode);
-    } else {
-	iconv(ic, 0, 0, 0, 0);
     }
-#else
-    icopen = true;
 #endif
+
+    icopen = true;
 
     while (isiz > 0) {
 	size_t osiz;
@@ -107,20 +110,25 @@ bool transcode(const string &in, string &out, const string &icode,
     }
 
 #ifndef ICONV_CACHE_OPEN
+    icopen = false;
     if(iconv_close(ic) == -1) {
 	out.erase();
 	out = string("iconv_close failed for ") + icode
 	    + " -> " + ocode;
 	goto error;
     }
-    icopen = false;
 #endif
+
     ret = true;
+
  error:
-#ifndef ICONV_CACHE_OPEN
     if (icopen)
+#ifndef ICONV_CACHE_OPEN
 	iconv_close(ic);
+#else
+        iconv(ic, 0, 0, 0, 0);
 #endif
+
     if (mecnt)
 	LOGDEB(("transcode: [%s]->[%s] %d errors\n", 
 		 icode.c_str(), ocode.c_str(), mecnt));
