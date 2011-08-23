@@ -18,7 +18,7 @@
 #   Free Software Foundation, Inc.,
 #   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-
+import sys
 import rclexecm
 try:
     from rarfile import RarFile
@@ -38,12 +38,27 @@ class RarExtractor:
     def extractone(self, ipath):
         #self.em.rclog("extractone: [%s]" % ipath)
         docdata = ""
+        isdir = False
+        
         try:
-            docdata = self.rar.read(ipath)
-            ok = True
+            rarinfo = self.rar.getinfo(ipath)
+            isdir = rarinfo.isdir()
         except Exception, err:
-#            self.em.rclog("extractone: failed: [%s]" % err)
-            ok = False
+            self.em.rclog("extractone: getinfo failed: [%s]" % err)
+            return (True, docdata, ipath, false)
+
+        if not isdir:
+            try:
+                docdata = self.rar.read(ipath)
+                ok = True
+            except Exception, err:
+                self.em.rclog("extractone: failed: [%s]" % err)
+                ok = False
+        else:
+            docdata = ""
+            ok = True
+            self.em.setmimetype("application/x-fsdirectory")
+
         iseof = rclexecm.RclExecM.noteof
         if self.currentindex >= len(self.rar.namelist()) -1:
             iseof = rclexecm.RclExecM.eofnext
