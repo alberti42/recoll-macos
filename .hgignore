@@ -81,6 +81,7 @@ src/query/xadump
 src/recollinstall
 src/sampleconf/rclmon.sh
 src/sampleconf/recoll.conf
+tests/config/aspdict.en.rws
 tests/config/history
 tests/config/index.pid
 tests/config/missing

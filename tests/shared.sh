@@ -1,9 +1,9 @@
 # @(#$Id: shared.sh,v 1.4 2009-01-06 18:47:33 dockes Exp $  (C) 2006 J.F.Dockes
 # shared code and variables for all tests
 
-RECOLL_TESTDATA=/Users/dockes/projets/fulltext/testrecoll
+RECOLL_TESTDATA=/home/dockes/projets/fulltext/testrecoll
 
-RECOLL_CONFDIR=/Users/dockes/projets/fulltext/recoll/tests/config
+RECOLL_CONFDIR=/home/dockes/projets/fulltext/recoll/tests/config
 export RECOLL_CONFDIR
 
 ECHON="/bin/echo -n"

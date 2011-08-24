@@ -1,2 +1,2 @@
 1 results
-text/html	[file:///Users/dockes/projets/fulltext/testrecoll/info/gpgme.info]	[gpgme.info / Preparation / Largefile Support (LFS)]	5076	bytes	
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/info/gpgme.info]	[gpgme.info / Preparation / Largefile Support (LFS)]	5076	bytes	

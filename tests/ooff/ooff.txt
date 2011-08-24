@@ -1,2 +1,2 @@
 1 results
-application/vnd.sun.xml.writer	[file:///Users/dockes/projets/fulltext/testrecoll/ooff/writer.odt]	[Ceci est le titre du document openoffice élément <> "toto"]	8296	bytes	
+application/vnd.sun.xml.writer	[file:///home/dockes/projets/fulltext/testrecoll/ooff/writer.odt]	[Ceci est le titre du document openoffice élément <> "toto"]	8296	bytes	
