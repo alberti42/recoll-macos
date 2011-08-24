@@ -52,6 +52,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 2.6. Real time indexing
 
+                             2.6.1. Slowing down the reindexing rate for fast
+                             changing files
+
    3. Searching
 
                 3.1. Searching with the Qt graphical user interface
@@ -570,6 +573,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    start the vi editor to edit the file). You may have more sophisticated
    tools available on your system.
 
+   Please be aware that there may be differences between your usual
+   interactive command line environment and the one seen by crontab commands.
+   Especially the PATH variable may be of concern. Please check the crontab
+   manual pages about possible issues.
+
      ----------------------------------------------------------------------
 
 2.6. Real time indexing
@@ -623,6 +631,18 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    significantly taxes system resources. You probably do not want to enable
    it if your system is short on resources. Periodic indexing is adequate in
    most cases.
+
+     ----------------------------------------------------------------------
+
+  2.6.1. Slowing down the reindexing rate for fast changing files
+
+   When using the real time monitor, it may happen that some files need to be
+   indexed, but change so often that they impose an excessive load for the
+   system.
+
+   Recoll provides a configuration option to specify the minimum time before
+   which a file, specified by a wildcard pattern, cannot be reindexed. See
+   the mondelaypatterns parameter in the configuration section.
 
      ----------------------------------------------------------------------
 
@@ -1239,6 +1259,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      * Result paragraph format string: allows you to change the presentation
        of each result list entry. This is described in its own section.
 
+     * Abstract snippet separator: for synthetic abstracts built from index
+       data, which are usually made of several snippets from different parts
+       of the document, this defines the snippet separator, an ellipsis by
+       default.
+
      * Maximum text size highlighted for preview Inserting highlights on
        search term inside the text before inserting it in the preview window
        involves quite a lot of processing, and can be disabled over the given
@@ -1285,20 +1310,20 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        will be deleted at the next indexing pass unless they are also added
        in the configuration file.
 
-     * Dynamically add phrase to simple searches: a phrase will be
+     * Automatically add phrase to simple searches: a phrase will be
        automatically built and added to simple searches when looking for Any
        terms. This will give a relevance boost to the results where the
        search terms appear as a phrase (consecutive and in order).
 
-     * Replace abstracts from documents: this decides if we should synthesize
-       and display an abstract in place of an explicit abstract found within
-       the document itself.
+     * Dynamically build abstracts: synthetic abstracts are constructed by
+       extracting context around the search terms out of the main document
+       text. This is usually fast because it only uses index content, not the
+       actual document, but still can slow down result list display, which is
+       why there is a way to turn it off.
 
-     * Dynamically build abstracts: this decides if Recoll tries to build
-       document abstracts when displaying the result list. Abstracts are
-       constructed by taking context from the document information, around
-       the search terms. This can slow down result list display significantly
-       for big documents, and you may want to turn it off.
+     * Replace abstracts from documents: this decides if the synthetic
+       abstract above should replace an explicit abstract field found within
+       the document itself, or if the latter should take precedence.
 
      * Synthetic abstract size: adjust to taste...
 
@@ -1336,7 +1361,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    This is a Qt HTML string where the following printf-like % substitutions
    will be performed:
 
-     * %A. Abstract
+     * %A. Abstract. Depending on document and query parameters, this can be
+       either an explicit abstract field from the document, a "keyword in
+       context" synthetic abstract or just the beginning of the document
+       text.
 
      * %D. Date
 
@@ -1400,9 +1428,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Note that the P%N link in the above paragraph makes the title a preview
    link.
 
-   Due to the way the program handles right mouse clicks in the result list,
-   if the custom formatting results in multiple paragraphs per result, right
-   clicks will only work inside the first one.
+   It is also possible to define the value of the snippet separator inside
+   the abstract section.
 
      ----------------------------------------------------------------------
 
@@ -2292,6 +2319,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * Zip archives need Python (and the standard zipfile module).
 
+     * Rar archives need Python, the rarfile Python module and the unrar
+       utility.
+
      * Midi karaoke files need Python and the Midi module
 
      * Konqueror webarchive format with Python (uses the Tarfile module).
@@ -2765,6 +2795,32 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            Where the messages should go. 'stderr' can be used as a special
            value, and is the default. The daemversion is specific to the
            indexing monitor daemon.
+
+   mondelaypatterns
+
+           This allows specify wildcard path patterns (processed with
+           fnmatch(3) with 0 flag), to match files which change too often and
+           for which a delay should be observed before re-indexing. This is a
+           space-separated list, each entry being a pattern and a time in
+           seconds, separated by a colon. You can use double quotes if a path
+           entry contains white space. Example:
+
+ mondelaypatterns = *.log:20 "this one has spaces*:10"
+             
+
+   monixinterval
+
+           Minimum interval (seconds) for processing the indexing queue. The
+           real time monitor does not process each event when it comes in,
+           but will wait this time for the queue to accumulate to diminish
+           overhead and in order to aggregate multiple events to the same
+           file. Default 30 S.
+
+   monauxinterval
+
+           Period (in seconds) at which the real time monitor will regenerate
+           the auxiliary databases (spelling, stemming) if needed. The
+           default is one hour.
 
    filtermaxseconds
 

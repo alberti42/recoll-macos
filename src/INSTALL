@@ -162,6 +162,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * Zip archives need Python (and the standard zipfile module).
 
+     * Rar archives need Python, the rarfile Python module and the unrar
+       utility.
+
      * Midi karaoke files need Python and the Midi module
 
      * Konqueror webarchive format with Python (uses the Tarfile module).
@@ -644,6 +647,32 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            Where the messages should go. 'stderr' can be used as a special
            value, and is the default. The daemversion is specific to the
            indexing monitor daemon.
+
+   mondelaypatterns
+
+           This allows specify wildcard path patterns (processed with
+           fnmatch(3) with 0 flag), to match files which change too often and
+           for which a delay should be observed before re-indexing. This is a
+           space-separated list, each entry being a pattern and a time in
+           seconds, separated by a colon. You can use double quotes if a path
+           entry contains white space. Example:
+
+ mondelaypatterns = *.log:20 "this one has spaces*:10"
+             
+
+   monixinterval
+
+           Minimum interval (seconds) for processing the indexing queue. The
+           real time monitor does not process each event when it comes in,
+           but will wait this time for the queue to accumulate to diminish
+           overhead and in order to aggregate multiple events to the same
+           file. Default 30 S.
+
+   monauxinterval
+
+           Period (in seconds) at which the real time monitor will regenerate
+           the auxiliary databases (spelling, stemming) if needed. The
+           default is one hour.
 
    filtermaxseconds
 
