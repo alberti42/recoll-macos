@@ -63,6 +63,10 @@ bool transcode(const string &in, string &out, const string &icode,
 
 #ifdef ICONV_CACHE_OPEN
     if (cachedicode.compare(icode) || cachedocode.compare(ocode)) {
+	if (ic != (iconv_t)-1) {
+	    iconv_close(ic);
+	    ic = (iconv_t)-1;
+	}
 #endif
 	if((ic = iconv_open(ocode.c_str(), icode.c_str())) == (iconv_t)-1) {
 	    out = string("iconv_open failed for ") + icode
@@ -73,6 +77,7 @@ bool transcode(const string &in, string &out, const string &icode,
 #endif
 	    goto error;
 	}
+
 #ifdef ICONV_CACHE_OPEN
 	cachedicode.assign(icode);
 	cachedocode.assign(ocode);
@@ -113,8 +118,7 @@ bool transcode(const string &in, string &out, const string &icode,
     icopen = false;
     if(iconv_close(ic) == -1) {
 	out.erase();
-	out = string("iconv_close failed for ") + icode
-	    + " -> " + ocode;
+	out = string("iconv_close failed for ") + icode + " -> " + ocode;
 	goto error;
     }
 #endif
@@ -122,12 +126,14 @@ bool transcode(const string &in, string &out, const string &icode,
     ret = true;
 
  error:
-    if (icopen)
+    if (icopen) {
 #ifndef ICONV_CACHE_OPEN
 	iconv_close(ic);
 #else
+	// Just reset conversion
         iconv(ic, 0, 0, 0, 0);
 #endif
+    }
 
     if (mecnt)
 	LOGDEB(("transcode: [%s]->[%s] %d errors\n", 
