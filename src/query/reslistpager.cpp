@@ -184,12 +184,14 @@ void ResListPager::displayDoc(RclConfig *config,
 
 	for (vector<string>::const_iterator it = vabs.begin();
 	     it != vabs.end(); it++) {
-	    // No need to call escapeHtml(), plaintorich handles it
-	    list<string> lr;
-	    m_hiliter->set_inputhtml(false);
-	    m_hiliter->plaintorich(*it, lr, hdata);
-	    richabst += lr.front();
-	    richabst += absSep();
+	    if (!it->empty()) {
+		// No need to call escapeHtml(), plaintorich handles it
+		list<string> lr;
+		m_hiliter->set_inputhtml(false);
+		m_hiliter->plaintorich(*it, lr, hdata);
+		richabst += lr.front();
+		richabst += absSep();
+	    }
 	}
     }
 

@@ -43,7 +43,7 @@ using std::string;
 bool transcode(const string &in, string &out, const string &icode,
 	       const string &ocode, int *ecnt)
 {
-    LOGDEB(("Transcode: %s -> %s\n", icode.c_str(), ocode.c_str()));
+    LOGDEB2(("Transcode: %s -> %s\n", icode.c_str(), ocode.c_str()));
 #ifdef ICONV_CACHE_OPEN
     static iconv_t ic = (iconv_t)-1;
     static string cachedicode;

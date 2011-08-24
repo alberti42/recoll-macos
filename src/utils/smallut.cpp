@@ -448,7 +448,6 @@ string truncate_to_word(const string &input, string::size_type maxlen)
 	} else {
 	    output.erase(space);
 	}
-	output += " ...";
     }
     return output;
 }

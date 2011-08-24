@@ -69,7 +69,7 @@ class DocSeqFiltSpec {
     by native capability (ex: docseqdb can sort and filter). The
     implementation might be nicer by using more sophisticated c++ with
     multiple inheritance of sort and filter virtual interfaces, but
-    the current one will have to do for now...
+    the current one will have to do for now.
 */
 class DocSequence {
  public:
@@ -96,17 +96,6 @@ class DocSequence {
     virtual bool getAbstract(Rcl::Doc& doc, vector<string>& abs) {
 	abs.push_back(doc.meta[Rcl::Doc::keyabs]);
 	return true;
-    }
-    virtual string getAbstract(Rcl::Doc& doc) {
-	vector<string> v;
-	getAbstract(doc, v);
-	string abstract;
-	for (vector<string>::const_iterator it = v.begin();
-	     it != v.end(); it++) {
-	    abstract += *it;
-	    abstract += "... ";
-	}
-	return abstract;
     }
     virtual bool getEnclosing(Rcl::Doc&, Rcl::Doc&) = 0;
 
@@ -168,12 +157,6 @@ public:
 	if (m_seq.isNull())
 	    return false;
 	return m_seq->getAbstract(doc, abs);
-    }
-    virtual string getAbstract(Rcl::Doc& doc)
-    {
-	if (m_seq.isNull())
-	    return "";
-	return m_seq->getAbstract(doc);
     }
     virtual string getDescription() 
     {

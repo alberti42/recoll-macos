@@ -73,6 +73,9 @@ namespace Rcl {
 #endif
 
 const string pathelt_prefix = "XP";
+// This is used as a marker inside the abstract frag lists, but
+// normally doesn't remain in final output (which is built with a
+// custom sep. by our caller).
 static const string ellipsis("...");
 
 string version_string(){
@@ -418,7 +421,7 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 			sparseDoc[ii] = emptys;
 		    }
 		}
-		// Add ... at the end. This may be replaced later by
+		// Add ellipsis at the end. This may be replaced later by
 		// an overlapping extract. Take care not to replace an
 		// empty string here, we really want an empty slot,
 		// use find()
@@ -442,14 +445,16 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 
     // This can happen if there are term occurences in the keywords
     // etc. but not elsewhere ?
-    if (qtermposs.size() == 0) 
+    if (qtermposs.size() == 0) {
+	LOGDEB1(("makeAbstract: no occurrences\n"));
 	return vector<string>();
+    }
 
     // Walk all document's terms position lists and populate slots
     // around the query terms. We arbitrarily truncate the list to
     // avoid taking forever. If we do cutoff, the abstract may be
     // inconsistant (missing words, potentially altering meaning),
-    // which is bad...
+    // which is bad.
     { 
 	Xapian::TermIterator term;
 	int cutoff = 500 * 1000;
@@ -532,10 +537,6 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
     }
     if (!chunk.empty())
 	vabs.push_back(chunk);
-    // This happens for docs with no terms (only filename) indexed? I'll fix 
-    // one day (yeah)
-    if (vabs.size() == 1 && !vabs[0].compare("... "))
-	vabs.clear();
 
     LOGDEB2(("makeAbtract: done in %d mS\n", chron.millis()));
     return vabs;
@@ -920,7 +921,7 @@ static const string nc("\n\r\x0c");
 
 // Add document in internal form to the database: index the terms in
 // the title abstract and body and add special terms for file name,
-// date, mime type ... , create the document data record (more
+// date, mime type etc. , create the document data record (more
 // metadata), and update database
 bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 		     const Doc &idoc)
@@ -1072,7 +1073,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     if (!parent_udi.empty()) {
 	newdocument.add_term(make_parentterm(parent_udi));
     }
-    // Dates etc...
+    // Dates etc.
     time_t mtime = atol(doc.dmtime.empty() ? doc.fmtime.c_str() : 
 			doc.dmtime.c_str());
     struct tm *tm = localtime(&mtime);
