@@ -11,8 +11,7 @@
     <meta name="Keywords" content=
       "recherche textuelle,desktop,unix,linux,solaris,open source,free">
     <meta http-equiv="Content-language" content="fr">
-    <meta http-equiv="content-type" content=
-    "text/html; charset=iso-8859-1">
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
     <meta name="robots" content="All,Index,Follow">
     <link type="text/css" rel="stylesheet" href="styles/style.css">
   </head>

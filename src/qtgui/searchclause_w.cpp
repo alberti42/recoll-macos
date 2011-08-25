@@ -81,7 +81,7 @@ void SearchClauseW::languageChange()
     sTpCMB->addItem(tr("File name matching"));//5
     //    sTpCMB->insertItem(tr("Complex clause"));//6
 
-    fldCMB->addItem(tr("In field"));
+    fldCMB->addItem(tr("No field"));
     if (theconfig) {
 	set<string> fields = theconfig->getIndexedFields();
 	for (set<string>::const_iterator it = fields.begin(); 

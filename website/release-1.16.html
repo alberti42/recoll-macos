@@ -41,13 +41,14 @@
 
 
       <p><em>Installing over an older version</em>: 1.16 is
-        mostly compatible with 1.15 indexes (except for a few
-        differences for really weird terms). Perform a full index pass
-        if installing over an older version. The simplest way to do
+        mostly compatible with 1.15 indexes, except for a few differences
+        for weird terms containing punctuation signs. Perform a full index
+        pass if installing over an older version. The simplest way to do
         this is to quit all recoll programs and just delete the index
-        directory
-        (<span class="literal">rm&nbsp;-rf&nbsp;~/.recoll/xapiandb</span>).  <span class="literal">recollindex&nbsp;-z</span>
-        will do the same in most cases.</p>
+        directory (<span
+        class="literal">rm&nbsp;-rf&nbsp;~/.recoll/xapiandb</span>).  <span
+        class="literal">recollindex&nbsp;-z</span> will do the same in most
+        cases.</p>
 
 
       <h2>Changes</h2>
@@ -92,8 +93,9 @@
         <li>Show hidden (dot) files in the indexing configuration
           GUI dialogs.</li>
 
-        <li>Added filters for .war (Konqueror web archive) and .mhtm (other web
-          archive format).</li>
+        <li>Added filters for <tt>.war</tt> (Konqueror web
+          archive), <tt>.mhtm</tt> (other web archive format)
+          and <tt>rar</tt> archives.</li>
 
         <li>Improved handling for native cjk punctuation signs.</li>
 
@@ -105,11 +107,16 @@
           skippedPaths/Names when used with -i. Allows the use of a
           purely external file selection mechanism.</li>
 
+        <li>The performance of email indexing has been slightly
+          improved (less CPU usage).</li>
+
         <li>Result table:
           <ul>
             <li>The detail area now has a popup menu similar
               to the one in the result list (open parent, save to disk
               etc.).</li>
+            <li>The result table header popup menu has an entry to save the
+              table as a CSV file.</li>
             <li>Estimated result counts are displayed in the status line.</li>
             <li>Set row height according to default font size, and better 
               adjust row height and vertical text position in

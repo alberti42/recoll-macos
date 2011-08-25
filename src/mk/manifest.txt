@@ -137,6 +137,7 @@ filters/rclppt
 filters/rclps
 filters/rclpurple
 filters/rclpython
+filters/rclrar
 filters/rclrtf
 filters/rclscribus
 filters/rclshowinfo

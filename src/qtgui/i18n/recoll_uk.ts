@@ -120,6 +120,10 @@
         <source>All non empty fields on the right will be combined with AND (&quot;All clauses&quot; choice) or OR (&quot;Any clause&quot; choice) conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
         <translation>Всі непусті поля буде об&apos;єднано за допомогою АБО (&quot;усі слова&quot;) або ТА (&quot;будь-які слова&quot;).&lt;br&gt;Поля типу &quot;будь-які слова&quot;, &quot;усі слова&quot; та &quot;без цих слів&quot; приймають суміш слів та фраз у подвійних лапках.&lt;br&gt;Поля без даних не беруться до уваги.</translation>
     </message>
+    <message>
+        <source>Invert</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Main</name>
@@ -140,7 +144,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Configuration problem (dynconf</source>
-        <translation>Проблема конфігурації (dynconf</translation>
+        <translation type="obsolete">Проблема конфігурації (dynconf</translation>
+    </message>
+    <message>
+        <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -210,6 +218,22 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Print Current Preview</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show image</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save document to file</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -464,6 +488,14 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>Query details</source>
         <translation type="unfinished">Деталі запиту</translation>
+    </message>
+    <message>
+        <source>Could not open external index. Db not open. Check external indexes list.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No results found</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -837,6 +869,85 @@ Do you want to start the  preferences dialog ?</source>
         <source>&quot; column</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Save table to CSV file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t open/create file: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="unfinished">&amp;Переглянути</translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="unfinished">Копіювати &amp;назву файла</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="unfinished">Копіювати &amp;URL</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="unfinished">Знайти &amp;схожі документи</translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Save as CSV</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ResTableDetailArea</name>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="unfinished">&amp;Переглянути</translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="unfinished">Копіювати &amp;назву файла</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="unfinished">Копіювати &amp;URL</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="unfinished">Знайти &amp;схожі документи</translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SSearch</name>
@@ -969,6 +1080,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Number of additional words that may be interspersed with the chosen ones</source>
         <translation>Кількість додаткових слів, що можуть бути між обраними</translation>
+    </message>
+    <message>
+        <source>No field</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1358,19 +1473,19 @@ This should give higher precedence to the results where the search terms appear 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Web cache directory name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The name for a directory where to store the cache for visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Max. size for the web cache (MB)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Entries will be recycled once the size is reached</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Web page store directory name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max. size for the web store (MB)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1729,6 +1844,18 @@ May be slow for big documents.</source>
     <message>
         <source>&amp;Cancel</source>
         <translation>&amp;Відміна</translation>
+    </message>
+    <message>
+        <source>Abstract snippet separator</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lines in PRE text are not folded. Using BR loses indentation.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

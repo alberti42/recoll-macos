@@ -1,4 +1,6 @@
-<!DOCTYPE TS><TS>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -120,6 +122,10 @@
         <source>All non empty fields on the right will be combined with AND (&quot;All clauses&quot; choice) or OR (&quot;Any clause&quot; choice) conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
         <translation>Tous les champs de droite non vides seront combinés par une conjonction ET (choix &quot;Toutes les clauses&quot;) ou OU (choix &quot;Une des clauses&quot;). &lt;br&gt; Les champs de type  &quot;Un de ces mots&quot;, &quot;Tous ces mots&quot; et &quot;Aucun de ces mots&quot; acceptent un mélange de mots et de phrases contenues dans des apostrophes &quot;une phrase&quot;.&lt;br&gt;Les champs non renseignés sont ignorés.</translation>
     </message>
+    <message>
+        <source>Invert</source>
+        <translation>Inverser</translation>
+    </message>
 </context>
 <context>
     <name>Main</name>
@@ -138,7 +144,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Configuration problem (dynconf</source>
-        <translation>Problème de configuration (dynconf)</translation>
+        <translation type="obsolete">Problème de configuration (dynconf)</translation>
+    </message>
+    <message>
+        <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
+        <translation>Le fichier d&apos;historique est illisible, le verifier ou l&apos;effacer:</translation>
     </message>
 </context>
 <context>
@@ -209,6 +219,22 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Print Current Preview</source>
         <translation>Imprimer la fenêtre de prévisualisation</translation>
+    </message>
+    <message>
+        <source>Show image</source>
+        <translation>Afficher l&apos;image</translation>
+    </message>
+    <message>
+        <source>Select All</source>
+        <translation>Tout selectionner</translation>
+    </message>
+    <message>
+        <source>Copy</source>
+        <translation>Copier</translation>
+    </message>
+    <message>
+        <source>Save document to file</source>
+        <translation>Sauvegarder le document</translation>
     </message>
 </context>
 <context>
@@ -463,6 +489,14 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     <message>
         <source>Query details</source>
         <translation>Détails de la recherche</translation>
+    </message>
+    <message>
+        <source>Could not open external index. Db not open. Check external indexes list.</source>
+        <translation>Impossible d&apos;ouvrir un index externe. Base non ouverte. Verifier la liste des index externes.</translation>
+    </message>
+    <message>
+        <source>No results found</source>
+        <translation>Aucun résultat trouvé</translation>
     </message>
 </context>
 <context>
@@ -840,6 +874,85 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
         <source>&quot; column</source>
         <translation>&quot; colonne</translation>
     </message>
+    <message>
+        <source>Save table to CSV file</source>
+        <translation>Sauvegarder dans un fichier CSV</translation>
+    </message>
+    <message>
+        <source>Can&apos;t open/create file: </source>
+        <translation>Impossible d&apos;ouvrir ou créer le fichier:</translation>
+    </message>
+    <message>
+        <source>&amp;Preview</source>
+        <translation>&amp;Voir contenu</translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation>&amp;Ouvrir</translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation>Copier le nom de &amp;Fichier</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation>Copier l&apos;&amp;Url</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation>&amp;Sauver sous</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation>Chercher des documents &amp;similaires</translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation>Prévisualiser le document p&amp;arent</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation>&amp;Ouvrir le document parent</translation>
+    </message>
+    <message>
+        <source>&amp;Save as CSV</source>
+        <translation>&amp;Sauvegarder en CSV</translation>
+    </message>
+</context>
+<context>
+    <name>ResTableDetailArea</name>
+    <message>
+        <source>&amp;Preview</source>
+        <translation>&amp;Voir contenu</translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation>&amp;Ouvrir</translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation>Copier le nom de &amp;Fichier</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation>Copier l&apos;&amp;Url</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation>&amp;Sauver sous</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation>Chercher des documents &amp;similaires</translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation>Prévisualiser le document p&amp;arent</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation>&amp;Ouvrir le document parent</translation>
+    </message>
 </context>
 <context>
     <name>SSearch</name>
@@ -988,6 +1101,14 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     <message>
         <source>Number of additional words that may be interspersed with the chosen ones</source>
         <translation>Nombre de mots additionnels qui peuvent se trouver entre les termes recherchés</translation>
+    </message>
+    <message>
+        <source>In field</source>
+        <translation type="obsolete">Sans champ</translation>
+    </message>
+    <message>
+        <source>No field</source>
+        <translation>Sans champ</translation>
     </message>
 </context>
 <context>
@@ -1398,19 +1519,31 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Web cache directory name</source>
-        <translation>Nom du répertoire cache de pages WEB</translation>
+        <translation type="obsolete">Nom du répertoire cache de pages WEB</translation>
     </message>
     <message>
         <source>The name for a directory where to store the cache for visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
-        <translation>Le nom d&apos;un répertoire où stocker les copies des pages WEB visitées.&lt;br&gt;Le chemin peut être relatif au répertoire de configuration.</translation>
+        <translation type="obsolete">Le nom d&apos;un répertoire où stocker les copies des pages WEB visitées.&lt;br&gt;Le chemin peut être relatif au répertoire de configuration.</translation>
     </message>
     <message>
         <source>Max. size for the web cache (MB)</source>
-        <translation>Taille maximum pour le cache (MB)</translation>
+        <translation type="obsolete">Taille maximum pour le cache (MB)</translation>
     </message>
     <message>
         <source>Entries will be recycled once the size is reached</source>
         <translation>Les pages seront écrasées quand la taille spécifiée est atteinte</translation>
+    </message>
+    <message>
+        <source>Web page store directory name</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
+        <translation>Le nom d&apos;un repertoire ou stocker les copies des pages visitees.&lt;br&gt;Un chemin relatif se refere au repertoire de configuration.</translation>
+    </message>
+    <message>
+        <source>Max. size for the web store (MB)</source>
+        <translation>Taill max. pour le cache Web (MB)</translation>
     </message>
 </context>
 <context>
@@ -1770,6 +1903,18 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     <message>
         <source>&amp;Cancel</source>
         <translation>&amp;Annuler</translation>
+    </message>
+    <message>
+        <source>Abstract snippet separator</source>
+        <translation>Separateur d&apos;extrait</translation>
+    </message>
+    <message>
+        <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html.</source>
+        <translation>Utilise des balises &lt;PRE&gt; au lieu de &lt;BR&gt; pour afficher du texte brut en html.</translation>
+    </message>
+    <message>
+        <source>Lines in PRE text are not folded. Using BR loses indentation.</source>
+        <translation>Les lignes de text brut &lt;PRE&gt; ne sont pas replies (scroll horizontal). L&apos;utilisation de balises &lt;BR&gt; ne preserve pas l&apos;indentation.</translation>
     </message>
 </context>
 </TS>

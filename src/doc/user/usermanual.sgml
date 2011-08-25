@@ -2,7 +2,7 @@
 
 <!ENTITY RCL "<application>Recoll</application>">
 <!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/features.html'>Recoll helper applications page</ulink>">
-<!ENTITY RCLVERSION "1.15">
+<!ENTITY RCLVERSION "1.16">
 <!ENTITY XAP "<application>Xapian</application>">
 ]>
  
@@ -1927,8 +1927,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       <guilabel>Query Language</guilabel>. It can also be used with the KIO
       slave or the command line search. It broadly has the same
       capabilities as the complex search interface in the
-      GUI. Additionally, the query language is for now the only way to
-      access the important &RCL; field search capabilities.</para>
+      GUI.</para>
 
       <para>The language is roughly based on the <ulink
             url="http://www.xesam.org/main/XesamUserSearchLanguage95">
@@ -3695,14 +3694,6 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
             generation is turned off. Useful for cases where you don't
             need the functionality or when it is unusable because
             aspell crashes during dictionary generation.</para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry><term><literal>guesscharset</literal></term>
-            <listitem><para>Decide if we try to guess the character
-            set of files if no internal value is available (ie: for
-            plain text files). This does not work well in general, and
-            should probably not be used. </para>
             </listitem>
           </varlistentry>
 
