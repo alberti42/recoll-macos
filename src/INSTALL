@@ -718,12 +718,6 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            Useful for cases where you don't need the functionality or when it
            is unusable because aspell crashes during dictionary generation.
 
-   guesscharset
-
-           Decide if we try to guess the character set of files if no
-           internal value is available (ie: for plain text files). This does
-           not work well in general, and should probably not be used.
-
 5.4.2. The fields file
 
    This file contains information about dynamic fields handling in Recoll.

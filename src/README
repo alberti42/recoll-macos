@@ -12,7 +12,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    This document introduces full text search notions and describes the
    installation and use of the Recoll application. It currently describes
-   Recoll 1.15.
+   Recoll 1.16.
 
    [ Split HTML / Single HTML ]
 
@@ -1310,20 +1310,20 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        will be deleted at the next indexing pass unless they are also added
        in the configuration file.
 
-     * Automatically add phrase to simple searches: a phrase will be
+     * Dynamically add phrase to simple searches: a phrase will be
        automatically built and added to simple searches when looking for Any
        terms. This will give a relevance boost to the results where the
        search terms appear as a phrase (consecutive and in order).
 
-     * Dynamically build abstracts: synthetic abstracts are constructed by
-       extracting context around the search terms out of the main document
-       text. This is usually fast because it only uses index content, not the
-       actual document, but still can slow down result list display, which is
-       why there is a way to turn it off.
+     * Replace abstracts from documents: this decides if we should synthesize
+       and display an abstract in place of an explicit abstract found within
+       the document itself.
 
-     * Replace abstracts from documents: this decides if the synthetic
-       abstract above should replace an explicit abstract field found within
-       the document itself, or if the latter should take precedence.
+     * Dynamically build abstracts: this decides if Recoll tries to build
+       document abstracts when displaying the result list. Abstracts are
+       constructed by taking context from the document information, around
+       the search terms. This can slow down result list display significantly
+       for big documents, and you may want to turn it off.
 
      * Synthetic abstract size: adjust to taste...
 
@@ -1361,10 +1361,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    This is a Qt HTML string where the following printf-like % substitutions
    will be performed:
 
-     * %A. Abstract. Depending on document and query parameters, this can be
-       either an explicit abstract field from the document, a "keyword in
-       context" synthetic abstract or just the beginning of the document
-       text.
+     * %A. Abstract
 
      * %D. Date
 
@@ -1542,8 +1539,6 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    when the search mode selector is set to Query Language. It can also be
    used with the KIO slave or the command line search. It broadly has the
    same capabilities as the complex search interface in the GUI.
-   Additionally, the query language is for now the only way to access the
-   important Recoll field search capabilities.
 
    The language is roughly based on the Xesam user search language
    specification.
@@ -2865,12 +2860,6 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            If this is set, the aspell dictionary generation is turned off.
            Useful for cases where you don't need the functionality or when it
            is unusable because aspell crashes during dictionary generation.
-
-   guesscharset
-
-           Decide if we try to guess the character set of files if no
-           internal value is available (ie: for plain text files). This does
-           not work well in general, and should probably not be used.
 
      ----------------------------------------------------------------------
 
