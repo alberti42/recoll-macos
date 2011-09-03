@@ -497,25 +497,28 @@ bool startMonitor(RclConfig *conf, int opts)
 	// Unlock queue before processing lists
 	rclEQ.unlock();
 
-	// Process. We don't do this everytime but let the lists accumulate
-        // a little, this saves processing.
+	// Process. We don't do this every time but let the lists accumulate
+        // a little, this saves processing. Start at once if list is big.
         time_t now = time(0);
-        if (now - lastixtime > ixinterval) {
+        if ((now - lastixtime > ixinterval) || 
+	    (deleted.size() + modified.size() > 20)) {
             lastixtime = now;
-            if (!modified.empty()) {
-                modified.sort();
-                modified.unique();
-                if (!indexfiles(conf, modified))
-                    break;
-                modified.clear();
-                didsomething = true;
-            }
+	    // Used to do the modified list first, but it does seem
+	    // smarter to make room first...
             if (!deleted.empty()) {
                 deleted.sort();
                 deleted.unique();
                 if (!purgefiles(conf, deleted))
                     break;
                 deleted.clear();
+                didsomething = true;
+            }
+            if (!modified.empty()) {
+                modified.sort();
+                modified.unique();
+                if (!indexfiles(conf, modified))
+                    break;
+                modified.clear();
                 didsomething = true;
             }
         }
