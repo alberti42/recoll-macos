@@ -70,10 +70,13 @@ dbdir = xapiandb
 maxfsoccuppc = 0
 
 # Threshold (megabytes of new data) where we flush from memory to disk
-# index. Setting this (ie to 10) can help control memory usage. The default
-# value of 0 means no explicit flushing, which lets Xapian perform its own
-# thing, which is flushing every 10000 documents (memory usage depends on
-# average document size).
+# index. Setting this (ie to 10) can help control memory usage. 
+#
+# A value of 0 means no explicit flushing, which lets Xapian perform its
+# own thing, meaning flushing every XAPIAN_FLUSH_THRESHOLD documents
+# created, modified or deleted. XAPIAN_FLUSH_THRESHOLD is an environment
+# variable. As memory usage depends on average document size, not only
+# document count, this is not very useful.
 idxflushmb = 10
 
 # Place to search for executable filters. If RECOLL_FILTERSDIR is set in

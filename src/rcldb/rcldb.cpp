@@ -1216,11 +1216,19 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     }
 
     // Test if we're over the flush threshold (limit memory usage):
-    m_curtxtsz += doc.text.length();
+    maybeflush(doc.text.length());
+    return true;
+}
+
+// Flush when idxflushmbs is reached
+bool Db::maybeflush(off_t moretext)
+{
     if (m_flushMb > 0) {
+	m_curtxtsz += moretext;
 	if ((m_curtxtsz - m_flushtxtsz) / MB >= m_flushMb) {
-	    ermsg.erase();
-	    LOGDEB(("Db::add: text size >= %d Mb, flushing\n", m_flushMb));
+	    LOGDEB(("Db::add/delete: txt size >= %d Mb, flushing\n", 
+		    m_flushMb));
+	    string ermsg;
 	    try {
 		m_ndb->xwdb.flush();
 	    } XCATCHERROR(ermsg);
@@ -1231,7 +1239,6 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	    m_flushtxtsz = m_curtxtsz;
 	}
     }
-
     return true;
 }
 
@@ -1386,7 +1393,18 @@ bool Db::purge()
 		    break;
 		}
 	    }
+
 	    try {
+		if (m_flushMb > 0) {
+		    // We use an average term length of 5 for
+		    // estimating the doc sizes which is probably not
+		    // accurate but gives rough consistency with what
+		    // we do for add/update. I should fetch the doc
+		    // size from the data record, but this would be
+		    // bad for performance.
+		    Xapian::termcount trms = m_ndb->xwdb.get_doclength(docid);
+		    maybeflush(trms * 5);
+		}
 		m_ndb->xwdb.delete_document(docid);
 		LOGDEB(("Db::purge: deleted document #%d\n", docid));
 	    } catch (const Xapian::DocNotFoundError &) {
@@ -1426,6 +1444,10 @@ bool Db::purgeFile(const string &udi, bool *existed)
         }
         *existed = true;
 	LOGDEB(("purgeFile: delete docid %d\n", *docid));
+	if (m_flushMb > 0) {
+	    Xapian::termcount trms = m_ndb->xwdb.get_doclength(*docid);
+	    maybeflush(trms * 5);
+	}
 	db.delete_document(*docid);
 	vector<Xapian::docid> docids;
 	m_ndb->subDocs(udi, docids);
@@ -1433,6 +1455,10 @@ bool Db::purgeFile(const string &udi, bool *existed)
 	for (vector<Xapian::docid>::iterator it = docids.begin();
 	     it != docids.end(); it++) {
 	    LOGDEB(("Db::purgeFile: delete subdoc %d\n", *it));
+	    if (m_flushMb > 0) {
+		Xapian::termcount trms = m_ndb->xwdb.get_doclength(*it);
+		maybeflush(trms * 5);
+	    }
 	    db.delete_document(*it);
 	}
 	return true;

@@ -3568,12 +3568,13 @@ skippedPaths = ~/somedir/&lowast;.txt
 
 
           <varlistentry><term><literal>idxflushmb</literal></term>
-            <listitem><para>Threshold (megabytes of new text data)
-            where we flush from memory to disk index. Setting this can
-            help control memory usage. A value of 0 means no explicit
-            flushing, letting Xapian use its own default, which is
-            flushing every 10000 documents (memory usage depends on
-            average document size). The default value is 10.</para>
+            <listitem><para>Threshold (megabytes of new text data) where we
+            flush from memory to disk index. Setting this can help control
+            memory usage. A value of 0 means no explicit flushing, letting
+            Xapian use its own default, which is flushing every 10000 (or
+            XAPIAN_FLUSH_THRESHOLD) documents, which gives little memory
+            usage control, as memory usage depends on average document
+            size. The default value is 10.</para> 
             </listitem>
           </varlistentry>
 

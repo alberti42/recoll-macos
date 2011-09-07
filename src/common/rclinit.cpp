@@ -14,12 +14,16 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include "autoconfig.h"
 
 #include <stdio.h>
 #include <signal.h>
 #include <locale.h>
 #include <pthread.h>
 #include <cstdlib>
+#if !defined(PUTENV_ARG_CONST)
+#include <string.h>
+#endif
 
 #include "debuglog.h"
 #include "rclconfig.h"
@@ -95,6 +99,18 @@ RclConfig *recollinit(RclInitFlags flags,
     // Make sure the locale charset is initialized (so that multiple
     // threads don't try to do it at once).
     config->getDefCharset();
+
+    int flushmb;
+    if (config->getConfParam("idxflushmb", &flushmb) && flushmb > 0) {
+	LOGDEB(("rclinit: idxflushmb=%d, set XAPIAN_FLUSH_THRESHOLD to 10E6\n",
+		flushmb));
+	static const char *cp = "XAPIAN_FLUSH_THRESHOLD=1000000";
+#ifdef PUTENV_ARG_CONST
+	::putenv(cp);
+#else
+	::putenv(strdup(cp));
+#endif
+    }
 
     return config;
 }

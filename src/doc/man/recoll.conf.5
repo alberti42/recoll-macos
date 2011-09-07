@@ -124,8 +124,8 @@ Threshold (megabytes of new text data)
 where we flush from memory to disk index. Setting this can
 help control memory usage. A value of 0 means no explicit
 flushing, letting Xapian use its own default, which is
-flushing every 10000 documents (memory usage depends on
-average document size). The default value is 10.
+flushing every 10000 documents (or XAPIAN_FLUSH_THRESHOLD), meaning that
+memory usage depends on average document size. The default value is 10.
 .TP
 .BI "filtersdir = " directory
 A directory to search for the external filter scripts used to index some

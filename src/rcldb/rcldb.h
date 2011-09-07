@@ -274,6 +274,9 @@ private:
     bool stemExpand(const string &lang, const string &s, 
 		    TermMatchResult& result, int max = -1);
 
+    // Flush when idxflushmb is reached
+    bool maybeflush(off_t moretext);
+
     /* Copyconst and assignemt private and forbidden */
     Db(const Db &) {}
     Db& operator=(const Db &) {return *this;};
