@@ -47,8 +47,8 @@
       <p><span class="application">Recoll</span> est un logiciel libre
 	gratuit, dont le code source est disponible sous licence GPL.
 	La dernière version est 
-        <a class="important" href="download.html">1.15.7</a>
-	(<a href="release-1.15.html">notes sur la version, en
+        <a class="important" href="download.html">1.16.0</a>
+	(<a href="release-1.16.html">notes sur la version, en
 	anglais</a>)</p> 
 
       <p>L'interface utilisateur de 
@@ -70,7 +70,7 @@
 	  Unix.</li> 
 
         <li>Interface conçue avec <a href="http://www.trolltech.com">
-	    Qt 4</a>. (Des versions plus anciennes supportent Qt 3).</li> 
+	    Qt 4</a>. (Qt 3 est supporté jusqu'aux versions 1.14.x).</li> 
 
         <li>Traite la plupart des <a href="fr/features.html#doctypes">
 	    types de documents</a> courants, les messages et leurs fichiers
@@ -78,8 +78,8 @@
 	    (gzip ou bzip2) de tous ces documents.</li>
 
         <li>Fonctions de recherche puissantes, avec expressions Booléennes,
-        phrases et proximité, wildcards, filtrage sur les types de fichiers
-        ou l'emplacement.</li>
+          phrases et proximité, wildcards, filtrage sur les types de fichiers
+          ou l'emplacement.</li>
 
         <li>Multi-langage et multi-jeu de caractères, utilisant
 	  Unicode en interne.</li> 
@@ -99,6 +99,12 @@
 
       <h2>Nouvelles: </h2>
       <ul>
+        <li>2011-09-02: la version 
+          <a href="download.html#source">1.16.0</a> est disponible.
+          Elle comporte de
+          nombreuses <a href="release-1.16.html">améliorations mineures</a>.
+        </li>
+
         <li>2011-05-29: la version 
           <a href="download.html#source">1.15.9</a> corrige un crash au
           démarrage de la version 1.15.8. Le problème n'affecte que
@@ -106,36 +112,16 @@
           vous n'êtes pas affecté.
         </li>
 
-        <li>2011-05-02: la version 
-          <a href="download.html#source">1.15.8</a> est disponible
-          avec des 
-          <a href="BUGS.html#b_1_15_7">corrections de bugs</a> et
-          quelques <a href="release-1.15.html">améliorations</a>.
-        </li>
-
-        <li>2011-03-26: un nouveau filtre pour le format webarchive de
-          konqueror (.war), et support élémentaire de mimehtml (.mhtml) (un
-          autre format d'archives web). Utilisable avec une version
-          1.15 standard, il suffit d'installer le filtre et d'éditer
-          la configuration.</li>
-
 	<li>2010-11-24 : Recoll <a href="download.html#source">1.14.4</a>
 	  vient de sortir. Cette version corrige quelques problèmes
 	  mineurs. <a href="CHANGES.html">Liste des modifications</a>.
 	  </li>
+
         <li>2010-11-20 : un petit script pour activer/cacher recoll sur un
         bureau gnome d'un seul coup de clavier: 
           <a href="http://bitbucket.org/medoc/recoll/wiki/HotRecoll">
             recette d'installation</a>.</li>
-	<li>2010-04-14 : la version <a
-	href="download.html#source">1.13.04</a> vient de sortir. Elle
-	corrige un gros bug de la 1.13.02 (le stemming ne marchait plus).</li>
 
-	<li>2009-10-28 : la version 
-	<a href="download.html#source">1.13.02</a> vient de sortir. Elle
-	contient de nombreuses améliorations, entre autres le support des
-	archives Zip et des fichiers MS help (.chm). Voir <a
-	href="CHANGES.html">les modifications (en anglais)</a>.</li>  
       </ul>
 
       <h2><a name="support">Support</a></h2>

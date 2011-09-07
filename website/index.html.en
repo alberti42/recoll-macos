@@ -47,8 +47,8 @@
 
       <p><span class="application">Recoll</span> is free, open source,
 	and licensed under the GPL. The current version is
-	<a class="important" href="download.html">1.15.8</a> 
-	(<a href="release-1.15.html">Release notes</a>).</p>
+	<a class="important" href="download.html">1.16.0</a> 
+	(<a href="release-1.16.html">Release notes</a>).</p>
 
       <h2>Features: </h2>
 
@@ -57,7 +57,7 @@
 	  web server, desktop environment or exotic language necessary.</li>
 	<li>Will run on most Unix-based <a
 	    href="features.html#systems">systems</a></li> 
-        <li>Qt 4 GUI. (Older releases can use Qt 3).</li>
+        <li>Qt 4 GUI. (Qt 3 is supported up to release 1.14.x).</li>
 
         <li>Searches most common 
 	  <a href="features.html#doctypes">document types</a>, emails and
@@ -90,6 +90,9 @@
 
       <h2>News: </h2>
       <ul>
+        <li>2011-09-03: release <a href="download.html#source">1.16.0</a>
+          is out with many <a href="release-1.16.html">small improvements</a>
+          over 1.15. </li>
 
         <li>2011-05-29: release 
           <a href="download.html#source">1.15.9</a> fixes a startup
@@ -98,23 +101,6 @@
           time if at all), you do not need to upgrade.
         </li>
 
-        <li>2011-05-02: release 
-          <a href="download.html#source">1.15.8</a> is out with 
-          <a href="BUGS.html#b_1_15_7">bug fixes</a> and a few
-          <a href="release-1.15.html">improvements</a>.
-        </li>
-
-        <li>2011-03-26: added a filter for konqueror webarchive (.war)
-          format, and elementary support for mimehtml (.mhtml). These
-          work with stock recoll 1.15, you just need to install the filter
-          and config adjustments.</li>
-
-	<li>2010-11-29 : Recoll <a href="download.html#source">1.14.4</a> is
-	  out. This is a small bugs fix release, the important <a
-	  href="CHANGES.html">changes</a> were in 1.14.2. 1.14.4 was
-	  released a few days after 1.14.3 because of an ennoying email
-	  preview bug in the latter.
-	</li>
 
         <li>2010-11-20 : wrote a small script so that recoll can be
           activated or hidden with a single keystroke on the gnome

@@ -31,14 +31,8 @@
 
       <h1>Release notes for Recoll 1.16.x</h1>
 
-      <p><em>Note:</em> No release has been made yet in this
-      series. This document documents the progress of development, and
-      the state of snapshots sometimes found on the download page, in
-      a form which will hopefuly be found easier to read than the
-      Mercurial changelog on BitBucket.</p>
 
       <h2>Caveats</h2>
-
 
       <p><em>Installing over an older version</em>: 1.16 is
         mostly compatible with 1.15 indexes, except for a few differences
@@ -46,16 +40,31 @@
         pass if installing over an older version. The simplest way to do
         this is to quit all recoll programs and just delete the index
         directory (<span
-        class="literal">rm&nbsp;-rf&nbsp;~/.recoll/xapiandb</span>).  <span
+        class="literal">rm&nbsp;-rf&nbsp;~/.recoll/xapiandb</span>), then
+        start recoll or recollindex.  <span
         class="literal">recollindex&nbsp;-z</span> will do the same in most
         cases.</p>
 
 
       <h2>Changes</h2>
 
-      <p>Recoll 1.16 current change list:</p> 
+      <p>Recoll 1.16 is an incremental improvements release over 1.15, no
+        major function was introduced or modified.</p> 
 
       <ul>
+
+        <li>Images are displayed in preview. You can get at the fields
+          and complete extracted text using the popup menu.</li>
+
+        <li>The preview window popup menu has a "save to file" entry
+          to write a subdocument (ie: mail attachement) to a file.</li>
+
+        <li>The GUI advanced search panel allows specifying a
+          field for each entry (ie: author/recipient, etc).</li>
+
+        <li>It is possible to configure the result list snippet
+           separator, given as an html fragment. This is an ellipsis by
+          default (&amp;hellip;). </li>
 
         <li>We can now perform negative directory filtering (-dir:/some/dir),
           to return all results except those from the
@@ -67,25 +76,26 @@
           and by checking a checkbox in the advanced search
           panel.</li>
 
+        <li>Result table:
+          <ul>
+            <li>The detail area now has a popup menu similar
+              to the one in the result list (open parent, save to disk
+              etc.).</li>
+            <li>The result table header popup menu has an entry to save the
+              table as a CSV file.</li>
+            <li>Estimated result counts are displayed in the status line.</li>
+            <li>Set row height according to default font size, and better 
+              adjust row height and vertical text position in
+              cells.</li>
+          </ul>
+        </li>
+
         <li>It is now possible to set an increased weight for indexing
           some fields. The title fields gets a boost by default. See
           the <tt>fields</tt> default file for details.</li>
 
         <li>The query language allows setting weights on terms, ie,
           as in: <tt>"important"2.5</tt> .</li>
-
-        <li>The GUI advanced search panel allows specifying a
-          field for each entry (ie: author/recipient, etc).</li>
-
-        <li>It is possible to configure the result list snippet
-           separator, given as an html fragment. This is an ellipsis by
-          default (&amp;hellip;). </li>
-
-        <li>The preview window popup menu has a "save to file" entry
-          to write a subdocument (ie: mail attachement) to a file.</li>
-
-        <li>Images are displayed in preview. You can get at the fields
-          and complete extracted text using the popup menu.</li>
 
         <li>Improved preservation of indentation for text files
           displayed in the preview window.</li>
@@ -109,20 +119,6 @@
 
         <li>The performance of email indexing has been slightly
           improved (less CPU usage).</li>
-
-        <li>Result table:
-          <ul>
-            <li>The detail area now has a popup menu similar
-              to the one in the result list (open parent, save to disk
-              etc.).</li>
-            <li>The result table header popup menu has an entry to save the
-              table as a CSV file.</li>
-            <li>Estimated result counts are displayed in the status line.</li>
-            <li>Set row height according to default font size, and better 
-              adjust row height and vertical text position in
-              cells.</li>
-          </ul>
-        </li>
 
         <li>Real time indexer: several configuration
           parameters allow adjusting the timing of indexing actions:
