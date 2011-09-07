@@ -1,4 +1,6 @@
-<!DOCTYPE TS><TS>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -672,72 +674,16 @@ Do you want to start the  preferences dialog ?</source>
 <context>
     <name>RecollModel</name>
     <message>
-        <source>Abstract</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Author</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Document size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Document date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>File size</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>File name</source>
-        <translation type="unfinished">Nome file</translation>
-    </message>
-    <message>
-        <source>File date</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> Ipath</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Keywords</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Nome file</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="unfinished">Tipo MIME</translation>
-    </message>
-    <message>
-        <source>Original character set</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Relevancy rating</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Title</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>URL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mtime</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Tipo MIME</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation type="unfinished">Data</translation>
-    </message>
-    <message>
-        <source>Date and time</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Data</translation>
     </message>
 </context>
 <context>

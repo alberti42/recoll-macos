@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0">
+<TS version="2.0" language="fr">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -690,71 +690,71 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     <name>RecollModel</name>
     <message>
         <source>Abstract</source>
-        <translation>Extrait</translation>
+        <translation type="obsolete">Extrait</translation>
     </message>
     <message>
         <source>Author</source>
-        <translation>Auteur</translation>
+        <translation type="obsolete">Auteur</translation>
     </message>
     <message>
         <source>Document size</source>
-        <translation>Taille document</translation>
+        <translation type="obsolete">Taille document</translation>
     </message>
     <message>
         <source>Document date</source>
-        <translation>Date document</translation>
+        <translation type="obsolete">Date document</translation>
     </message>
     <message>
         <source>File size</source>
-        <translation>Taille fichier</translation>
+        <translation type="obsolete">Taille fichier</translation>
     </message>
     <message>
         <source>File name</source>
-        <translation>Nom de fichier</translation>
+        <translation type="obsolete">Nom de fichier</translation>
     </message>
     <message>
         <source>File date</source>
-        <translation>Date fichier</translation>
+        <translation type="obsolete">Date fichier</translation>
     </message>
     <message>
         <source> Ipath</source>
-        <translation>Ipath</translation>
+        <translation type="obsolete">Ipath</translation>
     </message>
     <message>
         <source>Keywords</source>
-        <translation>Mots clef</translation>
+        <translation type="obsolete">Mots clef</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation>Type Mime</translation>
+        <translation type="obsolete">Type Mime</translation>
     </message>
     <message>
         <source>Original character set</source>
-        <translation>Jeu de caractères d&apos;origine</translation>
+        <translation type="obsolete">Jeu de caractères d&apos;origine</translation>
     </message>
     <message>
         <source>Relevancy rating</source>
-        <translation>Pertinence</translation>
+        <translation type="obsolete">Pertinence</translation>
     </message>
     <message>
         <source>Title</source>
-        <translation>Titre</translation>
+        <translation type="obsolete">Titre</translation>
     </message>
     <message>
         <source>URL</source>
-        <translation>URL</translation>
+        <translation type="obsolete">URL</translation>
     </message>
     <message>
         <source>Mtime</source>
-        <translation>Mtime</translation>
+        <translation type="obsolete">Mtime</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation>Date</translation>
+        <translation type="obsolete">Date</translation>
     </message>
     <message>
         <source>Date and time</source>
-        <translation>Date et heure</translation>
+        <translation type="obsolete">Date et heure</translation>
     </message>
 </context>
 <context>
