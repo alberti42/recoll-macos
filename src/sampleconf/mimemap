@@ -4,6 +4,7 @@
 .txt = text/plain
 .text = text/plain
 .d    = text/plain
+.ini = text/plain
 
 # Source files. 
 # Defining them with specific types allows using a specific ext viewer (in 
@@ -129,7 +130,7 @@
 # bit unconsistent to have it listed among the suffix translations, but no
 # problem in practice.
 recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .log.gz .md5 .map \
-       .o .lib .dll .a \
+       .o .lib .dll .a .sys .exe .com \
        .dat .bak .rdf .log .db .msf .pid \
        .gnm .gnumeric \
        ,v ~ #
