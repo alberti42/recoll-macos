@@ -77,7 +77,8 @@
       <ul>
         <li>Sorting by document and file size in the result table does
           not work.</li>
-
+        <li>idxflushmb was not handled while deleting documents in the
+          index, leading to almost unbounded memory usage.</li>
         <li>Email messages for which there would be an error indexing
           an attachment would not be indexed at all.</li>
 

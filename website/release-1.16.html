@@ -155,11 +155,13 @@
               an attachment would not be indexed at all.</li>
             <li>Text files bigger than 2 GB could not be indexed.</li>
             <li>Fixed the handling of compressed man pages.</li>
+            <li>Memory usage could grow almost unbounded while deleting
+              documents, because idxflushmb was not used for document
+              deletions.</li> 
           </ul>
         </li>
 
       </ul>
-
 
 
     </div>
