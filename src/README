@@ -92,13 +92,19 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 3.4. The query language
 
-                             3.4.1. More about wildcards
+                             3.4.1. Modifiers
 
-                3.5. Desktop integration
+                3.5. Anchored searches and wildcards
 
-                             3.5.1. Hotkeying recoll
+                             3.5.1. More about wildcards
 
-                             3.5.2. The KDE Kicker Recoll applet
+                             3.5.2. Anchored searches
+
+                3.6. Desktop integration
+
+                             3.6.1. Hotkeying recoll
+
+                             3.6.2. The KDE Kicker Recoll applet
 
    4. Programming interface
 
@@ -1660,7 +1666,40 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.4.1. More about wildcards
+  3.4.1. Modifiers
+
+   Some characters are recognized as search modifiers when found immediately
+   after the closing double quote of a phrase, as in "some
+   term"modifierchars. The actual "phrase" can be a single term of course.
+   Supported modifiers:
+
+     * l can be used to turn off stemming (mostly makes sense with p because
+       stemming is off by default for phrases).
+
+     * o can be used to specify a "slack" for phrase and proximity searches:
+       the number of additional terms that may be found between the specified
+       ones. If o is followed by an integer number, this is the slack, else
+       the default is 10.
+
+     * p can be used to turn the default phrase search into a proximity one
+       (unordered). Example:"order any in"p
+
+     * A weight can be specified for a query element by specifying a decimal
+       value at the start of the modifiers. Example: "Important"2.5.
+
+     ----------------------------------------------------------------------
+
+3.5. Anchored searches and wildcards
+
+   Some special characters are interpreted by Recoll in search strings to
+   expand or specialize the search. Wildcards expand a root term in
+   controlled ways. Anchor characters can restrict a search to succeed only
+   if the match is found at or near the beginning of the document or one of
+   its fields.
+
+     ----------------------------------------------------------------------
+
+  3.5.1. More about wildcards
 
    All words entered in Recoll search fields will be processed for wildcard
    expansion before the request is finally executed.
@@ -1691,14 +1730,39 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-3.5. Desktop integration
+  3.5.2. Anchored searches
+
+   Two characters are used to specify that a search hit should occur at the
+   beginning or at the end of the text. ^ at the beginning of a term or
+   phrase constrains the search to happen at the start, $ at the end force it
+   to happen at the end.
+
+   As this function is implemented as a phrase search it is possible to
+   specify a maximum distance at which the hit should occur, either through
+   the controls of the advanced search panel, or using the query language,
+   for example, as in:
+
+ "^someterm"o10
+
+   which would force someterm to be found within 10 terms of the start of the
+   text. This can be combined with a field search as in
+   somefield:"^someterm"o10 or somefield:someterm$.
+
+   This feature can also be used with an actual phrase search, but in this
+   case, the distance applies to the whole phrase and anchor, so that, for
+   example, bla bla my unexpected term at the beginning of the text would be
+   a match for "^my term"o5.
+
+     ----------------------------------------------------------------------
+
+3.6. Desktop integration
 
    Being independant of the desktop type has its drawbacks: Recoll desktop
    integration is minimal. Here follow a few things that may help.
 
      ----------------------------------------------------------------------
 
-  3.5.1. Hotkeying recoll
+  3.6.1. Hotkeying recoll
 
    It is surprisingly convenient to be able to show or hide the Recoll GUI
    with a single keystroke. Recoll comes with a small Python script, based on
@@ -1707,7 +1771,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.5.2. The KDE Kicker Recoll applet
+  3.6.2. The KDE Kicker Recoll applet
 
    The Recoll source tree contains the source code to the recoll_applet, a
    small application derived from the find_applet. This can be used to add a
