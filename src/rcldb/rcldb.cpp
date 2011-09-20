@@ -73,6 +73,9 @@ namespace Rcl {
 #endif
 
 const string pathelt_prefix = "XP";
+const string start_of_field_term = "XXST";
+const string end_of_field_term = "XXND";
+
 // This is used as a marker inside the abstract frag lists, but
 // normally doesn't remain in final output (which is built with a
 // custom sep. by our caller).
@@ -831,6 +834,8 @@ class TextSplitDb : public TextSplit {
 		Xapian::Document &d, StopList &_stops) 
 	: db(idb), doc(d), basepos(1), curpos(0), stops(_stops), wdfinc(1)
     {}
+    // Reimplement text_to_words to add start and end special terms
+    virtual bool text_to_words(const string &in);
     bool takeword(const std::string &term, int pos, int, int);
     void setprefix(const string& pref) {prefix = pref;}
     void setwdfinc(int i) {wdfinc = i;}
@@ -842,6 +847,38 @@ private:
     // Some fields have more weight
     int wdfinc;
 };
+
+
+bool TextSplitDb::text_to_words(const string &in) 
+{
+    LOGDEB(("TextSplitDb::text_to_words\n"));
+    string ermsg;
+    try {
+	// Index the possibly prefixed start term.
+	doc.add_posting(prefix + start_of_field_term, basepos, wdfinc);
+	++basepos;
+    } XCATCHERROR(ermsg);
+    if (!ermsg.empty()) {
+	LOGERR(("Db: xapian add_posting error %s\n", ermsg.c_str()));
+	return false;
+    }
+
+    if (!TextSplit::text_to_words(in)) {
+	LOGDEB(("TextSplitDb: TextSplit::text_to_words failed\n"));
+	return false;
+    }
+
+    try {
+	// Index the possibly prefixed end term.
+	doc.add_posting(prefix + end_of_field_term, basepos+curpos+1, wdfinc);
+	++basepos;
+    } XCATCHERROR(ermsg);
+    if (!ermsg.empty()) {
+	LOGERR(("Db: xapian add_posting error %s\n", ermsg.c_str()));
+	return false;
+    }
+    return true;
+}
 
 // Get one term from the doc, remove accents and lowercase, then add posting
 bool TextSplitDb::takeword(const std::string &_term, int pos, int, int)

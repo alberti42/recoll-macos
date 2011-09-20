@@ -287,6 +287,8 @@ private:
 string version_string();
 
 extern const string pathelt_prefix;
+extern const string start_of_field_term;
+extern const string end_of_field_term;
 #ifndef NO_NAMESPACES
 }
 #endif // NO_NAMESPACES

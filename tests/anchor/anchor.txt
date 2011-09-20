@@ -1,0 +1,34 @@
+"^anchortermeaudebut"
+1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/anchor/tryanchor.html]	[anchortitlebegin anchortitlemiddle anchortitleend]	1463	bytes	
+"^ anchortermeunpeuplusloin"
+0 results
+"^anchortermeunpeuplusloin"o30
+1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/anchor/tryanchor.html]	[anchortitlebegin anchortitlemiddle anchortitleend]	1463	bytes	
+"^ anchortermeunpeuplusloin"o30
+1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/anchor/tryanchor.html]	[anchortitlebegin anchortitlemiddle anchortitleend]	1463	bytes	
+"anchortermenullepart"
+1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/anchor/tryanchor.html]	[anchortitlebegin anchortitlemiddle anchortitleend]	1463	bytes	
+"^anchortermenullepart"
+0 results
+"anchortermenullepart $"
+0 results
+"anchortermeunpeumoinsloin$"o30
+1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/anchor/tryanchor.html]	[anchortitlebegin anchortitlemiddle anchortitleend]	1463	bytes	
+"anchortermeunpeumoinsloin$"
+0 results
+"anchortermealafin$"
+1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/anchor/tryanchor.html]	[anchortitlebegin anchortitlemiddle anchortitleend]	1463	bytes	
+title:"^anchortitlebegin"
+1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/anchor/tryanchor.html]	[anchortitlebegin anchortitlemiddle anchortitleend]	1463	bytes	
+title:"^anchortitleend"
+0 results
+title:"anchortitleend$"
+1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/anchor/tryanchor.html]	[anchortitlebegin anchortitlemiddle anchortitleend]	1463	bytes	

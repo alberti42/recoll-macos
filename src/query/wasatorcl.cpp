@@ -134,8 +134,9 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
 	    continue;
 
 	case WasaQuery::OP_LEAF: {
-	    LOGDEB2(("wasaQueryToRcl: leaf clause [%s]:[%s]\n", 
-		     (*it)->m_fieldspec.c_str(), (*it)->m_value.c_str()));
+	    LOGDEB(("wasaQueryToRcl: leaf clause [%s]:[%s] slack %d\n", 
+		    (*it)->m_fieldspec.c_str(), (*it)->m_value.c_str(),
+		    (*it)->m_slack));
 
             // Change terms found in the "autosuffs" list into "ext"
             // field queries
@@ -152,15 +153,17 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
 
 	    unsigned int mods = (unsigned int)(*it)->m_modifiers;
 
-	    if (TextSplit::hasVisibleWhite((*it)->m_value)) {
-		int slack = (mods & WasaQuery::WQM_PHRASESLACK) ? 10 : 0;
+	    // I'm not sure I understand the phrase/near detection
+	    // thereafter anymore, maybe it would be better to have an
+	    // explicit flag. Mods can only be set after a double
+	    // quote.
+	    if (TextSplit::hasVisibleWhite((*it)->m_value) || mods) {
 		Rcl::SClType tp = Rcl::SCLT_PHRASE;
 		if (mods & WasaQuery::WQM_PROX) {
 		    tp = Rcl::SCLT_NEAR;
-		    slack = 10;
 		}
 		nclause = new Rcl::SearchDataClauseDist(tp, (*it)->m_value,
-							slack,
+							(*it)->m_slack,
 							(*it)->m_fieldspec);
 	    } else {
 		nclause = new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, 
@@ -173,7 +176,7 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
 		return 0;
 	    }
 	    if (mods & WasaQuery::WQM_NOSTEM) {
-		nclause->setModifiers(Rcl::SearchDataClause::SDCM_NOSTEMMING);
+		nclause->addModifier(Rcl::SearchDataClause::SDCM_NOSTEMMING);
 	    }
 	    if ((*it)->m_weight != 1.0)
 		nclause->setWeight((*it)->m_weight);

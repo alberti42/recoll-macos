@@ -510,13 +510,13 @@ public:
 
 private:
     void expandTerm(bool dont, const string& term, list<string>& exp, 
-                    string& sterm, string *prefix = 0);
+                    string& sterm, const string& prefix);
     // After splitting entry on whitespace: process non-phrase element
     void processSimpleSpan(const string& span, bool nostemexp, list<Xapian::Query> &pqueries);
     // Process phrase/near element
     void processPhraseOrNear(TextSplitQ *splitData, 
 			     list<Xapian::Query> &pqueries,
-			     bool useNear, int slack);
+			     bool useNear, int slack, int mods);
 
     Db&           m_db;
     const string& m_field;
@@ -554,7 +554,7 @@ static void listVector(const string& what, const vector<string>&l)
 void StringToXapianQ::expandTerm(bool nostemexp, 
                                  const string& term, 
                                  list<string>& exp,
-                                 string &sterm, string *prefix)
+                                 string &sterm, const string& prefix)
 {
     LOGDEB2(("expandTerm: field [%s] term [%s] stemlang [%s] nostemexp %d\n", 
              m_field.c_str(), term.c_str(), m_stemlang.c_str(), nostemexp));
@@ -571,29 +571,20 @@ void StringToXapianQ::expandTerm(bool nostemexp,
 	nostemexp = true;
 
     if (nostemexp && !haswild) {
-	// Neither stemming nor wildcard expansion: just the word
-        string pfx;
-	const FieldTraits *ftp;
-        if (!m_field.empty() && m_db.fieldToTraits(m_field, &ftp)) {
-	    pfx = ftp->pfx;
-	}
-	    
 	sterm = term;
         m_uterms.push_back(sterm);
-	exp.push_front(pfx+term);
+	exp.push_front(prefix + term);
 	exp.resize(1);
-        if (prefix)
-            *prefix = pfx;
     } else {
 	TermMatchResult res;
 	if (haswild) {
 	    m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term, res, -1, 
-                           m_field, prefix);
+                           m_field);
 	} else {
 	    sterm = term;
             m_uterms.push_back(sterm);
-	    m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term, res, -1, m_field,
-                           prefix);
+	    m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term, res, -1, 
+			   m_field);
 	}
 	for (list<TermMatchEntry>::const_iterator it = res.entries.begin(); 
 	     it != res.entries.end(); it++) {
@@ -642,8 +633,15 @@ void StringToXapianQ::processSimpleSpan(const string& span, bool nostemexp,
 {
     list<string> exp;  
     string sterm; // dumb version of user term
+
     string prefix;
-    expandTerm(nostemexp, span, exp, sterm, &prefix);
+    const FieldTraits *ftp;
+    if (!m_field.empty() && m_db.fieldToTraits(m_field, &ftp)) {
+	prefix = ftp->pfx;
+    }
+
+    expandTerm(nostemexp, span, exp, sterm, prefix);
+
     // m_terms is used for highlighting, we don't want prefixes in there.
     for (list<string>::const_iterator it = exp.begin(); 
 	 it != exp.end(); it++) {
@@ -658,10 +656,9 @@ void StringToXapianQ::processSimpleSpan(const string& span, bool nostemexp,
     // less wqf). This does not happen if there are wildcards anywhere
     // in the search.
     if (m_doBoostUserTerms && !sterm.empty()) {
-        xq = Xapian::Query(Xapian::Query::OP_OR, 
-                           xq, 
-                           Xapian::Query(prefix+sterm, 
-                                         original_term_wqf_booster));
+        xq = Xapian::Query(Xapian::Query::OP_OR, xq, 
+			   Xapian::Query(prefix+sterm, 
+					 original_term_wqf_booster));
     }
     pqueries.push_back(xq);
 }
@@ -672,13 +669,24 @@ void StringToXapianQ::processSimpleSpan(const string& span, bool nostemexp,
 // don't do stemming for PHRASE though)
 void StringToXapianQ::processPhraseOrNear(TextSplitQ *splitData, 
 					  list<Xapian::Query> &pqueries,
-					  bool useNear, int slack)
+					  bool useNear, int slack, int mods)
 {
     Xapian::Query::op op = useNear ? Xapian::Query::OP_NEAR : 
 	Xapian::Query::OP_PHRASE;
     list<Xapian::Query> orqueries;
     bool hadmultiple = false;
     vector<vector<string> >groups;
+
+    string prefix;
+    const FieldTraits *ftp;
+    if (!m_field.empty() && m_db.fieldToTraits(m_field, &ftp)) {
+	prefix = ftp->pfx;
+    }
+
+    if (mods & Rcl::SearchDataClause::SDCM_ANCHORSTART) {
+	orqueries.push_back(Xapian::Query(prefix + start_of_field_term));
+	slack++;
+    }
 
     // Go through the list and perform stem/wildcard expansion for each element
     vector<bool>::iterator nxit = splitData->nostemexps.begin();
@@ -691,8 +699,7 @@ void StringToXapianQ::processPhraseOrNear(TextSplitQ *splitData,
 
 	string sterm;
 	list<string>exp;
-	string prefix;
-	expandTerm(nostemexp, *it, exp, sterm, &prefix);
+	expandTerm(nostemexp, *it, exp, sterm, prefix);
 
 	// groups is used for highlighting, we don't want prefixes in there.
 	vector<string> noprefs;
@@ -707,6 +714,11 @@ void StringToXapianQ::processPhraseOrNear(TextSplitQ *splitData,
 	if (exp.size() > 1) 
 	    hadmultiple = true;
 #endif
+    }
+
+    if (mods & Rcl::SearchDataClause::SDCM_ANCHOREND) {
+	orqueries.push_back(Xapian::Query(prefix + end_of_field_term));
+	slack++;
     }
 
     // Generate an appropriate PHRASE/NEAR query with adjusted slack
@@ -725,6 +737,23 @@ void StringToXapianQ::processPhraseOrNear(TextSplitQ *splitData,
     vector<string> comb;
     multiply_groups(groups.begin(), groups.end(), comb, allcombs);
     m_groups.insert(m_groups.end(), allcombs.begin(), allcombs.end());
+}
+
+// Trim string beginning with ^ or ending with $ and convert to flags
+static int stringToMods(string& s)
+{
+    int mods = 0;
+    // Check for an anchored search
+    trimstring(s);
+    if (s.length() > 0 && s[0] == '^') {
+	mods |= Rcl::SearchDataClause::SDCM_ANCHORSTART;
+	s.erase(0, 1);
+    }
+    if (s.length() > 0 && s[s.length()-1] == '$') {
+	mods |= Rcl::SearchDataClause::SDCM_ANCHOREND;
+	s.erase(s.length()-1);
+    }
+    return mods;
 }
 
 /** 
@@ -772,7 +801,8 @@ bool StringToXapianQ::processUserString(const string &iq,
 	for (list<string>::iterator it = phrases.begin(); 
 	     it != phrases.end(); it++) {
 	    LOGDEB0(("strToXapianQ: phrase/word: [%s]\n", it->c_str()));
-
+	    int mods = stringToMods(*it);
+	    int terminc = mods != 0 ? 1 : 0;
 	    // If there are multiple spans in this element, including
 	    // at least one composite, we have to increase the slack
 	    // else a phrase query including a span would fail. 
@@ -803,7 +833,7 @@ bool StringToXapianQ::processUserString(const string &iq,
 	    }
 
 	    LOGDEB0(("strToXapianQ: termcount: %d\n", splitter->terms.size()));
-	    switch (splitter->terms.size()) {
+	    switch (splitter->terms.size() + terminc) {
 	    case 0: 
 		continue;// ??
 	    case 1: 
@@ -811,7 +841,7 @@ bool StringToXapianQ::processUserString(const string &iq,
                                   splitter->nostemexps.front(), pqueries);
 		break;
 	    default:
-		processPhraseOrNear(splitter, pqueries, useNear, slack);
+		processPhraseOrNear(splitter, pqueries, useNear, slack, mods);
 	    }
 	}
     } catch (const Xapian::Error &e) {

@@ -20,9 +20,10 @@
 #include <string.h>
 #include <regex.h>
 
+#include "smallut.h"
 #include "wasastringtoquery.h"
 
-// #define DEB_WASASTRINGTOQ 1
+#undef DEB_WASASTRINGTOQ
 #ifdef DEB_WASASTRINGTOQ
 #define DPRINT(X) fprintf X
 #define DUMPQ(Q) {string D;Q->describe(D);fprintf(stderr, "%s\n", D.c_str());}
@@ -89,13 +90,18 @@ void WasaQuery::describe(string &desc) const
 	if (m_modifiers & WQM_DIACSENS)  desc += "DIACSENS|";
 	if (m_modifiers & WQM_FUZZY)     desc += "FUZZY|";
 	if (m_modifiers & WQM_NOSTEM)    desc += "NOSTEM|";
-	if (m_modifiers & WQM_PHRASESLACK) desc += "PHRASESLACK|";
+	if (m_modifiers & WQM_PHRASESLACK) {
+	    char buf[100];
+	    sprintf(buf, "%d", m_slack);
+	    desc += "PHRASESLACK(" + string(buf) + string(")|");
+	}
 	if (m_modifiers & WQM_PROX)      desc += "PROX|";
 	if (m_modifiers & WQM_REGEX)     desc += "REGEX|";
 	if (m_modifiers & WQM_SLOPPY)    desc += "SLOPPY|";
 	if (m_modifiers & WQM_WORDS)     desc += "WORDS|";
+
 	if (desc.length() > 0 && desc[desc.length()-1] == '|')
-	    desc = desc.substr(0, desc.length()-1);
+	    desc.erase(desc.length()-1);
     }
     desc += " ";
 }
@@ -224,7 +230,11 @@ StringToWasaQuery::~StringToWasaQuery()
 WasaQuery *
 StringToWasaQuery::stringToQuery(const string& str, string& reason)
 {
-    return internal ? internal->stringToQuery(str, reason) : 0;
+    if (internal == 0)
+	return 0;
+    WasaQuery *wq = internal->stringToQuery(str, reason);
+    DUMPQ(wq);
+    return wq;
 }
 
 WasaQuery *
@@ -316,6 +326,7 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 	    }
 
 	    // Check for quoted or unquoted value
+	    unsigned int mods = 0;
 	    if (checkSubMatch(SMI_QUOTED, match, reason)) {
 		nclause->m_value = match;
 	    } else if (checkSubMatch(SMI_TERM, match, reason)) {
@@ -332,7 +343,6 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 	    
 	    if (checkSubMatch(SMI_MODIF, match, reason)) {
 		DPRINT((stderr, "Got modifiers: [%s]\n", match));
-		unsigned int mods = 0;
 		for (unsigned int i = 0; i < strlen(match); i++) {
 		    switch (match[i]) {
 		    case 'b': 
@@ -350,7 +360,19 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 		    case 'f': mods |= WasaQuery::WQM_FUZZY; break;
 		    case 'l': mods |= WasaQuery::WQM_NOSTEM; break;
 		    case 'L': break;
-		    case 'o': mods |= WasaQuery::WQM_PHRASESLACK; break;
+		    case 'o': 
+			mods |= WasaQuery::WQM_PHRASESLACK; 
+			// Default slack if specified only by 'o' is 10.
+			nclause->m_slack = 10;
+			if (i < strlen(match) - 1) {
+			    char *endptr;
+			    int slack = strtol(match+i+1, &endptr, 10);
+			    if (endptr != match+i+1) {
+				i += endptr - (match+i+1);
+				nclause->m_slack = slack;
+			    }
+			}
+			break;
 		    case 'p': mods |= WasaQuery::WQM_PROX; break;
 		    case 'r': mods |= WasaQuery::WQM_REGEX; break;
 		    case 's': mods |= WasaQuery::WQM_SLOPPY; break;
@@ -370,8 +392,8 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 		    }
 		    }
 		}
-		nclause->m_modifiers = WasaQuery::Modifier(mods);
 	    }
+	    nclause->m_modifiers = WasaQuery::Modifier(mods);
 
 	    // Field indicator ?
 	    if (checkSubMatch(SMI_FIELD, match, reason)) {

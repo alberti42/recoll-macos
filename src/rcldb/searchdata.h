@@ -165,7 +165,8 @@ private:
 
 class SearchDataClause {
 public:
-    enum Modifier {SDCM_NONE=0, SDCM_NOSTEMMING=1};
+    enum Modifier {SDCM_NONE=0, SDCM_NOSTEMMING=1, SDCM_ANCHORSTART=2,
+		   SDCM_ANCHOREND=4};
 
     SearchDataClause(SClType tp) 
 	: m_tp(tp), m_parentSearch(0), m_haveWildCards(0), 
@@ -182,6 +183,12 @@ public:
     SClType getTp() {return m_tp;}
     void setParent(SearchData *p) {m_parentSearch = p;}
     virtual void setModifiers(Modifier mod) {m_modifiers = mod;}
+    virtual int getModifiers() {return m_modifiers;}
+    virtual void addModifier(Modifier mod) {
+	int imod = getModifiers();
+	imod |= mod;
+	setModifiers(Modifier(imod));
+    }
     virtual void setWeight(float w) {m_weight = w;}
     friend class SearchData;
 
