@@ -851,7 +851,7 @@ private:
 
 bool TextSplitDb::text_to_words(const string &in) 
 {
-    LOGDEB(("TextSplitDb::text_to_words\n"));
+    LOGDEB2(("TextSplitDb::text_to_words\n"));
     string ermsg;
     try {
 	// Index the possibly prefixed start term.
