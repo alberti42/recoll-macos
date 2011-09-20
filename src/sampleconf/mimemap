@@ -15,6 +15,7 @@
 .h   = text/x-c
 .c   = text/x-c
 .cc  = text/x-c
+.cxx = text/x-c
 .py  = text/x-python
 .awk = application/x-awk
 .pl = application/x-perl
