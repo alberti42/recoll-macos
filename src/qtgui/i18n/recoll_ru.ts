@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0">
+<TS version="2.0" language="ru_RU">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -473,23 +473,23 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Can&apos;t access file: </source>
-        <translation type="unfinished"></translation>
+        <translation>Нет доступа к файлу: </translation>
     </message>
     <message>
         <source>Can&apos;t uncompress file: </source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно распаковать файл: </translation>
     </message>
     <message>
         <source>Save file</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить файл</translation>
     </message>
     <message>
         <source>Result count (est.)</source>
-        <translation type="unfinished"></translation>
+        <translation>Результатов (примерно)</translation>
     </message>
     <message>
         <source>Query details</source>
-        <translation type="unfinished">Подробности запроса</translation>
+        <translation>Подробности запроса</translation>
     </message>
     <message>
         <source>Could not open external index. Db not open. Check external indexes list.</source>
@@ -640,7 +640,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Full Screen</source>
-        <translation type="unfinished"></translation>
+        <translation>Во весь &amp;экран</translation>
     </message>
     <message>
         <source>F11</source>
@@ -652,11 +652,11 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Full Screen</source>
-        <translation type="unfinished"></translation>
+        <translation>Во весь экран</translation>
     </message>
     <message>
         <source>&amp;Erase search history</source>
-        <translation type="unfinished"></translation>
+        <translation>Очистить историю &amp;поиска</translation>
     </message>
     <message>
         <source>sortByDateAsc</source>
@@ -664,7 +664,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Sort by dates from oldest to newest</source>
-        <translation type="unfinished"></translation>
+        <translation>Сортировать по датам от старых к новым</translation>
     </message>
     <message>
         <source>sortByDateDesc</source>
@@ -672,15 +672,15 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Sort by dates from newest to oldest</source>
-        <translation type="unfinished"></translation>
+        <translation>Сортировать по датам от новых к старым</translation>
     </message>
     <message>
         <source>Show Query Details</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать детали запроса</translation>
     </message>
     <message>
         <source>Show results as table</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать результаты в виде таблицы</translation>
     </message>
 </context>
 <context>
@@ -782,7 +782,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="unfinished"></translation>
+        <translation>О&amp;ткрыть</translation>
     </message>
     <message>
         <source>Documents</source>
@@ -801,19 +801,19 @@ Do you want to start the  preferences dialog ?</source>
     <name>ResTable</name>
     <message>
         <source>&amp;Reset sort</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Сбросить параметры сортировки</translation>
     </message>
     <message>
         <source>&amp;Delete column</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Удалить столбец</translation>
     </message>
     <message>
         <source>Add &quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить столбец &quot;</translation>
     </message>
     <message>
         <source>&quot; column</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;</translation>
     </message>
     <message>
         <source>Save table to CSV file</source>
@@ -829,7 +829,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">О&amp;ткрыть</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
@@ -868,7 +868,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">О&amp;ткрыть</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
@@ -951,7 +951,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Enter file name wildcard expression.</source>
-        <translation type="unfinished"></translation>
+        <translation>Введите маску имени файла.</translation>
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
@@ -1098,7 +1098,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>No db info.</source>
-        <translation type="unfinished"></translation>
+        <translation>Нет информации о БД.</translation>
     </message>
 </context>
 <context>
@@ -1141,11 +1141,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Doc. / Tot.</source>
-        <translation type="unfinished"></translation>
+        <translation>Док. / Всего</translation>
     </message>
     <message>
         <source>Index: %1 documents, average length %2 terms</source>
-        <translation type="unfinished"></translation>
+        <translation>Индекс: %1 документ(ов), средняя длина %2 элемент(ов)</translation>
     </message>
 </context>
 <context>
@@ -1378,7 +1378,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Command</source>
-        <translation type="unfinished"></translation>
+        <translation>Команда</translation>
     </message>
 </context>
 <context>
@@ -1480,7 +1480,7 @@ This should give higher precedence to the results where the search terms appear 
     <name>confgui::ConfSubPanelW</name>
     <message>
         <source>Global</source>
-        <translation type="unfinished"></translation>
+        <translation>Общее</translation>
     </message>
     <message>
         <source>Max. compressed file size (KB)</source>
@@ -1524,7 +1524,7 @@ This will help searching very big text  files (ie: log files).</source>
     <name>confgui::ConfTopPanelW</name>
     <message>
         <source>Top directories</source>
-        <translation type="unfinished"></translation>
+        <translation>Индексируемые папки</translation>
     </message>
     <message>
         <source>The list of directories where recursive indexing starts. Default: your home.</source>
@@ -1751,15 +1751,15 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>The words in the list will be automatically turned to ext:xxx clauses in the query language entry.</source>
-        <translation type="unfinished"></translation>
+        <translation>Слова в списке будут автоматически преобразованы к виду ext:xxx в запросе.</translation>
     </message>
     <message>
         <source>Query language magic file name suffixes.</source>
-        <translation type="unfinished"></translation>
+        <translation>Магические расширения имени файла для языка запросов</translation>
     </message>
     <message>
         <source>Enable</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить</translation>
     </message>
     <message>
         <source>External Indexes</source>
@@ -1787,7 +1787,7 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Click to add another index directory to the list</source>
-        <translation type="unfinished"></translation>
+        <translation>Нажмите, чтобы добавить ещё одну папку с индексом в список</translation>
     </message>
     <message>
         <source>Add index</source>
