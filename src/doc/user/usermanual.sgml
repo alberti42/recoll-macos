@@ -2112,6 +2112,50 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       field search possibilities may be different for you if someone
       took care of the customisation.</para>
 
+      <sect2>
+        <title>Modifiers</title>
+
+        <para>Some characters are recognized as search modifiers when found
+        immediately after the closing double quote of a phrase, as in
+        <literal>"some term"modifierchars</literal>. The actual "phrase"
+        can be a single term of course. Supported modifiers:
+        <itemizedlist>
+            <listitem><para><literal>l</literal> can be used to turn off
+            stemming (mostly makes sense with <literal>p</literal> because
+            stemming is off by default for phrases).</para>
+            </listitem>
+
+            <listitem><para><literal>o</literal> can be used to specify a
+            "slack" for phrase and proximity searches: the number of
+            additional terms that may be found between the specified
+            ones. If <literal>o</literal> is followed by an integer number,
+            this is the slack, else the default is 10.</para>
+            </listitem>
+
+            <listitem><para><literal>p</literal> can be used to turn the
+            default phrase search into a proximity one
+            (unordered). Example:<literal>"order any in"p</literal></para>
+            </listitem>
+
+            <listitem><para>A weight can be specified for a query element
+            by specifying a decimal value at the start of the
+            modifiers. Example: <literal>"Important"2.5</literal>.</para>
+            </listitem>
+          </itemizedlist>
+
+     </sect2> <!-- search modifiers -->
+
+    </sect1> <!-- rcl.search.lang -->
+      
+    <sect1 id="rcl.search.anchorwild">
+      <title>Anchored searches and wildcards</title>
+
+      <para>Some special characters are interpreted by &RCL; in search
+      strings to expand or specialize the search. Wildcards expand a root
+      term in controlled ways. Anchor characters can restrict a search to
+      succeed only if the match is found at or near the beginning of the
+      document or one of its fields.</para>
+
     <sect2 id="rcl.search.wildcards">
       <title>More about wildcards</title>
 
@@ -2158,9 +2202,36 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         </listitem>
       </itemizedlist>
 
-    </sect2>
+    </sect2> <!-- wildchars -->
 
-    </sect1> <!-- rcl.search.lang -->
+      <sect2 id="rcl.search.anchor">
+        <title>Anchored searches</title>
+
+        <para>Two characters are used to specify that a search hit should
+        occur at the beginning or at the end of the
+        text. <literal>^</literal> at the beginning of a term or phrase
+        constrains the search to happen at the start, <literal>$</literal>
+        at the end force it to happen at the end.</para>
+        
+        <para>As this function is implemented as a phrase search it is
+        possible to specify a maximum distance at which the hit should
+        occur, either through the controls of the advanced search panel, or
+        using the query language, for example, as in:
+        <programlisting>"^someterm"o10</programlisting> which would force
+        <literal>someterm</literal> to be found within 10 terms of the
+        start of the text. This can be combined with a field search as in
+        <literal>somefield:"^someterm"o10</literal> or
+        <literal>somefield:someterm$</literal>.</para>
+
+        <para>This feature can also be used with an actual phrase search,
+        but in this case, the distance applies to the whole phrase and
+        anchor, so that, for example, <literal>bla bla my unexpected
+        term</literal> at the beginning of the text would be a match for
+        <literal>"^my term"o5</literal>.</para>
+
+      </sect2>
+
+   </sect1> <!-- wildchars and anchors -->
 
     <sect1 id="rcl.search.desktop">
       <title>Desktop integration</title>

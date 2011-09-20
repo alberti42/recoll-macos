@@ -30,6 +30,7 @@ src/doc/user/rcl.kicker-applet.html
 src/doc/user/rcl.program.api.html
 src/doc/user/rcl.program.fields.html
 src/doc/user/rcl.program.html
+src/doc/user/rcl.search.anchorwild.html
 src/doc/user/rcl.search.commandline.html
 src/doc/user/rcl.search.complex.html
 src/doc/user/rcl.search.custom.html
