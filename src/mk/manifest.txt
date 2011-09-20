@@ -96,6 +96,7 @@ doc/user/rcl.introduction.search.html
 doc/user/rcl.program.api.html
 doc/user/rcl.program.fields.html
 doc/user/rcl.program.html
+doc/user/rcl.search.anchorwild.html
 doc/user/rcl.search.commandline.html
 doc/user/rcl.search.desktop.html
 doc/user/rcl.search.html

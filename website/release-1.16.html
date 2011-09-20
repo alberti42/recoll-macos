@@ -45,6 +45,7 @@
         class="literal">recollindex&nbsp;-z</span> will do the same in most
         cases.</p>
 
+       <p>Also, using the anchored search feature requires a full reindex.</p>
 
       <h2>Changes</h2>
 
@@ -61,6 +62,22 @@
 
         <li>The GUI advanced search panel allows specifying a
           field for each entry (ie: author/recipient, etc).</li>
+
+        <li>It is now possible to anchor searches to the beginning or
+          end of the text or field, by using <tt>^</tt> and <tt>$</tt>
+          characters at the beginning or the end of a term or
+          phrase. A maximum distance can be specified as a phrase
+          slack either in the advanced search panel, or as a query
+          language modifier, ie: <tt>"^beginterm"o10</tt> would search
+          for <tt>beginterm</tt> within 10 terms of the beginning of
+          the text. This feature was suggested to me (thanks Gökhan),
+          for searching for a name at the beginning of a text
+          (in the author list, as opposed to anywhere in 
+          the text). This is useful for example in the very common
+          case where the metadata for the author list was not
+          created. More details about this feature are to be found in
+          the <a href="http://www.recoll.org/usermanual/index.html">user
+          manual</a>.</li> 
 
         <li>It is possible to configure the result list snippet
            separator, given as an html fragment. This is an ellipsis by
