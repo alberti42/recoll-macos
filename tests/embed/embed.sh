@@ -1,0 +1,17 @@
+#!/bin/sh
+
+topdir=`dirname $0`/..
+. $topdir/shared.sh
+
+initvariables $0
+(
+for q in xing;do 
+    echo $q
+    recollq -q $q
+done
+
+) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
+
+diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
+
+checkresult

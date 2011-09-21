@@ -1,0 +1,5 @@
+xing
+3 results
+message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/mail/outmail]	[video+recdat]	2248254	bytes	
+application/msword	[file:///home/dockes/projets/fulltext/testrecoll/msword/xingfx1.doc]	[xingfx1.doc]	24576	bytes	
+application/msword	[file:///home/dockes/projets/fulltext/testrecoll/embed/thunderbirdlocalfolders.zip]	[xingfx1.doc]	2080329	bytes	
