@@ -4008,10 +4008,42 @@ fi
 done
 
 
+for ac_header in sys/param.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "sys/param.h" "ac_cv_header_sys_param_h" "$ac_includes_default"
+if test "x$ac_cv_header_sys_param_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_SYS_PARAM_H 1
+_ACEOF
+
+fi
+
+done
+
+for ac_header in bar.h
+do :
+  ac_fn_c_check_header_compile "$LINENO" "bar.h" "ac_cv_header_bar_h" "#ifdef HAVE_FOO_H
+# include <foo.h>
+#endif
+
+"
+if test "x$ac_cv_header_bar_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_BAR_H 1
+_ACEOF
+
+fi
+
+done
+
 for ac_header in sys/mount.h sys/statfs.h sys/statvfs.h sys/vfs.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
-ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+ac_fn_c_check_header_compile "$LINENO" "$ac_header" "$as_ac_Header" "#ifdef HAVE_SYS_PARAM_H
+# include <sys/param.h>
+#endif
+
+"
 if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
   cat >>confdefs.h <<_ACEOF
 #define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1

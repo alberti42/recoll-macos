@@ -23,7 +23,14 @@ fi
 
 AC_SYS_LARGEFILE
 
-AC_CHECK_HEADERS(sys/mount.h sys/statfs.h sys/statvfs.h sys/vfs.h)
+# OpenBSD needs sys/param.h for mount.h to compile
+AC_CHECK_HEADERS([sys/param.h])
+
+AC_CHECK_HEADERS([sys/mount.h sys/statfs.h sys/statvfs.h sys/vfs.h], [], [],
+[#ifdef HAVE_SYS_PARAM_H
+# include <sys/param.h>
+#endif
+])
 
 # Use specific 'file' command ? (Useful on solaris to specify
 # /usr/local/bin/file instead of the system's which doesn't understand '-i'
