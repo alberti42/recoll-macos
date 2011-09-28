@@ -42,3 +42,4 @@ sampleconf/recoll.conf
 sysconf
 wasabi
 wxgui
+makesrcdist-force.sh
