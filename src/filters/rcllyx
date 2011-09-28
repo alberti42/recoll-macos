@@ -146,10 +146,15 @@ lyx --export text "$lyxfile" || senderror "lyx --export not working"
 LYXOUTPUTUTF=No
 vline=`lyx --version 2>&1 | head -1 | tr '.' ' '`
 set $vline
-maj=`expr $2 '*' 10000` || senderror "Bad lyx version string $vline"
-med=`expr $3 '*' 100` || senderror "Bad lyx version string $vline"
-min=`expr $4 '*' 1` || senderror "Bad lyx version string $vline"
+for i in $2 $3 $4;do
+    expr "$i" ':' '[0-9][0-9]*' > /dev/null || \
+        senderror "Bad lyx version string $vline"
+done
+maj=`expr $2 '*' 10000`
+med=`expr $3 '*' 100` 
+min=`expr $4 '*' 1` 
 version=`expr $maj + $med + $min` || senderror "Bad lyx version string $vline"
+
 if test $version -ge 10607 ; then
   LYXOUTPUTUTF=Yes
 fi
