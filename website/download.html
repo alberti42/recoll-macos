@@ -53,6 +53,27 @@
       <p>The current version is 1.16.0. <a href="release-1.16.html">
           Release notes</a>.</p>
 
+      <div class="important">
+        <p>Notice for 1.16.0: the
+        <tt>recoll</tt> GUI program sometimes crashes when running a query
+        while the indexing thread is active. I can reproduce the problem
+        and I am working on a correction. Meanwhile, there are two possible
+        workarounds:<br>
+          <ul>
+        <li>(Recommended) Use the command
+             line <tt>recollindex</tt> program to perform indexing
+             (usually just type "recollindex" in a console, or see "man
+            recollindex").</li>
+        <li>Do not run queries in <tt>recoll</tt> while the indexing thread
+        is running (as indicated in the bottom status line).</li>
+      </ul>
+        If the workaround fails or you experience other kinds of
+        crashes with either <tt>recoll</tt> or <tt>recollindex</tt>, and
+        want to help, please follow the instructions on
+        <a href="https://bitbucket.org/medoc/recoll/wiki/GettingAStackTrace">
+          this  wiki page</a>.</p>
+        </div>
+
       <p>The download page for Recoll 1.15 is
 	<a href="download-1.15.html">still available</a>.</p>
 
@@ -204,21 +225,26 @@
        Xapian</a>, 
        <a  href="https://launchpad.net/~recoll-backports/+archive/recoll-1.15-on">
        Recoll and kio-recoll</a>. These were built from the latest versions,
-       for a set of Ubuntu series. You just need to add the
-       PPAs to your system software sources (the instructions are on
+       for a set of Ubuntu series.</p>
+
+      <p>Ubuntu 10.04 (lucid) and later versions just need the Recoll
+        PPA. Older versions also needed a backport for Xapian
+        (xapian-backports/xapian-1.2).</p>
+
+      <p>Just add the
+       PPA to your system software sources (the instructions are on
        the PPA page or 
 <a href="https://help.launchpad.net/Packaging/PPA/InstallingSoftware">
        here</a>), and you can then use the normal package
-       manager to install or update Recoll and Xapian. For Ubuntu versions
-       from 9.10 (Karmic), only two commands are needed:
+       manager to install or update Recoll. For Ubuntu versions
+       after 9.10 (Karmic), only one command is needed:
 <pre><tt>
-sudo add-apt-repository ppa:xapian-backports/xapian-1.2
 sudo add-apt-repository ppa:recoll-backports/recoll-1.15-on
 </tt></pre>
        </p>
 
-      <p>For Ubuntu 9.04 (Jaunty) and older, to avoid
-       messages about signature errors, you may have to explicitely import the 
+      <p>For Ubuntu 9.04 (Jaunty) and older,
+       you may have to explicitely import the 
        Recoll and Xapian public keys: <pre><tt>
 gpg --keyserver keyserver.ubuntu.com --recv 9DA85604
 gpg --export --armor 9DA85604 | sudo apt-key add -
@@ -390,7 +416,11 @@ I now use the OpenSUSE build service to create Recoll OpenSUSE packages.
       <h3>Updated 1.16 translations that became available after the
 	release:</h3>
 
-      <p>None for now :(</p>
+      <p>Czech, thanks to Pavel !
+	<a href="translations/recoll_cs.ts">recoll_cs.ts</a>
+	<a href="translations/recoll_cs.qm">recoll_cs.qm</a>
+	</p> 
+
 <!--  
       <p>Lithuanian. 
 	<a href="translations/recoll_lt.ts">recoll_lt.ts</a>

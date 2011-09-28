@@ -38,21 +38,21 @@ namespace Rcl {
 namespace StemDb {
 
 
-static const string stemdirstem = "stem_";
+static const string cstr_stemdirstem = "stem_";
 
 /// Compute name of stem db for given base database and language
 static string stemdbname(const string& dbdir, const string& lang)
 {
-    return path_cat(dbdir, stemdirstem + lang);
+    return path_cat(dbdir, cstr_stemdirstem + lang);
 }
 
 list<string> getLangs(const string& dbdir)
 {
-    string pattern = stemdirstem + "*";
+    string pattern = cstr_stemdirstem + "*";
     list<string> dirs = path_dirglob(dbdir, pattern);
     for (list<string>::iterator it = dirs.begin(); it != dirs.end(); it++) {
 	*it = path_basename(*it);
-	*it = it->substr(stemdirstem.length(), string::npos);
+	*it = it->substr(cstr_stemdirstem.length(), string::npos);
     }
     return dirs;
 }

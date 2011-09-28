@@ -34,6 +34,8 @@
 #include "rclaspell.h"
 #include "debuglog.h"
 
+#include "ptmutex.h"
+
 // Just a place where we keep the Aspell library entry points together
 class AspellApi {
 public:
@@ -61,6 +63,7 @@ public:
 
 };
 static AspellApi aapi;
+static PTMutexInit o_aapi_mutex;
 
 #define NMTOPTR(NM, TP)							\
     if ((aapi.NM = TP dlsym(m_data->m_handle, #NM)) == 0) {		\
@@ -111,6 +114,7 @@ Aspell::~Aspell()
 
 bool Aspell::init(string &reason)
 {
+    PTMutexLocker locker(o_aapi_mutex);
     deleteZ(m_data);
 
     // Language: we get this from the configuration, else from the NLS
@@ -227,7 +231,7 @@ bool Aspell::init(string &reason)
     return true;
 }
 
-bool Aspell::ok()
+bool Aspell::ok() const
 {
     return m_data != 0 && m_data->m_handle != 0;
 }

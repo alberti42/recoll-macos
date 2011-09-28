@@ -51,6 +51,7 @@ using namespace std;
 #include "md5.h"
 #include "rclversion.h"
 #include "cancelcheck.h"
+#include "ptmutex.h"
 
 #ifndef MAX
 #define MAX(A,B) (A>B?A:B)
@@ -61,8 +62,8 @@ using namespace std;
 
 // Recoll index format version is stored in user metadata. When this change,
 // we can't open the db and will have to reindex.
-static const string RCL_IDX_VERSION_KEY("RCL_IDX_VERSION_KEY");
-static const string RCL_IDX_VERSION("1");
+static const string cstr_RCL_IDX_VERSION_KEY("RCL_IDX_VERSION_KEY");
+static const string cstr_RCL_IDX_VERSION("1");
 
 // This is the word position offset at which we index the body text
 // (abstract, keywords, etc.. are stored before this)
@@ -79,7 +80,7 @@ const string end_of_field_term = "XXND";
 // This is used as a marker inside the abstract frag lists, but
 // normally doesn't remain in final output (which is built with a
 // custom sep. by our caller).
-static const string ellipsis("...");
+static const string cstr_ellipsis("...");
 
 string version_string(){
     return string("Recoll ") + string(rclversionstr) + string(" + Xapian ") +
@@ -88,12 +89,12 @@ string version_string(){
 
 // Synthetic abstract marker (to discriminate from abstract actually
 // found in document)
-static const string rclSyntAbs("?!#@");
+static const string cstr_syntAbs("?!#@");
 
 // Only ONE field name inside the index data record differs from the
 // Rcl::Doc ones: caption<->title, for a remnant of compatibility with
 // omega
-static const string keycap("caption");
+static const string cstr_keycap("caption");
 
 // Static/Default table for field->prefix/weight translation. 
 // This is logically const after initialization. Can't use a
@@ -106,8 +107,16 @@ static const string keycap("caption");
 // suppressed. 
 
 static map<string, FieldTraits> fldToTraits;
+static PTMutexInit o_fldToTraits_mutex;
+
 static void initFldToTraits() 
 {
+    PTMutexLocker locker(o_fldToTraits_mutex);
+    // As we perform non-locked testing of initialization, check again with
+    // the lock held
+    if (fldToTraits.size())
+	return;
+
     // Can't remember why "abstract" is indexed without a prefix
     // (result: it's indexed twice actually). Maybe I'll dare change
     // this one day
@@ -116,7 +125,7 @@ static void initFldToTraits()
     fldToTraits["ext"] = FieldTraits("XE");
     fldToTraits[Doc::keyfn] = FieldTraits("XSFN");
 
-    fldToTraits[keycap] = FieldTraits("S");
+    fldToTraits[cstr_keycap] = FieldTraits("S");
     fldToTraits[Doc::keytt] = FieldTraits("S");
     fldToTraits["subject"] = FieldTraits("S");
 
@@ -189,14 +198,14 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     parms.get(Doc::keyfmt, doc.fmtime);
     parms.get(Doc::keydmt, doc.dmtime);
     parms.get(Doc::keyoc, doc.origcharset);
-    parms.get(keycap, doc.meta[Doc::keytt]);
+    parms.get(cstr_keycap, doc.meta[Doc::keytt]);
     parms.get(Doc::keykw, doc.meta[Doc::keykw]);
     parms.get(Doc::keyabs, doc.meta[Doc::keyabs]);
     // Possibly remove synthetic abstract indicator (if it's there, we
     // used to index the beginning of the text as abstract).
     doc.syntabs = false;
-    if (doc.meta[Doc::keyabs].find(rclSyntAbs) == 0) {
-	doc.meta[Doc::keyabs] = doc.meta[Doc::keyabs].substr(rclSyntAbs.length());
+    if (doc.meta[Doc::keyabs].find(cstr_syntAbs) == 0) {
+	doc.meta[Doc::keyabs] = doc.meta[Doc::keyabs].substr(cstr_syntAbs.length());
 	doc.syntabs = true;
     }
     parms.get(Doc::keyipt, doc.ipath);
@@ -417,7 +426,7 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 		    } else if (ii > (unsigned int)ipos && 
 			       ii < (unsigned int)ipos + qtrmwrdcnt) {
 			sparseDoc[ii] = occupiedmarker;
-		    } else if (!sparseDoc[ii].compare(ellipsis)) {
+		    } else if (!sparseDoc[ii].compare(cstr_ellipsis)) {
 			// For an empty slot, the test has a side
 			// effect of inserting an empty string which
 			// is what we want
@@ -429,7 +438,7 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 		// empty string here, we really want an empty slot,
 		// use find()
 		if (sparseDoc.find(sto+1) == sparseDoc.end()) {
-		    sparseDoc[sto+1] = ellipsis;
+		    sparseDoc[sto+1] = cstr_ellipsis;
 		}
 
 		// Limit to allocated occurences and total size
@@ -531,7 +540,7 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 	if (!incjk || (incjk && !newcjk))
 	    chunk += " ";
 	incjk = newcjk;
-	if (it->second == ellipsis) {
+	if (it->second == cstr_ellipsis) {
 	    vabs.push_back(chunk);
 	    chunk.clear();
 	} else {
@@ -612,8 +621,8 @@ bool Db::open(OpenMode mode, OpenError *error)
                 // If db is empty, write the data format version at once
                 // to avoid stupid error messages:
                 if (m_ndb->xwdb.get_doccount() == 0)
-                    m_ndb->xwdb.set_metadata(RCL_IDX_VERSION_KEY, 
-                                             RCL_IDX_VERSION);
+                    m_ndb->xwdb.set_metadata(cstr_RCL_IDX_VERSION_KEY, 
+                                             cstr_RCL_IDX_VERSION);
 		m_ndb->m_iswritable = true;
 		// We open a readonly object in all cases (possibly in
 		// addition to the r/w one) because some operations
@@ -650,11 +659,11 @@ bool Db::open(OpenMode mode, OpenError *error)
 	// Check index format version. Must not try to check a just created or
 	// truncated db
 	if (mode != DbTrunc && m_ndb->xdb().get_doccount() > 0) {
-	    string version = m_ndb->xdb().get_metadata(RCL_IDX_VERSION_KEY);
-	    if (version.compare(RCL_IDX_VERSION)) {
+	    string version = m_ndb->xdb().get_metadata(cstr_RCL_IDX_VERSION_KEY);
+	    if (version.compare(cstr_RCL_IDX_VERSION)) {
 		m_ndb->m_noversionwrite = true;
 		LOGERR(("Rcl::Db::open: file index [%s], software [%s]\n",
-			version.c_str(), RCL_IDX_VERSION.c_str()));
+			version.c_str(), cstr_RCL_IDX_VERSION.c_str()));
 		throw Xapian::DatabaseError("Recoll index version mismatch",
 					    "", "");
 	    }
@@ -693,7 +702,7 @@ bool Db::i_close(bool final)
 	bool w = m_ndb->m_iswritable;
 	if (w) {
 	    if (!m_ndb->m_noversionwrite)
-		m_ndb->xwdb.set_metadata(RCL_IDX_VERSION_KEY, RCL_IDX_VERSION);
+		m_ndb->xwdb.set_metadata(cstr_RCL_IDX_VERSION_KEY, cstr_RCL_IDX_VERSION);
 	    LOGDEB(("Rcl::Db:close: xapian will close. May take some time\n"));
 	}
 	// Used to do a flush here. Cant see why it should be necessary.
@@ -952,7 +961,7 @@ void Db::setAbstractParams(int idxtrunc, int syntlen, int syntctxlen)
 }
 
 static const int MB = 1024 * 1024;
-static const string nc("\n\r\x0c");
+static const string cstr_nc("\n\r\x0c");
 
 #define RECORD_APPEND(R, NM, VAL) {R += NM + "=" + VAL + "\n";}
 
@@ -1168,13 +1177,13 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     if (doc.meta[Doc::keytt].empty())
 	doc.meta[Doc::keytt] = doc.utf8fn;
     doc.meta[Doc::keytt] = 
-	neutchars(truncate_to_word(doc.meta[Doc::keytt], 150), nc);
+	neutchars(truncate_to_word(doc.meta[Doc::keytt], 150), cstr_nc);
     if (!doc.meta[Doc::keytt].empty())
-	RECORD_APPEND(record, keycap, doc.meta[Doc::keytt]);
+	RECORD_APPEND(record, cstr_keycap, doc.meta[Doc::keytt]);
 
     trimstring(doc.meta[Doc::keykw], " \t\r\n");
     doc.meta[Doc::keykw] = 
-	neutchars(truncate_to_word(doc.meta[Doc::keykw], 300), nc);
+	neutchars(truncate_to_word(doc.meta[Doc::keykw], 300), cstr_nc);
     if (!doc.meta[Doc::keykw].empty())
 	RECORD_APPEND(record, Doc::keykw, doc.meta[Doc::keykw]);
 
@@ -1189,12 +1198,12 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     if (doc.meta[Doc::keyabs].empty()) {
 	syntabs = true;
 	if (!doc.text.empty())
-	    doc.meta[Doc::keyabs] = rclSyntAbs + 
-		neutchars(truncate_to_word(doc.text, m_idxAbsTruncLen), nc);
+	    doc.meta[Doc::keyabs] = cstr_syntAbs + 
+		neutchars(truncate_to_word(doc.text, m_idxAbsTruncLen), cstr_nc);
     } else {
 	doc.meta[Doc::keyabs] = 
 	    neutchars(truncate_to_word(doc.meta[Doc::keyabs], m_idxAbsTruncLen),
-		      nc);
+		      cstr_nc);
     }
     if (!doc.meta[Doc::keyabs].empty())
 	RECORD_APPEND(record, Doc::keyabs, doc.meta[Doc::keyabs]);
@@ -1205,7 +1214,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	string nm = m_config->fieldCanon(*it);
 	if (!doc.meta[*it].empty()) {
 	    string value = 
-		neutchars(truncate_to_word(doc.meta[*it], 150), nc);
+		neutchars(truncate_to_word(doc.meta[*it], 150), cstr_nc);
 	    RECORD_APPEND(record, nm, value);
 	}
     }
@@ -1611,8 +1620,8 @@ static void addPrefix(list<TermMatchEntry>& terms, const string& prefix)
 // Characters that can begin a wildcard or regexp expression. We use skipto
 // to begin the allterms search with terms that begin with the portion of
 // the input string prior to these chars.
-const string wildSpecChars = "*?[";
-const string regSpecChars = "(.[{";
+const string cstr_wildSpecChars = "*?[";
+const string cstr_regSpecChars = "(.[{";
 
 // Find all index terms that match a wildcard or regular expression
 bool Db::termMatch(MatchType typ, const string &lang,
@@ -1639,7 +1648,7 @@ bool Db::termMatch(MatchType typ, const string &lang,
 	LOGERR(("Db::termMatch: unac failed for [%s]\n", root.c_str()));
 	return false;
     }
-    string nochars = typ == ET_WILD ? wildSpecChars : regSpecChars;
+    string nochars = typ == ET_WILD ? cstr_wildSpecChars : cstr_regSpecChars;
 
     string prefix;
     if (!field.empty()) {
@@ -1852,7 +1861,7 @@ bool Db::makeDocAbstract(Doc &doc, Query *query, string& abstract)
     for (vector<string>::const_iterator it = vab.begin(); 
 	 it != vab.end(); it++) {
 	abstract.append(*it);
-	abstract.append(ellipsis);
+	abstract.append(cstr_ellipsis);
     }
     return m_reason.empty() ? true : false;
 }

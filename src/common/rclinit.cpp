@@ -29,6 +29,7 @@
 #include "rclconfig.h"
 #include "rclinit.h"
 #include "pathut.h"
+#include "unac.h"
 
 static const int catchedSigs[] = {SIGHUP, SIGINT, SIGQUIT, SIGTERM, 
      SIGUSR1, SIGUSR2};
@@ -99,6 +100,8 @@ RclConfig *recollinit(RclInitFlags flags,
     // Make sure the locale charset is initialized (so that multiple
     // threads don't try to do it at once).
     config->getDefCharset();
+    // Init unac locking
+    unac_init_mt();
 
     int flushmb;
     if (config->getConfParam("idxflushmb", &flushmb) && flushmb > 0) {

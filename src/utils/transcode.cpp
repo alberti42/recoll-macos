@@ -29,15 +29,21 @@ using std::string;
 
 #include "transcode.h"
 #include "debuglog.h"
-
+#include "ptmutex.h"
 #ifdef RCL_ICONV_INBUF_CONST
 #define ICV_P2_TYPE const char**
 #else
 #define ICV_P2_TYPE char**
 #endif
 
-// We gain approximately 28% exec time for word at a time conversions by
+// We gain approximately 25% exec time for word at a time conversions by
 // caching the iconv_open thing. 
+//
+// We may also lose some concurrency on multiproc because of the
+// necessary locking, but we only have one processing-intensive
+// possible thread for now (the indexing one), so this is probably not
+// an issue (and could be worked around with a slightly more
+// sohisticated approach).
 #define ICONV_CACHE_OPEN
 
 bool transcode(const string &in, string &out, const string &icode,
@@ -48,6 +54,8 @@ bool transcode(const string &in, string &out, const string &icode,
     static iconv_t ic = (iconv_t)-1;
     static string cachedicode;
     static string cachedocode;
+    static PTMutexInit o_cachediconv_mutex;
+    PTMutexLocker locker(o_cachediconv_mutex);
 #else 
     iconv_t ic;
 #endif
@@ -163,13 +171,14 @@ using namespace std;
 
 // Repeatedly transcode a small string for timing measurements
 static const string testword("\xc3\xa9\x6c\x69\x6d\x69\x6e\xc3\xa9\xc3\xa0");
-// Without cache 10e6 reps on macpro -> 1.88 S
-// With cache -> 1.56
+// Without cache 10e6 reps on y -> 6.68
+// With cache                   -> 4.73
+// With cache and lock          -> 4.9
 void looptest()
 {
     cout << testword << endl;
     string out;
-    for (int i = 0; i < 1000*1000; i++) {
+    for (int i = 0; i < 10*1000*1000; i++) {
 	if (!transcode(testword, out, "UTF-8", "UTF-16BE")) {
 	    cerr << "Transcode failed" << endl;
 	    break;
@@ -184,7 +193,7 @@ int main(int argc, char **argv)
     exit(0);
 #endif
     if (argc != 5) {
-	cerr << "Usage: trcsguess ifilename icode ofilename ocode" << endl;
+	cerr << "Usage: transcode ifilename icode ofilename ocode" << endl;
 	exit(1);
     }
     const string ifilename = argv[1];

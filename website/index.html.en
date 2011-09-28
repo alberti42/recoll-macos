@@ -90,6 +90,30 @@
 
       <h2>News: </h2>
       <ul>
+
+        <li>
+      <div class="important">
+        <p>Notice for 1.16.0: the
+        <tt>recoll</tt> GUI program sometimes crashes when running a query
+        while the indexing thread is active. I can reproduce the problem
+        and I am working on a correction. Meanwhile, there are two possible
+        workarounds:<br>
+          <ul>
+        <li>(Recommended) Use the command
+             line <tt>recollindex</tt> program to perform indexing
+             (usually just type "recollindex" in a console, or see "man
+            recollindex").</li>
+        <li>Do not run queries in <tt>recoll</tt> while the indexing thread
+        is running (as indicated in the bottom status line).</li>
+      </ul>
+        If the workaround fails or you experience other kinds of
+        crashes with either <tt>recoll</tt> or <tt>recollindex</tt>, and
+        want to help, please follow the instructions on
+        <a href="https://bitbucket.org/medoc/recoll/wiki/GettingAStackTrace">
+          this  wiki page</a>.</p>
+        </div>
+        </li>
+
         <li>2011-09-03: release <a href="download.html#source">1.16.0</a>
           is out with many <a href="release-1.16.html">small improvements</a>
           over 1.15. </li>

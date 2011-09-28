@@ -405,7 +405,7 @@ list(int fd, const string& path, vector<string>* names, flags flags, nspace dom)
     return true;
 }
 
-static const string nullstring("");
+static const string cstr_nullstring("");
 
 bool get(const string& path, const string& _name, string *value,
 	 flags flags, nspace dom)
@@ -414,7 +414,7 @@ bool get(const string& path, const string& _name, string *value,
 }
 bool get(int fd, const string& _name, string *value, flags flags, nspace dom)
 {
-    return get(fd, nullstring, _name, value, flags, dom);
+    return get(fd, cstr_nullstring, _name, value, flags, dom);
 }
 bool set(const string& path, const string& _name, const string& value,
 	 flags flags, nspace dom)
@@ -424,7 +424,7 @@ bool set(const string& path, const string& _name, const string& value,
 bool set(int fd, const string& _name, const string& value, 
 	 flags flags, nspace dom)
 {
-    return set(fd, nullstring, _name, value, flags, dom);
+    return set(fd, cstr_nullstring, _name, value, flags, dom);
 }
 bool del(const string& path, const string& _name, flags flags, nspace dom) 
 {
@@ -432,7 +432,7 @@ bool del(const string& path, const string& _name, flags flags, nspace dom)
 }
 bool del(int fd, const string& _name, flags flags, nspace dom) 
 {
-    return del(fd, nullstring, _name, flags, dom);
+    return del(fd, cstr_nullstring, _name, flags, dom);
 }
 bool list(const string& path, vector<string>* names, flags flags, nspace dom)
 {
@@ -440,17 +440,17 @@ bool list(const string& path, vector<string>* names, flags flags, nspace dom)
 }
 bool list(int fd, vector<string>* names, flags flags, nspace dom)
 {
-    return list(fd, nullstring, names, flags, dom);
+    return list(fd, cstr_nullstring, names, flags, dom);
 }
 
-static const string userstring("user.");
+static const string cstr_userstring("user.");
 bool sysname(nspace dom, const string& pname, string* sname)
 {
     if (dom != PXATTR_USER) {
 	errno = EINVAL;
 	return false;
      }
-    *sname = userstring + pname;
+    *sname = cstr_userstring + pname;
     return true;
 }
 
@@ -460,7 +460,7 @@ bool pxname(nspace dom, const string& sname, string* pname)
 	errno = EINVAL;
 	return false;
     }
-    *pname = sname.substr(userstring.length());
+    *pname = sname.substr(cstr_userstring.length());
     return true;
 }
 

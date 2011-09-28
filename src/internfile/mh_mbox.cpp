@@ -53,7 +53,7 @@ public:
 private: FILE **m_fpp;
 };
 
-static PTMutexInit o_mutex;
+static PTMutexInit o_mcache_mutex;
 
 /**
  * Handles a cache for message numbers to offset translations. Permits direct
@@ -86,7 +86,7 @@ public:
             LOGDEB0(("MboxCache::get_offsets: init failed\n"));
             return -1;
         }
-	PTMutexLocker locker(o_mutex);
+	PTMutexLocker locker(o_mcache_mutex);
         string fn = makefilename(udi);
         FILE *fp = 0;
         if ((fp = fopen(fn.c_str(), "r")) == 0) {
@@ -133,7 +133,7 @@ public:
             return;
         if (fsize < m_minfsize)
             return;
-	PTMutexLocker locker(o_mutex);
+	PTMutexLocker locker(o_mcache_mutex);
         string fn = makefilename(udi);
         FILE *fp;
         if ((fp = fopen(fn.c_str(), "w")) == 0) {
@@ -163,7 +163,7 @@ public:
 
     // Check state, possibly initialize
     bool ok(RclConfig *config) {
-	PTMutexLocker locker(o_mutex);
+	PTMutexLocker locker(o_mcache_mutex);
         if (m_minfsize == -1)
             return false;
         if (!m_ok) {
@@ -224,9 +224,9 @@ private:
 
 const size_t MboxCache::o_b1size = 1024;
 
-static class MboxCache mcache;
+static class MboxCache o_mcache;
 
-static const string keyquirks("mhmboxquirks");
+static const string cstr_keyquirks("mhmboxquirks");
 
 MimeHandlerMbox::~MimeHandlerMbox()
 {
@@ -271,7 +271,7 @@ bool MimeHandlerMbox::set_document_file(const string &fn)
 
     // Check for location-based quirks:
     string quirks;
-    if (m_config && m_config->getConfParam(keyquirks, quirks)) {
+    if (m_config && m_config->getConfParam(cstr_keyquirks, quirks)) {
 	if (quirks == "tbird") {
 	    LOGDEB(("MimeHandlerMbox: setting quirks TBIRD\n"));
 	    m_quirks |= MBOXQUIRK_TBIRD;
@@ -358,6 +358,20 @@ static const char *miniTbirdFrom = "^From $";
 static regex_t fromregex;
 static regex_t minifromregex;
 static bool regcompiled;
+static PTMutexInit o_regex_mutex;
+
+static void compileregexes()
+{
+    PTMutexLocker locker(o_regex_mutex);
+    // As the initial test of regcompiled is unprotected the value may
+    // have changed while we were waiting for the lock. Test again now
+    // that we are alone.
+    if (regcompiled)
+	return;
+    regcomp(&fromregex, frompat, REG_NOSUB|REG_EXTENDED);
+    regcomp(&minifromregex, miniTbirdFrom, REG_NOSUB|REG_EXTENDED);
+    regcompiled = true;
+}
 
 bool MimeHandlerMbox::next_document()
 {
@@ -383,9 +397,7 @@ bool MimeHandlerMbox::next_document()
 	mtarg = -1;
 
     if (!regcompiled) {
-	regcomp(&fromregex, frompat, REG_NOSUB|REG_EXTENDED);
-	regcomp(&minifromregex, miniTbirdFrom, REG_NOSUB|REG_EXTENDED);
-	regcompiled = true;
+	compileregexes();
     }
 
     // If we are called to retrieve a specific message, seek to bof
@@ -403,7 +415,7 @@ bool MimeHandlerMbox::next_document()
         LOGDEB0(("MimeHandlerMbox::next_doc: mtarg %d m_udi[%s]\n",
                 mtarg, m_udi.c_str()));
         if (!m_udi.empty() && 
-            (off = mcache.get_offset(m_config, m_udi, mtarg)) >= 0 && 
+            (off = o_mcache.get_offset(m_config, m_udi, mtarg)) >= 0 && 
             fseeko(fp, (off_t)off, SEEK_SET) >= 0 && 
             fgets(line, LL, fp) &&
             (!regexec(&fromregex, line, 0, 0, 0) || 
@@ -492,7 +504,7 @@ bool MimeHandlerMbox::next_document()
 	LOGDEB2(("MimeHandlerMbox::next: eof hit\n"));
 	m_havedoc = false;
 	if (!m_udi.empty() && storeoffsets) {
-	    mcache.put_offsets(m_config, m_udi, m_fsize, m_offsets);
+	    o_mcache.put_offsets(m_config, m_udi, m_fsize, m_offsets);
 	}
     }
     return msgtxt.empty() ? false : true;

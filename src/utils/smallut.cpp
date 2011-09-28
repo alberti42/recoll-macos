@@ -428,7 +428,7 @@ void neutchars(const string &str, string &out, const string& chars)
  * if reasonably possible. Note: we could also use textsplit, stopping when
  * we have enough, this would be cleanly utf8-aware but would remove 
  * punctuation */
-static const string SEPAR = " \t\n\r-:.;,/[]{}";
+static const string cstr_SEPAR = " \t\n\r-:.;,/[]{}";
 string truncate_to_word(const string &input, string::size_type maxlen)
 {
     string output;
@@ -436,7 +436,7 @@ string truncate_to_word(const string &input, string::size_type maxlen)
 	output = input;
     } else {
 	output = input.substr(0, maxlen);
-	string::size_type space = output.find_last_of(SEPAR);
+	string::size_type space = output.find_last_of(cstr_SEPAR);
 	// Original version only truncated at space if space was found after
 	// maxlen/2. But we HAVE to truncate at space, else we'd need to do
 	// utf8 stuff to avoid truncating at multibyte char. In any case,
@@ -676,6 +676,9 @@ static void gettime(int, struct m_timespec *ts)
 }
 ///// End system interface
 
+// Note: this not protected against multithread access and not reentrant, but
+// this is mostly debug code, and it won't crash, just show bad results. Also 
+// the frozen thing is not used that much
 static m_timespec frozen_tv;
 void Chrono::refnow()
 {

@@ -172,8 +172,6 @@ public:
     ifstream m_input;
 };
 
-const string badtmpdirname = "/no/such/dir/really/can/exist";
-
 // Initialize. Compute paths and create a temporary directory that will be
 // used by internfile()
 BeagleQueueIndexer::BeagleQueueIndexer(RclConfig *cnf, Rcl::Db *db,

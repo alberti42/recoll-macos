@@ -113,6 +113,9 @@ int unacfold_string(const char* charset,
 		const char* in, size_t in_length,
 		char** out, size_t* out_length);
 
+/* To be called before starting threads in mt programs */
+void unac_init_mt();
+
 /*
  * Return unac version number.
  */

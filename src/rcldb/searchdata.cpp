@@ -860,13 +860,13 @@ bool StringToXapianQ::processUserString(const string &iq,
     return true;
 }
 
-static const string nullstemlang;
+static const string cstr_null;
 
 // Translate a simple OR, AND, or EXCL search clause. 
 bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p, 
 					   const string& stemlang)
 {
-    const string& l_stemlang = (m_modifiers&SDCM_NOSTEMMING)? nullstemlang:
+    const string& l_stemlang = (m_modifiers&SDCM_NOSTEMMING)? cstr_null:
 	stemlang;
 
     m_terms.clear();
@@ -945,7 +945,7 @@ bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p,
 bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p, 
 					 const string& stemlang)
 {
-    const string& l_stemlang = (m_modifiers&SDCM_NOSTEMMING)? nullstemlang:
+    const string& l_stemlang = (m_modifiers&SDCM_NOSTEMMING)? cstr_null:
 	stemlang;
     LOGDEB(("SearchDataClauseDist::toNativeQuery\n"));
     m_terms.clear();

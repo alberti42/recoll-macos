@@ -34,12 +34,14 @@ using std::endl;
 #include "plaintorich.h"
 #include "mimehandler.h"
 
-// Default highlighter
+// Default highlighter. No need for locking, this is query-only.
+static const string cstr_hlfontcolor("<font color=\"blue\">");
+static const string cstr_hlendfont("</font>");
 class PlainToRichHtReslist : public PlainToRich {
 public:
     virtual ~PlainToRichHtReslist() {}
-    virtual string startMatch() {return string("<font color=\"blue\">");}
-    virtual string endMatch() {return string("</font>");}
+    virtual string startMatch() {return cstr_hlfontcolor;}
+    virtual string endMatch() {return cstr_hlendfont;}
 };
 static PlainToRichHtReslist g_hiliter;
 
@@ -406,10 +408,10 @@ string ResListPager::detailsLink()
 
 const string &ResListPager::parFormat()
 {
-    static const string format("<img src=\"%I\" align=\"left\">"
-			       "%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
-			       "%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
-			       "%A %K");
-    return format;
+    static const string cstr_format("<img src=\"%I\" align=\"left\">"
+				    "%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
+				    "%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
+				    "%A %K");
+    return cstr_format;
 }
 

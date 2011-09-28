@@ -38,7 +38,19 @@
       <h2><a name="b_latest">recoll 1.16</a></h2> 
 
       <ul> 
-        
+
+        <li>The <tt>recoll</tt> GUI program sometimes crashes when
+        running a query while the indexing thread is active.
+        Possible workarounds:<br>
+          <ul>
+        <li>(Recommended) Use the command
+             line <tt>recollindex</tt> program to perform indexing
+             (usually just type "recollindex" in a console, or see "man
+            recollindex").</li>
+        <li>Do not run queries in <tt>recoll</tt> while the indexing thread
+        is running (as indicated in the bottom status line).</li>
+          </ul>      
+
         <li>Cancelling a preview in the GUI will also cancel the indexing
           thread if it is running.</li>
 

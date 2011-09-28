@@ -50,7 +50,7 @@ class Aspell {
     ~Aspell();
 
     /** Check health */
-    bool ok();
+    bool ok() const;
 
     /** Find the aspell command and shared library, init function pointers */
     bool init(string &reason); 

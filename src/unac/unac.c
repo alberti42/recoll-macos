@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #endif /* HAVE_VSNPRINTF */
+#include <pthread.h>
 
 #include "unac.h"
 #include "unac_version.h"
@@ -10555,8 +10556,6 @@ int unacfold_string_utf16(const char* in, size_t in_length,
 				      outp, out_lengthp, 1);
 }
 
-#define MAXOUT 1024
-
 static int convert(const char* from, const char* to,
 		   const char* in, size_t in_length,
 		   char** outp, size_t* out_lengthp);
@@ -10564,6 +10563,14 @@ static int convert(const char* from, const char* to,
 static const char *utf16be = "UTF-16BE";
 static iconv_t u8tou16_cd = (iconv_t)-1;
 static iconv_t u16tou8_cd = (iconv_t)-1;
+static pthread_mutex_t o_unac_mutex;
+static int unac_mutex_is_init;
+// Call this or take your chances with the auto init.
+void unac_init_mt()
+{
+    pthread_mutex_init(&o_unac_mutex, 0);
+    unac_mutex_is_init = 1;
+}
 
 /*
  * Convert buffer <in> containing string encoded in charset <from> into
@@ -10576,6 +10583,7 @@ static int convert(const char* from, const char* to,
 		   const char* in, size_t in_length,
 		   char** outp, size_t* out_lengthp)
 {
+  int ret = -1;
   iconv_t cd;
   char* out;
   size_t out_remain;
@@ -10583,6 +10591,15 @@ static int convert(const char* from, const char* to,
   char* out_base;
   int from_utf16, from_utf8, to_utf16, to_utf8, u8tou16, u16tou8;
   const char space[] = { 0x00, 0x20 };
+
+  /* Note: better call explicit unac_init_mt() before starting threads than
+     rely on this.
+   */
+  if (unac_mutex_is_init == 0) {
+      pthread_mutex_init(&o_unac_mutex, 0);
+      unac_mutex_is_init = 1;
+  }
+  pthread_mutex_lock(&o_unac_mutex);
 
   if (!strcmp(utf16be, from)) {
       from_utf8 = 0;
@@ -10614,7 +10631,7 @@ static int convert(const char* from, const char* to,
 	/* *outp still valid, no freeing */
 	if(debug_level >= UNAC_DEBUG_LOW)
 	  DEBUG("realloc %d bytes failed\n", out_size+1);
-	return -1;
+	goto out;
     }
   } else {
     /* +1 for null */
@@ -10622,7 +10639,7 @@ static int convert(const char* from, const char* to,
     if(out == 0) {
 	if(debug_level >= UNAC_DEBUG_LOW)
 	  DEBUG("malloc %d bytes failed\n", out_size+1);
-	return -1;
+	goto out;
     }
   }
   out_remain = out_size;
@@ -10631,7 +10648,7 @@ static int convert(const char* from, const char* to,
   if (u8tou16) {
       if (u8tou16_cd == (iconv_t)-1) {
 	  if((u8tou16_cd = iconv_open(to, from)) == (iconv_t)-1) {
-	      return -1;
+	      goto out;
 	  }
       } else {
 	  iconv(u8tou16_cd, 0, 0, 0, 0);
@@ -10640,7 +10657,7 @@ static int convert(const char* from, const char* to,
   } else if (u16tou8) {
       if (u16tou8_cd == (iconv_t)-1) {
 	  if((u16tou8_cd = iconv_open(to, from)) == (iconv_t)-1) {
-	      return -1;
+	      goto out;
 	  }
       } else {
 	  iconv(u16tou8_cd, 0, 0, 0, 0);
@@ -10648,7 +10665,7 @@ static int convert(const char* from, const char* to,
       cd = u16tou8_cd;
   } else {
       if((cd = iconv_open(to, from)) == (iconv_t)-1) {
-	  return -1;
+	  goto out;
       }
   }
 
@@ -10682,7 +10699,7 @@ static int convert(const char* from, const char* to,
 	    if(errno == E2BIG)
 	      /* fall thru to the E2BIG case below */;
 	    else
-	      return -1;
+	      goto out;
 	  } else {
 	    /* The offending character was replaced by a SPACE, skip it. */
 	    in += 2;
@@ -10691,7 +10708,7 @@ static int convert(const char* from, const char* to,
 	    break;
 	  }
 	} else {
-	  return -1;
+	  goto out;
 	}
       case E2BIG:
 	{
@@ -10711,7 +10728,7 @@ static int convert(const char* from, const char* to,
 		      DEBUG("realloc %d bytes failed\n", out_size+1);
 		  free(saved);
 		  *outp = 0;
-		  return -1;
+		  goto out;
 	      }
 	  }
 	  out = out_base + length;
@@ -10719,7 +10736,7 @@ static int convert(const char* from, const char* to,
 	}
 	break;
       default:
-	return -1;
+	goto out;
 	break;
       }
     }
@@ -10732,7 +10749,10 @@ static int convert(const char* from, const char* to,
   *out_lengthp = out - out_base;
   (*outp)[*out_lengthp] = '\0';
 
-  return 0;
+  ret = 0;
+out:
+  pthread_mutex_unlock(&o_unac_mutex);
+  return ret;
 }
 
 int unacmaybefold_string(const char* charset,

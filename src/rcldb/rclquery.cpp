@@ -39,16 +39,17 @@
 namespace Rcl {
 #endif
 
+static const string cstr_keycap("caption");
+static const string cstr_keydmtime("dmtime");
+
 // Field names inside the index data record may differ from the rcldoc ones
 // (esp.: caption / title)
 static const string& docfToDatf(const string& df)
 {
-    static const string keycap("caption");
-    static const string keydmtime("dmtime");
     if (!df.compare(Doc::keytt)) {
-	return keycap;
+	return cstr_keycap;
     } else if (!df.compare(Doc::keymt)) {
-	return keydmtime;
+	return cstr_keydmtime;
     } else {
 	return df;
     }
