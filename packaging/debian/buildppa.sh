@@ -4,7 +4,7 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.16.0
+RCLVERS=1.16.1
 PPAVERS=1
 
 case $RCLVERS in
@@ -36,9 +36,9 @@ fi
 series4=""
 case $RCLVERS in
     1.14*)
-        series4="jaunty karmic lucid maverick natty";;
+        series4="jaunty karmic lucid maverick natty oneiric";;
     *)
-        series4="jaunty karmic lucid maverick natty";;
+        series4="jaunty karmic lucid maverick natty oneiric";;
 esac
 
 debdir=debianrclqt4
@@ -53,7 +53,7 @@ done
 
 ### KIO
 seriesk=""
-seriesk="jaunty karmic lucid maverick natty"
+seriesk="jaunty karmic lucid maverick natty oneiric"
 
 debdir=debiankio
 rm -rf recoll-${RCLVERS}/debian
