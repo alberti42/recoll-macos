@@ -50,29 +50,8 @@
 
       <h2><a>General information</a></h2>
 
-      <p>The current version is 1.16.0. <a href="release-1.16.html">
+      <p>The current version is 1.16.1. <a href="release-1.16.html">
           Release notes</a>.</p>
-
-      <div class="important">
-        <p>Notice for 1.16.0: the
-        <tt>recoll</tt> GUI program sometimes crashes when running a query
-        while the indexing thread is active. I can reproduce the problem
-        and I am working on a correction. Meanwhile, there are two possible
-        workarounds:<br>
-          <ul>
-        <li>(Recommended) Use the command
-             line <tt>recollindex</tt> program to perform indexing
-             (usually just type "recollindex" in a console, or see "man
-            recollindex").</li>
-        <li>Do not run queries in <tt>recoll</tt> while the indexing thread
-        is running (as indicated in the bottom status line).</li>
-      </ul>
-        If the workaround fails or you experience other kinds of
-        crashes with either <tt>recoll</tt> or <tt>recollindex</tt>, and
-        want to help, please follow the instructions on
-        <a href="https://bitbucket.org/medoc/recoll/wiki/GettingAStackTrace">
-          this  wiki page</a>.</p>
-        </div>
 
       <p>The download page for Recoll 1.15 is
 	<a href="download-1.15.html">still available</a>.</p>
@@ -122,11 +101,11 @@
 
       <h2><a name="source">Source</a></h2>
 
-      <h3>Current release distribution: 1.16.0:</h3> 
+      <h3>Current release distribution: 1.16.1:</h3> 
       <!-- Attention: source packages must remain here, not in a
         subdirectory, because of all the places they're referred from
         (package watches) -->
-       <p><a href="recoll-1.16.0.tar.gz">recoll-1.16.0.tar.gz</a>.
+       <p><a href="recoll-1.16.1.tar.gz">recoll-1.16.1.tar.gz</a>.
        </p>
 
 <!--
@@ -187,6 +166,7 @@
 
       <h3>Older recoll releases:</h3>
        <p>
+        <a href="recoll-1.16.0.tar.gz">1.16.0</a>.
         <a href="recoll-1.15.9.tar.gz">1.15.9</a>.
         <a href="recoll-1.14.4.tar.gz">1.14.4</a>.
         <a href="recoll-1.13.04.tar.gz">1.13.04</a>.
@@ -269,23 +249,23 @@ gpg --export --armor  A0735AD0 | sudo apt-key add -
       <p>These builds are not statically linked, but depend on the
         regular Xapian and zlib rpms from the Fedora repositories.
         <br>Fedora 13
-	<a href="fc13/recoll-1.16.0-1.fc13.i586.rpm">
-	  recoll-1.16.0-1.fc13.i586.rpm</a>. 
+	<a href="fc13/recoll-1.16.1-1.fc13.i586.rpm">
+	  recoll-1.16.1-1.fc13.i586.rpm</a>. 
 	Source: 
-	<a href="fc13/recoll-1.16.0-1.fc13.src.rpm">
-	  recoll-1.16.0-1.fc13.src.rpm</a>
+	<a href="fc13/recoll-1.16.1-1.fc13.src.rpm">
+	  recoll-1.16.1-1.fc13.src.rpm</a>
         <br>Fedora 14
-	<a href="fc14/recoll-1.16.0-1.fc14.i586.rpm">
-	  recoll-1.16.0-1.fc14.i586.rpm</a>. 
+	<a href="fc14/recoll-1.16.1-1.fc14.i586.rpm">
+	  recoll-1.16.1-1.fc14.i586.rpm</a>. 
 	Source: 
-	<a href="fc14/recoll-1.16.0-1.fc14.src.rpm">
-	  recoll-1.16.0-1.fc14.src.rpm</a>
+	<a href="fc14/recoll-1.16.1-1.fc14.src.rpm">
+	  recoll-1.16.1-1.fc14.src.rpm</a>
         <br>Fedora 15
-	<a href="fc15/recoll-1.16.0-1.fc15.i586.rpm">
-	  recoll-1.16.0-1.fc15.i586.rpm</a>. 
+	<a href="fc15/recoll-1.16.1-1.fc15.i586.rpm">
+	  recoll-1.16.1-1.fc15.i586.rpm</a>. 
 	Source: 
-	<a href="fc15/recoll-1.16.0-1.fc15.src.rpm">
-	  recoll-1.16.0-1.fc15.src.rpm</a>
+	<a href="fc15/recoll-1.16.1-1.fc15.src.rpm">
+	  recoll-1.16.1-1.fc15.src.rpm</a>
       </p>
 
       </blockquote>
@@ -313,13 +293,13 @@ I now use the OpenSUSE build service to create Recoll OpenSUSE packages.
       <h3>Mandriva</h3>
       <blockquote>
 
-        <p><b>Mandriva linux one 2010 with Qt 4 and a static link to
-            Xapian 1.2.7 with the --without-sse configure option.</b>: 
-	  <a href="mandriva2010/recoll-1.16.0-1mdv2010.2.i586.rpm">
-	  recoll-1.16.0-1mdv2010.2.i586.rpm</a>. 
+        <p><b>Mandriva linux one 2010 using Qt 4 and the Xapian version
+             from the Mandriva repository.</b>: 
+	  <a href="mandriva2010/recoll-1.16.1-1mdv2010.2.i586.rpm">
+	  recoll-1.16.1-1mdv2010.2.i586.rpm</a>. 
 	Source: 
-	<a href="mandriva2010/recoll-1.16.0-1mdv2010.2.src.rpm">
-	  recoll-1.16.0-1mdv2010.2.src.rpm</a>
+	<a href="mandriva2010/recoll-1.16.1-1mdv2010.2.src.rpm">
+	  recoll-1.16.1-1mdv2010.2.src.rpm</a>
         </p>
       </blockquote>
 
@@ -340,8 +320,8 @@ I now use the OpenSUSE build service to create Recoll OpenSUSE packages.
         following, but updates have stopped for some time.</p>
         <p><b>FreeBSD 7.4 i386 Qt 4.7.3</b> Statically linked to
           Xapian 1.2.7 with --disable-sse: 
-	   <a href="freebsd/recoll-1.16.0-FreeBSD-7.4-STABLE.tgz">
-	     recoll-1.16.0-FreeBSD-7.4-STABLE.tgz</a>
+	   <a href="freebsd/recoll-1.16.1-FreeBSD-7.4-STABLE.tgz">
+	     recoll-1.16.1-FreeBSD-7.4-STABLE.tgz</a>
         </p>
       </blockquote>
 
