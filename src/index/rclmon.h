@@ -103,6 +103,9 @@ extern bool startMonitor(RclConfig *conf, int flags);
 /** Main routine for the event receiving thread */
 extern void *rclMonRcvRun(void *);
 
+/** Utility routine to try and set ionice */
+extern void rclMonIonice(RclConfig *conf);
+
 // Specific debug macro for monitor synchronization events
 #define MONDEB LOGDEB2
 

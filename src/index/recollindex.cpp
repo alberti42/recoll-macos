@@ -294,6 +294,8 @@ int main(int argc, const char **argv)
     if (setpriority(PRIO_PROCESS, 0, 20) != 0) {
         LOGINFO(("recollindex: can't setpriority(), errno %d\n", errno));
     }
+    // Try to ionice. This does not work on all platforms
+    rclMonIonice(config);
 
     if (op_flags & (OPT_i|OPT_e)) {
 	lockorexit(&pidfile);
@@ -350,12 +352,16 @@ int main(int argc, const char **argv)
 	      exit(1);
 	    }
 	}
+	pidfile.write_pid();
+
         // Not too sure if I have to redo the nice thing after daemon(),
         // can't hurt anyway (easier than testing on all platforms...)
         if (setpriority(PRIO_PROCESS, 0, 20) != 0) {
             LOGINFO(("recollindex: can't setpriority(), errno %d\n", errno));
         }
-	pidfile.write_pid();
+	// Try to ionice. This does not work on all platforms
+	rclMonIonice(config);
+
 	if (sleepsecs > 0) {
 	    LOGDEB(("recollindex: sleeping %d\n", sleepsecs));
 	    for (int i = 0; i < sleepsecs; i++) {

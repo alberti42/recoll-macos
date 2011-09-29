@@ -159,6 +159,11 @@ filtermaxseconds = 1200
 # example:
 # mondelaypatterns = *.log:20  "*with spaces.*:30"
 
+# ionice class for monitor (on platforms where this is supported)
+# monioniceclass = 3
+# ionice class param for monitor (on platforms where this is supported)
+# monioniceclassdata = 
+
 # If this is set, process the directory where Beagle Web browser plugins
 # copy visited pages for indexing. Of course, Beagle MUST NOT be running,
 # else things will behave strangely. 

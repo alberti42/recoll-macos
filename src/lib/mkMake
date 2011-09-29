@@ -57,6 +57,7 @@ ${depth}/utils/mimeparse.cpp \
 ${depth}/utils/netcon.cpp \
 ${depth}/utils/pathut.cpp \
 ${depth}/utils/pxattr.cpp \
+${depth}/utils/rclionice.cpp \
 ${depth}/utils/readfile.cpp \
 ${depth}/utils/smallut.cpp \
 ${depth}/utils/transcode.cpp \
