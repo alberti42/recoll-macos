@@ -1117,7 +1117,7 @@ static void *allocmem(
         return cp;
     }
 
-    int inc = (*np > maxinc) ?  : *np;
+    int inc = (*np > maxinc) ?  maxinc : *np;
     if ((cp = realloc(cp, (*np + inc) * sz)) != 0)
         *np += inc;
     return cp;
