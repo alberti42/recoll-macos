@@ -217,13 +217,6 @@ bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
 		    strerror(errno)));
             it++; continue;
 	}
-	// If we get to indexing directory names one day, will need to test 
-	// against dbdir here to avoid modification loops (with rclmon).
-	if (!S_ISREG(stb.st_mode)) {
-	    LOGDEB(("FsIndexer::indexFiles: skipping [%s] (nr)\n", 
-		    it->c_str()));
-            it++; continue;
-	}
 
 	int abslen;
 	if (m_config->getConfParam("idxabsmlen", &abslen))
