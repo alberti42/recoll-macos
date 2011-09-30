@@ -367,7 +367,7 @@ const string& RclConfig::getDefCharset(bool filename)
 
 bool RclConfig::addLocalFields(map<string, string> *tgt)
 {
-    LOGDEB(("RclConfig::addLocalFields: keydir [%s]\n", m_keydir.c_str()));
+    LOGDEB0(("RclConfig::addLocalFields: keydir [%s]\n", m_keydir.c_str()));
     string sfields;
     if (tgt == 0 || ! getConfParam("localfields", sfields))
         return false;
