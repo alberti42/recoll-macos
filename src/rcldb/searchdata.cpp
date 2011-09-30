@@ -170,11 +170,6 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
     Xapian::Query xq;
     m_reason.erase();
 
-    if (!m_query.size() && !m_haveDates) {
-	m_reason = "empty query";
-	return false;
-    }
-
     // Walk the clause list translating each in turn and building the 
     // Xapian query tree
     for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++) {
@@ -210,7 +205,9 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
             xq = Xapian::Query(op, xq, nq);
         }
     }
-        
+    if (xq.empty())
+	xq = Xapian::Query::MatchAll;
+
     if (m_haveDates) {
         // If one of the extremities is unset, compute db extremas
         if (m_dates.y1 == 0 || m_dates.y2 == 0) {
