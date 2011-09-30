@@ -388,7 +388,7 @@ bool RclFAM::getEvent(RclMonEvent& ev, int secs)
 	ev.m_path = fe.filename;
     }
 
-    LOGDEB(("RclFAM::getEvent: %-12s %s\n", 
+    MONDEB(("RclFAM::getEvent: %-12s %s\n", 
 	    event_name(fe.code), ev.m_path.c_str()));
 
     switch (fe.code) {
