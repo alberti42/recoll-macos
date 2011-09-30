@@ -1240,9 +1240,9 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	    m_ndb->xwdb.replace_document(uniterm, newdocument);
 	if (did < updated.size()) {
 	    updated[did] = true;
-	    LOGDEB(("Db::add: docid %d updated [%s]\n", did, fnc));
+	    LOGINFO(("Db::add: docid %d updated [%s]\n", did, fnc));
 	} else {
-	    LOGDEB(("Db::add: docid %d added [%s]\n", did, fnc));
+	    LOGINFO(("Db::add: docid %d added [%s]\n", did, fnc));
 	}
     } XCATCHERROR(ermsg);
 
