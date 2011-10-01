@@ -25,7 +25,7 @@ bool rclionice(const string& clss, const string& cdata)
     string ionicexe;
     if (!ExecCmd::which("ionice", ionicexe)) {
 	// ionice not found, bail out
-	LOGDEB(("rclionice: ionice not found\n"));
+	LOGDEB0(("rclionice: ionice not found\n"));
 	return false;
     }
     list<string> args;
