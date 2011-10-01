@@ -19,6 +19,7 @@
 
 #include <string>
 
+#include "cstr.h"
 #include "mimehandler.h"
 
 /**
@@ -30,19 +31,19 @@ class MimeHandlerUnknown : public RecollFilter {
     MimeHandlerUnknown(RclConfig *cnf, const string& mt) 
 	: RecollFilter(cnf, mt) {}
     virtual ~MimeHandlerUnknown() {}
-    virtual bool set_document_string(const string& fn) {
+    virtual bool set_document_file(const string& fn) {
 	RecollFilter::set_document_file(fn);
 	return m_havedoc = true;
     }
-    virtual bool set_document_file(const string&) {
+    virtual bool set_document_string(const string&) {
 	return m_havedoc = true;
     }
     virtual bool next_document() {
 	if (m_havedoc == false)
 	    return false;
 	m_havedoc = false; 
-	m_metaData["content"] = "";
-	m_metaData["mimetype"] = "text/plain";
+	m_metaData[cstr_content] = cstr_null;
+	m_metaData[cstr_mimetype] = cstr_textplain;
 	return true;
     }
     virtual bool is_unknown() {return true;}

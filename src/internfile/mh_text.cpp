@@ -27,6 +27,7 @@
 using namespace std;
 #endif /* NO_NAMESPACES */
 
+#include "cstr.h"
 #include "mh_text.h"
 #include "csguess.h"
 #include "debuglog.h"
@@ -122,7 +123,7 @@ bool MimeHandlerText::next_document()
 	     m_dfltInputCharset.c_str()));
     int ecnt;
     bool ret;
-    string& itext = m_metaData["content"];
+    string& itext = m_metaData[cstr_content];
     if (!(ret=transcode(m_text, itext, m_dfltInputCharset, "UTF-8", &ecnt)) || 
 	ecnt > int(itext.size() / 4)) {
 	LOGERR(("MimeHandlerText::mkDoc: transcode to utf-8 failed "
@@ -132,8 +133,8 @@ bool MimeHandlerText::next_document()
 	return false;
     }
     m_metaData["origcharset"] = m_dfltInputCharset;
-    m_metaData["charset"] = "utf-8";
-    m_metaData["mimetype"] = "text/plain";
+    m_metaData[cstr_charset] = "utf-8";
+    m_metaData[cstr_mimetype] = cstr_textplain;
 
     // If text length is 0 (the file is empty or oversize), or we have
     // read all at once, we're done
@@ -151,7 +152,7 @@ bool MimeHandlerText::next_document()
         char buf[30];
         sprintf(buf, "%lld", (long long)(m_offs - m_text.length()));
         if (m_offs - m_text.length() != 0)
-            m_metaData["ipath"] = buf;
+            m_metaData[cstr_ipath] = buf;
         readnext();
         return true;
     }

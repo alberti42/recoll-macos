@@ -19,6 +19,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "cstr.h"
 #include "mh_execm.h"
 #include "mh_html.h"
 #include "debuglog.h"
@@ -85,7 +86,7 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
     // Empty line (end of message) ?
     if (!ibuf.compare("\n")) {
         LOGDEB(("MHExecMultiple: Got empty line\n"));
-        name = "";
+        name.clear();
         return true;
     }
 
@@ -122,7 +123,7 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
     // piece
     string *datap = &data;
     if (!stringlowercmp("document:", name)) {
-        datap = &m_metaData["content"];
+        datap = &m_metaData[cstr_content];
     } else {
         datap = &data;
     }
@@ -163,7 +164,7 @@ bool MimeHandlerExecMultiple::next_document()
     } else {
         obuf << "Filename: " << 0 << "\n";
     }
-    if (m_ipath.length()) {
+    if (!m_ipath.empty()) {
 	LOGDEB(("next_doc: sending len %d val [%s]\n", m_ipath.length(),
 		m_ipath.c_str()));
         obuf << "Ipath: " << m_ipath.length() << "\n" << m_ipath;
@@ -238,7 +239,7 @@ bool MimeHandlerExecMultiple::next_document()
     // It used to be that eof could be signalled just by an empty document, but
     // this was wrong. Empty documents can be found ie in zip files and should 
     // not be interpreted as eof.
-    if (m_metaData["content"].length() == 0) {
+    if (m_metaData[cstr_content].empty()) {
         LOGDEB0(("MHExecMultiple: got empty document inside [%s]: [%s]\n", 
                 m_fn.c_str(), ipath.c_str()));
     }
@@ -248,14 +249,14 @@ bool MimeHandlerExecMultiple::next_document()
     // mimetype, or the ipath MUST be a filename-like string which we can use
     // to compute a mime type
     if (!ipath.empty()) {
-        m_metaData["ipath"] = ipath;
+        m_metaData[cstr_ipath] = ipath;
         if (mtype.empty()) {
 	    LOGDEB0(("MHExecMultiple: no mime type from filter, "
 		    "using ipath for a guess\n"));
             mtype = mimetype(ipath, 0, m_config, false);
             if (mtype.empty()) {
                 // mimetype() won't call idFile when there is no file. Do it
-                mtype = idFileMem(m_metaData["content"]);
+                mtype = idFileMem(m_metaData[cstr_content]);
                 if (mtype.empty()) {
                     // Note this happens for example for directory zip members
                     // We could recognize them by the end /, but wouldn't know
@@ -265,13 +266,13 @@ bool MimeHandlerExecMultiple::next_document()
                 }
             }
         }
-        m_metaData["mimetype"] = mtype;
+        m_metaData[cstr_mimetype] = mtype;
         string md5, xmd5;
-        MD5String(m_metaData["content"], md5);
+        MD5String(m_metaData[cstr_content], md5);
         m_metaData["md5"] = MD5HexPrint(md5, xmd5);
     } else {
-        m_metaData["mimetype"] = mtype.empty() ? "text/html" : mtype;
-        m_metaData.erase("ipath");
+        m_metaData[cstr_mimetype] = mtype.empty() ? "text/html" : mtype;
+        m_metaData.erase(cstr_ipath);
         string md5, xmd5, reason;
         if (MD5File(m_fn, md5, &reason)) {
             m_metaData["md5"] = MD5HexPrint(md5, xmd5);
@@ -292,14 +293,13 @@ bool MimeHandlerExecMultiple::next_document()
 	    charset = m_dfltInputCharset;
 	}
     }
-    m_metaData["charset"] = charset;
+    m_metaData[cstr_charset] = charset;
     
     if (eofnext_received)
         m_havedoc = false;
 
     LOGDEB0(("MHExecMultiple: returning %d bytes of content,"
-	    " mtype [%s] charset [%s]\n", 
-	    m_metaData["content"].size(), m_metaData["mimetype"].c_str(),
-	    m_metaData["charset"].c_str()));
+	    " mtype [%s] charset [%s]\n", m_metaData[cstr_content].size(), 
+     m_metaData[cstr_mimetype].c_str(), m_metaData[cstr_charset].c_str()));
     return true;
 }

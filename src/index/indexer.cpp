@@ -25,6 +25,7 @@
 
 #include <algorithm>
 
+#include "cstr.h"
 #include "debuglog.h"
 #include "indexer.h"
 #include "fsindexer.h"
@@ -58,7 +59,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun)
 	return false;
     }
 
-    m_config->setKeyDir("");
+    m_config->setKeyDir(cstr_null);
     if (typestorun & IxTFs) {
         deleteZ(m_fsindexer);
         m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
@@ -118,7 +119,7 @@ bool ConfIndexer::indexFiles(std::list<string>& ifiles, IxFlag flag)
                 m_config->getDbDir().c_str()));
 	return false;
     }
-    m_config->setKeyDir("");
+    m_config->setKeyDir(cstr_null);
     bool ret = false;
     if (!m_fsindexer)
         m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
@@ -163,7 +164,7 @@ bool ConfIndexer::purgeFiles(std::list<string> &files)
 	return false;
     }
     bool ret = false;
-    m_config->setKeyDir("");
+    m_config->setKeyDir(cstr_null);
     if (!m_fsindexer)
         m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
     if (m_fsindexer)

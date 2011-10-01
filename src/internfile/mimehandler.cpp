@@ -24,6 +24,7 @@
 #include <vector>
 using namespace std;
 
+#include "cstr.h"
 #include "mimehandler.h"
 #include "debuglog.h"
 #include "rclconfig.h"
@@ -110,7 +111,7 @@ static Dijon::Filter *mhFactory(RclConfig *config, const string &mime)
     LOGDEB2(("mhFactory(%s)\n", mime.c_str()));
     string lmime(mime);
     stringtolower(lmime);
-    if ("text/plain" == lmime) {
+    if (cstr_textplain == lmime) {
 	LOGDEB2(("mhFactory(%s): returning MimeHandlerText\n", mime.c_str()));
 	return new MimeHandlerText(config, lmime);
     } else if ("text/html" == lmime) {
@@ -178,9 +179,9 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
     // Handle additional attributes. We substitute the semi-colons
     // with newlines and use a ConfSimple
     string value;
-    if (attrs.get("charset", value)) 
+    if (attrs.get(cstr_charset, value)) 
         h->cfgFilterOutputCharset = stringtolower((const string&)value);
-    if (attrs.get("mimetype", value))
+    if (attrs.get(cstr_mimetype, value))
         h->cfgFilterOutputMtype = stringtolower((const string&)value);
 
 #if 0
@@ -276,7 +277,7 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
     // If the type is an unknown text/xxx, index as text/plain and
     // hope for the best (this wouldn't work too well with text/rtf...)
     if (mtype.find("text/") == 0) {
-        h = mhFactory("text/plain");
+        h = mhFactory(cstr_textplain);
 	goto out;
     }
 #endif

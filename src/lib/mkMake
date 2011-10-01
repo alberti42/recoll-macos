@@ -6,6 +6,7 @@ depth=${depth:-..}
 SRC_CPP="\
 ${depth}/aspell/rclaspell.cpp \
 ${depth}/common/beaglequeuecache.cpp \
+${depth}/common/cstr.cpp \
 ${depth}/common/rclconfig.cpp \
 ${depth}/common/rclinit.cpp \
 ${depth}/common/textsplit.cpp \

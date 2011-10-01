@@ -25,6 +25,7 @@
 
 #include "xapian.h"
 
+#include "cstr.h"
 #include "rcldb.h"
 #include "searchdata.h"
 #include "debuglog.h"
@@ -346,8 +347,10 @@ bool SearchData::maybeAddAutoPhrase()
 	words +=  clp->gettext();
     }
 
-    if (words.find_first_of("\"*[]?") != string::npos && // has wildcards
-	TextSplit::countWords(words) <= 1) { // Just one word.
+    // If there are wildcards or quotes in there, or this is a single word,
+    // bail out
+    if (words.find_first_of("\"*[?") != string::npos &&
+	TextSplit::countWords(words) <= 1) { 
 	LOGDEB2(("SearchData::maybeAddAutoPhrase: wildcards or single word\n"));
 	return false;
     }
@@ -561,7 +564,7 @@ void StringToXapianQ::expandTerm(bool nostemexp,
 	return;
     }
 
-    bool haswild = term.find_first_of("*?[") != string::npos;
+    bool haswild = term.find_first_of(cstr_minwilds) != string::npos;
 
     // No stemming if there are wildcards or prevented globally.
     if (haswild || m_stemlang.empty())
@@ -857,8 +860,6 @@ bool StringToXapianQ::processUserString(const string &iq,
     return true;
 }
 
-static const string cstr_null;
-
 // Translate a simple OR, AND, or EXCL search clause. 
 bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p, 
 					   const string& stemlang)
@@ -964,10 +965,10 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
     // stringToXapianQueries() to lowercase and simplify the phrase
     // terms etc. This will result into a single (complex)
     // Xapian::Query.
-    if (m_text.find_first_of("\"") != string::npos) {
+    if (m_text.find('\"') != string::npos) {
 	m_text = neutchars(m_text, "\"");
     }
-    string s = string("\"") + m_text + string("\"");
+    string s = cstr_dquote + m_text + cstr_dquote;
     bool useNear = (m_tp == SCLT_NEAR);
     StringToXapianQ tr(db, m_field, l_stemlang, doBoostUserTerm);
     if (!tr.processUserString(s, m_reason, pqueries, db.getStopList(),

@@ -30,6 +30,7 @@
 #include "rcldb.h"
 #include "refcntr.h"
 #include "smallut.h"
+#include "cstr.h"
 
 class RclConfig;
 
@@ -215,7 +216,7 @@ public:
     SearchDataClauseSimple(SClType tp, const string& txt, 
 			   const string& fld = string())
 	: SearchDataClause(tp), m_text(txt), m_field(fld), m_slack(0) {
-	m_haveWildCards = (txt.find_first_of("*?[") != string::npos);
+	m_haveWildCards = (txt.find_first_of(cstr_minwilds) != string::npos);
     }
 
     virtual ~SearchDataClauseSimple() {}
