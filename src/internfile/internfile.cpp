@@ -278,8 +278,8 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 
     if (!df or df->is_unknown()) {
 	// No real handler for this type, for now :( 
-	LOGINFO(("FileInterner:: ignored: [%s] mime [%s]\n", 
-                f.c_str(), l_mime.c_str()));
+	LOGDEB(("FileInterner:: unprocessed mime: [%s] [%s]\n", 
+		 l_mime.c_str(), f.c_str()));
 	if (!df)
 	    return;
     }
@@ -328,7 +328,7 @@ void FileInterner::init(const string &data, RclConfig *cnf,
     if (!df) {
 	// No handler for this type, for now :( if indexallfilenames
 	// is set in the config, this normally wont happen (we get mh_unknown)
-	LOGINFO(("FileInterner:: ignored: mime [%s]\n", m_mimetype.c_str()));
+	LOGDEB(("FileInterner:: unprocessed mime [%s]\n", m_mimetype.c_str()));
 	return;
     }
     df->set_property(Dijon::Filter::OPERATING_MODE, 
