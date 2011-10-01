@@ -95,7 +95,7 @@ if test X$withAspell != Xno ; then
    fi
 fi
 
-if test -f /usr/include/sys/inotify.h ; then
+if test -f /usr/include/sys/inotify.h -o -f /usr/include/linux/inotify.h; then
    inot_default=yes
 else
    inot_default=no
