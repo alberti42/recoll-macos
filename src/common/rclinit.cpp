@@ -105,8 +105,8 @@ RclConfig *recollinit(RclInitFlags flags,
 
     int flushmb;
     if (config->getConfParam("idxflushmb", &flushmb) && flushmb > 0) {
-	LOGDEB(("rclinit: idxflushmb=%d, set XAPIAN_FLUSH_THRESHOLD to 10E6\n",
-		flushmb));
+	LOGDEB1(("rclinit: idxflushmb=%d, set XAPIAN_FLUSH_THRESHOLD to 10E6\n",
+		 flushmb));
 	static const char *cp = "XAPIAN_FLUSH_THRESHOLD=1000000";
 #ifdef PUTENV_ARG_CONST
 	::putenv(cp);
