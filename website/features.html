@@ -87,6 +87,7 @@
       <p>Many document types need the <span class="command">iconv</span>
       command in addition to the applications specifically listed.</p>
 
+      <h5>The XML ones</h5>
       <p>The following types need <span class=
       "command">xsltproc</span> from the <b>libxslt</b> package.
       Quite a few also need <span class="command">unzip</span>:</p>
@@ -106,7 +107,7 @@
         <li><span class="literal">SVG</span> files.</li>
       </ul>
 
-      <p>Others:</p>
+      <h5>Other formats</h5>
 
       <ul>
         <li><span class="literal">pdf</span> with the <span class=
@@ -216,9 +217,14 @@
         tag format (jpg, png, tiff, gif etc.).</li>
 
         <li>Midi karaoke files with Python, the 
-        <a href="http://pypi.python.org/pypi/midi/0.2.1">
-          midi module</a>, and some help
-          from <a href="http://chardet.feedparser.org/">chardet</a>.</li> 
+          <a href="http://pypi.python.org/pypi/midi/0.2.1">
+            midi module</a>, and some help
+          from <a href="http://chardet.feedparser.org/">chardet</a>. There
+          is probably a <tt>chardet</tt> package for your distribution,
+          but you will quite probably need to build the midi
+          package. This is easy but see the 
+          to <a href="helpernotes.html#midi">notes here</a>.
+        </li> 
 
         <li>Konqueror webarchive format with Python (uses the tarfile
           module).</li>
