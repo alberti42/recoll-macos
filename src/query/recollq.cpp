@@ -43,6 +43,7 @@ using namespace std;
 #include "transcode.h"
 #include "textsplit.h"
 #include "smallut.h"
+#include "base64.h"
 
 bool dump_contents(RclConfig *rclconfig, TempDir& tmpdir, Rcl::Doc& idoc)
 {
@@ -58,6 +59,23 @@ bool dump_contents(RclConfig *rclconfig, TempDir& tmpdir, Rcl::Doc& idoc)
     return true;
 }
 
+void output_fields(const vector<string>fields, Rcl::Doc& doc,
+		   Rcl::Query& query, Rcl::Db& rcldb)
+{
+    for (vector<string>::const_iterator it = fields.begin();
+	 it != fields.end(); it++) {
+	string out;
+	if (!it->compare("abstract")) {
+	    string abstract;
+	    rcldb.makeDocAbstract(doc, &query, abstract);
+	    base64_encode(abstract, out);
+	} else {
+	    base64_encode(doc.meta[*it], out);
+	}
+	cout << out << " ";
+    }
+    cout << endl;
+}
 
 static char *thisprog;
 static char usage [] =
@@ -83,6 +101,12 @@ static char usage [] =
 "    -S fld : sort by field name\n"
 "    -D : sort descending\n"
 "    -i <dbdir> : additional index, several can be given\n"
+"    -e use url encoding (%xx) for urls\n"
+"    -F <field name list> : output exactly these fields for each result.\n"
+"       The field values are encoded in base64, output in one line and \n"
+"       separated by one space character. This is the recommended format \n"
+"       for use by other programs. Use a normal query with option -m to \n"
+"       see the field names.\n"
 ;
 static void
 Usage(void)
@@ -92,26 +116,31 @@ Usage(void)
 }
 
 // ATTENTION A LA COMPATIBILITE AVEC LES OPTIONS DE recoll
-// OPT_q and OPT_t are ignored
+// -q, -t and -l are accepted and ignored
+// -a/f/o -c have the same meaning
+// -h is not used
+
 static int     op_flags;
-#define OPT_o     0x2 
-#define OPT_a     0x4 
+#define OPT_A     0x1
+#define OPT_a     0x2
+#define OPT_b     0x4
 #define OPT_c     0x8
-#define OPT_d     0x10
-#define OPT_n     0x20
-#define OPT_b     0x40
-#define OPT_f     0x80
+#define OPT_D     0x10
+#define OPT_d     0x20
+#define OPT_f     0x40
+#define OPT_i     0x80
 #define OPT_l     0x100
-#define OPT_q     0x200
-#define OPT_t     0x400
-#define OPT_m     0x800
-#define OPT_D     0x1000
-#define OPT_S     0x2000
-#define OPT_s     0x4000
-#define OPT_A     0x8000
-#define OPT_i     0x10000
-#define OPT_P     0x20000
-#define OPT_Q     0x40000
+#define OPT_m     0x200
+#define OPT_n     0x400
+#define OPT_o     0x800
+#define OPT_P     0x1000
+#define OPT_Q     0x2000
+#define OPT_q     0x4000
+#define OPT_S     0x8000
+#define OPT_s     0x10000
+#define OPT_t     0x20000
+#define OPT_e     0x40000
+#define OPT_F     0x80000
 
 int recollq(RclConfig **cfp, int argc, char **argv)
 {
@@ -119,6 +148,8 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     string sortfield;
     string stemlang("english");
     list<string> extra_dbs;
+    string sf;
+    vector<string> fields;
 
     int limit = 2000;
     thisprog = argv[0];
@@ -139,7 +170,11 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 		argc--; goto b1;
             case 'd':   op_flags |= OPT_d; break;
             case 'D':   op_flags |= OPT_D; break;
+            case 'e':   op_flags |= OPT_e; break;
             case 'f':   op_flags |= OPT_f; break;
+	    case 'F':	op_flags |= OPT_F; if (argc < 2)  Usage();
+		sf = *(++argv);
+		argc--; goto b1;
 	    case 'i':	op_flags |= OPT_i; if (argc < 2)  Usage();
 		extra_dbs.push_back(*(++argv));
 		argc--; goto b1;
@@ -176,7 +211,11 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     if (argc < 1 && !(op_flags & OPT_P)) {
 	Usage();
     }
-
+    if (op_flags & OPT_F) {
+	if (op_flags & (OPT_b|OPT_d|OPT_b|OPT_Q|OPT_m|OPT_A))
+	    Usage();
+	stringToStrings(sf, fields);
+    }
     Rcl::Db rcldb(rclconfig);
     if (!extra_dbs.empty()) {
         for (list<string>::iterator it = extra_dbs.begin();
@@ -291,16 +330,24 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 	if (!query.getDoc(i, doc))
 	    break;
 
+	if (op_flags & OPT_F) {
+	    output_fields(fields, doc, query, rcldb);
+	    continue;
+	}
+
+	if (op_flags & OPT_e) 
+	    doc.url = url_encode(doc.url);
+
 	if (op_flags & OPT_b) {
-	    cout << doc.url.c_str() << endl;
+		cout << doc.url << endl;
 	} else {
 	    char cpc[20];
 	    sprintf(cpc, "%d", doc.pc);
 	    cout 
-		<< doc.mimetype.c_str() << "\t"
-		<< "[" << doc.url.c_str() << "]" << "\t" 
-		<< "[" << doc.meta[Rcl::Doc::keytt].c_str() << "]" << "\t"
-		<< doc.fbytes.c_str()   << "\tbytes" << "\t"
+		<< doc.mimetype << "\t"
+		<< "[" << doc.url << "]" << "\t" 
+		<< "[" << doc.meta[Rcl::Doc::keytt] << "]" << "\t"
+		<< doc.fbytes << "\tbytes" << "\t"
 		<<  endl;
 	    if (op_flags & OPT_m) {
 		for (map<string,string>::const_iterator it = doc.meta.begin();
