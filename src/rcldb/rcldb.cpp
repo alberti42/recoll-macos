@@ -754,6 +754,32 @@ int Db::docCnt()
     return res;
 }
 
+int Db::termDocCnt(const string& _term)
+{
+    int res = -1;
+    if (!m_ndb || !m_ndb->m_isopen)
+        return -1;
+
+    string term;
+    if (!unacmaybefold(_term, term, "UTF-8", true)) {
+	LOGINFO(("Db::termDocCnt: unac failed for [%s]\n", _term.c_str()));
+	return 0;
+    }
+
+    if (m_stops.hasStops() && m_stops.isStop(term)) {
+	LOGDEB1(("Db::termDocCnt [%s] in stop list\n", term.c_str()));
+	return 0;
+    }
+
+    XAPTRY(res = m_ndb->xdb().get_termfreq(term), m_ndb->xrdb, m_reason);
+
+    if (!m_reason.empty()) {
+        LOGERR(("Db::termDocCnt: got error: %s\n", m_reason.c_str()));
+        return -1;
+    }
+    return res;
+}
+
 bool Db::addQueryDb(const string &dir) 
 {
     LOGDEB(("Db::addQueryDb: ndb %p iswritable %d db [%s]\n", m_ndb,

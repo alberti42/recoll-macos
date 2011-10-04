@@ -173,7 +173,8 @@ class Db {
 
     /** Return total docs in db */
     int  docCnt(); 
-
+    /** Return count of docs which have an occurrence of term */
+    int termDocCnt(const string& term);
     /** Add extra database for querying */
     bool addQueryDb(const string &dir);
     /** Remove extra database. if dir == "", remove all. */
