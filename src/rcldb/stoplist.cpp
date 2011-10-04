@@ -19,7 +19,7 @@
 #include "debuglog.h"
 #include "readfile.h"
 #include "unacpp.h"
-#include "textsplit.h"
+#include "smallut.h"
 #include "stoplist.h"
 
 #ifndef NO_NAMESPACES
@@ -27,40 +27,33 @@ namespace Rcl
 {
 #endif
 
-class TextSplitSW : public TextSplit {
-public:
-    set<string>& stops;
-    TextSplitSW(Flags flags, set<string>& stps) 
-        : TextSplit(flags), stops(stps) 
-    {}
-    virtual bool takeword(const string& term, int, int, int)
-    {
-        string dterm;
-        unacmaybefold(term, dterm, "UTF-8", true);
-        stops.insert(dterm);
-        return true;
-    }
-};
-
 bool StopList::setFile(const string &filename)
 {
-    m_hasStops = false;
     m_stops.clear();
     string stoptext, reason;
     if (!file_to_string(filename, stoptext, &reason)) {
-	LOGDEB(("StopList::StopList: file_to_string(%s) failed: %s\n", 
-		filename.c_str(), reason.c_str()));
+	LOGDEB0(("StopList::StopList: file_to_string(%s) failed: %s\n", 
+		 filename.c_str(), reason.c_str()));
 	return false;
     }
-    TextSplitSW ts(TextSplit::TXTS_ONLYSPANS, m_stops);
-    ts.text_to_words(stoptext);
-    m_hasStops = !m_stops.empty();
+    set<string> stops;
+    stringToStrings(stoptext, stops);
+    for (set<string>::iterator it = stops.begin(); 
+	 it != stops.end(); it++) {
+	string dterm;
+	unacmaybefold(*it, dterm, "UTF-8", true);
+	m_stops.insert(dterm);
+    }
+
     return true;
 }
 
+// Most sites will have an empty stop list. We try to optimize the
+// empty set case as much as possible. empty() is probably sligtly faster than
+// find() in this case.
 bool StopList::isStop(const string &term) const
 {
-    return m_hasStops ? m_stops.find(term) != m_stops.end() : false;
+    return m_stops.empty() ? false : m_stops.find(term) != m_stops.end();
 }
 
 
@@ -97,7 +90,7 @@ Usage(void)
 }
 
 const string tstwords[] = {
-    "the", "is", "xweird"
+    "the", "is", "xweird", "autre", "autre double", "mot1", "mot double",
 };
 const int tstsz = sizeof(tstwords) / sizeof(string);
 

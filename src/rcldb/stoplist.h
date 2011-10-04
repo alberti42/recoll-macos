@@ -27,18 +27,24 @@ namespace Rcl
 {
 #endif
 
+/**
+ * A StopList is just a bunch of strings read from a file. 
+ *
+ * Some of the string may contain whitespace (that's for experimentation with 
+ * stop n-grams), so we take care of dquotes while reading the file. We also 
+ * lowercase and remove accents. The source file should be utf-8.
+ */
 class StopList {
 public:
-    StopList() : m_hasStops(false) {}
+    StopList() {}
     StopList(const string &filename) {setFile(filename);}
     virtual ~StopList() {}
 
     bool setFile(const string &filename);
     bool isStop(const string &term) const;
-    bool hasStops() const {return m_hasStops;}
+    bool hasStops() const {return !m_stops.empty();}
 
 private:
-    bool m_hasStops;
     set<string> m_stops;
 };
 
