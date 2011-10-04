@@ -92,7 +92,7 @@
     </message>
     <message>
         <source>Search for &lt;br&gt;documents&lt;br&gt;satisfying:</source>
-        <translation>Hledat &lt;br&gt;dokumenty&lt;br&gt;, které splňují následující hlediska:</translation>
+        <translation>Hledat dokumenty, které splňují následující hlediska:</translation>
     </message>
     <message>
         <source>Delete clause</source>
@@ -266,7 +266,7 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     </message>
     <message>
         <source>These are patterns for file or directory  names which should not be indexed.</source>
-        <translation>Toto jsou vzory pro názvy souborů nebo adresářů, které se nemají rojstříkovat.</translation>
+        <translation>Toto jsou vzory pro názvy souborů nebo adresářů, které se nemají rejstříkovat.</translation>
     </message>
     <message>
         <source>Default character set</source>
@@ -395,7 +395,7 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Stop &amp;Indexing</source>
-        <translation>Zastavit &amp;ejstříkování</translation>
+        <translation>Zastavit &amp;rejstříkování</translation>
     </message>
     <message>
         <source>All</source>
@@ -1637,7 +1637,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
-        <translation>Po spuštění aotevřít automatisch dialog pro rozšířené hledání.</translation>
+        <translation>Po spuštění automaticky otevřít dialog pro rozšířené hledání.</translation>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
