@@ -855,14 +855,24 @@ bool Db::fieldToTraits(const string& fld, const FieldTraits **ftpp)
 }
 
 
-// The splitter breaks text into words and adds postings to the Xapian document.
+// The splitter breaks text into words and adds postings to the Xapian
+// document. We use a single object to split all of the document
+// fields and position jumps to separate fields
 class TextSplitDb : public TextSplit {
  public:
     Xapian::WritableDatabase db;
     Xapian::Document &doc;   // Xapian document 
-    Xapian::termpos basepos; // Base for document section
-    Xapian::termpos curpos;  // Current position. Used to set basepos for the
-                             // following section
+    // Base for document section. Gets large increment when we change
+    // sections, to avoid cross-section proximity matches.
+    Xapian::termpos basepos;
+    // Current relative position. This is the remembered value from
+    // the splitter callback. The term position is reset for each call
+    // to text_to_words(), so that the last value of curpos is the
+    // section size (last relative term position), and this is what
+    // gets added to basepos in addition to the inter-section increment
+    // to compute the first position of the next section.
+    Xapian::termpos curpos;
+
     StopList &stops;
     TextSplitDb(Xapian::WritableDatabase idb, 
 		Xapian::Document &d, StopList &_stops) 
@@ -894,11 +904,13 @@ bool TextSplitDb::text_to_words(const string &in)
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
 	LOGERR(("Db: xapian add_posting error %s\n", ermsg.c_str()));
+	basepos += curpos + 100;
 	return false;
     }
 
     if (!TextSplit::text_to_words(in)) {
 	LOGDEB(("TextSplitDb: TextSplit::text_to_words failed\n"));
+	basepos += curpos + 100;
 	return false;
     }
 
@@ -909,8 +921,10 @@ bool TextSplitDb::text_to_words(const string &in)
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
 	LOGERR(("Db: xapian add_posting error %s\n", ermsg.c_str()));
+	basepos += curpos + 100;
 	return false;
     }
+    basepos += curpos + 100;
     return true;
 }
 
@@ -1024,7 +1038,6 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     LOGDEB2(("Db::add: split file name [%s]\n", fn.c_str()));
     if (!splitter.text_to_words(doc.utf8fn))
         LOGDEB(("Db::addOrUpdate: split failed for file name\n"));
-    splitter.basepos += splitter.curpos + 100;
 
     // If the ipath is like a path, index the last element. This is
     // for compound documents like zip and chm for which the filter
@@ -1038,7 +1051,6 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	if (transcode(path_getsimple(doc.ipath), utf8ipathlast,
 		      "UTF-8", "UTF-8")) {
 	    splitter.text_to_words(utf8ipathlast);
-	    splitter.basepos += splitter.curpos + 100;
 	}
     }
 
@@ -1060,8 +1072,6 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 				    splitter.basepos + splitter.curpos++);
 	}
     }
-    splitter.basepos += splitter.curpos + 100;
-
 
     // Index textual metadata.  These are all indexed as text with
     // positions, as we may want to do phrase searches with them (this
@@ -1088,7 +1098,6 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	    if (!splitter.text_to_words(meta_it->second))
                 LOGDEB(("Db::addOrUpdate: split failed for %s\n", 
                         meta_it->first.c_str()));
-	    splitter.basepos += splitter.curpos + 100;
 	}
     }
     splitter.setprefix(string());
@@ -1096,8 +1105,6 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 
     if (splitter.curpos < baseTextPosition)
 	splitter.basepos = baseTextPosition;
-    else
-	splitter.basepos += splitter.curpos + 100;
 
     // Split and index body text
     LOGDEB2(("Db::add: split body: [%s]\n", doc.text.c_str()));
