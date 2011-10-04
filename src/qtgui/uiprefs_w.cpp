@@ -140,6 +140,7 @@ void UIPrefsDialog::setFromPrefs()
     stemLangCMB->setCurrentIndex(cur);
 
     autoPhraseCB->setChecked(prefs.ssearchAutoPhrase);
+    autoPThreshSB->setValue(prefs.ssearchAutoPhraseThreshPC);
 
     buildAbsCB->setChecked(prefs.queryBuildAbstract);
     replAbsCB->setEnabled(prefs.queryBuildAbstract);
@@ -199,6 +200,7 @@ void UIPrefsDialog::accept()
 	prefs.queryStemLang = stemLangCMB->currentText();
     }
     prefs.ssearchAutoPhrase = autoPhraseCB->isChecked();
+    prefs.ssearchAutoPhraseThreshPC = autoPThreshSB->value();
     prefs.queryBuildAbstract = buildAbsCB->isChecked();
     prefs.queryReplaceAbstract = buildAbsCB->isChecked() && 
 	replAbsCB->isChecked();
