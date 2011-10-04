@@ -608,12 +608,6 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
 
     Rcl::Query *query = new Rcl::Query(rcldb);
     query->setCollapseDuplicates(prefs.collapseDuplicates);
-    if (!query || !query->setQuery(sdata)) {
-	QMessageBox::warning(0, "Recoll", tr("Can't start query: ") +
-			     QString::fromAscii(query->getReason().c_str()));
-	QApplication::restoreOverrideCursor();
-	return;
-    }
 
     curPreview = 0;
     DocSequenceDb *src = 
