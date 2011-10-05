@@ -494,7 +494,7 @@ class TextSplitQ : public TextSplit {
 	    return true;
 	}
 
-	if (stops.hasStops() && stops.isStop(noaclowterm)) {
+	if (stops.isStop(noaclowterm)) {
 	    LOGDEB1(("TextSplitQ::takeword [%s] in stop list\n", 
                      noaclowterm.c_str()));
 	    return true;

@@ -766,7 +766,7 @@ int Db::termDocCnt(const string& _term)
 	return 0;
     }
 
-    if (m_stops.hasStops() && m_stops.isStop(term)) {
+    if (m_stops.isStop(term)) {
 	LOGDEB1(("Db::termDocCnt [%s] in stop list\n", term.c_str()));
 	return 0;
     }
@@ -942,7 +942,7 @@ bool TextSplitDb::takeword(const std::string &_term, int pos, int, int)
 	return true;
     }
 
-    if (stops.hasStops() && stops.isStop(term)) {
+    if (stops.isStop(term)) {
 	LOGDEB1(("Db: takeword [%s] in stop list\n", term.c_str()));
 	return true;
     }
