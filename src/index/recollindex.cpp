@@ -43,6 +43,7 @@ using namespace std;
 #include "beaglequeue.h"
 #include "recollindex.h"
 #include "fsindexer.h"
+#include "rclionice.h"
 
 // Command line options
 static int     op_flags;
@@ -116,6 +117,15 @@ static bool makeIndexer(RclConfig *config)
         exit(1);
     }
     return true;
+}
+
+void rclIxIonice(RclConfig *config)
+{
+    string clss, classdata;
+    if (!config->getConfParam("monioniceclass", clss) || clss.empty())
+	clss = "3";
+    config->getConfParam("monioniceclassdata", classdata);
+    rclionice(clss, classdata);
 }
 
 // Index a list of files. We just check that they belong to one of the
@@ -295,7 +305,7 @@ int main(int argc, const char **argv)
         LOGINFO(("recollindex: can't setpriority(), errno %d\n", errno));
     }
     // Try to ionice. This does not work on all platforms
-    rclMonIonice(config);
+    rclIxIonice(config);
 
     if (op_flags & (OPT_i|OPT_e)) {
 	lockorexit(&pidfile);
@@ -360,7 +370,7 @@ int main(int argc, const char **argv)
             LOGINFO(("recollindex: can't setpriority(), errno %d\n", errno));
         }
 	// Try to ionice. This does not work on all platforms
-	rclMonIonice(config);
+	rclIxIonice(config);
 
 	if (sleepsecs > 0) {
 	    LOGDEB(("recollindex: sleeping %d\n", sleepsecs));
@@ -411,3 +421,4 @@ int main(int argc, const char **argv)
 	return !status;
     }
 }
+

@@ -42,7 +42,6 @@
 #include "recollindex.h"
 #include "pathut.h"
 #include "x11mon.h"
-#include "rclionice.h"
 #include "subtreelist.h"
 
 typedef unsigned long mttcast;
@@ -562,16 +561,6 @@ bool startMonitor(RclConfig *conf, int opts)
     pthread_join(rcv_thrid, 0);
     LOGDEB(("Monitor: returning\n"));
     return true;
-}
-
-
-void rclMonIonice(RclConfig *config)
-{
-    string clss, classdata;
-    if (!config->getConfParam("monioniceclass", clss) || clss.empty())
-	clss = "3";
-    config->getConfParam("monioniceclassdata", classdata);
-    rclionice(clss, classdata);
 }
 
 #endif // RCL_MONITOR
