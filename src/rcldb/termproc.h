@@ -19,9 +19,27 @@
 #ifndef _TERMPROC_H_INCLUDED_
 #define _TERMPROC_H_INCLUDED_
 
+
 #include "textsplit.h"
 #include "stoplist.h"
+
 namespace Rcl {
+
+/** 
+ * Termproc objects take a stream of term tokens as input and do something
+ * with them: transform to lowercase, filter out stop words, generate n-grams,
+ * finally index or generate search clauses, etc. They are chained and can 
+ * be arranged to form different pipelines depending on the desired processing
+ * steps: for example, optional stoplist or commongram processing.
+ *
+ * Shared processing steps are defined in this file. The first and last steps
+ * (ie: adding index term) are usually defined in the specific module.
+ */
+
+/** 
+ * The base class takes care of chaining: all derived classes call its 
+ * takeword() and flush() methods to ensure that terms go through the pipe.
+ */
 class TermProc {
 public:
     TermProc(TermProc* next) : m_next(next) {}
@@ -42,13 +60,21 @@ public:
     }
 private:
     TermProc *m_next;
+    /* Copyconst and assignment private and forbidden */
+    TermProc(const TermProc &) {}
+    TermProc& operator=(const TermProc &) {return *this;};
 };
 
+/** 
+ * Intermediary specialized texsplit class: this will probably replace the base
+ * textsplit when we've converted all the code. The takeword() routine in this
+ * calls a TextProc's instead of being specialized in a derived class by the
+ * user module. The text_to_word() method also takes care of flushing.
+ */
 class TextSplitP : public TextSplit {
 public:
     TextSplitP(TermProc *prc, Flags flags = Flags(TXTS_NONE))
-	: TextSplit(flags), m_prc(prc)
-    {}
+	: TextSplit(flags), m_prc(prc)  {}
 
     virtual bool text_to_words(const string &in)
     {
@@ -70,6 +96,7 @@ private:
     TermProc *m_prc;
 };
 
+/** Unaccent and lowercase term. This is usually the first in the pipeline */
 class TermProcPrep : public TermProc {
 public:
     TermProcPrep(TermProc *nxt)	: TermProc(nxt) {}
@@ -86,10 +113,12 @@ public:
     }
 };
 
+/** Compare to stop words list and discard if match found */
 class TermProcStop : public TermProc {
 public:
     TermProcStop(TermProc *nxt, const Rcl::StopList& stops)
-	: TermProc(nxt), m_stops(stops) { }
+	: TermProc(nxt), m_stops(stops) {}
+
     virtual bool takeword(const string& term, int pos, int bts, int bte)
     {
 	if (m_stops.isStop(term)) {
@@ -101,6 +130,9 @@ private:
     const Rcl::StopList& m_stops;
 };
 
+/** Handle common-gram generation: combine frequent terms with neighbours to
+ *  shorten the positions lists for phrase searches.
+ */
 class TermProcCommongrams : public TermProc {
 public:
     TermProcCommongrams(TermProc *nxt, const Rcl::StopList& stops)
@@ -177,6 +209,7 @@ private:
     bool   m_onlygrams;
 };
 
-}
+
+} // End namespace Rcl
 
 #endif /* _TERMPROC_H_INCLUDED_ */
