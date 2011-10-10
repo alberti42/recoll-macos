@@ -319,11 +319,11 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     if (!tmpdir.ok()) {
 	cerr << "Can't create temporary directory: " << 
 	    tmpdir.getreason() << endl;
-	exit(1);
+	return(1);
     }
 
     if (op_flags & OPT_Q)
-	exit(0);
+	return(0);
 
     for (int i = 0; i < limit; i++) {
 	Rcl::Doc doc;
@@ -382,6 +382,6 @@ static RclConfig *rclconfig;
 
 int main(int argc, char **argv)
 {
-    exit(recollq(&rclconfig, argc, argv));
+    return(recollq(&rclconfig, argc, argv));
 }
 #endif // TEST_RECOLLQ
