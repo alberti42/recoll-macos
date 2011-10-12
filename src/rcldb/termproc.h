@@ -66,10 +66,10 @@ private:
 };
 
 /** 
- * Intermediary specialized texsplit class: this will probably replace the base
- * textsplit when we've converted all the code. The takeword() routine in this
- * calls a TextProc's instead of being specialized in a derived class by the
- * user module. The text_to_word() method also takes care of flushing.
+ * Specialized TextSplit class: this will probably replace the base
+ * TextSplit when we've converted all the code. The takeword() routine in this
+ * calls a TermProc's instead of being overriden in a user derived class.
+ * The text_to_word() method also takes care of flushing.
  */
 class TextSplitP : public TextSplit {
 public:
@@ -99,18 +99,39 @@ private:
 /** Unaccent and lowercase term. This is usually the first in the pipeline */
 class TermProcPrep : public TermProc {
 public:
-    TermProcPrep(TermProc *nxt)	: TermProc(nxt) {}
+    TermProcPrep(TermProc *nxt)	
+	: TermProc(nxt), m_totalterms(0), m_unacerrors(0) {}
 
     virtual bool takeword(const string& itrm, int pos, int bs, int be)
     {
+	m_totalterms++;
 	string otrm;
 	if (!unacmaybefold(itrm, otrm, "UTF-8", true)) {
-	    LOGINFO(("splitter::takeword: unac [%s] failed\n", itrm.c_str()));
-	    // We don't generate a fatal error because of a bad term
+	    LOGDEB(("splitter::takeword: unac [%s] failed\n", itrm.c_str()));
+	    m_unacerrors++;
+	    // We don't generate a fatal error because of a bad term,
+	    // but one has to put the limit somewhere
+	    if (m_unacerrors > 500 && 
+		(double(m_totalterms) / double(m_unacerrors)) < 2.0) {
+		// More than 1 error for every other term
+		LOGERR(("splitter::takeword: too many unac errors %d/%d\n",
+			m_unacerrors, m_totalterms));
+		return false;
+	    }
 	    return true;
 	}
 	return TermProc::takeword(otrm, pos, bs, be);
     }
+
+    virtual bool flush()
+    {
+	m_totalterms = m_unacerrors = 0;
+	return TermProc::flush();
+    }
+
+private:
+    int m_totalterms;
+    int m_unacerrors;
 };
 
 /** Compare to stop words list and discard if match found */
@@ -119,19 +140,23 @@ public:
     TermProcStop(TermProc *nxt, const Rcl::StopList& stops)
 	: TermProc(nxt), m_stops(stops) {}
 
-    virtual bool takeword(const string& term, int pos, int bts, int bte)
+    virtual bool takeword(const string& term, int pos, int bs, int be)
     {
 	if (m_stops.isStop(term)) {
 	    return true;
 	}
-	return TermProc::takeword(term, pos, bts, bte);
+	return TermProc::takeword(term, pos, bs, be);
     }
+
 private:
     const Rcl::StopList& m_stops;
 };
 
 /** Handle common-gram generation: combine frequent terms with neighbours to
  *  shorten the positions lists for phrase searches.
+ *  NOTE: This does not currently work because of bad interaction with the 
+ *  spans (ie john@domain.com) generation in textsplit. Not used, kept for
+ *  testing only
  */
 class TermProcCommongrams : public TermProc {
 public:
@@ -147,7 +172,7 @@ public:
 
 	if (!m_prevterm.empty() && (m_prevstop || isstop)) {
 	    // create 2-gram. space unnecessary but improves
-	    // lisibility of queries
+	    // the readability of queries
 	    string twogram;
 	    twogram.swap(m_prevterm);
 	    twogram.append(1, ' ');
@@ -164,7 +189,7 @@ public:
 	    }
 #endif
 	}
-
+	
 	m_prevterm = term;
 	m_prevstop = isstop;
 	m_prevpos = pos;
@@ -181,7 +206,7 @@ public:
 	return true;
     }
 
-    bool flush()
+    virtual bool flush()
     {
 	if (!m_prevsent && !m_prevterm.empty())
 	    if (!TermProc::takeword(m_prevterm, m_prevpos, m_prevbs, m_prevbe))

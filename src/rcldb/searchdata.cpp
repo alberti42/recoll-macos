@@ -478,7 +478,8 @@ void SearchData::getUTerms(vector<string>& terms) const
 class TextSplitQ : public TextSplitP {
  public:
     TextSplitQ(Flags flags, const StopList &_stops, TermProc *prc)
-	: TextSplitP(prc, flags), stops(_stops), alltermcount(0), lastpos(0)
+	: TextSplitP(prc, flags), 
+	  curnostemexp(false), stops(_stops), alltermcount(0), lastpos(0)
     {}
 
     bool takeword(const std::string &term, int pos, int bs, int be) 
@@ -509,16 +510,30 @@ public:
     bool takeword(const std::string &term, int pos, int bs, int be) 
     {
 	m_ts->alltermcount++;
-        m_ts->lastpos = pos;
+	if (m_ts->lastpos < pos)
+	    m_ts->lastpos = pos;
 	bool noexpand = be ? m_ts->curnostemexp : true;
-	LOGDEB(("TermProcQ::takeword: pushing [%s] noexp %d\n", 
-		term.c_str(), noexpand));
-	m_ts->terms.push_back(term);
-	m_ts->nostemexps.push_back(noexpand);
+	LOGDEB(("TermProcQ::takeword: pushing [%s] pos %d noexp %d\n", 
+		term.c_str(), pos, noexpand));
+	if (m_terms[pos].size() < term.size()) {
+	    m_terms[pos] = term;
+	    m_nste[pos] = noexpand;
+	}
+	return true;
+    }
+    bool flush()
+    {
+	for (map<int, string>::const_iterator it = m_terms.begin();
+	     it != m_terms.end(); it++) {
+	    m_ts->terms.push_back(it->second);
+	    m_ts->nostemexps.push_back(m_nste[it->first]);
+	}
 	return true;
     }
 private:
     TextSplitQ *m_ts;
+    map<int, string> m_terms;
+    map<int, bool> m_nste;
 };
 
 // A class used to translate a user compound string (*not* a query
@@ -783,7 +798,7 @@ void StringToXapianQ::processPhraseOrNear(TextSplitQ *splitData,
 
     // Generate an appropriate PHRASE/NEAR query with adjusted slack
     // For phrases, give a relevance boost like we do for original terms
-    LOGDEB2(("PHRASE/NEAR: alltermcount %d lastpos %d\n", 
+    LOGDEB2(("PHRASE/NEAR:  alltermcount %d lastpos %d\n", 
              splitData->alltermcount, splitData->lastpos));
     Xapian::Query xq(op, orqueries.begin(), orqueries.end(),
 		     splitData->lastpos + 1 + slack);
@@ -839,7 +854,7 @@ bool StringToXapianQ::processUserString(const string &iq,
 					bool useNear
 					)
 {
-    LOGDEB(("StringToXapianQ:: query string: [%s]\n", iq.c_str()));
+    LOGDEB(("StringToXapianQ:: query string: [%s], slack %d, near %d\n", iq.c_str(), slack, useNear));
     ermsg.erase();
     m_uterms.clear();
     m_terms.clear();
@@ -874,45 +889,35 @@ bool StringToXapianQ::processUserString(const string &iq,
 	    // We used to do  word split, searching for 
 	    // "term0 term1 term2" instead, which may have worse 
 	    // performance, but will succeed.
-	    // We now adjust the phrase/near slack by the term count
-	    // difference (this is mainly better for cjk where this is a very
-	    // common occurrence because of the ngrams thing.
+	    // We now adjust the phrase/near slack by comparing the term count
+	    // and the last position
 
+	    // The term processing pipeline:
 	    TermProcQ tpq;
-            //    TermProcStop tpstop(&tpidx, stops);
-	    TermProcCommongrams tpstop(&tpq, stops);
-	    tpstop.onlygrams(true);
-	    TermProcPrep tpprep(&tpstop);
+	    TermProc *nxt = &tpq;
+            TermProcStop tpstop(nxt, stops); nxt = &tpstop;
+            //TermProcCommongrams tpcommon(nxt, stops); nxt = &tpcommon;
+            //tpcommon.onlygrams(true);
+	    TermProcPrep tpprep(nxt); nxt = &tpprep;
 
-	    TextSplitQ splitterS(TextSplit::Flags(TextSplit::TXTS_ONLYSPANS | 
+	    TextSplitQ splitter(TextSplit::Flags(TextSplit::TXTS_ONLYSPANS | 
 						  TextSplit::TXTS_KEEPWILD), 
-                                 stops, &tpprep);
-	    tpq.setTSQ(&splitterS);
-	    splitterS.text_to_words(*it);
-	    LOGDEB(("SplitterS has %d terms\n", splitterS.terms.size()));
-	    TextSplitQ splitterW(TextSplit::Flags(TextSplit::TXTS_NOSPANS | 
-                                                  TextSplit::TXTS_KEEPWILD),
-                                 stops, &tpprep);
-	    tpq.setTSQ(&splitterW);
-	    tpstop.onlygrams(false);
-	    splitterW.text_to_words(*it);
+                                 stops, nxt);
+	    tpq.setTSQ(&splitter);
+	    splitter.text_to_words(*it);
 
-	    if (splitterS.terms.size() > 1 && 
-		splitterS.terms.size() != splitterW.terms.size()) {
-		slack += splitterW.terms.size() - splitterS.terms.size();
-	    }
+	    slack += splitter.lastpos - splitter.terms.size() + 1;
 
-	    TextSplitQ *splitter = &splitterS;
-	    LOGDEB0(("strToXapianQ: termcount: %d\n", splitter->terms.size()));
-	    switch (splitter->terms.size() + terminc) {
+	    LOGDEB0(("strToXapianQ: termcount: %d\n", splitter.terms.size()));
+	    switch (splitter.terms.size() + terminc) {
 	    case 0: 
 		continue;// ??
 	    case 1: 
-		processSimpleSpan(splitter->terms.front(), 
-                                  splitter->nostemexps.front(), pqueries);
+		processSimpleSpan(splitter.terms.front(), 
+                                  splitter.nostemexps.front(), pqueries);
 		break;
 	    default:
-		processPhraseOrNear(splitter, pqueries, useNear, slack, mods);
+		processPhraseOrNear(&splitter, pqueries, useNear, slack, mods);
 	    }
 	}
     } catch (const Xapian::Error &e) {

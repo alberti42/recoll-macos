@@ -897,8 +897,9 @@ private:
 // Reimplement text_to_words to insert the begin and end anchor terms.
 bool TextSplitDb::text_to_words(const string &in) 
 {
-    LOGDEB2(("TextSplitDb::text_to_words\n"));
+    bool ret = false;
     string ermsg;
+
     try {
 	// Index the possibly prefixed start term.
 	doc.add_posting(prefix + start_of_field_term, basepos, wdfinc);
@@ -906,14 +907,12 @@ bool TextSplitDb::text_to_words(const string &in)
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
 	LOGERR(("Db: xapian add_posting error %s\n", ermsg.c_str()));
-	basepos += curpos + 100;
-	return false;
+	goto out;
     }
 
     if (!TextSplitP::text_to_words(in)) {
 	LOGDEB(("TextSplitDb: TextSplit::text_to_words failed\n"));
-	basepos += curpos + 100;
-	return false;
+	goto out;
     }
 
     try {
@@ -923,10 +922,12 @@ bool TextSplitDb::text_to_words(const string &in)
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
 	LOGERR(("Db: xapian add_posting error %s\n", ermsg.c_str()));
-	basepos += curpos + 100;
-	return false;
+	goto out;
     }
 
+    ret = true;
+
+out:
     basepos += curpos + 100;
     return true;
 }
@@ -961,6 +962,7 @@ public:
 	LOGERR(("Db: xapian add_posting error %s\n", ermsg.c_str()));
 	return false;
     }
+
 private:
     TextSplitDb *m_ts;
 };
@@ -1028,12 +1030,17 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     Doc doc = idoc;
 
     Xapian::Document newdocument;
+
+    // The term processing pipeline:
     TermProcIdx tpidx;
-//    TermProcStop tpstop(&tpidx, m_stops);
-    TermProcCommongrams tpstop(&tpidx, m_stops);
-    TermProcPrep tpprep(&tpstop);
-    TextSplitDb splitter(m_ndb->xwdb, newdocument, &tpprep);
+    TermProc *nxt = &tpidx;
+    TermProcStop tpstop(nxt, m_stops);nxt = &tpstop;
+//    TermProcCommongrams tpcommon(nxt, m_stops); nxt = &tpcommon;
+    TermProcPrep tpprep(nxt); nxt = &tpprep;
+
+    TextSplitDb splitter(m_ndb->xwdb, newdocument, nxt);
     tpidx.setTSD(&splitter);
+
     // Split and index file name as document term(s)
     LOGDEB2(("Db::add: split file name [%s]\n", fn.c_str()));
     if (!splitter.text_to_words(doc.utf8fn))

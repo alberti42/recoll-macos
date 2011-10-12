@@ -164,7 +164,7 @@ bool          TextSplit::o_noNumbers = false;
 // Do some checking (the kind which is simpler to do here than in the
 // main loop), then send term to our client.
 inline bool TextSplit::emitterm(bool isspan, string &w, int pos, 
-			 int btstart, int btend)
+				int btstart, int btend)
 {
     LOGDEB3(("TextSplit::emitterm: [%s] pos %d\n", w.c_str(), pos));
 
@@ -348,12 +348,14 @@ bool TextSplit::text_to_words(const string &in)
 		m_inNumber = false;
 	    }
 	    break;
+
 	case WILD:
 	    if (m_flags & TXTS_KEEPWILD)
 		goto NORMALCHAR;
 	    else
 		goto SPACE;
 	    break;
+
 	case '-':
 	case '+':
 	    curspanglue = cc;
@@ -381,12 +383,16 @@ bool TextSplit::text_to_words(const string &in)
 		m_wordStart += it.appendchartostring(m_span);
 	    }
 	    break;
+
 	case '.':
 	case ',':
+	{
+	    // Need a little lookahead here. At worse this gets the end null
+	    int nextc = it[it.getCpos()+1];
+	    int nextwhat = whatcc(nextc);
 	    if (m_inNumber) {
-		// 132.jpg ?
-                int wn = it[it.getCpos()+1];
-		if (whatcc(wn) != DIGIT && wn != 'e' && wn != 'E')
+		// we're eliminating 132.jpg here. Good idea ?
+		if (nextwhat != DIGIT && nextc != 'e' && nextc != 'E')
 		    goto SPACE;
 		m_wordLen += it.appendchartostring(m_span);
 		curspanglue = cc;
@@ -398,10 +404,15 @@ bool TextSplit::text_to_words(const string &in)
                 // Another problem is that something like .x-errs 
 		// will be split as .x-errs, x, errs but not x-errs
 		// A final comma in a word will be removed by doemit
-		if (cc == '.' && it[it.getCpos()+1] != '.') {
+
+		// Only letters and digits make sense after
+		if (nextwhat != A_LLETTER && nextwhat != A_ULETTER && 
+		    nextwhat != DIGIT && nextwhat != LETTER)
+		    goto SPACE;
+
+		if (cc == '.') {
                     // Check for number like .1
-                    if (m_span.length() == 0 &&
-                        whatcc(it[it.getCpos()+1]) == DIGIT) {
+                    if (m_span.length() == 0 && nextwhat == DIGIT) {
                         m_inNumber = true;
                         m_wordLen += it.appendchartostring(m_span);
                         curspanglue = cc;
@@ -430,7 +441,9 @@ bool TextSplit::text_to_words(const string &in)
 		}
 	    }
 	    goto SPACE;
+	}
 	    break;
+
 	case '@':
 	    if (m_wordLen) {
 		if (!doemit(false, it.getBpos()))
@@ -623,8 +636,7 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
     // first
     if ((m_flags & TXTS_ONLYSPANS) && nchars > 0 && nchars != o_CJKNgramLen)  {
 	unsigned int btend = it.getBpos(); // Current char is out
-	if (!takeword(it.buffer().substr(boffs[0], 
-					       btend-boffs[0]),
+	if (!takeword(it.buffer().substr(boffs[0], btend-boffs[0]),
 			    m_wordpos - nchars,
 			    boffs[0], btend)) {
 	    return false;
@@ -764,18 +776,19 @@ bool TextSplit::stringToStrings(const string &s, list<string> &tokens)
 #include "readfile.h"
 #include "debuglog.h"
 #include "transcode.h"
+#include "unacpp.h"
+#include "termproc.h"
 
 using namespace std;
 
-class myTextSplit : public TextSplit {
+class myTermProc : public Rcl::TermProc {
     int first;
     bool nooutput;
- public:
-    myTextSplit(Flags flags = Flags(TXTS_NONE)) : 
-        TextSplit(flags),first(1), nooutput(false) 
-    {}
+public:
+    myTermProc() : TermProc(0), first(1), nooutput(false)  {}
     void setNoOut(bool val) {nooutput = val;}
-    bool takeword(const string &term, int pos, int bs, int be) {
+    virtual bool takeword(const string &term, int pos, int bs, int be)
+    {
 	if (nooutput)
 	    return true;
 	FILE *fp = stdout;
@@ -812,13 +825,15 @@ static string thisprog;
 
 static string usage =
     " textsplit [opts] [filename]\n"
-    "   -S: no output\n"
-    "   -s:  only spans\n"
-    "   -w:  only words\n"
-    "   -n:  no numbers\n"
-    "   -k:  preserve wildcards (?*)\n"
-    "   -c: just count words\n"
+    "   -q : no output\n"
+    "   -s :  only spans\n"
+    "   -w :  only words\n"
+    "   -n :  no numbers\n"
+    "   -k :  preserve wildcards (?*)\n"
+    "   -c : just count words\n"
+    "   -u : use unac\n"
     "   -C [charset] : input charset\n"
+    "   -S [stopfile] : stopfile to use for commongrams\n"
     " if filename is 'stdin', will read stdin for data (end with ^D)\n"
     "  \n\n"
     ;
@@ -833,15 +848,18 @@ Usage(void)
 static int        op_flags;
 #define OPT_s	  0x1 
 #define OPT_w	  0x2
-#define OPT_S	  0x4
+#define OPT_q	  0x4
 #define OPT_c     0x8
 #define OPT_k     0x10
 #define OPT_C     0x20
 #define OPT_n     0x40
+#define OPT_S     0x80
+#define OPT_u     0x100
 
 int main(int argc, char **argv)
 {
-    string charset;
+    string charset, stopfile;
+
     thisprog = argv[0];
     argc--; argv++;
 
@@ -858,8 +876,12 @@ int main(int argc, char **argv)
                 goto b1;
 	    case 'k':	op_flags |= OPT_k; break;
 	    case 'n':	op_flags |= OPT_n; break;
+	    case 'q':	op_flags |= OPT_q; break;
 	    case 's':	op_flags |= OPT_s; break;
-	    case 'S':	op_flags |= OPT_S; break;
+            case 'S':	op_flags |= OPT_S; if (argc < 2)  Usage();
+                stopfile = *(++argv); argc--; 
+                goto b1;
+	    case 'u':	op_flags |= OPT_u; break;
 	    case 'w':	op_flags |= OPT_w; break;
 	    default: Usage();	break;
 	    }
@@ -879,6 +901,13 @@ int main(int argc, char **argv)
     if (op_flags & OPT_n)
 	TextSplit::noNumbers();
 
+    Rcl::StopList stoplist;
+    if (op_flags & OPT_S) {
+	if (!stoplist.setFile(stopfile)) {
+	    cerr << "Can't read stopfile: " << stopfile << endl;
+	    exit(1);
+	}
+    }
     string odata, reason;
     if (argc == 1) {
 	const char *filename = *argv++;	argc--;
@@ -912,10 +941,25 @@ int main(int argc, char **argv)
 	int n = TextSplit::countWords(data, flags);
 	cout << n << " words" << endl;
     } else {
-	myTextSplit splitter(flags);
-        if (op_flags&OPT_S)
-            splitter.setNoOut(true);
+	myTermProc printproc;
+
+	Rcl::TermProc *nxt = &printproc;
+
+	Rcl::TermProcCommongrams commonproc(nxt, stoplist);
+	if (op_flags & OPT_S)
+	    nxt = &commonproc;
+
+	Rcl::TermProcPrep preproc(nxt);
+	if (op_flags & OPT_u) 
+	    nxt = &preproc;
+
+	Rcl::TextSplitP splitter(nxt, flags);
+
+        if (op_flags & OPT_q)
+            printproc.setNoOut(true);
+
 	splitter.text_to_words(data);
+
     }    
 }
 #endif // TEST
