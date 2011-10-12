@@ -616,8 +616,10 @@ bool RclIntf::getEvent(RclMonEvent& ev, int secs)
 	if (evp->mask & IN_ISDIR) {
 	    ev.m_etyp = RclMonEvent::RCLEVT_DIRCREATE;
 	} else {
-	    // Return null event. Will get modify event later
-	    return true;
+	    // We used to return null event because we would get a
+	    // modify event later, but it seems not to be the case any
+	    // more (10-2011). So generate MODIFY event
+	    ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
 	}
     } else if (evp->mask & (IN_IGNORED)) {
 	if (!m_idtopath.erase(evp->wd)) {
