@@ -34,7 +34,8 @@ skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
 # indexing of linked files)
 # followLinks = 0
 
-# Debug messages. 3 is errors/warnings only. 4 would be quite verbose.
+# Debug messages. 2 is errors/warnings only. 3 information like doc
+# updates, 4 is quite verbose and 6 very verbose
 loglevel = 3
 logfilename = stderr
 
