@@ -74,6 +74,11 @@ static string mimetypefromdata(const string &fn, bool usfc)
 	// The result of 'file' execution begins with the file name
 	// which may contain spaces. We happen to know its size, so
 	// strip it:
+	if (result.size() <= fn.size()) {
+	    // Garbage "file" output. Maybe the result of a charset
+	    // conversion attempt?
+	    return string();
+	}
 	result = result.substr(fn.size());
 	// Now looks like ": text/plain; charset=us-ascii"
 	// Split it, and take second field
