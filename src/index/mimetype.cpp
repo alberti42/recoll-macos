@@ -69,18 +69,36 @@ static string mimetypefromdata(const string &fn, bool usfc)
 	    LOGERR(("mimetypefromdata: doexec: status 0x%x\n", status));
 	    return string();
 	}
-	// LOGDEB(("mimetypefromdata: %s [%s]\n", result.c_str(), fn.c_str()));
+	LOGDEB2(("mimetype: [%s] \"file\" output [%s]\n", 
+		 result.c_str(), fn.c_str()));
+	
+	// The normal output from "file -i" looks like the following:
+	//   thefilename.xxx: text/plain; charset=us-ascii
+	// Sometimes the semi-colon is missing like in:
+	//     mimetype.cpp: text/x-c charset=us-ascii
+	// And sometimes we only get the mime type. This apparently happens
+	// when 'file' believes that the file name is binary
 
-	// The result of 'file' execution begins with the file name
-	// which may contain spaces. We happen to know its size, so
-	// strip it:
-	if (result.size() <= fn.size()) {
+	trimstring(result, " \t\n\r");
+
+	// If there is no colon and there is a slash, this is hopefuly
+	// the mime type
+	if (result.find_first_of(":") == string::npos && 
+	    result.find_first_of("/") != string::npos) {
+	    return result;
+	}
+
+	// Else the result should begin with the file name. Get rid of it:
+	if (result.find(fn) != 0) {
 	    // Garbage "file" output. Maybe the result of a charset
 	    // conversion attempt?
+	    LOGERR(("mimetype: can't interpret 'file' output: [%s]\n",
+		    result.c_str()));
 	    return string();
 	}
 	result = result.substr(fn.size());
-	// Now looks like ": text/plain; charset=us-ascii"
+
+	// Now should look like ": text/plain; charset=us-ascii"
 	// Split it, and take second field
 	list<string> res;
 	stringToStrings(result, res);
@@ -88,10 +106,9 @@ static string mimetypefromdata(const string &fn, bool usfc)
 	    return string();
 	list<string>::iterator it = res.begin();
 	mime = *++it;
-	// Remove possible punctuation at the end. Note that this mangles 
-	// text/x-c++ if there is no semi-colon... handled in mimeconf :(
-	if (mime.length() > 0 && !isalpha(mime[mime.length() - 1]))
-	    mime.erase(mime.length() -1);
+	// Remove possible semi-colon at the end
+	trimstring(mime, " \t;");
+
 	// File -i will sometimes return strange stuff (ie: "very small file")
 	if(mime.find("/") == string::npos) 
 	    mime.clear();
