@@ -50,9 +50,16 @@ RclConfig *recollinit(RclInitFlags flags,
 
     // Install signal handler
     if (sigcleanup) {
+	struct sigaction action;
+	action.sa_handler = sigcleanup;
+	action.sa_flags = 0;
+	sigemptyset(&action.sa_mask);
 	for (unsigned int i = 0; i < sizeof(catchedSigs) / sizeof(int); i++)
-	    if (signal(catchedSigs[i], SIG_IGN) != SIG_IGN)
-		signal(catchedSigs[i], sigcleanup);
+	    if (signal(catchedSigs[i], SIG_IGN) != SIG_IGN) {
+		if (sigaction(catchedSigs[i], &action, 0) < 0) {
+		    perror("Sigaction failed");
+		}
+	    }
     }
 
     DebugLog::getdbl()->setloglevel(DEBDEB1);

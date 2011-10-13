@@ -40,7 +40,7 @@ public:
     RclMonitor(){}
     virtual ~RclMonitor() {}
     virtual bool addWatch(const string& path, bool isDir) = 0;
-    virtual bool getEvent(RclMonEvent& ev, int secs = -1) = 0;
+    virtual bool getEvent(RclMonEvent& ev, int msecs = -1) = 0;
     virtual bool ok() const = 0;
     // Does this monitor generate 'exist' events at startup?
     virtual bool generatesExist() const = 0; 
@@ -128,7 +128,19 @@ void *rclMonRcvRun(void *q)
 
     LOGDEB(("rclMonRcvRun: running\n"));
     recoll_threadinit();
+    // Make a local copy of the configuration as it doesn't like
+    // concurrent accesses. It's ok to copy it here as the other
+    // thread will not work before we have sent events.
+    RclConfig lconfig(*queue->getConfig());
 
+    string loglevel;
+    lconfig.getConfParam(string("daemloglevel"), loglevel);
+    if (loglevel.empty())
+	lconfig.getConfParam(string("loglevel"), loglevel);
+    if (!loglevel.empty()) {
+	int lev = atoi(loglevel.c_str());
+	DebugLog::getdbl()->setloglevel(lev);
+    }
 
     // Create the fam/whatever interface object
     RclMonitor *mon;
@@ -138,10 +150,6 @@ void *rclMonRcvRun(void *q)
 	return 0;
     }
 
-    // Make a local copy of the configuration as it doesn't like
-    // concurrent accesses. It's ok to copy it here as the other
-    // thread will not work before we have sent events.
-    RclConfig lconfig(*queue->getConfig());
 
     // Get top directories from config 
     list<string> tdl = lconfig.getTopdirs();
@@ -167,16 +175,24 @@ void *rclMonRcvRun(void *q)
 	    walker.setOpts(FsTreeWalker::FtwOptNone);
 	}
 	LOGDEB(("rclMonRcvRun: walking %s\n", it->c_str()));
-	walker.walk(*it, walkcb);
+	if (walker.walk(*it, walkcb) != FsTreeWalker::FtwOk) {
+	    LOGERR(("rclMonRcvRun: tree walk failed\n"));
+	    goto terminate;
+	}
     }
 
-    bool dobeagle = false;
-    lconfig.getConfParam("processbeaglequeue", &dobeagle);
-    if (dobeagle) {
-        string beaglequeuedir;
-        if (!lconfig.getConfParam("beaglequeuedir", beaglequeuedir))
-            beaglequeuedir = path_tildexpand("~/.beagle/ToIndex/");
-        mon->addWatch(beaglequeuedir, true);
+    {
+	bool dobeagle = false;
+	lconfig.getConfParam("processbeaglequeue", &dobeagle);
+	if (dobeagle) {
+	    string beaglequeuedir;
+	    if (!lconfig.getConfParam("beaglequeuedir", beaglequeuedir))
+		beaglequeuedir = path_tildexpand("~/.beagle/ToIndex/");
+	    if (!mon->addWatch(beaglequeuedir, true)) {
+		LOGERR(("rclMonRcvRun: addwatch (beaglequeuedit) failed\n"));
+		goto terminate;
+	    }
+	}
     }
 
     // Forever wait for monitoring events and add them to queue:
@@ -188,7 +204,7 @@ void *rclMonRcvRun(void *q)
 	// (it goes to the main thread, from which I tried to close or
 	// write to the select fd, with no effect). So set a 
 	// timeout so that an intr will be detected
-	if (mon->getEvent(ev, 2)) {
+	if (mon->getEvent(ev, 2000)) {
 	    if (ev.m_etyp == RclMonEvent::RCLEVT_DIRCREATE) {
 		// Recursive addwatch: there may already be stuff
 		// inside this directory. Ie: files were quickly
@@ -201,7 +217,11 @@ void *rclMonRcvRun(void *q)
 		    !walker.inSkippedPaths(ev.m_path)) {
 		    LOGDEB(("rclMonRcvRun: walking new dir %s\n", 
 			    ev.m_path.c_str()));
-		    walker.walk(ev.m_path, walkcb);
+		    if (walker.walk(ev.m_path, walkcb) != FsTreeWalker::FtwOk) {
+			LOGERR(("rclMonRcvRun: failed walking new dir %s\n", 
+				ev.m_path.c_str()));
+			goto terminate;
+		    }
 		}
 	    }
 
@@ -210,6 +230,7 @@ void *rclMonRcvRun(void *q)
 	}
     }
 
+terminate:
     queue->setTerminate();
     LOGINFO(("rclMonRcvRun: monrcv thread routine returning\n"));
     return 0;
@@ -241,6 +262,9 @@ bool eraseWatchSubTree(map<int, string>& idtopath, const string& top)
 /** Fam/gamin -based monitor class */
 #include <fam.h>
 #include <sys/select.h>
+#include <setjmp.h>
+#include <unistd.h>
+#include <signal.h>
 
 /** FAM based monitor class. We have to keep a record of FAM watch
     request numbers to directory names as the event only contain the
@@ -250,7 +274,7 @@ public:
     RclFAM();
     virtual ~RclFAM();
     virtual bool addWatch(const string& path, bool isdir);
-    virtual bool getEvent(RclMonEvent& ev, int secs = -1);
+    virtual bool getEvent(RclMonEvent& ev, int msecs = -1);
     bool ok() const {return m_ok;}
     virtual bool generatesExist() const {return true;}
 
@@ -305,30 +329,53 @@ RclFAM::~RclFAM()
 	FAMClose(&m_conn);
 }
 
+static jmp_buf jbuf;
+static void onalrm(int sig)
+{
+    longjmp(jbuf, 1);
+}
 bool RclFAM::addWatch(const string& path, bool isdir)
 {
     if (!ok())
 	return false;
+    bool ret = false;
+
     MONDEB(("RclFAM::addWatch: adding %s\n", path.c_str()));
+
+    // It happens that the following call block forever. 
+    // We'd like to be able to at least terminate on a signal here, but
+    // gamin forever retries its write call on EINTR, so it's not even useful
+    // to unblock signals. SIGALRM is not used by the main thread, so at least
+    // ensure that we exit after gamin gets stuck.
+    if (setjmp(jbuf)) {
+	LOGERR(("RclFAM::addWatch: timeout talking to FAM\n"));
+	return false;
+    }
+    signal(SIGALRM, onalrm);
+    alarm(20);
     FAMRequest req;
     if (isdir) {
 	if (FAMMonitorDirectory(&m_conn, path.c_str(), &req, 0) != 0) {
 	    LOGERR(("RclFAM::addWatch: FAMMonitorDirectory failed\n"));
-	    return false;
+	    goto out;
 	}
     } else {
 	if (FAMMonitorFile(&m_conn, path.c_str(), &req, 0) != 0) {
 	    LOGERR(("RclFAM::addWatch: FAMMonitorFile failed\n"));
-	    return false;
+	    goto out;
 	}
     }
     m_idtopath[req.reqnum] = path;
-    return true;
+    ret = true;
+
+out:
+    alarm(0);
+    return ret;
 }
 
 // Note: return false only for queue empty or error 
 // Return EVT_NONE for bad event to keep queue processing going
-bool RclFAM::getEvent(RclMonEvent& ev, int secs)
+bool RclFAM::getEvent(RclMonEvent& ev, int msecs)
 {
     if (!ok())
 	return false;
@@ -340,13 +387,18 @@ bool RclFAM::getEvent(RclMonEvent& ev, int secs)
     FD_SET(fam_fd, &readfds);
 
     MONDEB(("RclFAM::getEvent: select. fam_fd is %d\n", fam_fd));
+    // Fam / gamin is sometimes a bit slow to send events. Always add
+    // a little timeout, because if we fail to retrieve enough events,
+    // we risk deadlocking in addwatch()
+    if (msecs == 0)
+	msecs = 2;
     struct timeval timeout;
-    if (secs >= 0) {
-	memset(&timeout, 0, sizeof(timeout));
-	timeout.tv_sec = secs;
+    if (msecs >= 0) {
+	timeout.tv_sec = msecs / 1000;
+	timeout.tv_usec = (msecs % 1000) * 1000;
     }
     int ret;
-    if ((ret=select(fam_fd+1, &readfds, 0, 0, secs >= 0 ? &timeout : 0)) < 0) {
+    if ((ret=select(fam_fd+1, &readfds, 0, 0, msecs >= 0 ? &timeout : 0)) < 0) {
 	LOGERR(("RclFAM::getEvent: select failed, errno %d\n", errno));
 	close();
 	return false;
@@ -455,7 +507,7 @@ public:
     }
 
     virtual bool addWatch(const string& path, bool isdir);
-    virtual bool getEvent(RclMonEvent& ev, int secs = -1);
+    virtual bool getEvent(RclMonEvent& ev, int msecs = -1);
     bool ok() const {return m_ok;}
     virtual bool generatesExist() const {return false;}
 
@@ -532,7 +584,7 @@ bool RclIntf::addWatch(const string& path, bool)
 
 // Note: return false only for queue empty or error 
 // Return EVT_NONE for bad event to keep queue processing going
-bool RclIntf::getEvent(RclMonEvent& ev, int secs)
+bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
 {
     if (!ok())
 	return false;
@@ -544,13 +596,13 @@ bool RclIntf::getEvent(RclMonEvent& ev, int secs)
 	FD_ZERO(&readfds);
 	FD_SET(m_fd, &readfds);
 	struct timeval timeout;
-	if (secs >= 0) {
-	    memset(&timeout, 0, sizeof(timeout));
-	    timeout.tv_sec = secs;
+	if (msecs >= 0) {
+	    timeout.tv_sec = msecs / 1000;
+	    timeout.tv_usec = (msecs % 1000) * 1000;
 	}
 	int ret;
 	MONDEB(("RclIntf::getEvent: select\n"));
-	if ((ret=select(m_fd + 1, &readfds, 0, 0, secs >= 0 ? &timeout : 0)) < 0) {
+	if ((ret=select(m_fd + 1, &readfds, 0, 0, msecs >= 0 ? &timeout : 0)) < 0) {
 	    LOGERR(("RclIntf::getEvent: select failed, errno %d\n", errno));
 	    close();
 	    return false;
