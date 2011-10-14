@@ -179,6 +179,10 @@ void *rclMonRcvRun(void *q)
 	    LOGERR(("rclMonRcvRun: tree walk failed\n"));
 	    goto terminate;
 	}
+	if (walker.getErrCnt() > 0) {
+	    LOGINFO(("rclMonRcvRun: fs walker errors: %s\n", 
+		     walker.getReason().c_str()));
+	}
     }
 
     {
@@ -218,9 +222,13 @@ void *rclMonRcvRun(void *q)
 		    LOGDEB(("rclMonRcvRun: walking new dir %s\n", 
 			    ev.m_path.c_str()));
 		    if (walker.walk(ev.m_path, walkcb) != FsTreeWalker::FtwOk) {
-			LOGERR(("rclMonRcvRun: failed walking new dir %s\n", 
-				ev.m_path.c_str()));
+			LOGERR(("rclMonRcvRun: walking new dir %s: %s\n", 
+				ev.m_path.c_str(), walker.getReason().c_str()));
 			goto terminate;
+		    }
+		    if (walker.getErrCnt() > 0) {
+			LOGINFO(("rclMonRcvRun: fs walker errors: %s\n", 
+				 walker.getReason().c_str()));
 		    }
 		}
 	    }
@@ -241,7 +249,7 @@ terminate:
 bool eraseWatchSubTree(map<int, string>& idtopath, const string& top)
 {
     bool found = false;
-    LOGDEB0(("Clearing map for [%s]\n", top.c_str()));
+    MONDEB(("Clearing map for [%s]\n", top.c_str()));
     map<int,string>::iterator it = idtopath.begin();
     while (it != idtopath.end()) {
 	if (it->second.find(top) == 0) {
@@ -461,8 +469,8 @@ bool RclFAM::getEvent(RclMonEvent& ev, int msecs)
 	ev.m_etyp = RclMonEvent::RCLEVT_DELETE;
 	// We would like to signal a directory here to enable cleaning
 	// the subtree (on a dir move), but can't test the actual file
-	// which is gone. Let's rely on the fact that a directory
-	// should be watched
+	// which is gone, and fam doesn't tell us if it's a dir or reg. 
+	// Let's rely on the fact that a directory should be watched
 	if (eraseWatchSubTree(m_idtopath, ev.m_path)) 
 	    ev.m_etyp |= RclMonEvent::RCLEVT_ISDIR;
 	break;

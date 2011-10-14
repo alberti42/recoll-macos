@@ -4243,8 +4243,9 @@ fi
 if test "${with_fam+set}" = set; then :
   withval=$with_fam; withFam=$withval
 else
-  withFam=no
+  withFam=yes
 fi
+
 
 if test X$withFam != Xno -a X$withInotify != Xno ; then
    { $as_echo "$as_me:${as_lineno-$LINENO}: FAM support enabled but inotify support also enabled. Disabling FAM support and using inotify" >&5

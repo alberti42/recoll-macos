@@ -43,7 +43,7 @@
           unexpected. This is probably dependant on the type of system
           and/or locale. Workaround: arrange for the offending file
           not to be indexed (move it away or configure it out), or
-          apply <a href="patch-badfileoutput.diff">this patch</a>,
+          apply <a href="files/patch-badfileoutput.diff">this patch</a>,
           which should work with all versions from 1.13 to 1.16.1</li>
         <li>Under certain conditions, the indexer can use all
           available memory and crash. This is caused by a memory leak
@@ -51,7 +51,7 @@
           triggered in specific conditions (all cases seen were from
           files inside zip archives). Workaround: arrange for the
           offending file not to be indexed (move it away or configure
-          it out), or apply <a href="patch-unac-icclose.diff">this
+          it out), or apply <a href="files/patch-unac-icclose.diff">this
           patch</a>, which should work with all versions from 1.13 to
           1.16.1</li>
         <li>Real time indexer: when running with gamin on FreeBSD, the
@@ -64,14 +64,14 @@
           all. Workaround: restart indexer from time to time.</li>
         <li>Recollq does not delete a temporary directory in some
           cases (/tmp/rcl...).</li>
+        <li>Most GUI queries are actually run two times which does not
+          help performance...</li>
         <li>Cancelling a preview in the GUI will also cancel the indexing
           thread if it is running.</li>
         <li>After an upgrade, the recoll GUI sometimes crashes on
           startup. This is fixed by removing (back it up just in case)
           ~/.config/Recoll.org/recoll.conf, the QSettings storage for
           recoll.</li>
-        <li>Most GUI queries are actually ran two times which does not
-          help performance...</li>
         <li>Under Solaris, it is necessary to perform the initial
           indexing with the recollindex program. For some unknown reason,
           the recoll index thread does not work for creating the database.

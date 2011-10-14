@@ -119,7 +119,8 @@ fi
 AC_ARG_WITH(fam, 
     AC_HELP_STRING([--with-fam],
    [Use File Alteration Monitor for almost real time indexing of modified files. Give the fam/gamin library as argument (ie: /usr/lib/libfam.so) if configure does not find the right one.]),
-        withFam=$withval, withFam=no)
+        withFam=$withval, withFam=yes)
+
 if test X$withFam != Xno -a X$withInotify != Xno ; then
    AC_MSG_NOTICE([FAM support enabled but inotify support also enabled. Disabling FAM support and using inotify])
    withFam=no
