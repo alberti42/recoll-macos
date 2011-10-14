@@ -99,7 +99,10 @@ void FsTreeWalker::setOpts(Options opts, int depthswitch)
 
 string FsTreeWalker::getReason()
 {
-    return data->reason.str();
+    string reason = data->reason.str();
+    data->reason.str(string());
+    data->errors = 0;
+    return reason;
 }
 
 int FsTreeWalker::getErrCnt()
@@ -198,8 +201,10 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top,
     struct stat st;
     // We always follow symlinks at this point. Makes more sense.
     if (stat(top.c_str(), &st) == -1) {
+	// Note that we do not return an error if the stat call
+	// fails. A temp file may have gone away.
 	data->logsyserr("stat", top);
-	return FtwError;
+	return errno == ENOENT ? FtwOk : FtwError;
     }
 
     // Recursive version, using the call stack to store state. iwalk
@@ -259,7 +264,7 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top,
         if (!nfather.empty()) {
             if (stat(nfather.c_str(), &st) == -1) {
                 data->logsyserr("stat", nfather);
-                return FtwError;
+		return errno == ENOENT ? FtwOk : FtwError;
             }
             if ((status = cb.processone(nfather, &st, FtwDirReturn)) & 
                 (FtwStop|FtwError)) {
@@ -269,7 +274,7 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top,
 
         if (stat(dir.c_str(), &st) == -1) {
             data->logsyserr("stat", dir);
-            return FtwError;
+	    return errno == ENOENT ? FtwOk : FtwError;
         }
         // iwalk will not recurse in this case, just process file entries
         // and append subdir entries to the list.
@@ -326,6 +331,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 	switch (errno) {
 	case EPERM:
 	case EACCES:
+	case ENOENT:
 	    goto out;
 	default:
 	    status = FtwError;
