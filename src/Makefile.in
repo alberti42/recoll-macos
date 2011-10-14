@@ -16,7 +16,7 @@ all: mk/sysconf
 	${MAKE} -C index recollindex
 	@NOQTMAKE@(cd $(QTGUI); ${QMAKE} recoll.pro)
 	@NOQTMAKE@${MAKE} -C $(QTGUI) depth=..
-	@NOCMDLINE@ ${MAKE} -C query recollq
+	${MAKE} -C query recollq
 
 mk/sysconf:
 	@echo "You need to run configure first" ; exit 1
