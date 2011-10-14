@@ -38,39 +38,46 @@
       <h2><a name="b_latest">recoll 1.16.1</a></h2> 
 
       <ul> 
-
+        <li>Indexing can crash on files with weird names (inconsistent with the
+          locale) for which the format of the "file -i" command is
+          unexpected. This is probably dependant on the type of system
+          and/or locale. Workaround: arrange for the offending file
+          not to be indexed (move it away or configure it out), or
+          apply <a href="patch-badfileoutput.diff">this patch</a>,
+          which should work with all versions from 1.13 to 1.16.1</li>
+        <li>Under certain conditions, the indexer can use all
+          available memory and crash. This is caused by a memory leak
+          in an error handling path inside unac, and can only be
+          triggered in specific conditions (all cases seen were from
+          files inside zip archives). Workaround: arrange for the
+          offending file not to be indexed (move it away or configure
+          it out), or apply <a href="patch-unac-icclose.diff">this
+          patch</a>, which should work with all versions from 1.13 to
+          1.16.1</li>
+        <li>Real time indexer: when running with gamin on FreeBSD, the
+          indexer can deadlock in the gamin dialog in some
+          cases.</li>
+        <li>Real time indexer: file move events were not detected when
+          running with inotify (at least for recent
+          versions). Workaround: restart indexer from time to time.</li>
+        <li>Real time indexer: directory moves are not handled at
+          all. Workaround: restart indexer from time to time.</li>
+        <li>Recollq does not delete a temporary directory in some
+          cases (/tmp/rcl...).</li>
         <li>Cancelling a preview in the GUI will also cancel the indexing
           thread if it is running.</li>
-
         <li>After an upgrade, the recoll GUI sometimes crashes on
           startup. This is fixed by removing (back it up just in case)
           ~/.config/Recoll.org/recoll.conf, the QSettings storage for
-          recoll.</li> 
-        <li>Compressed man pages could not be previewed.</li>
-
+          recoll.</li>
+        <li>Most GUI queries are actually ran two times which does not
+          help performance...</li>
         <li>Under Solaris, it is necessary to perform the initial
           indexing with the recollindex program. For some unknown reason,
           the recoll index thread does not work for creating the database.
           The only idea I have is a problem with exception handling (recoll
           catches an exception while trying the yet inexistant db).</li>
         
-        <li>The default filter for files in Microsoft Word format
-          (application/msword, .doc), antiword, has trouble with some
-          relatively rare files with a very small text, resulting in the
-          following error message:
-          <blockquote>
-            I'm afraid the text stream of this file is too small to
-            handle.
-          </blockquote> 
-
-          Only small files produced by Microsoft Word on a Mac, or by
-          OpenOffice will trigger this message.<br>
-
-          <b>Workaround</b>: install wvWare and modify
-          mimeconf to use the rcldoc filter (instead of directly
-          executing antiword). Rcldoc will try antiword, then will use
-          vwWare if it is available. This will result in slightly
-          slower indexing for all normal .doc files.</li>
       </ul>
 
       <h2><a name="b_1_16_0">recoll 1.16.0</a></h2> 
@@ -90,6 +97,26 @@
 
       <h2><a name="b_1_15_7">recoll 1.15.7</a></h2> 
       <ul>
+        <li>The default filter for files in Microsoft Word format
+          (application/msword, .doc), antiword, has trouble with some
+          relatively rare files with a very small text, resulting in the
+          following error message:
+          <blockquote>
+            I'm afraid the text stream of this file is too small to
+            handle.
+          </blockquote> 
+
+          Only small files produced by Microsoft Word on a Mac, or by
+          OpenOffice will trigger this message.<br>
+
+          <b>Workaround</b>: install wvWare and modify
+          mimeconf to use the rcldoc filter (instead of directly
+          executing antiword). Rcldoc will try antiword, then will use
+          vwWare if it is available. This will result in slightly
+          slower indexing for all normal .doc files. This fix was made the
+          default in 1.16</li>
+
+        <li>Compressed man pages could not be previewed.</li>
         <li>Sorting by document and file size in the result table does
           not work.</li>
         <li>idxflushmb was not handled while deleting documents in the
