@@ -140,20 +140,20 @@
       currently makes no attempt at automatic language recognition.</para>
 
       <para>&RCL; has many parameters which define exactly what to
-        index, and how to classify and decode the source
-        documents. These are kept in <link
-        linkend="rcl.indexing.config">configuration files</link>. A
-        default configuration is copied into a standard location
-        (usually something like
-        <filename>/usr/[local/]share/recoll/examples</filename>)
-        during installation. The default parameters from this file may
-        be overridden by values that you set inside your personal
-        configuration, found by default in the
-        <filename>.recoll</filename> sub-directory of your home
-        directory. The default configuration will index your home
-        directory with default parameters and should be sufficient for
-        giving &RCL; a try, but you may want to adjust it
-        later.</para>
+        index, and how to classify and decode the source documents. These
+        are kept in <link linkend="rcl.indexing.config">configuration
+        files</link>. A default configuration is copied into a standard
+        location (usually something like
+        <filename>/usr/[local/]share/recoll/examples</filename>) during
+        installation. The default parameters from this file may be
+        overridden by values that you set inside your personal
+        configuration, found by default in the <filename>.recoll</filename>
+        sub-directory of your home directory. The default configuration
+        will index your home directory with default parameters and should
+        be sufficient for giving &RCL; a try, but you may want to adjust it
+        later, which can be done either by editing the text files or by
+        using configuration menus in the <command>recoll</command>
+        GUI</para>
 
       <para><link linkend="rcl.indexing.periodic.exec">Indexing</link>
       is started automatically the first time you execute the
@@ -184,7 +184,7 @@
       <para>Indexing is the process by which the set of documents is
       analyzed and the data entered into the database. &RCL; indexing
       is normally incremental: documents will only be processed if
-      they have been modified. On the first execution, of course, all
+      they have been modified. On the first execution, all
       documents will need processing. A full index build can be forced
       later by specifying an option to the indexing command
       (<command>recollindex -z</command>).</para> 
@@ -238,7 +238,7 @@
         a folder file archived inside a zip file...</para>
 
       <para>&RCL; indexing processes plain text, HTML, openoffice
-        and e-mail files internally (a few more actually).</para>
+        and e-mail files, and a few others internally.</para>
 
       <para>Other file types (ie: postscript, pdf, ms-word, rtf ...) 
         need external applications for preprocessing. The list is in the
@@ -342,40 +342,23 @@ recoll
       <sect2 id="rcl.indexing.storage.format">
         <title>Xapian index formats</title>
 
-        <para>If your first installation of &RCL; was 1.9.0 or more
-          recent, you can skip this section.</para>
-
-        <para>&XAP; has had two possible index formats for quite some
-          time. The "old" one named <literal>Quartz</literal>, and the
-          new one named <literal>Flint</literal>. &XAP; 0.9 used
-          <literal>Quartz</literal> by default, but could use
-          <literal>Flint</literal> if a specific environment variable
-          (<literal>XAPIAN_PREFER_FLINT</literal>) was set. &XAP; 1.0
-          still supports <literal>Quartz</literal> but will use
-          <literal>Flint</literal> by default for new index
-          creations.</para>
-
-        <para>The number of disk accesses performed during indexing
-          has been much optimized in the new <literal>Flint</literal>
-          engine and you may see indexing times improved by 50% in some
-          cases (compared to <literal>Quartz</literal>), typically for
-          big indexes where disk accesses dominate the indexing
-          time. There is also a more modest improvement of index
-          size.</para>
+        <para>&XAP; versions usually support several formats for index
+          storage. A given major &XAP; version will have a current format,
+          used to create new indexes, and will also support the format from
+          the previous major version.</para>
 
         <para>&XAP; will not convert automatically an existing index
-          from the <literal>Quartz</literal> to the
-          <literal>Flint</literal> format. If you have an older index
-          and want to take advantage of the new format (which can be
-          done without setting the environment variable as of &RCL;
-          1.8.2 and &XAP; 1.0.0), you will have to explicitly delete
-          the old index, then run a normal indexing process.</para>
+          from the older format to the newer one. If you want to upgrade to
+          the new format, or if a very old index needs to be converted
+          because its format is not supported any more, you will have to
+          explicitly delete the old index, then run a normal indexing
+          process.</para>
 
         <para>Unfortunately, using the <literal>-z</literal> option to
           <command>recollindex</command> is not sufficient to change the
-          format, you have to delete all files inside the index
+          format, you will have to delete all files inside the index
           directory (typically <filename>~/.recoll/xapiandb</filename>)
-          before starting indexing.</para>
+          before starting the indexing.</para>
 
       </sect2>
 
@@ -387,7 +370,7 @@ recoll
           complete reconstruction. If confidential data is indexed,
           access to the database directory should be restricted. </para>
 
-        <para>As of version 1.4, &RCL; will create the configuration
+        <para>&RCL; (since version 1.4) will create the configuration
           directory with a mode of 0700 (access by owner only). As the
           index data directory is by default a sub-directory of the
           configuration directory, this should result in appropriate
@@ -511,16 +494,16 @@ recoll
         <title>Running indexing</title>
 
         <para>Indexing is performed either by the
-          <command>recollindex</command> program, or by the
-          indexing thread inside the <command>recoll</command>
-          program (use the <guimenu>File</guimenu> menu). Both programs
-          will use the <literal>RECOLL_CONFDIR</literal>
-          variable or accept a <literal>-c</literal>
-          <replaceable>confdir</replaceable> option to specify a non-default
-          configuration directory.</para>
+          <command>recollindex</command> program, or by the indexing thread
+          inside the <command>recoll</command> program (start it from the
+          <guimenu>File</guimenu> menu). Both programs will use the
+          <literal>RECOLL_CONFDIR</literal> variable or accept a
+          <literal>-c</literal> <replaceable>confdir</replaceable> option
+          to specify a non-default configuration directory.</para>
 
-        <para>Reasons to use either the indexing thread or the
-        <command>recollindex</command> command:
+        <para>There are reasons to use either the indexing thread or the
+          <command>recollindex</command> command, but it is also a matter of
+          personal preferences:
           <itemizedlist>
             <listitem><para>Starting the indexing thread is more convenient,
                 being just one click away.</para>
@@ -534,14 +517,15 @@ recoll
                 but who knows...)</para>
             </listitem>
             <listitem><para>The <command>recollindex</command> command uses
-                <command>setpriority/nice</command> to lower its priority while
-                indexing 
-                (it will also use <command>ionice</command> when this becomes
-                more widely available), the thread can't do it, else it would
-                also slow down the user/search interface.</para>
+                <command>setpriority/nice</command> to lower its priority
+                while indexing. When available (and for &RCL; version
+                1.16.2 and newer), it also uses the
+                <command>ionice</command> command to lower its IO
+                priority. The thread can't do it, else it would also slow
+                down the user/search interface.</para>
             </listitem>
           </itemizedlist>
-          I'll let the reader decide where my heart belongs...</para>
+        </para>
 
         <para>If the <command>recoll</command> program finds no index
           when it starts, it will automatically start indexing (except
@@ -631,7 +615,7 @@ recoll
       with the <literal>--with[out]-fam</literal> or
       <literal>--with[out]-inotify</literal> options.  The default is
       currently to include inotify monitoring on systems that support
-      it.</para>
+      it, and, as of recoll 1.17, gamin support on FreeBSD.</para>
 
       <para>The <filename>rclmon.sh</filename> script can be used to
       easily start and stop the daemon. It can be found in the
@@ -1311,19 +1295,13 @@ fvwm
       <title>Sorting search results and collapsing duplicates</title>
 
       <para>The documents in a result list are normally sorted in
-        order of relevance. It is possible to specify different sort
-        parameters by using the <guimenu>Sort parameters</guimenu>
-        dialog (located in the <guimenu>Tools</guimenu> menu).</para>
-
-      <para>The tool sorts a specified number of the most
-        relevant documents in the result list, according to specified
-        criteria. The currently available criteria are
-        <emphasis>date</emphasis> and <emphasis>mime
-        type</emphasis>.</para>
-
-      <para>The sort parameters stay in effect until they are
-        explicitly reset, or the program exits. An activated sort is
-        indicated in the result list header.</para>
+        order of relevance. It is possible to specify a different sort
+        order, either by using the vertical arrows in the GUI toolbox to
+        sort by date, or switching to the result table display and clicking
+        on any header. The sort order chosen inside the result table
+        remains active if you switch back to the result list, until you
+        click one of the vertical arrows, until both are unchecked (you are
+        back to sort by relevance).</para>
 
       <para>Sort parameters are remembered between program
         invocations, but result sorting is normally always inactive
@@ -1427,15 +1405,34 @@ fvwm
 
       <formalpara><title>AutoPhrases</title>
       <para>This option can be set in the preferences dialog. If it is
-      set, a phrase will be automatically built and added to simple
-      searches when looking for <literal>Any terms</literal>. This
-      will not change radically the results, but will give a relevance
-      boost to the results where the search terms appear as a
-      phrase. Ie: searching for <literal>virtual reality</literal>
-      will still find all documents where either
-      <literal>virtual</literal> or <literal>reality</literal> or 
-      both appear, but those which contain <literal>virtual
-      reality</literal> should appear sooner in the list.</para>
+        set, a phrase will be automatically built and added to simple
+        searches when looking for <literal>Any terms</literal>. This
+        will not change radically the results, but will give a relevance
+        boost to the results where the search terms appear as a
+        phrase. Ie: searching for <literal>virtual reality</literal>
+        will still find all documents where either
+        <literal>virtual</literal> or <literal>reality</literal> or 
+        both appear, but those which contain <literal>virtual
+          reality</literal> should appear sooner in the list.</para>
+
+      <para>Phrase searches can strongly slow down a query if most of the
+        terms in the phrase are common. This is why the
+        <literal>autophrase</literal> option is off by default for &RCL;
+        versions before 1.17. As of version 1.17,
+        <literal>autophrase</literal> is on by default, but very common
+        terms will be removed from the constructed phrase. The removal
+        threshold can be adjusted from the search preferences.</para>
+
+      <formalpara><title>Phrases and abbreviations</title> <para>As of
+      &RCL; version 1.17, dotted abbreviations like
+      <literal>I.B.M.</literal> are also automatically indexed as a word
+      without the dots: <literal>IBM</literal>. Searching for the word
+      inside a phrase (ie: <literal>"the IBM company"</literal>) will only
+      match the dotted abrreviation if you increase the phrase slack (using the
+      advanced search panel control, or the <literal>o</literal> query
+      language modifier). Literal occurences of the word will be matched
+      normally.</para>
+
 
       </sect3>
 
@@ -3406,6 +3403,13 @@ skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
               <programlisting>
 skippedPaths = ~/somedir/&lowast;.txt
               </programlisting>
+                <para>The values in the <literal>*skippedPaths</literal>
+                variables are currently matched with
+                <literal>fnmatch(3)</literal>, with the FNM_PATHNAME and
+                FNM_LEADING_DIR flags. This means that '/' characters must
+                be matched explicitely, which is probably
+                unfortunate.</para>
+
             </listitem>
           </varlistentry>
 
