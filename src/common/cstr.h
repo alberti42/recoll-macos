@@ -54,6 +54,7 @@ DEF_CSTR(iso_8859_1, "ISO-8859-1");
 DEF_CSTR(mimetype, "mimetype");
 DEF_CSTR(minwilds, "*?[");
 DEF_CSTR(newline, "\n");
+DEF_CSTR(origcharset, "origcharset");
 DEF_CSTR(null, "");
 DEF_CSTR(plus, "+");
 DEF_CSTR(textplain, "text/plain");

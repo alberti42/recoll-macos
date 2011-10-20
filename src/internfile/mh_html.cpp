@@ -162,7 +162,7 @@ bool MimeHandlerHtml::next_document()
 	}
     }
 
-    m_metaData["origcharset"] = result.get_charset();
+    m_metaData[cstr_origcharset] = result.get_charset();
     m_metaData[cstr_content] = result.dump;
     m_metaData[cstr_charset] = "utf-8";
     // Avoid setting empty values which would crush ones possibly inherited

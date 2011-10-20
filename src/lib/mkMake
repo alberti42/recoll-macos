@@ -27,6 +27,7 @@ ${depth}/internfile/mh_html.cpp \
 ${depth}/internfile/mh_mail.cpp \
 ${depth}/internfile/mh_mbox.cpp \
 ${depth}/internfile/mh_text.cpp \
+${depth}/internfile/txtdcode.cpp \
 ${depth}/query/docseq.cpp \
 ${depth}/query/docseqdb.cpp \
 ${depth}/query/docseqhist.cpp \

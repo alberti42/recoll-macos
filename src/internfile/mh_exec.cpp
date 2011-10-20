@@ -21,7 +21,6 @@
 #include "debuglog.h"
 #include "cancelcheck.h"
 #include "smallut.h"
-#include "transcode.h"
 #include "md5.h"
 #include "rclconfig.h"
 
@@ -146,52 +145,23 @@ bool MimeHandlerExec::next_document()
 
 void MimeHandlerExec::finaldetails()
 {
-    string& output = m_metaData[cstr_content];
+    m_metaData[cstr_origcharset] = m_dfltInputCharset;
 
-    // If output is text/plain (not text/html), we may have to convert
-    // it to utf-8, because this is the last point where it can be done.
     // cfgFilterOutputCharset comes from the mimeconf filter definition line
-    string charset = cfgFilterOutputCharset.empty() ? "utf-8" : 
-	cfgFilterOutputCharset;
-    bool trustcharset = true;
+    string& charset = m_metaData[cstr_charset];
+    charset = cfgFilterOutputCharset.empty() ? "UTF-8" : cfgFilterOutputCharset;
     if (!stringlowercmp("default", charset)) {
 	charset = m_dfltInputCharset;
-	trustcharset = false;
     }
-    string mt = cfgFilterOutputMtype.empty() ? "text/html" : 
+
+    string& mt = m_metaData[cstr_mimetype];
+    mt = cfgFilterOutputMtype.empty() ? "text/html" : 
 	cfgFilterOutputMtype;
 
-    // If this is text/plain and not utf-8 or untrusted, transcode to utf-8.
-    if (!mt.compare(cstr_textplain) && 
-	(!trustcharset || stringlowercmp("utf-8", charset))) {
-	string transcoded;
-	int ecnt;
-	if (!transcode(output, transcoded, charset, "UTF-8", &ecnt)) {
-	    LOGERR(("mh_exec: transcode failed from [%s] to UTF-8\n",
-		    charset.c_str()));
-	    // Erase text in this case: it's garbage
-	    output.clear();
-	} else {
-	    if (ecnt) {
-		LOGDEB(("mh_exec: %d transcoding errors  from [%s] to UTF-8\n",
-			ecnt, charset.c_str()));
-	    }
-	    output = transcoded;
-	    charset = "utf-8";
-	}
+    // If this is text/plain transcode_to/check utf-8
+    if (!mt.compare(cstr_textplain)) {
+	(void)txtdcode("mh_exec");
     }
-
-    // Success. Store some external metadata
-
-    // Original charset. Can't be too sure about this actually. It's
-    // just a hint anyway
-    m_metaData["origcharset"] = m_dfltInputCharset;
-
-    // Supposed contents charset encoding. This could still be
-    // overridden by the content-type meta tag for html, but this is
-    // wasteful so we hope it's correct
-    m_metaData[cstr_charset] = charset;
-    m_metaData[cstr_mimetype] = mt;
 
     string md5, xmd5, reason;
     if (MD5File(m_fn, md5, &reason)) {

@@ -32,7 +32,6 @@ using namespace std;
 #include "csguess.h"
 #include "debuglog.h"
 #include "readfile.h"
-#include "transcode.h"
 #include "md5.h"
 #include "rclconfig.h"
 
@@ -117,28 +116,21 @@ bool MimeHandlerText::next_document()
     if (m_havedoc == false)
 	return false;
 
-    // We transcode even if defcharset is already utf-8: 
+    // We transcode even if defcharset is supposedly already utf-8:
     // this validates the encoding.
-    LOGDEB1(("MimeHandlerText::mkDoc: transcod from %s to utf-8\n", 
-	     m_dfltInputCharset.c_str()));
-    int ecnt;
-    bool ret;
-    string& itext = m_metaData[cstr_content];
-    if (!(ret=transcode(m_text, itext, m_dfltInputCharset, "UTF-8", &ecnt)) || 
-	ecnt > int(itext.size() / 4)) {
-	LOGERR(("MimeHandlerText::mkDoc: transcode to utf-8 failed "
-		"for input charset [%s] ret %d ecnt %d\n", 
-		m_dfltInputCharset.c_str(), ret, ecnt));
-	itext.erase();
-	return false;
-    }
-    m_metaData["origcharset"] = m_dfltInputCharset;
-    m_metaData[cstr_charset] = "utf-8";
+    m_metaData[cstr_origcharset] = m_dfltInputCharset;
     m_metaData[cstr_mimetype] = cstr_textplain;
 
-    // If text length is 0 (the file is empty or oversize), or we have
-    // read all at once, we're done
-    if (m_text.length() == 0 || !m_paging) {
+    size_t srclen = m_text.length();
+    m_metaData[cstr_content].swap(m_text);
+
+    // txtdcode() truncates the text if transcoding fails
+    (void)txtdcode("mh_text");
+
+
+    // If the text length is 0 (the file is empty or oversize), or we are 
+    // not paging, we're done
+    if (srclen == 0 || !m_paging) {
         m_havedoc = false;
         return true;
     } else {
@@ -150,8 +142,8 @@ bool MimeHandlerText::next_document()
         // be to use a different mtype for files over the page size,
         // and keep text/plain only for smaller files.
         char buf[30];
-        sprintf(buf, "%lld", (long long)(m_offs - m_text.length()));
-        if (m_offs - m_text.length() != 0)
+        sprintf(buf, "%lld", (long long)(m_offs - srclen));
+        if (m_offs - srclen != 0)
             m_metaData[cstr_ipath] = buf;
         readnext();
         return true;
@@ -161,7 +153,7 @@ bool MimeHandlerText::next_document()
 bool MimeHandlerText::readnext()
 {
     string reason;
-    m_text.erase();
+    m_text.clear();
     if (!file_to_string(m_fn, m_text, m_offs, m_pagesz, &reason)) {
         LOGERR(("MimeHandlerText: can't read file: %s\n", reason.c_str()));
         m_havedoc = false;

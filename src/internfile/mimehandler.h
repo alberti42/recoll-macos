@@ -92,6 +92,9 @@ public:
 	m_reason.clear();
     }
 
+    // This only makes sense if the contents are currently txt/plain
+    bool txtdcode(const string& who);
+
 protected:
     bool preview() {return m_forPreview;}
 
