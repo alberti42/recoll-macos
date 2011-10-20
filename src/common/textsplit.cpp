@@ -208,10 +208,10 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
  */
 inline bool TextSplit::doemit(bool spanerase, int bp, bool spanemit)
 {
-    LOGDEB3(("TextSplit::doemit: sper %d bp %d spem %d. spp %d wS %d wL %d "
-	    "inn %d span [%s]\n",
-	    spanerase, bp, spanemit, m_spanpos, m_wordStart, m_wordLen,
-	    m_inNumber, m_span.c_str()));
+    LOGDEB2(("TextSplit::doemit: sper %d bp %d spem %d. spp %d wS %d wL %d "
+	     "inn %d span [%s]\n",
+	     spanerase, bp, spanemit, m_spanpos, m_wordStart, m_wordLen,
+	     m_inNumber, m_span.c_str()));
 
     // Emit span? When splitting for query, we only emit final spans
     // (spanerase)
@@ -220,6 +220,28 @@ inline bool TextSplit::doemit(bool spanerase, int bp, bool spanemit)
         !((m_wordLen == m_span.length()) && 
           (o_noNumbers) && m_inNumber) &&
 	((spanemit && !(m_flags & TXTS_ONLYSPANS)) || spanerase) ) {
+
+	// Check for an acronym/abbreviation ie I.B.M.
+	if (spanerase && m_wordLen != m_span.length() && m_span.length() > 2
+	    && m_span.length() <= 20) {
+	    bool acron = true;
+	    for (unsigned int i = 1 ; i < m_span.length(); i += 2) {
+		if (m_span[i] != '.') {
+		    acron = false;
+		    break;
+		}
+	    }
+	    if (acron) {
+		string acronym;
+		for (unsigned int i = 0; i < m_span.length(); i += 2) {
+		    acronym += m_span[i];
+		}
+		if (!emitterm(false, acronym, m_spanpos, bp - m_span.length(), 
+			      bp))
+		    return false;
+	    }
+	} 
+
 	// Maybe trim at end. These are chars that we would keep inside 
 	// a span, but not at the end
 	while (m_span.length() > 0) {
