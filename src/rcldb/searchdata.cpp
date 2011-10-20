@@ -385,11 +385,16 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
     }
     
     // We can't make a phrase with a single word :)
-    if (TextSplit::countWords(swords) <= 1) {
+    int nwords = TextSplit::countWords(swords);
+    if (nwords <= 1) {
 	LOGDEB2(("SearchData::maybeAddAutoPhrase: ended with 1 word\n"));
 	return false;
     }
-	
+
+    // Increase the slack: we want to be a little more laxist than for
+    // an actual user-entered phrase
+    slack += 1 + nwords / 3;
+    
     SearchDataClauseDist *nclp = 
 	new SearchDataClauseDist(SCLT_PHRASE, swords, slack, field);
 
