@@ -284,15 +284,37 @@ bool MimeHandlerExecMultiple::next_document()
 
     // Charset. For many document types it doesn't matter. For text
     // and html it does. We supply a default from the
-    // configuration. We should do the text transcoding to utf-8 here
-    // like exec::finaldetails does.
+    // configuration. 
+    bool trustcharset = true;
     if (charset.empty()) {
 	charset = cfgFilterOutputCharset.empty() ? "utf-8" : 
 	    cfgFilterOutputCharset;
 	if (!stringlowercmp("default", charset)) {
+	    trustcharset = false;
 	    charset = m_dfltInputCharset;
 	}
     }
+
+    string& output = m_metaData[cstr_content];
+    if (!m_metaData[cstr_mimetype].compare(cstr_textplain) && 
+	(!trustcharset || stringlowercmp("utf-8", charset))) {
+	string transcoded;
+	int ecnt;
+	if (!transcode(output, transcoded, charset, "UTF-8", &ecnt)) {
+	    LOGERR(("mh_execm: transcode failed from [%s] to UTF-8\n",
+		    charset.c_str()));
+	    // Erase text in this case: it's garbage
+	    output.clear();
+	} else {
+	    if (ecnt) {
+		LOGDEB(("mh_exec: %d transcoding errors  from [%s] to UTF-8\n",
+			ecnt, charset.c_str()));
+	    }
+	    output = transcoded;
+	    charset = "utf-8";
+	}
+    }
+    
     m_metaData[cstr_charset] = charset;
     
     if (eofnext_received)
