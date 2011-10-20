@@ -25,7 +25,6 @@
 #include "guiutils.h"
 #include "pathut.h"
 #include "base64.h"
-#include "transcode.h"
 
 #include <QSettings>
 #include <QStringList>
@@ -199,8 +198,6 @@ void rwSettings(bool writing)
 	prefs.ssearchHistory = 
 	    settings.value("/Recoll/prefs/query/ssearchHistory").toStringList();
     }
-    SETTING_RW(prefs.ssearchAutoPhrase, 
-	       "/Recoll/prefs/query/ssearchAutoPhrase", Bool, false);
 
     // Ignored file types (advanced search)
     if (writing) {
