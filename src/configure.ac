@@ -112,7 +112,7 @@ if test X$withInotify != Xno ; then
    AC_DEFINE(RCL_MONITOR, 1, [Real time monitoring option])
    AC_DEFINE(RCL_USE_INOTIFY, 1, [Compile the inotify interface])
 else
-   AC_MSG_NOTICE([inotify monitoring disabled])
+   AC_MSG_NOTICE([inotify not found, inotify monitoring disabled])
 fi
 
 # Real time monitoring with FAM
@@ -126,12 +126,17 @@ if test X$withFam != Xno -a X$withInotify != Xno ; then
    withFam=no
 fi
 
+famLib=""
 case $withFam in
      no);;
      yes)
 	for dir in /usr/local/lib ${libdir};do 
 	 if test -f $dir/libfam.so ; then famLib=$dir/libfam.so;break;fi
 	done
+        if test X$famLib = X ; then
+	  AC_MSG_NOTICE([FAM library not found, disabling FAM and real time indexing support])
+	  withFam=no
+        fi
      ;;
      *) # The argument should be the path to the fam library
      famLib=$withFam
