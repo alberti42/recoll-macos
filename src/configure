@@ -4233,8 +4233,8 @@ $as_echo "#define RCL_MONITOR 1" >>confdefs.h
 $as_echo "#define RCL_USE_INOTIFY 1" >>confdefs.h
 
 else
-   { $as_echo "$as_me:${as_lineno-$LINENO}: inotify monitoring disabled" >&5
-$as_echo "$as_me: inotify monitoring disabled" >&6;}
+   { $as_echo "$as_me:${as_lineno-$LINENO}: inotify not found, inotify monitoring disabled" >&5
+$as_echo "$as_me: inotify not found, inotify monitoring disabled" >&6;}
 fi
 
 # Real time monitoring with FAM
@@ -4253,12 +4253,18 @@ $as_echo "$as_me: FAM support enabled but inotify support also enabled. Disablin
    withFam=no
 fi
 
+famLib=""
 case $withFam in
      no);;
      yes)
 	for dir in /usr/local/lib ${libdir};do
 	 if test -f $dir/libfam.so ; then famLib=$dir/libfam.so;break;fi
 	done
+        if test X$famLib = X ; then
+	  { $as_echo "$as_me:${as_lineno-$LINENO}: FAM library not found, disabling FAM and real time indexing support" >&5
+$as_echo "$as_me: FAM library not found, disabling FAM and real time indexing support" >&6;}
+	  withFam=no
+        fi
      ;;
      *) # The argument should be the path to the fam library
      famLib=$withFam
