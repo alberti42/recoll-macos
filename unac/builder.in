@@ -93,6 +93,14 @@ sub main {
 	}
 	if($general_category =~ /^M/) {
 	    $mark{$code_value} = 1;
+            # For mark caracters, we generate a 0 entry in the
+            # decomposition table. This signals to the c code that no
+            # output should be generated. Slightly hacky but ok. The
+            # original code left mark character go through (generating
+            # still accented output if the input was in decomposed
+            # form). Decomposed text is rare, but, for example, macosx file
+            # names have separate combining accent characters.
+	    $decomposition{$code_value} = "0000";
 	}
 	$name{$code_value} = $character_name;
     }
@@ -114,11 +122,16 @@ sub main {
 		undef @decomposition;
 		last;
 	    }
-	    if(exists($decomposition{$code_value})) {
-		push(@code_values, split(' ', $decomposition{$code_value}));
-	    } elsif (!exists($mark{$code_value})) {
-		push(@decomposition, $code_value);
-	    }
+            # marks also have entries in the decomposition table (so that 
+            # they can be suppressed when found in input), but no output
+            # component should be generated for them.
+            if (!exists($mark{$code_value})) {
+                if(exists($decomposition{$code_value})) {
+                    push(@code_values, split(' ', $decomposition{$code_value}));
+                } else {
+                    push(@decomposition, $code_value);
+                }
+            }
 	}
 	if(@decomposition) {
 	    $decomposition{$from} = "@decomposition";
