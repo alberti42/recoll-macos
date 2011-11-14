@@ -195,9 +195,10 @@ static const char usage [] =
 "     -o : the query will be interpreted as an OR query.\n"
 "     -f : the query will be interpreted as a filename search\n"
 "     -l : the query will be interpreted as a query language string (default)\n"
-"     -t : terminal display: no gui. Results go to stdout. MUST be given\n"
-"          explicitly as -t (not ie, -at), and -q <query> MUST\n"
-"          be last on the command line if this is used.\n"
+"  -t : terminal display: no gui. Results go to stdout. MUST be given\n"
+"       explicitly as -t (not ie, -at), and -q <query> MUST\n"
+"       be last on the command line if this is used.\n"
+"       Use -t -h to see the additional non-gui options\n"
 ;
 static void
 Usage(void)
@@ -209,6 +210,8 @@ Usage(void)
 
 int main(int argc, char **argv)
 {
+    // If "-t" is present at all, we don't do the GUI thing and pass the 
+    // whole to recollq for command line / pipe usage.
     for (int i = 0; i < argc; i++) {
 	if (!strcmp(argv[i], "-t")) {
 	    exit(recollq(&theconfig, argc, argv));
