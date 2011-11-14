@@ -1,5 +1,5 @@
 %define name kio_recoll
-%define version 1.15.8
+%define version 1.16.2
 %define release 0
 
 Name:           %{name}
@@ -66,8 +66,10 @@ rm -rf $RPM_BUILD_ROOT
 # ---------------------------------------------------------------------------
 
 %changelog
+* Mon May 02 2011 Jean-Francois Dockes <jfd@recoll.org> 1.16.2-0
+- 1.16.2
 * Mon May 02 2011 Jean-Francois Dockes <jfd@recoll.org> 1.15.8-0
-- Initial spec file for kio
+- 1.15.8
 * Sun Mar 06 2011 Jean-Francois Dockes <jfd@recoll.org> 1.15.5-0
 - Initial spec file for kio
 

@@ -35,9 +35,55 @@
           supposedly fixed in later versions. Bugs listed in the
           topmost section may also exist in older versions.</i></p>
 
-      <h2><a name="b_latest">recoll 1.16.1</a></h2> 
+      <h2><a name="b_latest">recoll 1.16.2</a></h2> 
 
       <ul> 
+        <li>Real time indexer: when running with gamin on FreeBSD, the
+          indexer can deadlock in the gamin dialog in some
+          cases.</li>
+        <li>Real time indexer: file move events are not detected when
+          running with inotify (at least for recent
+          versions). Workaround: restart indexer from time to time.</li>
+        <li>Real time indexer: directory moves are not handled at
+          all. Workaround: restart indexer from time to time.</li>
+        <li>Cancelling a preview in the GUI will also cancel the indexing
+          thread if it is running.</li>
+        <li>After an upgrade, the recoll GUI sometimes crashes on
+          startup. This is fixed by removing (back it up just in case)
+          ~/.config/Recoll.org/recoll.conf, the QSettings storage for
+          recoll.</li>
+        <li>Under Solaris, it is necessary to perform the initial
+          indexing with the recollindex program. For some unknown reason,
+          the recoll index thread does not work for creating the database.
+          The only idea I have is a problem with exception handling (recoll
+          catches an exception while trying the yet inexistant db).</li>
+        
+      </ul>
+
+
+      <h2><a name="b_1_16_1">recoll 1.16.1</a></h2> 
+      <ul>
+        <li>At least on OpenSUSE 12.1 / Qt 4.7.4 (and probably other
+          environments), the links to Preview or Open inside the
+          result list do not work. Also the GUI can crash if a
+          temporary directory creation fails.</li>
+        <li>The Python filters can crash under certain error
+          conditions. This is a benign error, affecting just 
+          the current document, but it causes system reports.</li>
+        <li>The query is run 2 times, in most cases. This does not
+          cause a too dramatic performance impact because of caching but
+          still...</li>
+        <li>The output from some filters (most typically text files
+          out from the zip filters) is sometimes not transcoded
+          correctly to UTF-8, causing myriads of error messages (and a
+          possible application crash due to another bug in the unac
+          code, described further).</li>
+        <li>There is a compilation issue on Linux systems with a 3.x
+          kernel.</li>
+        <li>Queries without search terms (ie: all files of a given
+          mime type) fail with an "empty query" diagnostic.</li>
+        <li>The recollq command line query program sometimes does not
+          clean up its temporary directory.</li>
         <li>Indexing can crash on files with weird names (inconsistent with the
           locale) for which the format of the "file -i" command is
           unexpected. This is probably dependant on the type of system
@@ -54,47 +100,31 @@
           it out), or apply <a href="files/patch-unac-icclose.diff">this
           patch</a>, which should work with all versions from 1.13 to
           1.16.1</li>
-        <li>Real time indexer: when running with gamin on FreeBSD, the
-          indexer can deadlock in the gamin dialog in some
-          cases.</li>
-        <li>Real time indexer: file move events were not detected when
-          running with inotify (at least for recent
-          versions). Workaround: restart indexer from time to time.</li>
-        <li>Real time indexer: directory moves are not handled at
-          all. Workaround: restart indexer from time to time.</li>
-        <li>Recollq does not delete a temporary directory in some
-          cases (/tmp/rcl...).</li>
-        <li>Most GUI queries are actually run two times which does not
-          help performance...</li>
-        <li>Cancelling a preview in the GUI will also cancel the indexing
-          thread if it is running.</li>
-        <li>After an upgrade, the recoll GUI sometimes crashes on
-          startup. This is fixed by removing (back it up just in case)
-          ~/.config/Recoll.org/recoll.conf, the QSettings storage for
-          recoll.</li>
-        <li>Under Solaris, it is necessary to perform the initial
-          indexing with the recollindex program. For some unknown reason,
-          the recoll index thread does not work for creating the database.
-          The only idea I have is a problem with exception handling (recoll
-          catches an exception while trying the yet inexistant db).</li>
-        
+        <li>The lyx filter does not correctly detect the Lyx version,
+          needed for correct indexing.</li>
+        <li>A typo in a memory reallocation call inside the firefox
+          web history indexing module may cause problems in a highly
+          improbable case.</li>
+        <li>Directory creations are not processed by the real time
+          indexer (for indexing directory names).</li> 
       </ul>
 
       <h2><a name="b_1_16_0">recoll 1.16.0</a></h2> 
+      <ul>
         <li>The <tt>recoll</tt> GUI program sometimes crashes when
-        running a query while the indexing thread is active.
-        Possible workarounds:<br />
+          running a query while the indexing thread is active.
+          Possible workarounds:<br />
           <ul>
             <li>Upgrade to 1.16.1</li>
             <li>Use the command
               line <tt>recollindex</tt> program to perform indexing
-             (usually just type "recollindex" in a console, or see "man
-            recollindex").</li>
+              (usually just type "recollindex" in a console, or see "man
+              recollindex").</li>
             <li>Do not run queries in <tt>recoll</tt> while the indexing thread
               is running (as indicated in the bottom status line).</li>
           </ul>      
         </li>
-
+      </ul>
       <h2><a name="b_1_15_7">recoll 1.15.7</a></h2> 
       <ul>
         <li>The default filter for files in Microsoft Word format

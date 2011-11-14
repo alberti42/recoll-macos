@@ -47,8 +47,25 @@
 
        <p>Also, using the anchored search feature requires a full reindex.</p>
 
+       <p>1.16.2: this is a bug fix release, (see the 
+         <a href="BUGS.html#b_1_16_1">fixed bugs document</a>), with a few
+         limited changes:
+         <ul>
+           <li>The indexer now puts itself in the ionice "idle" class by
+             default (can be changed in the config).</li>
+
+           <li>The verbosity level of some messages were adjusted so that a
+             simple sequence of indexed files can now be seen while indexing
+             with the verbosity at level 3 (info).</li>
+
+           <li>New command line options for the recollq program add a fully
+             parseable base64-encoded output mode, with full control on the
+             list of fields printed for each result, for use by external
+             programs.</li>
+         </ul>
+       </p>
        <p>The 1.16.0 GUI can be crashed quite easily, please
-         upgrade.</p>
+         just upgrade to 1.16.1 or later.</p>
 
       <h2>Changes</h2>
 

@@ -50,7 +50,7 @@
 
       <h2><a>General information</a></h2>
 
-      <p>The current version is 1.16.1. <a href="release-1.16.html">
+      <p>The current version is 1.16.2. <a href="release-1.16.html">
           Release notes</a>.</p>
 
       <p>The download page for Recoll 1.15 is
@@ -101,11 +101,11 @@
 
       <h2><a name="source">Source</a></h2>
 
-      <h3>Current release distribution: 1.16.1:</h3> 
+      <h3>Current release distribution: 1.16.2:</h3> 
       <!-- Attention: source packages must remain here, not in a
         subdirectory, because of all the places they're referred from
         (package watches) -->
-       <p><a href="recoll-1.16.1.tar.gz">recoll-1.16.1.tar.gz</a>.
+       <p><a href="recoll-1.16.2.tar.gz">recoll-1.16.2.tar.gz</a>.
        </p>
 
 <!--
@@ -166,6 +166,7 @@
 
       <h3>Older recoll releases:</h3>
        <p>
+        <a href="recoll-1.16.1.tar.gz">1.16.1</a>.
         <a href="recoll-1.16.0.tar.gz">1.16.0</a>.
         <a href="recoll-1.15.9.tar.gz">1.15.9</a>.
         <a href="recoll-1.14.4.tar.gz">1.14.4</a>.
@@ -250,16 +251,13 @@ gpg --export --armor  A0735AD0 | sudo apt-key add -
 	  
       <h3>Fedora</h3>
       <p>Recoll is present in the standard Fedora package
-	repositories starting from F-12.</p>
-      <blockquote>
-      <p>These builds are not statically linked, but depend on the
-        regular Xapian and zlib rpms from the Fedora repositories.
-        <br>Fedora 13
-	<a href="fc13/recoll-1.16.1-1.fc13.i586.rpm">
-	  recoll-1.16.1-1.fc13.i586.rpm</a>. 
-	Source: 
-	<a href="fc13/recoll-1.16.1-1.fc13.src.rpm">
-	  recoll-1.16.1-1.fc13.src.rpm</a>
+	repositories starting from F-12. The new versions are tracked quite
+	closely, so I don't build the rpms any more (email me if you need
+	one).</p> 
+<!--
+      <blockquote> 
+        <p>These builds depend on the
+          regular Xapian and zlib rpms from the Fedora repositories.
         <br>Fedora 14
 	<a href="fc14/recoll-1.16.1-1.fc14.i586.rpm">
 	  recoll-1.16.1-1.fc14.i586.rpm</a>. 
@@ -273,8 +271,8 @@ gpg --export --armor  A0735AD0 | sudo apt-key add -
 	<a href="fc15/recoll-1.16.1-1.fc15.src.rpm">
 	  recoll-1.16.1-1.fc15.src.rpm</a>
       </p>
-
       </blockquote>
+-->
 
       <h3>OpenSUSE</h3>
       <blockquote>
@@ -301,11 +299,11 @@ I now use the OpenSUSE build service to create Recoll OpenSUSE packages.
 
         <p><b>Mandriva linux one 2010 using Qt 4 and the Xapian version
              from the Mandriva repository.</b>: 
-	  <a href="mandriva2010/recoll-1.16.1-1mdv2010.2.i586.rpm">
-	  recoll-1.16.1-1mdv2010.2.i586.rpm</a>. 
+	  <a href="mandriva2010/recoll-1.16.2-1mdv2010.2.i586.rpm">
+	  recoll-1.16.2-1mdv2010.2.i586.rpm</a>. 
 	Source: 
-	<a href="mandriva2010/recoll-1.16.1-1mdv2010.2.src.rpm">
-	  recoll-1.16.1-1mdv2010.2.src.rpm</a>
+	<a href="mandriva2010/recoll-1.16.2-1mdv2010.2.src.rpm">
+	  recoll-1.16.2-1mdv2010.2.src.rpm</a>
         </p>
       </blockquote>
 
@@ -326,8 +324,8 @@ I now use the OpenSUSE build service to create Recoll OpenSUSE packages.
         following, but updates have stopped for some time.</p>
         <p><b>FreeBSD 7.4 i386 Qt 4.7.3</b> Statically linked to
           Xapian 1.2.7 with --disable-sse: 
-	   <a href="freebsd/recoll-1.16.1-FreeBSD-7.4-STABLE.tgz">
-	     recoll-1.16.1-FreeBSD-7.4-STABLE.tgz</a>
+	   <a href="freebsd/recoll-1.16.2-FreeBSD-7.4-STABLE.tgz">
+	     recoll-1.16.2-FreeBSD-7.4-STABLE.tgz</a>
         </p>
       </blockquote>
 
@@ -401,10 +399,15 @@ I now use the OpenSUSE build service to create Recoll OpenSUSE packages.
 
       <h3>Updated 1.16 translations that became available after the
 	release:</h3>
-
-      <p>Czech, thanks to Pavel !
+      <p>The following are up to date in 1.16.2, but may be useful if you
+        are running 1.16.1.</p>
+      <p>Czech, thanks to Pavel.
 	<a href="translations/recoll_cs.ts">recoll_cs.ts</a>
 	<a href="translations/recoll_cs.qm">recoll_cs.qm</a>
+	</p> 
+      <p>Russian, thanks to Gleb.
+	<a href="translations/recoll_ru.ts">recoll_ru.ts</a>
+	<a href="translations/recoll_ru.qm">recoll_ru.qm</a>
 	</p> 
 
 <!--  
@@ -415,10 +418,6 @@ I now use the OpenSUSE build service to create Recoll OpenSUSE packages.
       <p>Ukrainian. 
 	<a href="translations/recoll_uk.ts">recoll_uk.ts</a>
 	<a href="translations/recoll_uk.qm">recoll_uk.qm</a>
-	</p> 
-      <p>Russian. 
-	<a href="translations/recoll_ru.ts">recoll_ru.ts</a>
-	<a href="translations/recoll_ru.qm">recoll_ru.qm</a>
 	</p> 
       <p><b>Italian</b>. Thanks to Mario, Christian and Giovanni for this.
 	<a href="translations/recoll_it.ts">recoll_it.ts</a>

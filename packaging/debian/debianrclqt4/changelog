@@ -1,3 +1,7 @@
+recoll (1.16.2-0~ppa1~SERIES1) SERIES; urgency=low
+  * Updated package to recoll version 1.16.2
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 07 Nov 2011 17:50:00 +0200
+
 recoll (1.16.1-0~ppa1~SERIES1) SERIES; urgency=low
   * Updated package to recoll version 1.16.1
  -- Jean-Francois Dockes <jf@dockes.org>  Wed, 28 Sep 2011 15:07:00 +0200

@@ -47,7 +47,7 @@
 
       <p><span class="application">Recoll</span> is free, open source,
 	and licensed under the GPL. The current version is
-	<a class="important" href="download.html">1.16.1</a> 
+	<a class="important" href="download.html">1.16.2</a> 
 	(<a href="release-1.16.html">Release notes</a>).</p>
 
       <h2>Features: </h2>
@@ -90,6 +90,11 @@
 
       <h2>News: </h2>
       <ul>
+
+        <li>2011-11-07: release <a href="download.html#source">1.16.2</a>
+          is out. It fixes a number of <a href="BUGS.html#b_1_16_1">
+          bugs</a> in 1.16.1, ranging from small to ennoying depending on
+          usage.</li>
 
         <li>2011-09-28: release <a href="download.html#source">1.16.1</a>
           is out. It fixes a GUI crash in 1.16.0 (see below) and a lyx filter
