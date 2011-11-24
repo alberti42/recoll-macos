@@ -2324,32 +2324,75 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 	  handle the protocol.</para>
 	  </listitem>
 	</itemizedlist>
-      The following will just describe the simple filters, if you are
-      programmer enough to write one of the other kind, it shouldn't be too
-      difficult to make sense of one of the existing modules (ie:
-      rclzip).</para> 
+      The following will just describe the simple filters. If you can
+      program and want to write one of the other kind, it shouldn't be too
+      difficult to make sense of one of the existing modules. For example,
+      look at <command>rclzip</command> which uses Zip file paths as
+      internal identifiers (<literal>ipath</literal>), and
+      <command>rclinfo</command>, which uses an integer index.</para> 
+
+      <sect2 id="rcl.program.filters.simple">
+        <title>Simple filters</title>
 
       <para>&RCL; simple filters are usually shell-scripts, but this is in
-        no way necessary. These programs are extremely simple and most
-        of the difficulty lies in extracting the text from the native
-        format, not outputting what is expected by &RCL;. Happily
-        enough, most document formats already have translators or text
-        extractors which handle the difficult part and can be called
-        from the filter. In some case the output of the translating
-        program is appropriate, and no intermediate shell-script is
-        needed.</para> 
+        no way necessary. Extracting the text from the native format is the
+        difficult part. Outputting the format expected by &RCL; is
+        trivial. Happily enough, most document formats have translators or
+        text extractors which can be called from the filter. In some cases
+        the output of the translating program is completely appropriate,
+        and no intermediate shell-script is needed.</para>
 
         <para>Filters are called with a single argument which is the
         source file name. They should output the result to stdout.</para>
 
-        <para>The <literal>RECOLL_FILTER_FORPREVIEW</literal>
-        environment variable (values <literal>yes</literal>,
-        <literal>no</literal>) tells the filter if the operation is
-        for indexing or previewing. Some filters use this to output a
-        slightly different format. This is not essential.</para>
+      <para>When writing a filter, you should decide if it will output
+      plain text or html. Plain text is simpler, but you will not be able
+      to add metadata or vary the output character encoding (this will be
+      defined in a configuration file). Additionally, some formatting may
+      easier to preserve when previewing html. Actually the deciding factor
+      is metadata: &RCL; has a way to <link linkend="rcl.program.filters.html">
+      extract metadata from the html header and use it for field 
+      searches.</link>.</para>
+
+      <para>The <literal>RECOLL_FILTER_FORPREVIEW</literal> environment
+        variable (values <literal>yes</literal>, <literal>no</literal>)
+        tells the filter if the operation is for indexing or
+        previewing. Some filters use this to output a slightly different
+        format, for example stripping uninteresting repeated keywords (ie:
+        <literal>Subject:</literal> for email) when indexing. This is not
+        essential.</para>
+
+      <para>You should look to one of the simple filters, for exemple
+        <literal>rclps</literal> for a starting point.</para>
+
+        <para>Don't forget to make your filter executable before 
+         testing !</para>
+
+      </sect2>
+
+      <sect2 id="rcl.program.filters.association">
+        <title>Telling &RCL; about the filter</title>
+
+      <para>There are two elements that link a file to the filter which
+      should process it: the association of file to mime type and the
+      association of a mime type with a filter.</para>
+
+      <para>The association of files to mime types is mostly based on
+        name suffixes. The types are defined inside the
+        <link linkend="rcl.install.config.mimeconf">
+        <filename>mimemap</filename> file</link>. Example:
+<programlisting>
+
+.doc = application/msword
+</programlisting>
+       If no suffix association is found for the file name, &RCL; will try
+       to execute the <command>file -i</command> command to determine a
+       mime type.</para>
 
       <para>The association of file types to filters is performed in
-      the <filename>mimeconf</filename> file. A sample:</para>
+      the <link linkend="rcl.install.config.mimemap">
+      <filename>mimeconf</filename> file</link>. A sample will probably be
+      of better help than a long explanation:</para>
 <programlisting>
 
 [index]
@@ -2392,14 +2435,9 @@ application/x-chm = execm rclchm
 	      <literal>execm</literal> keyword.</para>
 	  </listitem>
 	</itemizedlist>
-      The easiest way to write a new filter is probably to start from an
-      existing one.</para> 
+       </para> 
 
-      <para>Filters which output <literal>text/plain</literal> text
-      are generally simpler, but they cannot specify the character set
-      and other metadata, so they are limited to cases where these
-      elements are not needed.</para>
-
+      </sect2>
 
     <sect2 id="rcl.program.filters.html">
         <title>Filter HTML output</title>
