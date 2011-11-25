@@ -247,6 +247,7 @@ int main(int argc, char **argv)
 		question = *(++argv);
 		argc--; goto b1;
 	    case 't': op_flags |= OPT_t; break;
+	    default: Usage();
 	    }
     b1: argc--; argv++;
     }
