@@ -37,6 +37,18 @@
     <div class="content">
       <h1 class="intro">Recoll features</h1>
 
+	<table width=100%>
+	  <tbody>
+	    <tr>
+	      <td><a href="#systems">Supported systems</a></td>
+              <td><a href="#doctypes">Document types</a></td>
+	      <td><a href="#other">Other features</a></td>
+	      <td><a href="#integration">Desktop and web integration</a></td>
+	      <td><a href="#stemming">Stemming</a></td>
+	    </tr>
+	  </tbody>
+	</table>
+
       <h2><a name="systems">Supported systems</a></h2>
 
       <p><span class="application">Recoll</span> has been compiled
@@ -235,7 +247,7 @@
 
       </ul>
 
-      <h2>Other features</h2>
+      <h2><a name="other">Other features</a></h2>
 
       <ul>
         <li>Can use <b>Beagle</b> browser plug-ins to index web
@@ -271,7 +283,29 @@
         real-time indexing daemon.</li>
       </ul>
 
-      <h2><a name="#stemming"></a>Stemming</h2>
+      <h2><a name="integration">Desktop and web integration</a></h2>
+
+      <p>The <span class="application">Recoll</span> GUI has many
+	features that help to specify an efficient search and to manage
+	the results. However it maybe sometimes preferable to use a
+	simpler tool with a better integration with your desktop
+	interfaces. Several solutions exist, at the moment mostly for
+	the KDE desktop:</p>
+      <ul>
+	<li>The <span class="application">Recoll</span> KIO module
+	  allows starting queries and viewing results from the
+	  Konqueror browser or KDE applications <em>Open</em> dialogs.</li>
+	<li>The <a href="http://kde-apps.org">recollrunner</a> krunner
+	  module allows integrating Recoll search results into a
+	  krunner query.</li>
+      </ul>
+      <p>Recoll also has 
+	<a href="usermanual/rcl.program.api.html#RCL.PROGRAM.API.PYTHON">
+	  <span class="application">Python</span></a> and
+	<span class="application">PHP</span> modules which can allow
+	easy integration with web or other applications.</p>
+
+      <h2><a name="stemming"></a>Stemming</h2>
 
       <p>Stemming is a process which transforms inflected words
       into their most basic form. For example, <i>flooring</i>,

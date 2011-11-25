@@ -57,7 +57,7 @@
 	  web server, desktop environment or exotic language necessary.</li>
 	<li>Will run on most Unix-based <a
 	    href="features.html#systems">systems</a></li> 
-        <li>Qt 4 GUI. (Qt 3 is supported up to release 1.14.x).</li>
+        <li>Qt 4 GUI, plus command line, KIO and krunner interfaces.</li>
 
         <li>Searches most common 
 	  <a href="features.html#doctypes">document types</a>, emails and
@@ -70,6 +70,11 @@
 
         <li>Multi-language and multi-character set with Unicode based
 	  internals.</li> 
+
+	<li>Extensive documentation, with a
+	  complete <a href="usermanual/usermanual.html">user
+	    manual</a> and manual pages for each command.</li>
+
 	<li><a class="weak" href="features.html">(more detail)</a></li>
       </ul>
 
