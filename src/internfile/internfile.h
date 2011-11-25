@@ -193,6 +193,8 @@ class FileInterner {
     const string& getReason() const {return m_reason;}
     static void getMissingExternal(FIMissingStore *st, string& missing);
     static void getMissingDescription(FIMissingStore *st, string& desc);
+    // Parse "missing" file contents into memory struct
+    static void getMissingFromDescription(FIMissingStore *st, const string& desc);
     bool ok() {return m_ok;}
 
  private:

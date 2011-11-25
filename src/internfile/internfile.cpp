@@ -547,6 +547,50 @@ void FileInterner::getMissingDescription(FIMissingStore *st, string& out)
     }
 }
 
+void FileInterner::getMissingFromDescription(FIMissingStore *st, const string& in)
+{
+    if (st == 0)
+	return;
+
+    // The "missing" file is text. Each line defines a missing filter
+    // and the list of mime types actually encountered that needed it (see method
+    // getMissingDescription())
+
+    vector<string> lines;
+    stringToTokens(in, lines, "\n");
+
+    for (vector<string>::const_iterator it = lines.begin();
+	 it != lines.end(); it++) {
+	// Lines from the file are like: 
+	//
+	// filter name string (mime1 mime2) 
+	//
+	// We can't be too sure that there will never be a parenthesis
+	// inside the filter string as this comes from the filter
+	// itself. The list part is safer, so we start from the end.
+	const string& line = *it;
+	string::size_type lastopen = line.find_last_of("(");
+	if (lastopen == string::npos)
+	    continue;
+	string::size_type lastclose = line.find_last_of(")");
+	if (lastclose == string::npos || lastclose <= lastopen + 1)
+	    continue;
+	string smtypes = line.substr(lastopen+1, lastclose - lastopen - 1);
+	vector<string> mtypes;
+	stringToTokens(smtypes, mtypes);
+	string filter = line.substr(0, lastopen);
+	trimstring(filter);
+	if (filter.empty())
+	    continue;
+
+	st->m_missingExternal.insert(filter);
+	for (vector<string>::const_iterator itt = mtypes.begin(); 
+	     itt != mtypes.end(); itt++) {
+	    st->m_typesForMissing[filter].insert(*itt);
+	}
+    }
+}
+
 // Helper for extracting a value from a map.
 static inline bool getKeyValue(const map<string, string>& docdata, 
 			       const string& key, string& value)

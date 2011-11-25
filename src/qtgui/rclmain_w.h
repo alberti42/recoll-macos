@@ -69,6 +69,7 @@ public slots:
     virtual void showSpellDialog();
     virtual void showAboutDialog();
     virtual void showMissingHelpers();
+    virtual void showActiveTypes();
     virtual void startManual();
     virtual void startManual(const string&);
     virtual void showDocHistory();

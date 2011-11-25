@@ -138,7 +138,9 @@
     <addaction name="separator"/>
     <addaction name="fileEraseSearchHistoryAction"/>
     <addaction name="fileEraseDocHistoryAction"/>
+    <addaction name="separator"/>
     <addaction name="showMissingHelpers_Action"/>
+    <addaction name="showActiveTypes_Action"/>
     <addaction name="separator"/>
     <addaction name="toggleFullScreenAction"/>
     <addaction name="separator"/>
@@ -169,6 +171,7 @@
     </property>
     <addaction name="userManualAction"/>
     <addaction name="showMissingHelpers_Action"/>
+    <addaction name="showActiveTypes_Action"/>
     <addaction name="separator"/>
     <addaction name="helpAbout_RecollAction"/>
    </widget>
@@ -219,6 +222,14 @@
    </property>
    <property name="name" stdset="0">
     <cstring>showMissingHelpers_Action</cstring>
+   </property>
+  </action>
+  <action name="showActiveTypes_Action">
+   <property name="text">
+    <string>&amp;Show indexed types</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>showActiveTypes_Action</cstring>
    </property>
   </action>
   <action name="helpAbout_RecollAction">

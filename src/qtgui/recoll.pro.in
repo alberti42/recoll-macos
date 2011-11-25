@@ -7,6 +7,7 @@ HEADERS += \
         advsearch_w.h \
         confgui/confgui.h \
         confgui/confguiindex.h \
+        listdialog.h \
         preview_w.h \
         rclhelp.h \
         rclmain_w.h \
@@ -41,6 +42,7 @@ SOURCES += \
 
 FORMS   = \
         advsearch.ui \
+        listdialog.ui \
         rclmain.ui \
         restable.ui \
 	spell.ui \

@@ -68,6 +68,7 @@ using std::pair;
 #include "docseqhist.h"
 #include "confguiindex.h"
 #include "restable.h"
+#include "listdialog.h"
 
 using namespace confgui;
 
@@ -225,6 +226,8 @@ void RclMain::init()
 	    this, SLOT(showAboutDialog()));
     connect(showMissingHelpers_Action, SIGNAL(activated()), 
 	    this, SLOT(showMissingHelpers()));
+    connect(showActiveTypes_Action, SIGNAL(activated()), 
+	    this, SLOT(showActiveTypes()));
     connect(userManualAction, SIGNAL(activated()), 
 	    this, SLOT(startManual()));
     connect(toolsDoc_HistoryAction, SIGNAL(activated()), 
@@ -747,6 +750,86 @@ void RclMain::showMissingHelpers()
 	msg += tr("No helpers found missing");
     }
     QMessageBox::information(this, tr("Missing helper programs"), msg);
+}
+
+void RclMain::showActiveTypes()
+{
+    if (rcldb == 0) {
+	QMessageBox::warning(0, tr("Error"), 
+			     tr("Index not open"),
+			     QMessageBox::Ok, 
+			     QMessageBox::NoButton);
+	return;
+    }
+
+    // Get list of all mime types in index. For this, we use a
+    // wildcard field search on mtype
+    Rcl::TermMatchResult matches;
+    string prefix;
+    if (!rcldb->termMatch(Rcl::Db::ET_WILD, "", "*", matches, -1, "mtype", 
+			  &prefix)) {
+	QMessageBox::warning(0, tr("Error"), 
+			     tr("Index query error"),
+			     QMessageBox::Ok, 
+			     QMessageBox::NoButton);
+	return;
+    }
+
+    // Build the set of mtypes, stripping the prefix
+    set<string> mtypesfromdb;
+    for (list<Rcl::TermMatchEntry>::const_iterator it = matches.entries.begin(); 
+	 it != matches.entries.end(); it++) {
+	mtypesfromdb.insert(it->term.substr(prefix.size()));
+    }
+
+    // All types listed in mimeconf:
+    list<string> mtypesfromconfig = theconfig->getAllMimeTypes();
+
+    // Intersect file system types with config types (those not in the
+    // config can be indexed by name, not by content)
+    set<string> mtypesfromdbconf;
+    for (list<string>::const_iterator it = mtypesfromconfig.begin();
+	 it != mtypesfromconfig.end(); it++) {
+	if (mtypesfromdb.find(*it) != mtypesfromdb.end())
+	    mtypesfromdbconf.insert(*it);
+    }
+
+    // Substract the types for missing helpers (the docs are indexed by name only):
+    string miss = theconfig->getMissingHelperDesc();
+    if (!miss.empty()) {
+	FIMissingStore st;
+	FileInterner::getMissingFromDescription(&st, miss);
+	map<string, set<string> >::const_iterator it;
+	for (it = st.m_typesForMissing.begin(); 
+	     it != st.m_typesForMissing.end(); it++) {
+	    set<string>::const_iterator it1;
+	    for (it1 = it->second.begin(); 
+		 it1 != it->second.end(); it1++) {
+		set<string>::iterator it2 = mtypesfromdbconf.find(*it1);
+		if (it2 != mtypesfromdbconf.end())
+		    mtypesfromdbconf.erase(it2);
+	    }
+	}	
+    }
+    ListDialog dialog;
+    dialog.setWindowTitle(tr("Indexed Mime Types"));
+
+    // Turn the result into a string and display
+    dialog.groupBox->setTitle(tr("Content has been indexed for these mime types:"));
+
+    // We replace the list with an editor so that the user can copy/paste
+    delete dialog.listWidget;
+    QTextEdit *editor = new QTextEdit(dialog.groupBox);
+    editor->setReadOnly(TRUE);
+    dialog.horizontalLayout->addWidget(editor);
+
+    for (set<string>::const_iterator it = mtypesfromdbconf.begin(); 
+	 it != mtypesfromdbconf.end(); it++) {
+	editor->append(QString::fromAscii(it->c_str()));
+    }
+    editor->moveCursor(QTextCursor::Start);
+    editor->ensureCursorVisible();
+    dialog.exec();
 }
 
 // If a preview (toplevel) window gets closed by the user, we need to

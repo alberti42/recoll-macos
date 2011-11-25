@@ -139,6 +139,11 @@ date_range_filter(int y1, int m1, int d1, int y2, int m2, int d2)
 }
 
 // Expand categories and mime type wild card exps
+// Actually, using getAllMimeTypes() here is a bit problematic because
+// there maybe other types in the index, not indexed by content, but
+// which could be searched by file name. It would probably be
+// preferable to do a termMatch() on field "mtype", which would
+// retrieve all values from the index.
 bool SearchData::expandFileTypes(RclConfig *cfg, vector<string>& tps)
 {
     if (!cfg) {
