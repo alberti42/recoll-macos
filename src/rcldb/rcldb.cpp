@@ -141,6 +141,7 @@ static void initFldToTraits()
     fldToTraits["xapyear"] = FieldTraits("Y");
     fldToTraits["xapyearmon"] = FieldTraits("M");
     fldToTraits["xapdate"] = FieldTraits("D");
+    fldToTraits[Doc::keytp] = FieldTraits("T");
 }
 
 // Compute the unique term used to link documents to their origin. 
