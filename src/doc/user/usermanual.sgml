@@ -2390,7 +2390,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
        mime type.</para>
 
       <para>The association of file types to filters is performed in
-      the <link linkend="rcl.install.config.mimemap">
+      the <link linkend="rcl.install.config.mimeconf">
       <filename>mimeconf</filename> file</link>. A sample will probably be
       of better help than a long explanation:</para>
 <programlisting>
