@@ -388,10 +388,15 @@ bool RclConfig::addLocalFields(map<string, string> *tgt)
     return true;
 }
 
-
-// Get all known document mime values (for indexing). We get them from
-// the mimeconf 'index' submap: values not in there (ie from mimemap
-// or idfile) can't possibly belong to documents in the database.
+// Get all known document mime values. We get them from the mimeconf
+// 'index' submap.
+// It's quite possible that there are other mime types in the index
+// (defined in mimemap and not mimeconf, or output by "file -i"). We
+// just ignore them, because there may be myriads, and their contents
+// are not indexed. 
+//
+// This unfortunately means that searches by file names and mime type
+// filtering don't work well together.
 list<string> RclConfig::getAllMimeTypes()
 {
     list<string> lst;
