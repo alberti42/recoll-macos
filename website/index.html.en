@@ -50,40 +50,19 @@
 	<a class="important" href="download.html">1.16.2</a> 
 	(<a href="release-1.16.html">Release notes</a>).</p>
 
-      <h2>Features: </h2>
-
-      <ul>
-        <li>Easy installation, few dependancies. No database daemon,
-	  web server, desktop environment or exotic language necessary.</li>
-	<li>Will run on most Unix-based <a
-	    href="features.html#systems">systems</a></li> 
-        <li>Qt 4 GUI, plus command line, KIO and krunner interfaces.</li>
-
-        <li>Searches most common 
-	  <a href="features.html#doctypes">document types</a>, emails and
-	    their attachments. Transparently handles decompression
-	    (gzip, bzip2).</li> 
-	
-        <li>Powerful query facilities, with boolean searches,
-	  phrases, proximity, wildcards, filter on file types and directory
-	  tree. </li>
-
-        <li>Multi-language and multi-character set with Unicode based
-	  internals.</li> 
-
-	<li>Extensive documentation, with a
-	  complete <a href="usermanual/usermanual.html">user
-	    manual</a> and manual pages for each command.</li>
-
-	<li><a class="weak" href="features.html">(more detail)</a></li>
-      </ul>
-
-      <p><i>Recoll can index an <b>MS-Word</b> document stored as
+      <p class="remark">Recoll will index an <b>MS-Word</b> document stored as
 	  an <b>attachment</b> to an <b>e-mail message</b> inside
 	  a <b>Thunderbird folder</b> archived in a <b>Zip file</b>
 	  (and more...). It will also let you open a copy of the file
 	  without any fuss. There is little that will remain hidden on 
-	  your disk :)</i></p>
+	  your disk. 
+        <a class="important" href="features.html">More details &hellip;</a></p>
+
+      <p></p>
+
+      <p>If you have problems with
+        Recoll, <a href="doc.html">documentation</a>
+        and <a href="support.html">support</a> are available.</p> 
 
       <p><b><i>Recoll user ?</i></b> Maybe there are still a few useful
 	  tricks that you don't know about. A quick look at
@@ -94,7 +73,20 @@
 
 
       <h2>News: </h2>
+      <div class="news">
       <ul>
+        <li>2011-11-26: the result list glitch: ennoying and easily
+          worked-around: it will sometimes happen (for a yet
+          undetermined reason) that the result list paragraph format
+          stored in the Qt preferences file will get garbled,
+          causing result lists with no displayed paragraphs (the
+          counts and pages are ok, the results can be seen in table
+          mode, but not in list mode). The workaround is to go to
+          <blockquote>
+           Preferences->Query configuration->User interface
+          </blockquote>
+          and erase the result paragraph format string (^A DEL in the text area),
+          this will reset the string to the default value.</li>
 
         <li>2011-11-07: release <a href="download.html#source">1.16.2</a>
           is out. It fixes a number of <a href="BUGS.html#b_1_16_1">
@@ -144,40 +136,12 @@
           increase the feedback rate...</li>
 
       </ul>
+      </div>
 	
-      <h2><a name="support">Support</a></h3>
-
-      <p>If you have any problem with Recoll, or a suggestion for
-  	improvement, <em>please</em> provide feedback. There are three
-  	possible channels, depending on your preferences:
-	<ul>
-          <li>The <a href="http://bitbucket.org/medoc/recoll/issues">
-	      issues tracking system</a> on Bitbucket.</li>
-           <li>The <a href="http://www.freelists.org/list/recoll-user">
-	       recoll-user</a> mailing list.</li>
-          <li>Direct <a href="mailto:jfd@recoll.org">email</a>.</li>
-        </ul>
-      </p>
-
-      <p>Mailing list information:
-	<ul>
-	  <li><a href="http://www.freelists.org/list/recoll-user">
-	      Subscription management</a></li>
-	  <li><a href="http://www.freelists.org/archives/recoll-user">
-	      Archives </a></li>
-	</ul>
-      </p>
-
-      <p>You can also have a look at
-	the <a href="devel.html">development</a> page for things you
-	could do.</p>  
-
-      <p>The list of known bugs is <a href="BUGS.html">here</a></p>
-
       <h2>Thanks</h2>
-      <p>We borrow a lot of code
-	from other packages, and welcome code and ideas from
-	contributors, see the 
+      <p>Recoll borrows a lot of code
+	from other packages, and welcomes code and ideas from
+	contributors, see some of the 
 	<a class="important" href="credits.html">Credits</a>.</p>
 
     </div>
