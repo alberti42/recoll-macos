@@ -141,6 +141,9 @@ class Parser:
             line = ex[1][0]
             self.out.write("<h3>ERROR: %s</h3>%s\n" % (
                 msg, self.raw[self.lines[line]:]))
+        except IndentationError, ex:
+            msg = ex[0]
+            self.out.write("<h3>ERROR: %s</h3>\n" % (msg))
         self.out.write('\n</pre>')
 
     def __call__(self, toktype, toktext, (srow,scol), (erow,ecol), line):
