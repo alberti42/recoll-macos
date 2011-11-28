@@ -7,7 +7,7 @@ To use/test the port out of the official macports tree:
 
   (inserting before ensures it's used before the macports one)
 
-- The port should leave under category/portname (ie: textproc/
+- The port should live under category/portname (ie: textproc/
 
 - After you create or update your Portfile, use the MacPorts portindex
   command in the local repository's directory to create or update the index

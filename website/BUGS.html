@@ -38,6 +38,16 @@
       <h2><a name="b_latest">recoll 1.16.2</a></h2> 
 
       <ul> 
+        <li>It will sometimes happen that the result list paragraph format
+          stored in the Qt preferences file will get garbled,
+          causing result lists with no displayed paragraphs (the
+          counts and pages are ok, the results can be seen in table
+          mode, but not in list mode). The workaround is to go to
+          <blockquote>
+           Preferences->Query configuration->User interface
+          </blockquote>
+          and erase the result paragraph format string (^A DEL in the text area),
+          this will reset the string to the default value.</li>
         <li>Real time indexer: when running with gamin on FreeBSD, the
           indexer can deadlock in the gamin dialog in some
           cases.</li>

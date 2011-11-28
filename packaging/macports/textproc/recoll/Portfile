@@ -2,21 +2,24 @@
 # $Id$
 
 PortSystem          1.0
+PortGroup           app 1.0
 
 name                recoll
-version             1.15.9
+version             1.16.2
 categories          textproc
 platforms           darwin
-license             GPL
-maintainers         recoll.org:jfd
-description         Desktop full text search
-long_description    Recoll is a desktop search tool based on Xapian
-homepage            http://www.recoll.org
-master_sites        http://www.recoll.org
+license             GPL-2+
+maintainers         dockes.org:jf openmaintainer
 
-checksums           md5     93755266553f4a403d1b9293212aae16 \
-                    sha1    0281286c2fc6a00dcade3eb1d4abb16e478f5d6e \
-                    rmd160  aa5421a242505ecd7e8b3324713adc397eec7a09
+description         Desktop full text search
+
+long_description    Recoll is a desktop search tool based on Xapian
+
+homepage            http://www.recoll.org/
+master_sites        ${homepage}
+
+checksums           sha1    40c18a958eeecbb70cbdf14fa7319b54525537fa \
+                    rmd160  fb598b9c637cab49734547a41f2e8ec232f89dbe
 
 depends_lib         port:xapian-core \
                     port:qt4-mac \
@@ -26,10 +29,18 @@ depends_lib         port:xapian-core \
 
 depends_run         port:antiword \
                     port:catdoc \
-		    port:libxslt \
+                    port:libxslt \
                     port:poppler \
                     port:unrtf \
                     port:unzip
 
-patchfiles	    patch-configure.diff patch-sampleconf-mimeview.diff
-configure.args      --without-x --disable-x11mon
+patchfiles          patch-configure.diff \
+                    patch-sampleconf-mimeview.diff
+
+configure.args      --without-x \
+                    --disable-x11mon
+
+build.args          CC=${configure.cc} CXX=${configure.cxx}
+
+# g++-4.2: -E, -S, -save-temps and -M options are not allowed with multiple -arch flags
+universal_variant   no

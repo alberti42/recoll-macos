@@ -14,8 +14,6 @@
 # Pseudo entry used if the 'use desktop' preference is set in the GUI
 application/x-all = open %f
 
-[view]
-
 application/x-kword = kword %f
 application/x-abiword = abiword %f
 
@@ -66,9 +64,12 @@ image/jpeg = open %f
 image/png = open %f
 image/tiff = open %f
 image/gif  = open %f
-
-image/svg+xml = inkview %f
-image/vnd.djvu = djview %f
+image/svg+xml = open %f
+image/vnd.djvu = open %f
+image/x-xcf = open %f
+image/bmp = open %f
+image/x-ms-bmp = open %f
+image/x-xpmi = open %f
 
 application/x-tex = open %f
 text/x-tex = open %f
