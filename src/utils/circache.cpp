@@ -1301,7 +1301,7 @@ int main(int argc, char **argv)
               exit(1);
           }
           string udi;
-          make_udi(fn, cstr_null, udi);
+          make_udi(fn, "", udi);
           sprintf(dic, "#whatever...\nmimetype = text/plain\nudi=%s\n", 
                   udi.c_str());
           string sdic;

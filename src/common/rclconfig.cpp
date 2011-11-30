@@ -43,6 +43,7 @@
 #include "smallut.h"
 #include "textsplit.h"
 #include "readfile.h"
+#include "fstreewalk.h"
 
 #ifndef NO_NAMESPACES
 using namespace std;
@@ -200,6 +201,12 @@ bool RclConfig::updateMainConfig()
         m_rmtstate.init(this, 0, "indexedmimetypes");
 	return false;
     }
+    delete m_conf;
+    m_conf = newconf;
+    m_skpnstate.init(this, m_conf, "skippedNames");
+    m_rmtstate.init(this, m_conf, "indexedmimetypes");
+
+
     setKeyDir(cstr_null);
     bool nocjk = false;
     if (getConfParam("nocjk", &nocjk) && nocjk == true) {
@@ -218,10 +225,12 @@ bool RclConfig::updateMainConfig()
 	TextSplit::noNumbers();
     }
 
-    delete m_conf;
-    m_conf = newconf;
-    m_skpnstate.init(this, m_conf, "skippedNames");
-    m_rmtstate.init(this, m_conf, "indexedmimetypes");
+    bool fnmpathname = true;
+    if (getConfParam("skippedPathsFnmPathname", &fnmpathname)
+	&& fnmpathname == false) {
+	FsTreeWalker::setNoFnmPathname();
+    }
+
     return true;
 }
 

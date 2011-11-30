@@ -40,6 +40,8 @@
 using namespace std;
 #endif /* NO_NAMESPACES */
 
+bool FsTreeWalker::o_useFnmPathname = true;
+
 const int FsTreeWalker::FtwTravMask = FtwTravNatural|
     FtwTravBreadth|FtwTravFilesThenDirs|FtwTravBreadthThenDepth;
 
@@ -153,7 +155,7 @@ bool FsTreeWalker::setSkippedPaths(const list<string> &paths)
 }
 bool FsTreeWalker::inSkippedPaths(const string& path, bool ckparents)
 {
-    int fnmflags = FNM_PATHNAME;
+    int fnmflags = o_useFnmPathname ? FNM_PATHNAME : 0;
 #ifdef FNM_LEADING_DIR
     if (ckparents)
         fnmflags |= FNM_LEADING_DIR;
@@ -420,6 +422,8 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 
 #include <iostream>
 
+#include "rclinit.h"
+#include "rclconfig.h"
 #include "fstreewalk.h"
 
 using namespace std;
@@ -542,7 +546,13 @@ int main(int argc, const char **argv)
       opt |= FsTreeWalker::FtwTravFilesThenDirs;
   else if (op_flags & OPT_m)
       opt |= FsTreeWalker::FtwTravBreadthThenDepth;
-  
+
+  string reason;
+  if (!recollinit(0, 0, reason)) {
+      fprintf(stderr, "Init failed: %s\n", reason.c_str());
+      exit(1);
+  }
+
   FsTreeWalker walker(opt);
   walker.setSkippedNames(patterns);
   walker.setSkippedPaths(paths);

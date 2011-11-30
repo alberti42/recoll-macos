@@ -11,7 +11,7 @@ $(BIGLIB): force
 	cd $(depth)/lib;$(MAKE)
 force:
 
-FSTREEWALK_OBJS= trfstreewalk.o fstreewalk.o $(BIGLIB)
+FSTREEWALK_OBJS= trfstreewalk.o $(BIGLIB)
 trfstreewalk : $(FSTREEWALK_OBJS)
 	$(CXX) -o trfstreewalk $(FSTREEWALK_OBJS) $(LIBICONV) \
 	       $(LIBSYS)

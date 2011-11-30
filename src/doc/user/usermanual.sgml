@@ -3441,12 +3441,19 @@ skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
               <programlisting>
 skippedPaths = ~/somedir/&lowast;.txt
               </programlisting>
-                <para>The values in the <literal>*skippedPaths</literal>
-                variables are currently matched with
-                <literal>fnmatch(3)</literal>, with the FNM_PATHNAME and
-                FNM_LEADING_DIR flags. This means that '/' characters must
-                be matched explicitely, which is probably
-                unfortunate.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry id="rcl.install.config.recollconf.skippedpathsfnmpathname">
+            <term><literal>skippedPathsFnmPathname</literal></term>
+                <listitem><para>The values in the
+                <literal>*skippedPaths</literal> variables are matched by
+                default with <literal>fnmatch(3)</literal>, with the
+                FNM_PATHNAME and FNM_LEADING_DIR flags. This means that '/'
+                characters must be matched explicitely. You can set
+                <literal>skippedPathsFnmPathname</literal> to 0 to disable
+                the use of FNM_PATHNAME (meaning that /*/dir3 will match
+                /dir1/dir2/dir3).</para>
 
             </listitem>
           </varlistentry>

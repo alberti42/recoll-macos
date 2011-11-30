@@ -29,6 +29,12 @@ skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
 # not set, the daemon uses skippedPaths.
 #daemSkippedPaths = 
 
+# Recoll uses FNM_PATHNAME by default when matching skipped paths, which
+# means that /dir1/dir2/dir3 is not matched by */dir3. Can't change the
+# default now, but you can set the following variable to 0 to disable the
+# use of FNM_PATHNAME (see fnmatch(3) man page)
+# skippedPathsFnmPathname = 1
+
 # Option to follow symbolic links. We normally don't, to avoid duplicated
 # indexing (in any case, no effort is made to identify or avoid multiple
 # indexing of linked files)

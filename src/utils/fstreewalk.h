@@ -38,6 +38,18 @@ struct stat;
  */
 class FsTreeWalker {
  public:
+    // Global option to use FNM_PATHNAME when matching paths (for
+    // skippedPaths).  
+    // We initially used FNM_PATHNAME, and we can't change it now
+    // (because of all the config files around). So add global option
+    // to not use the flag, which can be set from rclconfig by adding
+    // a value to the config file (skippedPathsNoFnmPathname)
+    static bool o_useFnmPathname;
+    static void setNoFnmPathname()
+    {
+	o_useFnmPathname = false;
+    }
+
     // Flags for call to processone(). FtwDirEnter is used when
     // entering a directory. FtwDirReturn is used when returning to it
     // after processing a subdirectory.
