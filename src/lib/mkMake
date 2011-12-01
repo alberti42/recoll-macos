@@ -51,6 +51,7 @@ ${depth}/utils/closefrom.cpp \
 ${depth}/utils/conftree.cpp \
 ${depth}/utils/copyfile.cpp \
 ${depth}/utils/debuglog.cpp \
+${depth}/utils/ecrontab.cpp \
 ${depth}/utils/execmd.cpp \
 ${depth}/utils/fstreewalk.cpp \
 ${depth}/utils/idfile.cpp \

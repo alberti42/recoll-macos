@@ -1,15 +1,24 @@
 depth = ..
 include $(depth)/mk/sysconf
 
-PROGS = trnetcon trcopyfile trcircache trmd5 trreadfile trfileudi \
-      trconftree wipedir smallut  trfstreewalk trpathut transcode trbase64 \
-      trmimeparse trexecmd utf8iter idfile
+PROGS = trecrontab 
+      #trnetcon trcopyfile trcircache trmd5 trreadfile trfileudi \
+      #trconftree wipedir smallut  trfstreewalk trpathut transcode trbase64 \
+      #trmimeparse trexecmd utf8iter idfile
 
 all: $(PROGS) $(BIGLIB)
 
 $(BIGLIB): force
 	cd $(depth)/lib;$(MAKE)
 force:
+
+ECRONTAB_OBJS= trecrontab.o $(BIGLIB)
+trecrontab : $(ECRONTAB_OBJS)
+	$(CXX) -o trecrontab $(ECRONTAB_OBJS) $(LIBICONV) \
+	       $(LIBSYS)
+trecrontab.o : ecrontab.cpp ecrontab.h
+	$(CXX) -o trecrontab.o -c $(ALL_CXXFLAGS) \
+	       -DTEST_ECRONTAB ecrontab.cpp
 
 FSTREEWALK_OBJS= trfstreewalk.o $(BIGLIB)
 trfstreewalk : $(FSTREEWALK_OBJS)
