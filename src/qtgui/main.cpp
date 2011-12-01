@@ -51,6 +51,11 @@ RclConfig *theconfig;
 RclConfig *thestableconfig;
 PTMutexInit thestableconfiglock;
 
+// To avoid writing settings if we stopped before reading them (else
+// some kinds of errors would reset the qt/recoll settings to
+// defaults)
+static bool havereadsettings;
+
 void snapshotConfig()
 {
     PTMutexLocker locker(thestableconfiglock);
@@ -140,8 +145,10 @@ bool getStemLangs(list<string>& langs)
 
 static void recollCleanup()
 {
-    LOGDEB(("recollCleanup: writing settings\n"));
-    rwSettings(true);
+    if (havereadsettings) {
+	LOGDEB(("recollCleanup: writing settings\n"));
+	rwSettings(true);
+    }
     LOGDEB2(("recollCleanup: closing database\n"));
     deleteZ(rcldb);
     deleteZ(theconfig);
@@ -305,6 +312,7 @@ int main(int argc, char **argv)
 
     //    fprintf(stderr, "History done\n");
     rwSettings(false);
+    havereadsettings = true;
     //    fprintf(stderr, "Settings done\n");
 
 
