@@ -143,6 +143,9 @@ bool pcSubst(const string& in, string& out, map<char, string>& subs);
 /** Substitute printf-like percents and also %(key) */
 bool pcSubst(const string& in, string& out, map<string, string>& subs);
 
+/** Append system error message */
+void catstrerror(string *reason, const char *what, int _errno);
+
 /** Compute times to help with perf issues */
 class Chrono {
  public:

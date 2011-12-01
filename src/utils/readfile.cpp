@@ -36,43 +36,11 @@ using std::string;
 #endif /* NO_NAMESPACES */
 
 #include "readfile.h"
+#include "smallut.h"
 
 #ifndef MIN
 #define MIN(A,B) ((A) < (B) ? (A) : (B))
 #endif
-
-static void caterrno(string *reason, const char *what, int _errno)
-{
-    if (reason) {
-	reason->append(what);
-	reason->append(": errno: ");
-	char nbuf[20];
-	sprintf(nbuf, "%d", _errno);
-	reason->append(nbuf);
-	reason->append(" : ");
-#ifdef sun
-	// Note: sun strerror is noted mt-safe ??
-	reason->append(strerror(_errno));
-#else
-#define ERRBUFSZ 200    
-	char errbuf[ERRBUFSZ];
-	// There are 2 versions of strerror_r. 
-	// - The GNU one returns a pointer to the message (maybe
-	//   static storage or supplied buffer).
-        // - The POSIX one always stores in supplied buffer and
-	//   returns 0 on success. As the possibility of error and
-	//   error code are not specified, we're basically doomed
-	//   cause we can't use a test on the 0 value to know if we
-	//   were returned a pointer... 
-	// Also couldn't find an easy way to disable the gnu version without
-	// changing the cxxflags globally, so forget it.
-	// At worse we get no message at all here.
-	errbuf[0] = 0;
-	strerror_r(_errno, errbuf, ERRBUFSZ);
-	reason->append(errbuf);
-#endif
-    }
-}
 
 class FileToString : public FileScanDo {
 public:
@@ -87,7 +55,7 @@ public:
 	try {
 	    m_data.append(buf, cnt);
 	} catch (...) {
-	    caterrno(reason, "append", errno);
+	    catstrerror(reason, "append", errno);
 	    return false;
 	}
 	return true;
@@ -129,7 +97,7 @@ bool file_scan(const string &fn, FileScanDo* doer, off_t startoffs,
     if (!fn.empty()) {
 	fd = open(fn.c_str(), O_RDONLY|O_STREAMING);
 	if (fd < 0 || fstat(fd, &st) < 0) {
-	    caterrno(reason, "open/stat", errno);
+	    catstrerror(reason, "open/stat", errno);
 	    return false;
 	}
 	noclosing = false;
@@ -146,7 +114,7 @@ bool file_scan(const string &fn, FileScanDo* doer, off_t startoffs,
     off_t curoffs = 0;
     if (startoffs > 0 && !fn.empty()) {
         if (lseek(fd, startoffs, SEEK_SET) != startoffs) {
-            caterrno(reason, "lseek", errno);
+            catstrerror(reason, "lseek", errno);
             return false;
         }
         curoffs = startoffs;
@@ -165,7 +133,7 @@ bool file_scan(const string &fn, FileScanDo* doer, off_t startoffs,
         }
 	int n = read(fd, buf, toread);
 	if (n < 0) {
-	    caterrno(reason, "read", errno);
+	    catstrerror(reason, "read", errno);
 	    goto out;
 	}
 	if (n == 0)
