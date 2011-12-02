@@ -31,9 +31,11 @@
 #include "refcntr.h"
 #include "pathut.h"
 
+class IdxSchedW;
 class ExecCmd;
 class Preview;
 class ResTable;
+class CronToolW;
 
 #include "ui_rclmain.h"
 
@@ -49,7 +51,22 @@ class RclMain : public QMainWindow, public Ui::RclMainBase
 
 public:
     RclMain(QWidget * parent = 0) 
-	: QMainWindow(parent), m_sortspecnochange(false)
+	: QMainWindow(parent),
+	  curPreview(0),
+	  asearchform(0),
+	  uiprefs(0),
+	  indexConfig(0),
+	  indexSched(0),
+	  cronTool(0),
+	  spellform(0),
+	  periodictimer(0),
+	  restable(0),
+	  displayingTable(0),
+          m_idNoStem(0),
+          m_idAllStem(0),
+	  m_idxStatusAck(false),
+	  m_sortspecnochange(false),
+	  m_periodicToggle(0)
     {
 	setupUi(this);
 	init();
@@ -76,6 +93,11 @@ public slots:
     virtual void showExtIdxDialog();
     virtual void showUIPrefs();
     virtual void showIndexConfig();
+    virtual void execIndexConfig();
+    virtual void showCronTool();
+    virtual void execCronTool();
+    virtual void showIndexSched();
+    virtual void execIndexSched();
     virtual void setUIPrefs();
     virtual void enableNextPage(bool);
     virtual void enablePrevPage(bool);
@@ -120,16 +142,18 @@ private:
     AdvSearch      *asearchform;
     UIPrefsDialog  *uiprefs;
     ConfIndexW     *indexConfig;
+    IdxSchedW      *indexSched;
+    CronToolW      *cronTool;
     SpellW         *spellform;
     QTimer         *periodictimer;
     ResTable       *restable;
     bool            displayingTable;
+    QAction          *m_idNoStem;
+    QAction          *m_idAllStem;
 
     vector<ExecCmd*>  m_viewers;
     map<QString, QAction*> m_stemLangToId;
     vector<string>    m_catgbutvec;
-    QAction *         m_idNoStem;
-    QAction *         m_idAllStem;
     bool              m_idxStatusAck; // Did we act on last status?
     DocSeqFiltSpec    m_filtspec;
     bool              m_sortspecnochange;
@@ -142,6 +166,9 @@ private:
 					bool next);
     virtual void setStemLang(const QString& lang);
     virtual void onSortCtlChanged();
+    virtual void showIndexConfig(bool modal);
+    virtual void showIndexSched(bool modal);
+    virtual void showCronTool(bool modal);
 };
 
 #endif // RCLMAIN_W_H

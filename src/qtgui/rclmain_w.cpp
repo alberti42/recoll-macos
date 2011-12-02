@@ -69,6 +69,9 @@ using std::pair;
 #include "confguiindex.h"
 #include "restable.h"
 #include "listdialog.h"
+#include "firstidx.h"
+#include "idxsched.h"
+#include "crontool.h"
 
 using namespace confgui;
 
@@ -91,14 +94,8 @@ void RclMain::init()
     };
     DocSequence::set_translations((const char *)tr("sorted").toUtf8(), 
 				(const char *)tr("filtered").toUtf8());
-    curPreview = 0;
-    asearchform = 0;
-    uiprefs = 0;
-    indexConfig = 0;
-    spellform = 0;
-    m_idxStatusAck = false;
+
     periodictimer = new QTimer(this);
-    m_periodicToggle = 0;
 
     // At least some versions of qt4 don't display the status bar if
     // it's not created here.
@@ -340,48 +337,34 @@ void RclMain::resultCount(int n)
 // the database and talk to the user if we can't
 void RclMain::initDbOpen()
 {
-    bool needindexconfig = false;
     bool nodb = false;
     string reason;
     bool maindberror;
     if (!maybeOpenDb(reason, true, &maindberror)) {
         nodb = true;
 	if (maindberror) {
-	    switch (QMessageBox::
-		    question
-		    (this, "Recoll",
-		     qApp->translate("Main", "Could not open database in ") +
-		     QString::fromLocal8Bit(theconfig->getDbDir().c_str()) +
-		     qApp->translate("Main", 
-				     ".\n"
-				     "Click Cancel if you want to edit the configuration file before indexing starts, or Ok to let it proceed."),
-		     "Ok", "Cancel", 0,   0)) {
-
-	    case 0: // Ok: indexing is going to start.
-		start_indexing(true);
-		break;
-
-	    case 1: // Cancel
-		needindexconfig = true;
-		break;
-	    }
+	    FirstIdxDialog fidia(this);
+	    connect(fidia.idxconfCLB, SIGNAL(clicked()), 
+		    this, SLOT(execIndexConfig()));
+	    connect(fidia.idxschedCLB, SIGNAL(clicked()), 
+		    this, SLOT(execIndexSched()));
+	    connect(fidia.runidxPB, SIGNAL(clicked()), 
+		    this, SLOT(toggleIndexing()));
+	    fidia.exec();
+	    // Don't open adv search or run cmd line search in this case.
+	    return;
 	} else {
 	    QMessageBox::warning(0, "Recoll", 
 				 tr("Could not open external index. Db not open. Check external indexes list."));
 	}
     }
 
-    if (needindexconfig) {
-	startIndexingAfterConfig = 1;
-	showIndexConfig();
-    } else {
-	if (prefs.startWithAdvSearchOpen)
-	    showAdvSearchDialog();
-        // If we have something in the search entry, it comes from a
-        // command line argument
-        if (!nodb && sSearch->hasSearchString())
-            QTimer::singleShot(0, sSearch, SLOT(startSimpleSearch()));
-    }
+    if (prefs.startWithAdvSearchOpen)
+	showAdvSearchDialog();
+    // If we have something in the search entry, it comes from a
+    // command line argument
+    if (!nodb && sSearch->hasSearchString())
+	QTimer::singleShot(0, sSearch, SLOT(startSimpleSearch()));
 }
 
 void RclMain::focusToSearch()
@@ -687,6 +670,14 @@ void RclMain::showSpellDialog()
 
 void RclMain::showIndexConfig()
 {
+    showIndexConfig(false);
+}
+void RclMain::execIndexConfig()
+{
+    showIndexConfig(true);
+}
+void RclMain::showIndexConfig(bool modal)
+{
     LOGDEB(("showIndexConfig()\n"));
     if (indexConfig == 0) {
 	indexConfig = new ConfIndexW(0, theconfig);
@@ -697,7 +688,71 @@ void RclMain::showIndexConfig()
 	indexConfig->close();
 	indexConfig->reloadPanels();
     }
-    indexConfig->show();
+    if (modal) {
+	indexConfig->exec();
+	indexConfig->setModal(false);
+    } else {
+	indexConfig->show();
+    }
+}
+
+void RclMain::showIndexSched()
+{
+    showIndexSched(false);
+}
+void RclMain::execIndexSched()
+{
+    showIndexSched(true);
+}
+void RclMain::showIndexSched(bool modal)
+{
+    LOGDEB(("showIndexSched()\n"));
+    if (indexSched == 0) {
+	indexSched = new IdxSchedW(this);
+	connect(new QShortcut(quitKeySeq, indexSched), SIGNAL (activated()), 
+		this, SLOT (fileExit()));
+	connect(indexSched->cronCLB, SIGNAL(clicked()), 
+		this, SLOT(execCronTool()));
+	connect(indexSched->rtidxCLB, SIGNAL(clicked()), 
+		this, SLOT(execRTITool()));
+	
+    } else {
+	// Close and reopen, in hope that makes us visible...
+	indexSched->close();
+    }
+    if (modal) {
+	indexSched->exec();
+	indexSched->setModal(false);
+    } else {
+	indexSched->show();
+    }
+}
+
+void RclMain::showCronTool()
+{
+    showCronTool(false);
+}
+void RclMain::execCronTool()
+{
+    showCronTool(true);
+}
+void RclMain::showCronTool(bool modal)
+{
+    LOGDEB(("showCronTool()\n"));
+    if (cronTool == 0) {
+	cronTool = new CronToolW(0);
+	connect(new QShortcut(quitKeySeq, cronTool), SIGNAL (activated()), 
+		this, SLOT (fileExit()));
+    } else {
+	// Close and reopen, in hope that makes us visible...
+	cronTool->close();
+    }
+    if (modal) {
+	cronTool->exec();
+	cronTool->setModal(false);
+    } else {
+	cronTool->show();
+    }
 }
 
 void RclMain::showUIPrefs()

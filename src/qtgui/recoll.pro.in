@@ -7,6 +7,9 @@ HEADERS += \
         advsearch_w.h \
         confgui/confgui.h \
         confgui/confguiindex.h \
+        crontool.h \
+        firstidx.h \
+        idxsched.h \
         listdialog.h \
         preview_w.h \
         rclhelp.h \
@@ -24,6 +27,7 @@ SOURCES += \
         advsearch_w.cpp \
         confgui/confgui.cpp \
         confgui/confguiindex.cpp \
+        crontool.cpp \
         guiutils.cpp \
         idxthread.cpp \
         main.cpp \
@@ -42,10 +46,13 @@ SOURCES += \
 
 FORMS   = \
         advsearch.ui \
+        crontool.ui \
+        firstidx.ui \
+        idxsched.ui \
         listdialog.ui \
         rclmain.ui \
         restable.ui \
-	spell.ui \
+        spell.ui \
         ssearchb.ui \
         uiprefs.ui \
         viewaction.ui \

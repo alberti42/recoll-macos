@@ -20,9 +20,10 @@
 #include "ecrontab.h"
 #include "execmd.h"
 #include "smallut.h"
+#include "debuglog.h"
 
-bool editCrontab(const string& marker, const string& id, 
-		      const string& sched, const string& cmd, string& reason)
+// Read crontab file and split it into lines.
+static bool eCrontabGetLines(vector<string>& lines)
 {
     string crontab;
     ExecCmd croncmd;
@@ -30,21 +31,61 @@ bool editCrontab(const string& marker, const string& id,
     int status;
 
     // Retrieve current crontab contents. An error here means that no
-    // crontab exists, and is not fatal (just use empty string)
+    // crontab exists, and is not fatal, but we return a different
+    // status than for an empty one
     args.push_back("-l");
     if ((status = croncmd.doexec("crontab", args, 0, &crontab))) {
+	lines.clear();
+	return false;
+    }
+
+    // Split crontab into lines
+    stringToTokens(crontab, lines, "\n");
+    return true;
+}
+
+// Concatenate lines and write crontab
+static bool eCrontabWriteFile(const vector<string>& lines, string& reason)
+{
+    string crontab;
+    ExecCmd croncmd;
+    list<string> args; 
+    int status;
+
+    for (vector<string>::const_iterator it = lines.begin();
+	 it != lines.end(); it++) {
+	crontab += *it + "\n";
+    }
+
+    args.push_back("-");
+    if ((status = croncmd.doexec("crontab", args, &crontab, 0))) {
+	char nbuf[30]; 
+	sprintf(nbuf, "0x%x", status);
+	reason = string("Exec crontab -l failed: status: ") + nbuf;
+	return false;
+    }
+    return true;
+}
+
+// Add / change / delete entry identified by marker and id
+bool editCrontab(const string& marker, const string& id, 
+		      const string& sched, const string& cmd, string& reason)
+{
+    vector<string> lines;
+
+    if (!eCrontabGetLines(lines)) {
 	// Special case: cmd is empty, no crontab, don't create one
 	if (cmd.empty())
 	    return true;
     }
 
-    // Split crontab into lines
-    vector<string> lines;
-    stringToTokens(crontab, lines, "\n");
-
     // Remove old copy if any
     for (vector<string>::iterator it = lines.begin();
 	 it != lines.end(); it++) {
+	// Skip comment
+	if (it->find_first_of("#") == it->find_first_not_of(" \t"))
+	    continue;
+
 	if (it->find(marker) != string::npos && 
 	    it->find(id) != string::npos) {
 	    lines.erase(it);
@@ -57,42 +98,19 @@ bool editCrontab(const string& marker, const string& id,
 	lines.push_back(nline);
     }
     
-    // Rebuild new crontab and install it
-    crontab.clear();
-    for (vector<string>::iterator it = lines.begin();
-	 it != lines.end(); it++) {
-	crontab += *it + "\n";
-    }
-
-    args.clear();
-    args.push_back("-");
-    if ((status = croncmd.doexec("crontab", args, &crontab, 0))) {
-	char nbuf[30]; 
-	sprintf(nbuf, "0x%x", status);
-	reason = string("Exec crontab -l failed: status: ") + nbuf;
-    }
+    if (!eCrontabWriteFile(lines, reason))
+	return false;
 
     return true;
 }
 
 bool checkCrontabUnmanaged(const string& marker, const string& data)
 {
-    string crontab;
-    ExecCmd croncmd;
-    list<string> args; 
-    int status;
-
-    // Retrieve current crontab contents. An error here means that no
-    // crontab exists.
-    args.push_back("-l");
-    if ((status = croncmd.doexec("crontab", args, 0, &crontab))) {
+    vector<string> lines;
+    if (!eCrontabGetLines(lines)) {
+	// No crontab, answer is no
 	return false;
     }
-
-    // Split crontab into lines
-    vector<string> lines;
-    stringToTokens(crontab, lines, "\n");
-
     // Scan crontab
     for (vector<string>::iterator it = lines.begin();
 	 it != lines.end(); it++) {
@@ -102,6 +120,38 @@ bool checkCrontabUnmanaged(const string& marker, const string& data)
 	}
     }
     return false;
+}
+
+/** Retrieve the scheduling for a crontab entry */
+bool getCrontabSched(const string& marker, const string& id, 
+		     vector<string>& sched) 
+{
+    fprintf(stderr, "getCrontabSched: marker[%s], id[%s]\n",
+	    marker.c_str(), id.c_str());
+    vector<string> lines;
+    if (!eCrontabGetLines(lines)) {
+	// No crontab, answer is no
+	sched.clear();
+	return false;
+    }
+    string line;
+
+    for (vector<string>::iterator it = lines.begin();
+	 it != lines.end(); it++) {
+	// Skip comment
+	if (it->find_first_of("#") == it->find_first_not_of(" \t"))
+	    continue;
+
+	if (it->find(marker) != string::npos && 
+	    it->find(id) != string::npos) {
+	    line = *it;
+	    break;
+	}
+    }
+
+    stringToTokens(line, sched);
+    sched.resize(5);
+    return true;
 }
 
 #else // TEST ->
@@ -124,7 +174,8 @@ static char *thisprog;
 
 static char usage [] =
 " -a add or replace crontab line \n"
-" -a delete crontab line \n"
+" -d delete crontab line \n"
+" -s get scheduling \n"    
 " -c <string> check for unmanaged lines for string\n"
 ;
 static void
@@ -140,12 +191,13 @@ static int     op_flags;
 #define OPT_d	  0x4 
 #define OPT_w     0x8
 #define OPT_c     0x10
+#define OPT_s     0x20
 
 const string& marker("RCLCRON_RCLINDEX=");
 // Note of course the -w does not make sense for a cron entry
 const string& cmd0("recollindex -w ");
-const string& id("RECOLL_CONFDIR=/home/dockes/.recoll");
-const string& sched("30 8 * * *");
+const string& id("RECOLL_CONFDIR=\"/home/dockes/.recoll/\"");
+const string& sched("30 8 * 1 *");
 
 int main(int argc, char **argv)
 {
@@ -167,6 +219,7 @@ int main(int argc, char **argv)
 	  cmd = *(++argv); argc--; 
 	  goto b1;
       case 'd':	op_flags |= OPT_d; break;
+      case 's':	op_flags |= OPT_s; break;
       case 'w':	op_flags |= OPT_w; if (argc < 2)  Usage();
 	  wt = *(++argv); argc--; 
 	  goto b1;
@@ -187,6 +240,18 @@ int main(int argc, char **argv)
       status = editCrontab(marker, id, sched, cmd, reason);
   } else if (op_flags & OPT_d) {
       status = editCrontab(marker, id, sched, "", reason);
+  } else if (op_flags & OPT_s) {
+      vector<string> sched;
+      if (!(status = getCrontabSched(marker, id, sched))) {
+	  cerr << "getCrontabSched failed: " << reason << endl;
+	  exit(1);
+      }
+      cout << "sched vec size " << sched.size() << endl;
+      cout << "mins " << sched[0] << " hours " << sched[1] <<
+	  " days of month " << sched[2] << " months " << sched[3] << 
+	  " days of week " << sched[4] << endl;
+      exit(0);
+      
   } else if (op_flags & OPT_c) {
       if ((status = checkCrontabUnmanaged(marker, cmd))) {
 	  cerr << "crontab has unmanaged lines for " << cmd << endl;

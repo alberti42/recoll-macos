@@ -33,7 +33,9 @@
  */
 
 #include <string>
+#include <vector>
 using std::string;
+using std::vector;
 
 /** Add, replace or delete a command inside a crontab file
  *
@@ -61,5 +63,9 @@ bool editCrontab(const string& marker, const string& id,
  * @return true if unmanaged lines exist, false else.
  */
 bool checkCrontabUnmanaged(const string& marker, const string& data);
+
+/** Retrieve the scheduling for a crontab entry */
+bool getCrontabSched(const string& marker, const string& id, 
+		     vector<string>& sched);
 
 #endif /* _ECRONTAB_H_INCLUDED_ */
