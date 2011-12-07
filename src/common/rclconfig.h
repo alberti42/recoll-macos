@@ -83,8 +83,13 @@ class RclConfig {
     bool ok() {return m_ok;}
     const string &getReason() {return m_reason;}
 
-    /** Return the directory where this configuration is stored */
+    /** Return the directory where this configuration is stored. 
+     *  This was possibly silently created by the rclconfig
+     *  constructor it it is the default one (~/.recoll) and it did 
+     *  not exist yet. */
     string getConfDir() {return m_confdir;}
+    /** Returns true if this is ~/.recoll */
+    bool isDefaultConfig(); 
     /** Get the local value for /usr/local/share/recoll/ */
     const string& getDatadir() {return m_datadir;}
 

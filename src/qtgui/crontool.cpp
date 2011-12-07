@@ -72,7 +72,7 @@ void CronToolW::changeCron(bool enable)
 	return;
 
     string id = idstring(theconfig->getConfDir());
-    string cmd("recollindex -m -w 60");
+    string cmd("recollindex");
 
     string reason;
 
@@ -88,7 +88,7 @@ void CronToolW::changeCron(bool enable)
 	    accept();
 	}  else {
 	    QMessageBox::warning(0, "Recoll", 
-			     tr("Error installing cron entry. Bad syntax in fields ? "));
+		     tr("Error installing cron entry. Bad syntax in fields ?"));
 	}	    
     }
 }

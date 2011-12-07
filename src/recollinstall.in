@@ -111,6 +111,7 @@ ${INSTALL} -m 0755 desktop/hotrecoll.py \
 	   ${datadir}/recoll/filters/ || exit 1
 
 ${INSTALL} -m 0444 \
+           desktop/recollindex.desktop \
 	   sampleconf/mimeconf \
 	   sampleconf/mimeview \
 	   sampleconf/recoll.conf \

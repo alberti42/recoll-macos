@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes
+/*
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -14,4 +14,28 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#include "autoconfig.h"
+#ifndef _RTITOOL_W_H_INCLUDED_
+#define _RTITOOL_W_H_INCLUDED_
+
+#include "ui_rtitool.h"
+
+class QPushButton;
+
+class RTIToolW : public QDialog, public Ui::RTIToolW {
+    Q_OBJECT
+    public:
+    RTIToolW(QWidget * parent = 0) 
+	: QDialog(parent)
+    {
+	setupUi(this);
+	init();
+    }
+public slots:
+    void sesclicked(bool);
+    void accept();
+private:
+    void init();
+};
+
+
+#endif /* _RTITOOL_W_H_INCLUDED_ */

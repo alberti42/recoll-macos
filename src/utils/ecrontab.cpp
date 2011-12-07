@@ -17,6 +17,8 @@
 #ifndef TEST_ECRONTAB
 #include "autoconfig.h"
 
+#include <stdio.h>
+
 #include "ecrontab.h"
 #include "execmd.h"
 #include "smallut.h"
@@ -126,8 +128,8 @@ bool checkCrontabUnmanaged(const string& marker, const string& data)
 bool getCrontabSched(const string& marker, const string& id, 
 		     vector<string>& sched) 
 {
-    fprintf(stderr, "getCrontabSched: marker[%s], id[%s]\n",
-	    marker.c_str(), id.c_str());
+    LOGDEB0(("getCrontabSched: marker[%s], id[%s]\n",
+	     marker.c_str(), id.c_str()));
     vector<string> lines;
     if (!eCrontabGetLines(lines)) {
 	// No crontab, answer is no

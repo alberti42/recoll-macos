@@ -100,6 +100,14 @@ void RclConfig::zeroMe() {
     m_rmtstate.init(this, 0, "indexedmimetypes");
 }
 
+bool RclConfig::isDefaultConfig()
+{
+    string defaultconf = path_cat(path_canon(path_home()), ".recoll/");
+    string specifiedconf = path_canon(m_confdir);
+    path_catslash(specifiedconf);
+    return !defaultconf.compare(specifiedconf);
+}
+
 RclConfig::RclConfig(const string *argcnf)
 {
     zeroMe();
@@ -130,18 +138,18 @@ RclConfig::RclConfig(const string *argcnf)
 	    m_confdir = cp;
 	} else {
 	    autoconfdir = true;
-	    m_confdir = path_home();
-	    m_confdir += ".recoll/";
+	    m_confdir = path_cat(path_home(), ".recoll/");
 	}
     }
 
-    if (!autoconfdir) {
-	// We want a recoll.conf file to exist in this case to avoid
-	// creating indexes all over the place
-	string conffile = path_cat(m_confdir, "recoll.conf");
-	if (access(conffile.c_str(), 0) < 0) {
-	    m_reason = "Explicitly specified configuration directory must exist"
-		" (won't be automatically created)";
+    // Note: autoconfdir and isDefaultConfig() are normally the same. We just 
+    // want to avoid the imperfect test in isDefaultConfig() if we actually know
+    // this is the default conf
+    if (!autoconfdir && !isDefaultConfig()) {
+	if (access(m_confdir.c_str(), 0) < 0) {
+	    m_reason = "Explicitly specified configuration "
+		"directory must exist"
+		" (won't be automatically created). Use mkdir first";
 	    return;
 	}
     }

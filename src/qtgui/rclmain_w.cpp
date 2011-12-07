@@ -72,6 +72,7 @@ using std::pair;
 #include "firstidx.h"
 #include "idxsched.h"
 #include "crontool.h"
+#include "rtitool.h"
 
 using namespace confgui;
 
@@ -235,6 +236,8 @@ void RclMain::init()
 	    this, SLOT(showSpellDialog()));
     connect(indexConfigAction, SIGNAL(activated()), 
 	    this, SLOT(showIndexConfig()));
+    connect(indexScheduleAction, SIGNAL(activated()), 
+	    this, SLOT(showIndexSched()));
     connect(queryPrefsAction, SIGNAL(activated()), 
 	    this, SLOT(showUIPrefs()));
     connect(extIdxAction, SIGNAL(activated()), 
@@ -713,9 +716,12 @@ void RclMain::showIndexSched(bool modal)
 		this, SLOT (fileExit()));
 	connect(indexSched->cronCLB, SIGNAL(clicked()), 
 		this, SLOT(execCronTool()));
-	connect(indexSched->rtidxCLB, SIGNAL(clicked()), 
-		this, SLOT(execRTITool()));
-	
+	if (theconfig && theconfig->isDefaultConfig()) {
+	    connect(indexSched->rtidxCLB, SIGNAL(clicked()), 
+		    this, SLOT(execRTITool()));
+	} else {
+	    indexSched->rtidxCLB->setEnabled(false);
+	}
     } else {
 	// Close and reopen, in hope that makes us visible...
 	indexSched->close();
@@ -752,6 +758,33 @@ void RclMain::showCronTool(bool modal)
 	cronTool->setModal(false);
     } else {
 	cronTool->show();
+    }
+}
+
+void RclMain::showRTITool()
+{
+    showRTITool(false);
+}
+void RclMain::execRTITool()
+{
+    showRTITool(true);
+}
+void RclMain::showRTITool(bool modal)
+{
+    LOGDEB(("showRTITool()\n"));
+    if (rtiTool == 0) {
+	rtiTool = new RTIToolW(0);
+	connect(new QShortcut(quitKeySeq, rtiTool), SIGNAL (activated()), 
+		this, SLOT (fileExit()));
+    } else {
+	// Close and reopen, in hope that makes us visible...
+	rtiTool->close();
+    }
+    if (modal) {
+	rtiTool->exec();
+	rtiTool->setModal(false);
+    } else {
+	rtiTool->show();
     }
 }
 

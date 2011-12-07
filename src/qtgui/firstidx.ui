@@ -43,6 +43,9 @@ p, li { white-space: pre-wrap; }
        <property name="checkable">
         <bool>false</bool>
        </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
        <property name="description">
         <string>This will let you adjust the directories you want to index, and other parameters like excluded file paths or names, default character sets, etc.</string>
        </property>
@@ -52,6 +55,9 @@ p, li { white-space: pre-wrap; }
       <widget class="QCommandLinkButton" name="idxschedCLB">
        <property name="text">
         <string>Indexing schedule</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
        </property>
        <property name="description">
         <string>This will let you chose between batch and real-time indexing, and set up an automatic  schedule for batch indexing (using cron).</string>

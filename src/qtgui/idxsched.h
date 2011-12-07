@@ -18,6 +18,7 @@
 #define _IDXSCHED_H_INCLUDED_
 
 #include "ui_idxsched.h"
+#include "rclhelp.h"
 
 class IdxSchedW : public QDialog, public Ui::IdxSchedW {
     Q_OBJECT
@@ -26,6 +27,9 @@ class IdxSchedW : public QDialog, public Ui::IdxSchedW {
 	: QDialog(parent)
     {
 	setupUi(this);
+	(void)new HelpClient(this);
+	HelpClient::installMap((const char *)this->objectName().toUtf8(), 
+			   "RCL.INDEXING");
     }
 };
 

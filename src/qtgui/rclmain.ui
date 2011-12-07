@@ -160,6 +160,7 @@
      <string>&amp;Preferences</string>
     </property>
     <addaction name="indexConfigAction"/>
+    <addaction name="indexScheduleAction"/>
     <addaction name="separator"/>
     <addaction name="queryPrefsAction"/>
     <addaction name="extIdxAction"/>
@@ -373,6 +374,14 @@
    </property>
    <property name="name" stdset="0">
     <cstring>indexConfigAction</cstring>
+   </property>
+  </action>
+  <action name="indexScheduleAction">
+   <property name="text">
+    <string>&amp;Indexing schedule</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>indexScheduleAction</cstring>
    </property>
   </action>
   <action name="queryPrefsAction">

@@ -36,6 +36,7 @@ class ExecCmd;
 class Preview;
 class ResTable;
 class CronToolW;
+class RTIToolW;
 
 #include "ui_rclmain.h"
 
@@ -58,6 +59,7 @@ public:
 	  indexConfig(0),
 	  indexSched(0),
 	  cronTool(0),
+	  rtiTool(0),
 	  spellform(0),
 	  periodictimer(0),
 	  restable(0),
@@ -96,6 +98,8 @@ public slots:
     virtual void execIndexConfig();
     virtual void showCronTool();
     virtual void execCronTool();
+    virtual void showRTITool();
+    virtual void execRTITool();
     virtual void showIndexSched();
     virtual void execIndexSched();
     virtual void setUIPrefs();
@@ -144,6 +148,7 @@ private:
     ConfIndexW     *indexConfig;
     IdxSchedW      *indexSched;
     CronToolW      *cronTool;
+    RTIToolW       *rtiTool;
     SpellW         *spellform;
     QTimer         *periodictimer;
     ResTable       *restable;
@@ -169,6 +174,7 @@ private:
     virtual void showIndexConfig(bool modal);
     virtual void showIndexSched(bool modal);
     virtual void showCronTool(bool modal);
+    virtual void showRTITool(bool modal);
 };
 
 #endif // RCLMAIN_W_H

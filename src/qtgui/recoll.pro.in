@@ -16,6 +16,7 @@ HEADERS += \
         rclmain_w.h \
         reslist.h \
         restable.h \
+        rtitool.h \
         searchclause_w.h \
         spell_w.h \
         ssearch_w.h \
@@ -36,6 +37,7 @@ SOURCES += \
         rclmain_w.cpp \
         reslist.cpp \
         restable.cpp \
+        rtitool.cpp \
         searchclause_w.cpp \
         spell_w.cpp \
         ssearch_w.cpp \
@@ -52,6 +54,7 @@ FORMS   = \
         listdialog.ui \
         rclmain.ui \
         restable.ui \
+        rtitool.ui \
         spell.ui \
         ssearchb.ui \
         uiprefs.ui \

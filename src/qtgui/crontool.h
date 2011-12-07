@@ -14,8 +14,8 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifndef _CRONTAB_W_H_INCLUDED_
-#define _CRONTAB_W_H_INCLUDED_
+#ifndef _CRONTOOL_W_H_INCLUDED_
+#define _CRONTOOL_W_H_INCLUDED_
 
 #include "ui_crontool.h"
 
@@ -45,4 +45,4 @@ private:
 };
 
 
-#endif /* _CRONTAB_W_H_INCLUDED_ */
+#endif /* _CRONTOOL_W_H_INCLUDED_ */
