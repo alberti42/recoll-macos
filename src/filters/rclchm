@@ -4,7 +4,10 @@ Needs at least python 2.2 for HTMLParser (chmlib needs 2.2 too)"""
 
 import sys
 import os
+import urlparse
+
 import rclexecm
+
 try:
     from chm import chm,chmlib
 except:
@@ -84,6 +87,71 @@ class ChmTopicsParser(HTMLParser):
 
     def setname(self, name):
         self.fname = name
+
+def getfile(chmfile, path):
+    """Extract internal file text from chm object, given path"""
+    res, ui = chmfile.ResolveObject(path)
+    if res != chmlib.CHM_RESOLVE_SUCCESS:
+        #print "ResolveObject failed", path
+        return ""
+    res, doc = chmfile.RetrieveObject(ui)
+    if not res:
+        print "RetrieveObject failed", path
+        return ""
+    return doc
+
+
+class ChmWalker(HTMLParser):
+    """Links tree walker. This recursivelyfollows all internal links
+    found in the from the top node given as input, and augments the contents
+    list."""
+
+    def __init__(self, chm, path, contents):
+        HTMLParser.__init__(self)
+        self.chm = chm
+        self.contents = contents
+        self.path = os.path.normpath(path)
+        self.dir = os.path.dirname(self.path)
+        contents.append(self.path)
+        
+    def handle_starttag(self, tag, attrs):
+        if tag != 'a':
+            return
+
+        href = ''
+        for (nm,val) in attrs:
+            if nm == 'href':
+                href = val
+
+        path = ""
+        res = urlparse.urlparse(href)
+        if (not res.scheme or res.scheme.lower == "ms-its"):
+            path = res.path
+            lpath = path.split(':')
+            if len(lpath) == 3 and lpath[1] == cefilename:
+                # MS-ITS::somefile.chm:/some/path/file.htm ?
+                path = lpath[2]
+            elif len(lpath) == 1:
+                path = lpath[0]
+            else:
+                path = ""
+
+        if path:
+            #print "got path", path, "me", self.path, "dir", self.dir
+            if path[0] == "/":
+                npath = os.path.normpath(path)
+            else:
+                npath = os.path.normpath(os.path.join(self.dir, path))
+            if not npath in self.contents:
+                #print("Going into [%s] paths [%s]\n" %
+                #(npath,str(self.contents)))
+                text = getfile(self.chm, npath)
+                if text:
+                    try:
+                        newwalker = ChmWalker(self.chm, npath, self.contents)
+                        newwalker.feed(text)
+                    except:
+                        pass
         
 class rclCHM:
     """RclExecM slave worker for extracting all files from an Msoft chm
@@ -123,19 +191,41 @@ class rclCHM:
         self.currentindex = 0
         self.tp.reset()
         filename = params["filename:"]
-        self.chm.LoadCHM(filename)
-        self.chm.GetArchiveInfo()
-        self.topics = self.chm.GetTopicsTree()
-        if self.topics == None:
+        if not self.chm.LoadCHM(filename):
+            self.em.rclog("LoadCHM failed")
             return False
-        #self.em.rclog(self.topics)
-        # Parse Topics file and extract list of internal nodes
-        self.tp.setname(os.path.basename(filename))
-        self.tp.feed(self.topics)
-        self.tp.close()
-        #self.em.rclog("Contents size %d" % len(self.tp.contents))
-        return True
+        if not self.chm.GetArchiveInfo():
+            self.em.rclog("GetArchiveInfo failed")
+            return False
 
+        self.topics = self.chm.GetTopicsTree()
+        if self.topics:
+            # Parse Topics file and extract list of internal nodes
+            self.tp.setname(os.path.basename(filename))
+            self.tp.feed(self.topics)
+            self.tp.close()
+        else:
+            # No topics. If there is a home, let's try to walk the tree
+            #self.em.rclog("GetTopicsTree failed")
+            if not self.chm.home:
+                self.em.rclog("No topics and no home")
+                return False
+            home = self.chm.home
+            if home[0] != '/':
+                home = "/" + home
+            text = getfile(self.chm, home)
+            if not text:
+                self.em.rclog("No topics and no home content")
+                return False
+            walker = ChmWalker(self.chm, self.chm.home, self.tp.contents)
+            walker.feed(text)
+            walker.close()
+
+        #self.em.rclog("Contents size %d" % len(self.tp.contents))
+        uniq = set(self.tp.contents)
+        self.tp.contents = list(uniq)
+        return True
+    
     def getipath(self, params):
         return self.extractone(params["ipath:"])
         
