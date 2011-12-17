@@ -106,7 +106,7 @@ class RclExecM:
                     self.answer("", "", iserror = RclExecM.fileerror)
                     return
             except Exception, err:
-                self.em.rclog("processmessage: openfile raised: [%s]" % err)
+                self.rclog("processmessage: openfile raised: [%s]" % err)
                 self.answer("", "", iserror = RclExecM.fileerror)
                 return
 
