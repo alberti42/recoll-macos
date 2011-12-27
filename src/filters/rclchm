@@ -4,6 +4,7 @@ Needs at least python 2.2 for HTMLParser (chmlib needs 2.2 too)"""
 
 import sys
 import os
+import posixpath
 import urlparse
 
 import rclexecm
@@ -110,8 +111,8 @@ class ChmWalker(HTMLParser):
         HTMLParser.__init__(self)
         self.chm = chm
         self.contents = contents
-        self.path = os.path.normpath(path)
-        self.dir = os.path.dirname(self.path)
+        self.path = posixpath.normpath(path)
+        self.dir = posixpath.dirname(self.path)
         contents.append(self.path)
         
     def handle_starttag(self, tag, attrs):
@@ -139,9 +140,9 @@ class ChmWalker(HTMLParser):
         if path:
             #print "got path", path, "me", self.path, "dir", self.dir
             if path[0] == "/":
-                npath = os.path.normpath(path)
+                npath = posixpath.normpath(path)
             else:
-                npath = os.path.normpath(os.path.join(self.dir, path))
+                npath = posixpath.normpath(posixpath.join(self.dir, path))
             if not npath in self.contents:
                 #print("Going into [%s] paths [%s]\n" %
                 #(npath,str(self.contents)))
