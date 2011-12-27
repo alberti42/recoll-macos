@@ -651,6 +651,10 @@ fvwm
       <para>There is a similar mechanism under Gnome (find the session
       control tool in the menus and use the "Startup programs" tab).</para>
 
+      <para>If you use the daemon completely out of an X11 session, you
+      need to add option <literal>-x</literal> to disable  X11 session
+      monitoring (else the daemon will not start).</para>
+
       <para>By default, the messages from the indexing daemon will be
         discarded. You may want to change this by setting the
         <literal>daemlogfilename</literal> and
