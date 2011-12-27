@@ -20,6 +20,7 @@
 
 #include <QPushButton>
 #include <QMessageBox>
+#include <QTimer>
 
 #include "recoll.h"
 #include "crontool.h"
@@ -48,6 +49,13 @@ void CronToolW::init()
     // Try to read the current values
     if (!theconfig)
 	return;
+
+    if (checkCrontabUnmanaged(marker, "recollindex")) {
+	QMessageBox::warning(0, "Recoll", 
+			     tr("It seems that manually edited entries exist for recollindex, cannot edit crontab"));
+	QTimer::singleShot(0, this, SLOT(close()));
+    }
+    
     string id = idstring(theconfig->getConfDir());
     vector<string> sched;
     if (getCrontabSched(marker, id, sched)) {
