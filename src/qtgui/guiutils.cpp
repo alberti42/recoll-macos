@@ -152,6 +152,7 @@ void rwSettings(bool writing)
 	    prefs.creslistformat = (const char*)prefs.reslistformat.toUtf8();
 	}
     }
+    SETTING_RW(prefs.stylesheetFile, "/Recoll/prefs/stylesheet", String, "");
     SETTING_RW(prefs.queryStemLang, "/Recoll/prefs/query/stemLang", String,
 	       "english");
     SETTING_RW(prefs.useDesktopOpen, 
@@ -330,7 +331,7 @@ void rwSettings(bool writing)
     }
 }
 
-QString myGetFileName(bool isdir, QString caption)
+QString myGetFileName(bool isdir, QString caption, bool filenosave)
 {
     LOGDEB1(("myFileDialog: isdir %d\n", isdir));
     QFileDialog dialog(0, caption);
@@ -340,7 +341,10 @@ QString myGetFileName(bool isdir, QString caption)
 	dialog.setOptions(QFileDialog::ShowDirsOnly);
     } else {
 	dialog.setFileMode(QFileDialog::AnyFile);
-	dialog.setAcceptMode(QFileDialog::AcceptSave);
+	if (filenosave)
+	    dialog.setAcceptMode(QFileDialog::AcceptOpen);
+	else
+	    dialog.setAcceptMode(QFileDialog::AcceptSave);
     }
     dialog.setViewMode(QFileDialog::List);
     QFlags<QDir::Filter> flags = QDir::NoDotAndDotDot | QDir::Hidden; 
@@ -349,7 +353,6 @@ QString myGetFileName(bool isdir, QString caption)
     else 
 	flags |= QDir::Dirs | QDir::Files;
     dialog.setFilter(flags);
-
 
     if (dialog.exec() == QDialog::Accepted) {
         return dialog.selectedFiles().value(0);

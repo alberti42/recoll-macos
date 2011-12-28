@@ -22,7 +22,7 @@
      <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -60,19 +60,6 @@
               </widget>
              </item>
             </layout>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="collapseDupsCB">
-             <property name="toolTip">
-              <string>If checked, results with the same content under different names will only be shown once.</string>
-             </property>
-             <property name="text">
-              <string>Hide duplicate results.</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
            </item>
            <item>
             <layout class="QHBoxLayout">
@@ -204,6 +191,40 @@
            <item>
             <layout class="QHBoxLayout">
              <item>
+              <widget class="QLabel" name="tLSTL">
+               <property name="text">
+                <string>Style sheet</string>
+               </property>
+               <property name="wordWrap">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="stylesheetPB">
+               <property name="toolTip">
+                <string>Opens a dialog to select the style sheet file</string>
+               </property>
+               <property name="text">
+                <string>Choose</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="resetSSPB">
+               <property name="toolTip">
+                <string>Resets the style sheet to default</string>
+               </property>
+               <property name="text">
+                <string>Reset</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout">
+             <item>
               <widget class="QLabel" name="textLabelHL">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -323,6 +344,19 @@
          <string>Search parameters</string>
         </attribute>
         <layout class="QVBoxLayout">
+           <item>
+            <widget class="QCheckBox" name="collapseDupsCB">
+             <property name="toolTip">
+              <string>If checked, results with the same content under different names will only be shown once.</string>
+             </property>
+             <property name="text">
+              <string>Hide duplicate results.</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
          <item>
           <layout class="QVBoxLayout">
            <item>
@@ -341,6 +375,16 @@
               <widget class="QComboBox" name="stemLangCMB"/>
              </item>
             </layout>
+           </item>
+           <item>
+            <widget class="Line" name="lineX">
+             <property name="frameShape">
+              <enum>QFrame::HLine</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+            </widget>
            </item>
            <item>
             <widget class="QCheckBox" name="autoPhraseCB">

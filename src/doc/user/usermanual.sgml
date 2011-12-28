@@ -3263,9 +3263,19 @@ while query.next >= 0 and query.next < nres:
 
       <para>Most of the parameters specific to the
         <command>recoll</command> GUI are set through the
-        <guilabel>Preferences</guilabel> menu and stored in the
-        standard Qt place (<filename>$HOME/.qt/recollrc</filename>). 
+        <guilabel>Preferences</guilabel> menu and stored in the standard Qt
+        place (<filename>$HOME/.config/Recoll.org/recoll.conf</filename>).
         You probably do not want to edit this by hand.</para>
+
+      <note><para>One of these parameters is the name of a
+      <application>Qt</application> style sheet text file which is applied
+      to the whole Recoll application on startup. The default value is
+      empty, but there is a skeleton style sheet
+      (<filename>recoll.qss</filename>) inside the
+      <filename>/usr/share/recoll/examples</filename> directory. Using a
+      style sheet, you can change most Recoll graphical parameters: colors,
+      fonts, etc. See the sample file for a few simple examples.</para>
+      </note>
 
       <para>&RCL; indexing options are set inside text configuration
         files located in a configuration directory. There can be

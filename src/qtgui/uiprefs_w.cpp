@@ -57,6 +57,8 @@ void UIPrefsDialog::init()
     connect(viewActionPB, SIGNAL(clicked()), this, SLOT(showViewAction()));
     connect(reslistFontPB, SIGNAL(clicked()), this, SLOT(showFontDialog()));
     connect(resetFontPB, SIGNAL(clicked()), this, SLOT(resetReslistFont()));
+    connect(stylesheetPB, SIGNAL(clicked()), this, SLOT(showStylesheetDialog()));
+    connect(resetSSPB, SIGNAL(clicked()), this, SLOT(resetStylesheet()));
 
     connect(addExtraDbPB, SIGNAL(clicked()), 
 	    this, SLOT(addExtraDbPB_clicked()));
@@ -116,6 +118,16 @@ void UIPrefsDialog::setFromPrefs()
 	reslistFontPB->setText(reslistFontFamily + "-" +
 			       s.setNum(reslistFontSize));
     }
+
+    // Style sheet
+    stylesheetFile = prefs.stylesheetFile;
+    if (stylesheetFile.isEmpty()) {
+	stylesheetPB->setText(tr("Choose"));
+    } else {
+	string nm = path_getsimple((const char *)stylesheetFile.toLocal8Bit());
+	stylesheetPB->setText(QString::fromLocal8Bit(nm.c_str()));
+    }
+
     rlfTE->setPlainText(prefs.reslistformat);
 
     // Stemming language combobox
@@ -185,11 +197,13 @@ void UIPrefsDialog::accept()
 
     prefs.reslistfontfamily = reslistFontFamily;
     prefs.reslistfontsize = reslistFontSize;
+    prefs.stylesheetFile = stylesheetFile;
     prefs.reslistformat =  rlfTE->toPlainText();
     if (prefs.reslistformat.trimmed().isEmpty()) {
 	prefs.reslistformat = prefs.dfltResListFormat;
 	rlfTE->setPlainText(prefs.reslistformat);
     }
+
     prefs.creslistformat = (const char*)prefs.reslistformat.toUtf8();
 
     if (stemLangCMB->currentIndex() == 0) {
@@ -287,6 +301,19 @@ void UIPrefsDialog::showFontDialog()
 	    reslistFontSize = 0;
 	}
     }
+}
+
+void UIPrefsDialog::showStylesheetDialog()
+{
+    stylesheetFile = myGetFileName(false, "Select stylesheet file", true);
+    string nm = path_getsimple((const char *)stylesheetFile.toLocal8Bit());
+    stylesheetPB->setText(QString::fromLocal8Bit(nm.c_str()));
+}
+
+void UIPrefsDialog::resetStylesheet()
+{
+    stylesheetFile = "";
+    stylesheetPB->setText(tr("Choose"));
 }
 
 void UIPrefsDialog::resetReslistFont()

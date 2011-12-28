@@ -45,6 +45,8 @@
 #include "rclaspell.h"
 #endif
 #include "smallut.h"
+#include "readfile.h"
+
 #include "recollq.h"
 
 RclConfig *theconfig;
@@ -315,6 +317,13 @@ int main(int argc, char **argv)
     havereadsettings = true;
     //    fprintf(stderr, "Settings done\n");
 
+    if (!prefs.stylesheetFile.isEmpty()) {
+	string stylesheet;
+	file_to_string((const char *)prefs.stylesheetFile.toLocal8Bit(),
+		       stylesheet);
+	if (!stylesheet.empty())
+	    app.setStyleSheet(QString::fromAscii(stylesheet.c_str()));
+    }
 
     // Create main window and set its size to previous session's
     RclMain w;
