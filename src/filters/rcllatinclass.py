@@ -21,10 +21,13 @@ import os.path
 from zipfile import ZipFile
 
 class European8859TextClassifier:
-    def __init__(self, langzip):
+    def __init__(self, langzip=""):
         """langzip contains text files. Each text file is named like lang_code.txt
         (ie: french_cp1252.txt) and contains an encoded stop word list for the language"""
-        
+
+        if langzip == "":
+            langzip = os.path.join(os.path.dirname(__file__), 'rcllatinstops.zip')
+            
         self.langtables = self.readlanguages(langzip)
 
         # Table to translate from punctuation to spaces
@@ -41,7 +44,7 @@ class European8859TextClassifier:
         langs = []
         for fn in langfiles:
             text = zip.read(fn)
-            words = text.split()
+            words = set(text.split())
             langcode = os.path.basename(fn)
             langcode = os.path.splitext(langcode)[0]
             (lang,code) = langcode.split('_')
@@ -96,10 +99,7 @@ if __name__ == "__main__":
     rawtext = f.read()
     f.close()
 
-    dir = os.path.dirname(__file__)
-    langszip = os.path.join(dir, 'rcllatinstops.zip')
-
-    classifier = European8859TextClassifier(langszip)
+    classifier = European8859TextClassifier()
 
     lang,code,count = classifier.classify(rawtext)
     if count > 0:
