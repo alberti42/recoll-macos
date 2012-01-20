@@ -121,6 +121,11 @@ class FileInterner {
     FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, TempDir &td, 
                  int flags);
 
+    /** 
+     * Build sig for doc coming from rcldb. This is here because we know how
+     * to query the right backend */
+    static bool makesig(const Rcl::Doc& idoc, string& sig);
+
     ~FileInterner();
 
     void setMissingStore(FIMissingStore *st)

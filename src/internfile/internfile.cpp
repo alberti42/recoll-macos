@@ -441,6 +441,42 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf,
     }
 }
 
+#include "fsindexer.h"
+bool FileInterner::makesig(const Rcl::Doc& idoc, string& sig)
+{
+    if (idoc.url.empty()) {
+        LOGERR(("FileInterner::makesig:: no url!\n"));
+        return false;
+    }
+    string backend;
+    idoc.getmeta(Rcl::Doc::keybcknd, &backend);
+    
+    if (backend.empty() || !backend.compare("FS")) {
+        if (idoc.url.find(cstr_fileu) != 0) {
+            LOGERR(("FileInterner: FS backend and non fs url: [%s]\n",
+                    idoc.url.c_str()));
+            return false;
+        }
+        string fn = idoc.url.substr(7, string::npos);
+        struct stat st;
+        if (stat(fn.c_str(), &st) < 0) {
+            LOGERR(("FileInterner:: cannot access document file: [%s]\n",
+                    fn.c_str()));
+            return false;
+        }
+	FsIndexer::makesig(&st, sig);
+	return true;
+    } else if (!backend.compare("BGL")) {
+	// Bgl sigs are empty
+	sig.clear();
+	return true;
+    } else {
+        LOGERR(("FileInterner:: unknown backend: [%s]\n", backend.c_str()));
+        return false;
+    }
+    return false;
+}
+
 FileInterner::~FileInterner()
 {
     tmpcleanup();

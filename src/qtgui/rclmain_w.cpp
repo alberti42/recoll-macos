@@ -945,6 +945,29 @@ void RclMain::previewClosed(Preview *w)
 void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
 {
     LOGDEB(("startPreview(%d, doc, %d)\n", docnum, mod));
+
+    // Document up to date check. We do this only if ipath is not
+    // empty as this does not appear to be a serious issue for single
+    // docs (the main actual problem is displaying the wrong message
+    // from a compacted mail folder)
+    if (!doc.ipath.empty()) {
+	string udi, sig;
+	doc.getmeta(Rcl::Doc::keyudi, &udi);
+	FileInterner::makesig(doc, sig);
+	if (rcldb && !udi.empty()) {
+	    if (rcldb->needUpdate(udi, sig)) {
+		fprintf(stderr, "AFTER UPDATE CHECK-1\n");
+		QMessageBox::warning(0, tr("Warning"), 
+				     tr("Index not up to date for this file. "
+					"Refusing to risk showing the wrong "
+					"data. Please run indexing"),
+				     QMessageBox::Ok, 
+				     QMessageBox::NoButton);
+		return;
+	    }
+	}
+    }
+
     if (mod & Qt::ShiftModifier) {
 	// User wants new preview window
 	curPreview = 0;

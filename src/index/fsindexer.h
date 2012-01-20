@@ -24,10 +24,10 @@ using std::list;
 
 #include "indexer.h"
 #include "fstreewalk.h"
-#include "rcldb.h"
 
 class DbIxStatusUpdater;
 class FIMissingStore;
+struct stat;
 
 /** Index selected parts of the file system
  
@@ -68,6 +68,9 @@ class FsIndexer : public FsTreeWalkerCB {
     /**  Tree walker callback method */
     FsTreeWalker::Status 
     processone(const string &fn, const struct stat *, FsTreeWalker::CbFlag);
+
+    /** Make signature for file up to date checks */
+    static void makesig(const struct stat *stp, string& out);
 
  private:
     FsTreeWalker m_walker;

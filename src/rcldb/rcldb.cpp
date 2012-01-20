@@ -1370,19 +1370,21 @@ bool Db::needUpdate(const string &udi, const string& sig)
 	    // Up to date. 
 
 	    // Set the uptodate flag for doc / pseudo doc
-	    updated[*docid] = true;
+	    if (m_mode 	!= DbRO) {
+		updated[*docid] = true;
 
-	    // Set the existence flag for all the subdocs (if any)
-	    vector<Xapian::docid> docids;
-	    if (!m_ndb->subDocs(udi, docids)) {
-		LOGERR(("Rcl::Db::needUpdate: can't get subdocs list\n"));
-		return true;
-	    }
-	    for (vector<Xapian::docid>::iterator it = docids.begin();
-		 it != docids.end(); it++) {
-		if (*it < updated.size()) {
-		    LOGDEB2(("Db::needUpdate: set flag for docid %d\n", *it));
-		    updated[*it] = true;
+		// Set the existence flag for all the subdocs (if any)
+		vector<Xapian::docid> docids;
+		if (!m_ndb->subDocs(udi, docids)) {
+		    LOGERR(("Rcl::Db::needUpdate: can't get subdocs list\n"));
+		    return true;
+		}
+		for (vector<Xapian::docid>::iterator it = docids.begin();
+		     it != docids.end(); it++) {
+		    if (*it < updated.size()) {
+			LOGDEB2(("Db::needUpdate: set flag for docid %d\n", *it));
+			updated[*it] = true;
+		    }
 		}
 	    }
 	    return false;

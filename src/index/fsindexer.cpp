@@ -282,7 +282,7 @@ void FsIndexer::setlocalfields(Rcl::Doc& doc)
     }
 }
 
-static void makesig(const struct stat *stp, string& out)
+void FsIndexer::makesig(const struct stat *stp, string& out)
 {
     char cbuf[100]; 
     sprintf(cbuf, OFFTPC "%ld", stp->st_size, (long)stp->RCL_STTIME);
