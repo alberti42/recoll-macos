@@ -25,18 +25,28 @@
    widget object names or whatever, please get in touch, I'll fix what
    needs to be.
 
+   Please check http://developer.qt.nokia.com/doc/qt-4.8/stylesheet.html 
+   for Qt style sheet information.
 */
 
+
+/* Use a light grey background by default (lighter than the usual qt
+   default):
+*/
 
 * {
     background: #eeeeee;
 }
 
+/* Use a light yellow background for all text display areas: */
+
 QComboBox[editable="true"], QTextEdit, QLineEdit, QTextBrowser, QTableView { 
     background: #ffffee;
 }
 
-
+/* Keep a white background for the QTextEdit inside the Preview window 
+   This is rather arbitrary, just to show how to do it:
+*/
 Preview QTextEdit { 
     background: white;
     font-family: Serif;
