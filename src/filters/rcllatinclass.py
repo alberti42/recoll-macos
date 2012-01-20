@@ -28,69 +28,83 @@ class European8859TextClassifier:
         if langzip == "":
             langzip = os.path.join(os.path.dirname(__file__), 'rcllatinstops.zip')
             
-        self.langtables = self.readlanguages(langzip)
+        self.readlanguages(langzip)
 
         # Table to translate from punctuation to spaces
-        self.punct = '''*?[].@+-,#_$%&={};.,:!"''' + "\n\r"
-        spaces = ""
-        for c in self.punct:
-            spaces += " " 
+        self.punct = '''*?[].@+-,#_$%&={};.,:!"''' + "'\n\r"
+        spaces = len(self.punct) * " "
         self.spacetable = string.maketrans(self.punct, spaces)
 
     def readlanguages(self, langzip):
-        """Extract the stop words lists from the zip file"""
+        """Extract the stop words lists from the zip file.
+        We build a merge dictionary from the lists.
+        The keys are the words from all the files. The
+        values are a list of the (lang,code) origin(s) for the each word.
+        """
         zip = ZipFile(langzip)
         langfiles = zip.namelist()
-        langs = []
+        self.allwords = {}
         for fn in langfiles:
-            text = zip.read(fn)
-            words = set(text.split())
             langcode = os.path.basename(fn)
             langcode = os.path.splitext(langcode)[0]
             (lang,code) = langcode.split('_')
-            langs.append((lang, code, words))
-        return langs
+            text = zip.read(fn)
+            words = text.split()
+            for word in words:
+                if self.allwords.has_key(word):
+                    self.allwords[word].append((lang, code))
+                else:
+                    self.allwords[word] = [(lang, code)]
 
     def classify(self, rawtext):
         # Note: we can't use an re-based method to split the data because it
         # should be considered binary, not text.
+
         # Limit to reasonable size.
         if len(rawtext) > 10000:
             i = rawtext.find(" ", 9000)
             if i == -1:
                 i = 9000
             rawtext = rawtext[0:i]
+
         # Remove punctuation
         rawtext = rawtext.translate(self.spacetable)
-        # Split words. 
+
+        # Make of list of all text words, order it by frequency, we only
+        # use the ntest most frequent words.
+        ntest = 20
         words = rawtext.split()
-        # Count frequencies
         dict = {}
         for w in words:
             dict[w] = dict.get(w, 0) + 1
-        # Order word list by frequency
-        lfreq = sorted(dict.iteritems(), \
-                       key=lambda entry: entry[1], reverse=True)
-        # Check the text's ntest most frequent words against the
-        # language lists and chose the best match
-        ntest = 20
-        maxcount = 0
-        maxlang = ""
-        maxcode = ""
-        for lang,code,lwords in self.langtables:
-            count = 0
-            for w,c in lfreq[0:ntest]:
-                #print "testing", w
-                if w in lwords:
-                    count += 1
-            #print "Lang %s code %s count %d" % (lang, code, count)
-            if maxcount < count:
-                maxlang = lang
-                maxcount = count
-                maxcode = code
-        # If match too bad, default to most common
+        lfreq = [a[0] for a in sorted(dict.iteritems(), \
+                       key=lambda entry: entry[1], reverse=True)[0:ntest]]
+        #print lfreq
+
+        # Build a dict (lang,code)->matchcount
+        langstats = {}
+        for w in lfreq:
+            lcl = self.allwords.get(w, [])
+            for lc in lcl:
+                langstats[lc] = langstats.get(lc, 0) + 1
+
+        # Get a list of (lang,code) sorted by match count
+        lcfreq = sorted(langstats.iteritems(), \
+                        key=lambda entry: entry[1], reverse=True)
+        #print lcfreq[0:3]
+        if len(lcfreq) != 0:
+            lc,maxcount = lcfreq[0]
+            maxlang = lc[0]
+            maxcode = lc[1]
+        else:
+            maxcount = 0
+
+        # If the match is too bad, default to most common. Maybe we should
+        # generate an error instead, but the caller can look at the count
+        # anyway.
         if maxcount == 0:
             maxlang,maxcode = ('english', 'cp1252')
+
         return (maxlang, maxcode, maxcount)
 
 
