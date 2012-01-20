@@ -369,7 +369,7 @@ void FileInterner::initcommon(RclConfig *cnf, int flags)
     m_targetMType = cstr_textplain;
 }
 
-// We used a single beagle cache object to access beagle data. We protect it 
+// We use a single beagle cache object to access beagle data. We protect it 
 // against multiple thread access.
 static PTMutexInit o_beagler_mutex;
 
@@ -391,9 +391,7 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf,
     // and use some kind of backstore object factory next time we add a 
     // backend (if ever). 
     string backend;
-    map<string, string>::const_iterator it;
-    if ((it = idoc.meta.find(Rcl::Doc::keybcknd)) != idoc.meta.end())
-        backend = it->second;
+    idoc.getmeta(Rcl::Doc::keybcknd, &backend);
     
     if (backend.empty() || !backend.compare("FS")) {
         // Filesystem document. Intern from file.
@@ -412,16 +410,14 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf,
         }
         init(fn, &st, cnf, flags, &idoc.mimetype);
     } else if (!backend.compare("BGL")) {
-        string data;
-        Rcl::Doc dotdoc;
-        map<string,string>::const_iterator it = 
-            idoc.meta.find(Rcl::Doc::keyudi);
-        if (it == idoc.meta.end() || it->second.empty()) {
+        string udi;
+        if (!idoc.getmeta(Rcl::Doc::keyudi, &udi) || udi.empty()) {
             LOGERR(("FileInterner:: no udi in idoc\n"));
             return;
         }
-        string udi = it->second;
 
+        string data;
+        Rcl::Doc dotdoc;
 	{
 	    PTMutexLocker locker(o_beagler_mutex);
 	    // Retrieve from our webcache (beagle data). The beagler

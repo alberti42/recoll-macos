@@ -206,9 +206,7 @@ void ResListPager::displayDoc(RclConfig *config,
     }
 
     string apptag;
-    map<string,string>::const_iterator it;
-    if ((it = doc.meta.find(Rcl::Doc::keyapptg)) != doc.meta.end())
-	apptag = it->second;
+    doc.getmeta(Rcl::Doc::keyapptg, &apptag);
 
     if (!config->getMimeViewerDef(doc.mimetype, apptag).empty()) {
 	linksbuf << "<a href=\"E" << docnumforlinks << "\">"  

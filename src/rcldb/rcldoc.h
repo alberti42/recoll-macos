@@ -134,6 +134,19 @@ class Doc {
 	xdocid = 0;
     }
 
+    /** Get value for named field. If value pointer is 0, just test existence */
+    bool getmeta(const string& nm, string *value = 0) const
+    {
+	map<string,string>::const_iterator it = meta.find(nm);
+	if (it != meta.end()) {
+	    if (value)
+		*value = it->second;
+	    return true;
+	} else {
+	    return false;
+	}
+    }
+
     void dump(bool dotext=false) const;
 
     // The official names for recoll native fields when used in a text

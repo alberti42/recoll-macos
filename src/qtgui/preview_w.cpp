@@ -504,11 +504,9 @@ void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
 {
     LOGDEB1(("PreviewTextEdit::setCurTabProps\n"));
     QString title;
-    map<string,string>::const_iterator meta_it;
-    if ((meta_it = doc.meta.find(Rcl::Doc::keytt)) != doc.meta.end()
-        && !meta_it->second.empty()) {
-	    title = QString::fromUtf8(meta_it->second.c_str(), 
-				      meta_it->second.length());
+    string ctitle;
+    if (doc.getmeta(Rcl::Doc::keytt, &ctitle)) {
+	title = QString::fromUtf8(ctitle.c_str(), ctitle.length());
     } else {
         title = QString::fromLocal8Bit(path_getsimple(doc.url).c_str());
     }
@@ -531,8 +529,8 @@ void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
     printableUrl(theconfig->getDefCharset(), doc.url, url);
     string tiptxt = url + string("\n");
     tiptxt += doc.mimetype + " " + string(datebuf) + "\n";
-    if (meta_it != doc.meta.end() && !meta_it->second.empty())
-	tiptxt += meta_it->second + "\n";
+    if (!ctitle.empty())
+	tiptxt += ctitle + "\n";
     pvTab->setTabToolTip(curidx,
 			 QString::fromUtf8(tiptxt.c_str(), tiptxt.length()));
 
@@ -966,9 +964,10 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
 
     // Enter document in document history
-    map<string,string>::const_iterator udit = idoc.meta.find(Rcl::Doc::keyudi);
-    if (udit != idoc.meta.end())
-        historyEnterDoc(g_dynconf, udit->second);
+    string udi;
+    if (idoc.getmeta(Rcl::Doc::keyudi, &udi)) {
+        historyEnterDoc(g_dynconf, udi);
+    }
 
     editor->setFocus();
     emit(previewExposed(this, m_searchId, docnum));

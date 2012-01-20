@@ -1213,9 +1213,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 	cmdplusattr = theconfig->getMimeViewerDef("application/x-all", "");
     } else {
         string apptag;
-        map<string,string>::const_iterator it;
-        if ((it = doc.meta.find(Rcl::Doc::keyapptg)) != doc.meta.end())
-            apptag = it->second;
+        doc.getmeta(Rcl::Doc::keyapptg, &apptag);
 	cmdplusattr = theconfig->getMimeViewerDef(doc.mimetype, apptag);
     }
 
