@@ -6,7 +6,7 @@
 #
 
 PORTNAME=	recoll
-PORTVERSION=	1.15.8
+PORTVERSION=	1.16.2
 CATEGORIES=	deskutils
 MASTER_SITES=	http://www.lesbonscomptes.com/recoll/
 
@@ -22,6 +22,7 @@ GNU_CONFIGURE=	yes
 USE_GMAKE=	yes
 USE_ICONV=	yes
 INSTALLS_ICONS=	yes
+USE_FAM=	yes
 
 MAN1=		recoll.1 recollindex.1
 MAN5=		recoll.conf.5

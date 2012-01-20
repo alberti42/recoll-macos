@@ -41,6 +41,7 @@ share/pixmaps/recoll.png
 %%DATADIR%%/filters/rclps
 %%DATADIR%%/filters/rclpurple
 %%DATADIR%%/filters/rclpython
+%%DATADIR%%/filters/rclrar
 %%DATADIR%%/filters/rclrtf
 %%DATADIR%%/filters/rclscribus
 %%DATADIR%%/filters/rclshowinfo
@@ -76,6 +77,7 @@ share/pixmaps/recoll.png
 %%DATADIR%%/images/text-x-python.png
 %%DATADIR%%/images/txt.png
 %%DATADIR%%/images/wordprocessing.png
+%%DATADIR%%/translations/recoll_cs.qm
 %%DATADIR%%/translations/recoll_fr.qm
 %%DATADIR%%/translations/recoll_it.qm
 %%DATADIR%%/translations/recoll_lt.qm
