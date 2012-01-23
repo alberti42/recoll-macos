@@ -118,7 +118,7 @@ xsltproc --novalid --nonet - $infile <<EOF
 </xsl:template>
 
 <xsl:template match="@contents|@author">
-  <p><xsl:value-of select="local-name()"/>=<xsl:value-of select="." /></p>
+  <p><xsl:value-of select="." /></p>
 <xsl:text >
 </xsl:text>
 </xsl:template>
