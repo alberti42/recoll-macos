@@ -74,9 +74,11 @@ application/x-chm = execm rclchm
 application/x-dvi = exec rcldvi
 application/x-flac = execm rclaudio
 application/x-gnuinfo = execm rclinfo
+application/x-gnumeric = exec rclgnm
 application/x-kword = exec rclkwd
 application/x-lyx = exec rcllyx
 application/x-mimehtml = internal message/rfc822
+application/x-okular-notes = exec rclokulnote
 application/x-perl = internal text/plain
 application/x-rar = execm rclrar;charset=default
 application/x-scribus = exec rclscribus
@@ -153,8 +155,10 @@ application/x-abiword = wordprocessing
 application/x-dvi = document
 application/x-flac = sownd
 application/x-fsdirectory = folder
+application/x-gnumeric = spreadsheet
 application/x-kword = wordprocessing
 application/x-lyx = wordprocessing
+application/x-okular-notes = document
 application/x-scribus = document
 application/x-gnuinfo = document
 application/x-tex = wordprocessing
@@ -207,6 +211,7 @@ text = \
       application/x-dvi \
       application/x-kword \
       application/x-lyx \
+      application/x-okular-notes \
       application/x-perl \
       application/x-scribus \
       application/x-gnuinfo \
@@ -233,7 +238,8 @@ spreadsheet = \
    application/vnd.openxmlformats-officedocument.spreadsheetml.sheet \
    application/vnd.openxmlformats-officedocument.spreadsheetml.template \
    application/vnd.sun.xml.calc \
-   application/vnd.sun.xml.calc.template
+   application/vnd.sun.xml.calc.template \
+   application/x-gnumeric
 
 presentation = application/vnd.ms-powerpoint \
   application/vnd.openxmlformats-officedocument.presentationml.template \

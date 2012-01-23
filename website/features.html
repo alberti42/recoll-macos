@@ -142,6 +142,9 @@
         <li><span class="literal">OpenOffice</span> files.</li>
 
         <li><span class="literal">SVG</span> files.</li>
+        <li><span class="literal">Gnumeric</span> files.</li>
+        <li><span class="literal">Okular</span> annotations files.</li>
+        
       </ul>
 
       <h5>Other formats</h5>
@@ -200,16 +203,30 @@
         "http://www.gnu.org/software/ghostscript/ghostscript.html">
             ghostscript</a> and <a href=
         "http://www.cs.wisc.edu/~ghost/doc/pstotext.htm">pstotext</a>.
-        Actually the pstotext 1.9 found at the latter link has a
-        problem with file names using special shell characters, and
-        you should either use the version packaged for your system
-        which is probably patched, or apply the Debian patch which
-        is stored <a href=
+        Pstotext 1.9 has a serious issue with special characters in
+        file names, and you should either use the version packaged for
+        your system which is probably patched, or apply the Debian
+        patch which is stored <a href=
         "files/pstotext-1.9_4-debian.patch">here</a> for
-        convenience. See
-        http://packages.debian.org/squeeze/pstotext and
-        http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=356988 for
-        references/explanations.</li>
+        convenience. See http://packages.debian.org/squeeze/pstotext
+        and http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=356988
+        for references/explanations.
+          <blockquote>
+            To make things a bit easier, I also
+            store <a href="files/pstotext-1.9-patched.tar.gz">an
+            already patched version</a>. I added an
+            install target to the Makefile... This installs to
+            /usr/local, use <i>make install PREFIX=/usr</i> to
+            change. So all you need is:
+            <pre>
+              tar xvzf pstotext-1.9-patched.tar.gz
+              cd pstotext-1.9-patched
+              make
+              make install
+            </pre>
+          </blockquote>
+        </li>
+
 
         <li><span class="literal">RTF</span> files with <a href=
         "http://www.gnu.org/software/unrtf/unrtf.html">unrtf</a>. Please

@@ -96,6 +96,7 @@
 .scd = application/x-scribus
 .info = application/x-gnuinfo
 .kwd = application/x-kword
+.gnumeric = application/x-gnumeric
 
 .wpd = application/vnd.wordperfect
 
@@ -133,7 +134,7 @@
 recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .log.gz .md5 .map \
        .o .lib .dll .a .sys .exe .com \
        .dat .bak .rdf .log .db .msf .pid \
-       .gnm .gnumeric \
+       .gnm \
        ,v ~ #
 
 # Special handling of .txt files inside ~/.gaim and ~/.purple directories
@@ -185,3 +186,9 @@ recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .log.gz .md5 .map \
 .8 = text/x-man
 .9 = text/x-man
 .n = text/x-man
+
+# Special handling for okular notes
+[~/.kde4/share/apps/okular/docdata]
+.xml = application/x-okular-notes
+[~/.kde/share/apps/okular/docdata]
+.xml = application/x-okular-notes

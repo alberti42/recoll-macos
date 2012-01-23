@@ -54,6 +54,7 @@ application/vnd.wordperfect = libreoffice %f
 application/x-chm = kchmviewer %f
 application/x-fsdirectory = dolphin %f
 application/x-gnuinfo = xterm -e "info -f %f"
+application/x-gnumeric = gnumeric %f
 
 application/x-flac = rhythmbox %f
 audio/mpeg = rhythmbox %f

@@ -64,37 +64,49 @@
 	<a href="mimeconf">mimeconf</a> 
 	<a href="mimeview">mimeview</a> </p>
 
-<!--
-      <p>Notes:</p>
       <blockquote>
-	<p>All filters are up to date in Recoll 1.1.04, except rclics.</p>
-	<p>If you are using an older version, you should update to 1.13.04.</p>
+	<p>All filters are up to date in Recoll 1.16.2, except
+	  rclchm, and the new ones for gnumeric and Okular annotations.</p>
+        <p>Recoll 1.15 may benefit from some of the newer
+          filters linked below.</p>
+        <p>If you are running an older recoll version, you really
+          should upgrade.</p>
       </blockquote>
--->
+
+      <h2>Okular annotations</h2>
+      <p><a href="rclokulnote">rclokulnote</a>. Okular lets you create
+        annotations for PDF documents and stores them in xml format
+        somewhere under ~/.kde. This filter does not do a nice job to
+        format the data, but will at least let you find it...</p>
+
+      <h2>Gnumeric</h2>
+      <p><a href="rclgnm">rclgnm</a>. Needs xsltproc and gunzip.</p>
 
       <h2>Rar archive support</h2>
-      <p><a href="rclrar">rclrar</a>. This needs the Python rarfile module.
-       </p>
+      <p><a href="rclrar">rclrar</a>. This is up to date in Recoll
+        1.16.2 but may be added to Recoll 1.15. It needs the Python
+               rarfile module. </p> 
 
       <h2>Mimehtml support</h2>
       <p>This is based on the internal mail filter, you just need to
-        download and install the config files. Will only work with
-        1.15.</p>
+        download and install the configuration files (mimemap and
+        mimeconf. Will only work with 1.15 and later.</p>
 
       <h2>Konqueror webarchive (.war) filter</h2>
       <p><a href="rclwar">rclwar</a></p>
 
       <h2>Updated zip archive filter</h2>
       <p>The filter is corrected to handle utf-8 paths in zip archives: 
-        <a href="rclzip">rclzip</a></p>
-
+        <a href="rclzip">rclzip</a>. Up to date in Recoll 1.16, but
+        may be useful with Recoll 1.15</p>
 
       <h2>Updated audio tag filter</h2>
       <p>The mutagen-based rclaudio filter delivered with recoll 1.14.2
 	used a very recent mutagen interface which will only work with
 	mutagen versions after 1.17 (probably. at least works with 1.19,
 	doesn't with 1.15).
-	You can download the <a href="rclaudio">corrected script here</a>. 
+	You can download the <a href="rclaudio">corrected script
+	here. Not useful with Recoll 1.5 or 1.6</a>. 
       </p>
 
     </div>
