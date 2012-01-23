@@ -6,6 +6,10 @@
 # Values set in this file will override the system-wide values for the file
 # with the same name in the central directory. The syntax for setting
 # values is identical.
+
+[/home/dockes/projets/fulltext/testrecoll/okular-notes]
+.xml = application/x-okular-notes
+
 [/home/dockes/projets/fulltext/testrecoll/man]
 .0p = text/x-man
 .1 = text/x-man
