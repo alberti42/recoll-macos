@@ -101,8 +101,6 @@ fi
 
 cleanup()
 {
-    # Note that we're using a constant part (rclsofftmp), that hopefully
-    # guarantees that we can't do big mistakes here.
     rm -f $tmpfile
 }
     
