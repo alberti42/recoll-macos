@@ -1,0 +1,264 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+  <head>
+    <title>RECOLL: contributed result list formata</title>
+
+    <meta name="generator" content="HTML Tidy, see www.w3.org">
+    <meta name="Author" content="Jean-Francois Dockes">
+    <meta name="Description" content=
+    "recoll is a simple full-text search system for unix and linux
+    based on the powerful and mature xapian engine">
+    <meta name="Keywords" content=
+    "full text search, desktop search, unix, linux">
+    <meta http-equiv="Content-language" content="en">
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+    <meta name="robots" content="All,Index,Follow">
+
+    <link type="text/css" rel="stylesheet" href="styles/style.css">
+  </head>
+
+  <body>
+    
+    <div class="rightlinks">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="pics/index.html">Screenshots</a></li>
+        <li><a href="download.html">Downloads</a></li>
+        <li><a href="usermanual/index.html">User manual</a></li>
+        <li><a href="index.html#support">Support</a></li>
+      </ul>
+    </div>
+    
+    <div class="content">
+      <h2>Result list paragraph format samples</h2>
+
+      <p>The format for paragraphs inside the Recoll GUI result list is
+        customisable by specifying an html fragment (menu:
+      <tt>Preferences->Query&nbsp;configuration->User&nbsp;interface->Result&nbsp;paragraph&nbsp;format&nbsp;string</tt>)</p>
+      
+      <p>Here follow some sample formats. Most of them were contributed by
+        kind users, and I'll be happy to show their names if they so
+        wish (abstaining by default).</p>
+
+      <h3>Recoll 1.15 default</h3>
+<pre>
+
+<!--
+<table>
+  <tr>
+   <td><img src='%I'></td>
+   <td>%R %S %L&nbsp;&nbsp;<b>%T</b><br>
+       %M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>
+       %A %K
+    </td>
+  </tr>
+</table>
+-->
+&lt;table&gt;
+  &lt;tr&gt;
+   &lt;td&gt;&lt;img src='%I'&gt;&lt;/td&gt;
+   &lt;td&gt;%R %S %L&amp;nbsp;&amp;nbsp;&lt;b&gt;%T&lt;/b&gt;&lt;br&gt;
+     %M&amp;nbsp;%D&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;i&gt;%U&lt;/i&gt;&lt;br&gt;
+     %A %K
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+</pre>
+
+<br clear="all">
+<img src="resparpics/default.png"/>
+
+<h3>A simpler format, suggested in Bitbucket issue #73</h3>
+
+<pre>
+<!--
+<img src="%I" align="left">%R %L&nbsp;&nbsp;<b>%T</b><br>
+&nbsp;&nbsp;<i><font color="#808080">%U</font></i>&nbsp;%i<br>
+%A %K
+-->
+&lt;img src=&quot;%I&quot; align=&quot;left&quot;&gt;%R %L&amp;nbsp;&amp;nbsp;&lt;b&gt;%T&lt;/b&gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp;&lt;i&gt;&lt;font color=&quot;#808080&quot;&gt;%U&lt;/font&gt;&lt;/i&gt;&amp;nbsp;%i&lt;br&gt;
+%A %K
+</pre>
+<br clear="all">
+<img src="resparpics/issue73.png"/>
+
+
+<h3>Simple+table</h3>
+
+<p>Same format, but using a table to avoid text flowing into the icon
+area.</p>
+
+<pre>
+<!--
+<table>
+  <tr>
+    <td><img src="%I" align="left"></td>
+    <td>%R %L&nbsp;&nbsp;<b>%T</b><br>
+            &nbsp;&nbsp;<i><font color="#808080">%U</font></i>&nbsp;%i<br>
+            %A %K
+    </td>
+  </tr>
+</table>
+-->
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;&lt;img src=&quot;%I&quot; align=&quot;left&quot;&gt;&lt;/td&gt;
+    &lt;td&gt;%R %L&amp;nbsp;&amp;nbsp;&lt;b&gt;%T&lt;/b&gt;&lt;br&gt;
+            &amp;nbsp;&amp;nbsp;&lt;i&gt;&lt;font color=&quot;#808080&quot;&gt;%U&lt;/font&gt;&lt;/i&gt;&amp;nbsp;%i&lt;br&gt;
+            %A %K
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+</pre>
+
+<br clear="all">
+<img src="resparpics/issue73+table.png"/>
+
+
+
+<h3>Using a small font to make the size/date details less obstrusive</h3>
+
+<pre>
+<!--
+<table>
+  <tr>
+    <td><img src="%I" align="left"></td>
+    <td><table bgcolor="#bababa">
+        <tr><td><div>
+              <font face="Tahoma, sans-serif"><u><b><a href="P%N">%T</a></b></u><br>
+                <font color=#008000>%L</font><br>
+                <font color=#510101>%A %K</font><br>
+                <font color=#0100FF>%U</font>
+                <p align="right"><font size=1><font color=#000000>%S
+                      &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp; %D
+                      &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp; %M</font></p>
+        </div></td></tr>
+    </table></td>
+  </tr>
+</table>
+-->
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;&lt;img src=&quot;%I&quot; align=&quot;left&quot;&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;table bgcolor=&quot;#bababa&quot;&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;div&gt;
+              &lt;font face=&quot;Tahoma, sans-serif&quot;&gt;&lt;u&gt;&lt;b&gt;&lt;a href=&quot;P%N&quot;&gt;%T&lt;/a&gt;&lt;/b&gt;&lt;/u&gt;&lt;br&gt;
+                &lt;font color=#008000&gt;%L&lt;/font&gt;&lt;br&gt;
+                &lt;font color=#510101&gt;%A %K&lt;/font&gt;&lt;br&gt;
+                &lt;font color=#0100FF&gt;%U&lt;/font&gt;
+                &lt;p align=&quot;right&quot;&gt;&lt;font size=1&gt;&lt;font color=#000000&gt;%S
+                      &amp;nbsp;&amp;nbsp;&amp;nbsp;-&amp;nbsp;&amp;nbsp;&amp;nbsp; %D
+                      &amp;nbsp;&amp;nbsp;&amp;nbsp;-&amp;nbsp;&amp;nbsp;&amp;nbsp; %M&lt;/font&gt;&lt;/p&gt;
+        &lt;/div&gt;&lt;/td&gt;&lt;/tr&gt;
+    &lt;/table&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+</pre>
+
+<br clear="all">
+<img src="resparpics/detailSmallGreyTable.png"/>
+
+
+<h3>A very structured table</h3>
+
+<pre>
+<!--
+<table border="1" bgcolor="lightyellow">
+  <tr>
+    <td rowspan="4" width="40px" align="center" valign="center">
+      <img src="%I" width="32" height="32">
+      <p><b>%R</b></p>
+      <p><a href="P%N">Aperçu</a></p>
+    </td>
+    <th colspan="3" bgcolor="lightgrey">%T</th>
+  </tr>
+  <tr>
+    <td align="center">%M</td>
+    <td align="center">%D</td>
+    <td align="center">%S</td>
+  </tr>
+  <tr>
+    <td colspan="3"><a href="E%N">%U</a></td>
+  </tr>
+  <tr>
+    <td colspan="3">%A</td>
+  </tr>
+</table>
+-->
+&lt;table border=&quot;1&quot; bgcolor=&quot;lightyellow&quot;&gt;
+  &lt;tr&gt;
+    &lt;td rowspan=&quot;4&quot; width=&quot;40px&quot; align=&quot;center&quot; valign=&quot;center&quot;&gt;
+      &lt;img src=&quot;%I&quot; width=&quot;32&quot; height=&quot;32&quot;&gt;
+      &lt;p&gt;&lt;b&gt;%R&lt;/b&gt;&lt;/p&gt;
+      &lt;p&gt;&lt;a href=&quot;P%N&quot;&gt;Aper&Atilde;&sect;u&lt;/a&gt;&lt;/p&gt;
+    &lt;/td&gt;
+    &lt;th colspan=&quot;3&quot; bgcolor=&quot;lightgrey&quot;&gt;%T&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td align=&quot;center&quot;&gt;%M&lt;/td&gt;
+    &lt;td align=&quot;center&quot;&gt;%D&lt;/td&gt;
+    &lt;td align=&quot;center&quot;&gt;%S&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td colspan=&quot;3&quot;&gt;&lt;a href=&quot;E%N&quot;&gt;%U&lt;/a&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td colspan=&quot;3&quot;&gt;%A&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+</pre>
+<br clear="all">
+<img src="resparpics/structuredTable.png"/>
+
+
+<h3>Web-like from the user manual</h3>
+
+<pre>
+<!--
+<u><b><a href="P%N">%T</a></b></u><br>
+%U<br>
+%A <font color=#008000>%S</font> - <a href="E%N">Edit</a>
+-->
+&lt;u&gt;&lt;b&gt;&lt;a href=&quot;P%N&quot;&gt;%T&lt;/a&gt;&lt;/b&gt;&lt;/u&gt;&lt;br&gt;
+%U&lt;br&gt;
+%A &lt;font color=#008000&gt;%S&lt;/font&gt; - &lt;a href=&quot;E%N&quot;&gt;Edit&lt;/a&gt;
+</pre>
+<br clear="all">
+<img src="resparpics/weblike.png"/>
+
+
+<h3>Clean-Looking from the user manual</h3>
+
+<pre>
+<!--
+<table>
+  <tr><td><img src="%I" align="left"></td>
+    <td>%L <font color="#900000">%R</font> <b>%T</b><br>
+      %S <font color="#808080"><i>%U</i></font>
+      <table bgcolor="#e0e0e0">
+        <tr><td><div>%A</div> %K </td></tr>
+    </table></td>
+</table>
+-->
+&lt;table&gt;
+  &lt;tr&gt;&lt;td&gt;&lt;img src=&quot;%I&quot; align=&quot;left&quot;&gt;&lt;/td&gt;
+    &lt;td&gt;%L &lt;font color=&quot;#900000&quot;&gt;%R&lt;/font&gt; &lt;b&gt;%T&lt;/b&gt;&lt;br&gt;
+      %S &lt;font color=&quot;#808080&quot;&gt;&lt;i&gt;%U&lt;/i&gt;&lt;/font&gt;
+      &lt;table bgcolor=&quot;#e0e0e0&quot;&gt;
+        &lt;tr&gt;&lt;td&gt;&lt;div&gt;%A&lt;/div&gt; %K &lt;/td&gt;&lt;/tr&gt;
+    &lt;/table&gt;&lt;/td&gt;
+&lt;/table&gt;
+
+</pre>
+<br clear="all">
+<img src="resparpics/clean.png"/>
+
+
+
+    </div>
+  </body>
+</html>
+

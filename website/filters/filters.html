@@ -80,7 +80,14 @@
         format the data, but will at least let you find it...</p>
 
       <h2>Gnumeric</h2>
-      <p><a href="rclgnm">rclgnm</a>. Needs xsltproc and gunzip.</p>
+      <p><a href="rclgnm">rclgnm</a>. Needs xsltproc and
+      gunzip. As <tt>.gnumeric</tt> was in the list of
+      explicitely ignored suffixes, you can't just add the mime
+      and indexer script lines to your local mimemap and mimeconf, you
+      also need to define recoll_noindex in the local mimemap (to
+        override the system one which
+        contains <tt>.gnumeric</tt>). The simplest approach may be to
+        just replace the system files with those above.</p>
 
       <h2>Rar archive support</h2>
       <p><a href="rclrar">rclrar</a>. This is up to date in Recoll

@@ -1784,6 +1784,10 @@ fvwm
            preview link.
         </para>
 
+        <para>These samples, and some others are 
+          <ulink url="http://www.recoll.org/custom.html">on the web
+            site, with pictures to show how they look.</ulink></para>
+
           <para>It is also possible to 
           <link linkend="rcl.search.custom.abssep">
              define the value of the snippet separator inside the abstract

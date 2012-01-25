@@ -41,9 +41,8 @@
 	      <td><a href="#source">Source</a></td>
               <td><a href="#rpms">Rpm/deb packages</a></td>
               <td><a href="BUGS.html">Known bugs</a></td>
-	      <td><a href="#otherbinary">Other binary packages</a></td>
 	      <td><a href="#ports">Bsd and Mac ports</a></td>
-	      <td><a href="#filters">Filters</a> </td>
+	      <td><a href="filters/filters.html">Filters</a> </td>
 	      <td><a href="#translations">Translations</a></td>
 	    </tr>
 	  </tbody>
@@ -99,7 +98,11 @@
 
       <p>New and updated filters are sometimes 
 	<a href="filters/filters.html">available</a> before the next
-	Recoll release.</p>
+	Recoll release. As far as I know, all current filters are
+	fully compatible with older Recoll releases (from 1.13), so
+	you can install new or updated filters on
+	older Recoll packages and gain new file type support without
+	destabilizing your search setup.</p>
 
       <h2><a name="source">Source</a></h2>
 
@@ -299,8 +302,8 @@ I now use the OpenSUSE build service to create Recoll OpenSUSE packages.
       <h3>Mandriva</h3>
       <blockquote>
 
-        <p><b>Mandriva linux one 2010 using Qt 4 and the Xapian version
-             from the Mandriva repository.</b>: 
+        <p>Mandriva linux one 2010 using Qt 4 and the Xapian version
+             from the Mandriva repository.: 
 	  <a href="mandriva2010/recoll-1.16.2-1mdv2010.2.i586.rpm">
 	  recoll-1.16.2-1mdv2010.2.i586.rpm</a>. 
 	Source: 
@@ -311,6 +314,8 @@ I now use the OpenSUSE build service to create Recoll OpenSUSE packages.
 
       <h2><a name="otherbinary">Binary bundles</a></h2>
 
+      <p><i>There are currently no more binary bundles. Section kept as
+          placeholder</i>.</p>
       <p>These are just prebuilt trees (without the source files).
 	Xapian is statically linked.  They still depend on Qt. For
 	Solaris, you should be able to find a Qt package on
@@ -319,16 +324,11 @@ I now use the OpenSUSE build service to create Recoll OpenSUSE packages.
       <p><a href="usermanual/rcl.install.html">Installation
             instructions here</a>.</p>
 
-      <h3>FreeBSD</h3>
+      <h3><a name="freebsd">FreeBSD</a></h3>
       <blockquote>
-        <p>The FreeBSD ports used to track the Recoll and Xapian releases quite
-        closely, so there was actually little point in using the
-        following, but updates have stopped for some time.</p>
-        <p><b>FreeBSD 7.4 i386 Qt 4.7.3</b> Statically linked to
-          Xapian 1.2.7 with --disable-sse: 
-	   <a href="freebsd/recoll-1.16.2-FreeBSD-7.4-STABLE.tgz">
-	     recoll-1.16.2-FreeBSD-7.4-STABLE.tgz</a>
-        </p>
+        <p>The FreeBSD people have succeeded in terminally pissing me
+          off which is quite hard to do. There will be no more FreeBSD
+          support on this site.</p>
       </blockquote>
 
       <h3>Solaris</h3>
@@ -342,28 +342,8 @@ I now use the OpenSUSE build service to create Recoll OpenSUSE packages.
 
       <h2><a name="ports">Ports</a></h2> 
 
-      <h3>FreeBSD ports</h3>
-      <p>There are ports for both xapian-core
-	and recoll in the standard tree, you may just need to update
-	your ports (cvsup, portsnap), or you can get the ports from
-	the FreeBSD site. 
-	<a href="http://cvsweb.freebsd.org/ports/databases/xapian-core">
-	  xapian port</a> 
-	<a href="http://cvsweb.freebsd.org/ports/deskutils/recoll">
-	  recoll port</a>.
-      </p>
-
-        <p class="important">The ports in the standard FreeBSD tree
-          have been stuck to older xapian and recoll versions for
-          obscure reasons (the patches for xapian 1.2 have been in the
-          bug report system for months). As frustrated maintainer of the
-          FreeBSD Xapian and Recoll ports, I hereby make
-          available <a href="files/xapian+recoll-ports.tgz">the 
-            port directories </a>that should be in the port tree if the world
-          was perfect. Just extract this anywhere and <em>make</em>
-          away!
-        </p>
-
+      <h3>FreeBSD</h3>
+      <p><a href="#freebsd">See above</a>.</p>
       <h3>Mac port</h3>
 
       <p>It seems that Recoll will sometimes find data that Spotlight
