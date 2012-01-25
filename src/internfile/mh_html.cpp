@@ -120,8 +120,9 @@ bool MimeHandlerHtml::next_document()
 
 	try {
 	    p.parse_html(transcoded);
-	    // No exception: ok?
-	    result = p;
+	    // No exception: ok? But throw true to use the same
+	    // code path as if an exception had been thrown by parse_html
+	    throw true;
 	    break;
 	} catch (bool diag) {
 	    result = p;
