@@ -18,3 +18,5 @@ text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/utf8.html]	[Some
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/utf8.html]	[Some chars]	330	bytes	
 1 results
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/iso.html]	[Some chars]	249	bytes	
+1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/html5charset.html]	[html5charset.html]	113	bytes	
