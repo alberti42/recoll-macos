@@ -99,7 +99,7 @@ message/rfc822 = internal
 text/calendar = execm rclics;mimetype=text/plain;charset=utf-8
 text/html  = internal 
 text/plain = internal 
-text/rtf = exec unrtf --nopict --html;charset=iso-8859-1;mimetype=text/html
+text/rtf = exec unrtf --nopict --html;mimetype=text/html
 text/x-c = internal
 text/x-c++ = internal
 text/x-c+ = internal

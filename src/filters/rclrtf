@@ -83,6 +83,7 @@ checkcmds awk unrtf
 # output the result
 # The strange 'BEGIN' setup is to prevent 'file' from thinking this file
 # is an awk program
+# The thing about the charset is that unrtf outputs a garbled one.
 unrtf --nopict --html "$infile" 2> /dev/null |
 awk 'BEGIN'\
 ' {
@@ -90,10 +91,11 @@ awk 'BEGIN'\
 }
 /<\/head>/{
     if (gothead == 0) {
-        printf("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">\n")
+        printf("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n")
 	gothead = 1
     }
 }
+/<meta http-equiv=/{next}
 {
   print
 }
