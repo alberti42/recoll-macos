@@ -114,7 +114,10 @@ HtmlParser::HtmlParser()
 void
 HtmlParser::decode_entities(string &s)
 {
-    // Not used for recoll. Kept here to minimize the amount of diffs
+    // Not used for recoll. Kept here to minimize the amount of
+    // diffs. Almost the same code in myhtmlparse except that the
+    // entity table directly holds the utf-8 strings instead of the
+    // unicode positions (one less conversion).
 #if 0
     // We need a const_iterator version of s.end() - otherwise the
     // find() and find_if() templates don't work...
