@@ -391,7 +391,7 @@ MyHtmlParser::opening_tag(const string &tag)
 				p.params.end()) {
 				charset = k->second;
 				if (!samecharset(charset, fromcharset)) {
-				    LOGDEB1(("Doc specified charset '%s' "
+				    LOGDEB1(("Doc http-equiv charset '%s' "
 					    "differs from dir deflt '%s'\n",
 					    charset.c_str(), 
 					    fromcharset.c_str()));
@@ -399,6 +399,19 @@ MyHtmlParser::opening_tag(const string &tag)
 				}
 			    }
 			}
+		    }
+		}
+		string newcharset;
+		if (get_parameter(cstr_charset, newcharset)) {
+		    // HTML5 added: <meta charset="...">
+		    lowercase_term(newcharset);
+		    charset = newcharset;
+		    if (!samecharset(charset, fromcharset)) {
+			LOGDEB1(("Doc html5 charset '%s' "
+				 "differs from dir deflt '%s'\n",
+				 charset.c_str(), 
+				 fromcharset.c_str()));
+			throw false;
 		    }
 		}
 		break;
