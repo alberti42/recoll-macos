@@ -77,7 +77,7 @@ bool MimeHandlerHtml::next_document()
     map<string,string>::const_iterator it = m_metaData.find(cstr_charset);
     if (it != m_metaData.end() && !it->second.empty()) {
 	charset = it->second;
-	LOGDEB(("MHHtml: next_doc.: input charset from metadata: [%s]\n", 
+	LOGDEB(("MHHtml: next_doc.: input charset from ext. metadata: [%s]\n", 
 		charset.c_str()));
     }
 
