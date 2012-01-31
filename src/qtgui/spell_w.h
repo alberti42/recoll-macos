@@ -35,6 +35,7 @@ public:
 	
     ~SpellW(){}
 
+    virtual bool eventFilter(QObject *target, QEvent *event );
 public slots:
     virtual void doExpand();
     virtual void wordChanged(const QString&);
@@ -47,6 +48,7 @@ signals:
 
 private:
     void init();
+    void copy();
 };
 
 #endif /* _ASPELL_W_H_INCLUDED_ */

@@ -16,6 +16,8 @@
  */
 #include "autoconfig.h"
 
+#include <algorithm>
+
 #include <unistd.h>
 
 #include <list>
@@ -30,6 +32,8 @@
 #include <qcombobox.h>
 #include <QTableWidget>
 #include <QHeaderView>
+#include <QClipboard>
+#include <QKeyEvent>
 
 #include "debuglog.h"
 #include "recoll.h"
@@ -88,23 +92,24 @@ void SpellW::init()
 
     QStringList labels(tr("Term"));
     labels.push_back(tr("Doc. / Tot."));
-    suggsLV->setHorizontalHeaderLabels(labels);
-    suggsLV->setShowGrid(0);
-    suggsLV->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
-    suggsLV->verticalHeader()->setDefaultSectionSize(20); 
-    connect(suggsLV,
+    resTW->setHorizontalHeaderLabels(labels);
+    resTW->setShowGrid(0);
+    resTW->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
+    resTW->verticalHeader()->setDefaultSectionSize(20); 
+    connect(resTW,
 	   SIGNAL(cellDoubleClicked(int, int)),
             this, SLOT(textDoubleClicked(int, int)));
 
-    suggsLV->setColumnWidth(0, 200);
-    suggsLV->setColumnWidth(1, 150);
+    resTW->setColumnWidth(0, 200);
+    resTW->setColumnWidth(1, 150);
+    resTW->installEventFilter(this);
 }
 
 /* Expand term according to current mode */
 void SpellW::doExpand()
 {
     // Can't clear qt4 table widget: resets column headers too
-    suggsLV->setRowCount(0);
+    resTW->setRowCount(0);
     if (baseWordLE->text().isEmpty()) 
 	return;
 
@@ -176,7 +181,7 @@ void SpellW::doExpand()
 
 
     if (res.entries.empty()) {
-        suggsLV->setItem(0, 0, new QTableWidgetItem(tr("No expansion found")));
+        resTW->setItem(0, 0, new QTableWidgetItem(tr("No expansion found")));
     } else {
         int row = 0;
 	for (list<Rcl::TermMatchEntry>::iterator it = res.entries.begin(); 
@@ -187,14 +192,14 @@ void SpellW::doExpand()
 		sprintf(num, "%d / %d",  it->docs, it->wcf);
 	    else
 		num[0] = 0;
-            if (suggsLV->rowCount() <= row)
-                suggsLV->setRowCount(row+1);
-            suggsLV->setItem(row, 0, 
+            if (resTW->rowCount() <= row)
+                resTW->setRowCount(row+1);
+            resTW->setItem(row, 0, 
                     new QTableWidgetItem(QString::fromUtf8(it->term.c_str()))); 
-            suggsLV->setItem(row++, 1, 
+            resTW->setItem(row++, 1, 
                              new QTableWidgetItem(QString::fromAscii(num)));
 	}
-        suggsLV->setRowCount(row+1);
+        resTW->setRowCount(row+1);
     }
 }
 
@@ -202,7 +207,7 @@ void SpellW::wordChanged(const QString &text)
 {
     if (text.isEmpty()) {
 	expandPB->setEnabled(false);
-        suggsLV->setRowCount(0);
+        resTW->setRowCount(0);
     } else {
 	expandPB->setEnabled(true);
     }
@@ -211,7 +216,7 @@ void SpellW::wordChanged(const QString &text)
 void SpellW::textDoubleClicked() {}
 void SpellW::textDoubleClicked(int row, int)
 {
-    QTableWidgetItem *item = suggsLV->item(row, 0);
+    QTableWidgetItem *item = resTW->item(row, 0);
     if (item)
         emit(wordSelect(item->text()));
 }
@@ -222,4 +227,64 @@ void SpellW::modeSet(int mode)
 	stemLangCMB->setEnabled(true);
     else
 	stemLangCMB->setEnabled(false);
+}
+
+void SpellW::copy()
+{
+  QItemSelectionModel * selection = resTW->selectionModel();
+  QModelIndexList indexes = selection->selectedIndexes();
+
+  if(indexes.size() < 1)
+    return;
+
+  // QModelIndex::operator < sorts first by row, then by column. 
+  // this is what we need
+  std::sort(indexes.begin(), indexes.end());
+
+  // You need a pair of indexes to find the row changes
+  QModelIndex previous = indexes.first();
+  indexes.removeFirst();
+  QString selected_text;
+  QModelIndex current;
+  Q_FOREACH(current, indexes)
+  {
+    QVariant data = resTW->model()->data(previous);
+    QString text = data.toString();
+    // At this point `text` contains the text in one cell
+    selected_text.append(text);
+    // If you are at the start of the row the row number of the previous index
+    // isn't the same.  Text is followed by a row separator, which is a newline.
+    if (current.row() != previous.row())
+    {
+      selected_text.append(QLatin1Char('\n'));
+    }
+    // Otherwise it's the same row, so append a column separator, which is a tab.
+    else
+    {
+      selected_text.append(QLatin1Char('\t'));
+    }
+    previous = current;
+  }
+
+  // add last element
+  selected_text.append(resTW->model()->data(current).toString());
+  selected_text.append(QLatin1Char('\n'));
+  qApp->clipboard()->setText(selected_text, QClipboard::Selection);
+  qApp->clipboard()->setText(selected_text, QClipboard::Clipboard);
+}
+
+
+bool SpellW::eventFilter(QObject *target, QEvent *event)
+{
+    if (event->type() != QEvent::KeyPress ||
+	(target != resTW && target != resTW->viewport())) 
+	return false;
+
+    QKeyEvent *keyEvent = (QKeyEvent *)event;
+    if(keyEvent->matches(QKeySequence::Copy) )
+    {
+	copy();
+	return true;
+    }
+    return false;
 }
