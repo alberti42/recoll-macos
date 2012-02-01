@@ -134,6 +134,11 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.abssep, "/Recoll/prefs/reslist/abssep", String,"&hellip;");
     if (!writing && prefs.abssep == "")
 	prefs.abssep = "&hellip;";
+    SETTING_RW(prefs.reslistdateformat, "/Recoll/prefs/reslist/dateformat", 
+	       String,"&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%z");
+    if (!writing && prefs.reslistdateformat == "")
+	prefs.reslistdateformat = "&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%z";
+    prefs.creslistdateformat = (const char*)prefs.reslistdateformat.toUtf8();
 
     SETTING_RW(prefs.reslistfontfamily, "/Recoll/prefs/reslist/fontFamily", String,
 	       "");

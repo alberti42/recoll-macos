@@ -161,7 +161,7 @@ void ResListPager::displayDoc(RclConfig *config,
 	time_t mtime = doc.dmtime.empty() ?
 	    atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
 	struct tm *tm = localtime(&mtime);
-	strftime(datebuf, 99, "&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%z", tm);
+	strftime(datebuf, 99, dateFormat().c_str(), tm);
     }
 
     // Size information. We print both doc and file if they differ a lot
@@ -411,6 +411,12 @@ const string &ResListPager::parFormat()
 				    "%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
 				    "%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
 				    "%A %K");
+    return cstr_format;
+}
+
+const string &ResListPager::dateFormat()
+{
+    static const string cstr_format("&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%z");
     return cstr_format;
 }
 

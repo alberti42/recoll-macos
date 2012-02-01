@@ -106,6 +106,7 @@ public:
     virtual string trans(const string& in);
     virtual string detailsLink();
     virtual const string &parFormat();
+    virtual const string &dateFormat();
     virtual string nextUrl();
     virtual string prevUrl();
     virtual string pageTop() {return string();}

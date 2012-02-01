@@ -71,6 +71,7 @@ public:
     virtual string trans(const string& in);
     virtual string detailsLink();
     virtual const string &parFormat();
+    virtual const string &dateFormat();
     virtual string nextUrl();
     virtual string prevUrl();
     virtual string pageTop();
@@ -139,6 +140,10 @@ string QtGuiResListPager::detailsLink()
 const string& QtGuiResListPager::parFormat()
 {
     return prefs.creslistformat;
+}
+const string& QtGuiResListPager::dateFormat()
+{
+    return prefs.creslistdateformat;
 }
 
 string QtGuiResListPager::nextUrl()

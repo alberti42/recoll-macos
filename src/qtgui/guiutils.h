@@ -50,6 +50,9 @@ class PrefsPack {
     string  creslistformat;
     // Abstract snippet separator
     QString abssep;
+    // Date strftime format
+    QString reslistdateformat;
+    string creslistdateformat;
     QString stylesheetFile;
     QString queryStemLang;
     int mainwidth;
