@@ -34,6 +34,8 @@
 static int stopindexing;
 static int startindexing;
 static bool rezero;
+static vector<Rcl::Doc> idxdocs; // Docs to update. Update all if empty
+
 static IdxThreadStatus indexingstatus = IDXTS_OK;
 static string indexingReason;
 static int stopidxthread;
@@ -99,7 +101,11 @@ void IdxThread::run()
 	    } else {
 		pidfile.write_pid();
 		ConfIndexer *indexer = new ConfIndexer(myconf, this);
-		if (indexer->index(rezero, ConfIndexer::IxTAll)) {
+		bool status = idxdocs.empty() ? 
+		    indexer->index(rezero, ConfIndexer::IxTAll) :
+		    indexer->updateDocs(idxdocs);
+		    
+		if (status) {
 		    indexingstatus = IDXTS_OK;
 		    indexingReason = "";
 		} else {
@@ -152,11 +158,12 @@ void stop_indexing()
     action_wait.wakeAll();
 }
 
-void start_indexing(bool raz)
+void start_indexing(bool raz, vector<Rcl::Doc> docs)
 {
     action_mutex.lock();
     startindexing = 1;
     rezero = raz;
+    idxdocs = docs;
     action_mutex.unlock();
     action_wait.wakeAll();
 }

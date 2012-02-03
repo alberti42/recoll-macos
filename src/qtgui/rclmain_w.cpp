@@ -950,19 +950,38 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
     // empty as this does not appear to be a serious issue for single
     // docs (the main actual problem is displaying the wrong message
     // from a compacted mail folder)
+    //
+    // !! NOTE: there is one case where doing a partial index update
+    // will not worl: if the search result does not exist in the new
+    // version of the file, it won't be purged from the index because
+    // a partial index pass does no purge, so its ref date will stay
+    // the same and you keep getting the message about the index being
+    // out of date. The only way to fix this is to run a normal
+    // indexing pass. 
+    // Also we should re-run the query after updating the index
+    // because the ipaths may be wrong in the current result list
     if (!doc.ipath.empty()) {
 	string udi, sig;
 	doc.getmeta(Rcl::Doc::keyudi, &udi);
 	FileInterner::makesig(doc, sig);
 	if (rcldb && !udi.empty()) {
 	    if (rcldb->needUpdate(udi, sig)) {
-		fprintf(stderr, "AFTER UPDATE CHECK-1\n");
-		QMessageBox::warning(0, tr("Warning"), 
-				     tr("Index not up to date for this file. "
+		int rep = 
+		    QMessageBox::warning(0, tr("Warning"), 
+				       tr("Index not up to date for this file. "
 					"Refusing to risk showing the wrong "
-					"data. Please run indexing"),
-				     QMessageBox::Ok, 
-				     QMessageBox::NoButton);
+					"data. Click ok to update the "
+					"index for this file, then re-run the "
+					"query when indexing is done. "
+					"Else, Cancel."),
+					 QMessageBox::Ok,
+					 QMessageBox::Cancel,
+					 QMessageBox::NoButton);
+		if (rep == QMessageBox::Ok) {
+		    LOGDEB(("Requesting index update for %s\n", 
+			    doc.url.c_str()));
+		    start_indexing(false, vector<Rcl::Doc>(1, doc));
+		}
 		return;
 	    }
 	}

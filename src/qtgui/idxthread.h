@@ -18,6 +18,7 @@
 #define _IDXTHREAD_H_INCLUDED_
 #include <string>
 #include "indexer.h"
+#include "rcldoc.h"
 
 // These two deal with starting / stopping the thread itself, not
 // indexing sessions.
@@ -27,7 +28,8 @@ extern void start_idxthread();
 extern void stop_idxthread();
 
 // Use these to to request action from thread
-extern void start_indexing(bool rezero = false);
+extern void start_indexing(bool rezero = false, 
+			   const vector<Rcl::Doc> docs = vector<Rcl::Doc>());
 extern void stop_indexing();
 
 // Final status of indexing. indexingstatus is NULL iff indexing is

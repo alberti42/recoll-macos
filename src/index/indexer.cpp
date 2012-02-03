@@ -149,6 +149,38 @@ bool ConfIndexer::indexFiles(std::list<string>& ifiles, IxFlag flag)
     return ret;
 }
 
+// Update index for specific documents. The docs come from an index
+// query, so the udi, backend etc. fields are filled.
+bool ConfIndexer::updateDocs(std::vector<Rcl::Doc> &docs, IxFlag flag)
+{
+    list<string> files;
+    for (vector<Rcl::Doc>::iterator it = docs.begin(); it != docs.end(); it++) {
+	Rcl::Doc &idoc = *it;
+	string backend;
+	idoc.getmeta(Rcl::Doc::keybcknd, &backend);
+
+	// This only makes sense for file system files: beagle docs are
+	// always up to date because they can't be updated in the cache,
+	// only added/removed. Same remark as made inside internfile, we
+	// need a generic way to handle backends.
+	if (!backend.empty() && backend.compare("FS"))
+	    continue;
+
+	// Filesystem document. Intern from file.
+	// The url has to be like file://
+	if (idoc.url.find(cstr_fileu) != 0) {
+	    LOGERR(("idx::updateDocs: FS backend and non fs url: [%s]\n",
+		    idoc.url.c_str()));
+	    continue;
+	}
+	files.push_back(idoc.url.substr(7, string::npos));
+    }
+    if (!files.empty()) {
+	return indexFiles(files, flag);
+    }
+    return true;
+}
+
 bool ConfIndexer::purgeFiles(std::list<string> &files)
 {
     list<string> myfiles;

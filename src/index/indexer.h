@@ -29,6 +29,7 @@ using std::map;
 
 #include "rclconfig.h"
 #include "rcldb.h"
+#include "rcldoc.h"
 
 class FsIndexer;
 class BeagleQueueIndexer;
@@ -96,6 +97,10 @@ class ConfIndexer {
     /** Index a list of files. No db cleaning or stemdb updating */
     bool indexFiles(std::list<string> &files, IxFlag f = IxFNone);
 
+    /** Update index for list of documents given as list of docs (out of query)
+     */
+    bool updateDocs(std::vector<Rcl::Doc> &docs, IxFlag f = IxFNone);
+    
     /** Purge a list of files. */
     bool purgeFiles(std::list<string> &files);
 
