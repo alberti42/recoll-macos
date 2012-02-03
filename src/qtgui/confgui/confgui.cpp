@@ -410,7 +410,7 @@ void ConfParamDNLW::showInputDialog()
 		m_lb->findItems(s, Qt::MatchFixedString|Qt::MatchCaseSensitive);
 	    if (m_lb->selectionMode() == QAbstractItemView::SingleSelection && 
 		!items.empty())
-		(*items.begin())->setSelected(TRUE);
+		m_lb->setCurrentItem(*items.begin());
 	    listToConf();
 	}
     }
