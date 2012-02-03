@@ -105,6 +105,7 @@ public:
     virtual int eraseKey(const string &) = 0;
     virtual void listall()  {};
     virtual list<string> getSubKeys() = 0;
+    virtual list<string> getSubKeys(bool) = 0;
     virtual bool holdWrites(bool) = 0;
 };
 
@@ -205,6 +206,7 @@ public:
     /**
      * Return all subkeys 
      */
+    virtual list<string> getSubKeys(bool) {return getSubKeys();}
     virtual list<string> getSubKeys();
 
     virtual string getFilename() {return m_filename;}
@@ -435,7 +437,8 @@ public:
 	return nms;
     }
 
-    virtual list<string> getSubKeys() 
+    virtual list<string> getSubKeys(){return getSubKeys(false);}
+    virtual list<string> getSubKeys(bool shallow)
     {
 	list<string> sks;
 	typename list<T*>::iterator it;
@@ -443,6 +446,8 @@ public:
 	    list<string> lst;
 	    lst = (*it)->getSubKeys();
 	    sks.insert(sks.end(), lst.begin(), lst.end());
+	    if (shallow)
+		break;
 	}
 	sks.sort();
 	sks.unique();

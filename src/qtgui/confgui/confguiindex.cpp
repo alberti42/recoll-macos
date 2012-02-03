@@ -295,7 +295,14 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 	    SLOT(subDirChanged(QListWidgetItem *, QListWidgetItem *)));
     connect(m_subdirs, SIGNAL(entryDeleted(QString)),
 	    this, SLOT(subDirDeleted(QString)));
-    list<string> allkeydirs = config->getSubKeys(); 
+
+    // We only retrieve the subkeys from the user's config (shallow),
+    // no use to confuse the user by showing the subtrees which are
+    // customized in the system config like .thunderbird or
+    // .purple. This doesn't prevent them to add and customize them
+    // further.
+    list<string> allkeydirs = config->getSubKeys(true); 
+
     QStringList qls;
     for (list<string>::const_iterator it = allkeydirs.begin(); 
 	 it != allkeydirs.end(); it++) {
