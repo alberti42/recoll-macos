@@ -66,10 +66,13 @@
           Faqs and Howtos</a> on bitbucket.org, and some contributed
           <a href="custom.html">result list formats</a>.</p>
 
-
       <h2>News: </h2>
       <div class="news">
       <ul>
+        <li>2012-01-27: Recoll does Gnumeric. Gnumeric was the first
+          usable open-source spreadsheet and it really helped me back then,
+          so I was quite happy when someone requested
+          a <a href="filters/filters.html">Gnumeric filter</a>. </li>
         <li>2011-11-26: the result list glitch: ennoying and easily
           worked-around: it will sometimes happen (for a yet
           undetermined reason) that the result list paragraph format
