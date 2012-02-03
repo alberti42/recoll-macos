@@ -45,7 +45,9 @@
 #include "guiutils.h"
 
 #include <list>
+#include <vector>
 using std::list;
+using std::vector;
 
 namespace confgui {
 
@@ -380,19 +382,30 @@ void ConfParamSLW::listToConf()
 
 void ConfParamSLW::deleteSelected()
 {
-    bool didone;
-    do {
-	didone = false;
-	for (int i = 0; i < m_lb->count(); i++) {
-	    if (m_lb->item(i)->isSelected()) {
-		emit entryDeleted(m_lb->item(i)->text());
-		QListWidgetItem *item = m_lb->takeItem(i);
-		delete item;
-		didone = true;
-		break;
-	    }
+    // We used to repeatedly go through the list and delete the first
+    // found selected item (then restart from the beginning). But it
+    // seems (probably depends on the qt version), that, when deleting
+    // a selected item, qt will keep the selection active at the same
+    // index (now containing the next item), so that we'd end up
+    // deleting the whole list.
+    //
+    // Instead, we now build a list of indices, and delete it starting
+    // from the top so as not to invalidate lower indices
+
+    vector<int> idxes;
+    for (int i = 0; i < m_lb->count(); i++) {
+	if (m_lb->item(i)->isSelected()) {
+	    idxes.push_back(i);
 	}
-    } while (didone);
+    }
+    for (vector<int>::reverse_iterator it = idxes.rbegin(); 
+	 it != idxes.rend(); it++) {
+	LOGDEB0(("deleteSelected: %d was selected\n", *it));
+	QListWidgetItem *item = m_lb->takeItem(*it);
+	emit entryDeleted(item->text());
+	delete item;
+    }
+
     listToConf();
 }
 
