@@ -204,4 +204,39 @@ class ExecCmd {
 };
 
 
+/** Rexecute myself with the same arguments. 
+ *
+ * Note that there are some limitations:
+ *  - argv[0] has to be valid: an executable name which will be found in 
+ *    the path when exec is called in the initial working directory. This is 
+ *    by no means guaranteed. The shells do this, but argv[0] could be an
+ *    arbitrary string.
+ *  - The initial working directory must be found and remain valid.
+ *  - We don't try to do anything with fd 0,1,2. If they were changed by the
+ *    program, their initial meaning won't be the same as at the moment of the 
+ *    initial invocation.
+ *  - We don't restore the signals. Signals set to be blocked 
+ *    or ignored by the program will remain ignored even if this was not their
+ *    initial state.
+ *  - The environment is also not restored.
+ *  - Others system aspects ?
+ *  - Other program state: application-dependant
+ * 
+ * In short, this is usable in reasonably controlled situations and if there 
+ * are no security issues involved, but this does not perform miracles.
+ */
+class ReExec {
+public:
+    ReExec() {}
+    ReExec(int argc, char *argv[]);
+    void init(int argc, char *argv[]);
+    void reexec();
+    const string& getreason() {return m_reason;}
+private:
+    vector<string> m_argv;
+    string m_curdir;
+    int    m_cfd;
+    string m_reason;
+};
+
 #endif /* _EXECMD_H_INCLUDED_ */

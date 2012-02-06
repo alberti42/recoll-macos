@@ -173,7 +173,7 @@ ExecCmd::~ExecCmd()
 }
 
 int ExecCmd::startExec(const string &cmd, const list<string>& args,
-		  bool has_input, bool has_output)
+		       bool has_input, bool has_output)
 {
     { // Debug and logging
 	string command = cmd + " ";
@@ -255,7 +255,7 @@ public:
     {
 	if (!m_input) return -1;
 	LOGDEB1(("ExecWriter: input m_cnt %d input length %d\n", m_cnt, 
-		m_input->length()));
+		 m_input->length()));
 	if (m_cnt >= m_input->length()) {
 	    // Fd ready for more but we got none.
 	    if (m_provide) {
@@ -266,7 +266,7 @@ public:
 		    m_cnt = 0;
 		}
 		LOGDEB2(("ExecWriter: provide m_cnt %d input length %d\n", 
-			m_cnt, m_input->length()));
+			 m_cnt, m_input->length()));
 	    } else {
 		return 0;
 	    }
@@ -546,7 +546,7 @@ void ExecCmd::dochild(const string &cmd, const list<string>& args,
     }
 	
     // Fill up argv
-    argv[0] = path_getsimple(cmd).c_str();
+    argv[0] = cmd.c_str();
     int i = 1;
     list<string>::const_iterator it;
     for (it = args.begin(); it != args.end(); it++) {
@@ -574,6 +574,65 @@ void ExecCmd::dochild(const string &cmd, const list<string>& args,
     _exit(127);
 }
 
+ReExec::ReExec(int argc, char *args[])
+{
+    init(argc, args);
+}
+
+void ReExec::init(int argc, char *args[])
+{
+    for (int i = 0; i < argc; i++) {
+	m_argv.push_back(args[i]);
+    }
+    m_cfd = open(".", 0);
+    char *cd = getcwd(0, 0);
+    if (cd) 
+	m_curdir = cd;
+    free(cd);
+}
+
+void ReExec::reexec()
+{
+    char *cwd;
+    cwd = getcwd(0,0);
+    FILE *fp = stdout; //fopen("/tmp/exectrace", "w");
+    if (fp) {
+	fprintf(fp, "reexec: pwd: [%s] args: ", cwd?cwd:"getcwd failed");
+	for (vector<string>::const_iterator it = m_argv.begin();
+	     it != m_argv.end(); it++) {
+	    fprintf(fp, "[%s] ", it->c_str());
+	}
+	fprintf(fp, "\n");
+    }
+    if (m_cfd < 0 || fchdir(m_cfd) < 0) {
+	if (fp) fprintf(fp, "fchdir failed, trying chdir\n");
+	if (!m_curdir.empty() && chdir(m_curdir.c_str())) {
+	    if (fp) fprintf(fp, "chdir failed too\n");
+	}
+    }
+
+    // Close all descriptors except 0,1,2
+    libclf_closefrom(3);
+
+    // Allocate arg vector (1 more for final 0)
+    typedef const char *Ccharp;
+    Ccharp *argv;
+    argv = (Ccharp *)malloc((m_argv.size()+1) * sizeof(char *));
+    if (argv == 0) {
+	LOGERR(("ExecCmd::doexec: malloc() failed. errno %d\n",	errno));
+	return;
+    }
+	
+    // Fill up argv
+    int i = 0;
+    vector<string>::const_iterator it;
+    for (it = m_argv.begin(); it != m_argv.end(); it++) {
+	argv[i++] = it->c_str();
+    }
+    argv[i] = 0;
+    execvp(m_argv[0].c_str(), (char *const*)argv);
+}
+
 ////////////////////////////////////////////////////////////////////
 #else // TEST
 #include <stdio.h>
@@ -593,6 +652,7 @@ static int     op_flags;
 #define OPT_b	  0x4 
 #define OPT_w     0x8
 #define OPT_c     0x10
+#define OPT_r     0x20
 
 const char *data = "Une ligne de donnees\n";
 class MEAdv : public ExecCmdAdvise {
@@ -638,8 +698,9 @@ public:
 
 static char *thisprog;
 static char usage [] =
-"trexecmd [-c] cmd [arg1 arg2 ...]\n" 
+"trexecmd [-c|-r] cmd [arg1 arg2 ...]\n" 
 " -c : test cancellation (ie: trexecmd -c sleep 1000)\n"
+" -r : test reexec\n"
 "trexecmd -w cmd : do the which thing\n"
 ;
 static void Usage(void)
@@ -648,8 +709,11 @@ static void Usage(void)
     exit(1);
 }
 
-int main(int argc, char **argv)
+ReExec reexec;
+
+int main(int argc, char *argv[])
 {
+    reexec.init(argc, argv);
     thisprog = argv[0];
     argc--; argv++;
 
@@ -660,8 +724,9 @@ int main(int argc, char **argv)
 	    Usage();
 	while (**argv)
 	    switch (*(*argv)++) {
-	    case 'w':	op_flags |= OPT_w; break;
 	    case 'c':	op_flags |= OPT_c; break;
+	    case 'r':	op_flags |= OPT_r; break;
+	    case 'w':	op_flags |= OPT_w; break;
 	    default: Usage();	break;
 	    }
     b1: argc--; argv++;
@@ -675,10 +740,17 @@ int main(int argc, char **argv)
     while (argc > 0) {
 	l.push_back(*argv++); argc--;
     }
-
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
     signal(SIGPIPE, SIG_IGN);
+
+    if (op_flags & OPT_r) {
+	chdir("/");
+        argv[0] = strdup("");
+	sleep(1);
+        reexec.reexec();
+    }
+
     if (op_flags & OPT_w) {
 	string path;
 	if (ExecCmd::which(cmd, path)) {
