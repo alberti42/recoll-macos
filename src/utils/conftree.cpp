@@ -585,55 +585,11 @@ int ConfTree::get(const std::string &name, string &value, const string &sk)
 
 #include "conftree.h"
 #include "smallut.h"
+#include "readfile.h"
 
 using namespace std;
 
 static char *thisprog;
-
-static void caterrno(string *reason)
-{
-#define ERRBUFSZ 200    
-    char errbuf[ERRBUFSZ];
-  if (reason) {
-#ifdef sun
-    // Note: sun strerror is noted mt-safe ??
-    *reason += string("file_to_string: open failed: ") + strerror(errno);
-#else
-    strerror_r(errno, errbuf, ERRBUFSZ);
-    *reason += string("file_to_string: open failed: ") + errbuf;
-#endif
-  }
-}
-static bool file_to_string(const string &fn, string &data, string *reason)
-{
-    bool ret = false;
-    int fd = open(fn.c_str(), O_RDONLY);
-    if (fd < 0) {
-        caterrno(reason);
-	return false;
-    }
-    char buf[4096];
-    for (;;) {
-	int n = read(fd, buf, 4096);
-	if (n < 0) {
-	    caterrno(reason);
-	    goto out;
-	}
-	if (n == 0)
-	    break;
-	try {
-	    data.append(buf, n);
-	} catch (...) {
-	    caterrno(reason);
-	    goto out;
-	}
-    }
-    ret = true;
- out:
-    if (fd >= 0)
-	close(fd);
-    return ret;
-}
 
 bool complex_updates(const string& fn)
 {
