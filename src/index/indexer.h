@@ -36,7 +36,9 @@ class BeagleQueueIndexer;
 
 class DbIxStatus {
  public:
-    enum Phase {DBIXS_FILES, DBIXS_PURGE, DBIXS_STEMDB, DBIXS_CLOSING};
+    enum Phase {DBIXS_NONE,
+		DBIXS_FILES, DBIXS_PURGE, DBIXS_STEMDB, DBIXS_CLOSING, 
+		DBIXS_DONE};
     Phase phase;
     string fn;   // Last file processed
     int docsdone;  // Documents processed
@@ -51,13 +53,17 @@ class DbIxStatusUpdater {
  public:
     DbIxStatus status;
     virtual ~DbIxStatusUpdater(){}
-    virtual bool update() = 0;
+
+    // Convenience: change phase/fn and update
     virtual bool update(DbIxStatus::Phase phase, const string& fn)
     {
         status.phase = phase;
         status.fn = fn;
         return update();
     }
+
+    // To be implemented by user for sending info somewhere
+    virtual bool update() = 0;
 };
 
 /**

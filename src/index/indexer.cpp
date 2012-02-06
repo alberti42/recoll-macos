@@ -102,6 +102,8 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun)
 	return false;
     createAspellDict();
     clearMimeHandlerCache();
+    if (m_updater)
+	m_updater->update(DbIxStatus::DBIXS_DONE, string());
     return true;
 }
 

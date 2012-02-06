@@ -23,6 +23,7 @@
 #include <errno.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <fcntl.h>
 
 #include <iostream>
 #include <list>
@@ -76,29 +77,62 @@ static void cleanup()
 // indexing routines.
 int stopindexing;
 
-// Mainly used to request indexing stop, we currently do not use the
-// current file name
+// Receive status updates from the ongoing indexing operation
+// Also check for an interrupt request and return the info to caller which
+// should subsequently orderly terminate what it is doing.
 class MyUpdater : public DbIxStatusUpdater {
  public:
-    virtual bool update() {
+    MyUpdater(RclConfig *config) 
+	: m_prevphase(DbIxStatus::DBIXS_NONE)
+    {
+	m_fd = open(config->getIdxStatusFile().c_str(), 
+		    O_WRONLY|O_CREAT|O_TRUNC, 0600);
+	if (m_fd < 0)
+	    LOGERR(("Can't open/create status file: [%s]\n",
+		    config->getIdxStatusFile().c_str()));
+    }
+
+    virtual bool update() 
+    {
+	// Update the status file. Avoid doing it too often
+	if (status.phase != m_prevphase || m_chron.millis() > 300) {
+	    m_prevphase = status.phase;
+	    m_chron.restart();
+	    lseek(m_fd, 0, 0);
+	    int fd1 = dup(m_fd);
+	    FILE *fp = fdopen(fd1, "w");
+	    fprintf(fp, "phase = %d\n", int(status.phase));
+	    fprintf(fp, "docsdone = %d\n", status.docsdone);
+	    fprintf(fp, "dbtotdocs = %d\n", status.dbtotdocs);
+	    fprintf(fp, "fn = %s\n", status.fn.c_str());
+	    ftruncate(m_fd, off_t(ftell(fp)));
+            // Flush data and closes fd1. m_fd still valid
+	    fclose(fp); 
+	}
+
 	if (stopindexing) {
 	    return false;
 	}
 
-	// If we are in the monitor, we also need to check x status
+	// If we are in the monitor, we also need to check X11 status
 	// during the initial indexing pass (else the user could log
 	// out and the indexing would go on, not good (ie: if the user
 	// logs in again, the new recollindex will fail).
 	if ((op_flags & OPT_m) && !(op_flags & OPT_x) && !x11IsAlive()) {
-	  LOGDEB(("X11 session went away during initial indexing pass\n"));
-	  stopindexing = true;
-	  return false;
+	    LOGDEB(("X11 session went away during initial indexing pass\n"));
+	    stopindexing = true;
+	    return false;
 	}
 
 	return true;
     }
+
+private:
+    int    m_fd;
+    Chrono m_chron;
+    DbIxStatus::Phase m_prevphase;
 };
-static MyUpdater updater;
+static MyUpdater *updater;
 
 static void sigcleanup(int sig)
 {
@@ -111,7 +145,7 @@ static void sigcleanup(int sig)
 static bool makeIndexer(RclConfig *config)
 {
     if (!confindexer)
-	confindexer = new ConfIndexer(config, &updater);
+	confindexer = new ConfIndexer(config, updater);
     if (!confindexer) {
         cerr << "Cannot create indexer" << endl;
         exit(1);
@@ -300,6 +334,7 @@ int main(int argc, const char **argv)
     }
     bool rezero(op_flags & OPT_z);
     Pidfile pidfile(config->getPidfile());
+    updater = new MyUpdater(config);
 
     if (setpriority(PRIO_PROCESS, 0, 20) != 0) {
         LOGINFO(("recollindex: can't setpriority(), errno %d\n", errno));
@@ -383,8 +418,7 @@ int main(int argc, const char **argv)
 	      }
 	    }
 	}
-
-	confindexer = new ConfIndexer(config, &updater);
+	confindexer = new ConfIndexer(config, updater);
 	if (!confindexer->index(rezero, ConfIndexer::IxTAll) || stopindexing) {
 	  LOGERR(("recollindex, initial indexing pass failed, not going into monitor mode\n"));
 	  exit(1);
@@ -412,13 +446,18 @@ int main(int argc, const char **argv)
     } else {
 	lockorexit(&pidfile);
 	pidfile.write_pid();
-	confindexer = new ConfIndexer(config, &updater);
+	confindexer = new ConfIndexer(config, updater);
 	bool status = confindexer->index(rezero, ConfIndexer::IxTAll);
 	if (!status) 
 	    cerr << "Indexing failed" << endl;
         if (!confindexer->getReason().empty())
             cerr << confindexer->getReason() << endl;
+
+        if (updater) {
+	    updater->status.phase = DbIxStatus::DBIXS_DONE;
+	    updater->status.fn.clear();
+	    updater->update();
+	}
 	return !status;
     }
 }
-

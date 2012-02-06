@@ -883,6 +883,10 @@ string RclConfig::getPidfile()
 {
     return path_cat(getConfDir(), "index.pid");
 }
+string RclConfig::getIdxStatusFile()
+{
+    return path_cat(getConfDir(), "idxstatus.txt");
+}
 
 list<string>& RclConfig::getSkippedNames()
 {
