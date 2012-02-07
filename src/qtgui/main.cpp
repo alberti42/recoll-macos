@@ -97,7 +97,6 @@ Aspell *aspell;
 #endif
 
 int recollNeedsExit;
-int startIndexingAfterConfig;
 RclMain *mainWindow;
 
 void startManual(const string& helpindex)
@@ -351,10 +350,6 @@ int main(int argc, char **argv)
     // after mainWindow->show()?
     app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
     app.connect(&app, SIGNAL(aboutToQuit()), mainWindow, SLOT(close()));
-
-    // Start the indexing thread. It will immediately go to sleep waiting for 
-    // something to do.
-    start_idxthread();
 
     mainWindow->sSearch->searchTypCMB->setCurrentIndex(prefs.ssearchTyp);
     mainWindow->sSearch->searchTypeChanged(prefs.ssearchTyp);

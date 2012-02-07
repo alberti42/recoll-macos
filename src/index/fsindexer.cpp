@@ -349,6 +349,7 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 	if (m_updater) {
 	    // Status bar update, abort request etc.
 	    m_updater->status.fn = fn;
+	    ++(m_updater->status.filesdone);
 	    if (!m_updater->update()) {
 		return FsTreeWalker::FtwStop;
 	    }

@@ -103,6 +103,7 @@ class MyUpdater : public DbIxStatusUpdater {
 	    FILE *fp = fdopen(fd1, "w");
 	    fprintf(fp, "phase = %d\n", int(status.phase));
 	    fprintf(fp, "docsdone = %d\n", status.docsdone);
+	    fprintf(fp, "filesdone = %d\n", status.filesdone);
 	    fprintf(fp, "dbtotdocs = %d\n", status.dbtotdocs);
 	    fprintf(fp, "fn = %s\n", status.fn.c_str());
 	    ftruncate(m_fd, off_t(ftell(fp)));
@@ -422,6 +423,11 @@ int main(int argc, const char **argv)
 	if (!confindexer->index(rezero, ConfIndexer::IxTAll) || stopindexing) {
 	  LOGERR(("recollindex, initial indexing pass failed, not going into monitor mode\n"));
 	  exit(1);
+	}
+        if (updater) {
+	    updater->status.phase = DbIxStatus::DBIXS_MONITOR;
+	    updater->status.fn.clear();
+	    updater->update();
 	}
 	deleteZ(confindexer);
 	int opts = RCLMON_NONE;

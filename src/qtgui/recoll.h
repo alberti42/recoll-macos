@@ -20,7 +20,6 @@
 
 #include "rclconfig.h"
 #include "rcldb.h"
-#include "idxthread.h"
 #include "ptmutex.h"
 
 // Misc declarations in need of sharing between the UI files
@@ -41,7 +40,6 @@ extern void forgetTempFile(string &fn);
 
 extern Rcl::Db *rcldb;
 extern int recollNeedsExit;
-extern int startIndexingAfterConfig; // 1st startup
 extern void startManual(const string& helpindex);
 
 #ifdef RCL_USE_ASPELL

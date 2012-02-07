@@ -48,6 +48,7 @@ using std::pair;
 #include <qapplication.h>
 #include <qcursor.h>
 #include <qevent.h>
+#include <QFileSystemWatcher>
 
 #include "recoll.h"
 #include "debuglog.h"
@@ -73,6 +74,7 @@ using std::pair;
 #include "idxsched.h"
 #include "crontool.h"
 #include "rtitool.h"
+#include "indexer.h"
 
 using namespace confgui;
 
@@ -97,7 +99,8 @@ void RclMain::init()
 				(const char *)tr("filtered").toUtf8());
 
     periodictimer = new QTimer(this);
-
+    m_watcher.addPath(QString::fromLocal8Bit(
+			  theconfig->getIdxStatusFile().c_str()));
     // At least some versions of qt4 don't display the status bar if
     // it's not created here.
     (void)statusBar();
@@ -203,6 +206,8 @@ void RclMain::init()
     connect(sc, SIGNAL (activated()), 
 	    this, SLOT (focusToSearch()));
 
+    connect(&m_watcher, SIGNAL(fileChanged(QString)), 
+	    this, SLOT(idxStatus()));
     connect(sSearch, SIGNAL(startSearch(RefCntr<Rcl::SearchData>)), 
 	    this, SLOT(startSearch(RefCntr<Rcl::SearchData>)));
     connect(sSearch, SIGNAL(clearSearch()), 
@@ -473,82 +478,117 @@ void RclMain::fileExit()
     // We'd prefer to do this in the exit handler, but it's apparently to late
     // and some of the qt stuff is already dead at this point?
     LOGDEB2(("RclMain::fileExit() : stopping idx thread\n"));
-    stop_idxthread();
+
+    // Do we want to stop an ongoing index operation here ? 
+    // I guess not. We did use to cancel the indexing thread.
+
     // Let the exit handler clean up the rest (internal recoll stuff).
     exit(0);
 }
 
-// This is called by a periodic timer to check the status of the
-// indexing thread and a possible need to exit
+void RclMain::idxStatus()
+{
+    ConfSimple cs(theconfig->getIdxStatusFile().c_str(), 1);
+    QString msg = tr("Indexing in progress: ");
+    DbIxStatus status;
+    string val;
+    cs.get("phase", val);
+    status.phase = DbIxStatus::Phase(atoi(val.c_str()));
+    cs.get("fn", status.fn);
+    cs.get("docsdone", val);
+    status.docsdone = atoi(val.c_str());
+    cs.get("filesdone", val);
+    status.filesdone = atoi(val.c_str());
+    cs.get("dbtotdocs", val);
+    status.dbtotdocs = atoi(val.c_str());
+
+    QString phs;
+    switch (status.phase) {
+    case DbIxStatus::DBIXS_NONE:phs=tr("None");break;
+    case DbIxStatus::DBIXS_FILES: phs=tr("Updating");break;
+    case DbIxStatus::DBIXS_PURGE: phs=tr("Purge");break;
+    case DbIxStatus::DBIXS_STEMDB: phs=tr("Stemdb");break;
+    case DbIxStatus::DBIXS_CLOSING:phs=tr("Closing");break;
+    case DbIxStatus::DBIXS_DONE:phs=tr("Done");break;
+    case DbIxStatus::DBIXS_MONITOR:phs=tr("Monitor");break;
+    default: phs=tr("Unknown");break;
+    }
+    msg += phs + " ";
+    if (status.phase == DbIxStatus::DBIXS_FILES) {
+	char cnts[100];
+	if (status.dbtotdocs > 0)
+	    sprintf(cnts,"(%d/%d/%d) ", status.docsdone, status.filesdone, 
+		    status.dbtotdocs);
+	else
+	    sprintf(cnts, "(%d/%d) ", status.docsdone, status.filesdone);
+	msg += QString::fromAscii(cnts) + " ";
+    }
+    string mf;int ecnt = 0;
+    string fcharset = theconfig->getDefCharset(true);
+    if (!transcode(status.fn, mf, fcharset, "UTF-8", &ecnt) || ecnt) {
+	mf = url_encode(status.fn, 0);
+    }
+    msg += QString::fromUtf8(mf.c_str());
+    statusBar()->showMessage(msg, 4000);
+}
+
+// This is called by a periodic timer to check the status of 
+// indexing, a possible need to exit, and cleanup exited viewers
 void RclMain::periodic100()
 {
-    // Check if indexing thread done
-    if (idxthread_getStatus() != IDXTS_NULL) {
-	// Indexing is stopped
-	fileToggleIndexingAction->setText(tr("Update &Index"));
-	fileToggleIndexingAction->setEnabled(TRUE);
-	if (m_idxStatusAck == false) {
-	    m_idxStatusAck = true;
-	    if (idxthread_getStatus() != IDXTS_OK) {
-		if (idxthread_idxInterrupted()) {
-		    QMessageBox::warning(0, "Recoll", 
-					 tr("Indexing interrupted"));
-		} else {
-		    QMessageBox::warning(0, "Recoll", 
-		       QString::fromAscii(idxthread_getReason().c_str()));
-		}
+    LOGDEB2(("Periodic100\n"));
+    if (m_idxproc) {
+	// An indexing process was launched. If its' done, see status.
+	int status;
+	bool exited = m_idxproc->maybereap(&status);
+	if (exited) {
+	    deleteZ(m_idxproc);
+	    if (status) {
+		QMessageBox::warning(0, "Recoll", 
+				     tr("Indexing failed"));
 	    }
-	    // Make sure we reopen the db to get the results. If there
-	    // is current search data, we should reset it else things
-	    // are inconsistent (ie: applying sort will fail. But we
-	    // don't like erasing results while the user may be
-	    // looking at them either). Fixing this would be
-	    // relatively complicated (keep an open/close gen number
-	    // and check this / restart query in DocSeqDb() ?)
 	    string reason;
 	    maybeOpenDb(reason, 1);
-            periodictimer->setInterval(1000);
+	} else {
+	    // update/show status even if the status file did not
+	    // change (else the status line goes blank during
+	    // lengthy operations).
+	    idxStatus();
 	}
-    } else {
-	// Indexing is running
-	m_idxStatusAck = false;
+    }
+    // Update the "start/stop indexing" menu entry, can't be done from
+    // the "start/stop indexing" slot itself
+    if (m_idxproc) {
 	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
 	fileToggleIndexingAction->setEnabled(TRUE);
-        periodictimer->setInterval(100);
-	// The toggle thing is for the status to flash
-	if (m_periodicToggle < 9) {
-	    QString msg = tr("Indexing in progress: ");
-	    DbIxStatus status = idxthread_idxStatus();
-	    QString phs;
-	    switch (status.phase) {
-	    case DbIxStatus::DBIXS_FILES: phs=tr("Files");break;
-	    case DbIxStatus::DBIXS_PURGE: phs=tr("Purge");break;
-	    case DbIxStatus::DBIXS_STEMDB: phs=tr("Stemdb");break;
-	    case DbIxStatus::DBIXS_CLOSING:phs=tr("Closing");break;
-	    default: phs=tr("Unknown");break;
-	    }
-	    msg += phs + " ";
-	    if (status.phase == DbIxStatus::DBIXS_FILES) {
-		char cnts[100];
-		if (status.dbtotdocs>0)
-		    sprintf(cnts,"(%d/%d) ",status.docsdone, status.dbtotdocs);
-		else
-		    sprintf(cnts, "(%d) ", status.docsdone);
-		msg += QString::fromAscii(cnts) + " ";
-	    }
-	    string mf;int ecnt = 0;
-	    string fcharset = theconfig->getDefCharset(true);
-	    if (!transcode(status.fn, mf, fcharset, "UTF-8", &ecnt) || ecnt) {
-		mf = url_encode(status.fn, 0);
-	    }
-	    msg += QString::fromUtf8(mf.c_str());
-	    statusBar()->showMessage(msg, 4000);
-	} else if (m_periodicToggle == 9) {
-	    statusBar()->showMessage("");
-	}
-	if (++m_periodicToggle >= 10)
-	    m_periodicToggle = 0;
+    } else {
+	fileToggleIndexingAction->setText(tr("Update &Index"));
+	// No indexer of our own runnin, but the real time one may be up, check
+	// for some other indexer.
+	Pidfile pidfile(theconfig->getPidfile());
+	if (pidfile.open() == 0) {
+	    fileToggleIndexingAction->setEnabled(TRUE);
+	} else {
+	    fileToggleIndexingAction->setEnabled(FALSE);
+	}	    
     }
+
+    // Possibly cleanup the dead viewers
+    for (vector<ExecCmd*>::iterator it = m_viewers.begin();
+	 it != m_viewers.end(); it++) {
+	int status;
+	if ((*it)->maybereap(&status)) {
+	    deleteZ(*it);
+	}
+    }
+    vector<ExecCmd*> v;
+    for (vector<ExecCmd*>::iterator it = m_viewers.begin();
+	 it != m_viewers.end(); it++) {
+	if (*it)
+	    v.push_back(*it);
+    }
+    m_viewers = v;
+
     if (recollNeedsExit)
 	fileExit();
 }
@@ -558,14 +598,16 @@ void RclMain::periodic100()
 // re-enabled by the indexing status check
 void RclMain::toggleIndexing()
 {
-    if (idxthread_getStatus() == IDXTS_NULL) {
-	// Indexing was in progress, stop it
-	stop_indexing();
-        periodictimer->setInterval(1000);
-	fileToggleIndexingAction->setText(tr("Update &Index"));
+    if (m_idxproc) {
+	// Indexing was in progress, request stop. Let the periodic
+	// routine check for the results.
+	kill(m_idxproc->getChildPid(), SIGTERM);
     } else {
-	start_indexing(false);
-        periodictimer->setInterval(100);
+	list<string> args;
+	args.push_back("-c");
+	args.push_back(theconfig->getConfDir());
+	m_idxproc = new ExecCmd;
+	m_idxproc->startExec("recollindex", args, false, false);
 	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
     }
     fileToggleIndexingAction->setEnabled(FALSE);
@@ -574,15 +616,14 @@ void RclMain::toggleIndexing()
 // Start a db query and set the reslist docsource
 void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
 {
-    LOGDEB(("RclMain::startSearch. Indexing %s\n", 
-	    idxthread_getStatus() == IDXTS_NULL?"on":"off"));
+    LOGDEB(("RclMain::startSearch. Indexing %s\n", m_idxproc?"on":"off"));
     emit searchReset();
     m_source = RefCntr<DocSequence>();
 
     // The db may have been closed at the end of indexing
     string reason;
     // If indexing is being performed, we reopen the db at each query.
-    if (!maybeOpenDb(reason, idxthread_getStatus() == IDXTS_NULL)) {
+    if (!maybeOpenDb(reason, m_idxproc != 0)) {
 	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
 	return;
     }
@@ -970,7 +1011,7 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
 		    QMessageBox::warning(0, tr("Warning"), 
 				       tr("Index not up to date for this file. "
 					"Refusing to risk showing the wrong "
-					"data. Click ok to update the "
+					"entry. Click Ok to update the "
 					"index for this file, then re-run the "
 					"query when indexing is done. "
 					"Else, Cancel."),
@@ -980,7 +1021,8 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
 		if (rep == QMessageBox::Ok) {
 		    LOGDEB(("Requesting index update for %s\n", 
 			    doc.url.c_str()));
-		    start_indexing(false, vector<Rcl::Doc>(1, doc));
+		    vector<Rcl::Doc> docs(1, doc);
+		    updateIdxForDocs(docs);
 		}
 		return;
 	    }
@@ -1021,6 +1063,30 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
 	curPreview->show();
     } 
     curPreview->makeDocCurrent(doc, docnum);
+}
+
+void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
+{
+    if (m_idxproc) {
+	QMessageBox::warning(0, tr("Warning"), 
+			     tr("Can't update index: indexer running"),
+			     QMessageBox::Ok, 
+			     QMessageBox::NoButton);
+	return;
+    }
+	
+    vector<string> paths;
+    if (ConfIndexer::docsToPaths(docs, paths)) {
+	list<string> args;
+	args.push_back("-c");
+	args.push_back(theconfig->getConfDir());
+	args.push_back("-i");
+	args.insert(args.end(), paths.begin(), paths.end());
+	m_idxproc = new ExecCmd;
+	m_idxproc->startExec("recollindex", args, false, false);
+	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
+    }
+    fileToggleIndexingAction->setEnabled(FALSE);
 }
 
 /** 

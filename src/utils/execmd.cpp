@@ -17,6 +17,7 @@
 #ifndef TEST_EXECMD
 #include "autoconfig.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/stat.h>
@@ -138,7 +139,7 @@ public:
 	int status;
 	if (m_parent->m_pid > 0) {
             pid_t grp = getpgid(m_parent->m_pid);
-	    LOGDEB2(("ExecCmd: killpg(%d, SIGTERM)\n", grp));
+	    LOGDEB(("ExecCmd: killpg(%d, SIGTERM)\n", grp));
             int ret = killpg(grp, SIGTERM);
 	    if (ret == 0) {
 		for (int i = 0; i < 3; i++) {
@@ -385,7 +386,10 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
     // Normal return: deactivate cleaner, wait() will do the cleanup
     e.inactivate();
 
-    return ExecCmd::wait(ret);
+    int ret1 = ExecCmd::wait();
+    if (ret)
+	return -1;
+    return ret1;
 }
 
 int ExecCmd::send(const string& data)
@@ -457,17 +461,46 @@ int ExecCmd::getline(string& data)
 }
 
 // Wait for command status and clean up all resources.
-int ExecCmd::wait(bool haderror)
+int ExecCmd::wait()
 {
     ExecCmdRsrc e(this);
     int status = -1;
     if (!m_killRequest && m_pid > 0) {
-	if (waitpid(m_pid, &status, 0) < 0) 
+	if (waitpid(m_pid, &status, 0) < 0) {
+	    LOGERR(("ExecCmd::waitpid: returned -1 errno %d\n", errno));
 	    status = -1;
+	}
         LOGDEB(("ExecCmd::wait: got status 0x%x\n", status));
 	m_pid = -1;
     }
-    return haderror ? -1 : status;
+    // Let the ExecCmdRsrc cleanup
+    return status;
+}
+
+bool ExecCmd::maybereap(int *status)
+{
+    ExecCmdRsrc e(this);
+    *status = -1;
+
+    if (m_pid <= 0) {
+	// Already waited for ??
+	return true;
+    }
+
+    pid_t pid = waitpid(m_pid, status, WNOHANG);
+    if (pid < 0) {
+        LOGERR(("ExecCmd::maybereap: returned -1 errno %d\n", errno));
+	m_pid = -1;
+	return true;
+    } else if (pid == 0) {
+	LOGDEB1(("ExecCmd::maybereap: not exited yet\n"));
+	e.inactivate();
+	return false;
+    } else {
+        LOGDEB(("ExecCmd::maybereap: got status 0x%x\n", status));
+	m_pid = -1;
+	return true;
+    }
 }
 
 // In child process. Set up pipes, environment, and exec command. 
@@ -591,8 +624,11 @@ void ReExec::init(int argc, char *args[])
     free(cd);
 }
 
+// Reexecute myself, as close as possible to the initial exec
 void ReExec::reexec()
 {
+
+#if 0
     char *cwd;
     cwd = getcwd(0,0);
     FILE *fp = stdout; //fopen("/tmp/exectrace", "w");
@@ -604,10 +640,13 @@ void ReExec::reexec()
 	}
 	fprintf(fp, "\n");
     }
+#endif
+
+    // Try to get back to the initial working directory
     if (m_cfd < 0 || fchdir(m_cfd) < 0) {
-	if (fp) fprintf(fp, "fchdir failed, trying chdir\n");
+	LOGINFO(("ReExec::reexec: fchdir failed, trying chdir\n"));
 	if (!m_curdir.empty() && chdir(m_curdir.c_str())) {
-	    if (fp) fprintf(fp, "chdir failed too\n");
+	    LOGERR(("ReExec::reexec: chdir failed\n"));
 	}
     }
 

@@ -107,7 +107,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun)
     return true;
 }
 
-bool ConfIndexer::indexFiles(std::list<string>& ifiles, IxFlag flag)
+bool ConfIndexer::indexFiles(list<string>& ifiles, IxFlag flag)
 {
     list<string> myfiles;
     for (list<string>::const_iterator it = ifiles.begin(); 
@@ -151,11 +151,8 @@ bool ConfIndexer::indexFiles(std::list<string>& ifiles, IxFlag flag)
     return ret;
 }
 
-// Update index for specific documents. The docs come from an index
-// query, so the udi, backend etc. fields are filled.
-bool ConfIndexer::updateDocs(std::vector<Rcl::Doc> &docs, IxFlag flag)
+bool ConfIndexer::docsToPaths(vector<Rcl::Doc> &docs, vector<string> &paths)
 {
-    list<string> files;
     for (vector<Rcl::Doc>::iterator it = docs.begin(); it != docs.end(); it++) {
 	Rcl::Doc &idoc = *it;
 	string backend;
@@ -168,15 +165,24 @@ bool ConfIndexer::updateDocs(std::vector<Rcl::Doc> &docs, IxFlag flag)
 	if (!backend.empty() && backend.compare("FS"))
 	    continue;
 
-	// Filesystem document. Intern from file.
-	// The url has to be like file://
+	// Filesystem document. The url has to be like file://
 	if (idoc.url.find(cstr_fileu) != 0) {
-	    LOGERR(("idx::updateDocs: FS backend and non fs url: [%s]\n",
+	    LOGERR(("idx::docsToPaths: FS backend and non fs url: [%s]\n",
 		    idoc.url.c_str()));
 	    continue;
 	}
-	files.push_back(idoc.url.substr(7, string::npos));
+	paths.push_back(idoc.url.substr(7, string::npos));
     }
+    return true;
+}
+
+// Update index for specific documents. The docs come from an index
+// query, so the udi, backend etc. fields are filled.
+bool ConfIndexer::updateDocs(std::vector<Rcl::Doc> &docs, IxFlag flag)
+{
+    vector<string> paths;
+    docsToPaths(docs, paths);
+    list<string> files(paths.begin(), paths.end());
     if (!files.empty()) {
 	return indexFiles(files, flag);
     }

@@ -19,6 +19,7 @@
 
 #include <qvariant.h>
 #include <qmainwindow.h>
+#include <QFileSystemWatcher>
 
 #include "sortseq.h"
 #include "preview_w.h"
@@ -66,7 +67,7 @@ public:
 	  displayingTable(0),
           m_idNoStem(0),
           m_idAllStem(0),
-	  m_idxStatusAck(false),
+	  m_idxproc(0),
 	  m_sortspecnochange(false),
 	  m_periodicToggle(0)
     {
@@ -80,6 +81,7 @@ public:
 public slots:
     virtual bool close();
     virtual void fileExit();
+    virtual void idxStatus();
     virtual void periodic100();
     virtual void toggleIndexing();
     virtual void startSearch(RefCntr<Rcl::SearchData> sdata);
@@ -155,11 +157,12 @@ private:
     bool            displayingTable;
     QAction          *m_idNoStem;
     QAction          *m_idAllStem;
+    QFileSystemWatcher m_watcher;
 
     vector<ExecCmd*>  m_viewers;
+    ExecCmd          *m_idxproc; // Indexing process
     map<QString, QAction*> m_stemLangToId;
     vector<string>    m_catgbutvec;
-    bool              m_idxStatusAck; // Did we act on last status?
     DocSeqFiltSpec    m_filtspec;
     bool              m_sortspecnochange;
     DocSeqSortSpec    m_sortspec;
@@ -175,6 +178,7 @@ private:
     virtual void showIndexSched(bool modal);
     virtual void showCronTool(bool modal);
     virtual void showRTITool(bool modal);
+    virtual void updateIdxForDocs(vector<Rcl::Doc>&);
 };
 
 #endif // RCLMAIN_W_H

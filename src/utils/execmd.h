@@ -120,7 +120,7 @@ class ExecCmd {
      * @param args the argument list (NOT including argv[0]).
      * @param input Input to send TO the command.
      * @param output Output FROM the command.
-     * @return the exec ouput status (0 if ok).
+     * @return the exec ouput status (0 if ok), or -1
      */
     int doexec(const string &cmd, const list<string>& args, 
 	       const string *input = 0, 
@@ -135,7 +135,11 @@ class ExecCmd {
     int send(const string& data);
     int receive(string& data, int cnt = -1);
     int getline(string& data);
-    int wait(bool haderror = false);
+    int wait();
+    /** Wait with WNOHANG set. 
+	@return true if process exited, false else.
+	@param O: status, the wait(2) call's status value */
+    bool maybereap(int *status);
 
     pid_t getChildPid() {return m_pid;}
 

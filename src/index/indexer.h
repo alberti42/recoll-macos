@@ -20,11 +20,13 @@
 #include <string>
 #include <list>
 #include <map>
+#include <vector>
 
 #ifndef NO_NAMESPACES
 using std::string;
 using std::list;
 using std::map;
+using std::vector;
 #endif
 
 #include "rclconfig.h"
@@ -38,12 +40,19 @@ class DbIxStatus {
  public:
     enum Phase {DBIXS_NONE,
 		DBIXS_FILES, DBIXS_PURGE, DBIXS_STEMDB, DBIXS_CLOSING, 
+		DBIXS_MONITOR,
 		DBIXS_DONE};
     Phase phase;
     string fn;   // Last file processed
-    int docsdone;  // Documents processed
+    int docsdone;  // Documents actually updated
+    int filesdone; // Files tested (updated or not)
     int dbtotdocs;  // Doc count in index at start
-    void reset() {phase = DBIXS_FILES;fn.erase();docsdone=dbtotdocs=0;}
+    void reset() 
+    {
+	phase = DBIXS_FILES;
+	fn.erase();
+	docsdone = filesdone = dbtotdocs = 0;
+    }
     DbIxStatus() {reset();}
 };
 
@@ -101,14 +110,14 @@ class ConfIndexer {
     static list<string> getStemmerNames();
 
     /** Index a list of files. No db cleaning or stemdb updating */
-    bool indexFiles(std::list<string> &files, IxFlag f = IxFNone);
+    bool indexFiles(list<string> &files, IxFlag f = IxFNone);
 
     /** Update index for list of documents given as list of docs (out of query)
      */
-    bool updateDocs(std::vector<Rcl::Doc> &docs, IxFlag f = IxFNone);
-    
+    bool updateDocs(vector<Rcl::Doc> &docs, IxFlag f = IxFNone);
+    static bool docsToPaths(vector<Rcl::Doc> &docs, vector<string> &paths);
     /** Purge a list of files. */
-    bool purgeFiles(std::list<string> &files);
+    bool purgeFiles(list<string> &files);
 
  private:
     RclConfig *m_config;

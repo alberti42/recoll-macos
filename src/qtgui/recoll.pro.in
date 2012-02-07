@@ -30,7 +30,6 @@ SOURCES += \
         confgui/confguiindex.cpp \
         crontool.cpp \
         guiutils.cpp \
-        idxthread.cpp \
         main.cpp \
         preview_w.cpp \
         rclhelp.cpp \

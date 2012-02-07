@@ -33,7 +33,6 @@ using std::list;
 
 #include "confgui.h"
 #include "recoll.h"
-#include "idxthread.h"
 #include "confguiindex.h"
 #include "smallut.h"
 #include "debuglog.h"
@@ -85,10 +84,6 @@ void ConfIndexW::acceptChanges()
     m_rclconf->updateMainConfig();
     snapshotConfig();
 
-    if (startIndexingAfterConfig) {
-	startIndexingAfterConfig = 0;
-	start_indexing(true);
-    }
     hide();
 }
 
