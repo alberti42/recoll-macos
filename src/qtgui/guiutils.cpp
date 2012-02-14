@@ -37,7 +37,7 @@ RclDynConf *g_dynconf;
 // introducing blank space.
 const char *PrefsPack::dfltResListFormat = 
 #if 1
-	"<table><tr><td><img src='%I'></td>"
+	"<table><tr><td><img src='%I' width='64'></td>"
 	"<td>%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
 	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
 	"%A %K</td></tr></table>"
@@ -49,10 +49,10 @@ const char *PrefsPack::dfltResListFormat =
 #endif
     ;
 
-const char *v114reslistformat = "<img src=\"%I\" align=\"left\">"
-	"%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
-	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i>&nbsp;%i<br>"
-	"%A %K";
+const char* v162reslistformat="<table><tr><td><img src='%I'></td>"
+    "<td>%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
+    "%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
+    "%A %K</td></tr></table>";
 
 
 // The global preferences structure
@@ -151,7 +151,7 @@ void rwSettings(bool writing)
 	// If the current value of the format is the default for the
 	// previous version, replace it with the new default. We
 	// should have a flag to say if it was changed instead
-	if (!prefs.creslistformat.compare(v114reslistformat)) {
+	if (!prefs.creslistformat.compare(v162reslistformat)) {
 	    LOGDEB(("Replacing old default format\n"));
 	    prefs.reslistformat = rlfDflt;
 	    prefs.creslistformat = (const char*)prefs.reslistformat.toUtf8();

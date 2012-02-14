@@ -138,7 +138,7 @@ void ResListPager::displayDoc(RclConfig *config,
     }
 
     // Determine icon to display if any
-    string iconpath = iconPath(config, doc.mimetype);
+    string iconurl = iconUrl(config, doc);
 
     // Printable url: either utf-8 if transcoding succeeds, or url-encoded
     string url;
@@ -225,7 +225,7 @@ void ResListPager::displayDoc(RclConfig *config,
     map<string,string> subs;
     subs["A"] = !richabst.empty() ? richabst : "";
     subs["D"] = datebuf;
-    subs["I"] = iconpath;
+    subs["I"] = iconurl;
     subs["i"] = doc.ipath;
     subs["K"] = !doc.meta[Rcl::Doc::keykw].empty() ? 
 	string("[") + escapeHtml(doc.meta[Rcl::Doc::keykw]) + "]" : "";
@@ -379,12 +379,12 @@ string ResListPager::prevUrl()
     return "p-1";
 }
 
-string ResListPager::iconPath(RclConfig *config, const string& mtype)
+string ResListPager::iconUrl(RclConfig *config, Rcl::Doc& doc)
 {
-    string iconpath;
-    config->getMimeIconName(mtype, &iconpath);
-    iconpath = cstr_fileu + iconpath;
-    return iconpath;
+    string iconurl;
+    config->getMimeIconName(doc.mimetype, &iconurl);
+    iconurl = cstr_fileu + iconurl;
+    return iconurl;
 }
 
 bool ResListPager::append(const string& data)

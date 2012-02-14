@@ -49,6 +49,7 @@
 #include "plaintorich.h"
 #include "refcntr.h"
 #include "internfile.h"
+#include "indexer.h"
 
 #include "reslist.h"
 #include "moc_reslist.cpp"
@@ -75,9 +76,9 @@ public:
     virtual string nextUrl();
     virtual string prevUrl();
     virtual string pageTop();
-    virtual string iconPath(const string& mt);
     virtual void suggest(const vector<string>uterms, vector<string>&sugg);
     virtual string absSep() {return (const char *)(prefs.abssep.toUtf8());}
+    virtual string iconUrl(RclConfig *, Rcl::Doc& doc);
 private:
     ResList *m_parent;
 };
@@ -161,12 +162,6 @@ string QtGuiResListPager::pageTop()
     return string();
 }
 
-string QtGuiResListPager::iconPath(const string& mtype)
-{
-    string iconpath;
-    theconfig->getMimeIconName(mtype, &iconpath);
-    return iconpath;
-}
 
 void QtGuiResListPager::suggest(const vector<string>uterms, vector<string>&sugg)
 {
@@ -200,6 +195,24 @@ void QtGuiResListPager::suggest(const vector<string>uterms, vector<string>&sugg)
 #endif
 
 }
+
+string QtGuiResListPager::iconUrl(RclConfig *config, Rcl::Doc& doc)
+{
+    if (doc.ipath.empty()) {
+	vector<Rcl::Doc> docs;
+	docs.push_back(doc);
+	vector<string> paths;
+	ConfIndexer::docsToPaths(docs, paths);
+	if (!paths.empty()) {
+	    string path;
+	    if (thumbPathForUrl(cstr_fileu + paths[0], 128, path)) {
+		return cstr_fileu + path;
+	    }
+	}
+    }
+    return ResListPager::iconUrl(config, doc);
+}
+
 /////// /////// End reslistpager methods
 
 class PlainToRichQtReslist : public PlainToRich {

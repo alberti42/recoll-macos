@@ -110,7 +110,7 @@ public:
     virtual string nextUrl();
     virtual string prevUrl();
     virtual string pageTop() {return string();}
-    virtual string iconPath(RclConfig *, const string& mtype);
+    virtual string iconUrl(RclConfig *, Rcl::Doc& doc);
     virtual void suggest(const vector<string>, vector<string>&sugg) {
         sugg.clear();
     }

@@ -58,6 +58,7 @@ using std::stack;
 #include "pathut.h"
 #include "transcode.h"
 #include "wipedir.h"
+#include "md5.h"
 
 bool fsocc(const string &path, int *pc, long *blocks)
 {
@@ -559,6 +560,47 @@ int Pidfile::remove()
     return unlink(m_path.c_str());
 }
 
+// Freedesktop standard paths for thumbnails
+
+// Place for 256x256 files
+static const string thmbdirlarge = ".thumbnails/large";
+// 128x128
+static const string thmbdirnormal = ".thumbnails/normal";
+
+static void thumbname(const string& url, string& name)
+{
+    string digest;
+    MD5String(url, digest);
+    MD5HexPrint(digest, name);
+    name += ".png";
+}
+
+bool thumbPathForUrl(const string& url, int size, string& path)
+{
+    string name;
+    thumbname(url, name);
+    if (size <= 128) {
+	path = path_cat(path_home(), thmbdirnormal);
+	path = path_cat(path, name);
+	if (access(path.c_str(), R_OK) == 0) {
+	    return true;
+	}
+    } 
+    path = path_cat(path_home(), thmbdirlarge);
+    path = path_cat(path, name);
+    if (access(path.c_str(), R_OK) == 0) {
+	return true;
+    }
+
+    // File does not exist. Path corresponds to the large version at this point,
+    // fix it if needed.
+    if (size <= 128) {
+	path = path_cat(path_home(), thmbdirnormal);
+	path = path_cat(path, name);
+    }
+    return false;
+}
+
 #else // TEST_PATHUT
 #include <stdlib.h>
 #include <iostream>
@@ -645,7 +687,7 @@ int main(int argc, const char **argv)
   printf("pc %d, megabytes %ld\n", pc, blocks);
 #endif
 
-#if 1
+#if 0
   Pidfile pidfile("/tmp/pathutpidfile");
   pid_t pid;
   if ((pid = pidfile.open()) != 0) {
@@ -657,6 +699,35 @@ int main(int argc, const char **argv)
   sleep(10);
   pidfile.close();
   pidfile.remove();
+#endif
+
+#if 1
+  if (argc != 2) {
+      fprintf(stderr, "Usage: thumbpath <filepath> <size>\n");
+      exit(1);
+  }
+
+  string input = *argv++;
+  int size = atoi(*argv++);
+
+  if (input.empty())  {
+      fprintf(stderr, "Usage: thumbpath <filepath> <size>\n");
+      exit(1);
+  }
+
+  // Make absolute path if needed
+  if (input[0] != '/') {
+      input = path_absolute(input);
+  }
+  input = string("file://") + path_canon(input);
+  string path;
+  if (thumbPathForUrl(input, size, path)) {
+      cout << "Thumbnail for [" << input << "] [" << path << "]" << endl;
+  } else {
+      cout << "No thumbnail for [" << input << "] path [" << path << "]" <<endl;
+  }
+  
+  exit(0);
 #endif
 
     return 0;

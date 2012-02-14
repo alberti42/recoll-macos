@@ -129,4 +129,11 @@ private:
     int flopen();
 };
 
+
+
+// Freedesktop thumbnail standard path routine
+// On return, path will have the appropriate value in all cases,
+// returns true if the file already exists
+extern bool thumbPathForUrl(const string& url, int size, string& path);
+
 #endif /* _PATHUT_H_INCLUDED_ */

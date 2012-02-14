@@ -45,6 +45,7 @@
 #include "reslist.h"
 #include "rclconfig.h"
 #include "plaintorich.h"
+#include "indexer.h"
 
 // Compensate for the default and somewhat bizarre vertical placement
 // of text in cells
@@ -77,8 +78,8 @@ public:
     virtual bool append(const string& data, int idx, const Rcl::Doc& doc);
     virtual string trans(const string& in);
     virtual const string &parFormat();
-    virtual string iconPath(const string& mt);
     virtual string absSep() {return (const char *)(prefs.abssep.toUtf8());}
+    virtual string iconUrl(RclConfig *, Rcl::Doc& doc);
 private:
     ResTable *m_parent;
 };
@@ -102,11 +103,21 @@ const string& ResTablePager::parFormat()
     return prefs.creslistformat;
 }
 
-string ResTablePager::iconPath(const string& mtype)
+string ResTablePager::iconUrl(RclConfig *config, Rcl::Doc& doc)
 {
-    string iconpath;
-    theconfig->getMimeIconName(mtype, &iconpath);
-    return iconpath;
+    if (doc.ipath.empty()) {
+	vector<Rcl::Doc> docs;
+	docs.push_back(doc);
+	vector<string> paths;
+	ConfIndexer::docsToPaths(docs, paths);
+	if (!paths.empty()) {
+	    string path;
+	    if (thumbPathForUrl(cstr_fileu + paths[0], 128, path)) {
+		return cstr_fileu + path;
+	    }
+	}
+    }
+    return ResListPager::iconUrl(config, doc);
 }
 
 /////////////////////////////////////////////////////////////////////////////

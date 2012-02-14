@@ -84,8 +84,10 @@ src/sampleconf/rclmon.sh
 src/sampleconf/recoll.conf
 tests/config/aspdict.en.rws
 tests/config/history
+tests/config/idxstatus.txt
 tests/config/index.pid
 tests/config/missing
 tests/config/xapiandb
+tests/indexedmimetypes/idxstatus.txt
 tests/indexedmimetypes/index.pid 
 website/usermanual/*
