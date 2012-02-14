@@ -936,7 +936,8 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
 	if (!fn.empty()) {
 	    editor->m_image = QImage(fn.c_str());
-	    editor->displayImage();
+	    if (!editor->m_image.isNull())
+		editor->displayImage();
 	}
      }
 
