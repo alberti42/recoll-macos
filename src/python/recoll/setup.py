@@ -1,8 +1,9 @@
 from distutils.core import setup, Extension
 import os
+import sys
 
-sys = os.uname()[0]
-if sys == 'Linux':
+sysname = os.uname()[0]
+if sysname == 'Linux':
     libs = ['rcl', 'xapian']
 else:
     libs = ['rcl', 'xapian', 'iconv']
@@ -16,12 +17,28 @@ for datadir in datadirs:
     if os.path.exists(datadir):
         break
 if datadir == '/':
-    print 'You need to install Recoll first'
-    os.exit(1)
-
+    print 'share/recoll directory not found: you need to install Recoll first'
+    sys.exit(1)
 
 top = os.path.join('..', '..')
 
+# Test for PIC library
+localdefs = os.path.join(top, 'mk', 'localdefs')
+try:
+    lines = open(localdefs, 'r').readlines()
+except:
+    print 'You need to build recoll first. Use configure --enable-pic'
+    sys.exit(1)
+picok = False
+for line in lines:
+    if line.find('PICFLAGS') == 0:
+        picok = True
+        break
+if not picok:
+    print 'You need to rebuild recoll with PIC enabled. Use configure --enable-pic and make clean'
+    sys.exit(1)
+
+                               
 module1 = Extension('recoll',
                     define_macros = [('MAJOR_VERSION', '1'),
                                      ('MINOR_VERSION', '0'),
