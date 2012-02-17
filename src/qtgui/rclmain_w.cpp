@@ -478,12 +478,6 @@ void RclMain::fileExit()
     prefs.ssearchTyp = sSearch->searchTypCMB->currentIndex();
     if (asearchform)
 	delete asearchform;
-    // We'd prefer to do this in the exit handler, but it's apparently to late
-    // and some of the qt stuff is already dead at this point?
-    LOGDEB2(("RclMain::fileExit() : stopping idx thread\n"));
-
-    // Do we want to stop an ongoing index operation here ? 
-    // I guess not. We did use to cancel the indexing thread.
 
     // Let the exit handler clean up the rest (internal recoll stuff).
     exit(0);
