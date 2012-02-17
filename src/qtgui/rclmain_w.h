@@ -130,13 +130,12 @@ public slots:
     virtual void onSortDataChanged(DocSeqSortSpec);
     virtual void resultCount(int);
     virtual void showQueryDetails();
-    virtual void onResultsChanged();
 
 signals:
     void docSourceChanged(RefCntr<DocSequence>);
     void stemLangChanged(const QString& lang);
     void sortDataChanged(DocSeqSortSpec);
-    void applyFiltSortData();
+    void resultsReady();
     void searchReset();
 
 protected:
@@ -178,6 +177,7 @@ private:
     virtual void showCronTool(bool modal);
     virtual void showRTITool(bool modal);
     virtual void updateIdxForDocs(vector<Rcl::Doc>&);
+    virtual void initiateQuery();
 };
 
 #endif // RCLMAIN_W_H

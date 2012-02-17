@@ -49,6 +49,8 @@ using std::pair;
 #include <qcursor.h>
 #include <qevent.h>
 #include <QFileSystemWatcher>
+#include <QThread>
+#include <QProgressDialog>
 
 #include "recoll.h"
 #include "debuglog.h"
@@ -247,8 +249,6 @@ void RclMain::init()
 	    this, SLOT(showUIPrefs()));
     connect(extIdxAction, SIGNAL(activated()), 
 	    this, SLOT(showExtIdxDialog()));
-    connect(this, SIGNAL(applyFiltSortData()), 
-	    this, SLOT(onResultsChanged()));
 
     if (prefs.catgToolBar && catgCMB)
 	connect(catgCMB, SIGNAL(activated(int)), 
@@ -263,7 +263,7 @@ void RclMain::init()
 	    restable, SLOT(setDocSource(RefCntr<DocSequence>)));
     connect(this, SIGNAL(searchReset()), 
 	    restable, SLOT(resetSource()));
-    connect(this, SIGNAL(applyFiltSortData()), 
+    connect(this, SIGNAL(resultsReady()), 
 	    restable, SLOT(readDocSource()));
     connect(this, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
 	    restable, SLOT(onSortDataChanged(DocSeqSortSpec)));
@@ -293,7 +293,7 @@ void RclMain::init()
 	    reslist, SLOT(resPageDownOrNext()));
     connect(this, SIGNAL(searchReset()), 
 	    reslist, SLOT(resetList()));
-    connect(this, SIGNAL(applyFiltSortData()), 
+    connect(this, SIGNAL(resultsReady()), 
 	    reslist, SLOT(readDocSource()));
 
     connect(reslist, SIGNAL(hasResults(int)), 
@@ -626,8 +626,6 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
 	return;
     }
 
-    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
     string stemLang = (const char *)prefs.queryStemLang.toAscii();
     if (stemLang == "ALL") {
 	theconfig->getConfParam("indexstemminglanguages", stemLang);
@@ -649,24 +647,76 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
 
     emit docSourceChanged(m_source);
     emit sortDataChanged(m_sortspec);
-    emit applyFiltSortData();
-    QApplication::restoreOverrideCursor();
+    initiateQuery();
 }
 
-void RclMain::onResultsChanged()
-{
-    if (m_source.isNotNull()) {
-	int cnt = m_source->getResCnt();
-	QString msg;
-	if (cnt > 0) {
-	    QString str;
-	    msg = tr("Result count (est.)") + ": " + 
-		str.setNum(cnt);
-	} else {
-	    msg = tr("No results found");
-	}
-	statusBar()->showMessage(msg, 0);
+class QueryThread : public QThread {
+    int loglevel;
+    RefCntr<DocSequence> m_source;
+ public: 
+    QueryThread(RefCntr<DocSequence> source)
+	: m_source(source)
+    {
+	loglevel = DebugLog::getdbl()->getlevel();
     }
+    ~QueryThread() { }
+    virtual void run() 
+    {
+	DebugLog::getdbl()->setloglevel(loglevel);
+	cnt = m_source->getResCnt();
+    }
+    int cnt;
+};
+
+void RclMain::initiateQuery()
+{
+    if (m_source.isNull())
+	return;
+
+    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+    QueryThread qthr(m_source);
+    qthr.start();
+
+    QProgressDialog progress(this);
+    progress.setLabelText(tr("Query in progress.<br>"
+			     "Due to limitations of the indexing library,<br>"
+			     "cancelling will exit the program"));
+    progress.setWindowModality(Qt::WindowModal);
+    progress.setRange(0,0);
+
+    // For some reason setMinimumDuration() does not seem to work with
+    // a busy dialog (range 0,0) Have to call progress.show() inside
+    // the loop.
+    // progress.setMinimumDuration(2000);
+    // Also the multiple processEvents() seem to improve the responsiveness??
+    for (int i = 0;;i++) {
+	qApp->processEvents();
+	if (qthr.wait(100)) {
+	    break;
+	}
+	if (i == 20)
+	    progress.show();
+	qApp->processEvents();
+	if (progress.wasCanceled()) {
+	    fileExit();
+	}
+
+	qApp->processEvents();
+    }
+
+    int cnt = qthr.cnt;
+    QString msg;
+    if (cnt > 0) {
+	QString str;
+	msg = tr("Result count (est.)") + ": " + 
+	    str.setNum(cnt);
+    } else {
+	msg = tr("No results found");
+    }
+
+    statusBar()->showMessage(msg, 0);
+    QApplication::restoreOverrideCursor();
+    emit(resultsReady());
 }
 
 void RclMain::resetSearch()
@@ -1195,7 +1245,7 @@ void RclMain::onSortCtlChanged()
     if (m_source.isNotNull())
 	m_source->setSortSpec(m_sortspec);
     emit sortDataChanged(m_sortspec);
-    emit applyFiltSortData();
+    initiateQuery();
 }
 
 void RclMain::onSortDataChanged(DocSeqSortSpec spec)
@@ -1218,7 +1268,7 @@ void RclMain::onSortDataChanged(DocSeqSortSpec spec)
     prefs.sortDesc = spec.desc;
     prefs.sortActive = !spec.field.empty();
 
-    emit applyFiltSortData();
+    initiateQuery();
 }
 
 void RclMain::on_actionShowResultsAsTable_toggled(bool on)
@@ -1582,7 +1632,7 @@ void RclMain::showDocHistory()
     m_source->setFiltSpec(m_filtspec);
     emit docSourceChanged(m_source);
     emit sortDataChanged(m_sortspec);
-    emit applyFiltSortData();
+    initiateQuery();
 }
 
 // Erase all memory of documents viewed
@@ -1669,7 +1719,7 @@ void RclMain::catgFilter(int id)
     }
     if (m_source.isNotNull())
 	m_source->setFiltSpec(m_filtspec);
-    emit applyFiltSortData();
+    initiateQuery();
 }
 
 void RclMain::toggleFullScreen()

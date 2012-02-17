@@ -302,7 +302,6 @@ void RecollModel::setDocSource(RefCntr<DocSequence> nsource)
 	m_hdata.reset();
 	m_source->getTerms(m_hdata.terms, m_hdata.groups, m_hdata.gslks);
     }
-    readDocSource();
 }
 
 void RecollModel::deleteColumn(int col)
