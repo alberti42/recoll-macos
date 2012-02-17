@@ -1626,7 +1626,8 @@ void RclMain::showDocHistory()
 	new DocSequenceHistory(rcldb, g_dynconf, 
 			       string(tr("Document history").toUtf8()));
     src->setDescription((const char *)tr("History data").toUtf8());
-    m_source = RefCntr<DocSequence>(src);
+    DocSource *source = new DocSource(RefCntr<DocSequence>(src));
+    m_source = RefCntr<DocSequence>(source);
     m_source->setSortSpec(m_sortspec);
     m_source->setFiltSpec(m_filtspec);
     emit docSourceChanged(m_source);

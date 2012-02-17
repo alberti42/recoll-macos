@@ -318,7 +318,8 @@ void ResList::setDocSource(RefCntr<DocSequence> nsource)
     m_source = RefCntr<DocSequence>(new DocSource(nsource));
 }
 
-// Reapply parameters. Sort params probably changed
+// A query was executed, or the filtering/sorting parameters changed,
+// re-read the results.
 void ResList::readDocSource()
 {
     LOGDEB(("ResList::readDocSource()\n"));
