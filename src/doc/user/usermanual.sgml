@@ -2,7 +2,7 @@
 
 <!ENTITY RCL "<application>Recoll</application>">
 <!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/features.html'>Recoll helper applications page</ulink>">
-<!ENTITY RCLVERSION "1.16">
+<!ENTITY RCLVERSION "1.17">
 <!ENTITY XAP "<application>Xapian</application>">
 ]>
  
@@ -20,7 +20,7 @@
     </author>
 
     <copyright>
-      <year>2005-2011</year>
+      <year>2005-2012</year>
       <holder role="mailto:jfd@recoll.org">Jean-Francois
       Dockes</holder>
     </copyright>
@@ -1511,19 +1511,11 @@ fvwm
       interface itself, the parameters used for searching and
       returning results, and what indexes are searched.</para> 
 
+
       <formalpara id="rcl.search.custom.ui">
        <title>User interface parameters:</title>
         <para>
       <itemizedlist>
-
-            <listitem><para><guilabel>Number of results in a result
-              page</guilabel>: </para> 
-            </listitem>
-
-            <listitem><para><guilabel>Hide duplicate results</guilabel>:
-            decides if result list entries are shown for identical
-            documents found in different places.</para>
-            </listitem>
 
             <listitem><para><guilabel>Highlight color for query
             terms</guilabel>: Terms from the user query are highlighted in
@@ -1533,26 +1525,15 @@ fvwm
             default is <literal>blue</literal>.</para>
             </listitem>
 
-            <listitem><para><guilabel>Result list font</guilabel>: There is
-            quite a lot of information shown in the result list, and you
-            may want to customize the font and/or font size. The rest of
-            the fonts used by &RCL; are determined by your generic Qt
-            config (try the <command>qtconfig</command> command).</para>
-            </listitem>
-
-            <listitem><anchor id="rcl.search.custom.resultpara">
-            <para><guilabel>Result paragraph format string</guilabel>:
-            allows you to change the presentation of each result list
-            entry. This is <link linkend="rcl.search.custom.reslistpara">
-            described in its own section.</link></para>
-            </listitem>
-
-            <listitem><anchor id="rcl.search.custom.abssep">
-            <para><guilabel>Abstract snippet separator</guilabel>:
-            for synthetic abstracts built from index data, which are
-            usually made of several snippets from different parts of the
-            document, this defines the snippet separator, an ellipsis by
-            default. </para>
+            <listitem><para><guilabel>Style sheet</guilabel>:
+                The name of a <application>Qt</application> style sheet
+                text file which is applied to the whole Recoll application
+                on startup. The default value is empty, but there is a
+                skeleton style sheet (<filename>recoll.qss</filename>)
+                inside the <filename>/usr/share/recoll/examples</filename>
+                directory. Using a style sheet, you can change most Recoll
+                graphical parameters: colors, fonts, etc. See the sample
+                file for a few simple examples.</para>
             </listitem>
 
 	    <listitem><para><guilabel>Maximum text size highlighted for
@@ -1561,6 +1542,25 @@ fvwm
             quite a lot of processing, and can be disabled over the given
             text size to speed up loading.</para>
             </listitem>
+
+	    <listitem><para><guilabel>Prefer HTML to plain text for
+	    preview</guilabel> if set, Recoll will display HTML as such
+	    inside the preview window. If this causes problems with the Qt
+	    HTML display, you can uncheck it to display the plain text
+	    version instead. </para>
+	    </listitem>
+
+	    <listitem><para><guilabel>Use &lt;PRE&gt; tags instead of
+	    &lt;BR&gt; to display plain text as HTML in preview</guilabel>:
+                when displaying plain text inside the preview window, &RCL;
+                tries to preserve some of the original text line breaks and
+                indentation. It can either use PRE HTML tags, which will
+                well preserve the indentation but will force horizontal
+                scrolling for long lines, or use BR tags to break at the
+                original line breaks, which will let the editor introduce
+                other line breaks according to the window width, but will
+                lose some of the original indentation.</para>
+             </listitem>
 
             <listitem><para><guilabel>Use desktop preferences to choose
             document editor</guilabel>: if this is checked, the
@@ -1601,23 +1601,61 @@ fvwm
 	    stat between invocations. It normally starts with sorting
 	    disabled.</para>
 	    </listitem>
-	    <listitem><para><guilabel>Prefer HTML to plain text for preview
-
-	    </guilabel> if set, Recoll will display HTML as such inside the
-	    preview window. If this causes problems with the Qt HTML
-	    display, you can uncheck it to display the plain text version
-	    instead. </para>
-	    </listitem>
 
 	  </itemizedlist>
       </para>
       </formalpara>
 
 
+      <formalpara id="rcl.search.custom.rl">
+       <title>Result list parameters:</title>
+        <para>
+          <itemizedlist>
+            
+            <listitem><para><guilabel>Number of results in a result
+                  page</guilabel></para>
+            </listitem>
+
+            <listitem><para><guilabel>Result list font</guilabel>: There is
+            quite a lot of information shown in the result list, and you
+            may want to customize the font and/or font size. The rest of
+            the fonts used by &RCL; are determined by your generic Qt
+            config (try the <command>qtconfig</command> command).</para>
+            </listitem>
+
+            <listitem><anchor id="rcl.search.custom.resultpara">
+            <para><guilabel>Result paragraph format string</guilabel>:
+            allows you to change the presentation of each result list
+            entry. This is <link linkend="rcl.search.custom.reslistpara">
+            described in its own section.</link></para>
+            </listitem>
+
+            <listitem>
+            <para><guilabel>Date format</guilabel>: allows specifying the
+            format used for displaying dates inside the result list. This
+            should be specified as an strftime() string (man strftime).</para>
+            </listitem>
+
+            <listitem><anchor id="rcl.search.custom.abssep">
+            <para><guilabel>Abstract snippet separator</guilabel>:
+            for synthetic abstracts built from index data, which are
+            usually made of several snippets from different parts of the
+            document, this defines the snippet separator, an ellipsis by
+            default. </para>
+            </listitem>
+
+           </itemizedlist></para>
+      </formalpara>
+
       <formalpara id="rcl.search.custom.search">
 	<title>Search parameters:</title>
         <para>
       <itemizedlist>
+
+            <listitem><para><guilabel>Hide duplicate results</guilabel>:
+            decides if result list entries are shown for identical
+            documents found in different places.</para>
+            </listitem>
 
 	    <listitem><para><guilabel>Stemming language</guilabel>:
             stemming obviously depends on the document's language. This
@@ -1631,12 +1669,19 @@ fvwm
             file.</para>
             </listitem>
 
-            <listitem><para><guilabel>Dynamically add phrase to simple
+            <listitem><para><guilabel>Automatically add phrase to simple
             searches</guilabel>: a phrase will be automatically built and
             added to simple searches when looking for <literal>Any
             terms</literal>. This will give a relevance boost to the
             results where the search terms appear as a phrase (consecutive
             and in order).</para>
+            </listitem>
+
+            <listitem><para><guilabel>Autophrase term frequency threshold
+            percentage</guilabel>: very frequent terms should not be included
+            in automatic phrase searches for performance reasons. The
+            parameter defines the cutoff percentage (percentage of the
+            documents where the term appears).</para>
             </listitem>
 
             <listitem><para><guilabel>Replace abstracts from
@@ -3270,16 +3315,6 @@ while query.next >= 0 and query.next < nres:
         <guilabel>Preferences</guilabel> menu and stored in the standard Qt
         place (<filename>$HOME/.config/Recoll.org/recoll.conf</filename>).
         You probably do not want to edit this by hand.</para>
-
-      <note><para>One of these parameters is the name of a
-      <application>Qt</application> style sheet text file which is applied
-      to the whole Recoll application on startup. The default value is
-      empty, but there is a skeleton style sheet
-      (<filename>recoll.qss</filename>) inside the
-      <filename>/usr/share/recoll/examples</filename> directory. Using a
-      style sheet, you can change most Recoll graphical parameters: colors,
-      fonts, etc. See the sample file for a few simple examples.</para>
-      </note>
 
       <para>&RCL; indexing options are set inside text configuration
         files located in a configuration directory. There can be
