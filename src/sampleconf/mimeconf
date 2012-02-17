@@ -230,6 +230,7 @@ text = \
       text/x-html-aptosid-man \
       text/x-html-sidux-man \
       text/x-man \
+      text/x-perl \
       text/x-python \
       text/x-shellscript
 
@@ -265,7 +266,6 @@ media = \
       video/mp4 \
       video/x-msvideo \
 
-
 message = message/rfc822 \
 	  text/x-gaim-log \
 	  text/x-mail \
@@ -276,5 +276,7 @@ other = application/vnd.sun.xml.draw \
         application/vnd.sun.xml.draw.template \
         application/vnd.sun.xml.math \
         application/x-fsdirectory \
+        application/x-mimehtml \
         application/x-rar \
+        application/x-webarchive \
 	application/zip \

@@ -134,7 +134,6 @@
 recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .log.gz .md5 .map \
        .o .lib .dll .a .sys .exe .com \
        .dat .bak .rdf .log .db .msf .pid \
-       .gnm \
        ,v ~ #
 
 # Special handling of .txt files inside ~/.gaim and ~/.purple directories
