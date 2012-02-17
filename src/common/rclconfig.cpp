@@ -795,7 +795,7 @@ bool RclConfig::setMimeViewerDef(const string& mt, const string& def)
 {
     if (mimeview == 0)
         return false;
-    string pconfname = path_cat(m_confdir, "mimeview");
+    string pconfname = path_cat(getConfDir(), "mimeview");
     // Make sure this exists 
     close(open(pconfname.c_str(), O_CREAT|O_WRONLY, 0600));
     ConfTree tree(pconfname.c_str());
@@ -868,7 +868,7 @@ string RclConfig::getDbDir()
 	// If not an absolute path, compute relative to config dir
 	if (dbdir.at(0) != '/') {
 	    LOGDEB1(("Dbdir not abs, catting with confdir\n"));
-	    dbdir = path_cat(m_confdir, dbdir);
+	    dbdir = path_cat(getConfDir(), dbdir);
 	}
     }
     LOGDEB1(("RclConfig::getDbDir: dbdir: [%s]\n", dbdir.c_str()));
@@ -883,9 +883,22 @@ string RclConfig::getPidfile()
 {
     return path_cat(getConfDir(), "index.pid");
 }
+
+// The index status file is fast changing, so it's possible to put it outside
+// of the config directory (for ssds, not sure this is really useful).
 string RclConfig::getIdxStatusFile()
 {
-    return path_cat(getConfDir(), "idxstatus.txt");
+    string path;
+    if (!getConfParam("idxstatusfile", path)) {
+	return path_cat(getConfDir(), "idxstatus.txt");
+    } else {
+	path = path_tildexpand(path);
+	// If not an absolute path, compute relative to config dir
+	if (path.at(0) != '/') {
+	    path = path_cat(getConfDir(), path);
+	}
+	return path_canon(path);
+    }
 }
 
 list<string>& RclConfig::getSkippedNames()
