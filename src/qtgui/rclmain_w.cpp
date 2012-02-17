@@ -101,6 +101,11 @@ void RclMain::init()
 				(const char *)tr("filtered").toUtf8());
 
     periodictimer = new QTimer(this);
+
+    // idxstatus file. Make sure it exists before trying to watch it
+    // (case where we're started on an older index, or if the status
+    // file was deleted since indexing
+    ::close(::open(theconfig->getIdxStatusFile().c_str(), O_CREAT, 0600));
     m_watcher.addPath(QString::fromLocal8Bit(
 			  theconfig->getIdxStatusFile().c_str()));
     // At least some versions of qt4 don't display the status bar if
