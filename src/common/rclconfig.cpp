@@ -716,7 +716,7 @@ bool RclConfig::getFieldTraits(const string& _fld, const FieldTraits **ftpp)
     map<string, FieldTraits>::const_iterator pit = m_fldtotraits.find(fld);
     if (pit != m_fldtotraits.end()) {
 	*ftpp = &pit->second;
-	LOGDEB1(("RclConfig::getFieldPrefix: [%s]->[%s]\n", 
+	LOGDEB1(("RclConfig::getFieldTraits: [%s]->[%s]\n", 
 		 _fld.c_str(), ft.pfx.c_str()));
 	return true;
     } else {
@@ -1110,6 +1110,7 @@ using namespace std;
 #include "debuglog.h"
 #include "rclinit.h"
 #include "rclconfig.h"
+#include "cstr.h"
 
 static char *thisprog;
 
@@ -1193,9 +1194,13 @@ int main(int argc, char **argv)
 	cout << "Indexed fields: ";
         for (set<string>::const_iterator it = indexed.begin(); 
              it != indexed.end(); it++) {
-	    string prefix;
-	    config->getFieldPrefix(*it, prefix);
-            cout << "[" << *it << "]" << " -> [" << prefix << "] ";
+	    const FieldTraits *ftp;
+	    config->getFieldTraits(*it, &ftp);
+	    if (ftp)
+		cout << "[" << *it << "]" << " -> [" << ftp->pfx << "] ";
+	    else 
+		cout << "[" << *it << "]" << " -> [" << "(none)" << "] ";
+
         }
 	cout << endl;	
     } else if (op_flags & OPT_c) {
