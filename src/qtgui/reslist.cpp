@@ -334,16 +334,6 @@ void ResList::readDocSource()
     emit hasResults(m_source->getResCnt());
 }
 
-void ResList::setSortParams(DocSeqSortSpec)
-{
-    LOGDEB2(("ResList::setSortParams\n"));
-}
-
-void ResList::setFilterParams(const DocSeqFiltSpec&)
-{
-    LOGDEB2(("ResList::setFilterParams\n"));
-}
-
 void ResList::resetList() 
 {
     LOGDEB(("ResList::resetList()\n"));

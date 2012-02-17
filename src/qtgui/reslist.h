@@ -89,8 +89,6 @@ class ResList : public QTextBrowser
     virtual void previewExposed(int);
     virtual void append(const QString &text);
     virtual void readDocSource();
-    virtual void setSortParams(DocSeqSortSpec spec);
-    virtual void setFilterParams(const DocSeqFiltSpec &spec);
     virtual void highlighted(const QString& link);
     virtual void createPopupMenu(const QPoint& pos);
 	

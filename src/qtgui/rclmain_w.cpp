@@ -293,10 +293,6 @@ void RclMain::init()
 	    reslist, SLOT(resPageDownOrNext()));
     connect(this, SIGNAL(searchReset()), 
 	    reslist, SLOT(resetList()));
-    connect(this, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
-	    reslist, SLOT(setSortParams(DocSeqSortSpec)));
-    connect(this, SIGNAL(filtDataChanged(DocSeqFiltSpec)), 
-	    reslist, SLOT(setFilterParams(DocSeqFiltSpec)));
     connect(this, SIGNAL(applyFiltSortData()), 
 	    reslist, SLOT(readDocSource()));
 
@@ -653,7 +649,6 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
 
     emit docSourceChanged(m_source);
     emit sortDataChanged(m_sortspec);
-    emit filtDataChanged(m_filtspec);
     emit applyFiltSortData();
     QApplication::restoreOverrideCursor();
 }
@@ -1587,7 +1582,6 @@ void RclMain::showDocHistory()
     m_source->setFiltSpec(m_filtspec);
     emit docSourceChanged(m_source);
     emit sortDataChanged(m_sortspec);
-    emit filtDataChanged(m_filtspec);
     emit applyFiltSortData();
 }
 
@@ -1675,7 +1669,6 @@ void RclMain::catgFilter(int id)
     }
     if (m_source.isNotNull())
 	m_source->setFiltSpec(m_filtspec);
-    emit filtDataChanged(m_filtspec);
     emit applyFiltSortData();
 }
 

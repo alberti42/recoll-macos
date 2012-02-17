@@ -136,7 +136,6 @@ signals:
     void docSourceChanged(RefCntr<DocSequence>);
     void stemLangChanged(const QString& lang);
     void sortDataChanged(DocSeqSortSpec);
-    void filtDataChanged(DocSeqFiltSpec);
     void applyFiltSortData();
     void searchReset();
 
