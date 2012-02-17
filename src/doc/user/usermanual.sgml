@@ -3701,6 +3701,14 @@ skippedPaths = ~/somedir/&lowast;.txt
             </listitem>
           </varlistentry>
 
+          <varlistentry><term><literal>idxstatusfile</literal></term>
+            <listitem><para>The name of the scratch file where the indexer
+                process updates its status. Default:
+            <filename>idxstatus.txt</filename> inside the configuration
+            directory.</para>
+            </listitem>
+          </varlistentry>
+
           <varlistentry><term><literal>maxfsoccuppc</literal></term>
             <listitem><para>Maximum file system occupation before we
             stop indexing. The value is a percentage, corresponding to
