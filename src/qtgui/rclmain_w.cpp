@@ -306,6 +306,8 @@ void RclMain::init()
 	    this, SLOT(docExpand(Rcl::Doc)));
     connect(reslist, SIGNAL(wordSelect(QString)),
 	    sSearch, SLOT(addTerm(QString)));
+    connect(reslist, SIGNAL(wordReplace(const QString&, const QString&)),
+	    sSearch, SLOT(onWordReplace(const QString&, const QString&)));
     connect(reslist, SIGNAL(nextPageAvailable(bool)), 
 	    this, SLOT(enableNextPage(bool)));
     connect(reslist, SIGNAL(prevPageAvailable(bool)), 

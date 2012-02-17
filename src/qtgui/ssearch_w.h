@@ -51,7 +51,7 @@ public slots:
     virtual void setSearchString(const QString& text);
     virtual void startSimpleSearch();
     virtual void addTerm(QString);
-
+    virtual void onWordReplace(const QString&, const QString&);
 signals:
     void startSearch(RefCntr<Rcl::SearchData>);
     void clearSearch();

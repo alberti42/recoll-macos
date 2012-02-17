@@ -105,6 +105,7 @@ class ResList : public QTextBrowser
     void headerClicked();
     void docExpand(Rcl::Doc);
     void wordSelect(QString);
+    void wordReplace(const QString&, const QString&);
     void linkClicked(const QString&, int); // See emitLinkClicked()
     void hasResults(int);
 

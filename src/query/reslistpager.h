@@ -111,7 +111,8 @@ public:
     virtual string prevUrl();
     virtual string pageTop() {return string();}
     virtual string iconUrl(RclConfig *, Rcl::Doc& doc);
-    virtual void suggest(const vector<string>, vector<string>&sugg) {
+    virtual void suggest(const vector<string>, 
+			 map<string, vector<string> >& sugg) {
         sugg.clear();
     }
     virtual string absSep() {return "&hellip;";}

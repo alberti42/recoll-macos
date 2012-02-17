@@ -76,7 +76,8 @@ public:
     virtual string nextUrl();
     virtual string prevUrl();
     virtual string pageTop();
-    virtual void suggest(const vector<string>uterms, vector<string>&sugg);
+    virtual void suggest(const vector<string>uterms, 
+			 map<string, vector<string> >& sugg);
     virtual string absSep() {return (const char *)(prefs.abssep.toUtf8());}
     virtual string iconUrl(RclConfig *, Rcl::Doc& doc);
 private:
@@ -163,7 +164,8 @@ string QtGuiResListPager::pageTop()
 }
 
 
-void QtGuiResListPager::suggest(const vector<string>uterms, vector<string>&sugg)
+void QtGuiResListPager::suggest(const vector<string>uterms, 
+				map<string, vector<string> >& sugg)
 {
     sugg.clear();
 #ifdef RCL_USE_ASPELL
@@ -179,6 +181,10 @@ void QtGuiResListPager::suggest(const vector<string>uterms, vector<string>&sugg)
          uit != uterms.end(); uit++) {
         list<string> asuggs;
         string reason;
+
+	// If the term is in the index, we don't suggest alternatives. 
+	// Actually, we may want to check the frequencies and propose something
+	// anyway if a possible variation is much more common (as google does)
         if (aspell->check(*rcldb, *uit, reason))
             continue;
         else if (!reason.empty())
@@ -189,7 +195,15 @@ void QtGuiResListPager::suggest(const vector<string>uterms, vector<string>&sugg)
             continue;
         }
         if (!asuggs.empty()) {
-            sugg.push_back(*asuggs.begin());
+            sugg[*uit] = vector<string>(asuggs.begin(), asuggs.end());
+	    if (sugg[*uit].size() > 5)
+		sugg[*uit].resize(5);
+	    // Set up the links as a <href="Sold|new">. 
+	    for (vector<string>::iterator it = sugg[*uit].begin();
+		 it != sugg[*uit].end(); it++) {
+		*it = string("<a href=\"S") + *uit + "|" + *it + "\">" +
+		    *it + "</a>";
+	    }
         }
     }
 #endif
@@ -607,11 +621,9 @@ void ResList::mouseDoubleClickEvent(QMouseEvent *event)
 
 void ResList::linkWasClicked(const QUrl &url)
 {
-    QByteArray s = url.toString().toAscii();
-    const char *ascurl = (const char *)s;
-    LOGDEB(("ResList::linkWasClicked: [%s]\n", ascurl));
+    string ascurl = (const char *)url.toString().toAscii();;
+    LOGDEB(("ResList::linkWasClicked: [%s]\n", ascurl.c_str()));
 
-    int i = atoi(ascurl+1) - 1;
     int what = ascurl[0];
     switch (what) {
     case 'H': 
@@ -620,6 +632,7 @@ void ResList::linkWasClicked(const QUrl &url)
     case 'P': 
     case 'E': 
     {
+	int i = atoi(ascurl.c_str()+1) - 1;
 	Rcl::Doc doc;
 	if (!getDoc(i, doc)) {
 	    LOGERR(("ResList::linkWasClicked: can't get doc for %d\n", i));
@@ -637,8 +650,21 @@ void ResList::linkWasClicked(const QUrl &url)
     case 'p':
 	resultPageBack();
 	break;
+    case 'S':
+    {
+	QString s = url.toString();
+	if (!s.isEmpty())
+	    s = s.right(s.size()-1);
+	int bar = s.indexOf("|");
+	if (bar != -1 && bar < s.size()-1) {
+	    QString o = s.left(bar);
+	    QString n = s.right(s.size() - (bar+1));
+	    emit wordReplace(o, n);
+	}
+    }
+    break;
     default: 
-	LOGERR(("ResList::linkWasClicked: bad link [%s]\n", ascurl));
+	LOGERR(("ResList::linkWasClicked: bad link [%s]\n", ascurl.c_str()));
 	break;// ?? 
     }
 }

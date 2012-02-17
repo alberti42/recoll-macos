@@ -290,17 +290,24 @@ void ResListPager::displayPage(RclConfig *config)
         vector<string>uterms;
         m_docSource->getUTerms(uterms);
         if (!uterms.empty()) {
-            vector<string> spellings;
+            map<string, vector<string> > spellings;
             suggest(uterms, spellings);
             if (!spellings.empty()) {
                 chunk << 
-                 trans("<p><i>Alternate spellings (accents suppressed): </i>");
-                for (vector<string>::iterator it = spellings.begin();
-                     it != spellings.end(); it++) {
-                    chunk << *it;
-                    chunk << " ";
-                }
-                chunk << "</p>";
+                 trans("<p><i>Alternate spellings (accents suppressed): </i>")
+		      << "<br /><blockquote>";
+
+		for (map<string, vector<string> >::const_iterator it0 =
+			 spellings.begin(); it0 != spellings.end(); it0++) {
+		    chunk << "<b>" << it0->first << "</b> : ";
+		    for (vector<string>::const_iterator it = 
+			     it0->second.begin();
+			 it != it0->second.end(); it++) {
+			chunk << *it << " ";
+		    }
+		    chunk << "<br />";
+		}
+                chunk << "</blockquote></p>";
             }
         }
     } else {

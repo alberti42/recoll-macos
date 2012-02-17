@@ -236,6 +236,15 @@ void SSearch::addTerm(QString term)
     queryText->setEditText(text);
 }
 
+void SSearch::onWordReplace(const QString& o, const QString& n)
+{
+    QString txt = queryText->currentText();
+    QRegExp exp = QRegExp(QString("\\b") + o + QString("\\b"));
+    exp.setCaseSensitivity(Qt::CaseInsensitive);
+    txt.replace(exp, n);
+    queryText->setEditText(txt);
+}
+
 void SSearch::setAnyTermMode()
 {
     searchTypCMB->setCurrentIndex(SST_ANY);
