@@ -39,7 +39,7 @@ const char *PrefsPack::dfltResListFormat =
 #if 1
 	"<table><tr><td><img src='%I' width='64'></td>"
 	"<td>%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
-	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
+	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i>&nbsp;%i<br>"
 	"%A %K</td></tr></table>"
 #elif 0
 	"<img src='%I' align='left'>"
