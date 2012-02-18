@@ -165,7 +165,8 @@ public:
      * Set value for named parameter in specified subsection (or global)
      * @return 0 for error, 1 else
      */
-    virtual int set(const string &nm, const string &val, const string &sk = string());
+    virtual int set(const string &nm, const string &val, 
+		    const string &sk = string());
 
     /**
      * Remove name and value from config
@@ -208,6 +209,11 @@ public:
      */
     virtual list<string> getSubKeys(bool) {return getSubKeys();}
     virtual list<string> getSubKeys();
+    /** Test for subkey existence */
+    virtual bool hasSubKey(const string& sk)
+    {
+	return m_submaps.find(sk) != m_submaps.end();
+    }
 
     virtual string getFilename() {return m_filename;}
 
@@ -425,12 +431,27 @@ public:
 
     virtual list<string> getNames(const string &sk, const char *pattern = 0)
     {
+	return getNames1(sk, pattern, false);
+    }
+    virtual list<string> getNamesShallow(const string &sk, const char *patt = 0)
+    {
+	return getNames1(sk, patt, true);
+    }
+
+    virtual list<string> getNames1(const string &sk, const char *pattern,
+				   bool shallow)
+    {
 	list<string> nms;
 	typename list<T*>::iterator it;
+	bool skfound = false;
 	for (it = m_confs.begin();it != m_confs.end(); it++) {
-	    list<string> lst;
-	    lst = (*it)->getNames(sk, pattern);
-	    nms.insert(nms.end(), lst.begin(), lst.end());
+	    if ((*it)->hasSubKey(sk)) {
+		skfound = true;
+		list<string> lst = (*it)->getNames(sk, pattern);
+		nms.insert(nms.end(), lst.begin(), lst.end());
+	    }
+	    if (shallow && skfound)
+		break;
 	}
 	nms.sort();
 	nms.unique();
