@@ -135,6 +135,7 @@
      <string>&amp;File</string>
     </property>
     <addaction name="fileToggleIndexingAction"/>
+    <addaction name="fileRebuildIndexAction"/>
     <addaction name="separator"/>
     <addaction name="fileEraseSearchHistoryAction"/>
     <addaction name="fileEraseDocHistoryAction"/>
@@ -199,6 +200,14 @@
    </property>
    <property name="name" stdset="0">
     <cstring>fileToggleIndexingAction</cstring>
+   </property>
+  </action>
+  <action name="fileRebuildIndexAction">
+   <property name="text">
+    <string>&amp;Rebuild index</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>fileRebuildIndexAction</cstring>
    </property>
   </action>
   <action name="fileEraseDocHistoryAction">

@@ -228,6 +228,8 @@ void RclMain::init()
 	    this, SLOT(fileExit() ) );
     connect(fileToggleIndexingAction, SIGNAL(activated()), 
 	    this, SLOT(toggleIndexing()));
+    connect(fileRebuildIndexAction, SIGNAL(activated()), 
+	    this, SLOT(rebuildIndex()));
     connect(fileEraseDocHistoryAction, SIGNAL(activated()), 
 	    this, SLOT(eraseDocHistory()));
     connect(fileEraseSearchHistoryAction, SIGNAL(activated()), 
@@ -333,6 +335,8 @@ void RclMain::init()
 	emit sortDataChanged(m_sortspec);
     }
 
+    fileRebuildIndexAction->setEnabled(FALSE);
+    fileToggleIndexingAction->setEnabled(FALSE);
     // Start timer on a slow period (used for checking ^C). Will be
     // speeded up during indexing
     periodictimer->start(1000);
@@ -556,17 +560,26 @@ void RclMain::periodic100()
     // Update the "start/stop indexing" menu entry, can't be done from
     // the "start/stop indexing" slot itself
     if (m_idxproc) {
+	m_indexerState = IXST_RUNNINGMINE;
 	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
 	fileToggleIndexingAction->setEnabled(TRUE);
+	fileRebuildIndexAction->setEnabled(FALSE);
+	periodictimer->setInterval(200);
     } else {
-	fileToggleIndexingAction->setText(tr("Update &Index"));
-	// No indexer of our own runnin, but the real time one may be up, check
-	// for some other indexer.
 	Pidfile pidfile(theconfig->getPidfile());
 	if (pidfile.open() == 0) {
+	    m_indexerState = IXST_NOTRUNNING;
+	    fileToggleIndexingAction->setText(tr("Update &Index"));
 	    fileToggleIndexingAction->setEnabled(TRUE);
+	    fileRebuildIndexAction->setEnabled(TRUE);
+	    periodictimer->setInterval(1000);
 	} else {
-	    fileToggleIndexingAction->setEnabled(FALSE);
+	    // Real time or externally started batch indexer running
+	    m_indexerState = IXST_RUNNINGNOTMINE;
+	    fileToggleIndexingAction->setText(tr("Stop &Indexing"));
+	    fileToggleIndexingAction->setEnabled(TRUE);
+	    fileRebuildIndexAction->setEnabled(FALSE);
+	    periodictimer->setInterval(200);
 	}	    
     }
 
@@ -590,24 +603,78 @@ void RclMain::periodic100()
 	fileExit();
 }
 
-// This gets called when the indexing action is activated. It starts
+// This gets called when the "update iindex" action is activated. It executes
 // the requested action, and disables the menu entry. This will be
 // re-enabled by the indexing status check
 void RclMain::toggleIndexing()
 {
-    if (m_idxproc) {
-	// Indexing was in progress, request stop. Let the periodic
-	// routine check for the results.
-	kill(m_idxproc->getChildPid(), SIGTERM);
-    } else {
+    switch (m_indexerState) {
+    case IXST_RUNNINGMINE:
+	if (m_idxproc) {
+	    // Indexing was in progress, request stop. Let the periodic
+	    // routine check for the results.
+	    int pid = m_idxproc->getChildPid();
+	    if (pid > 0)
+		kill(pid, SIGTERM);
+	}
+	break;
+    case IXST_RUNNINGNOTMINE:
+    {
+	int rep = 
+	    QMessageBox::information(0, tr("Warning"), 
+				     tr("The current indexing process "
+					"was not started from this "
+					"interface. Click Ok to kill it "
+					"anyway, or Cancel to leave it alone"),
+					 QMessageBox::Ok,
+					 QMessageBox::Cancel,
+					 QMessageBox::NoButton);
+	if (rep == QMessageBox::Ok) {
+	    Pidfile pidfile(theconfig->getPidfile());
+	    pid_t pid = pidfile.open();
+	    if (pid > 0)
+		kill(pid, SIGTERM);
+	}
+    }		
+    break;
+    case IXST_NOTRUNNING:
+    {
 	list<string> args;
 	args.push_back("-c");
 	args.push_back(theconfig->getConfDir());
 	m_idxproc = new ExecCmd;
 	m_idxproc->startExec("recollindex", args, false, false);
-	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
     }
-    fileToggleIndexingAction->setEnabled(FALSE);
+    break;
+    }
+}
+
+void RclMain::rebuildIndex()
+{
+    switch (m_indexerState) {
+    case IXST_RUNNINGMINE:
+    case IXST_RUNNINGNOTMINE:
+	return; //?? Should not have been called
+    case IXST_NOTRUNNING:
+    {
+	int rep = 
+	    QMessageBox::warning(0, tr("Erasing index"), 
+				     tr("Reset the index and start "
+					"from scratch ?"),
+					 QMessageBox::Ok,
+					 QMessageBox::Cancel,
+					 QMessageBox::NoButton);
+	if (rep == QMessageBox::Ok) {
+	    list<string> args;
+	    args.push_back("-c");
+	    args.push_back(theconfig->getConfDir());
+	    args.push_back("-z");
+	    m_idxproc = new ExecCmd;
+	    m_idxproc->startExec("recollindex", args, false, false);
+	}
+    }
+    break;
+    }
 }
 
 // Start a db query and set the reslist docsource

@@ -52,6 +52,7 @@ class RclMain : public QMainWindow, public Ui::RclMainBase
     Q_OBJECT
 
 public:
+    enum  IndexerState {IXST_NOTRUNNING, IXST_RUNNINGMINE, IXST_RUNNINGNOTMINE};
     RclMain(QWidget * parent = 0) 
 	: QMainWindow(parent),
 	  curPreview(0),
@@ -69,7 +70,7 @@ public:
           m_idAllStem(0),
 	  m_idxproc(0),
 	  m_sortspecnochange(false),
-	  m_periodicToggle(0)
+	  m_indexerState(IXST_RUNNINGNOTMINE)
     {
 	setupUi(this);
 	init();
@@ -84,6 +85,7 @@ public slots:
     virtual void idxStatus();
     virtual void periodic100();
     virtual void toggleIndexing();
+    virtual void rebuildIndex();
     virtual void startSearch(RefCntr<Rcl::SearchData> sdata);
     virtual void previewClosed(Preview *w);
     virtual void showAdvSearchDialog();
@@ -156,7 +158,6 @@ private:
     QAction          *m_idNoStem;
     QAction          *m_idAllStem;
     QFileSystemWatcher m_watcher;
-
     vector<ExecCmd*>  m_viewers;
     ExecCmd          *m_idxproc; // Indexing process
     map<QString, QAction*> m_stemLangToId;
@@ -165,7 +166,7 @@ private:
     bool              m_sortspecnochange;
     DocSeqSortSpec    m_sortspec;
     RefCntr<DocSequence> m_source;
-    int               m_periodicToggle;
+    IndexerState      m_indexerState;
 
     virtual void init();
     virtual void previewPrevOrNextInTab(Preview *, int sid, int docnum, 
