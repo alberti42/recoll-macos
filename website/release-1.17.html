@@ -1,0 +1,131 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Recoll 1.17 series release notes</title>
+
+    <meta name="generator" content="HTML Tidy, see www.w3.org">
+    <meta name="Author" content="Jean-Francois Dockes">
+    <meta name="Description" content=
+	  "recoll is a simple full-text search system for unix and linux
+	   based on the powerful and mature xapian engine">
+    <meta name="Keywords" content=
+	  "full text search, desktop search, unix, linux">
+    <meta http-equiv="Content-language" content="en">
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+    <meta name="robots" content="All,Index,Follow">
+
+    <link type="text/css" rel="stylesheet" href="styles/style.css">
+  </head>
+
+  <body>
+    
+    <div class="rightlinks">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="download.html">Downloads</a></li>
+        <li><a href="doc.html">Documentation</a></li>
+      </ul>
+    </div>
+    
+    <div class="content">
+
+      <h1>Release notes for Recoll 1.17.x</h1>
+
+
+      <h2>Caveats</h2>
+
+      <p><em>Installing over an older version</em>: 1.17 is fully
+        compatible with 1.16 indexes, and mostly compatible with 1.15
+        ones, except for a few differences for weird terms containing
+        punctuation signs. Perform a full index pass if installing
+        over an older version. The simplest way to do this is to quit
+        all recoll programs and just delete the index directory
+        (<span class="literal">rm&nbsp;-rf&nbsp;~/.recoll/xapiandb</span>),
+        then start recoll or
+        recollindex.  <span class="literal">recollindex&nbsp;-z</span>
+        will do the same in most cases.</p>
+
+       <p>Also, using the anchored search feature on an 1.15 index
+         requires a full reindex.</p> 
+
+
+      <h2>Changes</h2>
+
+      <p>Recoll 1.17 is an incremental improvements release over 1.16, no
+        major function was introduced or modified.</p> 
+
+      <ul>
+
+        <li>When a search fails to retrieve results, the spelling
+          suggestions are now presented as links inside the result list
+          area. Clicking a link will replace the appropriate word inside
+          the search entry.</li>
+        <li>Thumbnails will be displayed in the result list if an
+          appropriate one is found in the standard freedesktop
+          thumbnails directory (ie: created by gimp or some file
+          manager). Recoll will not create thumbnails (this would slow
+          result display too much).</li>
+        
+        <li>The GUI now has a set of dialogs to set up the indexing
+          schedule, either as automatic real time indexing started
+          with the user session or as discrete cron entries. This
+          will take care of the details of autostart files or crontab
+          editing.</li> 
+        <li>The GUI indexing thread has been removed. All indexing is
+          now performed by a separate recollindex process. This has
+          multiple advantages, the thread was just a very bad
+          idea. Among others, exiting the GUI has no influence on an
+          ongoing indexing.</li>
+
+        <li>The GUI indexing configuration now only shows the directories
+          customized by the user not those which come from the
+          standard configuration (ie: ~/.thunderbird). Showing the
+          standard directories was more often confusing than
+          useful.</li>
+
+        <li>It is now possible to control the date format used to
+          display result (go to query preferences).</li>
+        <li>It is now possible to Copy/Paste from the term explorer
+          result list.</li>
+        <li>Indexer: handle the html5 <tt>charset</tt> meta tag.</li>
+
+        <li>Added okular notes and gnumeric filters.</li>
+
+        <li>GUI: it is now possible to use a Qt style sheet to modify
+          many aspects of Recoll appearance. A style sheet file can be
+          selected from the GUI query configuration dialog. A sample
+          skeleton style sheet is to be found in the
+          share/recoll/examples directory.</li>
+
+        <li>GUI: Added menu entry to show all the mime types actually
+          indexed.</li>
+
+        <li>Fixed bugs:
+          <ul>
+            <li>Indexing configuration: deleting one customized
+              directory would sometimes delete the whole list (depending
+              on Qt version I think).</li>
+            <li>Indexing configuration: adding a customized directory
+              would not make it the active/current one (so that
+              another click was needed to choose it before making
+              modifications).</li>
+            <li>The GUI preview now performs an up to date check
+              before displaying data from a subdocument, and proposes
+              to reindex the container if it changed. This is mostly
+              useful for mailbox containers, where preview would
+              sometimes display the wrong message (if the folder had
+              been compacted).</li>
+            <li>Fix a bug in html charset detection. The wrong charset
+              was sometimes used for GUI preview.</li>
+            <li>The chm filter can now process files lacking a Topics
+              node.</li>
+
+          </ul>
+        </li>
+
+      </ul>
+
+
+    </div>
+  </body>
+</html>
