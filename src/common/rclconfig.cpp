@@ -576,6 +576,24 @@ string RclConfig::getMimeHandlerDef(const string &mtype, bool filtertypes)
     return hs;
 }
 
+bool RclConfig::getGuiFilterNames(list<string>& cats) 
+{
+    if (!mimeconf)
+	return false;
+    cats = mimeconf->getNamesShallow("guifilters");
+    return true;
+}
+
+bool RclConfig::getGuiFilter(const string& catfiltername, string& frag)
+{
+    frag.clear();
+    if (!mimeconf)
+	return false;
+    if (!mimeconf->get(catfiltername, frag, "guifilters"))
+	return false;
+    return true;
+}
+
 bool RclConfig::valueSplitAttributes(const string& whole, string& value, 
 				     ConfSimple& attrs)
 {

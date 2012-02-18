@@ -315,7 +315,7 @@ extern "C" int XFlush(void *);
 void ResList::setDocSource(RefCntr<DocSequence> nsource)
 {
     LOGDEB(("ResList::setDocSource()\n"));
-    m_source = RefCntr<DocSequence>(new DocSource(nsource));
+    m_source = RefCntr<DocSequence>(new DocSource(theconfig, nsource));
 }
 
 // A query was executed, or the filtering/sorting parameters changed,

@@ -14,39 +14,87 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#include <algorithm>
 
 #include "debuglog.h"
 #include "filtseq.h"
+#include "rclconfig.h"
 
 using std::string;
 
 static bool filter(const DocSeqFiltSpec& fs, const Rcl::Doc *x)
 {
+    LOGDEB2(("  Filter: ncrits %d\n", fs.crits.size()));
     // Compare using each criterion in term. We're doing an or:
     // 1st ok ends 
     for (unsigned int i = 0; i < fs.crits.size(); i++) {
 	switch (fs.crits[i]) {
 	case DocSeqFiltSpec::DSFS_MIMETYPE:
-	    LOGDEB1((" MIMETYPE\n"));
+	    LOGDEB2((" filter: MIMETYPE: me [%s] doc [%s]\n",
+		    fs.values[i].c_str(), x->mimetype.c_str()));
 	    if (x->mimetype == fs.values[i])
-		return 1;
+		return true;
+	    break;
+	case DocSeqFiltSpec::DSFS_QLANG:
+	{
+	    LOGDEB((" filter: QLANG [%s]!!\n", fs.values[i].c_str()));
+	}
+	break;
+	case DocSeqFiltSpec::DSFS_PASSALL:
+	    return true;
 	}
     }
     // Did all comparisons
-    return 0;
+    return false;
 } 
+
+DocSeqFiltered::DocSeqFiltered(RclConfig *conf, RefCntr<DocSequence> iseq, 
+			       DocSeqFiltSpec &filtspec)
+    :  DocSeqModifier(iseq), m_config(conf)
+{
+    setFiltSpec(filtspec);
+}
 
 bool DocSeqFiltered::setFiltSpec(DocSeqFiltSpec &filtspec)
 {
-    m_spec = filtspec;
+    LOGDEB0(("DocSeqFiltered::setFiltSpec\n"));
+    for (unsigned int i = 0; i < filtspec.crits.size(); i++) {
+	switch (filtspec.crits[i]) {
+	case DocSeqFiltSpec::DSFS_MIMETYPE:
+	    m_spec.orCrit(filtspec.crits[i], filtspec.values[i]);
+	    break;
+	case DocSeqFiltSpec::DSFS_QLANG:
+	{
+	    // There are very few lang constructs that we can
+	    // interpret. The default config uses rclcat:value
+	    // only. That will be all for now...
+	    string val = filtspec.values[i];
+	    if (val.find("rclcat:") == 0) {
+		string catg = val.substr(7);
+		list<string> tps;
+		m_config->getMimeCatTypes(catg, tps);
+		for (list<string>::const_iterator it = tps.begin();
+		     it != tps.end(); it++) {
+		    LOGDEB2(("Adding mime: [%s]\n", it->c_str()));
+		    m_spec.orCrit(DocSeqFiltSpec::DSFS_MIMETYPE, *it);
+		}
+	    }
+	}
+	break;
+	default:
+	    break;
+	}
+    }
+    // If m_spec ends up empty, pass everything, better than filtering all.
+    if (m_spec.crits.empty()) {
+	m_spec.orCrit(DocSeqFiltSpec::DSFS_PASSALL, "");
+    }
     m_dbindices.clear();
     return true;
 }
 
 bool DocSeqFiltered::getDoc(int idx, Rcl::Doc &doc, string *)
 {
-    LOGDEB1(("DocSeqFiltered: fetching %d\n", idx));
+    LOGDEB2(("DocSeqFiltered::getDoc() fetching %d\n", idx));
 
     if (idx >= (int)m_dbindices.size()) {
 	// Have to fetch docs and filter until we get enough or

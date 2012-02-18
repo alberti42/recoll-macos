@@ -176,7 +176,7 @@ void RclMain::init()
     connect(bgrp, SIGNAL(buttonClicked(int)), this, SLOT(catgFilter(int)));
     allRDB->setChecked(true);
     list<string> cats;
-    theconfig->getMimeCategories(cats);
+    theconfig->getGuiFilterNames(cats);
     // Text for button 0 is not used. Next statement just avoids unused
     // variable compiler warning for catg_strings
     m_catgbutvec.push_back(catg_strings[0]);
@@ -1626,7 +1626,7 @@ void RclMain::showDocHistory()
 	new DocSequenceHistory(rcldb, g_dynconf, 
 			       string(tr("Document history").toUtf8()));
     src->setDescription((const char *)tr("History data").toUtf8());
-    DocSource *source = new DocSource(RefCntr<DocSequence>(src));
+    DocSource *source = new DocSource(theconfig, RefCntr<DocSequence>(src));
     m_source = RefCntr<DocSequence>(source);
     m_source->setSortSpec(m_sortspec);
     m_source->setFiltSpec(m_filtspec);
@@ -1695,7 +1695,8 @@ void RclMain::showQueryDetails()
 	return;
     string oq = breakIntoLines(m_source->getDescription(), 100, 50);
     QString str;
-    QString desc = tr("Result count (est.)") + ": " + str.setNum(m_source->getResCnt()) + "<br>";
+    QString desc = tr("Result count (est.)") + ": " + 
+	str.setNum(m_source->getResCnt()) + "<br>";
     desc += tr("Query details") + ": " + QString::fromUtf8(oq.c_str());
     QMessageBox::information(this, tr("Query details"), desc);
 }
@@ -1711,12 +1712,11 @@ void RclMain::catgFilter(int id)
 
     if (id != 0)  {
 	string catg = m_catgbutvec[id];
-	list<string> tps;
-	theconfig->getMimeCatTypes(catg, tps);
-	for (list<string>::const_iterator it = tps.begin();
-	     it != tps.end(); it++) 
-	    m_filtspec.orCrit(DocSeqFiltSpec::DSFS_MIMETYPE, *it);
+	string frag;
+	theconfig->getGuiFilter(catg, frag);
+	m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, frag);
     }
+    LOGDEB(("RclMain::catgFilter: calling setFiltSpec\n"));
     if (m_source.isNotNull())
 	m_source->setFiltSpec(m_filtspec);
     initiateQuery();

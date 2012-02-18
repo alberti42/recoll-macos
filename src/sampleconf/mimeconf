@@ -194,7 +194,12 @@ text/x-purple-html-log = pidgin
 text/x-python = text-x-python
 
 [categories]
-
+# Categories group mime types by "kind". They can be used from the query
+# language as an "rclcat" clause. This is fully dynamic, you can change the
+# names and groups as you wish, only the mime types are stored in the index.
+#
+# If you add/remove categories, you may also want to change the
+# "guifilters" section below.
 text = \
       application/msword \
       application/pdf \
@@ -280,3 +285,26 @@ other = application/vnd.sun.xml.draw \
         application/x-rar \
         application/x-webarchive \
 	application/zip \
+
+[guifilters]
+# This defines the top level filters in the GUI (accessed by the the
+# radiobuttons above the results area, or a toolbar combobox).
+# Each entry defines a label and a query language fragment that will be
+# applied to filter the current query if the option is activated.
+#
+# This does not really belong in mimeconf, but it does belong in the index
+# config (not the GUI one), because it's not necessarily the same in all
+# configs, it has to go somewhere, and it's not worth a separate config
+# file...
+#
+# By default this filters by document category (see above), but any
+# language fragment should be ok. Be aware though that the "document
+# history" queries only know about simple "rclcat" filtering.
+
+text = rclcat:text
+spreadsheet = rclcat:spreadsheet
+presentation = rclcat:presentation
+media = rclcat:media
+message = rclcat:message
+other = rclcat:other
+

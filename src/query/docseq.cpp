@@ -62,7 +62,7 @@ bool DocSource::buildStack()
     } else {
 	if (m_fspec.isNotNull()) {
 	    m_seq = 
-		RefCntr<DocSequence>(new DocSeqFiltered(m_seq, m_fspec));
+		RefCntr<DocSequence>(new DocSeqFiltered(m_config, m_seq, m_fspec));
 	} 
     }
     

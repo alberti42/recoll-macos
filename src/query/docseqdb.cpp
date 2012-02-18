@@ -21,6 +21,7 @@
 #include "rcldb.h"
 #include "debuglog.h"
 #include "internfile.h"
+#include "wasatorcl.h"
 
 DocSequenceDb::DocSequenceDb(RefCntr<Rcl::Query> q, const string &t, 
 			     RefCntr<Rcl::SearchData> sdata) 
@@ -126,6 +127,26 @@ bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs)
 	    switch (fs.crits[i]) {
 	    case DocSeqFiltSpec::DSFS_MIMETYPE:
 		m_fsdata->addFiletype(fs.values[i]);
+		break;
+	    case DocSeqFiltSpec::DSFS_QLANG:
+	    {
+		if (m_q.isNull())
+		    break;
+		    
+		string reason;
+		Rcl::SearchData *sd = 
+		    wasaStringToRcl(m_q->whatDb()->getConf(), 
+				    fs.values[i], reason);
+		if (sd)  {
+		    Rcl::SearchDataClauseSub *cl1 = 
+			new Rcl::SearchDataClauseSub(Rcl::SCLT_SUB, 
+						     RefCntr<Rcl::SearchData>(sd));
+		    m_fsdata->addClause(cl1);
+		}
+	    }
+	    break;
+	    default:
+		break;
 	    }
 	}
 	m_isFiltered = true;

@@ -202,6 +202,11 @@ class RclConfig {
     /** mimeconf: get list of mime types for category */
     bool getMimeCatTypes(const string& cat, list<string>&);
 
+    /** mimeconf: get list of gui filters (doc cats by default */
+    bool getGuiFilterNames(list<string>&);
+    /** mimeconf: get query lang frag for named filter */
+    bool getGuiFilter(const string& filtername, string& frag);
+
     /** fields: get field prefix from field name */
     bool getFieldTraits(const string& fldname, const FieldTraits **);
     const set<string>& getStoredFields() {return m_storedFields;}

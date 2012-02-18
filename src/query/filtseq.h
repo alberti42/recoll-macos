@@ -19,10 +19,13 @@
 
 #include <vector>
 #include <string>
+using std::string;
+using std::vector;
 
 #include "refcntr.h"
 #include "docseq.h"
 
+class RclConfig;
 
 /** 
  * A filtered sequence is created from another one by selecting entries
@@ -30,17 +33,17 @@
  */
 class DocSeqFiltered : public DocSeqModifier {
 public:
-    DocSeqFiltered(RefCntr<DocSequence> iseq, DocSeqFiltSpec &filtspec)
-	:  DocSeqModifier(iseq), m_spec(filtspec)
-    {}
+    DocSeqFiltered(RclConfig *conf, RefCntr<DocSequence> iseq, 
+		   DocSeqFiltSpec &filtspec);
     virtual ~DocSeqFiltered() {}
     virtual bool canFilter() {return true;}
     virtual bool setFiltSpec(DocSeqFiltSpec &filtspec);
     virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0);
     virtual int getResCnt() {return m_seq->getResCnt();}
  private:
-    DocSeqFiltSpec          m_spec;
-    vector<int>             m_dbindices;
+    RclConfig     *m_config;    
+    DocSeqFiltSpec m_spec;
+    vector<int>    m_dbindices;
 };
 
 #endif /* _FILTSEQ_H_INCLUDED_ */

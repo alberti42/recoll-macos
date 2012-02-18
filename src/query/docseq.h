@@ -49,7 +49,7 @@ class DocSeqSortSpec {
 class DocSeqFiltSpec {
  public:
     DocSeqFiltSpec() {}
-    enum Crit {DSFS_MIMETYPE};
+    enum Crit {DSFS_MIMETYPE, DSFS_QLANG, DSFS_PASSALL};
     void orCrit(Crit crit, const string& value) {
 	crits.push_back(crit);
 	values.push_back(value);
@@ -191,12 +191,13 @@ protected:
     RefCntr<DocSequence>    m_seq;
 };
 
+class RclConfig;
 // A DocSource can juggle docseqs of different kinds to implement
 // sorting and filtering in ways depending on the base seqs capabilities
 class DocSource : public DocSeqModifier {
 public:
-    DocSource(RefCntr<DocSequence> iseq) 
-	: DocSeqModifier(iseq)
+    DocSource(RclConfig *config, RefCntr<DocSequence> iseq) 
+	: DocSeqModifier(iseq), m_config(config)
     {}
     virtual bool canFilter() {return true;}
     virtual bool canSort() {return true;}
@@ -218,6 +219,7 @@ public:
 private:
     bool buildStack();
     void stripStack();
+    RclConfig *m_config;
     DocSeqFiltSpec  m_fspec;
     DocSeqSortSpec  m_sspec;
 };

@@ -298,7 +298,7 @@ void RecollModel::setDocSource(RefCntr<DocSequence> nsource)
     if (nsource.isNull()) {
 	m_source = RefCntr<DocSequence>();
     } else {
-	m_source = RefCntr<DocSequence>(new DocSource(nsource));
+	m_source = RefCntr<DocSequence>(new DocSource(theconfig, nsource));
 	m_hdata.reset();
 	m_source->getTerms(m_hdata.terms, m_hdata.groups, m_hdata.gslks);
     }
