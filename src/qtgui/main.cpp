@@ -167,11 +167,10 @@ static void recollCleanup()
 
 static void sigcleanup(int)
 {
-    fprintf(stderr, "sigcleanup called\n");
-    // Cant call exit from here, because the atexit cleanup does some
-    // thread stuff that we can't do from signal context.
-    // Just set a flag and let the watchdog timer do the work
+    // We used to not call exit from here, because of the idxthread, but
+    // this is now gone, so...
     recollNeedsExit = 1;
+    exit(1);
 }
 
 extern void qInitImages_recoll();
