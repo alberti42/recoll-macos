@@ -18,6 +18,9 @@
 #ifndef _rcldb_p_h_included_
 #define _rcldb_p_h_included_
 
+#ifdef IDX_THREADS
+#include "workqueue.h"
+#endif // IDX_THREADS
 #include "xapian.h"
 
 namespace Rcl {
@@ -63,6 +66,20 @@ enum value_slot {
 
 class Query;
 
+#ifdef IDX_THREADS
+class DbUpdTask {
+public:
+    DbUpdTask(const string& ud, const string& un, const Xapian::Document &d,
+	size_t tl)
+	: udi(ud), uniterm(un), doc(d), txtlen(tl)
+    {}
+    string udi;
+    string uniterm;
+    Xapian::Document doc;
+    size_t txtlen;
+};
+#endif // IDX_THREADS
+
 // A class for data and methods that would have to expose
 // Xapian-specific stuff if they were in Rcl::Db. There could actually be
 // 2 different ones for indexing or query as there is not much in
@@ -73,6 +90,9 @@ class Db::Native {
     bool m_isopen;
     bool m_iswritable;
     bool m_noversionwrite; //Set if open failed because of version mismatch!
+#ifdef IDX_THREADS
+    WorkQueue<DbUpdTask*> m_wqueue;
+#endif // IDX_THREADS
 
     // Indexing 
     Xapian::WritableDatabase xwdb;
@@ -86,9 +106,18 @@ class Db::Native {
     Native(Db *db) 
 	: m_rcldb(db), m_isopen(false), m_iswritable(false),
           m_noversionwrite(false)
+#ifdef IDX_THREADS
+	, m_wqueue(10)
+#endif // IDX_THREADS
     { }
 
-    ~Native() {
+    ~Native() { 
+#ifdef IDX_THREADS
+	if (m_iswritable) {
+	    void *status = m_wqueue.setTerminateAndWait();
+	    LOGDEB(("Native: worker status %ld\n", long(status)));
+	}
+#endif // IDX_THREADS
     }
 
     vector<string> makeAbstract(Xapian::docid id, Query *query);

@@ -25,15 +25,15 @@
 #include "xapian.h"
 
 #include "cstr.h"
+#include "rclconfig.h"
+#include "debuglog.h"
 #include "rcldb.h"
 #include "rcldb_p.h"
 #include "rclquery.h"
 #include "rclquery_p.h"
-#include "debuglog.h"
 #include "conftree.h"
 #include "smallut.h"
 #include "searchdata.h"
-#include "rclconfig.h"
 #include "unacpp.h"
 
 #ifndef NO_NAMESPACES

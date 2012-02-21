@@ -66,10 +66,23 @@ using namespace std;
 
 FsIndexer::FsIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc) 
     : m_config(cnf), m_db(db), m_updater(updfunc), m_missing(new FIMissingStore)
+#ifdef IDX_THREADS
+    , m_wqueue(10)
+#endif // IDX_THREADS
 {
     m_havelocalfields = m_config->hasNameAnywhere("localfields");
+#ifdef IDX_THREADS
+    if (!m_wqueue.start(FsIndexerIndexWorker, this)) {
+	LOGERR(("FsIndexer::FsIndexer: worker start failed\n"));
+	return;
+    }
+#endif // IDX_THREADS
 }
 FsIndexer::~FsIndexer() {
+#ifdef IDX_THREADS
+    void *status = m_wqueue.setTerminateAndWait();
+    LOGERR(("FsIndexer: worker status: %ld\n", long(status)));
+#endif // IDX_THREADS
     delete m_missing;
 }
 
@@ -127,6 +140,9 @@ bool FsIndexer::index()
 	}
     }
 
+#ifdef IDX_THREADS
+    m_wqueue.waitIdle();
+#endif // IDX_THREADS
     string missing;
     FileInterner::getMissingDescription(m_missing, missing);
     if (!missing.empty()) {
@@ -289,6 +305,28 @@ void FsIndexer::makesig(const struct stat *stp, string& out)
     out = cbuf;
 }
 
+#ifdef IDX_THREADS
+void *FsIndexerIndexWorker(void * fsp)
+{
+    FsIndexer *fip = (FsIndexer*)fsp;
+    WorkQueue<IndexingTask*> *tqp = &fip->m_wqueue;
+    IndexingTask *tsk;
+    for (;;) {
+	if (!tqp->take(&tsk)) {
+	    tqp->workerExit();
+	    return (void*)1;
+	}
+	LOGDEB(("FsIndexerIndexWorker: got task, ql %d\n", int(tqp->size())));
+	if (!fip->m_db->addOrUpdate(tsk->udi, tsk->parent_udi, tsk->doc)) {
+	    tqp->setTerminateAndWait(); 
+	    tqp->workerExit();
+	    return (void*)0;
+	}
+	delete tsk;
+    }
+}
+#endif // IDX_THREADS
+
 /// This method gets called for every file and directory found by the
 /// tree walker. 
 ///
@@ -443,8 +481,16 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 	// of the file document.
 	string udi;
 	make_udi(fn, doc.ipath, udi);
+
+#ifdef IDX_THREADS
+	IndexingTask *tp = new IndexingTask(udi, doc.ipath.empty() ? 
+					    cstr_null : parent_udi, doc);
+	if (!m_wqueue.put(tp))
+	    return FsTreeWalker::FtwError;
+#else
 	if (!m_db->addOrUpdate(udi, doc.ipath.empty() ? cstr_null : parent_udi, doc)) 
 	    return FsTreeWalker::FtwError;
+#endif // IDX_THREADS
 
 	// Tell what we are doing and check for interrupt request
 	if (m_updater) {
@@ -476,8 +522,14 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 	fileDoc.fbytes = cbuf;
 	// Document signature for up to date checks.
 	makesig(stp, fileDoc.sig);
+#ifdef IDX_THREADS
+	IndexingTask *tp = new IndexingTask(parent_udi, cstr_null, fileDoc);
+	if (!m_wqueue.put(tp))
+	    return FsTreeWalker::FtwError;
+#else
 	if (!m_db->addOrUpdate(parent_udi, cstr_null, fileDoc)) 
 	    return FsTreeWalker::FtwError;
+#endif // IDX_THREADS
     }
 
     return FsTreeWalker::FtwOk;

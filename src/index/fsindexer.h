@@ -24,10 +24,26 @@ using std::list;
 
 #include "indexer.h"
 #include "fstreewalk.h"
+#ifdef IDX_THREADS
+#include "workqueue.h"
+#endif // IDX_THREADS
 
 class DbIxStatusUpdater;
 class FIMissingStore;
 struct stat;
+
+#ifdef IDX_THREADS
+class IndexingTask {
+public:
+    IndexingTask(const string& u, const string& p, const Rcl::Doc& d)
+	:udi(u), parent_udi(p), doc(d)
+    {}
+    string udi;
+    string parent_udi;
+    Rcl::Doc doc;
+};
+extern void *FsIndexerIndexWorker(void*);
+#endif // IDX_THREADS
 
 /** Index selected parts of the file system
  
@@ -88,6 +104,11 @@ class FsIndexer : public FsTreeWalkerCB {
     // further wasteful processing if no local fields are set.
     bool         m_havelocalfields;
     map<string, string> m_localfields;
+
+#ifdef IDX_THREADS
+    friend void *FsIndexerIndexWorker(void*);
+    WorkQueue<IndexingTask*> m_wqueue;
+#endif // IDX_THREADS
 
     bool init();
     void localfieldsfromconf();
