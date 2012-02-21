@@ -97,6 +97,7 @@
 .info = application/x-gnuinfo
 .kwd = application/x-kword
 .gnumeric = application/x-gnumeric
+.gnm = application/x-gnumeric
 
 .wpd = application/vnd.wordperfect
 
