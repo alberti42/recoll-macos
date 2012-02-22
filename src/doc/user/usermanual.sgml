@@ -3249,9 +3249,14 @@ while query.next >= 0 and query.next < nres:
             enable the gnu version on systems where the native one is
             bad.</para> 
 	  </listitem>
-	  <listitem><para><literal>--without-gui</literal> Disable the Qt
-	    interface, and auxiliary uses of X11, and compile the command
-	    line version.</para> 
+	  <listitem><para><literal>--disable-qtgui</literal> Disable the Qt
+	    interface. Will allow building the indexer and the command line
+	    search program in absence of a Qt environment.</para> 
+	  </listitem>
+	  <listitem><para><literal>--disable-x11mon</literal> Disable 
+	    X11 connection monitoring inside recollindex. Together with
+	    --disable-qtgui, this allows building recoll without Qt and
+	    X11.</para>
 	  </listitem>
 	  <listitem><para>Of course the usual 
 	  <application>autoconf</application> <command>configure</command>
