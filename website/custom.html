@@ -2,7 +2,7 @@
 
 <html>
   <head>
-    <title>RECOLL: contributed result list formata</title>
+    <title>RECOLL: result list customisation tips</title>
 
     <meta name="generator" content="HTML Tidy, see www.w3.org">
     <meta name="Author" content="Jean-Francois Dockes">
@@ -16,6 +16,52 @@
     <meta name="robots" content="All,Index,Follow">
 
     <link type="text/css" rel="stylesheet" href="styles/style.css">
+
+
+<style type="text/css">
+/* Photo-Caption PZ3 CSS v080630
+* copyright: http://randsco.com/copyright
+* www.randsco.com
+*/
+
+.PZ3-l { float:left; margin-right:10px; }
+.PZ3-r { float:right; margin-left:10px; direction:rtl; }
+  html>/**/body .PZ3-r { position:relative; }
+
+.PZ3zoom { border:1px solid #369; }
+.PZ3zoom a,.PZ3zoom a:visited { display:block;
+  padding:0; overflow:hidden; text-decoration:none;
+  height:100%; width:100%; }
+  html>/**/body .PZ3-r a { right:0; }
+
+.PZ3zoom a:hover { position:absolute;
+  z-index:999; padding:0; background:none;
+  cursor:default; height:auto; width:auto;
+  overflow:visible; border:1px solid #369;
+  margin:-1px 0 0 -1px; }
+  html>body .PZ3zoom a:hover { margin:-1px -1px 0 -1px; }
+
+.PZ3zoom a img { border:0; height:100%; width:100%; }
+.PZ3zoom a:hover img { height:auto; width:auto;
+  border:0; }
+
+a:hover .PZ3cap,
+a:hover .PZ31cap { display:block;
+  direction:ltr; font:10pt verdana,sans-serif;
+  margin-top:-3px; background:#369; color:#fff;
+  text-align:left; }
+a:hover .PZ3cap { padding:3px 5px; }
+.PZ3inr { display:block; padding:2px 5px; }
+
+.noCap a:hover .PZ3cap,
+.noCap a:hover .PZ31cap { display:none; }
+.noBdr,.noBdr a:hover { border:0; }
+.Lnk a:hover { cursor:pointer; }
+
+/* End Photo-Caption Zoom CSS */ 
+</style>
+
+
   </head>
 
   <body>
@@ -29,8 +75,85 @@
         <li><a href="index.html#support">Support</a></li>
       </ul>
     </div>
+
     
     <div class="content">
+
+      <p>The Recoll result list is actually made of html text
+        displayed inside a Qt Widget. In all Recoll versions, you
+        can specify the format for the list entries: what data is
+        displayed for each hit document and how. This used to include
+        "almost full" support for HTML capabilities, with a few
+        restrictions due to the Qt QTextBrowser object.</p>
+
+      <p>As of Recoll 1.17, the result list can be built as a WebKit
+        object (WebKit is the basis for several major browsers), which
+        yields full CSS and even Javascript support. </p>
+
+      <h2>New in Recoll 1.17: the WebKit result list</h2>
+
+      <p>With WebKit, things that used to not work are now possible.</p>
+
+      <p>For example, you can make the list icons links that activate the
+        preview or open action (or the document url which you can then
+        drag/drop to other windows).</p>
+
+      <p>A more interesting example: recoll 1.17 will display document
+        thumbnails instead of the type icon if the thumbnail exists in
+        the standard Freedesktop location. The icons/thumbnails are
+        64x64 pixels in size, which is a bit small. The standard
+        thumbnail files are actually 128x128, which is much more
+        detailed. Using them statically would consume too much list
+        space though. Using CSS, you can get them to expand when the
+        mouse is over them. Recipee:</p>
+
+      <blockquote>
+      <p>Retrieve the CSS code
+        from <a href="http://randsco.com/_miscPgs/cssZoomPZ3.html">randsco
+        pure CSS photo-caption zoom</a>, and include it inside the
+        result list html header by using the "Edit result page html
+        header insert" from the GUI preferences. Don't forget to
+        enclose the CSS code between <code>&lt;style type="text/css"&gt;
+        &lt;/style&gt</code> tags.</p> 
+      
+      <p>Use something like the following result paragraph format
+      (only the code around the img tag is relevant, the rest can be
+        what you want):</p>
+
+<pre>
+<!--
+<table><tr><td>
+ <div class="PZ3zoom PZ3-l noBdr noCap noLnk" style="width:64px;height:64px;">
+ <a href="%U"> <img src='%I' width='64'></a>
+</div>
+</td><td>
+%R %S %L &nbsp;&nbsp;<b>%T</b><br>%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i>&nbsp;%i<br>%A %K
+</td></tr></table>
+-->
+&lt;table&gt;&lt;tr&gt;&lt;td&gt;
+
+ &lt;div class="PZ3zoom PZ3-l noBdr noCap noLnk" style="width:64px;height:64px;"&gt;
+ &lt;a href="%U"&gt; &lt;img src='%I' width='64'&gt;&lt;/a&gt;
+&lt;/div&gt;
+
+&lt;/td&gt;&lt;td&gt;
+%R %S %L &amp;nbsp;&amp;nbsp;&lt;b&gt;%T&lt;/b&gt;&lt;br&gt;%M&amp;nbsp;%D&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;i&gt;%U&lt;/i&gt;&amp;nbsp;%i&lt;br&gt;%A %K
+&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+</pre>
+
+      </blockquote>
+   <div class="PZ3zoom PZ3-r noCap noLnk" style="width:100px;height:40px;">
+     <a href="resparpics/pz3.png" onclick="return false">
+       <img src="resparpics/pz3.png" alt="hover zoom" />
+     </a>
+   </div>
+
+      <p>Et voilà! The icons will grow to their full size when the mouse is
+        over them.</p>
+
+
+
+
       <h2>Result list paragraph format samples</h2>
 
       <p>The format for paragraphs inside the Recoll GUI result list is

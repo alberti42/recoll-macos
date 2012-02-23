@@ -888,7 +888,7 @@ fvwm
 
       <para>The format of the result list entries is entirely
       configurable by using the preference dialog to 
-      <link linkend="rcl.search.custom.reslistpara">edit an HTML
+      <link linkend="rcl.search.custom.reslist">edit an HTML
       fragment</link>.  
 
       <para>You can click on the <literal>Query details</literal> link
@@ -988,10 +988,10 @@ fvwm
         <para>Hovering over a table row will update the detail area at the
         bottom of the window with the corresponding values. You can click
         the row to freeze the display. The bottom area is equivalent to a
-        classical result list paragraph, with links for
-        starting a preview or a native application, and an equivalent
-        right-click menu. Typing <keycap>Esc</keycap> (the Escape key) will
-        unfreeze the display.</para> 
+        result list paragraph, with links for starting a preview or a
+        native application, and an equivalent right-click menu. Typing
+        <keycap>Esc</keycap> (the Escape key) will unfreeze the
+        display.</para>
 
       </sect2>
 
@@ -1624,10 +1624,18 @@ fvwm
             </listitem>
 
             <listitem><anchor id="rcl.search.custom.resultpara">
-            <para><guilabel>Result paragraph format string</guilabel>:
+            <para><guilabel>Edit result list paragraph format string</guilabel>:
             allows you to change the presentation of each result list
-            entry. This is <link linkend="rcl.search.custom.reslistpara">
-            described in its own section.</link></para>
+            entry. See the <link linkend="rcl.search.custom.reslist">
+                result list customisation section</link>.</para>
+            </listitem>
+
+            <listitem><anchor id="rcl.search.custom.resulthead">
+            <para><guilabel>Edit result page html header insert</guilabel>:
+            allows you to define text inserted at the end of the result
+            page html header.  
+            More detail in the <link linkend="rcl.search.custom.reslist"> 
+                result list customisation section.</link></para>
             </listitem>
 
             <listitem>
@@ -1739,16 +1747,38 @@ fvwm
       need to implement a way of purging the index from stale data,
       </para>
 
-    <sect3 id="rcl.search.custom.reslistpara">
-      <title>The result list paragraph format</title>
+    <sect3 id="rcl.search.custom.reslist">
+      <title>The result list format</title>
 
-        <para>The presentation of each result inside the result list can be
-        customized by setting the result list paragraph format inside the
-        <guilabel>User Interface</guilabel> tab of the <guilabel>Query
-        configuration</guilabel>.</para> 
+        <para>The result list presentation can be exhaustively customized
+          by adjusting two elements:</para>
+        <itemizedlist>
+          <listitem><para>The paragraph format</para></listitem>
+          <listitem><para>Html code inside the header
+              section</para></listitem>
+        </itemizedlist>
 
-        <para>This is a Qt HTML string where the following printf-like
-        <literal>%</literal> substitutions will be performed:
+        <para>These can be edited from the <guilabel>Result list</guilabel>
+          tab of the <guilabel>Query configuration</guilabel>.</para> 
+
+        <para>Newer versions of Recoll (from 1.17) use a WebKit HTML
+          object by default (this may be disabled at build time), and
+          total customisation is possible with full support for CSS and
+          Javascript. Conversely, there are limits to what you can do with
+          the older Qt QTextBrowser, but still, it is possible to decide
+          what data each result will contain, and how it will be
+          displayed.</para>
+
+        <para>No more detail will be given about the header part (only
+          useful with the WebKit build), if there are restrictions to
+          what you can do, they are beyond this author's HTML/CSS/Javascript
+          abilities...</para>
+
+        <sect4 id="rcl.search.custom.reslist.para">
+          <title>The paragraph format</title>
+
+        <para>This is an arbitrary HTML string where the following printf-like
+          <literal>%</literal> substitutions will be performed:
 
         <itemizedlist>
           <listitem>
@@ -1756,23 +1786,29 @@ fvwm
           </listitem>
           <listitem><formalpara><title>%D</title><para>Date</para></formalpara>
           </listitem>
-          <listitem><formalpara><title>%I</title><para>Icon image name
-          </para></formalpara> 
+          <listitem><formalpara><title>%I</title><para>Icon image
+            name. This is normally determined from the mime type. The
+            associations are defined inside the 
+            <link linkend="rcl.install.config.mimeconf">
+              <filename>mimeconf</filename> configuration file</link>. 
+            If a thumbnail for the file is found at
+            the standard Freedesktop location, this will be displayed
+            instead.</para></formalpara> 
           </listitem>
           <listitem><formalpara><title>%K</title><para>Keywords (if
           any)</para></formalpara> 
           </listitem>
-          <listitem><formalpara><title>%L</title><para>Preview and
-          Edit links</para></formalpara> 
+          <listitem><formalpara><title>%L</title><para>Precooked Preview and
+            Edit links</para></formalpara> 
           </listitem>
           <listitem><formalpara><title>%M</title><para>Mime
                   type</para></formalpara> 
           </listitem>
-          <listitem><formalpara><title>%N</title><para>result Number
-                  </para></formalpara> 
+          <listitem><formalpara><title>%N</title><para>result Number inside
+            the result page</para></formalpara> 
           </listitem>
           <listitem><formalpara><title>%R</title><para>Relevance
-          percentage</para></formalpara> 
+            percentage</para></formalpara> 
           </listitem>
           <listitem><formalpara><title>%S</title><para>Size
           information</para></formalpara> 
@@ -1788,8 +1824,8 @@ fvwm
         <literal>&lt;a href="P%N"&gt;</literal>
         and 
         <literal>&lt;a href="E%N"&gt;</literal>
-        where <replaceable>docnum</replaceable> (%N expands to the document
-        number inside the result list).</para>
+        where <replaceable>docnum</replaceable> (%N) expands to the document
+        number inside the result page).</para>
 
         <para>In addition to the predefined values above, all strings like
         <literal>%(fieldname)</literal> will be replaced by the value of
@@ -2432,7 +2468,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
       <para>The association of files to mime types is mostly based on
         name suffixes. The types are defined inside the
-        <link linkend="rcl.install.config.mimeconf">
+        <link linkend="rcl.install.config.mimemap">
         <filename>mimemap</filename> file</link>. Example:
 <programlisting>
 
