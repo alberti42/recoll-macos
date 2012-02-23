@@ -307,7 +307,7 @@
            <item>
             <widget class="QCommandLinkButton" name="CLEditHeader">
              <property name="text">
-              <string>Edit result page html header text insert</string>
+              <string>Edit result page html header insert</string>
              </property>
             </widget>
            </item>

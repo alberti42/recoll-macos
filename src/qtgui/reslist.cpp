@@ -276,6 +276,7 @@ ResList::ResList(QWidget* parent, const char* name)
     connect(this, SIGNAL(linkClicked(const QUrl &)), 
 	    this, SLOT(linkWasClicked(const QUrl &)));
     page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
 #endif
     setFont();
     languageChange();
