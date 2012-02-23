@@ -56,6 +56,8 @@ public slots:
     virtual void actAllExtraDbPB_clicked();
     virtual void unacAllExtraDbPB_clicked();
     virtual void setStemLang(const QString& lang);
+    virtual void editParaFormat();
+    virtual void editHeaderText();
 
 signals:
     void uiprefsDone();
@@ -64,6 +66,9 @@ protected slots:
     virtual void accept();
     virtual void reject();
 private:
+    // Locally stored data (pending ok/cancel)
+    QString paraFormat;
+    QString headerText;
     void setFromPrefs();
     ViewAction *m_viewAction;
 

@@ -1,6 +1,9 @@
 TEMPLATE        = app
 LANGUAGE        = C++
 
+@QMAKE_ENABLE_WEBKIT@QT += webkit
+@QMAKE_DISABLE_WEBKIT@QMAKE_CXXFLAGS += -DRESLIST_TEXTBROWSER
+
 CONFIG  += qt warn_on thread release 
 
 HEADERS += \
@@ -8,6 +11,7 @@ HEADERS += \
         confgui/confgui.h \
         confgui/confguiindex.h \
         crontool.h \
+        editdialog.h \
         firstidx.h \
         idxsched.h \
         listdialog.h \
@@ -48,6 +52,7 @@ SOURCES += \
 FORMS   = \
         advsearch.ui \
         crontool.ui \
+        editdialog.ui \
         firstidx.ui \
         idxsched.ui \
         listdialog.ui \

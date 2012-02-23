@@ -404,6 +404,21 @@ else
   fi
   cd ..
 
+
+ ##### Using Qt webkit for reslist display? Else Qt textbrowser
+  AC_ARG_ENABLE(webkit,
+    AC_HELP_STRING([--disable-webkit],
+      [Disable use of qt-webkit.]),
+        enableWebkit=$enableval, enableWebkit="yes")
+
+  if test "$enableWebkit" = "yes" ; then
+   QMAKE_ENABLE_WEBKIT=""
+   QMAKE_DISABLE_WEBKIT="#"
+  else
+   QMAKE_ENABLE_WEBKIT="#"
+   QMAKE_DISABLE_WEBKIT=""
+  fi
+
   AC_CONFIG_FILES($QTGUI/recoll.pro)
   ##################### End QT detection
 fi
@@ -458,6 +473,8 @@ AC_SUBST(XAPIANCXXFLAGS)
 AC_SUBST(HAVE_MKDTEMP)
 AC_SUBST(NOQTMAKE)
 AC_SUBST(NOCMDLINE)
+AC_SUBST(QMAKE_ENABLE_WEBKIT)
+AC_SUBST(QMAKE_DISABLE_WEBKIT)
 AC_SUBST(NOPIC)
 AC_SUBST(RCLVERSION)
 

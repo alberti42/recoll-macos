@@ -48,6 +48,7 @@ class PrefsPack {
     // Result list format string
     QString reslistformat;
     string  creslistformat;
+    QString reslistheadertext;
     // Abstract snippet separator
     QString abssep;
     // Date strftime format

@@ -26,8 +26,13 @@ using std::list;
 using std::pair;
 #endif
 
-#include <qtextbrowser.h>
-#include <QTextCursor>
+#ifdef RESLIST_TEXTBROWSER
+#include <QTextBrowser>
+#define RESLIST_PARENTCLASS QTextBrowser
+#else
+#include <QtWebKit/QWebView>
+#define RESLIST_PARENTCLASS QWebView
+#endif
 
 #include "docseq.h"
 #include "sortseq.h"
@@ -36,20 +41,13 @@ using std::pair;
 #include "rcldoc.h"
 #include "reslistpager.h"
 
-class ResList;
 class QtGuiResListPager;
-class QMenu;
 
 /**
  * Display a list of document records. The data can be out of the history 
  * manager or from an index query, both abstracted as a DocSequence. 
- * Sorting and filtering are applied by stacking Sort/Filter DocSequences.
- * This is nice because history and index result are handled the same, but 
- * not nice because we can't use the sort/filter capabilities in the index 
- * engine, and do it instead on the index output, which duplicates code and 
- * may be sometimes slower.
  */
-class ResList : public QTextBrowser
+class ResList : public RESLIST_PARENTCLASS
 {
     Q_OBJECT;
 
@@ -67,6 +65,7 @@ class ResList : public QTextBrowser
     bool displayingHistory();
     int listId() const {return m_listId;}
     int pageFirstDocNum();
+    void setFont();
 
  public slots:
     virtual void setDocSource(RefCntr<DocSequence> nsource);
@@ -77,7 +76,6 @@ class ResList : public QTextBrowser
     virtual void resultPageFirst(); // First page of results
     virtual void resultPageNext(); // Next (or first) page of results
     virtual void resultPageFor(int docnum); // Page containing docnum
-    virtual void displayPage(); // Display current page
     virtual void menuPreview();
     virtual void menuSaveToFile();
     virtual void menuEdit();
@@ -104,7 +102,6 @@ class ResList : public QTextBrowser
     void docExpand(Rcl::Doc);
     void wordSelect(QString);
     void wordReplace(const QString&, const QString&);
-    void linkClicked(const QString&, int); // See emitLinkClicked()
     void hasResults(int);
 
  protected:
@@ -119,24 +116,22 @@ class ResList : public QTextBrowser
  private:
     QtGuiResListPager  *m_pager;
     RefCntr<DocSequence> m_source;
+    int        m_popDoc; // Docnum for the popup menu.
+    int        m_curPvDoc;// Docnum for current preview
+    int        m_lstClckMod; // Last click modifier. 
+    int        m_listId; // query Id for matching with preview windows
 
+#ifdef RESLIST_TEXTBROWSER    
     // Translate from textedit paragraph number to relative
     // docnum. Built while we insert text into the qtextedit
     std::map<int,int>  m_pageParaToReldocnums;
-
-    int                m_popDoc; // Docnum for the popup menu.
-    int                m_curPvDoc;// Docnum for current preview
-    int                m_lstClckMod; // Last click modifier. 
-    list<int>          m_selDocs;
-    int                m_listId; // query Id for matching with preview windows
-    
     virtual int docnumfromparnum(int);
     virtual pair<int,int> parnumfromdocnum(int);
+#else
+    QString    m_text; // webview doesn't take text incrementally, store it.
+#endif
 
-    // Don't know why this is necessary but it is
-    void emitLinkClicked(const QString &s) {
-	emit linkClicked(s, m_lstClckMod);
-    };
+    virtual void displayPage(); // Display current page
     static int newListId();
     void resetView();
 };

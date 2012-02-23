@@ -1726,12 +1726,7 @@ void RclMain::setUIPrefs()
     if (!uiprefs)
 	return;
     LOGDEB(("Recollmain::setUIPrefs\n"));
-    if (prefs.reslistfontfamily.length()) {
-	QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
-	reslist->setFont(nfont);
-    } else {
-	reslist->setFont(this->font());
-    }
+    reslist->setFont();
 }
 
 void RclMain::enableNextPage(bool yesno)

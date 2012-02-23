@@ -40,7 +40,8 @@
 
 /* Use a light yellow background for all text display areas: */
 
-QComboBox[editable="true"], QTextEdit, QLineEdit, QTextBrowser, QTableView { 
+QComboBox[editable="true"], QTextEdit, QLineEdit, QTextBrowser, QTableView,
+QWebView, QPlainTextEdit { 
     background: #ffffee;
 }
 

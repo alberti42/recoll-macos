@@ -157,6 +157,7 @@ void rwSettings(bool writing)
 	    prefs.creslistformat = (const char*)prefs.reslistformat.toUtf8();
 	}
     }
+    SETTING_RW(prefs.reslistheadertext, "/Recoll/prefs/reslist/headertext", String, "");
     SETTING_RW(prefs.stylesheetFile, "/Recoll/prefs/stylesheet", String, "");
     SETTING_RW(prefs.queryStemLang, "/Recoll/prefs/query/stemLang", String,
 	       "english");

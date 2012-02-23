@@ -49,6 +49,7 @@
 #include "uiprefs_w.h"
 #include "viewaction_w.h"
 #include "debuglog.h"
+#include "editdialog.h"
 
 void UIPrefsDialog::init()
 {
@@ -70,7 +71,8 @@ void UIPrefsDialog::init()
 	    this, SLOT(actAllExtraDbPB_clicked()));
     connect(unacAllExtraDbPB, SIGNAL(clicked()), 
 	    this, SLOT(unacAllExtraDbPB_clicked()));
-
+    connect(CLEditPara, SIGNAL(clicked()), this, SLOT(editParaFormat()));
+    connect(CLEditHeader, SIGNAL(clicked()), this, SLOT(editHeaderText()));
     connect(buttonOk, SIGNAL(clicked()), this, SLOT(accept()));
     connect(buttonCancel, SIGNAL(clicked()), this, SLOT(reject()));
     connect(buildAbsCB, SIGNAL(toggled(bool)), 
@@ -129,7 +131,8 @@ void UIPrefsDialog::setFromPrefs()
 	stylesheetPB->setText(QString::fromLocal8Bit(nm.c_str()));
     }
 
-    rlfTE->setPlainText(prefs.reslistformat);
+    paraFormat = prefs.reslistformat;
+    headerText = prefs.reslistheadertext;
 
     // Stemming language combobox
     stemLangCMB->clear();
@@ -201,10 +204,11 @@ void UIPrefsDialog::accept()
     prefs.reslistfontfamily = reslistFontFamily;
     prefs.reslistfontsize = reslistFontSize;
     prefs.stylesheetFile = stylesheetFile;
-    prefs.reslistformat =  rlfTE->toPlainText();
+    prefs.reslistformat =  paraFormat;
+    prefs.reslistheadertext =  headerText;
     if (prefs.reslistformat.trimmed().isEmpty()) {
 	prefs.reslistformat = prefs.dfltResListFormat;
-	rlfTE->setPlainText(prefs.reslistformat);
+	paraFormat = prefs.reslistformat;
     }
 
     prefs.creslistformat = (const char*)prefs.reslistformat.toUtf8();
@@ -255,6 +259,23 @@ void UIPrefsDialog::accept()
     QDialog::accept();
 }
 
+void UIPrefsDialog::editParaFormat()
+{
+    EditDialog dialog(this);
+    dialog.plainTextEdit->setPlainText(paraFormat);
+    int result = dialog.exec();
+    if (result == QDialog::Accepted)
+	paraFormat = dialog.plainTextEdit->toPlainText();
+}
+void UIPrefsDialog::editHeaderText()
+{
+    EditDialog dialog(this);
+    dialog.plainTextEdit->setPlainText(headerText);
+    int result = dialog.exec();
+    if (result == QDialog::Accepted)
+	headerText = dialog.plainTextEdit->toPlainText();
+}
+
 void UIPrefsDialog::reject()
 {
     setFromPrefs();
@@ -292,16 +313,18 @@ void UIPrefsDialog::showFontDialog()
     if (ok) {
 	// Check if the default font was set, in which case we
 	// erase the preference
+	QString s;
 	if (font.family().compare(this->font().family()) || 
 	    font.pointSize() != this->font().pointSize()) {
 	    reslistFontFamily = font.family();
 	    reslistFontSize = font.pointSize();
-	    QString s;
 	    reslistFontPB->setText(reslistFontFamily + "-" +
 			       s.setNum(reslistFontSize));
 	} else {
 	    reslistFontFamily = "";
 	    reslistFontSize = 0;
+	    reslistFontPB->setText(this->font().family() + "-" +
+				   s.setNum(this->font().pointSize()));
 	}
     }
 }

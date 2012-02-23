@@ -279,6 +279,7 @@ void ResListPager::displayPage(RclConfig *config)
     chunk << "<html><head>" << endl
 	  << "<meta http-equiv=\"content-type\""
 	  << " content=\"text/html; charset=utf-8\">" << endl
+	  << headerContent()
 	  << "</head><body>" << endl
 	  << pageTop()
 	  << "<p><font size=+1><b>"

@@ -62,6 +62,12 @@
 #define MIN(A,B) ((A) < (B) ? (A) : (B))
 #endif
 
+#ifndef RESLIST_TEXTBROWSER
+#include <QWebFrame>
+#include <QWebElement>
+#include <QWebSettings>
+#endif
+
 class QtGuiResListPager : public ResListPager {
 public:
     QtGuiResListPager(ResList *p, int ps) 
@@ -75,7 +81,7 @@ public:
     virtual const string &dateFormat();
     virtual string nextUrl();
     virtual string prevUrl();
-    virtual string pageTop();
+    virtual string headerContent();
     virtual void suggest(const vector<string>uterms, 
 			 map<string, vector<string> >& sugg);
     virtual string absSep() {return (const char *)(prefs.abssep.toUtf8());}
@@ -113,6 +119,7 @@ bool QtGuiResListPager::append(const string& data, int docnum,
     LOGDEB2(("QtGuiReslistPager::appendDoc: blockCount %d, %s\n",
 	    m_parent->document()->blockCount(), data.c_str()));
     logdata(data.c_str());
+#ifdef RESLIST_TEXTBROWSER
     int blkcnt0 = m_parent->document()->blockCount();
     m_parent->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
     m_parent->textCursor().insertBlock();
@@ -123,6 +130,12 @@ bool QtGuiResListPager::append(const string& data, int docnum,
     for (int block = blkcnt0; block < blkcnt1; block++) {
 	m_parent->m_pageParaToReldocnums[block] = docnum;
     }
+#else
+    QString sdoc = QString("<div rcldocnum=\"%1\">").arg(docnum);
+    m_parent->append(sdoc);
+    m_parent->append(QString::fromUtf8(data.c_str()));
+    m_parent->append("</div>");
+#endif
     return true;
 }
 
@@ -158,11 +171,10 @@ string QtGuiResListPager::prevUrl()
     return "p-1";
 }
 
-string QtGuiResListPager::pageTop() 
+string QtGuiResListPager::headerContent() 
 {
-    return string();
+    return (const char *)prefs.reslistheadertext.toUtf8();
 }
-
 
 void QtGuiResListPager::suggest(const vector<string>uterms, 
 				map<string, vector<string> >& sugg)
@@ -233,7 +245,7 @@ class PlainToRichQtReslist : public PlainToRich {
 public:
     virtual ~PlainToRichQtReslist() {}
     virtual string startMatch() {
-	return string("<span style='color: ")
+	return string("<span class='rclmatch' style='color: ")
 	    + string((const char *)prefs.qtermcolor.toAscii()) + string("'>");
     }
     virtual string endMatch() {return string("</span>");}
@@ -243,26 +255,35 @@ static PlainToRichQtReslist g_hiliter;
 /////////////////////////////////////
 
 ResList::ResList(QWidget* parent, const char* name)
-    : QTextBrowser(parent)
+    : RESLIST_PARENTCLASS(parent)
 {
     if (!name)
 	setObjectName("resList");
     else 
 	setObjectName(name);
+#ifdef RESLIST_TEXTBROWSER
+    LOGDEB(("Reslist: using QTextBrowser\n"));
     setReadOnly(TRUE);
     setUndoRedoEnabled(FALSE);
     setOpenLinks(FALSE);
-    languageChange();
-
     setTabChangesFocus(true);
+    // signals and slots connections
+    connect(this, SIGNAL(anchorClicked(const QUrl &)), 
+	    this, SLOT(linkWasClicked(const QUrl &)));
+#else
+    LOGDEB(("Reslist: using QWebView\n"));
+    // signals and slots connections
+    connect(this, SIGNAL(linkClicked(const QUrl &)), 
+	    this, SLOT(linkWasClicked(const QUrl &)));
+    page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+#endif
+    setFont();
+    languageChange();
 
     (void)new HelpClient(this);
     HelpClient::installMap((const char *)this->objectName().toAscii(), 
 			   "RCL.SEARCH.RESLIST");
 
-    // signals and slots connections
-    connect(this, SIGNAL(anchorClicked(const QUrl &)), 
-	    this, SLOT(linkWasClicked(const QUrl &)));
 #if 0
     // See comments in "highlighted
     connect(this, SIGNAL(highlighted(const QString &)), 
@@ -277,10 +298,6 @@ ResList::ResList(QWidget* parent, const char* name)
     m_listId = 0;
     m_pager = new QtGuiResListPager(this, prefs.respagesize);
     m_pager->setHighLighter(&g_hiliter);
-    if (prefs.reslistfontfamily.length()) {
-	QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
-	setFont(nfont);
-    }
 }
 
 ResList::~ResList()
@@ -302,6 +319,29 @@ ResList::~ResList()
 	QT_TR_NOOP("(show query)"),
         QT_TR_NOOP("<p><i>Alternate spellings (accents suppressed): </i>"),
     };
+}
+
+void ResList::setFont()
+{
+#ifdef RESLIST_TEXTBROWSER
+    if (prefs.reslistfontfamily.length()) {
+	QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
+	QTextBrowser::setFont(nfont);
+    } else {
+	QTextBrowser::setFont(QFont());
+    }
+#else
+    QWebSettings *websettings = settings();
+    if (prefs.reslistfontfamily.length()) {
+	websettings->setFontSize(QWebSettings::DefaultFontSize, 
+				 prefs.reslistfontsize);
+	websettings->setFontFamily(QWebSettings::StandardFont, 
+			       prefs.reslistfontfamily);
+    } else {
+	websettings->resetFontSize(QWebSettings::DefaultFontSize);
+	websettings->resetFontFamily(QWebSettings::StandardFont);
+    }
+#endif
 }
 
 int ResList::newListId()
@@ -350,12 +390,19 @@ void ResList::resetView()
     // slow search, the user will wonder if anything happened. The
     // following helps making sure that the textedit is really
     // blank. Else, there are often icons or text left around
+#ifdef RESLIST_TEXTBROWSER
+    m_pageParaToReldocnums.clear();
     clear();
     QTextBrowser::append(".");
     clear();
 #ifndef __APPLE__
     XFlush(QX11Info::display());
 #endif
+#else
+    m_text = "";
+    setHtml("<html><body></body></html>");
+#endif
+
 }
 
 bool ResList::displayingHistory()
@@ -373,6 +420,7 @@ void ResList::languageChange()
     setWindowTitle(tr("Result list"));
 }
 
+#ifdef RESLIST_TEXTBROWSER    
 // Get document number from text block number
 int ResList::docnumfromparnum(int block)
 {
@@ -390,7 +438,7 @@ int ResList::docnumfromparnum(int block)
     return -1;
 }
 
-// Get paragraph number from document number
+// Get range of paragraph numbers which make up the result for document number
 pair<int,int> ResList::parnumfromdocnum(int docnum)
 {
     LOGDEB(("parnumfromdocnum: docnum %d\n", docnum));
@@ -422,6 +470,7 @@ pair<int,int> ResList::parnumfromdocnum(int docnum)
     LOGDEB(("parnumfromdocnum: not found return -1,-1\n"));
     return pair<int,int>(-1,-1);
 }
+#endif // TEXTBROWSER
 
 // Return doc from current or adjacent result pages. We can get called
 // for a document not in the current page if the user browses through
@@ -464,7 +513,7 @@ void ResList::keyPressEvent(QKeyEvent * e)
 	resPageDownOrNext();
 	return;
     }
-    QTextBrowser::keyPressEvent(e);
+    RESLIST_PARENTCLASS::keyPressEvent(e);
 }
 
 void ResList::mouseReleaseEvent(QMouseEvent *e)
@@ -476,7 +525,7 @@ void ResList::mouseReleaseEvent(QMouseEvent *e)
     if (e->modifiers() & Qt::ShiftModifier) {
 	m_lstClckMod |= Qt::ShiftModifier;
     }
-    QTextBrowser::mouseReleaseEvent(e);
+    RESLIST_PARENTCLASS::mouseReleaseEvent(e);
 }
 
 void ResList::highlighted(const QString& )
@@ -491,20 +540,38 @@ void ResList::highlighted(const QString& )
 // fair enough, else we go to next/previous result page.
 void ResList::resPageUpOrBack()
 {
+#ifdef RESLIST_TEXTBROWSER
     int vpos = verticalScrollBar()->value();
     verticalScrollBar()->triggerAction(QAbstractSlider::SliderPageStepSub);
     if (vpos == verticalScrollBar()->value())
 	resultPageBack();
+#else
+    QWebFrame *frame = page()->mainFrame();
+    int vpos = frame->scrollBarValue(Qt::Vertical);
+    if (vpos != frame->scrollBarMinimum(Qt::Vertical))
+	frame->scroll(0, -int(0.9*geometry().height()));
+    else
+	resultPageBack();
+#endif
 }
 
 void ResList::resPageDownOrNext()
 {
+#ifdef RESLIST_TEXTBROWSER
     int vpos = verticalScrollBar()->value();
     verticalScrollBar()->triggerAction(QAbstractSlider::SliderPageStepAdd);
     LOGDEB(("ResList::resPageDownOrNext: vpos before %d, after %d\n",
 	    vpos, verticalScrollBar()->value()));
     if (vpos == verticalScrollBar()->value()) 
 	resultPageNext();
+#else
+    QWebFrame *frame = page()->mainFrame();
+    int vpos = frame->scrollBarValue(Qt::Vertical);
+    if (vpos != frame->scrollBarMaximum(Qt::Vertical))
+	frame->scroll(0, int(0.9*geometry().height()));
+    else
+	resultPageNext();
+#endif
 }
 
 // Show previous page of results. We just set the current number back
@@ -528,7 +595,11 @@ void ResList::append(const QString &text)
 {
     LOGDEB2(("QtGuiReslistPager::appendQString  : %s\n", 
 	    (const char*)text.toUtf8()));
+#ifdef RESLIST_TEXTBROWSER
     QTextBrowser::append(text);
+#else
+    m_text += text;
+#endif
 }
 
 // Fill up result list window with next screen of hits
@@ -546,16 +617,22 @@ void ResList::resultPageFor(int docnum)
 
 void ResList::displayPage()
 {
-    m_pageParaToReldocnums.clear();
-    clear();
+    resetView();
+
     m_pager->displayPage(theconfig);
+
+#ifndef RESLIST_TEXTBROWSER
+    setHtml(m_text);
+#endif
+
     LOGDEB0(("ResList::resultPageNext: hasNext %d hasPrev %d\n",
 	    m_pager->hasPrev(), m_pager->hasNext()));
     emit prevPageAvailable(m_pager->hasPrev());
     emit nextPageAvailable(m_pager->hasNext());
+
     // Possibly color paragraph of current preview if any
     previewExposed(m_curPvDoc);
-    ensureCursorVisible();
+
 }
 
 // Color paragraph (if any) of currently visible preview
@@ -564,9 +641,9 @@ void ResList::previewExposed(int docnum)
     LOGDEB(("ResList::previewExposed: doc %d\n", docnum));
 
     // Possibly erase old one to white
-    pair<int,int> blockrange;
     if (m_curPvDoc != -1) {
-	blockrange = parnumfromdocnum(m_curPvDoc);
+#ifdef RESLIST_TEXTBROWSER
+	pair<int,int> blockrange = parnumfromdocnum(m_curPvDoc);
 	if (blockrange.first != -1) {
 	    for (int blockn = blockrange.first;
 		 blockn < blockrange.second; blockn++) {
@@ -577,17 +654,31 @@ void ResList::previewExposed(int docnum)
 		cursor.setBlockFormat(format);
 	    }
 	}
+#else
+	QString sel = 
+	   QString("div[rcldocnum=\"%1\"]").arg(m_curPvDoc - pageFirstDocNum());
+	LOGDEB2(("Searching for element, selector: [%s]\n", 
+		 (const char *)sel.toAscii()));
+	QWebElement elt = page()->mainFrame()->findFirstElement(sel);
+	if (!elt.isNull()) {
+	    LOGDEB2(("Found\n"));
+	    elt.removeAttribute("style");
+	} else {
+	    LOGDEB2(("Not Found\n"));
+	}
+#endif
 	m_curPvDoc = -1;
     }
 
     // Set background for active preview's doc entry
     m_curPvDoc = docnum;
-    blockrange = parnumfromdocnum(docnum);
+
+#ifdef RESLIST_TEXTBROWSER
+    pair<int,int>  blockrange = parnumfromdocnum(docnum);
 
     // Maybe docnum is -1 or not in this window, 
     if (blockrange.first < 0)
 	return;
-
     // Color the new active paragraph
     QColor color("LightBlue");
     for (int blockn = blockrange.first+1;
@@ -600,14 +691,31 @@ void ResList::previewExposed(int docnum)
 	setTextCursor(cursor);
 	ensureCursorVisible();
     }
+#else
+    QString sel = 
+	QString("div[rcldocnum=\"%1\"]").arg(docnum - pageFirstDocNum());
+    LOGDEB2(("Searching for element, selector: [%s]\n", 
+	    (const char *)sel.toAscii()));
+    QWebElement elt = page()->mainFrame()->findFirstElement(sel);
+    if (!elt.isNull()) {
+	LOGDEB2(("Found\n"));
+	elt.setAttribute("style", "background: LightBlue;}");
+    } else {
+	LOGDEB2(("Not Found\n"));
+    }
+#endif
 }
 
 // Double click in res list: add selection to simple search
 void ResList::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    QTextBrowser::mouseDoubleClickEvent(event);
+    RESLIST_PARENTCLASS::mouseDoubleClickEvent(event);
+#ifdef RESLIST_TEXTBROWSER
     if (textCursor().hasSelection())
 	emit(wordSelect(textCursor().selectedText()));
+#else
+    emit(wordSelect(selectedText()));
+#endif
 }
 
 void ResList::linkWasClicked(const QUrl &url)
@@ -663,10 +771,23 @@ void ResList::linkWasClicked(const QUrl &url)
 void ResList::createPopupMenu(const QPoint& pos)
 {
     LOGDEB(("ResList::createPopupMenu(%d, %d)\n", pos.x(), pos.y()));
+#ifdef RESLIST_TEXTBROWSER
     QTextCursor cursor = cursorForPosition(pos);
     int blocknum = cursor.blockNumber();
     LOGDEB(("ResList::createPopupMenu(): block %d\n", blocknum));
     m_popDoc = docnumfromparnum(blocknum);
+#else
+    QWebHitTestResult htr = page()->mainFrame()->hitTestContent(pos);
+    if (htr.isNull())
+	return;
+    QWebElement el = htr.enclosingBlockElement();
+    while (!el.isNull() && !el.hasAttribute("rcldocnum"))
+	el = el.parent();
+    if (el.isNull())
+	return;
+    QString snum = el.attribute("rcldocnum");
+    m_popDoc = pageFirstDocNum() + snum.toInt();
+#endif
 
     if (m_popDoc < 0) 
 	return;
