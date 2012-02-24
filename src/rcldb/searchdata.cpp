@@ -291,7 +291,8 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 	vector<string> vpath;
 	stringToTokens(m_topdir, vpath, "/");
 	vector<string> pvpath;
-	pvpath.push_back(pathelt_prefix);
+	if (m_topdir[0] == '/')
+	    pvpath.push_back(pathelt_prefix);
 	for (vector<string>::const_iterator it = vpath.begin(); 
 	     it != vpath.end(); it++){
 	    pvpath.push_back(pathelt_prefix + *it);
