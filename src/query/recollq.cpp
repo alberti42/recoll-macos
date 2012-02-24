@@ -94,7 +94,9 @@ static char usage [] =
 "Common options:\n"
 "    -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
 "    -d also dump file contents\n"
-"    -n <cnt> limit the maximum number of results (0->no limit, default 2000)\n"
+"    -n [first-]<cnt> define the result slice. The default value for [first]\n"
+"       is 0. Without the option, the default max count is 2000.\n"
+"       Use n=0 for no limit\n"
 "    -b : basic. Just output urls, no mime types or titles\n"
 "    -Q : no result lines, just the processed query and result count\n"
 "    -m : dump the whole document meta[] array for each result\n"
@@ -152,7 +154,8 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     string sf;
     vector<string> fields;
 
-    int limit = 2000;
+    int firstres = 0;
+    int maxcount = 2000;
     thisprog = argv[0];
     argc--; argv++;
 
@@ -182,9 +185,20 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             case 'l':   op_flags |= OPT_l; break;
             case 'm':   op_flags |= OPT_m; break;
 	    case 'n':	op_flags |= OPT_n; if (argc < 2)  Usage();
-		limit = atoi(*(++argv));
-		if (limit <= 0) limit = INT_MAX;
-		argc--; goto b1;
+	    {
+		string rescnt = *(++argv);
+		string::size_type dash = rescnt.find("-");
+		if (dash != string::npos) {
+		    firstres = atoi(rescnt.substr(0, dash).c_str());
+		    if (dash < rescnt.size()-1) {
+			maxcount = atoi(rescnt.substr(dash+1).c_str());
+		    }
+		} else {
+		    maxcount = atoi(rescnt.c_str());
+		}
+		if (maxcount <= 0) maxcount = INT_MAX;
+	    }
+	    argc--; goto b1;
             case 'o':   op_flags |= OPT_o; break;
             case 'P':   op_flags |= OPT_P; break;
             case 'q':   op_flags |= OPT_q; break;
@@ -308,25 +322,24 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     int cnt = query.getResCnt();
     if (!(op_flags & OPT_b)) {
 	cout << "Recoll query: " << rq->getDescription() << endl;
-	if (cnt <= limit)
-	    cout << cnt << " results" << endl;
-	else
-	    cout << cnt << " results (printing  " << limit << " max):" << endl;
+	if (firstres == 0) {
+	    if (cnt <= maxcount)
+		cout << cnt << " results" << endl;
+	    else
+		cout << cnt << " results (printing  " << maxcount << " max):" 
+		     << endl;
+	} else {
+	    cout << "Printing at most " << cnt - (firstres+maxcount) <<
+		" results from first " << firstres << endl;
+	}
     }
     if (op_flags & OPT_Q)
 	cout << "Query setup took " << chron.millis() << " mS" << endl;
 
-    TempDir tmpdir;
-    if (!tmpdir.ok()) {
-	cerr << "Can't create temporary directory: " << 
-	    tmpdir.getreason() << endl;
-	return(1);
-    }
-
     if (op_flags & OPT_Q)
 	return(0);
 
-    for (int i = 0; i < limit; i++) {
+    for (int i = firstres; i < firstres + maxcount; i++) {
 	Rcl::Doc doc;
 	if (!query.getDoc(i, doc))
 	    break;
@@ -366,6 +379,12 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             }
         }
         if (op_flags & OPT_d) {
+	    static TempDir tmpdir;
+	    if (!tmpdir.ok()) {
+		cerr << "Can't create temporary directory: " << 
+		    tmpdir.getreason() << endl;
+		return(1);
+	    }
             dump_contents(rclconfig, tmpdir, doc);
         }	
     }
