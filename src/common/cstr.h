@@ -51,6 +51,7 @@ DEF_CSTR(fileu, "file://");
 DEF_CSTR(fmtime, "fmtime");
 DEF_CSTR(ipath, "ipath");
 DEF_CSTR(iso_8859_1, "ISO-8859-1");
+DEF_CSTR(md5, "md5");
 DEF_CSTR(mimetype, "mimetype");
 DEF_CSTR(minwilds, "*?[");
 DEF_CSTR(newline, "\n");

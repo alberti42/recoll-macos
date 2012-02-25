@@ -81,7 +81,7 @@ bool MimeHandlerText::set_document_file(const string &fn)
 
     string md5, xmd5;
     MD5String(m_text, md5);
-    m_metaData["md5"] = MD5HexPrint(md5, xmd5);
+    m_metaData[cstr_md5] = MD5HexPrint(md5, xmd5);
     m_havedoc = true;
     return true;
 }
@@ -91,7 +91,7 @@ bool MimeHandlerText::set_document_string(const string& otext)
     m_text = otext;
     string md5, xmd5;
     MD5String(m_text, md5);
-    m_metaData["md5"] = MD5HexPrint(md5, xmd5);
+    m_metaData[cstr_md5] = MD5HexPrint(md5, xmd5);
     m_havedoc = true;
     return true;
 }

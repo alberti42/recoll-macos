@@ -268,13 +268,13 @@ bool MimeHandlerExecMultiple::next_document()
         m_metaData[cstr_mimetype] = mtype;
         string md5, xmd5;
         MD5String(m_metaData[cstr_content], md5);
-        m_metaData["md5"] = MD5HexPrint(md5, xmd5);
+        m_metaData[cstr_md5] = MD5HexPrint(md5, xmd5);
     } else {
         m_metaData[cstr_mimetype] = mtype.empty() ? "text/html" : mtype;
         m_metaData.erase(cstr_ipath);
         string md5, xmd5, reason;
         if (MD5File(m_fn, md5, &reason)) {
-            m_metaData["md5"] = MD5HexPrint(md5, xmd5);
+            m_metaData[cstr_md5] = MD5HexPrint(md5, xmd5);
         } else {
             LOGERR(("MimeHandlerExecM: cant compute md5 for [%s]: %s\n",
                     m_fn.c_str(), reason.c_str()));

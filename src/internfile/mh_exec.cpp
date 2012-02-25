@@ -165,7 +165,7 @@ void MimeHandlerExec::finaldetails()
 
     string md5, xmd5, reason;
     if (MD5File(m_fn, md5, &reason)) {
-	m_metaData["md5"] = MD5HexPrint(md5, xmd5);
+	m_metaData[cstr_md5] = MD5HexPrint(md5, xmd5);
     } else {
 	LOGERR(("MimeHandlerExec: cant compute md5 for [%s]: %s\n", 
 		m_fn.c_str(), reason.c_str()));

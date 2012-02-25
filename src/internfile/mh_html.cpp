@@ -56,7 +56,7 @@ bool MimeHandlerHtml::set_document_string(const string& htext)
     // We want to compute the md5 now because we may modify m_html later
     string md5, xmd5;
     MD5String(htext, md5);
-    m_metaData["md5"] = MD5HexPrint(md5, xmd5);
+    m_metaData[cstr_md5] = MD5HexPrint(md5, xmd5);
 
     return true;
 }
