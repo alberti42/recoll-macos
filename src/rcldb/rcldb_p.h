@@ -29,8 +29,12 @@ namespace Rcl {
 // it makes any sense to keep any level of omega compat given that the index
 // is incompatible anyway.
 enum value_slot {
+    // Omega-compatible values:
     VALUE_LASTMOD = 0,	// 4 byte big endian value - seconds since 1970.
     VALUE_MD5 = 1,	// 16 byte MD5 checksum of original document.
+    VALUE_SIZE = 2,     // sortable_serialise(<file size in bytes>)
+
+    // Recoll only:
     VALUE_SIG = 10      // Doc sig as chosen by app (ex: mtime+size
 };
 
