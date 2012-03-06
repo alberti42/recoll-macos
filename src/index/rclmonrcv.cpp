@@ -50,10 +50,14 @@ public:
 // need for a 'kind' parameter
 static RclMonitor *makeMonitor();
 
-/** This class is a callback for the file system tree walker
-    class. The callback method alternatively creates the directory
-    watches and flushes the event queue (to avoid a possible overflow
-    while we create the watches)*/
+/** 
+ * Create directory watches during the initial file system tree walk.
+ *
+ * This class is a callback for the file system tree walker
+ * class. The callback method alternatively creates the directory
+ * watches and flushes the event queue (to avoid a possible overflow
+ * while we create the watches)
+ */
 class WalkCB : public FsTreeWalkerCB {
 public:
     WalkCB(RclConfig *conf, RclMonitor *mon, RclMonEventQueue *queue,
@@ -209,6 +213,15 @@ void *rclMonRcvRun(void *q)
 	// write to the select fd, with no effect). So set a 
 	// timeout so that an intr will be detected
 	if (mon->getEvent(ev, 2000)) {
+	    // Don't push events for skipped files. This would get
+	    // filtered on the processing side anyway, but causes
+	    // unnecessary wakeups and messages
+	    lconfig.setKeyDir(path_getfather(ev.m_path));
+	    walker.setSkippedNames(lconfig.getSkippedNames());
+	    if (walker.inSkippedNames(path_getsimple(ev.m_path)) || 
+		walker.inSkippedPaths(ev.m_path))
+		continue;
+
 	    if (ev.m_etyp == RclMonEvent::RCLEVT_DIRCREATE) {
 		// Recursive addwatch: there may already be stuff
 		// inside this directory. Ie: files were quickly
@@ -217,19 +230,16 @@ void *rclMonRcvRun(void *q)
 		// it seems that fam/gamin is doing the job for us so
 		// that we are generating double events here (no big
 		// deal as prc will sort/merge).
-		if (!walker.inSkippedNames(path_getsimple(ev.m_path)) && 
-		    !walker.inSkippedPaths(ev.m_path)) {
-		    LOGDEB(("rclMonRcvRun: walking new dir %s\n", 
-			    ev.m_path.c_str()));
-		    if (walker.walk(ev.m_path, walkcb) != FsTreeWalker::FtwOk) {
-			LOGERR(("rclMonRcvRun: walking new dir %s: %s\n", 
-				ev.m_path.c_str(), walker.getReason().c_str()));
-			goto terminate;
-		    }
-		    if (walker.getErrCnt() > 0) {
-			LOGINFO(("rclMonRcvRun: fs walker errors: %s\n", 
-				 walker.getReason().c_str()));
-		    }
+		LOGDEB(("rclMonRcvRun: walking new dir %s\n", 
+			ev.m_path.c_str()));
+		if (walker.walk(ev.m_path, walkcb) != FsTreeWalker::FtwOk) {
+		    LOGERR(("rclMonRcvRun: walking new dir %s: %s\n", 
+			    ev.m_path.c_str(), walker.getReason().c_str()));
+		    goto terminate;
+		}
+		if (walker.getErrCnt() > 0) {
+		    LOGINFO(("rclMonRcvRun: fs walker errors: %s\n", 
+			     walker.getReason().c_str()));
 		}
 	    }
 
