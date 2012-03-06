@@ -373,7 +373,10 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 			    }
 			}
 			break;
-		    case 'p': mods |= WasaQuery::WQM_PROX; break;
+		    case 'p': 
+			mods |= WasaQuery::WQM_PROX; 
+			nclause->m_slack = 10;
+			break;
 		    case 'r': mods |= WasaQuery::WQM_REGEX; break;
 		    case 's': mods |= WasaQuery::WQM_SLOPPY; break;
 		    case 'w': mods |= WasaQuery::WQM_WORDS; break;
