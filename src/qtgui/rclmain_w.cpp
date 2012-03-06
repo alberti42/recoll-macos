@@ -185,7 +185,15 @@ void RclMain::init()
 	QRadioButton *but = new QRadioButton(catgBGRP);
 	QString catgnm = QString::fromUtf8(it->c_str(), it->length());
 	m_catgbutvec.push_back(*it);
-	but->setText(tr(catgnm.toUtf8()));
+	// We strip text before the first colon before setting the button name.
+	// This is so that the user can decide the order of buttons by naming 
+	// the filter,ie, a:media b:messages etc.
+	QString but_txt = catgnm;
+	int colon = catgnm.indexOf(':');
+	if (colon != -1) {
+	    but_txt = catgnm.right(catgnm.size()-(colon+1));
+	}
+	but->setText(tr(but_txt.toUtf8()));
 	if (prefs.catgToolBar && catgCMB)
 	    catgCMB->addItem(tr(catgnm.toUtf8()));
         bgrphbox->addWidget(but);
