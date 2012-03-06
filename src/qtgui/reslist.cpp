@@ -507,12 +507,20 @@ bool ResList::getDoc(int docnum, Rcl::Doc &doc)
 
 void ResList::keyPressEvent(QKeyEvent * e)
 {
-    if (e->key() == Qt::Key_PageUp || e->key() == Qt::Key_Backspace) {
-	resPageUpOrBack();
-	return;
-    } else if (e->key() == Qt::Key_PageDown || e->key() == Qt::Key_Space) {
-	resPageDownOrNext();
-	return;
+    if ((e->modifiers() & Qt::ShiftModifier)) {
+	if (e->key() == Qt::Key_PageUp) {
+	    // Shift-PageUp -> first page of results
+	    resultPageFirst();
+	    return;
+	} 
+    } else {
+	if (e->key() == Qt::Key_PageUp || e->key() == Qt::Key_Backspace) {
+	    resPageUpOrBack();
+	    return;
+	} else if (e->key() == Qt::Key_PageDown || e->key() == Qt::Key_Space) {
+	    resPageDownOrNext();
+	    return;
+	}
     }
     RESLIST_PARENTCLASS::keyPressEvent(e);
 }

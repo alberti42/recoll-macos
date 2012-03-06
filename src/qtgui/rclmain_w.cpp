@@ -1796,17 +1796,9 @@ bool RclMain::eventFilter(QObject *, QEvent *event)
 {
     if (event->type() == QEvent::KeyPress)  {
         LOGDEB2(("RclMain::eventFilter: keypress\n"));
-	QKeyEvent *ke = (QKeyEvent *)event;
-        // Shift-Home is the shortcut for the 1st result page action, but it is
-        // filtered by the search entry to mean "select all line". We prefer to
-        // keep it for the action as it's easy to find another combination to
-        // select all (ie: home, then shift-end)
-        if (ke->key() == Qt::Key_Home && 
-	    (ke->modifiers() & Qt::ShiftModifier)) {
-            // Shift-Home -> first page of results
-            reslist->resultPageFirst();
-            return true;
-        } 
+	// We used to map shift-home to reslist "goto first page"
+	// here but we now use shift-pageUp because shift-home is
+	// useful to select all inside the search entry
     } else if (event->type() == QEvent::Show)  {
 	LOGDEB2(("RclMain::eventFilter: Show\n"));
 	// move the focus to the search entry on show

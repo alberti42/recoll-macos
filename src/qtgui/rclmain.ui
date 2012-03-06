@@ -350,7 +350,7 @@
     <string>Go to first page of results</string>
    </property>
    <property name="shortcut">
-    <string>Shift+Home</string>
+    <string>Shift+PgUp</string>
    </property>
    <property name="name" stdset="0">
     <cstring>firstPageAction</cstring>
