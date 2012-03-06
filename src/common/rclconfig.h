@@ -88,6 +88,10 @@ class RclConfig {
      *  constructor it it is the default one (~/.recoll) and it did 
      *  not exist yet. */
     string getConfDir() {return m_confdir;}
+
+    /** Check if the config files were modified since we read them */
+    bool sourceChanged();
+
     /** Returns true if this is ~/.recoll */
     bool isDefaultConfig(); 
     /** Get the local value for /usr/local/share/recoll/ */

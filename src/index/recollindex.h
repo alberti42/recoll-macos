@@ -25,4 +25,7 @@ extern bool createAuxDbs(RclConfig *config);
 
 extern int stopindexing;
 
+class ReExec;
+extern ReExec *o_reexec;
+
 #endif /* _recollindex_h_included_ */

@@ -39,6 +39,7 @@
 #include "debuglog.h"
 #include "rclmon.h"
 #include "debuglog.h"
+#include "execmd.h"
 #include "recollindex.h"
 #include "pathut.h"
 #include "x11mon.h"
@@ -485,11 +486,11 @@ bool startMonitor(RclConfig *conf, int opts)
 	    switch (ev.evtype()) {
 	    case RclMonEvent::RCLEVT_MODIFY:
 	    case RclMonEvent::RCLEVT_DIRCREATE:
-		LOGDEB(("Monitor: Modify/Check on %s\n", ev.m_path.c_str()));
+		LOGDEB0(("Monitor: Modify/Check on %s\n", ev.m_path.c_str()));
 		modified.push_back(ev.m_path);
 		break;
 	    case RclMonEvent::RCLEVT_DELETE:
-		LOGDEB(("Monitor: Delete on %s\n", ev.m_path.c_str()));
+		LOGDEB0(("Monitor: Delete on %s\n", ev.m_path.c_str()));
 		// If this is for a directory (which the caller should
 		// tell us because he knows), we should purge the db
 		// of all the subtree, because on a directory rename,
@@ -552,6 +553,11 @@ bool startMonitor(RclConfig *conf, int opts)
 	    }
 	}
 
+	// Check for a config change
+	if (!(opts & RCLMON_NOCONFCHECK) && o_reexec && conf->sourceChanged()) {
+	    LOGDEB(("Rclmonprc: config changed, reexecuting myself\n"));
+	    o_reexec->reexec();
+	}
 	// Lock queue before waiting again
 	rclEQ.lock();
     }

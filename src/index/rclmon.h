@@ -65,7 +65,8 @@ class RclMonEvent {
     int evflags() {return m_etyp & 0xf0;}
 };
 
-enum RclMonitorOption {RCLMON_NONE=0, RCLMON_NOFORK=1, RCLMON_NOX11=2};
+enum RclMonitorOption {RCLMON_NONE=0, RCLMON_NOFORK=1, RCLMON_NOX11=2,
+		       RCLMON_NOCONFCHECK=4};
 
 /**
  * Monitoring event queue. This is the shared object between the main thread 

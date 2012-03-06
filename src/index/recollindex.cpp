@@ -45,6 +45,7 @@ using namespace std;
 #include "recollindex.h"
 #include "fsindexer.h"
 #include "rclionice.h"
+#include "execmd.h"
 
 // Command line options
 static int     op_flags;
@@ -63,6 +64,9 @@ static int     op_flags;
 #define OPT_l     0x1000
 #define OPT_b     0x2000
 #define OPT_f     0x4000
+#define OPT_C     0x8000
+
+ReExec *o_reexec;
 
 // Globals for atexit cleanup
 static ConfIndexer *confindexer;
@@ -224,9 +228,10 @@ static const char usage [] =
 "    Index everything according to configuration file\n"
 "    -z : reset database before starting indexing\n"
 #ifdef RCL_MONITOR
-"recollindex -m [-w <secs>] -x [-D]\n"
+"recollindex -m [-w <secs>] -x [-D] [-C]\n"
 "    Perform real time indexing. Don't become a daemon if -D is set.\n"
 "    -w sets number of seconds to wait before starting.\n"
+"    -C disables monitoring config for changes/reexecuting.\n"
 #ifndef DISABLE_X11MON
 "    -x disables exit on end of x11 session\n"
 #endif /* DISABLE_X11MON */
@@ -271,10 +276,12 @@ void lockorexit(Pidfile *pidfile)
     }
 }
 
-int main(int argc, const char **argv)
+int main(int argc, char **argv)
 {
     string a_config;
     int sleepsecs = 60;
+    o_reexec = new ReExec;
+    o_reexec->init(argc, argv);
 
     thisprog = argv[0];
     argc--; argv++;
@@ -290,6 +297,7 @@ int main(int argc, const char **argv)
 		a_config = *(++argv);
 		argc--; goto b1;
 #ifdef RCL_MONITOR
+	    case 'C': op_flags |= OPT_C; break;
 	    case 'D': op_flags |= OPT_D; break;
 #endif
 	    case 'e': op_flags |= OPT_e; break;
@@ -333,6 +341,8 @@ int main(int argc, const char **argv)
 	cerr << "Configuration problem: " << reason << endl;
 	exit(1);
     }
+    o_reexec->atexit(cleanup);
+
     bool rezero(op_flags & OPT_z);
     Pidfile pidfile(config->getPidfile());
     updater = new MyUpdater(config);
@@ -433,6 +443,8 @@ int main(int argc, const char **argv)
 	int opts = RCLMON_NONE;
 	if (op_flags & OPT_D)
 	    opts |= RCLMON_NOFORK;
+	if (op_flags & OPT_C)
+	    opts |= RCLMON_NOCONFCHECK;
 	if (op_flags & OPT_x)
 	    opts |= RCLMON_NOX11;
 	bool monret = startMonitor(config, opts);

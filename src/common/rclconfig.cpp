@@ -893,6 +893,21 @@ string RclConfig::getDbDir()
     return path_canon(dbdir);
 }
 
+bool RclConfig::sourceChanged()
+{
+    if (m_conf && m_conf->sourceChanged())
+	return true;
+    if (mimemap && mimemap->sourceChanged())
+	return true;
+    if (mimeconf && mimeconf->sourceChanged())
+	return true;
+    if (mimeview && mimeview->sourceChanged())
+	return true;
+    if (m_fields && m_fields->sourceChanged())
+	return true;
+    return false;
+}
+
 string RclConfig::getStopfile()
 {
     return path_cat(getConfDir(), "stoplist.txt");

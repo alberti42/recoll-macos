@@ -107,6 +107,7 @@ public:
     virtual list<string> getSubKeys() = 0;
     virtual list<string> getSubKeys(bool) = 0;
     virtual bool holdWrites(bool) = 0;
+    virtual bool sourceChanged() = 0;
 };
 
 /** 
@@ -139,6 +140,9 @@ public:
     ConfSimple(int readonly = 0, bool tildexp = false);
 
     virtual ~ConfSimple() {};
+
+    /** Origin file changed. Only makes sense if we read the data from a file */
+    virtual bool sourceChanged();
 
     /** 
      * Decide if we actually rewrite the backing-store after modifying the
@@ -252,6 +256,7 @@ protected:
 private:
     // Set if we're working with a file
     string                            m_filename; 
+    time_t                            m_fmtime;
     // Configuration data submaps (one per subkey, the main data has a
     // null subkey)
     map<string, map<string, string> > m_submaps;
@@ -267,6 +272,7 @@ private:
     // Internal version of set: no RW checking
     virtual int i_set(const string &nm, const string &val, 
 		      const string &sk, bool init = false);
+    bool i_changed(bool upd);
 };
 
 /**
@@ -364,6 +370,16 @@ public:
 		init_from(rhs);
 	}
 	return *this;
+    }
+
+    virtual bool sourceChanged()
+    {
+	typename list<T*>::const_iterator it;
+	for (it = m_confs.begin();it != m_confs.end();it++) {
+	    if ((*it)->sourceChanged())
+		return true;
+	}
+	return false;
     }
 
     virtual int get(const string &name, string &value, const string &sk) const

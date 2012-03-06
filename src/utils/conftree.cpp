@@ -23,6 +23,7 @@
 #include <unistd.h> // for access(2)
 #include <ctype.h>
 #include <fnmatch.h>
+#include <sys/stat.h>
 
 #include <fstream>
 #include <sstream>
@@ -145,13 +146,13 @@ void ConfSimple::parseinput(istream &input)
 
 
 ConfSimple::ConfSimple(int readonly, bool tildexp)
-    : dotildexpand(tildexp), m_holdWrites(false)
+    : dotildexpand(tildexp), m_fmtime(0), m_holdWrites(false)
 {
     status = readonly ? STATUS_RO : STATUS_RW;
 }
 
 ConfSimple::ConfSimple(const string& d, int readonly, bool tildexp)
-    : dotildexpand(tildexp), m_holdWrites(false)
+    : dotildexpand(tildexp), m_fmtime(0), m_holdWrites(false)
 {
     status = readonly ? STATUS_RO : STATUS_RW;
 
@@ -160,7 +161,7 @@ ConfSimple::ConfSimple(const string& d, int readonly, bool tildexp)
 }
 
 ConfSimple::ConfSimple(const char *fname, int readonly, bool tildexp)
-    : dotildexpand(tildexp), m_filename(fname), m_holdWrites(false)
+    : dotildexpand(tildexp), m_filename(fname), m_fmtime(0), m_holdWrites(false)
 {
     status = readonly ? STATUS_RO : STATUS_RW;
 
@@ -193,6 +194,7 @@ ConfSimple::ConfSimple(const char *fname, int readonly, bool tildexp)
     }	    
 
     parseinput(input);
+    i_changed(true);
 }
 
 ConfSimple::StatusCode ConfSimple::getStatus() const
@@ -202,6 +204,26 @@ ConfSimple::StatusCode ConfSimple::getStatus() const
     case STATUS_RW: return STATUS_RW;
     default: return STATUS_ERROR;
     }
+}
+
+bool ConfSimple::sourceChanged()
+{
+    return i_changed(false);
+}
+
+bool ConfSimple::i_changed(bool upd)
+{
+    if (!m_filename.empty()) {
+	struct stat st;
+	if (stat(m_filename.c_str(), &st) == 0) {
+	    if (m_fmtime != st.st_mtime) {
+		if (upd)
+		    m_fmtime = st.st_mtime;
+		return true;
+	    }
+	}
+    }
+    return false;
 }
 
 int ConfSimple::get(const string &nm, string &value, const string &sk) const
