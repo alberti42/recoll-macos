@@ -99,6 +99,7 @@ contains( UNAME, SunOS ) {
 
 TRANSLATIONS = \
 	     i18n/recoll_de.ts \
+	     i18n/recoll_es.ts \
              i18n/recoll_fr.ts \
              i18n/recoll_it.ts \
              i18n/recoll_lt.ts \
