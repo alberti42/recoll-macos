@@ -19,20 +19,23 @@
     <div class="content">
     <h1>Recoll index format details</h1>
 
-    <p>A comparison of index formats for recoll 1.8 and omega
-    1.0.1</p>
+    <p>A comparison of index formats for recoll 1.17 and omega
+      1.0.1</p>
 
     <p>Recoll terms are not stemmed before being stored. They are turned to
       all minuscule letters with no accents. An auxiliary database
       handles stem expansion. Omega stores both raw
-      terms and stemmed versions (with prefix Z)</p>
+      terms (with prefix R) and stemmed versions (with prefix Z).
+      The xapian-side of the information here comes from the relevant
+      xapian-omega <a
+      href="http://xapian.org/docs/omega/termprefixes.html">documentation
+      page</a>. 
+    </p>
 
     <h2>Special prefixed terms:</h2>
 
     <p>A comparison of prefixed term usage between Recoll and
-      omega/xapian. <em>xapian-core</em> in the Omega column means
-      that the prefix is not used by Omega, but mentionned as
-      allocated in the xapian prefix definition document.</p>
+      omega/xapian.</p>
 
     <table border=1 cellspacing=0 width="90%">
 	<thead>
@@ -40,63 +43,109 @@
 	</tr>
       </thead>
       <tbody>
-	<tr><td>T</td><td>mime type</td><td>Same</td>
-	</tr>
+	<tr><td>A</td><td>Author</td><td>Same</td></tr>
 
-	<tr><td>P</td><td>Truncated/hashed version of file path. For
-	single-document files, and for the file part of a
-	multi-document file. Used for up-to-date checks and for
-	retrieving a document by path. </td><td>Path part of URL (no
-	hashing). Uses U for the equivalent
-	term used for up to date checks.</td> 
-	</tr>
-
-	<tr><td>Q</td><td>pathhash+ipath same + internal path for
-	documents inside multi-document files. Used to set the
-	existence flag for subdocs when a multi-document file is found
-	to be up to date, or for deleting all subdocs for a file, or
-	for retrieving a document by path+ipath. Compatible
-	with Q definition in xapian/termprefixes.txt: unique
-	identifier.</td><td>None</td> 
-	</tr>
+	<tr><td>B</td><td>Unused</td><td>Reserved</td></tr>
+	<tr><td>C</td><td>Unused</td><td>Reserved</td></tr>
 
 	<tr><td>D</td><td>date: modification date of file, like
-	YYYYMMDD</td><td>Same</td>
+	    YYYYMMDD</td><td>Same</td></tr>
+
+        <tr><td>E</td><td>Unused. Recoll uses XE</td>
+          <td>file name extension folded to lowercase</td></tr>
+
+
+	<tr><td>F</td><td>Unused</td><td>Reserved</td></tr>
+	<tr><td>G</td><td>Unused</td><td>newGroup / forum name</td></tr>
+
+	<tr><td>H</td><td>Unused</td><td>host name</td></tr>
+
+	<tr><td>I</td><td>Unused</td><td>"Can see"</td></tr>
+
+	<tr><td>J</td><td>Unused</td><td>Reserved</td></tr>
+	<tr><td>K</td><td>Keyword</td><td>Same</td></tr>
+
+	<tr><td>L</td><td>Unused</td><td>ISO language code</td></tr>
+
+	<tr><td>M</td><td>month: YYYYMM</td><td>Same</td></tr>
+
+	<tr><td>N</td><td>Unused</td><td>ISO country code</td></tr>
+
+	<tr><td>O</td><td>Unused</td><td>Owner</td></tr>
+
+	<tr><td>P</td><td>Unused</td><td>Path part of URL</td></tr>
+
+	<tr><td>Q</td><td>Unique Id. fs backend: trunc-hashed path+ipath
+	    Other backends may use a different unique id.
+	  </td><td>Unique Id</td></tr>
+
+	<tr><td>R</td><td>Unused</td><td>Raw (unstemmed) term</td></tr>
+
+	<tr><td>S</td><td>Subject/title</td><td>Same</td></tr>
+
+	<tr><td>T</td><td>mime type</td><td>Same</td></tr>
+
+	<tr><td>U</td><td>Unused</td><td>Full Url of indexed
+	    document. Truncated/hashed version of URL. Used for
+	    duplicate checks.</td></tr> 
+
+	<tr><td>V</td><td>Unused</td><td>"Can't see"</td></tr>
+
+	<tr><td>W</td><td>Unused</td><td>Owner</td></tr>
+
+	<tr><td>X</td><td>Prefix prefix for multichar prefixes</td>
+          <td>Same</td></tr>
+
+	<tr><td>Y</td><td>year YYYY</td><td>Same</td></tr>
+
+	<tr><td>Z</td><td>Unused</td><td>Stemmed term</td></tr>
+
+        <tr><td>XE</td><td>File name extension folded as lowercase
+            (omega uses E)</td><td>Unused</td></tr>
+
+        <tr><td>XP</td><td>Path elements (for phrase-based directory filtering)
+          </td><td>Unused</td></tr>
+
+	<tr><td>XSFN</td><td>utf8 lowercased/unaccented version of
+	    file name. Used for specific file name searches. NOT SPLIT
+	    (spaces as normal chars).</td><td>None</td>
+
+	<tr><td>XTO</td><td>Recipient</td><td>None</td>
+	<tr><td>XXST</td><td>Not really a prefix: start of field
+	    marker (for anchored phrase searches)</td><td>None</td>
+	<tr><td>XXND</td><td>Not really a prefix: end of field
+	    marker (for anchored phrase searches)</td><td>None</td>
+
 	</tr>
 
-	<tr><td>M</td><td>month: YYYYMM</td><td>Same</td>
-	</tr>
-	<tr><td>Y</td><td>year YYYY</td><td>Same</td>
-	</tr>
-
-	<tr><td>XSFN</td><td>utf8 version of file name. Used for specific
-	file name searches</td><td>None</td>
-	</tr>
-	<tr><td>U</td><td>None</td><td>Url term. Truncated/hashed version
-	    of URL. Used for duplicate checks.</td>
-	</tr>
-
-	<tr><td>S</td><td>Subject/title</td><td>xapian-core</td>
-	</tr>
-	<tr><td>A</td><td>Author</td><td>xapian-core</td>
-	</tr>
-	<tr><td>K</td><td>Keyword</td><td>xapian-core</td>
-	</tr>
 	
       </tbody>
     </table>
 
-    <p>None of the "date" terms are currently used by recoll queries</p>
 
     <h2>Values</h2>
-    <p>Recoll currently stores no document values.</p>
-    <p>Omega stores 2 values, for the md5 hash of the file, and the
-      last modification date (as unix time). The md5 value doesn't
-      appear to be currently used ?</p>
+
+    <table border=1 cellspacing=0 width="90%">
+	<thead>
+	<tr><th>Value slot</th><th>Recoll use</th><th>Omega use</th>
+	</tr>
+      </thead>
+      <tbody>
+	<tr><td>0</td><td>Unused</td><td>Unix modification time</td></tr>
+	<tr><td>1</td><td>MD5</td><td>Same</td></tr>
+	<tr><td>2</td><td>Unused</td><td>Size</td></tr>
+	<tr><td>10</td><td>Signature: value to be checked for
+	    up-to-dateness, ie mtime|size for the fs
+	    backend</td><td>Unused</td></tr> 
+      </tbody>
+    </table>
+
 
     <h2>Document data record format</h2>
+
       <p>Recoll has the same line based / prefixed data record format
-      as omega (name=value\n).</p>
+      as omega (name=value\n). The Omega data below is quite out of
+      date.</p>
 
     <table border=1 cellspacing=0 width="90%">
 	<thead>
@@ -141,7 +190,7 @@
     <address><a href="mailto:jfd@recoll.org">Jean-Francois Dockes</a></address>
 <!-- Created: Thu Dec  7 13:07:40 CET 2006 -->
 <!-- hhmts start -->
-Last modified: Thu Jun 14 11:14:38 CEST 2007
+Last modified: Sat Feb 25 09:14:38 CEST 2012
 <!-- hhmts end -->
   </body>
 </html>
