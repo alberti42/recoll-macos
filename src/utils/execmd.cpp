@@ -642,6 +642,12 @@ void ReExec::reexec()
     }
 #endif
 
+    // Execute the atexit funcs
+    while (!m_atexitfuncs.empty()) {
+	(m_atexitfuncs.top())();
+	m_atexitfuncs.pop();
+    }
+
     // Try to get back to the initial working directory
     if (m_cfd < 0 || fchdir(m_cfd) < 0) {
 	LOGINFO(("ReExec::reexec: fchdir failed, trying chdir\n"));

@@ -20,10 +20,12 @@
 #include <string>
 #include <list>
 #include <vector>
+#include <stack>
 #ifndef NO_NAMESPACES
 using std::list;
 using std::string;
 using std::vector;
+using std::stack;
 #endif
 
 #include "netcon.h"
@@ -208,7 +210,8 @@ class ExecCmd {
 };
 
 
-/** Rexecute myself with the same arguments. 
+/** 
+ * Rexecute self process with the same arguments. 
  *
  * Note that there are some limitations:
  *  - argv[0] has to be valid: an executable name which will be found in 
@@ -224,7 +227,10 @@ class ExecCmd {
  *    initial state.
  *  - The environment is also not restored.
  *  - Others system aspects ?
- *  - Other program state: application-dependant
+ *  - Other program state: application-dependant. Any external cleanup 
+ *    (temp files etc.) must be performed by the application. ReExec() 
+ *    duplicates the atexit() function to make this easier, but the 
+ *    ReExec().atexit() calls must be done explicitely, this is not automatic
  * 
  * In short, this is usable in reasonably controlled situations and if there 
  * are no security issues involved, but this does not perform miracles.
@@ -234,6 +240,11 @@ public:
     ReExec() {}
     ReExec(int argc, char *argv[]);
     void init(int argc, char *argv[]);
+    int atexit(void (*function)(void))
+    {
+	m_atexitfuncs.push(function);
+	return 0;
+    }
     void reexec();
     const string& getreason() {return m_reason;}
 private:
@@ -241,6 +252,7 @@ private:
     string m_curdir;
     int    m_cfd;
     string m_reason;
+    stack<void (*)(void)> m_atexitfuncs;
 };
 
 #endif /* _EXECMD_H_INCLUDED_ */
