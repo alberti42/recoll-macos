@@ -266,8 +266,13 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        (ie: --with-file-command=/usr/local/bin/file). Can be useful to enable
        the gnu version on systems where the native one is bad.
 
-     * --without-gui Disable the Qt interface, and auxiliary uses of X11, and
-       compile the command line version.
+     * --disable-qtgui Disable the Qt interface. Will allow building the
+       indexer and the command line search program in absence of a Qt
+       environment.
+
+     * --disable-x11mon Disable X11 connection monitoring inside recollindex.
+       Together with --disable-qtgui, this allows building recoll without Qt
+       and X11.
 
      * Of course the usual autoconf configure options, like --prefix apply.
 
@@ -277,7 +282,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
          configure
          make
          (practices usual hardship-repelling invocations)
-     
+      
 
    There is little auto-configuration. The configure script will mainly link
    one of the system-specific files in the mk directory to mk/sysconf. If
@@ -316,8 +321,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
                           5.4. Configuration overview
 
    Most of the parameters specific to the recoll GUI are set through the
-   Preferences menu and stored in the standard Qt place ($HOME/.qt/recollrc).
-   You probably do not want to edit this by hand.
+   Preferences menu and stored in the standard Qt place
+   ($HOME/.config/Recoll.org/recoll.conf). You probably do not want to edit
+   this by hand.
 
    Recoll indexing options are set inside text configuration files located in
    a configuration directory. There can be several such directories, each of
@@ -361,7 +367,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
          [~/somedirectory-with-utf8-txt-files]
          defaultcharset = utf-8
-       
+        
 
    There are three kinds of lines:
 
@@ -416,8 +422,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            the default file is:
 
  skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
-            *~ .beagle .git .hg .bzr loop.ps .xsession-errors \
-            .recoll* xapiandb recollrc recoll.conf
+                *~ .beagle .git .hg .bzr loop.ps .xsession-errors \
+                .recoll* xapiandb recollrc recoll.conf
 
            The list can be redefined at any sub-directory in the indexed
            area.
@@ -451,8 +457,16 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            Example of use for skipping text files only in a specific
            directory:
 
- skippedPaths = ~/somedir/*.txt
-             
+ skippedPaths = ~/somedir/..txt
+              
+
+   skippedPathsFnmPathname
+
+           The values in the *skippedPaths variables are matched by default
+           with fnmatch(3), with the FNM_PATHNAME and FNM_LEADING_DIR flags.
+           This means that '/' characters must be matched explicitely. You
+           can set skippedPathsFnmPathname to 0 to disable the use of
+           FNM_PATHNAME (meaning that /*/dir3 will match /dir1/dir2/dir3).
 
    followLinks
 
@@ -596,6 +610,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            directory. The value can have embedded spaces but starting or
            trailing spaces will be trimmed. You cannot use quotes here.
 
+   idxstatusfile
+
+           The name of the scratch file where the indexer process updates its
+           status. Default: idxstatus.txt inside the configuration directory.
+
    maxfsoccuppc
 
            Maximum file system occupation before we stop indexing. The value
@@ -659,7 +678,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            entry contains white space. Example:
 
  mondelaypatterns = *.log:20 "this one has spaces*:10"
-             
+              
 
    monixinterval
 
@@ -890,7 +909,6 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
        Note that the mime type is made up here, and you could call it
        diesel/oil just the same.
-
      * In $RECOLL_CONFDIR/mimeview under the [view] section, add:
 
  application/x-blobapp = blobviewer %f
