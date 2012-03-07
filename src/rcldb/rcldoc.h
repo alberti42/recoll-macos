@@ -87,15 +87,20 @@ class Doc {
     // as an indicative prefix at the beginning of the abstract (ugly hack)
     bool   syntabs;      
     
-    // File size. Index: Set by caller prior to Db::Add. Query: set by
-    // rcldb from index doc data. Historically this always has
-    // represented the whole file size (as from stat()), but there
-    // would be a need for a 3rd value for multidoc files (file
-    // size/doc size/ doc text size)
-    string fbytes;       
+    // File size. This is the size of the compressed file or of the
+    // external containing archive.
+    // Index: Set by caller prior to Db::Add. 
+    // Query: not set currently (not stored)
+    string pcbytes;       
 
-    // Doc text size. Index: from text.length(). Query: set by rcldb from
-    // index doc data.
+    // Document size, ie, size of the .odt or .xls.
+    // Index: Set in internfile from the filter stack
+    // Query: set from data record
+    string fbytes;
+
+    // Doc text size. 
+    // Index: from text.length(). 
+    // Query: set by rcldb from index data record
     string dbytes;
 
     // Doc signature. Used for up to date checks. 
@@ -126,6 +131,7 @@ class Doc {
 	origcharset.erase();
 	meta.clear();
 	syntabs = false;
+	pcbytes.erase();
 	fbytes.erase();
 	dbytes.erase();
 	sig.erase();
@@ -163,9 +169,10 @@ class Doc {
     static const string keydmt; // document mtime
     static const string keymt;  // mtime dmtime if set else fmtime
     static const string keyoc;  // original charset
-    static const string keyfs;  // file size
-    static const string keyds;  // document size
-    static const string keysz;  // dbytes if set else fbytes
+    static const string keypcs;  // document outer container size
+    static const string keyfs;  // document size
+    static const string keyds;  // document text size
+    static const string keysz;  // dbytes if set else fbytes else pcbytes
     static const string keysig; // sig
     static const string keyrr;  // relevancy rating
     static const string keycc;  // Collapse count

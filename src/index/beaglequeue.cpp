@@ -242,7 +242,7 @@ bool BeagleQueueIndexer::indexFromCache(const string& udi)
         doc.mimetype = dotdoc.mimetype;
         doc.fmtime = dotdoc.fmtime;
         doc.url = dotdoc.url;
-        doc.fbytes = dotdoc.fbytes;
+        doc.pcbytes = dotdoc.pcbytes;
         doc.sig.clear();
         doc.meta[Rcl::Doc::keybcknd] = "BGL";
         return m_db->addOrUpdate(udi, cstr_null, doc);
@@ -405,7 +405,7 @@ BeagleQueueIndexer::processone(const string &path,
 
         char cbuf[100]; 
         sprintf(cbuf, OFFTPC, stp->st_size);
-        dotdoc.fbytes = cbuf;
+        dotdoc.pcbytes = cbuf;
 
         // Document signature for up to date checks: none. 
         dotdoc.sig.clear();
@@ -452,7 +452,7 @@ BeagleQueueIndexer::processone(const string &path,
 
         char cbuf[100]; 
         sprintf(cbuf, OFFTPC, stp->st_size);
-        doc.fbytes = cbuf;
+        doc.pcbytes = cbuf;
         // Document signature for up to date checks: none. 
         doc.sig.clear();
         doc.url = dotdoc.url;
@@ -466,7 +466,9 @@ BeagleQueueIndexer::processone(const string &path,
     {
         // doc fields not in meta, needing saving to the cache
         dotfile.m_fields.set("fmtime", dotdoc.fmtime, cstr_null);
-        dotfile.m_fields.set("fbytes", dotdoc.fbytes, cstr_null);
+	// fbytes is used for historical reasons, should be pcbytes, but makes
+	// no sense to change.
+        dotfile.m_fields.set(cstr_fbytes, dotdoc.pcbytes, cstr_null);
         dotfile.m_fields.set("udi", udi, cstr_null);
         string fdata;
         file_to_string(path, fdata);

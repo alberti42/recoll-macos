@@ -18,6 +18,8 @@
 #define _MIMEHANDLER_H_INCLUDED_
 #include "autoconfig.h"
 
+#include <stdio.h>
+
 #include <string>
 #include <list>
 using std::string;
@@ -64,6 +66,13 @@ public:
     virtual bool set_document_string(const std::string &) {return false;}
     virtual bool set_document_data(const char *cp, unsigned int sz) {
 	return set_document_string(string(cp, sz));
+    }
+
+    virtual void set_docsize(size_t size)
+    {
+	char csize[30];
+	sprintf(csize, "%lld", (long long)size);
+	m_metaData[cstr_dj_keydocsize] = csize;
     }
 
     virtual bool has_documents() const {return m_havedoc;}

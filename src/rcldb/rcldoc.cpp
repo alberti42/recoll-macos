@@ -27,6 +27,7 @@ namespace Rcl {
     const string Doc::keydmt("dmtime");
     const string Doc::keymt("mtime");
     const string Doc::keyoc("origcharset");
+    const string Doc::keypcs("pcbytes");
     const string Doc::keyfs("fbytes");
     const string Doc::keyds("dbytes");
     const string Doc::keysz("size");
@@ -53,6 +54,7 @@ namespace Rcl {
         LOGDEB(("Rcl::Doc::dump: dmtime: [%s]\n", dmtime.c_str()));
         LOGDEB(("Rcl::Doc::dump: origcharset: [%s]\n", origcharset.c_str()));
         LOGDEB(("Rcl::Doc::dump: syntabs: [%d]\n", syntabs));
+        LOGDEB(("Rcl::Doc::dump: pcbytes: [%s]\n", pcbytes.c_str()));
         LOGDEB(("Rcl::Doc::dump: fbytes: [%s]\n", fbytes.c_str()));
         LOGDEB(("Rcl::Doc::dump: dbytes: [%s]\n", dbytes.c_str()));
         LOGDEB(("Rcl::Doc::dump: sig: [%s]\n", sig.c_str()));

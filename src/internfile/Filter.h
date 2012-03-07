@@ -121,6 +121,16 @@ namespace Dijon
 	 */
 	virtual bool set_document_uri(const std::string &uri) = 0;
 
+	/** Set the document size meta_data element. This is the size
+	    of the immediate containing file (ie, a .doc, a .odt), not
+	    the size of, ie, a containing archive or .gz nor the size
+	    of the extracted text. This is set externally, because the
+	    surrounding code quite often has a better idea about it
+	    (having created a temp file, etc.), and this saves more
+	    stat() calls The value is stored inside metaData, docsize
+	    key
+	*/
+	virtual void set_docsize(size_t size) = 0;
 
 	// Going from one nested document to the next.
 

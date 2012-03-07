@@ -210,6 +210,7 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
 	doc.syntabs = true;
     }
     parms.get(Doc::keyipt, doc.ipath);
+    parms.get(Doc::keypcs, doc.pcbytes);
     parms.get(Doc::keyfs, doc.fbytes);
     parms.get(Doc::keyds, doc.dbytes);
     parms.get(Doc::keysig, doc.sig);
@@ -1254,16 +1255,20 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     }
     RECORD_APPEND(record, Doc::keyoc, doc.origcharset);
 
+    if (doc.fbytes.empty())
+	doc.fbytes = doc.pcbytes;
     if (!doc.fbytes.empty())
 	RECORD_APPEND(record, Doc::keyfs, doc.fbytes);
+    if (!doc.pcbytes.empty())
+	RECORD_APPEND(record, Doc::keypcs, doc.pcbytes);
+    char sizebuf[30]; 
+    sprintf(sizebuf, "%u", (unsigned int)doc.text.length());
+    RECORD_APPEND(record, Doc::keyds, sizebuf);
+
     // Note that we add the signature both as a value and in the data record
     if (!doc.sig.empty())
 	RECORD_APPEND(record, Doc::keysig, doc.sig);
     newdocument.add_value(VALUE_SIG, doc.sig);
-
-    char sizebuf[30]; 
-    sprintf(sizebuf, "%u", (unsigned int)doc.text.length());
-    RECORD_APPEND(record, Doc::keyds, sizebuf);
 
     if (!doc.ipath.empty())
 	RECORD_APPEND(record, Doc::keyipt, doc.ipath);

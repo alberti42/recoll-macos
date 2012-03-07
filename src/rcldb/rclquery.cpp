@@ -64,7 +64,8 @@ public:
 	: m_fld(docfToDatf(f) + "=") 
     {
 	m_ismtime = !m_fld.compare("dmtime=");
-	m_issize = !m_fld.compare("fbytes=") || !m_fld.compare("dbytes=");
+	m_issize = !m_fld.compare("fbytes=") || !m_fld.compare("dbytes=") ||
+	    !m_fld.compare("pcbytes=");
     }
 
     virtual std::string operator()(const Xapian::Document& xdoc) const 

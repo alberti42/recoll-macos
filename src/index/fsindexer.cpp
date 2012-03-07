@@ -458,7 +458,7 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 
 	char cbuf[100]; 
 	sprintf(cbuf, OFFTPC, stp->st_size);
-	doc.fbytes = cbuf;
+	doc.pcbytes = cbuf;
 	// Document signature for up to date checks: concatenate
 	// m/ctime and size. Looking for changes only, no need to
 	// parseback so no need for reversible formatting. Also set,
@@ -519,7 +519,7 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 
 	char cbuf[100]; 
 	sprintf(cbuf, OFFTPC, stp->st_size);
-	fileDoc.fbytes = cbuf;
+	fileDoc.pcbytes = cbuf;
 	// Document signature for up to date checks.
 	makesig(stp, fileDoc.sig);
 #ifdef IDX_THREADS

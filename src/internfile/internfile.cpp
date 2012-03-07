@@ -239,6 +239,8 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
             l_mime = *imime;
     }
 
+    size_t docsize = stp->st_size;
+
     if (!l_mime.empty()) {
 	// Has mime: check for a compressed file. If so, create a
 	// temporary uncompressed file, and rerun the mime type
@@ -255,8 +257,16 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 		LOGDEB1(("FileInterner:: after ucomp: m_tdir %s, tfile %s\n", 
 			 m_tdir.dirname(), m_tfile.c_str()));
 		m_fn = m_tfile;
-		// Note: still using the original file's stat. right ?
-		l_mime = mimetype(m_fn, stp, m_cfg, usfci);
+		// Stat the uncompressed file, mainly to get the size
+		struct stat ucstat;
+		if (stat(m_fn.c_str(), &ucstat) != 0) {
+		    LOGERR(("FileInterner: can't stat the uncompressed file"
+			    "[%s] errno %d\n", m_fn.c_str(), errno));
+		    return;
+		} else {
+		    docsize = ucstat.st_size;
+		}
+		l_mime = mimetype(m_fn, &ucstat, m_cfg, usfci);
 		if (l_mime.empty() && imime)
 		    l_mime = *imime;
 	    } else {
@@ -294,6 +304,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
     reapXAttrs(f);
 #endif //RCL_USE_XATTR
 
+    df->set_docsize(docsize);
     if (!df->set_document_file(m_fn)) {
 	LOGERR(("FileInterner:: error converting %s\n", m_fn.c_str()));
 	return;
@@ -335,6 +346,7 @@ void FileInterner::init(const string &data, RclConfig *cnf,
 			    m_forPreview ? "view" : "index");
 
     bool setres = false;
+    df->set_docsize(data.length());
     if (df->is_data_input_ok(Dijon::Filter::DOCUMENT_STRING)) {
 	setres = df->set_document_string(data);
     } else if (df->is_data_input_ok(Dijon::Filter::DOCUMENT_DATA)) {
@@ -652,17 +664,30 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 	 it != docdata.end(); it++) {
 	if (it->first == cstr_dj_keycontent) {
 	    doc.text = it->second;
+	    if (doc.fbytes.empty()) {
+		// It's normally set by walking the filter stack, in
+		// collectIpathAndMt, which was called before us.  It
+		// can happen that the doc size is still empty at this
+		// point if the last container filter is directly
+		// returning text/plain content, so that there is no
+		// ipath-less filter at the top
+		char cbuf[30];
+		sprintf(cbuf, "%d", int(doc.text.length()));
+		doc.fbytes = cbuf;
+	    }
 	} else if (it->first == cstr_dj_keymd) {
 	    doc.dmtime = it->second;
 	} else if (it->first == cstr_dj_keyorigcharset) {
 	    doc.origcharset = it->second;
-	} else if (it->first == cstr_dj_keymt || it->first == cstr_dj_keycharset) {
+	} else if (it->first == cstr_dj_keymt || 
+		   it->first == cstr_dj_keycharset) {
 	    // don't need/want these.
 	} else {
 	    doc.meta[it->first] = it->second;
 	}
     }
-    if (doc.meta[Rcl::Doc::keyabs].empty() && !doc.meta[cstr_dj_keyds].empty()) {
+    if (doc.meta[Rcl::Doc::keyabs].empty() && 
+	!doc.meta[cstr_dj_keyds].empty()) {
 	doc.meta[Rcl::Doc::keyabs] = doc.meta[cstr_dj_keyds];
 	doc.meta.erase(cstr_dj_keyds);
     }
@@ -670,11 +695,20 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 }
 
 // Collect the ipath from the current path in the document tree.
-// While we're at it, we also set the mimetype and filename, which are special 
-// properties: we want to get them from the topmost doc
-// with an ipath, not the last one which is usually text/plain
-// We also set the author and modification time from the last doc
-// which has them.
+// While we're at it, we also set the mimetype and filename,
+// which are special properties: we want to get them from the topmost
+// doc with an ipath, not the last one which is usually text/plain We
+// also set the author and modification time from the last doc which
+// has them.
+//
+// The docsize is fetched from the first element without an ipath
+// (first non container). If the last element directly returns
+// text/plain so that there is no ipath-less element, the value will
+// be set in dijontorcl(). 
+// 
+// The whole thing is a bit messy but it's not obvious how it should
+// be cleaned up as the "inheritance" rules inside the stack are
+// actually complicated.
 void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
 {
     LOGDEB2(("FileInterner::collectIpathAndMT\n"));
@@ -702,9 +736,14 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
 		hasipath = true;
 		getKeyValue(docdata, cstr_dj_keymt, doc.mimetype);
 		getKeyValue(docdata, cstr_dj_keyfn, doc.utf8fn);
+	    } else {
+		if (doc.fbytes.empty())
+		    getKeyValue(docdata, cstr_dj_keydocsize, doc.fbytes);
 	    }
 	    doc.ipath += colon_hide(ipathel) + cstr_isep;
 	} else {
+	    if (doc.fbytes.empty())
+		getKeyValue(docdata, cstr_dj_keydocsize, doc.fbytes);
 	    doc.ipath += cstr_isep;
 	}
 	getKeyValue(docdata, cstr_dj_keyauthor, doc.meta[Rcl::Doc::keyau]);
@@ -793,6 +832,7 @@ int FileInterner::addHandler()
 	    txt = &it->second;
     }
     bool setres = false;
+    newflt->set_docsize(txt->length());
     if (newflt->is_data_input_ok(Dijon::Filter::DOCUMENT_STRING)) {
 	setres = newflt->set_document_string(*txt);
     } else if (newflt->is_data_input_ok(Dijon::Filter::DOCUMENT_DATA)) {

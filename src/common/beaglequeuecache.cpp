@@ -68,7 +68,7 @@ bool BeagleQueueCache::getFromCache(const string& udi, Rcl::Doc &dotdoc,
     cf.get(cstr_url, dotdoc.url, cstr_null);
     cf.get(cstr_bgc_mimetype, dotdoc.mimetype, cstr_null);
     cf.get(cstr_fmtime, dotdoc.fmtime, cstr_null);
-    cf.get(cstr_fbytes, dotdoc.fbytes, cstr_null);
+    cf.get(cstr_fbytes, dotdoc.pcbytes, cstr_null);
     dotdoc.sig.clear();
     list<string> names = cf.getNames(cstr_null);
     for (list<string>::const_iterator it = names.begin();
