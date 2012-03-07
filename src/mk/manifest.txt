@@ -40,6 +40,8 @@ common/Makefile
 common/autoconfig.h.in
 common/beaglequeuecache.cpp
 common/beaglequeuecache.h
+common/cstr.cpp
+common/cstr.h
 common/rclconfig.cpp
 common/rclconfig.h
 common/rclinit.cpp
@@ -57,6 +59,7 @@ desktop/hotrecoll.py
 desktop/recoll-searchgui.desktop
 desktop/recoll.png
 desktop/recoll.xcf
+desktop/recollindex.desktop
 desktop/xdg-utils-1.0.1/
 desktop/xdg-utils-1.0.1/LICENSE
 desktop/xdg-utils-1.0.1/scripts/
@@ -118,10 +121,9 @@ filters/rcldoc
 filters/rcldvi
 filters/rclexecm.py
 filters/rclfb2
-filters/rclflac
 filters/rclgaim
+filters/rclgnm
 filters/rclics
-filters/rclid3
 filters/rclimg
 filters/rclinfo
 filters/rclkar
@@ -131,7 +133,7 @@ filters/rcllatinstops.zip
 filters/rcllyx
 filters/rclman
 filters/rclnull
-filters/rclogg
+filters/rclokulnote
 filters/rclopxml
 filters/rclpdf
 filters/rclppt
@@ -171,6 +173,8 @@ index/rclmonprc.cpp
 index/rclmonrcv.cpp
 index/recollindex.cpp
 index/recollindex.h
+index/subtreelist.cpp
+index/subtreelist.h
 internfile/
 internfile/Filter.h
 internfile/Makefile
@@ -196,6 +200,7 @@ internfile/mimehandler.cpp
 internfile/mimehandler.h
 internfile/myhtmlparse.cpp
 internfile/myhtmlparse.h
+internfile/txtdcode.cpp
 kde/
 kde/kioslave/
 kde/kioslave/kio_recoll/
@@ -263,6 +268,13 @@ qtgui/confgui/confguiindex.h
 qtgui/confgui/conflinkrcl.h
 qtgui/confgui/main.cpp
 qtgui/confgui/trconf.pro
+qtgui/crontool.cpp
+qtgui/crontool.h
+qtgui/crontool.ui
+qtgui/editdialog.h
+qtgui/editdialog.ui
+qtgui/firstidx.h
+qtgui/firstidx.ui
 qtgui/guiutils.cpp
 qtgui/guiutils.h
 qtgui/i18n/
@@ -270,6 +282,8 @@ qtgui/i18n/recoll_cs.qm
 qtgui/i18n/recoll_cs.ts
 qtgui/i18n/recoll_de.qm
 qtgui/i18n/recoll_de.ts
+qtgui/i18n/recoll_es.qm
+qtgui/i18n/recoll_es.ts
 qtgui/i18n/recoll_fr.qm
 qtgui/i18n/recoll_fr.ts
 qtgui/i18n/recoll_it.qm
@@ -284,8 +298,8 @@ qtgui/i18n/recoll_uk.qm
 qtgui/i18n/recoll_uk.ts
 qtgui/i18n/recoll_xx.qm
 qtgui/i18n/recoll_xx.ts
-qtgui/idxthread.cpp
-qtgui/idxthread.h
+qtgui/idxsched.h
+qtgui/idxsched.ui
 qtgui/images/
 qtgui/images/asearch.png
 qtgui/images/cancel.png
@@ -299,6 +313,8 @@ qtgui/images/sortparms.png
 qtgui/images/spell.png
 qtgui/images/table.png
 qtgui/images/up.png
+qtgui/listdialog.h
+qtgui/listdialog.ui
 qtgui/main.cpp
 qtgui/mtpics/
 qtgui/mtpics/License_sidux.txt
@@ -340,6 +356,9 @@ qtgui/reslist.h
 qtgui/restable.cpp
 qtgui/restable.h
 qtgui/restable.ui
+qtgui/rtitool.cpp
+qtgui/rtitool.h
+qtgui/rtitool.ui
 qtgui/searchclause_w.cpp
 qtgui/searchclause_w.h
 qtgui/spell.ui
@@ -396,6 +415,7 @@ rcldb/stemdb.cpp
 rcldb/stemdb.h
 rcldb/stoplist.cpp
 rcldb/stoplist.h
+rcldb/termproc.h
 recollinstall.in
 sampleconf/
 sampleconf/fields
@@ -404,6 +424,7 @@ sampleconf/mimemap
 sampleconf/mimeview
 sampleconf/mimeview.mac
 sampleconf/recoll.conf.in
+sampleconf/recoll.qss
 unac/
 unac/AUTHORS
 unac/COPYING
@@ -427,6 +448,8 @@ utils/copyfile.cpp
 utils/copyfile.h
 utils/debuglog.cpp
 utils/debuglog.h
+utils/ecrontab.cpp
+utils/ecrontab.h
 utils/execmd.cpp
 utils/execmd.h
 utils/fileudi.cpp
@@ -461,5 +484,7 @@ utils/utf8iter.h
 utils/utf8testin.txt
 utils/wipedir.cpp
 utils/wipedir.h
+utils/workqueue.cpp
+utils/workqueue.h
 utils/x11mon.cpp
 utils/x11mon.h
