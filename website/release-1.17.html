@@ -52,7 +52,7 @@
       <h2>Changes</h2>
 
       <p>Recoll 1.17 is an incremental improvements release over 1.16, no
-        major function was introduced or modified.</p> 
+        really major function was introduced or modified.</p> 
 
       <ul>
         
@@ -60,31 +60,31 @@
           from the advanced search panel, or from the query langage
           (ie: "size&gt;10k&nbsp;size&lt;1m"). For documents stored
           inside archives, the file size stored in the index is now
-          the actual one not the archive's as was previously the
+          the actual one, not the archive's as was previously the
           case.</li>
 
-        <li>Query language: Tilde is now expanded inside a "dir:"
+        <li>Query language: tilde is now expanded inside a "dir:"
           clause.</li>
 
         <li>Query language: the "dir:" directive now accepts
-          non-absolute paths. For example dir:dir1/dir2 will accept any
-          file the ancestors of which include "dir1/dir2".</li>
+          non-absolute paths. For example dir:dir1/dir2 will select
+          any file the path of which includes "dir1/dir2".</li>
 
-        <li>GUI: When a search fails to retrieve results, the spelling
+        <li>GUI: when a search fails to retrieve results, the spelling
           suggestions are now presented as links inside the result list
           area. Clicking a link will replace the appropriate word inside
           the search entry.</li>
 
-        <li>GUI: Thumbnails will be displayed in the result list if an
-          appropriate one is found in the standard freedesktop
-          thumbnails directory (ie: created by gimp or some file
-          manager). Recoll will not create thumbnails (this would slow
-          result display too much).</li>
+        <li>GUI: thumbnails will be displayed in the result list if
+          found in the standard freedesktop thumbnails directory
+          (previously created by gimp or some file manager). Recoll
+          will not create thumbnails (this would slow the results display
+          too much).</li>
 
-        <li>GUI: It is now possible to control the date format used to
-          display result (go to query preferences).</li>
+        <li>GUI: it is now possible to control the date format used to
+          display the results (go to Query Preferences).</li>
 
-        <li>GUI: It is now possible to Copy/Paste from the term explorer
+        <li>GUI: it is now possible to Copy/Paste from the term explorer
           result list.</li>
 
         <li>GUI: it is now possible to use a Qt style sheet to modify
@@ -93,15 +93,15 @@
           skeleton style sheet is to be found in the
           share/recoll/examples directory.</li>
 
-        <li>GUI: Added menu entry to show all the mime types actually
+        <li>GUI: added menu entry to show all the mime types actually
           indexed.</li>
 
         <li>GUI: the result list is now based on the WebKit widget
           instead of QTextBrowser. This means better html/css support,
           and even Javascript ... You can force the use the old
-          QTextBrowser instead by using configure --disable-webkit.</li>
+          QTextBrowser instead by using configure&nbsp;--disable-webkit.</li>
 
-        <li>GUI: Use Shift+PageUp instead of Shift+Home to rewind the
+        <li>GUI: use Shift+PageUp instead of Shift+Home to rewind the
           result list to the first page. Shift+Home is useful in the
           search entry.</li>
    
@@ -117,13 +117,13 @@
           idea. Among others, exiting the GUI has no influence on an
           ongoing indexing.</li>
 
+        <li>The GUI now has a menu entry to force a full reindex.</li>
+
         <li>The GUI indexing configuration now only shows the directories
-          customized by the user not those which come from the
+          customized by the user, not those which come from the
           standard configuration (ie: ~/.thunderbird). Showing the
           standard directories was more often confusing than
           useful.</li>
-
-        <li>The GUI now has a menu entry to force a full reindex.</li>
 
         <li>GUI: the default reslist paragraph now displays the ipath:
           this is very useful for archive members and not too
@@ -134,7 +134,7 @@
           exit, but it's probably better than staring at a hung
           Recoll.</li>
 
-        <li>What used to be the document category filters
+        <li>GUI: what used to be the document category filters
           (media/text/etc.) are now defined as query language
           fragments inside mimeconf. This means that you can redefine
           them freely (see the comments for the [guifilters] section
