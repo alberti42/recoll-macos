@@ -300,7 +300,11 @@ other = application/vnd.sun.xml.draw \
 # By default this filters by document category (see above), but any
 # language fragment should be ok. Be aware though that the "document
 # history" queries only know about simple "rclcat" filtering.
-
+#
+# If you don't want the filter names to be displayed in alphabetic order,
+# you can define them with a colon. The part before the colon is not
+# displayed but used for ordering, ie: a:zzbutshouldbefirst b:aacomeslast
+#
 text = rclcat:text
 spreadsheet = rclcat:spreadsheet
 presentation = rclcat:presentation

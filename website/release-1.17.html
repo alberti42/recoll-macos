@@ -55,22 +55,62 @@
         major function was introduced or modified.</p> 
 
       <ul>
+        
+        <li>Recoll now supports filtering on file sizes. This is accessible
+          from the advanced search panel, or from the query langage
+          (ie: "size&gt;10k&nbsp;size&lt;1m"). For documents stored
+          inside archives, the file size stored in the index is now
+          the actual one not the archive's as was previously the
+          case.</li>
 
-        <li>When a search fails to retrieve results, the spelling
+        <li>Query language: Tilde is now expanded inside a "dir:"
+          clause.</li>
+
+        <li>Query language: the "dir:" directive now accepts
+          non-absolute paths. For example dir:dir1/dir2 will accept any
+          file the ancestors of which include "dir1/dir2".</li>
+
+        <li>GUI: When a search fails to retrieve results, the spelling
           suggestions are now presented as links inside the result list
           area. Clicking a link will replace the appropriate word inside
           the search entry.</li>
-        <li>Thumbnails will be displayed in the result list if an
+
+        <li>GUI: Thumbnails will be displayed in the result list if an
           appropriate one is found in the standard freedesktop
           thumbnails directory (ie: created by gimp or some file
           manager). Recoll will not create thumbnails (this would slow
           result display too much).</li>
-        
+
+        <li>GUI: It is now possible to control the date format used to
+          display result (go to query preferences).</li>
+
+        <li>GUI: It is now possible to Copy/Paste from the term explorer
+          result list.</li>
+
+        <li>GUI: it is now possible to use a Qt style sheet to modify
+          many aspects of Recoll appearance. A style sheet file can be
+          selected from the GUI query configuration dialog. A sample
+          skeleton style sheet is to be found in the
+          share/recoll/examples directory.</li>
+
+        <li>GUI: Added menu entry to show all the mime types actually
+          indexed.</li>
+
+        <li>GUI: the result list is now based on the WebKit widget
+          instead of QTextBrowser. This means better html/css support,
+          and even Javascript ... You can force the use the old
+          QTextBrowser instead by using configure --disable-webkit.</li>
+
+        <li>GUI: Use Shift+PageUp instead of Shift+Home to rewind the
+          result list to the first page. Shift+Home is useful in the
+          search entry.</li>
+   
         <li>The GUI now has a set of dialogs to set up the indexing
           schedule, either as automatic real time indexing started
           with the user session or as discrete cron entries. This
           will take care of the details of autostart files or crontab
           editing.</li> 
+
         <li>The GUI indexing thread has been removed. All indexing is
           now performed by a separate recollindex process. This has
           multiple advantages, the thread was just a very bad
@@ -83,23 +123,34 @@
           standard directories was more often confusing than
           useful.</li>
 
-        <li>It is now possible to control the date format used to
-          display result (go to query preferences).</li>
-        <li>It is now possible to Copy/Paste from the term explorer
-          result list.</li>
+        <li>The GUI now has a menu entry to force a full reindex.</li>
+
+        <li>GUI: the default reslist paragraph now displays the ipath:
+          this is very useful for archive members and not too
+          disturbing for other kinds.</li>
+
+        <li>GUI: it is now possible to cancel a query that takes too
+          long. Because of limitations in Xapian, this forces a program
+          exit, but it's probably better than staring at a hung
+          Recoll.</li>
+
+        <li>What used to be the document category filters
+          (media/text/etc.) are now defined as query language
+          fragments inside mimeconf. This means that you can redefine
+          them freely (see the comments for the [guifilters] section
+          in the default mimeconf).</li>
+
+        <li>Command line query: can now select a result slice
+          (first result rank and count of results).</li>
+
         <li>Indexer: handle the html5 <tt>charset</tt> meta tag.</li>
 
-        <li>Added okular notes and gnumeric filters.</li>
+        <li>Real time indexer: restart automatically when the
+          configuration changes.</li>
 
-        <li>GUI: it is now possible to use a Qt style sheet to modify
-          many aspects of Recoll appearance. A style sheet file can be
-          selected from the GUI query configuration dialog. A sample
-          skeleton style sheet is to be found in the
-          share/recoll/examples directory.</li>
+        <li>Indexer: Added okular notes and gnumeric filters.</li>
 
-        <li>GUI: Added menu entry to show all the mime types actually
-          indexed.</li>
-
+        
         <li>Fixed bugs:
           <ul>
             <li>Indexing configuration: deleting one customized
@@ -119,7 +170,10 @@
               was sometimes used for GUI preview.</li>
             <li>The chm filter can now process files lacking a Topics
               node.</li>
-
+            <li>The default slack for proximity searches from the query
+            language (ie: "word1 word2"p) had become 0. It was restored to
+            10.</li>
+            
           </ul>
         </li>
 
