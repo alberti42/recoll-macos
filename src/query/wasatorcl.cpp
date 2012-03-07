@@ -125,6 +125,46 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
 	    continue;
 	} 
 
+	// Handle "size" spec
+	if (!stringicmp("size", (*it)->m_fieldspec)) {
+	    if ((*it)->m_op != WasaQuery::OP_LEAF) {
+		reason = "Negative size filtering not supported";
+		return 0;
+	    }
+	    char *cp;
+	    size_t size = strtoll((*it)->m_value.c_str(), &cp, 10);
+	    if (*cp != 0) {
+		switch (*cp) {
+		case 'k': case 'K': size *= 1E3;break;
+		case 'm': case 'M': size *= 1E6;break;
+		case 'g': case 'G': size *= 1E9;break;
+		case 't': case 'T': size *= 1E12;break;
+		default: 
+		    reason = string("Bad multiplier suffix: ") + *cp;
+		    return 0;
+		}
+	    }
+
+	    switch ((*it)->m_rel) {
+	    case WasaQuery::REL_EQUALS:
+		sdata->setMaxSize(size);
+		sdata->setMinSize(size);
+		break;
+	    case WasaQuery::REL_LT:
+	    case WasaQuery::REL_LTE:
+		sdata->setMaxSize(size);
+		break;
+	    case WasaQuery::REL_GT: 
+	    case WasaQuery::REL_GTE:
+		sdata->setMinSize(size);
+		break;
+	    default:
+		reason = "Bad relation operator with size query. Use > < or =";
+		return 0;
+	    }
+	    continue;
+	} 
+
 	// "Regular" processing follows:
 	switch ((*it)->m_op) {
 	case WasaQuery::OP_NULL:

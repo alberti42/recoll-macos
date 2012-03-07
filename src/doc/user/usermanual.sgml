@@ -2125,6 +2125,17 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         <filename>/usr/local/share/doc</filename> </para>
         </listitem>
 
+        <listitem><para><literal>size</literal> for filtering the
+        results on file size. Exemple: 
+        <literal>size<10000</literal>. You can use
+        <literal>&lt;</literal>, <literal>&gt;</literal> or
+        <literal>=</literal> as operators. You can specify a range like the
+        following: <literal>size>100 size<1000</literal>. The usual
+        <literal>k/K, m/M, g/G, t/T</literal> can be used as (decimal)
+        multipliers. Ex: <literal>size&gt;1k</literal> to search for files
+        bigger than 1000 bytes.</para>
+        </listitem>
+
         <listitem><para><literal>date</literal> for searching or filtering
         on dates. The syntax for the argument is based on the ISO8601
         standard for dates and time intervals. Only dates are supported, no

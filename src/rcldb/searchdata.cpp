@@ -255,6 +255,39 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
         }
     }
 
+
+    if (m_minSize != size_t(-1) || m_maxSize != size_t(-1)) {
+        Xapian::Query sq;
+	char min[50], max[50];
+	sprintf(min, "%lld", (long long)m_minSize);
+	sprintf(max, "%lld", (long long)m_maxSize);
+	if (m_minSize == size_t(-1)) {
+	    string value(max);
+	    leftzeropad(value, 12);
+	    sq = Xapian::Query(Xapian::Query::OP_VALUE_LE, VALUE_SIZE, value);
+	} else if (m_maxSize == size_t(-1)) {
+	    string value(min);
+	    leftzeropad(value, 12);
+	    sq = Xapian::Query(Xapian::Query::OP_VALUE_GE, VALUE_SIZE, value);
+	} else {
+	    string minvalue(min);
+	    leftzeropad(minvalue, 12);
+	    string maxvalue(max);
+	    leftzeropad(maxvalue, 12);
+	    sq = Xapian::Query(Xapian::Query::OP_VALUE_RANGE, VALUE_SIZE, 
+			       minvalue, maxvalue);
+	}
+	    
+        // If no probabilistic query is provided then promote the
+        // filter to be THE query instead of filtering an empty query.
+        if (xq.empty()) {
+            LOGINFO(("Db::toNativeQuery: proba query is empty\n"));
+            xq = sq;
+        } else {
+            xq = Xapian::Query(Xapian::Query::OP_FILTER, xq, sq);
+        }
+    }
+
     // Add the file type filtering clause if any
     if (!m_filetypes.empty()) {
 	expandFileTypes(db.getConf(), m_filetypes);
@@ -452,6 +485,8 @@ void SearchData::erase() {
     m_description.erase();
     m_reason.erase();
     m_haveDates = false;
+    m_minSize = size_t(-1);
+    m_maxSize = size_t(-1);
 }
 
 // Am I a file name only search ? This is to turn off term highlighting

@@ -75,7 +75,8 @@ class SearchData {
 public:
     SearchData(SClType tp) 
         : m_tp(tp), m_topdirexcl(false), m_topdirweight(1.0), 
-	  m_haveDates(false), m_haveWildCards(false) 
+	  m_haveDates(false), m_maxSize(size_t(-1)),
+	  m_minSize(size_t(-1)), m_haveWildCards(false) 
     {
 	if (m_tp != SCLT_OR && m_tp != SCLT_AND) 
 	    m_tp = SCLT_OR;
@@ -113,6 +114,9 @@ public:
 	m_topdirexcl = excl;
 	m_topdirweight = w;
     }
+
+    void setMinSize(size_t size) {m_minSize = size;}
+    void setMaxSize(size_t size) {m_maxSize = size;}
 
     /** Set date span for filtering results */
     void setDateSpan(DateInterval *dip) {m_dates = *dip; m_haveDates = true;}
@@ -154,6 +158,8 @@ private:
     float                     m_topdirweight; // affect weight instead of filter
     bool                      m_haveDates;
     DateInterval              m_dates; // Restrict to date interval
+    size_t                    m_maxSize;
+    size_t                    m_minSize;
     // Printable expanded version of the complete query, retrieved/set
     // from rcldb after the Xapian::setQuery() call
     string m_description; 

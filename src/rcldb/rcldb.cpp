@@ -1257,8 +1257,13 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 
     if (doc.fbytes.empty())
 	doc.fbytes = doc.pcbytes;
-    if (!doc.fbytes.empty())
+
+    if (!doc.fbytes.empty()) {
 	RECORD_APPEND(record, Doc::keyfs, doc.fbytes);
+	leftzeropad(doc.fbytes, 12);
+	newdocument.add_value(VALUE_SIZE, doc.fbytes);
+    }
+
     if (!doc.pcbytes.empty())
 	RECORD_APPEND(record, Doc::keypcs, doc.pcbytes);
     char sizebuf[30]; 

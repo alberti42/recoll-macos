@@ -139,7 +139,7 @@ static const char * parserExpr =
       "("                            //5
         "([[:alpha:]][[:alnum:]:]*)" //6 Field spec: ie: "dc:title:letitre"
         "[[:space:]]*"
-        "(:)"            //7 Relation
+        "(:|=|>|<)"            //7 Relation
         "[[:space:]]*)?"
       "("                            //8
         "(\""                        //9
