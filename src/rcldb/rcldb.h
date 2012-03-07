@@ -153,7 +153,7 @@ class Db {
       * possible depending on the document type. parent_udi is only
       * use for subdocs, else set it to empty */
     bool addOrUpdate(const string &udi, const string &parent_udi, 
-		     const Doc &doc);
+		     Doc &doc);
 
     /** Delete document(s) for given UDI, including subdocs */
     bool purgeFile(const string &udi, bool *existed = 0);

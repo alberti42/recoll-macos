@@ -54,18 +54,19 @@ class Doc {
     string utf8fn; 
 
     // Internal path for multi-doc files. Ascii
-    // Set by DbIndexer::processone    
+    // Set by FsIndexer::processone    
     string ipath;
 
     // Mime type. Set by FileInterner::internfile
     string mimetype;     
 
     // File modification time as decimal ascii unix time
-    // Set by DbIndexer::processone
+    // Set by FsIndexer::processone
     string fmtime;
 
     // Data reference date (same format). Ie: mail date
     // Possibly set by mimetype-specific handler
+    // Filter::metaData["modificationdate"]
     string dmtime;
 
     // Charset we transcoded the 'text' field from (in case we want back)

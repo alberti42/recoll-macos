@@ -1064,7 +1064,7 @@ void *DbUpdWorker(void* vdbp)
 // date, mime type etc. , create the document data record (more
 // metadata), and update database
 bool Db::addOrUpdate(const string &udi, const string &parent_udi,
-		     const Doc &idoc)
+		     Doc &doc)
 {
     LOGDEB(("Db::add: udi [%s] parent [%s]\n", 
 	     udi.c_str(), parent_udi.c_str()));
@@ -1083,8 +1083,6 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	}
 	m_occtxtsz = m_curtxtsz;
     }
-
-    Doc doc = idoc;
 
     Xapian::Document newdocument;
 
