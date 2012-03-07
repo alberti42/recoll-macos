@@ -25,6 +25,8 @@
 #include "pathut.h"
 #include "rcldoc.h"
 
+const string cstr_bgc_mimetype("mimetype");
+
 BeagleQueueCache::BeagleQueueCache(RclConfig *cnf) 
 {
     string ccdir;
@@ -64,7 +66,7 @@ bool BeagleQueueCache::getFromCache(const string& udi, Rcl::Doc &dotdoc,
 
     // Build a doc from saved metadata 
     cf.get(cstr_url, dotdoc.url, cstr_null);
-    cf.get(cstr_mimetype, dotdoc.mimetype, cstr_null);
+    cf.get(cstr_bgc_mimetype, dotdoc.mimetype, cstr_null);
     cf.get(cstr_fmtime, dotdoc.fmtime, cstr_null);
     cf.get(cstr_fbytes, dotdoc.fbytes, cstr_null);
     dotdoc.sig.clear();

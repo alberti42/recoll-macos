@@ -638,14 +638,6 @@ static inline bool getKeyValue(const map<string, string>& docdata,
     return false;
 }
 
-// These defs are for the Dijon meta array. Rcl::Doc predefined field
-// names are used where appropriate. In some cases, Rcl::Doc names are
-// used inside the Dijon metadata (ex: origcharset)
-static const string cstr_keyds("description");
-static const string cstr_keyfn("filename");
-static const string cstr_keymd("modificationdate");
-static const string cstr_keytt("title");
-
 bool FileInterner::dijontorcl(Rcl::Doc& doc)
 {
     Dijon::Filter *df = m_handlers.back();
@@ -658,21 +650,21 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 
     for (map<string,string>::const_iterator it = docdata.begin(); 
 	 it != docdata.end(); it++) {
-	if (it->first == cstr_content) {
+	if (it->first == cstr_dj_keycontent) {
 	    doc.text = it->second;
-	} else if (it->first == cstr_keymd) {
+	} else if (it->first == cstr_dj_keymd) {
 	    doc.dmtime = it->second;
-	} else if (it->first == Rcl::Doc::keyoc) {
+	} else if (it->first == cstr_dj_keyorigcharset) {
 	    doc.origcharset = it->second;
-	} else if (it->first == cstr_mimetype || it->first == cstr_charset) {
+	} else if (it->first == cstr_dj_keymt || it->first == cstr_dj_keycharset) {
 	    // don't need/want these.
 	} else {
 	    doc.meta[it->first] = it->second;
 	}
     }
-    if (doc.meta[Rcl::Doc::keyabs].empty() && !doc.meta[cstr_keyds].empty()) {
-	doc.meta[Rcl::Doc::keyabs] = doc.meta[cstr_keyds];
-	doc.meta.erase(cstr_keyds);
+    if (doc.meta[Rcl::Doc::keyabs].empty() && !doc.meta[cstr_dj_keyds].empty()) {
+	doc.meta[Rcl::Doc::keyabs] = doc.meta[cstr_dj_keyds];
+	doc.meta.erase(cstr_dj_keyds);
     }
     return true;
 }
@@ -704,19 +696,19 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
     for (vector<Dijon::Filter*>::const_iterator hit = m_handlers.begin();
 	 hit != m_handlers.end(); hit++) {
 	const map<string, string>& docdata = (*hit)->get_meta_data();
-	if (getKeyValue(docdata, cstr_ipath, ipathel)) {
+	if (getKeyValue(docdata, cstr_dj_keyipath, ipathel)) {
 	    if (!ipathel.empty()) {
 		// We have a non-empty ipath
 		hasipath = true;
-		getKeyValue(docdata, cstr_mimetype, doc.mimetype);
-		getKeyValue(docdata, cstr_keyfn, doc.utf8fn);
+		getKeyValue(docdata, cstr_dj_keymt, doc.mimetype);
+		getKeyValue(docdata, cstr_dj_keyfn, doc.utf8fn);
 	    }
 	    doc.ipath += colon_hide(ipathel) + cstr_isep;
 	} else {
 	    doc.ipath += cstr_isep;
 	}
-	getKeyValue(docdata, cstr_author, doc.meta[Rcl::Doc::keyau]);
-	getKeyValue(docdata, cstr_keymd, doc.dmtime);
+	getKeyValue(docdata, cstr_dj_keyauthor, doc.meta[Rcl::Doc::keyau]);
+	getKeyValue(docdata, cstr_dj_keymd, doc.dmtime);
     }
 
     // Trim empty tail elements in ipath.
@@ -754,8 +746,8 @@ int FileInterner::addHandler()
 {
     const map<string, string>& docdata = m_handlers.back()->get_meta_data();
     string charset, mimetype;
-    getKeyValue(docdata, cstr_charset, charset);
-    getKeyValue(docdata, cstr_mimetype, mimetype);
+    getKeyValue(docdata, cstr_dj_keycharset, charset);
+    getKeyValue(docdata, cstr_dj_keymt, mimetype);
 
     LOGDEB(("FileInterner::addHandler: next_doc is %s\n", mimetype.c_str()));
 
@@ -796,7 +788,7 @@ int FileInterner::addHandler()
     const string *txt = &ns;
     {
 	map<string,string>::const_iterator it;
-	it = docdata.find(cstr_content);
+	it = docdata.find(cstr_dj_keycontent);
 	if (it != docdata.end())
 	    txt = &it->second;
     }

@@ -81,7 +81,7 @@ bool MimeHandlerText::set_document_file(const string &fn)
 
     string md5, xmd5;
     MD5String(m_text, md5);
-    m_metaData[cstr_md5] = MD5HexPrint(md5, xmd5);
+    m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
     m_havedoc = true;
     return true;
 }
@@ -91,7 +91,7 @@ bool MimeHandlerText::set_document_string(const string& otext)
     m_text = otext;
     string md5, xmd5;
     MD5String(m_text, md5);
-    m_metaData[cstr_md5] = MD5HexPrint(md5, xmd5);
+    m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
     m_havedoc = true;
     return true;
 }
@@ -118,11 +118,11 @@ bool MimeHandlerText::next_document()
 
     // We transcode even if defcharset is supposedly already utf-8:
     // this validates the encoding.
-    m_metaData[cstr_origcharset] = m_dfltInputCharset;
-    m_metaData[cstr_mimetype] = cstr_textplain;
+    m_metaData[cstr_dj_keyorigcharset] = m_dfltInputCharset;
+    m_metaData[cstr_dj_keymt] = cstr_textplain;
 
     size_t srclen = m_text.length();
-    m_metaData[cstr_content].swap(m_text);
+    m_metaData[cstr_dj_keycontent].swap(m_text);
 
     // txtdcode() truncates the text if transcoding fails
     (void)txtdcode("mh_text");
@@ -144,7 +144,7 @@ bool MimeHandlerText::next_document()
         char buf[30];
         sprintf(buf, "%lld", (long long)(m_offs - srclen));
         if (m_offs - srclen != 0)
-            m_metaData[cstr_ipath] = buf;
+            m_metaData[cstr_dj_keyipath] = buf;
         readnext();
         return true;
     }

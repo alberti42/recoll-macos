@@ -141,6 +141,7 @@ static Dijon::Filter *mhFactory(RclConfig *config, const string &mime)
     }
 }
 
+static const string cstr_mh_charset("charset");
 /**
  * Create a filter that executes an external program or script
  * A filter def can look like:
@@ -179,9 +180,9 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
     // Handle additional attributes. We substitute the semi-colons
     // with newlines and use a ConfSimple
     string value;
-    if (attrs.get(cstr_charset, value)) 
+    if (attrs.get(cstr_mh_charset, value)) 
         h->cfgFilterOutputCharset = stringtolower((const string&)value);
-    if (attrs.get(cstr_mimetype, value))
+    if (attrs.get(cstr_dj_keymt, value))
         h->cfgFilterOutputMtype = stringtolower((const string&)value);
 
 #if 0

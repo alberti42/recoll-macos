@@ -44,11 +44,7 @@
 using namespace std;
 
 static const int maxdepth = 20;
-static const string cstr_recipient = "recipient";
-static const string cstr_modificationdate = "modificationdate";
-static const string cstr_title = "title";
-static const string cstr_msgid = "msgid";
-static const string cstr_abstract = "abstract";
+static const string cstr_mail_charset("charset");
 
 MimeHandlerMail::MimeHandlerMail(RclConfig *cnf, const string &mt) 
     : RecollFilter(cnf, mt), m_bincdoc(0), m_fd(-1), m_stream(0), m_idx(-1)
@@ -100,7 +96,7 @@ bool MimeHandlerMail::set_document_file(const string &fn)
     // the md5 computation to the mime analysis, but ...
     string md5, xmd5, reason;
     if (MD5File(fn, md5, &reason)) {
-	m_metaData[cstr_md5] = MD5HexPrint(md5, xmd5);
+	m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
     } else {
 	LOGERR(("MimeHandlerMail: cant compute md5 for [%s]: %s\n", fn.c_str(),
 		reason.c_str()));
@@ -132,7 +128,7 @@ bool MimeHandlerMail::set_document_string(const string &msgtxt)
 
     string md5, xmd5;
     MD5String(msgtxt, md5);
-    m_metaData[cstr_md5] = MD5HexPrint(md5, xmd5);
+    m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
 
     m_stream = new stringstream(msgtxt);
     delete m_bincdoc;
@@ -172,16 +168,16 @@ bool MimeHandlerMail::next_document()
     bool res = false;
 
     if (m_idx == -1) {
-	m_metaData[cstr_mimetype] = cstr_textplain;
+	m_metaData[cstr_dj_keymt] = cstr_textplain;
 	res = processMsg(m_bincdoc, 0);
 	LOGDEB1(("MimeHandlerMail::next_document: mimetype %s\n",
-		m_metaData[cstr_mimetype].c_str()));
-        const string& txt = m_metaData[cstr_content];
+		m_metaData[cstr_dj_keymt].c_str()));
+        const string& txt = m_metaData[cstr_dj_keycontent];
         if (m_startoftext < txt.size())
-            m_metaData[cstr_abstract] = 
+            m_metaData[cstr_dj_keyabstract] = 
                 truncate_to_word(txt.substr(m_startoftext), 250);
     } else {
-        m_metaData[cstr_abstract].clear();
+        m_metaData[cstr_dj_keyabstract].clear();
 	res = processAttach();
     }
     m_idx++;
@@ -235,18 +231,18 @@ bool MimeHandlerMail::processAttach()
     }
     MHMailAttach *att = m_attachments[m_idx];
 
-    m_metaData[cstr_mimetype] = att->m_contentType;
-    m_metaData[cstr_charset] = att->m_charset;
-    m_metaData["filename"] = att->m_filename;
+    m_metaData[cstr_dj_keymt] = att->m_contentType;
+    m_metaData[cstr_dj_keycharset] = att->m_charset;
+    m_metaData[cstr_dj_keyfn] = att->m_filename;
     // Change the title to something helpul
-    m_metaData[cstr_title] = att->m_filename + "  (" + m_subject + ")";
+    m_metaData[cstr_dj_keytitle] = att->m_filename + "  (" + m_subject + ")";
     LOGDEB1(("  processAttach:ct [%s] cs [%s] fn [%s]\n", 
 	    att->m_contentType.c_str(),
 	    att->m_charset.c_str(),
 	    att->m_filename.c_str()));
 
-    m_metaData[cstr_content] = string();
-    string& body = m_metaData[cstr_content];
+    m_metaData[cstr_dj_keycontent] = string();
+    string& body = m_metaData[cstr_dj_keycontent];
     att->m_part->getBody(body, 0, att->m_part->bodylength);
     string decoded;
     const string *bdp;
@@ -259,11 +255,11 @@ bool MimeHandlerMail::processAttach()
     // Special case for text/plain content. Internfile should deal
     // with this but it expects text/plain to be utf-8 already, so we
     // handle the transcoding if needed
-    if (m_metaData[cstr_mimetype] == cstr_textplain) {
+    if (m_metaData[cstr_dj_keymt] == cstr_textplain) {
 	string utf8;
-	if (!transcode(body, utf8, m_metaData[cstr_charset], "UTF-8")) {
+	if (!transcode(body, utf8, m_metaData[cstr_dj_keycharset], "UTF-8")) {
 	    LOGERR(("  processAttach: transcode to utf-8 failed "
-		    "for charset [%s]\n", m_metaData[cstr_charset].c_str()));
+		    "for charset [%s]\n", m_metaData[cstr_dj_keycharset].c_str()));
  	    // can't transcode at all -> data is garbage just erase it
  	    body.clear();
 	} else {
@@ -273,18 +269,18 @@ bool MimeHandlerMail::processAttach()
 
     // Special case for application/octet-stream: try to better
     // identify content, using file name if set
-    if (m_metaData[cstr_mimetype] == "application/octet-stream" &&
-	!m_metaData["filename"].empty()) {
-	string mt = mimetype(m_metaData["filename"], 0,	
+    if (m_metaData[cstr_dj_keymt] == "application/octet-stream" &&
+	!m_metaData[cstr_dj_keyfn].empty()) {
+	string mt = mimetype(m_metaData[cstr_dj_keyfn], 0,	
 			     m_config, false);
 	if (!mt.empty()) 
-	    m_metaData[cstr_mimetype] = mt;
+	    m_metaData[cstr_dj_keymt] = mt;
     }
 
     // Ipath
     char nbuf[20];
     sprintf(nbuf, "%d", m_idx);
-    m_metaData[cstr_ipath] = nbuf;
+    m_metaData[cstr_dj_keyipath] = nbuf;
 
     return true;
 }
@@ -308,7 +304,7 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
     }
 	
     // Handle some headers. 
-    string& text = m_metaData[cstr_content];
+    string& text = m_metaData[cstr_dj_keycontent];
     Binc::HeaderItem hi;
     string transcoded;
     if (doc->h.getFirstHeader("From", hi)) {
@@ -317,7 +313,7 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
 	    text += string("From: ");
 	text += transcoded + cstr_newline;
 	if (depth == 1) {
-	    m_metaData[cstr_author] = transcoded;
+	    m_metaData[cstr_dj_keyauthor] = transcoded;
 	}
     }
     if (doc->h.getFirstHeader("To", hi)) {
@@ -326,7 +322,7 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
 	    text += string("To: ");
 	text += transcoded + cstr_newline;
 	if (depth == 1) {
-	    m_metaData[cstr_recipient] = transcoded;
+	    m_metaData[cstr_dj_keyrecipient] = transcoded;
 	}
     }
     if (doc->h.getFirstHeader("Cc", hi)) {
@@ -335,13 +331,13 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
 	    text += string("Cc: ");
 	text += transcoded + cstr_newline;
 	if (depth == 1) {
-	    m_metaData[cstr_recipient] += " " + transcoded;
+	    m_metaData[cstr_dj_keyrecipient] += " " + transcoded;
 	}
     }
     if (doc->h.getFirstHeader("Message-Id", hi)) {
 	if (depth == 1) {
-	    m_metaData[cstr_msgid] =  hi.getValue();
-            trimstring(m_metaData[cstr_msgid], "<>");
+	    m_metaData[cstr_dj_keymsgid] =  hi.getValue();
+            trimstring(m_metaData[cstr_dj_keymsgid], "<>");
 	}
     }
     if (doc->h.getFirstHeader("Date", hi)) {
@@ -351,7 +347,7 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
 	    if (t != (time_t)-1) {
 		char ascuxtime[100];
 		sprintf(ascuxtime, "%ld", (long)t);
-		m_metaData[cstr_modificationdate] = ascuxtime;
+		m_metaData[cstr_dj_keymd] = ascuxtime;
 	    } else {
 		// Leave mtime field alone, ftime will be used instead.
 		LOGDEB(("rfc2822Date...: failed: [%s]\n", transcoded.c_str()));
@@ -364,7 +360,7 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
     if (doc->h.getFirstHeader("Subject", hi)) {
 	rfc2047_decode(hi.getValue(), transcoded);
 	if (depth == 1) {
-	    m_metaData[cstr_title] = transcoded;
+	    m_metaData[cstr_dj_keytitle] = transcoded;
 	    m_subject = transcoded;
 	}
 	if (preview())
@@ -393,7 +389,7 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
     walkmime(doc, depth);
 
     LOGDEB2(("MimeHandlerMail::processMsg:text:[%s]\n", 
-	    m_metaData[cstr_content].c_str()));
+	    m_metaData[cstr_dj_keycontent].c_str()));
     return true;
 }
 
@@ -415,7 +411,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 	return;
     }
 
-    string& out = m_metaData[cstr_content];
+    string& out = m_metaData[cstr_dj_keycontent];
 
     if (doc->isMultipart()) {
 	LOGDEB2(("walkmime: ismultipart %d subtype '%s'\n", 
@@ -527,7 +523,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
     // to iso-8859 only if the transfer-encoding is 8 bit, or test for
     // actual 8 bit chars, but what the heck, le'ts use 8859-1 as default
     string charset;
-    it = content_type.params.find(string(cstr_charset));
+    it = content_type.params.find(cstr_mail_charset);
     if (it != content_type.params.end())
 	charset = it->second;
     if (charset.empty() || 
@@ -609,7 +605,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 	mh.set_document_string(body);
 	mh.next_document();
 	map<string, string>::const_iterator it = 
-	    mh.get_meta_data().find(cstr_content);
+	    mh.get_meta_data().find(cstr_dj_keycontent);
 	if (it != mh.get_meta_data().end())
 	    out += it->second;
     } else {

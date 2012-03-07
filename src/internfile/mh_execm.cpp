@@ -66,7 +66,7 @@ bool MimeHandlerExecMultiple::startCmd()
 }
 
 // Note: data is not used if this is the "document:" field: it goes
-// directly to m_metaData["content"] to avoid an extra copy
+// directly to m_metaData[cstr_dj_keycontent] to avoid an extra copy
 // 
 // Messages are made of data elements. Each element is like:
 // name: len\ndata
@@ -118,11 +118,11 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
     LOGDEB1(("MHExecMultiple: got name [%s] len: %d\n", name.c_str(), len));
 
     // Hack: check for 'Document:' and read directly the document data
-    // to m_metaData["content"] to avoid an extra copy of the bulky
+    // to m_metaData[cstr_dj_keycontent] to avoid an extra copy of the bulky
     // piece
     string *datap = &data;
     if (!stringlowercmp("document:", name)) {
-        datap = &m_metaData[cstr_content];
+        datap = &m_metaData[cstr_dj_keycontent];
     } else {
         datap = &data;
     }
@@ -238,7 +238,7 @@ bool MimeHandlerExecMultiple::next_document()
     // It used to be that eof could be signalled just by an empty document, but
     // this was wrong. Empty documents can be found ie in zip files and should 
     // not be interpreted as eof.
-    if (m_metaData[cstr_content].empty()) {
+    if (m_metaData[cstr_dj_keycontent].empty()) {
         LOGDEB0(("MHExecMultiple: got empty document inside [%s]: [%s]\n", 
                 m_fn.c_str(), ipath.c_str()));
     }
@@ -248,14 +248,14 @@ bool MimeHandlerExecMultiple::next_document()
     // mimetype, or the ipath MUST be a filename-like string which we can use
     // to compute a mime type
     if (!ipath.empty()) {
-        m_metaData[cstr_ipath] = ipath;
+        m_metaData[cstr_dj_keyipath] = ipath;
         if (mtype.empty()) {
 	    LOGDEB0(("MHExecMultiple: no mime type from filter, "
 		    "using ipath for a guess\n"));
             mtype = mimetype(ipath, 0, m_config, false);
             if (mtype.empty()) {
                 // mimetype() won't call idFile when there is no file. Do it
-                mtype = idFileMem(m_metaData[cstr_content]);
+                mtype = idFileMem(m_metaData[cstr_dj_keycontent]);
                 if (mtype.empty()) {
                     // Note this happens for example for directory zip members
                     // We could recognize them by the end /, but wouldn't know
@@ -265,16 +265,16 @@ bool MimeHandlerExecMultiple::next_document()
                 }
             }
         }
-        m_metaData[cstr_mimetype] = mtype;
+        m_metaData[cstr_dj_keymt] = mtype;
         string md5, xmd5;
-        MD5String(m_metaData[cstr_content], md5);
-        m_metaData[cstr_md5] = MD5HexPrint(md5, xmd5);
+        MD5String(m_metaData[cstr_dj_keycontent], md5);
+        m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
     } else {
-        m_metaData[cstr_mimetype] = mtype.empty() ? "text/html" : mtype;
-        m_metaData.erase(cstr_ipath);
+        m_metaData[cstr_dj_keymt] = mtype.empty() ? "text/html" : mtype;
+        m_metaData.erase(cstr_dj_keyipath);
         string md5, xmd5, reason;
         if (MD5File(m_fn, md5, &reason)) {
-            m_metaData[cstr_md5] = MD5HexPrint(md5, xmd5);
+            m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
         } else {
             LOGERR(("MimeHandlerExecM: cant compute md5 for [%s]: %s\n",
                     m_fn.c_str(), reason.c_str()));
@@ -290,10 +290,10 @@ bool MimeHandlerExecMultiple::next_document()
 	    charset = m_dfltInputCharset;
 	}
     }
-    m_metaData[cstr_origcharset] = charset;
-    m_metaData[cstr_charset] = charset;
+    m_metaData[cstr_dj_keyorigcharset] = charset;
+    m_metaData[cstr_dj_keycharset] = charset;
 
-    if (!m_metaData[cstr_mimetype].compare(cstr_textplain)) {
+    if (!m_metaData[cstr_dj_keymt].compare(cstr_textplain)) {
 	(void)txtdcode("mh_execm");
     }
     
@@ -302,7 +302,7 @@ bool MimeHandlerExecMultiple::next_document()
         m_havedoc = false;
 
     LOGDEB0(("MHExecMultiple: returning %d bytes of content,"
-	    " mtype [%s] charset [%s]\n", m_metaData[cstr_content].size(), 
-     m_metaData[cstr_mimetype].c_str(), m_metaData[cstr_charset].c_str()));
+	    " mtype [%s] charset [%s]\n", m_metaData[cstr_dj_keycontent].size(), 
+     m_metaData[cstr_dj_keymt].c_str(), m_metaData[cstr_dj_keycharset].c_str()));
     return true;
 }

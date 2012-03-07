@@ -161,7 +161,7 @@ public:
             m_fields.set((*it).first, (*it).second, cstr_null);
         }
         m_fields.set(cstr_url, doc.url, cstr_null);
-        m_fields.set(cstr_mimetype, doc.mimetype, cstr_null);
+        m_fields.set(cstr_bgc_mimetype, doc.mimetype, cstr_null);
 
         return true;
     }    

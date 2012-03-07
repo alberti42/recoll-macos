@@ -45,5 +45,6 @@ public:
 private:
     CirCache *m_cache;
 };
+extern const string cstr_bgc_mimetype;
 
 #endif /* _beaglequeuecache_h_included_ */

@@ -22,14 +22,14 @@
 
 bool RecollFilter::txtdcode(const string& who)
 {
-    if (m_metaData[cstr_mimetype].compare(cstr_textplain)) {
+    if (m_metaData[cstr_dj_keymt].compare(cstr_textplain)) {
 	LOGERR(("%s::txtdcode: called on non txt/plain: %s\n", who.c_str(),
-		m_metaData[cstr_mimetype].c_str()));
+		m_metaData[cstr_dj_keymt].c_str()));
 	return false;
     }
 
-    string& ocs = m_metaData[cstr_origcharset];
-    string& itext = m_metaData[cstr_content];
+    string& ocs = m_metaData[cstr_dj_keyorigcharset];
+    string& itext = m_metaData[cstr_dj_keycontent];
     LOGDEB0(("%s::txtdcode: %d bytes from [%s] to UTF-8\n", 
 	     who.c_str(), itext.size(), ocs.c_str()));
     int ecnt;
@@ -44,6 +44,6 @@ bool RecollFilter::txtdcode(const string& who)
 	return false;
     }
     itext.swap(otext);
-    m_metaData[cstr_charset] = "UTF-8";
+    m_metaData[cstr_dj_keycharset] = "UTF-8";
     return true;
 }

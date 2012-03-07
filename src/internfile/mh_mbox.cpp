@@ -435,7 +435,7 @@ bool MimeHandlerMbox::next_document()
     off_t message_end = 0;
     bool iseof = false;
     bool hademptyline = true;
-    string& msgtxt = m_metaData[cstr_content];
+    string& msgtxt = m_metaData[cstr_dj_keycontent];
     msgtxt.erase();
     line_type line;
     for (;;) {
@@ -499,8 +499,8 @@ bool MimeHandlerMbox::next_document()
     // m_msgnum was incremented when hitting the next From_ or eof, so the data
     // is for m_msgnum - 1
     sprintf(buf, "%d", m_msgnum - 1); 
-    m_metaData[cstr_ipath] = buf;
-    m_metaData[cstr_mimetype] = "message/rfc822";
+    m_metaData[cstr_dj_keyipath] = buf;
+    m_metaData[cstr_dj_keymt] = "message/rfc822";
     if (iseof) {
 	LOGDEB2(("MimeHandlerMbox::next: eof hit\n"));
 	m_havedoc = false;
@@ -591,7 +591,7 @@ int main(int argc, char **argv)
 	    exit(1);
 	}
 	map<string, string>::const_iterator it = 
-	    mh.get_meta_data().find(cstr_content);
+	    mh.get_meta_data().find(cstr_dj_keycontent);
 	int size;
 	if (it == mh.get_meta_data().end()) {
 	    size = -1;
@@ -611,7 +611,7 @@ int main(int argc, char **argv)
 	}
 	docnt++;
 	map<string, string>::const_iterator it = 
-	    mh.get_meta_data().find(cstr_content);
+	    mh.get_meta_data().find(cstr_dj_keycontent);
 	int size;
 	if (it == mh.get_meta_data().end()) {
 	    size = -1;

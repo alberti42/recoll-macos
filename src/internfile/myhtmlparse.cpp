@@ -36,6 +36,9 @@
 #include "debuglog.h"
 #include "transcode.h"
 
+static const string cstr_html_charset("charset");
+static const string cstr_html_content("content");
+
 inline static bool
 p_notdigit(char c)
 {
@@ -353,7 +356,7 @@ MyHtmlParser::opening_tag(const string &tag)
 	case 'm':
 	    if (tag == "meta") {
 		string content;
-		if (get_parameter(cstr_content, content)) {
+		if (get_parameter(cstr_html_content, content)) {
 		    string name;
 		    if (get_parameter("name", name)) {
 			lowercase_term(name);
@@ -387,7 +390,7 @@ MyHtmlParser::opening_tag(const string &tag)
 			    MimeHeaderValue p;
 			    parseMimeHeaderValue(content, p);
 			    map<string, string>::const_iterator k;
-			    if ((k = p.params.find(cstr_charset)) != 
+			    if ((k = p.params.find(cstr_html_charset)) != 
 				p.params.end()) {
 				charset = k->second;
 				if (!samecharset(charset, fromcharset)) {
@@ -402,7 +405,7 @@ MyHtmlParser::opening_tag(const string &tag)
 		    }
 		}
 		string newcharset;
-		if (get_parameter(cstr_charset, newcharset)) {
+		if (get_parameter(cstr_html_charset, newcharset)) {
 		    // HTML5 added: <meta charset="...">
 		    lowercase_term(newcharset);
 		    charset = newcharset;

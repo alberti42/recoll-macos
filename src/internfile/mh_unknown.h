@@ -42,8 +42,8 @@ class MimeHandlerUnknown : public RecollFilter {
 	if (m_havedoc == false)
 	    return false;
 	m_havedoc = false; 
-	m_metaData[cstr_content] = cstr_null;
-	m_metaData[cstr_mimetype] = cstr_textplain;
+	m_metaData[cstr_dj_keycontent] = cstr_null;
+	m_metaData[cstr_dj_keymt] = cstr_textplain;
 	return true;
     }
     virtual bool is_unknown() {return true;}

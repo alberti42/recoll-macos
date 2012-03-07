@@ -94,7 +94,7 @@ bool MimeHandlerExec::next_document()
 	myparams.push_back(m_ipath);
 
     // Execute command, store the output
-    string& output = m_metaData[cstr_content];
+    string& output = m_metaData[cstr_dj_keycontent];
     output.erase();
     ExecCmd mexec;
     MEAdv adv(filtermaxseconds);
@@ -145,16 +145,16 @@ bool MimeHandlerExec::next_document()
 
 void MimeHandlerExec::finaldetails()
 {
-    m_metaData[cstr_origcharset] = m_dfltInputCharset;
+    m_metaData[cstr_dj_keyorigcharset] = m_dfltInputCharset;
 
     // cfgFilterOutputCharset comes from the mimeconf filter definition line
-    string& charset = m_metaData[cstr_charset];
+    string& charset = m_metaData[cstr_dj_keycharset];
     charset = cfgFilterOutputCharset.empty() ? "UTF-8" : cfgFilterOutputCharset;
     if (!stringlowercmp("default", charset)) {
 	charset = m_dfltInputCharset;
     }
 
-    string& mt = m_metaData[cstr_mimetype];
+    string& mt = m_metaData[cstr_dj_keymt];
     mt = cfgFilterOutputMtype.empty() ? "text/html" : 
 	cfgFilterOutputMtype;
 
@@ -165,7 +165,7 @@ void MimeHandlerExec::finaldetails()
 
     string md5, xmd5, reason;
     if (MD5File(m_fn, md5, &reason)) {
-	m_metaData[cstr_md5] = MD5HexPrint(md5, xmd5);
+	m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
     } else {
 	LOGERR(("MimeHandlerExec: cant compute md5 for [%s]: %s\n", 
 		m_fn.c_str(), reason.c_str()));

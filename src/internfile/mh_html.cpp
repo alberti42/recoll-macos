@@ -56,7 +56,7 @@ bool MimeHandlerHtml::set_document_string(const string& htext)
     // We want to compute the md5 now because we may modify m_html later
     string md5, xmd5;
     MD5String(htext, md5);
-    m_metaData[cstr_md5] = MD5HexPrint(md5, xmd5);
+    m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
 
     return true;
 }
@@ -74,7 +74,7 @@ bool MimeHandlerHtml::next_document()
     LOGDEB(("MHHtml::next_doc.: default supposed input charset: [%s]\n", 
 	    charset.c_str()));
     // Override default input charset if someone took care to set one:
-    map<string,string>::const_iterator it = m_metaData.find(cstr_charset);
+    map<string,string>::const_iterator it = m_metaData.find(cstr_dj_keycharset);
     if (it != m_metaData.end() && !it->second.empty()) {
 	charset = it->second;
 	LOGDEB(("MHHtml: next_doc.: input charset from ext. metadata: [%s]\n", 
@@ -163,14 +163,14 @@ bool MimeHandlerHtml::next_document()
 	}
     }
 
-    m_metaData[cstr_origcharset] = result.get_charset();
-    m_metaData[cstr_content] = result.dump;
-    m_metaData[cstr_charset] = "utf-8";
+    m_metaData[cstr_dj_keyorigcharset] = result.get_charset();
+    m_metaData[cstr_dj_keycontent] = result.dump;
+    m_metaData[cstr_dj_keycharset] = "utf-8";
     // Avoid setting empty values which would crush ones possibly inherited
     // from parent (if we're an attachment)
     if (!result.dmtime.empty())
-	m_metaData["modificationdate"] = result.dmtime;
-    m_metaData[cstr_mimetype] = cstr_textplain;
+	m_metaData[cstr_dj_keymd] = result.dmtime;
+    m_metaData[cstr_dj_keymt] = cstr_textplain;
 
     for (map<string,string>::const_iterator it = result.meta.begin(); 
 	 it != result.meta.end(); it++) {
