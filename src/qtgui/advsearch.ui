@@ -146,6 +146,46 @@
     </layout>
    </item>
    <item>
+    <widget class="Line" name="line2">
+     <property name="frameShape">
+      <enum>QFrame::HLine</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QLabel" name="labelminsize">
+      <property name="toolTip">
+       <string>Minimum size. You can use k/K,m/M,g/G as multipliers</string>
+      </property>
+      <property name="text">
+       <string>Min. Size</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="minSizeLE"/>
+    </item>
+    <item>
+     <widget class="QLabel" name="labelmaxsize">
+      <property name="toolTip">
+       <string>Maximum size. You can use k/K,m/M,g/G as multipliers</string>
+      </property>
+      <property name="text">
+       <string>Max. Size</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="maxSizeLE"/>
+    </item>
+   </layout>
+   </item>
+   <item>
     <widget class="Line" name="line4">
      <property name="frameShape">
       <enum>QFrame::HLine</enum>

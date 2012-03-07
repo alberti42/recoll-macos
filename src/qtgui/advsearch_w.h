@@ -68,6 +68,7 @@ private:
     bool                       m_ignByCats;
     void saveCnf();
     void fillFileTypes();
+    size_t stringToSize(QString);
 };
 
 

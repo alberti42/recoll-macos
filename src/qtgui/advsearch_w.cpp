@@ -300,6 +300,30 @@ void AdvSearch::saveFileTypes()
     rwSettings(true);
 }
 
+size_t AdvSearch::stringToSize(QString qsize)
+{
+    size_t size = size_t(-1);
+    qsize.replace(QRegExp("[\\s]+"), "");
+    if (!qsize.isEmpty()) {
+	string csize((const char*)qsize.toAscii());
+	char *cp;
+	size = strtoll(csize.c_str(), &cp, 10);
+	if (*cp != 0) {
+	    switch (*cp) {
+	    case 'k': case 'K': size *= 1E3;break;
+	    case 'm': case 'M': size *= 1E6;break;
+	    case 'g': case 'G': size *= 1E9;break;
+	    case 't': case 'T': size *= 1E12;break;
+	    default: 
+		QMessageBox::warning(0, "Recoll", 
+			     tr("Bad multiplier suffix in size filter"));
+		size = size_t(-1);
+	    }
+	}
+    }
+    return size;
+}
+
 using namespace Rcl;
 void AdvSearch::runSearch()
 {
@@ -342,6 +366,11 @@ void AdvSearch::runSearch()
 	    }
 	}
     }
+
+    size_t size = stringToSize(minSizeLE->text());
+    sdata->setMinSize(size);
+    size = stringToSize(maxSizeLE->text());
+    sdata->setMaxSize(size);
 
     if (!subtreeCMB->currentText().isEmpty()) {
 	QString current = subtreeCMB->currentText();

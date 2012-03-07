@@ -594,17 +594,17 @@ string displayableBytes(off_t size)
     char sizebuf[50];
     const char *unit;
 
-    if (size < 1024) {
+    if (size < 1000) {
 	unit = " B ";
-    } else if (size < 1024*1024) {
+    } else if (size < 1E6) {
 	unit = " KB ";
-	size /= 1024;
-    } else if (size < 1024*1024*1024) {
+	size /= 1000;
+    } else if (size < 1E9) {
 	unit = " MB ";
-	size /= (1024*1024);
+	size /= (1E6);
     } else {
 	unit = " GB ";
-	size /= (1024*1024*1024);
+	size /= (1E9);
     }
 
     sprintf(sizebuf, OFFTPC "%s", size, unit);
