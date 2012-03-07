@@ -2015,17 +2015,17 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       capabilities as the complex search interface in the
       GUI.</para>
 
-      <para>The language is roughly based on the <ulink
-            url="http://www.xesam.org/main/XesamUserSearchLanguage95">
-      Xesam</ulink> user search language specification.</para>
+      <para>The language is roughly based on the (seemingly defunct) 
+        <ulink url="http://www.xesam.org/main/XesamUserSearchLanguage95">
+          Xesam</ulink> user search language specification.</para>
 
       <para>If the results of a query language search puzzle you and you
-      doubt what has been actually searched for, you can use the GUI
-      <literal>show query</literal> link at the top of the result list to
-      check the exact query which was finally executed by Xapian.</para>
+        doubt what has been actually searched for, you can use the GUI
+        <literal>show query</literal> link at the top of the result list to
+        check the exact query which was finally executed by Xapian.</para>
 
       <para>Here follows a sample request that we are going to
-      explain:</para>
+        explain:</para>
 
       <programlisting>
           author:"john doe" Beatles OR Lennon Live OR Unplugged -potatoes
@@ -2079,10 +2079,11 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       <replaceable>title:"prejudice pride"</replaceable> is not the same as
       <replaceable>title:prejudice title:pride</replaceable>, and is
       unlikely to find a result.</para> 
-      <para>Most Xesam phrase modifiers are unsupported, except for
-      <literal>l</literal> (small ell) to disable stemming, and
-      <literal>p</literal> to turn a phrase into a NEAR (unordered proximity)
-      search. Exemple: <replaceable>"prejudice pride"p</replaceable></para>
+
+      <para>Modifiers can be set on a phrase clause, for exemple to specify
+        a proximity search (unordered). See 
+        <link linkend="rcl.search.lang.modifiers">the modifier
+          section</link>.</para> 
 
       <para>&RCL; currently manages the following default fields:</para>
       <itemizedlist>
@@ -2114,7 +2115,14 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         results on file location (Ex:
         <literal>dir:/home/me/somedir</literal>). <literal>-dir</literal>
         also works to find results out of the specified directory, only
-        after release 1.15.8.</para>
+        after release 1.15.8. A tilde inside the value will be expanded to
+        the home directory. <literal>dir</literal> is not a regular field
+        and only one value makes sense in a query (you can't use
+        <literal>dir:dir1 OR dir:dir2</literal>). Relative paths make
+        sense, for example, 
+        <literal>dir:share/doc</literal> would match either
+        <filename>/usr/share/doc</filename> or
+        <filename>/usr/local/share/doc</filename> </para>
         </listitem>
 
         <listitem><para><literal>date</literal> for searching or filtering
@@ -2198,7 +2206,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       field search possibilities may be different for you if someone
       took care of the customisation.</para>
 
-      <sect2>
+      <sect2 id="rcl.search.lang.modifiers">
         <title>Modifiers</title>
 
         <para>Some characters are recognized as search modifiers when found
