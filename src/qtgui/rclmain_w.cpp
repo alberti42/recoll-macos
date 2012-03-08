@@ -977,7 +977,7 @@ void RclMain::showExtIdxDialog()
 	// Close and reopen, in hope that makes us visible...
 	uiprefs->close();
     }
-    uiprefs->tabWidget->setCurrentIndex(2);
+    uiprefs->tabWidget->setCurrentIndex(3);
     uiprefs->show();
 }
 
