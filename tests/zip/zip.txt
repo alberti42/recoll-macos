@@ -1,6 +1,6 @@
 3 results
-text/plain	[file:///home/dockes/projets/fulltext/testrecoll/zip/with blanks.zip]	[with blanks.zip]	248	bytes	
-text/plain	[file:///home/dockes/projets/fulltext/testrecoll/zip/manysmall.zip]	[manysmall.zip]	15222	bytes	
-text/plain	[file:///home/dockes/projets/fulltext/testrecoll/zip/misc.zip]	[misc.zip]	168155	bytes	
+text/plain	[file:///home/dockes/projets/fulltext/testrecoll/zip/with blanks.zip]	[with blanks.zip]	84	bytes	
+text/plain	[file:///home/dockes/projets/fulltext/testrecoll/zip/manysmall.zip]	[manysmall.zip]	12	bytes	
+text/plain	[file:///home/dockes/projets/fulltext/testrecoll/zip/misc.zip]	[misc.zip]	12	bytes	
 1 results
-message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/zip/maildir.zip]	[[FreeBSD-Announce]  ZIPPEDMAILDIR_UNIQUEXXX 	FreeBSD Security Advisory FreeBSD-SA-04:17.procfs]	59171	bytes	
+message/rfc822	[file:///home/dockes/projets/fulltext/testrecoll/zip/maildir.zip]	[[FreeBSD-Announce]  ZIPPEDMAILDIR_UNIQUEXXX 	FreeBSD Security Advisory FreeBSD-SA-04:17.procfs]	10765	bytes	

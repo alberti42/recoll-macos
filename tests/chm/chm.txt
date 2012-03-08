@@ -1,8 +1,8 @@
 1 results
-text/html	[file:///home/dockes/projets/fulltext/testrecoll/chm/Nokia_Nseries_Help_jpn.chm]	[デジタル著作権管理(DRM)]	321365	bytes	
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/chm/Nokia_Nseries_Help_jpn.chm]	[デジタル著作権管理(DRM)]	2912	bytes	
 1 results
-text/html	[file:///home/dockes/projets/fulltext/testrecoll/chm/soundrec.chm]	[Superposer (mixer) des fichiers son]	35269	bytes	
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/chm/soundrec.chm]	[Superposer (mixer) des fichiers son]	2243	bytes	
 1 results
-text/html	[file:///home/dockes/projets/fulltext/testrecoll/chm/Django-1.1a1-r9905.chm]	[User authentication in Django]	1731089	bytes	
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/chm/Django-1.1a1-r9905.chm]	[User authentication in Django]	115143	bytes	
 1 results
-text/html	[file:///home/dockes/projets/fulltext/testrecoll/chm/PMGlossary.chm]	[Project Management Glossary: P09]	782892	bytes	
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/chm/PMGlossary.chm]	[Project Management Glossary: P09]	64667	bytes	
