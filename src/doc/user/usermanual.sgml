@@ -195,7 +195,7 @@
       <itemizedlist>
 
         <listitem>
-          <formalpara><title>Periodic indexing:</title>
+          <formalpara><title>Periodic (or Batch) indexing:</title>
             <para>indexing takes place at discrete
               times, by executing the <command>recollindex</command>
               command. The typical usage is to have a nightly indexing run 
@@ -336,8 +336,9 @@ recoll
         total amount of data on the computer.</para>
       
       <para>The index data directory (<filename>xapiandb</filename>)
-	only contains data that can be completely rebuilt by an index
-	run, and it can always be destroyed safely.</para>
+	only contains data that can be completely rebuilt by an index run
+	(as long as the original documents exist), and it can always be
+	destroyed safely.</para>
 
       <sect2 id="rcl.indexing.storage.format">
         <title>Xapian index formats</title>
@@ -405,7 +406,7 @@ recoll
         will be asked whether or not you would like it to build the
         index. If you want to adjust the configuration before indexing,
         just click <guilabel>Cancel</guilabel> at this point, which will get
-        you into the configuration interface. If you exit, 
+        you into the configuration interface. If you exit at this point, 
         <filename>recoll</filename> will have created a ~/.recoll directory
         containing empty configuration files, which you can edit by hand.</para>
 
@@ -485,6 +486,12 @@ recoll
         <ulink url="https://bitbucket.org/medoc/recoll/wiki/IndexBeagleWeb">
          Recoll wiki</ulink>.</para>
 
+      <para>Unfortunately, it seems that the plugin does not work anymore
+        with recent Firefox versions (tried with 10.0). This is not the
+        trival installation version check issue, explicit manual indexing
+        requests still work, but automatic indexing on page load does
+        not.</para>
+
     </sect1>
 
     <sect1 id="rcl.indexing.periodic">
@@ -493,50 +500,26 @@ recoll
       <sect2 id="rcl.indexing.periodic.exec">
         <title>Running indexing</title>
 
-        <para>Indexing is performed either by the
-          <command>recollindex</command> program, or by the indexing thread
-          inside the <command>recoll</command> program (start it from the
-          <guimenu>File</guimenu> menu). Both programs will use the
+        <para>Indexing is always performed by the
+          <command>recollindex</command> program, which can be started
+          either from the command line or from the <guimenu>File</guimenu>
+          menu in the <command>recoll</command> GUI program. When started
+          from the GUI, the indexing will run on the same configuration
+          <command>recoll</command> was started on. When started from the
+          command line, <command>recollindex</command> will use the
           <literal>RECOLL_CONFDIR</literal> variable or accept a
           <literal>-c</literal> <replaceable>confdir</replaceable> option
           to specify a non-default configuration directory.</para>
-
-        <para>There are reasons to use either the indexing thread or the
-          <command>recollindex</command> command, but it is also a matter of
-          personal preferences:
-          <itemizedlist>
-            <listitem><para>Starting the indexing thread is more convenient,
-                being just one click away.</para>
-            </listitem>
-            <listitem><para>The <command>recollindex</command> command has
-                more options, especially the one to reset the index
-                (<literal>-z</literal>).</para>
-            </listitem>
-            <listitem><para>The <command>recollindex</command> command will
-                not take down your GUI if it crashes (a rare occurrence,
-                but who knows...)</para>
-            </listitem>
-            <listitem><para>The <command>recollindex</command> command uses
-                <command>setpriority/nice</command> to lower its priority
-                while indexing. When available (and for &RCL; version
-                1.16.2 and newer), it also uses the
-                <command>ionice</command> command to lower its IO
-                priority. The thread can't do it, else it would also slow
-                down the user/search interface.</para>
-            </listitem>
-          </itemizedlist>
-        </para>
 
         <para>If the <command>recoll</command> program finds no index
           when it starts, it will automatically start indexing (except
           if canceled).</para>
 
         <para>The <command>recollindex</command> indexing process can be
-          interrupted by sending an 
-          interrupt (^C, SIGINT) or terminate (SIGTERM) signal. Some time may
-          elapse before the process exits, because it needs to properly flush
-          and close the index. The indexing thread can be equivalently
-          stopped from the menu.</para>
+          interrupted by sending an interrupt (^C, SIGINT) or terminate
+          (SIGTERM) signal. Some time may elapse before the process exits,
+          because it needs to properly flush and close the index. The
+          indexing thread can be equivalently stopped from the menu.</para>
 
 	<para>After such an interruption, the index will be somewhat
 	  inconsistent because some operations which are normally performed
@@ -585,6 +568,13 @@ recoll
 <programlisting>1  15  su mylogin -c "recollindex recollindex > /tmp/rcltraceme 2>&1"</programlisting>
         </para>
 
+        <para>As of version 1.17 the &RCL; GUI has dialogs to manage
+          <filename>crontab</filename> entries for
+          <command>recollindex</command>. You can reach them from the
+          <guimenu>Preferences->Indexing Schedule</guimenu> menu. They only
+          work with the good old <command>cron</command>, and do not give
+          access to all features of <command>cron</command> scheduling.</para>
+
         <para>The usual command to edit your
           <filename>crontab</filename> is 
           <userinput>crontab -e</userinput> (which will usually start
@@ -593,10 +583,11 @@ recoll
           system.</para>
 
         <para>Please be aware that there may be differences between your
-        usual interactive command line environment and the one seen by
-        crontab commands. Especially the PATH variable may be of
-        concern. Please check the crontab manual pages about possible
-        issues.</para>
+          usual interactive command line environment and the one seen by
+          crontab commands. Especially the PATH variable may be of
+          concern. Please check the crontab manual pages about possible
+          issues.</para>
+
 
       </sect2>
     </sect1>
@@ -605,27 +596,28 @@ recoll
       <title>Real time indexing</title>
 
       <para>Real time monitoring/indexing is performed by starting the
-      <command>recollindex -m</command> command. With this option,
-      <command>recollindex</command> will detach from the terminal and
-      become a daemon, permanently monitoring file changes and updating
-      the index.</para>
+        <command>recollindex -m</command> command. With this option,
+        <command>recollindex</command> will detach from the terminal and
+        become a daemon, permanently monitoring file changes and updating
+        the index.</para>
 
-      <para>The real time indexing support can be customised during package 
-       <link linkend="rcl.install.building.build">configuration</link>
-      with the <literal>--with[out]-fam</literal> or
-      <literal>--with[out]-inotify</literal> options.  The default is
-      currently to include inotify monitoring on systems that support
-      it, and, as of recoll 1.17, gamin support on FreeBSD.</para>
+      <para>Under KDE, Gnome and some other desktop environments, the daemon
+        can automatically started when you log in, by creating a desktop
+        file inside the <filename>~/.config/autostart</filename> directory.
+        This can be done for you by the &RCL; GUI. Use the
+        <guimenu>Preferences->Indexing Schedule</guimenu> menu.</para>
+      
+      <para>With older X11 setups, starting the daemon is normally
+        performed as part of the user session script.</para>
 
       <para>The <filename>rclmon.sh</filename> script can be used to
       easily start and stop the daemon. It can be found in the
       <filename>examples</filename> directory (typically
       <filename>/usr/local/[share/]recoll/examples</filename>).</para>
 
-      <para>Starting the daemon is normally performed as part
-      of the user session script. For example, my out of fashion
-      xdm-based session has a <filename>.xsession</filename> script
-      with the following lines at the end:</para>
+      <para>For example, my out of fashion xdm-based session has a
+        <filename>.xsession</filename> script with the following lines at
+        the end:</para>
 
       <programlisting>recollconf=$HOME/.recoll-home
 recolldata=/usr/local/share/recoll
@@ -636,24 +628,15 @@ fvwm
 </programlisting>
 
       <para>The indexing daemon gets started, then the window manager,
-      for which the session waits.</para> <para>By default the
-      indexing daemon will monitor the state of the X11 session, and
-      exit when it finishes, it is not necessary to kill it
-      explicitly. (The X11 server monitoring can be disabled with option
-      <literal>-x</literal> to <command>recollindex</command>).
-      </para>
-
-      <para>Under KDE, you can place a small script to start
-      <command>recollindex -m</command> under
-      <filename>$HOME/.kde/Autostart</filename>. This will be executed
-      when the session begins.</para>
-      
-      <para>There is a similar mechanism under Gnome (find the session
-      control tool in the menus and use the "Startup programs" tab).</para>
+        for which the session waits.</para> <para>By default the
+        indexing daemon will monitor the state of the X11 session, and
+        exit when it finishes, it is not necessary to kill it
+        explicitly. (The X11 server monitoring can be disabled with option
+        <literal>-x</literal> to <command>recollindex</command>).</para>
 
       <para>If you use the daemon completely out of an X11 session, you
-      need to add option <literal>-x</literal> to disable  X11 session
-      monitoring (else the daemon will not start).</para>
+        need to add option <literal>-x</literal> to disable  X11 session
+        monitoring (else the daemon will not start).</para>
 
       <para>By default, the messages from the indexing daemon will be
         discarded. You may want to change this by setting the
@@ -662,6 +645,14 @@ fvwm
         log file will only be truncated when the daemon starts. If the
         daemon runs permanently, the log file may grow quite big, depending
         on the log level.</para>
+
+      <para>When building &RCL;, the real time indexing support can be
+        customised during package
+        <link linkend="rcl.install.building.build">configuration</link>
+        with the <literal>--with[out]-fam</literal> or
+        <literal>--with[out]-inotify</literal> options.  The default is
+        currently to include inotify monitoring on systems that support
+        it, and, as of recoll 1.17, gamin support on FreeBSD.</para>
 
       <para>While it is convenient that data is indexed in real time,
         repeated indexing can generate a significant load on the
@@ -3319,6 +3310,11 @@ while query.next >= 0 and query.next < nres:
             real time indexing. Inotify support is enabled by default on
             recent Linux systems.</para>
 	  </listitem>
+          <listitem><para><literal>--disable-webkit</literal> is available
+              from version 1.17 to implement the result list with a
+              <application>Qt</application> QTextBrowser instead of a
+              WebKit widget if you do not or can't depend on the
+              latter.</para>
 	  <listitem><para><literal>--enable-xattr</literal> will enable
  	    code to fetch data from file extended attributes. This is only
 	    useful is some application stores data in there, and also needs
