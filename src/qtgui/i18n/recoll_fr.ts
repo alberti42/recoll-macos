@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="fr">
+<TS version="2.0" language="fr" sourcelanguage="en">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -34,6 +34,10 @@
     <message>
         <source>other</source>
         <translation>autres</translation>
+    </message>
+    <message>
+        <source>Bad multiplier suffix in size filter</source>
+        <translation>Suffixe multiplicateur incorrect dans un filtre de taille (k/m/g/t)</translation>
     </message>
 </context>
 <context>
@@ -126,6 +130,169 @@
         <source>Invert</source>
         <translation>Inverser</translation>
     </message>
+    <message>
+        <source>Minimum size. You can use k/K,m/M,g/G as multipliers</source>
+        <translation>Taille minimum. Vous pouvez utiliser un suffixe multiplicateur: k/K, m/M, g/G.</translation>
+    </message>
+    <message>
+        <source>Min. Size</source>
+        <translation>Taille Min.</translation>
+    </message>
+    <message>
+        <source>Maximum size. You can use k/K,m/M,g/G as multipliers</source>
+        <translation>Taille Maximum. Vous pouvez utiliser un suffixe multiplicateur: k/K, m/M, g/G.</translation>
+    </message>
+    <message>
+        <source>Max. Size</source>
+        <translation>Taille Max.</translation>
+    </message>
+</context>
+<context>
+    <name>CronToolW</name>
+    <message>
+        <source>Cron Dialog</source>
+        <translation>Dialogue Cron</translation>
+    </message>
+    <message>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; batch indexing schedule (cron) &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Each field can contain a wildcard (*), a single numeric value, comma-separated lists (1,3,5) and ranges (1-7). More generally, the fields will be used &lt;span style=&quot; font-style:italic;&quot;&gt;as is&lt;/span&gt; inside the crontab file, and the full crontab syntax can be used, see crontab(5).&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;For example, entering &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;*&lt;/span&gt; in &lt;span style=&quot; font-style:italic;&quot;&gt;Days, &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;12,19&lt;/span&gt; in &lt;span style=&quot; font-style:italic;&quot;&gt;Hours&lt;/span&gt; and &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;15&lt;/span&gt; in &lt;span style=&quot; font-style:italic;&quot;&gt;Minutes&lt;/span&gt; would start recollindex every day at 12:15 AM and 7:15 PM&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;A schedule with very frequent activations is probably less efficient than real time indexing.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Days of week (* or 0-7, 0 or 7 is Sunday)</source>
+        <translation>Jours de la semaine (* ou 0-7, 0 ou 7 signifie Dimanche)</translation>
+    </message>
+    <message>
+        <source>Hours (* or 0-23)</source>
+        <translation>Heures (* ou 0-23)</translation>
+    </message>
+    <message>
+        <source>Minutes (0-59)</source>
+        <translation>Minutes (0-59)</translation>
+    </message>
+    <message>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Click &lt;span style=&quot; font-style:italic;&quot;&gt;Disable&lt;/span&gt; to stop automatic batch indexing, &lt;span style=&quot; font-style:italic;&quot;&gt;Enable&lt;/span&gt; to activate it, &lt;span style=&quot; font-style:italic;&quot;&gt;Cancel&lt;/span&gt; to change nothing.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Enable</source>
+        <translation>Activer</translation>
+    </message>
+    <message>
+        <source>Disable</source>
+        <translation>Désactiver</translation>
+    </message>
+    <message>
+        <source>It seems that manually edited entries exist for recollindex, cannot edit crontab</source>
+        <translation>Il semble que des entrées créées manuellement existent pour recollindex. Impossible d´éditer le fichier Cron</translation>
+    </message>
+    <message>
+        <source>Error installing cron entry. Bad syntax in fields ?</source>
+        <translation>Erreur durant l&apos;installation de l&apos;entrée cron. Mauvaise syntaxe des champs ?</translation>
+    </message>
+</context>
+<context>
+    <name>EditDialog</name>
+    <message>
+        <source>Dialog</source>
+        <translation>Dialogue</translation>
+    </message>
+</context>
+<context>
+    <name>FirstIdxDialog</name>
+    <message>
+        <source>First indexing setup</source>
+        <translation>Paramétrage de la première indexation</translation>
+    </message>
+    <message>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;It appears that the index for this configuration does not exist.&lt;/span&gt;&lt;br /&gt;&lt;br /&gt;If you just want to index your home directory with a set of reasonable defaults, press the &lt;span style=&quot; font-style:italic;&quot;&gt;Start indexing now&lt;/span&gt; button. You will be able to adjust the details later. &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If you want more control, use the following links to adjust the indexing configuration and schedule.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;These tools can be accessed later from the &lt;span style=&quot; font-style:italic;&quot;&gt;Preferences&lt;/span&gt; menu.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Indexing configuration</source>
+        <translation>Configuration de l&apos;indexation</translation>
+    </message>
+    <message>
+        <source>This will let you adjust the directories you want to index, and other parameters like excluded file paths or names, default character sets, etc.</source>
+        <translation>Vous pourrez ajuster les répertoires que vous voulez indexer, et d&apos;autres paramètres comme les schémas de noms ou chemins de fichiers exclus, les jeux de caractères par défaut, etc.</translation>
+    </message>
+    <message>
+        <source>Indexing schedule</source>
+        <translation>Planning de l&apos;indexation</translation>
+    </message>
+    <message>
+        <source>This will let you chose between batch and real-time indexing, and set up an automatic  schedule for batch indexing (using cron).</source>
+        <translation>Vous pourrez choisir entre l&apos;indexation à intervalles fixes ou au fil de l&apos;eau, et définir un planning pour la première (basé sur l&apos;utilitaire cron).</translation>
+    </message>
+    <message>
+        <source>Start indexing now</source>
+        <translation>Démarrer l&apos;indexation maintenant</translation>
+    </message>
+</context>
+<context>
+    <name>IdxSchedW</name>
+    <message>
+        <source>Index scheduling setup</source>
+        <translation>Paramétrage du planning d&apos;indexation</translation>
+    </message>
+    <message>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; indexing can run permanently, indexing files as they change, or run at discrete intervals. &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Reading the manual may help you to decide between these approaches (press F1). &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This tool can help you set up a schedule to automate batch indexing runs, or start real time indexing when you log in (or both, which rarely makes sense). &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Cron scheduling</source>
+        <translation>Planning Cron</translation>
+    </message>
+    <message>
+        <source>The tool will let you decide at what time indexing should run and will install a crontab entry.</source>
+        <translation>Le dialogue vous permettra de déterminer à quelle heure l&apos;indexation devra démarrer et installera une entrée crontab.</translation>
+    </message>
+    <message>
+        <source>Real time indexing start up</source>
+        <translation>Démarrage de l&apos;indexation au fil de l&apos;eau</translation>
+    </message>
+    <message>
+        <source>Decide if real time indexing will be started when you log in (only for the default index).</source>
+        <translation>Déterminer si l&apos;indexation au fil de l&apos;eau démarre quand vous vous connectez (pour l&apos;index par défaut).</translation>
+    </message>
+</context>
+<context>
+    <name>ListDialog</name>
+    <message>
+        <source>Dialog</source>
+        <translation>Dialogue</translation>
+    </message>
+    <message>
+        <source>GroupBox</source>
+        <translation>GroupBox</translation>
+    </message>
 </context>
 <context>
     <name>Main</name>
@@ -135,12 +302,12 @@
     </message>
     <message>
         <source>Could not open database in </source>
-        <translation>Impossible d&apos;ouvrir la base dans </translation>
+        <translation type="obsolete">Impossible d&apos;ouvrir la base dans </translation>
     </message>
     <message>
         <source>.
 Click Cancel if you want to edit the configuration file before indexing starts, or Ok to let it proceed.</source>
-        <translation>Cliquer Annuler pour pouvoir éditer le fichier de configuration avant que l&apos;indexation ne démarre, ou Ok pour continuer.</translation>
+        <translation type="obsolete">Cliquer Annuler pour pouvoir éditer le fichier de configuration avant que l&apos;indexation ne démarre, ou Ok pour continuer.</translation>
     </message>
     <message>
         <source>Configuration problem (dynconf</source>
@@ -183,7 +350,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Cannot create temporary directory</source>
-        <translation>Impossible de créer le répertoire temporaire</translation>
+        <translation type="obsolete">Impossible de créer le répertoire temporaire</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -200,6 +367,14 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Can&apos;t turn doc into internal representation for </source>
         <translation>Impossible de traduire le document en représentation interne pour </translation>
+    </message>
+    <message>
+        <source>Cannot create temporary directory: </source>
+        <translation>Impossible de créer un répertoire temporaire</translation>
+    </message>
+    <message>
+        <source>Error while loading file</source>
+        <translation>Erreur de chargement du fichier</translation>
     </message>
 </context>
 <context>
@@ -297,6 +472,66 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
 </context>
 <context>
+    <name>RTIToolW</name>
+    <message>
+        <source>Real time indexing automatic start</source>
+        <translation>Démarrage automatique de l&apos;indexation au fil de l&apos;eau</translation>
+    </message>
+    <message>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; indexing can be set up to run as a daemon, updating the index as files change, in real time. You gain an always up to date index, but system resources are used permanently.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>Start indexing daemon with my desktop session.</source>
+        <translation>Démarrer le démon d&apos;indexation quand je me connecte.</translation>
+    </message>
+    <message>
+        <source>Also start indexing daemon right now.</source>
+        <translation>Également démarrer le démon maintenant.</translation>
+    </message>
+    <message>
+        <source>Replacing: </source>
+        <translation>Remplacement de:</translation>
+    </message>
+    <message>
+        <source>Replacing file</source>
+        <translation>Remplacement du fichier</translation>
+    </message>
+    <message>
+        <source>Can&apos;t create: </source>
+        <translation>Impossible de créer:</translation>
+    </message>
+    <message>
+        <source>Warning</source>
+        <translation>Attention</translation>
+    </message>
+    <message>
+        <source>Could not execute recollindex</source>
+        <translation>Impossible d&apos;exécuter recollindex</translation>
+    </message>
+    <message>
+        <source>Deleting: </source>
+        <translation>Effacement:</translation>
+    </message>
+    <message>
+        <source>Deleting file</source>
+        <translation>Effacement du fichier</translation>
+    </message>
+    <message>
+        <source>Removing autostart</source>
+        <translation>Enlèvement de l&apos;autostart</translation>
+    </message>
+    <message>
+        <source>Autostart file deleted. Kill current process too ?</source>
+        <translation>Fichier autostart détruit. Arrêter le process en cours ?</translation>
+    </message>
+</context>
+<context>
     <name>RclMain</name>
     <message>
         <source>About Recoll</source>
@@ -336,7 +571,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Files</source>
-        <translation>Fichiers</translation>
+        <translation type="obsolete">Fichiers</translation>
     </message>
     <message>
         <source>Purge</source>
@@ -360,7 +595,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Can&apos;t start query: </source>
-        <translation>Impossible de démarrer la recherche:</translation>
+        <translation type="obsolete">Impossible de démarrer la recherche:</translation>
     </message>
     <message>
         <source>Bad viewer command line for %1: [%2]
@@ -390,7 +625,7 @@ Vérifier le fichier mimeconf</translation>
     </message>
     <message>
         <source>Indexing interrupted</source>
-        <translation>Indexation interrompue</translation>
+        <translation type="obsolete">Indexation interrompue</translation>
     </message>
     <message>
         <source>Stop &amp;Indexing</source>
@@ -497,6 +732,70 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     <message>
         <source>No results found</source>
         <translation>Aucun résultat trouvé</translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation>Rien</translation>
+    </message>
+    <message>
+        <source>Updating</source>
+        <translation>Mise à jour</translation>
+    </message>
+    <message>
+        <source>Done</source>
+        <translation>Fini</translation>
+    </message>
+    <message>
+        <source>Monitor</source>
+        <translation>Moniteur</translation>
+    </message>
+    <message>
+        <source>Indexing failed</source>
+        <translation>L&apos;indexation a échoué</translation>
+    </message>
+    <message>
+        <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
+        <translation>Le processus d&apos;indexation en cours n&apos;a pas été démarré depuis cette interface. Cliquer Ok pour le tuer quand même, ou Annuler pour le laisser tranquille</translation>
+    </message>
+    <message>
+        <source>Erasing index</source>
+        <translation>Effacement de l&apos;index</translation>
+    </message>
+    <message>
+        <source>Reset the index and start from scratch ?</source>
+        <translation>Effacer l&apos;index et redémarrer de zéro ?</translation>
+    </message>
+    <message>
+        <source>Query in progress.&lt;br&gt;Due to limitations of the indexing library,&lt;br&gt;cancelling will exit the program</source>
+        <translation>Requête en cours.&lt;br&gt;En raison de restrictions internes, &lt;br&gt;annuler terminera l&apos;exécution du programme</translation>
+    </message>
+    <message>
+        <source>Error</source>
+        <translation>Erreur</translation>
+    </message>
+    <message>
+        <source>Index not open</source>
+        <translation>Index pas ouvert</translation>
+    </message>
+    <message>
+        <source>Index query error</source>
+        <translation>Erreur de la recherche sur l&apos;index</translation>
+    </message>
+    <message>
+        <source>Indexed Mime Types</source>
+        <translation>Types MIME indexés</translation>
+    </message>
+    <message>
+        <source>Content has been indexed for these mime types:</source>
+        <translation>Du contenu a été indexé pour ces types MIME:</translation>
+    </message>
+    <message>
+        <source>Index not up to date for this file. Refusing to risk showing the wrong entry. Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
+        <translation>Index pas à jour pour ce fichier. Risque d&apos;afficher une entrée incorrecte. Cliquer Ok pour mettre à jour l&apos;index pour ce fichier, puis redémarrer la requête quand l&apos;indexation est terminée. Sinon, Annuler.</translation>
+    </message>
+    <message>
+        <source>Can&apos;t update index: indexer running</source>
+        <translation>Impossible de mettre à jour l&apos;index: un indexeur est déjà actif</translation>
     </message>
 </context>
 <context>
@@ -650,10 +949,6 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
         <translation>F11</translation>
     </message>
     <message>
-        <source>Shift+Home</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>Full Screen</source>
         <translation>Plein écran</translation>
     </message>
@@ -685,76 +980,92 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
         <source>Show results as table</source>
         <translation>Afficher les résultats en tableau</translation>
     </message>
+    <message>
+        <source>&amp;Rebuild index</source>
+        <translation>&amp;Reconstruire l&apos;index</translation>
+    </message>
+    <message>
+        <source>&amp;Show indexed types</source>
+        <translation>&amp;Afficher les types indexés</translation>
+    </message>
+    <message>
+        <source>Shift+PgUp</source>
+        <translation>Shift+PgUp</translation>
+    </message>
+    <message>
+        <source>&amp;Indexing schedule</source>
+        <translation>&amp;Planning d&apos;indexation</translation>
+    </message>
 </context>
 <context>
     <name>RecollModel</name>
     <message>
         <source>Abstract</source>
-        <translation type="obsolete">Extrait</translation>
+        <translation>Extrait</translation>
     </message>
     <message>
         <source>Author</source>
-        <translation type="obsolete">Auteur</translation>
+        <translation>Auteur</translation>
     </message>
     <message>
         <source>Document size</source>
-        <translation type="obsolete">Taille document</translation>
+        <translation>Taille document</translation>
     </message>
     <message>
         <source>Document date</source>
-        <translation type="obsolete">Date document</translation>
+        <translation>Date document</translation>
     </message>
     <message>
         <source>File size</source>
-        <translation type="obsolete">Taille fichier</translation>
+        <translation>Taille fichier</translation>
     </message>
     <message>
         <source>File name</source>
-        <translation type="obsolete">Nom de fichier</translation>
+        <translation>Nom de fichier</translation>
     </message>
     <message>
         <source>File date</source>
-        <translation type="obsolete">Date fichier</translation>
+        <translation>Date fichier</translation>
     </message>
     <message>
         <source> Ipath</source>
-        <translation type="obsolete">Ipath</translation>
+        <translation>Ipath</translation>
     </message>
     <message>
         <source>Keywords</source>
-        <translation type="obsolete">Mots clef</translation>
+        <translation>Mots clef</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="obsolete">Type Mime</translation>
+        <translation>Type Mime</translation>
     </message>
     <message>
         <source>Original character set</source>
-        <translation type="obsolete">Jeu de caractères d&apos;origine</translation>
+        <translation>Jeu de caractères d&apos;origine</translation>
     </message>
     <message>
         <source>Relevancy rating</source>
-        <translation type="obsolete">Pertinence</translation>
+        <translation>Pertinence</translation>
     </message>
     <message>
         <source>Title</source>
-        <translation type="obsolete">Titre</translation>
+        <translation>Titre</translation>
     </message>
     <message>
         <source>URL</source>
-        <translation type="obsolete">URL</translation>
+        <translation>URL</translation>
     </message>
     <message>
         <source>Mtime</source>
-        <translation type="obsolete">Mtime</translation>
+        <translation>Mtime</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation type="obsolete">Date</translation>
+        <translation>Date</translation>
     </message>
     <message>
         <source>Date and time</source>
-        <translation type="obsolete">Date et heure</translation>
+        <translation>Date et heure</translation>
     </message>
 </context>
 <context>
@@ -1252,6 +1563,10 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     <message>
         <source>error retrieving stemming languages</source>
         <translation>Impossible de former la liste des langues pour l&apos;expansion grammaticale</translation>
+    </message>
+    <message>
+        <source>Choose</source>
+        <translation>Choisir</translation>
     </message>
 </context>
 <context>
@@ -1754,11 +2069,11 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation>Definit le format des paragraphes de la liste de resultats. Utilise le format html qt et des directives de substitution de type printf:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</translation>
+        <translation type="obsolete">Definit le format des paragraphes de la liste de resultats. Utilise le format html qt et des directives de substitution de type printf:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</translation>
     </message>
     <message>
         <source>Result paragraph&lt;br&gt;format string</source>
-        <translation>Chaîne de formatage&lt;br&gt;des paragraphes résultats</translation>
+        <translation type="obsolete">Chaîne de formatage&lt;br&gt;des paragraphes résultats</translation>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
@@ -1910,11 +2225,65 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html.</source>
-        <translation>Utilise des balises &lt;PRE&gt; au lieu de &lt;BR&gt; pour afficher du texte brut en html.</translation>
+        <translation type="obsolete">Utilise des balises &lt;PRE&gt; au lieu de &lt;BR&gt; pour afficher du texte brut en html.</translation>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses indentation.</source>
-        <translation>Les lignes de text brut &lt;PRE&gt; ne sont pas replies (scroll horizontal). L&apos;utilisation de balises &lt;BR&gt; ne preserve pas l&apos;indentation.</translation>
+        <translation type="obsolete">Les lignes de text brut &lt;PRE&gt; ne sont pas replies (scroll horizontal). L&apos;utilisation de balises &lt;BR&gt; ne preserve pas l&apos;indentation.</translation>
+    </message>
+    <message>
+        <source>Style sheet</source>
+        <translation>Feuille de style</translation>
+    </message>
+    <message>
+        <source>Opens a dialog to select the style sheet file</source>
+        <translation>Ouvre un dialogue pour choisir un fichier feuille de style</translation>
+    </message>
+    <message>
+        <source>Choose</source>
+        <translation>Choisir</translation>
+    </message>
+    <message>
+        <source>Resets the style sheet to default</source>
+        <translation>Restore la valeur par défaut pour la feuille de style</translation>
+    </message>
+    <message>
+        <source>Lines in PRE text are not folded. Using BR loses some indentation.</source>
+        <translation>Les lignes dans des sections PRE ne sont pas justifiées. Using BR perd une partie de l&apos;indentation.</translation>
+    </message>
+    <message>
+        <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html in preview.</source>
+        <translation>Utiliser des tags &lt;PRE&gt; au lieu de &lt;BR&gt; pour affichier du texte non formaté en html dans la prévisualisation</translation>
+    </message>
+    <message>
+        <source>Result List</source>
+        <translation>Liste de résultats</translation>
+    </message>
+    <message>
+        <source>Edit result paragraph format string</source>
+        <translation>Editer le format du paragraphe de résultat</translation>
+    </message>
+    <message>
+        <source>Edit result page html header insert</source>
+        <translation>Editer le fragment à insérer dans l&apos;en-tête HTML</translation>
+    </message>
+    <message>
+        <source>Date format (strftime(3))</source>
+        <translation>Format de date (strftime(3))</translation>
+    </message>
+    <message>
+        <source>Frequency percentage threshold over which we do not use terms inside autophrase. 
+Frequent terms are a major performance issue with phrases. 
+Skipped terms augment the phrase slack, and reduce the autophrase efficiency.
+The default value is 2 (percent). </source>
+        <translation>Seuil de fréquence (pourcentage) au delà duquel les termes ne seront pas utilisés.
+Les phrases contenant des termes trop fréquents posent des problèmes de performance.
+Les termes ignorés augmentent la distance de phrase, et réduisent l&apos;efficacité de la fonction de recherche de phrase automatique.
+La valeur par défaut est 2%</translation>
+    </message>
+    <message>
+        <source>Autophrase term frequency threshold percentage</source>
+        <translation>Seuil de fréquence de terme (pourcentage) pour la génération automatique de phrases</translation>
     </message>
 </context>
 </TS>

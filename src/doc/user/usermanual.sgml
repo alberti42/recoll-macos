@@ -1059,10 +1059,10 @@ fvwm
       through the <guilabel>Tools</guilabel> menu or through the main
       toolbar.</para>
 
-      <para>The dialog has three parts:</para>
+      <para>The dialog has four sections:</para>
 
-      <itemizedlist>
-        <listitem><para>The top part allows constructing a query by
+      <orderedlist>
+        <listitem><para>The top section allows constructing a query by
           combining multiple clauses of different types.
           Each entry field is configurable for the following modes:</para>
 
@@ -1097,8 +1097,19 @@ fvwm
           search. </para>
         </listitem>
 
-        <listitem><para>The next part allows filtering the
-          results by their mime types.</para> 
+        <listitem><para>The next section allows filtering the results by
+            file size. There are two entries for minimum and maximum
+            size. Enter decimal numbers. You can use suffix multipliers:
+            <literal>k/K</literal>, <literal>m/M</literal>,
+            <literal>g/G</literal>, <literal>t/T</literal> for 1E3, 1E6,
+            1E9, 1E12 respectively.</para>
+         </listitem>
+
+        <listitem>
+          <para>The next section allows filtering the results by their mime
+            types, or mime categories (ie: media/text/message/etc.).</para>
+          <para>You can transfer the types between two boxes, to define
+            which will be included or excluded by the search.</para>
           <para>The state of the file type selection can be saved as
             the default (the file type filter will not be activated at
             program start-up, but the lists will be in the restored
@@ -1106,16 +1117,20 @@ fvwm
         </listitem>
 
         <listitem>
-          <para>The bottom part allows restricting the search results to a
+          <para>The bottom section allows restricting the search results to a
             sub-tree of the indexed area. You can use the
             <guilabel>Invert</guilabel> checkbox to search for files not in
             the sub-tree instead. If you use directory filtering often and on
             big subsets of the file system, you may think of setting up
             multiple indexes instead, as the performance may be
-            better. </para>
+            better.</para>
+          <para>You can use relative/partial paths for filtering. Ie,
+          entering <literal>dirA/dirB</literal> would match either
+          <filename>/dir1/dirA/dirB/myfile1</filename> or
+          <filename>/dir2/dirA/dirB/someother/myfile2</filename>.</para> 
         </listitem>
 
-      </itemizedlist>
+      </orderedlist>
 
 
       <formalpara><title>Phrases and Proximity searches</title>
@@ -1772,7 +1787,9 @@ fvwm
         <para>No more detail will be given about the header part (only
           useful with the WebKit build), if there are restrictions to
           what you can do, they are beyond this author's HTML/CSS/Javascript
-          abilities...</para>
+          abilities... There are a few exemples on the 
+          <ulink url="http://www.recoll.org/custom.html">page about 
+            customising the result list</ulink> on the &RCL; web site.</para>
 
         <sect4 id="rcl.search.custom.reslist.para">
           <title>The paragraph format</title>
@@ -1977,20 +1994,39 @@ fvwm
     <para><command>recollq</command> has a man page (not installed by
     default, look in the <filename>doc/man</filename> directory). The
     Usage string is as follows:</para>
-<programlisting>recollq [-o|-a|-f] &lt;query string>
+<programlisting>
+recollq: usage:
+ -P: Show the date span for all the documents present in the index
+ [-o|-a|-f] [-q] &lt;query string&gt;
  Runs a recoll query and displays result lines. 
-  Default: will interpret the argument(s) as a query language string
-  -o Emulate the gui simple search in ANY TERM mode
-  -a Emulate the gui simple search in ALL TERMS mode
-  -f Emulate the gui simple search in filename mode
+  Default: will interpret the argument(s) as a xesam query string
+    query may be like: 
+    implicit AND, Exclusion, field spec:    t1 -t2 title:t3
+    OR has priority: t1 OR t2 t3 OR t4 means (t1 OR t2) AND (t3 OR t4)
+    Phrase: "t1 t2" (needs additional quoting on cmd line)
+  -o Emulate the GUI simple search in ANY TERM mode
+  -a Emulate the GUI simple search in ALL TERMS mode
+  -f Emulate the GUI simple search in filename mode
+  -q is just ignored (compatibility with the recoll GUI command line)
 Common options:
-    -c &lt;configdir> : specify config directory, overriding $RECOLL_CONFDIR
+    -c &lt;configdir&gt; : specify config directory, overriding $RECOLL_CONFDIR
     -d also dump file contents
-    -n &lt;cnt> limit the maximum number of results (0->no limit, default 2000)
+    -n [first-]&lt;cnt&gt; define the result slice. The default value for [first]
+       is 0. Without the option, the default max count is 2000.
+       Use n=0 for no limit
     -b : basic. Just output urls, no mime types or titles
-    -m : dump the whole document meta[] array
-    -S fld : sort by field name
+    -Q : no result lines, just the processed query and result count
+    -m : dump the whole document meta[] array for each result
+    -A : output the document abstracts
+    -S fld : sort by field &lt;fld&gt;
     -D : sort descending
+    -i &lt;dbdir&gt; : additional index, several can be given
+    -e use url encoding (%xx) for urls
+    -F &lt;field name list&gt; : output exactly these fields for each result.
+       The field values are encoded in base64, output in one line and 
+       separated by one space character. This is the recommended format 
+       for use by other programs. Use a normal query with option -m to 
+       see the field names.
 </programlisting>
 
     <para>Sample execution:</para>

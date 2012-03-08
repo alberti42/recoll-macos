@@ -79,6 +79,7 @@ a:hover .PZ3cap { padding:3px 5px; }
     
     <div class="content">
 
+      <h1>Recoll result list customising exemples</h1>
       <p>The Recoll result list is actually made of html text
         displayed inside a Qt Widget. In all Recoll versions, you
         can specify the format for the list entries: what data is
@@ -86,19 +87,46 @@ a:hover .PZ3cap { padding:3px 5px; }
         "almost full" support for HTML capabilities, with a few
         restrictions due to the Qt QTextBrowser object.</p>
 
-      <p>As of Recoll 1.17, the result list can be built as a WebKit
+      <p>As of Recoll 1.17, the result list is by default a WebKit
         object (WebKit is the basis for several major browsers), which
-        yields full CSS and even Javascript support. </p>
+        yields full CSS and even Javascript support. For these
+        versions you can specify both the individual result format and
+        code to be included in the html header (ie: CSS or
+        Javascript).</p>
 
       <h2>New in Recoll 1.17: the WebKit result list</h2>
 
-      <p>With WebKit, things that used to not work are now possible.</p>
+      <p>With WebKit, things that used to not work are now
+        possible. The exemple which follow are probably not generally
+        very useful (else they'd be included in the standard Recoll),
+        but they provide samples of what can be done, and may be of use
+        anyway.</p>
 
-      <p>For example, you can make the list icons links that activate the
+      <p>You can now make the list icons links that activate the
         preview or open action (or the document url which you can then
-        drag/drop to other windows).</p>
+        drag/drop to other windows) (turning images into links did
+        not work with QTextBrowser).</p>
 
-      <p>A more interesting example: recoll 1.17 will display document
+      <h3>Zooming the paragraph font size</h3>
+      <p>If you are using a format with small fonts, it may be useful
+        to be able to zoom the text when the mouse hovers over it. A
+        very basic way to do this -<em>with the standard paragraph
+          format, which is a table</em>- would be to include the following
+        code in the header:</p>
+<pre>
+&lt;STYLE type="text/css">
+table:hover {font-size: 130%;}
+&lt;/STYLE>
+</pre>
+
+        <p>Of course, the selector should be adapted to your own
+          result format. You should know that every result will be
+          enclosed by Recoll inside a <tt>&lt;div
+            class="rclresult" rcldocnum="nn"&gt;</tt> element.</p>
+
+      <h3>Zooming the thumbnails</h3>
+
+      <p>Recoll 1.17 and newer will display document
         thumbnails instead of the type icon if the thumbnail exists in
         the standard Freedesktop location. The icons/thumbnails are
         64x64 pixels in size, which is a bit small. The standard
@@ -150,7 +178,6 @@ a:hover .PZ3cap { padding:3px 5px; }
 
       <p>Et voilà! The icons will grow to their full size when the mouse is
         over them.</p>
-
 
 
 

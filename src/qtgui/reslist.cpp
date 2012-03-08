@@ -131,7 +131,7 @@ bool QtGuiResListPager::append(const string& data, int docnum,
 	m_parent->m_pageParaToReldocnums[block] = docnum;
     }
 #else
-    QString sdoc = QString("<div rcldocnum=\"%1\">").arg(docnum);
+    QString sdoc = QString("<div class=\"rclresult\" rcldocnum=\"%1\">").arg(docnum);
     m_parent->append(sdoc);
     m_parent->append(QString::fromUtf8(data.c_str()));
     m_parent->append("</div>");

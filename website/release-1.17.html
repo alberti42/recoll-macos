@@ -45,30 +45,62 @@
         recollindex.  <span class="literal">recollindex&nbsp;-z</span>
         will do the same in most cases.</p>
 
-       <p>Also, using the anchored search feature on an 1.15 index
-         requires a full reindex.</p> 
+      <p>Some new, auxiliary, features do require a full reindex to work:</p>
+      <ul>
+        <li>The file size filtering functions.</li>
+        <li>The anchored search feature if the index was created by
+          release 1.15 or older.</li>
+      </ul>
 
 
       <h2>Changes</h2>
 
-      <p>Recoll 1.17 is an incremental improvements release over 1.16, no
-        really major function was introduced or modified.</p> 
+      <p>Recoll 1.17 is an incremental improvements release over 1.16, 
+        with quite a few changes under the hood (like the introduction
+        of a webkit-based result list), but relatively few obvious
+        changes for the casual user.</p> 
 
       <ul>
         
-        <li>Recoll now supports filtering on file sizes. This is accessible
-          from the advanced search panel, or from the query langage
-          (ie: "size&gt;10k&nbsp;size&lt;1m"). For documents stored
-          inside archives, the file size stored in the index is now
-          the actual one, not the archive's as was previously the
-          case.</li>
-
-        <li>Query language: tilde is now expanded inside a "dir:"
-          clause.</li>
+        <li>Search: Recoll now supports filtering on file sizes. This
+          is accessible from the advanced search panel, or from the
+          query langage (ie: "size&gt;10k&nbsp;size&lt;1m"). For
+          documents stored inside archives, the file size stored in
+          the index is now the actual one, not the archive's as was
+          previously the case. Because of this, you will need a full
+          reindex to completely enable this feature.</li>
 
         <li>Query language: the "dir:" directive now accepts
           non-absolute paths. For example dir:dir1/dir2 will select
           any file the path of which includes "dir1/dir2".</li>
+
+        <li>Query language: tilde is now expanded inside a "dir:"
+          clause.</li>
+
+        <li>GUI: it is now possible to cancel a query that takes too
+          long. Because of limitations in Xapian, this forces a program
+          exit, but it's probably better than staring at a hung
+          Recoll.</li>
+
+        <li>GUI/config: new set of dialogs to set up the indexing
+          schedule, either as automatic real time indexing started
+          with the user session or as discrete cron entries. This
+          will take care of the details of autostart files or crontab
+          editing.</li> 
+
+        <li>GUI: use Shift+PageUp instead of Shift+Home to rewind the
+          result list to the first page. Shift+Home is useful in the
+          search entry.</li>
+
+        <li>GUI: the preview function will now check that the index is
+          up to date before fetching the preview data, and propose to
+          update the index if necessary. This is especially important
+          for mail folders. It was previously possible that the
+          preview would display a message unrelated to the current
+          result.</li>
+
+        <li>GUI: it is now possible to control the date format 
+          displayed by the results (go to Query Preferences).</li>
 
         <li>GUI: when a search fails to retrieve results, the spelling
           suggestions are now presented as links inside the result list
@@ -77,15 +109,19 @@
 
         <li>GUI: thumbnails will be displayed in the result list if
           found in the standard freedesktop thumbnails directory
-          (previously created by gimp or some file manager). Recoll
-          will not create thumbnails (this would slow the results display
-          too much).</li>
-
-        <li>GUI: it is now possible to control the date format used to
-          display the results (go to Query Preferences).</li>
+          (previously created by gimp or some file manager). This Recoll
+          release will not create thumbnails.</li>
 
         <li>GUI: it is now possible to Copy/Paste from the term explorer
           result list.</li>
+
+        <li>GUI: what used to be the document category filters
+          (media/text/etc.) are now defined as query language
+          fragments
+          inside <span class="filename">mimeconf</span>. This means
+          that you can redefine them freely (see the comments for the
+          <tt>[guifilters]</tt> section in the
+          default <span class="filename">mimeconf</span>).</li> 
 
         <li>GUI: it is now possible to use a Qt style sheet to modify
           many aspects of Recoll appearance. A style sheet file can be
@@ -93,62 +129,44 @@
           skeleton style sheet is to be found in the
           share/recoll/examples directory.</li>
 
+        <li>GUI: the result list is now based on the WebKit widget
+          instead of QTextBrowser. This means better HTML/CSS support,
+          and even Javascript ... You can force the use the old
+          QTextBrowser instead by using
+          configure&nbsp;--disable-webkit. See a few CSS examples in
+          the <a href="custom.html">result list customisation
+            examples page</a></li>
+
         <li>GUI: added menu entry to show all the mime types actually
           indexed.</li>
 
-        <li>GUI: the result list is now based on the WebKit widget
-          instead of QTextBrowser. This means better html/css support,
-          and even Javascript ... You can force the use the old
-          QTextBrowser instead by using configure&nbsp;--disable-webkit.</li>
+        <li>GUI/indexing: the indexing thread has been removed. All
+          indexing is now performed by a separate recollindex
+          process. This has multiple advantages, the thread was just a
+          very bad idea. Among others, exiting the GUI has no
+          influence on an ongoing indexing.</li>
 
-        <li>GUI: use Shift+PageUp instead of Shift+Home to rewind the
-          result list to the first page. Shift+Home is useful in the
-          search entry.</li>
-   
-        <li>The GUI now has a set of dialogs to set up the indexing
-          schedule, either as automatic real time indexing started
-          with the user session or as discrete cron entries. This
-          will take care of the details of autostart files or crontab
-          editing.</li> 
+        <li>GUI/indexing: new menu entry to force a full reindex.</li>
 
-        <li>The GUI indexing thread has been removed. All indexing is
-          now performed by a separate recollindex process. This has
-          multiple advantages, the thread was just a very bad
-          idea. Among others, exiting the GUI has no influence on an
-          ongoing indexing.</li>
+        <li>GUI/config: the indexing configuration now only shows the
+          directories customized by the user, not those which come
+          from the standard configuration (ie:
+          ~/.thunderbird). Showing the standard directories was more
+          often confusing than useful.</li>
 
-        <li>The GUI now has a menu entry to force a full reindex.</li>
-
-        <li>The GUI indexing configuration now only shows the directories
-          customized by the user, not those which come from the
-          standard configuration (ie: ~/.thunderbird). Showing the
-          standard directories was more often confusing than
-          useful.</li>
-
-        <li>GUI: the default reslist paragraph now displays the ipath:
+        <li>GUI: the default result list paragraph now displays the ipath:
           this is very useful for archive members and not too
           disturbing for other kinds.</li>
 
-        <li>GUI: it is now possible to cancel a query that takes too
-          long. Because of limitations in Xapian, this forces a program
-          exit, but it's probably better than staring at a hung
-          Recoll.</li>
-
-        <li>GUI: what used to be the document category filters
-          (media/text/etc.) are now defined as query language
-          fragments inside mimeconf. This means that you can redefine
-          them freely (see the comments for the [guifilters] section
-          in the default mimeconf).</li>
-
         <li>Command line query: can now select a result slice
-          (first result rank and count of results).</li>
+          (first result rank and count of results). New option for
+          easy parsing of results by another program.</li>
 
-        <li>Indexer: handle the html5 <tt>charset</tt> meta tag.</li>
+        <li>Indexing: handle the html5 <tt>charset</tt> meta tag.</li>
+        <li>Indexing: added support for Okular notes and Gnumeric.</li>
 
         <li>Real time indexer: restart automatically when the
           configuration changes.</li>
-
-        <li>Indexer: Added okular notes and gnumeric filters.</li>
 
         
         <li>Fixed bugs:
