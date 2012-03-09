@@ -50,7 +50,7 @@ public:
     /** Type of this element: leaf or AND/OR chain */
     enum Op {OP_NULL, OP_LEAF, OP_EXCL, OP_OR, OP_AND};
     /** Relation to be searched between field and value. Recoll actually only
-	supports "contain" */
+	supports "contain" except for a size field */
     enum Rel {REL_NULL, REL_EQUALS, REL_CONTAINS, REL_LT, REL_LTE, 
 	      REL_GT, REL_GTE};
     /** Modifiers for term handling: case/diacritics handling,
