@@ -205,26 +205,7 @@ static string datetimegetter(const string&, const Rcl::Doc& doc)
 }
 
 // Static map to translate from internal column names to displayable ones
-map<string, string> RecollModel::o_displayableFields = 
-    create_map<string, string>
-    ("abstract", QT_TR_NOOP("Abstract"))
-    ("author", QT_TR_NOOP("Author"))
-    ("dbytes", QT_TR_NOOP("Document size"))
-    ("dmtime", QT_TR_NOOP("Document date"))
-    ("fbytes", QT_TR_NOOP("File size"))
-    ("filename", QT_TR_NOOP("File name"))
-    ("fmtime", QT_TR_NOOP("File date"))
-    ("ipath", QT_TR_NOOP(" Ipath"))
-    ("keywords", QT_TR_NOOP("Keywords"))
-    ("mtype", QT_TR_NOOP("Mime type"))
-    ("origcharset", QT_TR_NOOP("Original character set"))
-    ("relevancyrating", QT_TR_NOOP("Relevancy rating"))
-    ("title", QT_TR_NOOP("Title"))
-    ("url", QT_TR_NOOP("URL"))
-    ("mtime", QT_TR_NOOP("Mtime"))
-    ("date", QT_TR_NOOP("Date"))
-    ("datetime", QT_TR_NOOP("Date and time"))
-    ;
+map<string, QString> RecollModel::o_displayableFields;
 
 FieldGetter *RecollModel::chooseGetter(const string& field)
 {
@@ -249,6 +230,25 @@ string RecollModel::baseField(const string& field)
 RecollModel::RecollModel(const QStringList fields, QObject *parent)
     : QAbstractTableModel(parent), m_ignoreSort(false)
 {
+    // Initialize the translated map for column headers
+    o_displayableFields["abstract"] = tr("Abstract");
+    o_displayableFields["author"] = tr("Author");
+    o_displayableFields["dbytes"] = tr("Document size");
+    o_displayableFields["dmtime"] = tr("Document date");
+    o_displayableFields["fbytes"] = tr("File size");
+    o_displayableFields["filename"] = tr("File name");
+    o_displayableFields["fmtime"] = tr("File date");
+    o_displayableFields["ipath"] = tr("Ipath");
+    o_displayableFields["keywords"] = tr("Keywords");
+    o_displayableFields["mtype"] = tr("Mime type");
+    o_displayableFields["origcharset"] = tr("Original character set");
+    o_displayableFields["relevancyrating"] = tr("Relevancy rating");
+    o_displayableFields["title"] = tr("Title");
+    o_displayableFields["url"] = tr("URL");
+    o_displayableFields["mtime"] = tr("Mtime");
+    o_displayableFields["date"] = tr("Date");
+    o_displayableFields["datetime"] = tr("Date and time");
+
     // Add dynamic "stored" fields to the full column list. This
     // could be protected to be done only once, but it's no real
     // problem
@@ -257,7 +257,7 @@ RecollModel::RecollModel(const QStringList fields, QObject *parent)
 	for (set<string>::const_iterator it = stored.begin(); 
 	     it != stored.end(); it++) {
 	    if (o_displayableFields.find(*it) == o_displayableFields.end()) {
-		o_displayableFields[*it] = *it;
+		o_displayableFields[*it] = QString::fromUtf8(it->c_str());
 	    }
 	}
     }
@@ -344,12 +344,12 @@ QVariant RecollModel::headerData(int idx, Qt::Orientation orientation,
     }
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole &&
 	idx < int(m_fields.size())) {
-	map<string, string>::const_iterator it = 
+	map<string, QString>::const_iterator it = 
 	    o_displayableFields.find(m_fields[idx]);
 	if (it == o_displayableFields.end())
 	    return QString::fromUtf8(m_fields[idx].c_str());
 	else 
-	    return QString::fromUtf8(it->second.c_str());
+	    return it->second;
     }
     return QVariant();
 }
@@ -865,7 +865,7 @@ void ResTable::createHeaderPopupMenu(const QPoint& pos)
     if (m_popcolumn < 0)
 	return;
 
-    const map<string, string>& allfields = m_model->getAllFields();
+    const map<string, QString>& allfields = m_model->getAllFields();
     const vector<string>& fields = m_model->getFields();
     QMenu *popup = new QMenu(this);
 
@@ -879,12 +879,11 @@ void ResTable::createHeaderPopupMenu(const QPoint& pos)
     popup->addSeparator();
 
     QAction *act;
-    for (map<string, string>::const_iterator it = allfields.begin();
+    for (map<string, QString>::const_iterator it = allfields.begin();
 	 it != allfields.end(); it++) {
 	if (std::find(fields.begin(), fields.end(), it->first) != fields.end())
 	    continue;
-	act = new QAction(tr("Add \"")+tr(it->second.c_str())+tr("\" column"),
-			  popup);
+	act = new QAction(tr("Add \"%1\" column").arg(it->second), popup);
 	act->setData(QString::fromUtf8(it->first.c_str()));
 	connect(act, SIGNAL(triggered(bool)), this , SLOT(addColumn()));
 	popup->addAction(act);

@@ -1,4 +1,6 @@
-<!DOCTYPE TS><TS>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -985,6 +987,10 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
         <source>&amp;Indexing schedule</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>E&amp;xternal index dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RecollModel</name>
@@ -1025,10 +1031,6 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> Ipath</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Keywords</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1054,6 +1056,10 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
     </message>
     <message>
         <source>Date and time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ipath</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1167,14 +1173,6 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Add &quot;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&quot; column</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Save table to CSV file</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1216,6 +1214,10 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
     </message>
     <message>
         <source>&amp;Save as CSV</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add &quot;%1&quot; column</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

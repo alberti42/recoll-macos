@@ -403,7 +403,7 @@
   </action>
   <action name="extIdxAction">
    <property name="text">
-    <string>External index dialog</string>
+    <string>E&amp;xternal index dialog</string>
    </property>
    <property name="iconText">
     <string>External index dialog</string>

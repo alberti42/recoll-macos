@@ -50,7 +50,7 @@ public:
     virtual RefCntr<DocSequence> getDocSource() {return m_source;}
     virtual void deleteColumn(int);
     virtual const vector<string>& getFields() {return m_fields;}
-    virtual const map<string, string>& getAllFields() 
+    virtual const map<string, QString>& getAllFields() 
     { 
 	return o_displayableFields;
     }
@@ -71,7 +71,7 @@ private:
     mutable RefCntr<DocSequence> m_source;
     vector<string> m_fields;
     vector<FieldGetter*> m_getters;
-    static map<string, string> o_displayableFields;
+    static map<string, QString> o_displayableFields;
     bool m_ignoreSort;
     FieldGetter* chooseGetter(const string&);
     HiliteData m_hdata;

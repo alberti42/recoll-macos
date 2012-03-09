@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="fr" sourcelanguage="en">
+<TS version="2.0" language="fr_FR" sourcelanguage="en">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -996,6 +996,10 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
         <source>&amp;Indexing schedule</source>
         <translation>&amp;Planning d&apos;indexation</translation>
     </message>
+    <message>
+        <source>E&amp;xternal index dialog</source>
+        <translation>Configuration des index e&amp;xternes</translation>
+    </message>
 </context>
 <context>
     <name>RecollModel</name>
@@ -1029,7 +1033,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source> Ipath</source>
-        <translation>Ipath</translation>
+        <translation type="obsolete">Ipath</translation>
     </message>
     <message>
         <source>Keywords</source>
@@ -1066,6 +1070,10 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     <message>
         <source>Date and time</source>
         <translation>Date et heure</translation>
+    </message>
+    <message>
+        <source>Ipath</source>
+        <translation>Ipath</translation>
     </message>
 </context>
 <context>
@@ -1179,11 +1187,11 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>Add &quot;</source>
-        <translation>Ajouter &quot;</translation>
+        <translation type="obsolete">Ajouter &quot;</translation>
     </message>
     <message>
         <source>&quot; column</source>
-        <translation>&quot; colonne</translation>
+        <translation type="obsolete">&quot; colonne</translation>
     </message>
     <message>
         <source>Save table to CSV file</source>
@@ -1228,6 +1236,10 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     <message>
         <source>&amp;Save as CSV</source>
         <translation>&amp;Sauvegarder en CSV</translation>
+    </message>
+    <message>
+        <source>Add &quot;%1&quot; column</source>
+        <translation>Ajouter une colonne &quot;%1&quot;</translation>
     </message>
 </context>
 <context>

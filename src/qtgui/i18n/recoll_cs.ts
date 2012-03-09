@@ -1,4 +1,6 @@
-<!DOCTYPE TS><TS>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -987,6 +989,10 @@ Chcete spustit dialog s nastavením?</translation>
         <source>&amp;Indexing schedule</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>E&amp;xternal index dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RecollModel</name>
@@ -1027,10 +1033,6 @@ Chcete spustit dialog s nastavením?</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source> Ipath</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Keywords</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1056,6 +1058,10 @@ Chcete spustit dialog s nastavením?</translation>
     </message>
     <message>
         <source>Date and time</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ipath</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1162,11 +1168,11 @@ Chcete spustit dialog s nastavením?</translation>
     </message>
     <message>
         <source>Add &quot;</source>
-        <translation>Přidat &quot;</translation>
+        <translation type="obsolete">Přidat &quot;</translation>
     </message>
     <message>
         <source>&quot; column</source>
-        <translation>&quot; sloupec</translation>
+        <translation type="obsolete">&quot; sloupec</translation>
     </message>
     <message>
         <source>Save table to CSV file</source>
@@ -1211,6 +1217,10 @@ Chcete spustit dialog s nastavením?</translation>
     <message>
         <source>&amp;Save as CSV</source>
         <translation>&amp;Uložit jako CSV</translation>
+    </message>
+    <message>
+        <source>Add &quot;%1&quot; column</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

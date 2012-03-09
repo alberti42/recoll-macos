@@ -1,4 +1,6 @@
-<!DOCTYPE TS><TS>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0" language="es" sourcelanguage="en">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -35,7 +37,7 @@
     </message>
     <message>
         <source>Bad multiplier suffix in size filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Sufijo multiplicador incorrecto en filtro de tamaño</translation>
     </message>
 </context>
 <context>
@@ -130,26 +132,26 @@
     </message>
     <message>
         <source>Minimum size. You can use k/K,m/M,g/G as multipliers</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamaño mínimo. Puede utilizar k/K, m/M o g/G como multiplicadores</translation>
     </message>
     <message>
         <source>Min. Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamaño Mínimo</translation>
     </message>
     <message>
         <source>Maximum size. You can use k/K,m/M,g/G as multipliers</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamaño máximo. Puede utilizar k/K, m/M o g/G como multiplicadores</translation>
     </message>
     <message>
         <source>Max. Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamaño máximo</translation>
     </message>
 </context>
 <context>
     <name>CronToolW</name>
     <message>
         <source>Cron Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Ventana de Cron</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -162,19 +164,28 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;For example, entering &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;*&lt;/span&gt; in &lt;span style=&quot; font-style:italic;&quot;&gt;Days, &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;12,19&lt;/span&gt; in &lt;span style=&quot; font-style:italic;&quot;&gt;Hours&lt;/span&gt; and &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;15&lt;/span&gt; in &lt;span style=&quot; font-style:italic;&quot;&gt;Minutes&lt;/span&gt; would start recollindex every day at 12:15 AM and 7:15 PM&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;A schedule with very frequent activations is probably less efficient than real time indexing.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; horario de indexado por lotes (cron) &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Cada campo puede contener un comodín (*), un valor numérico único, listas separadas por comas (1,3,5) y rangos (1-7). Más generalmente, los campos serán usados &lt;span style=&quot; font-style:italic;&quot;&gt;tal como son&lt;/span&gt; dentro del fichero crontab, y toda la sintaxis crontab puede ser usada, ver crontab(5).&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;Por ejemplo, ingresar &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;*&lt;/span&gt; en &lt;span style=&quot; font-style:italic;&quot;&gt;Días, &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;12,19&lt;/span&gt; en &lt;span style=&quot; font-style:italic;&quot;&gt;Horas&lt;/span&gt; y &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;15&lt;/span&gt; en &lt;span style=&quot; font-style:italic;&quot;&gt;Minutos&lt;/span&gt; iniciaría recollindex cada día a las 12:15 AM y 7:15 PM&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Un horario con activaciones frecuentes es probablemente menos eficiente que el indexado en tiempo real.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Days of week (* or 0-7, 0 or 7 is Sunday)</source>
-        <translation type="unfinished"></translation>
+        <translation>Días de la semana (* o 0-7, 0 o 7 es Domingo)</translation>
     </message>
     <message>
         <source>Hours (* or 0-23)</source>
-        <translation type="unfinished"></translation>
+        <translation>Horas (* o 0-23)</translation>
     </message>
     <message>
         <source>Minutes (0-59)</source>
-        <translation type="unfinished"></translation>
+        <translation>Minutos (0-59)</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -182,37 +193,41 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Click &lt;span style=&quot; font-style:italic;&quot;&gt;Disable&lt;/span&gt; to stop automatic batch indexing, &lt;span style=&quot; font-style:italic;&quot;&gt;Enable&lt;/span&gt; to activate it, &lt;span style=&quot; font-style:italic;&quot;&gt;Cancel&lt;/span&gt; to change nothing.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Presione &lt;span style=&quot; font-style:italic;&quot;&gt;Deshabilitar&lt;/span&gt; para detener el indexado por lotes automático, &lt;span style=&quot; font-style:italic;&quot;&gt;Habilitar&lt;/span&gt; para activarlo, &lt;span style=&quot; font-style:italic;&quot;&gt;Cancelar&lt;/span&gt; para no cambiar nada.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Enable</source>
-        <translation type="unfinished">Habilitar</translation>
+        <translation>Habilitar</translation>
     </message>
     <message>
         <source>Disable</source>
-        <translation type="unfinished"></translation>
+        <translation>Deshabilitar</translation>
     </message>
     <message>
         <source>It seems that manually edited entries exist for recollindex, cannot edit crontab</source>
-        <translation type="unfinished"></translation>
+        <translation>Parece ser que existen entradas para recollindex editadas manualmente, no se puede editar crontab</translation>
     </message>
     <message>
         <source>Error installing cron entry. Bad syntax in fields ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al instalar entrada de cron. Sintaxis incorrecta en los campos?</translation>
     </message>
 </context>
 <context>
     <name>EditDialog</name>
     <message>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Ventana de diálogo</translation>
     </message>
 </context>
 <context>
     <name>FirstIdxDialog</name>
     <message>
         <source>First indexing setup</source>
-        <translation type="unfinished"></translation>
+        <translation>Primera configuración de indexado</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -224,34 +239,42 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If you want more control, use the following links to adjust the indexing configuration and schedule.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;These tools can be accessed later from the &lt;span style=&quot; font-style:italic;&quot;&gt;Preferences&lt;/span&gt; menu.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Parece ser que el índice para esta configuración no existe.&lt;/span&gt;&lt;br /&gt;&lt;br /&gt;Si solamente desea indexar su directorio personal con un conjunto de valores iniciales razonables, presione el botón &lt;span style=&quot; font-style:italic;&quot;&gt;Iniciar indexación ahora&lt;/span&gt;. Es posible ajustar los detalles más tarde.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Si necesita más control, use los enlaces siguientes para ajustar la configuración de indexación y el horario.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Estas herramientas pueden ser accedidas luego desde el menú &lt;span style=&quot; font-style:italic;&quot;&gt;Preferencias&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Indexing configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Configuración de indexación</translation>
     </message>
     <message>
         <source>This will let you adjust the directories you want to index, and other parameters like excluded file paths or names, default character sets, etc.</source>
-        <translation type="unfinished"></translation>
+        <translation>Esto le permite ajustar los directorios que quiere indexar y otros parámetros, como rutas de ficheros o nombres excluidos, conjuntos de caracteres estandar, etc.</translation>
     </message>
     <message>
         <source>Indexing schedule</source>
-        <translation type="unfinished"></translation>
+        <translation>Horario de indexación</translation>
     </message>
     <message>
         <source>This will let you chose between batch and real-time indexing, and set up an automatic  schedule for batch indexing (using cron).</source>
-        <translation type="unfinished"></translation>
+        <translation>Esto le permite escoger entre indexación en tiempo real y por lotes, y configurar un horario automático para indexar por lotes (utilizando cron).</translation>
     </message>
     <message>
         <source>Start indexing now</source>
-        <translation type="unfinished"></translation>
+        <translation>Iniciar indexación ahora</translation>
     </message>
 </context>
 <context>
     <name>IdxSchedW</name>
     <message>
         <source>Index scheduling setup</source>
-        <translation type="unfinished"></translation>
+        <translation>Configuración de horario de indexación</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -262,34 +285,41 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Reading the manual may help you to decide between these approaches (press F1). &lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This tool can help you set up a schedule to automate batch indexing runs, or start real time indexing when you log in (or both, which rarely makes sense). &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;La indexación de &lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; puede ejecutarse permanentemente, indexando ficheros cuando cambian, o puede ejecutarse en intervalos discretos. &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Leer el manual puede ayudarle a decidir entre estos dos métodos (presione F1).&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Esta herramienta puede ayudarle a configurar un horario para automatizar la ejecución de indexación por lotes, o iniciar la indexación en tiempo real cuando inicia la sesión (o ambos, lo cual rara vez tiene sentido).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Cron scheduling</source>
-        <translation type="unfinished"></translation>
+        <translation>Horario de Cron</translation>
     </message>
     <message>
         <source>The tool will let you decide at what time indexing should run and will install a crontab entry.</source>
-        <translation type="unfinished"></translation>
+        <translation>Esta herramiente le permite decidir a qué hora la indexación se ejecutará e instalará una entrada en el crontab.</translation>
     </message>
     <message>
         <source>Real time indexing start up</source>
-        <translation type="unfinished"></translation>
+        <translation>Inicio de la indexación en tiempo real</translation>
     </message>
     <message>
         <source>Decide if real time indexing will be started when you log in (only for the default index).</source>
-        <translation type="unfinished"></translation>
+        <translation>Decida si la indexación en tiempo real será ejecutada cuando inicie la sesión (solo para el índice estándar).</translation>
     </message>
 </context>
 <context>
     <name>ListDialog</name>
     <message>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Ventana de diálogo</translation>
     </message>
     <message>
         <source>GroupBox</source>
-        <translation type="unfinished"></translation>
+        <translation>Cuadro de grupo</translation>
     </message>
 </context>
 <context>
@@ -364,11 +394,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Cannot create temporary directory: </source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede crear directorio temporal:</translation>
     </message>
     <message>
         <source>Error while loading file</source>
-        <translation type="unfinished"></translation>
+        <translation>Error al cargar fichero</translation>
     </message>
 </context>
 <context>
@@ -469,7 +499,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <name>RTIToolW</name>
     <message>
         <source>Real time indexing automatic start</source>
-        <translation type="unfinished"></translation>
+        <translation>Inicio automático de la indexación en tiempo real</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -478,51 +508,56 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; indexing can be set up to run as a daemon, updating the index as files change, in real time. You gain an always up to date index, but system resources are used permanently.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;La indexación de &lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; puede configurarse para ejecutar como un demonio, actualizando el índice cuando los ficheros cambian, en tiempo real. Obtiene un índice actualizado siempre, pero recursos del sistema son utilizados permanentemente.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Start indexing daemon with my desktop session.</source>
-        <translation type="unfinished"></translation>
+        <translation>Iniciar el demonio de indexación con mi sesión de escritorio.</translation>
     </message>
     <message>
         <source>Also start indexing daemon right now.</source>
-        <translation type="unfinished"></translation>
+        <translation>También iniciar demonio de indexación ahora mismo.</translation>
     </message>
     <message>
         <source>Replacing: </source>
-        <translation type="unfinished"></translation>
+        <translation>Reemplazando:</translation>
     </message>
     <message>
         <source>Replacing file</source>
-        <translation type="unfinished"></translation>
+        <translation>Reemplazando fichero</translation>
     </message>
     <message>
         <source>Can&apos;t create: </source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede crear:</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation type="unfinished">Advertencia</translation>
+        <translation>Advertencia</translation>
     </message>
     <message>
         <source>Could not execute recollindex</source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede ejecutar recollindex</translation>
     </message>
     <message>
         <source>Deleting: </source>
-        <translation type="unfinished"></translation>
+        <translation>Borrando:</translation>
     </message>
     <message>
         <source>Deleting file</source>
-        <translation type="unfinished"></translation>
+        <translation>Borrando fichero</translation>
     </message>
     <message>
         <source>Removing autostart</source>
-        <translation type="unfinished"></translation>
+        <translation>Eliminando autoinicio</translation>
     </message>
     <message>
         <source>Autostart file deleted. Kill current process too ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Fichero de autoinicio borrado. Detener el proceso actual también?</translation>
     </message>
 </context>
 <context>
@@ -720,67 +755,67 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Ninguno</translation>
     </message>
     <message>
         <source>Updating</source>
-        <translation type="unfinished"></translation>
+        <translation>Actualizando</translation>
     </message>
     <message>
         <source>Done</source>
-        <translation type="unfinished"></translation>
+        <translation>Hecho</translation>
     </message>
     <message>
         <source>Monitor</source>
-        <translation type="unfinished"></translation>
+        <translation>Monitor</translation>
     </message>
     <message>
         <source>Indexing failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Indexación falló</translation>
     </message>
     <message>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
-        <translation type="unfinished"></translation>
+        <translation>El proceso de indexación actual no se inicio desde esta interfaz. Presione Ok para detenerlo, o Cancelar para dejarlo ejecutar</translation>
     </message>
     <message>
         <source>Erasing index</source>
-        <translation type="unfinished"></translation>
+        <translation>Borrando índice</translation>
     </message>
     <message>
         <source>Reset the index and start from scratch ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Restaurar el índice e iniciar desde cero?</translation>
     </message>
     <message>
         <source>Query in progress.&lt;br&gt;Due to limitations of the indexing library,&lt;br&gt;cancelling will exit the program</source>
-        <translation type="unfinished"></translation>
+        <translation>Consulta en progreso.&lt;br&gt;Debido a limitaciones en la librería de indexación,&lt;br&gt;cancelar terminará el programa</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Error</translation>
     </message>
     <message>
         <source>Index not open</source>
-        <translation type="unfinished"></translation>
+        <translation>Índice no está abierto</translation>
     </message>
     <message>
         <source>Index query error</source>
-        <translation type="unfinished"></translation>
+        <translation>Error de consulta del índice</translation>
     </message>
     <message>
         <source>Indexed Mime Types</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipos MIME indexados</translation>
     </message>
     <message>
         <source>Content has been indexed for these mime types:</source>
-        <translation type="unfinished"></translation>
+        <translation>Los contenidos han sido indexados para estos tipos MIME:</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation type="unfinished"></translation>
+        <translation>Índice no actualizado para este fichero. No mostrado para evitar utilizar la entrada errónea. Presione Ok para actualizar el índice para este fichero, luego ejecute la consulta de nuevo cuando la indexación termine. En caso contrario, presione Cancelar.</translation>
     </message>
     <message>
         <source>Can&apos;t update index: indexer running</source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede actualizar el índice: indexador en ejecución</translation>
     </message>
 </context>
 <context>
@@ -967,90 +1002,98 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Rebuild index</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Reconstruir índice</translation>
     </message>
     <message>
         <source>&amp;Show indexed types</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Mostrar tipos indexados</translation>
     </message>
     <message>
         <source>Shift+PgUp</source>
-        <translation type="unfinished"></translation>
+        <translation>Mayúsculas+RePág</translation>
     </message>
     <message>
         <source>&amp;Indexing schedule</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Horario de indexación</translation>
+    </message>
+    <message>
+        <source>E&amp;xternal index dialog</source>
+        <translation>Configuración de índices e&amp;xternos</translation>
     </message>
 </context>
 <context>
     <name>RecollModel</name>
     <message>
         <source>Abstract</source>
-        <translation type="unfinished"></translation>
+        <translation>Resumen</translation>
     </message>
     <message>
         <source>Author</source>
-        <translation type="unfinished"></translation>
+        <translation>Autor</translation>
     </message>
     <message>
         <source>Document size</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamaño del documento</translation>
     </message>
     <message>
         <source>Document date</source>
-        <translation type="unfinished"></translation>
+        <translation>Fecha del documento</translation>
     </message>
     <message>
         <source>File size</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamaño del fichero</translation>
     </message>
     <message>
         <source>File name</source>
-        <translation type="unfinished">Nombre de fichero</translation>
+        <translation>Nombre de fichero</translation>
     </message>
     <message>
         <source>File date</source>
-        <translation type="unfinished"></translation>
+        <translation>Fecha del fichero</translation>
     </message>
     <message>
         <source> Ipath</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Ipath</translation>
     </message>
     <message>
         <source>Keywords</source>
-        <translation type="unfinished"></translation>
+        <translation>Palabras clave</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="unfinished">Tipo MIME</translation>
+        <translation>Tipo MIME</translation>
     </message>
     <message>
         <source>Original character set</source>
-        <translation type="unfinished"></translation>
+        <translation>Conjunto de caracteres original</translation>
     </message>
     <message>
         <source>Relevancy rating</source>
-        <translation type="unfinished"></translation>
+        <translation>Calificación de relevancia</translation>
     </message>
     <message>
         <source>Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Título</translation>
     </message>
     <message>
         <source>URL</source>
-        <translation type="unfinished"></translation>
+        <translation>URL</translation>
     </message>
     <message>
         <source>Mtime</source>
-        <translation type="unfinished"></translation>
+        <translation>Fecha Mod</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Fecha</translation>
     </message>
     <message>
         <source>Date and time</source>
-        <translation type="unfinished"></translation>
+        <translation>Fecha y hora</translation>
+    </message>
+    <message>
+        <source>Ipath</source>
+        <translation>Ipath</translation>
     </message>
 </context>
 <context>
@@ -1152,11 +1195,11 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Add &quot;</source>
-        <translation>Añadir &quot;</translation>
+        <translation type="obsolete">Añadir &quot;</translation>
     </message>
     <message>
         <source>&quot; column</source>
-        <translation>&quot; columna</translation>
+        <translation type="obsolete">&quot; columna</translation>
     </message>
     <message>
         <source>Save table to CSV file</source>
@@ -1201,6 +1244,10 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>&amp;Save as CSV</source>
         <translation>&amp;Guardar como CSV</translation>
+    </message>
+    <message>
+        <source>Add &quot;%1&quot; column</source>
+        <translation>Añadir columna &quot;%1&quot;</translation>
     </message>
 </context>
 <context>
@@ -1385,7 +1432,7 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
     <message>
         <source>No field</source>
-        <translation>No hay campo</translation>
+        <translation>Ningún campo</translation>
     </message>
 </context>
 <context>
@@ -1486,7 +1533,7 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
     <message>
         <source>Choose</source>
-        <translation type="unfinished"></translation>
+        <translation>Elegir</translation>
     </message>
 </context>
 <context>
@@ -1914,54 +1961,57 @@ Puede ser lento para documentos grandes.</translation>
     </message>
     <message>
         <source>Style sheet</source>
-        <translation type="unfinished"></translation>
+        <translation>Hoja de estilo</translation>
     </message>
     <message>
         <source>Opens a dialog to select the style sheet file</source>
-        <translation type="unfinished"></translation>
+        <translation>Abre una ventana de diálogo para seleccionar la hoja de estilos</translation>
     </message>
     <message>
         <source>Choose</source>
-        <translation type="unfinished"></translation>
+        <translation>Elegir</translation>
     </message>
     <message>
         <source>Resets the style sheet to default</source>
-        <translation type="unfinished"></translation>
+        <translation>Restablecer la hoja de estilo al valor por defecto</translation>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses some indentation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Líneas en texto PRE no se parten. Al usar BR se pierde indentación.</translation>
     </message>
     <message>
         <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html in preview.</source>
-        <translation type="unfinished"></translation>
+        <translation>Use etiquetas &lt;PRE&gt; en lugar de &lt;BR&gt; para desplegar texto corriente como html en la vista previa.</translation>
     </message>
     <message>
         <source>Result List</source>
-        <translation type="unfinished"></translation>
+        <translation>Lista de resultados</translation>
     </message>
     <message>
         <source>Edit result paragraph format string</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar texto de formato para el párrafo de resultados</translation>
     </message>
     <message>
         <source>Edit result page html header insert</source>
-        <translation type="unfinished"></translation>
+        <translation>Editar encabezado html insertado en página de resultados</translation>
     </message>
     <message>
         <source>Date format (strftime(3))</source>
-        <translation type="unfinished"></translation>
+        <translation>Formato de fecha (strftime(3))</translation>
     </message>
     <message>
         <source>Frequency percentage threshold over which we do not use terms inside autophrase. 
 Frequent terms are a major performance issue with phrases. 
 Skipped terms augment the phrase slack, and reduce the autophrase efficiency.
 The default value is 2 (percent). </source>
-        <translation type="unfinished"></translation>
+        <translation>Umbral de porcentaje de frequencia sobre el cuál no utilizamos términos dentro de la autofrase.
+Los términos frequentes son un problema importante de desempeño con las frases.
+Términos omitidos aumenta la holgura de la frase, y reducen la eficiencia de la autofrase.
+El valor por defecto es 2 (por ciento).</translation>
     </message>
     <message>
         <source>Autophrase term frequency threshold percentage</source>
-        <translation type="unfinished"></translation>
+        <translation>Porcentaje del umbral de frequencia de términos de autofrase</translation>
     </message>
 </context>
 </TS>
