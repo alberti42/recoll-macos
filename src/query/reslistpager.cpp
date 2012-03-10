@@ -145,8 +145,15 @@ void ResListPager::displayDoc(RclConfig *config,
     printableUrl(config->getDefCharset(), doc.url, url);
 
     // Make title out of file name if none yet
-    if (doc.meta[Rcl::Doc::keytt].empty()) {
-	doc.meta[Rcl::Doc::keytt] = path_getsimple(url);
+    string titleOrFilename;
+    string utf8fn;
+    doc.getmeta(Rcl::Doc::keytt, &titleOrFilename);
+    doc.getmeta(Rcl::Doc::keyfn, &utf8fn);
+    if (utf8fn.empty()) {
+	utf8fn = path_getsimple(url);	
+    }
+    if (titleOrFilename.empty()) {
+	titleOrFilename = utf8fn;
     }
 
     // Result number
@@ -234,7 +241,8 @@ void ResListPager::displayDoc(RclConfig *config,
     subs["M"] = doc.mimetype;
     subs["R"] = doc.meta[Rcl::Doc::keyrr];
     subs["S"] = sizebuf;
-    subs["T"] = escapeHtml(doc.meta[Rcl::Doc::keytt]);
+    subs["T"] = escapeHtml(titleOrFilename);
+    subs["t"] = escapeHtml(doc.meta[Rcl::Doc::keytt]);
     subs["U"] = url;
 
     // Let %(xx) access all metadata.

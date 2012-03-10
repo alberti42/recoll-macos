@@ -1278,8 +1278,6 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     if (!doc.ipath.empty())
 	RECORD_APPEND(record, Doc::keyipt, doc.ipath);
 
-    if (doc.meta[Doc::keytt].empty())
-	doc.meta[Doc::keytt] = doc.utf8fn;
     doc.meta[Doc::keytt] = 
 	neutchars(truncate_to_word(doc.meta[Doc::keytt], 150), cstr_nc);
     if (!doc.meta[Doc::keytt].empty())
