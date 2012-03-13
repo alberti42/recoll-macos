@@ -62,6 +62,10 @@ void AdvSearch::init()
     // signals and slots connections
     connect(delFiltypPB, SIGNAL(clicked()), this, SLOT(delFiltypPB_clicked()));
     connect(searchPB, SIGNAL(clicked()), this, SLOT(runSearch()));
+    connect(filterDatesCB, SIGNAL(toggled(bool)), 
+	    this, SLOT(filterDatesCB_toggled(bool)));
+    connect(filterSizesCB, SIGNAL(toggled(bool)), 
+	    this, SLOT(filterSizesCB_toggled(bool)));
     connect(restrictFtCB, SIGNAL(toggled(bool)), 
 	    this, SLOT(restrictFtCB_toggled(bool)));
     connect(restrictCtCB, SIGNAL(toggled(bool)), 
@@ -101,6 +105,14 @@ void AdvSearch::init()
     }
     (*m_clauseWins.begin())->wordsLE->setFocus();
 
+    // Initialize min/max mtime from extrem values in the index
+    int minyear, maxyear;
+    if (rcldb) {
+	rcldb->maxYearSpan(&minyear, &maxyear);
+	minDateDTE->setDate(QDate(minyear, 1, 1));
+	maxDateDTE->setDate(QDate(maxyear, 12, 31));
+    }
+
     // Initialize lists of accepted and ignored mime types from config
     // and settings
     m_ignTypes = prefs.asearchIgnFilTyps;
@@ -117,6 +129,10 @@ void AdvSearch::init()
     // vbox is so that we can then insert SearchClauseWs), but we
     // don't want to see it.
     clauseline->close();
+
+    bool calpop = 0;
+    minDateDTE->setCalendarPopup(calpop);
+    maxDateDTE->setCalendarPopup(calpop);
 
     // Translations for known categories
     cat_translations[QString::fromUtf8("texts")] = tr("texts");
@@ -248,6 +264,19 @@ void AdvSearch::restrictFtCB_toggled(bool on)
     saveFileTypesPB->setEnabled(on);
 }
 
+// Activate file type selection
+void AdvSearch::filterSizesCB_toggled(bool on)
+{
+    minSizeLE->setEnabled(on);
+    maxSizeLE->setEnabled(on);
+}
+// Activate file type selection
+void AdvSearch::filterDatesCB_toggled(bool on)
+{
+    minDateDTE->setEnabled(on);
+    maxDateDTE->setEnabled(on);
+}
+
 void AdvSearch::restrictCtCB_toggled(bool on)
 {
     m_ignByCats = on;
@@ -367,10 +396,24 @@ void AdvSearch::runSearch()
 	}
     }
 
-    size_t size = stringToSize(minSizeLE->text());
-    sdata->setMinSize(size);
-    size = stringToSize(maxSizeLE->text());
-    sdata->setMaxSize(size);
+    if (filterDatesCB->isChecked()) {
+	QDate mindate = minDateDTE->date();
+	QDate maxdate = maxDateDTE->date();
+	DateInterval di;
+	di.y1 = mindate.year();
+	di.m1 = mindate.month();
+	di.d1 = mindate.day();
+	di.y2 = maxdate.year();
+	di.m2 = maxdate.month();
+	di.d2 = maxdate.day();
+	sdata->setDateSpan(&di);
+    }
+    if (filterSizesCB->isChecked()) {
+	size_t size = stringToSize(minSizeLE->text());
+	sdata->setMinSize(size);
+	size = stringToSize(maxSizeLE->text());
+	sdata->setMaxSize(size);
+    }
 
     if (!subtreeCMB->currentText().isEmpty()) {
 	QString current = subtreeCMB->currentText();
