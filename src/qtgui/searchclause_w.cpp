@@ -49,7 +49,7 @@ SearchClauseW::SearchClauseW(QWidget* parent)
     hLayout->addWidget(proxSlackSB);
 
     wordsLE = new QLineEdit(this);
-    wordsLE->setMinimumSize(QSize(250, 0));
+    wordsLE->setMinimumSize(QSize(190, 0));
     hLayout->addWidget(wordsLE);
 
     languageChange();
@@ -73,12 +73,12 @@ SearchClauseW::~SearchClauseW()
 void SearchClauseW::languageChange()
 {
     sTpCMB->clear();
-    sTpCMB->addItem(tr("Any of these")); // 0
-    sTpCMB->addItem(tr("All of these")); //1
-    sTpCMB->addItem(tr("None of these"));//2
-    sTpCMB->addItem(tr("This phrase"));//3
-    sTpCMB->addItem(tr("Terms in proximity"));//4
-    sTpCMB->addItem(tr("File name matching"));//5
+    sTpCMB->addItem(tr("Any")); // 0
+    sTpCMB->addItem(tr("All")); //1
+    sTpCMB->addItem(tr("None"));//2
+    sTpCMB->addItem(tr("Phrase"));//3
+    sTpCMB->addItem(tr("Proximity"));//4
+    sTpCMB->addItem(tr("File name"));//5
     //    sTpCMB->insertItem(tr("Complex clause"));//6
 
     fldCMB->addItem(tr("No field"));
