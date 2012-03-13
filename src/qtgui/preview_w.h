@@ -120,6 +120,7 @@ public slots:
     virtual void currentChanged(QWidget *tw);
     virtual void closeCurrentTab();
     virtual void emitSaveDocToFile();
+    virtual void togglePlainPre();
 
 signals:
     void previewClosed(Preview *);

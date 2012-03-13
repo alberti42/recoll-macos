@@ -80,7 +80,12 @@ public:
 	} else {
 	    if (prefs.previewPlainPre) {
 		m_eolbr = false;
-		return string("<qt><head><title></title></head><body><pre>");
+		return string("<qt><head><title></title></head><body>"
+			      "<pre>");
+// Note we could also use the following for line-folding instead of <br>s
+// This would be possible without recomputing the whole text, much better perfs
+// for toggling wrap/no-wrap
+//			      "<pre style=\"white-space: pre-wrap\">");
 	    } else {
 		m_eolbr = true;
 		return string("<qt><head><title></title></head><body>");
@@ -505,7 +510,7 @@ void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
     LOGDEB1(("PreviewTextEdit::setCurTabProps\n"));
     QString title;
     string ctitle;
-    if (doc.getmeta(Rcl::Doc::keytt, &ctitle)) {
+    if (doc.getmeta(Rcl::Doc::keytt, &ctitle) && !ctitle.empty()) {
 	title = QString::fromUtf8(ctitle.c_str(), ctitle.length());
     } else {
         title = QString::fromLocal8Bit(path_getsimple(doc.url).c_str());
@@ -576,6 +581,14 @@ bool Preview::makeDocCurrent(const Rcl::Doc& doc, int docnum, bool sametab)
     }
     raise();
     return true;
+}
+void Preview::togglePlainPre()
+{
+    prefs.previewPlainPre = !prefs.previewPlainPre;
+    
+    PreviewTextEdit *editor = currentEditor();
+    if (editor)
+	loadDocInCurrentTab(editor->m_dbdoc, editor->m_docnum);
 }
 
 void Preview::emitWordSelect(QString word)
@@ -703,7 +716,7 @@ public:
 
 bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 {
-    LOGDEB1(("PreviewTextEdit::loadDocInCurrentTab()\n"));
+    LOGDEB1(("Preview::loadDocInCurrentTab()\n"));
 
     LoadGuard guard(&m_loading);
     CancelCheck::instance().setCancel(false);
@@ -1015,6 +1028,12 @@ void PreviewTextEdit::createPopupMenu(const QPoint& pos)
     popup->addAction(tr("Select All"), this, SLOT(selectAll()));
     popup->addAction(tr("Copy"), this, SLOT(copy()));
     popup->addAction(tr("Print"), this, SLOT(print()));
+    if (prefs.previewPlainPre) {
+	popup->addAction(tr("Fold lines"), m_preview, SLOT(togglePlainPre()));
+    } else {
+	popup->addAction(tr("Preserve indentation"), 
+			 m_preview, SLOT(togglePlainPre()));
+    }
     // Need to check ipath until we fix the internfile bug that always
     // has it convert to html for top level docs
     if (!m_dbdoc.url.empty() && !m_dbdoc.ipath.empty())
