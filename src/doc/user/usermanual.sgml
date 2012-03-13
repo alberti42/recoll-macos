@@ -1050,12 +1050,35 @@ fvwm
       through the <guilabel>Tools</guilabel> menu or through the main
       toolbar.</para>
 
-      <para>The dialog has four sections:</para>
-
+      <para>The dialog has two tabs:</para> 
       <orderedlist>
-        <listitem><para>The top section allows constructing a query by
-          combining multiple clauses of different types.
-          Each entry field is configurable for the following modes:</para>
+
+      <listitem><para>The first tab lets you specify terms to search
+      for, and permits specifying multiple clauses which are combined
+      to build the search.</para>
+      </listitem> 
+
+      <listitem><para>The second tab lets filter the results according
+      to file size, date of modification, mime type, or
+      location.</para>
+      </listitem>
+     
+      </orderedlist>
+
+      <para>Click on the <guilabel>Start Search</guilabel> button in
+        the advanced search dialog, or type <keycap>Enter</keycap> in
+        any text field to start the search. The button in
+        the main window always performs a simple search.</para>
+
+      <para>Click on the <literal>Show query details</literal> link at
+        the top of the result page to see the query expansion.</para>
+
+      <sect3 id="rcl.search.complex.terms">
+      <title>Avanced search: the "find" tab</title>
+
+        <para>This part of the dialog lets you constructc a query by
+          combining multiple clauses of different types.  Each entry
+          field is configurable for the following modes:</para>
 
         <itemizedlist>
           <listitem><para>All terms.</para>
@@ -1086,43 +1109,6 @@ fvwm
           a mix of single words and phrases enclosed in double quotes. 
           Stemming and wildcard expansion will be performed as for simple
           search. </para>
-        </listitem>
-
-        <listitem><para>The next section allows filtering the results by
-            file size. There are two entries for minimum and maximum
-            size. Enter decimal numbers. You can use suffix multipliers:
-            <literal>k/K</literal>, <literal>m/M</literal>,
-            <literal>g/G</literal>, <literal>t/T</literal> for 1E3, 1E6,
-            1E9, 1E12 respectively.</para>
-         </listitem>
-
-        <listitem>
-          <para>The next section allows filtering the results by their mime
-            types, or mime categories (ie: media/text/message/etc.).</para>
-          <para>You can transfer the types between two boxes, to define
-            which will be included or excluded by the search.</para>
-          <para>The state of the file type selection can be saved as
-            the default (the file type filter will not be activated at
-            program start-up, but the lists will be in the restored
-            state).</para> 
-        </listitem>
-
-        <listitem>
-          <para>The bottom section allows restricting the search results to a
-            sub-tree of the indexed area. You can use the
-            <guilabel>Invert</guilabel> checkbox to search for files not in
-            the sub-tree instead. If you use directory filtering often and on
-            big subsets of the file system, you may think of setting up
-            multiple indexes instead, as the performance may be
-            better.</para>
-          <para>You can use relative/partial paths for filtering. Ie,
-          entering <literal>dirA/dirB</literal> would match either
-          <filename>/dir1/dirA/dirB/myfile1</filename> or
-          <filename>/dir2/dirA/dirB/someother/myfile2</filename>.</para> 
-        </listitem>
-
-      </orderedlist>
-
 
       <formalpara><title>Phrases and Proximity searches</title>
       <para>These two clauses work in similar ways, with the
@@ -1141,12 +1127,61 @@ fvwm
       latter, and also <literal>a fox is a cunning and quick animal</literal>.
       </formalpara>
 
-      <para>Click on the <guilabel>Start Search</guilabel> button in
-        the advanced search dialog, or type <keycap>Enter</keycap> in
-        any text field to start the search. The button in
-        the main window always performs a simple search.</para>
-      <para>Click on the <literal>Show query details</literal> link at
-        the top of the result page to see the query expansion.</para>
+      </sect3>
+
+      <sect3 id="rcl.search.complex.filter">
+      <title>Avanced search: the "filter" tab</title>
+
+      <para>This part of the dialog has several sections which allow
+      filtering the results of a search according to a number of
+      criteria</para>
+
+      <itemizedlist>
+
+      <listitem>
+      <para>The first section allows filtering by dates of last
+      modification. You can specify both a minimum and a maximum date. The
+      initial values are set according to the oldest and newest documents
+      found in the index.</para>
+      </listitem>
+
+      <listitem>
+      <para>The next section allows filtering the results by
+            file size. There are two entries for minimum and maximum
+            size. Enter decimal numbers. You can use suffix multipliers:
+            <literal>k/K</literal>, <literal>m/M</literal>,
+            <literal>g/G</literal>, <literal>t/T</literal> for 1E3, 1E6,
+            1E9, 1E12 respectively.</para>
+      </listitem>
+
+      <listitem>   
+      <para>The next section allows filtering the results by their mime
+            types, or mime categories (ie: media/text/message/etc.).</para>
+          <para>You can transfer the types between two boxes, to define
+            which will be included or excluded by the search.</para>
+          <para>The state of the file type selection can be saved as
+            the default (the file type filter will not be activated at
+            program start-up, but the lists will be in the restored
+            state).</para> 
+      </listitem>
+
+      <listitem>
+          <para>The bottom section allows restricting the search results to a
+            sub-tree of the indexed area. You can use the
+            <guilabel>Invert</guilabel> checkbox to search for files not in
+            the sub-tree instead. If you use directory filtering often and on
+            big subsets of the file system, you may think of setting up
+            multiple indexes instead, as the performance may be
+            better.</para>
+          <para>You can use relative/partial paths for filtering. Ie,
+          entering <literal>dirA/dirB</literal> would match either
+          <filename>/dir1/dirA/dirB/myfile1</filename> or
+          <filename>/dir2/dirA/dirB/someother/myfile2</filename>.</para> 
+      </listitem>
+
+      </itemizedlist>
+
+     </sect3>
 
     </sect2>
 
