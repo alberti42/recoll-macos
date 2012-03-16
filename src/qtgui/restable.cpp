@@ -240,7 +240,7 @@ RecollModel::RecollModel(const QStringList fields, QObject *parent)
     o_displayableFields["fmtime"] = tr("File date");
     o_displayableFields["ipath"] = tr("Ipath");
     o_displayableFields["keywords"] = tr("Keywords");
-    o_displayableFields["mtype"] = tr("Mime type");
+    o_displayableFields["mtype"] = tr("MIME type");
     o_displayableFields["origcharset"] = tr("Original character set");
     o_displayableFields["relevancyrating"] = tr("Relevancy rating");
     o_displayableFields["title"] = tr("Title");

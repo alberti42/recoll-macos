@@ -34,15 +34,18 @@
 
       <h2>Caveats</h2>
 
-      <p><em>Installing over an older version</em>: 1.17 is fully
-        compatible with 1.16 indexes, and mostly compatible with 1.15
-        ones, except for a few differences for weird terms containing
-        punctuation signs. Perform a full index pass if installing
-        over an older version. The simplest way to do this is to quit
-        all recoll programs and just delete the index directory
+      <p><em>Installing over an older version</em>: 1.17 is mostly
+        compatible with 1.16 and 1.15 indexes, except for a few
+        differences for weird terms containing punctuation
+        signs. Also, file/document size computations have been
+        improved in 1.17 and you'll need an index reset if you want to
+        enjoy the new goodness. Always reset the index if installing
+        over an older version (1.14 and older). The simplest way to do
+        this is to quit all recoll programs and just delete the index
+        directory
         (<span class="literal">rm&nbsp;-rf&nbsp;~/.recoll/xapiandb</span>),
         then start recoll or
-        recollindex.  <span class="literal">recollindex&nbsp;-z</span>
+        recollindex.  <span class="literal">recollindex&nbsp;-z</span> 
         will do the same in most cases.</p>
 
       <p>Some new, auxiliary, features do require a full reindex to work:</p>
@@ -73,7 +76,7 @@
           the index is now the actual one, not the archive's as was
           previously the case. Because of this, you will need a full
           reindex to completely enable this feature.</li>
-
+	
         <li>Query language: the "dir:" directive now accepts
           non-absolute paths. For example dir:dir1/dir2 will select
           any file the path of which includes "dir1/dir2".</li>
@@ -85,6 +88,10 @@
           long. Because of limitations in Xapian, this forces a program
           exit, but it's probably better than staring at a hung
           Recoll.</li>
+
+	<li>GUI/advanced search: the dialog gets new sections for
+	  filtering on file dates and sizes, and has been split into two
+	  tabs: for search terms, and for filtering.</li>
 
         <li>GUI/config: new set of dialogs to set up the indexing
           schedule, either as automatic real time indexing started

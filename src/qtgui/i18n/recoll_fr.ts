@@ -146,6 +146,42 @@
         <source>Max. Size</source>
         <translation>Taille Max.</translation>
     </message>
+    <message>
+        <source>Select</source>
+        <translation type="obsolete">Sélectionner</translation>
+    </message>
+    <message>
+        <source>Filter</source>
+        <translation>Filtrer</translation>
+    </message>
+    <message>
+        <source>From</source>
+        <translation>À partir de</translation>
+    </message>
+    <message>
+        <source>To</source>
+        <translation>Jusqu&apos;à</translation>
+    </message>
+    <message>
+        <source>Check this to enable filtering on dates</source>
+        <translation>Cocher pour activer le filtrage sur les dates</translation>
+    </message>
+    <message>
+        <source>Filter dates</source>
+        <translation>Filtrer sur les dates</translation>
+    </message>
+    <message>
+        <source>Find</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Check this to enable filtering on sizes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter sizes</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CronToolW</name>
@@ -410,6 +446,14 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Save document to file</source>
         <translation>Sauvegarder le document</translation>
+    </message>
+    <message>
+        <source>Fold lines</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preserve indentation</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -783,7 +827,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>Indexed Mime Types</source>
-        <translation>Types MIME indexés</translation>
+        <translation type="obsolete">Types MIME indexés</translation>
     </message>
     <message>
         <source>Content has been indexed for these mime types:</source>
@@ -796,6 +840,10 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     <message>
         <source>Can&apos;t update index: indexer running</source>
         <translation>Impossible de mettre à jour l&apos;index: un indexeur est déjà actif</translation>
+    </message>
+    <message>
+        <source>Indexed MIME Types</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1041,7 +1089,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation>Type Mime</translation>
+        <translation type="obsolete">Type Mime</translation>
     </message>
     <message>
         <source>Original character set</source>
@@ -1074,6 +1122,10 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     <message>
         <source>Ipath</source>
         <translation>Ipath</translation>
+    </message>
+    <message>
+        <source>MIME type</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1395,27 +1447,27 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Any of these</source>
-        <translation>Un de ces mots</translation>
+        <translation type="obsolete">Un de ces mots</translation>
     </message>
     <message>
         <source>All of these</source>
-        <translation>Tous ces mots</translation>
+        <translation type="obsolete">Tous ces mots</translation>
     </message>
     <message>
         <source>None of these</source>
-        <translation>Aucun de ces mots</translation>
+        <translation type="obsolete">Aucun de ces mots</translation>
     </message>
     <message>
         <source>This phrase</source>
-        <translation>Cette phrase</translation>
+        <translation type="obsolete">Cette phrase</translation>
     </message>
     <message>
         <source>Terms in proximity</source>
-        <translation>Termes en proximité</translation>
+        <translation type="obsolete">Termes en proximité</translation>
     </message>
     <message>
         <source>File name matching</source>
-        <translation>Modèle de nom de fichier</translation>
+        <translation type="obsolete">Modèle de nom de fichier</translation>
     </message>
     <message>
         <source>Select the type of query that will be performed with the words</source>
@@ -1432,6 +1484,30 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     <message>
         <source>No field</source>
         <translation>Sans champ</translation>
+    </message>
+    <message>
+        <source>Any</source>
+        <translation>Certains</translation>
+    </message>
+    <message>
+        <source>All</source>
+        <translation>Tout</translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation>Rien</translation>
+    </message>
+    <message>
+        <source>Phrase</source>
+        <translation>Phrase</translation>
+    </message>
+    <message>
+        <source>Proximity</source>
+        <translation>Proximité</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation>Nom de fichier</translation>
     </message>
 </context>
 <context>
@@ -1796,11 +1872,15 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Mime type</source>
-        <translation>Type Mime</translation>
+        <translation type="obsolete">Type Mime</translation>
     </message>
     <message>
         <source>Command</source>
         <translation>Commande</translation>
+    </message>
+    <message>
+        <source>MIME type</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

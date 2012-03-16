@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0">
+<TS version="2.0" language="cs_CZ">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -37,7 +37,7 @@
     </message>
     <message>
         <source>Bad multiplier suffix in size filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Špatná přípona násobitele ve filtru velikosti</translation>
     </message>
 </context>
 <context>
@@ -132,18 +132,54 @@
     </message>
     <message>
         <source>Minimum size. You can use k/K,m/M,g/G as multipliers</source>
-        <translation type="unfinished"></translation>
+        <translation>Nejmenší velikost: Můžete použít k/K,m/M,g/G jako násobitele</translation>
     </message>
     <message>
         <source>Min. Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Nejmenší velikost</translation>
     </message>
     <message>
         <source>Maximum size. You can use k/K,m/M,g/G as multipliers</source>
-        <translation type="unfinished"></translation>
+        <translation>Největší velikost: Můžete použít k/K,m/M,g/G jako násobitele</translation>
     </message>
     <message>
         <source>Max. Size</source>
+        <translation>Největší velikost</translation>
+    </message>
+    <message>
+        <source>Select</source>
+        <translation type="obsolete">Vybrat</translation>
+    </message>
+    <message>
+        <source>Filter</source>
+        <translation>Filtrovat</translation>
+    </message>
+    <message>
+        <source>From</source>
+        <translation>Z</translation>
+    </message>
+    <message>
+        <source>To</source>
+        <translation>K</translation>
+    </message>
+    <message>
+        <source>Check this to enable filtering on dates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter dates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Check this to enable filtering on sizes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter sizes</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -151,7 +187,7 @@
     <name>CronToolW</name>
     <message>
         <source>Cron Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Dialog Cron</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -164,19 +200,28 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;For example, entering &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;*&lt;/span&gt; in &lt;span style=&quot; font-style:italic;&quot;&gt;Days, &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;12,19&lt;/span&gt; in &lt;span style=&quot; font-style:italic;&quot;&gt;Hours&lt;/span&gt; and &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;15&lt;/span&gt; in &lt;span style=&quot; font-style:italic;&quot;&gt;Minutes&lt;/span&gt; would start recollindex every day at 12:15 AM and 7:15 PM&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;A schedule with very frequent activations is probably less efficient than real time indexing.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; dávkový rejstříkovací rozvrh (cron) &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Každé pole může obsahovat zástupný symbol (*), jednoduchou číselnou hodnotu, čárkou oddělené seznamy (1,3,5) a rozsahy (1-7). Obecněji, pole se budou používat &lt;span style=&quot; font-style:italic;&quot;&gt;jak je&lt;/span&gt; uvnitř souboru crontab, a lze použít úplnou stavbu crontab, podívejte se na crontab(5).&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;Například, zadání &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;*&lt;/span&gt; in &lt;span style=&quot; font-style:italic;&quot;&gt;Dny, &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;12,19&lt;/span&gt; in &lt;span style=&quot; font-style:italic;&quot;&gt;Hours&lt;/span&gt; a &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;15&lt;/span&gt; v &lt;span style=&quot; font-style:italic;&quot;&gt;Minuty&lt;/span&gt; spustí rejstříkování (recollindex) každý den v 12:15 dopoledne a 7:15 odpoledne&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Rozvrh s velmi častým spuštěním je pravděpodobně méně účinný než je rejstříkování ve skutečném čase.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Days of week (* or 0-7, 0 or 7 is Sunday)</source>
-        <translation type="unfinished"></translation>
+        <translation>Dny v týdnu (* nebo 0-7, 0 nebo 7 je neděle)</translation>
     </message>
     <message>
         <source>Hours (* or 0-23)</source>
-        <translation type="unfinished"></translation>
+        <translation>Hodiny (* nebo 0-23)</translation>
     </message>
     <message>
         <source>Minutes (0-59)</source>
-        <translation type="unfinished"></translation>
+        <translation>Minuty (0-59)</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -184,37 +229,41 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Click &lt;span style=&quot; font-style:italic;&quot;&gt;Disable&lt;/span&gt; to stop automatic batch indexing, &lt;span style=&quot; font-style:italic;&quot;&gt;Enable&lt;/span&gt; to activate it, &lt;span style=&quot; font-style:italic;&quot;&gt;Cancel&lt;/span&gt; to change nothing.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Klepněte na &lt;span style=&quot; font-style:italic;&quot;&gt;Zakázat&lt;/span&gt; pro zastavení automatického dávkového rejstříkování, &lt;span style=&quot; font-style:italic;&quot;&gt;Povolit&lt;/span&gt; pro jeho zapnutí, &lt;span style=&quot; font-style:italic;&quot;&gt;Zrušit&lt;/span&gt;, aby vše zůstalo beze změny.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Enable</source>
-        <translation type="unfinished">Povolit</translation>
+        <translation>Povolit</translation>
     </message>
     <message>
         <source>Disable</source>
-        <translation type="unfinished"></translation>
+        <translation>Zakázat</translation>
     </message>
     <message>
         <source>It seems that manually edited entries exist for recollindex, cannot edit crontab</source>
-        <translation type="unfinished"></translation>
+        <translation>Zdá se, že pro recollindex existují ručně upravené záznamy, nelze upravit crontab</translation>
     </message>
     <message>
         <source>Error installing cron entry. Bad syntax in fields ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyba při instalaci záznamu cron. Špatná skladba v polích?</translation>
     </message>
 </context>
 <context>
     <name>EditDialog</name>
     <message>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Dialog</translation>
     </message>
 </context>
 <context>
     <name>FirstIdxDialog</name>
     <message>
         <source>First indexing setup</source>
-        <translation type="unfinished"></translation>
+        <translation>První nastavení rejstříkování</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -226,34 +275,42 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If you want more control, use the following links to adjust the indexing configuration and schedule.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;These tools can be accessed later from the &lt;span style=&quot; font-style:italic;&quot;&gt;Preferences&lt;/span&gt; menu.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Zdá se, že rejstřík pro toto nastavení neexistuje.&lt;/span&gt;&lt;br /&gt;&lt;br /&gt;Pokud chcete pouze zrejstříkovat svůj domovský adresář sadou rozumných výchozích nastavení, stiskněte tlačítko &lt;span style=&quot; font-style:italic;&quot;&gt;Spustit rejstříkování nyní&lt;/span&gt;. Podrobnosti budete moci upravit později. &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Pokud chcete mít větší dohled, použijte následující odkazy pro upravení nastavení rejstříkování a rozvrhu.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;K těmto nástrojům lze přistupovat později v nabídce &lt;span style=&quot; font-style:italic;&quot;&gt;Nastavení&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Indexing configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastavení rejstříkování</translation>
     </message>
     <message>
         <source>This will let you adjust the directories you want to index, and other parameters like excluded file paths or names, default character sets, etc.</source>
-        <translation type="unfinished"></translation>
+        <translation>Toto vám umožní nastavit adresáře, které chcete rejstříkovat, a další parametry, jako jsou cesty pro vyloučené soubory, výchozí znakové sady atd.</translation>
     </message>
     <message>
         <source>Indexing schedule</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozvrh rejstříkování</translation>
     </message>
     <message>
         <source>This will let you chose between batch and real-time indexing, and set up an automatic  schedule for batch indexing (using cron).</source>
-        <translation type="unfinished"></translation>
+        <translation>Toto vám umožní zvolit mezi dávkovým rejstříkováním a rejstříkováním ve skutečném čase, a nastavit automatický rozvrh pro dávkové rejstříkování (za použití cronu).</translation>
     </message>
     <message>
         <source>Start indexing now</source>
-        <translation type="unfinished"></translation>
+        <translation>Spustit rejstříkování nyní</translation>
     </message>
 </context>
 <context>
     <name>IdxSchedW</name>
     <message>
         <source>Index scheduling setup</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastavení rozvrhu rejstříkování</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -264,34 +321,41 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Reading the manual may help you to decide between these approaches (press F1). &lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This tool can help you set up a schedule to automate batch indexing runs, or start real time indexing when you log in (or both, which rarely makes sense). &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; rejstříkování může běžet nepřetržitě, soubory se rejstříkují při jejich změně, nebo běžet v samostatných intervalech. &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Četba příručky vám může pomoci při rozhodování se mezi těmito přístupy (stiskněte F1). &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Tento nástroj vám může pomoci s nastavením rozvrhu pro automatizaci běhů dávkového rejstříkování, nebo spustit rejstříkování ve skutečném čase, když se přihlásíte (nebo obojí, což zřídkakdy dává smysl). &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Cron scheduling</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozvrh cron</translation>
     </message>
     <message>
         <source>The tool will let you decide at what time indexing should run and will install a crontab entry.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nástroj vám umožní rozhodnout se, kdy má rejstříkování běžet, a nainstaluje záznam crontab.</translation>
     </message>
     <message>
         <source>Real time indexing start up</source>
-        <translation type="unfinished"></translation>
+        <translation>Spuštění rejstříkování ve skutečném čase</translation>
     </message>
     <message>
         <source>Decide if real time indexing will be started when you log in (only for the default index).</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozhodněte, zda se rejstříkování ve skutečném čase spustí, když se přihlásíte (pouze pro výchozí rejstřík).</translation>
     </message>
 </context>
 <context>
     <name>ListDialog</name>
     <message>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Dialog</translation>
     </message>
     <message>
         <source>GroupBox</source>
-        <translation type="unfinished"></translation>
+        <translation>Seskupovací okénko</translation>
     </message>
 </context>
 <context>
@@ -371,11 +435,11 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     </message>
     <message>
         <source>Cannot create temporary directory: </source>
-        <translation type="unfinished"></translation>
+        <translation>Nelze vytvořit dočasný adresář: </translation>
     </message>
     <message>
         <source>Error while loading file</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyba při nahrávání souboru</translation>
     </message>
 </context>
 <context>
@@ -411,6 +475,14 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     <message>
         <source>Save document to file</source>
         <translation>Uložit dokument do souboru</translation>
+    </message>
+    <message>
+        <source>Fold lines</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preserve indentation</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -476,7 +548,7 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     <name>RTIToolW</name>
     <message>
         <source>Real time indexing automatic start</source>
-        <translation type="unfinished"></translation>
+        <translation>Automatické spuštění rejstříkování ve skutečném čase</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -485,51 +557,56 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; indexing can be set up to run as a daemon, updating the index as files change, in real time. You gain an always up to date index, but system resources are used permanently.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; rejstříkování může být nastaveno tak, aby běželo jako démon. Soubory jsou aktualizovány při jejich změně, ve skutečném čase. Získáte tak vždy nejnovější rejstřík, ale prostředky systému se při tom používají nepřetržitě.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Start indexing daemon with my desktop session.</source>
-        <translation type="unfinished"></translation>
+        <translation>Spustit rejstříkovacího démona s mým sezením pracovní plochy.</translation>
     </message>
     <message>
         <source>Also start indexing daemon right now.</source>
-        <translation type="unfinished"></translation>
+        <translation>Spustit rejstříkovacího démona ihned.</translation>
     </message>
     <message>
         <source>Replacing: </source>
-        <translation type="unfinished"></translation>
+        <translation>Nahrazení:</translation>
     </message>
     <message>
         <source>Replacing file</source>
-        <translation type="unfinished"></translation>
+        <translation>Nahrazení souboru</translation>
     </message>
     <message>
         <source>Can&apos;t create: </source>
-        <translation type="unfinished"></translation>
+        <translation>Nelze vytvořit: </translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation type="unfinished">Varování</translation>
+        <translation>Varování</translation>
     </message>
     <message>
         <source>Could not execute recollindex</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se spustit recollindex</translation>
     </message>
     <message>
         <source>Deleting: </source>
-        <translation type="unfinished"></translation>
+        <translation>Mazání:</translation>
     </message>
     <message>
         <source>Deleting file</source>
-        <translation type="unfinished"></translation>
+        <translation>Smazání souboru</translation>
     </message>
     <message>
         <source>Removing autostart</source>
-        <translation type="unfinished"></translation>
+        <translation>Odstranění automatického spuštění</translation>
     </message>
     <message>
         <source>Autostart file deleted. Kill current process too ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Soubor automatického spuštění smazán. Zabít i současný proces?</translation>
     </message>
 </context>
 <context>
@@ -728,66 +805,70 @@ Chcete spustit dialog s nastavením?</translation>
     </message>
     <message>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Žádný</translation>
     </message>
     <message>
         <source>Updating</source>
-        <translation type="unfinished"></translation>
+        <translation>Obnova</translation>
     </message>
     <message>
         <source>Done</source>
-        <translation type="unfinished"></translation>
+        <translation>Hotovo</translation>
     </message>
     <message>
         <source>Monitor</source>
-        <translation type="unfinished"></translation>
+        <translation>Dohled</translation>
     </message>
     <message>
         <source>Indexing failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejstříkování se nezdařilo</translation>
     </message>
     <message>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
-        <translation type="unfinished"></translation>
+        <translation>Nynější rejstříkovací proces nebyl spuštěn z tohoto rozhraní. Klepněte na OK pro jeho zabití, nebo na Zrušit, aby byl ponechán sám</translation>
     </message>
     <message>
         <source>Erasing index</source>
-        <translation type="unfinished"></translation>
+        <translation>Smazání rejstříku</translation>
     </message>
     <message>
         <source>Reset the index and start from scratch ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastavit rejstřík znovu a začít od nuly?</translation>
     </message>
     <message>
         <source>Query in progress.&lt;br&gt;Due to limitations of the indexing library,&lt;br&gt;cancelling will exit the program</source>
-        <translation type="unfinished"></translation>
+        <translation>Hledání běží.&lt;br&gt;Kvůli omezením rejstříkovací knihovny&lt;br&gt;zrušení ukončí program</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyba</translation>
     </message>
     <message>
         <source>Index not open</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejstřík neotevřen</translation>
     </message>
     <message>
         <source>Index query error</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyba při dotazu na rejstřík</translation>
     </message>
     <message>
         <source>Indexed Mime Types</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Rejstříkované mime typy</translation>
     </message>
     <message>
         <source>Content has been indexed for these mime types:</source>
-        <translation type="unfinished"></translation>
+        <translation>Obsah byl rejstříkován pro tyto mime typy:</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejstřík není pro tento soubor nejnovější. Odmítá se riziko, že by byl ukázán špatný záznam. Klepněte na OK pro obnovení rejstříku pro tento soubor, pak, až bude rejstříkování hotovo, spusťte dotaz znovu. Jinak klepněte na Zrušit.</translation>
     </message>
     <message>
         <source>Can&apos;t update index: indexer running</source>
+        <translation>Nelze obnovit rejstřík: běží rejstříkovač</translation>
+    </message>
+    <message>
+        <source>Indexed MIME Types</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -975,93 +1056,101 @@ Chcete spustit dialog s nastavením?</translation>
     </message>
     <message>
         <source>&amp;Rebuild index</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Sestavit rejstřík znovu</translation>
     </message>
     <message>
         <source>&amp;Show indexed types</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ukázat rejstříkované typy</translation>
     </message>
     <message>
         <source>Shift+PgUp</source>
-        <translation type="unfinished"></translation>
+        <translation>Shift+PgUp</translation>
     </message>
     <message>
         <source>&amp;Indexing schedule</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozvrh &amp;rejstříkování</translation>
     </message>
     <message>
         <source>E&amp;xternal index dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Dialog pro &amp;vnější rejstříkování</translation>
     </message>
 </context>
 <context>
     <name>RecollModel</name>
     <message>
         <source>File name</source>
-        <translation type="unfinished">Dateiname</translation>
+        <translation>Název souboru</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="unfinished">Mime Type</translation>
+        <translation type="obsolete">Mime typ</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation type="unfinished">Datum</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <source>Abstract</source>
-        <translation type="unfinished"></translation>
+        <translation>Výtah</translation>
     </message>
     <message>
         <source>Author</source>
-        <translation type="unfinished"></translation>
+        <translation>Autor</translation>
     </message>
     <message>
         <source>Document size</source>
-        <translation type="unfinished"></translation>
+        <translation>Velikost dokumentu</translation>
     </message>
     <message>
         <source>Document date</source>
-        <translation type="unfinished"></translation>
+        <translation>Datum dokumentu</translation>
     </message>
     <message>
         <source>File size</source>
-        <translation type="unfinished"></translation>
+        <translation>Velikost souboru</translation>
     </message>
     <message>
         <source>File date</source>
-        <translation type="unfinished"></translation>
+        <translation>Datum souboru</translation>
+    </message>
+    <message>
+        <source> Ipath</source>
+        <translation type="obsolete">Ipath</translation>
     </message>
     <message>
         <source>Keywords</source>
-        <translation type="unfinished"></translation>
+        <translation>Klíčová slova</translation>
     </message>
     <message>
         <source>Original character set</source>
-        <translation type="unfinished"></translation>
+        <translation>Původní znaková sada</translation>
     </message>
     <message>
         <source>Relevancy rating</source>
-        <translation type="unfinished"></translation>
+        <translation>Hodnocení závažnosti</translation>
     </message>
     <message>
         <source>Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Název</translation>
     </message>
     <message>
         <source>URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Adresa (URL)</translation>
     </message>
     <message>
         <source>Mtime</source>
-        <translation type="unfinished"></translation>
+        <translation>Mtime</translation>
     </message>
     <message>
         <source>Date and time</source>
-        <translation type="unfinished"></translation>
+        <translation>Datum a čas</translation>
     </message>
     <message>
         <source>Ipath</source>
+        <translation>Ipath</translation>
+    </message>
+    <message>
+        <source>MIME type</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1220,7 +1309,7 @@ Chcete spustit dialog s nastavením?</translation>
     </message>
     <message>
         <source>Add &quot;%1&quot; column</source>
-        <translation type="unfinished"></translation>
+        <translation>Přidat sloupec &quot;%1&quot;</translation>
     </message>
 </context>
 <context>
@@ -1376,27 +1465,27 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Any of these</source>
-        <translation>jakýkoli z těchto</translation>
+        <translation type="obsolete">jakýkoli z těchto</translation>
     </message>
     <message>
         <source>All of these</source>
-        <translation>Všechny tyto</translation>
+        <translation type="obsolete">Všechny tyto</translation>
     </message>
     <message>
         <source>None of these</source>
-        <translation>Žádný z těchto</translation>
+        <translation type="obsolete">Žádný z těchto</translation>
     </message>
     <message>
         <source>This phrase</source>
-        <translation>Tato slova</translation>
+        <translation type="obsolete">Tato slova</translation>
     </message>
     <message>
         <source>Terms in proximity</source>
-        <translation>Podobné výrazy</translation>
+        <translation type="obsolete">Podobné výrazy</translation>
     </message>
     <message>
         <source>File name matching</source>
-        <translation>Odpovídající názvy souborů</translation>
+        <translation type="obsolete">Odpovídající názvy souborů</translation>
     </message>
     <message>
         <source>Select the type of query that will be performed with the words</source>
@@ -1409,6 +1498,30 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     <message>
         <source>No field</source>
         <translation>Žádné pole</translation>
+    </message>
+    <message>
+        <source>Any</source>
+        <translation>Jakýkoliv</translation>
+    </message>
+    <message>
+        <source>All</source>
+        <translation>Vše</translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation>Žádný</translation>
+    </message>
+    <message>
+        <source>Phrase</source>
+        <translation>Tato slova</translation>
+    </message>
+    <message>
+        <source>Proximity</source>
+        <translation>Podobné výrazy</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation>Název souboru</translation>
     </message>
 </context>
 <context>
@@ -1551,7 +1664,7 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Choose</source>
-        <translation type="unfinished"></translation>
+        <translation>Vybrat</translation>
     </message>
 </context>
 <context>
@@ -1721,11 +1834,15 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Mime type</source>
-        <translation>Mime typ</translation>
+        <translation type="obsolete">Mime typ</translation>
     </message>
     <message>
         <source>Command</source>
         <translation>Příkaz</translation>
+    </message>
+    <message>
+        <source>MIME type</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2152,54 +2269,57 @@ U velkých dokumentů může být pomalé.</translation>
     </message>
     <message>
         <source>Style sheet</source>
-        <translation type="unfinished"></translation>
+        <translation>Stylový list</translation>
     </message>
     <message>
         <source>Opens a dialog to select the style sheet file</source>
-        <translation type="unfinished"></translation>
+        <translation>Otevře dialog pro výběr souboru se stylovým listem</translation>
     </message>
     <message>
         <source>Choose</source>
-        <translation type="unfinished"></translation>
+        <translation>Vybrat</translation>
     </message>
     <message>
         <source>Resets the style sheet to default</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastaví stylový list znovu na výchozí</translation>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses some indentation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Řádky v textu PRE nejsou složeny. Použití BR povede ke ztrátě odsazení.</translation>
     </message>
     <message>
         <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html in preview.</source>
-        <translation type="unfinished"></translation>
+        <translation>Použít značky &lt;PRE&gt; namísto &lt;BR&gt; pro zobrazení prostého textu formátovaného v náhledu jako HTML.</translation>
     </message>
     <message>
         <source>Result List</source>
-        <translation type="unfinished"></translation>
+        <translation>Seznam s výsledky</translation>
     </message>
     <message>
         <source>Edit result paragraph format string</source>
-        <translation type="unfinished"></translation>
+        <translation>Upravit řetězec formátu pro výsledky</translation>
     </message>
     <message>
         <source>Edit result page html header insert</source>
-        <translation type="unfinished"></translation>
+        <translation>Upravit záhlaví html na straně s výsledky</translation>
     </message>
     <message>
         <source>Date format (strftime(3))</source>
-        <translation type="unfinished"></translation>
+        <translation>Formát data (strftime(3))</translation>
     </message>
     <message>
         <source>Frequency percentage threshold over which we do not use terms inside autophrase. 
 Frequent terms are a major performance issue with phrases. 
 Skipped terms augment the phrase slack, and reduce the autophrase efficiency.
 The default value is 2 (percent). </source>
-        <translation type="unfinished"></translation>
+        <translation>Práh četnosti (procento), od kterého se výrazy nepoužívají.
+Slovní obraty obsahující příliš četné výrazy způsobují výkonnostní potíže.
+Přeskočené výrazy zvětšují vzdálenost slovního obratu a zmenšují účinnost funkce automatického hledání slovního obratu.
+Výchozí hodnota je 2 (procenta).</translation>
     </message>
     <message>
         <source>Autophrase term frequency threshold percentage</source>
-        <translation type="unfinished"></translation>
+        <translation>Četnost výskytu výrazu (procento) pro automatické tvoření slovních obratů</translation>
     </message>
 </context>
 </TS>

@@ -1062,7 +1062,7 @@ void RclMain::showActiveTypes()
 	}	
     }
     ListDialog dialog;
-    dialog.setWindowTitle(tr("Indexed Mime Types"));
+    dialog.setWindowTitle(tr("Indexed MIME Types"));
 
     // Turn the result into a string and display
     dialog.groupBox->setTitle(tr("Content has been indexed for these mime types:"));

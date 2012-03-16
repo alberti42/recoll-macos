@@ -62,7 +62,7 @@ void ViewAction::fillLists()
 	   new QTableWidgetItem(QString::fromAscii(it->second.c_str())));
 	row++;
     }
-    QStringList labels(tr("Mime type"));
+    QStringList labels(tr("MIME type"));
     labels.push_back(tr("Command"));
     actionsLV->setHorizontalHeaderLabels(labels);
 }

@@ -72,7 +72,7 @@
     </message>
     <message>
         <source>Check this to use file categories instead of raw mime types</source>
-        <translation>Marque esto para usar categorias en lugar de tipos MIME</translation>
+        <translation>Marque esto para usar categorías en lugar de tipos MIME</translation>
     </message>
     <message>
         <source>Save as default</source>
@@ -145,6 +145,38 @@
     <message>
         <source>Max. Size</source>
         <translation>Tamaño máximo</translation>
+    </message>
+    <message>
+        <source>Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Check this to enable filtering on dates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter dates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>From</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>To</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Check this to enable filtering on sizes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter sizes</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -255,7 +287,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>This will let you adjust the directories you want to index, and other parameters like excluded file paths or names, default character sets, etc.</source>
-        <translation>Esto le permite ajustar los directorios que quiere indexar y otros parámetros, como rutas de ficheros o nombres excluidos, conjuntos de caracteres estandar, etc.</translation>
+        <translation>Esto le permite ajustar los directorios que quiere indexar y otros parámetros, como rutas de ficheros o nombres excluidos, conjuntos de caracteres estándar, etc.</translation>
     </message>
     <message>
         <source>Indexing schedule</source>
@@ -300,7 +332,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>The tool will let you decide at what time indexing should run and will install a crontab entry.</source>
-        <translation>Esta herramiente le permite decidir a qué hora la indexación se ejecutará e instalará una entrada en el crontab.</translation>
+        <translation>Esta herramienta le permite decidir a qué hora la indexación se ejecutará e instalará una entrada en el crontab.</translation>
     </message>
     <message>
         <source>Real time indexing start up</source>
@@ -434,6 +466,14 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Save document to file</source>
         <translation>Guardar documento a fichero</translation>
+    </message>
+    <message>
+        <source>Fold lines</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preserve indentation</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -650,7 +690,7 @@ Por favor revise el fichero mimeconf</translation>
     </message>
     <message>
         <source>Update &amp;Index</source>
-        <translation>Actualizar &amp;Indice</translation>
+        <translation>Actualizar &amp;Índice</translation>
     </message>
     <message>
         <source>Indexing interrupted</source>
@@ -803,7 +843,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Indexed Mime Types</source>
-        <translation>Tipos MIME indexados</translation>
+        <translation type="obsolete">Tipos MIME indexados</translation>
     </message>
     <message>
         <source>Content has been indexed for these mime types:</source>
@@ -816,6 +856,10 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>Can&apos;t update index: indexer running</source>
         <translation>No se puede actualizar el índice: indexador en ejecución</translation>
+    </message>
+    <message>
+        <source>Indexed MIME Types</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1018,7 +1062,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>E&amp;xternal index dialog</source>
-        <translation>Configuración de índices e&amp;xternos</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1053,7 +1097,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source> Ipath</source>
-        <translation type="obsolete">Ipath</translation>
+        <translation type="obsolete"> Ipath</translation>
     </message>
     <message>
         <source>Keywords</source>
@@ -1061,7 +1105,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Mime type</source>
-        <translation>Tipo MIME</translation>
+        <translation type="obsolete">Tipo MIME</translation>
     </message>
     <message>
         <source>Original character set</source>
@@ -1093,7 +1137,11 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Ipath</source>
-        <translation>Ipath</translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MIME type</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1164,7 +1212,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Abir documento/directorio ascendente</translation>
+        <translation>&amp;Abrir documento/directorio ascendente</translation>
     </message>
     <message>
         <source>&amp;Open</source>
@@ -1247,7 +1295,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Add &quot;%1&quot; column</source>
-        <translation>Añadir columna &quot;%1&quot;</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1321,7 +1369,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Select an item:</source>
-        <translation>Seleccione un item:</translation>
+        <translation>Seleccione un ítem:</translation>
     </message>
     <message>
         <source>Enter query language expression. Cheat sheet:&lt;br&gt;
@@ -1400,27 +1448,27 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     <name>SearchClauseW</name>
     <message>
         <source>Any of these</source>
-        <translation>Cualquiera</translation>
+        <translation type="obsolete">Cualquiera</translation>
     </message>
     <message>
         <source>All of these</source>
-        <translation>Todas</translation>
+        <translation type="obsolete">Todas</translation>
     </message>
     <message>
         <source>None of these</source>
-        <translation>Ninguna</translation>
+        <translation type="obsolete">Ninguna</translation>
     </message>
     <message>
         <source>This phrase</source>
-        <translation>Frase</translation>
+        <translation type="obsolete">Frase</translation>
     </message>
     <message>
         <source>Terms in proximity</source>
-        <translation>Términos en proximidad</translation>
+        <translation type="obsolete">Términos en proximidad</translation>
     </message>
     <message>
         <source>File name matching</source>
-        <translation>Nombre de fichero</translation>
+        <translation type="obsolete">Nombre de fichero</translation>
     </message>
     <message>
         <source>Select the type of query that will be performed with the words</source>
@@ -1433,6 +1481,30 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     <message>
         <source>No field</source>
         <translation>Ningún campo</translation>
+    </message>
+    <message>
+        <source>Any</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All</source>
+        <translation type="unfinished">Todo</translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished">Ninguno</translation>
+    </message>
+    <message>
+        <source>Phrase</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Proximity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation type="unfinished">Nombre de fichero</translation>
     </message>
 </context>
 <context>
@@ -1544,11 +1616,15 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
     <message>
         <source>Mime type</source>
-        <translation>Tipo MIME</translation>
+        <translation type="obsolete">Tipo MIME</translation>
     </message>
     <message>
         <source>Command</source>
         <translation>Comando</translation>
+    </message>
+    <message>
+        <source>MIME type</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1730,7 +1806,7 @@ Esto ayuda con las búsquedas de ficheros de texto muy grandes (ej: ficheros de 
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation>El lenguaje para el diccionario aspell. Esto debe ser algo como &apos;en&apos; o &apos;fr&apos;...&lt;br&gt;Si este valor no se especifica, el ambiente NLS será usuado para averiguarlo, lo cual usualmente funciona. Para tener una idea de qué esta instalado en su sistema escriba &apos;aspell-config&apos; y busque por ficheros .dat dentro del directorio &apos;data-dir&apos;.</translation>
+        <translation>El lenguaje para el diccionario aspell. Esto debe ser algo como &apos;en&apos; o &apos;fr&apos;...&lt;br&gt;Si este valor no se especifica, el ambiente NLS será usado para averiguarlo, lo cual usualmente funciona. Para tener una idea de qué esta instalado en su sistema escriba &apos;aspell-config&apos; y busque por ficheros .dat dentro del directorio &apos;data-dir&apos;.</translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -1746,7 +1822,7 @@ Esto ayuda con las búsquedas de ficheros de texto muy grandes (ej: ficheros de 
     </message>
     <message>
         <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
-        <translation>Utilizar el comando &apos;file&apos; del sistema si la idenficación interna de tipos MIME falla.</translation>
+        <translation>Utilizar el comando &apos;file&apos; del sistema si la identificación interna de tipos MIME falla.</translation>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
@@ -2004,14 +2080,14 @@ Puede ser lento para documentos grandes.</translation>
 Frequent terms are a major performance issue with phrases. 
 Skipped terms augment the phrase slack, and reduce the autophrase efficiency.
 The default value is 2 (percent). </source>
-        <translation>Umbral de porcentaje de frequencia sobre el cuál no utilizamos términos dentro de la autofrase.
+        <translation>Umbral de porcentaje de frecuencia sobre el cuál no utilizamos términos dentro de la autofrase.
 Los términos frequentes son un problema importante de desempeño con las frases.
 Términos omitidos aumenta la holgura de la frase, y reducen la eficiencia de la autofrase.
 El valor por defecto es 2 (por ciento).</translation>
     </message>
     <message>
         <source>Autophrase term frequency threshold percentage</source>
-        <translation>Porcentaje del umbral de frequencia de términos de autofrase</translation>
+        <translation>Porcentaje del umbral de frecuencia de términos de autofrase</translation>
     </message>
 </context>
 </TS>

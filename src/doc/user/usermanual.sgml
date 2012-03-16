@@ -1494,6 +1494,15 @@ fvwm
         </para>
       </formalpara>
 
+      <formalpara><title>Ajusting the result table columns</title>
+        <para>When displaying results in table mode, you can use a
+        right click on the table headers to activate a pop-up menu
+        which will let you adjust what columns are displayed. You can
+        drag the column headers to adjust their order. You can click
+        them to sort by the field displayed in the column.  You can
+        also save the result list in CSV format.</para> 
+      </formalpara>
+
       <formalpara><title>Query explanation</title>
         <para>You can get an exact description of what the query
         looked for, including stem expansion, and Boolean operators

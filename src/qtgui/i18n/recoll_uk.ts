@@ -146,6 +146,38 @@
         <source>Max. Size</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>From</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>To</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Check this to enable filtering on dates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter dates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Check this to enable filtering on sizes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter sizes</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>CronToolW</name>
@@ -411,6 +443,14 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Save document to file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fold lines</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preserve indentation</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -783,10 +823,6 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Indexed Mime Types</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Content has been indexed for these mime types:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -796,6 +832,10 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Can&apos;t update index: indexer running</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexed MIME Types</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1006,7 +1046,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="unfinished">Тип MIME</translation>
+        <translation type="obsolete">Тип MIME</translation>
     </message>
     <message>
         <source>Date</source>
@@ -1066,6 +1106,10 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Ipath</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MIME type</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1364,27 +1408,27 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>SearchClauseW</name>
     <message>
         <source>Any of these</source>
-        <translation>будь-які слова</translation>
+        <translation type="obsolete">будь-які слова</translation>
     </message>
     <message>
         <source>All of these</source>
-        <translation>усі слова</translation>
+        <translation type="obsolete">усі слова</translation>
     </message>
     <message>
         <source>None of these</source>
-        <translation>без цих слів</translation>
+        <translation type="obsolete">без цих слів</translation>
     </message>
     <message>
         <source>This phrase</source>
-        <translation>фраза</translation>
+        <translation type="obsolete">фраза</translation>
     </message>
     <message>
         <source>Terms in proximity</source>
-        <translation>слова поблизу</translation>
+        <translation type="obsolete">слова поблизу</translation>
     </message>
     <message>
         <source>File name matching</source>
-        <translation>назва файлу</translation>
+        <translation type="obsolete">назва файлу</translation>
     </message>
     <message>
         <source>Select the type of query that will be performed with the words</source>
@@ -1397,6 +1441,30 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>No field</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Any</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All</source>
+        <translation type="unfinished">всі</translation>
+    </message>
+    <message>
+        <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Phrase</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Proximity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation type="unfinished">Ім&apos;я файлу</translation>
     </message>
 </context>
 <context>
@@ -1741,10 +1809,14 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Mime type</source>
-        <translation>Тип MIME</translation>
+        <translation type="obsolete">Тип MIME</translation>
     </message>
     <message>
         <source>Command</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MIME type</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
