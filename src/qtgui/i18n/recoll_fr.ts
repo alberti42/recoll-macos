@@ -172,15 +172,15 @@
     </message>
     <message>
         <source>Find</source>
-        <translation type="unfinished"></translation>
+        <translation>Trouver</translation>
     </message>
     <message>
         <source>Check this to enable filtering on sizes</source>
-        <translation type="unfinished"></translation>
+        <translation>Cocher pour activer le fitrage sur taille fichier</translation>
     </message>
     <message>
         <source>Filter sizes</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtrer les tailles</translation>
     </message>
 </context>
 <context>
@@ -200,7 +200,16 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;For example, entering &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;*&lt;/span&gt; in &lt;span style=&quot; font-style:italic;&quot;&gt;Days, &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;12,19&lt;/span&gt; in &lt;span style=&quot; font-style:italic;&quot;&gt;Hours&lt;/span&gt; and &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;15&lt;/span&gt; in &lt;span style=&quot; font-style:italic;&quot;&gt;Minutes&lt;/span&gt; would start recollindex every day at 12:15 AM and 7:15 PM&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;A schedule with very frequent activations is probably less efficient than real time indexing.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt;: planification de l&apos;indexation périodique (cron) &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Chaque champ peut contenir un joker (*), une simple valeur numérique , des listes ponctuées par des virgules (1,3,5) et des intervalles (1-7). Plus généralement, les champs seront utilisés &lt;span style=&quot; font-style:italic;&quot;&gt;tels quels&lt;/span&gt; dans le fichier crontab, et la syntaxe générale crontab peut être utilisée, voir la page de manuel crontab(5).&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;Par exemple, en entrant &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;*&lt;/span&gt; dans &lt;span style=&quot; font-style:italic;&quot;&gt;Jours, &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;12,19&lt;/span&gt; dans &lt;span style=&quot; font-style:italic;&quot;&gt;Heures&lt;/span&gt; et &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;15&lt;/span&gt; dans &lt;span style=&quot; font-style:italic;&quot;&gt;Minutes&lt;/span&gt;, recollindex démarrerait chaque hour à 12:15 et 19:15&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Un planning avec des activations très fréquentes est probablement moins efficace que l&apos;indexation au fil de l&apos;eau.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Days of week (* or 0-7, 0 or 7 is Sunday)</source>
@@ -220,7 +229,11 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Click &lt;span style=&quot; font-style:italic;&quot;&gt;Disable&lt;/span&gt; to stop automatic batch indexing, &lt;span style=&quot; font-style:italic;&quot;&gt;Enable&lt;/span&gt; to activate it, &lt;span style=&quot; font-style:italic;&quot;&gt;Cancel&lt;/span&gt; to change nothing.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Cliquer &lt;span style=&quot; font-style:italic;&quot;&gt;Désactiver&lt;/span&gt; pour arrêter l&apos;indexation automatique périodique, &lt;span style=&quot; font-style:italic;&quot;&gt;Activer&lt;/span&gt; pour la démarrer, &lt;span style=&quot; font-style:italic;&quot;&gt;Annuler&lt;/span&gt; pour ne rien changer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Enable</source>
@@ -262,7 +275,15 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If you want more control, use the following links to adjust the indexing configuration and schedule.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;These tools can be accessed later from the &lt;span style=&quot; font-style:italic;&quot;&gt;Preferences&lt;/span&gt; menu.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Il semble que l&apos;index pour cette configuration n&apos;existe pas encore.&lt;/span&gt;&lt;br /&gt;&lt;br /&gt;Si vous voulez simplement indexer votre répertoire avec un jeu raisonnable de valeurs par défaut, cliquer le bouton &lt;span style=&quot; font-style:italic;&quot;&gt;Démarrer l&apos;indexation maintenant&lt;/span&gt;. Vous pourrez ajuster les détails plus tard. &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Si vous voulez plus de contrôle, utilisez les liens qui suivent pour ajuster la configuration et le planning d&apos;indexation.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Ces outils peuvent être accédés plus tard à partir du menu &lt;span style=&quot; font-style:italic;&quot;&gt;Preferences&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Indexing configuration</source>
@@ -300,7 +321,14 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Reading the manual may help you to decide between these approaches (press F1). &lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This tool can help you set up a schedule to automate batch indexing runs, or start real time indexing when you log in (or both, which rarely makes sense). &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;L&apos;indexation &lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; peut fonctionner en permanence, traitant les fichiers dès qu&apos;ils sont modifiés, ou être exécutée à des moments prédéterminés. &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Une lecture du manuel peut vous aider à choisir entre ces approches (presser F1). &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Cet outil peut vous aider à planifier l&apos;indexation périodique, ou configurer un démarrage automatique de l&apos;indexation au fil de l&apos;eau quand vous vous connectez (ou les deux, ce qui est rarement pertinent). &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Cron scheduling</source>
@@ -366,7 +394,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>&amp;Previous</source>
-        <translation>&amp;Precédent</translation>
+        <translation>&amp;Précédent</translation>
     </message>
     <message>
         <source>Match &amp;Case</source>
@@ -437,7 +465,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Select All</source>
-        <translation>Tout selectionner</translation>
+        <translation>Tout sélectionner</translation>
     </message>
     <message>
         <source>Copy</source>
@@ -449,11 +477,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Fold lines</source>
-        <translation type="unfinished"></translation>
+        <translation>Replier les lignes</translation>
     </message>
     <message>
         <source>Preserve indentation</source>
-        <translation type="unfinished"></translation>
+        <translation>Préserver l&apos;indentation</translation>
     </message>
 </context>
 <context>
@@ -528,7 +556,12 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; indexing can be set up to run as a daemon, updating the index as files change, in real time. You gain an always up to date index, but system resources are used permanently.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;L&apos;indexation &lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; peut être configurer pour s&apos;exécuter en arrière plan, mettant à jour l&apos;index au fur et à mesure que des documents sont modifiés. Vous y gagnez un index toujours à jour, mais des ressources systême (mémoire et processeur) sont consommées en permanence.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Start indexing daemon with my desktop session.</source>
@@ -665,7 +698,7 @@ Vérifier le fichier mimeconf</translation>
     </message>
     <message>
         <source>Update &amp;Index</source>
-        <translation>Mise à jour &amp;Index</translation>
+        <translation>Mettre à jour l&apos;&amp;Index</translation>
     </message>
     <message>
         <source>Indexing interrupted</source>
@@ -843,7 +876,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>Indexed MIME Types</source>
-        <translation type="unfinished"></translation>
+        <translation>Types MIME indexés</translation>
     </message>
 </context>
 <context>
@@ -966,7 +999,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>&amp;Indexing configuration</source>
-        <translation>Configuration &amp;Indexation</translation>
+        <translation>Configuration d&apos;&amp;Indexation</translation>
     </message>
     <message>
         <source>All</source>
@@ -1125,7 +1158,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>MIME type</source>
-        <translation type="unfinished"></translation>
+        <translation>Type MIME</translation>
     </message>
 </context>
 <context>
@@ -1880,7 +1913,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>MIME type</source>
-        <translation type="unfinished"></translation>
+        <translation>Type MIME</translation>
     </message>
 </context>
 <context>
@@ -1946,7 +1979,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
-        <translation>Le nom d&apos;un repertoire ou stocker les copies des pages visitees.&lt;br&gt;Un chemin relatif se refere au repertoire de configuration.</translation>
+        <translation>Le nom d&apos;un répertoire où stocker les copies des pages visitées.&lt;br&gt;Un chemin relatif se réfère au répertoire de configuration.</translation>
     </message>
     <message>
         <source>Max. size for the web store (MB)</source>
@@ -2026,19 +2059,19 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     <name>confgui::ConfTopPanelW</name>
     <message>
         <source>Top directories</source>
-        <translation>Repertoires de depart</translation>
+        <translation>Répertoires de départ</translation>
     </message>
     <message>
         <source>The list of directories where recursive indexing starts. Default: your home.</source>
-        <translation>La liste des repertoires ou l&apos;indexation recursive demarre. Default: votre repertoire par defaut.</translation>
+        <translation>La liste des répertoires où l&apos;indexation récursive démarre. Défault: votre répertoire par défaut.</translation>
     </message>
     <message>
         <source>Skipped paths</source>
-        <translation>Chemins ignores</translation>
+        <translation>Chemins ignorés</translation>
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation>Ce sont des noms de repertoires ou l&apos;indexation n&apos;entrera pas.&lt;br&gt;Ils peuvent contenir des caracteres jokers. Les chemins doivent correspondre a ceux vus par l&apos;indexeur (par exemple: si un des repertoires de depart est &apos;/home/me&apos; et que &apos;/home&apos; est un lien sur &apos;/usr/home&apos;, une entree correcte ici serait &apos;/home/me/tmp*&apos; , pas &apos;/usr/home/me/tmp*&apos;)</translation>
+        <translation>Ce sont des noms de répertoires où l&apos;indexation n&apos;entrera pas.&lt;br&gt;Ils peuvent contenir des caractères jokers. Les chemins doivent correspondre à ceux vus par l&apos;indexeur (par exemple: si un des répertoires de départ est &apos;/home/me&apos; et que &apos;/home&apos; est un lien sur &apos;/usr/home&apos;, une entrée correcte ici serait &apos;/home/me/tmp*&apos; , pas &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
@@ -2058,7 +2091,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Log verbosity level</source>
-        <translation>Niveau de verbosite</translation>
+        <translation>Niveau de verbosité</translation>
     </message>
     <message>
         <source>This value adjusts the amount of messages,&lt;br&gt;from only errors to a lot of debugging data.</source>
@@ -2066,11 +2099,11 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Index flush megabytes interval</source>
-        <translation>Intervalle d&apos;ecriture de l&apos;index en megaoctets</translation>
+        <translation>Intervalle d&apos;écriture de l&apos;index en mégaoctets</translation>
     </message>
     <message>
         <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
-        <translation>Ajuste la quantite de donnees lues entre les ecritures sur disque.&lt;br&gt;Controle l&apos;utilisation de la memoire. Defaut 10 Mo </translation>
+        <translation>Ajuste la quantité de données lues entre les écritures sur disque.&lt;br&gt;Contrôle l&apos;utilisation de la mémoire. Défaut 10 Mo </translation>
     </message>
     <message>
         <source>Max disk occupation (%)</source>
@@ -2090,15 +2123,15 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation>Langue du dictionnaire aspell. Une valeur correcte ressemble a &apos;en&apos; ou &apos;fr&apos;... &lt;br&gt;Si cette valeur n&apos;est pas positionnee, l&apos;environnement est utilise pour la calculer, ce qui marche bien, habituellement. Utiliser &apos;aspell config&apos; et regarder les fichiers .dat dans le repertoire &apos;data-dir&apos; pour connaitre les langues aspell installees sur votre systeme.</translation>
+        <translation>Langue du dictionnaire aspell. Une valeur correcte ressemble à &apos;en&apos; ou &apos;fr&apos;... &lt;br&gt;Si cette valeur n&apos;est pas positionnée, l&apos;environnement est utilisé pour la calculer, ce qui marche bien, habituellement. Utiliser &apos;aspell config&apos; et regarder les fichiers .dat dans le répertoire &apos;data-dir&apos; pour connaitre les langues aspell installées sur votre système.</translation>
     </message>
     <message>
         <source>Database directory name</source>
-        <translation>Repertoire de stockage de l&apos;index</translation>
+        <translation>Répertoire de stockage de l&apos;index</translation>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation>Le nom d&apos;un repertoire ou l&apos;index sera stocke&lt;br&gt;Un chemin relatif demarrera au repertoire de configuration. Le defaut est &apos;xapiandb&apos;.</translation>
+        <translation>Le nom d&apos;un répertoire où l&apos;index sera stocké&lt;br&gt;Un chemin relatif démarrera au répertoire de configuration. Le défaut est &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
