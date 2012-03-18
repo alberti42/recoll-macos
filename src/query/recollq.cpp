@@ -355,12 +355,16 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 	if (op_flags & OPT_b) {
 		cout << doc.url << endl;
 	} else {
+	    string titleorfn = doc.meta[Rcl::Doc::keytt];
+	    if (titleorfn.empty())
+		titleorfn = doc.meta[Rcl::Doc::keyfn];
+
 	    char cpc[20];
 	    sprintf(cpc, "%d", doc.pc);
 	    cout 
 		<< doc.mimetype << "\t"
 		<< "[" << doc.url << "]" << "\t" 
-		<< "[" << doc.meta[Rcl::Doc::keytt] << "]" << "\t"
+		<< "[" << titleorfn << "]" << "\t"
 		<< doc.fbytes << "\tbytes" << "\t"
 		<<  endl;
 	    if (op_flags & OPT_m) {
