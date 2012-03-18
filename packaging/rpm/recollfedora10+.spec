@@ -1,14 +1,14 @@
 Name:           recoll
-Version:        1.16.1
+Version:        1.17.0
 Release:        1%{?dist}
 Summary:        Desktop full text search tool with a qt gui
 
 Group:          Applications/Databases
 License:        GPLv2
 URL:            http://www.recoll.org/
-Source0:        http://www.recoll.org/recoll-1.16.1.tar.gz 
+Source0:        http://www.recoll.org/recoll-1.17.0.tar.gz 
 
-BuildRequires:  qt-devel xapian-core-devel zlib-devel desktop-file-utils
+BuildRequires:  qt-devel qt-webkit-devel xapian-core-devel zlib-devel desktop-file-utils
 
 %description
 Recoll is a personal full text search package for Linux, FreeBSD and
@@ -50,6 +50,8 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Sun Mar 18 2012  J.F. Dockes <jfd@recoll.org> 1.17.9-1
+- updated to release 1.16.1
 * Wed Sep 28 2011  J.F. Dockes <jfd@recoll.org> 1.16.1-1
 - updated to release 1.16.1
 * Wed Sep 21 2011  J.F. Dockes <jfd@recoll.org> 1.16.0-1
