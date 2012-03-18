@@ -546,8 +546,10 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
     // If the Content-Disposition is not inline, we treat it as
     // attachment, as per rfc2183. 
     // If it is inline but not text or html, same thing.
+    // Some early MIME msgs have "text" instead of "text/plain" as type
     if (stringlowercmp("inline", content_disposition.value) ||
 	(stringlowercmp(cstr_textplain, content_type.value) && 
+	 stringlowercmp("text", content_type.value) && 
 	 stringlowercmp("text/html", content_type.value)) ) {
 	if (!filename.empty()) {
 	    out += "\n";
