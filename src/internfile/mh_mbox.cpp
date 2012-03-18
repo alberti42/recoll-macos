@@ -525,6 +525,7 @@ using namespace std;
 
 #include "rclconfig.h"
 #include "rclinit.h"
+#include "cstr.h"
 #include "mh_mbox.h"
 
 static char *thisprog;
