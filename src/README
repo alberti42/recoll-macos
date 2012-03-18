@@ -278,8 +278,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Recoll indexing can be performed with two different methods:
 
-     * Periodic indexing: indexing takes place at discrete times, by
-       executing the recollindex command. The typical usage is to have a
+     * Periodic (or Batch) indexing: indexing takes place at discrete times,
+       by executing the recollindex command. The typical usage is to have a
        nightly indexing run programmed into your cron file.
 
      * Real time indexing: indexing takes place as soon as a file is created
@@ -378,7 +378,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    will be negligible against the total amount of data on the computer.
 
    The index data directory (xapiandb) only contains data that can be
-   completely rebuilt by an index run, and it can always be destroyed safely.
+   completely rebuilt by an index run (as long as the original documents
+   exist), and it can always be destroyed safely.
 
      ----------------------------------------------------------------------
 
@@ -432,9 +433,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    The first time you start recoll, you will be asked whether or not you
    would like it to build the index. If you want to adjust the configuration
    before indexing, just click Cancel at this point, which will get you into
-   the configuration interface. If you exit, recoll will have created a
-   ~/.recoll directory containing empty configuration files, which you can
-   edit by hand.
+   the configuration interface. If you exit at this point, recoll will have
+   created a ~/.recoll directory containing empty configuration files, which
+   you can edit by hand.
 
    The configuration is documented inside the installation chapter of this
    document, or in the recoll.conf(5) man page, but the most current
@@ -493,34 +494,23 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    There are more recent instructions about how to find and install the
    Firefox extension on the Recoll wiki.
 
+   Unfortunately, it seems that the plugin does not work anymore with recent
+   Firefox versions (tried with 10.0). This is not the trival installation
+   version check issue, explicit manual indexing requests still work, but
+   automatic indexing on page load does not.
+
      ----------------------------------------------------------------------
 
 2.5. Periodic indexing
 
   2.5.1. Running indexing
 
-   Indexing is performed either by the recollindex program, or by the
-   indexing thread inside the recoll program (start it from the File menu).
-   Both programs will use the RECOLL_CONFDIR variable or accept a -c confdir
+   Indexing is always performed by the recollindex program, which can be
+   started either from the command line or from the File menu in the recoll
+   GUI program. When started from the GUI, the indexing will run on the same
+   configuration recoll was started on. When started from the command line,
+   recollindex will use the RECOLL_CONFDIR variable or accept a -c confdir
    option to specify a non-default configuration directory.
-
-   There are reasons to use either the indexing thread or the recollindex
-   command, but it is also a matter of personal preferences:
-
-     * Starting the indexing thread is more convenient, being just one click
-       away.
-
-     * The recollindex command has more options, especially the one to reset
-       the index (-z).
-
-     * The recollindex command will not take down your GUI if it crashes (a
-       rare occurrence, but who knows...)
-
-     * The recollindex command uses setpriority/nice to lower its priority
-       while indexing. When available (and for Recoll version 1.16.2 and
-       newer), it also uses the ionice command to lower its IO priority. The
-       thread can't do it, else it would also slow down the user/search
-       interface.
 
    If the recoll program finds no index when it starts, it will automatically
    start indexing (except if canceled).
@@ -568,6 +558,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
  1  15  su mylogin -c "recollindex recollindex > /tmp/rcltraceme 2>&1"
 
+   As of version 1.17 the Recoll GUI has dialogs to manage crontab entries
+   for recollindex. You can reach them from the Preferences->Indexing
+   Schedule menu. They only work with the good old cron, and do not give
+   access to all features of cron scheduling.
+
    The usual command to edit your crontab is crontab -e (which will usually
    start the vi editor to edit the file). You may have more sophisticated
    tools available on your system.
@@ -586,18 +581,20 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    become a daemon, permanently monitoring file changes and updating the
    index.
 
-   The real time indexing support can be customised during package
-   configuration with the --with[out]-fam or --with[out]-inotify options. The
-   default is currently to include inotify monitoring on systems that support
-   it, and, as of recoll 1.17, gamin support on FreeBSD.
+   Under KDE, Gnome and some other desktop environments, the daemon can
+   automatically started when you log in, by creating a desktop file inside
+   the ~/.config/autostart directory. This can be done for you by the Recoll
+   GUI. Use the Preferences->Indexing Schedule menu.
+
+   With older X11 setups, starting the daemon is normally performed as part
+   of the user session script.
 
    The rclmon.sh script can be used to easily start and stop the daemon. It
    can be found in the examples directory (typically
    /usr/local/[share/]recoll/examples).
 
-   Starting the daemon is normally performed as part of the user session
-   script. For example, my out of fashion xdm-based session has a .xsession
-   script with the following lines at the end:
+   For example, my out of fashion xdm-based session has a .xsession script
+   with the following lines at the end:
 
  recollconf=$HOME/.recoll-home
  recolldata=/usr/local/share/recoll
@@ -612,12 +609,6 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    and exit when it finishes, it is not necessary to kill it explicitly. (The
    X11 server monitoring can be disabled with option -x to recollindex).
 
-   Under KDE, you can place a small script to start recollindex -m under
-   $HOME/.kde/Autostart. This will be executed when the session begins.
-
-   There is a similar mechanism under Gnome (find the session control tool in
-   the menus and use the "Startup programs" tab).
-
    If you use the daemon completely out of an X11 session, you need to add
    option -x to disable X11 session monitoring (else the daemon will not
    start).
@@ -627,6 +618,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    configuration parameters. Also the log file will only be truncated when
    the daemon starts. If the daemon runs permanently, the log file may grow
    quite big, depending on the log level.
+
+   When building Recoll, the real time indexing support can be customised
+   during package configuration with the --with[out]-fam or
+   --with[out]-inotify options. The default is currently to include inotify
+   monitoring on systems that support it, and, as of recoll 1.17, gamin
+   support on FreeBSD.
 
    While it is convenient that data is indexed in real time, repeated
    indexing can generate a significant load on the system when files such as
@@ -935,46 +932,50 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    memorizing the search language constructs. It can be opened through the
    Tools menu or through the main toolbar.
 
-   The dialog has three parts:
+   The dialog has two tabs:
 
-     * The top part allows constructing a query by combining multiple clauses
-       of different types. Each entry field is configurable for the following
-       modes:
+    1. The first tab lets you specify terms to search for, and permits
+       specifying multiple clauses which are combined to build the search.
 
-          * All terms.
+    2. The second tab lets filter the results according to file size, date of
+       modification, mime type, or location.
 
-          * Any term.
+   Click on the Start Search button in the advanced search dialog, or type
+   Enter in any text field to start the search. The button in the main window
+   always performs a simple search.
 
-          * None of the terms.
+   Click on the Show query details link at the top of the result page to see
+   the query expansion.
 
-          * Phrase (exact terms in order within an adjustable window).
+     ----------------------------------------------------------------------
 
-          * Proximity (terms in any order within an adjustable window).
+    3.1.5.1. Avanced search: the "find" tab
 
-          * Filename search.
+   This part of the dialog lets you constructc a query by combining multiple
+   clauses of different types. Each entry field is configurable for the
+   following modes:
 
-       Additional entry fields can be created by clicking the Add clause
-       button.
+     * All terms.
 
-       When searching, the non-empty clauses will be combined either with an
-       AND or an OR conjunction, depending on the choice made on the left
-       (All clauses or Any clause).
+     * Any term.
 
-       Entries of all types except "Phrase" and "Near" accept a mix of single
-       words and phrases enclosed in double quotes. Stemming and wildcard
-       expansion will be performed as for simple search.
+     * None of the terms.
 
-     * The next part allows filtering the results by their mime types.
+     * Phrase (exact terms in order within an adjustable window).
 
-       The state of the file type selection can be saved as the default (the
-       file type filter will not be activated at program start-up, but the
-       lists will be in the restored state).
+     * Proximity (terms in any order within an adjustable window).
 
-     * The bottom part allows restricting the search results to a sub-tree of
-       the indexed area. You can use the Invert checkbox to search for files
-       not in the sub-tree instead. If you use directory filtering often and
-       on big subsets of the file system, you may think of setting up
-       multiple indexes instead, as the performance may be better.
+     * Filename search.
+
+   Additional entry fields can be created by clicking the Add clause button.
+
+   When searching, the non-empty clauses will be combined either with an AND
+   or an OR conjunction, depending on the choice made on the left (All
+   clauses or Any clause).
+
+   Entries of all types except "Phrase" and "Near" accept a mix of single
+   words and phrases enclosed in double quotes. Stemming and wildcard
+   expansion will be performed as for simple search.
 
    Phrases and Proximity searches. These two clauses work in similar ways,
    with the difference that proximity searches do not impose an order on the
@@ -988,12 +989,41 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    search for quick fox with the default slack will match the latter, and
    also a fox is a cunning and quick animal.
 
-   Click on the Start Search button in the advanced search dialog, or type
-   Enter in any text field to start the search. The button in the main window
-   always performs a simple search.
+     ----------------------------------------------------------------------
 
-   Click on the Show query details link at the top of the result page to see
-   the query expansion.
+    3.1.5.2. Avanced search: the "filter" tab
+
+   This part of the dialog has several sections which allow filtering the
+   results of a search according to a number of criteria
+
+     * The first section allows filtering by dates of last modification. You
+       can specify both a minimum and a maximum date. The initial values are
+       set according to the oldest and newest documents found in the index.
+
+     * The next section allows filtering the results by file size. There are
+       two entries for minimum and maximum size. Enter decimal numbers. You
+       can use suffix multipliers: k/K, m/M, g/G, t/T for 1E3, 1E6, 1E9, 1E12
+       respectively.
+
+     * The next section allows filtering the results by their mime types, or
+       mime categories (ie: media/text/message/etc.).
+
+       You can transfer the types between two boxes, to define which will be
+       included or excluded by the search.
+
+       The state of the file type selection can be saved as the default (the
+       file type filter will not be activated at program start-up, but the
+       lists will be in the restored state).
+
+     * The bottom section allows restricting the search results to a sub-tree
+       of the indexed area. You can use the Invert checkbox to search for
+       files not in the sub-tree instead. If you use directory filtering
+       often and on big subsets of the file system, you may think of setting
+       up multiple indexes instead, as the performance may be better.
+
+       You can use relative/partial paths for filtering. Ie, entering
+       dirA/dirB would match either /dir1/dirA/dirB/myfile1 or
+       /dir2/dirA/dirB/someother/myfile2.
 
      ----------------------------------------------------------------------
 
@@ -1214,6 +1244,13 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    with email, for example only searching emails from a specific originator:
    search tips from:helpfulgui
 
+   Ajusting the result table columns. When displaying results in table mode,
+   you can use a right click on the table headers to activate a pop-up menu
+   which will let you adjust what columns are displayed. You can drag the
+   column headers to adjust their order. You can click them to sort by the
+   field displayed in the column. You can also save the result list in CSV
+   format.
+
    Query explanation. You can get an exact description of what the query
    looked for, including stem expansion, and Boolean operators used, by
    clicking on the result list header.
@@ -1416,7 +1453,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    No more detail will be given about the header part (only useful with the
    WebKit build), if there are restrictions to what you can do, they are
-   beyond this author's HTML/CSS/Javascript abilities...
+   beyond this author's HTML/CSS/Javascript abilities... There are a few
+   exemples on the page about customising the result list on the Recoll web
+   site.
 
      ----------------------------------------------------------------------
 
@@ -1446,7 +1485,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * %S. Size information
 
-     * %T. Title
+     * %T. Title or Filename if not set.
+
+     * %t. Title or Filename if not set.
 
      * %U. Url
 
@@ -1459,12 +1500,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    document. Only stored fields can be accessed in this way, the value of
    indexed but not stored fields is not known at this point in the search
    process (see field configuration). There are currently very few fields
-   stored by default, apart from the values above (only author), so this
-   feature will need some custom local configuration to be useful. For
-   example, you could look at the fields for the document types of interest
-   (use the right-click menu inside the preview window), and add what you
-   want to the list of stored fields. A candidate example would be the
-   recipient field which is generated by the message filters.
+   stored by default, apart from the values above (only author and filename),
+   so this feature will need some custom local configuration to be useful.
+   For example, you could look at the fields for the document types of
+   interest (use the right-click menu inside the preview window), and add
+   what you want to the list of stored fields. A candidate example would be
+   the recipient field which is generated by the message filters.
 
    The default value for the paragraph format string is:
 
@@ -1575,20 +1616,38 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    recollq has a man page (not installed by default, look in the doc/man
    directory). The Usage string is as follows:
 
- recollq [-o|-a|-f] <query string>
+ recollq: usage:
+  -P: Show the date span for all the documents present in the index
+  [-o|-a|-f] [-q] <query string>
   Runs a recoll query and displays result lines.
-   Default: will interpret the argument(s) as a query language string
-   -o Emulate the gui simple search in ANY TERM mode
-   -a Emulate the gui simple search in ALL TERMS mode
-   -f Emulate the gui simple search in filename mode
+   Default: will interpret the argument(s) as a xesam query string
+     query may be like:
+     implicit AND, Exclusion, field spec:    t1 -t2 title:t3
+     OR has priority: t1 OR t2 t3 OR t4 means (t1 OR t2) AND (t3 OR t4)
+     Phrase: "t1 t2" (needs additional quoting on cmd line)
+   -o Emulate the GUI simple search in ANY TERM mode
+   -a Emulate the GUI simple search in ALL TERMS mode
+   -f Emulate the GUI simple search in filename mode
+   -q is just ignored (compatibility with the recoll GUI command line)
  Common options:
      -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR
      -d also dump file contents
-     -n <cnt> limit the maximum number of results (0->no limit, default 2000)
+     -n [first-]<cnt> define the result slice. The default value for [first]
+        is 0. Without the option, the default max count is 2000.
+        Use n=0 for no limit
      -b : basic. Just output urls, no mime types or titles
-     -m : dump the whole document meta[] array
-     -S fld : sort by field name
+     -Q : no result lines, just the processed query and result count
+     -m : dump the whole document meta[] array for each result
+     -A : output the document abstracts
+     -S fld : sort by field <fld>
      -D : sort descending
+     -i <dbdir> : additional index, several can be given
+     -e use url encoding (%xx) for urls
+     -F <field name list> : output exactly these fields for each result.
+        The field values are encoded in base64, output in one line and
+        separated by one space character. This is the recommended format
+        for use by other programs. Use a normal query with option -m to
+        see the field names.
 
    Sample execution:
 
@@ -2560,6 +2619,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      * --with-fam or --with-inotify will enable the code for real time
        indexing. Inotify support is enabled by default on recent Linux
        systems.
+
+     * --disable-webkit is available from version 1.17 to implement the
+       result list with a Qt QTextBrowser instead of a WebKit widget if you
+       do not or can't depend on the latter.
 
      * --enable-xattr will enable code to fetch data from file extended
        attributes. This is only useful is some application stores data in

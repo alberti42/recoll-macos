@@ -251,6 +251,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        indexing. Inotify support is enabled by default on recent Linux
        systems.
 
+     * --disable-webkit is available from version 1.17 to implement the
+       result list with a Qt QTextBrowser instead of a WebKit widget if you
+       do not or can't depend on the latter.
+
      * --enable-xattr will enable code to fetch data from file extended
        attributes. This is only useful is some application stores data in
        there, and also needs some simple configuration (see comments in the
