@@ -8,52 +8,37 @@ RCLVERS=1.17.0
 PPAVERS=1
 
 case $RCLVERS in
+    [23]*) PPANAME=recollexp-ppa;;
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
 
-########## QT3
-series3=""
-case $RCLVERS in
-    1.14*)
-        series3="dapper hardy";;
-esac
-        
-if test X$series3 != X; then
-  debdir=debianrclqt3
-
-  rm -rf recoll-${RCLVERS}/debian
-  cp -rp $debdir recoll-${RCLVERS}/debian
-  for series in  $series3;do 
-    sed -e s/SERIES/$series/g < ${debdir}/changelog > \
-        recoll-${RCLVERS}/debian/changelog ;
-    (cd recoll-${RCLVERS};debuild -S -sa) || break
-    dput $PPANAME recoll_${RCLVERS}-0~ppa${PPAVERS}~${series}1_source.changes
-  done
-fi
-
 ####### QT4
-series4=""
-case $RCLVERS in
-    1.14*)
-        series4="jaunty karmic lucid maverick natty oneiric";;
-    *)
-        series4="jaunty karmic lucid maverick natty oneiric";;
-esac
-
 debdir=debianrclqt4
+series4="lucid maverick natty oneiric precise"
+
 rm -rf recoll-${RCLVERS}/debian
 cp -rp $debdir recoll-${RCLVERS}/debian
+
 for series in $series4 ; do
-  sed -e s/SERIES/$series/g < ${debdir}/changelog > \
-    recoll-${RCLVERS}/debian/changelog ;
+  if test -f $debdir/control-$series ; then
+      cp -f -p $debdir/control-$series recoll-${RCLVERS}/debian/control
+  else 
+      cp -f -p $debdir/control recoll-${RCLVERS}/debian/control
+  fi
+
+  sed -e s/SERIES/${series}/g \
+      -e s/PPAVERS/${PPAVERS}/g \
+      < ${debdir}/changelog > recoll-${RCLVERS}/debian/changelog
+
   (cd recoll-${RCLVERS};debuild -S -sa)  || break
+
   dput $PPANAME recoll_${RCLVERS}-0~ppa${PPAVERS}~${series}1_source.changes
 done
 
 ### KIO
+seriesk="lucid maverick natty oneiric precise"
 seriesk=""
-seriesk="jaunty karmic lucid maverick natty oneiric"
 
 debdir=debiankio
 rm -rf recoll-${RCLVERS}/debian

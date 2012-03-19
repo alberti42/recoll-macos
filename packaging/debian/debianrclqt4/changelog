@@ -1,4 +1,4 @@
-recoll (1.17.0-0~ppa1~SERIES1) SERIES; urgency=low
+recoll (1.17.0-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
   * Updated package to recoll version 1.17.0
  -- Jean-Francois Dockes <jf@dockes.org>  Mon, 18 Mar 2012 16:50:00 +0200
 
