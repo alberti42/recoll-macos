@@ -104,6 +104,13 @@ void RTIToolW::accept()
 	if (text.empty())
 	    text = desktopfiletext;
 
+	// Try to create .config and autostart anyway. If they exists this will 
+	// do nothing. An error will be detected when we try to create the file
+	string dir = path_cat(path_home(), ".config");
+	mkdir(dir.c_str(), 0700);
+	dir = path_cat(dir, "autostart");
+	mkdir(dir.c_str(), 0700);
+
 	int fd = ::open(autostartfile.c_str(), O_WRONLY|O_CREAT, 0644);
 	if (fd < 0 || ::write(fd, text.c_str(), size_t(text.size())) 
 	    != ssize_t(text.size()) || ::close(fd) != 0) {
