@@ -3,8 +3,7 @@
 
 .txt = text/plain
 .text = text/plain
-.d    = text/plain
-.ini = text/plain
+.ini = text/x-ini
 
 # Source files. 
 # Defining them with specific types allows using a specific ext viewer (in 

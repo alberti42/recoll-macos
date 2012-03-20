@@ -82,5 +82,6 @@ text/x-c+ = emacsclient  %f
 text/x-c++ = emacsclient  %f
 text/x-html-sidux-man = konqueror %f
 text/x-html-aptosid-man = iceweasel %f
+text/x-ini = emacsclient  %f
 text/x-man = xterm -u8 -e "groff -T ascii -man %f | more"
 text/x-python = idle %f

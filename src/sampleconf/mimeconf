@@ -107,6 +107,7 @@ text/x-fictionbook = exec rclfb2
 text/x-gaim-log = exec rclgaim
 text/x-html-sidux-man = exec rclsiduxman
 text/x-html-aptosid-man = exec rclaptosidman
+text/x-ini = internal text/plain
 text/x-mail = internal
 text/x-man = exec rclman
 text/x-perl = internal text/plain
@@ -186,6 +187,7 @@ text/x-c+ = source
 text/x-fictionbook = document
 text/x-html-aptosid-man = aptosid-book
 text/x-html-sidux-man = sidux-book
+text/x-ini = txt
 text/x-mail = message
 text/x-man = document
 application/x-chm = document
@@ -234,6 +236,7 @@ text = \
       text/x-fictionbook \
       text/x-html-aptosid-man \
       text/x-html-sidux-man \
+      text/x-ini \
       text/x-man \
       text/x-perl \
       text/x-python \
