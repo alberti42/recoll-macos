@@ -148,35 +148,35 @@
     </message>
     <message>
         <source>Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtro</translation>
     </message>
     <message>
         <source>Check this to enable filtering on dates</source>
-        <translation type="unfinished"></translation>
+        <translation>Marque esto para habilitar filtros en fechas</translation>
     </message>
     <message>
         <source>Filter dates</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtrar fechas</translation>
     </message>
     <message>
         <source>From</source>
-        <translation type="unfinished"></translation>
+        <translation>Desde</translation>
     </message>
     <message>
         <source>To</source>
-        <translation type="unfinished"></translation>
+        <translation>Hasta</translation>
     </message>
     <message>
         <source>Find</source>
-        <translation type="unfinished"></translation>
+        <translation>Buscar</translation>
     </message>
     <message>
         <source>Check this to enable filtering on sizes</source>
-        <translation type="unfinished"></translation>
+        <translation>Marque esto para habilitar filtros en tamaños</translation>
     </message>
     <message>
         <source>Filter sizes</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamaños de filtros</translation>
     </message>
 </context>
 <context>
@@ -469,11 +469,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Fold lines</source>
-        <translation type="unfinished"></translation>
+        <translation>Doblar líneas</translation>
     </message>
     <message>
         <source>Preserve indentation</source>
-        <translation type="unfinished"></translation>
+        <translation>Preservar indentación</translation>
     </message>
 </context>
 <context>
@@ -859,7 +859,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Indexed MIME Types</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipos MIME indexados</translation>
     </message>
 </context>
 <context>
@@ -1062,7 +1062,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>E&amp;xternal index dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Configuración de índices externos</translation>
     </message>
 </context>
 <context>
@@ -1137,11 +1137,11 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Ipath</source>
-        <translation type="unfinished"></translation>
+        <translation>Ipath</translation>
     </message>
     <message>
         <source>MIME type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo MIME</translation>
     </message>
 </context>
 <context>
@@ -1295,7 +1295,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Add &quot;%1&quot; column</source>
-        <translation type="unfinished"></translation>
+        <translation>Agregar columna &quot;%1&quot;</translation>
     </message>
 </context>
 <context>
@@ -1484,27 +1484,27 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
     <message>
         <source>Any</source>
-        <translation type="unfinished"></translation>
+        <translation>Cualquiera</translation>
     </message>
     <message>
         <source>All</source>
-        <translation type="unfinished">Todo</translation>
+        <translation>Todo</translation>
     </message>
     <message>
         <source>None</source>
-        <translation type="unfinished">Ninguno</translation>
+        <translation>Ninguno</translation>
     </message>
     <message>
         <source>Phrase</source>
-        <translation type="unfinished"></translation>
+        <translation>Frase</translation>
     </message>
     <message>
         <source>Proximity</source>
-        <translation type="unfinished"></translation>
+        <translation>Proximidad</translation>
     </message>
     <message>
         <source>File name</source>
-        <translation type="unfinished">Nombre de fichero</translation>
+        <translation>Nombre de fichero</translation>
     </message>
 </context>
 <context>
@@ -1624,7 +1624,7 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
     <message>
         <source>MIME type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo MIME</translation>
     </message>
 </context>
 <context>
