@@ -132,6 +132,8 @@ static const unsigned int uniign[] = {
     0x205F, /*  ; White_Space # Zs       MEDIUM MATHEMATICAL SPACE*/
     0x207B, /*  ; Dash # Sm       SUPERSCRIPT MINUS*/
     0x208B, /*  ; Dash # Sm       SUBSCRIPT MINUS*/
+    0x2117, /* SOUND RECORDING COPYRIGHT;So */
+    0x2122, /* TRADE MARK SIGN;So; */
     0x2192, /* RIGHTWARDS ARROW;Sm;0;ON;;;;;N;RIGHT ARROW;;;;*/
     0x2212, /*  ; Dash # Sm       MINUS SIGN*/
     0x2E2E, /* REVERSED QUESTION MARK;Po;0;ON;;;;;N;;;;; */
