@@ -21,6 +21,9 @@ recollq -q 'accentueesISOHTML'
 
 recollq -q html5charsetaccentue
 
+# Stripping trade mark and copyright signs
+recollq -q filename:signs.html Registered Trademark Copyright SoundCopyright
+
 ) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
