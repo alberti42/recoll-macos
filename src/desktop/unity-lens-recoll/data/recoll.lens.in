@@ -1,0 +1,12 @@
+[Lens]
+DBusName=net.launchpad.UnityLensBliss.Lens
+DBusPath=/net/launchpad/unitylensbliss/lens
+Name=Apps Lens
+Icon=@DATADIR@/unity-lens-bliss/bliss-lens.svg
+Description=Easily find and launch apps
+SearchHint=Type to search
+Shortcut=a
+
+[Desktop Entry]
+X-Ubuntu-Gettext-Domain=unity-lens-bliss
+
