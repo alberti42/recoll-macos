@@ -31,6 +31,8 @@
 #include "pathut.h"
 #include "debuglog.h"
 #include "smallut.h"
+#include "utf8iter.h"
+#include "textsplit.h"
 
 using namespace std;
 
@@ -139,12 +141,11 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
         Xapian::Stem stemmer(lang);
         Xapian::TermIterator it;
         for (it = xdb.allterms_begin(); it != xdb.allterms_end(); it++) {
-            // Deciding if we try to stem the term. If it has any
+            // Deciding if we try to stem the term. 
+
+	    // If it has any
             // non-lowercase 7bit char (that is, numbers, capitals and
-            // punctuation) dont. We're still sending all multibyte
-            // utf-8 chars to the stemmer, which is not too well
-            // defined for xapian < 1.0, but seems to work anyway. We don't
-            // try to look for multibyte non alphabetic data.
+            // punctuation) dont. 
             string::iterator sit = (*it).begin(), eit = sit + (*it).length();
             if ((sit = find_if(sit, eit, p_notlowerascii)) != eit) {
                 ++nostem;
@@ -152,6 +153,21 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
                          (*it).c_str(), *sit));
                 continue;
             }
+
+	    // Detect and skip CJK terms.
+	    // We're still sending all other multibyte utf-8 chars to
+            // the stemmer, which is not too well defined for
+            // xapian<1.0 (very obsolete now), but seems to work
+            // anyway. There shouldnt be too many in any case because
+            // accents are stripped at this point. Effect of stripping
+            // accents on stemming unknown, hopefuly none, there is
+            // nothing we can do about it.
+	    Utf8Iter utfit(*it);
+	    if (TextSplit::isCJK(*utfit)) {
+		// LOGDEB(("stemskipped: Skipping CJK\n"));
+		continue;
+	    }
+
             string stem = stemmer(*it);
             LOGDEB2(("Db::createStemDb: word [%s], stem [%s]\n", (*it).c_str(),
                      stem.c_str()));
