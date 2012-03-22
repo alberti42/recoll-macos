@@ -8,6 +8,11 @@ import recoll
 # These category ids must match the order in which we add them to the lens
 CATEGORY_ALL = 0
 
+# typing timeout: we don't want to start a search for every
+# char. Unity does batch on its side, but we may want more control ?
+# Or not ? Set to 0 to not use it.
+TYPING_TIMEOUT = 0
+
 class Scope (Unity.Scope):
 
 	def __init__ (self):
@@ -16,13 +21,14 @@ class Scope (Unity.Scope):
 		# Listen for changes and requests
 		self.connect ("notify::active-search", self._on_search_changed)
 		self.connect ("notify::active-global-search", self._on_global_search_changed)
-		self.connect ("activate-uri", self.activate_uri)
 
 		# Bliss loaded the apps_tree menu here, let's connect to 
                 # the index
                 self.db = recoll.connect()
+                self.db.setAbstractParams(maxchars=200, 
+                                          contextwords=4)
 		
-		self._current_browse_node = None
+                self.timeout_id = None
 	
 	def get_search_string (self):
 		search = self.props.active_search
@@ -42,20 +48,7 @@ class Scope (Unity.Scope):
 		if search:
 			search.emit("finished")
 	
-	def activate_uri (self, scope, uri):
-		"""Activation handler to enable browsing of app directories"""
-		
-		print "Activate: %s" % uri
-		
-		# Defer all activations to Unity
-                # Reset browsing state when an app is launched
-                self.reset ()
-                return Unity.ActivationResponse.new (Unity.HandledType.NOT_HANDLED,
-                                                     uri)
-		
-	
 	def reset (self):
-		self._current_browse_node = None
 		self._do_browse (self.props.results_model)
 		self._do_browse (self.props.global_results_model)
 	
@@ -63,19 +56,17 @@ class Scope (Unity.Scope):
 		search = self.get_search_string()
 		results = scope.props.results_model
 		
-		print "Search changed to: '%s'" % search
+#		print "Search changed to: '%s'" % search
 		
 		self._update_results_model (search, results)
-		self.search_finished()
 	
 	def _on_global_search_changed (self, scope, param_spec):
 		search = self.get_global_search_string()
 		results = scope.props.global_results_model
 		
-		print "Global search changed to: '%s'" % search
+#		print "Global search changed to: '%s'" % search
 		
 		self._update_results_model (search, results)
-		self.global_search_finished()
 		
 	def _update_results_model (self, search_string, model):
 		if search_string:
@@ -84,30 +75,73 @@ class Scope (Unity.Scope):
 			self._do_browse (model)
 	
 	def _do_browse (self, model):
+                if self.timeout_id is not None:
+                        GObject.source_remove(self.timeout_id)
 		model.clear ()
-		self.search_finished()
-	
+
+                if model is self.props.results_model:
+                        self.search_finished()
+                else:
+                        self.global_search_finished()
+
+        def _on_timeout(self, search_string, model):
+                if self.timeout_id is not None:
+                        GObject.source_remove(self.timeout_id)
+                self.timeout_id = None
+                self._really_do_search(search_string, model)
+                if model is self.props.results_model:
+                        self.search_finished()
+                else:
+                        self.global_search_finished()
+
 	def _do_search (self, search_string, model):
-		model.clear ()
-		
-		# Reset browsing mode
-		self._current_browse_node = None
-		
+                if TYPING_TIMEOUT == 0:
+                        self._really_do_search(search_string, model)
+                        return True
+                
+                if self.timeout_id is not None:
+                        GObject.source_remove(self.timeout_id)
+                self.timeout_id = \
+                    GObject.timeout_add(TYPING_TIMEOUT, self._on_timeout, 
+                                        search_string, model)
+
+        def _really_do_search(self, search_string, model):
+#                print "really_do_search:", search_string
+                model.clear ()
+		if search_string == "":
+                        return True
+
                 # Do the recoll thing
                 query = self.db.query()
                 nres = query.execute(search_string)
-                if nres > 20:
-                        nres = 20
+                actual_results = 0
                 while query.next >= 0 and query.next < nres: 
                         doc = query.fetchone()
+
+                        # No sense in returning unusable results (until
+                        # I get an idea of what to do with them)
+                        if doc.ipath != "":
+                                continue
+
                         titleorfilename = doc.title
                         if titleorfilename == "":
                                 titleorfilename = doc.filename
+
+                        icon = Gio.content_type_get_icon(doc.mimetype)
+                        if icon:
+                                iconname = icon.get_names()[0]
+
+                        abstract = self.db.makeDocAbstract(doc, query).encode('utf-8')
+
 			model.append (doc.url,
-			              "",
+                                      iconname,
 			              CATEGORY_ALL,
 			              doc.mimetype,
 			              titleorfilename,
-			              titleorfilename,
+			              abstract,
 			              doc.url)
+
+                        actual_results += 1
+                        if actual_results >= 20:
+                                break
 		

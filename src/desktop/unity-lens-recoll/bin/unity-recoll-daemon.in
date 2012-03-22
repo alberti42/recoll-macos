@@ -55,9 +55,9 @@ def create_lens ():
 	
 	# Populate categories TODO FIX THIS
 	cats = []
-	cats.append (Unity.Category.new ("Applications",
-	                                 Gio.ThemedIcon.new("keyboard"),
-	                                 Unity.CategoryRenderer.VERTICAL_TILE))
+	cats.append (Unity.Category.new ("Documents",
+	                                 Gio.ThemedIcon.new("document"),
+	                                 Unity.CategoryRenderer.HORIZONTAL_TILE))
 	lens.props.categories = cats
 	
 	# Populate filters
