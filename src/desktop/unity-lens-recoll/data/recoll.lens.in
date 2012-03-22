@@ -1,12 +1,11 @@
 [Lens]
-DBusName=net.launchpad.UnityLensBliss.Lens
-DBusPath=/net/launchpad/unitylensbliss/lens
-Name=Apps Lens
-Icon=@DATADIR@/unity-lens-bliss/bliss-lens.svg
-Description=Easily find and launch apps
+DBusName=org.recoll.UnityLensRecoll.Lens
+DBusPath=/org/recoll/unitylensrecoll/lens
+Name=Recoll Lens
+Icon=@DATADIR@/unity-lens-recoll/recoll-lens.svg
+Description=Search documents indexed by Recoll
 SearchHint=Type to search
 Shortcut=a
 
 [Desktop Entry]
-X-Ubuntu-Gettext-Domain=unity-lens-bliss
-
+X-Ubuntu-Gettext-Domain=unity-lens-recoll

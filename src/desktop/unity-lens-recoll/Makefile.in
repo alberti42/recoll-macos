@@ -38,7 +38,6 @@ DIST_COMMON = README $(am__configure_deps) $(lens_PYTHON) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/bin/unity-recoll-daemon.in \
 	$(top_srcdir)/configure $(top_srcdir)/data/recoll.lens.in \
-	$(top_srcdir)/data/unity-lens-recoll.menu.in \
 	$(top_srcdir)/data/unity-lens-recoll.service.in AUTHORS \
 	COPYING ChangeLog INSTALL NEWS install-sh missing py-compile
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -50,7 +49,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES = bin/unity-recoll-daemon data/recoll.lens \
-	data/unity-lens-recoll.menu data/unity-lens-recoll.service
+	data/unity-lens-recoll.service
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -75,14 +74,12 @@ am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
 am__installdirs = "$(DESTDIR)$(libexecdir)" "$(DESTDIR)$(lensdir)" \
 	"$(DESTDIR)$(dbusdir)" "$(DESTDIR)$(docsdir)" \
-	"$(DESTDIR)$(dotlensdir)" "$(DESTDIR)$(iconsdir)" \
-	"$(DESTDIR)$(menudir)"
+	"$(DESTDIR)$(dotlensdir)" "$(DESTDIR)$(iconsdir)"
 SCRIPTS = $(libexec_SCRIPTS)
 SOURCES =
 DIST_SOURCES =
 py_compile = $(top_srcdir)/py-compile
-DATA = $(dbus_DATA) $(docs_DATA) $(dotlens_DATA) $(icons_DATA) \
-	$(menu_DATA)
+DATA = $(dbus_DATA) $(docs_DATA) $(dotlens_DATA) $(icons_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -183,7 +180,6 @@ EXTRA_DIST = \
   bin/unity-recoll-daemon.in \
   data/recoll.lens.in \
   data/recoll-lens.svg \
-  data/unity-lens-recoll.menu.in \
   data/unity-lens-recoll.service.in \
   $(docs_DATA) \
   $(NULL)
@@ -207,10 +203,10 @@ docs_DATA = \
 ######################################################
 # Lens code
 ######################################################
-lensdir = $(datadir)/unity-lens-recoll/recoll
+lensdir = $(datadir)/unity-lens-recoll/recollscope
 lens_PYTHON = \
-  recoll/__init__.py \
-  recoll/apps.py \
+  recollscope/__init__.py \
+  recollscope/rclsearch.py \
   $(NULL)
 
 libexec_SCRIPTS = \
@@ -242,15 +238,6 @@ icons_DATA = \
 dbusdir = $(datadir)/dbus-1/services
 dbus_DATA = \
   data/unity-lens-recoll.service \
-  $(NULL)
-
-
-######################################################
-# XDG .menu file
-######################################################
-menudir = $(sysconfdir)/xdg/menus
-menu_DATA = \
-  data/unity-lens-recoll.menu \
   $(NULL)
 
 all: all-am
@@ -293,8 +280,6 @@ $(am__aclocal_m4_deps):
 bin/unity-recoll-daemon: $(top_builddir)/config.status $(top_srcdir)/bin/unity-recoll-daemon.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 data/recoll.lens: $(top_builddir)/config.status $(top_srcdir)/data/recoll.lens.in
-	cd $(top_builddir) && $(SHELL) ./config.status $@
-data/unity-lens-recoll.menu: $(top_builddir)/config.status $(top_srcdir)/data/unity-lens-recoll.menu.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 data/unity-lens-recoll.service: $(top_builddir)/config.status $(top_srcdir)/data/unity-lens-recoll.service.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
@@ -450,26 +435,6 @@ uninstall-iconsDATA:
 	test -n "$$files" || exit 0; \
 	echo " ( cd '$(DESTDIR)$(iconsdir)' && rm -f" $$files ")"; \
 	cd "$(DESTDIR)$(iconsdir)" && rm -f $$files
-install-menuDATA: $(menu_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(menudir)" || $(MKDIR_P) "$(DESTDIR)$(menudir)"
-	@list='$(menu_DATA)'; test -n "$(menudir)" || list=; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(menudir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(menudir)" || exit $$?; \
-	done
-
-uninstall-menuDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(menu_DATA)'; test -n "$(menudir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	test -n "$$files" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(menudir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(menudir)" && rm -f $$files
 tags: TAGS
 TAGS:
 
@@ -628,7 +593,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(SCRIPTS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(libexecdir)" "$(DESTDIR)$(lensdir)" "$(DESTDIR)$(dbusdir)" "$(DESTDIR)$(docsdir)" "$(DESTDIR)$(dotlensdir)" "$(DESTDIR)$(iconsdir)" "$(DESTDIR)$(menudir)"; do \
+	for dir in "$(DESTDIR)$(libexecdir)" "$(DESTDIR)$(lensdir)" "$(DESTDIR)$(dbusdir)" "$(DESTDIR)$(docsdir)" "$(DESTDIR)$(dotlensdir)" "$(DESTDIR)$(iconsdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -679,7 +644,7 @@ info: info-am
 info-am:
 
 install-data-am: install-dbusDATA install-docsDATA install-dotlensDATA \
-	install-iconsDATA install-lensPYTHON install-menuDATA
+	install-iconsDATA install-lensPYTHON
 
 install-dvi: install-dvi-am
 
@@ -727,7 +692,7 @@ ps-am:
 
 uninstall-am: uninstall-dbusDATA uninstall-docsDATA \
 	uninstall-dotlensDATA uninstall-iconsDATA uninstall-lensPYTHON \
-	uninstall-libexecSCRIPTS uninstall-menuDATA
+	uninstall-libexecSCRIPTS
 
 .MAKE: install-am install-strip
 
@@ -740,14 +705,13 @@ uninstall-am: uninstall-dbusDATA uninstall-docsDATA \
 	install-dotlensDATA install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am install-iconsDATA \
 	install-info install-info-am install-lensPYTHON \
-	install-libexecSCRIPTS install-man install-menuDATA \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic pdf pdf-am ps ps-am uninstall uninstall-am \
-	uninstall-dbusDATA uninstall-docsDATA uninstall-dotlensDATA \
-	uninstall-iconsDATA uninstall-lensPYTHON \
-	uninstall-libexecSCRIPTS uninstall-menuDATA
+	install-libexecSCRIPTS install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
+	pdf-am ps ps-am uninstall uninstall-am uninstall-dbusDATA \
+	uninstall-docsDATA uninstall-dotlensDATA uninstall-iconsDATA \
+	uninstall-lensPYTHON uninstall-libexecSCRIPTS
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

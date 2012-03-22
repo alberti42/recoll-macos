@@ -4,7 +4,6 @@ EXTRA_DIST = \
   bin/unity-recoll-daemon.in \
   data/recoll.lens.in \
   data/recoll-lens.svg \
-  data/unity-lens-recoll.menu.in \
   data/unity-lens-recoll.service.in \
   $(docs_DATA) \
   $(NULL)
@@ -28,10 +27,10 @@ docs_DATA = \
 ######################################################
 # Lens code
 ######################################################
-lensdir = $(datadir)/unity-lens-recoll/recoll
+lensdir = $(datadir)/unity-lens-recoll/recollscope
 lens_PYTHON = \
-  recoll/__init__.py \
-  recoll/apps.py \
+  recollscope/__init__.py \
+  recollscope/rclsearch.py \
   $(NULL)
 
 libexec_SCRIPTS = \
@@ -61,12 +60,3 @@ dbusdir = $(datadir)/dbus-1/services
 dbus_DATA = \
   data/unity-lens-recoll.service \
   $(NULL)
-
-######################################################
-# XDG .menu file
-######################################################
-menudir = $(sysconfdir)/xdg/menus
-menu_DATA = \
-  data/unity-lens-recoll.menu \
-  $(NULL)
-

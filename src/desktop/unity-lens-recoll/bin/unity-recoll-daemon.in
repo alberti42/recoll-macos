@@ -8,10 +8,10 @@ if os.path.isfile(os.path.join(execpath, "..", "configure.ac")):
     print "Running from source tree"
     sys.path.insert (0, os.path.join(execpath, ".."))
 else:
-    sys.path.insert (0, os.path.join("@DATADIR@", "unity-lens-bliss"))
+    sys.path.insert (0, os.path.join("@DATADIR@", "unity-lens-recoll"))
 del execpath
 
-import bliss.apps
+import recollscope.rclsearch
 from gi.repository import GLib, GObject, Gio
 
 # NOTE: If we used the normal 'dbus' module for Python we'll get
@@ -26,7 +26,7 @@ from gi.repository import GLib, GObject, Gio
 #
 # The primary bus name we grab *must* match what we specify in our .lens file
 #
-BUS_NAME = "net.launchpad.UnityLensBliss.Lens"
+BUS_NAME = "org.recoll.UnityLensRecoll.Lens"
 
 session_bus_connection = Gio.bus_get_sync (Gio.BusType.SESSION, None)
 session_bus = Gio.DBusProxy.new_sync (session_bus_connection, 0, None,
@@ -47,13 +47,13 @@ if result != 1 :
 def create_lens ():
 	# The path for the Lens *must* also match the one in our .lens file
 	from gi.repository import Unity
-	lens = Unity.Lens.new ("/net/launchpad/unitylensbliss/lens", "bliss")
+	lens = Unity.Lens.new ("/org/recoll/unitylensrecoll/lens", "recoll")
 	
-	lens.props.search_hint = "Search for apps"
+	lens.props.search_hint = "Recoll search string"
 	lens.props.visible = True;
 	lens.props.search_in_global = True;
 	
-	# Populate categories
+	# Populate categories TODO FIX THIS
 	cats = []
 	cats.append (Unity.Category.new ("Applications",
 	                                 Gio.ThemedIcon.new("keyboard"),
@@ -66,7 +66,7 @@ def create_lens ():
 	return lens
 
 lens = create_lens ()
-lens.add_local_scope (bliss.apps.Scope())
+lens.add_local_scope (recollscope.rclsearch.Scope())
 # add more local scopes here (remote dbus scopes added automagically)
 lens.export ()
 

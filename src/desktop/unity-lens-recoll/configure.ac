@@ -18,7 +18,6 @@ AC_SUBST(LIBEXECDIR)
 AC_OUTPUT([
 bin/unity-recoll-daemon
 data/recoll.lens
-data/unity-lens-recoll.menu
 data/unity-lens-recoll.service
 Makefile
 ])
