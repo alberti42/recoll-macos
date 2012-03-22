@@ -3,7 +3,7 @@ NULL =
 EXTRA_DIST = \
   bin/unity-recoll-daemon.in \
   data/recoll.lens.in \
-  data/recoll-lens.svg \
+  data/recollbg24.png \
   data/unity-lens-recoll.service.in \
   $(docs_DATA) \
   $(NULL)
@@ -50,7 +50,7 @@ dotlens_DATA = \
 ######################################################
 iconsdir = $(datadir)/unity-lens-recoll
 icons_DATA = \
-  data/recoll-lens.svg \
+  data/recollbg24.png \
   $(NULL)
 
 ######################################################

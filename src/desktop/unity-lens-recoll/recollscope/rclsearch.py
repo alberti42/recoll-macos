@@ -1,6 +1,7 @@
 
 import sys
 from gi.repository import GLib, GObject, Gio
+from gi.repository import Dee
 from gi.repository import Unity
 
 import recoll
@@ -9,13 +10,19 @@ import recoll
 CATEGORY_ALL = 0
 
 # typing timeout: we don't want to start a search for every
-# char. Unity does batch on its side, but we may want more control ?
-# Or not ? Set to 0 to not use it.
+# char? Unity does batch on its side, but we may want more control ?
+# Or not ? I'm not sure this does any good on a moderate size index.
+# Set to 0 to not use it (default). Kept around because this still might be
+# useful with a very big index ?
 TYPING_TIMEOUT = 0
 
 class Scope (Unity.Scope):
 
 	def __init__ (self):
+                self.trcfile = open("/tmp/recolenstrace", "w")
+                print >> self.trcfile, "Scope init"
+                self.trcfile.flush()
+                
 		Unity.Scope.__init__ (self, dbus_path="/org/recoll/unitylensrecoll/scope/main")
 		
 		# Listen for changes and requests
@@ -24,12 +31,16 @@ class Scope (Unity.Scope):
 
 		# Bliss loaded the apps_tree menu here, let's connect to 
                 # the index
+                print >> self.trcfile, "Connecting to db"
                 self.db = recoll.connect()
+                print >> self.trcfile, "Done"
+                self.trcfile.flush()
+
                 self.db.setAbstractParams(maxchars=200, 
                                           contextwords=4)
 		
                 self.timeout_id = None
-	
+
 	def get_search_string (self):
 		search = self.props.active_search
 		return search.props.search_string if search else None
@@ -47,7 +58,6 @@ class Scope (Unity.Scope):
 		search = self.props.active_global_search
 		if search:
 			search.emit("finished")
-	
 	def reset (self):
 		self._do_browse (self.props.results_model)
 		self._do_browse (self.props.global_results_model)
@@ -106,17 +116,25 @@ class Scope (Unity.Scope):
                                         search_string, model)
 
         def _really_do_search(self, search_string, model):
-#                print "really_do_search:", search_string
+                print >> self.trcfile, "really_do_search:[", search_string, "]"
+                self.trcfile.flush()
                 model.clear ()
 		if search_string == "":
                         return True
 
                 # Do the recoll thing
                 query = self.db.query()
-                nres = query.execute(search_string)
+                try:
+                        nres = query.execute(search_string)
+                except:
+                        return
+
                 actual_results = 0
                 while query.next >= 0 and query.next < nres: 
-                        doc = query.fetchone()
+                        try:
+                                doc = query.fetchone()
+                        except:
+                                break
 
                         # No sense in returning unusable results (until
                         # I get an idea of what to do with them)

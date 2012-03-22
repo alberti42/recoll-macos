@@ -44,6 +44,9 @@ if result != 1 :
   print >> sys.stderr, "Failed to own name %s. Bailing out." % BUS_NAME
   raise SystemExit (1)
 
+rcltrace = open("/tmp/recolenstrace", "a")
+
+print >> rcltrace, "UNITY RECOLL DAEMON"
 def create_lens ():
 	# The path for the Lens *must* also match the one in our .lens file
 	from gi.repository import Unity
@@ -51,23 +54,41 @@ def create_lens ():
 	
 	lens.props.search_hint = "Recoll search string"
 	lens.props.visible = True;
-	lens.props.search_in_global = True;
+	lens.props.search_in_global = False;
 	
-	# Populate categories TODO FIX THIS
+	# Populate categories
 	cats = []
 	cats.append (Unity.Category.new ("Documents",
 	                                 Gio.ThemedIcon.new("document"),
 	                                 Unity.CategoryRenderer.HORIZONTAL_TILE))
 	lens.props.categories = cats
 	
+
 	# Populate filters
 	lens.props.filters = []
-	
+
+        # We should get the categories from the config but the python
+        # module currently has no code for this.
+	filter = Unity.RadioOptionFilter.new("rclcat", "Category",
+                                             Gio.ThemedIcon.new(""), False)
+
+        filter.add_option("text", "Text", None);
+        filter.add_option("spreadsheet", "Spreadsheet", None);
+        filter.add_option("presentation", "Presentation", None);
+        filter.add_option("media", "Media", None);
+        filter.add_option("message", "Message", None);
+        filter.add_option("other", "Other", None);
+
+        lens.props.filters.append(filter)
 	return lens
 
+print >> rcltrace, "UNITY RECOLL DAEMON: create lens"
 lens = create_lens ()
+print >> rcltrace, "UNITY RECOLL DAEMON: add local scope"
 lens.add_local_scope (recollscope.rclsearch.Scope())
 # add more local scopes here (remote dbus scopes added automagically)
+print >> rcltrace, "UNITY RECOLL DAEMON: add local export"
 lens.export ()
 
+print >> rcltrace, "UNITY RECOLL DAEMON: add local main loop"
 GObject.MainLoop().run()
