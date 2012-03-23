@@ -22,8 +22,9 @@ class Scope (Unity.Scope):
 		Unity.Scope.__init__ (self, dbus_path="/org/recoll/unitylensrecoll/scope/main")
 		
 		# Listen for changes and requests
-		self.connect ("notify::active-search", self._on_search_changed)
-		self.connect ("notify::active-global-search", self._on_global_search_changed)
+		self.connect("notify::active-search", self._on_search_changed)
+		self.connect("notify::active-global-search", self._on_global_search_changed)
+		self.connect("filters-changed", self._on_search_changed);
 
 		# Bliss loaded the apps_tree menu here, let's connect to 
                 # the index
@@ -55,7 +56,7 @@ class Scope (Unity.Scope):
 		self._do_browse (self.props.results_model)
 		self._do_browse (self.props.global_results_model)
 	
-	def _on_search_changed (self, scope, param_spec):
+	def _on_search_changed (self, scope, param_spec=None):
 		search = self.get_search_string()
 		results = scope.props.results_model
 		
@@ -114,6 +115,11 @@ class Scope (Unity.Scope):
                 model.clear ()
 		if search_string == "":
                         return True
+
+		fcat = self.get_filter("rclcat")
+                for option in fcat.options:
+                        if option.props.active:
+                                search_string += " rclcat:" + option.props.id 
 
                 # Do the recoll thing
                 query = self.db.query()

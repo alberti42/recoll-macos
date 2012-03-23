@@ -62,12 +62,12 @@ def create_lens ():
 	
 
 	# Populate filters
-	lens.props.filters = []
+        filters = []
 
         # We should get the categories from the config but the python
-        # module currently has no code for this.
+        # module currently has no code for this. CheckOption or RadioOption?
 	filter = Unity.RadioOptionFilter.new("rclcat", "Category",
-                                             Gio.ThemedIcon.new(""), False)
+                Gio.ThemedIcon.new("input-keyboard-symbolic"), False)
 
         filter.add_option("text", "Text", None);
         filter.add_option("spreadsheet", "Spreadsheet", None);
@@ -76,7 +76,9 @@ def create_lens ():
         filter.add_option("message", "Message", None);
         filter.add_option("other", "Other", None);
 
-        lens.props.filters.append(filter)
+        filters.append(filter)
+
+        lens.props.filters = filters
 	return lens
 
 lens = create_lens ()
