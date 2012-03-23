@@ -1,0 +1,11 @@
+[Lens]
+DBusName=org.recoll.UnityLensRecoll.Lens
+DBusPath=/org/recoll/unitylensrecoll/lens
+Name=Recoll Lens
+Icon=@DATADIR@/unity-lens-recoll/recollbg24.png
+Description=Search documents indexed by Recoll
+SearchHint=Type to search
+Shortcut=a
+
+[Desktop Entry]
+X-Ubuntu-Gettext-Domain=unity-lens-recoll

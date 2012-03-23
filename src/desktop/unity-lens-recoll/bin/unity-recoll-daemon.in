@@ -1,0 +1,87 @@
+#! /usr/bin/python
+
+# Set Python path up to load from the source code dir if we're running out
+# of the source tree, otherwise point at the installed code
+import sys, os
+execpath = os.path.dirname(__file__)
+if os.path.isfile(os.path.join(execpath, "..", "configure.ac")):
+    print "Running from source tree"
+    sys.path.insert (0, os.path.join(execpath, ".."))
+else:
+    sys.path.insert (0, os.path.join("@DATADIR@", "unity-lens-recoll"))
+del execpath
+
+import recollscope.rclsearch
+from gi.repository import GLib, GObject, Gio
+
+# NOTE: If we used the normal 'dbus' module for Python we'll get
+#       slightly odd results because it uses a default connection
+#       to the session bus that is different from the default connection
+#       GDBus (hence libunity) will use. Meaning that the daemon name
+#       will be owned by a connection different from the one all our
+#       Dee + Unity magic is working on...
+#       Still waiting for nice GDBus bindings to land:
+#                        http://www.piware.de/2011/01/na-zdravi-pygi/
+
+#
+# The primary bus name we grab *must* match what we specify in our .lens file
+#
+BUS_NAME = "org.recoll.UnityLensRecoll.Lens"
+
+session_bus_connection = Gio.bus_get_sync (Gio.BusType.SESSION, None)
+session_bus = Gio.DBusProxy.new_sync (session_bus_connection, 0, None,
+                                      'org.freedesktop.DBus',
+                                      '/org/freedesktop/DBus',
+                                      'org.freedesktop.DBus', None)
+result = session_bus.call_sync('RequestName',
+                               GLib.Variant ("(su)", (BUS_NAME, 0x4)),
+                               0, -1, None)
+	                               
+# Unpack variant response with signature "(u)". 1 means we got it.
+result = result.unpack()[0]
+
+if result != 1 :
+  print >> sys.stderr, "Failed to own name %s. Bailing out." % BUS_NAME
+  raise SystemExit (1)
+
+def create_lens ():
+	# The path for the Lens *must* also match the one in our .lens file
+	from gi.repository import Unity
+	lens = Unity.Lens.new ("/org/recoll/unitylensrecoll/lens", "recoll")
+	
+	lens.props.search_hint = "Recoll search string"
+	lens.props.visible = True;
+	lens.props.search_in_global = False;
+	
+	# Populate categories
+	cats = []
+	cats.append (Unity.Category.new ("Documents",
+	                                 Gio.ThemedIcon.new("document"),
+	                                 Unity.CategoryRenderer.HORIZONTAL_TILE))
+	lens.props.categories = cats
+	
+
+	# Populate filters
+	lens.props.filters = []
+
+        # We should get the categories from the config but the python
+        # module currently has no code for this.
+	filter = Unity.RadioOptionFilter.new("rclcat", "Category",
+                                             Gio.ThemedIcon.new(""), False)
+
+        filter.add_option("text", "Text", None);
+        filter.add_option("spreadsheet", "Spreadsheet", None);
+        filter.add_option("presentation", "Presentation", None);
+        filter.add_option("media", "Media", None);
+        filter.add_option("message", "Message", None);
+        filter.add_option("other", "Other", None);
+
+        lens.props.filters.append(filter)
+	return lens
+
+lens = create_lens ()
+lens.add_local_scope (recollscope.rclsearch.Scope())
+# add more local scopes here (remote dbus scopes added automagically)
+lens.export ()
+
+GObject.MainLoop().run()

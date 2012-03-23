@@ -1,0 +1,35 @@
+ABOUT
+-----
+
+ unity-lens-recoll 
+ Work derived from:
+   unity-lens-bliss,
+   Copyright 2011, Canonical Ltd
+   Authored by Mikkel Kamstrup Erlandsen <mikkel.kamstrup@canonical.com>
+   Distribute under the terms of the GNU General Public License v3
+
+ Modifications by J.F. Dockes <jfd@recoll.org> Copyright 2012, J.F. Dockes
+ License as original work.
+
+    unity-lens-bliss is is a very simple application launcher lens for
+    Unity. Mostly meant to be used as a starting point for users wanting to
+    write their own lens or customize this lens to their needs.
+
+unity-lens-recoll uses the starting point and replaces the search part with
+recoll queries.
+
+Install with:
+
+  ./configure --prefix=/usr --sysconfdir=/etc && make && sudo make install
+
+or if you checked the code out from a bazaar branch:
+
+  ./autogen.sh --prefix=/usr --sysconfdir=/etc  && make && sudo make install
+
+RESOURCES
+---------
+The source code and releases packages can be found on
+    http://www.recoll.org. 
+Bugs should be reported on the bitbucket recoll issues tracker:
+    https://bitbucket.org/medoc/recoll/issues
+
