@@ -86,8 +86,13 @@ done
 @NOQTMAKE@${INSTALL} -m 0444 desktop/recoll.png ${datadir}/icons/hicolor/48x48/apps
 @NOQTMAKE@${INSTALL} -m 0444 desktop/recoll.png ${datadir}/pixmaps/
 
-${INSTALL} -m 0444 doc/user/usermanual.html doc/user/docbook.css \
+if test -f doc/user/usermanual.html ; then
+    ${INSTALL} -m 0444 doc/user/usermanual.html doc/user/docbook.css \
 			${datadir}/recoll/doc 
+else
+    echo "User manual not found -> not installed"
+fi
+
 @NOQTMAKE@${INSTALL} -m 0444 doc/man/recoll.1 ${mandir}/man1/
 @NOCMDLINE@${INSTALL} -m 0444 doc/man/recollq.1 ${mandir}/man1/
 ${INSTALL} -m 0444 doc/man/recollindex.1 ${mandir}/man1/
