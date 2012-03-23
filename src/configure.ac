@@ -419,8 +419,29 @@ else
    QMAKE_DISABLE_WEBKIT=""
   fi
 
+ ##### Using QZeitGeist lib ? Default no for now
+  AC_ARG_WITH(qzeitgeist,
+    AC_HELP_STRING([--with-qzeitgeist],
+      [Enable the use of the qzeitgeist library to send zeitgeist events.]),
+        withQZeitgeist=$withval, withQZeitgeist="no")
+
+  case "$withQZeitgeist" in 
+    no)  LIBQZEITGEIST=;;
+    yes) LIBQZEITGEIST=-lqzeitgeist;;
+    *)   LIBQZEITGEIST=$withQZeitgeist;;
+  esac	
+
+  if test "$withQZeitgeist" != "no" ; then
+   QMAKE_ENABLE_ZEITGEIST=""
+   QMAKE_DISABLE_ZEITGEIST="#"
+  else
+   QMAKE_ENABLE_ZEITGEIST="#"
+   QMAKE_DISABLE_ZEITGEIST=""
+  fi
+
   AC_CONFIG_FILES($QTGUI/recoll.pro)
-  ##################### End QT detection
+
+  ##################### End QT stuff
 fi
 
 
@@ -475,6 +496,9 @@ AC_SUBST(NOQTMAKE)
 AC_SUBST(NOCMDLINE)
 AC_SUBST(QMAKE_ENABLE_WEBKIT)
 AC_SUBST(QMAKE_DISABLE_WEBKIT)
+AC_SUBST(QMAKE_ENABLE_ZEITGEIST)
+AC_SUBST(QMAKE_DISABLE_ZEITGEIST)
+AC_SUBST(LIBQZEITGEIST)
 AC_SUBST(NOPIC)
 AC_SUBST(RCLVERSION)
 

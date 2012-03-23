@@ -4,6 +4,9 @@ LANGUAGE        = C++
 @QMAKE_ENABLE_WEBKIT@QT += webkit
 @QMAKE_DISABLE_WEBKIT@QMAKE_CXXFLAGS += -DRESLIST_TEXTBROWSER
 
+@QMAKE_ENABLE_ZEITGEIST@QT += dbus
+@QMAKE_ENABLE_ZEITGEIST@QMAKE_CXXFLAGS += -DUSE_ZEITGEIST
+
 CONFIG  += qt warn_on thread release 
 
 HEADERS += \
@@ -38,6 +41,7 @@ SOURCES += \
         preview_w.cpp \
         rclhelp.cpp \
         rclmain_w.cpp \
+        rclzg.cpp \
         reslist.cpp \
         restable.cpp \
         rtitool.cpp \
@@ -73,7 +77,7 @@ unix {
 
   LIBS += ../lib/librcl.a \
        $(BSTATIC) @LIBXAPIAN@ $(LIBXAPIANSTATICEXTRA) @LIBICONV@ $(BDYNAMIC) \
-           -lz
+           @LIBQZEITGEIST@ -lz
 
   INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
               ../utils ../aspell ../rcldb ../qtgui \

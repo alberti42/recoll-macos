@@ -603,6 +603,9 @@ ac_subst_vars='LTLIBOBJS
 LIBOBJS
 RCLVERSION
 NOPIC
+LIBQZEITGEIST
+QMAKE_DISABLE_ZEITGEIST
+QMAKE_ENABLE_ZEITGEIST
 QMAKE_DISABLE_WEBKIT
 QMAKE_ENABLE_WEBKIT
 NOCMDLINE
@@ -692,6 +695,7 @@ enable_camelcase
 enable_pic
 enable_qtgui
 enable_webkit
+with_qzeitgeist
 enable_x11mon
 with_x
 '
@@ -1358,6 +1362,8 @@ Optional Packages:
                           indexing of modified files. Give the fam/gamin
                           library as argument (ie: /usr/lib/libfam.so) if
                           configure does not find the right one.
+  --with-qzeitgeist       Enable the use of the qzeitgeist library to send
+                          zeitgeist events.
   --with-x                use the X Window System
 
 Some influential environment variables:
@@ -4731,10 +4737,34 @@ fi
    QMAKE_DISABLE_WEBKIT=""
   fi
 
+ ##### Using QZeitGeist lib ? Default no for now
+
+# Check whether --with-qzeitgeist was given.
+if test "${with_qzeitgeist+set}" = set; then :
+  withval=$with_qzeitgeist; withQZeitgeist=$withval
+else
+  withQZeitgeist="no"
+fi
+
+
+  case "$withQZeitgeist" in
+    no)  LIBQZEITGEIST=;;
+    yes) LIBQZEITGEIST=-lqzeitgeist;;
+    *)   LIBQZEITGEIST=$withQZeitgeist;;
+  esac
+
+  if test "$withQZeitgeist" != "no" ; then
+   QMAKE_ENABLE_ZEITGEIST=""
+   QMAKE_DISABLE_ZEITGEIST="#"
+  else
+   QMAKE_ENABLE_ZEITGEIST="#"
+   QMAKE_DISABLE_ZEITGEIST=""
+  fi
+
   ac_config_files="$ac_config_files $QTGUI/recoll.pro"
 
 
-  ##################### End QT detection
+  ##################### End QT stuff
 fi
 
 
@@ -5590,6 +5620,9 @@ m_datadir=${m_prefix}/share
 QTRECOLL_DATADIR=${m_datadir}/recoll
 
 RCLVERSION='1.17.0'
+
+
+
 
 
 

@@ -77,6 +77,7 @@ using std::pair;
 #include "crontool.h"
 #include "rtitool.h"
 #include "indexer.h"
+#include "rclzg.h"
 
 using namespace confgui;
 
@@ -1149,6 +1150,8 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
 	    }
 	}
     }
+    // Do the zeitgeist thing
+    zg_send_event(ZGSEND_PREVIEW, doc);
 
     if (mod & Qt::ShiftModifier) {
 	// User wants new preview window
@@ -1231,6 +1234,8 @@ void RclMain::startPreview(Rcl::Doc doc)
 	    this, SLOT (fileExit()));
     connect(preview, SIGNAL(wordSelect(QString)),
 	    sSearch, SLOT(addTerm(QString)));
+    // Do the zeitgeist thing
+    zg_send_event(ZGSEND_PREVIEW, doc);
     preview->show();
     preview->makeDocCurrent(doc, 0);
 }
@@ -1621,6 +1626,9 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 
     if (!istempfile)
 	historyEnterDoc(g_dynconf, doc.meta[Rcl::Doc::keyudi]);
+    
+    // Do the zeitgeist thing
+    zg_send_event(ZGSEND_OPEN, doc);
 
     // We keep pushing back and never deleting. This can't be good...
     ExecCmd *ecmd = new ExecCmd;
