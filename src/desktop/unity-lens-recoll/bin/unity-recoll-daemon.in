@@ -44,9 +44,6 @@ if result != 1 :
   print >> sys.stderr, "Failed to own name %s. Bailing out." % BUS_NAME
   raise SystemExit (1)
 
-rcltrace = open("/tmp/recolenstrace", "a")
-
-print >> rcltrace, "UNITY RECOLL DAEMON"
 def create_lens ():
 	# The path for the Lens *must* also match the one in our .lens file
 	from gi.repository import Unity
@@ -82,13 +79,9 @@ def create_lens ():
         lens.props.filters.append(filter)
 	return lens
 
-print >> rcltrace, "UNITY RECOLL DAEMON: create lens"
 lens = create_lens ()
-print >> rcltrace, "UNITY RECOLL DAEMON: add local scope"
 lens.add_local_scope (recollscope.rclsearch.Scope())
 # add more local scopes here (remote dbus scopes added automagically)
-print >> rcltrace, "UNITY RECOLL DAEMON: add local export"
 lens.export ()
 
-print >> rcltrace, "UNITY RECOLL DAEMON: add local main loop"
 GObject.MainLoop().run()

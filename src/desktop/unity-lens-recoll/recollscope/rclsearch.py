@@ -19,10 +19,6 @@ TYPING_TIMEOUT = 0
 class Scope (Unity.Scope):
 
 	def __init__ (self):
-                self.trcfile = open("/tmp/recolenstrace", "w")
-                print >> self.trcfile, "Scope init"
-                self.trcfile.flush()
-                
 		Unity.Scope.__init__ (self, dbus_path="/org/recoll/unitylensrecoll/scope/main")
 		
 		# Listen for changes and requests
@@ -31,10 +27,7 @@ class Scope (Unity.Scope):
 
 		# Bliss loaded the apps_tree menu here, let's connect to 
                 # the index
-                print >> self.trcfile, "Connecting to db"
                 self.db = recoll.connect()
-                print >> self.trcfile, "Done"
-                self.trcfile.flush()
 
                 self.db.setAbstractParams(maxchars=200, 
                                           contextwords=4)
@@ -116,8 +109,8 @@ class Scope (Unity.Scope):
                                         search_string, model)
 
         def _really_do_search(self, search_string, model):
-                print >> self.trcfile, "really_do_search:[", search_string, "]"
-                self.trcfile.flush()
+#                print "really_do_search:[", search_string, "]"
+
                 model.clear ()
 		if search_string == "":
                         return True
