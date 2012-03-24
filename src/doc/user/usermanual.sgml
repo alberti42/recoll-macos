@@ -1,4 +1,9 @@
+<!-- Use this header for the FreeBSD sgml toolchain -->
 <!DOCTYPE BOOK PUBLIC "-//FreeBSD//DTD DocBook V4.1-Based Extension//EN" [
+
+<!-- Use this header for going XML -->
+<!-- <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [ -->
 
 <!ENTITY RCL "<application>Recoll</application>">
 <!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/features.html'>Recoll helper applications page</ulink>">
@@ -58,7 +63,8 @@
         applications</link> for document types that need them (for
         example <application>antiword</application> for ms-word
         files).</para>
-      
+    </sect1>
+
     <sect1 id="rcl.introduction.search"> 
       <title>Full text search</title>
 
@@ -220,7 +226,7 @@
         indexes (ie: use periodic indexing on a big documentation
         directory, and real time indexing on a small home
         directory). Monitoring a big file system tree can consume
-        significant system resources.<para>
+        significant system resources.</para>
 
       <para>&RCL; knows about quite a few different document
         types. The parameters for document types recognition and
@@ -297,7 +303,8 @@ recoll
           stored in <filename>~/.indexes-email/</filename> and,
           (unless specified otherwise in
           <filename>recoll.conf</filename>) would look for 
-          the index in <filename>~/.indexes-email/xapiandb/</filename>.
+          the index in
+          <filename>~/.indexes-email/xapiandb/</filename>.</para>
 
           <para>Using multiple configuration directories and 
           <link linkend="rcl.install.config.recollconf">configuration
@@ -560,10 +567,10 @@ recoll
           3:30AM (supposing <command>recollindex</command> is in your
           PATH):
 
-        <programlisting>30 3 * * * recollindex > /some/tmp/dir/recolltrace 2>&1</programlisting>
+        <programlisting>30 3 * * * recollindex > /some/tmp/dir/recolltrace 2>&amp;1</programlisting>
 
 	  Or, using <command>anacron</command>:
-<programlisting>1  15  su mylogin -c "recollindex recollindex > /tmp/rcltraceme 2>&1"</programlisting>
+<programlisting>1  15  su mylogin -c "recollindex recollindex > /tmp/rcltraceme 2>&amp;1"</programlisting>
         </para>
 
         <para>As of version 1.17 the &RCL; GUI has dialogs to manage
@@ -878,7 +885,7 @@ fvwm
       <para>The format of the result list entries is entirely
       configurable by using the preference dialog to 
       <link linkend="rcl.search.custom.reslist">edit an HTML
-      fragment</link>.  
+      fragment</link>.</para>
 
       <para>You can click on the <literal>Query details</literal> link
         at the top of the results page to see the query actually 
@@ -1122,7 +1129,8 @@ fvwm
       a slack of 1 it will match the latter, but not <literal>fox
       quick</literal>. A proximity search for <literal>quick
       fox</literal> with the default slack will match the
-      latter, and also <literal>a fox is a cunning and quick animal</literal>.
+      latter, and also <literal>a fox is a cunning and quick
+      animal</literal>.</para> 
       </formalpara>
 
       </sect3>
@@ -1330,7 +1338,7 @@ fvwm
         entry.</para> 
       <para>You can erase the document history by using the
       <guilabel>Erase document history</guilabel> entry in the
-      <guimenu>File</guimenu> menu.
+      <guimenu>File</guimenu> menu.</para>
 
     </sect2>
 
@@ -1457,6 +1465,7 @@ fvwm
         <literal>virtual</literal> or <literal>reality</literal> or 
         both appear, but those which contain <literal>virtual
           reality</literal> should appear sooner in the list.</para>
+          </formalpara>
 
       <para>Phrase searches can strongly slow down a query if most of the
         terms in the phrase are common. This is why the
@@ -1474,7 +1483,7 @@ fvwm
       match the dotted abrreviation if you increase the phrase slack (using the
       advanced search panel control, or the <literal>o</literal> query
       language modifier). Literal occurences of the word will be matched
-      normally.</para>
+      normally.</para></formalpara>
 
 
       </sect3>
@@ -1671,14 +1680,14 @@ fvwm
             config (try the <command>qtconfig</command> command).</para>
             </listitem>
 
-            <listitem><anchor id="rcl.search.custom.resultpara">
+            <listitem id="rcl.search.custom.resultpara">
             <para><guilabel>Edit result list paragraph format string</guilabel>:
             allows you to change the presentation of each result list
             entry. See the <link linkend="rcl.search.custom.reslist">
                 result list customisation section</link>.</para>
             </listitem>
 
-            <listitem><anchor id="rcl.search.custom.resulthead">
+            <listitem id="rcl.search.custom.resulthead">
             <para><guilabel>Edit result page html header insert</guilabel>:
             allows you to define text inserted at the end of the result
             page html header.  
@@ -1692,7 +1701,7 @@ fvwm
             should be specified as an strftime() string (man strftime).</para>
             </listitem>
 
-            <listitem><anchor id="rcl.search.custom.abssep">
+            <listitem id="rcl.search.custom.abssep">
             <para><guilabel>Abstract snippet separator</guilabel>:
             for synthetic abstracts built from index data, which are
             usually made of several snippets from different parts of the
@@ -1782,6 +1791,7 @@ fvwm
       their database directory (ie:
       <filename>/home/someothergui/.recoll/xapiandb</filename>,
       <filename>/usr/local/recollglobal/xapiandb</filename>).</para>
+        </formalpara>
 
       <para>Once entered, the indexes will appear in the
         <guilabel>External indexes</guilabel> list, and you can
@@ -1926,6 +1936,7 @@ fvwm
           <link linkend="rcl.search.custom.abssep">
              define the value of the snippet separator inside the abstract
              section</link>.</para>
+       </sect4>
       </sect3>
     </sect2>
 
@@ -2174,7 +2185,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         document-specified keywords (few documents actually have any).</para>
         </listitem>
         <listitem><para><literal>filename</literal> for the document's
-        file name.</listitem>
+        file name.</para></listitem>
         <listitem><para><literal>ext</literal> specifies the file
         name extension (Ex: <literal>ext:html</literal>)</para>
         </listitem>
@@ -2199,10 +2210,10 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
         <listitem><para><literal>size</literal> for filtering the
         results on file size. Exemple: 
-        <literal>size<10000</literal>. You can use
+        <literal>size&lt;10000</literal>. You can use
         <literal>&lt;</literal>, <literal>&gt;</literal> or
         <literal>=</literal> as operators. You can specify a range like the
-        following: <literal>size>100 size<1000</literal>. The usual
+        following: <literal>size>100 size&lt;1000</literal>. The usual
         <literal>k/K, m/M, g/G, t/T</literal> can be used as (decimal)
         multipliers. Ex: <literal>size&gt;1k</literal> to search for files
         bigger than 1000 bytes.</para>
@@ -2319,6 +2330,8 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
             modifiers. Example: <literal>"Important"2.5</literal>.</para>
             </listitem>
           </itemizedlist>
+      </para>
+
 
      </sect2> <!-- search modifiers -->
 
@@ -2627,7 +2640,7 @@ application/x-chm = execm rclchm
 
         <programlisting>&lt;html>&lt;head>
 &lt;meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-&lt/head>
+&lt;/head>
 &lt;body>some text content&lt;/body>&lt;/html>
           </programlisting>
 
@@ -2816,7 +2829,7 @@ application/x-chm = execm rclchm
       <sect3 id="rcl.program.python.manual">
         <title>Interface manual</title>
 
-      <literalLayout>
+      <literallayout>
 NAME
     recoll - This is an interface to the Recoll full text indexer.
 
@@ -3002,7 +3015,7 @@ FUNCTIONS
         writable decides if we can index new data through this connection
 
 
-</literalLayout>
+</literallayout>
         </sect3>
 
       <sect3 id="rcl.program.python.examples">
@@ -3014,7 +3027,7 @@ FUNCTIONS
 
         <programlisting>
 #!/usr/bin/env python
-
+<![CDATA[
 import recoll
 
 db = recoll.connect()
@@ -3035,13 +3048,13 @@ while query.next >= 0 and query.next < nres:
     print
 
 
-
+]]>
 </programlisting>
 
       </sect3>
 
     </sect2>
-
+    </sect1>
   </chapter>
 
 
@@ -3164,7 +3177,7 @@ while query.next >= 0 and query.next < nres:
         <listitem><para>Postscript files need <command>pstotext</command>. 
             The original version has an issue with shell
             character in file names, which is corrected in recent
-            packages. See the the &RCLAPPS; for more detail.
+            packages. See the the &RCLAPPS; for more detail.</para>
           </listitem>
 
         <listitem><para>MS Word needs
@@ -3303,7 +3316,9 @@ while query.next >= 0 and query.next < nres:
         <application>Linux</application> systems, the iconv interface
         is part of libc and you should not need to do anything
         special.</para>
-      
+
+      </sect2>
+
       <sect2 id="rcl.install.building.build">
         <title>Building</title>
 
@@ -3335,7 +3350,7 @@ while query.next >= 0 and query.next < nres:
         <para>On many Linux systems, <literal>QTDIR</literal> is set
         by the login scripts, and <literal>QMAKESPECS</literal> is not
         needed because there is a <filename>default</filename> link in
-        <filename>mkspecs/</filename>. 
+        <filename>mkspecs/</filename>.</para>
 
 	<para>Neither <literal>QTDIR</literal> nor 
 	<literal>QMAKESPECS</literal> should be needed with 
@@ -3360,6 +3375,7 @@ while query.next >= 0 and query.next < nres:
               <application>Qt</application> QTextBrowser instead of a
               WebKit widget if you do not or can't depend on the
               latter.</para>
+          </listitem>
 	  <listitem><para><literal>--enable-xattr</literal> will enable
  	    code to fetch data from file extended attributes. This is only
 	    useful is some application stores data in there, and also needs
@@ -4017,7 +4033,7 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
           </varlistentry>
 
         </variablelist>
-
+       </sect3>
       </sect2>
 
       <sect2 id="rcl.install.config.fields">
@@ -4045,14 +4061,14 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
           <varlistentry>
             <term>[prefixes]</term>
             <listitem><para>A field becomes indexed (searchable) by having
-            a prefix defined in this section.
+            a prefix defined in this section.</para>
             </listitem>
           </varlistentry>
           <varlistentry>
             <term>[stored]</term>
             <listitem><para>A field becomes stored (displayable inside
             results) by having its name listed in this section (typically
-            with an empty value).
+            with an empty value).</para>
             </listitem>
           </varlistentry>
           <varlistentry>
