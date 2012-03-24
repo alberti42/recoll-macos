@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0">
+<TS version="2.0" language="ru_RU" sourcelanguage="en">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -37,7 +37,7 @@
     </message>
     <message>
         <source>Bad multiplier suffix in size filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Неверный суффикс множителя в фильтре размера</translation>
     </message>
 </context>
 <context>
@@ -132,58 +132,58 @@
     </message>
     <message>
         <source>Minimum size. You can use k/K,m/M,g/G as multipliers</source>
-        <translation type="unfinished"></translation>
+        <translation>Минимальный размер. Можно использовать k/K, m/M, g/G как множители</translation>
     </message>
     <message>
         <source>Min. Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Мин. размер</translation>
     </message>
     <message>
         <source>Maximum size. You can use k/K,m/M,g/G as multipliers</source>
-        <translation type="unfinished"></translation>
+        <translation>Макс. размер. Можно использовать k/K, m/M, g/G как множители</translation>
     </message>
     <message>
         <source>Max. Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Макс. размер</translation>
     </message>
     <message>
         <source>Filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Фильтр</translation>
     </message>
     <message>
         <source>From</source>
-        <translation type="unfinished"></translation>
+        <translation>От</translation>
     </message>
     <message>
         <source>To</source>
-        <translation type="unfinished"></translation>
+        <translation>До</translation>
     </message>
     <message>
         <source>Check this to enable filtering on dates</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить фильтрование по дате</translation>
     </message>
     <message>
         <source>Filter dates</source>
-        <translation type="unfinished"></translation>
+        <translation>Фильтрование по дате</translation>
     </message>
     <message>
         <source>Find</source>
-        <translation type="unfinished"></translation>
+        <translation>Найти</translation>
     </message>
     <message>
         <source>Check this to enable filtering on sizes</source>
-        <translation type="unfinished"></translation>
+        <translation>Включить фильтрование по размеру</translation>
     </message>
     <message>
         <source>Filter sizes</source>
-        <translation type="unfinished"></translation>
+        <translation>Фильтрование по размеру</translation>
     </message>
 </context>
 <context>
     <name>CronToolW</name>
     <message>
         <source>Cron Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Диалог Cron</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -196,19 +196,28 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;For example, entering &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;*&lt;/span&gt; in &lt;span style=&quot; font-style:italic;&quot;&gt;Days, &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;12,19&lt;/span&gt; in &lt;span style=&quot; font-style:italic;&quot;&gt;Hours&lt;/span&gt; and &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;15&lt;/span&gt; in &lt;span style=&quot; font-style:italic;&quot;&gt;Minutes&lt;/span&gt; would start recollindex every day at 12:15 AM and 7:15 PM&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;A schedule with very frequent activations is probably less efficient than real time indexing.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Расписание пакетного индексирования &lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; (cron) &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Каждое поле может содержать шаблон (*), одно численное значение, список через запятую (1,3,5) или диапазон (1-7). Эти поля будут использованы &lt;span style=&quot; font-style:italic;&quot;&gt;как есть&lt;/span&gt; в файле crontab, для ознакомления с полным синтаксисом которого см. crontab(5).&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;Например, ввод &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;*&lt;/span&gt; для &lt;span style=&quot; font-style:italic;&quot;&gt;Дни&lt;/span&gt;, &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;12,19&lt;/span&gt; для &lt;span style=&quot; font-style:italic;&quot;&gt;Часы&lt;/span&gt; и &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;15&lt;/span&gt; для &lt;span style=&quot; font-style:italic;&quot;&gt;Минуты&lt;/span&gt; запустит recollindex ежедневно в 12:15 и 19:15.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Расписание с очень частыми запусками может оказаться менее эффективным, чем индексирование в реальном времени.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Days of week (* or 0-7, 0 or 7 is Sunday)</source>
-        <translation type="unfinished"></translation>
+        <translation>Дни недели (* или 0-7, 0 или 7 - воскресенье)</translation>
     </message>
     <message>
         <source>Hours (* or 0-23)</source>
-        <translation type="unfinished"></translation>
+        <translation>Часы (* или 0-23)</translation>
     </message>
     <message>
         <source>Minutes (0-59)</source>
-        <translation type="unfinished"></translation>
+        <translation>Минуты (0-59)</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -216,37 +225,41 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Click &lt;span style=&quot; font-style:italic;&quot;&gt;Disable&lt;/span&gt; to stop automatic batch indexing, &lt;span style=&quot; font-style:italic;&quot;&gt;Enable&lt;/span&gt; to activate it, &lt;span style=&quot; font-style:italic;&quot;&gt;Cancel&lt;/span&gt; to change nothing.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Нажмите &lt;span style=&quot; font-style:italic;&quot;&gt;Выключить&lt;/span&gt; для прекращения автоматической фоновой индексации, &lt;span style=&quot; font-style:italic;&quot;&gt;Включить&lt;/span&gt; для её запуска, &lt;span style=&quot; font-style:italic;&quot;&gt;Отмена&lt;/span&gt;, чтобы оставить всё как есть.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Enable</source>
-        <translation type="unfinished">Включить</translation>
+        <translation>Включить</translation>
     </message>
     <message>
         <source>Disable</source>
-        <translation type="unfinished"></translation>
+        <translation>Выключить</translation>
     </message>
     <message>
         <source>It seems that manually edited entries exist for recollindex, cannot edit crontab</source>
-        <translation type="unfinished"></translation>
+        <translation>Похоже, что для recollindex есть вручную правленые записи, не будем трогать crontab</translation>
     </message>
     <message>
         <source>Error installing cron entry. Bad syntax in fields ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка установки записи cron. Неверный синтаксис полей?</translation>
     </message>
 </context>
 <context>
     <name>EditDialog</name>
     <message>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Диалог</translation>
     </message>
 </context>
 <context>
     <name>FirstIdxDialog</name>
     <message>
         <source>First indexing setup</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройка первого индексирования</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -258,34 +271,42 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If you want more control, use the following links to adjust the indexing configuration and schedule.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;These tools can be accessed later from the &lt;span style=&quot; font-style:italic;&quot;&gt;Preferences&lt;/span&gt; menu.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Похоже, что индекс для этой конфигурации не существует.&lt;/span&gt;&lt;br /&gt;&lt;br /&gt;Если надо проиндексировать домашний каталог с набором разумных умолчаний, нажмите кнопку &lt;span style=&quot; font-style:italic;&quot;&gt;Запустить индексирование&lt;/span&gt;. Подробности можно будет уточнить позже. &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Если требуется больше контроля, воспользуйтесь ссылками для уточнения конфигурации и расписания индексирования.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Этот инструментарий доступен в любое время посредством меню &lt;span style=&quot; font-style:italic;&quot;&gt;Настройки&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Indexing configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Конфигурация индексирования</translation>
     </message>
     <message>
         <source>This will let you adjust the directories you want to index, and other parameters like excluded file paths or names, default character sets, etc.</source>
-        <translation type="unfinished"></translation>
+        <translation>Здесь можно уточнить, какие каталоги требуется индексировать, какие пути или имена не требуется, с какими кодировками и т.п.</translation>
     </message>
     <message>
         <source>Indexing schedule</source>
-        <translation type="unfinished"></translation>
+        <translation>Расписание индексирования</translation>
     </message>
     <message>
         <source>This will let you chose between batch and real-time indexing, and set up an automatic  schedule for batch indexing (using cron).</source>
-        <translation type="unfinished"></translation>
+        <translation>Здесь можно выбрать режим индексированиея: пакетный или реального времени, а также настроить расписание автоматического индексирования при помощи cron.</translation>
     </message>
     <message>
         <source>Start indexing now</source>
-        <translation type="unfinished"></translation>
+        <translation>Запустить индексирование</translation>
     </message>
 </context>
 <context>
     <name>IdxSchedW</name>
     <message>
         <source>Index scheduling setup</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройка расписания индексирования</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -296,34 +317,42 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Reading the manual may help you to decide between these approaches (press F1). &lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This tool can help you set up a schedule to automate batch indexing runs, or start real time indexing when you log in (or both, which rarely makes sense). &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Индексирование &lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; может работать постоянно, индексируя изменяющиеся файлы, или запускаться через промежутки времени. &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Прочитайте подсказку, чтобы решить, какой подход будет удобней (нажмите F1). &lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Здесь можно настроить расписание автоматических запусков пакетного индексирования или же старта индексирования в реальном времени при входе в систему (или всё и сразу, что редко имеет смысл). &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Cron scheduling</source>
-        <translation type="unfinished"></translation>
+        <translation>Расписание cron</translation>
     </message>
     <message>
         <source>The tool will let you decide at what time indexing should run and will install a crontab entry.</source>
-        <translation type="unfinished"></translation>
+        <translation>Здесь можно выбрать, в какое время запускать индексирование, и установить запись crontab.</translation>
     </message>
     <message>
         <source>Real time indexing start up</source>
-        <translation type="unfinished"></translation>
+        <translation>Запуск индексирования в реальном времени</translation>
     </message>
     <message>
         <source>Decide if real time indexing will be started when you log in (only for the default index).</source>
-        <translation type="unfinished"></translation>
+        <translation>Решите, нужно ли начинать индексирование в реальном времени при входе в систему (только для индекса по умолчанию).</translation>
     </message>
 </context>
 <context>
     <name>ListDialog</name>
     <message>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Диалог</translation>
     </message>
     <message>
         <source>GroupBox</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>?</translatorcomment>
+        <translation>GroupBox</translation>
     </message>
 </context>
 <context>
@@ -403,11 +432,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Cannot create temporary directory: </source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно создать временный каталог:</translation>
     </message>
     <message>
         <source>Error while loading file</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка загрузки файла</translation>
     </message>
 </context>
 <context>
@@ -446,11 +475,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Fold lines</source>
-        <translation type="unfinished"></translation>
+        <translation>Переносить строки</translation>
     </message>
     <message>
         <source>Preserve indentation</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранять отступы</translation>
     </message>
 </context>
 <context>
@@ -516,7 +545,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <name>RTIToolW</name>
     <message>
         <source>Real time indexing automatic start</source>
-        <translation type="unfinished"></translation>
+        <translation>Автоматический запуск индексирования в реальном времени</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -525,51 +554,56 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; indexing can be set up to run as a daemon, updating the index as files change, in real time. You gain an always up to date index, but system resources are used permanently.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Индексирование &lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; может быть настроено как сервис, обновляющий индекс при изменении файлов в реальном времени. При этом индекс всегда свежий, но ценой постоянно используемых системных ресурсов.&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Start indexing daemon with my desktop session.</source>
-        <translation type="unfinished"></translation>
+        <translation>Запускать службу индексирования вместе с моей сессией.</translation>
     </message>
     <message>
         <source>Also start indexing daemon right now.</source>
-        <translation type="unfinished"></translation>
+        <translation>Также запустить службу индексирования прямо сейчас.</translation>
     </message>
     <message>
         <source>Replacing: </source>
-        <translation type="unfinished"></translation>
+        <translation>Заменяю: </translation>
     </message>
     <message>
         <source>Replacing file</source>
-        <translation type="unfinished"></translation>
+        <translation>Заменяю файл</translation>
     </message>
     <message>
         <source>Can&apos;t create: </source>
-        <translation type="unfinished"></translation>
+        <translation>Не могу создать: </translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation type="unfinished">Осторожно</translation>
+        <translation>Осторожно</translation>
     </message>
     <message>
         <source>Could not execute recollindex</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно запустить recollindex</translation>
     </message>
     <message>
         <source>Deleting: </source>
-        <translation type="unfinished"></translation>
+        <translation>Удаляю: </translation>
     </message>
     <message>
         <source>Deleting file</source>
-        <translation type="unfinished"></translation>
+        <translation>Удаляю файл</translation>
     </message>
     <message>
         <source>Removing autostart</source>
-        <translation type="unfinished"></translation>
+        <translation>Убираю автозапуск</translation>
     </message>
     <message>
         <source>Autostart file deleted. Kill current process too ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл автозапуска удалён. Остановить текущий процесс?</translation>
     </message>
 </context>
 <context>
@@ -776,67 +810,67 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Отсутствует</translation>
     </message>
     <message>
         <source>Updating</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновляю</translation>
     </message>
     <message>
         <source>Done</source>
-        <translation type="unfinished"></translation>
+        <translation>Готово</translation>
     </message>
     <message>
         <source>Monitor</source>
-        <translation type="unfinished"></translation>
+        <translation>Монитор</translation>
     </message>
     <message>
         <source>Indexing failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Индексирование не удалось</translation>
     </message>
     <message>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
-        <translation type="unfinished"></translation>
+        <translation>Текущий процесс индексирования не был запущен из этого интерфейса. Нажмите OK для останова или Отменить, чтоб работал себе</translation>
     </message>
     <message>
         <source>Erasing index</source>
-        <translation type="unfinished"></translation>
+        <translation>Стираю индекс</translation>
     </message>
     <message>
         <source>Reset the index and start from scratch ?</source>
-        <translation type="unfinished"></translation>
+        <translation>Обнулить индекс и начать заново?</translation>
     </message>
     <message>
         <source>Query in progress.&lt;br&gt;Due to limitations of the indexing library,&lt;br&gt;cancelling will exit the program</source>
-        <translation type="unfinished"></translation>
+        <translation>Запрос обрабатывается.&lt;br&gt;Из-за ограничений библиотеки&lt;br&gt;останов прервёт всю программу</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка</translation>
     </message>
     <message>
         <source>Index not open</source>
-        <translation type="unfinished"></translation>
+        <translation>Индекс не открыт</translation>
     </message>
     <message>
         <source>Index query error</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка запроса</translation>
+    </message>
+    <message>
+        <source>Indexed Mime Types</source>
+        <translation>Индексируемые MIME-типы</translation>
     </message>
     <message>
         <source>Content has been indexed for these mime types:</source>
-        <translation type="unfinished"></translation>
+        <translation>Проиндексировано содержание следующих MIME-типов:</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation type="unfinished"></translation>
+        <translation>Индекс для этого файла устарел. Не буду рисковать показывать не тот фрагмент. Нажмите OK для обновления индекса для этого файла, затем повторите запрос. Или же Отменить.</translation>
     </message>
     <message>
         <source>Can&apos;t update index: indexer running</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indexed MIME Types</source>
-        <translation type="unfinished"></translation>
+        <translation>Не могу обновить индекс: индексатор уже трудится</translation>
     </message>
 </context>
 <context>
@@ -967,15 +1001,16 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Show missing helpers</source>
-        <translation>Недостающие внешние программы</translation>
+        <translatorcomment>FIXME</translatorcomment>
+        <translation>&amp;Показать недостающие внешние программы</translation>
     </message>
     <message>
         <source>PgDown</source>
-        <translation type="unfinished"></translation>
+        <translation>PgDown</translation>
     </message>
     <message>
         <source>PgUp</source>
-        <translation type="unfinished"></translation>
+        <translation>PgUp</translation>
     </message>
     <message>
         <source>&amp;Full Screen</source>
@@ -983,7 +1018,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>F11</source>
-        <translation type="unfinished"></translation>
+        <translation>F11</translation>
     </message>
     <message>
         <source>Full Screen</source>
@@ -995,7 +1030,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>sortByDateAsc</source>
-        <translation type="unfinished"></translation>
+        <translation>sortByDateAsc</translation>
     </message>
     <message>
         <source>Sort by dates from oldest to newest</source>
@@ -1003,7 +1038,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>sortByDateDesc</source>
-        <translation type="unfinished"></translation>
+        <translation>sortByDateDesc</translation>
     </message>
     <message>
         <source>Sort by dates from newest to oldest</source>
@@ -1019,98 +1054,98 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Rebuild index</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>FIXME</translatorcomment>
+        <translation>Пере&amp;индексировать</translation>
     </message>
     <message>
         <source>&amp;Show indexed types</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать индексируемые &amp;типы</translation>
     </message>
     <message>
         <source>Shift+PgUp</source>
-        <translation type="unfinished"></translation>
+        <translation>Shift-PgUp</translation>
     </message>
     <message>
         <source>&amp;Indexing schedule</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Расписание индексирования</translation>
     </message>
     <message>
         <source>E&amp;xternal index dialog</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>FIXME</translatorcomment>
+        <translation>Диалог &amp;внешнего индекса</translation>
     </message>
 </context>
 <context>
     <name>RecollModel</name>
     <message>
         <source>File name</source>
-        <translation type="unfinished">Имя файла</translation>
+        <translation>Имя файла</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="obsolete">Тип MIME</translation>
+        <translation>Тип MIME</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation type="unfinished">Дата</translation>
+        <translation>Дата</translation>
     </message>
     <message>
         <source>Abstract</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>FIXME</translatorcomment>
+        <translation>Выдержка</translation>
     </message>
     <message>
         <source>Author</source>
-        <translation type="unfinished"></translation>
+        <translation>Автор</translation>
     </message>
     <message>
         <source>Document size</source>
-        <translation type="unfinished"></translation>
+        <translation>Размер документа</translation>
     </message>
     <message>
         <source>Document date</source>
-        <translation type="unfinished"></translation>
+        <translation>Дата документа</translation>
     </message>
     <message>
         <source>File size</source>
-        <translation type="unfinished"></translation>
+        <translation>Размер файла</translation>
     </message>
     <message>
         <source>File date</source>
-        <translation type="unfinished"></translation>
+        <translation>Дата файла</translation>
     </message>
     <message>
         <source>Keywords</source>
-        <translation type="unfinished"></translation>
+        <translation>Ключевые слова</translation>
     </message>
     <message>
         <source>Original character set</source>
-        <translation type="unfinished"></translation>
+        <translation>Исходная кодировка</translation>
     </message>
     <message>
         <source>Relevancy rating</source>
-        <translation type="unfinished"></translation>
+        <translation>Релевантность</translation>
     </message>
     <message>
         <source>Title</source>
-        <translation type="unfinished"></translation>
+        <translation>Название</translation>
     </message>
     <message>
         <source>URL</source>
-        <translation type="unfinished"></translation>
+        <translation>URL</translation>
     </message>
     <message>
         <source>Mtime</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменено</translation>
     </message>
     <message>
         <source>Date and time</source>
-        <translation type="unfinished"></translation>
+        <translation>Дата и время</translation>
     </message>
     <message>
         <source>Ipath</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>MIME type</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>FIXME</translatorcomment>
+        <translation>I-путь</translation>
     </message>
 </context>
 <context>
@@ -1276,7 +1311,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Add &quot;%1&quot; column</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить колонку &quot;%1&quot;</translation>
     </message>
 </context>
 <context>
@@ -1393,7 +1428,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>SSearchBase</name>
     <message>
         <source>SSearchBase</source>
-        <translation type="unfinished"></translation>
+        <translation>SSearchBase</translation>
     </message>
     <message>
         <source>Clear</source>
@@ -1464,27 +1499,28 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Any</source>
-        <translation type="unfinished"></translation>
+        <translation>любое</translation>
     </message>
     <message>
         <source>All</source>
-        <translation type="unfinished">все</translation>
+        <translation>все</translation>
     </message>
     <message>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>без</translation>
     </message>
     <message>
         <source>Phrase</source>
-        <translation type="unfinished"></translation>
+        <translation>фраза</translation>
     </message>
     <message>
         <source>Proximity</source>
-        <translation type="unfinished"></translation>
+        <translation>близость</translation>
     </message>
     <message>
         <source>File name</source>
-        <translation type="unfinished">Имя файла</translation>
+        <translatorcomment>FIXME</translatorcomment>
+        <translation>имя файла</translation>
     </message>
 </context>
 <context>
@@ -1537,7 +1573,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Alt+E</source>
-        <translation type="unfinished"></translation>
+        <translation>Alt-E</translation>
     </message>
     <message>
         <source>&amp;Close</source>
@@ -1627,7 +1663,8 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Choose</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>FIXME</translatorcomment>
+        <translation>Выберите</translation>
     </message>
 </context>
 <context>
@@ -1833,15 +1870,11 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="obsolete">Тип MIME</translation>
+        <translation>Тип MIME</translation>
     </message>
     <message>
         <source>Command</source>
         <translation>Команда</translation>
-    </message>
-    <message>
-        <source>MIME type</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2286,54 +2319,58 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Style sheet</source>
-        <translation type="unfinished"></translation>
+        <translation>Набор стилей</translation>
     </message>
     <message>
         <source>Opens a dialog to select the style sheet file</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть диалог выбора файла стилей</translation>
     </message>
     <message>
         <source>Choose</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбрать</translation>
     </message>
     <message>
         <source>Resets the style sheet to default</source>
-        <translation type="unfinished"></translation>
+        <translation>Вернуть стили по умолчанию</translation>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses some indentation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Строки текста PRE не переносятся. Использование BR теряет чать отступов.</translation>
     </message>
     <message>
         <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html in preview.</source>
-        <translation type="unfinished"></translation>
+        <translation>Использовать теги &lt;PRE&gt; вместо &lt;BR&gt; для отображения обычного текста как HTML при предварительном просмотре.</translation>
     </message>
     <message>
         <source>Result List</source>
-        <translation type="unfinished"></translation>
+        <translation>Список результатов</translation>
     </message>
     <message>
         <source>Edit result paragraph format string</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>FIXME</translatorcomment>
+        <translation>Править строку форматирования результатов</translation>
     </message>
     <message>
         <source>Edit result page html header insert</source>
-        <translation type="unfinished"></translation>
+        <translation>Править HTML-заголовок результатов</translation>
     </message>
     <message>
         <source>Date format (strftime(3))</source>
-        <translation type="unfinished"></translation>
+        <translation>Формат даты по strftime(3)</translation>
     </message>
     <message>
         <source>Frequency percentage threshold over which we do not use terms inside autophrase. 
 Frequent terms are a major performance issue with phrases. 
 Skipped terms augment the phrase slack, and reduce the autophrase efficiency.
 The default value is 2 (percent). </source>
-        <translation type="unfinished"></translation>
+        <translation>Порог частоты в процентах, после которого мы не используем термы в автофразе. 
+Частые термы являются существенной проблемой производительности на фразах. 
+Пропущенные термы дополняют просадку фразы и уменьшают эффективность АФ. 
+Значение по умолчанию - 2 (процента). </translation>
     </message>
     <message>
         <source>Autophrase term frequency threshold percentage</source>
-        <translation type="unfinished"></translation>
+        <translation>Порог частоты термов автофразы в процентах</translation>
     </message>
 </context>
 </TS>
