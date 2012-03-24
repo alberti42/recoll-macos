@@ -51,11 +51,11 @@
 
       <h2><a>General information</a></h2>
 
-      <p>The current version is 1.17.0. <a href="release-1.17.html">
+      <p>The current version is 1.16.2. <a href="release-1.16.html">
           Release notes</a>.</p>
 
-      <p>The download page for Recoll 1.16 is
-	<a href="download-1.16.html">still available</a>.</p>
+      <p>The download page for Recoll 1.15 is
+	<a href="download-1.15.html">still available</a>.</p>
 
       <p>Recoll <a href="usermanual/rcl.install.html">
 	  Installation / building manual</a>.</p> 
@@ -106,11 +106,11 @@
 
       <h2><a name="source">Source</a></h2>
 
-      <h3>Current release distribution: 1.17.0:</h3> 
+      <h3>Current release distribution: 1.16.2:</h3> 
       <!-- Attention: source packages must remain here, not in a
         subdirectory, because of all the places they're referred from
         (package watches) -->
-       <p><a href="recoll-1.17.0.tar.gz">recoll-1.17.0.tar.gz</a>.
+       <p><a href="recoll-1.16.2.tar.gz">recoll-1.16.2.tar.gz</a>.
        </p>
 
 <!--
@@ -133,33 +133,24 @@
            carry them in their package repository. Or you will find source and
 	   binary packages on the 
            <a href="http://www.xapian.org/download.php">
-           Xapian download page</a>. <br /> 
-           Recoll should still work with Xapian 1.0, but it is highly
-           recommended to use a Xapian 1.2 version.</p> 
-
-           <p><em>Note on building Xapian for older CPUs:</em> The
-	     build configurations for Xapian releases 1.0.21 and
-	     1.2.1 or newer enable the use of SSE2 floating point
-	     instructions. These instructions are not available in CPUs
-	     older than Intel Pentium&nbsp;4 or AMD Athlon&nbsp;64. When
-	     building for such a CPU, you need to add the --disable-sse
-	     flag to the Xapian library configure command. If this is
-	     not done, the problem signals itself by "Illegal
-	     instruction" crashes (SIGILL) in recollindex and recoll.
+           Xapian download page</a>. <br /> Recoll 1.15 needs at least
+	   xapian 1.0.12. It is compatible with all later Xapian
+	   releases, including the 1.2.x series.</p> <p><em>Note on
+	   building Xapian for older CPUs:</em> The
+	   build configurations for Xapian releases 1.0.21 and
+	   1.2.1 or newer enable the use of SSE2 floating point
+	   instructions. These instructions are not available in CPUs
+	   older than Intel Pentium&nbsp;4 or AMD Athlon&nbsp;64. When
+	   building for such a CPU, you need to add the
+	   --disable-sse flag to the Xapian library configure
+	   command. If this is not done, the problem signals itself by
+	   "Illegal instruction" crashes (SIGILL) in recollindex and recoll.
 	   </p>
-
-         </li>
-
+        </li>
         <li>X11 development files.</li>
-
         <li>zlib development files.</p>
-
         <li><p>Qt development files: Qt 4.4 or newer. The Recoll GUI
             will not build with Qt releases older than 4.4.</p></li>
-
-        <li>Python development package: you can avoid needing this by
-          configuring with --disable-python-module.</li>
-
       </ul>
 
       <h3>KDE3 kicker applet:</h3>
@@ -180,7 +171,8 @@
 
       <h3>Older recoll releases:</h3>
        <p>
-        <a href="recoll-1.16.2.tar.gz">1.16.2</a>.
+        <a href="recoll-1.16.1.tar.gz">1.16.1</a>.
+        <a href="recoll-1.16.0.tar.gz">1.16.0</a>.
         <a href="recoll-1.15.9.tar.gz">1.15.9</a>.
         <a href="recoll-1.14.4.tar.gz">1.14.4</a>.
         <a href="recoll-1.13.04.tar.gz">1.13.04</a>.
@@ -376,20 +368,11 @@ I now use the OpenSUSE build service to create Recoll OpenSUSE packages.
       </p>
 
       <p><a href="translations/recoll_xx.ts">recoll_xx.ts</a> is a blank
-	Recoll 1.17 message file, handy to work on a new translation.</p>
+	Recoll 1.16 message file, handy to work on a new translation.</p>
 
-      <h3>Updated 1.17 translations that became available after the
+      <h3>Updated 1.16 translations that became available after the
 	release:</h3>
 
-      <p>Nothing new for 1.17 for now.</p>
-
-      <p>Note that, if you are running an older release,
-        you may find updated messages by looking inside the
-        appropriate maintenance branch
-        on <a href="https://bitbucket.org/medoc/recoll/src">bitbucket</a>.</p>
-
-
-<!--  
       <p>A new Spanish translation for 1.16.2, thanks to JCP.
 	<a href="translations/recoll_es.ts">recoll_es.ts</a>
 	<a href="translations/recoll_es.qm">recoll_es.qm</a>
@@ -405,6 +388,8 @@ I now use the OpenSUSE build service to create Recoll OpenSUSE packages.
 	<a href="translations/recoll_ru.ts">recoll_ru.ts</a>
 	<a href="translations/recoll_ru.qm">recoll_ru.qm</a>
 	</p> 
+
+<!--  
       <p>Lithuanian. 
 	<a href="translations/recoll_lt.ts">recoll_lt.ts</a>
 	<a href="translations/recoll_lt.qm">recoll_lt.qm</a>

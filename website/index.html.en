@@ -42,8 +42,8 @@
 
       <p><span class="application">Recoll</span> is free, open source,
 	and licensed under the GPL. The current version is
-	<a href="download.html">1.16.2</a> 
-	(<a href="release-1.16.html">Release notes</a>).</p>
+	<a href="download.html">1.17.0</a> 
+	(<a href="release-1.17.html">Release notes</a>).</p>
 
       <p class="remark">Recoll will index an <b>MS-Word</b> document stored as
 	  an <b>attachment</b> to an <b>e-mail message</b> inside
@@ -69,10 +69,10 @@
       <h2>News: </h2>
       <div class="news">
       <ul>
-        <li>2012-01-27: Recoll does Gnumeric. Gnumeric was the first
-          usable open-source spreadsheet and it really helped me back then,
-          so I was quite happy when someone requested
-          a <a href="filters/filters.html">Gnumeric filter</a>. </li>
+
+        <li>2012-03-24: Release 1.17 is out, see
+          the <a href="release-1.17.html">Release notes</a>. </li>
+
         <li>2011-11-26: the result list glitch: ennoying and easily
           worked-around: it will sometimes happen (for a yet
           undetermined reason) that the result list paragraph format
@@ -82,56 +82,10 @@
           mode, but not in list mode). The workaround is to go to
           <blockquote>
            Preferences->Query configuration->User interface
-          </blockquote>
-          and erase the result paragraph format string (^A DEL in the text area),
-          this will reset the string to the default value.</li>
+          </blockquote> and erase the result paragraph format string
+          (^A DEL in the text area), this will reset the string to the
+          default value.</li>
 
-        <li>2011-11-07: release <a href="download.html#source">1.16.2</a>
-          is out. It fixes a number of <a href="BUGS.html#b_1_16_1">
-          bugs</a> in 1.16.1, ranging from small to ennoying depending on
-          usage.</li>
-
-        <li>2011-09-28: release <a href="download.html#source">1.16.1</a>
-          is out. It fixes a GUI crash in 1.16.0 (see below) and a lyx filter
-          issue.</li> 
-
-        <li>
-          <div class="important">
-            <p>Notice for 1.16.0: the
-              <tt>recoll</tt> GUI program sometimes crashes when running a query
-              while the indexing thread is active. You should upgrade
-              to 1.16.1</p> 
-          </div>
-        </li>
-
-        <li>2011-09-03: release <a href="download.html#source">1.16.0</a>
-          is out with many <a href="release-1.16.html">small improvements</a>
-          over 1.15. </li>
-
-        <li>2011-05-29: release 
-          <a href="download.html#source">1.15.9</a> fixes a startup
-          crash in 1.15.8. This occurs only on some architectures, and
-          if you are not experiencing the problem (it happens every
-          time if at all), you do not need to upgrade.
-        </li>
-
-
-        <li>2010-11-20 : wrote a small script so that recoll can be
-          activated or hidden with a single keystroke on the gnome
-          desktop. See the 
-          <a href="http://bitbucket.org/medoc/recoll/wiki/HotRecoll">
-            installation recipee here</a>.</li>
-
-        <li>2010-01-29 : the full Recoll source repository is now
-          hosted on 
-	  <a href="http://bitbucket.org/medoc/recoll">Bitbucket</a>,
-          along with a Wiki
-          (<a href="http://bitbucket.org/medoc/recoll/wiki/FaqsAndHowTos">
-          Faqs and Howtos</a>) and an
-          <a href="http://bitbucket.org/medoc/recoll/issues">
-	    issues tracking system</a>. Hopefully, this
-          new channel for reporting bugs and make suggestions will
-          increase the feedback rate...</li>
 
       </ul>
       </div>
