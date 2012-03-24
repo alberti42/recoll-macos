@@ -8,21 +8,10 @@ if sysname == 'Linux':
 else:
     libs = ['rcl', 'xapian', 'iconv']
 
-if 'RECOLL_DATADIR' in os.environ:
-    datadirs = [os.environ['RECOLL_DATADIR']]
-else:
-    datadirs = []
-datadirs = datadirs + ['/usr/share/recoll', '/usr/local/share/recoll', '/']
-for datadir in datadirs:
-    if os.path.exists(datadir):
-        break
-if datadir == '/':
-    print 'share/recoll directory not found: you need to install Recoll first'
-    sys.exit(1)
 
 top = os.path.join('..', '..')
 
-# Test for PIC library
+# Verify that the Recoll library was compiled with the PIC options
 localdefs = os.path.join(top, 'mk', 'localdefs')
 try:
     lines = open(localdefs, 'r').readlines()
@@ -43,7 +32,7 @@ module1 = Extension('recoll',
                     define_macros = [('MAJOR_VERSION', '1'),
                                      ('MINOR_VERSION', '0'),
                                      ('UNAC_VERSION', '"1.0.7"'),
-                                     ('RECOLL_DATADIR', '"' + datadir + '"')
+                                     ('RECOLL_DATADIR', '"@QTRECOLL_DATADIR@"')
                                      ],
                     include_dirs = ['/usr/local/include',
                                     os.path.join(top, 'utils'), 
