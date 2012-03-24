@@ -113,4 +113,4 @@ TRANSLATIONS = \
              i18n/recoll_uk.ts \
              i18n/recoll_xx.ts \
              i18n/recoll_zh_CN.ts \
-
+             i18n/recoll_zh.ts \
