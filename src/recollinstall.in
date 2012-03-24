@@ -32,11 +32,14 @@ if test -z "$mandir" ; then
    fi
 fi
 
+REALPREFIX=$PREFIX
+ROOTFORPYTHON=""
 if test -n "$DESTDIR" ; then
    PREFIX=$DESTDIR/$PREFIX
    bindir=$DESTDIR/$bindir
    datadir=$DESTDIR/$datadir
    mandir=$DESTDIR/$mandir
+   ROOTFORPYTHON="--root=${DESTDIR}"
 fi
 
 echo "Installing to $PREFIX"
@@ -130,3 +133,11 @@ ${INSTALL} -m 0755 index/rclmon.sh ${datadir}/recoll/examples/ || exit 1
 ${INSTALL} -m 0444 qtgui/mtpics/*.png ${datadir}/recoll/images || exit 1
 
 ${INSTALL} -m 0444 ${I18N}/recoll*.qm ${datadir}/recoll/translations || exit 1
+# Install the simplified chinese file as just chinese until I can understand
+# if it's possible to have both. zh_CN doesn't seem to work
+${INSTALL} -m 0444 ${I18N}/recoll_zh_CN.qm \
+    ${datadir}/recoll/translations/recoll_zh.qm || exit 1
+
+
+@NOPYTHON@(cd python/recoll;python setup.py install \
+    --prefix=${REALPREFIX} ${ROOTFORPYTHON})

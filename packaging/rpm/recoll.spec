@@ -15,7 +15,7 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 License:	GPL
 
 # libxapian-devel or xapian-core-devel?
-BuildRequires: libqt4-devel zlib-devel xapian-core-devel libuuid-devel
+BuildRequires: libqt4-devel zlib-devel libxapian-devel libuuid-devel python-devel
 
 %description
 Recoll is a personal full text search package for Linux, FreeBSD and
@@ -51,6 +51,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %{_bindir}/*
+%{python_sitearch}/
 %{_datadir}/%{name}
 %{_datadir}/applications/recoll-searchgui.desktop
 %{_datadir}/icons/hicolor/48x48/apps/recoll.png

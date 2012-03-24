@@ -7,14 +7,16 @@ Build-Depends: debhelper (>= 7),
 	       libqt4-dev,
 	       libxapian-dev (>= 1.0.15),
 	       libx11-dev,
-	       libz-dev
+	       libz-dev,
+               python-dev,
+               quilt
 Standards-Version: 3.8.3
 
 Package: recoll
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: aspell, python
-Suggests: antiword, catdoc, ghostscript, libimage-exiftool-perl, poppler-utils, unrtf, python-mutagen, xsltproc
+Recommends: aspell, python, xsltproc
+Suggests: antiword, catdoc, ghostscript, libimage-exiftool-perl, poppler-utils, unrtf, python-mutagen
 Description: a personal full text search package with a QT GUI
  The Recoll personal full text search package is based on a very strong 
  backend (Xapian), for which it provides an easy to use and feature-rich 

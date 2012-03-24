@@ -1,0 +1,12 @@
+setup.py --root and --user options interfer with debian wanting a dist-packages, 
+not site-packages installation for python modules
+--- a/recollinstall.in
++++ b/recollinstall.in
+@@ -139,5 +139,4 @@
+     ${datadir}/recoll/translations/recoll_zh.qm || exit 1
+ 
+ 
+-@NOPYTHON@(cd python/recoll;python setup.py install \
+-    --prefix=${REALPREFIX} ${ROOTFORPYTHON})
++#@NOPYTHON@(cd python/recoll;python setup.py install \
++#    --prefix=${REALPREFIX} ${ROOTFORPYTHON})

@@ -5,7 +5,7 @@
 # sudo apt-get install pkg-kde-tools  cdbs
 
 RCLVERS=1.17.0
-PPAVERS=1
+PPAVERS=0
 
 case $RCLVERS in
     [23]*) PPANAME=recollexp-ppa;;
@@ -18,7 +18,7 @@ debdir=debianrclqt4
 series4="lucid maverick natty oneiric precise"
 
 rm -rf recoll-${RCLVERS}/debian
-cp -rp $debdir recoll-${RCLVERS}/debian
+cp -rp ${debdir}/ recoll-${RCLVERS}/debian
 
 for series in $series4 ; do
   if test -f $debdir/control-$series ; then
@@ -42,7 +42,7 @@ seriesk=""
 
 debdir=debiankio
 rm -rf recoll-${RCLVERS}/debian
-cp -rp $debdir recoll-${RCLVERS}/debian
+cp -rp ${debdir}/ recoll-${RCLVERS}/debian
 for series in $seriesk ; do
   sed -e s/SERIES/$series/g < ${debdir}/changelog > \
     recoll-${RCLVERS}/debian/changelog ;

@@ -67,6 +67,8 @@ src/lib/alldeps
 src/lib/librcl.a
 src/mk/localdefs
 src/mk/sysconf
+src/python/recoll/build
+src/python/recoll/setup.py
 src/qtgui/.moc/*
 src/qtgui/.obj/*
 src/qtgui/.ui/*

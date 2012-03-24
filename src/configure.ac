@@ -194,19 +194,38 @@ if test X$camelcaseEnabled = Xyes ; then
   AC_DEFINE(RCL_SPLIT_CAMELCASE, 1, [Split camelCase words])
 fi
 
-# Build PIC objects for the library. This is necessary when building the
-# php extension, would be useful for the others, and costs little. I wonder
-# if this should be made the default.
-# Not by default as these are little used for now.
+# Disable building the python module. This is built by default, because
+# it's really the easiest way to interface and extend recoll. It forces PIC
+# objects for everything (indexing performance impact: 1%), because it's
+# just not worth building the lib twice
+# You can still have a non-pic recoll with:
+#   configure --disable-python-module; make; make install;make clean
+#   configure; make; cd python/recoll; make install
+#
+AC_ARG_ENABLE(python-module,
+    AC_HELP_STRING([--disable-python-module],
+   [Do not build the Python module.]),
+        pythonEnabled=$enableval, pythonEnabled=yes)
+if test X$pythonEnabled = Xyes ; then
+  NOPYTHON=""
+else
+  NOPYTHON="#"
+fi
+
+# Build PIC objects for the library ?
 AC_ARG_ENABLE(pic,
     AC_HELP_STRING([--enable-pic],
-   [Compile library objects as position independant code. This is necessary
-   for building the php extension.]),
-        picEnabled=$enableval, picEnabled=no)
-if test X$picEnabled = Xyes ; then
-  NOPIC=""
-else
-  NOPIC="#"
+   [Do not compile library objects as position independant code. 
+    This is incompatible with the php or python extensions.]),
+        picEnabled=$enableval, picEnabled=forpython)
+case $picEnabled in
+forpython) picEnabled=$pythonEnabled; NOPIC=$NOPYTHON;;
+yes) NOPIC="";;
+*) NOPIC="#";;
+esac
+
+if test X$pythonEnabled = Xyes -a X$picEnabled != Xyes; then
+   AC_MSG_ERROR([Python build needs PIC library])
 fi
 
 AC_CHECK_FUNCS(mkdtemp)
@@ -500,6 +519,7 @@ AC_SUBST(QMAKE_ENABLE_ZEITGEIST)
 AC_SUBST(QMAKE_DISABLE_ZEITGEIST)
 AC_SUBST(LIBQZEITGEIST)
 AC_SUBST(NOPIC)
+AC_SUBST(NOPYTHON)
 AC_SUBST(RCLVERSION)
 
 # All object files depend on localdefs which has the cc flags. Avoid
@@ -509,6 +529,7 @@ AC_CONFIG_FILES(recollinstall)
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(sampleconf/recoll.conf)
 AC_CONFIG_FILES(common/rclversion.h)
+AC_CONFIG_FILES(python/recoll/setup.py)
 
 for d in bincimapmime index lib query
 do 
