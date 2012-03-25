@@ -19,7 +19,6 @@ docsdir = $(datadir)/doc/unity-lens-recoll
 docs_DATA = \
   AUTHORS \
   ChangeLog \
-  COPYING \
   NEWS \
   README \
   $(NULL)
@@ -33,7 +32,8 @@ lens_PYTHON = \
   recollscope/rclsearch.py \
   $(NULL)
 
-libexec_SCRIPTS = \
+daemondir = $(datadir)/unity-lens-recoll/
+daemon_SCRIPTS = \
   bin/unity-recoll-daemon \
   $(NULL)
 

@@ -1,0 +1,58 @@
+changeset:   2631:ea84aedd25e0
+parent:      2628:d1665b3a0e57
+user:        Jean-Francois Dockes <jfd@recoll.org>
+date:        Fri Mar 23 11:33:27 2012 +0100
+files:       src/desktop/unity-lens-recoll/bin/unity-recoll-daemon.in src/desktop/unity-lens-recoll/recollscope/rclsearch.py
+description:
+unity-lens-recoll with category filtering usable
+
+
+changeset:   2626:adb6eff2a9f6
+user:        Jean-Francois Dockes <jfd@recoll.org>
+date:        Fri Mar 23 08:58:34 2012 +0100
+files:       src/desktop/unity-lens-recoll/data/recollbg24.png
+description:
+none
+
+
+changeset:   2622:10162119234f
+user:        Jean-Francois Dockes <jfd@recoll.org>
+date:        Fri Mar 23 07:29:53 2012 +0100
+files:       src/desktop/unity-lens-recoll/bin/unity-recoll-daemon.in src/desktop/unity-lens-recoll/recollscope/rclsearch.py
+description:
+removed debug traces
+
+
+changeset:   2621:859ec39916ec
+user:        Jean-Francois Dockes <jfd@recoll.org>
+date:        Thu Mar 22 19:13:04 2012 +0100
+files:       src/desktop/unity-lens-recoll/Makefile.am src/desktop/unity-lens-recoll/Makefile.in src/desktop/unity-lens-recoll/README src/desktop/unity-lens-recoll/bin/unity-recoll-daemon.in src/desktop/unity-lens-recoll/data/recoll-lens.svg src/desktop/unity-lens-recoll/data/recoll.lens.in src/desktop/unity-lens-recoll/recollscope/rclsearch.py
+description:
+changed icon. Added filter code, but wont display
+
+
+changeset:   2620:44f1d9457b8c
+user:        Jean-Francois Dockes <jfd@recoll.org>
+date:        Thu Mar 22 13:54:14 2012 +0100
+files:       src/desktop/unity-lens-recoll/bin/unity-recoll-daemon.in src/desktop/unity-lens-recoll/recollscope/rclsearch.py
+description:
+usable. Needs new svg icon
+
+
+changeset:   2619:8ae983a1c2b7
+user:        Jean-Francois Dockes <jfd@recoll.org>
+date:        Thu Mar 22 08:34:57 2012 +0100
+files:       src/desktop/unity-lens-recoll/Makefile.am src/desktop/unity-lens-recoll/Makefile.in src/desktop/unity-lens-recoll/bin/unity-recoll-daemon.in src/desktop/unity-lens-recoll/configure src/desktop/unity-lens-recoll/configure.ac src/desktop/unity-lens-recoll/data/recoll.lens.in src/desktop/unity-lens-recoll/data/unity-lens-recoll.menu.in src/desktop/unity-lens-recoll/data/unity-lens-recoll.service.in src/desktop/unity-lens-recoll/recoll/__init__.py src/desktop/unity-lens-recoll/recoll/rclsearch.py src/desktop/unity-lens-recoll/recollscope/__init__.py src/desktop/unity-lens-recoll/recollscope/rclsearch.py
+description:
+1st raw version installable and searching
+
+
+changeset:   2618:35b76344948e
+parent:      -1:000000000000
+user:        Jean-Francois Dockes <jfd@recoll.org>
+date:        Wed Mar 21 18:44:23 2012 +0100
+files:       src/desktop/unity-lens-recoll/AUTHORS src/desktop/unity-lens-recoll/COPYING src/desktop/unity-lens-recoll/ChangeLog src/desktop/unity-lens-recoll/INSTALL src/desktop/unity-lens-recoll/Makefile.am src/desktop/unity-lens-recoll/Makefile.in src/desktop/unity-lens-recoll/NEWS src/desktop/unity-lens-recoll/README src/desktop/unity-lens-recoll/acinclude.m4 src/desktop/unity-lens-recoll/aclocal.m4 src/desktop/unity-lens-recoll/bin/unity-recoll-daemon.in src/desktop/unity-lens-recoll/configure src/desktop/unity-lens-recoll/configure.ac src/desktop/unity-lens-recoll/data/recoll-lens.svg src/desktop/unity-lens-recoll/data/recoll.lens.in src/desktop/unity-lens-recoll/data/unity-lens-recoll.menu.in src/desktop/unity-lens-recoll/data/unity-lens-recoll.service.in src/desktop/unity-lens-recoll/install-sh src/desktop/unity-lens-recoll/missing src/desktop/unity-lens-recoll/py-compile src/desktop/unity-lens-recoll/recoll/__init__.py src/desktop/unity-lens-recoll/recoll/rclsearch.py
+description:
+initial version after renaming bliss things
+
+

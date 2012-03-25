@@ -72,10 +72,10 @@ am__nobase_list = $(am__nobase_strip_setup); \
 am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-am__installdirs = "$(DESTDIR)$(libexecdir)" "$(DESTDIR)$(lensdir)" \
+am__installdirs = "$(DESTDIR)$(daemondir)" "$(DESTDIR)$(lensdir)" \
 	"$(DESTDIR)$(dbusdir)" "$(DESTDIR)$(docsdir)" \
 	"$(DESTDIR)$(dotlensdir)" "$(DESTDIR)$(iconsdir)"
-SCRIPTS = $(libexec_SCRIPTS)
+SCRIPTS = $(daemon_SCRIPTS)
 SOURCES =
 DIST_SOURCES =
 py_compile = $(top_srcdir)/py-compile
@@ -194,7 +194,6 @@ docsdir = $(datadir)/doc/unity-lens-recoll
 docs_DATA = \
   AUTHORS \
   ChangeLog \
-  COPYING \
   NEWS \
   README \
   $(NULL)
@@ -209,7 +208,8 @@ lens_PYTHON = \
   recollscope/rclsearch.py \
   $(NULL)
 
-libexec_SCRIPTS = \
+daemondir = $(datadir)/unity-lens-recoll/
+daemon_SCRIPTS = \
   bin/unity-recoll-daemon \
   $(NULL)
 
@@ -283,10 +283,10 @@ data/recoll.lens: $(top_builddir)/config.status $(top_srcdir)/data/recoll.lens.i
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 data/unity-lens-recoll.service: $(top_builddir)/config.status $(top_srcdir)/data/unity-lens-recoll.service.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-install-libexecSCRIPTS: $(libexec_SCRIPTS)
+install-daemonSCRIPTS: $(daemon_SCRIPTS)
 	@$(NORMAL_INSTALL)
-	test -z "$(libexecdir)" || $(MKDIR_P) "$(DESTDIR)$(libexecdir)"
-	@list='$(libexec_SCRIPTS)'; test -n "$(libexecdir)" || list=; \
+	test -z "$(daemondir)" || $(MKDIR_P) "$(DESTDIR)$(daemondir)"
+	@list='$(daemon_SCRIPTS)'; test -n "$(daemondir)" || list=; \
 	for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  if test -f "$$d$$p"; then echo "$$d$$p"; echo "$$p"; else :; fi; \
@@ -304,19 +304,19 @@ install-libexecSCRIPTS: $(libexec_SCRIPTS)
 	while read type dir files; do \
 	     if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
 	     test -z "$$files" || { \
-	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(libexecdir)$$dir'"; \
-	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(libexecdir)$$dir" || exit $$?; \
+	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(daemondir)$$dir'"; \
+	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(daemondir)$$dir" || exit $$?; \
 	     } \
 	; done
 
-uninstall-libexecSCRIPTS:
+uninstall-daemonSCRIPTS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(libexec_SCRIPTS)'; test -n "$(libexecdir)" || exit 0; \
+	@list='$(daemon_SCRIPTS)'; test -n "$(daemondir)" || exit 0; \
 	files=`for p in $$list; do echo "$$p"; done | \
 	       sed -e 's,.*/,,;$(transform)'`; \
 	test -n "$$list" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(libexecdir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(libexecdir)" && rm -f $$files
+	echo " ( cd '$(DESTDIR)$(daemondir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(daemondir)" && rm -f $$files
 install-lensPYTHON: $(lens_PYTHON)
 	@$(NORMAL_INSTALL)
 	test -z "$(lensdir)" || $(MKDIR_P) "$(DESTDIR)$(lensdir)"
@@ -593,7 +593,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(SCRIPTS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(libexecdir)" "$(DESTDIR)$(lensdir)" "$(DESTDIR)$(dbusdir)" "$(DESTDIR)$(docsdir)" "$(DESTDIR)$(dotlensdir)" "$(DESTDIR)$(iconsdir)"; do \
+	for dir in "$(DESTDIR)$(daemondir)" "$(DESTDIR)$(lensdir)" "$(DESTDIR)$(dbusdir)" "$(DESTDIR)$(docsdir)" "$(DESTDIR)$(dotlensdir)" "$(DESTDIR)$(iconsdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -643,14 +643,15 @@ info: info-am
 
 info-am:
 
-install-data-am: install-dbusDATA install-docsDATA install-dotlensDATA \
-	install-iconsDATA install-lensPYTHON
+install-data-am: install-daemonSCRIPTS install-dbusDATA \
+	install-docsDATA install-dotlensDATA install-iconsDATA \
+	install-lensPYTHON
 
 install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-libexecSCRIPTS
+install-exec-am:
 
 install-html: install-html-am
 
@@ -690,9 +691,9 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-dbusDATA uninstall-docsDATA \
-	uninstall-dotlensDATA uninstall-iconsDATA uninstall-lensPYTHON \
-	uninstall-libexecSCRIPTS
+uninstall-am: uninstall-daemonSCRIPTS uninstall-dbusDATA \
+	uninstall-docsDATA uninstall-dotlensDATA uninstall-iconsDATA \
+	uninstall-lensPYTHON
 
 .MAKE: install-am install-strip
 
@@ -700,18 +701,17 @@ uninstall-am: uninstall-dbusDATA uninstall-docsDATA \
 	dist-all dist-bzip2 dist-gzip dist-lzma dist-shar dist-tarZ \
 	dist-xz dist-zip distcheck distclean distclean-generic \
 	distcleancheck distdir distuninstallcheck dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-dbusDATA install-docsDATA \
+	html-am info info-am install install-am install-daemonSCRIPTS \
+	install-data install-data-am install-dbusDATA install-docsDATA \
 	install-dotlensDATA install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am install-iconsDATA \
-	install-info install-info-am install-lensPYTHON \
-	install-libexecSCRIPTS install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
-	pdf-am ps ps-am uninstall uninstall-am uninstall-dbusDATA \
-	uninstall-docsDATA uninstall-dotlensDATA uninstall-iconsDATA \
-	uninstall-lensPYTHON uninstall-libexecSCRIPTS
+	install-info install-info-am install-lensPYTHON install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic pdf pdf-am ps ps-am uninstall uninstall-am \
+	uninstall-daemonSCRIPTS uninstall-dbusDATA uninstall-docsDATA \
+	uninstall-dotlensDATA uninstall-iconsDATA uninstall-lensPYTHON
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
