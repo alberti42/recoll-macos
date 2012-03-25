@@ -40,6 +40,7 @@
 #include <qwhatsthis.h>
 #include <qtextedit.h>
 #include <qlist.h>
+#include <QTimer>
 
 #include "recoll.h"
 #include "guiutils.h"
@@ -50,6 +51,7 @@
 #include "viewaction_w.h"
 #include "debuglog.h"
 #include "editdialog.h"
+#include "rclmain_w.h"
 
 void UIPrefsDialog::init()
 {
@@ -204,6 +206,7 @@ void UIPrefsDialog::accept()
     prefs.reslistfontfamily = reslistFontFamily;
     prefs.reslistfontsize = reslistFontSize;
     prefs.stylesheetFile = stylesheetFile;
+    QTimer::singleShot(0, m_mainWindow, SLOT(applyStyleSheet()));
     prefs.reslistformat =  paraFormat;
     prefs.reslistheadertext =  headerText;
     if (prefs.reslistformat.trimmed().isEmpty()) {

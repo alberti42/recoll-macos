@@ -173,6 +173,19 @@ static void sigcleanup(int)
     exit(1);
 }
 
+void applyStyleSheet(const QString& ssfname)
+{
+    const char *cfname = (const char *)ssfname.toLocal8Bit();
+    LOGDEB0(("Applying style sheet: [%s]\n", cfname));
+    if (cfname && *cfname) {
+	string stylesheet;
+	file_to_string(cfname, stylesheet);
+	qApp->setStyleSheet(QString::fromAscii(stylesheet.c_str()));
+    } else {
+	qApp->setStyleSheet(QString());
+    }
+}
+
 extern void qInitImages_recoll();
 
 static const char *thisprog;
@@ -316,11 +329,7 @@ int main(int argc, char **argv)
     //    fprintf(stderr, "Settings done\n");
 
     if (!prefs.stylesheetFile.isEmpty()) {
-	string stylesheet;
-	file_to_string((const char *)prefs.stylesheetFile.toLocal8Bit(),
-		       stylesheet);
-	if (!stylesheet.empty())
-	    app.setStyleSheet(QString::fromAscii(stylesheet.c_str()));
+	applyStyleSheet(prefs.stylesheetFile);
     }
 
     // Create main window and set its size to previous session's

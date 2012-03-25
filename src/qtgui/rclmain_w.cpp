@@ -954,7 +954,7 @@ void RclMain::showRTITool(bool modal)
 void RclMain::showUIPrefs()
 {
     if (uiprefs == 0) {
-	uiprefs = new UIPrefsDialog(0);
+	uiprefs = new UIPrefsDialog(this);
 	connect(new QShortcut(quitKeySeq, uiprefs), SIGNAL (activated()), 
 		this, SLOT (fileExit()));
 	connect(uiprefs, SIGNAL(uiprefsDone()), this, SLOT(setUIPrefs()));
@@ -970,7 +970,7 @@ void RclMain::showUIPrefs()
 void RclMain::showExtIdxDialog()
 {
     if (uiprefs == 0) {
-	uiprefs = new UIPrefsDialog(0);
+	uiprefs = new UIPrefsDialog(this);
 	connect(new QShortcut(quitKeySeq, uiprefs), SIGNAL (activated()), 
 		this, SLOT (fileExit()));
 	connect(uiprefs, SIGNAL(uiprefsDone()), this, SLOT(setUIPrefs()));
@@ -1821,4 +1821,9 @@ bool RclMain::eventFilter(QObject *, QEvent *event)
 	sSearch->queryText->setFocus();
     }
     return false;
+}
+
+void RclMain::applyStyleSheet()
+{
+    ::applyStyleSheet(prefs.stylesheetFile);
 }

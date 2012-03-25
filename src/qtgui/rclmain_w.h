@@ -132,6 +132,7 @@ public slots:
     virtual void onSortDataChanged(DocSeqSortSpec);
     virtual void resultCount(int);
     virtual void showQueryDetails();
+    virtual void applyStyleSheet();
 
 signals:
     void docSourceChanged(RefCntr<DocSequence>);

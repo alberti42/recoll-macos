@@ -23,14 +23,15 @@
 
 class QDialog;
 class ViewAction;
+class RclMain;
 
 class UIPrefsDialog : public QDialog, public Ui::uiPrefsDialogBase
 {
     Q_OBJECT
 
 public:
-    UIPrefsDialog(QDialog* parent = 0)
-	: QDialog(parent) 
+    UIPrefsDialog(RclMain* parent)
+	: QDialog((QWidget*)parent), m_mainWindow(parent)
 	{
 	    setupUi(this);
 	    init();
@@ -71,7 +72,7 @@ private:
     QString headerText;
     void setFromPrefs();
     ViewAction *m_viewAction;
-
+    RclMain *m_mainWindow;
 };
 
 #endif /* _UIPREFS_W_H_INCLUDED_ */

@@ -35,9 +35,11 @@
           supposedly fixed in later versions. Bugs listed in the
           topmost section may also exist in older versions.</i></p>
 
-      <h2><a name="b_latest">recoll 1.16.2</a></h2> 
+      <h2><a name="b_latest">recoll 1.17.0</a></h2> 
 
       <ul> 
+        <li>The application style sheet is not reapplied when changed
+          from the preferences menu, you have to restart the GUI.</li>
         <li>It will sometimes happen that the result list paragraph format
           stored in the Qt preferences file will get garbled,
           causing result lists with no displayed paragraphs (the
@@ -45,31 +47,33 @@
           mode, but not in list mode). The workaround is to go to
           <blockquote>
            Preferences->Query configuration->User interface
-          </blockquote>
-          and erase the result paragraph format string (^A DEL in the text area),
-          this will reset the string to the default value.</li>
+          </blockquote> and erase the result paragraph format string
+          (^A DEL in the text area), this will reset the string to the
+          default value.</li>
         <li>Real time indexer: when running with gamin on FreeBSD, the
           indexer can deadlock in the gamin dialog in some
           cases.</li>
-        <li>Real time indexer: file move events are not detected when
-          running with inotify (at least for recent
-          versions). Workaround: restart indexer from time to time.</li>
-        <li>Real time indexer: directory moves are not handled at
-          all. Workaround: restart indexer from time to time.</li>
-        <li>Cancelling a preview in the GUI will also cancel the indexing
-          thread if it is running.</li>
         <li>After an upgrade, the recoll GUI sometimes crashes on
           startup. This is fixed by removing (back it up just in case)
           ~/.config/Recoll.org/recoll.conf, the QSettings storage for
           recoll.</li>
+
+      </ul>
+
+
+      <h2><a name="b_1_16_2">recoll 1.16.2</a></h2> 
+        <li>Real time indexer: directory moves are not handled at
+          all. Workaround: restart indexer from time to time.</li>
+        <li>Real time indexer: file move events are not detected when
+          running with inotify (at least for recent
+          versions). Workaround: restart indexer from time to time.</li>
+        <li>Cancelling a preview in the GUI will also cancel the indexing
+          thread if it is running.</li>
         <li>Under Solaris, it is necessary to perform the initial
           indexing with the recollindex program. For some unknown reason,
           the recoll index thread does not work for creating the database.
           The only idea I have is a problem with exception handling (recoll
           catches an exception while trying the yet inexistant db).</li>
-        
-      </ul>
-
 
       <h2><a name="b_1_16_1">recoll 1.16.1</a></h2> 
       <ul>

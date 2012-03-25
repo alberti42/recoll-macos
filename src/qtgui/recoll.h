@@ -22,6 +22,8 @@
 #include "rcldb.h"
 #include "ptmutex.h"
 
+#include <QString>
+
 // Misc declarations in need of sharing between the UI files
 
 // Open the database if needed. We now force a close/open by default
@@ -41,6 +43,8 @@ extern void forgetTempFile(string &fn);
 extern Rcl::Db *rcldb;
 extern int recollNeedsExit;
 extern void startManual(const string& helpindex);
+
+extern void applyStyleSheet(const QString&);
 
 #ifdef RCL_USE_ASPELL
 class Aspell;
