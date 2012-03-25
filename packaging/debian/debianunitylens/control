@@ -1,0 +1,17 @@
+Source: recoll-lens
+Section: x11
+Priority: optional
+Maintainer: Jean-Francois Dockes <jfd@recoll.org>
+Build-Depends: debhelper (>= 7), 
+	       autotools-dev,
+               recoll,
+               python
+Standards-Version: 3.9.2
+
+Package: recoll-lens
+Architecture: all
+Depends: ${misc:Depends}, python, recoll, unity
+Description:Unity Lens for searching the Recoll index.
+ Allows querying the Recoll index from the Unity Dash, optionally
+ filtering on file category.
+Homepage: http://www.recoll.org
