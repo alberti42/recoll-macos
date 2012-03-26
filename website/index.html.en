@@ -74,7 +74,12 @@
           an Ubuntu release where this makes sense, you can install
           the recoll-lens package from the 
      <a href="https://launchpad.net/~recoll-backports/+archive/recoll-1.15-on">
-          Recoll PPA</a>. 
+          Recoll PPA</a>. <br />
+         <i><b>Please note</b></i>:  for now, the Lens will only return
+          results which are normal files, not embedded documents.
+          Ie: no mbox messages, no attachments, no archive
+          members, etc. For now, you'll have to use the full Recoll
+          GUI to find these.</li>
 
         <li>2012-03-24: Release 1.17 is out, see
           the <a href="release-1.17.html">Release notes</a>. </li>
