@@ -70,6 +70,12 @@
       <div class="news">
       <ul>
 
+        <li>2012-03-26: Recoll gets a Ubuntu Unity Lens. If you are running
+          an Ubuntu release where this makes sense, you can install
+          the recoll-lens package from the 
+     <a href="https://launchpad.net/~recoll-backports/+archive/recoll-1.15-on">
+          Recoll PPA</a>. 
+
         <li>2012-03-24: Release 1.17 is out, see
           the <a href="release-1.17.html">Release notes</a>. </li>
 

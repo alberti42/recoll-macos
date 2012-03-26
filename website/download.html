@@ -223,35 +223,40 @@
        <a href="http://www.launchpad.net/~xapian-backports/+archive/xapian-1.2">
        Xapian</a>, 
        <a  href="https://launchpad.net/~recoll-backports/+archive/recoll-1.15-on">
-       Recoll and kio-recoll</a>. These were built from the latest versions,
-       for a set of Ubuntu series.</p>
+       Recoll, kio-recoll and recoll-lens</a>. These were built from the
+       latest versions, for a set of Ubuntu series.</p>
 
       <p>Ubuntu 10.04 (lucid) and later versions just need the Recoll
         PPA. Older versions also needed a backport for Xapian
         (xapian-backports/xapian-1.2).</p>
 
-      <p>Just add the
-       PPA to your system software sources (the instructions are on
-       the PPA page or 
+      <p>Just add the PPA to your system software sources (the
+        instructions are on the PPA page or 
 <a href="https://help.launchpad.net/Packaging/PPA/InstallingSoftware">
        here</a>), and you can then use the normal package
-       manager to install or update Recoll. For Ubuntu versions
-       after 9.10 (Karmic), only one command is needed:
+       manager to install or update Recoll. 
+<pre><tt>
+sudo add-apt-repository ppa:recoll-backports/recoll-1.15-on
+</tt></pre>
+       </p>
+
+      <p>Only for Ubuntu versions before 9.10 (Karmic):
 <pre><tt>
 sudo add-apt-repository ppa:recoll-backports/recoll-1.15-on
 sudo add-apt-repository ppa:xapian-backports/xapian-1.2
 </tt></pre>
-       </p>
+      </p>
 
-      <p>For Ubuntu 9.04 (Jaunty) and older,
-       you may have to explicitely import the 
-       Recoll and Xapian public keys: <pre><tt>
+      <p>For Ubuntu 9.04 (Jaunty) and older, you may also have to
+        explicitely import the  Recoll and Xapian public keys:
+<pre><tt>
 gpg --keyserver keyserver.ubuntu.com --recv 9DA85604
 gpg --export --armor 9DA85604 | sudo apt-key add -
 gpg --keyserver keyserver.ubuntu.com --recv A0735AD0
 gpg --export --armor  A0735AD0 | sudo apt-key add -
-       </tt></pre>
-       </p>
+</tt></pre>
+      </p>
+
       </blockquote>
 
       <h3>RPMS</h3> 

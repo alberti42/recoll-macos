@@ -6,6 +6,8 @@ from gi.repository import Unity
 
 import recoll
 
+BUS_PATH = "/org/recoll/unitylensrecoll/scope/main"
+
 # These category ids must match the order in which we add them to the lens
 CATEGORY_ALL = 0
 
@@ -19,22 +21,32 @@ TYPING_TIMEOUT = 0
 class Scope (Unity.Scope):
 
 	def __init__ (self):
-		Unity.Scope.__init__ (self, dbus_path="/org/recoll/unitylensrecoll/scope/main")
+		Unity.Scope.__init__ (self, dbus_path=BUS_PATH)
 		
 		# Listen for changes and requests
-		self.connect("notify::active-search", self._on_search_changed)
-		self.connect("notify::active-global-search", self._on_global_search_changed)
-		self.connect("filters-changed", self._on_search_changed);
+                if Unity._version == "4.0":
+                        #print "Setting up for Unity 4.0"
+                        self.connect("notify::active-search",
+                                     self._on_search_changed)
+                        self.connect("notify::active-global-search",
+                                     self._on_global_search_changed)
+                        self.connect("filters-changed",
+                                     self._on_search_changed);
+                else:
+                        #print "Setting up for Unity 5.0+"
+                        self.connect ("search-changed", self._on_search_changed)
+                        self.connect ("filters-changed",
+                                      self._on_filters_changed)
 
-		# Bliss loaded the apps_tree menu here, let's connect to 
-                # the index
+
+		# Connect to the index
                 self.db = recoll.connect()
 
                 self.db.setAbstractParams(maxchars=200, 
                                           contextwords=4)
 		
                 self.timeout_id = None
-
+                
 	def get_search_string (self):
 		search = self.props.active_search
 		return search.props.search_string if search else None
@@ -56,13 +68,24 @@ class Scope (Unity.Scope):
 		self._do_browse (self.props.results_model)
 		self._do_browse (self.props.global_results_model)
 	
-	def _on_search_changed (self, scope, param_spec=None):
-		search = self.get_search_string()
-		results = scope.props.results_model
+        def _on_filters_changed (self, scope):
+#                print "_on_filters_changed()"
+                self.queue_search_changed(Unity.SearchType.DEFAULT)
+        
+        if Unity._version == "4.0":
+                def _on_search_changed (self, scope, param_spec=None):
+                        search_string = self.get_search_string()
+                        results = scope.props.results_model
+#                        print "Search 4.0 changed to: '%s'" % search_string
 		
-#		print "Search changed to: '%s'" % search
+                        self._update_results_model (search_string, results)
+        else:
+                def _on_search_changed (self, scope, search, search_type, cancellable):
+                        search_string = search.props.search_string
+                        results = search.props.results_model
+#                        print "Search 5.0 changed to: '%s'" % search_string
 		
-		self._update_results_model (search, results)
+                        self._update_results_model (search_string, results)
 	
 	def _on_global_search_changed (self, scope, param_spec):
 		search = self.get_global_search_string()

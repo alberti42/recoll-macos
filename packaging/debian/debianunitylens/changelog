@@ -1,3 +1,6 @@
-recoll-lens (1.17.0.2643-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll-lens (1.17.0.2646-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+  * Updated lens to vers. 1.17.0.2646 : Unity 5.0/Ubuntu 12.04 compatibility
+ -- Jean-Francois Dockes <jf@dockes.org>  Sun, 25 Mar 2012 16:42:00 +0200
+recoll-lens (1.17.0.2645-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
   * Updated package to recoll version 1.17.0
  -- Jean-Francois Dockes <jf@dockes.org>  Sun, 25 Mar 2012 16:42:00 +0200
