@@ -210,9 +210,10 @@ class Scope (Unity.Scope):
         # Pass all uri without fragments to the desktop handler
         if uri.find("#") == -1:
             # Reset browsing state when an app is launched
-            self.reset ()
+            if Unity._version == "4.0":
+                self.reset ()
             return Unity.ActivationResponse.new(Unity.HandledType.NOT_HANDLED,
-												uri)
+                                                uri)
         
         # Pass all others to recoll
         proc = subprocess.Popen(["recoll", uri])
