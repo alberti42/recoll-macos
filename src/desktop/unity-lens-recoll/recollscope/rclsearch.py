@@ -67,32 +67,36 @@ class Scope (Unity.Scope):
         search = self.props.active_global_search
         if search:
             search.emit("finished")
+
     def reset (self):
         self._do_browse (self.props.results_model)
         self._do_browse (self.props.global_results_model)
     
     def _on_filters_changed (self, scope):
-#        print "_on_filters_changed()"
+        #print "_on_filters_changed()"
         self.queue_search_changed(Unity.SearchType.DEFAULT)
     
     if Unity._version == "4.0":
         def _on_search_changed (self, scope, param_spec=None):
             search_string = self.get_search_string()
             results = scope.props.results_model
-#            print "Search 4.0 changed to: '%s'" % search_string
+            #print "Search 4.0 changed to: '%s'" % search_string
             self._update_results_model (search_string, results)
     else:
         def _on_search_changed (self, scope, search, search_type, cancellable):
             search_string = search.props.search_string
             results = search.props.results_model
-#            print "Search 5.0 changed to: '%s'" % search_string
-            self._update_results_model (search_string, results)
+            #print "Search 5.0 changed to: '%s'" % search_string
+            if search_string:
+                self._update_results_model (search_string, results)
+            else:
+                search.props.results_model.clear()
     
     def _on_global_search_changed (self, scope, param_spec):
         search = self.get_global_search_string()
         results = scope.props.global_results_model
         
-#           print "Global search changed to: '%s'" % search
+        #print "Global search changed to: '%s'" % search
         
         self._update_results_model (search, results)
         
@@ -134,7 +138,7 @@ class Scope (Unity.Scope):
                     search_string, model)
 
     def _really_do_search(self, search_string, model):
-#        print "really_do_search:[", search_string, "]"
+        #print "really_do_search:", "[" + search_string + "]"
 
         model.clear ()
         if search_string == "":
@@ -168,7 +172,7 @@ class Scope (Unity.Scope):
                 mimetype = doc.mimetype
                 url = doc.url
 
-            # print "Recoll Lens: Using MIMETYPE", mimetype, " URL", url
+            #print "Recoll Lens: Using MIMETYPE", mimetype, " URL", url
 
             titleorfilename = doc.title
             if titleorfilename == "":
@@ -199,31 +203,39 @@ class Scope (Unity.Scope):
     #   https://bugs.launchpad.net/unity/+bug/893688
     # Then, the default url activation takes place
     # which is not at all what we want.
-    # So, in the recoll case, we just exit, the lens will be restarted.
-    # In the regular case, we return, and activation works exactly once for
-    # 2 calls...
+    # First workaround:
+    #    In the recoll case, we just exit, the lens will be restarted.
+    #    In the regular case, we return, and activation works exactly once for
+    #    2 calls on oneiric and mostly for precise...
+    # New workaround, suggested somewhere on the net and kept: other
+    # construction method
     def activate_uri (self, scope, uri):
         """Activation handler for uri"""
         
-        print "Activate: %s" % uri
+        #print "Activate: %s" % uri
         
         # Pass all uri without fragments to the desktop handler
         if uri.find("#") == -1:
             # Reset browsing state when an app is launched
             if Unity._version == "4.0":
                 self.reset ()
-            return Unity.ActivationResponse.new(Unity.HandledType.NOT_HANDLED,
-                                                uri)
+            ret = Unity.ActivationResponse(handled=Unity.HandledType.NOT_HANDLED,
+                                                goto_uri=uri)
+            return ret
         
         # Pass all others to recoll
         proc = subprocess.Popen(["recoll", uri])
-        print "Subprocess returned, going back to unity"
+        #print "Subprocess returned, going back to unity"
 
         scope.props.results_model.clear();
         scope.props.global_results_model.clear();
-        sys.exit(0)
+        # Old workaround:
+        #sys.exit(0)
 
-        #return Unity.ActivationResponse.new(Unity.HandledType.HIDE_DASH,
-        # "baduri")
-        
-        
+        # New and better:
+        # The goto_uri thing is a workaround suggested somewhere instead of
+        # passing the string. Does fix the issue
+        #return Unity.ActivationResponse.new(Unity.HandledType.HIDE_DASH,''
+        ret = Unity.ActivationResponse(handled=Unity.HandledType.HIDE_DASH,
+                                       goto_uri='')
+        return ret
