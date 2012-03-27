@@ -6,6 +6,7 @@ import sys
 import os
 import posixpath
 import urlparse
+import urllib
 
 import rclexecm
 
@@ -38,12 +39,13 @@ class ChmTopicsParser(HTMLParser):
     all values for parameters named "Local" (with some filtering/massaging),
     until proven wrong
     """
-    def __init__(self):
+    def __init__(self, em):
         HTMLParser.__init__(self)
         self.contents = []
-
+        self.em = em
+        
     def handle_starttag(self, tag, attrs):
-        #print >> sys.stderr, "Encountered the beginning of a %s tag" % tag
+        #self.em.rclog("Beginning of a %s tag" % tag)
         # If this is a param tag with name Local, we're interested in
         # the value which lists a file ref. Discard those with #
         # in them (references inside files)
@@ -61,19 +63,24 @@ class ChmTopicsParser(HTMLParser):
             if nm == 'value':
                 value = val
 
+        #self.em.rclog("Name [%s] value [%s]" %(name, value))
+
         if name != 'Local' or value == '':
             return
-
+        # value may be url-encoded. Decode it. If there are no % in there, will
+        # do nothing
+        value = urllib.unquote(value)
+        
         localpath = ""
         ll = value.split(":")
         if len(ll) == 1:
             localpath = value
         elif len(ll) == 4 and ll[-1] and ll[-3]:
-            #print >>sys.stderr, "File: %s" % ll[-3]
+            #self.em.rclog("File: %s" % ll[-3])
             if ll[-3] == self.fname:
                 localpath = ll[-1]
             else:
-                #print >> sys.stderr, "SKIPPING %s" % ll[-3]
+                #self.em.rclog("SKIPPING %s" % ll[-3])
                 pass
 
         if len(localpath) != 0 and  localpath.find("#") == -1:
@@ -161,7 +168,7 @@ class rclCHM:
 
     def __init__(self, em):
         self.chm = chm.CHMFile()
-        self.tp = ChmTopicsParser()
+        self.tp = ChmTopicsParser(em)
         self.currentindex = 0
         self.em = em
         
@@ -202,6 +209,7 @@ class rclCHM:
         self.topics = self.chm.GetTopicsTree()
         if self.topics:
             # Parse Topics file and extract list of internal nodes
+            #self.em.rclog("Got topics");
             self.tp.setname(os.path.basename(filename))
             self.tp.feed(self.topics)
             self.tp.close()
