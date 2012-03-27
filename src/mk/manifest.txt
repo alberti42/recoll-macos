@@ -81,6 +81,7 @@ desktop/unity-lens-recoll/data/recollbg24.png
 desktop/unity-lens-recoll/data/unity-lens-recoll.service.in
 desktop/unity-lens-recoll/install-sh
 desktop/unity-lens-recoll/missing
+desktop/unity-lens-recoll/mkdist.sh
 desktop/unity-lens-recoll/py-compile
 desktop/unity-lens-recoll/recollscope/
 desktop/unity-lens-recoll/recollscope/__init__.py
