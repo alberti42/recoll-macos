@@ -431,6 +431,7 @@ void RclMain::viewUrl()
     if (viewer.empty()) {
 	startPreview(doc);
     } else {
+	hide();
 	startNativeViewer(doc);
 	// We have a problem here because xdg-open will exit
 	// immediately after starting the command instead of waiting
@@ -440,7 +441,6 @@ void RclMain::viewUrl()
 	// prevent the temp file deletion completely, leaving it
 	// around forever. Better to let the user save a copy if he
 	// wants I think.
-	hide();
 	sleep(10);
 	fileExit();
     }
