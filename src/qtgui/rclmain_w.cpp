@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <regex.h>
@@ -78,6 +79,7 @@ using std::pair;
 #include "rtitool.h"
 #include "indexer.h"
 #include "rclzg.h"
+#include "fileudi.h"
 
 using namespace confgui;
 
@@ -389,6 +391,59 @@ void RclMain::initDbOpen()
     // command line argument
     if (!nodb && sSearch->hasSearchString())
 	QTimer::singleShot(0, sSearch, SLOT(startSimpleSearch()));
+
+    if (!m_urltoview.isEmpty()) 
+	viewUrl();
+}
+
+// Start native viewer or preview for input Doc. This is used allow
+// the using Recoll result docs with an ipath in another app.  We act
+// as a proxy to extract the data and start a viewer.
+// The Url are encoded as file://path#ipath
+void RclMain::viewUrl()
+{
+    if (m_urltoview.isEmpty() || !rcldb)
+	return;
+
+    QUrl qurl(m_urltoview);
+    LOGDEB(("RclMain::viewUrl: Path [%s] fragment [%s]\n", 
+	    (const char *)qurl.path().toLocal8Bit(),
+	    (const char *)qurl.fragment().toLocal8Bit()));
+
+    /* In theory, the url might not be for a file managed by the fs
+       indexer so that the make_udi() call here would be
+       wrong(). When/if this happens we'll have to hide this part
+       inside internfile and have some url magic to indicate the
+       appropriate indexer/identification scheme */
+    string udi;
+    make_udi((const char *)qurl.path().toLocal8Bit(),
+	     (const char *)qurl.fragment().toLocal8Bit(), udi);
+    
+    Rcl::Doc doc;
+    if (!rcldb->getDoc(udi, doc) || doc.pc == -1)
+	return;
+
+    // Start a native viewer if the mimetype has one defined, else a
+    // preview.
+    string apptag;
+    doc.getmeta(Rcl::Doc::keyapptg, &apptag);
+    string viewer = theconfig->getMimeViewerDef(doc.mimetype, apptag);
+    if (viewer.empty()) {
+	startPreview(doc);
+    } else {
+	startNativeViewer(doc);
+	// We have a problem here because xdg-open will exit
+	// immediately after starting the command instead of waiting
+	// for it, so we can't wait either and we don't know when we
+	// can exit (deleting the temp file). As a bad workaround we
+	// sleep some time then exit. The alternative would be to just
+	// prevent the temp file deletion completely, leaving it
+	// around forever. Better to let the user save a copy if he
+	// wants I think.
+	hide();
+	sleep(10);
+	fileExit();
+    }
 }
 
 void RclMain::focusToSearch()

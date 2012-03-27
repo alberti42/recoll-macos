@@ -11,6 +11,13 @@ src/common/autoconfig.h
 src/common/rclversion.h
 src/config.log
 src/config.status
+src/desktop/unity-lens-recoll/Makefile
+src/desktop/unity-lens-recoll/autom4te.cache
+src/desktop/unity-lens-recoll/bin/unity-recoll-daemon
+src/desktop/unity-lens-recoll/config.log
+src/desktop/unity-lens-recoll/config.status
+src/desktop/unity-lens-recoll/data/recoll.lens
+src/desktop/unity-lens-recoll/data/unity-lens-recoll.service
 src/doc/user/HTML.manifest
 src/doc/user/index.html
 src/doc/user/rcl.indexing.beaglequeue.html

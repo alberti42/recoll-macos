@@ -203,7 +203,7 @@ static int    op_flags;
 
 static const char usage [] =
 "\n"
-"recoll [-h] [-c <configdir>] [-q options]\n"
+"recoll [-h] [-c <configdir>] [-q query]\n"
 "  -h : Print help and exit\n"
 "  -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
 "  [-o|l|f|a] [-t] -q 'query' : search query to be executed as if entered\n"
@@ -219,6 +219,9 @@ static const char usage [] =
 "       explicitly as -t (not ie, -at), and -q <query> MUST\n"
 "       be last on the command line if this is used.\n"
 "       Use -t -h to see the additional non-gui options\n"
+"recoll <url>\n"
+"   This is used to open a recoll url (including an ipath), and called\n"
+"   typically from another search interface like the Unity Dash\n"
 ;
 static void
 Usage(void)
@@ -245,6 +248,7 @@ int main(int argc, char **argv)
 
     string a_config;
     string question;
+    string urltoview;
 
     thisprog = argv[0];
     argc--; argv++;
@@ -276,10 +280,21 @@ int main(int argc, char **argv)
     // to the query. This is for the common case recoll -q x y z to
     // avoid needing quoting "x y z"
     if (op_flags & OPT_q)
-	while (argc--) {
+	while (argc > 0) {
 	    question += " ";
 	    question += *argv++;
+	    argc--;
 	}
+
+    // Else the remaining argument should be an URL to be opened
+    if (argc == 1) {
+	urltoview = *argv++;argc--;
+	if (urltoview.compare(0, 7, cstr_fileu)) {
+	    Usage();
+	}
+    } else if (argc > 0)
+	Usage();
+
 
     // Translation file for Qt
     QString slang = QLocale::system().name().left(2);
@@ -375,6 +390,9 @@ int main(int argc, char **argv)
 	mainWindow->sSearch->searchTypCMB->setCurrentIndex(int(stype));
 	mainWindow->
 	    sSearch->setSearchString(QString::fromLocal8Bit(question.c_str()));
+    } else if (!urltoview.empty()) {
+	LOGDEB(("MAIN: got urltoview [%s]\n", urltoview.c_str()));
+	mainWindow->setUrlToView(QString::fromLocal8Bit(urltoview.c_str()));
     }
     return app.exec();
 }

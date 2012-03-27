@@ -79,6 +79,12 @@ public:
     virtual bool eventFilter(QObject *target, QEvent *event);
     QString getQueryDescription();
 
+    /** This is only called from main() to set an URL to be displayed (using
+	recoll as a doc extracter for embedded docs */
+    virtual void setUrlToView(const QString& u) {m_urltoview = u;}
+    /** Same usage: actually display the current urltoview */
+    virtual void viewUrl();
+
 public slots:
     virtual bool close();
     virtual void fileExit();
@@ -168,6 +174,10 @@ private:
     DocSeqSortSpec    m_sortspec;
     RefCntr<DocSequence> m_source;
     IndexerState      m_indexerState;
+
+    // If set on init, will be displayed either through ext app, or
+    // preview (if no ext app set)
+    QString          m_urltoview;
 
     virtual void init();
     virtual void previewPrevOrNextInTab(Preview *, int sid, int docnum, 
