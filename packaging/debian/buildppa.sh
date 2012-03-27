@@ -4,8 +4,8 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.17.0
-LENSVERS=1.17.0.2646
+RCLVERS=1.17.1
+LENSVERS=1.17.0.2654
 PPAVERS=1
 
 case $RCLVERS in
@@ -13,7 +13,7 @@ case $RCLVERS in
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-#PPANAME=recollexp-ppa
+PPANAME=recollexp-ppa
 
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
@@ -65,7 +65,7 @@ done
 
 ### Unity Lens
 seriesl="natty oneiric precise"
-seriesl="natty oneiric precise"
+#seriesl="oneiric"
 
 debdir=debianunitylens
 

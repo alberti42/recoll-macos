@@ -1,3 +1,9 @@
+recoll-lens (1.17.1.2654-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+  * Updated lens to vers. 1.17.1.2654 : display/open results for embedded files
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 27 Mar 2012 16:22:00 +0200
+recoll-lens (1.17.0.2648-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+  * Updated lens to vers. 1.17.0.2648 : don't use app shortcut 'a'
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 26 Mar 2012 22:05:00 +0200
 recoll-lens (1.17.0.2646-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
   * Updated lens to vers. 1.17.0.2646 : Unity 5.0/Ubuntu 12.04 compatibility
  -- Jean-Francois Dockes <jf@dockes.org>  Sun, 25 Mar 2012 16:42:00 +0200
