@@ -80,14 +80,12 @@ class Scope (Unity.Scope):
             search_string = self.get_search_string()
             results = scope.props.results_model
 #            print "Search 4.0 changed to: '%s'" % search_string
-        
             self._update_results_model (search_string, results)
     else:
         def _on_search_changed (self, scope, search, search_type, cancellable):
             search_string = search.props.search_string
             results = search.props.results_model
 #            print "Search 5.0 changed to: '%s'" % search_string
-        
             self._update_results_model (search_string, results)
     
     def _on_global_search_changed (self, scope, param_spec):
@@ -170,8 +168,7 @@ class Scope (Unity.Scope):
                 mimetype = doc.mimetype
                 url = doc.url
 
-            print "Recoll Lens: Using MIMETYPE", mimetype, \
-                " URL", url
+            # print "Recoll Lens: Using MIMETYPE", mimetype, " URL", url
 
             titleorfilename = doc.title
             if titleorfilename == "":
@@ -196,6 +193,15 @@ class Scope (Unity.Scope):
                 break
         
 
+    # If we return from here, the caller gets an error:
+    #  Warning: g_object_get_qdata: assertion `G_IS_OBJECT (object)' failed
+    # Known bug, see:
+    #   https://bugs.launchpad.net/unity/+bug/893688
+    # Then, the default url activation takes place
+    # which is not at all what we want.
+    # So, in the recoll case, we just exit, the lens will be restarted.
+    # In the regular case, we return, and activation works exactly once for
+    # 2 calls...
     def activate_uri (self, scope, uri):
         """Activation handler for uri"""
         
@@ -211,6 +217,12 @@ class Scope (Unity.Scope):
         # Pass all others to recoll
         proc = subprocess.Popen(["recoll", uri])
         print "Subprocess returned, going back to unity"
-        return Unity.ActivationResponse.new(Unity.HandledType.HIDE_DASH, "baduri")
+
+        scope.props.results_model.clear();
+        scope.props.global_results_model.clear();
+        sys.exit(0)
+
+        #return Unity.ActivationResponse.new(Unity.HandledType.HIDE_DASH,
+        # "baduri")
         
         
