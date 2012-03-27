@@ -1,6 +1,7 @@
 
 import sys
 import subprocess
+import time
 
 from gi.repository import GLib, GObject, Gio
 from gi.repository import Dee
@@ -41,15 +42,14 @@ class Scope (Unity.Scope):
             self.connect ("filters-changed",
                       self._on_filters_changed)
 
-
-        # Connect to the index
-        self.db = recoll.connect()
-
-        self.db.setAbstractParams(maxchars=200, 
-                      contextwords=4)
-        
+        self.last_connect_time = 0
         self.timeout_id = None
-        
+
+    def _connect_db(self):
+        #print "Connecting to db"
+        self.db = recoll.connect()
+        self.db.setAbstractParams(maxchars=200, contextwords=4)
+
     def get_search_string (self):
         search = self.props.active_search
         return search.props.search_string if search else None
@@ -143,6 +143,11 @@ class Scope (Unity.Scope):
         model.clear ()
         if search_string == "":
             return True
+
+        current_time = time.time()
+        if current_time - self.last_connect_time > 10:
+            self._connect_db()
+            self.last_connect_time = current_time
 
         fcat = self.get_filter("rclcat")
         for option in fcat.options:
