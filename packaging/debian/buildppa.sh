@@ -5,7 +5,7 @@
 # sudo apt-get install pkg-kde-tools  cdbs
 
 RCLVERS=1.17.1
-LENSVERS=1.17.0.2654
+LENSVERS=1.17.1.2654
 PPAVERS=1
 
 case $RCLVERS in
@@ -13,7 +13,7 @@ case $RCLVERS in
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-PPANAME=recollexp-ppa
+#PPANAME=recollexp-ppa
 
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
@@ -21,7 +21,8 @@ read rep
 ####### QT4
 debdir=debianrclqt4
 series4="lucid maverick natty oneiric precise"
-series4=""
+series4="natty oneiric precise"
+
 
 for series in $series4 ; do
   rm -rf recoll-${RCLVERS}/debian
@@ -39,7 +40,7 @@ for series in $series4 ; do
 
   (cd recoll-${RCLVERS};debuild -S -sa)  || break
 
-  dput $PPANAME recoll_${RCLVERS}-0~ppa${PPAVERS}~${series}1_source.changes
+  dput $PPANAME recoll_${RCLVERS}-1~ppa${PPAVERS}~${series}1_source.changes
 done
 
 ### KIO

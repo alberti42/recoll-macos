@@ -42,7 +42,7 @@
 
       <p><span class="application">Recoll</span> is free, open source,
 	and licensed under the GPL. The current version is
-	<a href="download.html">1.17.0</a> 
+	<a href="download.html">1.17.1</a> 
 	(<a href="release-1.17.html">Release notes</a>).</p>
 
       <p class="remark">Recoll will index an <b>MS-Word</b> document stored as
@@ -69,6 +69,9 @@
       <h2>News: </h2>
       <div class="news">
       <ul>
+        <li>2012-03-27: The Unity Lens can now handle results for embedded
+          documents, using the Recoll GUI as a proxy to extract and
+          display them.</li>
 
         <li>2012-03-26: Recoll gets a Ubuntu Unity Lens. If you are running
           an Ubuntu release where this makes sense, you can install
