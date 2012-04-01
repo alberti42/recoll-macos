@@ -176,7 +176,7 @@
     </message>
     <message>
         <source>Filter sizes</source>
-        <translation>Tamaños de filtros</translation>
+        <translation>Filtro de tamaños</translation>
     </message>
 </context>
 <context>
