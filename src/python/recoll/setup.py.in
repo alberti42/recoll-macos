@@ -3,6 +3,8 @@ import os
 import sys
 
 sysname = os.uname()[0]
+top = os.path.join('..', '..')
+
 libiconv = "@LIBICONV@"
 
 if libiconv.find("-liconv") != -1:
@@ -10,8 +12,11 @@ if libiconv.find("-liconv") != -1:
 else:
     libs = ['rcl', 'xapian']
 
-
-top = os.path.join('..', '..')
+libxapiandir="@LIBXAPIANDIR@"
+if libxapiandir != "":
+    libdirs = [os.path.join(top, 'lib'), libxapiandir, '/usr/local/lib']
+else:
+    libdirs = [os.path.join(top, 'lib'), '/usr/local/lib']
 
 # Verify that the Recoll library was compiled with the PIC options
 localdefs = os.path.join(top, 'mk', 'localdefs')
@@ -44,7 +49,7 @@ module1 = Extension('recoll',
                                     os.path.join(top, 'unac')
                                     ],
                     libraries = libs,
-                    library_dirs = [os.path.join(top, 'lib'), '/usr/local/lib'],
+                    library_dirs = libdirs,
                     sources = ['pyrecoll.cpp',
                                ])
 
