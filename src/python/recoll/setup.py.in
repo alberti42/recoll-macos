@@ -3,10 +3,12 @@ import os
 import sys
 
 sysname = os.uname()[0]
-if sysname == 'Linux':
-    libs = ['rcl', 'xapian']
-else:
+libiconv = "@LIBICONV@"
+
+if libiconv.find("-liconv") != -1:
     libs = ['rcl', 'xapian', 'iconv']
+else:
+    libs = ['rcl', 'xapian']
 
 
 top = os.path.join('..', '..')

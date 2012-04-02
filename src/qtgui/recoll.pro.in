@@ -88,12 +88,6 @@ unix {
 
 UNAME = $$system(uname -s)
 contains( UNAME, [lL]inux ) {
-          LIBS -= -liconv 
-	  LIBS += -ldl -lX11
-}
-
-contains( UNAME, GNU/kFreeBSD ) {
-          LIBS -= -liconv 
 	  LIBS += -ldl -lX11
 }
 

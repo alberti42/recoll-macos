@@ -109,7 +109,9 @@
 #undef _FILE_OFFSET_BITS
 #undef _LARGE_FILES
 
-#if _FILE_OFFSET_BITS == 64 || defined(__APPLE__) || defined(__OpenBSD__)
+/* The __FreeBSD_kernel__ thing is for debian/kfreebsd. */
+#if _FILE_OFFSET_BITS == 64 || defined(__APPLE__) || defined(__OpenBSD__) ||\
+    defined(__FreeBSD_kernel__)
 #define OFFTPC "%lld"
 #else
 #define OFFTPC "%ld"
