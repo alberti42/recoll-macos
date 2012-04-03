@@ -2,11 +2,20 @@
 """Extract Html files from a Microsoft Compiled Html Help file (.chm)
 Needs at least python 2.2 for HTMLParser (chmlib needs 2.2 too)"""
 
+# Do we return individual chapters as html pages or concatenate everything?
+rclchm_catenate = 0
+# Use special html type to allow for mimeconf/mimeview Open magic,
+# Or go the regular html way with text/html
+#rclchm_html_mtype = "text/x-chm-html"
+rclchm_html_mtype = "text/html"
+
 import sys
 import os
 import posixpath
 import urlparse
 import urllib
+if rclchm_catenate:
+    import subprocess
 
 import rclexecm
 
@@ -171,7 +180,11 @@ class rclCHM:
         self.tp = ChmTopicsParser(em)
         self.currentindex = 0
         self.em = em
-        
+        if rclchm_catenate:
+            self.em.setmimetype("text/plain")
+        else:
+            self.em.setmimetype(rclchm_html_mtype)
+
     def extractone(self, path):
         """Extract one path-named internal file from the chm file"""
 
@@ -188,10 +201,27 @@ class rclCHM:
         res, doc = self.chm.RetrieveObject(ui)
         #self.em.rclog("extract: RetrieveObject: %d [%s]" % (res, doc))
         if res > 0:
-            self.em.setmimetype("text/html")
+            self.em.setmimetype(rclchm_html_mtype)
             return (True, doc, path, iseof)
         return (False, "", path, iseof)
-    
+
+    def dumpall(self):
+        alltxt=""
+        for pth in self.tp.contents:
+            ret,doc,path,iseof = self.extractone(pth)
+            if not ret:
+                continue
+            # Feed doc to lynx
+            process = subprocess.Popen(["lynx", "-stdin", "-dump", "-nolist",
+                                        "-display_charset=utf8",
+                                        "-force_html"], 
+                                       stdin=subprocess.PIPE,
+                                       stdout=subprocess.PIPE
+                                       )
+            txt,err = process.communicate(doc)
+            alltxt += txt
+        return alltxt
+
     def openfile(self, params):
         """Open the chm file and build the contents list by extracting and
         parsing the Topics object"""
@@ -239,6 +269,13 @@ class rclCHM:
         return self.extractone(params["ipath:"])
         
     def getnext(self, params):
+        if rclchm_catenate:
+            alltxt = self.dumpall()
+            if alltxt:
+                return (True, alltxt, "", rclexecm.RclExecM.eofnext)
+            else:
+                return (False, "", "", rclexecm.RclExecM.eofnow)
+
         if self.currentindex >= len(self.tp.contents):
             return (False, "", "", rclexecm.RclExecM.eofnow)
         else:
