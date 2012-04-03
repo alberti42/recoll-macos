@@ -24,8 +24,11 @@ class RclExecM:
             sys.exit(exitvalue)
 
     def htmlescape(self, txt):
-        txt = txt.replace("<", "&lt;")
+        # This must stay first (it somehow had managed to skip after
+        # the next line, with rather interesting results)
         txt = txt.replace("&", "&amp;")
+
+        txt = txt.replace("<", "&lt;")
         txt = txt.replace('"', "&dquot;")
         return txt
 
