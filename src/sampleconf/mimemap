@@ -41,6 +41,7 @@
 
 .djvu = image/vnd.djvu
 .svg = image/svg+xml
+.dia = application/x-dia-diagram
 
 .gz = application/x-gzip
 .Z = application/x-gzip

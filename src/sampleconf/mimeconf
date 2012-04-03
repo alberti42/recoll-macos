@@ -71,6 +71,7 @@ application/vnd.wordperfect = exec wpd2html;mimetype=text/html
 application/x-abiword = exec rclabw
 application/x-awk = internal text/plain
 application/x-chm = execm rclchm
+application/x-dia-diagram = execm rcldia;mimetype=text/html;charset=utf-8
 application/x-dvi = exec rcldvi
 application/x-flac = execm rclaudio
 application/x-gnuinfo = execm rclinfo
@@ -107,6 +108,7 @@ text/x-fictionbook = exec rclfb2
 text/x-gaim-log = exec rclgaim
 text/x-html-sidux-man = exec rclsiduxman
 text/x-html-aptosid-man = exec rclaptosidman
+text/x-chm-html = internal text/html
 text/x-ini = internal text/plain
 text/x-mail = internal
 text/x-man = exec rclman
@@ -153,6 +155,7 @@ application/vnd.sun.xml.writer.global = wordprocessing
 application/vnd.sun.xml.writer.template = wordprocessing
 application/vnd.wordperfect = wordprocessing
 application/x-abiword = wordprocessing
+application/x-dia-diagram = drawing
 application/x-dvi = document
 application/x-flac = sownd
 application/x-fsdirectory = folder
@@ -283,6 +286,7 @@ message = message/rfc822 \
 other = application/vnd.sun.xml.draw \
         application/vnd.sun.xml.draw.template \
         application/vnd.sun.xml.math \
+        application/x-dia-diagram \
         application/x-fsdirectory \
         application/x-mimehtml \
         application/x-rar \
