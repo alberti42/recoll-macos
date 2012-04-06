@@ -87,11 +87,11 @@
       <h2><a name="doctypes">Document types</a></h2>
 
       <p>Recoll can index many document types (along with their
-      compressed versions). Some types are handled internally (no
-      external application needed). Other types need a separate
-      application to be installed to extract the text. Types that
-      only need very common utilities (awk/sed/groff etc.) are
-      listed in the native section.</p>
+        compressed versions). Some types are handled internally (no
+        external application needed). Other types need a separate
+        application to be installed to extract the text. Types that
+        only need very common utilities (awk/sed/groff/Python etc.)
+        are listed in the native section.</p>
 
       <h4>File types indexed natively</h4>
 
@@ -100,22 +100,25 @@
 
         <li><span class="literal">html</span>.</li>
 
-        <li><span class="literal">maildir</span> and <span class=
-        "literal">mailbox</span> (<span class=
-        "literal">Mozilla</span>, <span class=
-        "literal">Thunderbird</span> and <span class=
-        "literal">Evolution</span> mail ok).</li>
+        <li><span class="literal">maildir</span> and 
+          <span class="literal">mailbox</span> (
+          <span class="literal">Mozilla</span>, 
+          <span class="literal">Thunderbird</span> and 
+          <span class="literal">Evolution</span>mail ok).
+        </li>
 
-        <li><span class="literal">gaim</span> and <span class=
-        "literal">purple</span> log files.</li>
+        <li><span class="literal">gaim</span> and 
+          <span class="literal">purple</span> log files.</li>
 
-        <li><span class="literal">Lyx</span> files (needs <span
-        class="literal">Lyx</span> to be installed).</li>
+        <li><span class="literal">Lyx</span> files (needs 
+          <span class="literal">Lyx</span> to be installed).</li>
 
         <li><span class="literal">Scribus</span> files.</li>
 
-        <li><span class="literal">Man pages</span> (need <span
-        class="command">groff</span>).</li>
+        <li><span class="literal">Man pages</span> (needs
+          <span class="command">groff</span>).</li>
+
+        <li><span class="literal">Dia</span> diagrams.</li>
       </ul>
 
       <h4>File types indexed with external helpers</h4>
@@ -124,9 +127,10 @@
       command in addition to the applications specifically listed.</p>
 
       <h5>The XML ones</h5>
-      <p>The following types need <span class=
-      "command">xsltproc</span> from the <b>libxslt</b> package.
-      Quite a few also need <span class="command">unzip</span>:</p>
+
+      <p>The following types need <span class="command">
+          xsltproc</span> from the <b>libxslt</b> package.
+        Quite a few also need <span class="command">unzip</span>:</p>
 
       <ul>
         <li><span class="literal">Abiword</span> files.</li>
@@ -148,6 +152,9 @@
 
       <h5>Other formats</h5>
 
+      <p>The following need miscellaneous helper programs to decode
+        the internal formats.</p>
+
       <ul>
         <li><span class="literal">pdf</span> with the <span class=
         "command">pdftotext</span> command, which can be installed
@@ -166,7 +173,8 @@
         "http://vitus.wagner.pp.ru/software/catdoc/">catdoc</a> utilities.</li>
 
         <li><span class="literal">CHM (Microsoft help)</span> files
-          with <span class="command">Python, <a href="http://gnochm.sourceforge.net/pychm.html">pychm</a>
+          with <span class="command">Python, 
+            <a href="http://gnochm.sourceforge.net/pychm.html">pychm</a>
           and <a href="http://www.jedrea.com/chmlib/">chmlib</a></span>.</li>
 
         <li><span class="literal">GNU info</span> files
