@@ -235,24 +235,37 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    files with different character sets, encodings, and languages into the
    same index. It has input filters for many document types.
 
-   Stemming depends on the document language. Recoll stores the unstemmed
-   versions of terms and uses auxiliary databases for term expansion. It can
-   switch stemming languages, or add a language, without re-indexing. Storing
-   documents in different languages in the same index is possible, and useful
-   in practice, but does introduce possibilities of confusion. Recoll
-   currently makes no attempt at automatic language recognition.
+   Stemming is the process by which Recoll reduces words to their radicals so
+   that searching does not depend, for example, on a word being singular or
+   plural (floor, floors), or on a verb tense (flooring, floored). Because
+   the mechanisms used for stemming depend on the specific grammatical rules
+   for each language, there is a separate stemmer module for most common
+   languages where stemming makes sense. Storing documents written in
+   different languages in the same index is possible, and commonly done. In
+   this situation, you can specify several stemming languages for the index.
+   Recoll stores the unstemmed versions of terms in the main index and uses
+   auxiliary databases for term expansion (one for each stemming language),
+   which means that you can switch stemming languages between searches, or
+   add a language without needing a full reindex. Recoll currently makes no
+   attempt at automatic language recognition, which means that the stemmer
+   will sometimes be applied to terms from other languages with potentially
+   strange results. In practise, even if this introduces possibilities of
+   confusion, this approach has been proven quite useful, and, awaiting the
+   addition of an automatic language recognition module to Recoll, it is much
+   less cumbersome than separating your documents according to what language
+   they are written in.
 
    Recoll has many parameters which define exactly what to index, and how to
    classify and decode the source documents. These are kept in configuration
    files. A default configuration is copied into a standard location (usually
    something like /usr/[local/]share/recoll/examples) during installation.
-   The default parameters from this file may be overridden by values that you
-   set inside your personal configuration, found by default in the .recoll
-   sub-directory of your home directory. The default configuration will index
-   your home directory with default parameters and should be sufficient for
-   giving Recoll a try, but you may want to adjust it later, which can be
-   done either by editing the text files or by using configuration menus in
-   the recoll GUI
+   The default values set by the configuration files in this directory may be
+   overridden by values that you set inside your personal configuration,
+   found by default in the .recoll sub-directory of your home directory. The
+   default configuration will index your home directory with default
+   parameters and should be sufficient for giving Recoll a try, but you may
+   want to adjust it later, which can be done either by editing the text
+   files or by using configuration menus in the recoll GUI
 
    Indexing is started automatically the first time you execute the recoll
    search graphical user interface, or by executing the recollindex command.
