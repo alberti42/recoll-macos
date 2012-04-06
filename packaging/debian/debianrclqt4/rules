@@ -1,7 +1,5 @@
 #!/usr/bin/make -f
 
-include /usr/share/quilt/quilt.make 
-
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
@@ -28,13 +26,15 @@ config.status: configure
 		    --mandir=\$${prefix}/share/man \
 		    --prefix=/usr
 
-build: build-stamp
-build-stamp: $(QUILT_STAMPFN) config.status
+build: build-arch build-indep
+build-arch: build-stamp
+build-indep: build-stamp
+build-stamp: config.status
 	dh_testdir
 	$(MAKE)
 	touch $@
 
-clean: unpatch
+clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp config.log
@@ -46,8 +46,11 @@ install:
 	dh_testroot
 	dh_prep
 	dh_installdirs
-	$(MAKE) prefix=$(CURDIR)/debian/recoll/usr install
-	(cd python/recoll;python setup.py install --install-layout=deb --root=$(CURDIR)/debian/recoll/ )
+
+	$(MAKE) STRIP=ls prefix=$(CURDIR)/debian/tmp/usr install
+	(cd python/recoll; python setup.py install \
+	                                   --install-layout=deb \
+	                                   --prefix=$(CURDIR)/debian/tmp/usr )
 
 binary-arch: build install
 	dh_testdir
@@ -56,6 +59,7 @@ binary-arch: build install
 	dh_installdocs README
 	dh_installmenu
 	dh_installman
+	dh_install --sourcedir=debian/tmp
 	dh_link
 	dh_strip
 	dh_compress
@@ -69,4 +73,4 @@ binary-arch: build install
 binary-indep: build install
 
 binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install
+.PHONY: build build-arch build-indep clean binary-indep binary-arch binary install
