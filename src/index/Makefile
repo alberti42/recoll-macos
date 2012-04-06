@@ -28,14 +28,6 @@ subtreelist : $(SUBTREELIST_OBJS)
 subtreelist.o : subtreelist.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_SUBTREELIST -c subtreelist.cpp
 
-CSGUESS_OBJS= trcsguess.o  $(BIGLIB) 
-csguess : $(CSGUESS_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) -o csguess $(CSGUESS_OBJS) \
-	       $(LIBICONV)
-trcsguess.o : csguess.cpp
-	$(CXX) $(ALL_CXXFLAGS) -DTEST_CSGUESS -c -o trcsguess.o \
-	       csguess.cpp
-
 MIMETYPE_OBJS= trmimetype.o  $(BIGLIB) 
 mimetype : $(MIMETYPE_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o mimetype $(MIMETYPE_OBJS) \

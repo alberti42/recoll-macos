@@ -18,7 +18,6 @@
 #include "cstr.h"
 #include "mimehandler.h"
 #include "debuglog.h"
-#include "csguess.h"
 #include "readfile.h"
 #include "transcode.h"
 #include "mimeparse.h"

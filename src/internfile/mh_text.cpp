@@ -29,7 +29,6 @@ using namespace std;
 
 #include "cstr.h"
 #include "mh_text.h"
-#include "csguess.h"
 #include "debuglog.h"
 #include "readfile.h"
 #include "md5.h"

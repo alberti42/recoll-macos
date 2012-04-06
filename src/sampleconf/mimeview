@@ -52,6 +52,7 @@ application/vnd.sun.xml.writer.template = libreoffice %f
 application/vnd.wordperfect = libreoffice %f
 
 application/x-chm = kchmviewer %f
+application/x-dia-diagram = dia %f
 application/x-fsdirectory = dolphin %f
 application/x-gnuinfo = xterm -e "info -f %f"
 application/x-gnumeric = gnumeric %f
