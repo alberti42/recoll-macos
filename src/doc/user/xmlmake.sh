@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# A script to produce the Recoll manual with an xml toolchain.
+# Limitations:
+#   - Does not produce the links to the whole/chunked versions at the top
+#     of the document
+#   - The anchor names from the source text are converted to uppercase by
+#     the sgml toolchain. This does not happen with the xml toolchain,
+#     which means that external links like
+#     usermanual.html#RCL.CONFIG.INDEXING won't work because fragments are
+#     case-sensitive. This could be solved by converting all ids inside the
+#     source file to upper-case.
+
+# Wherever docbook.xsl and chunk.xsl live
+XSLDIR="/usr/local/share/xsl/docbook/"
+
+# Remove the SGML header and uncomment the XML one
+sed -e '\!//FreeBSD//DTD!d' \
+    -e '\!DTD DocBook XML!s/<!--//' \
+    -e '\!/docbookx.dtd!s/-->//' \
+    < usermanual.sgml > usermanual.xml
+
+# Options common to the single-file and chunked versions
+commonoptions="--stringparam section.autolabel 1 \
+  --stringparam section.autolabel.max.depth 3 \
+  --stringparam section.label.includes.component.label 1 \
+  --stringparam autotoc.label.in.hyperlink 0 \
+  --stringparam abstract.notitle.enabled 1 \
+  --stringparam html.stylesheet docbook-xsl.css \
+  --stringparam generate.toc \"book toc,title,figure,table,example,equation\" \
+"
+
+# Do the chunky thing
+eval xsltproc $commonoptions \
+    --stringparam use.id.as.filename 1 \
+    "$XSLDIR/html/chunk.xsl" \
+    usermanual.xml
+
+# Produce the single file version
+eval xsltproc $commonoptions \
+    -o usermanual-xml.html \
+    "$XSLDIR/html/docbook.xsl" \
+    usermanual.xml
+
+tidy -indent usermanual-xml.html > tmpfile 
+mv -f tmpfile usermanual-xml.html
