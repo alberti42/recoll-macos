@@ -7,7 +7,7 @@
     <meta name="Description" content="Recoll is a personal desktop full text search application for Unix, Linux and Mac OS X, based on the Xapian search engine library.">
     <meta name="Keywords" content="full text search,fulltext,full text,search,desktop search,unix,linux,open source,free">
     <meta http-equiv="Content-language" content="en">
-    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="robots" content="All,Index,Follow">
     <link type="text/css" rel="stylesheet" href="styles/style.css">
   </head>
@@ -69,20 +69,19 @@
       <h2>News: </h2>
       <div class="news">
       <ul>
-        <li>2012-03-27: The Unity Lens can now handle results for embedded
-          documents, using the Recoll GUI as a proxy to extract and
-          display them.</li>
+        <li>2012-04-07: we now have a Chinese user manual: Recoll现在有中文手册咯：
+        <a href="http://stupidbeauty.com/Blog/2012/03/recoll%E7%94%A8%E6%88%B6%E6%89%8B%E5%86%8A%E7%BF%BB%E8%AD%AF%EF%BC%8Crecoll-user-manual-2/">
+          Recoll中文手册，HTML</a></li>
 
-        <li>2012-03-26: Recoll gets a Ubuntu Unity Lens. If you are running
+        <li>2012-03-27: Recoll gets a Ubuntu Unity Lens. If you are running
           an Ubuntu release where this makes sense, you can install
           the recoll-lens package from the 
-     <a href="https://launchpad.net/~recoll-backports/+archive/recoll-1.15-on">
-          Recoll PPA</a>. <br />
-         <i><b>Please note</b></i>:  for now, the Lens will only return
-          results which are normal files, not embedded documents.
-          Ie: no mbox messages, no attachments, no archive
-          members, etc. For now, you'll have to use the full Recoll
-          GUI to find these.</li>
+          <a href="https://launchpad.net/~recoll-backports/+archive/recoll-1.15-on">
+            Recoll PPA</a>. The Lens uses the Recoll GUI as a proxy to
+          extract and display embedded documents, which native utility
+          can't reach directly. And of course you still need to run
+          the GUI (or the command line recollindex) to get indexing
+          going !</li>
 
         <li>2012-03-24: Release 1.17 is out, see
           the <a href="release-1.17.html">Release notes</a>. </li>

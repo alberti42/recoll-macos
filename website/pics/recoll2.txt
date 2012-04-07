@@ -1,1 +1,1 @@
-The advanced search dialog.
+The two tabs in the advanced search dialog.
