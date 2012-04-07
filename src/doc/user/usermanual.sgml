@@ -45,12 +45,12 @@
     <sect1 id="rcl.introduction.tryit">
       <title>Giving it a try</title>
       
-      <para>If you do not like reading manuals (who does?) and would
-      like to give &RCL; a try, just perform <link
-      linkend="rcl.install.binary">installation</link> and start the
-      <command>recoll</command> user interface, which will index your
-      home directory by default, allowing you to search immediately after
-      indexing completes.</para>
+      <para>If you do not like reading manuals (who does?) and would like
+        to give &RCL; a try, just <link
+        linkend="rcl.install.binary">install</link> the application and
+        start the <command>recoll</command> graphical user interface (GUI),
+        which will ask to index your home directory by default, allowing
+        you to search immediately after indexing completes.</para>
 
       <para>Do not do this if your home directory contains a huge
         number of documents and you do not want to wait or are very
@@ -176,21 +176,24 @@
         or by using configuration menus in the
         <command>recoll</command> GUI</para>
 
-      <para><link linkend="rcl.indexing.periodic.exec">Indexing</link>
-      is started automatically the first time you execute the
-      <command>recoll</command> search graphical user interface, or by
-      executing the <command>recollindex</command> command.</para>
+      <para>The <link linkend="rcl.indexing.periodic.exec">indexing
+          process</link> is started automatically the first time you
+        execute the <command>recoll</command> GUI. Indexing can also be
+        performed by executing the <command>recollindex</command>
+        command.</para>
 
       <para><link linkend="rcl.search">Searches</link> are usually
-        performed inside the <command>recoll</command> graphical user
-        interface (GUI) program, which has many options to help you find
-        what you are looking for. However, there are other ways to perform
-        &RCL; searches: mostly a <link linkend="rcl.search.commandline">
-          command line tool</link>, a 
+        performed inside the <command>recoll</command> GUI, which has many
+        options to help you find what you are looking for. However, there
+        are other ways to perform &RCL; searches: mostly a <link
+        linkend="rcl.search.commandline">
+          command line interface</link>, a 
         <link linkend="rcl.program.api.python">
           <application>Python</application>
-          programming interface</link>, and a <link linkend="rcl.searchkio">
-          <application>KDE</application> KIO slave module</link>.</para>
+          programming interface</link>, a <link linkend="rcl.searchkio">
+          <application>KDE</application> KIO slave module</link>, and
+        a <application>Ubuntu Unity Lens</application> module.
+        </para>
 
     </sect1>
   </chapter>
@@ -251,25 +254,27 @@
         <link linkend="rcl.indexing.config">configuration files</link>.</para>
 
       <para>Most file types, like HTML or word processing files, only hold
-        one document. Some file types, like mail folder files or zip
+        one document. Some file types, like email folders or zip
         archives, can hold many individually indexed documents, which may
         in turn be themselves compound ones. Such hierarchies can go quite
-        deep, and &RCL; has no problem processing, for example, an ms-word
-        document which would be an attachment to an email message part of
-        a folder file archived inside a zip file...</para>
+        deep, and &RCL; can process, for example, an
+        <application>ms-word</application> 
+        document stored as an attachment to an email message inside an
+        email folder archived in a zip file...</para>
 
-      <para>&RCL; indexing processes plain text, HTML, openoffice
-        and e-mail files, and a few others internally.</para>
+      <para>&RCL; indexing processes plain text, HTML, OpenDocument
+        (Open/LibreOffice), email formats, and a few others internally.</para>
 
       <para>Other file types (ie: postscript, pdf, ms-word, rtf ...) 
         need external applications for preprocessing. The list is in the
         <link linkend="rcl.install.external"> installation</link>
         section. After every indexing operation, &RCL; updates a list of
         commands that would be needed for indexing existing files
-        types. This list can be displayed from the
-        <command>recoll</command> <guilabel>File</guilabel> menu. It is
-        stored in the <filename>missing</filename> text file
-        inside the configuration directory.</para>
+        types. This list can be displayed by selecting the menu option
+        <guilabel>File</guilabel>-><guilabel>Show Missing Helpers</guilabel>
+        in the <command>recoll</command> GUI. It is stored in the
+        <filename>missing</filename> text file inside the configuration
+        directory.</para>
 
       <para>Without further configuration, &RCL; will index all
         appropriate files from your home directory, with a reasonable
@@ -353,9 +358,9 @@ recoll
         indexed).</para>
 
       <para>Of course, images, sound and video do not increase the
-        index size, which means that it will be quite typical nowadays
-        (2006), that even a big index will be negligible against the
-        total amount of data on the computer.</para>
+        index size, which means that nowadays (2012), typically, even a big
+        index will be negligible against the total amount of data on the
+        computer.</para>
       
       <para>The index data directory (<filename>xapiandb</filename>)
 	only contains data that can be completely rebuilt by an index run
@@ -456,14 +461,20 @@ recoll
         option.)</para> 
 
         <para>The interface is started from the
-        <guilabel>Preferences</guilabel> menu. It has two main
-        panels. The first panel allows setting global variables, like
-        the list of top directories or the list of skipped paths. The
-        second panel allows setting variables that can be redefined
-        for subdirectories. This second panel has an initially empty list of
-        customisation directories, to which you can add. The variables
-        are then set for the currently selected directory (or at the top
-        level if the empty line is selected).</para>
+        <guilabel>Preferences</guilabel>-><guilabel>Indexing
+        Configuration</guilabel> menu entry. It is divided in three tabs,
+        <guilabel>Global parameters</guilabel>, <guilabel>Local
+        parameters</guilabel>, and <guilabel>Beagle web history</guilabel>,
+        which is explained in the next section.</para>
+
+        <para>The first tab allows setting global variables, like the lists
+        of top directories, skipped paths, or stemming languages.</para>
+
+        <para>The second tab allows setting variables that can be redefined
+        for subdirectories. This second tab has an initially empty list of
+        customisation directories, to which you can add. The variables are
+        then set for the currently selected directory (or at the top level
+        if the empty line is selected).</para>
 
         <para>The meaning for most entries in the interface is 
         self-evident and documented by a <literal>ToolTip</literal>
@@ -538,15 +549,17 @@ recoll
           if canceled).</para>
 
         <para>The <command>recollindex</command> indexing process can be
-          interrupted by sending an interrupt (^C, SIGINT) or terminate
+          interrupted by sending an interrupt (Ctrl-C, SIGINT) or terminate
           (SIGTERM) signal. Some time may elapse before the process exits,
-          because it needs to properly flush and close the index. The
-          indexing thread can be equivalently stopped from the menu.</para>
+          because it needs to properly flush and close the index. This can
+          also be done from the <command>recoll</command> GUI
+          <guilabel>File</guilabel>-><guilabel>Stop Indexing</guilabel>
+          menu entry.</para>
 
 	<para>After such an interruption, the index will be somewhat
 	  inconsistent because some operations which are normally performed
 	  at the end of the indexing pass will have been skipped (for
-	  exemple, the stemming and spelling databases will be inexistant
+	  example, the stemming and spelling databases will be inexistant
 	  or out of date). You just need to restart indexing at a later
 	  time to restore consistency. The indexing will restart at the
           interruption point (the full file tree will be traversed,
@@ -593,7 +606,8 @@ recoll
         <para>As of version 1.17 the &RCL; GUI has dialogs to manage
           <filename>crontab</filename> entries for
           <command>recollindex</command>. You can reach them from the
-          <guimenu>Preferences->Indexing Schedule</guimenu> menu. They only
+          <guilabel>Preferences</guilabel>-><guilabel>Indexing
+          Schedule</guilabel> menu. They only 
           work with the good old <command>cron</command>, and do not give
           access to all features of <command>cron</command> scheduling.</para>
 
@@ -669,12 +683,13 @@ fvwm
         on the log level.</para>
 
       <para>When building &RCL;, the real time indexing support can be
-        customised during package
-        <link linkend="rcl.install.building.build">configuration</link>
-        with the <literal>--with[out]-fam</literal> or
+        customised during package <link
+        linkend="rcl.install.building.build">configuration</link> with the
+        <literal>--with[out]-fam</literal> or
         <literal>--with[out]-inotify</literal> options.  The default is
-        currently to include inotify monitoring on systems that support
-        it, and, as of recoll 1.17, gamin support on FreeBSD.</para>
+        currently to include <application>inotify</application> monitoring
+        on systems that support it, and, as of recoll 1.17,
+        <application>gamin</application> support on FreeBSD.</para>
 
       <para>While it is convenient that data is indexed in real time,
         repeated indexing can generate a significant load on the
@@ -729,7 +744,7 @@ fvwm
     <para>In most cases, you can enter the terms as you
         think them, even if they contain embedded punctuation or other
         non-textual characters. For
-        exemple, &RCL; can handle things like e-mail addresses, or
+        example, &RCL; can handle things like email addresses, or
         arbitrary cut and paste from another text window, punctation
         and all.</para>
 
@@ -967,7 +982,7 @@ fvwm
           that you can't actually visualize the folder (there will be an
           error dialog if you try). &RCL; is unfortunately not yet smart
           enough to disable the entry in this case. In other cases, the
-          <guilabel>Open</guilabel> option makes sense, for exemple to
+          <guilabel>Open</guilabel> option makes sense, for example to
           start a <application>chm</application> viewer on the parent
           document for a help page.</para>
 
@@ -1023,7 +1038,7 @@ fvwm
       create a new preview window. The old one stays open until you
       close it.</para>
 
-      <para>You can close a preview tab by typing <keycap>^W</keycap> 
+      <para>You can close a preview tab by typing <keycap>Ctrl-W</keycap> 
       (<keycap>Ctrl</keycap> + <keycap>W</keycap>) in the
       window. Closing the last tab for a window will also close the
       window.</para> 
@@ -1047,7 +1062,7 @@ fvwm
       <keycap>F3</keycap> inside the text area to get to the next
       occurrence.</para>
 
-      <para>If you have a search string entered and you use ^Up/^Down
+      <para>If you have a search string entered and you use Ctrl-Up/Ctrl-Down
       to browse the results, the search is initiated for each successive
       document. If the string is found, the cursor will be positioned
       at the first occurrence of the search string.</para>
@@ -1059,8 +1074,8 @@ fvwm
       the main text but in one of the fields.</para>
         
       <para>You can print the current preview window contents by typing
-         <keycap>^P</keycap> (<keycap>Ctrl</keycap> + <keycap>P</keycap>) in 
-        the window text.</para> 
+         <keycap>Ctrl-P</keycap> (<keycap>Ctrl</keycap> +
+         <keycap>P</keycap>) in  the window text.</para> 
         
     </sect2>
 
@@ -1556,19 +1571,19 @@ fvwm
       </formalpara>
 
       <formalpara><title>Closing previews</title> 
-       <para>Entering <keycap>^W</keycap> in a tab will
+       <para>Entering <keycap>Ctrl-W</keycap> in a tab will
         close it (and, for the last tab, close the preview
         window). Entering <keycap>Esc</keycap> will close the preview
         window and all its tabs.</para>
       </formalpara>
 
       <formalpara><title>Printing previews</title> 
-       <para>Entering <keycap>^P</keycap> in a preview window will print 
+       <para>Entering <keycap>Ctrl-P</keycap> in a preview window will print 
         the currently displayed text.</para>
       </formalpara>
 
       <formalpara><title>Quitting</title>
-      <para>Entering <keycap>^Q</keycap> almost anywhere will
+      <para>Entering <keycap>Ctrl-Q</keycap> almost anywhere will
         close the application.</para>
       </formalpara>
       </sect3>
@@ -1605,9 +1620,10 @@ fvwm
                 on startup. The default value is empty, but there is a
                 skeleton style sheet (<filename>recoll.qss</filename>)
                 inside the <filename>/usr/share/recoll/examples</filename>
-                directory. Using a style sheet, you can change most Recoll
-                graphical parameters: colors, fonts, etc. See the sample
-                file for a few simple examples.</para>
+                directory. Using a style sheet, you can change most
+                <command>recoll</command> graphical parameters: colors,
+                fonts, etc. See the sample file for a few simple
+                examples.</para>
             </listitem>
 
 	    <listitem><para><guilabel>Maximum text size highlighted for
@@ -1847,7 +1863,7 @@ fvwm
         <para>No more detail will be given about the header part (only
           useful with the WebKit build), if there are restrictions to
           what you can do, they are beyond this author's HTML/CSS/Javascript
-          abilities... There are a few exemples on the 
+          abilities... There are a few examples on the 
           <ulink url="http://www.recoll.org/custom.html">page about 
             customising the result list</ulink> on the &RCL; web site.</para>
 
@@ -2143,7 +2159,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       <replaceable>potatoes</replaceable> (in any part of the document).</para>
 
       <para>An element is composed of an optional field specification,
-      and a value, separated by a colon. Exemple:
+      and a value, separated by a colon. Example:
       <replaceable>Beatles</replaceable>,
       <replaceable>author:balzac</replaceable>,
       <replaceable>dc:title:grandet</replaceable> </para>
@@ -2180,7 +2196,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       <replaceable>title:prejudice title:pride</replaceable>, and is
       unlikely to find a result.</para> 
 
-      <para>Modifiers can be set on a phrase clause, for exemple to specify
+      <para>Modifiers can be set on a phrase clause, for example to specify
         a proximity search (unordered). See 
         <link linkend="rcl.search.lang.modifiers">the modifier
           section</link>.</para> 
@@ -2226,7 +2242,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         </listitem>
 
         <listitem><para><literal>size</literal> for filtering the
-        results on file size. Exemple: 
+        results on file size. Example: 
         <literal>size&lt;10000</literal>. You can use
         <literal>&lt;</literal>, <literal>&gt;</literal> or
         <literal>=</literal> as operators. You can specify a range like the
@@ -2250,7 +2266,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
        The days and months parts may be missing. If the
        <literal>/</literal> is present but an element is missing, the
        missing element is interpreted as the lowest or highest date in the
-       index. Exemples:</para>
+       index. Examples:</para>
 	  <itemizedlist>
 	    <listitem><para><literal>2001-03-01/2002-05-01</literal> the
 	    basic syntax for an interval of dates.</para>
@@ -2572,7 +2588,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         <literal>Subject:</literal> for email) when indexing. This is not
         essential.</para>
 
-      <para>You should look to one of the simple filters, for exemple
+      <para>You should look to one of the simple filters, for example
         <literal>rclps</literal> for a starting point.</para>
 
         <para>Don't forget to make your filter executable before 
@@ -3104,7 +3120,7 @@ while query.next >= 0 and query.next < nres:
       <para>You will only have to check or install <link
       linkend="rcl.install.external">supporting applications</link>
       for the file types that you want to index beyond those that are
-      natively processed by &RCL; (text, HTML, mail files, and a few
+      natively processed by &RCL; (text, HTML, email files, and a few
       others).</para>
 
       <para>You should also maybe have a look at the 
@@ -3276,13 +3292,13 @@ while query.next >= 0 and query.next < nres:
         <listitem><para>Konqueror webarchive format with Python (uses the
         Tarfile module).</para></listitem>
 
-        <listitem><para>mimehtml web archive format (support based on the mail
+        <listitem><para>mimehtml web archive format (support based on the email
           filter, which introduces some mild weirdness, but still
           usable).</para></listitem>
 
         </itemizedlist>
 
-        <para>Text, HTML, mail folders, and Scribus files are
+        <para>Text, HTML, email folders, and Scribus files are
         processed internally. <application>Lyx</application> is used to
         index Lyx files. Many filters need <command>iconv</command> and the
         standard <command>sed</command> and <command>awk</command>.
@@ -3628,7 +3644,7 @@ skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
                 <para>The list in the default configuration does not
                 exclude hidden directories (names beginning with a
                 dot), which means that it may index quite a few things
-                that you do not want. On the other hand, mail user
+                that you do not want. On the other hand, email user
                 agents like <application>thunderbird</application>
                 usually store messages in hidden directories, and you
                 probably want this indexed. One possible solution is to
@@ -3835,7 +3851,7 @@ skippedPaths = ~/somedir/&lowast;.txt
 
           <varlistentry><term><literal>maildefcharset</literal></term>
             <listitem><para>This can be used to define the default
-		character set specifically for mail messages which don't
+		character set specifically for email messages which don't
 		specify it. This is mainly useful for readpst (libpst) dumps,
 		which are utf-8 but do not say so.</para>
             </listitem>
@@ -4098,9 +4114,9 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
           <varlistentry>
             <term>filter-specific sections</term>
             <listitem><para>Some filters may need specific
-            configuration for handling fields. Only the mail message filter
+            configuration for handling fields. Only the email message filter
             currently has such a section (named
-            <literal>[mail]</literal>). It allows indexing arbitrary mail
+            <literal>[mail]</literal>). It allows indexing arbitrary email
             headers in addition to the ones indexed by default. Other such
             sections may appear in the future.</para>
             </listitem>
@@ -4110,9 +4126,9 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
 
       <para>Here follows a small example of a personal
       <filename>fields</filename> 
-      file. This would extract a specific mail header and
+      file. This would extract a specific email header and
       use it as a searchable field, with data displayable inside result
-      lists. (Side note: as the mail filter does no decoding on the values,
+      lists. (Side note: as the email filter does no decoding on the values,
       only plain ascii headers can be indexed, and only the
       first occurrence will be used for headers that occur several times).
 
