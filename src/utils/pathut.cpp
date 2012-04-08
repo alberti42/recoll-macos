@@ -389,6 +389,52 @@ bool path_isdir(const string& path)
     return false;
 }
 
+// Allowed punctuation in the path part of an URI according to RFC2396
+// -_.!~*'():@&=+$,
+/*
+21 !
+    22 "
+    23 #
+24 $
+    25 %
+26 &
+27 '
+28 (
+29 )
+2A *
+2B +
+2C , 
+2D -
+2E .
+2F /
+30 0
+...
+39 9
+3A :
+    3B ;
+    3C <
+3D =
+    3E >
+    3F ?
+40 @
+41 A
+...
+5A Z
+    5B [
+    5C \
+    5D ]
+    5E ^
+5F _
+    60 `
+61 a
+...
+7A z
+    7B {
+    7C |
+    7D }
+7E ~
+    7F DEL
+*/
 string url_encode(const string& url, string::size_type offs)
 {
     string out = url.substr(0, offs);
@@ -397,24 +443,23 @@ string url_encode(const string& url, string::size_type offs)
 	int c;
 	const char *h = "0123456789ABCDEF";
 	c = cp[i];
-	if(c <= 0x1f || 
+	if (c <= 0x20 || 
 	   c >= 0x7f || 
-	   c == '<' ||
-	   c == '>' ||
-	   c == ' ' ||
-	   c == '\t'||
 	   c == '"' ||
 	   c == '#' ||
 	   c == '%' ||
-	   c == '{' ||
-	   c == '}' ||
-	   c == '|' ||
-	   c == '\\' ||
-	   c == '^' ||
-	   c == '~'||
+	   c == ';' ||
+	   c == '<' ||
+	   c == '>' ||
+	   c == '?' ||
 	   c == '[' ||
+	   c == '\\' ||
 	   c == ']' ||
-	   c == '`') {
+	   c == '^' ||
+	   c == '`' ||
+	   c == '{' ||
+	   c == '|' ||
+	   c == '}' ) {
 	    out += '%';
 	    out += h[(c >> 4) & 0xf];
 	    out += h[c & 0xf];
@@ -445,7 +490,9 @@ string url_gpath(const string& url)
     return path_canon(url.substr(colon+1));
 }
 
-// Convert to file path if url is like file://
+// Convert to file path if url is like file:
+// Note: this only works with our internal pseudo-urls which are not
+// encoded/escaped
 string fileurltolocalpath(string url)
 {
     if (url.find("file://") == 0)
@@ -570,7 +617,8 @@ static const string thmbdirnormal = ".thumbnails/normal";
 static void thumbname(const string& url, string& name)
 {
     string digest;
-    MD5String(url, digest);
+    string l_url = url_encode(url);
+    MD5String(l_url, digest);
     MD5HexPrint(digest, name);
     name += ".png";
 }
