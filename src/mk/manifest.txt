@@ -142,6 +142,7 @@ filters/rclabw
 filters/rclaptosidman
 filters/rclaudio
 filters/rclchm
+filters/rcldia
 filters/rcldjvu
 filters/rcldoc
 filters/rcldvi
