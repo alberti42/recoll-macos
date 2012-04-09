@@ -107,8 +107,14 @@ RclConfig *recollinit(RclInitFlags flags,
     // Make sure the locale charset is initialized (so that multiple
     // threads don't try to do it at once).
     config->getDefCharset();
+
     // Init unac locking
     unac_init_mt();
+
+    // Init Unac translation exceptions
+    string unacex;
+    if (config->getConfParam("unac_except_trans", unacex) && !unacex.empty()) 
+	unac_set_except_translations(unacex.c_str());
 
     int flushmb;
     if (config->getConfParam("idxflushmb", &flushmb) && flushmb > 0) {

@@ -34,6 +34,9 @@
       <para>This document introduces full text search notions
       and describes the installation and use of the &RCL;
       application. It currently describes &RCL; &RCLVERSION;.</para>
+<!--      <para>[ <ulink url="index.html">Split HTML</ulink> / 
+             <ulink url="usermanual-xml.html">Single HTML</ulink> ]</para>
+-->
     </abstract>
 
 
@@ -3848,6 +3851,32 @@ skippedPaths = ~/somedir/&lowast;.txt
             LC_CTYPE, LANG), or iso8859-1 if nothing is set.</para> 
 	   </listitem>
          </varlistentry>
+
+          <varlistentry><term><literal>unac_except_trans</literal></term>
+            <listitem><para>This is a list of characters which should be
+            handled specially when converting text to unaccented lowercase.
+            For example, in Swedish, the letter <literal>a with diaeresis
+            </literal> has full alphabet citizenship and should not be
+            turned into an <literal>a</literal>. Each element in the
+            space-separated list has the special character as first element
+            and the translation following. The handling of both the
+            lowercase and upper-case versions of a character should be
+            specified, as appartenance to the list will turn-off both
+            standard accent and case processing. Example for Swedish:</para>
+                <programlisting>
+unac_except_trans =  åå Åå ää Ää öö Öö
+            </programlisting>
+
+            <para>Note that the translation is not limited to a single
+            character, you could very well have something like
+            <literal>üue</literal> in the list.</para>
+
+             <para>This parameter can't be defined for subdirectories, it
+             is global, because there is no way to do otherwise when
+             querying. If you have document sets which would need different
+             values, you will have to index and query them separately.</para> 
+              </listitem>
+            </varlistentry>
 
           <varlistentry><term><literal>maildefcharset</literal></term>
             <listitem><para>This can be used to define the default

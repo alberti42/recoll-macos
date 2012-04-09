@@ -17,15 +17,57 @@
  */
 
 #ifdef HAVE_CONFIG_H
+#ifdef RECOLL_DATADIR
+#include "autoconfig.h"
+#else
 #include "config.h"
+#endif /* RECOLL */
 #endif /* HAVE_CONFIG_H */
+
+#ifdef RECOLL_DATADIR
+/* Yes, recoll unac is actually c++, lets face modernity, I will not be
+   caught writing another binary search  */
+#include <vector>
+#include <map>
+#include <string>
+#include <algorithm>
+using std::string;
+using std::vector;
+using std::map;
+#include "smallut.h"
+
+/* 
+   Storage for the exception translations. These are chars which
+   should not be translated according to what UnicodeData says, but
+   instead according to some local rule. There will usually be very
+   few of them, but they must be looked up for every translated char.
+   
+   We use a sorted vector for fastest elimination by binary search and
+   a vector<string> to store the translations
+ */
+static vector<unsigned short> except_chars;
+static vector<string> except_trans;
+static inline size_t is_except_char(unsigned short c)
+{
+    vector<unsigned short>::iterator it = 
+	std::lower_bound(except_chars.begin(), except_chars.end(), c);
+    if (it == except_chars.end() || *it != c) {
+	return (size_t(-1));
+    }
+    return std::distance(except_chars.begin(), it);
+}
+#endif /* RECOLL_DATADIR */
 
 /*
  * If configure.in has not defined this symbol, assume const. It
  * does not harm much: a warning will be issued during compilation.
  */
 #ifndef ICONV_CONST
+#ifdef RCL_ICONV_INBUF_CONST
+#define ICONV_CONST const
+#else
 #define ICONV_CONST
+#endif
 #endif /* ICONV_CONST */
 
 #include <stdlib.h>
@@ -12622,12 +12664,12 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
   char* out;
   int out_size;
   int out_length;
-  int i;
+  unsigned int i;
 
   out_size = in_length > 0 ? in_length : 1024;
 
   out = *outp;
-  out = realloc(out, out_size + 1);
+  out = (char*)realloc(out, out_size + 1);
   if(out == 0) {
       if(debug_level >= UNAC_DEBUG_LOW)
 	  DEBUG("realloc %d bytes failed\n", out_size+1);
@@ -12646,11 +12688,25 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
     /*
      * Lookup the tables for decomposition information
      */
-    if (dofold) {
-	unacfold_char_utf16(c, p, l);
+#ifdef RECOLL_DATADIR
+    size_t idx;
+    if (except_chars.size() != 0 && (idx=is_except_char(c)) != (size_t)-1) {
+	p = (unsigned short *)(except_trans[idx].c_str() + 2);
+	l = (except_trans[idx].size() - 2) / 2;
+	/* unsigned char *cp = (unsigned char *)p;
+	   fprintf(stderr, "l %d cp[0] %x cp[1] %x\n", l, (unsigned int)cp[0], 
+	   (unsigned int)cp[1]);*/
     } else {
-	unac_char_utf16(c, p, l);
+#endif /* RECOLL_DATADIR */
+	if (dofold) {
+	    unacfold_char_utf16(c, p, l);
+	} else {
+	    unac_char_utf16(c, p, l);
+	}
+#ifdef RECOLL_DATADIR
     }
+#endif /* RECOLL_DATADIR */
+
     /*
      * Explain what's done in great detail
      */
@@ -12678,7 +12734,7 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
       char *saved;
       out_size += ((l + 1) * 2) + 1024;
       saved = out;
-      out = realloc(out, out_size);
+      out = (char *)realloc(out, out_size);
       if(out == 0) {
 	if(debug_level >= UNAC_DEBUG_LOW)
 	  DEBUG("realloc %d bytes failed\n", out_size);
@@ -12798,7 +12854,7 @@ static int convert(const char* from, const char* to,
   out_size = in_length > 0 ? in_length : 1024;
 
   out = *outp;
-  out = realloc(out, out_size + 1);
+  out = (char *)realloc(out, out_size + 1);
   if(out == 0) {
       /* *outp still valid, no freeing */
       if(debug_level >= UNAC_DEBUG_LOW)
@@ -12884,7 +12940,7 @@ static int convert(const char* from, const char* to,
 	  {
 	      char *saved = out_base;
 	      /* +1 for null */
-	      out_base = realloc(out_base, out_size + 1);
+	      out_base = (char *)realloc(out_base, out_size + 1);
 	      if (out_base == 0) {
 		  /* *outp potentially not valid any more. Free here,
 		   * and zero out */
@@ -12929,7 +12985,7 @@ int unacmaybefold_string(const char* charset,
    */
   if (in_length <= 0) {
       if(!*outp) {
-	  if ((*outp = malloc(32)) == 0)
+	  if ((*outp = (char*)malloc(32)) == 0)
 	      return -1;
       }
       (*outp)[0] = '\0';
@@ -12975,3 +13031,64 @@ const char* unac_version(void)
   return UNAC_VERSION;
 }
 
+#ifdef RECOLL_DATADIR
+void unac_set_except_translations(const char *spectrans)
+{
+    except_chars.clear();
+    except_trans.clear();
+    if (!spectrans || !spectrans[0])
+	return;
+
+    // The translation tables out of Unicode are in machine byte order (we
+    // just let the compiler read the values). 
+    // For the translation part, we need to choose our encoding in accordance )
+    // (16BE or 16LE depending on processor)
+    // On the contrary, the source char is always to be compared to
+    // the input text, which is encoded in UTF-16BE ... What a mess.
+    static const char *machinecoding = 0;
+    bool littleendian = true;
+    if (machinecoding == 0) {
+	const char*  charshort = "\001\002";
+	short *ip = (short *)charshort;
+	if (*ip == 0x0102) {
+	    littleendian = false;
+	    machinecoding = "UTF-16BE";
+	} else {
+	    littleendian = true;
+	    machinecoding = "UTF-16LE";
+	}
+    }
+
+    vector<string> vtrans;
+    stringToStrings(spectrans, vtrans);
+
+    for (vector<string>::iterator it = vtrans.begin();
+	 it != vtrans.end(); it++) {
+
+	/* Convert the whole thing to utf-16be/le according to endianness */
+	char *out = 0;
+	size_t outsize;
+	if (convert("UTF-8", machinecoding,
+		    it->c_str(), it->size(),
+		    &out, &outsize) != 0 || outsize < 2)
+	    continue;
+
+	/* The source char must be utf-16be as this is what we convert the
+	   input text to for internal processing */
+	unsigned short ch;
+	if (littleendian)
+	    ch = (out[1] << 8) | (out[0] & 0xff);
+	else
+	    ch = (out[0] << 8) | (out[1] & 0xff);
+
+	/* fprintf(stderr, "outsize %d Ch is 0x%hx\n", int(outsize), ch);*/
+	except_chars.push_back(ch);
+	// We keep ch as the first 2 bytes in the translation so that 
+	// both vectors sort identically
+	except_trans.push_back(string((const char *)out, outsize));
+	free(out);
+    }
+    std::sort(except_chars.begin(), except_chars.end());
+    std::sort(except_trans.begin(), except_trans.end());
+}
+#endif /* RECOLL_DATADIR */

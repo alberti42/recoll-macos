@@ -116,6 +116,22 @@ int unacfold_string(const char* charset,
 /* To be called before starting threads in mt programs */
 void unac_init_mt();
 
+#ifdef RECOLL_DATADIR
+#include <string>
+/** 
+ * Set exceptions for unaccenting, for characters which should not be
+ * handled according to what the Unicode tables say. For example "a
+ * with circle above" should not be stripped to a in swedish, etc.
+ * 
+ * @param spectrans defines the translations as a blank separated list of 
+ *  UTF-8 strings. Inside each string, the first character is the exception
+ *  the rest is the translation (which may be empty). You can use double 
+ *  quotes for translations which should include white space. The double-quote
+ *  can't be an exception character, deal with it...
+ */
+void unac_set_except_translations(const char *spectrans);
+#endif /* RECOLL_DATADIR */
+
 /*
  * Return unac version number.
  */

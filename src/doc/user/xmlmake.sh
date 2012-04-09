@@ -14,6 +14,9 @@
 # Wherever docbook.xsl and chunk.xsl live
 XSLDIR="/usr/local/share/xsl/docbook/"
 
+dochunky=1
+test $# -eq 1 && dochunky=0
+
 # Remove the SGML header and uncomment the XML one
 sed -e '\!//FreeBSD//DTD!d' \
     -e '\!DTD DocBook XML!s/<!--//' \
@@ -31,7 +34,7 @@ commonoptions="--stringparam section.autolabel 1 \
 "
 
 # Do the chunky thing
-eval xsltproc $commonoptions \
+test $dochunky -ne 0 && eval xsltproc $commonoptions \
     --stringparam use.id.as.filename 1 \
     "$XSLDIR/html/chunk.xsl" \
     usermanual.xml

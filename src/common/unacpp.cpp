@@ -88,6 +88,7 @@ using namespace std;
 
 #include "unacpp.h"
 #include "readfile.h"
+#include "rclinit.h"
 
 int main(int argc, char **argv)
 {
@@ -98,7 +99,12 @@ int main(int argc, char **argv)
     }
     const char *encoding = argv[1];
     string ifn = argv[2];
+    if (!ifn.compare("stdin"))
+	ifn.clear();
     const char *ofn = argv[3];
+
+    string reason;
+    (void)recollinit(RCLINIT_NONE, 0, 0, reason, 0);
 
     string odata;
     if (!file_to_string(ifn, odata)) {
@@ -111,7 +117,12 @@ int main(int argc, char **argv)
 	exit(1);
     }
     
-    int fd = open(ofn, O_CREAT|O_EXCL|O_WRONLY, 0666);
+    int fd;
+    if (strcmp(ofn, "stdout")) {
+	fd = open(ofn, O_CREAT|O_EXCL|O_WRONLY, 0666);
+    } else {
+	fd = 1;
+    }
     if (fd < 0) {
 	cerr << "Open/Create " << ofn << " failed: " << strerror(errno) 
 	     << endl;
