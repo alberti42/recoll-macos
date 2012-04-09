@@ -39,7 +39,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    You will only have to check or install supporting applications for the
    file types that you want to index beyond those that are natively processed
-   by Recoll (text, HTML, mail files, and a few others).
+   by Recoll (text, HTML, email files, and a few others).
 
    You should also maybe have a look at the configuration section (but this
    may not be necessary for a quick test with default parameters). Most
@@ -169,10 +169,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * Konqueror webarchive format with Python (uses the Tarfile module).
 
-     * mimehtml web archive format (support based on the mail filter, which
+     * mimehtml web archive format (support based on the email filter, which
        introduces some mild weirdness, but still usable).
 
-   Text, HTML, mail folders, and Scribus files are processed internally. Lyx
+   Text, HTML, email folders, and Scribus files are processed internally. Lyx
    is used to index Lyx files. Many filters need iconv and the standard sed
    and awk.
 
@@ -395,6 +395,22 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    White space is used for separation inside lists. List elements with
    embedded spaces can be quoted using double-quotes.
 
+   Encoding issues. Most of the configuration parameters are plain ASCII. Two
+   particular sets of values may cause encoding issues:
+
+     * File path parameters may contain non-ascii characters and should use
+       the exact same byte values as found in the file system directory.
+       Usually, this means that the configuration file should use the system
+       default locale encoding.
+
+     * The unac_except_trans parameter should be encoded in UTF-8. If your
+       system locale is not UTF-8, and you need to also specify non-ascii
+       file paths, this poses a difficulty because common text editors cannot
+       handle multiple encodings in a single file. In this relatively
+       unlikely case, you can edit the configuration file as two separate
+       text files with appropriate encodings, and concatenate them to create
+       the complete configuration.
+
 5.4.1. Main configuration file
 
    recoll.conf is the main configuration file. It defines things like what to
@@ -438,10 +454,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            The list in the default configuration does not exclude hidden
            directories (names beginning with a dot), which means that it may
            index quite a few things that you do not want. On the other hand,
-           mail user agents like thunderbird usually store messages in hidden
-           directories, and you probably want this indexed. One possible
-           solution is to have .* in skippedNames, and add things like
-           ~/.thunderbird or ~/.evolution in topdirs.
+           email user agents like thunderbird usually store messages in
+           hidden directories, and you probably want this indexed. One
+           possible solution is to have .* in skippedNames, and add things
+           like ~/.thunderbird or ~/.evolution in topdirs.
 
            Not even the file names are indexed for patterns in this list. See
            the recoll_noindex variable in mimemap for an alternative approach
@@ -588,10 +604,33 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            character set used is the one defined by the nls environment
            (LC_ALL, LC_CTYPE, LANG), or iso8859-1 if nothing is set.
 
+   unac_except_trans
+
+           This is a list of characters, encoded in UTF-8, which should be
+           handled specially when converting text to unaccented lowercase.
+           For example, in Swedish, the letter a with diaeresis has full
+           alphabet citizenship and should not be turned into an a. Each
+           element in the space-separated list has the special character as
+           first element and the translation following. The handling of both
+           the lowercase and upper-case versions of a character should be
+           specified, as appartenance to the list will turn-off both standard
+           accent and case processing. Example for Swedish:
+
+ unac_except_trans =  aaaa AAaa a:a: A:a: o:o: O:o:
+            
+
+           Note that the translation is not limited to a single character,
+           you could very well have something like u:ue in the list.
+
+           This parameter can't be defined for subdirectories, it is global,
+           because there is no way to do otherwise when querying. If you have
+           document sets which would need different values, you will have to
+           index and query them separately.
+
    maildefcharset
 
            This can be used to define the default character set specifically
-           for mail messages which don't specify it. This is mainly useful
+           for email messages which don't specify it. This is mainly useful
            for readpst (libpst) dumps, which are utf-8 but do not say so.
 
    localfields
@@ -777,14 +816,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    filter-specific sections
 
            Some filters may need specific configuration for handling fields.
-           Only the mail message filter currently has such a section (named
-           [mail]). It allows indexing arbitrary mail headers in addition to
+           Only the email message filter currently has such a section (named
+           [mail]). It allows indexing arbitrary email headers in addition to
            the ones indexed by default. Other such sections may appear in the
            future.
 
    Here follows a small example of a personal fields file. This would extract
-   a specific mail header and use it as a searchable field, with data
-   displayable inside result lists. (Side note: as the mail filter does no
+   a specific email header and use it as a searchable field, with data
+   displayable inside result lists. (Side note: as the email filter does no
    decoding on the values, only plain ascii headers can be indexed, and only
    the first occurrence will be used for headers that occur several times).
 

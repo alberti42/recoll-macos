@@ -163,9 +163,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 1.1. Giving it a try
 
    If you do not like reading manuals (who does?) and would like to give
-   Recoll a try, just perform installation and start the recoll user
-   interface, which will index your home directory by default, allowing you
-   to search immediately after indexing completes.
+   Recoll a try, just install the application and start the recoll graphical
+   user interface (GUI), which will ask to index your home directory by
+   default, allowing you to search immediately after indexing completes.
 
    Do not do this if your home directory contains a huge number of documents
    and you do not want to wait or are very short on disk space. In this case,
@@ -267,14 +267,15 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    want to adjust it later, which can be done either by editing the text
    files or by using configuration menus in the recoll GUI
 
-   Indexing is started automatically the first time you execute the recoll
-   search graphical user interface, or by executing the recollindex command.
+   The indexing process is started automatically the first time you execute
+   the recoll GUI. Indexing can also be performed by executing the
+   recollindex command.
 
-   Searches are usually performed inside the recoll graphical user interface
-   (GUI) program, which has many options to help you find what you are
-   looking for. However, there are other ways to perform Recoll searches:
-   mostly a command line tool, a Python programming interface, and a KDE KIO
-   slave module.
+   Searches are usually performed inside the recoll GUI, which has many
+   options to help you find what you are looking for. However, there are
+   other ways to perform Recoll searches: mostly a command line interface, a
+   Python programming interface, a KDE KIO slave module, and a Ubuntu Unity
+   Lens module.
 
      ----------------------------------------------------------------------
 
@@ -311,22 +312,22 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    files.
 
    Most file types, like HTML or word processing files, only hold one
-   document. Some file types, like mail folder files or zip archives, can
-   hold many individually indexed documents, which may in turn be themselves
-   compound ones. Such hierarchies can go quite deep, and Recoll has no
-   problem processing, for example, an ms-word document which would be an
-   attachment to an email message part of a folder file archived inside a zip
-   file...
+   document. Some file types, like email folders or zip archives, can hold
+   many individually indexed documents, which may in turn be themselves
+   compound ones. Such hierarchies can go quite deep, and Recoll can process,
+   for example, an ms-word document stored as an attachment to an email
+   message inside an email folder archived in a zip file...
 
-   Recoll indexing processes plain text, HTML, openoffice and e-mail files,
-   and a few others internally.
+   Recoll indexing processes plain text, HTML, OpenDocument
+   (Open/LibreOffice), email formats, and a few others internally.
 
    Other file types (ie: postscript, pdf, ms-word, rtf ...) need external
    applications for preprocessing. The list is in the installation section.
    After every indexing operation, Recoll updates a list of commands that
    would be needed for indexing existing files types. This list can be
-   displayed from the recoll File menu. It is stored in the missing text file
-   inside the configuration directory.
+   displayed by selecting the menu option File->Show Missing Helpers in the
+   recoll GUI. It is stored in the missing text file inside the configuration
+   directory.
 
    Without further configuration, Recoll will index all appropriate files
    from your home directory, with a reasonable set of defaults.
@@ -387,8 +388,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    files where only the tags would be indexed).
 
    Of course, images, sound and video do not increase the index size, which
-   means that it will be quite typical nowadays (2006), that even a big index
-   will be negligible against the total amount of data on the computer.
+   means that nowadays (2012), typically, even a big index will be negligible
+   against the total amount of data on the computer.
 
    The index data directory (xapiandb) only contains data that can be
    completely rebuilt by an index run (as long as the original documents
@@ -468,13 +469,18 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    recoll GUI running on this configuration (either as default, or by setting
    RECOLL_CONFDIR or the -c option.)
 
-   The interface is started from the Preferences menu. It has two main
-   panels. The first panel allows setting global variables, like the list of
-   top directories or the list of skipped paths. The second panel allows
-   setting variables that can be redefined for subdirectories. This second
-   panel has an initially empty list of customisation directories, to which
-   you can add. The variables are then set for the currently selected
-   directory (or at the top level if the empty line is selected).
+   The interface is started from the Preferences->Indexing Configuration menu
+   entry. It is divided in three tabs, Global parameters, Local parameters,
+   and Beagle web history, which is explained in the next section.
+
+   The first tab allows setting global variables, like the lists of top
+   directories, skipped paths, or stemming languages.
+
+   The second tab allows setting variables that can be redefined for
+   subdirectories. This second tab has an initially empty list of
+   customisation directories, to which you can add. The variables are then
+   set for the currently selected directory (or at the top level if the empty
+   line is selected).
 
    The meaning for most entries in the interface is self-evident and
    documented by a ToolTip popup on the text label. For more detail, you will
@@ -529,13 +535,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    start indexing (except if canceled).
 
    The recollindex indexing process can be interrupted by sending an
-   interrupt (^C, SIGINT) or terminate (SIGTERM) signal. Some time may elapse
-   before the process exits, because it needs to properly flush and close the
-   index. The indexing thread can be equivalently stopped from the menu.
+   interrupt (Ctrl-C, SIGINT) or terminate (SIGTERM) signal. Some time may
+   elapse before the process exits, because it needs to properly flush and
+   close the index. This can also be done from the recoll GUI File->Stop
+   Indexing menu entry.
 
    After such an interruption, the index will be somewhat inconsistent
    because some operations which are normally performed at the end of the
-   indexing pass will have been skipped (for exemple, the stemming and
+   indexing pass will have been skipped (for example, the stemming and
    spelling databases will be inexistant or out of date). You just need to
    restart indexing at a later time to restore consistency. The indexing will
    restart at the interruption point (the full file tree will be traversed,
@@ -677,8 +684,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        location in the file system.
 
    In most cases, you can enter the terms as you think them, even if they
-   contain embedded punctuation or other non-textual characters. For exemple,
-   Recoll can handle things like e-mail addresses, or arbitrary cut and paste
+   contain embedded punctuation or other non-textual characters. For example,
+   Recoll can handle things like email addresses, or arbitrary cut and paste
    from another text window, punctation and all.
 
    The main case where you should enter text differently from how it is
@@ -863,7 +870,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    appear for an email which is part of an mbox folder file, but that you
    can't actually visualize the folder (there will be an error dialog if you
    try). Recoll is unfortunately not yet smart enough to disable the entry in
-   this case. In other cases, the Open option makes sense, for exemple to
+   this case. In other cases, the Open option makes sense, for example to
    start a chm viewer on the parent document for a help page.
 
      ----------------------------------------------------------------------
@@ -907,8 +914,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Starting another search and requesting a preview will create a new preview
    window. The old one stays open until you close it.
 
-   You can close a preview tab by typing ^W (Ctrl + W) in the window. Closing
-   the last tab for a window will also close the window.
+   You can close a preview tab by typing Ctrl-W (Ctrl + W) in the window.
+   Closing the last tab for a window will also close the window.
 
    Of course you can also close a preview window by using the window manager
    button in the top of the frame.
@@ -924,18 +931,18 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    next/previous occurrence. You can also type F3 inside the text area to get
    to the next occurrence.
 
-   If you have a search string entered and you use ^Up/^Down to browse the
-   results, the search is initiated for each successive document. If the
-   string is found, the cursor will be positioned at the first occurrence of
-   the search string.
+   If you have a search string entered and you use Ctrl-Up/Ctrl-Down to
+   browse the results, the search is initiated for each successive document.
+   If the string is found, the cursor will be positioned at the first
+   occurrence of the search string.
 
    A right-click menu in the text area allows switching between displaying
    the main text or the contents of fields associated to the document (ie:
    author, abtract, etc.). This is especially useful in cases where the term
    match did not occur in the main text but in one of the fields.
 
-   You can print the current preview window contents by typing ^P (Ctrl + P)
-   in the window text.
+   You can print the current preview window contents by typing Ctrl-P (Ctrl +
+   P) in the window text.
 
      ----------------------------------------------------------------------
 
@@ -1281,14 +1288,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    list Preview link to force the creation of a preview window instead of a
    new tab in the existing one.
 
-   Closing previews. Entering ^W in a tab will close it (and, for the last
-   tab, close the preview window). Entering Esc will close the preview window
-   and all its tabs.
+   Closing previews. Entering Ctrl-W in a tab will close it (and, for the
+   last tab, close the preview window). Entering Esc will close the preview
+   window and all its tabs.
 
-   Printing previews. Entering ^P in a preview window will print the
+   Printing previews. Entering Ctrl-P in a preview window will print the
    currently displayed text.
 
-   Quitting. Entering ^Q almost anywhere will close the application.
+   Quitting. Entering Ctrl-Q almost anywhere will close the application.
 
      ----------------------------------------------------------------------
 
@@ -1312,7 +1319,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        to the whole Recoll application on startup. The default value is
        empty, but there is a skeleton style sheet (recoll.qss) inside the
        /usr/share/recoll/examples directory. Using a style sheet, you can
-       change most Recoll graphical parameters: colors, fonts, etc. See the
+       change most recoll graphical parameters: colors, fonts, etc. See the
        sample file for a few simple examples.
 
      * Maximum text size highlighted for preview Inserting highlights on
@@ -1467,7 +1474,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    No more detail will be given about the header part (only useful with the
    WebKit build), if there are restrictions to what you can do, they are
    beyond this author's HTML/CSS/Javascript abilities... There are a few
-   exemples on the page about customising the result list on the Recoll web
+   examples on the page about customising the result list on the Recoll web
    site.
 
      ----------------------------------------------------------------------
@@ -1702,7 +1709,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    the document).
 
    An element is composed of an optional field specification, and a value,
-   separated by a colon. Exemple: Beatles, author:balzac, dc:title:grandet
+   separated by a colon. Example: Beatles, author:balzac, dc:title:grandet
 
    The colon, if present, means "contains". Xesam defines other relations,
    which are not supported for now.
@@ -1721,7 +1728,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    significant), so that title:"prejudice pride" is not the same as
    title:prejudice title:pride, and is unlikely to find a result.
 
-   Modifiers can be set on a phrase clause, for exemple to specify a
+   Modifiers can be set on a phrase clause, for example to specify a
    proximity search (unordered). See the modifier section.
 
    Recoll currently manages the following default fields:
@@ -1751,7 +1758,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        dir:share/doc would match either /usr/share/doc or
        /usr/local/share/doc
 
-     * size for filtering the results on file size. Exemple: size<10000. You
+     * size for filtering the results on file size. Example: size<10000. You
        can use <, > or = as operators. You can specify a range like the
        following: size>100 size<1000. The usual k/K, m/M, g/G, t/T can be
        used as (decimal) multipliers. Ex: size>1k to search for files bigger
@@ -1766,7 +1773,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        missing. Dates are specified as YYYY-MM-DD. The days and months parts
        may be missing. If the / is present but an element is missing, the
        missing element is interpreted as the lowest or highest date in the
-       index. Exemples:
+       index. Examples:
 
           * 2001-03-01/2002-05-01 the basic syntax for an interval of dates.
 
@@ -2009,7 +2016,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    uninteresting repeated keywords (ie: Subject: for email) when indexing.
    This is not essential.
 
-   You should look to one of the simple filters, for exemple rclps for a
+   You should look to one of the simple filters, for example rclps for a
    starting point.
 
    Don't forget to make your filter executable before testing !
@@ -2437,7 +2444,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    You will only have to check or install supporting applications for the
    file types that you want to index beyond those that are natively processed
-   by Recoll (text, HTML, mail files, and a few others).
+   by Recoll (text, HTML, email files, and a few others).
 
    You should also maybe have a look at the configuration section (but this
    may not be necessary for a quick test with default parameters). Most
@@ -2559,10 +2566,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * Konqueror webarchive format with Python (uses the Tarfile module).
 
-     * mimehtml web archive format (support based on the mail filter, which
+     * mimehtml web archive format (support based on the email filter, which
        introduces some mild weirdness, but still usable).
 
-   Text, HTML, mail folders, and Scribus files are processed internally. Lyx
+   Text, HTML, email folders, and Scribus files are processed internally. Lyx
    is used to index Lyx files. Many filters need iconv and the standard sed
    and awk.
 
@@ -2766,6 +2773,22 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    White space is used for separation inside lists. List elements with
    embedded spaces can be quoted using double-quotes.
 
+   Encoding issues. Most of the configuration parameters are plain ASCII. Two
+   particular sets of values may cause encoding issues:
+
+     * File path parameters may contain non-ascii characters and should use
+       the exact same byte values as found in the file system directory.
+       Usually, this means that the configuration file should use the system
+       default locale encoding.
+
+     * The unac_except_trans parameter should be encoded in UTF-8. If your
+       system locale is not UTF-8, and you need to also specify non-ascii
+       file paths, this poses a difficulty because common text editors cannot
+       handle multiple encodings in a single file. In this relatively
+       unlikely case, you can edit the configuration file as two separate
+       text files with appropriate encodings, and concatenate them to create
+       the complete configuration.
+
      ----------------------------------------------------------------------
 
   5.4.1. Main configuration file
@@ -2813,10 +2836,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            The list in the default configuration does not exclude hidden
            directories (names beginning with a dot), which means that it may
            index quite a few things that you do not want. On the other hand,
-           mail user agents like thunderbird usually store messages in hidden
-           directories, and you probably want this indexed. One possible
-           solution is to have .* in skippedNames, and add things like
-           ~/.thunderbird or ~/.evolution in topdirs.
+           email user agents like thunderbird usually store messages in
+           hidden directories, and you probably want this indexed. One
+           possible solution is to have .* in skippedNames, and add things
+           like ~/.thunderbird or ~/.evolution in topdirs.
 
            Not even the file names are indexed for patterns in this list. See
            the recoll_noindex variable in mimemap for an alternative approach
@@ -2965,10 +2988,33 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            character set used is the one defined by the nls environment
            (LC_ALL, LC_CTYPE, LANG), or iso8859-1 if nothing is set.
 
+   unac_except_trans
+
+           This is a list of characters, encoded in UTF-8, which should be
+           handled specially when converting text to unaccented lowercase.
+           For example, in Swedish, the letter a with diaeresis has full
+           alphabet citizenship and should not be turned into an a. Each
+           element in the space-separated list has the special character as
+           first element and the translation following. The handling of both
+           the lowercase and upper-case versions of a character should be
+           specified, as appartenance to the list will turn-off both standard
+           accent and case processing. Example for Swedish:
+
+ unac_except_trans =  aaaa AAaa a:a: A:a: o:o: O:o:
+            
+
+           Note that the translation is not limited to a single character,
+           you could very well have something like u:ue in the list.
+
+           This parameter can't be defined for subdirectories, it is global,
+           because there is no way to do otherwise when querying. If you have
+           document sets which would need different values, you will have to
+           index and query them separately.
+
    maildefcharset
 
            This can be used to define the default character set specifically
-           for mail messages which don't specify it. This is mainly useful
+           for email messages which don't specify it. This is mainly useful
            for readpst (libpst) dumps, which are utf-8 but do not say so.
 
    localfields
@@ -3160,14 +3206,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    filter-specific sections
 
            Some filters may need specific configuration for handling fields.
-           Only the mail message filter currently has such a section (named
-           [mail]). It allows indexing arbitrary mail headers in addition to
+           Only the email message filter currently has such a section (named
+           [mail]). It allows indexing arbitrary email headers in addition to
            the ones indexed by default. Other such sections may appear in the
            future.
 
    Here follows a small example of a personal fields file. This would extract
-   a specific mail header and use it as a searchable field, with data
-   displayable inside result lists. (Side note: as the mail filter does no
+   a specific email header and use it as a searchable field, with data
+   displayable inside result lists. (Side note: as the email filter does no
    decoding on the values, only plain ascii headers can be indexed, and only
    the first occurrence will be used for headers that occur several times).
 
