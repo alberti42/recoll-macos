@@ -1335,13 +1335,13 @@ fvwm
       be adjusted quite frequently.</para>
 
       <para>The main index (defined by
-      <literal>RECOLL_CONFDIR</literal>) is always active. If this is
+      <envar>RECOLL_CONFDIR</envar>) is always active. If this is
       undesirable, you can set up your base configuration to index
       an empty directory.</para>
 
       <para>As building the set of all indexes can be a little tedious
       when done through the user interface, you can use the
-      <literal>RECOLL_EXTRA_DBS</literal> environment
+      <envar>RECOLL_EXTRA_DBS</envar> environment
       variable to provide an initial set. This might typically be
       set up by a system administrator so that every user does not
       have to do it. The variable should define a colon-separated list
@@ -1359,6 +1359,24 @@ fvwm
       effect with the directory filter in advanced search, but
       multiple indexes will have much better performance and may be
       worth the trouble.</para>
+
+     <para>Another environment variable, 
+        <envar>RECOLL_ACTIVE_EXTRA_DBS</envar> allows adding to the active
+        list of indexes. This variable was suggested and implemented by a
+        &RCL; user. It is mostly useful if you use scripts to mount
+        external volumes with &RCL; indexes. By using
+        <envar>RECOLL_EXTRA_DBS</envar> and
+        <envar>RECOLL_ACTIVE_EXTRA_DBS</envar>, you can add and activate
+        the index for the mounted volume when starting
+        <command>recoll</command>.
+       </para>
+        
+     <para><envar>RECOLL_ACTIVE_EXTRA_DBS</envar> is available for
+        &RCL; versions 1.17.2 and later. A change was made in the same
+        update so that <command>recoll</command> will
+        automatically deactivate unreachable indexes when starting
+        up.</para>
+
 
     </sect2>
 
