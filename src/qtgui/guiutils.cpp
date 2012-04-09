@@ -302,8 +302,45 @@ void rwSettings(bool writing)
 		prefs.allExtraDbs.push_back(dbdir);
 	    }
 	}
-	prefs.activeExtraDbs = g_dynconf->getStringList(actEdbsSk);
+
+        // Get the remembered "active external indexes":
+        prefs.activeExtraDbs = g_dynconf->getStringList(actEdbsSk);
+
+	// Clean up the list: remove directories which are not
+	// actually there: useful for removable volumes.
+	for (list<string>::iterator it = prefs.activeExtraDbs.begin();
+	     it != prefs.activeExtraDbs.end();) {
+	    if (!Rcl::Db::testDbDir(*it)) {
+		LOGINFO(("Not a xapian index: [%s]\n", it->c_str()));
+		it = prefs.activeExtraDbs.erase(it);
+	    } else {
+		it++;
+	    }
+	}
+
+	// Get active db directives from the environment. This can only add to
+	// the remembered and cleaned up list
+        const char *cp4Act;
+        if ((cp4Act = getenv("RECOLL_ACTIVE_EXTRA_DBS")) != 0) {
+            vector<string> dbl;
+            stringToTokens(cp4Act, dbl, ":");
+            for (vector<string>::iterator dit = dbl.begin(); dit != dbl.end();
+                 dit++) {
+                string dbdir = path_canon(*dit);
+                path_catslash(dbdir);
+                if (std::find(prefs.activeExtraDbs.begin(),
+                              prefs.activeExtraDbs.end(), dbdir) !=
+                    prefs.activeExtraDbs.end())
+                    continue;
+                if (!Rcl::Db::testDbDir(dbdir)) {
+                    LOGERR(("Not a xapian index: [%s]\n", dbdir.c_str()));
+                    continue;
+                }
+                prefs.activeExtraDbs.push_back(dbdir);
+            } //for
+        } //if
     }
+
 #if 0
     {
 	list<string>::const_iterator it;
