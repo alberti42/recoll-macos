@@ -3593,6 +3593,28 @@ while query.next >= 0 and query.next < nres:
         List elements with embedded spaces can be quoted using
         double-quotes.</para>
 
+      <formalpara><title>Encoding issues</title>
+        <para>Most of the configuration parameters are plain ASCII. Two
+        particular sets of values may cause encoding issues:</para>
+
+        <itemizedlist>
+        <listitem><para>File path parameters may contain non-ascii
+        characters and should use the exact same byte values as found in
+        the file system directory. Usually, this means that the
+        configuration file should use the system default locale
+        encoding.</para>
+        </listitem>
+        <listitem><para>The <literal>unac_except_trans</literal> parameter
+        should be encoded in UTF-8. If your system locale is not UTF-8, and
+        you need to also specify non-ascii file paths, this poses a
+        difficulty because common text editors cannot handle multiple
+        encodings in a single file. In this relatively unlikely case, you
+        can edit the configuration file as two separate text files with
+        appropriate encodings, and concatenate them to create the complete
+        configuration.</para>
+        </listitem>
+      </itemizedlist>
+        
       <sect2 id="rcl.install.config.recollconf">
         <title>Main configuration file</title>
 
@@ -3853,16 +3875,17 @@ skippedPaths = ~/somedir/&lowast;.txt
          </varlistentry>
 
           <varlistentry><term><literal>unac_except_trans</literal></term>
-            <listitem><para>This is a list of characters which should be
-            handled specially when converting text to unaccented lowercase.
-            For example, in Swedish, the letter <literal>a with diaeresis
-            </literal> has full alphabet citizenship and should not be
-            turned into an <literal>a</literal>. Each element in the
-            space-separated list has the special character as first element
-            and the translation following. The handling of both the
-            lowercase and upper-case versions of a character should be
-            specified, as appartenance to the list will turn-off both
-            standard accent and case processing. Example for Swedish:</para>
+            <listitem><para>This is a list of characters, encoded in UTF-8,
+            which should be handled specially when converting text to
+            unaccented lowercase.  For example, in Swedish, the letter
+            <literal>a with diaeresis </literal> has full alphabet
+            citizenship and should not be turned into an
+            <literal>a</literal>. Each element in the space-separated list
+            has the special character as first element and the translation
+            following. The handling of both the lowercase and upper-case
+            versions of a character should be specified, as appartenance to
+            the list will turn-off both standard accent and case
+            processing. Example for Swedish:</para>
                 <programlisting>
 unac_except_trans =  åå Åå ää Ää öö Öö
             </programlisting>

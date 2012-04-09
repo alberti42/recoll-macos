@@ -65,6 +65,17 @@ indexstemminglanguages = english
 # match your LANG and is not 8859-1, set it here.
 # defaultcharset = iso-8859-1
 
+# A list of characters, encoded in UTF-8, which should be handled specially
+# when converting text to unaccented lowercase. For example, in Swedish,
+# the letter a with diaeresis has full alphabet citizenship and should not
+# be turned into an a. 
+# Each element in the space-separated list has the special character as
+# first element and the translation following. The handling of both the
+# lowercase and upper-case versions of a character should be specified, as
+# appartenance to the list will turn-off both standard accent and case
+# processing. Example for Swedish:
+# unac_except_trans =  åå Åå ää Ää öö Öö
+
 # Where to store the database (directory). This may be an absolute path,
 # else it is taken as relative to the configuration directory (-c argument
 # or $RECOLL_CONFDIR). 
