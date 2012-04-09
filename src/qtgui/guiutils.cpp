@@ -302,7 +302,28 @@ void rwSettings(bool writing)
 		prefs.allExtraDbs.push_back(dbdir);
 	    }
 	}
-	prefs.activeExtraDbs = g_dynconf->getStringList(actEdbsSk);
+
+        //Get the "active external indexes":
+        prefs.activeExtraDbs = g_dynconf->getStringList(actEdbsSk);
+        const char *cp4Act;
+        if ((cp4Act = getenv("RECOLL_ACTIVE_EXTRA_DBS")) != 0) {
+            vector<string> dbl;
+            stringToTokens(cp4Act, dbl, ":");
+            for (vector<string>::iterator dit = dbl.begin(); dit != dbl.end();
+                 dit++) {
+                string dbdir = path_canon(*dit);
+                path_catslash(dbdir);
+                if (std::find(prefs.activeExtraDbs.begin(),
+                              prefs.activeExtraDbs.end(), dbdir) !=
+                    prefs.activeExtraDbs.end())
+                    continue;
+                if (!Rcl::Db::testDbDir(dbdir)) {
+                    LOGERR(("Not a xapian index: [%s]\n", dbdir.c_str()));
+                    continue;
+                }
+                prefs.activeExtraDbs.push_back(dbdir);
+            } //for
+        } //if
     }
 #if 0
     {
