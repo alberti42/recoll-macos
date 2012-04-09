@@ -107,6 +107,7 @@ doc/user/
 doc/user/HTML.manifest
 doc/user/Makefile
 doc/user/bldloop
+doc/user/docbook-xsl.css
 doc/user/docbook.css
 doc/user/index.html
 doc/user/rcl.indexing.beaglequeue.html
@@ -136,6 +137,7 @@ doc/user/usermanual.html
 doc/user/usermanual.html-text
 doc/user/usermanual.sgml
 doc/user/usermanual.txt
+doc/user/xmlmake.sh
 filters/
 filters/injectcommon.sh
 filters/rclabw
