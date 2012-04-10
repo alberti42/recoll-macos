@@ -297,7 +297,7 @@
 	the <filename>xapiandb</filename> directory (see 
 	<link linkend="rcl.indexing.storage">next section</link>), or, 
 	alternatively, start the next <command>recollindex</command> with the 
-	<literal>-z</literal> option, which will reset the database before
+	<option>-z</option> option, which will reset the database before
 	indexing.</para>
 
 
@@ -315,8 +315,8 @@
       <itemizedlist>
 
           <listitem><para>You can specify a different configuration
-          directory by setting the <literal>RECOLL_CONFDIR</literal>
-          environment variable, or using the <literal>-c</literal>
+          directory by setting the <envar>RECOLL_CONFDIR</envar>
+          environment variable, or using the <option>-c</option>
           option to the &RCL; commands. This method would typically be
           used to index different areas of the file system to
           different indexes. For example, if you were to issue the
@@ -339,7 +339,7 @@ recoll
 
           </listitem>
           <listitem><para>You can also specify a different storage
-          location for the index by setting the <literal>dbdir</literal>
+          location for the index by setting the <varname>dbdir</varname>
           parameter in the configuration file 
           (see the <link linkend="rcl.install.config.recollconf">configuration
           section</link>). This method would mainly be of use if you
@@ -385,7 +385,7 @@ recoll
           explicitly delete the old index, then run a normal indexing
           process.</para>
 
-        <para>Unfortunately, using the <literal>-z</literal> option to
+        <para>Unfortunately, using the <option>-z</option> option to
           <command>recollindex</command> is not sufficient to change the
           format, you will have to delete all files inside the index
           directory (typically <filename>~/.recoll/xapiandb</filename>)
@@ -460,7 +460,7 @@ recoll
         <para>Most parameters for a given indexing configuration can
         be set from a <command>recoll</command> GUI running on this
         configuration (either as default, or by setting
-        <literal>RECOLL_CONFDIR</literal> or the <literal>-c</literal>
+        <envar>RECOLL_CONFDIR</envar> or the <option>-c</option>
         option.)</para> 
 
         <para>The interface is started from the
@@ -515,7 +515,7 @@ recoll
 
       <para>This feature can be enabled in the GUI indexing configuration
 	panel, or by editing the configuration file (set
-	<literal>processbeaglequeue</literal> to 1).</para>
+	<varname>processbeaglequeue</varname> to 1).</para>
 
       <para>There are more recent instructions about how to find and
       install the <application>Firefox</application> extension on the 
@@ -543,8 +543,8 @@ recoll
           from the GUI, the indexing will run on the same configuration
           <command>recoll</command> was started on. When started from the
           command line, <command>recollindex</command> will use the
-          <literal>RECOLL_CONFDIR</literal> variable or accept a
-          <literal>-c</literal> <replaceable>confdir</replaceable> option
+          <envar>RECOLL_CONFDIR</envar> variable or accept a
+          <option>-c</option> <replaceable>confdir</replaceable> option
           to specify a non-default configuration directory.</para>
 
         <para>If the <command>recoll</command> program finds no index
@@ -572,15 +572,15 @@ recoll
         <para><command>recollindex</command> has a number of other options
           which are described in its man page.</para>
 
-        <para>Of special interest maybe are the <literal>-i</literal> and
-          <literal>-f</literal> options. <literal>-i</literal> allows
+        <para>Of special interest maybe are the <option>-i</option> and
+          <option>-f</option> options. <option>-i</option> allows
           indexing an explicit list of files (given as command line
-          parameters or read on stdin). <literal>-f</literal> tells
+          parameters or read on stdin). <option>-f</option> tells
           <command>recollindex</command> to ignore file selection
           parameters from the configuration. Together, these options allow
           building a custom file selection process for some area of the
           file system, by adding the top directory to the
-          <literal>skippedPaths</literal> list and using an appropriate
+          <varname>skippedPaths</varname> list and using an appropriate
           file selection method to build the file list to be fed to
           <literal>recollindex&nbsp;-if</literal> .</para>
 
@@ -671,16 +671,16 @@ fvwm
         indexing daemon will monitor the state of the X11 session, and
         exit when it finishes, it is not necessary to kill it
         explicitly. (The X11 server monitoring can be disabled with option
-        <literal>-x</literal> to <command>recollindex</command>).</para>
+        <option>-x</option> to <command>recollindex</command>).</para>
 
       <para>If you use the daemon completely out of an X11 session, you
-        need to add option <literal>-x</literal> to disable  X11 session
+        need to add option <option>-x</option> to disable  X11 session
         monitoring (else the daemon will not start).</para>
 
       <para>By default, the messages from the indexing daemon will be
         discarded. You may want to change this by setting the
-        <literal>daemlogfilename</literal> and
-        <literal>daemloglevel</literal> configuration parameters. Also the
+        <varname>daemlogfilename</varname> and
+        <varname>daemloglevel</varname> configuration parameters. Also the
         log file will only be truncated when the daemon starts. If the
         daemon runs permanently, the log file may grow quite big, depending
         on the log level.</para>
@@ -688,8 +688,8 @@ fvwm
       <para>When building &RCL;, the real time indexing support can be
         customised during package <link
         linkend="rcl.install.building.build">configuration</link> with the
-        <literal>--with[out]-fam</literal> or
-        <literal>--with[out]-inotify</literal> options.  The default is
+        <option>--with[out]-fam</option> or
+        <option>--with[out]-inotify</option> options.  The default is
         currently to include <application>inotify</application> monitoring
         on systems that support it, and, as of recoll 1.17,
         <application>gamin</application> support on FreeBSD.</para>
@@ -712,7 +712,7 @@ fvwm
 
         <para>&RCL; provides a configuration option to specify the minimum
         time before which a file, specified by a wildcard pattern, cannot be
-        reindexed. See the <literal>mondelaypatterns</literal> parameter in
+        reindexed. See the <varname>mondelaypatterns</varname> parameter in
         the <link linkend="rcl.install.config.recollconf.misc">
          configuration section</link>.</para>
 
@@ -1312,8 +1312,8 @@ fvwm
       using several configuration directories which are usually set to
       index different areas of the file system. A specific index can
       be selected for updating or searching, using the
-      <literal>RECOLL_CONFDIR</literal> environment variable or the
-      <literal>-c</literal> option to <command>recoll</command> and
+      <envar>RECOLL_CONFDIR</envar> environment variable or the
+      <option>-c</option> option to <command>recoll</command> and
       <command>recollindex</command>.</para>
 
       <para>A <command>recollindex</command> program instance can only
@@ -1522,9 +1522,9 @@ fvwm
 
       <para>Phrase searches can strongly slow down a query if most of the
         terms in the phrase are common. This is why the
-        <literal>autophrase</literal> option is off by default for &RCL;
+        <varname>autophrase</varname> option is off by default for &RCL;
         versions before 1.17. As of version 1.17,
-        <literal>autophrase</literal> is on by default, but very common
+        <varname>autophrase</varname> is on by default, but very common
         terms will be removed from the constructed phrase. The removal
         threshold can be adjusted from the search preferences.</para>
 
@@ -2070,7 +2070,7 @@ fvwm
     <para>There are several ways to obtain search results as a text
     stream, without a graphical interface:</para>
     <itemizedlist>
-      <listitem><para>By passing option <literal>-t</literal> to the
+      <listitem><para>By passing option <option>-t</option> to the
       <command>recoll</command> program.</para>
       </listitem>
       <listitem><para>By using the <command>recollq</command> program.</para>
@@ -2082,7 +2082,7 @@ fvwm
     </itemizedlist>
 
     <para>The first two methods work in the same way and accept/need the same
-    arguments (except for the additional <literal>-t</literal> to
+    arguments (except for the additional <option>-t</option> to
     <command>recoll</command>). The query to be executed is specified
     as command line arguments.</para> 
 
@@ -2158,7 +2158,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
       <para>If the results of a query language search puzzle you and you
         doubt what has been actually searched for, you can use the GUI
-        <literal>show query</literal> link at the top of the result list to
+        <literal>Show Query</literal> link at the top of the result list to
         check the exact query which was finally executed by Xapian.</para>
 
       <para>Here follows a sample request that we are going to
@@ -2489,7 +2489,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
         <para>It is surprisingly convenient to be able to show or hide the
           &RCL; GUI with a single keystroke. Recoll comes with a small
-          Python script, based on the <literal>libwnck</literal> window
+          Python script, based on the <application>libwnck</application> window
           manager interface library, which will allow you to do just
           this. The detailed instructions are on
           <ulink url="http://bitbucket.org/medoc/recoll/wiki/HotRecoll">
@@ -2501,8 +2501,8 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         <title>The KDE Kicker Recoll applet</title>
 
         <para>The &RCL; source tree contains the source code to the
-        <literal>recoll_applet</literal>, a small application derived
-        from the <literal>find_applet</literal>. This can be used to
+        <application>recoll_applet</application>, a small application derived
+        from the <application>find_applet</application>. This can be used to
         add a small &RCL; launcher to the KDE panel.</para>
 
         <para>The applet is not automatically built with the main &RCL;
@@ -2515,12 +2515,12 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         <para>You can then add the applet to the panel by right-clicking the
         panel and choosing the <guilabel>Add applet</guilabel> entry.</para>
 
-        <para>The <literal>recoll_applet</literal> has a small text window
-         where you can type a &RCL; query (in query language form), and an
-         icon which can be used to restrict the search to certain types of
-         files. It is quite primitive, and launches a new recoll GUI instance
-         every time (even if it is already running). You may find it useful
-         anyway.</para>
+        <para>The <application>recoll_applet</application> has a small text
+         window where you can type a &RCL; query (in query language form),
+         and an icon which can be used to restrict the search to certain
+         types of files. It is quite primitive, and launches a new recoll
+         GUI instance every time (even if it is already running). You may
+         find it useful anyway.</para>
 
       </sect2>
 
@@ -2601,7 +2601,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       extract metadata from the html header and use it for field 
       searches.</link>.</para>
 
-      <para>The <literal>RECOLL_FILTER_FORPREVIEW</literal> environment
+      <para>The <envar>RECOLL_FILTER_FORPREVIEW</envar> environment
         variable (values <literal>yes</literal>, <literal>no</literal>)
         tells the filter if the operation is for indexing or
         previewing. Some filters use this to output a slightly different
@@ -2609,8 +2609,8 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         <literal>Subject:</literal> for email) when indexing. This is not
         essential.</para>
 
-      <para>You should look to one of the simple filters, for example
-        <literal>rclps</literal> for a starting point.</para>
+      <para>You should look at one of the simple filters, for example
+        <command>rclps</command> for a starting point.</para>
 
         <para>Don't forget to make your filter executable before 
          testing !</para>
@@ -2863,7 +2863,7 @@ application/x-chm = execm rclchm
 </screen>
 	  There is no significant disadvantage in using PIC objects
 	  for the main Recoll executables, so you can use the
-	  <literal>--enable-pic</literal> option for the main build
+	  <option>--enable-pic</option> option for the main build
 	  too.</para> 
 
 	<para>The <filename>python/recoll/</filename> directory
@@ -3385,29 +3385,29 @@ while query.next >= 0 and query.next < nres:
 
       <para>Depending on the <application>Qt&nbsp;3</application>
       configuration on your system, you may have to set the
-      <literal>QTDIR</literal> and <literal>QMAKESPECS</literal>
+      <envar>QTDIR</envar> and <envar>QMAKESPECS</envar>
       variables in your environment:</para>
         <itemizedlist>
-          <listitem><para><literal>QTDIR</literal> should point to the
+          <listitem><para><envar>QTDIR</envar> should point to the
           directory above the one that holds the qt include files (ie:
           if <filename>qt.h</filename> is
           <filename>/usr/local/qt/include/qt.h</filename>, QTDIR
           should be <filename>/usr/local/qt</filename>).</para>
           </listitem>
-          <listitem><para><literal>QMAKESPECS</literal> should
+          <listitem><para><envar>QMAKESPECS</envar> should
           be set to the name of one of the
-          <application>qt</application> mkspecs sub-directories (ie:
-          linux-g++).</para> 
+          <application>Qt</application> mkspecs sub-directories (ie:
+          <filename>linux-g++</filename>).</para> 
           </listitem>
         </itemizedlist>
 
-        <para>On many Linux systems, <literal>QTDIR</literal> is set
-        by the login scripts, and <literal>QMAKESPECS</literal> is not
+        <para>On many Linux systems, <envar>QTDIR</envar> is set
+        by the login scripts, and <envar>QMAKESPECS</envar> is not
         needed because there is a <filename>default</filename> link in
         <filename>mkspecs/</filename>.</para>
 
-	<para>Neither <literal>QTDIR</literal> nor 
-	<literal>QMAKESPECS</literal> should be needed with 
+	<para>Neither <envar>QTDIR</envar> nor 
+	<envar>QMAKESPECS</envar> should be needed with 
         Qt&nbsp;4, configuration details are entirely determined by 
 	<command>qmake</command> (which is quite often installed as 
 	<command>qmake-qt4</command>).</para> 
@@ -3415,28 +3415,28 @@ while query.next >= 0 and query.next < nres:
         <formalpara><title>Configure options:</title>
 	  <para>
         <itemizedlist>
-	  <listitem><para><literal>--without-aspell</literal> 
+	  <listitem><para><option>--without-aspell</option> 
             will disable the code for phonetic matching of search
             terms. </para>
           </listitem>
-	  <listitem><para><literal>--with-fam</literal> or
-            <literal>--with-inotify</literal> will enable the code for
+	  <listitem><para><option>--with-fam</option> or
+            <option>--with-inotify</option> will enable the code for
             real time indexing. Inotify support is enabled by default on
             recent Linux systems.</para>
 	  </listitem>
-          <listitem><para><literal>--disable-webkit</literal> is available
+          <listitem><para><option>--disable-webkit</option> is available
               from version 1.17 to implement the result list with a
               <application>Qt</application> QTextBrowser instead of a
               WebKit widget if you do not or can't depend on the
               latter.</para>
           </listitem>
-	  <listitem><para><literal>--enable-xattr</literal> will enable
+	  <listitem><para><option>--enable-xattr</option> will enable
  	    code to fetch data from file extended attributes. This is only
 	    useful is some application stores data in there, and also needs
 	    some simple configuration (see comments in the
 	    <filename>fields</filename> configuration file).</para>
 	  </listitem>
-	  <listitem><para><literal>--enable-camelcase</literal> will enable
+	  <listitem><para><option>--enable-camelcase</option> will enable
  	    splitting <replaceable>camelCase</replaceable> words. This
 	    is not enabled by default as it has the unfortunate
 	    side-effect of making some phrase searches quite
@@ -3445,24 +3445,24 @@ while query.next >= 0 and query.next < nres:
 	    <literal>"my sql manual"</literal> but not <literal>"mysql
 	    manual"</literal> (only inside phrase searches).</para>
 	  </listitem>
-	  <listitem><para><literal>--with-file-command</literal> Specify
+	  <listitem><para><option>--with-file-command</option> Specify
 	    the version of the 'file' command to use (ie:
             --with-file-command=/usr/local/bin/file). Can be useful to
             enable the gnu version on systems where the native one is
             bad.</para> 
 	  </listitem>
-	  <listitem><para><literal>--disable-qtgui</literal> Disable the Qt
+	  <listitem><para><option>--disable-qtgui</option> Disable the Qt
 	    interface. Will allow building the indexer and the command line
 	    search program in absence of a Qt environment.</para> 
 	  </listitem>
-	  <listitem><para><literal>--disable-x11mon</literal> Disable 
+	  <listitem><para><option>--disable-x11mon</option> Disable 
 	    X11 connection monitoring inside recollindex. Together with
 	    --disable-qtgui, this allows building recoll without Qt and
 	    X11.</para>
 	  </listitem>
 	  <listitem><para>Of course the usual 
 	  <application>autoconf</application> <command>configure</command>
-	  options, like <literal>--prefix</literal> apply.</para> 
+	  options, like <option>--prefix</option> apply.</para> 
 	  </listitem>
          </itemizedlist>
          </para>
@@ -3502,7 +3502,7 @@ while query.next >= 0 and query.next < nres:
 	system default or the value which was
         specified when executing <command>configure</command> (as in 
 	<userinput>configure --prefix /some/path</userinput>), you
-        will have to set the <literal>RECOLL_DATADIR</literal>
+        will have to set the <envar>RECOLL_DATADIR</envar>
         environment variable to indicate where the shared data is to
         be found (ie for (ba)sh: 
 	<userinput>export RECOLL_DATADIR=/some/path/share/recoll</userinput>).
@@ -3551,7 +3551,7 @@ while query.next >= 0 and query.next < nres:
         directory.</para> 
 
       <para>This location can be changed, or others can be added with the
-        <literal>RECOLL_CONFDIR</literal> environment variable or the
+        <envar>RECOLL_CONFDIR</envar> environment variable or the
         -c option parameter to <command>recoll</command> and
         <command>recollindex</command>.</para>
 
@@ -3564,8 +3564,8 @@ while query.next >= 0 and query.next < nres:
         indexing. <command>recollindex</command> will proceed
         immediately. To avoid mistakes, the automatic directory
         creation will only occur for the
-       default location, not if <literal>-c</literal> or
-       <literal>RECOLL_CONFDIR</literal> were used (in the latter
+       default location, not if <option>-c</option> or
+       <envar>RECOLL_CONFDIR</envar> were used (in the latter
        cases, you will have to create the directory).</para>
       
 
@@ -3622,7 +3622,7 @@ while query.next >= 0 and query.next < nres:
         configuration file should use the system default locale
         encoding.</para>
         </listitem>
-        <listitem><para>The <literal>unac_except_trans</literal> parameter
+        <listitem><para>The <envar>unac_except_trans</envar> parameter
         should be encoded in UTF-8. If your system locale is not UTF-8, and
         you need to also specify non-ascii file paths, this poses a
         difficulty because common text editors cannot handle multiple
@@ -3660,16 +3660,16 @@ while query.next >= 0 and query.next < nres:
         <variablelist>
 
           <varlistentry id="rcl.install.config.recollconf.topdirs">
-            <term><literal>topdirs</literal></term>
+            <term><varname>topdirs</varname></term>
             <listitem><para>Specifies the list of directories or files to
             index (recursively for directories). You can use symbolic links
             as elements of this list. See the
-            <literal>followLinks</literal> option about following symbolic links
+            <varname>followLinks</varname> option about following symbolic links
             found under the top elements (not followed by default).</para>
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>skippedNames</literal></term>
+          <varlistentry><term><varname>skippedNames</varname></term>
             <listitem>
               <para>A space-separated list of patterns for
                names of files or directories that should be completely
@@ -3682,7 +3682,7 @@ skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
               <para>The list can be redefined at any sub-directory in the
 		indexed area.</para>
               <para>The top-level directories are not affected by this
-                list (that is, a directory in <literal>topdirs</literal>
+                list (that is, a directory in <varname>topdirs</varname>
                 might match and would still be indexed).</para>
                 <para>The list in the default configuration does not
                 exclude hidden directories (names beginning with a
@@ -3692,30 +3692,30 @@ skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
                 usually store messages in hidden directories, and you
                 probably want this indexed. One possible solution is to
                 have <filename>.*</filename> in
-                <literal>skippedNames</literal>, and add things like
+                <varname>skippedNames</varname>, and add things like
                 <filename>~/.thunderbird</filename> or
                 <filename>~/.evolution</filename> in
-                <literal>topdirs</literal>.</para> 
+                <varname>topdirs</varname>.</para> 
 
                 <para>Not even the file names are indexed for patterns
                 in this list. See the
-                <literal>recoll_noindex</literal> variable in
+                <varname>recoll_noindex</varname> variable in
                 <filename>mimemap</filename> for an alternative
                 approach which indexes the file names.</para>
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>skippedPaths</literal> and
-             <literal>daemSkippedPaths</literal> </term>
+          <varlistentry><term><varname>skippedPaths</varname> and
+             <varname>daemSkippedPaths</varname> </term>
             <listitem>
               <para>A space-separated list of patterns for
                <emphasis>paths</emphasis> of files or directories that should be skipped.
                There is no default in the sample configuration file,
                but the code always adds the configuration and database
                directories in there.</para>
-              <para><literal>skippedPaths</literal> is used both by
+              <para><varname>skippedPaths</varname> is used both by
               batch and real time
-              indexing. <literal>daemSkippedPaths</literal> can be
+              indexing. <varname>daemSkippedPaths</varname> can be
               used to specify things that should be indexed at
               startup, but not monitored.</para>
               <para>Example of use for skipping text files only in a
@@ -3727,13 +3727,13 @@ skippedPaths = ~/somedir/&lowast;.txt
           </varlistentry>
 
           <varlistentry id="rcl.install.config.recollconf.skippedpathsfnmpathname">
-            <term><literal>skippedPathsFnmPathname</literal></term>
+            <term><varname>skippedPathsFnmPathname</varname></term>
                 <listitem><para>The values in the
-                <literal>*skippedPaths</literal> variables are matched by
+                <varname>*skippedPaths</varname> variables are matched by
                 default with <literal>fnmatch(3)</literal>, with the
                 FNM_PATHNAME and FNM_LEADING_DIR flags. This means that '/'
                 characters must be matched explicitely. You can set
-                <literal>skippedPathsFnmPathname</literal> to 0 to disable
+                <varname>skippedPathsFnmPathname</varname> to 0 to disable
                 the use of FNM_PATHNAME (meaning that /*/dir3 will match
                 /dir1/dir2/dir3).</para>
 
@@ -3741,19 +3741,19 @@ skippedPaths = ~/somedir/&lowast;.txt
           </varlistentry>
 
           <varlistentry id="rcl.install.config.recollconf.followlinks">
-            <term><literal>followLinks</literal></term>
+            <term><varname>followLinks</varname></term>
             <listitem><para>Specifies if the indexer should follow
             symbolic links while walking the file tree. The default is
             to ignore symbolic links to avoid multiple indexing of
             linked files. No effort is made to avoid duplication when
             this option is set to true. This option can be set
-            individually for each of the <literal>topdirs</literal>
+            individually for each of the <varname>topdirs</varname>
             members by using sections. It can not be changed below the
-            <literal>topdirs</literal> level.</para>
+            <varname>topdirs</varname> level.</para>
             </listitem> 
           </varlistentry>
 
-          <varlistentry><term><literal>indexedmimetypes</literal></term>
+          <varlistentry><term><varname>indexedmimetypes</varname></term>
             <listitem><para>&RCL; normally indexes any file which it
             knows how to read. This list lets you restrict the indexed
             mime types to what you specify. If the variable is
@@ -3762,7 +3762,7 @@ skippedPaths = ~/somedir/&lowast;.txt
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>compressedfilemaxkbs</literal></term>
+          <varlistentry><term><varname>compressedfilemaxkbs</varname></term>
             <listitem><para>Size limit for compressed (.gz or .bz2)
             files. These need to be decompressed in a temporary
             directory for identification, which can be very wasteful
@@ -3772,14 +3772,14 @@ skippedPaths = ~/somedir/&lowast;.txt
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>textfilemaxmbs</literal></term>
+          <varlistentry><term><varname>textfilemaxmbs</varname></term>
             <listitem><para>Maximum size for text files. Very big text
             files are often uninteresting logs. Set to -1 to disable
             (default 20MB).</para>  
             </listitem>
            </varlistentry>
 
-          <varlistentry><term><literal>textfilepagekbs</literal></term>
+          <varlistentry><term><varname>textfilepagekbs</varname></term>
             <listitem><para>If set to other than -1, text files will be
             indexed as multiple documents of the given page size. This may
             be useful if you do want to index very big text files as it
@@ -3789,7 +3789,7 @@ skippedPaths = ~/somedir/&lowast;.txt
             </listitem>
            </varlistentry>
 
-          <varlistentry><term><literal>indexallfilenames</literal></term>
+          <varlistentry><term><varname>indexallfilenames</varname></term>
             <listitem><para>&RCL; indexes file names in a special
             section of the database to allow specific file names
             searches using wild cards. This parameter decides if 
@@ -3800,7 +3800,7 @@ skippedPaths = ~/somedir/&lowast;.txt
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>usesystemfilecommand</literal></term>
+          <varlistentry><term><varname>usesystemfilecommand</varname></term>
             <listitem><para>Decide if we use the <command>file -i</command>
             system command as a final step for determining the mime
             type for a file (the main procedure uses suffix
@@ -3811,7 +3811,7 @@ skippedPaths = ~/somedir/&lowast;.txt
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>processbeaglequeue</literal></term>
+          <varlistentry><term><varname>processbeaglequeue</varname></term>
             <listitem><para>If this is set, process the directory where
             Beagle Web browser plugins copy visited pages for indexing. Of
             course, Beagle MUST NOT be running, else things will behave
@@ -3819,7 +3819,7 @@ skippedPaths = ~/somedir/&lowast;.txt
             </listitem>
            </varlistentry>
 
-          <varlistentry><term><literal>beaglequeuedir</literal></term>
+          <varlistentry><term><varname>beaglequeuedir</varname></term>
             <listitem><para>The path to the Beagle indexing queue. This is
             hard-coded in the Beagle plugin as
             <filename>~/.beagle/ToIndex</filename> so there should be no
@@ -3840,7 +3840,7 @@ skippedPaths = ~/somedir/&lowast;.txt
 
         <variablelist>
 
-          <varlistentry><term><literal>nonumbers</literal></term>
+          <varlistentry><term><varname>nonumbers</varname></term>
             <listitem><para>If this set to true, no terms will be generated
             for numbers. For example "123", "1.5e6", 192.168.1.4, would not
             be indexed ("value123" would still be). Numbers are often quite
@@ -3851,18 +3851,18 @@ skippedPaths = ~/somedir/&lowast;.txt
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>nocjk</literal></term>
+          <varlistentry><term><varname>nocjk</varname></term>
             <listitem><para>If this set to true, specific east asian
             (Chinese Korean Japanese) characters/word splitting is
             turned off. This will save a small amount of cpu if you
             have no CJK documents. If your document base does include
             such text but you are not interested in searching it,
-            setting <literal>nocjk</literal> may be a significant time
+            setting <varname>nocjk</varname> may be a significant time
             and space saver.</para>
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>cjkngramlen</literal></term>
+          <varlistentry><term><varname>cjkngramlen</varname></term>
             <listitem><para>This lets you adjust the size of n-grams
             used for indexing CJK text. The default value of 2 is
             probably appropriate in most cases. A value of 3 would
@@ -3870,7 +3870,7 @@ skippedPaths = ~/somedir/&lowast;.txt
             the index will be approximately twice as large.</para>
             </listitem>
           </varlistentry>
-          <varlistentry><term><literal>indexstemminglanguages</literal></term>
+          <varlistentry><term><varname>indexstemminglanguages</varname></term>
             <listitem><para>A list of languages for which the stem
             expansion databases will be built. See recollindex(1) or
             use the <literal>recollindex -l</literal> command for
@@ -3882,7 +3882,7 @@ skippedPaths = ~/somedir/&lowast;.txt
             </listitem>
           </varlistentry>
          
-          <varlistentry><term><literal>defaultcharset</literal></term>
+          <varlistentry><term><varname>defaultcharset</varname></term>
             <listitem><para>The name of the character set used for
             files that do not contain a character set definition (ie:
             plain text files). This can be redefined for any
@@ -3892,11 +3892,11 @@ skippedPaths = ~/somedir/&lowast;.txt
 	   </listitem>
          </varlistentry>
 
-          <varlistentry><term><literal>unac_except_trans</literal></term>
+          <varlistentry><term><varname>unac_except_trans</varname></term>
             <listitem><para>This is a list of characters, encoded in UTF-8,
             which should be handled specially when converting text to
             unaccented lowercase.  For example, in Swedish, the letter
-            <literal>a with diaeresis </literal> has full alphabet
+            <literal>a with diaeresis</literal> has full alphabet
             citizenship and should not be turned into an
             <literal>a</literal>. Each element in the space-separated list
             has the special character as first element and the translation
@@ -3919,7 +3919,7 @@ unac_except_trans =  åå Åå ää Ää öö Öö
               </listitem>
             </varlistentry>
 
-          <varlistentry><term><literal>maildefcharset</literal></term>
+          <varlistentry><term><varname>maildefcharset</varname></term>
             <listitem><para>This can be used to define the default
 		character set specifically for email messages which don't
 		specify it. This is mainly useful for readpst (libpst) dumps,
@@ -3927,7 +3927,7 @@ unac_except_trans =  åå Åå ää Ää öö Öö
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>localfields</literal></term>
+          <varlistentry><term><varname>localfields</varname></term>
             <listitem><para>This allows setting fields for all documents
             under a given directory. Typical usage would be to set an
             "rclaptg" field, to be used in <filename>mimeview</filename> to
@@ -3947,7 +3947,7 @@ unac_except_trans =  åå Åå ää Ää öö Öö
 	<title>Parameters affecting where and how we store things:</title>
 
 	<variablelist>
-          <varlistentry><term><literal>dbdir</literal></term>
+          <varlistentry><term><varname>dbdir</varname></term>
             <listitem><para>The name of the Xapian data directory. It
             will be created if needed when the index is
             initialized. If this is not an absolute path, it will be
@@ -3957,7 +3957,7 @@ unac_except_trans =  åå Åå ää Ää öö Öö
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>idxstatusfile</literal></term>
+          <varlistentry><term><varname>idxstatusfile</varname></term>
             <listitem><para>The name of the scratch file where the indexer
                 process updates its status. Default:
             <filename>idxstatus.txt</filename> inside the configuration
@@ -3965,7 +3965,7 @@ unac_except_trans =  åå Åå ää Ää öö Öö
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>maxfsoccuppc</literal></term>
+          <varlistentry><term><varname>maxfsoccuppc</varname></term>
             <listitem><para>Maximum file system occupation before we
             stop indexing. The value is a percentage, corresponding to
             what the "Capacity" df output column shows.  The default
@@ -3973,7 +3973,7 @@ unac_except_trans =  åå Åå ää Ää öö Öö
             </listitem>
           </varlistentry>
 
-	  <varlistentry><term><literal>mboxcachedir</literal></term>
+	  <varlistentry><term><varname>mboxcachedir</varname></term>
 	    <listitem><para>The directory where mbox message offsets cache
 	    files are held. This is normally $RECOLL_CONFDIR/mboxcache, but
 	    it may be useful to share a directory between different
@@ -3981,14 +3981,14 @@ unac_except_trans =  åå Åå ää Ää öö Öö
 	    </listitem>
 	  </varlistentry>
 
-	  <varlistentry><term><literal>mboxcacheminmbs</literal></term>
+	  <varlistentry><term><varname>mboxcacheminmbs</varname></term>
 	    <listitem><para>The minimum mbox file size over which we
 		cache the offsets. There is really no sense in caching
 		offsets for small files. The default is 5 MB.</para>
 	    </listitem>
 	   </varlistentry>
 
-          <varlistentry><term><literal>webcachedir</literal></term>
+          <varlistentry><term><varname>webcachedir</varname></term>
             <listitem><para>This is only used by the Beagle web browser
             plugin indexing code, and defines where the cache for visited
             pages will live. Default:
@@ -3996,7 +3996,7 @@ unac_except_trans =  åå Åå ää Ää öö Öö
             </listitem>
 
            </varlistentry>
-          <varlistentry><term><literal>webcachemaxmbs</literal></term>
+          <varlistentry><term><varname>webcachemaxmbs</varname></term>
             <listitem><para>This is only used by the Beagle web browser
             plugin indexing code, and defines the maximum size for the web
             page cache. Default: 40 MB.</para> 
@@ -4004,7 +4004,7 @@ unac_except_trans =  åå Åå ää Ää öö Öö
            </varlistentry>
 
 
-          <varlistentry><term><literal>idxflushmb</literal></term>
+          <varlistentry><term><varname>idxflushmb</varname></term>
             <listitem><para>Threshold (megabytes of new text data) where we
             flush from memory to disk index. Setting this can help control
             memory usage. A value of 0 means no explicit flushing, letting
@@ -4023,7 +4023,7 @@ unac_except_trans =  åå Åå ää Ää öö Öö
 
 	 <variablelist>
 
-          <varlistentry><term><literal>loglevel,daemloglevel</literal></term>
+          <varlistentry><term><varname>loglevel,daemloglevel</varname></term>
             <listitem><para>Verbosity level for recoll and
             recollindex. A value of 4 lists quite a lot of
             debug/information messages. 2 only lists errors. The
@@ -4032,8 +4032,8 @@ unac_except_trans =  åå Åå ää Ää öö Öö
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>logfilename,
-		daemlogfilename</literal></term> 
+          <varlistentry><term><varname>logfilename,
+		daemlogfilename</varname></term> 
             <listitem><para>Where the messages should go. 'stderr' can
             be used as a special value, and is the default. The
             <literal>daem</literal>version is specific to the indexing monitor
@@ -4042,7 +4042,7 @@ unac_except_trans =  åå Åå ää Ää öö Öö
           </varlistentry>
 
 
-          <varlistentry><term><literal>mondelaypatterns</literal></term>
+          <varlistentry><term><varname>mondelaypatterns</varname></term>
             <listitem><para>This allows specify wildcard path patterns
             (processed with fnmatch(3) with 0 flag), to match files which
             change too often and for which a delay should be observed before
@@ -4056,7 +4056,7 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
             </listitem>
            </varlistentry>
 
-          <varlistentry><term><literal>monixinterval</literal></term>
+          <varlistentry><term><varname>monixinterval</varname></term>
             <listitem><para>Minimum interval (seconds) for processing the
             indexing queue. The real time monitor does not process each
             event when it comes in, but will wait this time for the queue
@@ -4065,7 +4065,7 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
             </listitem>
            </varlistentry>
 
-          <varlistentry><term><literal>monauxinterval</literal></term>
+          <varlistentry><term><varname>monauxinterval</varname></term>
             <listitem><para>Period (in seconds) at which the real time
             monitor will regenerate the auxiliary databases (spelling,
             stemming) if needed. The default is one hour.</para>
@@ -4075,13 +4075,13 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
 
 
 
-          <varlistentry><term><literal>filtermaxseconds</literal></term>
+          <varlistentry><term><varname>filtermaxseconds</varname></term>
             <listitem><para>Maximum filter execution time, after which it
             is aborted. Some postscript programs just loop...</para> 
             </listitem>
            </varlistentry>
 
-          <varlistentry><term><literal>filtersdir</literal></term>
+          <varlistentry><term><varname>filtersdir</varname></term>
             <listitem><para>A directory to search for the external
             filter scripts used to index some types of files. The
             value should not be changed, except if you want to modify
@@ -4090,7 +4090,7 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>iconsdir</literal></term>
+          <varlistentry><term><varname>iconsdir</varname></term>
             <listitem><para>The name of the directory where
             <command>recoll</command> result list icons are
             stored. You can change this if you want different
@@ -4098,14 +4098,14 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>idxabsmlen</literal></term>
+          <varlistentry><term><varname>idxabsmlen</varname></term>
             <listitem><para>&RCL; stores an abstract for each indexed
             file inside the database. The text can come from an actual
             'abstract' section in the document or will just be the
             beginning of the document. It is stored in the index so
             that it can be displayed inside the result lists without
             decoding the original
-            file. The <literal>idxabsmlen</literal> parameter defines
+            file. The <varname>idxabsmlen</varname> parameter defines
             the size of the stored abstract. The default value is 250 bytes.
             The search interface gives you the choice to display this
             stored text or a synthetic abstract built by extracting
@@ -4116,7 +4116,7 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>aspellLanguage</literal></term>
+          <varlistentry><term><varname>aspellLanguage</varname></term>
             <listitem><para>Language definitions to use when creating
             the aspell dictionary.  The value must match a set of
             aspell language definition files. You can type "aspell
@@ -4127,7 +4127,7 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
             </listitem>
           </varlistentry>
 
-          <varlistentry><term><literal>noaspell</literal></term>
+          <varlistentry><term><varname>noaspell</varname></term>
             <listitem><para>If this is set, the aspell dictionary
             generation is turned off. Useful for cases where you don't
             need the functionality or when it is unusable because
@@ -4240,20 +4240,20 @@ x-my-tag = mailmytag
         are usually all located in one place.</para>
 
         <para><filename>mimemap</filename> also has a
-        <literal>recoll_noindex</literal> variable which is a list of
+        <varname>recoll_noindex</varname> variable which is a list of
         suffixes. Matching files will be skipped (which avoids
         unnecessary decompressions or <command>file</command>
         executions). This is partially redundant with
-        <literal>skippedNames</literal> in the main configuration
+        <varname>skippedNames</varname> in the main configuration
         file, with a few differences: it will not affect directories,
         it cannot be made dependant on the file-system location (it is
         a configuration-wide parameter), and the file names will still
         be indexed (not even the file names are indexed for patterns
-        in <literal>skippedNames</literal>.
-        <literal>recoll_noindex</literal> is used mostly for things
+        in <varname>skippedNames</varname>.
+        <varname>recoll_noindex</varname> is used mostly for things
         known to be unindexable by a given &RCL; version. Having it
         there avoids cluttering the more user-oriented and locally
-        customized <literal>skippedNames</literal>.</para>
+        customized <varname>skippedNames</varname>.</para>
 
       </sect2>
 
@@ -4307,11 +4307,11 @@ x-my-tag = mailmytag
 
 	<para>The keys in the file are normally mime types. You can add an
 	  application tag to specialize the choice for an area of the
-	  filesystem (using a <literal>localfields</literal> specification
+	  filesystem (using a <varname>localfields</varname> specification
 	  in <filename>mimeconf</filename>). The syntax for the key is 
 <replaceable>mimetype</replaceable><literal>|</literal><replaceable>tag</replaceable></para>
 
-        <para>The <literal>nouncompforviewmts</literal> entry, (placed at
+        <para>The <varname>nouncompforviewmts</varname> entry, (placed at
         the top level, outside of the <literal>[view]</literal> section),
         holds a list of mime types that should not be uncompressed before
         starting the viewer (if they are found compressed, ie:
