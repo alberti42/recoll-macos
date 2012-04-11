@@ -65,6 +65,7 @@ static int     op_flags;
 #define OPT_b     0x2000
 #define OPT_f     0x4000
 #define OPT_C     0x8000
+#define OPT_Z     0x10000
 
 ReExec *o_reexec;
 
@@ -147,15 +148,17 @@ static void sigcleanup(int sig)
     stopindexing = 1;
 }
 
-static bool makeIndexer(RclConfig *config)
+static void makeIndexerOrExit(RclConfig *config, bool inPlaceReset)
 {
-    if (!confindexer)
+    if (!confindexer) {
 	confindexer = new ConfIndexer(config, updater);
+	if (inPlaceReset)
+	    confindexer->setInPlaceReset();
+    }
     if (!confindexer) {
         cerr << "Cannot create indexer" << endl;
         exit(1);
     }
-    return true;
 }
 
 void rclIxIonice(RclConfig *config)
@@ -172,14 +175,13 @@ void rclIxIonice(RclConfig *config)
 //
 // This is called either from the command line or from the monitor. In
 // this case we're called repeatedly in the same process, and the
-// confindexer is only created once by makeIndexer (but the db closed and
+// confindexer is only created once by makeIndexerOrExit (but the db closed and
 // flushed every time)
 bool indexfiles(RclConfig *config, list<string> &filenames)
 {
     if (filenames.empty())
 	return true;
-    if (!makeIndexer(config))
-	return false;
+    makeIndexerOrExit(config, (op_flags & OPT_Z) != 0);
     return confindexer->indexFiles(filenames, (op_flags&OPT_f) ? 
 				   ConfIndexer::IxFIgnoreSkip : 
 				   ConfIndexer::IxFNone);
@@ -190,16 +192,14 @@ bool purgefiles(RclConfig *config, list<string> &filenames)
 {
     if (filenames.empty())
 	return true;
-    if (!makeIndexer(config))
-	return false;
+    makeIndexerOrExit(config, (op_flags & OPT_Z) != 0);
     return confindexer->purgeFiles(filenames);
 }
 
 // Create stemming and spelling databases
 bool createAuxDbs(RclConfig *config)
 {
-    if (!makeIndexer(config))
-	return false;
+    makeIndexerOrExit(config, false);
 
     if (!confindexer->createStemmingDatabases())
 	return false;
@@ -213,8 +213,7 @@ bool createAuxDbs(RclConfig *config)
 // Create additional stem database 
 static bool createstemdb(RclConfig *config, const string &lang)
 {
-    if (!makeIndexer(config))
-        return false;
+    makeIndexerOrExit(config, false);
     return confindexer->createStemDb(lang);
 }
 
@@ -224,9 +223,11 @@ static const char usage [] =
 "\n"
 "recollindex [-h] \n"
 "    Print help\n"
-"recollindex [-z] \n"
+"recollindex [-z|-Z] \n"
 "    Index everything according to configuration file\n"
 "    -z : reset database before starting indexing\n"
+"    -Z : in place reset: consider all documents as changed. Can also\n"
+"         be combined with -i but not -m\n"
 #ifdef RCL_MONITOR
 "recollindex -m [-w <secs>] -x [-D] [-C]\n"
 "    Perform real time indexing. Don't become a daemon if -D is set.\n"
@@ -245,8 +246,10 @@ static const char usage [] =
 "    List available stemming languages\n"
 "recollindex -s <lang>\n"
 "    Build stem database for additional language <lang>\n"
+#ifdef FUTURE_IMPROVEMENT
 "recollindex -b\n"
 "    Process the Beagle queue\n"
+#endif
 #ifdef RCL_USE_ASPELL
 "recollindex -S\n"
 "    Build aspell spelling dictionary.>\n"
@@ -272,6 +275,11 @@ void lockorexit(Pidfile *pidfile)
     if ((pid = pidfile->open()) != 0) {
 	cerr << "Can't become exclusive indexer: " << pidfile->getreason() << 
 	    ". Return (other pid?): " << pid << endl;
+	exit(1);
+    }
+    if (pidfile->write_pid() != 0) {
+	cerr << "Can't become exclusive indexer: " << pidfile->getreason() <<
+	    endl;
 	exit(1);
     }
 }
@@ -315,6 +323,7 @@ int main(int argc, char **argv)
 		    Usage(); 
 		argc--; goto b1;
 	    case 'x': op_flags |= OPT_x; break;
+	    case 'Z': op_flags |= OPT_Z; break;
 	    case 'z': op_flags |= OPT_z; break;
 	    default: Usage(); break;
 	    }
@@ -332,6 +341,8 @@ int main(int argc, char **argv)
 
     if ((op_flags & OPT_z) && (op_flags & (OPT_i|OPT_e)))
 	Usage();
+    if ((op_flags & OPT_Z) && (op_flags & (OPT_m)))
+	Usage();
 
     string reason;
     RclInitFlags flags = (op_flags & OPT_m) && !(op_flags&OPT_D) ? 
@@ -344,6 +355,7 @@ int main(int argc, char **argv)
     o_reexec->atexit(cleanup);
 
     bool rezero(op_flags & OPT_z);
+    bool inPlaceReset(op_flags & OPT_Z);
     Pidfile pidfile(config->getPidfile());
     updater = new MyUpdater(config);
 
@@ -355,7 +367,6 @@ int main(int argc, char **argv)
 
     if (op_flags & (OPT_i|OPT_e)) {
 	lockorexit(&pidfile);
-	pidfile.write_pid();
 
 	list<string> filenames;
 
@@ -394,6 +405,11 @@ int main(int argc, char **argv)
 	    Usage();
 	string lang = *argv++; argc--;
 	exit(!createstemdb(config, lang));
+#ifdef RCL_USE_ASPELL
+    } else if (op_flags & OPT_S) {
+	makeIndexerOrExit(config, inPlaceReset);
+        exit(!confindexer->createAspellDict());
+#endif // ASPELL
 
 #ifdef RCL_MONITOR
     } else if (op_flags & OPT_m) {
@@ -408,6 +424,7 @@ int main(int argc, char **argv)
 	      exit(1);
 	    }
 	}
+	// Need to rewrite pid, it changed
 	pidfile.write_pid();
 
         // Not too sure if I have to redo the nice thing after daemon(),
@@ -429,7 +446,7 @@ int main(int argc, char **argv)
 	      }
 	    }
 	}
-	confindexer = new ConfIndexer(config, updater);
+	makeIndexerOrExit(config, inPlaceReset);
 	if (!confindexer->index(rezero, ConfIndexer::IxTAll) || stopindexing) {
 	  LOGERR(("recollindex, initial indexing pass failed, not going into monitor mode\n"));
 	  exit(1);
@@ -452,19 +469,12 @@ int main(int argc, char **argv)
 	exit(monret == false);
 #endif // MONITOR
 
-#ifdef RCL_USE_ASPELL
-    } else if (op_flags & OPT_S) {
-	if (!makeIndexer(config))
-            exit(1);
-        exit(!confindexer->createAspellDict());
-#endif // ASPELL
     } else if (op_flags & OPT_b) {
         cerr << "Not yet" << endl;
         return 1;
     } else {
 	lockorexit(&pidfile);
-	pidfile.write_pid();
-	confindexer = new ConfIndexer(config, updater);
+	makeIndexerOrExit(config, inPlaceReset);
 	bool status = confindexer->index(rezero, ConfIndexer::IxTAll);
 	if (!status) 
 	    cerr << "Indexing failed" << endl;

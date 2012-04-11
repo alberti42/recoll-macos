@@ -244,6 +244,14 @@ class Db {
 
     RclConfig *getConf() {return m_config;}
 
+    /** 
+	Activate the "in place reset" mode where all documents are
+	considered as needing update. This is a global/per-process
+	option, and can't be reset. It should be set at the start of
+	the indexing pass 
+    */
+    static void setInPlaceReset() {o_inPlaceReset = true;}
+
     /* This has to be public for access by embedded Query::Native */
     Native *m_ndb; 
 
@@ -277,19 +285,22 @@ private:
     int         m_occFirstCheck;
     // Maximum file system occupation percentage
     int          m_maxFsOccupPc;
-
     // Database directory
     string       m_basedir;
-
     // List of directories for additional databases to query
     list<string> m_extraDbs;
-
     OpenMode m_mode;
-
+    // File existence vector: this is filled during the indexing pass. Any
+    // document whose bit is not set at the end is purged
     vector<bool> updated;
-
+    // Stop terms: those don't get indexed.
     StopList m_stops;
-    
+    // When this is set, all documents are considered as needing a reindex.
+    // This implements an alternative to just erasing the index before 
+    // beginning, with the advantage that, for small index formats updates, 
+    // between releases the index remains available while being recreated.
+    static bool o_inPlaceReset;
+
     // Reinitialize when adding/removing additional dbs
     bool adjustdbs(); 
     bool stemExpand(const string &lang, const string &s, 
@@ -298,7 +309,7 @@ private:
     // Flush when idxflushmb is reached
     bool maybeflush(off_t moretext);
 
-    /* Copyconst and assignemt private and forbidden */
+    /* Copyconst and assignement private and forbidden */
     Db(const Db &) {}
     Db& operator=(const Db &) {return *this;};
 };

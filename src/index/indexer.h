@@ -119,6 +119,8 @@ class ConfIndexer {
     /** Purge a list of files. */
     bool purgeFiles(list<string> &files);
 
+    /** Set in place reset mode */
+    void setInPlaceReset() {m_db.setInPlaceReset();}
  private:
     RclConfig *m_config;
     Rcl::Db    m_db;

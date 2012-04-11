@@ -558,6 +558,8 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 
 /* Rcl::Db methods ///////////////////////////////// */
 
+bool Db::o_inPlaceReset;
+
 Db::Db(RclConfig *cfp)
     : m_ndb(0), m_config(cfp), m_idxAbsTruncLen(250), m_synthAbsLen(250),
       m_synthAbsWordCtxLen(4), m_flushMb(-1), 
@@ -1403,6 +1405,12 @@ bool Db::needUpdate(const string &udi, const string& sig)
 {
     if (m_ndb == 0)
 	return false;
+
+    // If we are doing an in place reset, no need to test. Note that there is
+    // no need to update the existence map either, it will be done while 
+    // indexing
+    if (o_inPlaceReset)
+	return true;
 
     string uniterm = make_uniterm(udi);
     string ermsg;
