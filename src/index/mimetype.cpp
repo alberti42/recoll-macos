@@ -57,7 +57,7 @@ static string mimetypefromdata(const string &fn, bool usfc)
 #ifdef USE_SYSTEM_FILE_COMMAND
     if (usfc && mime.empty()) {
 	// Last resort: use "file -i"
-	list<string> args;
+	vector<string> args;
 
 	args.push_back("-i");
 	args.push_back(fn);

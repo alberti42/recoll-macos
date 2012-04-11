@@ -18,11 +18,9 @@
 #define _EXECMD_H_INCLUDED_
 #include <signal.h>
 #include <string>
-#include <list>
 #include <vector>
 #include <stack>
 #ifndef NO_NAMESPACES
-using std::list;
 using std::string;
 using std::vector;
 using std::stack;
@@ -119,12 +117,12 @@ class ExecCmd {
      *
      * @param cmd the program to execute. This must be an absolute file name 
      *   or exist in the PATH.
-     * @param args the argument list (NOT including argv[0]).
+     * @param args the argument vector (NOT including argv[0]).
      * @param input Input to send TO the command.
      * @param output Output FROM the command.
      * @return the exec ouput status (0 if ok), or -1
      */
-    int doexec(const string &cmd, const list<string>& args, 
+    int doexec(const string &cmd, const vector<string>& args, 
 	       const string *input = 0, 
 	       string *output = 0);
 
@@ -132,7 +130,7 @@ class ExecCmd {
      * The next four methods can be used when a Q/A dialog needs to be 
      * performed with the command
      */
-    int startExec(const string &cmd, const list<string>& args, 
+    int startExec(const string &cmd, const vector<string>& args, 
 		  bool has_input, bool has_output);
     int send(const string& data);
     int receive(string& data, int cnt = -1);
@@ -202,7 +200,7 @@ class ExecCmd {
 	sigemptyset(&m_blkcld);
     }
     // Child process code
-    void dochild(const string &cmd, const list<string>& args, 
+    void dochild(const string &cmd, const vector<string>& args, 
 		 bool has_input, bool has_output);
     /* Copyconst and assignment private and forbidden */
     ExecCmd(const ExecCmd &) {}

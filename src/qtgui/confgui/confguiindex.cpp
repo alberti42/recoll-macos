@@ -340,7 +340,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
     m_widgets.push_back(eskn);
     gl1->addWidget(eskn, 0, 0, 1, 2);
 
-    list<string> args;
+    vector<string> args;
     args.push_back("-l");
     ExecCmd ex;
     string icout;

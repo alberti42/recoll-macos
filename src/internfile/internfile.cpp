@@ -143,7 +143,7 @@ static bool uncompressfile(RclConfig *conf, const string& ifn,
     // Substitute file name and temp dir in command elements
     list<string>::const_iterator it = cmdv.begin();
     ++it;
-    list<string> args;
+    vector<string> args;
     map<char, string> subs;
     subs['f'] = ifn;
     subs['t'] = tdir.dirname();

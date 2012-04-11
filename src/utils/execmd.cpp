@@ -32,7 +32,6 @@
 #include <string.h>
 #endif
 
-#include <list>
 #include <vector>
 #include <string>
 #include <sstream>
@@ -173,12 +172,12 @@ ExecCmd::~ExecCmd()
     ExecCmdRsrc(this);
 }
 
-int ExecCmd::startExec(const string &cmd, const list<string>& args,
+int ExecCmd::startExec(const string &cmd, const vector<string>& args,
 		       bool has_input, bool has_output)
 {
     { // Debug and logging
 	string command = cmd + " ";
-	for (list<string>::const_iterator it = args.begin();it != args.end();
+	for (vector<string>::const_iterator it = args.begin();it != args.end();
 	     it++) {
 	    command += "{" + *it + "} ";
 	}
@@ -314,7 +313,7 @@ private:
 };
 
 
-int ExecCmd::doexec(const string &cmd, const list<string>& args,
+int ExecCmd::doexec(const string &cmd, const vector<string>& args,
 		    const string *input, string *output)
 {
 
@@ -505,7 +504,7 @@ bool ExecCmd::maybereap(int *status)
 
 // In child process. Set up pipes, environment, and exec command. 
 // This must not return. exit() on error.
-void ExecCmd::dochild(const string &cmd, const list<string>& args,
+void ExecCmd::dochild(const string &cmd, const vector<string>& args,
 		      bool has_input, bool has_output)
 {
     // Start our own process group
@@ -581,7 +580,7 @@ void ExecCmd::dochild(const string &cmd, const list<string>& args,
     // Fill up argv
     argv[0] = cmd.c_str();
     int i = 1;
-    list<string>::const_iterator it;
+    vector<string>::const_iterator it;
     for (it = args.begin(); it != args.end(); it++) {
 	argv[i++] = it->c_str();
     }
@@ -684,7 +683,7 @@ void ReExec::reexec()
 #include <stdlib.h>
 #include <string>
 #include <iostream>
-#include <list>
+#include <vector>
 #include "debuglog.h"
 #include "cancelcheck.h"
 
@@ -781,7 +780,7 @@ int main(int argc, char *argv[])
 	Usage();
 
     string cmd = *argv++; argc--;
-    list<string> l;
+    vector<string> l;
     while (argc > 0) {
 	l.push_back(*argv++); argc--;
     }

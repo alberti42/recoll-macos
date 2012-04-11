@@ -125,7 +125,7 @@ void RTIToolW::accept()
 
 	if (nowCB->isChecked()) {
 	    ExecCmd cmd;
-	    list<string> args; 
+	    vector<string> args; 
 	    int status;
 
 	    args.push_back("-m");

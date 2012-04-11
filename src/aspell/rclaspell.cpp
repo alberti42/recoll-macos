@@ -284,7 +284,7 @@ bool Aspell::buildDict(Rcl::Db &db, string &reason)
     // We create the dictionary by executing the aspell command:
     // aspell --lang=[lang] create master [dictApath]
     ExecCmd aspell;
-    list<string> args;
+    vector<string> args;
     args.push_back(string("--lang=")+ m_lang);
     args.push_back("--encoding=utf-8");
     args.push_back("create");

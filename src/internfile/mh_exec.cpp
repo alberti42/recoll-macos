@@ -88,7 +88,7 @@ bool MimeHandlerExec::next_document()
     
     // Build parameter list: delete cmd name and add the file name
     list<string>::iterator it = params.begin();
-    list<string>myparams(++it, params.end());
+    vector<string>myparams(++it, params.end());
     myparams.push_back(m_fn);
     if (!m_ipath.empty())
 	myparams.push_back(m_ipath);

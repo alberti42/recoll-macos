@@ -703,7 +703,7 @@ void RclMain::toggleIndexing()
     break;
     case IXST_NOTRUNNING:
     {
-	list<string> args;
+	vector<string> args;
 	args.push_back("-c");
 	args.push_back(theconfig->getConfDir());
 	m_idxproc = new ExecCmd;
@@ -729,7 +729,7 @@ void RclMain::rebuildIndex()
 					 QMessageBox::Cancel,
 					 QMessageBox::NoButton);
 	if (rep == QMessageBox::Ok) {
-	    list<string> args;
+	    vector<string> args;
 	    args.push_back("-c");
 	    args.push_back(theconfig->getConfDir());
 	    args.push_back("-z");
@@ -1256,7 +1256,7 @@ void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
 	
     vector<string> paths;
     if (ConfIndexer::docsToPaths(docs, paths)) {
-	list<string> args;
+	vector<string> args;
 	args.push_back("-c");
 	args.push_back(theconfig->getConfDir());
 	args.push_back("-i");
@@ -1522,7 +1522,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
         ignoreipath = stringToBool(cmdplusattr);
 
     // Split the command line
-    list<string> lcmd;
+    vector<string> lcmd;
     if (!stringToStrings(cmd, lcmd)) {
 	QMessageBox::warning(0, "Recoll", 
 			     tr("Bad viewer command line for %1: [%2]\n"
@@ -1633,7 +1633,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
     }
 
     // Get rid of the command name. lcmd is now argv[1...n]
-    lcmd.pop_front();
+    lcmd.erase(lcmd.begin());
 
     // Substitute %xx inside arguments
     string efftime;
@@ -1658,7 +1658,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
         subs[it->first] = it->second;
     }
     string ncmd;
-    for (list<string>::iterator it = lcmd.begin(); 
+    for (vector<string>::iterator it = lcmd.begin(); 
          it != lcmd.end(); it++) {
         pcSubst(*it, ncmd, subs);
         LOGDEB(("%s->%s\n", it->c_str(), ncmd.c_str()));

@@ -52,7 +52,7 @@ bool MimeHandlerExecMultiple::startCmd()
     
     // Build parameter list: delete cmd name
     list<string>::iterator it = params.begin();
-    list<string>myparams(++it, params.end());
+    vector<string>myparams(++it, params.end());
 
     // Start filter
     m_cmd.putenv(m_forPreview ? "RECOLL_FILTER_FORPREVIEW=yes" :

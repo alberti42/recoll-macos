@@ -29,7 +29,7 @@ static bool eCrontabGetLines(vector<string>& lines)
 {
     string crontab;
     ExecCmd croncmd;
-    list<string> args; 
+    vector<string> args; 
     int status;
 
     // Retrieve current crontab contents. An error here means that no
@@ -51,7 +51,7 @@ static bool eCrontabWriteFile(const vector<string>& lines, string& reason)
 {
     string crontab;
     ExecCmd croncmd;
-    list<string> args; 
+    vector<string> args; 
     int status;
 
     for (vector<string>::const_iterator it = lines.begin();

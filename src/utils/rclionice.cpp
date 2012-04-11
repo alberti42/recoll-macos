@@ -29,7 +29,7 @@ bool rclionice(const string& clss, const string& cdata)
 	LOGDEB0(("rclionice: ionice not found\n"));
 	return false;
     }
-    list<string> args;
+    vector<string> args;
     args.push_back("-c");
     args.push_back(clss);
 
