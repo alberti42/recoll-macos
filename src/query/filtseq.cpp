@@ -70,9 +70,9 @@ bool DocSeqFiltered::setFiltSpec(DocSeqFiltSpec &filtspec)
 	    string val = filtspec.values[i];
 	    if (val.find("rclcat:") == 0) {
 		string catg = val.substr(7);
-		list<string> tps;
+		vector<string> tps;
 		m_config->getMimeCatTypes(catg, tps);
-		for (list<string>::const_iterator it = tps.begin();
+		for (vector<string>::const_iterator it = tps.begin();
 		     it != tps.end(); it++) {
 		    LOGDEB2(("Adding mime: [%s]\n", it->c_str()));
 		    m_spec.orCrit(DocSeqFiltSpec::DSFS_MIMETYPE, *it);

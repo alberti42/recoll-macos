@@ -133,7 +133,7 @@ bool maybeOpenDb(string &reason, bool force, bool *maindberror)
     return true;
 }
 
-bool getStemLangs(list<string>& langs)
+bool getStemLangs(vector<string>& langs)
 {
     string reason;
     if (!maybeOpenDb(reason)) {

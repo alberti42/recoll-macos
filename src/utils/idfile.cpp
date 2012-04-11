@@ -37,14 +37,6 @@ using namespace std;
  * to separate messages, that we don't recognize currently
  */
 
-std::list<string> idFileAllTypes()
-{
-    std::list<string> lst;
-    lst.push_back("text/x-mail");
-    lst.push_back("message/rfc822");
-    return lst;
-}
-
 // Mail headers we compare to:
 static const char *mailhs[] = {"From: ", "Received: ", "Message-Id: ", "To: ", 
 			       "Date: ", "Subject: ", "Status: ", 

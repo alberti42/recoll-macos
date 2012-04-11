@@ -18,7 +18,6 @@
 #define _IDFILE_H_INCLUDED_
 
 #include <string>
-#include <list>
 
 // Look at data inside file or string, and return mime type or empty string. 
 //
@@ -27,8 +26,5 @@
 
 extern std::string idFile(const char *fn);
 extern std::string idFileMem(const std::string& data);
-
-// Return all types known to us
-extern std::list<std::string> idFileAllTypes();
 
 #endif /* _IDFILE_H_INCLUDED_ */

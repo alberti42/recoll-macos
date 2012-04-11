@@ -82,10 +82,10 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
 		    "nor excl??";
 		return 0;
 	    }
-	    list<string> mtypes;
+	    vector<string> mtypes;
 	    if (config && config->getMimeCatTypes((*it)->m_value, mtypes)
 		&& !mtypes.empty()) {
-		for (list<string>::iterator mit = mtypes.begin();
+		for (vector<string>::iterator mit = mtypes.begin();
 		     mit != mtypes.end(); mit++) {
 		    if ((*it)->m_op == WasaQuery::OP_LEAF)
 			sdata->addFiletype(*mit);

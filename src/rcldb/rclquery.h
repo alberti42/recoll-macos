@@ -17,12 +17,10 @@
 #ifndef _rclquery_h_included_
 #define _rclquery_h_included_
 #include <string>
-#include <list>
 #include <vector>
 
 #ifndef NO_NAMESPACES
 using std::string;
-using std::list;
 using std::vector;
 #endif
 
@@ -72,14 +70,14 @@ class Query {
     bool getDoc(int i, Doc &doc);
 
     /** Get possibly expanded list of query terms */
-    bool getQueryTerms(list<string>& terms);
+    bool getQueryTerms(vector<string>& terms);
 
     /** Return a list of terms which matched for a specific result document */
-    bool getMatchTerms(const Doc& doc, list<string>& terms);
-    bool getMatchTerms(unsigned long xdocid, list<string>& terms);
+    bool getMatchTerms(const Doc& doc, vector<string>& terms);
+    bool getMatchTerms(unsigned long xdocid, vector<string>& terms);
 
     /** Expand query to look for documents like the one passed in */
-    list<string> expand(const Doc &doc);
+    vector<string> expand(const Doc &doc);
 
     /** Return the Db we're set for */
     Db *whatDb();

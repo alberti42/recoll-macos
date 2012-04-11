@@ -20,14 +20,12 @@
 #include <stdlib.h>
 
 #include <string>
-#include <list>
 #include <vector>
 #include <map>
 #include <set>
 
 #ifndef NO_NAMESPACES
 using std::string;
-using std::list;
 using std::vector;
 using std::map;
 using std::set;

@@ -28,7 +28,8 @@
 #include <algorithm>
 
 #include <sstream>
-#include <list>
+#include <vector>
+#include <deque>
 #include <set>
 
 #include "cstr.h"
@@ -60,11 +61,11 @@ class FsTreeWalker::Internal {
     int options;
     int depthswitch;
     stringstream reason;
-    list<string> skippedNames;
-    list<string> skippedPaths;
+    vector<string> skippedNames;
+    vector<string> skippedPaths;
     // When doing Breadth or FilesThenDirs traversal, we keep a list
     // of directory paths to be processed, and we do not recurse.
-    list<string> dirs;
+    deque<string> dirs;
     int errors;
     set<DirId> donedirs;
     void logsyserr(const char *call, const string &param) 
@@ -119,15 +120,14 @@ bool FsTreeWalker::addSkippedName(const string& pattern)
 	data->skippedNames.push_back(pattern);
     return true;
 }
-bool FsTreeWalker::setSkippedNames(const list<string> &patterns)
+bool FsTreeWalker::setSkippedNames(const vector<string> &patterns)
 {
     data->skippedNames = patterns;
     return true;
 }
 bool FsTreeWalker::inSkippedNames(const string& name)
 {
-    list<string>::const_iterator it;
-    for (it = data->skippedNames.begin(); 
+    for (vector<string>::const_iterator it = data->skippedNames.begin(); 
 	 it != data->skippedNames.end(); it++) {
 	if (fnmatch(it->c_str(), name.c_str(), 0) == 0) {
 	    return true;
@@ -144,10 +144,10 @@ bool FsTreeWalker::addSkippedPath(const string& ipath)
 	data->skippedPaths.push_back(path);
     return true;
 }
-bool FsTreeWalker::setSkippedPaths(const list<string> &paths)
+bool FsTreeWalker::setSkippedPaths(const vector<string> &paths)
 {
     data->skippedPaths = paths;
-    for (list<string>::iterator it = data->skippedPaths.begin();
+    for (vector<string>::iterator it = data->skippedPaths.begin();
 	 it != data->skippedPaths.end(); it++)
         if (!(data->options & FtwNoCanon))
             *it = path_canon(*it);
@@ -160,8 +160,8 @@ bool FsTreeWalker::inSkippedPaths(const string& path, bool ckparents)
     if (ckparents)
         fnmflags |= FNM_LEADING_DIR;
 #endif
-    list<string>::const_iterator it;
-    for (it = data->skippedPaths.begin(); 
+
+    for (vector<string>::const_iterator it = data->skippedPaths.begin(); 
 	 it != data->skippedPaths.end(); it++) {
 #ifndef FNM_LEADING_DIR
         if (ckparents) {
@@ -217,8 +217,8 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top,
     }
 
     // Breadth first of filesThenDirs semi-depth first order
-    // Managing lists of directories to be visited later, in breadth or
-    // depth order. Null marker are inserted in the list to indicate
+    // Managing queues of directories to be visited later, in breadth or
+    // depth order. Null marker are inserted in the queue to indicate
     // father directory changes (avoids computing parents all the time).
     data->dirs.push_back(top);
     Status status;
@@ -226,7 +226,7 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top,
         string dir, nfather;
         if (data->options & (FtwTravBreadth|FtwTravBreadthThenDepth)) {
             // Breadth first, pop and process an older dir at the
-            // front of the list. This will add any child dirs at the
+            // front of the queue. This will add any child dirs at the
             // back
             dir = data->dirs.front();
             data->dirs.pop_front();
@@ -279,7 +279,7 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top,
 	    return errno == ENOENT ? FtwOk : FtwError;
         }
         // iwalk will not recurse in this case, just process file entries
-        // and append subdir entries to the list.
+        // and append subdir entries to the queue.
         status = iwalk(dir, &st, cb);
         if (status != FtwOk)
             return status;
@@ -497,8 +497,8 @@ Usage(void)
 
 int main(int argc, const char **argv)
 {
-    list<string> patterns;
-    list<string> paths;
+    vector<string> patterns;
+    vector<string> paths;
     thisprog = argv[0];
     argc--; argv++;
 

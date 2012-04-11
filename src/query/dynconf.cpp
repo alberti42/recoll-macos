@@ -43,8 +43,8 @@ bool RclDynConf::insertNew(const string &sk, DynConfEntry &n, DynConfEntry &s,
     int maxlen)
 {
     // Is this doc already in list ? If it is we remove the old entry
-    list<string> names = m_data.getNames(sk);
-    list<string>::const_iterator it;
+    vector<string> names = m_data.getNames(sk);
+    vector<string>::const_iterator it;
     bool changed = false;
     for (it = names.begin(); it != names.end(); it++) {
 	string oval;
@@ -61,7 +61,7 @@ bool RclDynConf::insertNew(const string &sk, DynConfEntry &n, DynConfEntry &s,
 	}
     }
 
-    // Maybe reget list
+    // Maybe reget things
     if (changed)
 	names = m_data.getNames(sk);
 
@@ -95,8 +95,8 @@ bool RclDynConf::insertNew(const string &sk, DynConfEntry &n, DynConfEntry &s,
 
 bool RclDynConf::eraseAll(const string &sk)
 {
-    list<string> names = m_data.getNames(sk);
-    list<string>::const_iterator it;
+    vector<string> names = m_data.getNames(sk);
+    vector<string>::const_iterator it;
     for (it = names.begin(); it != names.end(); it++) {
 	    m_data.erase(*it, sk);
     }

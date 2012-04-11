@@ -395,8 +395,8 @@ bool RclConfig::addLocalFields(map<string, string> *tgt)
             sfields[i] = '\n';
     // Parse the result with a confsimple and add the results to the metadata
     ConfSimple conf(sfields, 1, true);
-    list<string> nmlst = conf.getNames(cstr_null);
-    for (list<string>::const_iterator it = nmlst.begin();
+    vector<string> nmlst = conf.getNames(cstr_null);
+    for (vector<string>::const_iterator it = nmlst.begin();
          it != nmlst.end(); it++) {
         conf.get(*it, (*tgt)[*it]);
         LOGDEB(("RclConfig::addLocalFields: [%s] => [%s]\n",
@@ -414,14 +414,12 @@ bool RclConfig::addLocalFields(map<string, string> *tgt)
 //
 // This unfortunately means that searches by file names and mime type
 // filtering don't work well together.
-list<string> RclConfig::getAllMimeTypes()
+vector<string> RclConfig::getAllMimeTypes()
 {
-    list<string> lst;
+    vector<string> lst;
     if (mimeconf == 0)
 	return lst;
     lst = mimeconf->getNames("index");
-    lst.sort();
-    lst.unique();
     return lst;
 }
 
@@ -511,9 +509,9 @@ string RclConfig::getMimeTypeFromSuffix(const string& suff)
 string RclConfig::getSuffixFromMimeType(const string &mt)
 {
     string suffix;
-    list<string>sfs = mimemap->getNames(cstr_null);
+    vector<string>sfs = mimemap->getNames(cstr_null);
     string mt1;
-    for (list<string>::const_iterator it = sfs.begin(); 
+    for (vector<string>::const_iterator it = sfs.begin(); 
 	 it != sfs.end(); it++) {
 	if (mimemap->get(*it, mt1, cstr_null))
 	    if (!stringicmp(mt, mt1))
@@ -523,7 +521,7 @@ string RclConfig::getSuffixFromMimeType(const string &mt)
 }
 
 /** Get list of file categories from mimeconf */
-bool RclConfig::getMimeCategories(list<string>& cats) 
+bool RclConfig::getMimeCategories(vector<string>& cats) 
 {
     if (!mimeconf)
 	return false;
@@ -533,9 +531,9 @@ bool RclConfig::getMimeCategories(list<string>& cats)
 
 bool RclConfig::isMimeCategory(string& cat) 
 {
-    list<string>cats;
+    vector<string>cats;
     getMimeCategories(cats);
-    for (list<string>::iterator it = cats.begin(); it != cats.end(); it++) {
+    for (vector<string>::iterator it = cats.begin(); it != cats.end(); it++) {
 	if (!stringicmp(*it,cat))
 	    return true;
     }
@@ -543,7 +541,7 @@ bool RclConfig::isMimeCategory(string& cat)
 }
 
 /** Get list of mime types for category from mimeconf */
-bool RclConfig::getMimeCatTypes(const string& cat, list<string>& tps)
+bool RclConfig::getMimeCatTypes(const string& cat, vector<string>& tps)
 {
     tps.clear();
     if (!mimeconf)
@@ -576,7 +574,7 @@ string RclConfig::getMimeHandlerDef(const string &mtype, bool filtertypes)
     return hs;
 }
 
-bool RclConfig::getGuiFilterNames(list<string>& cats) 
+bool RclConfig::getGuiFilterNames(vector<string>& cats) 
 {
     if (!mimeconf)
 	return false;
@@ -652,8 +650,9 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
     // Build a direct map avoiding all indirections for field to
     // prefix translation
     // Add direct prefixes from the [prefixes] section
-    list<string>tps = m_fields->getNames("prefixes");
-    for (list<string>::const_iterator it = tps.begin(); it != tps.end();it++) {
+    vector<string>tps = m_fields->getNames("prefixes");
+    for (vector<string>::const_iterator it = tps.begin(); 
+	 it != tps.end(); it++) {
 	string val;
 	m_fields->get(*it, val, "prefixes");
 	ConfSimple attrs;
@@ -677,7 +676,7 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
     // Having the aliases in the prefix map avoids an additional indirection
     // at index time.
     tps = m_fields->getNames("aliases");
-    for (list<string>::const_iterator it = tps.begin(); it != tps.end();it++) {
+    for (vector<string>::const_iterator it = tps.begin(); it != tps.end();it++) {
 	string canonic = stringtolower(*it); // canonic name
 	FieldTraits ft;
 	map<string, FieldTraits>::const_iterator pit = 
@@ -687,9 +686,9 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 	}
 	string aliases;
 	m_fields->get(canonic, aliases, "aliases");
-	list<string> l;
+	vector<string> l;
 	stringToStrings(aliases, l);
-	for (list<string>::const_iterator ait = l.begin();
+	for (vector<string>::const_iterator ait = l.begin();
 	     ait != l.end(); ait++) {
 	    if (pit != m_fldtotraits.end())
 		m_fldtotraits[stringtolower(*ait)] = ft;
@@ -706,9 +705,9 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
     }
 #endif
 
-    list<string> sl = m_fields->getNames("stored");
+    vector<string> sl = m_fields->getNames("stored");
     if (!sl.empty()) {
-	for (list<string>::const_iterator it = sl.begin(); 
+	for (vector<string>::const_iterator it = sl.begin(); 
 	     it != sl.end(); it++) {
 	    string fld = fieldCanon(stringtolower(*it));
 	    m_storedFields.insert(fld);
@@ -716,8 +715,8 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
     }
 
     // Extended file attribute to field translations
-    list<string>xattrs = m_fields->getNames("xattrtofields");
-    for (list<string>::const_iterator it = xattrs.begin(); 
+    vector<string>xattrs = m_fields->getNames("xattrtofields");
+    for (vector<string>::const_iterator it = xattrs.begin(); 
 	 it != xattrs.end(); it++) {
 	string val;
 	m_fields->get(*it, val, "xattrtofields");
@@ -751,7 +750,7 @@ set<string> RclConfig::getIndexedFields()
     if (m_fields == 0)
 	return flds;
 
-    list<string> sl = m_fields->getNames("prefixes");
+    vector<string> sl = m_fields->getNames("prefixes");
     flds.insert(sl.begin(), sl.end());
     return flds;
 }
@@ -769,10 +768,10 @@ string RclConfig::fieldCanon(const string& f)
     return fld;
 }
 
-list<string> RclConfig::getFieldSectNames(const string &sk, const char* patrn)
+vector<string> RclConfig::getFieldSectNames(const string &sk, const char* patrn)
 {
     if (m_fields == 0)
-        return list<string>();
+        return vector<string>();
     return m_fields->getNames(sk, patrn);
 }
 
@@ -802,8 +801,8 @@ bool RclConfig::getMimeViewerDefs(vector<pair<string, string> >& defs)
 {
     if (mimeview == 0)
 	return false;
-    list<string>tps = mimeview->getNames("view");
-    for (list<string>::const_iterator it = tps.begin(); it != tps.end();it++) {
+    vector<string>tps = mimeview->getNames("view");
+    for (vector<string>::const_iterator it = tps.begin(); it != tps.end();it++) {
 	defs.push_back(pair<string, string>(*it, getMimeViewerDef(*it, "")));
     }
     return true;
@@ -823,7 +822,7 @@ bool RclConfig::setMimeViewerDef(const string& mt, const string& def)
 	return false;
     }
 
-    list<string> cdirs;
+    vector<string> cdirs;
     cdirs.push_back(m_confdir);
     cdirs.push_back(path_cat(m_datadir, "examples"));
 
@@ -934,7 +933,7 @@ string RclConfig::getIdxStatusFile()
     }
 }
 
-list<string>& RclConfig::getSkippedNames()
+vector<string>& RclConfig::getSkippedNames()
 {
     if (m_skpnstate.needrecompute()) {
 	stringToStrings(m_skpnstate.savedvalue, m_skpnlist);
@@ -942,9 +941,9 @@ list<string>& RclConfig::getSkippedNames()
     return m_skpnlist;
 }
 
-list<string> RclConfig::getSkippedPaths()
+vector<string> RclConfig::getSkippedPaths()
 {
-    list<string> skpl;
+    vector<string> skpl;
     getConfParam("skippedPaths", &skpl);
 
     // Always add the dbdir and confdir to the skipped paths. This is 
@@ -952,30 +951,30 @@ list<string> RclConfig::getSkippedPaths()
     // don't do this.
     skpl.push_back(getDbDir());
     skpl.push_back(getConfDir());
-    for (list<string>::iterator it = skpl.begin(); it != skpl.end(); it++) {
+    for (vector<string>::iterator it = skpl.begin(); it != skpl.end(); it++) {
 	*it = path_tildexpand(*it);
 	*it = path_canon(*it);
     }
-    skpl.sort();
-    skpl.unique();
+    sort(skpl.begin(), skpl.end());
+    unique(skpl.begin(), skpl.end());
     return skpl;
 }
 
-list<string> RclConfig::getDaemSkippedPaths()
+vector<string> RclConfig::getDaemSkippedPaths()
 {
-    list<string> skpl = getSkippedPaths();
-
-    list<string> dskpl;
+    vector<string> dskpl;
     getConfParam("daemSkippedPaths", &dskpl);
 
-    for (list<string>::iterator it = dskpl.begin(); it != dskpl.end(); it++) {
+    for (vector<string>::iterator it = dskpl.begin(); it != dskpl.end(); it++) {
 	*it = path_tildexpand(*it);
 	*it = path_canon(*it);
     }
-    dskpl.sort();
+    sort(dskpl.begin(), dskpl.end());
 
-    skpl.merge(dskpl);
-    skpl.unique();
+    vector<string> skpl1 = getSkippedPaths();
+    vector<string> skpl;
+    merge(dskpl.begin(), dskpl.end(), skpl1.begin(), skpl1.end(), skpl.begin());
+    unique(skpl.begin(), skpl.end());
     return skpl;
 }
 
@@ -1024,20 +1023,20 @@ string RclConfig::findFilter(const string &icmd)
 /** 
  * Return decompression command line for given mime type
  */
-bool RclConfig::getUncompressor(const string &mtype, list<string>& cmd)
+bool RclConfig::getUncompressor(const string &mtype, vector<string>& cmd)
 {
     string hs;
 
     mimeconf->get(mtype, hs, cstr_null);
     if (hs.empty())
 	return false;
-    list<string> tokens;
+    vector<string> tokens;
     stringToStrings(hs, tokens);
     if (tokens.empty()) {
 	LOGERR(("getUncompressor: empty spec for mtype %s\n", mtype.c_str()));
 	return false;
     }
-    list<string>::iterator it = tokens.begin();
+    vector<string>::iterator it = tokens.begin();
     if (tokens.size() < 2)
 	return false;
     if (stringlowercmp("uncompress", *it++)) 
@@ -1148,7 +1147,7 @@ void RclConfig::initFrom(const RclConfig& r)
 #include <signal.h>
 
 #include <iostream>
-#include <list>
+#include <vector>
 #include <string>
 
 using namespace std;
@@ -1252,20 +1251,20 @@ int main(int argc, char **argv)
     } else if (op_flags & OPT_c) {
         // Check that all known mime types have an icon and belong to
         // some category
-        list<string> catnames;
+        vector<string> catnames;
         config->getMimeCategories(catnames);
         cout << "Categories: ";
         set<string> allmtsfromcats;
-        for (list<string>::const_iterator it = catnames.begin(); 
+        for (vector<string>::const_iterator it = catnames.begin(); 
              it != catnames.end(); it++) {
             cout << *it << " ";
         }
         cout << endl;
-        for (list<string>::const_iterator it = catnames.begin(); 
+        for (vector<string>::const_iterator it = catnames.begin(); 
              it != catnames.end(); it++) {
-            list<string> cts;
+            vector<string> cts;
             config->getMimeCatTypes(*it, cts);
-            for (list<string>::const_iterator it1 = cts.begin(); 
+            for (vector<string>::const_iterator it1 = cts.begin(); 
                  it1 != cts.end(); it1++) {
                 // Already in map -> duplicate
                 if (allmtsfromcats.find(*it1) != allmtsfromcats.end()) {
@@ -1275,8 +1274,8 @@ int main(int argc, char **argv)
             }
         }
 
-        list<string> mtypes = config->getAllMimeTypes();
-        for (list<string>::const_iterator it = mtypes.begin();
+        vector<string> mtypes = config->getAllMimeTypes();
+        for (vector<string>::const_iterator it = mtypes.begin();
              it != mtypes.end(); it++) {
             if (allmtsfromcats.find(*it) == allmtsfromcats.end()) {
                 cout << "Not found in catgs: [" << *it << "]" << endl;
@@ -1284,10 +1283,8 @@ int main(int argc, char **argv)
         }
     } else {
         config->setKeyDir(cstr_null);
-	list<string> names = config->getConfNames();
-	names.sort();
-	names.unique();
-	for (list<string>::iterator it = names.begin(); 
+	vector<string> names = config->getConfNames();
+	for (vector<string>::iterator it = names.begin(); 
 	     it != names.end();it++) {
 	    string value;
 	    config->getConfParam(*it, value);

@@ -98,7 +98,8 @@ bool DocSequenceDb::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc)
 list<string> DocSequenceDb::expand(Rcl::Doc &doc)
 {
     setQuery();
-    return m_q->expand(doc);
+    vector<string> v = m_q->expand(doc);
+    return list<string>(v.begin(), v.end());
 }
 
 string DocSequenceDb::title()

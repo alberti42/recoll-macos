@@ -51,7 +51,7 @@
 
 #include <string>
 #include <map>
-#include <list>
+#include <vector>
 
 // rh7.3 likes iostream better...
 #if defined(__GNUC__) && __GNUC__ < 3
@@ -63,7 +63,7 @@
 
 #ifndef NO_NAMESPACES
 using std::string;
-using std::list;
+using std::vector;
 using std::map;
 using std::istream;
 using std::ostream;
@@ -100,12 +100,12 @@ public:
     virtual int set(const string &nm, const string &val, 
 		    const string &sk = string()) = 0;
     virtual bool ok() const = 0;
-    virtual list<string> getNames(const string &sk, const char* = 0) = 0;
+    virtual vector<string> getNames(const string &sk, const char* = 0) = 0;
     virtual int erase(const string &, const string &) = 0;
     virtual int eraseKey(const string &) = 0;
-    virtual void listall()  {};
-    virtual list<string> getSubKeys() = 0;
-    virtual list<string> getSubKeys(bool) = 0;
+    virtual void showall()  {};
+    virtual vector<string> getSubKeys() = 0;
+    virtual vector<string> getSubKeys(bool) = 0;
     virtual bool holdWrites(bool) = 0;
     virtual bool sourceChanged() = 0;
 };
@@ -198,11 +198,11 @@ public:
 					const string &val),
 				void *clidata);
 
-    /** List all values to stdout */
-    virtual void listall();
+    /** Print all values to stdout */
+    virtual void showall();
 
     /** Return all names in given submap. */
-    virtual list<string> getNames(const string &sk, const char *pattern = 0);
+    virtual vector<string> getNames(const string &sk, const char *pattern = 0);
 
     /** Check if name is present in any submap. This is relatively expensive
      * but useful for saving further processing sometimes */
@@ -211,8 +211,8 @@ public:
     /**
      * Return all subkeys 
      */
-    virtual list<string> getSubKeys(bool) {return getSubKeys();}
-    virtual list<string> getSubKeys();
+    virtual vector<string> getSubKeys(bool) {return getSubKeys();}
+    virtual vector<string> getSubKeys();
     /** Test for subkey existence */
     virtual bool hasSubKey(const string& sk)
     {
@@ -263,7 +263,7 @@ private:
     // Presentation data. We keep the comments, empty lines and
     // variable and subkey ordering information in there (for
     // rewriting the file while keeping hand-edited information)
-    list<ConfLine>                    m_order;
+    vector<ConfLine>                    m_order;
     // Control if we're writing to the backing store
     bool                              m_holdWrites;
 
@@ -323,7 +323,7 @@ public:
  * have a central config, with possible overrides from more specific
  * (ie personal) ones.
  *
- * Notes: it's ok for some of the files in the list to not exist, but the last
+ * Notes: it's ok for some of the files not to exist, but the last
  * one must or we generate an error. We open all trees readonly, except the 
  * topmost one if requested. All writes go to the topmost file. Note that
  * erase() won't work except for parameters only defined in the topmost
@@ -331,18 +331,18 @@ public:
  */
 template <class T> class ConfStack : public ConfNull {
 public:
-    /// Construct from list of configuration file names. The earler
+    /// Construct from configuration file names. The earler
     /// files in have priority when fetching values. Only the first
     /// file will be updated if ro is false and set() is used.
-    ConfStack(const list<string> &fns, bool ro = true) 
+    ConfStack(const vector<string> &fns, bool ro = true) 
     {
 	construct(fns, ro);
     }
-    /// Construct out of single file name and list of directories
-    ConfStack(const string& nm, const list<string>& dirs, bool ro = true) 
+    /// Construct out of single file name and multiple directories
+    ConfStack(const string& nm, const vector<string>& dirs, bool ro = true) 
     {
-	list<string> fns;
-	for (list<string>::const_iterator it = dirs.begin(); 
+	vector<string> fns;
+	for (vector<string>::const_iterator it = dirs.begin(); 
 	     it != dirs.end(); it++){
 	    fns.push_back(path_cat(*it, nm));
 	}
@@ -374,7 +374,7 @@ public:
 
     virtual bool sourceChanged()
     {
-	typename list<T*>::const_iterator it;
+	typename vector<T*>::const_iterator it;
 	for (it = m_confs.begin();it != m_confs.end();it++) {
 	    if ((*it)->sourceChanged())
 		return true;
@@ -384,7 +384,7 @@ public:
 
     virtual int get(const string &name, string &value, const string &sk) const
     {
-	typename list<T*>::const_iterator it;
+	typename vector<T*>::const_iterator it;
 	for (it = m_confs.begin();it != m_confs.end();it++) {
 	    if ((*it)->get(name, value, sk))
 		return true;
@@ -394,7 +394,7 @@ public:
 
     virtual bool hasNameAnywhere(const string& nm)
     {
-	typename list<T*>::iterator it;
+	typename vector<T*>::iterator it;
 	for (it = m_confs.begin();it != m_confs.end();it++) {
 	    if ((*it)->hasNameAnywhere(nm))
 		return true;
@@ -411,7 +411,7 @@ public:
 	// Avoid adding unneeded entries: if the new value matches the
 	// one out from the deeper configs, erase or dont add it
 	// from/to the topmost file
-	typename list<T*>::iterator it = m_confs.begin();
+	typename vector<T*>::iterator it = m_confs.begin();
 	it++;
 	while (it != m_confs.end()) {
 	    string value;
@@ -445,49 +445,49 @@ public:
 	return m_confs.front()->holdWrites(on);
     }
 
-    virtual list<string> getNames(const string &sk, const char *pattern = 0)
+    virtual vector<string> getNames(const string &sk, const char *pattern = 0)
     {
 	return getNames1(sk, pattern, false);
     }
-    virtual list<string> getNamesShallow(const string &sk, const char *patt = 0)
+    virtual vector<string> getNamesShallow(const string &sk, const char *patt = 0)
     {
 	return getNames1(sk, patt, true);
     }
 
-    virtual list<string> getNames1(const string &sk, const char *pattern,
+    virtual vector<string> getNames1(const string &sk, const char *pattern,
 				   bool shallow)
     {
-	list<string> nms;
-	typename list<T*>::iterator it;
+	vector<string> nms;
+	typename vector<T*>::iterator it;
 	bool skfound = false;
 	for (it = m_confs.begin();it != m_confs.end(); it++) {
 	    if ((*it)->hasSubKey(sk)) {
 		skfound = true;
-		list<string> lst = (*it)->getNames(sk, pattern);
+		vector<string> lst = (*it)->getNames(sk, pattern);
 		nms.insert(nms.end(), lst.begin(), lst.end());
 	    }
 	    if (shallow && skfound)
 		break;
 	}
-	nms.sort();
-	nms.unique();
+	sort(nms.begin(), nms.end());
+	unique(nms.begin(), nms.end());
 	return nms;
     }
 
-    virtual list<string> getSubKeys(){return getSubKeys(false);}
-    virtual list<string> getSubKeys(bool shallow)
+    virtual vector<string> getSubKeys(){return getSubKeys(false);}
+    virtual vector<string> getSubKeys(bool shallow)
     {
-	list<string> sks;
-	typename list<T*>::iterator it;
+	vector<string> sks;
+	typename vector<T*>::iterator it;
 	for (it = m_confs.begin();it != m_confs.end(); it++) {
-	    list<string> lst;
+	    vector<string> lst;
 	    lst = (*it)->getSubKeys();
 	    sks.insert(sks.end(), lst.begin(), lst.end());
 	    if (shallow)
 		break;
 	}
-	sks.sort();
-	sks.unique();
+	sort(sks.begin(), sks.end());
+	unique(sks.begin(), sks.end());
 	return sks;
     }
 
@@ -495,11 +495,11 @@ public:
 
 private:
     bool     m_ok;
-    list<T*> m_confs;
+    vector<T*> m_confs;
 
     /// Reset to pristine
     void clear() {
-	typename list<T*>::iterator it;
+	typename vector<T*>::iterator it;
 	for (it = m_confs.begin();it != m_confs.end();it++) {
 	    delete (*it);
 	}
@@ -509,16 +509,16 @@ private:
     /// Common code to initialize from existing object
     void init_from(const ConfStack &rhs) {
 	if ((m_ok = rhs.m_ok)) {
-	    typename list<T*>::const_iterator it;
+	    typename vector<T*>::const_iterator it;
 	    for (it = rhs.m_confs.begin();it != rhs.m_confs.end();it++) {
 		m_confs.push_back(new T(**it));
 	    }
 	}
     }
 
-    /// Common construct from file list code
-    void construct(const list<string> &fns, bool ro) {
-	list<string>::const_iterator it;
+    /// Common construct from file names code
+    void construct(const vector<string> &fns, bool ro) {
+	vector<string>::const_iterator it;
 	bool lastok = false;
 	for (it = fns.begin(); it != fns.end(); it++) {
 	    T* p = new T(it->c_str(), ro);

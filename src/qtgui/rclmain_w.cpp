@@ -178,12 +178,12 @@ void RclMain::init()
     bgrp->addButton(allRDB, bgrpid++);
     connect(bgrp, SIGNAL(buttonClicked(int)), this, SLOT(catgFilter(int)));
     allRDB->setChecked(true);
-    list<string> cats;
+    vector<string> cats;
     theconfig->getGuiFilterNames(cats);
     // Text for button 0 is not used. Next statement just avoids unused
     // variable compiler warning for catg_strings
     m_catgbutvec.push_back(catg_strings[0]);
-    for (list<string>::const_iterator it = cats.begin();
+    for (vector<string>::const_iterator it = cats.begin();
 	 it != cats.end(); it++) {
 	QRadioButton *but = new QRadioButton(catgBGRP);
 	QString catgnm = QString::fromUtf8(it->c_str(), it->length());
@@ -1089,12 +1089,12 @@ void RclMain::showActiveTypes()
     }
 
     // All types listed in mimeconf:
-    list<string> mtypesfromconfig = theconfig->getAllMimeTypes();
+    vector<string> mtypesfromconfig = theconfig->getAllMimeTypes();
 
     // Intersect file system types with config types (those not in the
     // config can be indexed by name, not by content)
     set<string> mtypesfromdbconf;
-    for (list<string>::const_iterator it = mtypesfromconfig.begin();
+    for (vector<string>::const_iterator it = mtypesfromconfig.begin();
 	 it != mtypesfromconfig.end(); it++) {
 	if (mtypesfromdb.find(*it) != mtypesfromdb.end())
 	    mtypesfromdbconf.insert(*it);

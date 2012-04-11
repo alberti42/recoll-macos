@@ -28,7 +28,7 @@
  * an exec (security,  pipe control, the possibility that a bug will trigger
  * an unwanted write, etc.)
  *
- * A process has currently no POSIX way to determine the list of open file 
+ * A process has currently no POSIX way to determine the set of open file 
  * descriptors or at least the highest value. Closing all files (except a few),
  * thus implies performing a close() system call on each entry up to the 
  * maximum, which can be both relatively difficult to determine, and quite
@@ -46,7 +46,7 @@
  * System interfaces:
  *  FreeBSD:
  *   - Has a closefrom() system call as of release 7.x around Sep 2009
- *   - Has a /dev/fd, directory which lists the current process' open
+ *   - Has a /dev/fd, directory which shows the current process' open
  *     descriptors. Only descriptors 0, 1, 2 are shown except if
  *     fdescfs is mounted which it is not by default
  *

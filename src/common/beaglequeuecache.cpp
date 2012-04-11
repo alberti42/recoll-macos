@@ -70,8 +70,8 @@ bool BeagleQueueCache::getFromCache(const string& udi, Rcl::Doc &dotdoc,
     cf.get(cstr_fmtime, dotdoc.fmtime, cstr_null);
     cf.get(cstr_fbytes, dotdoc.pcbytes, cstr_null);
     dotdoc.sig.clear();
-    list<string> names = cf.getNames(cstr_null);
-    for (list<string>::const_iterator it = names.begin();
+    vector<string> names = cf.getNames(cstr_null);
+    for (vector<string>::const_iterator it = names.begin();
          it != names.end(); it++) {
         cf.get(*it, dotdoc.meta[*it], cstr_null);
     }

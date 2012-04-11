@@ -51,7 +51,7 @@ bool MimeHandlerExecMultiple::startCmd()
     string cmd = params.front();
     
     // Build parameter list: delete cmd name
-    list<string>::iterator it = params.begin();
+    vector<string>::iterator it = params.begin();
     vector<string>myparams(++it, params.end());
 
     // Start filter

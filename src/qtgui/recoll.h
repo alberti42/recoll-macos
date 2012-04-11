@@ -31,7 +31,7 @@ extern bool maybeOpenDb(std::string &reason, bool force = true,
 			bool *maindberror = 0);
 
 /** Retrieve configured stemming languages */
-bool getStemLangs(list<string>& langs);
+bool getStemLangs(vector<string>& langs);
 
 extern RclConfig *theconfig;
 extern RclConfig *thestableconfig;

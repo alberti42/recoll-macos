@@ -66,12 +66,12 @@ void SpellW::init()
 
     // Stemming language combobox
     stemLangCMB->clear();
-    list<string> langs;
+    vector<string> langs;
     if (!getStemLangs(langs)) {
 	QMessageBox::warning(0, "Recoll", 
 			     tr("error retrieving stemming languages"));
     }
-    for (list<string>::const_iterator it = langs.begin(); 
+    for (vector<string>::const_iterator it = langs.begin(); 
 	 it != langs.end(); it++) {
 	stemLangCMB->
 	    addItem(QString::fromAscii(it->c_str(), it->length()));

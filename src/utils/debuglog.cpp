@@ -28,10 +28,8 @@
 
 #include <string>
 #include <set>
-#include <list>
 using std::set;
 using std::string;
-using std::list;
 
 #include "debuglog.h"
 #include "pathut.h"

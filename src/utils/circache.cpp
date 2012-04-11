@@ -217,7 +217,7 @@ public:
         }
     }
 
-    // Return list of candidate offsets for udi (possibly several
+    // Return vector of candidate offsets for udi (possibly several
     // because there may be hash collisions, and also multiple
     // instances).
     bool khFind(const string& udi, vector<off_t>& ofss)
@@ -262,10 +262,10 @@ public:
         }
         return true;
     }
-    // Clear entries for list of udi/offs
-    bool khClear(const list<pair<string, off_t> >& udis)
+    // Clear entries for vector of udi/offs
+    bool khClear(const vector<pair<string, off_t> >& udis)
     {
-        for (list<pair<string, off_t> >::const_iterator it = udis.begin(); 
+        for (vector<pair<string, off_t> >::const_iterator it = udis.begin(); 
              it != udis.end(); it++)
             khClear(*it);
         return true;
@@ -754,7 +754,7 @@ bool CirCache::get(const string& udi, string& dic, string& data, int instance)
                 if (!fudi.compare(udi)) {
                     // Found one, memorize offset. Done if instance
                     // matches, else go on. If instance is -1 need to
-                    // go to the end of the list anyway
+                    // go to the end anyway
                     d_good = d;
                     o_good = *it;
                     if (finst == instance) {
@@ -849,7 +849,7 @@ class CCScanHookSpacer : public  CCScanHook {
 public:
     UINT sizewanted;
     UINT sizeseen;
-    list<pair<string, off_t> > squashed_udis;
+    vector<pair<string, off_t> > squashed_udis;
     CCScanHookSpacer(int sz)
         : sizewanted(sz), sizeseen(0) {assert(sz > 0);}
 

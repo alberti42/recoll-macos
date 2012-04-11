@@ -17,6 +17,9 @@
 #ifndef _beaglequeue_h_included_
 #define _beaglequeue_h_included_
 
+#include <list>
+using std::list;
+
 /**
  * Process the Beagle indexing queue. 
  *

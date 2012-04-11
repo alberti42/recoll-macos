@@ -18,11 +18,10 @@
 #define _FSTREEWALK_H_INCLUDED_
 
 #include <string>
-#include <list>
-
+#include <vector>
 #ifndef NO_NAMESPACES
 using std::string;
-using std::list;
+using std::vector;
 #endif
 
 class FsTreeWalkerCB;
@@ -92,18 +91,17 @@ class FsTreeWalker {
     int getErrCnt();
 
     /**
-     * Add a pattern to the list of things (file or dir) to be ignored
-     * (ie: #* , *~)
+     * Add a pattern (file or dir) to be ignored (ie: #* , *~)
      */
     bool addSkippedName(const string &pattern); 
-    /** Set the ignored patterns list */
-    bool setSkippedNames(const list<string> &patlist);
+    /** Set the ignored patterns set */
+    bool setSkippedNames(const vector<string> &patterns);
 
     /** Same for skipped paths: this are paths, not names, under which we
 	do not descend (ie: /home/me/.recoll) */
     bool addSkippedPath(const string &path); 
     /** Set the ignored paths list */
-    bool setSkippedPaths(const list<string> &pathlist);
+    bool setSkippedPaths(const vector<string> &patterns);
 
     /** Test if path/name should be skipped. This can be used independantly of
       * an actual tree walk */

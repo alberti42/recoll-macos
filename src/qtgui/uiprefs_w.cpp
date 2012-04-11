@@ -140,13 +140,13 @@ void UIPrefsDialog::setFromPrefs()
     stemLangCMB->clear();
     stemLangCMB->addItem(g_stringNoStem);
     stemLangCMB->addItem(g_stringAllStem);
-    list<string> langs;
+    vector<string> langs;
     if (!getStemLangs(langs)) {
 	QMessageBox::warning(0, "Recoll", 
 			     tr("error retrieving stemming languages"));
     }
     int cur = prefs.queryStemLang == ""  ? 0 : 1;
-    for (list<string>::const_iterator it = langs.begin(); 
+    for (vector<string>::const_iterator it = langs.begin(); 
 	 it != langs.end(); it++) {
 	stemLangCMB->
 	    addItem(QString::fromAscii(it->c_str(), it->length()));

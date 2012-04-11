@@ -140,7 +140,7 @@ class Db {
     }
 
     /** List existing stemming databases */
-    std::list<std::string> getStemLangs();
+    std::vector<std::string> getStemLangs();
 
 #ifdef TESTING_XAPIAN_SPELL
     /** Return spelling suggestion */

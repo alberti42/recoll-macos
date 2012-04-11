@@ -294,17 +294,17 @@ void AdvSearch::fillFileTypes()
 
     QStringList ql;
     if (m_ignByCats == false) {
-	list<string> types = theconfig->getAllMimeTypes();
-	for (list<string>::iterator it = types.begin(); 
+	vector<string> types = theconfig->getAllMimeTypes();
+	for (vector<string>::iterator it = types.begin(); 
 	     it != types.end(); it++) {
 	    QString qs = QString::fromUtf8(it->c_str());
 	    if (m_ignTypes.indexOf(qs) < 0)
 		ql.append(qs);
 	}
     } else {
-	list<string> cats;
+	vector<string> cats;
 	theconfig->getMimeCategories(cats);
-	for (list<string>::const_iterator it = cats.begin();
+	for (vector<string>::const_iterator it = cats.begin();
 	     it != cats.end(); it++) {
 	    map<QString, QString>::const_iterator it1;
 	    QString cat;
@@ -321,7 +321,7 @@ void AdvSearch::fillFileTypes()
     yesFiltypsLB->insertItems(0, ql);
 }
 
-// Save current list of ignored file types to prefs
+// Save current set of ignored file types to prefs
 void AdvSearch::saveFileTypes()
 {
     prefs.asearchIgnFilTyps = m_ignTypes;
@@ -383,9 +383,9 @@ void AdvSearch::runSearch()
 		} else {
 		    cat = (const char *)qcat.toUtf8();
 		}
-		list<string> types;
+		vector<string> types;
 		theconfig->getMimeCatTypes(cat, types);
-		for (list<string>::const_iterator it = types.begin();
+		for (vector<string>::const_iterator it = types.begin();
 		     it != types.end(); it++) {
 		    sdata->addFiletype(*it);
 		}
@@ -419,7 +419,7 @@ void AdvSearch::runSearch()
 	QString current = subtreeCMB->currentText();
 	sdata->setTopdir((const char*)subtreeCMB->currentText().toUtf8(),
 			 direxclCB->isChecked());
-	// Keep history list clean and sorted. Maybe there would be a
+	// Keep history clean and sorted. Maybe there would be a
 	// simpler way to do this
 	list<QString> entries;
 	for (int i = 0; i < subtreeCMB->count(); i++) {
@@ -427,7 +427,7 @@ void AdvSearch::runSearch()
 	}
 	entries.push_back(subtreeCMB->currentText());
 	entries.sort();
-	unique(entries.begin(), entries.end());
+	entries.unique();
 	subtreeCMB->clear();
 	for (list<QString>::iterator it = entries.begin(); 
 	     it != entries.end(); it++) {

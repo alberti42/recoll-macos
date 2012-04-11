@@ -48,11 +48,11 @@ static string stemdbname(const string& dbdir, const string& lang)
     return path_cat(dbdir, cstr_stemdirstem + lang);
 }
 
-list<string> getLangs(const string& dbdir)
+vector<string> getLangs(const string& dbdir)
 {
     string pattern = cstr_stemdirstem + "*";
-    list<string> dirs = path_dirglob(dbdir, pattern);
-    for (list<string>::iterator it = dirs.begin(); it != dirs.end(); it++) {
+    vector<string> dirs = path_dirglob(dbdir, pattern);
+    for (vector<string>::iterator it = dirs.begin(); it != dirs.end(); it++) {
 	*it = path_basename(*it);
 	*it = it->substr(cstr_stemdirstem.length(), string::npos);
     }
@@ -262,10 +262,10 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
     return true;
 }
 
-static string stringlistdisp(const list<string>& sl)
+static string stringlistdisp(const vector<string>& sl)
 {
     string s;
-    for (list<string>::const_iterator it = sl.begin(); it!= sl.end(); it++)
+    for (vector<string>::const_iterator it = sl.begin(); it!= sl.end(); it++)
 	s += "[" + *it + "] ";
     if (!s.empty())
 	s.erase(s.length()-1);
@@ -279,7 +279,7 @@ static string stringlistdisp(const list<string>& sl)
 static bool stemExpandOne(const std::string& dbdir, 
 			  const std::string& lang,
 			  const std::string& term,
-			  list<string>& result)
+			  vector<string>& result)
 {
     try {
 	Xapian::Stem stemmer(lang);
@@ -347,19 +347,19 @@ static bool stemExpandOne(const std::string& dbdir,
 bool stemExpand(const std::string& dbdir, 
 		const std::string& langs,
 		const std::string& term,
-		list<string>& result)
+		vector<string>& result)
 {
 
     list<string> llangs;
     stringToStrings(langs, llangs);
     for (list<string>::const_iterator it = llangs.begin();
 	 it != llangs.end(); it++) {
-	list<string> oneexp;
+	vector<string> oneexp;
 	stemExpandOne(dbdir, *it, term, oneexp);
 	result.insert(result.end(), oneexp.begin(), oneexp.end());
     }
-    result.sort();
-    result.unique();
+    sort(result.begin(), result.end());
+    unique(result.begin(), result.end());
     return true;
 }
 

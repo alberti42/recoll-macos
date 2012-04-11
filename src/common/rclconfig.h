@@ -121,7 +121,7 @@ class RclConfig {
      * Get list of config names under current sk, with possible 
      * wildcard filtering 
      */
-    list<string> getConfNames(const char *pattern = 0) {
+    vector<string> getConfNames(const char *pattern = 0) {
 	return m_conf->getNames(m_keydir, pattern);
     }
 
@@ -151,13 +151,13 @@ class RclConfig {
     string getIdxStatusFile();
 
     /** Get list of skipped file names for current keydir */
-    list<string>& getSkippedNames();
+    vector<string>& getSkippedNames();
 
     /** Get list of skipped paths patterns. Doesn't depend on the keydir */
-    list<string> getSkippedPaths();
+    vector<string> getSkippedPaths();
     /** Get list of skipped paths patterns, daemon version (may add some)
 	Doesn't depend on the keydir */
-    list<string> getDaemSkippedPaths();
+    vector<string> getDaemSkippedPaths();
 
     /** conf: Add local fields to target dic */
     bool addLocalFields(map<string, string> *tgt);
@@ -177,12 +177,12 @@ class RclConfig {
      * The returned command has substitutable places for input file name 
      * and temp dir name, and will return output name
      */
-    bool getUncompressor(const string &mtpe, list<string>& cmd);
+    bool getUncompressor(const string &mtpe, vector<string>& cmd);
 
     /** mimemap: compute mimetype */
     string getMimeTypeFromSuffix(const string &suffix);
     /** mimemap: get a list of all indexable mime types defined */
-    list<string> getAllMimeTypes();
+    vector<string> getAllMimeTypes();
     /** mimemap: Get appropriate suffix for mime type. This is inefficient */
     string getSuffixFromMimeType(const string &mt);
 
@@ -200,14 +200,14 @@ class RclConfig {
     string getMimeIconName(const string &mtype, string *path = 0);
 
     /** mimeconf: get list of file categories */
-    bool getMimeCategories(list<string>&);
+    bool getMimeCategories(vector<string>&);
     /** mimeconf: is parameter one of the categories ? */
     bool isMimeCategory(string&);
     /** mimeconf: get list of mime types for category */
-    bool getMimeCatTypes(const string& cat, list<string>&);
+    bool getMimeCatTypes(const string& cat, vector<string>&);
 
     /** mimeconf: get list of gui filters (doc cats by default */
-    bool getGuiFilterNames(list<string>&);
+    bool getGuiFilterNames(vector<string>&);
     /** mimeconf: get query lang frag for named filter */
     bool getGuiFilter(const string& filtername, string& frag);
 
@@ -222,7 +222,7 @@ class RclConfig {
     /** Get value of a parameter inside the "fields" file. Only some filters 
         use this (ie: mh_mail). The information specific to a given filter
         is typically stored in a separate section(ie: [mail]) */
-    list<string> getFieldSectNames(const string &sk, const char* = 0);
+    vector<string> getFieldSectNames(const string &sk, const char* = 0);
     bool getFieldConfParam(const string &name, const string &sk, string &value);
 
     /** mimeview: get/set external viewer exec string(s) for mimetype(s) */
@@ -267,7 +267,7 @@ class RclConfig {
     string m_keydir;    // Current directory used for parameter fetches.
     int    m_keydirgen; // To help with knowing when to update computed data.
 
-    list<string> m_cdirs; // directory stack for the confstacks
+    vector<string> m_cdirs; // directory stack for the confstacks
 
     ConfStack<ConfTree> *m_conf;   // Parsed configuration files
     ConfStack<ConfTree> *mimemap;  // The files don't change with keydir, 
@@ -284,7 +284,7 @@ class RclConfig {
     ParamStale   m_stpsuffstate;
 
     ParamStale   m_skpnstate;
-    list<string> m_skpnlist;
+    vector<string> m_skpnlist;
 
     // Parameters auto-fetched on setkeydir
     string defcharset;

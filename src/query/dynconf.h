@@ -98,8 +98,8 @@ template<typename Tp> list<Tp> RclDynConf::getList(const string &sk)
 {
     list<Tp> mlist;
     Tp entry;
-    list<string> names = m_data.getNames(sk);
-    for (list<string>::const_iterator it = names.begin(); 
+    vector<string> names = m_data.getNames(sk);
+    for (vector<string>::const_iterator it = names.begin(); 
 	 it != names.end(); it++) {
 	string value;
 	if (m_data.get(*it, value, sk)) {

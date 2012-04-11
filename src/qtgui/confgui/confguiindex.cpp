@@ -296,10 +296,10 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
     // customized in the system config like .thunderbird or
     // .purple. This doesn't prevent them to add and customize them
     // further.
-    list<string> allkeydirs = config->getSubKeys(true); 
+    vector<string> allkeydirs = config->getSubKeys(true); 
 
     QStringList qls;
-    for (list<string>::const_iterator it = allkeydirs.begin(); 
+    for (vector<string>::const_iterator it = allkeydirs.begin(); 
 	 it != allkeydirs.end(); it++) {
 	qls.push_back(QString::fromUtf8(it->c_str()));
     }

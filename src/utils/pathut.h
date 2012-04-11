@@ -19,12 +19,12 @@
 #include <unistd.h>
 
 #include <string>
-#include <list>
+#include <vector>
 #include "refcntr.h"
 
 #ifndef NO_NAMESPACES
 using std::string;
-using std::list;
+using std::vector;
 #endif
 
 /// Add a / at the end if none there yet.
@@ -46,9 +46,9 @@ extern string path_tildexpand(const string &s);
 extern string path_absolute(const string &s);
 /// Clean up path by removing duplicated / and resolving ../ + make it absolute
 extern string path_canon(const string &s);
-/// Use glob(3) to return a list of file names matching pattern inside dir
-extern list<string> path_dirglob(const string &dir, 
-					   const string pattern);
+/// Use glob(3) to return the file names matching pattern inside dir
+extern vector<string> path_dirglob(const string &dir, 
+				   const string pattern);
 /// Encode according to rfc 1738
 extern string url_encode(const string& url, 
 			      string::size_type offs = 0);

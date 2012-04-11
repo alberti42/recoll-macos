@@ -217,8 +217,8 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     doc.xdocid = docid;
 
     // Other, not predefined meta fields:
-    list<string> keys = parms.getNames(string());
-    for (list<string>::const_iterator it = keys.begin(); 
+    vector<string> keys = parms.getNames(string());
+    for (vector<string>::const_iterator it = keys.begin(); 
 	 it != keys.end(); it++) {
 	if (doc.meta.find(*it) == doc.meta.end()) 
 	    parms.get(*it, doc.meta[*it]);
@@ -228,9 +228,9 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
 }
 
 // Remove prefixes (caps) from a list of terms.
-static void noPrefixList(const list<string>& in, list<string>& out) 
+static void noPrefixList(const vector<string>& in, vector<string>& out) 
 {
-    for (list<string>::const_iterator qit = in.begin(); 
+    for (vector<string>::const_iterator qit = in.begin(); 
 	 qit != in.end(); qit++) {
 	if ('A' <= qit->at(0) && qit->at(0) <= 'Z') {
 	    string term = *qit;
@@ -252,10 +252,10 @@ static void noPrefixList(const list<string>& in, list<string>& out)
 #define LOGABS LOGDEB2
 #endif
 #if 0
-static void listList(const string& what, const list<string>&l)
+static void listList(const string& what, const vector<string>&l)
 {
     string a;
-    for (list<string>::const_iterator it = l.begin(); it != l.end(); it++) {
+    for (vector<string>::const_iterator it = l.begin(); it != l.end(); it++) {
         a = a + *it + " ";
     }
     LOGDEB(("%s: %s\n", what.c_str(), a.c_str()));
@@ -273,10 +273,10 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
     LOGDEB2(("makeAbstract:%d: maxlen %d wWidth %d\n", chron.ms(),
 	     m_rcldb->m_synthAbsLen, m_rcldb->m_synthAbsWordCtxLen));
 
-    list<string> terms;
+    vector<string> terms;
 
     {
-        list<string> iterms;
+        vector<string> iterms;
         query->getMatchTerms(docid, iterms);
         noPrefixList(iterms, terms);
         if (terms.empty()) {
@@ -289,13 +289,13 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
     // Retrieve db-wide frequencies for the query terms (we do this once per
     // query, using all the query terms, not only the document match terms)
     if (query->m_nq->termfreqs.empty()) {
-        list<string> iqterms, qterms;
+        vector<string> iqterms, qterms;
         query->getQueryTerms(iqterms);
         noPrefixList(iqterms, qterms);
 //        listList("Query terms: ", qterms);
 	double doccnt = xrdb.get_doccount();
 	if (doccnt == 0) doccnt = 1;
-	for (list<string>::const_iterator qit = qterms.begin(); 
+	for (vector<string>::const_iterator qit = qterms.begin(); 
 	     qit != qterms.end(); qit++) {
 	    query->m_nq->termfreqs[*qit] = xrdb.get_termfreq(*qit) / doccnt;
 	    LOGABS(("makeAbstract: [%s] db freq %.1e\n", qit->c_str(), 
@@ -312,7 +312,7 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
     double totalweight = 0;
     double doclen = xrdb.get_doclength(docid);
     if (doclen == 0) doclen = 1;
-    for (list<string>::const_iterator qit = terms.begin(); 
+    for (vector<string>::const_iterator qit = terms.begin(); 
 	 qit != terms.end(); qit++) {
 	Xapian::TermIterator term = xrdb.termlist_begin(docid);
 	term.skip_to(*qit);
@@ -338,7 +338,7 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 
     // Build a sorted by quality term list.
     multimap<double, string> byQ;
-    for (list<string>::const_iterator qit = terms.begin(); 
+    for (vector<string>::const_iterator qit = terms.begin(); 
 	 qit != terms.end(); qit++) {
 	if (termQcoefs.find(*qit) != termQcoefs.end())
 	    byQ.insert(pair<double,string>(termQcoefs[*qit], *qit));
@@ -1481,10 +1481,10 @@ bool Db::needUpdate(const string &udi, const string& sig)
 
 
 // Return list of existing stem db languages
-list<string> Db::getStemLangs()
+vector<string> Db::getStemLangs()
 {
     LOGDEB(("Db::getStemLang\n"));
-    list<string> dirs;
+    vector<string> dirs;
     if (m_ndb == 0 || m_ndb->m_isopen == false)
 	return dirs;
     dirs = StemDb::getLangs(m_basedir);
@@ -1724,7 +1724,7 @@ bool Db::stemExpand(const string &lang, const string &term,
     list<string> dirs = m_extraDbs;
     dirs.push_front(m_basedir);
     for (list<string>::iterator it = dirs.begin(); it != dirs.end(); it++) {
-	list<string> more;
+	vector<string> more;
 	StemDb::stemExpand(*it, lang, term, more);
 	LOGDEB1(("Db::stemExpand: Got %d from %s\n", 
 		 more.size(), it->c_str()));

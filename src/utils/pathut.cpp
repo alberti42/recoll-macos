@@ -47,11 +47,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
-#include <list>
 #include <stack>
 #ifndef NO_NAMESPACES
 using std::string;
-using std::list;
 using std::stack;
 #endif /* NO_NAMESPACES */
 
@@ -363,10 +361,10 @@ extern string path_canon(const string &is)
 
 #include <glob.h>
 #include <sys/stat.h>
-list<string> path_dirglob(const string &dir, 
-				    const string pattern)
+vector<string> path_dirglob(const string &dir, 
+			    const string pattern)
 {
-    list<string> res;
+    vector<string> res;
     glob_t mglob;
     string mypat=path_cat(dir, pattern);
     if (glob(mypat.c_str(), 0, 0, &mglob)) {
@@ -673,7 +671,7 @@ int main(int argc, const char **argv)
     thisprog = *argv++;argc--;
 
     string s;
-    list<string>::const_iterator it;
+    vector<string>::const_iterator it;
 #if 0
     for (unsigned int i = 0;i < sizeof(tstvec) / sizeof(char *); i++) {
 	cout << tstvec[i] << " Father " << path_getfather(tstvec[i]) << endl;
@@ -713,7 +711,7 @@ int main(int argc, const char **argv)
     }
     string dir = *argv++;argc--;
     string pattern =  *argv++;argc--;
-    list<string> matched = path_dirglob(dir, pattern);
+    vector<string> matched = path_dirglob(dir, pattern);
     for (it = matched.begin(); it != matched.end();it++) {
 	cout << *it << endl;
     }

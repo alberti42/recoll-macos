@@ -37,7 +37,6 @@
 
 #ifndef NO_NAMESPACES
 using namespace std;
-using std::list;
 #endif // NO_NAMESPACES
 
 #ifndef MIN
@@ -346,7 +345,7 @@ int ConfSimple::i_set(const std::string &nm, const std::string &value,
     // at begin() for a null subkey, or just behind the subkey
     // entry. End is either the next subkey entry, or the end of
     // list. We insert the new entry just before end.
-    list<ConfLine>::iterator start, fin;
+    vector<ConfLine>::iterator start, fin;
     if (sk.empty()) {
 	start = m_order.begin();
 	LOGDEB((stderr,"ConfSimple::i_set: null sk, start at top of order\n"));
@@ -367,7 +366,7 @@ int ConfSimple::i_set(const std::string &nm, const std::string &value,
 	// The null subkey has no entry (maybe it should)
 	if (!sk.empty())
 	    start++;
-	for (list<ConfLine>::iterator it = start; it != m_order.end(); it++) {
+	for (vector<ConfLine>::iterator it = start; it != m_order.end(); it++) {
 	    if (it->m_kind == ConfLine::CFL_SK) {
 		fin = it;
 		break;
@@ -402,8 +401,8 @@ int ConfSimple::erase(const string &nm, const string &sk)
 
 int ConfSimple::eraseKey(const string &sk)
 {
-    list<string>nms = getNames(sk);
-    for (list<string>::iterator it = nms.begin(); it != nms.end(); it++) {
+    vector<string> nms = getNames(sk);
+    for (vector<string>::iterator it = nms.begin(); it != nms.end(); it++) {
 	erase(*it, sk);
     }
     return write();
@@ -460,13 +459,13 @@ bool ConfSimple::write()
 
 // Write out the tree in configuration file format:
 // This does not check holdWrites, this is done by write(void), which
-// lets ie: listall work even when holdWrites is set
+// lets ie: showall work even when holdWrites is set
 bool ConfSimple::write(ostream& out) const
 {
     if (!ok())
 	return false;
     string sk;
-    for (list<ConfLine>::const_iterator it = m_order.begin(); 
+    for (vector<ConfLine>::const_iterator it = m_order.begin(); 
 	 it != m_order.end(); it++) {
 	switch(it->m_kind) {
 	case ConfLine::CFL_COMMENT: 
@@ -509,38 +508,38 @@ bool ConfSimple::write(ostream& out) const
     return true;
 }
 
-void ConfSimple::listall()
+void ConfSimple::showall()
 {
     if (!ok())
 	return;
     write(std::cout);
 }
 
-list<string> ConfSimple::getNames(const string &sk, const char *pattern)
+vector<string> ConfSimple::getNames(const string &sk, const char *pattern)
 {
-    std::list<string> mylist;
+    vector<string> mylist;
     if (!ok())
 	return mylist;
     map<string, map<string, string> >::iterator ss;
     if ((ss = m_submaps.find(sk)) == m_submaps.end()) {
 	return mylist;
     }
+    mylist.reserve(ss->second.size());
     map<string, string>::const_iterator it;
-    for (it = ss->second.begin();it != ss->second.end();it++) {
+    for (it = ss->second.begin(); it != ss->second.end(); it++) {
         if (pattern && FNM_NOMATCH == fnmatch(pattern, it->first.c_str(), 0))
             continue;
 	mylist.push_back(it->first);
     }
-    mylist.sort();
-    mylist.unique();
     return mylist;
 }
 
-list<string> ConfSimple::getSubKeys()
+vector<string> ConfSimple::getSubKeys()
 {
-    std::list<string> mylist;
+    vector<string> mylist;
     if (!ok())
 	return mylist;
+    mylist.reserve(m_submaps.size());
     map<string, map<string, string> >::iterator ss;
     for (ss = m_submaps.begin(); ss != m_submaps.end(); ss++) {
 	mylist.push_back(ss->first);
@@ -550,8 +549,8 @@ list<string> ConfSimple::getSubKeys()
 
 bool ConfSimple::hasNameAnywhere(const string& nm)
 {
-    list<string>keys = getSubKeys();
-    for (list<string>::const_iterator it = keys.begin(); 
+    vector<string>keys = getSubKeys();
+    for (vector<string>::const_iterator it = keys.begin(); 
          it != keys.end(); it++) {
         string val;
         if (get(nm, val, *it))
@@ -603,7 +602,7 @@ int ConfTree::get(const std::string &name, string &value, const string &sk)
 #include <string.h>
 #include <sstream>
 #include <iostream>
-#include <list>
+#include <vector>
 
 #include "conftree.h"
 #include "smallut.h"
@@ -700,7 +699,7 @@ const char *longvalue =
 void memtest(ConfSimple &c) 
 {
     cout << "Initial:" << endl;
-    c.listall();
+    c.showall();
     if (c.set("nom", "avec nl \n 2eme ligne", "")) {
 	fprintf(stderr, "set with embedded nl succeeded !\n");
 	exit(1);
@@ -719,7 +718,7 @@ void memtest(ConfSimple &c)
     }
 
     cout << "Final:" << endl;
-    c.listall();
+    c.showall();
 }
 
 bool readwrite(ConfNull *conf)
@@ -924,7 +923,7 @@ int main(int argc, char **argv)
     if (op_flags & OPT_U) {
 	exit(!complex_updates(argv[0]));
     }
-    list<string> flist;
+    vector<string> flist;
     while (argc--) {
 	flist.push_back(*argv++);
     }
@@ -951,8 +950,8 @@ int main(int argc, char **argv)
 	    cerr << "conf init error" << endl;
 	    exit(1);
 	}
-	list<string>lst = conf->getSubKeys();
-	for (list<string>::const_iterator it = lst.begin(); 
+	vector<string>lst = conf->getSubKeys();
+	for (vector<string>::const_iterator it = lst.begin(); 
 	     it != lst.end(); it++) {
 	    cout << *it << endl;
 	}
@@ -975,13 +974,13 @@ int main(int argc, char **argv)
 	    exit(1);
 	}
 	cout << "source: [" << source << "]" << endl;
-	list<string> strings;
+	vector<string> strings;
 	if (!stringToStrings(source, strings)) {
 	    cerr << "parse failed" << endl;
 	    exit(1);
 	}
 	    
-	for (list<string>::iterator it = strings.begin(); 
+	for (vector<string>::iterator it = strings.begin(); 
 	     it != strings.end(); it++) {
 	    cout << "[" << *it << "]" << endl;
 	}
@@ -992,17 +991,17 @@ int main(int argc, char **argv)
 	    exit(1);
 	}
 	printf("LIST\n");
-	conf->listall();
+	conf->showall();
 	//printf("WALK\n");conf->sortwalk(mywalker, 0);
 	printf("\nNAMES in global space:\n");
-	list<string> names = conf->getNames("");
-	for (list<string>::iterator it = names.begin();
+	vector<string> names = conf->getNames("");
+	for (vector<string>::iterator it = names.begin();
              it!=names.end(); it++) 
 	    cout << *it << " ";
         cout << endl;
 	printf("\nNAMES in global space matching t* \n");
 	names = conf->getNames("", "t*");
-	for (list<string>::iterator it = names.begin();
+	for (vector<string>::iterator it = names.begin();
              it!=names.end(); it++) 
 	    cout << *it << " ";
         cout << endl;

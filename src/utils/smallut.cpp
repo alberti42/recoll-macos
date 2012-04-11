@@ -32,6 +32,7 @@
 
 #include <string>
 #include <iostream>
+#include <list>
 
 #include "smallut.h"
 #include "utf8iter.h"

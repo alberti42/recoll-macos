@@ -130,7 +130,7 @@ bool FileInterner::getEnclosing(const string &url, const string &ipath,
 // Uncompress input file into a temporary one, by executing the appropriate
 // script.
 static bool uncompressfile(RclConfig *conf, const string& ifn, 
-			   const list<string>& cmdv, TempDir& tdir, 
+			   const vector<string>& cmdv, TempDir& tdir, 
 			   string& tfile)
 {
     // Make sure tmp dir is empty. we guarantee this to filters
@@ -141,7 +141,7 @@ static bool uncompressfile(RclConfig *conf, const string& ifn,
     string cmd = cmdv.front();
 
     // Substitute file name and temp dir in command elements
-    list<string>::const_iterator it = cmdv.begin();
+    vector<string>::const_iterator it = cmdv.begin();
     ++it;
     vector<string> args;
     map<char, string> subs;
@@ -245,7 +245,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 	// Has mime: check for a compressed file. If so, create a
 	// temporary uncompressed file, and rerun the mime type
 	// identification, then do the rest with the temp file.
-	list<string>ucmd;
+	vector<string>ucmd;
 	if (m_cfg->getUncompressor(l_mime, ucmd)) {
 	    // Check for compressed size limit
 	    int maxkbs = -1;
@@ -541,10 +541,10 @@ bool FileInterner::dataToTempFile(const string& dt, const string& mt,
 void FileInterner::checkExternalMissing(const string& msg, const string& mt)
 {
     if (m_missingdatap && msg.find("RECFILTERROR") == 0) {
-	list<string> lerr;
+	vector<string> lerr;
 	stringToStrings(msg, lerr);
 	if (lerr.size() > 2) {
-	    list<string>::iterator it = lerr.begin();
+	    vector<string>::iterator it = lerr.begin();
 	    lerr.erase(it++);
 	    if (*it == "HELPERNOTFOUND") {
 		lerr.erase(it++);
@@ -597,8 +597,8 @@ void FileInterner::getMissingFromDescription(FIMissingStore *st, const string& i
 	return;
 
     // The "missing" file is text. Each line defines a missing filter
-    // and the list of mime types actually encountered that needed it (see method
-    // getMissingDescription())
+    // and the list of mime types actually encountered that needed it
+    // (see method getMissingDescription())
 
     vector<string> lines;
     stringToTokens(in, lines, "\n");
@@ -1125,7 +1125,7 @@ bool FileInterner::isCompressed(const string& fn, RclConfig *cnf)
         return false;
     }
 
-    list<string>ucmd;
+    vector<string> ucmd;
     if (cnf->getUncompressor(l_mime, ucmd)) {
         return true;
     }
@@ -1149,7 +1149,7 @@ bool FileInterner::maybeUncompressToTemp(TempFile& temp, const string& fn,
         return false;
     }
 
-    list<string>ucmd;
+    vector<string>ucmd;
     if (!cnf->getUncompressor(l_mime, ucmd)) {
         return true;
     }

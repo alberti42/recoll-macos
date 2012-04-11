@@ -151,15 +151,15 @@ bool SearchData::expandFileTypes(RclConfig *cfg, vector<string>& tps)
 	return false;
     }
     vector<string> exptps;
-    list<string> alltypes = cfg->getAllMimeTypes();
+    vector<string> alltypes = cfg->getAllMimeTypes();
 
     for (vector<string>::iterator it = tps.begin(); it != tps.end(); it++) {
 	if (cfg->isMimeCategory(*it)) {
-	    list<string>tps;
+	    vector<string>tps;
 	    cfg->getMimeCatTypes(*it, tps);
 	    exptps.insert(exptps.end(), tps.begin(), tps.end());
 	} else {
-	    for (list<string>::const_iterator ait = alltypes.begin();
+	    for (vector<string>::const_iterator ait = alltypes.begin();
 		 ait != alltypes.end(); ait++) {
 		if (fnmatch(it->c_str(), ait->c_str(), FNM_CASEFOLD) 
 		    != FNM_NOMATCH) {

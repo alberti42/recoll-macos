@@ -24,20 +24,16 @@
 /// Stem databases are stored as separate xapian databases (used as an 
 /// Isam method), in subdirectories of the index.
 
-#include <list>
+#include <vector>
 #include <string>
 
 #include <xapian.h>
 
-#ifndef NO_NAMESPACES
-using std::string;
-using std::list;
 namespace Rcl {
 namespace StemDb {
-#endif // NO_NAMESPACES
 
 /// Get languages of existing stem databases
-extern std::list<std::string> getLangs(const std::string& dbdir);
+extern std::vector<std::string> getLangs(const std::string& dbdir);
 /// Delete stem database for given language
 extern bool deleteDb(const std::string& dbdir, const std::string& lang);
 /// Create stem database for given language
@@ -47,10 +43,8 @@ extern bool createDb(Xapian::Database& xdb,
 extern bool stemExpand(const std::string& dbdir, 
 		       const std::string& langs,
 		       const std::string& term,
-		       list<string>& result);
-#ifndef NO_NAMESPACES
+		       std::vector<std::string>& result);
 }
 }
-#endif // NO_NAMESPACES
 
 #endif /* _STEMDB_H_INCLUDED_ */

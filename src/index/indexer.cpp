@@ -239,13 +239,13 @@ bool ConfIndexer::createStemmingDatabases()
             LOGERR(("ConfIndexer::createStemmingDb: could not open db\n"))
             return false;
         }
-	list<string> langs;
+	vector<string> langs;
 	stringToStrings(slangs, langs);
 
 	// Get the list of existing stem dbs from the database (some may have 
 	// been manually created, we just keep those from the config
-	list<string> dblangs = m_db.getStemLangs();
-	list<string>::const_iterator it;
+	vector<string> dblangs = m_db.getStemLangs();
+	vector<string>::const_iterator it;
 	for (it = dblangs.begin(); it != dblangs.end(); it++) {
 	    if (find(langs.begin(), langs.end(), *it) == langs.end())
 		m_db.deleteStemDb(*it);

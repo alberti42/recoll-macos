@@ -19,7 +19,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <list>
 #include <vector>
 
 #include "xapian.h"
@@ -240,7 +239,7 @@ bool Query::setQuery(RefCntr<SearchData> sdata)
 }
 
 
-bool Query::getQueryTerms(list<string>& terms)
+bool Query::getQueryTerms(vector<string>& terms)
 {
     if (ISNULL(m_nq))
 	return false;
@@ -261,11 +260,11 @@ bool Query::getQueryTerms(list<string>& terms)
     return true;
 }
 
-bool Query::getMatchTerms(const Doc& doc, list<string>& terms)
+bool Query::getMatchTerms(const Doc& doc, vector<string>& terms)
 {
     return getMatchTerms(doc.xdocid, terms);
 }
-bool Query::getMatchTerms(unsigned long xdocid, list<string>& terms)
+bool Query::getMatchTerms(unsigned long xdocid, vector<string>& terms)
 {
     if (ISNULL(m_nq) || !m_nq->xenquire) {
 	LOGERR(("Query::getMatchTerms: no query opened\n"));
@@ -421,10 +420,10 @@ bool Query::getDoc(int xapi, Doc &doc)
     return m_db->m_ndb->dbDataToRclDoc(docid, data, doc);
 }
 
-list<string> Query::expand(const Doc &doc)
+vector<string> Query::expand(const Doc &doc)
 {
     LOGDEB(("Rcl::Query::expand()\n"));
-    list<string> res;
+    vector<string> res;
     if (ISNULL(m_nq) || !m_nq->xenquire) {
 	LOGERR(("Query::expand: no query opened\n"));
 	return res;

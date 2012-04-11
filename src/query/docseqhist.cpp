@@ -44,10 +44,10 @@ bool RclDHistoryEntry::encode(string& value)
 // Current entry format is "U time b64udi"
 bool RclDHistoryEntry::decode(const string &value)
 {
-    list<string> vall;
+    vector<string> vall;
     stringToStrings(value, vall);
 
-    list<string>::const_iterator it = vall.begin();
+    vector<string>::const_iterator it = vall.begin();
     udi.erase();
     string fn, ipath;
     switch (vall.size()) {

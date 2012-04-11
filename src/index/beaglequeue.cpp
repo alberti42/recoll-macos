@@ -127,8 +127,8 @@ public:
             confstr += line + "\n";
         }
         ConfSimple fields(confstr, 1);
-        list<string> names = fields.getNames(cstr_null);
-        for (list<string>::iterator it = names.begin();
+        vector<string> names = fields.getNames(cstr_null);
+        for (vector<string>::iterator it = names.begin();
              it != names.end(); it++) {
             string value;
             fields.get(*it, value, cstr_null);

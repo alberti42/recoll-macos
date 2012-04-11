@@ -51,11 +51,11 @@ MimeHandlerMail::MimeHandlerMail(RclConfig *cnf, const string &mt)
 {
 
     // Look for additional headers to be processed as per config:
-    list<string> hdrnames = 
+    vector<string> hdrnames = 
         m_config->getFieldSectNames("mail");
     if (hdrnames.empty())
         return;
-    for (list<string>::const_iterator it = hdrnames.begin();
+    for (vector<string>::const_iterator it = hdrnames.begin();
          it != hdrnames.end(); it++) {
         (void)m_config->getFieldConfParam(*it, "mail", m_addProcdHdrs[*it]);
     }

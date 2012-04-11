@@ -18,8 +18,8 @@
 #define _MH_EXEC_H_INCLUDED_
 
 #include <string>
-#include <list>
-using std::list;
+#include <vector>
+using std::vector;
 using std::string;
 
 #include "mimehandler.h"
@@ -43,9 +43,9 @@ class MimeHandlerExec : public RecollFilter {
     // (no use to try and execute over and over something that's not
     // here).
 
-    // Parameter list: this has been built by our creator, from config file 
+    // Parameters: this has been built by our creator, from config file 
     // data. We always add the file name at the end before actual execution
-    list<string> params;
+    vector<string> params;
     // Filter output type. The default for ext. filters is to output html, 
     // but some don't, in which case the type is defined in the config.
     string cfgFilterOutputMtype;
