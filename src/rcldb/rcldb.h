@@ -18,7 +18,6 @@
 #define _DB_H_INCLUDED_
 
 #include <string>
-#include <list>
 #include <vector>
 
 #include "cstr.h"
@@ -29,7 +28,6 @@
 
 #ifndef NO_NAMESPACES
 using std::string;
-using std::list;
 using std::vector;
 #endif
 
@@ -80,8 +78,8 @@ public:
     TermMatchEntry() : wcf(0) {}
     TermMatchEntry(const string&t, int f, int d) : term(t), wcf(f), docs(d) {}
     TermMatchEntry(const string&t) : term(t), wcf(0) {}
-    bool operator==(const TermMatchEntry &o) { return term == o.term;}
-    bool operator<(const TermMatchEntry &o) { return term < o.term;}
+    bool operator==(const TermMatchEntry &o) const { return term == o.term;}
+    bool operator<(const TermMatchEntry &o) const { return term < o.term;}
     string term;
     int    wcf; // Total count of occurrences within collection.
     int    docs; // Number of documents countaining term.
@@ -91,7 +89,7 @@ class TermMatchResult {
 public:
     TermMatchResult() {clear();}
     void clear() {entries.clear(); dbdoccount = 0; dbavgdoclen = 0;}
-    list<TermMatchEntry> entries;
+    vector<TermMatchEntry> entries;
     unsigned int dbdoccount;
     double       dbavgdoclen;
 };
@@ -124,8 +122,11 @@ class Db {
     /** Get explanation about last error */
     string getReason() const {return m_reason;}
 
-    /** List possible stemmer names */
-    static list<string> getStemmerNames();
+    /** Return all possible stemmer names */
+    static vector<string> getStemmerNames();
+
+    /** Return existing stemming databases */
+    vector<string> getStemLangs();
 
     /** Test word for spelling correction candidate: not too long, no 
 	special chars... */
@@ -139,8 +140,6 @@ class Db {
 	return true;
     }
 
-    /** List existing stemming databases */
-    std::vector<std::string> getStemLangs();
 
 #ifdef TESTING_XAPIAN_SPELL
     /** Return spelling suggestion */
@@ -148,7 +147,7 @@ class Db {
 #endif
 
     /* The next two, only for searchdata, should be somehow hidden */
-    /* Return list of configured stop words */
+    /* Return configured stop words */
     const StopList& getStopList() const {return m_stops;}
     /* Field name to prefix translation (ie: author -> 'A') */
     bool fieldToTraits(const string& fldname, const FieldTraits **ftpp);
@@ -201,7 +200,7 @@ class Db {
     /** Tell if directory seems to hold xapian db */
     static bool testDbDir(const string &dir);
 
-    /** Return a list of index terms that match the input string
+    /** Return the index terms that match the input string
      * Expansion is performed either with either wildcard or regexp processing
      * Stem expansion is performed if lang is not empty */
     enum MatchType {ET_WILD, ET_REGEXP, ET_STEM};
@@ -215,7 +214,7 @@ class Db {
 
     /** Special filename wildcard to XSFN terms expansion.
 	internal/searchdata use only */
-    bool filenameWildExp(const string& exp, list<string>& names);
+    bool filenameWildExp(const string& exp, vector<string>& names);
 
     /** Set parameters for synthetic abstract generation */
     void setAbstractParams(int idxTrunc, int synthLen, int syntCtxLen);
@@ -287,8 +286,8 @@ private:
     int          m_maxFsOccupPc;
     // Database directory
     string       m_basedir;
-    // List of directories for additional databases to query
-    list<string> m_extraDbs;
+    // Xapian directories for additional databases to query
+    vector<string> m_extraDbs;
     OpenMode m_mode;
     // File existence vector: this is filled during the indexing pass. Any
     // document whose bit is not set at the end is purged

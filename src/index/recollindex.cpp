@@ -394,8 +394,8 @@ int main(int argc, char **argv)
     } else if (op_flags & OPT_l) {
 	if (argc != 0) 
 	    Usage();
-	list<string> stemmers = ConfIndexer::getStemmerNames();
-	for (list<string>::const_iterator it = stemmers.begin(); 
+	vector<string> stemmers = ConfIndexer::getStemmerNames();
+	for (vector<string>::const_iterator it = stemmers.begin(); 
 	     it != stemmers.end(); it++) {
 	    cout << *it << endl;
 	}

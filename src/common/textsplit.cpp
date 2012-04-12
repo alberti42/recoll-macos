@@ -780,9 +780,9 @@ template <class T> bool u8stringToStrings(const string &s, T &tokens)
     return true;
 }
 
-bool TextSplit::stringToStrings(const string &s, list<string> &tokens)
+bool TextSplit::stringToStrings(const string &s, vector<string> &tokens)
 {
-    return u8stringToStrings<list<string> >(s, tokens);
+    return u8stringToStrings<vector<string> >(s, tokens);
 }
 
 #else  // TEST driver ->

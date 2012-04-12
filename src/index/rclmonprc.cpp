@@ -35,6 +35,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <list>
+#include <vector>
+using std::list;
+using std::vector;
 
 #include "debuglog.h"
 #include "rclmon.h"
@@ -501,7 +504,7 @@ bool startMonitor(RclConfig *conf, int opts)
 		// purge.
 		deleted.push_back(ev.m_path);
 		if (ev.evflags() & RclMonEvent::RCLEVT_ISDIR) {
-		    list<string> paths;
+		    vector<string> paths;
 		    if (subtreelist(conf, ev.m_path, paths)) {
 			deleted.insert(deleted.end(),
 				       paths.begin(), paths.end());

@@ -184,7 +184,7 @@ void SpellW::doExpand()
         resTW->setItem(0, 0, new QTableWidgetItem(tr("No expansion found")));
     } else {
         int row = 0;
-	for (list<Rcl::TermMatchEntry>::iterator it = res.entries.begin(); 
+	for (vector<Rcl::TermMatchEntry>::iterator it = res.entries.begin(); 
 	     it != res.entries.end(); it++) {
 	    LOGDEB(("SpellW::expand: %6d [%s]\n", it->wcf, it->term.c_str()));
 	    char num[30];

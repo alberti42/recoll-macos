@@ -299,7 +299,7 @@ void SSearch::completion()
 	ok = true;
     } else {
 	QStringList lst;
-	for (list<Rcl::TermMatchEntry>::iterator it = tmres.entries.begin(); 
+	for (vector<Rcl::TermMatchEntry>::iterator it = tmres.entries.begin(); 
 	     it != tmres.entries.end(); it++) {
 	    lst.push_back(QString::fromUtf8(it->term.c_str()));
 	}

@@ -107,7 +107,7 @@ class ConfIndexer {
     bool createAspellDict();
 
     /** List possible stemmer names */
-    static list<string> getStemmerNames();
+    static vector<string> getStemmerNames();
 
     /** Index a list of files. No db cleaning or stemdb updating */
     bool indexFiles(list<string> &files, IxFlag f = IxFNone);

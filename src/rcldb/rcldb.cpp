@@ -227,7 +227,7 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     return true;
 }
 
-// Remove prefixes (caps) from a list of terms.
+// Remove prefixes (caps) from terms.
 static void noPrefixList(const vector<string>& in, vector<string>& out) 
 {
     for (vector<string>::const_iterator qit = in.begin(); 
@@ -592,9 +592,9 @@ Db::~Db()
     i_close(true);
 }
 
-list<string> Db::getStemmerNames()
+vector<string> Db::getStemmerNames()
 {
-    list<string> res;
+    vector<string> res;
     stringToStrings(Xapian::Stem::get_available_languages(), res);
     return res;
 }
@@ -652,7 +652,7 @@ bool Db::open(OpenMode mode, OpenError *error)
 	default:
 	    m_ndb->m_iswritable = false;
 	    m_ndb->xrdb = Xapian::Database(dir);
-	    for (list<string>::iterator it = m_extraDbs.begin();
+	    for (vector<string>::iterator it = m_extraDbs.begin();
 		 it != m_extraDbs.end(); it++) {
 		if (error)
 		    *error = DbOpenExtraDb;
@@ -814,7 +814,7 @@ bool Db::rmQueryDb(const string &dir)
     if (dir.empty()) {
 	m_extraDbs.clear();
     } else {
-	list<string>::iterator it = find(m_extraDbs.begin(), 
+	vector<string>::iterator it = find(m_extraDbs.begin(), 
 					 m_extraDbs.end(), dir);
 	if (it != m_extraDbs.end()) {
 	    m_extraDbs.erase(it);
@@ -1454,7 +1454,7 @@ bool Db::needUpdate(const string &udi, const string& sig)
 		// Set the existence flag for all the subdocs (if any)
 		vector<Xapian::docid> docids;
 		if (!m_ndb->subDocs(udi, docids)) {
-		    LOGERR(("Rcl::Db::needUpdate: can't get subdocs list\n"));
+		    LOGERR(("Rcl::Db::needUpdate: can't get subdocs\n"));
 		    return true;
 		}
 		for (vector<Xapian::docid>::iterator it = docids.begin();
@@ -1480,7 +1480,7 @@ bool Db::needUpdate(const string &udi, const string& sig)
 }
 
 
-// Return list of existing stem db languages
+// Return existing stem db languages
 vector<string> Db::getStemLangs()
 {
     LOGDEB(("Db::getStemLang\n"));
@@ -1645,7 +1645,7 @@ bool Db::purgeFile(const string &udi, bool *existed)
 }
 
 // File name wild card expansion. This is a specialisation ot termMatch
-bool Db::filenameWildExp(const string& fnexp, list<string>& names)
+bool Db::filenameWildExp(const string& fnexp, vector<string>& names)
 {
     string pattern = fnexp;
     names.clear();
@@ -1665,7 +1665,7 @@ bool Db::filenameWildExp(const string& fnexp, list<string>& names)
     TermMatchResult result;
     if (!termMatch(ET_WILD, string(), pattern, result, 1000, Doc::keyfn))
 	return false;
-    for (list<TermMatchEntry>::const_iterator it = result.entries.begin();
+    for (vector<TermMatchEntry>::const_iterator it = result.entries.begin();
 	 it != result.entries.end(); it++) 
 	names.push_back(it->term);
 
@@ -1685,7 +1685,7 @@ bool Db::maxYearSpan(int *minyear, int *maxyear)
     TermMatchResult result;
     if (!termMatch(ET_WILD, string(), "*", result, 5000, "xapyear"))
 	return false;
-    for (list<TermMatchEntry>::const_iterator it = result.entries.begin();
+    for (vector<TermMatchEntry>::const_iterator it = result.entries.begin();
 	 it != result.entries.end(); it++) {
         if (!it->term.empty()) {
             int year = atoi(it->term.c_str()+1);
@@ -1721,9 +1721,9 @@ public:
 bool Db::stemExpand(const string &lang, const string &term, 
 		    TermMatchResult& result, int max)
 {
-    list<string> dirs = m_extraDbs;
-    dirs.push_front(m_basedir);
-    for (list<string>::iterator it = dirs.begin(); it != dirs.end(); it++) {
+    vector<string> dirs(1, m_basedir);
+    dirs.insert(dirs.end(), m_extraDbs.begin(), m_extraDbs.end());
+    for (vector<string>::iterator it = dirs.begin(); it != dirs.end(); it++) {
 	vector<string> more;
 	StemDb::stemExpand(*it, lang, term, more);
 	LOGDEB1(("Db::stemExpand: Got %d from %s\n", 
@@ -1737,11 +1737,11 @@ bool Db::stemExpand(const string &lang, const string &term,
 }
 
 /** Add prefix to all strings in list */
-static void addPrefix(list<TermMatchEntry>& terms, const string& prefix)
+static void addPrefix(vector<TermMatchEntry>& terms, const string& prefix)
 {
     if (prefix.empty())
 	return;
-    for (list<TermMatchEntry>::iterator it = terms.begin(); 
+    for (vector<TermMatchEntry>::iterator it = terms.begin(); 
          it != terms.end(); it++)
 	it->term.insert(0, prefix);
 }
@@ -1795,9 +1795,9 @@ bool Db::termMatch(MatchType typ, const string &lang,
     if (typ == ET_STEM) {
 	if (!stemExpand(lang, root, res, max))
 	    return false;
-	res.entries.sort();
-	res.entries.unique();
-	for (list<TermMatchEntry>::iterator it = res.entries.begin(); 
+	sort(res.entries.begin(), res.entries.end());
+	unique(res.entries.begin(), res.entries.end());
+	for (vector<TermMatchEntry>::iterator it = res.entries.begin(); 
 	     it != res.entries.end(); it++) {
 	    XAPTRY(it->wcf = xdb.get_collection_freq(it->term);
                    it->docs = xdb.get_termfreq(it->term),
@@ -1884,11 +1884,11 @@ bool Db::termMatch(MatchType typ, const string &lang,
     }
 
     TermMatchCmpByTerm tcmp;
-    res.entries.sort(tcmp);
+    sort(res.entries.begin(), res.entries.end(), tcmp);
     TermMatchTermEqual teq;
-    res.entries.unique(teq);
+    unique(res.entries.begin(), res.entries.end(), teq);
     TermMatchCmpByWcf wcmp;
-    res.entries.sort(wcmp);
+    sort(res.entries.begin(), res.entries.end(), wcmp);
     if (max > 0) {
 	res.entries.resize(MIN(res.entries.size(), (unsigned int)max));
     }

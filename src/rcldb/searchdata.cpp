@@ -364,7 +364,7 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
     }
 
     string field;
-    list<string> words;
+    vector<string> words;
     // Walk the clause list. If we find any non simple clause or different
     // field names, bail out.
     for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++) {
@@ -409,7 +409,7 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
     if (!doccnt)
 	doccnt = 1;
     string swords;
-    for (list<string>::iterator it = words.begin(); 
+    for (vector<string>::iterator it = words.begin(); 
 	 it != words.end(); it++) {
 	double freq = double(db.termDocCnt(*it)) / doccnt;
 	if (freq < freqThreshold) {
@@ -598,7 +598,7 @@ public:
 
     bool processUserString(const string &iq,
 			   string &ermsg,
-			   list<Xapian::Query> &pqueries, 
+			   vector<Xapian::Query> &pqueries, 
 			   const StopList &stops,
 			   int slack = 0, bool useNear = false);
     // After processing the string: return search terms and term
@@ -616,13 +616,14 @@ public:
     }
 
 private:
-    void expandTerm(bool dont, const string& term, list<string>& exp, 
+    void expandTerm(bool dont, const string& term, vector<string>& exp, 
                     string& sterm, const string& prefix);
     // After splitting entry on whitespace: process non-phrase element
-    void processSimpleSpan(const string& span, bool nostemexp, list<Xapian::Query> &pqueries);
+    void processSimpleSpan(const string& span, bool nostemexp, 
+			   vector<Xapian::Query> &pqueries);
     // Process phrase/near element
     void processPhraseOrNear(TextSplitQ *splitData, 
-			     list<Xapian::Query> &pqueries,
+			     vector<Xapian::Query> &pqueries,
 			     bool useNear, int slack, int mods);
 
     Db&           m_db;
@@ -644,14 +645,6 @@ static void listVector(const string& what, const vector<string>&l)
     }
     LOGDEB(("%s: %s\n", what.c_str(), a.c_str()));
 }
-static void listList(const string& what, const list<string>& l)
-{
-    string a;
-    for (list<string>::const_iterator it = l.begin(); it != l.end(); it++) {
-        a = a + *it + " ";
-    }
-    LOGDEB(("%s: %s\n", what.c_str(), a.c_str()));
-}
 #endif
 
 /** Expand stem and wildcards
@@ -668,7 +661,7 @@ static void listList(const string& what, const list<string>& l)
  */
 void StringToXapianQ::expandTerm(bool nostemexp, 
                                  const string& term, 
-                                 list<string>& exp,
+                                 vector<string>& exp,
                                  string &sterm, const string& prefix)
 {
     LOGDEB2(("expandTerm: field [%s] term [%s] stemlang [%s] nostemexp %d\n",
@@ -690,8 +683,8 @@ void StringToXapianQ::expandTerm(bool nostemexp,
     if (nostemexp && !haswild) {
 	sterm = term;
         m_uterms.push_back(sterm);
-	exp.push_front(prefix + term);
 	exp.resize(1);
+	exp[0] = prefix + term;
     } else {
 	TermMatchResult res;
 	if (haswild) {
@@ -703,7 +696,7 @@ void StringToXapianQ::expandTerm(bool nostemexp,
 	    m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term, res, -1, 
 			   m_field);
 	}
-	for (list<TermMatchEntry>::const_iterator it = res.entries.begin(); 
+	for (vector<TermMatchEntry>::const_iterator it = res.entries.begin(); 
 	     it != res.entries.end(); it++) {
 	    exp.push_back(it->term);
 	}
@@ -746,11 +739,11 @@ void multiply_groups(vector<vector<string> >::const_iterator vvit,
 }
 
 void StringToXapianQ::processSimpleSpan(const string& span, bool nostemexp,
-					list<Xapian::Query> &pqueries)
+					vector<Xapian::Query> &pqueries)
 {
     LOGDEB2(("StringToXapianQ::processSimpleSpan: [%s] nostemexp %d\n",
 	     span.c_str(), int(nostemexp)));
-    list<string> exp;  
+    vector<string> exp;  
     string sterm; // dumb version of user term
 
     string prefix;
@@ -762,7 +755,7 @@ void StringToXapianQ::processSimpleSpan(const string& span, bool nostemexp,
     expandTerm(nostemexp, span, exp, sterm, prefix);
 
     // m_terms is used for highlighting, we don't want prefixes in there.
-    for (list<string>::const_iterator it = exp.begin(); 
+    for (vector<string>::const_iterator it = exp.begin(); 
 	 it != exp.end(); it++) {
 	m_terms.push_back(it->substr(prefix.size()));
     }
@@ -787,12 +780,12 @@ void StringToXapianQ::processSimpleSpan(const string& span, bool nostemexp,
 // queries if the terms get expanded by stemming or wildcards (we
 // don't do stemming for PHRASE though)
 void StringToXapianQ::processPhraseOrNear(TextSplitQ *splitData, 
-					  list<Xapian::Query> &pqueries,
+					  vector<Xapian::Query> &pqueries,
 					  bool useNear, int slack, int mods)
 {
     Xapian::Query::op op = useNear ? Xapian::Query::OP_NEAR : 
 	Xapian::Query::OP_PHRASE;
-    list<Xapian::Query> orqueries;
+    vector<Xapian::Query> orqueries;
     bool hadmultiple = false;
     vector<vector<string> >groups;
 
@@ -818,13 +811,13 @@ void StringToXapianQ::processPhraseOrNear(TextSplitQ *splitData,
 	bool nostemexp = *nxit || (op == Xapian::Query::OP_PHRASE) || hadmultiple;
 
 	string sterm;
-	list<string> exp;
+	vector<string> exp;
 	expandTerm(nostemexp, *it, exp, sterm, prefix);
 	LOGDEB0(("ProcessPhrase: exp size %d\n", exp.size()));
-	listList("", exp);
+	listVector("", exp);
 	// groups is used for highlighting, we don't want prefixes in there.
 	vector<string> noprefs;
-	for (list<string>::const_iterator it = exp.begin(); 
+	for (vector<string>::const_iterator it = exp.begin(); 
 	     it != exp.end(); it++) {
 	    noprefs.push_back(it->substr(prefix.size()));
 	}
@@ -894,7 +887,7 @@ static int stringToMods(string& s)
  */
 bool StringToXapianQ::processUserString(const string &iq,
 					string &ermsg,
-					list<Xapian::Query> &pqueries,
+					vector<Xapian::Query> &pqueries,
 					const StopList& stops,
 					int slack, 
 					bool useNear
@@ -913,13 +906,13 @@ bool StringToXapianQ::processUserString(const string &iq,
     // "words" are really phrases, this depends on separators:
     // [paul@dom.net] would still be a word (span), but [about:me]
     // will probably be handled as a phrase.
-    list<string> phrases;
+    vector<string> phrases;
     TextSplit::stringToStrings(iq, phrases);
 
     // Process each element: textsplit into terms, handle stem/wildcard 
     // expansion and transform into an appropriate Xapian::Query
     try {
-	for (list<string>::iterator it = phrases.begin(); 
+	for (vector<string>::iterator it = phrases.begin(); 
 	     it != phrases.end(); it++) {
 	    LOGDEB0(("strToXapianQ: phrase/word: [%s]\n", it->c_str()));
 	    int mods = stringToMods(*it);
@@ -1006,7 +999,7 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 	LOGERR(("SearchDataClauseSimple: bad m_tp %d\n", m_tp));
 	return false;
     }
-    list<Xapian::Query> pqueries;
+    vector<Xapian::Query> pqueries;
 
     // We normally boost the original term in the stem expansion list. Don't
     // do it if there are wildcards anywhere, this would skew the results.
@@ -1046,12 +1039,12 @@ bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p,
     Xapian::Query *qp = (Xapian::Query *)p;
     *qp = Xapian::Query();
 
-    list<string> patterns;
+    vector<string> patterns;
     TextSplit::stringToStrings(m_text, patterns);
-    list<string> names;
-    for (list<string>::iterator it = patterns.begin();
+    vector<string> names;
+    for (vector<string>::iterator it = patterns.begin();
 	 it != patterns.end(); it++) {
-	list<string> more;
+	vector<string> more;
 	db.filenameWildExp(*it, more);
 	Xapian::Query tq = Xapian::Query(Xapian::Query::OP_OR, more.begin(), 
 					 more.end());
@@ -1076,7 +1069,7 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
     Xapian::Query *qp = (Xapian::Query *)p;
     *qp = Xapian::Query();
 
-    list<Xapian::Query> pqueries;
+    vector<Xapian::Query> pqueries;
     Xapian::Query nq;
 
     // We normally boost the original term in the stem expansion list. Don't

@@ -25,7 +25,7 @@
 #include "debuglog.h"
 
 bool subtreelist(RclConfig *config, const string& top, 
-			list<string>& paths)
+			vector<string>& paths)
 {
     LOGDEB(("subtreelist: top: [%s]\n", top.c_str()));
     Rcl::Db rcldb(config);
@@ -65,7 +65,7 @@ bool subtreelist(RclConfig *config, const string& top,
 #include <string.h>
 
 #include <iostream>
-#include <list>
+#include <vector>
 #include <string>
 using namespace std;
 
@@ -115,12 +115,12 @@ int main(int argc, char **argv)
 	exit(1);
     }
 
-    list<string> paths;
+    vector<string> paths;
     if (!subtreelist(config, top, paths)) {
 	cerr << "subtreelist failed" << endl;
 	exit(1);
     }
-    for (list<string>::const_iterator it = paths.begin(); 
+    for (vector<string>::const_iterator it = paths.begin(); 
 	 it != paths.end(); it++) {
 	cout << *it << endl;
     }

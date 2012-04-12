@@ -18,11 +18,11 @@
 #define _TEXTSPLIT_H_INCLUDED_
 
 #include <string>
-#include <list>
+#include <vector>
 
 #ifndef NO_NAMESPACES
 using std::string;
-using std::list;
+using std::vector;
 #endif
 
 class Utf8Iter;
@@ -94,7 +94,7 @@ public:
      * non-utf-8 input (iso-8859 config files work ok). This hopefully
      * handles all Unicode whitespace, but needs correct utf-8 input
      */
-    static bool stringToStrings(const string &s, list<string> &tokens);
+    static bool stringToStrings(const string &s, vector<string> &tokens);
 
     /** Is char CJK ? */
     static bool isCJK(int c);

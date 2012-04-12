@@ -1083,7 +1083,8 @@ void RclMain::showActiveTypes()
 
     // Build the set of mtypes, stripping the prefix
     set<string> mtypesfromdb;
-    for (list<Rcl::TermMatchEntry>::const_iterator it = matches.entries.begin(); 
+    for (vector<Rcl::TermMatchEntry>::const_iterator it = 
+	     matches.entries.begin(); 
 	 it != matches.entries.end(); it++) {
 	mtypesfromdb.insert(it->term.substr(prefix.size()));
     }

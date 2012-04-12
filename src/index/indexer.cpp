@@ -310,7 +310,7 @@ bool ConfIndexer::createAspellDict()
     return true;
 }
 
-list<string> ConfIndexer::getStemmerNames()
+vector<string> ConfIndexer::getStemmerNames()
 {
     return Rcl::Db::getStemmerNames();
 }

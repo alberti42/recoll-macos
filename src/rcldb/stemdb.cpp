@@ -90,13 +90,13 @@ p_notlowerascii(unsigned int c)
 }
 
 static bool addAssoc(Xapian::WritableDatabase &sdb, const string& stem,
-                     const list<string>& derivs)
+                     const vector<string>& derivs)
 {
     Xapian::Document newdocument;
     newdocument.add_term(stem);
     // The doc data is just parents=blank-separated-list
     string record = "parents=";
-    for (list<string>::const_iterator it = derivs.begin(); 
+    for (vector<string>::const_iterator it = derivs.begin(); 
          it != derivs.end(); it++) {
         record += *it + " ";
     }
@@ -215,7 +215,7 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
 
     // Enter pseud-docs in db by walking the multimap.
     string stem;
-    list<string> derivs;
+    vector<string> derivs;
     for (multimap<string,string>::const_iterator it = assocs.begin();
          it != assocs.end(); it++) {
         if (stem == it->first) {
@@ -350,9 +350,9 @@ bool stemExpand(const std::string& dbdir,
 		vector<string>& result)
 {
 
-    list<string> llangs;
+    vector<string> llangs;
     stringToStrings(langs, llangs);
-    for (list<string>::const_iterator it = llangs.begin();
+    for (vector<string>::const_iterator it = llangs.begin();
 	 it != llangs.end(); it++) {
 	vector<string> oneexp;
 	stemExpandOne(dbdir, *it, term, oneexp);

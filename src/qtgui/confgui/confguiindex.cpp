@@ -184,9 +184,9 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
     setSzPol(eskp, QSizePolicy::Preferred, QSizePolicy::Preferred, 1, 3);
     gl1->addWidget(eskp, 1, 0, 1, 2);
 
-    list<string> cstemlangs = Rcl::Db::getStemmerNames();
+    vector<string> cstemlangs = Rcl::Db::getStemmerNames();
     QStringList stemlangs;
-    for (list<string>::const_iterator it = cstemlangs.begin(); 
+    for (vector<string>::const_iterator it = cstemlangs.begin(); 
 	 it != cstemlangs.end(); it++) {
 	stemlangs.push_back(QString::fromUtf8(it->c_str()));
     }
