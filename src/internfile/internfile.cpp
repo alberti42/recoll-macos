@@ -679,6 +679,11 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 	    doc.dmtime = it->second;
 	} else if (it->first == cstr_dj_keyorigcharset) {
 	    doc.origcharset = it->second;
+	} else if (it->first == cstr_dj_keyfn) {
+	    // Only if not set during the stack walk
+	    const string *fnp = 0;
+	    if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty())
+		doc.meta[Rcl::Doc::keyfn] = it->second;
 	} else if (it->first == cstr_dj_keymt || 
 		   it->first == cstr_dj_keycharset) {
 	    // don't need/want these.
@@ -735,7 +740,7 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
 		// We have a non-empty ipath
 		hasipath = true;
 		getKeyValue(docdata, cstr_dj_keymt, doc.mimetype);
-		getKeyValue(docdata, cstr_dj_keyfn, doc.utf8fn);
+		getKeyValue(docdata, cstr_dj_keyfn, doc.meta[Rcl::Doc::keyfn]);
 	    } else {
 		if (doc.fbytes.empty())
 		    getKeyValue(docdata, cstr_dj_keydocsize, doc.fbytes);
@@ -999,15 +1004,16 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, const string& ipath
 	return FIError;
     }
 
-    // If indexing compute ipath and significant mimetype.  ipath is
-    // returned through doc.ipath. We also retrieve some metadata
-    // fields from the ancesters (like date or author). This is useful
-    // for email attachments. The values will be replaced by those
-    // internal to the document (by dijontorcl()) if any, so the order
-    // of calls is important.
-    if (!m_forPreview) {
-	collectIpathAndMT(doc);
-    } else {
+    // Compute ipath and significant mimetype.  ipath is returned
+    // through doc.ipath. We also retrieve some metadata fields from
+    // the ancesters (like date or author). This is useful for email
+    // attachments. The values will be replaced by those internal to
+    // the document (by dijontorcl()) if any, so the order of calls is
+    // important. We used to only do this when indexing, but the aux
+    // fields like filename and author may be interesting when
+    // previewing too
+    collectIpathAndMT(doc);
+    if (m_forPreview) {
 	doc.mimetype = m_reachedMType;
     }
     // Keep this AFTER collectIpathAndMT

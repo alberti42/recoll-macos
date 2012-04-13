@@ -262,15 +262,11 @@ protected:
     int m_slack;
 };
 
-/** Filename search clause. This is special because term expansion is only
- * performed against the XSFN terms (it's performed against the main index
- * for all other fields). Else we could just use a "filename:" field
- * This doesn't really make sense (either). I think we could either expand
- * filenames against all terms and then select the XSFN ones, or always perform
- * expansion only against the field's terms ? Anyway this doesn't hurt
- * much either. 
+/** 
+ * Filename search clause. This is special because term expansion is only
+ * performed against the unsplit file name terms. 
  *
- * There is a big advantage though in expanding only against the
+ * There is a big advantage in expanding only against the
  * field, especially for file names, because this makes searches for
  * "*xx" much faster (no need to scan the whole main index).
  */

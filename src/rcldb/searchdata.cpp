@@ -1024,32 +1024,25 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
     return true;
 }
 
-// Translate a FILENAME search clause. This mostly (or always) comes
+// Translate a FILENAME search clause. This always comes
 // from a "filename" search from the gui or recollq. A query language
 // "filename:"-prefixed field will not go through here, but through
 // the generic field-processing code.
 //
-// In the case of multiple space-separated fragments, we generate an
-// AND of OR queries. Each OR query comes from the expansion of a
-// fragment. We used to generate a single OR with all expanded terms,
-// which did not make much sense.
+// We do not split the entry any more (used to do some crazy thing
+// about expanding multiple fragments in the past. We just take the
+// value blanks and all and expand this against the indexed unsplit
+// file names
 bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p, 
 					     const string&)
 {
     Xapian::Query *qp = (Xapian::Query *)p;
     *qp = Xapian::Query();
 
-    vector<string> patterns;
-    TextSplit::stringToStrings(m_text, patterns);
     vector<string> names;
-    for (vector<string>::iterator it = patterns.begin();
-	 it != patterns.end(); it++) {
-	vector<string> more;
-	db.filenameWildExp(*it, more);
-	Xapian::Query tq = Xapian::Query(Xapian::Query::OP_OR, more.begin(), 
-					 more.end());
-	*qp = qp->empty() ? tq : Xapian::Query(Xapian::Query::OP_AND, *qp, tq);
-    }
+    db.filenameWildExp(m_text, names);
+    *qp = Xapian::Query(Xapian::Query::OP_OR, names.begin(), names.end());
+
     if (m_weight != 1.0) {
 	*qp = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, *qp, m_weight);
     }

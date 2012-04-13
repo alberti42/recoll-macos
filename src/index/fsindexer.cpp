@@ -452,8 +452,9 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 	    doc.fmtime = ascdate;
         if (doc.url.empty())
             doc.url = cstr_fileu + fn;
-	if (doc.utf8fn.empty())
-	    doc.utf8fn = utf8fn;
+	const string *fnp = 0;
+	if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty())
+	    doc.meta[Rcl::Doc::keyfn] = utf8fn;
 
 	char cbuf[100]; 
 	sprintf(cbuf, OFFTPC, stp->st_size);
@@ -512,7 +513,7 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 	LOGDEB1(("Creating empty doc for file\n"));
 	Rcl::Doc fileDoc;
 	fileDoc.fmtime = ascdate;
-	fileDoc.utf8fn = utf8fn;
+	fileDoc.meta[Rcl::Doc::keyfn] = utf8fn;
 	fileDoc.mimetype = interner.getMimetype();
 	fileDoc.url = cstr_fileu + fn;
 

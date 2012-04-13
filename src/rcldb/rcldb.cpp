@@ -109,6 +109,22 @@ static const string cstr_syntAbs("?!#@");
 static map<string, FieldTraits> fldToTraits;
 static PTMutexInit o_fldToTraits_mutex;
 
+// A bogus fldToTraits key (bogus because not a real field) used to
+// retrieve the prefix used for specific filename searches (unsplit
+// filename, not "filename as 'filename:' field" searches)
+static const string keySysFilenamePrefix("rclUnsplitFN");
+// The prefix for regular "filename:" field searches.
+static const string cstr_fnAsFieldPrefix("XSFN");
+// The prefix for unsplit filename terms used with specific -f or
+// "File Name" GUI entries. There is a compile option to use the same prefix 
+// for both.
+// #define UNSPLIT_FN_PREFIX_SAME_AS_SPLIT
+#if defined(UNSPLIT_FN_PREFIX_SAME_AS_SPLIT)
+static const string cstr_fnUnsplitPrefix(cstr_fnAsFieldPrefix);
+#else
+static const string cstr_fnUnsplitPrefix("XSFS");
+#endif
+
 static void initFldToTraits() 
 {
     PTMutexLocker locker(o_fldToTraits_mutex);
@@ -123,7 +139,9 @@ static void initFldToTraits()
     fldToTraits[Doc::keyabs] = FieldTraits();
 
     fldToTraits["ext"] = FieldTraits("XE");
-    fldToTraits[Doc::keyfn] = FieldTraits("XSFN");
+
+    fldToTraits[Doc::keyfn] = FieldTraits(cstr_fnAsFieldPrefix);
+    fldToTraits[keySysFilenamePrefix] = FieldTraits(cstr_fnUnsplitPrefix);
 
     fldToTraits[cstr_caption] = FieldTraits("S");
     fldToTraits[Doc::keytt] = FieldTraits("S");
@@ -220,7 +238,7 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     vector<string> keys = parms.getNames(string());
     for (vector<string>::const_iterator it = keys.begin(); 
 	 it != keys.end(); it++) {
-	if (doc.meta.find(*it) == doc.meta.end()) 
+	if (doc.meta.find(*it) == doc.meta.end())
 	    parms.get(*it, doc.meta[*it]);
     }
     doc.meta[Doc::keymt] = doc.dmtime.empty() ? doc.fmtime : doc.dmtime;
@@ -1099,11 +1117,6 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     TextSplitDb splitter(newdocument, nxt);
     tpidx.setTSD(&splitter);
 
-    // Split and index file name as document term(s)
-    LOGDEB2(("Db::add: split file name [%s]\n", fn.c_str()));
-    if (!splitter.text_to_words(doc.utf8fn))
-        LOGDEB(("Db::addOrUpdate: split failed for file name\n"));
-
     // If the ipath is like a path, index the last element. This is
     // for compound documents like zip and chm for which the filter
     // uses the file path as ipath. 
@@ -1180,11 +1193,13 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     // Mime type
     newdocument.add_term("T" + doc.mimetype);
 
-    // Simple file name indexed for file name searches with a term prefix
-    // We also add a term for the filename extension if any.
-    if (!doc.utf8fn.empty()) {
+    // Simple file name indexed unsplit for file name searches with a
+    // term prefix We also add a term for the filename extension if
+    // any.
+    string utf8fn;
+    if (doc.getmeta(Doc::keyfn, &utf8fn) && !utf8fn.empty()) {
 	string fn;
-	if (unacmaybefold(doc.utf8fn, fn, "UTF-8", true)) {
+	if (unacmaybefold(utf8fn, fn, "UTF-8", true)) {
 	    // We should truncate after extracting the extension, but this is
 	    // a pathological case anyway
 	    if (fn.size() > 230)
@@ -1193,17 +1208,8 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	    if (pos != string::npos && pos != fn.length() - 1) {
 		newdocument.add_term(string("XE") + fn.substr(pos + 1));
 	    }
-	    fn = string("XSFN") + fn;
+	    fn = cstr_fnUnsplitPrefix + fn;
 	    newdocument.add_term(fn);
-	}
-        // Store utf8fn inside the metadata array as keyfn
-        // (="filename") so that it can be accessed by the "stored"
-        // processing below, without special-casing it. We only do it
-        // if keyfn is currently empty, because there could be a value
-        // already (ie for a mail attachment with a file name
-        // attribute)
-	if (doc.meta[Doc::keyfn].empty()) {
-            doc.meta[Doc::keyfn] = doc.utf8fn;
 	}
     }
 
@@ -1663,7 +1669,8 @@ bool Db::filenameWildExp(const string& fnexp, vector<string>& names)
     LOGDEB(("Rcl::Db::filenameWildExp: pattern: [%s]\n", pattern.c_str()));
 
     TermMatchResult result;
-    if (!termMatch(ET_WILD, string(), pattern, result, 1000, Doc::keyfn))
+    if (!termMatch(ET_WILD, string(), pattern, result, 1000, 
+		   keySysFilenamePrefix))
 	return false;
     for (vector<TermMatchEntry>::const_iterator it = result.entries.begin();
 	 it != result.entries.end(); it++) 

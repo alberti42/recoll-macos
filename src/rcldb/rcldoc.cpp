@@ -47,7 +47,6 @@ namespace Rcl {
     void Doc::dump(bool dotext) const
     {
         LOGDEB(("Rcl::Doc::dump: url: [%s]\n", url.c_str()));
-        LOGDEB(("Rcl::Doc::dump: utf8fn: [%s]\n", utf8fn.c_str()));
         LOGDEB(("Rcl::Doc::dump: ipath: [%s]\n", ipath.c_str()));
         LOGDEB(("Rcl::Doc::dump: mimetype: [%s]\n", mimetype.c_str()));
         LOGDEB(("Rcl::Doc::dump: fmtime: [%s]\n", fmtime.c_str()));

@@ -428,8 +428,6 @@ Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
     case 'f':
 	if (!key.compare(Rcl::Doc::keyfs)) {
 	    self->doc->fbytes = uvalue;
-	} else if (!key.compare(Rcl::Doc::keyfn)) {
-	    self->doc->utf8fn = uvalue;
 	} else if (!key.compare(Rcl::Doc::keyfmt)) {
 	    self->doc->fmtime = uvalue;
 	}

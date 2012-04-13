@@ -212,8 +212,7 @@ class Db {
     /** Return min and max years for doc mod times in db */
     bool maxYearSpan(int *minyear, int *maxyear);
 
-    /** Special filename wildcard to XSFN terms expansion.
-	internal/searchdata use only */
+    /** Wildcard expansion specific to file names. Internal/sdata use only */
     bool filenameWildExp(const string& exp, vector<string>& names);
 
     /** Set parameters for synthetic abstract generation */

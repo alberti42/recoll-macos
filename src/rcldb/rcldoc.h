@@ -48,11 +48,6 @@ class Doc {
     // Query: from doc data.
     string url;
 
-    // Transcoded version of the simple file name for SFN-prefixed
-    // specific file name indexing
-    // Index: set by DbIndexer::processone    
-    string utf8fn; 
-
     // Internal path for multi-doc files. Ascii
     // Set by FsIndexer::processone    
     string ipath;
@@ -123,7 +118,6 @@ class Doc {
     ///////////////////////////////////////////////////////////////////
     void erase() {
 	url.erase();
-	utf8fn.erase();
 	ipath.erase();
 	mimetype.erase();
 	fmtime.erase();
@@ -148,6 +142,17 @@ class Doc {
 	if (it != meta.end()) {
 	    if (value)
 		*value = it->second;
+	    return true;
+	} else {
+	    return false;
+	}
+    }
+    bool peekmeta(const string& nm, const string **value = 0) const
+    {
+	map<string,string>::const_iterator it = meta.find(nm);
+	if (it != meta.end()) {
+	    if (value)
+		*value = &(it->second);
 	    return true;
 	} else {
 	    return false;
