@@ -35,15 +35,12 @@
           supposedly fixed in later versions. Bugs listed in the
           topmost section may also exist in older versions.</i></p>
 
-      <h2><a name="b_latest">recoll 1.17.0</a></h2> 
+      <h2><a name="b_latest">recoll 1.17.10</a></h2> 
 
-      <ul> 
-        <li>The chm filter handles badly some CHM files with encoded
-          internal URLs (the whole file or some parts are not
-          indexed). There is an updated filter on the filters section
-          of the download page.</li>
-        <li>The application style sheet is not reapplied when changed
-          from the preferences menu, you have to restart the GUI.</li>
+      <ul>
+        <li>The version string was not correctly updated for 1.17.1, the
+        help dialog and recollindex -v will print 1.17.0.</li>
+
         <li>It will sometimes happen that the result list paragraph format
           stored in the Qt preferences file will get garbled,
           causing result lists with no displayed paragraphs (the
@@ -61,9 +58,16 @@
           startup. This is fixed by removing (back it up just in case)
           ~/.config/Recoll.org/recoll.conf, the QSettings storage for
           recoll.</li>
-
       </ul>
 
+
+      <h2><a name="b_1_17_0">recoll 1.17.0</a></h2> 
+        <li>The chm filter handles badly some CHM files with encoded
+          internal URLs (the whole file or some parts are not
+          indexed). There is an updated filter on the filters section
+          of the download page.</li>
+        <li>The application style sheet is not reapplied when changed
+          from the preferences menu, you have to restart the GUI.</li>
 
       <h2><a name="b_1_16_2">recoll 1.16.2</a></h2> 
         <li>Real time indexer: directory moves are not handled at
