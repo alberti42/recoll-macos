@@ -214,7 +214,7 @@
       they have been modified. On the first execution, all
       documents will need processing. A full index build can be forced
       later by specifying an option to the indexing command
-      (<command>recollindex -z</command>).</para> 
+      (<command>recollindex</command> <option>-z</option>).</para> 
 
       <para>&RCL; indexing can be performed with two different
        methods:</para>
@@ -274,7 +274,10 @@
         section. After every indexing operation, &RCL; updates a list of
         commands that would be needed for indexing existing files
         types. This list can be displayed by selecting the menu option
-        <guilabel>File</guilabel>-><guilabel>Show Missing Helpers</guilabel>
+	<menuchoice>
+	    <guimenu>File</guimenu>
+	    <guimenu>Show Missing Helpers</guimenu>
+        </menuchoice>
         in the <command>recoll</command> GUI. It is stored in the
         <filename>missing</filename> text file inside the configuration
         directory.</para>
@@ -434,25 +437,32 @@ recoll
 
       <para>The first time you start <command>recoll</command>, you
         will be asked whether or not you would like it to build the
-        index. If you want to adjust the configuration before indexing,
-        just click <guilabel>Cancel</guilabel> at this point, which will get
-        you into the configuration interface. If you exit at this point, 
-        <filename>recoll</filename> will have created a ~/.recoll directory
-        containing empty configuration files, which you can edit by hand.</para>
+        index. If you want to adjust the configuration before
+        indexing, just click <guilabel>Cancel</guilabel> at this
+        point, which will get you into the configuration interface. If
+        you exit at this point, <filename>recoll</filename> will have
+        created a <filename>~/.recoll</filename> directory containing
+        empty configuration files, which you can edit by hand.</para>
 
       <para>The configuration is documented inside the 
         <link linkend="rcl.install.config">installation chapter</link> 
-        of this document, or in the recoll.conf(5) man page, but the most
+        of this document, or in the 
+       <citerefentry>
+            <refentrytitle>recoll.conf</refentrytitle>
+	    <manvolnum>5</manvolnum>
+       </citerefentry>
+        man page, but the most
         current information will most likely be the comments inside the
         sample file. The most immediately useful variable you may
         interested in is probably 
-        <link linkend="rcl.install.config.recollconf.topdirs">topdirs</link>,
+        <link linkend="rcl.install.config.recollconf.topdirs">
+	<varname>topdirs</varname></link>, 
         which determines what subtrees get indexed.</para>
 
       <para>The applications needed to index file types other than
         text, HTML or email (ie: pdf, postscript, ms-word...) are
         described in the <link linkend="rcl.install.external">external
-          packages section</link></para>
+          packages section.</link></para>
 
       <sect2 id="rcl.indexing.config.gui">
         <title>The indexing configuration GUI</title>
@@ -464,8 +474,11 @@ recoll
         option.)</para> 
 
         <para>The interface is started from the
-        <guilabel>Preferences</guilabel>-><guilabel>Indexing
-        Configuration</guilabel> menu entry. It is divided in three tabs,
+	<menuchoice>
+            <guimenu>Preferences</guimenu>
+	    <guimenu>Indexing Configuration</guimenu> 
+	</menuchoice>
+	menu entry. It is divided in three tabs,
         <guilabel>Global parameters</guilabel>, <guilabel>Local
         parameters</guilabel>, and <guilabel>Beagle web history</guilabel>,
         which is explained in the next section.</para>
@@ -498,7 +511,9 @@ recoll
       <title>Using Beagle WEB browser plugins</title>
 
       <para><application>Beagle</application> is (was?) a concurrent desktop
-	indexer, built on Lucene and the Mono project (C#), for which a
+	indexer, built on <application>Lucene</application> and 
+	the <application>Mono</application> project 
+	(<application>C#</application>), for which a
 	number of add-on browser plugins were written. These work by
 	copying visited web pages to an indexing queue directory, which the
 	indexer then processes. Especially, there is a
@@ -507,7 +522,9 @@ recoll
       <para>If, for any reason, you so happen to prefer &RCL; to
 	<application>Beagle</application>, you can still use the
 	<application>Firefox</application> plugin, which is written in
-	Javascript and completely independant of C#, Beagle, Lucene..., and
+	<application>Javascript</application> and completely independant of 
+	<application>C#</application>, <application>Beagle</application>, 
+	<application>Lucene</application>..., and
 	set &RCL; to process the <application>Beagle</application> queue
 	directory. This supposes that <application>Beagle</application> is
 	not running, else both programs will fight for the same
@@ -523,7 +540,8 @@ recoll
          Recoll wiki</ulink>.</para>
 
       <para>Unfortunately, it seems that the plugin does not work anymore
-        with recent Firefox versions (tried with 10.0). This is not the
+        with recent <application>Firefox</application>
+        versions (tried with 10.0). This is not the
         trival installation version check issue, explicit manual indexing
         requests still work, but automatic indexing on page load does
         not.</para>
@@ -552,11 +570,15 @@ recoll
           if canceled).</para>
 
         <para>The <command>recollindex</command> indexing process can be
-          interrupted by sending an interrupt (Ctrl-C, SIGINT) or terminate
+          interrupted by sending an interrupt (<keysym>Ctrl-C</keysym>, 
+	  SIGINT) or terminate
           (SIGTERM) signal. Some time may elapse before the process exits,
           because it needs to properly flush and close the index. This can
           also be done from the <command>recoll</command> GUI
-          <guilabel>File</guilabel>-><guilabel>Stop Indexing</guilabel>
+	  <menuchoice>
+	        <guimenu>File</guimenu>
+                <guimenu>Stop Indexing</guimenu>
+          </menuchoice>
           menu entry.</para>
 
 	<para>After such an interruption, the index will be somewhat
@@ -575,17 +597,23 @@ recoll
         <para>Of special interest maybe are the <option>-i</option> and
           <option>-f</option> options. <option>-i</option> allows
           indexing an explicit list of files (given as command line
-          parameters or read on stdin). <option>-f</option> tells
+          parameters or read on <literal>stdin</literal>). 
+	  <option>-f</option> tells
           <command>recollindex</command> to ignore file selection
           parameters from the configuration. Together, these options allow
           building a custom file selection process for some area of the
           file system, by adding the top directory to the
           <varname>skippedPaths</varname> list and using an appropriate
           file selection method to build the file list to be fed to
-          <literal>recollindex&nbsp;-if</literal> .</para>
+          <command>recollindex</command> <option>-if</option>. 
+	  Trivial example:</para>  
+	  <programlisting>
+	    find . -name indexable.txt -print | recollindex -if
+	  </programlisting>
 
-        <para><literal>recollindex&nbsp;-i</literal> will not descend into
-          directory parameters, but just add them as index entries. It is
+        <para><command>recollindex</command> <option>-i</option> will 
+	  not descend into subdirectories specified as parameters, 
+	  but just add them as index entries. It is
           up to the external file selection method to build the complete
           file list.</para>
       </sect2>
@@ -600,26 +628,32 @@ recoll
           3:30AM (supposing <command>recollindex</command> is in your
           PATH):
 
-        <programlisting>30 3 * * * recollindex > /some/tmp/dir/recolltrace 2>&amp;1</programlisting>
+        <screen><![CDATA[
+30 3 * * * recollindex > /some/tmp/dir/recolltrace 2>&1
+]]></screen>
 
 	  Or, using <command>anacron</command>:
-<programlisting>1  15  su mylogin -c "recollindex recollindex > /tmp/rcltraceme 2>&amp;1"</programlisting>
+<screen><![CDATA[
+1  15  su mylogin -c "recollindex recollindex > /tmp/rcltraceme 2>&1"
+]]></screen>
         </para>
 
         <para>As of version 1.17 the &RCL; GUI has dialogs to manage
           <filename>crontab</filename> entries for
           <command>recollindex</command>. You can reach them from the
-          <guilabel>Preferences</guilabel>-><guilabel>Indexing
-          Schedule</guilabel> menu. They only 
+	  <menuchoice>
+              <guimenu>Preferences</guimenu>
+	      <guimenu>Indexing Schedule</guimenu> 
+          </menuchoice> 
+	  menu. They only 
           work with the good old <command>cron</command>, and do not give
           access to all features of <command>cron</command> scheduling.</para>
 
         <para>The usual command to edit your
-          <filename>crontab</filename> is 
-          <userinput>crontab -e</userinput> (which will usually start
-          the <command>vi</command> editor to edit the file). You may
-          have more sophisticated tools available on your
-          system.</para>
+          <filename>crontab</filename> is <command>crontab</command>
+          <option>-e</option> (which will usually start the
+          <command>vi</command> editor to edit the file). You may have
+          more sophisticated tools available on your system.</para>
 
         <para>Please be aware that there may be differences between your
           usual interactive command line environment and the one seen by
@@ -635,28 +669,32 @@ recoll
       <title>Real time indexing</title>
 
       <para>Real time monitoring/indexing is performed by starting the
-        <command>recollindex -m</command> command. With this option,
-        <command>recollindex</command> will detach from the terminal and
-        become a daemon, permanently monitoring file changes and updating
-        the index.</para>
+        <command>recollindex</command> <option>-m</option> command.
+        With this option, <command>recollindex</command> will detach
+        from the terminal and become a daemon, permanently monitoring
+        file changes and updating the index.</para>
 
-      <para>Under KDE, Gnome and some other desktop environments, the daemon
-        can automatically started when you log in, by creating a desktop
-        file inside the <filename>~/.config/autostart</filename> directory.
-        This can be done for you by the &RCL; GUI. Use the
-        <guimenu>Preferences->Indexing Schedule</guimenu> menu.</para>
+      <para>Under <application>KDE</application>,
+      <application>Gnome</application> and some other desktop
+      environments, the daemon can automatically started when you log
+      in, by creating a desktop file inside the
+      <filename>~/.config/autostart</filename> directory.  This can be
+      done for you by the &RCL; GUI. Use the
+      <guimenu>Preferences->Indexing Schedule</guimenu> menu.</para>
       
-      <para>With older X11 setups, starting the daemon is normally
-        performed as part of the user session script.</para>
+      <para>With older <application>X11</application> setups, starting
+        the daemon is normally performed as part of the user session
+        script.</para>
 
       <para>The <filename>rclmon.sh</filename> script can be used to
       easily start and stop the daemon. It can be found in the
       <filename>examples</filename> directory (typically
       <filename>/usr/local/[share/]recoll/examples</filename>).</para>
 
-      <para>For example, my out of fashion xdm-based session has a
-        <filename>.xsession</filename> script with the following lines at
-        the end:</para>
+      <para>For example, my out of fashion
+        <application>xdm</application>-based session has a
+        <filename>.xsession</filename> script with the following lines
+        at the end:</para>
 
       <programlisting>recollconf=$HOME/.recoll-home
 recolldata=/usr/local/share/recoll
@@ -670,12 +708,14 @@ fvwm
         for which the session waits.</para> <para>By default the
         indexing daemon will monitor the state of the X11 session, and
         exit when it finishes, it is not necessary to kill it
-        explicitly. (The X11 server monitoring can be disabled with option
-        <option>-x</option> to <command>recollindex</command>).</para>
+        explicitly. (The <application>X11</application> server
+        monitoring can be disabled with option <option>-x</option> to
+        <command>recollindex</command>).</para>
 
-      <para>If you use the daemon completely out of an X11 session, you
-        need to add option <option>-x</option> to disable  X11 session
-        monitoring (else the daemon will not start).</para>
+      <para>If you use the daemon completely out of an
+        <application>X11</application> session, you need to add option
+        <option>-x</option> to disable <application>X11</application> session monitoring (else
+        the daemon will not start).</para>
 
       <para>By default, the messages from the indexing daemon will be
         discarded. You may want to change this by setting the
@@ -687,12 +727,13 @@ fvwm
 
       <para>When building &RCL;, the real time indexing support can be
         customised during package <link
-        linkend="rcl.install.building.build">configuration</link> with the
-        <option>--with[out]-fam</option> or
+        linkend="rcl.install.building.build">configuration</link> with
+        the <option>--with[out]-fam</option> or
         <option>--with[out]-inotify</option> options.  The default is
-        currently to include <application>inotify</application> monitoring
-        on systems that support it, and, as of recoll 1.17,
-        <application>gamin</application> support on FreeBSD.</para>
+        currently to include <application>inotify</application>
+        monitoring on systems that support it, and, as of &RCL; 1.17,
+        <application>gamin</application> support on
+        <application>FreeBSD</application>.</para>
 
       <para>While it is convenient that data is indexed in real time,
         repeated indexing can generate a significant load on the
@@ -867,8 +908,12 @@ fvwm
       you have to care about the syntax.</para>
 
       <para>You can use the <link linkend="rcl.search.complex">
-       <guilabel>Tools</guilabel> / <guilabel>Advanced search</guilabel>
-        </link> dialog for more complex searches.</para>
+      <menuchoice>
+          <guimenu>Tools</guimenu> 
+          <guimenu>Advanced search</guimenu>
+      </menuchoice>
+      </link> dialog for more complex searches.</para>
+
     </sect2>
 
     <sect2 id="rcl.search.reslist">
@@ -904,7 +949,8 @@ fvwm
        the <guilabel>Use desktop preferences</guilabel> option in the user
        preferences dialog to use the desktop defaults for all
        documents. This is probably the best option if you are using a well
-       configured Gnome or KDE desktop.</para>
+       configured <application>Gnome</application> or 
+       <application>KDE</application> desktop.</para>
 
       <para>The <literal>Preview</literal> and <literal>Open</literal>
        edit links may not be present for all entries, meaning that
@@ -1961,25 +2007,31 @@ fvwm
         by the message filters.</para>
 
         <para>The default value for the paragraph format string is:
-        <programlisting>&lt;img src="%I" align="left">%R %S %L &amp;nbsp;&amp;nbsp;&lt;b>%T&lt;/b>&lt;br>
-%M&amp;nbsp;%D&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;i>%U&lt;/i>&amp;nbsp;%i&lt;br>
+        <screen><![CDATA[
+<img src="%I" align="left">%R %S %L &nbsp;&nbsp;<b>%T</b><br>
+%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i>&nbsp;%i<br>
 %A %K
-        </programlisting>
+]]></screen>
+
         You may, for example, try the following for a more web-like
         experience:
-        <programlisting>&lt;u>&lt;b>&lt;a href="P%N"&gt;%T&lt;/a&gt;&lt;/b>&lt;/u>&lt;br>
-%A&lt;font color=#008000>%U - %S&lt;/font> - %L
-        </programlisting>
-        Or the clean looking:
-        <programlisting>&lt;img src="%I" align="left">%L &lt;font color="#900000">%R&lt;/font>
-&nbsp;&nbsp;&lt;b>%T&lt;/b>&lt;br>%S&nbsp;
-&lt;font color="#808080">&lt;i>%U&lt;/i>&lt;/font>
-&lt;table bgcolor="#e0e0e0">
-&lt;tr>&lt;td>&lt;div>%A&lt;/div>&lt;/td>&lt;/tr>
-&lt;/table>%K
-        </programlisting>
-           Note that the P%N link in the above paragraph makes the title a
-           preview link.
+
+        <screen><![CDATA[
+<u><b><a href="P%N">%T</a></b></u><br>
+%A<font color=#008000>%U - %S</font> - %L
+]]></screen>
+
+       Note that the P%N link in the above paragraph makes the title a
+       preview link. Or the clean looking:
+
+        <screen><![CDATA[
+<img src="%I" align="left">%L <font color="#900000">%R</font>
+&nbsp;&nbsp;<b>%T&</b><br>%S&nbsp;
+<font color="#808080"><i>%U</i></font>
+<table bgcolor="#e0e0e0">
+<tr><td><div>%A</div></td></tr>
+</table>%K
+]]></screen>
         </para>
 
         <para>These samples, and some others are 
@@ -3338,14 +3390,14 @@ while query.next >= 0 and query.next < nres:
 	manifest itself by strange messages about a missing
 	iconv_open.</para>
 
-	<para>Development files for 
-        <ulink url="http://www.xapian.org">
-         <application>Xapian core</application></ulink>.</para> <important><para>If you
-         are building Xapian for an older CPU (before Pentium 4 or Athlon
-         64), you need to add the --disable-sse flag to the configure
-         command. Else all Xapian application will crash with an
-         <literal>illegal instruction</literal> error.</para>
-	</important>
+	<para>Development files for <ulink
+        url="http://www.xapian.org"> <application>Xapian
+        core</application></ulink>.</para> <important><para>If you are
+        building Xapian for an older CPU (before Pentium 4 or Athlon
+        64), you need to add the <option>--disable-sse</option> flag
+        to the configure command. Else all Xapian application will
+        crash with an <literal>illegal instruction</literal>
+        error.</para> </important>
 
 	<para>Development files for 
          <ulink url="http://www.trolltech.com/products/qt/index.html">
@@ -3455,11 +3507,14 @@ while query.next >= 0 and query.next < nres:
 	    interface. Will allow building the indexer and the command line
 	    search program in absence of a Qt environment.</para> 
 	  </listitem>
-	  <listitem><para><option>--disable-x11mon</option> Disable 
-	    X11 connection monitoring inside recollindex. Together with
-	    --disable-qtgui, this allows building recoll without Qt and
-	    X11.</para>
-	  </listitem>
+
+	  <listitem><para><option>--disable-x11mon</option> Disable
+	    <application>X11</application> connection monitoring
+	    inside recollindex. Together with --disable-qtgui, this
+	    allows building recoll without
+	    <application>Qt</application> and
+	    <application>X11</application>.</para> </listitem>
+
 	  <listitem><para>Of course the usual 
 	  <application>autoconf</application> <command>configure</command>
 	  options, like <option>--prefix</option> apply.</para> 
@@ -3483,8 +3538,10 @@ while query.next >= 0 and query.next < nres:
         directory to <filename>mk/sysconf</filename>. If your system
         is not known yet, it will tell you as much, and you may want
         to manually copy and modify one of the existing files (the new
-        file name should be the output of <command>uname -s</command>).</para>
-      </sect2>
+        file name should be the output of <command>uname</command>
+        <option>-s</option>).</para> 
+
+    </sect2>
 
       <sect2 id="rcl.install.building.install">
         <title>Installation</title>
@@ -3552,7 +3609,7 @@ while query.next >= 0 and query.next < nres:
 
       <para>This location can be changed, or others can be added with the
         <envar>RECOLL_CONFDIR</envar> environment variable or the
-        -c option parameter to <command>recoll</command> and
+        <option>-c</option> option parameter to <command>recoll</command> and
         <command>recollindex</command>.</para>
 
       <para>If the <filename>.recoll</filename> directory does not
@@ -3632,6 +3689,7 @@ while query.next >= 0 and query.next < nres:
         configuration.</para>
         </listitem>
       </itemizedlist>
+      </formalpara>
         
       <sect2 id="rcl.install.config.recollconf">
         <title>Main configuration file</title>
@@ -3801,15 +3859,15 @@ skippedPaths = ~/somedir/&lowast;.txt
           </varlistentry>
 
           <varlistentry><term><varname>usesystemfilecommand</varname></term>
-            <listitem><para>Decide if we use the <command>file -i</command>
-            system command as a final step for determining the mime
-            type for a file (the main procedure uses suffix
-            associations as defined in the  <filename>mimemap</filename>
-            file). This can be useful for files with suffix-less names,
-            but it will also cause the indexing of many bogus "text"
-            files.</para> 
-            </listitem>
-          </varlistentry>
+            <listitem><para>Decide if we use the
+            <command>file</command> <option>-i</option> system command
+            as a final step for determining the mime type for a file
+            (the main procedure uses suffix associations as defined in
+            the <filename>mimemap</filename> file). This can be useful
+            for files with suffix-less names, but it will also cause
+            the indexing of many bogus "text" files.</para>
+            </listitem> 
+	  </varlistentry>
 
           <varlistentry><term><varname>processbeaglequeue</varname></term>
             <listitem><para>If this is set, process the directory where
@@ -3870,16 +3928,19 @@ skippedPaths = ~/somedir/&lowast;.txt
             the index will be approximately twice as large.</para>
             </listitem>
           </varlistentry>
+
           <varlistentry><term><varname>indexstemminglanguages</varname></term>
             <listitem><para>A list of languages for which the stem
-            expansion databases will be built. See recollindex(1) or
-            use the <literal>recollindex -l</literal> command for
-            possible values. You can add a stem expansion database for
-            a different language by using <command>recollindex
-            -s</command>, but it will be deleted during the next
-            indexing. Only languages listed in the configuration
-            file are permanent.</para>
-            </listitem>
+            expansion databases will be built. See <citerefentry>
+            <refentrytitle>recollindex</refentrytitle>
+            <manvolnum>1</manvolnum> </citerefentry> or use the
+            <command>recollindex</command> <option>-l</option> command
+            for possible values. You can add a stem expansion database
+            for a different language by using
+            <command>recollindex</command> <option>-s</option>, but it
+            will be deleted during the next indexing. Only languages
+            listed in the configuration file are permanent.</para>
+            </listitem> 
           </varlistentry>
          
           <varlistentry><term><varname>defaultcharset</varname></term>
@@ -3887,8 +3948,10 @@ skippedPaths = ~/somedir/&lowast;.txt
             files that do not contain a character set definition (ie:
             plain text files). This can be redefined for any
             sub-directory. If it is not set at all, the character set
-            used is the one defined by the nls environment (LC_ALL,
-            LC_CTYPE, LANG), or iso8859-1 if nothing is set.</para> 
+            used is the one defined by the nls environment (
+	    <envar>LC_ALL</envar>, <envar>LC_CTYPE</envar>, 
+	    <envar>LANG</envar>), or <literal>iso8859-1</literal> 
+	    if nothing is set.</para> 
 	   </listitem>
          </varlistentry>
 
@@ -3905,12 +3968,12 @@ skippedPaths = ~/somedir/&lowast;.txt
             the list will turn-off both standard accent and case
             processing. Example for Swedish:</para>
                 <programlisting>
-unac_except_trans =  åå Åå ää Ää öö Öö
+unac_except_trans =  Ã¥Ã¥ Ã…Ã¥ Ã¤Ã¤ Ã„Ã¤ Ã¶Ã¶ Ã–Ã¶
             </programlisting>
 
             <para>Note that the translation is not limited to a single
             character, you could very well have something like
-            <literal>üue</literal> in the list.</para>
+            <literal>Ã¼ue</literal> in the list.</para>
 
              <para>This parameter can't be defined for subdirectories, it
              is global, because there is no way to do otherwise when
@@ -4228,7 +4291,8 @@ x-my-tag = mailmytag
         file name extension to mime type mappings.</para> 
 
         <para>For file names without an extension, or with an unknown
-        one, the system's <command>file -i</command> command will be
+        one, the system's <command>file</command> <option>-i</option> 
+	command will be
         executed to determine the mime type (this can be switched off
         inside the main configuration file).</para>
 
