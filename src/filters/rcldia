@@ -4,7 +4,7 @@
 # stefan.friedel@iwr.uni-heidelberg.de 2012
 #
 # add the following to ~/.recoll/mimeconf into the [index] section:
-# application/x-dia-diagram = execm rcldia;mimetype=text/html;charset=utf-8
+# application/x-dia-diagram = execm rcldia;mimetype=text/plain;charset=utf-8
 # and into the [icons] section:
 # application/x-dia-diagram = drawing
 # and finally under [categories]:
@@ -15,8 +15,6 @@
 # .dia = application/x-dia-diagram
 
 # Small fixes from jfd: dia files are sometimes not compressed.  
-# And a note: this file actually has no reason to return HTML as there is
-#   no metadata. We could just as well and more simply return text/plain
 import rclexecm
 import re
 from gzip import GzipFile
@@ -24,19 +22,9 @@ import xml.parsers.expat
 
 # some regexps to parse/format the xml data: delete #/spaces at the b/eol and
 # ignore empty lines
-rhs = re.compile(r'^[#|\s+](.*)')
-rhe = re.compile(r'(.*)[#|\s+]$')
+rhs = re.compile(r'^#\s*(.*)')
+rhe = re.compile(r'(.*)\s*#$')
 rempty = re.compile(r'^#?\s*#?$')
-
-htmltemplate = '''
-<html><head>
-<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-</head>
-<body>
-{0} 
-</body>
-</html>
-'''
 
 # xml parser for dia xml file
 class Parser:
@@ -58,11 +46,9 @@ class Parser:
     def chardata(self,data):
         if self.handlethis:
             # check if line is not empty and replace hashes/spaces
-            # tricky: after htmlescape check also for umlauts
             if not rempty.search(data):
-                self.string.append(self.rclem.htmlescape(
-                    rhe.sub(r'\1',rhs.sub(r'\1',data))).encode('ascii', 'xmlcharrefreplace'))
-
+                self.string.append(rhe.sub(r'\1',rhs.sub(r'\1',data)))
+    
     def endelement(self,name):
         self.handlethis = False
 
@@ -83,7 +69,7 @@ class DiaExtractor:
         except Exception, err:
             ok = False
         iseof = rclexecm.RclExecM.eofnext
-        self.em.setmimetype("text/html")
+        self.em.setmimetype("text/plain")
         return (ok, docdata, ipath, iseof)
 
     ###### File type handler api, used by rclexecm ---------->
@@ -116,7 +102,7 @@ class DiaExtractor:
     def ExtractDiaText(self):
         diap = Parser(self.em)
         diap.feed(self.dia)
-        return htmltemplate.format('\n'.join(diap.string))
+        return '\n'.join(diap.string)
 
 # Main program: create protocol handler and extractor and run them
 proto = rclexecm.RclExecM()

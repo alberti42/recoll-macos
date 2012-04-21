@@ -71,7 +71,7 @@ application/vnd.wordperfect = exec wpd2html;mimetype=text/html
 application/x-abiword = exec rclabw
 application/x-awk = internal text/plain
 application/x-chm = execm rclchm
-application/x-dia-diagram = execm rcldia;mimetype=text/html;charset=utf-8
+application/x-dia-diagram = execm rcldia;mimetype=text/plain;charset=utf-8
 application/x-dvi = exec rcldvi
 application/x-flac = execm rclaudio
 application/x-gnuinfo = execm rclinfo
