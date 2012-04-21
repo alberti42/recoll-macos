@@ -12,7 +12,7 @@
 #     source file to upper-case.
 
 # Wherever docbook.xsl and chunk.xsl live
-XSLDIR="/usr/local/share/xsl/docbook/"
+XSLDIR="/opt/local/share/xsl/docbook-xsl/"
 
 dochunky=1
 test $# -eq 1 && dochunky=0

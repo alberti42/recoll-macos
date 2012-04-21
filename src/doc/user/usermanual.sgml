@@ -276,7 +276,7 @@
         types. This list can be displayed by selecting the menu option
 	<menuchoice>
 	    <guimenu>File</guimenu>
-	    <guimenu>Show Missing Helpers</guimenu>
+	    <guimenuitem>Show Missing Helpers</guimenuitem>
         </menuchoice>
         in the <command>recoll</command> GUI. It is stored in the
         <filename>missing</filename> text file inside the configuration
@@ -476,7 +476,7 @@ recoll
         <para>The interface is started from the
 	<menuchoice>
             <guimenu>Preferences</guimenu>
-	    <guimenu>Indexing Configuration</guimenu> 
+	    <guimenuitem>Indexing Configuration</guimenuitem> 
 	</menuchoice>
 	menu entry. It is divided in three tabs,
         <guilabel>Global parameters</guilabel>, <guilabel>Local
@@ -577,7 +577,7 @@ recoll
           also be done from the <command>recoll</command> GUI
 	  <menuchoice>
 	        <guimenu>File</guimenu>
-                <guimenu>Stop Indexing</guimenu>
+                <guimenuitem>Stop Indexing</guimenuitem>
           </menuchoice>
           menu entry.</para>
 
@@ -643,7 +643,7 @@ recoll
           <command>recollindex</command>. You can reach them from the
 	  <menuchoice>
               <guimenu>Preferences</guimenu>
-	      <guimenu>Indexing Schedule</guimenu> 
+	      <guimenuitem>Indexing Schedule</guimenuitem> 
           </menuchoice> 
 	  menu. They only 
           work with the good old <command>cron</command>, and do not give
@@ -910,7 +910,7 @@ fvwm
       <para>You can use the <link linkend="rcl.search.complex">
       <menuchoice>
           <guimenu>Tools</guimenu> 
-          <guimenu>Advanced search</guimenu>
+          <guimenuitem>Advanced search</guimenuitem>
       </menuchoice>
       </link> dialog for more complex searches.</para>
 
