@@ -52,6 +52,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <algorithm>
 
 // rh7.3 likes iostream better...
 #if defined(__GNUC__) && __GNUC__ < 3
