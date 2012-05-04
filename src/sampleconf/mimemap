@@ -30,6 +30,8 @@
 .php = text/html
 .ics = text/calendar
 
+.eml = message/rfc822
+
 .pdf = application/pdf
 
 .ps = application/postscript
