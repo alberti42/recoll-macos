@@ -80,6 +80,7 @@ a:hover .PZ3cap { padding:3px 5px; }
     <div class="content">
 
       <h1>Recoll result list customising exemples</h1>
+
       <p>The Recoll result list is actually made of html text
         displayed inside a Qt Widget. In all Recoll versions, you
         can specify the format for the list entries: what data is
@@ -89,23 +90,52 @@ a:hover .PZ3cap { padding:3px 5px; }
 
       <p>As of Recoll 1.17, the result list is by default a WebKit
         object (WebKit is the basis for several major browsers), which
-        yields full CSS and even Javascript support. For these
-        versions you can specify both the individual result format and
-        code to be included in the html header (ie: CSS or
-        Javascript).</p>
+        yields full CSS and even Javascript support.</p>
 
       <h2>New in Recoll 1.17: the WebKit result list</h2>
 
-      <p>With WebKit, things that used to not work are now
-        possible. The exemple which follow are probably not generally
-        very useful (else they'd be included in the standard Recoll),
-        but they provide samples of what can be done, and may be of use
-        anyway.</p>
 
+      <p>For newer Recoll versions, you can specify the
+        individual result format, as for previous versions. You can
+        also define code to be included in the HTML
+        header (ie: CSS or Javascript), using 
+        <tt>Preferences->Query&nbsp;Configuration->Result&nbsp;List->Edit&nbsp;result&nbsp;page&nbsp;html&nbsp;header&nbsp;insert</tt></p>
+
+      <p>This, plus the full Javascript and CSS support in WebKit,
+        open a world of possibilities for result list formatting and
+        even behaviour.</p>
+
+      <p>The examples which follow are probably not generally
+        very useful but they show the kinds of things you can do, if
+        you can use Javascript/CSS which is not my case.</p>
+      
+      <h3>Using the icons as links</h3>
       <p>You can now make the list icons links that activate the
         preview or open action (or the document url which you can then
-        drag/drop to other windows) (turning images into links did
-        not work with QTextBrowser).</p>
+        drag/drop to other windows). Using images as links did
+        not work with QTextBrowser.</p>
+
+      <h3>Alternating result backgrounds</h3>
+      <p>Using the following Javascript inside the header will yield
+        alternating backgrounds for the results:</p>
+
+<pre>
+&lt;script type="text/javascript">
+function altRows() {
+    var rows = document.getElementsByClassName("rclresult");
+    for (i = 0; i &lt; rows.length; i++) {
+        if (i % 2 == 0) {
+            rows[i].style.backgroundColor = "#d4e3e5";
+        }
+    }
+}
+
+window.onload = function() {
+    altRows();
+}
+&lt;/script>
+</pre>
+
 
       <h3>Zooming the paragraph font size</h3>
       <p>If you are using a format with small fonts, it may be useful
@@ -114,9 +144,9 @@ a:hover .PZ3cap { padding:3px 5px; }
           format, which is a table</em>- would be to include the following
         code in the header:</p>
 <pre>
-&lt;STYLE type="text/css">
-table:hover {font-size: 130%;}
-&lt;/STYLE>
+&lt;style type="text/css">
+    table:hover {font-size: 130%;}
+&lt;/style>
 </pre>
 
         <p>Of course, the selector should be adapted to your own
@@ -181,7 +211,7 @@ table:hover {font-size: 130%;}
 
 
 
-      <h2>Result list paragraph format samples</h2>
+      <h2>Result list paragraph format samples (for all versions)</h2>
 
       <p>The format for paragraphs inside the Recoll GUI result list is
         customisable by specifying an html fragment (menu:

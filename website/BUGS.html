@@ -35,11 +35,28 @@
           supposedly fixed in later versions. Bugs listed in the
           topmost section may also exist in older versions.</i></p>
 
-      <h2><a name="b_latest">recoll 1.17.10</a></h2> 
+      <h2><a name="b_latest">recoll 1.17.1</a></h2> 
 
       <ul>
-        <li>The version string was not correctly updated for 1.17.1, the
-        help dialog and recollindex -v will print 1.17.0.</li>
+        <li>The version string is not correctly updated for 1.17.1, the
+          help dialog and recollindex -v will print 1.17.0.</li>
+
+        <li>chm filter: url-encoded internal paths are mishandled.</li>
+
+        <li>Does not compile on Solaris (flock() issue).</li>
+
+        <li>The KDE recoll applet does not work.</li>
+
+        <li>configure --disable-python-module breaks the installation
+          script.</li>
+
+        <li>Does not display thumbnails for files with an URL which
+          should be encoded (ie: with embedded spaces).</li>
+
+        <li>Does not compile with gcc 4.7 (missing include).</li>
+        
+        <li>Html output from Python (rclexecm) filters is not
+          correctly escaped.</li>
 
         <li>It will sometimes happen that the result list paragraph format
           stored in the Qt preferences file will get garbled,
