@@ -122,9 +122,10 @@ bool maybeOpenDb(string &reason, bool force, bool *maindberror)
     }
     Rcl::Db::OpenError error;
     if (!rcldb->isopen() && !rcldb->open(Rcl::Db::DbRO, &error)) {
-	reason = "Could not open database in " + 
-	    theconfig->getDbDir() + " wait for indexing to complete?";
+	reason = "Could not open database";
 	if (maindberror) {
+	    reason +=  " in " +  theconfig->getDbDir() + 
+		" wait for indexing to complete?";	    
 	    *maindberror = (error == Rcl::Db::DbOpenMainDb) ? true : false;
 	}
 	return false;

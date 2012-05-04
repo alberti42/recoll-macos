@@ -115,6 +115,7 @@ void SpellW::doExpand()
 
     string reason;
     if (!maybeOpenDb(reason)) {
+	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
 	LOGDEB(("SpellW::doExpand: db error: %s\n", reason.c_str()));
 	return;
     }
