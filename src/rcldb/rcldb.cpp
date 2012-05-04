@@ -841,6 +841,16 @@ bool Db::rmQueryDb(const string &dir)
     return adjustdbs();
 }
 
+// Determining what index a doc result comes from is based on the
+// modulo of the docid against the db count. Ref:
+// http://trac.xapian.org/wiki/FAQ/MultiDatabaseDocumentID
+size_t Db::whatDbIdx(const Doc& doc)
+{
+    if (doc.xdocid == 0) 
+	return (size_t)-1;
+    return doc.xdocid % m_extraDbs.size();
+}
+
 bool Db::testDbDir(const string &dir)
 {
     string aerr;

@@ -1171,7 +1171,7 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
     // from a compacted mail folder)
     //
     // !! NOTE: there is one case where doing a partial index update
-    // will not worl: if the search result does not exist in the new
+    // will not work: if the search result does not exist in the new
     // version of the file, it won't be purged from the index because
     // a partial index pass does no purge, so its ref date will stay
     // the same and you keep getting the message about the index being
@@ -1179,11 +1179,15 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
     // indexing pass. 
     // Also we should re-run the query after updating the index
     // because the ipaths may be wrong in the current result list
-    if (!doc.ipath.empty()) {
-	string udi, sig;
+    // We only do this for the main index, else jump and prey (cant
+    // update anyway, even the makesig() call might not make sense for
+    // our base config)
+    if (!doc.ipath.empty() && rcldb && rcldb->whatDbIdx(doc) == 0) {
+	string udi;
 	doc.getmeta(Rcl::Doc::keyudi, &udi);
-	FileInterner::makesig(doc, sig);
-	if (rcldb && !udi.empty()) {
+	if (!udi.empty()) {
+	    string sig;
+	    FileInterner::makesig(doc, sig);
 	    if (rcldb->needUpdate(udi, sig)) {
 		int rep = 
 		    QMessageBox::warning(0, tr("Warning"), 

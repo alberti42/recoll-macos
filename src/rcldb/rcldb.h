@@ -197,6 +197,11 @@ class Db {
     bool addQueryDb(const string &dir);
     /** Remove extra database. if dir == "", remove all. */
     bool rmQueryDb(const string &dir);
+    /** Look where the doc result comes from. 
+     * @return: 0 main index, (size_t)-1 don't know, 
+     *   other: order of database in add_database() sequence.
+     */
+    size_t whatDbIdx(const Doc& doc);
     /** Tell if directory seems to hold xapian db */
     static bool testDbDir(const string &dir);
 
