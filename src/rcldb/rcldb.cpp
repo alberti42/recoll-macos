@@ -848,7 +848,9 @@ size_t Db::whatDbIdx(const Doc& doc)
 {
     if (doc.xdocid == 0) 
 	return (size_t)-1;
-    return doc.xdocid % m_extraDbs.size();
+    if (m_extraDbs.size() == 0)
+	return 0;
+    return doc.xdocid % (m_extraDbs.size()+1);
 }
 
 bool Db::testDbDir(const string &dir)
