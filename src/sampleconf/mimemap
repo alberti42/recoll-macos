@@ -4,6 +4,7 @@
 .txt = text/plain
 .text = text/plain
 .ini = text/x-ini
+.csv = text/plain
 
 # Source files. 
 # Defining them with specific types allows using a specific ext viewer (in 
