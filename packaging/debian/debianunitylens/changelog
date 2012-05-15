@@ -1,3 +1,6 @@
+recoll-lens (1.17.2.2697-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+  * Updated lens to vers. 1.17.1.2697 : display thumbnails when they exist
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 15 May 2012 13:51:00 +0200
 recoll-lens (1.17.1.2654-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
   * Updated lens to vers. 1.17.1.2654 : display/open results for embedded files
  -- Jean-Francois Dockes <jf@dockes.org>  Tue, 27 Mar 2012 16:22:00 +0200
