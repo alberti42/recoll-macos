@@ -10,6 +10,6 @@ Last-Update: 2012-03-26
  
  
 -@NOPYTHON@(cd python/recoll;python setup.py install \
--    --prefix=${REALPREFIX} ${ROOTFORPYTHON})
+-@NOPYTHON@ --prefix=${REALPREFIX} ${ROOTFORPYTHON})
 +#@NOPYTHON@(cd python/recoll;python setup.py install \
 +#    --prefix=${REALPREFIX} ${ROOTFORPYTHON})

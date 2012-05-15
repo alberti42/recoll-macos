@@ -9,8 +9,7 @@ Build-Depends: debhelper (>= 7),
 	       libxapian-dev (>= 1.0.15),
 	       libx11-dev,
 	       libz-dev,
-               python-all-dev (>= 2.6.6-3~),
-               quilt
+               python-all-dev (>= 2.6.6-3~)
 Standards-Version: 3.9.3
 
 Package: recoll

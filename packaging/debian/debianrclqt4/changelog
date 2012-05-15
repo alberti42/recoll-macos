@@ -1,3 +1,7 @@
+recoll (2696-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+  * pre-1.17.2 beta for testing thumbnail issues.
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 14 May 2012 17:47:00 +0200
+
 recoll (1.17.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
   * Updated package to recoll version 1.17.1: unity lens support
  -- Jean-Francois Dockes <jf@dockes.org>  Tue, 27 Mar 2012 16:21:00 +0200

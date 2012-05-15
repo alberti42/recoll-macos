@@ -48,9 +48,13 @@ install:
 	dh_installdirs
 
 	$(MAKE) STRIP=ls prefix=$(CURDIR)/debian/tmp/usr install
+	# Note: the debian rules file uses --prefix instead of --root
+	# but this ends up generating an error on the ubuntu ppa:
+	#   "Found files in /usr/lib/python2.7/site-packages (must be in
+	#    dist-packages for python2.7)."
 	(cd python/recoll; python setup.py install \
 	                                   --install-layout=deb \
-	                                   --prefix=$(CURDIR)/debian/tmp/usr )
+	                                   --root=$(CURDIR)/debian/tmp )
 
 binary-arch: build install
 	dh_testdir
