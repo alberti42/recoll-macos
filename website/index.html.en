@@ -78,9 +78,9 @@
           the recoll-lens package from the 
           <a href="https://launchpad.net/~recoll-backports/+archive/recoll-1.15-on">
             Recoll PPA</a>. The Lens uses the Recoll GUI as a proxy to
-          extract and display embedded documents, which native utility
+          extract and display embedded documents, which native utilities
           can't reach directly. And of course you still need to run
-          the GUI (or the command line recollindex) to get indexing
+          the GUI (or the command line recollindex) to get the indexing
           going !</li>
 
         <li>2012-03-24: Release 1.17 is out, see
