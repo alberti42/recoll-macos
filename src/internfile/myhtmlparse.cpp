@@ -311,6 +311,7 @@ MyHtmlParser::opening_tag(const string &tag)
 	    // even text before the body is displayed by Opera and
 	    // Firefox.  We used to reset the dump each time we saw a
 	    // body tag, but I can't see any reason to do so.
+
 	    if (tag == "blockquote" || tag == "br") {
 		dump += '\n';
 		pending_space = true;
@@ -471,14 +472,11 @@ MyHtmlParser::closing_tag(const string &tag)
 	    if (tag == "address") pending_space = true;
 	    break;
 	case 'b':
-	    if (tag == "body") {
-		LOGDEB1(("Myhtmlparse: body close tag found\n"));
-		// We used to signal and end of doc here by returning
-		// false but the browsers just ignore body and html
-		// closing tags if there is further text, so it seems right
-		// to do the same
-		break;
-	    }
+	    // body: We used to signal and end of doc here by returning
+	    // false but the browsers just ignore body and html
+	    // closing tags if there is further text, so it seems right
+	    // to do the same
+
 	    if (tag == "blockquote" || tag == "br") pending_space = true;
 	    break;
 	case 'c':
