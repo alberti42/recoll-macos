@@ -1,6 +1,6 @@
 1 results
-application/x-perl	[file:///home/dockes/projets/fulltext/testrecoll/program/rclimg]	[rclimg]	5294	bytes	
+text/x-perl	[file:///home/dockes/projets/fulltext/testrecoll/program/rclimg]	[rclimg]	5294	bytes	
 1 results
 application/x-shellscript	[file:///home/dockes/projets/fulltext/testrecoll/program/run_program_with_counters.sh]	[run_program_with_counters.sh]	2632	bytes	
 1 results
-application/x-shellscript	[file:///home/dockes/projets/fulltext/testrecoll/program/nosuffixshell]	[nosuffixshell]	34	bytes	
+text/x-shellscript	[file:///home/dockes/projets/fulltext/testrecoll/program/nosuffixshell]	[nosuffixshell]	34	bytes	
