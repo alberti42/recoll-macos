@@ -24,6 +24,11 @@ recollq -q html5charsetaccentue
 # Stripping trade mark and copyright signs
 recollq -q filename:signs.html Registered Trademark Copyright SoundCopyright
 
+# Text in malformed html (before or after body) should be indexed anyway...
+recollq -q BADHTMLTEXTBEFOREBODY
+recollq -q BADHTMLTEXTINSECONDBODY
+recollq -q BADHTMLTEXTAFTERBODY
+
 ) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1

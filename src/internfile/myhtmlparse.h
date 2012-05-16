@@ -36,7 +36,6 @@ class MyHtmlParser : public HtmlParser {
  public:
     bool in_script_tag;
     bool in_style_tag;
-    bool in_body_tag; 
     bool in_pre_tag;
     bool pending_space;
     map<string,string> meta;

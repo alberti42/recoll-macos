@@ -35,11 +35,54 @@
           supposedly fixed in later versions. Bugs listed in the
           topmost section may also exist in older versions.</i></p>
 
-      <h2><a name="b_latest">recoll 1.17.1</a></h2> 
+      <h2><a name="b_latest">recoll 1.17.2</a></h2> 
+
+        <li>It appears that recollindex will sometimes crash while
+          indexing mail files. There are 2 separate reports about
+          this, and no resolution for now. This is not specific to
+          1.17 as one of the reports is for 1.16. Refs:
+          <a href="https://bugzilla.redhat.com/show_bug.cgi?format=multiple&id=819408">Fedora</a>
+          (maildir, processing an attachment), 
+          <a href="https://bugs.launchpad.net/ubuntu/+source/recoll/+bug/994228">Ubuntu</a>: apparently (no stack trace): 
+          <em>Recoll was indexing files in .thunderbird when the crash
+            occurred. It seemed to be indexing the INBOX file on
+            disk. </em> 
+        </li>
+
+        <li>Text inside malformed HTML files (appearing before a &lt;body&gt;
+          tag, or after a second one, or after a &lt;/body&gt; tag is
+          not indexed. At it would be displayed by current browsers,
+          this is wrong.</li>
+
+        <li>It will sometimes happen that the result list paragraph
+          format stored in the Qt preferences file will get garbled,
+          causing result lists with no displayed paragraphs (the
+          counts and pages are ok, the results can be seen in table
+          mode, but not in list mode). The workaround is to go to
+          <blockquote>
+           Preferences->Query configuration->User interface
+          </blockquote> and erase the result paragraph format string
+          (^A DEL in the text area), this will reset the string to the
+          default value.</li>
+
+        <li>Real time indexer: when running with gamin on FreeBSD, the
+          indexer can deadlock in the gamin dialog in some
+          cases.</li>
+
+        <li>After an upgrade, the recoll GUI sometimes crashes on
+          startup. This is fixed by removing (back it up just in case)
+          ~/.config/Recoll.org/recoll.conf, the QSettings storage for
+          recoll.</li>
+
+      <h2><a name="b_1_17_1">recoll 1.17.1</a></h2> 
 
       <ul>
         <li>The version string is not correctly updated for 1.17.1, the
           help dialog and recollindex -v will print 1.17.0.</li>
+
+        <li>You can crash the GUI by starting simultaneous queries,
+          which could be accomplished among others by quickly clicking
+          the sort order buttons.</li>
 
         <li>chm filter: url-encoded internal paths are mishandled.</li>
 
@@ -57,24 +100,6 @@
         
         <li>Html output from Python (rclexecm) filters is not
           correctly escaped.</li>
-
-        <li>It will sometimes happen that the result list paragraph format
-          stored in the Qt preferences file will get garbled,
-          causing result lists with no displayed paragraphs (the
-          counts and pages are ok, the results can be seen in table
-          mode, but not in list mode). The workaround is to go to
-          <blockquote>
-           Preferences->Query configuration->User interface
-          </blockquote> and erase the result paragraph format string
-          (^A DEL in the text area), this will reset the string to the
-          default value.</li>
-        <li>Real time indexer: when running with gamin on FreeBSD, the
-          indexer can deadlock in the gamin dialog in some
-          cases.</li>
-        <li>After an upgrade, the recoll GUI sometimes crashes on
-          startup. This is fixed by removing (back it up just in case)
-          ~/.config/Recoll.org/recoll.conf, the QSettings storage for
-          recoll.</li>
       </ul>
 
 

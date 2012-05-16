@@ -22,3 +22,9 @@ text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/iso.html]	[Some 
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/html5charset.html]	[html5charset.html]	113	bytes	
 1 results
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/signs.html]	[signs.html]	230	bytes	
+1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/verybadhtml.html]	[Conversation with xxx at Sun 13 May 2012 10:42:23 PM PDT on xxx (xxx)]	646	bytes	
+1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/verybadhtml.html]	[Conversation with xxx at Sun 13 May 2012 10:42:23 PM PDT on xxx (xxx)]	646	bytes	
+1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/html/verybadhtml.html]	[Conversation with xxx at Sun 13 May 2012 10:42:23 PM PDT on xxx (xxx)]	646	bytes	

@@ -176,7 +176,6 @@ static NamedEntsInitializer namedEntsInitializerInstance;
 MyHtmlParser::MyHtmlParser()
     : in_script_tag(false),
       in_style_tag(false),
-      in_body_tag(false),
       in_pre_tag(false),
       pending_space(false),
       indexing_allowed(true)
@@ -308,11 +307,10 @@ MyHtmlParser::opening_tag(const string &tag)
 	    if (tag == "address") pending_space = true;
 	    break;
 	case 'b':
-	    if (tag == "body") {
-		dump.resize(0);
-		in_body_tag = true;
-		break;
-	    }
+	    // body: some bad docs have several opening body tags and
+	    // even text before the body is displayed by Opera and
+	    // Firefox.  We used to reset the dump each time we saw a
+	    // body tag, but I can't see any reason to do so.
 	    if (tag == "blockquote" || tag == "br") {
 		dump += '\n';
 		pending_space = true;
@@ -475,8 +473,11 @@ MyHtmlParser::closing_tag(const string &tag)
 	case 'b':
 	    if (tag == "body") {
 		LOGDEB1(("Myhtmlparse: body close tag found\n"));
-		in_body_tag = false;
-		return false;
+		// We used to signal and end of doc here by returning
+		// false but the browsers just ignore body and html
+		// closing tags if there is further text, so it seems right
+		// to do the same
+		break;
 	    }
 	    if (tag == "blockquote" || tag == "br") pending_space = true;
 	    break;
@@ -562,6 +563,4 @@ MyHtmlParser::closing_tag(const string &tag)
 void
 MyHtmlParser::do_eof()
 {
-    //    if (!in_body_tag)
-    //	throw(false);
 }
