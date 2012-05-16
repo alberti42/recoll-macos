@@ -438,6 +438,7 @@ static int     op_flags;
 #define OPT_d     0x40
 #define OPT_m     0x80
 #define OPT_L     0x100
+#define OPT_w     0x200
 
 class myCB : public FsTreeWalkerCB {
  public:
@@ -487,6 +488,7 @@ static char usage [] =
 " -b : use breadth first walk\n"
 " -d : use almost depth first (dir files, then subdirs)\n"
 " -m : use breadth up to 4 deep then switch to -d\n"
+" -w : unset default FNM_PATHNAME when using fnmatch() to match skipped paths\n"
 ;
 static void
 Usage(void)
@@ -514,7 +516,6 @@ int main(int argc, const char **argv)
       case 'd':	op_flags |= OPT_d; break;
       case 'L':	op_flags |= OPT_L; break;
       case 'm':	op_flags |= OPT_m; break;
-      case 'r':	op_flags |= OPT_r; break;
       case 'p':	op_flags |= OPT_p; if (argc < 2)  Usage();
 	  patterns.push_back(*(++argv));
 	  argc--; 
@@ -523,6 +524,8 @@ int main(int argc, const char **argv)
 	  paths.push_back(*(++argv));
 	argc--; 
 	goto b1;
+      case 'r':	op_flags |= OPT_r; break;
+      case 'w':	op_flags |= OPT_w; break;
       default: Usage();	break;
       }
   b1: argc--; argv++;
@@ -552,7 +555,9 @@ int main(int argc, const char **argv)
       fprintf(stderr, "Init failed: %s\n", reason.c_str());
       exit(1);
   }
-
+  if (op_flags & OPT_w) {
+      FsTreeWalker::setNoFnmPathname();
+  }
   FsTreeWalker walker(opt);
   walker.setSkippedNames(patterns);
   walker.setSkippedPaths(paths);
