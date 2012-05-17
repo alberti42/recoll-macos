@@ -4,7 +4,7 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=12697
+RCLVERS=1.17.2
 LENSVERS=1.17.2.2697
 PPAVERS=1
 
@@ -21,7 +21,7 @@ read rep
 ####### QT4
 debdir=debianrclqt4
 series4="lucid maverick natty oneiric precise"
-series4=""
+series4="lucid maverick natty oneiric"
 
 for series in $series4 ; do
   rm -rf recoll-${RCLVERS}/debian
@@ -65,6 +65,7 @@ done
 
 ### Unity Lens
 seriesl="natty oneiric precise"
+seriesl=""
 
 debdir=debianunitylens
 

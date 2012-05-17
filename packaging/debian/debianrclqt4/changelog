@@ -1,3 +1,7 @@
+recoll (1.17.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+  * Release 1.17.2 
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 17 May 2012 09:27:00 +0200
+
 recoll (2696-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
   * pre-1.17.2 beta for testing thumbnail issues.
  -- Jean-Francois Dockes <jf@dockes.org>  Mon, 14 May 2012 17:47:00 +0200
