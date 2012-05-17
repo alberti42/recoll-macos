@@ -77,12 +77,16 @@
       <h2><a name="b_1_17_1">recoll 1.17.1</a></h2> 
 
       <ul>
-        <li>The version string is not correctly updated for 1.17.1, the
-          help dialog and recollindex -v will print 1.17.0.</li>
-
         <li>You can crash the GUI by starting simultaneous queries,
           which could be accomplished among others by quickly clicking
           the sort order buttons.</li>
+
+        <li>When external indexes set as active are not actually
+          present, the GUI fails to open the db. It should
+          automatically inactivate them instead.</li>
+
+        <li>Does not display thumbnails for files with an URL which
+          should be encoded (ie: with embedded spaces).</li>
 
         <li>chm filter: url-encoded internal paths are mishandled.</li>
 
@@ -93,13 +97,14 @@
         <li>configure --disable-python-module breaks the installation
           script.</li>
 
-        <li>Does not display thumbnails for files with an URL which
-          should be encoded (ie: with embedded spaces).</li>
+        <li>The version string is not correctly updated for 1.17.1, the
+          help dialog and recollindex -v will print 1.17.0.</li>
+
+        <li>The HTML output from Python (rclexecm) filters is not
+          correctly escaped.</li>
 
         <li>Does not compile with gcc 4.7 (missing include).</li>
         
-        <li>Html output from Python (rclexecm) filters is not
-          correctly escaped.</li>
       </ul>
 
 

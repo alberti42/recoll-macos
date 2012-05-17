@@ -1,5 +1,5 @@
 %define name recoll
-%define version 1.17.0
+%define version 1.17.2
 %define release  %mkrel 1
 
 Name:           %{name}
@@ -13,7 +13,9 @@ Group:          Applications/Databases
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 License:	GPL
-Requires:	xapian-core
+BuildRequires:  libqt4-devel
+BuildRequires:  libpython-devel
+BuildRequires:  libxapian-devel
 
 %description
 Recoll is a personal full text search package for Linux, FreeBSD and
@@ -55,12 +57,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/%{name}
 %{_mandir}/man1/recoll*
 %{_mandir}/man5/recoll*
+%{python_sitearch}/Recoll*.egg-info
+%{python_sitearch}/recoll.so
 
 # ---------------------------------------------------------------------------
 
 %changelog
-* Sun Mar 18 2012 Jean-Francois Dockes <jfd@recoll.org> 1.17.0-1
-- Update to release 1.17.0
+* Thu May 17 2012 Jean-Francois Dockes <jfd@recoll.org> 1.17.2-1
+- Update to release 1.17.2
 * Mon Nov 07 2011 Jean-Francois Dockes <jfd@recoll.org> 1.16.2-1
 - Update to release 1.16.2
 * Wed Sep 28 2011 Jean-Francois Dockes <jfd@recoll.org> 1.16.1-1
