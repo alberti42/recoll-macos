@@ -118,10 +118,13 @@ text/x-purple-html-log = internal text/html
 text/x-python = exec rclpython
 text/x-shellscript = internal text/plain
 text/x-tex = exec rcltex
-# You're probably better off letting xml be indexed as text/plain (which
-# will happen because of the default text/xxx handling. Handling it as html
-# will strip all the parameters, where most of the data often resides
-#text/xml = internal text/html
+
+application/xml = exec rclxml
+text/xml = exec rclxml
+# Using these instead of the two above would index all parameter and tag
+# names, attribute values etc, instead of just the text content.
+#application/xml = internal text/plain
+#text/xml = internal text/plain
 
 ## #############################################
 # Icons to be used in the result list if required by gui config
@@ -167,6 +170,8 @@ application/x-scribus = document
 application/x-gnuinfo = document
 application/x-tex = wordprocessing
 text/x-tex = wordprocessing
+application/xml = document
+text/xml = document
 application/x-awk = source
 application/x-perl = source
 application/x-shellscript = source
@@ -227,6 +232,8 @@ text = \
       application/x-gnuinfo \
       application/x-shellscript \
       application/x-tex \
+      application/xml \
+      text/xml \
       text/x-tex \
       image/vnd.djvu \
       text/calendar \
