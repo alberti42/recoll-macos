@@ -53,8 +53,10 @@ application/vnd.sun.xml.writer.template = open %f
 application/vnd.wordperfect = open %f
 
 application/x-chm = kchmviewer %f
+application/x-dia-diagram = dia %f
 application/x-fsdirectory = open %f
 application/x-gnuinfo = xterm -e "info -f %f"
+application/x-gnumeric = gnumeric %f
 
 application/x-flac = open %f
 audio/mpeg = open %f
@@ -71,6 +73,9 @@ image/bmp = open %f
 image/x-ms-bmp = open %f
 image/x-xpmi = open %f
 
+message/rfc822 = thunderbird -file %f
+text/x-mail = thunderbird -file %f
+
 application/x-tex = open %f
 text/x-tex = open %f
 text/html = open %u
@@ -79,4 +84,7 @@ text/plain = open %f
 text/x-c = open %f
 text/x-c+ = open %f
 text/x-c++ = open %f
+text/x-chm-html = openchm %f %i
+text/x-ini = open  %f
+#text/x-man = xterm -u8 -e "groff -T ascii -man %f | more"
 text/x-python = idle %f
