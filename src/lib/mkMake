@@ -44,6 +44,7 @@ ${depth}/rcldb/rclquery.cpp \
 ${depth}/rcldb/searchdata.cpp \
 ${depth}/rcldb/stemdb.cpp \
 ${depth}/rcldb/stoplist.cpp \
+${depth}/unac/unac.cpp \
 ${depth}/utils/base64.cpp \
 ${depth}/utils/circache.cpp \
 ${depth}/utils/closefrom.cpp \
@@ -116,12 +117,10 @@ all: \$(LIBS)
 OBJS = $OBJS
 DEPS = $DEPS
 
-librcl.a : \$(DEPS) \$(OBJS) unac.o
-	ar ru librcl.a \$(OBJS) unac.o
+librcl.a : \$(DEPS) \$(OBJS)
+	ar ru librcl.a \$(OBJS)
 	\$(RANLIB) librcl.a
 
-unac.o : \$(depth)/unac/unac.c \$(depth)/unac/unac.h $defs
-	\$(CXX) \$(ALL_CXXFLAGS) -c \$(depth)/unac/unac.c
 EOF
 
 for c in $SRC_CPP;do
@@ -138,7 +137,7 @@ done
 cat >> $mk <<EOF
 depend: \$(DEPS)
 clean:
-	rm -f \$(OBJS) \$(LIBS) \$(DEPS) *.stamp unac.o
+	rm -f \$(OBJS) \$(LIBS) \$(DEPS) *.stamp
 	for i in *.dep;do test -f \$\$i && cp /dev/null \$\$i;done
 distclean: clean
 	rm -f *.dep   

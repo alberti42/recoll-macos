@@ -114,8 +114,8 @@ namespace Binc {
     virtual void clear(void) const;
 
     const MimePart *getPart(const std::string &findpart, std::string genpart, FetchType fetchType = FetchBody) const;
-    virtual int parseOnlyHeader(const std::string &toboundary) const;
-    virtual int parseFull(const std::string &toboundary, int &boundarysize) const;
+    virtual int doParseOnlyHeader(const std::string &toboundary) const;
+    virtual int doParseFull(const std::string &toboundary, int &boundarysize) const;
 
     MimePart(void);
     virtual ~MimePart(void);

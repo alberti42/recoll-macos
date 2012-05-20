@@ -41,7 +41,7 @@ public:
     } 
 };
 
-bool DocSeqSorted::setSortSpec(DocSeqSortSpec &sortspec)
+bool DocSeqSorted::setSortSpec(const DocSeqSortSpec &sortspec)
 {
     LOGDEB(("DocSeqSorted::setSortSpec\n"));
     m_spec = sortspec;

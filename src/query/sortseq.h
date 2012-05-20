@@ -36,7 +36,7 @@ class DocSeqSorted : public DocSeqModifier {
     }
     virtual ~DocSeqSorted() {}
     virtual bool canSort() {return true;}
-    virtual bool setSortSpec(DocSeqSortSpec &sortspec);
+    virtual bool setSortSpec(const DocSeqSortSpec &sortspec);
     virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0);
     virtual int getResCnt() {return m_docsp.size();}
  private:

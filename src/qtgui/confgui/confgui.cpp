@@ -279,7 +279,7 @@ class SmallerListWidget: public QListWidget
 public:
     SmallerListWidget(QWidget *parent)
 	: QListWidget(parent) {}
-    virtual QSize sizeHint() {return QSize(150, 40);}
+    virtual QSize sizeHint() const {return QSize(150, 40);}
 };
 
 ConfParamSLW::ConfParamSLW(QWidget *parent, ConfLink cflink, 

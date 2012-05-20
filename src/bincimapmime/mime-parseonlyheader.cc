@@ -72,7 +72,7 @@ void Binc::MimeDocument::parseOnlyHeader(int fd) const
   nlines = 0;
   nbodylines = 0;
 
-  MimePart::parseOnlyHeader("");
+  doParseOnlyHeader("");
 }
 
 void Binc::MimeDocument::parseOnlyHeader(istream& s) const
@@ -95,11 +95,11 @@ void Binc::MimeDocument::parseOnlyHeader(istream& s) const
   nlines = 0;
   nbodylines = 0;
 
-  MimePart::parseOnlyHeader("");
+  doParseOnlyHeader("");
 }
 
 //------------------------------------------------------------------------
-int Binc::MimePart::parseOnlyHeader(const string &toboundary) const
+int Binc::MimePart::doParseOnlyHeader(const string &toboundary) const
 {
   string name;
   string content;

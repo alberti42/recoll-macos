@@ -37,7 +37,7 @@ public:
 		   DocSeqFiltSpec &filtspec);
     virtual ~DocSeqFiltered() {}
     virtual bool canFilter() {return true;}
-    virtual bool setFiltSpec(DocSeqFiltSpec &filtspec);
+    virtual bool setFiltSpec(const DocSeqFiltSpec &filtspec);
     virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0);
     virtual int getResCnt() {return m_seq->getResCnt();}
  private:

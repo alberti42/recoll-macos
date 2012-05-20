@@ -80,7 +80,7 @@ void Binc::MimeDocument::parseFull(int fd) const
 
   int bsize = 0;
   string bound;
-  MimePart::parseFull(bound, bsize);
+  doParseFull(bound, bsize);
 
   // eat any trailing junk to get the correct size
   char c;
@@ -109,7 +109,7 @@ void Binc::MimeDocument::parseFull(istream& s) const
 
   int bsize = 0;
   string bound;
-  MimePart::parseFull(bound, bsize);
+  doParseFull(bound, bsize);
 
   // eat any trailing junk to get the correct size
   char c;
@@ -286,7 +286,7 @@ static void parseMessageRFC822(vector<Binc::MimePart> *members,
   // parsefull returns the number of bytes that need to be removed
   // from the body because of the terminating boundary string.
   int bsize = 0;
-  if (m.parseFull(toboundary, bsize))
+  if (m.doParseFull(toboundary, bsize))
     *foundendofpart = true;
 
   // make sure bodylength doesn't overflow    
@@ -468,7 +468,7 @@ static void parseMultipart(const string &boundary,
       // If parseFull returns != 0, then it encountered the multipart's
       // final boundary.
       int bsize = 0;
-      if (m.parseFull(boundary, bsize)) {
+      if (m.doParseFull(boundary, bsize)) {
 	quit = true;
 	*boundarysize = bsize;
       }
@@ -591,10 +591,10 @@ static void parseSinglePart(const string &toboundary,
 }
 
 //------------------------------------------------------------------------
-int Binc::MimePart::parseFull(const string &toboundary,
+int Binc::MimePart::doParseFull(const string &toboundary,
 			      int &boundarysize) const
 {
-  MPFDEB((stderr, "BINC: parsefull, toboundary[%s]\n", toboundary.c_str()));
+  MPFDEB((stderr, "BINC: doParsefull, toboundary[%s]\n", toboundary.c_str()));
   headerstartoffsetcrlf = mimeSource->getOffset();
 
   // Parse the header of this mime part.
@@ -626,6 +626,6 @@ int Binc::MimePart::parseFull(const string &toboundary,
 		    &eof, &foundendofpart, &bodylength);
   }
 
-  MPFDEB((stderr, "BINC: parsefull ret, toboundary[%s]\n", toboundary.c_str()));
+  MPFDEB((stderr, "BINC: doParsefull ret, toboundary[%s]\n", toboundary.c_str()));
   return (eof || foundendofpart) ? 1 : 0;
 }

@@ -26,7 +26,7 @@ using std::vector;
 
 class RclConfig;
 class PlainToRich;
-class HiliteData;
+struct HiliteData;
 
 /**
  * Manage a paged HTML result list. 

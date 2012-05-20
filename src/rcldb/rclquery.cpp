@@ -57,14 +57,21 @@ static const string& docfToDatf(const string& df)
 // special processing for special fields like dates and sizes. User
 // custom field data will have to be processed before insertion to
 // achieve equivalent results.
+#if XAPIAN_MAJOR_VERSION == 1 && XAPIAN_MINOR_VERSION < 2
 class QSorter : public Xapian::Sorter {
+#else
+class QSorter : public Xapian::KeyMaker {
+#endif
 public:
     QSorter(const string& f) 
 	: m_fld(docfToDatf(f) + "=") 
     {
 	m_ismtime = !m_fld.compare("dmtime=");
-	m_issize = !m_fld.compare("fbytes=") || !m_fld.compare("dbytes=") ||
-	    !m_fld.compare("pcbytes=");
+	if (m_ismtime)
+	    m_issize = false;
+	else 
+	    m_issize = !m_fld.compare("fbytes=") || !m_fld.compare("dbytes=") ||
+		!m_fld.compare("pcbytes=");
     }
 
     virtual std::string operator()(const Xapian::Document& xdoc) const 

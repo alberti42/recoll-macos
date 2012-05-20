@@ -54,7 +54,7 @@ DocSeqFiltered::DocSeqFiltered(RclConfig *conf, RefCntr<DocSequence> iseq,
     setFiltSpec(filtspec);
 }
 
-bool DocSeqFiltered::setFiltSpec(DocSeqFiltSpec &filtspec)
+bool DocSeqFiltered::setFiltSpec(const DocSeqFiltSpec &filtspec)
 {
     LOGDEB0(("DocSeqFiltered::setFiltSpec\n"));
     for (unsigned int i = 0; i < filtspec.crits.size(); i++) {
