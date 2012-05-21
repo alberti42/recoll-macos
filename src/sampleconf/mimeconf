@@ -19,6 +19,8 @@
 application/x-gzip  =  uncompress rcluncomp gunzip %f %t
 application/x-compress = uncompress rcluncomp gunzip %f %t
 application/x-bzip2 =  uncompress rcluncomp bunzip2 %f %t
+application/x-xz = uncompress rcluncomp unxz %f %t
+application/x-lzma = uncompress rcluncomp unxz %f %t
 
 ## ###################################
 # Filters for indexing and internal preview. 

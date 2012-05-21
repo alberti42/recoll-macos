@@ -17,14 +17,25 @@ outdir=$3
 sinfile=`basename "$infile"`
 #echo "rcluncomp: $sinfile" 1>&2
 
-# What we do depends on suffix existence.
 case "$sinfile" in
-*.*)
-	cp "$infile" "$outdir/$sinfile" || exit 1
-	$uncomp "$outdir/$sinfile" || exit 1
-	uncompressed=`echo $outdir/*`
-	;;
-*)
+
+  # File with a suffix: try to decompress in file mode so that the
+  # decompressor can transform the file name if it knows how. Try
+  # filter mode if this fails
+  *.*)
+    cp "$infile" "$outdir/$sinfile" || exit 1
+    # try uncompress
+    if $uncomp "$outdir/$sinfile" ; then
+       uncompressed=`echo $outdir/*`
+    else
+       rm -f "$outdir/sinfile"
+       $uncomp < "$infile" > "$outdir/$sinfile" || exit 1
+       uncompressed="$outdir/$sinfile"
+    fi
+    ;;
+
+  # Suffixless file names: use filter mode
+  *)
 	$uncomp < "$infile" > "$outdir/$sinfile" || exit 1
 	uncompressed="$outdir/$sinfile"
 	;;
