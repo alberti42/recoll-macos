@@ -74,6 +74,17 @@
         <p>If you are running an older Recoll version, you really
           should upgrade.</p>
       </blockquote>
+      
+      <h2>XML files</h2>
+
+      <p>By default, the current recoll version does not index xml
+        content (except for known formats like dia, svg etc.). This
+        new <a href="rclxml">rclxml</a> filter will extract the data
+        from any xml file. Only text data is extracted, no attribute
+        values. The other option is to treat xml file as plain text
+        one (see comment in mimeconf), and index everything, including
+        a lot of garbage.</p>
+
 
       <h2>DIA files</h2>
       <p><a href="rcldia">rcldia</a> is a new filter
