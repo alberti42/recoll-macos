@@ -66,7 +66,7 @@
           Faqs and Howtos</a> on bitbucket.org, and some contributed
           <a href="custom.html">result list formats</a>.</p>
 
-      <h2>News: </h2>
+      <h2>News</h2>
       <div class="news">
       <ul>
         <li>2012-05-16: Release 1.17.2 fixes a few minor bugs in
@@ -112,6 +112,27 @@
 	from other packages, and welcomes code and ideas from
 	contributors, see some of the 
 	<a class="important" href="credits.html">Credits</a>.</p>
+
+      <h2>On the side</h2>
+
+      <div class="news">
+      <p>It doesn't appear likely that I'm going to become rich with
+        Recoll any time soon (what with giving it away for free and
+        all), so I've decided to use the home page to link to a few
+        things that marginally kind of earn some money:</p>
+      <blockquote>
+        <p>We rent <a href="http://www.metairie-enbor.com/index.html.en">
+	    a big country house</a> in the Aude area, in the south of
+	  France (<a href="http://www.metairie-enbor.com/acces.html.en">see
+	    map on the site</a>). If you are
+	  looking for a wonderful country place with a pool to
+	  spend holidays with a big bunch of family and/or
+          friends in a nice historical but very quiet area, this may be it.</p>
+        <p>And we also
+          sell <a href="http://www.metairie-enbor.com/bois-de-chauffage.html">
+            du <em>bois de chauffage</em></a> there too...</p> 
+      </blockquote>
+      </div>
 
     </div>
   </body>

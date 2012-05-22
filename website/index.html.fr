@@ -3,13 +3,14 @@
 <html>
   <head>
     <title>RECOLL: un outil personnel de recherche textuelle pour 
-    Unix et Linux</title>
+      Unix et Linux</title>
     <meta name="generator" content="HTML Tidy, see www.w3.org">
     <meta name="Author" content="Jean-Francois Dockes">
     <meta name="Description" content=
     "recoll est un logiciel personnel de recherche textuelle pour unix et linux basé sur Xapian, un moteur d'indexation puissant et mature.">
     <meta name="Keywords" content=
-      "recherche textuelle,desktop,unix,linux,solaris,open source,free">
+      "recherche textuelle,desktop,unix,linux,solaris,open
+      source, free, bois de chauffage">
     <meta http-equiv="Content-language" content="fr">
     <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
     <meta name="robots" content="All,Index,Follow">
@@ -132,8 +133,12 @@
 
       <h2>Autres</h2>
       <p>Je loue une 
-	<a href="http://www.metairie-enbor.com/index.html">
-	  grande maison sympa dans l'Aude</a> :)</p>
+	<a href="http://www.metairie-enbor.com/index.html.fr">
+	  grande maison sympa dans l'Aude</a> :), et nous produisons aussi
+	  du <a href="http://www.metairie-enbor.com/bois-de-chauffage.html">
+          bois de chauffage</a>. (Il faut bien que cette page me serve
+          tout de même à <em>quelque chose</em> à moi aussi de temps
+          en temps !).</p>
 
     </div>
   </body>
