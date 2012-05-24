@@ -43,7 +43,7 @@
 
       <p><span class="application">Recoll</span> is free, open source,
 	and licensed under the GPL. The current version is
-	<a href="download.html">1.17.2</a> 
+	<a href="download.html">1.17.3</a> 
 	(<a href="release-1.17.html">Release notes</a>).</p>
 
       <p class="remark">Recoll will index an <b>MS-Word</b> document stored as
@@ -70,9 +70,10 @@
       <h2>News</h2>
       <div class="news">
       <ul>
-        <li>2012-05-16: Release 1.17.2 fixes a few minor bugs in
-          1.17. See the <a href="release-1.17.html">Release
-            notes</a>. </li>
+        <li>2012-05-23: Release 1.17.3 mostly fixes an indexing crash that
+          sometimes occurred  while processing email. See the 
+          <a href="release-1.17.html">Release notes</a>. 
+        </li>
 
         <li>2012-04-07: we now have a Chinese user manual: Recoll现在有中文手册咯：
         <a href="http://stupidbeauty.com/Blog/2012/03/recoll%E7%94%A8%E6%88%B6%E6%89%8B%E5%86%8A%E7%BF%BB%E8%AD%AF%EF%BC%8Crecoll-user-manual-2/">

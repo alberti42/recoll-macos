@@ -35,20 +35,10 @@
           supposedly fixed in later versions. Bugs listed in the
           topmost section may also exist in older versions.</i></p>
 
-      <h2><a name="b_latest">recoll 1.17.2</a></h2> 
+      
+      <h2><a name="b_latest">recoll 1.17.3</a></h2> 
 
-        <li>It appears that recollindex will sometimes crash while
-          indexing mail files. There are 2 separate reports about
-          this, and no resolution for now. This is not specific to
-          1.17 as one of the reports is for 1.16. Refs:
-          <a href="https://bugzilla.redhat.com/show_bug.cgi?format=multiple&id=819408">Fedora</a>
-          (maildir, processing an attachment), 
-          <a href="https://bugs.launchpad.net/ubuntu/+source/recoll/+bug/994228">Ubuntu</a>: apparently (no stack trace): 
-          <em>Recoll was indexing files in .thunderbird when the crash
-            occurred. It seemed to be indexing the INBOX file on
-            disk. </em> 
-        </li>
-
+      <ul>
         <li>Text inside malformed HTML files (appearing before a &lt;body&gt;
           tag, or after a second one, or after a &lt;/body&gt; tag is
           not indexed. At it would be displayed by current browsers,
@@ -73,6 +63,25 @@
           startup. This is fixed by removing (back it up just in case)
           ~/.config/Recoll.org/recoll.conf, the QSettings storage for
           recoll.</li>
+      </ul>
+
+      <h2><a name="b_1_17_2">recoll 1.17.2</a></h2> 
+
+      <ul>
+        <li>It appears that recollindex will sometimes crash while
+          indexing mail files. There are 2 separate reports about
+          this, and no resolution for now. This is not specific to
+          1.17 as one of the reports is for 1.16. Refs:
+          <a href="https://bugzilla.redhat.com/show_bug.cgi?format=multiple&id=819408">Fedora</a>
+          (maildir, processing an attachment), 
+          <a href="https://bugs.launchpad.net/ubuntu/+source/recoll/+bug/994228">Ubuntu</a>: apparently (no stack trace): 
+          <em>Recoll was indexing files in .thunderbird when the crash
+            occurred. It seemed to be indexing the INBOX file on
+            disk. </em> 
+        </li>
+        <li>There were a few small glitches when paging the result
+          list, for example going back from the last page.</li>
+      </ul>
 
       <h2><a name="b_1_17_1">recoll 1.17.1</a></h2> 
 

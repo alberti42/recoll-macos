@@ -48,7 +48,7 @@
       <p><span class="application">Recoll</span> est un logiciel libre
 	gratuit, dont le code source est disponible sous licence GPL.
 	La dernière version est 
-        <a class="important" href="download.html">1.17.2</a>
+        <a class="important" href="download.html">1.17.3</a>
 	(<a href="release-1.17.html">notes sur la version, en
 	anglais</a>)</p> 
 
@@ -101,9 +101,11 @@
       <h2>Nouvelles: </h2>
       <ul>
 
-        <li>2012-05-16: Sortie de la
-          version <a href="download.html#source">1.17.2</a>. Voir
-          les <a href="release-1.17.html">les notes</a>. 
+        <li>2012-05-24: Sortie de la
+          version <a href="download.html#source">1.17.3</a>. Voir
+          les <a href="release-1.17.html">les notes</a>. Cette version
+          corrige un "arrêt imprévu" de l'indexation qui se produisait
+          parfois en traitant certains messages mail.
         </li>
 
         <li>2010-11-20 : un petit script pour activer/cacher recoll sur un
