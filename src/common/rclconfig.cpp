@@ -969,12 +969,17 @@ vector<string> RclConfig::getDaemSkippedPaths()
 	*it = path_tildexpand(*it);
 	*it = path_canon(*it);
     }
-    sort(dskpl.begin(), dskpl.end());
 
     vector<string> skpl1 = getSkippedPaths();
     vector<string> skpl;
-    merge(dskpl.begin(), dskpl.end(), skpl1.begin(), skpl1.end(), skpl.begin());
-    unique(skpl.begin(), skpl.end());
+    if (dskpl.empty()) {
+	skpl = skpl1;
+    } else {
+	sort(dskpl.begin(), dskpl.end());
+	merge(dskpl.begin(), dskpl.end(), skpl1.begin(), skpl1.end(), 
+	      skpl.begin());
+	unique(skpl.begin(), skpl.end());
+    }
     return skpl;
 }
 
