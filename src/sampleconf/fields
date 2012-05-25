@@ -84,7 +84,7 @@ filename=
 [aliases]
 abstract = summary dc:summary description xesam:description
 author = creator dc:creator xesam:author xesam:creator from
-caption = title dc:title subject
+title = caption title dc:title subject
 # catg = dc:type contentCategory
 dbytes = size xesam:size
 dmtime = date dc:date dc:datemodified datemodified contentmodified \
