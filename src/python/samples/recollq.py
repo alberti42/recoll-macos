@@ -16,7 +16,6 @@ def Usage():
     sys.exit(1);
 
 def doquery(db, q):
-    """Parse and execute query on open db"""
     # Get query object
     query = db.query()
     # Parse/run input query string
@@ -27,8 +26,9 @@ def doquery(db, q):
     while query.next >= 0 and query.next < nres: 
         doc = query.fetchone()
         print query.next, ":",
-        for k in ("title", "url", "mtime"):
+        for k in ("title", "mtime", "author"):
             print k, ":", getattr(doc, k).encode('utf-8')
+        print "Bin URL :", doc.getbinurl()
         abs = db.makeDocAbstract(doc, query).encode('utf-8')
         print abs
         print

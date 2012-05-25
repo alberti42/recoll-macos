@@ -295,6 +295,55 @@ Doc_init(recoll_DocObject *self, PyObject *, PyObject *)
     return 0;
 }
 
+PyDoc_STRVAR(doc_getbinurl,
+"getbinurl(none) -> binary url\n"
+"\n"
+"Returns an URL with a path part which is a as bit for bit copy of the \n"
+"file system path, without encoding\n"
+);
+
+static PyObject *
+Doc_getbinurl(recoll_DocObject *self)
+{
+    LOGDEB(("Doc_getbinurl\n"));
+    if (self->doc == 0 || 
+	the_docs.find(self->doc) == the_docs.end()) {
+        PyErr_SetString(PyExc_AttributeError, "doc");
+	return 0;
+    }
+    return PyByteArray_FromStringAndSize(self->doc->url.c_str(), 
+					 self->doc->url.size());
+}
+
+PyDoc_STRVAR(doc_setbinurl,
+"setbinurl(url) -> binary url\n"
+"\n"
+"Set the URL from binary path like file://may/contain/unencodable/bytes\n"
+);
+
+static int
+Doc_setbinurl(recoll_DocObject *self, PyObject *value)
+{
+    if (self->doc == 0 || 
+	the_docs.find(self->doc) == the_docs.end()) {
+        PyErr_SetString(PyExc_AttributeError, "doc??");
+	return -1;
+    }
+
+    self->doc->url = string(PyByteArray_AsString(value),
+			    PyByteArray_Size(value));
+    return 0;
+}
+
+
+static PyMethodDef Doc_methods[] = {
+    {"getbinurl", (PyCFunction)Doc_getbinurl, METH_NOARGS,
+     doc_getbinurl},
+    {"setbinurl", (PyCFunction)Doc_setbinurl, METH_O,
+     doc_setbinurl},
+    {NULL}  /* Sentinel */
+};
+
 static PyObject *
 Doc_getattr(recoll_DocObject *self, char *name)
 {
@@ -312,66 +361,79 @@ Doc_getattr(recoll_DocObject *self, char *name)
 #endif
     string key = rclconfig->fieldCanon(string(name));
 
-    // Handle special cases, then try retrieving key value from meta 
-    // array
+    // Handle special cases, then check this is not a method then
+    // try retrieving key value from the meta array
+
     string value;
+    bool found = false;
     switch (key.at(0)) {
     case 'u':
 	if (!key.compare(Rcl::Doc::keyurl)) {
-	    value = self->doc->url;
+	    value = self->doc->url; found = true;
 	}
 	break;
     case 'f':
 	if (!key.compare(Rcl::Doc::keyfs)) {
-	    value = self->doc->fbytes;
+	    value = self->doc->fbytes; found = true;
 	} else if (!key.compare(Rcl::Doc::keyfs)) {
-	    value = self->doc->fbytes;
+	    value = self->doc->fbytes; found = true;
 	} else if (!key.compare(Rcl::Doc::keyfmt)) {
-	    value = self->doc->fmtime;
+	    value = self->doc->fmtime; found = true;
 	}
 	break;
     case 'd':
 	if (!key.compare(Rcl::Doc::keyds)) {
-	    value = self->doc->dbytes;
+	    value = self->doc->dbytes; found = true;
 	} else if (!key.compare(Rcl::Doc::keydmt)) {
-	    value = self->doc->dmtime;
+	    value = self->doc->dmtime; found = true;
 	}
 	break;
     case 'i':
 	if (!key.compare(Rcl::Doc::keyipt)) {
-	    value = self->doc->ipath;
+	    value = self->doc->ipath; found = true;
 	}
 	break;
     case 'm':
 	if (!key.compare(Rcl::Doc::keytp)) {
-	    value = self->doc->mimetype;
+	    value = self->doc->mimetype; found = true;
 	} else if (!key.compare(Rcl::Doc::keymt)) {
 	    value = self->doc->dmtime.empty() ? self->doc->fmtime : 
-		self->doc->dmtime;
+		self->doc->dmtime; found = true;
 	}
 	break;
     case 'o':
 	if (!key.compare(Rcl::Doc::keyoc)) {
-	    value = self->doc->origcharset;
+	    value = self->doc->origcharset; found = true;
 	}
 	break;
     case 's':
 	if (!key.compare(Rcl::Doc::keysig)) {
-	    value = self->doc->sig;
+	    value = self->doc->sig; found = true;
 	} else 	if (!key.compare(Rcl::Doc::keysz)) {
 	    value = self->doc->dbytes.empty() ? self->doc->fbytes : 
-		self->doc->dbytes;
+		self->doc->dbytes; found = true;
 	}
 	break;
     }
 
-    if (value.empty())
-	value = self->doc->meta[key];
+    if (!found) {
+	PyObject *meth = Py_FindMethod(Doc_methods, (PyObject*)self, 
+				       key.c_str());
+	if (meth) {
+	    return meth;
+	} else {
+	    PyErr_Clear();
+	}
+
+	if (self->doc->getmeta(key, 0)) {
+	    value = self->doc->meta[key];
+	}
+    }
 
     LOGDEB(("Doc_getattr: [%s] (%s) -> [%s]\n",
 	    name, key.c_str(), value.c_str()));
     // Return a python unicode object
-    PyObject* res = PyUnicode_Decode(value.c_str(), value.size(), "UTF-8", 
+    PyObject* res = PyUnicode_Decode(value.c_str(), value.size(), "utf-8",
 				     "replace");
     return res;
 }
@@ -467,6 +529,7 @@ Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
     return 0;
 }
 
+
 PyDoc_STRVAR(doc_DocObject,
 "Doc()\n"
 "\n"
@@ -532,7 +595,7 @@ static PyTypeObject recoll_DocType = {
     0,		               /* tp_weaklistoffset */
     0,		               /* tp_iter */
     0,		               /* tp_iternext */
-    0,                         /* tp_methods */
+    Doc_methods,               /* tp_methods */
     0,                         /* tp_members */
     0,                         /* tp_getset */
     0,                         /* tp_base */
