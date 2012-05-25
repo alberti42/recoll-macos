@@ -74,7 +74,15 @@
         <p>If you are running an older Recoll version, you really
           should upgrade.</p>
       </blockquote>
-      
+
+      <h2>TAR archives</h2>
+
+      <p>New <a href="rcltar">rcltar</a> filter for tar archives. The
+        indexing of tar archives is disabled by default in the sample
+        configuration (stored here). You'll need to add
+        an <tt>application/x-tar = execm rcltar</tt> line in the
+        [index] section of your $HOME/mimeconf to enable it.</p>
+
       <h2>XML files</h2>
 
       <p>By default, the current recoll version does not index xml

@@ -70,6 +70,10 @@
       <h2>News</h2>
       <div class="news">
       <ul>
+        <li>2012-05-25: a
+          new <a href="filters/filters.html">filter</a> for indexing
+          tar archives.</li>
+
         <li>2012-05-23: Release 1.17.3 mostly fixes an indexing crash that
           sometimes occurred  while processing email. See the 
           <a href="release-1.17.html">Release notes</a>. 
