@@ -7,3 +7,5 @@
 # with the same name in the central directory. The syntax for setting
 # values is identical.
 
+[index]
+application/x-tar = execm rcltar

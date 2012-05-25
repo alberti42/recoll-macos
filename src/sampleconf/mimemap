@@ -53,6 +53,16 @@
 #.Z  = application/x-compress
 .zip = application/zip
 
+# The rcltar module can handle compressed tar formats internally so we
+# use application/x-tar for all tar files compressed or not. Note that tar
+# file indexing is disabled by default, you'll need to copy and uncomment
+# the application/x-tar commented line from mimeconf into your personal config
+.tar = application/x-tar
+.tar.gz = application/x-tar
+.tgz = application/x-tar
+.tbz = application/x-tar
+.tar.bz2 = application/x-tar
+
 .doc = application/msword
 .ppt = application/vnd.ms-powerpoint
 .xls = application/vnd.ms-excel
@@ -135,9 +145,9 @@
 # indexallfilenames is set (so this is different from skippedNames). It's a
 # bit unconsistent to have it listed among the suffix translations, but no
 # problem in practice.
-recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .log.gz .md5 .map \
+recoll_noindex = .md5 .map \
        .o .lib .dll .a .sys .exe .com \
-       .dat .bak .rdf .log .db .msf .pid \
+       .dat .bak .rdf .log.gz .log .db .msf .pid \
        ,v ~ #
 
 # Special handling of .txt files inside ~/.gaim and ~/.purple directories

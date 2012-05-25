@@ -86,6 +86,7 @@ application/x-perl = internal text/plain
 application/x-rar = execm rclrar;charset=default
 application/x-scribus = exec rclscribus
 application/x-shellscript = internal text/plain
+#application/x-tar = execm rcltar
 application/x-tex = exec rcltex
 application/x-webarchive = execm rclwar
 application/zip = execm rclzip;charset=default
@@ -299,6 +300,7 @@ other = application/vnd.sun.xml.draw \
         application/x-fsdirectory \
         application/x-mimehtml \
         application/x-rar \
+	application/x-tar \
         application/x-webarchive \
 	application/zip \
 
