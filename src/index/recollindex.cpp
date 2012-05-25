@@ -66,6 +66,7 @@ static int     op_flags;
 #define OPT_f     0x4000
 #define OPT_C     0x8000
 #define OPT_Z     0x10000
+#define OPT_n     0x20000
 
 ReExec *o_reexec;
 
@@ -233,6 +234,7 @@ static const char usage [] =
 "    Perform real time indexing. Don't become a daemon if -D is set.\n"
 "    -w sets number of seconds to wait before starting.\n"
 "    -C disables monitoring config for changes/reexecuting.\n"
+"    -n disables initial incremental indexing (!and purge!).\n"
 #ifndef DISABLE_X11MON
 "    -x disables exit on end of x11 session\n"
 #endif /* DISABLE_X11MON */
@@ -288,6 +290,10 @@ int main(int argc, char **argv)
 {
     string a_config;
     int sleepsecs = 60;
+
+    // The reexec struct is used by the daemon to shed memory after
+    // the initial indexing pass and to restart when the configuration
+    // changes
     o_reexec = new ReExec;
     o_reexec->init(argc, argv);
 
@@ -314,6 +320,7 @@ int main(int argc, char **argv)
 	    case 'i': op_flags |= OPT_i; break;
 	    case 'l': op_flags |= OPT_l; break;
 	    case 'm': op_flags |= OPT_m; break;
+	    case 'n': op_flags |= OPT_n; break;
 	    case 's': op_flags |= OPT_s; break;
 #ifdef RCL_USE_ASPELL
 	    case 'S': op_flags |= OPT_S; break;
@@ -446,17 +453,30 @@ int main(int argc, char **argv)
 	      }
 	    }
 	}
-	makeIndexerOrExit(config, inPlaceReset);
-	if (!confindexer->index(rezero, ConfIndexer::IxTAll) || stopindexing) {
-	  LOGERR(("recollindex, initial indexing pass failed, not going into monitor mode\n"));
-	  exit(1);
+	if (!(op_flags & OPT_n)) {
+	    makeIndexerOrExit(config, inPlaceReset);
+	    LOGDEB(("Recollindex: initial indexing pass before monitoring\n"));
+	    if (!confindexer->index(rezero, ConfIndexer::IxTAll) || 
+		stopindexing) {
+		LOGERR(("recollindex, initial indexing pass failed, "
+			"not going into monitor mode\n"));
+		exit(1);
+	    }
+	    deleteZ(confindexer);
+	    o_reexec->insertArgs(vector<string>(1, "-n"));
+	    LOGDEB(("recollindex: calling reexec after init path with "
+		    "option -n\n"));
+	    // Note that -n will be inside the reexec when we come
+	    // back, but the monitor will explicitely strip it before
+	    // starting a config change exec to ensure that we do a
+	    // purging pass in this case.
+	    o_reexec.reexec();
 	}
         if (updater) {
 	    updater->status.phase = DbIxStatus::DBIXS_MONITOR;
 	    updater->status.fn.clear();
 	    updater->update();
 	}
-	deleteZ(confindexer);
 	int opts = RCLMON_NONE;
 	if (op_flags & OPT_D)
 	    opts |= RCLMON_NOFORK;

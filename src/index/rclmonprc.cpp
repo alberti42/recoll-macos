@@ -559,6 +559,10 @@ bool startMonitor(RclConfig *conf, int opts)
 	// Check for a config change
 	if (!(opts & RCLMON_NOCONFCHECK) && o_reexec && conf->sourceChanged()) {
 	    LOGDEB(("Rclmonprc: config changed, reexecuting myself\n"));
+	    // We never want to have a -n option after a config
+	    // change. -n was added by the reexec after the initial
+	    // pass even if it was not given on the command line
+	    o_reexec->removeArg("-n");
 	    o_reexec->reexec();
 	}
 	// Lock queue before waiting again

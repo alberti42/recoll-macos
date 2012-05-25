@@ -623,6 +623,48 @@ void ReExec::init(int argc, char *args[])
     free(cd);
 }
 
+void ReExec::insertArgs(const vector<string>& args, int idx)
+{
+    vector<string>::iterator it, cit;
+    unsigned int cmpoffset = (unsigned int)-1;
+
+    if (idx == -1 || string::size_type(idx) >= m_argv.size()) {
+	it = m_argv.end();
+	if (m_argv.size() >= args.size()) {
+	    cmpoffset = m_argv.size() - args.size();
+	}
+    } else {
+	it = m_argv.begin() + idx;
+	if (idx + args.size() <= m_argv.size()) {
+	    cmpoffset = idx;
+	}
+    }
+
+    // Check that the option is not already there
+    if (cmpoffset != (unsigned int)-1) {
+	bool allsame = true;
+	for (unsigned int i = 0; i < args.size(); i++) {
+	    if (m_argv[cmpoffset + i] != args[i]) {
+		allsame = false;
+		break;
+	    }
+	}
+	if (allsame)
+	    return;
+    }
+
+    m_argv.insert(it, args.begin(), args.end());
+}
+
+void ReExec::removeArg(const string& arg)
+{
+    for (vector<string>::iterator it = m_argv.begin(); 
+	 it != m_argv.end(); it++) {
+	if (*it == arg)
+	    it = m_argv.erase(it);
+    }
+}
+
 // Reexecute myself, as close as possible to the initial exec
 void ReExec::reexec()
 {
@@ -758,6 +800,17 @@ ReExec reexec;
 int main(int argc, char *argv[])
 {
     reexec.init(argc, argv);
+
+    if (0) {
+	vector<string> newargs;
+	newargs.push_back("newarg");
+	newargs.push_back("newarg1");
+	newargs.push_back("newarg2");
+	newargs.push_back("newarg3");
+	newargs.push_back("newarg4");
+	reexec.insertArgs(newargs, 2);
+    }
+
     thisprog = argv[0];
     argc--; argv++;
 

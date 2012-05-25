@@ -245,6 +245,12 @@ public:
     }
     void reexec();
     const string& getreason() {return m_reason;}
+    // Insert new args into the initial argv. idx designates the place
+    // before which the new args are inserted (the default of 1
+    // inserts after argv[0] which would probably be an appropriate
+    // place for additional options)
+    void insertArgs(const vector<string>& args, int idx = 1);
+    void removeArg(const string& arg);
 private:
     vector<string> m_argv;
     string m_curdir;
