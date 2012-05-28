@@ -107,6 +107,7 @@ text/rtf = exec unrtf --nopict --html;mimetype=text/html
 text/x-c = internal
 text/x-c++ = internal
 text/x-c+ = internal
+text/x-csv = internal text/plain
 text/x-fictionbook = exec rclfb2
 text/x-gaim-log = exec rclgaim
 text/x-html-sidux-man = exec rclsiduxman
@@ -138,73 +139,78 @@ application/pdf = pdf
 application/postscript = postscript
 application/vnd.ms-excel = spreadsheet
 application/vnd.ms-powerpoint = presentation
-application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
-  wordprocessing
-application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
-  wordprocessing
-application/vnd.openxmlformats-officedocument.presentationml.template = \
- presentation
-application/vnd.openxmlformats-officedocument.presentationml.presentation = \
- presentation
-application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = \
- spreadsheet
-application/vnd.openxmlformats-officedocument.spreadsheetml.template =\
- spreadsheet
+application/vnd.openxmlformats-officedocument.presentationml.presentation = presentation
+application/vnd.openxmlformats-officedocument.presentationml.template = presentation
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = spreadsheet
+application/vnd.openxmlformats-officedocument.spreadsheetml.template = spreadsheet
+application/vnd.openxmlformats-officedocument.wordprocessingml.document = wordprocessing
+application/vnd.openxmlformats-officedocument.wordprocessingml.template = wordprocessing
 application/vnd.sun.xml.calc = spreadsheet
 application/vnd.sun.xml.calc.template = spreadsheet
 application/vnd.sun.xml.draw = drawing
 application/vnd.sun.xml.draw.template = drawing
 application/vnd.sun.xml.impress = presentation
 application/vnd.sun.xml.impress.template = presentation
+application/vnd.sun.xml.math  = wordprocessing
 application/vnd.sun.xml.writer = wordprocessing
 application/vnd.sun.xml.writer.global = wordprocessing
 application/vnd.sun.xml.writer.template = wordprocessing
 application/vnd.wordperfect = wordprocessing
 application/x-abiword = wordprocessing
+application/x-awk = source
+application/x-chm = document
 application/x-dia-diagram = drawing
 application/x-dvi = document
 application/x-flac = sownd
 application/x-fsdirectory = folder
+application/x-gnuinfo = document
 application/x-gnumeric = spreadsheet
 application/x-kword = wordprocessing
 application/x-lyx = wordprocessing
+application/x-mimehtml = message
 application/x-okular-notes = document
-application/x-scribus = document
-application/x-gnuinfo = document
-application/x-tex = wordprocessing
-text/x-tex = wordprocessing
-application/xml = document
-text/xml = document
-application/x-awk = source
 application/x-perl = source
+application/x-rar = archive
+application/x-scribus = document
+application/x-scribus = wordprocessing
 application/x-shellscript = source
+application/x-tar = archive
+application/x-tex = wordprocessing
+application/x-webarchive = archive
+application/xml = document
+application/zip = archive
 audio/mpeg = sownd
 audio/x-karaoke = sownd
 image/bmp = image
 image/gif = image
 image/jpeg = image
 image/png = image
+image/svg+xml = drawing
 image/tiff = image
 image/vnd.djvu = document
-image/svg+xml = drawing
 image/x-xcf = image
 image/x-xpmi = image
 message/rfc822 = message
 text/html = html
 text/plain = txt
+text/rtf = wordprocessing
 text/x-c = source
-text/x-c++ = source
 text/x-c+ = source
+text/x-c++ = source
+text/x-csv = txt
 text/x-fictionbook = document
 text/x-html-aptosid-man = aptosid-book
 text/x-html-sidux-man = sidux-book
 text/x-ini = txt
 text/x-mail = message
 text/x-man = document
-application/x-chm = document
-text/x-purple-log = pidgin
+text/x-perl = source
 text/x-purple-html-log = pidgin
+text/x-purple-log = pidgin
 text/x-python = text-x-python
+text/x-shellscript = source
+text/x-tex = wordprocessing
+text/xml = document
 
 [categories]
 # Categories group mime types by "kind". They can be used from the query
@@ -237,6 +243,7 @@ text = \
       application/x-tex \
       application/xml \
       text/xml \
+      text/x-csv \
       text/x-tex \
       image/vnd.djvu \
       text/calendar \
