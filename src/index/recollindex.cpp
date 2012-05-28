@@ -470,7 +470,7 @@ int main(int argc, char **argv)
 	    // back, but the monitor will explicitely strip it before
 	    // starting a config change exec to ensure that we do a
 	    // purging pass in this case.
-	    o_reexec.reexec();
+	    o_reexec->reexec();
 	}
         if (updater) {
 	    updater->status.phase = DbIxStatus::DBIXS_MONITOR;
