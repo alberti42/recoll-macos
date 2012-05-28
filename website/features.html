@@ -82,7 +82,7 @@
       should compile and run on all subsequent releases of these
       systems and probably a few others too.</p>
 
-      <p>Qt versions from 3.1 to 4.7</p>
+      <p>Qt versions from 3.1 to 4.8</p>
 
       <h2><a name="doctypes">Document types</a></h2>
 
@@ -96,29 +96,24 @@
       <h4>File types indexed natively</h4>
 
       <ul>
-        <li><span class="literal">text</span>.</li>
-
-        <li><span class="literal">html</span>.</li>
-
-        <li><span class="literal">maildir</span> and 
-          <span class="literal">mailbox</span> (
-          <span class="literal">Mozilla</span>, 
-          <span class="literal">Thunderbird</span> and 
-          <span class="literal">Evolution</span>mail ok).
+        <li><span class="application">text</span>.</li>
+        <li><span class="application">html</span>.</li>
+        <li><span class="application">maildir</span> and 
+          <span class="application">mailbox</span> (
+          <span class="application">Mozilla</span>, 
+          <span class="application">Thunderbird</span> and 
+          <span class="application">Evolution</span> mail ok).
         </li>
 
-        <li><span class="literal">gaim</span> and 
-          <span class="literal">purple</span> log files.</li>
+        <li><span class="application">gaim</span> and 
+          <span class="application">purple</span> log files.</li>
 
-        <li><span class="literal">Lyx</span> files (needs 
-          <span class="literal">Lyx</span> to be installed).</li>
+        <li><span class="application">Scribus</span> files.</li>
 
-        <li><span class="literal">Scribus</span> files.</li>
+        <li><span class="application">Man pages</span> (needs
+          <span class="application">groff</span>).</li>
 
-        <li><span class="literal">Man pages</span> (needs
-          <span class="command">groff</span>).</li>
-
-        <li><span class="literal">Dia</span> diagrams.</li>
+        <li><span class="application">Dia</span> diagrams.</li>
       </ul>
 
       <h4>File types indexed with external helpers</h4>
@@ -133,20 +128,20 @@
         Quite a few also need <span class="command">unzip</span>:</p>
 
       <ul>
-        <li><span class="literal">Abiword</span> files.</li>
+        <li><span class="application">Abiword</span> files.</li>
 
-        <li><span class="literal">Fb2</span> ebooks.</li>
+        <li><span class="application">Fb2</span> ebooks.</li>
 
-        <li><span class="literal">Kword</span> files.</li>
+        <li><span class="application">Kword</span> files.</li>
 
-        <li><span class="literal">Microsoft Office Open XML</span>
+        <li><span class="application">Microsoft Office Open XML</span>
         files.</li>
 
-        <li><span class="literal">OpenOffice</span> files.</li>
+        <li><span class="application">OpenOffice</span> files.</li>
 
-        <li><span class="literal">SVG</span> files.</li>
-        <li><span class="literal">Gnumeric</span> files.</li>
-        <li><span class="literal">Okular</span> annotations files.</li>
+        <li><span class="application">SVG</span> files.</li>
+        <li><span class="application">Gnumeric</span> files.</li>
+        <li><span class="application">Okular</span> annotations files.</li>
         
       </ul>
 
@@ -156,57 +151,73 @@
         the internal formats.</p>
 
       <ul>
-        <li><span class="literal">pdf</span> with the <span class=
+        <li><span class="application">pdf</span> with the <span class=
         "command">pdftotext</span> command, which can be installed
         as part of <a href="http://www.foolabs.com/xpdf/">xpdf</a>
         or <a href="http://poppler.freedesktop.org/">poppler</a>,
         depending on your distribution.</li>
 
-        <li><span class="literal">msword</span> with <a href=
+        <li><span class="application">msword</span> with <a href=
         "http://www.winfield.demon.nl/">antiword</a>.  It is also useful to
         have <a href="http://wvware.sourceforge.net/">wvWare</a> installed
         as it may be be used as a fallback for some files which antiword
         does not handle.</li>
 
-        <li><span class="literal">Powerpoint</span> and <span
-        class="literal">Excel</span> with the <a href=
+        <li><span class="application">Wordperfect</span> with the 
+         <span class="command">wpd2html</span> command from <a href=
+        "http://libwpd.sourceforge.net">libwpd</a>. On some distributions,
+        the command may come with a package named <span
+        class="literal">libwpd-tools</span> or such, not the base <a
+        span="literal">libwpd</a> package.</li>
+
+
+        <li><span class="application">Lyx</span> files (needs 
+          <span class="application">Lyx</span> to be installed).</li>
+
+        <li><span class="application">Powerpoint</span> and <span
+        class="application">Excel</span> with the <a href=
         "http://vitus.wagner.pp.ru/software/catdoc/">catdoc</a> utilities.</li>
 
-        <li><span class="literal">CHM (Microsoft help)</span> files
+        <li><span class="application">CHM (Microsoft help)</span> files
           with <span class="command">Python, 
             <a href="http://gnochm.sourceforge.net/pychm.html">pychm</a>
           and <a href="http://www.jedrea.com/chmlib/">chmlib</a></span>.</li>
 
-        <li><span class="literal">GNU info</span> files
+        <li><span class="application">GNU info</span> files
         with <span class="command">Python</span> and the 
         <span class="command">info</span> command.</li>
 
-        <li><span class="literal">Zip</span> archives (needs <span
+        <li><span class="application">Tar</span> archives (needs <span
+        class="command">Python</span>). Tar file indexing is disabled
+        by default (because tar archives don't typically contain the
+        kind of documents that people search for), you will need to
+        enable it explicitely, like with the following in your
+          <span class="filename">$HOME/.recoll/mimeconf</span> file:
+          <pre>
+[index]
+application/x-tar = execm rcltar
+</pre>
+        </li> 
+
+        <li><span class="application">Zip</span> archives (needs <span
         class="command">Python</span>).</li>
 
-        <li><span class="literal">Rar</span> archives (needs <span
+        <li><span class="application">Rar</span> archives (needs <span
         class="command">Python</span>), the
         <a href="http://pypi.python.org/pypi/rarfile/">rarfile</a> Python
         module and the <a
         href="http://www.rarlab.com/rar_add.htm">unrar</a> utility.</li>
 
-        <li><span class="literal">iCalendar</span>(.ics) files
+        <li><span class="application">iCalendar</span>(.ics) files
         (needs <span class="command">Python, <a href=
         "http://pypi.python.org/pypi/icalendar/2.1">icalendar</a></span>).</li>
 
-        <li><span class="literal">Mozilla calendar data</span> See
+        <li><span class="application">Mozilla calendar data</span> See
         <a href=
         "http://bitbucket.org/medoc/recoll/wiki/IndexMozillaCalendari">
         the wiki</a> about this.</li>
 
-        <li><span class="literal">Wordperfect</span> with the 
-         <span class="command">wpd2html</span> command from <a href=
-        "http://libwpd.sourceforge.net">libwpd</a>. On some distributions,
-        the command may come with an package named <span
-        class="literal">libwpd-tools</span> or such, not the base <a
-        span="literal">libwpd</a> package.</li>
-
-        <li><span class="literal">postscript</span> with <a href=
+        <li><span class="application">postscript</span> with <a href=
         "http://www.gnu.org/software/ghostscript/ghostscript.html">
             ghostscript</a> and <a href=
         "http://www.cs.wisc.edu/~ghost/doc/pstotext.htm">pstotext</a>.
@@ -235,7 +246,7 @@
         </li>
 
 
-        <li><span class="literal">RTF</span> files with <a href=
+        <li><span class="application">RTF</span> files with <a href=
         "http://www.gnu.org/software/unrtf/unrtf.html">unrtf</a>. Please
         note that up to version
         0.21, <span class="command">unrtf</span> mostly does not work
@@ -248,7 +259,7 @@
         on <a href="http://www.bitbucket.org/medoc/unrtf-int">
          bitbucket.org</a>.</li>  
 
-        <li><span class="literal">TeX</span> with <span class=
+        <li><span class="application">TeX</span> with <span class=
         "command">untex</span>. If there is no untex package for
         your distribution, <a href="untex/untex-1.3.jf.tar.gz">a
         source package is stored on this site</a> (as untex has no
@@ -256,28 +267,25 @@
         "http://www.cs.purdue.edu/homes/trinkle/detex/">detex</a>
         if this is installed.</li>
 
-        <li><span class="literal">dvi</span> with <a href=
+        <li><span class="application">dvi</span> with <a href=
         "http://www.radicaleye.com/dvips.html">dvips</a>.</li>
 
-        <li><span class="literal">djvu</span> with <a href=
+        <li><span class="application">djvu</span> with <a href=
         "http://djvu.sourceforge.net">DjVuLibre</a>.</li>
 
-        <li>Audio file tags: Recoll releases 1.13 and older use <a
-        href="http://id3lib.sourceforge.net/">id3info (id3lib)</a>
-        (compiling id3lib on recent systems may need a small patch,
-        see <a href="id3lib.html">here.</a>) or the ogg and flac
-        tools.<br>
-         Recoll releases 1.14 and later use a Python filter based
-        on <a href="http://code.google.com/p/mutagen/">mutagen</a>
-        for all audio types.</li>
+        <li><span class="application">Audio file tags</span>.
+          Recoll releases 1.14 and later use a Python filter based
+          on <a href="http://code.google.com/p/mutagen/">mutagen</a>
+          for all audio types.</li>
 
-        <li>Image file tags with <a href=
+        <li><span class="application">Image file tags</span> with <a href=
         "http://www.sno.phy.queensu.ca/~phil/exiftool/">exiftool</a>.
         This is a perl program, so you also need perl on the
         system. This works with about any possible image file and
         tag format (jpg, png, tiff, gif etc.).</li>
 
-        <li>Midi karaoke files with Python, the 
+        <li><span class="application">Midi karaoke files</span> with
+          Python, the
           <a href="http://pypi.python.org/pypi/midi/0.2.1">
             midi module</a>, and some help
           from <a href="http://chardet.feedparser.org/">chardet</a>. There
@@ -287,10 +295,11 @@
           to <a href="helpernotes.html#midi">notes here</a>.
         </li> 
 
-        <li>Konqueror webarchive format with Python (uses the tarfile
-          module).</li>
+        <li><span class="application">Konqueror webarchive</span>
+          format with Python (uses the tarfile module).</li>
 
-        <li>mimehtml web archive format (support based on the mail
+        <li><span class="application">Mimehtml web archive
+            format</span> (support based on the mail 
           filter, which introduces some mild weirdness, but still
           usable).</li>
 
@@ -300,7 +309,7 @@
 
       <ul>
         <li>Can use <b>Beagle</b> browser plug-ins to index web
-        history. See the <a href=
+        history. See <a href=
         "http://bitbucket.org/medoc/recoll/wiki/IndexBeagleWeb">the
         Wiki</a> for more detail.</li>
 
