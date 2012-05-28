@@ -207,7 +207,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt;: planification de l&apos;indexation périodique (cron) &lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Chaque champ peut contenir un joker (*), une simple valeur numérique , des listes ponctuées par des virgules (1,3,5) et des intervalles (1-7). Plus généralement, les champs seront utilisés &lt;span style=&quot; font-style:italic;&quot;&gt;tels quels&lt;/span&gt; dans le fichier crontab, et la syntaxe générale crontab peut être utilisée, voir la page de manuel crontab(5).&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;Par exemple, en entrant &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;*&lt;/span&gt; dans &lt;span style=&quot; font-style:italic;&quot;&gt;Jours, &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;12,19&lt;/span&gt; dans &lt;span style=&quot; font-style:italic;&quot;&gt;Heures&lt;/span&gt; et &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;15&lt;/span&gt; dans &lt;span style=&quot; font-style:italic;&quot;&gt;Minutes&lt;/span&gt;, recollindex démarrerait chaque hour à 12:15 et 19:15&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;Par exemple, en entrant &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;*&lt;/span&gt; dans &lt;span style=&quot; font-style:italic;&quot;&gt;Jours, &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;12,19&lt;/span&gt; dans &lt;span style=&quot; font-style:italic;&quot;&gt;Heures&lt;/span&gt; et &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;15&lt;/span&gt; dans &lt;span style=&quot; font-style:italic;&quot;&gt;Minutes&lt;/span&gt;, recollindex démarrerait chaque jour à 12:15 et 19:15&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Un planning avec des activations très fréquentes est probablement moins efficace que l&apos;indexation au fil de l&apos;eau.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
@@ -520,7 +520,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>This is the character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
-        <translation>Jeu de caractères utilisé pour lire les fichiers qui ne l&apos;identifient pas de manière interne, par exemple les purs fichiers texte. &lt;br&gt;La valeur par défaut est vide, et le programme utilise l&apos;environnement.</translation>
+        <translation>Jeu de caractères utilisé pour lire les fichiers qui ne l&apos;identifient pas de manière interne, par exemple les fichiers de texte pur. &lt;br&gt;La valeur par défaut est vide, et le programme utilise l&apos;environnement.</translation>
     </message>
     <message>
         <source>Follow symbolic links</source>
@@ -1983,7 +1983,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Max. size for the web store (MB)</source>
-        <translation>Taill max. pour le cache Web (MB)</translation>
+        <translation>Taille max. pour le cache Web (MB)</translation>
     </message>
 </context>
 <context>
@@ -2031,22 +2031,22 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Max. text file size (MB)</source>
-        <translation>Taille maximum d&apos;un fichier texte (MB)</translation>
+        <translation>Taille maximale d&apos;un fichier texte (MB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
 This is for excluding monster log files from the index.</source>
-        <translation>Cette valeur est un seuil au delà duquel les fichiers texte ne seront pas indexés. Spécifier -1 pour supprimer la limite.
+        <translation>Cette valeur est un seuil au delà duquel les fichiers de texte pur ne seront pas indexés. Spécifier -1 pour supprimer la limite.
 Utilisé pour éviter d&apos;indexer des fichiers monstres.</translation>
     </message>
     <message>
         <source>Text file page size (KB)</source>
-        <translation>Taille de découpe pour les fichiers texte (KB)</translation>
+        <translation>Taille de page pour les fichiers de texte pur (KB)</translation>
     </message>
     <message>
         <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
 This will help searching very big text  files (ie: log files).</source>
-        <translation>Si cette valeur est spécifiée et positive, les fichiers texte seront découpés en tranches de cette taille pour l&apos;indexation.
+        <translation>Si cette valeur est spécifiée et positive, les fichiers de texte pur seront découpés en tranches de cette taille pour l&apos;indexation.
 Ceci diminue les ressources consommées par l&apos;indexation et aide le chargement pour prévisualisation.</translation>
     </message>
     <message>
@@ -2083,7 +2083,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation>Les langages pour lesquels les dictionnaires d&apos;expansion&lt;br&gt;des termes  seront construits.</translation>
+        <translation>Les langages pour lesquels les dictionnaires d&apos;expansion&lt;br&gt;des termes seront construits.</translation>
     </message>
     <message>
         <source>Log file name</source>
@@ -2206,7 +2206,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
-        <translation>Les texte plus gros ne seront pas surlignés dans la prévisualisation (trop lent).</translation>
+        <translation>Les textes plus gros ne seront pas surlignés dans la prévisualisation (trop lent).</translation>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
@@ -2378,11 +2378,11 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses some indentation.</source>
-        <translation>Les lignes dans des sections PRE ne sont pas justifiées. Using BR perd une partie de l&apos;indentation.</translation>
+        <translation>Les lignes dans des sections PRE ne sont pas justifiées. Utiliser BR perd une partie de l&apos;indentation.</translation>
     </message>
     <message>
         <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html in preview.</source>
-        <translation>Utiliser des tags &lt;PRE&gt; au lieu de &lt;BR&gt; pour affichier du texte non formaté en html dans la prévisualisation</translation>
+        <translation>Utiliser des tags &lt;PRE&gt; au lieu de &lt;BR&gt; pour afficher du texte non formaté en html dans la prévisualisation</translation>
     </message>
     <message>
         <source>Result List</source>

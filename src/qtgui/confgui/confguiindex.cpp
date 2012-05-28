@@ -251,7 +251,7 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 		      tr("The language for the aspell dictionary. "
 			 "This should look like 'en' or 'fr' ...<br>"
 			 "If this value is not set, the NLS environment "
-			 "will be used to compute it, which usually works."
+			 "will be used to compute it, which usually works. "
 			 "To get an idea of what is installed on your system, "
 			 "type 'aspell config' and look for .dat files inside "
 			 "the 'data-dir' directory. "));
@@ -433,7 +433,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 		      tr("Max. filter exec. time (S)"),
 		      tr("External filters working longer than this will be "
                          "aborted. This is for the rare case (ie: postscript) "
-                         "where a document could cause a filter to loop"
+                         "where a document could cause a filter to loop. "
 			 "Set to -1 for no limit.\n"),
 		      -1, 10000);
     m_widgets.push_back(efiltmaxsecs);
