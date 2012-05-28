@@ -1254,17 +1254,21 @@ int main(int argc, char **argv)
         }
 	cout << endl;	
     } else if (op_flags & OPT_c) {
-        // Check that all known mime types have an icon and belong to
-        // some category
+	// Checking the configuration consistency
+	
+	// Find and display category names
         vector<string> catnames;
         config->getMimeCategories(catnames);
         cout << "Categories: ";
-        set<string> allmtsfromcats;
         for (vector<string>::const_iterator it = catnames.begin(); 
              it != catnames.end(); it++) {
             cout << *it << " ";
         }
         cout << endl;
+
+	// Compute union of all types from each category. Check that there
+	// are no duplicates while we are at it.
+        set<string> allmtsfromcats;
         for (vector<string>::const_iterator it = catnames.begin(); 
              it != catnames.end(); it++) {
             vector<string> cts;
@@ -1279,13 +1283,41 @@ int main(int argc, char **argv)
             }
         }
 
+	// Retrieve complete list of mime types 
         vector<string> mtypes = config->getAllMimeTypes();
+
+	// And check that each mime type is found in exactly one category
         for (vector<string>::const_iterator it = mtypes.begin();
              it != mtypes.end(); it++) {
             if (allmtsfromcats.find(*it) == allmtsfromcats.end()) {
                 cout << "Not found in catgs: [" << *it << "]" << endl;
             }
         }
+
+	// List mime types not in mimeview
+        for (vector<string>::const_iterator it = mtypes.begin();
+             it != mtypes.end(); it++) {
+	    if (config->getMimeViewerDef(*it, "").empty()) {
+		cout << "No viewer: [" << *it << "]" << endl;
+	    }
+        }
+
+	// Check that each mime type has an indexer
+        for (vector<string>::const_iterator it = mtypes.begin();
+             it != mtypes.end(); it++) {
+	    if (config->getMimeHandlerDef(*it, false).empty()) {
+		cout << "No filter: [" << *it << "]" << endl;
+	    }
+        }
+
+	// Check that each mime type has a defined icon
+        for (vector<string>::const_iterator it = mtypes.begin();
+             it != mtypes.end(); it++) {
+	    if (config->getMimeIconName(*it) == "document") {
+		cout << "No or generic icon: [" << *it << "]" << endl;
+	    }
+        }
+
     } else {
         config->setKeyDir(cstr_null);
 	vector<string> names = config->getConfNames();
