@@ -34,7 +34,7 @@
 
       <h1>Recoll downloads</h1>
 
-      <p>
+      <div class="intrapage">
 	<table width=100%>
 	  <tbody>
 	    <tr>
@@ -47,7 +47,7 @@
 	    </tr>
 	  </tbody>
 	</table>
-      </p>
+       </div>
 
       <h2><a>General information</a></h2>
 
@@ -62,10 +62,9 @@
 
       <p>The indexing filters for some document types may need
         external packages not installed on your system by default, and
-        not installed automatically with Recoll:
-	<a href="usermanual/usermanual.html#RCL.INSTALL.EXTERNAL"> 
-	  take a look at the list</a> and decide what you need to
-	  install.</p> 
+        not installed automatically with Recoll: <a
+	href="features.html#doctypes"> take a look at the list</a> and
+	decide what you need to install.</p> 
 
       <p>The Recoll term explorer tool in phonetic mode (marginally
 	useful and optional) uses the <b>aspell</b> package, version
@@ -104,8 +103,9 @@
 	older Recoll packages and gain new file type support without
 	destabilizing your search setup.</p>
 
-      <p>You may be interested by the new XML filter that appeared
-        after the 1.17.2 release.</p>
+      <p>You may be interested by the new XML and TAR filters, and an
+      updated Open Office filter that appeared after the 1.17.3
+      release.</p>
 
       <h2><a name="source">Source</a></h2>
 
@@ -224,7 +224,6 @@
 
       <h3><a name="ubuntu">Ubuntu</a></h3>
 
-      <blockquote>
         <p>There are Personal Package Archives on launchpad.net for 
           <a href="http://www.launchpad.net/~xapian-backports/+archive/xapian-1.2">
             Xapian</a>, 
@@ -233,37 +232,14 @@
           latest versions, for a set of Ubuntu series.</p>
 
         <p>Ubuntu 10.04 (lucid) and later versions just need the Recoll
-          PPA. Older versions also needed a backport for Xapian
-          (xapian-backports/xapian-1.2).</p>
+          PPA.</p> 
 
-        <p>Just add the PPA to your system software sources (the
-          instructions are on the PPA page or 
-          <a href="https://help.launchpad.net/Packaging/PPA/InstallingSoftware">
-            here</a>), and you can then use the normal package
-          manager to install or update Recoll. 
-<pre><tt>
-sudo add-apt-repository ppa:recoll-backports/recoll-1.15-on
-</tt></pre>
+        <p>I am not producing packages for older versions any more,
+        but some are still stored on Launchpad, and you'll find some
+        instructions to install them in
+        the <a href="download-1.14.html">older download page</a>.
         </p>
 
-        <p>Only for Ubuntu versions before 9.10 (Karmic):
-<pre><tt>
-sudo add-apt-repository ppa:recoll-backports/recoll-1.15-on
-sudo add-apt-repository ppa:xapian-backports/xapian-1.2
-</tt></pre>
-        </p>
-
-        <p>For Ubuntu 9.04 (Jaunty) and older, you may also have to
-          explicitely import the  Recoll and Xapian public keys:
-<pre><tt>
-gpg --keyserver keyserver.ubuntu.com --recv 9DA85604
-gpg --export --armor 9DA85604 | sudo apt-key add -
-gpg --keyserver keyserver.ubuntu.com --recv A0735AD0
-gpg --export --armor  A0735AD0 | sudo apt-key add -
-</tt></pre>
-        </p>
-
-      </blockquote>
 
       <h3>RPMS</h3> 
 
@@ -278,25 +254,6 @@ gpg --export --armor  A0735AD0 | sudo apt-key add -
 	repositories starting from F-12. The new versions are tracked quite
 	closely, so I don't build the rpms any more (email me if you need
 	one).</p> 
-<!--
-      <blockquote> 
-        <p>These builds depend on the
-          regular Xapian and zlib rpms from the Fedora repositories.
-        <br>Fedora 14
-	<a href="fc14/recoll-1.16.1-1.fc14.i586.rpm">
-	  recoll-1.16.1-1.fc14.i586.rpm</a>. 
-	Source: 
-	<a href="fc14/recoll-1.16.1-1.fc14.src.rpm">
-	  recoll-1.16.1-1.fc14.src.rpm</a>
-        <br>Fedora 15
-	<a href="fc15/recoll-1.16.1-1.fc15.i586.rpm">
-	  recoll-1.16.1-1.fc15.i586.rpm</a>. 
-	Source: 
-	<a href="fc15/recoll-1.16.1-1.fc15.src.rpm">
-	  recoll-1.16.1-1.fc15.src.rpm</a>
-      </p>
-      </blockquote>
--->
 
       <h3>OpenSUSE</h3>
       <blockquote>
@@ -333,30 +290,6 @@ I now use the OpenSUSE build service to create Recoll OpenSUSE packages.
         </p>
       </blockquote>
 
-      <h2><a name="otherbinary">Binary bundles</a></h2>
-
-      <p><i>There are currently no more binary bundles. Section kept as
-          placeholder</i>.</p>
-      <p>These are just prebuilt trees (without the source files).
-	Xapian is statically linked.  They still depend on Qt. For
-	Solaris, you should be able to find a Qt package on
-      <a href="http://www.sunfreeware.com/">sunfreeware</a>.</p> 
-
-      <p><a href="usermanual/rcl.install.html">Installation
-            instructions here</a>.</p>
-
-      <h3>Solaris</h3>
-      <blockquote>
-        <p>I did not test building the GUI on Solaris for this version. You
-          will need at least Qt 4.4. The old hints
-          in <a href="download-1.14.html">the previous page</a> may
-          still be valid.</p>
-        <p>Someone did test the indexer and Python module build, they
-          do work, with a few minor glitches. Be sure to use
-          GNU <b>make</b> and <b>install</b>.</p>
-      </blockquote>
-
-
       <h2><a name="ports">Ports</a></h2> 
 
       <h3>Mac port</h3>
@@ -373,6 +306,15 @@ I now use the OpenSUSE build service to create Recoll OpenSUSE packages.
 
       <p>Recoll is then available from the command line and as an icon in
         the usual MacPorts applications place.</p>
+
+      <h2>Building on Solaris</h2>
+      <p>I did not test building the GUI on Solaris for this version. You
+          will need at least Qt 4.4. The old hints
+          in <a href="download-1.14.html">the previous page</a> may
+          still be valid.</p>
+        <p>Someone did test the indexer and Python module build, they
+          do work, with a few minor glitches. Be sure to use
+          GNU <b>make</b> and <b>install</b>.</p>
 
       <h2><a name="translations">Translations</a></h2>
 

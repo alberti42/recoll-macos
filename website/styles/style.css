@@ -107,3 +107,8 @@ a.weak {
 }
 
 table { empty-cells:show; }
+div.intrapage {
+    background: #ccccff;
+    padding-left: 2em;
+    margin-left: -2em;
+}

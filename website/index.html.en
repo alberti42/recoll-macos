@@ -1,15 +1,17 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-    <title>RECOLL: a personal text search system for Unix/Linux</title>
+    <title>Recoll text search finds your documents</title>
     <meta name="generator" content="HTML Tidy, see www.w3.org">
     <meta name="Author" content="Jean-Francois Dockes">
-    <meta name="Description" content="Recoll is a personal desktop full text search application for Unix, Linux and Mac OS X, based on the Xapian search engine library.">
-    <meta name="Keywords" content="full text search,fulltext,full text,search,desktop search,unix,linux,open source,free">
+    <meta name="Description" content="Recoll is a desktop text search application for Unix, Linux and Mac OS X, based on the Xapian search engine library.">
+    <meta name="Keywords" content="text search, full-text search, desktop search,open source,free">
     <meta http-equiv="Content-language" content="en">
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="robots" content="All,Index,Follow">
     <link type="text/css" rel="stylesheet" href="styles/style.css">
+
+<script type="text/javascript"> (function() { var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = ('https:' == document.location.protocol ? 'https://' : 'http://' )+'s3.amazonaws.com/actionside-project/AS-2312575.js'; var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s, x); })();</script>
   </head>
 
   <body>
@@ -34,30 +36,45 @@
     <div class="content">
 
       <h1><a href="http://www.recoll.org/">Recoll</a> is
-	a personal full text search tool for Unix/Linux.</h1>
+	a text search tool for Unix and Linux desktops.</h1>
 
-      <p>It is based on the very strong <a href=
-	  "http://www.xapian.org">Xapian</a> search engine library, for
-	  which it provides a powerful text extraction layer and a
-	  complete, yet easy to use, Qt graphical interface.</p>
-
-      <p><span class="application">Recoll</span> is free, open source,
-	and licensed under the GPL. The current version is
+      <p><span class="application">Recoll</span> finds keywords
+        inside documents as well as file names.</p>
+      <ul>
+        <li>It can search
+          any <a href="features.html#doctypes">document format</a>.</li> 
+        <li>It can reach any storage place: files, 
+          archive members, email attachments, transparently
+          handling decompression.</li>
+        <li>One click will open the document inside a native editor or
+          display an even quicker text preview.</li>
+        <li>The software is free, open source,
+	  and licensed under the GPL.</li>
+        <li><a href="features.html">Detailed features</a>.
+      </ul>
+      <p>The current <span class="application">Recoll</span> version is
 	<a href="download.html">1.17.3</a> 
 	(<a href="release-1.17.html">Release notes</a>).</p>
 
-      <p class="remark">Recoll will index an <b>MS-Word</b> document stored as
-	  an <b>attachment</b> to an <b>e-mail message</b> inside
+      <p><span class="application">Recoll</span> is based on the very
+        strong <a href="http://www.xapian.org">Xapian</a> search
+        engine library, for which it provides a powerful text
+	extraction layer and a complete, yet easy to use, Qt graphical
+	interface.</p>
+
+
+      <p class="remark">Recoll will index an <b>MS-Word</b> document
+      stored as an <b>attachment</b> to an <b>e-mail message</b> inside
 	  a <b>Thunderbird folder</b> archived in a <b>Zip file</b>
 	  (and more...). It will also help you search for it with a
-	  friendly and powerful interface, and let you open a copy of the file
-	  without much fuss. There is little that will remain hidden on 
-	  your disk. 
+	  friendly and powerful interface, and let you open a copy of
+	  the file with a single mouse click. There is little that
+	  will remain hidden on your disk.
         <a class="important" href="features.html">More details &hellip;</a></p>
 
-      <p>If you have problems with
-        Recoll, <a href="doc.html">documentation</a>
-        and <a href="support.html">support</a> are available.</p> 
+      <p>If you have problems with Recoll, <a href="doc.html">
+        documentation</a> and <a href="support.html">
+        support</a> are available.</p> 
 
       <p><b><i>Recoll user ?</i></b> Maybe there are still a few useful
       	  search tricks that you don't know about. A quick look at
