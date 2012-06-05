@@ -12,13 +12,14 @@ ${depth}/common/rclinit.cpp \
 ${depth}/common/textsplit.cpp \
 ${depth}/common/unacpp.cpp \
 ${depth}/index/beaglequeue.cpp \
+${depth}/index/bglfetcher.cpp \
+${depth}/index/fetcher.cpp \
+${depth}/index/fsfetcher.cpp \
 ${depth}/index/fsindexer.cpp \
 ${depth}/index/indexer.cpp \
 ${depth}/index/mimetype.cpp \
 ${depth}/index/subtreelist.cpp \
 ${depth}/internfile/htmlparse.cpp \
-${depth}/internfile/myhtmlparse.cpp \
-${depth}/internfile/mimehandler.cpp \
 ${depth}/internfile/internfile.cpp \
 ${depth}/internfile/mh_exec.cpp \
 ${depth}/internfile/mh_execm.cpp \
@@ -26,6 +27,8 @@ ${depth}/internfile/mh_html.cpp \
 ${depth}/internfile/mh_mail.cpp \
 ${depth}/internfile/mh_mbox.cpp \
 ${depth}/internfile/mh_text.cpp \
+${depth}/internfile/mimehandler.cpp \
+${depth}/internfile/myhtmlparse.cpp \
 ${depth}/internfile/txtdcode.cpp \
 ${depth}/query/docseq.cpp \
 ${depth}/query/docseqdb.cpp \

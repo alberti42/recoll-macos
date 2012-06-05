@@ -1189,7 +1189,7 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
 	doc.getmeta(Rcl::Doc::keyudi, &udi);
 	if (!udi.empty()) {
 	    string sig;
-	    FileInterner::makesig(doc, sig);
+	    FileInterner::makesig(theconfig, doc, sig);
 	    if (rcldb->needUpdate(udi, sig)) {
 		int rep = 
 		    QMessageBox::warning(0, tr("Warning"), 

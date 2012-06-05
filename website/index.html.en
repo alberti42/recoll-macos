@@ -11,7 +11,6 @@
     <meta name="robots" content="All,Index,Follow">
     <link type="text/css" rel="stylesheet" href="styles/style.css">
 
-<script type="text/javascript"> (function() { var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = ('https:' == document.location.protocol ? 'https://' : 'http://' )+'s3.amazonaws.com/actionside-project/AS-2312575.js'; var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s, x); })();</script>
   </head>
 
   <body>
@@ -87,6 +86,11 @@
       <h2>News</h2>
       <div class="news">
       <ul>
+        <li>2012-06-01: an
+          updated <a href="filters/filters.html">filter</a> for the 
+          OpenDocument format will properly handle exported Google Docs
+          files.</li> 
+
         <li>2012-05-25: a
           new <a href="filters/filters.html">filter</a> for indexing
           tar archives.</li>

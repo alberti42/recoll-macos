@@ -43,10 +43,9 @@ using namespace std;
 #include "rclconfig.h"
 #include "mh_html.h"
 #include "fileudi.h"
-#include "beaglequeuecache.h"
 #include "cancelcheck.h"
 #include "copyfile.h"
-#include "ptmutex.h"
+#include "fetcher.h"
 
 #ifdef RCL_USE_XATTR
 #include "pxattr.h"
@@ -381,10 +380,6 @@ void FileInterner::initcommon(RclConfig *cnf, int flags)
     m_targetMType = cstr_textplain;
 }
 
-// We use a single beagle cache object to access beagle data. We protect it 
-// against multiple thread access.
-static PTMutexInit o_beagler_mutex;
-
 FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, 
                            TempDir& td, int flags)
     : m_tdir(td), m_ok(false), m_missingdatap(0)
@@ -392,101 +387,40 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf,
     LOGDEB(("FileInterner::FileInterner(idoc)\n"));
     initcommon(cnf, flags);
 
-    // We do insist on having an url...
-    if (idoc.url.empty()) {
-        LOGERR(("FileInterner::FileInterner:: no url!\n"));
+    DocFetcher *fetcher = docFetcherMake(idoc);
+    if (fetcher == 0) {
+        LOGERR(("FileInterner:: no backend\n"));
         return;
     }
-
-    // This stuff will be moved to some kind of generic function:
-    //   get(idoc, ofn, odata, ometa) 
-    // and use some kind of backstore object factory next time we add a 
-    // backend (if ever). 
-    string backend;
-    idoc.getmeta(Rcl::Doc::keybcknd, &backend);
-    
-    if (backend.empty() || !backend.compare("FS")) {
-        // Filesystem document. Intern from file.
-        // The url has to be like file://
-        if (idoc.url.find(cstr_fileu) != 0) {
-            LOGERR(("FileInterner: FS backend and non fs url: [%s]\n",
-                    idoc.url.c_str()));
-            return;
-        }
-        string fn = idoc.url.substr(7, string::npos);
-        struct stat st;
-        if (stat(fn.c_str(), &st) < 0) {
-            LOGERR(("FileInterner:: cannot access document file: [%s]\n",
-                    fn.c_str()));
-            return;
-        }
-        init(fn, &st, cnf, flags, &idoc.mimetype);
-    } else if (!backend.compare("BGL")) {
-        string udi;
-        if (!idoc.getmeta(Rcl::Doc::keyudi, &udi) || udi.empty()) {
-            LOGERR(("FileInterner:: no udi in idoc\n"));
-            return;
-        }
-
-        string data;
-        Rcl::Doc dotdoc;
-	{
-	    PTMutexLocker locker(o_beagler_mutex);
-	    // Retrieve from our webcache (beagle data). The beagler
-	    // object is created at the first call of this routine and
-	    // deleted when the program exits.
-	    static BeagleQueueCache o_beagler(cnf);
-	    if (!o_beagler.getFromCache(udi, dotdoc, data)) {
-		LOGINFO(("FileInterner:: failed fetch from Beagle cache for [%s]\n",
-			 udi.c_str()));
-		return;
-	    }
-	}
-        if (dotdoc.mimetype.compare(idoc.mimetype)) {
-            LOGINFO(("FileInterner:: udi [%s], mimetp mismatch: in: [%s], bgl "
-                     "[%s]\n", idoc.mimetype.c_str(), dotdoc.mimetype.c_str()));
-        }
-        init(data, cnf, flags, dotdoc.mimetype);
-    } else {
-        LOGERR(("FileInterner:: unknown backend: [%s]\n", backend.c_str()));
-        return;
+    DocFetcher::RawDoc rawdoc;
+    string data;
+    if (!fetcher->fetch(cnf, idoc, rawdoc)) {
+	LOGERR(("FileInterner:: fetcher failed\n"));
+	return;
     }
+    switch (rawdoc.kind) {
+    case DocFetcher::RawDoc::RDK_FILENAME:
+        init(rawdoc.data, &rawdoc.st, cnf, flags, &idoc.mimetype);
+	break;
+    case DocFetcher::RawDoc::RDK_DATA:
+        init(data, cnf, flags, idoc.mimetype);
+	break;
+    }
+    return;
 }
 
-#include "fsindexer.h"
-bool FileInterner::makesig(const Rcl::Doc& idoc, string& sig)
+bool FileInterner::makesig(RclConfig *cnf, const Rcl::Doc& idoc, string& sig)
 {
-    if (idoc.url.empty()) {
-        LOGERR(("FileInterner::makesig:: no url!\n"));
+    DocFetcher *fetcher = docFetcherMake(idoc);
+    if (fetcher == 0) {
+        LOGERR(("FileInterner::makesig no backend for doc\n"));
         return false;
     }
-    string backend;
-    idoc.getmeta(Rcl::Doc::keybcknd, &backend);
-    
-    if (backend.empty() || !backend.compare("FS")) {
-        if (idoc.url.find(cstr_fileu) != 0) {
-            LOGERR(("FileInterner: FS backend and non fs url: [%s]\n",
-                    idoc.url.c_str()));
-            return false;
-        }
-        string fn = idoc.url.substr(7, string::npos);
-        struct stat st;
-        if (stat(fn.c_str(), &st) < 0) {
-            LOGERR(("FileInterner:: cannot access document file: [%s]\n",
-                    fn.c_str()));
-            return false;
-        }
-	FsIndexer::makesig(&st, sig);
-	return true;
-    } else if (!backend.compare("BGL")) {
-	// Bgl sigs are empty
-	sig.clear();
-	return true;
-    } else {
-        LOGERR(("FileInterner:: unknown backend: [%s]\n", backend.c_str()));
-        return false;
-    }
-    return false;
+
+    bool ret = fetcher->makesig(cnf, idoc, sig);
+
+    delete fetcher;
+    return ret;
 }
 
 FileInterner::~FileInterner()

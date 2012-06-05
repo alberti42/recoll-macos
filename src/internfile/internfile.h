@@ -124,7 +124,7 @@ class FileInterner {
     /** 
      * Build sig for doc coming from rcldb. This is here because we know how
      * to query the right backend */
-    static bool makesig(const Rcl::Doc& idoc, string& sig);
+    static bool makesig(RclConfig *cnf, const Rcl::Doc& idoc, string& sig);
 
     ~FileInterner();
 
