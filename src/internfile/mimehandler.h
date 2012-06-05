@@ -57,9 +57,14 @@ public:
     // We don't use this for now
     virtual bool set_document_uri(const std::string &) {return false;}
 
-    /// This does nothing right now but should be called from the
-    /// subclass method in case we need some common processing one day
-    /// (was used for xattrs at some point).
+    // This does nothing right now but should be called from the
+    // subclass method in case we need some common processing one day
+    // (was used for xattrs at some point).  Yes this is the "call
+    // super" anti-pattern, bad, but we have several layers of derived
+    // classes, so that implementing the template method approach (by
+    // having a pure virtual called from here and implemented in the
+    // subclass) would have to be repeated in each derived class. It's
+    // just simpler this way.
     virtual bool set_document_file(const string & /*file_path*/) {return true;}
 
     // Default implementations
@@ -94,6 +99,8 @@ public:
 	return m_reason;
     }
 
+    // "Call super" anti-pattern again. Must be called from derived
+    // classes which reimplement clear()
     virtual void clear() {
 	Dijon::Filter::clear();
 	m_forPreview = m_havedoc = false;
