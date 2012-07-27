@@ -238,7 +238,7 @@ void ResListPager::displayDoc(RclConfig *config,
 	chunk << "<p style='margin: 0px;padding: 0px;clear: both;'>";
 
     // Configurable stuff
-    map<string,string> subs;
+    map<string, string> subs;
     subs["A"] = !richabst.empty() ? richabst : "";
     subs["D"] = datebuf;
     subs["I"] = iconurl;
@@ -254,8 +254,12 @@ void ResListPager::displayDoc(RclConfig *config,
     subs["t"] = escapeHtml(doc.meta[Rcl::Doc::keytt]);
     subs["U"] = url;
 
-    // Let %(xx) access all metadata.
-    subs.insert(doc.meta.begin(), doc.meta.end());
+    // Let %(xx) access all metadata. HTML-neuter everything:
+    for (map<string,string>::iterator it = doc.meta.begin(); 
+	 it != doc.meta.end(); it++) {
+	if (!it->first.empty()) 
+	    subs[it->first] = escapeHtml(it->second);
+    }
 
     string formatted;
     pcSubst(parFormat(), formatted, subs);
