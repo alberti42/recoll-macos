@@ -19,10 +19,7 @@
 /* Macros for log and debug messages */
 #include <stack>
 
-#ifndef NO_NAMESPACES
 namespace DebugLog {
-    using std::stack;
-#endif // NO_NAMESPACES
 
 #ifndef DEBUGLOG_USE_THREADS
 #define DEBUGLOG_USE_THREADS 1
@@ -44,7 +41,7 @@ namespace DebugLog {
 class DebugLogWriter;
 
 class DebugLog {
-    stack<int> levels;
+    std::stack<int> levels;
     int debuglevel;
     int dodate;
     DebugLogWriter *writer;
@@ -109,7 +106,5 @@ extern int setfilename(const char *fname, int trnc = 1);
 #else
 #define LOGDEB3(X)
 #endif
-#ifndef NO_NAMESPACES
 }
-#endif // NO_NAMESPACES
 #endif /* _DEBUGLOG_H_ */
