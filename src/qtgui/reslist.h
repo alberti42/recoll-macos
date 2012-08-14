@@ -128,7 +128,9 @@ class ResList : public RESLIST_PARENTCLASS
     virtual int docnumfromparnum(int);
     virtual pair<int,int> parnumfromdocnum(int);
 #else
-    QString    m_text; // webview doesn't take text incrementally, store it.
+    // Webview makes it more difficult to append text incrementally,
+    // so we store the page and display it when done.
+    QString    m_text; 
 #endif
 
     virtual void displayPage(); // Display current page
