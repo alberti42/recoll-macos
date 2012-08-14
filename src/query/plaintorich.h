@@ -43,13 +43,24 @@ struct HiliteData {
 /** 
  * A class for highlighting search results. Overridable methods allow
  * for different styles. We can handle plain text or html input. In the latter
- * case, we may fail to highligt term groups if they are mixed with html tags.
+ * case, we may fail to highligt term groups if they are mixed with HTML 
+ * tags (ex: firstterm <b>2ndterm</b>).
  */
 class PlainToRich {
 public:
-    PlainToRich() : m_inputhtml(false) {}
-    virtual ~PlainToRich() {}
-    void set_inputhtml(bool v) {m_inputhtml = v;}
+    PlainToRich() 
+	: m_inputhtml(false) 
+    {
+    }
+
+    virtual ~PlainToRich() 
+    {
+    }
+
+    void set_inputhtml(bool v) 
+    {
+	m_inputhtml = v;
+    }
 
     /**
      * Transform plain text for highlighting search terms, ie in the
@@ -68,7 +79,7 @@ public:
      * @param in    raw text out of internfile.
      * @param out   rich text output, divided in chunks (to help our caller
      *   avoid inserting half tags into textedit which doesnt like it)
-     * @param hdata terms and groups to be highlighted. These are
+     * @param in hdata terms and groups to be highlighted. These are
      *   lowercase and unaccented.
      * @param chunksize max size of chunks in output list
      */
@@ -77,7 +88,7 @@ public:
 			     int chunksize = 50000
 			     );
 
-    /* Methods to ouput headers, highlighting and marking tags */
+    /* Overridable output methods for headers, highlighting and marking tags */
     virtual string header() {return snull;}
     virtual string startMatch() {return snull;}
     virtual string endMatch() {return snull;}
