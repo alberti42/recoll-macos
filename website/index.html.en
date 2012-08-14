@@ -86,6 +86,13 @@
       <h2>News</h2>
       <div class="news">
       <ul>
+        <li>2012-06-19: update info. If you are not running Recoll 1.17.3,
+          you probably should. 1.17.2 and older versions have a bug which
+          can cause a crash of the indexing process while processing email,
+          under relatively common conditions.<br>
+          Also, if you are already running 1.17.3, you may want to install
+          the updated open/libre-office filter described just below.</li>
+
         <li>2012-06-01: an
           updated <a href="filters/filters.html">filter</a> for the 
           OpenDocument format will properly handle exported Google Docs
@@ -143,10 +150,6 @@
       <h2>On the side</h2>
 
       <div class="news">
-      <p>It doesn't appear likely that I'm going to become rich with
-        Recoll any time soon (what with giving it away for free and
-        all), so I've decided to use the home page to link to a few
-        things that marginally kind of earn some money:</p>
       <blockquote>
         <p>We rent <a href="http://www.metairie-enbor.com/index.html.en">
 	    a big country house</a> in the Aude area, in the south of
@@ -155,9 +158,6 @@
 	  looking for a wonderful country place with a pool to
 	  spend holidays with a big bunch of family and/or
           friends in a nice historical but very quiet area, this may be it.</p>
-        <p>And we also
-          sell <a href="http://www.metairie-enbor.com/bois-de-chauffage.html">
-            du <em>bois de chauffage</em></a> there too...</p> 
       </blockquote>
       </div>
 
