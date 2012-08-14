@@ -77,7 +77,9 @@ class TextSplitPTR : public TextSplit {
 	}
     }
 
-    // Callback called by the text-to-words breaker for each word
+    // Accept word and its position. If word is search term, add
+    // highlight zone definition. If word is part of search group
+    // (phrase or near), update positions list.
     virtual bool takeword(const std::string& term, int pos, int bts, int bte) {
 	string dumb;
 	if (!unacmaybefold(term, dumb, "UTF-8", true)) {
@@ -93,14 +95,18 @@ class TextSplitPTR : public TextSplit {
 	    tboffs.push_back(pair<int, int>(bts, bte));
 	}
 	
+	// If word is part of a search group, update its positions list
 	if (m_gterms.find(dumb) != m_gterms.end()) {
 	    // Term group (phrase/near) handling
 	    m_plists[dumb].push_back(pos);
 	    m_gpostobytes[pos] = pair<int,int>(bts, bte);
 	    //LOGDEB2(("Recorded bpos for %d: %d %d\n", pos, bts, bte));
 	}
+
+	// Check for cancellation request
 	if ((m_wcount++ & 0xfff) == 0)
 	    CancelCheck::instance().checkCancel();
+
 	return true;
     }
 
@@ -140,21 +146,28 @@ class VecIntCmpShorter {
 	if ((POS) > (STO)) (STO) = (POS);}
 
 // Recursively check that each term is inside the window (which is
-// readjusted as the successive terms are found). i is the index for
-// the next position list to use (initially 1)
+// readjusted as the successive terms are found).
+// @param window the search window width
+// @param plists the position list vector
+// @param i the position list to process (we then recurse with the next list)
+// @param min the current minimum pos for a found term
+// @param max the current maximum pos for a found term
+// @param sp, ep output: the found area
+// @param minpos bottom of search: this is the highest point of
+//    any previous match. We don't look below this as overlapping matches 
+//    make no sense for highlighting.
 static bool do_proximity_test(int window, vector<vector<int>* >& plists, 
 			      unsigned int i, int min, int max, 
-			      int *sp, int *ep)
+			      int *sp, int *ep, int minpos)
 {
-    int tmp = max + 1;
-    // take care to avoid underflow
-    if (window <= tmp) 
-	tmp -= window; 
-    else 
-	tmp = 0;
-    vector<int>::iterator it = plists[i]->begin();
+    LOGDEB0(("do_prox_test: win %d i %d min %d max %d minpos %d\n", 
+	     window, i, min, max, minpos));
+    int tmp = max + 1 - window;
+    if (tmp < minpos)
+	tmp = minpos;
 
     // Find 1st position bigger than window start
+    vector<int>::iterator it = plists[i]->begin();
     while (it != plists[i]->end() && *it < tmp)
 	it++;
 
@@ -167,12 +180,8 @@ static bool do_proximity_test(int window, vector<vector<int>* >& plists,
 	    SETMINMAX(pos, *sp, *ep);
 	    return true;
 	}
-	if (pos < min) {
-	    min = pos;
-	} else if (pos > max) {
-	    max = pos;
-	}
-	if (do_proximity_test(window, plists, i + 1, min, max, sp, ep)) {
+	SETMINMAX(pos, min, max);
+	if (do_proximity_test(window,plists, i + 1, min, max, sp, ep, minpos)) {
 	    SETMINMAX(pos, *sp, *ep);
 	    return true;
 	}
@@ -181,7 +190,7 @@ static bool do_proximity_test(int window, vector<vector<int>* >& plists,
     return false;
 }
 
-// Check if there is a NEAR match for the group of terms
+// Find NEAR matches for the input group of terms, update highlight map
 bool TextSplitPTR::matchGroup(const vector<string>& terms, int window)
 {
     LOGDEB0(("TextSplitPTR::matchGroup:d %d: %s\n", window,
@@ -232,18 +241,24 @@ bool TextSplitPTR::matchGroup(const vector<string>& terms, int window)
 		it->second.c_str(), plists[0]->size()));
     }
 
+    // Minpos is the highest end of a found match. While looking for
+    // further matches, we don't want the search to extend before
+    // this, because it does not make sense for highlight regions to
+    // overlap
+    int minpos = 0;
     // Walk the shortest plist and look for matches
     for (vector<int>::iterator it = plists[0]->begin(); 
 	 it != plists[0]->end(); it++) {
 	int pos = *it;
 	int sta = int(10E9), sto = 0;
 	LOGDEB0(("MatchGroup: Testing at pos %d\n", pos));
-	if (do_proximity_test(window, plists, 1, pos, pos, &sta, &sto)) {
+	if (do_proximity_test(window,plists, 1, pos, pos, &sta, &sto, minpos)) {
 	    LOGDEB0(("TextSplitPTR::matchGroup: MATCH termpos [%d,%d]\n", 
 		     sta, sto)); 
 	    // Maybe extend the window by 1st term position, this was not
 	    // done by do_prox..
 	    SETMINMAX(pos, sta, sto);
+	    minpos = sto+1;
 	    // Translate the position window into a byte offset window
 	    int bs = 0;
 	    map<int, pair<int, int> >::iterator i1 =  m_gpostobytes.find(sta);
@@ -257,6 +272,8 @@ bool TextSplitPTR::matchGroup(const vector<string>& terms, int window)
 	    } else {
 		LOGDEB(("matchGroup: no bpos found for %d or %d\n", sta, sto));
 	    }
+	} else {
+	    LOGDEB0(("matchGroup: no group match found at this position\n"));
 	}
     }
 
@@ -273,7 +290,8 @@ public:
     }
 };
 
-// Do the phrase match thing, then merge the highlight lists
+// Look for matches to PHRASE and NEAR term groups. Actually, we
+// handle all groups as NEAR (ignore order).
 bool TextSplitPTR::matchGroups()
 {
     vector<vector<string> >::const_iterator vit = m_groups.begin();
@@ -282,8 +300,8 @@ bool TextSplitPTR::matchGroups()
 	matchGroup(*vit, *sit + (*vit).size());
     }
 
-    // Sort by start and end offsets. The merging of overlapping entries
-    // will be handled during output.
+    // Sort regions by increasing start and decreasing width.  
+    // The output process will skip overlapping entries.
     std::sort(tboffs.begin(), tboffs.end(), PairIntCmpFirst());
     return true;
 }
@@ -291,15 +309,12 @@ bool TextSplitPTR::matchGroups()
 
 // Fix result text for display inside the gui text window.
 //
-// To compute the term character positions in the output text, we used
-// to emulate how qt's textedit counts chars (ignoring tags and
-// duplicate whitespace etc...). This was tricky business, dependant
-// on qtextedit internals, and we don't do it any more, so we finally
-// don't know the term par/car positions in the editor text.  
-// Instead, we now mark the search term positions with html anchors
+// We call overridden functions to output header data, beginnings and ends of
+// matches etc.
 //
-// We output the result in chunks, arranging not to cut in the middle of
-// a tag, which would confuse qtextedit.
+// If the input is text, we output the result in chunks, arranging not
+// to cut in the middle of a tag, which would confuse qtextedit. If
+// the input is html, the body is always a single output chunk.
 bool PlainToRich::plaintorich(const string& in, 
 			      list<string>& out, // Output chunk list
 			      const HiliteData& hdata,
@@ -311,18 +326,16 @@ bool PlainToRich::plaintorich(const string& in,
     const vector<int>& slacks(hdata.gslks);
 
     if (0 && DebugLog::getdbl()->getlevel() >= DEBDEB0) {
-	LOGDEB0(("plaintorich: terms: \n"));
 	string sterms = vecStringToString(terms);
-	LOGDEB0(("  %s\n", sterms.c_str()));
-	sterms = "\n";
-	LOGDEB0(("plaintorich: groups: \n"));
+	LOGDEB0(("plaintorich: terms: %s\n", sterms.c_str()));
+	sterms.clear();
 	for (vector<vector<string> >::const_iterator vit = groups.begin(); 
 	     vit != groups.end(); vit++) {
 	    sterms += "GROUP: ";
 	    sterms += vecStringToString(*vit);
 	    sterms += "\n";
 	}
-	LOGDEB0(("  %s", sterms.c_str()));
+	LOGDEB0(("plaintorich: groups:\n %s", sterms.c_str()));
         LOGDEB2(("  TEXT:[%s]\n", in.c_str()));
     }
 
@@ -394,7 +407,7 @@ bool PlainToRich::plaintorich(const string& in,
 	if (tPosIt != tPosEnd) {
 	    int ibyteidx = chariter.getBpos();
 	    if (ibyteidx == tPosIt->first) {
-		if (!intag && ibyteidx > (int)headend) {
+		if (!intag && ibyteidx >= (int)headend) {
 		    *olit += startAnchor(anchoridx);
 		    *olit += startMatch();
 		}
