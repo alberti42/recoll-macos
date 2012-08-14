@@ -42,11 +42,17 @@ application/msword = exec rcldoc
 # You can also use wvware directly but it's much slower.
 # application/msword = exec wvWare --charset=utf-8 --nographics
 
+# Also Handle the mime type returned by "file -i" for a suffix-less word
+# file. This could probably just as well be an excel file, but we have to
+# chose one.
+application/vnd.ms-office = exec rcldoc
+
 application/ogg = execm rclaudio
 application/pdf = exec rclpdf
 application/postscript = exec pstotext;charset=iso-8859-1;mimetype=text/plain
 application/vnd.ms-excel = exec xls2csv -c "	" -d utf-8;charset=utf-8;mimetype=text/plain
 application/vnd.ms-powerpoint = exec catppt -d utf-8;charset=utf-8;mimetype=text/plain
+application/vn.oasis.opendocument.txt = exec rclsoff
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
  exec rclopxml
 application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
@@ -93,6 +99,7 @@ application/zip = execm rclzip;charset=default
 audio/mpeg = execm rclaudio
 audio/x-karaoke = execm rclkar
 image/gif = execm rclimg
+image/jp2 = execm rclimg
 image/jpeg = execm rclimg
 image/png = execm rclimg
 image/tiff = execm rclimg
@@ -139,6 +146,7 @@ application/pdf = pdf
 application/postscript = postscript
 application/vnd.ms-excel = spreadsheet
 application/vnd.ms-powerpoint = presentation
+application/vn.oasis.opendocument.txt = wordprocessing
 application/vnd.openxmlformats-officedocument.presentationml.presentation = presentation
 application/vnd.openxmlformats-officedocument.presentationml.template = presentation
 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = spreadsheet
@@ -183,6 +191,7 @@ audio/mpeg = sownd
 audio/x-karaoke = sownd
 image/bmp = image
 image/gif = image
+image/jp2 = image
 image/jpeg = image
 image/png = image
 image/svg+xml = drawing
@@ -223,6 +232,7 @@ text = \
       application/msword \
       application/pdf \
       application/postscript \
+      application/vn.oasis.opendocument.txt \
       application/vnd.openxmlformats-officedocument.wordprocessingml.document \
       application/vnd.openxmlformats-officedocument.wordprocessingml.template \
       application/vnd.sun.xml.writer \
@@ -282,6 +292,7 @@ media = \
       audio/mpeg \
       audio/x-karaoke \
       image/gif \
+      image/jp2 \
       image/jpeg \
       image/png \
       image/svg+xml \

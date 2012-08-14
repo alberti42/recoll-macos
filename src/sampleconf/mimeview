@@ -27,6 +27,8 @@ application/msword = libreoffice %f
 application/vnd.ms-excel = libreoffice %f
 application/vnd.ms-powerpoint = libreoffice %f
 
+application/vn.oasis.opendocument.txt = libreoffice %f
+
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
  libreoffice %f
 application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
