@@ -39,16 +39,9 @@ DocSequenceDb::~DocSequenceDb()
 {
 }
 
-bool DocSequenceDb::getTerms(vector<string>& terms, 
-			     vector<vector<string> >& groups, 
-			     vector<int>& gslks)
+void DocSequenceDb::getTerms(HighlightData& hld)
 {
-    return m_fsdata->getTerms(terms, groups, gslks);
-}
-
-void DocSequenceDb::getUTerms(vector<string>& terms)
-{
-    m_sdata->getUTerms(terms);
+    m_fsdata->getTerms(hld);
 }
 
 string DocSequenceDb::getDescription() 
@@ -180,5 +173,13 @@ bool DocSequenceDb::setQuery()
 	return true;
     m_rescnt = -1;
     m_needSetQuery = !m_q->setQuery(m_fsdata);
+
+    if (0) {
+	HighlightData hld;
+	m_fsdata->getTerms(hld);
+	string str; 
+	hld.toString(str);
+	fprintf(stderr, "DocSequenceDb::setQuery: terms: %s\n", str.c_str());
+    }
     return !m_needSetQuery;
 }

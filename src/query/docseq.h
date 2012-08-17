@@ -19,19 +19,16 @@
 #include <string>
 #include <list>
 #include <vector>
-#ifndef NO_NAMESPACES
-using std::string;
-using std::list;
-using std::vector;
-#endif
+
 
 #include "rcldoc.h"
 #include "refcntr.h"
+#include "hldata.h"
 
 // A result list entry. 
 struct ResListEntry {
     Rcl::Doc doc;
-    string subHeader;
+    std::string subHeader;
 };
 
 /** Sort specification. */
@@ -40,7 +37,7 @@ class DocSeqSortSpec {
     DocSeqSortSpec() : desc(false) {}
     bool isNotNull() const {return !field.empty();}
     void reset() {field.erase();}
-    string field;
+    std::string field;
     bool   desc;
 };
 
@@ -50,12 +47,12 @@ class DocSeqFiltSpec {
  public:
     DocSeqFiltSpec() {}
     enum Crit {DSFS_MIMETYPE, DSFS_QLANG, DSFS_PASSALL};
-    void orCrit(Crit crit, const string& value) {
+    void orCrit(Crit crit, const std::string& value) {
 	crits.push_back(crit);
 	values.push_back(value);
     }
     std::vector<Crit> crits;
-    std::vector<string> values;
+    std::vector<std::string> values;
     void reset() {crits.clear(); values.clear();}
     bool isNotNull() const {return crits.size() != 0;}
 };
@@ -73,7 +70,7 @@ class DocSeqFiltSpec {
 */
 class DocSequence {
  public:
-    DocSequence(const string &t) : m_title(t) {}
+    DocSequence(const std::string &t) : m_title(t) {}
     virtual ~DocSequence() {}
 
     /** Get document at given rank. 
@@ -84,16 +81,17 @@ class DocSequence {
      *           inside history)
      * @return true if ok, false for error or end of data
      */
-    virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0) = 0;
+    virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = 0) = 0;
 
     /** Get next page of documents. This accumulates entries into the result
      *  list parameter (doesn't reset it). */
-    virtual int getSeqSlice(int offs, int cnt, vector<ResListEntry>& result);
+    virtual int getSeqSlice(int offs, int cnt, 
+			    std::vector<ResListEntry>& result);
 
     /** Get abstract for document. This is special because it may take time.
      *  The default is to return the input doc's abstract fields, but some 
      *  sequences can compute a better value (ie: docseqdb) */
-    virtual bool getAbstract(Rcl::Doc& doc, vector<string>& abs) {
+    virtual bool getAbstract(Rcl::Doc& doc, std::vector<std::string>& abs) {
 	abs.push_back(doc.meta[Rcl::Doc::keyabs]);
 	return true;
     }
@@ -103,25 +101,21 @@ class DocSequence {
     virtual int getResCnt() = 0;
 
     /** Get title for result list */
-    virtual string title() {return m_title;}
+    virtual std::string title() {return m_title;}
 
     /** Get description for underlying query */
-    virtual string getDescription() = 0;
+    virtual std::string getDescription() = 0;
 
     /** Get search terms (for highlighting abstracts). Some sequences
      * may have no associated search terms. Implement this for them. */
-    virtual bool getTerms(vector<string>& terms, 
-			  vector<vector<string> >& groups, 
-			  vector<int>& gslks) 
+    virtual void getTerms(HighlightData& hld)			  
     {
-	terms.clear(); groups.clear(); gslks.clear(); return true;
+	hld.clear();
     }
-    /** Get user-input terms (before stemming etc.) */
-    virtual void getUTerms(vector<string>& terms)
+    virtual std::list<std::string> expand(Rcl::Doc &) 
     {
-	terms.clear(); 
+	return std::list<std::string>();
     }
-    virtual list<string> expand(Rcl::Doc &) {return list<string>();}
 
     /** Optional functionality. */
     virtual bool canFilter() {return false;}
@@ -130,16 +124,16 @@ class DocSequence {
     virtual bool setSortSpec(const DocSeqSortSpec &) {return false;}
     virtual RefCntr<DocSequence> getSourceSeq() {return RefCntr<DocSequence>();}
 
-    static void set_translations(const string& sort, const string& filt)
+    static void set_translations(const std::string& sort, const std::string& filt)
     {
 	o_sort_trans = sort;
 	o_filt_trans = filt;
     }
 protected:
-    static string o_sort_trans;
-    static string o_filt_trans;
+    static std::string o_sort_trans;
+    static std::string o_filt_trans;
  private:
-    string          m_title;
+    std::string          m_title;
 };
 
 /** A modifier has a child sequence which does the real work and does
@@ -152,25 +146,23 @@ public:
     {}
     virtual ~DocSeqModifier() {}
 
-    virtual bool getAbstract(Rcl::Doc& doc, vector<string>& abs) 
+    virtual bool getAbstract(Rcl::Doc& doc, std::vector<std::string>& abs) 
     {
 	if (m_seq.isNull())
 	    return false;
 	return m_seq->getAbstract(doc, abs);
     }
-    virtual string getDescription() 
+    virtual std::string getDescription() 
     {
 	if (m_seq.isNull())
 	    return "";
 	return m_seq->getDescription();
     }
-    virtual bool getTerms(vector<string>& terms, 
-			  vector<vector<string> >& groups, 
-			  vector<int>& gslks) 
+    virtual void getTerms(HighlightData& hld)
     {
 	if (m_seq.isNull())
-	    return false;
-	return m_seq->getTerms(terms, groups, gslks);
+	    return;
+	m_seq->getTerms(hld);
     }
     virtual bool getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc) 
     {
@@ -178,13 +170,7 @@ public:
 	    return false;
 	return m_seq->getEnclosing(doc, pdoc);
     }
-    virtual void getUTerms(vector<string>& terms)
-    {
-	if (m_seq.isNull())
-	    return;
-	m_seq->getUTerms(terms);
-    }
-    virtual string title() {return m_seq->title();}
+    virtual std::string title() {return m_seq->title();}
     virtual RefCntr<DocSequence> getSourceSeq() {return m_seq;}
 
 protected:
@@ -203,7 +189,7 @@ public:
     virtual bool canSort() {return true;}
     virtual bool setFiltSpec(const DocSeqFiltSpec &);
     virtual bool setSortSpec(const DocSeqSortSpec &);
-    virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0)
+    virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = 0)
     {
 	if (m_seq.isNull())
 	    return false;
@@ -215,7 +201,7 @@ public:
 	    return 0;
 	return m_seq->getResCnt();
     }
-    virtual string title();
+    virtual std::string title();
 private:
     bool buildStack();
     void stripStack();

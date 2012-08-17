@@ -686,12 +686,12 @@ class LoadThread : public QThread {
 /* A thread to convert to rich text (mark search terms) */
 class ToRichThread : public QThread {
     string &in;
-    const HiliteData &hdata;
+    const HighlightData &hdata;
     list<string> &out;
     int loglevel;
     PlainToRichQtPreview *ptr;
  public:
-    ToRichThread(string &i, const HiliteData& hd, list<string> &o, 
+    ToRichThread(string &i, const HighlightData& hd, list<string> &o, 
 		 PlainToRichQtPreview *_ptr)
 	: in(i), hdata(hd), out(o), ptr(_ptr)
     {

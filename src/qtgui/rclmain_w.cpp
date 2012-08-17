@@ -1220,8 +1220,8 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
 	curPreview = 0;
     }
     if (curPreview == 0) {
-	HiliteData hdata;
-	m_source->getTerms(hdata.terms, hdata.groups, hdata.gslks);
+	HighlightData hdata;
+	m_source->getTerms(hdata);
 	curPreview = new Preview(reslist->listId(), hdata);
 
 	if (curPreview == 0) {
@@ -1284,7 +1284,7 @@ void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
  */
 void RclMain::startPreview(Rcl::Doc doc)
 {
-    Preview *preview = new Preview(0, HiliteData());
+    Preview *preview = new Preview(0, HighlightData());
     if (preview == 0) {
 	QMessageBox::warning(0, tr("Warning"), 
 			     tr("Can't create preview window"),

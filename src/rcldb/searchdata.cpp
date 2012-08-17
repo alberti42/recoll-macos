@@ -498,23 +498,12 @@ bool SearchData::fileNameOnly()
     return true;
 }
 
-// Extract all terms and term groups
-bool SearchData::getTerms(vector<string>& terms, 
-			  vector<vector<string> >& groups,
-			  vector<int>& gslks) const
+// Extract all term data
+void SearchData::getTerms(HighlightData &hld) const
 {
     for (qlist_cit_t it = m_query.begin(); it != m_query.end(); it++)
-	(*it)->getTerms(terms, groups, gslks);
-    return true;
-}
-// Extract user terms
-void SearchData::getUTerms(vector<string>& terms) const
-{
-    for (qlist_cit_t it = m_query.begin(); it != m_query.end(); it++)
-	(*it)->getUTerms(terms);
-    sort(terms.begin(), terms.end());
-    vector<string>::iterator it = unique(terms.begin(), terms.end());
-    terms.erase(it, terms.end());
+	(*it)->getTerms(hld);
+    return;
 }
 
 // Splitter callback for breaking a user string into simple terms and
@@ -590,10 +579,10 @@ private:
 // translating.
 class StringToXapianQ {
 public:
-    StringToXapianQ(Db& db, const string& field, 
+    StringToXapianQ(Db& db, HighlightData& hld, const string& field, 
 		    const string &stmlng, bool boostUser)
-	: m_db(db), m_field(field), m_stemlang(stmlng), 
-	  m_doBoostUserTerms(boostUser)
+	: m_db(db), m_field(field), m_stemlang(stmlng),
+	  m_doBoostUserTerms(boostUser), m_hld(hld)
     { }
 
     bool processUserString(const string &iq,
@@ -601,20 +590,6 @@ public:
 			   vector<Xapian::Query> &pqueries, 
 			   const StopList &stops,
 			   int slack = 0, bool useNear = false);
-    // After processing the string: return search terms and term
-    // groups (ie: for highlighting)
-    bool getTerms(vector<string>& terms, vector<vector<string> >& groups) 
-    {
-	terms.insert(terms.end(), m_terms.begin(), m_terms.end());
-	groups.insert(groups.end(), m_groups.begin(), m_groups.end());
-	return true;
-    }
-    bool getUTerms(vector<string>& terms) 
-    {
-	terms.insert(terms.end(), m_uterms.begin(), m_uterms.end());
-	return true;
-    }
-
 private:
     void expandTerm(bool dont, const string& term, vector<string>& exp, 
                     string& sterm, const string& prefix);
@@ -630,10 +605,7 @@ private:
     const string& m_field;
     const string& m_stemlang;
     bool          m_doBoostUserTerms;
-    // Single terms and phrases resulting from breaking up text;
-    vector<string>          m_uterms;
-    vector<string>          m_terms;
-    vector<vector<string> > m_groups; 
+    HighlightData& m_hld;
 };
 
 #if 1
@@ -647,7 +619,7 @@ static void listVector(const string& what, const vector<string>&l)
 }
 #endif
 
-/** Expand stem and wildcards
+/** Take simple term and expand stem and wildcards
  *
  * @param nostemexp don't perform stem expansion. This is mainly used to
  *   prevent stem expansion inside phrases (because the user probably
@@ -680,9 +652,11 @@ void StringToXapianQ::expandTerm(bool nostemexp,
 	nostemexp = true;
     }
 
+    if (!haswild)
+	m_hld.uterms.insert(term);
+
     if (nostemexp && !haswild) {
 	sterm = term;
-        m_uterms.push_back(sterm);
 	exp.resize(1);
 	exp[0] = prefix + term;
     } else {
@@ -692,7 +666,6 @@ void StringToXapianQ::expandTerm(bool nostemexp,
                            m_field);
 	} else {
 	    sterm = term;
-            m_uterms.push_back(sterm);
 	    m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term, res, -1, 
 			   m_field);
 	}
@@ -701,7 +674,6 @@ void StringToXapianQ::expandTerm(bool nostemexp,
 	    exp.push_back(it->term);
 	}
     }
-    //listVector("ExpandTerm:uterms now: ", m_uterms);
 }
 
 // Do distribution of string vectors: a,b c,d -> a,c a,d b,c b,d
@@ -753,12 +725,15 @@ void StringToXapianQ::processSimpleSpan(const string& span, bool nostemexp,
     }
 
     expandTerm(nostemexp, span, exp, sterm, prefix);
-
-    // m_terms is used for highlighting, we don't want prefixes in there.
+    
+    // Set up the highlight data. No prefix should go in there
     for (vector<string>::const_iterator it = exp.begin(); 
 	 it != exp.end(); it++) {
-	m_terms.push_back(it->substr(prefix.size()));
+	m_hld.groups.push_back(vector<string>(1, it->substr(prefix.size())));
+	m_hld.slacks.push_back(0);
+	m_hld.grpsugidx.push_back(m_hld.ugroups.size() - 1);
     }
+
     // Push either term or OR of stem-expanded set
     Xapian::Query xq(Xapian::Query::OP_OR, exp.begin(), exp.end());
 
@@ -786,7 +761,9 @@ void StringToXapianQ::processPhraseOrNear(TextSplitQ *splitData,
     Xapian::Query::op op = useNear ? Xapian::Query::OP_NEAR : 
 	Xapian::Query::OP_PHRASE;
     vector<Xapian::Query> orqueries;
+#ifdef XAPIAN_NEAR_EXPAND_SINGLE_BUF
     bool hadmultiple = false;
+#endif
     vector<vector<string> >groups;
 
     string prefix;
@@ -805,15 +782,19 @@ void StringToXapianQ::processPhraseOrNear(TextSplitQ *splitData,
     for (vector<string>::iterator it = splitData->terms.begin();
 	 it != splitData->terms.end(); it++, nxit++) {
 	LOGDEB0(("ProcessPhrase: processing [%s]\n", it->c_str()));
-	// Adjust when we do stem expansion. Not inside phrases, and
-	// some versions of xapian will accept only one OR clause
-	// inside NEAR, all others must be leafs.
-	bool nostemexp = *nxit || (op == Xapian::Query::OP_PHRASE) || hadmultiple;
+	// Adjust when we do stem expansion. Not if disabled by
+	// caller, not inside phrases, and some versions of xapian
+	// will accept only one OR clause inside NEAR.
+	bool nostemexp = *nxit || (op == Xapian::Query::OP_PHRASE) 
+#ifdef XAPIAN_NEAR_EXPAND_SINGLE_BUF
+	    || hadmultiple
+#endif // single OR inside NEAR
+	    ;
 
 	string sterm;
 	vector<string> exp;
 	expandTerm(nostemexp, *it, exp, sterm, prefix);
-	LOGDEB0(("ProcessPhrase: exp size %d\n", exp.size()));
+	LOGDEB0(("ProcessPhraseOrNear: exp size %d\n", exp.size()));
 	listVector("", exp);
 	// groups is used for highlighting, we don't want prefixes in there.
 	vector<string> noprefs;
@@ -850,7 +831,13 @@ void StringToXapianQ::processPhraseOrNear(TextSplitQ *splitData,
     vector<vector<string> > allcombs;
     vector<string> comb;
     multiply_groups(groups.begin(), groups.end(), comb, allcombs);
-    m_groups.insert(m_groups.end(), allcombs.begin(), allcombs.end());
+    
+    // Insert the search groups and slacks in the highlight data, with
+    // a reference to the user entry that generated them:
+    m_hld.groups.insert(m_hld.groups.end(), allcombs.begin(), allcombs.end());
+    m_hld.slacks.insert(m_hld.slacks.end(), allcombs.size(), slack);
+    m_hld.grpsugidx.insert(m_hld.grpsugidx.end(), allcombs.size(), 
+			   m_hld.ugroups.size() - 1);
 }
 
 // Trim string beginning with ^ or ending with $ and convert to flags
@@ -875,7 +862,16 @@ static int stringToMods(string& s)
  * We just separate words and phrases, and do wildcard and stem expansion,
  *
  * This is used to process data entered into an OR/AND/NEAR/PHRASE field of
- * the GUI.
+ * the GUI (in the case of NEAR/PHRASE, clausedist adds dquotes to the user
+ * entry).
+ *
+ * This appears awful, and it would seem that the split into
+ * terms/phrases should be performed in the upper layer so that we
+ * only receive pure term or near/phrase pure elements here, but in
+ * fact there are things that would appear like terms to naive code,
+ * and which will actually may be turned into phrases (ie: tom:jerry),
+ * in a manner which intimately depends on the index implementation,
+ * so that it makes sense to process this here.
  *
  * The final list contains one query for each term or phrase
  *   - Elements corresponding to a stem-expanded part are an OP_OR
@@ -895,9 +891,6 @@ bool StringToXapianQ::processUserString(const string &iq,
 {
     LOGDEB(("StringToXapianQ:: query string: [%s], slack %d, near %d\n", iq.c_str(), slack, useNear));
     ermsg.erase();
-    m_uterms.clear();
-    m_terms.clear();
-    m_groups.clear();
 
     // Simple whitespace-split input into user-level words and
     // double-quoted phrases: word1 word2 "this is a phrase". 
@@ -952,10 +945,12 @@ bool StringToXapianQ::processUserString(const string &iq,
 	    case 0: 
 		continue;// ??
 	    case 1: 
+		m_hld.ugroups.push_back(vector<string>(1, *it));
 		processSimpleSpan(splitter.terms.front(), 
                                   splitter.nostemexps.front(), pqueries);
 		break;
 	    default:
+		m_hld.ugroups.push_back(vector<string>(1, *it));
 		processPhraseOrNear(&splitter, pqueries, useNear, slack, mods);
 	    }
 	}
@@ -984,8 +979,6 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
     LOGDEB2(("SearchDataClauseSimple::toNativeQuery: stemlang [%s]\n",
 	     stemlang.c_str()));
 
-    m_terms.clear();
-    m_groups.clear();
     Xapian::Query *qp = (Xapian::Query *)p;
     *qp = Xapian::Query();
 
@@ -1007,16 +1000,14 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 	(m_parentSearch && !m_parentSearch->haveWildCards()) || 
 	(m_parentSearch == 0 && !m_haveWildCards);
 
-    StringToXapianQ tr(db, m_field, l_stemlang, doBoostUserTerm);
+    StringToXapianQ tr(db, m_hldata, m_field, l_stemlang, doBoostUserTerm);
     if (!tr.processUserString(m_text, m_reason, pqueries, db.getStopList()))
 	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseSimple: resolved to null query\n"));
 	return true;
     }
-    tr.getTerms(m_terms, m_groups);
-    tr.getUTerms(m_uterms);
-    //listVector("SearchDataClauseSimple: Uterms: ", m_uterms);
+
     *qp = Xapian::Query(op, pqueries.begin(), pqueries.end());
     if  (m_weight != 1.0) {
 	*qp = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, *qp, m_weight);
@@ -1056,8 +1047,6 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
     const string& l_stemlang = (m_modifiers&SDCM_NOSTEMMING)? cstr_null:
 	stemlang;
     LOGDEB(("SearchDataClauseDist::toNativeQuery\n"));
-    m_terms.clear();
-    m_groups.clear();
 
     Xapian::Query *qp = (Xapian::Query *)p;
     *qp = Xapian::Query();
@@ -1080,7 +1069,7 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
     }
     string s = cstr_dquote + m_text + cstr_dquote;
     bool useNear = (m_tp == SCLT_NEAR);
-    StringToXapianQ tr(db, m_field, l_stemlang, doBoostUserTerm);
+    StringToXapianQ tr(db, m_hldata, m_field, l_stemlang, doBoostUserTerm);
     if (!tr.processUserString(s, m_reason, pqueries, db.getStopList(),
 			      m_slack, useNear))
 	return false;
@@ -1088,30 +1077,12 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
 	LOGERR(("SearchDataClauseDist: resolved to null query\n"));
 	return true;
     }
-    tr.getTerms(m_terms, m_groups);
-    tr.getUTerms(m_uterms);
+
     *qp = *pqueries.begin();
     if (m_weight != 1.0) {
 	*qp = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, *qp, m_weight);
     }
     return true;
-}
-
-// Translate subquery
-bool SearchDataClauseSub::toNativeQuery(Rcl::Db &db, void *p, const string&)
-{
-    return m_sub->toNativeQuery(db, p);
-}
-
-bool SearchDataClauseSub::getTerms(vector<string>& terms, 
-				   vector<vector<string> >& groups,
-				   vector<int>& gslks) const
-{
-    return m_sub.getconstptr()->getTerms(terms, groups, gslks);
-}
-void SearchDataClauseSub::getUTerms(vector<string>& terms) const
-{
-    m_sub.getconstptr()->getUTerms(terms);
 }
 
 } // Namespace Rcl

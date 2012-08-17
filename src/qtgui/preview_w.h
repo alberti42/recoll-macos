@@ -91,7 +91,7 @@ class Preview : public QWidget {
     public:
 
     Preview(int sid, // Search Id
-	    const HiliteData& hdata) // Search terms etc. for highlighting
+	    const HighlightData& hdata) // Search terms etc. for highlighting
 	: QWidget(0), m_searchId(sid), m_hData(hdata)
     {
 	init();
@@ -141,7 +141,7 @@ private:
     bool          m_canBeep;
     bool          m_loading;
     QWidget      *m_currentW;
-    HiliteData    m_hData;
+    HighlightData m_hData;
     bool          m_justCreated; // First tab create is different
     bool          m_haveAnchors; // Search terms are marked in text
     int           m_lastAnchor; // Number of last anchor. Then rewind to 1

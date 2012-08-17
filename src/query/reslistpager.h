@@ -19,14 +19,13 @@
 #define _reslistpager_h_included_
 
 #include <vector>
-using std::vector;
 
 #include "refcntr.h"
 #include "docseq.h"
+#include "hldata.h"
 
 class RclConfig;
 class PlainToRich;
-struct HiliteData;
 
 /**
  * Manage a paged HTML result list. 
@@ -85,7 +84,7 @@ public:
     void resultPageFor(int docnum);
     void displayPage(RclConfig *);
     void displayDoc(RclConfig *, int idx, Rcl::Doc& doc, 
-		    const HiliteData& hdata, const string& sh = "");
+		    const HighlightData& hdata, const string& sh = "");
     bool pageEmpty() {return m_respage.size() == 0;}
 
     string queryDescription() {return m_docSource.isNull() ? "" :
@@ -112,8 +111,9 @@ public:
     virtual string pageTop() {return string();}
     virtual string headerContent() {return string();}
     virtual string iconUrl(RclConfig *, Rcl::Doc& doc);
-    virtual void suggest(const vector<string>, 
-			 map<string, vector<string> >& sugg) {
+    virtual void suggest(const std::vector<std::string>, 
+			std::map<std::string, std::vector<std::string> >& sugg) 
+    {
         sugg.clear();
     }
     virtual string absSep() {return "&hellip;";}
@@ -126,7 +126,7 @@ private:
     bool                 m_hasNext;
     PlainToRich         *m_hiliter;
     RefCntr<DocSequence> m_docSource;
-    vector<ResListEntry> m_respage;
+    std::vector<ResListEntry> m_respage;
 };
 
 #endif /* _reslistpager_h_included_ */

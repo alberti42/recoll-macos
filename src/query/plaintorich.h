@@ -19,26 +19,8 @@
 
 #include <string>
 #include <list>
-using std::list;
-using std::string;
 
-/// Holder for plaintorich() input data: words and groups of words to
-/// be highlighted
-struct HiliteData {
-    // Single terms
-    vector<string> terms;
-    // NEAR and PHRASE elements
-    vector<vector<string> > groups;
-    // Group slacks (number of permitted non-matched words). 
-    // Parallel vector to the above 'groups'
-    vector<int> gslks; 
-    void reset() 
-    {
-	terms.clear();
-	groups.clear();
-	gslks.clear();
-    }
-};
+#include "hldata.h"
 
 /** 
  * A class for highlighting search results. Overridable methods allow
@@ -83,21 +65,21 @@ public:
      *   lowercase and unaccented.
      * @param chunksize max size of chunks in output list
      */
-    virtual bool plaintorich(const string &in, list<string> &out,
-			     const HiliteData& hdata,
+    virtual bool plaintorich(const std::string &in, std::list<std::string> &out,
+			     const HighlightData& hdata,
 			     int chunksize = 50000
 			     );
 
     /* Overridable output methods for headers, highlighting and marking tags */
-    virtual string header() {return snull;}
-    virtual string startMatch() {return snull;}
-    virtual string endMatch() {return snull;}
-    virtual string startAnchor(int) {return snull;}
-    virtual string endAnchor() {return snull;}
-    virtual string startChunk() {return snull;}
+    virtual std::string header() {return snull;}
+    virtual std::string startMatch() {return snull;}
+    virtual std::string endMatch() {return snull;}
+    virtual std::string startAnchor(int) {return snull;}
+    virtual std::string endAnchor() {return snull;}
+    virtual std::string startChunk() {return snull;}
 
 protected:
-    const string snull;
+    const std::string snull;
     bool m_inputhtml;
     // Use <br> to break plain text lines (else caller has used a <pre> tag)
     bool m_eolbr; 

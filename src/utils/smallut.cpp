@@ -36,6 +36,7 @@
 
 #include "smallut.h"
 #include "utf8iter.h"
+#include "hldata.h"
 
 #ifndef NO_NAMESPACES
 using namespace std;
@@ -1038,8 +1039,57 @@ void catstrerror(string *reason, const char *what, int _errno)
 #endif
 }
 
+void HighlightData::toString(std::string& out)
+{
+    out.append("\nUser terms (orthograph): ");
+    for (std::set<std::string>::const_iterator it = uterms.begin();
+	 it != uterms.end(); it++) {
+	out.append(" [").append(*it).append("]");
+    }
 
-#else
+    out.append("\nGroups: ");
+    char cbuf[200];
+    sprintf(cbuf, "Groups size %d grpsugidx size %d ugroups size %d",
+	    int(groups.size()), int(grpsugidx.size()), int(ugroups.size()));
+    out.append(cbuf);
+
+    unsigned int ugidx = (unsigned int)-1;
+    for (unsigned int i = 0; i < groups.size(); i++) {
+	if (ugidx != grpsugidx[i]) {
+	    ugidx = grpsugidx[i];
+	    out.append("\n(");
+	    for (unsigned int j = 0; j < ugroups[ugidx].size(); j++) {
+		out.append("[").append(ugroups[ugidx][j]).append("] ");
+	    }
+	    out.append(") ->");
+	}
+	out.append(" {");
+	for (unsigned int j = 0; j < groups[i].size(); j++) {
+	    out.append("[").append(groups[i][j]).append("]");
+	}
+	sprintf(cbuf, "%d", slacks[i]);
+	out.append("}").append(cbuf);
+    }
+    out.append("\n");
+    fprintf(stderr, "toString ok\n");
+}
+
+void HighlightData::append(const HighlightData& hl)
+{
+    uterms.insert(hl.uterms.begin(), hl.uterms.end());
+
+    size_t ugsz0 = ugroups.size();
+    ugroups.insert(ugroups.end(), hl.ugroups.begin(), hl.ugroups.end());
+
+    groups.insert(groups.end(), hl.groups.begin(), hl.groups.end());
+    slacks.insert(slacks.end(), hl.slacks.begin(), hl.slacks.end());
+    for (std::vector<unsigned int>::const_iterator it = hl.grpsugidx.begin(); 
+	 it != hl.grpsugidx.end(); it++) {
+	grpsugidx.push_back(*it + ugsz0);
+    }
+}
+
+#else // TEST_SMALLUT
 
 #include <string>
 using namespace std;

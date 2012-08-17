@@ -30,10 +30,7 @@ class DocSequenceDb : public DocSequence {
     virtual ~DocSequenceDb();
     virtual bool getDoc(int num, Rcl::Doc &doc, string * = 0);
     virtual int getResCnt();
-    virtual bool getTerms(vector<string>& terms, 
-			  vector<vector<string> >& groups, 
-			  vector<int>& gslks);
-    virtual void getUTerms(vector<string>& terms);
+    virtual void getTerms(HighlightData& hld);
     virtual bool getAbstract(Rcl::Doc &doc, vector<string>&);
     virtual bool getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc);
     virtual string getDescription();

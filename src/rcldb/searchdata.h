@@ -31,14 +31,11 @@
 #include "refcntr.h"
 #include "smallut.h"
 #include "cstr.h"
+#include "hldata.h"
 
 class RclConfig;
 
-#ifndef NO_NAMESPACES
-using std::vector;
-using std::string;
 namespace Rcl {
-#endif // NO_NAMESPACES
 
 /** Search clause types */
 enum SClType {
@@ -50,33 +47,33 @@ enum SClType {
 class SearchDataClause;
 
 /** 
-  Data structure representing a Recoll user query, for translation
-  into a Xapian query tree. This could probably better called a 'question'.
+    Data structure representing a Recoll user query, for translation
+    into a Xapian query tree. This could probably better called a 'question'.
 
-  This is a list of search clauses combined through either OR or AND.
+    This is a list of search clauses combined through either OR or AND.
 
-  Clauses either reflect user entry in a query field: some text, a
-  clause type (AND/OR/NEAR etc.), possibly a distance, or points to
-  another SearchData representing a subquery.
+    Clauses either reflect user entry in a query field: some text, a
+    clause type (AND/OR/NEAR etc.), possibly a distance, or points to
+    another SearchData representing a subquery.
 
-  The content of each clause when added may not be fully parsed yet
-  (may come directly from a gui field). It will be parsed and may be
-  translated to several queries in the Xapian sense, for exemple
-  several terms and phrases as would result from 
-  ["this is a phrase"  term1 term2] . 
+    The content of each clause when added may not be fully parsed yet
+    (may come directly from a gui field). It will be parsed and may be
+    translated to several queries in the Xapian sense, for exemple
+    several terms and phrases as would result from 
+    ["this is a phrase"  term1 term2] . 
 
-  This is why the clauses also have an AND/OR/... type. 
+    This is why the clauses also have an AND/OR/... type. 
 
-  A phrase clause could be added either explicitly or using double quotes:
-  {SCLT_PHRASE, [this is a phrase]} or as {SCLT_XXX, ["this is a phrase"]}
+    A phrase clause could be added either explicitly or using double quotes:
+    {SCLT_PHRASE, [this is a phrase]} or as {SCLT_XXX, ["this is a phrase"]}
 
- */
+*/
 class SearchData {
 public:
     SearchData(SClType tp) 
-        : m_tp(tp), m_topdirexcl(false), m_topdirweight(1.0), 
-	  m_haveDates(false), m_maxSize(size_t(-1)),
-	  m_minSize(size_t(-1)), m_haveWildCards(false) 
+    : m_tp(tp), m_topdirexcl(false), m_topdirweight(1.0), 
+      m_haveDates(false), m_maxSize(size_t(-1)),
+      m_minSize(size_t(-1)), m_haveWildCards(false) 
     {
 	if (m_tp != SCLT_OR && m_tp != SCLT_AND) 
 	    m_tp = SCLT_OR;
@@ -108,7 +105,7 @@ public:
     bool maybeAddAutoPhrase(Rcl::Db &db, double threshold);
 
     /** Set/get top subdirectory for filtering results */
-    void setTopdir(const string& t, bool excl = false, float w = 1.0) 
+    void setTopdir(const std::string& t, bool excl = false, float w = 1.0) 
     {
 	m_topdir = t;
 	m_topdirexcl = excl;
@@ -122,38 +119,37 @@ public:
     void setDateSpan(DateInterval *dip) {m_dates = *dip; m_haveDates = true;}
 
     /** Add file type for filtering results */
-    void addFiletype(const string& ft) {m_filetypes.push_back(ft);}
+    void addFiletype(const std::string& ft) {m_filetypes.push_back(ft);}
     /** Add file type to not wanted list */
-    void remFiletype(const string& ft) {m_nfiletypes.push_back(ft);}
+    void remFiletype(const std::string& ft) {m_nfiletypes.push_back(ft);}
 
-    void setStemlang(const string& lang = "english") {m_stemlang = lang;}
+    void setStemlang(const std::string& lang = "english") {m_stemlang = lang;}
 
     /** Retrieve error description */
-    string getReason() {return m_reason;}
+    std::string getReason() {return m_reason;}
 
-    /** Get terms and phrase/near groups. Used in the GUI for highlighting 
-     * The groups and gslks vectors are parallel and hold the phrases/near
-     * string groups and their associated slacks (distance in excess of group
-     * size)
+    /** Return term expansion data. Mostly used by caller for highlighting
      */
-    bool getTerms(vector<string>& terms, 
-		  vector<vector<string> >& groups, vector<int>& gslks) const;
-    /** Get user-input terms (before expansion etc.) */
-    void getUTerms(vector<string>& terms) const;
+    void getTerms(HighlightData& hldata) const;
 
     /** 
      * Get/set the description field which is retrieved from xapian after
      * initializing the query. It is stored here for usage in the GUI.
      */
-    string getDescription() {return m_description;}
-    void setDescription(const string& d) {m_description = d;}
+    std::string getDescription() {return m_description;}
+    void setDescription(const std::string& d) {m_description = d;}
 
 private:
-    SClType                   m_tp; // Only SCLT_AND or SCLT_OR here
-    vector<SearchDataClause*> m_query;
-    vector<string>            m_filetypes; // Restrict to filetypes if set.
-    vector<string>            m_nfiletypes; // Unwanted file types
-    string                    m_topdir; // Restrict to subtree.
+    // Combine type. Only SCLT_AND or SCLT_OR here
+    SClType                   m_tp; 
+    // Complex query descriptor
+    std::vector<SearchDataClause*> m_query;
+    // Restricted set of filetypes if not empty.
+    std::vector<std::string>            m_filetypes; 
+    // Excluded set of file types if not empty
+    std::vector<std::string>            m_nfiletypes;
+    // Restrict to subtree.
+    std::string                    m_topdir; 
     bool                      m_topdirexcl; // Invert meaning
     float                     m_topdirweight; // affect weight instead of filter
     bool                      m_haveDates;
@@ -162,11 +158,11 @@ private:
     size_t                    m_minSize;
     // Printable expanded version of the complete query, retrieved/set
     // from rcldb after the Xapian::setQuery() call
-    string m_description; 
-    string m_reason;
+    std::string m_description; 
+    std::string m_reason;
     bool   m_haveWildCards;
-    string m_stemlang;
-    bool expandFileTypes(RclConfig *cfg, vector<string>& exptps);
+    std::string m_stemlang;
+    bool expandFileTypes(RclConfig *cfg, std::vector<std::string>& exptps);
     /* Copyconst and assignment private and forbidden */
     SearchData(const SearchData &) {}
     SearchData& operator=(const SearchData&) {return *this;};
@@ -178,39 +174,56 @@ public:
 		   SDCM_ANCHOREND=4};
 
     SearchDataClause(SClType tp) 
-	: m_tp(tp), m_parentSearch(0), m_haveWildCards(0), 
-	  m_modifiers(SDCM_NONE), m_weight(1.0)
+    : m_tp(tp), m_parentSearch(0), m_haveWildCards(0), 
+      m_modifiers(SDCM_NONE), m_weight(1.0)
     {}
     virtual ~SearchDataClause() {}
-    virtual bool toNativeQuery(Rcl::Db &db, void *, const string&) = 0;
+    virtual bool toNativeQuery(Rcl::Db &db, void *, const std::string&) = 0;
     bool isFileName() const {return m_tp == SCLT_FILENAME ? true: false;}
-    virtual string getReason() const {return m_reason;}
-    virtual bool getTerms(vector<string>&, vector<vector<string> >&,
-			  vector<int>&) const = 0;
-    virtual void getUTerms(vector<string>&) const = 0;
+    virtual std::string getReason() const {return m_reason;}
+    virtual void getTerms(HighlightData & hldata) const = 0;
 
-    SClType getTp() {return m_tp;}
-    void setParent(SearchData *p) {m_parentSearch = p;}
-    virtual void setModifiers(Modifier mod) {m_modifiers = mod;}
-    virtual int getModifiers() {return m_modifiers;}
-    virtual void addModifier(Modifier mod) {
+    SClType getTp() 
+    {
+	return m_tp;
+    }
+    void setParent(SearchData *p) 
+    {
+	m_parentSearch = p;
+    }
+    virtual void setModifiers(Modifier mod) 
+    {
+	m_modifiers = mod;
+    }
+    virtual int getModifiers() 
+    {
+	return m_modifiers;
+    }
+    virtual void addModifier(Modifier mod) 
+    {
 	int imod = getModifiers();
 	imod |= mod;
 	setModifiers(Modifier(imod));
     }
-    virtual void setWeight(float w) {m_weight = w;}
+    virtual void setWeight(float w) 
+    {
+	m_weight = w;
+    }
     friend class SearchData;
 
 protected:
-    string      m_reason;
+    std::string      m_reason;
     SClType     m_tp;
     SearchData *m_parentSearch;
     bool        m_haveWildCards;
     Modifier    m_modifiers;
     float       m_weight;
 private:
-    SearchDataClause(const SearchDataClause&) {}
-    SearchDataClause& operator=(const SearchDataClause&) {
+    SearchDataClause(const SearchDataClause&) 
+    {
+    }
+    SearchDataClause& operator=(const SearchDataClause&) 
+    {
 	return *this;
     }
 };
@@ -221,45 +234,37 @@ private:
  */
 class SearchDataClauseSimple : public SearchDataClause {
 public:
-    SearchDataClauseSimple(SClType tp, const string& txt, 
-			   const string& fld = string())
-	: SearchDataClause(tp), m_text(txt), m_field(fld), m_slack(0) {
-	m_haveWildCards = (txt.find_first_of(cstr_minwilds) != string::npos);
+    SearchDataClauseSimple(SClType tp, const std::string& txt, 
+			   const std::string& fld = std::string())
+	: SearchDataClause(tp), m_text(txt), m_field(fld)
+    {
+	m_haveWildCards = 
+	    (txt.find_first_of(cstr_minwilds) != std::string::npos);
     }
 
-    virtual ~SearchDataClauseSimple() {}
+    virtual ~SearchDataClauseSimple() 
+    {
+    }
 
     /** Translate to Xapian query */
-    virtual bool toNativeQuery(Rcl::Db &db, void *, const string& stemlang);
+    virtual bool toNativeQuery(Rcl::Db &, void *, const std::string& stemlang);
 
-    /** Retrieve query terms and term groups. This is used for highlighting */
-    virtual bool getTerms(vector<string>& terms, /* Single terms */
-			  vector<vector<string> >& groups, /* Prox grps */
-			  vector<int>& gslks) const        /* Prox slacks */
+    virtual void getTerms(HighlightData& hldata) const
     {
-	terms.insert(terms.end(), m_terms.begin(), m_terms.end());
-	groups.insert(groups.end(), m_groups.begin(), m_groups.end());
-	gslks.insert(gslks.end(), m_groups.size(), m_slack);
-	return true;
+	hldata.append(m_hldata);
     }
-    virtual void getUTerms(vector<string>& terms) const
+    virtual const std::string& gettext() 
     {
-	terms.insert(terms.end(), m_uterms.begin(), m_uterms.end());
+	return m_text;
     }
-    virtual const string& gettext() {return m_text;}
-    virtual const string& getfield() {return m_field;}
+    virtual const std::string& getfield() 
+    {
+	return m_field;
+    }
 protected:
-    string  m_text;  // Raw user entry text.
-    string  m_field; // Field specification if any
-    // Single terms and phrases resulting from breaking up m_text;
-    // valid after toNativeQuery() call
-    vector<string>          m_terms;
-    vector<vector<string> > m_groups;
-    // User terms before expansion
-    vector<string>          m_uterms;
-    // Declare m_slack here. Always 0, but allows getTerms to work for
-    // SearchDataClauseDist
-    int m_slack;
+    std::string  m_text;  // Raw user entry text.
+    std::string  m_field; // Field specification if any
+    HighlightData m_hldata;
 };
 
 /** 
@@ -272,29 +277,39 @@ protected:
  */
 class SearchDataClauseFilename : public SearchDataClauseSimple {
 public:
-    SearchDataClauseFilename(const string& txt)
-	: SearchDataClauseSimple(SCLT_FILENAME, txt) {
+    SearchDataClauseFilename(const std::string& txt)
+	: SearchDataClauseSimple(SCLT_FILENAME, txt) 
+    {
 	// File name searches don't count when looking for wild cards.
 	m_haveWildCards = false;
     }
-    virtual ~SearchDataClauseFilename() {}
-    virtual bool toNativeQuery(Rcl::Db &db, void *, const string& stemlang);
+
+    virtual ~SearchDataClauseFilename() 
+    {
+    }
+
+    virtual bool toNativeQuery(Rcl::Db &, void *, const std::string& stemlang);
 };
 
 /** 
  * A clause coming from a NEAR or PHRASE entry field. There is only one 
- * string group, and a specified distance, which applies to it.
+ * std::string group, and a specified distance, which applies to it.
  */
 class SearchDataClauseDist : public SearchDataClauseSimple {
 public:
-    SearchDataClauseDist(SClType tp, const string& txt, int slack, 
-			 const string& fld = string())
-	: SearchDataClauseSimple(tp, txt, fld) {m_slack = slack;}
-    virtual ~SearchDataClauseDist() {}
+    SearchDataClauseDist(SClType tp, const std::string& txt, int slack, 
+			 const std::string& fld = std::string())
+	: SearchDataClauseSimple(tp, txt, fld), m_slack(slack)
+    {
+    }
 
-    virtual bool toNativeQuery(Rcl::Db &db, void *, const string& stemlang);
+    virtual ~SearchDataClauseDist() 
+    {
+    }
 
-    // m_slack is declared in SearchDataClauseSimple
+    virtual bool toNativeQuery(Rcl::Db &, void *, const std::string& stemlang);
+private:
+    int m_slack;
 };
 
 /** Subquery */
@@ -302,15 +317,28 @@ class SearchDataClauseSub : public SearchDataClause {
 public:
     // We take charge of the SearchData * and will delete it.
     SearchDataClauseSub(SClType tp, RefCntr<SearchData> sub) 
-	: SearchDataClause(tp), m_sub(sub) {}
-    virtual ~SearchDataClauseSub() {}
-    virtual bool toNativeQuery(Rcl::Db &db, void *, const string& stemlang);
-    virtual bool getTerms(vector<string>&, vector<vector<string> >&,
-			  vector<int>&) const;
-    virtual void getUTerms(vector<string>&) const;
+	: SearchDataClause(tp), m_sub(sub) 
+    {
+    }
+
+    virtual ~SearchDataClauseSub() 
+    {
+    }
+
+    virtual bool toNativeQuery(Rcl::Db &db, void *p, const std::string&)
+    {
+	return m_sub->toNativeQuery(db, p);
+    }
+
+    virtual void getTerms(HighlightData& hldata) const
+    {
+	m_sub.getconstptr()->getTerms(hldata);
+    }
+
 protected:
     RefCntr<SearchData> m_sub;
 };
 
 } // Namespace Rcl
+
 #endif /* _SEARCHDATA_H_INCLUDED_ */

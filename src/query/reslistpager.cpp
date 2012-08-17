@@ -132,9 +132,8 @@ void ResListPager::resultPageFor(int docnum)
     m_respage = npage;
 }
 
-void ResListPager::displayDoc(RclConfig *config,
-			      int i, Rcl::Doc& doc, const HiliteData& hdata,
-			      const string& sh)
+void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc, 
+			      const HighlightData& hdata, const string& sh)
 {
     ostringstream chunk;
     int percent;
@@ -309,8 +308,9 @@ void ResListPager::displayPage(RclConfig *config)
 
     if (pageEmpty()) {
 	chunk << trans("<p><b>No results found</b><br>");
-        vector<string>uterms;
-        m_docSource->getUTerms(uterms);
+	HighlightData hldata;
+        m_docSource->getTerms(hldata);
+        vector<string> uterms(hldata.uterms.begin(), hldata.uterms.end());
         if (!uterms.empty()) {
             map<string, vector<string> > spellings;
             suggest(uterms, spellings);
@@ -366,8 +366,8 @@ void ResListPager::displayPage(RclConfig *config)
     if (pageEmpty())
 	return;
 
-    HiliteData hdata;
-    m_docSource->getTerms(hdata.terms, hdata.groups, hdata.gslks);
+    HighlightData hdata;
+    m_docSource->getTerms(hdata);
 
     // Emit data for result entry paragraph. Do it in chunks that make sense
     // html-wise, else our client may get confused

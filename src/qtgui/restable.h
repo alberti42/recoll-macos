@@ -19,6 +19,10 @@
 
 #include <Qt>
 
+#include <string>
+#include <map>
+#include <vector>
+
 #include "ui_restable.h"
 #include "refcntr.h"
 #include "docseq.h"
@@ -26,7 +30,7 @@
 
 class ResTable;
 
-typedef string (FieldGetter)(const string& fldname, const Rcl::Doc& doc);
+typedef std::string (FieldGetter)(const std::string& fldname, const Rcl::Doc& doc);
 
 class RecollModel : public QAbstractTableModel {
 
@@ -49,15 +53,15 @@ public:
     virtual void setDocSource(RefCntr<DocSequence> nsource);
     virtual RefCntr<DocSequence> getDocSource() {return m_source;}
     virtual void deleteColumn(int);
-    virtual const vector<string>& getFields() {return m_fields;}
-    virtual const map<string, QString>& getAllFields() 
+    virtual const std::vector<std::string>& getFields() {return m_fields;}
+    virtual const std::map<std::string, QString>& getAllFields() 
     { 
 	return o_displayableFields;
     }
-    virtual void addColumn(int, const string&);
+    virtual void addColumn(int, const std::string&);
     // Some column name are aliases/translator for base document field 
     // (ie: date, datetime->mtime). Help deal with this:
-    virtual string baseField(const string&);
+    virtual std::string baseField(const std::string&);
 
     // Ignore sort() call because 
     virtual void setIgnoreSort(bool onoff) {m_ignoreSort = onoff;}
@@ -69,12 +73,12 @@ signals:
 
 private:
     mutable RefCntr<DocSequence> m_source;
-    vector<string> m_fields;
-    vector<FieldGetter*> m_getters;
-    static map<string, QString> o_displayableFields;
+    std::vector<std::string> m_fields;
+    std::vector<FieldGetter*> m_getters;
+    static std::map<std::string, QString> o_displayableFields;
     bool m_ignoreSort;
-    FieldGetter* chooseGetter(const string&);
-    HiliteData m_hdata;
+    FieldGetter* chooseGetter(const std::string&);
+    HighlightData m_hdata;
 };
 
 class ResTable;

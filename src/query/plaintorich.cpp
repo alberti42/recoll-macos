@@ -24,12 +24,10 @@
 #include <map>
 #include <algorithm>
 
-#ifndef NO_NAMESPACES
 using std::vector;
 using std::list;
 using std::pair;
 using std::set;
-#endif /* NO_NAMESPACES */
 
 #include "rcldb.h"
 #include "rclconfig.h"
@@ -51,28 +49,30 @@ static string vecStringToString(const vector<string>& t)
     return sterms;
 }
 
-// Text splitter callback used to take note of the position of query terms 
-// inside the result text. This is then used to insert highlight tags. 
+// Text splitter used to take note of the position of query terms
+// inside the result text. This is then used to insert highlight tags.
 class TextSplitPTR : public TextSplit {
  public:
 
     // Out: begin and end byte positions of query terms/groups in text
     vector<pair<int, int> > tboffs;  
 
-    TextSplitPTR(const vector<string>& its, 
-                 const vector<vector<string> >&groups, 
-                 const vector<int>& slacks) 
-	:  m_wcount(0), m_groups(groups), m_slacks(slacks)
+    TextSplitPTR(const HighlightData& hdata)
+    :  m_wcount(0), m_hdata(hdata)
     {
-	for (vector<string>::const_iterator it = its.begin(); 
-	     it != its.end(); it++) {
-	    m_terms.insert(*it);
-	}
-	for (vector<vector<string> >::const_iterator vit = m_groups.begin(); 
-	     vit != m_groups.end(); vit++) {
-	    for (vector<string>::const_iterator it = (*vit).begin(); 
-		 it != (*vit).end(); it++) {
-		m_gterms.insert(*it);
+	// We separate single terms and groups and extract the group
+	// terms for computing positions list before looking for group
+	// matches
+
+	for (vector<vector<string> >::const_iterator vit = hdata.groups.begin();
+	     vit != hdata.groups.end(); vit++) {
+	    if (vit->size() == 1) {
+		m_terms.insert(vit->front());
+	    } else if (vit->size() > 1) {
+		for (vector<string>::const_iterator it = vit->begin(); 
+		     it != vit->end(); it++) {
+		    m_gterms.insert(*it);
+		}
 	    }
 	}
     }
@@ -116,15 +116,16 @@ class TextSplitPTR : public TextSplit {
 private:
     virtual bool matchGroup(const vector<string>& terms, int dist);
 
+    // Word count. Used to call checkCancel from time to time.
     int m_wcount;
 
     // In: user query terms
     set<string>    m_terms; 
 
-    // In: user query groups, for near/phrase searches.
-    const vector<vector<string> >& m_groups;
-    const vector<int>&             m_slacks;
-    set<string>                    m_gterms;
+    // m_gterms holds all the terms in m_groups, as a set for quick lookup
+    set<string>    m_gterms;
+
+    const HighlightData& m_hdata;
 
     // group/near terms word positions.
     map<string, vector<int> > m_plists;
@@ -294,10 +295,11 @@ public:
 // handle all groups as NEAR (ignore order).
 bool TextSplitPTR::matchGroups()
 {
-    vector<vector<string> >::const_iterator vit = m_groups.begin();
-    vector<int>::const_iterator sit = m_slacks.begin();
-    for (; vit != m_groups.end() && sit != m_slacks.end(); vit++, sit++) {
-	matchGroup(*vit, *sit + (*vit).size());
+    for (unsigned int i = 0; i < m_hdata.groups.size(); i++) {
+	if (m_hdata.groups[i].size() <= 1)
+	    continue;
+	matchGroup(m_hdata.groups[i], 
+		   m_hdata.groups[i].size() + m_hdata.slacks[i]);
     }
 
     // Sort regions by increasing start and decreasing width.  
@@ -317,39 +319,22 @@ bool TextSplitPTR::matchGroups()
 // the input is html, the body is always a single output chunk.
 bool PlainToRich::plaintorich(const string& in, 
 			      list<string>& out, // Output chunk list
-			      const HiliteData& hdata,
+			      const HighlightData& hdata,
 			      int chunksize)
 {
     Chrono chron;
-    const vector<string>& terms(hdata.terms);
-    const vector<vector<string> >& groups(hdata.groups);
-    const vector<int>& slacks(hdata.gslks);
-
-    if (0 && DebugLog::getdbl()->getlevel() >= DEBDEB0) {
-	string sterms = vecStringToString(terms);
-	LOGDEB0(("plaintorich: terms: %s\n", sterms.c_str()));
-	sterms.clear();
-	for (vector<vector<string> >::const_iterator vit = groups.begin(); 
-	     vit != groups.end(); vit++) {
-	    sterms += "GROUP: ";
-	    sterms += vecStringToString(*vit);
-	    sterms += "\n";
-	}
-	LOGDEB0(("plaintorich: groups:\n %s", sterms.c_str()));
-        LOGDEB2(("  TEXT:[%s]\n", in.c_str()));
-    }
 
     // Compute the positions for the query terms.  We use the text
     // splitter to break the text into words, and compare the words to
     // the search terms,
-    TextSplitPTR splitter(terms, groups, slacks);
+    TextSplitPTR splitter(hdata);
     // Note: the splitter returns the term locations in byte, not
     // character, offsets.
     splitter.text_to_words(in);
     LOGDEB2(("plaintorich: split done %d mS\n", chron.millis()));
-
     // Compute the positions for NEAR and PHRASE groups.
     splitter.matchGroups();
+    LOGDEB2(("plaintorich: group match done %d mS\n", chron.millis()));
 
     out.clear();
     out.push_back("");
