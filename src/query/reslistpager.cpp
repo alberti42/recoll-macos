@@ -40,9 +40,14 @@ static const string cstr_hlfontcolor("<font color=\"blue\">");
 static const string cstr_hlendfont("</font>");
 class PlainToRichHtReslist : public PlainToRich {
 public:
-    virtual ~PlainToRichHtReslist() {}
-    virtual string startMatch() {return cstr_hlfontcolor;}
-    virtual string endMatch() {return cstr_hlendfont;}
+    virtual string startMatch(unsigned int) 
+    {
+	return cstr_hlfontcolor;
+    }
+    virtual string endMatch() 
+    {
+	return cstr_hlendfont;
+    }
 };
 static PlainToRichHtReslist g_hiliter;
 

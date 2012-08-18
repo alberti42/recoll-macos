@@ -250,12 +250,22 @@ string QtGuiResListPager::iconUrl(RclConfig *config, Rcl::Doc& doc)
 
 class PlainToRichQtReslist : public PlainToRich {
 public:
-    virtual ~PlainToRichQtReslist() {}
-    virtual string startMatch() {
+    virtual string startMatch(unsigned int idx)
+    {
+	if (m_hdata) {
+	    string s1, s2;
+	    stringsToString<vector<string> >(m_hdata->groups[idx], s1); 
+	    stringsToString<vector<string> >(m_hdata->ugroups[m_hdata->grpsugidx[idx]], s2);
+	    LOGDEB(("Reslist startmatch: group %s user group %s\n", s1.c_str(), s2.c_str()));
+	}
+		
 	return string("<span class='rclmatch' style='color: ")
 	    + string((const char *)prefs.qtermcolor.toAscii()) + string("'>");
     }
-    virtual string endMatch() {return string("</span>");}
+    virtual string endMatch() 
+    {
+	return string("</span>");
+    }
 };
 static PlainToRichQtReslist g_hiliter;
 

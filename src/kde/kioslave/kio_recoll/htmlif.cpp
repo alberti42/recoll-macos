@@ -204,24 +204,32 @@ void RecollProtocol::queryDetails()
 class PlainToRichKio : public PlainToRich {
 public:
     PlainToRichKio(const string& nm) 
-	: PlainToRich() , m_name(nm)
+    : m_name(nm)
     {
     }    
-    virtual ~PlainToRichKio() {}
+
     virtual string header() {
 	if (m_inputhtml) {
-	    return snull;
+	    return cstr_null;
 	} else {
-	    return
-		string("<html><head>"
-		       "<META http-equiv=\"Content-Type\""
-		       "content=\"text/html;charset=UTF-8\"><title>") + 
-		m_name + 
-		string("</title></head><body><pre>");
+	    return string("<html><head>"
+			  "<META http-equiv=\"Content-Type\""
+			  "content=\"text/html;charset=UTF-8\"><title>").
+		append(m_name).
+		append("</title></head><body><pre>");
 	}
     }
-    virtual string startMatch() {return string("<font color=\"blue\">");}
-    virtual string endMatch() {return string("</font>");}
+
+    virtual string startMatch(unsigned int)
+    {
+	return string("<font color=\"blue\">");
+    }
+
+    virtual string endMatch() 
+    {
+	return string("</font>");
+    }
+
     const string &m_name;
 };
 

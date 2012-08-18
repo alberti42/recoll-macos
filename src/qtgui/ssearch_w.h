@@ -38,7 +38,6 @@ public:
 	setupUi(this);
 	init();
     }
-    ~SSearch(){}
 
     virtual void init();
     virtual void setAnyTermMode();

@@ -68,54 +68,130 @@ using std::pair;
 // Subclass plainToRich to add <termtag>s and anchors to the preview text
 class PlainToRichQtPreview : public PlainToRich {
 public:
-    int lastanchor;
-    PlainToRichQtPreview() 
+
+    PlainToRichQtPreview()
+	: m_curanchor(1), m_lastanchor(0)
     {
-	lastanchor = 0;
     }    
-    virtual ~PlainToRichQtPreview() {}
-    virtual string header() {
+
+    bool haveAnchors()
+    {
+	return m_lastanchor != 0;
+    }
+
+    virtual string header() 
+    {
 	if (m_inputhtml) {
-	    return snull;
+	    return cstr_null;
 	} else {
 	    if (prefs.previewPlainPre) {
 		m_eolbr = false;
 		return string("<qt><head><title></title></head><body>"
 			      "<pre>");
-// Note we could also use the following for line-folding instead of <br>s
-// This would be possible without recomputing the whole text, much better perfs
-// for toggling wrap/no-wrap
-//			      "<pre style=\"white-space: pre-wrap\">");
+		// Note: we could also use the following for
+		// line-folding instead of <br>s This would be
+		// possible without recomputing the whole text, much
+		// better perfs for toggling wrap/no-wrap: 
+		//   <pre style=\"white-space: pre-wrap\">
 	    } else {
 		m_eolbr = true;
 		return string("<qt><head><title></title></head><body>");
 	    }
 	}
     }
-    virtual string startMatch() 
+
+    virtual string startMatch(unsigned int grpidx)
     {
-	return string("<span style='color: ")
-	    + string((const char *)(prefs.qtermcolor.toUtf8()))
-	    + string(";font-weight: bold;")
-	    + string("'>");
+	LOGDEB2(("startMatch, grpidx %u\n", grpidx));
+	grpidx = m_hdata->grpsugidx[grpidx];
+	LOGDEB2(("startMatch, ugrpidx %u\n", grpidx));
+	m_groupanchors[grpidx].push_back(++m_lastanchor);
+	m_groupcuranchors[grpidx] = 0; 
+	return string("<span style='color: ").
+	    append((const char *)(prefs.qtermcolor.toUtf8())).
+	    append(";font-weight: bold;").
+	    append("'>").
+	    append("<a name=\"").
+	    append(termAnchorName(m_lastanchor)).
+	    append("\">");
     }
-    virtual string endMatch() {return string("</span>");}
-    virtual string termAnchorName(int i) {
+
+    virtual string endMatch() 
+    {
+	return string("</a></span>");
+    }
+
+    virtual string termAnchorName(int i) const
+    {
 	static const char *termAnchorNameBase = "TRM";
 	char acname[sizeof(termAnchorNameBase) + 20];
 	sprintf(acname, "%s%d", termAnchorNameBase, i);
-	if (i > lastanchor)
-	    lastanchor = i;
 	return string(acname);
     }
 
-    virtual string startAnchor(int i) {
-	return string("<a name=\"") + termAnchorName(i) + "\">";
+    virtual string startChunk() 
+    { 
+	return "<pre>";
     }
-    virtual string endAnchor() {
-	return string("</a>");
+
+    int nextAnchorNum(int grpidx)
+    {
+	LOGDEB2(("nextAnchorNum: group %d\n", grpidx));
+	map<unsigned int, unsigned int>::iterator curit = 
+	    m_groupcuranchors.find(grpidx);
+	map<unsigned int, vector<int> >::iterator vecit = 
+	    m_groupanchors.find(grpidx);
+	if (grpidx == -1 || curit == m_groupcuranchors.end() ||
+	    vecit == m_groupanchors.end()) {
+	    if (m_curanchor >= m_lastanchor)
+		m_curanchor = 1;
+	    else
+		m_curanchor++;
+	} else {
+	    if (curit->second >= vecit->second.size() -1)
+		m_groupcuranchors[grpidx] = 0;
+	    else 
+		m_groupcuranchors[grpidx]++;
+	    m_curanchor = vecit->second[m_groupcuranchors[grpidx]];
+	    LOGDEB2(("nextAnchorNum: curanchor now %d\n", m_curanchor));
+	}
+	return m_curanchor;
     }
-    virtual string startChunk() { return "<pre>";}
+
+    int prevAnchorNum(int grpidx)
+    {
+	map<unsigned int, unsigned int>::iterator curit = 
+	    m_groupcuranchors.find(grpidx);
+	map<unsigned int, vector<int> >::iterator vecit = 
+	    m_groupanchors.find(grpidx);
+	if (grpidx == -1 || curit == m_groupcuranchors.end() ||
+	    vecit == m_groupanchors.end()) {
+	    if (m_curanchor <= 1)
+		m_curanchor = m_lastanchor;
+	    else
+		m_curanchor--;
+	} else {
+	    if (curit->second <= 0)
+		m_groupcuranchors[grpidx] = vecit->second.size() -1;
+	    else 
+		m_groupcuranchors[grpidx]--;
+	    m_curanchor = vecit->second[m_groupcuranchors[grpidx]];
+	}
+	return m_curanchor;
+    }
+
+    QString curAnchorName() const
+    {
+	return QString::fromUtf8(termAnchorName(m_curanchor).c_str());
+    }
+
+private:
+    int m_curanchor;
+    int m_lastanchor;
+    // Lists of anchor numbers (match locations) for the term (groups)
+    // in the query (the map key is and index into HighlightData.groups).
+    map<unsigned int, vector<int> > m_groupanchors;
+    map<unsigned int, unsigned int> m_groupcuranchors;
 };
 
 void Preview::init()
@@ -141,8 +217,24 @@ void Preview::init()
     QHBoxLayout *layout3 = new QHBoxLayout(0); 
     searchLabel = new QLabel(this);
     layout3->addWidget(searchLabel);
-    searchTextLine = new QLineEdit(this);
-    layout3->addWidget(searchTextLine);
+
+    searchTextCMB = new QComboBox(this);
+    searchTextCMB->setEditable(true);
+    searchTextCMB->setInsertPolicy(QComboBox::NoInsert);
+    searchTextCMB->setDuplicatesEnabled(false);
+    for (unsigned int i = 0; i < m_hData.ugroups.size(); i++) {
+	QString s;
+	for (unsigned int j = 0; j < m_hData.ugroups[i].size(); j++) {
+	    s.append(QString::fromUtf8(m_hData.ugroups[i][j].c_str()));
+	    if (j != m_hData.ugroups[i].size()-1)
+		s.append(" ");
+	}
+	searchTextCMB->addItem(s);
+    }
+    searchTextCMB->setEditText("");
+
+    layout3->addWidget(searchTextCMB);
+
     nextButton = new QPushButton(this);
     nextButton->setEnabled(TRUE);
     layout3->addWidget(nextButton);
@@ -160,7 +252,7 @@ void Preview::init()
     resize(QSize(640, 480).expandedTo(minimumSizeHint()));
 
     // buddies
-    searchLabel->setBuddy(searchTextLine);
+    searchLabel->setBuddy(searchTextCMB);
 
     searchLabel->setText(tr("&Search for:"));
     nextButton->setText(tr("&Next"));
@@ -176,26 +268,25 @@ void Preview::init()
 			   "RCL.SEARCH.PREVIEW");
 
     // signals and slots connections
-    connect(searchTextLine, SIGNAL(textChanged(const QString&)), 
-	    this, SLOT(searchTextLine_textChanged(const QString&)));
+    connect(searchTextCMB, SIGNAL(activated(int)), 
+	    this, SLOT(searchTextFromIndex(int)));
+    connect(searchTextCMB, SIGNAL(editTextChanged(const QString&)), 
+	    this, SLOT(searchTextChanged(const QString&)));
     connect(nextButton, SIGNAL(clicked()), this, SLOT(nextPressed()));
     connect(prevButton, SIGNAL(clicked()), this, SLOT(prevPressed()));
-    connect(clearPB, SIGNAL(clicked()), searchTextLine, SLOT(clear()));
+    connect(clearPB, SIGNAL(clicked()), searchTextCMB, SLOT(clearEditText()));
     connect(pvTab, SIGNAL(currentChanged(QWidget *)), 
 	    this, SLOT(currentChanged(QWidget *)));
     connect(bt, SIGNAL(clicked()), this, SLOT(closeCurrentTab()));
 
     m_dynSearchActive = false;
     m_canBeep = true;
-    m_currentW = 0;
     if (prefs.pvwidth > 100) {
 	resize(prefs.pvwidth, prefs.pvheight);
     }
     m_loading = false;
     currentChanged(pvTab->currentWidget());
     m_justCreated = true;
-    m_haveAnchors = false;
-    m_curAnchor = 1;
 }
 
 void Preview::closeEvent(QCloseEvent *e)
@@ -273,11 +364,11 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
     } else if (m_dynSearchActive) {
 	if (keyEvent->key() == Qt::Key_F3) {
 	    LOGDEB2(("Preview::eventFilter: got F3\n"));
-	    doSearch(searchTextLine->text(), true, false);
+	    doSearch(searchTextCMB->currentText(), true, false);
 	    return true;
 	}
-	if (target != searchTextLine)
-	    return QApplication::sendEvent(searchTextLine, event);
+	if (target != searchTextCMB)
+	    return QApplication::sendEvent(searchTextCMB, event);
     } else {
 	if (edit && 
 	    (target == edit || target == edit->viewport())) {
@@ -285,7 +376,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 		(keyEvent->key() == Qt::Key_F &&
 		 (keyEvent->modifiers() & Qt::ControlModifier))) {
 		LOGDEB2(("Preview::eventFilter: got / or C-F\n"));
-		searchTextLine->setFocus();
+		searchTextCMB->setFocus();
 		m_dynSearchActive = true;
 		return true;
 	    } else if (keyEvent->key() == Qt::Key_Space) {
@@ -307,21 +398,25 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
     return false;
 }
 
-void Preview::searchTextLine_textChanged(const QString & text)
+void Preview::searchTextChanged(const QString & text)
 {
-    LOGDEB2(("search line text changed. text: '%s'\n", text.ascii()));
+    LOGDEB1(("Search line text changed. text: '%s'\n", 
+	     (const char *)text.toAscii()));
+    m_searchTextFromIndex = -1;
     if (text.isEmpty()) {
 	m_dynSearchActive = false;
-	//	nextButton->setEnabled(false);
-	//	prevButton->setEnabled(false);
 	clearPB->setEnabled(false);
     } else {
 	m_dynSearchActive = true;
-	//	nextButton->setEnabled(true);
-	//	prevButton->setEnabled(true);
 	clearPB->setEnabled(true);
 	doSearch(text, false, false);
     }
+}
+
+void Preview::searchTextFromIndex(int idx)
+{
+    LOGDEB1(("search line from index %d\n", idx));
+    m_searchTextFromIndex = idx;
 }
 
 PreviewTextEdit *Preview::currentEditor()
@@ -351,9 +446,9 @@ void Preview::emitSaveDocToFile()
 void Preview::doSearch(const QString &_text, bool next, bool reverse, 
 		       bool wordOnly)
 {
-    LOGDEB(("Preview::doSearch: text [%s] txtlen %d next %d rev %d word %d\n", 
-             (const char *)_text.toUtf8(), _text.length(), int(next), 
-             int(reverse), int(wordOnly)));
+    LOGDEB(("Preview::doSearch: text [%s] idx %d next %d rev %d word %d\n", 
+	    (const char *)_text.toUtf8(), m_searchTextFromIndex, int(next), 
+	    int(reverse), int(wordOnly)));
     QString text = _text;
 
     bool matchCase = matchCheck->isChecked();
@@ -363,25 +458,19 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
 	return;
     }
 
-    if (text.isEmpty()) {
-	if (m_haveAnchors == false) {
+    if (text.isEmpty() || m_searchTextFromIndex != -1) {
+	if (!edit->m_plaintorich->haveAnchors()) {
 	    LOGDEB(("NO ANCHORS\n"));
 	    return;
 	}
+	// The combobox indices are equal to the search ugroup indices
+	// in hldata, that's how we built the list.
 	if (reverse) {
-	    if (m_curAnchor == 1)
-		m_curAnchor = edit->m_plaintorich->lastanchor;
-	    else
-		m_curAnchor--;
+	    edit->m_plaintorich->prevAnchorNum(m_searchTextFromIndex);
 	} else {
-	    if (m_curAnchor == edit->m_plaintorich->lastanchor)
-		m_curAnchor = 1;
-	    else
-		m_curAnchor++;
+	    edit->m_plaintorich->nextAnchorNum(m_searchTextFromIndex);
 	}
-	LOGDEB(("m_curAnchor: %d\n", m_curAnchor));
-	QString aname = 
-	   QString::fromUtf8(edit->m_plaintorich->termAnchorName(m_curAnchor).c_str());
+	QString aname = edit->m_plaintorich->curAnchorName();
 	LOGDEB(("Calling scrollToAnchor(%s)\n", (const char *)aname.toUtf8()));
 	edit->scrollToAnchor(aname);
 	// Position the cursor approximately at the anchor (top of
@@ -440,14 +529,14 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
 
 void Preview::nextPressed()
 {
-    LOGDEB2(("PreviewTextEdit::nextPressed\n"));
-    doSearch(searchTextLine->text(), true, false);
+    LOGDEB2(("Preview::nextPressed\n"));
+    doSearch(searchTextCMB->currentText(), true, false);
 }
 
 void Preview::prevPressed()
 {
-    LOGDEB2(("PreviewTextEdit::prevPressed\n"));
-    doSearch(searchTextLine->text(), true, true);
+    LOGDEB2(("Preview::prevPressed\n"));
+    doSearch(searchTextCMB->currentText(), true, true);
 }
 
 // Called when user clicks on tab
@@ -456,7 +545,6 @@ void Preview::currentChanged(QWidget * tw)
     LOGDEB2(("PreviewTextEdit::currentChanged\n"));
     PreviewTextEdit *edit = 
 	tw->findChild<PreviewTextEdit*>("pvEdit");
-    m_currentW = tw;
     LOGDEB1(("Preview::currentChanged(). Editor: %p\n", edit));
     
     if (edit == 0) {
@@ -470,7 +558,7 @@ void Preview::currentChanged(QWidget * tw)
     connect(this, SIGNAL(printCurrentPreviewRequest()), edit, SLOT(print()));
     edit->installEventFilter(this);
     edit->viewport()->installEventFilter(this);
-    searchTextLine->installEventFilter(this);
+    searchTextCMB->installEventFilter(this);
     emit(previewExposed(this, m_searchId, edit->m_docnum));
 }
 
@@ -507,7 +595,7 @@ PreviewTextEdit *Preview::addEditorTab()
 
 void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
 {
-    LOGDEB1(("PreviewTextEdit::setCurTabProps\n"));
+    LOGDEB1(("Preview::setCurTabProps\n"));
     QString title;
     string ctitle;
     if (doc.getmeta(Rcl::Doc::keytt, &ctitle) && !ctitle.empty()) {
@@ -720,8 +808,6 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
     LoadGuard guard(&m_loading);
     CancelCheck::instance().setCancel(false);
-
-    m_haveAnchors = false;
 
     setCurTabProps(idoc, docnum);
 
@@ -956,23 +1042,20 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
 
     // Position the editor so that the first search term is visible
-    m_haveAnchors = editor->m_plaintorich->lastanchor != 0;
-    if (searchTextLine->text().length() != 0) {
+    if (searchTextCMB->currentText().length() != 0) {
 	// If there is a current search string, perform the search
 	m_canBeep = true;
-	doSearch(searchTextLine->text(), true, false);
+	doSearch(searchTextCMB->currentText(), true, false);
     } else {
 	// Position to the first query term
-	if (m_haveAnchors) {
-	    QString aname = 
-		QString::fromUtf8(editor->m_plaintorich->termAnchorName(1).c_str());
+	if (editor->m_plaintorich->haveAnchors()) {
+	    QString aname = editor->m_plaintorich->curAnchorName();
 	    LOGDEB2(("Call movetoanchor(%s)\n", (const char *)aname.toUtf8()));
 	    editor->scrollToAnchor(aname);
 	    // Position the cursor approximately at the anchor (top of
 	    // viewport) so that searches start from here
 	    QTextCursor cursor = editor->cursorForPosition(QPoint(0, 0));
 	    editor->setTextCursor(cursor);
-	    m_curAnchor = 1;
 	}
     }
 
@@ -989,14 +1072,15 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     return true;
 }
 
-PreviewTextEdit::PreviewTextEdit(QWidget* parent,const char* name, Preview *pv) 
-    : QTextEdit(parent), m_preview(pv), m_dspflds(false), m_docnum(-1) 
+PreviewTextEdit::PreviewTextEdit(QWidget* parent, const char* nm, Preview *pv) 
+    : QTextEdit(parent), m_preview(pv), 
+      m_plaintorich(new PlainToRichQtPreview()), 
+      m_dspflds(false), m_docnum(-1) 
 {
     setContextMenuPolicy(Qt::CustomContextMenu);
-    setObjectName(name);
+    setObjectName(nm);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
 	    this, SLOT(createPopupMenu(const QPoint&)));
-    m_plaintorich = new PlainToRichQtPreview();
 }
 
 PreviewTextEdit::~PreviewTextEdit()

@@ -21,6 +21,7 @@
 #include <list>
 
 #include "hldata.h"
+#include "cstr.h"
 
 /** 
  * A class for highlighting search results. Overridable methods allow
@@ -31,7 +32,7 @@
 class PlainToRich {
 public:
     PlainToRich() 
-	: m_inputhtml(false) 
+	: m_inputhtml(false), m_eolbr(false), m_hdata(0)
     {
     }
 
@@ -71,18 +72,35 @@ public:
 			     );
 
     /* Overridable output methods for headers, highlighting and marking tags */
-    virtual std::string header() {return snull;}
-    virtual std::string startMatch() {return snull;}
-    virtual std::string endMatch() {return snull;}
-    virtual std::string startAnchor(int) {return snull;}
-    virtual std::string endAnchor() {return snull;}
-    virtual std::string startChunk() {return snull;}
+
+    virtual std::string header() 
+    {
+	return cstr_null;
+    }
+
+    /** Return match prefix (e.g.: <div class="match">). 
+	@param groupidx the index into hdata.groups */
+    virtual std::string startMatch(unsigned int) 
+    {
+	return cstr_null;
+    }
+
+    /** Return data for end of match area (e.g.: </div>). */
+    virtual std::string endMatch() 
+    {
+	return cstr_null;
+    }
+
+    virtual std::string startChunk() 
+    {
+	return cstr_null;
+    }
 
 protected:
-    const std::string snull;
     bool m_inputhtml;
     // Use <br> to break plain text lines (else caller has used a <pre> tag)
     bool m_eolbr; 
+    const HighlightData *m_hdata;
 };
 
 #endif /* _PLAINTORICH_H_INCLUDED_ */

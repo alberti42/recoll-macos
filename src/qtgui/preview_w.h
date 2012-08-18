@@ -58,22 +58,27 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent *);
 
 private:
-    PlainToRichQtPreview *m_plaintorich;
     Preview *m_preview;
-    bool     m_dspflds;
+    PlainToRichQtPreview *m_plaintorich;
+    
+    bool   m_dspflds;
     string m_url; // filename for this tab
     string m_ipath; // Internal doc path inside file
     int    m_docnum;  // Index of doc in db search results.
+
     // doc out of internfile (previous fields come from the index) with
     // main text erased (for space).
     Rcl::Doc m_fdoc; 
+
     // The input doc out of the index/query list
     Rcl::Doc m_dbdoc; 
+
     // Saved rich (or plain actually) text: the textedit seems to
     // sometimes (but not always) return its text stripped of tags, so
     // this is needed (for printing for example)
     QString  m_richtxt;
     Qt::TextFormat m_format;
+
     // Temporary file name (possibly, if displaying image). The
     // TempFile itself is kept inside main.cpp (because that's where
     // signal cleanup happens), but we use its name to ask for release
@@ -92,14 +97,14 @@ class Preview : public QWidget {
 
     Preview(int sid, // Search Id
 	    const HighlightData& hdata) // Search terms etc. for highlighting
-	: QWidget(0), m_searchId(sid), m_hData(hdata)
+	: QWidget(0), m_searchId(sid), m_searchTextFromIndex(-1), m_hData(hdata)
     {
 	init();
     }
-    ~Preview(){}
 
     virtual void closeEvent(QCloseEvent *e );
     virtual bool eventFilter(QObject *target, QEvent *event );
+
     /** 
      * Arrange for the document to be displayed either by exposing the tab 
      * if already loaded, or by creating a new tab and loading it.
@@ -112,7 +117,8 @@ class Preview : public QWidget {
     friend class PreviewTextEdit;
 
 public slots:
-    virtual void searchTextLine_textChanged(const QString& text);
+    virtual void searchTextChanged(const QString& text);
+    virtual void searchTextFromIndex(int);
     virtual void doSearch(const QString& str, bool next, bool reverse,
 			  bool wo = false);
     virtual void nextPressed();
@@ -138,18 +144,17 @@ private:
     int           m_searchId; 
 
     bool          m_dynSearchActive;
+    // Index value the search text comes from. -1 if text was edited
+    int           m_searchTextFromIndex;
+
     bool          m_canBeep;
     bool          m_loading;
-    QWidget      *m_currentW;
     HighlightData m_hData;
     bool          m_justCreated; // First tab create is different
-    bool          m_haveAnchors; // Search terms are marked in text
-    int           m_lastAnchor; // Number of last anchor. Then rewind to 1
-    int           m_curAnchor;
 
     QTabWidget* pvTab;
     QLabel* searchLabel;
-    QLineEdit* searchTextLine;
+    QComboBox *searchTextCMB;
     QPushButton* nextButton;
     QPushButton* prevButton;
     QPushButton* clearPB;

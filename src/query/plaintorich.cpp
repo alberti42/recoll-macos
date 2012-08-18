@@ -49,13 +49,22 @@ static string vecStringToString(const vector<string>& t)
     return sterms;
 }
 
+struct MatchEntry {
+    pair<int, int> offs;
+    unsigned int grpidx;
+    MatchEntry(int sta, int sto, unsigned int idx) 
+	: offs(sta, sto), grpidx(idx)
+    {
+    }
+};
+
 // Text splitter used to take note of the position of query terms
 // inside the result text. This is then used to insert highlight tags.
 class TextSplitPTR : public TextSplit {
  public:
 
     // Out: begin and end byte positions of query terms/groups in text
-    vector<pair<int, int> > tboffs;  
+    vector<MatchEntry> tboffs;  
 
     TextSplitPTR(const HighlightData& hdata)
     :  m_wcount(0), m_hdata(hdata)
@@ -67,7 +76,7 @@ class TextSplitPTR : public TextSplit {
 	for (vector<vector<string> >::const_iterator vit = hdata.groups.begin();
 	     vit != hdata.groups.end(); vit++) {
 	    if (vit->size() == 1) {
-		m_terms.insert(vit->front());
+		m_terms[vit->front()] = vit - hdata.groups.begin();
 	    } else if (vit->size() > 1) {
 		for (vector<string>::const_iterator it = vit->begin(); 
 		     it != vit->end(); it++) {
@@ -91,8 +100,9 @@ class TextSplitPTR : public TextSplit {
 	// pos, bts, bte));
 
 	// If this word is a search term, remember its byte-offset span. 
-	if (m_terms.find(dumb) != m_terms.end()) {
-	    tboffs.push_back(pair<int, int>(bts, bte));
+	map<string, unsigned int>::const_iterator it = m_terms.find(dumb);
+	if (it != m_terms.end()) {
+	    tboffs.push_back(MatchEntry(bts, bte, (*it).second));
 	}
 	
 	// If word is part of a search group, update its positions list
@@ -114,13 +124,13 @@ class TextSplitPTR : public TextSplit {
     virtual bool matchGroups();
 
 private:
-    virtual bool matchGroup(const vector<string>& terms, int dist);
+    virtual bool matchGroup(unsigned int idx);
 
     // Word count. Used to call checkCancel from time to time.
     int m_wcount;
 
     // In: user query terms
-    set<string>    m_terms; 
+    map<string, unsigned int>    m_terms; 
 
     // m_gterms holds all the terms in m_groups, as a set for quick lookup
     set<string>    m_gterms;
@@ -191,9 +201,12 @@ static bool do_proximity_test(int window, vector<vector<int>* >& plists,
     return false;
 }
 
-// Find NEAR matches for the input group of terms, update highlight map
-bool TextSplitPTR::matchGroup(const vector<string>& terms, int window)
+// Find NEAR matches for one group of terms, update highlight map
+bool TextSplitPTR::matchGroup(unsigned int grpidx)
 {
+    const vector<string>& terms = m_hdata.groups[grpidx];
+    int window = m_hdata.groups[grpidx].size() + m_hdata.slacks[grpidx];
+
     LOGDEB0(("TextSplitPTR::matchGroup:d %d: %s\n", window,
 	    vecStringToString(terms).c_str()));
 
@@ -203,26 +216,23 @@ bool TextSplitPTR::matchGroup(const vector<string>& terms, int window)
     // A revert plist->term map. This is so that we can find who is who after
     // sorting the plists by length.
     map<vector<int>*, string> plistToTerm;
-    // For traces
-    vector<string> realgroup;
 
-    // Find the position list for each term in the group. Not all
-    // necessarily exist (esp for NEAR where terms have been
-    // stem-expanded: we don't know which matched)
+    // Find the position list for each term in the group. It is
+    // possible that this particular group was not actually matched by
+    // the search, so that some terms are not found.
     for (vector<string>::const_iterator it = terms.begin(); 
 	 it != terms.end(); it++) {
 	map<string, vector<int> >::iterator pl = m_plists.find(*it);
 	if (pl == m_plists.end()) {
 	    LOGDEB0(("TextSplitPTR::matchGroup: [%s] not found in m_plists\n",
 		    (*it).c_str()));
-	    continue;
+	    return false;
 	}
 	plists.push_back(&(pl->second));
 	plistToTerm[&(pl->second)] = *it;
-	realgroup.push_back(*it);
     }
-    LOGDEB0(("TextSplitPTR::matchGroup:d %d:real group after expansion %s\n", 
-	     window, vecStringToString(realgroup).c_str()));
+    // I think this can't actually happen, was useful when we used to
+    // prune the groups, but doesn't hurt.
     if (plists.size() < 2) {
 	LOGDEB0(("TextSplitPTR::matchGroup: no actual groups found\n"));
 	return false;
@@ -261,15 +271,13 @@ bool TextSplitPTR::matchGroup(const vector<string>& terms, int window)
 	    SETMINMAX(pos, sta, sto);
 	    minpos = sto+1;
 	    // Translate the position window into a byte offset window
-	    int bs = 0;
 	    map<int, pair<int, int> >::iterator i1 =  m_gpostobytes.find(sta);
 	    map<int, pair<int, int> >::iterator i2 =  m_gpostobytes.find(sto);
 	    if (i1 != m_gpostobytes.end() && i2 != m_gpostobytes.end()) {
 		LOGDEB0(("TextSplitPTR::matchGroup: pushing bpos %d %d\n",
 			i1->second.first, i2->second.second));
-		tboffs.push_back(pair<int, int>(i1->second.first, 
-						i2->second.second));
-		bs = i1->second.first;
+		tboffs.push_back(MatchEntry(i1->second.first, 
+					    i2->second.second, grpidx));
 	    } else {
 		LOGDEB(("matchGroup: no bpos found for %d or %d\n", sta, sto));
 	    }
@@ -284,22 +292,23 @@ bool TextSplitPTR::matchGroup(const vector<string>& terms, int window)
 /** Sort integer pairs by increasing first value and decreasing width */
 class PairIntCmpFirst {
 public:
-    bool operator()(pair<int,int> a, pair<int, int>b) {
-	if (a.first != b.first)
-	    return a.first < b.first;
-	return a.second > b.second;
+    bool operator()(const MatchEntry& a, const MatchEntry& b) {
+	if (a.offs.first != b.offs.first)
+	    return a.offs.first < b.offs.first;
+	return a.offs.second > b.offs.second;
     }
 };
 
-// Look for matches to PHRASE and NEAR term groups. Actually, we
-// handle all groups as NEAR (ignore order).
+// Look for matches to PHRASE and NEAR term groups and finalize the
+// matched regions list (sort it by increasing start then decreasing
+// length)
+// Actually, we handle all groups as NEAR (ignore order).
 bool TextSplitPTR::matchGroups()
 {
     for (unsigned int i = 0; i < m_hdata.groups.size(); i++) {
 	if (m_hdata.groups[i].size() <= 1)
 	    continue;
-	matchGroup(m_hdata.groups[i], 
-		   m_hdata.groups[i].size() + m_hdata.slacks[i]);
+	matchGroup(i);
     }
 
     // Sort regions by increasing start and decreasing width.  
@@ -324,6 +333,7 @@ bool PlainToRich::plaintorich(const string& in,
 {
     Chrono chron;
 
+    m_hdata = &hdata;
     // Compute the positions for the query terms.  We use the text
     // splitter to break the text into words, and compare the words to
     // the search terms,
@@ -346,8 +356,8 @@ bool PlainToRich::plaintorich(const string& in,
     // Iterator for the list of input term positions. We use it to
     // output highlight tags and to compute term positions in the
     // output text
-    vector<pair<int, int> >::iterator tPosIt = splitter.tboffs.begin();
-    vector<pair<int, int> >::iterator tPosEnd = splitter.tboffs.end();
+    vector<MatchEntry>::iterator tPosIt = splitter.tboffs.begin();
+    vector<MatchEntry>::iterator tPosEnd = splitter.tboffs.end();
 
 #if 0
     for (vector<pair<int, int> >::const_iterator it = splitter.tboffs.begin();
@@ -365,8 +375,6 @@ bool PlainToRich::plaintorich(const string& in,
     int hadcr = 0;
     int inindent = 1;
 
-    // Value for numbered anchors at each term match
-    int anchoridx = 1;
     // HTML state
     bool intag = false, inparamvalue = false;
     // My tag state
@@ -391,22 +399,20 @@ bool PlainToRich::plaintorich(const string& in,
 	// we are at or after a term match, mark.
 	if (tPosIt != tPosEnd) {
 	    int ibyteidx = chariter.getBpos();
-	    if (ibyteidx == tPosIt->first) {
+	    if (ibyteidx == tPosIt->offs.first) {
 		if (!intag && ibyteidx >= (int)headend) {
-		    *olit += startAnchor(anchoridx);
-		    *olit += startMatch();
+		    *olit += startMatch(tPosIt->grpidx);
 		}
-		anchoridx++;
                 inrcltag = 1;
-	    } else if (ibyteidx == tPosIt->second) {
+	    } else if (ibyteidx == tPosIt->offs.second) {
 		// Output end of match region tags
 		if (!intag && ibyteidx > (int)headend) {
 		    *olit += endMatch();
-		    *olit += endAnchor();
 		}
 		// Skip all highlight areas that would overlap this one
-		int crend = tPosIt->second;
-		while (tPosIt != splitter.tboffs.end() && tPosIt->first < crend)
+		int crend = tPosIt->offs.second;
+		while (tPosIt != splitter.tboffs.end() && 
+		       tPosIt->offs.first < crend)
 		    tPosIt++;
                 inrcltag = 0;
 	    }
