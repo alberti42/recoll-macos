@@ -26,8 +26,7 @@
 
     <copyright>
       <year>2005-2012</year>
-      <holder role="mailto:jfd@recoll.org">Jean-Francois
-      Dockes</holder>
+      <holder role="mailto:jfd@recoll.org">Jean-Francois Dockes</holder>
     </copyright>
 
     <abstract>
@@ -193,7 +192,7 @@
           command line interface</link>, a 
         <link linkend="rcl.program.api.python">
           <application>Python</application>
-          programming interface</link>, a <link linkend="rcl.searchkio">
+          programming interface</link>, a <link linkend="rcl.search.kio">
           <application>KDE</application> KIO slave module</link>, and
         a <application>Ubuntu Unity Lens</application> module.
         </para>
@@ -209,100 +208,143 @@
       <title>Introduction</title>
 
       <para>Indexing is the process by which the set of documents is
-      analyzed and the data entered into the database. &RCL; indexing
-      is normally incremental: documents will only be processed if
-      they have been modified. On the first execution, all
-      documents will need processing. A full index build can be forced
-      later by specifying an option to the indexing command
-      (<command>recollindex</command> <option>-z</option>).</para> 
+	analyzed and the data entered into the database. &RCL;
+	indexing is normally incremental: documents will only be
+	processed if they have been modified. On the first execution,
+	all documents will need processing. A full index build can be
+	forced later by specifying an option to the indexing command
+	(<command>recollindex</command> <option>-z</option>
+	or <option>-Z</option>).</para> 
 
-      <para>&RCL; indexing can be performed with two different
-       methods:</para>
+      <para>The following sections give an overview of different
+	aspects of the indexing processes and configuration, with links
+	to detailed sections.</para>
 
-      <itemizedlist>
+      <sect2>
+	<title>Indexing modes</title> 
 
-        <listitem>
-          <formalpara><title>Periodic (or Batch) indexing:</title>
-            <para>indexing takes place at discrete
-              times, by executing the <command>recollindex</command>
-              command. The typical usage is to have a nightly indexing run 
-              <link linkend="rcl.indexing.periodic.automat">programmed</link>
-              into your <command>cron</command> file.</para>
-          </formalpara>
-        </listitem>
+	<para>&RCL; indexing can be performed along two different modes:
+	  <itemizedlist>
+            <listitem>
+              <formalpara>
+		<title><link linkend="rcl.indexing.periodic">
+		    Periodic (or batch) indexing:</link></title>
+		<para>indexing takes place at discrete
+		  times, by executing the <command>recollindex</command>
+		  command. The typical usage is to have a nightly indexing run 
+		  <link linkend="rcl.indexing.periodic.automat">
+		    programmed</link> into
+		    your <command>cron</command> file.</para>
+              </formalpara>
+            </listitem>
+            <listitem>
+              <formalpara><title><link linkend="rcl.indexing.monitor">Real
+		    time indexing:</link></title> 
+		<para>indexing takes place as soon as a file is created or
+		  changed. <command>recollindex</command> runs as a daemon
+		  and uses a file system alteration monitor such as 
+		  <application>inotify</application>, 
+		  <application>Fam</application> or
+		  <application>Gamin</application>
+		  to detect file changes.</para>
+              </formalpara>
+            </listitem>
+	  </itemizedlist>
+	</para>
+	<para>The choice between the two methods is mostly a matter of
+          preference, and they can be combined by setting up multiple
+          indexes (ie: use periodic indexing on a big documentation
+          directory, and real time indexing on a small home
+          directory). Monitoring a big file system tree can consume
+          significant system resources.</para>
 
-        <listitem>
-          <formalpara><title>Real time indexing:</title>
-            <para>indexing takes place as soon as a file is created or
-              changed. <command>recollindex</command> runs as a daemon
-              and uses a file system alteration monitor such as 
-              <application>inotify</application>, 
-            <application>Fam</application> or
-            <application>Gamin</application>
-            to detect file changes.</para>
-          </formalpara>
-        </listitem>
-      </itemizedlist>
+	</sect2>
 
-      <para>The choice between the two methods is mostly a matter of
-        preference, and they can be combined by setting up multiple
-        indexes (ie: use periodic indexing on a big documentation
-        directory, and real time indexing on a small home
-        directory). Monitoring a big file system tree can consume
-        significant system resources.</para>
+      <sect2>
+	<title>Configurations, multiple indexes</title>
+	
+	<para>The parameters describing what is to be indexed and
+	  local preferences are defined in text files contained in a
+	  <link linkend="rcl.indexing.config">configuration
+	  directory</link>.</para>
+	<para>All parameters have defaults, defined in system-wide
+	  files.</para> 
+	<para>Without further configuration, &RCL; will index all
+          appropriate files from your home directory, with a reasonable
+          set of defaults.</para>
+	<para>A default personal configuration directory
+	  (<filename>$HOME/.recoll/</filename>) is created
+	  when a &RCL; program is first executed. It is possible to
+	  create other configuration directories, and use them by
+	  setting the <envar>RECOLL_CONFDIR</envar> environment
+	  variable, or giving the <option>-c</option> option to any of
+	  the &RCL; commands.</para>
 
-      <para>&RCL; knows about quite a few different document
-        types. The parameters for document types recognition and
-        processing are set in 
-        <link linkend="rcl.indexing.config">configuration files</link>.</para>
+	<para>In some cases, it may be interesting to index different
+	  areas of the file system to separate databases. You can do this
+	  by using multiple configuration directories, each indexing a
+	  file system area to a specific database. Typically, this
+	  would be done to separate personal and shared
+          indexes, or to take advantage of the organization of your data
+          to improve search precision.</para>
+	<para>The generated indexes can
+          be <link linkend="rcl.search.multidb">queried 
+            concurrently</link> in a transparent manner.</para>
 
-      <para>Most file types, like HTML or word processing files, only hold
-        one document. Some file types, like email folders or zip
-        archives, can hold many individually indexed documents, which may
-        in turn be themselves compound ones. Such hierarchies can go quite
-        deep, and &RCL; can process, for example, an
-        <application>ms-word</application> 
-        document stored as an attachment to an email message inside an
-        email folder archived in a zip file...</para>
+	<para>For index generation, multiple configurations are
+          totally independant from each other. When multiple indexes
+          are used for searches, 
+	  <link linkend="rcl.search.multidb">some parameters
+          should be consistent among the configurations</link>.</para>
 
-      <para>&RCL; indexing processes plain text, HTML, OpenDocument
-        (Open/LibreOffice), email formats, and a few others internally.</para>
+      </sect2>
 
-      <para>Other file types (ie: postscript, pdf, ms-word, rtf ...) 
-        need external applications for preprocessing. The list is in the
-        <link linkend="rcl.install.external"> installation</link>
-        section. After every indexing operation, &RCL; updates a list of
-        commands that would be needed for indexing existing files
-        types. This list can be displayed by selecting the menu option
-	<menuchoice>
+      <sect2>
+	<title>Document types</title>
+	<para>&RCL; knows about quite a few different document
+          types. The parameters for document types recognition and
+          processing are set in 
+          <link linkend="rcl.indexing.config">configuration files</link>.</para>
+
+	<para>Most file types, like HTML or word processing files, only hold
+          one document. Some file types, like email folders or zip
+          archives, can hold many individually indexed documents, which may
+          themselves be compound ones. Such hierarchies can go quite
+          deep, and &RCL; can process, for example, an
+          <application>ms-word</application> 
+          document stored as an attachment to an email message inside an
+          email folder archived in a zip file...</para>
+
+	<para>&RCL; indexing processes plain text, HTML, OpenDocument
+          (Open/LibreOffice), email formats, and a few others internally.</para>
+
+	<para>Other file types (ie: postscript, pdf, ms-word, rtf ...) 
+          need external applications for preprocessing. The list is in the
+          <link linkend="rcl.install.external"> installation</link>
+          section. After every indexing operation, &RCL; updates a list of
+          commands that would be needed for indexing existing files
+          types. This list can be displayed by selecting the menu option
+	  <menuchoice>
 	    <guimenu>File</guimenu>
 	    <guimenuitem>Show Missing Helpers</guimenuitem>
-        </menuchoice>
-        in the <command>recoll</command> GUI. It is stored in the
-        <filename>missing</filename> text file inside the configuration
-        directory.</para>
+          </menuchoice>
+          in the <command>recoll</command> GUI. It is stored in the
+          <filename>missing</filename> text file inside the configuration
+          directory.</para>
+      </sect2>
 
-      <para>Without further configuration, &RCL; will index all
-        appropriate files from your home directory, with a reasonable
-        set of defaults.</para>
 
-      <para>In some cases, it may be interesting to index different
-	areas of the file system to separate databases. You can do this
-	by using multiple configuration directories, each indexing a
-	file system area to a specific database. See the 
-	<link linkend="rcl.search.multidb">section about using multiple
-	  databases</link> for more information on multiple configurations
-	and indexes. </para>
-
-      <para>In the rare case where the index becomes corrupted (which can
-	signal itself by weird search results or crashes), the index files
-	need to be erased before restarting a clean indexing pass. Just delete
-	the <filename>xapiandb</filename> directory (see 
-	<link linkend="rcl.indexing.storage">next section</link>), or, 
-	alternatively, start the next <command>recollindex</command> with the 
-	<option>-z</option> option, which will reset the database before
-	indexing.</para>
-
+      <sect2>
+	<title>Recovery</title>
+	<para>In the rare case where the index becomes corrupted (which can
+	  signal itself by weird search results or crashes), the index files
+	  need to be erased before restarting a clean indexing pass. Just delete
+	  the <filename>xapiandb</filename> directory (see 
+	  <link linkend="rcl.indexing.storage">next section</link>), or, 
+	  alternatively, start the next <command>recollindex</command> with the 
+	  <option>-z</option> option, which will reset the database before
+	  indexing.</para>
+      </sect2>
 
     </sect1>
 
@@ -313,10 +355,8 @@
       <filename>xapiandb</filename> subdirectory of the &RCL;
       configuration directory, typically
       <filename>$HOME/.recoll/xapiandb/</filename>. This can be
-      changed via two different methods (with different purposes):</para>
-
+      changed via two different methods (with different purposes):
       <itemizedlist>
-
           <listitem><para>You can specify a different configuration
           directory by setting the <envar>RECOLL_CONFDIR</envar>
           environment variable, or using the <option>-c</option>
@@ -341,6 +381,7 @@ recoll
           that you wish to make searchable.</para>
 
           </listitem>
+
           <listitem><para>You can also specify a different storage
           location for the index by setting the <varname>dbdir</varname>
           parameter in the configuration file 
@@ -352,13 +393,14 @@ recoll
           </listitem>
 
         </itemizedlist>
+      </para>
 
-      <para>The size of the index is determined by the document set size,
-        but the ratio can vary a lot. For a typical mixed
-        set of documents, the index size will often be close to
-        the data set size. In specific cases (a set of compressed
-        mbox files for example), the index can become much bigger than
-        the documents. It may also be much smaller if the documents
+      <para>The size of the index is determined by the size of the set
+        of documents, but the ratio can vary a lot. For a typical
+        mixed set of documents, the index size will often be close to
+        the data set size. In specific cases (a set of compressed mbox
+        files for example), the index can become much bigger than the
+        documents. It may also be much smaller if the documents
         contain a lot of images or other non-indexed data (an extreme
         example being a set of mp3 files where only the tags would be
         indexed).</para>
@@ -388,7 +430,7 @@ recoll
           explicitly delete the old index, then run a normal indexing
           process.</para>
 
-        <para>Unfortunately, using the <option>-z</option> option to
+        <para>Using the <option>-z</option> option to
           <command>recollindex</command> is not sufficient to change the
           format, you will have to delete all files inside the index
           directory (typically <filename>~/.recoll/xapiandb</filename>)
@@ -429,11 +471,6 @@ recoll
         files are processed. These variables can be set either by
         editing the text files or using the dialogs in the
         <command>recoll</command> GUI.</para>
-
-      <para>You can also use <link linkend="rcl.search.multidb">multiple 
-          indexes</link> defined by separate configurations, typically to 
-        separate personal and shared indexes, or to take advantage of
-        the organization of your data to improve search precision.</para> 
 
       <para>The first time you start <command>recoll</command>, you
         will be asked whether or not you would like it to build the
@@ -582,19 +619,32 @@ recoll
           menu entry.</para>
 
 	<para>After such an interruption, the index will be somewhat
-	  inconsistent because some operations which are normally performed
-	  at the end of the indexing pass will have been skipped (for
-	  example, the stemming and spelling databases will be inexistant
-	  or out of date). You just need to restart indexing at a later
-	  time to restore consistency. The indexing will restart at the
-          interruption point (the full file tree will be traversed,
-          but files that were indexed up to the interruption and are still
-          up to date will not need to be reindexed).</para>
+	  inconsistent because some operations which are normally
+	  performed at the end of the indexing pass will have been
+	  skipped (for example, the stemming and spelling databases
+	  will be inexistant or out of date). You just need to restart
+	  indexing at a later time to restore consistency. The
+	  indexing will restart at the interruption point (the full
+	  file tree will be traversed, but files that were indexed up
+	  to the interruption and for which the index is still up to
+	  date will not need to be reindexed).</para>
 
         <para><command>recollindex</command> has a number of other options
-          which are described in its man page.</para>
-
-        <para>Of special interest maybe are the <option>-i</option> and
+          which are described in its man page. Only a few will be
+          described here.</para>
+	<para>Option <option>-z</option> will reset the index when
+	  starting. This is almost the same as destroying the index
+	  files (the nuance is that the Xapian format version will not
+	  be changed).</para>
+	<para>Option <option>-Z</option> will force the update of all
+	  documents without resetting the index first. This will not
+	  have the "clean start" aspect of <option>-z</option>, but
+	  the advantage is that the index will remain available for
+	  querying while it is rebuilt, which can be a significant
+	  advantage if it is very big (some installations need days
+	  for a full index rebuild).</para>
+        <para>Of special interest also, maybe, are
+          the <option>-i</option> and
           <option>-f</option> options. <option>-i</option> allows
           indexing an explicit list of files (given as command line
           parameters or read on <literal>stdin</literal>). 
@@ -799,7 +849,7 @@ fvwm
       case (they would typically be printed without white
       space).</para>
 
-    <sect2 id="rcl.search.simple">
+    <sect2 id="rcl.search.gui.simple">
       <title>Simple search</title>
 
       <procedure>
@@ -907,7 +957,7 @@ fvwm
       this mode from the <guilabel>Query Language</guilabel> mode, where
       you have to care about the syntax.</para>
 
-      <para>You can use the <link linkend="rcl.search.complex">
+      <para>You can use the <link linkend="rcl.search.gui.complex">
       <menuchoice>
           <guimenu>Tools</guimenu> 
           <guimenuitem>Advanced search</guimenuitem>
@@ -916,7 +966,7 @@ fvwm
 
     </sect2>
 
-    <sect2 id="rcl.search.reslist">
+    <sect2 id="rcl.search.gui.reslist">
       <title>The default result list</title>
 
       <para>After starting a search, a list of results will instantly
@@ -927,7 +977,7 @@ fvwm
        matches the query). You can sort the result by ascending or
        descending date by using the vertical arrows in the toolbar (the old
        sort tool is gone after release 1.15, because the new <link
-       linkend="rcl.search.restable">result table</link> has much better
+       linkend="rcl.search.gui.restable">result table</link> has much better
        capability).</para> 
 
       <para>Clicking on the
@@ -965,7 +1015,7 @@ fvwm
 
       <para>The format of the result list entries is entirely
       configurable by using the preference dialog to 
-      <link linkend="rcl.search.custom.reslist">edit an HTML
+      <link linkend="rcl.search.gui.custom.reslist">edit an HTML
       fragment</link>.</para>
 
       <para>You can click on the <literal>Query details</literal> link
@@ -981,7 +1031,7 @@ fvwm
        results.</para>
 
 
-      <sect3 id="rcl.search.resultlist.menu">
+      <sect3 id="rcl.search.gui.resultlist.menu">
         <title>The result list right-click menu</title>
 
         <para>Apart from the preview and edit links, you can display a
@@ -1038,7 +1088,7 @@ fvwm
       </sect3>
     </sect2>
 
-    <sect2 id="rcl.search.restable">
+    <sect2 id="rcl.search.gui.restable">
       <title>The result table</title>
 
         <para>In &RCL; 1.15 and newer, the results can be displayed in 
@@ -1072,7 +1122,7 @@ fvwm
 
       </sect2>
 
-    <sect2 id="rcl.search.preview">
+    <sect2 id="rcl.search.gui.preview">
       <title>The preview window</title>
 
       <para>The preview window opens when you first click a
@@ -1093,7 +1143,7 @@ fvwm
       window.</para> 
 
       <para>Of course you can also close a preview window by using the
-      window manager button in the top of the frame.</para>
+	window manager button in the top of the frame.</para>
 
       <para>You can display successive or previous documents from the
       result list inside a preview tab by typing
@@ -1101,34 +1151,77 @@ fvwm
       <keycap>Shift</keycap>+<keycap>Up</keycap> (<keycap>Down</keycap>
       and <keycap>Up</keycap> are the arrow keys).</para> 
 
-      <para>The preview tabs have an internal incremental search
-      function. You initiate the search either by typing a
-      <keycap>/</keycap> (slash) or <keycap>CTL-F</keycap> inside the text
-      area or by clicking into the <guilabel>Search for:</guilabel> text
-      field and entering the search string. You can then use the
-      <guilabel>Next</guilabel> and <guilabel>Previous</guilabel> buttons
-      to find the next/previous occurrence. You can also type
-      <keycap>F3</keycap> inside the text area to get to the next
-      occurrence.</para>
-
-      <para>If you have a search string entered and you use Ctrl-Up/Ctrl-Down
-      to browse the results, the search is initiated for each successive
-      document. If the string is found, the cursor will be positioned
-      at the first occurrence of the search string.</para>
-
       <para>A right-click menu in the text area allows switching
-      between displaying the main text or the contents of fields
-      associated to the document (ie: author, abtract, etc.). This is
-      especially useful in cases where the term match did not occur in
-      the main text but in one of the fields.</para>
-        
+	between displaying the main text or the contents of fields
+	associated to the document (ie: author, abtract, etc.). This is
+	especially useful in cases where the term match did not occur in
+	the main text but in one of the fields. In the case of
+	images, you can switch between three displays: the image
+	itself, the image metadata as extracted
+	by <command>exiftool</command> and the fields, which is the
+	metadata stored in the index.</para>
+
+
       <para>You can print the current preview window contents by typing
          <keycap>Ctrl-P</keycap> (<keycap>Ctrl</keycap> +
          <keycap>P</keycap>) in  the window text.</para> 
+
+
+      <sect3 id="rcl.search.gui.preview.search">
+	<title>Searching inside the preview</title>
+
+	<para>The preview window has an internal search capability,
+	  mostly controlled by the panel at the bottom of the window,
+	  which works in two modes: as a classical editor incremental
+	  search, where we look for the text entered in the entry
+	  zone, or as a way to walk the matches between the document
+	  and the &RCL; query that found it.</para>
+
+	<variablelist>
+	  <varlistentry>
+	    <term>Incremental text search</term>
+	    <listitem><para>The preview tabs have an internal incremental search
+		function. You initiate the search either by typing a
+		<keycap>/</keycap> (slash) or <keycap>CTL-F</keycap>
+		inside the text area or by clicking into
+		the <guilabel>Search for:</guilabel> text field and
+		entering the search string. You can then use the 
+		<guilabel>Next</guilabel>
+		and <guilabel>Previous</guilabel> buttons 
+		to find the next/previous occurrence. You can also type
+		<keycap>F3</keycap> inside the text area to get to the next
+		occurrence.</para>
+	      <para>If you have a search string entered and you use
+		Ctrl-Up/Ctrl-Down to browse the results, the search is
+		initiated for each successive document. If the string is
+		found, the cursor will be positioned at the first
+		occurrence of the search string.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term>Walking the match lists</term>
+	    <listitem><para>If the entry area is empty when you click
+		the <guilabel>Next</guilabel>
+		or <guilabel>Previous</guilabel> buttons, the editor will
+		be scrolled to show the next match to any search term
+		(the next highlighted zone). If you select a search group
+		from the dropdown list and click <guilabel>Next</guilabel>
+		or <guilabel>Previous</guilabel>, the match list for this
+		group will be walked. This is not the same as a text
+		search, because the occurences will include non-exact
+		matches (as caused by stemming or wildcards). The search
+		will revert to the text mode as soon as you edit the
+		entry area.</para></listitem>
+	  </varlistentry>
+	</variablelist>
+
+
+      </sect3>        
         
     </sect2>
 
-    <sect2 id="rcl.search.complex">
+    <sect2 id="rcl.search.gui.complex">
       <title>Complex/advanced search</title>
 
       <para>The advanced search dialog helps you build more complex queries
@@ -1159,7 +1252,7 @@ fvwm
       <para>Click on the <literal>Show query details</literal> link at
         the top of the result page to see the query expansion.</para>
 
-      <sect3 id="rcl.search.complex.terms">
+      <sect3 id="rcl.search.gui.complex.terms">
       <title>Avanced search: the "find" tab</title>
 
         <para>This part of the dialog lets you constructc a query by
@@ -1216,7 +1309,7 @@ fvwm
 
       </sect3>
 
-      <sect3 id="rcl.search.complex.filter">
+      <sect3 id="rcl.search.gui.complex.filter">
       <title>Avanced search: the "filter" tab</title>
 
       <para>This part of the dialog has several sections which allow
@@ -1272,7 +1365,7 @@ fvwm
 
     </sect2>
 
-    <sect2 id="rcl.search.termexplorer">
+    <sect2 id="rcl.search.gui.termexplorer">
       <title>The term explorer tool</title>
 
       <para>&RCL; automatically manages the expansion of search terms
@@ -1351,62 +1444,45 @@ fvwm
 
     </sect2>
 
-    <sect2 id="rcl.search.multidb">
+    <sect2 id="rcl.search.gui.multidb">
       <title>Multiple databases</title>
 
-      <para>Multiple &RCL; databases or indexes can be created by
-      using several configuration directories which are usually set to
-      index different areas of the file system. A specific index can
-      be selected for updating or searching, using the
-      <envar>RECOLL_CONFDIR</envar> environment variable or the
-      <option>-c</option> option to <command>recoll</command> and
-      <command>recollindex</command>.</para>
+      <para>See the <link linkend="rcl.search.multidb">section
+	  describing the use of multiple indexes</link> for
+	generalities. Only the aspects concerning
+	the <command>recoll</command> GUI are described here.</para>
 
-      <para>A <command>recollindex</command> program instance can only
-      update one specific index.</para>
-
-      <para>A <command>recoll</command> program instance is also
-      associated with a specific index, which is the one to be
-      updated by its indexing thread, but it can use any
-      number of &RCL; indexes for searching. The external indexes
-      can be selected through the <guilabel>external
-      indexes</guilabel> tab in the preferences dialog.</para>
+      <para>A <command>recoll</command> program instance is always
+	associated with a specific index, which is the one to be updated
+	when requested from the <guimenu>File</guimenu> menu, but it can
+	use any number of &RCL; indexes for searching. The external
+	indexes can be selected through the <guilabel>external
+	  indexes</guilabel> tab in the preferences dialog.</para>
 
       <para>Index selection is performed in two phases. A set of all
-      usable indexes must first be defined, and then the subset of
-      indexes to be used for searching. Of course, these parameters
-      are retained across program executions (there are kept
-      separately for each &RCL; configuration). The set of all indexes
-      is usually quite stable, while the active ones might typically
-      be adjusted quite frequently.</para>
+	usable indexes must first be defined, and then the subset of
+	indexes to be used for searching. Of course, these parameters
+	are retained across program executions (there are kept
+	separately for each &RCL; configuration). The set of all indexes
+	is usually quite stable, while the active ones might typically
+	be adjusted quite frequently.</para>
 
       <para>The main index (defined by
-      <envar>RECOLL_CONFDIR</envar>) is always active. If this is
-      undesirable, you can set up your base configuration to index
-      an empty directory.</para>
+	<envar>RECOLL_CONFDIR</envar>) is always active. If this is
+	undesirable, you can set up your base configuration to index
+	an empty directory.</para>
 
       <para>As building the set of all indexes can be a little tedious
-      when done through the user interface, you can use the
-      <envar>RECOLL_EXTRA_DBS</envar> environment
-      variable to provide an initial set. This might typically be
-      set up by a system administrator so that every user does not
-      have to do it. The variable should define a colon-separated list
-      of index  directories, ie: 
-     </para>
-       <screen>export RECOLL_EXTRA_DBS=/some/place/xapiandb:/some/other/db</screen> 
+	when done through the user interface, you can use the
+	<envar>RECOLL_EXTRA_DBS</envar> environment
+	variable to provide an initial set. This might typically be
+	set up by a system administrator so that every user does not
+	have to do it. The variable should define a colon-separated list
+	of index  directories, ie: 
+      </para>
+      <screen>export RECOLL_EXTRA_DBS=/some/place/xapiandb:/some/other/db</screen> 
 
-      <para>A typical usage scenario for the multiple index feature
-      would be for a system administrator to set up a central index
-      for shared data, that you choose to search or not in addition to
-      your personal data. Of course, there are other
-      possibilities. There are many cases where you know the subset of
-      files that should be searched, and where narrowing the search
-      can improve the results. You can achieve approximately the same
-      effect with the directory filter in advanced search, but
-      multiple indexes will have much better performance and may be
-      worth the trouble.</para>
-
-     <para>Another environment variable, 
+      <para>Another environment variable, 
         <envar>RECOLL_ACTIVE_EXTRA_DBS</envar> allows adding to the active
         list of indexes. This variable was suggested and implemented by a
         &RCL; user. It is mostly useful if you use scripts to mount
@@ -1415,18 +1491,17 @@ fvwm
         <envar>RECOLL_ACTIVE_EXTRA_DBS</envar>, you can add and activate
         the index for the mounted volume when starting
         <command>recoll</command>.
-       </para>
-        
-     <para><envar>RECOLL_ACTIVE_EXTRA_DBS</envar> is available for
+      </para>
+      
+      <para><envar>RECOLL_ACTIVE_EXTRA_DBS</envar> is available for
         &RCL; versions 1.17.2 and later. A change was made in the same
         update so that <command>recoll</command> will
         automatically deactivate unreachable indexes when starting
         up.</para>
 
-
     </sect2>
 
-    <sect2 id="rcl.search.history">
+    <sect2 id="rcl.search.gui.history">
       <title>Document history</title>
 
       <para>Documents that you actually view (with the internal preview
@@ -1441,7 +1516,7 @@ fvwm
 
     </sect2>
 
-    <sect2 id="rcl.search.sort">
+    <sect2 id="rcl.search.gui.sort">
       <title>Sorting search results and collapsing duplicates</title>
 
       <para>The documents in a result list are normally sorted in
@@ -1471,10 +1546,10 @@ fvwm
 
     </sect2>
 
-    <sect2 id="rcl.search.tips">
+    <sect2 id="rcl.search.gui.tips">
       <title>Search tips, shortcuts</title>
 
-    <sect3 id="rcl.search.tips.terms">
+    <sect3 id="rcl.search.gui.tips.terms">
       <title>Terms and search expansion</title>
 
       <formalpara><title>Term completion</title>
@@ -1539,7 +1614,7 @@ fvwm
       </sect3>
 
 
-    <sect3 id="rcl.search.tips.phrases">
+    <sect3 id="rcl.search.gui.tips.phrases">
       <title>Working with phrases and proximity</title>
 
       <formalpara><title>Phrases and Proximity searches</title>
@@ -1587,7 +1662,7 @@ fvwm
 
       </sect3>
 
-    <sect3 id="rcl.search.tips.misc">
+    <sect3 id="rcl.search.gui.tips.misc">
       <title>Others</title>
 
       <formalpara><title>Using fields</title>
@@ -1656,7 +1731,7 @@ fvwm
       </sect3>
     </sect2>
 
-    <sect2 id="rcl.search.custom">
+    <sect2 id="rcl.search.gui.custom">
       <title>Customizing the search interface</title>
 
       <para>You can customize some aspects of the search interface by using
@@ -1668,7 +1743,7 @@ fvwm
       returning results, and what indexes are searched.</para> 
 
 
-      <formalpara id="rcl.search.custom.ui">
+      <formalpara id="rcl.search.gui.custom.ui">
        <title>User interface parameters:</title>
         <para>
       <itemizedlist>
@@ -1764,7 +1839,7 @@ fvwm
       </formalpara>
 
 
-      <formalpara id="rcl.search.custom.rl">
+      <formalpara id="rcl.search.gui.custom.rl">
        <title>Result list parameters:</title>
         <para>
           <itemizedlist>
@@ -1780,18 +1855,18 @@ fvwm
             config (try the <command>qtconfig</command> command).</para>
             </listitem>
 
-            <listitem id="rcl.search.custom.resultpara">
+            <listitem id="rcl.search.gui.custom.resultpara">
             <para><guilabel>Edit result list paragraph format string</guilabel>:
             allows you to change the presentation of each result list
-            entry. See the <link linkend="rcl.search.custom.reslist">
+            entry. See the <link linkend="rcl.search.gui.custom.reslist">
                 result list customisation section</link>.</para>
             </listitem>
 
-            <listitem id="rcl.search.custom.resulthead">
+            <listitem id="rcl.search.gui.custom.resulthead">
             <para><guilabel>Edit result page html header insert</guilabel>:
             allows you to define text inserted at the end of the result
             page html header.  
-            More detail in the <link linkend="rcl.search.custom.reslist"> 
+            More detail in the <link linkend="rcl.search.gui.custom.reslist"> 
                 result list customisation section.</link></para>
             </listitem>
 
@@ -1801,7 +1876,7 @@ fvwm
             should be specified as an strftime() string (man strftime).</para>
             </listitem>
 
-            <listitem id="rcl.search.custom.abssep">
+            <listitem id="rcl.search.gui.custom.abssep">
             <para><guilabel>Abstract snippet separator</guilabel>:
             for synthetic abstracts built from index data, which are
             usually made of several snippets from different parts of the
@@ -1812,7 +1887,7 @@ fvwm
            </itemizedlist></para>
       </formalpara>
 
-      <formalpara id="rcl.search.custom.search">
+      <formalpara id="rcl.search.gui.custom.search">
 	<title>Search parameters:</title>
         <para>
       <itemizedlist>
@@ -1884,7 +1959,7 @@ fvwm
        </para>
       </formalpara>
 
-      <formalpara id="rcl.search.custom.extradb">
+      <formalpara id="rcl.search.gui.custom.extradb">
         <title>External indexes:</title> 
       <para>This panel will let you browse for additional indexes
       that you may want to search. External indexes are designated by
@@ -1905,7 +1980,7 @@ fvwm
       need to implement a way of purging the index from stale data,
       </para>
 
-    <sect3 id="rcl.search.custom.reslist">
+    <sect3 id="rcl.search.gui.custom.reslist">
       <title>The result list format</title>
 
         <para>The result list presentation can be exhaustively customized
@@ -1934,7 +2009,7 @@ fvwm
           <ulink url="http://www.recoll.org/custom.html">page about 
             customising the result list</ulink> on the &RCL; web site.</para>
 
-        <sect4 id="rcl.search.custom.reslist.para">
+        <sect4 id="rcl.search.gui.custom.reslist.para">
           <title>The paragraph format</title>
 
         <para>This is an arbitrary HTML string where the following printf-like
@@ -2039,7 +2114,7 @@ fvwm
             site, with pictures to show how they look.</ulink></para>
 
           <para>It is also possible to 
-          <link linkend="rcl.search.custom.abssep">
+          <link linkend="rcl.search.gui.custom.abssep">
              define the value of the snippet separator inside the abstract
              section</link>.</para>
        </sect4>
@@ -2048,10 +2123,10 @@ fvwm
 
   </sect1> <!-- search GUI -->
 
-  <sect1 id="rcl.searchkio">
+  <sect1 id="rcl.search.kio">
     <title>Searching with the KDE KIO slave</title>
 
-    <sect2 id="rcl.searchkio.intro">
+    <sect2 id="rcl.search.kio.intro">
       <title>What's this</title>
 
       <para>The &RCL; KIO slave allows performing a &RCL; search
@@ -2086,7 +2161,7 @@ fvwm
     </sect2>
 
 
-    <sect2 id="rcl.searchkio.searchabledocs">
+    <sect2 id="rcl.search.kio.searchabledocs">
       <title>Searchable documents</title>
 
       <para>As a sample application, the &RCL; KIO slave could allow
@@ -2488,7 +2563,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         <listitem><para>Using a <literal>*</literal> at the end of a
         word can produce more matches than you would think, and
         strange search results. You can use the <link
-        linkend="rcl.search.termexplorer">term explorer</link> tool to
+        linkend="rcl.search.gui.termexplorer">term explorer</link> tool to
         check what completions exist for a given term. You can also
         see exactly what search was performed by clicking on the link
         at the top of the result list. In general, for natural
@@ -2578,7 +2653,56 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
     </sect1> <!-- rcl.search.desktop -->
 
+
+    <sect1 id="rcl.search.multidb">
+      <title>Multiple databases</title>
+
+      <para>Multiple &RCL; databases or indexes can be created by
+	using several configuration directories which are usually set to
+	index different areas of the file system. A specific index can
+	be selected for updating or searching, using the
+	<envar>RECOLL_CONFDIR</envar> environment variable or the
+	<option>-c</option> option to <command>recoll</command> and
+	<command>recollindex</command>.</para>
+
+      <para>A typical usage scenario for the multiple index feature
+	would be for a system administrator to set up a central index
+	for shared data, that you choose to search or not in addition to
+	your personal data. Of course, there are other
+	possibilities. There are many cases where you know the subset of
+	files that should be searched, and where narrowing the search
+	can improve the results. You can achieve approximately the same
+	effect with the directory filter in advanced search, but
+	multiple indexes will have much better performance and may be
+	worth the trouble.</para>
+
+      <para>A <command>recollindex</command> program instance can only
+	update one specific index.</para>
+
+      <para>The main index (defined by
+	<envar>RECOLL_CONFDIR</envar> or <option>-c</option>) is
+	always active. If this is undesirable, you can set up your
+	base configuration to index an empty directory.</para>
+
+      <para>The different search interfaces (GUI, command line, ...)
+	have different methods to define the set of indexes to be
+	used, see the appropriate section.</para>
+
+      <para>If a set of multiple indexes are to be used together for
+	searches, some configuration parameters must be consistent
+	among the set. These are parameters which need to be the same
+	when indexing and searching. As the parameters come from the
+	main configuration when searching, they need to be compatible
+	with what was set when creating the other indexes (which came
+	from their respective configuration directories. Most of the
+	relevant parameters are described in the following
+	<link linkend="rcl.install.config.recollconf.terms">linked
+	section</link>.</para>
+
+    </sect1> <!-- multiple databases -->
+
   </chapter> <!-- Search -->
+
 
   <chapter id="rcl.program">
     <title>Programming interface</title>
@@ -3892,9 +4016,9 @@ skippedPaths = ~/somedir/&lowast;.txt
 	<title>Parameters affecting how we generate terms:</title>
 
         <para>Changing some of these parameters will imply a full
-        reindex. Also, when using multiple indexes, it may not make sense
-        to search indexes that don't share the values for these parameters,
-        because they usually affect both search and index operations.</para>
+          reindex. Also, when using multiple indexes, it may not make sense
+          to search indexes that don't share the values for these parameters,
+          because they usually affect both search and index operations.</para>
 
         <variablelist>
 
