@@ -71,8 +71,7 @@ class SearchDataClause;
 class SearchData {
 public:
     SearchData(SClType tp) 
-    : m_tp(tp), m_topdirexcl(false), m_topdirweight(1.0), 
-      m_haveDates(false), m_maxSize(size_t(-1)),
+    : m_tp(tp), m_haveDates(false), m_maxSize(size_t(-1)),
       m_minSize(size_t(-1)), m_haveWildCards(false) 
     {
 	if (m_tp != SCLT_OR && m_tp != SCLT_AND) 
@@ -105,11 +104,9 @@ public:
     bool maybeAddAutoPhrase(Rcl::Db &db, double threshold);
 
     /** Set/get top subdirectory for filtering results */
-    void setTopdir(const std::string& t, bool excl = false, float w = 1.0) 
+    void addDirSpec(const std::string& t, bool excl = false, float w = 1.0) 
     {
-	m_topdir = t;
-	m_topdirexcl = excl;
-	m_topdirweight = w;
+	m_dirspecs.push_back(DirSpec(t, excl, w));
     }
 
     void setMinSize(size_t size) {m_minSize = size;}
@@ -148,10 +145,21 @@ private:
     std::vector<std::string>            m_filetypes; 
     // Excluded set of file types if not empty
     std::vector<std::string>            m_nfiletypes;
-    // Restrict to subtree.
-    std::string                    m_topdir; 
-    bool                      m_topdirexcl; // Invert meaning
-    float                     m_topdirweight; // affect weight instead of filter
+
+    // Restrict  to subtree or exclude one
+    class DirSpec {
+    public:
+	std::string dir; 
+	bool        exclude; 
+	// For positive spec: affect weight instead of filter
+	float       weight;
+	DirSpec(const std::string&d, bool x, float w)
+	    : dir(d), exclude(x), weight(w)
+	{
+	}
+    };
+    std::vector<DirSpec> m_dirspecs;
+
     bool                      m_haveDates;
     DateInterval              m_dates; // Restrict to date interval
     size_t                    m_maxSize;

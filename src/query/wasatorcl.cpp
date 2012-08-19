@@ -102,8 +102,8 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
 	// Filtering on location
 	if (!stringicmp("dir", (*it)->m_fieldspec)) {
 	    string dir = path_tildexpand((*it)->m_value);
-	    sdata->setTopdir(dir, (*it)->m_op == WasaQuery::OP_EXCL,
-			     (*it)->m_weight);
+	    sdata->addDirSpec(dir, (*it)->m_op == WasaQuery::OP_EXCL,
+			      (*it)->m_weight);
 	    continue;
 	} 
 

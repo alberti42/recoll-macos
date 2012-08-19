@@ -417,8 +417,8 @@ void AdvSearch::runSearch()
 
     if (!subtreeCMB->currentText().isEmpty()) {
 	QString current = subtreeCMB->currentText();
-	sdata->setTopdir((const char*)subtreeCMB->currentText().toUtf8(),
-			 direxclCB->isChecked());
+	sdata->addDirSpec((const char*)subtreeCMB->currentText().toUtf8(),
+			  direxclCB->isChecked());
 	// Keep history clean and sorted. Maybe there would be a
 	// simpler way to do this
 	list<QString> entries;

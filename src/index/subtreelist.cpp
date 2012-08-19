@@ -25,7 +25,7 @@
 #include "debuglog.h"
 
 bool subtreelist(RclConfig *config, const string& top, 
-			vector<string>& paths)
+		 vector<string>& paths)
 {
     LOGDEB(("subtreelist: top: [%s]\n", top.c_str()));
     Rcl::Db rcldb(config);
@@ -38,7 +38,7 @@ bool subtreelist(RclConfig *config, const string& top,
     Rcl::SearchData *sd = new Rcl::SearchData(Rcl::SCLT_OR);
     RefCntr<Rcl::SearchData> rq(sd);
 
-    rq->setTopdir(top);
+    rq->addDirSpec(top);
 
     Rcl::Query query(&rcldb);
     query.setQuery(rq);

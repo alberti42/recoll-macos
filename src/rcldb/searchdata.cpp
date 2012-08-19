@@ -320,29 +320,30 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 
     // Add the directory filtering clause. This is a phrase of terms
     // prefixed with the pathelt prefix XP
-    if (!m_topdir.empty()) {
+    for (vector<DirSpec>::const_iterator dit = m_dirspecs.begin();
+	 dit != m_dirspecs.end(); dit++) {
 	vector<string> vpath;
-	stringToTokens(m_topdir, vpath, "/");
+	stringToTokens(dit->dir, vpath, "/");
 	vector<string> pvpath;
-	if (m_topdir[0] == '/')
+	if (dit->dir[0] == '/')
 	    pvpath.push_back(pathelt_prefix);
-	for (vector<string>::const_iterator it = vpath.begin(); 
-	     it != vpath.end(); it++){
-	    pvpath.push_back(pathelt_prefix + *it);
+	for (vector<string>::const_iterator pit = vpath.begin(); 
+	     pit != vpath.end(); pit++){
+	    pvpath.push_back(pathelt_prefix + *pit);
 	}
 	Xapian::Query::op tdop;
-	if (m_topdirweight == 1.0) {
-	    tdop = m_topdirexcl ? 
+	if (dit->weight == 1.0) {
+	    tdop = dit->exclude ? 
 		Xapian::Query::OP_AND_NOT : Xapian::Query::OP_FILTER;
 	} else {
-	    tdop = m_topdirexcl ? 
+	    tdop = dit->exclude ? 
 		Xapian::Query::OP_AND_NOT : Xapian::Query::OP_AND_MAYBE;
 	}
 	Xapian::Query tdq = Xapian::Query(Xapian::Query::OP_PHRASE, 
 					  pvpath.begin(), pvpath.end());
-	if (m_topdirweight != 1.0)
+	if (dit->weight != 1.0)
 	    tdq = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, 
-				tdq, m_topdirweight);
+				tdq, dit->weight);
 
 	xq = Xapian::Query(tdop, xq, tdq);
     }
@@ -480,8 +481,7 @@ void SearchData::erase() {
 	delete *it;
     m_query.clear();
     m_filetypes.clear();
-    m_topdir.erase();
-    m_topdirexcl = false;
+    m_dirspecs.clear();
     m_description.erase();
     m_reason.erase();
     m_haveDates = false;
