@@ -156,8 +156,10 @@ class VecIntCmpShorter {
 #define SETMINMAX(POS, STA, STO)  {if ((POS) < (STA)) (STA) = (POS); \
 	if ((POS) > (STO)) (STO) = (POS);}
 
-// Recursively check that each term is inside the window (which is
-// readjusted as the successive terms are found).
+// Check that at least an entry from the first position list is inside
+// the window and recurse on next list. The window is readjusted as
+// the successive terms are found.
+//
 // @param window the search window width
 // @param plists the position list vector
 // @param i the position list to process (we then recurse with the next list)
@@ -182,7 +184,9 @@ static bool do_proximity_test(int window, vector<vector<int>* >& plists,
     while (it != plists[i]->end() && *it < tmp)
 	it++;
 
-    // Try each position inside window in turn for match with other lists
+    // Look for position inside window. If not found, no match. If
+    // found: if this is the last list we're done, else recurse on
+    // next list after adjusting the window
     while (it != plists[i]->end()) {
 	int pos = *it;
 	if (pos > min + window - 1) 
@@ -282,7 +286,7 @@ bool TextSplitPTR::matchGroup(unsigned int grpidx)
 		LOGDEB(("matchGroup: no bpos found for %d or %d\n", sta, sto));
 	    }
 	} else {
-	    LOGDEB0(("matchGroup: no group match found at this position\n"));
+	    LOGDEB1(("matchGroup: no group match found at this position\n"));
 	}
     }
 

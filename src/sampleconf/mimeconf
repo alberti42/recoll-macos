@@ -1,13 +1,15 @@
-# @(#$Id: mimeconf,v 1.48 2008-11-27 13:35:24 dockes Exp $  (C) 2004 J.F.Dockes
+# (C) 2004 J.F.Dockes
 
-# Recoll : associations of mime types to processing filters.
-# There are different sections for decompression, 'interning' for indexing
-# and preview, and external viewers
+# Associations of mime types to processing filters ([index] section).
+# Other sections describe auxiliary properties associated to the mime types.
 
 ## #######################################
 # Decompression: these types need a first pass to create a temp file to
 # work with. We use a script because uncompress utilities usually work in
 # place, which is not suitable. 
+#
+# Obviously this should be in a [decompress] section or such, but it was once
+# forgotten and remained global for compatibility...
 #
 # The %t parameter will be substituted to the name of a temporary directory
 # by recoll. This directory is guaranteed empty when calling the filter

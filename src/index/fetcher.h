@@ -25,17 +25,22 @@
 class RclConfig;
 
 /** 
- * Definition for a generic method to retrieve the data
- * for a document designated by its index data (udi/ipath/url).
- * This is used to retrieve the data for previewing. The
- * actual implementation is specific to the kind of backend (file
- * system, beagle cache, others in the future ?), and of course may
- * share code with the indexing-time functions from the specific backend.
+ * Generic interface to retrieve the data for a document designated by
+ * its index data (udi/ipath/url).  This is used to retrieve the data
+ * for previewing. The actual implementation is specific to the kind
+ * of backend (file system, beagle cache, others?...), and the
+ * implementation may of course may share code with the indexing-time
+ * functions from the specific backend.
+ *
+ * This is used to give access the raw document container (either as a
+ * file or as a memory block). The Internfile code will then further
+ * process it to get to the actual document, especially if
+ * de-embedding is involved.
  */
 class DocFetcher {
 public:
-    /** A RawDoc is the data for a source document either as a memory
-       block, or pointed to by a file name */
+    /** A RawDoc is the data for a document-holding entity either as a
+       memory block, or pointed to by a file name */
     struct RawDoc {
 	enum RawDocKind {RDK_FILENAME, RDK_DATA};
 	RawDocKind kind;
@@ -55,7 +60,7 @@ public:
     
     /** 
      * Return the signature for the requested document. This is used for
-     * up-to-date tests performed out of indexing (e.g.: verifying that a 
+     * up-to-date tests performed when not indexing (e.g.: verifying that a 
      * document is not stale before previewing it).
      * @param cnf the global config
      * @param idoc the data gathered from the index for this doc (udi/ipath)
@@ -65,7 +70,7 @@ public:
     virtual ~DocFetcher() {}
 };
 
-/** Returns an appropriate fetcher object given the backend string identifier */
+/** Return an appropriate fetcher object given the backend string identifier */
 DocFetcher *docFetcherMake(const Rcl::Doc& idoc);
 
 #endif /* _FETCHER_H_INCLUDED_ */

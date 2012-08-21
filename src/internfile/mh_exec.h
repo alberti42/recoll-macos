@@ -59,7 +59,6 @@ class MimeHandlerExec : public RecollFilter {
     MimeHandlerExec(RclConfig *cnf, const string& mt) 
 	: RecollFilter(cnf, mt), missingHelper(false) 
     {}
-    virtual ~MimeHandlerExec() {}
     virtual bool set_document_file(const string &file_path) {
 	RecollFilter::set_document_file(file_path);
 	m_fn = file_path;
