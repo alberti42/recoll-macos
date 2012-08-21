@@ -86,7 +86,7 @@ public:
 	for (i = 0; i  < strlen(wild); i++)
 	    charclasses[int(wild[i])] = WILD;
 
-	char special[] = ".@+-,#'_\n\r";
+	char special[] = ".@+-,#'_\n\r\f";
 	for (i = 0; i  < strlen(special); i++)
 	    charclasses[int(special[i])] = special[i];
 
@@ -316,6 +316,7 @@ bool TextSplit::text_to_words(const string &in)
     m_inNumber = false;
     m_wordStart = m_wordLen = m_prevpos = m_prevlen = m_wordpos = m_spanpos = 0;
     int curspanglue = 0;
+    bool pagepending = false;
 
     // Running count of non-alphanum chars. Reset when we see one;
     int nonalnumcnt = 0;
@@ -368,6 +369,10 @@ bool TextSplit::text_to_words(const string &in)
 		if (!doemit(true, it.getBpos()))
 		    return false;
 		m_inNumber = false;
+	    }
+	    if (pagepending) {
+		pagepending = false;
+		newpage(m_wordpos);
 	    }
 	    break;
 
@@ -521,7 +526,10 @@ bool TextSplit::text_to_words(const string &in)
 		goto SPACE;
 	    }
 	    break;
-
+	case '\f':
+	    pagepending = true;
+	    goto SPACE;
+	    break;
 #ifdef RCL_SPLIT_CAMELCASE
             // Camelcase handling. 
             // If we get uppercase ascii after lowercase ascii, emit word.

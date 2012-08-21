@@ -95,6 +95,11 @@ class DocSequence {
 	abs.push_back(doc.meta[Rcl::Doc::keyabs]);
 	return true;
     }
+    virtual int getFirstMatchPage(Rcl::Doc&) 
+    {
+	return -1;
+    }
+
     virtual bool getEnclosing(Rcl::Doc&, Rcl::Doc&) = 0;
 
     /** Get estimated total count in results */

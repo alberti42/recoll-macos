@@ -35,6 +35,7 @@ using std::pair;
 #include <qscrollbar.h>
 #include <qmenu.h>
 #include <qtextedit.h>
+#include <qtextbrowser.h>
 #include <qprogressdialog.h>
 #include <qevent.h>
 #include <qlabel.h>
@@ -732,10 +733,10 @@ class LoadThread : public QThread {
                               FileInterner::FIF_forPreview);
 	FIMissingStore mst;
 	interner.setMissingStore(&mst);
-	// We don't set the interner's target mtype to html because we
-	// do want the html filter to do its work: we won't use the
-	// text, but we need the conversion to utf-8
-	// interner.setTargetMType("text/html");
+	// Even when previewHtml is set, we don't set the interner's
+	// target mtype to html because we do want the html filter to
+	// do its work: we won't use the text/plain, but we want the
+	// text/html to be converted to utf-8 (for highlight processing)
 	try {
             string ipath = idoc.ipath;
 	    FileInterner::Status ret = interner.internfile(out, ipath);
@@ -883,6 +884,22 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     // while still inserting at bottom
     list<QString> qrichlst;
     PreviewTextEdit *editor = currentEditor();
+
+    // For an actual html file, if we want to have the images and
+    // style loaded in the preview, we need to set the search
+    // path. Not too sure this is a good idea as I find them rather
+    // distracting when looking for text, esp. with qtextedit
+    // relatively limited html support (text sometimes get hidden by
+    // images).
+#if 0
+    string path = fileurltolocalpath(idoc.url);
+    if (!path.empty()) {
+	path = path_getfather(path);
+	QStringList paths(QString::fromLocal8Bit(path.c_str()));
+	editor->setSearchPaths(paths);
+    }
+#endif
+
     editor->setHtml("");
     editor->m_format = Qt::RichText;
     bool inputishtml = !fdoc.mimetype.compare("text/html");
@@ -1073,7 +1090,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 }
 
 PreviewTextEdit::PreviewTextEdit(QWidget* parent, const char* nm, Preview *pv) 
-    : QTextEdit(parent), m_preview(pv), 
+    : QTextBrowser(parent), m_preview(pv), 
       m_plaintorich(new PlainToRichQtPreview()), 
       m_dspflds(false), m_docnum(-1) 
 {
@@ -1081,6 +1098,8 @@ PreviewTextEdit::PreviewTextEdit(QWidget* parent, const char* nm, Preview *pv)
     setObjectName(nm);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
 	    this, SLOT(createPopupMenu(const QPoint&)));
+    setOpenExternalLinks(false);
+    setOpenLinks(false);
 }
 
 PreviewTextEdit::~PreviewTextEdit()

@@ -17,11 +17,24 @@
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
 
+// Always use a qtextbrowser for now, there is no compelling reason to
+// switch to webkit here
+#if 1 || defined(RESLIST_TEXTBROWSER)
+#define PREVIEW_TEXTBROWSER
+#endif
+
 #include <stdio.h>
 
 #include <qvariant.h>
 #include <qwidget.h>
-#include <qtextedit.h>
+
+#ifdef PREVIEW_TEXTBROWSER
+#include <QTextBrowser>
+#define PREVIEW_PARENTCLASS QTextBrowser
+#else
+#include <QtWebKit/QWebView>
+#define PREVIEW_PARENTCLASS QWebView
+#endif
 #include <qimage.h>
 
 #include "rcldb.h"
@@ -31,13 +44,12 @@
 
 class QTabWidget;
 class QLabel;
-class QLineEdit;
 class QPushButton;
 class QCheckBox;
 class Preview;
 class PlainToRichQtPreview;
 
-class PreviewTextEdit : public QTextEdit {
+class PreviewTextEdit : public PREVIEW_PARENTCLASS {
     Q_OBJECT;
 public:
     PreviewTextEdit(QWidget* parent, const char* name, Preview *pv);

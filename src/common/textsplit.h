@@ -20,10 +20,8 @@
 #include <string>
 #include <vector>
 
-#ifndef NO_NAMESPACES
 using std::string;
 using std::vector;
-#endif
 
 class Utf8Iter;
 
@@ -78,6 +76,12 @@ public:
 			  int bte   // byte offset of first char after term
 			  ) = 0; 
 
+    /** Called when we encounter formfeed \f 0x0c. Override to use the event.
+     * Mostly or exclusively used with pdftoxx output. Other filters mostly 
+     * just don't know about pages. */
+    virtual void newpage(int /*pos*/)
+    {
+    }
 
     // Static utility functions:
 

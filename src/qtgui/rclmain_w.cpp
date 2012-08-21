@@ -1520,6 +1520,14 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 	return;
     }
 
+    int pagenum = 1;
+    if (m_source.isNotNull())
+	pagenum = m_source->getFirstMatchPage(doc);
+    if (pagenum == -1)
+	pagenum = 1;
+    char cpagenum[20];
+    sprintf(cpagenum, "%d", pagenum);
+
     // Extract possible viewer attributes
     ConfSimple attrs;
     string cmd;
@@ -1657,6 +1665,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
     subs["F"] = orgfn;
     subs["i"] = doc.ipath;
     subs["M"] = doc.mimetype;
+    subs["p"] = cpagenum;
     subs["U"] = url;
     subs["u"] = url;
     // Let %(xx) access all metadata.

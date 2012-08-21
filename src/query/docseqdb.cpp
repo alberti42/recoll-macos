@@ -74,8 +74,16 @@ bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<string>& vabs)
     } 
     if (vabs.empty())
 	vabs.push_back(doc.meta[Rcl::Doc::keyabs]);
-
     return true;
+}
+
+int DocSequenceDb::getFirstMatchPage(Rcl::Doc &doc)
+{
+    setQuery();
+    if (m_q->whatDb()) {
+	return m_q->whatDb()->getFirstMatchPage(doc, m_q.getptr());
+    }
+    return -1;
 }
 
 bool DocSequenceDb::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc) 

@@ -77,6 +77,7 @@ namespace Rcl {
 const string pathelt_prefix = "XP";
 const string start_of_field_term = "XXST";
 const string end_of_field_term = "XXND";
+const string page_break_term = "XXPG";
 
 // This is used as a marker inside the abstract frag lists, but
 // normally doesn't remain in final output (which is built with a
@@ -245,31 +246,21 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     return true;
 }
 
-// Remove prefixes (caps) from terms.
+// Keep only non-prefixed terms. We use to remove prefixes and keep
+// the terms instead, but field terms are normally also indexed
+// un-prefixed, so this is simpler and better.
 static void noPrefixList(const vector<string>& in, vector<string>& out) 
 {
     for (vector<string>::const_iterator qit = in.begin(); 
 	 qit != in.end(); qit++) {
-	if ('A' <= qit->at(0) && qit->at(0) <= 'Z') {
-	    string term = *qit;
-	    while (term.length() && 'A' <= term.at(0) && term.at(0) <= 'Z')
-		term.erase(0, 1);
-	    if (term.length())
-		out.push_back(term);
-	    continue;
-	} else {
+	if (qit->size() && !('A' <= (*qit)[0] && (*qit)[0] <= 'Z'))
 	    out.push_back(*qit);
-	}
     }
 }
 
-//#define DEBUGABSTRACT  1
+#undef DEBUGABSTRACT  
 #ifdef DEBUGABSTRACT
 #define LOGABS LOGDEB
-#else
-#define LOGABS LOGDEB2
-#endif
-#if 0
 static void listList(const string& what, const vector<string>&l)
 {
     string a;
@@ -278,58 +269,55 @@ static void listList(const string& what, const vector<string>&l)
     }
     LOGDEB(("%s: %s\n", what.c_str(), a.c_str()));
 }
+#else
+#define LOGABS LOGDEB2
+static void listList(const string&, const vector<string>&)
+{
+}
 #endif
 
-// Build a document abstract by extracting text chunks around the query terms
-// This uses the db termlists, not the original document.
-//
-// DatabaseModified and other general exceptions are catched and
-// possibly retried by our caller
-vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
+// Retrieve and store db-wide frequencies for the query terms.
+void Db::Native::setDbWideQTermsFreqs(Query *query)
 {
-    Chrono chron;
-    LOGDEB2(("makeAbstract:%d: maxlen %d wWidth %d\n", chron.ms(),
-	     m_rcldb->m_synthAbsLen, m_rcldb->m_synthAbsWordCtxLen));
+    // Do it once only for a given query.
+    if (!query->m_nq->termfreqs.empty())
+	return;
 
-    vector<string> terms;
-
+    vector<string> qterms;
     {
-        vector<string> iterms;
-        query->getMatchTerms(docid, iterms);
-        noPrefixList(iterms, terms);
-        if (terms.empty()) {
-            LOGDEB(("makeAbstract::Empty term list\n"));
-            return vector<string>();
-        }
+	vector<string> iqterms;
+	query->getQueryTerms(iqterms);
+	noPrefixList(iqterms, qterms);
     }
-//    listList("Match terms: ", terms);
+    // listList("Query terms: ", qterms);
 
-    // Retrieve db-wide frequencies for the query terms (we do this once per
-    // query, using all the query terms, not only the document match terms)
-    if (query->m_nq->termfreqs.empty()) {
-        vector<string> iqterms, qterms;
-        query->getQueryTerms(iqterms);
-        noPrefixList(iqterms, qterms);
-//        listList("Query terms: ", qterms);
-	double doccnt = xrdb.get_doccount();
-	if (doccnt == 0) doccnt = 1;
-	for (vector<string>::const_iterator qit = qterms.begin(); 
-	     qit != qterms.end(); qit++) {
-	    query->m_nq->termfreqs[*qit] = xrdb.get_termfreq(*qit) / doccnt;
-	    LOGABS(("makeAbstract: [%s] db freq %.1e\n", qit->c_str(), 
-		    query->m_nq->termfreqs[*qit]));
-	}
-	LOGABS(("makeAbstract:%d: got termfreqs\n", chron.ms()));
+    double doccnt = xrdb.get_doccount();
+    if (doccnt == 0) 
+	doccnt = 1;
+
+    for (vector<string>::const_iterator qit = qterms.begin(); 
+	 qit != qterms.end(); qit++) {
+	query->m_nq->termfreqs[*qit] = xrdb.get_termfreq(*qit) / doccnt;
+	LOGABS(("makeAbstract: [%s] db freq %.1e\n", qit->c_str(), 
+		query->m_nq->termfreqs[*qit]));
     }
+}
 
-    // Compute a term quality coefficient by retrieving the term
-    // Within Document Frequencies and multiplying by overal term
-    // frequency, then using log-based thresholds. We are going to try
-    // and show text around the less common search terms.
+// Compute query terms quality coefficients for a matched document by
+// retrieving the Within Document Frequencies and multiplying by
+// overal term frequency, then using log-based thresholds.
+double Db::Native::qualityTerms(Xapian::docid docid, 
+				Query *query,
+				const vector<string>& terms,
+				multimap<double, string>& byQ)
+{
     map<string, double> termQcoefs;
     double totalweight = 0;
+
     double doclen = xrdb.get_doclength(docid);
-    if (doclen == 0) doclen = 1;
+    if (doclen == 0) 
+	doclen = 1;
+
     for (vector<string>::const_iterator qit = terms.begin(); 
 	 qit != terms.end(); qit++) {
 	Xapian::TermIterator term = xrdb.termlist_begin(docid);
@@ -352,10 +340,8 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 	    totalweight += q;
 	}
     }    
-    LOGABS(("makeAbstract:%d: computed Qcoefs.\n", chron.ms()));
 
     // Build a sorted by quality term list.
-    multimap<double, string> byQ;
     for (vector<string>::const_iterator qit = terms.begin(); 
 	 qit != terms.end(); qit++) {
 	if (termQcoefs.find(*qit) != termQcoefs.end())
@@ -368,8 +354,128 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 	LOGDEB(("%.1e->[%s]\n", qit->first, qit->second.c_str()));
     }
 #endif
+    return totalweight;
+}
 
+// Return the positions list for the page break term
+bool Db::Native::getPagePositions(Xapian::docid docid, vector<int>& vpos)
+{
+    string qterm = page_break_term;
+    Xapian::PositionIterator pos;
+    try {
+	for (pos = xrdb.positionlist_begin(docid, qterm); 
+	     pos != xrdb.positionlist_end(docid, qterm); pos++) {
+	    int ipos = *pos;
+	    if (ipos < int(baseTextPosition)) {
+		// Not in text body. Strange...
+		continue;
+	    }
+	    vpos.push_back(ipos);
+	} 
+    } catch (...) {
+	// Term does not occur. No problem.
+    }
+    return true;
+}
 
+// Return page number for first match of "significant" term.
+int Db::Native::getFirstMatchPage(Xapian::docid docid, Query *query)
+{
+    vector<string> terms;
+    {
+	vector<string> iterms;
+        query->getMatchTerms(docid, iterms);
+	noPrefixList(iterms, terms);
+    }
+    if (terms.empty()) {
+	LOGDEB(("getFirstMatchPage: empty match term list (field match?)\n"));
+	return -1;
+    }
+
+    vector<int> pagepos;
+    getPagePositions(docid, pagepos);
+    if (pagepos.empty())
+	return -1;
+	
+    setDbWideQTermsFreqs(query);
+
+    // We try to use a page which matches the "best" term. Get a sorted list
+    multimap<double, string> byQ;
+    double totalweight = qualityTerms(docid, query, terms, byQ);
+
+    for (multimap<double, string>::reverse_iterator qit = byQ.rbegin(); 
+	 qit != byQ.rend(); qit++) {
+	string qterm = qit->second;
+	Xapian::PositionIterator pos;
+	string emptys;
+	try {
+	    for (pos = xrdb.positionlist_begin(docid, qterm); 
+		 pos != xrdb.positionlist_end(docid, qterm); pos++) {
+		int ipos = *pos;
+		if (ipos < int(baseTextPosition)) // Not in text body
+		    continue;
+		// What page ?
+		LOGABS(("getFirstPageMatch: looking for match for [%s]\n", 
+			qterm.c_str()));
+		vector<int>::const_iterator it = 
+		    lower_bound(pagepos.begin(), pagepos.end(), ipos);
+		if (it != pagepos.end())
+		    return it - pagepos.begin() + 1;
+	    }
+	} catch (...) {
+	    // Term does not occur. No problem.
+	}
+    }
+    return -1;
+}
+
+// Build a document abstract by extracting text chunks around the query terms
+// This uses the db termlists, not the original document.
+//
+// DatabaseModified and other general exceptions are catched and
+// possibly retried by our caller
+vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
+{
+    Chrono chron;
+    LOGDEB2(("makeAbstract:%d: maxlen %d wWidth %d\n", chron.ms(),
+	     m_rcldb->m_synthAbsLen, m_rcldb->m_synthAbsWordCtxLen));
+
+    // The (unprefixed) terms matched by this document
+    vector<string> terms;
+
+    {
+        vector<string> iterms;
+        query->getMatchTerms(docid, iterms);
+        noPrefixList(iterms, terms);
+        if (terms.empty()) {
+            LOGDEB(("makeAbstract::Empty term list\n"));
+            return vector<string>();
+        }
+    }
+    listList("Match terms: ", terms);
+
+    // Retrieve the term freqencies for the query terms. This is
+    // actually computed only once for a query, and for all terms in
+    // the query (not only the matches for this doc)
+    setDbWideQTermsFreqs(query);
+
+    // Build a sorted by quality container for the match terms We are
+    // going to try and show text around the less common search terms.
+    // TOBEDONE: terms issued from an original one by stem expansion
+    // should be somehow aggregated here, else, it may happen that
+    // such a group prevents displaying matches for other terms (by
+    // remaining its meaning to the maximum occurrences per term test
+    // using while walking the list below)
+    multimap<double, string> byQ;
+    double totalweight = qualityTerms(docid, query, terms, byQ);
+    LOGABS(("makeAbstract:%d: computed Qcoefs.\n", chron.ms()));
+    // This can't happen, but would crash us
+    if (totalweight == 0.0) {
+	LOGERR(("makeAbstract: totalweight == 0.0 !\n"));
+	return vector<string>();
+    }
+
+    ///////////////////
     // For each of the query terms, ask xapian for its positions list
     // in the document. For each position entry, remember it in
     // qtermposs and insert it and its neighbours in the set of
@@ -390,11 +496,6 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
     const unsigned int maxtotaloccs = 
 	m_rcldb->m_synthAbsLen /(7 * (m_rcldb->m_synthAbsWordCtxLen+1));
     LOGABS(("makeAbstract:%d: mxttloccs %d\n", chron.ms(), maxtotaloccs));
-    // This can't happen, but would crash us
-    if (totalweight == 0.0) {
-	LOGERR(("makeAbstract: 0 totalweight!\n"));
-	return vector<string>();
-    }
 
     // This is used to mark positions overlapped by a multi-word match term
     const string occupiedmarker("?");
@@ -1000,7 +1101,11 @@ public:
 	LOGERR(("Db: xapian add_posting error %s\n", ermsg.c_str()));
 	return false;
     }
-
+    void newpage(int pos)
+    {
+	pos += m_ts->basepos;
+	m_ts->doc.add_posting(m_ts->prefix + page_break_term, pos);
+    }
 private:
     TextSplitDb *m_ts;
 };
@@ -2012,6 +2117,19 @@ bool Db::makeDocAbstract(Doc &doc, Query *query, string& abstract)
 	abstract.append(cstr_ellipsis);
     }
     return m_reason.empty() ? true : false;
+}
+
+int Db::getFirstMatchPage(Doc &doc, Query *query)
+{
+    LOGDEB1(("Db::getFirstMatchPages\n"));;
+    if (!m_ndb || !m_ndb->m_isopen) {
+	LOGERR(("Db::getFirstMatchPage: no db\n"));
+	return false;
+    }
+    int pagenum = -1;
+    XAPTRY(pagenum = m_ndb->getFirstMatchPage(Xapian::docid(doc.xdocid), query),
+	   m_ndb->xrdb, m_reason);
+    return m_reason.empty() ? pagenum : -1;
 }
 
 // Retrieve document defined by Unique doc identifier. This is mainly used

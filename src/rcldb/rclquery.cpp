@@ -245,7 +245,6 @@ bool Query::setQuery(RefCntr<SearchData> sdata)
     return true;
 }
 
-
 bool Query::getQueryTerms(vector<string>& terms)
 {
     if (ISNULL(m_nq))
@@ -288,7 +287,7 @@ bool Query::getMatchTerms(unsigned long xdocid, vector<string>& terms)
            m_db->m_ndb->xrdb, m_reason);
 
     if (!m_reason.empty()) {
-	LOGERR(("getQueryTerms: xapian error: %s\n", m_reason.c_str()));
+	LOGERR(("getMatchTerms: xapian error: %s\n", m_reason.c_str()));
 	return false;
     }
 

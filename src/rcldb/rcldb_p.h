@@ -18,6 +18,8 @@
 #ifndef _rcldb_p_h_included_
 #define _rcldb_p_h_included_
 
+#include <map>
+
 #ifdef IDX_THREADS
 #include "workqueue.h"
 #endif // IDX_THREADS
@@ -111,7 +113,14 @@ class Db::Native {
 #endif // IDX_THREADS
     }
 
+    double qualityTerms(Xapian::docid docid, 
+			Query *query,
+			const vector<string>& terms,
+			std::multimap<double, string>& byQ);
+    void setDbWideQTermsFreqs(Query *query);
     vector<string> makeAbstract(Xapian::docid id, Query *query);
+    bool getPagePositions(Xapian::docid docid, vector<int>& vpos);
+    int getFirstMatchPage(Xapian::docid docid, Query *query);
 
     bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc);
 

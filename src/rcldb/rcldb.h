@@ -26,10 +26,8 @@
 #include "stoplist.h"
 #include "rclconfig.h"
 
-#ifndef NO_NAMESPACES
 using std::string;
 using std::vector;
-#endif
 
 // rcldb defines an interface for a 'real' text database. The current 
 // implementation uses xapian only, and xapian-related code is in rcldb.cpp
@@ -227,6 +225,8 @@ class Db {
      * the input query. This uses index data only (no access to the file) */
     bool makeDocAbstract(Doc &doc, Query *query, string& abstract);
     bool makeDocAbstract(Doc &doc, Query *query, vector<string>& abstract);
+    /** Retrieve detected page breaks positions */
+    int getFirstMatchPage(Doc &doc, Query *query);
 
     /** Get document for given udi
      *
@@ -324,9 +324,8 @@ string version_string();
 extern const string pathelt_prefix;
 extern const string start_of_field_term;
 extern const string end_of_field_term;
-#ifndef NO_NAMESPACES
-}
-#endif // NO_NAMESPACES
+extern const string page_break_term;
 
+}
 
 #endif /* _DB_H_INCLUDED_ */

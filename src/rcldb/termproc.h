@@ -51,6 +51,11 @@ public:
 	else
 	    return true;
     }
+    virtual void newpage(int pos)
+    {
+	if (m_next)
+	    m_next->newpage(pos);
+    }
     virtual bool flush()
     {
 	if (m_next)
@@ -90,6 +95,11 @@ public:
 	    return m_prc->takeword(term, pos, bs, be);
 	else
 	    return true;
+    }
+    virtual void newpage(int pos)
+    {
+	if (m_prc)
+	    return m_prc->newpage(pos);
     }
 
 private:

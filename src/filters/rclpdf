@@ -18,8 +18,11 @@
 # check if it was actually incorrect or just mis-understood by qtextedit
 # (tobedone) 
 
-# Comment the following if you get better results without
-optionraw=-raw
+# Uncomment the following if you get better results without. The
+# pdftotext manual says that the option is no longer recommended The
+# difference in output seems mostly the removal of soft-hyphens when
+# -raw is not set
+# optionraw=-raw
 
 # set variables
 LANG=C ; export LANG

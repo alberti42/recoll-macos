@@ -44,6 +44,7 @@ src/doc/user/rcl.search.custom.html
 src/doc/user/rcl.search.desktop.html
 src/doc/user/rcl.search.history.html
 src/doc/user/rcl.search.html
+src/doc/user/rcl.search.kio.html
 src/doc/user/rcl.search.lang.html
 src/doc/user/rcl.search.multidb.html
 src/doc/user/rcl.search.preview.html
@@ -55,6 +56,7 @@ src/doc/user/rcl.search.wildcards.html
 src/doc/user/rcl.searchkcl.html
 src/doc/user/rcl.searchkio.html
 src/doc/user/rcl.searchkio.searchabledocs.html
+src/doc/user/usermanual-xml.html
 src/doc/user/usermanual.aux
 src/doc/user/usermanual.html
 src/doc/user/usermanual.html-text
@@ -64,6 +66,7 @@ src/doc/user/usermanual.pdf
 src/doc/user/usermanual.tex-pdf
 src/doc/user/usermanual.tex-pdf-tmp
 src/doc/user/usermanual.txt
+src/doc/user/usermanual.xml
 src/filters/rclexecm.pyc
 src/filters/rcllatinclass.pyc
 src/index/alldeps
