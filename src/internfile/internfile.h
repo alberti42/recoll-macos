@@ -149,7 +149,7 @@ class FileInterner {
     Status internfile(Rcl::Doc& doc, const string &ipath = "");
 
     /** Return the file's (top level object) mimetype (useful for 
-     *  container files) 
+     *  creating the pseudo-doc for container files) 
      */ 
     const string&  getMimetype() {return m_mimetype;}
 
@@ -244,7 +244,7 @@ class FileInterner {
     void tmpcleanup();
     bool dijontorcl(Rcl::Doc&);
     void collectIpathAndMT(Rcl::Doc&) const;
-    bool dataToTempFile(const string& data, const string& mt, string& fn);
+    TempFile dataToTempFile(const string& data, const string& mt);
     void popHandler();
     int addHandler();
     void checkExternalMissing(const string& msg, const string& mt);

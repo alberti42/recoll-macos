@@ -201,9 +201,9 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 {
     m_fn = f;
 
-    // This is used by filters which manage some kind of cache.
-    // Indexing by udi makes things easier (because they sometimes get a temp 
-    // as input
+    // Compute udi for the input file. This is used by filters which
+    // manage some kind of cache.  Indexing by udi makes things easier
+    // because they sometimes get a temp as actual input.
     string udi;
     make_udi(f, cstr_null, udi);
 
@@ -216,7 +216,9 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
     // In general, even when the input mime type is set (when
     // previewing), we can't use it: it's the type for the actual
     // document, but this can be part of a compound document, and
-    // we're dealing with the top level file here.
+    // we're dealing with the top level file here, or this could be a
+    // compressed file. The flag tells us we really can use it
+    // (e.g. the beagle indexer sets it).
     if (flags & FIF_doUseInputMimetype) {
         if (!imime) {
             LOGERR(("FileInterner:: told to use null imime\n"));
@@ -227,8 +229,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
         LOGDEB(("FileInterner:: [%s] mime [%s] preview %d\n", 
                 f.c_str(), imime?imime->c_str() : "(null)", m_forPreview));
 
-        // We need to run mime type identification in any case to check
-        // for a compressed file.
+        // Run mime type identification in any case (see comment above).
         l_mime = mimetype(m_fn, stp, m_cfg, usfci);
 
         // If identification fails, try to use the input parameter. This
@@ -344,22 +345,21 @@ void FileInterner::init(const string &data, RclConfig *cnf,
     df->set_property(Dijon::Filter::OPERATING_MODE, 
 			    m_forPreview ? "view" : "index");
 
-    bool setres = false;
+    bool result = false;
     df->set_docsize(data.length());
     if (df->is_data_input_ok(Dijon::Filter::DOCUMENT_STRING)) {
-	setres = df->set_document_string(data);
+	result = df->set_document_string(data);
     } else if (df->is_data_input_ok(Dijon::Filter::DOCUMENT_DATA)) {
-	setres = df->set_document_data(data.c_str(), data.length());
+	result = df->set_document_data(data.c_str(), data.length());
     } else if (df->is_data_input_ok(Dijon::Filter::DOCUMENT_FILE_NAME)) {
-	string filename;
-	if (dataToTempFile(data, m_mimetype, filename)) {
-	    if (!(setres=df->set_document_file(filename))) {
-		m_tmpflgs[0] = false;
-		m_tempfiles.pop_back();
-	    }
+	TempFile temp = dataToTempFile(data, m_mimetype);
+	if (temp.isNotNull() && 
+	    (result = df->set_document_file(temp->filename()))) {
+	    m_tmpflgs[m_handlers.size()] = true;
+	    m_tempfiles.push_back(temp);
 	}
     }
-    if (!setres) {
+    if (!result) {
 	LOGINFO(("FileInterner:: set_doc failed inside for mtype %s\n", 
                  m_mimetype.c_str()));
 	delete df;
@@ -436,38 +436,30 @@ FileInterner::~FileInterner()
 // Create a temporary file for a block of data (ie: attachment) found
 // while walking the internal document tree, with a type for which the
 // handler needs an actual file (ie : external script).
-bool FileInterner::dataToTempFile(const string& dt, const string& mt, 
-				  string& fn)
+TempFile FileInterner::dataToTempFile(const string& dt, const string& mt)
 {
-    // Find appropriate suffix for mime type
+    // Create temp file with appropriate suffix for mime type
     TempFile temp(new TempFileInternal(m_cfg->getSuffixFromMimeType(mt)));
-    if (temp->ok()) {
-        // We are called before the handler is actually on the stack, so the
-        // index is m_handlers.size(). m_tmpflgs is a static array, so this is
-        // no problem
-	m_tmpflgs[m_handlers.size()] = true;
-	m_tempfiles.push_back(temp);
-    } else {
+    if (!temp->ok()) {
 	LOGERR(("FileInterner::dataToTempFile: cant create tempfile: %s\n",
 		temp->getreason().c_str()));
-	return false;
+	return TempFile();
     }
 
     int fd = open(temp->filename(), O_WRONLY);
     if (fd < 0) {
 	LOGERR(("FileInterner::dataToTempFile: open(%s) failed errno %d\n",
 		temp->filename(), errno));
-	return false;
+	return TempFile();
     }
     if (write(fd, dt.c_str(), dt.length()) != (int)dt.length()) {
 	close(fd);
 	LOGERR(("FileInterner::dataToTempFile: write to %s failed errno %d\n",
 		temp->filename(), errno));
-	return false;
+	return TempFile();
     }
     close(fd);
-    fn = temp->filename();
-    return true;
+    return temp;
 }
 
 // See if the error string is formatted as a missing helper message,
@@ -707,7 +699,7 @@ void FileInterner::popHandler()
 {
     if (m_handlers.empty())
 	return;
-    int i = m_handlers.size()-1;
+    int i = m_handlers.size() - 1;
     if (m_tmpflgs[i]) {
 	m_tempfiles.pop_back();
 	m_tmpflgs[i] = false;
@@ -777,18 +769,16 @@ int FileInterner::addHandler()
     } else if (newflt->is_data_input_ok(Dijon::Filter::DOCUMENT_DATA)) {
 	setres = newflt->set_document_data(txt->c_str(), txt->length());
     } else if (newflt->is_data_input_ok(Dijon::Filter::DOCUMENT_FILE_NAME)) {
-	string filename;
-	if (dataToTempFile(*txt, mimetype, filename)) {
-	    if (!(setres = newflt->set_document_file(filename))) {
-		m_tmpflgs[m_handlers.size()] = false;
-		m_tempfiles.pop_back();
-	    } else {
-		// Hack here, but really helps perfs: if we happen to
-		// create a temp file for, ie, an image attachment,
-		// keep it around for preview reuse
-		if (!mimetype.compare(0, 6, "image/")) {
-		    m_imgtmp = m_tempfiles.back();
-		}
+	TempFile temp = dataToTempFile(*txt, mimetype);
+	if (temp.isNotNull() && 
+	    (setres = newflt->set_document_file(temp->filename()))) {
+	    m_tmpflgs[m_handlers.size()] = true;
+	    m_tempfiles.push_back(temp);
+	    // Hack here, but really helps perfs: if we happen to
+	    // create a temp file for, ie, an image attachment, keep
+	    // it around for preview to use it through get_imgtmp()
+	    if (!mimetype.compare(0, 6, "image/")) {
+		m_imgtmp = m_tempfiles.back();
 	    }
 	}
     }
