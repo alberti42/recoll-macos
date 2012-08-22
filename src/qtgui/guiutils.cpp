@@ -122,10 +122,8 @@ void rwSettings(bool writing)
 	       "/Recoll/prefs/showResultsAsTable", Bool, false);
     SETTING_RW(prefs.maxhltextmbs, "/Recoll/prefs/preview/maxhltextmbs", Int, 3);
 
-    // The default is true because I find it more often useful to keep
-    // indentation than to fold lines. Mileage may vary. 
     SETTING_RW(prefs.previewPlainPre, 
-	       "/Recoll/prefs/preview/plainPre", Bool, true);
+	       "/Recoll/prefs/preview/plainPre", Int, PrefsPack::PP_PREWRAP);
     SETTING_RW(prefs.qtermcolor, "/Recoll/prefs/qtermcolor", String, "blue");
     if (!writing && prefs.qtermcolor == "")
 	prefs.qtermcolor = "blue";

@@ -105,7 +105,18 @@ void UIPrefsDialog::setFromPrefs()
 
     keepSortCB->setChecked(prefs.keepSort);
     previewHtmlCB->setChecked(prefs.previewHtml);
-    previewPlainPreCB->setChecked(prefs.previewPlainPre);
+    switch (prefs.previewPlainPre) {
+    case PrefsPack::PP_BR:
+	plainBRRB->setChecked(1);
+	break;
+    case PrefsPack::PP_PRE:
+	plainPRERB->setChecked(1);
+	break;
+    case PrefsPack::PP_PREWRAP:
+    default:
+	plainPREWRAPRB->setChecked(1);
+	break;
+    }
     // Query terms color
     qtermColorLE->setText(prefs.qtermcolor);
     // Abstract snippet separator string
@@ -233,7 +244,14 @@ void UIPrefsDialog::accept()
     prefs.useDesktopOpen = useDesktopOpenCB->isChecked();
     prefs.keepSort = keepSortCB->isChecked();
     prefs.previewHtml = previewHtmlCB->isChecked();
-    prefs.previewPlainPre = previewPlainPreCB->isChecked();
+
+    if (plainBRRB->isChecked()) {
+	prefs.previewPlainPre = PrefsPack::PP_BR;
+    } else if (plainPRERB->isChecked()) {
+	prefs.previewPlainPre = PrefsPack::PP_PRE;
+    } else {
+	prefs.previewPlainPre = PrefsPack::PP_PREWRAP;
+    }
 
     prefs.syntAbsLen = syntlenSB->value();
     prefs.syntAbsCtx = syntctxSB->value();

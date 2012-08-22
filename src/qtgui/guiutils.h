@@ -76,7 +76,8 @@ class PrefsPack {
     bool previewHtml;
     // Use <pre> tag to display highlighted text/plain inside html (else
     // we use <br> at end of lines, which lets textedit wrap lines).
-    bool previewPlainPre; 
+    enum PlainPre {PP_BR, PP_PRE, PP_PREWRAP};
+    int  previewPlainPre; 
     bool collapseDuplicates;
     bool showResultsAsTable;
 

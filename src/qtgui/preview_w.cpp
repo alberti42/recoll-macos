@@ -82,23 +82,21 @@ public:
 
     virtual string header() 
     {
-	if (m_inputhtml) {
-	    return cstr_null;
-	} else {
-	    if (prefs.previewPlainPre) {
-		m_eolbr = false;
-		return string("<qt><head><title></title></head><body>"
-			      "<pre>");
-		// Note: we could also use the following for
-		// line-folding instead of <br>s This would be
-		// possible without recomputing the whole text, much
-		// better perfs for toggling wrap/no-wrap: 
-		//   <pre style=\"white-space: pre-wrap\">
-	    } else {
+	if (!m_inputhtml) {
+	    switch (prefs.previewPlainPre) {
+	    case PrefsPack::PP_BR:
 		m_eolbr = true;
-		return string("<qt><head><title></title></head><body>");
+		return "<qt><head><title></title></head><body>";
+	    case PrefsPack::PP_PRE:
+		m_eolbr = false;
+		return "<qt><head><title></title></head><body><pre>";
+	    case PrefsPack::PP_PREWRAP:
+		m_eolbr = false;
+		return "<qt><head><title></title></head><body>"
+		    "<pre style=\"white-space: pre-wrap\">";
 	    }
 	}
+	return cstr_null;
     }
 
     virtual string startMatch(unsigned int grpidx)
@@ -673,7 +671,18 @@ bool Preview::makeDocCurrent(const Rcl::Doc& doc, int docnum, bool sametab)
 }
 void Preview::togglePlainPre()
 {
-    prefs.previewPlainPre = !prefs.previewPlainPre;
+    switch (prefs.previewPlainPre) {
+    case PrefsPack::PP_BR:
+	prefs.previewPlainPre = PrefsPack::PP_PRE;
+	break;
+    case PrefsPack::PP_PRE:
+	prefs.previewPlainPre = PrefsPack::PP_BR;
+	break;
+    case PrefsPack::PP_PREWRAP:
+    default:
+	prefs.previewPlainPre = PrefsPack::PP_PRE;
+	break;
+    }
     
     PreviewTextEdit *editor = currentEditor();
     if (editor)

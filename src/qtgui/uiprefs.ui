@@ -133,17 +133,39 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="previewPlainPreCB">
-             <property name="toolTip">
-              <string>Lines in PRE text are not folded. Using BR loses some indentation.</string>
-             </property>
-             <property name="text">
-              <string>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html in preview.</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
+	     <layout class="QHBoxLayout" name="horizontalLayout">
+	       <item>
+		 <widget class="QLabel" name="label">
+		   <property name="text">
+		     <string>Plain text to HTML line style</string>
+		   </property>
+		   <property name="toolTip">
+		     <string>Lines in PRE text are not folded. Using BR loses some indentation. PRE + Wrap style may be what you want.</string>
+		   </property>
+		 </widget>
+	       </item>
+	       <item>
+		 <widget class="QRadioButton" name="plainBRRB">
+		   <property name="text">
+		     <string>&lt;BR&gt;</string>
+		   </property>
+		 </widget>
+	       </item>
+	       <item>
+		 <widget class="QRadioButton" name="plainPRERB">
+		   <property name="text">
+		     <string>&lt;PRE&gt;</string>
+		   </property>
+		 </widget>
+	       </item>
+	       <item>
+		 <widget class="QRadioButton" name="plainPREWRAPRB">
+		   <property name="text">
+		     <string>&lt;PRE&gt; + wrap</string>
+		   </property>
+		 </widget>
+	       </item>
+	     </layout>
            </item>
            <item>
             <widget class="QCheckBox" name="useDesktopOpenCB">

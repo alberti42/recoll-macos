@@ -182,12 +182,12 @@ bool DocSequenceDb::setQuery()
     m_rescnt = -1;
     m_needSetQuery = !m_q->setQuery(m_fsdata);
 
-    if (0) {
+#if 0
 	HighlightData hld;
 	m_fsdata->getTerms(hld);
 	string str; 
 	hld.toString(str);
 	fprintf(stderr, "DocSequenceDb::setQuery: terms: %s\n", str.c_str());
-    }
+#endif
     return !m_needSetQuery;
 }
