@@ -132,6 +132,32 @@ static const unsigned int uniign[] = {
     0x205F, /*  ; White_Space # Zs       MEDIUM MATHEMATICAL SPACE*/
     0x207B, /*  ; Dash # Sm       SUPERSCRIPT MINUS*/
     0x208B, /*  ; Dash # Sm       SUBSCRIPT MINUS*/
+    0x20A0, /* EURO-CURRENCY SIGN */
+    0x20A1, /* COLON SIGN */
+    0x20A2, /* CRUZEIRO SIGN */
+    0x20A3, /* FRENCH FRANC SIGN */
+    0x20A4, /* LIRA SIGN */
+    0x20A5, /* MILL SIGN */
+    0x20A6, /* NAIRA SIGN */
+    0x20A7, /* PESETA SIGN */
+    0x20A8, /* RUPEE SIGN */
+    0x20A9, /* WON SIGN */
+    0x20AA, /* NEW SHEQEL SIGN */
+    0x20AB, /* DONG SIGN */
+    0x20AC, /* EURO SIGN */
+    0x20AD, /* KIP SIGN */
+    0x20AE, /* TUGRIK SIGN */
+    0x20AF, /* DRACHMA SIGN */
+    0x20B0, /* GERMAN PENNY SIGN */
+    0x20B1, /* PESO SIGN */
+    0x20B2, /* GUARANI SIGN */
+    0x20B3, /* AUSTRAL SIGN */
+    0x20B4, /* HRYVNIA SIGN */
+    0x20B5, /* CEDI SIGN */
+    0x20B6, /* LIVRE TOURNOIS SIGN */
+    0x20B7, /* SPESMILO SIGN */
+    0x20B8, /* TENGE SIGN */
+    0x20B9, /* INDIAN RUPEE SIGN */
     0x2117, /* SOUND RECORDING COPYRIGHT;So */
     0x2122, /* TRADE MARK SIGN;So; */
     0x2192, /* RIGHTWARDS ARROW;Sm;0;ON;;;;;N;RIGHT ARROW;;;;*/
