@@ -130,22 +130,18 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
     // Else, we add an entry to the multimap.
     // At the end, we only save stem-terms associations with several terms, the
     // others are not useful
-    // Note: a map<string, list<string> > would probably be more efficient
-    multimap<string, string> assocs;
+    // Note: a map<string, vector<string> > would probably be more efficient
+    map<string, vector<string> > assocs;
     // Statistics
     int nostem=0; // Dont even try: not-alphanum (incomplete for now)
     int stemconst=0; // Stem == term
-    int stemdiff=0;  // Count of all different stems
     int stemmultiple = 0; // Count of stems with multiple derivatives
     try {
         Xapian::Stem stemmer(lang);
         Xapian::TermIterator it;
         for (it = xdb.allterms_begin(); it != xdb.allterms_end(); it++) {
-            // Deciding if we try to stem the term. 
-
-	    // If it has any
-            // non-lowercase 7bit char (that is, numbers, capitals and
-            // punctuation) dont. 
+	    // If the term has any non-lowercase 7bit char (that is,
+            // numbers, capitals and punctuation) dont stem.
             string::iterator sit = (*it).begin(), eit = sit + (*it).length();
             if ((sit = find_if(sit, eit, p_notlowerascii)) != eit) {
                 ++nostem;
@@ -158,10 +154,11 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
 	    // We're still sending all other multibyte utf-8 chars to
             // the stemmer, which is not too well defined for
             // xapian<1.0 (very obsolete now), but seems to work
-            // anyway. There shouldnt be too many in any case because
-            // accents are stripped at this point. Effect of stripping
-            // accents on stemming unknown, hopefuly none, there is
-            // nothing we can do about it.
+            // anyway. There shouldn't be too many in any case because
+            // accents are stripped at this point. 
+	    // The effect of stripping accents on stemming is not good, 
+            // (e.g: in french partimes -> partim, parti^mes -> part)
+	    // but fixing the issue would be complicated.
 	    Utf8Iter utfit(*it);
 	    if (TextSplit::isCJK(*utfit)) {
 		// LOGDEB(("stemskipped: Skipping CJK\n"));
@@ -175,7 +172,7 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
                 ++stemconst;
                 continue;
             }
-            assocs.insert(pair<string,string>(stem, *it));
+            assocs[stem].push_back(*it);
         }
     } catch (const Xapian::Error &e) {
         LOGERR(("Db::createStemDb: build failed: %s\n", e.get_msg().c_str()));
@@ -213,51 +210,25 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
         return false;
     }
 
-    // Enter pseud-docs in db by walking the multimap.
-    string stem;
-    vector<string> derivs;
-    for (multimap<string,string>::const_iterator it = assocs.begin();
+    // Enter pseud-docs in db by walking the map.
+    for (map<string, vector<string> >::const_iterator it = assocs.begin();
          it != assocs.end(); it++) {
-        if (stem == it->first) {
-            // Staying with same stem
-            derivs.push_back(it->second);
-            // cerr << " " << it->second << endl;
-        } else {
-            // Changing stems 
-            ++stemdiff;
-            LOGDEB2(("createStemDb: stem [%s]\n", stem.c_str()));
-
-            // We need an entry even if there is only one derivative
-            // so that it is possible to search by entering the stem
-            // even if it doesnt exist as a term
-            if (!derivs.empty()) {
-
-                if (derivs.size() > 1)
-                    ++stemmultiple;
+	LOGDEB2(("createStemDb: stem [%s]\n", it->first.c_str()));
+	// We need an entry even if there is only one derivative
+	// so that it is possible to search by entering the stem
+	// even if it doesnt exist as a term
+	if (it->second.size() > 1)
+	    ++stemmultiple;
                     
-                if (!addAssoc(sdb, stem, derivs)) {
-                    return false;
-                }
-                derivs.clear();
-            }
-            stem = it->first;
-            derivs.push_back(it->second);
-            //	    cerr << "\n" << stem << " " << it->second;
-        }
-    }
-    if (!derivs.empty()) {
-        if (derivs.size() > 1)
-            ++stemmultiple;
-                    
-        if (!addAssoc(sdb, stem, derivs)) {
-            return false;
-        }
+	if (!addAssoc(sdb, it->first, it->second)) {
+	    return false;
+	}
     }
 
     LOGDEB1(("StemDb::createDb(%s): done: %.2f S\n", 
              lang.c_str(), cron.secs()));
-    LOGDEB(("Stem map size: %d stems %d mult %d no %d const %d\n", 
-	    assocs.size(), stemdiff, stemmultiple, nostem, stemconst));
+    LOGDEB(("Stem map size: %d mult %d const %d no %d \n", 
+	    assocs.size(), stemmultiple, stemconst, nostem));
     wiper.do_it = false;
     return true;
 }
