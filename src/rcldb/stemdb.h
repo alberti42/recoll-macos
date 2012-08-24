@@ -16,13 +16,36 @@
  */
 #ifndef _STEMDB_H_INCLUDED_
 #define _STEMDB_H_INCLUDED_
-/// Stem database code
-/// 
-/// Stem databases list stems and the set of index terms they expand to. They 
-/// are computed from index data by stemming each term and regrouping those 
-/// that stem to the same value.
-/// Stem databases are stored as separate xapian databases (used as an 
-/// Isam method), in subdirectories of the index.
+
+/** Stem database code
+ * 
+ * Stem databases list stems and the set of index terms they expand to. They 
+ * are computed from index data by stemming each term and regrouping those 
+ * that stem to the same value.
+ *
+ * Stem databases are stored as separate Xapian databases, in
+ * subdirectories of the index (e.g.: stem_french, stem_german2)
+ *
+ * The stem database is generated at the end of an indexing session by
+ * walking the whole index term list, computing the stem for each
+ * term, and building a stem->terms map.
+ * 
+ * The map is then stored as a Xapian index where each stem is the
+ * unique term indexing a document, and the list of expansions is stored
+ * as the document data record. It would probably be possible to store
+ * the expansions as the document term list instead (using a prefix to
+ * distinguish the stem term).
+ *
+ * Another possible approach would be to update the stem map as we index. 
+ * This would probably be be less efficient for a full index pass because
+ * each term would be seen and stemmed many times, but it might be
+ * more efficient for an incremental pass with a limited number of
+ * updated documents. For a small update, the stem building part often
+ * dominates the indexing time.
+ * 
+ * For future reference, I did try to store the map in a gdbm file and
+ * the result is bigger and takes more time to create than the Xapian version.
+ */
 
 #include <vector>
 #include <string>
