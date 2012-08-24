@@ -428,6 +428,7 @@ void AdvSearch::runSearch()
 	entries.push_back(subtreeCMB->currentText());
 	entries.sort();
 	entries.unique();
+	LOGDEB(("Subtree list now has %d entries\n", entries.size()));
 	subtreeCMB->clear();
 	for (list<QString>::iterator it = entries.begin(); 
 	     it != entries.end(); it++) {

@@ -19,7 +19,6 @@
 #ifndef _TERMPROC_H_INCLUDED_
 #define _TERMPROC_H_INCLUDED_
 
-
 #include "textsplit.h"
 #include "stoplist.h"
 
@@ -74,7 +73,7 @@ private:
  * Specialized TextSplit class: this will probably replace the base
  * TextSplit when we've converted all the code. The takeword() routine in this
  * calls a TermProc's instead of being overriden in a user derived class.
- * The text_to_word() method also takes care of flushing.
+ * The text_to_words() method also takes care of flushing.
  */
 class TextSplitP : public TextSplit {
 public:
@@ -110,7 +109,9 @@ private:
 class TermProcPrep : public TermProc {
 public:
     TermProcPrep(TermProc *nxt)	
-	: TermProc(nxt), m_totalterms(0), m_unacerrors(0) {}
+	: TermProc(nxt), m_totalterms(0), m_unacerrors(0) 
+    {
+    }
 
     virtual bool takeword(const string& itrm, int pos, int bs, int be)
     {
@@ -148,7 +149,9 @@ private:
 class TermProcStop : public TermProc {
 public:
     TermProcStop(TermProc *nxt, const Rcl::StopList& stops)
-	: TermProc(nxt), m_stops(stops) {}
+	: TermProc(nxt), m_stops(stops) 
+    {
+    }
 
     virtual bool takeword(const string& term, int pos, int bs, int be)
     {
@@ -171,7 +174,9 @@ private:
 class TermProcCommongrams : public TermProc {
 public:
     TermProcCommongrams(TermProc *nxt, const Rcl::StopList& stops)
-	: TermProc(nxt), m_stops(stops), m_onlygrams(false) { }
+	: TermProc(nxt), m_stops(stops), m_onlygrams(false) 
+    {
+    }
 
     virtual bool takeword(const string& term, int pos, int bs, int be)
     {

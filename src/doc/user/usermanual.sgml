@@ -1,4 +1,5 @@
 <!-- Use this header for the FreeBSD sgml toolchain -->
+<!-- NOTE: the sgml version should be saved as ISO-8859-1. -->
 <!DOCTYPE BOOK PUBLIC "-//FreeBSD//DTD DocBook V4.1-Based Extension//EN" [
 
 <!-- Use this header for going XML -->
@@ -3792,11 +3793,13 @@ while query.next >= 0 and query.next < nres:
         List elements with embedded spaces can be quoted using
         double-quotes.</para>
 
-      <formalpara><title>Encoding issues</title>
+      <formalpara>
+        <title>Encoding issues</title>
         <para>Most of the configuration parameters are plain ASCII. Two
         particular sets of values may cause encoding issues:</para>
-
-        <itemizedlist>
+      </formalpara>
+      <para>
+      <itemizedlist>
         <listitem><para>File path parameters may contain non-ascii
         characters and should use the exact same byte values as found in
         the file system directory. Usually, this means that the
@@ -3813,8 +3816,8 @@ while query.next >= 0 and query.next < nres:
         configuration.</para>
         </listitem>
       </itemizedlist>
-      </formalpara>
-        
+      </para>
+
       <sect2 id="rcl.install.config.recollconf">
         <title>Main configuration file</title>
 
@@ -4092,12 +4095,12 @@ skippedPaths = ~/somedir/&lowast;.txt
             the list will turn-off both standard accent and case
             processing. Example for Swedish:</para>
                 <programlisting>
-unac_except_trans =  Ã¥Ã¥ Ã…Ã¥ Ã¤Ã¤ Ã„Ã¤ Ã¶Ã¶ Ã–Ã¶
+unac_except_trans =  åå Åå ää Ää öö Öö
             </programlisting>
 
             <para>Note that the translation is not limited to a single
             character, you could very well have something like
-            <literal>Ã¼ue</literal> in the list.</para>
+            <literal>üue</literal> in the list.</para>
 
              <para>This parameter can't be defined for subdirectories, it
              is global, because there is no way to do otherwise when

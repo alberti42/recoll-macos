@@ -10,18 +10,27 @@
 #     usermanual.html#RCL.CONFIG.INDEXING won't work because fragments are
 #     case-sensitive. This could be solved by converting all ids inside the
 #     source file to upper-case.
+#   - No simple way to produce pdf
 
 # Wherever docbook.xsl and chunk.xsl live
-XSLDIR="/opt/local/share/xsl/docbook-xsl/"
+# Fbsd
+XSLDIR="/usr/local/share/xsl/docbook/"
+# Mac
+#XSLDIR="/opt/local/share/xsl/docbook-xsl/"
+#Linux
+#XSLDIR="/usr/share/xml/docbook/stylesheet/docbook-xsl/"
 
 dochunky=1
 test $# -eq 1 && dochunky=0
 
-# Remove the SGML header and uncomment the XML one
+# Remove the SGML header and uncomment the XML one + convert from iso-8859-1
+# to utf-8
 sed -e '\!//FreeBSD//DTD!d' \
     -e '\!DTD DocBook XML!s/<!--//' \
     -e '\!/docbookx.dtd!s/-->//' \
-    < usermanual.sgml > usermanual.xml
+    < usermanual.sgml \
+    | iconv -f iso-8859-1 -t utf-8 \
+    > usermanual.xml
 
 # Options common to the single-file and chunked versions
 commonoptions="--stringparam section.autolabel 1 \

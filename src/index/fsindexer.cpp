@@ -406,10 +406,11 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
     interner.setMissingStore(m_missing);
 
     // File name transcoded to utf8 for indexing. 
-    string charset = m_config->getDefCharset(true);
     // If this fails, the file name won't be indexed, no big deal
     // Note that we used to do the full path here, but I ended up believing
     // that it made more sense to use only the file name
+    // The charset is used is the one from the locale.
+    string charset = m_config->getDefCharset(true);
     string utf8fn; int ercnt;
     if (!transcode(path_getsimple(fn), utf8fn, charset, "UTF-8", &ercnt)) {
 	LOGERR(("processone: fn transcode failure from [%s] to UTF-8: %s\n",
