@@ -34,7 +34,9 @@
  * unique term indexing a document, and the list of expansions is stored
  * as the document data record. It would probably be possible to store
  * the expansions as the document term list instead (using a prefix to
- * distinguish the stem term).
+ * distinguish the stem term). I tried this (chert, 08-2012) and the stem
+ * db creation is very slightly slower than with the record approach, and
+ * the result is 50% bigger.
  *
  * Another possible approach would be to update the stem map as we index. 
  * This would probably be be less efficient for a full index pass because
