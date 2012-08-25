@@ -24,38 +24,9 @@
 #include "workqueue.h"
 #endif // IDX_THREADS
 #include "xapian.h"
+#include "xmacros.h"
 
 namespace Rcl {
-
-// Generic Xapian exception catching code. We do this quite often,
-// and I have no idea how to do this except for a macro
-#define XCATCHERROR(MSG) \
- catch (const Xapian::Error &e) {		   \
-    MSG = e.get_msg();				   \
-    if (MSG.empty()) MSG = "Empty error message";  \
- } catch (const string &s) {			   \
-    MSG = s;					   \
-    if (MSG.empty()) MSG = "Empty error message";  \
- } catch (const char *s) {			   \
-    MSG = s;					   \
-    if (MSG.empty()) MSG = "Empty error message";  \
- } catch (...) {				   \
-    MSG = "Caught unknown xapian exception";	   \
- } 
-
-#define XAPTRY(STMTTOTRY, XAPDB, ERSTR)       \
-    for (int tries = 0; tries < 2; tries++) { \
-	try {                                 \
-            STMTTOTRY;                        \
-            ERSTR.erase();                    \
-            break;                            \
-	} catch (const Xapian::DatabaseModifiedError &e) { \
-            ERSTR = e.get_msg();                           \
-	    XAPDB.reopen();                                \
-            continue;                                      \
-	} XCATCHERROR(ERSTR);                              \
-        break;                                             \
-    }
 
 class Query;
 
@@ -142,17 +113,6 @@ class Db::Native {
     bool subDocs(const string &udi, vector<Xapian::docid>& docids);
 
 };
-
-// Xapian synonyms table abuse:
-// The Xapian synonyms mechanisms can be put to many uses, but,
-// unfortunately, it has a global name space (we'd like to be able to open 
-// different synonym tables, but there is only one).
-// We use prefixes to create separate name spaces, in mostly the same way
-// that they are used in the main index. See synfamily.h
-// Prefixes are centrally defined here to avoid collisions
-//
-// Stem expansion family prefix. The family member name is the language
-static const std::string synprefStem("Stm");
 
 }
 #endif /* _rcldb_p_h_included_ */

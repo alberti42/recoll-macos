@@ -321,6 +321,15 @@ template <class T> void stringsToString(const T &tokens, string &s)
 template void stringsToString<list<string> >(const list<string> &, string &);
 template void stringsToString<vector<string> >(const vector<string> &,string &);
 template void stringsToString<set<string> >(const set<string> &, string &);
+template <class T> string stringsToString(const T &tokens)
+{
+    string out;
+    stringsToString<T>(tokens, out);
+    return out;
+}
+template string stringsToString<list<string> >(const list<string> &);
+template string stringsToString<vector<string> >(const vector<string> &);
+template string stringsToString<set<string> >(const set<string> &);
 
 template <class T> void stringsToCSV(const T &tokens, string &s, 
 				     char sep)

@@ -3,7 +3,7 @@ depth = ..
 include $(depth)/mk/sysconf
 
 # Only test executables get build in here
-PROGS = stoplist
+PROGS = synfamily stoplist
 
 all: $(BIGLIB) $(PROGS) 
 
@@ -18,6 +18,14 @@ stoplist : $(STOPLIST_OBJS)
 trstoplist.o : stoplist.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_STOPLIST -c -o trstoplist.o \
 	       stoplist.cpp
+
+SYNFAMILY_OBJS= trsynfamily.o  $(BIGLIB)
+synfamily : $(SYNFAMILY_OBJS)
+	$(CXX) $(ALL_CXXFLAGS) -o synfamily $(SYNFAMILY_OBJS) \
+        $(BIGLIB)  $(LIBICONV) $(LIBXAPIAN) $(LIBSYS)
+trsynfamily.o : synfamily.cpp 
+	$(CXX) $(ALL_CXXFLAGS) -DTEST_SYNFAMILY -c -o trsynfamily.o \
+	       synfamily.cpp
 
 clean:
 	rm -f *.o $(PROGS)

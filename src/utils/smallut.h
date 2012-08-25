@@ -90,6 +90,7 @@ template <class T> bool stringToStrings(const string& s, T &tokens,
  * Inverse operation:
  */
 template <class T> void stringsToString(const T &tokens, string &s);
+template <class T> std::string stringsToString(const T &tokens);
 
 /**
  * Strings to CSV string. tokens containing the separator are quoted (")

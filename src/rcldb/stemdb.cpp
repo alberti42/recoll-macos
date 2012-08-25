@@ -46,7 +46,7 @@ namespace StemDb {
 
 vector<string> getLangs(Xapian::Database& xdb)
 {
-    XapSynFamily fam(xdb, synprefStem);
+    XapSynFamily fam(xdb, synFamStem);
     vector<string> langs;
     (void)fam.getMembers(langs);
     return langs;
@@ -54,7 +54,7 @@ vector<string> getLangs(Xapian::Database& xdb)
 
 bool deleteDb(Xapian::WritableDatabase& xdb, const string& lang)
 {
-    XapWritableSynFamily fam(xdb, synprefStem);
+    XapWritableSynFamily fam(xdb, synFamStem);
     return fam.deleteMember(lang);
 }
 
@@ -137,7 +137,7 @@ bool createDb(Xapian::WritableDatabase& xdb, const string& lang)
     LOGDEB1(("StemDb::createDb(%s): in memory map built: %.2f S\n", 
              lang.c_str(), cron.secs()));
 
-    XapWritableSynFamily fam(xdb, synprefStem);
+    XapWritableSynFamily fam(xdb, synFamStem);
     fam.createMember(lang);
 
     for (map<string, vector<string> >::const_iterator it = assocs.begin();
@@ -161,16 +161,6 @@ bool createDb(Xapian::WritableDatabase& xdb, const string& lang)
     return true;
 }
 
-static string stringlistdisp(const vector<string>& sl)
-{
-    string s;
-    for (vector<string>::const_iterator it = sl.begin(); it!= sl.end(); it++)
-	s += "[" + *it + "] ";
-    if (!s.empty())
-	s.erase(s.length()-1);
-    return s;
-}
-
 /**
  * Expand term to list of all terms which stem to the same term, for one
  * expansion language
@@ -186,7 +176,7 @@ static bool stemExpandOne(Xapian::Database& xdb,
 	LOGDEB(("stemExpand:%s: [%s] stem-> [%s]\n", 
                 lang.c_str(), term.c_str(), stem.c_str()));
 
-	XapSynFamily fam(xdb, synprefStem);
+	XapSynFamily fam(xdb, synFamStem);
 	if (!fam.synExpand(lang, stem, result)) {
 	    // ?
 	}
@@ -199,7 +189,7 @@ static bool stemExpandOne(Xapian::Database& xdb,
 	    result.push_back(stem);
 	}
 	LOGDEB0(("stemExpand:%s: %s ->  %s\n", lang.c_str(), stem.c_str(),
-		 stringlistdisp(result).c_str()));
+		 stringsToString(result).c_str()));
 
     } catch (...) {
 	LOGERR(("stemExpand: error accessing stem db. lang [%s]\n",
