@@ -27,12 +27,16 @@
 #include <xapian.h>
 
 #include "stemdb.h"
-#include "wipedir.h"
 #include "pathut.h"
 #include "debuglog.h"
 #include "smallut.h"
 #include "utf8iter.h"
 #include "textsplit.h"
+#include "rcldb.h"
+#include "rcldb_p.h"
+#include "synfamily.h"
+
+#include <iostream>
 
 using namespace std;
 
@@ -40,46 +44,19 @@ namespace Rcl {
 namespace StemDb {
 
 
-static const string cstr_stemdirstem = "stem_";
-
-/// Compute name of stem db for given base database and language
-static string stemdbname(const string& dbdir, const string& lang)
+vector<string> getLangs(Xapian::Database& xdb)
 {
-    return path_cat(dbdir, cstr_stemdirstem + lang);
+    XapSynFamily fam(xdb, synprefStem);
+    vector<string> langs;
+    (void)fam.getMembers(langs);
+    return langs;
 }
 
-vector<string> getLangs(const string& dbdir)
+bool deleteDb(Xapian::WritableDatabase& xdb, const string& lang)
 {
-    string pattern = cstr_stemdirstem + "*";
-    vector<string> dirs = path_dirglob(dbdir, pattern);
-    for (vector<string>::iterator it = dirs.begin(); it != dirs.end(); it++) {
-	*it = path_basename(*it);
-	*it = it->substr(cstr_stemdirstem.length(), string::npos);
-    }
-    return dirs;
+    XapWritableSynFamily fam(xdb, synprefStem);
+    return fam.deleteMember(lang);
 }
-
-bool deleteDb(const string& dbdir, const string& lang)
-{
-    string dir = stemdbname(dbdir, lang);
-    if (wipedir(dir) == 0 && rmdir(dir.c_str()) == 0)
-	return true;
-    return false;
-}
-
-// Autoclean/delete directory 
-class DirWiper {
- public:
-    string dir;
-    bool do_it;
-    DirWiper(string d) : dir(d), do_it(true) {}
-    ~DirWiper() {
-	if (do_it) {
-	    wipedir(dir);
-	    rmdir(dir.c_str());
-	}
-    }
-};
 
 inline static bool
 p_notlowerascii(unsigned int c)
@@ -89,37 +66,13 @@ p_notlowerascii(unsigned int c)
     return false;
 }
 
-static bool addAssoc(Xapian::WritableDatabase &sdb, const string& stem,
-                     const vector<string>& derivs)
-{
-    Xapian::Document newdocument;
-    newdocument.add_term(stem);
-    // The doc data is just parents=blank-separated-list
-    string record = "parents=";
-    for (vector<string>::const_iterator it = derivs.begin(); 
-         it != derivs.end(); it++) {
-        record += *it + " ";
-    }
-    record += "\n";
-    LOGDEB2(("createStemDb: stmdoc data: [%s]\n", record.c_str()));
-    newdocument.set_data(record);
-    try {
-        sdb.replace_document(stem, newdocument);
-    } catch (...) {
-        LOGERR(("Db::createstemdb(addAssoc): replace failed\n"));
-        return false;
-    }
-    return true;
-}
-
-
 /**
  * Create database of stem to parents associations for a given language.
  * We walk the list of all terms, stem them, and create another Xapian db
  * with documents indexed by a single term (the stem), and with the list of
  * parent terms in the document data.
  */
-bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
+bool createDb(Xapian::WritableDatabase& xdb, const string& lang)
 {
     LOGDEB(("StemDb::createDb(%s)\n", lang.c_str()));
     Chrono cron;
@@ -136,6 +89,7 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
     int nostem=0; // Dont even try: not-alphanum (incomplete for now)
     int stemconst=0; // Stem == term
     int stemmultiple = 0; // Count of stems with multiple derivatives
+    string ermsg;
     try {
         Xapian::Stem stemmer(lang);
         Xapian::TermIterator it;
@@ -174,43 +128,18 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
             }
             assocs[stem].push_back(*it);
         }
-    } catch (const Xapian::Error &e) {
-        LOGERR(("Db::createStemDb: build failed: %s\n", e.get_msg().c_str()));
-        return false;
-    } catch (...) {
-        LOGERR(("Db::createStemDb: build failed: no stemmer for %s ? \n", 
-                lang.c_str()));
+    } XCATCHERROR(ermsg);
+    if (!ermsg.empty()) {
+        LOGERR(("Db::createStemDb: map build failed: %s\n", ermsg.c_str()));
         return false;
     }
+
     LOGDEB1(("StemDb::createDb(%s): in memory map built: %.2f S\n", 
              lang.c_str(), cron.secs()));
 
-    // Create xapian database for stem relations
-    string stemdbdir = stemdbname(dbdir, lang);
-    // We want to get rid of the db dir in case of error. This gets disarmed
-    // just before success return.
-    DirWiper wiper(stemdbdir);
-    string ermsg;
-    Xapian::WritableDatabase sdb;
-    try {
-        sdb = Xapian::WritableDatabase(stemdbdir, 
-                                       Xapian::DB_CREATE_OR_OVERWRITE);
-    } catch (const Xapian::Error &e) {
-        ermsg = e.get_msg();
-    } catch (const string &s) {
-        ermsg = s;
-    } catch (const char *s) {
-        ermsg = s;
-    } catch (...) {
-        ermsg = "Caught unknown exception";
-    }
-    if (!ermsg.empty()) {
-        LOGERR(("Db::createstemdb: exception while opening [%s]: %s\n", 
-                stemdbdir.c_str(), ermsg.c_str()));
-        return false;
-    }
+    XapWritableSynFamily fam(xdb, synprefStem);
+    fam.createMember(lang);
 
-    // Enter pseud-docs in db by walking the map.
     for (map<string, vector<string> >::const_iterator it = assocs.begin();
          it != assocs.end(); it++) {
 	LOGDEB2(("createStemDb: stem [%s]\n", it->first.c_str()));
@@ -219,8 +148,7 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
 	// even if it doesnt exist as a term
 	if (it->second.size() > 1)
 	    ++stemmultiple;
-                    
-	if (!addAssoc(sdb, it->first, it->second)) {
+	if (!fam.addSynonyms(lang, it->first, it->second)) {
 	    return false;
 	}
     }
@@ -229,7 +157,7 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
              lang.c_str(), cron.secs()));
     LOGDEB(("Stem map size: %d mult %d const %d no %d \n", 
 	    assocs.size(), stemmultiple, stemconst, nostem));
-    wiper.do_it = false;
+    fam.listMap(lang);
     return true;
 }
 
@@ -247,7 +175,7 @@ static string stringlistdisp(const vector<string>& sl)
  * Expand term to list of all terms which stem to the same term, for one
  * expansion language
  */
-static bool stemExpandOne(const std::string& dbdir, 
+static bool stemExpandOne(Xapian::Database& xdb, 
 			  const std::string& lang,
 			  const std::string& term,
 			  vector<string>& result)
@@ -258,37 +186,9 @@ static bool stemExpandOne(const std::string& dbdir,
 	LOGDEB(("stemExpand:%s: [%s] stem-> [%s]\n", 
                 lang.c_str(), term.c_str(), stem.c_str()));
 
-	// Open stem database
-	string stemdbdir = stemdbname(dbdir, lang);
-	Xapian::Database sdb(stemdbdir);
-	LOGDEB0(("stemExpand: %s lastdocid: %d\n", 
-		stemdbdir.c_str(), sdb.get_lastdocid()));
-
-	// Try to fetch the doc from the stem db
-	if (!sdb.term_exists(stem)) {
-	    LOGDEB0(("Db::stemExpand: no term for %s\n", stem.c_str()));
-	} else {
-	    Xapian::PostingIterator did = sdb.postlist_begin(stem);
-	    if (did == sdb.postlist_end(stem)) {
-		LOGDEB0(("stemExpand: no term(1) for %s\n",stem.c_str()));
-	    } else {
-		Xapian::Document doc = sdb.get_document(*did);
-		string data = doc.get_data();
-
-		// Build expansion list from database data No need for
-		// a conftree, but we need to massage the data a
-		// little
-		string::size_type pos = data.find('=');
-		string::size_type pos1 = data.rfind('\n');
-		if (pos == string::npos || pos1 == string::npos || 
-		    pos1 <= pos+1) {
-		    LOGERR(("stemExpand: bad data in db: [%s]\n", 
-			    data.c_str()));
-		} else {
-		    ++pos;
-		    stringToStrings(data.substr(pos, pos1-pos), result);
-		}
-	    }
+	XapSynFamily fam(xdb, synprefStem);
+	if (!fam.synExpand(lang, stem, result)) {
+	    // ?
 	}
 
 	// If the user term or stem are not in the list, add them
@@ -302,8 +202,8 @@ static bool stemExpandOne(const std::string& dbdir,
 		 stringlistdisp(result).c_str()));
 
     } catch (...) {
-	LOGERR(("stemExpand: error accessing stem db. dbdir [%s] lang [%s]\n",
-		dbdir.c_str(), lang.c_str()));
+	LOGERR(("stemExpand: error accessing stem db. lang [%s]\n",
+		lang.c_str()));
 	result.push_back(term);
 	return false;
     }
@@ -315,18 +215,17 @@ static bool stemExpandOne(const std::string& dbdir,
  * Expand term to list of all terms which stem to the same term, add the
  * expansion sets for possibly multiple expansion languages
  */
-bool stemExpand(const std::string& dbdir, 
+bool stemExpand(Xapian::Database& xdb,
 		const std::string& langs,
 		const std::string& term,
 		vector<string>& result)
 {
-
     vector<string> llangs;
     stringToStrings(langs, llangs);
     for (vector<string>::const_iterator it = llangs.begin();
 	 it != llangs.end(); it++) {
 	vector<string> oneexp;
-	stemExpandOne(dbdir, *it, term, oneexp);
+	stemExpandOne(xdb, *it, term, oneexp);
 	result.insert(result.end(), oneexp.begin(), oneexp.end());
     }
     sort(result.begin(), result.end());

@@ -143,5 +143,16 @@ class Db::Native {
 
 };
 
+// Xapian synonyms table abuse:
+// The Xapian synonyms mechanisms can be put to many uses, but,
+// unfortunately, it has a global name space (we'd like to be able to open 
+// different synonym tables, but there is only one).
+// We use prefixes to create separate name spaces, in mostly the same way
+// that they are used in the main index. See synfamily.h
+// Prefixes are centrally defined here to avoid collisions
+//
+// Stem expansion family prefix. The family member name is the language
+static const std::string synprefStem("Stm");
+
 }
 #endif /* _rcldb_p_h_included_ */

@@ -235,7 +235,7 @@ bool ConfIndexer::createStemmingDatabases()
 {
     string slangs;
     if (m_config->getConfParam("indexstemminglanguages", slangs)) {
-        if (!m_db.open(Rcl::Db::DbRO)) {
+        if (!m_db.open(Rcl::Db::DbUpd)) {
             LOGERR(("ConfIndexer::createStemmingDb: could not open db\n"))
             return false;
         }
@@ -262,7 +262,7 @@ bool ConfIndexer::createStemmingDatabases()
 
 bool ConfIndexer::createStemDb(const string &lang)
 {
-    if (!m_db.open(Rcl::Db::DbRO)) {
+    if (!m_db.open(Rcl::Db::DbUpd)) {
 	return false;
     }
     return m_db.createStemDb(lang);

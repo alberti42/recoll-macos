@@ -1607,11 +1607,11 @@ bool Db::needUpdate(const string &udi, const string& sig)
 vector<string> Db::getStemLangs()
 {
     LOGDEB(("Db::getStemLang\n"));
-    vector<string> dirs;
+    vector<string> langs;
     if (m_ndb == 0 || m_ndb->m_isopen == false)
-	return dirs;
-    dirs = StemDb::getLangs(m_basedir);
-    return dirs;
+	return langs;
+    langs = StemDb::getLangs(m_ndb->xrdb);
+    return langs;
 }
 
 /**
@@ -1620,9 +1620,9 @@ vector<string> Db::getStemLangs()
 bool Db::deleteStemDb(const string& lang)
 {
     LOGDEB(("Db::deleteStemDb(%s)\n", lang.c_str()));
-    if (m_ndb == 0 || m_ndb->m_isopen == false)
+    if (m_ndb == 0 || m_ndb->m_isopen == false || !m_ndb->m_iswritable)
 	return false;
-    return StemDb::deleteDb(m_basedir, lang);
+    return StemDb::deleteDb(m_ndb->xwdb, lang);
 }
 
 /**
@@ -1634,10 +1634,12 @@ bool Db::deleteStemDb(const string& lang)
 bool Db::createStemDb(const string& lang)
 {
     LOGDEB(("Db::createStemDb(%s)\n", lang.c_str()));
-    if (m_ndb == 0 || m_ndb->m_isopen == false)
+    if (m_ndb == 0 || m_ndb->m_isopen == false || !m_ndb->m_iswritable) {
+	LOGERR(("createStemDb: db not open or not writable\n"));
 	return false;
+    }
 
-    return StemDb::createDb(m_ndb->xdb(), m_basedir, lang);
+    return StemDb::createDb(m_ndb->xwdb, lang);
 }
 
 /**
@@ -1842,21 +1844,15 @@ public:
     }
 };
 
-bool Db::stemExpand(const string &lang, const string &term, 
+bool Db::stemExpand(const string &langs, const string &term, 
 		    TermMatchResult& result, int max)
 {
-    vector<string> dirs(1, m_basedir);
-    dirs.insert(dirs.end(), m_extraDbs.begin(), m_extraDbs.end());
-    for (vector<string>::iterator it = dirs.begin(); it != dirs.end(); it++) {
-	vector<string> more;
-	StemDb::stemExpand(*it, lang, term, more);
-	LOGDEB1(("Db::stemExpand: Got %d from %s\n", 
-		 more.size(), it->c_str()));
-	result.entries.insert(result.entries.end(), more.begin(), more.end());
-	if (result.entries.size() >= (unsigned int)max)
-	    break;
-    }
-    LOGDEB1(("Db:::stemExpand: final count %d \n", result.size()));
+    if (m_ndb == 0 || m_ndb->m_isopen == false)
+	return false;
+    vector<string> exp;
+    if (!StemDb::stemExpand(m_ndb->xrdb, langs, term, exp))
+	return false;
+    result.entries.insert(result.entries.end(), exp.begin(), exp.end());
     return true;
 }
 

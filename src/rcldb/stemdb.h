@@ -58,15 +58,17 @@ namespace Rcl {
 namespace StemDb {
 
 /// Get languages of existing stem databases
-extern std::vector<std::string> getLangs(const std::string& dbdir);
+extern std::vector<std::string> getLangs(Xapian::Database& xdb);
+
 /// Delete stem database for given language
-extern bool deleteDb(const std::string& dbdir, const std::string& lang);
+extern bool deleteDb(Xapian::WritableDatabase&, const std::string& lang);
+
 /// Create stem database for given language
-extern bool createDb(Xapian::Database& xdb, 
-		     const std::string& dbdir, const std::string& lang);
+extern bool createDb(Xapian::WritableDatabase&, const std::string& lang);
+
 /// Expand term to stem siblings
-extern bool stemExpand(const std::string& dbdir, 
-		       const std::string& langs,
+extern bool stemExpand(Xapian::Database& xdb,
+		       const std::string& lang,
 		       const std::string& term,
 		       std::vector<std::string>& result);
 }
