@@ -41,25 +41,12 @@
 using namespace std;
 
 namespace Rcl {
-namespace StemDb {
 
-
-vector<string> getLangs(Xapian::Database& xdb)
-{
-    XapSynFamily fam(xdb, synFamStem);
-    vector<string> langs;
-    (void)fam.getMembers(langs);
-    return langs;
-}
-
-bool deleteDb(Xapian::WritableDatabase& xdb, const string& lang)
-{
-    XapWritableSynFamily fam(xdb, synFamStem);
-    return fam.deleteMember(lang);
-}
-
-inline static bool
-p_notlowerascii(unsigned int c)
+// Fast raw detection of non-natural-language words: look for ascii
+// chars which are not lowercase letters. Not too sure what islower()
+// would do with 8 bit values, so not using it here. If we want to be
+// more complete we'd need to go full utf-8
+inline static bool p_notlowerascii(unsigned int c)
 {
     if (c < 'a' || (c > 'z' && c < 128))
 	return true;
@@ -68,32 +55,28 @@ p_notlowerascii(unsigned int c)
 
 /**
  * Create database of stem to parents associations for a given language.
- * We walk the list of all terms, stem them, and create another Xapian db
- * with documents indexed by a single term (the stem), and with the list of
- * parent terms in the document data.
  */
-bool createDb(Xapian::WritableDatabase& xdb, const string& lang)
+bool WritableStemDb::createDb(const string& lang)
 {
     LOGDEB(("StemDb::createDb(%s)\n", lang.c_str()));
     Chrono cron;
+    createMember(lang);
+    string prefix = entryprefix(lang);
 
-    // First build the in-memory stem database:
-    // We walk the list of all terms, and stem each. 
-    //   If the stem is identical to the term, no need to create an entry
-    // Else, we add an entry to the multimap.
-    // At the end, we only save stem-terms associations with several terms, the
-    // others are not useful
-    // Note: a map<string, vector<string> > would probably be more efficient
-    map<string, vector<string> > assocs;
+    // We walk the list of all terms, and stem each. We skip terms which
+    // don't look like natural language.
+    // If the stem is not identical to the term, we add a synonym entry.
     // Statistics
-    int nostem=0; // Dont even try: not-alphanum (incomplete for now)
-    int stemconst=0; // Stem == term
-    int stemmultiple = 0; // Count of stems with multiple derivatives
+    int nostem = 0; // Dont even try: not-alphanum (incomplete for now)
+    int stemconst = 0; // Stem == term
+    int allsyns = 0; // Total number of entries created
+
     string ermsg;
     try {
         Xapian::Stem stemmer(lang);
-        Xapian::TermIterator it;
-        for (it = xdb.allterms_begin(); it != xdb.allterms_end(); it++) {
+
+        for (Xapian::TermIterator it = m_wdb.allterms_begin(); 
+	     it != m_wdb.allterms_end(); it++) {
 	    // If the term has any non-lowercase 7bit char (that is,
             // numbers, capitals and punctuation) dont stem.
             string::iterator sit = (*it).begin(), eit = sit + (*it).length();
@@ -126,7 +109,9 @@ bool createDb(Xapian::WritableDatabase& xdb, const string& lang)
                 ++stemconst;
                 continue;
             }
-            assocs[stem].push_back(*it);
+    
+	    m_wdb.add_synonym(prefix + stem, *it);
+	    ++allsyns;
         }
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
@@ -134,30 +119,9 @@ bool createDb(Xapian::WritableDatabase& xdb, const string& lang)
         return false;
     }
 
-    LOGDEB1(("StemDb::createDb(%s): in memory map built: %.2f S\n", 
-             lang.c_str(), cron.secs()));
-
-    XapWritableSynFamily fam(xdb, synFamStem);
-    fam.createMember(lang);
-
-    for (map<string, vector<string> >::const_iterator it = assocs.begin();
-         it != assocs.end(); it++) {
-	LOGDEB2(("createStemDb: stem [%s]\n", it->first.c_str()));
-	// We need an entry even if there is only one derivative
-	// so that it is possible to search by entering the stem
-	// even if it doesnt exist as a term
-	if (it->second.size() > 1)
-	    ++stemmultiple;
-	if (!fam.addSynonyms(lang, it->first, it->second)) {
-	    return false;
-	}
-    }
-
-    LOGDEB1(("StemDb::createDb(%s): done: %.2f S\n", 
-             lang.c_str(), cron.secs()));
-    LOGDEB(("Stem map size: %d mult %d const %d no %d \n", 
-	    assocs.size(), stemmultiple, stemconst, nostem));
-    fam.listMap(lang);
+    LOGDEB(("StemDb::createDb(%s): done: %.2f S\n", lang.c_str(), cron.secs()));
+    LOGDEB(("StemDb::createDb: nostem %d stemconst %d allsyns %d\n", 
+	    nostem, stemconst, allsyns));
     return true;
 }
 
@@ -165,10 +129,9 @@ bool createDb(Xapian::WritableDatabase& xdb, const string& lang)
  * Expand term to list of all terms which stem to the same term, for one
  * expansion language
  */
-static bool stemExpandOne(Xapian::Database& xdb, 
-			  const std::string& lang,
-			  const std::string& term,
-			  vector<string>& result)
+bool StemDb::expandOne(const std::string& lang,
+		       const std::string& term,
+		       vector<string>& result)
 {
     try {
 	Xapian::Stem stemmer(lang);
@@ -176,8 +139,7 @@ static bool stemExpandOne(Xapian::Database& xdb,
 	LOGDEB(("stemExpand:%s: [%s] stem-> [%s]\n", 
                 lang.c_str(), term.c_str(), stem.c_str()));
 
-	XapSynFamily fam(xdb, synFamStem);
-	if (!fam.synExpand(lang, stem, result)) {
+	if (!synExpand(lang, stem, result)) {
 	    // ?
 	}
 
@@ -202,20 +164,18 @@ static bool stemExpandOne(Xapian::Database& xdb,
 }
     
 /**
- * Expand term to list of all terms which stem to the same term, add the
- * expansion sets for possibly multiple expansion languages
+ * Expand for one or several languages
  */
-bool stemExpand(Xapian::Database& xdb,
-		const std::string& langs,
-		const std::string& term,
-		vector<string>& result)
+bool StemDb::stemExpand(const std::string& langs,
+			const std::string& term,
+			vector<string>& result)
 {
     vector<string> llangs;
     stringToStrings(langs, llangs);
     for (vector<string>::const_iterator it = llangs.begin();
 	 it != llangs.end(); it++) {
 	vector<string> oneexp;
-	stemExpandOne(xdb, *it, term, oneexp);
+	expandOne(*it, term, oneexp);
 	result.insert(result.end(), oneexp.begin(), oneexp.end());
     }
     sort(result.begin(), result.end());
@@ -224,5 +184,4 @@ bool stemExpand(Xapian::Database& xdb,
 }
 
 
-}
 }

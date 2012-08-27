@@ -54,24 +54,37 @@
 
 #include <xapian.h>
 
+#include "synfamily.h"
+
 namespace Rcl {
-namespace StemDb {
 
-/// Get languages of existing stem databases
-extern std::vector<std::string> getLangs(Xapian::Database& xdb);
+class StemDb : public XapSynFamily {
+public:
+    StemDb(Xapian::Database& xdb)
+	: XapSynFamily(xdb, synFamStem)
+    {
+    }
 
-/// Delete stem database for given language
-extern bool deleteDb(Xapian::WritableDatabase&, const std::string& lang);
+    /** Expand for a number of languages */
+    bool stemExpand(const std::string& langs,
+		     const std::string& term,
+		     std::vector<std::string>& result);
+private:
+    /** Compute stem and call synExpand() */
+    bool expandOne(const std::string& lang,
+		   const std::string& term,
+		   std::vector<std::string>& result);
+};
 
-/// Create stem database for given language
-extern bool createDb(Xapian::WritableDatabase&, const std::string& lang);
+class WritableStemDb : public XapWritableSynFamily {
+public:
+    WritableStemDb(Xapian::WritableDatabase& xdb)
+	: XapWritableSynFamily(xdb, synFamStem)
+    {
+    }
+    bool createDb(const std::string& lang);
+};
 
-/// Expand term to stem siblings
-extern bool stemExpand(Xapian::Database& xdb,
-		       const std::string& lang,
-		       const std::string& term,
-		       std::vector<std::string>& result);
-}
 }
 
 #endif /* _STEMDB_H_INCLUDED_ */

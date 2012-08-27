@@ -93,8 +93,7 @@ public:
     virtual bool createMember(const std::string& membername);
 
     /** Add expansion list for term inside family member (e.g., inside
-     *  the french member, add expansion for familier -> familier,
-     * familierement, ... */
+     *  the english member, add expansion for floor -> floors, flooring.. */
     virtual bool addSynonyms(const std::string& membername, 
 			     const std::string& term, 
 			     const std::vector<std::string>& trans);

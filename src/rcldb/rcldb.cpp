@@ -891,7 +891,7 @@ int Db::termDocCnt(const string& _term)
         return -1;
 
     string term;
-    if (!unacmaybefold(_term, term, "UTF-8", true)) {
+    if (!unacmaybefold(_term, term, "UTF-8", UNACOP_UNACFOLD)) {
 	LOGINFO(("Db::termDocCnt: unac failed for [%s]\n", _term.c_str()));
 	return 0;
     }
@@ -1117,7 +1117,7 @@ string Db::getSpellingSuggestion(const string& word)
     if (m_ndb == 0)
 	return string();
     string term;
-    if (!unacmaybefold(word, term, "UTF-8", true)) {
+    if (!unacmaybefold(word, term, "UTF-8", UNACOP_UNACFOLD)) {
 	LOGINFO(("Db::getSpelling: unac failed for [%s]\n", word.c_str()));
 	return string();
     }
@@ -1316,7 +1316,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     string utf8fn;
     if (doc.getmeta(Doc::keyfn, &utf8fn) && !utf8fn.empty()) {
 	string fn;
-	if (unacmaybefold(utf8fn, fn, "UTF-8", true)) {
+	if (unacmaybefold(utf8fn, fn, "UTF-8", UNACOP_UNACFOLD)) {
 	    // We should truncate after extracting the extension, but this is
 	    // a pathological case anyway
 	    if (fn.size() > 230)
@@ -1610,7 +1610,8 @@ vector<string> Db::getStemLangs()
     vector<string> langs;
     if (m_ndb == 0 || m_ndb->m_isopen == false)
 	return langs;
-    langs = StemDb::getLangs(m_ndb->xrdb);
+    StemDb db(m_ndb->xrdb);
+    db.getMembers(langs);
     return langs;
 }
 
@@ -1622,7 +1623,8 @@ bool Db::deleteStemDb(const string& lang)
     LOGDEB(("Db::deleteStemDb(%s)\n", lang.c_str()));
     if (m_ndb == 0 || m_ndb->m_isopen == false || !m_ndb->m_iswritable)
 	return false;
-    return StemDb::deleteDb(m_ndb->xwdb, lang);
+    WritableStemDb db(m_ndb->xwdb);
+    return db.deleteMember(lang);
 }
 
 /**
@@ -1639,7 +1641,8 @@ bool Db::createStemDb(const string& lang)
 	return false;
     }
 
-    return StemDb::createDb(m_ndb->xwdb, lang);
+    WritableStemDb db(m_ndb->xwdb);
+    return db.createDb(lang);
 }
 
 /**
@@ -1850,7 +1853,8 @@ bool Db::stemExpand(const string &langs, const string &term,
     if (m_ndb == 0 || m_ndb->m_isopen == false)
 	return false;
     vector<string> exp;
-    if (!StemDb::stemExpand(m_ndb->xrdb, langs, term, exp))
+    StemDb db(m_ndb->xrdb);
+    if (!db.stemExpand(langs, term, exp))
 	return false;
     result.entries.insert(result.entries.end(), exp.begin(), exp.end());
     return true;
@@ -1893,7 +1897,7 @@ bool Db::termMatch(MatchType typ, const string &lang,
 
     // Get rid of capitals and accents
     string droot;
-    if (!unacmaybefold(root, droot, "UTF-8", true)) {
+    if (!unacmaybefold(root, droot, "UTF-8", UNACOP_UNACFOLD)) {
 	LOGERR(("Db::termMatch: unac failed for [%s]\n", root.c_str()));
 	return false;
     }
