@@ -41,7 +41,7 @@ bool StopList::setFile(const string &filename)
     for (set<string>::iterator it = stops.begin(); 
 	 it != stops.end(); it++) {
 	string dterm;
-	unacmaybefold(*it, dterm, "UTF-8", true);
+	unacmaybefold(*it, dterm, "UTF-8", UNACOP_UNACFOLD);
 	m_stops.insert(dterm);
     }
 

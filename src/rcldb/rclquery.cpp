@@ -117,7 +117,7 @@ public:
 	// approach to collating...)
 	string sortterm;
 	// We're not even sure the term is utf8 here (ie: url)
-	if (!unacmaybefold(term, sortterm, "UTF-8", true)) {
+	if (!unacmaybefold(term, sortterm, "UTF-8", UNACOP_UNACFOLD)) {
 	    sortterm = term;
 	}
 	// Also remove some common uninteresting starting characters

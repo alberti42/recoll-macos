@@ -24,8 +24,9 @@ using std::string;
 #endif /* NO_NAMESPACES */
 
 // A small stringified wrapper for unac.c
+enum UnacOp {UNACOP_UNAC, UNACOP_UNACFOLD, UNACOP_FOLD};
 extern bool unacmaybefold(const string& in, string& out, 
-			  const char *encoding, bool dofold);
+			  const char *encoding, UnacOp what);
 
 // Utility function to determine if string begins with capital
 extern bool unaciscapital(const string& in);

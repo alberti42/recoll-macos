@@ -117,7 +117,7 @@ public:
     {
 	m_totalterms++;
 	string otrm;
-	if (!unacmaybefold(itrm, otrm, "UTF-8", true)) {
+	if (!unacmaybefold(itrm, otrm, "UTF-8", UNACOP_UNACFOLD)) {
 	    LOGDEB(("splitter::takeword: unac [%s] failed\n", itrm.c_str()));
 	    m_unacerrors++;
 	    // We don't generate a fatal error because of a bad term,

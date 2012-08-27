@@ -341,36 +341,50 @@ sub source {
 		@values = ();
 	    }
 	    $code_value = uc(sprintf("%04x", $code_value));
+            #print "$code_value UNAC ";
 	    if(exists($decomposition->{$code_value})) {
 		push(@values, $decomposition->{$code_value});
+                #print "$decomposition->{$code_value} ";
 	    } else {
 		push(@values, "FFFF");
+                #print "FFFF ";
 	    }
-	    # We also push the case-folded version of the unaccented char
-	    # Note that by pushing the case-folded version of the original
-	    # char, we'd have the possibility of independant unaccenting and
-	    # case folding, but with less performance. 
-	    # We could also keep the three chunks, using a little more memory
+	    # We push both the case-folded version of the unaccented char
+            # and the case-folded version of the original one. This
+            # makes the table a little bigger, but allows
+            # independantly unaccenting, folding or both
+            #print "UNACFOLD ";
 	    if(exists($decomposition->{$code_value})) {
 	      my($cv);
 	      my(@vl);
 	      foreach $cv (split(' ', $decomposition->{$code_value})) {
 		if(exists($casefold->{$cv})) {
 		  push(@vl, $casefold->{$cv});
+                  #print "$casefold->{$cv} ";
 		} else {
 		  push(@vl, $cv);
+                  #print "$cv ";
 		}
 	      }
-	      #print STDERR "Pushing " . join(" ", @vl) . " for " . 
-	      #$code_value . "\n";
 	      push(@values, join(" ", @vl));
 	    } else {
 	      if(exists($casefold->{$code_value})) {
 		push(@values, $casefold->{$code_value});
+                #print "$casefold->{$code_value} ";
 	      } else {
 		push(@values, "FFFF");
+                #print "FFFF ";
 	      }
 	    }
+            #print "FOLD ";
+            if(exists($casefold->{$code_value})) {
+                push(@values, $casefold->{$code_value});
+                #print "$casefold->{$code_value} ";
+            } else {
+		push(@values, "FFFF");
+                #print "FFFF ";
+            }
+            #print "\n";
 	}
 	print STDERR scalar(@blocks) . " blocks of " . $block_count . " entries, factorized $duplicate blocks\n\t" if($verbose);
 	my($block_size) = 0;
@@ -466,7 +480,7 @@ EOF
 	$block_number++;
     }
     my($position_type) = $highest_position >= 256 ? "short" : "char";
-    my($positions_out) = "unsigned $position_type unac_positions[UNAC_BLOCK_COUNT][2*UNAC_BLOCK_SIZE + 1] = {\n";
+    my($positions_out) = "unsigned $position_type unac_positions[UNAC_BLOCK_COUNT][3*UNAC_BLOCK_SIZE + 1] = {\n";
 
     $positions_out .= join(",\n", @positions_out);
     $positions_out .= "\n};\n";
@@ -481,7 +495,7 @@ EOF
     my($declarations);
     $declarations = <<EOF;
 extern unsigned short unac_indexes[UNAC_INDEXES_SIZE];
-extern unsigned $position_type unac_positions[UNAC_BLOCK_COUNT][2*UNAC_BLOCK_SIZE + 1];
+extern unsigned $position_type unac_positions[UNAC_BLOCK_COUNT][3*UNAC_BLOCK_SIZE + 1];
 extern unsigned short* unac_data_table[UNAC_BLOCK_COUNT];
 EOF
     for($block_number = 0; $block_number < $block_count; $block_number++) {

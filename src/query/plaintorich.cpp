@@ -91,7 +91,7 @@ class TextSplitPTR : public TextSplit {
     // (phrase or near), update positions list.
     virtual bool takeword(const std::string& term, int pos, int bts, int bte) {
 	string dumb;
-	if (!unacmaybefold(term, dumb, "UTF-8", true)) {
+	if (!unacmaybefold(term, dumb, "UTF-8", UNACOP_UNACFOLD)) {
 	    LOGINFO(("PlainToRich::splitter::takeword: unac failed for [%s]\n",
                      term.c_str()));
 	    return true;
