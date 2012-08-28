@@ -8,14 +8,17 @@
 #   - the field names MUST be all lowercase alphabetic ascii here. They can
 #     be anycased in the documents.
 
+[prefixes]
+
 #####################################################
 # This section defines what prefix the terms inside named fields will be
 # indexed with (in addition to prefix-less indexing for general search)
-# ALL prefixes MUST be all UPPERCASE. Extension prefixes begin with X 
+# ALL prefixes MUST be all UPPERCASE. 
 # 
-# The choice of field names is rather arbitrary. Use of any of the aliases
-# defined in the following section will yield exactly the same results,
-# (both for indexing and search).
+# The field names should be the canonic ones, not the aliases defined in
+# the following section. Don't change those which are predefined here, 
+# quite a few are hard-coded in the c++. But you can add more (for new
+# fields emitted by filters).
 #
 # Fields can have two relevance boost factors defined, such as in:
 # caption = S ; wdfinc=10
@@ -27,22 +30,30 @@
 # caption-based field query (ie: caption:mytitle or title:mytitle) at query
 # time.
 
-[prefixes]
-
-# Native fields matching omega uses, which we index without an X first
-# letter. Don't change these. Caption is used for 'title' to keep a last
-# remnant of omega compatibility inside the data record. 
-# Also reserved/hardcoded: D(ate), M(onth), Y(ear), 
-#           F(parentid), Q(uniqueid), T(mime type)
-caption = S ; wdfinc = 10
+# The following ones are probably hard-coded in the c code, can't change at
+# all.
+# Also reserved: F(parentid), Q(uniqueid)
+title = S ; wdfinc = 10
 author = A
-keywords = K
+abstract =
+caption = S
+title = S
+subject = S
+author = A
+keywords= K
+xapyear = Y
+xapyearmon = M
+xapdate = D
+mtype = T
+rclUnsplitFN = XSFS
+filename = XSFN
+ext = XE
 
 # Extension examples. These are actually used by default by Recoll, you can
 # add your own to search for fields produced by the filters and not handled
 # by default. 
 # Some values are internally reserved by recoll: 
-#   XE (file ext), XP (for path elements), XSFN, XSFS, XXST, XXND, 
+#   XE (file ext), XP (for path elements), XSFN, XSFS, XXST, XXND, XXPG
 # Using XX was not a good idea. 
 #
 # I hereby commit to not using XY for Recoll:
@@ -50,6 +61,7 @@ keywords = K
 # myfield = XYMYPREF
 recipient = XTO
 
+[stored]
 ############################
 # Some fields are stored in the document data record inside the index and
 # can be returned in result lists. There is no necessity that stored fields
@@ -64,12 +76,12 @@ recipient = XTO
 # "rclaptg" is used for viewer specialization (depending on local config)
 # "rclbes" defines the backend type (ie normal fs, firefox cache). Should
 #   probably be hardcoded, don't remove it
-[stored]
 author=
 rclaptg=
 rclbes=
 filename=
 
+[aliases]
 ##########################
 # This section defines field names aliases or synonyms. Any right hand side
 # value will be turned into the lhs canonic name before further treatment
@@ -80,8 +92,6 @@ filename=
 #
 # Filters should only add canonic names to the meta array when indexing,
 # not aliases.
-
-[aliases]
 abstract = summary dc:summary description xesam:description
 author = creator dc:creator xesam:author xesam:creator from
 title = caption title dc:title subject
@@ -97,18 +107,11 @@ mtype = mime mimetype xesam:mimetype contenttype xesam:contenttype dc:format
 recipient = to xesam:recipient
 url = dc:identifier xesam:url
 
-#########################
-# This section defines a hierarchy for field names. Searching for a lhs
-# ancestor will be expanded to a search for itself and all rhs descendants
-# This is not used for now
-[specialisations]
-author = from
-
+[xattrtofields]
 ######################
 # Section to define translations from extended file attribute names to
 # field names. xattr use must be enabled at compile time for this to be
 # used. Enter translations as "xattrname = fieldname". Case matters.
-[xattrtofields]
 
 
 ########################

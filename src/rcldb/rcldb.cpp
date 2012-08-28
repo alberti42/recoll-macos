@@ -93,75 +93,12 @@ string version_string(){
 // found in document)
 static const string cstr_syntAbs("?!#@");
 
-// Only ONE field name inside the index data record differs from the
-// Rcl::Doc ones: caption<->title, for a remnant of compatibility with
-// omega
-
-// Static/Default table for field->prefix/weight translation. 
-// This is logically const after initialization. Can't use a
-// static object to init this as the static std::string objects may
-// not be ready.
-//
-// This map is searched if a match is not found in the dynamic
-// "fields" configuration (cf: Db::fieldToTraits()), meaning that the
-// entries can be overriden in the configuration, but not
-// suppressed. 
-
-static map<string, FieldTraits> fldToTraits;
-static PTMutexInit o_fldToTraits_mutex;
 
 // A bogus fldToTraits key (bogus because not a real field) used to
 // retrieve the prefix used for specific filename searches (unsplit
 // filename, not "filename as 'filename:' field" searches)
 static const string keySysFilenamePrefix("rclUnsplitFN");
-// The prefix for regular "filename:" field searches.
-static const string cstr_fnAsFieldPrefix("XSFN");
-// The prefix for unsplit filename terms used with specific -f or
-// "File Name" GUI entries. There is a compile option to use the same prefix 
-// for both.
-// #define UNSPLIT_FN_PREFIX_SAME_AS_SPLIT
-#if defined(UNSPLIT_FN_PREFIX_SAME_AS_SPLIT)
-static const string cstr_fnUnsplitPrefix(cstr_fnAsFieldPrefix);
-#else
 static const string cstr_fnUnsplitPrefix("XSFS");
-#endif
-
-static void initFldToTraits() 
-{
-    PTMutexLocker locker(o_fldToTraits_mutex);
-    // As we perform non-locked testing of initialization, check again with
-    // the lock held
-    if (fldToTraits.size())
-	return;
-
-    // Can't remember why "abstract" is indexed without a prefix
-    // (result: it's indexed twice actually). Maybe I'll dare change
-    // this one day
-    fldToTraits[Doc::keyabs] = FieldTraits();
-
-    fldToTraits["ext"] = FieldTraits("XE");
-
-    fldToTraits[Doc::keyfn] = FieldTraits(cstr_fnAsFieldPrefix);
-    fldToTraits[keySysFilenamePrefix] = FieldTraits(cstr_fnUnsplitPrefix);
-
-    fldToTraits[cstr_caption] = FieldTraits("S");
-    fldToTraits[Doc::keytt] = FieldTraits("S");
-    fldToTraits["subject"] = FieldTraits("S");
-
-    fldToTraits[Doc::keyau] = FieldTraits("A");
-    fldToTraits["creator"] = FieldTraits("A");
-    fldToTraits["from"] = FieldTraits("A");
-
-    fldToTraits[Doc::keykw] = FieldTraits("K");
-    fldToTraits["keyword"] = FieldTraits("K");
-    fldToTraits["tag"] = FieldTraits("K");
-    fldToTraits["tags"] = FieldTraits("K");
-
-    fldToTraits["xapyear"] = FieldTraits("Y");
-    fldToTraits["xapyearmon"] = FieldTraits("M");
-    fldToTraits["xapdate"] = FieldTraits("D");
-    fldToTraits[Doc::keytp] = FieldTraits("T");
-}
 
 // Compute the unique term used to link documents to their origin. 
 // "Q" + external udi
@@ -171,6 +108,7 @@ static inline string make_uniterm(const string& udi)
     uniterm.append(udi);
     return uniterm;
 }
+
 // Compute parent term used to link documents to their parent document (if any)
 // "F" + parent external udi
 static inline string make_parentterm(const string& udi)
@@ -685,9 +623,6 @@ Db::Db(RclConfig *cfp)
       m_curtxtsz(0), m_flushtxtsz(0), m_occtxtsz(0), m_occFirstCheck(1),
       m_maxFsOccupPc(0), m_mode(Db::DbRO)
 {
-    if (!fldToTraits.size())
-	initFldToTraits();
-
     m_ndb = new Native(this);
     if (m_config) {
 	m_config->getConfParam("maxfsoccuppc", &m_maxFsOccupPc);
@@ -976,22 +911,12 @@ bool Db::isopen()
     return m_ndb->m_isopen;
 }
 
-// Try to translate field specification into field prefix.  We have a
-// default table used if translations are not in the config for some
-// reason (old config not updated ?). We use it only if the config
-// translation fails. Also we add in there fields which should be
-// indexed with no prefix (ie: abstract)
+// Try to translate field specification into field prefix. 
 bool Db::fieldToTraits(const string& fld, const FieldTraits **ftpp)
 {
     if (m_config && m_config->getFieldTraits(fld, ftpp))
 	return true;
 
-    // No data in rclconfig? Check default values
-    map<string, FieldTraits>::const_iterator it = fldToTraits.find(fld);
-    if (it != fldToTraits.end()) {
-	*ftpp = &it->second;
-	return true;
-    }
     *ftpp = 0;
     return false;
 }
@@ -1310,9 +1235,10 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     // Mime type
     newdocument.add_term("T" + doc.mimetype);
 
-    // Simple file name indexed unsplit for file name searches with a
-    // term prefix We also add a term for the filename extension if
-    // any.
+    // Simple file name indexed unsplit for specific "file name"
+    // searches. This is not the same as a filename: clause inside the
+    // query language.
+    // We also add a term for the filename extension if any.
     string utf8fn;
     if (doc.getmeta(Doc::keyfn, &utf8fn) && !utf8fn.empty()) {
 	string fn;
