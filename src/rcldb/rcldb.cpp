@@ -74,10 +74,21 @@ static const unsigned int baseTextPosition = 100000;
 namespace Rcl {
 #endif
 
+// Some prefixes that we could get from the fields file, but are not going
+// to ever change.
+static const string fileext_prefix = "XE";
+static const string mimetype_prefix = "T";
+static const string xapday_prefix = "D";
+static const string xapmonth_prefix = "M";
+static const string xapyear_prefix = "Y";
 const string pathelt_prefix = "XP";
 const string start_of_field_term = "XXST";
 const string end_of_field_term = "XXND";
-const string page_break_term = "XXPG";
+static const string page_break_term = "XXPG";
+// Field name for the unsplit file name. Has to exist in the field file 
+// because of usage in termmatch()
+static const string unsplitFilenameFieldName = "rclUnsplitFN";
+static const string unsplitfilename_prefix = "XSFS";
 
 // This is used as a marker inside the abstract frag lists, but
 // normally doesn't remain in final output (which is built with a
@@ -92,13 +103,6 @@ string version_string(){
 // Synthetic abstract marker (to discriminate from abstract actually
 // found in document)
 static const string cstr_syntAbs("?!#@");
-
-
-// A bogus fldToTraits key (bogus because not a real field) used to
-// retrieve the prefix used for specific filename searches (unsplit
-// filename, not "filename as 'filename:' field" searches)
-static const string keySysFilenamePrefix("rclUnsplitFN");
-static const string cstr_fnUnsplitPrefix("XSFS");
 
 // Compute the unique term used to link documents to their origin. 
 // "Q" + external udi
@@ -1213,7 +1217,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	    LOGDEB0(("Db::add: field [%s] pfx [%s] inc %d: [%s]\n", 
 		     meta_it->first.c_str(), ftp->pfx.c_str(), ftp->wdfinc,
 		     meta_it->second.c_str()));
-	    splitter.setprefix(ftp->pfx); // Subject
+	    splitter.setprefix(ftp->pfx);
 	    splitter.setwdfinc(ftp->wdfinc);
 	    if (!splitter.text_to_words(meta_it->second))
                 LOGDEB(("Db::addOrUpdate: split failed for %s\n", 
@@ -1233,7 +1237,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 
     ////// Special terms for other metadata. No positions for these.
     // Mime type
-    newdocument.add_term("T" + doc.mimetype);
+    newdocument.add_term(mimetype_prefix + doc.mimetype);
 
     // Simple file name indexed unsplit for specific "file name"
     // searches. This is not the same as a filename: clause inside the
@@ -1249,10 +1253,9 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 		utf8truncate(fn, 230);
 	    string::size_type pos = fn.rfind('.');
 	    if (pos != string::npos && pos != fn.length() - 1) {
-		newdocument.add_term(string("XE") + fn.substr(pos + 1));
+		newdocument.add_term(fileext_prefix + fn.substr(pos + 1));
 	    }
-	    fn = cstr_fnUnsplitPrefix + fn;
-	    newdocument.add_term(fn);
+	    newdocument.add_term(unsplitfilename_prefix + fn);
 	}
     }
 
@@ -1272,11 +1275,11 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     char buf[9];
     snprintf(buf, 9, "%04d%02d%02d",
 	    tm->tm_year+1900, tm->tm_mon + 1, tm->tm_mday);
-    newdocument.add_term("D" + string(buf)); // Date (YYYYMMDD)
+    newdocument.add_term(xapday_prefix + string(buf)); // Date (YYYYMMDD)
     buf[6] = '\0';
-    newdocument.add_term("M" + string(buf)); // Month (YYYYMM)
+    newdocument.add_term(xapmonth_prefix + string(buf)); // Month (YYYYMM)
     buf[4] = '\0';
-    newdocument.add_term("Y" + string(buf)); // Year (YYYY)
+    newdocument.add_term(xapyear_prefix + string(buf)); // Year (YYYY)
 
 
     //////////////////////////////////////////////////////////////////
@@ -1717,7 +1720,7 @@ bool Db::filenameWildExp(const string& fnexp, vector<string>& names)
 
     TermMatchResult result;
     if (!termMatch(ET_WILD, string(), pattern, result, 1000, 
-		   keySysFilenamePrefix))
+		   unsplitFilenameFieldName))
 	return false;
     for (vector<TermMatchEntry>::const_iterator it = result.entries.begin();
 	 it != result.entries.end(); it++) 

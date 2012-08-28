@@ -324,7 +324,6 @@ string version_string();
 extern const string pathelt_prefix;
 extern const string start_of_field_term;
 extern const string end_of_field_term;
-extern const string page_break_term;
 
 }
 
