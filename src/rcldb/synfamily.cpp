@@ -144,6 +144,7 @@ bool XapWritableSynFamily::addSynonyms(const string& membername,
     return true;
 }
 
+
 }
 
 #else  // TEST_SYNFAMILY 
@@ -232,11 +233,11 @@ int main(int argc, char **argv)
 
     // We do stem only for now
     string familyname;
-    if (op_flags & (OPT_a|OPT_c)) {
-	cerr << "Accents and case not ready" << endl;
-	return 1;
+    if (op_flags & OPT_a) {
+	familyname = Rcl::synFamDiac;
+    } else if (op_flags &OPT_c) {
+	familyname = Rcl::synFamCase;
     } else {
-	op_flags |= OPT_s;
 	familyname = Rcl::synFamStem;
     }
     if ((op_flags & (OPT_l|OPT_L|OPT_D|OPT_e)) == 0)

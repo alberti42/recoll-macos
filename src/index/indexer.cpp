@@ -250,11 +250,7 @@ bool ConfIndexer::createStemmingDatabases()
 	    if (find(langs.begin(), langs.end(), *it) == langs.end())
 		m_db.deleteStemDb(*it);
 	}
-	for (it = langs.begin(); it != langs.end(); it++) {
-	    if (m_updater && !m_updater->update(DbIxStatus::DBIXS_STEMDB, *it))
-		return false;
-	    m_db.createStemDb(*it);
-	}
+	m_db.createStemDbs(langs);
     }
     m_db.close();
     return true;
@@ -265,7 +261,7 @@ bool ConfIndexer::createStemDb(const string &lang)
     if (!m_db.open(Rcl::Db::DbUpd)) {
 	return false;
     }
-    return m_db.createStemDb(lang);
+    return m_db.createStemDbs(vector<string>(1, lang));
 }
 
 // The language for the aspell dictionary is handled internally by the aspell

@@ -1623,7 +1623,7 @@ bool Db::deleteStemDb(const string& lang)
     LOGDEB(("Db::deleteStemDb(%s)\n", lang.c_str()));
     if (m_ndb == 0 || m_ndb->m_isopen == false || !m_ndb->m_iswritable)
 	return false;
-    WritableStemDb db(m_ndb->xwdb);
+    XapWritableSynFamily db(m_ndb->xwdb, synFamStem);
     return db.deleteMember(lang);
 }
 
@@ -1633,16 +1633,15 @@ bool Db::deleteStemDb(const string& lang)
  * with documents indexed by a single term (the stem), and with the list of
  * parent terms in the document data.
  */
-bool Db::createStemDb(const string& lang)
+bool Db::createStemDbs(const vector<string>& langs)
 {
-    LOGDEB(("Db::createStemDb(%s)\n", lang.c_str()));
+    LOGDEB(("Db::createStemDbs\n"));
     if (m_ndb == 0 || m_ndb->m_isopen == false || !m_ndb->m_iswritable) {
 	LOGERR(("createStemDb: db not open or not writable\n"));
 	return false;
     }
 
-    WritableStemDb db(m_ndb->xwdb);
-    return db.createDb(lang);
+    return createExpansionDbs(m_ndb->xwdb, langs);
 }
 
 /**

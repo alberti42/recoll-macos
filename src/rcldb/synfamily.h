@@ -35,7 +35,10 @@
 #include <string>
 #include <vector>
 
-#include "xapian.h"
+#include <xapian.h>
+
+#include "debuglog.h"
+#include "xmacros.h"
 
 namespace Rcl {
 
@@ -98,15 +101,38 @@ public:
 			     const std::string& term, 
 			     const std::vector<std::string>& trans);
 
+    // Need to call setCurrentMemberName before addSynonym ! 
+    // We don't check it, for speed
+    virtual void setCurrentMemberName(const std::string& nm)
+    {
+	m_currentPrefix = entryprefix(nm);
+    }
+    virtual bool addSynonym(const std::string& term, const std::string& trans)
+    {
+	std::string key = m_currentPrefix + term;
+	std::string ermsg;
+	try {
+	    m_wdb.add_synonym(key, trans);
+	} XCATCHERROR(ermsg);
+	if (!ermsg.empty()) {
+	    LOGERR(("XapSynFamily::addSynonym: xapian error %s\n", 
+		    ermsg.c_str()));
+	    return false;
+	}
+	return true;
+    }
+
 protected:
     Xapian::WritableDatabase m_wdb;
+    std::string m_currentPrefix;
 };
 
 
 //
 // Prefixes are centrally defined here to avoid collisions
 //
-// Stem expansion family prefix. The family member name is the language
+// Stem expansion family prefix. The family member name is the
+// language ("all" for Dia and Cse)
 static const std::string synFamStem("Stm");
 static const std::string synFamDiac("Dia");
 static const std::string synFamCase("Cse");

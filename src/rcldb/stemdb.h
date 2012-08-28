@@ -76,14 +76,8 @@ private:
 		   std::vector<std::string>& result);
 };
 
-class WritableStemDb : public XapWritableSynFamily {
-public:
-    WritableStemDb(Xapian::WritableDatabase& xdb)
-	: XapWritableSynFamily(xdb, synFamStem)
-    {
-    }
-    bool createDb(const std::string& lang);
-};
+extern bool createExpansionDbs(Xapian::WritableDatabase& wdb, 
+			       const std::vector<std::string>& langs);
 
 }
 

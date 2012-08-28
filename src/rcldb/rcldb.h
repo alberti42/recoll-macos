@@ -181,7 +181,7 @@ class Db {
     bool purge();
 
     /** Create stem expansion database for given language. */
-    bool createStemDb(const string &lang);
+    bool createStemDbs(const std::vector<std::string> &langs);
     /** Delete stem expansion database for given language. */
     bool deleteStemDb(const string &lang);
 

@@ -24,7 +24,7 @@
  catch (const Xapian::Error &e) {		   \
     MSG = e.get_msg();				   \
     if (MSG.empty()) MSG = "Empty error message";  \
- } catch (const string &s) {			   \
+ } catch (const std::string &s) {		   \
     MSG = s;					   \
     if (MSG.empty()) MSG = "Empty error message";  \
  } catch (const char *s) {			   \

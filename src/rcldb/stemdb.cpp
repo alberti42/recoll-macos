@@ -35,6 +35,7 @@
 #include "rcldb.h"
 #include "rcldb_p.h"
 #include "synfamily.h"
+#include "unacpp.h"
 
 #include <iostream>
 
@@ -56,12 +57,19 @@ inline static bool p_notlowerascii(unsigned int c)
 /**
  * Create database of stem to parents associations for a given language.
  */
-bool WritableStemDb::createDb(const string& lang)
+bool createExpansionDbs(Xapian::WritableDatabase& wdb, 
+			const vector<string>& langs)
 {
-    LOGDEB(("StemDb::createDb(%s)\n", lang.c_str()));
+    LOGDEB(("StemDb::createExpansionDbs\n"));
     Chrono cron;
-    createMember(lang);
-    string prefix = entryprefix(lang);
+
+    vector<XapWritableSynFamily> stemdbs;
+    for (unsigned int i = 0; i < langs.size(); i++) {
+	stemdbs.push_back(XapWritableSynFamily(wdb, synFamStem));
+	stemdbs[i].deleteMember(langs[i]);
+	stemdbs[i].createMember(langs[i]);
+	stemdbs[i].setCurrentMemberName(langs[i]);
+    }
 
     // We walk the list of all terms, and stem each. We skip terms which
     // don't look like natural language.
@@ -73,10 +81,13 @@ bool WritableStemDb::createDb(const string& lang)
 
     string ermsg;
     try {
-        Xapian::Stem stemmer(lang);
+	vector<Xapian::Stem> stemmers;
+	for (unsigned int i = 0; i < langs.size(); i++) {
+	    stemmers.push_back(Xapian::Stem(langs[i]));
+	}
 
-        for (Xapian::TermIterator it = m_wdb.allterms_begin(); 
-	     it != m_wdb.allterms_end(); it++) {
+        for (Xapian::TermIterator it = wdb.allterms_begin(); 
+	     it != wdb.allterms_end(); it++) {
 	    // If the term has any non-lowercase 7bit char (that is,
             // numbers, capitals and punctuation) dont stem.
             string::iterator sit = (*it).begin(), eit = sit + (*it).length();
@@ -102,16 +113,19 @@ bool WritableStemDb::createDb(const string& lang)
 		continue;
 	    }
 
-            string stem = stemmer(*it);
-            LOGDEB2(("Db::createStemDb: word [%s], stem [%s]\n", (*it).c_str(),
-                     stem.c_str()));
-            if (stem == *it) {
-                ++stemconst;
-                continue;
-            }
-    
-	    m_wdb.add_synonym(prefix + stem, *it);
-	    ++allsyns;
+	    // Create stemming synonym for every lang
+	    for (unsigned int i = 0; i < langs.size(); i++) {
+		string stem = stemmers[i](*it);
+		if (stem == *it) {
+		    ++stemconst;
+		} else {
+		    stemdbs[i].addSynonym(stem, *it);
+		    LOGDEB0(("Db::createExpansiondbs: [%s] (%s) -> [%s]\n", 
+			     (*it).c_str(), langs[i].c_str(), stem.c_str()));
+		    ++allsyns;
+		}
+	    }
+
         }
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
@@ -119,7 +133,7 @@ bool WritableStemDb::createDb(const string& lang)
         return false;
     }
 
-    LOGDEB(("StemDb::createDb(%s): done: %.2f S\n", lang.c_str(), cron.secs()));
+    LOGDEB(("StemDb::createExpansionDbs: done: %.2f S\n", cron.secs()));
     LOGDEB(("StemDb::createDb: nostem %d stemconst %d allsyns %d\n", 
 	    nostem, stemconst, allsyns));
     return true;
