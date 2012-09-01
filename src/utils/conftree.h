@@ -471,7 +471,8 @@ public:
 		break;
 	}
 	sort(nms.begin(), nms.end());
-	unique(nms.begin(), nms.end());
+	vector<string>::iterator uit = unique(nms.begin(), nms.end());
+	nms.resize(uit - nms.begin());
 	return nms;
     }
 
@@ -488,7 +489,8 @@ public:
 		break;
 	}
 	sort(sks.begin(), sks.end());
-	unique(sks.begin(), sks.end());
+	vector<string>::iterator uit = unique(sks.begin(), sks.end());
+	sks.resize(uit - sks.begin());
 	return sks;
     }
 

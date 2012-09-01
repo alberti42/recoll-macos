@@ -956,7 +956,8 @@ vector<string> RclConfig::getSkippedPaths()
 	*it = path_canon(*it);
     }
     sort(skpl.begin(), skpl.end());
-    unique(skpl.begin(), skpl.end());
+    vector<string>::iterator uit = unique(skpl.begin(), skpl.end());
+    skpl.resize(uit - skpl.begin());
     return skpl;
 }
 
@@ -978,7 +979,8 @@ vector<string> RclConfig::getDaemSkippedPaths()
 	sort(dskpl.begin(), dskpl.end());
 	merge(dskpl.begin(), dskpl.end(), skpl1.begin(), skpl1.end(), 
 	      skpl.begin());
-	unique(skpl.begin(), skpl.end());
+	vector<string>::iterator uit = unique(skpl.begin(), skpl.end());
+	skpl.resize(uit - skpl.begin());
     }
     return skpl;
 }
