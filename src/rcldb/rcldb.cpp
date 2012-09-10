@@ -22,10 +22,10 @@
 #include <math.h>
 #include <time.h>
 
-#include <iostream>
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 
 #ifndef NO_NAMESPACES
 using namespace std;
@@ -69,6 +69,8 @@ static const string cstr_RCL_IDX_VERSION("1");
 // This is the word position offset at which we index the body text
 // (abstract, keywords, etc.. are stored before this)
 static const unsigned int baseTextPosition = 100000;
+
+static const string cstr_mbreaks("rclmbreaks");
 
 #ifndef NO_NAMESPACES
 namespace Rcl {
@@ -302,6 +304,27 @@ double Db::Native::qualityTerms(Xapian::docid docid,
 // Return the positions list for the page break term
 bool Db::Native::getPagePositions(Xapian::docid docid, vector<int>& vpos)
 {
+    // Need to retrieve the document record to check for multiple page breaks
+    // that we store there for lack of better place
+    map<int, int> mbreaksmap;
+    try {
+	Xapian::Document xdoc = xrdb.get_document(docid);
+	string data = xdoc.get_data();
+	Doc doc;
+	string mbreaks;
+	if (dbDataToRclDoc(docid, data, doc) && 
+	    doc.getmeta(cstr_mbreaks, &mbreaks)) {
+	    vector<string> values;
+	    stringToTokens(mbreaks, values, ",");
+	    for (unsigned int i = 0; i < values.size() / 2; i += 2) {
+		int pos  = atoi(values[i].c_str()) + baseTextPosition;
+		int incr = atoi(values[i+1].c_str());
+		mbreaksmap[pos] = incr;
+	    }
+	}
+    } catch (...) {
+    }
+
     string qterm = page_break_term;
     Xapian::PositionIterator pos;
     try {
@@ -311,6 +334,13 @@ bool Db::Native::getPagePositions(Xapian::docid docid, vector<int>& vpos)
 	    if (ipos < int(baseTextPosition)) {
 		// Not in text body. Strange...
 		continue;
+	    }
+	    map<int, int>::iterator it = mbreaksmap.find(ipos);
+	    if (it != mbreaksmap.end()) {
+		LOGDEB1(("getPagePositions: found multibreak at %d incr %d\n", 
+			 ipos, it->second));
+		for (int i = 0 ; i < it->second; i++) 
+		    vpos.push_back(ipos);
 	    }
 	    vpos.push_back(ipos);
 	} 
@@ -357,12 +387,11 @@ int Db::Native::getFirstMatchPage(Xapian::docid docid, Query *query)
 		if (ipos < int(baseTextPosition)) // Not in text body
 		    continue;
 		// What page ?
-		LOGABS(("getFirstPageMatch: looking for match for [%s]\n", 
-			qterm.c_str()));
+		LOGABS(("getFirstPageMatch: search match for [%s] pos %d\n", 
+			qterm.c_str(), ipos));
 		vector<int>::const_iterator it = 
-		    lower_bound(pagepos.begin(), pagepos.end(), ipos);
-		if (it != pagepos.end())
-		    return it - pagepos.begin() + 1;
+		    upper_bound(pagepos.begin(), pagepos.end(), ipos);
+		return it - pagepos.begin() + 1;
 	    }
 	} catch (...) {
 	    // Term does not occur. No problem.
@@ -1002,7 +1031,7 @@ out:
 
 class TermProcIdx : public TermProc {
 public:
-    TermProcIdx() : TermProc(0), m_ts(0) {}
+    TermProcIdx() : TermProc(0), m_ts(0), m_lastpagepos(0), m_pageincr(0) {}
     void setTSD(TextSplitDb *ts) {m_ts = ts;}
 
     bool takeword(const std::string &term, int pos, int, int)
@@ -1033,10 +1062,47 @@ public:
     void newpage(int pos)
     {
 	pos += m_ts->basepos;
+	LOGDEB2(("newpage: %d\n", pos));
+	if (pos < int(baseTextPosition))
+	    return;
+
 	m_ts->doc.add_posting(m_ts->prefix + page_break_term, pos);
+	if (pos == m_lastpagepos) {
+	    m_pageincr++;
+	    LOGDEB2(("newpage: same pos, pageincr %d lastpagepos %d\n", 
+		     m_pageincr, m_lastpagepos));
+	} else {
+	    LOGDEB2(("newpage: pos change, pageincr %d lastpagepos %d\n", 
+		     m_pageincr, m_lastpagepos));
+	    if (m_pageincr > 0) {
+		// Remember the multiple page break at this position
+		m_pageincrvec.push_back(
+		    pair<int, int>(m_lastpagepos - baseTextPosition, 
+				   m_pageincr));
+	    }
+	    m_pageincr = 0;
+	}
+	m_lastpagepos = pos;
     }
-private:
+
+    virtual bool flush()
+    {
+	if (m_pageincr > 0) {
+	    m_pageincrvec.push_back(
+		pair<int, int>(m_lastpagepos - baseTextPosition,  
+			       m_pageincr));
+	    m_pageincr = 0;
+	}
+	return TermProc::flush();
+    }
+
     TextSplitDb *m_ts;
+    // Auxiliary page breaks data for positions with multiple page breaks.
+    int m_lastpagepos;
+    // increment of page breaks at same pos. Normally 0, 1.. when several
+    // breaks at the same pos
+    int m_pageincr; 
+    vector <pair<int, int> > m_pageincrvec;
 };
 
 
@@ -1274,7 +1340,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     struct tm *tm = localtime(&mtime);
     char buf[9];
     snprintf(buf, 9, "%04d%02d%02d",
-	    tm->tm_year+1900, tm->tm_mon + 1, tm->tm_mday);
+	     tm->tm_year+1900, tm->tm_mon + 1, tm->tm_mday);
     newdocument.add_term(xapday_prefix + string(buf)); // Date (YYYYMMDD)
     buf[6] = '\0';
     newdocument.add_term(xapmonth_prefix + string(buf)); // Month (YYYYMM)
@@ -1375,6 +1441,18 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	}
     }
 
+    // If empty pages (multiple break at same pos) were recorded, save
+    // them (this is because we have no way to record them in the
+    // Xapian list
+    if (!tpidx.m_pageincrvec.empty()) {
+	ostringstream multibreaks;
+	for (unsigned int i = 0; i < tpidx.m_pageincrvec.size(); i++) {
+	    multibreaks << tpidx.m_pageincrvec[i].first << "," << 
+		tpidx.m_pageincrvec[i].second;
+	}
+	RECORD_APPEND(record, string(cstr_mbreaks), multibreaks.str());
+    }
+    
     // If the file's md5 was computed, add value. This is optionally
     // used for query result duplicate elimination.
     string& md5 = doc.meta[Doc::keymd5];
