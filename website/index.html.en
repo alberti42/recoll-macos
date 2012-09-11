@@ -86,6 +86,12 @@
       <h2>News</h2>
       <div class="news">
       <ul>
+        <li>2012-09-11: a new user-contributed script for those who use
+          real-time indexing on laptops: stop or start indexing
+          according to AC power status. See the details on
+          the <a href="https://bitbucket.org/medoc/recoll/wiki/IndexOnAc.wiki">
+            Wiki</a>. </li>
+
         <li>2012-06-19: update info. If you are not running Recoll 1.17.3,
           you probably should. 1.17.2 and older versions have a bug which
           can cause a crash of the indexing process while processing email,
