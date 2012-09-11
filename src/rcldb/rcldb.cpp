@@ -250,6 +250,9 @@ void Db::Native::setDbWideQTermsFreqs(Query *query)
 // Compute query terms quality coefficients for a matched document by
 // retrieving the Within Document Frequencies and multiplying by
 // overal term frequency, then using log-based thresholds.
+// 2012: it's not too clear to me why exactly we do the log thresholds thing.
+//  Preferring terms wich are rare either or both in the db and the document 
+//  seems reasonable though
 double Db::Native::qualityTerms(Xapian::docid docid, 
 				Query *query,
 				const vector<string>& terms,
@@ -350,6 +353,16 @@ bool Db::Native::getPagePositions(Xapian::docid docid, vector<int>& vpos)
     return true;
 }
 
+int Db::Native::getPageNumberForPosition(const vector<int>& pbreaks, 
+					 unsigned int pos)
+{
+    if (pos < baseTextPosition) // Not in text body
+	return -1;
+    vector<int>::const_iterator it = 
+	upper_bound(pbreaks.begin(), pbreaks.end(), pos);
+    return it - pbreaks.begin() + 1;
+}
+
 // Return page number for first match of "significant" term.
 int Db::Native::getFirstMatchPage(Xapian::docid docid, Query *query)
 {
@@ -383,15 +396,9 @@ int Db::Native::getFirstMatchPage(Xapian::docid docid, Query *query)
 	try {
 	    for (pos = xrdb.positionlist_begin(docid, qterm); 
 		 pos != xrdb.positionlist_end(docid, qterm); pos++) {
-		int ipos = *pos;
-		if (ipos < int(baseTextPosition)) // Not in text body
-		    continue;
-		// What page ?
-		LOGABS(("getFirstPageMatch: search match for [%s] pos %d\n", 
-			qterm.c_str(), ipos));
-		vector<int>::const_iterator it = 
-		    upper_bound(pagepos.begin(), pagepos.end(), ipos);
-		return it - pagepos.begin() + 1;
+		int pagenum = getPageNumberForPosition(pagepos, *pos);
+		if (pagenum > 0)
+		    return pagenum;
 	    }
 	} catch (...) {
 	    // Term does not occur. No problem.
@@ -435,8 +442,8 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
     // TOBEDONE: terms issued from an original one by stem expansion
     // should be somehow aggregated here, else, it may happen that
     // such a group prevents displaying matches for other terms (by
-    // remaining its meaning to the maximum occurrences per term test
-    // using while walking the list below)
+    // removing its meaning from the maximum occurrences per term test
+    // used while walking the list below)
     multimap<double, string> byQ;
     double totalweight = qualityTerms(docid, query, terms, byQ);
     LOGABS(("makeAbstract:%d: computed Qcoefs.\n", chron.ms()));
@@ -614,8 +621,11 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
     }
 #endif
 
-    LOGABS(("makeAbstract:%d: extracting\n", chron.millis()));
+    vector<int> vpbreaks;
+    getPagePositions(docid, vpbreaks);
 
+    LOGABS(("makeAbstract:%d: extracting. Got %u pages\n", chron.millis(),
+	    vpbreaks.size()));
     // Finally build the abstract by walking the map (in order of position)
     vector<string> vabs;
     string chunk;
@@ -625,6 +635,12 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 	LOGDEB2(("Abtract:output %u -> [%s]\n", it->first,it->second.c_str()));
 	if (!occupiedmarker.compare(it->second))
 	    continue;
+	if (chunk.empty() && !vpbreaks.empty()) {
+	    int pnum =  getPageNumberForPosition(vpbreaks, it->first);
+	    ostringstream ss;
+	    ss << pnum;
+	    chunk += string(" [p ") + ss.str() + "] ";
+	}
 	Utf8Iter uit(it->second);
 	bool newcjk = false;
 	if (TextSplit::isCJK(*uit))

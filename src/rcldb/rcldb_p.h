@@ -92,6 +92,7 @@ class Db::Native {
     vector<string> makeAbstract(Xapian::docid id, Query *query);
     bool getPagePositions(Xapian::docid docid, vector<int>& vpos);
     int getFirstMatchPage(Xapian::docid docid, Query *query);
+    int getPageNumberForPosition(const vector<int>& pbreaks, unsigned int pos);
 
     bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc);
 
