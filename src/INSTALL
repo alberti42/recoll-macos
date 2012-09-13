@@ -232,7 +232,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        include files (ie: if qt.h is /usr/local/qt/include/qt.h, QTDIR should
        be /usr/local/qt).
 
-     * QMAKESPECS should be set to the name of one of the qt mkspecs
+     * QMAKESPECS should be set to the name of one of the Qt mkspecs
        sub-directories (ie: linux-g++).
 
    On many Linux systems, QTDIR is set by the login scripts, and QMAKESPECS
@@ -601,8 +601,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            The name of the character set used for files that do not contain a
            character set definition (ie: plain text files). This can be
            redefined for any sub-directory. If it is not set at all, the
-           character set used is the one defined by the nls environment
-           (LC_ALL, LC_CTYPE, LANG), or iso8859-1 if nothing is set.
+           character set used is the one defined by the nls environment (
+           LC_ALL, LC_CTYPE, LANG), or iso8859-1 if nothing is set.
 
    unac_except_trans
 
