@@ -86,6 +86,13 @@
       <h2>News</h2>
       <div class="news">
       <ul>
+        <li>2012-09-13: the next Recoll version will maybe acquire switchable
+          case and diacritics sensitivity. I am writing 
+          a few pages about the
+          issues involved, they are referenced from my  
+          <a href="https://plus.google.com/u/0/113262930843833486941/posts">
+            google+</a> profile</li>
+
         <li>2012-09-11: a new user-contributed script for those who use
           real-time indexing on laptops: stop or start indexing
           according to AC power status. See the details on
