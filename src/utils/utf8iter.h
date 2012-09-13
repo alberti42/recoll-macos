@@ -20,6 +20,7 @@
 #ifdef UTF8ITER_CHECK
 #include "assert.h"
 #endif
+#include <string>
 
 /** 
  * A small helper class to iterate over utf8 strings. This is not an
@@ -30,13 +31,13 @@
  */
 class Utf8Iter {
 public:
-    Utf8Iter(const string &in) 
+    Utf8Iter(const std::string &in) 
 	: m_s(in), m_cl(0), m_pos(0), m_charpos(0), m_error(false)
     {
 	update_cl();
     }
 
-    const string& buffer() const {return m_s;}
+    const std::string& buffer() const {return m_s;}
 
     void rewind() 
     {
@@ -52,7 +53,7 @@ public:
      * current position */
     unsigned int operator[](unsigned int charpos) const 
     {
-	string::size_type mypos = 0;
+	std::string::size_type mypos = 0;
 	unsigned int mycp = 0;
 	if (charpos >= m_charpos) {
 	    mypos = m_pos;
@@ -75,7 +76,7 @@ public:
     }
 
     /** Increment current position to next utf-8 char */
-    string::size_type operator++(int) 
+    std::string::size_type operator++(int) 
     {
 	// Note: m_cl may be zero at eof if user's test not right
 	// this shouldn't crash the program until actual data access
@@ -83,7 +84,7 @@ public:
 	assert(m_cl != 0);
 #endif
 	if (m_cl <= 0) 
-	    return string::npos;
+	    return std::string::npos;
 
 	m_pos += m_cl;
 	m_charpos++;
@@ -102,7 +103,7 @@ public:
 
     /** Append current utf-8 possibly multi-byte character to string param.
 	This needs to be fast. No error checking. */
-    unsigned int appendchartostring(string &out) {
+    unsigned int appendchartostring(std::string &out) {
 #ifdef UTF8ITER_CHECK
 	assert(m_cl != 0);
 #endif
@@ -111,7 +112,7 @@ public:
     }
 
     /** Return current character as string */
-    operator string() {
+    operator std::string() {
 #ifdef UTF8ITER_CHECK
 	assert(m_cl != 0);
 #endif
@@ -127,39 +128,39 @@ public:
     }
 
     /** Return current byte offset in input string */
-    string::size_type getBpos() const {
+    std::string::size_type getBpos() const {
 	return m_pos;
     }
 
     /** Return current character length */
-    string::size_type getBlen() const {
+    std::string::size_type getBlen() const {
 	return m_cl;
     }
 
     /** Return current unicode character offset in input string */
-    string::size_type getCpos() const {
+    std::string::size_type getCpos() const {
 	return m_charpos;
     }
 
 private:
     // String we're working with
-    const string&     m_s; 
+    const std::string&     m_s; 
     // Character length at current position. A value of zero indicates
     // an error.
     unsigned int      m_cl; 
     // Current byte offset in string.
-    string::size_type m_pos; 
+    std::string::size_type m_pos; 
     // Current character position
     unsigned int      m_charpos; 
     // Am I ok ?
     mutable bool      m_error;
 
     // Check position and cl against string length
-    bool poslok(string::size_type p, int l) const {
+    bool poslok(std::string::size_type p, int l) const {
 #ifdef UTF8ITER_CHECK
-	assert(p != string::npos && l > 0 && p + l <= m_s.length());
+	assert(p != std::string::npos && l > 0 && p + l <= m_s.length());
 #endif
-	return p != string::npos && l > 0 && p + l <= m_s.length();
+	return p != std::string::npos && l > 0 && p + l <= m_s.length();
     }
 
     // Update current char length in object state, minimum checking
@@ -180,7 +181,7 @@ private:
     }
 
     // Get character byte length at specified position. Returns 0 for error.
-    inline int get_cl(string::size_type p) const 
+    inline int get_cl(std::string::size_type p) const 
     {
 	unsigned int z = (unsigned char)m_s[p];
 	if (z <= 127) {
@@ -200,7 +201,7 @@ private:
     }
 
     // Compute value at given position. No error checking.
-    inline unsigned int getvalueat(string::size_type p, int l) const
+    inline unsigned int getvalueat(std::string::size_type p, int l) const
     {
 	switch (l) {
 	case 1: 

@@ -102,6 +102,8 @@ static char usage [] =
 "    -m : dump the whole document meta[] array for each result\n"
 "    -A : output the document abstracts\n"
 "    -S fld : sort by field <fld>\n"
+"    -s stemlang : set stemming language to use (must exist in index...)\n"
+"       Use -s \"\" to turn off stem expansion\n"
 "    -D : sort descending\n"
 "    -i <dbdir> : additional index, several can be given\n"
 "    -e use url encoding (%xx) for urls\n"

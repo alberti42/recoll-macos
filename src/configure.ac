@@ -104,7 +104,8 @@ fi
 # Real time monitoring with inotify
 AC_ARG_WITH(inotify, 
     AC_HELP_STRING([--with-inotify],
-   [Use inotify for almost real time indexing of modified files.]),
+   [Use inotify for almost real time indexing of modified files (the default
+    is yes on Linux).]),
         withInotify=$withval, withInotify=$inot_default)
 
 if test X$withInotify != Xno ; then
@@ -163,7 +164,8 @@ if test X$withFam != Xno ; then
 fi
 
 # Enable use of file extended attributes. 
-# Not by default as these are little used for now.
+# Not by default as extended attributes are little used for now, and
+# looking for them is not completely trivial
 AC_ARG_ENABLE(xattr,
     AC_HELP_STRING([--enable-xattr],
    [Enable fetching metadata from file extended attributes. This is only
@@ -173,6 +175,22 @@ AC_ARG_ENABLE(xattr,
 
 if test X$xattrEnabled = Xyes ; then
   AC_DEFINE(RCL_USE_XATTR, 1, [Use file extended attributes])
+fi
+
+# Enable use of threads in the indexing pipeline.  Threads are used in
+# bucket-brigade fashion for the processing steps (reading file - text
+# splitting - indexing proper). The performance increase is small in normal
+# case (might be a bit more significant if you're using an SSD), and this
+# is disabled by default as we usually care little about indexing absolute
+# performance (more about impact on usability and total resources used).
+AC_ARG_ENABLE(idxthreads,
+    AC_HELP_STRING([--enable-idxthreads],
+   [Enable multithread indexing. This can somewhat boost indexing 
+   performance.]),
+        idxthreadsEnabled=$enableval, idxthreadsEnabled=no)
+
+if test X$idxthreadsEnabled = Xyes ; then
+  AC_DEFINE(IDX_THREADS, 1, [Use multiple threads for indexing])
 fi
 
 # Enable CamelCase word splitting. This is optional because it causes 
@@ -192,6 +210,17 @@ AC_ARG_ENABLE(camelcase,
 
 if test X$camelcaseEnabled = Xyes ; then
   AC_DEFINE(RCL_SPLIT_CAMELCASE, 1, [Split camelCase words])
+fi
+
+# Not by default as these are little used for now.
+AC_ARG_ENABLE(stripchars,
+    AC_HELP_STRING([--enable-stripchars],
+   [Remove diacritics and fold character case in indexed terms. This will
+   yield less precise searches but the index will be smaller]),
+        stripcharsEnabled=$enableval, stripcharsEnabled=no)
+
+if test X$stripcharsEnabled = Xyes ; then
+  AC_DEFINE(RCL_INDEX_STRIPCHARS, 1, [Remove case and accents from terms])
 fi
 
 # Disable building the python module. This is built by default, because
@@ -214,7 +243,7 @@ fi
 
 # Build PIC objects for the library ?
 AC_ARG_ENABLE(pic,
-    AC_HELP_STRING([--enable-pic],
+    AC_HELP_STRING([--disable-pic],
    [Do not compile library objects as position independant code. 
     This is incompatible with the php or python extensions.]),
         picEnabled=$enableval, picEnabled=forpython)
@@ -433,7 +462,7 @@ else
  ##### Using Qt webkit for reslist display? Else Qt textbrowser
   AC_ARG_ENABLE(webkit,
     AC_HELP_STRING([--disable-webkit],
-      [Disable use of qt-webkit.]),
+      [Disable use of qt-webkit (only meaningful if qtgui is enabled).]),
         enableWebkit=$enableval, enableWebkit="yes")
 
   if test "$enableWebkit" = "yes" ; then
@@ -443,6 +472,8 @@ else
    QMAKE_ENABLE_WEBKIT="#"
    QMAKE_DISABLE_WEBKIT=""
   fi
+
+
 
  ##### Using QZeitGeist lib ? Default no for now
   AC_ARG_WITH(qzeitgeist,

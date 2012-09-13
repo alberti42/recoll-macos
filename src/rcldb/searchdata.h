@@ -179,7 +179,7 @@ private:
 class SearchDataClause {
 public:
     enum Modifier {SDCM_NONE=0, SDCM_NOSTEMMING=1, SDCM_ANCHORSTART=2,
-		   SDCM_ANCHOREND=4};
+		   SDCM_ANCHOREND=4, SDCM_CASESENS=8, SDCM_DIACSENS=16};
 
     SearchDataClause(SClType tp) 
     : m_tp(tp), m_parentSearch(0), m_haveWildCards(0), 

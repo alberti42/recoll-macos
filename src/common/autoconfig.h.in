@@ -96,6 +96,12 @@
 /* Use file extended attributes */
 #undef RCL_USE_XATTR
 
+/* Use multiple threads for indexing */
+#undef IDX_THREADS
+
+/* Remove case and accents from terms */
+#undef RCL_INDEX_STRIPCHARS
+
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 

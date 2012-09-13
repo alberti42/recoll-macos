@@ -41,6 +41,7 @@ using std::string;
 #endif
 
 DEF_CSTR(caption, "caption");
+DEF_CSTR(colon, ":");
 DEF_CSTR(dmtime, "dmtime");
 DEF_CSTR(dquote, "\"");
 DEF_CSTR(fbytes, "fbytes");
