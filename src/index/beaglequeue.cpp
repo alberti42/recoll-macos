@@ -204,8 +204,10 @@ bool BeagleQueueIndexer::indexFromCache(const string& udi)
     string data;
     string hittype;
 
-    if (!m_cache || !m_cache->getFromCache(udi, dotdoc, data, &hittype))
+    if (!m_cache || !m_cache->getFromCache(udi, dotdoc, data, &hittype)) {
+	LOGERR(("BeagleQueueIndexer::indexFromCache: cache failed\n"));
         return false;
+    }
 
     if (hittype.empty()) {
         LOGERR(("BeagleIndexer::index: cc entry has no hit type\n"));

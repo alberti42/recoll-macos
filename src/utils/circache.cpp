@@ -19,9 +19,9 @@
 #include "autoconfig.h"
 
 #include <stdio.h>
-#include <assert.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <assert.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/uio.h>
@@ -318,7 +318,10 @@ public:
 
     bool writefirstblock()
     {
-        assert(m_fd >= 0);
+	if (m_fd < 0) {
+	    m_reason << "writefirstblock: not open ";
+	    return false;
+	}
 
         ostringstream s;
         s << 
@@ -344,7 +347,10 @@ public:
 
     bool readfirstblock()
     {
-        assert(m_fd >= 0);
+	if (m_fd < 0) {
+	    m_reason << "readfirstblock: not open ";
+	    return false;
+	}
 
         char bf[CIRCACHE_FIRSTBLOCK_SIZE];
 
@@ -387,6 +393,10 @@ public:
 
     bool writeEntryHeader(off_t offset, const EntryHeaderData& d)
     {
+	if (m_fd < 0) {
+	    m_reason << "writeEntryHeader: not open ";
+	    return false;
+	}
         char bf[CIRCACHE_HEADER_SIZE];
         memset(bf, 0, CIRCACHE_HEADER_SIZE);
         snprintf(bf, CIRCACHE_HEADER_SIZE, 
@@ -405,7 +415,10 @@ public:
 
     CCScanHook::status readEntryHeader(off_t offset, EntryHeaderData& d)
     {
-        assert(m_fd >= 0);
+	if (m_fd < 0) {
+	    m_reason << "readEntryHeader: not open ";
+            return CCScanHook::Error;
+	}
 
         if (lseek(m_fd, offset, 0) != offset) {
             m_reason << "readEntryHeader: lseek(" << offset << 
@@ -438,7 +451,10 @@ public:
     CCScanHook::status scan(off_t startoffset, CCScanHook *user, 
                             bool fold = false)
     {
-        assert(m_fd >= 0);
+	if (m_fd < 0) {
+	    m_reason << "scan: not open ";
+            return CCScanHook::Error;
+	}
 
         off_t so0 = startoffset;
         bool already_folded = false;
@@ -601,7 +617,10 @@ string CirCache::getReason()
 bool CirCache::create(off_t m_maxsize, int flags)
 {
     LOGDEB(("CirCache::create: [%s] flags 0x%x\n", m_dir.c_str(), flags));
-    assert(m_d != 0);
+    if (m_d == 0) {
+	LOGERR(("CirCache::create: null data\n"));
+	return false;
+    }
     struct stat st;
     if (stat(m_dir.c_str(), &st) < 0) {
         if (mkdir(m_dir.c_str(), 0777) < 0) {
@@ -639,7 +658,11 @@ bool CirCache::create(off_t m_maxsize, int flags)
 
 bool CirCache::open(OpMode mode)
 {
-    assert(m_d != 0);
+    if (m_d == 0) {
+	LOGERR(("CirCache::open: null data\n"));
+	return false;
+    }
+
     if (m_d->m_fd >= 0)
         ::close(m_d->m_fd);
 
@@ -726,9 +749,8 @@ public:
 bool CirCache::get(const string& udi, string& dic, string& data, int instance)
 {
     Chrono chron;
-    assert(m_d != 0);
     if (m_d->m_fd < 0) {
-        m_d->m_reason << "CirCache::get: not open";
+        m_d->m_reason << "CirCache::get: no data or not open";
         return false;
     }
 
@@ -794,9 +816,12 @@ bool CirCache::get(const string& udi, string& dic, string& data, int instance)
 
 bool CirCache::erase(const string& udi)
 {
-    assert(m_d != 0);
+    if (m_d == 0) {
+        LOGERR(("CirCache::erase: null data\n"));
+        return false;
+    }
     if (m_d->m_fd < 0) {
-        m_d->m_reason << "CirCache::erase: not open";
+        m_d->m_reason << "CirCache::erase: no data or not open";
         return false;
     }
 
@@ -869,9 +894,12 @@ public:
 bool CirCache::put(const string& udi, const ConfSimple *iconf, 
                    const string& data, unsigned int iflags)
 {
-    assert(m_d != 0);
+    if (m_d == 0) {
+        LOGERR(("CirCache::put: null data\n"));
+        return false;
+    }
     if (m_d->m_fd < 0) {
-        m_d->m_reason << "CirCache::put: not open";
+        m_d->m_reason << "CirCache::put: no data or not open";
         return false;
     }
 
@@ -940,7 +968,10 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
         if (m_d->readEntryHeader(m_d->m_nheadoffs, pd) != CCScanHook::Continue){
             return false;
         }
-        assert(int(pd.padsize) == m_d->m_npadsize);
+	if (int(pd.padsize) != m_d->m_npadsize) {
+	    m_d->m_reason << "CirCache::put: logic error: bad padsize ";
+	    return false;
+	}
         if (pd.dicsize == 0) {
             // erased entry. Also recover the header space, no need to rewrite
             // the header, we're going to write on it.
@@ -1033,7 +1064,10 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
 
 bool CirCache::rewind(bool& eof)
 {
-    assert(m_d != 0);
+    if (m_d == 0) {
+        LOGERR(("CirCache::rewind: null data\n"));
+        return false;
+    }
 
     eof = false;
 
@@ -1054,7 +1088,10 @@ bool CirCache::rewind(bool& eof)
 
 bool CirCache::next(bool& eof)
 {
-    assert(m_d != 0);
+    if (m_d == 0) {
+        LOGERR(("CirCache::next: null data\n"));
+        return false;
+    }
 
     eof = false;
 
@@ -1087,7 +1124,10 @@ bool CirCache::next(bool& eof)
 
 bool CirCache::getCurrentUdi(string& udi)
 {
-    assert(m_d != 0);
+    if (m_d == 0) {
+        LOGERR(("CirCache::getCurrentUdi: null data\n"));
+        return false;
+    }
     
     if (!m_d->readHUdi(m_d->m_itoffs, m_d->m_ithd, udi))
         return false;
@@ -1096,7 +1136,10 @@ bool CirCache::getCurrentUdi(string& udi)
 
 bool CirCache::getCurrent(string& udi, string& dic, string& data)
 {
-    assert(m_d != 0);
+    if (m_d == 0) {
+        LOGERR(("CirCache::getCurrent: null data\n"));
+        return false;
+    }
     if (!m_d->readDicData(m_d->m_itoffs, m_d->m_ithd, dic, &data))
         return false;
 
