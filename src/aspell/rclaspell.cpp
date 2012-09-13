@@ -258,11 +258,6 @@ public:
     {}
     void newData() {
 	while (m_db.termWalkNext(m_tit, *m_input)) {
-	    // Prefixed terms are also somewhere else without the suffix,
-	    // skip them
-	    if (m_input->empty() || 
-		('A' <= m_input->at(0) && m_input->at(0) <= 'Z'))
-		continue;
 	    if (!Rcl::Db::isSpellingCandidate(*m_input))
 		continue;
 	    // Got a non-empty sort-of appropriate term, let's send it to
