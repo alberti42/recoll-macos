@@ -258,10 +258,11 @@ bool ConfIndexer::createStemmingDatabases()
 
 bool ConfIndexer::createStemDb(const string &lang)
 {
-    if (!m_db.open(Rcl::Db::DbUpd)) {
+    if (!m_db.open(Rcl::Db::DbUpd))
 	return false;
-    }
-    return m_db.createStemDbs(vector<string>(1, lang));
+    vector<string> langs;
+    stringToStrings(lang, langs);
+    return m_db.createStemDbs(langs);
 }
 
 // The language for the aspell dictionary is handled internally by the aspell

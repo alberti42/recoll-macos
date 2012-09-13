@@ -274,15 +274,6 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
     // We get here if there was no specific error, but there is no
     // identified mime type, or no handler associated.
 
-#ifdef INDEX_UNKNOWN_TEXT_AS_PLAIN
-    // If the type is an unknown text/xxx, index as text/plain and
-    // hope for the best (this wouldn't work too well with text/rtf...)
-    if (mtype.find("text/") == 0) {
-        h = mhFactory(cstr_textplain);
-	goto out;
-    }
-#endif
-
     // Finally, unhandled files are either ignored or their name and
     // generic metadata is indexed, depending on configuration
     {bool indexunknown = false;

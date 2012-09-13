@@ -16,7 +16,8 @@ topdirs = ~
 # ignore. If you need index mozilla/thunderbird mail folders, don't put
 # ".*" in there (as was the case with an older sample config)
 # These are simple names, not paths (must contain no / )
-skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
+skippedNames = #* bin CVS  Cache cache* .cache caughtspam tmp \
+     .thumbnails .svn \
      *~ .beagle .git .hg .bzr loop.ps .xsession-errors \
      .recoll* xapiandb recollrc recoll.conf
 
@@ -73,8 +74,13 @@ indexstemminglanguages = english
 # first element and the translation following. The handling of both the
 # lowercase and upper-case versions of a character should be specified, as
 # appartenance to the list will turn-off both standard accent and case
-# processing. Example for Swedish:
+# processing. Examples: 
+# Swedish:
 # unac_except_trans =  åå Åå ää Ää öö Öö
+# German:
+# unac_except_trans = Ää Öö Üü ää öö üü ßss
+# In French, you probably want to decompose oe and ae
+# unac_except_trans = œoe Œoe æae Æae
 
 # Where to store the database (directory). This may be an absolute path,
 # else it is taken as relative to the configuration directory (-c argument

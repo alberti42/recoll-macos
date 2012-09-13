@@ -166,6 +166,9 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
 	} 
 
 	// "Regular" processing follows:
+	unsigned int mods = (unsigned int)(*it)->m_modifiers;
+	nclause = 0;
+
 	switch ((*it)->m_op) {
 	case WasaQuery::OP_NULL:
 	case WasaQuery::OP_AND:
@@ -192,8 +195,6 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
                 }
             }
 
-	    unsigned int mods = (unsigned int)(*it)->m_modifiers;
-
 	    // I'm not sure I understand the phrase/near detection
 	    // thereafter anymore, maybe it would be better to have an
 	    // explicit flag. Mods can only be set after a double
@@ -216,12 +217,6 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
 		LOGERR(("wasaQueryToRcl: out of memory\n"));
 		return 0;
 	    }
-	    if (mods & WasaQuery::WQM_NOSTEM) {
-		nclause->addModifier(Rcl::SearchDataClause::SDCM_NOSTEMMING);
-	    }
-	    if ((*it)->m_weight != 1.0)
-		nclause->setWeight((*it)->m_weight);
-	    sdata->addClause(nclause);
 	}
 	    break;
 	    
@@ -248,11 +243,6 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
 		LOGERR(("wasaQueryToRcl: out of memory\n"));
 		return 0;
 	    }
-	    if ((*it)->m_modifiers & WasaQuery::WQM_NOSTEM)
-		nclause->setModifiers(Rcl::SearchDataClause::SDCM_NOSTEMMING);
-	    if ((*it)->m_weight != 1.0)
-		nclause->setWeight((*it)->m_weight);
-	    sdata->addClause(nclause);
 	    break;
 
 	case WasaQuery::OP_OR:
@@ -272,10 +262,17 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
 		reason = "Out of memory";
 		return 0;
 	    }
-	    if ((*it)->m_modifiers & WasaQuery::WQM_NOSTEM)
-		nclause->setModifiers(Rcl::SearchDataClause::SDCM_NOSTEMMING);
-	    sdata->addClause(nclause);
 	}
+
+	if (mods & WasaQuery::WQM_NOSTEM)
+	    nclause->addModifier(Rcl::SearchDataClause::SDCM_NOSTEMMING);
+	if (mods & WasaQuery::WQM_DIACSENS)
+	    nclause->addModifier(Rcl::SearchDataClause::SDCM_DIACSENS);
+	if (mods & WasaQuery::WQM_CASESENS)
+	    nclause->addModifier(Rcl::SearchDataClause::SDCM_CASESENS);
+	if ((*it)->m_weight != 1.0)
+	    nclause->setWeight((*it)->m_weight);
+	sdata->addClause(nclause);
     }
 
     return sdata;

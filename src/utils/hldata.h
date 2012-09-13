@@ -24,7 +24,9 @@ struct HighlightData {
 
     /** Processed/expanded terms and groups. Used for looking for
      * regions to highlight. Terms are just groups with 1 entry. All
-     * terms in there are unaccented, and the list may include values
+     * terms are transformed to be compatible with index content
+     * (unaccented and lowercased as needed depending on
+     * configuration), and the list may include values
      * expanded from the original terms by stem or wildcard expansion.
      */
     std::vector<std::vector<std::string> > groups;
