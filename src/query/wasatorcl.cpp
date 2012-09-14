@@ -169,6 +169,7 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config,
 
 	// "Regular" processing follows:
 	unsigned int mods = (unsigned int)(*it)->m_modifiers;
+	LOGDEB0(("wasaQueryToRcl: clause modifiers 0x%x\n", mods));
 	nclause = 0;
 
 	switch ((*it)->m_op) {
@@ -180,7 +181,7 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config,
 	    continue;
 
 	case WasaQuery::OP_LEAF: {
-	    LOGDEB(("wasaQueryToRcl: leaf clause [%s]:[%s] slack %d\n", 
+	    LOGDEB0(("wasaQueryToRcl: leaf clause [%s]:[%s] slack %d\n", 
 		    (*it)->m_fieldspec.c_str(), (*it)->m_value.c_str(),
 		    (*it)->m_slack));
 

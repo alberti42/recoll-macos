@@ -666,8 +666,8 @@ void StringToXapianQ::expandTerm(int mods,
                                  vector<string>& exp, string &sterm,
 				 const string& prefix)
 {
-    LOGDEB2(("expandTerm: field [%s] term [%s] stemlang [%s] nostemexp %d\n",
-	     m_field.c_str(), term.c_str(), m_stemlang.c_str(), nostemexp));
+    LOGDEB0(("expandTerm: mods 0x%x fld [%s] trm [%s] lang [%s]\n",
+	     mods, m_field.c_str(), term.c_str(), m_stemlang.c_str()));
     sterm.clear();
     exp.clear();
     if (term.empty())
@@ -872,8 +872,8 @@ void StringToXapianQ::processSimpleSpan(const string& span,
 					int mods,
 					vector<Xapian::Query> &pqueries)
 {
-    LOGDEB2(("StringToXapianQ::processSimpleSpan: [%s] mods %x\n",
-	     span.c_str(), (unsigned int)mods));
+    LOGDEB0(("StringToXapianQ::processSimpleSpan: [%s] mods 0x%x\n",
+	    span.c_str(), (unsigned int)mods));
     vector<string> exp;  
     string sterm; // dumb version of user term
 
@@ -1051,7 +1051,8 @@ bool StringToXapianQ::processUserString(const string &iq,
 					bool useNear
 					)
 {
-    LOGDEB(("StringToXapianQ:: query string: [%s], slack %d, near %d\n", iq.c_str(), slack, useNear));
+    LOGDEB(("StringToXapianQ:: qstr [%s] mods 0x%x slack %d near %d\n", 
+	    iq.c_str(), mods, slack, useNear));
     ermsg.erase();
 
     const StopList stops = m_db.getStopList();
@@ -1072,8 +1073,10 @@ bool StringToXapianQ::processUserString(const string &iq,
 	for (vector<string>::iterator it = phrases.begin(); 
 	     it != phrases.end(); it++) {
 	    LOGDEB0(("strToXapianQ: phrase/word: [%s]\n", it->c_str()));
-	    int mods = stringToMods(*it);
-	    int terminc = mods != 0 ? 1 : 0;
+	    // Anchoring modifiers
+	    int amods = stringToMods(*it);
+	    int terminc = amods != 0 ? 1 : 0;
+	    mods |= amods;
 	    // If there are multiple spans in this element, including
 	    // at least one composite, we have to increase the slack
 	    // else a phrase query including a span would fail. 
