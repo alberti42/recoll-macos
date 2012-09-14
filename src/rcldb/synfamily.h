@@ -42,7 +42,7 @@
 
 namespace Rcl {
 
-class XapSynFamily {
+class XapSynFamily  {
 public:
     /** 
      * Construct from readable xapian database and family name (ie: Stm)
@@ -53,38 +53,50 @@ public:
 	m_prefix1 = std::string(":") + familyname;
     }
 
-    /** Expand one term (e.g.: familier) inside one family number (e.g: french)
-     */
-    virtual bool synExpand(const std::string& fammember,
-		   const std::string& key,
-		   std::vector<std::string>& result);
-
     /** Retrieve all members of this family (e.g: french english german...) */
     virtual bool getMembers(std::vector<std::string>&);
 
     /** debug: list map for one member to stdout */
     virtual bool listMap(const std::string& fam); 
 
-protected:
-    Xapian::Database m_rdb;
-    std::string m_prefix1;
+    /** Expand term to list of synonyms for given member */
+    bool synExpand(const std::string& membername, 
+		   const std::string& term, std::vector<std::string>& result);
 
+    // The prefix shared by all synonym entries inside a family member
     virtual std::string entryprefix(const std::string& member)
     {
 	return m_prefix1 + ":" + member + ":";
     }
+
+    // The key for the "list of members" entry
     virtual std::string memberskey()
     {
 	return m_prefix1 + ";" + "members";
     }
 
+    Xapian::Database& getdb() 
+    {
+	return m_rdb;
+    }
+
+protected:
+    Xapian::Database m_rdb;
+    std::string m_prefix1;
 };
 
+/** Modify ops for a synonyms family 
+ * 
+ * A method to add a synonym entry inside a given member would make sense, 
+ * but would not be used presently as all these ops go through 
+ * ComputableSynFamMember objects
+ */
 class XapWritableSynFamily : public XapSynFamily {
 public:
     /** Construct with Xapian db open for r/w */
-    XapWritableSynFamily(Xapian::WritableDatabase db, const std::string& pfx)
-	: XapSynFamily(db, pfx),  m_wdb(db)
+    XapWritableSynFamily(Xapian::WritableDatabase db, 
+			 const std::string& familyname)
+	: XapSynFamily(db, familyname),  m_wdb(db)
     {
     }
 
@@ -95,36 +107,92 @@ public:
     /** Add to list of members. Idempotent, does not affect actual expansions */
     virtual bool createMember(const std::string& membername);
 
-    /** Add expansion list for term inside family member (e.g., inside
-     *  the english member, add expansion for floor -> floors, flooring.. */
-    virtual bool addSynonyms(const std::string& membername, 
-			     const std::string& term, 
-			     const std::vector<std::string>& trans);
+    Xapian::WritableDatabase getdb() {return m_wdb;}
 
-    // Need to call setCurrentMemberName before addSynonym ! 
-    // We don't check it, for speed
-    virtual void setCurrentMemberName(const std::string& nm)
+protected:
+    Xapian::WritableDatabase m_wdb;
+};
+
+/** A functor which transforms a string */
+class SynTermTrans {
+public:
+    virtual std::string operator()(const std::string&) = 0;
+};
+
+/** A member (set of root-synonyms associations) of a SynFamily for
+ * which the root is computable from the input term.
+ * The objects use a functor member to compute the term root on input
+ * (e.g. compute the term sterm or casefold it
+ */
+class XapComputableSynFamMember {
+public:
+    XapComputableSynFamMember(Xapian::Database xdb, std::string familyname, 
+			      std::string membername, SynTermTrans* trans)
+	: m_family(xdb, familyname), m_membername(membername), 
+	  m_trans(trans), m_prefix(m_family.entryprefix(m_membername))
     {
-	m_currentPrefix = entryprefix(nm);
     }
-    virtual bool addSynonym(const std::string& term, const std::string& trans)
+
+    /** Expand a term to its list of synonyms. If filtertrans is set we 
+     * keep only the results which transform to the same value as the input */
+    bool synExpand(const std::string& term, std::vector<std::string>& result,
+		   SynTermTrans *filtertrans = 0);
+    
+private:
+    XapSynFamily m_family;
+    std::string  m_membername;
+    SynTermTrans *m_trans;
+    std::string m_prefix;
+};
+
+/** Computable term root SynFamily member, modify ops */
+class XapWritableComputableSynFamMember {
+public:
+    XapWritableComputableSynFamMember(
+	Xapian::WritableDatabase xdb, std::string familyname, 
+	std::string membername, SynTermTrans* trans)
+	: m_family(xdb, familyname), m_membername(membername), 
+	  m_trans(trans), m_prefix(m_family.entryprefix(m_membername))
     {
-	std::string key = m_currentPrefix + term;
+    }
+
+    virtual bool addSynonym(const std::string& term)
+    {
+	LOGDEB2(("addSynonym:me %p term [%s] m_trans %p\n", this,
+		term.c_str(), m_trans));
+	std::string transformed = (*m_trans)(term);
+	LOGDEB2(("addSynonym: transformed [%s]\n", transformed.c_str()));
+	if (transformed == term)
+	    return true;
+
 	std::string ermsg;
 	try {
-	    m_wdb.add_synonym(key, trans);
+	    m_family.getdb().add_synonym(m_prefix + transformed, term);
 	} XCATCHERROR(ermsg);
 	if (!ermsg.empty()) {
-	    LOGERR(("XapSynFamily::addSynonym: xapian error %s\n", 
-		    ermsg.c_str()));
+	    LOGERR(("XapWritableComputableSynFamMember::addSynonym: "
+		    "xapian error %s\n", ermsg.c_str()));
 	    return false;
 	}
 	return true;
     }
 
-protected:
-    Xapian::WritableDatabase m_wdb;
-    std::string m_currentPrefix;
+    void clear()
+    {
+	m_family.deleteMember(m_membername);
+    }
+
+    void recreate()
+    {
+	clear();
+	m_family.createMember(m_membername);
+    }
+
+private:
+    XapWritableSynFamily m_family;
+    std::string  m_membername;
+    SynTermTrans *m_trans;
+    std::string m_prefix;
 };
 
 
@@ -133,11 +201,13 @@ protected:
 //
 // Stem expansion family prefix. The family member name is the
 // language ("all" for Dia and Cse)
+
+// Lowercase accented stem to expansion
 static const std::string synFamStem("Stm");
-static const std::string synFamDiac("Dia");
-static const std::string synFamCase("Cse");
-
-
+// Lowercase unaccented stem to expansion
+static const std::string synFamStemUnac("StU");
+// Lowercase unaccented term to case and accent variations
+static const std::string synFamDiCa("DCa");
 }
 
 #endif /* _SYNFAMILY_H_INCLUDED_ */

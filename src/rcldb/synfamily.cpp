@@ -28,31 +28,6 @@ using namespace std;
 
 namespace Rcl {
 
-bool XapSynFamily::synExpand(const string& member, const string& term,
-			     vector<string>& result)
-{
-    string key = entryprefix(member) + term;
-    string ermsg;
-    try {
-	for (Xapian::TermIterator xit = m_rdb.synonyms_begin(key);
-	     xit != m_rdb.synonyms_end(key); xit++) {
-	    result.push_back(*xit);
-	}
-    } XCATCHERROR(ermsg);
-    if (!ermsg.empty()) {
-	LOGERR(("synFamily::synExpand: error for member [%s] term [%s]\n",
-		member.c_str(), term.c_str()));
-	return false;
-    }
-#if 0
-    string out;
-    stringsToString(result, out);
-    LOGDEB0(("XapSynFamily::synExpand:%s: [%s] -> %s\n", member.c_str(), 
-	     term.c_str(), out.c_str()));
-#endif
-    return true;
-}
-
 bool XapSynFamily::getMembers(vector<string>& members)
 {
     string key = memberskey();
@@ -100,6 +75,35 @@ bool XapSynFamily::listMap(const string& membername)
     return true;
 }
 
+bool XapSynFamily::synExpand(const string& member, const string& term,
+                             vector<string>& result)
+{
+    LOGDEB(("XapSynFamily::synExpand:(%s) %s for %s\n",
+              m_prefix1.c_str(), term.c_str(), member.c_str()));
+
+    string key = entryprefix(member) + term;
+    string ermsg;
+    try {
+        for (Xapian::TermIterator xit = m_rdb.synonyms_begin(key);
+             xit != m_rdb.synonyms_end(key); xit++) {
+            LOGDEB2(("  Pushing %s\n", (*xit).c_str()));
+            result.push_back(*xit);
+        }
+    } XCATCHERROR(ermsg);
+    if (!ermsg.empty()) {
+        LOGERR(("synFamily::synExpand: error for member [%s] term [%s]\n",
+                member.c_str(), term.c_str()));
+        result.push_back(term);
+        return false;
+    }
+    // If the input term is not in the list, add it
+    if (find(result.begin(), result.end(), term) == result.end()) {
+        result.push_back(term);
+    }
+
+    return true;
+}
+
 bool XapWritableSynFamily::deleteMember(const string& membername)
 {
     string key = entryprefix(membername);
@@ -119,31 +123,60 @@ bool XapWritableSynFamily::createMember(const string& membername)
 	m_wdb.add_synonym(memberskey(), membername);
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
-	LOGERR(("XapSynFamily::createMember: xapian error %s\n", ermsg.c_str()));
+	LOGERR(("XapSynFamily::createMember: error: %s\n", ermsg.c_str()));
 	return false;
     }
     return true;
 }
 
-bool XapWritableSynFamily::addSynonyms(const string& membername, 
-				       const string& term, 
-				       const vector<string>& trans)
+bool XapComputableSynFamMember::synExpand(const string& term, 
+					  vector<string>& result,
+					  SynTermTrans *filtertrans)
 {
-    string key = entryprefix(membername) + term;
+    string root = (*m_trans)(term);
+    string filter_root;
+    if (filtertrans)
+	filter_root = (*filtertrans)(term);
+
+    /* We could call XapSynFamily::synExpand() here instead of doing it
+       ourselves... */
+    string key = m_prefix + root;
+
+    LOGDEB(("XapCompSynFamMbr::synExpand([%s]): term [%s] root [%s] \n", 
+	    m_prefix.c_str(), term.c_str(), root.c_str()));
+
     string ermsg;
     try {
-	for (vector<string>::const_iterator it = trans.begin();
-	     it != trans.end(); it++) {
-	    m_wdb.add_synonym(key, *it);
+	for (Xapian::TermIterator xit = m_family.getdb().synonyms_begin(key);
+	     xit != m_family.getdb().synonyms_end(key); xit++) {
+	    if (!filtertrans || (*filtertrans)(*xit) == filter_root) {
+		LOGDEB2(("  Pushing %s\n", (*xit).c_str()));
+		result.push_back(*xit);
+	    }
 	}
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
-	LOGERR(("XapSynFamily::addSynonyms: xapian error %s\n", ermsg.c_str()));
+	LOGERR(("XapSynDb::synExpand: error for term [%s] (key %s)\n",
+		term.c_str(), key.c_str()));
+	result.push_back(term);
 	return false;
     }
+
+    // If the input term and root are not in the list, add them
+    if (find(result.begin(), result.end(), term) == result.end()) {
+	LOGDEB2(("  Pushing %s\n", term.c_str()));
+	result.push_back(term);
+    }
+    if (root != term && 
+	find(result.begin(), result.end(), root) == result.end()) {
+	if (!filtertrans || (*filtertrans)(root) == filter_root) {
+	    LOGDEB2(("  Pushing %s\n", root.c_str()));
+	    result.push_back(root);
+	}
+    }
+
     return true;
 }
-
 
 }
 
@@ -169,16 +202,16 @@ using namespace std;
 
 static string thisprog;
 static int        op_flags;
-#define OPT_a     0x4
-#define OPT_c     0x8
 #define OPT_D     0x1
-#define OPT_d     0x10
 #define OPT_L     0x2
+#define OPT_a     0x4
+#define OPT_u     0x8
+#define OPT_d     0x10
 #define OPT_l     0x20
 #define OPT_s     0x40
 #define OPT_e     0x80
 static string usage =
-    " -d <dbdir> {-s|-a|-c} database dir and synfamily: stem accents case\n"
+    " -d <dbdir> {-s|-a|-u} database dir and synfamily: stem accents/case ustem\n"
     " -l : list members\n"
     " -L <member>: list entries for given member\n"
     " -e <member> <key> : list expansion for given member and key\n"
@@ -209,7 +242,6 @@ int main(int argc, char **argv)
 	while (**argv)
 	    switch (*(*argv)++) {
 	    case 'a':	op_flags |= OPT_a; break;
-	    case 'c':	op_flags |= OPT_c; break;
 	    case 'D':	op_flags |= OPT_D; break;
 	    case 'd':	op_flags |= OPT_d; if (argc < 2)  Usage();
 		dbdir = *(++argv); argc--; 
@@ -223,6 +255,7 @@ int main(int argc, char **argv)
 		member = *(++argv); argc--; 
 		goto b1;
 	    case 's':	op_flags |= OPT_s; break;
+	    case 'u':	op_flags |= OPT_u; break;
 	    default: Usage();	break;
 	    }
     b1: argc--; argv++;
@@ -231,12 +264,11 @@ int main(int argc, char **argv)
     if (argc != 0)
 	Usage();
 
-    // We do stem only for now
     string familyname;
     if (op_flags & OPT_a) {
-	familyname = Rcl::synFamDiac;
-    } else if (op_flags &OPT_c) {
-	familyname = Rcl::synFamCase;
+	familyname = Rcl::synFamDiCa;
+    } else if (op_flags & OPT_u) {
+	familyname = Rcl::synFamStemUnac;
     } else {
 	familyname = Rcl::synFamStem;
     }

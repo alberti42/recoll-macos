@@ -356,8 +356,9 @@ size_t AdvSearch::stringToSize(QString qsize)
 using namespace Rcl;
 void AdvSearch::runSearch()
 {
+    string stemLang = prefs.stemlang();
     RefCntr<SearchData> sdata(new SearchData(conjunctCMB->currentIndex() == 0 ?
-					     SCLT_AND : SCLT_OR));
+					     SCLT_AND : SCLT_OR, stemLang));
     bool hasclause = false;
 
     for (list<SearchClauseW*>::iterator it = m_clauseWins.begin();

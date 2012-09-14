@@ -25,7 +25,7 @@ using std::string;
 
 class RclConfig;
 
-extern Rcl::SearchData *wasaStringToRcl(RclConfig *, 
+extern Rcl::SearchData *wasaStringToRcl(RclConfig *, const string& stemlang,
 					const string& query, string &reason,
 					const string& autosuffs = string());
 #endif /* _WASATORCL_H_INCLUDED_ */

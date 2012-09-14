@@ -24,11 +24,17 @@ using std::string;
 #endif /* NO_NAMESPACES */
 
 // A small stringified wrapper for unac.c
-enum UnacOp {UNACOP_UNAC, UNACOP_UNACFOLD, UNACOP_FOLD};
+enum UnacOp {UNACOP_UNAC = 1, UNACOP_FOLD = 2, UNACOP_UNACFOLD = 3};
 extern bool unacmaybefold(const string& in, string& out, 
 			  const char *encoding, UnacOp what);
 
 // Utility function to determine if string begins with capital
 extern bool unaciscapital(const string& in);
+// Utility function to determine if string has upper-case anywhere
+extern bool unachasuppercase(const string& in);
+// Utility function to determine if any character is accented. This
+// approprialey ignores the characters from unac_except_chars which
+// are really separate letters
+extern bool unachasaccents(const string& in);
 
 #endif /* _UNACPP_H_INCLUDED_ */

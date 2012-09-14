@@ -72,7 +72,7 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
 
     SynTermTransUnac transunac(UNACOP_UNACFOLD);
     XapWritableComputableSynFamMember 
-	diacasedb(wdb, synFamDiac, "all", &transunac);
+	diacasedb(wdb, synFamDiCa, "all", &transunac);
     diacasedb.recreate();
 #endif
 

@@ -32,7 +32,9 @@ using std::list;
 #include "refcntr.h"
 #include "textsplit.h"
 
-static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa, 
+static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, 
+				       const string& stemlang,
+				       WasaQuery *wasa, 
 				       const string& autosuffs, string& reason)
 {
     if (wasa == 0) {
@@ -47,7 +49,7 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
 
     Rcl::SearchData *sdata = new 
 	Rcl::SearchData(wasa->m_op == WasaQuery::OP_AND ? Rcl::SCLT_AND : 
-			Rcl::SCLT_OR);
+			Rcl::SCLT_OR, stemlang);
     LOGDEB2(("wasaQueryToRcl: %s chain\n", wasa->m_op == WasaQuery::OP_AND ? 
 	     "AND" : "OR"));
 
@@ -250,7 +252,7 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
 		     (*it)->m_fieldspec.c_str(), (*it)->m_value.c_str()));
 	    // Create a subquery.
 	    Rcl::SearchData *sub = 
-		wasaQueryToRcl(config, *it, autosuffs, reason);
+		wasaQueryToRcl(config, stemlang, *it, autosuffs, reason);
 	    if (sub == 0) {
 		continue;
 	    }
@@ -278,7 +280,7 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, WasaQuery *wasa,
     return sdata;
 }
 
-Rcl::SearchData *wasaStringToRcl(RclConfig *config, 
+Rcl::SearchData *wasaStringToRcl(RclConfig *config, const string& stemlang,
 				 const string &qs, string &reason, 
                                  const string& autosuffs)
 {
@@ -286,5 +288,5 @@ Rcl::SearchData *wasaStringToRcl(RclConfig *config,
     WasaQuery *wq = parser.stringToQuery(qs, reason);
     if (wq == 0) 
 	return 0;
-    return wasaQueryToRcl(config, wq, autosuffs, reason);
+    return wasaQueryToRcl(config, stemlang, wq, autosuffs, reason);
 }

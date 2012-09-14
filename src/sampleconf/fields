@@ -35,7 +35,7 @@
 # Also reserved: F(parentid), Q(uniqueid)
 title = S ; wdfinc = 10
 author = A
-abstract =
+abstract = XS
 caption = S
 title = S
 subject = S

@@ -756,12 +756,6 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
 	return;
     }
 
-    string stemLang = (const char *)prefs.queryStemLang.toAscii();
-    if (stemLang == "ALL") {
-	theconfig->getConfParam("indexstemminglanguages", stemLang);
-    }
-    sdata->setStemlang(stemLang);
-
     Rcl::Query *query = new Rcl::Query(rcldb);
     query->setCollapseDuplicates(prefs.collapseDuplicates);
 
@@ -1073,9 +1067,7 @@ void RclMain::showActiveTypes()
     // Get list of all mime types in index. For this, we use a
     // wildcard field search on mtype
     Rcl::TermMatchResult matches;
-    string prefix;
-    if (!rcldb->termMatch(Rcl::Db::ET_WILD, "", "*", matches, -1, "mtype", 
-			  &prefix)) {
+    if (!rcldb->termMatch(Rcl::Db::ET_WILD, "", "*", matches, -1, "mtype")) {
 	QMessageBox::warning(0, tr("Error"), 
 			     tr("Index query error"),
 			     QMessageBox::Ok, 
@@ -1088,7 +1080,7 @@ void RclMain::showActiveTypes()
     for (vector<Rcl::TermMatchEntry>::const_iterator it = 
 	     matches.entries.begin(); 
 	 it != matches.entries.end(); it++) {
-	mtypesfromdb.insert(it->term.substr(prefix.size()));
+	mtypesfromdb.insert(it->term.substr(matches.prefix.size()));
     }
 
     // All types listed in mimeconf:
@@ -1771,7 +1763,7 @@ void RclMain::showDocHistory()
     }
     // Construct a bogus SearchData structure
     RefCntr<Rcl::SearchData>searchdata = 
-	RefCntr<Rcl::SearchData>(new Rcl::SearchData(Rcl::SCLT_AND));
+	RefCntr<Rcl::SearchData>(new Rcl::SearchData(Rcl::SCLT_AND, cstr_null));
     searchdata->setDescription((const char *)tr("History data").toUtf8());
 
 

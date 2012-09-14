@@ -120,6 +120,8 @@ class PrefsPack {
     // Default paragraph format for result list
     static const char *dfltResListFormat;
 
+    std::string stemlang();
+
     PrefsPack() :
 	respagesize(8), 
 	reslistfontsize(10),
