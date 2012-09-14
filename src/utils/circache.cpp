@@ -188,15 +188,15 @@ public:
         UdiH h(udi);
 
         LOGDEB2(("Circache::khEnter: h %s offs %lu udi [%s]\n", 
-                h.asHexString().c_str(), (ULONG)ofs, udi.c_str()));
+		 h.asHexString().c_str(), (ULONG)ofs, udi.c_str()));
 
         pair<kh_type::iterator, kh_type::iterator> p = m_ofskh.equal_range(h);
 
         if (p.first != m_ofskh.end() && p.first->first == h) {
             for (kh_type::iterator it = p.first; it != p.second; it++) {
                 LOGDEB2(("Circache::khEnter: col h %s, ofs %lu\n", 
-                        it->first.asHexString().c_str(),
-                        (ULONG)it->second));
+			 it->first.asHexString().c_str(),
+			 (ULONG)it->second));
                 if (it->second == ofs) {
                     // (h,offs) already there. Happens
                     LOGDEB2(("Circache::khEnter: already there\n"));
@@ -227,7 +227,7 @@ public:
         UdiH h(udi);
 
         LOGDEB2(("Circache::khFind: h %s udi [%s]\n", 
-                h.asHexString().c_str(), udi.c_str()));
+		 h.asHexString().c_str(), udi.c_str()));
 
         pair<kh_type::iterator, kh_type::iterator> p = m_ofskh.equal_range(h);
 
@@ -621,24 +621,36 @@ bool CirCache::create(off_t m_maxsize, int flags)
 	LOGERR(("CirCache::create: null data\n"));
 	return false;
     }
-    struct stat st;
-    if (stat(m_dir.c_str(), &st) < 0) {
-        if (mkdir(m_dir.c_str(), 0777) < 0) {
-            m_d->m_reason << "CirCache::create: mkdir(" << m_dir << 
-                ") failed" << " errno " << errno;
-            return false;
-        }
-    } else {
-        if (!(flags & CC_CRTRUNCATE))
-            return open(CC_OPWRITE);
+
+    {
+	struct stat st;
+	if (stat(m_dir.c_str(), &st) < 0) {
+	    // Directory does not exist, create it
+	    if (mkdir(m_dir.c_str(), 0777) < 0) {
+		m_d->m_reason << "CirCache::create: mkdir(" << m_dir << 
+		    ") failed" << " errno " << errno;
+		return false;
+	    }
+	} else {
+	    // Directory exists but file might still not exist:
+	    // e.g. the user is using a non default directory and
+	    // created it for us.
+	    if (access(m_d->datafn(m_dir).c_str(), 0) >= 0) {
+		// File exists, switch to "open" mode, except if we're told to 
+		// truncate.
+		if (!(flags & CC_CRTRUNCATE)) {
+		    return open(CC_OPWRITE);
+		}
+	    }
+	    // Else fall through to create file
+	}
     }
 
     if ((m_d->m_fd = ::open(m_d->datafn(m_dir).c_str(), 
-                          O_CREAT | O_RDWR | O_TRUNC, 
-                          0666)) < 0) {
+			    O_CREAT | O_RDWR | O_TRUNC, 0666)) < 0) {
         m_d->m_reason << "CirCache::create: open/creat(" << 
             m_d->datafn(m_dir) << ") failed " << "errno " << errno;
-            return false;
+	return false;
     }
 
     m_d->m_maxsize = m_maxsize;
@@ -667,7 +679,7 @@ bool CirCache::open(OpMode mode)
         ::close(m_d->m_fd);
 
     if ((m_d->m_fd = ::open(m_d->datafn(m_dir).c_str(), 
-                          mode == CC_OPREAD ? O_RDONLY : O_RDWR)) < 0) {
+			    mode == CC_OPREAD ? O_RDONLY : O_RDWR)) < 0) {
         m_d->m_reason << "CirCache::open: open(" << m_d->datafn(m_dir) << 
             ") failed " << "errno " << errno;
         return false;
@@ -876,13 +888,13 @@ public:
     UINT sizeseen;
     vector<pair<string, off_t> > squashed_udis;
     CCScanHookSpacer(int sz)
-        : sizewanted(sz), sizeseen(0) {assert(sz > 0);}
+    : sizewanted(sz), sizeseen(0) {assert(sz > 0);}
 
     virtual status takeone(off_t offs, const string& udi, 
                            const EntryHeaderData& d)
     {
         LOGDEB2(("Circache:ScanSpacer:off %u dcsz %u dtsz %u pdsz %u udi[%s]\n",
-                (UINT)offs, d.dicsize, d.datasize, d.padsize, udi.c_str()));
+		 (UINT)offs, d.dicsize, d.datasize, d.padsize, udi.c_str()));
         sizeseen += CIRCACHE_HEADER_SIZE + d.dicsize + d.datasize + d.padsize;
         squashed_udis.push_back(make_pair(udi, offs));
         if (sizeseen >= sizewanted)
@@ -1031,7 +1043,7 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
     char head[CIRCACHE_HEADER_SIZE];
     memset(head, 0, CIRCACHE_HEADER_SIZE);
     snprintf(head, CIRCACHE_HEADER_SIZE, 
-	    headerformat, dic.size(), datalen, npadsize, flags);
+	     headerformat, dic.size(), datalen, npadsize, flags);
     struct iovec vecs[3];
     vecs[0].iov_base = head;
     vecs[0].iov_len = CIRCACHE_HEADER_SIZE;
@@ -1201,7 +1213,7 @@ static bool inflateToDynBuf(void* inp, UINT inlen, void **outpp, UINT *outlenp)
                  d_stream.avail_out, d_stream.total_out));
         if (d_stream.avail_out == 0) {
             if ((outp = (char*)allocmem(outp, inlen, &alloc, 
-                                                 imul, mxinc)) == 0) {
+					imul, mxinc)) == 0) {
                 LOGERR(("Inflate: out of memory, current alloc %d\n", 
                         alloc*inlen));
                 inflateEnd(&d_stream);
@@ -1255,13 +1267,13 @@ using namespace std;
 static char *thisprog;
 
 static char usage [] =
-" -c [-u] <dirname> : create\n"
-" -p <dirname> <apath> [apath ...] : put files\n"
-" -d <dirname> : dump\n"
-" -g [-i instance] [-D] <dirname> <udi>: get\n"
-"   -D: also dump data\n"
-" -e <dirname> <udi> : erase\n"
-;
+    " -c [-u] <dirname> : create\n"
+    " -p <dirname> <apath> [apath ...] : put files\n"
+    " -d <dirname> : dump\n"
+    " -g [-i instance] [-D] <dirname> <udi>: get\n"
+    "   -D: also dump data\n"
+    " -e <dirname> <udi> : erase\n"
+    ;
 static void
 Usage(FILE *fp = stderr)
 {
@@ -1282,121 +1294,121 @@ static int     op_flags;
 
 int main(int argc, char **argv)
 {
-  int instance = -1;
+    int instance = -1;
 
-  thisprog = argv[0];
-  argc--; argv++;
+    thisprog = argv[0];
+    argc--; argv++;
 
-  while (argc > 0 && **argv == '-') {
-    (*argv)++;
-    if (!(**argv))
-      /* Cas du "adb - core" */
-      Usage();
-    while (**argv)
-      switch (*(*argv)++) {
-      case 'c':	op_flags |= OPT_c; break;
-      case 'e':	op_flags |= OPT_e; break;
-      case 'p':	op_flags |= OPT_p; break;
-      case 'g':	op_flags |= OPT_g; break;
-      case 'd':	op_flags |= OPT_d; break;
-      case 'D':	op_flags |= OPT_D; break;
-      case 'u':	op_flags |= OPT_u; break;
-      case 'i':	op_flags |= OPT_i; if (argc < 2)  Usage();
-	if ((sscanf(*(++argv), "%d", &instance)) != 1) 
-	  Usage(); 
-	argc--; 
-	goto b1;
-      default: Usage();	break;
-      }
-  b1: argc--; argv++;
-  }
+    while (argc > 0 && **argv == '-') {
+	(*argv)++;
+	if (!(**argv))
+	    /* Cas du "adb - core" */
+	    Usage();
+	while (**argv)
+	    switch (*(*argv)++) {
+	    case 'c':	op_flags |= OPT_c; break;
+	    case 'e':	op_flags |= OPT_e; break;
+	    case 'p':	op_flags |= OPT_p; break;
+	    case 'g':	op_flags |= OPT_g; break;
+	    case 'd':	op_flags |= OPT_d; break;
+	    case 'D':	op_flags |= OPT_D; break;
+	    case 'u':	op_flags |= OPT_u; break;
+	    case 'i':	op_flags |= OPT_i; if (argc < 2)  Usage();
+		if ((sscanf(*(++argv), "%d", &instance)) != 1) 
+		    Usage(); 
+		argc--; 
+		goto b1;
+	    default: Usage();	break;
+	    }
+    b1: argc--; argv++;
+    }
 
-  DebugLog::getdbl()->setloglevel(DEBDEB1);
-  DebugLog::setfilename("stderr");
+    DebugLog::getdbl()->setloglevel(DEBDEB1);
+    DebugLog::setfilename("stderr");
 
-  if (argc < 1)
-    Usage();
-  string dir = *argv++;argc--;
+    if (argc < 1)
+	Usage();
+    string dir = *argv++;argc--;
 
-  CirCache cc(dir);
+    CirCache cc(dir);
 
-  if (op_flags & OPT_c) {
-      int flags = 0;
-      if (op_flags & OPT_u)
-          flags |= CirCache::CC_CRUNIQUE;
-      if (!cc.create(100*1024, flags)) {
-          cerr << "Create failed:" << cc.getReason() << endl;
-          exit(1);
-      }
-  } else if (op_flags & OPT_p) {
-      if (argc < 1)
-          Usage();
-      if (!cc.open(CirCache::CC_OPWRITE)) {
-          cerr << "Open failed: " << cc.getReason() << endl;
-          exit(1);
-      }
-      while (argc) {
-          string fn = *argv++;argc--;
-          char dic[1000];
-          string data, reason;
-          if (!file_to_string(fn, data, &reason)) {
-              cerr << "File_to_string: " << reason << endl;
-              exit(1);
-          }
-          string udi;
-          make_udi(fn, "", udi);
-          sprintf(dic, "#whatever...\nmimetype = text/plain\nudi=%s\n", 
-                  udi.c_str());
-          string sdic;
-          sdic.assign(dic, strlen(dic));
-          ConfSimple conf(sdic);
+    if (op_flags & OPT_c) {
+	int flags = 0;
+	if (op_flags & OPT_u)
+	    flags |= CirCache::CC_CRUNIQUE;
+	if (!cc.create(100*1024, flags)) {
+	    cerr << "Create failed:" << cc.getReason() << endl;
+	    exit(1);
+	}
+    } else if (op_flags & OPT_p) {
+	if (argc < 1)
+	    Usage();
+	if (!cc.open(CirCache::CC_OPWRITE)) {
+	    cerr << "Open failed: " << cc.getReason() << endl;
+	    exit(1);
+	}
+	while (argc) {
+	    string fn = *argv++;argc--;
+	    char dic[1000];
+	    string data, reason;
+	    if (!file_to_string(fn, data, &reason)) {
+		cerr << "File_to_string: " << reason << endl;
+		exit(1);
+	    }
+	    string udi;
+	    make_udi(fn, "", udi);
+	    sprintf(dic, "#whatever...\nmimetype = text/plain\nudi=%s\n", 
+		    udi.c_str());
+	    string sdic;
+	    sdic.assign(dic, strlen(dic));
+	    ConfSimple conf(sdic);
    
-          if (!cc.put(udi, &conf, data, 0)) {
-              cerr << "Put failed: " << cc.getReason() << endl;
-              cerr << "conf: ["; conf.write(cerr); cerr << "]" << endl;
-              exit(1);
-          }
-      }
-      cc.open(CirCache::CC_OPREAD);
-  } else if (op_flags & OPT_g) {
-      if (!cc.open(CirCache::CC_OPREAD)) {
-          cerr << "Open failed: " << cc.getReason() << endl;
-          exit(1);
-      }
-      while (argc) {
-          string udi = *argv++;argc--;
-          string dic, data;
-          if (!cc.get(udi, dic, data, instance)) {
-              cerr << "Get failed: " << cc.getReason() << endl;
-              exit(1);
-          }
-          cout << "Dict: [" << dic << "]" << endl;
-          if (op_flags & OPT_D)
-              cout << "Data: [" << data << "]" << endl;
-      }
-  } else if (op_flags & OPT_e) {
-      if (!cc.open(CirCache::CC_OPWRITE)) {
-          cerr << "Open failed: " << cc.getReason() << endl;
-          exit(1);
-      }
-      while (argc) {
-          string udi = *argv++;argc--;
-          string dic, data;
-          if (!cc.erase(udi)) {
-              cerr << "Erase failed: " << cc.getReason() << endl;
-              exit(1);
-          }
-      }
-  } else if (op_flags & OPT_d) {
-      if (!cc.open(CirCache::CC_OPREAD)) {
-          cerr << "Open failed: " << cc.getReason() << endl;
-          exit(1);
-      }
-      cc.dump();
-  } else
-      Usage();
+	    if (!cc.put(udi, &conf, data, 0)) {
+		cerr << "Put failed: " << cc.getReason() << endl;
+		cerr << "conf: ["; conf.write(cerr); cerr << "]" << endl;
+		exit(1);
+	    }
+	}
+	cc.open(CirCache::CC_OPREAD);
+    } else if (op_flags & OPT_g) {
+	if (!cc.open(CirCache::CC_OPREAD)) {
+	    cerr << "Open failed: " << cc.getReason() << endl;
+	    exit(1);
+	}
+	while (argc) {
+	    string udi = *argv++;argc--;
+	    string dic, data;
+	    if (!cc.get(udi, dic, data, instance)) {
+		cerr << "Get failed: " << cc.getReason() << endl;
+		exit(1);
+	    }
+	    cout << "Dict: [" << dic << "]" << endl;
+	    if (op_flags & OPT_D)
+		cout << "Data: [" << data << "]" << endl;
+	}
+    } else if (op_flags & OPT_e) {
+	if (!cc.open(CirCache::CC_OPWRITE)) {
+	    cerr << "Open failed: " << cc.getReason() << endl;
+	    exit(1);
+	}
+	while (argc) {
+	    string udi = *argv++;argc--;
+	    string dic, data;
+	    if (!cc.erase(udi)) {
+		cerr << "Erase failed: " << cc.getReason() << endl;
+		exit(1);
+	    }
+	}
+    } else if (op_flags & OPT_d) {
+	if (!cc.open(CirCache::CC_OPREAD)) {
+	    cerr << "Open failed: " << cc.getReason() << endl;
+	    exit(1);
+	}
+	cc.dump();
+    } else
+	Usage();
 
-  exit(0);
+    exit(0);
 }
 
 #endif
