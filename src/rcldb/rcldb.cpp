@@ -92,10 +92,11 @@ const string start_of_field_term = "XXST";
 const string end_of_field_term = "XXND";
 static const string page_break_term = "XXPG";
 #else
-const string start_of_field_term = "XXST/";
-const string end_of_field_term = "XXND/";
-static const string page_break_term = "XXPG/";
+string start_of_field_term;
+string end_of_field_term;
+const string page_break_term = "XXPG/";
 #endif
+
 // Field name for the unsplit file name. Has to exist in the field file 
 // because of usage in termmatch()
 static const string unsplitFilenameFieldName = "rclUnsplitFN";
@@ -683,6 +684,18 @@ Db::Db(RclConfig *cfp)
       m_curtxtsz(0), m_flushtxtsz(0), m_occtxtsz(0), m_occFirstCheck(1),
       m_maxFsOccupPc(0), m_mode(Db::DbRO)
 {
+#ifndef RCL_INDEX_STRIPCHARS
+    if (start_of_field_term.empty()) {
+	if (o_index_stripchars) {
+	    start_of_field_term = "XXST";
+	    end_of_field_term = "XXND";
+	} else {
+	    start_of_field_term = "XXST/";
+	    end_of_field_term = "XXND/";
+	}
+    }
+#endif
+
     m_ndb = new Native(this);
     if (m_config) {
 	m_config->getConfParam("maxfsoccuppc", &m_maxFsOccupPc);
@@ -886,12 +899,13 @@ int Db::termDocCnt(const string& _term)
         return -1;
 
     string term = _term;
-#ifdef RCL_INDEX_STRIPCHARS
-    if (!unacmaybefold(_term, term, "UTF-8", UNACOP_UNACFOLD)) {
-	LOGINFO(("Db::termDocCnt: unac failed for [%s]\n", _term.c_str()));
-	return 0;
-    }
+#ifndef RCL_INDEX_STRIPCHARS
+    if (o_index_stripchars)
 #endif
+	if (!unacmaybefold(_term, term, "UTF-8", UNACOP_UNACFOLD)) {
+	    LOGINFO(("Db::termDocCnt: unac failed for [%s]\n", _term.c_str()));
+	    return 0;
+	}
 
     if (m_stops.isStop(term)) {
 	LOGDEB1(("Db::termDocCnt [%s] in stop list\n", term.c_str()));
@@ -1151,13 +1165,17 @@ string Db::getSpellingSuggestion(const string& word)
 {
     if (m_ndb == 0)
 	return string();
+
     string term = word;
-#ifdef RCL_INDEX_STRIPCHARS
+
+#ifndef RCL_INDEX_STRIPCHARS
+    if (o_index_stripchars)
+#endif
     if (!unacmaybefold(word, term, "UTF-8", UNACOP_UNACFOLD)) {
 	LOGINFO(("Db::getSpelling: unac failed for [%s]\n", word.c_str()));
 	return string();
     }
-#endif
+
     if (!isSpellingCandidate(term))
 	return string();
     return m_ndb->xrdb.get_spelling_suggestion(term);
@@ -1266,9 +1284,12 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     TermProc *nxt = &tpidx;
     TermProcStop tpstop(nxt, m_stops);nxt = &tpstop;
     //TermProcCommongrams tpcommon(nxt, m_stops); nxt = &tpcommon;
-#ifdef RCL_INDEX_STRIPCHARS
-    TermProcPrep tpprep(nxt); nxt = &tpprep;
+
+    TermProcPrep tpprep(nxt);
+#ifndef RCL_INDEX_STRIPCHARS
+    if (o_index_stripchars)
 #endif
+	nxt = &tpprep;
 
     TextSplitDb splitter(newdocument, nxt);
     tpidx.setTSD(&splitter);
@@ -1951,12 +1972,15 @@ bool Db::termMatch(MatchType typ, const string &lang,
     // Get rid of capitals and accents
 
     string droot = root;
-#ifdef RCL_INDEX_STRIPCHARS
-    if (!unacmaybefold(root, droot, "UTF-8", UNACOP_UNACFOLD)) {
-	LOGERR(("Db::termMatch: unac failed for [%s]\n", root.c_str()));
-	return false;
-    }
+
+#ifndef RCL_INDEX_STRIPCHARS
+    if (o_index_stripchars)
 #endif
+	if (!unacmaybefold(root, droot, "UTF-8", UNACOP_UNACFOLD)) {
+	    LOGERR(("Db::termMatch: unac failed for [%s]\n", root.c_str()));
+	    return false;
+	}
+
     string nochars = typ == ET_WILD ? cstr_wildSpecChars : cstr_regSpecChars;
 
     string prefix;

@@ -79,10 +79,22 @@ static const int original_term_wqf_booster = 10;
 
 #ifdef RCL_INDEX_STRIPCHARS
 #define bufprefix(BUF, L) {(BUF)[0] = L;}
-#define bpoffs 1
+#define bpoffs() 1
 #else
-#define bufprefix(BUF, L) {(BUF)[0] = ':'; (BUF)[1] = L; (BUF)[2] = ':';}
-#define bpoffs 3
+static inline void bufprefix(char *buf, char c)
+{
+    if (o_index_stripchars) {
+	buf[0] = c;
+    } else {
+	buf[0] = ':'; 
+	buf[1] = c; 
+	buf[2] = ':';
+    }
+}
+static inline int bpoffs() 
+{
+    return o_index_stripchars ? 1 : 3;
+}
 #endif
 
 static Xapian::Query
@@ -92,7 +104,7 @@ date_range_filter(int y1, int m1, int d1, int y2, int m2, int d2)
     // only doing %d's !
     char buf[200];
     bufprefix(buf, 'D');
-    sprintf(buf+bpoffs, "%04d%02d", y1, m1);
+    sprintf(buf+bpoffs(), "%04d%02d", y1, m1);
     vector<Xapian::Query> v;
 
     int d_last = monthdays(m1, y1);
@@ -103,7 +115,7 @@ date_range_filter(int y1, int m1, int d1, int y2, int m2, int d2)
     // Deal with any initial partial month
     if (d1 > 1 || d_end < d_last) {
     	for ( ; d1 <= d_end ; d1++) {
-	    sprintf(buf + 6 + bpoffs, "%02d", d1);
+	    sprintf(buf + 6 + bpoffs(), "%02d", d1);
 	    v.push_back(Xapian::Query(buf));
 	}
     } else {
@@ -117,32 +129,32 @@ date_range_filter(int y1, int m1, int d1, int y2, int m2, int d2)
 
     int m_last = (y1 < y2) ? 12 : m2 - 1;
     while (++m1 <= m_last) {
-	sprintf(buf + 4 + bpoffs, "%02d", m1);
+	sprintf(buf + 4 + bpoffs(), "%02d", m1);
 	bufprefix(buf, 'M');
 	v.push_back(Xapian::Query(buf));
     }
 	
     if (y1 < y2) {
 	while (++y1 < y2) {
-	    sprintf(buf + bpoffs, "%04d", y1);
+	    sprintf(buf + bpoffs(), "%04d", y1);
 	    bufprefix(buf, 'Y');
 	    v.push_back(Xapian::Query(buf));
 	}
-	sprintf(buf + bpoffs, "%04d", y2);
+	sprintf(buf + bpoffs(), "%04d", y2);
 	bufprefix(buf, 'M');
 	for (m1 = 1; m1 < m2; m1++) {
-	    sprintf(buf + 4 + bpoffs, "%02d", m1);
+	    sprintf(buf + 4 + bpoffs(), "%02d", m1);
 	    v.push_back(Xapian::Query(buf));
 	}
     }
 	
-    sprintf(buf + 2 + bpoffs, "%02d", m2);
+    sprintf(buf + 2 + bpoffs(), "%02d", m2);
 
     // Deal with any final partial month
     if (d2 < monthdays(m2, y2)) {
 	bufprefix(buf, 'D');
     	for (d1 = 1 ; d1 <= d2; d1++) {
-	    sprintf(buf + 6 + bpoffs, "%02d", d1);
+	    sprintf(buf + 6 + bpoffs(), "%02d", d1);
 	    v.push_back(Xapian::Query(buf));
 	}
     } else {
@@ -663,13 +675,13 @@ static void listVector(const string& what, const vector<string>&l)
  */
 void StringToXapianQ::expandTerm(int mods, 
 				 const string& term, 
-                                 vector<string>& exp, string &sterm,
+                                 vector<string>& oexp, string &sterm,
 				 const string& prefix)
 {
     LOGDEB0(("expandTerm: mods 0x%x fld [%s] trm [%s] lang [%s]\n",
 	     mods, m_field.c_str(), term.c_str(), m_stemlang.c_str()));
     sterm.clear();
-    exp.clear();
+    oexp.clear();
     if (term.empty())
 	return;
 
@@ -693,145 +705,161 @@ void StringToXapianQ::expandTerm(int mods,
     bool diac_sensitive = (mods & SearchDataClause::SDCM_DIACSENS) != 0;
     bool case_sensitive = (mods & SearchDataClause::SDCM_CASESENS) != 0;
 
-    // If we are working with a raw index, apply the rules for case and 
-    // diacritics sensitivity.
+    if (o_index_stripchars) {
+	diac_sensitive = case_sensitive = false;
+    } else {
+	// If we are working with a raw index, apply the rules for case and 
+	// diacritics sensitivity.
 
-    // If any character has a diacritic, we become
-    // diacritic-sensitive. Note that the way that the test is
-    // performed (conversion+comparison) will automatically ignore
-    // accented characters which are actually a separate letter
-    if (unachasaccents(term))
-	diac_sensitive = true;
+	// If any character has a diacritic, we become
+	// diacritic-sensitive. Note that the way that the test is
+	// performed (conversion+comparison) will automatically ignore
+	// accented characters which are actually a separate letter
+	if (unachasaccents(term))
+	    diac_sensitive = true;
 
-    // If any character apart the first is uppercase, we become case-sensitive. 
-    // The first character is reserved for turning off stemming. You need to
-    // use a query language modifier to search for Floor in a case-sensitive
-    // way.
-    Utf8Iter it(term);
-    it++;
-    if (unachasuppercase(term.substr(it.getBpos())))
-	case_sensitive = true;
+	// If any character apart the first is uppercase, we become
+	// case-sensitive.  The first character is reserved for
+	// turning off stemming. You need to use a query language
+	// modifier to search for Floor in a case-sensitive way.
+	Utf8Iter it(term);
+	it++;
+	if (unachasuppercase(term.substr(it.getBpos())))
+	    case_sensitive = true;
 
-    // If we are sensitive to case or diacritics turn stemming off
-    if (diac_sensitive || case_sensitive)
-	nostemexp = true;
+	// If we are sensitive to case or diacritics turn stemming off
+	if (diac_sensitive || case_sensitive)
+	    nostemexp = true;
 
-    if (!case_sensitive || !diac_sensitive)
-	noexpansion = false;
+	if (!case_sensitive || !diac_sensitive)
+	    noexpansion = false;
+    }
 #endif
 
     if (noexpansion) {
 	sterm = term;
-	exp.push_back(prefix + term);
-    } else {
-	TermMatchResult res;
-	if (haswild) {
-	    // Note that if there are wildcards, we do a direct from-index
-	    // expansion, which means that we are casediac-sensitive. There
-	    // would be nothing to prevent us to expand from the casediac
-	    // synonyms first. To be done later
-	    m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term, res, -1, 
-                           m_field);
-	} else {
-	    sterm = term;
-#ifdef RCL_INDEX_STRIPCHARS
-	    m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term, res, -1, 
-                           m_field);
-#else
-	    // No stem expansion when diacritic or case sensitivity is
-	    // set, it makes no sense (it would mess with the
-	    // diacritics anyway if they are not in the stem part).
-	    // In these 3 cases, perform appropriate expansion from
-	    // the charstripping db, and do a bogus wildcard expansion
-	    // (there is no wild card) to generate the result:
-	    if (diac_sensitive && case_sensitive) {
-		// No expansion whatsoever
-		m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term, res, -1, 
-			       m_field);
-	    } else {
-		// Access case and diacritics expansion:
-		vector<string> exp;
-		SynTermTransUnac unacfoldtrans(UNACOP_UNACFOLD);
-		XapComputableSynFamMember synac(m_db.m_ndb->xrdb, synFamDiCa,
-						"all", &unacfoldtrans);
+	oexp.push_back(prefix + term);
+	LOGDEB(("ExpandTerm: final: %s\n", stringsToString(oexp).c_str()));
+	return;
+    } 
 
-		if (diac_sensitive) {
-		    // Expand for accents and case, filtering for same accents,
-		    // then bogus wildcard expansion for generating result
-		    SynTermTransUnac foldtrans(UNACOP_FOLD);
-		    synac.synExpand(term, exp, &foldtrans);
-		    for (vector<string>::const_iterator it = exp.begin();
-			 it != exp.end(); it++) {
-			m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, *it, res, 
-				       -1, m_field);
-		    }
-		} else if (case_sensitive) {
-		    // Expand for accents and case, filtering for same case,
-		    // then bogus wildcard expansion for generating result
-		    SynTermTransUnac unactrans(UNACOP_UNAC);
-		    synac.synExpand(term, exp, &unactrans);
-		    for (vector<string>::const_iterator it = exp.begin();
-			 it != exp.end(); it++) {
-			m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, *it, res, 
-				       -1, m_field);
-		    }
-		} else {
-		    // Expand for accents and case, then lowercase
-		    // result for input to stemdb.
-		    synac.synExpand(term, exp);
-		    for (unsigned int i = 0; i < exp.size(); i++) {
-			string lower;
-			unacmaybefold(exp[i], lower, "UTF-8", UNACOP_FOLD);
-			exp[i] = lower;
-		    }
-		    sort(exp.begin(), exp.end());
-		    vector<string>::iterator uit = 
-			unique(exp.begin(), exp.end());
-		    exp.resize(uit - exp.begin());
-		    LOGDEB(("ExpandTerm: after casediac: %s\n", 
-			    stringsToString(exp).c_str()));
+    SynTermTransUnac unacfoldtrans(UNACOP_UNACFOLD);
+    XapComputableSynFamMember synac(m_db.m_ndb->xrdb, synFamDiCa, "all", 
+				    &unacfoldtrans);
+    vector<string> lexp;
 
-		    StemDb db(m_db.m_ndb->xrdb);
-		    vector<string> exp1;
-		    for (vector<string>::const_iterator it = exp.begin();
-			 it != exp.end(); it++) {
-			db.stemExpand(m_stemlang, *it, exp1);
-		    }
-		    LOGDEB(("ExpandTerm: after stem: %s\n", 
-			    stringsToString(exp1).c_str()));
-
-		    // Expand the resulting list for case (all stemdb content
-		    // is lowercase)
-		    exp.clear();
-		    for (vector<string>::const_iterator it = exp1.begin();
-			 it != exp1.end(); it++) {
-			synac.synExpand(*it, exp);
-		    }
-		    sort(exp.begin(), exp.end());
-		    uit = unique(exp.begin(), exp.end());
-		    exp.resize(uit - exp.begin());
-
-		    LOGDEB(("ExpandTerm: after case exp of stem: %s\n", 
-			    stringsToString(exp).c_str()));
-
-                    // Bogus wildcard expand to generate the result
-		    for (vector<string>::const_iterator it = exp.begin();
-			 it != exp.end(); it++) {
-			m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, *it, res, 
-				       -1, m_field);
-		    }
-
-		}
-	    }
-#endif
-	}
-
-	for (vector<TermMatchEntry>::const_iterator it = res.entries.begin(); 
-	     it != res.entries.end(); it++) {
-	    exp.push_back(it->term);
-	}
-	LOGDEB(("ExpandTerm: final: %s\n", stringsToString(exp).c_str()));
+    TermMatchResult res;
+    if (haswild) {
+	// Note that if there are wildcards, we do a direct from-index
+	// expansion, which means that we are casediac-sensitive. There
+	// would be nothing to prevent us to expand from the casediac
+	// synonyms first. To be done later
+	m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term, res, -1, 
+		       m_field);
+	goto termmatchtoresult;
     }
+
+    sterm = term;
+
+#ifdef RCL_INDEX_STRIPCHARS
+
+    m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term, res, -1, m_field);
+
+#else
+
+    if (o_index_stripchars) {
+	// If the index is raw, we can only come here if nostemexp is unset
+	// and we just need stem expansion.
+	m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term, res, -1, m_field);
+	goto termmatchtoresult;
+    } 
+
+    // No stem expansion when diacritic or case sensitivity is set, it
+    // makes no sense (it would mess with the diacritics anyway if
+    // they are not in the stem part).  In these 3 cases, perform
+    // appropriate expansion from the charstripping db, and do a bogus
+    // wildcard expansion (there is no wild card) to generate the
+    // result:
+
+    if (diac_sensitive && case_sensitive) {
+	// No expansion whatsoever
+	m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term, res, -1, m_field);
+	goto termmatchtoresult;
+    }
+
+    if (diac_sensitive) {
+	// Expand for accents and case, filtering for same accents,
+	// then bogus wildcard expansion for generating result
+	SynTermTransUnac foldtrans(UNACOP_FOLD);
+	synac.synExpand(term, lexp, &foldtrans);
+	goto exptotermatch;
+    } 
+
+    if (case_sensitive) {
+	// Expand for accents and case, filtering for same case, then
+	// bogus wildcard expansion for generating result
+	SynTermTransUnac unactrans(UNACOP_UNAC);
+	synac.synExpand(term, lexp, &unactrans);
+	goto exptotermatch;
+    }
+
+    // We are neither accent- nor case- sensitive and may need stem
+    // expansion or not.
+
+    // Expand for accents and case
+    synac.synExpand(term, lexp);
+    LOGDEB(("ExpTerm: casediac: %s\n", stringsToString(lexp).c_str()));
+    if (nostemexp)
+	goto exptotermatch;
+
+    // Need stem expansion. Lowercase the result of accent and case
+    // expansion for input to stemdb.
+    for (unsigned int i = 0; i < lexp.size(); i++) {
+	string lower;
+	unacmaybefold(lexp[i], lower, "UTF-8", UNACOP_FOLD);
+	lexp[i] = lower;
+    }
+    sort(lexp.begin(), lexp.end());
+    {
+	vector<string>::iterator uit = unique(lexp.begin(), lexp.end());
+	lexp.resize(uit - lexp.begin());
+	StemDb db(m_db.m_ndb->xrdb);
+	vector<string> exp1;
+	for (vector<string>::const_iterator it = lexp.begin(); 
+	     it != lexp.end(); it++) {
+	    db.stemExpand(m_stemlang, *it, exp1);
+	}
+	LOGDEB(("ExpTerm: stem: %s\n", stringsToString(exp1).c_str()));
+
+	// Expand the resulting list for case (all stemdb content
+	// is lowercase)
+	lexp.clear();
+	for (vector<string>::const_iterator it = exp1.begin(); 
+	     it != exp1.end(); it++) {
+	    synac.synExpand(*it, lexp);
+	}
+	sort(lexp.begin(), lexp.end());
+	uit = unique(lexp.begin(), lexp.end());
+	lexp.resize(uit - lexp.begin());
+    }
+    LOGDEB(("ExpTerm: case exp of stem: %s\n", stringsToString(lexp).c_str()));
+
+    // Bogus wildcard expand to generate the result
+exptotermatch:
+    for (vector<string>::const_iterator it = lexp.begin();
+	 it != lexp.end(); it++) {
+	m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, *it, 
+		       res, -1, m_field);
+    }
+#endif
+
+    // Term match entries to vector of terms
+termmatchtoresult:
+    for (vector<TermMatchEntry>::const_iterator it = res.entries.begin(); 
+	 it != res.entries.end(); it++) {
+	oexp.push_back(it->term);
+    }
+    LOGDEB(("ExpandTerm: final: %s\n", stringsToString(oexp).c_str()));
 }
 
 // Do distribution of string vectors: a,b c,d -> a,c a,d b,c b,d
@@ -1097,9 +1125,11 @@ bool StringToXapianQ::processUserString(const string &iq,
             TermProcStop tpstop(nxt, stops); nxt = &tpstop;
             //TermProcCommongrams tpcommon(nxt, stops); nxt = &tpcommon;
             //tpcommon.onlygrams(true);
-#ifdef RCL_INDEX_STRIPCHARS
-	    TermProcPrep tpprep(nxt); nxt = &tpprep;
+	    TermProcPrep tpprep(nxt);
+#ifndef RCL_INDEX_STRIPCHARS
+	    if (o_index_stripchars)
 #endif
+		nxt = &tpprep;
 
 	    TextSplitQ splitter(TextSplit::Flags(TextSplit::TXTS_ONLYSPANS | 
 						 TextSplit::TXTS_KEEPWILD), 

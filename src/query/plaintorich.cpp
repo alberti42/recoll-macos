@@ -79,22 +79,30 @@ class TextSplitPTR : public TextSplit {
 	for (vector<vector<string> >::const_iterator vit = hdata.groups.begin();
 	     vit != hdata.groups.end(); vit++) {
 	    if (vit->size() == 1) {
-#ifdef RCL_INDEX_STRIPCHARS
-		m_terms[vit->front()] = vit - hdata.groups.begin();
-#else
-		string dumb = vit->front();
-		unacmaybefold(vit->front(), dumb, "UTF-8", UNACOP_UNACFOLD);
-		m_terms[dumb] = vit - hdata.groups.begin();
+#ifndef RCL_INDEX_STRIPCHARS
+		if (o_index_stripchars) {
+#endif
+		    m_terms[vit->front()] = vit - hdata.groups.begin();
+#ifndef RCL_INDEX_STRIPCHARS
+		} else {
+		    string dumb = vit->front();
+		    unacmaybefold(vit->front(), dumb, "UTF-8", UNACOP_UNACFOLD);
+		    m_terms[dumb] = vit - hdata.groups.begin();
+		}
 #endif
 	    } else if (vit->size() > 1) {
 		for (vector<string>::const_iterator it = vit->begin(); 
 		     it != vit->end(); it++) {
-#ifdef RCL_INDEX_STRIPCHARS
+#ifndef RCL_INDEX_STRIPCHARS
+		if (o_index_stripchars) {
+#endif
 		    m_gterms.insert(*it);
-#else
+#ifndef RCL_INDEX_STRIPCHARS
+		} else {
 		    string dumb = *it;
 		    unacmaybefold(*it, dumb, "UTF-8", UNACOP_UNACFOLD);
 		    m_gterms.insert(dumb);
+		}
 #endif
 		}
 	    }

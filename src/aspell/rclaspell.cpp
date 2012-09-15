@@ -23,9 +23,9 @@
 
 #include <unistd.h>
 #include <dlfcn.h>
-#include <iostream>
 #include <stdlib.h>
-#include <vector>
+
+using namespace std;
 
 #include ASPELL_INCLUDE
 
@@ -33,7 +33,7 @@
 #include "execmd.h"
 #include "rclaspell.h"
 #include "debuglog.h"
-
+#include "unacpp.h"
 #include "ptmutex.h"
 
 // Just a place where we keep the Aspell library entry points together
@@ -260,6 +260,14 @@ public:
 	while (m_db.termWalkNext(m_tit, *m_input)) {
 	    if (!Rcl::Db::isSpellingCandidate(*m_input))
 		continue;
+#ifndef RCL_INDEX_STRIPCHARS
+	    if (!o_index_stripchars) {
+		string lower;
+		if (!unacmaybefold(*m_input, lower, "UTF-8", UNACOP_FOLD))
+		    continue;
+		m_input->swap(lower);
+	    }
+#endif
 	    // Got a non-empty sort-of appropriate term, let's send it to
 	    // aspell
 	    m_input->append("\n");
@@ -335,17 +343,29 @@ bool Aspell::make_speller(string& reason)
     return true;
 }
 
-bool Aspell::check(Rcl::Db &db, const string &term, string& reason)
+bool Aspell::check(const string &iterm, string& reason)
 {
-    LOGDEB2(("Aspell::check [%s]\n", term.c_str()));
+    LOGDEB2(("Aspell::check [%s]\n", iterm.c_str()));
+    string mterm(iterm);
 
     if (!ok() || !make_speller(reason))
 	return false;
-    if (term.empty())
+    if (iterm.empty())
         return true; //??
 
+#ifndef RCL_INDEX_STRIPCHARS
+    if (!o_index_stripchars) {
+	string lower;
+	if (!unacmaybefold(mterm, lower, "UTF-8", UNACOP_FOLD)) {
+	    LOGERR(("Aspell::check : cant lowercase input\n"));
+	    return false;
+	}
+	mterm.swap(lower);
+    }
+#endif
+
     int ret = aapi.aspell_speller_check(m_data->m_speller, 
-                                        term.c_str(), term.length());
+                                        mterm.c_str(), mterm.length());
     reason.clear();
     switch (ret) {
     case 0: return false;
@@ -358,19 +378,31 @@ bool Aspell::check(Rcl::Db &db, const string &term, string& reason)
     }
 }
 
-bool Aspell::suggest(Rcl::Db &db, const string &term, 
+bool Aspell::suggest(Rcl::Db &db, const string &_term, 
                      list<string>& suggestions, string& reason)
 {
     if (!ok() || !make_speller(reason))
 	return false;
-    if (term.empty())
+    string mterm(_term);
+    if (mterm.empty())
         return true; //??
+
+#ifndef RCL_INDEX_STRIPCHARS
+    if (!o_index_stripchars) {
+	string lower;
+	if (!unacmaybefold(mterm, lower, "UTF-8", UNACOP_FOLD)) {
+	    LOGERR(("Aspell::check : cant lowercase input\n"));
+	    return false;
+	}
+	mterm.swap(lower);
+    }
+#endif
 
     AspellCanHaveError *ret;
 
     const AspellWordList *wl = 
 	aapi.aspell_speller_suggest(m_data->m_speller, 
-                                    term.c_str(), term.length());
+                                    mterm.c_str(), mterm.length());
     if (wl == 0) {
 	reason = aapi.aspell_speller_error_message(m_data->m_speller);
 	return false;
@@ -385,7 +417,7 @@ bool Aspell::suggest(Rcl::Db &db, const string &term,
         // ******** This should depend if
 	// stemming is turned on or not for querying  *******
 	string sw(word);
-	if (db.termExists(sw) && db.stemDiffers("english", sw, term))
+	if (db.termExists(sw) && db.stemDiffers("english", sw, mterm))
 	    suggestions.push_back(word);
     }
     aapi.delete_aspell_string_enumeration(els);
@@ -418,7 +450,6 @@ using namespace std;
 
 static char *thisprog;
 RclConfig *rclconfig;
-Rcl::Db rcldb;
 
 static char usage [] =
 " -b : build dictionary\n"
@@ -477,7 +508,9 @@ int main(int argc, char **argv)
 	exit(1);
     }
 
-    if (!rcldb.open(dbdir, Rcl::Db::DbRO, 0)) {
+    Rcl::Db rcldb(rclconfig);
+
+    if (!rcldb.open(Rcl::Db::DbRO, 0)) {
 	fprintf(stderr, "Could not open database in %s\n", dbdir.c_str());
 	exit(1);
     }

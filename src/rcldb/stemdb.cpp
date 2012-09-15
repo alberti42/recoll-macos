@@ -26,6 +26,8 @@
 
 #include <algorithm>
 #include <map>
+#include <iostream>
+using namespace std;
 
 #include <xapian.h>
 
@@ -34,18 +36,14 @@
 #include "smallut.h"
 #include "synfamily.h"
 #include "unacpp.h"
-
-#include <iostream>
-
-using namespace std;
+#include "rclconfig.h"
 
 namespace Rcl {
 
 /**
  * Expand for one or several languages
  */
-bool StemDb::stemExpand(const std::string& langs,
-			const std::string& term,
+bool StemDb::stemExpand(const std::string& langs, const std::string& term,
 			vector<string>& result)
 {
     vector<string> llangs;
@@ -59,14 +57,17 @@ bool StemDb::stemExpand(const std::string& langs,
     }
 
 #ifndef RCL_INDEX_STRIPCHARS
-    for (vector<string>::const_iterator it = llangs.begin();
-	 it != llangs.end(); it++) {
-	SynTermTransStem stemmer(*it);
-	XapComputableSynFamMember expander(getdb(), synFamStemUnac, 
-					   *it, &stemmer);
-	string unac;
-	unacmaybefold(term, unac, "UTF-8", UNACOP_UNAC);
-	(void)expander.synExpand(unac, result);
+    // Expand the unaccented stem
+    if (!o_index_stripchars) {
+	for (vector<string>::const_iterator it = llangs.begin();
+	     it != llangs.end(); it++) {
+	    SynTermTransStem stemmer(*it);
+	    XapComputableSynFamMember expander(getdb(), synFamStemUnac, 
+					       *it, &stemmer);
+	    string unac;
+	    unacmaybefold(term, unac, "UTF-8", UNACOP_UNAC);
+	    (void)expander.synExpand(unac, result);
+	}
     }
 #endif 
 

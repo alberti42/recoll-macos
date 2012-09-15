@@ -129,18 +129,27 @@ extern  void *DbUpdWorker(void*);
 
 inline bool has_prefix(const string& trm)
 {
-#ifdef RCL_INDEX_STRIPCHARS
-    return !trm.empty() && 'A' <= trm[0] && trm[0] <= 'Z';
-#else
-    return !trm.empty() && trm[0] == ':';
+#ifndef RCL_INDEX_STRIPCHARS
+    if (o_index_stripchars) {
+#endif
+	return !trm.empty() && 'A' <= trm[0] && trm[0] <= 'Z';
+#ifndef RCL_INDEX_STRIPCHARS
+    } else {
+	return !trm.empty() && trm[0] == ':';
+    }
 #endif
 }
+
 inline string wrap_prefix(const string& pfx) 
 {
-#ifdef RCL_INDEX_STRIPCHARS
-    return pfx;
-#else
-    return cstr_colon + pfx + cstr_colon;
+#ifndef RCL_INDEX_STRIPCHARS
+    if (o_index_stripchars) {
+#endif
+	return pfx;
+#ifndef RCL_INDEX_STRIPCHARS
+    } else {
+	return cstr_colon + pfx + cstr_colon;
+    }
 #endif
 }
 
@@ -384,9 +393,13 @@ private:
 string version_string();
 
 extern const string pathelt_prefix;
+#ifdef RCL_INDEX_STRIPCHARS
 extern const string start_of_field_term;
 extern const string end_of_field_term;
-
+#else
+extern string start_of_field_term;
+extern string end_of_field_term;
+#endif
 }
 
 #endif /* _DB_H_INCLUDED_ */
