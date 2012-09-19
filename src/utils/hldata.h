@@ -5,20 +5,23 @@
 #include <string>
 #include <set>
 
-/** Store about user terms and their expansions. This is used mostly for
- *  highlighting result text and walking the matches.
+/** Store data about user search terms and their expansions. This is used
+ * mostly for highlighting result text and walking the matches, generating 
+ * spelling suggestions.
  */
 struct HighlightData {
-    /** The user terms, excluding those with wildcards. 
-     * This list is intended for orthographic suggestions but the terms are
-     * unaccented lowercased anyway because they are compared to the dictionary
-     * generated from the index term list (which is unaccented).
+    /** The user terms, excluding those with wildcards. This list is
+     * intended for orthographic suggestions so the terms are always
+     * lowercased, unaccented or not depending on the type of index 
+     * (as the spelling dictionary is generated from the index terms).
      */
     std::set<std::string> uterms;
 
-    /** The original user terms-or-groups. This is for displaying the matched
-     * terms or groups, ie in relation with highlighting or skipping to the 
-     * next match. These are raw, diacritics and case preserved.
+    /** The original user terms-or-groups. This is for display
+     * purposes: ie when creating a menu to look for a specific
+     * matched group inside a preview window. We want to show the
+     * user-entered data in the menu, not some transformation, so
+     * these are always raw, diacritics and case preserved.
      */
     std::vector<std::vector<std::string> > ugroups;
 
@@ -35,7 +38,7 @@ struct HighlightData {
 
     /** Index into ugroups for each group. Parallel to groups. As a
      * user term or group may generate many processed/expanded terms
-     * or groups, this is how we relate them 
+     * or groups, this is how we relate an expansion to its source.
      */
     std::vector<unsigned int> grpsugidx;
 
