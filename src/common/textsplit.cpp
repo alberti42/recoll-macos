@@ -21,7 +21,10 @@
 
 #include <iostream>
 #include <string>
-#include <set>
+//#include <set>
+#include <tr1/unordered_set>
+using std::tr1::unordered_set;
+
 #include <cstring>
 
 #include "textsplit.h"
@@ -57,8 +60,8 @@ static int charclasses[charclasses_size];
 // with interesting properties. This is far from full-blown management
 // of Unicode properties, but seems to do the job well enough in most
 // common cases
-static set<unsigned int> unicign;
-static set<unsigned int> visiblewhite;
+static unordered_set<unsigned int> unicign;
+static unordered_set<unsigned int> visiblewhite;
 
 class CharClassInit {
 public:
