@@ -220,7 +220,9 @@ static void listList(const string&, const vector<string>&)
 }
 #endif
 
-// Retrieve and store db-wide frequencies for the query terms.
+// Retrieve db-wide frequencies for the query terms and store them in
+// the query object. This is done at most once for a query, and the data is used
+// while computing abstracts for the different result documents.
 void Db::Native::setDbWideQTermsFreqs(Query *query)
 {
     // Do it once only for a given query.
@@ -420,18 +422,17 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 	     m_rcldb->m_synthAbsLen, m_rcldb->m_synthAbsWordCtxLen));
 
     // The (unprefixed) terms matched by this document
-    vector<string> terms;
-
+    vector<string> matchedTerms;
     {
         vector<string> iterms;
         query->getMatchTerms(docid, iterms);
-        noPrefixList(iterms, terms);
-        if (terms.empty()) {
+        noPrefixList(iterms, matchedTerms);
+        if (matchedTerms.empty()) {
             LOGDEB(("makeAbstract::Empty term list\n"));
             return vector<string>();
         }
     }
-    listList("Match terms: ", terms);
+    listList("Match terms: ", matchedTerms);
 
     // Retrieve the term freqencies for the query terms. This is
     // actually computed only once for a query, and for all terms in
@@ -446,7 +447,7 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
     // removing its meaning from the maximum occurrences per term test
     // used while walking the list below)
     multimap<double, string> byQ;
-    double totalweight = qualityTerms(docid, query, terms, byQ);
+    double totalweight = qualityTerms(docid, query, matchedTerms, byQ);
     LOGABS(("makeAbstract:%d: computed Qcoefs.\n", chron.ms()));
     // This can't happen, but would crash us
     if (totalweight == 0.0) {
@@ -464,8 +465,8 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
     // terms, at their positions around the search terms positions:
     map<unsigned int, string> sparseDoc;
 
-    // All the chosen query term positions. 
-    vector<unsigned int> qtermposs; 
+    // Total number of occurences for all terms. We stop when we have too much
+    int totaloccs = 0;
 
     // Limit the total number of slots we populate. The 7 is taken as
     // average word size. It was a mistake to have the user max
@@ -499,7 +500,10 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 
 	Xapian::PositionIterator pos;
 	// There may be query terms not in this doc. This raises an
-	// exception when requesting the position list, we catch it.
+	// exception when requesting the position list, we catch it ??
+	// Not clear how this can happen because we are walking the
+	// match list returned by Xapian. Maybe something with the
+	// fields?
 	string emptys;
 	try {
 	    unsigned int occurrences = 0;
@@ -510,8 +514,8 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 		    continue;
 		LOGABS(("makeAbstract: [%s] at %d occurrences %d maxoccs %d\n",
 			qterm.c_str(), ipos, occurrences, maxoccs));
-		// Remember the term position
-		qtermposs.push_back(ipos);
+
+		totaloccs++;
 
 		// Add adjacent slots to the set to populate at next
 		// step by inserting empty strings. Special provisions
@@ -543,21 +547,21 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 
 		// Limit to allocated occurences and total size
 		if (++occurrences >= maxoccs || 
-		    qtermposs.size() >= maxtotaloccs)
+		    totaloccs >= maxtotaloccs)
 		    break;
 	    }
 	} catch (...) {
 	    // Term does not occur. No problem.
 	}
-	if (qtermposs.size() >= maxtotaloccs)
+	if (totaloccs >= maxtotaloccs)
 	    break;
     }
     LOGABS(("makeAbstract:%d:chosen number of positions %d\n", 
-	    chron.millis(), qtermposs.size()));
+	    chron.millis(), totaloccs));
 
     // This can happen if there are term occurences in the keywords
     // etc. but not elsewhere ?
-    if (qtermposs.size() == 0) {
+    if (totaloccs == 0) {
 	LOGDEB1(("makeAbstract: no occurrences\n"));
 	return vector<string>();
     }
