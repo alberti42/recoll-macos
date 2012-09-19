@@ -307,6 +307,7 @@ double Db::Native::qualityTerms(Xapian::docid docid,
 // Return the positions list for the page break term
 bool Db::Native::getPagePositions(Xapian::docid docid, vector<int>& vpos)
 {
+    vpos.clear();
     // Need to retrieve the document record to check for multiple page breaks
     // that we store there for lack of better place
     map<int, int> mbreaksmap;
@@ -637,9 +638,11 @@ vector<string> Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 	    continue;
 	if (chunk.empty() && !vpbreaks.empty()) {
 	    int pnum =  getPageNumberForPosition(vpbreaks, it->first);
-	    ostringstream ss;
-	    ss << pnum;
-	    chunk += string(" [p ") + ss.str() + "] ";
+	    if (pnum > 0) {
+		ostringstream ss;
+		ss << pnum;
+		chunk += string(" [p ") + ss.str() + "] ";
+	    }
 	}
 	Utf8Iter uit(it->second);
 	bool newcjk = false;
@@ -1463,6 +1466,8 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     if (!tpidx.m_pageincrvec.empty()) {
 	ostringstream multibreaks;
 	for (unsigned int i = 0; i < tpidx.m_pageincrvec.size(); i++) {
+	    if (i != 0)
+		multibreaks << ",";
 	    multibreaks << tpidx.m_pageincrvec[i].first << "," << 
 		tpidx.m_pageincrvec[i].second;
 	}
