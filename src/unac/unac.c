@@ -31,9 +31,9 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <tr1/unordered_map>
 using std::string;
-using std::vector;
-using std::map;
+using std::tr1::unordered_map;
 #include "smallut.h"
 
 /* 
@@ -41,20 +41,16 @@ using std::map;
    should not be translated according to what UnicodeData says, but
    instead according to some local rule. There will usually be very
    few of them, but they must be looked up for every translated char.
-   
-   We use a sorted vector for fastest elimination by binary search and
-   a vector<string> to store the translations
  */
-static vector<unsigned short> except_chars;
-static vector<string> except_trans;
-static inline size_t is_except_char(unsigned short c)
+unordered_map<unsigned short, string> except_trans;
+static inline bool is_except_char(unsigned short c, string& trans)
 {
-    vector<unsigned short>::iterator it = 
-	std::lower_bound(except_chars.begin(), except_chars.end(), c);
-    if (it == except_chars.end() || *it != c) {
-	return (size_t(-1));
-    }
-    return std::distance(except_chars.begin(), it);
+    unordered_map<unsigned short, string>::const_iterator it 
+	= except_trans.find(c);
+    if (it == except_trans.end())
+	return false;
+    trans = it->second;
+    return true;
 }
 #endif /* RECOLL_DATADIR */
 
@@ -12715,21 +12711,18 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
     //   - unaccenting: do nothing (copy original char)
     //   - unac+fold: use table
     //   - fold: use the unicode data.
-    size_t idx;
-    if (what != UNAC_FOLD && except_chars.size() != 0 && 
-	(idx=is_except_char(c)) != (size_t)-1) {
+    string trans;
+    if (what != UNAC_FOLD && except_trans.size() != 0 && 
+	is_except_char(c, trans)) {
 	if (what == UNAC_UNAC) {
 	    // Unaccent only. Do nothing
 	    p = 0;
 	    l = 0;
 	} else {
 	    // Has to be UNAC_UNACFOLD: use table
-	    p = (unsigned short *)(except_trans[idx].c_str() + 2);
-	    l = (except_trans[idx].size() - 2) / 2;
+	    p = (unsigned short *)trans.c_str();
+	    l = trans.size() / 2;
 	}
-	/* if (p) {unsigned char *cp = (unsigned char *)p;
-	   fprintf(stderr, "l %d cp[0] %x cp[1] %x\n", l, (unsigned int)cp[0], 
-	   (unsigned int)cp[1]);}*/
     } else {
 #endif /* RECOLL_DATADIR */
 	unac_uf_char_utf16_(c, p, l, what)
@@ -13076,7 +13069,6 @@ const char* unac_version(void)
 #ifdef RECOLL_DATADIR
 void unac_set_except_translations(const char *spectrans)
 {
-    except_chars.clear();
     except_trans.clear();
     if (!spectrans || !spectrans[0])
 	return;
@@ -13123,14 +13115,8 @@ void unac_set_except_translations(const char *spectrans)
 	else
 	    ch = (out[0] << 8) | (out[1] & 0xff);
 
-	/* fprintf(stderr, "outsize %d Ch is 0x%hx\n", int(outsize), ch);*/
-	except_chars.push_back(ch);
-	// We keep ch as the first 2 bytes in the translation so that 
-	// both vectors sort identically
-	except_trans.push_back(string((const char *)out, outsize));
+	except_trans[ch] = string((const char *)(out + 2), outsize-2);
 	free(out);
     }
-    std::sort(except_chars.begin(), except_chars.end());
-    std::sort(except_trans.begin(), except_trans.end());
 }
 #endif /* RECOLL_DATADIR */
