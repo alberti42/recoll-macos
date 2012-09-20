@@ -41,6 +41,7 @@ using std::pair;
 #include "rcldoc.h"
 #include "reslistpager.h"
 
+class RclMain;
 class QtGuiResListPager;
 
 /**
@@ -66,7 +67,10 @@ class ResList : public RESLIST_PARENTCLASS
     int listId() const {return m_listId;}
     int pageFirstDocNum();
     void setFont();
-
+    void setRclMain(RclMain *m) 
+    {
+	m_parent = m;
+    }
  public slots:
     virtual void setDocSource(RefCntr<DocSequence> nsource);
     virtual void resetList();     // Erase current list
@@ -84,6 +88,7 @@ class ResList : public RESLIST_PARENTCLASS
     virtual void menuExpand();
     virtual void menuPreviewParent();
     virtual void menuOpenParent();
+    virtual void menuOpenSnippets();
     virtual void previewExposed(int);
     virtual void append(const QString &text);
     virtual void readDocSource();
@@ -132,6 +137,7 @@ class ResList : public RESLIST_PARENTCLASS
     // so we store the page and display it when done.
     QString    m_text; 
 #endif
+    RclMain   *m_parent;
 
     virtual void displayPage(); // Display current page
     static int newListId();

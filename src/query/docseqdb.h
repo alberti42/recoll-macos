@@ -31,6 +31,7 @@ class DocSequenceDb : public DocSequence {
     virtual bool getDoc(int num, Rcl::Doc &doc, string * = 0);
     virtual int getResCnt();
     virtual void getTerms(HighlightData& hld);
+    virtual bool getAbstract(Rcl::Doc &doc, vector<pair<int, string> >&);
     virtual bool getAbstract(Rcl::Doc &doc, vector<string>&);
     virtual int getFirstMatchPage(Rcl::Doc&);
     virtual bool getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc);

@@ -25,6 +25,7 @@ HEADERS += \
         restable.h \
         rtitool.h \
         searchclause_w.h \
+        snippets_w.h \
         spell_w.h \
         ssearch_w.h \
         uiprefs_w.h \
@@ -46,6 +47,7 @@ SOURCES += \
         restable.cpp \
         rtitool.cpp \
         searchclause_w.cpp \
+        snippets_w.cpp \
         spell_w.cpp \
         ssearch_w.cpp \
         uiprefs_w.cpp \
@@ -64,6 +66,7 @@ FORMS   = \
         restable.ui \
         rtitool.ui \
         spell.ui \
+        snippets.ui \
         ssearchb.ui \
         uiprefs.ui \
         viewaction.ui \

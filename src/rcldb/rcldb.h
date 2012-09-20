@@ -223,8 +223,13 @@ class Db {
 
     /** Build synthetic abstract for document, extracting chunks relevant for
      * the input query. This uses index data only (no access to the file) */
+    // Abstract return as one string
     bool makeDocAbstract(Doc &doc, Query *query, string& abstract);
+    // Returned as a snippets vector
     bool makeDocAbstract(Doc &doc, Query *query, vector<string>& abstract);
+    // Returned as a vector of page,snippet page is 0 if unknown
+    bool makeDocAbstract(Doc &doc, Query *query, 
+			 vector<pair<int, string> >& abstract);
     /** Retrieve detected page breaks positions */
     int getFirstMatchPage(Doc &doc, Query *query);
 

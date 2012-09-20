@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 
+#include <QComboBox>
 #include <qvariant.h>
 #include <qwidget.h>
 

@@ -95,6 +95,14 @@ class DocSequence {
 	abs.push_back(doc.meta[Rcl::Doc::keyabs]);
 	return true;
     }
+    virtual bool getAbstract(Rcl::Doc& doc, 
+			     std::vector<std::pair<int, std::string> >& abs) 
+    {
+	fprintf(stderr, "DocSequence::getAbstract/pair\n");
+	abs.push_back(std::pair<int, std::string>(0,
+						  doc.meta[Rcl::Doc::keyabs]));
+	return true;
+    }
     virtual int getFirstMatchPage(Rcl::Doc&) 
     {
 	return -1;
@@ -152,6 +160,13 @@ public:
     virtual ~DocSeqModifier() {}
 
     virtual bool getAbstract(Rcl::Doc& doc, std::vector<std::string>& abs) 
+    {
+	if (m_seq.isNull())
+	    return false;
+	return m_seq->getAbstract(doc, abs);
+    }
+    virtual bool getAbstract(Rcl::Doc& doc, 
+			     std::vector<std::pair<int, std::string> >& abs) 
     {
 	if (m_seq.isNull())
 	    return false;

@@ -65,6 +65,19 @@ int DocSequenceDb::getResCnt()
     return m_rescnt;
 }
 
+bool DocSequenceDb::getAbstract(Rcl::Doc &doc, 
+				vector<pair<int, string> >& vpabs)
+{
+    LOGDEB(("DocSequenceDb::getAbstract/pair\n"));
+    setQuery();
+    if (m_q->whatDb() &&
+	m_queryBuildAbstract && (doc.syntabs || m_queryReplaceAbstract)) {
+	m_q->whatDb()->makeDocAbstract(doc, m_q.getptr(), vpabs);
+    } 
+    if (vpabs.empty())
+	vpabs.push_back(pair<int, string>(0, doc.meta[Rcl::Doc::keyabs]));
+    return true;
+}
 bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<string>& vabs)
 {
     setQuery();

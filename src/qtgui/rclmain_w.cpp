@@ -301,6 +301,7 @@ void RclMain::init()
     connect(restable, SIGNAL(docSaveToFileClicked(Rcl::Doc)), 
 	    this, SLOT(saveDocToFile(Rcl::Doc)));
 
+    reslist->setRclMain(this);
     connect(this, SIGNAL(docSourceChanged(RefCntr<DocSequence>)),
 	    reslist, SLOT(setDocSource(RefCntr<DocSequence>)));
     connect(firstPageAction, SIGNAL(activated()), 
@@ -1501,8 +1502,9 @@ static bool lookForHtmlBrowser(string &exefile)
     return false;
 }
 
-void RclMain::startNativeViewer(Rcl::Doc doc)
+void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum)
 {
+    LOGDEB(("RclMain::startNativeViewer: page %d\n", pagenum));
     // Look for appropriate viewer
     string cmdplusattr;
     if (prefs.useDesktopOpen) {
@@ -1520,11 +1522,13 @@ void RclMain::startNativeViewer(Rcl::Doc doc)
 	return;
     }
 
-    int pagenum = 1;
-    if (m_source.isNotNull())
-	pagenum = m_source->getFirstMatchPage(doc);
-    if (pagenum == -1)
+    if (pagenum == -1) {
 	pagenum = 1;
+	if (m_source.isNotNull())
+	    pagenum = m_source->getFirstMatchPage(doc);
+	if (pagenum == -1)
+	    pagenum = 1;
+    }
     char cpagenum[20];
     sprintf(cpagenum, "%d", pagenum);
 
