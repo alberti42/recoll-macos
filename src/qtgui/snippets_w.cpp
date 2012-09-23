@@ -50,6 +50,17 @@ void SnippetsW::init()
     if (m_source.isNull())
 	return;
 
+    // Make title out of file name if none yet
+    string titleOrFilename;
+    string utf8fn;
+    m_doc.getmeta(Rcl::Doc::keytt, &titleOrFilename);
+    m_doc.getmeta(Rcl::Doc::keyfn, &utf8fn);
+    if (titleOrFilename.empty()) {
+	titleOrFilename = utf8fn;
+    }
+
+    setWindowTitle(QString::fromUtf8(titleOrFilename.c_str()));
+
     vector<pair<int, string> > vpabs;
     m_source->getAbstract(m_doc, vpabs);
 

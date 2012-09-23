@@ -244,7 +244,7 @@ void Db::Native::setDbWideQTermsFreqs(Query *query)
     for (vector<string>::const_iterator qit = qterms.begin(); 
 	 qit != qterms.end(); qit++) {
 	query->m_nq->termfreqs[*qit] = xrdb.get_termfreq(*qit) / doccnt;
-	LOGABS(("makeAbstract: [%s] db freq %.1e\n", qit->c_str(), 
+	LOGABS(("set..QTermFreqs: [%s] db freq %.1e\n", qit->c_str(), 
 		query->m_nq->termfreqs[*qit]));
     }
 }
@@ -298,6 +298,7 @@ double Db::Native::qualityTerms(Xapian::docid docid,
     }
 
 #ifdef DEBUGABSTRACT
+    LOGDEB(("Db::qualityTerms:\n"));
     for (multimap<double, string>::reverse_iterator qit = byQ.rbegin(); 
 	 qit != byQ.rend(); qit++) {
 	LOGDEB(("%.1e->[%s]\n", qit->first, qit->second.c_str()));
@@ -415,12 +416,13 @@ int Db::Native::getFirstMatchPage(Xapian::docid docid, Query *query)
 //
 // DatabaseModified and other general exceptions are catched and
 // possibly retried by our caller
-bool Db::Native::makeAbstract(Xapian::docid docid, Query *query, 
-			      vector<pair<int, string> >& vabs)
+abstract_result Db::Native::makeAbstract(Xapian::docid docid, Query *query, 
+					 vector<pair<int, string> >& vabs, 
+					 int imaxoccs, int ictxwords)
 {
     Chrono chron;
-    LOGDEB2(("makeAbstract:%d: maxlen %d wWidth %d\n", chron.ms(),
-	     m_rcldb->m_synthAbsLen, m_rcldb->m_synthAbsWordCtxLen));
+    LOGDEB2(("makeAbstract:%d: maxlen %d wWidth %d imaxoccs %d\n", chron.ms(),
+	     m_rcldb->m_synthAbsLen, m_rcldb->m_synthAbsWordCtxLen, imaxoccs));
 
     // The (unprefixed) terms matched by this document
     vector<string> matchedTerms;
@@ -430,7 +432,7 @@ bool Db::Native::makeAbstract(Xapian::docid docid, Query *query,
         noPrefixList(iterms, matchedTerms);
         if (matchedTerms.empty()) {
             LOGDEB(("makeAbstract::Empty term list\n"));
-            return false;
+            return ABSRES_ERROR;
         }
     }
     listList("Match terms: ", matchedTerms);
@@ -453,7 +455,7 @@ bool Db::Native::makeAbstract(Xapian::docid docid, Query *query,
     // This can't happen, but would crash us
     if (totalweight == 0.0) {
 	LOGERR(("makeAbstract: totalweight == 0.0 !\n"));
-	return false;
+	return ABSRES_ERROR;
     }
 
     ///////////////////
@@ -474,12 +476,16 @@ bool Db::Native::makeAbstract(Xapian::docid docid, Query *query,
     // abstract size parameter in characters, we basically only deal
     // with words. We used to limit the character size at the end, but
     // this damaged our careful selection of terms
-    const unsigned int maxtotaloccs = 
+    const unsigned int maxtotaloccs = imaxoccs > 0 ? imaxoccs :
 	m_rcldb->m_synthAbsLen /(7 * (m_rcldb->m_synthAbsWordCtxLen+1));
-    LOGABS(("makeAbstract:%d: mxttloccs %d\n", chron.ms(), maxtotaloccs));
+    int ctxwords = ictxwords == -1 ? m_rcldb->m_synthAbsWordCtxLen : ictxwords;
+    LOGABS(("makeAbstract:%d: mxttloccs %d ctxwords %d\n", 
+	    chron.ms(), maxtotaloccs, ctxwords));
 
     // This is used to mark positions overlapped by a multi-word match term
     const string occupiedmarker("?");
+
+    abstract_result ret = ABSRES_OK;
 
     // Let's go populate
     for (multimap<double, string>::reverse_iterator qit = byQ.rbegin(); 
@@ -522,7 +528,7 @@ bool Db::Native::makeAbstract(Xapian::docid docid, Query *query,
 		// step by inserting empty strings. Special provisions
 		// for adding ellipsis and for positions overlapped by
 		// the match term.
-		unsigned int sta = MAX(0, ipos-m_rcldb->m_synthAbsWordCtxLen);
+		unsigned int sta = MAX(0, ipos - ctxwords);
 		unsigned int sto = ipos + qtrmwrdcnt-1 + 
 		    m_rcldb->m_synthAbsWordCtxLen;
 		for (unsigned int ii = sta; ii <= sto;  ii++) {
@@ -548,14 +554,20 @@ bool Db::Native::makeAbstract(Xapian::docid docid, Query *query,
 
 		// Limit to allocated occurences and total size
 		if (++occurrences >= maxoccs || 
-		    totaloccs >= maxtotaloccs)
+		    totaloccs >= maxtotaloccs) {
+		    ret = ABSRES_TRUNC;
+		    LOGDEB(("Db::makeAbstract: max occurrences cutoff\n"));
 		    break;
+		}
 	    }
 	} catch (...) {
 	    // Term does not occur. No problem.
 	}
-	if (totaloccs >= maxtotaloccs)
+	if (totaloccs >= maxtotaloccs) {
+	    ret = ABSRES_TRUNC;
+	    LOGDEB(("Db::makeAbstract: max1 occurrences cutoff\n"));
 	    break;
+	}
     }
     LOGABS(("makeAbstract:%d:chosen number of positions %d\n", 
 	    chron.millis(), totaloccs));
@@ -564,7 +576,7 @@ bool Db::Native::makeAbstract(Xapian::docid docid, Query *query,
     // etc. but not elsewhere ?
     if (totaloccs == 0) {
 	LOGDEB1(("makeAbstract: no occurrences\n"));
-	return false;
+	return ABSRES_ERROR;
     }
 
     // Walk all document's terms position lists and populate slots
@@ -582,6 +594,7 @@ bool Db::Native::makeAbstract(Xapian::docid docid, Query *query,
 	    if ('A' <= (*term).at(0) && (*term).at(0) <= 'Z')
 		continue;
 	    if (cutoff-- < 0) {
+		ret = ABSRES_TRUNC;
 		LOGDEB0(("makeAbstract: max term count cutoff\n"));
 		break;
 	    }
@@ -590,6 +603,7 @@ bool Db::Native::makeAbstract(Xapian::docid docid, Query *query,
 	    for (pos = xrdb.positionlist_begin(docid, *term); 
 		 pos != xrdb.positionlist_end(docid, *term); pos++) {
 		if (cutoff-- < 0) {
+		    ret = ABSRES_TRUNC;
 		    LOGDEB0(("makeAbstract: max term count cutoff\n"));
 		    break;
 		}
@@ -600,8 +614,8 @@ bool Db::Native::makeAbstract(Xapian::docid docid, Query *query,
 		    // at the same position, we want to keep only the
 		    // first one (ie: dockes and dockes@wanadoo.fr)
 		    if (vit->second.empty()) {
-			LOGABS(("makeAbstract: populating: [%s] at %d\n", 
-				(*term).c_str(), *pos));
+			LOGDEB2(("makeAbstract: populating: [%s] at %d\n", 
+				 (*term).c_str(), *pos));
 			sparseDoc[*pos] = *term;
 		    }
 		}
@@ -665,7 +679,7 @@ bool Db::Native::makeAbstract(Xapian::docid docid, Query *query,
 	vabs.push_back(pair<int, string>(page, chunk));
 
     LOGDEB2(("makeAbtract: done in %d mS\n", chron.millis()));
-    return true;
+    return ret;
 }
 
 /* Rcl::Db methods ///////////////////////////////// */
@@ -2119,17 +2133,22 @@ bool Db::stemDiffers(const string& lang, const string& word,
     return true;
 }
 
-bool Db::makeDocAbstract(Doc &doc, Query *query, 
-			 vector<pair<int, string> >& abstract)
+abstract_result Db::makeDocAbstract(Doc &doc, Query *query, 
+				    vector<pair<int, string> >& abstract, 
+				    int maxoccs, int ctxwords)
 {
+    LOGDEB(("makeDocAbstract: maxoccs %d ctxwords %d\n", maxoccs, ctxwords));
     if (!m_ndb || !m_ndb->m_isopen) {
 	LOGERR(("Db::makeDocAbstract: no db\n"));
-	return false;
+	return ABSRES_ERROR;
     }
-    bool ret = false;
-    XAPTRY(ret = m_ndb->makeAbstract(doc.xdocid, query, abstract),
+    abstract_result ret = ABSRES_ERROR;
+    XAPTRY(ret = m_ndb->makeAbstract(doc.xdocid, query, abstract, 
+				     maxoccs, ctxwords),
            m_ndb->xrdb, m_reason);
-    return (ret && m_reason.empty()) ? true : false;
+    if (!m_reason.empty())
+	return ABSRES_ERROR;
+    return ret;
 }
 
 bool Db::makeDocAbstract(Doc &doc, Query *query, vector<string>& abstract)

@@ -81,6 +81,8 @@ indexstemminglanguages = english
 # unac_except_trans = Ää Öö Üü ää öö üü ßss
 # In French, you probably want to decompose oe and ae
 # unac_except_trans = œoe Œoe æae Æae
+# Actually, this seems a reasonable default for all until someone protests.
+unac_except_trans = åå Åå ää Ää öö Öö üü Üü ßss œoe Œoe æae ÆAE ﬁfi ﬂfl
 
 # Where to store the database (directory). This may be an absolute path,
 # else it is taken as relative to the configuration directory (-c argument

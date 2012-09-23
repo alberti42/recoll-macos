@@ -65,19 +65,32 @@ int DocSequenceDb::getResCnt()
     return m_rescnt;
 }
 
+// This one only gets called to fill-up the snippets window
+// We ignore most abstract/snippets preferences.
 bool DocSequenceDb::getAbstract(Rcl::Doc &doc, 
 				vector<pair<int, string> >& vpabs)
 {
     LOGDEB(("DocSequenceDb::getAbstract/pair\n"));
     setQuery();
-    if (m_q->whatDb() &&
-	m_queryBuildAbstract && (doc.syntabs || m_queryReplaceAbstract)) {
-	m_q->whatDb()->makeDocAbstract(doc, m_q.getptr(), vpabs);
+
+    // Have to put the limit somewhere. 
+    int maxoccs = 500;
+    Rcl::abstract_result ret = Rcl::ABSRES_ERROR;
+    if (m_q->whatDb()) {
+	ret = m_q->whatDb()->makeDocAbstract(doc, m_q.getptr(), vpabs, 
+					     maxoccs, 
+					     m_q->whatDb()->getAbsCtxLen()+ 2);
     } 
     if (vpabs.empty())
 	vpabs.push_back(pair<int, string>(0, doc.meta[Rcl::Doc::keyabs]));
+
+    // If the list was probably truncated, indicate it.
+    if (ret == Rcl::ABSRES_TRUNC)
+	vpabs.push_back(pair<int, string>(-1, "[...]"));
+
     return true;
 }
+
 bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<string>& vabs)
 {
     setQuery();

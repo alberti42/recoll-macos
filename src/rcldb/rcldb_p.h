@@ -89,8 +89,9 @@ class Db::Native {
 			const vector<string>& terms,
 			std::multimap<double, string>& byQ);
     void setDbWideQTermsFreqs(Query *query);
-    bool makeAbstract(Xapian::docid id, Query *query, 
-		      vector<pair<int, string> >&);
+    abstract_result makeAbstract(Xapian::docid id, Query *query, 
+				 vector<pair<int, string> >&, int maxoccs = -1,
+				 int ctxwords = -1);
     bool getPagePositions(Xapian::docid docid, vector<int>& vpos);
     int getFirstMatchPage(Xapian::docid docid, Query *query);
     int getPageNumberForPosition(const vector<int>& pbreaks, unsigned int pos);

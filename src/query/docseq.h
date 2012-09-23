@@ -98,7 +98,6 @@ class DocSequence {
     virtual bool getAbstract(Rcl::Doc& doc, 
 			     std::vector<std::pair<int, std::string> >& abs) 
     {
-	fprintf(stderr, "DocSequence::getAbstract/pair\n");
 	abs.push_back(std::pair<int, std::string>(0,
 						  doc.meta[Rcl::Doc::keyabs]));
 	return true;

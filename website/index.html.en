@@ -86,6 +86,13 @@
       <h2>News</h2>
       <div class="news">
       <ul>
+        <li>2012-09-21: an
+          <a href="https://bitbucket.org/medoc/recoll/wiki/ElinksBeagle">easy
+                 way</a> to extend the "Beagle queue"
+         Recoll web history indexing mechanism to other browsers than
+         Firefox (Elinks in this case).
+         </li>
+
         <li>2012-09-13: the next Recoll version will maybe acquire switchable
           case and diacritics sensitivity. I am writing 
           a few pages about the
