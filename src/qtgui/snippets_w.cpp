@@ -71,25 +71,29 @@ void SnippetsW::init()
 	"<html><head>"
 	"<meta http-equiv=\"content-type\" "
 	"content=\"text/html; charset=utf-8\"></head>"
-	"<body style='overflow-x: scroll; white-space: nowrap'>");
+	"<body style='overflow-x: scroll; white-space: nowrap'>"
+	"<table>"
+				      );
 
     g_hiliter.set_inputhtml(false);
 
     for (vector<pair<int, string> >::const_iterator it = vpabs.begin(); 
 	 it != vpabs.end(); it++) {
+	html += "<tr><td>";
 	if (it->first > 0) {
 	    char buf[100];
-	    sprintf(buf, "P. %d", it->first);
+	    sprintf(buf, "P.&nbsp;%d", it->first);
 	    html += "<a href=\"";
 	    html += buf;
 	    html += "\">";
 	    html += buf;
-	    html += "</a> ";
+	    html += "</a>";
 	}
+	html += "</td><td>";
 	list<string> lr;
 	g_hiliter.plaintorich(it->second, lr, hdata);
 	html.append(QString::fromUtf8(lr.front().c_str()));
-	html.append("<br>\n");
+	html.append("</td></tr>\n");
     }
     html.append("</body></html>");
     webView->setHtml(html);
