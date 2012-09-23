@@ -938,8 +938,12 @@ void RclMain::showIndexSched(bool modal)
 	connect(indexSched->cronCLB, SIGNAL(clicked()), 
 		this, SLOT(execCronTool()));
 	if (theconfig && theconfig->isDefaultConfig()) {
+#ifdef RCL_MONITOR
 	    connect(indexSched->rtidxCLB, SIGNAL(clicked()), 
 		    this, SLOT(execRTITool()));
+#else
+	    indexSched->rtidxCLB->setEnabled(false);
+#endif
 	} else {
 	    indexSched->rtidxCLB->setEnabled(false);
 	}
