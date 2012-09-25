@@ -17,6 +17,8 @@
 #ifndef _DB_H_INCLUDED_
 #define _DB_H_INCLUDED_
 
+#include "autoconfig.h"
+
 #include <string>
 #include <vector>
 
@@ -78,21 +80,50 @@ class Query;
 /** Used for returning result lists for index terms matching some criteria */
 class TermMatchEntry {
 public:
-    TermMatchEntry() : wcf(0) {}
-    TermMatchEntry(const string&t, int f, int d) : term(t), wcf(f), docs(d) {}
-    TermMatchEntry(const string&t) : term(t), wcf(0) {}
-    bool operator==(const TermMatchEntry &o) const { return term == o.term;}
-    bool operator<(const TermMatchEntry &o) const { return term < o.term;}
+    TermMatchEntry() 
+	: wcf(0) 
+    {
+    }
+    TermMatchEntry(const string& t, int f, int d)
+	: term(t), wcf(f), docs(d) 
+    {
+    }
+    TermMatchEntry(const string& t)
+    : term(t), wcf(0) 
+    {
+    }
+    bool operator==(const TermMatchEntry &o) const 
+    { 
+	return term == o.term;
+    }
+    bool operator<(const TermMatchEntry &o) const 
+    { 
+	return term < o.term;
+    }
+
     string term;
     int    wcf; // Total count of occurrences within collection.
     int    docs; // Number of documents countaining term.
 };
 
+/** Term match result list header: statistics and global info */
 class TermMatchResult {
 public:
-    TermMatchResult() {clear();}
-    void clear() {entries.clear(); dbdoccount = 0; dbavgdoclen = 0;}
+    TermMatchResult() 
+    {
+	clear();
+    }
+    void clear() 
+    {
+	entries.clear(); 
+	dbdoccount = 0; 
+	dbavgdoclen = 0;
+    }
+    // Term expansion
     vector<TermMatchEntry> entries;
+    // If a field was specified, this is the corresponding index prefix
+    string prefix;
+    // Index-wide stats
     unsigned int dbdoccount;
     double       dbavgdoclen;
 };
@@ -100,6 +131,33 @@ public:
 #ifdef IDX_THREADS
 extern  void *DbUpdWorker(void*);
 #endif // IDX_THREADS
+
+inline bool has_prefix(const string& trm)
+{
+#ifndef RCL_INDEX_STRIPCHARS
+    if (o_index_stripchars) {
+#endif
+	return !trm.empty() && 'A' <= trm[0] && trm[0] <= 'Z';
+#ifndef RCL_INDEX_STRIPCHARS
+    } else {
+	return !trm.empty() && trm[0] == ':';
+    }
+#endif
+}
+
+inline string wrap_prefix(const string& pfx) 
+{
+#ifndef RCL_INDEX_STRIPCHARS
+    if (o_index_stripchars) {
+#endif
+	return pfx;
+#ifndef RCL_INDEX_STRIPCHARS
+    } else {
+	return cstr_colon + pfx + cstr_colon;
+    }
+#endif
+}
+
 /**
  * Wrapper class for the native database.
  */
@@ -136,6 +194,8 @@ class Db {
     static bool isSpellingCandidate(const string& term)
     {
 	if (term.empty() || term.length() > 50)
+	    return false;
+	if (has_prefix(term))
 	    return false;
 	if (term.find_first_of(" !\"#$%&()*+,-./0123456789:;<=>?@[\\]^_`{|}~") 
 	    != string::npos)
@@ -210,12 +270,23 @@ class Db {
 
     /** Return the index terms that match the input string
      * Expansion is performed either with either wildcard or regexp processing
-     * Stem expansion is performed if lang is not empty */
+     * Stem expansion is performed if lang is not empty 
+     * 
+     * @param typ defines the kind of expansion: wildcard, regexp or stemming
+     * @param lang sets the stemming language(s). Can be a space-separated list
+     * @param term is the term to expand
+     * @param result is the main output
+     * @param max defines the maximum result count
+     * @param field if set, defines the field within with the expansion should
+     *        be performed. Only used for wildcards and regexps, stemming is
+     *        always global. If this is set, the resulting output terms 
+     *        will be appropriately prefix and the prefix value will be set 
+     *        in the TermMatchResult header
+     */
     enum MatchType {ET_WILD, ET_REGEXP, ET_STEM};
-    bool termMatch(MatchType typ, const string &lang, const string &s, 
+    bool termMatch(MatchType typ, const string &lang, const string &term, 
 		   TermMatchResult& result, int max = -1, 
-		   const string& field = cstr_null,
-                   string *prefix = 0
+		   const string& field = cstr_null
         );
     /** Return min and max years for doc mod times in db */
     bool maxYearSpan(int *minyear, int *maxyear);
@@ -337,9 +408,13 @@ private:
 string version_string();
 
 extern const string pathelt_prefix;
+#ifdef RCL_INDEX_STRIPCHARS
 extern const string start_of_field_term;
 extern const string end_of_field_term;
-
+#else
+extern string start_of_field_term;
+extern string end_of_field_term;
+#endif
 }
 
 #endif /* _DB_H_INCLUDED_ */

@@ -14,6 +14,9 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+
+#include "autoconfig.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -36,7 +39,8 @@ using namespace std;
 static string thisprog;
 
 static string usage =
-    " -d <dbdir> -e <output encoding>\n"
+    " -d <dbdir> \n"
+    "-e <output encoding>\n"
     " -i docid -D : get document data for docid\n"
     " -i docid -X : delete document docid\n"
     " -i docid -b : 'rebuild' document from term positions\n"
@@ -110,6 +114,23 @@ static void sigcleanup(int sig)
     fprintf(stderr, "sigcleanup\n");
     cleanup();
     exit(1);
+}
+
+#ifndef RCL_INDEX_STRIPCHARS
+bool o_index_stripchars;
+#endif
+
+inline bool has_prefix(const string& trm)
+{
+#ifndef RCL_INDEX_STRIPCHARS
+    if (o_index_stripchars) {
+#endif
+	return trm.size() && 'A' <= trm[0] && trm[0] <= 'Z';
+#ifndef RCL_INDEX_STRIPCHARS
+    } else {
+	return trm.size() > 0 && trm[0] == ':';
+    }
+#endif
 }
 
 int main(int argc, char **argv)
@@ -188,10 +209,22 @@ int main(int argc, char **argv)
 
     try {
 	db = new Xapian::Database(dbdir);
-
 	cout << "DB: ndocs " << db->get_doccount() << " lastdocid " <<
 	    db->get_lastdocid() << " avglength " << db->get_avlength() << endl;
-	    
+
+#ifndef RCL_INDEX_STRIPCHARS
+	// If we have terms with a leading ':' it's a new style,
+	// unstripped index
+	{
+	    Xapian::TermIterator term = db->allterms_begin(":");
+	    if (term == db->allterms_end())
+		o_index_stripchars = true;
+	    else
+		o_index_stripchars = false;
+	    cout<<"DB: terms are "<<(o_index_stripchars?"stripped":"raw")<<endl;
+	}
+#endif
+    
 	if (op_flags & OPT_T) {
 	    Xapian::TermIterator term;
 	    string printable;
@@ -201,8 +234,7 @@ int main(int argc, char **argv)
 		for (term = db->termlist_begin(docid); 
 		     term != db->termlist_end(docid);term++) {
 		    const string& s = *term;
-		    if ((op_flags&OPT_l) && 
-			!s.empty() && s[0] >= 'A' && s[0] <= 'Z')
+		    if ((op_flags&OPT_l) && has_prefix(s))
 			continue;
 		    cout << op << detailstring(s) << cl << endl;
 		}
@@ -210,8 +242,7 @@ int main(int argc, char **argv)
 		for (term = db->allterms_begin(); 
 		     term != db->allterms_end();term++) {
 		    const string& s = *term;
-		    if ((op_flags&OPT_l) && 
-			!s.empty() && s[0] >= 'A' && s[0] <= 'Z')
+		    if ((op_flags&OPT_l) && has_prefix(s))
 			continue;
 		    if (op_flags & OPT_f)
 			cout <<  db->get_collection_freq(*term) << " " 

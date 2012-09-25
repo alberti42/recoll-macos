@@ -103,7 +103,7 @@ public:
 
     /** Append current utf-8 possibly multi-byte character to string param.
 	This needs to be fast. No error checking. */
-    unsigned int appendchartostring(std::string &out) {
+    unsigned int appendchartostring(std::string &out) const {
 #ifdef UTF8ITER_CHECK
 	assert(m_cl != 0);
 #endif

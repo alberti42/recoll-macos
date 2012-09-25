@@ -372,6 +372,18 @@ void rwSettings(bool writing)
     }
 }
 
+string PrefsPack::stemlang()
+{
+    string stemLang = (const char *)prefs.queryStemLang.toAscii();
+    if (stemLang == "ALL") {
+	if (theconfig)
+	    theconfig->getConfParam("indexstemminglanguages", stemLang);
+	else
+	    stemLang = "";
+    }
+    return stemLang;
+}
+
 QString myGetFileName(bool isdir, QString caption, bool filenosave)
 {
     LOGDEB1(("myFileDialog: isdir %d\n", isdir));

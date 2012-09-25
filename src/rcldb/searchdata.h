@@ -70,9 +70,9 @@ class SearchDataClause;
 */
 class SearchData {
 public:
-    SearchData(SClType tp) 
+    SearchData(SClType tp, const string& stemlang) 
     : m_tp(tp), m_haveDates(false), m_maxSize(size_t(-1)),
-      m_minSize(size_t(-1)), m_haveWildCards(false) 
+      m_minSize(size_t(-1)), m_haveWildCards(false), m_stemlang(stemlang)
     {
 	if (m_tp != SCLT_OR && m_tp != SCLT_AND) 
 	    m_tp = SCLT_OR;
@@ -90,6 +90,7 @@ public:
 
     /** Translate to Xapian query. rcldb knows about the void*  */
     bool toNativeQuery(Rcl::Db &db, void *);
+
 
     /** We become the owner of cl and will delete it */
     bool addClause(SearchDataClause *cl);
@@ -109,6 +110,8 @@ public:
 	m_dirspecs.push_back(DirSpec(t, excl, w));
     }
 
+    const std::string& getStemLang() {return m_stemlang;}
+
     void setMinSize(size_t size) {m_minSize = size;}
     void setMaxSize(size_t size) {m_maxSize = size;}
 
@@ -119,8 +122,6 @@ public:
     void addFiletype(const std::string& ft) {m_filetypes.push_back(ft);}
     /** Add file type to not wanted list */
     void remFiletype(const std::string& ft) {m_nfiletypes.push_back(ft);}
-
-    void setStemlang(const std::string& lang = "english") {m_stemlang = lang;}
 
     /** Retrieve error description */
     std::string getReason() {return m_reason;}
@@ -170,7 +171,12 @@ private:
     std::string m_reason;
     bool   m_haveWildCards;
     std::string m_stemlang;
+
     bool expandFileTypes(RclConfig *cfg, std::vector<std::string>& exptps);
+    bool clausesToQuery(Rcl::Db &db, SClType tp,     
+			std::vector<SearchDataClause*>& query,
+			string& reason, void *d);
+
     /* Copyconst and assignment private and forbidden */
     SearchData(const SearchData &) {}
     SearchData& operator=(const SearchData&) {return *this;};
@@ -186,7 +192,7 @@ public:
       m_modifiers(SDCM_NONE), m_weight(1.0)
     {}
     virtual ~SearchDataClause() {}
-    virtual bool toNativeQuery(Rcl::Db &db, void *, const std::string&) = 0;
+    virtual bool toNativeQuery(Rcl::Db &db, void *) = 0;
     bool isFileName() const {return m_tp == SCLT_FILENAME ? true: false;}
     virtual std::string getReason() const {return m_reason;}
     virtual void getTerms(HighlightData & hldata) const = 0;
@@ -198,6 +204,11 @@ public:
     void setParent(SearchData *p) 
     {
 	m_parentSearch = p;
+    }
+    string getStemLang() 
+    {
+	return (m_modifiers & SDCM_NOSTEMMING) || m_parentSearch == 0 ? 
+	    cstr_null : m_parentSearch->getStemLang();
     }
     virtual void setModifiers(Modifier mod) 
     {
@@ -255,7 +266,7 @@ public:
     }
 
     /** Translate to Xapian query */
-    virtual bool toNativeQuery(Rcl::Db &, void *, const std::string& stemlang);
+    virtual bool toNativeQuery(Rcl::Db &, void *);
 
     virtual void getTerms(HighlightData& hldata) const
     {
@@ -296,7 +307,7 @@ public:
     {
     }
 
-    virtual bool toNativeQuery(Rcl::Db &, void *, const std::string& stemlang);
+    virtual bool toNativeQuery(Rcl::Db &, void *);
 };
 
 /** 
@@ -315,7 +326,7 @@ public:
     {
     }
 
-    virtual bool toNativeQuery(Rcl::Db &, void *, const std::string& stemlang);
+    virtual bool toNativeQuery(Rcl::Db &, void *);
 private:
     int m_slack;
 };
@@ -323,17 +334,11 @@ private:
 /** Subquery */
 class SearchDataClauseSub : public SearchDataClause {
 public:
-    // We take charge of the SearchData * and will delete it.
     SearchDataClauseSub(SClType tp, RefCntr<SearchData> sub) 
 	: SearchDataClause(tp), m_sub(sub) 
     {
     }
-
-    virtual ~SearchDataClauseSub() 
-    {
-    }
-
-    virtual bool toNativeQuery(Rcl::Db &db, void *p, const std::string&)
+    virtual bool toNativeQuery(Rcl::Db &db, void *p)
     {
 	return m_sub->toNativeQuery(db, p);
     }

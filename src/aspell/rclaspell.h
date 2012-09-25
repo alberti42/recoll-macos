@@ -37,11 +37,6 @@
 #include "rclconfig.h"
 #include "rcldb.h"
 
-#ifndef NO_NAMESPACES
-using std::string;
-using std::list;
-#endif // NO_NAMESPACES
-
 class AspellData;
 
 class Aspell {
@@ -53,26 +48,31 @@ class Aspell {
     bool ok() const;
 
     /** Find the aspell command and shared library, init function pointers */
-    bool init(string &reason); 
+    bool init(std::string &reason); 
 
     /**  Build dictionary out of index term list. This is done at the end
      * of an indexing pass. */
-    bool buildDict(Rcl::Db &db, string &reason);
+    bool buildDict(Rcl::Db &db, std::string &reason);
 
-    /** Check that word is in dictionary. ret==false && !reason.empty() => err*/
-    bool check(Rcl::Db &db, const string& term, string& reason);
+    /** Check that word is in dictionary. Note that this would mean
+     * that the EXACT word is: aspell just does a lookup, no
+     * grammatical, case or diacritics magic of any kind
+     *
+     * @return true if word in dic, false if not. reason.size() -> error
+     */
+    bool check(const std::string& term, std::string& reason);
 
     /** Return a list of possible expansions for a given word */
-    bool suggest(Rcl::Db &db, const string& term, list<string> &suggestions, 
-		 string &reason);
+    bool suggest(Rcl::Db &db, const std::string& term, 
+		 std::list<std::string> &suggestions, std::string &reason);
 
  private:
-    string dicPath();
+    std::string dicPath();
     RclConfig  *m_config;
-    string      m_lang;
+    std::string      m_lang;
     AspellData *m_data;
 
-    bool make_speller(string& reason);
+    bool make_speller(std::string& reason);
 };
 
 #endif /* RCL_USE_ASPELL */

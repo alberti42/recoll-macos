@@ -15,6 +15,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #ifndef TEST_RCLCONFIG
+#include "autoconfig.h"
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -34,6 +36,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
+using namespace std;
 
 #include "cstr.h"
 #include "pathut.h"
@@ -45,15 +48,8 @@
 #include "readfile.h"
 #include "fstreewalk.h"
 
-#ifndef NO_NAMESPACES
-using namespace std;
-#endif /* NO_NAMESPACES */
-
-#ifndef MIN
-#define MIN(A,B) (((A)<(B)) ? (A) : (B))
-#endif
-#ifndef MAX
-#define MAX(A,B) (((A)>(B)) ? (A) : (B))
+#ifndef RCL_INDEX_STRIPCHARS
+bool o_index_stripchars;
 #endif
 
 bool ParamStale::needrecompute()
@@ -77,6 +73,7 @@ bool ParamStale::needrecompute()
     }
     return false;
 }
+
 void ParamStale::init(RclConfig *rconf, ConfNull *cnf, const string& nm)
 {
     parent = rconf;
@@ -238,6 +235,14 @@ bool RclConfig::updateMainConfig()
 	&& fnmpathname == false) {
 	FsTreeWalker::setNoFnmPathname();
     }
+
+#ifndef RCL_INDEX_STRIPCHARS
+    static int m_index_stripchars_init = 0;
+    if (!m_index_stripchars_init) {
+	getConfParam("indexStripChars", &o_index_stripchars);
+	m_index_stripchars_init = 1;
+    }
+#endif
 
     return true;
 }

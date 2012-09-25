@@ -146,7 +146,8 @@ bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs)
     LOGDEB(("DocSequenceDb::setFiltSpec\n"));
     if (fs.isNotNull()) {
 	// We build a search spec by adding a filtering layer to the base one.
-	m_fsdata = RefCntr<Rcl::SearchData>(new Rcl::SearchData(Rcl::SCLT_AND));
+	m_fsdata = RefCntr<Rcl::SearchData>(
+	    new Rcl::SearchData(Rcl::SCLT_AND, m_sdata->getStemLang()));
 	Rcl::SearchDataClauseSub *cl = 
 	    new Rcl::SearchDataClauseSub(Rcl::SCLT_SUB, m_sdata);
 	m_fsdata->addClause(cl);
@@ -164,6 +165,7 @@ bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs)
 		string reason;
 		Rcl::SearchData *sd = 
 		    wasaStringToRcl(m_q->whatDb()->getConf(), 
+				    m_sdata->getStemLang(),
 				    fs.values[i], reason);
 		if (sd)  {
 		    Rcl::SearchDataClauseSub *cl1 = 

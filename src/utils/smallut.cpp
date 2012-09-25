@@ -33,16 +33,11 @@
 #include <string>
 #include <iostream>
 #include <list>
+using namespace std;
 
 #include "smallut.h"
 #include "utf8iter.h"
 #include "hldata.h"
-
-#ifndef NO_NAMESPACES
-using namespace std;
-#endif /* NO_NAMESPACES */
-
-#define MIN(A,B) ((A)<(B)?(A):(B))
 
 int stringicmp(const string & s1, const string& s2) 
 {

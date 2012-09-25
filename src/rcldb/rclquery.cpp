@@ -446,7 +446,7 @@ vector<string> Query::expand(const Doc &doc)
 	    for (Xapian::ESetIterator it = eset.begin(); 
 		 it != eset.end(); it++) {
 		LOGDEB((" [%s]\n", (*it).c_str()));
-		if ((*it).empty() || ((*it).at(0)>='A' && (*it).at(0)<='Z'))
+		if ((*it).empty() || has_prefix(*it))
 		    continue;
 		res.push_back(*it);
 		if (res.size() >= 10)

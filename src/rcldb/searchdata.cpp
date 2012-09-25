@@ -16,17 +16,22 @@
  */
 
 // Handle translation from rcl's SearchData structures to Xapian Queries
+
+#include "autoconfig.h"
+
 #include <stdio.h>
 #include <fnmatch.h>
 
 #include <string>
 #include <vector>
 #include <algorithm>
+using namespace std;
 
 #include "xapian.h"
 
 #include "cstr.h"
 #include "rcldb.h"
+#include "rcldb_p.h"
 #include "searchdata.h"
 #include "debuglog.h"
 #include "smallut.h"
@@ -36,11 +41,11 @@
 #include "stoplist.h"
 #include "rclconfig.h"
 #include "termproc.h"
+#include "synfamily.h"
+#include "stemdb.h"
+#include "expansiondbs.h"
 
-#ifndef NO_NAMESPACES
-using namespace std;
 namespace Rcl {
-#endif
 
 typedef  vector<SearchDataClause *>::iterator qlist_it_t;
 typedef  vector<SearchDataClause *>::const_iterator qlist_cit_t;
@@ -71,13 +76,35 @@ static const int original_term_wqf_booster = 10;
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301
  * USA
  */
+
+#ifdef RCL_INDEX_STRIPCHARS
+#define bufprefix(BUF, L) {(BUF)[0] = L;}
+#define bpoffs() 1
+#else
+static inline void bufprefix(char *buf, char c)
+{
+    if (o_index_stripchars) {
+	buf[0] = c;
+    } else {
+	buf[0] = ':'; 
+	buf[1] = c; 
+	buf[2] = ':';
+    }
+}
+static inline int bpoffs() 
+{
+    return o_index_stripchars ? 1 : 3;
+}
+#endif
+
 static Xapian::Query
 date_range_filter(int y1, int m1, int d1, int y2, int m2, int d2)
 {
     // Xapian uses a smallbuf and snprintf. Can't be bothered, we're
     // only doing %d's !
     char buf[200];
-    sprintf(buf, "D%04d%02d", y1, m1);
+    bufprefix(buf, 'D');
+    sprintf(buf+bpoffs(), "%04d%02d", y1, m1);
     vector<Xapian::Query> v;
 
     int d_last = monthdays(m1, y1);
@@ -88,11 +115,11 @@ date_range_filter(int y1, int m1, int d1, int y2, int m2, int d2)
     // Deal with any initial partial month
     if (d1 > 1 || d_end < d_last) {
     	for ( ; d1 <= d_end ; d1++) {
-	    sprintf(buf + 7, "%02d", d1);
+	    sprintf(buf + 6 + bpoffs(), "%02d", d1);
 	    v.push_back(Xapian::Query(buf));
 	}
     } else {
-	buf[0] = 'M';
+	bufprefix(buf, 'M');
 	v.push_back(Xapian::Query(buf));
     }
     
@@ -102,36 +129,36 @@ date_range_filter(int y1, int m1, int d1, int y2, int m2, int d2)
 
     int m_last = (y1 < y2) ? 12 : m2 - 1;
     while (++m1 <= m_last) {
-	sprintf(buf + 5, "%02d", m1);
-	buf[0] = 'M';
+	sprintf(buf + 4 + bpoffs(), "%02d", m1);
+	bufprefix(buf, 'M');
 	v.push_back(Xapian::Query(buf));
     }
 	
     if (y1 < y2) {
 	while (++y1 < y2) {
-	    sprintf(buf + 1, "%04d", y1);
-	    buf[0] = 'Y';
+	    sprintf(buf + bpoffs(), "%04d", y1);
+	    bufprefix(buf, 'Y');
 	    v.push_back(Xapian::Query(buf));
 	}
-	sprintf(buf + 1, "%04d", y2);
-	buf[0] = 'M';
+	sprintf(buf + bpoffs(), "%04d", y2);
+	bufprefix(buf, 'M');
 	for (m1 = 1; m1 < m2; m1++) {
-	    sprintf(buf + 5, "%02d", m1);
+	    sprintf(buf + 4 + bpoffs(), "%02d", m1);
 	    v.push_back(Xapian::Query(buf));
 	}
     }
 	
-    sprintf(buf + 5, "%02d", m2);
+    sprintf(buf + 2 + bpoffs(), "%02d", m2);
 
     // Deal with any final partial month
     if (d2 < monthdays(m2, y2)) {
-	buf[0] = 'D';
+	bufprefix(buf, 'D');
     	for (d1 = 1 ; d1 <= d2; d1++) {
-	    sprintf(buf + 7, "%02d", d1);
+	    sprintf(buf + 6 + bpoffs(), "%02d", d1);
 	    v.push_back(Xapian::Query(buf));
 	}
     } else {
-	buf[0] = 'M';
+	bufprefix(buf, 'M');
 	v.push_back(Xapian::Query(buf));
     }
 
@@ -172,31 +199,27 @@ bool SearchData::expandFileTypes(RclConfig *cfg, vector<string>& tps)
     return true;
 }
 
-bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
+bool SearchData::clausesToQuery(Rcl::Db &db, SClType tp, 
+				vector<SearchDataClause*>& query, 
+				string& reason, void *d)
 {
-    LOGDEB2(("SearchData::toNativeQuery: stemlang [%s]\n", 
-	    m_stemlang.c_str()));
     Xapian::Query xq;
-    m_reason.erase();
-
-    // Walk the clause list translating each in turn and building the 
-    // Xapian query tree
-    for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++) {
+    for (qlist_it_t it = query.begin(); it != query.end(); it++) {
 	Xapian::Query nq;
-	if (!(*it)->toNativeQuery(db, &nq, m_stemlang)) {
-	    LOGERR(("SearchData::toNativeQuery: failed\n"));
-	    m_reason = (*it)->getReason();
+	if (!(*it)->toNativeQuery(db, &nq)) {
+	    LOGERR(("SearchData::clausesToQuery: toNativeQuery failed\n"));
+	    reason = (*it)->getReason();
 	    return false;
 	}	    
         if (nq.empty()) {
-            LOGDEB(("SearchData::toNativeQuery: skipping empty clause\n"));
+            LOGDEB(("SearchData::clausesToQuery: skipping empty clause\n"));
             continue;
         }
 	// If this structure is an AND list, must use AND_NOT for excl clauses.
 	// Else this is an OR list, and there can't be excl clauses (checked by
 	// addClause())
 	Xapian::Query::op op;
-	if (m_tp == SCLT_AND) {
+	if (tp == SCLT_AND) {
             if ((*it)->m_tp == SCLT_EXCL) {
                 op =  Xapian::Query::OP_AND_NOT;
             } else {
@@ -216,6 +239,23 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
     }
     if (xq.empty())
 	xq = Xapian::Query::MatchAll;
+
+   *((Xapian::Query *)d) = xq;
+    return true;
+}
+
+bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
+{
+    LOGDEB(("SearchData::toNativeQuery: stemlang [%s]\n", m_stemlang.c_str()));
+    m_reason.erase();
+
+    // Walk the clause list translating each in turn and building the 
+    // Xapian query tree
+    Xapian::Query xq;
+    if (!clausesToQuery(db, m_tp, m_query, m_reason, &xq)) {
+	LOGERR(("SearchData::toNativeQuery: clausesToQuery failed\n"));
+	return false;
+    }
 
     if (m_haveDates) {
         // If one of the extremities is unset, compute db extremas
@@ -326,10 +366,10 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 	stringToTokens(dit->dir, vpath, "/");
 	vector<string> pvpath;
 	if (dit->dir[0] == '/')
-	    pvpath.push_back(pathelt_prefix);
+	    pvpath.push_back(wrap_prefix(pathelt_prefix));
 	for (vector<string>::const_iterator pit = vpath.begin(); 
 	     pit != vpath.end(); pit++){
-	    pvpath.push_back(pathelt_prefix + *pit);
+	    pvpath.push_back(wrap_prefix(pathelt_prefix) + *pit);
 	}
 	Xapian::Query::op tdop;
 	if (dit->weight == 1.0) {
@@ -446,7 +486,7 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
 	// My type is AND. Change it to OR and insert two queries, one
 	// being the original query as a subquery, the other the
 	// phrase.
-	SearchData *sd = new SearchData(m_tp);
+	SearchData *sd = new SearchData(m_tp, m_stemlang);
 	sd->m_query = m_query;
 	sd->m_stemlang = m_stemlang;
 	m_tp = SCLT_OR;
@@ -586,25 +626,28 @@ public:
     { }
 
     bool processUserString(const string &iq,
+			   int mods, 
 			   string &ermsg,
 			   vector<Xapian::Query> &pqueries, 
-			   const StopList &stops,
 			   int slack = 0, bool useNear = false);
 private:
-    void expandTerm(bool dont, const string& term, vector<string>& exp, 
+    void expandTerm(int mods, 
+		    const string& term, vector<string>& exp, 
                     string& sterm, const string& prefix);
     // After splitting entry on whitespace: process non-phrase element
-    void processSimpleSpan(const string& span, bool nostemexp, 
+    void processSimpleSpan(const string& span, 
+			   int mods,
 			   vector<Xapian::Query> &pqueries);
     // Process phrase/near element
     void processPhraseOrNear(TextSplitQ *splitData, 
+			     int mods,
 			     vector<Xapian::Query> &pqueries,
-			     bool useNear, int slack, int mods);
+			     bool useNear, int slack);
 
     Db&           m_db;
     const string& m_field;
     const string& m_stemlang;
-    bool          m_doBoostUserTerms;
+    const bool    m_doBoostUserTerms;
     HighlightData& m_hld;
 };
 
@@ -619,61 +662,204 @@ static void listVector(const string& what, const vector<string>&l)
 }
 #endif
 
-/** Take simple term and expand stem and wildcards
+/** Expand term into term list, using appropriate mode: stem, wildcards, 
+ *  diacritics... 
  *
- * @param nostemexp don't perform stem expansion. This is mainly used to
- *   prevent stem expansion inside phrases (because the user probably
- *   does not expect it). This does NOT prevent wild card expansion.
- *   Other factors than nostemexp can prevent stem expansion: 
- *   a null stemlang, resulting from a global user preference, a
- *   capitalized term, or wildcard(s)
+ * @param mods stem expansion, case and diacritics sensitivity control.
  * @param term input single word
  * @param exp output expansion list
  * @param sterm output original input term if there were no wildcards
+ * @param prefix field prefix in index. We could recompute it, but the caller
+ *  has it already. Used in the simple case where there is nothing to expand, 
+ *  and we just return the prefixed term (else Db::termMatch deals with it).
  */
-void StringToXapianQ::expandTerm(bool nostemexp, 
-                                 const string& term, 
-                                 vector<string>& exp,
-                                 string &sterm, const string& prefix)
+void StringToXapianQ::expandTerm(int mods, 
+				 const string& term, 
+                                 vector<string>& oexp, string &sterm,
+				 const string& prefix)
 {
-    LOGDEB2(("expandTerm: field [%s] term [%s] stemlang [%s] nostemexp %d\n",
-	     m_field.c_str(), term.c_str(), m_stemlang.c_str(), nostemexp));
-    sterm.erase();
-    exp.clear();
-    if (term.empty()) {
+    LOGDEB0(("expandTerm: mods 0x%x fld [%s] trm [%s] lang [%s]\n",
+	     mods, m_field.c_str(), term.c_str(), m_stemlang.c_str()));
+    sterm.clear();
+    oexp.clear();
+    if (term.empty())
 	return;
-    }
 
     bool haswild = term.find_first_of(cstr_minwilds) != string::npos;
 
-    // No stemming if there are wildcards or prevented globally.
+    // If there are no wildcards, add term to the list of user-entered terms
+    if (!haswild)
+	m_hld.uterms.insert(term);
+
+    bool nostemexp = (mods & SearchDataClause::SDCM_NOSTEMMING) != 0;
+
+    // No stem expansion if there are wildcards or if prevented by caller
     if (haswild || m_stemlang.empty()) {
 	LOGDEB2(("expandTerm: found wildcards or stemlang empty: no exp\n"));
 	nostemexp = true;
     }
 
-    if (!haswild)
-	m_hld.uterms.insert(term);
+    bool noexpansion = nostemexp && !haswild;
 
-    if (nostemexp && !haswild) {
-	sterm = term;
-	exp.resize(1);
-	exp[0] = prefix + term;
+#ifndef RCL_INDEX_STRIPCHARS
+    bool diac_sensitive = (mods & SearchDataClause::SDCM_DIACSENS) != 0;
+    bool case_sensitive = (mods & SearchDataClause::SDCM_CASESENS) != 0;
+
+    if (o_index_stripchars) {
+	diac_sensitive = case_sensitive = false;
     } else {
-	TermMatchResult res;
-	if (haswild) {
-	    m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term, res, -1, 
-                           m_field);
-	} else {
-	    sterm = term;
-	    m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term, res, -1, 
-			   m_field);
-	}
-	for (vector<TermMatchEntry>::const_iterator it = res.entries.begin(); 
-	     it != res.entries.end(); it++) {
-	    exp.push_back(it->term);
-	}
+	// If we are working with a raw index, apply the rules for case and 
+	// diacritics sensitivity.
+
+	// If any character has a diacritic, we become
+	// diacritic-sensitive. Note that the way that the test is
+	// performed (conversion+comparison) will automatically ignore
+	// accented characters which are actually a separate letter
+	if (unachasaccents(term))
+	    diac_sensitive = true;
+
+	// If any character apart the first is uppercase, we become
+	// case-sensitive.  The first character is reserved for
+	// turning off stemming. You need to use a query language
+	// modifier to search for Floor in a case-sensitive way.
+	Utf8Iter it(term);
+	it++;
+	if (unachasuppercase(term.substr(it.getBpos())))
+	    case_sensitive = true;
+
+	// If we are sensitive to case or diacritics turn stemming off
+	if (diac_sensitive || case_sensitive)
+	    nostemexp = true;
+
+	if (!case_sensitive || !diac_sensitive)
+	    noexpansion = false;
     }
+#endif
+
+    if (noexpansion) {
+	sterm = term;
+	oexp.push_back(prefix + term);
+	LOGDEB(("ExpandTerm: final: %s\n", stringsToString(oexp).c_str()));
+	return;
+    } 
+
+    SynTermTransUnac unacfoldtrans(UNACOP_UNACFOLD);
+    XapComputableSynFamMember synac(m_db.m_ndb->xrdb, synFamDiCa, "all", 
+				    &unacfoldtrans);
+    vector<string> lexp;
+
+    TermMatchResult res;
+    if (haswild) {
+	// Note that if there are wildcards, we do a direct from-index
+	// expansion, which means that we are casediac-sensitive. There
+	// would be nothing to prevent us to expand from the casediac
+	// synonyms first. To be done later
+	m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term, res, -1, 
+		       m_field);
+	goto termmatchtoresult;
+    }
+
+    sterm = term;
+
+#ifdef RCL_INDEX_STRIPCHARS
+
+    m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term, res, -1, m_field);
+
+#else
+
+    if (o_index_stripchars) {
+	// If the index is raw, we can only come here if nostemexp is unset
+	// and we just need stem expansion.
+	m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term, res, -1, m_field);
+	goto termmatchtoresult;
+    } 
+
+    // No stem expansion when diacritic or case sensitivity is set, it
+    // makes no sense (it would mess with the diacritics anyway if
+    // they are not in the stem part).  In these 3 cases, perform
+    // appropriate expansion from the charstripping db, and do a bogus
+    // wildcard expansion (there is no wild card) to generate the
+    // result:
+
+    if (diac_sensitive && case_sensitive) {
+	// No expansion whatsoever
+	m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term, res, -1, m_field);
+	goto termmatchtoresult;
+    }
+
+    if (diac_sensitive) {
+	// Expand for accents and case, filtering for same accents,
+	// then bogus wildcard expansion for generating result
+	SynTermTransUnac foldtrans(UNACOP_FOLD);
+	synac.synExpand(term, lexp, &foldtrans);
+	goto exptotermatch;
+    } 
+
+    if (case_sensitive) {
+	// Expand for accents and case, filtering for same case, then
+	// bogus wildcard expansion for generating result
+	SynTermTransUnac unactrans(UNACOP_UNAC);
+	synac.synExpand(term, lexp, &unactrans);
+	goto exptotermatch;
+    }
+
+    // We are neither accent- nor case- sensitive and may need stem
+    // expansion or not.
+
+    // Expand for accents and case
+    synac.synExpand(term, lexp);
+    LOGDEB(("ExpTerm: casediac: %s\n", stringsToString(lexp).c_str()));
+    if (nostemexp)
+	goto exptotermatch;
+
+    // Need stem expansion. Lowercase the result of accent and case
+    // expansion for input to stemdb.
+    for (unsigned int i = 0; i < lexp.size(); i++) {
+	string lower;
+	unacmaybefold(lexp[i], lower, "UTF-8", UNACOP_FOLD);
+	lexp[i] = lower;
+    }
+    sort(lexp.begin(), lexp.end());
+    {
+	vector<string>::iterator uit = unique(lexp.begin(), lexp.end());
+	lexp.resize(uit - lexp.begin());
+	StemDb db(m_db.m_ndb->xrdb);
+	vector<string> exp1;
+	for (vector<string>::const_iterator it = lexp.begin(); 
+	     it != lexp.end(); it++) {
+	    db.stemExpand(m_stemlang, *it, exp1);
+	}
+	LOGDEB(("ExpTerm: stem: %s\n", stringsToString(exp1).c_str()));
+
+	// Expand the resulting list for case (all stemdb content
+	// is lowercase)
+	lexp.clear();
+	for (vector<string>::const_iterator it = exp1.begin(); 
+	     it != exp1.end(); it++) {
+	    synac.synExpand(*it, lexp);
+	}
+	sort(lexp.begin(), lexp.end());
+	uit = unique(lexp.begin(), lexp.end());
+	lexp.resize(uit - lexp.begin());
+    }
+    LOGDEB(("ExpTerm: case exp of stem: %s\n", stringsToString(lexp).c_str()));
+
+    // Bogus wildcard expand to generate the result
+exptotermatch:
+    for (vector<string>::const_iterator it = lexp.begin();
+	 it != lexp.end(); it++) {
+	m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, *it, 
+		       res, -1, m_field);
+    }
+#endif
+
+    // Term match entries to vector of terms
+termmatchtoresult:
+    for (vector<TermMatchEntry>::const_iterator it = res.entries.begin(); 
+	 it != res.entries.end(); it++) {
+	oexp.push_back(it->term);
+    }
+    LOGDEB(("ExpandTerm: final: %s\n", stringsToString(oexp).c_str()));
 }
 
 // Do distribution of string vectors: a,b c,d -> a,c a,d b,c b,d
@@ -710,21 +896,22 @@ void multiply_groups(vector<vector<string> >::const_iterator vvit,
     }
 }
 
-void StringToXapianQ::processSimpleSpan(const string& span, bool nostemexp,
+void StringToXapianQ::processSimpleSpan(const string& span, 
+					int mods,
 					vector<Xapian::Query> &pqueries)
 {
-    LOGDEB2(("StringToXapianQ::processSimpleSpan: [%s] nostemexp %d\n",
-	     span.c_str(), int(nostemexp)));
+    LOGDEB0(("StringToXapianQ::processSimpleSpan: [%s] mods 0x%x\n",
+	    span.c_str(), (unsigned int)mods));
     vector<string> exp;  
     string sterm; // dumb version of user term
 
     string prefix;
     const FieldTraits *ftp;
     if (!m_field.empty() && m_db.fieldToTraits(m_field, &ftp)) {
-	prefix = ftp->pfx;
+	prefix = wrap_prefix(ftp->pfx);
     }
 
-    expandTerm(nostemexp, span, exp, sterm, prefix);
+    expandTerm(mods, span, exp, sterm, prefix);
     
     // Set up the highlight data. No prefix should go in there
     for (vector<string>::const_iterator it = exp.begin(); 
@@ -755,8 +942,9 @@ void StringToXapianQ::processSimpleSpan(const string& span, bool nostemexp,
 // queries if the terms get expanded by stemming or wildcards (we
 // don't do stemming for PHRASE though)
 void StringToXapianQ::processPhraseOrNear(TextSplitQ *splitData, 
+					  int mods,
 					  vector<Xapian::Query> &pqueries,
-					  bool useNear, int slack, int mods)
+					  bool useNear, int slack)
 {
     Xapian::Query::op op = useNear ? Xapian::Query::OP_NEAR : 
 	Xapian::Query::OP_PHRASE;
@@ -769,7 +957,7 @@ void StringToXapianQ::processPhraseOrNear(TextSplitQ *splitData,
     string prefix;
     const FieldTraits *ftp;
     if (!m_field.empty() && m_db.fieldToTraits(m_field, &ftp)) {
-	prefix = ftp->pfx;
+	prefix = wrap_prefix(ftp->pfx);
     }
 
     if (mods & Rcl::SearchDataClause::SDCM_ANCHORSTART) {
@@ -790,10 +978,12 @@ void StringToXapianQ::processPhraseOrNear(TextSplitQ *splitData,
 	    || hadmultiple
 #endif // single OR inside NEAR
 	    ;
-
+	int lmods = mods;
+	if (nostemexp)
+	    lmods |= SearchDataClause::SDCM_NOSTEMMING;
 	string sterm;
 	vector<string> exp;
-	expandTerm(nostemexp, *it, exp, sterm, prefix);
+	expandTerm(lmods, *it, exp, sterm, prefix);
 	LOGDEB0(("ProcessPhraseOrNear: exp size %d\n", exp.size()));
 	listVector("", exp);
 	// groups is used for highlighting, we don't want prefixes in there.
@@ -882,15 +1072,18 @@ static int stringToMods(string& s)
  *   count)
  */
 bool StringToXapianQ::processUserString(const string &iq,
+					int mods, 
 					string &ermsg,
 					vector<Xapian::Query> &pqueries,
-					const StopList& stops,
 					int slack, 
 					bool useNear
 					)
 {
-    LOGDEB(("StringToXapianQ:: query string: [%s], slack %d, near %d\n", iq.c_str(), slack, useNear));
+    LOGDEB(("StringToXapianQ:: qstr [%s] mods 0x%x slack %d near %d\n", 
+	    iq.c_str(), mods, slack, useNear));
     ermsg.erase();
+
+    const StopList stops = m_db.getStopList();
 
     // Simple whitespace-split input into user-level words and
     // double-quoted phrases: word1 word2 "this is a phrase". 
@@ -908,8 +1101,10 @@ bool StringToXapianQ::processUserString(const string &iq,
 	for (vector<string>::iterator it = phrases.begin(); 
 	     it != phrases.end(); it++) {
 	    LOGDEB0(("strToXapianQ: phrase/word: [%s]\n", it->c_str()));
-	    int mods = stringToMods(*it);
-	    int terminc = mods != 0 ? 1 : 0;
+	    // Anchoring modifiers
+	    int amods = stringToMods(*it);
+	    int terminc = amods != 0 ? 1 : 0;
+	    mods |= amods;
 	    // If there are multiple spans in this element, including
 	    // at least one composite, we have to increase the slack
 	    // else a phrase query including a span would fail. 
@@ -930,11 +1125,15 @@ bool StringToXapianQ::processUserString(const string &iq,
             TermProcStop tpstop(nxt, stops); nxt = &tpstop;
             //TermProcCommongrams tpcommon(nxt, stops); nxt = &tpcommon;
             //tpcommon.onlygrams(true);
-	    TermProcPrep tpprep(nxt); nxt = &tpprep;
+	    TermProcPrep tpprep(nxt);
+#ifndef RCL_INDEX_STRIPCHARS
+	    if (o_index_stripchars)
+#endif
+		nxt = &tpprep;
 
 	    TextSplitQ splitter(TextSplit::Flags(TextSplit::TXTS_ONLYSPANS | 
-						  TextSplit::TXTS_KEEPWILD), 
-                                 stops, nxt);
+						 TextSplit::TXTS_KEEPWILD), 
+				stops, nxt);
 	    tpq.setTSQ(&splitter);
 	    splitter.text_to_words(*it);
 
@@ -944,14 +1143,17 @@ bool StringToXapianQ::processUserString(const string &iq,
 	    switch (splitter.terms.size() + terminc) {
 	    case 0: 
 		continue;// ??
-	    case 1: 
+	    case 1: {
+		int lmods = mods;
+		if (splitter.nostemexps.front())
+		    lmods |= SearchDataClause::SDCM_NOSTEMMING;
 		m_hld.ugroups.push_back(vector<string>(1, *it));
-		processSimpleSpan(splitter.terms.front(), 
-                                  splitter.nostemexps.front(), pqueries);
+		processSimpleSpan(splitter.terms.front(), lmods, pqueries);
+	    }
 		break;
 	    default:
 		m_hld.ugroups.push_back(vector<string>(1, *it));
-		processPhraseOrNear(&splitter, pqueries, useNear, slack, mods);
+		processPhraseOrNear(&splitter, mods, pqueries, useNear, slack);
 	    }
 	}
     } catch (const Xapian::Error &e) {
@@ -971,13 +1173,10 @@ bool StringToXapianQ::processUserString(const string &iq,
 }
 
 // Translate a simple OR, AND, or EXCL search clause. 
-bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p, 
-					   const string& stemlang)
+bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p)
 {
-    const string& l_stemlang = (m_modifiers&SDCM_NOSTEMMING)? cstr_null:
-	stemlang;
     LOGDEB2(("SearchDataClauseSimple::toNativeQuery: stemlang [%s]\n",
-	     stemlang.c_str()));
+	     getStemLang().c_str()));
 
     Xapian::Query *qp = (Xapian::Query *)p;
     *qp = Xapian::Query();
@@ -1000,8 +1199,8 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 	(m_parentSearch && !m_parentSearch->haveWildCards()) || 
 	(m_parentSearch == 0 && !m_haveWildCards);
 
-    StringToXapianQ tr(db, m_hldata, m_field, l_stemlang, doBoostUserTerm);
-    if (!tr.processUserString(m_text, m_reason, pqueries, db.getStopList()))
+    StringToXapianQ tr(db, m_hldata, m_field, getStemLang(), doBoostUserTerm);
+    if (!tr.processUserString(m_text, getModifiers(), m_reason, pqueries))
 	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseSimple: resolved to null query\n"));
@@ -1024,8 +1223,7 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 // about expanding multiple fragments in the past. We just take the
 // value blanks and all and expand this against the indexed unsplit
 // file names
-bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p, 
-					     const string&)
+bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p)
 {
     Xapian::Query *qp = (Xapian::Query *)p;
     *qp = Xapian::Query();
@@ -1041,11 +1239,8 @@ bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p,
 }
 
 // Translate NEAR or PHRASE clause. 
-bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p, 
-					 const string& stemlang)
+bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p)
 {
-    const string& l_stemlang = (m_modifiers&SDCM_NOSTEMMING)? cstr_null:
-	stemlang;
     LOGDEB(("SearchDataClauseDist::toNativeQuery\n"));
 
     Xapian::Query *qp = (Xapian::Query *)p;
@@ -1069,8 +1264,8 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p,
     }
     string s = cstr_dquote + m_text + cstr_dquote;
     bool useNear = (m_tp == SCLT_NEAR);
-    StringToXapianQ tr(db, m_hldata, m_field, l_stemlang, doBoostUserTerm);
-    if (!tr.processUserString(s, m_reason, pqueries, db.getStopList(),
+    StringToXapianQ tr(db, m_hldata, m_field, getStemLang(), doBoostUserTerm);
+    if (!tr.processUserString(s, getModifiers(), m_reason, pqueries, 
 			      m_slack, useNear))
 	return false;
     if (pqueries.empty()) {

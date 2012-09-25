@@ -320,9 +320,16 @@ void ResListPager::displayPage(RclConfig *config)
             map<string, vector<string> > spellings;
             suggest(uterms, spellings);
             if (!spellings.empty()) {
-                chunk << 
-                 trans("<p><i>Alternate spellings (accents suppressed): </i>")
-		      << "<br /><blockquote>";
+		if (o_index_stripchars) {
+		    chunk << 
+		trans("<p><i>Alternate spellings (accents suppressed): </i>")
+			  << "<br /><blockquote>";
+		} else {
+		    chunk << 
+			trans("<p><i>Alternate spellings: </i>")
+			  << "<br /><blockquote>";
+		    
+		}
 
 		for (map<string, vector<string> >::const_iterator it0 =
 			 spellings.begin(); it0 != spellings.end(); it0++) {

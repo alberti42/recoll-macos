@@ -24,10 +24,13 @@
 
 namespace Rcl {
 
-/* A Capitals/Diacritics removal functor for using with
-   XapComputableSynFamMember */
+/** A Capitals/Diacritics removal functor for using with
+ *  XapComputableSynFamMember */
 class SynTermTransUnac : public SynTermTrans {
 public:
+    /** Constructor
+     * @param op defines if we remove diacritics, case or both 
+     */
     SynTermTransUnac(UnacOp op)
     : m_op(op)
     {
@@ -43,7 +46,9 @@ public:
     UnacOp m_op;
 };
 
-/** Walk the Xapian term list and create all the expansion dbs in one go */
+/** Walk the Xapian term list and create all the expansion dbs in one go.
+ * 
+ */
 extern bool createExpansionDbs(Xapian::WritableDatabase& wdb, 
 			       const std::vector<std::string>& langs);
 }

@@ -17,6 +17,7 @@
 
 #ifndef TEST_SUBTREELIST
 
+#include "cstr.h"
 #include "refcntr.h"
 #include "rcldb.h"
 #include "searchdata.h"
@@ -35,7 +36,7 @@ bool subtreelist(RclConfig *config, const string& top,
 	return false;
     }
 
-    Rcl::SearchData *sd = new Rcl::SearchData(Rcl::SCLT_OR);
+    Rcl::SearchData *sd = new Rcl::SearchData(Rcl::SCLT_OR, cstr_null);
     RefCntr<Rcl::SearchData> rq(sd);
 
     rq->addDirSpec(top);

@@ -126,23 +126,25 @@ void SSearch::startSimpleSearch()
     if (u8.length() == 0)
 	return;
 
+    string stemlang = prefs.stemlang();
+
     SSearchType tp = (SSearchType)searchTypCMB->currentIndex();
     Rcl::SearchData *sdata = 0;
 
     if (tp == SST_LANG) {
 	string reason;
         if (prefs.autoSuffsEnable)
-            sdata = wasaStringToRcl(theconfig, u8, reason, 
+            sdata = wasaStringToRcl(theconfig, stemlang, u8, reason, 
 				    (const char *)prefs.autoSuffs.toUtf8());
         else
-            sdata = wasaStringToRcl(theconfig, u8, reason);
+            sdata = wasaStringToRcl(theconfig, stemlang, u8, reason);
 	if (sdata == 0) {
 	    QMessageBox::warning(0, "Recoll", tr("Bad query string") + ": " +
 				 QString::fromAscii(reason.c_str()));
 	    return;
 	}
     } else {
-	sdata = new Rcl::SearchData(Rcl::SCLT_OR);
+	sdata = new Rcl::SearchData(Rcl::SCLT_OR, stemlang);
 	if (sdata == 0) {
 	    QMessageBox::warning(0, "Recoll", tr("Out of memory"));
 	    return;
@@ -166,11 +168,6 @@ void SSearch::startSimpleSearch()
     }
 
     if (prefs.ssearchAutoPhrase && rcldb) {
-	string stemLang = (const char *)prefs.queryStemLang.toAscii();
-	if (stemLang == "ALL") {
-	    theconfig->getConfParam("indexstemminglanguages", stemLang);
-	}
-	sdata->setStemlang(stemLang);
 	sdata->maybeAddAutoPhrase(*rcldb, 
 				  prefs.ssearchAutoPhraseThreshPC / 100.0);
     }
@@ -277,10 +274,9 @@ void SSearch::completion()
     // Query database
     const int max = 100;
     Rcl::TermMatchResult tmres;
-    string stemLang = (const char *)prefs.queryStemLang.toAscii();
-    if (stemLang == "ALL") {
-	theconfig->getConfParam("indexstemminglanguages", stemLang);
-    }
+
+    string stemLang = prefs.stemlang();
+
     if (!rcldb->termMatch(Rcl::Db::ET_WILD, stemLang, s, tmres, max) || 
 	tmres.entries.size() == 0) {
 	QApplication::beep();

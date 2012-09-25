@@ -55,9 +55,30 @@
 #include <xapian.h>
 
 #include "synfamily.h"
+#include "unacpp.h"
 
 namespace Rcl {
 
+/* A stemming functor for using with XapComputableSynFamMember */
+class SynTermTransStem : public SynTermTrans {
+public:
+    SynTermTransStem(const std::string& lang)
+	: m_stemmer(lang), m_lang(lang)
+    {
+    }
+    virtual std::string operator()(const std::string& in)
+    {
+	string out = m_stemmer(in);
+	LOGDEB2(("SynTermTransStem(%s): in [%s] out [%s]\n", m_lang.c_str(),
+		 in.c_str(), out.c_str()));
+	return out;
+    }
+    Xapian::Stem m_stemmer;
+    std::string m_lang;
+};
+
+/** Stemdb is a bit special as a SynFamily as we may want to expand for one
+ * or several members (languages) */
 class StemDb : public XapSynFamily {
 public:
     StemDb(Xapian::Database& xdb)
@@ -67,17 +88,9 @@ public:
 
     /** Expand for a number of languages */
     bool stemExpand(const std::string& langs,
-		     const std::string& term,
-		     std::vector<std::string>& result);
-private:
-    /** Compute stem and call synExpand() */
-    bool expandOne(const std::string& lang,
-		   const std::string& term,
-		   std::vector<std::string>& result);
+		    const std::string& term,
+		    std::vector<std::string>& result);
 };
-
-extern bool createExpansionDbs(Xapian::WritableDatabase& wdb, 
-			       const std::vector<std::string>& langs);
 
 }
 

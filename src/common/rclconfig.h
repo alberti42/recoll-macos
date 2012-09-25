@@ -303,5 +303,13 @@ class RclConfig {
     bool readFieldsConfig(const string& errloc);
 };
 
-
+// This global variable defines if we are running with an index
+// stripped of accents and case or a raw one. Ideally, it should be
+// constant, but it needs to be initialized from the configuration, so
+// there is no way to do this. It never changes after initialization
+// of course. When set, it is supposed to get all of recoll to behave like if
+// if was compiled with RCL_INDEX_STRIPCHARS
+#ifndef  RCL_INDEX_STRIPCHARS
+extern bool o_index_stripchars;
+#endif
 #endif /* _RCLCONFIG_H_INCLUDED_ */

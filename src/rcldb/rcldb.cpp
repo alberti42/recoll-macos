@@ -14,6 +14,8 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include "autoconfig.h"
+
 #include <stdio.h>
 #include <cstring>
 #include <unistd.h>
@@ -53,6 +55,7 @@ using namespace std;
 #include "cancelcheck.h"
 #include "ptmutex.h"
 #include "termproc.h"
+#include "expansiondbs.h"
 
 #ifndef MAX
 #define MAX(A,B) (A>B?A:B)
@@ -84,9 +87,16 @@ static const string xapday_prefix = "D";
 static const string xapmonth_prefix = "M";
 static const string xapyear_prefix = "Y";
 const string pathelt_prefix = "XP";
+#ifdef RCL_INDEX_STRIPCHARS
 const string start_of_field_term = "XXST";
 const string end_of_field_term = "XXND";
 static const string page_break_term = "XXPG";
+#else
+string start_of_field_term;
+string end_of_field_term;
+const string page_break_term = "XXPG/";
+#endif
+
 // Field name for the unsplit file name. Has to exist in the field file 
 // because of usage in termmatch()
 static const string unsplitFilenameFieldName = "rclUnsplitFN";
@@ -197,7 +207,7 @@ static void noPrefixList(const vector<string>& in, vector<string>& out)
 {
     for (vector<string>::const_iterator qit = in.begin(); 
 	 qit != in.end(); qit++) {
-	if (qit->size() && !('A' <= (*qit)[0] && (*qit)[0] <= 'Z'))
+	if (!has_prefix(*qit))
 	    out.push_back(*qit);
     }
 }
@@ -591,7 +601,7 @@ abstract_result Db::Native::makeAbstract(Xapian::docid docid, Query *query,
 	for (term = xrdb.termlist_begin(docid);
 	     term != xrdb.termlist_end(docid); term++) {
 	    // Ignore prefixed terms
-	    if ('A' <= (*term).at(0) && (*term).at(0) <= 'Z')
+	    if (has_prefix(*term))
 		continue;
 	    if (cutoff-- < 0) {
 		ret = ABSRES_TRUNC;
@@ -672,7 +682,9 @@ abstract_result Db::Native::makeAbstract(Xapian::docid docid, Query *query,
 	    vabs.push_back(pair<int,string>(page, chunk));
 	    chunk.clear();
 	} else {
-	    chunk += it->second;
+	    if (it->second.compare(end_of_field_term) && 
+		it->second.compare(start_of_field_term))
+		chunk += it->second;
 	}
     }
     if (!chunk.empty())
@@ -692,6 +704,18 @@ Db::Db(RclConfig *cfp)
       m_curtxtsz(0), m_flushtxtsz(0), m_occtxtsz(0), m_occFirstCheck(1),
       m_maxFsOccupPc(0), m_mode(Db::DbRO)
 {
+#ifndef RCL_INDEX_STRIPCHARS
+    if (start_of_field_term.empty()) {
+	if (o_index_stripchars) {
+	    start_of_field_term = "XXST";
+	    end_of_field_term = "XXND";
+	} else {
+	    start_of_field_term = "XXST/";
+	    end_of_field_term = "XXND/";
+	}
+    }
+#endif
+
     m_ndb = new Native(this);
     if (m_config) {
 	m_config->getConfParam("maxfsoccuppc", &m_maxFsOccupPc);
@@ -894,11 +918,14 @@ int Db::termDocCnt(const string& _term)
     if (!m_ndb || !m_ndb->m_isopen)
         return -1;
 
-    string term;
-    if (!unacmaybefold(_term, term, "UTF-8", UNACOP_UNACFOLD)) {
-	LOGINFO(("Db::termDocCnt: unac failed for [%s]\n", _term.c_str()));
-	return 0;
-    }
+    string term = _term;
+#ifndef RCL_INDEX_STRIPCHARS
+    if (o_index_stripchars)
+#endif
+	if (!unacmaybefold(_term, term, "UTF-8", UNACOP_UNACFOLD)) {
+	    LOGINFO(("Db::termDocCnt: unac failed for [%s]\n", _term.c_str()));
+	    return 0;
+	}
 
     if (m_stops.isStop(term)) {
 	LOGDEB1(("Db::termDocCnt [%s] in stop list\n", term.c_str()));
@@ -1014,8 +1041,19 @@ class TextSplitDb : public TextSplitP {
     {}
     // Reimplement text_to_words to add start and end special terms
     virtual bool text_to_words(const string &in);
-    void setprefix(const string& pref) {prefix = pref;}
-    void setwdfinc(int i) {wdfinc = i;}
+
+    void setprefix(const string& pref) 
+    {
+	if (pref.empty())
+	    prefix.clear();
+	else
+	    prefix = wrap_prefix(pref);
+    }
+
+    void setwdfinc(int i) 
+    {
+	wdfinc = i;
+    }
 
     friend class TermProcIdx;
 
@@ -1147,11 +1185,17 @@ string Db::getSpellingSuggestion(const string& word)
 {
     if (m_ndb == 0)
 	return string();
-    string term;
+
+    string term = word;
+
+#ifndef RCL_INDEX_STRIPCHARS
+    if (o_index_stripchars)
+#endif
     if (!unacmaybefold(word, term, "UTF-8", UNACOP_UNACFOLD)) {
 	LOGINFO(("Db::getSpelling: unac failed for [%s]\n", word.c_str()));
 	return string();
     }
+
     if (!isSpellingCandidate(term))
 	return string();
     return m_ndb->xrdb.get_spelling_suggestion(term);
@@ -1259,8 +1303,13 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     TermProcIdx tpidx;
     TermProc *nxt = &tpidx;
     TermProcStop tpstop(nxt, m_stops);nxt = &tpstop;
-//    TermProcCommongrams tpcommon(nxt, m_stops); nxt = &tpcommon;
-    TermProcPrep tpprep(nxt); nxt = &tpprep;
+    //TermProcCommongrams tpcommon(nxt, m_stops); nxt = &tpcommon;
+
+    TermProcPrep tpprep(nxt);
+#ifndef RCL_INDEX_STRIPCHARS
+    if (o_index_stripchars)
+#endif
+	nxt = &tpprep;
 
     TextSplitDb splitter(newdocument, nxt);
     tpidx.setTSD(&splitter);
@@ -1286,7 +1335,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 	vector<string> vpath;
 	stringToTokens(path, vpath, "/");
 	splitter.curpos = 0;
-	newdocument.add_posting(pathelt_prefix, 
+	newdocument.add_posting(wrap_prefix(pathelt_prefix),
 				splitter.basepos + splitter.curpos++);
 	for (vector<string>::iterator it = vpath.begin(); 
 	     it != vpath.end(); it++){
@@ -1294,7 +1343,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 		// Just truncate it. May still be useful because of wildcards
 		*it = it->substr(0, 230);
 	    }
-	    newdocument.add_posting(pathelt_prefix + *it, 
+	    newdocument.add_posting(wrap_prefix(pathelt_prefix) + *it, 
 				    splitter.basepos + splitter.curpos++);
 	}
     }
@@ -1339,7 +1388,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 
     ////// Special terms for other metadata. No positions for these.
     // Mime type
-    newdocument.add_term(mimetype_prefix + doc.mimetype);
+    newdocument.add_term(wrap_prefix(mimetype_prefix) + doc.mimetype);
 
     // Simple file name indexed unsplit for specific "file name"
     // searches. This is not the same as a filename: clause inside the
@@ -1355,9 +1404,10 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
 		utf8truncate(fn, 230);
 	    string::size_type pos = fn.rfind('.');
 	    if (pos != string::npos && pos != fn.length() - 1) {
-		newdocument.add_term(fileext_prefix + fn.substr(pos + 1));
+		newdocument.add_term(wrap_prefix(fileext_prefix) + 
+				     fn.substr(pos + 1));
 	    }
-	    newdocument.add_term(unsplitfilename_prefix + fn);
+	    newdocument.add_term(wrap_prefix(unsplitfilename_prefix) + fn);
 	}
     }
 
@@ -1376,12 +1426,15 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     struct tm *tm = localtime(&mtime);
     char buf[9];
     snprintf(buf, 9, "%04d%02d%02d",
-	     tm->tm_year+1900, tm->tm_mon + 1, tm->tm_mday);
-    newdocument.add_term(xapday_prefix + string(buf)); // Date (YYYYMMDD)
+	    tm->tm_year+1900, tm->tm_mon + 1, tm->tm_mday);
+    // Date (YYYYMMDD)
+    newdocument.add_term(wrap_prefix(xapday_prefix) + string(buf)); 
+    // Month (YYYYMM)
     buf[6] = '\0';
-    newdocument.add_term(xapmonth_prefix + string(buf)); // Month (YYYYMM)
+    newdocument.add_term(wrap_prefix(xapmonth_prefix) + string(buf));
+    // Year (YYYY)
     buf[4] = '\0';
-    newdocument.add_term(xapyear_prefix + string(buf)); // Year (YYYY)
+    newdocument.add_term(wrap_prefix(xapyear_prefix) + string(buf)); 
 
 
     //////////////////////////////////////////////////////////////////
@@ -1856,7 +1909,7 @@ bool Db::maxYearSpan(int *minyear, int *maxyear)
     *minyear = 1000000; 
     *maxyear = -1000000;
     TermMatchResult result;
-    if (!termMatch(ET_WILD, string(), "*", result, 5000, "xapyear"))
+    if (!termMatch(ET_WILD, string(), "*", result, -1, "xapyear"))
 	return false;
     for (vector<TermMatchEntry>::const_iterator it = result.entries.begin();
 	 it != result.entries.end(); it++) {
@@ -1921,30 +1974,35 @@ const string cstr_wildSpecChars = "*?[";
 const string cstr_regSpecChars = "(.[{";
 
 // Find all index terms that match a wildcard or regular expression
+// If field is set, we return a list of appropriately prefixed terms (which 
+// are going to be used to build a Xapian query).
 bool Db::termMatch(MatchType typ, const string &lang,
 		   const string &root, 
 		   TermMatchResult& res,
 		   int max, 
-		   const string& field,
-                   string *prefixp
-    )
+		   const string& field)
 {
     if (!m_ndb || !m_ndb->m_isopen)
 	return false;
     Xapian::Database xdb = m_ndb->xdb();
 
-    res.clear();
     XAPTRY(res.dbdoccount = xdb.get_doccount();
            res.dbavgdoclen = xdb.get_avlength(), xdb, m_reason);
     if (!m_reason.empty())
         return false;
 
     // Get rid of capitals and accents
-    string droot;
-    if (!unacmaybefold(root, droot, "UTF-8", UNACOP_UNACFOLD)) {
-	LOGERR(("Db::termMatch: unac failed for [%s]\n", root.c_str()));
-	return false;
-    }
+
+    string droot = root;
+
+#ifndef RCL_INDEX_STRIPCHARS
+    if (o_index_stripchars)
+#endif
+	if (!unacmaybefold(root, droot, "UTF-8", UNACOP_UNACFOLD)) {
+	    LOGERR(("Db::termMatch: unac failed for [%s]\n", root.c_str()));
+	    return false;
+	}
+
     string nochars = typ == ET_WILD ? cstr_wildSpecChars : cstr_regSpecChars;
 
     string prefix;
@@ -1954,17 +2012,14 @@ bool Db::termMatch(MatchType typ, const string &lang,
             LOGDEB(("Db::termMatch: field is not indexed (no prefix): [%s]\n", 
                     field.c_str()));
         } else {
-	    prefix = ftp->pfx;
+	    prefix = wrap_prefix(ftp->pfx);
 	}
-        if (prefixp)
-            *prefixp = prefix;
     }
+    res.prefix = prefix;
 
     if (typ == ET_STEM) {
 	if (!stemExpand(lang, root, res, max))
 	    return false;
-	sort(res.entries.begin(), res.entries.end());
-	unique(res.entries.begin(), res.entries.end());
 	for (vector<TermMatchEntry>::iterator it = res.entries.begin(); 
 	     it != res.entries.end(); it++) {
 	    XAPTRY(it->wcf = xdb.get_collection_freq(it->term);
@@ -2054,7 +2109,9 @@ bool Db::termMatch(MatchType typ, const string &lang,
     TermMatchCmpByTerm tcmp;
     sort(res.entries.begin(), res.entries.end(), tcmp);
     TermMatchTermEqual teq;
-    unique(res.entries.begin(), res.entries.end(), teq);
+    vector<TermMatchEntry>::iterator uit = 
+	unique(res.entries.begin(), res.entries.end(), teq);
+    res.entries.resize(uit - res.entries.begin());
     TermMatchCmpByWcf wcmp;
     sort(res.entries.begin(), res.entries.end(), wcmp);
     if (max > 0) {

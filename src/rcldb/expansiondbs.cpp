@@ -63,17 +63,19 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
     // Unaccented stem dbs
     vector<XapWritableComputableSynFamMember> unacstemdbs;
     // We can reuse the same stemmer pointers, the objects are stateless.
-    for (unsigned int i = 0; i < langs.size(); i++) {
-	unacstemdbs.push_back(
-	    XapWritableComputableSynFamMember(wdb, synFamStemUnac, langs[i], 
-					      stemmers.back().getptr()));
-	unacstemdbs.back().recreate();
+    if (!o_index_stripchars) {
+	for (unsigned int i = 0; i < langs.size(); i++) {
+	    unacstemdbs.push_back(
+		XapWritableComputableSynFamMember(wdb, synFamStemUnac, langs[i], 
+						  stemmers.back().getptr()));
+	    unacstemdbs.back().recreate();
+	}
     }
-
     SynTermTransUnac transunac(UNACOP_UNACFOLD);
     XapWritableComputableSynFamMember 
-	diacasedb(wdb, synFamDiac, "all", &transunac);
-    diacasedb.recreate();
+	diacasedb(wdb, synFamDiCa, "all", &transunac);
+    if (!o_index_stripchars)
+	diacasedb.recreate();
 #endif
 
     // Walk the list of all terms, and stem/unac each.
@@ -109,8 +111,10 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
 	    // is the input to the stem db, and add a synonym from the
 	    // stripped term to the cased and accented one, for accent
 	    // and case expansion at query time
-	    unacmaybefold(*it, lower, "UTF-8", UNACOP_FOLD);
-	    diacasedb.addSynonym(*it);
+	    if (!o_index_stripchars) {
+		unacmaybefold(*it, lower, "UTF-8", UNACOP_FOLD);
+		diacasedb.addSynonym(*it);
+	    }
 #endif
 
 	    // Create stemming synonym for every language. The input is the 
@@ -124,12 +128,15 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
 	    // the unaccented term. While this may be incorrect, it is
 	    // also necessary for searching in a diacritic-unsensitive
 	    // way on a raw index
-	    string unac;
-	    unacmaybefold(lower, unac, "UTF-8", UNACOP_UNAC);
-	    if (unac != lower)
-		for (unsigned int i = 0; i < langs.size(); i++) {
-		    unacstemdbs[i].addSynonym(unac);
+	    if (!o_index_stripchars) {
+		string unac;
+		unacmaybefold(lower, unac, "UTF-8", UNACOP_UNAC);
+		if (unac != lower) {
+		    for (unsigned int i = 0; i < langs.size(); i++) {
+			unacstemdbs[i].addSynonym(unac);
+		    }
 		}
+	    }
 #endif
         }
     } XCATCHERROR(ermsg);

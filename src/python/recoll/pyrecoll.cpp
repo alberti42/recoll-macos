@@ -93,7 +93,7 @@ SearchData_init(recoll_SearchDataObject *self, PyObject *args, PyObject *kwargs)
     if (stp && strcasecmp(stp, "or")) {
 	tp = Rcl::SCLT_OR;
     }
-    self->sd = RefCntr<Rcl::SearchData>(new Rcl::SearchData(tp));
+    self->sd = RefCntr<Rcl::SearchData>(new Rcl::SearchData(tp, "english"));
     return 0;
 }
 
@@ -715,18 +715,18 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
         PyErr_SetString(PyExc_AttributeError, "query");
 	return 0;
     }
+
+    // SearchData defaults to stemming in english
+    // Use default for now but need to add way to specify language
     string reason;
-    Rcl::SearchData *sd = wasaStringToRcl(rclconfig, utf8, reason);
+    Rcl::SearchData *sd = wasaStringToRcl(rclconfig, dostem ? "english" : "",
+					  utf8, reason);
 
     if (!sd) {
 	PyErr_SetString(PyExc_ValueError, reason.c_str());
 	return 0;
     }
 
-    // SearchData defaults to stemming in english
-    // Use default for now but need to add way to specify language
-    if (!dostem)
-	sd->setStemlang("");
     RefCntr<Rcl::SearchData> rq(sd);
     string sf = self->sortfield ? string(self->sortfield) : string("");
     self->query->setSortBy(sf, self->ascending);

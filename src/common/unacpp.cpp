@@ -63,26 +63,57 @@ bool unacmaybefold(const string &in, string &out,
     return true;
 }
 
+// Functions to determine upper-case or accented status could be implemented
+// hugely more efficiently inside the unac c code, but there only used for
+// testing user-entered terms, so we don't really care.
 bool unaciscapital(const string& in)
 {
+    LOGDEB2(("unaciscapital: [%s]\n", in.c_str()));
     if (in.empty())
 	return false;
     Utf8Iter it(in);
     string shorter;
     it.appendchartostring(shorter);
 
-    string noacterm, noaclowterm;
-    if (!unacmaybefold(shorter, noacterm, "UTF-8", UNACOP_UNAC)) {
-	LOGINFO(("unaciscapital: unac failed for [%s]\n", in.c_str()));
+    string lower;
+    if (!unacmaybefold(shorter, lower, "UTF-8", UNACOP_FOLD)) {
+	LOGINFO(("unaciscapital: unac/fold failed for [%s]\n", in.c_str()));
 	return false;
     } 
-    if (!unacmaybefold(noacterm, noaclowterm, "UTF-8", UNACOP_UNACFOLD)) {
-	LOGINFO(("unaciscapital: unacfold failed for [%s]\n", in.c_str()));
+    Utf8Iter it1(lower);
+    if (*it != *it1)
+	return true;
+    else
 	return false;
-    }
-    Utf8Iter it1(noacterm);
-    Utf8Iter it2(noaclowterm);
-    if (*it1 != *it2)
+}
+bool unachasuppercase(const string& in)
+{
+    LOGDEB2(("unachasuppercase: [%s]\n", in.c_str()));
+    if (in.empty())
+	return false;
+
+    string lower;
+    if (!unacmaybefold(in, lower, "UTF-8", UNACOP_FOLD)) {
+	LOGINFO(("unachasuppercase: unac/fold failed for [%s]\n", in.c_str()));
+	return false;
+    } 
+    if (lower != in)
+	return true;
+    else
+	return false;
+}
+bool unachasaccents(const string& in)
+{
+    LOGDEB2(("unachasaccents: [%s]\n", in.c_str()));
+    if (in.empty())
+	return false;
+
+    string noac;
+    if (!unacmaybefold(in, noac, "UTF-8", UNACOP_UNAC)) {
+	LOGINFO(("unachasaccents: unac/unac failed for [%s]\n", in.c_str()));
+	return false;
+    } 
+    if (noac != in)
 	return true;
     else
 	return false;
@@ -107,12 +138,15 @@ static char *thisprog;
 
 static char usage [] = "\n"
     "[-c|-C] <encoding> <infile> <outfile>\n"
-    " Default : unaccent\n"
-    " -c : unaccent and casefold\n"
-    " -C : casefold only\n"
+    "   Default : unaccent\n"
+    "   -c : unaccent and casefold\n"
+    "   -C : casefold only\n"
+    "-t <string> test string as capitalized, upper-case anywhere, accents\n"
+    "   the parameter is supposedly utf-8 so this can only work in an utf-8\n"
+    "   locale\n"
     "\n";
-
 ;
+
 static void
 Usage(void)
 {
@@ -123,6 +157,7 @@ Usage(void)
 static int     op_flags;
 #define OPT_c	  0x2 
 #define OPT_C	  0x4 
+#define OPT_t     0x8
 
 int main(int argc, char **argv)
 {
@@ -140,58 +175,73 @@ int main(int argc, char **argv)
 	    switch (*(*argv)++) {
 	    case 'c':	op_flags |= OPT_c; break;
 	    case 'C':	op_flags |= OPT_C; break;
+	    case 't':	op_flags |= OPT_t; break;
 	    default: Usage();	break;
 	    }
 	argc--; argv++;
     }
 
-    if (op_flags & OPT_c) {
-	op = UNACOP_UNACFOLD;
-    } else if (op_flags & OPT_C) {
-	op = UNACOP_FOLD;
-    }
-
-    if (argc != 3) {
-	Usage();
-    }
-
-    const char *encoding = *argv++; argc--;
-    string ifn = *argv++; argc--;
-    if (!ifn.compare("stdin"))
-	ifn.clear();
-    const char *ofn = *argv++; argc--;
-
-    string reason;
-    (void)recollinit(RCLINIT_NONE, 0, 0, reason, 0);
-
-    string odata;
-    if (!file_to_string(ifn, odata)) {
-	cerr << "file_to_string " << ifn << " : " << odata << endl;
-	return 1;
-    }
-    string ndata;
-    if (!unacmaybefold(odata, ndata, encoding, op)) {
-	cerr << "unac: " << ndata << endl;
-	return 1;
-    }
-    
-    int fd;
-    if (strcmp(ofn, "stdout")) {
-	fd = open(ofn, O_CREAT|O_EXCL|O_WRONLY, 0666);
+    if (op_flags & OPT_t) {
+	if (argc != 1)
+	    Usage();
+	string in = *argv++;argc--;
+	bool capital, upper, accent;
+	capital = unaciscapital(in);
+	upper = unachasuppercase(in);
+	accent = unachasaccents(in);
+	cout << "[" << in << "] : " << 
+	    "capitalized: " << (capital ? "Yes. " : "No. ") <<
+	    "has uppercase: " << (upper ? "Yes. " : "No. ") <<
+	    "has accents: " << (accent ? "Yes. " : "No. ") << 
+	    endl;
+	return 0;
     } else {
-	fd = 1;
+	if (argc != 3)
+	    Usage();
+	if (op_flags & OPT_c) {
+	    op = UNACOP_UNACFOLD;
+	} else if (op_flags & OPT_C) {
+	    op = UNACOP_FOLD;
+	}
+
+	const char *encoding = *argv++; argc--;
+	string ifn = *argv++; argc--;
+	if (!ifn.compare("stdin"))
+	    ifn.clear();
+	const char *ofn = *argv++; argc--;
+
+	string reason;
+	(void)recollinit(RCLINIT_NONE, 0, 0, reason, 0);
+
+	string odata;
+	if (!file_to_string(ifn, odata)) {
+	    cerr << "file_to_string " << ifn << " : " << odata << endl;
+	    return 1;
+	}
+	string ndata;
+	if (!unacmaybefold(odata, ndata, encoding, op)) {
+	    cerr << "unac: " << ndata << endl;
+	    return 1;
+	}
+    
+	int fd;
+	if (strcmp(ofn, "stdout")) {
+	    fd = open(ofn, O_CREAT|O_EXCL|O_WRONLY, 0666);
+	} else {
+	    fd = 1;
+	}
+	if (fd < 0) {
+	    cerr << "Open/Create " << ofn << " failed: " << strerror(errno) 
+		 << endl;
+	    return 1;
+	}
+	if (write(fd, ndata.c_str(), ndata.length()) != (int)ndata.length()) {
+	    cerr << "Write(2) failed: " << strerror(errno)  << endl;
+	    return 1;
+	}
+	close(fd);
+	return 0;
     }
-    if (fd < 0) {
-	cerr << "Open/Create " << ofn << " failed: " << strerror(errno) 
-	     << endl;
-	return 1;
-    }
-    if (write(fd, ndata.c_str(), ndata.length()) != (int)ndata.length()) {
-	cerr << "Write(2) failed: " << strerror(errno)  << endl;
-	return 1;
-    }
-    close(fd);
-    return 0;
 }
 
 #endif

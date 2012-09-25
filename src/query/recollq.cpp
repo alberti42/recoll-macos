@@ -286,7 +286,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     Rcl::SearchData *sd = 0;
 
     if (op_flags & (OPT_a|OPT_o|OPT_f)) {
-	sd = new Rcl::SearchData(Rcl::SCLT_OR);
+	sd = new Rcl::SearchData(Rcl::SCLT_OR, stemlang);
 	Rcl::SearchDataClause *clp = 0;
 	if (op_flags & OPT_f) {
 	    clp = new Rcl::SearchDataClauseFilename(qs);
@@ -305,14 +305,13 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 	if (sd)
 	    sd->addClause(clp);
     } else {
-	sd = wasaStringToRcl(rclconfig, qs, reason);
+	sd = wasaStringToRcl(rclconfig, stemlang, qs, reason);
     }
 
     if (!sd) {
 	cerr << "Query string interpretation failed: " << reason << endl;
 	return 1;
     }
-    sd->setStemlang(stemlang);
 
     RefCntr<Rcl::SearchData> rq(sd);
     Rcl::Query query(&rcldb);

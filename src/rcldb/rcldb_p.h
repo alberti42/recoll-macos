@@ -18,12 +18,17 @@
 #ifndef _rcldb_p_h_included_
 #define _rcldb_p_h_included_
 
+#include "autoconfig.h"
+
 #include <map>
+
+#include <xapian.h>
 
 #ifdef IDX_THREADS
 #include "workqueue.h"
+#include "debuglog.h"
 #endif // IDX_THREADS
-#include "xapian.h"
+
 #include "xmacros.h"
 
 namespace Rcl {
