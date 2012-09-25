@@ -893,8 +893,9 @@ void ResList::createPopupMenu(const QPoint& pos)
 		      this, SLOT(menuPreviewParent()));
     popup->addAction(tr("&Open Parent document/folder"), 
 		     this, SLOT(menuOpenParent()));
-    popup->addAction(tr("Open &Snippets window"), 
-		     this, SLOT(menuOpenSnippets()));
+    if (m_source->snippetsCapable()) 
+	popup->addAction(tr("Open &Snippets window"), 
+			 this, SLOT(menuOpenSnippets()));
     popup->popup(mapToGlobal(pos));
 }
 

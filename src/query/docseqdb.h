@@ -50,6 +50,11 @@ class DocSequenceDb : public DocSequence {
         m_queryBuildAbstract = qba;
         m_queryReplaceAbstract = qra;
     }
+
+    virtual bool snippetsCapable()
+    {
+	return true;
+    }
     virtual string title();
 
  private:

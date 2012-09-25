@@ -113,8 +113,16 @@ class DocSequence {
     virtual int getResCnt() = 0;
 
     /** Get title for result list */
-    virtual std::string title() {return m_title;}
+    virtual std::string title() 
+    {
+	return m_title;
+    }
 
+    /** Can do snippets ? */
+    virtual bool snippetsCapable()
+    {
+	return false;
+    }
     /** Get description for underlying query */
     virtual std::string getDescription() = 0;
 
@@ -170,6 +178,13 @@ public:
 	if (m_seq.isNull())
 	    return false;
 	return m_seq->getAbstract(doc, abs);
+    }
+
+    virtual bool snippetsCapable()
+    {
+	if (m_seq.isNull())
+	    return false;
+	return m_seq->snippetsCapable();
     }
     virtual std::string getDescription() 
     {
