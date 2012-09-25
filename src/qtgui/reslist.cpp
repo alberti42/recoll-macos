@@ -198,13 +198,18 @@ void QtGuiResListPager::suggest(const vector<string>uterms,
 	// Actually, we may want to check the frequencies and propose something
 	// anyway if a possible variation is much more common (as google does)
 #warning need to take case and diacs sensibility into account somehow	
-	// Maybe use the xapian index instead ? How to retrieve the sensitivity flags ?
-	if (0) {
-        if (aspell->check(*uit, reason))
-            continue;
-        else if (!reason.empty())
-            return;
-	}
+	// Maybe use the xapian index instead ? How to retrieve the
+	// sensitivity flags ?  
+
+	// We used to call aspell->check() here and continue if it
+	// succeeded.  but this does not work if we are in
+	// case-sensitive mode and the term was not found because of a
+	// case difference (our aspell is all lowercase).
+        // if (aspell->check(*uit, reason))        
+	//     continue;
+        // else if (!reason.empty())
+	//      return;
+
         if (!aspell->suggest(*rcldb, *uit, asuggs, reason)) {
             LOGERR(("QtGuiResListPager::suggest: aspell failed: %s\n", 
                     reason.c_str()));
