@@ -54,7 +54,12 @@ class Aspell {
      * of an indexing pass. */
     bool buildDict(Rcl::Db &db, std::string &reason);
 
-    /** Check that word is in dictionary. ret==false && !reason.empty() => err*/
+    /** Check that word is in dictionary. Note that this would mean
+     * that the EXACT word is: aspell just does a lookup, no
+     * grammatical, case or diacritics magic of any kind
+     *
+     * @return true if word in dic, false if not. reason.size() -> error
+     */
     bool check(const std::string& term, std::string& reason);
 
     /** Return a list of possible expansions for a given word */

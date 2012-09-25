@@ -270,6 +270,7 @@ public:
 #endif
 	    // Got a non-empty sort-of appropriate term, let's send it to
 	    // aspell
+	    LOGDEB2(("ASpExecPv: [%s]\n", m_input->c_str()));
 	    m_input->append("\n");
 	    return;
 	}
@@ -454,7 +455,8 @@ RclConfig *rclconfig;
 static char usage [] =
 " -b : build dictionary\n"
 " -s <term>: suggestions for term\n"
-"\n\n"
+" -c <term>: check term\n"
+"\n"
 ;
 static void
 Usage(void)
@@ -467,6 +469,7 @@ static int     op_flags;
 #define OPT_MOINS 0x1
 #define OPT_s	  0x2 
 #define OPT_b	  0x4 
+#define OPT_c     0x8
 
 int main(int argc, char **argv)
 {
@@ -483,6 +486,10 @@ int main(int argc, char **argv)
 	while (**argv)
 	    switch (*(*argv)++) {
 	    case 'b':	op_flags |= OPT_b; break;
+	    case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
+		word = *(++argv);
+		argc--; 
+		goto b1;
 	    case 's':	op_flags |= OPT_s; if (argc < 2)  Usage();
 		word = *(++argv);
 		argc--; 
@@ -525,6 +532,18 @@ int main(int argc, char **argv)
 	if (!aspell.buildDict(rcldb, reason)) {
 	    cerr << "buildDict failed: " << reason << endl;
 	    exit(1);
+	}
+    } else if (op_flags & OPT_c) {
+	bool ret = aspell.check(word, reason);
+	if (!ret && reason.size()) {
+	    cerr << "Aspell error: " << reason << endl;
+	    return 1;
+	}
+	cout << word;
+	if (ret) {
+	    cout << " is in dictionary" << endl;
+	} else {
+	    cout << " not in dictionary" << endl;
 	}
     } else {
 	list<string> suggs;
