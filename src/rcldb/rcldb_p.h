@@ -89,16 +89,7 @@ class Db::Native {
 #endif // IDX_THREADS
     }
 
-    double qualityTerms(Xapian::docid docid, 
-			Query *query,
-			const vector<string>& terms,
-			std::multimap<double, string>& byQ);
-    void setDbWideQTermsFreqs(Query *query);
-    abstract_result makeAbstract(Xapian::docid id, Query *query, 
-				 vector<pair<int, string> >&, int maxoccs = -1,
-				 int ctxwords = -1);
     bool getPagePositions(Xapian::docid docid, vector<int>& vpos);
-    int getFirstMatchPage(Xapian::docid docid, Query *query);
     int getPageNumberForPosition(const vector<int>& pbreaks, unsigned int pos);
 
     bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc);
@@ -121,6 +112,10 @@ class Db::Native {
     bool subDocs(const string &udi, vector<Xapian::docid>& docids);
 
 };
+
+// This is the word position offset at which we index the body text
+// (abstract, keywords, etc.. are stored before this)
+static const unsigned int baseTextPosition = 100000;
 
 }
 #endif /* _rcldb_p_h_included_ */

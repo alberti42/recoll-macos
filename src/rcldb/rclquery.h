@@ -34,6 +34,12 @@ class SearchData;
 class Db;
 class Doc;
 
+enum abstract_result {
+    ABSRES_ERROR = 0,
+    ABSRES_OK = 1,
+    ABSRES_TRUNC = 2
+};
+
 /**
  * An Rcl::Query is a question (SearchData) applied to a
  * database. Handles access to the results. Somewhat equivalent to a
@@ -75,6 +81,18 @@ class Query {
     /** Return a list of terms which matched for a specific result document */
     bool getMatchTerms(const Doc& doc, vector<string>& terms);
     bool getMatchTerms(unsigned long xdocid, vector<string>& terms);
+
+    /** Build synthetic abstract for document, extracting chunks relevant for
+     * the input query. This uses index data only (no access to the file) */
+    // Abstract return as one string
+    bool makeDocAbstract(Doc &doc, string& abstract);
+    // Returned as a snippets vector
+    bool makeDocAbstract(Doc &doc, vector<string>& abstract);
+    // Returned as a vector of pair<page,snippet> page is 0 if unknown
+    abstract_result makeDocAbstract(Doc &doc, vector<pair<int, string> >& abst, 
+				    int maxoccs= -1, int ctxwords = -1);
+    /** Retrieve detected page breaks positions */
+    int getFirstMatchPage(Doc &doc);
 
     /** Expand query to look for documents like the one passed in */
     vector<string> expand(const Doc &doc);

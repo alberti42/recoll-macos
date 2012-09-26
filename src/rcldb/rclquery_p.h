@@ -34,7 +34,6 @@ public:
     /** The query I belong to */
     Query                *m_q;
 
-
     /** query descriptor: terms and subqueries joined by operators
      * (or/and etc...)
      */
@@ -55,6 +54,12 @@ public:
 	delete xenquire; xenquire = 0;
 	termfreqs.clear();
     }
+    abstract_result makeAbstract(Xapian::docid id, vector<pair<int, string> >&,
+				 int maxoccs = -1, int ctxwords = -1);
+    int getFirstMatchPage(Xapian::docid docid);
+    void setDbWideQTermsFreqs();
+    double qualityTerms(Xapian::docid docid, const vector<string>& terms,
+			std::multimap<double, string>& byQ);
 };
 
 }

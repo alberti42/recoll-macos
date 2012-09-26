@@ -1053,7 +1053,7 @@ Db_makeDocAbstract(recoll_DbObject* self, PyObject *args, PyObject *)
         return 0;
     }
     string abstract;
-    if (!self->db->makeDocAbstract(*(pydoc->doc), pyquery->query, abstract)) {
+    if (!pyquery->query->makeDocAbstract(*(pydoc->doc), abstract)) {
 	PyErr_SetString(PyExc_EnvironmentError, "rcl makeDocAbstract failed");
         return 0;
     }

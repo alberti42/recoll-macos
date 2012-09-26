@@ -42,6 +42,7 @@ ${depth}/query/sortseq.cpp \
 ${depth}/query/wasastringtoquery.cpp \
 ${depth}/query/wasatorcl.cpp \
 ${depth}/rcldb/expansiondbs.cpp \
+${depth}/rcldb/rclabstract.cpp \
 ${depth}/rcldb/rcldb.cpp \
 ${depth}/rcldb/rcldoc.cpp \
 ${depth}/rcldb/rclquery.cpp \

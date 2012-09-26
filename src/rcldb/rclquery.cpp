@@ -20,6 +20,8 @@
 #include <stdio.h>
 
 #include <vector>
+#include <sstream>
+using namespace std;
 
 #include "xapian.h"
 
@@ -35,10 +37,11 @@
 #include "searchdata.h"
 #include "unacpp.h"
 
-#ifndef NO_NAMESPACES
 namespace Rcl {
-#endif
-
+// This is used as a marker inside the abstract frag lists, but
+// normally doesn't remain in final output (which is built with a
+// custom sep. by our caller).
+static const string cstr_ellipsis("...");
 
 // Field names inside the index data record may differ from the rcldoc ones
 // (esp.: caption / title)
@@ -292,6 +295,68 @@ bool Query::getMatchTerms(unsigned long xdocid, vector<string>& terms)
     }
 
     return true;
+}
+
+abstract_result Query::makeDocAbstract(Doc &doc,
+				       vector<pair<int, string> >& abstract, 
+				       int maxoccs, int ctxwords)
+{
+    LOGDEB(("makeDocAbstract: maxoccs %d ctxwords %d\n", maxoccs, ctxwords));
+    if (!m_db || !m_db->m_ndb || !m_db->m_ndb->m_isopen || !m_nq) {
+	LOGERR(("Query::makeDocAbstract: no db or no nq\n"));
+	return ABSRES_ERROR;
+    }
+    abstract_result ret = ABSRES_ERROR;
+    XAPTRY(ret = m_nq->makeAbstract(doc.xdocid, abstract, maxoccs, ctxwords),
+           m_db->m_ndb->xrdb, m_reason);
+    if (!m_reason.empty())
+	return ABSRES_ERROR;
+    return ret;
+}
+
+bool Query::makeDocAbstract(Doc &doc, vector<string>& abstract)
+{
+    vector<pair<int, string> > vpabs;
+    if (!makeDocAbstract(doc, vpabs)) 
+	return false;
+    for (vector<pair<int, string> >::const_iterator it = vpabs.begin();
+	 it != vpabs.end(); it++) {
+	string chunk;
+	if (it->first > 0) {
+	    ostringstream ss;
+	    ss << it->first;
+	    chunk += string(" [p ") + ss.str() + "] ";
+	}
+	chunk += it->second;
+	abstract.push_back(chunk);
+    }
+    return true;
+}
+
+bool Query::makeDocAbstract(Doc &doc, string& abstract)
+{
+    vector<pair<int, string> > vpabs;
+    if (!makeDocAbstract(doc, vpabs))
+	return false;
+    for (vector<pair<int, string> >::const_iterator it = vpabs.begin(); 
+	 it != vpabs.end(); it++) {
+	abstract.append(it->second);
+	abstract.append(cstr_ellipsis);
+    }
+    return m_reason.empty() ? true : false;
+}
+
+int Query::getFirstMatchPage(Doc &doc)
+{
+    LOGDEB1(("Db::getFirstMatchPages\n"));;
+    if (!m_nq) {
+	LOGERR(("Query::getFirstMatchPage: no nq\n"));
+	return false;
+    }
+    int pagenum = -1;
+    XAPTRY(pagenum = m_nq->getFirstMatchPage(Xapian::docid(doc.xdocid)),
+	   m_db->m_ndb->xrdb, m_reason);
+    return m_reason.empty() ? pagenum : -1;
 }
 
 

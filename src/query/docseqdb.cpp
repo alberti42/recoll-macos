@@ -77,9 +77,8 @@ bool DocSequenceDb::getAbstract(Rcl::Doc &doc,
     int maxoccs = 500;
     Rcl::abstract_result ret = Rcl::ABSRES_ERROR;
     if (m_q->whatDb()) {
-	ret = m_q->whatDb()->makeDocAbstract(doc, m_q.getptr(), vpabs, 
-					     maxoccs, 
-					     m_q->whatDb()->getAbsCtxLen()+ 2);
+	ret = m_q->makeDocAbstract(doc,vpabs, maxoccs, 
+				   m_q->whatDb()->getAbsCtxLen()+ 2);
     } 
     if (vpabs.empty())
 	vpabs.push_back(pair<int, string>(0, doc.meta[Rcl::Doc::keyabs]));
@@ -96,7 +95,7 @@ bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<string>& vabs)
     setQuery();
     if (m_q->whatDb() &&
 	m_queryBuildAbstract && (doc.syntabs || m_queryReplaceAbstract)) {
-	m_q->whatDb()->makeDocAbstract(doc, m_q.getptr(), vabs);
+	m_q->makeDocAbstract(doc, vabs);
     } 
     if (vabs.empty())
 	vabs.push_back(doc.meta[Rcl::Doc::keyabs]);
@@ -107,7 +106,7 @@ int DocSequenceDb::getFirstMatchPage(Rcl::Doc &doc)
 {
     setQuery();
     if (m_q->whatDb()) {
-	return m_q->whatDb()->getFirstMatchPage(doc, m_q.getptr());
+	return m_q->getFirstMatchPage(doc);
     }
     return -1;
 }

@@ -67,7 +67,7 @@ void output_fields(const vector<string>fields, Rcl::Doc& doc,
 	string out;
 	if (!it->compare("abstract")) {
 	    string abstract;
-	    rcldb.makeDocAbstract(doc, &query, abstract);
+	    query.makeDocAbstract(doc, abstract);
 	    base64_encode(abstract, out);
 	} else {
 	    base64_encode(doc.meta[*it], out);
@@ -376,7 +376,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 	    }
             if (op_flags & OPT_A) {
                 string abstract;
-                if (rcldb.makeDocAbstract(doc, &query, abstract)) {
+                if (query.makeDocAbstract(doc, abstract)) {
                     cout << "ABSTRACT" << endl;
                     cout << abstract << endl;
                     cout << "/ABSTRACT" << endl;
