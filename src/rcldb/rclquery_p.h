@@ -60,7 +60,7 @@ public:
     void setDbWideQTermsFreqs();
     double qualityTerms(Xapian::docid docid, 
 			const std::vector<std::string>& terms,
-			std::map<double, std::vector<std::string> >& byQ);
+			std::multimap<double, std::vector<std::string> >& byQ);
 };
 
 }

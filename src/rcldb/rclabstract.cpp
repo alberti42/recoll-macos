@@ -112,7 +112,7 @@ void Query::Native::setDbWideQTermsFreqs()
 // aggregated frequency.
 double Query::Native::qualityTerms(Xapian::docid docid, 
 				   const vector<string>& terms,
-				   map<double, vector<string> >& byQ)
+				   multimap<double, vector<string> >& byQ)
 {
     LOGABS(("qualityTerms\n"));
     setDbWideQTermsFreqs();
@@ -129,6 +129,7 @@ double Query::Native::qualityTerms(Xapian::docid docid,
 	m_q->m_sd->getTerms(hld);
     }
 
+    // Group the input terms by the user term they were possibly expanded from
     map<string, vector<string> > byRoot;
     for (vector<string>::const_iterator qit = terms.begin(); 
 	 qit != terms.end(); qit++) {
@@ -143,14 +144,14 @@ double Query::Native::qualityTerms(Xapian::docid docid,
 	    }
 	} 
 	if (!found) {
-	    LOGABS(("qualityTerms: [%s] not found\n", (*qit).c_str()));
+	    LOGDEB0(("qualityTerms: [%s] not found in hld\n", (*qit).c_str()));
 	    byRoot[*qit].push_back(*qit);
 	}
     }
 
+    // Compute in-document and global frequencies for the groups.
     map<string, double> grpwdfs;
     map<string, double> grptfreqs;
-
     for (map<string, vector<string> >::const_iterator git = byRoot.begin();
 	 git != byRoot.end(); git++) {
 	for (vector<string>::const_iterator qit = git->second.begin(); 
@@ -169,6 +170,7 @@ double Query::Native::qualityTerms(Xapian::docid docid,
 	}    
     }
 
+    // Build a sorted by quality container for the groups
     for (map<string, vector<string> >::const_iterator git = byRoot.begin();
 	 git != byRoot.end(); git++) {
 	double q = (grpwdfs[git->first]) * grptfreqs[git->first];
@@ -185,21 +187,11 @@ double Query::Native::qualityTerms(Xapian::docid docid,
 	    q = 1;
 	}
 	totalweight += q;
-	for (vector<string>::const_iterator qit = git->second.begin(); 
-	     qit != git->second.end(); qit++) {
-	    termQcoefs[*qit] = q;
-	}
-    }
-
-    // Build a sorted by quality term list.
-    for (vector<string>::const_iterator qit = terms.begin(); 
-	 qit != terms.end(); qit++) {
-	if (termQcoefs.find(*qit) != termQcoefs.end())
-	    byQ[termQcoefs[*qit]].push_back(*qit);
+	byQ.insert(pair<double, vector<string> >(q, git->second));
     }
 
 #ifdef DEBUGABSTRACT
-    for (map<double, vector<string> >::reverse_iterator mit = byQ.rbegin(); 
+    for (multimap<double, vector<string> >::reverse_iterator mit= byQ.rbegin(); 
 	 mit != byQ.rend(); mit++) {
 	LOGABS(("qualityTerms: group\n"));
 	for (vector<string>::const_iterator qit = mit->second.begin();
@@ -240,7 +232,7 @@ int Query::Native::getFirstMatchPage(Xapian::docid docid)
     setDbWideQTermsFreqs();
 
     // We try to use a page which matches the "best" term. Get a sorted list
-    map<double, vector<string> > byQ;
+    multimap<double, vector<string> > byQ;
     double totalweight = qualityTerms(docid, terms, byQ);
 
     for (map<double, vector<string> >::reverse_iterator mit = byQ.rbegin(); 
@@ -303,7 +295,7 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
     // such a group prevents displaying matches for other terms (by
     // removing its meaning from the maximum occurrences per term test
     // used while walking the list below)
-    map<double, vector<string> > byQ;
+    multimap<double, vector<string> > byQ;
     double totalweight = qualityTerms(docid, matchedTerms, byQ);
     LOGABS(("makeAbstract:%d: computed Qcoefs.\n", chron.ms()));
     // This can't happen, but would crash us
