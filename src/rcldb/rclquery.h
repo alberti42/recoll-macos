@@ -112,6 +112,7 @@ private:
     bool   m_sortAscending;
     bool   m_collapseDuplicates;     
     int    m_resCnt;
+    RefCntr<SearchData> m_sd;
 
     /* Copyconst and assignement private and forbidden */
     Query(const Query &) {}

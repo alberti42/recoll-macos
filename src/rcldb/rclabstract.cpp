@@ -27,16 +27,19 @@ using namespace std;
 #include "rclquery.h"
 #include "rclquery_p.h"
 #include "textsplit.h"
-
+#include "searchdata.h"
 #include "utf8iter.h"
+#include "hldata.h"
 
 namespace Rcl {
 // This is used as a marker inside the abstract frag lists, but
 // normally doesn't remain in final output (which is built with a
 // custom sep. by our caller).
 static const string cstr_ellipsis("...");
+// This is used to mark positions overlapped by a multi-word match term
+static const string occupiedmarker("?");
 
-#undef DEBUGABSTRACT  
+#define DEBUGABSTRACT  
 #ifdef DEBUGABSTRACT
 #define LOGABS LOGDEB
 static void listList(const string& what, const vector<string>&l)
@@ -96,16 +99,22 @@ void Query::Native::setDbWideQTermsFreqs()
     }
 }
 
-// Compute query terms quality coefficients for a matched document by
+// Compute matched terms quality coefficients for a matched document by
 // retrieving the Within Document Frequencies and multiplying by
 // overal term frequency, then using log-based thresholds.
 // 2012: it's not too clear to me why exactly we do the log thresholds thing.
 //  Preferring terms wich are rare either or both in the db and the document 
 //  seems reasonable though
+// To avoid setting a high quality for a low frequency expansion of a
+// common stem, which seems wrong, we group the terms by
+// root, compute a frequency for the group from the sum of member
+// occurrences, and let the frequency for each group member be the
+// aggregated frequency.
 double Query::Native::qualityTerms(Xapian::docid docid, 
 				   const vector<string>& terms,
-				   multimap<double, string>& byQ)
+				   map<double, vector<string> >& byQ)
 {
+    LOGABS(("qualityTerms\n"));
     setDbWideQTermsFreqs();
 
     map<string, double> termQcoefs;
@@ -115,42 +124,88 @@ double Query::Native::qualityTerms(Xapian::docid docid,
     double doclen = xrdb.get_doclength(docid);
     if (doclen == 0) 
 	doclen = 1;
+    HighlightData hld;
+    if (!m_q->m_sd.isNull()) {
+	m_q->m_sd->getTerms(hld);
+    }
 
+    map<string, vector<string> > byRoot;
     for (vector<string>::const_iterator qit = terms.begin(); 
 	 qit != terms.end(); qit++) {
-	Xapian::TermIterator term = xrdb.termlist_begin(docid);
-	term.skip_to(*qit);
-	if (term != xrdb.termlist_end(docid) && *term == *qit) {
-	    double q = (term.get_wdf() / doclen) * termfreqs[*qit];
-	    q = -log10(q);
-	    if (q < 3) {
-		q = 0.05;
-	    } else if (q < 4) {
-		q = 0.3;
-	    } else if (q < 5) {
-		q = 0.7;
-	    } else if (q < 6) {
-		q = 0.8;
-	    } else {
-		q = 1;
+	bool found = false;
+	for (unsigned int gidx = 0; gidx < hld.groups.size(); gidx++) {
+	    if (hld.groups[gidx].size() == 1 && hld.groups[gidx][0] == *qit) {
+		string us = hld.ugroups[hld.grpsugidx[gidx]][0];
+		LOGABS(("qualityTerms: [%s] found, comes from [%s]\n", 
+			(*qit).c_str(),	us.c_str()));
+		byRoot[us].push_back(*qit);
+		found = true;
 	    }
-	    termQcoefs[*qit] = q;
-	    totalweight += q;
+	} 
+	if (!found) {
+	    LOGABS(("qualityTerms: [%s] not found\n", (*qit).c_str()));
+	    byRoot[*qit].push_back(*qit);
 	}
-    }    
+    }
+
+    map<string, double> grpwdfs;
+    map<string, double> grptfreqs;
+
+    for (map<string, vector<string> >::const_iterator git = byRoot.begin();
+	 git != byRoot.end(); git++) {
+	for (vector<string>::const_iterator qit = git->second.begin(); 
+	     qit != git->second.end(); qit++) {
+	    Xapian::TermIterator term = xrdb.termlist_begin(docid);
+	    term.skip_to(*qit);
+	    if (term != xrdb.termlist_end(docid) && *term == *qit) {
+		if (grpwdfs.find(git->first) != grpwdfs.end()) {
+		    grpwdfs[git->first] = term.get_wdf() / doclen;
+		    grptfreqs[git->first] = termfreqs[*qit];
+		} else {
+		    grpwdfs[git->first] += term.get_wdf() / doclen;
+		    grptfreqs[git->first] += termfreqs[*qit];
+		}
+	    }
+	}    
+    }
+
+    for (map<string, vector<string> >::const_iterator git = byRoot.begin();
+	 git != byRoot.end(); git++) {
+	double q = (grpwdfs[git->first]) * grptfreqs[git->first];
+	q = -log10(q);
+	if (q < 3) {
+	    q = 0.05;
+	} else if (q < 4) {
+	    q = 0.3;
+	} else if (q < 5) {
+	    q = 0.7;
+	} else if (q < 6) {
+	    q = 0.8;
+	} else {
+	    q = 1;
+	}
+	totalweight += q;
+	for (vector<string>::const_iterator qit = git->second.begin(); 
+	     qit != git->second.end(); qit++) {
+	    termQcoefs[*qit] = q;
+	}
+    }
 
     // Build a sorted by quality term list.
     for (vector<string>::const_iterator qit = terms.begin(); 
 	 qit != terms.end(); qit++) {
 	if (termQcoefs.find(*qit) != termQcoefs.end())
-	    byQ.insert(pair<double,string>(termQcoefs[*qit], *qit));
+	    byQ[termQcoefs[*qit]].push_back(*qit);
     }
 
 #ifdef DEBUGABSTRACT
-    LOGDEB(("Db::qualityTerms:\n"));
-    for (multimap<double, string>::reverse_iterator qit = byQ.rbegin(); 
-	 qit != byQ.rend(); qit++) {
-	LOGDEB(("%.1e->[%s]\n", qit->first, qit->second.c_str()));
+    for (map<double, vector<string> >::reverse_iterator mit = byQ.rbegin(); 
+	 mit != byQ.rend(); mit++) {
+	LOGABS(("qualityTerms: group\n"));
+	for (vector<string>::const_iterator qit = mit->second.begin();
+	     qit != mit->second.end(); qit++) {
+	    LOGABS(("%.1e->[%s]\n", mit->first, qit->c_str()));
+	}
     }
 #endif
     return totalweight;
@@ -185,23 +240,26 @@ int Query::Native::getFirstMatchPage(Xapian::docid docid)
     setDbWideQTermsFreqs();
 
     // We try to use a page which matches the "best" term. Get a sorted list
-    multimap<double, string> byQ;
+    map<double, vector<string> > byQ;
     double totalweight = qualityTerms(docid, terms, byQ);
 
-    for (multimap<double, string>::reverse_iterator qit = byQ.rbegin(); 
-	 qit != byQ.rend(); qit++) {
-	string qterm = qit->second;
-	Xapian::PositionIterator pos;
-	string emptys;
-	try {
-	    for (pos = xrdb.positionlist_begin(docid, qterm); 
-		 pos != xrdb.positionlist_end(docid, qterm); pos++) {
-		int pagenum = ndb->getPageNumberForPosition(pagepos, *pos);
-		if (pagenum > 0)
-		    return pagenum;
+    for (map<double, vector<string> >::reverse_iterator mit = byQ.rbegin(); 
+	 mit != byQ.rend(); mit++) {
+	for (vector<string>::const_iterator qit = mit->second.begin();
+	     qit != mit->second.end(); qit++) {
+	    string qterm = *qit;
+	    Xapian::PositionIterator pos;
+	    string emptys;
+	    try {
+		for (pos = xrdb.positionlist_begin(docid, qterm); 
+		     pos != xrdb.positionlist_end(docid, qterm); pos++) {
+		    int pagenum = ndb->getPageNumberForPosition(pagepos, *pos);
+		    if (pagenum > 0)
+			return pagenum;
+		}
+	    } catch (...) {
+		// Term does not occur. No problem.
 	    }
-	} catch (...) {
-	    // Term does not occur. No problem.
 	}
     }
     return -1;
@@ -245,7 +303,7 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
     // such a group prevents displaying matches for other terms (by
     // removing its meaning from the maximum occurrences per term test
     // used while walking the list below)
-    multimap<double, string> byQ;
+    map<double, vector<string> > byQ;
     double totalweight = qualityTerms(docid, matchedTerms, byQ);
     LOGABS(("makeAbstract:%d: computed Qcoefs.\n", chron.ms()));
     // This can't happen, but would crash us
@@ -259,9 +317,8 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
 
     ///////////////////
     // For each of the query terms, ask xapian for its positions list
-    // in the document. For each position entry, remember it in
-    // qtermposs and insert it and its neighbours in the set of
-    // 'interesting' positions
+    // in the document. For each position entry, insert it and its
+    // neighbours in the set of 'interesting' positions
 
     // The terms 'array' that we partially populate with the document
     // terms, at their positions around the search terms positions:
@@ -270,7 +327,7 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
     // Total number of occurences for all terms. We stop when we have too much
     unsigned int totaloccs = 0;
 
-    // Limit the total number of slots we populate. The 7 is taken as
+    // Total number of slots we populate. The 7 is taken as
     // average word size. It was a mistake to have the user max
     // abstract size parameter in characters, we basically only deal
     // with words. We used to limit the character size at the end, but
@@ -281,91 +338,105 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
     LOGABS(("makeAbstract:%d: mxttloccs %d ctxwords %d\n", 
 	    chron.ms(), maxtotaloccs, ctxwords));
 
-    // This is used to mark positions overlapped by a multi-word match term
-    const string occupiedmarker("?");
-
     abstract_result ret = ABSRES_OK;
 
     // Let's go populate
-    for (multimap<double, string>::reverse_iterator qit = byQ.rbegin(); 
-	 qit != byQ.rend(); qit++) {
-	string qterm = qit->second;
-	unsigned int maxoccs;
+    for (map<double, vector<string> >::reverse_iterator mit = byQ.rbegin(); 
+	 mit != byQ.rend(); mit++) {
+	unsigned int maxgrpoccs;
+	float q;
 	if (byQ.size() == 1) {
-	    maxoccs = maxtotaloccs;
+	    maxgrpoccs = maxtotaloccs;
+	    q = 1.0;
 	} else {
-	    // We give more slots to the better terms
-	    float q = qit->first / totalweight;
-	    maxoccs = int(ceil(maxtotaloccs * q));
-	    LOGABS(("makeAbstract: [%s] %d max occs (coef %.2f)\n", 
-		    qterm.c_str(), maxoccs, q));
+	    // We give more slots to the better term groups
+	    q = mit->first / totalweight;
+	    maxgrpoccs = int(ceil(maxtotaloccs * q));
 	}
+	unsigned int grpoccs = 0;
 
-	// The match term may span several words
-	int qtrmwrdcnt = TextSplit::countWords(qterm, TextSplit::TXTS_NOSPANS);
+	for (vector<string>::const_iterator qit = mit->second.begin();
+	     qit != mit->second.end(); qit++) {
 
-	Xapian::PositionIterator pos;
-	// There may be query terms not in this doc. This raises an
-	// exception when requesting the position list, we catch it ??
-	// Not clear how this can happen because we are walking the
-	// match list returned by Xapian. Maybe something with the
-	// fields?
-	string emptys;
-	try {
-	    unsigned int occurrences = 0;
-	    for (pos = xrdb.positionlist_begin(docid, qterm); 
-		 pos != xrdb.positionlist_end(docid, qterm); pos++) {
-		int ipos = *pos;
-		if (ipos < int(baseTextPosition)) // Not in text body
-		    continue;
-		LOGABS(("makeAbstract: [%s] at %d occurrences %d maxoccs %d\n",
-			qterm.c_str(), ipos, occurrences, maxoccs));
+	    // Group done ?
+	    if (grpoccs >= maxgrpoccs) 
+		break;
 
-		totaloccs++;
+	    string qterm = *qit;
 
-		// Add adjacent slots to the set to populate at next
-		// step by inserting empty strings. Special provisions
-		// for adding ellipsis and for positions overlapped by
-		// the match term.
-		unsigned int sta = MAX(0, ipos - ctxwords);
-		unsigned int sto = ipos + qtrmwrdcnt-1 + 
-		    m_q->m_db->getAbsCtxLen();
-		for (unsigned int ii = sta; ii <= sto;  ii++) {
-		    if (ii == (unsigned int)ipos) {
-			sparseDoc[ii] = qterm;
-		    } else if (ii > (unsigned int)ipos && 
-			       ii < (unsigned int)ipos + qtrmwrdcnt) {
-			sparseDoc[ii] = occupiedmarker;
-		    } else if (!sparseDoc[ii].compare(cstr_ellipsis)) {
-			// For an empty slot, the test has a side
-			// effect of inserting an empty string which
-			// is what we want
-			sparseDoc[ii] = emptys;
+	    LOGABS(("makeAbstract: [%s] %d max grp occs (coef %.2f)\n", 
+		    qterm.c_str(), maxgrpoccs, q));
+
+	    // The match term may span several words
+	    int qtrmwrdcnt = 
+		TextSplit::countWords(qterm, TextSplit::TXTS_NOSPANS);
+
+	    Xapian::PositionIterator pos;
+	    // There may be query terms not in this doc. This raises an
+	    // exception when requesting the position list, we catch it ??
+	    // Not clear how this can happen because we are walking the
+	    // match list returned by Xapian. Maybe something with the
+	    // fields?
+	    string emptys;
+	    try {
+		for (pos = xrdb.positionlist_begin(docid, qterm); 
+		     pos != xrdb.positionlist_end(docid, qterm); pos++) {
+		    int ipos = *pos;
+		    if (ipos < int(baseTextPosition)) // Not in text body
+			continue;
+		    LOGABS(("makeAbstract: [%s] at pos %d grpoccs %d maxgrpoccs %d\n",
+			    qterm.c_str(), ipos, grpoccs, maxgrpoccs));
+
+		    totaloccs++;
+		    grpoccs++;
+
+		    // Add adjacent slots to the set to populate at next
+		    // step by inserting empty strings. Special provisions
+		    // for adding ellipsis and for positions overlapped by
+		    // the match term.
+		    unsigned int sta = MAX(0, ipos - ctxwords);
+		    unsigned int sto = ipos + qtrmwrdcnt-1 + 
+			m_q->m_db->getAbsCtxLen();
+		    for (unsigned int ii = sta; ii <= sto;  ii++) {
+			if (ii == (unsigned int)ipos) {
+			    sparseDoc[ii] = qterm;
+			} else if (ii > (unsigned int)ipos && 
+				   ii < (unsigned int)ipos + qtrmwrdcnt) {
+			    sparseDoc[ii] = occupiedmarker;
+			} else if (!sparseDoc[ii].compare(cstr_ellipsis)) {
+			    // For an empty slot, the test has a side
+			    // effect of inserting an empty string which
+			    // is what we want
+			    sparseDoc[ii] = emptys;
+			}
+		    }
+		    // Add ellipsis at the end. This may be replaced later by
+		    // an overlapping extract. Take care not to replace an
+		    // empty string here, we really want an empty slot,
+		    // use find()
+		    if (sparseDoc.find(sto+1) == sparseDoc.end()) {
+			sparseDoc[sto+1] = cstr_ellipsis;
+		    }
+
+		    // Group done ?
+		    if (grpoccs >= maxgrpoccs) 
+			break;
+		    // Global done ?
+		    if (totaloccs >= maxtotaloccs) {
+			ret = ABSRES_TRUNC;
+			LOGABS(("Db::makeAbstract: max occurrences cutoff\n"));
+			break;
 		    }
 		}
-		// Add ellipsis at the end. This may be replaced later by
-		// an overlapping extract. Take care not to replace an
-		// empty string here, we really want an empty slot,
-		// use find()
-		if (sparseDoc.find(sto+1) == sparseDoc.end()) {
-		    sparseDoc[sto+1] = cstr_ellipsis;
-		}
-
-		// Limit to allocated occurences and total size
-		if (++occurrences >= maxoccs || 
-		    totaloccs >= maxtotaloccs) {
-		    ret = ABSRES_TRUNC;
-		    LOGDEB(("Db::makeAbstract: max occurrences cutoff\n"));
-		    break;
-		}
+	    } catch (...) {
+		// Term does not occur. No problem.
 	    }
-	} catch (...) {
-	    // Term does not occur. No problem.
-	}
-	if (totaloccs >= maxtotaloccs) {
-	    ret = ABSRES_TRUNC;
-	    LOGDEB(("Db::makeAbstract: max1 occurrences cutoff\n"));
-	    break;
+
+	    if (totaloccs >= maxtotaloccs) {
+		ret = ABSRES_TRUNC;
+		LOGABS(("Db::makeAbstract: max1 occurrences cutoff\n"));
+		break;
+	    }
 	}
     }
     LOGABS(("makeAbstract:%d:chosen number of positions %d\n", 

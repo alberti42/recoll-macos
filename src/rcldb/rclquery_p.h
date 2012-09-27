@@ -58,8 +58,9 @@ public:
 				 int maxoccs = -1, int ctxwords = -1);
     int getFirstMatchPage(Xapian::docid docid);
     void setDbWideQTermsFreqs();
-    double qualityTerms(Xapian::docid docid, const vector<string>& terms,
-			std::multimap<double, string>& byQ);
+    double qualityTerms(Xapian::docid docid, 
+			const std::vector<std::string>& terms,
+			std::map<double, std::vector<std::string> >& byQ);
 };
 
 }

@@ -191,6 +191,7 @@ bool Query::setQuery(RefCntr<SearchData> sdata)
     m_reason.erase();
 
     m_nq->clear();
+    m_sd = sdata;
 
     Xapian::Query xq;
     if (!sdata->toNativeQuery(*m_db, &xq)) {
@@ -244,6 +245,7 @@ bool Query::setQuery(RefCntr<SearchData> sdata)
 	d.erase(0, strlen("Xapian::Query"));
 
     sdata->setDescription(d);
+    m_sd = sdata;
     LOGDEB(("Query::SetQuery: Q: %s\n", sdata->getDescription().c_str()));
     return true;
 }
