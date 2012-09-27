@@ -1,0 +1,30 @@
++ recollq -s french éviter
+1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile.html]	[testfile.html]	140	bytes	
++ recollq -s french èviter
+0 results
++ recollq -s french '"eviter"D'
+0 results
++ recollq -s french eviter
+1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile.html]	[testfile.html]	140	bytes	
++ recollq -s french evite
+1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile.html]	[testfile.html]	140	bytes	
++ recollq -s french Evite
+0 results
++ recollq -s french MAJUSCULESXX
+1 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile.html]	[testfile.html]	140	bytes	
++ recollq -s french MAjUSCULESXX
+0 results
++ recollq -s french majusculesxx
+2 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile1.html]	[testfile1.html]	132	bytes	
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile.html]	[testfile.html]	140	bytes	
++ recollq -s french Majusculesxx
+2 results
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile1.html]	[testfile1.html]	132	bytes	
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile.html]	[testfile.html]	140	bytes	
++ recollq -s french '"Majusculesxx"C'
+0 results
