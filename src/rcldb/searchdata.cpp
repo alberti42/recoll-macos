@@ -715,8 +715,10 @@ void StringToXapianQ::expandTerm(int mods,
 	// diacritic-sensitive. Note that the way that the test is
 	// performed (conversion+comparison) will automatically ignore
 	// accented characters which are actually a separate letter
-	if (unachasaccents(term))
+	if (unachasaccents(term)) {
+	    LOGDEB0(("expandTerm: term has accents -> diac-sensitive\n"));
 	    diac_sensitive = true;
+	}
 
 	// If any character apart the first is uppercase, we become
 	// case-sensitive.  The first character is reserved for
@@ -724,12 +726,16 @@ void StringToXapianQ::expandTerm(int mods,
 	// modifier to search for Floor in a case-sensitive way.
 	Utf8Iter it(term);
 	it++;
-	if (unachasuppercase(term.substr(it.getBpos())))
+	if (unachasuppercase(term.substr(it.getBpos()))) {
+	    LOGDEB0(("expandTerm: term has uppercase -> case-sensitive\n"));
 	    case_sensitive = true;
+	}
 
 	// If we are sensitive to case or diacritics turn stemming off
-	if (diac_sensitive || case_sensitive)
+	if (diac_sensitive || case_sensitive) {
+	    LOGDEB0(("expandTerm: diac or case sens set -> stemexpand off\n"));
 	    nostemexp = true;
+	}
 
 	if (!case_sensitive || !diac_sensitive)
 	    noexpansion = false;
@@ -743,19 +749,21 @@ void StringToXapianQ::expandTerm(int mods,
 	return;
     } 
 
+    // Make objects before the goto jungle to avoid compiler complaints
     SynTermTransUnac unacfoldtrans(UNACOP_UNACFOLD);
     XapComputableSynFamMember synac(m_db.m_ndb->xrdb, synFamDiCa, "all", 
 				    &unacfoldtrans);
+    // This will hold the result of case and diacritics expansion as input
+    // to stem expansion.
     vector<string> lexp;
-
+    
     TermMatchResult res;
     if (haswild) {
 	// Note that if there are wildcards, we do a direct from-index
 	// expansion, which means that we are casediac-sensitive. There
 	// would be nothing to prevent us to expand from the casediac
 	// synonyms first. To be done later
-	m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term, res, -1, 
-		       m_field);
+	m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term, res, -1, m_field);
 	goto termmatchtoresult;
     }
 
@@ -785,32 +793,23 @@ void StringToXapianQ::expandTerm(int mods,
 	// No expansion whatsoever
 	m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term, res, -1, m_field);
 	goto termmatchtoresult;
-    }
-
-    if (diac_sensitive) {
+    } else if (diac_sensitive) {
 	// Expand for accents and case, filtering for same accents,
-	// then bogus wildcard expansion for generating result
 	SynTermTransUnac foldtrans(UNACOP_FOLD);
 	synac.synExpand(term, lexp, &foldtrans);
 	goto exptotermatch;
-    } 
-
-    if (case_sensitive) {
-	// Expand for accents and case, filtering for same case, then
-	// bogus wildcard expansion for generating result
+    } else if (case_sensitive) {
+	// Expand for accents and case, filtering for same case
 	SynTermTransUnac unactrans(UNACOP_UNAC);
 	synac.synExpand(term, lexp, &unactrans);
 	goto exptotermatch;
+    } else {
+	// We are neither accent- nor case- sensitive and may need stem
+	// expansion or not. Expand for accents and case
+	synac.synExpand(term, lexp);
+	if (nostemexp)
+	    goto exptotermatch;
     }
-
-    // We are neither accent- nor case- sensitive and may need stem
-    // expansion or not.
-
-    // Expand for accents and case
-    synac.synExpand(term, lexp);
-    LOGDEB(("ExpTerm: casediac: %s\n", stringsToString(lexp).c_str()));
-    if (nostemexp)
-	goto exptotermatch;
 
     // Need stem expansion. Lowercase the result of accent and case
     // expansion for input to stemdb.
@@ -829,7 +828,7 @@ void StringToXapianQ::expandTerm(int mods,
 	     it != lexp.end(); it++) {
 	    db.stemExpand(m_stemlang, *it, exp1);
 	}
-	LOGDEB(("ExpTerm: stem: %s\n", stringsToString(exp1).c_str()));
+	LOGDEB(("ExpTerm: stem exp-> %s\n", stringsToString(exp1).c_str()));
 
 	// Expand the resulting list for case (all stemdb content
 	// is lowercase)
@@ -842,10 +841,10 @@ void StringToXapianQ::expandTerm(int mods,
 	uit = unique(lexp.begin(), lexp.end());
 	lexp.resize(uit - lexp.begin());
     }
-    LOGDEB(("ExpTerm: case exp of stem: %s\n", stringsToString(lexp).c_str()));
 
     // Bogus wildcard expand to generate the result
 exptotermatch:
+    LOGDEB(("ExpandTerm:TM: lexp: %s\n", stringsToString(lexp).c_str()));
     for (vector<string>::const_iterator it = lexp.begin();
 	 it != lexp.end(); it++) {
 	m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, *it, 
@@ -859,6 +858,12 @@ termmatchtoresult:
 	 it != res.entries.end(); it++) {
 	oexp.push_back(it->term);
     }
+    // If the term does not exist at all in the db, the return from
+    // term match is going to be empty, which is not what we want (we
+    // would then compute an empty Xapian query)
+    if (oexp.empty())
+	oexp.push_back(prefix + term);
+
     LOGDEB(("ExpandTerm: final: %s\n", stringsToString(oexp).c_str()));
 }
 
