@@ -105,7 +105,7 @@ void SnippetsW::init()
 
 void SnippetsW::linkWasClicked(const QUrl &url)
 {
-    string ascurl = (const char *)url.toString().toAscii();;
+    string ascurl = (const char *)url.toString().toAscii();
     LOGDEB(("Snippets::linkWasClicked: [%s]\n", ascurl.c_str()));
 
     if (ascurl.size() > 3) {
@@ -113,7 +113,10 @@ void SnippetsW::linkWasClicked(const QUrl &url)
 	switch (what) {
 	case 'P': 
 	{
-	    int page = atoi(ascurl.c_str()+2);
+	    string::size_type numpos = ascurl.find_first_of("0123456789");
+	    if (numpos == string::npos)
+		return;
+	    int page = atoi(ascurl.c_str() + numpos);
 	    emit startNativeViewer(m_doc, page);
 	    return;
 	}

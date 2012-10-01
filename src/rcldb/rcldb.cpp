@@ -200,7 +200,7 @@ bool Db::Native::getPagePositions(Xapian::docid docid, vector<int>& vpos)
 	    doc.getmeta(cstr_mbreaks, &mbreaks)) {
 	    vector<string> values;
 	    stringToTokens(mbreaks, values, ",");
-	    for (unsigned int i = 0; i < values.size() / 2; i += 2) {
+	    for (unsigned int i = 0; i < values.size() - 1; i += 2) {
 		int pos  = atoi(values[i].c_str()) + baseTextPosition;
 		int incr = atoi(values[i+1].c_str());
 		mbreaksmap[pos] = incr;
@@ -216,13 +216,15 @@ bool Db::Native::getPagePositions(Xapian::docid docid, vector<int>& vpos)
 	     pos != xrdb.positionlist_end(docid, qterm); pos++) {
 	    int ipos = *pos;
 	    if (ipos < int(baseTextPosition)) {
+		LOGDEB(("getPagePositions: got page position %d not in body\n",
+			ipos));
 		// Not in text body. Strange...
 		continue;
 	    }
 	    map<int, int>::iterator it = mbreaksmap.find(ipos);
 	    if (it != mbreaksmap.end()) {
 		LOGDEB1(("getPagePositions: found multibreak at %d incr %d\n", 
-			 ipos, it->second));
+			ipos, it->second));
 		for (int i = 0 ; i < it->second; i++) 
 		    vpos.push_back(ipos);
 	    }
@@ -687,9 +689,10 @@ public:
     void newpage(int pos)
     {
 	pos += m_ts->basepos;
-	LOGDEB2(("newpage: %d\n", pos));
-	if (pos < int(baseTextPosition))
+	if (pos < int(baseTextPosition)) {
+	    LOGDEB(("newpage: not in body\n", pos));
 	    return;
+	}
 
 	m_ts->doc.add_posting(m_ts->prefix + page_break_term, pos);
 	if (pos == m_lastpagepos) {
@@ -701,9 +704,10 @@ public:
 		     m_pageincr, m_lastpagepos));
 	    if (m_pageincr > 0) {
 		// Remember the multiple page break at this position
-		m_pageincrvec.push_back(
-		    pair<int, int>(m_lastpagepos - baseTextPosition, 
-				   m_pageincr));
+		unsigned int relpos = m_lastpagepos - baseTextPosition;
+		LOGDEB2(("Remembering multiple page break. Relpos %u cnt %d\n",
+			relpos, m_pageincr));
+		m_pageincrvec.push_back(pair<int, int>(relpos, m_pageincr));
 	    }
 	    m_pageincr = 0;
 	}
@@ -713,9 +717,10 @@ public:
     virtual bool flush()
     {
 	if (m_pageincr > 0) {
-	    m_pageincrvec.push_back(
-		pair<int, int>(m_lastpagepos - baseTextPosition,  
-			       m_pageincr));
+	    unsigned int relpos = m_lastpagepos - baseTextPosition;
+	    LOGDEB2(("Remembering multiple page break. Position %u cnt %d\n",
+		    relpos, m_pageincr));
+	    m_pageincrvec.push_back(pair<int, int>(relpos, m_pageincr));
 	    m_pageincr = 0;
 	}
 	return TermProc::flush();
