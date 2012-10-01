@@ -258,8 +258,11 @@ public:
     {}
     void newData() {
 	while (m_db.termWalkNext(m_tit, *m_input)) {
-	    if (!Rcl::Db::isSpellingCandidate(*m_input))
+	    LOGDEB2(("Aspell::buildDict: term: [%s]\n", m_input->c_str()));
+	    if (!Rcl::Db::isSpellingCandidate(*m_input)) {
+		LOGDEB2(("Aspell::buildDict: SKIP\n"));
 		continue;
+	    }
 #ifndef RCL_INDEX_STRIPCHARS
 	    if (!o_index_stripchars) {
 		string lower;
@@ -270,7 +273,7 @@ public:
 #endif
 	    // Got a non-empty sort-of appropriate term, let's send it to
 	    // aspell
-	    LOGDEB2(("ASpExecPv: [%s]\n", m_input->c_str()));
+	    LOGDEB2(("Apell::buildDict: SEND\n"));
 	    m_input->append("\n");
 	    return;
 	}
@@ -411,14 +414,13 @@ bool Aspell::suggest(Rcl::Db &db, const string &_term,
     AspellStringEnumeration *els = aapi.aspell_word_list_elements(wl);
     const char *word;
     while ((word = aapi.aspell_string_enumeration_next(els)) != 0) {
-	// stemDiffers checks that the word exists (we don't want
-	// aspell computed stuff, only exact terms from the dictionary),
-	// and that it stems differently to the base word (else it's not 
-	// useful to expand the search). Or is it ? 
-        // ******** This should depend if
-	// stemming is turned on or not for querying  *******
-	string sw(word);
-	if (db.termExists(sw) && db.stemDiffers("english", sw, mterm))
+	// Check that the word exists in the index (we don't want
+	// aspell computed stuff, only exact terms from the
+	// dictionary).  We used to also check that it stems
+	// differently from the base word but this is complicated
+	// (stemming on/off + language), so we now leave this to the
+	// caller.
+	if (db.termExists(word))
 	    suggestions.push_back(word);
     }
     aapi.delete_aspell_string_enumeration(els);
