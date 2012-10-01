@@ -49,7 +49,8 @@ using namespace std;
 #include "fstreewalk.h"
 
 #ifndef RCL_INDEX_STRIPCHARS
-bool o_index_stripchars;
+// We default to a case- and diacritics-less index for now
+bool o_index_stripchars = true;
 #endif
 
 bool ParamStale::needrecompute()
