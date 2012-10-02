@@ -27,6 +27,8 @@
 #include "rcldoc.h"
 #include "stoplist.h"
 #include "rclconfig.h"
+#include "utf8iter.h"
+#include "textsplit.h"
 
 using std::string;
 using std::vector;
@@ -191,6 +193,9 @@ class Db {
 	if (term.empty() || term.length() > 50)
 	    return false;
 	if (has_prefix(term))
+	    return false;
+	Utf8Iter u8i(term);
+	if (TextSplit::isCJK(*u8i)) 
 	    return false;
 	if (term.find_first_of(" !\"#$%&()*+,-./0123456789:;<=>?@[\\]^_`{|}~") 
 	    != string::npos)

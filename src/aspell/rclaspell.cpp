@@ -297,22 +297,47 @@ bool Aspell::buildDict(Rcl::Db &db, string &reason)
     args.push_back("create");
     args.push_back("master");
     args.push_back(dicPath());
-    aspell.setStderr("/dev/null");
+
+    // Have to disable stderr, as numerous messages about bad strings are
+    // printed. We'd like to keep errors about missing databases though, so
+    // make it configurable for diags
+    bool keepStderr = false;
+    m_config->getConfParam("aspellKeepStderr", &keepStderr);
+    if (!keepStderr)
+	aspell.setStderr("/dev/null");
 
     Rcl::TermIter *tit = db.termWalkOpen();
     if (tit == 0) {
 	reason = "termWalkOpen failed\n";
 	return false;
     }
-
     string termbuf;
     AspExecPv pv(&termbuf, tit, db);
     aspell.setProvide(&pv);
-
+    
     if (aspell.doexec(m_data->m_exec, args, &termbuf)) {
-	reason = string("aspell dictionary creation command failed.\n"
-			"One possible reason might be missing language "
-			"data files for lang = ") + m_lang;
+	ExecCmd cmd;
+	args.clear();
+	args.push_back("dicts");
+	string dicts;
+	bool hasdict = false;
+	if (!cmd.doexec(m_data->m_exec, args, 0, &dicts)) {
+	    vector<string> vdicts;
+	    stringToTokens(dicts, vdicts, "\n\r\t ");
+	    if (find(vdicts.begin(), vdicts.end(), m_lang) != vdicts.end()) {
+		hasdict = true;
+	    }
+	}
+	if (hasdict)
+	    reason = string(
+		"\naspell dictionary creation command failed. Reason unknown.\n"
+		"Try to set aspellKeepStderr = 1 in recoll.conf, and execute \n"
+		"the indexing command in a terminal to see the aspell "
+		"diagnostic output.\n");
+	else
+	    reason = string("aspell dictionary creation command failed.\n"
+			    "One possible reason might be missing language "
+			    "data files for lang = ") + m_lang;
 	return false;
     }
     db.termWalkClose(tit);
