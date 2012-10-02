@@ -62,6 +62,7 @@ static int charclasses[charclasses_size];
 // common cases
 static unordered_set<unsigned int> unicign;
 static unordered_set<unsigned int> visiblewhite;
+static vector<unsigned int> vignblocks;
 
 class CharClassInit {
 public:
@@ -98,6 +99,15 @@ public:
 	}
 	unicign.insert((unsigned int)-1);
 
+	for (i = 0; i < sizeof(uniignblocks) / sizeof(int); i++) {
+	    vignblocks.push_back(uniignblocks[i]);
+	}
+	if (vignblocks.size() % 2) {
+	    LOGFATAL(("Fatal internal error: unicode ign blocks array "
+		      "size not even\n"));
+	    abort();
+	}
+
 	for (i = 0; i < sizeof(avsbwht) / sizeof(int); i++) {
 	    visiblewhite.insert(avsbwht[i]);
 	}
@@ -110,13 +120,35 @@ static inline int whatcc(unsigned int c)
     if (c <= 127) {
 	return charclasses[c]; 
     } else {
-	if (unicign.find(c) != unicign.end())
+	if (unicign.find(c) != unicign.end()) {
 	    return SPACE;
-	else
-	    return LETTER;
+	} else {
+	    vector<unsigned int>::iterator it = 
+		lower_bound(vignblocks.begin(), vignblocks.end(), c);
+	    if (c == *it)
+		return SPACE;
+	    if ((it - vignblocks.begin()) % 2 == 1) {
+		return SPACE;
+	    } else {
+		return LETTER;
+	    }
+	} 
     }
 }
 
+// testing whatcc...
+#if 0
+  unsigned int testvalues[] = {'a', '0', 0x80, 0xbf, 0xc0, 0x05c3, 0x1000, 
+			       0x2000, 0x2001, 0x206e, 0x206f, 0x20d0, 0x2399, 
+			       0x2400, 0x2401, 0x243f, 0x2440, 0xff65};
+  int ntest = sizeof(testvalues) / sizeof(int);
+  for (int i = 0; i < ntest; i++) {
+      int ret = whatcc(testvalues[i]);
+      printf("Tested value 0x%x, returned value %d %s\n",
+	     testvalues[i], ret, ret == LETTER ? "LETTER" : 
+	     ret == SPACE ? "SPACE" : "OTHER");
+  }
+#endif
 
 // CJK Unicode character detection:
 //
