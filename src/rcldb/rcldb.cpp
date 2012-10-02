@@ -104,7 +104,7 @@ static const string cstr_syntAbs("?!#@");
 // "Q" + external udi
 static inline string make_uniterm(const string& udi)
 {
-    string uniterm("Q");
+    string uniterm(wrap_prefix("Q"));
     uniterm.append(udi);
     return uniterm;
 }
@@ -116,7 +116,7 @@ static inline string make_parentterm(const string& udi)
     // I prefer to be in possible conflict with omega than with
     // user-defined fields (Xxxx) that we also allow. "F" is currently
     // not used by omega (2008-07)
-    string pterm("F");
+    string pterm(wrap_prefix("F"));
     pterm.append(udi);
     return pterm;
 }
