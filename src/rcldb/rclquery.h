@@ -25,12 +25,12 @@ using std::vector;
 #endif
 
 #include "refcntr.h"
+#include "searchdata.h"
 
 #ifndef NO_NAMESPACES
 namespace Rcl {
 #endif
 
-class SearchData;
 class Db;
 class Doc;
 
@@ -40,6 +40,24 @@ enum abstract_result {
     ABSRES_TRUNC = 2
 };
 
+// Snippet entry for makeDocAbstract
+class Snippet {
+public:
+    Snippet(int page, const string& snip) 
+	: page(page), snippet(snip)
+    {
+    }
+    Snippet& setTerm(const string& trm)
+    {
+	term = trm;
+	return *this;
+    }
+    int page;
+    string term;
+    string snippet;
+};
+
+	
 /**
  * An Rcl::Query is a question (SearchData) applied to a
  * database. Handles access to the results. Somewhat equivalent to a
@@ -89,10 +107,10 @@ class Query {
     // Returned as a snippets vector
     bool makeDocAbstract(Doc &doc, vector<string>& abstract);
     // Returned as a vector of pair<page,snippet> page is 0 if unknown
-    abstract_result makeDocAbstract(Doc &doc, vector<pair<int, string> >& abst, 
+    abstract_result makeDocAbstract(Doc &doc, vector<Snippet>& abst, 
 				    int maxoccs= -1, int ctxwords = -1);
     /** Retrieve detected page breaks positions */
-    int getFirstMatchPage(Doc &doc);
+    int getFirstMatchPage(Doc &doc, std::string& term);
 
     /** Expand query to look for documents like the one passed in */
     vector<string> expand(const Doc &doc);

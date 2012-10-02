@@ -25,6 +25,9 @@
 #include "refcntr.h"
 #include "hldata.h"
 
+// Need this for the "Snippet" class def.
+#include "rclquery.h"
+
 // A result list entry. 
 struct ResListEntry {
     Rcl::Doc doc;
@@ -96,13 +99,12 @@ class DocSequence {
 	return true;
     }
     virtual bool getAbstract(Rcl::Doc& doc, 
-			     std::vector<std::pair<int, std::string> >& abs) 
+			     std::vector<Rcl::Snippet>& abs) 
     {
-	abs.push_back(std::pair<int, std::string>(0,
-						  doc.meta[Rcl::Doc::keyabs]));
+	abs.push_back(Rcl::Snippet(0, doc.meta[Rcl::Doc::keyabs]));
 	return true;
     }
-    virtual int getFirstMatchPage(Rcl::Doc&) 
+    virtual int getFirstMatchPage(Rcl::Doc&, std::string&) 
     {
 	return -1;
     }
@@ -173,7 +175,7 @@ public:
 	return m_seq->getAbstract(doc, abs);
     }
     virtual bool getAbstract(Rcl::Doc& doc, 
-			     std::vector<std::pair<int, std::string> >& abs) 
+			     std::vector<Rcl::Snippet>& abs) 
     {
 	if (m_seq.isNull())
 	    return false;

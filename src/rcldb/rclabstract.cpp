@@ -19,6 +19,9 @@
 #include <math.h>
 
 #include <map>
+#include <tr1/unordered_set>
+using std::tr1::unordered_set;
+
 using namespace std;
 
 #include "debuglog.h"
@@ -204,11 +207,11 @@ double Query::Native::qualityTerms(Xapian::docid docid,
 }
 
 // Return page number for first match of "significant" term.
-int Query::Native::getFirstMatchPage(Xapian::docid docid)
+int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
 {
     if (!m_q|| !m_q->m_db || !m_q->m_db->m_ndb || !m_q->m_db->m_ndb->m_isopen) {
 	LOGERR(("Query::getFirstMatchPage: no db\n"));
-	return false;
+	return -1;
     }
     Rcl::Db::Native *ndb(m_q->m_db->m_ndb);
     Xapian::Database& xrdb(ndb->xrdb);
@@ -246,8 +249,10 @@ int Query::Native::getFirstMatchPage(Xapian::docid docid)
 		for (pos = xrdb.positionlist_begin(docid, qterm); 
 		     pos != xrdb.positionlist_end(docid, qterm); pos++) {
 		    int pagenum = ndb->getPageNumberForPosition(pagepos, *pos);
-		    if (pagenum > 0)
+		    if (pagenum > 0) {
+			term = qterm;
 			return pagenum;
+		    }
 		}
 	    } catch (...) {
 		// Term does not occur. No problem.
@@ -263,7 +268,7 @@ int Query::Native::getFirstMatchPage(Xapian::docid docid)
 // DatabaseModified and other general exceptions are catched and
 // possibly retried by our caller
 abstract_result Query::Native::makeAbstract(Xapian::docid docid,
-					    vector<pair<int, string> >& vabs, 
+					    vector<Snippet>& vabs, 
 					    int imaxoccs, int ictxwords)
 {
     Chrono chron;
@@ -315,6 +320,9 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
     // The terms 'array' that we partially populate with the document
     // terms, at their positions around the search terms positions:
     map<unsigned int, string> sparseDoc;
+    // Also remember apart the search term positions so that we can list
+    // them with their snippets.
+    unordered_set<unsigned int> searchTermPositions;
 
     // Total number of occurences for all terms. We stop when we have too much
     unsigned int totaloccs = 0;
@@ -392,6 +400,7 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
 		    for (unsigned int ii = sta; ii <= sto;  ii++) {
 			if (ii == (unsigned int)ipos) {
 			    sparseDoc[ii] = qterm;
+			    searchTermPositions.insert(ii);
 			} else if (ii > (unsigned int)ipos && 
 				   ii < (unsigned int)ipos + qtrmwrdcnt) {
 			    sparseDoc[ii] = occupiedmarker;
@@ -470,7 +479,7 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
 		    break;
 		}
 		map<unsigned int, string>::iterator vit;
-		if ((vit=sparseDoc.find(*pos)) != sparseDoc.end()) {
+		if ((vit = sparseDoc.find(*pos)) != sparseDoc.end()) {
 		    // Don't replace a term: the terms list is in
 		    // alphabetic order, and we may have several terms
 		    // at the same position, we want to keep only the
@@ -513,6 +522,7 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
     string chunk;
     bool incjk = false;
     int page = 0;
+    string term;
     for (map<unsigned int, string>::const_iterator it = sparseDoc.begin();
 	 it != sparseDoc.end(); it++) {
 	LOGDEB2(("Abtract:output %u -> [%s]\n", it->first,it->second.c_str()));
@@ -522,6 +532,7 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
 	    page =  ndb->getPageNumberForPosition(vpbreaks, it->first);
 	    if (page < 0) 
 		page = 0;
+	    term.clear();
 	}
 	Utf8Iter uit(it->second);
 	bool newcjk = false;
@@ -530,8 +541,10 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
 	if (!incjk || (incjk && !newcjk))
 	    chunk += " ";
 	incjk = newcjk;
+	if (searchTermPositions.find(it->first) != searchTermPositions.end())
+	    term = it->second;
 	if (it->second == cstr_ellipsis) {
-	    vabs.push_back(pair<int,string>(page, chunk));
+	    vabs.push_back(Snippet(page, chunk).setTerm(term));
 	    chunk.clear();
 	} else {
 	    if (it->second.compare(end_of_field_term) && 
@@ -540,7 +553,7 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
 	}
     }
     if (!chunk.empty())
-	vabs.push_back(pair<int, string>(page, chunk));
+	vabs.push_back(Snippet(page, chunk).setTerm(term));
 
     LOGDEB2(("makeAbtract: done in %d mS\n", chron.millis()));
     return ret;

@@ -119,7 +119,8 @@ public slots:
     virtual void docExpand(Rcl::Doc);
     virtual void startPreview(int docnum, Rcl::Doc doc, int keymods);
     virtual void startPreview(Rcl::Doc);
-    virtual void startNativeViewer(Rcl::Doc, int pagenum = -1);
+    virtual void startNativeViewer(Rcl::Doc, int pagenum = -1, 
+				   QString term=QString());
     virtual void saveDocToFile(Rcl::Doc);
     virtual void previewNextInTab(Preview *, int sid, int docnum);
     virtual void previewPrevInTab(Preview *, int sid, int docnum);

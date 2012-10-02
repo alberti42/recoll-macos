@@ -1498,7 +1498,7 @@ static bool lookForHtmlBrowser(string &exefile)
     return false;
 }
 
-void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum)
+void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 {
     LOGDEB(("RclMain::startNativeViewer: page %d\n", pagenum));
     // Look for appropriate viewer
@@ -1520,10 +1520,13 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum)
 
     if (pagenum == -1) {
 	pagenum = 1;
+	string lterm;
 	if (m_source.isNotNull())
-	    pagenum = m_source->getFirstMatchPage(doc);
+	    pagenum = m_source->getFirstMatchPage(doc, lterm);
 	if (pagenum == -1)
 	    pagenum = 1;
+	else
+	    term = QString::fromUtf8(lterm.c_str());
     }
     char cpagenum[20];
     sprintf(cpagenum, "%d", pagenum);
@@ -1666,6 +1669,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum)
     subs["i"] = doc.ipath;
     subs["M"] = doc.mimetype;
     subs["p"] = cpagenum;
+    subs["s"] = (const char*)term.toLocal8Bit();
     subs["U"] = url;
     subs["u"] = url;
     // Let %(xx) access all metadata.

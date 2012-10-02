@@ -300,7 +300,7 @@ bool Query::getMatchTerms(unsigned long xdocid, vector<string>& terms)
 }
 
 abstract_result Query::makeDocAbstract(Doc &doc,
-				       vector<pair<int, string> >& abstract, 
+				       vector<Snippet>& abstract, 
 				       int maxoccs, int ctxwords)
 {
     LOGDEB(("makeDocAbstract: maxoccs %d ctxwords %d\n", maxoccs, ctxwords));
@@ -318,19 +318,19 @@ abstract_result Query::makeDocAbstract(Doc &doc,
 
 bool Query::makeDocAbstract(Doc &doc, vector<string>& abstract)
 {
-    vector<pair<int, string> > vpabs;
+    vector<Snippet> vpabs;
     if (!makeDocAbstract(doc, vpabs)) 
 	return false;
-    for (vector<pair<int, string> >::const_iterator it = vpabs.begin();
+    for (vector<Snippet>::const_iterator it = vpabs.begin();
 	 it != vpabs.end(); it++) {
 	string chunk;
-	if (it->first > 0) {
+	if (it->page > 0) {
 	    doc.haspages = true;
 	    ostringstream ss;
-	    ss << it->first;
+	    ss << it->page;
 	    chunk += string(" [p ") + ss.str() + "] ";
 	}
-	chunk += it->second;
+	chunk += it->snippet;
 	abstract.push_back(chunk);
     }
     return true;
@@ -338,18 +338,18 @@ bool Query::makeDocAbstract(Doc &doc, vector<string>& abstract)
 
 bool Query::makeDocAbstract(Doc &doc, string& abstract)
 {
-    vector<pair<int, string> > vpabs;
+    vector<Snippet> vpabs;
     if (!makeDocAbstract(doc, vpabs))
 	return false;
-    for (vector<pair<int, string> >::const_iterator it = vpabs.begin(); 
+    for (vector<Snippet>::const_iterator it = vpabs.begin(); 
 	 it != vpabs.end(); it++) {
-	abstract.append(it->second);
+	abstract.append(it->snippet);
 	abstract.append(cstr_ellipsis);
     }
     return m_reason.empty() ? true : false;
 }
 
-int Query::getFirstMatchPage(Doc &doc)
+int Query::getFirstMatchPage(Doc &doc, string& term)
 {
     LOGDEB1(("Db::getFirstMatchPages\n"));;
     if (!m_nq) {
@@ -357,7 +357,7 @@ int Query::getFirstMatchPage(Doc &doc)
 	return false;
     }
     int pagenum = -1;
-    XAPTRY(pagenum = m_nq->getFirstMatchPage(Xapian::docid(doc.xdocid)),
+    XAPTRY(pagenum = m_nq->getFirstMatchPage(Xapian::docid(doc.xdocid), term),
 	   m_db->m_ndb->xrdb, m_reason);
     return m_reason.empty() ? pagenum : -1;
 }

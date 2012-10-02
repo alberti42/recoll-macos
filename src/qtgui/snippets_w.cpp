@@ -61,7 +61,7 @@ void SnippetsW::init()
 
     setWindowTitle(QString::fromUtf8(titleOrFilename.c_str()));
 
-    vector<pair<int, string> > vpabs;
+    vector<Rcl::Snippet> vpabs;
     m_source->getAbstract(m_doc, vpabs);
 
     HighlightData hdata;
@@ -77,21 +77,23 @@ void SnippetsW::init()
 
     g_hiliter.set_inputhtml(false);
 
-    for (vector<pair<int, string> >::const_iterator it = vpabs.begin(); 
+    for (vector<Rcl::Snippet>::const_iterator it = vpabs.begin(); 
 	 it != vpabs.end(); it++) {
 	html += "<tr><td>";
-	if (it->first > 0) {
-	    char buf[100];
-	    sprintf(buf, "P.&nbsp;%d", it->first);
+	if (it->page > 0) {
+	    char txt[100];
+	    sprintf(txt, "P.&nbsp;%d", it->page);
+	    char url[100];
+	    sprintf(url, "P%dT%s", it->page, it->term.c_str());
 	    html += "<a href=\"";
-	    html += buf;
+	    html += url;
 	    html += "\">";
-	    html += buf;
+	    html += txt;
 	    html += "</a>";
 	}
 	html += "</td><td>";
 	list<string> lr;
-	g_hiliter.plaintorich(it->second, lr, hdata);
+	g_hiliter.plaintorich(it->snippet, lr, hdata);
 	html.append(QString::fromUtf8(lr.front().c_str()));
 	html.append("</td></tr>\n");
     }
@@ -117,7 +119,12 @@ void SnippetsW::linkWasClicked(const QUrl &url)
 	    if (numpos == string::npos)
 		return;
 	    int page = atoi(ascurl.c_str() + numpos);
-	    emit startNativeViewer(m_doc, page);
+	    string::size_type termpos = ascurl.find_first_of("T");
+	    string term;
+	    if (termpos != string::npos)
+		term = ascurl.substr(termpos+1);
+	    emit startNativeViewer(m_doc, page, 
+				   QString::fromUtf8(term.c_str()));
 	    return;
 	}
 	}

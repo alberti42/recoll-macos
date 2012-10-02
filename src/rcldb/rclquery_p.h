@@ -54,9 +54,9 @@ public:
 	delete xenquire; xenquire = 0;
 	termfreqs.clear();
     }
-    abstract_result makeAbstract(Xapian::docid id, vector<pair<int, string> >&,
+    abstract_result makeAbstract(Xapian::docid id, vector<Snippet>&,
 				 int maxoccs = -1, int ctxwords = -1);
-    int getFirstMatchPage(Xapian::docid docid);
+    int getFirstMatchPage(Xapian::docid docid, std::string& term);
     void setDbWideQTermsFreqs();
     double qualityTerms(Xapian::docid docid, 
 			const std::vector<std::string>& terms,

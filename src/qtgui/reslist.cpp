@@ -34,6 +34,7 @@
 #include <qclipboard.h>
 #include <qscrollbar.h>
 #include <QTextBlock>
+#include <QShortcut>
 #ifndef __APPLE__
 #include <qx11info_x11.h>
 #endif
@@ -59,9 +60,8 @@
 #include "rclaspell.h"
 #endif
 
-#ifndef MIN
-#define MIN(A,B) ((A) < (B) ? (A) : (B))
-#endif
+static const QKeySequence quitKeySeq("Ctrl+q");
+static const QKeySequence closeKeySeq("Ctrl+w");
 
 #ifndef RESLIST_TEXTBROWSER
 #include <QWebFrame>
@@ -805,9 +805,13 @@ void ResList::newSnippetsW(const Rcl::Doc& doc)
 {
     SnippetsW *sp = new SnippetsW(doc, m_source);
     if (m_parent) {
-	connect(sp, SIGNAL(startNativeViewer(Rcl::Doc, int)),
-		m_parent, SLOT(startNativeViewer(Rcl::Doc, int)));
+	connect(sp, SIGNAL(startNativeViewer(Rcl::Doc, int, QString)),
+		m_parent, SLOT(startNativeViewer(Rcl::Doc, int, QString)));
+	connect(new QShortcut(quitKeySeq, sp), SIGNAL (activated()), 
+		m_parent, SLOT (fileExit()));
     }
+    connect(new QShortcut(closeKeySeq, sp), SIGNAL (activated()), 
+	    sp, SLOT (close()));
     sp->show();
 }
 

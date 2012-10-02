@@ -16,6 +16,7 @@
  */
 #ifndef _SNIPPETS_W_H_INCLUDED_
 #define _SNIPPETS_W_H_INCLUDED_
+#include <QString>
 
 #include "rcldoc.h"
 #include "refcntr.h"
@@ -39,7 +40,7 @@ protected slots:
     virtual void linkWasClicked(const QUrl &);
 
 signals:
-    void startNativeViewer(Rcl::Doc, int pagenum);
+    void startNativeViewer(Rcl::Doc, int pagenum, QString term);
 	
 private:
     void init();

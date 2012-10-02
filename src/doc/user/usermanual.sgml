@@ -4563,6 +4563,14 @@ x-my-tag = mailmytag
               snippet.</para></formalpara>  
           </listitem>
 
+          <listitem><formalpara><title>%s</title>
+              <para>Search term. The value will only be set for documents
+              with indexed page numbers (ie: PDF). The value will be one of
+              the matched search terms. It would allow pre-setting the
+              value in the "Find" entry inside Evince for example, for easy
+              highlighting of the term.</para></formalpara>  
+          </listitem>
+
           <listitem><formalpara><title>%U, %u</title>
               <para>Url.</para></formalpara> 
           </listitem>

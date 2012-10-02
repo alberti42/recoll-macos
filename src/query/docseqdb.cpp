@@ -64,11 +64,11 @@ int DocSequenceDb::getResCnt()
     }
     return m_rescnt;
 }
+static const string cstr_mre("[...]");
 
 // This one only gets called to fill-up the snippets window
 // We ignore most abstract/snippets preferences.
-bool DocSequenceDb::getAbstract(Rcl::Doc &doc, 
-				vector<pair<int, string> >& vpabs)
+bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<Rcl::Snippet>& vpabs)
 {
     LOGDEB(("DocSequenceDb::getAbstract/pair\n"));
     setQuery();
@@ -77,15 +77,16 @@ bool DocSequenceDb::getAbstract(Rcl::Doc &doc,
     int maxoccs = 500;
     Rcl::abstract_result ret = Rcl::ABSRES_ERROR;
     if (m_q->whatDb()) {
-	ret = m_q->makeDocAbstract(doc,vpabs, maxoccs, 
+	ret = m_q->makeDocAbstract(doc, vpabs, maxoccs, 
 				   m_q->whatDb()->getAbsCtxLen()+ 2);
     } 
     if (vpabs.empty())
-	vpabs.push_back(pair<int, string>(0, doc.meta[Rcl::Doc::keyabs]));
+	vpabs.push_back(Rcl::Snippet(0, doc.meta[Rcl::Doc::keyabs]));
 
     // If the list was probably truncated, indicate it.
-    if (ret == Rcl::ABSRES_TRUNC)
-	vpabs.push_back(pair<int, string>(-1, "[...]"));
+    if (ret == Rcl::ABSRES_TRUNC) {
+	vpabs.push_back(Rcl::Snippet(-1, cstr_mre));
+    }
 
     return true;
 }
@@ -102,11 +103,11 @@ bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<string>& vabs)
     return true;
 }
 
-int DocSequenceDb::getFirstMatchPage(Rcl::Doc &doc)
+int DocSequenceDb::getFirstMatchPage(Rcl::Doc &doc, string& term)
 {
     setQuery();
     if (m_q->whatDb()) {
-	return m_q->getFirstMatchPage(doc);
+	return m_q->getFirstMatchPage(doc, term);
     }
     return -1;
 }
