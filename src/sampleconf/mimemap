@@ -21,6 +21,7 @@
 .awk = application/x-awk
 .pl = application/x-perl
 .sh = application/x-shellscript
+.tcl = text/x-tcl
 
 .xml = text/xml
 
