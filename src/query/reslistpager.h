@@ -90,6 +90,8 @@ public:
     string queryDescription() {return m_docSource.isNull() ? "" :
 	    m_docSource->getDescription();}
 
+    bool getDoc(int num, Rcl::Doc &doc);
+
     // Things that need to be reimplemented in the subclass:
     virtual bool append(const string& data);
     virtual bool append(const string& data, int, const Rcl::Doc&)

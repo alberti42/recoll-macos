@@ -2022,6 +2022,10 @@ fvwm
           </listitem>
           <listitem><formalpara><title>%D</title><para>Date</para></formalpara>
           </listitem>
+          <listitem><formalpara><title>%E</title><para>Precooked Snippets
+          link (will only appear for documents indexed with page
+          numbers)</para></formalpara> 
+          </listitem>
           <listitem><formalpara><title>%I</title><para>Icon image
             name. This is normally determined from the mime type. The
             associations are defined inside the 
@@ -2905,6 +2909,17 @@ application/x-chm = execm rclchm
       <para> See the following section for details about configuring
       how field data is processed by the indexer.</para>
 
+      </sect2>
+
+    <sect2 id="rcl.program.filters.pages">
+        <title>Page numbers</title>
+
+        <para>The indexer will interpret <literal>^L</literal> characters
+        in the filter output as indicating page breaks, and will record
+        them. At query time, this allows starting a viewer on the right
+        page for a hit or a snippet. Currently, only the PDF filter
+        generates page breaks (thanks to
+        <literal>pdftotext</literal>).</para>
       </sect2>
 
     </sect1>
@@ -4514,27 +4529,42 @@ x-my-tag = mailmytag
 
         <itemizedlist>
           <listitem>
-            <formalpara><title>%D</title><para>Document date</para></formalpara>
-          </listitem> <listitem><formalpara><title>%f</title><para>File
-          name. This may be the name of a temporary file if it was
-          necessary to create one (ie: to extract a subdocument from a
-          container).</para></formalpara>
+            <formalpara><title>%D</title>
+              <para>Document date</para></formalpara>
+          </listitem> 
+
+          <listitem><formalpara><title>%f</title>
+              <para>File name. This may be the name of a temporary file if
+              it was  necessary to create one (ie: to extract a subdocument
+              from a  container).</para></formalpara>
           </listitem>
-          <listitem><formalpara><title>%F</title><para>Original file name. 
-          Same as %f except if a temporary file is used.</para></formalpara>
+
+          <listitem><formalpara><title>%F</title>
+              <para>Original file name. Same as %f except if a temporary
+              file is used.</para></formalpara> 
           </listitem>
-          <listitem><formalpara><title>%i</title><para>Internal path, for
-          subdocuments of containers. The format depends on the container
-          type. If this appears in the command line, &RCL; will not create
-          a temporary file to extract the subdocument, expecting the called
-          application (possibly a script) to be able to handle
-          it.</para></formalpara>
+
+          <listitem><formalpara><title>%i</title>
+              <para>Internal path, for subdocuments of containers. The
+              format depends on the container type. If this appears in the
+              command line, &RCL; will not create a temporary file to
+              extract the subdocument, expecting the called application
+              (possibly a script) to be able to handle it.</para></formalpara>
           </listitem>
-          <listitem><formalpara><title>%M</title><para>Mime
-                  type</para></formalpara> 
+
+          <listitem><formalpara><title>%M</title>
+              <para>Mime type</para></formalpara> 
           </listitem>
-          <listitem><formalpara><title>%U, %u</title><para>Url.
-           </para></formalpara> 
+
+          <listitem><formalpara><title>%p</title>
+              <para>Page index. Only significant for a subset of document
+              types, currently only PDF files. Can be used to start the
+              editor at the right page for a match or
+              snippet.</para></formalpara>  
+          </listitem>
+
+          <listitem><formalpara><title>%U, %u</title>
+              <para>Url.</para></formalpara> 
           </listitem>
         </itemizedlist>
 

@@ -112,10 +112,17 @@ class Doc {
     // and indexed
     string text; 
 
+    /////////////////////////////////////////////////
+    // Misc stuff
+
     int pc; // relevancy percentage, used by sortseq, convenience
     unsigned long xdocid; // Opaque: rcldb doc identifier.
 
+    // Page breaks were stored during indexing.
+    bool haspages; 
+
     ///////////////////////////////////////////////////////////////////
+
     void erase() {
 	url.erase();
 	ipath.erase();
@@ -133,8 +140,12 @@ class Doc {
 	text.erase();
 	pc = 0;
 	xdocid = 0;
+	haspages = false;
     }
-
+    Doc()
+     : syntabs(false), pc(0), xdocid(0), haspages(false)
+    {
+    }
     /** Get value for named field. If value pointer is 0, just test existence */
     bool getmeta(const string& nm, string *value = 0) const
     {

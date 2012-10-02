@@ -510,7 +510,7 @@ bool ResList::getDoc(int docnum, Rcl::Doc &doc)
 
     // Is docnum in current page ? Then all Ok
     if (docnum >= winfirst && docnum <= winlast) {
-	return m_source->getDoc(docnum, doc);
+	return m_pager->getDoc(docnum, doc);
     }
 
     // Else we accept to page down or up but not further
@@ -522,7 +522,7 @@ bool ResList::getDoc(int docnum, Rcl::Doc &doc)
     winfirst = pageFirstDocNum();
     winlast = m_pager->pageLastDocNum();
     if (docnum >= winfirst && docnum <= winlast) {
-	return m_source->getDoc(docnum, doc);
+	return m_pager->getDoc(docnum, doc);
     }
     return false;
 }
@@ -801,6 +801,16 @@ void ResList::mouseDoubleClickEvent(QMouseEvent *event)
 #endif
 }
 
+void ResList::newSnippetsW(const Rcl::Doc& doc)
+{
+    SnippetsW *sp = new SnippetsW(doc, m_source);
+    if (m_parent) {
+	connect(sp, SIGNAL(startNativeViewer(Rcl::Doc, int)),
+		m_parent, SLOT(startNativeViewer(Rcl::Doc, int)));
+    }
+    sp->show();
+}
+
 void ResList::linkWasClicked(const QUrl &url)
 {
     string ascurl = (const char *)url.toString().toAscii();;
@@ -808,9 +818,27 @@ void ResList::linkWasClicked(const QUrl &url)
 
     int what = ascurl[0];
     switch (what) {
+    // Open abstract/snippets window
+    case 'A':
+    {
+	if (m_source.isNull()) 
+	    return;
+	int i = atoi(ascurl.c_str()+1) - 1;
+	Rcl::Doc doc;
+	if (!getDoc(i, doc)) {
+	    LOGERR(("ResList::linkWasClicked: can't get doc for %d\n", i));
+	    return;
+	}
+	newSnippetsW(doc);
+    }
+    break;
+
+	// Show query details
     case 'H': 
 	emit headerClicked(); 
 	break;
+
+	// Preview and edit
     case 'P': 
     case 'E': 
     {
@@ -826,12 +854,16 @@ void ResList::linkWasClicked(const QUrl &url)
 	    emit docEditClicked(doc);
     }
     break;
+
+    // Next/prev page
     case 'n':
 	resultPageNext();
 	break;
     case 'p':
 	resultPageBack();
 	break;
+
+	// Spelling: replacement suggestion clicked
     case 'S':
     {
 	QString s = url.toString();
@@ -845,6 +877,7 @@ void ResList::linkWasClicked(const QUrl &url)
 	}
     }
     break;
+
     default: 
 	LOGERR(("ResList::linkWasClicked: bad link [%s]\n", ascurl.c_str()));
 	break;// ?? 
@@ -897,7 +930,7 @@ void ResList::createPopupMenu(const QPoint& pos)
 		      this, SLOT(menuPreviewParent()));
     popup->addAction(tr("&Open Parent document/folder"), 
 		     this, SLOT(menuOpenParent()));
-    if (m_source->snippetsCapable()) 
+    if (havedoc && doc.haspages && m_source->snippetsCapable()) 
 	popup->addAction(tr("Open &Snippets window"), 
 			 this, SLOT(menuOpenSnippets()));
     popup->popup(mapToGlobal(pos));
@@ -956,13 +989,7 @@ void ResList::menuOpenSnippets()
     Rcl::Doc doc;
     if (!getDoc(m_popDoc, doc) || m_source.isNull()) 
 	return;
-    SnippetsW *sp = new SnippetsW(doc, m_source);
-    if (m_parent) {
-	connect(sp, SIGNAL(startNativeViewer(Rcl::Doc, int)),
-		m_parent, SLOT(startNativeViewer(Rcl::Doc, int)));
-    }
-		
-    sp->show();
+    newSnippetsW(doc);
 }
 
 void ResList::menuEdit()

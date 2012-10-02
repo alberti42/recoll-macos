@@ -145,6 +145,7 @@ class ResList : public RESLIST_PARENTCLASS
     bool scrollIsAtTop();
     bool scrollIsAtBottom();
     void setupArrows();
+    void newSnippetsW(const Rcl::Doc &doc);
 };
 
 

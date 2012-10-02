@@ -325,6 +325,7 @@ bool Query::makeDocAbstract(Doc &doc, vector<string>& abstract)
 	 it != vpabs.end(); it++) {
 	string chunk;
 	if (it->first > 0) {
+	    doc.haspages = true;
 	    ostringstream ss;
 	    ss << it->first;
 	    chunk += string(" [p ") + ss.str() + "] ";

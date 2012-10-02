@@ -232,6 +232,11 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
 	linksbuf << "<a href=\"E" << docnumforlinks << "\">"  
 		 << trans("Open") << "</a>";
     }
+    ostringstream snipsbuf;
+    if (doc.haspages) {
+	snipsbuf << "<a href=\"A" << docnumforlinks << "\">" 
+		 << trans("Snippets") << "</a>&nbsp;&nbsp;";
+    }
 
     // Build the result list paragraph:
 
@@ -245,6 +250,7 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     map<string, string> subs;
     subs["A"] = !richabst.empty() ? richabst : "";
     subs["D"] = datebuf;
+    subs["E"] = snipsbuf.rdbuf()->str();
     subs["I"] = iconurl;
     subs["i"] = doc.ipath;
     subs["K"] = !doc.meta[Rcl::Doc::keykw].empty() ? 
@@ -277,6 +283,16 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
 
     LOGDEB2(("Chunk: [%s]\n", (const char *)chunk.rdbuf()->str().c_str()));
     append(chunk.rdbuf()->str(), i, doc);
+}
+
+bool ResListPager::getDoc(int num, Rcl::Doc& doc)
+{
+    if (m_winfirst < 0 || m_respage.size() == 0)
+	return false;
+    if (num < m_winfirst || num >= m_winfirst + int(m_respage.size()))
+	return false;
+    doc = m_respage[num-m_winfirst].doc;
+    return true;
 }
 
 void ResListPager::displayPage(RclConfig *config)
@@ -384,7 +400,7 @@ void ResListPager::displayPage(RclConfig *config)
     // Emit data for result entry paragraph. Do it in chunks that make sense
     // html-wise, else our client may get confused
     for (int i = 0; i < (int)m_respage.size(); i++) {
-	Rcl::Doc &doc(m_respage[i].doc);
+	Rcl::Doc& doc(m_respage[i].doc);
 	string& sh(m_respage[i].subHeader);
 	displayDoc(config, i, doc, hdata, sh);
     }
