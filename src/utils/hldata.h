@@ -17,6 +17,12 @@ struct HighlightData {
      */
     std::set<std::string> uterms;
 
+    /** The db query terms linked to the uterms entry they were expanded from. 
+     * This is used for aggregating term stats when generating snippets (for 
+     * choosing the best terms, allocating slots, etc. )
+     */
+    std::map<std::string, std::string> terms;
+
     /** The original user terms-or-groups. This is for display
      * purposes: ie when creating a menu to look for a specific
      * matched group inside a preview window. We want to show the

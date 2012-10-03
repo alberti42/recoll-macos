@@ -745,6 +745,7 @@ void StringToXapianQ::expandTerm(int mods,
     if (noexpansion) {
 	sterm = term;
 	oexp.push_back(prefix + term);
+	m_hld.terms[term] = m_hld.uterms.size() - 1;
 	LOGDEB(("ExpandTerm: final: %s\n", stringsToString(oexp).c_str()));
 	return;
     } 
@@ -790,9 +791,9 @@ void StringToXapianQ::expandTerm(int mods,
     // result:
 
     if (diac_sensitive && case_sensitive) {
-	// No expansion whatsoever
-	m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term, res, -1, m_field);
-	goto termmatchtoresult;
+	// No expansion whatsoever. 
+	lexp.push_back(term);
+	goto exptotermatch;
     } else if (diac_sensitive) {
 	// Expand for accents and case, filtering for same accents,
 	SynTermTransUnac foldtrans(UNACOP_FOLD);
@@ -842,13 +843,12 @@ void StringToXapianQ::expandTerm(int mods,
 	lexp.resize(uit - lexp.begin());
     }
 
-    // Bogus wildcard expand to generate the result
+    // Bogus wildcard expand to generate the result (possibly add prefixes)
 exptotermatch:
     LOGDEB(("ExpandTerm:TM: lexp: %s\n", stringsToString(lexp).c_str()));
     for (vector<string>::const_iterator it = lexp.begin();
 	 it != lexp.end(); it++) {
-	m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, *it, 
-		       res, -1, m_field);
+	m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, *it,  res, -1, m_field);
     }
 #endif
 
@@ -864,6 +864,11 @@ termmatchtoresult:
     if (oexp.empty())
 	oexp.push_back(prefix + term);
 
+    // Remember the uterm-to-expansion links
+    for (vector<string>::const_iterator it = oexp.begin(); 
+	 it != oexp.end(); it++) {
+	m_hld.terms[strip_prefix(*it)] = term;
+    }
     LOGDEB(("ExpandTerm: final: %s\n", stringsToString(oexp).c_str()));
 }
 

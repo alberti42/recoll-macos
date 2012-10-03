@@ -1050,7 +1050,12 @@ void HighlightData::toString(std::string& out)
 	 it != uterms.end(); it++) {
 	out.append(" [").append(*it).append("]");
     }
-
+    out.append("\nUser terms to Query terms:");
+    for (map<string, string>::const_iterator it = terms.begin();
+	 it != terms.end(); it++) {
+	out.append("[").append(it->first).append("]->[");
+	out.append(it->second).append("] ");
+    }
     out.append("\nGroups: ");
     char cbuf[200];
     sprintf(cbuf, "Groups size %d grpsugidx size %d ugroups size %d",
@@ -1075,13 +1080,12 @@ void HighlightData::toString(std::string& out)
 	out.append("}").append(cbuf);
     }
     out.append("\n");
-    fprintf(stderr, "toString ok\n");
 }
 
 void HighlightData::append(const HighlightData& hl)
 {
     uterms.insert(hl.uterms.begin(), hl.uterms.end());
-
+    terms.insert(hl.terms.begin(), hl.terms.end());
     size_t ugsz0 = ugroups.size();
     ugroups.insert(ugroups.end(), hl.ugroups.begin(), hl.ugroups.end());
 

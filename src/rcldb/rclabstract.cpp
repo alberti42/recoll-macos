@@ -42,7 +42,7 @@ static const string cstr_ellipsis("...");
 // This is used to mark positions overlapped by a multi-word match term
 static const string occupiedmarker("?");
 
-#define DEBUGABSTRACT  
+#undef DEBUGABSTRACT  
 #ifdef DEBUGABSTRACT
 #define LOGABS LOGDEB
 static void listList(const string& what, const vector<string>&l)
@@ -60,16 +60,16 @@ static void listList(const string&, const vector<string>&)
 }
 #endif
 
-// Keep only non-prefixed terms. We use to remove prefixes and keep
-// the terms instead, but field terms are normally also indexed
-// un-prefixed, so this is simpler and better.
+// Unprefix terms.
 static void noPrefixList(const vector<string>& in, vector<string>& out) 
 {
     for (vector<string>::const_iterator qit = in.begin(); 
 	 qit != in.end(); qit++) {
-	if (!has_prefix(*qit))
-	    out.push_back(*qit);
+	out.push_back(strip_prefix(*qit));
     }
+    sort(out.begin(), out.end());
+    vector<string>::iterator it = unique(out.begin(), out.end());
+    out.resize(it - out.begin());
 }
 
 // Retrieve db-wide frequencies for the query terms and store them in
@@ -132,25 +132,43 @@ double Query::Native::qualityTerms(Xapian::docid docid,
 	m_q->m_sd->getTerms(hld);
     }
 
+#ifdef DEBUGABSTRACT
+    {
+	string deb;
+	hld.toString(deb);
+	LOGABS(("qualityTerms: hld: %s\n", deb.c_str()));
+    }
+#endif
+
     // Group the input terms by the user term they were possibly expanded from
     map<string, vector<string> > byRoot;
     for (vector<string>::const_iterator qit = terms.begin(); 
 	 qit != terms.end(); qit++) {
 	bool found = false;
-	for (unsigned int gidx = 0; gidx < hld.groups.size(); gidx++) {
-	    if (hld.groups[gidx].size() == 1 && hld.groups[gidx][0] == *qit) {
-		string us = hld.ugroups[hld.grpsugidx[gidx]][0];
-		LOGABS(("qualityTerms: [%s] found, comes from [%s]\n", 
-			(*qit).c_str(),	us.c_str()));
-		byRoot[us].push_back(*qit);
-		found = true;
-	    }
-	} 
-	if (!found) {
+	map<string, string>::const_iterator eit = hld.terms.find(*qit);
+	if (eit != hld.terms.end()) {
+	    byRoot[eit->second].push_back(*qit);
+	} else {
 	    LOGDEB0(("qualityTerms: [%s] not found in hld\n", (*qit).c_str()));
 	    byRoot[*qit].push_back(*qit);
 	}
     }
+
+#ifdef DEBUGABSTRACT
+    {
+	string byRootstr;
+	for (map<string, vector<string> >::const_iterator debit = 
+		 byRoot.begin();  debit != byRoot.end(); debit++) {
+	    byRootstr.append("[").append(debit->first).append("]->");
+	    for (vector<string>::const_iterator it = debit->second.begin();
+		 it != debit->second.end(); it++) {
+		byRootstr.append("[").append(*it).append("] ");
+	    }
+	    byRootstr.append("\n");
+	}
+	LOGABS(("\nqualityTerms: uterms to terms: %s\n", byRootstr.c_str()));
+    }
+#endif
 
     // Compute in-document and global frequencies for the groups.
     map<string, double> grpwdfs;

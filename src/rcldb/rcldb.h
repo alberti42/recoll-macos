@@ -142,6 +142,29 @@ inline bool has_prefix(const string& trm)
 #endif
 }
 
+inline string strip_prefix(const string& trm)
+{
+    if (trm.empty())
+	return trm;
+    string::size_type st = 0;
+#ifndef RCL_INDEX_STRIPCHARS
+    if (o_index_stripchars) {
+#endif
+	st = trm.find_first_not_of("ABCDEFIJKLMNOPQRSTUVWXYZ");
+	if (st == string::npos)
+	    return string();
+#ifndef RCL_INDEX_STRIPCHARS
+    } else {
+	if (has_prefix(trm)) {
+	    st = trm.find_last_of(":") + 1;
+	} else {
+	    return trm;
+	}
+    }
+#endif
+    return trm.substr(st);
+}
+
 inline string wrap_prefix(const string& pfx) 
 {
 #ifndef RCL_INDEX_STRIPCHARS
