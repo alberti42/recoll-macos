@@ -454,11 +454,11 @@ bool Query::getDoc(int xapi, Doc &doc)
             m_reason.erase();
             Chrono chron;
             Xapian::TermIterator it = xdoc.termlist_begin();
-            it.skip_to("Q");
+            it.skip_to(wrap_prefix(udi_prefix));
             if (it != xdoc.termlist_end()) {
                 udi = *it;
                 if (!udi.empty())
-                    udi = udi.substr(1);
+                    udi = udi.substr(wrap_prefix(udi_prefix).size());
             }
             LOGDEB2(("Query::getDoc: %d ms for udi [%s], collapse count %d\n", 
 		     chron.millis(), udi.c_str(), collapsecount));

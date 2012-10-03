@@ -18,10 +18,10 @@
 #include "autoconfig.h"
 
 #include <assert.h>
+#include <stdlib.h>
 
 #include <iostream>
 #include <string>
-//#include <set>
 #include <tr1/unordered_set>
 using std::tr1::unordered_set;
 
@@ -102,11 +102,7 @@ public:
 	for (i = 0; i < sizeof(uniignblocks) / sizeof(int); i++) {
 	    vignblocks.push_back(uniignblocks[i]);
 	}
-	if (vignblocks.size() % 2) {
-	    LOGFATAL(("Fatal internal error: unicode ign blocks array "
-		      "size not even\n"));
-	    abort();
-	}
+	assert((vignblocks.size() % 2) == 0);
 
 	for (i = 0; i < sizeof(avsbwht) / sizeof(int); i++) {
 	    visiblewhite.insert(avsbwht[i]);

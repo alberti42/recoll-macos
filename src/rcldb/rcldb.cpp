@@ -76,6 +76,11 @@ static const string xapday_prefix = "D";
 static const string xapmonth_prefix = "M";
 static const string xapyear_prefix = "Y";
 const string pathelt_prefix = "XP";
+const string udi_prefix("Q");
+const string parent_prefix("F");
+
+// Special terms to mark begin/end of field (for anchored searches), and
+// page breaks
 #ifdef RCL_INDEX_STRIPCHARS
 const string start_of_field_term = "XXST";
 const string end_of_field_term = "XXND";
@@ -104,7 +109,7 @@ static const string cstr_syntAbs("?!#@");
 // "Q" + external udi
 static inline string make_uniterm(const string& udi)
 {
-    string uniterm(wrap_prefix("Q"));
+    string uniterm(wrap_prefix(udi_prefix));
     uniterm.append(udi);
     return uniterm;
 }
@@ -116,7 +121,7 @@ static inline string make_parentterm(const string& udi)
     // I prefer to be in possible conflict with omega than with
     // user-defined fields (Xxxx) that we also allow. "F" is currently
     // not used by omega (2008-07)
-    string pterm(wrap_prefix("F"));
+    string pterm(wrap_prefix(parent_prefix));
     pterm.append(udi);
     return pterm;
 }
