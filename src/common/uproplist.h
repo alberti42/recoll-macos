@@ -27,9 +27,9 @@
  * says. 
 */
 
-// Blocks array. Each block is defined by a starting and ending code
-// point (both included). MUST BE SORTED.
-static const unsigned uniignblocks[] = {
+// Punctuation chararacters blocks array.  Each block is defined by a
+// starting and ending code point (both included). MUST BE SORTED.
+static const unsigned unipuncblocks[] = {
     // Start of latin-1 supplement block, up to capital A grave
     0x0080, 0x00BF,
     // General punctuation
@@ -78,7 +78,9 @@ static const unsigned uniignblocks[] = {
     0x2B00, 0x2BFF,
 };
 
-static const unsigned int uniign[] = {
+// Other punctuation characters list. Not all punctuation is in a
+// separate block some is found in the middle of alphanumeric codes.
+static const unsigned int unipunc[] = {
     0x00D7, /* MULTIPLICATION SIGN */
     0x00F7, /* DIVISION SIGN */
     0x037E, /* GREEK QUESTION MARK */
@@ -154,6 +156,19 @@ static const unsigned int uniign[] = {
     0xFF63, /* HALFWIDTH RIGHT CORNER BRACKET*/
     0xFF64, /* HALFWIDTH IDEOGRAPHIC COMMA*/
     0xFF65, /* HALFWIDTH KATAKANA MIDDLE DOT*/
+};
+
+// Characters that should just be discarded. Some of these are in the
+// above blocks, but this array is tested first, so it's not worth
+// breaking the blocks
+static const unsigned int uniskip[] = {
+    0x00AD, /* SOFT HYPHEN */
+    0x034F, /* COMBINING GRAPHEME JOINER */
+    0x2027, /* HYPHENATION POINT */
+    0x200C, /* ZERO WIDTH NON-JOINER */
+    0x200D, /* ZERO WIDTH JOINER */
+    0x2060, /* WORD JOINER . Actually this should not be ignored but used to 
+	     * prevent a word break... */
 };
 
 /* Things that would visibly break a block of text, rendering obvious the need

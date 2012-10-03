@@ -53,16 +53,17 @@ using namespace std;
 // because it makes some tests in the code simpler.
 const unsigned int charclasses_size = 256;
 enum CharClass {LETTER=256, SPACE=257, DIGIT=258, WILD=259, 
-                A_ULETTER=260, A_LLETTER=261};
+                A_ULETTER=260, A_LLETTER=261, SKIP=262};
 static int charclasses[charclasses_size];
 
 // Real UTF-8 characters are handled with sets holding all characters
 // with interesting properties. This is far from full-blown management
 // of Unicode properties, but seems to do the job well enough in most
 // common cases
-static unordered_set<unsigned int> unicign;
+static vector<unsigned int> vpuncblocks;
+static unordered_set<unsigned int> spunc;
 static unordered_set<unsigned int> visiblewhite;
-static vector<unsigned int> vignblocks;
+static unordered_set<unsigned int> sskip;
 
 class CharClassInit {
 public:
@@ -94,18 +95,21 @@ public:
 	for (i = 0; i  < strlen(special); i++)
 	    charclasses[int(special[i])] = special[i];
 
-	for (i = 0; i < sizeof(uniign) / sizeof(int); i++) {
-	    unicign.insert(uniign[i]);
+	for (i = 0; i < sizeof(unipunc) / sizeof(int); i++) {
+	    spunc.insert(unipunc[i]);
 	}
-	unicign.insert((unsigned int)-1);
+	spunc.insert((unsigned int)-1);
 
-	for (i = 0; i < sizeof(uniignblocks) / sizeof(int); i++) {
-	    vignblocks.push_back(uniignblocks[i]);
+	for (i = 0; i < sizeof(unipuncblocks) / sizeof(int); i++) {
+	    vpuncblocks.push_back(unipuncblocks[i]);
 	}
-	assert((vignblocks.size() % 2) == 0);
+	assert((vpuncblocks.size() % 2) == 0);
 
 	for (i = 0; i < sizeof(avsbwht) / sizeof(int); i++) {
 	    visiblewhite.insert(avsbwht[i]);
+	}
+	for (i = 0; i < sizeof(uniskip) / sizeof(int); i++) {
+	    sskip.insert(uniskip[i]);
 	}
     }
 };
@@ -116,14 +120,16 @@ static inline int whatcc(unsigned int c)
     if (c <= 127) {
 	return charclasses[c]; 
     } else {
-	if (unicign.find(c) != unicign.end()) {
+	if (sskip.find(c) != sskip.end()) {
+	    return SKIP;
+	} else if (spunc.find(c) != spunc.end()) {
 	    return SPACE;
 	} else {
 	    vector<unsigned int>::iterator it = 
-		lower_bound(vignblocks.begin(), vignblocks.end(), c);
+		lower_bound(vpuncblocks.begin(), vpuncblocks.end(), c);
 	    if (c == *it)
 		return SPACE;
-	    if ((it - vignblocks.begin()) % 2 == 1) {
+	    if ((it - vpuncblocks.begin()) % 2 == 1) {
 		return SPACE;
 	    } else {
 		return LETTER;
@@ -385,6 +391,8 @@ bool TextSplit::text_to_words(const string &in)
 
 	int cc = whatcc(c);
 	switch (cc) {
+	case SKIP:
+	    continue;
 	case DIGIT:
 	    if (m_wordLen == 0)
 		m_inNumber = true;
