@@ -90,13 +90,16 @@ private:
     void reloadAll();
 };
 
-/** 
- * Extra or little used parameters
- */
 class ConfBeaglePanelW : public QWidget {
     Q_OBJECT
 public:
     ConfBeaglePanelW(QWidget *parent, ConfNull *config);
+};
+
+class ConfSearchPanelW : public QWidget {
+    Q_OBJECT
+public:
+    ConfSearchPanelW(QWidget *parent, ConfNull *config);
 };
 
 } // Namespace confgui

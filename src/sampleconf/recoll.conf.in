@@ -57,6 +57,19 @@ logfilename = stderr
 # default to a stripped index for now.
 indexStripChars = 1
 
+# IF the index is not stripped. Decide if we automatically trigger
+# diacritics sensitivity if the search term has accented characters (not in
+# unac_except_trans). Else you need to use the query language and the "D"
+# modifier to specify diacritics sensitivity. Default is no.
+autodiacsens = 0
+
+# IF the index is not stripped. Decide if we automatically trigger
+# character case sensitivity if the search term has upper-case characters
+# in any but the first position. Else you need to use the query language
+# and the "C" modifier to specify character-case sensitivity. Default is
+# yes.
+autocasesens = 1
+
 # Languages for which to build stemming databases at the end of
 # indexing. Stemmer names can be found on http://www.xapian.org 
 # The flag to perform stem expansion at query time is now set from the GUI

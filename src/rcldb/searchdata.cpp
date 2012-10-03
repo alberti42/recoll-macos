@@ -622,8 +622,12 @@ public:
     StringToXapianQ(Db& db, HighlightData& hld, const string& field, 
 		    const string &stmlng, bool boostUser)
 	: m_db(db), m_field(field), m_stemlang(stmlng),
-	  m_doBoostUserTerms(boostUser), m_hld(hld)
-    { }
+	  m_doBoostUserTerms(boostUser), m_hld(hld), m_autodiacsens(false),
+	  m_autocasesens(true)
+    { 
+	m_db.getConf()->getConfParam("autodiacsens", &m_autodiacsens);
+	m_db.getConf()->getConfParam("autocasesens", &m_autocasesens);
+    }
 
     bool processUserString(const string &iq,
 			   int mods, 
@@ -649,6 +653,8 @@ private:
     const string& m_stemlang;
     const bool    m_doBoostUserTerms;
     HighlightData& m_hld;
+    bool m_autodiacsens;
+    bool m_autocasesens;
 };
 
 #if 1
@@ -715,7 +721,7 @@ void StringToXapianQ::expandTerm(int mods,
 	// diacritic-sensitive. Note that the way that the test is
 	// performed (conversion+comparison) will automatically ignore
 	// accented characters which are actually a separate letter
-	if (unachasaccents(term)) {
+	if (m_autodiacsens && unachasaccents(term)) {
 	    LOGDEB0(("expandTerm: term has accents -> diac-sensitive\n"));
 	    diac_sensitive = true;
 	}
@@ -726,7 +732,7 @@ void StringToXapianQ::expandTerm(int mods,
 	// modifier to search for Floor in a case-sensitive way.
 	Utf8Iter it(term);
 	it++;
-	if (unachasuppercase(term.substr(it.getBpos()))) {
+	if (m_autocasesens && unachasuppercase(term.substr(it.getBpos()))) {
 	    LOGDEB0(("expandTerm: term has uppercase -> case-sensitive\n"));
 	    case_sensitive = true;
 	}

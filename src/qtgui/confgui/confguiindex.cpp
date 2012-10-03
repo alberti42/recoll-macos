@@ -115,6 +115,14 @@ void ConfIndexW::reloadPanels()
     w = new ConfBeaglePanelW(this, m_conf);
     m_widgets.push_back(w);
     tabWidget->addTab(w, QObject::tr("Beagle web history"));
+
+#ifndef RCL_INDEX_STRIPCHARS
+    if (!o_index_stripchars) {
+	w = new ConfSearchPanelW(this, m_conf);
+	m_widgets.push_back(w);
+	tabWidget->addTab(w, QObject::tr("Search parameters"));
+    }
+#endif
 }
 
 ConfBeaglePanelW::ConfBeaglePanelW(QWidget *parent, ConfNull *config)
@@ -152,6 +160,41 @@ ConfBeaglePanelW::ConfBeaglePanelW(QWidget *parent, ConfNull *config)
     cp3->setEnabled(cp1->m_cb->isChecked());
     connect(cp1->m_cb, SIGNAL(toggled(bool)), cp3, SLOT(setEnabled(bool)));
     vboxLayout->addWidget(cp3);
+    vboxLayout->insertStretch(-1);
+}
+
+ConfSearchPanelW::ConfSearchPanelW(QWidget *parent, ConfNull *config)
+    : QWidget(parent)
+{
+    QVBoxLayout *vboxLayout = new QVBoxLayout(this);
+    vboxLayout->setSpacing(spacing);
+    vboxLayout->setMargin(margin);
+
+    ConfLink lnk1(new ConfLinkRclRep(config, "autodiacsens"));
+    ConfParamBoolW* cp1 = 
+        new ConfParamBoolW(this, lnk1, tr("Automatic diacritics sensitivity"),
+                           tr("<p>Automatically trigger diacritics sensitivity "
+			      "if the search term has accented characters "
+			      "(not in unac_except_trans). Else you need to "
+			      "use the query language and the <i>D</i> "
+			      "modifier to specify "
+			      "diacritics sensitivity."
+			  ));
+    vboxLayout->addWidget(cp1);
+
+    ConfLink lnk2(new ConfLinkRclRep(config, "autocasesens"));
+    ConfParamBoolW* cp2 = 
+        new ConfParamBoolW(this, lnk2, 
+			   tr("Automatic character case sensitivity"),
+			   tr("<p>Automatically trigger character case "
+			      "sensitivity if the entry has upper-case "
+			      "characters in any but the first position. "
+			      "Else you need to use the query language and "
+			      "the <i>C</i> modifier to specify character-case "
+			      "sensitivity."
+			       ));
+    vboxLayout->addWidget(cp2);
+
     vboxLayout->insertStretch(-1);
 }
 
@@ -264,9 +307,23 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 	ConfParamFNW(this, lnkdbd, tr("Database directory name"),
 		     tr("The name for a directory where to store the index<br>"
 			"A non-absolute path is taken relative to the "
-			" configuration directory. The default is 'xapiandb'."
+			"configuration directory. The default is 'xapiandb'."
 			), true);
     gl1->addWidget(edbd, 7, 0, 1, 2);
+    
+    ConfLink lnkuexc(new ConfLinkRclRep(config, "unac_except_trans"));
+    ConfParamStrW *euexc = new 
+	ConfParamStrW(this, lnkuexc, tr("Unac exceptions"),
+		     tr("<p>These are exceptions to the unac mechanism "
+			"which, by default, removes all diacritics, "
+			"and performs canonic decomposition. You can override "
+			"unaccenting for some characters, depending on your "
+			"language, and specify additional decompositions, "
+			"e.g. for ligatures. In each space-separated entry, "
+			"the first character is the source one, and the rest "
+			"is the translation."
+			));
+    gl1->addWidget(euexc, 8, 0, 1, 2);
 }
 
 ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)

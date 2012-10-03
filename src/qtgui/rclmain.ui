@@ -379,7 +379,7 @@
   </action>
   <action name="indexConfigAction">
    <property name="text">
-    <string>&amp;Indexing configuration</string>
+    <string>&amp;Index configuration</string>
    </property>
    <property name="name" stdset="0">
     <cstring>indexConfigAction</cstring>
@@ -395,7 +395,7 @@
   </action>
   <action name="queryPrefsAction">
    <property name="text">
-    <string>&amp;Query configuration</string>
+    <string>&amp;GUI configuration</string>
    </property>
    <property name="name" stdset="0">
     <cstring>queryPrefsAction</cstring>
