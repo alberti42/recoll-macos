@@ -139,27 +139,47 @@
       index. It has input filters for many document types.</para>
       
       <para>Stemming is the process by which &RCL; reduces words to
-      their radicals so that searching does not depend, for example,
-      on a word being singular or plural (floor, floors), or on a verb
-      tense (flooring, floored). Because the mechanisms used for
-      stemming depend on the specific grammatical rules for each
-      language, there is a separate stemmer module for most common
-      languages where stemming makes sense. Storing documents written
-      in different languages in the same index is possible, and
-      commonly done. In this situation, you can specify several
-      stemming languages for the index. &RCL; stores the unstemmed
-      versions of terms in the main index and uses auxiliary databases
-      for term expansion (one for each stemming language), which means
-      that you can switch stemming languages between searches, or add
-      a language without needing a full reindex. &RCL; currently
-      makes no attempt at automatic language recognition, which means
-      that the stemmer will sometimes be applied to terms from other
-      languages with potentially strange results. In practise, even if
-      this introduces possibilities of confusion, this approach has
-      been proven quite useful, and, awaiting the addition of an
-      automatic language recognition module to &RCL;, it is much less
-      cumbersome than separating your documents according to what
-      language they are written in.</para>
+        their radicals so that searching does not depend, for example, on a
+        word being singular or plural (floor, floors), or on a verb tense
+        (flooring, floored). Because the mechanisms used for stemming
+        depend on the specific grammatical rules for each language, there
+        is a separate stemmer module for most common languages where
+        stemming makes sense.</para>
+
+      <para>&RCL; stores the unstemmed versions of terms in the main index
+        and uses auxiliary databases for term expansion (one for each
+        stemming language), which means that you can switch stemming
+        languages between searches, or add a language without needing a
+        full reindex.</para>
+
+      <para>Storing documents written in different languages in the same
+        index is possible, and commonly done. In this situation, you can
+        specify several stemming languages for the index. </para>
+
+      <para>&RCL; currently makes no attempt at automatic language
+        recognition, which means that the stemmer will sometimes be applied
+        to terms from other languages with potentially strange results. In
+        practise, even if this introduces possibilities of confusion, this
+        approach has been proven quite useful, and, awaiting the addition
+        of an automatic language recognition module to &RCL;, it is much
+        less cumbersome than separating your documents according to what
+        language they are written in.</para>
+
+      <para>Before version 1.18, &RCL; always stripped most accents and
+        diacritics from terms, and converted them to lower case before
+        storing them in the index. As a consequence, it was impossible to
+        search for a particular capitalization of a term
+        (<literal>US</literal> / <literal>us</literal>), or to
+        discriminate two terms based on diacritics (<literal>sake</literal>
+        / <literal>saké</literal>, <literal>mate</literal> /
+        <literal>maté</literal>).</para>  
+      
+      <para>As of version 1.18, &RCL; can optionally store the raw terms,
+        without accent stripping or case conversion. Expansions necessary
+        for searches insensitive to case and/or diacritics are then
+        performed when searching. This is described in more detail in the
+        <link linkend="RCL.INDEXING.CONFIG.SENS">section about index case
+        and diacritics sensitivity</link>.</para>
 
       <para>&RCL; has many parameters which define exactly what to
         index, and how to classify and decode the source
@@ -507,13 +527,45 @@ recoll
       <sect2 id="rcl.indexing.config.sens">
         <title>Index case and diacritics sensitivity</title>
 
-        <para>Index case sensitivity
-          is controlled by the <i>indexStripChars</i> configuration
+        <para>As of &RCL; version 1.18 you have a choice of building an
+          index with terms stripped of character case and diacritics, or
+          one with raw terms. For a source term of
+          <literal>Résumé</literal>, the former will store
+          <literal>resume</literal>, the latter
+          <literal>Résumé</literal>.</para>
+        
+        <para>Each type of index allows performing searches insensitive to
+          case and diacritics: with a raw index, the user entry will be
+          expanded to match all case and diacritics variations present in
+          the index. With a stripped index, the search term will be stripped
+          before searching.</para>
+        
+        <para>A raw index allows for another possibility which a stripped
+          index cannot offer: using case and diacritics to discriminate
+          between terms, returning different results when searching for
+          <literal>US</literal> and <literal>us</literal> or
+          <literal>resume</literal> and <literal>résumé</literal>.
+          Read the <link linkend="rcl.search.casediac">section about search
+          case and diacritics sensitivity</link> for more details.</para>
+
+        <para>The type of index to be created is controlled by the
+          <literal>indexStripChars</literal> configuration
           variable which can only be changed by editing the
           configuration file. Any change implies an index reset (not
-          automated by recoll), and all indexes in a search must be set
-          in the same way (again, not checked by recoll). </para>
+          automated by &RCL;), and all indexes in a search must be set
+          in the same way (again, not checked by &RCL;). </para>
 
+        <para>If the <literal>indexStripChars</literal> is not set, &RCL;
+          1.18 creates a stripped index by default, for
+          compatibility with previous versions.</para>
+
+        <para>As a cost for added capability, a raw index will be slightly
+          bigger than a stripped one (around 10%). Also, searches will be
+          more complex, so probably slightly slower, and the feature is
+          still young, and a certain amount of weirdness cannot be
+          excluded.</para> 
+
+      </sect2>
 
 
       <sect2 id="rcl.indexing.config.gui">
@@ -1011,7 +1063,7 @@ fvwm
        start an external viewer. The viewer for each document type can be
        configured through the user preferences dialog, or by editing the
        <filename>mimeview</filename> configuration file. You can also check
-       the <guilabel>Use desktop preferences</guilabel> option in the user
+       the <guilabel>Use desktop preferences</guilabel> option in the GUI
        preferences dialog to use the desktop defaults for all
        documents. This is probably the best option if you are using a well
        configured <application>Gnome</application> or 
@@ -1819,6 +1871,14 @@ fvwm
             application.</para>
            </listitem>
 
+            <listitem><para><guilabel>Exceptions</guilabel>: when using the
+            desktop preferences for opening documents, these are mime types
+            that will still be opened according to &RCL; preferences. This
+            is useful for passing parameters like page numbers or search
+            strings to applications that support them
+            (e.g. <application>evince</application>).</para> 
+           </listitem>
+
             <listitem><para><guilabel>Choose editor applications</guilabel>
             this will let you choose the command started by the
             <guilabel>Open</guilabel> links inside the result list, for
@@ -2369,144 +2429,160 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           section</link>.</para> 
 
       <para>&RCL; currently manages the following default fields:</para>
+
       <itemizedlist>
+
         <listitem><para><literal>title</literal>,
-        <literal>subject</literal> or <literal>caption</literal> are
-        synonyms which specify data to be searched for in the
-        document title or subject.</para>
-        </listitem>
+            <literal>subject</literal> or <literal>caption</literal> are
+            synonyms which specify data to be searched for in the
+            document title or subject.</para>
+           </listitem>
+
         <listitem><para><literal>author</literal> or
-        <literal>from</literal> for searching the documents originators.</para>
-        </listitem>
+            <literal>from</literal> for searching the documents
+            originators.</para>
+           </listitem>
+
         <listitem><para><literal>recipient</literal> or
-        <literal>to</literal> for searching the documents recipients.</para>
-        </listitem>
+            <literal>to</literal> for searching the documents
+            recipients.</para>
+           </listitem>
+
         <listitem><para><literal>keyword</literal> for searching the
-        document-specified keywords (few documents actually have any).</para>
-        </listitem>
+            document-specified keywords (few documents actually have
+            any).</para>
+           </listitem>
+
         <listitem><para><literal>filename</literal> for the document's
-        file name.</para></listitem>
+            file name.</para></listitem>
+
         <listitem><para><literal>ext</literal> specifies the file
-        name extension (Ex: <literal>ext:html</literal>)</para>
-        </listitem>
-      </itemizedlist>
+            name extension (Ex: <literal>ext:html</literal>)</para>
+           </listitem>
+
+         </itemizedlist>
 
       <para>The field syntax also supports a few field-like, but
-      special, criteria:</para>
+        special, criteria:</para>
+
       <itemizedlist>
+
         <listitem><para><literal>dir</literal> for filtering the
-        results on file location (Ex:
-        <literal>dir:/home/me/somedir</literal>). <literal>-dir</literal>
-        also works to find results out of the specified directory, only
-        after release 1.15.8. A tilde inside the value will be expanded to
-        the home directory. <literal>dir</literal> is not a regular field
-        and only one value makes sense in a query (you can't use
-        <literal>dir:dir1 OR dir:dir2</literal>). Relative paths make
-        sense, for example, 
-        <literal>dir:share/doc</literal> would match either
-        <filename>/usr/share/doc</filename> or
-        <filename>/usr/local/share/doc</filename> </para>
-        </listitem>
+            results on file location (Ex:
+            <literal>dir:/home/me/somedir</literal>). <literal>-dir</literal>
+            also works to find results out of the specified directory, only
+            after release 1.15.8. A tilde inside the value will be expanded to
+            the home directory. <literal>dir</literal> is not a regular field
+            and only one value makes sense in a query (you can't use
+            <literal>dir:dir1 OR dir:dir2</literal>). Relative paths make
+            sense, for example, 
+            <literal>dir:share/doc</literal> would match either
+            <filename>/usr/share/doc</filename> or
+            <filename>/usr/local/share/doc</filename> </para>
+           </listitem>
 
         <listitem><para><literal>size</literal> for filtering the
-        results on file size. Example: 
-        <literal>size&lt;10000</literal>. You can use
-        <literal>&lt;</literal>, <literal>&gt;</literal> or
-        <literal>=</literal> as operators. You can specify a range like the
-        following: <literal>size>100 size&lt;1000</literal>. The usual
-        <literal>k/K, m/M, g/G, t/T</literal> can be used as (decimal)
-        multipliers. Ex: <literal>size&gt;1k</literal> to search for files
-        bigger than 1000 bytes.</para>
-        </listitem>
+            results on file size. Example: 
+            <literal>size&lt;10000</literal>. You can use
+            <literal>&lt;</literal>, <literal>&gt;</literal> or
+            <literal>=</literal> as operators. You can specify a range like the
+            following: <literal>size>100 size&lt;1000</literal>. The usual
+            <literal>k/K, m/M, g/G, t/T</literal> can be used as (decimal)
+            multipliers. Ex: <literal>size&gt;1k</literal> to search for files
+            bigger than 1000 bytes.</para>
+           </listitem>
 
         <listitem><para><literal>date</literal> for searching or filtering
-        on dates. The syntax for the argument is based on the ISO8601
-        standard for dates and time intervals. Only dates are supported, no
-        times. The general syntax is 2 elements separated by a
-        <literal>/</literal> character. Each element can be a date or a
-        period of time. Periods are specified as 
-<literal>P</literal><replaceable>n</replaceable><literal>Y</literal><replaceable>n</replaceable><literal>M</literal><replaceable>n</replaceable><literal>D</literal>. 
-       The <replaceable>n</replaceable> numbers are the respective numbers
-       of years, months or days, any of which may be missing. Dates are
-       specified as  
-<replaceable>YYYY</replaceable>-<replaceable>MM</replaceable>-<replaceable>DD</replaceable>. 
-       The days and months parts may be missing. If the
-       <literal>/</literal> is present but an element is missing, the
-       missing element is interpreted as the lowest or highest date in the
-       index. Examples:</para>
+            on dates. The syntax for the argument is based on the ISO8601
+            standard for dates and time intervals. Only dates are supported, no
+            times. The general syntax is 2 elements separated by a
+            <literal>/</literal> character. Each element can be a date or a
+            period of time. Periods are specified as 
+            <literal>P</literal><replaceable>n</replaceable><literal>Y</literal><replaceable>n</replaceable><literal>M</literal><replaceable>n</replaceable><literal>D</literal>. 
+            The <replaceable>n</replaceable> numbers are the respective numbers
+            of years, months or days, any of which may be missing. Dates are
+            specified as  
+            <replaceable>YYYY</replaceable>-<replaceable>MM</replaceable>-<replaceable>DD</replaceable>. 
+            The days and months parts may be missing. If the
+            <literal>/</literal> is present but an element is missing, the
+            missing element is interpreted as the lowest or highest date in the
+            index. Examples:</para>
+
 	  <itemizedlist>
 	    <listitem><para><literal>2001-03-01/2002-05-01</literal> the
-	    basic syntax for an interval of dates.</para>
-	    </listitem>
+	        basic syntax for an interval of dates.</para>
+	       </listitem>
 	    <listitem><para><literal>2001-03-01/P1Y2M</literal> the
-	    same specified with a period.</para>
-	    </listitem>
+	        same specified with a period.</para>
+	       </listitem>
 	    <listitem><para><literal>2001/</literal> from the beginning of
-	    2001 to the latest date in the index.</para>
-	    </listitem>
+	        2001 to the latest date in the index.</para>
+	       </listitem>
 	    <listitem><para><literal>2001</literal> the whole year of
-	      2001</para></listitem>
+	        2001</para></listitem>
 	    <listitem><para><literal>P2D/</literal> means 2 days ago up to
-	      now if there are no documents with dates in the future.</para>
-	    </listitem>
+	        now if there are no documents with dates in the future.</para>
+	       </listitem>
 	    <listitem><para><literal>/2003</literal> all documents from
-	    2003 or older.</para>
-	    </listitem>
-	  </itemizedlist>
+	        2003 or older.</para>
+	       </listitem>
+	     </itemizedlist>
 	  <para>Periods can also be specified with small letters (ie:
-	  p2y).</para> 
-        </listitem>
+	    p2y).</para> 
+           </listitem>
 
         <listitem><para><literal>mime</literal> or
-        <literal>format</literal> for specifying the
-        mime type. This one is quite special because you can specify
-        several values which will be OR'ed (the normal default for the
-        language is AND). Ex: <literal>mime:text/plain
-        mime:text/html</literal>. Specifying an explicit boolean
-        operator before a
-        <literal>mime</literal> specification is not supported and
-        will produce strange results. You can filter out certain types
-        by using negation (<literal>-mime:some/type</literal>), and you can
-        use wildcards in the value (<literal>mime:text/*</literal>).
-        Note that <literal>mime</literal> is
-        the ONLY field with an OR default. You do need to use
-        <literal>OR</literal> with <literal>ext</literal> terms for
-        example.</para> 
-        </listitem>
+            <literal>format</literal> for specifying the
+            mime type. This one is quite special because you can specify
+            several values which will be OR'ed (the normal default for the
+            language is AND). Ex: <literal>mime:text/plain
+              mime:text/html</literal>. Specifying an explicit boolean
+            operator before a
+            <literal>mime</literal> specification is not supported and
+            will produce strange results. You can filter out certain types
+            by using negation (<literal>-mime:some/type</literal>), and you can
+            use wildcards in the value (<literal>mime:text/*</literal>).
+            Note that <literal>mime</literal> is
+            the ONLY field with an OR default. You do need to use
+            <literal>OR</literal> with <literal>ext</literal> terms for
+            example.</para> 
+           </listitem>
 
         <listitem><para><literal>type</literal> or
-        <literal>rclcat</literal> for specifying the category (as in
-        text/media/presentation/etc.). The classification of mime
-        types in categories is defined in the &RCL; configuration
-        (<filename>mimeconf</filename>), and can be modified or
-        extended. The default category names are those which permit
-        filtering results in the main GUI screen. Categories are OR'ed
-        like mime types above. This can't be negated with
-        <literal>-</literal> either.</para>
-        </listitem>
+            <literal>rclcat</literal> for specifying the category (as in
+            text/media/presentation/etc.). The classification of mime
+            types in categories is defined in the &RCL; configuration
+            (<filename>mimeconf</filename>), and can be modified or
+            extended. The default category names are those which permit
+            filtering results in the main GUI screen. Categories are OR'ed
+            like mime types above. This can't be negated with
+            <literal>-</literal> either.</para>
+           </listitem>
 
-      </itemizedlist>
+         </itemizedlist>
 
       <para>Words inside phrases and capitalized words are not
-      stem-expanded. Wildcards may be used anywhere inside a term.
-      Specifying a wild-card on the left of a term can produce a very
-      slow search (or even an incorrect one if the expansion is
-      truncated because of excessive size). Also see <link
-      linkend="rcl.search.wildcards">More about wildcards</link>.</para>
+        stem-expanded. Wildcards may be used anywhere inside a term.
+        Specifying a wild-card on the left of a term can produce a very
+        slow search (or even an incorrect one if the expansion is
+        truncated because of excessive size). Also see 
+        <link linkend="rcl.search.wildcards">
+          More about wildcards</link>.</para>
 
       <para>The document filters used while indexing have the
-      possibility to create other fields with arbitrary names, and
-      aliases may be defined in the configuration, so that the exact
-      field search possibilities may be different for you if someone
-      took care of the customisation.</para>
+        possibility to create other fields with arbitrary names, and
+        aliases may be defined in the configuration, so that the exact
+        field search possibilities may be different for you if someone
+        took care of the customisation.</para>
 
       <sect2 id="rcl.search.lang.modifiers">
         <title>Modifiers</title>
 
         <para>Some characters are recognized as search modifiers when found
-        immediately after the closing double quote of a phrase, as in
-        <literal>"some term"modifierchars</literal>. The actual "phrase"
-        can be a single term of course. Supported modifiers:
+          immediately after the closing double quote of a phrase, as in
+          <literal>"some term"modifierchars</literal>. The actual "phrase"
+          can be a single term of course. Supported modifiers:
+
         <itemizedlist>
             <listitem><para><literal>l</literal> can be used to turn off
             stemming (mostly makes sense with <literal>p</literal> because
@@ -2525,6 +2601,12 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
             (unordered). Example:<literal>"order any in"p</literal></para>
             </listitem>
 
+            <listitem><para><literal>C</literal> will turn on case
+            sensitivity (if the index supports it).</para></listitem>
+
+            <listitem><para><literal>D</literal> will turn on diacritics
+                sensitivity (if the index supports it).</para></listitem>
+
             <listitem><para>A weight can be specified for a query element
             by specifying a decimal value at the start of the
             modifiers. Example: <literal>"Important"2.5</literal>.</para>
@@ -2537,6 +2619,78 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
     </sect1> <!-- rcl.search.lang -->
       
+
+    <sect1 id="rcl.search.casediac">
+      <title>Search case and diacritics sensitivity</title>
+
+      <para>For &RCL; versions 1.18 and later, and <emphasis>when working
+          with a raw index</emphasis> (not the default), searches can be
+          made sensitive
+        to character case and diacritics. How this happens is controlled by
+        configuration variables and what search data is entered.</para>
+
+      <para>The general default is that searches are insensitive to case
+      and diacritics. An entry of <literal>resume</literal> will match any
+      of <literal>Resume</literal>, <literal>RESUME</literal>,
+      <literal>résumé</literal>, <literal>Résumé</literal> etc.</para>
+
+      <para>Two configuration variables can automate switching on
+        sensitivity:</para> 
+
+      <variablelist>
+
+        <varlistentry>
+          <term>autodiacsens</term><listitem><para>If this is set, search
+              sensitivity to diacritics will be turned on as soon as an
+              accented character exists in a search term. When the variable
+              is set to true, <literal>resume</literal> will start a
+              diacritics-unsensitive search, but <literal>résumé</literal>
+              will be matched exactly. The default value is
+              <emphasis>false</emphasis>.</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>autocasesens</term><listitem><para>If this is set, search
+              sensitivity to character case will be turned on as soon as an
+              upper-case character exists in a search term <emphasis>except
+              for the first one</emphasis>. When the variable is set to
+              true, <literal>us</literal> or <literal>Us</literal> will
+              start a diacritics-unsensitive search, but
+              <literal>US</literal> will be matched exactly. The default
+              value is <emphasis>true</emphasis> (contrary to
+              <literal>autodiacsens</literal>).</para></listitem>
+        </varlistentry>
+
+      </variablelist>
+      
+      <para>As in the past, capitalizing the first letter of a word will
+        turn off its stem expansion and have no effect on
+        case-sensitivity.</para>
+
+      <para>You can also explicitely activate case and diacritics
+      sensitivity by using modifiers with the query
+      language. <literal>C</literal> will make the term case-sensitive, and
+      <literal>D</literal> will make it
+      diacritics-sensitive. Examples:</para>
+      <programlisting>
+        "us"C
+   </programlisting>
+
+      <para>will search for the term <literal>us</literal> exactly
+      (<literal>Us</literal> will not be a match).</para>
+
+      <programlisting>
+        "resume"D
+      </programlisting>
+      <para>will search for the term <literal>resume</literal> exactly
+      (<literal>résumé</literal> will not be a match).</para>
+
+
+      <para>When either case or diacritics sensitivity is activated, stem
+        expansion is turned off. Having both does not make much sense.</para>
+
+   </sect1>
+
     <sect1 id="rcl.search.anchorwild">
       <title>Anchored searches and wildcards</title>
 
@@ -2929,11 +3083,11 @@ application/x-chm = execm rclchm
         <title>Page numbers</title>
 
         <para>The indexer will interpret <literal>^L</literal> characters
-        in the filter output as indicating page breaks, and will record
-        them. At query time, this allows starting a viewer on the right
-        page for a hit or a snippet. Currently, only the PDF filter
-        generates page breaks (thanks to
-        <literal>pdftotext</literal>).</para>
+          in the filter output as indicating page breaks, and will record
+          them. At query time, this allows starting a viewer on the right
+          page for a hit or a snippet. Currently, only the PDF, Postscript
+          and DVI filters generate page breaks.</para>
+
       </sect2>
 
     </sect1>
@@ -4529,30 +4683,38 @@ x-my-tag = mailmytag
         <title>The mimeview file</title>
 
         <para><filename>mimeview</filename> specifies which programs
-        are started when you click on an <guilabel>Open</guilabel>
-        link in a result list. Ie: HTML is normally displayed using
+          are started when you click on an <guilabel>Open</guilabel> link
+          in a result list. Ie: HTML is normally displayed using
          <application>firefox</application>, but you may prefer
          <application>Konqueror</application>, your
          <application>openoffice.org</application> 
          program might be named <command>oofice</command> instead of
-         <command>openoffice</command> etc. 
-         </para>
+         <command>openoffice</command> etc.</para>
 
         <para>Changes to this file can be done by direct editing, or
-        through the <command>recoll</command> user preferences dialog.</para>
+        through the <command>recoll</command> GUI preferences dialog.</para>
 
         <para>If <guilabel>Use desktop preferences to choose document
-        editor</guilabel> is checked in the &RCL; GUI user preferences, all
+        editor</guilabel> is checked in the &RCL; GUI preferences, all
         <filename>mimeview</filename> entries will be ignored except the
         one labelled <literal>application/x-all</literal> (which is set to
         use <command>xdg-open</command> by default).</para>
 
+        <para>In this case, the <literal>xallexcepts</literal> top level
+          variable defines a list of mime type exceptions which
+          will be processed according to the local entries instead of being
+          passed to the desktop. This is so that specific &RCL; options
+          such as a page number or a search string can be passed to
+          applications that support them, such as the
+          <application>evince</application> viewer.</para>
+
         <para>As for the other configuration files, the normal usage
-        is to have a <filename>mimeview</filename> inside your own
-        configuration directory, with just the non-default entries,
-        which will override those from the central configuration
-        file.</para>
-        <para>Please note that these entries must be placed under a
+          is to have a <filename>mimeview</filename> inside your own
+          configuration directory, with just the non-default entries,
+          which will override those from the central configuration
+          file.</para>
+
+        <para>All viewer definition entries must be placed under a
           <literal>[view]</literal> section.</para>
 
 	<para>The keys in the file are normally mime types. You can add an
@@ -4602,9 +4764,9 @@ x-my-tag = mailmytag
 
           <listitem><formalpara><title>%p</title>
               <para>Page index. Only significant for a subset of document
-              types, currently only PDF files. Can be used to start the
-              editor at the right page for a match or
-              snippet.</para></formalpara>  
+              types, currently only PDF, Postscript and DVI files. Can be
+              used to start the editor at the right page for a match or
+              snippet.</para></formalpara>
           </listitem>
 
           <listitem><formalpara><title>%s</title>

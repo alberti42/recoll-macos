@@ -39,10 +39,6 @@
 using namespace std;
 #endif // NO_NAMESPACES
 
-#ifndef MIN
-#define MIN(A,B) ((A)<(B) ? (A) : (B))
-#endif
-
 #undef DEBUG
 #ifdef DEBUG
 #define LOGDEB(X) fprintf X
@@ -276,7 +272,7 @@ int ConfSimple::set(const std::string &nm, const std::string &value,
 {
     if (status  != STATUS_RW)
 	return 0;
-    LOGDEB2(("ConfSimple::set [%s]:[%s] -> [%s]\n", sk.c_str(),
+    LOGDEB((stderr, "ConfSimple::set [%s]:[%s] -> [%s]\n", sk.c_str(),
 	     nm.c_str(), value.c_str()));
     if (!i_set(nm, value, sk))
 	return 0;

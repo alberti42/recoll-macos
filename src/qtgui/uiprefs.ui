@@ -184,6 +184,9 @@
                <property name="text">
                 <string>Exceptions</string>
                </property>
+               <property name="toolTip">
+	        <string>Mime types that should not be passed to xdg-open even when "Use desktop preferences" is set.&lt;br&gt; Useful to pass page number and search string options to, e.g. evince.</string>
+		   </property>
               </widget>
              </item>
              <item>
