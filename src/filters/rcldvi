@@ -129,7 +129,7 @@ awk 'BEGIN'\
     cont = ""
 
     if ($0 == "\f") {
-       print "</p>\n<hr>\n<p>"
+       print "</p>\n<hr>\n\f<p>"
        next
     } else if ($0 ~ /-$/) {
       match($0, "[ \t][^ \t]+$")

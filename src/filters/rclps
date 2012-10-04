@@ -110,7 +110,7 @@ awk 'BEGIN'\
     cont = ""
 
     if ($0 == "\f") {
-       print "</p>\n<hr>\n<p>"
+       print "</p>\n<hr>\n\f<p>"
        next
     } else if ($0 ~ /­$/) {
       # Note : soft-hyphen is iso8859 0xad
