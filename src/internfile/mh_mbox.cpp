@@ -41,6 +41,10 @@
 #include "ptmutex.h"
 
 using namespace std;
+
+// Define maximum message size for safety. 100MB would seem reasonable
+static const unsigned int max_mbox_member_size = 100 * 1024 * 1024;
+
 class FpKeeper { 
 public:
     FpKeeper(FILE **fpp) : m_fpp(fpp) {}
@@ -279,6 +283,14 @@ bool MimeHandlerMbox::set_document_file(const string &fn)
 	}
     }
 
+    // And double check for thunderbird 
+    string tbirdmsf = fn + ".msf";
+    if ((m_quirks&MBOXQUIRK_TBIRD) == 0 && access(tbirdmsf.c_str(), 0) == 0) {
+	LOGDEB(("MimeHandlerMbox: detected unconfigured tbird mbox in %s\n",
+		fn.c_str()));
+	m_quirks |= MBOXQUIRK_TBIRD;
+    }
+
     return true;
 }
 
@@ -491,6 +503,12 @@ bool MimeHandlerMbox::next_document()
 	    line[ll] = '\n';
 	    line[ll+1] = 0;
 	    msgtxt += line;
+	    if (msgtxt.size() > max_mbox_member_size) {
+		LOGERR(("mh_mbox: huge message (more than %u MB) inside %s,"
+			" giving up\n", max_mbox_member_size/(1024*1024),
+			m_fn.c_str()));
+		return false;
+	    }
 	}
     }
     LOGDEB2(("Message text length %d\n", msgtxt.size()));
