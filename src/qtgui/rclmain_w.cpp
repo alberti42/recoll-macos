@@ -398,7 +398,7 @@ void RclMain::initDbOpen()
 }
 
 // Start native viewer or preview for input Doc. This is used allow
-// the using Recoll result docs with an ipath in another app.  We act
+// using Recoll result docs with an ipath in another app.  We act
 // as a proxy to extract the data and start a viewer.
 // The Url are encoded as file://path#ipath
 void RclMain::viewUrl()
@@ -428,7 +428,8 @@ void RclMain::viewUrl()
     // preview.
     string apptag;
     doc.getmeta(Rcl::Doc::keyapptg, &apptag);
-    string viewer = theconfig->getMimeViewerDef(doc.mimetype, apptag);
+    string viewer = theconfig->getMimeViewerDef(doc.mimetype, apptag, 
+						prefs.useDesktopOpen);
     if (viewer.empty()) {
 	startPreview(doc);
     } else {
@@ -1502,14 +1503,10 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 {
     LOGDEB(("RclMain::startNativeViewer: page %d\n", pagenum));
     // Look for appropriate viewer
-    string cmdplusattr;
-    if (prefs.useDesktopOpen) {
-	cmdplusattr = theconfig->getMimeViewerDef("application/x-all", "");
-    } else {
-        string apptag;
-        doc.getmeta(Rcl::Doc::keyapptg, &apptag);
-	cmdplusattr = theconfig->getMimeViewerDef(doc.mimetype, apptag);
-    }
+    string apptag;
+    doc.getmeta(Rcl::Doc::keyapptg, &apptag);
+    string cmdplusattr = theconfig->getMimeViewerDef(doc.mimetype, apptag, 
+						     prefs.useDesktopOpen);
 
     if (cmdplusattr.empty()) {
 	QMessageBox::warning(0, "Recoll", 

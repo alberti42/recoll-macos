@@ -246,7 +246,7 @@ int ConfSimple::get(const string &nm, string &value, const string &sk) const
 // Appropriately output a subkey (nm=="") or variable line.
 // Splits long lines
 static ConfSimple::WalkerCode varprinter(void *f, const string &nm, 
-				      const string &value)
+					 const string &value)
 {
     ostream *output = (ostream *)f;
     if (nm.empty()) {
@@ -276,7 +276,8 @@ int ConfSimple::set(const std::string &nm, const std::string &value,
 {
     if (status  != STATUS_RW)
 	return 0;
-
+    LOGDEB2(("ConfSimple::set [%s]:[%s] -> [%s]\n", sk.c_str(),
+	     nm.c_str(), value.c_str()));
     if (!i_set(nm, value, sk))
 	return 0;
     return write();

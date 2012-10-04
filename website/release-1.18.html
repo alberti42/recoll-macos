@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Recoll 1.18 series release notes</title>
+
+    <meta name="generator" content="HTML Tidy, see www.w3.org">
+    <meta name="Author" content="Jean-Francois Dockes">
+    <meta name="Description" content=
+	  "recoll is a simple full-text search system for unix and linux
+	   based on the powerful and mature xapian engine">
+    <meta name="Keywords" content=
+	  "full text search, desktop search, unix, linux">
+    <meta http-equiv="Content-language" content="en">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="robots" content="All,Index,Follow">
+
+    <link type="text/css" rel="stylesheet" href="styles/style.css">
+  </head>
+
+  <body>
+    
+    <div class="rightlinks">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="download.html">Downloads</a></li>
+        <li><a href="doc.html">Documentation</a></li>
+      </ul>
+    </div>
+    
+    <div class="content">
+
+      <h1>Release notes for Recoll 1.18.x</h1>
+
+
+      <h2>Caveats</h2>
+
+      <p><em>Installing over an older version</em>: 1.18 introduces serious
+        index formats changes, and it will be advisable to reset the
+        index in most cases. IF the 1.18 index is not configured for
+        case and diacritics sensitivity, it is mostly compatible with
+        1.17 indexes though. Case/diacritics sensitivity can be turned
+        off either by a compile flag or a configuration variable, and
+        the default is still a stripped index (so, mostly compatible
+        with 1.17). If you activate case and diacritics sensitivity,
+        you must reset the index.</p>
+
+      <p>Always reset the index if installing over an older version (1.14
+        and older). The simplest way to do this is to quit all recoll
+        programs and just delete the index directory (<span
+        class="literal">rm&nbsp;-rf&nbsp;~/.recoll/xapiandb</span>), then
+        start recoll or recollindex.  <span
+        class="literal">recollindex&nbsp;-z</span> will do the same in most
+        cases.</p>
+
+      <p>Some new, auxiliary, features do require a full reindex to work:</p>
+      <ul>
+        <li>The file size filtering functions (for an index created by
+          1.16 or older).</li>
+        <li>The anchored search feature if the index was created by
+          release 1.15 or older.</li>
+      </ul>
+
+
+
+      <h2>Changes</h2>
+
+      <p>Recoll 1.18 has some major changes 1.17, the most visible of
+        which is the ability to consider character case and diacritics
+        when searching.</p> 
+
+      <p>Recoll 1.18.0 changes:</p>
+
+      <ul>
+        
+        <li>The index can now be configured for case and diacritics
+          sensitivity. Raw terms are indexed, and query time expansions
+          are used when search insensitivity is designed (in a similar
+          manner to what is used for stemming). See the chapter
+          manual for details about controlling the feature.</li>
+
+        <li>More effort is put in choosing the terms used in
+          generating the snippets inside the result list.</li>
+        
+        <li>Capacity to store page breaks and use them when opening a
+          document.</li> 
+        <li>Capacity to pass a search string to the native app.</li>
+        <li>New "snippets" window for documents with page numbers, let
+          the user choose a snippet and open the document at the
+          appropriate page.</li>
+        <li>We now use the Xapian "synonyms" mechanism to store all
+          data about stemming, case, and diacritics expansion (this
+          replace the previous ad-hoc stemming expansion mechanism).</li>
+
+        <li>New script to start/stop recollindex according to mains
+          power status.</li>
+        <li>Add &lt;pre style="white-space: pre-wrap"&gt; to plain
+          text HTML display options.</li>
+        <li>Allow multiple directory specifications in the query
+          language, as in: <i>dir:/home/me -dir:tmp</i></li>
+        <li>Improved search in the preview window, allows selecting
+          one of the initial search clauses from a list.</li>
+
+        <li>Fixed bugs:
+          <ul>
+            <li>The unac_except_trans mechanism could be buggy in some
+              cases and generate wrong character translations.</li>
+            <li>Don't terminate monitor for permissions-related
+              addwatch error.</li>
+            <li>Fix handling of ODF documents exported by Google
+              docs.</li>
+
+          </ul>
+        </li>
+
+      </ul>
+
+
+    </div>
+  </body>
+</html>

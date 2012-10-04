@@ -226,7 +226,10 @@ class RclConfig {
     bool getFieldConfParam(const string &name, const string &sk, string &value);
 
     /** mimeview: get/set external viewer exec string(s) for mimetype(s) */
-    string getMimeViewerDef(const string &mimetype, const string& apptag);
+    string getMimeViewerDef(const string &mimetype, const string& apptag, 
+			    bool useall);
+    string getMimeViewerAllEx();
+    bool setMimeViewerAllEx(const string& allex);
     bool getMimeViewerDefs(vector<pair<string, string> >&);
     bool setMimeViewerDef(const string& mimetype, const string& cmd);
     /** Check if mime type is designated as needing no uncompress before view

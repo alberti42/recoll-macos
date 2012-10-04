@@ -502,6 +502,20 @@ recoll
         described in the <link linkend="rcl.install.external">external
           packages section.</link></para>
 
+
+
+      <sect2 id="rcl.indexing.config.sens">
+        <title>Index case and diacritics sensitivity</title>
+
+        <para>Index case sensitivity
+          is controlled by the <i>indexStripChars</i> configuration
+          variable which can only be changed by editing the
+          configuration file. Any change implies an index reset (not
+          automated by recoll), and all indexes in a search must be set
+          in the same way (again, not checked by recoll). </para>
+
+
+
       <sect2 id="rcl.indexing.config.gui">
         <title>The indexing configuration GUI</title>
 
@@ -4040,6 +4054,17 @@ skippedPaths = ~/somedir/&lowast;.txt
 
         <variablelist>
 
+          <varlistentry><term><varname>indexStripChars</varname></term>
+            <listitem><para>Decide if we strip characters of diacritics and
+                convert them to lower-case before terms are indexed. If we
+                don't, searches sensitive to case and diacritics can be
+                performed, but the index will be bigger, and some marginal
+                weirdness may sometimes occur. The default is a stripped
+                index (<literal>indexStripChars = 1</literal> for
+                now.</para> 
+            </listitem>
+          </varlistentry>
+
           <varlistentry><term><varname>nonumbers</varname></term>
             <listitem><para>If this set to true, no terms will be generated
             for numbers. For example "123", "1.5e6", 192.168.1.4, would not
@@ -4228,6 +4253,26 @@ unac_except_trans =  åå Åå ää Ää öö Öö
 
 	 <variablelist>
 
+          <varlistentry><term><varname>autodiacsens</varname></term>
+            <listitem><para>IF the index is not stripped, decide if we
+                automatically trigger diacritics sensitivity if the search
+                term has accented characters (not in
+                <literal>unac_except_trans</literal>). Else you need to use
+                the query language and the <literal>D</literal> modifier to
+                specify diacritics sensitivity. Default is no.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry><term><varname>autocasesens</varname></term>
+            <listitem><para>IF the index is not stripped, decide if we
+                automatically trigger character case sensitivity if the
+                search term has upper-case characters in any but the first
+                position. Else you need to use the query language and the
+                <literal>C</literal> modifier to specify character-case
+                sensitivity. Default is yes.</para>
+            </listitem>
+          </varlistentry>
+
           <varlistentry><term><varname>loglevel,daemloglevel</varname></term>
             <listitem><para>Verbosity level for recoll and
             recollindex. A value of 4 lists quite a lot of
@@ -4245,7 +4290,6 @@ unac_except_trans =  åå Åå ää Ää öö Öö
             daemon.</para>
             </listitem>
           </varlistentry>
-
 
           <varlistentry><term><varname>mondelaypatterns</varname></term>
             <listitem><para>This allows specify wildcard path patterns

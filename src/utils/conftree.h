@@ -408,7 +408,8 @@ public:
     {
 	if (!m_ok)
 	    return 0;
-
+	//LOGDEB2(("ConfStack::set [%s]:[%s] -> [%s]\n", sk.c_str(),
+	//nm.c_str(), val.c_str()));
 	// Avoid adding unneeded entries: if the new value matches the
 	// one out from the deeper configs, erase or dont add it
 	// from/to the topmost file

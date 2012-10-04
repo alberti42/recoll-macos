@@ -178,6 +178,27 @@
             </widget>
            </item>
            <item>
+            <layout class="QHBoxLayout">
+             <item>
+              <widget class="QLabel" name="textLabelallex">
+               <property name="text">
+                <string>Exceptions</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="allExLE">
+               <property name="minimumSize">
+                <size>
+                 <width>70</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
             <widget class="QPushButton" name="viewActionPB">
              <property name="text">
               <string>Choose editor applications</string>

@@ -175,7 +175,9 @@ RclConfig::RclConfig(const string *argcnf)
 	m_reason = string("No/bad mimeconf in: ") + cnferrloc;
 	return;
     }
-    mimeview = new ConfStack<ConfSimple>("mimeview", m_cdirs, true);
+    mimeview = new ConfStack<ConfSimple>("mimeview", m_cdirs, false);
+    if (mimeview == 0)
+	mimeview = new ConfStack<ConfSimple>("mimeview", m_cdirs, true);
     if (mimeview == 0 || !mimeview->ok()) {
 	m_reason = string("No/bad mimeview in: ") + cnferrloc;
 	return;
@@ -789,14 +791,49 @@ bool RclConfig::getFieldConfParam(const string &name, const string &sk,
     return m_fields->get(name, value, sk);
 }
 
+string RclConfig::getMimeViewerAllEx()
+{
+    string hs;
+    if (mimeview == 0)
+	return hs;
+    mimeview->get("xallexcepts", hs, "");
+    return hs;
+}
 
-string RclConfig::getMimeViewerDef(const string &mtype, const string& apptag)
+bool RclConfig::setMimeViewerAllEx(const string& allex)
+{
+    if (mimeview == 0)
+        return false;
+    if (!mimeview->set("xallexcepts", allex, "")) {
+	m_reason = string("RclConfig:: cant set value. Readonly?");
+	return false;
+    }
+	
+    return true;
+}
+
+string RclConfig::getMimeViewerDef(const string &mtype, const string& apptag,
+				   bool useall)
 {
     LOGDEB2(("RclConfig::getMimeViewerDef: mtype [%s] apptag [%s]\n",
 	     mtype.c_str(), apptag.c_str()));
     string hs;
     if (mimeview == 0)
 	return hs;
+
+    if (useall) {
+	// Check for exception
+	string excepts = getMimeViewerAllEx();
+	vector<string> vex;
+	stringToTokens(excepts, vex);
+	vector<string>::iterator it = find(vex.begin(), vex.end(), mtype);
+	if (it == vex.end()) {
+	    mimeview->get("application/x-all", hs, "view");
+	    return hs;
+	}
+	// Fallthrough to normal case.
+    }
+
     if (apptag.empty() || !mimeview->get(mtype + string("|") + apptag,
                                          hs, "view"))
         mimeview->get(mtype, hs, "view");
@@ -808,8 +845,9 @@ bool RclConfig::getMimeViewerDefs(vector<pair<string, string> >& defs)
     if (mimeview == 0)
 	return false;
     vector<string>tps = mimeview->getNames("view");
-    for (vector<string>::const_iterator it = tps.begin(); it != tps.end();it++) {
-	defs.push_back(pair<string, string>(*it, getMimeViewerDef(*it, "")));
+    for (vector<string>::const_iterator it = tps.begin(); 
+	 it != tps.end();it++) {
+	defs.push_back(pair<string, string>(*it, getMimeViewerDef(*it, "", 0)));
     }
     return true;
 }
@@ -818,24 +856,8 @@ bool RclConfig::setMimeViewerDef(const string& mt, const string& def)
 {
     if (mimeview == 0)
         return false;
-    string pconfname = path_cat(getConfDir(), "mimeview");
-    // Make sure this exists 
-    close(open(pconfname.c_str(), O_CREAT|O_WRONLY, 0600));
-    ConfTree tree(pconfname.c_str());
-    if (!tree.set(mt, def, "view")) {
-	m_reason = string("RclConfig::setMimeViewerDef: cant set value in ")
-	    + pconfname;
-	return false;
-    }
-
-    vector<string> cdirs;
-    cdirs.push_back(m_confdir);
-    cdirs.push_back(path_cat(m_datadir, "examples"));
-
-    delete mimeview;
-    mimeview = new ConfStack<ConfSimple>("mimeview", cdirs, true);
-    if (mimeview == 0 || !mimeview->ok()) {
-	m_reason = string("No/bad mimeview in: ") + m_confdir;
+    if (!mimeview->set(mt, def, "view")) {
+	m_reason = string("RclConfig:: cant set value. Readonly?");
 	return false;
     }
     return true;

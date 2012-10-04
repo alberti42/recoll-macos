@@ -9,6 +9,12 @@
 # exceptions and the list is normally empty
 #nouncompforviewmts = 
 
+# Exceptions when using the x-all entry: these types will use their local
+# definition. This is useful, e.g. for pdf, where we can pass additional
+# parameters like page to open and search string when using the local
+# definition
+xallexcepts = application/pdf application/postscript application/x-dvi
+
 [view]
 # Pseudo entry used if the 'use desktop' preference is set in the GUI
 application/x-all = xdg-open %f
@@ -16,9 +22,9 @@ application/x-all = xdg-open %f
 application/x-kword = kword %f
 application/x-abiword = abiword %f
 
-application/pdf  = okular %f
-application/postscript = okular %f
-application/x-dvi = okular %f
+application/pdf  = evince --page-index=%p --find=%s %f
+application/postscript = evince --page-index=%p --find=%s %f
+application/x-dvi = evince --page-index=%p --find=%s  %f
 
 application/x-lyx = lyx %f
 application/x-scribus = scribus %f

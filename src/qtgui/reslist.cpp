@@ -920,7 +920,7 @@ void ResList::createPopupMenu(const QPoint& pos)
     if (havedoc)
 	doc.getmeta(Rcl::Doc::keyapptg, &apptag);
 
-    if (havedoc && !theconfig->getMimeViewerDef(doc.mimetype, apptag).empty()) {
+    if (havedoc && !theconfig->getMimeViewerDef(doc.mimetype, apptag, 0).empty()) {
 	popup->addAction(tr("&Open"), this, SLOT(menuEdit()));
     }
     popup->addAction(tr("Copy &File Name"), this, SLOT(menuCopyFN()));
