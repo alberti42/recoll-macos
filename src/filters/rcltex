@@ -86,21 +86,17 @@ else
 fi
 
 # output the result
-echo '<html><head>'
-#echo '<title>' "$title" '</title>'
-echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">'
-echo '</head><body>'
-echo '<pre>'
-
-#untex -giso -a "$infile" | \
+cat <<EOF
+<html><head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+</head><body><pre>
+EOF
 
 $CMD "$infile" | \
    iconv -c -f iso-8859-1 -t utf-8 | \
-   sed \
-       -e 's/</&lt;/g' -e 's/&/&amp;/g' 
+   sed -e 's/</&lt;/g' -e 's/&/&amp;/g' 
 
-echo '</pre>'
-echo '</body></html>'
+echo '</pre></body></html>'
 
 # exit normally
 exit 0
