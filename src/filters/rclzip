@@ -45,10 +45,18 @@ class ZipExtractor:
         #self.em.rclog("extractone: [%s]" % ipath)
         docdata = ""
         try:
-            docdata = self.zip.read(ipath)
+            info = self.zip.getinfo(ipath)
+            # There could be a 4GB Iso in the zip. We have to set a limit
+            if info.file_size > 50 * 1024*1024:
+                self.em.rclog("extractone: entry %s size %d too big" %
+                              (ipath, info.file_size))
+                docdata = ""
+                #raise BadZipfile()
+            else:
+                docdata = self.zip.read(ipath)
             ok = True
         except Exception, err:
-#            self.em.rclog("extractone: failed: [%s]" % err)
+            self.em.rclog("extractone: failed: [%s]" % err)
             ok = False
         iseof = rclexecm.RclExecM.noteof
         if self.currentindex >= len(self.zip.namelist()) -1:

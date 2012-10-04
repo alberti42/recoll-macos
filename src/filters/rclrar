@@ -49,7 +49,12 @@ class RarExtractor:
 
         if not isdir:
             try:
-                docdata = self.rar.read(ipath)
+                if rarinfo.file_size > 50 * 1024 * 1024:
+                    self.em.rclog("extractone: entry %s size %d too big" %
+                              (ipath, rarinfo.file_size))
+                    docdata = ""
+                else:
+                    docdata = self.rar.read(ipath)
                 ok = True
             except Exception, err:
                 self.em.rclog("extractone: failed: [%s]" % err)

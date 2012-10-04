@@ -23,7 +23,15 @@ class TarExtractor:
     def extractone(self, ipath):
         docdata = ""
         try:
-            docdata = self.tar.extractfile(ipath).read()
+            info = self.tar.getmember(ipath)
+            if info.size > 50 * 1024 * 1024:
+                # skip
+                docdata = ""
+                self.em.rclog("extractone: entry %s size %d too big" %
+                              (ipath, info.size))
+                docdata = "" # raise TarError("Member too big")
+            else:
+                docdata = self.tar.extractfile(ipath).read()
             ok = True
         except Exception, err:
             ok = False
