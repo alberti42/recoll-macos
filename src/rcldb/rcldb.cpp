@@ -1449,7 +1449,7 @@ bool Db::filenameWildExp(const string& fnexp, vector<string>& names)
     LOGDEB(("Rcl::Db::filenameWildExp: pattern: [%s]\n", pattern.c_str()));
 
     TermMatchResult result;
-    if (!termMatch(ET_WILD, string(), pattern, result, 1000, 
+    if (!termMatch(ET_WILD, string(), pattern, result, -1,
 		   unsplitFilenameFieldName))
 	return false;
     for (vector<TermMatchEntry>::const_iterator it = result.entries.begin();
@@ -1506,7 +1506,7 @@ public:
 };
 
 bool Db::stemExpand(const string &langs, const string &term, 
-		    TermMatchResult& result, int max)
+		    TermMatchResult& result)
 {
     if (m_ndb == 0 || m_ndb->m_isopen == false)
 	return false;
@@ -1518,7 +1518,9 @@ bool Db::stemExpand(const string &langs, const string &term,
     return true;
 }
 
-/** Add prefix to all strings in list */
+/** Add prefix to all strings in list. 
+ * @param prefix already wrapped prefix
+ */
 static void addPrefix(vector<TermMatchEntry>& terms, const string& prefix)
 {
     if (prefix.empty())
@@ -1579,7 +1581,7 @@ bool Db::termMatch(MatchType typ, const string &lang,
     res.prefix = prefix;
 
     if (typ == ET_STEM) {
-	if (!stemExpand(lang, root, res, max))
+	if (!stemExpand(lang, root, res))
 	    return false;
 	for (vector<TermMatchEntry>::iterator it = res.entries.begin(); 
 	     it != res.entries.end(); it++) {
@@ -1623,7 +1625,7 @@ bool Db::termMatch(MatchType typ, const string &lang,
                 Xapian::TermIterator it = xdb.allterms_begin(); 
                 if (!is.empty())
                     it.skip_to(is.c_str());
-                for (int n = 0; it != xdb.allterms_end(); it++) {
+                for (int rcnt = 0; it != xdb.allterms_end(); it++) {
                     // If we're beyond the terms matching the initial
                     // string, end
                     if (!is.empty() && (*it).find(is) != 0)
@@ -1645,7 +1647,14 @@ bool Db::termMatch(MatchType typ, const string &lang,
                     res.entries.push_back(TermMatchEntry(*it, 
                                                    xdb.get_collection_freq(*it),
                                                    it.get_termfreq()));
-                    ++n;
+
+		    // The problem with truncating here is that this is done
+		    // alphabetically and we may not keep the most frequent 
+		    // terms. OTOH, not doing it may stall the program if
+		    // we are walking the whole term list. We compromise
+		    // by cutting at 2*max
+                    if (max > 0 && ++rcnt >= 2*max)
+			break;
                 }
                 m_reason.erase();
                 break;
@@ -1676,6 +1685,7 @@ bool Db::termMatch(MatchType typ, const string &lang,
     TermMatchCmpByWcf wcmp;
     sort(res.entries.begin(), res.entries.end(), wcmp);
     if (max > 0) {
+	// Would need a small max and big stem expansion...
 	res.entries.resize(MIN(res.entries.size(), (unsigned int)max));
     }
     return true;

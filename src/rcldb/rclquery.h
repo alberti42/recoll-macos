@@ -19,11 +19,6 @@
 #include <string>
 #include <vector>
 
-#ifndef NO_NAMESPACES
-using std::string;
-using std::vector;
-#endif
-
 #include "refcntr.h"
 #include "searchdata.h"
 
@@ -43,18 +38,18 @@ enum abstract_result {
 // Snippet entry for makeDocAbstract
 class Snippet {
 public:
-    Snippet(int page, const string& snip) 
+    Snippet(int page, const std::string& snip) 
 	: page(page), snippet(snip)
     {
     }
-    Snippet& setTerm(const string& trm)
+    Snippet& setTerm(const std::string& trm)
     {
 	term = trm;
 	return *this;
     }
     int page;
-    string term;
-    string snippet;
+    std::string term;
+    std::string snippet;
 };
 
 	
@@ -71,11 +66,11 @@ class Query {
     ~Query();
 
     /** Get explanation about last error */
-    string getReason() const;
+    std::string getReason() const;
 
     /** Choose sort order. Must be called before setQuery */
-    void setSortBy(const string& fld, bool ascending = true);
-    const string& getSortBy() const {return m_sortField;}
+    void setSortBy(const std::string& fld, bool ascending = true);
+    const std::string& getSortBy() const {return m_sortField;}
     bool getSortAscending() const {return m_sortAscending;}
 
     /** Return or filter results with identical content checksum */
@@ -94,26 +89,26 @@ class Query {
     bool getDoc(int i, Doc &doc);
 
     /** Get possibly expanded list of query terms */
-    bool getQueryTerms(vector<string>& terms);
+    bool getQueryTerms(std::vector<std::string>& terms);
 
     /** Return a list of terms which matched for a specific result document */
-    bool getMatchTerms(const Doc& doc, vector<string>& terms);
-    bool getMatchTerms(unsigned long xdocid, vector<string>& terms);
+    bool getMatchTerms(const Doc& doc, std::vector<std::string>& terms);
+    bool getMatchTerms(unsigned long xdocid, std::vector<std::string>& terms);
 
     /** Build synthetic abstract for document, extracting chunks relevant for
      * the input query. This uses index data only (no access to the file) */
     // Abstract return as one string
-    bool makeDocAbstract(Doc &doc, string& abstract);
+    bool makeDocAbstract(Doc &doc, std::string& abstract);
     // Returned as a snippets vector
-    bool makeDocAbstract(Doc &doc, vector<string>& abstract);
+    bool makeDocAbstract(Doc &doc, std::vector<std::string>& abstract);
     // Returned as a vector of pair<page,snippet> page is 0 if unknown
-    abstract_result makeDocAbstract(Doc &doc, vector<Snippet>& abst, 
+    abstract_result makeDocAbstract(Doc &doc, std::vector<Snippet>& abst, 
 				    int maxoccs= -1, int ctxwords = -1);
     /** Retrieve detected page breaks positions */
     int getFirstMatchPage(Doc &doc, std::string& term);
 
     /** Expand query to look for documents like the one passed in */
-    vector<string> expand(const Doc &doc);
+    std::vector<std::string> expand(const Doc &doc);
 
     /** Return the Db we're set for */
     Db *whatDb();
@@ -123,10 +118,10 @@ class Query {
     Native *m_nq;
 
 private:
-    string m_reason; // Error explanation
+    std::string m_reason; // Error explanation
     Db    *m_db;
     void  *m_sorter;
-    string m_sortField;
+    std::string m_sortField;
     bool   m_sortAscending;
     bool   m_collapseDuplicates;     
     int    m_resCnt;

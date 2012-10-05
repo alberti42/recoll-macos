@@ -406,7 +406,7 @@ private:
     // Reinitialize when adding/removing additional dbs
     bool adjustdbs(); 
     bool stemExpand(const string &lang, const string &s, 
-		    TermMatchResult& result, int max = -1);
+		    TermMatchResult& result);
 
     // Flush when idxflushmb is reached
     bool maybeflush(off_t moretext);

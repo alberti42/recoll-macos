@@ -1095,8 +1095,9 @@ bool StringToXapianQ::processUserString(const string &iq,
 					bool useNear
 					)
 {
-    LOGDEB(("StringToXapianQ:: qstr [%s] mods 0x%x slack %d near %d\n", 
-	    iq.c_str(), mods, slack, useNear));
+    LOGDEB(("StringToXapianQ:pUS:: qstr [%s] fld [%s] mods 0x%x "
+	    "slack %d near %d\n", 
+	    iq.c_str(), m_field.c_str(), mods, slack, useNear));
     ermsg.erase();
 
     const StopList stops = m_db.getStopList();
