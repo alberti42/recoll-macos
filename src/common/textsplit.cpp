@@ -211,9 +211,11 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
 	// nothing else. We might want to turn this into a test for a
 	// single utf8 character instead ?
 	if (l == 1) {
-	    int c = (int)w[0];
+	    unsigned int c = ((unsigned int)w[0]) & 0xff;
 	    if (charclasses[c] != A_ULETTER && charclasses[c] != A_LLETTER && 
-                charclasses[c] != DIGIT) {
+                charclasses[c] != DIGIT &&
+		(!(m_flags & TXTS_KEEPWILD) || charclasses[c] != WILD)
+		) {
 		//cerr << "ERASING single letter term " << c << endl;
 		return true;
 	    }
