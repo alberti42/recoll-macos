@@ -105,6 +105,8 @@ void SpellW::init()
     resTW->installEventFilter(this);
 }
 
+static const int maxexpand = 10000;
+
 /* Expand term according to current mode */
 void SpellW::doExpand()
 {
@@ -140,12 +142,14 @@ void SpellW::doExpand()
     {
 	string l_stemlang = (const char*)stemLangCMB->currentText().toAscii();
 
-	if (!rcldb->termMatch(mt, l_stemlang, expr, res, 200)) {
+	if (!rcldb->termMatch(mt, l_stemlang, expr, res, maxexpand)) {
 	    LOGERR(("SpellW::doExpand:rcldb::termMatch failed\n"));
 	    return;
 	}
-        statsLBL->setText(tr("Index: %1 documents, average length %2 terms")
-                          .arg(res.dbdoccount).arg(res.dbavgdoclen, 0, 'f', 1));
+        statsLBL->setText(tr("Index: %1 documents, average length %2 terms."
+			     "%3 results")
+                          .arg(res.dbdoccount).arg(res.dbavgdoclen, 0, 'f', 1)
+			  .arg(res.entries.size()));
     }
         
 	break;
@@ -176,6 +180,7 @@ void SpellW::doExpand()
 	    res.entries.push_back(Rcl::TermMatchEntry(rclsugg));
 	}
 #endif // TESTING_XAPIAN_SPELL
+        statsLBL->setText(tr("%1 results").arg(res.entries.size()));
     }
 #endif
     }
@@ -185,6 +190,23 @@ void SpellW::doExpand()
         resTW->setItem(0, 0, new QTableWidgetItem(tr("No expansion found")));
     } else {
         int row = 0;
+
+	if (maxexpand > 0 && int(res.entries.size()) >= maxexpand) {
+	    resTW->setRowCount(row + 1);
+	    resTW->setSpan(row, 0, 1, 2);
+	    resTW->setItem(row++, 0, 
+			   new QTableWidgetItem(
+			       tr("List was truncated alphabetically, "
+				  "some frequent "))); 
+	    resTW->setRowCount(row + 1);
+	    resTW->setSpan(row, 0, 1, 2);
+	    resTW->setItem(row++, 0, new QTableWidgetItem(
+			       tr("terms may be missing. "
+				  "Try using a longer root.")));
+	    resTW->setRowCount(row + 1);
+	    resTW->setItem(row++, 0, new QTableWidgetItem(""));
+	}
+
 	for (vector<Rcl::TermMatchEntry>::iterator it = res.entries.begin(); 
 	     it != res.entries.end(); it++) {
 	    LOGDEB(("SpellW::expand: %6d [%s]\n", it->wcf, it->term.c_str()));
@@ -193,14 +215,12 @@ void SpellW::doExpand()
 		sprintf(num, "%d / %d",  it->docs, it->wcf);
 	    else
 		num[0] = 0;
-            if (resTW->rowCount() <= row)
-                resTW->setRowCount(row+1);
+	    resTW->setRowCount(row+1);
             resTW->setItem(row, 0, 
                     new QTableWidgetItem(QString::fromUtf8(it->term.c_str()))); 
             resTW->setItem(row++, 1, 
                              new QTableWidgetItem(QString::fromAscii(num)));
 	}
-        resTW->setRowCount(row+1);
     }
 }
 
