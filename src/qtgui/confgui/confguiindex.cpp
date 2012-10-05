@@ -195,6 +195,34 @@ ConfSearchPanelW::ConfSearchPanelW(QWidget *parent, ConfNull *config)
 			       ));
     vboxLayout->addWidget(cp2);
 
+    ConfLink lnk3(new ConfLinkRclRep(config, "maxTermExpand"));
+    ConfParamIntW* cp3 = 
+        new ConfParamIntW(this, lnk3, 
+			   tr("Maximum term expansion count"),
+			   tr("<p>Maximum expansion count for a single term "
+			      "(e.g.: when using wildcards). The default "
+			      "of 10 000 is reasonable and will avoid "
+			      "queries that appear frozen while the engine is "
+			      "walking the term list."
+			       ));
+    vboxLayout->addWidget(cp3);
+
+
+    ConfLink lnk4(new ConfLinkRclRep(config, "maxXapianClauses"));
+    ConfParamIntW* cp4 = 
+        new ConfParamIntW(this, lnk4, 
+			   tr("Maximum Xapian clauses count"),
+			   tr("<p>Maximum number of elementary clauses we "
+			      "add to a single Xapian query. In some cases, "
+			      "the result of term expansion can be "
+			      "multiplicative, and we want to avoid using "
+			      "excessive memory. The default of 100 000 "
+			      "should be both high enough in most cases "
+			      "and compatible with current typical hardware "
+			      "configurations."
+			       ));
+    vboxLayout->addWidget(cp4);
+
     vboxLayout->insertStretch(-1);
 }
 

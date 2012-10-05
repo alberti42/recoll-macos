@@ -138,7 +138,10 @@ class DocSequence {
     {
 	return std::list<std::string>();
     }
-
+    virtual std::string getReason() 
+    {
+	return m_reason;
+    }
     /** Optional functionality. */
     virtual bool canFilter() {return false;}
     virtual bool canSort() {return false;}
@@ -154,6 +157,7 @@ class DocSequence {
 protected:
     static std::string o_sort_trans;
     static std::string o_filt_trans;
+    std::string          m_reason;
  private:
     std::string          m_title;
 };
@@ -205,6 +209,12 @@ public:
 	if (m_seq.isNull())
 	    return false;
 	return m_seq->getEnclosing(doc, pdoc);
+    }
+    virtual std::string getReason() 
+    {
+	if (m_seq.isNull())
+	    return false;
+	return m_seq->getReason();
     }
     virtual std::string title() {return m_seq->title();}
     virtual RefCntr<DocSequence> getSourceSeq() {return m_seq;}

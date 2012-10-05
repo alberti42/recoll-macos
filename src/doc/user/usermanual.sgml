@@ -569,9 +569,9 @@ recoll
 
 
       <sect2 id="rcl.indexing.config.gui">
-        <title>The indexing configuration GUI</title>
+        <title>The index configuration GUI</title>
 
-        <para>Most parameters for a given indexing configuration can
+        <para>Most parameters for a given index configuration can
         be set from a <command>recoll</command> GUI running on this
         configuration (either as default, or by setting
         <envar>RECOLL_CONFDIR</envar> or the <option>-c</option>
@@ -4218,6 +4218,24 @@ skippedPaths = ~/somedir/&lowast;.txt
                 now.</para> 
             </listitem>
           </varlistentry>
+
+          <varlistentry><term><varname>maxTermExpand</varname></term>
+            <listitem><para>Maximum expansion count for a single term (e.g.:
+                when using wildcards). The default of 10000 is reasonable and
+                will avoid queries that appear frozen while the engine is
+                walking the term list.</para>
+            </listitem>
+         </varlistentry>
+
+          <varlistentry><term><varname>maxXapianClauses</varname></term>
+            <listitem><para>Maximum number of elementary clauses we can add
+                to a single Xapian query. In some cases, the result of term
+                expansion can be multiplicative, and we want to avoid using
+                excessive memory. The default of 100 000 should be both
+                high enough in most cases and compatible with current
+                typical hardware configurations.</para>
+            </listitem>
+         </varlistentry>
 
           <varlistentry><term><varname>nonumbers</varname></term>
             <listitem><para>If this set to true, no terms will be generated

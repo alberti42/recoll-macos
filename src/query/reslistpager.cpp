@@ -337,37 +337,43 @@ void ResListPager::displayPage(RclConfig *config)
 
     if (pageEmpty()) {
 	chunk << trans("<p><b>No results found</b><br>");
-	HighlightData hldata;
-        m_docSource->getTerms(hldata);
-        vector<string> uterms(hldata.uterms.begin(), hldata.uterms.end());
-        if (!uterms.empty()) {
-            map<string, vector<string> > spellings;
-            suggest(uterms, spellings);
-            if (!spellings.empty()) {
-		if (o_index_stripchars) {
-		    chunk << 
-		trans("<p><i>Alternate spellings (accents suppressed): </i>")
-			  << "<br /><blockquote>";
-		} else {
-		    chunk << 
-			trans("<p><i>Alternate spellings: </i>")
-			  << "<br /><blockquote>";
+	string reason = m_docSource->getReason();
+	if (!reason.empty()) {
+	    chunk << "<blockquote>" << escapeHtml(reason) << 
+		"</blockquote></p>";
+	} else {
+	    HighlightData hldata;
+	    m_docSource->getTerms(hldata);
+	    vector<string> uterms(hldata.uterms.begin(), hldata.uterms.end());
+	    if (!uterms.empty()) {
+		map<string, vector<string> > spellings;
+		suggest(uterms, spellings);
+		if (!spellings.empty()) {
+		    if (o_index_stripchars) {
+			chunk << 
+			    trans("<p><i>Alternate spellings (accents suppressed): </i>")
+			      << "<br /><blockquote>";
+		    } else {
+			chunk << 
+			    trans("<p><i>Alternate spellings: </i>")
+			      << "<br /><blockquote>";
 		    
-		}
-
-		for (map<string, vector<string> >::const_iterator it0 =
-			 spellings.begin(); it0 != spellings.end(); it0++) {
-		    chunk << "<b>" << it0->first << "</b> : ";
-		    for (vector<string>::const_iterator it = 
-			     it0->second.begin();
-			 it != it0->second.end(); it++) {
-			chunk << *it << " ";
 		    }
-		    chunk << "<br />";
+
+		    for (map<string, vector<string> >::const_iterator it0 =
+			     spellings.begin(); it0 != spellings.end(); it0++) {
+			chunk << "<b>" << it0->first << "</b> : ";
+			for (vector<string>::const_iterator it = 
+				 it0->second.begin();
+			     it != it0->second.end(); it++) {
+			    chunk << *it << " ";
+			}
+			chunk << "<br />";
+		    }
+		    chunk << "</blockquote></p>";
 		}
-                chunk << "</blockquote></p>";
-            }
-        }
+	    }
+	}
     } else {
 	unsigned int resCnt = m_docSource->getResCnt();
 	if (m_winfirst + m_respage.size() < resCnt) {

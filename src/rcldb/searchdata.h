@@ -89,8 +89,7 @@ public:
     bool haveWildCards() {return m_haveWildCards;}
 
     /** Translate to Xapian query. rcldb knows about the void*  */
-    bool toNativeQuery(Rcl::Db &db, void *);
-
+    bool toNativeQuery(Rcl::Db &db, void *, int maxexp, int maxcl);
 
     /** We become the owner of cl and will delete it */
     bool addClause(SearchDataClause *cl);
@@ -175,7 +174,7 @@ private:
     bool expandFileTypes(RclConfig *cfg, std::vector<std::string>& exptps);
     bool clausesToQuery(Rcl::Db &db, SClType tp,     
 			std::vector<SearchDataClause*>& query,
-			string& reason, void *d);
+			string& reason, void *d, int, int);
 
     /* Copyconst and assignment private and forbidden */
     SearchData(const SearchData &) {}
@@ -192,7 +191,7 @@ public:
       m_modifiers(SDCM_NONE), m_weight(1.0)
     {}
     virtual ~SearchDataClause() {}
-    virtual bool toNativeQuery(Rcl::Db &db, void *) = 0;
+    virtual bool toNativeQuery(Rcl::Db &db, void *, int maxexp, int maxcl) = 0;
     bool isFileName() const {return m_tp == SCLT_FILENAME ? true: false;}
     virtual std::string getReason() const {return m_reason;}
     virtual void getTerms(HighlightData & hldata) const = 0;
@@ -266,7 +265,7 @@ public:
     }
 
     /** Translate to Xapian query */
-    virtual bool toNativeQuery(Rcl::Db &, void *);
+    virtual bool toNativeQuery(Rcl::Db &, void *, int maxexp, int maxcl);
 
     virtual void getTerms(HighlightData& hldata) const
     {
@@ -307,7 +306,7 @@ public:
     {
     }
 
-    virtual bool toNativeQuery(Rcl::Db &, void *);
+    virtual bool toNativeQuery(Rcl::Db &, void *, int maxexp, int maxcl);
 };
 
 /** 
@@ -326,7 +325,7 @@ public:
     {
     }
 
-    virtual bool toNativeQuery(Rcl::Db &, void *);
+    virtual bool toNativeQuery(Rcl::Db &, void *, int maxexp, int maxcl);
 private:
     int m_slack;
 };
@@ -338,9 +337,12 @@ public:
 	: SearchDataClause(tp), m_sub(sub) 
     {
     }
-    virtual bool toNativeQuery(Rcl::Db &db, void *p)
+    virtual bool toNativeQuery(Rcl::Db &db, void *p, int maxexp, int maxcl)
     {
-	return m_sub->toNativeQuery(db, p);
+	bool ret = m_sub->toNativeQuery(db, p, maxexp, maxcl);
+	if (!ret) 
+	    m_reason = m_sub->getReason();
+	return ret;
     }
 
     virtual void getTerms(HighlightData& hldata) const

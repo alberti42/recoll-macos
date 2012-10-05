@@ -315,7 +315,7 @@ class Db {
     bool maxYearSpan(int *minyear, int *maxyear);
 
     /** Wildcard expansion specific to file names. Internal/sdata use only */
-    bool filenameWildExp(const string& exp, vector<string>& names);
+    bool filenameWildExp(const string& exp, vector<string>& names, int max);
 
     /** Set parameters for synthetic abstract generation */
     void setAbstractParams(int idxTrunc, int synthLen, int syntCtxLen);

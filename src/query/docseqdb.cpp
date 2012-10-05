@@ -51,14 +51,16 @@ string DocSequenceDb::getDescription()
 
 bool DocSequenceDb::getDoc(int num, Rcl::Doc &doc, string *sh)
 {
-    setQuery();
+    if (!setQuery())
+	return false;
     if (sh) sh->erase();
     return m_q->getDoc(num, doc);
 }
 
 int DocSequenceDb::getResCnt()
 {
-    setQuery();
+    if (!setQuery())
+	return false;
     if (m_rescnt < 0) {
 	m_rescnt= m_q->getResCnt();
     }
@@ -71,7 +73,8 @@ static const string cstr_mre("[...]");
 bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<Rcl::Snippet>& vpabs)
 {
     LOGDEB(("DocSequenceDb::getAbstract/pair\n"));
-    setQuery();
+    if (!setQuery())
+	return false;
 
     // Have to put the limit somewhere. 
     int maxoccs = 500;
@@ -93,7 +96,8 @@ bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<Rcl::Snippet>& vpabs)
 
 bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<string>& vabs)
 {
-    setQuery();
+    if (!setQuery())
+	return false;
     if (m_q->whatDb() &&
 	m_queryBuildAbstract && (doc.syntabs || m_queryReplaceAbstract)) {
 	m_q->makeDocAbstract(doc, vabs);
@@ -105,7 +109,8 @@ bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<string>& vabs)
 
 int DocSequenceDb::getFirstMatchPage(Rcl::Doc &doc, string& term)
 {
-    setQuery();
+    if (!setQuery())
+	return false;
     if (m_q->whatDb()) {
 	return m_q->getFirstMatchPage(doc, term);
     }
@@ -114,7 +119,8 @@ int DocSequenceDb::getFirstMatchPage(Rcl::Doc &doc, string& term)
 
 bool DocSequenceDb::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc) 
 {
-    setQuery();
+    if (!setQuery())
+	return false;
     string udi;
     if (!FileInterner::getEnclosing(doc.url, doc.ipath, pdoc.url, pdoc.ipath,
                                     udi))
@@ -124,7 +130,8 @@ bool DocSequenceDb::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc)
 
 list<string> DocSequenceDb::expand(Rcl::Doc &doc)
 {
-    setQuery();
+    if (!setQuery())
+	return list<string>();
     vector<string> v = m_q->expand(doc);
     return list<string>(v.begin(), v.end());
 }
@@ -209,13 +216,10 @@ bool DocSequenceDb::setQuery()
 	return true;
     m_rescnt = -1;
     m_needSetQuery = !m_q->setQuery(m_fsdata);
-
-#if 0
-	HighlightData hld;
-	m_fsdata->getTerms(hld);
-	string str; 
-	hld.toString(str);
-	fprintf(stderr, "DocSequenceDb::setQuery: terms: %s\n", str.c_str());
-#endif
+    if (m_needSetQuery) {
+	m_reason = m_q->getReason();
+	LOGERR(("DocSequenceDb::setQuery: rclquery::setQuery failed: %s\n",
+		m_reason.c_str()));
+    }
     return !m_needSetQuery;
 }

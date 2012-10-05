@@ -103,6 +103,17 @@ indexstemminglanguages = english
 # Actually, this seems a reasonable default for all until someone protests.
 unac_except_trans = åå Åå ää Ää öö Öö üü Üü ßss œoe Œoe æae ÆAE ﬁfi ﬂfl
 
+# Maximum expansion count for a single term (ie: when using wildcards).
+# We used to not limit this at all (except for filenames where the limit
+# was too low at 1000), but it is unreasonable with a big index. 
+# Default 10 000
+maxTermExpand = 10000
+
+# Maximum number of clauses we add to a single Xapian query. In some cases,
+# the result of term expansion can be multiplicative, and we want to avoid
+# eating all the memory. Default 100 000
+maxXapianClauses = 100000
+
 # Where to store the database (directory). This may be an absolute path,
 # else it is taken as relative to the configuration directory (-c argument
 # or $RECOLL_CONFDIR). 
@@ -131,18 +142,6 @@ filtersdir = @prefix@/share/recoll/filters
 # Place to search for icons. The only reason to change this would be if you
 # want to change the icons displayed in the result list
 iconsdir = @prefix@/share/recoll/images
-
-# A list of characters, encoded in UTF-8, which should be handled specially
-# when converting text to unaccented lowercase. For example, in Swedish,
-# the letter a with diaeresis has full alphabet citizenship and should not
-# be turned into an a.  Each element in the space-separated list has the
-# special character as first element and the translation following
-# (multiple chars allowed.  The handling of both the lowercase and
-# upper-case versions of a character should be specified, as appartenance
-# to the list will turn-off both standard accent and case
-# processing. ** Changing the list implies a full reindex **
-# Example for Swedish:
-# unac_except_trans =  åå Åå ää Ää öö Öö
 
 # Should we use the system's 'file -i' command as a final step in file type
 # identification ? This may be useful, but will usually cause the

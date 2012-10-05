@@ -1431,7 +1431,7 @@ bool Db::purgeFile(const string &udi, bool *existed)
 }
 
 // File name wild card expansion. This is a specialisation ot termMatch
-bool Db::filenameWildExp(const string& fnexp, vector<string>& names)
+bool Db::filenameWildExp(const string& fnexp, vector<string>& names, int max)
 {
     string pattern = fnexp;
     names.clear();
@@ -1449,7 +1449,7 @@ bool Db::filenameWildExp(const string& fnexp, vector<string>& names)
     LOGDEB(("Rcl::Db::filenameWildExp: pattern: [%s]\n", pattern.c_str()));
 
     TermMatchResult result;
-    if (!termMatch(ET_WILD, string(), pattern, result, -1,
+    if (!termMatch(ET_WILD, string(), pattern, result, max,
 		   unsplitFilenameFieldName))
 	return false;
     for (vector<TermMatchEntry>::const_iterator it = result.entries.begin();
@@ -1459,7 +1459,7 @@ bool Db::filenameWildExp(const string& fnexp, vector<string>& names)
     if (names.empty()) {
 	// Build an impossible query: we know its impossible because we
 	// control the prefixes!
-	names.push_back("XNONENoMatchingTerms");
+	names.push_back(wrap_prefix("XNONE") + "NoMatchingTerms");
     }
     return true;
 }

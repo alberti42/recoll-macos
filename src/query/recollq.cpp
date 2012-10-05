@@ -319,7 +319,10 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 	query.setSortBy(sortfield, (op_flags & OPT_D) ? false : true);
     }
     Chrono chron;
-    query.setQuery(rq);
+    if (!query.setQuery(rq)) {
+	cerr << "Query setup failed: " << query.getReason() << endl;
+	return(1);
+    }
     int cnt = query.getResCnt();
     if (!(op_flags & OPT_b)) {
 	cout << "Recoll query: " << rq->getDescription() << endl;
