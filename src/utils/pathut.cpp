@@ -515,7 +515,11 @@ bool printableUrl(const string &fcharset, const string &in, string &out)
     return true;
 }
 
-
+// We do not want to mess with the pidfile content in the destructor:
+// the lock might still be in use in a child process. In fact as much
+// as we'd like to reset the pid inside the file when we're done, it
+// would be very difficult to do it right and it's probably best left
+// alone.
 Pidfile::~Pidfile()
 {
     if (m_fd >= 0)
