@@ -313,8 +313,8 @@
             concurrently</link> in a transparent manner.</para>
 
 	<para>For index generation, multiple configurations are
-          totally independant from each other. When multiple indexes
-          are used for searches, 
+          totally independant from each other. When multiple indexes need
+          to be used for a single search,
 	  <link linkend="rcl.search.multidb">some parameters
           should be consistent among the configurations</link>.</para>
 
@@ -484,7 +484,7 @@ recoll
     </sect1>
 
     <sect1 id="rcl.indexing.config">
-      <title>Indexing configuration</title>
+      <title>Index configuration</title>
 
       <para>Variables set inside the 
         <link linkend="rcl.install.config">&RCL; configuration files</link>
@@ -572,29 +572,36 @@ recoll
         <title>The index configuration GUI</title>
 
         <para>Most parameters for a given index configuration can
-        be set from a <command>recoll</command> GUI running on this
-        configuration (either as default, or by setting
-        <envar>RECOLL_CONFDIR</envar> or the <option>-c</option>
-        option.)</para> 
+          be set from a <command>recoll</command> GUI running on this
+          configuration (either as default, or by setting
+          <envar>RECOLL_CONFDIR</envar> or the <option>-c</option>
+          option.)</para> 
 
         <para>The interface is started from the
 	<menuchoice>
             <guimenu>Preferences</guimenu>
-	    <guimenuitem>Indexing Configuration</guimenuitem> 
+	    <guimenuitem>Index Configuration</guimenuitem> 
 	</menuchoice>
-	menu entry. It is divided in three tabs,
+	menu entry. It is divided in four tabs,
         <guilabel>Global parameters</guilabel>, <guilabel>Local
-        parameters</guilabel>, and <guilabel>Beagle web history</guilabel>,
-        which is explained in the next section.</para>
+        parameters</guilabel>, <guilabel>Beagle web history</guilabel>
+        (which is explained in the next section) and <guilabel>Search
+        parameters</guilabel>.</para>
 
-        <para>The first tab allows setting global variables, like the lists
-        of top directories, skipped paths, or stemming languages.</para>
+        <para>The <guilabel>Global parameters</guilabel> tab allows setting
+        global variables, like the lists of top directories, skipped paths,
+        or stemming languages.</para> 
 
-        <para>The second tab allows setting variables that can be redefined
-        for subdirectories. This second tab has an initially empty list of
-        customisation directories, to which you can add. The variables are
-        then set for the currently selected directory (or at the top level
-        if the empty line is selected).</para>
+        <para>The <guilabel>Local parameters</guilabel> tab allows setting
+        variables that can be redefined for subdirectories. This second tab
+        has an initially empty list of customisation directories, to which
+        you can add. The variables are then set for the currently selected
+        directory (or at the top level if the empty line is
+        selected).</para>
+
+        <para>The <guilabel>Search parameters</guilabel> section defines
+          parameters which are used at query time, but are global to an
+          index and affect all search tools, not only the GUI.</para>
 
         <para>The meaning for most entries in the interface is 
         self-evident and documented by a <literal>ToolTip</literal>
@@ -634,7 +641,8 @@ recoll
 	not running, else both programs will fight for the same
 	files.</para>
 
-      <para>This feature can be enabled in the GUI indexing configuration
+      <para>This feature can be enabled in the GUI 
+        <guilabel>Index configuration</guilabel>
 	panel, or by editing the configuration file (set
 	<varname>processbeaglequeue</varname> to 1).</para>
 
@@ -1113,9 +1121,11 @@ fvwm
           <listitem><para><guilabel>Save to File</guilabel></para></listitem>
           <listitem><para><guilabel>Find similar</guilabel></para></listitem>
           <listitem><para><guilabel>Preview Parent
-          document</guilabel></para></listitem> 
+                document</guilabel></para></listitem> 
           <listitem><para><guilabel>Open Parent
-          document</guilabel></para></listitem> 
+                document</guilabel></para></listitem> 
+          <listitem><para><guilabel>Open Snippets
+                Window</guilabel></para></listitem>  
         </itemizedlist>
 
         <para>The <guilabel>Preview</guilabel> and
@@ -1151,6 +1161,15 @@ fvwm
           <guilabel>Open</guilabel> option makes sense, for example to
           start a <application>chm</application> viewer on the parent
           document for a help page.</para>
+
+        <para>The <guilabel>Open Snippets Window</guilabel> entry will only
+          appear for documents which support page breaks (typically
+          PDF, Postscript, DVI). The snippets window lists extracts from
+          the document, taken around search terms occurrences, along with the
+          corresponding page number, as links which can be used to start
+          the native viewer on the appropriate page. If the viewer supports
+          it, its search function will also be primed with one of the
+          search terms.</para>
 
       </sect3>
     </sect2>
@@ -3894,7 +3913,7 @@ while query.next >= 0 and query.next < nres:
         for one index.</para>
 
       <para>The configuration files can be edited by hand or through
-        the <guilabel>Indexing configuration</guilabel> dialog 
+        the <guilabel>Index configuration</guilabel> dialog 
         (<guilabel>Preferences</guilabel> menu). The GUI tool will try
         to respect your formatting and comments as much as possible,
         so it is quite possible to use both ways.</para>
