@@ -3,7 +3,14 @@
 # This is a shell script that starts and stops the recollindex daemon
 # depending on whether or not the power supply is plugged in.  It should be
 # called from the file ~/.config/autostart/recollindex.desktop.
-
+#
+# That is: make the script executable (chmod +x) and replace in
+# recollindex.desk the line:
+#   Exec=recollindex -w 60 -m 
+# With
+#   Exec=/path/to/recoll_index_on_ac.sh
+#
+#
 # By: The Doctor (drwho at virtadpt dot net)
 # License: GPLv3
 # 

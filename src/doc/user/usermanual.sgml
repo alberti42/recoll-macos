@@ -2489,15 +2489,40 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         <listitem><para><literal>dir</literal> for filtering the
             results on file location (Ex:
             <literal>dir:/home/me/somedir</literal>). <literal>-dir</literal>
-            also works to find results out of the specified directory, only
-            after release 1.15.8. A tilde inside the value will be expanded to
-            the home directory. <literal>dir</literal> is not a regular field
-            and only one value makes sense in a query (you can't use
-            <literal>dir:dir1 OR dir:dir2</literal>). Relative paths make
-            sense, for example, 
+            also works to find results not in the specified directory
+            (release >= 1.15.8). A tilde inside the value will be expanded
+            to the home directory. Wildcards will <emphasis>not</emphasis>
+            be expanded. You cannot use <literal>OR</literal> with
+            <literal>dir</literal> clauses (this restriction may go away in
+            the future).</para>
+
+           <para>Relative paths also make sense, for example, 
             <literal>dir:share/doc</literal> would match either
             <filename>/usr/share/doc</filename> or
             <filename>/usr/local/share/doc</filename> </para>
+
+          <para>Several <literal>dir</literal> clauses can be specified,
+          both positive and negative. For example the following makes sense:
+            <programlisting>
+dir:recoll dir:src -dir:utils -dir:common
+            </programlisting> This would select results which have both
+            <filename>recoll</filename> and <filename>src</filename> in the
+            path (in any order), and which have not either
+            <filename>utils</filename> or
+            <filename>common</filename>.</para>
+
+          <para>Another special aspect of <literal>dir</literal> clauses is
+          that the values in the index are not transcoded to UTF-8, and
+          never lower-cased or unaccented, but stored as binary. This means
+          that you need to enter the values in the exact lower or upper
+          case, and that searches for names with diacritics may sometimes
+          be impossible because of character set conversion
+          issues. Non-ASCII UNIX file paths are an unending source of
+          trouble and are best avoided.</para> 
+
+          <para>You need to use double-quotes around the path value if it
+          contains space characters.</para> 
+
            </listitem>
 
         <listitem><para><literal>size</literal> for filtering the

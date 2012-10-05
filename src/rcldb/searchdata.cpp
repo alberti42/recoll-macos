@@ -368,7 +368,7 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d, int maxexp, int maxcl)
 	xq = xq.empty() ? tq : Xapian::Query(Xapian::Query::OP_AND_NOT, xq, tq);
     }
 
-    // Add the directory filtering clause. This is a phrase of terms
+    // Add the directory filtering clauses. Each is a phrase of terms
     // prefixed with the pathelt prefix XP
     for (vector<DirSpec>::const_iterator dit = m_dirspecs.begin();
 	 dit != m_dirspecs.end(); dit++) {

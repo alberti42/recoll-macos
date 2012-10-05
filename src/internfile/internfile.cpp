@@ -187,18 +187,27 @@ void FileInterner::tmpcleanup()
 // Empty handler on return says that we're in error, this will be
 // processed by the first call to internfile().
 // Split into "constructor calls init()" to allow use from other constructor
-FileInterner::FileInterner(const string &f, const struct stat *stp,
+FileInterner::FileInterner(const string &fn, const struct stat *stp,
 			   RclConfig *cnf, 
 			   TempDir& td, int flags, const string *imime)
     : m_tdir(td), m_ok(false), m_missingdatap(0)
 {
+    LOGDEB0(("FileInterner::FileInterner(fn=%s)\n", fn.c_str()));
+    if (fn.empty()) {
+	LOGERR(("FileInterner::FileInterner: empty file name!\n"));
+	return;
+    }
     initcommon(cnf, flags);
-    init(f, stp, cnf, flags, imime);
+    init(fn, stp, cnf, flags, imime);
 }
 
 void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
                         int flags, const string *imime)
 {
+    if (f.empty()) {
+	LOGERR(("FileInterner::init: empty file name!\n"));
+	return;
+    }
     m_fn = f;
 
     // Compute udi for the input file. This is used by filters which
@@ -226,7 +235,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
         }
         l_mime = *imime;
     } else {
-        LOGDEB(("FileInterner:: [%s] mime [%s] preview %d\n", 
+        LOGDEB(("FileInterner::init fn [%s] mime [%s] preview %d\n", 
                 f.c_str(), imime?imime->c_str() : "(null)", m_forPreview));
 
         // Run mime type identification in any case (see comment above).
@@ -320,6 +329,7 @@ FileInterner::FileInterner(const string &data, RclConfig *cnf,
                            TempDir& td, int flags, const string& imime)
     : m_tdir(td), m_ok(false), m_missingdatap(0)
 {
+    LOGDEB0(("FileInterner::FileInterner(data)\n"));
     initcommon(cnf, flags);
     init(data, cnf, flags, imime);
 }
@@ -384,7 +394,7 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf,
                            TempDir& td, int flags)
     : m_tdir(td), m_ok(false), m_missingdatap(0)
 {
-    LOGDEB(("FileInterner::FileInterner(idoc)\n"));
+    LOGDEB0(("FileInterner::FileInterner(idoc)\n"));
     initcommon(cnf, flags);
 
     DocFetcher *fetcher = docFetcherMake(idoc);
