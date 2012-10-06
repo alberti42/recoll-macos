@@ -54,8 +54,10 @@ checkresult() {
     fatal '*** ' $myname FAILED
   else
     rm -f $mydiffs
+
     # for tests with a local index
-    rm -rf xapiandb aspdict.* missing recoll.conf
+    rm -rf history idxstatus.txt index.pid missing recoll.conf xapiandb mimeview
+    rm -rf aspdict.* 
     exit 0
   fi
 }
