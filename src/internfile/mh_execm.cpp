@@ -120,7 +120,7 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
                 ibuf.c_str()));
         return false;
     }
-    LOGDEB1(("MHExecMultiple: got name [%s] len: %d\n", name.c_str(), len));
+    LOGDEB(("MHExecMultiple: got name [%s] len: %d\n", name.c_str(), len));
     if (len / 1024 > m_maxmemberkb) {
         LOGERR(("MHExecMultiple: data len > maxmemberkb\n"));
         return false;
@@ -290,27 +290,15 @@ bool MimeHandlerExecMultiple::next_document()
         }
     }
 
-    // Charset. For many document types it doesn't matter. For text
-    // and html it does. We supply a default from the configuration. 
-    if (charset.empty()) {
-	charset = cfgFilterOutputCharset.empty() ? "utf-8" : 
-	    cfgFilterOutputCharset;
-	if (!stringlowercmp("default", charset)) {
-	    charset = m_dfltInputCharset;
-	}
-    }
-    m_metaData[cstr_dj_keyorigcharset] = charset;
-    m_metaData[cstr_dj_keycharset] = charset;
+    handle_cs(m_metaData[cstr_dj_keymt], charset);
 
-    if (!m_metaData[cstr_dj_keymt].compare(cstr_textplain)) {
-	(void)txtdcode("mh_execm");
-    }
-    
     if (eofnext_received)
         m_havedoc = false;
 
     LOGDEB0(("MHExecMultiple: returning %d bytes of content,"
-	    " mtype [%s] charset [%s]\n", m_metaData[cstr_dj_keycontent].size(), 
-     m_metaData[cstr_dj_keymt].c_str(), m_metaData[cstr_dj_keycharset].c_str()));
+	    " mtype [%s] charset [%s]\n", 
+	     m_metaData[cstr_dj_keycontent].size(), 
+	     m_metaData[cstr_dj_keymt].c_str(), 
+	     m_metaData[cstr_dj_keycharset].c_str()));
     return true;
 }

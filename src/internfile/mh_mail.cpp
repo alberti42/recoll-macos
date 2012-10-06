@@ -242,39 +242,27 @@ bool MimeHandlerMail::processAttach()
     MHMailAttach *att = m_attachments[m_idx];
 
     m_metaData[cstr_dj_keymt] = att->m_contentType;
+    m_metaData[cstr_dj_keyorigcharset] = att->m_charset;
     m_metaData[cstr_dj_keycharset] = att->m_charset;
     m_metaData[cstr_dj_keyfn] = att->m_filename;
-    // Change the title to something helpul
     m_metaData[cstr_dj_keytitle] = att->m_filename + "  (" + m_subject + ")";
     LOGDEB1(("  processAttach:ct [%s] cs [%s] fn [%s]\n", 
 	    att->m_contentType.c_str(),
 	    att->m_charset.c_str(),
 	    att->m_filename.c_str()));
 
+    // Erase current content and replace
     m_metaData[cstr_dj_keycontent] = string();
     string& body = m_metaData[cstr_dj_keycontent];
     att->m_part->getBody(body, 0, att->m_part->bodylength);
-    string decoded;
-    const string *bdp;
-    if (!decodeBody(att->m_contentTransferEncoding, body, decoded, &bdp)) {
-	return false;
-    }
-    if (bdp != &body)
-	body = decoded;
-
-    // Special case for text/plain content. Internfile should deal
-    // with this but it expects text/plain to be utf-8 already, so we
-    // handle the transcoding if needed
-    if (m_metaData[cstr_dj_keymt] == cstr_textplain) {
-	string utf8;
-	if (!transcode(body, utf8, m_metaData[cstr_dj_keycharset], "UTF-8")) {
-	    LOGERR(("  processAttach: transcode to utf-8 failed "
-		    "for charset [%s]\n", m_metaData[cstr_dj_keycharset].c_str()));
- 	    // can't transcode at all -> data is garbage just erase it
- 	    body.clear();
-	} else {
-	    body = utf8;
+    {
+	string decoded;
+	const string *bdp;
+	if (!decodeBody(att->m_contentTransferEncoding, body, decoded, &bdp)) {
+	    return false;
 	}
+	if (bdp != &body)
+	    body.swap(decoded);
     }
 
     // Special case for application/octet-stream: try to better
@@ -285,6 +273,22 @@ bool MimeHandlerMail::processAttach()
 			     m_config, false);
 	if (!mt.empty()) 
 	    m_metaData[cstr_dj_keymt] = mt;
+    }
+
+    // Special case for text/plain content. Internfile should deal
+    // with this but it expects text/plain to be utf-8 already, so we
+    // handle the transcoding if needed
+    if (m_metaData[cstr_dj_keymt] == cstr_textplain) {
+	string utf8;
+	if (!transcode(body, utf8, m_metaData[cstr_dj_keycharset], cstr_utf8)) {
+	    LOGERR(("  processAttach: transcode to utf-8 failed for charset "
+		    "[%s]\n", m_metaData[cstr_dj_keycharset].c_str()));
+ 	    // can't transcode at all -> data is garbage just erase it
+ 	    body.clear();
+	} else {
+	    m_metaData[cstr_dj_keycharset] = cstr_utf8;
+	    body.swap(utf8);
+	}
     }
 
     // Ipath
@@ -527,11 +531,13 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 
     // "Simple" part. 
     LOGDEB2(("walkmime: simple  part\n"));
-    // Normally the default charset is us-ascii. But it happens that
-    // 8 bit chars exist in a message that is stated as us-ascii. Ie the 
-    // mailer used by yahoo support ('KANA') does this. We could convert 
-    // to iso-8859 only if the transfer-encoding is 8 bit, or test for
-    // actual 8 bit chars, but what the heck, le'ts use 8859-1 as default
+    // Normally the default charset is us-ascii. But it happens that 8
+    // bit chars exist in a message that is stated as us-ascii. Ie the
+    // mailer used by yahoo support ('KANA') does this. We could
+    // convert to iso-8859 only if the transfer-encoding is 8 bit, or
+    // test for actual 8 bit chars, but what the heck, le'ts use
+    // 8859-1 (actually CP1252 which is compatible, but with more
+    // useful chars) as default.
     string charset;
     it = content_type.params.find(cstr_mail_charset);
     if (it != content_type.params.end())
@@ -544,7 +550,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 	!stringlowercmp("unknown", charset) ) {
         m_config->getConfParam("maildefcharset", charset);
         if (charset.empty())
-            charset = "iso-8859-1";
+            charset = "CP1252";
     }
 
     // Content transfer encoding
@@ -609,8 +615,6 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 	body = decoded;
 
     // Handle html stripping and transcoding to utf8
-    string utf8;
-    const string *putf8 = 0;
     if (!stringlowercmp("text/html", content_type.value)) {
 	MimeHandlerHtml mh(m_config, "text/html");
 	mh.set_property(Dijon::Filter::OPERATING_MODE, 
@@ -623,9 +627,10 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 	if (it != mh.get_meta_data().end())
 	    out += it->second;
     } else {
+	string utf8;
 	// Transcode to utf-8 
 	LOGDEB1(("walkmime: transcoding from %s to UTF-8\n", charset.c_str()));
-	if (!transcode(body, utf8, charset, "UTF-8")) {
+	if (!transcode(body, utf8, charset, cstr_utf8)) {
 	    LOGERR(("walkmime: transcode failed from cs '%s' to UTF-8\n",
 		    charset.c_str()));
 	    out += body;

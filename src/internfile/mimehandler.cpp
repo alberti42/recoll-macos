@@ -288,8 +288,7 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
 
 out:
     if (h) {
-	string charset = cfg->getDefCharset();
-	h->set_property(Dijon::Filter::DEFAULT_CHARSET, charset);
+	h->set_property(Dijon::Filter::DEFAULT_CHARSET, cfg->getDefCharset());
     }
     return h;
 }

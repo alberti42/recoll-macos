@@ -77,6 +77,13 @@ protected:
     string m_fn;
     string m_ipath;
 
+    // Set up the character set metadata fields and possibly transcode
+    // text/plain output. 
+    // @param charset when called from mh_execm, a possible explicit
+    //       value from the filter (else the data will come from the config)
+    virtual void handle_cs(const string& mt, const string& charset = string());
+
+private:
     virtual void finaldetails();
 };
 

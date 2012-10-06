@@ -143,30 +143,37 @@ bool MimeHandlerExec::next_document()
     return true;
 }
 
-void MimeHandlerExec::finaldetails()
+void MimeHandlerExec::handle_cs(const string& mt, const string& icharset)
 {
-    m_metaData[cstr_dj_keyorigcharset] = m_dfltInputCharset;
+    string charset(icharset);
 
     // cfgFilterOutputCharset comes from the mimeconf filter
-    // definition line If the value is "default", we use the charset
-    // value defined in recoll.conf (which may vary depending on
-    // directory)
-    string& charset = m_metaData[cstr_dj_keycharset];
-    charset = cfgFilterOutputCharset.empty() ? "UTF-8" : cfgFilterOutputCharset;
-    if (!stringlowercmp("default", charset)) {
-	charset = m_dfltInputCharset;
+    // definition line and defaults to UTF-8 if empty. If the value is
+    // "default", we use the default input charset value defined in
+    // recoll.conf (which may vary depending on directory)
+    if (charset.empty()) {
+	charset = cfgFilterOutputCharset.empty() ? cstr_utf8 : 
+	    cfgFilterOutputCharset;
+	if (!stringlowercmp("default", charset)) {
+	    charset = m_dfltInputCharset;
+	}
     }
-
-    // The output mime type is html except if defined otherwise in the filter
-    // definition.
-    string& mt = m_metaData[cstr_dj_keymt];
-    mt = cfgFilterOutputMtype.empty() ? "text/html" : 
-	cfgFilterOutputMtype;
+    m_metaData[cstr_dj_keyorigcharset] = charset;
 
     // If this is text/plain transcode_to/check utf-8
     if (!mt.compare(cstr_textplain)) {
-	(void)txtdcode("mh_exec");
+	(void)txtdcode("mh_exec/m");
+    } else {
+	m_metaData[cstr_dj_keycharset] = charset;
     }
+}
+
+void MimeHandlerExec::finaldetails()
+{
+    // The default output mime type is html, but it may be defined
+    // otherwise in the filter definition.
+    m_metaData[cstr_dj_keymt] = cfgFilterOutputMtype.empty() ? "text/html" : 
+	cfgFilterOutputMtype;
 
     string md5, xmd5, reason;
     if (MD5File(m_fn, md5, &reason)) {
@@ -175,4 +182,6 @@ void MimeHandlerExec::finaldetails()
 	LOGERR(("MimeHandlerExec: cant compute md5 for [%s]: %s\n", 
 		m_fn.c_str(), reason.c_str()));
     }
+
+    handle_cs(m_metaData[cstr_dj_keymt]);
 }

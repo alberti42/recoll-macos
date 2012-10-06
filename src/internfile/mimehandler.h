@@ -109,6 +109,7 @@ public:
     }
 
     // This only makes sense if the contents are currently txt/plain
+    // It converts from keyorigcharset to UTF-8 and sets keycharset.
     bool txtdcode(const string& who);
 
 protected:

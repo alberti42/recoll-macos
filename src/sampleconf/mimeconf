@@ -40,7 +40,7 @@ application/x-lzma = uncompress rcluncomp unxz %f %t
 # The default is now again to use rcldoc. Use raw antiword if speed is more
 # important for you than catching all data, 
 application/msword = exec rcldoc
-#application/msword = exec antiword -t -i 1 -m UTF-8;mimetype=text/plain;charset=utf-8
+#application/msword = exec antiword -t -i 1 -m UTF-8;mimetype=text/plain
 # You can also use wvware directly but it's much slower.
 # application/msword = exec wvWare --charset=utf-8 --nographics
 
@@ -52,8 +52,8 @@ application/vnd.ms-office = exec rcldoc
 application/ogg = execm rclaudio
 application/pdf = exec rclpdf
 application/postscript = exec pstotext;charset=iso-8859-1;mimetype=text/plain
-application/vnd.ms-excel = exec xls2csv -c "	" -d utf-8;charset=utf-8;mimetype=text/plain
-application/vnd.ms-powerpoint = exec catppt -d utf-8;charset=utf-8;mimetype=text/plain
+application/vnd.ms-excel = exec xls2csv -c "	" -d utf-8;mimetype=text/plain
+application/vnd.ms-powerpoint = exec catppt -d utf-8;mimetype=text/plain
 application/vn.oasis.opendocument.txt = exec rclsoff
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
  exec rclopxml
@@ -81,7 +81,7 @@ application/vnd.wordperfect = exec wpd2html;mimetype=text/html
 application/x-abiword = exec rclabw
 application/x-awk = internal text/plain
 application/x-chm = execm rclchm
-application/x-dia-diagram = execm rcldia;mimetype=text/plain;charset=utf-8
+application/x-dia-diagram = execm rcldia;mimetype=text/plain
 application/x-dvi = exec rcldvi
 application/x-flac = execm rclaudio
 application/x-gnuinfo = execm rclinfo
@@ -109,7 +109,7 @@ image/vnd.djvu = exec rcldjvu
 image/svg+xml = exec rclsvg
 image/x-xcf = execm rclimg
 message/rfc822 = internal
-text/calendar = execm rclics;mimetype=text/plain;charset=utf-8
+text/calendar = execm rclics;mimetype=text/plain
 text/html  = internal 
 text/plain = internal 
 text/rtf = exec unrtf --nopict --html;mimetype=text/html

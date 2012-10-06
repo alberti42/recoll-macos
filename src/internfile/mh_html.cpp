@@ -164,7 +164,7 @@ bool MimeHandlerHtml::next_document()
 
     m_metaData[cstr_dj_keyorigcharset] = result.get_charset();
     m_metaData[cstr_dj_keycontent] = result.dump;
-    m_metaData[cstr_dj_keycharset] = "utf-8";
+    m_metaData[cstr_dj_keycharset] = cstr_utf8;
     // Avoid setting empty values which would crush ones possibly inherited
     // from parent (if we're an attachment)
     if (!result.dmtime.empty())
