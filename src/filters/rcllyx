@@ -131,15 +131,14 @@ case "$infile" in
  *) infile=`pwd`/"$infile";;
 esac
 
-binfile=`basename "$infile"`
-ln -s "$infile" "$workdir/$binfile" || exit 1
-lyxfile=$workdir/"$binfile"
-textfile=$workdir/`basename "$binfile" .lyx`.txt
+ln -s "$infile" "$workdir/input.lyx" || exit 1
+lyxfile=$workdir/input.lyx
+textfile=$workdir/input.txt
 
-#echo binfile: $binfile;echo lyxfile: $lyxfile ; ls -l $lyxfile; echo textfile: $textfile
+#echo lyxfile: $lyxfile ; ls -l $lyxfile; echo textfile: $textfile
 
 # Run lyx --export
-lyx --export text "$lyxfile" || senderror "lyx --export not working"
+lyx --export text "$lyxfile" || senderror "lyx --export text "$lyxfile" failed"
 
 # Need the lyx version. After some point -export prints utf-8,
 # whatever the input version
