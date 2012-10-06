@@ -51,7 +51,7 @@ bool MimeHandlerExecMultiple::startCmd()
     string cmd = params.front();
     
     m_maxmemberkb = 50000;
-    m_config->getConfParam("maxmemberkb", &m_maxmemberkb);
+    m_config->getConfParam("membermaxkbs", &m_maxmemberkb);
     ostringstream oss;
     oss << "RECOLL_FILTER_MAXMEMBERKB=" << m_maxmemberkb;
     m_cmd.putenv(oss.str());

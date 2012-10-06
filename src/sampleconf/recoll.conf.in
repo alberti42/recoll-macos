@@ -163,7 +163,7 @@ indexallfilenames = 1
 # Size limit for archive members. This is passed to the filters in the
 # environment as RECOLL_FILTER_MAXMEMBERKB
 # 
-maxmemberkb = 50000
+membermaxkbs = 50000
 
 # Size limit for compressed files. We need to decompress these in a
 # temporary directory for identification, which can be wasteful in some

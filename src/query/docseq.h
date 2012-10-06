@@ -213,7 +213,7 @@ public:
     virtual std::string getReason() 
     {
 	if (m_seq.isNull())
-	    return false;
+	    return string();
 	return m_seq->getReason();
     }
     virtual std::string title() {return m_seq->title();}

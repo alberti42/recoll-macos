@@ -4201,6 +4201,13 @@ skippedPaths = ~/somedir/&lowast;.txt
             </listitem>
            </varlistentry>
 
+          <varlistentry><term><varname>membermaxkbs</varname></term>
+            <listitem><para>This defines the maximum size in kilobytes for
+            an archive member (zip, tar or rar at the moment). Bigger
+            entries will be skipped.</para>
+              </listitem>
+            </varlistentry>
+
           <varlistentry><term><varname>indexallfilenames</varname></term>
             <listitem><para>&RCL; indexes file names in a special
             section of the database to allow specific file names
@@ -4258,8 +4265,10 @@ skippedPaths = ~/somedir/&lowast;.txt
                 don't, searches sensitive to case and diacritics can be
                 performed, but the index will be bigger, and some marginal
                 weirdness may sometimes occur. The default is a stripped
-                index (<literal>indexStripChars = 1</literal> for
-                now.</para> 
+                index (<literal>indexStripChars = 1</literal>) for
+                now. When using multiple indexes for a search,
+                this parameter must be defined identically for
+                all. Changing the value implies an index reset.</para>
             </listitem>
           </varlistentry>
 
@@ -4537,15 +4546,18 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
               </listitem>
            </varlistentry>
 
+            <varlistentry><term><varname>monioniceclass, monioniceclassdata
+             </varname></term><listitem><para>These allow defining the
+             <application>ionice</application> class and data used by the
+             indexer (default class 3, no data).</para>
+              </listitem>
+            </varlistentry>
 
-
-
-          <varlistentry><term><varname>filtermaxseconds</varname></term>
-            <listitem><para>Maximum filter execution time, after which it
+            <varlistentry><term><varname>filtermaxseconds</varname></term>
+              <listitem><para>Maximum filter execution time, after which it
             is aborted. Some postscript programs just loop...</para> 
-            </listitem>
-           </varlistentry>
-
+              </listitem>
+            </varlistentry>
           <varlistentry><term><varname>filtersdir</varname></term>
             <listitem><para>A directory to search for the external
             filter scripts used to index some types of files. The
@@ -4599,6 +4611,17 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
             aspell crashes during dictionary generation.</para>
             </listitem>
           </varlistentry>
+
+          <varlistentry><term><varname>mhmboxquirks</varname></term>
+            <listitem><para>This allows definining location-related quirks
+            for the mailbox handler. Currently only the
+            <literal>tbird</literal> flag is defined, and it should be set
+            for directories which hold
+            <application>Thunderbird</application> data, as their folder
+            format is weird.</para>
+              </listitem>
+            </varlistentry>
+
 
         </variablelist>
        </sect3>
