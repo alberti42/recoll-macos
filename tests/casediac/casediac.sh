@@ -34,8 +34,10 @@ recollindex -z
 set -x
 # Diac-sensitive search for existing term
 recollq -s french éviter
-# Diac-sensitive searches for non-existing terms
+# Succeeds because of default autodiacsens = false
 recollq -s french èviter
+# Diac-sensitive searches for non-existing term
+recollq -s french '"èviter"D'
 recollq -s french '"eviter"D'
 # Diac-unsensitive search
 recollq -s french eviter
@@ -55,9 +57,6 @@ recollq -s french '"Majusculesxx"C'
 
 )  2>&1 | egrep -v '^Recoll query: ' > $mystdout
 
-cd $RECOLL_CONFDIR 
-rm -rf history idxstatus.txt index.pid missing recoll.conf xapiandb/
-
-diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
+diff -u -w ${myname}.txt $mystdout > $mydiffs 2>&1
 checkresult
 
