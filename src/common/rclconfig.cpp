@@ -344,7 +344,7 @@ list<string> RclConfig::getTopdirs()
 //  If defcharset was set (from the config or a previous call, this
 //   is done in setKeydir), use it.
 //  Else, try to guess it from the locale
-//  Use iso8859-1 as ultimate default
+//  Use cp1252 (as a superset of iso8859-1) as ultimate default
 //
 // For filenames, same thing except that we do not use the config file value
 // (only the locale).
@@ -372,9 +372,8 @@ const string& RclConfig::getDefCharset(bool filename)
 	    ) {
 	    localecharset = string(cp);
 	} else {
-	    // Note: it seems that all versions of iconv will take
-	    // iso-8859. Some won't take iso8859
-	    localecharset = string(cstr_iso_8859_1);
+	    // Use cp1252 instead of iso-8859-1, it's a superset.
+	    localecharset = string(cstr_cp1252);
 	}
 	LOGDEB1(("RclConfig::getDefCharset: localecharset [%s]\n",
 		localecharset.c_str()));

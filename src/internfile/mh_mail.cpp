@@ -279,16 +279,8 @@ bool MimeHandlerMail::processAttach()
     // with this but it expects text/plain to be utf-8 already, so we
     // handle the transcoding if needed
     if (m_metaData[cstr_dj_keymt] == cstr_textplain) {
-	string utf8;
-	if (!transcode(body, utf8, m_metaData[cstr_dj_keycharset], cstr_utf8)) {
-	    LOGERR(("  processAttach: transcode to utf-8 failed for charset "
-		    "[%s]\n", m_metaData[cstr_dj_keycharset].c_str()));
- 	    // can't transcode at all -> data is garbage just erase it
- 	    body.clear();
-	} else {
-	    m_metaData[cstr_dj_keycharset] = cstr_utf8;
-	    body.swap(utf8);
-	}
+	if (!txtdcode("MimeHandlerMail::processAttach"))
+	    body.clear();
     }
 
     // Ipath
@@ -320,32 +312,32 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
     // Handle some headers. 
     string& text = m_metaData[cstr_dj_keycontent];
     Binc::HeaderItem hi;
-    string transcoded;
+    string decoded;
     if (doc->h.getFirstHeader("From", hi)) {
-	rfc2047_decode(hi.getValue(), transcoded);
+	rfc2047_decode(hi.getValue(), decoded);
 	if (preview())
 	    text += string("From: ");
-	text += transcoded + cstr_newline;
+	text += decoded + cstr_newline;
 	if (depth == 1) {
-	    m_metaData[cstr_dj_keyauthor] = transcoded;
+	    m_metaData[cstr_dj_keyauthor] = decoded;
 	}
     }
     if (doc->h.getFirstHeader("To", hi)) {
-	rfc2047_decode(hi.getValue(), transcoded);
+	rfc2047_decode(hi.getValue(), decoded);
 	if (preview())
 	    text += string("To: ");
-	text += transcoded + cstr_newline;
+	text += decoded + cstr_newline;
 	if (depth == 1) {
-	    m_metaData[cstr_dj_keyrecipient] = transcoded;
+	    m_metaData[cstr_dj_keyrecipient] = decoded;
 	}
     }
     if (doc->h.getFirstHeader("Cc", hi)) {
-	rfc2047_decode(hi.getValue(), transcoded);
+	rfc2047_decode(hi.getValue(), decoded);
 	if (preview())
 	    text += string("Cc: ");
-	text += transcoded + cstr_newline;
+	text += decoded + cstr_newline;
 	if (depth == 1) {
-	    m_metaData[cstr_dj_keyrecipient] += " " + transcoded;
+	    m_metaData[cstr_dj_keyrecipient] += " " + decoded;
 	}
     }
     if (doc->h.getFirstHeader("Message-Id", hi)) {
@@ -355,31 +347,31 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
 	}
     }
     if (doc->h.getFirstHeader("Date", hi)) {
-	rfc2047_decode(hi.getValue(), transcoded);
+	rfc2047_decode(hi.getValue(), decoded);
 	if (depth == 1) {
-	    time_t t = rfc2822DateToUxTime(transcoded);
+	    time_t t = rfc2822DateToUxTime(decoded);
 	    if (t != (time_t)-1) {
 		char ascuxtime[100];
 		sprintf(ascuxtime, "%ld", (long)t);
 		m_metaData[cstr_dj_keymd] = ascuxtime;
 	    } else {
 		// Leave mtime field alone, ftime will be used instead.
-		LOGDEB(("rfc2822Date...: failed: [%s]\n", transcoded.c_str()));
+		LOGDEB(("rfc2822Date...: failed: [%s]\n", decoded.c_str()));
 	    }
 	}
 	if (preview())
 	    text += string("Date: ");
-	text += transcoded + cstr_newline;
+	text += decoded + cstr_newline;
     }
     if (doc->h.getFirstHeader("Subject", hi)) {
-	rfc2047_decode(hi.getValue(), transcoded);
+	rfc2047_decode(hi.getValue(), decoded);
 	if (depth == 1) {
-	    m_metaData[cstr_dj_keytitle] = transcoded;
-	    m_subject = transcoded;
+	    m_metaData[cstr_dj_keytitle] = decoded;
+	    m_subject = decoded;
 	}
 	if (preview())
 	    text += string("Subject: ");
-	text += transcoded + cstr_newline;
+	text += decoded + cstr_newline;
     }
 
     // Check for the presence of configured additional headers and possibly
@@ -597,22 +589,23 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
     }
 
     // We are dealing with an inline part of text/plain or text/html
-    // type There may be several such parts, which is why we don't
-    // just return a text or html subdoc and let the filter stack
-    // work: we want to concatenate them in place instead
+    // type. We can't just return a text or html subdoc and let the
+    // filter stack work: this would create another subdocument, but
+    // we want instead to decode a body part of this message document.
 
     LOGDEB2(("walkmime: final: body start offset %d, length %d\n", 
 	     doc->getBodyStartOffset(), doc->getBodyLength()));
     string body;
     doc->getBody(body, 0, doc->bodylength);
-
-    string decoded;
-    const string *bdp;
-    if (!decodeBody(cte, body, decoded, &bdp)) {
-	LOGERR(("MimeHandlerMail::walkmime: failed decoding body\n"));
+    {
+	string decoded;
+	const string *bdp;
+	if (!decodeBody(cte, body, decoded, &bdp)) {
+	    LOGERR(("MimeHandlerMail::walkmime: failed decoding body\n"));
+	}
+	if (bdp != &body)
+	    body.swap(decoded);
     }
-    if (bdp != &body)
-	body = decoded;
 
     // Handle html stripping and transcoding to utf8
     if (!stringlowercmp("text/html", content_type.value)) {
