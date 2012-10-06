@@ -24,7 +24,7 @@ class TarExtractor:
         docdata = ""
         try:
             info = self.tar.getmember(ipath)
-            if info.size > 50 * 1024 * 1024:
+            if info.size > self.em.maxmembersize:
                 # skip
                 docdata = ""
                 self.em.rclog("extractone: entry %s size %d too big" %

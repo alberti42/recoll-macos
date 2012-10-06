@@ -50,13 +50,18 @@ bool MimeHandlerExecMultiple::startCmd()
     // Command name
     string cmd = params.front();
     
-    // Build parameter list: delete cmd name
-    vector<string>::iterator it = params.begin();
-    vector<string>myparams(++it, params.end());
+    m_maxmemberkb = 50000;
+    m_config->getConfParam("maxmemberkb", &m_maxmemberkb);
+    ostringstream oss;
+    oss << "RECOLL_FILTER_MAXMEMBERKB=" << m_maxmemberkb;
+    m_cmd.putenv(oss.str());
 
-    // Start filter
     m_cmd.putenv(m_forPreview ? "RECOLL_FILTER_FORPREVIEW=yes" :
 		"RECOLL_FILTER_FORPREVIEW=no");
+
+    // Build parameter list: delete cmd name
+    vector<string>myparams(params.begin() + 1, params.end());
+
     if (m_cmd.startExec(cmd, myparams, 1, 1) < 0) {
         m_reason = string("RECFILTERROR HELPERNOTFOUND ") + cmd;
         missingHelper = true;
@@ -116,7 +121,11 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
         return false;
     }
     LOGDEB1(("MHExecMultiple: got name [%s] len: %d\n", name.c_str(), len));
-
+    if (len / 1024 > m_maxmemberkb) {
+        LOGERR(("MHExecMultiple: data len > maxmemberkb\n"));
+        return false;
+    }
+    
     // Hack: check for 'Document:' and read directly the document data
     // to m_metaData[cstr_dj_keycontent] to avoid an extra copy of the bulky
     // piece
@@ -296,7 +305,6 @@ bool MimeHandlerExecMultiple::next_document()
     if (!m_metaData[cstr_dj_keymt].compare(cstr_textplain)) {
 	(void)txtdcode("mh_execm");
     }
-    
     
     if (eofnext_received)
         m_havedoc = false;

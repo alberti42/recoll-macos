@@ -73,6 +73,10 @@ bool MimeHandlerExec::next_document()
 	LOGDEB(("MimeHandlerExec::next_document(): helper known missing\n"));
 	return false;
     }
+
+    int filtermaxseconds = 900;
+    m_config->getConfParam("filtermaxseconds", &filtermaxseconds);
+
     if (params.empty()) {
 	// Hu ho
 	LOGERR(("MimeHandlerExec::mkDoc: empty params\n"));
@@ -80,15 +84,11 @@ bool MimeHandlerExec::next_document()
 	return false;
     }
 
-    int filtermaxseconds = 900;
-    m_config->getConfParam("filtermaxseconds", &filtermaxseconds);
-
     // Command name
     string cmd = params.front();
     
     // Build parameter vector: delete cmd name and add the file name
-    vector<string>::iterator it = params.begin();
-    vector<string>myparams(++it, params.end());
+    vector<string>myparams(params.begin() + 1, params.end());
     myparams.push_back(m_fn);
     if (!m_ipath.empty())
 	myparams.push_back(m_ipath);
@@ -147,13 +147,18 @@ void MimeHandlerExec::finaldetails()
 {
     m_metaData[cstr_dj_keyorigcharset] = m_dfltInputCharset;
 
-    // cfgFilterOutputCharset comes from the mimeconf filter definition line
+    // cfgFilterOutputCharset comes from the mimeconf filter
+    // definition line If the value is "default", we use the charset
+    // value defined in recoll.conf (which may vary depending on
+    // directory)
     string& charset = m_metaData[cstr_dj_keycharset];
     charset = cfgFilterOutputCharset.empty() ? "UTF-8" : cfgFilterOutputCharset;
     if (!stringlowercmp("default", charset)) {
 	charset = m_dfltInputCharset;
     }
 
+    // The output mime type is html except if defined otherwise in the filter
+    // definition.
     string& mt = m_metaData[cstr_dj_keymt];
     mt = cfgFilterOutputMtype.empty() ? "text/html" : 
 	cfgFilterOutputMtype;

@@ -590,8 +590,10 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 	return;
     }
 
-    // We are dealing with an inline part of text/plain or text/html type
-
+    // We are dealing with an inline part of text/plain or text/html
+    // type There may be several such parts, which is why we don't
+    // just return a text or html subdoc and let the filter stack
+    // work: we want to concatenate them in place instead
 
     LOGDEB2(("walkmime: final: body start offset %d, length %d\n", 
 	     doc->getBodyStartOffset(), doc->getBodyLength()));

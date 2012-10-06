@@ -40,14 +40,14 @@ class ZipExtractor:
     def __init__(self, em):
         self.currentindex = 0
         self.em = em
-
+            
     def extractone(self, ipath):
         #self.em.rclog("extractone: [%s]" % ipath)
         docdata = ""
         try:
             info = self.zip.getinfo(ipath)
             # There could be a 4GB Iso in the zip. We have to set a limit
-            if info.file_size > 50 * 1024*1024:
+            if info.file_size > self.em.maxmembersize:
                 self.em.rclog("extractone: entry %s size %d too big" %
                               (ipath, info.file_size))
                 docdata = ""

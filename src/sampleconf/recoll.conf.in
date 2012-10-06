@@ -159,6 +159,12 @@ indexallfilenames = 1
 #
 # indexedmimetypes = text/html application/pdf
 
+#
+# Size limit for archive members. This is passed to the filters in the
+# environment as RECOLL_FILTER_MAXMEMBERKB
+# 
+maxmemberkb = 50000
+
 # Size limit for compressed files. We need to decompress these in a
 # temporary directory for identification, which can be wasteful in some
 # cases. Limit the waste. Negative means no limit. 0 results in no

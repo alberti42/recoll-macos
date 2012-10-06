@@ -107,6 +107,7 @@ private:
     bool startCmd();
     bool readDataElement(string& name, string& data);
     bool m_filefirst;
+    int  m_maxmemberkb;
 };
 
 #endif /* _MH_EXECM_H_INCLUDED_ */

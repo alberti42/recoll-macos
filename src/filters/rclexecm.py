@@ -17,6 +17,11 @@ class RclExecM:
     def __init__(self):
         self.myname = os.path.basename(sys.argv[0])
         self.mimetype = ""
+        self.maxmembersize = int(os.environ.get("RECOLL_FILTER_MAXMEMBERKB"))
+        if self.maxmembersize:
+            self.maxmembersize = self.maxmembersize * 1024
+        else:
+            self.maxmembersize = 50 * 1024 * 1024
 
     def rclog(self, s, doexit = 0, exitvalue = 1):
         print >> sys.stderr, "RCLMFILT:", self.myname, ":", s
