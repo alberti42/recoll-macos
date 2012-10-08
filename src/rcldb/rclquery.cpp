@@ -141,8 +141,10 @@ private:
 
 Query::Query(Db *db)
     : m_nq(new Native(this)), m_db(db), m_sorter(0), m_sortAscending(true),
-      m_collapseDuplicates(false), m_resCnt(-1)
+      m_collapseDuplicates(false), m_resCnt(-1), m_snipMaxPosWalk(1000000)
 {
+    if (db)
+	db->getConf()->getConfParam("snippetMaxPosWalk", &m_snipMaxPosWalk);
 }
 
 Query::~Query()

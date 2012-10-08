@@ -598,8 +598,8 @@ public:
 	if (m_ts->lastpos < pos)
 	    m_ts->lastpos = pos;
 	bool noexpand = be ? m_ts->curnostemexp : true;
-	LOGDEB(("TermProcQ::takeword: pushing [%s] pos %d noexp %d\n", 
-		term.c_str(), pos, noexpand));
+	LOGDEB1(("TermProcQ::takeword: pushing [%s] pos %d noexp %d\n", 
+		 term.c_str(), pos, noexpand));
 	if (m_terms[pos].size() < term.size()) {
 	    m_terms[pos] = term;
 	    m_nste[pos] = noexpand;

@@ -342,6 +342,10 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
     // them with their snippets.
     unordered_set<unsigned int> searchTermPositions;
 
+    // Remember max position. Used to stop walking positions lists while 
+    // populating the adjacent slots.
+    unsigned int maxpos = 0;
+
     // Total number of occurences for all terms. We stop when we have too much
     unsigned int totaloccs = 0;
 
@@ -419,6 +423,8 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
 			if (ii == (unsigned int)ipos) {
 			    sparseDoc[ii] = qterm;
 			    searchTermPositions.insert(ii);
+			    if (ii > maxpos)
+				maxpos = ii;
 			} else if (ii > (unsigned int)ipos && 
 				   ii < (unsigned int)ipos + qtrmwrdcnt) {
 			    sparseDoc[ii] = occupiedmarker;
@@ -460,6 +466,7 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
     }
     LOGABS(("makeAbstract:%d:chosen number of positions %d\n", 
 	    chron.millis(), totaloccs));
+    maxpos += ctxwords + 1;
 
     // This can happen if there are term occurences in the keywords
     // etc. but not elsewhere ?
@@ -472,31 +479,37 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
     // around the query terms. We arbitrarily truncate the list to
     // avoid taking forever. If we do cutoff, the abstract may be
     // inconsistant (missing words, potentially altering meaning),
-    // which is bad.
+    // which is bad. 
     { 
 	Xapian::TermIterator term;
-	int cutoff = 500 * 1000;
-
+	int cutoff = m_q->m_snipMaxPosWalk;
 	for (term = xrdb.termlist_begin(docid);
 	     term != xrdb.termlist_end(docid); term++) {
 	    // Ignore prefixed terms
 	    if (has_prefix(*term))
 		continue;
-	    if (cutoff-- < 0) {
-		ret = ABSRES_TRUNC;
-		LOGDEB0(("makeAbstract: max term count cutoff\n"));
+	    if (m_q->m_snipMaxPosWalk > 0 && cutoff-- < 0) {
+		ret = ABSRES_TERMMISS;
+		LOGDEB0(("makeAbstract: max term count cutoff %d\n", 
+			 m_q->m_snipMaxPosWalk));
 		break;
 	    }
 
+	    map<unsigned int, string>::iterator vit;
 	    Xapian::PositionIterator pos;
 	    for (pos = xrdb.positionlist_begin(docid, *term); 
 		 pos != xrdb.positionlist_end(docid, *term); pos++) {
-		if (cutoff-- < 0) {
-		    ret = ABSRES_TRUNC;
-		    LOGDEB0(("makeAbstract: max term count cutoff\n"));
+		if (m_q->m_snipMaxPosWalk > 0 && cutoff-- < 0) {
+		    ret = ABSRES_TERMMISS;
+		    LOGDEB0(("makeAbstract: max term count cutoff %d\n", 
+			     m_q->m_snipMaxPosWalk));
 		    break;
 		}
-		map<unsigned int, string>::iterator vit;
+		// If we are beyond the max possible position, stop
+		// for this term
+		if (*pos > maxpos) {
+		    break;
+		}
 		if ((vit = sparseDoc.find(*pos)) != sparseDoc.end()) {
 		    // Don't replace a term: the terms list is in
 		    // alphabetic order, and we may have several terms

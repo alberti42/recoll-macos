@@ -1618,7 +1618,7 @@ bool Db::termMatch(MatchType typ, const string &lang,
 	case 0: is = prefix; break;
 	default: is = prefix + droot.substr(0, es); break;
 	}
-	LOGDEB(("termMatch: initsec: [%s]\n", is.c_str()));
+	LOGDEB1(("termMatch: initsec: [%s]\n", is.c_str()));
 
         for (int tries = 0; tries < 2; tries++) { 
             try {

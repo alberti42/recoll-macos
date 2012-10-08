@@ -32,7 +32,8 @@ class Doc;
 enum abstract_result {
     ABSRES_ERROR = 0,
     ABSRES_OK = 1,
-    ABSRES_TRUNC = 2
+    ABSRES_TRUNC = 2,
+    ABSRES_TERMMISS = 3
 };
 
 // Snippet entry for makeDocAbstract
@@ -126,6 +127,7 @@ private:
     bool   m_collapseDuplicates;     
     int    m_resCnt;
     RefCntr<SearchData> m_sd;
+    int    m_snipMaxPosWalk;
 
     /* Copyconst and assignement private and forbidden */
     Query(const Query &) {}
