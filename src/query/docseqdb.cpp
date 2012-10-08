@@ -77,7 +77,7 @@ bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<Rcl::Snippet>& vpabs)
 	return false;
 
     // Have to put the limit somewhere. 
-    int maxoccs = 500;
+    int maxoccs = 1000;
     Rcl::abstract_result ret = Rcl::ABSRES_ERROR;
     if (m_q->whatDb()) {
 	ret = m_q->makeDocAbstract(doc, vpabs, maxoccs, 
@@ -89,6 +89,9 @@ bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<Rcl::Snippet>& vpabs)
     // If the list was probably truncated, indicate it.
     if (ret == Rcl::ABSRES_TRUNC) {
 	vpabs.push_back(Rcl::Snippet(-1, cstr_mre));
+    } else if (ret == Rcl::ABSRES_TERMMISS) {
+	vpabs.insert(vpabs.begin(), 
+		     Rcl::Snippet(-1, "(Words missing in snippets)"));
     }
 
     return true;
