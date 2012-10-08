@@ -244,6 +244,7 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     if (doc.haspages) {
 	snipsbuf << "<a href=\"A" << docnumforlinks << "\">" 
 		 << trans("Snippets") << "</a>&nbsp;&nbsp;";
+	linksbuf << "&nbsp;&nbsp;" << snipsbuf.str();
     }
 
     // Build the result list paragraph:
@@ -258,12 +259,12 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     map<string, string> subs;
     subs["A"] = !richabst.empty() ? richabst : "";
     subs["D"] = datebuf;
-    subs["E"] = snipsbuf.rdbuf()->str();
+    subs["E"] = snipsbuf.str();
     subs["I"] = iconurl;
     subs["i"] = doc.ipath;
     subs["K"] = !doc.meta[Rcl::Doc::keykw].empty() ? 
 	string("[") + escapeHtml(doc.meta[Rcl::Doc::keykw]) + "]" : "";
-    subs["L"] = linksbuf.rdbuf()->str();
+    subs["L"] = linksbuf.str();
     subs["N"] = numbuf;
     subs["M"] = doc.mimetype;
     subs["R"] = doc.meta[Rcl::Doc::keyrr];
