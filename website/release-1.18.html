@@ -35,8 +35,8 @@
       <h2>Caveats</h2>
 
       <p><em>Installing over an older version</em>: 1.18 introduces serious
-        index formats changes, and it will be advisable to reset the
-        index in most cases. IF the 1.18 index is not configured for
+        index formats changes, and it will be advisable to reset the index
+        in most cases. <em>IF</em> the 1.18 index is not configured for
         case and diacritics sensitivity, it is mostly compatible with
         1.17 indexes though. Case/diacritics sensitivity can be turned
         off either by a compile flag or a configuration variable, and
@@ -52,10 +52,10 @@
         class="literal">recollindex&nbsp;-z</span> will do the same in most
         cases.</p>
 
-      <p>Some new, auxiliary, features do require a full reindex to work:</p>
+      <p>Some new, auxiliary, features also require a full reindex:</p>
       <ul>
-        <li>The file size filtering functions (for an index created by
-          1.16 or older).</li>
+        <li>The file size filtering functions if the existing index was
+        created by version 1.16 or older.</li>
         <li>The anchored search feature if the index was created by
           release 1.15 or older.</li>
       </ul>
@@ -64,41 +64,80 @@
 
       <h2>Changes</h2>
 
-      <p>Recoll 1.18 has some major changes 1.17, the most visible of
-        which is the ability to consider character case and diacritics
-        when searching.</p> 
+      <p>Recoll 1.18 has some major changes, the most visible of
+        which is the ability to search for exact matches of character case
+        and diacritics.</p> 
 
       <p>Recoll 1.18.0 changes:</p>
 
       <ul>
         
         <li>The index can now be configured for case and diacritics
-          sensitivity. Raw terms are indexed, and query time expansions
-          are used when search insensitivity is designed (in a similar
-          manner to what is used for stemming). See the chapter
-          manual for details about controlling the feature.</li>
+          sensitivity, in which case raw terms are indexed. On such an
+          index, search insensitivity to case and diacriics is obtained,
+          when desired, by query time expansion, in a similar manner to
+          what is used for stemming. See the 
+          <a href="usermanual/usermanual.html#RCL.INDEXING.CONFIG.SENS">
+            manual chapter for details</a> about controlling the
+            feature.</li> 
 
-        <li>More effort is put in choosing the terms used in
-          generating the snippets inside the result list.</li>
-        
-        <li>Capacity to store page breaks and use them when opening a
-          document.</li> 
-        <li>Capacity to pass a search string to the native app.</li>
-        <li>New "snippets" window for documents with page numbers, let
-          the user choose a snippet and open the document at the
-          appropriate page.</li>
-        <li>We now use the Xapian "synonyms" mechanism to store all
-          data about stemming, case, and diacritics expansion (this
-          replace the previous ad-hoc stemming expansion mechanism).</li>
+        <li>Recoll has a new capacity to store page break locations
+          and use them when opening a document at the location for a
+          given match. This currently works with PDF, Postscript and DVI
+          documents, and the <b>evince</b> viewer.</li> 
 
-        <li>New script to start/stop recollindex according to mains
-          power status.</li>
-        <li>Add &lt;pre style="white-space: pre-wrap"&gt; to plain
-          text HTML display options.</li>
-        <li>Allow multiple directory specifications in the query
+        <li>Recoll can now also pass a search string to the native
+          application.</li> 
+
+        <li>The GUI result list has a new "snippets" window for
+          documents with page numbers, which let the user choose a
+          snippet and open the document at the appropriate page.</li>
+
+        <li>We now allow multiple directory specifications in the query
           language, as in: <i>dir:/home/me -dir:tmp</i></li>
-        <li>Improved search in the preview window, allows selecting
-          one of the initial search clauses from a list.</li>
+
+        <li>The search inside the GUI preview window, has been
+          improved, and allows selecting from a list one of the
+          initial term groups as the search target.</li>
+
+        <li>A new script dedicated to laptops, which can start or stop
+          recollindex according to mains power status.</li>
+
+        <li>Added &lt;pre style="white-space: pre-wrap"&gt; to plain
+          text HTML display options. This will often be the best
+          option to display plain text: it will better respect
+          indentation, while folding long lines.</li>
+
+        <li>When running in an UTF-8 locale, and after decoding a
+          plain text file as UTF-8 fails, indexing will try again
+          using an 8bit character set heuristically chosen according
+          to the locale country code.</li>
+
+        <li>A new configuration, maxmemberkbs, has been implemented to
+          limit the size of archive members we process. This will avoid
+          recoll trying to read a 4 GB ISO from a zip archive...</li>
+
+        <li>Proper error reporting when a wildcard expansion is
+          truncated for size. An incomplete search could previously be
+          performed without any indication.</li>
+
+        <li>More effort is also put in choosing the terms used in
+          generating the snippets inside the result list.</li>
+
+        <li>Recoll now uses the Xapian "synonyms" mechanism to store all
+          data about stemming, case, and diacritics expansion (this
+          replaces the previous ad-hoc stemming expansion
+          mechanism).</li>
+
+        <li>Partial autodetection of thunderbird mailboxes found out
+          of the configured location.</li>
+
+        <li>Implemented a list of mime types that should be opened
+          with the locally configured application even when <em>Use
+            Desktop Preferences</em> is checked. This will permit, for
+          example, using evince for its page access capabilities on
+          PDF files, while letting the desktop handle all the other
+          mime types.</li>
 
         <li>Fixed bugs:
           <ul>
