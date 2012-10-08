@@ -247,6 +247,12 @@ webcachemaxmbs = 40
 # really no sense in caching offsets for small files. The default is 5 MB.
 #mboxcacheminmbs = 5
 
+# Maximum number of positions we walk while populating a snippet for the
+# result list. The default of 1 000 000 may be insufficient for big
+# documents, the consequence would be snippets with possibly
+# meaning-altering missing words. 
+snippetMaxPosWalk = 1000000
+
 # You could specify different parameters for a subdirectory like this:
 #[~/hungariandocs/plain]
 #defaultcharset = iso-8859-2
