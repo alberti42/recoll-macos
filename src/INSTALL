@@ -333,7 +333,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    a configuration directory. There can be several such directories, each of
    which define the parameters for one index.
 
-   The configuration files can be edited by hand or through the Indexing
+   The configuration files can be edited by hand or through the Index
    configuration dialog (Preferences menu). The GUI tool will try to respect
    your formatting and comments as much as possible, so it is quite possible
    to use both ways.
@@ -526,6 +526,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            window. A size of a few megabytes would seem reasonable (default:
            1MB).
 
+   membermaxkbs
+
+           This defines the maximum size in kilobytes for an archive member
+           (zip, tar or rar at the moment). Bigger entries will be skipped.
+
    indexallfilenames
 
            Recoll indexes file names in a special section of the database to
@@ -561,6 +566,32 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    using multiple indexes, it may not make sense to search indexes that don't
    share the values for these parameters, because they usually affect both
    search and index operations.
+
+   indexStripChars
+
+           Decide if we strip characters of diacritics and convert them to
+           lower-case before terms are indexed. If we don't, searches
+           sensitive to case and diacritics can be performed, but the index
+           will be bigger, and some marginal weirdness may sometimes occur.
+           The default is a stripped index (indexStripChars = 1) for now.
+           When using multiple indexes for a search, this parameter must be
+           defined identically for all. Changing the value implies an index
+           reset.
+
+   maxTermExpand
+
+           Maximum expansion count for a single term (e.g.: when using
+           wildcards). The default of 10000 is reasonable and will avoid
+           queries that appear frozen while the engine is walking the term
+           list.
+
+   maxXapianClauses
+
+           Maximum number of elementary clauses we can add to a single Xapian
+           query. In some cases, the result of term expansion can be
+           multiplicative, and we want to avoid using excessive memory. The
+           default of 100 000 should be both high enough in most cases and
+           compatible with current typical hardware configurations.
 
    nonumbers
 
@@ -699,6 +730,22 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
   5.4.1.4. Miscellaneous parameters:
 
+   autodiacsens
+
+           IF the index is not stripped, decide if we automatically trigger
+           diacritics sensitivity if the search term has accented characters
+           (not in unac_except_trans). Else you need to use the query
+           language and the D modifier to specify diacritics sensitivity.
+           Default is no.
+
+   autocasesens
+
+           IF the index is not stripped, decide if we automatically trigger
+           character case sensitivity if the search term has upper-case
+           characters in any but the first position. Else you need to use the
+           query language and the C modifier to specify character-case
+           sensitivity. Default is yes.
+
    loglevel,daemloglevel
 
            Verbosity level for recoll and recollindex. A value of 4 lists
@@ -736,6 +783,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            Period (in seconds) at which the real time monitor will regenerate
            the auxiliary databases (spelling, stemming) if needed. The
            default is one hour.
+
+   monioniceclass, monioniceclassdata
+
+           These allow defining the ionice class and data used by the indexer
+           (default class 3, no data).
 
    filtermaxseconds
 
@@ -780,6 +832,13 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            If this is set, the aspell dictionary generation is turned off.
            Useful for cases where you don't need the functionality or when it
            is unusable because aspell crashes during dictionary generation.
+
+   mhmboxquirks
+
+           This allows definining location-related quirks for the mailbox
+           handler. Currently only the tbird flag is defined, and it should
+           be set for directories which hold Thunderbird data, as their
+           folder format is weird.
 
 5.4.2. The fields file
 
@@ -885,19 +944,24 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    oofice instead of openoffice etc.
 
    Changes to this file can be done by direct editing, or through the recoll
-   user preferences dialog.
+   GUI preferences dialog.
 
    If Use desktop preferences to choose document editor is checked in the
-   Recoll GUI user preferences, all mimeview entries will be ignored except
-   the one labelled application/x-all (which is set to use xdg-open by
-   default).
+   Recoll GUI preferences, all mimeview entries will be ignored except the
+   one labelled application/x-all (which is set to use xdg-open by default).
+
+   In this case, the xallexcepts top level variable defines a list of mime
+   type exceptions which will be processed according to the local entries
+   instead of being passed to the desktop. This is so that specific Recoll
+   options such as a page number or a search string can be passed to
+   applications that support them, such as the evince viewer.
 
    As for the other configuration files, the normal usage is to have a
    mimeview inside your own configuration directory, with just the
    non-default entries, which will override those from the central
    configuration file.
 
-   Please note that these entries must be placed under a [view] section.
+   All viewer definition entries must be placed under a [view] section.
 
    The keys in the file are normally mime types. You can add an application
    tag to specialize the choice for an area of the filesystem (using a
@@ -926,6 +990,15 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        the called application (possibly a script) to be able to handle it.
 
      * %M. Mime type
+
+     * %p. Page index. Only significant for a subset of document types,
+       currently only PDF, Postscript and DVI files. Can be used to start the
+       editor at the right page for a match or snippet.
+
+     * %s. Search term. The value will only be set for documents with indexed
+       page numbers (ie: PDF). The value will be one of the matched search
+       terms. It would allow pre-setting the value in the "Find" entry inside
+       Evince for example, for easy highlighting of the term.
 
      * %U, %u. Url.
 
