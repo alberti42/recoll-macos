@@ -38,7 +38,10 @@ public:
 
 protected slots:
     virtual void linkWasClicked(const QUrl &);
-
+    virtual void slotEditFind();
+    virtual void slotEditFindNext();
+    virtual void slotEditFindPrevious();
+    virtual void slotSearchTextChanged(const QString&);
 signals:
     void startNativeViewer(Rcl::Doc, int pagenum, QString term);
 	

@@ -16,15 +16,90 @@
   <property name="sizeGripEnabled">
    <bool>true</bool>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
-    <widget class="QWebView" name="webView">
-     <property name="url">
-      <url>
-       <string>about:blank</string>
-      </url>
-     </property>
-    </widget>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QWebView" name="webView">
+       <property name="url">
+        <url>
+         <string>about:blank</string>
+        </url>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="searchFM">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QToolButton" name="searchClosePB">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string notr="true">X</string>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonTextOnly</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="searchLB">
+          <property name="text">
+           <string>Find:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="searchLE">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="nextPB">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Next</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="prevPB">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Prev</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
@@ -60,6 +135,22 @@
     <hint type="destinationlabel">
      <x>257</x>
      <y>197</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>searchClosePB</sender>
+   <signal>clicked()</signal>
+   <receiver>searchFM</receiver>
+   <slot>hide()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>33</x>
+     <y>414</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>328</x>
+     <y>414</y>
     </hint>
    </hints>
   </connection>
