@@ -123,6 +123,7 @@ doc/user/rcl.program.api.html
 doc/user/rcl.program.fields.html
 doc/user/rcl.program.html
 doc/user/rcl.search.anchorwild.html
+doc/user/rcl.search.casediac.html
 doc/user/rcl.search.commandline.html
 doc/user/rcl.search.desktop.html
 doc/user/rcl.search.html
@@ -401,6 +402,9 @@ qtgui/rtitool.h
 qtgui/rtitool.ui
 qtgui/searchclause_w.cpp
 qtgui/searchclause_w.h
+qtgui/snippets.ui
+qtgui/snippets_w.cpp
+qtgui/snippets_w.h
 qtgui/spell.ui
 qtgui/spell_w.cpp
 qtgui/spell_w.h
@@ -443,6 +447,7 @@ rcldb/
 rcldb/Makefile
 rcldb/expansiondbs.cpp
 rcldb/expansiondbs.h
+rcldb/rclabstract.cpp
 rcldb/rcldb.cpp
 rcldb/rcldb.h
 rcldb/rcldb_p.h
