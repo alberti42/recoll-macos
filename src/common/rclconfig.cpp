@@ -825,8 +825,20 @@ string RclConfig::getMimeViewerDef(const string &mtype, const string& apptag,
 	string excepts = getMimeViewerAllEx();
 	vector<string> vex;
 	stringToTokens(excepts, vex);
-	vector<string>::iterator it = find(vex.begin(), vex.end(), mtype);
-	if (it == vex.end()) {
+	bool isexcept = false;
+	for (vector<string>::iterator it = vex.begin();
+	     it != vex.end(); it++) {
+	    vector<string> mita;
+	    stringToTokens(*it, mita, "|");
+	    if ((mita.size() == 1 && apptag.empty() && mita[0] == mtype) ||
+		(mita.size() == 2 && mita[1] == apptag && mita[0] == mtype)) {
+		// Exception to x-all
+		isexcept = true;
+		break;
+	    }
+	}
+
+	if (isexcept == false) {
 	    mimeview->get("application/x-all", hs, "view");
 	    return hs;
 	}
