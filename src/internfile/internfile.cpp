@@ -729,7 +729,8 @@ int FileInterner::addHandler()
     getKeyValue(docdata, cstr_dj_keycharset, charset);
     getKeyValue(docdata, cstr_dj_keymt, mimetype);
 
-    LOGDEB(("FileInterner::addHandler: next_doc is %s\n", mimetype.c_str()));
+    LOGDEB(("FileInterner::addHandler: next_doc is %s target [%s]\n", 
+	    mimetype.c_str(), m_targetMType.c_str()));
 
     // If we find a document of the target type (text/plain in
     // general), we're done decoding. If we hit text/plain, we're done
