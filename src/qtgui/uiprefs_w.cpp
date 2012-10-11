@@ -289,6 +289,8 @@ void UIPrefsDialog::accept()
 void UIPrefsDialog::editParaFormat()
 {
     EditDialog dialog(this);
+    dialog.setWindowTitle(tr("Result list paragraph format "
+			     "(erase all to reset to default)"));
     dialog.plainTextEdit->setPlainText(paraFormat);
     int result = dialog.exec();
     if (result == QDialog::Accepted)
@@ -297,6 +299,7 @@ void UIPrefsDialog::editParaFormat()
 void UIPrefsDialog::editHeaderText()
 {
     EditDialog dialog(this);
+    dialog.setWindowTitle(tr("Result list header (default is empty)"));
     dialog.plainTextEdit->setPlainText(headerText);
     int result = dialog.exec();
     if (result == QDialog::Accepted)
