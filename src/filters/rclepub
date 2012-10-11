@@ -1,0 +1,74 @@
+#!/usr/bin/env python
+"""Extract Html content from an EPUB file (.chm)"""
+
+rclepub_html_mtype = "text/html"
+
+import sys
+import os
+import re
+
+import rclexecm
+
+try:
+    import epub
+except:
+    print "RECFILTERROR HELPERNOTFOUND python:epub"
+    sys.exit(1);
+
+class rclEPUB:
+    """RclExecM slave worker for extracting all text from an EPUB
+    file. We first extract the list of internal nodes, and them return them
+    one by one. The ipath is the internal href"""
+
+    def __init__(self, em):
+        self.currentindex = 0
+        self.em = em
+        self.em.setmimetype(rclepub_html_mtype)
+
+    def extractone(self, path):
+        """Extract one path-named internal file from the EPUB file"""
+
+        #self.em.rclog("extractone: [%s]"%(path))
+        iseof = rclexecm.RclExecM.noteof
+        if self.currentindex >= len(self.contents) -1:
+            iseof = rclexecm.RclExecM.eofnext
+
+        try:
+            doc = self.book.read(path)
+            doc = re.sub('''</[hH][eE][aA][dD]''',
+                         '''<meta name="rclaptg" content="epub"></head>''', doc)
+            return (True, doc, path, iseof)
+        except Exception, err:
+            self.em.rclog("openfile: failed: [%s]" % err)
+            return (False, "", path, iseof)
+
+    def openfile(self, params):
+        """Open the EPUB file"""
+        self.currentindex = 0
+        self.contents = []
+        try:
+            self.book = epub.open(params["filename:"])
+        except Exception, err:
+            self.em.rclog("openfile: failed: [%s]" % err)
+            return False
+        for id, item in self.book.opf.manifest.iteritems():
+#            print item.__dict__
+            if item.media_type == u'application/xhtml+xml':
+                self.contents.append(item.href)
+        return True
+        
+
+    def getipath(self, params):
+        return self.extractone(params["ipath:"])
+        
+    def getnext(self, params):
+        if self.currentindex >= len(self.contents):
+            return (False, "", "", rclexecm.RclExecM.eofnow)
+        else:
+            ret= self.extractone(self.contents[self.currentindex])
+            self.currentindex += 1
+            return ret
+
+proto = rclexecm.RclExecM()
+extract = rclEPUB(proto)
+rclexecm.main(proto, extract)

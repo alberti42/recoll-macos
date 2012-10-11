@@ -1,0 +1,3 @@
+#!/bin/sh
+
+kchmviewer --url $2 $1

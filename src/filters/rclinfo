@@ -20,8 +20,10 @@ htmltemplate = '''
 <html>
   <head>
       <title>%s</title>
+      <meta name="rclaptg" content="gnuinfo">
    </head>
-   <body><pre>
+   <body>
+   <pre style="white-space: pre-wrap">
    %s
    </pre></body>
 </html>

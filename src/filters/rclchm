@@ -11,6 +11,7 @@ rclchm_html_mtype = "text/html"
 
 import sys
 import os
+import re
 import posixpath
 import urlparse
 import urllib
@@ -201,6 +202,8 @@ class rclCHM:
         res, doc = self.chm.RetrieveObject(ui)
         #self.em.rclog("extract: RetrieveObject: %d [%s]" % (res, doc))
         if res > 0:
+            doc = re.sub('''</[hH][eE][aA][dD]''',
+                         '''<meta name="rclaptg" content="chm"></head>''', doc)
             self.em.setmimetype(rclchm_html_mtype)
             return (True, doc, path, iseof)
         return (False, "", path, iseof)
