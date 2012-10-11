@@ -70,6 +70,8 @@
 .xls = application/vnd.ms-excel
 .chm = application/x-chm
 
+.epub = application/epub+zip
+
 # OpenOffice / opendocument. We handle opendocument as old openoffice files
 # for now
 .sxc = application/vnd.sun.xml.calc

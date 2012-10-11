@@ -32,6 +32,7 @@ application/x-lzma = uncompress rcluncomp unxz %f %t
 # A different format (ie text/plain), and a character set can be defined for
 # each filter, see the exemples below (ie: msword)
 [index]
+application/epub+zip = execm rclepub
 
 # MSWORD: the rcldoc script handles a number of marginal case that raw
 # antiword won't:
@@ -142,6 +143,7 @@ text/xml = exec rclxml
 ## #############################################
 # Icons to be used in the result list if required by gui config
 [icons]
+application/epub+zip = document
 application/msword = wordprocessing
 application/ogg = sownd
 application/pdf = pdf
@@ -231,6 +233,7 @@ text/xml = document
 # If you add/remove categories, you may also want to change the
 # "guifilters" section below.
 text = \
+      application/epub+zip \
       application/msword \
       application/pdf \
       application/postscript \
@@ -245,12 +248,12 @@ text = \
       application/x-awk \
       application/x-chm \
       application/x-dvi \
+      application/x-gnuinfo \
       application/x-kword \
       application/x-lyx \
       application/x-okular-notes \
       application/x-perl \
       application/x-scribus \
-      application/x-gnuinfo \
       application/x-shellscript \
       application/x-tex \
       application/xml \

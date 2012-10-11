@@ -13,11 +13,13 @@
 # definition. This is useful, e.g. for pdf, where we can pass additional
 # parameters like page to open and search string when using the local
 # definition
-xallexcepts = application/pdf application/postscript application/x-dvi
-
+xallexcepts = application/pdf application/postscript application/x-dvi \
+            text/html|gnuinfo text/html|chm
 [view]
 # Pseudo entry used if the 'use desktop' preference is set in the GUI
 application/x-all = xdg-open %f
+
+application/epub+zip = ebook-viewer %f
 
 application/x-kword = kword %f
 application/x-abiword = abiword %f
@@ -102,10 +104,10 @@ text/x-shellscript = emacsclient  %f
 
 # Or firefox -remote "openFile(%u)"
 text/html = firefox %u
-text/html|gnuinfo = rclshowinfo %F %(title)
+text/html|gnuinfo = rclshowinfo %F %(title);ignoreipath=1
 application/x-webarchive = konqueror %f
 
-text/x-fictionbook = calibre %f
+text/x-fictionbook = ebook-viewer %f
 
 application/x-tex = emacsclient  %f
 application/xml = emacsclient  %f
@@ -119,7 +121,7 @@ text/x-c++ = emacsclient  %f
 text/x-csv = libreoffice %f
 text/x-html-sidux-man = konqueror %f
 text/x-html-aptosid-man = iceweasel %f
-text/x-chm-html = openchm %f %i
+text/html|chm = rclshowchm %f %i
 text/x-ini = emacsclient  %f
 text/x-man = xterm -u8 -e "groff -T ascii -man %f | more"
 text/x-python = idle %f
