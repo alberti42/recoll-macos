@@ -25,7 +25,7 @@ class rclEPUB:
         self.em = em
         self.em.setmimetype(rclepub_html_mtype)
 
-    def extractone(self, path):
+    def extractone(self, id):
         """Extract one path-named internal file from the EPUB file"""
 
         #self.em.rclog("extractone: [%s]"%(path))
@@ -34,13 +34,17 @@ class rclEPUB:
             iseof = rclexecm.RclExecM.eofnext
 
         try:
-            doc = self.book.read(path)
+            item = self.book.get_item(id)
+            if item is None:
+                raise Exception("Item not found for id %s" % (id,))
+            doc = self.book.read_item(item)
             doc = re.sub('''</[hH][eE][aA][dD]''',
                          '''<meta name="rclaptg" content="epub"></head>''', doc)
-            return (True, doc, path, iseof)
+            self.em.setmimetype(rclepub_html_mtype)
+            return (True, doc, id, iseof)
         except Exception, err:
-            self.em.rclog("openfile: failed: [%s]" % err)
-            return (False, "", path, iseof)
+            self.em.rclog("extractone: failed: [%s]" % err)
+            return (False, "", id, iseof)
 
     def openfile(self, params):
         """Open the EPUB file"""
@@ -49,12 +53,12 @@ class rclEPUB:
         try:
             self.book = epub.open(params["filename:"])
         except Exception, err:
-            self.em.rclog("openfile: failed: [%s]" % err)
+            self.em.rclog("openfile: epub.open failed: [%s]" % err)
             return False
         for id, item in self.book.opf.manifest.iteritems():
-#            print item.__dict__
+            # print item.__dict__
             if item.media_type == u'application/xhtml+xml':
-                self.contents.append(item.href)
+                self.contents.append(id)
         return True
         
 

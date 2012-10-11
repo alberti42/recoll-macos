@@ -120,7 +120,7 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
                 ibuf.c_str()));
         return false;
     }
-    LOGDEB(("MHExecMultiple: got name [%s] len: %d\n", name.c_str(), len));
+
     if (len / 1024 > m_maxmemberkb) {
         LOGERR(("MHExecMultiple: data len > maxmemberkb\n"));
         return false;
@@ -143,6 +143,9 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
                 len, datap->length()));
         return false;
     }
+    LOGDEB1(("MHExecMe:rdDtElt got: name [%s] len %d value [%s]\n", 
+	     name.c_str(), len, datap->size() > 100 ? 
+	     (datap->substr(0, 100) + " ...").c_str() : datap->c_str()));
     return true;
 }
 
