@@ -190,7 +190,6 @@ class rclCHM:
     def __init__(self, em):
         self.contents = []
         self.chm = chm.CHMFile()
-        self.currentindex = 0
         self.em = em
         if rclchm_catenate:
             self.em.setmimetype("text/plain")
@@ -240,15 +239,13 @@ class rclCHM:
         """Open the chm file and build the contents list by extracting and
         parsing the Topics object"""
 
-        self.currentindex = 0
+        self.currentindex = -1
         self.contents = []
         
         filename = params["filename:"]
         if not self.chm.LoadCHM(filename):
             self.em.rclog("LoadCHM failed")
             return False
-
-        self.sfn = os.path.basename(filename)
 
         #self.em.rclog("home [%s] topics [%s] title [%s]" %
         #              (self.chm.home, self.chm.topics, self.chm.title))
@@ -292,6 +289,16 @@ class rclCHM:
                 return (True, alltxt, "", rclexecm.RclExecM.eofnext)
             else:
                 return (False, "", "", rclexecm.RclExecM.eofnow)
+
+        if self.currentindex == -1:
+            # Return "self" doc
+            self.currentindex = 0
+            self.em.setmimetype('text/plain')
+            if len(self.contents) == 0:
+                eof = rclexecm.RclExecM.eofnext
+            else:
+                eof = rclexecm.RclExecM.noteof
+            return (True, "", "", eof)
 
         if self.currentindex >= len(self.contents):
             return (False, "", "", rclexecm.RclExecM.eofnow)

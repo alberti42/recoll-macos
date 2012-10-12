@@ -67,7 +67,7 @@ class ZipExtractor:
 
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
-        self.currentindex = 0
+        self.currentindex = -1
         try:
             self.zip = ZipFile(params["filename:"])
             return True
@@ -87,6 +87,16 @@ class ZipExtractor:
             return (ok, data, ipath, eof)
         
     def getnext(self, params):
+        if self.currentindex == -1:
+            # Return "self" doc
+            self.currentindex = 0
+            self.em.setmimetype('text/plain')
+            if len(self.zip.namelist()) == 0:
+                eof = rclexecm.RclExecM.eofnext
+            else:
+                eof = rclexecm.RclExecM.noteof
+            return (True, "", "", eof)
+
         if self.currentindex >= len(self.zip.namelist()):
             #self.em.rclog("getnext: EOF hit")
             return (False, "", "", rclexecm.RclExecM.eofnow)

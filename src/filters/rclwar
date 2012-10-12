@@ -22,7 +22,7 @@ class WarExtractor:
 
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
-        self.currentindex = 0
+        self.currentindex = -1
         try:
             self.tar = tarfile.open(params["filename:"])
             return True
@@ -40,6 +40,11 @@ class WarExtractor:
         return self.extractone(tarinfo)
 
     def getnext(self, params):
+        if self.currentindex == -1:
+            # Return "self" doc
+            self.currentindex = 0
+            return (True, "", "", rclexecm.RclExecM.noteof)
+
         tarinfo = self.tar.next()
         if tarinfo is None:
             #self.em.rclog("getnext: EOF hit")

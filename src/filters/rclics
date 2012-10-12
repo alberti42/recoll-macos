@@ -60,7 +60,7 @@ class IcalExtractor:
             self.em.rclog("Openfile: open: %s" % str(e))
             return False
 
-        self.currentindex = 0
+        self.currentindex = -1
 
         if usemodule == 'internal':
             self.contents = ICalSimpleSplitter().splitcalendar(calstr)
@@ -96,6 +96,17 @@ class IcalExtractor:
         return self.extractone(index)
         
     def getnext(self, params):
+
+        if self.currentindex == -1:
+            # Return "self" doc
+            self.currentindex = 0
+            self.em.setmimetype('text/plain')
+            if len(self.contents) == 0:
+                eof = rclexecm.RclExecM.eofnext
+            else:
+                eof = rclexecm.RclExecM.noteof
+            return (True, "", "", eof)
+
         if self.currentindex >= len(self.contents):
             self.em.rclog("getnext: EOF hit")
             return (False, "", "", rclexecm.RclExecM.eofnow)

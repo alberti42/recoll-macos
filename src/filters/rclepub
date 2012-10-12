@@ -48,7 +48,7 @@ class rclEPUB:
 
     def openfile(self, params):
         """Open the EPUB file, create a contents array"""
-        self.currentindex = 0
+        self.currentindex = -1
         self.contents = []
         try:
             self.book = epub.open(params["filename:"])
@@ -65,6 +65,17 @@ class rclEPUB:
         return self.extractone(params["ipath:"])
         
     def getnext(self, params):
+
+        if self.currentindex == -1:
+            # Return "self" doc
+            self.currentindex = 0
+            self.em.setmimetype('text/plain')
+            if len(self.contents) == 0:
+                eof = rclexecm.RclExecM.eofnext
+            else:
+                eof = rclexecm.RclExecM.noteof
+            return (True, "", "", eof)
+
         if self.currentindex >= len(self.contents):
             return (False, "", "", rclexecm.RclExecM.eofnow)
         else:

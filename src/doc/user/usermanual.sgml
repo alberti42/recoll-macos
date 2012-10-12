@@ -215,7 +215,7 @@
           <application>Python</application>
           programming interface</link>, a <link linkend="rcl.search.kio">
           <application>KDE</application> KIO slave module</link>, and
-        a <application>Ubuntu Unity Lens</application> module.
+        a <ulink url="http://bitbucket.org/medoc/recoll/wiki/UnityLens">Ubuntu Unity Lens</ulink> module.
         </para>
 
     </sect1>
@@ -2825,8 +2825,29 @@ dir:recoll dir:src -dir:utils -dir:common
       <title>Desktop integration</title>
 
       <para>Being independant of the desktop type has its drawbacks: &RCL;
-      desktop integration is minimal. Here follow a few things that may
-      help.</para> 
+      desktop integration is minimal. However there are a few tools
+      available:
+      <itemizedlist>
+          <listitem>
+            <para>The <application>KDE</application> KIO Slave was
+            described in a <link linkend="rcl.search.kio">previous 
+            section</link>.</para>
+          </listitem>
+        <listitem>
+            <para>If you use a recent version of Ubuntu Linux, you may
+             find the <ulink
+            url="http://bitbucket.org/medoc/recoll/wiki/UnityLens">Ubuntu Unity
+           Lens</ulink> module useful.</para>
+          </listitem>
+          <listitem>
+            <para>There is also an independantly developed
+                 <ulink
+      url="http://kde-apps.org/content/show.php/recollrunner?content=128203">
+            Krunner plugin</ulink>.</para>
+          </listitem>
+        </itemizedlist>
+
+       <para>Here follow a few other things that may help.</para>
 
       <sect2 id="rcl.search.shortcut">
         <title>Hotkeying recoll</title>
@@ -2844,6 +2865,7 @@ dir:recoll dir:src -dir:utils -dir:common
       <sect2 id="rcl.kicker-applet">
         <title>The KDE Kicker Recoll applet</title>
 
+        <para>This is probably obsolete now. Anyway:</para>
         <para>The &RCL; source tree contains the source code to the
         <application>recoll_applet</application>, a small application derived
         from the <application>find_applet</application>. This can be used to

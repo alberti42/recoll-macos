@@ -1,7 +1,8 @@
 1 results
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/chm/Nokia_Nseries_Help_jpn.chm]	[デジタル著作権管理(DRM)]	2948	bytes	
-1 results
+2 results
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/chm/soundrec.chm]	[Superposer (mixer) des fichiers son]	2279	bytes	
+text/html	[file:///home/dockes/projets/fulltext/testrecoll/chm/zippedsoundrec.zip]	[Superposer (mixer) des fichiers son]	2279	bytes	
 1 results
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/chm/Django-1.1a1-r9905.chm]	[User authentication in Django]	115179	bytes	
 1 results

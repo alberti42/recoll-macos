@@ -83,6 +83,9 @@ class FileInterner {
     static bool getEnclosing(const string &url, const string &ipath,
 			     string &eurl, string &eipath, string& udi);
 
+    /** Return last element in ipath, like basename */
+    static std::string getLastIpathElt(const std::string& ipath);
+
     /** Constructors take the initial step to preprocess the data object and
      *  create the top filter */
 

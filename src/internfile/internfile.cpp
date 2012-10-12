@@ -126,6 +126,16 @@ bool FileInterner::getEnclosing(const string &url, const string &ipath,
     return true;
 }
 
+string FileInterner::getLastIpathElt(const string& ipath)
+{
+    string::size_type sep;
+    if ((sep =  ipath.find_last_of(cstr_isep)) != string::npos) {
+	return ipath.substr(sep + 1);
+    } else {
+	return ipath;
+    }
+}
+
 // Uncompress input file into a temporary one, by executing the appropriate
 // script.
 static bool uncompressfile(RclConfig *conf, const string& ifn, 

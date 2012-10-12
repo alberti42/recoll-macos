@@ -43,7 +43,7 @@ class TarExtractor:
         return (ok, docdata, ipath, iseof)
 
     def openfile(self, params):
-        self.currentindex = 0
+        self.currentindex = -1
         try:
             self.tar = open(name=params["filename:"],mode='r')
             self.namen = [ y.name for y in filter(lambda z:z.isfile(),self.tar.getmembers())]
@@ -63,6 +63,17 @@ class TarExtractor:
             return (ok, data, ipath, eof)
 
     def getnext(self, params):
+
+        if self.currentindex == -1:
+            # Return "self" doc
+            self.currentindex = 0
+            self.em.setmimetype('text/plain')
+            if len(self.namen) == 0:
+                eof = rclexecm.RclExecM.eofnext
+            else:
+                eof = rclexecm.RclExecM.noteof
+            return (True, "", "", eof)
+
         if self.currentindex >= len(self.namen):
             self.namen=[]
             return (False, "", "", rclexecm.RclExecM.eofnow)
