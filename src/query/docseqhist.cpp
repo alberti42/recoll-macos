@@ -135,7 +135,7 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, string *sh)
 	    sh->erase();
     }
     bool ret = m_db->getDoc(m_it->udi, doc);
-    if (!ret) {
+    if (!ret || doc.pc == -1) {
 	doc.url = "UNKNOWN";
         doc.ipath = "";
     }
@@ -148,7 +148,8 @@ bool DocSequenceHistory::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc)
     if (!FileInterner::getEnclosing(doc.url, doc.ipath, pdoc.url, pdoc.ipath,
                                     udi))
         return false;
-    return m_db->getDoc(udi, pdoc);
+    bool dbret = m_db->getDoc(udi, pdoc);
+    return dbret && pdoc.pc != -1;
 }
 
 int DocSequenceHistory::getResCnt()

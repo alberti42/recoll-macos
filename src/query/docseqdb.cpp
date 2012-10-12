@@ -128,7 +128,8 @@ bool DocSequenceDb::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc)
     if (!FileInterner::getEnclosing(doc.url, doc.ipath, pdoc.url, pdoc.ipath,
                                     udi))
         return false;
-    return m_q->whatDb()->getDoc(udi, pdoc);
+    bool dbret =  m_q->whatDb()->getDoc(udi, pdoc);
+    return dbret && pdoc.pc != -1;
 }
 
 list<string> DocSequenceDb::expand(Rcl::Doc &doc)
