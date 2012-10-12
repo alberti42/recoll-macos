@@ -1761,8 +1761,10 @@ bool Db::stemDiffers(const string& lang, const string& word,
     return true;
 }
 
-// Retrieve document defined by Unique doc identifier. This is mainly used
-// by the GUI history feature
+// Retrieve document defined by Unique doc identifier. This is used
+// by the GUI history feature and by open parent/getenclosing
+// ! The return value is always true except for fatal errors. Document
+//  existence should be tested by looking at doc.pc
 bool Db::getDoc(const string &udi, Doc &doc)
 {
     LOGDEB(("Db:getDoc: [%s]\n", udi.c_str()));
