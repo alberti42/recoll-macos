@@ -47,7 +47,7 @@ class rclEPUB:
             return (False, "", id, iseof)
 
     def openfile(self, params):
-        """Open the EPUB file"""
+        """Open the EPUB file, create a contents array"""
         self.currentindex = 0
         self.contents = []
         try:
@@ -56,8 +56,7 @@ class rclEPUB:
             self.em.rclog("openfile: epub.open failed: [%s]" % err)
             return False
         for id, item in self.book.opf.manifest.iteritems():
-            # print item.__dict__
-            if item.media_type == u'application/xhtml+xml':
+            if item.media_type == 'application/xhtml+xml':
                 self.contents.append(id)
         return True
         
