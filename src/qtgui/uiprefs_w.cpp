@@ -494,6 +494,6 @@ void UIPrefsDialog::addExtraDbPB_clicked()
     }
 #endif
     QListWidgetItem *item = new QListWidgetItem(input, idxLV);
-    item->setCheckState(Qt::Unchecked);
+    item->setCheckState(Qt::Checked);
     idxLV->sortItems();
 }
