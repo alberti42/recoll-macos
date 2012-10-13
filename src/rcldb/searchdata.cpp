@@ -345,7 +345,7 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d, int maxexp, int maxcl)
 	Xapian::Query tq;
 	for (vector<string>::iterator it = m_filetypes.begin(); 
 	     it != m_filetypes.end(); it++) {
-	    string term = "T" + *it;
+	    string term = wrap_prefix(mimetype_prefix) + *it;
 	    LOGDEB0(("Adding file type term: [%s]\n", term.c_str()));
 	    tq = tq.empty() ? Xapian::Query(term) : 
 		Xapian::Query(Xapian::Query::OP_OR, tq, Xapian::Query(term));
@@ -360,7 +360,7 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d, int maxexp, int maxcl)
 	Xapian::Query tq;
 	for (vector<string>::iterator it = m_nfiletypes.begin(); 
 	     it != m_nfiletypes.end(); it++) {
-	    string term = "T" + *it;
+	    string term = wrap_prefix(mimetype_prefix) + *it;
 	    LOGDEB0(("Adding negative file type term: [%s]\n", term.c_str()));
 	    tq = tq.empty() ? Xapian::Query(term) : 
 		Xapian::Query(Xapian::Query::OP_OR, tq, Xapian::Query(term));

@@ -423,6 +423,7 @@ string version_string();
 extern const string pathelt_prefix;
 extern const string udi_prefix;
 extern const string parent_prefix;
+extern const string mimetype_prefix;
 #ifdef RCL_INDEX_STRIPCHARS
 extern const string start_of_field_term;
 extern const string end_of_field_term;

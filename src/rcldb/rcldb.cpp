@@ -71,7 +71,7 @@ namespace Rcl {
 // Some prefixes that we could get from the fields file, but are not going
 // to ever change.
 static const string fileext_prefix = "XE";
-static const string mimetype_prefix = "T";
+const string mimetype_prefix = "T";
 static const string xapday_prefix = "D";
 static const string xapmonth_prefix = "M";
 static const string xapyear_prefix = "Y";
