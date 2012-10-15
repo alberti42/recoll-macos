@@ -1270,7 +1270,7 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 // the generic field-processing code.
 //
 // We do not split the entry any more (used to do some crazy thing
-// about expanding multiple fragments in the past. We just take the
+// about expanding multiple fragments in the past). We just take the
 // value blanks and all and expand this against the indexed unsplit
 // file names
 bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p, 

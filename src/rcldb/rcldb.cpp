@@ -536,6 +536,8 @@ bool Db::rmQueryDb(const string &dir)
 // http://trac.xapian.org/wiki/FAQ/MultiDatabaseDocumentID
 size_t Db::whatDbIdx(const Doc& doc)
 {
+    LOGDEB(("Db::whatDbIdx: xdocid %lu, %u extraDbs\n", 
+	    (unsigned long)doc.xdocid, m_extraDbs.size()));
     if (doc.xdocid == 0) 
 	return (size_t)-1;
     if (m_extraDbs.size() == 0)
@@ -1447,6 +1449,15 @@ bool Db::filenameWildExp(const string& fnexp, vector<string>& names, int max)
     } // else let it be
 
     LOGDEB(("Rcl::Db::filenameWildExp: pattern: [%s]\n", pattern.c_str()));
+
+    // We inconditionnally lowercase and strip the pattern, as is done
+    // during indexing. This seems to be the only sane possible
+    // approach with file names and wild cards. termMatch does
+    // stripping conditionally on indexstripchars.
+    string pat1;
+    if (unacmaybefold(pattern, pat1, "UTF-8", UNACOP_UNACFOLD)) {
+	pattern.swap(pat1);
+    }
 
     TermMatchResult result;
     if (!termMatch(ET_WILD, string(), pattern, result, max,
