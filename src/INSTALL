@@ -653,6 +653,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            Note that the translation is not limited to a single character,
            you could very well have something like u:ue in the list.
 
+           The default value set for unac_except_trans can't be listed here
+           because I have trouble with SGML and UTF-8, but it only contains
+           ligature decompositions: german ss, oe, ae, fi, fl.
+
            This parameter can't be defined for subdirectories, it is global,
            because there is no way to do otherwise when querying. If you have
            document sets which would need different values, you will have to

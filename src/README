@@ -48,9 +48,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 2.3. Index configuration
 
-                             2.3.1. Index case and diacritics sensitivity
+                             2.3.1. Multiple indexes
 
-                             2.3.2. The index configuration GUI
+                             2.3.2. Index case and diacritics sensitivity
+
+                             2.3.3. The index configuration GUI
 
                 2.4. Using Beagle WEB browser plugins
 
@@ -81,7 +83,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                              3.1.6. The term explorer tool
 
-                             3.1.7. Multiple databases
+                             3.1.7. Multiple indexes
 
                              3.1.8. Document history
 
@@ -117,8 +119,6 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
                              3.7.1. Hotkeying recoll
 
                              3.7.2. The KDE Kicker Recoll applet
-
-                3.8. Multiple databases
 
    4. Programming interface
 
@@ -190,7 +190,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Also be aware that you may need to install the appropriate supporting
    applications for document types that need them (for example antiword for
-   ms-word files).
+   Microsoft Word files).
 
      ----------------------------------------------------------------------
 
@@ -205,7 +205,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    You do not need to remember in what file or email message you stored a
    given piece of information. You just ask for related terms, and the tool
-   will return a list of documents where those terms are prominent, in a
+   will return a list of documents where these terms are prominent, in a
    similar way to Internet search engines.
 
    A search application tries to determine which documents are most relevant
@@ -255,8 +255,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    that searching does not depend, for example, on a word being singular or
    plural (floor, floors), or on a verb tense (flooring, floored). Because
    the mechanisms used for stemming depend on the specific grammatical rules
-   for each language, there is a separate stemmer module for most common
-   languages where stemming makes sense.
+   for each language, there is a separate Xapian stemmer module for most
+   common languages where stemming makes sense.
 
    Recoll stores the unstemmed versions of terms in the main index and uses
    auxiliary databases for term expansion (one for each stemming language),
@@ -271,21 +271,21 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    means that the stemmer will sometimes be applied to terms from other
    languages with potentially strange results. In practise, even if this
    introduces possibilities of confusion, this approach has been proven quite
-   useful, and, awaiting the addition of an automatic language recognition
-   module to Recoll, it is much less cumbersome than separating your
-   documents according to what language they are written in.
+   useful, and it is much less cumbersome than separating your documents
+   according to what language they are written in.
 
-   Before version 1.18, Recoll always stripped most accents and diacritics
-   from terms, and converted them to lower case before storing them in the
-   index. As a consequence, it was impossible to search for a particular
-   capitalization of a term (US / us), or to discriminate two terms based on
-   diacritics (sake / sake, mate / mate).
+   Before version 1.18, Recoll stripped most accents and diacritics from
+   terms, and converted them to lower case before either storing them in the
+   index or searching for them. As a consequence, it was impossible to search
+   for a particular capitalization of a term (US / us), or to discriminate
+   two terms based on diacritics (sake / sake, mate / mate).
 
    As of version 1.18, Recoll can optionally store the raw terms, without
-   accent stripping or case conversion. Expansions necessary for searches
-   insensitive to case and/or diacritics are then performed when searching.
-   This is described in more detail in the section about index case and
-   diacritics sensitivity.
+   accent stripping or case conversion. In this configuration, it is still
+   possible (and most common) for a query to be insensitive to case and/or
+   diacritics. Appropriate term expansions are performed before actually
+   accessing the main index. This is described in more detail in the section
+   about index case and diacritics sensitivity.
 
    Recoll has many parameters which define exactly what to index, and how to
    classify and decode the source documents. These are kept in configuration
@@ -297,7 +297,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    default configuration will index your home directory with default
    parameters and should be sufficient for giving Recoll a try, but you may
    want to adjust it later, which can be done either by editing the text
-   files or by using configuration menus in the recoll GUI
+   files or by using configuration menus in the recoll GUI. Some other
+   parameters affecting only the recoll GUI are stored in the standard
+   location defined by Qt.
 
    The indexing process is started automatically the first time you execute
    the recoll GUI. Indexing can also be performed by executing the
@@ -346,6 +348,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    small home directory). Monitoring a big file system tree can consume
    significant system resources.
 
+   The choice of method and the parameters used can be configured from the
+   recoll GUI: Preferences->Indexing schedule
+
      ----------------------------------------------------------------------
 
   2.1.2. Configurations, multiple indexes
@@ -389,8 +394,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    document. Some file types, like email folders or zip archives, can hold
    many individually indexed documents, which may themselves be compound
    ones. Such hierarchies can go quite deep, and Recoll can process, for
-   example, an ms-word document stored as an attachment to an email message
-   inside an email folder archived in a zip file...
+   example, a LibreOffice document stored as an attachment to an email
+   message inside an email folder archived in a zip file...
 
    Recoll indexing processes plain text, HTML, OpenDocument
    (Open/LibreOffice), email formats, and a few others internally.
@@ -438,15 +443,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
        Using multiple configuration directories and configuration options
        allows you to tailor multiple configurations and indexes to handle
-       whatever subset of the available data that you wish to make
-       searchable.
+       whatever subset of the available data you wish to make searchable.
 
-     * You can also specify a different storage location for the index by
-       setting the dbdir parameter in the configuration file (see the
-       configuration section). This method would mainly be of use if you
-       wanted to keep the configuration directory in its default location,
-       but desired another location for the index, typically out of disk
-       occupation concerns.
+     * For a given configuration directory, you can specify a non-default
+       storage location for the index by setting the dbdir parameter in the
+       configuration file (see the configuration section). This method would
+       mainly be of use if you wanted to keep the configuration directory in
+       its default location, but desired another location for the index,
+       typically out of disk occupation concerns.
 
    The size of the index is determined by the size of the set of documents,
    but the ratio can vary a lot. For a typical mixed set of documents, the
@@ -506,7 +510,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Variables set inside the Recoll configuration files control which areas of
    the file system are indexed, and how files are processed. These variables
-   can be set either by editing the text files or using the dialogs in the
+   can be set either by editing the text files or by using the dialogs in the
    recoll GUI.
 
    The first time you start recoll, you will be asked whether or not you
@@ -526,9 +530,54 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    (ie: pdf, postscript, ms-word...) are described in the external packages
    section.
 
+   As of Recoll 1.18 there are two incompatible types of Recoll indexes,
+   depending on the treatment of character case and diacritics. The next
+   section describes the two types in more detail.
+
      ----------------------------------------------------------------------
 
-  2.3.1. Index case and diacritics sensitivity
+  2.3.1. Multiple indexes
+
+   Multiple Recoll indexes can be created by using several configuration
+   directories which are usually set to index different areas of the file
+   system. A specific index can be selected for updating or searching, using
+   the RECOLL_CONFDIR environment variable or the -c option to recoll and
+   recollindex.
+
+   A typical usage scenario for the multiple index feature would be for a
+   system administrator to set up a central index for shared data, that you
+   choose to search or not in addition to your personal data. Of course,
+   there are other possibilities. There are many cases where you know the
+   subset of files that should be searched, and where narrowing the search
+   can improve the results. You can achieve approximately the same effect
+   with the directory filter in advanced search, but multiple indexes will
+   have much better performance and may be worth the trouble.
+
+   A recollindex program instance can only update one specific index.
+
+   The main index (defined by RECOLL_CONFDIR or -c) is always active. If this
+   is undesirable, you can set up your base configuration to index an empty
+   directory.
+
+   The different search interfaces (GUI, command line, ...) have different
+   methods to define the set of indexes to be used, see the appropriate
+   section.
+
+   If a set of multiple indexes are to be used together for searches, some
+   configuration parameters must be consistent among the set. These are
+   parameters which need to be the same when indexing and searching. As the
+   parameters come from the main configuration when searching, they need to
+   be compatible with what was set when creating the other indexes (which
+   came from their respective configuration directories).
+
+   Most importantly, all indexes to be queried concurrently must have the
+   same option concerning character case and diacritics stripping, but there
+   are other constraints. Most of the relevant parameters are described in
+   the linked section.
+
+     ----------------------------------------------------------------------
+
+  2.3.2. Index case and diacritics sensitivity
 
    As of Recoll version 1.18 you have a choice of building an index with
    terms stripped of character case and diacritics, or one with raw terms.
@@ -556,12 +605,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    As a cost for added capability, a raw index will be slightly bigger than a
    stripped one (around 10%). Also, searches will be more complex, so
-   probably slightly slower, and the feature is still young, and a certain
-   amount of weirdness cannot be excluded.
+   probably slightly slower, and the feature is still young, so that a
+   certain amount of weirdness cannot be excluded.
 
      ----------------------------------------------------------------------
 
-  2.3.2. The index configuration GUI
+  2.3.3. The index configuration GUI
 
    Most parameters for a given index configuration can be set from a recoll
    GUI running on this configuration (either as default, or by setting
@@ -797,8 +846,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * Advanced search (a panel accessed through the Tools menu or the
        toolbox bar icon) has multiple entry fields, which you may use to
-       build a logical condition, with additional filtering on file type and
-       location in the file system.
+       build a logical condition, with additional filtering on file type,
+       location in the file system, modification date, and size.
 
    In most cases, you can enter the terms as you think them, even if they
    contain embedded punctuation or other non-textual characters. For example,
@@ -832,45 +881,36 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    The Query Language features are described in a separate section.
 
-   File name will specifically look for file names. The entry will be split
-   at white space characters, and each fragment will be separately expanded,
-   then the search will be for file names matching all fragments (this is new
-   in 1.15, older releases did an OR of the whole thing which did not make
-   sense). Things to know:
-
-     * The search is case- and accent-insensitive.
-
-     * Fragments without any wild card character and not capitalized will be
-       prepended and appended with '*' (ie: etc -> *etc*, but Etc -> etc). Of
-       course it does not make sense to have multiple fragments if one of
-       them is capitalized (as this one will require an exact match).
-
-     * If you want to search for a pattern including white space, use double
-       quotes (ie: "admin note*").
-
-     * If you have a big index (many files), excessively generic fragments
-       may result in inefficient searches.
-
-     * As an example, inst recoll would match recollinstall.in (and quite a
-       few others...).
-
-   The point of having a separate file name search is that wild card
-   expansion can be performed more efficiently on a relatively small subset
-   of the index (allowing wild cards on the left of terms without excessive
-   penality).
-
    All search modes allow wildcards inside terms (*, ?, []). You may want to
    have a look at the section about wildcards for more information about
    this.
 
+   File name will specifically look for file names. The point of having a
+   separate file name search is that wild card expansion can be performed
+   more efficiently on a small subset of the index (allowing wild cards on
+   the left of terms without excessive penality). Things to know:
+
+     * White space in the entry should match white space in the file name,
+       and is not treated specially.
+
+     * The search is insensitive to character case and accents, independantly
+       of the type of index.
+
+     * An entry without any wild card character and not capitalized will be
+       prepended and appended with '*' (ie: etc -> *etc*, but Etc -> etc).
+
+     * If you have a big index (many files), excessively generic fragments
+       may result in inefficient searches.
+
    You can search for exact phrases (adjacent words in a given order) by
    enclosing the input inside double quotes. Ex: "virtual reality".
 
-   Character case has no influence on search, except that you can disable
-   stem expansion for any term by capitalizing it. Ie: a search for floor
-   will also normally look for flooring, floored, etc., but a search for
-   Floor will only look for floor, in any character case. Stemming can also
-   be disabled globally in the preferences.
+   When using a stripped index, character case has no influence on search,
+   except that you can disable stem expansion for any term by capitalizing
+   it. Ie: a search for floor will also normally look for flooring, floored,
+   etc., but a search for Floor will only look for floor, in any character
+   case. Stemming can also be disabled globally in the preferences. When
+   using a raw index, the rules are a bit more complicated.
 
    Recoll remembers the last few searches that you performed. You can use the
    simple search text entry widget (a combobox) to recall them (click on the
@@ -902,8 +942,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    By default, the document list is presented in order of relevance (how well
    the system estimates that the document matches the query). You can sort
    the result by ascending or descending date by using the vertical arrows in
-   the toolbar (the old sort tool is gone after release 1.15, because the new
-   result table has much better capability).
+   the toolbar.
 
    Clicking on the Preview link for an entry will open an internal preview
    window for the document. Further Preview clicks for the same search will
@@ -1245,8 +1284,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Note that in cases where Recoll does not know the beginning of the string
    to search for (ie a wildcard expression like *coll), the expansion can
    take quite a long time because the full index term list will have to be
-   processed. The expansion is currently limited at 200 results for wildcards
-   and regular expressions.
+   processed. The expansion is currently limited at 10000 results for
+   wildcards and regular expressions.
 
    Double-clicking on a term in the result list will insert it into the
    simple search entry field. You can also cut/paste between the result list
@@ -1254,7 +1293,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.1.7. Multiple databases
+  3.1.7. Multiple indexes
 
    See the section describing the use of multiple indexes for generalities.
    Only the aspects concerning the recoll GUI are described here.
@@ -1330,7 +1369,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    identity is based on an MD5 hash of the document container, not only of
    the text contents (so that ie, a text document with an image added will
    not be a duplicate of the text only). Duplicates hiding is controlled by
-   an entry in the Query configuration dialog, and is off by default.
+   an entry in the GUI configuration dialog, and is off by default.
 
      ----------------------------------------------------------------------
 
@@ -1451,7 +1490,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
   3.1.11. Customizing the search interface
 
-   You can customize some aspects of the search interface by using the Query
+   You can customize some aspects of the search interface by using the GUI
    configuration entry in the Preferences menu.
 
    There are several tabs in the dialog, dealing with the interface itself,
@@ -1482,14 +1521,15 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        HTML display, you can uncheck it to display the plain text version
        instead.
 
-     * Use <PRE> tags instead of <BR> to display plain text as HTML in
-       preview: when displaying plain text inside the preview window, Recoll
-       tries to preserve some of the original text line breaks and
-       indentation. It can either use PRE HTML tags, which will well preserve
-       the indentation but will force horizontal scrolling for long lines, or
-       use BR tags to break at the original line breaks, which will let the
-       editor introduce other line breaks according to the window width, but
-       will lose some of the original indentation.
+     * Plain text to HTML line style: when displaying plain text inside the
+       preview window, Recoll tries to preserve some of the original text
+       line breaks and indentation. It can either use PRE HTML tags, which
+       will well preserve the indentation but will force horizontal scrolling
+       for long lines, or use BR tags to break at the original line breaks,
+       which will let the editor introduce other line breaks according to the
+       window width, but will lose some of the original indentation. The
+       third option has been available in recent releases and is probably now
+       the best one: use PRE tags with line wrapping.
 
      * Use desktop preferences to choose document editor: if this is checked,
        the xdg-open utility will be used to open files when you click the
@@ -1501,6 +1541,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        these are mime types that will still be opened according to Recoll
        preferences. This is useful for passing parameters like page numbers
        or search strings to applications that support them (e.g. evince).
+       This cannot be done with xdg-open which only supports passing one
+       parameter.
 
      * Choose editor applications this will let you choose the command
        started by the Open links inside the result list, for specific
@@ -1514,9 +1556,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        search input field. This lets you look at the result list as you enter
        new terms. This is off by default, you may like it or not...
 
-     * Start with advanced search dialog open and Start with sort dialog
-       open: If you use these dialogs all the time, checking these entries
-       will get them to open when recoll starts.
+     * Start with advanced search dialog open : If you use this dialog
+       frequently, checking the entries will get it to open when recoll
+       starts.
 
      * Remember sort activation state if set, Recoll will remember the sort
        tool stat between invocations. It normally starts with sorting
@@ -1535,8 +1577,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        presentation of each result list entry. See the result list
        customisation section.
 
-     * Edit result page html header insert: allows you to define text
-       inserted at the end of the result page html header. More detail in the
+     * Edit result page HTML header insert: allows you to define text
+       inserted at the end of the result page HTML header. More detail in the
        result list customisation section.
 
      * Date format: allows specifying the format used for displaying dates
@@ -1576,10 +1618,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        the document itself.
 
      * Dynamically build abstracts: this decides if Recoll tries to build
-       document abstracts when displaying the result list. Abstracts are
-       constructed by taking context from the document information, around
-       the search terms. This can slow down result list display significantly
-       for big documents, and you may want to turn it off.
+       document abstracts (lists of snippets) when displaying the result
+       list. Abstracts are constructed by taking context from the document
+       information, around the search terms.
 
      * Synthetic abstract size: adjust to taste...
 
@@ -1615,9 +1656,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * The paragraph format
 
-     * Html code inside the header section
+     * HTML code inside the header section
 
-   These can be edited from the Result list tab of the Query configuration.
+   These can be edited from the Result list tab of the GUI configuration.
 
    Newer versions of Recoll (from 1.17) use a WebKit HTML object by default
    (this may be disabled at build time), and total customisation is possible
@@ -1643,9 +1684,6 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * %D. Date
 
-     * %E. Precooked Snippets link (will only appear for documents indexed
-       with page numbers)
-
      * %I. Icon image name. This is normally determined from the mime type.
        The associations are defined inside the mimeconf configuration file.
        If a thumbnail for the file is found at the standard Freedesktop
@@ -1653,7 +1691,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * %K. Keywords (if any)
 
-     * %L. Precooked Preview and Edit links
+     * %L. Precooked Preview, Edit, and possibly Snippets links
 
      * %M. Mime type
 
@@ -1669,9 +1707,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * %U. Url
 
-   The format of the Preview and Edit links is <a href="P%N"> and <a
-   href="E%N"> where docnum (%N) expands to the document number inside the
-   result page).
+   The format of the Preview, Edit, and Snippets links is <a href="P%N">, <a
+   href="E%N"> and <a href="A%N"> where docnum (%N) expands to the document
+   number inside the result page).
 
    In addition to the predefined values above, all strings like %(fieldname)
    will be replaced by the value of the field named fieldname for this
@@ -1842,7 +1880,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    used with the KIO slave or the command line search. It broadly has the
    same capabilities as the complex search interface in the GUI.
 
-   The language is roughly based on the (seemingly defunct) Xesam user search
+   The language is based on the (seemingly defunct) Xesam user search
    language specification.
 
    If the results of a query language search puzzle you and you doubt what
@@ -1862,17 +1900,19 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    the document).
 
    An element is composed of an optional field specification, and a value,
-   separated by a colon. Example: Beatles, author:balzac, dc:title:grandet
+   separated by a colon (the field separator is the last colon in the
+   element). Example: Eugenie, author:balzac, dc:title:grandet
 
    The colon, if present, means "contains". Xesam defines other relations,
-   which are not supported for now.
+   which are mostly supported for now (except in special cases, described
+   further down).
 
    All elements in the search entry are normally combined with an implicit
    AND. It is possible to specify that elements be OR'ed instead, as in
    Beatles OR Lennon. The OR must be entered literally (capitals), and it has
    priority over the AND associations: word1 word2 OR word3 means word1 AND
-   (word2 OR word3) not (word1 AND word2) OR word3. Do not enter explicit
-   parenthesis, they are not supported for now.
+   (word2 OR word3) not (word1 AND word2) OR word3. Explicit parenthesis are
+   not supported.
 
    An element preceded by a - specifies a term that should not appear. Pure
    negative queries are forbidden.
@@ -2103,6 +2143,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        slow search because Recoll will have to scan the whole index term list
        to find the matches.
 
+     * When working with a raw index (preserving character case and
+       diacritics), the literal part of a wildcard expression will be matched
+       exactly for case and diacritics.
+
      * Using a * at the end of a word can produce more matches than you would
        think, and strange search results. You can use the term explorer tool
        to check what completions exist for a given term. You can also see
@@ -2136,12 +2180,27 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    example, bla bla my unexpected term at the beginning of the text would be
    a match for "^my term"o5.
 
+   Anchored searches can be very useful for searches inside somewhat
+   structured documents like scientific articles, in case explicit metadata
+   has not been supplied (a most frequent case), for example for looking for
+   matches inside the abstract or the list of authors (which occur at the top
+   of the document).
+
      ----------------------------------------------------------------------
 
 3.7. Desktop integration
 
    Being independant of the desktop type has its drawbacks: Recoll desktop
-   integration is minimal. Here follow a few things that may help.
+   integration is minimal. However there are a few tools available:
+
+     * The KDE KIO Slave was described in a previous section.
+
+     * If you use a recent version of Ubuntu Linux, you may find the Ubuntu
+       Unity Lens module useful.
+
+     * There is also an independantly developed Krunner plugin.
+
+   Here follow a few other things that may help.
 
      ----------------------------------------------------------------------
 
@@ -2155,6 +2214,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      ----------------------------------------------------------------------
 
   3.7.2. The KDE Kicker Recoll applet
+
+   This is probably obsolete now. Anyway:
 
    The Recoll source tree contains the source code to the recoll_applet, a
    small application derived from the find_applet. This can be used to add a
@@ -2177,46 +2238,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-3.8. Multiple databases
-
-   Multiple Recoll databases or indexes can be created by using several
-   configuration directories which are usually set to index different areas
-   of the file system. A specific index can be selected for updating or
-   searching, using the RECOLL_CONFDIR environment variable or the -c option
-   to recoll and recollindex.
-
-   A typical usage scenario for the multiple index feature would be for a
-   system administrator to set up a central index for shared data, that you
-   choose to search or not in addition to your personal data. Of course,
-   there are other possibilities. There are many cases where you know the
-   subset of files that should be searched, and where narrowing the search
-   can improve the results. You can achieve approximately the same effect
-   with the directory filter in advanced search, but multiple indexes will
-   have much better performance and may be worth the trouble.
-
-   A recollindex program instance can only update one specific index.
-
-   The main index (defined by RECOLL_CONFDIR or -c) is always active. If this
-   is undesirable, you can set up your base configuration to index an empty
-   directory.
-
-   The different search interfaces (GUI, command line, ...) have different
-   methods to define the set of indexes to be used, see the appropriate
-   section.
-
-   If a set of multiple indexes are to be used together for searches, some
-   configuration parameters must be consistent among the set. These are
-   parameters which need to be the same when indexing and searching. As the
-   parameters come from the main configuration when searching, they need to
-   be compatible with what was set when creating the other indexes (which
-   came from their respective configuration directories. Most of the relevant
-   parameters are described in the following linked section.
-
-     ----------------------------------------------------------------------
-
                         Chapter 4. Programming interface
 
-   Recoll has an Application programming Interface, usable both for indexing
+   Recoll has an Application Programming Interface, usable both for indexing
    and searching, currently accessible from the Python language.
 
    Another less radical way to extend the application is to write filters for
@@ -2237,8 +2261,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * Simple filters (the old ones) run once and exit. They can be bare
        programs like antiword, or shell-scripts using other programs. They
-       are very simple to write, just having to write the text to the
-       standard output.
+       are very simple to write, because they just need to output the
+       converted to the standard output.
 
      * Multiple filters, new in 1.13, run as long as their master process
        (ie: recollindex) is active. They can process multiple files (sparing
@@ -2270,12 +2294,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    They should output the result to stdout.
 
    When writing a filter, you should decide if it will output plain text or
-   html. Plain text is simpler, but you will not be able to add metadata or
+   HTML. Plain text is simpler, but you will not be able to add metadata or
    vary the output character encoding (this will be defined in a
-   configuration file). Additionally, some formatting may easier to preserve
-   when previewing html. Actually the deciding factor is metadata: Recoll has
-   a way to extract metadata from the html header and use it for field
-   searches..
+   configuration file). Additionally, some formatting may be easier to
+   preserve when previewing HTML. Actually the deciding factor is metadata:
+   Recoll has a way to extract metadata from the HTML header and use it for
+   field searches..
 
    The RECOLL_FILTER_FORPREVIEW environment variable (values yes, no) tells
    the filter if the operation is for indexing or previewing. Some filters
@@ -2351,7 +2375,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    transforming them into appropriate entities. "&" should be transformed
    into "&amp;", "<" should be transformed into "&lt;". This is not always
    properly done by translating programs which output HTML, and of course
-   nerver by those which output plain text.
+   never by those which output plain text.
 
    The character set needs to be specified in the header. It does not need to
    be UTF-8 (Recoll will take care of translating it), but it must be
@@ -2407,8 +2431,38 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    A field can be either or both indexed and stored. This and other aspects
    of fields handling is defined inside the fields configuration file.
 
+   The sequence of events for field processing is as follows:
+
+     * During indexing, recollindex scans all meta fields in HTML documents
+       (most document types are transformed into HTML at some point). It
+       compares the name for each element to the configuration defining what
+       should be done with fields (the fields file)
+
+     * If the name for the meta element matches one for a field that should
+       be indexed, the contents are processed and the terms are entered into
+       the index with the prefix defined in the fields file.
+
+     * If the name for the meta element matches one for a field that should
+       be stored, the content of the element is stored with the document data
+       record, from which it can be extracted and displayed at query time.
+
+     * At query time, if a field search is performed, the index prefix is
+       computed and the match is only performed against appropriately
+       prefixed terms in the index.
+
+     * At query time, the field can be displayed inside the result list by
+       using the appropriate directive in the definition of the result list
+       paragraph format. All fields are displayed on the fields screen of the
+       preview window (which you can reach through the right-click menu).
+       This is independant of the fact that the search which produced the
+       results used the field or not.
+
    You can find more information in the section about the fields file, or in
    comments inside the file.
+
+   You can also have a look at the example on the Wiki, detailing how one
+   could add a page count field to pdf documents for displaying inside result
+   lists.
 
      ----------------------------------------------------------------------
 
@@ -2462,8 +2516,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Recoll versions after 1.11 define a Python programming interface, both for
    searching and indexing.
 
-   The Python interface is not built by default and can be found in the
-   source package, under python/recoll.
+   The Python interface can be found in the source package, under
+   python/recoll.
 
    In order to build the module, you should first build or re-build the
    Recoll library using position-independant objects:
@@ -3312,6 +3366,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
            Note that the translation is not limited to a single character,
            you could very well have something like u:ue in the list.
+
+           The default value set for unac_except_trans can't be listed here
+           because I have trouble with SGML and UTF-8, but it only contains
+           ligature decompositions: german ss, oe, ae, fi, fl.
 
            This parameter can't be defined for subdirectories, it is global,
            because there is no way to do otherwise when querying. If you have
