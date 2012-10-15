@@ -71,6 +71,7 @@
 .chm = application/x-chm
 
 .epub = application/epub+zip
+.mobi = application/x-mobipocket-ebook 
 
 # OpenOffice / opendocument. We handle opendocument as old openoffice files
 # for now

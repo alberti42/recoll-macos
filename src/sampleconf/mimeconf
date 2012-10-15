@@ -90,6 +90,7 @@ application/x-gnumeric = exec rclgnm
 application/x-kword = exec rclkwd
 application/x-lyx = exec rcllyx
 application/x-mimehtml = internal message/rfc822
+#application/x-mobipocket-ebook = execm rclmobi
 application/x-okular-notes = exec rclokulnote
 application/x-perl = internal text/plain
 application/x-rar = execm rclrar;charset=default
@@ -180,6 +181,7 @@ application/x-gnumeric = spreadsheet
 application/x-kword = wordprocessing
 application/x-lyx = wordprocessing
 application/x-mimehtml = message
+application/x-mobipocket-ebook = document
 application/x-okular-notes = document
 application/x-perl = source
 application/x-rar = archive
@@ -251,6 +253,7 @@ text = \
       application/x-gnuinfo \
       application/x-kword \
       application/x-lyx \
+      application/x-mobipocket-ebook \
       application/x-okular-notes \
       application/x-perl \
       application/x-scribus \

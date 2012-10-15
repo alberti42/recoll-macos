@@ -20,6 +20,7 @@ xallexcepts = application/pdf application/postscript application/x-dvi \
 application/x-all = xdg-open %f
 
 application/epub+zip = ebook-viewer %f
+application/x-mobipocket-ebook = ebook-viewer %f
 
 application/x-kword = kword %f
 application/x-abiword = abiword %f
