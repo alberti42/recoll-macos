@@ -64,8 +64,8 @@
       <para>Also be aware that you may need to install the
         appropriate <link linkend="rcl.install.external"> supporting
         applications</link> for document types that need them (for
-        example <application>antiword</application> for ms-word
-        files).</para>
+        example <application>antiword</application> for
+        <application>Microsoft Word</application> files).</para>
     </sect1>
 
     <sect1 id="rcl.introduction.search"> 
@@ -83,7 +83,7 @@
       <para>You do not need to remember in what file or email message you
         stored a given piece of information. You just ask for related
         terms, and the tool will return a list of documents where
-        those terms are prominent, in a similar way to Internet search
+        these terms are prominent, in a similar way to Internet search
         engines.</para>
 
       <para>A search application tries to determine which documents are
@@ -143,7 +143,7 @@
         word being singular or plural (floor, floors), or on a verb tense
         (flooring, floored). Because the mechanisms used for stemming
         depend on the specific grammatical rules for each language, there
-        is a separate stemmer module for most common languages where
+        is a separate &XAP; stemmer module for most common languages where
         stemming makes sense.</para>
 
       <para>&RCL; stores the unstemmed versions of terms in the main index
@@ -160,26 +160,27 @@
         recognition, which means that the stemmer will sometimes be applied
         to terms from other languages with potentially strange results. In
         practise, even if this introduces possibilities of confusion, this
-        approach has been proven quite useful, and, awaiting the addition
-        of an automatic language recognition module to &RCL;, it is much
-        less cumbersome than separating your documents according to what
+        approach has been proven quite useful, and it is much less
+        cumbersome than separating your documents according to what
         language they are written in.</para>
 
-      <para>Before version 1.18, &RCL; always stripped most accents and
+      <para>Before version 1.18, &RCL; stripped most accents and
         diacritics from terms, and converted them to lower case before
-        storing them in the index. As a consequence, it was impossible to
-        search for a particular capitalization of a term
-        (<literal>US</literal> / <literal>us</literal>), or to
-        discriminate two terms based on diacritics (<literal>sake</literal>
-        / <literal>saké</literal>, <literal>mate</literal> /
-        <literal>maté</literal>).</para>  
+        either storing them in the index or searching for them. As a
+        consequence, it was impossible to search for a particular
+        capitalization of a term (<literal>US</literal> /
+        <literal>us</literal>), or to discriminate two terms based on
+        diacritics (<literal>sake</literal> / <literal>saké</literal>, 
+        <literal>mate</literal> / <literal>maté</literal>).</para>
       
       <para>As of version 1.18, &RCL; can optionally store the raw terms,
-        without accent stripping or case conversion. Expansions necessary
-        for searches insensitive to case and/or diacritics are then
-        performed when searching. This is described in more detail in the
-        <link linkend="RCL.INDEXING.CONFIG.SENS">section about index case
-        and diacritics sensitivity</link>.</para>
+        without accent stripping or case conversion. In this configuration,
+        it is still possible (and most common) for a query to be
+        insensitive to case and/or diacritics. Appropriate term expansions
+        are performed before actually accessing the main index. This is
+        described in more detail in the <link
+        linkend="RCL.INDEXING.CONFIG.SENS">section about index case and
+        diacritics sensitivity</link>.</para>
 
       <para>&RCL; has many parameters which define exactly what to
         index, and how to classify and decode the source
@@ -197,7 +198,9 @@
         sufficient for giving &RCL; a try, but you may want to adjust
         it later, which can be done either by editing the text files
         or by using configuration menus in the
-        <command>recoll</command> GUI</para>
+        <command>recoll</command> GUI. Some other parameters affecting only
+        the <command>recoll</command> GUI are stored in the standard
+        location defined by <application>Qt</application>.</para>
 
       <para>The <link linkend="rcl.indexing.periodic.exec">indexing
           process</link> is started automatically the first time you
@@ -241,7 +244,7 @@
 	aspects of the indexing processes and configuration, with links
 	to detailed sections.</para>
 
-      <sect2>
+      <sect2 id="rcl.indexing.introduction.modes">
 	<title>Indexing modes</title> 
 
 	<para>&RCL; indexing can be performed along two different modes:
@@ -279,20 +282,30 @@
           directory). Monitoring a big file system tree can consume
           significant system resources.</para>
 
+        <para>The choice of method and the parameters used can be
+        configured from the <command>recoll</command> GUI:
+	  <menuchoice>
+	    <guimenu>Preferences</guimenu>
+	    <guimenuitem>Indexing schedule</guimenuitem>
+          </menuchoice>
+         </para>
 	</sect2>
 
-      <sect2>
+      <sect2 id="rcl.indexing.introduction.config">
 	<title>Configurations, multiple indexes</title>
 	
 	<para>The parameters describing what is to be indexed and
 	  local preferences are defined in text files contained in a
 	  <link linkend="rcl.indexing.config">configuration
 	  directory</link>.</para>
+
 	<para>All parameters have defaults, defined in system-wide
 	  files.</para> 
+
 	<para>Without further configuration, &RCL; will index all
           appropriate files from your home directory, with a reasonable
           set of defaults.</para>
+
 	<para>A default personal configuration directory
 	  (<filename>$HOME/.recoll/</filename>) is created
 	  when a &RCL; program is first executed. It is possible to
@@ -308,14 +321,14 @@
 	  would be done to separate personal and shared
           indexes, or to take advantage of the organization of your data
           to improve search precision.</para>
+
 	<para>The generated indexes can
-          be <link linkend="rcl.search.multidb">queried 
-            concurrently</link> in a transparent manner.</para>
+          be queried concurrently in a transparent manner.</para>
 
 	<para>For index generation, multiple configurations are
           totally independant from each other. When multiple indexes need
           to be used for a single search,
-	  <link linkend="rcl.search.multidb">some parameters
+	  <link linkend="rcl.indexing.config.multiple">some parameters
           should be consistent among the configurations</link>.</para>
 
       </sect2>
@@ -331,8 +344,8 @@
           one document. Some file types, like email folders or zip
           archives, can hold many individually indexed documents, which may
           themselves be compound ones. Such hierarchies can go quite
-          deep, and &RCL; can process, for example, an
-          <application>ms-word</application> 
+          deep, and &RCL; can process, for example, a
+          <application>LibreOffice</application> 
           document stored as an attachment to an email message inside an
           email folder archived in a zip file...</para>
 
@@ -395,22 +408,23 @@ recoll
           the index in
           <filename>~/.indexes-email/xapiandb/</filename>.</para>
 
-          <para>Using multiple configuration directories and 
-          <link linkend="rcl.install.config.recollconf">configuration
-          options</link> allows you to tailor multiple configurations
-          and indexes to handle whatever subset of the available data
-          that you wish to make searchable.</para>
+          <para>Using multiple configuration directories and <link
+          linkend="rcl.install.config.recollconf">configuration
+          options</link> allows you to tailor multiple configurations and
+          indexes to handle whatever subset of the available data you wish
+          to make searchable.</para>
 
           </listitem>
 
-          <listitem><para>You can also specify a different storage
-          location for the index by setting the <varname>dbdir</varname>
-          parameter in the configuration file 
-          (see the <link linkend="rcl.install.config.recollconf">configuration
-          section</link>). This method would mainly be of use if you
-          wanted to keep the configuration directory in its default location,
-          but desired another location for the index, typically out of
-          disk occupation concerns.</para>
+          <listitem><para>For a given configuration directory, you can
+          specify a non-default storage location for the index by setting
+          the <varname>dbdir</varname> parameter in the configuration file
+          (see the <link
+          linkend="rcl.install.config.recollconf">configuration
+          section</link>). This method would mainly be of use if you wanted
+          to keep the configuration directory in its default location, but
+          desired another location for the index, typically out of disk
+          occupation concerns.</para>
           </listitem>
 
         </itemizedlist>
@@ -437,7 +451,7 @@ recoll
 	destroyed safely.</para>
 
       <sect2 id="rcl.indexing.storage.format">
-        <title>Xapian index formats</title>
+        <title>&XAP; index formats</title>
 
         <para>&XAP; versions usually support several formats for index
           storage. A given major &XAP; version will have a current format,
@@ -490,8 +504,9 @@ recoll
         <link linkend="rcl.install.config">&RCL; configuration files</link>
         control which areas of the file system are indexed, and how
         files are processed. These variables can be set either by
-        editing the text files or using the dialogs in the
-        <command>recoll</command> GUI.</para>
+        editing the text files or by using the 
+        <link linkend="rcl.indexing.config.gui"> dialogs in the
+        <command>recoll</command> GUI</link>.</para>
 
       <para>The first time you start <command>recoll</command>, you
         will be asked whether or not you would like it to build the
@@ -522,6 +537,61 @@ recoll
         described in the <link linkend="rcl.install.external">external
           packages section.</link></para>
 
+      <para>As of Recoll 1.18 there are two incompatible types of Recoll
+      indexes, depending on the treatment of character case and
+      diacritics. The next section describes the two types in more
+      detail.</para>
+
+      <sect2 id="rcl.indexing.config.multiple">
+        <title>Multiple indexes</title>
+
+        <para>Multiple &RCL; indexes can be created by
+	using several configuration directories which are usually set to
+	index different areas of the file system. A specific index can
+	be selected for updating or searching, using the
+	<envar>RECOLL_CONFDIR</envar> environment variable or the
+	<option>-c</option> option to <command>recoll</command> and
+	<command>recollindex</command>.</para>
+
+        <para>A typical usage scenario for the multiple index feature
+	would be for a system administrator to set up a central index
+	for shared data, that you choose to search or not in addition to
+	your personal data. Of course, there are other
+	possibilities. There are many cases where you know the subset of
+	files that should be searched, and where narrowing the search
+	can improve the results. You can achieve approximately the same
+	effect with the directory filter in advanced search, but
+	multiple indexes will have much better performance and may be
+	worth the trouble.</para>
+
+        <para>A <command>recollindex</command> program instance can only
+	update one specific index.</para>
+
+        <para>The main index (defined by
+	<envar>RECOLL_CONFDIR</envar> or <option>-c</option>) is
+	always active. If this is undesirable, you can set up your
+	base configuration to index an empty directory.</para>
+
+        <para>The different search interfaces (GUI, command line, ...)
+	have different methods to define the set of indexes to be
+	used, see the appropriate section.</para>
+
+        <para>If a set of multiple indexes are to be used together for
+	searches, some configuration parameters must be consistent
+	among the set. These are parameters which need to be the same
+	when indexing and searching. As the parameters come from the
+	main configuration when searching, they need to be compatible
+	with what was set when creating the other indexes (which came
+	from their respective configuration directories).</para>
+
+        <para>Most importantly, all indexes to be queried concurrently must
+        have the same option concerning character case and diacritics
+        stripping, but there are other constraints. Most of the
+	relevant parameters are described in the 
+	<link linkend="rcl.install.config.recollconf.terms">linked
+	section</link>.</para>
+
+      </sect2>
 
 
       <sect2 id="rcl.indexing.config.sens">
@@ -562,7 +632,7 @@ recoll
         <para>As a cost for added capability, a raw index will be slightly
           bigger than a stripped one (around 10%). Also, searches will be
           more complex, so probably slightly slower, and the feature is
-          still young, and a certain amount of weirdness cannot be
+          still young, so that a certain amount of weirdness cannot be
           excluded.</para> 
 
       </sect2>
@@ -709,7 +779,7 @@ recoll
           described here.</para>
 	<para>Option <option>-z</option> will reset the index when
 	  starting. This is almost the same as destroying the index
-	  files (the nuance is that the Xapian format version will not
+	  files (the nuance is that the &XAP; format version will not
 	  be changed).</para>
 	<para>Option <option>-Z</option> will force the update of all
 	  documents without resetting the index first. This will not
@@ -905,8 +975,8 @@ fvwm
       <listitem><para>Advanced search (a panel accessed through the
         <guilabel>Tools</guilabel> menu or the toolbox bar icon) has
         multiple entry fields, which you may use to build a logical
-        condition, with additional filtering on file type and location
-        in the file system.</para>
+        condition, with additional filtering on file type, location
+        in the file system, modification date, and size.</para>
       </listitem>
     </itemizedlist>
 
@@ -955,60 +1025,53 @@ fvwm
       described in <link linkend="rcl.search.lang">a separate
       section</link>.</para>  
 
-      <para><guilabel>File name</guilabel> will specifically look for file
-        names. The entry will be split at white space characters,
-        and each fragment will be separately expanded, then the search will
-        be for file names matching all fragments (this is new in 1.15,
-        older releases did an OR of the whole thing which did not make
-        sense). Things to know:
-        <itemizedlist>
-            <listitem><para>The search is case- and accent-insensitive.</para>
-            </listitem>
-            <listitem><para>Fragments without any wild card
-            character and not capitalized will be prepended and appended
-            with '*' (ie: <replaceable>etc</replaceable> ->
-            <replaceable>*etc*</replaceable>, but
-            <replaceable>Etc</replaceable> ->
-            <replaceable>etc</replaceable>). Of course it does not make
-            sense to have multiple fragments if one of them is capitalized
-            (as this one will require an exact match).</para> 
-            </listitem>
-            <listitem><para>If you want to search for a pattern including
-            white space, use double quotes (ie: <replaceable>"admin
-            note*"</replaceable>).</para> 
-            </listitem>
-            <listitem><para>If you have a big index (many files),
-            excessively generic fragments may result in inefficient
-            searches.</para>
-            </listitem>
-            <listitem><para>As an example, <replaceable>inst
-            recoll</replaceable> would match
-            <replaceable>recollinstall.in</replaceable> (and quite a few
-            others...).</para> 
-            </listitem>
-          </itemizedlist>
-        The point of having a separate file name
-        search is that wild card expansion can be performed more
-        efficiently on a relatively small subset of the index (allowing
-        wild cards on the left of terms without excessive penality).</para>
-
       <para>All search modes allow wildcards inside terms
         (<literal>*</literal>, <literal>?</literal>,
         <literal>[]</literal>). You may want to have a look at the
         <link linkend="rcl.search.wildcards">section about wildcards</link>
         for more information about this.</para>
 
+      <para><guilabel>File name</guilabel> will specifically look for file
+        names. The point of having a separate file name
+        search is that wild card expansion can be performed more
+        efficiently on a small subset of the index (allowing
+        wild cards on the left of terms without excessive penality).
+        Things to know:
+        <itemizedlist>
+            <listitem><para>White space in the entry should match white
+            space in the file name, and is not treated specially.</para>
+            </listitem>
+            <listitem><para>The search is insensitive to character case and
+            accents, independantly of the type of index.</para>
+            </listitem>
+            <listitem><para>An entry without any wild card
+            character and not capitalized will be prepended and appended
+            with '*' (ie: <replaceable>etc</replaceable> ->
+            <replaceable>*etc*</replaceable>, but
+            <replaceable>Etc</replaceable> ->
+            <replaceable>etc</replaceable>).</para> 
+            </listitem>
+            <listitem><para>If you have a big index (many files),
+            excessively generic fragments may result in inefficient
+            searches.</para>
+            </listitem>
+          </itemizedlist>
+      </para>
+
       <para>You can search for exact phrases (adjacent words in a
       given order) by enclosing the input inside double quotes. Ex:
      <literal>"virtual reality"</literal>.</para>
 
-      <para>Character case has no influence on search, except that you
-      can disable stem expansion for any term by capitalizing it. Ie:
-      a search for <literal>floor</literal> will also normally look for 
-      <literal>flooring</literal>, <literal>floored</literal>, etc., but
-      a search for <literal>Floor</literal> will only look for
-      <literal>floor</literal>, in any character case. Stemming can
-      also be disabled globally in the preferences. </para>
+      <para>When using a stripped index, character case has no influence on
+      search, except that you can disable stem expansion for any term by
+      capitalizing it. Ie: a search for <literal>floor</literal> will also
+      normally look for <literal>flooring</literal>,
+      <literal>floored</literal>, etc., but a search for
+      <literal>Floor</literal> will only look for <literal>floor</literal>,
+      in any character case. Stemming can also be disabled globally in the
+      preferences. When using a raw index, <link
+      linkend="rcl.search.casediac">the rules are a bit more
+      complicated</link>.</para> 
 
       <para>&RCL; remembers the last few searches that you
         performed. You can use the simple search text entry widget (a
@@ -1050,10 +1113,7 @@ fvwm
       <para>By default, the document list is presented in order of
        relevance (how well the system estimates that the document
        matches the query). You can sort the result by ascending or
-       descending date by using the vertical arrows in the toolbar (the old
-       sort tool is gone after release 1.15, because the new <link
-       linkend="rcl.search.gui.restable">result table</link> has much better
-       capability).</para> 
+       descending date by using the vertical arrows in the toolbar.</para>
 
       <para>Clicking on the
        <literal>Preview</literal> link for an entry will open an
@@ -1520,7 +1580,7 @@ fvwm
       of the string to search for (ie a wildcard expression like
       <replaceable>*coll</replaceable>), the expansion can take quite
       a long time because the full index term list will have to be
-      processed. The expansion is currently limited at 200 results for
+      processed. The expansion is currently limited at 10000 results for
       wildcards and regular expressions.</para>
       
       <para>Double-clicking on a term in the result list will insert
@@ -1531,9 +1591,9 @@ fvwm
     </sect2>
 
     <sect2 id="rcl.search.gui.multidb">
-      <title>Multiple databases</title>
+      <title>Multiple indexes</title>
 
-      <para>See the <link linkend="rcl.search.multidb">section
+      <para>See the <link linkend="rcl.indexing.config.multiple">section
 	  describing the use of multiple indexes</link> for
 	generalities. Only the aspects concerning
 	the <command>recoll</command> GUI are described here.</para>
@@ -1627,7 +1687,7 @@ fvwm
         of the document container, not only of the text contents (so
         that ie, a text document with an image added will not be a
         duplicate of the text only). Duplicates hiding is controlled
-        by an entry in the <guilabel>Query configuration</guilabel>
+        by an entry in the <guilabel>GUI configuration</guilabel>
         dialog, and is off by default.</para>
 
     </sect2>
@@ -1821,7 +1881,7 @@ fvwm
       <title>Customizing the search interface</title>
 
       <para>You can customize some aspects of the search interface by using
-      the <guimenu>Query configuration</guimenu> entry in the
+      the <guimenu>GUI configuration</guimenu> entry in the
       <guimenu>Preferences</guimenu> menu.</para>
 
       <para>There are several tabs in the dialog, dealing with the
@@ -1868,8 +1928,7 @@ fvwm
 	    version instead. </para>
 	    </listitem>
 
-	    <listitem><para><guilabel>Use &lt;PRE&gt; tags instead of
-	    &lt;BR&gt; to display plain text as HTML in preview</guilabel>:
+	    <listitem><para><guilabel>Plain text to HTML line style</guilabel>:
                 when displaying plain text inside the preview window, &RCL;
                 tries to preserve some of the original text line breaks and
                 indentation. It can either use PRE HTML tags, which will
@@ -1877,7 +1936,9 @@ fvwm
                 scrolling for long lines, or use BR tags to break at the
                 original line breaks, which will let the editor introduce
                 other line breaks according to the window width, but will
-                lose some of the original indentation.</para>
+                lose some of the original indentation. The third option has
+                been available in recent releases and is probably now the best
+                one: use PRE tags with line wrapping.</para>
              </listitem>
 
             <listitem><para><guilabel>Use desktop preferences to choose
@@ -1895,7 +1956,9 @@ fvwm
             that will still be opened according to &RCL; preferences. This
             is useful for passing parameters like page numbers or search
             strings to applications that support them
-            (e.g. <application>evince</application>).</para> 
+            (e.g. <application>evince</application>). This cannot be done
+            with <command>xdg-open</command> which only supports passing
+            one parameter.</para>
            </listitem>
 
             <listitem><para><guilabel>Choose editor applications</guilabel>
@@ -1917,9 +1980,8 @@ fvwm
             </listitem>
 
 	    <listitem><para><guilabel>Start with advanced search dialog open
-            </guilabel> and <guilabel>Start with sort dialog
-            open</guilabel>: If you use these dialogs all the time, checking
-            these entries will get them to open when recoll starts.</para>
+            </guilabel>: If you use this dialog frequently, checking
+            the entries will get it to open when recoll starts.</para>
 	    </listitem>
 	    
 	    <listitem><para><guilabel>Remember sort activation
@@ -1957,9 +2019,9 @@ fvwm
             </listitem>
 
             <listitem id="rcl.search.gui.custom.resulthead">
-            <para><guilabel>Edit result page html header insert</guilabel>:
+            <para><guilabel>Edit result page HTML header insert</guilabel>:
             allows you to define text inserted at the end of the result
-            page html header.  
+            page HTML header.  
             More detail in the <link linkend="rcl.search.gui.custom.reslist"> 
                 result list customisation section.</link></para>
             </listitem>
@@ -2026,11 +2088,10 @@ fvwm
 
             <listitem><para><guilabel>Dynamically build
             abstracts</guilabel>: this decides if &RCL; tries to build
-            document abstracts when displaying the result list. Abstracts
-            are constructed by taking context from the document
-            information, around the search terms. This can slow down
-            result list display significantly for big documents, and you
-            may want to turn it off.</para>
+            document abstracts (lists of <emphasis>snippets</emphasis>)
+            when displaying the result list. Abstracts are constructed by
+            taking context from the document information, around the search
+            terms.</para>
             </listitem>
 
             <listitem><para><guilabel>Synthetic abstract size</guilabel>:
@@ -2081,12 +2142,12 @@ fvwm
           by adjusting two elements:</para>
         <itemizedlist>
           <listitem><para>The paragraph format</para></listitem>
-          <listitem><para>Html code inside the header
+          <listitem><para>HTML code inside the header
               section</para></listitem>
         </itemizedlist>
 
         <para>These can be edited from the <guilabel>Result list</guilabel>
-          tab of the <guilabel>Query configuration</guilabel>.</para> 
+          tab of the <guilabel>GUI configuration</guilabel>.</para> 
 
         <para>Newer versions of Recoll (from 1.17) use a WebKit HTML
           object by default (this may be disabled at build time), and
@@ -2115,10 +2176,6 @@ fvwm
           </listitem>
           <listitem><formalpara><title>%D</title><para>Date</para></formalpara>
           </listitem>
-          <listitem><formalpara><title>%E</title><para>Precooked Snippets
-          link (will only appear for documents indexed with page
-          numbers)</para></formalpara> 
-          </listitem>
           <listitem><formalpara><title>%I</title><para>Icon image
             name. This is normally determined from the mime type. The
             associations are defined inside the 
@@ -2131,8 +2188,8 @@ fvwm
           <listitem><formalpara><title>%K</title><para>Keywords (if
           any)</para></formalpara> 
           </listitem>
-          <listitem><formalpara><title>%L</title><para>Precooked Preview and
-            Edit links</para></formalpara> 
+          <listitem><formalpara><title>%L</title><para>Precooked Preview,
+            Edit, and possibly Snippets links</para></formalpara> 
           </listitem>
           <listitem><formalpara><title>%M</title><para>Mime
                   type</para></formalpara> 
@@ -2156,10 +2213,11 @@ fvwm
           </listitem>
         </itemizedlist>
 
-        The format of the Preview and Edit links is 
-        <literal>&lt;a href="P%N"&gt;</literal>
-        and 
+        The format of the Preview, Edit, and Snippets links is 
+        <literal>&lt;a href="P%N"&gt;</literal>,
         <literal>&lt;a href="E%N"&gt;</literal>
+        and 
+        <literal>&lt;a href="A%N"&gt;</literal>
         where <replaceable>docnum</replaceable> (%N) expands to the document
         number inside the result page).</para>
 
@@ -2377,7 +2435,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       capabilities as the complex search interface in the
       GUI.</para>
 
-      <para>The language is roughly based on the (seemingly defunct) 
+      <para>The language is based on the (seemingly defunct) 
         <ulink url="http://www.xesam.org/main/XesamUserSearchLanguage95">
           Xesam</ulink> user search language specification.</para>
 
@@ -2405,13 +2463,15 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       <replaceable>potatoes</replaceable> (in any part of the document).</para>
 
       <para>An element is composed of an optional field specification,
-      and a value, separated by a colon. Example:
-      <replaceable>Beatles</replaceable>,
+      and a value, separated by a colon (the field separator is the last
+      colon in the element). Example:
+      <replaceable>Eugenie</replaceable>,
       <replaceable>author:balzac</replaceable>,
       <replaceable>dc:title:grandet</replaceable> </para>
 
       <para>The colon, if present, means "contains". Xesam defines other
-      relations, which are not supported for now.</para>
+      relations, which are mostly supported for now (except in special
+      cases, described further down).</para>
 
       <para>All elements in the search entry are normally combined
       with an implicit AND. It is possible to specify that elements be
@@ -2429,8 +2489,8 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       not 
       (<replaceable>word1</replaceable> AND
       <replaceable>word2</replaceable>) <literal>OR</literal>
-      <replaceable>word3</replaceable>. Do not enter explicit
-      parenthesis, they are not supported for now.</para>
+      <replaceable>word3</replaceable>. Explicit
+      parenthesis are <emphasis>not</emphasis> supported.</para>
 
       <para>An element preceded by a <literal>-</literal> specifies a
       term that should <emphasis>not</emphasis> appear. Pure negative
@@ -2777,6 +2837,11 @@ dir:recoll dir:src -dir:utils -dir:common
         a word can make for a slow search because &RCL; will have to
         scan the whole index term list to find the matches.</para>
         </listitem>
+          <listitem><para>When working with a raw index (preserving
+          character case and diacritics), the literal part of a wildcard
+          expression will be matched exactly for case and
+          diacritics.</para>
+          </listitem>
         <listitem><para>Using a <literal>*</literal> at the end of a
         word can produce more matches than you would think, and
         strange search results. You can use the <link
@@ -2817,7 +2882,14 @@ dir:recoll dir:src -dir:utils -dir:common
         term</literal> at the beginning of the text would be a match for
         <literal>"^my term"o5</literal>.</para>
 
-      </sect2>
+        <para>Anchored searches can be very useful for searches inside
+        somewhat structured documents like scientific articles, in case
+        explicit metadata has not been supplied (a most frequent case), for
+        example for looking for matches inside the abstract or the list of
+        authors (which occur at the top of the document).</para>
+
+
+   </sect2>
 
    </sect1> <!-- wildchars and anchors -->
 
@@ -2892,61 +2964,13 @@ dir:recoll dir:src -dir:utils -dir:common
 
     </sect1> <!-- rcl.search.desktop -->
 
-
-    <sect1 id="rcl.search.multidb">
-      <title>Multiple databases</title>
-
-      <para>Multiple &RCL; databases or indexes can be created by
-	using several configuration directories which are usually set to
-	index different areas of the file system. A specific index can
-	be selected for updating or searching, using the
-	<envar>RECOLL_CONFDIR</envar> environment variable or the
-	<option>-c</option> option to <command>recoll</command> and
-	<command>recollindex</command>.</para>
-
-      <para>A typical usage scenario for the multiple index feature
-	would be for a system administrator to set up a central index
-	for shared data, that you choose to search or not in addition to
-	your personal data. Of course, there are other
-	possibilities. There are many cases where you know the subset of
-	files that should be searched, and where narrowing the search
-	can improve the results. You can achieve approximately the same
-	effect with the directory filter in advanced search, but
-	multiple indexes will have much better performance and may be
-	worth the trouble.</para>
-
-      <para>A <command>recollindex</command> program instance can only
-	update one specific index.</para>
-
-      <para>The main index (defined by
-	<envar>RECOLL_CONFDIR</envar> or <option>-c</option>) is
-	always active. If this is undesirable, you can set up your
-	base configuration to index an empty directory.</para>
-
-      <para>The different search interfaces (GUI, command line, ...)
-	have different methods to define the set of indexes to be
-	used, see the appropriate section.</para>
-
-      <para>If a set of multiple indexes are to be used together for
-	searches, some configuration parameters must be consistent
-	among the set. These are parameters which need to be the same
-	when indexing and searching. As the parameters come from the
-	main configuration when searching, they need to be compatible
-	with what was set when creating the other indexes (which came
-	from their respective configuration directories. Most of the
-	relevant parameters are described in the following
-	<link linkend="rcl.install.config.recollconf.terms">linked
-	section</link>.</para>
-
-    </sect1> <!-- multiple databases -->
-
   </chapter> <!-- Search -->
 
 
   <chapter id="rcl.program">
     <title>Programming interface</title>
 
-    <para>&RCL; has an Application programming Interface, usable both
+    <para>&RCL; has an Application Programming Interface, usable both
     for indexing and searching, currently accessible from the
     <application>Python</application> language.</para>
 
@@ -2972,8 +2996,8 @@ dir:recoll dir:src -dir:utils -dir:common
 	  <listitem><para>Simple filters (the old ones) run once and
 	  exit. They can be bare programs like
 	  <application>antiword</application>, or shell-scripts using other
-	  programs. They are very simple to write, just having to write the
-	  text to the standard output.</para>
+	  programs. They are very simple to write, because they just need
+	  to output the converted to the standard output.</para>
 	  </listitem>
 	  <listitem><para>Multiple filters, new in 1.13, run as long as
 	  their master process (ie: recollindex) is active. They can
@@ -3008,12 +3032,12 @@ dir:recoll dir:src -dir:utils -dir:common
         source file name. They should output the result to stdout.</para>
 
       <para>When writing a filter, you should decide if it will output
-      plain text or html. Plain text is simpler, but you will not be able
+      plain text or HTML. Plain text is simpler, but you will not be able
       to add metadata or vary the output character encoding (this will be
       defined in a configuration file). Additionally, some formatting may
-      easier to preserve when previewing html. Actually the deciding factor
+      be easier to preserve when previewing HTML. Actually the deciding factor
       is metadata: &RCL; has a way to <link linkend="rcl.program.filters.html">
-      extract metadata from the html header and use it for field 
+      extract metadata from the HTML header and use it for field 
       searches.</link>.</para>
 
       <para>The <envar>RECOLL_FILTER_FORPREVIEW</envar> environment
@@ -3121,7 +3145,7 @@ application/x-chm = execm rclchm
           should be transformed into
           "<literal>&amp;lt;</literal>". This is not always properly
           done by translating programs which output HTML, and of
-          course nerver by those which output plain text.</para>
+          course never by those which output plain text.</para>
 
         <para>The character set needs to be specified in the
           header. It does not need to be UTF-8 (&RCL; will take care
@@ -3197,11 +3221,51 @@ application/x-chm = execm rclchm
       other aspects of fields handling is defined inside the
       <filename>fields</filename> configuration file.</para>
 
+      <para>The sequence of events for field processing is as follows:
+       <itemizedlist>
+          <listitem><para>During indexing, 
+          <command>recollindex</command> scans all <literal>meta</literal>
+          fields in HTML documents (most document types are transformed
+          into HTML at some point). It compares the name for each element
+          to the configuration defining what should be done with fields
+          (the <filename>fields</filename> file)</para>
+          </listitem>
+          <listitem><para>If the name for the <literal>meta</literal>
+          element matches one for a field that should be indexed, the
+          contents are processed and the terms are entered into the index
+          with the prefix defined in the <filename>fields</filename>
+          file.</para>
+          </listitem>
+          <listitem><para>If the name for the <literal>meta</literal> element
+          matches one for a field that should be stored, the content of the
+          element is stored with the document data record, from which it
+          can be extracted and displayed at query time.</para>
+          </listitem>
+          <listitem><para>At query time, if a field search is performed, the
+          index prefix is computed and the match is only performed against
+          appropriately prefixed terms in the index.</para>
+          </listitem>
+          <listitem><para>At query time, the field can be displayed inside
+          the result list by using the appropriate directive in the
+          definition of the <link
+          linkend="rcl.search.gui.custom.reslist">result list paragraph
+          format</link>. All fields are displayed on the fields screen of
+          the preview window (which you can reach through the right-click
+          menu). This is independant of the fact that the search which
+          produced the results used the field or not.</para>  
+          </listitem>
+        </itemizedlist>
+
       <para>You can find more information in the 
       <link linkend="rcl.install.config.fields">section about the
       <filename>fields</filename> file</link>, or in comments inside the
       file.</para> 
 
+      <para>You can also have a look at the <ulink
+      url="https://bitbucket.org/medoc/recoll/wiki/HandleCustomField">example
+      on the Wiki</ulink>, detailing 
+      how one could add a <emphasis>page count</emphasis> field to pdf
+      documents for displaying inside result lists.</para>
 
     </sect1>
 
@@ -3276,8 +3340,7 @@ application/x-chm = execm rclchm
         <para>&RCL; versions after 1.11 define a Python programming
           interface, both for searching and indexing.</para> 
 
-        <para>The Python interface is not built by default and can be
-          found in the source package,
+        <para>The Python interface can be found in the source package,
           under <filename>python/recoll</filename>.</para>
 	<para>In order to build the module, you should first build
 	  or re-build the Recoll library using position-independant
@@ -4388,6 +4451,12 @@ unac_except_trans =  åå Åå ää Ää öö Öö
             <para>Note that the translation is not limited to a single
             character, you could very well have something like
             <literal>üue</literal> in the list.</para>
+
+             <para>The default value set for
+             <literal>unac_except_trans</literal> can't be listed here
+             because I have trouble with SGML and UTF-8, but it only
+             contains ligature decompositions: german ss, oe, ae, fi,
+             fl.</para>
 
              <para>This parameter can't be defined for subdirectories, it
              is global, because there is no way to do otherwise when
