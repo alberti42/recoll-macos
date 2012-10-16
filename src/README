@@ -1238,6 +1238,17 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
+    3.1.5.3. Avanced search history
+
+   The advanced search tool memorizes the last 100 searches performed. You
+   can walk the saved searches by using the up and down arrow keys while the
+   keyboard focus belongs to the advanced search dialog.
+
+   The complex search history can be erased, along with the one for simple
+   search, by selecting the File->Erase Search History menu entry.
+
+     ----------------------------------------------------------------------
+
   3.1.6. The term explorer tool
 
    Recoll automatically manages the expansion of search terms to their
@@ -1463,6 +1474,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Query explanation. You can get an exact description of what the query
    looked for, including stem expansion, and Boolean operators used, by
    clicking on the result list header.
+
+   Advanced search history. You can display any of the last 100 complex
+   searches performed by using the up and down arrow keys while the advanced
+   search panel is active.
 
    Browsing the result list inside a preview window. Entering Shift-Down or
    Shift-Up (Shift + an arrow key) in a preview window will display the next
