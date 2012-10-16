@@ -1478,15 +1478,18 @@ bool Db::filenameWildExp(const string& fnexp, vector<string>& names, int max)
 // Walk the Y terms and return min/max
 bool Db::maxYearSpan(int *minyear, int *maxyear)
 {
+    LOGDEB(("Rcl::Db:maxYearSpan\n"));
     *minyear = 1000000; 
     *maxyear = -1000000;
     TermMatchResult result;
-    if (!termMatch(ET_WILD, string(), "*", result, -1, "xapyear"))
+    if (!termMatch(ET_WILD, string(), "*", result, -1, "xapyear")) {
+	LOGINFO(("Rcl::Db:maxYearSpan: termMatch failed\n"));
 	return false;
+    }
     for (vector<TermMatchEntry>::const_iterator it = result.entries.begin();
 	 it != result.entries.end(); it++) {
         if (!it->term.empty()) {
-            int year = atoi(it->term.c_str()+1);
+            int year = atoi(strip_prefix(it->term).c_str());
             if (year < *minyear)
                 *minyear = year;
             if (year > *maxyear)
