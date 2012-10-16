@@ -22,9 +22,8 @@
 
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include <tr1/unordered_set>
-using std::tr1::unordered_set;
-
 #include <cstring>
 
 #include "textsplit.h"
@@ -33,9 +32,9 @@ using std::tr1::unordered_set;
 #include "utf8iter.h"
 #include "uproplist.h"
 
-#ifndef NO_NAMESPACES
+using std::tr1::unordered_set;
 using namespace std;
-#endif /* NO_NAMESPACES */
+
 
 /**
  * Splitting a text into words. The code in this file works with utf-8

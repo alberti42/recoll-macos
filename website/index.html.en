@@ -86,6 +86,16 @@
       <h2>News</h2>
       <div class="news">
       <ul>
+        <li>2012-10-16: recoll 1.18 will soon be out. It will have
+          optional character case and diacritics sensitivity, direct
+          access to hit page when opening PDF files, complex search
+          history, and a host of other smaller improvements. You can
+          already see the <a href="release-1.18.html">release
+          notes</a> and the snapshot currently on the 
+          <a href="https://launchpad.net/~recoll-backports/+archive/experiments"> 
+            "experimental" Ubuntu PPA</a> is actually a release
+            candidate, so Ubuntu users can take an early plunge...</li>
+
         <li>2012-09-21: an
           <a href="https://bitbucket.org/medoc/recoll/wiki/ElinksBeagle">easy
                  way</a> to extend the "Beagle queue"

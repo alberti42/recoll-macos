@@ -8,7 +8,7 @@
 
 <!ENTITY RCL "<application>Recoll</application>">
 <!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/features.html'>Recoll helper applications page</ulink>">
-<!ENTITY RCLVERSION "1.17">
+<!ENTITY RCLVERSION "1.18">
 <!ENTITY XAP "<application>Xapian</application>">
 ]>
  
@@ -1854,9 +1854,9 @@ fvwm
       </formalpara>
 
       <formalpara><title>Advanced search history</title>
-        <para>You can display any of the last 100 complex searches
-          performed by using the up and down arrow keys while the advanced
-          search panel is active.</para>
+        <para>As of &RCL; 1.18, you can display any of the last 100 complex
+          searches performed by using the up and down arrow keys while the
+          advanced search panel is active.</para>
       </formalpara>
       
       <formalpara><title>Browsing the result list inside a preview 
