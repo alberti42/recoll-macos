@@ -12,7 +12,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    This document introduces full text search notions and describes the
    installation and use of the Recoll application. It currently describes
-   Recoll 1.17.
+   Recoll 1.18.
 
    [ Split HTML / Single HTML ]
 
@@ -1475,9 +1475,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    looked for, including stem expansion, and Boolean operators used, by
    clicking on the result list header.
 
-   Advanced search history. You can display any of the last 100 complex
-   searches performed by using the up and down arrow keys while the advanced
-   search panel is active.
+   Advanced search history. As of Recoll 1.18, you can display any of the
+   last 100 complex searches performed by using the up and down arrow keys
+   while the advanced search panel is active.
 
    Browsing the result list inside a preview window. Entering Shift-Down or
    Shift-Up (Shift + an arrow key) in a preview window will display the next
