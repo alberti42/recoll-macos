@@ -27,18 +27,12 @@
 #include <qtooltip.h>
 #include <qwhatsthis.h>
 #include <qmessagebox.h>
+#include <QShortcut>
 
-#include <list>
 #include <string>
 #include <map>
 #include <algorithm>
-
-#ifndef NO_NAMESPACES
-using std::list;
-using std::string;
-using std::map;
-using std::unique;
-#endif /* NO_NAMESPACES */
+using namespace std;
 
 #include "recoll.h"
 #include "rclconfig.h"
@@ -51,7 +45,6 @@ static const int initclausetypes[] = {1, 3, 0, 2, 5};
 static const unsigned int iclausescnt = sizeof(initclausetypes) / sizeof(int);
 static map<QString,QString> cat_translations;
 static map<QString,QString> cat_rtranslations;
-
 
 void AdvSearch::init()
 {
@@ -83,6 +76,9 @@ void AdvSearch::init()
     connect(addClausePB, SIGNAL(clicked()), this, SLOT(addClause()));
     connect(delClausePB, SIGNAL(clicked()), this, SLOT(delClause()));
 
+    new QShortcut(QKeySequence(Qt::Key_Up), this, SLOT(slotHistoryNext()));;
+    new QShortcut(QKeySequence(Qt::Key_Down), this, SLOT(slotHistoryPrev()));
+
     conjunctCMB->insertItem(1, tr("All clauses"));
     conjunctCMB->insertItem(2, tr("Any clause"));
 
@@ -92,7 +88,7 @@ void AdvSearch::init()
     }
     // Tune initial state according to last saved
     {
-	std::list<SearchClauseW *>::iterator cit = m_clauseWins.begin();
+	vector<SearchClauseW *>::iterator cit = m_clauseWins.begin();
 	for (vector<int>::iterator it = prefs.advSearchClauses.begin(); 
 	     it != prefs.advSearchClauses.end(); it++) {
 	    if (cit != m_clauseWins.end()) {
@@ -109,6 +105,8 @@ void AdvSearch::init()
     int minyear, maxyear;
     if (rcldb) {
 	rcldb->maxYearSpan(&minyear, &maxyear);
+	minDateDTE->setDisplayFormat("dd.MM.yyyy");
+	maxDateDTE->setDisplayFormat("dd.MM.yyyy");
 	minDateDTE->setDate(QDate(minyear, 1, 1));
 	maxDateDTE->setDate(QDate(maxyear, 12, 31));
     }
@@ -158,7 +156,7 @@ void AdvSearch::saveCnf()
 {
     // Save my state
     prefs.advSearchClauses.clear(); 
-    for (std::list<SearchClauseW *>::iterator cit = m_clauseWins.begin();
+    for (vector<SearchClauseW *>::iterator cit = m_clauseWins.begin();
 	 cit != m_clauseWins.end(); cit++) {
 	prefs.advSearchClauses.push_back((*cit)->sTpCMB->currentIndex());
     }
@@ -168,12 +166,6 @@ bool AdvSearch::close()
 {
     saveCnf();
     return QWidget::close();
-}
-
-void AdvSearch::delAFiltypPB_clicked()
-{
-    yesFiltypsLB->selectAll();
-    delFiltypPB_clicked();
 }
 
 void AdvSearch::addClause()
@@ -206,6 +198,12 @@ void AdvSearch::delClause()
     } else {
 	delClausePB->setEnabled(false);
     }
+}
+
+void AdvSearch::delAFiltypPB_clicked()
+{
+    yesFiltypsLB->selectAll();
+    delFiltypPB_clicked();
 }
 
 // Move selected file types from the searched to the ignored box
@@ -329,6 +327,12 @@ void AdvSearch::saveFileTypes()
     rwSettings(true);
 }
 
+void AdvSearch::browsePB_clicked()
+{
+    QString dir = myGetFileName(true);
+    subtreeCMB->setEditText(dir);
+}
+
 size_t AdvSearch::stringToSize(QString qsize)
 {
     size_t size = size_t(-1);
@@ -361,7 +365,7 @@ void AdvSearch::runSearch()
 					     SCLT_AND : SCLT_OR, stemLang));
     bool hasclause = false;
 
-    for (list<SearchClauseW*>::iterator it = m_clauseWins.begin();
+    for (vector<SearchClauseW*>::iterator it = m_clauseWins.begin();
 	 it != m_clauseWins.end(); it++) {
 	SearchDataClause *cl;
 	if ((cl = (*it)->getClause())) {
@@ -441,12 +445,121 @@ void AdvSearch::runSearch()
 	    prefs.asearchSubdirHist.push_back(subtreeCMB->itemText(index));
     }
     saveCnf();
-    
+    g_advshistory && g_advshistory->push(sdata);
     emit startSearch(sdata);
 }
 
-void AdvSearch::browsePB_clicked()
+
+// Set up fields from existing search data, which must be compatible
+// with what we can do...
+void AdvSearch::fromSearch(RefCntr<SearchData> sdata)
 {
-    QString dir = myGetFileName(true);
-    subtreeCMB->setEditText(dir);
+    if (sdata->m_tp == SCLT_OR)
+	conjunctCMB->setCurrentIndex(1);
+    else
+	conjunctCMB->setCurrentIndex(0);
+
+    while (sdata->m_query.size() > m_clauseWins.size()) {
+	addClause();
+    }
+
+    for (unsigned int i = 0; i < sdata->m_query.size(); i++) {
+	// Set fields from clause
+	if (sdata->m_query[i]->getTp() == SCLT_SUB) {
+	    LOGERR(("AdvSearch::fromSearch: SUB clause found !\n"));
+	    continue;
+	}
+	SearchDataClauseSimple *cs = 
+	    dynamic_cast<SearchDataClauseSimple*>(sdata->m_query[i]);
+	m_clauseWins[i]->setFromClause(cs);
+    }
+    for (unsigned int i = sdata->m_query.size(); i < m_clauseWins.size(); i++) {
+	m_clauseWins[i]->clear();
+    }
+
+    restrictCtCB->setChecked(0);
+    if (!sdata->m_filetypes.empty()) {
+	restrictFtCB_toggled(1);
+	delAFiltypPB_clicked();
+	for (unsigned int i = 0; i < sdata->m_filetypes.size(); i++) {
+	    QString ft = QString::fromUtf8(sdata->m_filetypes[i].c_str());
+	    QList<QListWidgetItem *> lst = 
+		noFiltypsLB->findItems(ft, Qt::MatchExactly);
+	    if (!lst.isEmpty()) {
+		int row = noFiltypsLB->row(lst[0]);
+		QListWidgetItem *item = noFiltypsLB->takeItem(row);
+		yesFiltypsLB->insertItem(0, item);
+	    }
+	}
+	yesFiltypsLB->sortItems();
+    } else {
+	addAFiltypPB_clicked();
+	restrictFtCB_toggled(0);
+    }
+
+    if (sdata->m_haveDates) {
+	filterDatesCB->setChecked(1);
+	DateInterval &di(sdata->m_dates);
+	QDate mindate(di.y1, di.m1, di.d1);
+	QDate maxdate(di.y2, di.m2, di.d2);
+        minDateDTE->setDate(mindate);
+        maxDateDTE->setDate(maxdate);
+    } else {
+	filterDatesCB->setChecked(0);
+	QDate date;
+	minDateDTE->setDate(date);
+	maxDateDTE->setDate(date);
+    }
+
+    if (sdata->m_maxSize != (size_t)-1 || sdata->m_minSize != (size_t)-1) {
+	filterSizesCB->setChecked(1);
+	QString sz;
+	if (sdata->m_minSize != (size_t)-1) {
+	    sz.setNum(sdata->m_minSize);
+	    minSizeLE->setText(sz);
+	} else {
+	    minSizeLE->setText("");
+	}
+	if (sdata->m_maxSize != (size_t)-1) {
+	    sz.setNum(sdata->m_maxSize);
+	    maxSizeLE->setText(sz);
+	} else {
+	    maxSizeLE->setText("");
+	}
+    } else {
+	filterSizesCB->setChecked(0);
+	minSizeLE->setText("");
+	maxSizeLE->setText("");
+    }
+    
+    if (!sdata->m_dirspecs.empty()) {
+	// Can only use one entry
+	QString qdir = QString::fromLocal8Bit(sdata->m_dirspecs[0].dir.c_str());
+	subtreeCMB->setEditText(qdir);
+	direxclCB->setChecked(sdata->m_dirspecs[0].exclude);
+    } else {
+	subtreeCMB->setEditText("");
+	direxclCB->setChecked(0);
+    }
 }
+
+void AdvSearch::slotHistoryNext()
+{
+    if (g_advshistory == 0)
+	return;
+    RefCntr<Rcl::SearchData> sd = g_advshistory->getnewer();
+    if (sd.isNull())
+	return;
+    fromSearch(sd);
+}
+
+void AdvSearch::slotHistoryPrev()
+{
+    if (g_advshistory == 0)
+	return;
+    RefCntr<Rcl::SearchData> sd = g_advshistory->getolder();
+    if (sd.isNull())
+	return;
+    fromSearch(sd);
+}
+

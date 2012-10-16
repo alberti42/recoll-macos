@@ -20,5 +20,18 @@
 
 void base64_encode(const std::string& in, std::string& out);
 bool base64_decode(const std::string& in, std::string& out);
+inline std::string base64_encode(const std::string& in)
+{
+    std::string o;
+    base64_encode(in, o);
+    return o;
+}
+inline std::string base64_decode(const std::string& in)
+{
+    std::string o;
+    if (base64_decode(in, o))
+	return o;
+    return std::string();
+}
 
 #endif /* _BASE64_H_INCLUDED_ */

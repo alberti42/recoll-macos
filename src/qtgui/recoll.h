@@ -16,6 +16,7 @@
  */
 #ifndef _RECOLL_H_INCLUDED_
 #define _RECOLL_H_INCLUDED_
+
 #include <string>
 
 #include "rclconfig.h"
@@ -51,4 +52,8 @@ class Aspell;
 extern Aspell *aspell;
 #endif
 
+inline std::string qs2utf8s(const QString& qs)
+{
+    return std::string((const char *)qs.toUtf8());
+}
 #endif /* _RECOLL_H_INCLUDED_ */

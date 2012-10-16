@@ -338,6 +338,7 @@ int main(int argc, char **argv)
 	QMessageBox::critical(0, "Recoll",  msg);
 	exit(1);
     }
+    g_advshistory = new AdvSearchHist;
 
     //    fprintf(stderr, "History done\n");
     rwSettings(false);

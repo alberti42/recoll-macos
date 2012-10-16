@@ -91,7 +91,7 @@ bool base64_decode(const string& in, string& out)
 {
     int io = 0, state = 0, ch = 0;
     unsigned int ii = 0;
-    out.erase();
+    out.clear();
     size_t ilen = in.length();
     out.reserve(ilen);
 
@@ -217,7 +217,7 @@ void base64_encode(const string &in, string &out)
     unsigned char input[3];
     unsigned char output[4];
 
-    out.erase();
+    out.clear();
 
     int srclength = in.length();
     int sidx = 0;

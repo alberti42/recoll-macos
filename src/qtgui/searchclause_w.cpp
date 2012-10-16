@@ -17,6 +17,7 @@
 #include "autoconfig.h"
 
 #include "recoll.h"
+#include "debuglog.h"
 
 #include "searchclause_w.h"
 
@@ -27,6 +28,8 @@
 #include <qlayout.h>
 #include <qtooltip.h>
 #include <qwhatsthis.h>
+
+using namespace Rcl;
 
 /*
  *  Constructs a SearchClauseW as a child of 'parent', with the
@@ -100,11 +103,8 @@ void SearchClauseW::languageChange()
     proxSlackSB->setToolTip(tr("Number of additional words that may be interspersed with the chosen ones"));
 }
 
-using namespace Rcl;
-
 // Translate my window state into an Rcl search clause
-SearchDataClause *
-SearchClauseW::getClause()
+SearchDataClause *SearchClauseW::getClause()
 {
     if (wordsLE->text().isEmpty())
 	return 0;
@@ -132,6 +132,61 @@ SearchClauseW::getClause()
     default:
 	return 0;
     }
+}
+
+
+void SearchClauseW::setFromClause(SearchDataClauseSimple *cl)
+{
+    LOGDEB(("SearchClauseW::setFromClause\n"));
+    switch(cl->getTp()) {
+    case SCLT_OR: tpChange(0); break;
+    case SCLT_AND: tpChange(1); break;
+    case SCLT_EXCL: tpChange(2); break;
+    case SCLT_PHRASE: tpChange(3); break;
+    case SCLT_NEAR: tpChange(4); break;
+    case SCLT_FILENAME:	tpChange(5); break;
+    default: return;
+    }
+    LOGDEB(("SearchClauseW::setFromClause: calling erase\n"));
+    clear();
+
+    QString text = QString::fromUtf8(cl->gettext().c_str());
+    QString field = QString::fromUtf8(cl->getfield().c_str()); 
+
+    switch(cl->getTp()) {
+    case SCLT_OR: case SCLT_AND: case SCLT_EXCL:
+    case SCLT_PHRASE: case SCLT_NEAR:
+	if (!field.isEmpty()) {
+	    int idx = fldCMB->findText(field);
+	    if (field >= 0) {
+		fldCMB->setCurrentIndex(idx);
+	    } else {
+		fldCMB->setEditText(field);
+	    }
+	}
+	/* FALLTHROUGH */
+    case SCLT_FILENAME:
+	wordsLE->setText(text);
+	break;
+    default: break;
+    }
+
+    switch(cl->getTp()) {
+    case SCLT_PHRASE: case SCLT_NEAR:
+    {
+	SearchDataClauseDist *cls = dynamic_cast<SearchDataClauseDist*>(cl);
+	proxSlackSB->setValue(cls->getslack());
+    }
+    break;
+    default: break;
+    }
+}
+
+void SearchClauseW::clear()
+{
+    wordsLE->setText("");
+    fldCMB->setCurrentIndex(0);
+    proxSlackSB->setValue(0);
 }
 
 // Handle combobox change: may need to enable/disable the distance

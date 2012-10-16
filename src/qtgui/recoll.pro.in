@@ -7,10 +7,13 @@ LANGUAGE        = C++
 @QMAKE_ENABLE_ZEITGEIST@QT += dbus
 @QMAKE_ENABLE_ZEITGEIST@QMAKE_CXXFLAGS += -DUSE_ZEITGEIST
 
+QT += xml
+
 CONFIG  += qt warn_on thread release 
 
 HEADERS += \
         advsearch_w.h \
+        advshist.h \
         confgui/confgui.h \
         confgui/confguiindex.h \
         crontool.h \
@@ -34,6 +37,7 @@ HEADERS += \
 
 SOURCES += \
         advsearch_w.cpp \
+        advshist.cpp \
         confgui/confgui.cpp \
         confgui/confguiindex.cpp \
         crontool.cpp \
@@ -52,7 +56,6 @@ SOURCES += \
         ssearch_w.cpp \
         uiprefs_w.cpp \
         viewaction_w.cpp \
-
 
 
 FORMS   = \

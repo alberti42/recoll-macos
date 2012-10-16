@@ -25,22 +25,17 @@
 #include "smallut.h"
 #include "debuglog.h"
 
-#ifndef NO_NAMESPACES
 using namespace std;
-#endif
 
 // Well known keys for history and external indexes.
 const string docHistSubKey = "docs";
 const string allEdbsSk = "allExtDbs";
 const string actEdbsSk = "actExtDbs";
+const string advSearchHistSk = "advSearchHist";
 
 
-// @param sk section this is for
-// @param n  new entry
-// @param s a scratch entry used for decoding and comparisons. 
-//    This avoids templating this routine for the actual entry type.
 bool RclDynConf::insertNew(const string &sk, DynConfEntry &n, DynConfEntry &s,
-    int maxlen)
+			   int maxlen)
 {
     // Is this doc already in list ? If it is we remove the old entry
     vector<string> names = m_data.getNames(sk);
@@ -98,37 +93,21 @@ bool RclDynConf::eraseAll(const string &sk)
     vector<string> names = m_data.getNames(sk);
     vector<string>::const_iterator it;
     for (it = names.begin(); it != names.end(); it++) {
-	    m_data.erase(*it, sk);
+	m_data.erase(*it, sk);
     }
     return true;
 }
 
 
-// Generic string list specialization ///////////////////////////////////
+// Specialization for plain strings ///////////////////////////////////
 
-// Encode/decode simple string. base64 used to avoid problems with
-// strange chars
-bool RclSListEntry::encode(string& enc)
-{
-    base64_encode(value, enc);
-    return true;
-}
-bool RclSListEntry::decode(const string &enc)
-{
-    base64_decode(enc, value);
-    return true;
-}
-bool RclSListEntry::equal(const DynConfEntry& other)
-{
-    const RclSListEntry& e = dynamic_cast<const RclSListEntry&>(other);
-    return e.value == value;
-}
 bool RclDynConf::enterString(const string sk, const string value, int maxlen)
 {
     RclSListEntry ne(value);
     RclSListEntry scratch;
     return insertNew(sk, ne, scratch, maxlen);
 }
+
 list<string> RclDynConf::getStringList(const string sk) 
 {
     list<RclSListEntry> el = getList<RclSListEntry>(sk);

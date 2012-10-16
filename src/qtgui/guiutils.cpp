@@ -25,12 +25,14 @@
 #include "guiutils.h"
 #include "pathut.h"
 #include "base64.h"
+#include "advshist.h"
 
 #include <QSettings>
 #include <QStringList>
 #include <QFileDialog>
 
 RclDynConf *g_dynconf;
+AdvSearchHist *g_advshistory;
 
 // The table should not be necessary, but I found no css way to get
 // qt 4.6 qtextedit to clear the margins after the float img without 

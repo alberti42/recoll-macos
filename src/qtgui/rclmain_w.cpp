@@ -1855,7 +1855,10 @@ void RclMain::eraseDocHistory()
 void RclMain::eraseSearchHistory()
 {
     prefs.ssearchHistory.clear();
-    sSearch->queryText->clear();
+    if (sSearch)
+	sSearch->queryText->clear();
+    if (g_advshistory)
+	g_advshistory->clear();
 }
 
 // Called when the uiprefs dialog is ok'd

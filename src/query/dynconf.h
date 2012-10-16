@@ -34,6 +34,9 @@
  * encodings which depend on the data stored. Under each section, the keys 
  * are sequential numeric, so this basically manages a set of lists.
  *
+ * The code ensures that a a given value (as defined by the
+ * DynConfEntry::equal() method is only stored once. If undesirable,
+ * equal() should always return false.
  */
 
 #include <string>
@@ -41,67 +44,95 @@
 #include <utility>
 
 #include "conftree.h"
+#include "base64.h"
 
-#ifndef NO_NAMESPACES
-using namespace std;
-#endif
-
-// Entry interface.
+/** Interface for a stored object. */
 class DynConfEntry {
  public:
-    virtual ~DynConfEntry() {}
-    virtual bool decode(const string &value) = 0;
-    virtual bool encode(string& value) = 0;
+    /** Decode object-as-string coming out from storage */
+    virtual bool decode(const std::string &value) = 0;
+    /** Encode object state into state for storing */
+    virtual bool encode(std::string& value) = 0;
+    /** Compare objects */
     virtual bool equal(const DynConfEntry &other) = 0;
 };
 
-
-/** String storage generic object */
+/** Stored object specialization for generic string storage */
 class RclSListEntry : public DynConfEntry {
  public:
-    RclSListEntry() {}
-    RclSListEntry(const string& v) : value(v) {}
-    virtual ~RclSListEntry() {}
-    virtual bool decode(const string &enc);
-    virtual bool encode(string& enc);
-    virtual bool equal(const DynConfEntry& other);
+    RclSListEntry() 
+    {
+    }
+    RclSListEntry(const std::string& v) 
+    : value(v) 
+    {
+    }
+    virtual bool decode(const std::string &enc)
+    {
+	base64_decode(enc, value);
+	return true;
+    }
+    virtual bool encode(std::string& enc)
+    {
+	base64_encode(value, enc);
+	return true;
+    }
+    virtual bool equal(const DynConfEntry& other)
+    {
+	const RclSListEntry& e = dynamic_cast<const RclSListEntry&>(other);
+	return e.value == value;
+    }
 
-    string value;
+    std::string value;
 };
 
 /** The dynamic configuration class */
 class RclDynConf {
  public:
-    RclDynConf(const string &fn)
-	: m_data(fn.c_str()) {}
-    bool ok() {return m_data.getStatus() == ConfSimple::STATUS_RW;}
-    string getFilename() {return m_data.getFilename();}
+    RclDynConf(const std::string &fn)
+        : m_data(fn.c_str()) 
+    {
+    }
+    bool ok() 
+    {
+	return m_data.getStatus() == ConfSimple::STATUS_RW;
+    }
+    std::string getFilename() 
+    {
+	return m_data.getFilename();
+    }
 
     // Generic methods
-    bool eraseAll(const string& sk);
-    bool insertNew(const string& sk, DynConfEntry &n, DynConfEntry &s, 
+    bool eraseAll(const std::string& sk);
+
+    /** Insert new entry for section sk
+     * @param sk section this is for
+     * @param n  new entry
+     * @param s a scratch entry used for decoding and comparisons,
+     *        avoiding templating the routine for the actual entry type.
+     */
+    bool insertNew(const std::string& sk, DynConfEntry &n, DynConfEntry &s, 
                    int maxlen = -1);
-    template<typename Tp> list<Tp> getList(const string& sk);
+    template<typename Tp> std::list<Tp> getList(const std::string& sk);
 
     // Specialized methods for simple string lists, designated by the
     // subkey value
-    bool enterString(const string sk, const string value, int maxlen = -1);
-    list<string> getStringList(const string sk);
+    bool enterString(const std::string sk, const std::string value, int maxlen = -1);
+    std::list<std::string> getStringList(const std::string sk);
 
  private:
     unsigned int m_mlen;
     ConfSimple   m_data;
-
 };
 
-template<typename Tp> list<Tp> RclDynConf::getList(const string &sk)
+template<typename Tp> std::list<Tp> RclDynConf::getList(const std::string &sk)
 {
-    list<Tp> mlist;
+    std::list<Tp> mlist;
     Tp entry;
-    vector<string> names = m_data.getNames(sk);
-    for (vector<string>::const_iterator it = names.begin(); 
+    std::vector<std::string> names = m_data.getNames(sk);
+    for (std::vector<std::string>::const_iterator it = names.begin(); 
 	 it != names.end(); it++) {
-	string value;
+	std::string value;
 	if (m_data.get(*it, value, sk)) {
 	    if (!entry.decode(value))
 		continue;
@@ -113,10 +144,12 @@ template<typename Tp> list<Tp> RclDynConf::getList(const string &sk)
 
 // Defined subkeys. Values in dynconf.cpp
 // History
-extern const string docHistSubKey;
+extern const std::string docHistSubKey;
 // All external indexes
-extern const string allEdbsSk;
+extern const std::string allEdbsSk;
 // Active external indexes
-extern const string actEdbsSk;
+extern const std::string actEdbsSk;
+// Advanced search history
+extern const std::string advSearchHistSk;
 
 #endif /* _DYNCONF_H_INCLUDED_ */

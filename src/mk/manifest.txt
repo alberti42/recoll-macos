@@ -146,6 +146,7 @@ filters/rcldia
 filters/rcldjvu
 filters/rcldoc
 filters/rcldvi
+filters/rclepub
 filters/rclexecm.py
 filters/rclfb2
 filters/rclgaim
@@ -292,6 +293,8 @@ qtgui/
 qtgui/advsearch.ui
 qtgui/advsearch_w.cpp
 qtgui/advsearch_w.h
+qtgui/advshist.cpp
+qtgui/advshist.h
 qtgui/confgui/
 qtgui/confgui/confgui.cpp
 qtgui/confgui/confgui.h

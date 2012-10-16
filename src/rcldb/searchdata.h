@@ -34,6 +34,7 @@
 #include "hldata.h"
 
 class RclConfig;
+class AdvSearch;
 
 namespace Rcl {
 
@@ -77,6 +78,12 @@ public:
 	if (m_tp != SCLT_OR && m_tp != SCLT_AND) 
 	    m_tp = SCLT_OR;
     }
+    SearchData() 
+	: m_tp(SCLT_AND), m_haveDates(false), m_maxSize(size_t(-1)),
+	  m_minSize(size_t(-1)), m_haveWildCards(false), m_stemlang("english")
+    {
+    }
+    
     ~SearchData() {erase();}
 
     /** Make pristine */
@@ -136,6 +143,12 @@ public:
     std::string getDescription() {return m_description;}
     void setDescription(const std::string& d) {m_description = d;}
 
+    virtual string asXML();
+    void setTp(SClType tp) 
+    {
+	m_tp = tp;
+    }
+    friend class ::AdvSearch;
 private:
     // Combine type. Only SCLT_AND or SCLT_OR here
     SClType                   m_tp; 
@@ -196,7 +209,7 @@ public:
     virtual std::string getReason() const {return m_reason;}
     virtual void getTerms(HighlightData & hldata) const = 0;
 
-    SClType getTp() 
+    SClType getTp() const
     {
 	return m_tp;
     }
@@ -326,6 +339,10 @@ public:
     }
 
     virtual bool toNativeQuery(Rcl::Db &, void *, int maxexp, int maxcl);
+    virtual int getslack() const
+    {
+	return m_slack;
+    }
 private:
     int m_slack;
 };

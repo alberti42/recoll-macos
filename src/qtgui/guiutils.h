@@ -27,6 +27,9 @@
 #include "dynconf.h"
 extern RclDynConf *g_dynconf;
 
+#include "advshist.h"
+extern AdvSearchHist *g_advshistory;
+
 #ifndef NO_NAMESPACES
 using std::string;
 using std::list;

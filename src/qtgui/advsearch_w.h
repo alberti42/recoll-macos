@@ -16,7 +16,9 @@
  */
 #ifndef _ADVSEARCH_W_H_INCLUDED_
 #define _ADVSEARCH_W_H_INCLUDED_
-#include <list>
+
+#include <vector>
+
 #include <qvariant.h>
 #include <qdialog.h>
 
@@ -24,6 +26,7 @@
 #include "recoll.h"
 #include "refcntr.h"
 #include "searchdata.h"
+#include "advshist.h"
 
 class QDialog;
 
@@ -53,19 +56,22 @@ public slots:
     virtual void restrictFtCB_toggled(bool);
     virtual void restrictCtCB_toggled(bool);
     virtual void runSearch();
+    virtual void fromSearch(RefCntr<Rcl::SearchData> sdata);
     virtual void browsePB_clicked();
     virtual void saveFileTypes();
     virtual void delClause();
     virtual void addClause();
     virtual void addClause(int);
     virtual bool close();
+    virtual void slotHistoryNext();
+    virtual void slotHistoryPrev();
 
 signals:
     void startSearch(RefCntr<Rcl::SearchData>);
 
 private:
     virtual void init();
-    std::list<SearchClauseW *> m_clauseWins;
+    std::vector<SearchClauseW *> m_clauseWins;
     QStringList                m_ignTypes;
     bool                       m_ignByCats;
     void saveCnf();

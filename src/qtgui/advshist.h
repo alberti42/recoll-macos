@@ -1,4 +1,4 @@
-/*
+/* Copyright (C) 2005 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -14,41 +14,30 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifndef SEARCHCLAUSE_H
-#define SEARCHCLAUSE_H
-// A class for entry of a search clause: type (OR/AND/etc.), distance
-// for PHRASE or NEAR, and text
+#ifndef _ADVSHIST_H_INCLUDED_
+#define _ADVSHIST_H_INCLUDED_
 
-#include <qvariant.h>
-#include <qwidget.h>
+#include <vector>
+
+#include "recoll.h"
+#include "refcntr.h"
 #include "searchdata.h"
 
-class QVBoxLayout;
-class QHBoxLayout;
-class QComboBox;
-class QSpinBox;
-class QLineEdit;
-
-class SearchClauseW : public QWidget
-{
-    Q_OBJECT
-
+class AdvSearchHist {
 public:
-    SearchClauseW(QWidget* parent = 0);
-    ~SearchClauseW();
-    Rcl::SearchDataClause *getClause();
-    void setFromClause(Rcl::SearchDataClauseSimple *cl);
+    AdvSearchHist();
+    ~AdvSearchHist();
+    RefCntr<Rcl::SearchData> getolder();
+    RefCntr<Rcl::SearchData> getnewer();
+    bool push(RefCntr<Rcl::SearchData>);
     void clear();
 
-    QComboBox* sTpCMB;
-    QComboBox* fldCMB;
-    QSpinBox*  proxSlackSB;
-    QLineEdit* wordsLE;
+private:
+    bool read();
 
-public slots:
-    virtual void tpChange(int);
-protected slots:
-    virtual void languageChange();
+    int m_current;
+    std::vector<RefCntr<Rcl::SearchData> > m_entries;
 };
 
-#endif // SEARCHCLAUSE_H
+
+#endif // _ADVSHIST_H_INCLUDED_
