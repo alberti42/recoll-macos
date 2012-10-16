@@ -36,33 +36,46 @@
           topmost section may also exist in older versions.</i></p>
 
       
+      <h2><a name="b_latest">recoll 1.18.0</a></h2> 
+      <li>It will sometimes happen that the result list paragraph
+        format stored in the Qt preferences file will get garbled,
+        causing result lists with no displayed paragraphs (the
+        counts and pages are ok, the results can be seen in table
+        mode, but not in list mode). The workaround is to go to
+        <blockquote>
+          Preferences->Query configuration->User interface
+        </blockquote> and erase the result paragraph format string
+        (^A DEL in the text area), this will reset the string to the
+        default value.</li>
+
+      <li>Real time indexer: when running with gamin on FreeBSD, the
+        indexer can deadlock in the gamin dialog in some
+        cases.</li>
+
+      <li>After an upgrade, the recoll GUI sometimes crashes on
+        startup. This is fixed by removing (back it up just in case)
+        ~/.config/Recoll.org/recoll.conf, the QSettings storage for
+        recoll.</li>
+
       <h2><a name="b_latest">recoll 1.17.3</a></h2> 
 
       <ul>
+        <li>The unac_except_trans mechanism can generate wrong
+          character translations in some cases.</li> 
+        <li>The real time monitor can be terminated for for permissions-related
+          addwatch errors that should be non-fatal.</li>
+        <li>ODF documents exported by Google docs are badly
+          processed.</li> 
+        <li>It is impossible to open the parent of an
+          embedded document (e.g. the CHM file for an HTML page
+          inside the CHM) if the parent is itself a member of an
+          archive.</li> 
+
         <li>Text inside malformed HTML files (appearing before a &lt;body&gt;
           tag, or after a second one, or after a &lt;/body&gt; tag is
           not indexed. As it would be displayed by current browsers,
           this is wrong.</li>
 
-        <li>It will sometimes happen that the result list paragraph
-          format stored in the Qt preferences file will get garbled,
-          causing result lists with no displayed paragraphs (the
-          counts and pages are ok, the results can be seen in table
-          mode, but not in list mode). The workaround is to go to
-          <blockquote>
-           Preferences->Query configuration->User interface
-          </blockquote> and erase the result paragraph format string
-          (^A DEL in the text area), this will reset the string to the
-          default value.</li>
-
-        <li>Real time indexer: when running with gamin on FreeBSD, the
-          indexer can deadlock in the gamin dialog in some
-          cases.</li>
-
-        <li>After an upgrade, the recoll GUI sometimes crashes on
-          startup. This is fixed by removing (back it up just in case)
-          ~/.config/Recoll.org/recoll.conf, the QSettings storage for
-          recoll.</li>
       </ul>
 
       <h2><a name="b_1_17_2">recoll 1.17.2</a></h2> 

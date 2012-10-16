@@ -36,31 +36,44 @@
 
       <p><em>Installing over an older version</em>: 1.18 introduces serious
         index formats changes, and it will be advisable to reset the index
-        in most cases. <em>IF</em> the 1.18 index is not configured for
-        case and diacritics sensitivity, it is mostly compatible with
-        1.17 indexes though. Case/diacritics sensitivity can be turned
-        off either by a compile flag or a configuration variable, and
-        the default is still a stripped index (so, mostly compatible
-        with 1.17). If you activate case and diacritics sensitivity,
-        you must reset the index.</p>
+        in most cases. This will be best done by destroying the
+        index directory (<tt>rm -rf ~/.recoll/xapiandb</tt>).</p> 
 
-      <p>Always reset the index if installing over an older version (1.14
+      <p><em>If</em> the 1.18 index is not configured for case and
+        diacritics sensitivity, it is mostly compatible with 1.17
+        indexes though.</p>  
+
+      <p>Case/diacritics sensitivity is off by default. For 1.18, it can be
+        turned on only by editing recoll.conf by hand (see the
+        manual). If you do so, you must reset the index.</p>
+
+      <p>Always reset the index if installing over an older version (1.16
         and older). The simplest way to do this is to quit all recoll
         programs and just delete the index directory (<span
         class="literal">rm&nbsp;-rf&nbsp;~/.recoll/xapiandb</span>), then
         start recoll or recollindex.  <span
-        class="literal">recollindex&nbsp;-z</span> will do the same in most
-        cases.</p>
+        class="literal">recollindex&nbsp;-z</span> will do the same in
+        most, but not all, cases.</p>
 
-      <p>Some new, auxiliary, features also require a full reindex:</p>
-      <ul>
-        <li>The file size filtering functions if the existing index was
-        created by version 1.16 or older.</li>
-        <li>The anchored search feature if the index was created by
-          release 1.15 or older.</li>
-      </ul>
+      <p>The subdirectories of xapiandb which were previously used to
+        store the stem expansion database (stem_english,
+        stem_french...)  are not used anymore, because the data is now
+        stored in the Xapian synonyms table. They will stay around if
+        you do nothing about them, so you may want to delete them if
+        you have not chosen to just delete the whole index
+        directory.</p>
 
-
+      <p><em>Viewer exceptions</em>: 
+        There is a new list of mime types that should be opened with
+        the locally configured application even when <em>Use
+          Desktop Preferences</em> is checked. This allows making
+        use of new function (direct access to page), which could
+        not be available through the desktop's <tt>xdg-open</tt>.
+        The default list contains PDF,
+        Postscript and DVI, so you may want to reset it after
+        installation if you want to keep the previous behaviour
+        (losing the page number functionality). This can be done
+        from the <em>Preferences->Gui Configuration</em> menu.</p>
 
       <h2>Changes</h2>
 
@@ -79,7 +92,12 @@
           what is used for stemming. See the 
           <a href="usermanual/usermanual.html#RCL.INDEXING.CONFIG.SENS">
             manual chapter for details</a> about controlling the
-            feature.</li> 
+          feature. The capacity for case/diacritics sensitivity is
+          off by default, and you should not see differences in this
+          respect after upgrading if you do not turn it on
+          explicitely. Even on a raw index, most searches should
+          behave like they did in 1.17. Sensitivity must be
+          explicitely requested in most cases.</li>
 
         <li>Recoll has a new capacity to store page break locations
           and use them when opening a document at the location for a
@@ -89,9 +107,24 @@
         <li>Recoll can now also pass a search string to the native
           application.</li> 
 
+        <li>There is a list of mime types that should be opened with
+          the locally configured application even when <em>Use
+            Desktop Preferences</em> is checked. This will permit, for
+          example, using evince for its page access capabilities on
+          PDF files, while letting the desktop handle all the other
+          mime types. The list is not empty by default, it contains PDF,
+          Postscript and DVI, so you may want to reset it after
+          installation if you want to keep the previous behaviour
+          (losing the page number functionality). This can be done
+          from the <em>Preferences->Gui Configuration</em> menu.</li>
+
         <li>The GUI result list has a new "snippets" window for
           documents with page numbers, which let the user choose a
           snippet and open the document at the appropriate page.</li>
+
+        <li>The advanced search screen now has a history
+          function. While the focus is in this window, you
+          can walk the history of searches using the up and down arrows.</li>
 
         <li>We now allow multiple directory specifications in the query
           language, as in: <i>dir:/home/me -dir:tmp</i></li>
@@ -108,14 +141,15 @@
           option to display plain text: it will better respect
           indentation, while folding long lines.</li>
 
-        <li>When running in an UTF-8 locale, and after decoding a
-          plain text file as UTF-8 fails, indexing will try again
-          using an 8bit character set heuristically chosen according
-          to the locale country code.</li>
+        <li>When running in an UTF-8 locale, and after failing to decode a
+          plain text file as UTF-8, indexing will try again using an 8 bit
+          character set heuristically chosen according to the locale
+          country code.</li>
 
-        <li>A new configuration, maxmemberkbs, has been implemented to
-          limit the size of archive members we process. This will avoid
-          recoll trying to read a 4 GB ISO from a zip archive...</li>
+        <li>A new configuration variable, <tt>maxmemberkbs</tt>, has been
+          implemented to limit the size of archive members we process. This
+          will avoid trying to read a 4 GB ISO from a zip archive as
+          happened in the past...</li>
 
         <li>Proper error reporting when a wildcard expansion is
           truncated for size. An incomplete search could previously be
@@ -132,13 +166,6 @@
         <li>Partial autodetection of thunderbird mailboxes found out
           of the configured location.</li>
 
-        <li>Implemented a list of mime types that should be opened
-          with the locally configured application even when <em>Use
-            Desktop Preferences</em> is checked. This will permit, for
-          example, using evince for its page access capabilities on
-          PDF files, while letting the desktop handle all the other
-          mime types.</li>
-
         <li>Fixed bugs:
           <ul>
             <li>The unac_except_trans mechanism could be buggy in some
@@ -147,7 +174,10 @@
               addwatch error.</li>
             <li>Fix handling of ODF documents exported by Google
               docs.</li>
-
+            <li>It was previously impossible to open the parent of an
+              embedded document (e.g. the CHM file for an HTML page
+              inside the CHM) if the parent was itself a member of an
+              archive.</li> 
           </ul>
         </li>
 
