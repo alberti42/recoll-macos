@@ -1371,22 +1371,23 @@ fvwm
       <title>Complex/advanced search</title>
 
       <para>The advanced search dialog helps you build more complex queries
-      without memorizing the search language constructs. It can be opened
-      through the <guilabel>Tools</guilabel> menu or through the main
-      toolbar.</para>
+        without memorizing the search language constructs. It can be opened
+        through the <guilabel>Tools</guilabel> menu or through the main
+        toolbar.</para>
 
       <para>The dialog has two tabs:</para> 
+
       <orderedlist>
 
       <listitem><para>The first tab lets you specify terms to search
-      for, and permits specifying multiple clauses which are combined
-      to build the search.</para>
-      </listitem> 
+          for, and permits specifying multiple clauses which are combined
+          to build the search.</para>
+         </listitem> 
 
       <listitem><para>The second tab lets filter the results according
-      to file size, date of modification, mime type, or
-      location.</para>
-      </listitem>
+          to file size, date of modification, mime type, or
+          location.</para>
+         </listitem>
      
       </orderedlist>
 
@@ -1399,7 +1400,7 @@ fvwm
         the top of the result page to see the query expansion.</para>
 
       <sect3 id="rcl.search.gui.complex.terms">
-      <title>Avanced search: the "find" tab</title>
+        <title>Avanced search: the "find" tab</title>
 
         <para>This part of the dialog lets you constructc a query by
           combining multiple clauses of different types.  Each entry
@@ -1508,6 +1509,22 @@ fvwm
       </itemizedlist>
 
      </sect3>
+
+      <sect3 id="rcl.search.gui.complex.history">
+        <title>Avanced search history</title>
+
+        <para>The advanced search tool memorizes the last 100 searches
+          performed. You can walk the saved searches by using the up and
+          down arrow keys while the keyboard focus belongs to the advanced
+          search dialog.</para>
+
+        <para>The complex search history can be erased, along with the
+          one for simple search, by selecting the <menuchoice>
+	    <guimenu>File</guimenu>
+	    <guimenuitem>Erase Search History</guimenuitem>
+          </menuchoice> menu entry.</para>
+
+      </sect3>
 
     </sect2>
 
@@ -1836,6 +1853,12 @@ fvwm
         used, by clicking on the result list header.</para>
       </formalpara>
 
+      <formalpara><title>Advanced search history</title>
+        <para>You can display any of the last 100 complex searches
+          performed by using the up and down arrow keys while the advanced
+          search panel is active.</para>
+      </formalpara>
+      
       <formalpara><title>Browsing the result list inside a preview 
                    window</title>
        <para>Entering <keycap>Shift-Down</keycap> or <keycap>Shift-Up</keycap>
