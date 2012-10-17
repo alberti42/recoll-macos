@@ -69,14 +69,15 @@ recipient = XTO
 # "url", but this one doesn't need to be listed here, it's stored by hard
 # code)
 #
-# Some fields are stored by default, don't add them here, else they will be
-# stored twice: caption, keywords, abstract, mimetype, url
+# Some fields are stored by default, don't add them here:
+#    caption, keywords, abstract, mimetype, url
 # Only canonical names should be used here, not aliases.
 # "author" used to be stored by default, now set here as optional
 # "rclaptg" is used for viewer specialization (depending on local config)
 # "rclbes" defines the backend type (ie normal fs, firefox cache). Should
 #   probably be hardcoded, don't remove it
 author=
+recipient=
 rclaptg=
 rclbes=
 filename=
