@@ -143,7 +143,7 @@ public:
     std::string getDescription() {return m_description;}
     void setDescription(const std::string& d) {m_description = d;}
 
-    virtual string asXML();
+    string asXML();
     void setTp(SClType tp) 
     {
 	m_tp = tp;
