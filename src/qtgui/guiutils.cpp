@@ -39,7 +39,7 @@ AdvSearchHist *g_advshistory;
 // introducing blank space.
 const char *PrefsPack::dfltResListFormat = 
 #if 1
-	"<table><tr><td><img src='%I' width='64'></td>"
+	"<table><tr><td><a href='%U'><img src='%I' width='64'></a></td>"
 	"<td>%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
 	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i>&nbsp;%i<br>"
 	"%A %K</td></tr></table>"
