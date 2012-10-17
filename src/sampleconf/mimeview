@@ -9,10 +9,10 @@
 # exceptions and the list is normally empty
 #nouncompforviewmts = 
 
-# Exceptions when using the x-all entry: these types will use their local
-# definition. This is useful, e.g. for pdf, where we can pass additional
-# parameters like page to open and search string when using the local
-# definition
+# For releases 1.18 and later: exceptions when using the x-all entry: these
+# types will use their local definition. This is useful, e.g. for pdf,
+# where we can pass additional parameters like page to open and search
+# string when using the local definition
 xallexcepts = application/pdf application/postscript application/x-dvi \
             text/html|gnuinfo text/html|chm
 [view]
@@ -20,6 +20,10 @@ xallexcepts = application/pdf application/postscript application/x-dvi \
 application/x-all = xdg-open %f
 
 application/epub+zip = ebook-viewer %f
+# If you want to open the parent epub document for epub parts instead of
+# opening them as html documents:
+#text/html|epub = ebook-viewer %F;ignoreipath=1
+
 application/x-mobipocket-ebook = ebook-viewer %f
 
 application/x-kword = kword %f
@@ -36,7 +40,9 @@ application/msword = libreoffice %f
 application/vnd.ms-excel = libreoffice %f
 application/vnd.ms-powerpoint = libreoffice %f
 
-application/vn.oasis.opendocument.txt = libreoffice %f
+application/vnd.oasis.opendocument.text = libreoffice %f
+application/vnd.oasis.opendocument.presentation = libreoffice %f
+application/vnd.oasis.opendocument.spreadsheet = libreoffice %f
 
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
  libreoffice %f

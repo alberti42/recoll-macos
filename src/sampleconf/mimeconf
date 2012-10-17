@@ -55,7 +55,9 @@ application/pdf = exec rclpdf
 application/postscript = exec pstotext;charset=iso-8859-1;mimetype=text/plain
 application/vnd.ms-excel = exec xls2csv -c "	" -d utf-8;mimetype=text/plain
 application/vnd.ms-powerpoint = exec catppt -d utf-8;mimetype=text/plain
-application/vn.oasis.opendocument.txt = exec rclsoff
+application/vnd.oasis.opendocument.text = exec rclsoff
+application/vnd.oasis.opendocument.presentation = exec rclsoff 
+application/vnd.oasis.opendocument.spreadsheet = exec rclsoff
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
  exec rclopxml
 application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
@@ -151,7 +153,9 @@ application/pdf = pdf
 application/postscript = postscript
 application/vnd.ms-excel = spreadsheet
 application/vnd.ms-powerpoint = presentation
-application/vn.oasis.opendocument.txt = wordprocessing
+application/vnd.oasis.opendocument.text = wordprocessing
+application/vnd.oasis.opendocument.presentation = presentation
+application/vnd.oasis.opendocument.spreadsheet = spreadsheet
 application/vnd.openxmlformats-officedocument.presentationml.presentation = presentation
 application/vnd.openxmlformats-officedocument.presentationml.template = presentation
 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = spreadsheet
@@ -239,7 +243,7 @@ text = \
       application/msword \
       application/pdf \
       application/postscript \
-      application/vn.oasis.opendocument.txt \
+      application/vnd.oasis.opendocument.text \
       application/vnd.openxmlformats-officedocument.wordprocessingml.document \
       application/vnd.openxmlformats-officedocument.wordprocessingml.template \
       application/vnd.sun.xml.writer \
@@ -282,15 +286,18 @@ text = \
 
 spreadsheet = \
    application/vnd.ms-excel \
+   application/vnd.oasis.opendocument.spreadsheet \
    application/vnd.openxmlformats-officedocument.spreadsheetml.sheet \
    application/vnd.openxmlformats-officedocument.spreadsheetml.template \
    application/vnd.sun.xml.calc \
    application/vnd.sun.xml.calc.template \
    application/x-gnumeric
 
-presentation = application/vnd.ms-powerpoint \
-  application/vnd.openxmlformats-officedocument.presentationml.template \
+presentation = \
+  application/vnd.ms-powerpoint \
+  application/vnd.oasis.opendocument.presentation \
   application/vnd.openxmlformats-officedocument.presentationml.presentation \
+  application/vnd.openxmlformats-officedocument.presentationml.template \
   application/vnd.sun.xml.impress \
   application/vnd.sun.xml.impress.template
 
