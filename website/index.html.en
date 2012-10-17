@@ -3,7 +3,6 @@
   <head>
     <title>Recoll text search finds your documents</title>
     <meta name="generator" content="HTML Tidy, see www.w3.org">
-    <meta name="Author" content="Jean-Francois Dockes">
     <meta name="Description" content="Recoll is a desktop text search application for Unix, Linux and Mac OS X, based on the Xapian search engine library.">
     <meta name="Keywords" content="text search, document search, full-text search, desktop search,open source,free">
     <meta http-equiv="Content-language" content="en">
@@ -61,7 +60,6 @@
 	extraction layer and a complete, yet easy to use, Qt graphical
 	interface.</p>
 
-
       <p class="remark">Recoll will index an <b>MS-Word</b> document
       stored as an <b>attachment</b> to an <b>e-mail message</b> inside
 	  a <b>Thunderbird folder</b> archived in a <b>Zip file</b>
@@ -86,6 +84,8 @@
       <h2>News</h2>
       <div class="news">
       <ul>
+        <li>2012-10-16: <a href="filters/filters.html">new filter for
+            EPUB documents</a>.</li> 
         <li>2012-10-16: recoll 1.18 will soon be out. It will have
           optional character case and diacritics sensitivity, direct
           access to hit page when opening PDF files, complex search

@@ -5,7 +5,6 @@
     <title>RECOLL: un outil personnel de recherche textuelle pour 
       Unix et Linux</title>
     <meta name="generator" content="HTML Tidy, see www.w3.org">
-    <meta name="Author" content="Jean-Francois Dockes">
     <meta name="Description" content=
     "recoll est un logiciel personnel de recherche textuelle pour unix et linux basé sur Xapian, un moteur d'indexation puissant et mature.">
     <meta name="Keywords" content=
@@ -101,6 +100,8 @@
       <h2>Nouvelles: </h2>
       <ul>
 
+        <li>2012-10-16: <a href="filters/filters.html">un nouveau filtre
+            pour les documents EPUB</a>.</li> 
         <li>2012-05-24: Sortie de la
           version <a href="download.html#source">1.17.3</a>. Voir
           les <a href="release-1.17.html">les notes</a>. Cette version
