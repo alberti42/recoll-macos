@@ -39,7 +39,7 @@
 	  <tbody>
 	    <tr>
 	      <td><a href="#source">Source</a></td>
-              <td><a href="#rpms">Rpm/deb packages</a></td>
+              <td><a href="#packages">Packages (.rpm and .deb)</a></td>
               <td><a href="BUGS.html">Known bugs</a></td>
 	      <td><a href="#ports">Mac ports</a></td>
 	      <td><a href="filters/filters.html">Filters</a> </td>
@@ -60,11 +60,16 @@
       <p>Recoll <a href="usermanual/rcl.install.html">
 	  Installation / building manual</a>.</p> 
 
-      <p>The indexing filters for some document types may need
+      <p>The indexing filters used for some document types may need
         external packages not installed on your system by default, and
         not installed automatically with Recoll: <a
 	href="features.html#doctypes"> take a look at the list</a> and
-	decide what you need to install.</p> 
+	decide what you need to
+	install. Also <a href="filters/filters.html">new or updated
+	filters</a> sometimes become available after a release. As a
+	rule, all filters are compatible with all Recoll
+	versions. Any compatibility problem will be explicitely
+	mentionned.</p>
 
       <p>The Recoll term explorer tool in phonetic mode (marginally
 	useful and optional) uses the <b>aspell</b> package, version
@@ -92,20 +97,6 @@
 	problems, if you are not affected by the corrected bugs (check
 	the <a href="CHANGES.html">changes file</a>), there is
 	probably no necessity to upgrade anyway.</p>
-
-      <h2><a name="filters">Updated filters</a></h2>
-
-      <p>New and updated filters are sometimes 
-	<a href="filters/filters.html">available</a> before the next
-	Recoll release. As far as I know, all current filters are
-	fully compatible with older Recoll releases (from 1.13), so
-	you can install new or updated filters on
-	older Recoll packages and gain new file type support without
-	destabilizing your search setup.</p>
-
-      <p>You may be interested by the new XML and TAR filters, and an
-      updated Open Office filter that appeared after the 1.17.3
-      release.</p>
 
       <h2><a name="source">Source</a></h2>
 
@@ -165,15 +156,6 @@
 
       </ul>
 
-      <h3>KDE3 kicker applet:</h3>
-       <p>the applet can start a Recoll search
-        from the KDE3 toolbar. It is in a separate source file.
-	<a href="recoll_applet-1.10.0.tgz">recoll_applet-1.10.0.tgz</a>.
-	This is a very slightly modified version of the 
-	<a href="http://demandiseineseite.gmxhome.de/find/">
-	find_applet</a>. It will work with any recoll version after
-	1.10. <em>KDE 3 only</em>.</p>
-
       <h3>Source repository:</h3>
       <p>The <span class="application">Recoll</span> source repository is
         hosted on 
@@ -204,7 +186,7 @@
 	<a href="older/recoll-1.0.16.tar.gz">1.0.16</a>.
       </p>
 
-      <h2><a name="rpms">Packages</a></h2>
+      <h2><a name="packages">Packages</a></h2>
 
       <p>Packages or ports for Recoll are available in the standard
         repositories for many distributions.</p>
@@ -225,22 +207,21 @@
       <h3><a name="ubuntu">Ubuntu</a></h3>
 
         <p>There are Personal Package Archives on launchpad.net for 
-          <a href="http://www.launchpad.net/~xapian-backports/+archive/xapian-1.2">
-            Xapian</a>, 
           <a  href="https://launchpad.net/~recoll-backports/+archive/recoll-1.15-on">
             Recoll, kio-recoll and recoll-lens</a>. These were built from the
-          latest versions, for a set of Ubuntu series.</p>
-
-        <p>Ubuntu 10.04 (lucid) and later versions just need the Recoll
-          PPA.</p> 
-
-        <p>I am not producing packages for older versions any more,
-        but some are still stored on Launchpad, and you'll find some
-        instructions to install them in
-        the <a href="download-1.14.html">older download page</a>.
-        </p>
+          latest versions, for a set of Ubuntu series. starting at
+          Lucid. The installation is very simple:
+          <pre><tt>
+          sudo add-apt-repository ppa:recoll-backports/recoll-1.15-on
+          sudo apt-get update
+          sudo apt-get install recoll
+          </tt></pre>
 
 
+        <h3><a name="mint">Mint Linux</a></h3>
+        <p>The Ubuntu PPA works perfectly for Mint 13 (and probably
+          other releases too). Just follow the instructions for Ubuntu.</p>
+        
       <h3>RPMS</h3> 
 
        <p>Some Fedora and Mandriva packages unfortunately think that they

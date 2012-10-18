@@ -43,6 +43,7 @@ using namespace std;
 #include "plaintorich.h"
 #include "internfile.h"
 #include "wipedir.h"
+#include "hldata.h"
 
 using namespace KIO;
 
@@ -260,9 +261,9 @@ void RecollProtocol::showPreview(const Rcl::Doc& idoc)
     PlainToRichKio ptr(fname);
     ptr.set_inputhtml(!fdoc.mimetype.compare("text/html"));
     list<string> otextlist;
-    HiliteData hdata;
+    HighlightData hdata;
     if (!m_source.isNull())
-	m_source->getTerms(hdata.terms, hdata.groups, hdata.gslks);
+	m_source->getTerms(hdata);
     ptr.plaintorich(fdoc.text, otextlist, hdata);
 
     QByteArray array;

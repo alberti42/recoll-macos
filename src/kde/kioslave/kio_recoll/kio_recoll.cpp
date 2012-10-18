@@ -323,11 +323,11 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
 						Rcl::SCLT_OR : Rcl::SCLT_AND, 
 						qs);
 	}
-	sd = new Rcl::SearchData(Rcl::SCLT_OR);
+	sd = new Rcl::SearchData(Rcl::SCLT_OR, "english");
 	if (sd && clp)
 	    sd->addClause(clp);
     } else {
-	sd = wasaStringToRcl(o_rclconfig, qs, m_reason);
+	sd = wasaStringToRcl(o_rclconfig, "english", qs, m_reason);
     }
     if (!sd) {
 	m_reason = "Internal Error: cant build search";
@@ -336,7 +336,6 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
     }
 
     RefCntr<Rcl::SearchData> sdata(sd);
-    sdata->setStemlang("english");
     RefCntr<Rcl::Query>query(new Rcl::Query(m_rcldb));
     query->setCollapseDuplicates(prefs.collapseDuplicates);
     if (!query->setQuery(sdata)) {

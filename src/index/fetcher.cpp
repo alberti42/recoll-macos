@@ -28,7 +28,7 @@ DocFetcher *docFetcherMake(const Rcl::Doc& idoc)
 {
     if (idoc.url.empty()) {
         LOGERR(("docFetcherMakeg:: no url in doc!\n"));
-        return false;
+        return 0;
     }
     string backend;
     idoc.getmeta(Rcl::Doc::keybcknd, &backend);

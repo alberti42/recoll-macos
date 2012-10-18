@@ -49,7 +49,7 @@
 
 #include "recollq.h"
 
-RclConfig *theconfig;
+extern RclConfig *theconfig;
 RclConfig *thestableconfig;
 PTMutexInit thestableconfiglock;
 

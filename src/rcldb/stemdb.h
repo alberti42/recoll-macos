@@ -66,6 +66,7 @@ public:
 	: m_stemmer(lang), m_lang(lang)
     {
     }
+    virtual ~SynTermTransStem() {}
     virtual std::string operator()(const std::string& in)
     {
 	string out = m_stemmer(in);
