@@ -37,6 +37,16 @@
 
       
       <h2><a name="b_latest">recoll 1.18.0</a></h2> 
+
+      <li>On systems such as Debian Stable which use Evince version 2.x as
+        a PDF viewer, the default "Open" command for PDF files will
+        not work. You need to edit the command:
+        in <em>Preferences->GUI&nbsp;configuration</em>,
+        uncheck <em>Use&nbsp;desktop&nbsp;preferences...</em>, then
+        click <em>Choose&nbsp;editor&nbsp;applications</em>, and for
+        application/pdf, application/postscript and text/dvi, change
+        the --page-index option to --page-label.</li>
+
       <li>It will sometimes happen that the result list paragraph
         format stored in the Qt preferences file will get garbled,
         causing result lists with no displayed paragraphs (the

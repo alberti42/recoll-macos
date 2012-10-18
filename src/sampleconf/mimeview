@@ -10,11 +10,15 @@
 #nouncompforviewmts = 
 
 # For releases 1.18 and later: exceptions when using the x-all entry: these
-# types will use their local definition. This is useful, e.g. for pdf,
-# where we can pass additional parameters like page to open and search
-# string when using the local definition
+# types will use their local definition. This is useful, e.g.: 
+#
+#  - for pdf, where we can pass additional parameters like page to open and
+#    search string
+#  - For pages of CHM and EPUB documents where we can choose to open the 
+#    parent document instead of a temporary html file.
 xallexcepts = application/pdf application/postscript application/x-dvi \
-            text/html|gnuinfo text/html|chm
+            text/html|gnuinfo text/html|chm text/html|epub
+
 [view]
 # Pseudo entry used if the 'use desktop' preference is set in the GUI
 application/x-all = xdg-open %f
