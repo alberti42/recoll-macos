@@ -125,13 +125,12 @@ PHP_METHOD(Query, query)
     // jf: the original implementation built an AND clause. It would
     // be nice to offer an option, but the next best thing is to
     // default to the query language
-    sd = wasaStringToRcl(rclconfig, qs, reason);
+    sd = wasaStringToRcl(rclconfig, "english", qs, reason);
 
     if (!sd) {
 	cerr << "Query string interpretation failed: " << reason << endl;
 	RETURN_BOOL(false);
     }
-    sd->setStemlang("english");
 
     RefCntr<Rcl::SearchData> rq(sd);
     Rcl::Query *pRclQuery = new Rcl::Query(pRclDb);
@@ -169,7 +168,7 @@ PHP_METHOD(Query, get_doc)
     }
 
     string abs;
-    pRclQuery->whatDb()->makeDocAbstract(doc, pRclQuery, abs);
+    pRclQuery->makeDocAbstract(doc, abs);
 
     char splitter[] = {7,8,1,2,0};
     char ret_string[1000];
