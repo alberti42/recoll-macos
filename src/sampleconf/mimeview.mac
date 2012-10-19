@@ -3,88 +3,148 @@
 ## ##########################################
 # External viewers, launched by the recoll GUI when you click on a result
 # 'Open' link - MAC version
-# On the MAC, we basically use "open" for everything...
+# On the MAC, we use "open" for everything...
 
 # Mime types which we should not uncompress if they are found gzipped or
 # bzipped because the native viewer knows how to handle. These would be
 # exceptions and the list is normally empty
 #nouncompforviewmts = 
 
+# For releases 1.18 and later: exceptions when using the x-all entry: these
+# types will use their local definition. This is useful, e.g.: 
+#
+#  - for pdf, where we can pass additional parameters like page to open and
+#    search string
+#  - For pages of CHM and EPUB documents where we can choose to open the 
+#    parent document instead of a temporary html file.
+#xallexcepts = application/pdf application/postscript application/x-dvi \
+#            text/html|gnuinfo text/html|chm text/html|epub
+
 [view]
 # Pseudo entry used if the 'use desktop' preference is set in the GUI
 application/x-all = open %f
 
+application/epub+zip = ebook-viewer %f
+# If you want to open the parent epub document for epub parts instead of
+# opening them as html documents:
+#text/html|epub = ebook-viewer %F;ignoreipath=1
+
+application/x-mobipocket-ebook = ebook-viewer %f
+
 application/x-kword = kword %f
 application/x-abiword = abiword %f
 
-application/pdf  = open %f
-application/postscript = open %f
-application/x-dvi = open %f
+application/pdf  = evince --page-index=%p --find=%s %f
+application/postscript = evince --page-index=%p --find=%s %f
+application/x-dvi = evince --page-index=%p --find=%s  %f
 
 application/x-lyx = lyx %f
 application/x-scribus = scribus %f
 
-application/msword = open %f
-application/vnd.ms-excel = open %f
-application/vnd.ms-powerpoint = open %f
+application/msword = libreoffice %f
+application/vnd.ms-excel = libreoffice %f
+application/vnd.ms-powerpoint = libreoffice %f
+
+application/vnd.oasis.opendocument.text = libreoffice %f
+application/vnd.oasis.opendocument.presentation = libreoffice %f
+application/vnd.oasis.opendocument.spreadsheet = libreoffice %f
 
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
- open %f
+ libreoffice %f
 application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
- open %f
+ libreoffice %f
 application/vnd.openxmlformats-officedocument.presentationml.template = \
- open %f
+ libreoffice %f
 application/vnd.openxmlformats-officedocument.presentationml.presentation = \
- open %f
+ libreoffice %f
 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = \
- open %f
+ libreoffice %f
 application/vnd.openxmlformats-officedocument.spreadsheetml.template =\
- open %f
-application/vnd.sun.xml.calc = open %f
-application/vnd.sun.xml.calc.template = open %f
-application/vnd.sun.xml.draw = open %f
-application/vnd.sun.xml.draw.template = open %f
-application/vnd.sun.xml.impress = open %f
-application/vnd.sun.xml.impress.template = open %f
-application/vnd.sun.xml.math = open %f
-application/vnd.sun.xml.writer = open %f
-application/vnd.sun.xml.writer.global = open %f
-application/vnd.sun.xml.writer.template = open %f
-application/vnd.wordperfect = open %f
+ libreoffice %f
+application/vnd.sun.xml.calc = libreoffice %f
+application/vnd.sun.xml.calc.template = libreoffice %f
+application/vnd.sun.xml.draw = libreoffice %f
+application/vnd.sun.xml.draw.template = libreoffice %f
+application/vnd.sun.xml.impress = libreoffice %f
+application/vnd.sun.xml.impress.template = libreoffice %f
+application/vnd.sun.xml.math = libreoffice %f
+application/vnd.sun.xml.writer = libreoffice %f
+application/vnd.sun.xml.writer.global = libreoffice %f
+application/vnd.sun.xml.writer.template = libreoffice %f
+application/vnd.wordperfect = libreoffice %f
+text/rtf = libreoffice %f
 
 application/x-chm = kchmviewer %f
 application/x-dia-diagram = dia %f
-application/x-fsdirectory = open %f
+application/x-fsdirectory = dolphin %f
 application/x-gnuinfo = xterm -e "info -f %f"
 application/x-gnumeric = gnumeric %f
 
-application/x-flac = open %f
-audio/mpeg = open %f
-application/ogg = open %f
+application/x-flac = rhythmbox %f
+audio/mpeg = rhythmbox %f
+application/ogg = rhythmbox %f
+audio/x-karaoke = kmid %f
 
-image/jpeg = open %f
-image/png = open %f
-image/tiff = open %f
-image/gif  = open %f
-image/svg+xml = open %f
-image/vnd.djvu = open %f
-image/x-xcf = open %f
-image/bmp = open %f
-image/x-ms-bmp = open %f
-image/x-xpmi = open %f
+image/jpeg = gwenview %f
+image/png = gwenview %f
+image/tiff = gwenview %f
+image/gif  = gwenview %f
+image/svg+xml = inkview %f
+image/vnd.djvu = djview %f
+image/x-xcf = gimp %f
+image/bmp = gwenview %f
+image/x-ms-bmp = gwenview %f
+image/x-xpmi = gwenview %f
 
 message/rfc822 = thunderbird -file %f
 text/x-mail = thunderbird -file %f
+application/x-mimehtml = thunderbird -file %f
 
-application/x-tex = open %f
-text/x-tex = open %f
-text/html = open %u
-text/html|gnuinfo = rclshowinfo %F %(title)
-text/plain = open %f
-text/x-c = open %f
-text/x-c+ = open %f
-text/x-c++ = open %f
-text/x-chm-html = openchm %f %i
-text/x-ini = open  %f
-#text/x-man = xterm -u8 -e "groff -T ascii -man %f | more"
+text/calendar = evolution %f
+
+application/x-okular-notes = okular %f
+
+application/x-rar = ark %f
+application/x-tar = ark %f
+application/zip = ark %f
+
+application/x-awk = emacsclient  %f
+application/x-perl = emacsclient  %f
+text/x-perl = emacsclient  %f
+application/x-shellscript = emacsclient  %f
+text/x-shellscript = emacsclient  %f
+
+# Or firefox -remote "openFile(%u)"
+text/html = firefox %u
+
+# gnu info nodes are translated to html with a "gnuinfo"
+# rclaptg. rclshowinfo knows how to start the info command on the right
+# node
+text/html|gnuinfo = rclshowinfo %F %(title);ignoreipath=1
+
+application/x-webarchive = konqueror %f
+text/x-fictionbook = ebook-viewer %f
+application/x-tex = emacsclient  %f
+application/xml = emacsclient  %f
+text/xml = emacsclient  %f
+text/x-tex = emacsclient  %f
+text/plain = emacsclient  %f
+text/x-awk = emacsclient  %f
+text/x-c = emacsclient  %f
+text/x-c+ = emacsclient  %f
+text/x-c++ = emacsclient  %f
+text/x-csv = libreoffice %f
+text/x-html-sidux-man = konqueror %f
+text/x-html-aptosid-man = iceweasel %f
+
+# Html pages inside a chm have a chm rclaptg set by the filter. Kchmviewer
+# knows how to use the ipath (which is the internal chm path) to open the
+# file at the right place
+text/html|chm = kchmviewer --url %i %F
+
+text/x-ini = emacsclient %f
+text/x-man = xterm -u8 -e "groff -T ascii -man %f | more"
 text/x-python = idle %f
+text/x-gaim-log = emacsclient  %f
+text/x-purple-html-log = emacsclient  %f
+text/x-purple-log = emacsclient  %f
