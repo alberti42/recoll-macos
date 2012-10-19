@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="fr_FR" sourcelanguage="en">
+<TS version="2.0" language="fr">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -13,15 +13,15 @@
     </message>
     <message>
         <source>texts</source>
-        <translation>textes</translation>
+        <translation type="obsolete">textes</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation>feuilles de calcul</translation>
+        <translation type="obsolete">feuilles de calcul</translation>
     </message>
     <message>
         <source>presentations</source>
-        <translation>présentations</translation>
+        <translation type="obsolete">présentations</translation>
     </message>
     <message>
         <source>media</source>
@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>messages</source>
-        <translation>messages</translation>
+        <translation type="obsolete">messages</translation>
     </message>
     <message>
         <source>other</source>
@@ -38,6 +38,22 @@
     <message>
         <source>Bad multiplier suffix in size filter</source>
         <translation>Suffixe multiplicateur incorrect dans un filtre de taille (k/m/g/t)</translation>
+    </message>
+    <message>
+        <source>text</source>
+        <translation>texte</translation>
+    </message>
+    <message>
+        <source>spreadsheet</source>
+        <translation>feuille de calcul</translation>
+    </message>
+    <message>
+        <source>presentation</source>
+        <translation>présentation</translation>
+    </message>
+    <message>
+        <source>message</source>
+        <translation>message</translation>
     </message>
 </context>
 <context>
@@ -542,6 +558,10 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <source>Beagle web history</source>
         <translation>Queue Beagle</translation>
     </message>
+    <message>
+        <source>Search parameters</source>
+        <translation>Paramètres pour la recherche</translation>
+    </message>
 </context>
 <context>
     <name>RTIToolW</name>
@@ -677,7 +697,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
-        <translation>Mauvaise commande pour %1: [%2]
+        <translation type="obsolete">Mauvaise commande pour %1: [%2]
 Vérifier le fichier mimeconf</translation>
     </message>
     <message>
@@ -878,6 +898,19 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
         <source>Indexed MIME Types</source>
         <translation>Types MIME indexés</translation>
     </message>
+    <message>
+        <source>Bad viewer command line for %1: [%2]
+Please check the mimeview file</source>
+        <translation>Ligne de commande incorrecte pour %1:[%2]. Vérifier le fichier mimeview.</translation>
+    </message>
+    <message>
+        <source>Viewer command line for %1 specifies both file and parent file value: unsupported</source>
+        <translation>La ligne de commande pour %1 spécifie à la fois le fichier et son parent: non supporté</translation>
+    </message>
+    <message>
+        <source>Cannot find parent document</source>
+        <translation>Impossible de trouver le document parent</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -955,7 +988,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>&amp;Query configuration</source>
-        <translation>&amp;Recherche</translation>
+        <translation type="obsolete">&amp;Recherche</translation>
     </message>
     <message>
         <source>&amp;User manual</source>
@@ -999,7 +1032,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>&amp;Indexing configuration</source>
-        <translation>Configuration d&apos;&amp;Indexation</translation>
+        <translation type="obsolete">Configuration d&apos;&amp;Indexation</translation>
     </message>
     <message>
         <source>All</source>
@@ -1080,6 +1113,14 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     <message>
         <source>E&amp;xternal index dialog</source>
         <translation>Configuration des index e&amp;xternes</translation>
+    </message>
+    <message>
+        <source>&amp;Index configuration</source>
+        <translation>Configuration de l&apos;&amp;Index</translation>
+    </message>
+    <message>
+        <source>&amp;GUI configuration</source>
+        <translation>Confi&amp;guration de l&apos;interface</translation>
     </message>
 </context>
 <context>
@@ -1258,6 +1299,14 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     <message>
         <source>for</source>
         <translation>pour</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;&lt;i&gt;Alternate spellings: &lt;/i&gt;</source>
+        <translation>&lt;p&gt;&lt;i&gt;Orthographes proposés: &lt;/i&gt;</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation>Ouvrir la fenêtre des e&amp;xtraits</translation>
     </message>
 </context>
 <context>
@@ -1544,6 +1593,33 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
 </context>
 <context>
+    <name>Snippets</name>
+    <message>
+        <source>Snippets</source>
+        <translation>Extraits</translation>
+    </message>
+    <message>
+        <source>about:blank</source>
+        <translation></translation>
+    </message>
+    <message>
+        <source>X</source>
+        <translation type="obsolete">X</translation>
+    </message>
+    <message>
+        <source>Find:</source>
+        <translation>Trouver:</translation>
+    </message>
+    <message>
+        <source>Next</source>
+        <translation>Suivant</translation>
+    </message>
+    <message>
+        <source>Prev</source>
+        <translation>Précédent</translation>
+    </message>
+</context>
+<context>
     <name>SortForm</name>
     <message>
         <source>Date</source>
@@ -1660,7 +1736,23 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Index: %1 documents, average length %2 terms</source>
-        <translation>Index: %1 documents, taille moyenne %2 termes</translation>
+        <translation type="obsolete">Index: %1 documents, taille moyenne %2 termes</translation>
+    </message>
+    <message>
+        <source>Index: %1 documents, average length %2 terms.%3 results</source>
+        <translation>Index: %1 documents, longueur moyenne %2 termes. %3 résultats</translation>
+    </message>
+    <message>
+        <source>%1 results</source>
+        <translation>%1 résultats</translation>
+    </message>
+    <message>
+        <source>List was truncated alphabetically, some frequent </source>
+        <translation>La liste a été tronquée par ordre alphabétique. Certains termes fréquents</translation>
+    </message>
+    <message>
+        <source>terms may be missing. Try using a longer root.</source>
+        <translation>pourraient être absents. Essayer d&apos;utiliser une racine plus longue</translation>
     </message>
 </context>
 <context>
@@ -1688,6 +1780,14 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     <message>
         <source>Choose</source>
         <translation>Choisir</translation>
+    </message>
+    <message>
+        <source>Result list paragraph format (erase all to reset to default)</source>
+        <translation>Format de paragraphe de la liste de résultats (tout effacer pour revenir à la valeur par défaut)</translation>
+    </message>
+    <message>
+        <source>Result list header (default is empty)</source>
+        <translation>En-tête HTML (la valeur par défaut est vide)</translation>
     </message>
 </context>
 <context>
@@ -2016,6 +2116,41 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
 </context>
 <context>
+    <name>confgui::ConfSearchPanelW</name>
+    <message>
+        <source>Automatic diacritics sensitivity</source>
+        <translation>Sensibilité automatique aux accents</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
+        <translation>&lt;p&gt;Activer automatiquement la sensibilité aux accents si le terme recherché contient des accents (saufs pour ceux de unac_except_trans). Sans cette option, il vous faut utiliser le langage de recherche et le drapeau &lt;i&gt;D&lt;/i&gt; pour activer la sensibilité aux accents.</translation>
+    </message>
+    <message>
+        <source>Automatic character case sensitivity</source>
+        <translation>Sensibilité automatique aux majuscules</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
+        <translation>&lt;p&gt;Activer automatiquement la sensibilité aux majuscules si le terme de recherche contient des majuscules (sauf en première lettre). Sans cette option, vous devez utiliser le langage de recherche et le drapeau &lt;i&gt;C&lt;/i&gt; pour activer la sensibilité aux majuscules.</translation>
+    </message>
+    <message>
+        <source>Maximum term expansion count</source>
+        <translation>Taille maximum de l&apos;expansion d&apos;un terme</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
+        <translation>&lt;p&gt;Nombre maximum de termes de recherche résultant d&apos;un terme entré (par exemple expansion par caractères jokers). La valeur par défaut de 10000 est raisonnable et évitera les requêtes qui paraissent bloquées pendant que le moteur parcourt l&apos;ensemble de la liste des termes.</translation>
+    </message>
+    <message>
+        <source>Maximum Xapian clauses count</source>
+        <translation>Compte maximum de clauses Xapian</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
+        <translation>&lt;p&gt;Nombre maximum de clauses Xapian élémentaires générées pour une requête. Dans certains cas, le résultat de l&apos;expansion des termes peut ere multiplicatif, et utiliserait trop de mémoire. La valeur par défaut de 100000 devrait être à la fois suffisante et compatible avec les configurations matérielles typiques.</translation>
+    </message>
+</context>
+<context>
     <name>confgui::ConfSubPanelW</name>
     <message>
         <source>Global</source>
@@ -2056,7 +2191,12 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
 </source>
-        <translation>Un filtre externe sera interrompu si l&apos;attente dépasse ce temps. Utile dans le cas rare (programme postscript par exemple) où un document pourrait forcer un filtre à boucler indéfiniment. Positionner à -1 pour supprimer la limite.</translation>
+        <translation type="obsolete">Un filtre externe sera interrompu si l&apos;attente dépasse ce temps. Utile dans le cas rare (programme postscript par exemple) où un document pourrait forcer un filtre à boucler indéfiniment. Positionner à -1 pour supprimer la limite.</translation>
+    </message>
+    <message>
+        <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
+</source>
+        <translation>Un filtre externe qui prend plus de temps sera arrêté. Traite le cas rare (possible avec postscript par exemple) où un document pourrait amener un filtre à boucler sans fin. Mettre -1 pour complètement supprimer la limite (déconseillé).</translation>
     </message>
 </context>
 <context>
@@ -2127,7 +2267,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation>Langue du dictionnaire aspell. Une valeur correcte ressemble à &apos;en&apos; ou &apos;fr&apos;... &lt;br&gt;Si cette valeur n&apos;est pas positionnée, l&apos;environnement est utilisé pour la calculer, ce qui marche bien, habituellement. Utiliser &apos;aspell config&apos; et regarder les fichiers .dat dans le répertoire &apos;data-dir&apos; pour connaitre les langues aspell installées sur votre système.</translation>
+        <translation type="obsolete">Langue du dictionnaire aspell. Une valeur correcte ressemble à &apos;en&apos; ou &apos;fr&apos;... &lt;br&gt;Si cette valeur n&apos;est pas positionnée, l&apos;environnement est utilisé pour la calculer, ce qui marche bien, habituellement. Utiliser &apos;aspell config&apos; et regarder les fichiers .dat dans le répertoire &apos;data-dir&apos; pour connaitre les langues aspell installées sur votre système.</translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -2135,7 +2275,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation>Le nom d&apos;un répertoire où l&apos;index sera stocké&lt;br&gt;Un chemin relatif démarrera au répertoire de configuration. Le défaut est &apos;xapiandb&apos;.</translation>
+        <translation type="obsolete">Le nom d&apos;un répertoire où l&apos;index sera stocké&lt;br&gt;Un chemin relatif démarrera au répertoire de configuration. Le défaut est &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
@@ -2148,6 +2288,22 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
         <translation>Désactiver l&apos;utilisation d&apos;aspell pour générer les approximations orthographiques.&lt;br&gt; Utile si aspell n&apos;est pas installé ou ne fonctionne pas. </translation>
+    </message>
+    <message>
+        <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
+        <translation>Langue pour le dictionnaire aspell. La valeur devrait ressembler à &apos;en&apos; ou &apos;fr&apos;... &lt;br&gt;Si cette valeur n&apos;est pas positionnée, l&apos;environnement national sera utilisé pour la calculer, ce qui marche bien habituellement. Pour avoir une liste des valeurs possibles sur votre système, entrer &apos;aspell config&apos; sur une ligne de commande et regarder les fichiers &apos;.dat&apos; dans le répertoire &apos;data-dir&apos;. </translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
+        <translation>Le nom d&apos;un répertoire pour stocker l&apos;index&lt;br&gt;Un chemin relatif sera interprété par rapport au répertoire de configuration. La valeur par défaut est &apos;xapiandb&apos;.</translation>
+    </message>
+    <message>
+        <source>Unac exceptions</source>
+        <translation>Exceptions Unac</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
+        <translation>&lt;p&gt;Ce sont les exceptions au mécanisme de suppression des accents, qui, par défaut et en fonction de la configuration de l&apos;index, supprime tous les accents et effectue une décomposition canonique Unicode. Vous pouvez inhiber la suppression des accents pour certains caractères, en fonction de votre langue, et préciser d&apos;autres décompositions, par exemple pour des ligatures. Dans la liste séparée par des espaces, le premier caractères d&apos;un élément est la source, le reste est la traduction.</translation>
     </message>
 </context>
 <context>
@@ -2378,11 +2534,11 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses some indentation.</source>
-        <translation>Les lignes dans des sections PRE ne sont pas justifiées. Utiliser BR perd une partie de l&apos;indentation.</translation>
+        <translation type="obsolete">Les lignes dans des sections PRE ne sont pas justifiées. Utiliser BR perd une partie de l&apos;indentation.</translation>
     </message>
     <message>
         <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html in preview.</source>
-        <translation>Utiliser des tags &lt;PRE&gt; au lieu de &lt;BR&gt; pour afficher du texte non formaté en html dans la prévisualisation</translation>
+        <translation type="obsolete">Utiliser des tags &lt;PRE&gt; au lieu de &lt;BR&gt; pour afficher du texte non formaté en html dans la prévisualisation</translation>
     </message>
     <message>
         <source>Result List</source>
@@ -2413,6 +2569,34 @@ La valeur par défaut est 2%</translation>
     <message>
         <source>Autophrase term frequency threshold percentage</source>
         <translation>Seuil de fréquence de terme (pourcentage) pour la génération automatique de phrases</translation>
+    </message>
+    <message>
+        <source>Plain text to HTML line style</source>
+        <translation>Style de traduction texte ordinaire vers HTML</translation>
+    </message>
+    <message>
+        <source>Lines in PRE text are not folded. Using BR loses some indentation. PRE + Wrap style may be what you want.</source>
+        <translation>Les lignes dans une balise PRE ne sont pas repliées. Utiliser BR conduit à perdre une partie des tabulations. Le style PRE + WRAP peut être le meilleurs compromis mais son bon fonctionnement dépend des versions Qt.</translation>
+    </message>
+    <message>
+        <source>&lt;BR&gt;</source>
+        <translation>&lt;BR&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;PRE&gt;</source>
+        <translation>&lt;PRE&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;PRE&gt; + wrap</source>
+        <translation>&lt;PRE&gt; + repliement</translation>
+    </message>
+    <message>
+        <source>Exceptions</source>
+        <translation>Exceptions</translation>
+    </message>
+    <message>
+        <source>Mime types that should not be passed to xdg-open even when &quot;Use desktop preferences&quot; is set.&lt;br&gt; Useful to pass page number and search string options to, e.g. evince.</source>
+        <translation>Types MIME qui ne doivent pas être passés à xdg-open même quand &quot;Utiliser les préférences du bureau&quot; est coché. &lt;br&gt; Utile pour pouvoir passer les paramètres de numéro de page et de terme de recherche à evince, par exemple. </translation>
     </message>
 </context>
 </TS>

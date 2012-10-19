@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="uk">
+<TS version="2.0">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -13,15 +13,15 @@
     </message>
     <message>
         <source>texts</source>
-        <translation>тексти</translation>
+        <translation type="obsolete">тексти</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation>таблиці</translation>
+        <translation type="obsolete">таблиці</translation>
     </message>
     <message>
         <source>presentations</source>
-        <translation>презентації</translation>
+        <translation type="obsolete">презентації</translation>
     </message>
     <message>
         <source>media</source>
@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>messages</source>
-        <translation>повідомлення</translation>
+        <translation type="obsolete">повідомлення</translation>
     </message>
     <message>
         <source>other</source>
@@ -38,6 +38,22 @@
     <message>
         <source>Bad multiplier suffix in size filter</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>text</source>
+        <translation type="unfinished">текст</translation>
+    </message>
+    <message>
+        <source>spreadsheet</source>
+        <translation type="unfinished">таблиці</translation>
+    </message>
+    <message>
+        <source>presentation</source>
+        <translation type="unfinished">презентації</translation>
+    </message>
+    <message>
+        <source>message</source>
+        <translation type="unfinished">повідомлення</translation>
     </message>
 </context>
 <context>
@@ -512,6 +528,10 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <source>Beagle web history</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Search parameters</source>
+        <translation type="unfinished">Параметри пошуку</translation>
+    </message>
 </context>
 <context>
     <name>RTIToolW</name>
@@ -638,7 +658,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
-        <translation>Невірний командний рядок для переглядача %1: [%2]
+        <translation type="obsolete">Невірний командний рядок для переглядача %1: [%2]
 Перевірте файл mimeconf</translation>
     </message>
     <message>
@@ -838,6 +858,19 @@ Do you want to start the  preferences dialog ?</source>
         <source>Indexed MIME Types</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Bad viewer command line for %1: [%2]
+Please check the mimeview file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Viewer command line for %1 specifies both file and parent file value: unsupported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot find parent document</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -927,7 +960,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Query configuration</source>
-        <translation>Конфіґурація &amp;запиту</translation>
+        <translation type="obsolete">Конфіґурація &amp;запиту</translation>
     </message>
     <message>
         <source>Update &amp;index</source>
@@ -959,7 +992,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>&amp;Indexing configuration</source>
-        <translation>&amp;Конфіґурація індексування</translation>
+        <translation type="obsolete">&amp;Конфіґурація індексування</translation>
     </message>
     <message>
         <source>All</source>
@@ -1035,6 +1068,14 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>E&amp;xternal index dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Index configuration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;GUI configuration</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1210,6 +1251,14 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>for</source>
         <translation>по</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;&lt;i&gt;Alternate spellings: &lt;/i&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1468,6 +1517,29 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
 </context>
 <context>
+    <name>Snippets</name>
+    <message>
+        <source>Snippets</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>about:blank</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next</source>
+        <translation type="unfinished">Наступна</translation>
+    </message>
+    <message>
+        <source>Prev</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SortForm</name>
     <message>
         <source>Date</source>
@@ -1579,7 +1651,19 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Index: %1 documents, average length %2 terms</source>
+        <source>Index: %1 documents, average length %2 terms.%3 results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List was truncated alphabetically, some frequent </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>terms may be missing. Try using a longer root.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1608,6 +1692,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Choose</source>
         <translation type="unfinished">Перегляд</translation>
+    </message>
+    <message>
+        <source>Result list paragraph format (erase all to reset to default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Result list header (default is empty)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1908,6 +2000,41 @@ This should give higher precedence to the results where the search terms appear 
     </message>
 </context>
 <context>
+    <name>confgui::ConfSearchPanelW</name>
+    <message>
+        <source>Automatic diacritics sensitivity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatic character case sensitivity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum term expansion count</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum Xapian clauses count</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>confgui::ConfSubPanelW</name>
     <message>
         <source>Global</source>
@@ -1944,7 +2071,7 @@ This will help searching very big text  files (ie: log files).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
+        <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
 </source>
         <translation type="unfinished"></translation>
     </message>
@@ -2009,7 +2136,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation>Мова словника aspell.  Має виглядати як &apos;en&apos; або &apos;uk&apos;...&lt;br&gt;Якщо не встановлене, буде використане оточення (локаль), що зазвичай робить. Щоб з&apos;ясувати, що маємо на системі, наберіть &apos;aspell config&apos; та перегляньте файли .dat у теці &apos;data-dir&apos;. </translation>
+        <translation type="obsolete">Мова словника aspell.  Має виглядати як &apos;en&apos; або &apos;uk&apos;...&lt;br&gt;Якщо не встановлене, буде використане оточення (локаль), що зазвичай робить. Щоб з&apos;ясувати, що маємо на системі, наберіть &apos;aspell config&apos; та перегляньте файли .dat у теці &apos;data-dir&apos;. </translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -2017,7 +2144,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation>Назва теки, де міститься індекс&lt;br&gt;Відносний шлях буде трактовано відносно теки конфіґурації. Типово: &apos;xapiandb&apos;.</translation>
+        <translation type="obsolete">Назва теки, де міститься індекс&lt;br&gt;Відносний шлях буде трактовано відносно теки конфіґурації. Типово: &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
@@ -2038,6 +2165,22 @@ This will help searching very big text  files (ie: log files).</source>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
         <translation>Вимикає використання aspell для генерації наближень у написання в навіґаторі термінів.&lt;br&gt;Корисне, коли aspell відсутній або зламаний. </translation>
+    </message>
+    <message>
+        <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unac exceptions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2259,14 +2402,6 @@ May be slow for big documents.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Lines in PRE text are not folded. Using BR loses some indentation.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html in preview.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Result List</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2291,6 +2426,34 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Autophrase term frequency threshold percentage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plain text to HTML line style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lines in PRE text are not folded. Using BR loses some indentation. PRE + Wrap style may be what you want.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;BR&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;PRE&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;PRE&gt; + wrap</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exceptions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mime types that should not be passed to xdg-open even when &quot;Use desktop preferences&quot; is set.&lt;br&gt; Useful to pass page number and search string options to, e.g. evince.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

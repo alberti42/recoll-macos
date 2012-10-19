@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="lt">
+<TS version="2.0">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -13,15 +13,15 @@
     </message>
     <message>
         <source>texts</source>
-        <translation>tekstai</translation>
+        <translation type="obsolete">tekstai</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation>skaičiuoklės</translation>
+        <translation type="obsolete">skaičiuoklės</translation>
     </message>
     <message>
         <source>presentations</source>
-        <translation>prezentacijos</translation>
+        <translation type="obsolete">prezentacijos</translation>
     </message>
     <message>
         <source>media</source>
@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>messages</source>
-        <translation>žinutės</translation>
+        <translation type="obsolete">žinutės</translation>
     </message>
     <message>
         <source>other</source>
@@ -38,6 +38,22 @@
     <message>
         <source>Bad multiplier suffix in size filter</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>text</source>
+        <translation type="unfinished">tekstas</translation>
+    </message>
+    <message>
+        <source>spreadsheet</source>
+        <translation type="unfinished">skaičiuoklės</translation>
+    </message>
+    <message>
+        <source>presentation</source>
+        <translation type="unfinished">prezentacijos</translation>
+    </message>
+    <message>
+        <source>message</source>
+        <translation type="unfinished">pranešimas</translation>
     </message>
 </context>
 <context>
@@ -505,6 +521,10 @@ p, li { white-space: pre-wrap; }
         <source>Beagle web history</source>
         <translation>Beagle tinklo istorija</translation>
     </message>
+    <message>
+        <source>Search parameters</source>
+        <translation type="unfinished">Paieškos parametrai</translation>
+    </message>
 </context>
 <context>
     <name>RTIToolW</name>
@@ -631,7 +651,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
-        <translation>Netinkamos peržiūros komandinė eilutė  %1: [%2]
+        <translation type="obsolete">Netinkamos peržiūros komandinė eilutė  %1: [%2]
 Prašome patikrinti mimeconf bylą</translation>
     </message>
     <message>
@@ -832,6 +852,19 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
         <source>Indexed MIME Types</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Bad viewer command line for %1: [%2]
+Please check the mimeview file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Viewer command line for %1 specifies both file and parent file value: unsupported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot find parent document</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -945,7 +978,7 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
     </message>
     <message>
         <source>&amp;Query configuration</source>
-        <translation>&amp;Užklausų nustatymai</translation>
+        <translation type="obsolete">&amp;Užklausų nustatymai</translation>
     </message>
     <message>
         <source>External index dialog</source>
@@ -953,7 +986,7 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
     </message>
     <message>
         <source>&amp;Indexing configuration</source>
-        <translation>&amp;Indeksavimo nustatymai</translation>
+        <translation type="obsolete">&amp;Indeksavimo nustatymai</translation>
     </message>
     <message>
         <source>All</source>
@@ -1029,6 +1062,14 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
     </message>
     <message>
         <source>E&amp;xternal index dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Index configuration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;GUI configuration</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1203,6 +1244,14 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
     </message>
     <message>
         <source>&amp;Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;&lt;i&gt;Alternate spellings: &lt;/i&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1466,6 +1515,29 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
 </context>
 <context>
+    <name>Snippets</name>
+    <message>
+        <source>Snippets</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>about:blank</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next</source>
+        <translation type="unfinished">Kitas</translation>
+    </message>
+    <message>
+        <source>Prev</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SortForm</name>
     <message>
         <source>Date</source>
@@ -1577,7 +1649,19 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Index: %1 documents, average length %2 terms</source>
+        <source>Index: %1 documents, average length %2 terms.%3 results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List was truncated alphabetically, some frequent </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>terms may be missing. Try using a longer root.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1606,6 +1690,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Choose</source>
         <translation type="unfinished">Naršyti</translation>
+    </message>
+    <message>
+        <source>Result list paragraph format (erase all to reset to default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Result list header (default is empty)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1921,6 +2013,41 @@ Didelės apimties dokumentams gali lėtai veikti.</translation>
     </message>
 </context>
 <context>
+    <name>confgui::ConfSearchPanelW</name>
+    <message>
+        <source>Automatic diacritics sensitivity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Automatic character case sensitivity</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum term expansion count</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum Xapian clauses count</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>confgui::ConfSubPanelW</name>
     <message>
         <source>Global</source>
@@ -1959,7 +2086,12 @@ This will help searching very big text  files (ie: log files).</source>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
 </source>
-        <translation>Išorinių filtrų, dirbančių ilgiau nei numatyta, darbas bus nutraukiamas. Taikoma retiems atvejas (pav. postscript) kada dokumentas galėtų priversti filtrą kartoti veiksmus be galo ilgai. </translation>
+        <translation type="obsolete">Išorinių filtrų, dirbančių ilgiau nei numatyta, darbas bus nutraukiamas. Taikoma retiems atvejas (pav. postscript) kada dokumentas galėtų priversti filtrą kartoti veiksmus be galo ilgai. </translation>
+    </message>
+    <message>
+        <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
+</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2030,7 +2162,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation>Aspell žodyno kalba (&apos;en&apos;, &apos;fr&apos; ar kita).&lt;br&gt;Jei vertė nenurodyta NLS aplinka pabandys nustatyti tinkamą kalbą (paprastai teisingai). Norėdami sužinoti kas įrašyta Jūsų sistemoje įrašykite &apos;aspell-config&apos; ir žiūrėkite į dat bylas &apos;data-dir&apos; direktorijoje.</translation>
+        <translation type="obsolete">Aspell žodyno kalba (&apos;en&apos;, &apos;fr&apos; ar kita).&lt;br&gt;Jei vertė nenurodyta NLS aplinka pabandys nustatyti tinkamą kalbą (paprastai teisingai). Norėdami sužinoti kas įrašyta Jūsų sistemoje įrašykite &apos;aspell-config&apos; ir žiūrėkite į dat bylas &apos;data-dir&apos; direktorijoje.</translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -2038,7 +2170,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation>Direktorijos, kurioje bus saugomas indeksas, vardas&lt;br&gt;Laikoma, jog santykinio keliio iki direktorijos pradžia yra nustatymų direktorija. Numatytoji yra &apos;xapiandb&apos;. </translation>
+        <translation type="obsolete">Direktorijos, kurioje bus saugomas indeksas, vardas&lt;br&gt;Laikoma, jog santykinio keliio iki direktorijos pradžia yra nustatymų direktorija. Numatytoji yra &apos;xapiandb&apos;. </translation>
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
@@ -2051,6 +2183,22 @@ This will help searching very big text  files (ie: log files).</source>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
         <translation>Nurodo nenaudoti aspell programos kuriant tarimo aproksimacijas raktinių žodžių tyrinėjimo įrankyje.&lt;br&gt;Naudinga, jei aspell neveikia arba neįdiegta.</translation>
+    </message>
+    <message>
+        <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unac exceptions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2271,14 +2419,6 @@ Didelės apimties dokumentams gali lėtai veikti.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Lines in PRE text are not folded. Using BR loses some indentation.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html in preview.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Result List</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2303,6 +2443,34 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Autophrase term frequency threshold percentage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plain text to HTML line style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lines in PRE text are not folded. Using BR loses some indentation. PRE + Wrap style may be what you want.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;BR&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;PRE&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;PRE&gt; + wrap</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exceptions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mime types that should not be passed to xdg-open even when &quot;Use desktop preferences&quot; is set.&lt;br&gt; Useful to pass page number and search string options to, e.g. evince.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
