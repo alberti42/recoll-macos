@@ -116,13 +116,9 @@ void ConfIndexW::reloadPanels()
     m_widgets.push_back(w);
     tabWidget->addTab(w, QObject::tr("Beagle web history"));
 
-#ifndef RCL_INDEX_STRIPCHARS
-    if (!o_index_stripchars) {
-	w = new ConfSearchPanelW(this, m_conf);
-	m_widgets.push_back(w);
-	tabWidget->addTab(w, QObject::tr("Search parameters"));
-    }
-#endif
+    w = new ConfSearchPanelW(this, m_conf);
+    m_widgets.push_back(w);
+    tabWidget->addTab(w, QObject::tr("Search parameters"));
 }
 
 ConfBeaglePanelW::ConfBeaglePanelW(QWidget *parent, ConfNull *config)
@@ -170,6 +166,8 @@ ConfSearchPanelW::ConfSearchPanelW(QWidget *parent, ConfNull *config)
     vboxLayout->setSpacing(spacing);
     vboxLayout->setMargin(margin);
 
+#ifndef RCL_INDEX_STRIPCHARS
+    if (!o_index_stripchars) {
     ConfLink lnk1(new ConfLinkRclRep(config, "autodiacsens"));
     ConfParamBoolW* cp1 = 
         new ConfParamBoolW(this, lnk1, tr("Automatic diacritics sensitivity"),
@@ -194,6 +192,8 @@ ConfSearchPanelW::ConfSearchPanelW(QWidget *parent, ConfNull *config)
 			      "sensitivity."
 			       ));
     vboxLayout->addWidget(cp2);
+    }
+#endif
 
     ConfLink lnk3(new ConfLinkRclRep(config, "maxTermExpand"));
     ConfParamIntW* cp3 = 
