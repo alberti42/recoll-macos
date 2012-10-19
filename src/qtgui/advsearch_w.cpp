@@ -105,8 +105,8 @@ void AdvSearch::init()
     int minyear, maxyear;
     if (rcldb) {
 	rcldb->maxYearSpan(&minyear, &maxyear);
-	minDateDTE->setDisplayFormat("dd.MM.yyyy");
-	maxDateDTE->setDisplayFormat("dd.MM.yyyy");
+	minDateDTE->setDisplayFormat("yyyy-MM-dd");
+	maxDateDTE->setDisplayFormat("yyyy-MM-dd");
 	minDateDTE->setDate(QDate(minyear, 1, 1));
 	maxDateDTE->setDate(QDate(maxyear, 12, 31));
     }
