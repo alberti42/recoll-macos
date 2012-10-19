@@ -84,7 +84,6 @@ src/qtgui/.moc/*
 src/qtgui/.obj/*
 src/qtgui/.ui/*
 src/qtgui/Makefile
-src/qtgui/i18n/*.qm
 src/qtgui/qrc_recoll.cpp
 src/qtgui/recoll
 src/qtgui/recoll.app
