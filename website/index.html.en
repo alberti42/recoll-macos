@@ -84,9 +84,18 @@
       <h2>News</h2>
       <div class="news">
       <ul>
+        <li>2012-10-19: the source for <a href="recoll-1.18.0.tar.gz">
+            recoll 1.18.0</a> is available, and this is a call to
+            volunteers to test it. There are binary
+            packages for Ubuntu and Mint Linux users, and I can build
+            others. See this 
+     <a href="http://www.freelists.org/post/recoll-user/recoll-1180-prerelease">
+            message</a> for more information.</li>
+
         <li>2012-10-16: <a href="filters/filters.html">new filter for
             EPUB documents</a>.</li> 
         <li>2012-10-16: recoll 1.18 will soon be out. It will have
+
           optional character case and diacritics sensitivity, direct
           access to hit page when opening PDF files, complex search
           history, and a host of other smaller improvements. You can

@@ -34,18 +34,21 @@
 
       <h2>Caveats</h2>
 
-      <p><em>Installing over an older version</em>: 1.18 introduces serious
-        index formats changes, and it will be advisable to reset the index
-        in most cases. This will be best done by destroying the
-        index directory (<tt>rm -rf ~/.recoll/xapiandb</tt>).</p> 
+      <p><em>Installing over an older version</em>: 1.18 introduces
+        significant index formats changes to support optional
+        character case and diacritics sensitivity, and it will be
+        advisable to reset the index in most cases. This will be best
+        done by destroying the index directory (<tt>rm -rf
+        ~/.recoll/xapiandb</tt>).</p>
 
       <p><em>If</em> the 1.18 index is not configured for case and
         diacritics sensitivity, it is mostly compatible with 1.17
         indexes though.</p>  
 
-      <p>Case/diacritics sensitivity is off by default. For 1.18, it can be
-        turned on only by editing recoll.conf by hand (see the
-        manual). If you do so, you must reset the index.</p>
+      <p>Case/diacritics sensitivity is off by default for this
+        release. It can be turned on <em>only</em> by editing
+        recoll.conf (see the manual). If you do so, you must reset the
+        index.</p>
 
       <p>Always reset the index if installing over an older version (1.16
         and older). The simplest way to do this is to quit all recoll
@@ -67,12 +70,13 @@
         There is a new list of mime types that should be opened with
         the locally configured application even when <em>Use
           Desktop Preferences</em> is checked. This allows making
-        use of new function (direct access to page), which could not
+        use of new functions (direct access to page), which could not
         be available through the desktop's <tt>xdg-open</tt>.  The
         default list contains PDF, Postscript and DVI, which should be
-        opened with the Evince viewer for the page access functions to
+        opened with the <em>evince</em> (or <em>atril</em> for
+        Mint/MATE users) viewer for the page access functions to
         work. If you want to keep the previous behaviour (losing the
-        page number functionality), you need to empty the list after
+        page number functionality), you need to prune the list after
         installation . This can be done from the <em>Preferences->Gui
         Configuration</em> menu.</p>
 
