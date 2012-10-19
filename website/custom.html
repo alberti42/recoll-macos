@@ -438,6 +438,73 @@ area.</p>
 
 
 
+<h3>Another clean and nice one, using both a bit of header code and a
+  custom paragraph format</h3>
+
+<p>This one also uses the custom icons set from
+<a href="http://kde-look.org/content/show.php?content=145669">
+  this kde-look page</a>.</p>
+
+<p>The header code:</p>
+
+<pre>
+&lt;style type="text/css"&gt;
+body {
+    color: rgb(0, 0, 0);
+    background-color: rgb(224, 224, 224);
+}
+&lt;/style&gt;
+</pre>
+
+<p>The paragraph code:</p>
+
+<pre>
+&lt;table style="background-color: white; width: 950px;"
+border-style="none" border-color:="" border="0"&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td rowspan="4"
+style="width: 68px; text-align: center; background-color: rgb(238, 238, 238);"&gt;
+&lt;img src="%I" height="32" width="32"&gt;
+&lt;p style="font-family: sans-serif;"&gt;&lt;b&gt;%R&lt;/b&gt;&lt;/p&gt;
+&lt;p style="font-family: sans-serif; color: rgb(0, 153, 0);"&gt;&lt;br&gt;
+&lt;/p&gt;
+&lt;/td&gt;
+&lt;td style="vertical-align: top;"&gt;&lt;br&gt;
+&lt;/td&gt;
+&lt;th
+style="font-family: sans-serif; background-color: white; text-align: left;"
+colspan="3" bgcolor="lightgrey"&gt;%T&lt;/th&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style="vertical-align: top; width: 11px;"&gt;&lt;br&gt;
+&lt;/td&gt;
+&lt;td
+style="text-align: center; font-family: sans-serif; background-color: rgb(249, 249, 249);"&gt;%M&lt;/td&gt;
+&lt;td
+style="text-align: center; font-family: sans-serif; background-color: rgb(249, 249, 249);"&gt;%D&lt;/td&gt;
+&lt;td
+style="font-family: sans-serif; text-align: right; background-color: rgb(249, 249, 249);"&gt;%S&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr style="font-family: sans-serif; color: rgb(0, 153, 0);"&gt;
+&lt;td style="vertical-align: top;"&gt;&lt;br&gt;
+&lt;/td&gt;
+&lt;td colspan="3"&gt;&lt;a href="E%N"&gt;%U&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr style="font-family: sans-serif;" 8=""&gt;
+&lt;td style="vertical-align: top;"&gt;&lt;br&gt;
+&lt;/td&gt;
+&lt;td colspan="3"&gt;%A&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;br&gt;
+&lt;br&gt;
+</pre>
+
+<br clear="all">
+<img src="resparpics/christopher.png"/>
+
     </div>
   </body>
 </html>
