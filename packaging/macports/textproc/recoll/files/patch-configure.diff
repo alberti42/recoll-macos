@@ -1,6 +1,7 @@
---- configure.orig	2012-05-19 08:10:35.000000000 +0200
-+++ configure	2012-05-19 08:10:47.000000000 +0200
-@@ -4409,7 +4409,7 @@
+diff -r d2ac364b662c src/configure
+--- configure	Fri Oct 19 16:28:23 2012 +0200
++++ configure	Fri Oct 19 18:49:28 2012 +0200
+@@ -4472,7 +4472,7 @@
  LIBICONV=""
  S_LDFLAGS=$LDFLAGS
  S_CPPFLAGS=$CPPFLAGS
