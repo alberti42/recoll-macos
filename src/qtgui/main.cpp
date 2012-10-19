@@ -30,6 +30,7 @@
 #include <qcheckbox.h>
 #include <qcombobox.h>
 #include <QLocale>
+#include <QLibraryInfo>
 
 #include "rcldb.h"
 #include "rclconfig.h"
@@ -297,12 +298,6 @@ int main(int argc, char **argv)
 	Usage();
 
 
-    // Translation file for Qt
-    QString slang = QLocale::system().name().left(2);
-    QTranslator qt(0);
-    qt.load(QString("qt_") + slang, "." );
-    app.installTranslator( &qt );
-
     string reason;
     theconfig = recollinit(recollCleanup, sigcleanup, reason, &a_config);
     if (!theconfig || !theconfig->ok()) {
@@ -311,8 +306,15 @@ int main(int argc, char **argv)
 	QMessageBox::critical(0, "Recoll",  msg);
 	exit(1);
     }
-    snapshotConfig();
     //    fprintf(stderr, "recollinit done\n");
+    snapshotConfig();
+
+    // Translations for Qt standard widgets
+    QString slang = QLocale::system().name().left(2);
+    QTranslator qt_trans(0);
+    qt_trans.load(QString("qt_%1").arg(slang), 
+		  QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    app.installTranslator(&qt_trans);
 
     // Translations for Recoll
     string translatdir = path_cat(theconfig->getDatadir(), "translations");

@@ -133,20 +133,20 @@ void AdvSearch::init()
     maxDateDTE->setCalendarPopup(calpop);
 
     // Translations for known categories
-    cat_translations[QString::fromUtf8("texts")] = tr("texts");
-    cat_rtranslations[tr("texts")] = QString::fromUtf8("texts"); 
+    cat_translations[QString::fromUtf8("texts")] = tr("text");
+    cat_rtranslations[tr("texts")] = QString::fromUtf8("text"); 
 
-    cat_translations[QString::fromUtf8("spreadsheets")] = tr("spreadsheets");
-    cat_rtranslations[tr("spreadsheets")] = QString::fromUtf8("spreadsheets");
+    cat_translations[QString::fromUtf8("spreadsheet")] = tr("spreadsheet");
+    cat_rtranslations[tr("spreadsheets")] = QString::fromUtf8("spreadsheet");
 
-    cat_translations[QString::fromUtf8("presentations")] = tr("presentations");
-    cat_rtranslations[tr("presentations")] =QString::fromUtf8("presentations");
+    cat_translations[QString::fromUtf8("presentation")] = tr("presentation");
+    cat_rtranslations[tr("presentation")] =QString::fromUtf8("presentation");
 
     cat_translations[QString::fromUtf8("media")] = tr("media");
     cat_rtranslations[tr("media")] = QString::fromUtf8("media"); 
 
-    cat_translations[QString::fromUtf8("messages")] = tr("messages");
-    cat_rtranslations[tr("messages")] = QString::fromUtf8("messages"); 
+    cat_translations[QString::fromUtf8("message")] = tr("message");
+    cat_rtranslations[tr("message")] = QString::fromUtf8("message"); 
 
     cat_translations[QString::fromUtf8("other")] = tr("other");
     cat_rtranslations[tr("other")] = QString::fromUtf8("other"); 
