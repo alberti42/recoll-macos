@@ -424,6 +424,14 @@ void RclMain::viewUrl()
     if (!rcldb->getDoc(udi, doc) || doc.pc == -1)
 	return;
 
+    // StartNativeViewer needs a db source to call getEnclosing() on.
+    Rcl::Query *query = new Rcl::Query(rcldb);
+    DocSequenceDb *src = 
+	new DocSequenceDb(RefCntr<Rcl::Query>(query), "", 
+			  RefCntr<Rcl::SearchData>(new Rcl::SearchData));
+    m_source = RefCntr<DocSequence>(src);
+
+
     // Start a native viewer if the mimetype has one defined, else a
     // preview.
     string apptag;

@@ -38,9 +38,18 @@
       
       <h2><a name="b_latest">recoll 1.18.0</a></h2> 
 
-      <li>On systems such as Debian Stable which use Evince version 2.x as
-        a PDF viewer, the default "Open" command for PDF files will
-        not work. You need to edit the command:
+      <li>Opening embedded documents from the Unity Lens does not
+        work.</li>
+
+      <li>It seems that a click in the snippets window can crash
+        recoll the very first time it is used. I could never reproduce
+        this on later runs and it is not known what causes the
+        problem. Just restart the application, and things should stay
+        up the next times.</li>
+
+      <li>On systems such as Debian Stable which use Evince version
+        2.x (not 3.x) as PDF viewer, the default "Open" command for
+        PDF files will not work. You need to edit the command:
         in <em>Preferences->GUI&nbsp;configuration</em>,
         uncheck <em>Use&nbsp;desktop&nbsp;preferences...</em>, then
         click <em>Choose&nbsp;editor&nbsp;applications</em>, and for

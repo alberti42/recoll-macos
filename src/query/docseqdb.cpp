@@ -122,8 +122,9 @@ int DocSequenceDb::getFirstMatchPage(Rcl::Doc &doc, string& term)
 
 bool DocSequenceDb::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc) 
 {
-    if (!setQuery())
-	return false;
+    // Note: no need for setQuery here, we're just passing through a
+    // query-independant request
+
     string udi;
     if (!FileInterner::getEnclosing(doc.url, doc.ipath, pdoc.url, pdoc.ipath,
                                     udi))
