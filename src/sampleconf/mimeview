@@ -24,9 +24,9 @@ xallexcepts = application/pdf application/postscript application/x-dvi \
 application/x-all = xdg-open %f
 
 application/epub+zip = ebook-viewer %f
-# If you want to open the parent epub document for epub parts instead of
-# opening them as html documents:
-#text/html|epub = ebook-viewer %F;ignoreipath=1
+# Open the parent epub document for epub parts instead of opening them as
+# html documents. This is almost always what we want.
+text/html|epub = ebook-viewer %F;ignoreipath=1
 
 application/x-mobipocket-ebook = ebook-viewer %f
 
