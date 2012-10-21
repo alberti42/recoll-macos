@@ -28,7 +28,8 @@ def doquery(db, q):
         print query.next, ":",
         for k in ("title", "mtime", "author"):
             print k, ":", getattr(doc, k).encode('utf-8')
-        print "Bin URL :", doc.getbinurl()
+        #doc.setbinurl(bytearray("toto"))
+        #burl = doc.getbinurl(); print "Bin URL :", doc.getbinurl()
         abs = db.makeDocAbstract(doc, query).encode('utf-8')
         print abs
         print
