@@ -318,15 +318,18 @@ abstract_result Query::makeDocAbstract(Doc &doc,
     abstract_result ret = ABSRES_ERROR;
     XAPTRY(ret = m_nq->makeAbstract(doc.xdocid, abstract, maxoccs, ctxwords),
            m_db->m_ndb->xrdb, m_reason);
-    if (!m_reason.empty())
+    if (!m_reason.empty()) {
+	LOGDEB(("makeDocAbstract: makeAbstract error, reason: %s\n", 
+		m_reason.c_str()));
 	return ABSRES_ERROR;
+    }
     return ret;
 }
 
 bool Query::makeDocAbstract(Doc &doc, vector<string>& abstract)
 {
     vector<Snippet> vpabs;
-    if (!makeDocAbstract(doc, vpabs)) 
+    if (!makeDocAbstract(doc, vpabs))
 	return false;
     for (vector<Snippet>::const_iterator it = vpabs.begin();
 	 it != vpabs.end(); it++) {

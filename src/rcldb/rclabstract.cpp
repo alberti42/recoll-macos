@@ -290,8 +290,8 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
 					    int imaxoccs, int ictxwords)
 {
     Chrono chron;
-    LOGDEB2(("makeAbstract:%d: maxlen %d wWidth %d imaxoccs %d\n", chron.ms(),
-	     m_rcldb->m_synthAbsLen, m_rcldb->m_synthAbsWordCtxLen, imaxoccs));
+    LOGABS(("makeAbstract: docid %l imaxoccs %d ictxwords %d\n", 
+	    long(docid), imaxoccs, ictxwords));
 
     // The (unprefixed) terms matched by this document
     vector<string> matchedTerms;
@@ -464,15 +464,15 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
 	    }
 	}
     }
-    LOGABS(("makeAbstract:%d:chosen number of positions %d\n", 
-	    chron.millis(), totaloccs));
     maxpos += ctxwords + 1;
 
+    LOGABS(("makeAbstract:%d:chosen number of positions %d\n", 
+	    chron.millis(), totaloccs));
     // This can happen if there are term occurences in the keywords
     // etc. but not elsewhere ?
     if (totaloccs == 0) {
-	LOGDEB1(("makeAbstract: no occurrences\n"));
-	return ABSRES_ERROR;
+	LOGDEB(("makeAbstract: no occurrences\n"));
+	return ABSRES_OK;
     }
 
     // Walk all document's terms position lists and populate slots
