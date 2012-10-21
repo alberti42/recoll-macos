@@ -18,6 +18,7 @@
 
 #include <Python.h>
 #include <structmember.h>
+#include <bytearrayobject.h>
 
 #include <strings.h>
 
@@ -321,18 +322,22 @@ PyDoc_STRVAR(doc_setbinurl,
 "Set the URL from binary path like file://may/contain/unencodable/bytes\n"
 );
 
-static int
+static PyObject *
 Doc_setbinurl(recoll_DocObject *self, PyObject *value)
 {
     if (self->doc == 0 || 
 	the_docs.find(self->doc) == the_docs.end()) {
         PyErr_SetString(PyExc_AttributeError, "doc??");
-	return -1;
+	return 0;
+    }
+    if (!PyByteArray_Check(value)) {
+        PyErr_SetString(PyExc_TypeError, "setbinurl needs byte array argument");
+	return 0;
     }
 
     self->doc->url = string(PyByteArray_AsString(value),
 			    PyByteArray_Size(value));
-    return 0;
+    Py_RETURN_NONE;
 }
 
 
