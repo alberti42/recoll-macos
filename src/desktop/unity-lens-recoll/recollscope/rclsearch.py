@@ -7,9 +7,7 @@ import hashlib
 import os
 import locale
 
-from gi.repository import GLib, GObject, Gio
-from gi.repository import Dee
-from gi.repository import Unity
+from gi.repository import Unity, GObject, Gio
 
 import recoll
 
@@ -26,6 +24,9 @@ THMBDIRNORMAL = "~/.thumbnails/normal"
 SPEC_MIME_ICONS = {'application/x-fsdirectory' : 'gnome-fs-directory.svg',
                    'message/rfc822' : 'mail-read',
                    'application/x-recoll' : 'recoll'}
+
+# Truncate results here:
+MAX_RESULTS = 30
 
 # These category ids must match the order in which we add them to the lens
 CATEGORY_ALL = 0
@@ -237,12 +238,10 @@ class Scope (Unity.Scope):
                 # original path could not be translated to unicode by
                 # pyrecoll, or if the unicode can't be translated back
                 # in the current locale)
-                encoding = locale.nl_langinfo(locale.CODESET)
-                thumbnail = \
-                          self._get_thumbnail_path(url.encode(encoding,
-                                                              errors='replace'))
-
-            #print "Recoll Lens: Using MIMETYPE", mimetype, " URL", url
+                #encoding = locale.nl_langinfo(locale.CODESET)
+                #thumbnail = self._get_thumbnail_path(url.encode(encoding,
+                #                                            errors='replace'))
+                thumbnail = self._get_thumbnail_path(doc.getbinurl())
 
             titleorfilename = doc.title
             if titleorfilename == "":
@@ -261,22 +260,21 @@ class Scope (Unity.Scope):
 
             #print "iconname:", iconname
 
-
             try:
                 abstract = self.db.makeDocAbstract(doc, query).encode('utf-8')
             except:
                 break
 
             model.append (url,
-                      iconname,
-                      CATEGORY_ALL,
-                      mimetype,
-                      titleorfilename,
-                      abstract,
-                      doc.url)
+                          iconname,
+                          CATEGORY_ALL,
+                          mimetype,
+                          titleorfilename,
+                          abstract,
+                          doc.url)
 
             actual_results += 1
-            if actual_results >= 20:
+            if actual_results >= MAX_RESULTS:
                 break
         
 
