@@ -13,15 +13,15 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="obsolete">Texty</translation>
+        <translation>Texty</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="obsolete">Tabulky</translation>
+        <translation>Tabulky</translation>
     </message>
     <message>
         <source>presentations</source>
-        <translation type="obsolete">Představení</translation>
+        <translation>Představení</translation>
     </message>
     <message>
         <source>media</source>
@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>messages</source>
-        <translation type="obsolete">Zprávy</translation>
+        <translation>Zprávy</translation>
     </message>
     <message>
         <source>other</source>
@@ -164,7 +164,7 @@
     </message>
     <message>
         <source>Select</source>
-        <translation type="obsolete">Vybrat</translation>
+        <translation>Vybrat</translation>
     </message>
     <message>
         <source>Filter</source>
@@ -382,17 +382,17 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Could not open database in </source>
-        <translation type="obsolete">Nepodařilo se otevřít databázi v</translation>
+        <translation>Nepodařilo se otevřít databázi v</translation>
     </message>
     <message>
         <source>.
 Click Cancel if you want to edit the configuration file before indexing starts, or Ok to let it proceed.</source>
-        <translation type="obsolete">.
+        <translation>.
 Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím než se začne s rejstříkováním nebo na OK pro započetí s rejstříkováním.</translation>
     </message>
     <message>
         <source>Configuration problem (dynconf</source>
-        <translation type="obsolete">Konfigurationsproblem (dynconf)</translation>
+        <translation>Konfigurationsproblem (dynconf)</translation>
     </message>
     <message>
         <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
@@ -431,7 +431,7 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     </message>
     <message>
         <source>Cannot create temporary directory</source>
-        <translation type="obsolete">Nelze vytvořit dočasný adresář</translation>
+        <translation>Nelze vytvořit dočasný adresář</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -669,7 +669,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Files</source>
-        <translation type="obsolete">Soubory</translation>
+        <translation>Soubory</translation>
     </message>
     <message>
         <source>Purge</source>
@@ -693,12 +693,12 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Can&apos;t start query: </source>
-        <translation type="obsolete">Nelze spustit hledání:</translation>
+        <translation>Nelze spustit hledání:</translation>
     </message>
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
-        <translation type="obsolete">Chybový příkaz pro prohlížeč pro %1: [%2]
+        <translation>Chybový příkaz pro prohlížeč pro %1: [%2]
 Prověřte soubor mimeconf</translation>
     </message>
     <message>
@@ -723,7 +723,7 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Indexing interrupted</source>
-        <translation type="obsolete">Rejstříkování přerušeno</translation>
+        <translation>Rejstříkování přerušeno</translation>
     </message>
     <message>
         <source>Stop &amp;Indexing</source>
@@ -873,7 +873,7 @@ Chcete spustit dialog s nastavením?</translation>
     </message>
     <message>
         <source>Indexed Mime Types</source>
-        <translation type="obsolete">Rejstříkované mime typy</translation>
+        <translation>Rejstříkované mime typy</translation>
     </message>
     <message>
         <source>Content has been indexed for these mime types:</source>
@@ -981,7 +981,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Query configuration</source>
-        <translation type="obsolete">Nastavení &amp;hledání</translation>
+        <translation>Nastavení &amp;hledání</translation>
     </message>
     <message>
         <source>&amp;User manual</source>
@@ -1025,7 +1025,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Indexing configuration</source>
-        <translation type="obsolete">Nastavení &amp;rejstříkování</translation>
+        <translation>Nastavení &amp;rejstříkování</translation>
     </message>
     <message>
         <source>All</source>
@@ -1053,7 +1053,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Shift+Home</source>
-        <translation type="obsolete">Shift+Home</translation>
+        <translation>Shift+Home</translation>
     </message>
     <message>
         <source>Full Screen</source>
@@ -1124,7 +1124,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="obsolete">Mime typ</translation>
+        <translation>Mime typ</translation>
     </message>
     <message>
         <source>Date</source>
@@ -1156,7 +1156,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source> Ipath</source>
-        <translation type="obsolete">Ipath</translation>
+        <translation>Ipath</translation>
     </message>
     <message>
         <source>Keywords</source>
@@ -1231,7 +1231,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Query details</source>
-        <translation type="obsolete">Suchdetails</translation>
+        <translation>Suchdetails</translation>
     </message>
     <message>
         <source>(show query)</source>
@@ -1306,11 +1306,11 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Add &quot;</source>
-        <translation type="obsolete">Přidat &quot;</translation>
+        <translation>Přidat &quot;</translation>
     </message>
     <message>
         <source>&quot; column</source>
-        <translation type="obsolete">&quot; sloupec</translation>
+        <translation>&quot; sloupec</translation>
     </message>
     <message>
         <source>Save table to CSV file</source>
@@ -1510,31 +1510,31 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     <name>SearchClauseW</name>
     <message>
         <source>SearchClauseW</source>
-        <translation type="obsolete">SearchClauseW</translation>
+        <translation>SearchClauseW</translation>
     </message>
     <message>
         <source>Any of these</source>
-        <translation type="obsolete">jakýkoli z těchto</translation>
+        <translation>jakýkoli z těchto</translation>
     </message>
     <message>
         <source>All of these</source>
-        <translation type="obsolete">Všechny tyto</translation>
+        <translation>Všechny tyto</translation>
     </message>
     <message>
         <source>None of these</source>
-        <translation type="obsolete">Žádný z těchto</translation>
+        <translation>Žádný z těchto</translation>
     </message>
     <message>
         <source>This phrase</source>
-        <translation type="obsolete">Tato slova</translation>
+        <translation>Tato slova</translation>
     </message>
     <message>
         <source>Terms in proximity</source>
-        <translation type="obsolete">Podobné výrazy</translation>
+        <translation>Podobné výrazy</translation>
     </message>
     <message>
         <source>File name matching</source>
-        <translation type="obsolete">Odpovídající názvy souborů</translation>
+        <translation>Odpovídající názvy souborů</translation>
     </message>
     <message>
         <source>Select the type of query that will be performed with the words</source>
@@ -1600,38 +1600,38 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     <name>SortForm</name>
     <message>
         <source>Date</source>
-        <translation type="obsolete">Datum</translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="obsolete">Mime Type</translation>
+        <translation>Mime Type</translation>
     </message>
 </context>
 <context>
     <name>SortFormBase</name>
     <message>
         <source>Sort Criteria</source>
-        <translation type="obsolete">Sortierkriterium</translation>
+        <translation>Sortierkriterium</translation>
     </message>
     <message>
         <source>Sort the</source>
-        <translation type="obsolete">Zeige die</translation>
+        <translation>Zeige die</translation>
     </message>
     <message>
         <source>most relevant results by:</source>
-        <translation type="obsolete">relevantesten Ergebnisse sortiert nach:</translation>
+        <translation>relevantesten Ergebnisse sortiert nach:</translation>
     </message>
     <message>
         <source>Descending</source>
-        <translation type="obsolete">Absteigend</translation>
+        <translation>Absteigend</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation type="obsolete">Schließen</translation>
+        <translation>Schließen</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation type="obsolete">Übernehmen</translation>
+        <translation>Übernehmen</translation>
     </message>
 </context>
 <context>
@@ -1658,7 +1658,7 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Term</source>
-        <translation type="obsolete">Ausdruck</translation>
+        <translation>Ausdruck</translation>
     </message>
     <message>
         <source>No db info.</source>
@@ -1709,7 +1709,7 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Index: %1 documents, average length %2 terms</source>
-        <translation type="obsolete">Rejstřík: %1 dokumentů, průměrná délka %2 výrazy(ů)</translation>
+        <translation>Rejstřík: %1 dokumentů, průměrná délka %2 výrazy(ů)</translation>
     </message>
     <message>
         <source>Index: %1 documents, average length %2 terms.%3 results</source>
@@ -1767,159 +1767,159 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     <name>UIPrefsDialogBase</name>
     <message>
         <source>User interface</source>
-        <translation type="obsolete">Benutzeroberfläche</translation>
+        <translation>Benutzeroberfläche</translation>
     </message>
     <message>
         <source>Number of entries in a result page</source>
-        <translation type="obsolete">Anzahl der Ergebnisse pro Seite</translation>
+        <translation>Anzahl der Ergebnisse pro Seite</translation>
     </message>
     <message>
         <source>Result list font</source>
-        <translation type="obsolete">Schriftart für Ergebnisliste</translation>
+        <translation>Schriftart für Ergebnisliste</translation>
     </message>
     <message>
         <source>Helvetica-10</source>
-        <translation type="obsolete">Helvetica-10</translation>
+        <translation>Helvetica-10</translation>
     </message>
     <message>
         <source>Opens a dialog to select the result list font</source>
-        <translation type="obsolete">Öffnet einen Dialog zur Auswahl der Schriftart für die Ergebnisliste</translation>
+        <translation>Öffnet einen Dialog zur Auswahl der Schriftart für die Ergebnisliste</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation type="obsolete">Reset</translation>
+        <translation>Reset</translation>
     </message>
     <message>
         <source>Resets the result list font to the system default</source>
-        <translation type="obsolete">Setzt die Schriftart für die Ergebnisliste zurück auf den Standardwert</translation>
+        <translation>Setzt die Schriftart für die Ergebnisliste zurück auf den Standardwert</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation type="obsolete">Automatisch eine einfache Suche starten, wenn ein Worttrenner im Sucheingabefeld eingegeben wird.</translation>
+        <translation>Automatisch eine einfache Suche starten, wenn ein Worttrenner im Sucheingabefeld eingegeben wird.</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
-        <translation type="obsolete">Nach dem Start automatisch den Dialog für die erweiterte Suche öffnen.</translation>
+        <translation>Nach dem Start automatisch den Dialog für die erweiterte Suche öffnen.</translation>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
-        <translation type="obsolete">Nach dem Start automatisch den Sortierdialog öffnen.</translation>
+        <translation>Nach dem Start automatisch den Sortierdialog öffnen.</translation>
     </message>
     <message>
         <source>Search parameters</source>
-        <translation type="obsolete">Suchparameter</translation>
+        <translation>Suchparameter</translation>
     </message>
     <message>
         <source>Stemming language</source>
-        <translation type="obsolete">Stemming Sprache</translation>
+        <translation>Stemming Sprache</translation>
     </message>
     <message>
         <source>Dynamically build abstracts</source>
-        <translation type="obsolete">Zusammenfassungen dynamisch erzeugen</translation>
+        <translation>Zusammenfassungen dynamisch erzeugen</translation>
     </message>
     <message>
         <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
 May be slow for big documents.</source>
-        <translation type="obsolete">Festlegung ob Zusammenfassungen für Ergebnisse im Kontext der Suchparameter erzeugt werden (kann bei großen Dokumenten langsam sein).</translation>
+        <translation>Festlegung ob Zusammenfassungen für Ergebnisse im Kontext der Suchparameter erzeugt werden (kann bei großen Dokumenten langsam sein).</translation>
     </message>
     <message>
         <source>Replace abstracts from documents</source>
-        <translation type="obsolete">Ersetzen der Zusammenfassungen in den Dokumenten</translation>
+        <translation>Ersetzen der Zusammenfassungen in den Dokumenten</translation>
     </message>
     <message>
         <source>Do we synthetize an abstract even if the document seemed to have one?</source>
-        <translation type="obsolete">Festlegung ob eine Zusammenfassung auch dann erzeugt wird, wenn das Dokument schon eine Zusammenfassung enthält</translation>
+        <translation>Festlegung ob eine Zusammenfassung auch dann erzeugt wird, wenn das Dokument schon eine Zusammenfassung enthält</translation>
     </message>
     <message>
         <source>Synthetic abstract size (characters)</source>
-        <translation type="obsolete">Länge der erzeugten Zusammenfassung (Zeichen)</translation>
+        <translation>Länge der erzeugten Zusammenfassung (Zeichen)</translation>
     </message>
     <message>
         <source>Synthetic abstract context words</source>
-        <translation type="obsolete">Anzahl der Kontextworte in der Zusammenfassung</translation>
+        <translation>Anzahl der Kontextworte in der Zusammenfassung</translation>
     </message>
     <message>
         <source>External Indexes</source>
-        <translation type="obsolete">externe Indizes</translation>
+        <translation>externe Indizes</translation>
     </message>
     <message>
         <source>Add index</source>
-        <translation type="obsolete">Index hinzufügen</translation>
+        <translation>Index hinzufügen</translation>
     </message>
     <message>
         <source>Select the xapiandb directory for the index you want to add, then click Add Index</source>
-        <translation type="obsolete">Wählen Sie das xapiandb-Verzeichnis des zuzufügenden Indizes und klicken Sie auf Index hinzufügen</translation>
+        <translation>Wählen Sie das xapiandb-Verzeichnis des zuzufügenden Indizes und klicken Sie auf Index hinzufügen</translation>
     </message>
     <message>
         <source>Browse</source>
-        <translation type="obsolete">Auswahl</translation>
+        <translation>Auswahl</translation>
     </message>
     <message>
         <source>&amp;OK</source>
-        <translation type="obsolete">&amp;OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <source>Apply changes</source>
-        <translation type="obsolete">Änderungen übernehmen</translation>
+        <translation>Änderungen übernehmen</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
-        <translation type="obsolete">&amp;Abbrechen</translation>
+        <translation>&amp;Abbrechen</translation>
     </message>
     <message>
         <source>Discard changes</source>
-        <translation type="obsolete">Änderungen verwerfen</translation>
+        <translation>Änderungen verwerfen</translation>
     </message>
     <message>
         <source>Result paragraph&lt;br&gt;format string</source>
-        <translation type="obsolete">Formatstring 
+        <translation>Formatstring 
 für Ergebnisse</translation>
     </message>
     <message>
         <source>Automatically add phrase to simple searches</source>
-        <translation type="obsolete">Automatisches Zufügen von Sätzen zu einfachen Suchen</translation>
+        <translation>Automatisches Zufügen von Sätzen zu einfachen Suchen</translation>
     </message>
     <message>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
 This should give higher precedence to the results where the search terms appear exactly as entered.</source>
-        <translation type="obsolete">Eine Suche nach [Jürgen Klinsmann] wird geändert nach [Jürgen OR Klinsmann OR (Jürgen PHRASE 2 Klinsmann)].
+        <translation>Eine Suche nach [Jürgen Klinsmann] wird geändert nach [Jürgen OR Klinsmann OR (Jürgen PHRASE 2 Klinsmann)].
 Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalten, stärker gewichtet werden.</translation>
     </message>
     <message>
         <source>User preferences</source>
-        <translation type="obsolete">Benutzereinstellungen</translation>
+        <translation>Benutzereinstellungen</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
-        <translation type="obsolete">Die Einstellung des Dokumenteneditors erfolgt in den Desktopvoreinstellungen.</translation>
+        <translation>Die Einstellung des Dokumenteneditors erfolgt in den Desktopvoreinstellungen.</translation>
     </message>
     <message>
         <source>External indexes</source>
-        <translation type="obsolete">Externe Indizes</translation>
+        <translation>Externe Indizes</translation>
     </message>
     <message>
         <source>Toggle selected</source>
-        <translation type="obsolete">Auswahl umkehren</translation>
+        <translation>Auswahl umkehren</translation>
     </message>
     <message>
         <source>Activate All</source>
-        <translation type="obsolete">Alle Auswählen</translation>
+        <translation>Alle Auswählen</translation>
     </message>
     <message>
         <source>Deactivate All</source>
-        <translation type="obsolete">Alle Abwählen</translation>
+        <translation>Alle Abwählen</translation>
     </message>
     <message>
         <source>Remove selected</source>
-        <translation type="obsolete">Ausgewählte entfernen</translation>
+        <translation>Ausgewählte entfernen</translation>
     </message>
     <message>
         <source>Remove from list. This has no effect on the disk index.</source>
-        <translation type="obsolete">Aus der Liste entfernen. Dies hat keinen Einfluss auf den gespeicherten Index.</translation>
+        <translation>Aus der Liste entfernen. Dies hat keinen Einfluss auf den gespeicherten Index.</translation>
     </message>
     <message>
         <source>Remember sort activation state.</source>
-        <translation type="obsolete">Speichern, ob Sortieren aktiviert ist.</translation>
+        <translation>Speichern, ob Sortieren aktiviert ist.</translation>
     </message>
 </context>
 <context>
@@ -1930,7 +1930,7 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="obsolete">Mime typ</translation>
+        <translation>Mime typ</translation>
     </message>
     <message>
         <source>Command</source>
@@ -1945,11 +1945,11 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     <name>ViewActionBase</name>
     <message>
         <source>File type</source>
-        <translation type="obsolete">Dateityp</translation>
+        <translation>Dateityp</translation>
     </message>
     <message>
         <source>Action</source>
-        <translation type="obsolete">Aktion</translation>
+        <translation>Aktion</translation>
     </message>
     <message>
         <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
@@ -2100,7 +2100,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
 </source>
-        <translation type="obsolete">Vnější filtry pracující déle než po tak dlouho budou přerušeny. Je to pro ten zřídkavý případ (např. postscript), kdy by dokument mohl zapříčinit filtr loopSet na -1 pro žádné omezení.
+        <translation>Vnější filtry pracující déle než po tak dlouho budou přerušeny. Je to pro ten zřídkavý případ (např. postscript), kdy by dokument mohl zapříčinit filtr loopSet na -1 pro žádné omezení.
 </translation>
     </message>
     <message>
@@ -2177,7 +2177,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="obsolete">Jazyk pro adresář aspellu. Mělo by to vypadat jako &apos;en&apos; nebo &apos;fr&apos; nebo &apos;cs&apos;...&lt;br&gt;Pokud není tato hodnota nastavena, použije se pro její vypočítání prostředí NLS, což obvykle pracuje. Pro získání představy o tom, co je ve vašem systému nainstalováno, napište &apos;aspell config&apos; a hledejte soubory .dat v adresáři &apos;data-dir&apos;. </translation>
+        <translation>Jazyk pro adresář aspellu. Mělo by to vypadat jako &apos;en&apos; nebo &apos;fr&apos; nebo &apos;cs&apos;...&lt;br&gt;Pokud není tato hodnota nastavena, použije se pro její vypočítání prostředí NLS, což obvykle pracuje. Pro získání představy o tom, co je ve vašem systému nainstalováno, napište &apos;aspell config&apos; a hledejte soubory .dat v adresáři &apos;data-dir&apos;. </translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -2185,7 +2185,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation type="obsolete">Název pro adresář, v němž se má ukládat rejstřík.&lt;br&gt;Neabsolutní cesta je vzata relativně k adresáři s nastavením. Výchozí je &apos;xapiandb&apos;.</translation>
+        <translation>Název pro adresář, v němž se má ukládat rejstřík.&lt;br&gt;Neabsolutní cesta je vzata relativně k adresáři s nastavením. Výchozí je &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
@@ -2264,11 +2264,11 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation type="obsolete">Stanovuje formát pro každý odstavec seznamu s výsledky. Použijte qt nahrazení formátu html a printf:&lt;br&gt;%A přehled&lt;br&gt; %D datum&lt;br&gt; %I název obrázku ikony&lt;br&gt; %K klíčová slova (jsou-li)&lt;br&gt; %L odkazy na náhled a úpravy&lt;br&gt; %M mime typ&lt;br&gt; %N počet výsledků&lt;br&gt; %R procento významnosti&lt;br&gt; %S informace o velikosti&lt;br&gt; %T název&lt;br&gt; %U adresa (URL)&lt;br&gt;</translation>
+        <translation>Stanovuje formát pro každý odstavec seznamu s výsledky. Použijte qt nahrazení formátu html a printf:&lt;br&gt;%A přehled&lt;br&gt; %D datum&lt;br&gt; %I název obrázku ikony&lt;br&gt; %K klíčová slova (jsou-li)&lt;br&gt; %L odkazy na náhled a úpravy&lt;br&gt; %M mime typ&lt;br&gt; %N počet výsledků&lt;br&gt; %R procento významnosti&lt;br&gt; %S informace o velikosti&lt;br&gt; %T název&lt;br&gt; %U adresa (URL)&lt;br&gt;</translation>
     </message>
     <message>
         <source>Result paragraph&lt;br&gt;format string</source>
-        <translation type="obsolete">Řetězec formátu&lt;br&gt;pro výsledky</translation>
+        <translation>Řetězec formátu&lt;br&gt;pro výsledky</translation>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
@@ -2300,7 +2300,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Start with sort dialog open.</source>
-        <translation type="obsolete">Nach dem Start automatisch den Sortierdialog öffnen.</translation>
+        <translation>Nach dem Start automatisch den Sortierdialog öffnen.</translation>
     </message>
     <message>
         <source>Remember sort activation state.</source>
@@ -2420,11 +2420,11 @@ U velkých dokumentů může být pomalé.</translation>
     </message>
     <message>
         <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html.</source>
-        <translation type="obsolete">Použít značky &lt;PRE&gt; namísto &lt;BR&gt; pro zobrazení prostého textu jako HTML.</translation>
+        <translation>Použít značky &lt;PRE&gt; namísto &lt;BR&gt; pro zobrazení prostého textu jako HTML.</translation>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses indentation.</source>
-        <translation type="obsolete">Řádky v textu PRE nejsou složeny. Použití BR povede ke ztrátě odsazení.</translation>
+        <translation>Řádky v textu PRE nejsou složeny. Použití BR povede ke ztrátě odsazení.</translation>
     </message>
     <message>
         <source>Style sheet</source>
@@ -2444,11 +2444,11 @@ U velkých dokumentů může být pomalé.</translation>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses some indentation.</source>
-        <translation type="obsolete">Řádky v textu PRE nejsou složeny. Použití BR povede ke ztrátě odsazení.</translation>
+        <translation>Řádky v textu PRE nejsou složeny. Použití BR povede ke ztrátě odsazení.</translation>
     </message>
     <message>
         <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html in preview.</source>
-        <translation type="obsolete">Použít značky &lt;PRE&gt; namísto &lt;BR&gt; pro zobrazení prostého textu formátovaného v náhledu jako HTML.</translation>
+        <translation>Použít značky &lt;PRE&gt; namísto &lt;BR&gt; pro zobrazení prostého textu formátovaného v náhledu jako HTML.</translation>
     </message>
     <message>
         <source>Result List</source>

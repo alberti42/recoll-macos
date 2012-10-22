@@ -13,15 +13,15 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="obsolete">文本</translation>
+        <translation>文本</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="obsolete">电子表格</translation>
+        <translation>电子表格</translation>
     </message>
     <message>
         <source>presentations</source>
-        <translation type="obsolete">演示文稿</translation>
+        <translation>演示文稿</translation>
     </message>
     <message>
         <source>media</source>
@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>messages</source>
-        <translation type="obsolete">邮件</translation>
+        <translation>邮件</translation>
     </message>
     <message>
         <source>other</source>
@@ -729,7 +729,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
-        <translation type="obsolete">针对%1的查看命令[%2]配置出错
+        <translation>针对%1的查看命令[%2]配置出错
 请检查mimeconf文件</translation>
     </message>
     <message>
@@ -1044,7 +1044,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Query configuration</source>
-        <translation type="obsolete">查询配置（&amp;Q）</translation>
+        <translation>查询配置（&amp;Q）</translation>
     </message>
     <message>
         <source>External index dialog</source>
@@ -1052,7 +1052,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Indexing configuration</source>
-        <translation type="obsolete">索引配置（&amp;I）</translation>
+        <translation>索引配置（&amp;I）</translation>
     </message>
     <message>
         <source>All</source>
@@ -1651,7 +1651,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Index: %1 documents, average length %2 terms</source>
-        <translation type="obsolete">索引：%1个文档，平均长度为%2个词语</translation>
+        <translation>索引：%1个文档，平均长度为%2个词语</translation>
     </message>
     <message>
         <source>Index: %1 documents, average length %2 terms.%3 results</source>
@@ -1871,7 +1871,7 @@ This will help searching very big text  files (ie: log files).</source>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
 </source>
-        <translation type="obsolete">外部过滤器的执行时间如果超过这个值，则会被强行中断。在罕见的情况下，某些文档（例如postscript）会导致过滤器陷入死循环。设置成-1以表示不加限制。
+        <translation>外部过滤器的执行时间如果超过这个值，则会被强行中断。在罕见的情况下，某些文档（例如postscript）会导致过滤器陷入死循环。设置成-1以表示不加限制。
 </translation>
     </message>
     <message>
@@ -1948,7 +1948,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="obsolete">aspell词典的语言。表示方式是&apos;en&apos;或&apos;fr&apos;……&lt;br&gt;如果不设置这个值，则会使用系统环境中的自然语言设置信息，而那个通常是正确的。要想查看你的系统中安装咯哪些语言的话，就执行&apos;aspell config&apos;，再在&apos;data-dir&apos;目录中找.dat文件。</translation>
+        <translation>aspell词典的语言。表示方式是&apos;en&apos;或&apos;fr&apos;……&lt;br&gt;如果不设置这个值，则会使用系统环境中的自然语言设置信息，而那个通常是正确的。要想查看你的系统中安装咯哪些语言的话，就执行&apos;aspell config&apos;，再在&apos;data-dir&apos;目录中找.dat文件。</translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -1956,7 +1956,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation type="obsolete">用来储存索引数据的目录的名字&lt;br&gt;如果使用相对路径，则路径会相对于配置目录进行计算。默认值是&apos;xapiandb&apos;。</translation>
+        <translation>用来储存索引数据的目录的名字&lt;br&gt;如果使用相对路径，则路径会相对于配置目录进行计算。默认值是&apos;xapiandb&apos;。</translation>
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
@@ -2195,11 +2195,11 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses some indentation.</source>
-        <translation type="obsolete">PRE中的文字不会换行。使用BR的话会使一些缩进失效。</translation>
+        <translation>PRE中的文字不会换行。使用BR的话会使一些缩进失效。</translation>
     </message>
     <message>
         <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html in preview.</source>
-        <translation type="obsolete">在将纯文本显示成html预览的时候，使用&lt;PRE&gt;标签，而不是&lt;BR&gt;标签。</translation>
+        <translation>在将纯文本显示成html预览的时候，使用&lt;PRE&gt;标签，而不是&lt;BR&gt;标签。</translation>
     </message>
     <message>
         <source>Result List</source>

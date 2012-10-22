@@ -13,15 +13,15 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="obsolete">textos</translation>
+        <translation>textos</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="obsolete">hojas de cálculo</translation>
+        <translation>hojas de cálculo</translation>
     </message>
     <message>
         <source>presentations</source>
-        <translation type="obsolete">presentaciones</translation>
+        <translation>presentaciones</translation>
     </message>
     <message>
         <source>media</source>
@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>messages</source>
-        <translation type="obsolete">mensajes</translation>
+        <translation>mensajes</translation>
     </message>
     <message>
         <source>other</source>
@@ -378,12 +378,12 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Could not open database in </source>
-        <translation type="obsolete">No se puede abrir base de datos en</translation>
+        <translation>No se puede abrir base de datos en</translation>
     </message>
     <message>
         <source>.
 Click Cancel if you want to edit the configuration file before indexing starts, or Ok to let it proceed.</source>
-        <translation type="obsolete">Presione Cancelar si desea editar la configuración antes de indexar, o Ok para proceder.</translation>
+        <translation>Presione Cancelar si desea editar la configuración antes de indexar, o Ok para proceder.</translation>
     </message>
     <message>
         <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
@@ -398,7 +398,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Cannot create temporary directory</source>
-        <translation type="obsolete">No se puede crear directorio temporal</translation>
+        <translation>No se puede crear directorio temporal</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -640,7 +640,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Files</source>
-        <translation type="obsolete">Ficheros</translation>
+        <translation>Ficheros</translation>
     </message>
     <message>
         <source>Purge</source>
@@ -660,7 +660,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Can&apos;t start query: </source>
-        <translation type="obsolete">No se puede iniciar la consulta:</translation>
+        <translation>No se puede iniciar la consulta:</translation>
     </message>
     <message>
         <source>Query results</source>
@@ -685,7 +685,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
-        <translation type="obsolete">Línea de comando incorrecta de visualizador para %1: [%2]
+        <translation>Línea de comando incorrecta de visualizador para %1: [%2]
 Por favor revise el fichero mimeconf</translation>
     </message>
     <message>
@@ -714,7 +714,7 @@ Por favor revise el fichero mimeconf</translation>
     </message>
     <message>
         <source>Indexing interrupted</source>
-        <translation type="obsolete">Indexación interrumpida</translation>
+        <translation>Indexación interrumpida</translation>
     </message>
     <message>
         <source>Stop &amp;Indexing</source>
@@ -863,7 +863,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Indexed Mime Types</source>
-        <translation type="obsolete">Tipos MIME indexados</translation>
+        <translation>Tipos MIME indexados</translation>
     </message>
     <message>
         <source>Content has been indexed for these mime types:</source>
@@ -1007,7 +1007,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Query configuration</source>
-        <translation type="obsolete">Configuración de &amp;consulta</translation>
+        <translation>Configuración de &amp;consulta</translation>
     </message>
     <message>
         <source>External index dialog</source>
@@ -1015,7 +1015,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Indexing configuration</source>
-        <translation type="obsolete">Configuración de &amp;indexación</translation>
+        <translation>Configuración de &amp;indexación</translation>
     </message>
     <message>
         <source>All</source>
@@ -1043,7 +1043,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Shift+Home</source>
-        <translation type="obsolete">Mayúsculas+Inicio</translation>
+        <translation>Mayúsculas+Inicio</translation>
     </message>
     <message>
         <source>Full Screen</source>
@@ -1138,7 +1138,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source> Ipath</source>
-        <translation type="obsolete"> Ipath</translation>
+        <translation> Ipath</translation>
     </message>
     <message>
         <source>Keywords</source>
@@ -1146,7 +1146,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="obsolete">Tipo MIME</translation>
+        <translation>Tipo MIME</translation>
     </message>
     <message>
         <source>Original character set</source>
@@ -1292,11 +1292,11 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Add &quot;</source>
-        <translation type="obsolete">Añadir &quot;</translation>
+        <translation>Añadir &quot;</translation>
     </message>
     <message>
         <source>&quot; column</source>
-        <translation type="obsolete">&quot; columna</translation>
+        <translation>&quot; columna</translation>
     </message>
     <message>
         <source>Save table to CSV file</source>
@@ -1497,27 +1497,27 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     <name>SearchClauseW</name>
     <message>
         <source>Any of these</source>
-        <translation type="obsolete">Cualquiera</translation>
+        <translation>Cualquiera</translation>
     </message>
     <message>
         <source>All of these</source>
-        <translation type="obsolete">Todas</translation>
+        <translation>Todas</translation>
     </message>
     <message>
         <source>None of these</source>
-        <translation type="obsolete">Ninguna</translation>
+        <translation>Ninguna</translation>
     </message>
     <message>
         <source>This phrase</source>
-        <translation type="obsolete">Frase</translation>
+        <translation>Frase</translation>
     </message>
     <message>
         <source>Terms in proximity</source>
-        <translation type="obsolete">Términos en proximidad</translation>
+        <translation>Términos en proximidad</translation>
     </message>
     <message>
         <source>File name matching</source>
-        <translation type="obsolete">Nombre de fichero</translation>
+        <translation>Nombre de fichero</translation>
     </message>
     <message>
         <source>Select the type of query that will be performed with the words</source>
@@ -1650,7 +1650,7 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
     <message>
         <source>Index: %1 documents, average length %2 terms</source>
-        <translation type="obsolete">Índice: %1 documentos, largo promedio %2 términos</translation>
+        <translation>Índice: %1 documentos, largo promedio %2 términos</translation>
     </message>
     <message>
         <source>Index: %1 documents, average length %2 terms.%3 results</source>
@@ -1712,7 +1712,7 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="obsolete">Tipo MIME</translation>
+        <translation>Tipo MIME</translation>
     </message>
     <message>
         <source>Command</source>
@@ -1873,7 +1873,7 @@ Esto ayuda con las búsquedas de ficheros de texto muy grandes (ej: ficheros de 
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
 </source>
-        <translation type="obsolete">Filtros externos que se ejecuten por más tiempo del establecido serán abortados.&lt;br&gt;Esto ocurre en los raros casos (ej: postscript) cuando un documento hace que un filtro entre en un ciclo.&lt;br&gt;Establezca un valor de -1 para no tener límite.</translation>
+        <translation>Filtros externos que se ejecuten por más tiempo del establecido serán abortados.&lt;br&gt;Esto ocurre en los raros casos (ej: postscript) cuando un documento hace que un filtro entre en un ciclo.&lt;br&gt;Establezca un valor de -1 para no tener límite.</translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
@@ -1949,7 +1949,7 @@ Esto ayuda con las búsquedas de ficheros de texto muy grandes (ej: ficheros de 
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="obsolete">El lenguaje para el diccionario aspell. Esto debe ser algo como &apos;en&apos; o &apos;fr&apos;...&lt;br&gt;Si este valor no se especifica, el ambiente NLS será usado para averiguarlo, lo cual usualmente funciona. Para tener una idea de qué esta instalado en su sistema escriba &apos;aspell-config&apos; y busque por ficheros .dat dentro del directorio &apos;data-dir&apos;.</translation>
+        <translation>El lenguaje para el diccionario aspell. Esto debe ser algo como &apos;en&apos; o &apos;fr&apos;...&lt;br&gt;Si este valor no se especifica, el ambiente NLS será usado para averiguarlo, lo cual usualmente funciona. Para tener una idea de qué esta instalado en su sistema escriba &apos;aspell-config&apos; y busque por ficheros .dat dentro del directorio &apos;data-dir&apos;.</translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -1957,7 +1957,7 @@ Esto ayuda con las búsquedas de ficheros de texto muy grandes (ej: ficheros de 
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation type="obsolete">Nombre del directorio donde almacenar el índice.&lt;br&gt;Un valor no absoluto para la ruta de directorio es usado, relativo al directorio de configuración. El valor estándar es &apos;xapiandb&apos;.</translation>
+        <translation>Nombre del directorio donde almacenar el índice.&lt;br&gt;Un valor no absoluto para la ruta de directorio es usado, relativo al directorio de configuración. El valor estándar es &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
@@ -2036,11 +2036,11 @@ Esto ayuda con las búsquedas de ficheros de texto muy grandes (ej: ficheros de 
     </message>
     <message>
         <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation type="obsolete">Define el formato para cada párrafo de resultados. Utilice formato qt-html y reemplazos estilo printf:&lt;br&gt;%A Resumen&lt;br&gt; %D Fecha&lt;br&gt; %I Nombre del ícono&lt;br&gt; %K Palabras clave (si existen)&lt;br&gt; %L Enlaces de vista previa y edición&lt;br&gt; %M Tipo MIME&lt;br&gt; %Número de resultado&lt;br&gt; %R Porcentaje de relevancia&lt;br&gt; %S Información de tamaño&lt;br&gt; %T Título&lt;br&gt; %U Url&lt;br&gt;</translation>
+        <translation>Define el formato para cada párrafo de resultados. Utilice formato qt-html y reemplazos estilo printf:&lt;br&gt;%A Resumen&lt;br&gt; %D Fecha&lt;br&gt; %I Nombre del ícono&lt;br&gt; %K Palabras clave (si existen)&lt;br&gt; %L Enlaces de vista previa y edición&lt;br&gt; %M Tipo MIME&lt;br&gt; %Número de resultado&lt;br&gt; %R Porcentaje de relevancia&lt;br&gt; %S Información de tamaño&lt;br&gt; %T Título&lt;br&gt; %U Url&lt;br&gt;</translation>
     </message>
     <message>
         <source>Result paragraph&lt;br&gt;format string</source>
-        <translation type="obsolete">Texto de formato para&lt;br&gt;párrafo de resultados</translation>
+        <translation>Texto de formato para&lt;br&gt;párrafo de resultados</translation>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
@@ -2188,11 +2188,11 @@ Puede ser lento para documentos grandes.</translation>
     </message>
     <message>
         <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html.</source>
-        <translation type="obsolete">Utilizar etiquetas &lt;PRE&gt; en lugar de &lt;BR&gt; para mostrar texto simple como html.</translation>
+        <translation>Utilizar etiquetas &lt;PRE&gt; en lugar de &lt;BR&gt; para mostrar texto simple como html.</translation>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses indentation.</source>
-        <translation type="obsolete">Líneas en texto PRE no se parten. Al usar BR se pierde indentación.</translation>
+        <translation>Líneas en texto PRE no se parten. Al usar BR se pierde indentación.</translation>
     </message>
     <message>
         <source>Style sheet</source>
@@ -2212,11 +2212,11 @@ Puede ser lento para documentos grandes.</translation>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses some indentation.</source>
-        <translation type="obsolete">Líneas en texto PRE no se parten. Al usar BR se pierde indentación.</translation>
+        <translation>Líneas en texto PRE no se parten. Al usar BR se pierde indentación.</translation>
     </message>
     <message>
         <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html in preview.</source>
-        <translation type="obsolete">Use etiquetas &lt;PRE&gt; en lugar de &lt;BR&gt; para desplegar texto corriente como html en la vista previa.</translation>
+        <translation>Use etiquetas &lt;PRE&gt; en lugar de &lt;BR&gt; para desplegar texto corriente como html en la vista previa.</translation>
     </message>
     <message>
         <source>Result List</source>

@@ -13,15 +13,15 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="obsolete">tekstai</translation>
+        <translation>tekstai</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="obsolete">skaičiuoklės</translation>
+        <translation>skaičiuoklės</translation>
     </message>
     <message>
         <source>presentations</source>
-        <translation type="obsolete">prezentacijos</translation>
+        <translation>prezentacijos</translation>
     </message>
     <message>
         <source>media</source>
@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>messages</source>
-        <translation type="obsolete">žinutės</translation>
+        <translation>žinutės</translation>
     </message>
     <message>
         <source>other</source>
@@ -346,7 +346,7 @@ p, li { white-space: pre-wrap; }
     <name>Main</name>
     <message>
         <source>Configuration problem (dynconf</source>
-        <translation type="obsolete">Nustatymų bėda (dynconf</translation>
+        <translation>Nustatymų bėda (dynconf</translation>
     </message>
     <message>
         <source>No db directory in configuration</source>
@@ -354,7 +354,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Could not open database in </source>
-        <translation type="obsolete">Nepavyko atidaryti duomenų bazės</translation>
+        <translation>Nepavyko atidaryti duomenų bazės</translation>
     </message>
     <message>
         <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
@@ -369,7 +369,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Cannot create temporary directory</source>
-        <translation type="obsolete">Nepavyksta sukurti laikinos direktorijos</translation>
+        <translation>Nepavyksta sukurti laikinos direktorijos</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -606,7 +606,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Files</source>
-        <translation type="obsolete">Failai</translation>
+        <translation>Failai</translation>
     </message>
     <message>
         <source>Purge</source>
@@ -626,7 +626,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Can&apos;t start query: </source>
-        <translation type="obsolete">Nepavyksta pradėti vykdyti užklausą:</translation>
+        <translation>Nepavyksta pradėti vykdyti užklausą:</translation>
     </message>
     <message>
         <source>Query results</source>
@@ -651,7 +651,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
-        <translation type="obsolete">Netinkamos peržiūros komandinė eilutė  %1: [%2]
+        <translation>Netinkamos peržiūros komandinė eilutė  %1: [%2]
 Prašome patikrinti mimeconf bylą</translation>
     </message>
     <message>
@@ -680,7 +680,7 @@ Prašome patikrinti mimeconf bylą</translation>
     </message>
     <message>
         <source>Indexing interrupted</source>
-        <translation type="obsolete">indeksavimas pertrauktas</translation>
+        <translation>indeksavimas pertrauktas</translation>
     </message>
     <message>
         <source>Stop &amp;Indexing</source>
@@ -740,11 +740,11 @@ Prašome patikrinti mimeconf bylą</translation>
     </message>
     <message>
         <source>Save file dialog</source>
-        <translation type="obsolete">Išsaugoti failą forma</translation>
+        <translation>Išsaugoti failą forma</translation>
     </message>
     <message>
         <source>Choose a file name to save under</source>
-        <translation type="obsolete">Pasirinkite bylos vardą, kuriuo išsaugosite bylą</translation>
+        <translation>Pasirinkite bylos vardą, kuriuo išsaugosite bylą</translation>
     </message>
     <message>
         <source>Document category filter</source>
@@ -978,7 +978,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Query configuration</source>
-        <translation type="obsolete">&amp;Užklausų nustatymai</translation>
+        <translation>&amp;Užklausų nustatymai</translation>
     </message>
     <message>
         <source>External index dialog</source>
@@ -986,7 +986,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Indexing configuration</source>
-        <translation type="obsolete">&amp;Indeksavimo nustatymai</translation>
+        <translation>&amp;Indeksavimo nustatymai</translation>
     </message>
     <message>
         <source>All</source>
@@ -1081,7 +1081,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="obsolete">Mime tipas</translation>
+        <translation>Mime tipas</translation>
     </message>
     <message>
         <source>Date</source>
@@ -1176,15 +1176,15 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Query details</source>
-        <translation type="obsolete">Užklausos detalės</translation>
+        <translation>Užklausos detalės</translation>
     </message>
     <message>
         <source>filtered</source>
-        <translation type="obsolete">išfiltruota</translation>
+        <translation>išfiltruota</translation>
     </message>
     <message>
         <source>sorted</source>
-        <translation type="obsolete">surūšiuota</translation>
+        <translation>surūšiuota</translation>
     </message>
     <message>
         <source>Document history</source>
@@ -1451,31 +1451,31 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>SearchClauseW</name>
     <message>
         <source>SearchClauseW</source>
-        <translation type="obsolete">SearchClauseW</translation>
+        <translation>SearchClauseW</translation>
     </message>
     <message>
         <source>Any of these</source>
-        <translation type="obsolete">Bet kuris šių</translation>
+        <translation>Bet kuris šių</translation>
     </message>
     <message>
         <source>All of these</source>
-        <translation type="obsolete">Visi šie</translation>
+        <translation>Visi šie</translation>
     </message>
     <message>
         <source>None of these</source>
-        <translation type="obsolete">Nei vienas šių</translation>
+        <translation>Nei vienas šių</translation>
     </message>
     <message>
         <source>This phrase</source>
-        <translation type="obsolete">Ši frazė</translation>
+        <translation>Ši frazė</translation>
     </message>
     <message>
         <source>Terms in proximity</source>
-        <translation type="obsolete">Artimi raktiniai žodžiai</translation>
+        <translation>Artimi raktiniai žodžiai</translation>
     </message>
     <message>
         <source>File name matching</source>
-        <translation type="obsolete">Bylos vardą atitinka</translation>
+        <translation>Bylos vardą atitinka</translation>
     </message>
     <message>
         <source>Select the type of query that will be performed with the words</source>
@@ -1541,38 +1541,38 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>SortForm</name>
     <message>
         <source>Date</source>
-        <translation type="obsolete">Data</translation>
+        <translation>Data</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="obsolete">Mime tipas</translation>
+        <translation>Mime tipas</translation>
     </message>
 </context>
 <context>
     <name>SortFormBase</name>
     <message>
         <source>Sort Criteria</source>
-        <translation type="obsolete">Rūšiavimo kriterijus</translation>
+        <translation>Rūšiavimo kriterijus</translation>
     </message>
     <message>
         <source>Sort the</source>
-        <translation type="obsolete">Rūšiuoti</translation>
+        <translation>Rūšiuoti</translation>
     </message>
     <message>
         <source>most relevant results by:</source>
-        <translation type="obsolete">tinkamiausi rezultatai pagal:</translation>
+        <translation>tinkamiausi rezultatai pagal:</translation>
     </message>
     <message>
         <source>Descending</source>
-        <translation type="obsolete">Mažėjimo tvarka</translation>
+        <translation>Mažėjimo tvarka</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation type="obsolete">Pritaikyti</translation>
+        <translation>Pritaikyti</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation type="obsolete">Uždaryti</translation>
+        <translation>Uždaryti</translation>
     </message>
 </context>
 <context>
@@ -1599,7 +1599,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Term</source>
-        <translation type="obsolete">Raktinis žodis</translation>
+        <translation>Raktinis žodis</translation>
     </message>
     <message>
         <source>No db info.</source>
@@ -1704,194 +1704,194 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>UIPrefsDialogBase</name>
     <message>
         <source>User preferences</source>
-        <translation type="obsolete">Vartotojo nustatymai</translation>
+        <translation>Vartotojo nustatymai</translation>
     </message>
     <message>
         <source>User interface</source>
-        <translation type="obsolete">Vartotoja aplinka</translation>
+        <translation>Vartotoja aplinka</translation>
     </message>
     <message>
         <source>Number of entries in a result page</source>
-        <translation type="obsolete">Įrašų skaičius rezultatų puslapyje</translation>
+        <translation>Įrašų skaičius rezultatų puslapyje</translation>
     </message>
     <message>
         <source>Result list font</source>
-        <translation type="obsolete">Rezultatų sąrašo šriftas</translation>
+        <translation>Rezultatų sąrašo šriftas</translation>
     </message>
     <message>
         <source>Helvetica-10</source>
-        <translation type="obsolete">Helvetica-10</translation>
+        <translation>Helvetica-10</translation>
     </message>
     <message>
         <source>Opens a dialog to select the result list font</source>
-        <translation type="obsolete">Pasirinkite rezultatų sąrašo šriftą</translation>
+        <translation>Pasirinkite rezultatų sąrašo šriftą</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation type="obsolete">Gražinti numatytąją formą</translation>
+        <translation>Gražinti numatytąją formą</translation>
     </message>
     <message>
         <source>Resets the result list font to the system default</source>
-        <translation type="obsolete">Gražina numatytąją rezultatų sąrašo srifto vertę</translation>
+        <translation>Gražina numatytąją rezultatų sąrašo srifto vertę</translation>
     </message>
     <message>
         <source>Result paragraph&lt;br&gt;format string</source>
-        <translation type="obsolete">Rezultatų paragrafo&lt;br&gt;formatas</translation>
+        <translation>Rezultatų paragrafo&lt;br&gt;formatas</translation>
     </message>
     <message>
         <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation type="obsolete">Apibūdina kiekvieno rezultatų įrašo formatą:&lt;br&gt;%A Santrauka&lt;br&gt; %D Data&lt;br&gt; %I Ikona&lt;br&gt; %K Raktiniai žodžiai (jei yra)&lt;br&gt; %L Peržiūros ir Redagavimo nuorodos&lt;br&gt; %M Mime tipai&lt;br&gt; %N Rezultų skaičius&lt;br&gt; %R Tinkamumas procentais&lt;br&gt; %S Informacija apie dydį&lt;br&gt; %T Pavadinimas&lt;br&gt; %U Url&lt;br&gt;</translation>
+        <translation>Apibūdina kiekvieno rezultatų įrašo formatą:&lt;br&gt;%A Santrauka&lt;br&gt; %D Data&lt;br&gt; %I Ikona&lt;br&gt; %K Raktiniai žodžiai (jei yra)&lt;br&gt; %L Peržiūros ir Redagavimo nuorodos&lt;br&gt; %M Mime tipai&lt;br&gt; %N Rezultų skaičius&lt;br&gt; %R Tinkamumas procentais&lt;br&gt; %S Informacija apie dydį&lt;br&gt; %T Pavadinimas&lt;br&gt; %U Url&lt;br&gt;</translation>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
-        <translation type="obsolete">Tekstai viršijantys šį dydį nebus nuspalvinami peržiūros metu (per didelė apkrova).</translation>
+        <translation>Tekstai viršijantys šį dydį nebus nuspalvinami peržiūros metu (per didelė apkrova).</translation>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation type="obsolete">Didžiausia teksto, pažymėto peržiūrai, apimtis (megabaitai)</translation>
+        <translation>Didžiausia teksto, pažymėto peržiūrai, apimtis (megabaitai)</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation type="obsolete">Pradėti paprastąją paiešką įvedus tuščio tarpelio simoblį.</translation>
+        <translation>Pradėti paprastąją paiešką įvedus tuščio tarpelio simoblį.</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
-        <translation type="obsolete">Pradėti nuo išsamesnės paieškos lango.</translation>
+        <translation>Pradėti nuo išsamesnės paieškos lango.</translation>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
-        <translation type="obsolete">Pradėti su atidarytu rūšiavimo langu.</translation>
+        <translation>Pradėti su atidarytu rūšiavimo langu.</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
-        <translation type="obsolete">Naudoti darbalaukio nustatymus parenkant dokumentų redaktorių.</translation>
+        <translation>Naudoti darbalaukio nustatymus parenkant dokumentų redaktorių.</translation>
     </message>
     <message>
         <source>Remember sort activation state.</source>
-        <translation type="obsolete">Įsiminti rūšiavimo pasirinkimus (nedings perkrovus).</translation>
+        <translation>Įsiminti rūšiavimo pasirinkimus (nedings perkrovus).</translation>
     </message>
     <message>
         <source>Search parameters</source>
-        <translation type="obsolete">Paieškos parametrai</translation>
+        <translation>Paieškos parametrai</translation>
     </message>
     <message>
         <source>Stemming language</source>
-        <translation type="obsolete">Stemming kalba</translation>
+        <translation>Stemming kalba</translation>
     </message>
     <message>
         <source>Automatically add phrase to simple searches</source>
-        <translation type="obsolete">Pridėti prie paprastos paieškos frazę</translation>
+        <translation>Pridėti prie paprastos paieškos frazę</translation>
     </message>
     <message>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
 This should give higher precedence to the results where the search terms appear exactly as entered.</source>
-        <translation type="obsolete">Paieška bus pakeista (pav. rolling stones -&gt; rolling or stones or (rolling phrase 2 stones)). Teikiama aiški pirmenybė rezultatams kuriuose rasti raktiniai žodžiai atitinka įvestus.</translation>
+        <translation>Paieška bus pakeista (pav. rolling stones -&gt; rolling or stones or (rolling phrase 2 stones)). Teikiama aiški pirmenybė rezultatams kuriuose rasti raktiniai žodžiai atitinka įvestus.</translation>
     </message>
     <message>
         <source>Dynamically build abstracts</source>
-        <translation type="obsolete">Dinamiškai sukurti santraukas</translation>
+        <translation>Dinamiškai sukurti santraukas</translation>
     </message>
     <message>
         <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
 May be slow for big documents.</source>
-        <translation type="obsolete">Ar pabandome sukurti santraukas remdamiesi užklausų raktinių žodžių kontekstu?
+        <translation>Ar pabandome sukurti santraukas remdamiesi užklausų raktinių žodžių kontekstu?
 Didelės apimties dokumentams gali lėtai veikti.</translation>
     </message>
     <message>
         <source>Replace abstracts from documents</source>
-        <translation type="obsolete">Pakeisti dokumentuose randamas santraukas</translation>
+        <translation>Pakeisti dokumentuose randamas santraukas</translation>
     </message>
     <message>
         <source>Do we synthetize an abstract even if the document seemed to have one?</source>
-        <translation type="obsolete">Ar sukuriame dirbtinę santrauką, jei dokumente jau ji yra? </translation>
+        <translation>Ar sukuriame dirbtinę santrauką, jei dokumente jau ji yra? </translation>
     </message>
     <message>
         <source>Synthetic abstract size (characters)</source>
-        <translation type="obsolete">Dirbtinės santraukos dydis (simbolių skaičius)</translation>
+        <translation>Dirbtinės santraukos dydis (simbolių skaičius)</translation>
     </message>
     <message>
         <source>Synthetic abstract context words</source>
-        <translation type="obsolete">Dirbtinės santraukos konteksto žodžiai</translation>
+        <translation>Dirbtinės santraukos konteksto žodžiai</translation>
     </message>
     <message>
         <source>External Indexes</source>
-        <translation type="obsolete">Išoriniai indeksai</translation>
+        <translation>Išoriniai indeksai</translation>
     </message>
     <message>
         <source>External indexes</source>
-        <translation type="obsolete">Išoriniai indeksai</translation>
+        <translation>Išoriniai indeksai</translation>
     </message>
     <message>
         <source>Toggle selected</source>
-        <translation type="obsolete">Įjungti/Išjungti pasirinktą</translation>
+        <translation>Įjungti/Išjungti pasirinktą</translation>
     </message>
     <message>
         <source>Activate All</source>
-        <translation type="obsolete">Visus aktyvuoti</translation>
+        <translation>Visus aktyvuoti</translation>
     </message>
     <message>
         <source>Deactivate All</source>
-        <translation type="obsolete">Visus deaktyvuoti</translation>
+        <translation>Visus deaktyvuoti</translation>
     </message>
     <message>
         <source>Remove selected</source>
-        <translation type="obsolete">Pažymėtus pašalinti</translation>
+        <translation>Pažymėtus pašalinti</translation>
     </message>
     <message>
         <source>Remove from list. This has no effect on the disk index.</source>
-        <translation type="obsolete">Pašalinti iš sąrašo. Neturi jokio poveikio indeksui diske.</translation>
+        <translation>Pašalinti iš sąrašo. Neturi jokio poveikio indeksui diske.</translation>
     </message>
     <message>
         <source>Add index</source>
-        <translation type="obsolete">Pridėti indeksą</translation>
+        <translation>Pridėti indeksą</translation>
     </message>
     <message>
         <source>Select the xapiandb directory for the index you want to add, then click Add Index</source>
-        <translation type="obsolete">Pasirinkti xapiandb direktoriją kurios indeką norite pridėti, tada paspauskite Pridėti Indeksą</translation>
+        <translation>Pasirinkti xapiandb direktoriją kurios indeką norite pridėti, tada paspauskite Pridėti Indeksą</translation>
     </message>
     <message>
         <source>Browse</source>
-        <translation type="obsolete">Naršyti</translation>
+        <translation>Naršyti</translation>
     </message>
     <message>
         <source>&amp;OK</source>
-        <translation type="obsolete">&amp;Gerai</translation>
+        <translation>&amp;Gerai</translation>
     </message>
     <message>
         <source>Apply changes</source>
-        <translation type="obsolete">Pritaikyti pakeitimus</translation>
+        <translation>Pritaikyti pakeitimus</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
-        <translation type="obsolete">&amp;Atšaukti</translation>
+        <translation>&amp;Atšaukti</translation>
     </message>
     <message>
         <source>Discard changes</source>
-        <translation type="obsolete">Panaikinti pakeitimus</translation>
+        <translation>Panaikinti pakeitimus</translation>
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation type="obsolete">Užklausų raktinių žodžių žymėjimo spalvos</translation>
+        <translation>Užklausų raktinių žodžių žymėjimo spalvos</translation>
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
-        <translation type="obsolete">Pirmenybę teikti Html formatui peržiūros metu.</translation>
+        <translation>Pirmenybę teikti Html formatui peržiūros metu.</translation>
     </message>
     <message>
         <source>If checked, results with the same content under different names will only be shown once.</source>
-        <translation type="obsolete">Pažymėjus, bus rodoma tik viena iš bylų su tuo pačiu turiniu, tačiau skirtingais vardais.</translation>
+        <translation>Pažymėjus, bus rodoma tik viena iš bylų su tuo pačiu turiniu, tačiau skirtingais vardais.</translation>
     </message>
     <message>
         <source>Hide duplicate results.</source>
-        <translation type="obsolete">Slėpti pasikartojančius rezultatus.</translation>
+        <translation>Slėpti pasikartojančius rezultatus.</translation>
     </message>
     <message>
         <source>Choose editor applications</source>
-        <translation type="obsolete">Pasirinkite redaktorių programas</translation>
+        <translation>Pasirinkite redaktorių programas</translation>
     </message>
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
-        <translation type="obsolete">Kategorijų filtrą rodyti kaip įrankų juostą (reikalauja perkrovimo).</translation>
+        <translation>Kategorijų filtrą rodyti kaip įrankų juostą (reikalauja perkrovimo).</translation>
     </message>
 </context>
 <context>
@@ -1902,7 +1902,7 @@ Didelės apimties dokumentams gali lėtai veikti.</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="obsolete">Mime tipas</translation>
+        <translation>Mime tipas</translation>
     </message>
     <message>
         <source>Command</source>
@@ -1925,11 +1925,11 @@ Didelės apimties dokumentams gali lėtai veikti.</translation>
     </message>
     <message>
         <source>File type</source>
-        <translation type="obsolete">Bylos tipas</translation>
+        <translation>Bylos tipas</translation>
     </message>
     <message>
         <source>Action</source>
-        <translation type="obsolete">Veiksmas</translation>
+        <translation>Veiksmas</translation>
     </message>
     <message>
         <source>Change Action</source>
@@ -1956,15 +1956,15 @@ Didelės apimties dokumentams gali lėtai veikti.</translation>
     </message>
     <message>
         <source>Web cache directory name</source>
-        <translation type="obsolete">Naršymo tinkle cache direktorijos vardas</translation>
+        <translation>Naršymo tinkle cache direktorijos vardas</translation>
     </message>
     <message>
         <source>The name for a directory where to store the cache for visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
-        <translation type="obsolete">Direktorijos, kurioje saugoma lankytų tinklo svetainių cache, vardas.&lt;br&gt;Santykinis kelias prasideda nuo nustatymų direktorijos.</translation>
+        <translation>Direktorijos, kurioje saugoma lankytų tinklo svetainių cache, vardas.&lt;br&gt;Santykinis kelias prasideda nuo nustatymų direktorijos.</translation>
     </message>
     <message>
         <source>Max. size for the web cache (MB)</source>
-        <translation type="obsolete">Didžiausias tinklo naršymo cache dydis (MB)</translation>
+        <translation>Didžiausias tinklo naršymo cache dydis (MB)</translation>
     </message>
     <message>
         <source>Entries will be recycled once the size is reached</source>
@@ -1994,7 +1994,7 @@ Didelės apimties dokumentams gali lėtai veikti.</translation>
     <name>confgui::ConfParamFNW</name>
     <message>
         <source>Browse</source>
-        <translation type="obsolete">Naršyti</translation>
+        <translation>Naršyti</translation>
     </message>
     <message>
         <source>Choose</source>
@@ -2086,7 +2086,7 @@ This will help searching very big text  files (ie: log files).</source>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
 </source>
-        <translation type="obsolete">Išorinių filtrų, dirbančių ilgiau nei numatyta, darbas bus nutraukiamas. Taikoma retiems atvejas (pav. postscript) kada dokumentas galėtų priversti filtrą kartoti veiksmus be galo ilgai. </translation>
+        <translation>Išorinių filtrų, dirbančių ilgiau nei numatyta, darbas bus nutraukiamas. Taikoma retiems atvejas (pav. postscript) kada dokumentas galėtų priversti filtrą kartoti veiksmus be galo ilgai. </translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
@@ -2162,7 +2162,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="obsolete">Aspell žodyno kalba (&apos;en&apos;, &apos;fr&apos; ar kita).&lt;br&gt;Jei vertė nenurodyta NLS aplinka pabandys nustatyti tinkamą kalbą (paprastai teisingai). Norėdami sužinoti kas įrašyta Jūsų sistemoje įrašykite &apos;aspell-config&apos; ir žiūrėkite į dat bylas &apos;data-dir&apos; direktorijoje.</translation>
+        <translation>Aspell žodyno kalba (&apos;en&apos;, &apos;fr&apos; ar kita).&lt;br&gt;Jei vertė nenurodyta NLS aplinka pabandys nustatyti tinkamą kalbą (paprastai teisingai). Norėdami sužinoti kas įrašyta Jūsų sistemoje įrašykite &apos;aspell-config&apos; ir žiūrėkite į dat bylas &apos;data-dir&apos; direktorijoje.</translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -2170,7 +2170,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation type="obsolete">Direktorijos, kurioje bus saugomas indeksas, vardas&lt;br&gt;Laikoma, jog santykinio keliio iki direktorijos pradžia yra nustatymų direktorija. Numatytoji yra &apos;xapiandb&apos;. </translation>
+        <translation>Direktorijos, kurioje bus saugomas indeksas, vardas&lt;br&gt;Laikoma, jog santykinio keliio iki direktorijos pradžia yra nustatymų direktorija. Numatytoji yra &apos;xapiandb&apos;. </translation>
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
@@ -2249,11 +2249,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation type="obsolete">Apibūdina kiekvieno rezultatų įrašo formatą:&lt;br&gt;%A Santrauka&lt;br&gt; %D Data&lt;br&gt; %I Ikona&lt;br&gt; %K Raktiniai žodžiai (jei yra)&lt;br&gt; %L Peržiūros ir Redagavimo nuorodos&lt;br&gt; %M Mime tipai&lt;br&gt; %N Rezultų skaičius&lt;br&gt; %R Tinkamumas procentais&lt;br&gt; %S Informacija apie dydį&lt;br&gt; %T Pavadinimas&lt;br&gt; %U Url&lt;br&gt;</translation>
+        <translation>Apibūdina kiekvieno rezultatų įrašo formatą:&lt;br&gt;%A Santrauka&lt;br&gt; %D Data&lt;br&gt; %I Ikona&lt;br&gt; %K Raktiniai žodžiai (jei yra)&lt;br&gt; %L Peržiūros ir Redagavimo nuorodos&lt;br&gt; %M Mime tipai&lt;br&gt; %N Rezultų skaičius&lt;br&gt; %R Tinkamumas procentais&lt;br&gt; %S Informacija apie dydį&lt;br&gt; %T Pavadinimas&lt;br&gt; %U Url&lt;br&gt;</translation>
     </message>
     <message>
         <source>Result paragraph&lt;br&gt;format string</source>
-        <translation type="obsolete">Rezultatų paragrafo&lt;br&gt;formatas</translation>
+        <translation>Rezultatų paragrafo&lt;br&gt;formatas</translation>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
@@ -2285,7 +2285,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
-        <translation type="obsolete">Pradėti su atidarytu rūšiavimo langu.</translation>
+        <translation>Pradėti su atidarytu rūšiavimo langu.</translation>
     </message>
     <message>
         <source>Remember sort activation state.</source>

@@ -13,15 +13,15 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="obsolete">κείμενα</translation>
+        <translation>κείμενα</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="obsolete">λογιστικά φύλλα</translation>
+        <translation>λογιστικά φύλλα</translation>
     </message>
     <message>
         <source>presentations</source>
-        <translation type="obsolete">παρουσιάσεις</translation>
+        <translation>παρουσιάσεις</translation>
     </message>
     <message>
         <source>media</source>
@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>messages</source>
-        <translation type="obsolete">μηνύματα</translation>
+        <translation>μηνύματα</translation>
     </message>
     <message>
         <source>other</source>
@@ -820,7 +820,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
-        <translation type="obsolete">Κακοδιατυπωμένη εντολή για %1: [%2]
+        <translation>Κακοδιατυπωμένη εντολή για %1: [%2]
 Παρακαλώ ελέγξτε το αρχείο mimeconf</translation>
     </message>
     <message>
@@ -1011,7 +1011,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Indexing configuration</source>
-        <translation type="obsolete">&amp;Διαμόρφωση της ευρετηρίασης</translation>
+        <translation>&amp;Διαμόρφωση της ευρετηρίασης</translation>
     </message>
     <message>
         <source>&amp;Indexing schedule</source>
@@ -1019,7 +1019,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Query configuration</source>
-        <translation type="obsolete">Δια&amp;μόρφωση της αναζήτησης</translation>
+        <translation>Δια&amp;μόρφωση της αναζήτησης</translation>
     </message>
     <message>
         <source>E&amp;xternal index dialog</source>
@@ -1565,7 +1565,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Index: %1 documents, average length %2 terms</source>
-        <translation type="obsolete">Ευρετήριο: %1 έγγραφα, μέσο μήκος %2 όροι</translation>
+        <translation>Ευρετήριο: %1 έγγραφα, μέσο μήκος %2 όροι</translation>
     </message>
     <message>
         <source>Aspell init failed. Aspell not installed?</source>
@@ -1793,7 +1793,7 @@ This will help searching very big text  files (ie: log files).</source>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
 </source>
-        <translation type="obsolete">Τα εξωτερικά φίλτρα σε λειτουργία μεγαλύτερη από αυτό θα διακόπτονται. Χρήσιμο για τη σπάνια περίπτωση (π.χ. postscript) όπου ένα έγγραφο μπορεί να προκαλέσει ένα βρόγχο στο φίλτρο. ορίστε το σε -1 για να αφαιρέσετε το όριο.</translation>
+        <translation>Τα εξωτερικά φίλτρα σε λειτουργία μεγαλύτερη από αυτό θα διακόπτονται. Χρήσιμο για τη σπάνια περίπτωση (π.χ. postscript) όπου ένα έγγραφο μπορεί να προκαλέσει ένα βρόγχο στο φίλτρο. ορίστε το σε -1 για να αφαιρέσετε το όριο.</translation>
     </message>
     <message>
         <source>Global</source>
@@ -1885,7 +1885,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="obsolete">Η γλώσσα του λεξικού του aspell. Μια σωστή τιμή μοιάζει με &apos;en&apos; ή &apos;el&apos;...&lt;br&gt;Αν αυτή η τιμή δεν έχει οριστεί, θα χρησιμοποιηθεί το περιβάλλον για τον υπολογισμό της, κάτι που συνήθως δουλεύει καλά. Για να πάρετε μια ιδέα για το τι είναι εγκατεστημένο στο σύστημά σας, πληκτρολογήστε &apos;aspell config&apos; και αναζητήστε τα αρχεία .dat μέσα στον κατάλογο &apos;data-dir&apos;.</translation>
+        <translation>Η γλώσσα του λεξικού του aspell. Μια σωστή τιμή μοιάζει με &apos;en&apos; ή &apos;el&apos;...&lt;br&gt;Αν αυτή η τιμή δεν έχει οριστεί, θα χρησιμοποιηθεί το περιβάλλον για τον υπολογισμό της, κάτι που συνήθως δουλεύει καλά. Για να πάρετε μια ιδέα για το τι είναι εγκατεστημένο στο σύστημά σας, πληκτρολογήστε &apos;aspell config&apos; και αναζητήστε τα αρχεία .dat μέσα στον κατάλογο &apos;data-dir&apos;.</translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -1893,7 +1893,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation type="obsolete">Το όνομα του καταλόγου αποθήκευσης του ευρετηρίου.&lt;br&gt;Μια σχετική διαδρομή αναφερόμενη στη διαδρομή διαμόρφωσης. Η προεπιλογή είναι &apos;xapiandb&apos;.</translation>
+        <translation>Το όνομα του καταλόγου αποθήκευσης του ευρετηρίου.&lt;br&gt;Μια σχετική διαδρομή αναφερόμενη στη διαδρομή διαμόρφωσης. Η προεπιλογή είναι &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
@@ -1960,11 +1960,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses some indentation.</source>
-        <translation type="obsolete">Οι γραμμές στις ενότητες PRE δεν δικαιολογούνται. Χρησιμοποιώντας BR χάνονται μερικές εσοχές.</translation>
+        <translation>Οι γραμμές στις ενότητες PRE δεν δικαιολογούνται. Χρησιμοποιώντας BR χάνονται μερικές εσοχές.</translation>
     </message>
     <message>
         <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html in preview.</source>
-        <translation type="obsolete">Χρήση &lt;PRE&gt; αντί &lt;BR&gt; για απλό κείμενο αντί html στην προεπισκόπηση.</translation>
+        <translation>Χρήση &lt;PRE&gt; αντί &lt;BR&gt; για απλό κείμενο αντί html στην προεπισκόπηση.</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>

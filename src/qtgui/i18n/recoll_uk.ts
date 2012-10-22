@@ -13,15 +13,15 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="obsolete">тексти</translation>
+        <translation>тексти</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="obsolete">таблиці</translation>
+        <translation>таблиці</translation>
     </message>
     <message>
         <source>presentations</source>
-        <translation type="obsolete">презентації</translation>
+        <translation>презентації</translation>
     </message>
     <message>
         <source>media</source>
@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>messages</source>
-        <translation type="obsolete">повідомлення</translation>
+        <translation>повідомлення</translation>
     </message>
     <message>
         <source>other</source>
@@ -350,18 +350,18 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Could not open database in </source>
-        <translation type="obsolete">Не можу відкрити базу даних в </translation>
+        <translation>Не можу відкрити базу даних в </translation>
     </message>
     <message>
         <source>.
 Click Cancel if you want to edit the configuration file before indexing starts, or Ok to let it proceed.</source>
-        <translation type="obsolete">.
+        <translation>.
 Натисніть Відміна, якщо бажаєте відредагувати конфіґурацію до початку індексування,
 чи OK для продовження.</translation>
     </message>
     <message>
         <source>Configuration problem (dynconf</source>
-        <translation type="obsolete">Проблема конфігурації (dynconf</translation>
+        <translation>Проблема конфігурації (dynconf</translation>
     </message>
     <message>
         <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
@@ -392,7 +392,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Cannot create temporary directory</source>
-        <translation type="obsolete">Не можу створити тимчасову теку</translation>
+        <translation>Не можу створити тимчасову теку</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -633,7 +633,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Files</source>
-        <translation type="obsolete">Файли</translation>
+        <translation>Файли</translation>
     </message>
     <message>
         <source>Purge</source>
@@ -658,7 +658,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
-        <translation type="obsolete">Невірний командний рядок для переглядача %1: [%2]
+        <translation>Невірний командний рядок для переглядача %1: [%2]
 Перевірте файл mimeconf</translation>
     </message>
     <message>
@@ -683,7 +683,7 @@ Please check the mimeconf file</source>
     </message>
     <message>
         <source>Indexing interrupted</source>
-        <translation type="obsolete">Індексування перервано</translation>
+        <translation>Індексування перервано</translation>
     </message>
     <message>
         <source>Stop &amp;Indexing</source>
@@ -691,7 +691,7 @@ Please check the mimeconf file</source>
     </message>
     <message>
         <source>Can&apos;t start query: </source>
-        <translation type="obsolete">Неможливо почати запит:</translation>
+        <translation>Неможливо почати запит:</translation>
     </message>
     <message>
         <source>All</source>
@@ -747,11 +747,11 @@ Please check the mimeconf file</source>
     </message>
     <message>
         <source>Save file dialog</source>
-        <translation type="obsolete">Зберегти файл</translation>
+        <translation>Зберегти файл</translation>
     </message>
     <message>
         <source>Choose a file name to save under</source>
-        <translation type="obsolete">Оберіть ім&apos;я файла для збереження</translation>
+        <translation>Оберіть ім&apos;я файла для збереження</translation>
     </message>
     <message>
         <source>Document category filter</source>
@@ -960,7 +960,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Query configuration</source>
-        <translation type="obsolete">Конфіґурація &amp;запиту</translation>
+        <translation>Конфіґурація &amp;запиту</translation>
     </message>
     <message>
         <source>Update &amp;index</source>
@@ -992,7 +992,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Indexing configuration</source>
-        <translation type="obsolete">&amp;Конфіґурація індексування</translation>
+        <translation>&amp;Конфіґурація індексування</translation>
     </message>
     <message>
         <source>All</source>
@@ -1087,7 +1087,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="obsolete">Тип MIME</translation>
+        <translation>Тип MIME</translation>
     </message>
     <message>
         <source>Date</source>
@@ -1186,7 +1186,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Query details</source>
-        <translation type="obsolete">Деталі запиту</translation>
+        <translation>Деталі запиту</translation>
     </message>
     <message>
         <source>(show query)</source>
@@ -1202,11 +1202,11 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>filtered</source>
-        <translation type="obsolete">фільтроване</translation>
+        <translation>фільтроване</translation>
     </message>
     <message>
         <source>sorted</source>
-        <translation type="obsolete">сортоване</translation>
+        <translation>сортоване</translation>
     </message>
     <message>
         <source>Document history</source>
@@ -1457,27 +1457,27 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>SearchClauseW</name>
     <message>
         <source>Any of these</source>
-        <translation type="obsolete">будь-які слова</translation>
+        <translation>будь-які слова</translation>
     </message>
     <message>
         <source>All of these</source>
-        <translation type="obsolete">усі слова</translation>
+        <translation>усі слова</translation>
     </message>
     <message>
         <source>None of these</source>
-        <translation type="obsolete">без цих слів</translation>
+        <translation>без цих слів</translation>
     </message>
     <message>
         <source>This phrase</source>
-        <translation type="obsolete">фраза</translation>
+        <translation>фраза</translation>
     </message>
     <message>
         <source>Terms in proximity</source>
-        <translation type="obsolete">слова поблизу</translation>
+        <translation>слова поблизу</translation>
     </message>
     <message>
         <source>File name matching</source>
-        <translation type="obsolete">назва файлу</translation>
+        <translation>назва файлу</translation>
     </message>
     <message>
         <source>Select the type of query that will be performed with the words</source>
@@ -1543,38 +1543,38 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>SortForm</name>
     <message>
         <source>Date</source>
-        <translation type="obsolete">Дата</translation>
+        <translation>Дата</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="obsolete">Тип MIME</translation>
+        <translation>Тип MIME</translation>
     </message>
 </context>
 <context>
     <name>SortFormBase</name>
     <message>
         <source>Sort Criteria</source>
-        <translation type="obsolete">Критерії сортування</translation>
+        <translation>Критерії сортування</translation>
     </message>
     <message>
         <source>Sort the</source>
-        <translation type="obsolete">Сортувати</translation>
+        <translation>Сортувати</translation>
     </message>
     <message>
         <source>most relevant results by:</source>
-        <translation type="obsolete">кращих результатів за:</translation>
+        <translation>кращих результатів за:</translation>
     </message>
     <message>
         <source>Descending</source>
-        <translation type="obsolete">спаданням</translation>
+        <translation>спаданням</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation type="obsolete">Закрити</translation>
+        <translation>Закрити</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation type="obsolete">Застосувати</translation>
+        <translation>Застосувати</translation>
     </message>
 </context>
 <context>
@@ -1601,7 +1601,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Term</source>
-        <translation type="obsolete">Слово</translation>
+        <translation>Слово</translation>
     </message>
     <message>
         <source>No db info.</source>
@@ -1706,191 +1706,191 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>UIPrefsDialogBase</name>
     <message>
         <source>User interface</source>
-        <translation type="obsolete">Інтерфейс</translation>
+        <translation>Інтерфейс</translation>
     </message>
     <message>
         <source>Number of entries in a result page</source>
-        <translation type="obsolete">Кількість результатів на сторінку</translation>
+        <translation>Кількість результатів на сторінку</translation>
     </message>
     <message>
         <source>Result list font</source>
-        <translation type="obsolete">Шрифт списку результатів</translation>
+        <translation>Шрифт списку результатів</translation>
     </message>
     <message>
         <source>Helvetica-10</source>
-        <translation type="obsolete">Helvetica-10</translation>
+        <translation>Helvetica-10</translation>
     </message>
     <message>
         <source>Opens a dialog to select the result list font</source>
-        <translation type="obsolete">Відкриває діалог вибору шрифту списку результатів</translation>
+        <translation>Відкриває діалог вибору шрифту списку результатів</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation type="obsolete">Скинути</translation>
+        <translation>Скинути</translation>
     </message>
     <message>
         <source>Resets the result list font to the system default</source>
-        <translation type="obsolete">Повертає шрифт у типовий системний</translation>
+        <translation>Повертає шрифт у типовий системний</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation type="obsolete">Починати простий пошук при введенні пробілу.</translation>
+        <translation>Починати простий пошук при введенні пробілу.</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
-        <translation type="obsolete">Відкривати діалог складного пошуку при старті.</translation>
+        <translation>Відкривати діалог складного пошуку при старті.</translation>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
-        <translation type="obsolete">Відкривати діалог сортування при старті.</translation>
+        <translation>Відкривати діалог сортування при старті.</translation>
     </message>
     <message>
         <source>Search parameters</source>
-        <translation type="obsolete">Параметри пошуку</translation>
+        <translation>Параметри пошуку</translation>
     </message>
     <message>
         <source>Stemming language</source>
-        <translation type="obsolete">Мова словоформ</translation>
+        <translation>Мова словоформ</translation>
     </message>
     <message>
         <source>Dynamically build abstracts</source>
-        <translation type="obsolete">Динамічно будувати конспекти</translation>
+        <translation>Динамічно будувати конспекти</translation>
     </message>
     <message>
         <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
 May be slow for big documents.</source>
-        <translation type="obsolete">Чи намагатися будувати конспекти для результатів пошуку, використовуючі контекст знайдених слів?
+        <translation>Чи намагатися будувати конспекти для результатів пошуку, використовуючі контекст знайдених слів?
 Може працювати повільно для великих документів.</translation>
     </message>
     <message>
         <source>Replace abstracts from documents</source>
-        <translation type="obsolete">Заміняти наявні у документах конспекти</translation>
+        <translation>Заміняти наявні у документах конспекти</translation>
     </message>
     <message>
         <source>Do we synthetize an abstract even if the document seemed to have one?</source>
-        <translation type="obsolete">Чи робити новий конспект, навіть якщо якийсь вже є в документі?</translation>
+        <translation>Чи робити новий конспект, навіть якщо якийсь вже є в документі?</translation>
     </message>
     <message>
         <source>Synthetic abstract size (characters)</source>
-        <translation type="obsolete">Розмір синтетичного конспекту (у символах)</translation>
+        <translation>Розмір синтетичного конспекту (у символах)</translation>
     </message>
     <message>
         <source>Synthetic abstract context words</source>
-        <translation type="obsolete">Контекстних слів у конспекті</translation>
+        <translation>Контекстних слів у конспекті</translation>
     </message>
     <message>
         <source>External Indexes</source>
-        <translation type="obsolete">Зовнішні індекси</translation>
+        <translation>Зовнішні індекси</translation>
     </message>
     <message>
         <source>Add index</source>
-        <translation type="obsolete">Додати індекс</translation>
+        <translation>Додати індекс</translation>
     </message>
     <message>
         <source>Select the xapiandb directory for the index you want to add, then click Add Index</source>
-        <translation type="obsolete">Оберіть потрібну теку із індексом Xapian та натисніть &quot;Додати індекс&quot;</translation>
+        <translation>Оберіть потрібну теку із індексом Xapian та натисніть &quot;Додати індекс&quot;</translation>
     </message>
     <message>
         <source>Browse</source>
-        <translation type="obsolete">Перегляд</translation>
+        <translation>Перегляд</translation>
     </message>
     <message>
         <source>&amp;OK</source>
-        <translation type="obsolete">&amp;OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <source>Apply changes</source>
-        <translation type="obsolete">Застосувати зміни</translation>
+        <translation>Застосувати зміни</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
-        <translation type="obsolete">&amp;Відміна</translation>
+        <translation>&amp;Відміна</translation>
     </message>
     <message>
         <source>Discard changes</source>
-        <translation type="obsolete">Відмінити зміни</translation>
+        <translation>Відмінити зміни</translation>
     </message>
     <message>
         <source>Result paragraph&lt;br&gt;format string</source>
-        <translation type="obsolete">Рядок форматування&lt;br&gt;блоку результатів</translation>
+        <translation>Рядок форматування&lt;br&gt;блоку результатів</translation>
     </message>
     <message>
         <source>Automatically add phrase to simple searches</source>
-        <translation type="obsolete">Автоматично додавати фразу до простих пошуків</translation>
+        <translation>Автоматично додавати фразу до простих пошуків</translation>
     </message>
     <message>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
 This should give higher precedence to the results where the search terms appear exactly as entered.</source>
-        <translation type="obsolete">Пошук [rolling stones] (2 слова) буде змінено на [rolling or stones or (rolling phrase 2 stones)]. 
+        <translation>Пошук [rolling stones] (2 слова) буде змінено на [rolling or stones or (rolling phrase 2 stones)]. 
 Це може підняти результати, в яких пошукові слова зустрічаються саме в такій послідовності, як в запиті.</translation>
     </message>
     <message>
         <source>User preferences</source>
-        <translation type="obsolete">Вподобання</translation>
+        <translation>Вподобання</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
-        <translation type="obsolete">Використовувати налаштування десктопу щодо редактору документів.</translation>
+        <translation>Використовувати налаштування десктопу щодо редактору документів.</translation>
     </message>
     <message>
         <source>External indexes</source>
-        <translation type="obsolete">Зовнішні індекси</translation>
+        <translation>Зовнішні індекси</translation>
     </message>
     <message>
         <source>Toggle selected</source>
-        <translation type="obsolete">Переключити вибране</translation>
+        <translation>Переключити вибране</translation>
     </message>
     <message>
         <source>Activate All</source>
-        <translation type="obsolete">Включити все</translation>
+        <translation>Включити все</translation>
     </message>
     <message>
         <source>Remove selected</source>
-        <translation type="obsolete">Видалити вибране</translation>
+        <translation>Видалити вибране</translation>
     </message>
     <message>
         <source>Remove from list. This has no effect on the disk index.</source>
-        <translation type="obsolete">Видалити зі списку.  Не впливає на дисковий індекс.</translation>
+        <translation>Видалити зі списку.  Не впливає на дисковий індекс.</translation>
     </message>
     <message>
         <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation type="obsolete">Визначає формат для кожного блоку списку результатів. Використовуйте html-формат qt та схожі на printf заміни:&lt;br&gt;%A анотація&lt;br&gt; %D дата&lt;br&gt; %I назва піктограми&lt;br&gt; %K ключові слова (якщо є)&lt;br&gt; %L посилання перегляду та редагування&lt;br&gt; %M тип MIME&lt;br&gt; %N кількість результатів&lt;br&gt; %R релевантність&lt;br&gt; %S розмір&lt;br&gt; %T назва&lt;br&gt; %U URL&lt;br&gt;</translation>
+        <translation>Визначає формат для кожного блоку списку результатів. Використовуйте html-формат qt та схожі на printf заміни:&lt;br&gt;%A анотація&lt;br&gt; %D дата&lt;br&gt; %I назва піктограми&lt;br&gt; %K ключові слова (якщо є)&lt;br&gt; %L посилання перегляду та редагування&lt;br&gt; %M тип MIME&lt;br&gt; %N кількість результатів&lt;br&gt; %R релевантність&lt;br&gt; %S розмір&lt;br&gt; %T назва&lt;br&gt; %U URL&lt;br&gt;</translation>
     </message>
     <message>
         <source>Remember sort activation state.</source>
-        <translation type="obsolete">Запам&apos;ятати стан сортування.</translation>
+        <translation>Запам&apos;ятати стан сортування.</translation>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation type="obsolete">Максимальний розмір тексту із підсвічуванням (Мб)</translation>
+        <translation>Максимальний розмір тексту із підсвічуванням (Мб)</translation>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
-        <translation type="obsolete">Тексти із розміром, більшим за вказаний, не буде підсвічено у попередньому перегляді (повільно).</translation>
+        <translation>Тексти із розміром, більшим за вказаний, не буде підсвічено у попередньому перегляді (повільно).</translation>
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation type="obsolete">Колір виділення ключових слів</translation>
+        <translation>Колір виділення ключових слів</translation>
     </message>
     <message>
         <source>Deactivate All</source>
-        <translation type="obsolete">Виключити все</translation>
+        <translation>Виключити все</translation>
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
-        <translation type="obsolete">Віддавати перевагу HTML над текстом для перегляду.</translation>
+        <translation>Віддавати перевагу HTML над текстом для перегляду.</translation>
     </message>
     <message>
         <source>If checked, results with the same content under different names will only be shown once.</source>
-        <translation type="obsolete">Якщо увімкнене, результати с таким самим змістом та різними назвами буде показано не більше одного разу.</translation>
+        <translation>Якщо увімкнене, результати с таким самим змістом та різними назвами буде показано не більше одного разу.</translation>
     </message>
     <message>
         <source>Hide duplicate results.</source>
-        <translation type="obsolete">Ховати дублікати</translation>
+        <translation>Ховати дублікати</translation>
     </message>
     <message>
         <source>Choose editor applications</source>
-        <translation type="obsolete">Оберіть редактори</translation>
+        <translation>Оберіть редактори</translation>
     </message>
 </context>
 <context>
@@ -1901,7 +1901,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="obsolete">Тип MIME</translation>
+        <translation>Тип MIME</translation>
     </message>
     <message>
         <source>Command</source>
@@ -1916,11 +1916,11 @@ This should give higher precedence to the results where the search terms appear 
     <name>ViewActionBase</name>
     <message>
         <source>File type</source>
-        <translation type="obsolete">Тип файлу</translation>
+        <translation>Тип файлу</translation>
     </message>
     <message>
         <source>Action</source>
-        <translation type="obsolete">Дія</translation>
+        <translation>Дія</translation>
     </message>
     <message>
         <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
@@ -1981,7 +1981,7 @@ This should give higher precedence to the results where the search terms appear 
     <name>confgui::ConfParamFNW</name>
     <message>
         <source>Browse</source>
-        <translation type="obsolete">Перегляд</translation>
+        <translation>Перегляд</translation>
     </message>
     <message>
         <source>Choose</source>
@@ -2136,7 +2136,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="obsolete">Мова словника aspell.  Має виглядати як &apos;en&apos; або &apos;uk&apos;...&lt;br&gt;Якщо не встановлене, буде використане оточення (локаль), що зазвичай робить. Щоб з&apos;ясувати, що маємо на системі, наберіть &apos;aspell config&apos; та перегляньте файли .dat у теці &apos;data-dir&apos;. </translation>
+        <translation>Мова словника aspell.  Має виглядати як &apos;en&apos; або &apos;uk&apos;...&lt;br&gt;Якщо не встановлене, буде використане оточення (локаль), що зазвичай робить. Щоб з&apos;ясувати, що маємо на системі, наберіть &apos;aspell config&apos; та перегляньте файли .dat у теці &apos;data-dir&apos;. </translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -2144,7 +2144,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation type="obsolete">Назва теки, де міститься індекс&lt;br&gt;Відносний шлях буде трактовано відносно теки конфіґурації. Типово: &apos;xapiandb&apos;.</translation>
+        <translation>Назва теки, де міститься індекс&lt;br&gt;Відносний шлях буде трактовано відносно теки конфіґурації. Типово: &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
@@ -2231,11 +2231,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation type="obsolete">Визначає формат для кожного блоку списку результатів. Використовуйте html-формат qt та схожі на printf заміни:&lt;br&gt;%A анотація&lt;br&gt; %D дата&lt;br&gt; %I назва піктограми&lt;br&gt; %K ключові слова (якщо є)&lt;br&gt; %L посилання перегляду та редагування&lt;br&gt; %M тип MIME&lt;br&gt; %N кількість результатів&lt;br&gt; %R релевантність&lt;br&gt; %S розмір&lt;br&gt; %T назва&lt;br&gt; %U URL&lt;br&gt;</translation>
+        <translation>Визначає формат для кожного блоку списку результатів. Використовуйте html-формат qt та схожі на printf заміни:&lt;br&gt;%A анотація&lt;br&gt; %D дата&lt;br&gt; %I назва піктограми&lt;br&gt; %K ключові слова (якщо є)&lt;br&gt; %L посилання перегляду та редагування&lt;br&gt; %M тип MIME&lt;br&gt; %N кількість результатів&lt;br&gt; %R релевантність&lt;br&gt; %S розмір&lt;br&gt; %T назва&lt;br&gt; %U URL&lt;br&gt;</translation>
     </message>
     <message>
         <source>Result paragraph&lt;br&gt;format string</source>
-        <translation type="obsolete">Рядок форматування&lt;br&gt;блоку результатів</translation>
+        <translation>Рядок форматування&lt;br&gt;блоку результатів</translation>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
@@ -2267,7 +2267,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
-        <translation type="obsolete">Відкривати діалог сортування при старті.</translation>
+        <translation>Відкривати діалог сортування при старті.</translation>
     </message>
     <message>
         <source>Remember sort activation state.</source>
