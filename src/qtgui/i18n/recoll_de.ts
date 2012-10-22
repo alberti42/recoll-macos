@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0">
+<TS version="2.0" language="de_DE">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -41,19 +41,19 @@
     </message>
     <message>
         <source>text</source>
-        <translation type="unfinished">Text</translation>
+        <translation>Text</translation>
     </message>
     <message>
         <source>spreadsheet</source>
-        <translation type="unfinished">Tabelle</translation>
+        <translation>Tabelle</translation>
     </message>
     <message>
         <source>presentation</source>
-        <translation type="unfinished">Präsentation</translation>
+        <translation>Präsentation</translation>
     </message>
     <message>
         <source>message</source>
-        <translation type="unfinished">Nachricht</translation>
+        <translation>Nachricht</translation>
     </message>
 </context>
 <context>
@@ -564,7 +564,7 @@ Der Standardwert ist &quot;Nein&quot;, um doppelte Indizierung zu vermeiden.</tr
     </message>
     <message>
         <source>Search parameters</source>
-        <translation type="unfinished">Suchparameter</translation>
+        <translation>Suchparameter</translation>
     </message>
 </context>
 <context>
@@ -889,15 +889,16 @@ Wollen Sie den Einstellungs-Dialog starten?</translation>
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeview file</source>
-        <translation type="unfinished"></translation>
+        <translation>Fehlerhafter Anzeigebefehl für %1: [%2]
+Überprüfen Sie die Datei mimeview.</translation>
     </message>
     <message>
         <source>Viewer command line for %1 specifies both file and parent file value: unsupported</source>
-        <translation type="unfinished"></translation>
+        <translation>Anzeigebefehl für %1 legt Datei und übergeordnete Datei fest: nicht unterstützt </translation>
     </message>
     <message>
         <source>Cannot find parent document</source>
-        <translation type="unfinished"></translation>
+        <translation>Übergeordnetes Dokument nicht gefunden</translation>
     </message>
 </context>
 <context>
@@ -1100,11 +1101,11 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Index configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Index-Einstellungen</translation>
     </message>
     <message>
         <source>&amp;GUI configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;GUI-Einstellungen</translation>
     </message>
 </context>
 <context>
@@ -1274,11 +1275,11 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&lt;p&gt;&lt;i&gt;Alternate spellings: &lt;/i&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;&lt;i&gt;Alternative Schreibweisen: &lt;/i&gt;</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation type="unfinished"></translation>
+        <translation>Öffne &amp;Schnipsel-Fenster</translation>
     </message>
 </context>
 <context>
@@ -1558,23 +1559,23 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     <name>Snippets</name>
     <message>
         <source>Snippets</source>
-        <translation type="unfinished"></translation>
+        <translation>Schnipsel</translation>
     </message>
     <message>
         <source>about:blank</source>
-        <translation type="unfinished"></translation>
+        <translation>about:blank</translation>
     </message>
     <message>
         <source>Find:</source>
-        <translation type="unfinished"></translation>
+        <translation>Finden:</translation>
     </message>
     <message>
         <source>Next</source>
-        <translation type="unfinished">Weiter</translation>
+        <translation>Weiter</translation>
     </message>
     <message>
         <source>Prev</source>
-        <translation type="unfinished"></translation>
+        <translation>Zurück</translation>
     </message>
 </context>
 <context>
@@ -1694,19 +1695,19 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Index: %1 documents, average length %2 terms.%3 results</source>
-        <translation type="unfinished"></translation>
+        <translation>Index: %1 Dokumente mit durchschnittlicher Länge von %2 Begriffen. %3 Ergebnisse</translation>
     </message>
     <message>
         <source>%1 results</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 Ergebnisse</translation>
     </message>
     <message>
         <source>List was truncated alphabetically, some frequent </source>
-        <translation type="unfinished"></translation>
+        <translation>Liste wurde alphabetisch abgeschnitten, einige häufige Begriffe </translation>
     </message>
     <message>
         <source>terms may be missing. Try using a longer root.</source>
-        <translation type="unfinished"></translation>
+        <translation>können fehlen. Versuchen Sie es mit einer längeren Wurzel.</translation>
     </message>
 </context>
 <context>
@@ -1737,11 +1738,11 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Result list paragraph format (erase all to reset to default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Format für Ergebnis-Absatz (alles löschen, um auf Standard zurück zu setzen)</translation>
     </message>
     <message>
         <source>Result list header (default is empty)</source>
-        <translation type="unfinished"></translation>
+        <translation>Header der Ergebnisliste (Standard ist leer)</translation>
     </message>
 </context>
 <context>
@@ -2010,35 +2011,35 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     <name>confgui::ConfSearchPanelW</name>
     <message>
         <source>Automatic diacritics sensitivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Automatisch diakritische Zeichen beachten</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt; Automatisch die Beachtung von diakritischen Zeichen einschalten, wenn der Suchbegriff Zeichen mit Akzenten enthält (nicht in unac_except_trans). Ansonsten müssen Sie dafür die Suchsprache und den &lt;i&gt;D&lt;/i&gt; Modifikator verwenden.</translation>
     </message>
     <message>
         <source>Automatic character case sensitivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Automatisch Groß-/Kleinschreibung beachten</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt; Automatisch die Beachtung von Groß-/Kleinschreibung einschalten, wenn der Eintrag Großbuchstaben enthält (außer an erster Stelle). Ansonsten müssen Sie dafür die Suchsprache und den &lt;i&gt;C&lt;/i&gt; Modifikator verwenden.</translation>
     </message>
     <message>
         <source>Maximum term expansion count</source>
-        <translation type="unfinished"></translation>
+        <translation>Maximale Anzahl von Ausdruck-Erweiterungen</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Maximale Anzahl von Erweiterungen für einen einzelnen Ausdruck (z.B. bei der Verwendung von Wildcards). Der Standardwert 10 000 ist vernünftig und verhindert, dass Suchanfragen scheinbar einfrieren, während die Liste der Begriffe durchlaufen wird.</translation>
     </message>
     <message>
         <source>Maximum Xapian clauses count</source>
-        <translation type="unfinished"></translation>
+        <translation>Maximale Anzahl von Xapian-Ausdrücken</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Maximale Anzahl von elementaren Ausdrücken, die wir zu einer einzelnen Xapian Abfrage hinzufügen. In manchen Fällen können die Ergebnisse von Ausdruck-Erweiterungen sich ausmultiplizieren, und wir wollen übermäßigen Speicherverbrauch vermeiden. Der Standardwert 100 000 sollte in den meisten Fällen hoch genug sein und zugleich zu typischen derzeitigen Hardware-Ausstattungen passen.</translation>
     </message>
 </context>
 <context>
@@ -2091,7 +2092,9 @@ Auf -1 setzen, um keine Obergrenze zu haben.</translation>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Externe Filter, die länger als diese Zeit laufen, werden abgebrochen.
+Das ist für den seltenen Fall (Postscript), in dem ein Dokument eine unendliche Schleife auslöst.
+Auf -1 setzen, um keine Obergrenze zu haben.</translation>
     </message>
 </context>
 <context>
@@ -2186,19 +2189,19 @@ Auf -1 setzen, um keine Obergrenze zu haben.</translation>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="unfinished"></translation>
+        <translation>Die Sprache des Aspell-Wörterbuchs (z.B. &apos;en&apos; oder &apos;de&apos; ...)&lt;br&gt;Wenn dieser Wert nicht gesetzt ist, wird die NLS-Umgebung verwendet, um die Sprache festzustellen, was im Allgemeinen funktioniert. Um eine Vorstellung zu bekommen, was auf Ihrem System installiert ist, geben Sie &apos;aspell config&apos; ein und schauen Sie nach .dat Dateien im Verzeichnis &apos;data-dir&apos;.</translation>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Der Name eines Verzeichnisses, in dem der Index gespeichert werden soll.&lt;br&gt;Ein nicht-absoluter Pfad ist dabei relativ zum Konfigurationsverzeichnis. Der Standard ist &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <source>Unac exceptions</source>
-        <translation type="unfinished"></translation>
+        <translation>Unac Ausnahmen</translation>
     </message>
     <message>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Dies sind Ausnahmen für den unac Mechanismus, der standardmäßig alle diakritischen Zeichen entfernt und sie durch kanonische Entsprechungen ersetzt. Sie können (abhängig von Ihrer Sprache) dieses Entfernen von Akzenten für einige Zeichen übersteuern und zusätzliche Ersetzungen angeben, z.B. für Ligaturen. Bei jedem durch Leerzeichen getrennten Eintrag ist das erste Zeichen das Ausgangszeichen und der Rest die Ersetzung.</translation>
     </message>
 </context>
 <context>
@@ -2456,31 +2459,31 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     </message>
     <message>
         <source>Plain text to HTML line style</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeilen-Stil für Umwandlung von Text in HTML</translation>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses some indentation. PRE + Wrap style may be what you want.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeilen in PRE-Text werden nicht umgebrochen. Bei Verwendung von BR gehen manche Einrückungen verloren. Möglicherweise ist der Stil &apos;PRE + Umbruch&apos; das, was Sie wollen.</translation>
     </message>
     <message>
         <source>&lt;BR&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;BR&gt;</translation>
     </message>
     <message>
         <source>&lt;PRE&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;PRE&gt;</translation>
     </message>
     <message>
         <source>&lt;PRE&gt; + wrap</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;PRE&gt; + Umbruch</translation>
     </message>
     <message>
         <source>Exceptions</source>
-        <translation type="unfinished"></translation>
+        <translation>Ausnahmen</translation>
     </message>
     <message>
         <source>Mime types that should not be passed to xdg-open even when &quot;Use desktop preferences&quot; is set.&lt;br&gt; Useful to pass page number and search string options to, e.g. evince.</source>
-        <translation type="unfinished"></translation>
+        <translation>Mime-Typen, die nicht an xdg-open übergeben werden sollen, selbst wenn Desktopvoreinstellungen gewählt wurden.&lt;br&gt; Nützlich, um Seitenzahl und Suchstring zu übergebn, z.B. an evince.</translation>
     </message>
 </context>
 </TS>
