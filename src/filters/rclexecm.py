@@ -36,6 +36,7 @@ class RclExecM:
         txt = txt.replace("&", "&amp;")
 
         txt = txt.replace("<", "&lt;")
+        txt = txt.replace(">", "&gt;")
         txt = txt.replace('"', "&dquot;")
         return txt
 
@@ -77,6 +78,10 @@ class RclExecM:
     def answer(self, docdata, ipath, iseof = noteof, iserror = noerror):
 
         if iserror != RclExecM.fileerror and iseof != RclExecM.eofnow:
+            if isinstance(docdata, unicode):
+                self.rclog("GOT UNICODE for ipath [%s]" % (ipath,))
+                docdata = docdata.encode("UTF-8")
+
             print "Document:", len(docdata)
             sys.stdout.write(docdata)
 
@@ -180,7 +185,11 @@ def main(proto, extract):
             if ok:
                 print "== Found entry for ipath %s (mimetype [%s]):" % \
                       (ipath, proto.mimetype)
-                print data
+                if isinstance(data, unicode):
+                    bdata = data.encode("UTF-8")
+                else:
+                    bdata = data
+                sys.stdout.write(bdata)
                 print
             else:
                 print "Got error, eof %d"%eof
@@ -193,7 +202,11 @@ def main(proto, extract):
                 ecnt = ecnt + 1
                 print "== Entry %d ipath %s (mimetype [%s]):" % \
                       (ecnt, ipath, proto.mimetype)
-                print data
+                if isinstance(data, unicode):
+                    bdata = data.encode("UTF-8")
+                else:
+                    bdata = data
+                sys.stdout.write(bdata)
                 print
                 if eof != RclExecM.noteof:
                     break
