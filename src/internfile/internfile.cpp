@@ -483,21 +483,23 @@ TempFile FileInterner::dataToTempFile(const string& dt, const string& mt)
 }
 
 // See if the error string is formatted as a missing helper message,
-// accumulate helper name if it is
+// accumulate helper name if it is. The format of the message is:
+// RECFILTERROR HELPERNOTFOUND program1 [program2 ...]
 void FileInterner::checkExternalMissing(const string& msg, const string& mt)
 {
+    LOGDEB2(("checkExternalMissing: [%s]\n", msg.c_str()));
     if (m_missingdatap && msg.find("RECFILTERROR") == 0) {
-	vector<string> lerr;
-	stringToStrings(msg, lerr);
-	if (lerr.size() > 2) {
-	    vector<string>::iterator it = lerr.begin();
-	    lerr.erase(it++);
+	vector<string> verr;
+	stringToStrings(msg, verr);
+	if (verr.size() > 2) {
+	    vector<string>::iterator it = verr.begin();
+	    it++;
 	    if (*it == "HELPERNOTFOUND") {
-		lerr.erase(it++);
-		string s;
-		stringsToString(lerr, s);
-		m_missingdatap->m_missingExternal.insert(s);
-		m_missingdatap->m_typesForMissing[s].insert(mt);
+		it++;
+		for (; it < verr.end(); it++) {
+		    m_missingdatap->m_missingExternal.insert(*it);
+		    m_missingdatap->m_typesForMissing[*it].insert(mt);
+		}
 	    }
 	}		    
     }
