@@ -71,7 +71,8 @@ public:
 	  m_idxproc(0),
 	  m_sortspecnochange(false),
 	  m_indexerState(IXST_RUNNINGNOTMINE),
-	  m_queryActive(false)
+	  m_queryActive(false),
+	  m_firstIndexing(false)
     {
 	setupUi(this);
 	init();
@@ -177,6 +178,7 @@ private:
     RefCntr<DocSequence> m_source;
     IndexerState      m_indexerState;
     bool              m_queryActive;
+    bool              m_firstIndexing;
 
     // If set on init, will be displayed either through ext app, or
     // preview (if no ext app set)

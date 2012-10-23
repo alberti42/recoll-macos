@@ -621,6 +621,10 @@ void RclMain::periodic100()
 	    if (status) {
 		QMessageBox::warning(0, "Recoll", 
 				     tr("Indexing failed"));
+	    } else {
+		// On the first run, show missing helpers. We only do this once
+		if (m_firstIndexing)
+		    showMissingHelpers();
 	    }
 	    string reason;
 	    maybeOpenDb(reason, 1);
@@ -713,6 +717,11 @@ void RclMain::toggleIndexing()
     break;
     case IXST_NOTRUNNING:
     {
+	// Could also mean that no helpers are missing, but then we
+	// won't try to show a message anyway (which is what
+	// firstIndexing is used for)
+	m_firstIndexing = theconfig->getMissingHelperDesc().empty();
+
 	vector<string> args;
 	args.push_back("-c");
 	args.push_back(theconfig->getConfDir());
@@ -739,6 +748,10 @@ void RclMain::rebuildIndex()
 					 QMessageBox::Cancel,
 					 QMessageBox::NoButton);
 	if (rep == QMessageBox::Ok) {
+	    // Could also mean that no helpers are missing, but then we
+	    // won't try to show a message anyway (which is what
+	    // firstIndexing is used for)
+	    m_firstIndexing = theconfig->getMissingHelperDesc().empty();
 	    vector<string> args;
 	    args.push_back("-c");
 	    args.push_back(theconfig->getConfDir());
@@ -1058,13 +1071,18 @@ void RclMain::showAboutDialog()
 void RclMain::showMissingHelpers()
 {
     string miss = theconfig->getMissingHelperDesc();
-    QString msg = tr("External applications/commands needed and not found "
+    QString msg = QString::fromAscii("<p>") +
+	tr("External applications/commands needed and not found "
 		     "for indexing your file types:\n\n");
+    msg += "(<i>";
+    msg += QString::fromLocal8Bit(theconfig->getConfDir().c_str());
+    msg += "/missing</i>):<pre>\n";
     if (!miss.empty()) {
 	msg += QString::fromUtf8(miss.c_str());
     } else {
 	msg += tr("No helpers found missing");
     }
+    msg += "</pre>";
     QMessageBox::information(this, tr("Missing helper programs"), msg);
 }
 
