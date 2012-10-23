@@ -25,6 +25,31 @@ class rclEPUB:
         self.em = em
         self.em.setmimetype(rclepub_html_mtype)
 
+    def _selfdoc(self):
+        meta = self.book.opf.metadata
+        title = ""
+        for tt, lang in meta.titles:
+            title += tt + " "
+        author = ""
+        for name, role, fileas in meta.creators:
+            author += name + " "
+        data = "<html>\n<head>\n"
+        if title:
+            data += "<title>" + self.em.htmlescape(title) + "</title>\n"
+        if author:
+            data += '<meta name="author" content="' + \
+                self.em.htmlescape(author).strip() + '">\n'
+        if meta.description:
+            data += '<meta name="description" content="' + \
+                self.em.htmlescape(meta.description) + '">\n'
+        data = data.encode('UTF-8')
+        self.em.setmimetype('text/html')
+        if len(self.contents) == 0:
+            eof = rclexecm.RclExecM.eofnext
+        else:
+            eof = rclexecm.RclExecM.noteof
+        return (True, data, "", eof)
+
     def extractone(self, id):
         """Extract one path-named internal file from the EPUB file"""
 
@@ -38,7 +63,7 @@ class rclEPUB:
             if item is None:
                 raise Exception("Item not found for id %s" % (id,))
             doc = self.book.read_item(item)
-            doc = re.sub('''</[hH][eE][aA][dD]''',
+            doc = re.sub('''</[hH][eE][aA][dD]>''',
                          '''<meta name="rclaptg" content="epub"></head>''', doc)
             self.em.setmimetype(rclepub_html_mtype)
             return (True, doc, id, iseof)
@@ -63,18 +88,12 @@ class rclEPUB:
 
     def getipath(self, params):
         return self.extractone(params["ipath:"])
-        
+
     def getnext(self, params):
 
         if self.currentindex == -1:
-            # Return "self" doc
             self.currentindex = 0
-            self.em.setmimetype('text/plain')
-            if len(self.contents) == 0:
-                eof = rclexecm.RclExecM.eofnext
-            else:
-                eof = rclexecm.RclExecM.noteof
-            return (True, "", "", eof)
+            return self._selfdoc()
 
         if self.currentindex >= len(self.contents):
             return (False, "", "", rclexecm.RclExecM.eofnow)
