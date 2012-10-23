@@ -453,10 +453,10 @@ string ResListPager::prevUrl()
 
 string ResListPager::iconUrl(RclConfig *config, Rcl::Doc& doc)
 {
-    string iconurl;
-    config->getMimeIconName(doc.mimetype, &iconurl);
-    iconurl = cstr_fileu + iconurl;
-    return iconurl;
+    string apptag;
+    doc.getmeta(Rcl::Doc::keyapptg, &apptag);
+
+    return cstr_fileu + config->getMimeIconPath(doc.mimetype, apptag);
 }
 
 bool ResListPager::append(const string& data)

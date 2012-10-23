@@ -100,7 +100,7 @@ bool RecollFilter::txtdcode(const string& who)
 
     string& ocs = m_metaData[cstr_dj_keyorigcharset];
     string& itext = m_metaData[cstr_dj_keycontent];
-    LOGDEB0(("%s::txtdcode: %d bytes from [%s] to UTF-8\n", 
+    LOGDEB1(("%s::txtdcode: %d bytes from [%s] to UTF-8\n", 
 	     who.c_str(), itext.size(), ocs.c_str()));
     int ecnt;
     string otext;

@@ -196,8 +196,8 @@ class RclConfig {
     bool valueSplitAttributes(const string& whole, string& value, 
                               ConfSimple& attrs);
 
-    /** mimeconf: get icon name for mimetype */
-    string getMimeIconName(const string &mtype, string *path = 0);
+    /** Return icon path for mime type and tag */
+    string getMimeIconPath(const string &mt, const string& apptag);
 
     /** mimeconf: get list of file categories */
     bool getMimeCategories(vector<string>&);

@@ -885,33 +885,30 @@ bool RclConfig::mimeViewerNeedsUncomp(const string &mimetype)
     return true;
 }
 
-/**
- * Return icon name and path
- */
-string RclConfig::getMimeIconName(const string &mtype, string *path)
+string RclConfig::getMimeIconPath(const string &mtype, const string &apptag)
 {
     string iconname;
-    mimeconf->get(mtype, iconname, "icons");
+    if (!apptag.empty())
+	mimeconf->get(mtype + string("|") + apptag, iconname, "icons");
+    if (iconname.empty())
+        mimeconf->get(mtype, iconname, "icons");
     if (iconname.empty())
 	iconname = "document";
 
-    if (path) {
-	string iconsdir;
-
+    string iconpath;
 #if defined (__FreeBSD__) && __FreeBSD_version < 500000
-	// gcc 2.95 dies if we call getConfParam here ??
-	if (m_conf) m_conf->get(string("iconsdir"), iconsdir, m_keydir);
+    // gcc 2.95 dies if we call getConfParam here ??
+    if (m_conf) m_conf->get(string("iconsdir"), iconpath, m_keydir);
 #else
-	getConfParam("iconsdir", iconsdir);
+    getConfParam("iconsdir", iconpath);
 #endif
-	if (iconsdir.empty()) {
-	    iconsdir = path_cat(m_datadir, "images");
-	} else {
-	    iconsdir = path_tildexpand(iconsdir);
-	}
-	*path = path_cat(iconsdir, iconname) + ".png";
+
+    if (iconpath.empty()) {
+	iconpath = path_cat(m_datadir, "images");
+    } else {
+	iconpath = path_tildexpand(iconpath);
     }
-    return iconname;
+    return path_cat(iconpath, iconname) + ".png";
 }
 
 string RclConfig::getDbDir()
