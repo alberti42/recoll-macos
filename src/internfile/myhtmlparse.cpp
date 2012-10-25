@@ -360,9 +360,7 @@ MyHtmlParser::opening_tag(const string &tag)
 		    if (get_parameter("name", name)) {
 			lowercase_term(name);
 			if (name == "date") {
-			    // Yes this doesnt exist. It's output by filters
-			    // And the format isn't even standard http/html
-			    // FIXME
+			    // Specific to Recoll filters.
 			    decode_entities(content);
 			    struct tm tm;
 			    if (strptime(content.c_str(), 
@@ -376,10 +374,22 @@ MyHtmlParser::opening_tag(const string &tag)
 			    }
 			} else if (name == "robots") {
 			} else {
+			    string markup;
+			    bool ishtml = false;
+			    if (get_parameter("markup", markup)) {
+				if (!stringlowercmp("html", markup)) {
+				    ishtml = true;
+				}
+			    }
 			    if (!meta[name].empty())
 				meta[name] += ' ';
 			    decode_entities(content);
 			    meta[name] += content;
+			    if (ishtml && 
+				meta[name].compare(0, cstr_fldhtm.size(), 
+						   cstr_fldhtm)) {
+				meta[name].insert(0, cstr_fldhtm);
+			    }
 			}
 		    } 
 		    string hdr;
@@ -417,8 +427,7 @@ MyHtmlParser::opening_tag(const string &tag)
 		    }
 		}
 		break;
-	    }
-	    if (tag == "marquee" || tag == "menu" || tag == "multicol")
+	    } else if (tag == "marquee" || tag == "menu" || tag == "multicol")
 		pending_space = true;
 	    break;
 	case 'o':
@@ -441,12 +450,11 @@ MyHtmlParser::opening_tag(const string &tag)
 	    if (tag == "style") {
 		in_style_tag = true;
 		break;
-	    }
-	    if (tag == "script") {
+	    } else if (tag == "script") {
 		in_script_tag = true;
 		break;
-	    }
-	    if (tag == "select") pending_space = true;
+	    } else if (tag == "select") 
+		pending_space = true;
 	    break;
 	case 't':
 	    if (tag == "table" || tag == "td" || tag == "textarea" ||

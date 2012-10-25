@@ -100,6 +100,25 @@
       <h2>Nouvelles: </h2>
       <ul>
 
+        <li>2012-10-25: Un problème avec une solution simple peut provoquer
+          des <span class="important">plantages de
+          recollindex</span>. 
+          Si vous indexez des messages mail Mozilla/Thunderbird
+          ailleurs qu'à l'endroit standard (~/.thunderbird), vous
+          devriez ajouter les lignes qui suivent à la fin de votre
+          fichier de configuration (~/.recoll/recoll.conf):
+          <pre><tt>
+              [/path/to/my/mozilla/mail]
+              mhmboxquirks = tbird
+          </tt></pre> Changez le chemin d'accès pour le votre bien
+          sûr.  Sans cette indication, recollindex a des difficultés à
+          déterminer les limites de message dans les fichiers mailbox,
+          et peut arriver à utiliser toute la mémoire de la machine,
+          et à se planter. Dans les cas moins graves (avec des
+          fichiers de taille "raisonnable"), cela provoque aussi une
+          indexation incorrecte des messages.
+        </li>
+
         <li>2012-10-16: <a href="filters/filters.html">un nouveau filtre
             pour les documents EPUB</a>.</li> 
         <li>2012-05-24: Sortie de la

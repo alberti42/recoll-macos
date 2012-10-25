@@ -84,6 +84,22 @@
       <h2>News</h2>
       <div class="news">
       <ul>
+        <li>2012-10-25: a problem with a simple workaround has caused
+          several reported <span class="important">recollindex
+          crashes</span> recently. If you store and index
+          Mozilla/Thunderbird email out of the standard location
+          (~/.thunderbird), you should add the following at the end of
+          your configuration file (e.g.:
+          ~/.recoll/recoll.conf): <pre><tt>
+              [/path/to/my/mozilla/mail]
+              mhmboxquirks = tbird
+          </tt></pre> Adjust the path to your local value of course...
+          Without this hint, recollindex has trouble finding the
+          message delimiters inside the folder files, and will
+          possibly use all the computer's memory and crash. Apart from
+          crashes, which only occur for very big folders, this also
+          causes incorrect mail indexing.
+        </li>
         <li>2012-10-19: the source for <a href="recoll-1.18.001.tar.gz">
             recoll 1.18.001</a> is available, and this is a call to
             volunteers to test it. There are binary

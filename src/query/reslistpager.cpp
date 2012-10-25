@@ -110,6 +110,14 @@ void ResListPager::resultPageNext()
     m_resultsInCurrentPage = pagelen;
     m_respage = npage;
 }
+static string maybeEscapeHtml(const string& fld)
+{
+    if (fld.compare(0, cstr_fldhtm.size(), cstr_fldhtm))
+	return escapeHtml(fld);
+    else
+	return fld.substr(cstr_fldhtm.size());
+}
+
 
 void ResListPager::resultPageFor(int docnum)
 {
@@ -263,21 +271,21 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     subs["I"] = iconurl;
     subs["i"] = doc.ipath;
     subs["K"] = !doc.meta[Rcl::Doc::keykw].empty() ? 
-	string("[") + escapeHtml(doc.meta[Rcl::Doc::keykw]) + "]" : "";
+	string("[") + maybeEscapeHtml(doc.meta[Rcl::Doc::keykw]) + "]" : "";
     subs["L"] = linksbuf.str();
     subs["N"] = numbuf;
     subs["M"] = doc.mimetype;
     subs["R"] = doc.meta[Rcl::Doc::keyrr];
     subs["S"] = sizebuf;
-    subs["T"] = escapeHtml(titleOrFilename);
-    subs["t"] = escapeHtml(doc.meta[Rcl::Doc::keytt]);
+    subs["T"] = maybeEscapeHtml(titleOrFilename);
+    subs["t"] = maybeEscapeHtml(doc.meta[Rcl::Doc::keytt]);
     subs["U"] = url;
 
     // Let %(xx) access all metadata. HTML-neuter everything:
     for (map<string,string>::iterator it = doc.meta.begin(); 
 	 it != doc.meta.end(); it++) {
 	if (!it->first.empty()) 
-	    subs[it->first] = escapeHtml(it->second);
+	    subs[it->first] = maybeEscapeHtml(it->second);
     }
 
     string formatted;
