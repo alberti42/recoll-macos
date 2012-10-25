@@ -364,6 +364,8 @@ qtgui/mtpics/aptosid-book.png
 qtgui/mtpics/aptosid-manual-copyright.txt
 qtgui/mtpics/aptosid-manual.png
 qtgui/mtpics/archive.png
+qtgui/mtpics/book.png
+qtgui/mtpics/bookchap.png
 qtgui/mtpics/document.png
 qtgui/mtpics/drawing.png
 qtgui/mtpics/folder.png
