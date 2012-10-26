@@ -84,9 +84,17 @@
       <h2>News</h2>
       <div class="news">
       <ul>
+        <li>2012-10-25: the source for <a href="recoll-1.18.002.tar.gz">
+            recoll 1.18.002</a> is available, and this is a call to
+            volunteers to test it. There are binary
+            packages for Ubuntu and Mint Linux users, and I can build
+            others. See this 
+     <a href="http://www.freelists.org/post/recoll-user/recoll-1180-prerelease">
+            message</a> for more information.</li>
+
         <li>2012-10-25: a problem with a simple workaround has caused
           several reported <span class="important">recollindex
-          crashes</span> recently. If you store and index
+          crashes</span> recently (for 1.17). If you store and index
           Mozilla/Thunderbird email out of the standard location
           (~/.thunderbird), you should add the following at the end of
           your configuration file (e.g.:
@@ -100,13 +108,6 @@
           crashes, which only occur for very big folders, this also
           causes incorrect mail indexing.
         </li>
-        <li>2012-10-19: the source for <a href="recoll-1.18.001.tar.gz">
-            recoll 1.18.001</a> is available, and this is a call to
-            volunteers to test it. There are binary
-            packages for Ubuntu and Mint Linux users, and I can build
-            others. See this 
-     <a href="http://www.freelists.org/post/recoll-user/recoll-1180-prerelease">
-            message</a> for more information.</li>
 
         <li>2012-10-16: <a href="filters/filters.html">new filter for
             EPUB documents</a>.</li> 
