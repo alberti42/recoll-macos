@@ -80,53 +80,54 @@ class RclConfig {
     /** (re)Read recoll.conf */
     bool updateMainConfig();
 
-    bool ok() {return m_ok;}
-    const string &getReason() {return m_reason;}
+    bool ok() const {return m_ok;}
+    const string &getReason() const {return m_reason;}
 
     /** Return the directory where this configuration is stored. 
      *  This was possibly silently created by the rclconfig
      *  constructor it it is the default one (~/.recoll) and it did 
      *  not exist yet. */
-    string getConfDir() {return m_confdir;}
+    string getConfDir() const {return m_confdir;}
 
     /** Check if the config files were modified since we read them */
-    bool sourceChanged();
+    bool sourceChanged() const;
 
     /** Returns true if this is ~/.recoll */
-    bool isDefaultConfig(); 
+    bool isDefaultConfig() const;
     /** Get the local value for /usr/local/share/recoll/ */
-    const string& getDatadir() {return m_datadir;}
+    const string& getDatadir() const {return m_datadir;}
 
     /** Set current directory reference, and fetch automatic parameters. */
     void setKeyDir(const string &dir);
     string getKeyDir() const {return m_keydir;}
 
     /** Get generic configuration parameter according to current keydir */
-    bool getConfParam(const string &name, string &value) 
+    bool getConfParam(const string &name, string &value) const
     {
 	if (m_conf == 0)
 	    return false;
 	return m_conf->get(name, value, m_keydir);
     }
     /** Variant with autoconversion to int */
-    bool getConfParam(const string &name, int *value);
+    bool getConfParam(const string &name, int *value) const;
     /** Variant with autoconversion to bool */
-    bool getConfParam(const string &name, bool *value);
+    bool getConfParam(const string &name, bool *value) const;
     /** Variant with conversion to string list/vector
      *  (stringToStrings). Can fail if the string is malformed. */
-    bool getConfParam(const string &name, vector<string> *value);
-    bool getConfParam(const string &name, list<string> *value);
+    bool getConfParam(const string &name, vector<string> *value) const;
+    bool getConfParam(const string &name, list<string> *value) const;
 
     /** 
      * Get list of config names under current sk, with possible 
      * wildcard filtering 
      */
-    vector<string> getConfNames(const char *pattern = 0) {
+    vector<string> getConfNames(const char *pattern = 0) const
+    {
 	return m_conf->getNames(m_keydir, pattern);
     }
 
     /** Check if name exists anywhere in config */
-    bool hasNameAnywhere(const string& nm) 
+    bool hasNameAnywhere(const string& nm) const
     {
         return m_conf? m_conf->hasNameAnywhere(nm) : false;
     }
@@ -134,33 +135,33 @@ class RclConfig {
 
     /** Get default charset for current keydir (was set during setKeydir) 
      * filenames are handled differently */
-    const string &getDefCharset(bool filename = false);
+    const string &getDefCharset(bool filename = false) const;
 
     /** Get list of top directories. This is needed from a number of places
      * and needs some cleaning-up code. An empty list is always an error, no
      * need for other status */
-    list<string> getTopdirs();
+    list<string> getTopdirs() const;
 
     /** Get database directory */
-    string getDbDir();
+    string getDbDir() const;
     /** Get stoplist file name */
-    string getStopfile();
+    string getStopfile() const;
     /** Get indexing pid file name */
-    string getPidfile();
+    string getPidfile() const;
     /** Get indexing status file name */
-    string getIdxStatusFile();
+    string getIdxStatusFile() const;
 
     /** Get list of skipped file names for current keydir */
     vector<string>& getSkippedNames();
 
     /** Get list of skipped paths patterns. Doesn't depend on the keydir */
-    vector<string> getSkippedPaths();
+    vector<string> getSkippedPaths() const;
     /** Get list of skipped paths patterns, daemon version (may add some)
 	Doesn't depend on the keydir */
-    vector<string> getDaemSkippedPaths();
+    vector<string> getDaemSkippedPaths() const;
 
     /** conf: Add local fields to target dic */
-    bool addLocalFields(map<string, string> *tgt);
+    bool addLocalFields(map<string, string> *tgt) const;
 
     /** 
      * mimemap: Check if file name should be ignored because of suffix
@@ -177,14 +178,14 @@ class RclConfig {
      * The returned command has substitutable places for input file name 
      * and temp dir name, and will return output name
      */
-    bool getUncompressor(const string &mtpe, vector<string>& cmd);
+    bool getUncompressor(const string &mtpe, vector<string>& cmd) const;
 
     /** mimemap: compute mimetype */
-    string getMimeTypeFromSuffix(const string &suffix);
+    string getMimeTypeFromSuffix(const string &suffix) const;
     /** mimemap: get a list of all indexable mime types defined */
-    vector<string> getAllMimeTypes();
+    vector<string> getAllMimeTypes() const;
     /** mimemap: Get appropriate suffix for mime type. This is inefficient */
-    string getSuffixFromMimeType(const string &mt);
+    string getSuffixFromMimeType(const string &mt) const;
 
     /** mimeconf: get input filter for mimetype */
     string getMimeHandlerDef(const string &mimetype, bool filtertypes=false);
@@ -193,57 +194,58 @@ class RclConfig {
      * Separate the value and store the attributes in a ConfSimple 
      * @param whole the raw value. No way to escape a semi-colon in there.
      */
-    bool valueSplitAttributes(const string& whole, string& value, 
-                              ConfSimple& attrs);
+    static bool valueSplitAttributes(const string& whole, string& value, 
+				     ConfSimple& attrs) ;
 
     /** Return icon path for mime type and tag */
-    string getMimeIconPath(const string &mt, const string& apptag);
+    string getMimeIconPath(const string &mt, const string& apptag) const;
 
     /** mimeconf: get list of file categories */
-    bool getMimeCategories(vector<string>&);
+    bool getMimeCategories(vector<string>&) const;
     /** mimeconf: is parameter one of the categories ? */
-    bool isMimeCategory(string&);
+    bool isMimeCategory(string&) const;
     /** mimeconf: get list of mime types for category */
-    bool getMimeCatTypes(const string& cat, vector<string>&);
+    bool getMimeCatTypes(const string& cat, vector<string>&) const;
 
     /** mimeconf: get list of gui filters (doc cats by default */
-    bool getGuiFilterNames(vector<string>&);
+    bool getGuiFilterNames(vector<string>&) const;
     /** mimeconf: get query lang frag for named filter */
-    bool getGuiFilter(const string& filtername, string& frag);
+    bool getGuiFilter(const string& filtername, string& frag) const;
 
     /** fields: get field prefix from field name */
-    bool getFieldTraits(const string& fldname, const FieldTraits **);
-    const set<string>& getStoredFields() {return m_storedFields;}
-    set<string> getIndexedFields();
+    bool getFieldTraits(const string& fldname, const FieldTraits **) const;
+    const set<string>& getStoredFields() const {return m_storedFields;}
+    set<string> getIndexedFields() const;
     /** Get canonic name for possible alias */
-    string fieldCanon(const string& fld);
+    string fieldCanon(const string& fld) const;
     /** Get xattr name to field names translations */
-    const map<string, string>& getXattrToField() {return m_xattrtofld;}
+    const map<string, string>& getXattrToField() const {return m_xattrtofld;}
     /** Get value of a parameter inside the "fields" file. Only some filters 
         use this (ie: mh_mail). The information specific to a given filter
         is typically stored in a separate section(ie: [mail]) */
-    vector<string> getFieldSectNames(const string &sk, const char* = 0);
-    bool getFieldConfParam(const string &name, const string &sk, string &value);
+    vector<string> getFieldSectNames(const string &sk, const char* = 0) const;
+    bool getFieldConfParam(const string &name, const string &sk, string &value)
+    const;
 
     /** mimeview: get/set external viewer exec string(s) for mimetype(s) */
     string getMimeViewerDef(const string &mimetype, const string& apptag, 
-			    bool useall);
-    string getMimeViewerAllEx();
+			    bool useall) const;
+    string getMimeViewerAllEx() const;
     bool setMimeViewerAllEx(const string& allex);
-    bool getMimeViewerDefs(vector<pair<string, string> >&);
+    bool getMimeViewerDefs(vector<pair<string, string> >&) const;
     bool setMimeViewerDef(const string& mimetype, const string& cmd);
     /** Check if mime type is designated as needing no uncompress before view
      * (if a file of this type is found compressed). Default is true,
      *  exceptions are found in the nouncompforviewmts mimeview list */
-    bool mimeViewerNeedsUncomp(const string &mimetype);
+    bool mimeViewerNeedsUncomp(const string &mimetype) const;
 
     /** Store/retrieve missing helpers description string */
-    string getMissingHelperDesc();
+    string getMissingHelperDesc() const;
     void storeMissingHelperDesc(const string &s);
 
     /** Find exec file for external filter. cmd is the command name from the
      * command string returned by getMimeHandlerDef */
-    string findFilter(const string& cmd);
+    string findFilter(const string& cmd) const;
 
     ~RclConfig() {
 	freeAll();
@@ -290,7 +292,8 @@ class RclConfig {
     vector<string> m_skpnlist;
 
     // Parameters auto-fetched on setkeydir
-    string defcharset;
+    string m_defcharset;
+    static string o_localecharset;
     // Limiting set of mime types to be processed. Normally empty.
     ParamStale    m_rmtstate;
     set<string>   m_restrictMTypes; 

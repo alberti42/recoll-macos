@@ -98,13 +98,15 @@ void RclConfig::zeroMe() {
     m_rmtstate.init(this, 0, "indexedmimetypes");
 }
 
-bool RclConfig::isDefaultConfig()
+bool RclConfig::isDefaultConfig() const
 {
     string defaultconf = path_cat(path_canon(path_home()), ".recoll/");
     string specifiedconf = path_canon(m_confdir);
     path_catslash(specifiedconf);
     return !defaultconf.compare(specifiedconf);
 }
+
+string RclConfig::o_localecharset; 
 
 RclConfig::RclConfig(const string *argcnf)
 {
@@ -155,6 +157,34 @@ RclConfig::RclConfig(const string *argcnf)
     if (access(m_confdir.c_str(), 0) < 0) {
 	if (!initUserConfig()) 
 	    return;
+    }
+
+    // This can't change once computed inside a process. It would be
+    // nicer to move this to a static class initializer to avoid
+    // possible threading issues but this doesn't work (tried) as
+    // things would not be ready. In practise we make sure that this
+    // is called from the main thread at once, by constructing a config
+    // from recollinit
+    if (o_localecharset.empty()) {
+	const char *cp;
+	cp = nl_langinfo(CODESET);
+	// We don't keep US-ASCII. It's better to use a superset
+	// Ie: me have a C locale and some french file names, and I
+	// can't imagine a version of iconv that couldn't translate
+	// from iso8859?
+	// The 646 thing is for solaris. 
+	if (cp && *cp && strcmp(cp, "US-ASCII") 
+#ifdef sun
+	    && strcmp(cp, "646")
+#endif
+	    ) {
+	    o_localecharset = string(cp);
+	} else {
+	    // Use cp1252 instead of iso-8859-1, it's a superset.
+	    o_localecharset = string(cstr_cp1252);
+	}
+	LOGDEB1(("RclConfig::getDefCharset: localecharset [%s]\n",
+		 o_localecharset.c_str()));
     }
 
     m_cdirs.push_back(m_confdir);
@@ -272,11 +302,11 @@ void RclConfig::setKeyDir(const string &dir)
     if (m_conf == 0)
 	return;
 
-    if (!m_conf->get("defaultcharset", defcharset, m_keydir))
-	defcharset.erase();
+    if (!m_conf->get("defaultcharset", m_defcharset, m_keydir))
+	m_defcharset.erase();
 }
 
-bool RclConfig::getConfParam(const string &name, int *ivp)
+bool RclConfig::getConfParam(const string &name, int *ivp) const
 {
     string value;
     if (!getConfParam(name, value))
@@ -290,7 +320,7 @@ bool RclConfig::getConfParam(const string &name, int *ivp)
     return true;
 }
 
-bool RclConfig::getConfParam(const string &name, bool *bvp)
+bool RclConfig::getConfParam(const string &name, bool *bvp) const
 {
     if (!bvp) 
 	return false;
@@ -303,7 +333,7 @@ bool RclConfig::getConfParam(const string &name, bool *bvp)
     return true;
 }
 
-bool RclConfig::getConfParam(const string &name, vector<string> *svvp)
+bool RclConfig::getConfParam(const string &name, vector<string> *svvp) const
 {
     if (!svvp) 
 	return false;
@@ -313,7 +343,7 @@ bool RclConfig::getConfParam(const string &name, vector<string> *svvp)
 	return false;
     return stringToStrings(s, *svvp);
 }
-bool RclConfig::getConfParam(const string &name, list<string> *svvp)
+bool RclConfig::getConfParam(const string &name, list<string> *svvp) const
 {
     if (!svvp) 
 	return false;
@@ -324,7 +354,7 @@ bool RclConfig::getConfParam(const string &name, list<string> *svvp)
     return stringToStrings(s, *svvp);
 }
 
-list<string> RclConfig::getTopdirs()
+list<string> RclConfig::getTopdirs() const
 {
     list<string> tdl;
     if (!getConfParam("topdirs", &tdl)) {
@@ -348,49 +378,16 @@ list<string> RclConfig::getTopdirs()
 //
 // For filenames, same thing except that we do not use the config file value
 // (only the locale).
-const string& RclConfig::getDefCharset(bool filename) 
+const string& RclConfig::getDefCharset(bool filename) const
 {
-    // This can't change once computed inside a process. It would be
-    // nicer to move this to a static class initializer to avoid
-    // possible threading issues but this doesn't work (tried) as
-    // things would not be ready. In practise we make sure that this
-    // is called from the main thread at once, by calling
-    // getDefCharset from recollinit
-    static string localecharset; 
-    if (localecharset.empty()) {
-	const char *cp;
-	cp = nl_langinfo(CODESET);
-	// We don't keep US-ASCII. It's better to use a superset
-	// Ie: me have a C locale and some french file names, and I
-	// can't imagine a version of iconv that couldn't translate
-	// from iso8859?
-	// The 646 thing is for solaris. 
-	if (cp && *cp && strcmp(cp, "US-ASCII") 
-#ifdef sun
-	    && strcmp(cp, "646")
-#endif
-	    ) {
-	    localecharset = string(cp);
-	} else {
-	    // Use cp1252 instead of iso-8859-1, it's a superset.
-	    localecharset = string(cstr_cp1252);
-	}
-	LOGDEB1(("RclConfig::getDefCharset: localecharset [%s]\n",
-		localecharset.c_str()));
-    }
-
-    if (defcharset.empty()) {
-	defcharset = localecharset;
-    }
-
     if (filename) {
-	return localecharset;
+	return o_localecharset;
     } else {
-	return defcharset;
+	return m_defcharset.empty() ? o_localecharset : m_defcharset;
     }
 }
 
-bool RclConfig::addLocalFields(map<string, string> *tgt)
+bool RclConfig::addLocalFields(map<string, string> *tgt) const
 {
     LOGDEB0(("RclConfig::addLocalFields: keydir [%s]\n", m_keydir.c_str()));
     string sfields;
@@ -421,7 +418,7 @@ bool RclConfig::addLocalFields(map<string, string> *tgt)
 //
 // This unfortunately means that searches by file names and mime type
 // filtering don't work well together.
-vector<string> RclConfig::getAllMimeTypes()
+vector<string> RclConfig::getAllMimeTypes() const
 {
     vector<string> lst;
     if (mimeconf == 0)
@@ -506,14 +503,14 @@ bool RclConfig::inStopSuffixes(const string& fni)
     }
 }
 
-string RclConfig::getMimeTypeFromSuffix(const string& suff)
+string RclConfig::getMimeTypeFromSuffix(const string& suff) const
 {
     string mtype;
     mimemap->get(suff, mtype, m_keydir);
     return mtype;
 }
 
-string RclConfig::getSuffixFromMimeType(const string &mt)
+string RclConfig::getSuffixFromMimeType(const string &mt) const
 {
     string suffix;
     vector<string>sfs = mimemap->getNames(cstr_null);
@@ -528,7 +525,7 @@ string RclConfig::getSuffixFromMimeType(const string &mt)
 }
 
 /** Get list of file categories from mimeconf */
-bool RclConfig::getMimeCategories(vector<string>& cats) 
+bool RclConfig::getMimeCategories(vector<string>& cats) const
 {
     if (!mimeconf)
 	return false;
@@ -536,7 +533,7 @@ bool RclConfig::getMimeCategories(vector<string>& cats)
     return true;
 }
 
-bool RclConfig::isMimeCategory(string& cat) 
+bool RclConfig::isMimeCategory(string& cat) const
 {
     vector<string>cats;
     getMimeCategories(cats);
@@ -548,7 +545,7 @@ bool RclConfig::isMimeCategory(string& cat)
 }
 
 /** Get list of mime types for category from mimeconf */
-bool RclConfig::getMimeCatTypes(const string& cat, vector<string>& tps)
+bool RclConfig::getMimeCatTypes(const string& cat, vector<string>& tps) const
 {
     tps.clear();
     if (!mimeconf)
@@ -581,7 +578,7 @@ string RclConfig::getMimeHandlerDef(const string &mtype, bool filtertypes)
     return hs;
 }
 
-bool RclConfig::getGuiFilterNames(vector<string>& cats) 
+bool RclConfig::getGuiFilterNames(vector<string>& cats) const
 {
     if (!mimeconf)
 	return false;
@@ -589,7 +586,7 @@ bool RclConfig::getGuiFilterNames(vector<string>& cats)
     return true;
 }
 
-bool RclConfig::getGuiFilter(const string& catfiltername, string& frag)
+bool RclConfig::getGuiFilter(const string& catfiltername, string& frag) const
 {
     frag.clear();
     if (!mimeconf)
@@ -623,7 +620,7 @@ bool RclConfig::valueSplitAttributes(const string& whole, string& value,
 }
 
 
-string RclConfig::getMissingHelperDesc()
+string RclConfig::getMissingHelperDesc() const
 {
     string fmiss = path_cat(getConfDir(), "missing");
     string out;
@@ -735,6 +732,7 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 
 // Return specifics for field name:
 bool RclConfig::getFieldTraits(const string& _fld, const FieldTraits **ftpp)
+    const
 {
     string fld = fieldCanon(_fld);
     map<string, FieldTraits>::const_iterator pit = m_fldtotraits.find(fld);
@@ -751,7 +749,7 @@ bool RclConfig::getFieldTraits(const string& _fld, const FieldTraits **ftpp)
     }
 }
 
-set<string> RclConfig::getIndexedFields()
+set<string> RclConfig::getIndexedFields() const
 {
     set<string> flds;
     if (m_fields == 0)
@@ -762,7 +760,7 @@ set<string> RclConfig::getIndexedFields()
     return flds;
 }
 
-string RclConfig::fieldCanon(const string& f)
+string RclConfig::fieldCanon(const string& f) const
 {
     string fld = stringtolower(f);
     map<string, string>::const_iterator it = m_aliastocanon.find(fld);
@@ -776,6 +774,7 @@ string RclConfig::fieldCanon(const string& f)
 }
 
 vector<string> RclConfig::getFieldSectNames(const string &sk, const char* patrn)
+    const
 {
     if (m_fields == 0)
         return vector<string>();
@@ -783,14 +782,14 @@ vector<string> RclConfig::getFieldSectNames(const string &sk, const char* patrn)
 }
 
 bool RclConfig::getFieldConfParam(const string &name, const string &sk, 
-                                  string &value)
+                                  string &value) const
 {
     if (m_fields == 0)
         return false;
     return m_fields->get(name, value, sk);
 }
 
-string RclConfig::getMimeViewerAllEx()
+string RclConfig::getMimeViewerAllEx() const
 {
     string hs;
     if (mimeview == 0)
@@ -807,12 +806,12 @@ bool RclConfig::setMimeViewerAllEx(const string& allex)
 	m_reason = string("RclConfig:: cant set value. Readonly?");
 	return false;
     }
-	
+
     return true;
 }
 
 string RclConfig::getMimeViewerDef(const string &mtype, const string& apptag,
-				   bool useall)
+				   bool useall) const
 {
     LOGDEB2(("RclConfig::getMimeViewerDef: mtype [%s] apptag [%s]\n",
 	     mtype.c_str(), apptag.c_str()));
@@ -851,7 +850,7 @@ string RclConfig::getMimeViewerDef(const string &mtype, const string& apptag,
     return hs;
 }
 
-bool RclConfig::getMimeViewerDefs(vector<pair<string, string> >& defs)
+bool RclConfig::getMimeViewerDefs(vector<pair<string, string> >& defs) const
 {
     if (mimeview == 0)
 	return false;
@@ -874,7 +873,7 @@ bool RclConfig::setMimeViewerDef(const string& mt, const string& def)
     return true;
 }
 
-bool RclConfig::mimeViewerNeedsUncomp(const string &mimetype)
+bool RclConfig::mimeViewerNeedsUncomp(const string &mimetype) const
 {
     string s;
     vector<string> v;
@@ -886,6 +885,7 @@ bool RclConfig::mimeViewerNeedsUncomp(const string &mimetype)
 }
 
 string RclConfig::getMimeIconPath(const string &mtype, const string &apptag)
+    const
 {
     string iconname;
     if (!apptag.empty())
@@ -911,7 +911,7 @@ string RclConfig::getMimeIconPath(const string &mtype, const string &apptag)
     return path_cat(iconpath, iconname) + ".png";
 }
 
-string RclConfig::getDbDir()
+string RclConfig::getDbDir() const
 {
     string dbdir;
     if (!getConfParam("dbdir", dbdir)) {
@@ -928,7 +928,7 @@ string RclConfig::getDbDir()
     return path_canon(dbdir);
 }
 
-bool RclConfig::sourceChanged()
+bool RclConfig::sourceChanged() const
 {
     if (m_conf && m_conf->sourceChanged())
 	return true;
@@ -943,18 +943,18 @@ bool RclConfig::sourceChanged()
     return false;
 }
 
-string RclConfig::getStopfile()
+string RclConfig::getStopfile() const
 {
     return path_cat(getConfDir(), "stoplist.txt");
 }
-string RclConfig::getPidfile()
+string RclConfig::getPidfile() const
 {
     return path_cat(getConfDir(), "index.pid");
 }
 
 // The index status file is fast changing, so it's possible to put it outside
 // of the config directory (for ssds, not sure this is really useful).
-string RclConfig::getIdxStatusFile()
+string RclConfig::getIdxStatusFile() const
 {
     string path;
     if (!getConfParam("idxstatusfile", path)) {
@@ -977,7 +977,7 @@ vector<string>& RclConfig::getSkippedNames()
     return m_skpnlist;
 }
 
-vector<string> RclConfig::getSkippedPaths()
+vector<string> RclConfig::getSkippedPaths() const
 {
     vector<string> skpl;
     getConfParam("skippedPaths", &skpl);
@@ -997,7 +997,7 @@ vector<string> RclConfig::getSkippedPaths()
     return skpl;
 }
 
-vector<string> RclConfig::getDaemSkippedPaths()
+vector<string> RclConfig::getDaemSkippedPaths() const
 {
     vector<string> dskpl;
     getConfParam("daemSkippedPaths", &dskpl);
@@ -1024,7 +1024,7 @@ vector<string> RclConfig::getDaemSkippedPaths()
 
 // Look up an executable filter.  We look in $RECOLL_FILTERSDIR,
 // filtersdir in config file, then let the system use the PATH
-string RclConfig::findFilter(const string &icmd)
+string RclConfig::findFilter(const string &icmd) const
 {
     // If the path is absolute, this is it
     if (icmd[0] == '/')
@@ -1066,7 +1066,7 @@ string RclConfig::findFilter(const string &icmd)
 /** 
  * Return decompression command line for given mime type
  */
-bool RclConfig::getUncompressor(const string &mtype, vector<string>& cmd)
+bool RclConfig::getUncompressor(const string &mtype, vector<string>& cmd) const
 {
     string hs;
 
@@ -1177,7 +1177,7 @@ void RclConfig::initFrom(const RclConfig& r)
     if (r.m_stopsuffixes)
 	m_stopsuffixes = new SuffixStore(*((SuffixStore*)r.m_stopsuffixes));
     m_maxsufflen = r.m_maxsufflen;
-    defcharset = r.defcharset;
+    m_defcharset = r.m_defcharset;
 
     m_stpsuffstate.init(this, mimemap, r.m_stpsuffstate.paramname);
     m_skpnstate.init(this, m_conf, r.m_skpnstate.paramname);
