@@ -201,9 +201,17 @@ ConfSimple::StatusCode ConfSimple::getStatus() const
     }
 }
 
-bool ConfSimple::sourceChanged()
+bool ConfSimple::sourceChanged() const
 {
-    return i_changed(false);
+    if (!m_filename.empty()) {
+	struct stat st;
+	if (stat(m_filename.c_str(), &st) == 0) {
+	    if (m_fmtime != st.st_mtime) {
+		return true;
+	    }
+	}
+    }
+    return false;
 }
 
 bool ConfSimple::i_changed(bool upd)
@@ -408,12 +416,13 @@ int ConfSimple::eraseKey(const string &sk)
 // Walk the tree, calling user function at each node
 ConfSimple::WalkerCode 
 ConfSimple::sortwalk(WalkerCode (*walker)(void *,const string&,const string&),
-		     void *clidata)
+		     void *clidata) const
 {
     if (!ok())
 	return WALK_STOP;
     // For all submaps:
-    for (map<string, map<string, string> >::iterator sit = m_submaps.begin();
+    for (map<string, map<string, string> >::const_iterator sit = 
+	     m_submaps.begin();
 	 sit != m_submaps.end(); sit++) {
 
 	// Possibly emit submap name:
@@ -422,8 +431,8 @@ ConfSimple::sortwalk(WalkerCode (*walker)(void *,const string&,const string&),
 	    return WALK_STOP;
 
 	// Walk submap
-	map<string, string> &sm = sit->second;
-	for (map<string, string>::iterator it = sm.begin();it != sm.end();
+	const map<string, string> &sm = sit->second;
+	for (map<string, string>::const_iterator it = sm.begin();it != sm.end();
 	     it++) {
 	    if (walker(clidata, it->first, it->second) == WALK_STOP)
 		return WALK_STOP;
@@ -505,19 +514,19 @@ bool ConfSimple::write(ostream& out) const
     return true;
 }
 
-void ConfSimple::showall()
+void ConfSimple::showall() const
 {
     if (!ok())
 	return;
     write(std::cout);
 }
 
-vector<string> ConfSimple::getNames(const string &sk, const char *pattern)
+vector<string> ConfSimple::getNames(const string &sk, const char *pattern) const
 {
     vector<string> mylist;
     if (!ok())
 	return mylist;
-    map<string, map<string, string> >::iterator ss;
+    map<string, map<string, string> >::const_iterator ss;
     if ((ss = m_submaps.find(sk)) == m_submaps.end()) {
 	return mylist;
     }
@@ -531,20 +540,20 @@ vector<string> ConfSimple::getNames(const string &sk, const char *pattern)
     return mylist;
 }
 
-vector<string> ConfSimple::getSubKeys()
+vector<string> ConfSimple::getSubKeys() const
 {
     vector<string> mylist;
     if (!ok())
 	return mylist;
     mylist.reserve(m_submaps.size());
-    map<string, map<string, string> >::iterator ss;
+    map<string, map<string, string> >::const_iterator ss;
     for (ss = m_submaps.begin(); ss != m_submaps.end(); ss++) {
 	mylist.push_back(ss->first);
     }
     return mylist;
 }
 
-bool ConfSimple::hasNameAnywhere(const string& nm)
+bool ConfSimple::hasNameAnywhere(const string& nm) const
 {
     vector<string>keys = getSubKeys();
     for (vector<string>::const_iterator it = keys.begin(); 

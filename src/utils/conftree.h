@@ -97,18 +97,18 @@ public:
     virtual ~ConfNull() {};
     virtual int get(const string &name, string &value, 
 		    const string &sk = string()) const = 0;
-    virtual bool hasNameAnywhere(const string& nm) = 0;
+    virtual bool hasNameAnywhere(const string& nm) const = 0;
     virtual int set(const string &nm, const string &val, 
 		    const string &sk = string()) = 0;
     virtual bool ok() const = 0;
-    virtual vector<string> getNames(const string &sk, const char* = 0) = 0;
+    virtual vector<string> getNames(const string &sk, const char* = 0)const = 0;
     virtual int erase(const string &, const string &) = 0;
     virtual int eraseKey(const string &) = 0;
-    virtual void showall()  {};
-    virtual vector<string> getSubKeys() = 0;
-    virtual vector<string> getSubKeys(bool) = 0;
+    virtual void showall() const {};
+    virtual vector<string> getSubKeys() const = 0;
+    virtual vector<string> getSubKeys(bool) const = 0;
     virtual bool holdWrites(bool) = 0;
-    virtual bool sourceChanged() = 0;
+    virtual bool sourceChanged() const = 0;
 };
 
 /** 
@@ -143,7 +143,7 @@ public:
     virtual ~ConfSimple() {};
 
     /** Origin file changed. Only makes sense if we read the data from a file */
-    virtual bool sourceChanged();
+    virtual bool sourceChanged() const;
 
     /** 
      * Decide if we actually rewrite the backing-store after modifying the
@@ -197,30 +197,35 @@ public:
     virtual WalkerCode sortwalk(WalkerCode 
 				(*wlkr)(void *cldata, const string &nm, 
 					const string &val),
-				void *clidata);
+				void *clidata) const;
 
     /** Print all values to stdout */
-    virtual void showall();
+    virtual void showall() const;
 
     /** Return all names in given submap. */
-    virtual vector<string> getNames(const string &sk, const char *pattern = 0);
+    virtual vector<string> getNames(const string &sk, const char *pattern = 0) 
+	const;
 
     /** Check if name is present in any submap. This is relatively expensive
      * but useful for saving further processing sometimes */
-    virtual bool hasNameAnywhere(const string& nm);
+    virtual bool hasNameAnywhere(const string& nm) const;
 
     /**
      * Return all subkeys 
      */
-    virtual vector<string> getSubKeys(bool) {return getSubKeys();}
-    virtual vector<string> getSubKeys();
+    virtual vector<string> getSubKeys(bool) const 
+    {
+	return getSubKeys();
+    }
+    virtual vector<string> getSubKeys() const;
     /** Test for subkey existence */
-    virtual bool hasSubKey(const string& sk)
+    virtual bool hasSubKey(const string& sk) const
     {
 	return m_submaps.find(sk) != m_submaps.end();
     }
 
-    virtual string getFilename() {return m_filename;}
+    virtual string getFilename() const 
+    {return m_filename;}
 
     /**
      * Copy constructor. Expensive but less so than a full rebuild
@@ -306,7 +311,8 @@ public:
 	: ConfSimple(readonly, true) {}
     virtual ~ConfTree() {};
     ConfTree(const ConfTree& r)	: ConfSimple(r) {};
-    ConfTree& operator=(const ConfTree& r) {
+    ConfTree& operator=(const ConfTree& r) 
+    {
 	ConfSimple::operator=(r);
 	return *this;
     }
@@ -373,7 +379,7 @@ public:
 	return *this;
     }
 
-    virtual bool sourceChanged()
+    virtual bool sourceChanged() const
     {
 	typename vector<T*>::const_iterator it;
 	for (it = m_confs.begin();it != m_confs.end();it++) {
@@ -393,9 +399,9 @@ public:
 	return false;
     }
 
-    virtual bool hasNameAnywhere(const string& nm)
+    virtual bool hasNameAnywhere(const string& nm) const
     {
-	typename vector<T*>::iterator it;
+	typename vector<T*>::const_iterator it;
 	for (it = m_confs.begin();it != m_confs.end();it++) {
 	    if ((*it)->hasNameAnywhere(nm))
 		return true;
@@ -448,21 +454,23 @@ public:
     }
 
     virtual vector<string> getNames(const string &sk, const char *pattern = 0)
+	const
     {
 	return getNames1(sk, pattern, false);
     }
-    virtual vector<string> getNamesShallow(const string &sk, const char *patt = 0)
+    virtual vector<string> getNamesShallow(const string &sk, 
+					   const char *patt = 0) const
     {
 	return getNames1(sk, patt, true);
     }
 
     virtual vector<string> getNames1(const string &sk, const char *pattern,
-				   bool shallow)
+				   bool shallow) const
     {
 	vector<string> nms;
-	typename vector<T*>::iterator it;
+	typename vector<T*>::const_iterator it;
 	bool skfound = false;
-	for (it = m_confs.begin();it != m_confs.end(); it++) {
+	for (it = m_confs.begin(); it != m_confs.end(); it++) {
 	    if ((*it)->hasSubKey(sk)) {
 		skfound = true;
 		vector<string> lst = (*it)->getNames(sk, pattern);
@@ -477,12 +485,15 @@ public:
 	return nms;
     }
 
-    virtual vector<string> getSubKeys(){return getSubKeys(false);}
-    virtual vector<string> getSubKeys(bool shallow)
+    virtual vector<string> getSubKeys() const
+    {
+	return getSubKeys(false);
+    }
+    virtual vector<string> getSubKeys(bool shallow) const
     {
 	vector<string> sks;
-	typename vector<T*>::iterator it;
-	for (it = m_confs.begin();it != m_confs.end(); it++) {
+	typename vector<T*>::const_iterator it;
+	for (it = m_confs.begin(); it != m_confs.end(); it++) {
 	    vector<string> lst;
 	    lst = (*it)->getSubKeys();
 	    sks.insert(sks.end(), lst.begin(), lst.end());
