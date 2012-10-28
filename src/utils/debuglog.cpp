@@ -21,6 +21,7 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fcntl.h>
 
 #ifdef INCLUDE_NEW_H
 #include <new.h>
@@ -84,8 +85,16 @@ class DLFWImpl {
 	    fp = stderr;
 	} else {
 	    fp = fopen(filename, (truncate) ? "w" : "a");
-	    if (fp)
+	    if (fp) {
 		setvbuf(fp, 0, _IOLBF, 0);
+#ifdef O_APPEND
+		{
+		    int flgs = 0;
+		    fcntl(fileno(fp), F_GETFL, &flgs);
+		    fcntl(fileno(fp), F_SETFL, flgs|O_APPEND);
+		}
+#endif
+	    }
 	}
 	return;
     }
