@@ -1127,11 +1127,11 @@ void RclMain::showActiveTypes()
 	    mtypesfromdbconf.insert(*it);
     }
 
-    // Substract the types for missing helpers (the docs are indexed by name only):
+    // Substract the types for missing helpers (the docs are indexed
+    // by name only):
     string miss = theconfig->getMissingHelperDesc();
     if (!miss.empty()) {
-	FIMissingStore st;
-	FileInterner::getMissingFromDescription(&st, miss);
+	FIMissingStore st(miss);
 	map<string, set<string> >::const_iterator it;
 	for (it = st.m_typesForMissing.begin(); 
 	     it != st.m_typesForMissing.end(); it++) {

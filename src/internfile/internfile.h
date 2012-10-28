@@ -34,7 +34,7 @@ using std::set;
 
 class RclConfig;
 namespace Rcl {
-class Doc;
+    class Doc;
 }
 
 struct stat;
@@ -47,8 +47,19 @@ struct stat;
  */
 class FIMissingStore {
 public:
+    FIMissingStore() {}
+    FIMissingStore(const string& in);
+    virtual ~FIMissingStore() {}
+    virtual void addMissing(const string& prog, const string& mt)
+    {
+	m_typesForMissing[prog].insert(mt);
+    }
+    // Get simple progs list string
+    virtual void getMissingExternal(string& out);
+    // Get progs + assoc mtypes description string
+    virtual void getMissingDescription(string& out);
+
     // Missing external programs
-    set<string>           m_missingExternal;
     map<string, set<string> > m_typesForMissing;
 };
 

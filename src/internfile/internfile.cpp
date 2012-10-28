@@ -496,54 +496,43 @@ void FileInterner::checkExternalMissing(const string& msg, const string& mt)
 	    it++;
 	    if (*it == "HELPERNOTFOUND") {
 		it++;
-		for (; it < verr.end(); it++) {
-		    m_missingdatap->m_missingExternal.insert(*it);
-		    m_missingdatap->m_typesForMissing[*it].insert(mt);
+		for (; it != verr.end(); it++) {
+		    m_missingdatap->addMissing(*it, mt);
 		}
 	    }
 	}		    
     }
 }
 
-void FileInterner::getMissingExternal(FIMissingStore *st, string& out) 
+void FIMissingStore::getMissingExternal(string& out) 
 {
-    if (st)
-	stringsToString(st->m_missingExternal, out);
+    for (map<string, set<string> >::const_iterator it = 
+	     m_typesForMissing.begin(); it != m_typesForMissing.end(); it++) {
+	out += string(" ") + it->first;
+    }
+    trimstring(out);
 }
 
-void FileInterner::getMissingDescription(FIMissingStore *st, string& out)
+void FIMissingStore::getMissingDescription(string& out)
 {
-    if (st == 0)
-	return;
-
     out.erase();
 
-    for (set<string>::const_iterator it = 
-	     st->m_missingExternal.begin();
-	 it != st->m_missingExternal.end(); it++) {
-	out += *it;
-	map<string, set<string> >::const_iterator it2;
-	it2 = st->m_typesForMissing.find(*it);
-	if (it2 != st->m_typesForMissing.end()) {
-	    out += " (";
-	    set<string>::const_iterator it3;
-	    for (it3 = it2->second.begin(); 
-		 it3 != it2->second.end(); it3++) {
-		out += *it3;
-		out += string(" ");
-	    }
-	    trimstring(out);
-	    out += ")";
-	}	
+    for (map<string, set<string> >::const_iterator it = 
+	     m_typesForMissing.begin(); it != m_typesForMissing.end(); it++) {
+	out += it->first + " (";
+	set<string>::const_iterator it3;
+	for (it3 = it->second.begin(); 
+		 it3 != it->second.end(); it3++) {
+	    out += *it3 + " ";
+	}
+	trimstring(out);
+	out += ")";
 	out += "\n";
     }
 }
 
-void FileInterner::getMissingFromDescription(FIMissingStore *st, const string& in)
+FIMissingStore::FIMissingStore(const string& in)
 {
-    if (st == 0)
-	return;
-
     // The "missing" file is text. Each line defines a missing filter
     // and the list of mime types actually encountered that needed it
     // (see method getMissingDescription())
@@ -575,10 +564,9 @@ void FileInterner::getMissingFromDescription(FIMissingStore *st, const string& i
 	if (filter.empty())
 	    continue;
 
-	st->m_missingExternal.insert(filter);
 	for (vector<string>::const_iterator itt = mtypes.begin(); 
 	     itt != mtypes.end(); itt++) {
-	    st->m_typesForMissing[filter].insert(*itt);
+	    m_typesForMissing[filter].insert(*itt);
 	}
     }
 }

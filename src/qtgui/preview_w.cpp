@@ -766,7 +766,7 @@ class LoadThread : public QThread {
 		imgtmp = interner.get_imgtmp();
 	    } else {
 		out.mimetype = interner.getMimetype();
-		interner.getMissingExternal(&mst, missing);
+		mst.getMissingExternal(missing);
 		*statusp = -1;
 	    }
 	} catch (CancelExcept) {
