@@ -36,6 +36,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
+using namespace std;
 
 #include "execmd.h"
 #include "pathut.h"
@@ -45,20 +46,9 @@
 #include "closefrom.h"
 #include "ptmutex.h"
 
-#ifndef NO_NAMESPACES
-using namespace std;
-#endif /* NO_NAMESPACES */
-
-#ifndef MAX
-#define MAX(A,B) ((A) > (B) ? (A) : (B))
-#endif
-#ifndef MIN
-#define MIN(A,B) ((A) < (B) ? (A) : (B))
-#endif
 
 /* From FreeBSD's which command */
-static bool
-exec_is_there(const char *candidate)
+static bool exec_is_there(const char *candidate)
 {
     struct stat fin;
 
@@ -135,13 +125,18 @@ public:
 	    close(m_parent->m_pipeout[0]);
 	if (m_parent->m_pipeout[1] >= 0)
 	    close(m_parent->m_pipeout[1]);
-	int status;
-	if (m_parent->m_pid > 0) {
-            pid_t grp = getpgid(m_parent->m_pid);
+
+	// It's apparently possible for m_pid to be > 0 and getpgid to fail. In
+	// this case, we have to conclude that the child process does 
+	// not exist. Not too sure what causes this, but the previous code
+	// definitely tried to call killpg(-1,) from time to time.
+	pid_t grp;
+	if (m_parent->m_pid > 0 && (grp = getpgid(m_parent->m_pid)) > 0) {
 	    LOGDEB(("ExecCmd: killpg(%d, SIGTERM)\n", grp));
             int ret = killpg(grp, SIGTERM);
 	    if (ret == 0) {
 		for (int i = 0; i < 3; i++) {
+		    int status;
 		    (void)waitpid(m_parent->m_pid, &status, WNOHANG);
 		    if (kill(m_parent->m_pid, 0) != 0)
 			break;
