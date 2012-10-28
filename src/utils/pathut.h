@@ -101,6 +101,8 @@ public:
 private:
     string m_dirname;
     string m_reason;
+    TempDir(const TempDir &) {}
+    TempDir& operator=(const TempDir &) {return *this;};
 };
 
 /// Lock/pid file class. This is quite close to the pidfile_xxx
