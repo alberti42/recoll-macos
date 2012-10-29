@@ -716,17 +716,24 @@ recoll
 	panel, or by editing the configuration file (set
 	<varname>processbeaglequeue</varname> to 1).</para>
 
-      <para>There are more recent instructions about how to find and
-      install the <application>Firefox</application> extension on the 
+      <important><para>For the extension to work, you will need to manually
+      create the  queue directory:
+      <filename>~/.beagle/ToIndex/</filename>.</para></important>
+
+      <para>Current Firefox versions need a slightly adapted extension
+      module. This can be found, along with up-to-date instructions, on the
         <ulink url="https://bitbucket.org/medoc/recoll/wiki/IndexBeagleWeb">
          Recoll wiki</ulink>.</para>
 
-      <para>Unfortunately, it seems that the plugin does not work anymore
-        with recent <application>Firefox</application>
-        versions (tried with 10.0). This is not the
-        trival installation version check issue, explicit manual indexing
-        requests still work, but automatic indexing on page load does
-        not.</para>
+
+      <para>A copy of the indexed WEB pages is retained by Recoll in a
+      local cache (from which previews can be fetched). The cache size can
+      be adjusted from the <guilabel>Index configuration</guilabel> /
+      <guilabel>Beagle web history</guilabel> panel. Once the maximum size
+      is reached, old pages are purged - both from the cache and the index
+      - to make room for new ones, so you need to explicitly archive in
+        some other place the pages that you want to keep
+        indefinitely.</para> 
 
     </sect1>
 
