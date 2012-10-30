@@ -10,6 +10,7 @@
 <!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/features.html'>Recoll helper applications page</ulink>">
 <!ENTITY RCLVERSION "1.18">
 <!ENTITY XAP "<application>Xapian</application>">
+<!ENTITY WIKI "http://bitbucket.org/medoc/recoll/wiki/">
 ]>
  
 <book lang="en">
@@ -218,7 +219,7 @@
           <application>Python</application>
           programming interface</link>, a <link linkend="rcl.search.kio">
           <application>KDE</application> KIO slave module</link>, and
-        a <ulink url="http://bitbucket.org/medoc/recoll/wiki/UnityLens">Ubuntu Unity Lens</ulink> module.
+        a <ulink url="&WIKI;UnityLens">Ubuntu Unity Lens</ulink> module.
         </para>
 
     </sect1>
@@ -722,8 +723,7 @@ recoll
 
       <para>Current Firefox versions need a slightly adapted extension
       module. This can be found, along with up-to-date instructions, on the
-        <ulink url="https://bitbucket.org/medoc/recoll/wiki/IndexBeagleWeb">
-         Recoll wiki</ulink>.</para>
+        <ulink url="&WIKI;IndexBeagleWeb">Recoll wiki</ulink>.</para>
 
 
       <para>A copy of the indexed WEB pages is retained by Recoll in a
@@ -1188,6 +1188,20 @@ fvwm
        toolbar or the links at the bottom of the page to browse the
        results.</para>
 
+      <sect3 id="rcl.search.gui.reslist.suggs">
+          <title>No results: the spelling suggestions</title>
+
+          <para>When a search yields no result, and if the
+          <application>aspell</application> dictionary is configured, &RCL;
+          will try to check for misspellings among the query terms, and
+          will propose lists of replacements. Clicking on one of the
+          suggestions will replace the word and restart the search. You can
+          hold any of the modifier keys (Ctrl, Shift, etc.) while clicking
+          if you would rather stay on the suggestion screen because several
+          terms need replacement.</para>
+
+        </sect3>
+
 
       <sect3 id="rcl.search.gui.resultlist.menu">
         <title>The result list right-click menu</title>
@@ -1255,6 +1269,7 @@ fvwm
           search terms.</para>
 
       </sect3>
+
     </sect2>
 
     <sect2 id="rcl.search.gui.restable">
@@ -1288,6 +1303,31 @@ fvwm
         native application, and an equivalent right-click menu. Typing
         <keycap>Esc</keycap> (the Escape key) will unfreeze the
         display.</para>
+
+      </sect2>
+
+     <sect2 id="rcl.search.gui.thumbnails">
+          <title>Displaying thumbnails</title>
+
+        <para>The default format for the result list entries and the
+          detail area of the result table display an icon for each result
+          document. The icon is either a generic one determined from the
+          MIME type, or a thumbnail of the document appearance. Thumbnails
+          are only displayed if found in the standard
+          <application>freedesktop</application> location, where they would
+          typically have been created by a file manager.</para>
+
+        <para>Recoll has no capability to create thumbnails. A relatively
+        simple trick is to use the <guilabel>Open parent
+        document/folder</guilabel> entry in the result list popup
+        menu. This should open a file manager window on the containing
+        directory, which should in turn create the thumbnails (depending on
+        your settings). Restarting the search should then display the
+        thumbnails.</para>
+        
+        <para>There are also <ulink url="&WIKI;ResultThumbnails.wiki">some
+          pointers about  thumbnail generation</ulink> on the &RCL; wiki.
+          </para>
 
       </sect2>
 
@@ -2953,8 +2993,7 @@ dir:recoll dir:src -dir:utils -dir:common
           </listitem>
         <listitem>
             <para>If you use a recent version of Ubuntu Linux, you may
-             find the <ulink
-            url="http://bitbucket.org/medoc/recoll/wiki/UnityLens">Ubuntu Unity
+             find the <ulink url="&WIKI;UnityLens">Ubuntu Unity
            Lens</ulink> module useful.</para>
           </listitem>
           <listitem>
@@ -2975,8 +3014,7 @@ dir:recoll dir:src -dir:utils -dir:common
           Python script, based on the <application>libwnck</application> window
           manager interface library, which will allow you to do just
           this. The detailed instructions are on
-          <ulink url="http://bitbucket.org/medoc/recoll/wiki/HotRecoll">
-            this wiki page</ulink>.</para>
+          <ulink url="&WIKI;HotRecoll">this wiki page</ulink>.</para>
 
       </sect2>
 
@@ -3307,11 +3345,10 @@ application/x-chm = execm rclchm
       <filename>fields</filename> file</link>, or in comments inside the
       file.</para> 
 
-      <para>You can also have a look at the <ulink
-      url="https://bitbucket.org/medoc/recoll/wiki/HandleCustomField">example
-      on the Wiki</ulink>, detailing 
-      how one could add a <emphasis>page count</emphasis> field to pdf
-      documents for displaying inside result lists.</para>
+      <para>You can also have a look at the 
+       <ulink url="&WIKI;HandleCustomField">example on the Wiki</ulink>, 
+      detailing how one could add a <emphasis>page count</emphasis> field
+      to pdf documents for displaying inside result lists.</para>
 
     </sect1>
 
