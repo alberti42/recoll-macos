@@ -1134,15 +1134,31 @@ fvwm
        <keycap>Shift</keycap>+<keycap>ArrowUp/Down</keycap> in the
        window).</para> 
 
-      <para>Clicking the <literal>Open</literal> link will attempt to 
-       start an external viewer. The viewer for each document type can be
-       configured through the user preferences dialog, or by editing the
-       <filename>mimeview</filename> configuration file. You can also check
-       the <guilabel>Use desktop preferences</guilabel> option in the GUI
-       preferences dialog to use the desktop defaults for all
-       documents. This is probably the best option if you are using a well
-       configured <application>Gnome</application> or 
-       <application>KDE</application> desktop.</para>
+      <para>Clicking the <literal>Open</literal> link will
+       start an external viewer for the document. By default, &RCL; lets
+       the desktop choose the appropriate application for most document
+       types (there is a short list of exceptions, see further). If you
+       prefer to completely customize the choice of applications, you can
+       uncheck the <guilabel>Use desktop preferences</guilabel> option in
+       the GUI preferences dialog, and click the <guilabel>Choose editor
+       applications</guilabel> button to adjust the predefined &RCL;
+       choices. The tool accepts multiple selections of mime types (e.g. to
+       set up the editor for the dozens of office file types).</para>
+
+        <para>Even when <guilabel>Use desktop preferences</guilabel> is
+        checked, there is a small list of exceptions, for mime types where
+        the &RCL; choice should override the desktop one. These are
+        applications which are well integrated with &RCL;, especially
+        <application>evince</application> for viewing PDF and Postscript
+        files because of its support for opening the document at a specific
+        page and passing a search string as an argument. Of course, you can
+        edit the list (in the GUI preferences) if you would prefer to lose
+        the functionality and use the standard desktop tool.</para>
+
+        <para>You may also change the choice of applications by editing the
+       <link linkend="rcl.install.config.mimeview">
+       <filename>mimeview</filename></link> configuration file if you find
+       this more convenient.</para>
 
       <para>The <literal>Preview</literal> and <literal>Open</literal>
        edit links may not be present for all entries, meaning that
