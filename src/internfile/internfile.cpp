@@ -414,7 +414,6 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf,
         return;
     }
     DocFetcher::RawDoc rawdoc;
-    string data;
     if (!fetcher->fetch(cnf, idoc, rawdoc)) {
 	LOGERR(("FileInterner:: fetcher failed\n"));
 	return;
@@ -424,8 +423,10 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf,
         init(rawdoc.data, &rawdoc.st, cnf, flags, &idoc.mimetype);
 	break;
     case DocFetcher::RawDoc::RDK_DATA:
-        init(data, cnf, flags, idoc.mimetype);
+        init(rawdoc.data, cnf, flags, idoc.mimetype);
 	break;
+    default:
+	LOGERR(("FileInterner::FileInterner(idoc): bad rawdoc kind ??\n"));
     }
     return;
 }
