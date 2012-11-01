@@ -33,11 +33,14 @@
 #include <string>
 #include <iostream>
 #include <list>
+#include <tr1/unordered_map>
+using std::tr1::unordered_map;
 using namespace std;
 
 #include "smallut.h"
 #include "utf8iter.h"
 #include "hldata.h"
+#include "cstr.h"
 
 int stringicmp(const string & s1, const string& s2) 
 {
@@ -1095,6 +1098,63 @@ void HighlightData::append(const HighlightData& hl)
 	 it != hl.grpsugidx.end(); it++) {
 	grpsugidx.push_back(*it + ugsz0);
     }
+}
+
+static const char *vlang_to_code[] = {
+    "be", "cp1251",
+    "bg", "cp1251",
+    "cs", "iso-8859-2",
+    "el", "iso-8859-7",
+    "he", "iso-8859-8",
+    "hr", "iso-8859-2",
+    "hu", "iso-8859-2",
+    "ja", "eucjp",
+    "kk", "pt154",
+    "ko", "euckr",
+    "lt", "iso-8859-13",
+    "lv", "iso-8859-13",
+    "pl", "iso-8859-2",
+    "rs", "iso-8859-2",
+    "ro", "iso-8859-2",
+    "ru", "koi8-r",
+    "sk", "iso-8859-2",
+    "sl", "iso-8859-2",
+    "sr", "iso-8859-2",
+    "th", "iso-8859-11",
+    "tr", "iso-8859-9",
+    "uk", "koi8-u",
+};
+
+string langtocode(const string& lang)
+{
+    static unordered_map<string, string> lang_to_code;
+    if (lang_to_code.empty()) {
+	for (unsigned int i = 0; 
+	     i < sizeof(vlang_to_code) / sizeof(char *); i += 2) {
+	    lang_to_code[vlang_to_code[i]] = vlang_to_code[i+1];
+	}
+    }
+    unordered_map<string,string>::const_iterator it = 
+	lang_to_code.find(lang);
+
+    // Use cp1252 by default...
+    if (it == lang_to_code.end())
+	return cstr_cp1252;
+
+    return it->second;
+}
+
+string localelang()
+{
+    const char *lang = getenv("LANG");
+
+    if (lang == 0 || *lang == 0 || !strcmp(lang, "C") || !strcmp(lang, "POSIX"))
+	return "en";
+    string locale(lang);
+    string::size_type under = locale.find_first_of("_");
+    if (under == string::npos)
+	return locale;
+    return locale.substr(0, under);
 }
 
 #else // TEST_SMALLUT
