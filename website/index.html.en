@@ -84,13 +84,24 @@
       <h2>News</h2>
       <div class="news">
       <ul>
-        <li>2012-10-25: the source for <a href="recoll-1.18.002.tar.gz">
-            recoll 1.18.002</a> is available, and this is a call to
-            volunteers to test it. There are binary
-            packages for Ubuntu and Mint Linux users, and I can build
-            others. See this 
+
+        <li>2012-10-30: Recoll has a brand new Firefox extension for
+          indexing visited Web pages. This is very similar to the old
+          Beagle plugin, but slightly better integrated (no-fuss
+          installation), and with a new lease on life. See
+          <a href="https://sourceforge.net/projects/recollfirefox/">
+            Dave King's project page on sourceforge</a> and the
+          <a href="https://bitbucket.org/medoc/recoll/wiki/IndexWebHistory">
+            page about Recoll (trivial) configuration</a>.</li>
+
+        <li>2012-10-30: the source for <a href="recoll-1.18.003.tar.gz">
+            recoll 1.18.003</a> is available, and this is a call to
+            volunteers to test it. There are binary packages on the recoll
+            "experimental" PPA for Ubuntu and Mint Linux users, and I can
+            build others. See this
      <a href="http://www.freelists.org/post/recoll-user/recoll-1180-prerelease">
-            message</a> for more information.</li>
+            message</a> for more information. Mini-release 003 fixes a GUI
+            crash and a few other issues in 002.</li>
 
         <li>2012-10-25: a problem with a simple workaround has caused
           several reported <span class="important">recollindex

@@ -26,10 +26,10 @@
 
 #ifdef IDX_THREADS
 #include "workqueue.h"
-#include "debuglog.h"
 #endif // IDX_THREADS
-
+#include "debuglog.h"
 #include "xmacros.h"
+#include "ptmutex.h"
 
 namespace Rcl {
 
@@ -61,6 +61,8 @@ class Db::Native {
     bool m_noversionwrite; //Set if open failed because of version mismatch!
 #ifdef IDX_THREADS
     WorkQueue<DbUpdTask*> m_wqueue;
+    int  m_loglevel;
+    PTMutexInit m_mutex;
 #endif // IDX_THREADS
 
     // Indexing 
@@ -76,18 +78,25 @@ class Db::Native {
 	: m_rcldb(db), m_isopen(false), m_iswritable(false),
           m_noversionwrite(false)
 #ifdef IDX_THREADS
-	, m_wqueue(10)
+	, m_wqueue("DbUpd", 2)
 #endif // IDX_THREADS
-    { }
+    { 
+	LOGDEB2(("Native::Native: me %p\n", this));
+    }
 
     ~Native() { 
+	LOGDEB2(("Native::~Native: me %p\n", this));
 #ifdef IDX_THREADS
 	if (m_iswritable) {
 	    void *status = m_wqueue.setTerminateAndWait();
-	    LOGDEB(("Native: worker status %ld\n", long(status)));
+	    LOGDEB2(("Native::~Native: worker status %ld\n", long(status)));
 	}
 #endif // IDX_THREADS
     }
+
+    // Final steps of doc update, part which need to be single-threaded
+    bool addOrUpdateWrite(const string& udi, const string& uniterm, 
+			  Xapian::Document& doc, size_t txtlen);
 
     bool getPagePositions(Xapian::docid docid, vector<int>& vpos);
     int getPageNumberForPosition(const vector<int>& pbreaks, unsigned int pos);

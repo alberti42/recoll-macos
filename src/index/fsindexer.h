@@ -17,14 +17,14 @@
 #ifndef _fsindexer_h_included_
 #define _fsindexer_h_included_
 
+#include <sys/stat.h>
+
 #include <list>
-#ifndef NO_NAMESPACES
-using std::list;
-#endif
 
 #include "indexer.h"
 #include "fstreewalk.h"
 #ifdef IDX_THREADS
+#include "ptmutex.h"
 #include "workqueue.h"
 #endif // IDX_THREADS
 
@@ -32,18 +32,8 @@ class DbIxStatusUpdater;
 class FIMissingStore;
 struct stat;
 
-#ifdef IDX_THREADS
-class IndexingTask {
-public:
-    IndexingTask(const string& u, const string& p, const Rcl::Doc& d)
-	:udi(u), parent_udi(p), doc(d)
-    {}
-    string udi;
-    string parent_udi;
-    Rcl::Doc doc;
-};
-extern void *FsIndexerIndexWorker(void*);
-#endif // IDX_THREADS
+class DbUpdTask;
+class InternfileTask;
 
 /** Index selected parts of the file system
  
@@ -75,11 +65,11 @@ class FsIndexer : public FsTreeWalkerCB {
     bool index();
 
     /** Index a list of files. No db cleaning or stemdb updating */
-    bool indexFiles(list<string> &files, ConfIndexer::IxFlag f = 
+    bool indexFiles(std::list<std::string> &files, ConfIndexer::IxFlag f = 
 		    ConfIndexer::IxFNone);
 
     /** Purge a list of files. */
-    bool purgeFiles(list<string> &files);
+    bool purgeFiles(std::list<std::string> &files);
 
     /**  Tree walker callback method */
     FsTreeWalker::Status 
@@ -92,11 +82,12 @@ class FsIndexer : public FsTreeWalkerCB {
     FsTreeWalker m_walker;
     RclConfig   *m_config;
     Rcl::Db     *m_db;
-    TempDir     m_tmpdir;
+    TempDir      m_tmpdir;
     string       m_reason;
     DbIxStatusUpdater *m_updater;
-    list<string> m_tdl;
+    std::list<std::string> m_tdl;
     FIMissingStore *m_missing;
+
 
     // The configuration can set attribute fields to be inherited by
     // all files in a file system area. Ie: set "rclaptg = thunderbird"
@@ -106,14 +97,25 @@ class FsIndexer : public FsTreeWalkerCB {
     map<string, string> m_localfields;
 
 #ifdef IDX_THREADS
-    friend void *FsIndexerIndexWorker(void*);
-    WorkQueue<IndexingTask*> m_wqueue;
+    // Used to protect all ops from processonefile to class members:
+    // m_missing, m_db. It would be possible to be more fine-grained
+    // but probably not worth it. m_config and m_updater have separate 
+    // protections 
+    PTMutexInit m_mutex;
+    friend void *FsIndexerDbUpdWorker(void*);
+    friend void *FsIndexerInternfileWorker(void*);
+    int m_loglevel;
+    WorkQueue<InternfileTask*> m_iwqueue;
+    WorkQueue<DbUpdTask*> m_dwqueue;
 #endif // IDX_THREADS
 
     bool init();
     void localfieldsfromconf();
     void setlocalfields(Rcl::Doc& doc);
     string getDbDir() {return m_config->getDbDir();}
+    FsTreeWalker::Status 
+    processonefile(RclConfig *config, TempDir& tmpdir, const string &fn, 
+		   const struct stat *);
 };
 
 #endif /* _fsindexer_h_included_ */

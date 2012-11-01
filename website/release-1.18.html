@@ -46,17 +46,16 @@
         indexes though.</p>  
 
       <p>Case/diacritics sensitivity is off by default for this
-        release. It can be turned on <em>only</em> by editing
-        recoll.conf (see the manual). If you do so, you must reset the
-        index.</p>
+        release. It can be turned on <em>only</em> by editing recoll.conf
+        (see the manual). If you do so, you must then reset the index.</p>
 
-      <p>Always reset the index if installing over an older version (1.16
-        and older). The simplest way to do this is to quit all recoll
-        programs and just delete the index directory (<span
-        class="literal">rm&nbsp;-rf&nbsp;~/.recoll/xapiandb</span>), then
-        start recoll or recollindex.  <span
-        class="literal">recollindex&nbsp;-z</span> will do the same in
-        most, but not all, cases.</p>
+      <p>Always reset the index if installing over an even older
+        version (1.16 and older). The simplest way to do this is to
+        quit all recoll programs and just delete the index directory
+        (<span class="literal">rm&nbsp;-rf&nbsp;~/.recoll/xapiandb</span>),
+        then start recoll or
+        recollindex.  <span class="literal">recollindex&nbsp;-z</span>
+        will do the same in most, but not all, cases.</p>
 
       <p>The subdirectories of xapiandb which were previously used to
         store the stem expansion database (stem_english,
@@ -110,18 +109,19 @@
           documents, and the <b>evince</b> viewer.</li> 
 
         <li>Recoll can now also pass a search string to the native
-          application.</li> 
+          application (again, works with <b>evince</b>).</li> 
 
-        <li>There is a list of mime types that should be opened with
+        <li>There is a list of MIME types that should be opened with
           the locally configured application even when <em>Use
             Desktop Preferences</em> is checked. This will permit, for
-          example, using evince for its page access capabilities on
-          PDF files, while letting the desktop handle all the other
-          mime types. The list is not empty by default, it contains PDF,
-          Postscript and DVI, so you may want to reset it after
-          installation if you want to keep the previous behaviour
-          (losing the page number functionality). This can be done
-          from the <em>Preferences->Gui Configuration</em> menu.</li>
+          example, using <b>evince</b> for its page access
+          capabilities on PDF files, while letting the desktop handle
+          all the other mime types. The list is not empty by default,
+          it contains PDF, Postscript and DVI, so you may want to
+          reset it after installation if you want to keep the previous
+          behaviour (losing the page number functionality). This can
+          be done from the <em>Preferences->Gui Configuration</em>
+          menu.</li>
 
         <li>The GUI result list has a new "snippets" window for
           documents with page numbers, which let the user choose a
@@ -129,7 +129,8 @@
 
         <li>The advanced search screen now has a history
           function. While the focus is in this window, you
-          can walk the history of searches using the up and down arrows.</li>
+          can walk the history of searches using the up and down
+          arrows.</li> 
 
         <li>We now allow multiple directory specifications in the query
           language, as in: <i>dir:/home/me -dir:tmp</i></li>
@@ -149,7 +150,19 @@
         <li>When running in an UTF-8 locale, and after failing to decode a
           plain text file as UTF-8, indexing will try again using an 8 bit
           character set heuristically chosen according to the locale
-          country code.</li>
+          language code. This uses the LANG environment variable.</li>
+
+        <li>On initial installation (when the <em>~/.recoll</em>
+          directory does not exist), recoll will install a list of
+          characters which should not be stripped of diacritics,
+          according to the detected national language (based on
+          $LANG). There are currently specific lists for German (don't
+          strip the umlauts), and Nordic languages (keep the letters
+          with circle above in addition to the German list). Other
+          languages currently only have exceptions which result in
+          decomposing ligatures (fl, fi etc.). You can have a look at
+          the standard recoll.conf in /usr/share/recoll/examples for
+          more information.</li>
 
         <li>A new configuration variable, <tt>maxmemberkbs</tt>, has been
           implemented to limit the size of archive members we process. This

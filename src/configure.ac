@@ -177,12 +177,10 @@ if test X$xattrEnabled = Xyes ; then
   AC_DEFINE(RCL_USE_XATTR, 1, [Use file extended attributes])
 fi
 
-# Enable use of threads in the indexing pipeline.  Threads are used in
-# bucket-brigade fashion for the processing steps (reading file - text
-# splitting - indexing proper). The performance increase is small in normal
-# case (might be a bit more significant if you're using an SSD), and this
-# is disabled by default as we usually care little about indexing absolute
-# performance (more about impact on usability and total resources used).
+# Enable use of threads in the indexing pipeline.  
+# This is disabled by default as we usually care little about indexing 
+# absolute performance (more about impact on usability and total 
+# resources used).
 AC_ARG_ENABLE(idxthreads,
     AC_HELP_STRING([--enable-idxthreads],
    [Enable multithread indexing. This can somewhat boost indexing 
@@ -191,6 +189,9 @@ AC_ARG_ENABLE(idxthreads,
 
 if test X$idxthreadsEnabled = Xyes ; then
   AC_DEFINE(IDX_THREADS, 1, [Use multiple threads for indexing])
+  NOTHREADS=""
+else
+  NOTHREADS="#"
 fi
 
 # Enable CamelCase word splitting. This is optional because it causes 
@@ -557,6 +558,7 @@ AC_SUBST(QMAKE_ENABLE_ZEITGEIST)
 AC_SUBST(QMAKE_DISABLE_ZEITGEIST)
 AC_SUBST(LIBQZEITGEIST)
 AC_SUBST(NOPIC)
+AC_SUBST(NOTHREADS)
 AC_SUBST(NOPYTHON)
 AC_SUBST(RCLVERSION)
 

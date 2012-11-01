@@ -218,7 +218,7 @@ bool BeagleQueueIndexer::indexFromCache(const string& udi)
     if (!stringlowercmp("bookmark", hittype)) {
         // Just index the dotdoc
         dotdoc.meta[Rcl::Doc::keybcknd] = "BGL";
-        return m_db->addOrUpdate(udi, cstr_null, dotdoc);
+        return m_db->addOrUpdate(m_config, udi, cstr_null, dotdoc);
     } else if (stringlowercmp("webhistory", dotdoc.meta[Rcl::Doc::keybght]) ||
                (dotdoc.mimetype.compare("text/html") &&
                 dotdoc.mimetype.compare(cstr_textplain))) {
@@ -248,7 +248,7 @@ bool BeagleQueueIndexer::indexFromCache(const string& udi)
         doc.pcbytes = dotdoc.pcbytes;
         doc.sig.clear();
         doc.meta[Rcl::Doc::keybcknd] = "BGL";
-        return m_db->addOrUpdate(udi, cstr_null, doc);
+        return m_db->addOrUpdate(m_config, udi, cstr_null, doc);
     }
 }
 
@@ -414,7 +414,7 @@ BeagleQueueIndexer::processone(const string &path,
         dotdoc.sig.clear();
         
         dotdoc.meta[Rcl::Doc::keybcknd] = "BGL";
-        if (!m_db->addOrUpdate(udi, cstr_null, dotdoc)) 
+        if (!m_db->addOrUpdate(m_config, udi, cstr_null, dotdoc)) 
             return FsTreeWalker::FtwError;
 
     } else if (stringlowercmp("webhistory", dotdoc.meta[Rcl::Doc::keybght]) ||
@@ -461,7 +461,7 @@ BeagleQueueIndexer::processone(const string &path,
         doc.url = dotdoc.url;
 
         doc.meta[Rcl::Doc::keybcknd] = "BGL";
-        if (!m_db->addOrUpdate(udi, cstr_null, doc)) 
+        if (!m_db->addOrUpdate(m_config, udi, cstr_null, doc)) 
             return FsTreeWalker::FtwError;
     }
 

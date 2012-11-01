@@ -22,6 +22,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <list>
 using namespace std;
 
 #include "cstr.h"
@@ -44,23 +45,35 @@ using namespace std;
 // (think email attachment in email message: 2 rfc822 handlers are
 // needed simulteanously)
 static multimap<string, Dijon::Filter*>  o_handlers;
+static list<multimap<string, Dijon::Filter*>::iterator> o_hlru;
+typedef list<multimap<string, Dijon::Filter*>::iterator>::iterator hlruit_tp;
+
 static PTMutexInit o_handlers_mutex;
 
-static const unsigned int max_handlers_cache_size = 300;
+static const unsigned int max_handlers_cache_size = 100;
 
 /* Look for mime handler in pool */
-static Dijon::Filter *getMimeHandlerFromCache(const string& mtype)
+static Dijon::Filter *getMimeHandlerFromCache(const string& key)
 {
-    LOGDEB0(("getMimeHandlerFromCache: %s\n", mtype.c_str()));
-
     PTMutexLocker locker(o_handlers_mutex);
-    map<string, Dijon::Filter *>::iterator it = o_handlers.find(mtype);
+    LOGDEB(("getMimeHandlerFromCache: %s cache size %u\n", 
+	    key.c_str(), o_handlers.size()));
+
+    multimap<string, Dijon::Filter *>::iterator it = o_handlers.find(key);
     if (it != o_handlers.end()) {
 	Dijon::Filter *h = it->second;
+	hlruit_tp it1 = find(o_hlru.begin(), o_hlru.end(), it);
+	if (it1 != o_hlru.end()) {
+	    o_hlru.erase(it1);
+	} else {
+	    LOGERR(("getMimeHandlerFromCache: lru position not found\n"));
+	}
 	o_handlers.erase(it);
-	LOGDEB0(("getMimeHandlerFromCache: %s found\n", mtype.c_str()));
+	LOGDEB(("getMimeHandlerFromCache: %s found size %u\n", 
+		key.c_str(), o_handlers.size()));
 	return h;
     }
+    LOGDEB(("getMimeHandlerFromCache: %s not found\n", key.c_str()));
     return 0;
 }
 
@@ -68,28 +81,40 @@ static Dijon::Filter *getMimeHandlerFromCache(const string& mtype)
 void returnMimeHandler(Dijon::Filter *handler)
 {
     typedef multimap<string, Dijon::Filter*>::value_type value_type;
-    if (handler) {
-	handler->clear();
-	PTMutexLocker locker(o_handlers_mutex);
-	LOGDEB2(("returnMimeHandler: returning filter for %s cache size %d\n", 
-		 handler->get_mime_type().c_str(), o_handlers.size()));
-	// Limit pool size. It's possible for some reason that the
-	// handler was not found in the cache by getMimeHandler() and
-	// that a new handler is returned every time. We don't want
-	// the cache to grow indefinitely. We try to delete an element
-	// of the same kind, and if this fails, the first at
-	// hand. Note that going oversize *should not* normally
-	// happen, we're only being prudent.
-	if (o_handlers.size() >= max_handlers_cache_size) {
-	    map<string, Dijon::Filter *>::iterator it = 
-		o_handlers.find(handler->get_mime_type());
-	    if (it != o_handlers.end()) 
-		o_handlers.erase(it);
-	    else
-		o_handlers.erase(o_handlers.begin());
+
+    if (handler==0) 
+	return;
+    handler->clear();
+
+    PTMutexLocker locker(o_handlers_mutex);
+
+    LOGDEB(("returnMimeHandler: returning filter for %s cache size %d\n", 
+	    handler->get_mime_type().c_str(), o_handlers.size()));
+
+    // Limit pool size. The pool can grow quite big because there are
+    // many filter types, each of which can be used in several copies
+    // at the same time either because it occurs several times in a
+    // stack (ie mail attachment to mail), or because several threads
+    // are processing the same mime type at the same time.
+    multimap<string, Dijon::Filter *>::iterator it;
+    if (o_handlers.size() >= max_handlers_cache_size) {
+	static int once = 1;
+	if (once) {
+	    once = 0;
+	    for (it = o_handlers.begin(); it != o_handlers.end(); it++) {
+		LOGERR(("Cache full key: %s\n", it->first.c_str()));
+	    }
+	    LOGERR(("Cache LRU size: %u\n", o_hlru.size()));
 	}
-	o_handlers.insert(value_type(handler->get_mime_type(), handler));
+	if (o_hlru.size() > 0) {
+	    it = o_hlru.back();
+	    o_hlru.pop_back();
+	    delete it->second;
+	    o_handlers.erase(it);
+	}
     }
+    it = o_handlers.insert(value_type(handler->get_mime_type(), handler));
+    o_hlru.push_front(it);
 }
 
 void clearMimeHandlerCache()
@@ -203,7 +228,7 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
 			      bool filtertypes)
 {
     LOGDEB(("getMimeHandler: mtype [%s] filtertypes %d\n", 
-	    mtype.c_str(), filtertypes));
+	     mtype.c_str(), filtertypes));
     Dijon::Filter *h = 0;
 
     // Get handler definition for mime type. We do this even if an
@@ -279,7 +304,8 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
     {bool indexunknown = false;
 	cfg->getConfParam("indexallfilenames", &indexunknown);
 	if (indexunknown) {
-	    h = new MimeHandlerUnknown(cfg, "application/octet-stream");
+	    if ((h = getMimeHandlerFromCache("application/octet-stream")) == 0)
+		h = new MimeHandlerUnknown(cfg, "application/octet-stream");
 	    goto out;
 	} else {
 	    goto out;

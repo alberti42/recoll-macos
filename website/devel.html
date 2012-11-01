@@ -40,20 +40,13 @@
 	(and understand english, which can probably be assumed, you
 	being reading this), you can take a little time to translate
 	the GUI messages file.</p>
-      <p>The newest versions of the message files follow. There
-	is an empty one (the xx thing), the others are partially
+      <p>The newest versions of the message files follow can be found
+        in <a href="translations">this directory</a>. There
+	is an empty one (the xx one), the others are partially
 	translated, just needing an update for the new messages.<p>
       <p>Updating the files can easily be done with
 	the <span class="application">Qt Linguist</span>. Contact me
 	for more directions if needed.</p>
-      <ul>
-	<li>Blank: <a href="translations/recoll_xx.ts">recoll_xx.ts</a></li>
-	<li>German: <a href="translations/recoll_de.ts">recoll_de.ts</a></li>
-	<li>Italian: <a href="translations/recoll_it.ts">recoll_it.ts</a></li>
-	<li>Russian: <a href="translations/recoll_ru.ts">recoll_ru.ts</a></li>
-	<li>Turkish: <a href="translations/recoll_tr.ts">recoll_tr.ts</a></li>
-	<li>Ukrainian: <a href="translations/recoll_uk.ts">recoll_uk.ts</a></li>
-      </ul>
 
       <h1><a name="development">Development</a></h1>
 
@@ -67,7 +60,9 @@
 	tracking system</a>, these are the general areas where help or
 	ideas are particularly welcome:</p>
       <ul>
-	<li>A better GUI design (both the ergonomy and the appearance).</li>
+	<li>A better GUI design (both the ergonomy and the
+	appearance). Adding missing shortcuts or fixing the menu
+	accelerators for exemple is easy and useful.</li>
 
         <li>More support for the more advanced <span class=
 	    "application">Xapian</span> concepts like relevance
@@ -95,90 +90,10 @@
       <p>Reporting crashes is very useful. It can help others, and it
 	can get your own problem to be solved.</p>
 
-      <p>All reports are useful. But, in order to maximize usefulness,
-	a crash report should include a so-called stack trace, something
-	that indicates what the program was doing when it
-	crashed. Getting a useful stack trace is not very difficult,
-	but it may need a little work on your part (which
-	will then enable me do my part of the work).</p>
-
-      <p>If your distribution includes a separate package for Recoll
-	debugging symbols, it probably also has a page on its web site
-	explaining how to use them to get a stack trace. You should
-	follow these instructions. If there is no debugging package,
-	you should follow the instructions below. A little
-	familiarity with the command line will be necessary.</p>
-
-      <dl><dt>Compiling and installing a debugging version</dt>
-	<dd>
-	  <ul>
-	  <li>Obtain the recoll source for the version you are using
-	    (<a
-	    href="http://www.recoll.org/download.html">www.recoll.org</a>),
-	    and extract the source tree.</li>
-
-	  <li>Follow the instructions for 
-	    <a
-	    href="http://www.lesbonscomptes.com/recoll/usermanual/index.html#RCL.INSTALL.BUILDING">
-	      building Recoll from source</a> with the following
-	      modifications: 
-	    <ul>
-	      <li>Before running <tt>configure</tt>, edit
-		the <tt>mk/localdefs.in</tt> file and remove the <tt>-O2</tt>
-		option(s). </li>
-	      <li>When running <tt>configure</tt>, specify the
-		standard installation location for your system as a prefix
-		(to avoid ending up with two installed versions, which
-		would almost certainly end in confusion). On Linux this
-		would typically be: 
-		<br><tt>configure --prefix=/usr</tt>.
-	      </li> <li>When installing, arrange for the installed
-		executables not to be stripped of debugging symbols by
-		specifying a value for the STRIP environment variable
-		(ie: <tt>echo</tt> or <tt>ls</tt>): <br><tt>sudo make
-		install STRIP=ls</tt>
-	      </li>
-	    </ul>
-      </ul></dd>
-
-      <dt>Getting a core dump</dt>
-	<dd>You will need to run the operation that caused the crash
-	inside a writable directory, and tell the system that you
-	accept core dumps. The commands need to be run in a shell
-	inside a terminal window. Ie:
-	  <pre><tt>
-cd
-ulimit -c unlimited
-recoll  #(or recollindex or whatever you want to run).
-	  </tt></pre>
-
-	  Hopefully, you will succeed in getting the command to crash,
-	  and you will get a core file.
-	</dd>
-
-      <dt>Using gdb to get a stack trace</dt>
-	<dd>
-	  <ul>
-	    <li>Install <tt>gdb</tt> if it is not already on the system.</li>
-
-	    <li>Run <tt>gdb</tt> on the command that crashed and the
-	    core file (depending on the system, the core file may be
-	    named "core" or something else, like recollindex.core, or
-	    core.pid), ie:
-
-	      <br><tt>gdb /usr/bin/recollindex core</tt>
-	    </li>
-	    <li>Inside <tt>gdb</tt>,  you need to use different
-	      commands to get a stack trace for <tt>recoll</tt>
-	      and <tt>recollindex</tt>. For <tt>recollindex</tt> you
-	      can use the <tt>bt</tt> command. For <tt>recoll</tt>
-	      use: <br><tt>thread&nbsp;apply&nbsp;all&nbsp;bt&nbsp;full</tt>
-	    </li>
-	    <li>Copy/paste the output to your report email :), and
-	      quit <tt>gdb</tt> ("q").</li>
-	  </ul>
-	</dd>
-      </dl>
+      <p>You will find help and information about producing a useful
+      problem report on this 
+        <a href="https://bitbucket.org/medoc/recoll/wiki/ProblemSolvingData">
+          Recoll wiki page</a>.</p>
 
     </div>
   </body>

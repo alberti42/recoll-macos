@@ -112,7 +112,10 @@ class MyUpdater : public DbIxStatusUpdater {
 	    fprintf(fp, "filesdone = %d\n", status.filesdone);
 	    fprintf(fp, "dbtotdocs = %d\n", status.dbtotdocs);
 	    fprintf(fp, "fn = %s\n", status.fn.c_str());
-	    ftruncate(m_fd, off_t(ftell(fp)));
+	    if (ftruncate(m_fd, off_t(ftell(fp))) < 0) {
+		// ? kill compiler warning about ignoring ftruncate return
+		LOGDEB(("Status update: ftruncate failed\n"));
+	    }
             // Flush data and closes fd1. m_fd still valid
 	    fclose(fp); 
 	}

@@ -36,14 +36,8 @@
           topmost section may also exist in older versions.</i></p>
 
       
-      <h2><a name="b_latest">recoll 1.18.002</a></h2> 
+      <h2><a name="b_latest">recoll 1.18.003</a></h2> 
       <ul>
-      <li>It seems that a click in the snippets window can crash
-        recoll the very first time it is used. I could never reproduce
-        this on later runs and it is not known what causes the
-        problem. Just restart the application, and things should stay
-        up the next times.</li>
-
       <li>On systems such as Debian Stable which use Evince version
         2.x (not 3.x) as PDF viewer, the default "Open" command for
         PDF files will not work. You need to edit the command:
@@ -77,10 +71,20 @@
 
       <h2><a name="b_1_18_0">recoll 1.18.0</a></h2> 
       <ul>
-      <li>The missing filter recording code is broken.</li>
-
-      <li>Opening embedded documents from the Unity Lens does not
-        work.</li>
+        <li>Thumbnails are not found on newer desktops (e.g. Ubuntu
+          Quantal) because of a change in the freedesktop.org
+          "standard".</li>
+        <li>A bug in extracting search term from click data in the
+          snippet window results in passing an incorrect term to the
+          viewer. Only affects non-ascii terms.</li>
+        <li>Using the snippets window can sometimes crash the
+          GUI.</li>
+        <li>Tilde expansion is not properly performed for the
+          "beaglequeuedir" parameter. This only affects people who
+          develop scripts over the queue feature.</li>
+        <li>The missing filter recording code is broken.</li>
+        <li>Opening embedded documents from the Unity Lens does not
+          work.</li>
       </ul>
 
       <h2><a name="b_1_17_3">recoll 1.17.3</a></h2> 

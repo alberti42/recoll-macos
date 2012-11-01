@@ -13,7 +13,7 @@ recollindex : $(RECOLLINDEX_OBJS)
 	       $(LIBICONV) $(BDYNAMIC) \
 	       $(LIBFAM) \
 	       $(X_LIBS) $(X_PRE_LIBS) $(X_LIBX11) $(X_EXTRA_LIBS) \
-	       $(LIBSYS)
+	       $(LIBSYS) $(LIBTHREADS)
 recollindex.o : recollindex.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c -o recollindex.o $<
 rclmonrcv.o : rclmonrcv.cpp 

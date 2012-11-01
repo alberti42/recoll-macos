@@ -250,8 +250,11 @@ class Db {
     /** Add or update document. The Doc class should have been filled as much as
       * possible depending on the document type. parent_udi is only
       * use for subdocs, else set it to empty */
-    bool addOrUpdate(const string &udi, const string &parent_udi, 
-		     Doc &doc);
+    bool addOrUpdate(RclConfig *config, const string &udi, 
+		     const string &parent_udi, Doc &doc);
+#ifdef IDX_THREADS
+    void waitUpdIdle();
+#endif
 
     /** Delete document(s) for given UDI, including subdocs */
     bool purgeFile(const string &udi, bool *existed = 0);

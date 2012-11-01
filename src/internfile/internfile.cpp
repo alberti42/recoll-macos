@@ -325,6 +325,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 
     df->set_docsize(docsize);
     if (!df->set_document_file(m_fn)) {
+	delete df;
 	LOGERR(("FileInterner:: error converting %s\n", m_fn.c_str()));
 	return;
     }

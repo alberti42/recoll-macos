@@ -25,6 +25,7 @@ libdir = @libdir@
 RECOLL_DATADIR = ${datadir}/recoll
 
 @NOPIC@PICFLAGS = $(SYSPICFLAGS)
+@NOTHREADS@LIBTHREADS = $(LIBSYSTHREADS)
 
 LOCALCXXFLAGS = -g -O2 -Wall -Wno-unused \
 	      $(INCICONV) $(XAPIANCXXFLAGS) $(X_CFLAGS) \

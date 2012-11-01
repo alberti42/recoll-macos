@@ -1,6 +1,6 @@
 #!/bin/sh
 set -x 
-docdir=/home/dockes/projets/fulltext/recoll/src/doc/user/
+docdir=/home/dockes/projets/fulltext/17-MAINT/src/doc/user/
 #docdir=/Users/dockes/projets/fulltext/recoll/src/doc/user/
 
 #(cd $docdir;make) || exit 1
