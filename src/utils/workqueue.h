@@ -31,8 +31,6 @@ using std::string;
 
 #include "debuglog.h"
 
-#define WORKQUEUE_TIMING
-
 class WQTData {
     public:
     WQTData() {wstart.tv_sec = 0; wstart.tv_nsec = 0;}
@@ -63,10 +61,11 @@ public:
      */
     WorkQueue(const string& name, int hi = 0, int lo = 1)
         : m_name(name), m_high(hi), m_low(lo), m_size(0), 
-          m_workers_waiting(0), m_workers_exited(0), m_jobcnt(0), 
-          m_clientwait(0), m_workerwait(0), m_workerwork(0)
+          m_workers_waiting(0), m_workers_exited(0),
+	  m_clients_waiting(0), m_tottasks(0), m_nowake(0)
     {
-        m_ok = (pthread_cond_init(&m_cond, 0) == 0) && 
+        m_ok = (pthread_cond_init(&m_ccond, 0) == 0) &&
+	    (pthread_cond_init(&m_wcond, 0) == 0) && 
             (pthread_mutex_init(&m_mutex, 0) == 0);
     }
 
@@ -109,29 +108,26 @@ public:
         if (!ok() || pthread_mutex_lock(&m_mutex) != 0) 
             return false;
 
-#ifdef WORKQUEUE_TIMING
-        struct timespec before;
-        clock_gettime(CLOCK_MONOTONIC, &before);
-#endif
-
         while (ok() && m_high > 0 && m_queue.size() >= m_high) {
             // Keep the order: we test ok() AFTER the sleep...
-            if (pthread_cond_wait(&m_cond, &m_mutex) || !ok()) {
+	    m_clients_waiting++;
+            if (pthread_cond_wait(&m_ccond, &m_mutex) || !ok()) {
                 pthread_mutex_unlock(&m_mutex);
+		m_clients_waiting--;
                 return false;
             }
+	    m_clients_waiting--;
         }
-
-#ifdef WORKQUEUE_TIMING
-        struct timespec after;
-        clock_gettime(CLOCK_MONOTONIC, &after);
-        m_clientwait += nanodiff(before, after);
-#endif
 
         m_queue.push(t);
         ++m_size;
-	// Just wake one worker, there is only one new task.
-        pthread_cond_signal(&m_cond);
+	if (m_workers_waiting > 0) {
+	    // Just wake one worker, there is only one new task.
+	    pthread_cond_signal(&m_wcond);
+	} else {
+	    m_nowake++;
+	}
+
         pthread_mutex_unlock(&m_mutex);
         return true;
     }
@@ -156,22 +152,16 @@ public:
         // waiting for a task.
         while (ok() && (m_queue.size() > 0 || 
                         m_workers_waiting != m_worker_threads.size())) {
-            if (pthread_cond_wait(&m_cond, &m_mutex)) {
+	    m_clients_waiting++;
+            if (pthread_cond_wait(&m_ccond, &m_mutex)) {
+		m_clients_waiting--;
                 pthread_mutex_unlock(&m_mutex);
                 m_ok = false;
                 LOGERR(("WorkQueue::waitIdle: cond_wait failed\n"));
                 return false;
             }
+	    m_clients_waiting--;
         }
-
-#ifdef WORKQUEUE_TIMING
-        long long M = 1000000LL;
-        long long wscl = m_worker_threads.size() * M;
-        LOGERR(("WorkQueue:%s: clients wait (all) %lld mS, "
-                 "worker wait (avg) %lld mS, worker work (avg) %lld mS\n", 
-                 m_name.c_str(), m_clientwait / M, m_workerwait / wscl,  
-                 m_workerwork / wscl));
-#endif // WORKQUEUE_TIMING
 
         pthread_mutex_unlock(&m_mutex);
         return ok();
@@ -195,14 +185,19 @@ public:
 	// Wait for all worker threads to have called workerExit()
         m_ok = false;
         while (m_workers_exited < m_worker_threads.size()) {
-            pthread_cond_broadcast(&m_cond);
-            if (pthread_cond_wait(&m_cond, &m_mutex)) {
+            pthread_cond_broadcast(&m_wcond);
+	    m_clients_waiting++;
+            if (pthread_cond_wait(&m_ccond, &m_mutex)) {
                 pthread_mutex_unlock(&m_mutex);
                 LOGERR(("WorkQueue::setTerminate: cond_wait failed\n"));
+		m_clients_waiting--;
                 return false;
             }
+	    m_clients_waiting--;
         }
 
+	LOGDEB(("%s: %u tasks %u nowakes\n", m_name.c_str(), m_tottasks, 
+		m_nowake));
 	// Perform the thread joins and compute overall status
         // Workers return (void*)1 if ok
         void *statusall = (void*)1;
@@ -230,25 +225,11 @@ public:
         if (!ok() || pthread_mutex_lock(&m_mutex) != 0)
             return false;
 
-#ifdef WORKQUEUE_TIMING
-        struct timespec beforesleep;
-        clock_gettime(CLOCK_MONOTONIC, &beforesleep);
-
-        pthread_t me = pthread_self();
-        unordered_map<pthread_t, WQTData>::iterator it = 
-            m_worker_threads.find(me);
-        if (it != m_worker_threads.end() && 
-            it->second.wstart.tv_sec != 0 && it->second.wstart.tv_nsec != 0) {
-            long long nanos = nanodiff(it->second.wstart, beforesleep);
-            m_workerwork += nanos;
-        }
-#endif
-
         while (ok() && m_queue.size() < m_low) {
             m_workers_waiting++;
             if (m_queue.empty())
-                pthread_cond_broadcast(&m_cond);
-            if (pthread_cond_wait(&m_cond, &m_mutex) || !ok()) {
+                pthread_cond_broadcast(&m_ccond);
+            if (pthread_cond_wait(&m_wcond, &m_mutex) || !ok()) {
 		// !ok is a normal condition when shutting down
 		if (ok())
 		    LOGERR(("WorkQueue::take:%s: cond_wait failed or !ok\n",
@@ -260,21 +241,16 @@ public:
             m_workers_waiting--;
         }
 
-#ifdef WORKQUEUE_TIMING
-        struct timespec aftersleep;
-        clock_gettime(CLOCK_MONOTONIC, &aftersleep);
-        m_workerwait += nanodiff(beforesleep, aftersleep);
-        it = m_worker_threads.find(me);
-        if (it != m_worker_threads.end())
-            it->second.wstart = aftersleep;
-#endif
-
-        ++m_jobcnt;
+	m_tottasks++;
         *tp = m_queue.front();
         m_queue.pop();
         --m_size;
-	// No reason to wake up more than one client thread
-        pthread_cond_signal(&m_cond);
+	if (m_clients_waiting > 0) {
+	    // No reason to wake up more than one client thread
+	    pthread_cond_signal(&m_ccond);
+	} else {
+	    m_nowake++;
+	}
         pthread_mutex_unlock(&m_mutex);
         return true;
     }
@@ -292,7 +268,7 @@ public:
             return;
         m_workers_exited++;
         m_ok = false;
-        pthread_cond_broadcast(&m_cond);
+        pthread_cond_broadcast(&m_ccond);
         pthread_mutex_unlock(&m_mutex);
     }
 
@@ -327,16 +303,15 @@ private:
     /* Worker threads currently waiting for a job */
     unsigned int m_workers_waiting;
     unsigned int m_workers_exited;
-    /* Stats */
-    int m_jobcnt;
-    long long m_clientwait;
-    long long m_workerwait;
-    long long m_workerwork;
 
     unordered_map<pthread_t, WQTData> m_worker_threads;
     queue<T> m_queue;
-    pthread_cond_t m_cond;
+    pthread_cond_t m_ccond;
+    pthread_cond_t m_wcond;
     pthread_mutex_t m_mutex;
+    unsigned int m_clients_waiting;
+    unsigned int m_tottasks;
+    unsigned int m_nowake;
     bool m_ok;
 };
 

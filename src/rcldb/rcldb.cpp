@@ -1097,8 +1097,11 @@ bool Db::addOrUpdate(RclConfig *config, const string &udi,
 }
 
 bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm, 
-			  Xapian::Document& newdocument, size_t textlen)
+				  Xapian::Document& newdocument, size_t textlen)
 {
+#ifdef IDX_THREADS
+    Chrono chron;
+#endif
     // Check file system full every mbyte of indexed text. It's a bit wasteful
     // to do this after having prepared the document, but it needs to be in
     // the single-threaded section.
@@ -1123,6 +1126,11 @@ bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm,
     try {
 	Xapian::docid did = 
 	    xwdb.replace_document(uniterm, newdocument);
+#ifdef IDX_THREADS
+	// Need to protect against interaction with the up-to-date checks
+	// which also update the existence map
+	PTMutexLocker lock(m_rcldb->m_ndb->m_mutex);
+#endif
 	if (did < m_rcldb->updated.size()) {
 	    m_rcldb->updated[did] = true;
 	    LOGINFO(("Db::add: docid %d updated [%s]\n", did, fnc));
@@ -1147,13 +1155,18 @@ bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm,
     }
 
     // Test if we're over the flush threshold (limit memory usage):
-    return m_rcldb->maybeflush(textlen);
+    bool ret = m_rcldb->maybeflush(textlen);
+#ifdef IDX_THREADS
+    m_totalworkus += chron.micros();
+#endif
+    return ret;
 }
 
 #ifdef IDX_THREADS
 void Db::waitUpdIdle()
 {
     m_ndb->m_wqueue.waitIdle();
+    LOGDEB(("Db::waitUpdIdle: total work %ll mS\n", m_ndb->m_totalworkus/1000));
 }
 #endif
 
@@ -1185,10 +1198,10 @@ bool Db::needUpdate(const string &udi, const string& sig)
     if (m_ndb == 0)
 	return false;
 
-    // If we are doing an in place reset, no need to test. Note that there is
-    // no need to update the existence map either, it will be done while 
-    // indexing
-    if (o_inPlaceReset)
+    // If we are doing an in place or full reset, no need to
+    // test. Note that there is no need to update the existence map
+    // either, it will be done when updating the index
+    if (o_inPlaceReset || m_mode == DbTrunc)
 	return true;
 
     string uniterm = make_uniterm(udi);
@@ -1202,7 +1215,7 @@ bool Db::needUpdate(const string &udi, const string& sig)
     for (int tries = 0; tries < 2; tries++) {
 	try {
 	    // Get the doc or pseudo-doc
-	    Xapian::PostingIterator docid =m_ndb->xrdb.postlist_begin(uniterm);
+	    Xapian::PostingIterator docid = m_ndb->xrdb.postlist_begin(uniterm);
 	    if (docid == m_ndb->xrdb.postlist_end(uniterm)) {
 		// If no document exist with this path, we do need update
 		LOGDEB(("Db::needUpdate:yes (new): [%s]\n", uniterm.c_str()));
@@ -1228,7 +1241,12 @@ bool Db::needUpdate(const string &udi, const string& sig)
 
 	    // Set the uptodate flag for doc / pseudo doc
 	    if (m_mode 	!= DbRO) {
-#warning we need a lock here !
+#ifdef IDX_THREADS
+		// Need to protect against interaction with the doc
+		// update/insert thread which also updates the
+		// existence map
+		PTMutexLocker lock(m_ndb->m_mutex);
+#endif
 		updated[*docid] = true;
 
 		// Set the existence flag for all the subdocs (if any)
@@ -1336,6 +1354,8 @@ bool Db::purge()
 
     // Walk the document array and delete any xapian document whose
     // flag is not set (we did not see its source during indexing).
+    // Threads: we do not need a mutex here as the indexing threads
+    // are necessarily done at this point.
     int purgecount = 0;
     for (Xapian::docid docid = 1; docid < updated.size(); ++docid) {
 	if (!updated[docid]) {

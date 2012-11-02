@@ -371,7 +371,7 @@ class Db {
 	Activate the "in place reset" mode where all documents are
 	considered as needing update. This is a global/per-process
 	option, and can't be reset. It should be set at the start of
-	the indexing pass 
+	the indexing pass. 2012-10: no idea why this is done this way...
     */
     static void setInPlaceReset() {o_inPlaceReset = true;}
 

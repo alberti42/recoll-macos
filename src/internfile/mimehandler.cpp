@@ -102,9 +102,9 @@ void returnMimeHandler(Dijon::Filter *handler)
 	if (once) {
 	    once = 0;
 	    for (it = o_handlers.begin(); it != o_handlers.end(); it++) {
-		LOGERR(("Cache full key: %s\n", it->first.c_str()));
+		LOGDEB1(("Cache full. key: %s\n", it->first.c_str()));
 	    }
-	    LOGERR(("Cache LRU size: %u\n", o_hlru.size()));
+	    LOGDEB1(("Cache LRU size: %u\n", o_hlru.size()));
 	}
 	if (o_hlru.size() > 0) {
 	    it = o_hlru.back();

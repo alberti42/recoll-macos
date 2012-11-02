@@ -364,10 +364,14 @@ int main(int argc, char **argv)
     }
     o_reexec->atexit(cleanup);
 
-    bool rezero(op_flags & OPT_z);
-    bool inPlaceReset(op_flags & OPT_Z);
+    bool rezero((op_flags & OPT_z) != 0);
+    bool inPlaceReset((op_flags & OPT_Z) != 0);
     Pidfile pidfile(config->getPidfile());
     updater = new MyUpdater(config);
+
+    // Log something at LOGINFO to reset the trace file. Else at level
+    // 3 it's not even truncated if all docs are up to date.
+    LOGINFO(("recollindex: starting up\n"));
 
     if (setpriority(PRIO_PROCESS, 0, 20) != 0) {
         LOGINFO(("recollindex: can't setpriority(), errno %d\n", errno));
@@ -417,7 +421,7 @@ int main(int argc, char **argv)
 	exit(!createstemdb(config, lang));
 #ifdef RCL_USE_ASPELL
     } else if (op_flags & OPT_S) {
-	makeIndexerOrExit(config, inPlaceReset);
+	makeIndexerOrExit(config, false);
         exit(!confindexer->createAspellDict());
 #endif // ASPELL
 
