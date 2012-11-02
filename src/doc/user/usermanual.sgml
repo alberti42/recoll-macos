@@ -3037,55 +3037,106 @@ dir:recoll dir:src -dir:utils -dir:common
   </chapter> <!-- Search -->
 
 
-  <chapter id="rcl.program">
-    <title>Programming interface</title>
+    <chapter id="rcl.program">
+      <title>Programming interface</title>
 
-    <para>&RCL; has an Application Programming Interface, usable both
-    for indexing and searching, currently accessible from the
-    <application>Python</application> language.</para>
+      <para>&RCL; has an Application Programming Interface, usable both
+        for indexing and searching, currently accessible from the
+        <application>Python</application> language.</para>
 
-    <para>Another less radical way to extend the application is to
-    write filters for new types of documents.</para>
+      <para>Another less radical way to extend the application is to
+        write filters for new types of documents.</para>
 
-    <para>The processing of metadata attributes for documents
-    (<literal>fields</literal>) is highly configurable.</para>
+      <para>The processing of metadata attributes for documents
+        (<literal>fields</literal>) is highly configurable.</para>
 
-    <sect1 id="rcl.program.filters">
+
+
+      <sect1 id="rcl.program.filters">
         <title>Writing a document filter</title>
 
-      <para>&RCL; filters are executable programs which 
-        translate from a specific format (ie:
-        <application>openoffice</application>,
-        <application>acrobat</application>, etc.) to the &RCL;
-        indexing input format, which may be
-        <literal>text/plain</literal> or
-        <literal>text/html</literal>.</para> 
+        <para>&RCL; filters cooperate to translate from the multitude
+        of input document formats, simple ones
+        as <application>opendocument</application>, 
+          <application>acrobat</application>), or compound ones such
+          as <application>Zip</application>
+          or <application>Email</application>, into the final &RCL;
+          indexing input format, which may
+          be <literal>text/plain</literal>
+          or <literal>text/html</literal>. Most filters are executable
+          programs or scripts. A few filters are coded in C++ and live
+          inside <command>recollindex</command>. This latter kind will not
+          be described here.</para>
 
-      <para>As of &RCL; 1.13, there are two kinds of filters:
-        <itemizedlist>
-	  <listitem><para>Simple filters (the old ones) run once and
-	  exit. They can be bare programs like
-	  <application>antiword</application>, or shell-scripts using other
-	  programs. They are very simple to write, because they just need
-	  to output the converted to the standard output.</para>
-	  </listitem>
-	  <listitem><para>Multiple filters, new in 1.13, run as long as
-	  their master process (ie: recollindex) is active. They can
-	  process multiple files (sparing the process startup time which
-	  can be very significant), or multiple documents per file (ie: for
-	  zip or chm files). They communicate with the indexer through a
-	  simple protocol, but are nevertheless a bit more complicated than
-	  the older kind. Most of these new filters are written in
-	  <application>Python</application>, using a common module to
-	  handle the protocol.</para>
-	  </listitem>
-	</itemizedlist>
-      The following will just describe the simple filters. If you can
-      program and want to write one of the other kind, it shouldn't be too
-      difficult to make sense of one of the existing modules. For example,
-      look at <command>rclzip</command> which uses Zip file paths as
-      internal identifiers (<literal>ipath</literal>), and
-      <command>rclinfo</command>, which uses an integer index.</para> 
+        <para>There are currently (1.18 and since 1.13) two kinds of
+        external executable filters:
+          <itemizedlist>
+	    <listitem><para>Simple filters (<literal>exec</literal>
+	        filters) run once and
+	        exit. They can be bare programs
+	        like <application>antiword</application>, or scripts
+	        using other programs. They are very simple to write,
+	        because they just need to print the converted document
+	        to the standard output. Their output can
+	        be <literal>text/plain</literal>
+	        or <literal>text/html</literal>.</para>
+	    </listitem>
+	    <listitem><para>Multiple filters (<literal>execm</literal>
+	        filters), run as long as
+	        their master process (<command>recollindex</command>) is
+	        active. They can process multiple files (sparing the
+	        process startup time which can be very significant),
+	        or multiple documents per file (e.g.: for zip or chm
+	        files). They communicate with the indexer through a
+	        simple protocol, but are nevertheless a bit more
+	        complicated than the older kind. Most of new
+	        filters are written
+	        in <application>Python</application>, using a common
+	        module to handle the protocol. There is an
+	        exception, <command>rclimg</command> which is written
+	        in Perl. The subdocuments output by these filters can
+	        be directly indexable (text or HTML), or they can be
+	        other simple or compound documents that will need to
+	        be processed by another filter.</para>
+	    </listitem>
+	  </itemizedlist>
+        </para>
+
+        <para>In both cases, filters deal with regular file system
+          files, and can process either a single document, or a
+          linear list of documents in each file. &RCL; is responsible
+          for performing up to date checks, deal with more complex
+          embedding and other upper level issues.</para>
+
+        <para>In the extreme case of a simple filter returning a
+          document in <literal>text/plain</literal> format, no
+          metadata can be transferred from the filter to the
+          indexer. Generic metadata, like document size or
+          modification date, will be gathered and stored by the
+          indexer.</para> 
+
+        <para>Filters that produce  <literal>text/html</literal>
+          format can return an arbitrary amount of metadata inside HTML
+          <literal>meta</literal> tags. These will be processed
+          according to the directives found in 
+          the <link linkend="rcl.program.fields">
+            <filename>fields</filename> configuration
+            file</link>.</para>
+
+        <para>The filters that can handle multiple documents per file
+          return a single piece of data to identify each document inside
+          the file. This piece of data, called
+          an <literal>ipath element</literal> will be sent back by
+          &RCL; to extract the document at query time, for previewing,
+          or for creating a temporary file to be opened by a
+          viewer.</para>  
+
+        <para>The following section describes the simple
+          filters, and the next one gives a few explanations about
+          the <literal>execm</literal> ones. You could conceivably
+          write a simple filter with only the elements in the
+          manual. This will not be the case for the other ones, for
+          which you will have to look at the code.</para>
 
       <sect2 id="rcl.program.filters.simple">
         <title>Simple filters</title>
@@ -3125,6 +3176,51 @@ dir:recoll dir:src -dir:utils -dir:common
          testing !</para>
 
       </sect2>
+
+      <sect2 id="rcl.program.filters.multiple">
+        <title>"Multiple" filters</title>
+
+        <para>If you can program and want to write
+          an <literal>execm</literal> filter, it should not be too
+          difficult to make sense of one of the existing modules. For
+          example, look at <command>rclzip</command> which uses Zip
+          file paths as identifiers (<literal>ipath</literal>),
+          and <command>rclics</command>, which uses an integer
+          index. Also have a look at the comments inside
+          the <filename>internfile/mh_execm.h</filename> file and
+          possibly at the corresponding module.</para>
+
+        <para><literal>execm</literal> filters sometimes need to make
+          a choice for the nature of the <literal>ipath</literal>
+          elements that they use in communication with the
+          indexer. Here are a few guidelines:
+          <itemizedlist>
+            <listitem><para>Use ASCII or UTF-8 (if the identifier is an
+                integer print it, for example, like printf %d would
+                do).</para></listitem>
+            <listitem><para>If at all possible, the data should make some
+              kind of sense when printed to a log file to help with 
+                debugging.</para></listitem>
+            <listitem><para>&RCL; uses a colon (<literal>:</literal>) as a
+                separator to store a complex path internally (for
+                deeper embedding). Colons inside
+                the <literal>ipath</literal> elements output by a
+                filter will be escaped, but would be a bad choice as a
+                filter-specific separator (mostly, again, for
+                debugging issues).</para></listitem>
+          </itemizedlist>
+          In any case, the main goal is that it should
+          be easy for the filter to extract the target document, given
+          the file name and the <literal>ipath</literal>
+          element.</para>
+
+        <para><literal>execm</literal> filters will also produce
+          a document with a null <literal>ipath</literal>
+          element. Depending on the type of document, this may have
+          some associated data (e.g. the body of an email message), or
+          none (typical for an archive file). If it is empty, this
+          document will be useful anyway for some operations, as the
+          parent of the actual data documents.</para>
 
       <sect2 id="rcl.program.filters.association">
         <title>Telling &RCL; about the filter</title>
