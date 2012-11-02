@@ -28,6 +28,8 @@ application/epub+zip = ebook-viewer %f
 # html documents. This is almost always what we want.
 text/html|epub = ebook-viewer %F;ignoreipath=1
 
+application/x-gnote = gnote %f
+
 application/x-mobipocket-ebook = ebook-viewer %f
 
 application/x-kword = kword %f

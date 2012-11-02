@@ -87,6 +87,7 @@ application/x-chm = execm rclchm
 application/x-dia-diagram = execm rcldia;mimetype=text/plain
 application/x-dvi = exec rcldvi
 application/x-flac = execm rclaudio
+application/x-gnote = exec rclxml
 application/x-gnuinfo = execm rclinfo
 application/x-gnumeric = exec rclgnm
 application/x-kword = exec rclkwd
@@ -180,6 +181,7 @@ application/x-dia-diagram = drawing
 application/x-dvi = document
 application/x-flac = sownd
 application/x-fsdirectory = folder
+application/x-gnote = document
 application/x-gnuinfo = book
 application/x-gnumeric = spreadsheet
 application/x-kword = wordprocessing
@@ -257,6 +259,7 @@ text = \
       application/x-awk \
       application/x-chm \
       application/x-dvi \
+      application/x-gnote \
       application/x-gnuinfo \
       application/x-kword \
       application/x-lyx \

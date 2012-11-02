@@ -25,6 +25,8 @@
 
 .xml = text/xml
 
+.note = application/x-gnote
+
 .rtf  = text/rtf
 
 .html = text/html
