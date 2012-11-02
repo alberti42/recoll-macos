@@ -247,9 +247,24 @@ class Db {
      */
     bool needUpdate(const string &udi, const string& sig);
 
-    /** Add or update document. The Doc class should have been filled as much as
-      * possible depending on the document type. parent_udi is only
-      * use for subdocs, else set it to empty */
+    /** Add or update document identified by unique identifier.
+     * @param config Config object to use. Can be the same as the member config
+     *   or a clone, to avoid sharing when called in multithread context.
+     * @param udi the Unique Document Identifier is opaque to us. 
+     *   Maximum size 150 bytes.
+     * @param parent_udi the UDI for the container document. In case of complex
+     *  embedding, this is not always the immediate parent but the UDI for
+     *  the container file (which may be a farther ancestor). It is
+     *  used for purging subdocuments when a file ceases to exist and
+     *  to set the existence flags of all subdocuments of a container
+     *  that is found to be up to date. In other words, the
+     *  parent_udi is the UDI for the ancestor of the document which
+     *  is subject to needUpdate() and physical existence tests (some
+     *  kind of file equivalent). Empty for top-level docs. Should
+     *  probably be renamed container_udi.
+     * @param doc container for document data. Should have been filled as 
+     *   much as possible depending on the document type. 
+     */
     bool addOrUpdate(RclConfig *config, const string &udi, 
 		     const string &parent_udi, Doc &doc);
 #ifdef IDX_THREADS
@@ -261,7 +276,7 @@ class Db {
 
     /** Remove documents that no longer exist in the file system. This
      * depends on the update map, which is built during
-     * indexing (needUpdate()). 
+     * indexing (needUpdate() / addOrUpdate()). 
      *
      * This should only be called after a full walk of
      * the file system, else the update map will not be complete, and
@@ -271,7 +286,7 @@ class Db {
      */
     bool purge();
 
-    /** Create stem expansion database for given language. */
+    /** Create stem expansion database for given languages. */
     bool createStemDbs(const std::vector<std::string> &langs);
     /** Delete stem expansion database for given language. */
     bool deleteStemDb(const string &lang);
@@ -282,11 +297,15 @@ class Db {
     int  docCnt(); 
     /** Return count of docs which have an occurrence of term */
     int termDocCnt(const string& term);
-    /** Add extra database for querying */
+    /** Add extra Xapian database for querying. 
+     * @param dir must point to something which can be passed as parameter 
+     *      to a Xapian::Database constructor (directory or stub).
+     */
     bool addQueryDb(const string &dir);
     /** Remove extra database. if dir == "", remove all. */
     bool rmQueryDb(const string &dir);
     /** Look where the doc result comes from. 
+     * @param doc must come from a db query so that "opaque" xdocid is set.
      * @return: 0 main index, (size_t)-1 don't know, 
      *   other: order of database in add_database() sequence.
      */
@@ -312,8 +331,7 @@ class Db {
     enum MatchType {ET_WILD, ET_REGEXP, ET_STEM};
     bool termMatch(MatchType typ, const string &lang, const string &term, 
 		   TermMatchResult& result, int max = -1, 
-		   const string& field = cstr_null
-        );
+		   const string& field = cstr_null);
     /** Return min and max years for doc mod times in db */
     bool maxYearSpan(int *minyear, int *maxyear);
 
@@ -332,7 +350,7 @@ class Db {
     }
     /** Get document for given udi
      *
-     * Used by the 'history' feature (and nothing else?) 
+     * Used by the 'history' feature, and to retrieve ancestor documents.
      */
     bool getDoc(const string &udi, Doc &doc);
 
