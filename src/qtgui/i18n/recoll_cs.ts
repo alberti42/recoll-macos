@@ -1,4 +1,6 @@
-<!DOCTYPE TS><TS>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0" language="cs_CZ">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -39,19 +41,19 @@
     </message>
     <message>
         <source>text</source>
-        <translation type="unfinished">Text</translation>
+        <translation>Text</translation>
     </message>
     <message>
         <source>spreadsheet</source>
-        <translation type="unfinished">Tabulky</translation>
+        <translation>Tabulky</translation>
     </message>
     <message>
         <source>presentation</source>
-        <translation type="unfinished">Představení</translation>
+        <translation>Představení</translation>
     </message>
     <message>
         <source>message</source>
-        <translation type="unfinished">Zpráva</translation>
+        <translation>Zpráva</translation>
     </message>
 </context>
 <context>
@@ -122,7 +124,7 @@
     </message>
     <message>
         <source>Check this to enable filtering on file types</source>
-        <translation>Zaškrtněte pro zapnutí filtrování na souborové typy</translation>
+        <translation>Zaškrtněte pro zapnutí filtrování podle souborových typů</translation>
     </message>
     <message>
         <source>By categories</source>
@@ -130,7 +132,7 @@
     </message>
     <message>
         <source>Check this to use file categories instead of raw mime types</source>
-        <translation>Zaškrtněte pro používání skupin souborů místo mime-typů</translation>
+        <translation>Zaškrtněte pro používání skupin souborů místo MIME typů</translation>
     </message>
     <message>
         <source>Close</source>
@@ -170,31 +172,31 @@
     </message>
     <message>
         <source>From</source>
-        <translation>Z</translation>
+        <translation>Od</translation>
     </message>
     <message>
         <source>To</source>
-        <translation>K</translation>
+        <translation>Do</translation>
     </message>
     <message>
         <source>Check this to enable filtering on dates</source>
-        <translation type="unfinished"></translation>
+        <translation>Zaškrtněte pro zapnutí filtrování podle dat</translation>
     </message>
     <message>
         <source>Filter dates</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtrovat data</translation>
     </message>
     <message>
         <source>Find</source>
-        <translation type="unfinished"></translation>
+        <translation>Najít</translation>
     </message>
     <message>
         <source>Check this to enable filtering on sizes</source>
-        <translation type="unfinished"></translation>
+        <translation>Zaškrtněte pro zapnutí filtrování podle velikostí</translation>
     </message>
     <message>
         <source>Filter sizes</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtrovat velikosti</translation>
     </message>
 </context>
 <context>
@@ -492,11 +494,11 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     </message>
     <message>
         <source>Fold lines</source>
-        <translation type="unfinished"></translation>
+        <translation>Zalomit řádky</translation>
     </message>
     <message>
         <source>Preserve indentation</source>
-        <translation type="unfinished"></translation>
+        <translation>Zachovat odsazení</translation>
     </message>
 </context>
 <context>
@@ -551,7 +553,7 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     </message>
     <message>
         <source>Index the names of files for which the contents cannot be identified or processed (no or unsupported mime type). Default true</source>
-        <translation>Rejstříkovat všechny názvy souborů, jejichž obsah nelze určit nebo zpracovat (žádný nebo nepodporovaný mime typ). Výchozí hodnota je ano</translation>
+        <translation>Rejstříkovat všechny názvy souborů, jejichž obsah nelze určit nebo zpracovat (žádný nebo nepodporovaný MIME typ). Výchozí hodnota je ano</translation>
     </message>
     <message>
         <source>Beagle web history</source>
@@ -559,11 +561,11 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     </message>
     <message>
         <source>Search parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parametry hledání</translation>
     </message>
     <message>
         <source>Web history</source>
-        <translation type="unfinished"></translation>
+        <translation>Historie webu</translation>
     </message>
 </context>
 <context>
@@ -771,7 +773,7 @@ Prověřte soubor mimeconf</translation>
         <source>External applications/commands needed and not found for indexing your file types:
 
 </source>
-        <translation>Pro rejstříkování vašich mime typů jsou potřeba vnější programy/příkazy, které ale nebyly nalezeny:
+        <translation>Pro rejstříkování vašich MIME typů jsou potřeba vnější programy/příkazy, které ale nebyly nalezeny:
 
 </translation>
     </message>
@@ -789,12 +791,12 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>No external viewer configured for mime type [</source>
-        <translation>Žádný vnější prohlížeč nebyl nastaven pro mime typ [</translation>
+        <translation>Žádný vnější prohlížeč nebyl nastaven pro MIME typ [</translation>
     </message>
     <message>
         <source>The viewer specified in mimeview for %1: %2 is not found.
 Do you want to start the  preferences dialog ?</source>
-        <translation>Prohlížeč stanovený v mime zobrazení pro %1: %2 nenalezen.
+        <translation>Prohlížeč stanovený v MIME zobrazení pro %1: %2 nenalezen.
 Chcete spustit dialog s nastavením?</translation>
     </message>
     <message>
@@ -879,7 +881,7 @@ Chcete spustit dialog s nastavením?</translation>
     </message>
     <message>
         <source>Content has been indexed for these mime types:</source>
-        <translation>Obsah byl rejstříkován pro tyto mime typy:</translation>
+        <translation>Obsah byl rejstříkován pro tyto MIME typy:</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
@@ -891,20 +893,21 @@ Chcete spustit dialog s nastavením?</translation>
     </message>
     <message>
         <source>Indexed MIME Types</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejstříkované MIME typy</translation>
     </message>
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeview file</source>
-        <translation type="unfinished"></translation>
+        <translation>Chybový příkaz pro prohlížeč pro %1: [%2]
+Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Viewer command line for %1 specifies both file and parent file value: unsupported</source>
-        <translation type="unfinished"></translation>
+        <translation>Příkaz pro prohlížeč pro %1 stanovuje jak hodnotu souboru tak hodnotu rodičovského souboru: nepodporováno</translation>
     </message>
     <message>
         <source>Cannot find parent document</source>
-        <translation type="unfinished"></translation>
+        <translation>Nelze najít rodičovský dokument</translation>
     </message>
 </context>
 <context>
@@ -1111,11 +1114,11 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Index configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastavení &amp;rejstříku</translation>
     </message>
     <message>
         <source>&amp;GUI configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastavení uživatelského roz&amp;hraní</translation>
     </message>
 </context>
 <context>
@@ -1194,7 +1197,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>MIME type</source>
-        <translation type="unfinished"></translation>
+        <translation>Typ MIME</translation>
     </message>
 </context>
 <context>
@@ -1289,11 +1292,11 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&lt;p&gt;&lt;i&gt;Alternate spellings: &lt;/i&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;&lt;i&gt;Náhradní pravopis: &lt;/i&gt;</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation type="unfinished"></translation>
+        <translation>Otevřít okno s úr&amp;yvky</translation>
     </message>
 </context>
 <context>
@@ -1579,34 +1582,34 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     <name>Snippets</name>
     <message>
         <source>Snippets</source>
-        <translation type="unfinished"></translation>
+        <translation>Úryvky</translation>
     </message>
     <message>
         <source>about:blank</source>
-        <translation type="unfinished"></translation>
+        <translation>about:blank</translation>
     </message>
     <message>
         <source>Find:</source>
-        <translation type="unfinished"></translation>
+        <translation>Hledat:</translation>
     </message>
     <message>
         <source>Next</source>
-        <translation type="unfinished">Další</translation>
+        <translation>Další</translation>
     </message>
     <message>
         <source>Prev</source>
-        <translation type="unfinished"></translation>
+        <translation>Předchozí</translation>
     </message>
     <message>
         <source>X</source>
-        <translation type="unfinished"></translation>
+        <translation>X</translation>
     </message>
 </context>
 <context>
     <name>SnippetsW</name>
     <message>
         <source>Search</source>
-        <translation type="unfinished">Hledat</translation>
+        <translation>Hledat</translation>
     </message>
 </context>
 <context>
@@ -1726,19 +1729,19 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Index: %1 documents, average length %2 terms.%3 results</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejstřík: %1 dokumentů, průměrná délka %2 výrazy(ů). %3 výsledky(ů)</translation>
     </message>
     <message>
         <source>%1 results</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 výsledky(ů)</translation>
     </message>
     <message>
         <source>List was truncated alphabetically, some frequent </source>
-        <translation type="unfinished"></translation>
+        <translation>Seznam byl zkrácen abecedně, některé četné </translation>
     </message>
     <message>
         <source>terms may be missing. Try using a longer root.</source>
-        <translation type="unfinished"></translation>
+        <translation>pojmy mohou chybět. Zkuste použít delší kořen.</translation>
     </message>
 </context>
 <context>
@@ -1769,11 +1772,11 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Result list paragraph format (erase all to reset to default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Formát odstavce seznamu s výsledky (vymazat všechny pro znovunastavení na výchozí)</translation>
     </message>
     <message>
         <source>Result list header (default is empty)</source>
-        <translation type="unfinished"></translation>
+        <translation>Záhlaví seznamu s výsledky (výchozí je prázdné)</translation>
     </message>
 </context>
 <context>
@@ -1951,7 +1954,7 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>MIME type</source>
-        <translation type="unfinished"></translation>
+        <translation>Typ MIME</translation>
     </message>
 </context>
 <context>
@@ -1966,7 +1969,7 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
-        <translation>Wählen Sie einen oder mehrere Dateitypen und klicken Sie auf &quot;Ändere Aktion&quot; um das verknüpfte Programm zum Öffnen anzupassen. </translation>
+        <translation>Vyberte jeden nebo více datových typů a klepněte na &quot;Změnit činnost&quot; pro změnu programu přiřazeného k jejich otevření</translation>
     </message>
     <message>
         <source>Change Action</source>
@@ -1982,7 +1985,7 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Select one or several mime types then click &quot;Change Action&quot;&lt;br&gt;You can also close this dialog and check &quot;Use desktop preferences&quot;&lt;br&gt;in the main panel to ignore this list and use your desktop defaults.</source>
-        <translation>Vyberte jeden nebo několik mime typů a potom klepněte na &quot;Změnit činnost&quot;&lt;br&gt;Taktéž můžete tento dialog zavřít a zaškrtnout &quot;Použít nastavení pracovní plochy&quot;&lt;br&gt;v hlavním panelu, aby se tento seznam přehlížel a pracovní plocha se použila jako výchozí.</translation>
+        <translation>Vyberte jeden nebo několik MIME typů a potom klepněte na &quot;Změnit činnost&quot;&lt;br&gt;Taktéž můžete tento dialog zavřít a zaškrtnout &quot;Použít nastavení pracovní plochy&quot;&lt;br&gt;v hlavním panelu, aby se tento seznam přehlížel a pracovní plocha se použila jako výchozí.</translation>
     </message>
 </context>
 <context>
@@ -2013,11 +2016,11 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Process the WEB history queue</source>
-        <translation type="unfinished"></translation>
+        <translation>Zpracovat řadu historie WEBu</translation>
     </message>
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
-        <translation type="unfinished"></translation>
+        <translation>Povolí rejstříkování Firefoxem navštívených stránek.&lt;br&gt;(také je potřeba, abyste nainstalovali přídavný modul Recollu pro Firefox)</translation>
     </message>
 </context>
 <context>
@@ -2049,35 +2052,35 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     <name>confgui::ConfSearchPanelW</name>
     <message>
         <source>Automatic diacritics sensitivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Automaticky rozlišovat diakritická znaménka</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Zapnout automaticky rozlišování diakritických znamének, když hledaný pojem obsahuje znaky a akcenty (ne v unac_except_trans). Jinak pro  musíte použít jazyk dotazu a modifikátor &lt;i&gt;D&lt;/i&gt;.</translation>
     </message>
     <message>
         <source>Automatic character case sensitivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Automaticky rozlišovat velká a malá písmena</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Zapnout automaticky rozlišování velkých a malých písmen, když záznam obsahuje velká písmena (mimo na prvním místě). Jinak pro  musíte použít jazyk dotazu a modifikátor &lt;i&gt;C&lt;/i&gt;.</translation>
     </message>
     <message>
         <source>Maximum term expansion count</source>
-        <translation type="unfinished"></translation>
+        <translation>Největší počet rozšíření výrazu</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Největší počet rozšíření pro jeden výraz (např. při použití žolíků). Standardní výchozí hodnota 10 000 je rozumná a zabrání tomu, aby se hledaný pojem jevil jako zamrzlý, zatímco je procházen seznam pojmů.</translation>
     </message>
     <message>
         <source>Maximum Xapian clauses count</source>
-        <translation type="unfinished"></translation>
+        <translation>Největší počet výrazů Xapian</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Největší počet základních výrazů, které přidáme do jednoho dotazu Xapian. V některých případech se mohou výsledky rozšíření výrazu vynásobit, a my se chceme vyvarovat nadbytečné spotřebě paměti. Standardní výchozí hodnota 100 000 by měla ve většině případů naprosto postačovat a hodit se k typickému současnému sestavení zařízení (hardware).</translation>
     </message>
 </context>
 <context>
@@ -2127,7 +2130,8 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Vnější filtry pracující déle než po tak dlouhou dobu budou přerušeny. Je to pro ten zřídkavý případ (např. postscript), kdy by dokument mohl zapříčinit vejití filtru do smyčky. Nastavte na -1 pro žádné omezení.
+</translation>
     </message>
 </context>
 <context>
@@ -2214,7 +2218,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
-        <translation>Použít příkaz &apos;file&apos;, když vnitřní&lt;br&gt;rozpoznání mime typu selže.</translation>
+        <translation>Použít příkaz &apos;file&apos;, když vnitřní&lt;br&gt;rozpoznání MIME typu selže.</translation>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
@@ -2222,19 +2226,19 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="unfinished"></translation>
+        <translation>Jazyk pro adresář aspellu. Mělo by to vypadat jako &apos;en&apos; nebo &apos;fr&apos; nebo &apos;cs&apos;...&lt;br&gt;Pokud není tato hodnota nastavena, použije se pro její vypočítání prostředí NLS, což obvykle pracuje. Pro získání představy o tom, co je ve vašem systému nainstalováno, napište &apos;aspell config&apos; a hledejte soubory .dat v adresáři &apos;data-dir&apos;. </translation>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Název pro adresář, v němž se má ukládat rejstřík.&lt;br&gt;Neabsolutní cesta je vzata relativně k adresáři s nastavením. Výchozí je &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <source>Unac exceptions</source>
-        <translation type="unfinished"></translation>
+        <translation>Výjimky unac</translation>
     </message>
     <message>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Toto jsou výjimky pro mechanismus unac, který ve výchozím nastavení odstraňuje všechny diakritické znaky a nahrazuje je kanonickými obdobami. Toto odstraňování akcentů můžete (v závislosti na vaší řeči) pro některé znaky potlačit a zadat dodatečná nahrazení, např. pro ligatury. V každém mezerou odděleném záznamu je první znak zdrojovým (výchozím) a zbytek je nahrazení.</translation>
     </message>
 </context>
 <context>
@@ -2503,31 +2507,31 @@ Výchozí hodnota je 2 (procenta).</translation>
     </message>
     <message>
         <source>Plain text to HTML line style</source>
-        <translation type="unfinished"></translation>
+        <translation>Prostý text do stylu řádku HTML</translation>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses some indentation. PRE + Wrap style may be what you want.</source>
-        <translation type="unfinished"></translation>
+        <translation>Řádky v PRE textu nejsou zalomeny. Při použití BR dojde ke ztrátě některých zalomení. Možná je to, co chcete styl PRE + zalomení.</translation>
     </message>
     <message>
         <source>&lt;BR&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;BR&gt;</translation>
     </message>
     <message>
         <source>&lt;PRE&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;PRE&gt;</translation>
     </message>
     <message>
         <source>&lt;PRE&gt; + wrap</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;PRE&gt; + zalomení</translation>
     </message>
     <message>
         <source>Exceptions</source>
-        <translation type="unfinished"></translation>
+        <translation>Výjimky</translation>
     </message>
     <message>
         <source>Mime types that should not be passed to xdg-open even when &quot;Use desktop preferences&quot; is set.&lt;br&gt; Useful to pass page number and search string options to, e.g. evince.</source>
-        <translation type="unfinished"></translation>
+        <translation>MIME typy, jež nemají být předány xdg-open, dokonce i když je nastaveno &quot;Použít nastavení plochy&quot;.&lt;br&gt;Užitečné pro předání čísla strany a hledaného řetězce, např. Evince.</translation>
     </message>
 </context>
 </TS>
