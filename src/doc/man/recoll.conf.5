@@ -80,7 +80,7 @@ can be used to define a specific value for the real time indexing monitor.
 .BI "skippedPathsFnmPathname = " 0/1
 The values in the *skippedPaths variables are matched by default with
 fnmatch(3), with the FNM_PATHNAME and FNM_LEADING_DIR flags. This means
-that '/' characters must be matched explicitely. You can set
+that '/' characters must be matched explicitly. You can set
 skippedPathsFnmPathname to 0 to disable the use of FNM_PATHNAME (meaning
 that /*/dir3 will match /dir1/dir2/dir3). 
 .TP
@@ -111,10 +111,10 @@ to \-1.
 .TP
 .BI "textfilemaxmbs = " value
 Maximum size for text files. Very big text files are often uninteresting
-logs. Set to -1 to disable (default 20MB). 
+logs. Set to \-1 to disable (default 20MB). 
 .TP
 .BI "textfilepagekbs = " value
-If this is set to other than -1, text files will be indexed as multiple
+If this is set to other than \-1, text files will be indexed as multiple
 documents of the given page size. This may be useful if you do want to
 index very big text files as it will both reduce memory usage at index time
 and help with loading data to the preview window. A size of a few megabytes
