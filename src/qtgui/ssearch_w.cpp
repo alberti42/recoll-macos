@@ -24,6 +24,7 @@
 #include <qwhatsthis.h>
 #include <qmessagebox.h>
 #include <qevent.h>
+#include <QTimer>
 
 #include "debuglog.h"
 #include "guiutils.h"
@@ -58,6 +59,8 @@ void SSearch::init()
     connect(searchTypCMB, SIGNAL(activated(int)), this, SLOT(searchTypeChanged(int)));
 
     queryText->installEventFilter(this);
+    queryText->view()->installEventFilter(this);
+    m_displayingCompletions = false;
     m_escape = false;
 }
 
@@ -261,9 +264,9 @@ void SSearch::completion()
 	return;
     }
     // Extract last word in text
-    string txt = (const char *)queryText->currentText().toUtf8();
-    string::size_type cs = txt.find_last_of(" ");
-    if (cs == string::npos)
+    QString txt = queryText->currentText();
+    int cs = txt.lastIndexOf(" ");
+    if (cs == -1)
 	cs = 0;
     else
 	cs++;
@@ -271,10 +274,10 @@ void SSearch::completion()
 	QApplication::beep();
 	return;
     }
-    string s = txt.substr(cs) + "*";
-    LOGDEB(("Completing: [%s]\n", s.c_str()));
 
-    // Query database
+    // Query database for completions
+    string s = qs2utf8s(txt.right(txt.size() - cs)) + "*";
+
     const int max = 100;
     Rcl::TermMatchResult tmres;
 
@@ -286,35 +289,60 @@ void SSearch::completion()
 	return;
     }
     if (tmres.entries.size() == (unsigned int)max) {
-	QMessageBox::warning(0, "Recoll", tr("Too many completions"));
+	QMessageBox *warning = new QMessageBox;
+	warning->setWindowTitle(tr("Recoll"));
+	warning->setText(tr("Too many completions"));
+	warning->show();
+	QTimer::singleShot(500, warning, SLOT(close()));
 	return;
     }
 
-    // If list from db is single word, insert it, else ask user to select
-    QString res;
-    bool ok = false;
+    // If list from db is single word, insert it, else popup the listview
     if (tmres.entries.size() == 1) {
-	res = QString::fromUtf8(tmres.entries.begin()->term.c_str());
-	ok = true;
+	QString res = QString::fromUtf8(tmres.entries.begin()->term.c_str());
+	txt.truncate(cs);
+	txt.append(res);
+	queryText->setEditText(txt);
     } else {
 	QStringList lst;
 	for (vector<Rcl::TermMatchEntry>::iterator it = tmres.entries.begin(); 
 	     it != tmres.entries.end(); it++) {
 	    lst.push_back(QString::fromUtf8(it->term.c_str()));
 	}
-	res = QInputDialog::getItem (this, tr("Completions"), 
-				     tr("Select an item:"),
-				     lst, 0, false, &ok);
-    }
 
-    // Insert result
-    if (ok) {
-	txt.erase(cs);
-	txt.append((const char *)res.toUtf8());
-	queryText->setEditText(QString::fromUtf8(txt.c_str()));
-    } else {
-	return;
+	m_savedEditText = queryText->currentText();
+	m_displayingCompletions = true;
+	m_chosenCompletion.clear();
+	m_completedWordStart = cs;
+
+	queryText->clear();
+	queryText->addItems(lst);
+	queryText->showPopup();
+
+	connect(queryText, SIGNAL(activated(const QString&)), this,
+		SLOT(completionTermChosen(const QString&)));
+	
     }
+}
+
+void SSearch::completionTermChosen(const QString& text)
+{
+    m_chosenCompletion = text;
+}
+
+void SSearch::wrapupCompletion()
+{
+    queryText->clear();
+    queryText->addItems(prefs.ssearchHistory);
+    if (!m_chosenCompletion.isEmpty()) {
+	m_savedEditText.truncate(m_completedWordStart);
+	m_savedEditText.append(m_chosenCompletion);
+    }
+    queryText->setEditText(m_savedEditText);
+    m_savedEditText.clear();
+    m_chosenCompletion.clear();
+    disconnect(queryText, SIGNAL(activated(const QString&)), this,
+	       SLOT(completionTermChosen(const QString&)));
 }
 
 #undef SHOWEVENTS
@@ -458,7 +486,7 @@ const char *eventTypeToStr(int tp)
 }
 #endif
 
-bool SSearch::eventFilter(QObject *, QEvent *event)
+bool SSearch::eventFilter(QObject *target, QEvent *event)
 {
 #if defined(SHOWEVENTS)
     if (event->type() == QEvent::Timer || 
@@ -469,6 +497,18 @@ bool SSearch::eventFilter(QObject *, QEvent *event)
 	     target, queryText->lineEdit(),
 	     eventTypeToStr(event->type())));
 #endif
+
+    if (target == queryText->view()) {
+	if (event->type() == QEvent::Hide) {
+	    // List was closed. If we were displaying completions, need
+	    // to reset state.
+	    if (m_displayingCompletions) {
+		QTimer::singleShot(0, this, SLOT(wrapupCompletion()));
+		m_displayingCompletions = false;
+	    }
+	}
+	return false;
+    }
 
     if (event->type() == QEvent::KeyPress)  {
 	QKeyEvent *ke = (QKeyEvent *)event;

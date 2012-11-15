@@ -51,11 +51,17 @@ public slots:
     virtual void startSimpleSearch();
     virtual void addTerm(QString);
     virtual void onWordReplace(const QString&, const QString&);
+    virtual void completionTermChosen(const QString& text);
+    virtual void wrapupCompletion();
 signals:
     void startSearch(RefCntr<Rcl::SearchData>);
     void clearSearch();
  private:
     bool m_escape;
+    bool m_displayingCompletions;
+    QString m_chosenCompletion;
+    QString m_savedEditText;
+    unsigned int m_completedWordStart;
 };
 
 
