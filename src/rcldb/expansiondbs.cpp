@@ -84,21 +84,7 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
         for (Xapian::TermIterator it = wdb.allterms_begin(); 
 	     it != wdb.allterms_end(); it++) {
 
-	    // Skip terms which don't look like natural language words.
-            if (!Db::isSpellingCandidate(*it)) {
-                LOGDEB1(("createExpansionDbs: skipped: [%s]\n", (*it).c_str()));
-                continue;
-            }
-
 	    // Detect and skip CJK terms.
-	    // We're still sending all other multibyte utf-8 chars to
-            // the stemmer, which is not too well defined for
-            // xapian<1.0 (very obsolete now), but seems to work
-            // anyway. There shouldn't be too many in any case because
-            // accents are stripped at this point. 
-	    // The effect of stripping accents on stemming is not good, 
-            // (e.g: in french partimes -> partim, parti^mes -> part)
-	    // but fixing the issue would be complicated.
 	    Utf8Iter utfit(*it);
 	    if (TextSplit::isCJK(*utfit)) {
 		// LOGDEB(("stemskipped: Skipping CJK\n"));
@@ -116,6 +102,13 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
 		diacasedb.addSynonym(*it);
 	    }
 #endif
+
+	    // Dont' apply stemming to terms which don't look like
+	    // natural language words.
+            if (!Db::isSpellingCandidate(*it)) {
+                LOGDEB1(("createExpansionDbs: skipped: [%s]\n", (*it).c_str()));
+                continue;
+            }
 
 	    // Create stemming synonym for every language. The input is the 
 	    // lowercase accented term
