@@ -1,3 +1,7 @@
+recoll (1.18.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+  * Release 1.18.1 
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 05 Nov 2012 11:22:00 +0200
+
 recoll (1.17.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
   * Release 1.17.3 fixes a nasty email indexing crash
  -- Jean-Francois Dockes <jf@dockes.org>  Thu, 23 May 2012 16:22:00 +0200

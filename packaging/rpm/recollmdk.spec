@@ -1,5 +1,5 @@
 %define name recoll
-%define version 1.17.2
+%define version 1.18.1
 %define release  %mkrel 1
 
 Name:           %{name}
@@ -14,6 +14,7 @@ Group:          Applications/Databases
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 License:	GPL
 BuildRequires:  libqt4-devel
+BuildRequires:  libqtwebkit2.2-devel
 BuildRequires:  libpython-devel
 BuildRequires:  libxapian-devel
 
@@ -63,6 +64,8 @@ rm -rf $RPM_BUILD_ROOT
 # ---------------------------------------------------------------------------
 
 %changelog
+* Mon Nov 05 2012 Jean-Francois Dockes <jfd@recoll.org> 1.18.1-1
+- Update to release 1.18.1
 * Thu May 17 2012 Jean-Francois Dockes <jfd@recoll.org> 1.17.2-1
 - Update to release 1.17.2
 * Mon Nov 07 2011 Jean-Francois Dockes <jfd@recoll.org> 1.16.2-1
