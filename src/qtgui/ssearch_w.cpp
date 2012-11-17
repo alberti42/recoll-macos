@@ -62,6 +62,7 @@ void SSearch::init()
     queryText->view()->installEventFilter(this);
     m_displayingCompletions = false;
     m_escape = false;
+    m_disableAutosearch = true;
 }
 
 void SSearch::searchTextChanged(const QString& text)
@@ -69,10 +70,39 @@ void SSearch::searchTextChanged(const QString& text)
     if (text.isEmpty()) {
 	searchPB->setEnabled(false);
 	clearqPB->setEnabled(false);
+	queryText->setFocus();
 	emit clearSearch();
     } else {
 	searchPB->setEnabled(true);
 	clearqPB->setEnabled(true);
+	if (prefs.autoSearchOnWS && !m_disableAutosearch) {
+	    m_disableAutosearch = true;
+	    LOGDEB(("Autosearch: current: [%s]\n", 
+		    qs2utf8s(queryText->currentText()).c_str()));
+#if 1
+	    string s;
+	    int cs = partialWord(s);
+	    if (cs < 0) {
+		startSimpleSearch();
+		return;
+	    }
+
+	    // Query database for completions
+	    QStringList lst;
+	    const int maxcompsize = 40;
+	    completionList(s, lst, maxcompsize);
+	    if (lst.size() >= maxcompsize) {
+		LOGDEB(("Autosearch: completion list too big: %d\n",
+			lst.size()));
+		return;
+	    }
+	    s = qs2utf8s(queryText->currentText());
+	    s += "*";
+	    startSimpleSearch(s);
+#else
+	    startSimpleSearch();
+#endif
+	}
     }
 }
 
@@ -123,12 +153,38 @@ void SSearch::startSimpleSearch()
 	return;
 
     string u8 = (const char *)queryText->currentText().toUtf8();
-    LOGDEB(("SSearch::startSimpleSearch: [%s]\n", u8.c_str()));
 
     trimstring(u8);
     if (u8.length() == 0)
 	return;
 
+    if (!startSimpleSearch(u8))
+	return;
+
+    LOGDEB(("startSimpleSearch: updating history\n"));
+    // Search terms history:
+    // We want to have the new text at the top and any older identical
+    // entry to be erased. There is no standard qt policy to do this ? 
+    // So do it by hand.
+    QString txt = queryText->currentText();
+    int index = queryText->findText(txt);
+    if (index >= 0) 
+	queryText->removeItem(index);
+    queryText->insertItem(0, txt);
+    queryText->setCurrentIndex(0);
+    m_disableAutosearch = true;
+
+    // Save the current state of the listbox list to the prefs (will
+    // go to disk)
+    prefs.ssearchHistory.clear();
+    for (int index = 0; index < queryText->count(); index++) {
+	prefs.ssearchHistory.push_back(queryText->itemText(index));
+    }
+}
+
+bool SSearch::startSimpleSearch(const string& u8)
+{
+    LOGDEB(("SSearch::startSimpleSearch(%s)\n", u8.c_str()));
     string stemlang = prefs.stemlang();
 
     SSearchType tp = (SSearchType)searchTypCMB->currentIndex();
@@ -144,13 +200,13 @@ void SSearch::startSimpleSearch()
 	if (sdata == 0) {
 	    QMessageBox::warning(0, "Recoll", tr("Bad query string") + ": " +
 				 QString::fromAscii(reason.c_str()));
-	    return;
+	    return false;
 	}
     } else {
 	sdata = new Rcl::SearchData(Rcl::SCLT_OR, stemlang);
 	if (sdata == 0) {
 	    QMessageBox::warning(0, "Recoll", tr("Out of memory"));
-	    return;
+	    return false;
 	}
 	Rcl::SearchDataClause *clp = 0;
 	if (tp == SST_FNM) {
@@ -175,31 +231,14 @@ void SSearch::startSimpleSearch()
 				  prefs.ssearchAutoPhraseThreshPC / 100.0);
     }
 
-    // Search terms history
-
-    // We want to have the new text at the top and any older identical
-    // entry to be erased. There is no standard qt policy to do this ? 
-    // So do it by hand.
-    QString txt = queryText->currentText();
-    int index = queryText->findText(txt);
-    if (index >= 0) 
-	queryText->removeItem(index);
-    queryText->insertItem(0, txt);
-    queryText->setCurrentIndex(0);
-
-    // Save the current state of the listbox list to the prefs (will
-    // go to disk)
-    prefs.ssearchHistory.clear();
-    for (int index = 0; index < queryText->count(); index++) {
-	prefs.ssearchHistory.push_back(queryText->itemText(index));
-    }
-
     RefCntr<Rcl::SearchData> rsdata(sdata);
     emit startSearch(rsdata);
+    return true;
 }
 
 void SSearch::setSearchString(const QString& txt)
 {
+    m_disableAutosearch = true;
     queryText->setEditText(txt);
 }
 
@@ -234,15 +273,19 @@ void SSearch::addTerm(QString term)
     QString text = queryText->currentText();
     text += QString::fromLatin1(" ") + term;
     queryText->setEditText(text);
+    m_disableAutosearch = true;
 }
 
 void SSearch::onWordReplace(const QString& o, const QString& n)
 {
+    LOGDEB(("SSearch::onWordReplace: o [%s] n [%s]\n",
+	    qs2utf8s(o).c_str(), qs2utf8s(n).c_str()));
     QString txt = queryText->currentText();
     QRegExp exp = QRegExp(QString("\\b") + o + QString("\\b"));
     exp.setCaseSensitivity(Qt::CaseInsensitive);
     txt.replace(exp, n);
     queryText->setEditText(txt);
+    m_disableAutosearch = true;
     Qt::KeyboardModifiers mods = QApplication::keyboardModifiers ();
     if (mods == Qt::NoModifier)
 	startSimpleSearch();
@@ -253,16 +296,8 @@ void SSearch::setAnyTermMode()
     searchTypCMB->setCurrentIndex(SST_ANY);
 }
 
-// Complete last word in input by querying db for all possible terms.
-void SSearch::completion()
+int SSearch::partialWord(string& s)
 {
-    if (!rcldb)
-	return;
-    if (searchTypCMB->currentIndex() == SST_FNM) {
-	// Filename: no completion
-	QApplication::beep();
-	return;
-    }
     // Extract last word in text
     QString txt = queryText->currentText();
     int cs = txt.lastIndexOf(" ");
@@ -271,24 +306,57 @@ void SSearch::completion()
     else
 	cs++;
     if (txt.size() == 0 || cs == txt.size()) {
+	return -1;
+    }
+    s = qs2utf8s(txt.right(txt.size() - cs));
+    return cs;
+}
+
+int SSearch::completionList(string s, QStringList& lst, int max)
+{
+    if (!rcldb)
+	return -1;
+   // Query database for completions
+    s += "*";
+    Rcl::TermMatchResult tmres;
+    if (!rcldb->termMatch(Rcl::Db::ET_WILD, "", s, tmres, max) || 
+	tmres.entries.size() == 0) {
+	return 0;
+    }
+    for (vector<Rcl::TermMatchEntry>::iterator it = tmres.entries.begin(); 
+	 it != tmres.entries.end(); it++) {
+	lst.push_back(QString::fromUtf8(it->term.c_str()));
+    }
+    return lst.size();
+}
+
+// Complete last word in input by querying db for all possible terms.
+void SSearch::completion()
+{
+    LOGDEB(("SSearch::completion\n"));
+    if (!rcldb)
+	return;
+    if (searchTypCMB->currentIndex() == SST_FNM) {
+	// Filename: no completion
+	QApplication::beep();
+	return;
+    }
+
+    // Extract last word in text
+    string s;
+    int cs = partialWord(s);
+    if (cs < 0) {
 	QApplication::beep();
 	return;
     }
 
     // Query database for completions
-    string s = qs2utf8s(txt.right(txt.size() - cs)) + "*";
-
-    const int max = 100;
-    Rcl::TermMatchResult tmres;
-
-    string stemLang = prefs.stemlang();
-
-    if (!rcldb->termMatch(Rcl::Db::ET_WILD, stemLang, s, tmres, max) || 
-	tmres.entries.size() == 0) {
+    QStringList lst;
+    if (completionList(s, lst, 100) <= 0) {
 	QApplication::beep();
 	return;
     }
-    if (tmres.entries.size() == (unsigned int)max) {
+    if (lst.size() == 100) {
 	QMessageBox *warning = new QMessageBox;
 	warning->setWindowTitle(tr("Recoll"));
 	warning->setText(tr("Too many completions"));
@@ -298,18 +366,13 @@ void SSearch::completion()
     }
 
     // If list from db is single word, insert it, else popup the listview
-    if (tmres.entries.size() == 1) {
-	QString res = QString::fromUtf8(tmres.entries.begin()->term.c_str());
+    m_disableAutosearch = true;
+    if (lst.size() == 1) {
+	QString txt = queryText->currentText();
 	txt.truncate(cs);
-	txt.append(res);
+	txt.append(lst[0]);
 	queryText->setEditText(txt);
     } else {
-	QStringList lst;
-	for (vector<Rcl::TermMatchEntry>::iterator it = tmres.entries.begin(); 
-	     it != tmres.entries.end(); it++) {
-	    lst.push_back(QString::fromUtf8(it->term.c_str()));
-	}
-
 	m_savedEditText = queryText->currentText();
 	m_displayingCompletions = true;
 	m_chosenCompletion.clear();
@@ -321,7 +384,6 @@ void SSearch::completion()
 
 	connect(queryText, SIGNAL(activated(const QString&)), this,
 		SLOT(completionTermChosen(const QString&)));
-	
     }
 }
 
@@ -332,6 +394,7 @@ void SSearch::completionTermChosen(const QString& text)
 
 void SSearch::wrapupCompletion()
 {
+    LOGDEB(("SSearch::wrapupCompletion\n"));
     queryText->clear();
     queryText->addItems(prefs.ssearchHistory);
     if (!m_chosenCompletion.isEmpty()) {
@@ -339,8 +402,10 @@ void SSearch::wrapupCompletion()
 	m_savedEditText.append(m_chosenCompletion);
     }
     queryText->setEditText(m_savedEditText);
+    m_disableAutosearch = true;
     m_savedEditText.clear();
     m_chosenCompletion.clear();
+    m_displayingCompletions = false;
     disconnect(queryText, SIGNAL(activated(const QString&)), this,
 	       SLOT(completionTermChosen(const QString&)));
 }
@@ -504,7 +569,6 @@ bool SSearch::eventFilter(QObject *target, QEvent *event)
 	    // to reset state.
 	    if (m_displayingCompletions) {
 		QTimer::singleShot(0, this, SLOT(wrapupCompletion()));
-		m_displayingCompletions = false;
 	    }
 	}
 	return false;
@@ -525,10 +589,11 @@ bool SSearch::eventFilter(QObject *target, QEvent *event)
 	    m_escape = false;
 	    return true;
 	} else if (ke->key() == Qt::Key_Space) {
-	    if (prefs.autoSearchOnWS)
-		startSimpleSearch();
+//	    if (prefs.autoSearchOnWS)
+//		startSimpleSearch();
 	}
 	m_escape = false;
+	m_disableAutosearch = false;
     }
     return false;
 }

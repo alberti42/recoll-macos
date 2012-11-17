@@ -62,6 +62,11 @@ signals:
     QString m_chosenCompletion;
     QString m_savedEditText;
     unsigned int m_completedWordStart;
+    bool m_disableAutosearch;
+
+    int partialWord(string& s);
+    int completionList(string s, QStringList& lst, int max = 100);
+    bool startSimpleSearch(const string& q);
 };
 
 
