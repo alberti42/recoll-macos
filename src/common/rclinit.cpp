@@ -47,6 +47,10 @@ RclConfig *recollinit(RclInitFlags flags,
     // must check write() return values.
     signal(SIGPIPE, SIG_IGN);
     
+    // Make sure the locale is set. This is only for converting file names 
+    // to utf8 for indexing.
+    setlocale(LC_CTYPE, "");
+
     // We would like to block SIGCHLD globally, but we can't because
     // QT uses it. Have to block it inside execmd.cpp
 
@@ -101,10 +105,6 @@ RclConfig *recollinit(RclInitFlags flags,
 	int lev = atoi(loglevel.c_str());
 	DebugLog::getdbl()->setloglevel(lev);
     }
-
-    // Make sure the locale is set. This is only for converting file names 
-    // to utf8 for indexing.
-    setlocale(LC_CTYPE, "");
 
     // Make sure the locale charset is initialized (so that multiple
     // threads don't try to do it at once).
