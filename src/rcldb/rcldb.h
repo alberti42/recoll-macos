@@ -53,9 +53,7 @@ using std::vector;
 
 class RclConfig;
 
-#ifndef NO_NAMESPACES
 namespace Rcl {
-#endif
 
 // Omega compatible values. We leave a hole for future omega values. Not sure 
 // it makes any sense to keep any level of omega compat given that the index
