@@ -48,13 +48,15 @@ enum SClType {
 class SearchDataClause;
 
 /** 
-    Data structure representing a Recoll user query, for translation
+    A SearchData object represents a Recoll user query, for translation
     into a Xapian query tree. This could probably better called a 'question'.
 
-    This is a list of search clauses combined through either OR or AND.
+    This is a list of SearchDataClause objects combined through either
+    OR or AND.
 
     Clauses either reflect user entry in a query field: some text, a
-    clause type (AND/OR/NEAR etc.), possibly a distance, or points to
+    clause type (AND/OR/NEAR etc.), possibly a distance, or are the
+    result of parsing query language input. A clause can also point to
     another SearchData representing a subquery.
 
     The content of each clause when added may not be fully parsed yet
@@ -63,28 +65,34 @@ class SearchDataClause;
     several terms and phrases as would result from 
     ["this is a phrase"  term1 term2] . 
 
-    This is why the clauses also have an AND/OR/... type. 
+    This is why the clauses also have an AND/OR/... type. They are an 
+    intermediate form between the primary user input and 
+    the final Xapian::Query tree.
 
-    A phrase clause could be added either explicitly or using double quotes:
-    {SCLT_PHRASE, [this is a phrase]} or as {SCLT_XXX, ["this is a phrase"]}
+    For example, a phrase clause could be added either explicitly or
+    using double quotes: {SCLT_PHRASE, [this is a phrase]} or as
+    {SCLT_XXX, ["this is a phrase"]}
 
 */
 class SearchData {
 public:
     SearchData(SClType tp, const string& stemlang) 
-    : m_tp(tp), m_haveDates(false), m_maxSize(size_t(-1)),
-      m_minSize(size_t(-1)), m_haveWildCards(false), m_stemlang(stemlang)
+	: m_tp(tp), m_stemlang(stemlang)
     {
 	if (m_tp != SCLT_OR && m_tp != SCLT_AND) 
 	    m_tp = SCLT_OR;
+	commoninit();
     }
     SearchData() 
-	: m_tp(SCLT_AND), m_haveDates(false), m_maxSize(size_t(-1)),
-	  m_minSize(size_t(-1)), m_haveWildCards(false), m_stemlang("english")
+	: m_tp(SCLT_AND), m_stemlang("english")
     {
+	commoninit();
     }
     
-    ~SearchData() {erase();}
+    ~SearchData() 
+    {
+	erase();
+    }
 
     /** Make pristine */
     void erase();
@@ -96,7 +104,7 @@ public:
     bool haveWildCards() {return m_haveWildCards;}
 
     /** Translate to Xapian query. rcldb knows about the void*  */
-    bool toNativeQuery(Rcl::Db &db, void *, int maxexp, int maxcl);
+    bool toNativeQuery(Rcl::Db &db, void *);
 
     /** We become the owner of cl and will delete it */
     bool addClause(SearchDataClause *cl);
@@ -143,12 +151,26 @@ public:
     std::string getDescription() {return m_description;}
     void setDescription(const std::string& d) {m_description = d;}
 
+    /** Return an XML version of the contents, for storage in search history
+	by the GUI */
     string asXML();
+
     void setTp(SClType tp) 
     {
 	m_tp = tp;
     }
+
+    void setMaxExpand(int max)
+    {
+	m_softmaxexpand = max;
+    }
+    bool getAutoDiac() {return m_autodiacsens;}
+    bool getAutoCase() {return m_autocasesens;}
+    int getMaxExp() {return m_maxexp;}
+    int getMaxCl() {return m_maxcl;}
+
     friend class ::AdvSearch;
+
 private:
     // Combine type. Only SCLT_AND or SCLT_OR here
     SClType                   m_tp; 
@@ -184,10 +206,26 @@ private:
     bool   m_haveWildCards;
     std::string m_stemlang;
 
+    // Parameters set at the start of ToNativeQuery because they need
+    // an rclconfig. Actually this does not make sense and it would be
+    // simpler to just pass an rclconfig to the constructor;
+    bool m_autodiacsens;
+    bool m_autocasesens;
+    int m_maxexp;
+    int m_maxcl;
+
+    // Parameters which are not part of the main query data but may influence
+    // translation in special cases.
+    // Maximum TermMatch (e.g. wildcard) expansion. This is normally set
+    // from the configuration with a high default, but may be set to a lower
+    // value during "find-as-you-type" operations from the GUI
+    int m_softmaxexpand;
+
     bool expandFileTypes(RclConfig *cfg, std::vector<std::string>& exptps);
     bool clausesToQuery(Rcl::Db &db, SClType tp,     
 			std::vector<SearchDataClause*>& query,
-			string& reason, void *d, int, int);
+			string& reason, void *d);
+    void commoninit();
 
     /* Copyconst and assignment private and forbidden */
     SearchData(const SearchData &) {}
@@ -204,7 +242,7 @@ public:
       m_modifiers(SDCM_NONE), m_weight(1.0)
     {}
     virtual ~SearchDataClause() {}
-    virtual bool toNativeQuery(Rcl::Db &db, void *, int maxexp, int maxcl) = 0;
+    virtual bool toNativeQuery(Rcl::Db &db, void *) = 0;
     bool isFileName() const {return m_tp == SCLT_FILENAME ? true: false;}
     virtual std::string getReason() const {return m_reason;}
     virtual void getTerms(HighlightData & hldata) const = 0;
@@ -221,6 +259,22 @@ public:
     {
 	return (m_modifiers & SDCM_NOSTEMMING) || m_parentSearch == 0 ? 
 	    cstr_null : m_parentSearch->getStemLang();
+    }
+    bool getAutoDiac()
+    {
+	return m_parentSearch ? m_parentSearch->getAutoDiac() : false;
+    }
+    bool getAutoCase()
+    {
+	return m_parentSearch ? m_parentSearch->getAutoCase() : true;
+    }
+    int getMaxExp() 
+    {
+	return m_parentSearch ? m_parentSearch->getMaxExp() : 10000;
+    }
+    int getMaxCl() 
+    {
+	return m_parentSearch ? m_parentSearch->getMaxCl() : 100000;
     }
     virtual void setModifiers(Modifier mod) 
     {
@@ -263,6 +317,7 @@ private:
  * "Simple" data clause with user-entered query text. This can include 
  * multiple phrases and words, but no specified distance.
  */
+class TextSplitQ;
 class SearchDataClauseSimple : public SearchDataClause {
 public:
     SearchDataClauseSimple(SClType tp, const std::string& txt, 
@@ -278,7 +333,7 @@ public:
     }
 
     /** Translate to Xapian query */
-    virtual bool toNativeQuery(Rcl::Db &, void *, int maxexp, int maxcl);
+    virtual bool toNativeQuery(Rcl::Db &, void *);
 
     virtual void getTerms(HighlightData& hldata) const
     {
@@ -296,6 +351,21 @@ protected:
     std::string  m_text;  // Raw user entry text.
     std::string  m_field; // Field specification if any
     HighlightData m_hldata;
+    int  m_curcl;
+
+    bool processUserString(Rcl::Db &db, const string &iq, int mods,  
+			   std::string &ermsg,
+			   void* pq, int slack = 0, bool useNear = false);
+    bool expandTerm(Rcl::Db &db, std::string& ermsg, int mods, 
+		    const std::string& term, 
+		    std::vector<std::string>& exp, 
+                    std::string& sterm, const std::string& prefix);
+    // After splitting entry on whitespace: process non-phrase element
+    void processSimpleSpan(Rcl::Db &db, string& ermsg, const string& span, 
+			   int mods, void *pq);
+    // Process phrase/near element
+    void processPhraseOrNear(Rcl::Db &db, string& ermsg, TextSplitQ *splitData, 
+			     int mods, void *pq, bool useNear, int slack);
 };
 
 /** 
@@ -306,10 +376,10 @@ protected:
  * field, especially for file names, because this makes searches for
  * "*xx" much faster (no need to scan the whole main index).
  */
-class SearchDataClauseFilename : public SearchDataClauseSimple {
+class SearchDataClauseFilename : public SearchDataClause {
 public:
     SearchDataClauseFilename(const std::string& txt)
-	: SearchDataClauseSimple(SCLT_FILENAME, txt) 
+	: SearchDataClause(SCLT_FILENAME), m_text(txt) 
     {
 	// File name searches don't count when looking for wild cards.
 	m_haveWildCards = false;
@@ -319,7 +389,14 @@ public:
     {
     }
 
-    virtual bool toNativeQuery(Rcl::Db &, void *, int maxexp, int maxcl);
+    virtual void getTerms(HighlightData&) const
+    {
+    }
+
+    virtual bool toNativeQuery(Rcl::Db &, void *);
+
+protected:
+    std::string m_text;
 };
 
 /** 
@@ -338,7 +415,7 @@ public:
     {
     }
 
-    virtual bool toNativeQuery(Rcl::Db &, void *, int maxexp, int maxcl);
+    virtual bool toNativeQuery(Rcl::Db &, void *);
     virtual int getslack() const
     {
 	return m_slack;
@@ -354,9 +431,9 @@ public:
 	: SearchDataClause(tp), m_sub(sub) 
     {
     }
-    virtual bool toNativeQuery(Rcl::Db &db, void *p, int maxexp, int maxcl)
+    virtual bool toNativeQuery(Rcl::Db &db, void *p)
     {
-	bool ret = m_sub->toNativeQuery(db, p, maxexp, maxcl);
+	bool ret = m_sub->toNativeQuery(db, p);
 	if (!ret) 
 	    m_reason = m_sub->getReason();
 	return ret;

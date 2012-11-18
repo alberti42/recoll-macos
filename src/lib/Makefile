@@ -6,8 +6,8 @@ LIBS = librcl.a
 
 all: $(LIBS)
 
-OBJS =  rclaspell.o beaglequeuecache.o cstr.o rclconfig.o rclinit.o textsplit.o unacpp.o beaglequeue.o bglfetcher.o fetcher.o fsfetcher.o fsindexer.o indexer.o mimetype.o subtreelist.o htmlparse.o internfile.o mh_exec.o mh_execm.o mh_html.o mh_mail.o mh_mbox.o mh_text.o mimehandler.o myhtmlparse.o txtdcode.o docseq.o docseqdb.o docseqhist.o filtseq.o dynconf.o plaintorich.o recollq.o reslistpager.o sortseq.o wasastringtoquery.o wasatorcl.o expansiondbs.o rclabstract.o rcldb.o rcldoc.o rclquery.o searchdata.o stemdb.o stoplist.o synfamily.o unac.o base64.o circache.o closefrom.o conftree.o copyfile.o debuglog.o ecrontab.o execmd.o fstreewalk.o idfile.o fileudi.o md5.o mimeparse.o netcon.o pathut.o pxattr.o rclionice.o readfile.o smallut.o transcode.o wipedir.o x11mon.o mime-parsefull.o mime-parseonlyheader.o mime-printbody.o mime.o convert.o iodevice.o iofactory.o
-DEPS =  rclaspell.dep.stamp beaglequeuecache.dep.stamp cstr.dep.stamp rclconfig.dep.stamp rclinit.dep.stamp textsplit.dep.stamp unacpp.dep.stamp beaglequeue.dep.stamp bglfetcher.dep.stamp fetcher.dep.stamp fsfetcher.dep.stamp fsindexer.dep.stamp indexer.dep.stamp mimetype.dep.stamp subtreelist.dep.stamp htmlparse.dep.stamp internfile.dep.stamp mh_exec.dep.stamp mh_execm.dep.stamp mh_html.dep.stamp mh_mail.dep.stamp mh_mbox.dep.stamp mh_text.dep.stamp mimehandler.dep.stamp myhtmlparse.dep.stamp txtdcode.dep.stamp docseq.dep.stamp docseqdb.dep.stamp docseqhist.dep.stamp filtseq.dep.stamp dynconf.dep.stamp plaintorich.dep.stamp recollq.dep.stamp reslistpager.dep.stamp sortseq.dep.stamp wasastringtoquery.dep.stamp wasatorcl.dep.stamp expansiondbs.dep.stamp rclabstract.dep.stamp rcldb.dep.stamp rcldoc.dep.stamp rclquery.dep.stamp searchdata.dep.stamp stemdb.dep.stamp stoplist.dep.stamp synfamily.dep.stamp unac.dep.stamp base64.dep.stamp circache.dep.stamp closefrom.dep.stamp conftree.dep.stamp copyfile.dep.stamp debuglog.dep.stamp ecrontab.dep.stamp execmd.dep.stamp fstreewalk.dep.stamp idfile.dep.stamp fileudi.dep.stamp md5.dep.stamp mimeparse.dep.stamp netcon.dep.stamp pathut.dep.stamp pxattr.dep.stamp rclionice.dep.stamp readfile.dep.stamp smallut.dep.stamp transcode.dep.stamp wipedir.dep.stamp x11mon.dep.stamp mime-parsefull.dep.stamp mime-parseonlyheader.dep.stamp mime-printbody.dep.stamp mime.dep.stamp convert.dep.stamp iodevice.dep.stamp iofactory.dep.stamp
+OBJS =  rclaspell.o beaglequeuecache.o cstr.o rclconfig.o rclinit.o textsplit.o unacpp.o beaglequeue.o bglfetcher.o fetcher.o fsfetcher.o fsindexer.o indexer.o mimetype.o subtreelist.o htmlparse.o internfile.o mh_exec.o mh_execm.o mh_html.o mh_mail.o mh_mbox.o mh_text.o mimehandler.o myhtmlparse.o txtdcode.o docseq.o docseqdb.o docseqhist.o filtseq.o dynconf.o plaintorich.o recollq.o reslistpager.o sortseq.o wasastringtoquery.o wasatorcl.o daterange.o expansiondbs.o rclabstract.o rcldb.o rcldoc.o rclquery.o searchdata.o searchdataxml.o stemdb.o stoplist.o synfamily.o unac.o base64.o circache.o closefrom.o conftree.o copyfile.o debuglog.o ecrontab.o execmd.o fstreewalk.o idfile.o fileudi.o md5.o mimeparse.o netcon.o pathut.o pxattr.o rclionice.o readfile.o smallut.o transcode.o wipedir.o x11mon.o mime-parsefull.o mime-parseonlyheader.o mime-printbody.o mime.o convert.o iodevice.o iofactory.o
+DEPS =  rclaspell.dep.stamp beaglequeuecache.dep.stamp cstr.dep.stamp rclconfig.dep.stamp rclinit.dep.stamp textsplit.dep.stamp unacpp.dep.stamp beaglequeue.dep.stamp bglfetcher.dep.stamp fetcher.dep.stamp fsfetcher.dep.stamp fsindexer.dep.stamp indexer.dep.stamp mimetype.dep.stamp subtreelist.dep.stamp htmlparse.dep.stamp internfile.dep.stamp mh_exec.dep.stamp mh_execm.dep.stamp mh_html.dep.stamp mh_mail.dep.stamp mh_mbox.dep.stamp mh_text.dep.stamp mimehandler.dep.stamp myhtmlparse.dep.stamp txtdcode.dep.stamp docseq.dep.stamp docseqdb.dep.stamp docseqhist.dep.stamp filtseq.dep.stamp dynconf.dep.stamp plaintorich.dep.stamp recollq.dep.stamp reslistpager.dep.stamp sortseq.dep.stamp wasastringtoquery.dep.stamp wasatorcl.dep.stamp daterange.dep.stamp expansiondbs.dep.stamp rclabstract.dep.stamp rcldb.dep.stamp rcldoc.dep.stamp rclquery.dep.stamp searchdata.dep.stamp searchdataxml.dep.stamp stemdb.dep.stamp stoplist.dep.stamp synfamily.dep.stamp unac.dep.stamp base64.dep.stamp circache.dep.stamp closefrom.dep.stamp conftree.dep.stamp copyfile.dep.stamp debuglog.dep.stamp ecrontab.dep.stamp execmd.dep.stamp fstreewalk.dep.stamp idfile.dep.stamp fileudi.dep.stamp md5.dep.stamp mimeparse.dep.stamp netcon.dep.stamp pathut.dep.stamp pxattr.dep.stamp rclionice.dep.stamp readfile.dep.stamp smallut.dep.stamp transcode.dep.stamp wipedir.dep.stamp x11mon.dep.stamp mime-parsefull.dep.stamp mime-parseonlyheader.dep.stamp mime-printbody.dep.stamp mime.dep.stamp convert.dep.stamp iodevice.dep.stamp iofactory.dep.stamp
 
 librcl.a : $(DEPS) $(OBJS)
 	ar ru librcl.a $(OBJS)
@@ -87,6 +87,8 @@ wasastringtoquery.o : ../query/wasastringtoquery.cpp $(depth)/mk/localdefs
 	$(CXX) $(ALL_CXXFLAGS) -c ../query/wasastringtoquery.cpp
 wasatorcl.o : ../query/wasatorcl.cpp $(depth)/mk/localdefs
 	$(CXX) $(ALL_CXXFLAGS) -c ../query/wasatorcl.cpp
+daterange.o : ../rcldb/daterange.cpp $(depth)/mk/localdefs
+	$(CXX) $(ALL_CXXFLAGS) -c ../rcldb/daterange.cpp
 expansiondbs.o : ../rcldb/expansiondbs.cpp $(depth)/mk/localdefs
 	$(CXX) $(ALL_CXXFLAGS) -c ../rcldb/expansiondbs.cpp
 rclabstract.o : ../rcldb/rclabstract.cpp $(depth)/mk/localdefs
@@ -99,6 +101,8 @@ rclquery.o : ../rcldb/rclquery.cpp $(depth)/mk/localdefs
 	$(CXX) $(ALL_CXXFLAGS) -c ../rcldb/rclquery.cpp
 searchdata.o : ../rcldb/searchdata.cpp $(depth)/mk/localdefs
 	$(CXX) $(ALL_CXXFLAGS) -c ../rcldb/searchdata.cpp
+searchdataxml.o : ../rcldb/searchdataxml.cpp $(depth)/mk/localdefs
+	$(CXX) $(ALL_CXXFLAGS) -c ../rcldb/searchdataxml.cpp
 stemdb.o : ../rcldb/stemdb.cpp $(depth)/mk/localdefs
 	$(CXX) $(ALL_CXXFLAGS) -c ../rcldb/stemdb.cpp
 stoplist.o : ../rcldb/stoplist.cpp $(depth)/mk/localdefs
@@ -282,6 +286,9 @@ wasastringtoquery.dep.stamp : ../query/wasastringtoquery.cpp $(depth)/mk/localde
 wasatorcl.dep.stamp : ../query/wasatorcl.cpp $(depth)/mk/localdefs
 	$(CXX) -M $(ALL_CXXFLAGS) ../query/wasatorcl.cpp > wasatorcl.dep
 	touch wasatorcl.dep.stamp
+daterange.dep.stamp : ../rcldb/daterange.cpp $(depth)/mk/localdefs
+	$(CXX) -M $(ALL_CXXFLAGS) ../rcldb/daterange.cpp > daterange.dep
+	touch daterange.dep.stamp
 expansiondbs.dep.stamp : ../rcldb/expansiondbs.cpp $(depth)/mk/localdefs
 	$(CXX) -M $(ALL_CXXFLAGS) ../rcldb/expansiondbs.cpp > expansiondbs.dep
 	touch expansiondbs.dep.stamp
@@ -300,6 +307,9 @@ rclquery.dep.stamp : ../rcldb/rclquery.cpp $(depth)/mk/localdefs
 searchdata.dep.stamp : ../rcldb/searchdata.cpp $(depth)/mk/localdefs
 	$(CXX) -M $(ALL_CXXFLAGS) ../rcldb/searchdata.cpp > searchdata.dep
 	touch searchdata.dep.stamp
+searchdataxml.dep.stamp : ../rcldb/searchdataxml.cpp $(depth)/mk/localdefs
+	$(CXX) -M $(ALL_CXXFLAGS) ../rcldb/searchdataxml.cpp > searchdataxml.dep
+	touch searchdataxml.dep.stamp
 stemdb.dep.stamp : ../rcldb/stemdb.cpp $(depth)/mk/localdefs
 	$(CXX) -M $(ALL_CXXFLAGS) ../rcldb/stemdb.cpp > stemdb.dep
 	touch stemdb.dep.stamp
@@ -415,12 +425,14 @@ include reslistpager.dep
 include sortseq.dep
 include wasastringtoquery.dep
 include wasatorcl.dep
+include daterange.dep
 include expansiondbs.dep
 include rclabstract.dep
 include rcldb.dep
 include rcldoc.dep
 include rclquery.dep
 include searchdata.dep
+include searchdataxml.dep
 include stemdb.dep
 include stoplist.dep
 include synfamily.dep

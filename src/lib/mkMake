@@ -41,12 +41,14 @@ ${depth}/query/reslistpager.cpp \
 ${depth}/query/sortseq.cpp \
 ${depth}/query/wasastringtoquery.cpp \
 ${depth}/query/wasatorcl.cpp \
+${depth}/rcldb/daterange.cpp \
 ${depth}/rcldb/expansiondbs.cpp \
 ${depth}/rcldb/rclabstract.cpp \
 ${depth}/rcldb/rcldb.cpp \
 ${depth}/rcldb/rcldoc.cpp \
 ${depth}/rcldb/rclquery.cpp \
 ${depth}/rcldb/searchdata.cpp \
+${depth}/rcldb/searchdataxml.cpp \
 ${depth}/rcldb/stemdb.cpp \
 ${depth}/rcldb/stoplist.cpp \
 ${depth}/rcldb/synfamily.cpp \

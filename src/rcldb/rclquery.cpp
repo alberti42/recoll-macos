@@ -195,13 +195,8 @@ bool Query::setQuery(RefCntr<SearchData> sdata)
     m_nq->clear();
     m_sd = sdata;
     
-    int maxexp = 10000;
-    m_db->getConf()->getConfParam("maxTermExpand", &maxexp);
-    int maxcl = 100000;
-    m_db->getConf()->getConfParam("maxXapianClauses", &maxcl);
-
     Xapian::Query xq;
-    if (!sdata->toNativeQuery(*m_db, &xq, maxexp, maxcl)) {
+    if (!sdata->toNativeQuery(*m_db, &xq)) {
 	m_reason += sdata->getReason();
 	return false;
     }
