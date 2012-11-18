@@ -564,6 +564,14 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
     if (term.empty())
 	return true;
 
+    bool maxexpissoft = false;
+    int maxexpand = getSoftMaxExp();
+    if (maxexpand != -1) {
+	maxexpissoft = true;
+    } else {
+	maxexpand = getMaxExp();
+    }
+
     bool haswild = term.find_first_of(cstr_minwilds) != string::npos;
 
     // If there are no wildcards, add term to the list of user-entered terms
@@ -644,7 +652,7 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 	// would be nothing to prevent us to expand from the casediac
 	// synonyms first. To be done later
 	db.termMatch(Rcl::Db::ET_WILD, getStemLang(), term, res, 
-		     getMaxExp(), m_field);
+		     maxexpand, m_field);
 	goto termmatchtoresult;
     }
 
@@ -653,7 +661,7 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 #ifdef RCL_INDEX_STRIPCHARS
 
     db.termMatch(Rcl::Db::ET_STEM, getStemLang(), term, res, 
-		 getMaxExp(), m_field);
+		 maxexpand, m_field);
 
 #else
 
@@ -661,7 +669,7 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 	// If the index is raw, we can only come here if nostemexp is unset
 	// and we just need stem expansion.
 	db.termMatch(Rcl::Db::ET_STEM, getStemLang(), term, res, 
-		     getMaxExp(), m_field);
+		     maxexpand, m_field);
 	goto termmatchtoresult;
     } 
 
@@ -731,13 +739,13 @@ exptotermatch:
     for (vector<string>::const_iterator it = lexp.begin();
 	 it != lexp.end(); it++) {
 	db.termMatch(Rcl::Db::ET_WILD, getStemLang(), *it, res,
-		     getMaxExp(), m_field);
+		     maxexpand, m_field);
     }
 #endif
 
     // Term match entries to vector of terms
 termmatchtoresult:
-    if (int(res.entries.size()) >= getMaxExp()) {
+    if (int(res.entries.size()) >= maxexpand && !maxexpissoft) {
 	ermsg = "Maximum term expansion size exceeded."
 	    " Maybe increase maxTermExpand.";
 	return false;
@@ -1140,9 +1148,11 @@ bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p)
     Xapian::Query *qp = (Xapian::Query *)p;
     *qp = Xapian::Query();
 
+    int maxexp = getSoftMaxExp();
+    if (maxexp == -1)
+	maxexp = getMaxExp();
+
     vector<string> names;
-    int maxexp = 10000;
-    db.getConf()->getConfParam("maxTermExpand", &maxexp);
     db.filenameWildExp(m_text, names, maxexp);
     *qp = Xapian::Query(Xapian::Query::OP_OR, names.begin(), names.end());
 

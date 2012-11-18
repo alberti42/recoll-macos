@@ -168,6 +168,7 @@ public:
     bool getAutoCase() {return m_autocasesens;}
     int getMaxExp() {return m_maxexp;}
     int getMaxCl() {return m_maxcl;}
+    int getSoftMaxExp() {return m_softmaxexpand;}
 
     friend class ::AdvSearch;
 
@@ -275,6 +276,10 @@ public:
     int getMaxCl() 
     {
 	return m_parentSearch ? m_parentSearch->getMaxCl() : 100000;
+    }
+    int getSoftMaxExp() 
+    {
+	return m_parentSearch ? m_parentSearch->getSoftMaxExp() : -1;
     }
     virtual void setModifiers(Modifier mod) 
     {
