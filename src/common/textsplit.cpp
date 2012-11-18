@@ -517,8 +517,10 @@ bool TextSplit::text_to_words(const string &in)
 		    return false;
 		curspanglue = cc;
 		m_inNumber = false;
+		m_wordStart += it.appendchartostring(m_span);
+	    } else {
+		goto SPACE;
 	    }
-	    m_wordStart += it.appendchartostring(m_span);
 	    break;
 	case '_':
 	    if (m_wordLen) {
