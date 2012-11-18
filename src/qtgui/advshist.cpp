@@ -108,7 +108,7 @@ bool SDHXMLHandler::endElement(const QString & /* namespaceURI */,
     } else if (qName == "S") {
 	slack = atoi((const char *)currentText.toAscii());
     } else if (qName == "C") {
-	SearchDataClauseSimple *c;
+	SearchDataClause *c;
 	if (whatclause == "AND" || whatclause.isEmpty()) {
 	    c = new SearchDataClauseSimple(SCLT_AND, text, field);
 	} else if (whatclause == "OR") {
