@@ -36,8 +36,23 @@
           topmost section may also exist in older versions.</i></p>
 
       
-      <h2><a name="b_latest">recoll 1.18.003</a></h2> 
+      <h2><a name="b_latest">recoll 1.18.1</a></h2> 
       <ul>
+
+        <li>Weird data in filter output text (e.g.: produced by some
+          versions of pdftotext) can cause an error which will halt
+          the processing of the document, which becomes
+          unsearchable. This is a relatively uncommon problem which
+          signals itself by a specific error in the indexing log, so
+          you can know if you are affected. Look for:
+          <tt>xapian add_posting error Empty termnames aren't allowed</tt>
+        </li> 
+
+        <li>Raw indexes (not default): diacritics and case expansion
+          is not applied to terms containing numbers so that a
+          case-insensitive search does not work for them (e.g.:
+          searching for ds1820 will not find DS1820).</li>
+
       <li>On systems such as Debian Stable which use Evince version
         2.x (not 3.x) as PDF viewer, the default "Open" command for
         PDF files will not work. You need to edit the command:

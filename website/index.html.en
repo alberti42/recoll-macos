@@ -51,8 +51,8 @@
         <li><a href="features.html">Detailed features</a>.
       </ul>
       <p>The current <span class="application">Recoll</span> version is
-	<a href="download.html">1.17.3</a> 
-	(<a href="release-1.17.html">Release notes</a>).</p>
+	<a href="download.html">1.18.1</a> 
+	(<a href="release-1.18.html">Release notes</a>).</p>
 
       <p><span class="application">Recoll</span> is based on the very
         strong <a href="http://www.xapian.org">Xapian</a> search
@@ -83,27 +83,43 @@
 
       <h2>News</h2>
       <div class="news">
-      <ul>
+      <dl>
+        <dt>2012-11-05</dt><dd>Recoll 1.18.1 is out. It has optional
+          character case and diacritics 
+          sensitivity, direct access to the hit page when opening PDF
+          files, complex search history, and a host of other smaller
+          improvements. See the <a href="release-1.18.html">release
+            notes</a>.
+          <span class="important">Those of you not using <b>evince</b>
+          as a PDF/Postscript/DVI viewer may be surprised to see the
+          recoll GUI try to use this viewer anyway.</span>This is because
+            some of the new functions in 1.18 work better
+            with <b>evince</b>, but you can override the choice by
+            going to the GUI preferences, and removing
+            application/pdf, application/postscript and
+            application/dvi from the <tt>Exceptions</tt> list.
+        </dd>
 
-        <li>2012-10-30: Recoll has a brand new Firefox extension for
+        <dt>2012-10-30</dt> <dd>Recoll has a brand new Firefox extension for
           indexing visited Web pages. This is very similar to the old
           Beagle plugin, but slightly better integrated (no-fuss
           installation), and with a new lease on life. See
           <a href="https://sourceforge.net/projects/recollfirefox/">
             Dave King's project page on sourceforge</a> and the
           <a href="https://bitbucket.org/medoc/recoll/wiki/IndexWebHistory">
-            page about Recoll (trivial) configuration</a>.</li>
+            page about Recoll (trivial) configuration</a>.</dd>
 
-        <li>2012-10-30: the source for <a href="recoll-1.18.003.tar.gz">
+        <dt>2012-10-30</dt> <dd>The source for <a href="recoll-1.18.003.tar.gz">
             recoll 1.18.003</a> is available, and this is a call to
             volunteers to test it. There are binary packages on the recoll
             "experimental" PPA for Ubuntu and Mint Linux users, and I can
             build others. See this
      <a href="http://www.freelists.org/post/recoll-user/recoll-1180-prerelease">
             message</a> for more information. Mini-release 003 fixes a GUI
-            crash and a few other issues in 002.</li>
+            crash and a few other issues in 002.</dd>
+        </dd>
 
-        <li>2012-10-25: a problem with a simple workaround has caused
+        <dt>2012-10-25</dt> <dd>A problem with a simple workaround has caused
           several reported <span class="important">recollindex
           crashes</span> recently (for 1.17). If you store and index
           Mozilla/Thunderbird email out of the standard location
@@ -118,67 +134,56 @@
           possibly use all the computer's memory and crash. Apart from
           crashes, which only occur for very big folders, this also
           causes incorrect mail indexing.
-        </li>
+        </dd>
 
-        <li>2012-10-16: <a href="filters/filters.html">new filter for
-            EPUB documents</a>.</li> 
-        <li>2012-10-16: recoll 1.18 will soon be out. It will have
+        <dt>2012-10-16</dt><dd> <a href="filters/filters.html">new filter for
+            EPUB documents</a>.</dd>
 
-          optional character case and diacritics sensitivity, direct
-          access to hit page when opening PDF files, complex search
-          history, and a host of other smaller improvements. You can
-          already see the <a href="release-1.18.html">release
-          notes</a> and the snapshot currently on the 
-          <a href="https://launchpad.net/~recoll-backports/+archive/experiments"> 
-            "experimental" Ubuntu PPA</a> is actually a release
-            candidate, so Ubuntu users can take an early plunge...</li>
-
-        <li>2012-09-21: an
+        <dt>2012-09-21</dt><dd>An
           <a href="https://bitbucket.org/medoc/recoll/wiki/ElinksBeagle">easy
                  way</a> to extend the "Beagle queue"
          Recoll web history indexing mechanism to other browsers than
          Firefox (Elinks in this case).
-         </li>
+        </dd>
 
-        <li>2012-09-13: the next Recoll version will maybe acquire switchable
+        <dt>2012-09-13</dt> <dd>The next Recoll version will
+          acquire switchable 
           case and diacritics sensitivity. I am writing 
           a few pages about the
           issues involved, they are referenced from my  
           <a href="https://plus.google.com/u/0/113262930843833486941/posts">
-            google+</a> profile</li>
+            google+</a> profile</dd>
 
-        <li>2012-09-11: a new user-contributed script for those who use
+        <dt>2012-09-11</dt> <dd>A new user-contributed script for those who use
           real-time indexing on laptops: stop or start indexing
           according to AC power status. See the details on
           the <a href="https://bitbucket.org/medoc/recoll/wiki/IndexOnAc.wiki">
-            Wiki</a>. </li>
+            Wiki</a>. </dd>
 
-        <li>2012-06-19: update info. If you are not running Recoll 1.17.3,
-          you probably should. 1.17.2 and older versions have a bug which
+        <dt>2012-06-19</dt> <dd>Update info. If you are not running
+          Recoll 1.17.3, you probably should. 1.17.2 and older versions
+          have a bug which 
           can cause a crash of the indexing process while processing email,
           under relatively common conditions.<br>
           Also, if you are already running 1.17.3, you may want to install
-          the updated open/libre-office filter described just below.</li>
+          the updated open/libre-office filter described just below.</dd>
 
-        <li>2012-06-01: an
+        <dt>2012-06-01</dt> <dd>An
           updated <a href="filters/filters.html">filter</a> for the 
           OpenDocument format will properly handle exported Google Docs
-          files.</li> 
+          files.</dd> 
 
-        <li>2012-05-25: a
-          new <a href="filters/filters.html">filter</a> for indexing
-          tar archives.</li>
+        <dt>2012-05-25</dt> <dd>A
+          new <a href="filters/filters.html">filter</a> for indexing 
+          tar archives.</dd>
 
-        <li>2012-05-23: Release 1.17.3 mostly fixes an indexing crash that
-          sometimes occurred  while processing email. See the 
-          <a href="release-1.17.html">Release notes</a>. 
-        </li>
-
-        <li>2012-04-07: we now have a Chinese user manual: Recoll现在有中文手册咯：
+        <dt>2012-04-07</dt><dd>We now have a Chinese user manual:
+        Recoll现在有中文手册咯： 
         <a href="http://stupidbeauty.com/Blog/2012/03/recoll%E7%94%A8%E6%88%B6%E6%89%8B%E5%86%8A%E7%BF%BB%E8%AD%AF%EF%BC%8Crecoll-user-manual-2/">
-          Recoll中文手册，HTML</a></li>
+          Recoll中文手册，HTML</a></dd>
 
-        <li>2012-03-27: Recoll gets a Ubuntu Unity Lens. If you are running
+        <dt>2012-03-27</dt> <dd>Recoll gets a Ubuntu Unity Lens. If
+        you are running
           an Ubuntu release where this makes sense, you can install
           the recoll-lens package from the 
           <a href="https://launchpad.net/~recoll-backports/+archive/recoll-1.15-on">
@@ -186,26 +191,9 @@
           extract and display embedded documents, which native utilities
           can't reach directly. And of course you still need to run
           the GUI (or the command line recollindex) to get the indexing
-          going !</li>
+          going !</dd>
 
-        <li>2012-03-24: Release 1.17 is out, see
-          the <a href="release-1.17.html">Release notes</a>. </li>
-
-        <li>2011-11-26: the result list glitch: ennoying and easily
-          worked-around: it will sometimes happen (for a yet
-          undetermined reason) that the result list paragraph format
-          stored in the Qt preferences file will get garbled,
-          causing result lists with no displayed paragraphs (the
-          counts and pages are ok, the results can be seen in table
-          mode, but not in list mode). The workaround is to go to
-          <blockquote>
-           Preferences->Query configuration->User interface
-          </blockquote> and erase the result paragraph format string
-          (^A DEL in the text area), this will reset the string to the
-          default value.</li>
-
-
-      </ul>
+      </dl>
       </div>
 	
       <h2>Thanks</h2>

@@ -47,8 +47,8 @@
       <p><span class="application">Recoll</span> est un logiciel libre
 	gratuit, dont le code source est disponible sous licence GPL.
 	La dernière version est 
-        <a class="important" href="download.html">1.17.3</a>
-	(<a href="release-1.17.html">notes sur la version, en
+        <a class="important" href="download.html">1.18.1</a>
+	(<a href="release-1.18.html">notes sur la version, en
 	anglais</a>)</p> 
 
       <p>L'interface utilisateur de 
@@ -98,9 +98,23 @@
         des questions fréquentes et trucs divers</a> sur bitbucket.org</p>
 
       <h2>Nouvelles: </h2>
-      <ul>
+      <dl>
 
-        <li>2012-10-25: Un problème avec une solution simple peut provoquer
+        <dt>2012-11-05</dt><dd>Recoll 1.18.1 est disponible. Cette
+          version peut faire des recherches sensibles aux majuscules et
+          aux accents, donner un accès direct à la bonne page pour les
+          documents PDF (uniquement avec <b>evince</b>), elle a un
+          historique des recherches complexes, et plein d'autres
+          petites améliorations. Les <a href="release-1.18.html">notes
+            de version</a> (en anglais). <span class="important">Cette
+            version utilise <b>evince</b> par défaut comme visualiseur
+            PDF même si recoll est configuré pour utiliser les
+            préférences du bureau. Vous pouvez retrouver le
+            comportement antérieur en éditant la liste "exceptions"
+            dans la configuration GUI.</span>
+        </dd>
+
+        <dt>2012-10-25</dt><dd> Un problème avec une solution simple peut provoquer
           des <span class="important">plantages de
           recollindex</span>. 
           Si vous indexez des messages mail Mozilla/Thunderbird
@@ -117,21 +131,21 @@
           et à se planter. Dans les cas moins graves (avec des
           fichiers de taille "raisonnable"), cela provoque aussi une
           indexation incorrecte des messages.
-        </li>
+        </dd>
 
-        <li>2012-10-16: <a href="filters/filters.html">un nouveau filtre
-            pour les documents EPUB</a>.</li> 
-        <li>2012-05-24: Sortie de la
+<dt>2012-10-16</dt><dd> <a href="filters/filters.html">un nouveau filtre
+            pour les documents EPUB</a>.</dd> 
+<dt>2012-05-24</dt><dd> Sortie de la
           version <a href="download.html#source">1.17.3</a>. Voir
           les <a href="release-1.17.html">les notes</a>. Cette version
           corrige un "arrêt imprévu" de l'indexation qui se produisait
           parfois en traitant certains messages mail.
-        </li>
+        </dd>
 
-        <li>2010-11-20 : un petit script pour activer/cacher recoll sur un
+        <dt>2010-11-20 : un petit script pour activer/cacher recoll sur un
           bureau gnome d'un seul coup de clavier: 
           <a href="http://bitbucket.org/medoc/recoll/wiki/HotRecoll">
-            recette d'installation</a>.</li>
+            recette d'installation</a>.</dd>
 
       </ul>
 

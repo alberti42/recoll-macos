@@ -39,15 +39,15 @@
         character case and diacritics sensitivity, and it will be
         advisable to reset the index in most cases. This will be best
         done by destroying the index directory (<tt>rm -rf
-        ~/.recoll/xapiandb</tt>).</p>
-
-      <p><em>If</em> the 1.18 index is not configured for case and
+        ~/.recoll/xapiandb</tt>).<br>
+        <em>If</em> 1.18 is not configured for case and
         diacritics sensitivity, it is mostly compatible with 1.17
-        indexes though.</p>  
+        indexes.</p>
 
       <p>Case/diacritics sensitivity is off by default for this
         release. It can be turned on <em>only</em> by editing recoll.conf
-        (see the manual). If you do so, you must then reset the index.</p>
+        (<a href="usermanual/usermanual.html#RCL.INDEXING.CONFIG.SENS">
+          see the manual</a>). If you do so, you must then reset the index.</p>
 
       <p>Always reset the index if installing over an even older
         version (1.16 and older). The simplest way to do this is to
@@ -55,7 +55,7 @@
         (<span class="literal">rm&nbsp;-rf&nbsp;~/.recoll/xapiandb</span>),
         then start recoll or
         recollindex.  <span class="literal">recollindex&nbsp;-z</span>
-        will do the same in most, but not all, cases.</p>
+        &nbsp;will do the same in most, but not all, cases.</p>
 
       <p>The subdirectories of xapiandb which were previously used to
         store the stem expansion database (stem_english,
@@ -85,8 +85,6 @@
         which is the ability to search for exact matches of character case
         and diacritics.</p> 
 
-      <p>Recoll 1.18.0 changes:</p>
-
       <ul>
         
         <li>The index can now be configured for case and diacritics
@@ -103,13 +101,20 @@
           behave like they did in 1.17. Sensitivity must be
           explicitely requested in most cases.</li>
 
+        <li>The advanced search screen now has a history
+          function. While the focus is in this window, you
+          can walk the history of searches using the up and down
+          arrows.</li> 
+
         <li>Recoll has a new capacity to store page break locations
           and use them when opening a document at the location for a
-          given match. This currently works with PDF, Postscript and DVI
-          documents, and the <b>evince</b> viewer.</li> 
+          given match. It will also pass a search string to the viewer
+          application. This currently works with PDF, Postscript and DVI
+          documents, and, optimally, the <b>evince</b> viewer.</li> 
 
-        <li>Recoll can now also pass a search string to the native
-          application (again, works with <b>evince</b>).</li> 
+        <li>The GUI result list has a new "snippets" window for
+          documents with page numbers, which let the user choose a
+          snippet and open the document at the appropriate page.</li>
 
         <li>There is a list of MIME types that should be opened with
           the locally configured application even when <em>Use
@@ -122,15 +127,6 @@
           behaviour (losing the page number functionality). This can
           be done from the <em>Preferences->Gui Configuration</em>
           menu.</li>
-
-        <li>The GUI result list has a new "snippets" window for
-          documents with page numbers, which let the user choose a
-          snippet and open the document at the appropriate page.</li>
-
-        <li>The advanced search screen now has a history
-          function. While the focus is in this window, you
-          can walk the history of searches using the up and down
-          arrows.</li> 
 
         <li>We now allow multiple directory specifications in the query
           language, as in: <i>dir:/home/me -dir:tmp</i></li>

@@ -51,11 +51,11 @@
 
       <h2><a>General information</a></h2>
 
-      <p>The current version is 1.17.3. <a href="release-1.17.html">
+      <p>The current version is 1.18.1. <a href="release-1.18.html">
           Release notes</a>.</p>
 
-      <p>The download page for Recoll 1.16 is
-	<a href="download-1.16.html">still available</a>.</p>
+      <p>The download page for Recoll 1.17 is
+	<a href="download-1.17.html">still available</a>.</p>
 
       <p>Recoll <a href="usermanual/rcl.install.html">
 	  Installation / building manual</a>.</p> 
@@ -95,16 +95,16 @@
 	and moving from X.Y.Z to X.Y.Z+u should in general involve
 	little risk of regression. But, <em>any</em> change can bring
 	problems, if you are not affected by the corrected bugs (check
-	the <a href="CHANGES.html">changes file</a>), there is
+	the <a href="release-1.18.html">release file</a>), there is
 	probably no necessity to upgrade anyway.</p>
 
       <h2><a name="source">Source</a></h2>
 
-      <h3>Current release distribution: 1.17.3:</h3> 
+      <h3>Current release distribution: 1.18.1:</h3> 
       <!-- Attention: source packages must remain here, not in a
         subdirectory, because of all the places they're referred from
         (package watches) -->
-       <p><a href="recoll-1.17.3.tar.gz">recoll-1.17.3.tar.gz</a>.
+       <p><a href="recoll-1.18.1.tar.gz">recoll-1.18.1.tar.gz</a>.
        </p>
 
 <!--
@@ -151,6 +151,11 @@
         <li><p>Qt development files: Qt 4.4 or newer. The Recoll GUI
             will not build with Qt releases older than 4.4.</p></li>
 
+        <li><p>Qt webkit development: Qt WebKit is quite often
+            distributed apart from the main Qt lib. It is possible to
+            configure Recoll not to use Qt WebKit (see 
+            configure&nbsp;--help).</p></li>
+
         <li>Python development package: you can avoid needing this by
           configuring with --disable-python-module.</li>
 
@@ -165,8 +170,8 @@
 
       <h3>Older recoll releases:</h3>
        <p>
-        <a href="recoll-1.17.2.tar.gz">1.17.2</a>.
-        <a href="recoll-1.17.1.tar.gz">1.17.1</a>.
+       <p>
+        <a href="recoll-1.17.3.tar.gz">1.17.3</a>.
         <a href="recoll-1.16.2.tar.gz">1.16.2</a>.
         <a href="recoll-1.15.9.tar.gz">1.15.9</a>.
         <a href="recoll-1.14.4.tar.gz">1.14.4</a>.
@@ -223,12 +228,8 @@
           other releases too). Just follow the instructions for Ubuntu.</p>
         
       <h3>RPMS</h3> 
-
-       <p>Some Fedora and Mandriva packages unfortunately think that they
-	depend on exiftool (which is needed by the little used jpeg
-	info filter), due to excessive rpmbuild	cleverness.
-	<br>You'll need to install the Xapian, Qt, and zlib development
-	  packages if you want use the source rpms.</i></p>
+	<p>You'll need to install the Xapian, Qt, Qt-Webkit and zlib
+	  development packages if you want use the source rpms.</p>
 	  
       <h3>Fedora</h3>
       <p>Recoll is present in the standard Fedora package
@@ -256,18 +257,17 @@ I now use the OpenSUSE build service to create Recoll OpenSUSE packages.
           somewhere else.</p>
       </blockquote>
 
-      <h3>Mandriva</h3>
+      <h3>Mageia</h3>
       <blockquote>
 
-        <p>Mandriva linux 2011 using Qt 4 and the Xapian version
-             from the Mandriva repository.: 
-	  <a href="mandriva2011/recoll-1.17.2-1-mdv2011.0.i586.rpm">
-	    recoll-1.17.2-1-mdv2011.0.i586.rpm</a>, 
-          <a href="recoll-debug-1.17.2-1-mdv2011.0.i586.rpm">
-            recoll-debug-1.17.2-1-mdv2011.0.i586.rpm</a>. <br>
+        <p>Mageia version 2: 
+	  <a href="mageia2/recoll-1.18.1-1.mga2.i586.rpm">
+	    mageia2/recoll-1.18.1-1.mga2.i586.rpm,
+          <a href="mageia2/recoll-debug-1.18.1-1.mga2.i586.rpm">
+            recoll-debug-1.18.1-1.mga2.i586.rpm</a>. <br>
 	  Source: 
-	<a href="mandriva2011/recoll-1.17.2-1.src.rpm">
-	  recoll-1.17.2-1.src.rpm</a>
+	<a href="mageia2/recoll-1.18.1-1.mga2.src.rpm">
+	  recoll-1.18.1-1.mga2.src.rpm</a>
         </p>
       </blockquote>
 
@@ -299,7 +299,7 @@ I now use the OpenSUSE build service to create Recoll OpenSUSE packages.
 
       <h2><a name="translations">Translations</a></h2>
 
-      <p>Most of the translations for 1.17 are incomplete
+      <p>Most of the translations for 1.18 are incomplete
 	The source translation files are included in the source
 	release. If your language has some english messages left and
 	you want to take a shot at fixing the problem, you can send
@@ -315,55 +315,27 @@ I now use the OpenSUSE build service to create Recoll OpenSUSE packages.
       </p>
 
       <p><a href="translations/recoll_xx.ts">recoll_xx.ts</a> is a blank
-	Recoll 1.17 message file, handy to work on a new translation.</p>
+	Recoll 1.18 message file, handy to work on a new translation.</p>
 
-      <h3>Updated 1.17 translations that became available after the
+      <p>A Czech translation for 1.18, thanks to Pavel
+	<a href="translations/recoll_cs.ts">recoll_cs.ts</a>
+	<a href="translations/recoll_cs.qm">recoll_cs.qm</a>
+      </p>
+
+<!--
+      <h3>Updated 1.18 translations that became available after the
 	release:</h3>
 
       <p>A Greek translation for 1.17, thanks to Dimitrios
 	<a href="translations/recoll_el.ts">recoll_el.ts</a>
 	<a href="translations/recoll_el.qm">recoll_el.qm</a>
       </p>
-
+-->
       <p>Note that, if you are running an older release,
         you may find updated messages by looking inside the
         appropriate maintenance branch
         on <a href="https://bitbucket.org/medoc/recoll/src">bitbucket</a>.</p>
 
-
-<!--  
-      <p>A new Spanish translation for 1.16.2, thanks to JCP.
-	<a href="translations/recoll_es.ts">recoll_es.ts</a>
-	<a href="translations/recoll_es.qm">recoll_es.qm</a>
-      </p>
-
-      <p>The following are up to date in 1.16.2, but may be useful if you
-        are running 1.16.1.</p>
-      <p>Czech, thanks to Pavel.
-	<a href="translations/recoll_cs.ts">recoll_cs.ts</a>
-	<a href="translations/recoll_cs.qm">recoll_cs.qm</a>
-	</p> 
-      <p>Russian, thanks to Gleb.
-	<a href="translations/recoll_ru.ts">recoll_ru.ts</a>
-	<a href="translations/recoll_ru.qm">recoll_ru.qm</a>
-	</p> 
-      <p>Lithuanian. 
-	<a href="translations/recoll_lt.ts">recoll_lt.ts</a>
-	<a href="translations/recoll_lt.qm">recoll_lt.qm</a>
-	</p> 
-      <p>Ukrainian. 
-	<a href="translations/recoll_uk.ts">recoll_uk.ts</a>
-	<a href="translations/recoll_uk.qm">recoll_uk.qm</a>
-	</p> 
-      <p><b>Italian</b>. Thanks to Mario, Christian and Giovanni for this.
-	<a href="translations/recoll_it.ts">recoll_it.ts</a>
-	<a href="translations/recoll_it.qm">recoll_it.qm</a>
-	</p> 
-      <p><b>Turkish</b>. Thanks Serdar.
-	<a href="translations/recoll_tr.ts">recoll_tr.ts</a>
-	<a href="translations/recoll_tr.qm">recoll_tr.qm</a>
-	</p> 
--->
 
     </div>
   </body>
