@@ -63,10 +63,24 @@ void SSearch::init()
     m_displayingCompletions = false;
     m_escape = false;
     m_disableAutosearch = true;
+    m_stroketimeout = new QTimer(this);
+    m_stroketimeout->setSingleShot(true);
+    connect(m_stroketimeout, SIGNAL(timeout()), this, SLOT(timerDone()));
+    m_keystroke = false;
+}
+
+void SSearch::timerDone()
+{
+    QString qs = queryText->currentText();
+    LOGINFO(("TIMER DONE. qstring [%s]\n", qs2utf8s(qs).c_str()));
+    searchTextChanged(qs);
 }
 
 void SSearch::searchTextChanged(const QString& text)
 {
+    QString qs = queryText->currentText();
+    LOGINFO(("SEARCHTEXTCHANGED. ks %d text [%s]\n", 
+	     m_keystroke, qs2utf8s(text).c_str()));
     if (text.isEmpty()) {
 	searchPB->setEnabled(false);
 	clearqPB->setEnabled(false);
@@ -75,35 +89,25 @@ void SSearch::searchTextChanged(const QString& text)
     } else {
 	searchPB->setEnabled(true);
 	clearqPB->setEnabled(true);
-	if (prefs.autoSearchOnWS && !m_disableAutosearch) {
+	if (m_keystroke) {
+	    m_tstartqs = qs;
+	}
+	if (prefs.autoSearchOnWS && !m_disableAutosearch && 
+	    !m_keystroke && m_tstartqs == qs) {
 	    m_disableAutosearch = true;
-	    LOGDEB(("Autosearch: current: [%s]\n", 
-		    qs2utf8s(queryText->currentText()).c_str()));
-#if 1
+	    LOGINFO(("Autosearch: current: [%s]\n", qs2utf8s(qs).c_str()));
 	    string s;
 	    int cs = partialWord(s);
 	    if (cs < 0) {
 		startSimpleSearch();
-		return;
+	    } else if (!m_stroketimeout->isActive()) {
+		s = qs2utf8s(queryText->currentText());
+		s += "*";
+		startSimpleSearch(s, 20);
 	    }
-
-	    // Query database for completions
-	    QStringList lst;
-	    const int maxcompsize = 40;
-	    completionList(s, lst, maxcompsize);
-	    if (lst.size() >= maxcompsize) {
-		LOGDEB(("Autosearch: completion list too big: %d\n",
-			lst.size()));
-		return;
-	    }
-	    s = qs2utf8s(queryText->currentText());
-	    s += "*";
-	    startSimpleSearch(s);
-#else
-	    startSimpleSearch();
-#endif
 	}
     }
+    m_keystroke = false;
 }
 
 void SSearch::searchTypeChanged(int typ)
@@ -149,7 +153,9 @@ void SSearch::searchTypeChanged(int typ)
 
 void SSearch::startSimpleSearch()
 {
-    if (queryText->currentText().length() == 0)
+    QString qs = queryText->currentText();
+    LOGINFO(("startSimpleSearch qs [%s]\n", qs2utf8s(qs).c_str()));
+    if (qs.length() == 0)
 	return;
 
     string u8 = (const char *)queryText->currentText().toUtf8();
@@ -168,11 +174,13 @@ void SSearch::startSimpleSearch()
     // So do it by hand.
     QString txt = queryText->currentText();
     int index = queryText->findText(txt);
-    if (index >= 0) 
+    if (index > 0) {
 	queryText->removeItem(index);
+    }
     queryText->insertItem(0, txt);
     queryText->setCurrentIndex(0);
     m_disableAutosearch = true;
+    m_stroketimeout->stop();
 
     // Save the current state of the listbox list to the prefs (will
     // go to disk)
@@ -182,9 +190,9 @@ void SSearch::startSimpleSearch()
     }
 }
 
-bool SSearch::startSimpleSearch(const string& u8)
+bool SSearch::startSimpleSearch(const string& u8, int maxexp)
 {
-    LOGDEB(("SSearch::startSimpleSearch(%s)\n", u8.c_str()));
+    LOGINFO(("SSearch::startSimpleSearch(%s)\n", u8.c_str()));
     string stemlang = prefs.stemlang();
 
     SSearchType tp = (SSearchType)searchTypCMB->currentIndex();
@@ -230,7 +238,9 @@ bool SSearch::startSimpleSearch(const string& u8)
 	sdata->maybeAddAutoPhrase(*rcldb, 
 				  prefs.ssearchAutoPhraseThreshPC / 100.0);
     }
-
+    if (maxexp != -1) {
+	sdata->setMaxExpand(maxexp);
+    }
     RefCntr<Rcl::SearchData> rsdata(sdata);
     emit startSearch(rsdata);
     return true;
@@ -239,6 +249,7 @@ bool SSearch::startSimpleSearch(const string& u8)
 void SSearch::setSearchString(const QString& txt)
 {
     m_disableAutosearch = true;
+    m_stroketimeout->stop();
     queryText->setEditText(txt);
 }
 
@@ -274,6 +285,7 @@ void SSearch::addTerm(QString term)
     text += QString::fromLatin1(" ") + term;
     queryText->setEditText(text);
     m_disableAutosearch = true;
+    m_stroketimeout->stop();
 }
 
 void SSearch::onWordReplace(const QString& o, const QString& n)
@@ -286,6 +298,7 @@ void SSearch::onWordReplace(const QString& o, const QString& n)
     txt.replace(exp, n);
     queryText->setEditText(txt);
     m_disableAutosearch = true;
+    m_stroketimeout->stop();
     Qt::KeyboardModifiers mods = QApplication::keyboardModifiers ();
     if (mods == Qt::NoModifier)
 	startSimpleSearch();
@@ -334,6 +347,10 @@ int SSearch::completionList(string s, QStringList& lst, int max)
 void SSearch::completion()
 {
     LOGDEB(("SSearch::completion\n"));
+
+    m_disableAutosearch = true;
+    m_stroketimeout->stop();
+
     if (!rcldb)
 	return;
     if (searchTypCMB->currentIndex() == SST_FNM) {
@@ -352,21 +369,19 @@ void SSearch::completion()
 
     // Query database for completions
     QStringList lst;
-    if (completionList(s, lst, 100) <= 0) {
+    const int maxdpy = 80;
+    const int maxwalked = 10000;
+    if (completionList(s, lst, maxwalked) <= 0) {
 	QApplication::beep();
 	return;
     }
-    if (lst.size() == 100) {
-	QMessageBox *warning = new QMessageBox;
-	warning->setWindowTitle(tr("Recoll"));
-	warning->setText(tr("Too many completions"));
-	warning->show();
-	QTimer::singleShot(500, warning, SLOT(close()));
-	return;
+    if (lst.size() >= maxdpy) {
+	LOGINFO(("TRUNCATING COMPLETION\n"));
+	lst = lst.mid(0, maxdpy);
+	lst.append("[...]");
     }
 
     // If list from db is single word, insert it, else popup the listview
-    m_disableAutosearch = true;
     if (lst.size() == 1) {
 	QString txt = queryText->currentText();
 	txt.truncate(cs);
@@ -389,12 +404,16 @@ void SSearch::completion()
 
 void SSearch::completionTermChosen(const QString& text)
 {
-    m_chosenCompletion = text;
+    if (text != "[...]")
+	m_chosenCompletion = text;
+    else 
+	m_chosenCompletion.clear();
 }
 
 void SSearch::wrapupCompletion()
 {
     LOGDEB(("SSearch::wrapupCompletion\n"));
+
     queryText->clear();
     queryText->addItems(prefs.ssearchHistory);
     if (!m_chosenCompletion.isEmpty()) {
@@ -581,19 +600,29 @@ bool SSearch::eventFilter(QObject *target, QEvent *event)
 	if (ke->key() == Qt::Key_Escape) {
 	    LOGDEB(("Escape\n"));
 	    m_escape = true;
+	    m_disableAutosearch = true;
+	    m_stroketimeout->stop();
 	    return true;
 	} else if (m_escape && ke->key() == Qt::Key_Space) {
 	    LOGDEB(("Escape space\n"));
 	    ke->accept();
 	    completion();
 	    m_escape = false;
+	    m_disableAutosearch = true;
+	    m_stroketimeout->stop();
 	    return true;
 	} else if (ke->key() == Qt::Key_Space) {
 //	    if (prefs.autoSearchOnWS)
 //		startSimpleSearch();
 	}
 	m_escape = false;
-	m_disableAutosearch = false;
+	m_keystroke = true;
+	if (prefs.autoSearchOnWS) {
+	    m_disableAutosearch = false;
+	    QString qs = queryText->currentText();
+	    LOGINFO(("STARTING TIMER, qs [%s]\n", qs2utf8s(qs).c_str()));
+	    m_stroketimeout->start(500);
+	}
     }
     return false;
 }

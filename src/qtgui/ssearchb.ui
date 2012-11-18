@@ -85,7 +85,7 @@
         <bool>true</bool>
        </property>
        <property name="maxCount">
-        <number>30</number>
+        <number>200</number>
        </property>
        <property name="insertPolicy">
         <enum>QComboBox::NoInsert</enum>

@@ -17,8 +17,11 @@
 #ifndef _SSEARCH_W_H_INCLUDED_
 #define _SSEARCH_W_H_INCLUDED_
 
-#include <qvariant.h>
-#include <qwidget.h>
+#include <QVariant>
+#include <QWidget>
+
+class QTimer;
+
 #include "recoll.h"
 #include "searchdata.h"
 #include "refcntr.h"
@@ -53,20 +56,26 @@ public slots:
     virtual void onWordReplace(const QString&, const QString&);
     virtual void completionTermChosen(const QString& text);
     virtual void wrapupCompletion();
+    virtual void timerDone();
 signals:
     void startSearch(RefCntr<Rcl::SearchData>);
     void clearSearch();
  private:
     bool m_escape;
+
     bool m_displayingCompletions;
     QString m_chosenCompletion;
     QString m_savedEditText;
     unsigned int m_completedWordStart;
+
     bool m_disableAutosearch;
+    QTimer *m_stroketimeout;
+    bool m_keystroke;
+    QString m_tstartqs;
 
     int partialWord(string& s);
     int completionList(string s, QStringList& lst, int max = 100);
-    bool startSimpleSearch(const string& q);
+    bool startSimpleSearch(const string& q, int maxexp = -1);
 };
 
 
