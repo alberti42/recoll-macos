@@ -1157,6 +1157,14 @@ string localelang()
     return locale.substr(0, under);
 }
 
+// Initialization for static stuff to be called from main thread before going 
+// multiple
+void smallut_init_mt()
+{
+    // Init langtocode() static table
+    langtocode("");
+}
+
 #else // TEST_SMALLUT
 
 #include <string>

@@ -95,14 +95,18 @@ bool fsocc(const string &path, int *pc, long *blocks)
     return true;
 }
 
-static const char *tmplocation()
+static const string& tmplocation()
 {
-    const char *tmpdir = getenv("RECOLL_TMPDIR");
-    if (!tmpdir)
-	tmpdir = getenv("TMPDIR");
-    if (!tmpdir)
-	tmpdir = "/tmp";
-    return tmpdir;
+    static string stmpdir;
+    if (stmpdir.empty()) {
+        const char *tmpdir = getenv("RECOLL_TMPDIR");
+        if (tmpdir == 0) 
+            tmpdir = getenv("TMPDIR");
+        if (tmpdir == 0)
+            tmpdir = "/tmp";
+        stmpdir = string(tmpdir);
+    }
+    return stmpdir;
 }
 
 bool maketmpdir(string& tdir, string& reason)

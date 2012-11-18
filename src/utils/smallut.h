@@ -236,4 +236,6 @@ public:
 #define MAX(A,B) (((A)>(B)) ? (A) : (B))
 #endif
 
+void smallut_init_mt();
+
 #endif /* _SMALLUT_H_INCLUDED_ */

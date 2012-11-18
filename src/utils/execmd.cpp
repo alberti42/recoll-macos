@@ -28,10 +28,6 @@
 #include <errno.h>
 #include <signal.h>
 
-#if !defined(PUTENV_ARG_CONST)
-#include <string.h>
-#endif
-
 #include <vector>
 #include <string>
 #include <sstream>
@@ -44,8 +40,10 @@ using namespace std;
 #include "smallut.h"
 #include "netcon.h"
 #include "closefrom.h"
-#include "ptmutex.h"
 
+extern char **environ;
+
+bool ExecCmd::o_useVfork = false;
 
 /* From FreeBSD's which command */
 static bool exec_is_there(const char *candidate)
@@ -167,6 +165,80 @@ ExecCmd::~ExecCmd()
     ExecCmdRsrc(this);
 }
 
+// In child process. Set up pipes and exec command. 
+// This must not return. _exit() on error.
+// *** This can be called after a vfork, so no modification of the
+//     process memory at all is allowed ***
+// The LOGXX calls should not be there, but they occur only after "impossible"
+// errors, which we would most definitely want to have a hint about
+inline void ExecCmd::dochild(const string &cmd, const char **argv,
+			     const char **envv,
+			     bool has_input, bool has_output)
+{
+    // Start our own process group
+    if (setpgid(0, getpid())) {
+	LOGINFO(("ExecCmd::dochild: setpgid(0, %d) failed: errno %d\n",
+		 getpid(), errno));
+    }
+
+    // Restore SIGTERM to default. Really, signal handling should be
+    // specified when creating the execmd. Help Recoll get rid of its
+    // filter children though. To be fixed one day... Not sure that
+    // all of this is needed. But an ignored sigterm and the masks are
+    // normally inherited.
+    if (signal(SIGTERM, SIG_DFL) == SIG_ERR) {
+	LOGERR(("ExecCmd::dochild: signal() failed, errno %d\n", errno));
+    }
+    sigset_t sset;
+    sigfillset(&sset);
+    pthread_sigmask(SIG_UNBLOCK, &sset, 0);
+    sigprocmask(SIG_UNBLOCK, &sset, 0);
+
+    if (has_input) {
+	close(m_pipein[1]);
+	if (m_pipein[0] != 0) {
+	    dup2(m_pipein[0], 0);
+	    close(m_pipein[0]);
+	}
+    }
+    if (has_output) {
+	close(m_pipeout[0]);
+	if (m_pipeout[1] != 1) {
+	    if (dup2(m_pipeout[1], 1) < 0) {
+		LOGERR(("ExecCmd::doexec: dup2(2) failed. errno %d\n", errno));
+	    }
+	    if (close(m_pipeout[1]) < 0) {
+		LOGERR(("ExecCmd::doexec: close(2) failed. errno %d\n", errno));
+	    }
+	}
+    }
+    // Do we need to redirect stderr ?
+    if (!m_stderrFile.empty()) {
+	int fd = open(m_stderrFile.c_str(), O_WRONLY|O_CREAT
+#ifdef O_APPEND
+		      |O_APPEND
+#endif
+		      , 0600);
+	if (fd < 0) {
+	    close(2);
+	} else {
+	    if (fd != 2) {
+		dup2(fd, 2);
+	    }
+	    lseek(2, 0, 2);
+	}
+    }
+
+    // Close all descriptors except 0,1,2
+    libclf_closefrom(3);
+
+    execve(cmd.c_str(), (char *const*)argv, (char *const*)envv);
+    // Hu ho
+    LOGERR(("ExecCmd::doexec: execvp(%s) failed. errno %d\n", cmd.c_str(),
+	    errno));
+    _exit(127);
+}
+
 int ExecCmd::startExec(const string &cmd, const vector<string>& args,
 		       bool has_input, bool has_output)
 {
@@ -192,19 +264,76 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
 	return -1;
     }
 
-    m_pid = fork();
+
+//////////// vfork setup section
+    // We do here things that we could/should do after a fork(), but
+    // not a vfork(). Does no harm to do it here in both cases, except
+    // that it needs cleanup (as compared to doing it just before
+    // exec()).
+
+    // Allocate arg vector (2 more for arg0 + final 0)
+    typedef const char *Ccharp;
+    Ccharp *argv;
+    argv = (Ccharp *)malloc((args.size()+2) * sizeof(char *));
+    if (argv == 0) {
+	LOGERR(("ExecCmd::doexec: malloc() failed. errno %d\n",	errno));
+	exit(1);
+    }
+    // Fill up argv
+    argv[0] = cmd.c_str();
+    int i = 1;
+    vector<string>::const_iterator it;
+    for (it = args.begin(); it != args.end(); it++) {
+	argv[i++] = it->c_str();
+    }
+    argv[i] = 0;
+
+    Ccharp *envv;
+    int envsize;
+    for (envsize = 0; ; envsize++) 
+	if (environ[envsize] == 0)
+	    break;
+    envv = (Ccharp *)malloc((envsize + m_env.size() + 2) * sizeof(char *));
+    int eidx;
+    for (eidx = 0; eidx < envsize; eidx++)
+	envv[eidx] = environ[eidx];
+    for (vector<string>::const_iterator it = m_env.begin(); 
+	 it != m_env.end(); it++) {
+	envv[eidx++] = it->c_str();
+    }
+    envv[eidx] = 0;
+
+    // As we are going to use execve, not execvp, do the PATH
+    // thing. If the command is not found, exe will be empty and the
+    // exec will fail, which is what we want.
+    string exe;
+    which(cmd, exe);
+////////////////////////////////
+
+    if (o_useVfork) {
+	m_pid = vfork();
+    } else {
+	m_pid = fork();
+    }
     if (m_pid < 0) {
 	LOGERR(("ExecCmd::startExec: fork(2) failed. errno %d\n", errno));
 	return -1;
     }
     if (m_pid == 0) {
-	e.inactivate(); // needed ?
-	dochild(cmd, args, has_input, has_output);
+	// e.inactivate() is not needed. As we do not return, the call
+	// stack won't be unwound and destructors of local objects
+	// won't be called.
+	dochild(exe, argv, envv, has_input, has_output);
 	// dochild does not return. Just in case...
 	_exit(1);
     }
 
     // Father process
+////////////////////
+    // Vfork cleanup section
+    free(argv);
+    free(envv);
+///////////////////
 
     // Set the process group for the child. This is also done in the
     // child process see wikipedia(Process_group)
@@ -495,110 +624,6 @@ bool ExecCmd::maybereap(int *status)
 	m_pid = -1;
 	return true;
     }
-}
-
-// In child process. Set up pipes, environment, and exec command. 
-// This must not return. exit() on error.
-void ExecCmd::dochild(const string &cmd, const vector<string>& args,
-		      bool has_input, bool has_output)
-{
-    // Start our own process group
-    if (setpgid(0, getpid())) {
-	LOGINFO(("ExecCmd::dochild: setpgid(0, %d) failed: errno %d\n",
-		 getpid(), errno));
-    }
-
-    // Restore SIGTERM to default. Really, signal handling should be
-    // specified when creating the execmd. Help Recoll get rid of its
-    // filter children though. To be fixed one day... Not sure that
-    // all of this is needed. But an ignored sigterm and the masks are
-    // normally inherited.
-    if (signal(SIGTERM, SIG_DFL) == SIG_ERR) {
-	LOGERR(("ExecCmd::dochild: signal() failed, errno %d\n", errno));
-    }
-    sigset_t sset;
-    sigfillset(&sset);
-    pthread_sigmask(SIG_UNBLOCK, &sset, 0);
-    sigprocmask(SIG_UNBLOCK, &sset, 0);
-
-    if (has_input) {
-	close(m_pipein[1]);
-	m_pipein[1] = -1;
-	if (m_pipein[0] != 0) {
-	    dup2(m_pipein[0], 0);
-	    close(m_pipein[0]);
-	    m_pipein[0] = -1;
-	}
-    }
-    if (has_output) {
-	close(m_pipeout[0]);
-	m_pipeout[0] = -1;
-	if (m_pipeout[1] != 1) {
-	    if (dup2(m_pipeout[1], 1) < 0) {
-		LOGERR(("ExecCmd::doexec: dup2(2) failed. errno %d\n", errno));
-	    }
-	    if (close(m_pipeout[1]) < 0) {
-		LOGERR(("ExecCmd::doexec: close(2) failed. errno %d\n", errno));
-	    }
-	    m_pipeout[1] = -1;
-	}
-    }
-    // Do we need to redirect stderr ?
-    if (!m_stderrFile.empty()) {
-	int fd = open(m_stderrFile.c_str(), O_WRONLY|O_CREAT
-#ifdef O_APPEND
-		      |O_APPEND
-#endif
-		      , 0600);
-	if (fd < 0) {
-	    close(2);
-	} else {
-	    if (fd != 2) {
-		dup2(fd, 2);
-	    }
-	    lseek(2, 0, 2);
-	}
-    }
-
-    // Close all descriptors except 0,1,2
-    libclf_closefrom(3);
-
-    // Allocate arg vector (2 more for arg0 + final 0)
-    typedef const char *Ccharp;
-    Ccharp *argv;
-    argv = (Ccharp *)malloc((args.size()+2) * sizeof(char *));
-    if (argv == 0) {
-	LOGERR(("ExecCmd::doexec: malloc() failed. errno %d\n",	errno));
-	exit(1);
-    }
-	
-    // Fill up argv
-    argv[0] = cmd.c_str();
-    int i = 1;
-    vector<string>::const_iterator it;
-    for (it = args.begin(); it != args.end(); it++) {
-	argv[i++] = it->c_str();
-    }
-    argv[i] = 0;
-
-#if 0
-    {int i = 0;cerr << "cmd: " << cmd << endl << "ARGS: " << endl; 
-	while (argv[i]) cerr << argv[i++] << endl;}
-#endif
-
-    for (vector<string>::const_iterator it = m_env.begin(); 
-	 it != m_env.end(); it++) {
-#ifdef PUTENV_ARG_CONST
-	::putenv(it->c_str());
-#else
-	::putenv(strdup(it->c_str()));
-#endif
-    }
-    execvp(cmd.c_str(), (char *const*)argv);
-    // Hu ho
-    LOGERR(("ExecCmd::doexec: execvp(%s) failed. errno %d\n", cmd.c_str(),
-	    errno));
-    _exit(127);
 }
 
 ReExec::ReExec(int argc, char *args[])

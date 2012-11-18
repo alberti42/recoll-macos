@@ -73,6 +73,12 @@ class ExecCmdProvide {
  */
 class ExecCmd {
  public:
+    // Use vfork instead of fork. This must not be called in a multithreaded 
+    // program.
+    static void useVfork(bool on)
+    {
+	o_useVfork  = on;
+    }
     /** 
      * Add/replace environment variable before executing command. This must
      * be called before doexec() to have an effect (possibly multiple
@@ -155,7 +161,7 @@ class ExecCmd {
      */
     void zapChild() {setKill(); (void)wait();}
 
-    ExecCmd() 
+    ExecCmd()
 	: m_advise(0), m_provide(0), m_timeoutMs(1000)
     {
 	reset();
@@ -174,6 +180,8 @@ class ExecCmd {
 
     friend class ExecCmdRsrc;
  private:
+    static bool      o_useVfork;
+
     vector<string>   m_env;
     ExecCmdAdvise   *m_advise;
     ExecCmdProvide  *m_provide;
@@ -200,8 +208,8 @@ class ExecCmd {
 	sigemptyset(&m_blkcld);
     }
     // Child process code
-    void dochild(const string &cmd, const vector<string>& args, 
-		 bool has_input, bool has_output);
+    inline void dochild(const string &cmd, const char **argv, 
+			const char **envv, bool has_input, bool has_output);
     /* Copyconst and assignment private and forbidden */
     ExecCmd(const ExecCmd &) {}
     ExecCmd& operator=(const ExecCmd &) {return *this;};

@@ -31,6 +31,7 @@
 #include "pathut.h"
 #include "unac.h"
 #include "smallut.h"
+#include "execmd.h"
 
 static const int catchedSigs[] = {SIGHUP, SIGINT, SIGQUIT, SIGTERM, 
      SIGUSR1, SIGUSR2};
@@ -112,16 +113,18 @@ RclConfig *recollinit(RclInitFlags flags,
     // Init unac locking
     unac_init_mt();
 
-    // Init pathut static values
+    // Init smallut and pathut static values
     pathut_init_mt();
+    smallut_init_mt();
 
     // Init Unac translation exceptions
     string unacex;
     if (config->getConfParam("unac_except_trans", unacex) && !unacex.empty()) 
 	unac_set_except_translations(unacex.c_str());
 
-    // Init langtocode() static table
-    langtocode("");
+#ifndef IDX_THREADS
+    ExecCmd::useVfork(true);
+#endif
 
     int flushmb;
     if (config->getConfParam("idxflushmb", &flushmb) && flushmb > 0) {
