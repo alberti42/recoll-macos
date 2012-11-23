@@ -739,7 +739,7 @@ bool RclConfig::getFieldTraits(const string& _fld, const FieldTraits **ftpp)
     if (pit != m_fldtotraits.end()) {
 	*ftpp = &pit->second;
 	LOGDEB1(("RclConfig::getFieldTraits: [%s]->[%s]\n", 
-		 _fld.c_str(), ft.pfx.c_str()));
+		 _fld.c_str(), pit->second.pfx.c_str()));
 	return true;
     } else {
 	LOGDEB1(("RclConfig::readFieldsConfig: no prefix for field [%s]\n",
