@@ -81,6 +81,7 @@
 .ods = application/vnd.sun.xml.calc
 .stc = application/vnd.sun.xml.calc.template
 .sxd = application/vnd.sun.xml.draw
+.odg = application/vnd.sun.xml.draw
 .std = application/vnd.sun.xml.draw.template
 .sxi = application/vnd.sun.xml.impress
 .odp = application/vnd.sun.xml.impress

@@ -58,6 +58,7 @@ application/vnd.ms-powerpoint = exec catppt -d utf-8;mimetype=text/plain
 application/vnd.oasis.opendocument.text = exec rclsoff
 application/vnd.oasis.opendocument.presentation = exec rclsoff 
 application/vnd.oasis.opendocument.spreadsheet = exec rclsoff
+application/vnd.oasis.opendocument.graphics = exec rclsoff
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
  exec rclopxml
 application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
