@@ -768,7 +768,6 @@ void RclMain::rebuildIndex()
 void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
 {
     LOGDEB(("RclMain::startSearch. Indexing %s\n", m_idxproc?"on":"off"));
-    emit searchReset();
     m_source = RefCntr<DocSequence>();
 
     // The db may have been closed at the end of indexing
