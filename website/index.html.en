@@ -84,6 +84,12 @@
       <h2>News</h2>
       <div class="news">
       <dl>
+        <dt>2012-11-23</dt><dd>Released a minor update to the very
+          stable 1.17
+          branch: <a href="download-1.17.html">1.17.4</a>.
+          <a href="release-1.17.html">release notes</a>.
+        </dd>
+
         <dt>2012-11-05</dt><dd>Recoll 1.18.1 is out. It has optional
           character case and diacritics 
           sensitivity, direct access to the hit page when opening PDF

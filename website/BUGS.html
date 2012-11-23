@@ -103,20 +103,34 @@
       </ul>
 
       <h2><a name="b_1_17_3">recoll 1.17.3</a></h2> 
+      
+      <p>Fixed in 1.17.4 and 1.18:</p>
+      <ul>
+        <li>The real time monitor can be terminated for permissions-related
+          addwatch errors that should be non-fatal.</li>
+        <li>text/plain files are sometimes opened as csv (using a
+          spreadsheet...)</li> 
+        <li>Tilde expansion was wrong for the
+          beaglequeuedir/webqueuedir variable, causing problem when
+          using the new Web history indexer module with 1.17.</li>
+        <li>Fixed relatively benign memory leak in the filters
+         cache handler.</li>
+        <li>Prevent document indexing truncation caused by unac in
+          some marginal case which became quite common with the recent
+          versions of pdftotext.</li>
+      </ul>
 
+      <p>Only fixed in the 1.18 branch:</p>
       <ul>
         <li>Messages in Qt standard dialog messages are not translated.</li>
         <li>The unac_except_trans mechanism can generate wrong
           character translations in some cases.</li> 
-        <li>The real time monitor can be terminated for for permissions-related
-          addwatch errors that should be non-fatal.</li>
         <li>ODF documents exported by Google docs are badly
           processed.</li> 
         <li>It is impossible to open the parent of an
           embedded document (e.g. the CHM file for an HTML page
           inside the CHM) if the parent is itself a member of an
           archive.</li> 
-
         <li>Text inside malformed HTML files (appearing before a &lt;body&gt;
           tag, or after a second one, or after a &lt;/body&gt; tag is
           not indexed. As it would be displayed by current browsers,
