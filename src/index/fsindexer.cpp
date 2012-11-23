@@ -44,6 +44,7 @@
 #include "wipedir.h"
 #include "fileudi.h"
 #include "cancelcheck.h"
+#include "rclinit.h"
 
 // When using extended attributes, we have to use the ctime. 
 // This is quite an expensive price to pay...
@@ -361,6 +362,7 @@ void FsIndexer::makesig(const struct stat *stp, string& out)
 #ifdef IDX_THREADS
 void *FsIndexerDbUpdWorker(void * fsp)
 {
+    recoll_threadinit();
     FsIndexer *fip = (FsIndexer*)fsp;
     WorkQueue<DbUpdTask*> *tqp = &fip->m_dwqueue;
     DebugLog::getdbl()->setloglevel(fip->m_loglevel);
@@ -384,6 +386,7 @@ void *FsIndexerDbUpdWorker(void * fsp)
 
 void *FsIndexerInternfileWorker(void * fsp)
 {
+    recoll_threadinit();
     FsIndexer *fip = (FsIndexer*)fsp;
     WorkQueue<InternfileTask*> *tqp = &fip->m_iwqueue;
     DebugLog::getdbl()->setloglevel(fip->m_loglevel);

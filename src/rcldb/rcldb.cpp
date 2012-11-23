@@ -56,6 +56,7 @@ using namespace std;
 #include "ptmutex.h"
 #include "termproc.h"
 #include "expansiondbs.h"
+#include "rclinit.h"
 
 // Recoll index format version is stored in user metadata. When this change,
 // we can't open the db and will have to reindex.
@@ -793,6 +794,7 @@ static const string cstr_nc("\n\r\x0c");
 #ifdef IDX_THREADS
 void *DbUpdWorker(void* vdbp)
 {
+    recoll_threadinit();
     Db *dbp = (Db *)vdbp;
     WorkQueue<DbUpdTask*> *tqp = &(dbp->m_ndb->m_wqueue);
     DebugLog::getdbl()->setloglevel(dbp->m_ndb->m_loglevel);
@@ -1170,7 +1172,8 @@ bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm,
 void Db::waitUpdIdle()
 {
     m_ndb->m_wqueue.waitIdle();
-    LOGDEB(("Db::waitUpdIdle: total work %ll mS\n", m_ndb->m_totalworkus/1000));
+    LOGDEB(("Db::waitUpdIdle: total work %lld mS\n",
+	    m_ndb->m_totalworkus/1000));
 }
 #endif
 
