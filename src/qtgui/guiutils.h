@@ -39,7 +39,10 @@ using std::vector;
 /** Holder for preferences (gets saved to user Qt prefs) */
 class PrefsPack {
  public:
-    bool autoSearchOnWS;
+    // Simple search entry behaviour
+    bool ssearchOnWS;
+    bool ssearchNoComplete;
+    bool ssearchAsYouType;
     // Decide if we display the doc category filter control as a
     // toolbar+combobox or as a button group under simple search
     bool catgToolBar;

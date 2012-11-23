@@ -111,8 +111,12 @@ void rwSettings(bool writing)
 	}
     }
 
-    SETTING_RW(prefs.autoSearchOnWS, "/Recoll/prefs/reslist/autoSearchOnWS", 
+    SETTING_RW(prefs.ssearchOnWS, "/Recoll/prefs/reslist/autoSearchOnWS", 
 	       Bool, false);
+    SETTING_RW(prefs.ssearchNoComplete, 
+	       "/Recoll/prefs/ssearch/noComplete", Bool, false);
+    SETTING_RW(prefs.ssearchAsYouType, 
+	       "/Recoll/prefs/ssearch/asYouType", Bool, false);
     SETTING_RW(prefs.catgToolBar, "/Recoll/prefs/catgToolBar", Bool, false);
     SETTING_RW(prefs.ssearchAutoPhrase, 
 	       "/Recoll/prefs/ssearchAutoPhrase", Bool, true);

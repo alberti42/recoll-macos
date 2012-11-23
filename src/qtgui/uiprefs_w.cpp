@@ -79,6 +79,10 @@ void UIPrefsDialog::init()
     connect(buttonCancel, SIGNAL(clicked()), this, SLOT(reject()));
     connect(buildAbsCB, SIGNAL(toggled(bool)), 
 	    replAbsCB, SLOT(setEnabled(bool)));
+    connect(ssAutoAllCB, SIGNAL(toggled(bool)), 
+	    ssAutoSpaceCB, SLOT(setDisabled(bool)));
+    connect(ssAutoAllCB, SIGNAL(toggled(bool)), 
+	    ssAutoSpaceCB, SLOT(setChecked(bool)));
     connect(useDesktopOpenCB, SIGNAL(toggled(bool)), 
 	    viewActionPB, SLOT(setDisabled(bool)));
     connect(useDesktopOpenCB, SIGNAL(toggled(bool)), 
@@ -95,7 +99,9 @@ void UIPrefsDialog::setFromPrefs()
     collapseDupsCB->setChecked(prefs.collapseDuplicates);
     maxHLTSB->setValue(prefs.maxhltextmbs);
     catgToolBarCB->setChecked(prefs.catgToolBar);
-    autoSearchCB->setChecked(prefs.autoSearchOnWS);
+    ssAutoSpaceCB->setChecked(prefs.ssearchOnWS);
+    ssNoCompleteCB->setChecked(prefs.ssearchNoComplete);
+    ssAutoAllCB->setChecked(prefs.ssearchAsYouType);
     syntlenSB->setValue(prefs.syntAbsLen);
     syntctxSB->setValue(prefs.syntAbsCtx);
 
@@ -207,7 +213,10 @@ void UIPrefsDialog::setFromPrefs()
 
 void UIPrefsDialog::accept()
 {
-    prefs.autoSearchOnWS = autoSearchCB->isChecked();
+    prefs.ssearchOnWS = ssAutoSpaceCB->isChecked();
+    prefs.ssearchNoComplete = ssNoCompleteCB->isChecked();
+    prefs.ssearchAsYouType = ssAutoAllCB->isChecked();
+
     prefs.catgToolBar = catgToolBarCB->isChecked();
     prefs.respagesize = pageLenSB->value();
     prefs.collapseDuplicates = collapseDupsCB->isChecked();

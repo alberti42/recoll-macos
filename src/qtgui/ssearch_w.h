@@ -47,6 +47,7 @@ public:
     virtual void completion();
     virtual bool eventFilter(QObject *target, QEvent *event);
     virtual bool hasSearchString();
+    virtual void setPrefs();				  
 public slots:
     virtual void searchTextChanged(const QString & text);
     virtual void searchTypeChanged(int);
@@ -72,6 +73,7 @@ signals:
     QTimer *m_stroketimeout;
     bool m_keystroke;
     QString m_tstartqs;
+    QAbstractItemModel *m_savedModel;
 
     int partialWord(string& s);
     int completionList(string s, QStringList& lst, int max = 100);

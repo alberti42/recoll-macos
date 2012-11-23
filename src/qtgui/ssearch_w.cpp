@@ -25,6 +25,7 @@
 #include <qmessagebox.h>
 #include <qevent.h>
 #include <QTimer>
+#include <QCompleter>
 
 #include "debuglog.h"
 #include "guiutils.h"
@@ -60,6 +61,13 @@ void SSearch::init()
 
     queryText->installEventFilter(this);
     queryText->view()->installEventFilter(this);
+    queryText->setInsertPolicy(QComboBox::NoInsert);
+    // Note: we can't do the obvious and save the completer instead because
+    // the combobox lineedit will delete the completer on setCompleter(0).
+    // But the model does not belong to the completer so it's not deleted...
+    m_savedModel = queryText->completer()->model();
+    if (prefs.ssearchNoComplete) 
+	queryText->completer()->setModel(0);
     m_displayingCompletions = false;
     m_escape = false;
     m_disableAutosearch = true;
@@ -92,7 +100,7 @@ void SSearch::searchTextChanged(const QString& text)
 	if (m_keystroke) {
 	    m_tstartqs = qs;
 	}
-	if (prefs.autoSearchOnWS && !m_disableAutosearch && 
+	if (prefs.ssearchAsYouType && !m_disableAutosearch && 
 	    !m_keystroke && m_tstartqs == qs) {
 	    m_disableAutosearch = true;
 	    LOGDEB0(("SSearch::searchTextChanged: autosearch\n"));
@@ -173,12 +181,15 @@ void SSearch::startSimpleSearch()
     // entry to be erased. There is no standard qt policy to do this ? 
     // So do it by hand.
     QString txt = queryText->currentText();
-    int index = queryText->findText(txt);
+    QString txtt = txt.trimmed();
+    int index = queryText->findText(txtt);
     if (index > 0) {
 	queryText->removeItem(index);
     }
-    queryText->insertItem(0, txt);
-    queryText->setCurrentIndex(0);
+    if (index != 0) {
+	queryText->insertItem(0, txtt);
+	queryText->setEditText(txt);
+    }
     m_disableAutosearch = true;
     m_stroketimeout->stop();
 
@@ -187,6 +198,14 @@ void SSearch::startSimpleSearch()
     prefs.ssearchHistory.clear();
     for (int index = 0; index < queryText->count(); index++) {
 	prefs.ssearchHistory.push_back(queryText->itemText(index));
+    }
+}
+void SSearch::setPrefs()
+{
+    if (prefs.ssearchNoComplete) {
+	queryText->completer()->setModel(0);
+    } else {
+	queryText->completer()->setModel(m_savedModel);
     }
 }
 
@@ -325,6 +344,13 @@ int SSearch::partialWord(string& s)
     return cs;
 }
 
+// Create completion list for term by adding a joker at the end and calling
+// rcldb->termMatch(). This does not work well if the db is not
+// rcldb->stripped, the completion is casediac-sensitive in this case.
+//
+// What we should do instead is complete the term from the key list in
+// the casediac expansion db (stripped->unstripped synonyms table),
+// then expand each of the completed keys.
 int SSearch::completionList(string s, QStringList& lst, int max)
 {
     if (!rcldb)
@@ -612,17 +638,18 @@ bool SSearch::eventFilter(QObject *target, QEvent *event)
 	    m_stroketimeout->stop();
 	    return true;
 	} else if (ke->key() == Qt::Key_Space) {
-//	    if (prefs.autoSearchOnWS)
-//		startSimpleSearch();
-	}
-	m_escape = false;
-	m_keystroke = true;
-	if (prefs.autoSearchOnWS) {
-	    m_disableAutosearch = false;
-	    QString qs = queryText->currentText();
-	    LOGDEB0(("SSearch::eventFilter: start timer, qs [%s]\n", 
-		     qs2utf8s(qs).c_str()));
-	    m_stroketimeout->start(200);
+	    if (prefs.ssearchOnWS)
+		startSimpleSearch();
+	} else {
+	    m_escape = false;
+	    m_keystroke = true;
+	    if (prefs.ssearchAsYouType) {
+		m_disableAutosearch = false;
+		QString qs = queryText->currentText();
+		LOGDEB0(("SSearch::eventFilter: start timer, qs [%s]\n", 
+			 qs2utf8s(qs).c_str()));
+		m_stroketimeout->start(200);
+	    }
 	}
     }
     return false;

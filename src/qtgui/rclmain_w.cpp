@@ -1894,6 +1894,7 @@ void RclMain::setUIPrefs()
 	return;
     LOGDEB(("Recollmain::setUIPrefs\n"));
     reslist->setFont();
+    sSearch->setPrefs();
 }
 
 void RclMain::enableNextPage(bool yesno)
