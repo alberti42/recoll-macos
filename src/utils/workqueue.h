@@ -191,7 +191,7 @@ public:
                 pthread_mutex_unlock(&m_mutex);
                 LOGERR(("WorkQueue::setTerminate: cond_wait failed\n"));
 		m_clients_waiting--;
-                return false;
+                return (void*)0;
             }
 	    m_clients_waiting--;
         }
