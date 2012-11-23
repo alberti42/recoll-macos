@@ -72,14 +72,14 @@ void SSearch::init()
 void SSearch::timerDone()
 {
     QString qs = queryText->currentText();
-    LOGINFO(("TIMER DONE. qstring [%s]\n", qs2utf8s(qs).c_str()));
+    LOGDEB0(("SSearch::timerDone: qs [%s]\n", qs2utf8s(qs).c_str()));
     searchTextChanged(qs);
 }
 
 void SSearch::searchTextChanged(const QString& text)
 {
     QString qs = queryText->currentText();
-    LOGINFO(("SEARCHTEXTCHANGED. ks %d text [%s]\n", 
+    LOGDEB0(("SSearch::searchTextChanged. ks %d qs [%s]\n", 
 	     m_keystroke, qs2utf8s(text).c_str()));
     if (text.isEmpty()) {
 	searchPB->setEnabled(false);
@@ -95,7 +95,7 @@ void SSearch::searchTextChanged(const QString& text)
 	if (prefs.autoSearchOnWS && !m_disableAutosearch && 
 	    !m_keystroke && m_tstartqs == qs) {
 	    m_disableAutosearch = true;
-	    LOGINFO(("Autosearch: current: [%s]\n", qs2utf8s(qs).c_str()));
+	    LOGDEB0(("SSearch::searchTextChanged: autosearch\n"));
 	    string s;
 	    int cs = partialWord(s);
 	    if (cs < 0) {
@@ -154,7 +154,7 @@ void SSearch::searchTypeChanged(int typ)
 void SSearch::startSimpleSearch()
 {
     QString qs = queryText->currentText();
-    LOGINFO(("startSimpleSearch qs [%s]\n", qs2utf8s(qs).c_str()));
+    LOGDEB(("SSearch::startSimpleSearch(): qs [%s]\n", qs2utf8s(qs).c_str()));
     if (qs.length() == 0)
 	return;
 
@@ -192,7 +192,7 @@ void SSearch::startSimpleSearch()
 
 bool SSearch::startSimpleSearch(const string& u8, int maxexp)
 {
-    LOGINFO(("SSearch::startSimpleSearch(%s)\n", u8.c_str()));
+    LOGDEB(("SSearch::startSimpleSearch(%s)\n", u8.c_str()));
     string stemlang = prefs.stemlang();
 
     SSearchType tp = (SSearchType)searchTypCMB->currentIndex();
@@ -376,7 +376,7 @@ void SSearch::completion()
 	return;
     }
     if (lst.size() >= maxdpy) {
-	LOGINFO(("TRUNCATING COMPLETION\n"));
+	LOGDEB0(("SSearch::completion(): truncating list\n"));
 	lst = lst.mid(0, maxdpy);
 	lst.append("[...]");
     }
@@ -620,8 +620,9 @@ bool SSearch::eventFilter(QObject *target, QEvent *event)
 	if (prefs.autoSearchOnWS) {
 	    m_disableAutosearch = false;
 	    QString qs = queryText->currentText();
-	    LOGINFO(("STARTING TIMER, qs [%s]\n", qs2utf8s(qs).c_str()));
-	    m_stroketimeout->start(500);
+	    LOGDEB0(("SSearch::eventFilter: start timer, qs [%s]\n", 
+		     qs2utf8s(qs).c_str()));
+	    m_stroketimeout->start(200);
 	}
     }
     return false;
