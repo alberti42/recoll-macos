@@ -801,11 +801,12 @@ void *DbUpdWorker(void* vdbp)
 
     DbUpdTask *tsk;
     for (;;) {
-	if (!tqp->take(&tsk)) {
+	size_t qsz;
+	if (!tqp->take(&tsk, &qsz)) {
 	    tqp->workerExit();
 	    return (void*)1;
 	}
-	LOGDEB(("DbUpdWorker: got task, ql %d\n", int(tqp->size())));
+	LOGDEB(("DbUpdWorker: got task, ql %d\n", int(qsz)));
 	if (!dbp->m_ndb->addOrUpdateWrite(tsk->udi, tsk->uniterm, 
 				   tsk->doc, tsk->txtlen)) {
 	    LOGERR(("DbUpdWorker: addOrUpdateWrite failed\n"));
@@ -1163,7 +1164,7 @@ bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm,
     // Test if we're over the flush threshold (limit memory usage):
     bool ret = m_rcldb->maybeflush(textlen);
 #ifdef IDX_THREADS
-    m_totalworkus += chron.micros();
+    m_totalworkns += chron.nanos();
 #endif
     return ret;
 }
@@ -1171,9 +1172,18 @@ bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm,
 #ifdef IDX_THREADS
 void Db::waitUpdIdle()
 {
+    Chrono chron;
     m_ndb->m_wqueue.waitIdle();
+    string ermsg;
+    try {
+	m_ndb->xwdb.flush();
+    } XCATCHERROR(ermsg);
+    if (!ermsg.empty()) {
+	LOGERR(("Db::waitUpdIdle: flush() failed: %s\n", ermsg.c_str()));
+    }
+    m_ndb->m_totalworkns += chron.nanos();
     LOGDEB(("Db::waitUpdIdle: total work %lld mS\n",
-	    m_ndb->m_totalworkus/1000));
+	    m_ndb->m_totalworkns/1000000));
 }
 #endif
 

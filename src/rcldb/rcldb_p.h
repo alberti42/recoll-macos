@@ -63,7 +63,7 @@ class Db::Native {
     WorkQueue<DbUpdTask*> m_wqueue;
     int  m_loglevel;
     PTMutexInit m_mutex;
-    long long  m_totalworkus;
+    long long  m_totalworkns;
 #endif // IDX_THREADS
 
     // Indexing 
@@ -79,7 +79,7 @@ class Db::Native {
 	: m_rcldb(db), m_isopen(false), m_iswritable(false),
           m_noversionwrite(false)
 #ifdef IDX_THREADS
-	, m_wqueue("DbUpd", 2), m_totalworkus(0LL)
+	, m_wqueue("DbUpd", 2), m_totalworkns(0LL)
 #endif // IDX_THREADS
     { 
 	LOGDEB2(("Native::Native: me %p\n", this));
