@@ -279,6 +279,9 @@ localfields = rclaptg=gnuinfo
 [/usr/local/info]
 localfields = rclaptg=gnuinfo
 
+[/usr/share/man]
+followSymlinks = 1
+
 # Enable thunderbird mbox format quirks where appropriate, and same for
 # mozilla/seamonkey
 [~/.thunderbird]
