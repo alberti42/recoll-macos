@@ -27,6 +27,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <signal.h>
+#include <time.h>
 
 #include <vector>
 #include <string>
@@ -101,6 +102,13 @@ void  ExecCmd::putenv(const string &ea)
 {
     m_env.push_back(ea);
 }
+static void msleep(int millis)
+{
+    struct timespec spec;
+    spec.tv_sec = millis / 1000;
+    spec.tv_nsec = (millis % 1000) * 1000000;
+    nanosleep(&spec, 0);
+}
 
 /** A resource manager to ensure that execcmd cleans up if an exception is 
  *  raised in the callback, or at different places on errors occurring
@@ -134,11 +142,11 @@ public:
             int ret = killpg(grp, SIGTERM);
 	    if (ret == 0) {
 		for (int i = 0; i < 3; i++) {
+		    msleep(i == 0 ? 5 : (i == 1 ? 100 : 2000));
 		    int status;
 		    (void)waitpid(m_parent->m_pid, &status, WNOHANG);
 		    if (kill(m_parent->m_pid, 0) != 0)
 			break;
-		    sleep(1);
 		    if (i == 2) {
 			LOGDEB(("ExecCmd: killpg(%d, SIGKILL)\n", grp));
 			killpg(grp, SIGKILL);
