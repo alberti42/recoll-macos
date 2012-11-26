@@ -25,7 +25,7 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <errno.h>
-#include <sys/time.h>
+#include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
@@ -656,39 +656,36 @@ string breakIntoLines(const string& in, unsigned int ll,
 }
 
 ////////////////////
+
+#if 0
 // Internal redefinition of system time interface to help with dependancies
 struct m_timespec {
   time_t tv_sec;
   long   tv_nsec;
 };
+#endif
 
 #ifndef CLOCK_REALTIME
 #define CLOCK_REALTIME 1
 #endif
 
-#define MILLIS(TV) ( (long)(((TV).tv_sec - m_secs) * 1000 + \
+#define MILLIS(TV) ( (long)(((TV).tv_sec - m_secs) * 1000L + \
   ((TV).tv_nsec - m_nsecs) / 1000000))
-
-#define MICROS(TV) ( (long)(((TV).tv_sec - m_secs) * 1000000 + \
+#define MICROS(TV) ( (long)(((TV).tv_sec - m_secs) * 1000000L + \
   ((TV).tv_nsec - m_nsecs) / 1000))
+#define NANOS(TV) ( (long long)(((TV).tv_sec - m_secs) * 1000000000LL + \
+  ((TV).tv_nsec - m_nsecs)))
 
-
-// We use gettimeofday instead of clock_gettime for now and get only
-// uS resolution, because clock_gettime is more configuration trouble
-// than it's worth
-static void gettime(int, struct m_timespec *ts)
+static void gettime(clockid_t clk_id, struct timespec *ts)
 {
-  struct timeval tv;
-  gettimeofday(&tv, 0);
-  ts->tv_sec = tv.tv_sec;
-  ts->tv_nsec = tv.tv_usec * 1000;
+    clock_gettime(clk_id, ts);
 }
 ///// End system interface
 
 // Note: this not protected against multithread access and not reentrant, but
 // this is mostly debug code, and it won't crash, just show bad results. Also 
 // the frozen thing is not used that much
-static m_timespec frozen_tv;
+static timespec frozen_tv;
 void Chrono::refnow()
 {
   gettime(CLOCK_REALTIME, &frozen_tv);
@@ -702,7 +699,7 @@ Chrono::Chrono()
 // Reset and return value before rest in milliseconds
 long Chrono::restart()
 {
-  struct m_timespec tv;
+  struct timespec tv;
   gettime(CLOCK_REALTIME, &tv);
   long ret = MILLIS(tv);
   m_secs = tv.tv_sec;
@@ -713,30 +710,29 @@ long Chrono::restart()
 // Get current timer value, milliseconds
 long Chrono::millis(int frozen)
 {
-  if (frozen) {
-    return MILLIS(frozen_tv);
-  } else {
-    struct m_timespec tv;
-    gettime(CLOCK_REALTIME, &tv);
-    return MILLIS(tv);
-  }
+    return nanos() / 1000000;
 }
 
 //
 long Chrono::micros(int frozen)
 {
+    return nanos() / 1000;
+}
+
+long long Chrono::nanos(int frozen)
+{
   if (frozen) {
-    return MICROS(frozen_tv);
+    return NANOS(frozen_tv);
   } else {
-    struct m_timespec tv;
+    struct timespec tv;
     gettime(CLOCK_REALTIME, &tv);
-    return MICROS(tv);
+    return NANOS(tv);
   }
 }
 
 float Chrono::secs(int frozen)
 {
-  struct m_timespec tv;
+  struct timespec tv;
   gettime(CLOCK_REALTIME, &tv);
   float secs = (float)(frozen?frozen_tv.tv_sec:tv.tv_sec - m_secs);
   float nsecs = (float)(frozen?frozen_tv.tv_nsec:tv.tv_nsec - m_nsecs); 

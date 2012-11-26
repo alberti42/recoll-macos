@@ -167,6 +167,7 @@ class Chrono {
   long millis(int frozen = 0);
   long ms() {return millis();}
   long micros(int frozen = 0);
+  long long nanos(int frozen = 0);
   float secs(int frozen = 0);
  private:
   long	m_secs;
