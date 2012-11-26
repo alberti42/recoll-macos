@@ -105,6 +105,7 @@ FsIndexer::FsIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc)
     , m_iwqueue("Internfile", 2), m_dwqueue("Split", 2)
 #endif // IDX_THREADS
 {
+    LOGDEB1(("FsIndexer::FsIndexer\n"));
     m_havelocalfields = m_config->hasNameAnywhere("localfields");
 #ifdef IDX_THREADS
     m_loglevel = DebugLog::getdbl()->getlevel();
@@ -119,13 +120,14 @@ FsIndexer::FsIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc)
 #endif // IDX_THREADS
 }
 
-FsIndexer::~FsIndexer() {
+FsIndexer::~FsIndexer() 
+{
+    LOGDEB1(("FsIndexer::~FsIndexer()\n"));
 #ifdef IDX_THREADS
     void *status = m_iwqueue.setTerminateAndWait();
-    LOGINFO(("FsIndexer: internfile wrker status: %ld (1->ok)\n", 
-	     long(status)));
+    LOGDEB0(("FsIndexer: internfile wrkr status: %ld (1->ok)\n", long(status)));
     status = m_dwqueue.setTerminateAndWait();
-    LOGINFO(("FsIndexer: dbupd worker status: %ld (1->ok)\n", long(status)));
+    LOGDEB0(("FsIndexer: dbupd worker status: %ld (1->ok)\n", long(status)));
 #endif // IDX_THREADS
     delete m_missing;
 }
@@ -305,6 +307,11 @@ bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
         it = files.erase(it);
     }
 
+#ifdef IDX_THREADS
+    m_iwqueue.waitIdle();
+    m_dwqueue.waitIdle();
+    m_db->waitUpdIdle();
+#endif // IDX_THREADS
     return true;
 }
 
@@ -314,6 +321,7 @@ bool FsIndexer::purgeFiles(list<string>& files)
 {
     if (!init())
 	return false;
+
     for (list<string>::iterator it = files.begin(); it != files.end(); ) {
 	string udi;
 	make_udi(*it, cstr_null, udi);
@@ -378,7 +386,7 @@ void *FsIndexerDbUpdWorker(void * fsp)
 	    tqp->workerExit();
 	    return (void*)1;
 	}
-	LOGDEB(("FsIndexerDbUpdWorker: got task, ql %d\n", int(qsz)));
+	LOGDEB0(("FsIndexerDbUpdWorker: task ql %d\n", int(qsz)));
 	if (!fip->m_db->addOrUpdate(tsk->config, tsk->udi, tsk->parent_udi, 
 				    tsk->doc)) {
 	    LOGERR(("FsIndexerDbUpdWorker: addOrUpdate failed\n"));
@@ -404,7 +412,7 @@ void *FsIndexerInternfileWorker(void * fsp)
 	    tqp->workerExit();
 	    return (void*)1;
 	}
-	LOGDEB1(("FsIndexerInternfileWorker: fn %s\n", tsk->fn.c_str()));
+	LOGDEB0(("FsIndexerInternfileWorker: task fn %s\n", tsk->fn.c_str()));
 	if (fip->processonefile(myconf, tmpdir, tsk->fn, &tsk->statbuf) !=
 	    FsTreeWalker::FtwOk) {
 	    LOGERR(("FsIndexerInternfileWorker: processone failed\n"));

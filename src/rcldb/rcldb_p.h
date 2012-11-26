@@ -75,25 +75,12 @@ class Db::Native {
     // really know if this makes sense
     Xapian::Database& xdb() {return m_iswritable ? xwdb : xrdb;}
 
-    Native(Db *db) 
-	: m_rcldb(db), m_isopen(false), m_iswritable(false),
-          m_noversionwrite(false)
-#ifdef IDX_THREADS
-	, m_wqueue("DbUpd", 2), m_totalworkns(0LL)
-#endif // IDX_THREADS
-    { 
-	LOGDEB2(("Native::Native: me %p\n", this));
-    }
+    Native(Db *db);
+    ~Native();
 
-    ~Native() { 
-	LOGDEB2(("Native::~Native: me %p\n", this));
 #ifdef IDX_THREADS
-	if (m_iswritable) {
-	    void *status = m_wqueue.setTerminateAndWait();
-	    LOGDEB2(("Native::~Native: worker status %ld\n", long(status)));
-	}
+    friend void *DbUpdWorker(void*);
 #endif // IDX_THREADS
-    }
 
     // Final steps of doc update, part which need to be single-threaded
     bool addOrUpdateWrite(const string& udi, const string& uniterm, 

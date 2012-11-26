@@ -123,10 +123,6 @@ public:
     double       dbavgdoclen;
 };
 
-#ifdef IDX_THREADS
-extern  void *DbUpdWorker(void*);
-#endif // IDX_THREADS
-
 inline bool has_prefix(const string& trm)
 {
 #ifndef RCL_INDEX_STRIPCHARS
@@ -184,9 +180,6 @@ class Db {
     // A place for things we don't want visible here.
     class Native;
     friend class Native;
-#ifdef IDX_THREADS
-    friend void *DbUpdWorker(void*);
-#endif // IDX_THREADS
 
     /* General stuff (valid for query or update) ****************************/
     Db(RclConfig *cfp);

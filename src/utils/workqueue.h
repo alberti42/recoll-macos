@@ -107,8 +107,10 @@ public:
      */
     bool put(T t)
     {
-        if (!ok() || pthread_mutex_lock(&m_mutex) != 0) 
+        if (!ok() || pthread_mutex_lock(&m_mutex) != 0) {
+	    LOGERR(("WorkQueue::put: !ok or mutex_lock failed\n"));
             return false;
+	}
 
         while (ok() && m_high > 0 && m_queue.size() >= m_high) {
             // Keep the order: we test ok() AFTER the sleep...

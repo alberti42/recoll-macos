@@ -127,6 +127,62 @@ static inline string make_parentterm(const string& udi)
     return pterm;
 }
 
+#ifdef IDX_THREADS
+void *DbUpdWorker(void* vdbp)
+{
+    recoll_threadinit();
+    Db::Native *ndbp = (Db::Native *)vdbp;
+    WorkQueue<DbUpdTask*> *tqp = &(ndbp->m_wqueue);
+    DebugLog::getdbl()->setloglevel(ndbp->m_loglevel);
+
+    DbUpdTask *tsk;
+    for (;;) {
+	size_t qsz;
+	if (!tqp->take(&tsk, &qsz)) {
+	    tqp->workerExit();
+	    return (void*)1;
+	}
+	LOGDEB(("DbUpdWorker: got task, ql %d\n", int(qsz)));
+	if (!ndbp->addOrUpdateWrite(tsk->udi, tsk->uniterm, 
+				   tsk->doc, tsk->txtlen)) {
+	    LOGERR(("DbUpdWorker: addOrUpdateWrite failed\n"));
+	    tqp->workerExit();
+	    delete tsk;
+	    return (void*)0;
+	}
+	delete tsk;
+    }
+}
+#endif // IDX_THREADS
+
+Db::Native::Native(Db *db) 
+    : m_rcldb(db), m_isopen(false), m_iswritable(false),
+      m_noversionwrite(false)
+#ifdef IDX_THREADS
+    , m_wqueue("DbUpd", 2), m_totalworkns(0LL)
+#endif // IDX_THREADS
+{ 
+    LOGDEB1(("Native::Native: me %p\n", this));
+#ifdef IDX_THREADS
+    m_loglevel = DebugLog::getdbl()->getlevel();
+    if (!m_wqueue.start(1, DbUpdWorker, this)) {
+	LOGERR(("Db::Db: Worker start failed\n"));
+	return;
+    }
+#endif // IDX_THREADS
+}
+
+Db::Native::~Native() 
+{ 
+    LOGDEB1(("Native::~Native: me %p\n", this));
+#ifdef IDX_THREADS
+    if (m_iswritable) {
+	void *status = m_wqueue.setTerminateAndWait();
+	LOGDEB2(("Native::~Native: worker status %ld\n", long(status)));
+    }
+#endif // IDX_THREADS
+}
+
 /* See comment in class declaration: return all subdocuments of a
  * document given by its unique id. 
 */
@@ -280,15 +336,6 @@ Db::Db(RclConfig *cfp)
 	m_config->getConfParam("maxfsoccuppc", &m_maxFsOccupPc);
 	m_config->getConfParam("idxflushmb", &m_flushMb);
     }
-#ifdef IDX_THREADS
-    if (m_ndb) {
-	m_ndb->m_loglevel = DebugLog::getdbl()->getlevel();
-	if (!m_ndb->m_wqueue.start(1, DbUpdWorker, this)) {
-	    LOGERR(("Db::Db: Worker start failed\n"));
-	    return;
-	}
-    }
-#endif // IDX_THREADS
 }
 
 Db::~Db()
@@ -790,34 +837,6 @@ static const int MB = 1024 * 1024;
 static const string cstr_nc("\n\r\x0c");
 
 #define RECORD_APPEND(R, NM, VAL) {R += NM + "=" + VAL + "\n";}
-
-#ifdef IDX_THREADS
-void *DbUpdWorker(void* vdbp)
-{
-    recoll_threadinit();
-    Db *dbp = (Db *)vdbp;
-    WorkQueue<DbUpdTask*> *tqp = &(dbp->m_ndb->m_wqueue);
-    DebugLog::getdbl()->setloglevel(dbp->m_ndb->m_loglevel);
-
-    DbUpdTask *tsk;
-    for (;;) {
-	size_t qsz;
-	if (!tqp->take(&tsk, &qsz)) {
-	    tqp->workerExit();
-	    return (void*)1;
-	}
-	LOGDEB(("DbUpdWorker: got task, ql %d\n", int(qsz)));
-	if (!dbp->m_ndb->addOrUpdateWrite(tsk->udi, tsk->uniterm, 
-				   tsk->doc, tsk->txtlen)) {
-	    LOGERR(("DbUpdWorker: addOrUpdateWrite failed\n"));
-	    tqp->workerExit();
-	    delete tsk;
-	    return (void*)0;
-	}
-	delete tsk;
-    }
-}
-#endif // IDX_THREADS
 
 // Add document in internal form to the database: index the terms in
 // the title abstract and body and add special terms for file name,
