@@ -181,8 +181,9 @@ MyHtmlParser::MyHtmlParser()
       indexing_allowed(true)
 {
     // The default html document charset is iso-8859-1. We'll update
-    // this value from the encoding tag if found.
-    charset = "iso-8859-1";
+    // this value from the encoding tag if found. Actually use cp1252 which
+    // is a superset
+    charset = "CP1252";
 }
 
 void MyHtmlParser::decode_entities(string &s)
@@ -402,7 +403,8 @@ MyHtmlParser::opening_tag(const string &tag)
 			    if ((k = p.params.find(cstr_html_charset)) != 
 				p.params.end()) {
 				charset = k->second;
-				if (!samecharset(charset, fromcharset)) {
+				if (!charset.empty() && 
+				    !samecharset(charset, fromcharset)) {
 				    LOGDEB1(("Doc http-equiv charset '%s' "
 					    "differs from dir deflt '%s'\n",
 					    charset.c_str(), 
@@ -418,7 +420,8 @@ MyHtmlParser::opening_tag(const string &tag)
 		    // HTML5 added: <meta charset="...">
 		    lowercase_term(newcharset);
 		    charset = newcharset;
-		    if (!samecharset(charset, fromcharset)) {
+		    if (!charset.empty() && 
+			!samecharset(charset, fromcharset)) {
 			LOGDEB1(("Doc html5 charset '%s' "
 				 "differs from dir deflt '%s'\n",
 				 charset.c_str(), 
