@@ -59,14 +59,16 @@ bool StemDb::stemExpand(const std::string& langs, const std::string& term,
 #ifndef RCL_INDEX_STRIPCHARS
     // Expand the unaccented stem
     if (!o_index_stripchars) {
-	for (vector<string>::const_iterator it = llangs.begin();
-	     it != llangs.end(); it++) {
-	    SynTermTransStem stemmer(*it);
-	    XapComputableSynFamMember expander(getdb(), synFamStemUnac, 
-					       *it, &stemmer);
-	    string unac;
-	    unacmaybefold(term, unac, "UTF-8", UNACOP_UNAC);
-	    (void)expander.synExpand(unac, result);
+	string unac;
+	unacmaybefold(term, unac, "UTF-8", UNACOP_UNAC);
+	if (term != unac) {
+	    for (vector<string>::const_iterator it = llangs.begin();
+		 it != llangs.end(); it++) {
+		SynTermTransStem stemmer(*it);
+		XapComputableSynFamMember expander(getdb(), synFamStemUnac, 
+						   *it, &stemmer);
+		(void)expander.synExpand(unac, result);
+	    }
 	}
     }
 #endif 
@@ -77,7 +79,7 @@ bool StemDb::stemExpand(const std::string& langs, const std::string& term,
     sort(result.begin(), result.end());
     vector<string>::iterator uit = unique(result.begin(), result.end());
     result.resize(uit - result.begin());
-    LOGDEB0(("stemExpand:%s: %s ->  %s\n", langs.c_str(), term.c_str(),
+    LOGDEB1(("stemExpand:%s: %s ->  %s\n", langs.c_str(), term.c_str(),
 	     stringsToString(result).c_str()));
     return true;
 }

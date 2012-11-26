@@ -18,12 +18,13 @@
 
 #include "autoconfig.h"
 
+#include <iostream>
+#include <algorithm>
+
 #include "debuglog.h"
 #include "xmacros.h"
 #include "synfamily.h"
-
-#include <iostream>
-#include <algorithm>
+#include "smallut.h"
 
 using namespace std;
 
@@ -175,7 +176,8 @@ bool XapComputableSynFamMember::synExpand(const string& term,
 	    result.push_back(root);
 	}
     }
-
+    LOGDEB(("XapCompSynFamMbr::synExpand([%s]): term [%s] -> [%s]\n",
+	    m_prefix.c_str(), term.c_str(), stringsToString(result).c_str()));
     return true;
 }
 

@@ -666,8 +666,8 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 #else
 
     if (o_index_stripchars) {
-	// If the index is raw, we can only come here if nostemexp is unset
-	// and we just need stem expansion.
+	// If the index is stripped, we can only come here if
+	// nostemexp is unset and we just need stem expansion.
 	db.termMatch(Rcl::Db::ET_STEM, getStemLang(), term, res, 
 		     maxexpand, m_field);
 	goto termmatchtoresult;
