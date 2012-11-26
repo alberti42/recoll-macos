@@ -274,8 +274,10 @@ bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
         m_config->setKeyDir(path_getfather(*it));
         if (m_havelocalfields)
             localfieldsfromconf();
-        walker.setSkippedNames(m_config->getSkippedNames());
+	bool follow = false;
+	m_config->getConfParam("followLinks", &follow);
 
+        walker.setSkippedNames(m_config->getSkippedNames());
 	// Check path against indexed areas and skipped names/paths
         if (!(flag&ConfIndexer::IxFIgnoreSkip) && 
 	    matchesSkipped(m_tdl, walker, *it)) {
@@ -283,7 +285,9 @@ bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
         }
 
 	struct stat stb;
-	if (lstat(it->c_str(), &stb) != 0) {
+	int ststat = follow ? stat(it->c_str(), &stb) : 
+	    lstat(it->c_str(), &stb);
+	if (ststat != 0) {
 	    LOGERR(("FsIndexer::indexFiles: lstat(%s): %s", it->c_str(),
 		    strerror(errno)));
             it++; continue;
@@ -369,11 +373,12 @@ void *FsIndexerDbUpdWorker(void * fsp)
 
     DbUpdTask *tsk;
     for (;;) {
-	if (!tqp->take(&tsk)) {
+	size_t qsz;
+	if (!tqp->take(&tsk, &qsz)) {
 	    tqp->workerExit();
 	    return (void*)1;
 	}
-	LOGDEB(("FsIndexerDbUpdWorker: got task, ql %d\n", int(tqp->size())));
+	LOGDEB(("FsIndexerDbUpdWorker: got task, ql %d\n", int(qsz)));
 	if (!fip->m_db->addOrUpdate(tsk->config, tsk->udi, tsk->parent_udi, 
 				    tsk->doc)) {
 	    LOGERR(("FsIndexerDbUpdWorker: addOrUpdate failed\n"));
