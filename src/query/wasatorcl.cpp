@@ -32,7 +32,7 @@ using std::list;
 #include "refcntr.h"
 #include "textsplit.h"
 
-static Rcl::SearchData *wasaQueryToRcl(RclConfig *config, 
+static Rcl::SearchData *wasaQueryToRcl(const RclConfig *config, 
 				       const string& stemlang,
 				       WasaQuery *wasa, 
 				       const string& autosuffs, string& reason)
@@ -281,7 +281,7 @@ static Rcl::SearchData *wasaQueryToRcl(RclConfig *config,
     return sdata;
 }
 
-Rcl::SearchData *wasaStringToRcl(RclConfig *config, const string& stemlang,
+Rcl::SearchData *wasaStringToRcl(const RclConfig *config, const string& stemlang,
 				 const string &qs, string &reason, 
                                  const string& autosuffs)
 {
