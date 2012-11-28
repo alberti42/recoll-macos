@@ -74,7 +74,7 @@ void SearchData::commoninit()
 // which could be searched by file name. It would probably be
 // preferable to do a termMatch() on field "mtype", which would
 // retrieve all values from the index.
-bool SearchData::expandFileTypes(RclConfig *cfg, vector<string>& tps)
+bool SearchData::expandFileTypes(const RclConfig *cfg, vector<string>& tps)
 {
     if (!cfg) {
 	LOGFATAL(("Db::expandFileTypes: null configuration!!\n"));

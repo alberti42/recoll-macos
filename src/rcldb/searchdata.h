@@ -222,7 +222,7 @@ private:
     // value during "find-as-you-type" operations from the GUI
     int m_softmaxexpand;
 
-    bool expandFileTypes(RclConfig *cfg, std::vector<std::string>& exptps);
+    bool expandFileTypes(const RclConfig *cfg, std::vector<std::string>& exptps);
     bool clausesToQuery(Rcl::Db &db, SClType tp,     
 			std::vector<SearchDataClause*>& query,
 			string& reason, void *d);
