@@ -182,7 +182,7 @@ class Db {
     friend class Native;
 
     /* General stuff (valid for query or update) ****************************/
-    Db(RclConfig *cfp);
+    Db(const RclConfig *cfp);
     ~Db();
 
     enum OpenMode {DbRO, DbUpd, DbTrunc};
@@ -356,7 +356,7 @@ class Db {
     bool stemDiffers(const string& lang, const string& term, 
 		     const string& base);
 
-    RclConfig *getConf() {return m_config;}
+    const RclConfig *getConf() {return m_config;}
 
     /** 
 	Activate the "in place reset" mode where all documents are
@@ -368,15 +368,31 @@ class Db {
 
     /* This has to be public for access by embedded Query::Native */
     Native *m_ndb; 
-
+    bool purgeFileWrite(const string& udi, const string& uniterm);
 private:
-    // Internal form of close, can be called during destruction
-    bool i_close(bool final);
-
-    RclConfig *m_config;
+    const RclConfig *m_config;
     string     m_reason; // Error explanation
 
-    /* Parameters cached out of the configuration files */
+    // Xapian directories for additional databases to query
+    vector<string> m_extraDbs;
+    OpenMode m_mode;
+    // File existence vector: this is filled during the indexing pass. Any
+    // document whose bit is not set at the end is purged
+    vector<bool> updated;
+    // Stop terms: those don't get indexed.
+    StopList m_stops;
+    // Text bytes indexed since beginning
+    long long    m_curtxtsz;
+    // Text bytes at last flush
+    long long    m_flushtxtsz;
+    // Text bytes at last fsoccup check
+    long long    m_occtxtsz;
+    // First fs occup check ?
+    int         m_occFirstCheck;
+
+    /***************
+     * Parameters cached out of the configuration files. Logically const 
+     * after init */
     // This is how long an abstract we keep or build from beginning of
     // text when indexing. It only has an influence on the size of the
     // db as we are free to shorten it again when displaying
@@ -389,32 +405,19 @@ private:
     int          m_synthAbsWordCtxLen;
     // Flush threshold. Megabytes of text indexed before we flush.
     int          m_flushMb;
-    // Text bytes indexed since beginning
-    long long    m_curtxtsz;
-    // Text bytes at last flush
-    long long    m_flushtxtsz;
-    // Text bytes at last fsoccup check
-    long long    m_occtxtsz;
-    // First fs occup check ?
-    int         m_occFirstCheck;
     // Maximum file system occupation percentage
     int          m_maxFsOccupPc;
     // Database directory
     string       m_basedir;
-    // Xapian directories for additional databases to query
-    vector<string> m_extraDbs;
-    OpenMode m_mode;
-    // File existence vector: this is filled during the indexing pass. Any
-    // document whose bit is not set at the end is purged
-    vector<bool> updated;
-    // Stop terms: those don't get indexed.
-    StopList m_stops;
     // When this is set, all documents are considered as needing a reindex.
     // This implements an alternative to just erasing the index before 
     // beginning, with the advantage that, for small index formats updates, 
     // between releases the index remains available while being recreated.
     static bool o_inPlaceReset;
+    /******* End logical constnesss */
 
+    // Internal form of close, can be called during destruction
+    bool i_close(bool final);
     // Reinitialize when adding/removing additional dbs
     bool adjustdbs(); 
     bool stemExpand(const string &lang, const string &s, 
@@ -422,6 +425,7 @@ private:
 
     // Flush when idxflushmb is reached
     bool maybeflush(off_t moretext);
+    bool docExists(const string& uniterm);
 
     /* Copyconst and assignement private and forbidden */
     Db(const Db &) {}

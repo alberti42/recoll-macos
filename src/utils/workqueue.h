@@ -57,7 +57,7 @@ public:
     /** Create a WorkQueue
      * @param name for message printing
      * @param hi number of tasks on queue before clients blocks. Default 0 
-     *    meaning no limit.
+     *    meaning no limit. hi == -1 means that the queue is disabled.
      * @param lo minimum count of tasks before worker starts. Default 1.
      */
     WorkQueue(const string& name, int hi = 0, int lo = 1)
@@ -66,14 +66,14 @@ public:
 	  m_clients_waiting(0), m_tottasks(0), m_nowake(0),
 	  m_workersleeps(0)
     {
-        m_ok = (pthread_cond_init(&m_ccond, 0) == 0) &&
+        m_ok = (m_high >= 0) && (pthread_cond_init(&m_ccond, 0) == 0) &&
 	    (pthread_cond_init(&m_wcond, 0) == 0) && 
             (pthread_mutex_init(&m_mutex, 0) == 0);
     }
 
     ~WorkQueue() 
     {
-        LOGDEB2(("WorkQueue::~WorkQueue: name %s\n", m_name.c_str()));
+        LOGDEB2(("WorkQueue::~WorkQueue:%s\n", m_name.c_str()));
         if (!m_worker_threads.empty())
             setTerminateAndWait();
     }
@@ -88,16 +88,19 @@ public:
      */
     bool start(int nworkers, void *(*start_routine)(void *), void *arg)
     {
+	pthread_mutex_lock(&m_mutex);
         for  (int i = 0; i < nworkers; i++) {
             int err;
             pthread_t thr;
             if ((err = pthread_create(&thr, 0, start_routine, arg))) {
                 LOGERR(("WorkQueue:%s: pthread_create failed, err %d\n",
                         m_name.c_str(), err));
+		pthread_mutex_unlock(&m_mutex);
                 return false;
             }
             m_worker_threads.insert(pair<pthread_t, WQTData>(thr, WQTData()));
         }
+	pthread_mutex_unlock(&m_mutex);
         return true;
     }
 
@@ -107,8 +110,9 @@ public:
      */
     bool put(T t)
     {
-        if (!ok() || pthread_mutex_lock(&m_mutex) != 0) {
-	    LOGERR(("WorkQueue::put: !ok or mutex_lock failed\n"));
+        if (pthread_mutex_lock(&m_mutex) != 0 || !ok()) {
+	    LOGERR(("WorkQueue::put:%s: !ok or mutex_lock failed\n", 
+		    m_name.c_str()));
             return false;
 	}
 
@@ -141,12 +145,15 @@ public:
      * back sleeping. Used by the client to wait for all current work
      * to be completed, when it needs to perform work that couldn't be
      * done in parallel with the worker's tasks, or before shutting
-     * down. Work can be resumed after calling this.
+     * down. Work can be resumed after calling this. Note that the only thread
+     * which can call it safely is the client just above (which can
+       control the task flow), else there could be
+     * tasks in the intermediate queues.
      */
     bool waitIdle()
     {
-        if (!ok() || pthread_mutex_lock(&m_mutex) != 0) {
-            LOGERR(("WorkQueue::waitIdle: %s not ok or can't lock\n",
+        if (pthread_mutex_lock(&m_mutex) != 0 || !ok()) {
+            LOGERR(("WorkQueue::waitIdle:%s: not ok or can't lock\n",
                     m_name.c_str()));
             return false;
         }
@@ -159,7 +166,8 @@ public:
             if (pthread_cond_wait(&m_ccond, &m_mutex)) {
 		m_clients_waiting--;
                 m_ok = false;
-                LOGERR(("WorkQueue::waitIdle: cond_wait failed\n"));
+                LOGERR(("WorkQueue::waitIdle:%s: cond_wait failed\n",
+			   m_name.c_str()));
                 pthread_mutex_unlock(&m_mutex);
                 return false;
             }
@@ -192,7 +200,8 @@ public:
 	    m_clients_waiting++;
             if (pthread_cond_wait(&m_ccond, &m_mutex)) {
                 pthread_mutex_unlock(&m_mutex);
-                LOGERR(("WorkQueue::setTerminate: cond_wait failed\n"));
+                LOGERR(("WorkQueue::setTerminate:%s: cond_wait failed\n",
+			   m_name.c_str()));
 		m_clients_waiting--;
                 return (void*)0;
             }
@@ -225,8 +234,10 @@ public:
      */
     bool take(T* tp, size_t *szp = 0)
     {
-        if (!ok() || pthread_mutex_lock(&m_mutex) != 0)
+        if (pthread_mutex_lock(&m_mutex) != 0 || !ok()) {
+	    LOGDEB(("WorkQueue::take:%s: not ok\n", m_name.c_str()));
             return false;
+	}
 
         while (ok() && m_queue.size() < m_low) {
 	    m_workersleeps++;
@@ -269,6 +280,7 @@ public:
      */
     void workerExit()
     {
+	LOGDEB(("workerExit:%s\n", m_name.c_str()));
         if (pthread_mutex_lock(&m_mutex) != 0)
             return;
         m_workers_exited++;
@@ -288,7 +300,13 @@ public:
 private:
     bool ok() 
     {
-        return m_ok && m_workers_exited == 0 && !m_worker_threads.empty();
+	bool isok = m_ok && m_workers_exited == 0 && !m_worker_threads.empty();
+	if (!isok) {
+	    LOGDEB(("WorkQueue:ok:%s: not ok m_ok %d m_workers_exited %d "
+		    "m_worker_threads size %d\n", m_name.c_str(),
+		    m_ok, m_workers_exited, int(m_worker_threads.size())));
+	}
+        return isok;
     }
 
     long long nanodiff(const struct timespec& older, 

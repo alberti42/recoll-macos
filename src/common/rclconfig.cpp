@@ -343,26 +343,48 @@ bool RclConfig::getConfParam(const string &name, vector<string> *svvp) const
 	return false;
     return stringToStrings(s, *svvp);
 }
-bool RclConfig::getConfParam(const string &name, list<string> *svvp) const
+
+bool RclConfig::getConfParam(const string &name, vector<int> *vip) const
 {
-    if (!svvp) 
+    if (!vip) 
 	return false;
-    svvp->clear();
-    string s;
-    if (!getConfParam(name, s))
+    vip->clear();
+    vector<string> vs;
+    if (!getConfParam(name, &vs))
 	return false;
-    return stringToStrings(s, *svvp);
+    vip->reserve(vs.size());
+    for (unsigned int i = 0; i < vs.size(); i++) {
+	char *ep;
+	vip->push_back(strtol(vs[i].c_str(), &ep, 0));
+	if (ep == vs[i].c_str()) {
+	    LOGDEB(("RclConfig::getConfParam: bad int value in [%s]\n",
+		    name.c_str()));
+	    return false;
+	}
+    }
+    return true;
 }
 
-list<string> RclConfig::getTopdirs() const
+pair<int,int> RclConfig::getThrConf(ThrStage who) const
 {
-    list<string> tdl;
+    vector<int> vq;
+    vector<int> vt;
+    if (!getConfParam("thrQSizes", &vq) || !getConfParam("thrTCounts", &vt)) {
+	return pair<int,int>(-1,-1);
+    }
+    return pair<int,int>(vq[who], vt[who]);
+}
+
+vector<string> RclConfig::getTopdirs() const
+{
+    vector<string> tdl;
     if (!getConfParam("topdirs", &tdl)) {
-	LOGERR(("RclConfig::getTopdirs: no top directories in config or bad list format\n"));
+	LOGERR(("RclConfig::getTopdirs: no top directories in config or "
+		"bad list format\n"));
 	return tdl;
     }
 
-    for (list<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
+    for (vector<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
 	*it = path_tildexpand(*it);
 	*it = path_canon(*it);
     }

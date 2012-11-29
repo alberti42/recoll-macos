@@ -85,7 +85,7 @@ class FsIndexer : public FsTreeWalkerCB {
     TempDir      m_tmpdir;
     string       m_reason;
     DbIxStatusUpdater *m_updater;
-    std::list<std::string> m_tdl;
+    std::vector<std::string> m_tdl;
     FIMissingStore *m_missing;
 
 
@@ -107,6 +107,8 @@ class FsIndexer : public FsTreeWalkerCB {
     int m_loglevel;
     WorkQueue<InternfileTask*> m_iwqueue;
     WorkQueue<DbUpdTask*> m_dwqueue;
+    bool m_haveInternQ;
+    bool m_haveSplitQ;
 #endif // IDX_THREADS
 
     bool init();

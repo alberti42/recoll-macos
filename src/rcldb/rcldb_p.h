@@ -36,6 +36,8 @@ namespace Rcl {
 class Query;
 
 #ifdef IDX_THREADS
+// Task for the index update thread. This can be either and add/update
+// or a purge op, in which case the txtlen is (size_t)-1
 class DbUpdTask {
 public:
     DbUpdTask(const string& ud, const string& un, const Xapian::Document &d,
@@ -64,16 +66,14 @@ class Db::Native {
     int  m_loglevel;
     PTMutexInit m_mutex;
     long long  m_totalworkns;
+    bool m_haveWriteQ;
+    void maybeStartThreads();
 #endif // IDX_THREADS
 
     // Indexing 
     Xapian::WritableDatabase xwdb;
     // Querying (active even if the wdb is too)
     Xapian::Database xrdb;
-
-    // We sometimes go through the wdb for some query ops, don't
-    // really know if this makes sense
-    Xapian::Database& xdb() {return m_iswritable ? xwdb : xrdb;}
 
     Native(Db *db);
     ~Native();

@@ -102,33 +102,58 @@ FsIndexer::FsIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc)
     : m_config(cnf), m_db(db), m_updater(updfunc), 
       m_missing(new FSIFIMissingStore)
 #ifdef IDX_THREADS
-    , m_iwqueue("Internfile", 2), m_dwqueue("Split", 2)
+    , m_iwqueue("Internfile", cnf->getThrConf(RclConfig::ThrIntern).first), 
+      m_dwqueue("Split", cnf->getThrConf(RclConfig::ThrSplit).first)
 #endif // IDX_THREADS
 {
     LOGDEB1(("FsIndexer::FsIndexer\n"));
     m_havelocalfields = m_config->hasNameAnywhere("localfields");
+
 #ifdef IDX_THREADS
     m_loglevel = DebugLog::getdbl()->getlevel();
-    if (!m_iwqueue.start(4, FsIndexerInternfileWorker, this)) {
-	LOGERR(("FsIndexer::FsIndexer: worker start failed\n"));
-	return;
+    m_haveInternQ = m_haveSplitQ = false;
+    int internqlen = cnf->getThrConf(RclConfig::ThrIntern).first;
+    int internthreads = cnf->getThrConf(RclConfig::ThrIntern).second;
+    if (internqlen >= 0) {
+	if (!m_iwqueue.start(internthreads, FsIndexerInternfileWorker, this)) {
+	    LOGERR(("FsIndexer::FsIndexer: intern worker start failed\n"));
+	    return;
+	}
+	m_haveInternQ = true;
+    } 
+    int splitqlen = cnf->getThrConf(RclConfig::ThrSplit).first;
+    int splitthreads = cnf->getThrConf(RclConfig::ThrSplit).second;
+    if (splitqlen >= 0) {
+	if (!m_dwqueue.start(splitthreads, FsIndexerDbUpdWorker, this)) {
+	    LOGERR(("FsIndexer::FsIndexer: split worker start failed\n"));
+	    return;
+	}
+	m_haveSplitQ = true;
     }
-    if (!m_dwqueue.start(2, FsIndexerDbUpdWorker, this)) {
-	LOGERR(("FsIndexer::FsIndexer: worker start failed\n"));
-	return;
-    }
+    LOGDEB(("FsIndexer: threads: haveIQ %d iql %d iqts %d "
+	    "haveSQ %d sql %d sqts %d\n", m_haveInternQ, internqlen, 
+	    internthreads, m_haveSplitQ, splitqlen, splitthreads));
 #endif // IDX_THREADS
 }
 
 FsIndexer::~FsIndexer() 
 {
     LOGDEB1(("FsIndexer::~FsIndexer()\n"));
+
 #ifdef IDX_THREADS
-    void *status = m_iwqueue.setTerminateAndWait();
-    LOGDEB0(("FsIndexer: internfile wrkr status: %ld (1->ok)\n", long(status)));
-    status = m_dwqueue.setTerminateAndWait();
-    LOGDEB0(("FsIndexer: dbupd worker status: %ld (1->ok)\n", long(status)));
+    void *status;
+    if (m_haveInternQ) {
+	status = m_iwqueue.setTerminateAndWait();
+	LOGDEB0(("FsIndexer: internfile wrkr status: %ld (1->ok)\n", 
+		 long(status)));
+    }
+    if (m_haveSplitQ) {
+	status = m_dwqueue.setTerminateAndWait();
+	LOGDEB0(("FsIndexer: dbupd worker status: %ld (1->ok)\n", 
+		 long(status)));
+    }
 #endif // IDX_THREADS
+
     delete m_missing;
 }
 
@@ -161,7 +186,7 @@ bool FsIndexer::index()
 
     m_walker.setSkippedPaths(m_config->getSkippedPaths());
     m_walker.addSkippedPath(path_tildexpand("~/.beagle"));
-    for (list<string>::const_iterator it = m_tdl.begin();
+    for (vector<string>::const_iterator it = m_tdl.begin();
 	 it != m_tdl.end(); it++) {
 	LOGDEB(("FsIndexer::index: Indexing %s into %s\n", it->c_str(), 
 		getDbDir().c_str()));
@@ -191,8 +216,10 @@ bool FsIndexer::index()
     }
 
 #ifdef IDX_THREADS
-    m_iwqueue.waitIdle();
-    m_dwqueue.waitIdle();
+    if (m_haveInternQ) 
+	m_iwqueue.waitIdle();
+    if (m_haveSplitQ)
+	m_dwqueue.waitIdle();
     m_db->waitUpdIdle();
 #endif // IDX_THREADS
 
@@ -209,13 +236,14 @@ bool FsIndexer::index()
     return true;
 }
 
-static bool matchesSkipped(const list<string>& tdl,
+static bool matchesSkipped(const vector<string>& tdl,
                            FsTreeWalker& walker,
                            const string& path)
 {
     // First check what (if any) topdir this is in:
     string td;
-    for (list<string>::const_iterator it = tdl.begin(); it != tdl.end(); it++) {
+    for (vector<string>::const_iterator it = tdl.begin(); 
+	 it != tdl.end(); it++) {
         if (path.find(*it) == 0) {
             td = *it;
             break;
@@ -308,10 +336,13 @@ bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
     }
 
 #ifdef IDX_THREADS
-    m_iwqueue.waitIdle();
-    m_dwqueue.waitIdle();
+    if (m_haveInternQ) 
+	m_iwqueue.waitIdle();
+    if (m_haveSplitQ)
+	m_dwqueue.waitIdle();
     m_db->waitUpdIdle();
 #endif // IDX_THREADS
+
     return true;
 }
 
@@ -372,6 +403,10 @@ void FsIndexer::makesig(const struct stat *stp, string& out)
 }
 
 #ifdef IDX_THREADS
+// Called updworker as seen from here, but the first step (and only in
+// most meaningful configurations) is doing the word-splitting, which
+// is why the task is referred as "Split" in the grand scheme of
+// things. An other stage usually deals with the actual index update.
 void *FsIndexerDbUpdWorker(void * fsp)
 {
     recoll_threadinit();
@@ -471,13 +506,18 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
     }
 
 #ifdef IDX_THREADS
-    InternfileTask *tp = new InternfileTask(fn, stp);
-    if (!m_iwqueue.put(tp))
-	return FsTreeWalker::FtwError;
-    return FsTreeWalker::FtwOk;
-#else
+    if (m_haveInternQ) {
+	InternfileTask *tp = new InternfileTask(fn, stp);
+	if (m_iwqueue.put(tp)) {
+	    return FsTreeWalker::FtwOk;
+	} else {
+	    return FsTreeWalker::FtwError;
+	}
+    }
+#endif
+
     return processonefile(m_config, m_tmpdir, fn, stp);
-#endif // IDX_THREADS
+
 }
 
 
@@ -505,13 +545,7 @@ FsIndexer::processonefile(RclConfig *config, TempDir& tmpdir,
     makesig(stp, sig);
     string udi;
     make_udi(fn, cstr_null, udi);
-    bool needupdate;
-    {
-#ifdef IDX_THREADS
-	PTMutexLocker locker(m_mutex);
-#endif
-	needupdate = m_db->needUpdate(udi, sig);
-    }
+    bool needupdate = m_db->needUpdate(udi, sig);
 
     if (!needupdate) {
 	LOGDEB0(("processone: up to date: %s\n", fn.c_str()));
@@ -619,17 +653,22 @@ FsIndexer::processonefile(RclConfig *config, TempDir& tmpdir,
 	make_udi(fn, doc.ipath, udi);
 
 #ifdef IDX_THREADS
-	DbUpdTask *tp = new DbUpdTask(config, udi, doc.ipath.empty() ? 
-				      cstr_null : parent_udi, doc);
-	if (!m_dwqueue.put(tp)) {
-	    LOGERR(("processonefile: wqueue.put failed\n"));
-	    return FsTreeWalker::FtwError;
+	if (m_haveSplitQ) {
+	    DbUpdTask *tp = new DbUpdTask(config, udi, doc.ipath.empty() ? 
+					  cstr_null : parent_udi, doc);
+	    if (!m_dwqueue.put(tp)) {
+		LOGERR(("processonefile: wqueue.put failed\n"));
+		return FsTreeWalker::FtwError;
+	    } 
+	} else {
+#endif
+	    if (!m_db->addOrUpdate(config, udi, doc.ipath.empty() ? cstr_null : 
+				   parent_udi, doc)) {
+		return FsTreeWalker::FtwError;
+	    }
+#ifdef IDX_THREADS
 	}
-#else
-	if (!m_db->addOrUpdate(config, udi, doc.ipath.empty() ? cstr_null : 
-			       parent_udi, doc)) 
-	    return FsTreeWalker::FtwError;
-#endif // IDX_THREADS
+#endif
 
 	// Tell what we are doing and check for interrupt request
 	if (m_updater) {
@@ -664,14 +703,19 @@ FsIndexer::processonefile(RclConfig *config, TempDir& tmpdir,
 	fileDoc.pcbytes = cbuf;
 	// Document signature for up to date checks.
 	makesig(stp, fileDoc.sig);
+
 #ifdef IDX_THREADS
-	DbUpdTask *tp = new DbUpdTask(config, parent_udi, cstr_null, fileDoc);
-	if (!m_dwqueue.put(tp))
-	    return FsTreeWalker::FtwError;
-#else
+	if (m_haveSplitQ) {
+	    DbUpdTask *tp = new DbUpdTask(config, parent_udi, cstr_null, 
+					  fileDoc);
+	    if (!m_dwqueue.put(tp))
+		return FsTreeWalker::FtwError;
+	    else
+		return FsTreeWalker::FtwOk;
+	}
+#endif
 	if (!m_db->addOrUpdate(config, parent_udi, cstr_null, fileDoc)) 
 	    return FsTreeWalker::FtwError;
-#endif // IDX_THREADS
     }
 
     return FsTreeWalker::FtwOk;

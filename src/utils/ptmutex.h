@@ -22,7 +22,8 @@
 /// A trivial wrapper/helper for pthread mutex locks
 
 
-/// Init lock. Used as a single PTMutexInit static object.
+/// Lock storage with auto-initialization. Must be created before any
+/// lock-using thread of course (possibly as a static object).
 class PTMutexInit {
 public:
     pthread_mutex_t m_mutex;
@@ -32,16 +33,21 @@ public:
     }
 };
 
-/// Take the lock when constructed, release when deleted
+/// Take the lock when constructed, release when deleted. Can be disabled
+/// by constructor params for conditional use.
 class PTMutexLocker {
 public:
-    PTMutexLocker(PTMutexInit& l) : m_lock(l)
+    // The nolock arg enables conditional locking
+    PTMutexLocker(PTMutexInit& l, bool nolock = false)
+	: m_lock(l), m_status(-1)
     {
-	m_status = pthread_mutex_lock(&m_lock.m_mutex);
+	if (!nolock)
+	    m_status = pthread_mutex_lock(&m_lock.m_mutex);
     }
     ~PTMutexLocker()
     {
-	pthread_mutex_unlock(&m_lock.m_mutex);
+	if (m_status == 0)
+	    pthread_mutex_unlock(&m_lock.m_mutex);
     }
     int ok() {return m_status == 0;}
 private:

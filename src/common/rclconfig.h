@@ -112,10 +112,14 @@ class RclConfig {
     bool getConfParam(const string &name, int *value) const;
     /** Variant with autoconversion to bool */
     bool getConfParam(const string &name, bool *value) const;
-    /** Variant with conversion to string list/vector
+    /** Variant with conversion to vector<string>
      *  (stringToStrings). Can fail if the string is malformed. */
     bool getConfParam(const string &name, vector<string> *value) const;
-    bool getConfParam(const string &name, list<string> *value) const;
+    /** Variant with conversion to vector<int> */
+    bool getConfParam(const string &name, vector<int> *value) const;
+
+    enum ThrStage {ThrIntern=0, ThrSplit=1, ThrDbWrite=2};
+    pair<int, int> getThrConf(ThrStage who) const;
 
     /** 
      * Get list of config names under current sk, with possible 
@@ -140,7 +144,7 @@ class RclConfig {
     /** Get list of top directories. This is needed from a number of places
      * and needs some cleaning-up code. An empty list is always an error, no
      * need for other status */
-    list<string> getTopdirs() const;
+    vector<string> getTopdirs() const;
 
     /** Get database directory */
     string getDbDir() const;

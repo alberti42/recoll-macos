@@ -172,7 +172,7 @@ void *rclMonRcvRun(void *q)
 
 
     // Get top directories from config 
-    list<string> tdl = lconfig.getTopdirs();
+    vector<string> tdl = lconfig.getTopdirs();
     if (tdl.empty()) {
 	LOGERR(("rclMonRcvRun:: top directory list (topdirs param.) not"
 		"found in config or Directory list parse error"));
@@ -184,7 +184,7 @@ void *rclMonRcvRun(void *q)
     FsTreeWalker walker;
     walker.setSkippedPaths(lconfig.getDaemSkippedPaths());
     WalkCB walkcb(&lconfig, mon, queue, walker);
-    for (list<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
+    for (vector<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
 	lconfig.setKeyDir(*it);
 	// Adjust the follow symlinks options
 	bool follow;
