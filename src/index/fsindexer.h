@@ -97,11 +97,6 @@ class FsIndexer : public FsTreeWalkerCB {
     map<string, string> m_localfields;
 
 #ifdef IDX_THREADS
-    // Used to protect all ops from processonefile to class members:
-    // m_missing, m_db. It would be possible to be more fine-grained
-    // but probably not worth it. m_config and m_updater have separate 
-    // protections 
-    PTMutexInit m_mutex;
     friend void *FsIndexerDbUpdWorker(void*);
     friend void *FsIndexerInternfileWorker(void*);
     int m_loglevel;
@@ -109,15 +104,16 @@ class FsIndexer : public FsTreeWalkerCB {
     WorkQueue<DbUpdTask*> m_dwqueue;
     bool m_haveInternQ;
     bool m_haveSplitQ;
+    RclConfig   *m_stableconfig;
 #endif // IDX_THREADS
 
     bool init();
     void localfieldsfromconf();
-    void setlocalfields(Rcl::Doc& doc);
+    void setlocalfields(const map<string, string> flds, Rcl::Doc& doc);
     string getDbDir() {return m_config->getDbDir();}
     FsTreeWalker::Status 
     processonefile(RclConfig *config, TempDir& tmpdir, const string &fn, 
-		   const struct stat *);
+		   const struct stat *, map<string,string> localfields);
 };
 
 #endif /* _fsindexer_h_included_ */

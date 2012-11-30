@@ -1149,7 +1149,7 @@ Db_addOrUpdate(recoll_DbObject* self, PyObject *args, PyObject *)
         PyErr_SetString(PyExc_AttributeError, "doc");
         return 0;
     }
-    if (!self->db->addOrUpdate(rclconfig, udi, parent_udi, *pydoc->doc)) {
+    if (!self->db->addOrUpdate(udi, parent_udi, *pydoc->doc)) {
 	LOGERR(("Db_addOrUpdate: rcldb error\n"));
         PyErr_SetString(PyExc_AttributeError, "rcldb error");
         return 0;

@@ -59,24 +59,24 @@ using namespace std;
 #ifdef IDX_THREADS
 class DbUpdTask {
 public:
-    DbUpdTask(RclConfig *cnf, const string& u, const string& p, 
-	      const Rcl::Doc& d)
-	: udi(u), parent_udi(p), doc(d), config(cnf)
+    DbUpdTask(const string& u, const string& p, const Rcl::Doc& d)
+	: udi(u), parent_udi(p), doc(d)
     {}
     string udi;
     string parent_udi;
     Rcl::Doc doc;
-    RclConfig *config;
 };
 extern void *FsIndexerDbUpdWorker(void*);
 
 class InternfileTask {
 public:
-    InternfileTask(const std::string &f, const struct stat *i_stp)
-	: fn(f), statbuf(*i_stp)
+    InternfileTask(const std::string &f, const struct stat *i_stp,
+		   map<string,string> lfields)
+	: fn(f), statbuf(*i_stp), localfields(lfields)
     {}
     string fn;
     struct stat statbuf;
+    map<string,string> localfields;
 };
 extern void *FsIndexerInternfileWorker(void*);
 #endif // IDX_THREADS
@@ -110,6 +110,7 @@ FsIndexer::FsIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc)
     m_havelocalfields = m_config->hasNameAnywhere("localfields");
 
 #ifdef IDX_THREADS
+    m_stableconfig = new RclConfig(*m_config);
     m_loglevel = DebugLog::getdbl()->getlevel();
     m_haveInternQ = m_haveSplitQ = false;
     int internqlen = cnf->getThrConf(RclConfig::ThrIntern).first;
@@ -152,6 +153,7 @@ FsIndexer::~FsIndexer()
 	LOGDEB0(("FsIndexer: dbupd worker status: %ld (1->ok)\n", 
 		 long(status)));
     }
+    delete m_stableconfig;
 #endif // IDX_THREADS
 
     delete m_missing;
@@ -178,7 +180,7 @@ bool FsIndexer::index()
 
     if (m_updater) {
 #ifdef IDX_THREADS
-	PTMutexLocker locker(m_mutex);
+	PTMutexLocker locker(m_updater->m_mutex);
 #endif
 	m_updater->status.reset();
 	m_updater->status.dbtotdocs = m_db->docCnt();
@@ -293,6 +295,10 @@ bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
     if (!init())
         return false;
 
+    int abslen;
+    if (m_config->getConfParam("idxabsmlen", &abslen))
+	m_db->setAbstractParams(abslen, -1, -1);
+      
     // We use an FsTreeWalker just for handling the skipped path/name lists
     FsTreeWalker walker;
     walker.setSkippedPaths(m_config->getSkippedPaths());
@@ -302,8 +308,8 @@ bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
         LOGDEB2(("FsIndexer::indexFiles: [%s]\n", it->c_str()));
 
         m_config->setKeyDir(path_getfather(*it));
-        if (m_havelocalfields)
-            localfieldsfromconf();
+	if (m_havelocalfields)
+	    localfieldsfromconf();
 	bool follow = false;
 	m_config->getConfParam("followLinks", &follow);
 
@@ -323,10 +329,6 @@ bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
             it++; continue;
 	}
 
-	int abslen;
-	if (m_config->getConfParam("idxabsmlen", &abslen))
-	    m_db->setAbstractParams(abslen, -1, -1);
-        
 	if (processone(*it, &stb, FsTreeWalker::FtwRegular) != 
 	    FsTreeWalker::FtwOk) {
 	    LOGERR(("FsIndexer::indexFiles: processone failed\n"));
@@ -383,10 +385,10 @@ void FsIndexer::localfieldsfromconf()
 }
 
 // 
-void FsIndexer::setlocalfields(Rcl::Doc& doc)
+void FsIndexer::setlocalfields(map<string, string> fields, Rcl::Doc& doc)
 {
-    for (map<string, string>::const_iterator it = m_localfields.begin();
-         it != m_localfields.end(); it++) {
+    for (map<string, string>::const_iterator it = fields.begin();
+         it != fields.end(); it++) {
         // Should local fields override those coming from the document
         // ? I think not, but not too sure
         if (doc.meta.find(it->second) == doc.meta.end()) {
@@ -422,8 +424,7 @@ void *FsIndexerDbUpdWorker(void * fsp)
 	    return (void*)1;
 	}
 	LOGDEB0(("FsIndexerDbUpdWorker: task ql %d\n", int(qsz)));
-	if (!fip->m_db->addOrUpdate(tsk->config, tsk->udi, tsk->parent_udi, 
-				    tsk->doc)) {
+	if (!fip->m_db->addOrUpdate(tsk->udi, tsk->parent_udi, tsk->doc)) {
 	    LOGERR(("FsIndexerDbUpdWorker: addOrUpdate failed\n"));
 	    tqp->workerExit();
 	    return (void*)0;
@@ -439,7 +440,7 @@ void *FsIndexerInternfileWorker(void * fsp)
     WorkQueue<InternfileTask*> *tqp = &fip->m_iwqueue;
     DebugLog::getdbl()->setloglevel(fip->m_loglevel);
     TempDir tmpdir;
-    RclConfig *myconf = new RclConfig(*(fip->m_config));
+    RclConfig myconf(*(fip->m_stableconfig));
 
     InternfileTask *tsk;
     for (;;) {
@@ -448,7 +449,8 @@ void *FsIndexerInternfileWorker(void * fsp)
 	    return (void*)1;
 	}
 	LOGDEB0(("FsIndexerInternfileWorker: task fn %s\n", tsk->fn.c_str()));
-	if (fip->processonefile(myconf, tmpdir, tsk->fn, &tsk->statbuf) !=
+	if (fip->processonefile(&myconf, tmpdir, tsk->fn, &tsk->statbuf,
+		tsk->localfields) !=
 	    FsTreeWalker::FtwOk) {
 	    LOGERR(("FsIndexerInternfileWorker: processone failed\n"));
 	    tqp->workerExit();
@@ -477,7 +479,7 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 {
     if (m_updater) {
 #ifdef IDX_THREADS
-	PTMutexLocker locker(m_mutex);
+	PTMutexLocker locker(m_updater->m_mutex);
 #endif
 	if (!m_updater->update()) {
 	    return FsTreeWalker::FtwStop;
@@ -493,13 +495,9 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 	// Set up skipped patterns for this subtree. 
 	m_walker.setSkippedNames(m_config->getSkippedNames());
 
-	int abslen;
-	if (m_config->getConfParam("idxabsmlen", &abslen))
-	    m_db->setAbstractParams(abslen, -1, -1);
-
         // Adjust local fields from config for this subtree
-        if (m_havelocalfields)
-            localfieldsfromconf();
+	if (m_havelocalfields)
+	    localfieldsfromconf();
 
 	if (flg == FsTreeWalker::FtwDirReturn)
 	    return FsTreeWalker::FtwOk;
@@ -507,7 +505,7 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 
 #ifdef IDX_THREADS
     if (m_haveInternQ) {
-	InternfileTask *tp = new InternfileTask(fn, stp);
+	InternfileTask *tp = new InternfileTask(fn, stp, m_localfields);
 	if (m_iwqueue.put(tp)) {
 	    return FsTreeWalker::FtwOk;
 	} else {
@@ -516,20 +514,15 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
     }
 #endif
 
-    return processonefile(m_config, m_tmpdir, fn, stp);
-
+    return processonefile(m_config, m_tmpdir, fn, stp, m_localfields);
 }
 
 
 FsTreeWalker::Status 
 FsIndexer::processonefile(RclConfig *config, TempDir& tmpdir,
-			  const std::string &fn, const struct stat *stp)
+			  const std::string &fn, const struct stat *stp,
+			  map<string, string> localfields)
 {
-    
-#ifdef IDX_THREADS
-    config->setKeyDir(path_getfather(fn));
-#endif
-
     ////////////////////
     // Check db up to date ? Doing this before file type
     // identification means that, if usesystemfilecommand is switched
@@ -551,7 +544,7 @@ FsIndexer::processonefile(RclConfig *config, TempDir& tmpdir,
 	LOGDEB0(("processone: up to date: %s\n", fn.c_str()));
 	if (m_updater) {
 #ifdef IDX_THREADS
-	    PTMutexLocker locker(m_mutex);
+	    PTMutexLocker locker(m_updater->m_mutex);
 #endif
 	    // Status bar update, abort request etc.
 	    m_updater->status.fn = fn;
@@ -579,7 +572,7 @@ FsIndexer::processonefile(RclConfig *config, TempDir& tmpdir,
     // Note that we used to do the full path here, but I ended up believing
     // that it made more sense to use only the file name
     // The charset is used is the one from the locale.
-    string charset = m_config->getDefCharset(true);
+    string charset = config->getDefCharset(true);
     string utf8fn; int ercnt;
     if (!transcode(path_getsimple(fn), utf8fn, charset, "UTF-8", &ercnt)) {
 	LOGERR(("processone: fn transcode failure from [%s] to UTF-8: %s\n",
@@ -646,7 +639,7 @@ FsIndexer::processonefile(RclConfig *config, TempDir& tmpdir,
 
         // Possibly add fields from local config
         if (m_havelocalfields) 
-            setlocalfields(doc);
+            setlocalfields(localfields, doc);
 	// Add document to database. If there is an ipath, add it as a children
 	// of the file document.
 	string udi;
@@ -654,16 +647,15 @@ FsIndexer::processonefile(RclConfig *config, TempDir& tmpdir,
 
 #ifdef IDX_THREADS
 	if (m_haveSplitQ) {
-	    DbUpdTask *tp = new DbUpdTask(config, udi, doc.ipath.empty() ? 
-					  cstr_null : parent_udi, doc);
+	    DbUpdTask *tp = new DbUpdTask(udi, doc.ipath.empty() ? cstr_null : parent_udi, doc);
 	    if (!m_dwqueue.put(tp)) {
 		LOGERR(("processonefile: wqueue.put failed\n"));
 		return FsTreeWalker::FtwError;
 	    } 
 	} else {
 #endif
-	    if (!m_db->addOrUpdate(config, udi, doc.ipath.empty() ? cstr_null : 
-				   parent_udi, doc)) {
+	    if (!m_db->addOrUpdate(udi, doc.ipath.empty() ? 
+				   cstr_null : parent_udi, doc)) {
 		return FsTreeWalker::FtwError;
 	    }
 #ifdef IDX_THREADS
@@ -673,7 +665,7 @@ FsIndexer::processonefile(RclConfig *config, TempDir& tmpdir,
 	// Tell what we are doing and check for interrupt request
 	if (m_updater) {
 #ifdef IDX_THREADS
-	    PTMutexLocker locker(m_mutex);
+	    PTMutexLocker locker(m_updater->m_mutex);
 #endif
 	    ++(m_updater->status.docsdone);
             if (m_updater->status.dbtotdocs < m_updater->status.docsdone)
@@ -697,6 +689,8 @@ FsIndexer::processonefile(RclConfig *config, TempDir& tmpdir,
 	fileDoc.meta[Rcl::Doc::keyfn] = utf8fn;
 	fileDoc.mimetype = interner.getMimetype();
 	fileDoc.url = cstr_fileu + fn;
+        if (m_havelocalfields) 
+            setlocalfields(localfields, fileDoc);
 
 	char cbuf[100]; 
 	sprintf(cbuf, OFFTPC, stp->st_size);
@@ -706,15 +700,14 @@ FsIndexer::processonefile(RclConfig *config, TempDir& tmpdir,
 
 #ifdef IDX_THREADS
 	if (m_haveSplitQ) {
-	    DbUpdTask *tp = new DbUpdTask(config, parent_udi, cstr_null, 
-					  fileDoc);
+	    DbUpdTask *tp = new DbUpdTask(parent_udi, cstr_null, fileDoc);
 	    if (!m_dwqueue.put(tp))
 		return FsTreeWalker::FtwError;
 	    else
 		return FsTreeWalker::FtwOk;
 	}
 #endif
-	if (!m_db->addOrUpdate(config, parent_udi, cstr_null, fileDoc)) 
+	if (!m_db->addOrUpdate(parent_udi, cstr_null, fileDoc)) 
 	    return FsTreeWalker::FtwError;
     }
 

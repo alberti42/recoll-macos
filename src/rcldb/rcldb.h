@@ -256,7 +256,7 @@ class Db {
      * @param doc container for document data. Should have been filled as 
      *   much as possible depending on the document type. 
      */
-    bool addOrUpdate(RclConfig *config, const string &udi, 
+    bool addOrUpdate(const string &udi, 
 		     const string &parent_udi, Doc &doc);
 #ifdef IDX_THREADS
     void waitUpdIdle();

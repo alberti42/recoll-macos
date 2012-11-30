@@ -32,6 +32,9 @@ using std::vector;
 #include "rclconfig.h"
 #include "rcldb.h"
 #include "rcldoc.h"
+#ifdef IDX_THREADS
+#include "ptmutex.h"
+#endif
 
 class FsIndexer;
 class BeagleQueueIndexer;
@@ -60,12 +63,18 @@ class DbIxStatus {
  * stop as soon as possible without corrupting state */
 class DbIxStatusUpdater {
  public:
+#ifdef IDX_THREADS
+    PTMutexInit m_mutex;
+#endif
     DbIxStatus status;
     virtual ~DbIxStatusUpdater(){}
 
     // Convenience: change phase/fn and update
     virtual bool update(DbIxStatus::Phase phase, const string& fn)
     {
+#ifdef IDX_THREADS
+	PTMutexLocker lock(m_mutex);
+#endif
         status.phase = phase;
         status.fn = fn;
         return update();

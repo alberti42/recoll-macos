@@ -338,11 +338,12 @@ int Db::Native::getPageNumberForPosition(const vector<int>& pbreaks,
 bool Db::o_inPlaceReset;
 
 Db::Db(const RclConfig *cfp)
-    : m_ndb(0), m_config(cfp), m_mode(Db::DbRO), m_curtxtsz(0), m_flushtxtsz(0),
+    : m_ndb(0),  m_mode(Db::DbRO), m_curtxtsz(0), m_flushtxtsz(0),
       m_occtxtsz(0), m_occFirstCheck(1),
       m_idxAbsTruncLen(250), m_synthAbsLen(250), m_synthAbsWordCtxLen(4), 
       m_flushMb(-1), m_maxFsOccupPc(0)
 {
+    m_config = new RclConfig(*cfp);
 #ifndef RCL_INDEX_STRIPCHARS
     if (start_of_field_term.empty()) {
 	if (o_index_stripchars) {
@@ -370,6 +371,7 @@ Db::~Db()
     LOGDEB(("Db::~Db: isopen %d m_iswritable %d\n", m_ndb->m_isopen,
 	    m_ndb->m_iswritable));
     i_close(true);
+    delete m_config;
 }
 
 vector<string> Db::getStemmerNames()
@@ -867,8 +869,7 @@ static const string cstr_nc("\n\r\x0c");
 // the title abstract and body and add special terms for file name,
 // date, mime type etc. , create the document data record (more
 // metadata), and update database
-bool Db::addOrUpdate(RclConfig *config, const string &udi, 
-		     const string &parent_udi, Doc &doc)
+bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 {
     LOGDEB(("Db::add: udi [%s] parent [%s]\n", 
 	     udi.c_str(), parent_udi.c_str()));
@@ -1097,10 +1098,10 @@ bool Db::addOrUpdate(RclConfig *config, const string &udi,
     if (!doc.meta[Doc::keyabs].empty())
 	RECORD_APPEND(record, Doc::keyabs, doc.meta[Doc::keyabs]);
 
-    const set<string>& stored = config->getStoredFields();
+    const set<string>& stored = m_config->getStoredFields();
     for (set<string>::const_iterator it = stored.begin();
 	 it != stored.end(); it++) {
-	string nm = config->fieldCanon(*it);
+	string nm = m_config->fieldCanon(*it);
 	if (!doc.meta[*it].empty()) {
 	    string value = 
 		neutchars(truncate_to_word(doc.meta[*it], 150), cstr_nc);

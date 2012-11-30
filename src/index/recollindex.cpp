@@ -88,7 +88,7 @@ int stopindexing;
 // should subsequently orderly terminate what it is doing.
 class MyUpdater : public DbIxStatusUpdater {
  public:
-    MyUpdater(RclConfig *config) 
+    MyUpdater(const RclConfig *config) 
 	: m_prevphase(DbIxStatus::DBIXS_NONE)
     {
 	m_fd = open(config->getIdxStatusFile().c_str(), 
@@ -165,7 +165,7 @@ static void makeIndexerOrExit(RclConfig *config, bool inPlaceReset)
     }
 }
 
-void rclIxIonice(RclConfig *config)
+void rclIxIonice(const RclConfig *config)
 {
     string clss, classdata;
     if (!config->getConfParam("monioniceclass", clss) || clss.empty())
