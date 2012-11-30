@@ -64,6 +64,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun)
         deleteZ(m_fsindexer);
         m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
         if (!m_fsindexer || !m_fsindexer->index()) {
+	    m_db.close();
             return false;
         }
     }
@@ -72,6 +73,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun)
         deleteZ(m_beagler);
         m_beagler = new BeagleQueueIndexer(m_config, &m_db, m_updater);
         if (!m_beagler || !m_beagler->index()) {
+	    m_db.close();
             return false;
         }
     }
@@ -79,8 +81,10 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun)
     if (typestorun == IxTAll) {
         // Get rid of all database entries that don't exist in the
         // filesystem anymore. Only if all *configured* indexers ran.
-        if (m_updater && !m_updater->update(DbIxStatus::DBIXS_PURGE, string()))
+        if (m_updater && !m_updater->update(DbIxStatus::DBIXS_PURGE, string())) {
+	    m_db.close();
 	    return false;
+	}
         m_db.purge();
     }
 

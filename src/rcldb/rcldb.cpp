@@ -131,8 +131,7 @@ Db::Native::Native(Db *db)
     : m_rcldb(db), m_isopen(false), m_iswritable(false),
       m_noversionwrite(false)
 #ifdef IDX_THREADS
-    , m_wqueue("DbUpd", 
-	       m_rcldb->m_config->getThrConf(RclConfig::ThrDbWrite).first),
+    , m_wqueue("DbUpd", m_rcldb->m_config->getThrConf(RclConfig::ThrDbWrite).first),
       m_totalworkns(0LL)
 #endif // IDX_THREADS
 { 
@@ -477,7 +476,7 @@ bool Db::open(OpenMode mode, OpenError *error)
 // Note: xapian has no close call, we delete and recreate the db
 bool Db::close()
 {
-    LOGDEB2(("Db::close()\n"));
+    LOGDEB1(("Db::close()\n"));
     return i_close(false);
 }
 bool Db::i_close(bool final)

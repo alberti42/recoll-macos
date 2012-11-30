@@ -471,8 +471,7 @@ int main(int argc, char **argv)
 	    }
 	    deleteZ(confindexer);
 	    o_reexec->insertArgs(vector<string>(1, "-n"));
-	    LOGDEB(("recollindex: calling reexec after init path with "
-		    "option -n\n"));
+	    LOGINFO(("recollindex: reexecuting with -n after initial full pass\n"));
 	    // Note that -n will be inside the reexec when we come
 	    // back, but the monitor will explicitely strip it before
 	    // starting a config change exec to ensure that we do a

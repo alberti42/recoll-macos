@@ -27,9 +27,10 @@
 class PTMutexInit {
 public:
     pthread_mutex_t m_mutex;
+    int m_status;
     PTMutexInit() 
     {
-	pthread_mutex_init(&m_mutex, 0);
+	m_status = pthread_mutex_init(&m_mutex, 0);
     }
 };
 
@@ -50,6 +51,11 @@ public:
 	    pthread_mutex_unlock(&m_lock.m_mutex);
     }
     int ok() {return m_status == 0;}
+    // For pthread_cond_wait etc.
+    pthread_mutex_t *getMutex() 
+    {
+	return &m_lock.m_mutex;
+    }
 private:
     PTMutexInit& m_lock;
     int m_status;

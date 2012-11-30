@@ -1197,7 +1197,6 @@ void RclConfig::initFrom(const RclConfig& r)
     m_datadir = r.m_datadir;
     m_keydir = r.m_keydir;
     m_cdirs = r.m_cdirs;
-    // We should use reference-counted objects instead!
     if (r.m_conf)
 	m_conf = new ConfStack<ConfTree>(*(r.m_conf));
     if (r.mimemap)
