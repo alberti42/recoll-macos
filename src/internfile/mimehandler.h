@@ -36,6 +36,10 @@ public:
 	  m_forPreview(false), m_havedoc(false)
     {}
     virtual ~RecollFilter() {}
+    virtual void setConfig(RclConfig *config)
+    {
+	m_config = config;
+    }
     virtual bool set_property(Properties p, const string &v) {
 	switch (p) {
 	case DJF_UDI: 

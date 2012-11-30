@@ -21,6 +21,8 @@
 #include <set>
 #include <map>
 
+class RclConfig;
+
 namespace Dijon
 {
     class Filter;
@@ -54,7 +56,7 @@ namespace Dijon
 	Filter(const std::string &mime_type) : m_mimeType(mime_type) {}
 	/// Destroys the filter.
 	virtual ~Filter() {}
-
+	virtual void setConfig(RclConfig *) = 0;
 
 	// Enumerations.
 

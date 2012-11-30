@@ -315,6 +315,10 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
 out:
     if (h) {
 	h->set_property(Dijon::Filter::DEFAULT_CHARSET, cfg->getDefCharset());
+	// In multithread context, and in case this handler is out
+	// from the cache, it may have a config pointer belonging to
+	// another thread. Fix it.
+	h->setConfig(cfg);
     }
     return h;
 }
