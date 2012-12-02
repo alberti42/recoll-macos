@@ -416,7 +416,9 @@ bool Db::open(OpenMode mode, OpenError *error)
                     m_ndb->xwdb.set_metadata(cstr_RCL_IDX_VERSION_KEY, 
                                              cstr_RCL_IDX_VERSION);
 		m_ndb->m_iswritable = true;
+#ifdef IDX_THREADS
 		m_ndb->maybeStartThreads();
+#endif
 		// We open a readonly object in all cases (possibly in
 		// addition to the r/w one) because some operations
 		// are faster when performed through a Database: no
@@ -1537,8 +1539,9 @@ bool Db::purgeFile(const string &udi, bool *existed)
 bool Db::purgeFileWrite(const string& udi, const string& uniterm)
 {
 #if defined(IDX_THREADS) 
-    // If we have a write queue we're called from there, and single threaded, no locking.
-    // Else need to mutex other threads from above
+    // If we have a write queue we're called from there, and single
+    // threaded, no locking.  Else need to mutex other threads from
+    // above
     PTMutexLocker lock(m_ndb->m_mutex, m_ndb->m_haveWriteQ);
 #endif // IDX_THREADS
 
