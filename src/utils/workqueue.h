@@ -63,9 +63,8 @@ public:
      */
     WorkQueue(const string& name, int hi = 0, int lo = 1)
         : m_name(name), m_high(hi), m_low(lo),
-          m_workers_waiting(0), m_workers_exited(0),
-	  m_clients_waiting(0), m_tottasks(0), m_nowake(0),
-	  m_workersleeps(0)
+          m_workers_exited(0), m_clients_waiting(0), m_workers_waiting(0), 
+	  m_tottasks(0), m_nowake(0), m_workersleeps(0), m_clientsleeps(0)
     {
         m_ok = (m_high >= 0) && (pthread_cond_init(&m_ccond, 0) == 0) &&
 	    (pthread_cond_init(&m_wcond, 0) == 0);
@@ -116,6 +115,7 @@ public:
 	}
 
         while (ok() && m_high > 0 && m_queue.size() >= m_high) {
+	    m_clientsleeps++;
             // Keep the order: we test ok() AFTER the sleep...
 	    m_clients_waiting++;
             if (pthread_cond_wait(&m_ccond, lock.getMutex()) || !ok()) {
@@ -203,8 +203,9 @@ public:
 	    m_clients_waiting--;
         }
 
-	LOGDEB(("%s: %u tasks %u nowakes %u wsleeps \n", m_name.c_str(), 
-		m_tottasks, m_nowake, m_workersleeps));
+	LOGINFO(("%s: tasks %u nowakes %u wsleeps %u csleeps %u\n", 
+		m_name.c_str(), m_tottasks, m_nowake, m_workersleeps, 
+		m_clientsleeps));
 	// Perform the thread joins and compute overall status
         // Workers return (void*)1 if ok
         void *statusall = (void*)1;
@@ -219,8 +220,8 @@ public:
         }
 
 	// Reset to start state.
-	m_workers_waiting = m_workers_exited = m_clients_waiting = m_tottasks =
-	    m_nowake = m_workersleeps = 0;
+	m_workers_exited = m_clients_waiting = m_workers_waiting = 
+	    m_tottasks = m_nowake = m_workersleeps = m_clientsleeps = 0;
         m_ok = true;
 
         LOGDEB(("setTerminateAndWait:%s done\n", m_name.c_str()));
@@ -312,26 +313,34 @@ private:
             + newer.tv_nsec - older.tv_nsec;
     }
 
+    // Configuration
     string m_name;
     size_t m_high;
     size_t m_low; 
 
-    /* Worker threads currently waiting for a job */
-    unsigned int m_workers_waiting;
+    // Status
+    // Worker threads having called exit
     unsigned int m_workers_exited;
+    bool m_ok;
 
     // Per-thread data. The data is not used currently, this could be
     // a set<pthread_t>
     unordered_map<pthread_t, WQTData> m_worker_threads;
+
+    // Synchronization
     queue<T> m_queue;
     pthread_cond_t m_ccond;
     pthread_cond_t m_wcond;
     PTMutexInit m_mutex;
+    // Client/Worker threads currently waiting for a job
     unsigned int m_clients_waiting;
+    unsigned int m_workers_waiting;
+
+    // Statistics
     unsigned int m_tottasks;
     unsigned int m_nowake;
     unsigned int m_workersleeps;
-    bool m_ok;
+    unsigned int m_clientsleeps;
 };
 
 #endif /* _WORKQUEUE_H_INCLUDED_ */

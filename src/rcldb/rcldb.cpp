@@ -1241,8 +1241,8 @@ void Db::waitUpdIdle()
 	    LOGERR(("Db::waitUpdIdle: flush() failed: %s\n", ermsg.c_str()));
 	}
 	m_ndb->m_totalworkns += chron.nanos();
-	LOGDEB(("Db::waitUpdIdle: total work %lld mS\n",
-		m_ndb->m_totalworkns/1000000));
+	LOGINFO(("Db::waitUpdIdle: total xapian work %lld mS\n",
+		 m_ndb->m_totalworkns/1000000));
     }
 }
 #endif
