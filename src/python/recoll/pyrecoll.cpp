@@ -691,7 +691,7 @@ Query_sortby(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 }
 
 PyDoc_STRVAR(doc_Query_execute,
-"execute(query_string, stemming=1|0)\n"
+"execute(query_string, stemming=1|0, stemlang=\"stemming language\")\n"
 "\n"
 "Starts a search for query_string, a Recoll search language string\n"
 "(mostly Xesam-compatible).\n"
@@ -702,19 +702,30 @@ PyDoc_STRVAR(doc_Query_execute,
 static PyObject *
 Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 {
-    LOGDEB(("Query_execute\n"));
-    static const char *kwlist[] = {"query_string", "stemming", NULL};
+    LOGDEB1(("Query_execute\n"));
+    static const char *kwlist[] = {"query_string", "stemming", "stemlang", NULL};
     char *sutf8 = 0; // needs freeing
+    char *sstemlang = 0;
     int dostem = 1;
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "es|i:Query_execute", 
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "es|ies:Query_execute", 
 				     (char**)kwlist, "utf-8", &sutf8,
-				     &dostem)) {
+				     &dostem, 
+				     "utf-8", &sstemlang)) {
 	return 0;
     }
-    LOGDEB(("Query_execute:  [%s]\n", sutf8));
+
 
     string utf8(sutf8);
     PyMem_Free(sutf8);
+    string stemlang("english");
+    if (sstemlang) {
+	stemlang.assign(sstemlang);
+	PyMem_Free(sstemlang);
+    }
+
+    LOGDEB(("Query_execute: [%s] dostem %d stemlang [%s]\n", sutf8, dostem,
+	    stemlang.c_str()));
+
     if (self->query == 0 || 
 	the_queries.find(self->query) == the_queries.end()) {
         PyErr_SetString(PyExc_AttributeError, "query");
@@ -724,7 +735,7 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     // SearchData defaults to stemming in english
     // Use default for now but need to add way to specify language
     string reason;
-    Rcl::SearchData *sd = wasaStringToRcl(rclconfig, dostem ? "english" : "",
+    Rcl::SearchData *sd = wasaStringToRcl(rclconfig, dostem ? stemlang : "",
 					  utf8, reason);
 
     if (!sd) {

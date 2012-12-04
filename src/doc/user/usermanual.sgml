@@ -3656,7 +3656,7 @@ CLASSES
      |  
      |  
      |  execute(...)
-     |      execute(query_string, stemming=1|0)
+     |      execute(query_string, stemming=1|0, stemlang="stemming language")
      |      
      |      Starts a search for query_string, a Recoll search language string
      |      (mostly Xesam-compatible).

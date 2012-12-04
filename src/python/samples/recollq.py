@@ -19,7 +19,7 @@ def doquery(db, q):
     # Get query object
     query = db.query()
     # Parse/run input query string
-    nres = query.execute(q)
+    nres = query.execute(q, stemming = 1, stemlang="english")
 
     # Print results:
     print "Result count: ", nres
