@@ -1,0 +1,399 @@
+= Converting Recoll indexing to multithreading
+:Author: Jean-François Dockès
+:Email: jfd@recoll.org
+:Date: 2012-12-03
+
+http://www.recoll.org[*Recoll*] is a document indexing application, it
+allows you to find documents by specifying search terms. 
+
+The documents need to be _indexed_ for searches to be fast. In a nutshell,
+we convert the different document formats to text, then split the text into
+terms and remember where those occur. This is a time-consuming operation.
+
+Up to version 1.18 *Recoll* indexing is single-threaded: routines which
+call each other sequentially.
+
+In most personal indexer contexts, it is also CPU-bound. There is a lot of
+conversion work necessary for turning those PDF (or other) files into
+appropriately cleaned up pure text, then split it into terms and update the
+index. Given the relatively modest amount of data, and the speed of
+storage, I/O issues are secondary.
+
+Looking at the _CPU idle_ *top* output stuck at 75% on my quad-core CPU,
+while waiting for the indexing to finish, was frustrating, and I was
+tempted to find a way to keep those other cores at temperature and shorten
+the waiting.
+
+For some usages, the best way to accomplish this may be to just partition
+the index and independantly start indexing on different configurations,
+using multiple processes to better utilize the available processing power.
+
+This is not an universal solution though, as it is complicated to set up,
+not optimal in general for indexing performance, and not always optimal
+either at query time. 
+
+The most natural way to improve indexing times is to increase CPU
+utilization by using multiple threads inside an indexing process.
+
+Something similar had been done with earlier versions of the *Recoll* GUI,
+which had an internal indexing thread. This had been a frequent source of
+trouble though, and linking the GUI and indexing process lifetimes was a
+bad idea, so, in recent versions, the indexing is always performed by an
+external process. Still, this experience had put in light most of the
+problem areas, and prepared the code for further work.
+
+It should be noted that, as `recollindex` is both _nice_'d and _ionice_'d
+as a lowest priority process, it will only use free computing power on the
+machine, and will step down as soon as anything else wants to work.
+
+****
+
+The only case where you may notice that the indexing is at work
+is when the machine is short on memory and things (such as
+your Web browser) get swapped-out while you are not actively using
+them. You then notice a long delay when you want to start, because they
+need to be swapped back in. There is little which can be done about
+this. Setting _idxflushmb_ to a low value may help in some cases (depending
+on the document sizes). May I also suggest in this case that, if your
+machine can take more memory, it may be a good idea to procure some, as
+memory is nowadays quite cheap, and memory-starved machines are not fun.
+
+****
+
+In general, augmenting the machine utilisation by `recollindex` just does
+not change its responsiveness. My PC has a an Intel Pentium Core i5 750 (4
+cores, no hyperthreading), which is far from being a high performance CPU
+(nowadays...), and I often forget that I am running indexing tests, it is
+just not noticeable. The machine does have a lot of memory though (12GB).
+
+
+== The Recoll indexing processing flow
+
+image::nothreads.png["Basic flow", float="right"]
+
+There are 4 main steps in the `recollindex` processing pipeline:
+
+ . Find the file
+ . Convert it to text
+ . Process the text (split, strip etc.) and create a *Xapian* document
+ . Update the index
+
+The first step, walking the file system (or some other data source), is
+usually much faster than the others, and we just leave it alone to be
+performed by the main thread. It outputs file names (and the associated
+*POSIX* _stat_ data).
+
+The last step, *Xapian* index updating, can only be single-threaded.
+
+The first idea is to change the indexing pipeline so that each step is
+performed by an independant worker thread, passing its output to the next
+thread, in assembly-line fashion.
+
+In order to achieve this, we need to decouple the different phases. They
+are normally linked by procedure calls, which we replace with a job
+control object: the 'WorkQueue'.
+
+=== The WorkQueue
+
+
+The _WorkQueue_ object is implemented by a reasonably simple class, which
+manages an input queue on which client append jobs, and a set of worker
+threads, which retrieve and perform the jobs, and whose lifetime are
+managed by the _WorkQueue_ object. The 
+https://bitbucket.org/medoc/recoll/src/f06f3aba912045d6ad52e9a0fd930b95e363fd10/src/utils/workqueue.h?at=default[implementation] is straightforward with
+*POSIX* threads synchronization functions and C++ *STL* data structures.
+
+In practise it proved quite simple to modify existing code to create a job
+object and put it on the queue, instead of calling the downstream routine
+with the job parameters, _while keeping the capacity to call the downstream
+routine directly_. The kind of coupling is determined either by compilation
+flags (for global disabling/enabling of multithreading), or according to
+configuration data, which allows experimenting with different threads
+arrangements just by changing parameters in a file, without recompiling.
+
+Each _WorkQueue_ accepts two parameters: the length of the input queue
+(before a client will block when trying to add a job), and the number of
+worker threads. Both parameters can be set in the *Recoll* configuration
+file for each of the three queues used in the indexing pipeline. Setting
+the queue length to -1 will disable the corresponding queue (using a direct
+call instead).
+
+unfloat::[]
+
+
+== The Assembly Line
+
+image::assembly.png["Assembly line", float="right"]
+
+So the first idea is to create 3 explicit threads to manage the file
+conversion, the term generation, and the *Xapian* index update. The first
+thread prepares a file, passes it on to the term generation thread, and
+immediately goes back to work on the next file, etc. 
+
+The presumed advantage of this method is that the different stages, which
+perform disjointed processing, should share little, so that we can hope to
+minimize the changes necessitated by the threads interactions.
+
+However some changes to the code were needed to make this work (and a few
+bugs were missed, which only became apparent at later stages, confirming
+that the _low interaction_ idea was not completely false).
+
+=== Converting to multithreading: what to look for
+
+I am probably stating the obvious here, but when preparing a program for
+multi-threading, problems can only arise where non-constant data is
+accessed by different threads.
+
+Once you have solved the core problems posed by the obvious data that needs
+to be shared, you will be left to deal with less obvious, hidden,
+interactions inside the program.
+
+Classically this would concern global or static data, but in a C++ program,
+class members will be a concern if a single object can be accessed by
+several threads.
+
+Hunting for static data inside a program of non trivial size is not always
+obvious. Two approaches can be used: hunting for the _static_ keyword in
+source code, or looking at global and static data symbols in *nm* output.
+
+Once found, there are mostly three types of static/global data:
+
+ * Things that need to be eliminated: for example, routines can be made
+   reentrant by letting the caller supply a storage buffer instead of using
+   an internal static one (which was a bad idea in the first place
+   anyway).
+ * Things that need to be protected: sometimes, the best approach is just
+   to protect the access with a mutex lock. It is trivial to encapsulate
+   the locks in C++ objects to use the "Resource Acquisition is
+   Initialization" idiom, easily making sure that locks are freed when
+   exiting the critical section. A very basic
+   https://bitbucket.org/medoc/recoll/src/f06f3aba9120/src/utils/ptmutex.h?at=default[example of implementation] 
+   can be found in the *Recoll* source code.
+ * Things which can stay: this is mostly initialization data such as value
+   tables which are computed once, and then stay logically constant during
+   program execution. In order to be sure of a correct single-threaded
+   initialization, it is best to explicitly initialize the modules or
+   functions that use this kind of data in the main thread when the program
+   starts.
+
+=== Assembly line approach: the results
+
+Unfortunately, the assembly line approach yields very modest improvements
+when used inside *Recoll* indexing. The reason, is that this method needs
+stages of equivalent complexity to be efficient. If one of the stages
+dominates the others, its thread will be the only one active at any time,
+and little will be gained.
+
+What is especially problematic is that the balance between tasks need not
+only exist on average, but also for the majority of individual jobs.
+
+For *Recoll* indexing, even if the data preparation and index update steps
+are often of the same order of magnitude _on average_, their balance
+depends a lot on the kind of data being processed, so that things are
+usually unbalanced at any given time: the index update thread is mostly
+idle while processing PDF files, and the data preparation has little to do
+when working on HTML or plain text.
+
+In practice, very modest indexing time improvements from 5% to 15% were
+achieved with this method.
+
+== The next step: multi-stage parallelism
+
+image::multipara.png["Multi-stage parallelism", float="right"]
+
+Given the limitations of the assembly line approach, the next step in the
+transformation of *Recoll* indexing was to enable full parallelism wherever
+possible.
+
+Of the four processing steps (see figures), two are not candidates for
+parallelization: 
+
+ * File system walking is so fast compared to the other steps that using
+   several threads would make no sense (it would also quite probably become
+   IO bound if we tried anyway).
+ * The *Xapian* library index updating code is not designed for
+   multi-threading and must stay protected from multiple accesses.
+
+The two other steps are good candidates.
+
+Most of the work to make *Recoll* code reentrant had been performed for the
+previous transformation. Going full-parallel only implied protecting the
+data structures that needed to be shared by the threads performing a given
+processing step.
+
+Just for the anecdotic value, a list of the elements that needed mutexes:
+
+- Filter subprocesses cache: some file conversion subprocesses may be
+  expensive (starting a Python process is no piece of cake), so they are
+  cached for reuse after they are done translating a file. The shared cache
+  needs protection.
+- Status updates: an object used to update the current file name and indexing
+  status to a shared file. 
+- Missing store: the list of missing helper programs
+- The readonly *Xapian* database object: a Xapian::Database object which is
+  used for checking the validity of current index data against a file's
+  last modification date.
+- Document existence map: a bit array used to store an existence bit about
+  every document, and purge the disappeared at the end of the indexing
+  pass. This is accessed both from the file conversion and database update
+  code, so it also needed protection in the previous assembly line
+  approach. 
+- Mbox offsets cache. Used to store the offsets of individual messages
+  inside *mbox* files.
+- *iconv* control blocks: these are cached for reuse in several places, and
+  need protection. Actually, it might be better in multithreading context
+  to just suppress the reuse and locking. Rough tests seem to indicate that
+  the impact on overall performance is small, but this might change with
+  higher parallelism (or not...).
+
+The *Recoll* configuration also used to be managed by a single shared
+object, which is mutable as values may depend on what area of the
+file-system we are exploring, so that the object is stateful and updated as
+we change directories. The choice made here was to duplicate the object
+where needed (each indexing thread gets its own). This gave rise to the
+sneakiest bug in the whole transformation (see further down).
+
+Having a dynamic way to define the threads configuration makes it easy to
+experiment. For example, the following data defines the configuration that
+was finally found to be best overall on my hardware:
+
+ thrQSizes = 2 2 2
+ thrTCounts =  4 2 1
+
+This is using 3 queues of depth 2, 4 threads working on file conversion, 2
+on text splitting and other document processing, and 1 on Xapian updating
+(no choice here).
+
+unfloat::[]
+
+== Bench results
+
+So the big question after all the work: was it worth it ? I could only get
+a real answer when the program stopped crashing, so this took some time and
+a little faith...
+
+The answer is mostly yes, as far as I'm concerned. Indexing tests running
+almost twice as fast are good for my blood pressure and I don't need a
+faster PC, I'll buy more red wine instead (good for my health too, or maybe
+not). And it was a fun project anyway.
+
+.Results on a variety of file system areas:
+[options="header", width="70%"]
+|=======================
+|Area |Seconds before |Seconds after| Percent Improvement| Speed Factor
+|home |12742     | 6942 | 46%| 1.8
+|mail |2700     | 1563 | 58% | 1.7
+|projets | 5022 | 1970 | 61% | 2.5
+|pdf  | 2164 | 770 | 64% | 2.8
+|otherhtml | 5593 | 4014| 28% | 1.4
+|=======================
+
+.Characteristics of the data
+[options="header", width="70%"]
+|=======================
+|Area | Files MB | Files | DB MB | Documents
+|home | 64106 | 44897 | 1197 | 104797
+|mail | 813 | 232 | 663 | 47267
+|projets | 2056 | 34504 | 549 | 40281
+|pdf  | 1123 | 1139 | 111 | 1139 
+|otherhtml | 3442 | 223007 | 2080 | 221890 |
+|=======================
+
+_home_ is my home directory. The high megabyte value is due to a number of
+very big and not indexed *VirtualBox* images. Otherwise, it's a wide
+mix of source files, email,  miscellaneous documents and ebooks.
+
+_mail_ is my mail directory, full of *mbox* files.
+
+_projets_ mostly holds source files, and a number of documents.
+
+_pdf_ holds random *pdf* files harvested on the internets. The performance
+is quite spectacular, because most of the processing time goes to
+converting them to text, and this is done in parallel. Probably could be
+made a bit faster with more cores, until we hit the *Xapian* update speed
+limit.
+
+_otherhtml_ holds myriad of small html files, mostly from
+*wikipedia*. The improvement is not great here because a lot of time is
+spent in the single-threaded *Xapian* index update.
+
+The tests were made with queue depths of 2 on all queues, and 4 threads
+working on the file conversion step, 2 on the term generation.
+
+== A variation: linear parallelism
+
+Once past the assembly-line idea, another possible transformation would be
+to get rid of the two downstream queues, and just create a job for each
+file and let it go to the end (using a mutex to protect accesses to the
+writable *Xapian* database). 
+
+With the current *Recoll* code, this can be defined by the following
+parameters (one can also use a deeper front queue, this changes little):
+
+ thrQSizes = 2 -1 -1
+ thrTCounts =  4 0 0
+
+In practise, the performance is close to the one for the multistage
+version.
+
+If we were to hard-code this approach, this would be a simpler
+modification, necessitating less changes to the code, but it has a slight
+inconvenient: when working on a single big multi-document file, no
+parallelism at all can be obtained. In this situation, the multi-stage
+approach brings us back to the assembly-line behaviour, so the improvements
+are not great, but they do exist.
+
+
+
+== Miscellany
+
+=== The big gotcha: my stack dump staring days
+
+Overall, debugging the modified program was reasonably
+straightforward. Data access synchronization issues mostly provoke dynamic
+data corruption, which can be beastly to debug. I was lucky enough that
+most crashes occurred in the code that was actually related to the
+corrupted data, not in some randomly located and unrelated dynamic memory
+user, so that the issues were reasonably easy to find.
+
+One issue though kept me working for a few days. The indexing process kept
+crashing randomly at an interval of a few thousands documents, segfaulting
+on a bad pointer. An access to the configuration data structure seemed to
+be involved, but, as each thread was supposed to have its own copy, I was
+out of ideas.
+
+After reviewing all the uses for the configuration data (there are quite a
+few), the problem was finally revealed to lie with the filter process
+cache. Each filter structure stored in the cache stores a pointer to a
+configuration structure. This belonged to the thread which initially
+created the filter. But the filter would often be reused by a different
+thread, with the consequence that the configuration object was now accessed
+and modified by two unsynchronized threads... Resetting the config pointer
+at the time of filter reuse was the ridiculously simple single-line fix to
+this evasive problem.
+
+Looking at multi-threaded stack dumps is mostly fun for people with several
+heads, which is unfortunately not my case, so I was quite elated when this
+was over.
+
+=== Fork performance issues
+
+On a quite unrelated note, something that I discovered while evaluating the
+program performance is that forking a big process like `recollindex` can be
+quite expensive. Even if the memory space of the forked process is not
+copied (it's Copy On Write, and we write very little before the following
+exec), just duplicating the memory maps can be slow when the process uses a
+few hundred megabytes.
+
+I modified the single-threaded version of `recollindex` to use *vfork*
+instead of *fork*, but this can't be used with multiple threads (no
+modification of the process memory space is allowed in the child between
+*vfork* and *exec*, so we'd have to have a way to suspend all the threads
+first).
+
+I did not implement a solution to this issue, and I don't think
+that a simple one exists. The workaround is to use modest *Xapian* flush
+values to prevent the process from becoming too big.
+
+A longer time solution would be to implement a small slave process to do
+the executing of ephemeral external commands.

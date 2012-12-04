@@ -123,6 +123,18 @@ maxXapianClauses = 100000
 # If nothing is specified, the default is then ~/.recoll/xapiandb/
 dbdir = xapiandb
 
+# Indexing process threads configuration. If Recoll is configured for 
+# multithreading, this defines what queues are active and how many threads
+# to start for any of them. The default values were found good on a
+# quad-core processor. The three steps are file conversion, term extraction
+# and conversion and Xapian index update. The three queue values define the
+# max number of jobs waiting on one of the corresponding queues. Setting a
+# value to -1 disables a queue (replaced by a direct call). The thrTcounts
+# values define the number of threads to start for each queue. The last
+# value can only be one (as Xapian is single-threaded).
+thrQSizes = 2 2 2
+thrTCounts =  4 2 1
+
 # Maximum file system occupation before we stop indexing. The default value
 # is 0, meaning no checking. The value is a percentage, corresponding to
 # what the "Capacity" df output column shows.
