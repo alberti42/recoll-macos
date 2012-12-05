@@ -178,7 +178,7 @@ class ChmWalker(HTMLParser):
                 if text:
                     try:
                         newwalker = ChmWalker(self.rclchm, npath, self.contents)
-                        newwalker.feed(text)
+                        newwalker.feed(self.rclchm.fixencoding(text))
                     except:
                         pass
         
@@ -195,6 +195,10 @@ class rclCHM:
             self.em.setmimetype("text/plain")
         else:
             self.em.setmimetype(rclchm_html_mtype)
+        expr = r'(<meta *http-equiv *= *"content-type".*charset *= *)((us-)?ascii)( *" *>)'
+        self.asciito1252re = re.compile(expr, re.IGNORECASE)
+        expr = r'<meta *http-equiv *= *"content-type".*charset *= *([a-z0-9-]+) *" *>'
+        self.findcharsetre = re.compile(expr, re.IGNORECASE)
 
     def extractone(self, path):
         """Extract one path-named internal file from the chm file"""
@@ -235,6 +239,28 @@ class rclCHM:
             alltxt += txt
         return alltxt
 
+    def fixencoding(self, text):
+        """Fix encoding for supposedly html document. We do 2 things here:
+            - Change any 'ASCII' charset decl to windows-1252 because windows
+              people can't learn and we have to cope.
+            - Decode the string to unicode if it's originally an str because
+              that's what Python HTMLParser actually expects even if it does not
+              really say so. See http://bugs.python.org/issue3932.
+        """
+
+        # Memo. Charset decl example. Maybe we should also process the
+        # HTML5 charset tag ?
+        #<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=US-ASCII">
+
+        if isinstance(text, str):
+            # Fix an ascii charset decl to windows-1252
+            text = self.asciito1252re.sub(r"\1windows-1252\4", text, 1)
+            # Convert to unicode according to charset decl
+            m = self.findcharsetre.search(text)
+            if m:
+                text = text.decode(m.group(1))
+        return text
+    
     def openfile(self, params):
         """Open the chm file and build the contents list by extracting and
         parsing the Topics object"""
@@ -255,7 +281,7 @@ class rclCHM:
             # Parse Topics file and extract list of internal nodes
             #self.em.rclog("Got topics");
             tp = ChmTopicsParser(self)
-            tp.feed(self.topics)
+            tp.feed(self.fixencoding(self.topics))
             tp.close()
         else:
             # No topics. If there is a home, let's try to walk the tree
@@ -271,7 +297,7 @@ class rclCHM:
                 self.em.rclog("No topics and no home content")
                 return False
             walker = ChmWalker(self, self.chm.home, self.contents)
-            walker.feed(text)
+            walker.feed(self.fixencoding(text))
             walker.close()
 
         #self.em.rclog("Contents size %d" % len(self.contents))
