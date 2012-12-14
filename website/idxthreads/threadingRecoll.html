@@ -743,7 +743,17 @@ asciidoc.install();
 <span id="revdate">2012-12-03</span>
 </div>
 <div id="content">
-<div id="preamble">
+<div class="sect1">
+<h2 id="_abstract">Abstract</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>This relates lessons learned while modifying <strong>Recoll</strong> indexing to be
+multithreaded. I am by no means a threaded applications expert, so that a
+few of the observations I made whole doing this may be of use to other
+novices.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_introduction">Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph"><p><a href="http://www.recoll.org"><strong>Recoll</strong></a> is a document indexing application, it
 allows you to find documents by specifying search terms.</p></div>
@@ -1247,8 +1257,9 @@ configuration structure. This belonged to the thread which initially
 created the filter. But the filter would often be reused by a different
 thread, with the consequence that the configuration object was now accessed
 and modified by two unsynchronized threads&#8230; Resetting the config pointer
-at the time of filter reuse was the ridiculously simple single-line fix to
-this evasive problem.</p></div>
+at the time of filter reuse was the
+<a href="https://bitbucket.org/medoc/recoll/commits/943de4b78818079b0eb6ffd0fcbdfdd0746b4a40">ridiculously
+simple (almost)single-line fix</a> to this evasive problem.</p></div>
 <div class="paragraph"><p>Looking at multi-threaded stack dumps is mostly fun for people with several
 heads, which is unfortunately not my case, so I was quite elated when this
 was over.</p></div>
@@ -1278,7 +1289,7 @@ the executing of ephemeral external commands.</p></div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-12-04 11:14:07 CET
+Last updated 2012-12-14 15:55:12 CET
 </div>
 </div>
 </body>

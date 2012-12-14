@@ -221,7 +221,26 @@
           sudo apt-get update
           sudo apt-get install recoll
           </tt></pre>
+          <p>Source code for the lens (also included in the main
+            recoll tar file):<br>
+            For 1.18 installations: <a href="recoll-lens-1.18.1.2997.tar.gz">
+              recoll-lens-1.18.1.2997.tar.gz</a><br>
+            For 1.17: <a href="recoll-lens-1.17.2.2697.tar.gz">
+              recoll-lens-1.17.2.2697.tar.gz</a></p>
 
+          <p>The packages in the standard repository and on the PPA
+            are a bit different in the sense that the Python extension
+            is included in the PPA package, but it's a separate
+            package in the standard repository. This can give rise to
+            errors about overwriting the Python module when switching
+            between versions. Typically, the error message would be
+            like the following:</p>
+          <pre><tt>
+    ErrorMessage: trying to overwrite '/usr/lib/python2.7/dist-packages/recoll.so', which is also in package recoll 1.18.1-1~ppa1~quantal1</tt></pre>
+
+           <p>If this happens, you just need to delete
+            the previous package(s) before installing the other one(s)
+            instead of performing an upgrade.</p>
 
         <h3><a name="mint">Linux Mint</a></h3>
         <p>The Ubuntu PPA works perfectly for Mint 13 (and probably

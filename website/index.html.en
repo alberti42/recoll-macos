@@ -84,6 +84,14 @@
       <h2>News</h2>
       <div class="news">
       <dl>
+        <dt>2012-12-14</dt><dd>The next version of Recoll indexing will be
+          multithreaded, and much faster on most current
+          processors. The conversion has been an interesting project
+          with multiple stages, and I've taken 
+          <a href="idxthreads/threadingRecoll.html">a few  notes</a> 
+          about the transformation.</dd>
+        </dd>
+
         <dt>2012-11-23</dt><dd>Released a minor update to the very
           stable 1.17
           branch: <a href="download-1.17.html">1.17.4</a>.
