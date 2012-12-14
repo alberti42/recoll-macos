@@ -185,7 +185,7 @@ SearchData_addclause(recoll_SearchDataObject* self, PyObject *args,
     char *qs = 0; // needs freeing
     int slack = 0;
     char *fld = 0; // needs freeing
-    int  dostem = 1; // needs freeing
+    int  dostem = 1;
     recoll_SearchDataObject *sub = 0;
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ses|iesiO!", (char**)kwlist,
 				     &tp, "utf-8", &qs, &slack,

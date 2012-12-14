@@ -991,6 +991,15 @@ string RclConfig::getIdxStatusFile() const
     }
 }
 
+string RclConfig::getWebQueueDir() const
+{
+    string webqueuedir;
+    if (!getConfParam("webqueuedir", webqueuedir))
+	webqueuedir = "~/.recollweb/ToIndex/";
+    webqueuedir = path_tildexpand(webqueuedir);
+    return webqueuedir;
+}
+
 vector<string>& RclConfig::getSkippedNames()
 {
     if (m_skpnstate.needrecompute()) {
@@ -1009,6 +1018,8 @@ vector<string> RclConfig::getSkippedPaths() const
     // don't do this.
     skpl.push_back(getDbDir());
     skpl.push_back(getConfDir());
+    // And the web queue dir
+    skpl.push_back(getWebQueueDir());
     for (vector<string>::iterator it = skpl.begin(); it != skpl.end(); it++) {
 	*it = path_tildexpand(*it);
 	*it = path_canon(*it);

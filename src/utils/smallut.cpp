@@ -666,6 +666,7 @@ struct m_timespec {
 #endif
 
 #ifndef CLOCK_REALTIME
+typedef int clockid_t;
 #define CLOCK_REALTIME 1
 #endif
 
@@ -675,10 +676,19 @@ struct m_timespec {
   ((TV).tv_nsec - m_nsecs) / 1000))
 #define NANOS(TV) ( (long long)(((TV).tv_sec - m_secs) * 1000000000LL + \
   ((TV).tv_nsec - m_nsecs)))
-
+#ifdef __APPLE__
+#include <sys/time.h>
+#endif
 static void gettime(clockid_t clk_id, struct timespec *ts)
 {
+#ifdef __APPLE__
+    struct timeval tv;
+    gettimeofday(&tv, 0);
+    ts->tv_sec = tv.tv_sec;
+    ts->tv_nsec = tv.tv_usec * 1000;
+#else
     clock_gettime(clk_id, ts);
+#endif
 }
 ///// End system interface
 

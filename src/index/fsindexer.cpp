@@ -187,7 +187,6 @@ bool FsIndexer::index()
     }
 
     m_walker.setSkippedPaths(m_config->getSkippedPaths());
-    m_walker.addSkippedPath(path_tildexpand("~/.beagle"));
     for (vector<string>::const_iterator it = m_tdl.begin();
 	 it != m_tdl.end(); it++) {
 	LOGDEB(("FsIndexer::index: Indexing %s into %s\n", it->c_str(), 
@@ -302,7 +301,6 @@ bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
     // We use an FsTreeWalker just for handling the skipped path/name lists
     FsTreeWalker walker;
     walker.setSkippedPaths(m_config->getSkippedPaths());
-    m_walker.addSkippedPath(path_tildexpand("~/.beagle"));
 
     for (list<string>::iterator it = files.begin(); it != files.end(); ) {
         LOGDEB2(("FsIndexer::indexFiles: [%s]\n", it->c_str()));

@@ -209,9 +209,7 @@ void *rclMonRcvRun(void *q)
 	bool doweb = false;
 	lconfig.getConfParam("processwebqueue", &doweb);
 	if (doweb) {
-	    string webqueuedir;
-	    if (!lconfig.getConfParam("webqueuedir", webqueuedir))
-		webqueuedir = path_tildexpand("~/.recollweb/ToIndex/");
+	    string webqueuedir = lconfig.getWebQueueDir();
 	    if (!mon->addWatch(webqueuedir, true)) {
 		LOGERR(("rclMonRcvRun: addwatch (webqueuedir) failed\n"));
 		if (mon->saved_errno != EACCES && mon->saved_errno != ENOENT)

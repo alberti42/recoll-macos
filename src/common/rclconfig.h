@@ -155,6 +155,9 @@ class RclConfig {
     /** Get indexing status file name */
     string getIdxStatusFile() const;
 
+    /** Get Web Queue directory name */
+    string getWebQueueDir() const;
+
     /** Get list of skipped file names for current keydir */
     vector<string>& getSkippedNames();
 
