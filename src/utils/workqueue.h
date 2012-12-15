@@ -147,6 +147,11 @@ public:
      * only thread which can call it safely is the client just above
      * (which can control the task flow), else there could be
      * tasks in the intermediate queues.
+     * To rephrase: there is no warranty on return that the queue is actually
+     * idle EXCEPT if the caller knows that no jobs are still being created. 
+     * It would be possible to transform this into a safe call if some kind
+     * of suspend condition was set on the queue by waitIdle(), to be reset by 
+     * some kind of "resume" call. Not currently the case.
      */
     bool waitIdle()
     {

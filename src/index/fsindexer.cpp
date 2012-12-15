@@ -291,6 +291,8 @@ static bool matchesSkipped(const vector<string>& tdl,
  */
 bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
 {
+    int ret = false;
+
     if (!init())
         return false;
 
@@ -315,7 +317,8 @@ bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
 	// Check path against indexed areas and skipped names/paths
         if (!(flag&ConfIndexer::IxFIgnoreSkip) && 
 	    matchesSkipped(m_tdl, walker, *it)) {
-            it++; continue;
+            it++; 
+	    continue;
         }
 
 	struct stat stb;
@@ -324,17 +327,20 @@ bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
 	if (ststat != 0) {
 	    LOGERR(("FsIndexer::indexFiles: lstat(%s): %s", it->c_str(),
 		    strerror(errno)));
-            it++; continue;
+            it++; 
+	    continue;
 	}
 
 	if (processone(*it, &stb, FsTreeWalker::FtwRegular) != 
 	    FsTreeWalker::FtwOk) {
 	    LOGERR(("FsIndexer::indexFiles: processone failed\n"));
-	    return false;
+	    goto out;
 	}
         it = files.erase(it);
     }
 
+    ret = true;
+out:
 #ifdef IDX_THREADS
     if (m_haveInternQ) 
 	m_iwqueue.waitIdle();
@@ -342,14 +348,14 @@ bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
 	m_dwqueue.waitIdle();
     m_db->waitUpdIdle();
 #endif // IDX_THREADS
-
-    return true;
+    return ret;
 }
 
 
 /** Purge docs for given files out of the database */
 bool FsIndexer::purgeFiles(list<string>& files)
 {
+    bool ret = false;
     if (!init())
 	return false;
 
@@ -361,7 +367,7 @@ bool FsIndexer::purgeFiles(list<string>& files)
         bool existed;
 	if (!m_db->purgeFile(udi, &existed)) {
 	    LOGERR(("FsIndexer::purgeFiles: Database error\n"));
-	    return false;
+	    goto out;
 	}
         // If we actually deleted something, take it off the list
         if (existed) {
@@ -371,7 +377,16 @@ bool FsIndexer::purgeFiles(list<string>& files)
         }
     }
 
-    return true;
+    ret = true;
+out:
+#ifdef IDX_THREADS
+    if (m_haveInternQ) 
+	m_iwqueue.waitIdle();
+    if (m_haveSplitQ)
+	m_dwqueue.waitIdle();
+    m_db->waitUpdIdle();
+#endif // IDX_THREADS
+    return ret;
 }
 
 // Local fields can be set for fs subtrees in the configuration file 
