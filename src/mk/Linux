@@ -5,5 +5,6 @@ include $(depth)/mk/localdefs
 ALL_CXXFLAGS = $(CXXFLAGS) $(COMMONCXXFLAGS) $(LOCALCXXFLAGS) \
 	 -D_GNU_SOURCE 
 
-LIBSYS = -lpthread -ldl -lrt
-LIBSYSTHREADS = -lrt
+LIBSYS = -lpthread -ldl
+LIBSYSTHREADS = 
+
