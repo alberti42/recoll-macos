@@ -290,7 +290,7 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
 					    int imaxoccs, int ictxwords)
 {
     Chrono chron;
-    LOGABS(("makeAbstract: docid %l imaxoccs %d ictxwords %d\n", 
+    LOGABS(("makeAbstract: docid %ld imaxoccs %d ictxwords %d\n", 
 	    long(docid), imaxoccs, ictxwords));
 
     // The (unprefixed) terms matched by this document
