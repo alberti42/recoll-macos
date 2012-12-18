@@ -676,12 +676,23 @@ typedef int clockid_t;
   ((TV).tv_nsec - m_nsecs) / 1000))
 #define NANOS(TV) ( (long long)(((TV).tv_sec - m_secs) * 1000000000LL + \
   ((TV).tv_nsec - m_nsecs)))
+
+// Using clock_gettime() is nice because it gives us ns res and it helps with
+// computing threads work times, but it's also a pita because it forces linking
+// with -lrt. So keep it optional. And not on the mac anyway
+// #define USE_CLOCK_GETTIME
+
 #ifdef __APPLE__
+#undef USE_CLOCK_GETTIME
+#endif
+
+#ifndef USE_CLOCK_GETTIME
 #include <sys/time.h>
 #endif
+
 static void gettime(clockid_t clk_id, struct timespec *ts)
 {
-#ifdef __APPLE__
+#ifndef USE_CLOCK_GETTIME
     struct timeval tv;
     gettimeofday(&tv, 0);
     ts->tv_sec = tv.tv_sec;
