@@ -203,16 +203,17 @@ bool Query::setQuery(RefCntr<SearchData> sdata)
                 m_nq->xenquire->set_collapse_key(Xapian::BAD_VALUENO);
             }
 	    m_nq->xenquire->set_docid_order(Xapian::Enquire::DONT_CARE);
-            if (!m_sortField.empty()) {
+            if (!m_sortField.empty() && 
+		stringlowercmp("relevancyrating", m_sortField)) {
                 if (m_sorter) {
                     delete (QSorter*)m_sorter;
                     m_sorter = 0;
                 }
-                m_sorter = new QSorter(m_sortField);
-                // It really seems there is a xapian bug about sort order, we 
-                // invert here.
-                m_nq->xenquire->set_sort_by_key((QSorter*)m_sorter, 
-                                                !m_sortAscending);
+		m_sorter = new QSorter(m_sortField);
+		// It really seems there is a xapian bug about sort order, we 
+		// invert here.
+		m_nq->xenquire->set_sort_by_key((QSorter*)m_sorter, 
+						!m_sortAscending);
             }
             m_nq->xenquire->set_query(m_nq->xquery);
             m_nq->xmset = Xapian::MSet();
