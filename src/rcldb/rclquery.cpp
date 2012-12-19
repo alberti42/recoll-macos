@@ -156,16 +156,6 @@ Query::~Query()
     }
 }
 
-string Query::getReason() const
-{
-    return m_reason;
-}
-
-Db *Query::whatDb() 
-{
-    return m_db;
-}
-
 void Query::setSortBy(const string& fld, bool ascending) {
     if (fld.empty()) {
 	m_sortField.erase();
@@ -270,34 +260,6 @@ bool Query::getQueryTerms(vector<string>& terms)
 	LOGERR(("getQueryTerms: xapian error: %s\n", ermsg.c_str()));
 	return false;
     }
-    return true;
-}
-
-bool Query::getMatchTerms(const Doc& doc, vector<string>& terms)
-{
-    return getMatchTerms(doc.xdocid, terms);
-}
-bool Query::getMatchTerms(unsigned long xdocid, vector<string>& terms)
-{
-    if (ISNULL(m_nq) || !m_nq->xenquire) {
-	LOGERR(("Query::getMatchTerms: no query opened\n"));
-	return -1;
-    }
-
-    terms.clear();
-    Xapian::TermIterator it;
-    Xapian::docid id = Xapian::docid(xdocid);
-
-    XAPTRY(terms.insert(terms.begin(),
-                        m_nq->xenquire->get_matching_terms_begin(id),
-                        m_nq->xenquire->get_matching_terms_end(id)),
-           m_db->m_ndb->xrdb, m_reason);
-
-    if (!m_reason.empty()) {
-	LOGERR(("getMatchTerms: xapian error: %s\n", m_reason.c_str()));
-	return false;
-    }
-
     return true;
 }
 
@@ -493,7 +455,6 @@ bool Query::getDoc(int xapi, Doc &doc)
 
     sprintf(buf, "%d", collapsecount);
     doc.meta[Rcl::Doc::keycc] = buf;
-
 
     // Parse xapian document's data and populate doc fields
     return m_db->m_ndb->dbDataToRclDoc(docid, data, doc);

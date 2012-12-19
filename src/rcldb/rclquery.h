@@ -62,20 +62,31 @@ public:
  */
 class Query {
  public:
-    /** The constructor only allocates memory */
     Query(Db *db);
     ~Query();
 
     /** Get explanation about last error */
-    std::string getReason() const;
+    std::string getReason() const
+    {
+	return m_reason;
+    }
 
     /** Choose sort order. Must be called before setQuery */
     void setSortBy(const std::string& fld, bool ascending = true);
-    const std::string& getSortBy() const {return m_sortField;}
-    bool getSortAscending() const {return m_sortAscending;}
+    const std::string& getSortBy() const 
+    {
+	return m_sortField;
+    }
+    bool getSortAscending() const 
+    {
+	return m_sortAscending;
+    }
 
     /** Return or filter results with identical content checksum */
-    void setCollapseDuplicates(bool on) {m_collapseDuplicates = on;}
+    void setCollapseDuplicates(bool on) 
+    {
+	m_collapseDuplicates = on;
+    }
 
     /** Accept data describing the search and query the index. This can
      * be called repeatedly on the same object which gets reinitialized each
@@ -92,27 +103,32 @@ class Query {
     /** Get possibly expanded list of query terms */
     bool getQueryTerms(std::vector<std::string>& terms);
 
-    /** Return a list of terms which matched for a specific result document */
-    bool getMatchTerms(const Doc& doc, std::vector<std::string>& terms);
-    bool getMatchTerms(unsigned long xdocid, std::vector<std::string>& terms);
-
     /** Build synthetic abstract for document, extracting chunks relevant for
      * the input query. This uses index data only (no access to the file) */
-    // Abstract return as one string
+    // Abstract returned as one string
     bool makeDocAbstract(Doc &doc, std::string& abstract);
     // Returned as a snippets vector
     bool makeDocAbstract(Doc &doc, std::vector<std::string>& abstract);
     // Returned as a vector of pair<page,snippet> page is 0 if unknown
     abstract_result makeDocAbstract(Doc &doc, std::vector<Snippet>& abst, 
 				    int maxoccs= -1, int ctxwords = -1);
-    /** Retrieve detected page breaks positions */
+    /** Retrieve page number for first match for term */
     int getFirstMatchPage(Doc &doc, std::string& term);
+
+    /** Retrieve a reference to the searchData we are using */
+    RefCntr<SearchData> getSD() 
+    {
+	return m_sd;
+    }
 
     /** Expand query to look for documents like the one passed in */
     std::vector<std::string> expand(const Doc &doc);
 
     /** Return the Db we're set for */
-    Db *whatDb();
+    Db *whatDb() const
+    {
+	return m_db;
+    }
 
     /* make this public for access from embedded Db::Native */
     class Native;

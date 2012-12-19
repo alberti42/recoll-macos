@@ -46,14 +46,19 @@ public:
 
     Native(Query *q)
 	: m_q(q), xenquire(0)
-    { }
-    ~Native() {
+    { 
+    }
+    ~Native() 
+    {
 	clear();
     }
-    void clear() {
+    void clear() 
+    {
 	delete xenquire; xenquire = 0;
 	termfreqs.clear();
     }
+    /** Return a list of terms which matched for a specific result document */
+    bool getMatchTerms(unsigned long xdocid, std::vector<std::string>& terms);
     abstract_result makeAbstract(Xapian::docid id, vector<Snippet>&,
 				 int maxoccs = -1, int ctxwords = -1);
     int getFirstMatchPage(Xapian::docid docid, std::string& term);

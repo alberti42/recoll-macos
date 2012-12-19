@@ -72,6 +72,30 @@ static void noPrefixList(const vector<string>& in, vector<string>& out)
     out.resize(it - out.begin());
 }
 
+bool Query::Native::getMatchTerms(unsigned long xdocid, vector<string>& terms)
+{
+    if (!xenquire) {
+	LOGERR(("Query::getMatchTerms: no query opened\n"));
+	return -1;
+    }
+
+    terms.clear();
+    Xapian::TermIterator it;
+    Xapian::docid id = Xapian::docid(xdocid);
+
+    XAPTRY(terms.insert(terms.begin(),
+                        xenquire->get_matching_terms_begin(id),
+                        xenquire->get_matching_terms_end(id)),
+           m_q->m_db->m_ndb->xrdb, m_q->m_reason);
+
+    if (!m_q->m_reason.empty()) {
+	LOGERR(("getMatchTerms: xapian error: %s\n", m_q->m_reason.c_str()));
+	return false;
+    }
+
+    return true;
+}
+
 // Retrieve db-wide frequencies for the query terms and store them in
 // the query object. This is done at most once for a query, and the data is used
 // while computing abstracts for the different result documents.
@@ -237,7 +261,7 @@ int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
     vector<string> terms;
     {
 	vector<string> iterms;
-        m_q->getMatchTerms(docid, iterms);
+        getMatchTerms(docid, iterms);
 	noPrefixList(iterms, terms);
     }
     if (terms.empty()) {
@@ -297,7 +321,7 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
     vector<string> matchedTerms;
     {
         vector<string> iterms;
-        m_q->getMatchTerms(docid, iterms);
+        getMatchTerms(docid, iterms);
         noPrefixList(iterms, matchedTerms);
         if (matchedTerms.empty()) {
             LOGDEB(("makeAbstract::Empty term list\n"));
