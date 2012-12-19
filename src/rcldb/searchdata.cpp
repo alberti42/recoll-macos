@@ -1067,13 +1067,13 @@ bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
 		int lmods = mods;
 		if (splitter.nostemexps.front())
 		    lmods |= SearchDataClause::SDCM_NOSTEMMING;
-		m_hldata.ugroups.push_back(vector<string>(1, *it));
+		m_hldata.ugroups.push_back(splitter.terms);
 		processSimpleSpan(db, ermsg, splitter.terms.front(),
 				  lmods, &pqueries);
 	    }
 		break;
 	    default:
-		m_hldata.ugroups.push_back(vector<string>(1, *it));
+		m_hldata.ugroups.push_back(splitter.terms);
 		processPhraseOrNear(db, ermsg, &splitter, mods, &pqueries,
 				    useNear, slack);
 	    }
