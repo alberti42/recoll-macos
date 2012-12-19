@@ -85,7 +85,7 @@ class Doc {
     // File size. This is the size of the compressed file or of the
     // external containing archive.
     // Index: Set by caller prior to Db::Add. 
-    // Query: not set currently (not stored)
+    // Query: Set from data record
     string pcbytes;       
 
     // Document size, ie, size of the .odt or .xls.
