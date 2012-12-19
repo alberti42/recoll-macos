@@ -15,7 +15,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-
 #include <Python.h>
 #include <structmember.h>
 #include <bytearrayobject.h>
@@ -37,6 +36,10 @@ using namespace std;
 #include "wasatorcl.h"
 #include "debuglog.h"
 #include "pathut.h"
+#include "plaintorich.h"
+#include "hldata.h"
+
+#include "pyrecoll.h"
 
 static set<Rcl::Db *> the_dbs;
 static set<Rcl::Query *> the_queries;
@@ -45,7 +48,7 @@ static set<Rcl::Doc *> the_docs;
 static RclConfig *rclconfig;
 
 // This has to exist somewhere in the python api ??
-PyObject *obj_Create(PyTypeObject *tp, PyObject *args, PyObject *kwargs)
+static PyObject *obj_Create(PyTypeObject *tp, PyObject *args, PyObject *kwargs)
 {
     PyObject *result = tp->tp_new(tp, args, kwargs);
     if (result && tp->tp_init(result, args, kwargs) < 0)
@@ -252,11 +255,6 @@ SearchData_addclause(recoll_SearchDataObject* self, PyObject *args,
 
 ///////////////////////////////////////////////////////////////////////
 ///// DOC Doc code
-typedef struct {
-    PyObject_HEAD
-    /* Type-specific fields go here. */
-    Rcl::Doc *doc;
-} recoll_DocObject;
 
 static void 
 Doc_dealloc(recoll_DocObject *self)
@@ -292,11 +290,12 @@ Doc_init(recoll_DocObject *self, PyObject *, PyObject *)
     self->doc = new Rcl::Doc;
     if (self->doc == 0)
 	return -1;
+    self->rclconfig = rclconfig;
     the_docs.insert(self->doc);
     return 0;
 }
 
-PyDoc_STRVAR(doc_getbinurl,
+PyDoc_STRVAR(doc_Doc_getbinurl,
 "getbinurl(none) -> binary url\n"
 "\n"
 "Returns an URL with a path part which is a as bit for bit copy of the \n"
@@ -316,7 +315,7 @@ Doc_getbinurl(recoll_DocObject *self)
 					 self->doc->url.size());
 }
 
-PyDoc_STRVAR(doc_setbinurl,
+PyDoc_STRVAR(doc_Doc_setbinurl,
 "setbinurl(url) -> binary url\n"
 "\n"
 "Set the URL from binary path like file://may/contain/unencodable/bytes\n"
@@ -340,12 +339,94 @@ Doc_setbinurl(recoll_DocObject *self, PyObject *value)
     Py_RETURN_NONE;
 }
 
+PyDoc_STRVAR(doc_Doc_keys,
+"keys() -> list of doc object keys (attribute names)\n"
+);
+static PyObject *
+Doc_keys(recoll_DocObject *self)
+{
+    LOGDEB(("Doc_keys\n"));
+    if (self->doc == 0 || 
+	the_docs.find(self->doc) == the_docs.end()) {
+        PyErr_SetString(PyExc_AttributeError, "doc");
+	return 0;
+    }
+
+    PyObject *pkeys = PyList_New(0);
+    for (map<string,string>::const_iterator it = self->doc->meta.begin();
+	 it != self->doc->meta.end(); it++) {
+	PyList_Append(pkeys,  PyUnicode_Decode(it->first.c_str(), 
+					       it->first.size(), 
+					       "UTF-8", "replace"));
+    }
+    return pkeys;
+}
+
+PyDoc_STRVAR(doc_Doc_items,
+"items() -> dictionary of doc object keys/values\n"
+);
+static PyObject *
+Doc_items(recoll_DocObject *self)
+{
+    LOGDEB(("Doc_getbinurl\n"));
+    if (self->doc == 0 || 
+	the_docs.find(self->doc) == the_docs.end()) {
+        PyErr_SetString(PyExc_AttributeError, "doc");
+	return 0;
+    }
+
+    PyObject *pdict = PyDict_New();
+    for (map<string,string>::const_iterator it = self->doc->meta.begin();
+	 it != self->doc->meta.end(); it++) {
+	PyDict_SetItem(pdict, 
+		       PyUnicode_Decode(it->first.c_str(), 
+					it->first.size(), 
+					"UTF-8", "replace"),
+		       PyUnicode_Decode(it->second.c_str(), 
+					it->second.size(), 
+					"UTF-8", "replace"));
+    }
+    return pdict;
+}
+
+PyDoc_STRVAR(doc_Doc_get,
+"get(key) -> value\n"
+"Retrieve the named doc attribute\n"
+);
+
+static PyObject *
+Doc_get(recoll_DocObject *self, PyObject *args)
+{
+    LOGDEB(("Doc_get\n"));
+    char *sutf8 = 0; // needs freeing
+    if (!PyArg_ParseTuple(args, "es:Doc_get",
+			  "utf-8", &sutf8)) {
+	return 0;
+    }
+    string key(sutf8);
+    PyMem_Free(sutf8);
+
+    if (self->doc == 0 || 
+	the_docs.find(self->doc) == the_docs.end()) {
+        PyErr_SetString(PyExc_AttributeError, "doc??");
+	return 0;
+    }
+    string value;
+    if (self->doc->getmeta(key, 0)) {
+	value = self->doc->meta[key];
+	return PyUnicode_Decode(value.c_str(), 
+				value.size(), 
+				"UTF-8", "replace");
+    }
+    Py_RETURN_NONE;
+}
 
 static PyMethodDef Doc_methods[] = {
-    {"getbinurl", (PyCFunction)Doc_getbinurl, METH_NOARGS,
-     doc_getbinurl},
-    {"setbinurl", (PyCFunction)Doc_setbinurl, METH_O,
-     doc_setbinurl},
+    {"getbinurl", (PyCFunction)Doc_getbinurl, METH_NOARGS, doc_Doc_getbinurl},
+    {"setbinurl", (PyCFunction)Doc_setbinurl, METH_O, doc_Doc_setbinurl},
+    {"keys", (PyCFunction)Doc_keys, METH_NOARGS, doc_Doc_keys},
+    {"items", (PyCFunction)Doc_items, METH_NOARGS, doc_Doc_items},
+    {"get", (PyCFunction)Doc_get, METH_VARARGS, doc_Doc_get},
     {NULL}  /* Sentinel */
 };
 
@@ -379,8 +460,6 @@ Doc_getattr(recoll_DocObject *self, char *name)
 	break;
     case 'f':
 	if (!key.compare(Rcl::Doc::keyfs)) {
-	    value = self->doc->fbytes; found = true;
-	} else if (!key.compare(Rcl::Doc::keyfs)) {
 	    value = self->doc->fbytes; found = true;
 	} else if (!key.compare(Rcl::Doc::keyfmt)) {
 	    value = self->doc->fmtime; found = true;
@@ -419,6 +498,11 @@ Doc_getattr(recoll_DocObject *self, char *name)
 		self->doc->dbytes; found = true;
 	}
 	break;
+    case 't':
+	if (!key.compare("text")) {
+	    value = self->doc->text; found = true;
+	}
+	break;
     }
 
     if (!found) {
@@ -432,7 +516,14 @@ Doc_getattr(recoll_DocObject *self, char *name)
 
 	if (self->doc->getmeta(key, 0)) {
 	    value = self->doc->meta[key];
+	    found = true;
 	}
+    }
+
+    if (!found) {
+	LOGDEB(("Doc_getattr: name [%s] key [%s] Not found\n",
+		name, key.c_str()));
+	Py_RETURN_NONE;
     }
 
     LOGDEB(("Doc_getattr: [%s] (%s) -> [%s]\n",
@@ -683,10 +774,17 @@ Query_sortby(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB(("Query_sortby\n"));
     static const char *kwlist[] = {"field", "ascending", NULL};
+    PyObject *ascobj = 0;
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|i", (char**)kwlist,
 				     &self->sortfield,
-				     &self->ascending))
+				     &ascobj))
 	return 0;
+
+    if (ascobj != 0 && !PyObject_IsTrue(ascobj))
+	self->ascending = false;
+    else 
+	self->ascending = true;
+
     Py_RETURN_NONE;
 }
 
@@ -707,13 +805,15 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     char *sutf8 = 0; // needs freeing
     char *sstemlang = 0;
     int dostem = 1;
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "es|ies:Query_execute", 
+    PyObject *dostemobj = 0;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "es|Oes:Query_execute", 
 				     (char**)kwlist, "utf-8", &sutf8,
-				     &dostem, 
+				     &dostemobj, 
 				     "utf-8", &sstemlang)) {
 	return 0;
     }
-
+    if (dostemobj != 0 && !PyObject_IsTrue(dostemobj))
+	dostem = 0;
 
     string utf8(sutf8);
     PyMem_Free(sutf8);
@@ -828,15 +928,274 @@ Query_fetchone(recoll_QueryObject* self, PyObject *, PyObject *)
     return (PyObject *)result;
 }
 
+
+PyDoc_STRVAR(doc_Query_highlight,
+"highlight(text, ishtml = 0/1, eolbr = 0/1, methods = object))\n"
+"Will insert <span \"class=rclmatch\"></span> tags around the match areas\n"
+"in the input text and return the modified text\n"
+"ishtml can be set to indicate that the input text is html and html special\n"
+" characters should not be escaped\n"
+"methods if set should be an object with methods startMatch(i) and endMatch()\n"
+"  which will be called for each match and should return a begin and end tag\n"
+);
+
+class PyPlainToRich: public PlainToRich {
+public:
+    PyPlainToRich(PyObject *methods)
+    : m_methods(methods)
+    {
+    }
+    virtual ~PyPlainToRich()
+    {
+    }
+    virtual string startMatch(unsigned int idx)
+    {
+	PyObject *res =  0;
+	if (m_methods)
+	    res = PyObject_CallMethod(m_methods, (char *)"startMatch", 
+				      (char *)"(i)", idx);
+	if (res == 0)
+	    return "<span class=\"rclmatch\">";
+	PyObject *res1 = res;
+	if (PyUnicode_Check(res))
+	    res1 = PyUnicode_AsUTF8String(res);
+	return PyString_AsString(res1);
+    } 
+
+    virtual string endMatch() 
+    {
+	PyObject *res =  0;
+	if (m_methods)
+	    res = PyObject_CallMethod(m_methods, (char *)"endMatch", 0);
+	if (res == 0)
+	    return "</span res is null>";
+	PyObject *res1 = res;
+	if (PyUnicode_Check(res))
+	    res1 = PyUnicode_AsUTF8String(res);
+	return PyString_AsString(res1);
+    }
+
+    PyObject *m_methods;
+};
+
+static PyObject *
+Query_highlight(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
+{
+    LOGDEB1(("Query_highlight\n"));
+    static const char *kwlist[] = {"text", "ishtml", "methods", NULL};
+    char *sutf8 = 0; // needs freeing
+    int ishtml = 0;
+    PyObject *ishtmlobj = 0;
+    PyObject *methods = 0;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "es|OO:Query_highlight",
+				     (char**)kwlist, 
+				     "utf-8", &sutf8,
+				     &ishtml,
+				     &methods)) {
+	return 0;
+    }
+    string utf8(sutf8);
+    LOGDEB(("Query_highlight: [%s] ishtml %d\n", sutf8, ishtml));
+    PyMem_Free(sutf8);
+    if (ishtmlobj != 0 && PyObject_IsTrue(ishtmlobj))
+	ishtml = 1;
+
+    if (self->query == 0 || 
+	the_queries.find(self->query) == the_queries.end()) {
+        PyErr_SetString(PyExc_AttributeError, "query");
+	return 0;
+    }
+
+    RefCntr<Rcl::SearchData> sd = self->query->getSD();
+    if (sd.isNull()) {
+	PyErr_SetString(PyExc_ValueError, "Query not initialized");
+	return 0;
+    }
+    HighlightData hldata;
+    sd->getTerms(hldata);
+    PyPlainToRich hler(methods);
+    hler.set_inputhtml(ishtml);
+    list<string> out;
+    hler.plaintorich(utf8, out, hldata, 5000000);
+    if (out.empty()) {
+	PyErr_SetString(PyExc_ValueError, "Plaintorich failed");
+	return 0;
+    }
+    PyObject* unicode = PyUnicode_FromStringAndSize(out.begin()->c_str(),
+						    out.begin()->size());
+    return Py_BuildValue("u#", PyUnicode_AsUnicode(unicode), 
+			 PyUnicode_GetSize(unicode));
+}
+
+PyDoc_STRVAR(doc_Query_makedocabstract,
+"makedocabstract(doc, methods = object))\n"
+"Will create a snippets abstract for doc by selecting text around the match\n"
+" terms\n"
+"If methods is set, will also perform highlighting. See the highlight method\n"
+);
+static PyObject *
+Query_makedocabstract(recoll_QueryObject* self, PyObject *args,PyObject *kwargs)
+{
+    LOGDEB(("Db_makeDocAbstract\n"));
+    static const char *kwlist[] = {"doc", "methods", NULL};
+    recoll_DocObject *pydoc = 0;
+    PyObject *hlmethods = 0;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!|O:Query_makeDocAbstract",
+				     (char **)kwlist,
+				     &recoll_DocType, &pydoc,
+				     &hlmethods)) {
+	return 0;
+    }
+
+    if (pydoc->doc == 0 || the_docs.find(pydoc->doc) == the_docs.end()) {
+	LOGERR(("Query_makeDocAbstract: doc not found %p\n", pydoc->doc));
+        PyErr_SetString(PyExc_AttributeError, "doc");
+        return 0;
+    }
+    if (the_queries.find(self->query) == the_queries.end()) {
+	LOGERR(("Query_makeDocAbstract: query not found %p\n", self->query));
+        PyErr_SetString(PyExc_AttributeError, "query");
+        return 0;
+    }
+    RefCntr<Rcl::SearchData> sd = self->query->getSD();
+    if (sd.isNull()) {
+	PyErr_SetString(PyExc_ValueError, "Query not initialized");
+	return 0;
+    }
+    string abstract;
+    if (hlmethods == 0) {
+	if (!self->query->makeDocAbstract(*(pydoc->doc), abstract)) {
+	    PyErr_SetString(PyExc_EnvironmentError, 
+			    "rcl makeDocAbstract failed");
+	    return 0;
+	}
+    } else {
+	HighlightData hldata;
+	sd->getTerms(hldata);
+	PyPlainToRich hler(hlmethods);
+	hler.set_inputhtml(0);
+	vector<string> vabs;
+	self->query->makeDocAbstract(*pydoc->doc, vabs);
+	for (unsigned int i = 0; i < vabs.size(); i++) {
+	    if (vabs[i].empty())
+		continue;
+	    list<string> lr;
+	    // There may be data like page numbers before the snippet text.
+	    // will be in brackets.
+	    string::size_type bckt = vabs[i].find("]");
+	    if (bckt == string::npos) {
+		hler.plaintorich(vabs[i], lr, hldata);
+	    } else {
+		hler.plaintorich(vabs[i].substr(bckt), lr, hldata);
+		lr.front() = vabs[i].substr(0, bckt) + lr.front();
+	    }
+	    abstract += lr.front();
+	    abstract += "...";
+	}
+    }
+
+    // Return a python unicode object
+    return PyUnicode_Decode(abstract.c_str(), abstract.size(), 
+				     "UTF-8", "replace");
+}
+
+
+PyDoc_STRVAR(doc_Query_getxquery,
+"getxquery(None) -> Unicode string\n"
+"\n"
+"Retrieves the Xapian query description as a Unicode string.\n"
+"Meaningful only after executexx\n"
+);
+static PyObject *
+Query_getxquery(recoll_QueryObject* self, PyObject *, PyObject *)
+{
+    LOGDEB(("Query_getxquery\n"));
+
+    if (self->query == 0 || 
+	the_queries.find(self->query) == the_queries.end()) {
+        PyErr_SetString(PyExc_AttributeError, "query");
+	return 0;
+    }
+    RefCntr<Rcl::SearchData> sd = self->query->getSD();
+    if (sd.isNull()) {
+	PyErr_SetString(PyExc_ValueError, "Query not initialized");
+	return 0;
+    }
+    string desc = sd->getDescription();
+    return PyUnicode_Decode(desc.c_str(), desc.size(), "UTF-8", "replace");
+}
+
+PyDoc_STRVAR(doc_Query_getgroups,
+"getgroups(None) -> a list of pairs\n"
+"\n"
+"Retrieves the expanded query terms. Meaningful only after executexx\n"
+"In each pair, the first entry is a list of user terms, the second a list of\n"
+"query terms as derived from the user terms and used in the Xapian Query.\n"
+"The size of each list is one for simple terms, or more for group and phrase\n"
+"clauses\n"
+);
+static PyObject *
+Query_getgroups(recoll_QueryObject* self, PyObject *, PyObject *)
+{
+    LOGDEB(("Query_getxquery\n"));
+
+    if (self->query == 0 || 
+	the_queries.find(self->query) == the_queries.end()) {
+        PyErr_SetString(PyExc_AttributeError, "query");
+	return 0;
+    }
+    RefCntr<Rcl::SearchData> sd = self->query->getSD();
+    if (sd.isNull()) {
+	PyErr_SetString(PyExc_ValueError, "Query not initialized");
+	return 0;
+    }
+    HighlightData hld;
+    sd->getTerms(hld);
+    PyObject *mainlist = PyList_New(0);
+    PyObject *ulist;
+    PyObject *xlist;
+    // We walk the groups vector. For each we retrieve the user group,
+    // make a python list of each, then group those in a pair, and
+    // append this to the main list.
+    for (unsigned int i = 0; i < hld.groups.size(); i++) {
+	unsigned int ugidx = hld.grpsugidx[i];
+	ulist = PyList_New(hld.ugroups[ugidx].size());
+	for (unsigned int j = 0; j < hld.ugroups[ugidx].size(); j++) {
+	    PyList_SetItem(ulist, j, 
+			   PyUnicode_Decode(hld.ugroups[ugidx][j].c_str(), 
+					    hld.ugroups[ugidx][j].size(), 
+					    "UTF-8", "replace"));
+	}
+
+	xlist = PyList_New(hld.groups[i].size());
+	for (unsigned int j = 0; j < hld.groups[i].size(); j++) {
+	    PyList_SetItem(xlist, j, 
+			   PyUnicode_Decode(hld.groups[i][j].c_str(), 
+					    hld.groups[i][j].size(), 
+					    "UTF-8", "replace"));
+	}
+	PyList_Append(mainlist,  Py_BuildValue("(OO)", ulist, xlist));
+    }
+    return mainlist;
+}
+
 static PyMethodDef Query_methods[] = {
     {"execute", (PyCFunction)Query_execute, METH_VARARGS|METH_KEYWORDS, 
      doc_Query_execute},
     {"executesd", (PyCFunction)Query_executesd, METH_VARARGS|METH_KEYWORDS, 
      doc_Query_executesd},
-    {"fetchone", (PyCFunction)Query_fetchone, METH_VARARGS,
+    {"fetchone", (PyCFunction)Query_fetchone, METH_NOARGS,
      doc_Query_fetchone},
     {"sortby", (PyCFunction)Query_sortby, METH_VARARGS|METH_KEYWORDS,
      doc_Query_sortby},
+    {"highlight", (PyCFunction)Query_highlight, METH_VARARGS|METH_KEYWORDS,
+     doc_Query_highlight},
+    {"getxquery", (PyCFunction)Query_getxquery, METH_NOARGS,
+     doc_Query_getxquery},
+    {"getgroups", (PyCFunction)Query_getgroups, METH_NOARGS,
+     doc_Query_getgroups},
+    {"makedocabstract", (PyCFunction)Query_makedocabstract, 
+     METH_VARARGS|METH_KEYWORDS, doc_Query_makedocabstract},
     {NULL}  /* Sentinel */
 };
 
@@ -1037,12 +1396,13 @@ Db_setAbstractParams(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
         PyErr_SetString(PyExc_AttributeError, "db id not found");
         return 0;
     }
+    LOGDEB(("Db_setAbstractParams: mxchrs %d, ctxwrds %d\n", maxchars, ctxwords));
     self->db->setAbstractParams(-1, maxchars, ctxwords);
     Py_RETURN_NONE;
 }
 
 static PyObject *
-Db_makeDocAbstract(recoll_DbObject* self, PyObject *args, PyObject *)
+Db_makeDocAbstract(recoll_DbObject* self, PyObject *args)
 {
     LOGDEB(("Db_makeDocAbstract\n"));
     recoll_DocObject *pydoc = 0;
@@ -1341,4 +1701,8 @@ initrecoll(void)
     PyModule_AddStringConstant(m, "__doc__",
                                pyrecoll_doc_string);
 
+    
+    PyObject* doctypecapsule = 
+	PyCapsule_New(&recoll_DocType, "recoll.doctype", 0);
+    PyModule_AddObject(m, "doctype", doctypecapsule);
 }

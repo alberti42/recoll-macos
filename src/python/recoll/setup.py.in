@@ -53,6 +53,23 @@ module1 = Extension('recoll',
                     sources = ['pyrecoll.cpp',
                                ])
 
+module2 = Extension('rclextract',
+                    define_macros = [('MAJOR_VERSION', '1'),
+                                     ('MINOR_VERSION', '0'),
+                                     ('UNAC_VERSION', '"1.0.7"'),
+                                     ('RECOLL_DATADIR', '"@QTRECOLL_DATADIR@"')
+                                     ],
+                    include_dirs = ['/usr/local/include',
+                                    os.path.join(top, 'utils'), 
+                                    os.path.join(top, 'common'), 
+                                    os.path.join(top, 'internfile'), 
+                                    os.path.join(top, 'rcldb'), 
+                                    ],
+                    libraries = libs,
+                    library_dirs = libdirs,
+                    sources = ['pyrclextract.cpp',
+                               ])
+
 setup (name = 'Recoll',
        version = '1.0',
        description = 'Query/Augment a Recoll full text index',
@@ -60,4 +77,4 @@ setup (name = 'Recoll',
        author_email = 'jfd@recoll.org',
        long_description = '''
 ''',
-       ext_modules = [module1])
+       ext_modules = [module1, module2])
