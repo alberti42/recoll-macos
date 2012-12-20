@@ -1002,10 +1002,20 @@ bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
     // doesn't change anything in this case.
     FileInterner interner(idoc, cnf, tmpdir, FIF_forPreview);
     interner.setTargetMType(idoc.mimetype);
+    return interner.interntofile(otemp, tofile, idoc.ipath, idoc.mimetype);
+}
+
+bool FileInterner::interntofile(TempFile& otemp, const string& tofile,
+				const string& ipath, const string& mimetype)
+{
+    if (!ok()) {
+	LOGERR(("FileInterner::interntofile: constructor failed\n"));
+	return false;
+    }
     Rcl::Doc doc;
-    Status ret = interner.internfile(doc, idoc.ipath);
+    Status ret = internfile(doc, ipath);
     if (ret == FileInterner::FIError) {
-	LOGERR(("FileInterner::idocToFile: internfile() failed\n"));
+	LOGERR(("FileInterner::interntofile: internfile() failed\n"));
 	return false;
     }
 
@@ -1015,19 +1025,19 @@ bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
     // performed. A common case would be an "Open" on an html file
     // (we'd end up with text/plain content). As the html version is
     // saved in this case, use it.  
-    if (!stringlowercmp("text/html", idoc.mimetype) && 
-        !interner.get_html().empty()) {
-        doc.text = interner.get_html();
+    if (!stringlowercmp("text/html", mimetype) && !get_html().empty()) {
+        doc.text = get_html();
         doc.mimetype = "text/html";
     }
 
     string filename;
     TempFile temp;
     if (tofile.empty()) {
-	TempFile temp1(new TempFileInternal(cnf->getSuffixFromMimeType(idoc.mimetype)));
+	TempFile temp1(new TempFileInternal(
+			   m_cfg->getSuffixFromMimeType(mimetype)));
 	temp = temp1;
 	if (!temp->ok()) {
-	    LOGERR(("FileInterner::idocToFile: cant create temporary file"));
+	    LOGERR(("FileInterner::interntofile: can't create temp file\n"));
 	    return false;
 	}
 	filename = temp->filename();
@@ -1036,14 +1046,14 @@ bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
     }
     int fd = open(filename.c_str(), O_WRONLY|O_CREAT, 0600);
     if (fd < 0) {
-	LOGERR(("FileInterner::idocToFile: open(%s) failed errno %d\n",
+	LOGERR(("FileInterner::interntofile: open(%s) failed errno %d\n",
 		filename.c_str(), errno));
 	return false;
     }
     const string& dt = doc.text;
     if (write(fd, dt.c_str(), dt.length()) != (int)dt.length()) {
 	close(fd);
-	LOGERR(("FileInterner::idocToFile: write to %s failed errno %d\n",
+	LOGERR(("FileInterner::interntofile: write to %s failed errno %d\n",
 		filename.c_str(), errno));
 	return false;
     }

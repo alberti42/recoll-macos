@@ -161,6 +161,11 @@ class FileInterner {
      */
     Status internfile(Rcl::Doc& doc, const string &ipath = "");
 
+    /** Extract subdoc defined by ipath in idoc to file. See params for
+	idocToFile() */
+    bool interntofile(TempFile& otemp, const string& tofile,
+		      const string& ipath, const string& mimetype);
+
     /** Return the file's (top level object) mimetype (useful for 
      *  creating the pseudo-doc for container files) 
      */ 
