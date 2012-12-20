@@ -1701,8 +1701,8 @@ initrecoll(void)
     PyModule_AddStringConstant(m, "__doc__",
                                pyrecoll_doc_string);
 
-    
+    // Export a few pointers for the benefit of other recoll python modules
     PyObject* doctypecapsule = 
-	PyCapsule_New(&recoll_DocType, "recoll.doctype", 0);
-    PyModule_AddObject(m, "doctype", doctypecapsule);
+	PyCapsule_New(&recoll_DocType, "recoll.doctypeptr", 0);
+    PyModule_AddObject(m, "doctypeptr", doctypecapsule);
 }

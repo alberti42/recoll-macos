@@ -29,10 +29,13 @@ using namespace std;
 #include "rcldoc.h"
 #include "internfile.h"
 #include "rclconfig.h"
+#include "rclinit.h"
 
 #include "pyrecoll.h"
 
+// Imported from pyrecoll
 static PyObject *recoll_DocType;
+static RclConfig *rclconfig;
 
 //////////////////////////////////////////////////////////////////////
 /// Extractor object code
@@ -89,14 +92,22 @@ Extractor_init(rclx_ExtractorObject *self, PyObject *args, PyObject *kwargs)
     return 0;
 }
 
+PyDoc_STRVAR(doc_Extractor_textextract,
+"textextract(ipath)\n"
+"Extract document defined by ipath and return a doc object. The doc.text\n"
+"field has the document text as either text/plain or text/html\n"
+"according to doc.mimetype.\n"
+);
+
 static PyObject *
-Extractor_extract(rclx_ExtractorObject* self, PyObject *args, PyObject *kwargs)
+Extractor_textextract(rclx_ExtractorObject* self, PyObject *args, 
+		      PyObject *kwargs)
 {
-    LOGDEB(("Extractor_extract\n"));
+    LOGDEB(("Extractor_textextract\n"));
     static const char* kwlist[] = {"ipath", NULL};
     char *sipath = 0;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "es:Extractor_extract", 
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "es:Extractor_textextract",
 				     (char**)kwlist, 
 				     "utf-8", &sipath))
 	return 0;
@@ -112,7 +123,7 @@ Extractor_extract(rclx_ExtractorObject* self, PyObject *args, PyObject *kwargs)
     recoll_DocObject *result = 
        (recoll_DocObject *)PyObject_CallObject((PyObject *)recoll_DocType, 0);
     if (!result) {
-	LOGERR(("Query_fetchone: couldn't create doc object for result\n"));
+        PyErr_SetString(PyExc_AttributeError, "extract: doc create failed");
 	return 0;
     }
     FileInterner::Status status = self->xtr->internfile(*(result->doc), ipath);
@@ -127,8 +138,7 @@ Extractor_extract(rclx_ExtractorObject* self, PyObject *args, PyObject *kwargs)
 	result->doc->mimetype = "text/html";
     }
 
-    // fetching attributes easier. Is this actually needed ? Useful for
-    // url which is also formatted .
+    // Is this actually needed ? Useful for url which is also formatted .
     Rcl::Doc *doc = result->doc;
     printableUrl(self->rclconfig->getDefCharset(), doc->url, 
 		 doc->meta[Rcl::Doc::keyurl]);
@@ -139,22 +149,64 @@ Extractor_extract(rclx_ExtractorObject* self, PyObject *args, PyObject *kwargs)
     return (PyObject *)result;
 }
 
-PyDoc_STRVAR(doc_extract,
-"extract(ipath)\n"
-"Extract document defined by ipath and return a doc object.\n"
+PyDoc_STRVAR(doc_Extractor_idoctofile,
+"idoctofile(ipath)\n"
+"Extract document defined by ipath into a file, in its native format.\n"
 );
+static PyObject *
+Extractor_idoctofile(rclx_ExtractorObject* self, PyObject *args, 
+		     PyObject *kwargs)
+{
+    LOGDEB(("Extractor_idoctofile\n"));
+    static const char* kwlist[] = {"ipath", "mimetype", "ofilename", NULL};
+    char *sipath = 0;
+    char *smt = 0;
+    char *soutfile = 0; // no freeing
+    if (!PyArg_ParseTupleAndKeywords(args,kwargs, "eses|s:Extractor_idoctofile",
+				     (char**)kwlist, 
+				     "utf-8", &sipath,
+				     "utf-8", &smt,
+				     &soutfile))
+	return 0;
+
+    string ipath(sipath);
+    PyMem_Free(sipath);
+    string mimetype(smt);
+    PyMem_Free(smt);
+    string outfile;
+    if (soutfile && *soutfile)
+	outfile.assign(soutfile); 
+    
+    if (self->xtr == 0) {
+        PyErr_SetString(PyExc_AttributeError, "extract: null object");
+	return 0;
+    }
+    TempFile temp;
+    bool status = self->xtr->interntofile(temp, outfile, ipath, mimetype);
+    if (!status) {
+        PyErr_SetString(PyExc_AttributeError, "interntofile failure");
+	return 0;
+    }
+    if (outfile.empty())
+	temp->setnoremove(1);
+    PyObject *result = outfile.empty() ? PyString_FromString(temp->filename()) :
+	PyString_FromString(outfile.c_str());
+    return (PyObject *)result;
+}
 
 static PyMethodDef Extractor_methods[] = {
-    {"extract", (PyCFunction)Extractor_extract, METH_VARARGS|METH_KEYWORDS,
-     doc_extract},
+    {"textextract", (PyCFunction)Extractor_textextract, 
+     METH_VARARGS|METH_KEYWORDS, doc_Extractor_textextract},
+    {"idoctofile", (PyCFunction)Extractor_idoctofile, 
+     METH_VARARGS|METH_KEYWORDS, doc_Extractor_idoctofile},
     {NULL}  /* Sentinel */
 };
 
 PyDoc_STRVAR(doc_ExtractorObject,
 "Extractor()\n"
 "\n"
-"A Extractor object describes a query. It has a number of global\n"
-"parameters and a chain of search clauses.\n"
+"An Extractor object can extract data from a native simple or compound\n"
+"object.\n"
 );
 static PyTypeObject rclx_ExtractorType = {
     PyObject_HEAD_INIT(NULL)
@@ -211,6 +263,20 @@ PyDoc_STRVAR(rclx_doc_string,
 PyMODINIT_FUNC
 initrclextract(void)
 {
+    // We run recollinit. It's responsible for initializing some static data
+    // which is distinct from pyrecoll's as we're separately dlopened
+    string reason;
+    rclconfig = recollinit(0, 0, reason, 0);
+    if (rclconfig == 0) {
+	PyErr_SetString(PyExc_EnvironmentError, reason.c_str());
+	return;
+    }
+    if (!rclconfig->ok()) {
+	PyErr_SetString(PyExc_EnvironmentError, 
+			"Recoll init error: bad environment ?");
+	return;
+    }
+
     PyObject* m = Py_InitModule("rclextract", rclxMethods);
     PyModule_AddStringConstant(m, "__doc__", rclx_doc_string);
 
@@ -219,5 +285,5 @@ initrclextract(void)
     Py_INCREF(&rclx_ExtractorType);
     PyModule_AddObject(m, "Extractor", (PyObject *)&rclx_ExtractorType);
 
-    recoll_DocType = (PyObject*)PyCapsule_Import("recoll.doctype", 0);
+    recoll_DocType = (PyObject*)PyCapsule_Import("recoll.doctypeptr", 0);
 }
