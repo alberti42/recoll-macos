@@ -930,7 +930,7 @@ Query_fetchone(recoll_QueryObject* self, PyObject *, PyObject *)
 
 
 PyDoc_STRVAR(doc_Query_highlight,
-"highlight(text, ishtml = 0/1, eolbr = 0/1, methods = object))\n"
+"highlight(text, ishtml = 0/1, methods = object))\n"
 "Will insert <span \"class=rclmatch\"></span> tags around the match areas\n"
 "in the input text and return the modified text\n"
 "ishtml can be set to indicate that the input text is html and html special\n"
@@ -1036,7 +1036,7 @@ PyDoc_STRVAR(doc_Query_makedocabstract,
 static PyObject *
 Query_makedocabstract(recoll_QueryObject* self, PyObject *args,PyObject *kwargs)
 {
-    LOGDEB(("Db_makeDocAbstract\n"));
+    LOGDEB(("Query_makeDocAbstract\n"));
     static const char *kwlist[] = {"doc", "methods", NULL};
     recoll_DocObject *pydoc = 0;
     PyObject *hlmethods = 0;
