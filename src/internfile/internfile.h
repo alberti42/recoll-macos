@@ -26,11 +26,10 @@ using std::vector;
 using std::map;
 using std::set;
 
-#include "pathut.h"
 #include "Filter.h"
-// Beware: the class changes according to RCL_USE_XATTR, so any file
-// including this needs autoconfig.h
+// The class changes according to RCL_USE_XATTR
 #include "autoconfig.h"
+#include "pathut.h"
 
 class RclConfig;
 namespace Rcl {
@@ -64,9 +63,12 @@ public:
 };
 
 /** 
- * A class to convert data from a datastore (file-system, firefox
- * history, etc.)  into possibly one or severaldocuments in internal
- * representation, either for indexing or viewing at query time (gui preview).
+ * Convert data from file-serialized form (either an actual File
+ * System file or a memory image) into one or several documents in
+ * internal representation (Rcl::Doc). This can be used for indexing,
+ * or viewing at query time (GUI preview), or extracting an internal
+ * document out of a compound file into a simple one.
+ *
  * Things work a little differently when indexing or previewing:
  *  - When indexing, all data has to come from the datastore, and it is 
  *    normally desired that all found subdocuments be returned (ie:
@@ -76,26 +78,19 @@ public:
  *    so that the full doc identifier is passed in: high level url 
  *    (ie: file path) and internal identifier: ipath, ie: message and 
  *    attachment number.
+ *
+ * Internfile is the part of the code which knows about ipath structure. 
+ *
+ * The class has a number of static helper method which could just as well not
+ * be members and are in there just for namespace reasons.
+ * 
  */
 class FileInterner {
  public:
-    /// Operation modifier flags
+    /** Operation modifier flags */
     enum Flags {FIF_none, FIF_forPreview, FIF_doUseInputMimetype};
-    /// Return values for internfile()
+    /** Return values for internfile() */
     enum Status {FIError, FIDone, FIAgain};
-
-    /**
-     * Get immediate parent for document. 
-     *
-     * This is not in general the same as the "parent" document used 
-     * with Rcl::Db::addOrUpdate(). The latter is generally the enclosing file,
-     * this would be for exemple the email containing the attachment.
-     */
-    static bool getEnclosing(const string &url, const string &ipath,
-			     string &eurl, string &eipath, string& udi);
-
-    /** Return last element in ipath, like basename */
-    static std::string getLastIpathElt(const std::string& ipath);
 
     /** Constructors take the initial step to preprocess the data object and
      *  create the top filter */
@@ -106,13 +101,17 @@ class FileInterner {
      *   created for previewing a file). 
      * - Filter output may be different for previewing and indexing.
      *
-     * @param fn file name 
+     * This constructor is now only used for indexing, the form with
+     * an Rcl::Doc parameter to identify the data is always used
+     * at query time.
+     *
+     * @param fn file name.
      * @param stp pointer to updated stat struct.
-     * @param cnf Recoll configuration
+     * @param cnf Recoll configuration.
      * @param td  temporary directory to use as working space if 
      *   decompression needed. Must be private and will be wiped clean.
      * @param mtype mime type if known. For a compressed file this is the 
-     *   mime type for the uncompressed version. 
+     *   mime type for the uncompressed version.
      */
     FileInterner(const string &fn, const struct stat *stp, 
 		 RclConfig *cnf, TempDir &td, int flags,
@@ -121,24 +120,23 @@ class FileInterner {
     /** 
      * Alternate constructor for the case where the data is in memory.
      * This is mainly for data extracted from the web cache. The mime type
-     * must be set, input must be uncompressed.
+     * must be set, input must be already uncompressed.
      */
     FileInterner(const string &data, RclConfig *cnf, TempDir &td, 
                  int flags, const string& mtype);
 
     /**
-     * Alternate constructor for the case where it is not known where
-     * the data will come from. We'll use the doc fields and try our
-     * best. This is only used at query time, the idoc was built from index 
-     * data.
+     * Alternate constructor used at query time. We don't know where
+     * the data was stored, this is determined from the Rcl::Doc data
+     * 
+     * @param idoc Rcl::Doc object built from index data. The back-end
+     *   storage identifier (rclbes field) is used to build the
+     *   appropriate fetcher which uses the rest of the Doc fields (url,
+     *   ipath...) to retrieve the file or a file reference, which we
+     *   then process normally.
      */
     FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, TempDir &td, 
                  int flags);
-
-    /** 
-     * Build sig for doc coming from rcldb. This is here because we know how
-     * to query the right backend */
-    static bool makesig(RclConfig *cnf, const Rcl::Doc& idoc, string& sig);
 
     ~FileInterner();
 
@@ -150,8 +148,9 @@ class FileInterner {
     /** 
      * Turn file or file part into Recoll document.
      * 
-     * For multidocument files (ie: mail folder), this must be called multiple
-     * times to retrieve the subdocuments
+     * For multidocument files (ie: mail folder), this must be called
+     * multiple times to retrieve the subdocuments.
+     *
      * @param doc output document
      * @param ipath internal path. If set by caller, the specified subdoc will
      *  be returned. Else the next document according to current state will 
@@ -169,7 +168,7 @@ class FileInterner {
 
     /** We normally always return text/plain data. A caller can request
      *  that we stop conversion at the native document type (ie: extracting
-     *  an email attachment and starting an external viewer)
+     *  an email attachment in its native form for an external viewer)
      */
     void setTargetMType(const string& tp) {m_targetMType = tp;}
 
@@ -182,16 +181,44 @@ class FileInterner {
 	we keep it around to save work for our caller, which can get it here */
     TempFile get_imgtmp() {return m_imgtmp;}
 
+    const string& getReason() const 
+    {
+	return m_reason;
+    }
+    bool ok() const
+    {
+	return m_ok;
+    }
+
+    /**
+     * Get immediate parent for document. 
+     *
+     * This is not in general the same as the "parent" document used 
+     * with Rcl::Db::addOrUpdate(). The latter is the enclosing file,
+     * this would be for exemple the email containing the attachment.
+     */
+    static bool getEnclosing(const string &url, const string &ipath,
+			     string &eurl, string &eipath, string& udi);
+
+    /** Return last element in ipath, like basename */
+    static std::string getLastIpathElt(const std::string& ipath);
+
+    /** 
+     * Build sig for doc coming from rcldb. This is here because we know how
+     * to query the right backend. Used to check up-to-dateness at query time */
+    static bool makesig(RclConfig *cnf, const Rcl::Doc& idoc, string& sig);
+
     /** Extract internal document into temporary file. 
      *  This is used mainly for starting an external viewer for a
-     *  subdocument (ie: mail attachment).
+     *  subdocument (ie: mail attachment). This really would not need to be
+     *  a member. It creates a FileInterner object to do the actual work
      * @return true for success.
      * @param temp output reference-counted temp file object (goes
      *   away magically). Only used if tofile.empty()
-     * @param tofile output file if not null
+     * @param tofile output file if not empty.
      * @param cnf The recoll config
-     * @param doc Doc data taken from the index. We use it to access the 
-     *            actual document (ie: use mtype, fn, ipath...).
+     * @param doc Doc data taken from the index. We use it to construct a
+     *    FileInterner object.
      */
     static bool idocToFile(TempFile& temp, const string& tofile, 
 			   RclConfig *cnf, const Rcl::Doc& doc);
@@ -209,12 +236,10 @@ class FileInterner {
     static bool maybeUncompressToTemp(TempFile& temp, const string& fn, 
                                       RclConfig *cnf, const Rcl::Doc& doc);
 
-    const string& getReason() const {return m_reason;}
     static void getMissingExternal(FIMissingStore *st, string& missing);
     static void getMissingDescription(FIMissingStore *st, string& desc);
     // Parse "missing" file contents into memory struct
     static void getMissingFromDescription(FIMissingStore *st, const string& desc);
-    bool ok() {return m_ok;}
 
  private:
     static const unsigned int MAXHANDLERS = 20;
