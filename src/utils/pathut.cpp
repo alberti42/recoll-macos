@@ -148,6 +148,7 @@ bool maketmpdir(string& tdir, string& reason)
 }
 
 TempFileInternal::TempFileInternal(const string& suffix)
+    : m_noremove(false)
 {
     string filename = path_cat(tmplocation(), "rcltmpfXXXXXX");
     char *cp = strdup(filename.c_str());
@@ -179,7 +180,7 @@ TempFileInternal::TempFileInternal(const string& suffix)
 
 TempFileInternal::~TempFileInternal()
 {
-    if (!m_filename.empty())
+    if (!m_filename.empty() && !m_noremove)
 	unlink(m_filename.c_str());
 }
 

@@ -85,12 +85,26 @@ class TempFileInternal {
 public:
     TempFileInternal(const string& suffix);
     ~TempFileInternal();
-    const char *filename() {return m_filename.c_str();}
-    const string &getreason() {return m_reason;}
-    bool ok() {return !m_filename.empty();}
+    const char *filename() 
+    {
+	return m_filename.c_str();
+    }
+    const string &getreason() 
+    {
+	return m_reason;
+    }
+    void setnoremove(bool onoff)
+    {
+	m_noremove = onoff;
+    }
+    bool ok() 
+    {
+	return !m_filename.empty();
+    }
 private:
     string m_filename;
     string m_reason;
+    bool m_noremove;
 };
 
 typedef RefCntr<TempFileInternal> TempFile;
