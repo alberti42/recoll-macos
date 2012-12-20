@@ -236,11 +236,6 @@ class FileInterner {
     static bool maybeUncompressToTemp(TempFile& temp, const string& fn, 
                                       RclConfig *cnf, const Rcl::Doc& doc);
 
-    static void getMissingExternal(FIMissingStore *st, string& missing);
-    static void getMissingDescription(FIMissingStore *st, string& desc);
-    // Parse "missing" file contents into memory struct
-    static void getMissingFromDescription(FIMissingStore *st, const string& desc);
-
  private:
     static const unsigned int MAXHANDLERS = 20;
     RclConfig             *m_cfg;
