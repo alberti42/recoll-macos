@@ -763,7 +763,7 @@ Query_init(recoll_QueryObject *self, PyObject *, PyObject *)
 }
 
 PyDoc_STRVAR(doc_Query_sortby,
-"sortby(field=fieldname, ascending=true)\n"
+"sortby(field=fieldname, ascending=True)\n"
 "Sort results by 'fieldname', in ascending or descending order.\n"
 "Only one field can be used, no subsorts for now.\n"
 "Must be called before executing the search\n"
@@ -775,16 +775,17 @@ Query_sortby(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     LOGDEB(("Query_sortby\n"));
     static const char *kwlist[] = {"field", "ascending", NULL};
     PyObject *ascobj = 0;
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|i", (char**)kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|O", (char**)kwlist,
 				     &self->sortfield,
 				     &ascobj))
 	return 0;
 
-    if (ascobj != 0 && !PyObject_IsTrue(ascobj))
-	self->ascending = false;
-    else 
+    if (ascobj == 0) {
 	self->ascending = true;
-
+    } else {
+    	self->ascending = PyObject_IsTrue(ascobj);
+    }
+	
     Py_RETURN_NONE;
 }
 
