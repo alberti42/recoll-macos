@@ -1703,6 +1703,6 @@ initrecoll(void)
 
     // Export a few pointers for the benefit of other recoll python modules
     PyObject* doctypecapsule = 
-	PyCapsule_New(&recoll_DocType, "recoll.doctypeptr", 0);
+	PyCapsule_New(&recoll_DocType, PYRECOLL_PACKAGE "recoll.doctypeptr", 0);
     PyModule_AddObject(m, "doctypeptr", doctypecapsule);
 }

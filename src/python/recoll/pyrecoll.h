@@ -28,4 +28,6 @@ typedef struct {
     RclConfig *rclconfig; 
 } recoll_DocObject;
 
+#define PYRECOLL_PACKAGE "recoll."
+
 #endif // _PYRECOLL_H_INCLUDED_

@@ -117,7 +117,7 @@ include \$(depth)/mk/sysconf
 
 LIBS = librcl.a
 
-all: \$(LIBS)
+all: \$(LIBS) 
 
 OBJS = $OBJS
 DEPS = $DEPS
@@ -125,6 +125,13 @@ DEPS = $DEPS
 librcl.a : \$(DEPS) \$(OBJS)
 	ar ru librcl.a \$(OBJS)
 	\$(RANLIB) librcl.a
+
+# Future 
+#all: librecoll.so
+#librecoll.so : \$(DEPS) \$(OBJS)
+#	g++ -shared -Wl,--no-undefined \
+#          -Wl,-soname=librecoll.so.1 -o librecoll.so \$(OBJS) \
+#           -lxapian -lz -lX11 -lpthread -ldl
 
 EOF
 

@@ -178,9 +178,15 @@ Extractor_idoctofile(rclx_ExtractorObject* self, PyObject *args,
 	outfile.assign(soutfile); 
     
     if (self->xtr == 0) {
-        PyErr_SetString(PyExc_AttributeError, "extract: null object");
+        PyErr_SetString(PyExc_AttributeError, "idoctofile: null object");
 	return 0;
     }
+    if (ipath.empty()) {
+        PyErr_SetString(PyExc_ValueError, "idoctofile: null ipath");
+	return 0;
+    }
+	
+    self->xtr->setTargetMType(mimetype);
     TempFile temp;
     bool status = self->xtr->interntofile(temp, outfile, ipath, mimetype);
     if (!status) {
@@ -285,5 +291,5 @@ initrclextract(void)
     Py_INCREF(&rclx_ExtractorType);
     PyModule_AddObject(m, "Extractor", (PyObject *)&rclx_ExtractorType);
 
-    recoll_DocType = (PyObject*)PyCapsule_Import("recoll.doctypeptr", 0);
+    recoll_DocType = (PyObject*)PyCapsule_Import(PYRECOLL_PACKAGE "recoll.doctypeptr", 0);
 }

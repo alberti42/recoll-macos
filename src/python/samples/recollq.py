@@ -6,9 +6,15 @@ This could actually be useful for something after some customization
 
 import sys
 from getopt import getopt
-import recoll
-import rclextract
 
+try:
+    from recoll import recoll
+    from recoll import rclextract
+    hasextract = True
+except:
+    import recoll
+    hasextract = False
+    
 allmeta = ("title", "keywords", "abstract", "url", "mimetype", "mtime",
            "ipath", "fbytes", "dbytes", "relevancyrating")
 
@@ -27,8 +33,14 @@ class ptrmeths:
     
 def extract(doc):
     extractor = rclextract.Extractor(doc)
-    newdoc = extractor.extract(doc.ipath)
+    newdoc = extractor.textextract(doc.ipath)
     return newdoc
+
+def extractofile(doc, outfilename=""):
+    extractor = rclextract.Extractor(doc)
+    outfilename = extractor.idoctofile(doc.ipath, doc.mimetype, \
+                                       ofilename=outfilename)
+    return outfilename
 
 def doquery(db, q):
     # Get query object
@@ -48,9 +60,11 @@ def doquery(db, q):
     while query.next >= 0 and query.next < nres: 
         doc = query.fetchone()
         print query.next, ":",
-#        for k,v in doc.items().items():
-#            print "KEY:", k.encode('utf-8'), "VALUE", v.encode('utf-8')
-#        continue
+        #for k,v in doc.items().items():
+        #print "KEY:", k.encode('utf-8'), "VALUE", v.encode('utf-8')
+        #continue
+        #outfile = extractofile(doc)
+        #print "outfile:", outfile, "url", doc.url.encode("utf-8")
         for k in ("title", "mtime", "author"):
             value = getattr(doc, k)
 #            value = doc.get(k)
