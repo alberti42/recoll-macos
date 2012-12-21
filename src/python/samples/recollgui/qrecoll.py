@@ -10,7 +10,7 @@ except:
     import recoll
     hasextract = False
 
-import queryarea
+import rclmain
 from getopt import getopt
 
 from PyQt4 import QtCore, QtGui
@@ -108,15 +108,13 @@ def extractofile(doc, outfilename=""):
                                        ofilename=outfilename)
     return outfilename
 
-class RclGui_Main(QtGui.QWidget):
+class RclGui_Main(QtGui.QMainWindow):
     def __init__(self, db, parent=None):
         QtGui.QWidget.__init__(self, parent)
-        self.ui = queryarea.Ui_queryArea()
+        self.ui = rclmain.Ui_MainWindow()
         self.ui.setupUi(self)
         self.db = db
         self.qmodel = RecollQuery()
-        self.connect(self.ui.exitPB, QtCore.SIGNAL("clicked()"),
-                     self.onexit)
     def on_searchEntry_returnPressed(self):
         self.startQuery()
     def on_resTable_clicked(self, index):
