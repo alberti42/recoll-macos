@@ -15,42 +15,96 @@ from getopt import getopt
 
 from PyQt4 import QtCore, QtGui
 
+
+####################
+# Highlighting methods. Just for showing the groups usage, we add the
+# original string for the match to the highlighted text. I don't think
+# you'd want to do this in a real app, but maybe some kind of tooltip?
+class HlMeths:
+    def __init__(self, groups):
+        self.groups = groups
+
+    def startMatch(self, idx):
+        ugroup = " ".join(self.groups[idx][0])
+        return '<font size="tiny">'+ugroup+'</font><font color="blue">'
+
+    def endMatch(self):
+        return '</font>'
+
+############
+# Data extraction. The 2 following methods use the extractor module
+# and get the data from the original document
+#
+# Extract and return document text (in text or html format, indicated
+# by newdoc.mimetype)
+def textextract(doc):
+    extractor = rclextract.Extractor(doc)
+    newdoc = extractor.textextract(doc.ipath)
+    return newdoc
+# Extract document in original format (ie: application/msword) and
+# save it to a file. This only works if ipath is not null (else just
+# use the url !)
+def extractofile(doc, outfilename=""):
+    extractor = rclextract.Extractor(doc)
+    outfilename = extractor.idoctofile(doc.ipath, doc.mimetype, \
+                                       ofilename=outfilename)
+    return outfilename
+
+#########
+# RecollQuery wraps a recoll.query object in a Qt model
 class RecollQuery(QtCore.QAbstractTableModel):
     def __init__(self):
         QtCore.QAbstractTableModel.__init__(self)
         self.totres = -1
+        self.db = None
         self.query = None
+        self.qtext = ""
         self.docs = []
         self.pagelen = 10
         self.attrs = ("filename", "title", "mtime", "url", "ipath")
+
     def rowCount(self, parent):
         ret = len(self.docs)
         #print "RecollQuery.rowCount(): ", ret
         return ret
+
     def columnCount(self, parent):
         #print "RecollQuery.columnCount()"
         if parent.isValid():
             return 0
         else:
             return len(self.attrs)
-    def setquery(self, db, q):
+
+    def setquery(self, db, q, sortfield="", ascending=True):
         """Parse and execute query on open db"""
-        print "RecollQuery.setquery():"
+        #print "RecollQuery.setquery():"
         # Get query object
         self.query = db.query()
+        if sortfield:
+            self.query.sortby(sortfield, ascending)
         # Parse/run input query string
         self.totres = self.query.execute(q)
+        self.qtext = q
+        self.db = db
         self.docs = []
         self.fetchMore(None)
+
     def getdoc(self, index):
         if index.row() < len(self.docs):
             return self.docs[index.row()]
         else:
             return None
+
+    def sort(self, col, order):
+        #print "sort", col, order
+        self.setquery(self.db, self.qtext, sortfield=self.attrs[col],
+                      ascending = order)
+
     def headerData(self, idx, orient, role):
         if orient == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
             return self.attrs[idx]
         return None
+
     def data(self, index, role):
         #print "RecollQuery.data: row %d, role: " % (index.row(),), role
         if not index.isValid():
@@ -70,12 +124,14 @@ class RecollQuery(QtCore.QAbstractTableModel):
             return value
         else:
             return QtCore.QVariant()
+
     def canFetchMore(self, parent):
         #print "RecollQuery.canFetchMore:"
         if len(self.docs) < self.totres:
             return True
         else:
             return False
+
     def fetchMore(self, parent):
         #print "RecollQuery.fetchMore:"
         self.beginInsertRows(QtCore.QModelIndex(), len(self.docs), \
@@ -88,26 +144,9 @@ class RecollQuery(QtCore.QAbstractTableModel):
             count += 1
         self.endInsertRows()
 
-class HlMeths:
-    def __init__(self, groups):
-        self.groups = groups
-    def startMatch(self, idx):
-        ugroup = " ".join(self.groups[idx][1])
-        return '<font color="blue">'
-    def endMatch(self):
-        return '</font>'
 
-def extract(doc):
-    extractor = rclextract.Extractor(doc)
-    newdoc = extractor.textextract(doc.ipath)
-    return newdoc
-
-def extractofile(doc, outfilename=""):
-    extractor = rclextract.Extractor(doc)
-    outfilename = extractor.idoctofile(doc.ipath, doc.mimetype, \
-                                       ofilename=outfilename)
-    return outfilename
-
+###
+#  UI interaction code
 class RclGui_Main(QtGui.QMainWindow):
     def __init__(self, db, parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -115,52 +154,91 @@ class RclGui_Main(QtGui.QMainWindow):
         self.ui.setupUi(self)
         self.db = db
         self.qmodel = RecollQuery()
+        scq = QtGui.QShortcut(QtGui.QKeySequence("Ctrl+Q"), self);
+        self.connect(scq, QtCore.SIGNAL("activated()"), self.onexit)
+        header = self.ui.resTable.horizontalHeader();
+	header.setSortIndicatorShown(True);
+	header.setSortIndicator(-1, QtCore.Qt.AscendingOrder);
+        self.ui.resTable.setSortingEnabled(True)
+        self.currentindex = -1
+        self.currentdoc = None
+        
     def on_searchEntry_returnPressed(self):
         self.startQuery()
+
     def on_resTable_clicked(self, index):
         doc = self.qmodel.getdoc(index)
-        query = self.qmodel.query;
-        groups = self.qmodel.query.getgroups()
+        self.currentindex = index
+        self.currentdoc = doc
+        if doc is None:
+            print "NO DoC"
+            return
+        query = self.qmodel.query
+        groups = query.getgroups()
         meths = HlMeths(groups)
-        if doc is not None:
+        abs = query.makedocabstract(doc, methods=meths)
+        self.ui.resDetail.setText(abs)
+        if hasextract:
             ipath = doc.get('ipath')
-            print "ipath[", ipath, "]"
-            if index.column() == 1:
-                newdoc = extract(doc)
-                print "newdoc.mimetype:", newdoc.mimetype
-                if newdoc.mimetype == 'text/html':
-                    ishtml = True
-                else:
-                    ishtml = False
-                text = query.highlight(newdoc.text,
-                                       methods=meths,
-                                       ishtml=ishtml,
-                                       eolbr=True)
-                print text
-                
-                text = '<qt><head></head><body>' + text + '</body></qt>'
-                self.ui.resDetail.setText(text)
-            elif index.column() == 3 and ipath:
-                fn = QtGui.QFileDialog.getSaveFileName(self)
-                if fn:
-                    docitems = doc.items()
-                    fn = extractofile(doc, str(fn.toLocal8Bit()))
-                    print "Saved as", fn
-                else:
-                    print >> sys.stderr, "Canceled"
+            #print "ipath[%s]" % (ipath,)
+            self.ui.previewPB.setEnabled(True)
+            if ipath:
+                self.ui.savePB.setEnabled(True)
             else:
-                abs = query.makedocabstract(doc, methods=meths)
-                self.ui.resDetail.setText(abs)
+                self.ui.savePB.setEnabled(False)
+
+    # The 'checked' thing is to work around a bug in pyqt?
+    def on_previewPB_clicked(self, checked=True):
+        print "on_previewPB_clicked(self, %s):" % (repr(checked))
+        if checked:
+            return
+        newdoc = textextract(self.currentdoc)
+        query = self.qmodel.query;
+        groups = query.getgroups()
+        meths = HlMeths(groups)
+        #print "newdoc.mimetype:", newdoc.mimetype
+        if newdoc.mimetype == 'text/html':
+            ishtml = True
+        else:
+            ishtml = False
+        text = '<qt><head></head><body>' + \
+               query.highlight(newdoc.text,
+                               methods=meths,
+                               ishtml=ishtml,
+                               eolbr=True)
+        text += '</body></qt>'
+        self.ui.resDetail.setText(text)
+
+    # The 'checked' thing is to work around a bug in pyqt?
+    def on_savePB_clicked(self, checked=True):
+        print "on_savePB_clicked(self, %s):" % (repr(checked))
+        if checked:
+            return
+        doc = self.currentdoc
+        ipath = doc.ipath
+        if not ipath:
+            return
+        fn = QtGui.QFileDialog.getSaveFileName(self)
+        if fn:
+            docitems = doc.items()
+            fn = extractofile(doc, str(fn.toLocal8Bit()))
+            print "Saved as", fn
+        else:
+            print >> sys.stderr, "Canceled"
                 
     def startQuery(self):
         self.qmodel.setquery(self.db, self.ui.searchEntry.text())
         self.ui.resTable.setModel(self.qmodel)
+
     def onexit(self):
         sys.exit(0)
-        
+
+
 def Usage():
     print >> sys.stderr, '''Usage: qt.py [<qword1> [<qword2> ...]]'''
     sys.exit(1)
+
+
 
 def main(args):
 
