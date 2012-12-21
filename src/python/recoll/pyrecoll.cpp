@@ -433,7 +433,7 @@ static PyMethodDef Doc_methods[] = {
 static PyObject *
 Doc_getattr(recoll_DocObject *self, char *name)
 {
-    LOGDEB(("Doc_getattr: name [%s]\n", name));
+    LOGDEB1(("Doc_getattr: name [%s]\n", name));
     if (self->doc == 0 || 
 	the_docs.find(self->doc) == the_docs.end()) {
         PyErr_SetString(PyExc_AttributeError, "doc");
@@ -526,7 +526,7 @@ Doc_getattr(recoll_DocObject *self, char *name)
 	Py_RETURN_NONE;
     }
 
-    LOGDEB(("Doc_getattr: [%s] (%s) -> [%s]\n",
+    LOGDEB1(("Doc_getattr: [%s] (%s) -> [%s]\n",
 	    name, key.c_str(), value.c_str()));
     // Return a python unicode object
     PyObject* res = PyUnicode_Decode(value.c_str(), value.size(), "utf-8",
@@ -942,9 +942,10 @@ PyDoc_STRVAR(doc_Query_highlight,
 
 class PyPlainToRich: public PlainToRich {
 public:
-    PyPlainToRich(PyObject *methods)
+    PyPlainToRich(PyObject *methods, bool eolbr = false)
     : m_methods(methods)
     {
+	m_eolbr = eolbr;
     }
     virtual ~PyPlainToRich()
     {
@@ -983,23 +984,28 @@ static PyObject *
 Query_highlight(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB1(("Query_highlight\n"));
-    static const char *kwlist[] = {"text", "ishtml", "methods", NULL};
+    static const char *kwlist[] = {"text", "ishtml", "eolbr", "methods", NULL};
     char *sutf8 = 0; // needs freeing
     int ishtml = 0;
     PyObject *ishtmlobj = 0;
+    int eolbr = 1;
+    PyObject *eolbrobj = 0;
     PyObject *methods = 0;
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "es|OO:Query_highlight",
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "es|OOO:Query_highlight",
 				     (char**)kwlist, 
 				     "utf-8", &sutf8,
-				     &ishtml,
+				     &ishtmlobj,
+				     &eolbrobj,
 				     &methods)) {
 	return 0;
     }
     string utf8(sutf8);
-    LOGDEB(("Query_highlight: [%s] ishtml %d\n", sutf8, ishtml));
     PyMem_Free(sutf8);
-    if (ishtmlobj != 0 && PyObject_IsTrue(ishtmlobj))
+    if (ishtmlobj && PyObject_IsTrue(ishtmlobj))
 	ishtml = 1;
+    if (eolbrobj && !PyObject_IsTrue(eolbrobj))
+	eolbr = 0;
+    LOGDEB(("Query_highlight: ishtml %d\n", ishtml));
 
     if (self->query == 0 || 
 	the_queries.find(self->query) == the_queries.end()) {
@@ -1014,7 +1020,7 @@ Query_highlight(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     }
     HighlightData hldata;
     sd->getTerms(hldata);
-    PyPlainToRich hler(methods);
+    PyPlainToRich hler(methods, eolbr);
     hler.set_inputhtml(ishtml);
     list<string> out;
     hler.plaintorich(utf8, out, hldata, 5000000);

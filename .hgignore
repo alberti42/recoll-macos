@@ -80,6 +80,8 @@ src/mk/localdefs
 src/mk/sysconf
 src/python/recoll/build
 src/python/recoll/setup.py
+src/python/samples/recollgui/rclmain.py
+src/python/samples/recollgui/rclmain.pyc
 src/qtgui/.moc/*
 src/qtgui/.obj/*
 src/qtgui/.ui/*

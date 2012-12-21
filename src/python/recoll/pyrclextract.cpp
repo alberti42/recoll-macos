@@ -127,7 +127,7 @@ Extractor_textextract(rclx_ExtractorObject* self, PyObject *args,
 	return 0;
     }
     FileInterner::Status status = self->xtr->internfile(*(result->doc), ipath);
-    if (status != FileInterner::FIDone) {
+    if (status != FileInterner::FIDone && status != FileInterner::FIAgain) {
         PyErr_SetString(PyExc_AttributeError, "internfile failure");
         return 0;
     }
