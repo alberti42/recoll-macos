@@ -56,12 +56,14 @@ def doquery(db, q):
     m = ptrmeths(groups)
 
     # Print results:
-    print "Result count: ", nres
+    print "Result count: ", nres, query.rowcount
     if nres > 20:
         nres = 20
-    while query.next >= 0 and query.next < nres: 
-        doc = query.fetchone()
-        print query.next, ":",
+    results = query.fetchmany(nres)
+    for doc in results:
+#    while query.next >= 0 and query.next < nres: 
+#        doc = query.fetchone()
+#        print query.next, ":",
         #for k,v in doc.items().items():
         #print "KEY:", k.encode('utf-8'), "VALUE", v.encode('utf-8')
         #continue

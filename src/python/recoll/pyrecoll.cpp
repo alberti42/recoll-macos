@@ -713,19 +713,30 @@ typedef struct {
     /* Type-specific fields go here. */
     Rcl::Query *query;
     int         next; // Index of result to be fetched next or -1 if uninit
-    char       *sortfield;
+    int         rowcount; // Number of records returned by last execute
+    string      *sortfield;
     int         ascending;
+    int         arraysize; // Default size for fetchmany
 } recoll_QueryObject;
+
+PyDoc_STRVAR(doc_Query_close,
+"close(). Deallocate query. Object is unusable after the call."
+);
+static void 
+Query_close(recoll_QueryObject *self)
+{
+    LOGDEB(("Query_close\n"));
+    if (self->query)
+	the_queries.erase(self->query);
+    deleteZ(self->query);
+    deleteZ(self->sortfield);
+}
 
 static void 
 Query_dealloc(recoll_QueryObject *self)
 {
     LOGDEB(("Query_dealloc\n"));
-    if (self->query)
-	the_queries.erase(self->query);
-    delete self->query;
-    self->query = 0;
-    self->sortfield = 0;
+    Query_close(self);
     self->ob_type->tp_free((PyObject*)self);
 }
 
@@ -740,7 +751,9 @@ Query_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
 	return 0;
     self->query = 0;
     self->next = -1;
-    self->sortfield = 0;
+    self->rowcount = -1;
+    self->arraysize = 1;
+    self->sortfield = new string;
     return (PyObject *)self;
 }
 
@@ -757,7 +770,6 @@ Query_init(recoll_QueryObject *self, PyObject *, PyObject *)
     delete self->query;
     self->query = 0;
     self->next = -1;
-    self->sortfield = 0;
     self->ascending = true;
     return 0;
 }
@@ -774,18 +786,23 @@ Query_sortby(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB(("Query_sortby\n"));
     static const char *kwlist[] = {"field", "ascending", NULL};
+    char *sfield = 0;
     PyObject *ascobj = 0;
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|O", (char**)kwlist,
-				     &self->sortfield,
+				     &sfield,
 				     &ascobj))
 	return 0;
 
+    if (sfield) {
+	self->sortfield->assign(sfield);
+    } else {
+	self->sortfield->clear();
+    }
     if (ascobj == 0) {
 	self->ascending = true;
     } else {
     	self->ascending = PyObject_IsTrue(ascobj);
     }
-	
     Py_RETURN_NONE;
 }
 
@@ -845,11 +862,11 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     }
 
     RefCntr<Rcl::SearchData> rq(sd);
-    string sf = self->sortfield ? string(self->sortfield) : string("");
-    self->query->setSortBy(sf, self->ascending);
+    self->query->setSortBy(*self->sortfield, self->ascending);
     self->query->setQuery(rq);
     int cnt = self->query->getResCnt();
     self->next = 0;
+    self->rowcount = cnt;
     return Py_BuildValue("i", cnt);
 }
 
@@ -875,12 +892,25 @@ Query_executesd(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
         PyErr_SetString(PyExc_AttributeError, "query");
 	return 0;
     }
-    string sf = self->sortfield ? string(self->sortfield) : string("");
-    self->query->setSortBy(sf, self->ascending);
+    self->query->setSortBy(*self->sortfield, self->ascending);
     self->query->setQuery(pysd->sd);
     int cnt = self->query->getResCnt();
     self->next = 0;
+    self->rowcount = cnt;
     return Py_BuildValue("i", cnt);
+}
+
+static void movedocfields(Rcl::Doc *doc)
+{
+    // Move some data from the dedicated fields to the meta array to make 
+    // fetching attributes easier. Is this actually needed ? Useful for
+    // url which is also formatted .
+    printableUrl(rclconfig->getDefCharset(), doc->url, 
+		 doc->meta[Rcl::Doc::keyurl]);
+    doc->meta[Rcl::Doc::keytp] = doc->mimetype;
+    doc->meta[Rcl::Doc::keyipt] = doc->ipath;
+    doc->meta[Rcl::Doc::keyfs] = doc->fbytes;
+    doc->meta[Rcl::Doc::keyds] = doc->dbytes;
 }
 
 PyDoc_STRVAR(doc_Query_fetchone,
@@ -906,7 +936,7 @@ Query_fetchone(recoll_QueryObject* self, PyObject *, PyObject *)
     recoll_DocObject *result = 
 	(recoll_DocObject *)obj_Create(&recoll_DocType, 0, 0);
     if (!result) {
-	LOGERR(("Query_fetchone: couldn't create doc object for result\n"));
+        PyErr_SetString(PyExc_EnvironmentError, "doc create failed");
 	return 0;
     }
     if (!self->query->getDoc(self->next, *result->doc)) {
@@ -916,17 +946,59 @@ Query_fetchone(recoll_QueryObject* self, PyObject *, PyObject *)
     }
     self->next++;
 
-    // Move some data from the dedicated fields to the meta array to make 
-    // fetching attributes easier. Is this actually needed ? Useful for
-    // url which is also formatted .
-    Rcl::Doc *doc = result->doc;
-    printableUrl(rclconfig->getDefCharset(), doc->url, 
-		 doc->meta[Rcl::Doc::keyurl]);
-    doc->meta[Rcl::Doc::keytp] = doc->mimetype;
-    doc->meta[Rcl::Doc::keyipt] = doc->ipath;
-    doc->meta[Rcl::Doc::keyfs] = doc->fbytes;
-    doc->meta[Rcl::Doc::keyds] = doc->dbytes;
+    movedocfields(result->doc);
     return (PyObject *)result;
+}
+
+PyDoc_STRVAR(doc_Query_fetchmany,
+"fetchmany([size=query.arraysize]) -> Doc list\n"
+"\n"
+"Fetches the next Doc objects in the current search results.\n"
+);
+static PyObject *
+Query_fetchmany(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
+{
+    LOGDEB(("Query_fetchmany\n"));
+    static const char *kwlist[] = {"size", NULL};
+    int size = 0;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|i", (char**)kwlist,
+				     &size))
+	return 0;
+
+    if (size == 0)
+	size = self->arraysize;
+
+    if (self->query == 0 || 
+	the_queries.find(self->query) == the_queries.end()) {
+        PyErr_SetString(PyExc_AttributeError, "query");
+	return 0;
+    }
+    int cnt = self->query->getResCnt();
+    if (cnt <= 0 || self->next < 0) {
+        PyErr_SetString(PyExc_AttributeError, "query: no results");
+	return 0;
+    }
+
+    PyObject *reslist = PyList_New(0);
+    int howmany = MIN(self->rowcount - self->next, size);
+    for (int i = 0; i < howmany; i++) {
+	recoll_DocObject *docobj = 
+	    (recoll_DocObject *)obj_Create(&recoll_DocType, 0, 0);
+	if (!docobj) {
+	    PyErr_SetString(PyExc_EnvironmentError, "doc create failed");
+	    return 0;
+	}
+	if (!self->query->getDoc(self->next, *docobj->doc)) {
+	    PyErr_SetString(PyExc_EnvironmentError, "can't fetch");
+	    self->next = -1;
+	    return 0;
+	}
+	self->next++;
+	movedocfields(docobj->doc);
+	PyList_Append(reslist,  (PyObject*)docobj);
+    }
+    return (PyObject *)reslist;
 }
 
 
@@ -1106,7 +1178,6 @@ Query_makedocabstract(recoll_QueryObject* self, PyObject *args,PyObject *kwargs)
 				     "UTF-8", "replace");
 }
 
-
 PyDoc_STRVAR(doc_Query_getxquery,
 "getxquery(None) -> Unicode string\n"
 "\n"
@@ -1193,6 +1264,10 @@ static PyMethodDef Query_methods[] = {
      doc_Query_executesd},
     {"fetchone", (PyCFunction)Query_fetchone, METH_NOARGS,
      doc_Query_fetchone},
+    {"fetchmany", (PyCFunction)Query_fetchmany, METH_VARARGS|METH_KEYWORDS, 
+     doc_Query_fetchmany},
+    {"close", (PyCFunction)Query_close, METH_NOARGS,
+     doc_Query_close},
     {"sortby", (PyCFunction)Query_sortby, METH_VARARGS|METH_KEYWORDS,
      doc_Query_sortby},
     {"highlight", (PyCFunction)Query_highlight, METH_VARARGS|METH_KEYWORDS,
@@ -1211,6 +1286,16 @@ static PyMemberDef Query_members[] = {
      (char*)"Next index to be fetched from results. Normally increments after\n"
      "each fetchone() call, but can be set/reset before the call effect\n"
      "seeking. Starts at 0"
+    },
+    {(char*)"rownumber", T_INT, offsetof(recoll_QueryObject, next), 0,
+     (char*)"Alias for 'next'. Next index to be fetched from results.\n"
+     "Starts at 0"
+    },
+    {(char*)"rowcount", T_INT, offsetof(recoll_QueryObject, rowcount), 0,
+     (char*)"Number of records returned by the last execute"
+    },
+    {(char*)"arraysize", T_INT, offsetof(recoll_QueryObject, arraysize), 0,
+     (char*)"Default number of records processed by fetchmany (r/w)"
     },
     {NULL}  /* Sentinel */
 };
@@ -1270,14 +1355,21 @@ typedef struct {
     Rcl::Db *db;
 } recoll_DbObject;
 
-static void 
-Db_dealloc(recoll_DbObject *self)
+static void
+Db_close(recoll_DbObject *self)
 {
-    LOGDEB(("Db_dealloc\n"));
+    LOGDEB(("Db_close\n"));
     if (self->db)
 	the_dbs.erase(self->db);
     delete self->db;
     self->db = 0;
+}
+
+static void 
+Db_dealloc(recoll_DbObject *self)
+{
+    LOGDEB(("Db_dealloc\n"));
+    Db_close(self);
     self->ob_type->tp_free((PyObject*)self);
 }
 
@@ -1536,8 +1628,14 @@ Db_addOrUpdate(recoll_DbObject* self, PyObject *args, PyObject *)
 }
     
 static PyMethodDef Db_methods[] = {
+    {"close", (PyCFunction)Db_close, METH_NOARGS,
+     "close() closes the index connection. The object is unusable after this."
+    },
     {"query", (PyCFunction)Db_query, METH_NOARGS,
      "query() -> Query. Return a new, blank query object for this index."
+    },
+    {"cursor", (PyCFunction)Db_query, METH_NOARGS,
+     "cursor() -> Query. Alias for query(). Return query object."
     },
     {"setAbstractParams", (PyCFunction)Db_setAbstractParams, 
      METH_VARARGS|METH_KEYWORDS,
