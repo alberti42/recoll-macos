@@ -14,7 +14,7 @@ import rclmain
 from getopt import getopt
 
 from PyQt4 import QtCore, QtGui
-
+from PyQt4.QtCore import pyqtSlot
 
 ####################
 # Highlighting methods. Just for showing the groups usage, we add the
@@ -187,11 +187,9 @@ class RclGui_Main(QtGui.QMainWindow):
             else:
                 self.ui.savePB.setEnabled(False)
 
-    # The 'checked' thing is to work around a bug in pyqt?
-    def on_previewPB_clicked(self, checked=True):
-        print "on_previewPB_clicked(self, %s):" % (repr(checked))
-        if checked:
-            return
+    @pyqtSlot()
+    def on_previewPB_clicked(self):
+        print "on_previewPB_clicked(self)"
         newdoc = textextract(self.currentdoc)
         query = self.qmodel.query;
         groups = query.getgroups()
@@ -209,11 +207,9 @@ class RclGui_Main(QtGui.QMainWindow):
         text += '</body></qt>'
         self.ui.resDetail.setText(text)
 
-    # The 'checked' thing is to work around a bug in pyqt?
-    def on_savePB_clicked(self, checked=True):
-        print "on_savePB_clicked(self, %s):" % (repr(checked))
-        if checked:
-            return
+    @pyqtSlot()
+    def on_savePB_clicked(self):
+        print "on_savePB_clicked(self)"
         doc = self.currentdoc
         ipath = doc.ipath
         if not ipath:
