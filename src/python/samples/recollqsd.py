@@ -13,9 +13,9 @@ def dotest(db, q):
     print "Result count: ", nres
     if nres > 10:
         nres = 10
-    while query.next >= 0 and query.next < nres: 
+    for i in range(nres):
         doc = query.fetchone()
-        print query.next
+        print query.next if type(query.next) == int else query.rownumber
         for k in ("url", "mtime", "title", "author", "abstract"):
             print k, ":", getattr(doc, k).encode('utf-8')
             #abs = db.makeDocAbstract(doc, query).encode('utf-8')

@@ -59,11 +59,14 @@ def doquery(db, q):
     print "Result count: ", nres, query.rowcount
     if nres > 20:
         nres = 20
-    results = query.fetchmany(nres)
-    for doc in results:
-#    while query.next >= 0 and query.next < nres: 
-#        doc = query.fetchone()
-#        print query.next, ":",
+    #results = query.fetchmany(nres)
+    #for doc in results:
+
+    for i in range(nres):
+        doc = query.fetchone()
+        rownum = query.next if type(query.next) == int else \
+                 query.rownumber
+        print rownum, ":",
         #for k,v in doc.items().items():
         #print "KEY:", k.encode('utf-8'), "VALUE", v.encode('utf-8')
         #continue

@@ -136,12 +136,11 @@ class RecollQuery(QtCore.QAbstractTableModel):
         #print "RecollQuery.fetchMore:"
         self.beginInsertRows(QtCore.QModelIndex(), len(self.docs), \
                              len(self.docs) + self.pagelen)
-        count = 0
-        while self.query.next >= 0 and self.query.next < self.totres \
-                  and count < self.pagelen:
-            #print "Got: ", title.encode("utf-8")
-            self.docs.append(self.query.fetchone())
-            count += 1
+        for count in range(self.pagelen):
+            try:
+                self.docs.append(self.query.fetchone())
+            except:
+                break
         self.endInsertRows()
 
 

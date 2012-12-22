@@ -215,7 +215,7 @@ class Scope (Unity.Scope):
             return
 
         actual_results = 0
-        while query.next >= 0 and query.next < nres: 
+        for i in range(nres):
             try:
                 doc = query.fetchone()
             except:
