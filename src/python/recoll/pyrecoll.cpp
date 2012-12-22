@@ -1334,14 +1334,10 @@ static PyMethodDef Query_methods[] = {
 };
 
 static PyMemberDef Query_members[] = {
-    {(char*)"next", T_INT, offsetof(recoll_QueryObject, next), 0,
+    {(char*)"rownumber", T_INT, offsetof(recoll_QueryObject, next), 0,
      (char*)"Next index to be fetched from results. Normally increments after\n"
      "each fetchone() call, but can be set/reset before the call effect\n"
      "seeking. Starts at 0"
-    },
-    {(char*)"rownumber", T_INT, offsetof(recoll_QueryObject, next), 0,
-     (char*)"Alias for 'next'. Next index to be fetched from results.\n"
-     "Starts at 0"
     },
     {(char*)"rowcount", T_INT, offsetof(recoll_QueryObject, rowcount), 
      READONLY, (char*)"Number of records returned by the last execute"
@@ -1380,7 +1376,7 @@ static PyTypeObject recoll_QueryType = {
     0,                         /*tp_getattro*/
     0,                         /*tp_setattro*/
     0,                         /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_ITER, /*tp_flags*/
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE, /*tp_flags*/
     doc_QueryObject,           /* tp_doc */
     0,		               /* tp_traverse */
     0,		               /* tp_clear */
