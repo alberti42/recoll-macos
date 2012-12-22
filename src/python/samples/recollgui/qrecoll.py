@@ -227,13 +227,12 @@ class RclGui_Main(QtGui.QMainWindow):
         self.ui.resTable.setModel(self.qmodel)
 
     def onexit(self):
-        sys.exit(0)
+        self.close()
 
 
 def Usage():
     print >> sys.stderr, '''Usage: qt.py [<qword1> [<qword2> ...]]'''
     sys.exit(1)
-
 
 
 def main(args):

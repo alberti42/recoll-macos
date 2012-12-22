@@ -47,15 +47,6 @@ static set<Rcl::Doc *> the_docs;
 
 static RclConfig *rclconfig;
 
-// This has to exist somewhere in the python api ??
-static PyObject *obj_Create(PyTypeObject *tp, PyObject *args, PyObject *kwargs)
-{
-    PyObject *result = tp->tp_new(tp, args, kwargs);
-    if (result && tp->tp_init(result, args, kwargs) < 0)
-	return 0;
-    return result;
-}
-
 //////////////////////////////////////////////////////////////////////
 /// SEARCHDATA SearchData code
 typedef struct {
@@ -707,6 +698,7 @@ static PyTypeObject recoll_DocType = {
 
 //////////////////////////////////////////////////////
 /// QUERY Query object 
+struct recoll_DbObject;
 
 typedef struct {
     PyObject_HEAD
@@ -717,6 +709,7 @@ typedef struct {
     string      *sortfield;
     int         ascending;
     int         arraysize; // Default size for fetchmany
+    recoll_DbObject* connection;
 } recoll_QueryObject;
 
 PyDoc_STRVAR(doc_Query_close,
@@ -730,6 +723,8 @@ Query_close(recoll_QueryObject *self)
 	the_queries.erase(self->query);
     deleteZ(self->query);
     deleteZ(self->sortfield);
+    if (self->connection)
+	Py_DECREF(self->connection);
 }
 
 static void 
@@ -754,6 +749,7 @@ Query_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
     self->rowcount = -1;
     self->arraysize = 1;
     self->sortfield = new string;
+    self->connection = 0;
     return (PyObject *)self;
 }
 
@@ -772,6 +768,12 @@ Query_init(recoll_QueryObject *self, PyObject *, PyObject *)
     self->next = -1;
     self->ascending = true;
     return 0;
+}
+
+static PyObject *
+Query_iter(PyObject *self)
+{
+    return self;
 }
 
 PyDoc_STRVAR(doc_Query_sortby,
@@ -919,9 +921,10 @@ PyDoc_STRVAR(doc_Query_fetchone,
 "Fetches the next Doc object in the current search results.\n"
 );
 static PyObject *
-Query_fetchone(recoll_QueryObject* self, PyObject *, PyObject *)
+Query_fetchone(PyObject *_self)
 {
-    LOGDEB(("Query_fetchone\n"));
+    recoll_QueryObject* self = (recoll_QueryObject*)_self;
+    LOGDEB(("Query_fetchone/next\n"));
 
     if (self->query == 0 || 
 	the_queries.find(self->query) == the_queries.end()) {
@@ -934,9 +937,13 @@ Query_fetchone(recoll_QueryObject* self, PyObject *, PyObject *)
 	return 0;
     }
     recoll_DocObject *result = 
-	(recoll_DocObject *)obj_Create(&recoll_DocType, 0, 0);
+       (recoll_DocObject *)PyObject_CallObject((PyObject *)&recoll_DocType, 0);
     if (!result) {
         PyErr_SetString(PyExc_EnvironmentError, "doc create failed");
+	return 0;
+    }
+    if (self->next >= self->rowcount) {
+        PyErr_SetString(PyExc_StopIteration, "End of list reached");
 	return 0;
     }
     if (!self->query->getDoc(self->next, *result->doc)) {
@@ -951,10 +958,10 @@ Query_fetchone(recoll_QueryObject* self, PyObject *, PyObject *)
 }
 
 PyDoc_STRVAR(doc_Query_fetchmany,
-"fetchmany([size=query.arraysize]) -> Doc list\n"
-"\n"
-"Fetches the next Doc objects in the current search results.\n"
-);
+	     "fetchmany([size=query.arraysize]) -> Doc list\n"
+	     "\n"
+	     "Fetches the next Doc objects in the current search results.\n"
+    );
 static PyObject *
 Query_fetchmany(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 {
@@ -963,44 +970,85 @@ Query_fetchmany(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     int size = 0;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|i", (char**)kwlist,
-				     &size))
-	return 0;
+                                     &size))
+        return 0;
 
     if (size == 0)
-	size = self->arraysize;
+        size = self->arraysize;
+
+    if (self->query == 0 ||
+        the_queries.find(self->query) == the_queries.end()) {
+        PyErr_SetString(PyExc_AttributeError, "query");
+        return 0;
+    }
+    int cnt = self->query->getResCnt();
+    if (cnt <= 0 || self->next < 0) {
+        PyErr_SetString(PyExc_AttributeError, "query: no results");
+        return 0;
+    }
+
+    PyObject *reslist = PyList_New(0);
+    int howmany = MIN(self->rowcount - self->next, size);
+    for (int i = 0; i < howmany; i++) {
+        recoll_DocObject *docobj = (recoll_DocObject *)
+	    PyObject_CallObject((PyObject *)&recoll_DocType, 0);
+        if (!docobj) {
+            PyErr_SetString(PyExc_EnvironmentError, "doc create failed");
+            return 0;
+        }
+        if (!self->query->getDoc(self->next, *docobj->doc)) {
+            PyErr_SetString(PyExc_EnvironmentError, "can't fetch");
+            self->next = -1;
+            return 0;
+        }
+        self->next++;
+        movedocfields(docobj->doc);
+        PyList_Append(reslist,  (PyObject*)docobj);
+    }
+    return (PyObject *)reslist;
+}
+
+
+PyDoc_STRVAR(doc_Query_scroll,
+"scroll(value, [, mode='relative'/'absolute' ]) -> new int position\n"
+"\n"
+"Adjusts the position in the current result set.\n"
+);
+static PyObject *
+Query_scroll(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
+{
+    LOGDEB(("Query_scroll\n"));
+    static const char *kwlist[] = {"position", "mode", NULL};
+    int pos = 0;
+    char *smode = 0;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "i|s", (char**)kwlist,
+				     &pos, &smode))
+	return 0;
+
+    bool isrelative = 1;
+    if (smode != 0) {
+	if (!strcasecmp(smode, "relative")) {
+	    isrelative = 1;
+	} else if (!strcasecmp(smode, "absolute")) {
+	    isrelative = 0;
+	} else {
+	    PyErr_SetString(PyExc_ValueError, "bad mode value");
+	}
+    } 
 
     if (self->query == 0 || 
 	the_queries.find(self->query) == the_queries.end()) {
         PyErr_SetString(PyExc_AttributeError, "query");
 	return 0;
     }
-    int cnt = self->query->getResCnt();
-    if (cnt <= 0 || self->next < 0) {
-        PyErr_SetString(PyExc_AttributeError, "query: no results");
+    int newpos = isrelative ? self->next + pos : pos;
+    if (newpos < 0 || newpos >= self->rowcount) {
+        PyErr_SetString(PyExc_IndexError, "position out of range");
 	return 0;
     }
-
-    PyObject *reslist = PyList_New(0);
-    int howmany = MIN(self->rowcount - self->next, size);
-    for (int i = 0; i < howmany; i++) {
-	recoll_DocObject *docobj = 
-	    (recoll_DocObject *)obj_Create(&recoll_DocType, 0, 0);
-	if (!docobj) {
-	    PyErr_SetString(PyExc_EnvironmentError, "doc create failed");
-	    return 0;
-	}
-	if (!self->query->getDoc(self->next, *docobj->doc)) {
-	    PyErr_SetString(PyExc_EnvironmentError, "can't fetch");
-	    self->next = -1;
-	    return 0;
-	}
-	self->next++;
-	movedocfields(docobj->doc);
-	PyList_Append(reslist,  (PyObject*)docobj);
-    }
-    return (PyObject *)reslist;
+    self->next = newpos;
+    return Py_BuildValue("i", newpos);
 }
-
 
 PyDoc_STRVAR(doc_Query_highlight,
 "highlight(text, ishtml = 0/1, methods = object))\n"
@@ -1262,6 +1310,8 @@ static PyMethodDef Query_methods[] = {
      doc_Query_execute},
     {"executesd", (PyCFunction)Query_executesd, METH_VARARGS|METH_KEYWORDS, 
      doc_Query_executesd},
+    {"next", (PyCFunction)Query_fetchone, METH_NOARGS,
+     doc_Query_fetchone},
     {"fetchone", (PyCFunction)Query_fetchone, METH_NOARGS,
      doc_Query_fetchone},
     {"fetchmany", (PyCFunction)Query_fetchmany, METH_VARARGS|METH_KEYWORDS, 
@@ -1278,6 +1328,8 @@ static PyMethodDef Query_methods[] = {
      doc_Query_getgroups},
     {"makedocabstract", (PyCFunction)Query_makedocabstract, 
      METH_VARARGS|METH_KEYWORDS, doc_Query_makedocabstract},
+    {"scroll", (PyCFunction)Query_scroll, 
+     METH_VARARGS|METH_KEYWORDS, doc_Query_scroll},
     {NULL}  /* Sentinel */
 };
 
@@ -1291,11 +1343,14 @@ static PyMemberDef Query_members[] = {
      (char*)"Alias for 'next'. Next index to be fetched from results.\n"
      "Starts at 0"
     },
-    {(char*)"rowcount", T_INT, offsetof(recoll_QueryObject, rowcount), 0,
-     (char*)"Number of records returned by the last execute"
+    {(char*)"rowcount", T_INT, offsetof(recoll_QueryObject, rowcount), 
+     READONLY, (char*)"Number of records returned by the last execute"
     },
     {(char*)"arraysize", T_INT, offsetof(recoll_QueryObject, arraysize), 0,
      (char*)"Default number of records processed by fetchmany (r/w)"
+    },
+    {(char*)"connection", T_OBJECT_EX, offsetof(recoll_QueryObject, connection),
+     0, (char*)"Connection object this is from"
     },
     {NULL}  /* Sentinel */
 };
@@ -1325,14 +1380,14 @@ static PyTypeObject recoll_QueryType = {
     0,                         /*tp_getattro*/
     0,                         /*tp_setattro*/
     0,                         /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,        /*tp_flags*/
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_ITER, /*tp_flags*/
     doc_QueryObject,           /* tp_doc */
     0,		               /* tp_traverse */
     0,		               /* tp_clear */
     0,		               /* tp_richcompare */
     0,		               /* tp_weaklistoffset */
-    0,		               /* tp_iter */
-    0,		               /* tp_iternext */
+    Query_iter,	               /* tp_iter */
+    Query_fetchone,            /* tp_iternext */
     Query_methods,             /* tp_methods */
     Query_members,             /* tp_members */
     0,                         /* tp_getset */
@@ -1349,7 +1404,7 @@ static PyTypeObject recoll_QueryType = {
 
 ///////////////////////////////////////////////
 ////// DB Db object code
-typedef struct {
+typedef struct recoll_DbObject {
     PyObject_HEAD
     /* Type-specific fields go here. */
     Rcl::Db *db;
@@ -1472,11 +1527,14 @@ Db_query(recoll_DbObject* self)
         PyErr_SetString(PyExc_AttributeError, "db");
         return 0;
     }
-    recoll_QueryObject *result = 
-	(recoll_QueryObject *)obj_Create(&recoll_QueryType, 0, 0);
+    recoll_QueryObject *result = (recoll_QueryObject *)
+	PyObject_CallObject((PyObject *)&recoll_QueryType, 0);
     if (!result)
 	return 0;
     result->query = new Rcl::Query(self->db);
+    result->connection = self;
+    Py_INCREF(self);
+
     the_queries.insert(result->query);
     return (PyObject *)result;
 }
@@ -1734,9 +1792,8 @@ static PyObject *
 recoll_connect(PyObject *self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB(("recoll_connect\n"));
-    recoll_DbObject *db = 
-	(recoll_DbObject *)obj_Create(&recoll_DbType, args, kwargs);
-
+    recoll_DbObject *db = (recoll_DbObject *)
+	PyObject_Call((PyObject *)&recoll_DbType, args, kwargs);
     return (PyObject *)db;
 }
 
