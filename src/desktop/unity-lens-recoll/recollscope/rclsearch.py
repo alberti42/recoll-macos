@@ -9,7 +9,13 @@ import locale
 
 from gi.repository import Unity, GObject, Gio
 
-import recoll
+try:
+    from recoll import recoll
+    from recoll import rclextract
+    hasextract = True
+except:
+    import recoll
+    hasextract = False
 
 BUS_PATH = "/org/recoll/unitylensrecoll/scope/main"
 
@@ -68,7 +74,8 @@ class Scope (Unity.Scope):
         try:
             self.db = recoll.connect()
             self.db.setAbstractParams(maxchars=200, contextwords=4)
-        except:
+        except Exception, s:
+            print >> sys.stderr, "recoll-lens: Error connecting to db:", s
             return
 
     def get_search_string (self):

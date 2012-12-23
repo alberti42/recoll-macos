@@ -41,6 +41,9 @@ if test -n "$DESTDIR" ; then
    mandir=$DESTDIR/$mandir
    ROOTFORPYTHON="--root=${DESTDIR}"
 fi
+if test -f /etc/debian_version ; then
+   OPTSFORPYTHON=--install-layout=deb
+fi
 
 echo "Installing to $PREFIX"
 
@@ -140,4 +143,4 @@ ${INSTALL} -m 0444 ${I18N}/recoll_zh_CN.qm \
 
 
 @NOPYTHON@(cd python/recoll;python setup.py install \
-@NOPYTHON@ --prefix=${REALPREFIX} ${ROOTFORPYTHON})
+@NOPYTHON@ --prefix=${REALPREFIX} ${ROOTFORPYTHON} ${OPTSFORPYTHON})
