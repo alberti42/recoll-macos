@@ -66,7 +66,7 @@ class Db::Native {
     int  m_loglevel;
     PTMutexInit m_mutex;
     long long  m_totalworkns;
-    bool m_haveWriteQ;
+    bool m_havewriteq;
     void maybeStartThreads();
 #endif // IDX_THREADS
 
