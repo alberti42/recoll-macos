@@ -291,6 +291,7 @@ static bool matchesSkipped(const vector<string>& tdl,
  */
 bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
 {
+    LOGDEB(("FsIndexer::indexFiles\n"));
     int ret = false;
 
     if (!init())
@@ -348,6 +349,7 @@ out:
 	m_dwqueue.waitIdle();
     m_db->waitUpdIdle();
 #endif // IDX_THREADS
+    LOGDEB(("FsIndexer::indexFiles: done\n"));
     return ret;
 }
 
@@ -355,6 +357,7 @@ out:
 /** Purge docs for given files out of the database */
 bool FsIndexer::purgeFiles(list<string>& files)
 {
+    LOGDEB(("FsIndexer::purgeFiles\n"));
     bool ret = false;
     if (!init())
 	return false;
@@ -386,6 +389,7 @@ out:
 	m_dwqueue.waitIdle();
     m_db->waitUpdIdle();
 #endif // IDX_THREADS
+    LOGDEB(("FsIndexer::purgeFiles: done\n"));
     return ret;
 }
 
