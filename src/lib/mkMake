@@ -115,23 +115,27 @@ cat > $mk <<EOF
 depth = ${depth}
 include \$(depth)/mk/sysconf
 
-LIBS = librcl.a
+LIBRECOLL=librecoll.so.\$(RCLLIBVERSION)
+LIBS = librecoll.a \$(LIBRECOLL)
 
 all: \$(LIBS) 
 
 OBJS = $OBJS
 DEPS = $DEPS
 
-librcl.a : \$(DEPS) \$(OBJS)
-	ar ru librcl.a \$(OBJS)
-	\$(RANLIB) librcl.a
+librecoll.a : \$(DEPS) \$(OBJS)
+	ar ru librecoll.a \$(OBJS)
+	\$(RANLIB) librecoll.a
 
-# Future 
-#all: librecoll.so
-#librecoll.so : \$(DEPS) \$(OBJS)
-#	g++ -shared -Wl,--no-undefined \
-#          -Wl,-soname=librecoll.so.1 -o librecoll.so \$(OBJS) \
-#           -lxapian -lz -lX11 -lpthread -ldl
+# Note that we are using the Recoll release number in the soname. There is
+# no effort whatsoever to maintain any kind of ABI compat in this lib. Only
+# programs or modules from the same Recoll release can be compatible.
+\$(LIBRECOLL): \$(DEPS) \$(OBJS)
+	g++ -shared -Wl,--no-undefined -Wl,-rpath=\$(libdir) \
+          -Wl,-soname=\$(LIBRECOLL) -o \$(LIBRECOLL) \$(OBJS) \
+           -lxapian -lz -lX11 -lpthread -ldl
+	rm -f librecoll.so
+	ln -s \$(LIBRECOLL) librecoll.so
 
 EOF
 

@@ -22,7 +22,10 @@ QTGUI=@QTGUI@
 # The .qm files are in qtgui/i18n even if qt4 is used
 I18N=qtgui/i18n
 
+RCLLIBVERSION=@RCLLIBVERSION@
+
 test -n "$bindir" || bindir=${PREFIX}/bin
+test -n "$libdir" || libdir=${PREFIX}/lib
 test -n "$datadir" || datadir=${PREFIX}/share
 if test -z "$mandir" ; then 
    if test -d ${PREFIX}/man ; then
@@ -110,6 +113,8 @@ ${INSTALL} -m 0444 doc/man/recoll.conf.5  ${mandir}/man5/
 @NOCMDLINE@${STRIP} ${bindir}/recollq 
 ${INSTALL} -m 0755 index/recollindex ${bindir} || exit 1
 ${STRIP} ${bindir}/recollindex
+
+${INSTALL} -m 0644 lib/librecoll.so.${RCLLIBVERSION} ${libdir} || exit 1
 
 ${INSTALL} -m 0755 filters/rcl* ${datadir}/recoll/filters/ || exit 1
 for f in rclexecm.py rcllatinstops.zip;do

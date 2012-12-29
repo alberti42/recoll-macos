@@ -2542,7 +2542,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       <replaceable>dc:title:grandet</replaceable> </para>
 
       <para>The colon, if present, means "contains". Xesam defines other
-      relations, which are mostly supported for now (except in special
+      relations, which are mostly unsupported for now (except in special
       cases, described further down).</para>
 
       <para>All elements in the search entry are normally combined

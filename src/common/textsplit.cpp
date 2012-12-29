@@ -837,10 +837,12 @@ bool TextSplit::stringToStrings(const string &s, vector<string> &tokens)
 
 #else  // TEST driver ->
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <stdio.h>
+#include <string.h>
 
 #include <iostream>
 

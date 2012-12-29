@@ -15,8 +15,7 @@ COMMONCXXFLAGS = -I. \
 # the sys file or localdefs
 SYSPICFLAGS = -fPIC -DPIC
 
-BIGLIB = $(depth)/lib/librcl.a
+LIBRECOLL = -L $(depth)/lib -lrecoll -Wl,-rpath=$(libdir)
 
 RANLIB = test -f
-
 AR=ar

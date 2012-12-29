@@ -121,6 +121,8 @@ bool unachasaccents(const string& in)
 
 #else // not testing
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>

@@ -26,14 +26,6 @@ TRBINCOBJS = trbinc.o
 trbinc: trbinc.o
 	$(CXX) -o trbinc trbinc.o libmime.a 
 
-depend: alldeps.stamp
-alldeps.stamp : $(SRCS)
-	$(CXX) -M $(ALL_CXXFLAGS) $(SRCS) > alldeps
-	touch alldeps.stamp
-
-clean:
-	cp /dev/null alldeps
-	rm -f alldeps.stamp
-	rm -f ${LIBS} ${PROGS} ${OBJS}
+include $(depth)/mk/commontargets
 
 include alldeps

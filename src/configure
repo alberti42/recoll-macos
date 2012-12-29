@@ -621,6 +621,7 @@ ac_includes_default="\
 
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
+RCLLIBVERSION
 RCLVERSION
 NOPYTHON
 NOTHREADS
@@ -5719,6 +5720,8 @@ m_datadir=${m_prefix}/share
 QTRECOLL_DATADIR=${m_datadir}/recoll
 
 RCLVERSION=`cat VERSION`
+RCLLIBVERSION=$RCLVERSION
+
 
 
 
@@ -5769,7 +5772,7 @@ do
     cp -f /dev/null $d/alldeps
 done
 
-(cd lib;test -f Makefile && chmod +w Makefile;sh mkMake)
+(cd lib;RCLLIBVERSION=$RCLLIBVERSION sh mkMake)
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure

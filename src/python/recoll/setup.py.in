@@ -8,9 +8,9 @@ top = os.path.join('..', '..')
 libiconv = "@LIBICONV@"
 
 if libiconv.find("-liconv") != -1:
-    libs = ['rcl', 'xapian', 'iconv']
+    libs = ['recoll', 'xapian', 'iconv']
 else:
-    libs = ['rcl', 'xapian']
+    libs = ['recoll', 'xapian']
 
 libxapiandir="@LIBXAPIANDIR@"
 if libxapiandir != "":
@@ -50,6 +50,7 @@ module1 = Extension('recoll',
                                     ],
                     libraries = libs,
                     library_dirs = libdirs,
+                    runtime_library_dirs = libdirs,
                     sources = ['pyrecoll.cpp'])
 
 module2 = Extension('rclextract',
@@ -66,6 +67,7 @@ module2 = Extension('rclextract',
                                     ],
                     libraries = libs,
                     library_dirs = libdirs,
+                    runtime_library_dirs = libdirs,
                     sources = ['pyrclextract.cpp'])
 
 setup (name = 'Recoll',

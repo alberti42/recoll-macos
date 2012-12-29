@@ -1,38 +1,33 @@
-# @(#$Id: Makefile,v 1.16 2008-12-17 14:26:49 dockes Exp $  (C) 2005 J.F.Dockes
 depth = ..
 include $(depth)/mk/sysconf
 
 # Only test executables get build in here
 PROGS = unacpp textsplit rclconfig
 
-all: $(BIGLIB) $(PROGS) 
+all: librecoll $(PROGS) 
 
-$(BIGLIB): force
-	cd $(depth)/lib;$(MAKE)
-force:
-
-UNACPP_OBJS= trunacpp.o $(BIGLIB)
+UNACPP_OBJS= trunacpp.o
 unacpp : $(UNACPP_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o unacpp $(UNACPP_OBJS) \
-	       $(LIBICONV)
+	       $(LIBRECOLL)  $(LIBICONV)
 trunacpp.o : unacpp.cpp unacpp.h
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_UNACPP -c -o trunacpp.o unacpp.cpp
 
-TEXTSPLIT_OBJS= trtextsplit.o  $(BIGLIB)
+TEXTSPLIT_OBJS= trtextsplit.o  
 textsplit : $(TEXTSPLIT_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) -o textsplit $(TEXTSPLIT_OBJS) $(LIBICONV)
+	$(CXX) $(ALL_CXXFLAGS) -o textsplit $(TEXTSPLIT_OBJS) \
+        $(LIBRECOLL) $(LIBICONV)
 trtextsplit.o : textsplit.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_TEXTSPLIT -c -o trtextsplit.o \
 	       textsplit.cpp
 
-RCLCONFIG_OBJS= trrclconfig.o  $(BIGLIB) 
+RCLCONFIG_OBJS= trrclconfig.o 
 rclconfig : $(RCLCONFIG_OBJS) 
 	$(CXX) $(ALL_CXXFLAGS) -o rclconfig $(RCLCONFIG_OBJS) \
-	       $(LIBICONV) $(LIBSYS)
+	       $(LIBRECOLL) $(LIBICONV) $(LIBSYS)
 trrclconfig.o : rclconfig.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_RCLCONFIG -c -o trrclconfig.o \
 	       rclconfig.cpp
 
-clean:
-	rm -f *.o $(PROGS)
+include $(depth)/mk/commontargets
 

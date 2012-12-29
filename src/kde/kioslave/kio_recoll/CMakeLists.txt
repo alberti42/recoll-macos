@@ -54,7 +54,7 @@ add_custom_target(rcllib
 )
 add_dependencies(kio_recoll rcllib)
 
-target_link_libraries(kio_recoll rcl xapian z ${EXTRA_LIBS} ${KDE4_KIO_LIBS})
+target_link_libraries(kio_recoll recoll xapian z ${EXTRA_LIBS} ${KDE4_KIO_LIBS})
 
 install(TARGETS kio_recoll DESTINATION ${PLUGIN_INSTALL_DIR})
 

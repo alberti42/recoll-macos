@@ -533,6 +533,7 @@ m_datadir=${m_prefix}/share
 QTRECOLL_DATADIR=${m_datadir}/recoll
 
 RCLVERSION=`cat VERSION`
+RCLLIBVERSION=$RCLVERSION
 
 AC_SUBST(X_CFLAGS)
 AC_SUBST(X_PRE_LIBS)
@@ -561,6 +562,7 @@ AC_SUBST(NOPIC)
 AC_SUBST(NOTHREADS)
 AC_SUBST(NOPYTHON)
 AC_SUBST(RCLVERSION)
+AC_SUBST(RCLLIBVERSION)
 
 # All object files depend on localdefs which has the cc flags. Avoid
 # changing it unless necessary
@@ -577,7 +579,7 @@ do
     cp -f /dev/null $d/alldeps
 done
 
-(cd lib;test -f Makefile && chmod +w Makefile;sh mkMake)
+(cd lib;RCLLIBVERSION=$RCLLIBVERSION sh mkMake)
 
 AC_OUTPUT
 

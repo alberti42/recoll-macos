@@ -1383,7 +1383,7 @@ int main(int argc, char **argv)
 	// List mime types not in mimeview
         for (vector<string>::const_iterator it = mtypes.begin();
              it != mtypes.end(); it++) {
-	    if (config->getMimeViewerDef(*it, "").empty()) {
+	    if (config->getMimeViewerDef(*it, "", false).empty()) {
 		cout << "No viewer: [" << *it << "]" << endl;
 	    }
         }
@@ -1399,7 +1399,7 @@ int main(int argc, char **argv)
 	// Check that each mime type has a defined icon
         for (vector<string>::const_iterator it = mtypes.begin();
              it != mtypes.end(); it++) {
-	    if (config->getMimeIconName(*it) == "document") {
+	    if (config->getMimeIconPath(*it, "") == "document") {
 		cout << "No or generic icon: [" << *it << "]" << endl;
 	    }
         }

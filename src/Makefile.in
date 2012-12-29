@@ -17,7 +17,7 @@ all: mk/sysconf
 	@NOQTMAKE@(cd $(QTGUI); ${QMAKE} recoll.pro)
 	@NOQTMAKE@${MAKE} -C $(QTGUI) depth=..
 	@NOPYTHON@${MAKE} -C python/recoll
-	${MAKE} -C query recollq
+	${MAKE} -C query recollq xadump
 
 mk/sysconf:
 	@echo "You need to run configure first" ; exit 1
