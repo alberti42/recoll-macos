@@ -43,15 +43,15 @@
 
   </bookinfo>
   
-  <chapter id="rcl.introduction">
+  <chapter id="RCL.INTRODUCTION">
     <title>Introduction</title>
 
-    <sect1 id="rcl.introduction.tryit">
+    <sect1 id="RCL.INTRODUCTION.TRYIT">
       <title>Giving it a try</title>
       
       <para>If you do not like reading manuals (who does?) and would like
         to give &RCL; a try, just <link
-        linkend="rcl.install.binary">install</link> the application and
+        linkend="RCL.INSTALL.BINARY">install</link> the application and
         start the <command>recoll</command> graphical user interface (GUI),
         which will ask to index your home directory by default, allowing
         you to search immediately after indexing completes.</para>
@@ -59,17 +59,17 @@
       <para>Do not do this if your home directory contains a huge
         number of documents and you do not want to wait or are very
         short on disk space. In this case, you may first want to customize
-        the <link linkend="rcl.indexing.config">configuration</link>
+        the <link linkend="RCL.INDEXING.CONFIG">configuration</link>
         to restrict the indexed area.</para> 
 
       <para>Also be aware that you may need to install the
-        appropriate <link linkend="rcl.install.external"> supporting
+        appropriate <link linkend="RCL.INSTALL.EXTERNAL"> supporting
         applications</link> for document types that need them (for
         example <application>antiword</application> for
         <application>Microsoft Word</application> files).</para>
     </sect1>
 
-    <sect1 id="rcl.introduction.search"> 
+    <sect1 id="RCL.INTRODUCTION.SEARCH"> 
       <title>Full text search</title>
 
       <para>&RCL; is a full text search application. Full text search
@@ -111,7 +111,7 @@
 
     </sect1>
 
-      <sect1 id="rcl.introduction.recoll">
+      <sect1 id="RCL.INTRODUCTION.RECOLL">
       <title>Recoll overview</title>
 
       <para>&RCL; uses the 
@@ -186,7 +186,7 @@
       <para>&RCL; has many parameters which define exactly what to
         index, and how to classify and decode the source
         documents. These are kept in <link
-        linkend="rcl.indexing.config">configuration files</link>. A
+        linkend="RCL.INDEXING.CONFIG">configuration files</link>. A
         default configuration is copied into a standard location
         (usually something like
         <filename>/usr/[local/]share/recoll/examples</filename>)
@@ -203,21 +203,21 @@
         the <command>recoll</command> GUI are stored in the standard
         location defined by <application>Qt</application>.</para>
 
-      <para>The <link linkend="rcl.indexing.periodic.exec">indexing
+      <para>The <link linkend="RCL.INDEXING.PERIODIC.EXEC">indexing
           process</link> is started automatically the first time you
         execute the <command>recoll</command> GUI. Indexing can also be
         performed by executing the <command>recollindex</command>
         command.</para>
 
-      <para><link linkend="rcl.search">Searches</link> are usually
+      <para><link linkend="RCL.SEARCH">Searches</link> are usually
         performed inside the <command>recoll</command> GUI, which has many
         options to help you find what you are looking for. However, there
         are other ways to perform &RCL; searches: mostly a <link
-        linkend="rcl.search.commandline">
+        linkend="RCL.SEARCH.COMMANDLINE">
           command line interface</link>, a 
-        <link linkend="rcl.program.api.python">
+        <link linkend="RCL.PROGRAM.API.PYTHON">
           <application>Python</application>
-          programming interface</link>, a <link linkend="rcl.search.kio">
+          programming interface</link>, a <link linkend="RCL.SEARCH.KIO">
           <application>KDE</application> KIO slave module</link>, and
         a <ulink url="&WIKI;UnityLens">Ubuntu Unity Lens</ulink> module.
         </para>
@@ -226,10 +226,10 @@
   </chapter>
 
 
-  <chapter id="rcl.indexing">
+  <chapter id="RCL.INDEXING">
     <title>Indexing</title>
 
-    <sect1 id="rcl.indexing.introduction">
+    <sect1 id="RCL.INDEXING.INTRODUCTION">
       <title>Introduction</title>
 
       <para>Indexing is the process by which the set of documents is
@@ -245,25 +245,25 @@
 	aspects of the indexing processes and configuration, with links
 	to detailed sections.</para>
 
-      <sect2 id="rcl.indexing.introduction.modes">
+      <sect2 id="RCL.INDEXING.INTRODUCTION.MODES">
 	<title>Indexing modes</title> 
 
 	<para>&RCL; indexing can be performed along two different modes:
 	  <itemizedlist>
             <listitem>
               <formalpara>
-		<title><link linkend="rcl.indexing.periodic">
+		<title><link linkend="RCL.INDEXING.PERIODIC">
 		    Periodic (or batch) indexing:</link></title>
 		<para>indexing takes place at discrete
 		  times, by executing the <command>recollindex</command>
 		  command. The typical usage is to have a nightly indexing run 
-		  <link linkend="rcl.indexing.periodic.automat">
+		  <link linkend="RCL.INDEXING.PERIODIC.AUTOMAT">
 		    programmed</link> into
 		    your <command>cron</command> file.</para>
               </formalpara>
             </listitem>
             <listitem>
-              <formalpara><title><link linkend="rcl.indexing.monitor">Real
+              <formalpara><title><link linkend="RCL.INDEXING.MONITOR">Real
 		    time indexing:</link></title> 
 		<para>indexing takes place as soon as a file is created or
 		  changed. <command>recollindex</command> runs as a daemon
@@ -292,12 +292,12 @@
          </para>
 	</sect2>
 
-      <sect2 id="rcl.indexing.introduction.config">
+      <sect2 id="RCL.INDEXING.INTRODUCTION.CONFIG">
 	<title>Configurations, multiple indexes</title>
 	
 	<para>The parameters describing what is to be indexed and
 	  local preferences are defined in text files contained in a
-	  <link linkend="rcl.indexing.config">configuration
+	  <link linkend="RCL.INDEXING.CONFIG">configuration
 	  directory</link>.</para>
 
 	<para>All parameters have defaults, defined in system-wide
@@ -329,7 +329,7 @@
 	<para>For index generation, multiple configurations are
           totally independant from each other. When multiple indexes need
           to be used for a single search,
-	  <link linkend="rcl.indexing.config.multiple">some parameters
+	  <link linkend="RCL.INDEXING.CONFIG.MULTIPLE">some parameters
           should be consistent among the configurations</link>.</para>
 
       </sect2>
@@ -339,7 +339,7 @@
 	<para>&RCL; knows about quite a few different document
           types. The parameters for document types recognition and
           processing are set in 
-          <link linkend="rcl.indexing.config">configuration files</link>.</para>
+          <link linkend="RCL.INDEXING.CONFIG">configuration files</link>.</para>
 
 	<para>Most file types, like HTML or word processing files, only hold
           one document. Some file types, like email folders or zip
@@ -355,7 +355,7 @@
 
 	<para>Other file types (ie: postscript, pdf, ms-word, rtf ...) 
           need external applications for preprocessing. The list is in the
-          <link linkend="rcl.install.external"> installation</link>
+          <link linkend="RCL.INSTALL.EXTERNAL"> installation</link>
           section. After every indexing operation, &RCL; updates a list of
           commands that would be needed for indexing existing files
           types. This list can be displayed by selecting the menu option
@@ -375,7 +375,7 @@
 	  signal itself by weird search results or crashes), the index files
 	  need to be erased before restarting a clean indexing pass. Just delete
 	  the <filename>xapiandb</filename> directory (see 
-	  <link linkend="rcl.indexing.storage">next section</link>), or, 
+	  <link linkend="RCL.INDEXING.STORAGE">next section</link>), or, 
 	  alternatively, start the next <command>recollindex</command> with the 
 	  <option>-z</option> option, which will reset the database before
 	  indexing.</para>
@@ -383,7 +383,7 @@
 
     </sect1>
 
-    <sect1 id="rcl.indexing.storage">
+    <sect1 id="RCL.INDEXING.STORAGE">
       <title>Index storage</title>
 
       <para>The default location for the index data is the
@@ -410,7 +410,7 @@ recoll
           <filename>~/.indexes-email/xapiandb/</filename>.</para>
 
           <para>Using multiple configuration directories and <link
-          linkend="rcl.install.config.recollconf">configuration
+          linkend="RCL.INSTALL.CONFIG.RECOLLCONF">configuration
           options</link> allows you to tailor multiple configurations and
           indexes to handle whatever subset of the available data you wish
           to make searchable.</para>
@@ -421,7 +421,7 @@ recoll
           specify a non-default storage location for the index by setting
           the <varname>dbdir</varname> parameter in the configuration file
           (see the <link
-          linkend="rcl.install.config.recollconf">configuration
+          linkend="RCL.INSTALL.CONFIG.RECOLLCONF">configuration
           section</link>). This method would mainly be of use if you wanted
           to keep the configuration directory in its default location, but
           desired another location for the index, typically out of disk
@@ -451,7 +451,7 @@ recoll
 	(as long as the original documents exist), and it can always be
 	destroyed safely.</para>
 
-      <sect2 id="rcl.indexing.storage.format">
+      <sect2 id="RCL.INDEXING.STORAGE.FORMAT">
         <title>&XAP; index formats</title>
 
         <para>&XAP; versions usually support several formats for index
@@ -474,7 +474,7 @@ recoll
 
       </sect2>
 
-      <sect2 id="rcl.indexing.storage.security">
+      <sect2 id="RCL.INDEXING.STORAGE.SECURITY">
         <title>Security aspects</title>
 
         <para>The &RCL; index does not hold copies of the indexed
@@ -498,15 +498,15 @@ recoll
 
     </sect1>
 
-    <sect1 id="rcl.indexing.config">
+    <sect1 id="RCL.INDEXING.CONFIG">
       <title>Index configuration</title>
 
       <para>Variables set inside the 
-        <link linkend="rcl.install.config">&RCL; configuration files</link>
+        <link linkend="RCL.INSTALL.CONFIG">&RCL; configuration files</link>
         control which areas of the file system are indexed, and how
         files are processed. These variables can be set either by
         editing the text files or by using the 
-        <link linkend="rcl.indexing.config.gui"> dialogs in the
+        <link linkend="RCL.INDEXING.CONFIG.GUI"> dialogs in the
         <command>recoll</command> GUI</link>.</para>
 
       <para>The first time you start <command>recoll</command>, you
@@ -519,7 +519,7 @@ recoll
         empty configuration files, which you can edit by hand.</para>
 
       <para>The configuration is documented inside the 
-        <link linkend="rcl.install.config">installation chapter</link> 
+        <link linkend="RCL.INSTALL.CONFIG">installation chapter</link> 
         of this document, or in the 
        <citerefentry>
             <refentrytitle>recoll.conf</refentrytitle>
@@ -529,13 +529,13 @@ recoll
         current information will most likely be the comments inside the
         sample file. The most immediately useful variable you may
         interested in is probably 
-        <link linkend="rcl.install.config.recollconf.topdirs">
+        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.TOPDIRS">
 	<varname>topdirs</varname></link>, 
         which determines what subtrees get indexed.</para>
 
       <para>The applications needed to index file types other than
         text, HTML or email (ie: pdf, postscript, ms-word...) are
-        described in the <link linkend="rcl.install.external">external
+        described in the <link linkend="RCL.INSTALL.EXTERNAL">external
           packages section.</link></para>
 
       <para>As of Recoll 1.18 there are two incompatible types of Recoll
@@ -543,7 +543,7 @@ recoll
       diacritics. The next section describes the two types in more
       detail.</para>
 
-      <sect2 id="rcl.indexing.config.multiple">
+      <sect2 id="RCL.INDEXING.CONFIG.MULTIPLE">
         <title>Multiple indexes</title>
 
         <para>Multiple &RCL; indexes can be created by
@@ -589,13 +589,13 @@ recoll
         have the same option concerning character case and diacritics
         stripping, but there are other constraints. Most of the
 	relevant parameters are described in the 
-	<link linkend="rcl.install.config.recollconf.terms">linked
+	<link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.TERMS">linked
 	section</link>.</para>
 
       </sect2>
 
 
-      <sect2 id="rcl.indexing.config.sens">
+      <sect2 id="RCL.INDEXING.CONFIG.SENS">
         <title>Index case and diacritics sensitivity</title>
 
         <para>As of &RCL; version 1.18 you have a choice of building an
@@ -616,7 +616,7 @@ recoll
           between terms, returning different results when searching for
           <literal>US</literal> and <literal>us</literal> or
           <literal>resume</literal> and <literal>résumé</literal>.
-          Read the <link linkend="rcl.search.casediac">section about search
+          Read the <link linkend="RCL.SEARCH.CASEDIAC">section about search
           case and diacritics sensitivity</link> for more details.</para>
 
         <para>The type of index to be created is controlled by the
@@ -639,7 +639,7 @@ recoll
       </sect2>
 
 
-      <sect2 id="rcl.indexing.config.gui">
+      <sect2 id="RCL.INDEXING.CONFIG.GUI">
         <title>The index configuration GUI</title>
 
         <para>Most parameters for a given index configuration can
@@ -677,7 +677,7 @@ recoll
         <para>The meaning for most entries in the interface is 
         self-evident and documented by a <literal>ToolTip</literal>
         popup on the text label. For more detail, you will need to
-        refer to the <link linkend="rcl.install.config">configuration
+        refer to the <link linkend="RCL.INSTALL.CONFIG">configuration
         section</link> of this guide.</para>
 
         <para>The configuration tool normally respects the comments
@@ -689,7 +689,7 @@ recoll
 
     </sect1>
 
-    <sect1 id="rcl.indexing.webqueue">
+    <sect1 id="RCL.INDEXING.WEBQUEUE">
       <title>Index WEB visited page history</title>
 
       <para>With the help of a <application>Firefox</application>
@@ -723,10 +723,10 @@ recoll
 
     </sect1>
 
-    <sect1 id="rcl.indexing.periodic">
+    <sect1 id="RCL.INDEXING.PERIODIC">
       <title>Periodic indexing</title>
 
-      <sect2 id="rcl.indexing.periodic.exec">
+      <sect2 id="RCL.INDEXING.PERIODIC.EXEC">
         <title>Running indexing</title>
 
         <para>Indexing is always performed by the
@@ -806,7 +806,7 @@ recoll
           file list.</para>
       </sect2>
 
-      <sect2 id="rcl.indexing.periodic.automat">
+      <sect2 id="RCL.INDEXING.PERIODIC.AUTOMAT">
         <title>Using <command>cron</command> to automate
           indexing</title>
 
@@ -853,7 +853,7 @@ recoll
       </sect2>
     </sect1>
 
-    <sect1 id="rcl.indexing.monitor">
+    <sect1 id="RCL.INDEXING.MONITOR">
       <title>Real time indexing</title>
 
       <para>Real time monitoring/indexing is performed by starting the
@@ -915,7 +915,7 @@ fvwm
 
       <para>When building &RCL;, the real time indexing support can be
         customised during package <link
-        linkend="rcl.install.building.build">configuration</link> with
+        linkend="RCL.INSTALL.BUILDING.BUILD">configuration</link> with
         the <option>--with[out]-fam</option> or
         <option>--with[out]-inotify</option> options.  The default is
         currently to include <application>inotify</application>
@@ -931,7 +931,7 @@ fvwm
         your system is short on resources. Periodic indexing is
         adequate in most cases.</para>
 
-      <sect2 id="rcl.indexing.monitor.fastfiles">
+      <sect2 id="RCL.INDEXING.MONITOR.FASTFILES">
         <title>Slowing down the reindexing rate for fast changing
         files</title>
 
@@ -942,7 +942,7 @@ fvwm
         <para>&RCL; provides a configuration option to specify the minimum
         time before which a file, specified by a wildcard pattern, cannot be
         reindexed. See the <varname>mondelaypatterns</varname> parameter in
-        the <link linkend="rcl.install.config.recollconf.misc">
+        the <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.MISC">
          configuration section</link>.</para>
 
       </sect2>
@@ -950,10 +950,10 @@ fvwm
 
   </chapter>
 
-  <chapter id="rcl.search">
+  <chapter id="RCL.SEARCH">
     <title>Searching</title>
 
-  <sect1 id="rcl.search.gui">
+  <sect1 id="RCL.SEARCH.GUI">
     <title>Searching with the Qt graphical user interface</title>
 
     <para>The <command>recoll</command> program provides the main user
@@ -987,7 +987,7 @@ fvwm
       case (they would typically be printed without white
       space).</para>
 
-    <sect2 id="rcl.search.gui.simple">
+    <sect2 id="RCL.SEARCH.GUI.SIMPLE">
       <title>Simple search</title>
 
       <procedure>
@@ -1015,13 +1015,13 @@ fvwm
         where at least one of the terms appear. </para>
 
       <para>The <guilabel>Query Language</guilabel> features are
-      described in <link linkend="rcl.search.lang">a separate
+      described in <link linkend="RCL.SEARCH.LANG">a separate
       section</link>.</para>  
 
       <para>All search modes allow wildcards inside terms
         (<literal>*</literal>, <literal>?</literal>,
         <literal>[]</literal>). You may want to have a look at the
-        <link linkend="rcl.search.wildcards">section about wildcards</link>
+        <link linkend="RCL.SEARCH.WILDCARDS">section about wildcards</link>
         for more information about this.</para>
 
       <para><guilabel>File name</guilabel> will specifically look for file
@@ -1063,7 +1063,7 @@ fvwm
       <literal>Floor</literal> will only look for <literal>floor</literal>,
       in any character case. Stemming can also be disabled globally in the
       preferences. When using a raw index, <link
-      linkend="rcl.search.casediac">the rules are a bit more
+      linkend="RCL.SEARCH.CASEDIAC">the rules are a bit more
       complicated</link>.</para> 
 
       <para>&RCL; remembers the last few searches that you
@@ -1088,7 +1088,7 @@ fvwm
       this mode from the <guilabel>Query Language</guilabel> mode, where
       you have to care about the syntax.</para>
 
-      <para>You can use the <link linkend="rcl.search.gui.complex">
+      <para>You can use the <link linkend="RCL.SEARCH.GUI.COMPLEX">
       <menuchoice>
           <guimenu>Tools</guimenu> 
           <guimenuitem>Advanced search</guimenuitem>
@@ -1097,7 +1097,7 @@ fvwm
 
     </sect2>
 
-    <sect2 id="rcl.search.gui.reslist">
+    <sect2 id="RCL.SEARCH.GUI.RESLIST">
       <title>The default result list</title>
 
       <para>After starting a search, a list of results will instantly
@@ -1142,7 +1142,7 @@ fvwm
         the functionality and use the standard desktop tool.</para>
 
         <para>You may also change the choice of applications by editing the
-       <link linkend="rcl.install.config.mimeview">
+       <link linkend="RCL.INSTALL.CONFIG.MIMEVIEW">
        <filename>mimeview</filename></link> configuration file if you find
        this more convenient.</para>
 
@@ -1151,15 +1151,15 @@ fvwm
        &RCL; has no configured way to preview a given file type (which
        was indexed by name only), or no configured external editor for
        the file type. This can sometimes be adjusted simply by tweaking
-       the <link linkend="rcl.install.config.mimemap">
+       the <link linkend="RCL.INSTALL.CONFIG.MIMEMAP">
              <filename>mimemap</filename></link> and  
-       <link linkend="rcl.install.config.mimeview">
+       <link linkend="RCL.INSTALL.CONFIG.MIMEVIEW">
        <filename>mimeview</filename></link> configuration files (the latter
        can be modified with the user preferences dialog).</para> 
 
       <para>The format of the result list entries is entirely
       configurable by using the preference dialog to 
-      <link linkend="rcl.search.gui.custom.reslist">edit an HTML
+      <link linkend="RCL.SEARCH.GUI.CUSTOM.RESLIST">edit an HTML
       fragment</link>.</para>
 
       <para>You can click on the <literal>Query details</literal> link
@@ -1174,7 +1174,7 @@ fvwm
        toolbar or the links at the bottom of the page to browse the
        results.</para>
 
-      <sect3 id="rcl.search.gui.reslist.suggs">
+      <sect3 id="RCL.SEARCH.GUI.RESLIST.SUGGS">
           <title>No results: the spelling suggestions</title>
 
           <para>When a search yields no result, and if the
@@ -1189,7 +1189,7 @@ fvwm
         </sect3>
 
 
-      <sect3 id="rcl.search.gui.resultlist.menu">
+      <sect3 id="RCL.SEARCH.GUI.RESULTLIST.MENU">
         <title>The result list right-click menu</title>
 
         <para>Apart from the preview and edit links, you can display a
@@ -1258,7 +1258,7 @@ fvwm
 
     </sect2>
 
-    <sect2 id="rcl.search.gui.restable">
+    <sect2 id="RCL.SEARCH.GUI.RESTABLE">
       <title>The result table</title>
 
         <para>In &RCL; 1.15 and newer, the results can be displayed in 
@@ -1292,7 +1292,7 @@ fvwm
 
       </sect2>
 
-     <sect2 id="rcl.search.gui.thumbnails">
+     <sect2 id="RCL.SEARCH.GUI.THUMBNAILS">
           <title>Displaying thumbnails</title>
 
         <para>The default format for the result list entries and the
@@ -1317,7 +1317,7 @@ fvwm
 
       </sect2>
 
-    <sect2 id="rcl.search.gui.preview">
+    <sect2 id="RCL.SEARCH.GUI.PREVIEW">
       <title>The preview window</title>
 
       <para>The preview window opens when you first click a
@@ -1362,7 +1362,7 @@ fvwm
          <keycap>P</keycap>) in  the window text.</para> 
 
 
-      <sect3 id="rcl.search.gui.preview.search">
+      <sect3 id="RCL.SEARCH.GUI.PREVIEW.SEARCH">
 	<title>Searching inside the preview</title>
 
 	<para>The preview window has an internal search capability,
@@ -1416,7 +1416,7 @@ fvwm
         
     </sect2>
 
-    <sect2 id="rcl.search.gui.complex">
+    <sect2 id="RCL.SEARCH.GUI.COMPLEX">
       <title>Complex/advanced search</title>
 
       <para>The advanced search dialog helps you build more complex queries
@@ -1448,7 +1448,7 @@ fvwm
       <para>Click on the <literal>Show query details</literal> link at
         the top of the result page to see the query expansion.</para>
 
-      <sect3 id="rcl.search.gui.complex.terms">
+      <sect3 id="RCL.SEARCH.GUI.COMPLEX.TERMS">
         <title>Avanced search: the "find" tab</title>
 
         <para>This part of the dialog lets you constructc a query by
@@ -1505,7 +1505,7 @@ fvwm
 
       </sect3>
 
-      <sect3 id="rcl.search.gui.complex.filter">
+      <sect3 id="RCL.SEARCH.GUI.COMPLEX.FILTER">
       <title>Avanced search: the "filter" tab</title>
 
       <para>This part of the dialog has several sections which allow
@@ -1559,7 +1559,7 @@ fvwm
 
      </sect3>
 
-      <sect3 id="rcl.search.gui.complex.history">
+      <sect3 id="RCL.SEARCH.GUI.COMPLEX.HISTORY">
         <title>Avanced search history</title>
 
         <para>The advanced search tool memorizes the last 100 searches
@@ -1577,7 +1577,7 @@ fvwm
 
     </sect2>
 
-    <sect2 id="rcl.search.gui.termexplorer">
+    <sect2 id="RCL.SEARCH.GUI.TERMEXPLORER">
       <title>The term explorer tool</title>
 
       <para>&RCL; automatically manages the expansion of search terms
@@ -1599,7 +1599,7 @@ fvwm
             <replaceable>xapi*</replaceable> would display all index terms
             beginning with <replaceable>xapi</replaceable>. (More
             about wildcards <link
-            linkend="rcl.search.wildcards">here</link>).</para></listitem> 
+            linkend="RCL.SEARCH.WILDCARDS">here</link>).</para></listitem> 
           </varlistentry>
 
           <varlistentry>
@@ -1656,10 +1656,10 @@ fvwm
 
     </sect2>
 
-    <sect2 id="rcl.search.gui.multidb">
+    <sect2 id="RCL.SEARCH.GUI.MULTIDB">
       <title>Multiple indexes</title>
 
-      <para>See the <link linkend="rcl.indexing.config.multiple">section
+      <para>See the <link linkend="RCL.INDEXING.CONFIG.MULTIPLE">section
 	  describing the use of multiple indexes</link> for
 	generalities. Only the aspects concerning
 	the <command>recoll</command> GUI are described here.</para>
@@ -1713,7 +1713,7 @@ fvwm
 
     </sect2>
 
-    <sect2 id="rcl.search.gui.history">
+    <sect2 id="RCL.SEARCH.GUI.HISTORY">
       <title>Document history</title>
 
       <para>Documents that you actually view (with the internal preview
@@ -1728,7 +1728,7 @@ fvwm
 
     </sect2>
 
-    <sect2 id="rcl.search.gui.sort">
+    <sect2 id="RCL.SEARCH.GUI.SORT">
       <title>Sorting search results and collapsing duplicates</title>
 
       <para>The documents in a result list are normally sorted in
@@ -1758,10 +1758,10 @@ fvwm
 
     </sect2>
 
-    <sect2 id="rcl.search.gui.tips">
+    <sect2 id="RCL.SEARCH.GUI.TIPS">
       <title>Search tips, shortcuts</title>
 
-    <sect3 id="rcl.search.gui.tips.terms">
+    <sect3 id="RCL.SEARCH.GUI.TIPS.TERMS">
       <title>Terms and search expansion</title>
 
       <formalpara><title>Term completion</title>
@@ -1780,7 +1780,7 @@ fvwm
 
       <formalpara><title>Wildcards</title>
           <para>Wildcards can be used inside search terms in all forms
-            of searches. <link linkend="rcl.search.wildcards">
+            of searches. <link linkend="RCL.SEARCH.WILDCARDS">
             More about wildcards</link>.
           </para>
       </formalpara>
@@ -1826,7 +1826,7 @@ fvwm
       </sect3>
 
 
-    <sect3 id="rcl.search.gui.tips.phrases">
+    <sect3 id="RCL.SEARCH.GUI.TIPS.PHRASES">
       <title>Working with phrases and proximity</title>
 
       <formalpara><title>Phrases and Proximity searches</title>
@@ -1874,11 +1874,11 @@ fvwm
 
       </sect3>
 
-    <sect3 id="rcl.search.gui.tips.misc">
+    <sect3 id="RCL.SEARCH.GUI.TIPS.MISC">
       <title>Others</title>
 
       <formalpara><title>Using fields</title>
-        <para>You can use the <link linkend="rcl.search.lang">query
+        <para>You can use the <link linkend="RCL.SEARCH.LANG">query
         language </link> and field specifications
         to only search certain parts of documents. This can be
         especially helpful with email, for example only searching
@@ -1949,7 +1949,7 @@ fvwm
       </sect3>
     </sect2>
 
-    <sect2 id="rcl.search.gui.custom">
+    <sect2 id="RCL.SEARCH.GUI.CUSTOM">
       <title>Customizing the search interface</title>
 
       <para>You can customize some aspects of the search interface by using
@@ -1961,7 +1961,7 @@ fvwm
       returning results, and what indexes are searched.</para> 
 
 
-      <formalpara id="rcl.search.gui.custom.ui">
+      <formalpara id="RCL.SEARCH.GUI.CUSTOM.UI">
        <title>User interface parameters:</title>
         <para>
       <itemizedlist>
@@ -2067,7 +2067,7 @@ fvwm
       </formalpara>
 
 
-      <formalpara id="rcl.search.gui.custom.rl">
+      <formalpara id="RCL.SEARCH.GUI.CUSTOM.RL">
        <title>Result list parameters:</title>
         <para>
           <itemizedlist>
@@ -2083,18 +2083,18 @@ fvwm
             config (try the <command>qtconfig</command> command).</para>
             </listitem>
 
-            <listitem id="rcl.search.gui.custom.resultpara">
+            <listitem id="RCL.SEARCH.GUI.CUSTOM.RESULTPARA">
             <para><guilabel>Edit result list paragraph format string</guilabel>:
             allows you to change the presentation of each result list
-            entry. See the <link linkend="rcl.search.gui.custom.reslist">
+            entry. See the <link linkend="RCL.SEARCH.GUI.CUSTOM.RESLIST">
                 result list customisation section</link>.</para>
             </listitem>
 
-            <listitem id="rcl.search.gui.custom.resulthead">
+            <listitem id="RCL.SEARCH.GUI.CUSTOM.RESULTHEAD">
             <para><guilabel>Edit result page HTML header insert</guilabel>:
             allows you to define text inserted at the end of the result
             page HTML header.  
-            More detail in the <link linkend="rcl.search.gui.custom.reslist"> 
+            More detail in the <link linkend="RCL.SEARCH.GUI.CUSTOM.RESLIST"> 
                 result list customisation section.</link></para>
             </listitem>
 
@@ -2104,7 +2104,7 @@ fvwm
             should be specified as an strftime() string (man strftime).</para>
             </listitem>
 
-            <listitem id="rcl.search.gui.custom.abssep">
+            <listitem id="RCL.SEARCH.GUI.CUSTOM.ABSSEP">
             <para><guilabel>Abstract snippet separator</guilabel>:
             for synthetic abstracts built from index data, which are
             usually made of several snippets from different parts of the
@@ -2115,7 +2115,7 @@ fvwm
            </itemizedlist></para>
       </formalpara>
 
-      <formalpara id="rcl.search.gui.custom.search">
+      <formalpara id="RCL.SEARCH.GUI.CUSTOM.SEARCH">
 	<title>Search parameters:</title>
         <para>
       <itemizedlist>
@@ -2129,7 +2129,7 @@ fvwm
             stemming obviously depends on the document's language. This
             listbox will let you chose among the stemming databases which
             were built during indexing (this is set in the <link
-            linkend="rcl.install.config.recollconf">main configuration
+            linkend="RCL.INSTALL.CONFIG.RECOLLCONF">main configuration
             file</link>), or later added with <command>recollindex
             -s</command> (See the recollindex manual). Stemming languages
             which are dynamically added will be deleted at the next
@@ -2186,7 +2186,7 @@ fvwm
        </para>
       </formalpara>
 
-      <formalpara id="rcl.search.gui.custom.extradb">
+      <formalpara id="RCL.SEARCH.GUI.CUSTOM.EXTRADB">
         <title>External indexes:</title> 
       <para>This panel will let you browse for additional indexes
       that you may want to search. External indexes are designated by
@@ -2207,7 +2207,7 @@ fvwm
       need to implement a way of purging the index from stale data,
       </para>
 
-    <sect3 id="rcl.search.gui.custom.reslist">
+    <sect3 id="RCL.SEARCH.GUI.CUSTOM.RESLIST">
       <title>The result list format</title>
 
         <para>The result list presentation can be exhaustively customized
@@ -2236,7 +2236,7 @@ fvwm
           <ulink url="http://www.recoll.org/custom.html">page about 
             customising the result list</ulink> on the &RCL; web site.</para>
 
-        <sect4 id="rcl.search.gui.custom.reslist.para">
+        <sect4 id="RCL.SEARCH.GUI.CUSTOM.RESLIST.PARA">
           <title>The paragraph format</title>
 
         <para>This is an arbitrary HTML string where the following printf-like
@@ -2251,7 +2251,7 @@ fvwm
           <listitem><formalpara><title>%I</title><para>Icon image
             name. This is normally determined from the mime type. The
             associations are defined inside the 
-            <link linkend="rcl.install.config.mimeconf">
+            <link linkend="RCL.INSTALL.CONFIG.MIMECONF">
               <filename>mimeconf</filename> configuration file</link>. 
             If a thumbnail for the file is found at
             the standard Freedesktop location, this will be displayed
@@ -2298,7 +2298,7 @@ fvwm
         the field named <literal>fieldname</literal> for this
         document. Only stored fields can be accessed in this way, the value
         of indexed but not stored fields is not known at this point in the
-        search process (see <link linkend="rcl.program.fields">field
+        search process (see <link linkend="RCL.PROGRAM.FIELDS">field
         configuration</link>). There are currently very few fields stored
         by default, apart from the values above (only
         <literal>author</literal> and <literal>filename</literal>), so this
@@ -2342,7 +2342,7 @@ fvwm
             site, with pictures to show how they look.</ulink></para>
 
           <para>It is also possible to 
-          <link linkend="rcl.search.gui.custom.abssep">
+          <link linkend="RCL.SEARCH.GUI.CUSTOM.ABSSEP">
              define the value of the snippet separator inside the abstract
              section</link>.</para>
        </sect4>
@@ -2351,10 +2351,10 @@ fvwm
 
   </sect1> <!-- search GUI -->
 
-  <sect1 id="rcl.search.kio">
+  <sect1 id="RCL.SEARCH.KIO">
     <title>Searching with the KDE KIO slave</title>
 
-    <sect2 id="rcl.search.kio.intro">
+    <sect2 id="RCL.SEARCH.KIO.INTRO">
       <title>What's this</title>
 
       <para>The &RCL; KIO slave allows performing a &RCL; search
@@ -2389,7 +2389,7 @@ fvwm
     </sect2>
 
 
-    <sect2 id="rcl.search.kio.searchabledocs">
+    <sect2 id="RCL.SEARCH.KIO.SEARCHABLEDOCS">
       <title>Searchable documents</title>
 
       <para>As a sample application, the &RCL; KIO slave could allow
@@ -2419,7 +2419,7 @@ fvwm
     </sect1>
 
 
-  <sect1 id="rcl.search.commandline">
+  <sect1 id="RCL.SEARCH.COMMANDLINE">
     <title>Searching on the command line</title>
 
     <para>There are several ways to obtain search results as a text
@@ -2432,7 +2432,7 @@ fvwm
       </listitem>
       <listitem><para>By writing a custom
       <application>Python</application> program, using the 
-      <link linkend="rcl.program.api.python">Recoll Python API</link>.</para>
+      <link linkend="RCL.PROGRAM.API.PYTHON">Recoll Python API</link>.</para>
       </listitem>
     </itemizedlist>
 
@@ -2497,7 +2497,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 </programlisting>
       </sect1>
 
-    <sect1 id="rcl.search.lang">
+    <sect1 id="RCL.SEARCH.LANG">
       <title>The query language</title>
 
       <para>The query language processor is activated in the GUI
@@ -2576,7 +2576,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
       <para>Modifiers can be set on a phrase clause, for example to specify
         a proximity search (unordered). See 
-        <link linkend="rcl.search.lang.modifiers">the modifier
+        <link linkend="RCL.SEARCH.LANG.MODIFIERS">the modifier
           section</link>.</para> 
 
       <para>&RCL; currently manages the following default fields:</para>
@@ -2742,7 +2742,7 @@ dir:recoll dir:src -dir:utils -dir:common
         Specifying a wild-card on the left of a term can produce a very
         slow search (or even an incorrect one if the expansion is
         truncated because of excessive size). Also see 
-        <link linkend="rcl.search.wildcards">
+        <link linkend="RCL.SEARCH.WILDCARDS">
           More about wildcards</link>.</para>
 
       <para>The document filters used while indexing have the
@@ -2751,7 +2751,7 @@ dir:recoll dir:src -dir:utils -dir:common
         field search possibilities may be different for you if someone
         took care of the customisation.</para>
 
-      <sect2 id="rcl.search.lang.modifiers">
+      <sect2 id="RCL.SEARCH.LANG.MODIFIERS">
         <title>Modifiers</title>
 
         <para>Some characters are recognized as search modifiers when found
@@ -2796,7 +2796,7 @@ dir:recoll dir:src -dir:utils -dir:common
     </sect1> <!-- rcl.search.lang -->
       
 
-    <sect1 id="rcl.search.casediac">
+    <sect1 id="RCL.SEARCH.CASEDIAC">
       <title>Search case and diacritics sensitivity</title>
 
       <para>For &RCL; versions 1.18 and later, and <emphasis>when working
@@ -2867,7 +2867,7 @@ dir:recoll dir:src -dir:utils -dir:common
 
    </sect1>
 
-    <sect1 id="rcl.search.anchorwild">
+    <sect1 id="RCL.SEARCH.ANCHORWILD">
       <title>Anchored searches and wildcards</title>
 
       <para>Some special characters are interpreted by &RCL; in search
@@ -2876,7 +2876,7 @@ dir:recoll dir:src -dir:utils -dir:common
       succeed only if the match is found at or near the beginning of the
       document or one of its fields.</para>
 
-    <sect2 id="rcl.search.wildcards">
+    <sect2 id="RCL.SEARCH.WILDCARDS">
       <title>More about wildcards</title>
 
       <para>All words entered in &RCL; search fields will be processed
@@ -2917,7 +2917,7 @@ dir:recoll dir:src -dir:utils -dir:common
         <listitem><para>Using a <literal>*</literal> at the end of a
         word can produce more matches than you would think, and
         strange search results. You can use the <link
-        linkend="rcl.search.gui.termexplorer">term explorer</link> tool to
+        linkend="RCL.SEARCH.GUI.TERMEXPLORER">term explorer</link> tool to
         check what completions exist for a given term. You can also
         see exactly what search was performed by clicking on the link
         at the top of the result list. In general, for natural
@@ -2929,7 +2929,7 @@ dir:recoll dir:src -dir:utils -dir:common
 
     </sect2> <!-- wildchars -->
 
-      <sect2 id="rcl.search.anchor">
+      <sect2 id="RCL.SEARCH.ANCHOR">
         <title>Anchored searches</title>
 
         <para>Two characters are used to specify that a search hit should
@@ -2965,7 +2965,7 @@ dir:recoll dir:src -dir:utils -dir:common
 
    </sect1> <!-- wildchars and anchors -->
 
-    <sect1 id="rcl.search.desktop">
+    <sect1 id="RCL.SEARCH.DESKTOP">
       <title>Desktop integration</title>
 
       <para>Being independant of the desktop type has its drawbacks: &RCL;
@@ -2974,7 +2974,7 @@ dir:recoll dir:src -dir:utils -dir:common
       <itemizedlist>
           <listitem>
             <para>The <application>KDE</application> KIO Slave was
-            described in a <link linkend="rcl.search.kio">previous 
+            described in a <link linkend="RCL.SEARCH.KIO">previous 
             section</link>.</para>
           </listitem>
         <listitem>
@@ -2989,10 +2989,11 @@ dir:recoll dir:src -dir:utils -dir:common
             Krunner plugin</ulink>.</para>
           </listitem>
         </itemizedlist>
+       </para>
 
        <para>Here follow a few other things that may help.</para>
 
-      <sect2 id="rcl.search.shortcut">
+      <sect2 id="RCL.SEARCH.SHORTCUT">
         <title>Hotkeying recoll</title>
 
         <para>It is surprisingly convenient to be able to show or hide the
@@ -3004,7 +3005,7 @@ dir:recoll dir:src -dir:utils -dir:common
 
       </sect2>
 
-      <sect2 id="rcl.kicker-applet">
+      <sect2 id="RCL.KICKER-APPLET">
         <title>The KDE Kicker Recoll applet</title>
 
         <para>This is probably obsolete now. Anyway:</para>
@@ -3037,7 +3038,7 @@ dir:recoll dir:src -dir:utils -dir:common
   </chapter> <!-- Search -->
 
 
-    <chapter id="rcl.program">
+    <chapter id="RCL.PROGRAM">
       <title>Programming interface</title>
 
       <para>&RCL; has an Application Programming Interface, usable both
@@ -3052,7 +3053,7 @@ dir:recoll dir:src -dir:utils -dir:common
 
 
 
-      <sect1 id="rcl.program.filters">
+      <sect1 id="RCL.PROGRAM.FILTERS">
         <title>Writing a document filter</title>
 
         <para>&RCL; filters cooperate to translate from the multitude
@@ -3119,7 +3120,7 @@ dir:recoll dir:src -dir:utils -dir:common
           format can return an arbitrary amount of metadata inside HTML
           <literal>meta</literal> tags. These will be processed
           according to the directives found in 
-          the <link linkend="rcl.program.fields">
+          the <link linkend="RCL.PROGRAM.FIELDS">
             <filename>fields</filename> configuration
             file</link>.</para>
 
@@ -3138,7 +3139,7 @@ dir:recoll dir:src -dir:utils -dir:common
           manual. This will not be the case for the other ones, for
           which you will have to look at the code.</para>
 
-      <sect2 id="rcl.program.filters.simple">
+      <sect2 id="RCL.PROGRAM.FILTERS.SIMPLE">
         <title>Simple filters</title>
 
       <para>&RCL; simple filters are usually shell-scripts, but this is in
@@ -3157,7 +3158,7 @@ dir:recoll dir:src -dir:utils -dir:common
       to add metadata or vary the output character encoding (this will be
       defined in a configuration file). Additionally, some formatting may
       be easier to preserve when previewing HTML. Actually the deciding factor
-      is metadata: &RCL; has a way to <link linkend="rcl.program.filters.html">
+      is metadata: &RCL; has a way to <link linkend="RCL.PROGRAM.FILTERS.HTML">
       extract metadata from the HTML header and use it for field 
       searches.</link>.</para>
 
@@ -3177,7 +3178,7 @@ dir:recoll dir:src -dir:utils -dir:common
 
       </sect2>
 
-      <sect2 id="rcl.program.filters.multiple">
+      <sect2 id="RCL.PROGRAM.FILTERS.MULTIPLE">
         <title>"Multiple" filters</title>
 
         <para>If you can program and want to write
@@ -3221,8 +3222,9 @@ dir:recoll dir:src -dir:utils -dir:common
           none (typical for an archive file). If it is empty, this
           document will be useful anyway for some operations, as the
           parent of the actual data documents.</para>
+      </sect2>
 
-      <sect2 id="rcl.program.filters.association">
+      <sect2 id="RCL.PROGRAM.FILTERS.ASSOCIATION">
         <title>Telling &RCL; about the filter</title>
 
       <para>There are two elements that link a file to the filter which
@@ -3231,7 +3233,7 @@ dir:recoll dir:src -dir:utils -dir:common
 
       <para>The association of files to mime types is mostly based on
         name suffixes. The types are defined inside the
-        <link linkend="rcl.install.config.mimemap">
+        <link linkend="RCL.INSTALL.CONFIG.MIMEMAP">
         <filename>mimemap</filename> file</link>. Example:
 <programlisting>
 
@@ -3242,7 +3244,7 @@ dir:recoll dir:src -dir:utils -dir:common
        mime type.</para>
 
       <para>The association of file types to filters is performed in
-      the <link linkend="rcl.install.config.mimeconf">
+      the <link linkend="RCL.INSTALL.CONFIG.MIMECONF">
       <filename>mimeconf</filename> file</link>. A sample will probably be
       of better help than a long explanation:</para>
 <programlisting>
@@ -3291,7 +3293,7 @@ application/x-chm = execm rclchm
 
       </sect2>
 
-    <sect2 id="rcl.program.filters.html">
+    <sect2 id="RCL.PROGRAM.FILTERS.HTML">
         <title>Filter HTML output</title>
 
         <para>The output HTML could be very minimal like the following
@@ -3335,7 +3337,7 @@ application/x-chm = execm rclchm
 
       </sect2>
 
-    <sect2 id="rcl.program.filters.pages">
+    <sect2 id="RCL.PROGRAM.FILTERS.PAGES">
         <title>Page numbers</title>
 
         <para>The indexer will interpret <literal>^L</literal> characters
@@ -3348,7 +3350,7 @@ application/x-chm = execm rclchm
 
     </sect1>
 
-    <sect1 id="rcl.program.fields">
+    <sect1 id="RCL.PROGRAM.FIELDS">
         <title>Field data processing</title>
 
       <para><literal>Fields</literal> are named pieces of information
@@ -3414,16 +3416,17 @@ application/x-chm = execm rclchm
           <listitem><para>At query time, the field can be displayed inside
           the result list by using the appropriate directive in the
           definition of the <link
-          linkend="rcl.search.gui.custom.reslist">result list paragraph
+          linkend="RCL.SEARCH.GUI.CUSTOM.RESLIST">result list paragraph
           format</link>. All fields are displayed on the fields screen of
           the preview window (which you can reach through the right-click
           menu). This is independant of the fact that the search which
           produced the results used the field or not.</para>  
           </listitem>
         </itemizedlist>
+      </para>
 
       <para>You can find more information in the 
-      <link linkend="rcl.install.config.fields">section about the
+      <link linkend="RCL.INSTALL.CONFIG.FIELDS">section about the
       <filename>fields</filename> file</link>, or in comments inside the
       file.</para> 
 
@@ -3435,10 +3438,10 @@ application/x-chm = execm rclchm
     </sect1>
 
 
-    <sect1 id="rcl.program.api">
+    <sect1 id="RCL.PROGRAM.API">
       <title>API</title>
 
-    <sect2 id="rcl.program.api.elements">
+    <sect2 id="RCL.PROGRAM.API.ELEMENTS">
       <title>Interface elements</title>
 
       <para>A few elements in the interface are specific and and need
@@ -3496,10 +3499,10 @@ application/x-chm = execm rclchm
 
     </sect2>
 
-    <sect2 id="rcl.program.api.python">
+    <sect2 id="RCL.PROGRAM.API.PYTHON">
       <title>Python interface</title>
 
-      <sect3 id="rcl.program.python.intro">
+      <sect3 id="RCL.PROGRAM.PYTHON.INTRO">
         <title>Introduction</title>
 
         <para>&RCL; versions after 1.11 define a Python programming
@@ -3534,7 +3537,7 @@ application/x-chm = execm rclchm
       </sect3>
 
 
-      <sect3 id="rcl.program.python.manual">
+      <sect3 id="RCL.PROGRAM.PYTHON.MANUAL">
         <title>Interface manual</title>
 
       <literallayout>
@@ -3726,7 +3729,7 @@ FUNCTIONS
 </literallayout>
         </sect3>
 
-      <sect3 id="rcl.program.python.examples">
+      <sect3 id="RCL.PROGRAM.PYTHON.EXAMPLES">
         <title>Example code</title>
 
         <para>The following sample would query the index with a user
@@ -3766,10 +3769,10 @@ while query.next >= 0 and query.next < nres:
   </chapter>
 
 
-  <chapter id="rcl.install">
+  <chapter id="RCL.INSTALL">
     <title>Installation and configuration</title>
 
-    <sect1 id="rcl.install.binary">
+    <sect1 id="RCL.INSTALL.BINARY">
       <title>Installing a binary copy</title>
 
       <para>There are three types of binary &RCL; installations:
@@ -3793,18 +3796,18 @@ while query.next >= 0 and query.next < nres:
       you should not have to worry about them.</para>
 
       <para>You will only have to check or install <link
-      linkend="rcl.install.external">supporting applications</link>
+      linkend="RCL.INSTALL.EXTERNAL">supporting applications</link>
       for the file types that you want to index beyond those that are
       natively processed by &RCL; (text, HTML, email files, and a few
       others).</para>
 
       <para>You should also maybe have a look at the 
-      <link linkend="rcl.install.config">configuration section</link>
+      <link linkend="RCL.INSTALL.CONFIG">configuration section</link>
       (but this may not be necessary for a quick test with default
       parameters). Most parameters can be more conveniently set from the
       GUI interface.</para>
 
-      <sect2 id="rcl.install.binary.package">
+      <sect2 id="RCL.INSTALL.BINARY.PACKAGE">
         <title>Installing through a package system</title>
 
         <para>If you use a BSD-type port system or a prebuilt package (DEB,
@@ -3813,7 +3816,7 @@ while query.next >= 0 and query.next < nres:
 
       </sect2>
 
-      <sect2 id="rcl.install.binary.rcl">
+      <sect2 id="RCL.INSTALL.BINARY.RCL">
         <title>Installing a prebuilt &RCL;</title>
 
         <para>The unpackaged binary versions on the &RCL; web site are
@@ -3826,7 +3829,7 @@ while query.next >= 0 and query.next < nres:
         dependencies).</para> 
 
         <para>After extracting the tar file, you can proceed with
-        <link linkend="rcl.install.building.install">installation</link> as
+        <link linkend="RCL.INSTALL.BUILDING.INSTALL">installation</link> as
         if you had built the package from source (that is, just type
         <literal>make install</literal>). The binary trees are built for
         installation to <filename>/usr/local</filename>.</para>
@@ -3834,7 +3837,7 @@ while query.next >= 0 and query.next < nres:
       </sect2>
     </sect1>
 
-    <sect1 id="rcl.install.external">
+    <sect1 id="RCL.INSTALL.EXTERNAL">
       <title>Supporting packages</title>
 
       <para>&RCL; uses external applications to index some file
@@ -3982,10 +3985,10 @@ while query.next >= 0 and query.next < nres:
     </sect1>
 
 
-      <sect1 id="rcl.install.building">
+      <sect1 id="RCL.INSTALL.BUILDING">
       <title>Building from source</title>
 
-      <sect2 id="rcl.install.building.prereqs">
+      <sect2 id="RCL.INSTALL.BUILDING.PREREQS">
         <title>Prerequisites</title>
 
 	<para>C++ compiler. Up to &RCL; version 1.13.04, its absence can
@@ -4027,7 +4030,7 @@ while query.next >= 0 and query.next < nres:
 
       </sect2>
 
-      <sect2 id="rcl.install.building.build">
+      <sect2 id="RCL.INSTALL.BUILDING.BUILD">
         <title>Building</title>
 
       <para>&RCL; has been built on Linux, FreeBSD, Mac OS X, and Solaris,
@@ -4145,7 +4148,7 @@ while query.next >= 0 and query.next < nres:
 
     </sect2>
 
-      <sect2 id="rcl.install.building.install">
+      <sect2 id="RCL.INSTALL.BUILDING.INSTALL">
         <title>Installation</title>
       
       <para>Either type <userinput>make install</userinput> or execute
@@ -4168,12 +4171,12 @@ while query.next >= 0 and query.next < nres:
 	</para> 
 
         <para>You can then proceed to <link
-       linkend="rcl.install.config">configuration</link>. </para>
+       linkend="RCL.INSTALL.CONFIG">configuration</link>. </para>
 
       </sect2>
     </sect1>
 
-    <sect1 id="rcl.install.config">
+    <sect1 id="RCL.INSTALL.CONFIG">
       <title>Configuration overview</title>
 
       <para>Most of the parameters specific to the
@@ -4295,7 +4298,7 @@ while query.next >= 0 and query.next < nres:
       </itemizedlist>
       </para>
 
-      <sect2 id="rcl.install.config.recollconf">
+      <sect2 id="RCL.INSTALL.CONFIG.RECOLLCONF">
         <title>Main configuration file</title>
 
         <para><filename>recoll.conf</filename> is the main
@@ -4316,12 +4319,12 @@ while query.next >= 0 and query.next < nres:
         <command>recoll</command> interface. Some can only be set by
         editing the configuration file.</para>
 
-        <sect3 id="rcl.install.config.recollconf.files">
+        <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.FILES">
           <title>Parameters affecting what documents we index:</title>
 
         <variablelist>
 
-          <varlistentry id="rcl.install.config.recollconf.topdirs">
+          <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.TOPDIRS">
             <term><varname>topdirs</varname></term>
             <listitem><para>Specifies the list of directories or files to
             index (recursively for directories). You can use symbolic links
@@ -4388,7 +4391,7 @@ skippedPaths = ~/somedir/&lowast;.txt
             </listitem>
           </varlistentry>
 
-          <varlistentry id="rcl.install.config.recollconf.skippedpathsfnmpathname">
+          <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDPATHSFNMPATHNAME">
             <term><varname>skippedPathsFnmPathname</varname></term>
                 <listitem><para>The values in the
                 <varname>*skippedPaths</varname> variables are matched by
@@ -4402,7 +4405,7 @@ skippedPaths = ~/somedir/&lowast;.txt
             </listitem>
           </varlistentry>
 
-          <varlistentry id="rcl.install.config.recollconf.followlinks">
+          <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.FOLLOWLINKS">
             <term><varname>followLinks</varname></term>
             <listitem><para>Specifies if the indexer should follow
             symbolic links while walking the file tree. The default is
@@ -4497,7 +4500,7 @@ skippedPaths = ~/somedir/&lowast;.txt
         </variablelist>
        </sect3>
 
-       <sect3 id="rcl.install.config.recollconf.terms">
+       <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.TERMS">
 	<title>Parameters affecting how we generate terms:</title>
 
         <para>Changing some of these parameters will imply a full
@@ -4652,7 +4655,7 @@ unac_except_trans =  åå Åå ää Ää öö Öö
         </variablelist>
        </sect3>
 
-       <sect3 id="rcl.install.config.recollconf.storage">
+       <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.STORAGE">
 	<title>Parameters affecting where and how we store things:</title>
 
 	<variablelist>
@@ -4730,7 +4733,7 @@ unac_except_trans =  åå Åå ää Ää öö Öö
         </variablelist>
        </sect3>
 
-       <sect3 id="rcl.install.config.recollconf.misc">
+       <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.MISC">
 	<title>Miscellaneous parameters:</title>
 
 	 <variablelist>
@@ -4884,7 +4887,7 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
        </sect3>
       </sect2>
 
-      <sect2 id="rcl.install.config.fields">
+      <sect2 id="RCL.INSTALL.CONFIG.FIELDS">
 	<title>The fields file</title>
 
 	<para>This file contains information about dynamic fields handling
@@ -4966,7 +4969,7 @@ x-my-tag = mailmytag
 
       </sect2>
 
-      <sect2 id="rcl.install.config.mimemap">
+      <sect2 id="RCL.INSTALL.CONFIG.MIMEMAP">
         <title>The mimemap file</title>
 
         <para><filename>mimemap</filename> specifies the
@@ -5003,7 +5006,7 @@ x-my-tag = mailmytag
 
       </sect2>
 
-      <sect2 id="rcl.install.config.mimeconf">
+      <sect2 id="RCL.INSTALL.CONFIG.MIMECONF">
         <title>The mimeconf file</title>
 
         <para><filename>mimeconf</filename> specifies how the
@@ -5021,7 +5024,7 @@ x-my-tag = mailmytag
          <filename>recoll.conf</filename>).</para>
 
       </sect2>
-      <sect2 id="rcl.install.config.mimeview">
+      <sect2 id="RCL.INSTALL.CONFIG.MIMEVIEW">
         <title>The mimeview file</title>
 
         <para><filename>mimeview</filename> specifies which programs
@@ -5132,10 +5135,10 @@ x-my-tag = mailmytag
 
       </sect2>
 
-      <sect2 id="rcl.install.config.examples">
+      <sect2 id="RCL.INSTALL.CONFIG.EXAMPLES">
         <title>Examples of configuration adjustments</title>
 
-        <sect3 id="rcl.install.config.examples.addview">
+        <sect3 id="RCL.INSTALL.CONFIG.EXAMPLES.ADDVIEW">
           <title>Adding an external viewer for an non-indexed type</title>
 
           <para>Imagine that you have some kind of file which does not
@@ -5180,7 +5183,7 @@ application/x-blobapp = blobviewer %f
 
         </sect3>
 
-        <sect3 id="rcl.install.config.examples.addindex">
+        <sect3 id="RCL.INSTALL.CONFIG.EXAMPLES.ADDINDEX">
           <title>Adding indexing support for a new file type</title>
 
           <para>Let us now imagine that the above
@@ -5217,7 +5220,7 @@ application/x-blobapp = exec rclblob
             will be given a file name as argument and should output the
             text or html contents on the standard output.</para>
 
-          <para>The <link linkend="rcl.program.filters">filter
+          <para>The <link linkend="RCL.PROGRAM.FILTERS">filter
               programming</link> section describes in more detail how
               to write a filter.</para> 
 

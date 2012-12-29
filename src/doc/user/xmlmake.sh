@@ -14,11 +14,11 @@
 
 # Wherever docbook.xsl and chunk.xsl live
 # Fbsd
-XSLDIR="/usr/local/share/xsl/docbook/"
+#XSLDIR="/usr/local/share/xsl/docbook/"
 # Mac
 #XSLDIR="/opt/local/share/xsl/docbook-xsl/"
 #Linux
-#XSLDIR="/usr/share/xml/docbook/stylesheet/docbook-xsl/"
+XSLDIR="/usr/share/xml/docbook/stylesheet/docbook-xsl/"
 
 dochunky=1
 test $# -eq 1 && dochunky=0
@@ -50,7 +50,7 @@ test $dochunky -ne 0 && eval xsltproc $commonoptions \
 
 # Produce the single file version
 eval xsltproc $commonoptions \
-    -o usermanual-xml.html \
+    -o usermanual.html \
     "$XSLDIR/html/docbook.xsl" \
     usermanual.xml
 
