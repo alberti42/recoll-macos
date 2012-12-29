@@ -1,6 +1,6 @@
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        3150
+Version:        3151
 Release:        1%{?dist}
 Group:          Applications/Databases
 License:        GPLv2+
@@ -35,6 +35,7 @@ export QMAKE=qmake-qt4
 %install
 %{__rm} -rf %{buildroot}
 %{__make} install DESTDIR=%{buildroot} STRIP=/bin/true INSTALL='install -p'
+%{__chmod} 0755 %{buildroot}/%{_libdir}/lib%{name}.so.%{version}
 
 desktop-file-install --delete-original \
   --dir=%{buildroot}/%{_datadir}/applications \
