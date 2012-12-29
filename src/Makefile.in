@@ -49,6 +49,7 @@ clean:
 	rm -rf qtgui/.moc qtgui/.ui qtgui/confgui/.moc qtgui/confgui/.ui
 	rm -rf qtgui/.obj qtgui/.moc qtgui/.ui 
 	rm -rf python/recoll/build
+	rm -rf php/recoll/build php/recoll/include php/recoll/modules
 	rm -rf $(QTGUI)/recoll.app
 
 # Note: we don't remove the top Makefile, to keep the "clean" targets
@@ -62,7 +63,8 @@ distclean: clean
 	   recollinstall \
 	   lib/*.dep common/autoconfig.h
 	rm -f common/rclversion.h
-	rm -f index/alldeps lib/alldeps query/alldeps bincimapmime/alldeps
+	rm -f index/alldeps lib/alldeps query/alldeps \
+            bincimapmime/alldeps common/alldeps internfile/alldeps utils/alldeps
 	rm -rf autom4te.cache
 
 maintainer-clean: distclean

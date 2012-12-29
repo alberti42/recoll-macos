@@ -180,7 +180,7 @@ iofactory.o : ../bincimapmime/iofactory.cc $(depth)/mk/localdefs
 	$(CXX) $(ALL_CXXFLAGS) -c ../bincimapmime/iofactory.cc
 depend: $(DEPS)
 clean:
-	rm -f $(OBJS) $(LIBS) $(DEPS) *.stamp
+	rm -f $(OBJS) $(LIBS) $(DEPS) librecoll.so *.stamp
 	for i in *.dep;do test -f $$i && cp /dev/null $$i;done
 distclean: clean
 	rm -f *.dep   

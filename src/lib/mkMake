@@ -153,7 +153,7 @@ done
 cat >> $mk <<EOF
 depend: \$(DEPS)
 clean:
-	rm -f \$(OBJS) \$(LIBS) \$(DEPS) *.stamp
+	rm -f \$(OBJS) \$(LIBS) \$(DEPS) librecoll.so *.stamp
 	for i in *.dep;do test -f \$\$i && cp /dev/null \$\$i;done
 distclean: clean
 	rm -f *.dep   

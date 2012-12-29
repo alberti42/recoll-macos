@@ -29,7 +29,7 @@ tagtop() {
 
 #set -x
 
-TAR=/usr/bin/tar
+TAR=${TAR-/bin/tar}
 
 #VCCMD=svn
 #SVNREPOS=svn+ssh://y/home/subversion/recoll/
@@ -123,10 +123,10 @@ EOF
 echo "Dumping html documentation to text files"
 links -dump ${RECOLLDOC}/usermanual.html >> README
 
-links -dump ${RECOLLDOC}/rcl.install.html >> INSTALL
-links -dump ${RECOLLDOC}/rcl.install.external.html >> INSTALL
-links -dump ${RECOLLDOC}/rcl.install.building.html >> INSTALL
-links -dump ${RECOLLDOC}/rcl.install.config.html >> INSTALL
+links -dump ${RECOLLDOC}/RCL.INSTALL.html >> INSTALL
+links -dump ${RECOLLDOC}/RCL.INSTALL.EXTERNAL.html >> INSTALL
+links -dump ${RECOLLDOC}/RCL.INSTALL.BUILDING.html >> INSTALL
+links -dump ${RECOLLDOC}/RCL.INSTALL.CONFIG.html >> INSTALL
 
 $VCCMD commit -m "release $version" README INSTALL
 
@@ -143,13 +143,6 @@ if test $snap = "yes" ; then
     echo $version > $topdir/VERSION
 fi
 
-# Fix the single/multiple page link in the header (we dont deliver the
-# multi-page version and the file name is wrong anyway
-sed -e '/\.\/index\.html/d' -e '/\.\/book\.html/d' \
-    < $topdir/doc/user/usermanual.html > $topdir/doc/user/u1.html
-diff $topdir/doc/user/u1.html $topdir/doc/user/usermanual.html
-mv -f $topdir/doc/user/u1.html $topdir/doc/user/usermanual.html
-
 # Can't now put ./Makefile in excludefile, gets ignored everywhere. So delete
 # the top Makefile here (its' output by configure on the target system):
 rm -f $topdir/Makefile
@@ -161,8 +154,11 @@ out=$releasename.tar.gz
 echo "$targetdir/$out created"
 
 # Check manifest against current reference
+(
+export LANG=C
 tar tzf $targetdir/$out | sort | cut -d / -f 2- | \
     diff mk/manifest.txt - || fatal "Please fix file list mk/manifest.txt"
+)
 
 # We tag .. as there is the 'packaging/' directory in there
 [ $dotag = "yes" ] && tagtop $TAG
