@@ -45,7 +45,7 @@ def extractofile(doc, outfilename=""):
 def doquery(db, q):
     # Get query object
     query = db.query()
-    query.sortby("dmtime", ascending=True)
+    #query.sortby("dmtime", ascending=True)
 
     # Parse/run input query string
     nres = query.execute(q, stemming = 0, stemlang="english")

@@ -253,8 +253,7 @@ Doc_dealloc(recoll_DocObject *self)
     LOGDEB(("Doc_dealloc\n"));
     if (self->doc)
 	the_docs.erase(self->doc);
-    delete self->doc;
-    self->doc = 0;
+    deleteZ(self->doc);
     self->ob_type->tp_free((PyObject*)self);
 }
 
@@ -268,6 +267,7 @@ Doc_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     if (self == 0) 
 	return 0;
     self->doc = 0;
+    self->rclconfig = 0;
     return (PyObject *)self;
 }
 
@@ -344,6 +344,8 @@ Doc_keys(recoll_DocObject *self)
     }
 
     PyObject *pkeys = PyList_New(0);
+    if (!pkeys)
+	return 0;
     for (map<string,string>::const_iterator it = self->doc->meta.begin();
 	 it != self->doc->meta.end(); it++) {
 	PyList_Append(pkeys,  PyUnicode_Decode(it->first.c_str(), 
@@ -367,6 +369,8 @@ Doc_items(recoll_DocObject *self)
     }
 
     PyObject *pdict = PyDict_New();
+    if (!pdict)
+	return 0;
     for (map<string,string>::const_iterator it = self->doc->meta.begin();
 	 it != self->doc->meta.end(); it++) {
 	PyDict_SetItem(pdict, 
@@ -384,7 +388,6 @@ PyDoc_STRVAR(doc_Doc_get,
 "get(key) -> value\n"
 "Retrieve the named doc attribute\n"
 );
-
 static PyObject *
 Doc_get(recoll_DocObject *self, PyObject *args)
 {
@@ -430,12 +433,6 @@ Doc_getattr(recoll_DocObject *self, char *name)
         PyErr_SetString(PyExc_AttributeError, "doc");
 	return 0;
     }
-#if 0
-    for (map<string,string>::const_iterator it = self->doc->meta.begin();
-	 it != self->doc->meta.end(); it++) {
-	LOGDEB(("meta[%s] -> [%s]\n", it->first.c_str(), it->second.c_str()));
-    }
-#endif
     string key = rclconfig->fieldCanon(string(name));
 
     // Handle special cases, then check this is not a method then
@@ -698,8 +695,8 @@ static PyTypeObject recoll_DocType = {
 
 //////////////////////////////////////////////////////
 /// QUERY Query object 
-struct recoll_DbObject;
 
+struct recoll_DbObject;
 typedef struct {
     PyObject_HEAD
     /* Type-specific fields go here. */
@@ -747,8 +744,9 @@ Query_new(PyTypeObject *type, PyObject *args, PyObject *kwargs)
     self->query = 0;
     self->next = -1;
     self->rowcount = -1;
-    self->arraysize = 1;
     self->sortfield = new string;
+    self->ascending = 1;
+    self->arraysize = 1;
     self->connection = 0;
     return (PyObject *)self;
 }
