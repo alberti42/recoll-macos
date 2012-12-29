@@ -43,10 +43,13 @@ commonoptions="--stringparam section.autolabel 1 \
 "
 
 # Do the chunky thing
-test $dochunky -ne 0 && eval xsltproc $commonoptions \
+if test $dochunky -ne 0 ; then 
+  eval xsltproc $commonoptions \
     --stringparam use.id.as.filename 1 \
+    --stringparam root.filename index \
     "$XSLDIR/html/chunk.xsl" \
     usermanual.xml
+fi
 
 # Produce the single file version
 eval xsltproc $commonoptions \
