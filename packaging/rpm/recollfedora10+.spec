@@ -1,6 +1,6 @@
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.17.2
+Version:        3150
 Release:        1%{?dist}
 Group:          Applications/Databases
 License:        GPLv2+
@@ -71,17 +71,24 @@ exit 0
 %doc COPYING ChangeLog README
 %{_bindir}/%{name}
 %{_bindir}/%{name}index
+%{_libdir}/lib%{name}.so.%{version}
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}-searchgui.desktop
 %{_datadir}/icons/hicolor/48x48/apps/%{name}.png
 %{_datadir}/pixmaps/%{name}.png
 %{python_sitearch}/Recoll*.egg-info
-%{python_sitearch}/recoll.so
+%{python_sitearch}/recoll/recoll.so
+%{python_sitearch}/recoll/rclextract.so
+%{python_sitearch}/recoll/__init__.py
+%{python_sitearch}/recoll/__init__.pyc
 %{_mandir}/man1/%{name}.1*
 %{_mandir}/man1/%{name}index.1*
 %{_mandir}/man5/%{name}.conf.5*
 
 %changelog
+* Sat Dec 29 2012 J.F. Dockes <jf@dockes.org> - 3149 1.19.0 snap
+- Snapshot for packaging tests
+
 * Thu May 17 2012 J.F. Dockes <jf@dockes.org> - 1.17.2-1
 - 1.17.2
 

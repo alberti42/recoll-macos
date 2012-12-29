@@ -1837,22 +1837,22 @@ initrecoll(void)
     
     if (PyType_Ready(&recoll_DbType) < 0)
         return;
-    Py_INCREF(&recoll_DbType);
+    Py_INCREF((PyObject*)&recoll_DbType);
     PyModule_AddObject(m, "Db", (PyObject *)&recoll_DbType);
 
     if (PyType_Ready(&recoll_QueryType) < 0)
         return;
-    Py_INCREF(&recoll_QueryType);
+    Py_INCREF((PyObject*)&recoll_QueryType);
     PyModule_AddObject(m, "Query", (PyObject *)&recoll_QueryType);
 
     if (PyType_Ready(&recoll_DocType) < 0)
         return;
-    Py_INCREF(&recoll_DocType);
+    Py_INCREF((PyObject*)&recoll_DocType);
     PyModule_AddObject(m, "Doc", (PyObject *)&recoll_DocType);
 
     if (PyType_Ready(&recoll_SearchDataType) < 0)
         return;
-    Py_INCREF(&recoll_SearchDataType);
+    Py_INCREF((PyObject*)&recoll_SearchDataType);
     PyModule_AddObject(m, "SearchData", (PyObject *)&recoll_SearchDataType);
     PyModule_AddStringConstant(m, "__doc__",
                                pyrecoll_doc_string);

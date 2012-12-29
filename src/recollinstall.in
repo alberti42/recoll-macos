@@ -40,6 +40,7 @@ ROOTFORPYTHON=""
 if test -n "$DESTDIR" ; then
    PREFIX=$DESTDIR/$PREFIX
    bindir=$DESTDIR/$bindir
+   libdir=$DESTDIR/$libdir
    datadir=$DESTDIR/$datadir
    mandir=$DESTDIR/$mandir
    ROOTFORPYTHON="--root=${DESTDIR}"
@@ -67,6 +68,7 @@ test -x $TESTPROG || fatal "$TESTPROG does not exist." \
 
 for d in \
     ${bindir} \
+    ${libdir} \
     ${mandir}/man1 \
     ${mandir}/man5 \
     ${datadir}/icons \
