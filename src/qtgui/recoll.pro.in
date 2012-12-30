@@ -80,9 +80,10 @@ unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
-  # Expanding prefix here is not good as it means that it can't be
-  # redefined at make time.
-  LIBS += $(BSTATIC) -L../lib -lrecoll -Wl,-rpath=@prefix@/lib/recoll \
+  # Note: libdir may be substituted with sthing like $(exec_prefix)/lib
+  # at this point and will go as such in the Makefile. Expansion will be
+  # completed at make time.
+  LIBS += $(BSTATIC) -L../lib -lrecoll -Wl,-rpath=@libdir@/recoll \
        @LIBXAPIAN@ $(LIBXAPIANSTATICEXTRA) \
        @LIBICONV@ $(BDYNAMIC) @LIBQZEITGEIST@ -lz
 

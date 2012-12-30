@@ -4,7 +4,7 @@ include $(depth)/mk/sysconf
 PROGS = xadump recollq #trhist qtry qxtry 
 SRCS = xadump.cpp 
 
-all: depend $(PROGS) librecoll
+all: depend librecoll $(PROGS)
 
 XADUMP_OBJS= xadump.o 
 xadump : $(XADUMP_OBJS)
@@ -14,14 +14,14 @@ xadump.o : xadump.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c xadump.cpp
 
 RECOLLQ_OBJS= recollq.o 
-recollq : $(RECOLLQ_OBJS) librecoll
+recollq : $(RECOLLQ_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o recollq $(RECOLLQ_OBJS) \
 	       $(BSTATIC) $(LIBRECOLL) $(LIBXAPIAN) $(LIBICONV) $(BDYNAMIC) \
                $(LIBSYS)
 recollq.o : recollq.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_RECOLLQ -c recollq.cpp
 
-HISTORY_OBJS= trhist.o  $(BIGLIB) 
+HISTORY_OBJS= trhist.o
 trhist : $(HISTORY_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o trhist $(HISTORY_OBJS) \
 	       $(LIBICONV) $(LIBXAPIAN)
