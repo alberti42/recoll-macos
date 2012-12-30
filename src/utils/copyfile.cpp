@@ -110,10 +110,14 @@ bool renameormove(const char *src, const char *dst, string &reason)
     // Try to preserve modes, owner, times. This may fail for a number
     // of reasons
     if ((st1.st_mode & 0777) != (st.st_mode & 0777)) {
-        chmod(dst, st.st_mode&0777);
+        if (chmod(dst, st.st_mode&0777) != 0) {
+	    reason += string("Chmod ") + dst + "Error : " + strerror(errno);
+	}
     }
     if (st.st_uid != st1.st_uid || st.st_gid != st1.st_gid) {
-        chown(dst, st.st_uid, st.st_gid);
+        if (chown(dst, st.st_uid, st.st_gid) != 0) {
+	    reason += string("Chown ") + dst + "Error : " + strerror(errno);
+	}
     }
     struct timeval times[2];
     times[0].tv_sec = st.st_atime;
@@ -192,9 +196,13 @@ int main(int argc, const char **argv)
     if (!ret) {
         cerr << reason << endl;
         exit(1);
-    } 
-    exit(0);
+    }  else {
+	cout << "Succeeded" << endl;
+	if (!reason.empty()) {
+	    cout << "Warnings: " << reason << endl;
+	}
+	exit(0);
+    }
 }
-
 
 #endif
