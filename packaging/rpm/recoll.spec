@@ -1,5 +1,5 @@
 %define name recoll
-%define version 1.17.2
+%define version 3152
 %define release 0
 
 Name:           %{name}
@@ -40,6 +40,7 @@ make %{?_smp_mflags}
 %install
 rm -rf $RPM_BUILD_ROOT
 %makeinstall
+%{__chmod} 0755 $RPM_BUILD_ROOT/%{_libdir}/%{name}/lib%{name}.so.%{version}
 
 # ---------------------------------------------------------------------------
 
@@ -52,6 +53,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %{_bindir}/*
 %{python_sitearch}/
+%{_libdir}/%{name}
+%{_libdir}/%{name}/lib%{name}.so.%{version}
 %{_datadir}/%{name}
 %{_datadir}/applications/recoll-searchgui.desktop
 %{_datadir}/icons/hicolor/48x48/apps/recoll.png

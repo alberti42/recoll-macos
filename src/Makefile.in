@@ -17,7 +17,7 @@ all: mk/sysconf
 	${MAKE} -C index recollindex
 	@NOQTMAKE@(cd $(QTGUI); ${QMAKE} recoll.pro)
 	@NOQTMAKE@${MAKE} -C $(QTGUI) depth=..
-	@NOPYTHON@${MAKE} -C python/recoll
+	@NOPYTHON@${MAKE} -C python/recoll libdir=$(libdir)
 	${MAKE} -C query recollq xadump
 
 mk/sysconf:

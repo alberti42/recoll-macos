@@ -35,7 +35,7 @@ export QMAKE=qmake-qt4
 %install
 %{__rm} -rf %{buildroot}
 %{__make} install DESTDIR=%{buildroot} STRIP=/bin/true INSTALL='install -p'
-%{__chmod} 0755 %{buildroot}/%{_libdir}/lib%{name}.so.%{version}
+%{__chmod} 0755 %{buildroot}/%{_libdir}/%{name}/lib%{name}.so.%{version}
 
 desktop-file-install --delete-original \
   --dir=%{buildroot}/%{_datadir}/applications \
@@ -72,7 +72,8 @@ exit 0
 %doc COPYING ChangeLog README
 %{_bindir}/%{name}
 %{_bindir}/%{name}index
-%{_libdir}/lib%{name}.so.%{version}
+%{_libdir}/%{name}
+%{_libdir}/%{name}/lib%{name}.so.%{version}
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}-searchgui.desktop
 %{_datadir}/icons/hicolor/48x48/apps/%{name}.png

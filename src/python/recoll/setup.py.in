@@ -5,18 +5,9 @@ import sys
 sysname = os.uname()[0]
 top = os.path.join('..', '..')
 
-libiconv = "@LIBICONV@"
-
-if libiconv.find("-liconv") != -1:
-    libs = ['recoll', 'xapian', 'iconv']
-else:
-    libs = ['recoll', 'xapian']
-
-libxapiandir="@LIBXAPIANDIR@"
-if libxapiandir != "":
-    libdirs = [os.path.join(top, 'lib'), libxapiandir, '/usr/local/lib']
-else:
-    libdirs = [os.path.join(top, 'lib'), '/usr/local/lib']
+library_dirs = [os.path.join(top, 'lib')]
+libraries = ['recoll']
+runtime_library_dirs = [os.path.join(os.environ['libdir'], 'recoll')]
 
 # Verify that the Recoll library was compiled with the PIC options
 localdefs = os.path.join(top, 'mk', 'localdefs')
@@ -48,9 +39,9 @@ module1 = Extension('recoll',
                                     os.path.join(top, 'query'), 
                                     os.path.join(top, 'unac')
                                     ],
-                    libraries = libs,
-                    library_dirs = libdirs,
-                    runtime_library_dirs = libdirs,
+                    libraries = libraries,
+                    library_dirs = library_dirs,
+                    runtime_library_dirs = runtime_library_dirs,
                     sources = ['pyrecoll.cpp'])
 
 module2 = Extension('rclextract',
@@ -65,9 +56,9 @@ module2 = Extension('rclextract',
                                     os.path.join(top, 'internfile'), 
                                     os.path.join(top, 'rcldb'), 
                                     ],
-                    libraries = libs,
-                    library_dirs = libdirs,
-                    runtime_library_dirs = libdirs,
+                    libraries = libraries,
+                    library_dirs = library_dirs,
+                    runtime_library_dirs = runtime_library_dirs,
                     sources = ['pyrclextract.cpp'])
 
 setup (name = 'Recoll',
