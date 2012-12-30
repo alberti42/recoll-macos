@@ -1,0 +1,69 @@
+Source: recoll
+Section: x11
+Priority: optional
+Maintainer: Kartik Mistry <kartik@debian.org>
+Build-Depends: autotools-dev,
+               debhelper (>= 7),
+               hardening-wrapper,
+               libqt4-dev,
+               libqtwebkit-dev,
+               libx11-dev,
+               libxapian-dev (>= 1.0.15),
+               libz-dev,
+               python-all-dev (>= 2.6.6-3~)
+Standards-Version: 3.9.3
+X-Python-Version: >= 2.7
+Homepage: http://www.lesbonscomptes.com/recoll
+Vcs-Git: git://anonscm.debian.org/collab-maint/recoll.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/recoll.git;a=summary
+
+Package: recoll
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Recommends: aspell, python, xdg-utils, xsltproc
+Suggests: antiword,
+          catdoc,
+          ghostscript,
+          libimage-exiftool-perl,
+          poppler-utils,
+          pstotext,
+          python-chm,
+          python-mutagen,
+          unrtf,
+          untex
+Description: Personal full text search package with a Qt GUI
+ This package is a personal full text search package is based on a very strong
+ backend (Xapian), for which it provides an easy to use and feature-rich
+ interface.
+ .
+ Features:
+  * Qt-based GUI
+  * Supports the following document types (and their compressed versions)
+   - Natively: text, html, OpenOffice files, maildir and mailbox (Mozilla and
+     IceDove mail) with attachments, pidgin log files
+   - With external helpers:  pdf (pdftotext), postscript (ghostscript), msword
+     (antiword), excel, ppt (catdoc), rtf (unrtf)
+  * Powerful query facilities, with boolean searches, phrases, filter on file
+    types and directory tree
+  * Support for multiple charsets, Internal processing and storage uses Unicode
+    UTF-8
+  * Stemming performed at query time (can switch stemming language after
+    indexing)
+  * Easy installation. No database daemon, web server or exotic language
+    necessary
+  * An indexer which runs either as a thread inside the GUI or as an external,
+    cron'able program
+
+Package: python-recoll
+Architecture: any
+Section: python
+Depends: recoll (>= ${source:Version}),
+         ${misc:Depends},
+         ${python:Depends},
+         ${shlibs:Depends}
+Description: Python extension for recoll
+ Personal full text search package which is based on a very strong backend
+ (Xapian), for which it provides an easy to use and feature-rich interface.
+ .
+ This package provides Python extension module for recoll which can be use to
+ extend recoll such as an Ubuntu Unity Lens.
