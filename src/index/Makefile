@@ -4,10 +4,10 @@ include $(depth)/mk/sysconf
 PROGS = recollindex 
 SRCS = recollindex.cpp rclmonrcv.cpp rclmonprc.cpp
 
-all: depend $(PROGS) librecoll
+all: depend librecoll $(PROGS)
 
 RECOLLINDEX_OBJS= recollindex.o rclmonrcv.o rclmonprc.o 
-recollindex : $(RECOLLINDEX_OBJS) librecoll
+recollindex : $(RECOLLINDEX_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) $(RECOLL_LDFLAGS) -o recollindex \
                $(RECOLLINDEX_OBJS) \
 	       $(BSTATIC) $(LIBRECOLL) $(LIBXAPIAN) $(LIBXAPIANSTATICEXTRA) \

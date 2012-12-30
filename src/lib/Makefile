@@ -18,7 +18,7 @@ librecoll.a : $(DEPS) $(OBJS)
 # no effort whatsoever to maintain any kind of ABI compat in this lib. Only
 # programs or modules from the same Recoll release can be compatible.
 $(LIBRECOLL): $(DEPS) $(OBJS)
-	g++ -shared -Wl,--no-undefined -Wl,-rpath=$(libdir)           -Wl,-soname=$(LIBRECOLL) -o $(LIBRECOLL) $(OBJS)            -lxapian -lz -lX11 -lpthread -ldl
+	g++ -shared -Wl,--no-undefined           -Wl,-soname=$(LIBRECOLL) -o $(LIBRECOLL) $(OBJS)            -lxapian -lz -lX11 -lpthread -ldl
 	rm -f librecoll.so
 	ln -s $(LIBRECOLL) librecoll.so
 
