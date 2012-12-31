@@ -7,11 +7,11 @@ top = os.path.join('..', '..')
 
 library_dirs = [os.path.join(top, 'lib')]
 libraries = ['recoll']
-runtime_library_dirs = []
-try:
+
+if os.environ.has_key('libdir') and os.environ['libdir'] != "":
     runtime_library_dirs = [os.path.join(os.environ['libdir'], 'recoll')]
-except:
-    pass
+else:
+    runtime_library_dirs = [os.path.join('@prefix@', 'lib', 'recoll')]
 
 # Verify that the Recoll library was compiled with the PIC options
 localdefs = os.path.join(top, 'mk', 'localdefs')
