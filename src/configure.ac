@@ -163,9 +163,10 @@ if test X$withFam != Xno ; then
    fi
 fi
 
-# Enable use of file extended attributes. 
-# Not by default as extended attributes are little used for now, and
-# looking for them is not completely trivial
+# Enable use of file extended attributes.  Not by default as extended
+# attributes are little used for now, and looking for them is not
+# completely trivial: we have to use ctime instead of mtime to detect
+# changes.
 AC_ARG_ENABLE(xattr,
     AC_HELP_STRING([--enable-xattr],
    [Enable fetching metadata from file extended attributes. This is only

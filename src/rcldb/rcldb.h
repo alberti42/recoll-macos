@@ -368,7 +368,6 @@ class Db {
 
     /* This has to be public for access by embedded Query::Native */
     Native *m_ndb; 
-    bool purgeFileWrite(const string& udi, const string& uniterm);
 private:
     const RclConfig *m_config;
     string     m_reason; // Error explanation
@@ -379,8 +378,6 @@ private:
     // File existence vector: this is filled during the indexing pass. Any
     // document whose bit is not set at the end is purged
     vector<bool> updated;
-    // Stop terms: those don't get indexed.
-    StopList m_stops;
     // Text bytes indexed since beginning
     long long    m_curtxtsz;
     // Text bytes at last flush
@@ -393,6 +390,8 @@ private:
     /***************
      * Parameters cached out of the configuration files. Logically const 
      * after init */
+    // Stop terms: those don't get indexed.
+    StopList m_stops;
     // This is how long an abstract we keep or build from beginning of
     // text when indexing. It only has an influence on the size of the
     // db as we are free to shorten it again when displaying
@@ -415,6 +414,11 @@ private:
     // between releases the index remains available while being recreated.
     static bool o_inPlaceReset;
     /******* End logical constnesss */
+
+#ifdef IDX_THREADS
+    friend void *DbUpdWorker(void*);
+#endif // IDX_THREADS
+    bool purgeFileWrite(const string& udi, const string& uniterm);
 
     // Internal form of close, can be called during destruction
     bool i_close(bool final);

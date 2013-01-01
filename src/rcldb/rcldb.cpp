@@ -500,11 +500,10 @@ bool Db::i_close(bool final)
 	    if (!m_ndb->m_noversionwrite)
 		m_ndb->xwdb.set_metadata(cstr_RCL_IDX_VERSION_KEY, cstr_RCL_IDX_VERSION);
 	    LOGDEB(("Rcl::Db:close: xapian will close. May take some time\n"));
-	}
 #ifdef IDX_THREADS
-	waitUpdIdle();
+	    waitUpdIdle();
 #endif
-	// Used to do a flush here. Cant see why it should be necessary.
+	}
 	deleteZ(m_ndb);
 	if (w)
 	    LOGDEB(("Rcl::Db:close() xapian close done.\n"));
@@ -1490,9 +1489,8 @@ bool Db::purge()
 bool Db::docExists(const string& uniterm)
 {
 #ifdef IDX_THREADS
-    // If we're not running our own (single) thread, need to protect
-    // read db against multiaccess (e.g. from needUpdate(), or this method).
-    PTMutexLocker lock(m_ndb->m_mutex, m_ndb->m_havewriteq);
+    // Need to protect read db against multiaccess. 
+    PTMutexLocker lock(m_ndb->m_mutex);
 #endif
 
     string ermsg;
@@ -1543,10 +1541,11 @@ bool Db::purgeFile(const string &udi, bool *existed)
 bool Db::purgeFileWrite(const string& udi, const string& uniterm)
 {
 #if defined(IDX_THREADS) 
-    // If we have a write queue we're called from there, and single
-    // threaded, no locking.  Else need to mutex other threads from
-    // above
-    PTMutexLocker lock(m_ndb->m_mutex, m_ndb->m_havewriteq);
+    // We need a mutex even if we have a write queue (so we can only
+    // be called by a single thread) to protect about multiple acces
+    // to xrdb from subDocs() which is also called from needupdate()
+    // (called from outside the write thread !
+    PTMutexLocker lock(m_ndb->m_mutex);
 #endif // IDX_THREADS
 
     Xapian::WritableDatabase db = m_ndb->xwdb;
