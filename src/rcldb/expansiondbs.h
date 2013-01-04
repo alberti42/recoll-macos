@@ -22,10 +22,15 @@
 
 #include <xapian.h>
 
+/** Specialization and overall creation code for the term expansion mechanism
+ * defined in synfamily.h
+ */
 namespace Rcl {
 
 /** A Capitals/Diacritics removal functor for using with
- *  XapComputableSynFamMember */
+ * XapComputableSynFamMember. The input term transformation always uses
+ * UNACFOLD. Post-expansion filtering uses either UNAC or FOLD 
+ */
 class SynTermTransUnac : public SynTermTrans {
 public:
     /** Constructor
@@ -46,9 +51,7 @@ public:
     UnacOp m_op;
 };
 
-/** Walk the Xapian term list and create all the expansion dbs in one go.
- * 
- */
+/** Walk the Xapian term list and create all the expansion dbs in one go. */
 extern bool createExpansionDbs(Xapian::WritableDatabase& wdb, 
 			       const std::vector<std::string>& langs);
 }
