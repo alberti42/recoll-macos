@@ -480,6 +480,8 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 #else // TEST
 
 #include <stdio.h>
+#include <stdlib.h>
+
 #include "wasastringtoquery.h"
 
 static char *thisprog;
