@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Recoll 1.19 series release notes</title>
+
+    <meta name="generator" content="HTML Tidy, see www.w3.org">
+    <meta name="Author" content="Jean-Francois Dockes">
+    <meta name="Description" content=
+	  "recoll is a simple full-text search system for unix and linux
+	   based on the powerful and mature xapian engine">
+    <meta name="Keywords" content=
+	  "full text search, desktop search, unix, linux">
+    <meta http-equiv="Content-language" content="en">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="robots" content="All,Index,Follow">
+
+    <link type="text/css" rel="stylesheet" href="styles/style.css">
+  </head>
+
+  <body>
+    
+    <div class="rightlinks">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="download.html">Downloads</a></li>
+        <li><a href="doc.html">Documentation</a></li>
+      </ul>
+    </div>
+    
+    <div class="content">
+
+      <h1>Release notes for Recoll 1.19.x</h1>
+
+
+      <h2>Caveats</h2>
+
+      <p><em>Installing over an older version</em>: 1.19 
+        </p>
+
+      <p>Case/diacritics sensitivity is still off by default for this
+        release. It can be turned on <em>only</em> by editing recoll.conf
+        (<a href="usermanual/usermanual.html#RCL.INDEXING.CONFIG.SENS">
+          see the manual</a>). If you do so, you must then reset the index.</p>
+
+      <p>Always reset the index if you do not know by which version it
+        was created (you're not sure it's 1.18). The simplest way to
+        do this is to quit all recoll programs and just delete the
+        index directory
+        (<span class="literal">rm&nbsp;-rf&nbsp;~/.recoll/xapiandb</span>),
+        then start recoll or
+        recollindex.  <span class="literal">recollindex&nbsp;-z</span>
+        &nbsp;will do the same in most, but not all, cases, it's
+        better to use the <tt>rm</tt> method, which will also ensure
+        that no debris from older releases remain (e.g.: old stemming
+        files which are not used any more).</p>
+
+      <p><span class="important">Viewer exceptions</span>: 
+        There is a new list of mime types that should be opened with
+        the locally configured application even when <em>Use
+          Desktop Preferences</em> is checked. This allows making
+        use of new functions (direct access to page), which could not
+        be available through the desktop's <tt>xdg-open</tt>.  The
+        default list contains PDF, Postscript and DVI, which should be
+        opened with the <em>evince</em> (or <em>atril</em> for
+        Mint/MATE users) viewer for the page access functions to
+        work. If you want to keep the previous behaviour (losing the
+        page number functionality), you need to prune the list after
+        installation . This can be done from the <em>Preferences->Gui
+        Configuration</em> menu.</p>
+
+      <h2>Changes</h2>
+
+      <p>Recoll 1.19 .... Changes documented from 1.18.1 to rev 3159</p> 
+
+      <ul>
+        <li>There are new GUI configuration options to run in "search
+          as you type" mode, and to disable the Qt auto-completion
+          inside the simple search string, which was often more confusing
+          and ennoying than useful.</li>
+
+        <li>The software can now be built so that indexing is runs with
+        multiple threads. This can be a major performance boost for
+        people with multiprocessor machines and big indexes. It is not
+        enabled by default for now, you will need to build from
+        source. I wrote some 
+          <a href="http://www.recoll.org/idxthreads/threadingRecoll.html">notes
+            about the transformation and the performance improvements</a>.</li>
+
+        <li>The Python module has been expanded to include the
+          interface for extracting data. This means that you could now
+          write most of the Recoll GUI in Python if you wished. There
+          is
+          a <a href="https://bitbucket.org/medoc/recoll/src/5b4bd9ef26a1/src/python/samples/recollgui/qrecoll.py?at=default">bit
+          of sample code</a> in the source package doing just this. A
+          few incompatible changes had to be made to the Python
+          module. Especially the "Query.next" field is gone and the
+          module structure has been changed (different import
+          statement needed). Adapting your code is trivial, have a
+          look at the changes in
+          the <a href="https://bitbucket.org/medoc/recoll/src/5b4bd9ef26a10912bf8bd833fe6c084bd5a7bdbd/src/desktop/unity-lens-recoll/recollscope/rclsearch.py?at=default">Unity
+          Lens module</a> for an example. The new module is compatible
+          with
+          the <a href="http://www.python.org/dev/peps/pep-0249/">Python
+          Database API Specification v2.0</a> for the parts that make
+          sense for a non-relational DB.</li>
+
+        <li>You can now access your Recoll indexes through a Web
+          browser interface. The server side is based on
+          the <a href="http://bottlepy.org/docs/dev/">Bottle Python
+            Web frameork</a> and the Recoll Python module, and can run
+            self-contained (no necessity to run apache or another web
+            server), so it's quite simple to set up. See:
+          the expanded Python module. See
+          the <a href="https://github.com/koniu/recoll-webui/">Recoll
+          WebUI</a> on GitHub. </li>
+
+        <li>Recoll now uses a dynamic library for the code shared by
+          the query interface, the indexer and the Python
+          module. This should have no visible impact but was rendered
+          necessary by the Python module evolutions.</li>
+
+        <li>Fixed bugs:
+          <ul>
+          </ul>
+        </li>
+
+      </ul>
+
+
+    </div>
+  </body>
+</html>
