@@ -134,10 +134,17 @@ public:
     }
 
     /** Expand a term to its list of synonyms. If filtertrans is set we 
-     * keep only the results which transform to the same value as the input */
+     * keep only the results which transform to the same value as the input 
+     * This is used for example for filtering the result of case+diac
+     * expansion when only either case or diac expansion is desired.
+     */
     bool synExpand(const std::string& term, std::vector<std::string>& result,
 		   SynTermTrans *filtertrans = 0);
     
+    /** Expand key to wildcard/regexp  matching keys */
+    bool keyWildExpand(const std::string& in, std::vector<std::string>& result,
+		       SynTermTrans *filtertrans = 0);
+
 private:
     XapSynFamily m_family;
     std::string  m_membername;
@@ -199,15 +206,18 @@ private:
 //
 // Prefixes are centrally defined here to avoid collisions
 //
-// Stem expansion family prefix. The family member name is the
-// language ("all" for Dia and Cse)
 
-// Lowercase accented stem to expansion
+// Lowercase accented stem to expansion. Family member name: language
 static const std::string synFamStem("Stm");
-// Lowercase unaccented stem to expansion
+
+// Lowercase unaccented stem to expansion. Family member name: language
 static const std::string synFamStemUnac("StU");
-// Lowercase unaccented term to case and accent variations
+
+// Lowercase unaccented term to case and accent variations. Only one
+// member, named "all". This set is used for separate case/diac
+// expansion by post-filtering the results of dual expansion.
 static const std::string synFamDiCa("DCa");
-}
+
+} // end namespace Rcl
 
 #endif /* _SYNFAMILY_H_INCLUDED_ */

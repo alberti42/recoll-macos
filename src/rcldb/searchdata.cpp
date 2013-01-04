@@ -545,7 +545,7 @@ static void listVector(const string& what, const vector<string>&l)
  *
  * @param mods stem expansion, case and diacritics sensitivity control.
  * @param term input single word
- * @param exp output expansion list
+ * @param oexp output expansion list
  * @param sterm output original input term if there were no wildcards
  * @param prefix field prefix in index. We could recompute it, but the caller
  *  has it already. Used in the simple case where there is nothing to expand, 
@@ -578,15 +578,15 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
     if (!haswild)
 	m_hldata.uterms.insert(term);
 
-    bool nostemexp = (mods & SearchDataClause::SDCM_NOSTEMMING) != 0;
-
     // No stem expansion if there are wildcards or if prevented by caller
+    bool nostemexp = (mods & SearchDataClause::SDCM_NOSTEMMING) != 0;
     if (haswild || getStemLang().empty()) {
 	LOGDEB2(("expandTerm: found wildcards or stemlang empty: no exp\n"));
 	nostemexp = true;
     }
 
-    bool noexpansion = nostemexp && !haswild;
+    // noexpansion can be modified further down by possible case/diac expansion
+    bool noexpansion = nostemexp && !haswild; 
 
 #ifndef RCL_INDEX_STRIPCHARS
     bool diac_sensitive = (mods & SearchDataClause::SDCM_DIACSENS) != 0;
@@ -637,20 +637,42 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 	return true;
     } 
 
-    // Make objects before the goto jungle to avoid compiler complaints
+    // The case/diac expansion db
     SynTermTransUnac unacfoldtrans(UNACOP_UNACFOLD);
     XapComputableSynFamMember synac(db.m_ndb->xrdb, synFamDiCa, "all", 
 				    &unacfoldtrans);
-    // This will hold the result of case and diacritics expansion as input
-    // to stem expansion.
-    vector<string> lexp;
-    
     TermMatchResult res;
+
     if (haswild) {
-	// Note that if there are wildcards, we do a direct from-index
-	// expansion, which means that we are casediac-sensitive. There
-	// would be nothing to prevent us to expand from the casediac
-	// synonyms first. To be done later
+#ifndef RCL_INDEX_STRIPCHARS
+	if (!o_index_stripchars && (!diac_sensitive || !case_sensitive)) {
+	    // Perform case/diac expansion on the exp as appropriate and
+	    // expand the result.
+	    vector<string> exp;
+	    if (diac_sensitive) {
+		// Expand for diacritics and case, filtering for same diacritics
+		SynTermTransUnac foldtrans(UNACOP_FOLD);
+		synac.keyWildExpand(term, exp, &foldtrans);
+	    } else if (case_sensitive) {
+		// Expand for diacritics and case, filtering for same case
+		SynTermTransUnac unactrans(UNACOP_UNAC);
+		synac.keyWildExpand(term, exp, &unactrans);
+	    } else {
+		// Expand for diacritics and case, no filtering
+		synac.keyWildExpand(term, exp);
+	    }
+	    // There are no wildcards in the result from above but
+	    // calling termMatch gets the result into the right form
+	    for (vector<string>::const_iterator it = exp.begin(); 
+		 it != exp.end(); it++) {
+		db.termMatch(Rcl::Db::ET_WILD, getStemLang(), *it, res, 
+			     maxexpand, m_field);
+	    }
+	}
+#endif // RCL_INDEX_STRIPCHARS
+
+	// Expand the original wildcard expression even if we did the
+	// case/diac dance above,
 	db.termMatch(Rcl::Db::ET_WILD, getStemLang(), term, res, 
 		     maxexpand, m_field);
 	goto termmatchtoresult;
@@ -670,76 +692,61 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 	// nostemexp is unset and we just need stem expansion.
 	db.termMatch(Rcl::Db::ET_STEM, getStemLang(), term, res, 
 		     maxexpand, m_field);
-	goto termmatchtoresult;
-    } 
-
-    // No stem expansion when diacritic or case sensitivity is set, it
-    // makes no sense (it would mess with the diacritics anyway if
-    // they are not in the stem part).  In these 3 cases, perform
-    // appropriate expansion from the charstripping db, and do a bogus
-    // wildcard expansion (there is no wild card) to generate the
-    // result:
-
-    if (diac_sensitive && case_sensitive) {
-	// No expansion whatsoever. 
-	lexp.push_back(term);
-	goto exptotermatch;
-    } else if (diac_sensitive) {
-	// Expand for accents and case, filtering for same accents,
-	SynTermTransUnac foldtrans(UNACOP_FOLD);
-	synac.synExpand(term, lexp, &foldtrans);
-	goto exptotermatch;
-    } else if (case_sensitive) {
-	// Expand for accents and case, filtering for same case
-	SynTermTransUnac unactrans(UNACOP_UNAC);
-	synac.synExpand(term, lexp, &unactrans);
-	goto exptotermatch;
     } else {
-	// We are neither accent- nor case- sensitive and may need stem
-	// expansion or not. Expand for accents and case
-	synac.synExpand(term, lexp);
-	if (nostemexp)
-	    goto exptotermatch;
-    }
+	vector<string> lexp;
+	if (diac_sensitive && case_sensitive) {
+	    // No expansion whatsoever. 
+	    lexp.push_back(term);
+	} else if (diac_sensitive) {
+	    // Expand for accents and case, filtering for same accents,
+	    SynTermTransUnac foldtrans(UNACOP_FOLD);
+	    synac.synExpand(term, lexp, &foldtrans);
+	} else if (case_sensitive) {
+	    // Expand for accents and case, filtering for same case
+	    SynTermTransUnac unactrans(UNACOP_UNAC);
+	    synac.synExpand(term, lexp, &unactrans);
+	} else {
+	    // We are neither accent- nor case- sensitive and may need stem
+	    // expansion or not. Expand for accents and case
+	    synac.synExpand(term, lexp);
+	}
 
-    // Need stem expansion. Lowercase the result of accent and case
-    // expansion for input to stemdb.
-    for (unsigned int i = 0; i < lexp.size(); i++) {
-	string lower;
-	unacmaybefold(lexp[i], lower, "UTF-8", UNACOP_FOLD);
-	lexp[i] = lower;
-    }
-    sort(lexp.begin(), lexp.end());
-    {
-	vector<string>::iterator uit = unique(lexp.begin(), lexp.end());
-	lexp.resize(uit - lexp.begin());
-	StemDb sdb(db.m_ndb->xrdb);
-	vector<string> exp1;
-	for (vector<string>::const_iterator it = lexp.begin(); 
+	if (!nostemexp) {
+	    // Need stem expansion. Lowercase the result of accent and case
+	    // expansion for input to stemdb.
+	    for (unsigned int i = 0; i < lexp.size(); i++) {
+		string lower;
+		unacmaybefold(lexp[i], lower, "UTF-8", UNACOP_FOLD);
+		lexp[i] = lower;
+	    }
+	    sort(lexp.begin(), lexp.end());
+	    lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
+	    StemDb sdb(db.m_ndb->xrdb);
+	    vector<string> exp1;
+	    for (vector<string>::const_iterator it = lexp.begin(); 
+		 it != lexp.end(); it++) {
+		sdb.stemExpand(getStemLang(), *it, exp1);
+	    }
+	    LOGDEB(("ExpTerm: stem exp-> %s\n", stringsToString(exp1).c_str()));
+
+	    // Expand the resulting list for case (all stemdb content
+	    // is lowercase)
+	    lexp.clear();
+	    for (vector<string>::const_iterator it = exp1.begin(); 
+		 it != exp1.end(); it++) {
+		synac.synExpand(*it, lexp);
+	    }
+	    sort(lexp.begin(), lexp.end());
+	    lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
+	}
+
+	// Bogus wildcard expand to generate the result (possibly add prefixes)
+	LOGDEB(("ExpandTerm:TM: lexp: %s\n", stringsToString(lexp).c_str()));
+	for (vector<string>::const_iterator it = lexp.begin();
 	     it != lexp.end(); it++) {
-	    sdb.stemExpand(getStemLang(), *it, exp1);
+	    db.termMatch(Rcl::Db::ET_WILD, getStemLang(), *it, res,
+			 maxexpand, m_field);
 	}
-	LOGDEB(("ExpTerm: stem exp-> %s\n", stringsToString(exp1).c_str()));
-
-	// Expand the resulting list for case (all stemdb content
-	// is lowercase)
-	lexp.clear();
-	for (vector<string>::const_iterator it = exp1.begin(); 
-	     it != exp1.end(); it++) {
-	    synac.synExpand(*it, lexp);
-	}
-	sort(lexp.begin(), lexp.end());
-	uit = unique(lexp.begin(), lexp.end());
-	lexp.resize(uit - lexp.begin());
-    }
-
-    // Bogus wildcard expand to generate the result (possibly add prefixes)
-exptotermatch:
-    LOGDEB(("ExpandTerm:TM: lexp: %s\n", stringsToString(lexp).c_str()));
-    for (vector<string>::const_iterator it = lexp.begin();
-	 it != lexp.end(); it++) {
-	db.termMatch(Rcl::Db::ET_WILD, getStemLang(), *it, res,
-		     maxexpand, m_field);
     }
 #endif
 

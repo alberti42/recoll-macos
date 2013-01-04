@@ -18,10 +18,13 @@
 
 #include "autoconfig.h"
 
+#include <fnmatch.h>
+
 #include <iostream>
 #include <algorithm>
 
 #include "debuglog.h"
+#include "cstr.h"
 #include "xmacros.h"
 #include "synfamily.h"
 #include "smallut.h"
@@ -140,8 +143,6 @@ bool XapComputableSynFamMember::synExpand(const string& term,
     if (filtertrans)
 	filter_root = (*filtertrans)(term);
 
-    /* We could call XapSynFamily::synExpand() here instead of doing it
-       ourselves... */
     string key = m_prefix + root;
 
     LOGDEB(("XapCompSynFamMbr::synExpand([%s]): term [%s] root [%s] \n", 
@@ -181,7 +182,98 @@ bool XapComputableSynFamMember::synExpand(const string& term,
     return true;
 }
 
+
+bool XapComputableSynFamMember::keyWildExpand(const string& inexp,
+					      vector<string>& result,
+					      SynTermTrans *filtertrans)
+{
+    LOGDEB(("XapCompSynFam::keyWildExpand: [%s]\n", inexp.c_str()));
+    
+    // Transform input into our key format (e.g.: case-folded + diac-stripped)
+    string stripped_exp = (*m_trans)(inexp);
+
+    // If set, compute filtering term (e.g.: only case-folded)
+    string filter_exp;
+    if (filtertrans)
+	filter_exp = (*filtertrans)(inexp);
+
+    // Find the initial section before any special chars
+    string::size_type es = stripped_exp.find_first_of(cstr_wildSpecStChars);
+    string is; // Initial section
+    switch (es) {
+    case string::npos: 
+	// No special chars, no expansion.
+	result.push_back(inexp);
+	return true;
+	break;
+    case 0: 
+	// Input starts with special char: start at bottom
+	is = m_prefix; 
+	break;
+    default: 
+	// Compute initial section
+	is = m_prefix + stripped_exp.substr(0, es); 
+	break;
+    }
+
+    // Input to matching: prefix + transformed input
+    string matchin = m_prefix + stripped_exp;
+    string::size_type preflen = m_prefix.size();
+
+    string ermsg;
+    try {
+        for (Xapian::TermIterator xit = m_family.getdb().synonym_keys_begin(is);
+             xit != m_family.getdb().synonym_keys_end(is); xit++) {
+	    LOGDEB(("  Checking1 [%s] against [%s]\n", (*xit).c_str(),
+		    matchin.c_str()));
+	    if (fnmatch(matchin.c_str(), (*xit).c_str(), 0) == FNM_NOMATCH)
+		continue;
+
+	    // Push all the synonyms if they match the secondary filter
+	    for (Xapian::TermIterator xit1 = 
+		     m_family.getdb().synonyms_begin(*xit);
+		 xit1 != m_family.getdb().synonyms_end(*xit); xit1++) {
+		string term = *xit1;
+		if (filtertrans) {
+		    string term1 = (*filtertrans)(term);
+		    LOGDEB((" Testing [%s] against [%s]\n", 
+			    term1.c_str(), filter_exp.c_str()));
+		    if (fnmatch(filter_exp.c_str(), 
+				term1.c_str(), 0) == FNM_NOMATCH) {
+			continue;
+		    }
+		}
+		LOGDEB(("XapCompSynFam::keyWildExpand: Pushing %s\n", 
+			(*xit1).c_str()));
+		result.push_back(*xit1);
+	    }
+	    // Same with key itself
+	    string term = (*xit).substr(preflen);
+	    if (filtertrans) {
+		string term1 = (*filtertrans)(term);
+		LOGDEB((" Testing [%s] against [%s]\n", 
+			term1.c_str(), filter_exp.c_str()));
+		if (fnmatch(filter_exp.c_str(), 
+			    term1.c_str(), 0) == FNM_NOMATCH) {
+		    continue;
+		}
+	    }
+	    LOGDEB(("XapCompSynFam::keyWildExpand: Pushing [%s]\n", 
+		    term.c_str()));
+	    result.push_back(term);
+        }
+    } XCATCHERROR(ermsg);
+    if (!ermsg.empty()) {
+        LOGERR(("XapCompSynFam::keyWildExpand: error: term [%s]\n",
+                inexp.c_str()));
+        result.push_back(inexp);
+        return false;
+    }
+    return true;
 }
+
+
+} // Namespace Rcl
 
 #else  // TEST_SYNFAMILY 
 #include "autoconfig.h"
