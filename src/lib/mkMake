@@ -2,6 +2,7 @@
 
 mk=Makefile
 depth=${depth:-..}
+sys=`uname`
 
 SRC_CPP="\
 ${depth}/aspell/rclaspell.cpp \
@@ -110,13 +111,18 @@ defs=\$\(depth\)/mk/localdefs
 
 test -f $mk && chmod +w $mk
 
+if test $sys = "Darwin";then
+  NODYNLIB='#'
+fi
+  
 cat > $mk <<EOF
 # DONT EDIT BY HAND: created by script mkMake
 depth = ${depth}
 include \$(depth)/mk/sysconf
 
 LIBRECOLL=librecoll.so.\$(RCLLIBVERSION)
-LIBS = librecoll.a \$(LIBRECOLL)
+LIBS = librecoll.a
+${NODYNLIB}LIBS = librecoll.a \$(LIBRECOLL)
 
 all: \$(LIBS) 
 

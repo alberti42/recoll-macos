@@ -83,8 +83,13 @@ unix {
   # Note: libdir may be substituted with sthing like $(exec_prefix)/lib
   # at this point and will go as such in the Makefile. Expansion will be
   # completed at make time.
-  LIBS += $(BSTATIC) -L../lib -lrecoll -Wl,-rpath=@libdir@/recoll \
-       @LIBXAPIAN@ $(LIBXAPIANSTATICEXTRA) \
+  LIBS += $(BSTATIC) -L../lib -lrecoll
+
+  !macx {
+    LIBS += -Wl,-rpath=@libdir@/recoll
+  }
+
+  LIBS +=  @LIBXAPIAN@ $(LIBXAPIANSTATICEXTRA) \
        @LIBICONV@ $(BDYNAMIC) @LIBQZEITGEIST@ -lz
 
   INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
@@ -101,6 +106,10 @@ contains( UNAME, [lL]inux ) {
 
 contains( UNAME, SunOS ) {
           LIBS += -ldl
+}
+
+macx {
+    ICON = images/recoll.icns
 }
 
 TRANSLATIONS = \

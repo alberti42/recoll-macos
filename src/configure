@@ -4341,9 +4341,10 @@ _ACEOF
    fi
 fi
 
-# Enable use of file extended attributes.
-# Not by default as extended attributes are little used for now, and
-# looking for them is not completely trivial
+# Enable use of file extended attributes.  Not by default as extended
+# attributes are little used for now, and looking for them is not
+# completely trivial: we have to use ctime instead of mtime to detect
+# changes.
 # Check whether --enable-xattr was given.
 if test "${enable_xattr+set}" = set; then :
   enableval=$enable_xattr; xattrEnabled=$enableval
