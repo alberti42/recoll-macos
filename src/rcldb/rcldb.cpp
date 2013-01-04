@@ -1693,12 +1693,6 @@ static void addPrefix(vector<TermMatchEntry>& terms, const string& prefix)
 	it->term.insert(0, prefix);
 }
 
-// Characters that can begin a wildcard or regexp expression. We use skipto
-// to begin the allterms search with terms that begin with the portion of
-// the input string prior to these chars.
-const string cstr_wildSpecChars = "*?[";
-const string cstr_regSpecChars = "(.[{";
-
 // Find all index terms that match a wildcard or regular expression
 // If field is set, we return a list of appropriately prefixed terms (which 
 // are going to be used to build a Xapian query).
@@ -1729,7 +1723,8 @@ bool Db::termMatch(MatchType typ, const string &lang,
 	    return false;
 	}
 
-    string nochars = typ == ET_WILD ? cstr_wildSpecChars : cstr_regSpecChars;
+    string nochars = typ == ET_WILD ? cstr_wildSpecStChars : 
+	cstr_regSpecStChars;
 
     string prefix;
     if (!field.empty()) {
