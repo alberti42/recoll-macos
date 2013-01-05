@@ -119,7 +119,12 @@ SearchDataClause *SearchClauseW::getClause()
     case 1:
 	return new SearchDataClauseSimple(SCLT_AND, text, field);
     case 2:
-	return new SearchDataClauseSimple(SCLT_EXCL, text, field);
+    {
+	SearchDataClauseSimple *cl = 
+	    new SearchDataClauseSimple(SCLT_OR, text, field);
+	cl->setexclude(true);
+	return cl;
+    }
     case 3:
 	return new SearchDataClauseDist(SCLT_PHRASE, text, 
 					proxSlackSB->value(), field);
@@ -139,9 +144,8 @@ void SearchClauseW::setFromClause(SearchDataClauseSimple *cl)
 {
     LOGDEB(("SearchClauseW::setFromClause\n"));
     switch(cl->getTp()) {
-    case SCLT_OR: tpChange(0); break;
+    case SCLT_OR: if (cl->getexclude()) tpChange(2); else tpChange(0); break;
     case SCLT_AND: tpChange(1); break;
-    case SCLT_EXCL: tpChange(2); break;
     case SCLT_PHRASE: tpChange(3); break;
     case SCLT_NEAR: tpChange(4); break;
     case SCLT_FILENAME:	tpChange(5); break;
@@ -154,7 +158,7 @@ void SearchClauseW::setFromClause(SearchDataClauseSimple *cl)
     QString field = QString::fromUtf8(cl->getfield().c_str()); 
 
     switch(cl->getTp()) {
-    case SCLT_OR: case SCLT_AND: case SCLT_EXCL:
+    case SCLT_OR: case SCLT_AND: 
     case SCLT_PHRASE: case SCLT_NEAR:
 	if (!field.isEmpty()) {
 	    int idx = fldCMB->findText(field);

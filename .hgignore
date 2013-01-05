@@ -7,6 +7,7 @@ syntax: glob
 src/Makefile
 src/autom4te.cache
 src/bincimapmime/alldeps
+src/common/alldeps
 src/common/autoconfig.h
 src/common/rclversion.h
 src/config.log
@@ -19,20 +20,19 @@ src/desktop/unity-lens-recoll/config.status
 src/desktop/unity-lens-recoll/data/recoll.lens
 src/desktop/unity-lens-recoll/data/unity-lens-recoll.service
 src/doc/user/HTML.manifest
-src/doc/user/index.html
 src/doc/user/RCL.INDEXING.CONFIG.html
-src/doc/user/RCL.INDEXING.html
 src/doc/user/RCL.INDEXING.MONITOR.html
 src/doc/user/RCL.INDEXING.PERIODIC.html
 src/doc/user/RCL.INDEXING.STORAGE.html
 src/doc/user/RCL.INDEXING.WEBQUEUE.html
+src/doc/user/RCL.INDEXING.html
 src/doc/user/RCL.INSTALL.BUILDING.html
 src/doc/user/RCL.INSTALL.CONFIG.html
 src/doc/user/RCL.INSTALL.EXTERNAL.html
 src/doc/user/RCL.INSTALL.html
-src/doc/user/RCL.INTRODUCTION.html
 src/doc/user/RCL.INTRODUCTION.RECOLL.html
 src/doc/user/RCL.INTRODUCTION.SEARCH.html
+src/doc/user/RCL.INTRODUCTION.html
 src/doc/user/RCL.KICKER-APPLET.html
 src/doc/user/RCL.PROGRAM.API.html
 src/doc/user/RCL.PROGRAM.FIELDS.html
@@ -44,7 +44,6 @@ src/doc/user/RCL.SEARCH.COMPLEX.html
 src/doc/user/RCL.SEARCH.CUSTOM.html
 src/doc/user/RCL.SEARCH.DESKTOP.html
 src/doc/user/RCL.SEARCH.HISTORY.html
-src/doc/user/RCL.SEARCH.html
 src/doc/user/RCL.SEARCH.KIO.html
 src/doc/user/RCL.SEARCH.LANG.html
 src/doc/user/RCL.SEARCH.MULTIDB.html
@@ -54,9 +53,11 @@ src/doc/user/RCL.SEARCH.SORT.html
 src/doc/user/RCL.SEARCH.TERMEXPLORER.html
 src/doc/user/RCL.SEARCH.TIPS.html
 src/doc/user/RCL.SEARCH.WILDCARDS.html
+src/doc/user/RCL.SEARCH.html
 src/doc/user/RCL.SEARCHKCL.html
-src/doc/user/RCL.SEARCHKIO.html
 src/doc/user/RCL.SEARCHKIO.SEARCHABLEDOCS.html
+src/doc/user/RCL.SEARCHKIO.html
+src/doc/user/index.html
 src/doc/user/usermanual-xml.html
 src/doc/user/usermanual.aux
 src/doc/user/usermanual.html
@@ -73,6 +74,7 @@ src/filters/rcllatinclass.pyc
 src/index/alldeps
 src/index/alldeps.stamp
 src/index/recollindex
+src/internfile/alldeps
 src/kde/kioslave/kio_recoll/builddir
 src/lib/alldeps
 src/lib/librecoll.a
@@ -98,6 +100,7 @@ src/query/xadump
 src/recollinstall
 src/sampleconf/rclmon.sh
 src/sampleconf/recoll.conf
+src/utils/alldeps
 tests/config/aspdict.en.rws
 tests/config/history
 tests/config/idxstatus.txt

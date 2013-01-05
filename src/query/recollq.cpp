@@ -168,6 +168,9 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             Usage();
         while (**argv)
             switch (*(*argv)++) {
+	    case '-': 
+		// -- : end of options
+		goto endopts;
             case 'A':   op_flags |= OPT_A; break;
             case 'a':   op_flags |= OPT_a; break;
             case 'b':   op_flags |= OPT_b; break;
@@ -216,6 +219,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             }
     b1: argc--; argv++;
     }
+endopts:
 
     string reason;
     *cfp = recollinit(0, 0, reason, &a_config);

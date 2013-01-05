@@ -128,7 +128,7 @@ bool SearchData::clausesToQuery(Rcl::Db &db, SClType tp,
 	// addClause())
 	Xapian::Query::op op;
 	if (tp == SCLT_AND) {
-            if ((*it)->m_tp == SCLT_EXCL || (*it)->getexclude()) {
+            if ((*it)->getexclude()) {
                 op =  Xapian::Query::OP_AND_NOT;
             } else {
                 op =  Xapian::Query::OP_AND;
@@ -388,7 +388,7 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
 // Add clause to current list. OR lists cant have EXCL clauses.
 bool SearchData::addClause(SearchDataClause* cl)
 {
-    if (m_tp == SCLT_OR && (cl->m_tp == SCLT_EXCL || cl->getexclude())) {
+    if (m_tp == SCLT_OR && cl->getexclude()) {
 	LOGERR(("SearchData::addClause: cant add EXCL to OR list\n"));
 	m_reason = "No Negative (AND_NOT) clauses allowed in OR queries";
 	return false;
@@ -1075,7 +1075,7 @@ bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
     return true;
 }
 
-// Translate a simple OR, AND, or EXCL search clause. 
+// Translate a simple OR or AND search clause. 
 bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p)
 {
     LOGDEB2(("SearchDataClauseSimple::toNativeQuery: stemlang [%s]\n",
@@ -1087,9 +1087,7 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p)
     Xapian::Query::op op;
     switch (m_tp) {
     case SCLT_AND: op = Xapian::Query::OP_AND; break;
-	// EXCL will be set with AND_NOT in the list. So it's an OR list here
-    case SCLT_OR: 
-    case SCLT_EXCL: op = Xapian::Query::OP_OR; break;
+    case SCLT_OR: op = Xapian::Query::OP_OR; break;
     default:
 	LOGERR(("SearchDataClauseSimple: bad m_tp %d\n", m_tp));
 	return false;

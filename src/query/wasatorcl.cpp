@@ -195,39 +195,32 @@ static Rcl::SearchData *wasaQueryToRcl(const RclConfig *config,
 		// dir filtering special case
 		nclause = new Rcl::SearchDataClausePath((*it)->m_value, 
 							(*it)->m_exclude);
-	    } else if ((*it)->m_exclude) {
-		if (wasa->m_op != WasaQuery::OP_AND) {
+	    } else {
+		if ((*it)->m_exclude && wasa->m_op != WasaQuery::OP_AND) {
 		    LOGERR(("wasaQueryToRcl: excl clause inside OR list!\n"));
 		    continue;
 		}
-		// Note: have to add dquotes which will be translated to
-		// phrase if there are several words in there. Not pretty
-		// but should work. If there is actually a single
-		// word, it will not be taken as a phrase, and
-		// stem-expansion will work normally
-		// Have to do this because searchdata has nothing like and_not
-		nclause = new Rcl::SearchDataClauseSimple(Rcl::SCLT_EXCL, 
-							  string("\"") + 
-							  (*it)->m_value + "\"",
-							  (*it)->m_fieldspec);
-	    } else {
 		// I'm not sure I understand the phrase/near detection
 		// thereafter anymore, maybe it would be better to have an
 		// explicit flag. Mods can only be set after a double
 		// quote.
 		if (TextSplit::hasVisibleWhite((*it)->m_value) || mods) {
-		    Rcl::SClType tp = Rcl::SCLT_PHRASE;
-		    if (mods & WasaQuery::WQM_PROX) {
-			tp = Rcl::SCLT_NEAR;
-		    }
+
+		    Rcl::SClType tp = (mods & WasaQuery::WQM_PROX)  ?
+			Rcl::SCLT_NEAR :
+			Rcl::SCLT_PHRASE;
 		    nclause = new Rcl::SearchDataClauseDist(tp, (*it)->m_value,
 							    (*it)->m_slack,
 							    (*it)->m_fieldspec);
 		} else {
-		    nclause = new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, 
-							      (*it)->m_value, 
-						            (*it)->m_fieldspec);
+		    Rcl::SClType tp = (*it)->m_exclude ? 
+			Rcl::SCLT_OR:
+			Rcl::SCLT_AND;
+		    nclause = 
+			new Rcl::SearchDataClauseSimple(tp, (*it)->m_value, 
+							(*it)->m_fieldspec);
 		}
+		nclause->setexclude((*it)->m_exclude);
 	    }
 
 	    if (nclause == 0) {

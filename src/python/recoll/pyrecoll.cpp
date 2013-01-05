@@ -206,7 +206,8 @@ SearchData_addclause(recoll_SearchDataObject* self, PyObject *args,
     case 'E':
 	if (strcasecmp(tp, "excl"))
 	    goto defaultcase;
-	cl = new Rcl::SearchDataClauseSimple(Rcl::SCLT_EXCL, qs, fld?fld:"");
+	cl = new Rcl::SearchDataClauseSimple(Rcl::SCLT_OR, qs, fld?fld:"");
+	cl->setexclude(true);
 	break;
     case 'n':
     case 'N':

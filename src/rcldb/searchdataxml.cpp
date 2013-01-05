@@ -38,7 +38,6 @@ static string tpToString(SClType tp)
     switch (tp) {
     case SCLT_AND: return "AND";
     case SCLT_OR: return "OR";
-    case SCLT_EXCL: return "EX";
     case SCLT_FILENAME: return "FN";
     case SCLT_PHRASE: return "PH";
     case SCLT_NEAR: return "NE";
@@ -65,8 +64,8 @@ string SearchData::asXML()
 	    LOGERR(("SearchData::asXML: can't do subclauses !\n"));
 	    continue;
 	}
-	//if (c->getexclude())
-	//    os << "<NEG/>" << endl;
+	if (c->getexclude())
+	    os << "<NEG/>" << endl;
 	if (c->getTp() == SCLT_PATH) {
 	    // Keep these apart, for compat with the older history format
 	    SearchDataClausePath *cl = 

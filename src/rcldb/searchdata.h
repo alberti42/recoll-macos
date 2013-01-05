@@ -41,7 +41,7 @@ namespace Rcl {
 /** Search clause types */
 enum SClType {
     SCLT_AND, 
-    SCLT_OR, SCLT_EXCL, SCLT_FILENAME, SCLT_PHRASE, SCLT_NEAR, SCLT_PATH,
+    SCLT_OR, SCLT_FILENAME, SCLT_PHRASE, SCLT_NEAR, SCLT_PATH,
     SCLT_SUB
 };
 
@@ -282,6 +282,10 @@ public:
     virtual bool getexclude() const
     {
 	return m_exclude;
+    }
+    virtual void setexclude(bool onoff)
+    {
+	m_exclude = onoff;
     }
 
     friend class SearchData;

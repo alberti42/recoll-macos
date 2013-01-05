@@ -57,6 +57,7 @@ private:
 	slack = 0;
 	d = m = y = di.d1 = di.m1 = di.y1 = di.d2 = di.m2 = di.y2 = 0;
 	hasdates = false;
+	exclude = false;
     }
 
     // Temporary data while parsing.
@@ -67,6 +68,7 @@ private:
     int d, m, y;
     DateInterval di;
     bool hasdates;
+    bool exclude;
 };
 
 bool SDHXMLHandler::startElement(const QString & /* namespaceURI */,
@@ -101,6 +103,8 @@ bool SDHXMLHandler::endElement(const QString & /* namespaceURI */,
 	}
     } else if (qName == "CT") {
 	whatclause = currentText.trimmed();
+    } else if (qName == "NEG") {
+	exclude = true;
     } else if (qName == "F") {
 	field = base64_decode(qs2utf8s(currentText.trimmed()));
     } else if (qName == "T") {
@@ -111,16 +115,24 @@ bool SDHXMLHandler::endElement(const QString & /* namespaceURI */,
 	SearchDataClause *c;
 	if (whatclause == "AND" || whatclause.isEmpty()) {
 	    c = new SearchDataClauseSimple(SCLT_AND, text, field);
+	    c->setexclude(exclude);
 	} else if (whatclause == "OR") {
 	    c = new SearchDataClauseSimple(SCLT_OR, text, field);
+	    c->setexclude(exclude);
 	} else if (whatclause == "EX") {
-	    c = new SearchDataClauseSimple(SCLT_EXCL, text, field);
+	    // Compat with old hist. We don't generete EX (SCLT_EXCL) anymore
+	    // it's replaced with OR + exclude flag
+	    c = new SearchDataClauseSimple(SCLT_OR, text, field);
+	    c->setexclude(true);
 	} else if (whatclause == "FN") {
 	    c = new SearchDataClauseFilename(text);
+	    c->setexclude(exclude);
 	} else if (whatclause == "PH") {
 	    c = new SearchDataClauseDist(SCLT_PHRASE, text, slack, field);
+	    c->setexclude(exclude);
 	} else if (whatclause == "NE") {
 	    c = new SearchDataClauseDist(SCLT_NEAR, text, slack, field);
+	    c->setexclude(exclude);
 	} else {
 	    LOGERR(("Bad clause type [%s]\n", qs2utf8s(whatclause).c_str()));
 	    return false;
@@ -130,6 +142,7 @@ bool SDHXMLHandler::endElement(const QString & /* namespaceURI */,
 	text.clear();
 	field.clear();
 	slack = 0;
+	exclude = false;
     } else if (qName == "D") {
 	d = atoi((const char *)currentText.toAscii());
     } else if (qName == "M") {
