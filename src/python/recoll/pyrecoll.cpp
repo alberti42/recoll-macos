@@ -1857,8 +1857,14 @@ initrecoll(void)
     PyModule_AddStringConstant(m, "__doc__",
                                pyrecoll_doc_string);
 
+    PyObject *doctypecobject;
+
+#if PY_MAJOR_VERSION >= 2 && PY_MINOR_VERSION >=	7
     // Export a few pointers for the benefit of other recoll python modules
-    PyObject* doctypecapsule = 
+    doctypecobject= 
 	PyCapsule_New(&recoll_DocType, PYRECOLL_PACKAGE "recoll.doctypeptr", 0);
-    PyModule_AddObject(m, "doctypeptr", doctypecapsule);
+#else
+    doctypecobject = PyCObject_FromVoidPtr(&recoll_DocType, NULL);
+#endif
+    PyModule_AddObject(m, "doctypeptr", doctypecobject);
 }

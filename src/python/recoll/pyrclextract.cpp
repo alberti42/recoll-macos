@@ -291,5 +291,17 @@ initrclextract(void)
     Py_INCREF(&rclx_ExtractorType);
     PyModule_AddObject(m, "Extractor", (PyObject *)&rclx_ExtractorType);
 
+#if PY_MAJOR_VERSION >= 2 && PY_MINOR_VERSION >= 7
     recoll_DocType = (PyObject*)PyCapsule_Import(PYRECOLL_PACKAGE "recoll.doctypeptr", 0);
+#else
+    PyObject *module = PyImport_ImportModule(PYRECOLL_PACKAGE "recoll");
+    if (module != NULL) {
+        PyObject *cobject = PyObject_GetAttrString(module, "_C_API");
+        if (cobject == NULL)
+            return;
+        if (PyCObject_Check(cobject))
+            recoll_DocType = (PyObject*)PyCObject_AsVoidPtr(cobject);
+        Py_DECREF(cobject);
+    }
+#endif
 }
