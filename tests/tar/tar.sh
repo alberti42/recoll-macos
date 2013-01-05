@@ -6,7 +6,7 @@ topdir=`dirname $0`/..
 initvariables $0
 
 (
-  recollq TARUNIQUETERM2
+  recollq -S mtime TARUNIQUETERM2
 
 )  2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 

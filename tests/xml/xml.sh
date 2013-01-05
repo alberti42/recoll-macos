@@ -5,9 +5,9 @@ topdir=`dirname $0`/..
 
 initvariables $0
 (
-recollq xmlhuunique
-recollq xmlzhuunique
-recollq xmlzshuunique
+recollq -S mtime xmlhuunique
+recollq -S mtime xmlzhuunique
+recollq -S mtime xmlzshuunique
 
 ) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 

@@ -4,9 +4,9 @@ text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile.htm
 + recollq -s french èviter
 1 results
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile.html]	[testfile.html]	140	bytes	
-+ recollq -s french '"èviter"D'
++ recollq -s french "èviter"D
 0 results
-+ recollq -s french '"eviter"D'
++ recollq -s french "eviter"D
 0 results
 + recollq -s french eviter
 1 results
@@ -29,5 +29,5 @@ text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile.htm
 2 results
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile1.html]	[testfile1.html]	132	bytes	
 text/html	[file:///home/dockes/projets/fulltext/testrecoll/casediac/testfile.html]	[testfile.html]	140	bytes	
-+ recollq -s french '"Majusculesxx"C'
++ recollq -s french "Majusculesxx"C
 0 results

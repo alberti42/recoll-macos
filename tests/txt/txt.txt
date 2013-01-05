@@ -1,6 +1,6 @@
 3 results
-text/plain	[file:///home/dockes/projets/fulltext/testrecoll/txt/liste.txt]	[liste.txt]	1182	bytes	
 text/plain	[file:///home/dockes/projets/fulltext/testrecoll/txt/liste1.txt]	[liste1.txt]	893	bytes	
+text/plain	[file:///home/dockes/projets/fulltext/testrecoll/txt/liste.txt]	[liste.txt]	1182	bytes	
 text/plain	[file:///home/dockes/projets/fulltext/testrecoll/zip/misc.zip]	[misc.zip]	1181	bytes	
 1 results
 text/x-ini	[file:///home/dockes/projets/fulltext/testrecoll/txt/docutils.ini]	[docutils.ini]	177	bytes	

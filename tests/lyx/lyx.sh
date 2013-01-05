@@ -6,9 +6,9 @@ topdir=`dirname $0`/..
 initvariables $0
 
 (
-recollq 'Bienvenue Dans Univers De Lyx' 
-recollq 'Welcome To Lyx' 
-recollq 'LyX jol dokumentalt'
+recollq -S mtime 'Bienvenue Dans Univers De Lyx' 
+recollq -S mtime 'Welcome To Lyx' 
+recollq -S mtime 'LyX jol dokumentalt'
 ) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
