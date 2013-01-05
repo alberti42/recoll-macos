@@ -4,7 +4,7 @@ include $(depth)/mk/sysconf
 
 LIBRECOLL=librecoll.so.$(RCLLIBVERSION)
 LIBS = librecoll.a
-@NODYNLIB@LIBS = librecoll.a $(LIBRECOLL)
+LIBS = librecoll.a $(LIBRECOLL)
 
 all: $(LIBS) 
 
