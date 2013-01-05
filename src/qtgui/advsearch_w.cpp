@@ -384,9 +384,9 @@ void AdvSearch::runSearch()
 		string cat;
 		if ((qit = cat_rtranslations.find(qcat)) != 
 		    cat_rtranslations.end()) {
-		    cat = (const char *)qit->second.toUtf8();
+		    cat = qs2utf8s(qit->second);
 		} else {
-		    cat = (const char *)qcat.toUtf8();
+		    cat = qs2utf8s(qcat);
 		}
 		vector<string> types;
 		theconfig->getMimeCatTypes(cat, types);
@@ -395,8 +395,7 @@ void AdvSearch::runSearch()
 		    sdata->addFiletype(*it);
 		}
 	    } else {
-		sdata->addFiletype((const char *)
-				   yesFiltypsLB->item(i)->text().toUtf8());
+		sdata->addFiletype(qs2utf8s(yesFiltypsLB->item(i)->text()));
 	    }
 	}
     }
@@ -422,8 +421,9 @@ void AdvSearch::runSearch()
 
     if (!subtreeCMB->currentText().isEmpty()) {
 	QString current = subtreeCMB->currentText();
-	sdata->addDirSpec((const char*)subtreeCMB->currentText().toUtf8(),
-			  direxclCB->isChecked());
+	sdata->addClause(new Rcl::SearchDataClausePath(
+			     (const char*)current.toLocal8Bit(),
+			     direxclCB->isChecked()));
 	// Keep history clean and sorted. Maybe there would be a
 	// simpler way to do this
 	list<QString> entries;
@@ -463,10 +463,23 @@ void AdvSearch::fromSearch(RefCntr<SearchData> sdata)
 	addClause();
     }
 
+    subtreeCMB->setEditText("");
+    direxclCB->setChecked(0);
+
     for (unsigned int i = 0; i < sdata->m_query.size(); i++) {
 	// Set fields from clause
 	if (sdata->m_query[i]->getTp() == SCLT_SUB) {
 	    LOGERR(("AdvSearch::fromSearch: SUB clause found !\n"));
+	    continue;
+	}
+	if (sdata->m_query[i]->getTp() == SCLT_PATH) {
+	    SearchDataClausePath *cs = 
+		dynamic_cast<SearchDataClausePath*>(sdata->m_query[i]);
+	    // We can only use one such clause. There should be only one too 
+	    // if this is sfrom aved search data.
+	    QString qdir = QString::fromLocal8Bit(cs->gettext().c_str());
+	    subtreeCMB->setEditText(qdir);
+	    direxclCB->setChecked(cs->getexclude());
 	    continue;
 	}
 	SearchDataClauseSimple *cs = 
@@ -530,16 +543,6 @@ void AdvSearch::fromSearch(RefCntr<SearchData> sdata)
 	filterSizesCB->setChecked(0);
 	minSizeLE->setText("");
 	maxSizeLE->setText("");
-    }
-    
-    if (!sdata->m_dirspecs.empty()) {
-	// Can only use one entry
-	QString qdir = QString::fromLocal8Bit(sdata->m_dirspecs[0].dir.c_str());
-	subtreeCMB->setEditText(qdir);
-	direxclCB->setChecked(sdata->m_dirspecs[0].exclude);
-    } else {
-	subtreeCMB->setEditText("");
-	direxclCB->setChecked(0);
     }
 }
 

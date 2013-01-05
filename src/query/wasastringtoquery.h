@@ -48,7 +48,7 @@ using std::vector;
 class WasaQuery {
 public:
     /** Type of this element: leaf or AND/OR chain */
-    enum Op {OP_NULL, OP_LEAF, OP_EXCL, OP_OR, OP_AND};
+    enum Op {OP_NULL, OP_LEAF, OP_OR, OP_AND};
     /** Relation to be searched between field and value. Recoll actually only
 	supports "contain" except for a size field */
     enum Rel {REL_NULL, REL_EQUALS, REL_CONTAINS, REL_LT, REL_LTE, 
@@ -63,7 +63,8 @@ public:
     typedef vector<WasaQuery*> subqlist_t;
 
     WasaQuery() 
-	: m_op(OP_NULL), m_modifiers(0), m_slack(0), m_weight(1.0)
+	: m_op(OP_NULL), m_rel(REL_NULL), m_exclude(false), 
+	  m_modifiers(0), m_slack(0), m_weight(1.0)
     {}
 
     ~WasaQuery();
@@ -78,6 +79,9 @@ public:
     string             m_fieldspec;
     /** Relation between field and value: =, :, <,>,<=, >= */
     WasaQuery::Rel     m_rel;
+
+    /* Negating flag */
+    bool             m_exclude;
 
     /* String value. Valid for op == OP_LEAF or EXCL */
     string             m_value;

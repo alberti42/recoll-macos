@@ -64,11 +64,13 @@ static Rcl::SearchData *wasaQueryToRcl(const RclConfig *config,
 	if (!stringicmp("mime", (*it)->m_fieldspec) ||
 	    !stringicmp("format", (*it)->m_fieldspec)) {
 	    if ((*it)->m_op == WasaQuery::OP_LEAF) {
-		sdata->addFiletype((*it)->m_value);
-	    } else if ((*it)->m_op == WasaQuery::OP_EXCL) {
-		sdata->remFiletype((*it)->m_value);
+		if ((*it)->m_exclude) {
+		    sdata->remFiletype((*it)->m_value);
+		} else {
+		    sdata->addFiletype((*it)->m_value);
+		}
 	    } else {
-		reason = "internal error: mime clause neither leaf not excl??";
+		reason = "internal error: mime clause not leaf??";
 		return 0;
 	    }
 	    continue;
@@ -78,10 +80,8 @@ static Rcl::SearchData *wasaQueryToRcl(const RclConfig *config,
 	// categories like "audio", "presentation", etc.
 	if (!stringicmp("rclcat", (*it)->m_fieldspec) ||
 	    !stringicmp("type", (*it)->m_fieldspec)) {
-	    if ((*it)->m_op != WasaQuery::OP_LEAF && 
-		(*it)->m_op != WasaQuery::OP_EXCL) {
-		reason = "internal error: rclcat/type clause neither leaf"
-		    "nor excl??";
+	    if ((*it)->m_op != WasaQuery::OP_LEAF) {
+		reason = "internal error: rclcat/type clause not leaf??";
 		return 0;
 	    }
 	    vector<string> mtypes;
@@ -89,10 +89,11 @@ static Rcl::SearchData *wasaQueryToRcl(const RclConfig *config,
 		&& !mtypes.empty()) {
 		for (vector<string>::iterator mit = mtypes.begin();
 		     mit != mtypes.end(); mit++) {
-		    if ((*it)->m_op == WasaQuery::OP_LEAF)
-			sdata->addFiletype(*mit);
-		    else
+		    if ((*it)->m_exclude) {
 			sdata->remFiletype(*mit);
+		    } else {
+			sdata->addFiletype(*mit);
+		    }
 		}
 	    } else {
 		reason = "Unknown rclcat/type value: no mime types found";
@@ -100,14 +101,6 @@ static Rcl::SearchData *wasaQueryToRcl(const RclConfig *config,
 	    }
 	    continue;
 	}
-
-	// Filtering on location
-	if (!stringicmp("dir", (*it)->m_fieldspec)) {
-	    string dir = path_tildexpand((*it)->m_value);
-	    sdata->addDirSpec(dir, (*it)->m_op == WasaQuery::OP_EXCL,
-			      (*it)->m_weight);
-	    continue;
-	} 
 
 	// Handle "date" spec
 	if (!stringicmp("date", (*it)->m_fieldspec)) {
@@ -181,9 +174,9 @@ static Rcl::SearchData *wasaQueryToRcl(const RclConfig *config,
 	    continue;
 
 	case WasaQuery::OP_LEAF: {
-	    LOGDEB0(("wasaQueryToRcl: leaf clause [%s]:[%s] slack %d\n", 
-		    (*it)->m_fieldspec.c_str(), (*it)->m_value.c_str(),
-		    (*it)->m_slack));
+	    LOGDEB0(("wasaQueryToRcl: leaf clause [%s:%s] slack %d excl %d\n", 
+		     (*it)->m_fieldspec.c_str(), (*it)->m_value.c_str(),
+		     (*it)->m_slack, (*it)->m_exclude));
 
             // Change terms found in the "autosuffs" list into "ext"
             // field queries
@@ -198,23 +191,45 @@ static Rcl::SearchData *wasaQueryToRcl(const RclConfig *config,
                 }
             }
 
-	    // I'm not sure I understand the phrase/near detection
-	    // thereafter anymore, maybe it would be better to have an
-	    // explicit flag. Mods can only be set after a double
-	    // quote.
-	    if (TextSplit::hasVisibleWhite((*it)->m_value) || mods) {
-		Rcl::SClType tp = Rcl::SCLT_PHRASE;
-		if (mods & WasaQuery::WQM_PROX) {
-		    tp = Rcl::SCLT_NEAR;
+	    if (!stringicmp("dir", (*it)->m_fieldspec)) {
+		// dir filtering special case
+		nclause = new Rcl::SearchDataClausePath((*it)->m_value, 
+							(*it)->m_exclude);
+	    } else if ((*it)->m_exclude) {
+		if (wasa->m_op != WasaQuery::OP_AND) {
+		    LOGERR(("wasaQueryToRcl: excl clause inside OR list!\n"));
+		    continue;
 		}
-		nclause = new Rcl::SearchDataClauseDist(tp, (*it)->m_value,
-							(*it)->m_slack,
-							(*it)->m_fieldspec);
-	    } else {
-		nclause = new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, 
-							  (*it)->m_value, 
+		// Note: have to add dquotes which will be translated to
+		// phrase if there are several words in there. Not pretty
+		// but should work. If there is actually a single
+		// word, it will not be taken as a phrase, and
+		// stem-expansion will work normally
+		// Have to do this because searchdata has nothing like and_not
+		nclause = new Rcl::SearchDataClauseSimple(Rcl::SCLT_EXCL, 
+							  string("\"") + 
+							  (*it)->m_value + "\"",
 							  (*it)->m_fieldspec);
+	    } else {
+		// I'm not sure I understand the phrase/near detection
+		// thereafter anymore, maybe it would be better to have an
+		// explicit flag. Mods can only be set after a double
+		// quote.
+		if (TextSplit::hasVisibleWhite((*it)->m_value) || mods) {
+		    Rcl::SClType tp = Rcl::SCLT_PHRASE;
+		    if (mods & WasaQuery::WQM_PROX) {
+			tp = Rcl::SCLT_NEAR;
+		    }
+		    nclause = new Rcl::SearchDataClauseDist(tp, (*it)->m_value,
+							    (*it)->m_slack,
+							    (*it)->m_fieldspec);
+		} else {
+		    nclause = new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, 
+							      (*it)->m_value, 
+						            (*it)->m_fieldspec);
+		}
 	    }
+
 	    if (nclause == 0) {
 		reason = "Out of memory";
 		LOGERR(("wasaQueryToRcl: out of memory\n"));
@@ -223,31 +238,6 @@ static Rcl::SearchData *wasaQueryToRcl(const RclConfig *config,
 	}
 	    break;
 	    
-	case WasaQuery::OP_EXCL:
-	    LOGDEB2(("wasaQueryToRcl: excl clause [%s]:[%s]\n", 
-                    (*it)->m_fieldspec.c_str(), (*it)->m_value.c_str()));
-	    if (wasa->m_op != WasaQuery::OP_AND) {
-		LOGERR(("wasaQueryToRcl: negative clause inside OR list!\n"));
-		continue;
-	    }
-	    // Note: have to add dquotes which will be translated to
-	    // phrase if there are several words in there. Not pretty
-	    // but should work. If there is actually a single
-	    // word, it will not be taken as a phrase, and
-	    // stem-expansion will work normally
-            // Have to do this because searchdata has nothing like and_not
-	    nclause = new Rcl::SearchDataClauseSimple(Rcl::SCLT_EXCL, 
-						      string("\"") + 
-						      (*it)->m_value + "\"",
-						      (*it)->m_fieldspec);
-	    
-	    if (nclause == 0) {
-		reason = "Out of memory";
-		LOGERR(("wasaQueryToRcl: out of memory\n"));
-		return 0;
-	    }
-	    break;
-
 	case WasaQuery::OP_OR:
 	    LOGDEB2(("wasaQueryToRcl: OR clause [%s]:[%s]\n", 
 		     (*it)->m_fieldspec.c_str(), (*it)->m_value.c_str()));

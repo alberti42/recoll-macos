@@ -29,8 +29,8 @@ using namespace Rcl;
 class SDHXMLHandler : public QXmlDefaultHandler {
 public:
     SDHXMLHandler()
-	: slack(0)
     {
+	resetTemps();
     }
     bool startElement(const QString & /* namespaceURI */,
 		      const QString & /* localName */,
@@ -165,11 +165,11 @@ bool SDHXMLHandler::endElement(const QString & /* namespaceURI */,
     } else if (qName == "YD") {
 	string d;
 	base64_decode((const char*)currentText.trimmed().toAscii(), d);
-	sd->addDirSpec(d);
+	sd->addClause(new SearchDataClausePath(d));
     } else if (qName == "ND") {
 	string d;
 	base64_decode((const char*)currentText.trimmed().toAscii(), d);
-	sd->addDirSpec(d, true);
+	sd->addClause(new SearchDataClausePath(d, true));
     } else if (qName == "SD") {
 	// Closing current search descriptor. Finishing touches...
 	if (hasdates)

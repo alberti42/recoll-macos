@@ -128,7 +128,7 @@ bool SearchData::clausesToQuery(Rcl::Db &db, SClType tp,
 	// addClause())
 	Xapian::Query::op op;
 	if (tp == SCLT_AND) {
-            if ((*it)->m_tp == SCLT_EXCL) {
+            if ((*it)->m_tp == SCLT_EXCL || (*it)->getexclude()) {
                 op =  Xapian::Query::OP_AND_NOT;
             } else {
                 op =  Xapian::Query::OP_AND;
@@ -274,36 +274,6 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 	xq = xq.empty() ? tq : Xapian::Query(Xapian::Query::OP_AND_NOT, xq, tq);
     }
 
-    // Add the directory filtering clauses. Each is a phrase of terms
-    // prefixed with the pathelt prefix XP
-    for (vector<DirSpec>::const_iterator dit = m_dirspecs.begin();
-	 dit != m_dirspecs.end(); dit++) {
-	vector<string> vpath;
-	stringToTokens(dit->dir, vpath, "/");
-	vector<string> pvpath;
-	if (dit->dir[0] == '/')
-	    pvpath.push_back(wrap_prefix(pathelt_prefix));
-	for (vector<string>::const_iterator pit = vpath.begin(); 
-	     pit != vpath.end(); pit++){
-	    pvpath.push_back(wrap_prefix(pathelt_prefix) + *pit);
-	}
-	Xapian::Query::op tdop;
-	if (dit->weight == 1.0) {
-	    tdop = dit->exclude ? 
-		Xapian::Query::OP_AND_NOT : Xapian::Query::OP_FILTER;
-	} else {
-	    tdop = dit->exclude ? 
-		Xapian::Query::OP_AND_NOT : Xapian::Query::OP_AND_MAYBE;
-	}
-	Xapian::Query tdq = Xapian::Query(Xapian::Query::OP_PHRASE, 
-					  pvpath.begin(), pvpath.end());
-	if (dit->weight != 1.0)
-	    tdq = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, 
-				tdq, dit->weight);
-
-	xq = Xapian::Query(tdop, xq, tdq);
-    }
-
     *((Xapian::Query *)d) = xq;
     return true;
 }
@@ -418,7 +388,7 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
 // Add clause to current list. OR lists cant have EXCL clauses.
 bool SearchData::addClause(SearchDataClause* cl)
 {
-    if (m_tp == SCLT_OR && (cl->m_tp == SCLT_EXCL)) {
+    if (m_tp == SCLT_OR && (cl->m_tp == SCLT_EXCL || cl->getexclude())) {
 	LOGERR(("SearchData::addClause: cant add EXCL to OR list\n"));
 	m_reason = "No Negative (AND_NOT) clauses allowed in OR queries";
 	return false;
@@ -438,7 +408,6 @@ void SearchData::erase()
 	delete *it;
     m_query.clear();
     m_filetypes.clear();
-    m_dirspecs.clear();
     m_description.erase();
     m_reason.erase();
     m_haveDates = false;
@@ -1162,6 +1131,35 @@ bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p)
     vector<string> names;
     db.filenameWildExp(m_text, names, maxexp);
     *qp = Xapian::Query(Xapian::Query::OP_OR, names.begin(), names.end());
+
+    if (m_weight != 1.0) {
+	*qp = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, *qp, m_weight);
+    }
+    return true;
+}
+
+// Translate a dir: path filtering clause. See comments in .h
+bool SearchDataClausePath::toNativeQuery(Rcl::Db &db, void *p)
+{
+    LOGDEB(("SearchDataClausePath::toNativeQuery: [%s]\n", m_text.c_str()));
+    Xapian::Query *qp = (Xapian::Query *)p;
+    *qp = Xapian::Query();
+
+    if (m_text.empty()) {
+	LOGERR(("SearchDataClausePath: empty path??\n"));
+	return false;
+    }
+    vector<string> vpath;
+    stringToTokens(m_text, vpath, "/");
+    vector<string> pvpath;
+    if (m_text[0] == '/')
+	pvpath.push_back(wrap_prefix(pathelt_prefix));
+    for (vector<string>::const_iterator pit = vpath.begin(); 
+	 pit != vpath.end(); pit++){
+	pvpath.push_back(wrap_prefix(pathelt_prefix) + *pit);
+    }
+    *qp = Xapian::Query(Xapian::Query::OP_PHRASE, 
+			pvpath.begin(), pvpath.end());
 
     if (m_weight != 1.0) {
 	*qp = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, *qp, m_weight);

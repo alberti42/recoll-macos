@@ -41,7 +41,7 @@ namespace Rcl {
 /** Search clause types */
 enum SClType {
     SCLT_AND, 
-    SCLT_OR, SCLT_EXCL, SCLT_FILENAME, SCLT_PHRASE, SCLT_NEAR,
+    SCLT_OR, SCLT_EXCL, SCLT_FILENAME, SCLT_PHRASE, SCLT_NEAR, SCLT_PATH,
     SCLT_SUB
 };
 
@@ -84,7 +84,7 @@ public:
 	commoninit();
     }
     SearchData() 
-	: m_tp(SCLT_AND), m_stemlang("english")
+	: m_tp(SCLT_AND)
     {
 	commoninit();
     }
@@ -117,12 +117,6 @@ public:
      *     (proportion of docs where they occur) 	
      */
     bool maybeAddAutoPhrase(Rcl::Db &db, double threshold);
-
-    /** Set/get top subdirectory for filtering results */
-    void addDirSpec(const std::string& t, bool excl = false, float w = 1.0) 
-    {
-	m_dirspecs.push_back(DirSpec(t, excl, w));
-    }
 
     const std::string& getStemLang() {return m_stemlang;}
 
@@ -182,20 +176,6 @@ private:
     // Excluded set of file types if not empty
     std::vector<std::string>            m_nfiletypes;
 
-    // Restrict  to subtree or exclude one
-    class DirSpec {
-    public:
-	std::string dir; 
-	bool        exclude; 
-	// For positive spec: affect weight instead of filter
-	float       weight;
-	DirSpec(const std::string&d, bool x, float w)
-	    : dir(d), exclude(x), weight(w)
-	{
-	}
-    };
-    std::vector<DirSpec> m_dirspecs;
-
     bool                      m_haveDates;
     DateInterval              m_dates; // Restrict to date interval
     size_t                    m_maxSize;
@@ -240,7 +220,7 @@ public:
 
     SearchDataClause(SClType tp) 
     : m_tp(tp), m_parentSearch(0), m_haveWildCards(0), 
-      m_modifiers(SDCM_NONE), m_weight(1.0)
+      m_modifiers(SDCM_NONE), m_weight(1.0), m_exclude(false)
     {}
     virtual ~SearchDataClause() {}
     virtual bool toNativeQuery(Rcl::Db &db, void *) = 0;
@@ -299,8 +279,12 @@ public:
     {
 	m_weight = w;
     }
-    friend class SearchData;
+    virtual bool getexclude() const
+    {
+	return m_exclude;
+    }
 
+    friend class SearchData;
 protected:
     std::string      m_reason;
     SClType     m_tp;
@@ -308,6 +292,7 @@ protected:
     bool        m_haveWildCards;
     Modifier    m_modifiers;
     float       m_weight;
+    bool        m_exclude;
 private:
     SearchDataClause(const SearchDataClause&) 
     {
@@ -399,6 +384,54 @@ public:
     }
 
     virtual bool toNativeQuery(Rcl::Db &, void *);
+
+protected:
+    std::string m_text;
+};
+
+
+/** 
+ * Pathname filtering clause. This is special because of history:
+ *  - Pathname filtering used to be performed as a post-processing step 
+ *    done with the url fields of doc data records.
+ *  - Then it was done as special phrase searchs on path elements prefixed
+ *    with XP.
+ *  Up to this point dir filtering data was stored as part of the searchdata
+ *  object, not in the SearchDataClause tree. Only one, then a list,
+ *  of clauses where stored, and they were always ANDed together.
+ *
+ *  In order to allow for OR searching, dir clauses are now stored in a
+ *  specific SearchDataClause, but this is still special because the field has
+ *  non-standard phrase-like processing, reflected in index storage by
+ *  an empty element representing / (as "XP").
+ * 
+ * A future version should use a standard phrase with an anchor to the
+ * start if the path starts with /. As this implies an index format
+ * change but is no important enough to warrant it, this has to wait for
+ * the next format change.
+ */
+class SearchDataClausePath : public SearchDataClause {
+public:
+    SearchDataClausePath(const std::string& txt, bool excl = false)
+	: SearchDataClause(SCLT_PATH), m_text(txt)
+    {
+	m_exclude = excl;
+	m_haveWildCards = false;
+    }
+
+    virtual ~SearchDataClausePath() 
+    {
+    }
+
+    virtual void getTerms(HighlightData&) const
+    {
+    }
+
+    virtual bool toNativeQuery(Rcl::Db &, void *);
+    virtual const std::string& gettext() const
+    {
+	return m_text;
+    }
 
 protected:
     std::string m_text;

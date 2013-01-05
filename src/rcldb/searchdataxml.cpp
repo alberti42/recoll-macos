@@ -15,7 +15,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-// Handle translation from rcl's SearchData structures to Xapian Queries
+// Handle translation from rcl's SearchData structures to XML. Used for
+// complex search history storage in the GUI
 
 #include "autoconfig.h"
 
@@ -64,6 +65,20 @@ string SearchData::asXML()
 	    LOGERR(("SearchData::asXML: can't do subclauses !\n"));
 	    continue;
 	}
+	//if (c->getexclude())
+	//    os << "<NEG/>" << endl;
+	if (c->getTp() == SCLT_PATH) {
+	    // Keep these apart, for compat with the older history format
+	    SearchDataClausePath *cl = 
+		dynamic_cast<SearchDataClausePath*>(c);
+	    if (cl->getexclude()) {
+		os << "<ND>" << base64_encode(cl->gettext()) << "</ND>" << endl;
+	    } else {
+		os << "<YD>" << base64_encode(cl->gettext()) << "</YD>" << endl;
+	    }
+	    continue;
+	}
+
 	SearchDataClauseSimple *cl = 
 	    dynamic_cast<SearchDataClauseSimple*>(c);
 	os << "<C>" << endl;
@@ -100,7 +115,6 @@ string SearchData::asXML()
 	}
     }
 
-
     if (m_minSize != size_t(-1)) {
 	os << "<MIS>" << m_minSize << "</MIS>" << endl;
     }
@@ -126,14 +140,6 @@ string SearchData::asXML()
 	os << "</IT>" << endl;
     }
 
-    for (vector<DirSpec>::const_iterator dit = m_dirspecs.begin();
-	 dit != m_dirspecs.end(); dit++) {
-	if (dit->exclude) {
-	    os << "<ND>" << base64_encode(dit->dir) << "</ND>" << endl;
-	} else {
-	    os << "<YD>" << base64_encode(dit->dir) << "</YD>" << endl;
-	}
-    }
     os << "</SD>";
     return os.str();
 }

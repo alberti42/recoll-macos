@@ -39,7 +39,7 @@ bool subtreelist(RclConfig *config, const string& top,
     Rcl::SearchData *sd = new Rcl::SearchData(Rcl::SCLT_OR, cstr_null);
     RefCntr<Rcl::SearchData> rq(sd);
 
-    rq->addDirSpec(top);
+    sd->addClause(new Rcl::SearchDataClausePath(top, false));
 
     Rcl::Query query(&rcldb);
     query.setQuery(rq);

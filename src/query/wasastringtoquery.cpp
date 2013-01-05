@@ -64,10 +64,11 @@ void WasaQuery::describe(string &desc) const
 	desc += "NULL"; 
 	break;
     case OP_LEAF: 
+	if (m_exclude)
+	    desc += "NOT (";
 	desc += fieldspec + m_value;
-	break;
-    case OP_EXCL: 
-	desc += string("NOT (" ) + fieldspec + m_value + ") ";
+	if (m_exclude)
+	    desc += ")";
 	break;
     case OP_OR: 
     case OP_AND:
@@ -429,11 +430,12 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 		}
 	    }
 
+	    nclause->m_op = WasaQuery::OP_LEAF;
 	    // +- indicator ?
 	    if (checkSubMatch(SMI_PM, match, reason) && match[0] == '-') {
-		nclause->m_op = WasaQuery::OP_EXCL;
+		nclause->m_exclude = true;
 	    } else {
-		nclause->m_op = WasaQuery::OP_LEAF;
+		nclause->m_exclude = false;
 	    }
 
 	    if (prev_or) {
