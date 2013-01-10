@@ -24,8 +24,9 @@
 #include <langinfo.h>
 #include <limits.h>
 
-#include <set>
 #include <algorithm>
+#include <list>
+using std::list;
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -642,12 +643,13 @@ bool RclConfig::valueSplitAttributes(const string& whole, string& value,
 }
 
 
-string RclConfig::getMissingHelperDesc() const
+bool RclConfig::getMissingHelperDesc(string& out) const
 {
     string fmiss = path_cat(getConfDir(), "missing");
-    string out;
-    file_to_string(fmiss, out);
-    return out;
+    out.clear();
+    if (!file_to_string(fmiss, out))
+	return false;
+    return true;
 }
 
 void RclConfig::storeMissingHelperDesc(const string &s)

@@ -17,7 +17,10 @@
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
+
 #include <cmath>
+#include <list>
+using std::list;
 
 #include "docseqhist.h"
 #include "rcldb.h"

@@ -720,7 +720,8 @@ void RclMain::toggleIndexing()
 	// Could also mean that no helpers are missing, but then we
 	// won't try to show a message anyway (which is what
 	// firstIndexing is used for)
-	m_firstIndexing = theconfig->getMissingHelperDesc().empty();
+	string mhd;
+	m_firstIndexing = !theconfig->getMissingHelperDesc(mhd);
 
 	vector<string> args;
 	args.push_back("-c");
@@ -751,7 +752,8 @@ void RclMain::rebuildIndex()
 	    // Could also mean that no helpers are missing, but then we
 	    // won't try to show a message anyway (which is what
 	    // firstIndexing is used for)
-	    m_firstIndexing = theconfig->getMissingHelperDesc().empty();
+	    string mhd;
+	    m_firstIndexing = !theconfig->getMissingHelperDesc(mhd);
 	    vector<string> args;
 	    args.push_back("-c");
 	    args.push_back(theconfig->getConfDir());
@@ -1069,7 +1071,11 @@ void RclMain::showAboutDialog()
 
 void RclMain::showMissingHelpers()
 {
-    string miss = theconfig->getMissingHelperDesc();
+    string miss;
+    if (!theconfig->getMissingHelperDesc(miss)) {
+	QMessageBox::information(this, "", tr("Indexing did not run yet"));
+	return;
+    }
     QString msg = QString::fromAscii("<p>") +
 	tr("External applications/commands needed and not found "
 		     "for indexing your file types:\n\n");
@@ -1128,8 +1134,8 @@ void RclMain::showActiveTypes()
 
     // Substract the types for missing helpers (the docs are indexed
     // by name only):
-    string miss = theconfig->getMissingHelperDesc();
-    if (!miss.empty()) {
+    string miss;
+    if (theconfig->getMissingHelperDesc(miss) && !miss.empty()) {
 	FIMissingStore st(miss);
 	map<string, set<string> >::const_iterator it;
 	for (it = st.m_typesForMissing.begin(); 

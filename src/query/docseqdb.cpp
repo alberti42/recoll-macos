@@ -17,6 +17,9 @@
 #include <math.h>
 #include <time.h>
 
+#include <list>
+using std::list;
+
 #include "docseqdb.h"
 #include "rcldb.h"
 #include "debuglog.h"

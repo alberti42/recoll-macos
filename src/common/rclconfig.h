@@ -17,22 +17,18 @@
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
 
-#include <list>
 #include <string>
 #include <vector>
 #include <set>
 #include <utility>
 #include <map>
-#include <set>
-#ifndef NO_NAMESPACES
-using std::list;
+
 using std::string;
 using std::vector;
 using std::pair;
 using std::set;
 using std::map;
-using std::set;
-#endif
+
 
 #include "conftree.h"
 #include "smallut.h"
@@ -247,7 +243,7 @@ class RclConfig {
     bool mimeViewerNeedsUncomp(const string &mimetype) const;
 
     /** Store/retrieve missing helpers description string */
-    string getMissingHelperDesc() const;
+    bool getMissingHelperDesc(string&) const;
     void storeMissingHelperDesc(const string &s);
 
     /** Find exec file for external filter. cmd is the command name from the
