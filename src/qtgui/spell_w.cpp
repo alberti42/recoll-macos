@@ -16,12 +16,16 @@
  */
 #include "autoconfig.h"
 
-#include <algorithm>
-
+#include <stdio.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <list>
-#include <stdio.h>
+#include <map>
+#include <string>
+using std::list;
+using std::multimap;
+using std::string;
 
 #include <qmessagebox.h>
 #include <qpushbutton.h>
@@ -40,7 +44,11 @@
 #include "spell_w.h"
 #include "guiutils.h"
 #include "rcldb.h"
+#include "searchdata.h"
+#include "rclquery.h"
 #include "rclhelp.h"
+#include "wasatorcl.h"
+#include "execmd.h"
 
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"
@@ -48,21 +56,32 @@
 
 void SpellW::init()
 {
-    // Don't change the order, or fix the rest of the code...
-    /*0*/expTypeCMB->addItem(tr("Wildcards"));
-    /*1*/expTypeCMB->addItem(tr("Regexp"));
-    /*2*/expTypeCMB->addItem(tr("Stem expansion"));
+    m_c2t.clear();
+    expTypeCMB->addItem(tr("Wildcards"));
+    m_c2t.push_back(TYPECMB_WILD);
+    expTypeCMB->addItem(tr("Regexp"));
+    m_c2t.push_back(TYPECMB_REG);
+    expTypeCMB->addItem(tr("Stem expansion"));
+    m_c2t.push_back(TYPECMB_STEM);
 #ifdef RCL_USE_ASPELL
     bool noaspell = false;
     theconfig->getConfParam("noaspell", &noaspell);
-    if (!noaspell)
-	/*3*/expTypeCMB->addItem(tr("Spelling/Phonetic"));
+    if (!noaspell) {
+	expTypeCMB->addItem(tr("Spelling/Phonetic"));
+	m_c2t.push_back(TYPECMB_ASPELL);
+    }
 #endif
+    expTypeCMB->addItem(tr("Show index statistics"));
+    m_c2t.push_back(TYPECMB_STATS);
 
     int typ = prefs.termMatchType;
-    if (typ < 0 || typ > expTypeCMB->count())
-	typ = 0;
-    expTypeCMB->setCurrentIndex(typ);
+    vector<comboboxchoice>::const_iterator it = 
+	std::find(m_c2t.begin(), m_c2t.end(), typ);
+    if (it == m_c2t.end())
+	it = m_c2t.begin();
+    int cmbidx = it - m_c2t.begin();
+
+    expTypeCMB->setCurrentIndex(cmbidx);
 
     // Stemming language combobox
     stemLangCMB->clear();
@@ -76,7 +95,6 @@ void SpellW::init()
 	stemLangCMB->
 	    addItem(QString::fromAscii(it->c_str(), it->length()));
     }
-    stemLangCMB->setEnabled(expTypeCMB->currentIndex()==2);
 
     (void)new HelpClient(this);
     HelpClient::installMap((const char *)this->objectName().toUtf8(), 
@@ -90,9 +108,6 @@ void SpellW::init()
     connect(dismissPB, SIGNAL(clicked()), this, SLOT(close()));
     connect(expTypeCMB, SIGNAL(activated(int)), this, SLOT(modeSet(int)));
 
-    QStringList labels(tr("Term"));
-    labels.push_back(tr("Doc. / Tot."));
-    resTW->setHorizontalHeaderLabels(labels);
     resTW->setShowGrid(0);
     resTW->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
     resTW->verticalHeader()->setDefaultSectionSize(20); 
@@ -103,6 +118,8 @@ void SpellW::init()
     resTW->setColumnWidth(0, 200);
     resTW->setColumnWidth(1, 150);
     resTW->installEventFilter(this);
+
+    modeSet(cmbidx);
 }
 
 static const int maxexpand = 10000;
@@ -110,9 +127,14 @@ static const int maxexpand = 10000;
 /* Expand term according to current mode */
 void SpellW::doExpand()
 {
+    int idx = expTypeCMB->currentIndex();
+    if (idx < 0 || idx >= int(m_c2t.size()))
+	idx = 0;
+    comboboxchoice mode = m_c2t[idx];
+
     // Can't clear qt4 table widget: resets column headers too
     resTW->setRowCount(0);
-    if (baseWordLE->text().isEmpty()) 
+    if (baseWordLE->text().isEmpty() && mode != TYPECMB_STATS) 
 	return;
 
     string reason;
@@ -122,25 +144,24 @@ void SpellW::doExpand()
 	return;
     }
 
-    string expr = string((const char *)baseWordLE->text().toUtf8());
-    list<string> suggs;
-
-    prefs.termMatchType = expTypeCMB->currentIndex();
-
-    Rcl::Db::MatchType mt = Rcl::Db::ET_WILD;
-    switch(expTypeCMB->currentIndex()) {
-    case 0: mt = Rcl::Db::ET_WILD; break;
-    case 1:mt = Rcl::Db::ET_REGEXP; break;
-    case 2:mt = Rcl::Db::ET_STEM; break;
+    Rcl::Db::MatchType mt;
+    switch(mode) {
+    case TYPECMB_WILD: mt = Rcl::Db::ET_WILD; break;
+    case TYPECMB_REG: mt = Rcl::Db::ET_REGEXP; break;
+    case TYPECMB_STEM: mt = Rcl::Db::ET_STEM; break;
+    default: mt = Rcl::Db::ET_WILD;
     }
 
     Rcl::TermMatchResult res;
-    switch (expTypeCMB->currentIndex()) {
-    case 0: 
-    case 1:
-    case 2: 
+    string expr = string((const char *)baseWordLE->text().toUtf8());
+
+    switch (mode) {
+    case TYPECMB_WILD: 
+    default:
+    case TYPECMB_REG:
+    case TYPECMB_STEM:
     {
-	string l_stemlang = (const char*)stemLangCMB->currentText().toAscii();
+	string l_stemlang = qs2utf8s(stemLangCMB->currentText());
 
 	if (!rcldb->termMatch(mt, l_stemlang, expr, res, maxexpand)) {
 	    LOGERR(("SpellW::doExpand:rcldb::termMatch failed\n"));
@@ -152,10 +173,11 @@ void SpellW::doExpand()
 			  .arg(res.entries.size()));
     }
         
-	break;
+    break;
 
 #ifdef RCL_USE_ASPELL
-    case 3: {
+    case TYPECMB_ASPELL: 
+    {
 	LOGDEB(("SpellW::doExpand: aspelling\n"));
 	if (!aspell) {
 	    QMessageBox::warning(0, "Recoll",
@@ -182,7 +204,15 @@ void SpellW::doExpand()
 #endif // TESTING_XAPIAN_SPELL
         statsLBL->setText(tr("%1 results").arg(res.entries.size()));
     }
-#endif
+    break;
+#endif // RCL_USE_ASPELL
+
+    case TYPECMB_STATS: 
+    {
+	showStats();
+	return;
+    }
+    break;
     }
 
 
@@ -224,6 +254,93 @@ void SpellW::doExpand()
     }
 }
 
+void SpellW::showStats()
+{
+    statsLBL->setText("");
+    int row = 0;
+
+    Rcl::TermMatchResult res;
+    if (!rcldb->termMatch(Rcl::Db::ET_WILD, "", "azbogusaz", res, 1)) {
+	LOGERR(("SpellW::doExpand:rcldb::termMatch failed\n"));
+	return;
+    }
+
+    resTW->setRowCount(row+1);
+    resTW->setItem(row, 0,
+		   new QTableWidgetItem(tr("Number of documents")));
+    resTW->setItem(row++, 1, new QTableWidgetItem(
+		       QString::number(res.dbdoccount)));
+
+    resTW->setRowCount(row+1);
+    resTW->setItem(row, 0,
+		   new QTableWidgetItem(tr("Average terms per document")));
+    resTW->setItem(row++, 1, new QTableWidgetItem(
+		       QString::number(res.dbavgdoclen)));
+
+    resTW->setRowCount(row+1);
+    resTW->setItem(row, 0,
+		   new QTableWidgetItem(tr("Smallest document length")));
+    resTW->setItem(row++, 1, new QTableWidgetItem(
+		       QString::number(res.mindoclen)));
+
+    resTW->setRowCount(row+1);
+    resTW->setItem(row, 0,
+		   new QTableWidgetItem(tr("Longest document length")));
+    resTW->setItem(row++, 1, new QTableWidgetItem(
+		       QString::number(res.maxdoclen)));
+
+    if (!thestableconfig)
+	return;
+
+    ExecCmd cmd;
+    vector<string> args; 
+    int status;
+    args.push_back("-sk");
+    args.push_back(thestableconfig->getDbDir());
+    string output;
+    status = cmd.doexec("du", args, 0, &output);
+    int dbkbytes = 0;
+    if (!status) {
+	dbkbytes = atoi(output.c_str());
+    }
+    resTW->setRowCount(row+1);
+    resTW->setItem(row, 0,
+		   new QTableWidgetItem(tr("Database directory size")));
+    resTW->setItem(row++, 1, new QTableWidgetItem(
+		       QString::fromUtf8(
+			   displayableBytes(dbkbytes*1024).c_str())));
+
+    vector<string> allmimetypes = thestableconfig->getAllMimeTypes();
+    multimap<int, string> mtbycnt;
+    for (vector<string>::const_iterator it = allmimetypes.begin();
+	 it != allmimetypes.end(); it++) {
+	string reason;
+	string q = string("mime:") + *it;
+	Rcl::SearchData *sd =
+	    wasaStringToRcl(thestableconfig, "", q, reason);
+	RefCntr<Rcl::SearchData> rq(sd);
+	Rcl::Query query(rcldb);
+	if (!query.setQuery(rq)) {
+	    LOGERR(("Query setup failed: %s",query.getReason().c_str()));
+	    return;
+	}
+	int cnt = query.getResCnt();
+	mtbycnt.insert(pair<int,string>(cnt,*it));
+    }
+    resTW->setRowCount(row+1);
+    resTW->setItem(row, 0, new QTableWidgetItem(tr("MIME types:")));
+    resTW->setItem(row++, 1, new QTableWidgetItem(""));
+
+    for (multimap<int, string>::const_reverse_iterator it = mtbycnt.rbegin();
+	 it != mtbycnt.rend(); it++) {
+	resTW->setRowCount(row+1);
+	resTW->setItem(row, 0, new QTableWidgetItem(
+			   QString::fromUtf8(it->second.c_str())));
+	resTW->setItem(row++, 1, new QTableWidgetItem(
+			   QString::number(it->first)));
+    }
+}
+
 void SpellW::wordChanged(const QString &text)
 {
     if (text.isEmpty()) {
@@ -242,12 +359,34 @@ void SpellW::textDoubleClicked(int row, int)
         emit(wordSelect(item->text()));
 }
 
-void SpellW::modeSet(int mode)
+void SpellW::modeSet(int idx)
 {
-    if (mode == 2)
+    if (idx < 0 || idx > int(m_c2t.size()))
+	return;
+    comboboxchoice mode = m_c2t[idx]; 
+    resTW->setRowCount(0);
+   
+    if (mode == TYPECMB_STEM)
 	stemLangCMB->setEnabled(true);
     else
 	stemLangCMB->setEnabled(false);
+    if (mode == TYPECMB_STATS)
+	baseWordLE->setEnabled(false);
+    else
+	baseWordLE->setEnabled(true);
+
+
+    if (mode == TYPECMB_STATS) {
+	QStringList labels(tr("Item"));
+	labels.push_back(tr("Value"));
+	resTW->setHorizontalHeaderLabels(labels);
+	doExpand();
+    } else {
+	QStringList labels(tr("Term"));
+	labels.push_back(tr("Doc. / Tot."));
+	resTW->setHorizontalHeaderLabels(labels);
+	prefs.termMatchType = mode;
+    }
 }
 
 void SpellW::copy()

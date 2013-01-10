@@ -121,6 +121,8 @@ public:
     // Index-wide stats
     unsigned int dbdoccount;
     double       dbavgdoclen;
+    size_t       mindoclen;
+    size_t       maxdoclen;
 };
 
 inline bool has_prefix(const string& trm)

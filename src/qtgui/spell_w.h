@@ -17,11 +17,12 @@
 #ifndef _ASPELL_W_H_INCLUDED_
 #define _ASPELL_W_H_INCLUDED_
 
+#include <vector>
+
 #include <qvariant.h>
 #include <qwidget.h>
 
 #include "ui_spell.h"
-
 class SpellW : public QWidget, public Ui::SpellBase
 {
     Q_OBJECT
@@ -33,8 +34,6 @@ public:
 	init();
     }
 	
-    ~SpellW(){}
-
     virtual bool eventFilter(QObject *target, QEvent *event );
 public slots:
     virtual void doExpand();
@@ -47,8 +46,13 @@ signals:
     void wordSelect(QString);
 
 private:
+    enum comboboxchoice {TYPECMB_WILD, TYPECMB_REG, TYPECMB_STEM, 
+			 TYPECMB_ASPELL, TYPECMB_STATS};
+    // combobox index to expansion type
+    std::vector<comboboxchoice> m_c2t; 
     void init();
     void copy();
+    void showStats();
 };
 
 #endif /* _ASPELL_W_H_INCLUDED_ */

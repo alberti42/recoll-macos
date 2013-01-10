@@ -29,6 +29,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <math.h>
 
 #include <string>
 #include <iostream>
@@ -602,20 +603,22 @@ string displayableBytes(off_t size)
 {
     char sizebuf[50];
     const char *unit;
-
+    
+    double roundable = 0;
     if (size < 1000) {
 	unit = " B ";
+	roundable = double(size);
     } else if (size < 1E6) {
 	unit = " KB ";
-	size /= 1000;
+	roundable = double(size) / 1E3;
     } else if (size < 1E9) {
 	unit = " MB ";
-	size /= (1E6);
+	roundable = double(size) / 1E6;
     } else {
 	unit = " GB ";
-	size /= (1E9);
+	roundable = double(size) / 1E9;
     }
-
+    size = round(roundable);
     sprintf(sizebuf, OFFTPC "%s", size, unit);
     return string(sizebuf);
 }

@@ -443,11 +443,7 @@ bool RclConfig::addLocalFields(map<string, string> *tgt) const
 // filtering don't work well together.
 vector<string> RclConfig::getAllMimeTypes() const
 {
-    vector<string> lst;
-    if (mimeconf == 0)
-	return lst;
-    lst = mimeconf->getNames("index");
-    return lst;
+    return mimeconf ? mimeconf->getNames("index") : vector<string>();
 }
 
 // Things for suffix comparison. We define a string class and string 

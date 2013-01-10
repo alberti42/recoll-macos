@@ -1707,7 +1707,10 @@ bool Db::termMatch(MatchType typ, const string &lang,
     Xapian::Database xdb = m_ndb->xrdb;
 
     XAPTRY(res.dbdoccount = xdb.get_doccount();
-           res.dbavgdoclen = xdb.get_avlength(), xdb, m_reason);
+           res.dbavgdoclen = xdb.get_avlength();
+	   res.mindoclen = xdb.get_doclength_lower_bound();
+	   res.maxdoclen = xdb.get_doclength_upper_bound();
+	   , xdb, m_reason);
     if (!m_reason.empty())
         return false;
 
