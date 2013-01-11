@@ -199,13 +199,9 @@ inline void leftzeropad(string& s, unsigned len)
 	s = s.insert(0, len - s.length(), '0');
 }
 
-#ifndef deleteZ
-#define deleteZ(X) {delete X;X = 0;}
-#endif
-
 // Code for static initialization of an stl map. Somewhat like Boost.assign. 
 // Ref: http://stackoverflow.com/questions/138600/initializing-a-static-stdmapint-int-in-c
-// Example use: map<int, int> m = map_list_of (1,2) (3,4) (5,6) (7,8);
+// Example use: map<int, int> m = create_map (1,2) (3,4) (5,6) (7,8);
 
 template <typename T, typename U>
 class create_map
@@ -235,6 +231,9 @@ public:
 #endif
 #ifndef MAX
 #define MAX(A,B) (((A)>(B)) ? (A) : (B))
+#endif
+#ifndef deleteZ
+#define deleteZ(X) {delete X;X = 0;}
 #endif
 
 void smallut_init_mt();
