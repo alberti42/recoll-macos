@@ -33,6 +33,31 @@ using namespace std;
 
 namespace Rcl {
 
+bool XapWritableSynFamily::createMember(const string& membername)
+{
+    string ermsg;
+    try {
+	m_wdb.add_synonym(memberskey(), membername);
+    } XCATCHERROR(ermsg);
+    if (!ermsg.empty()) {
+	LOGERR(("XapSynFamily::createMember: error: %s\n", ermsg.c_str()));
+	return false;
+    }
+    return true;
+}
+
+bool XapWritableSynFamily::deleteMember(const string& membername)
+{
+    string key = entryprefix(membername);
+
+    for (Xapian::TermIterator xit = m_wdb.synonym_keys_begin(key);
+	 xit != m_wdb.synonym_keys_end(key); xit++) {
+	m_wdb.clear_synonyms(*xit);
+    }
+    m_wdb.remove_synonym(memberskey(), membername);
+    return true;
+}
+
 bool XapSynFamily::getMembers(vector<string>& members)
 {
     string key = memberskey();
@@ -109,31 +134,6 @@ bool XapSynFamily::synExpand(const string& member, const string& term,
     return true;
 }
 
-bool XapWritableSynFamily::deleteMember(const string& membername)
-{
-    string key = entryprefix(membername);
-
-    for (Xapian::TermIterator xit = m_wdb.synonym_keys_begin(key);
-	 xit != m_wdb.synonym_keys_end(key); xit++) {
-	m_wdb.clear_synonyms(*xit);
-    }
-    m_wdb.remove_synonym(memberskey(), membername);
-    return true;
-}
-
-bool XapWritableSynFamily::createMember(const string& membername)
-{
-    string ermsg;
-    try {
-	m_wdb.add_synonym(memberskey(), membername);
-    } XCATCHERROR(ermsg);
-    if (!ermsg.empty()) {
-	LOGERR(("XapSynFamily::createMember: error: %s\n", ermsg.c_str()));
-	return false;
-    }
-    return true;
-}
-
 bool XapComputableSynFamMember::synExpand(const string& term, 
 					  vector<string>& result,
 					  SynTermTrans *filtertrans)
@@ -182,7 +182,6 @@ bool XapComputableSynFamMember::synExpand(const string& term,
     return true;
 }
 
-
 bool XapComputableSynFamMember::keyWildExpand(const string& inexp,
 					      vector<string>& result,
 					      SynTermTrans *filtertrans)
@@ -224,8 +223,8 @@ bool XapComputableSynFamMember::keyWildExpand(const string& inexp,
     try {
         for (Xapian::TermIterator xit = m_family.getdb().synonym_keys_begin(is);
              xit != m_family.getdb().synonym_keys_end(is); xit++) {
-	    LOGDEB(("  Checking1 [%s] against [%s]\n", (*xit).c_str(),
-		    matchin.c_str()));
+	    LOGDEB2(("  Checking1 [%s] against [%s]\n", (*xit).c_str(),
+		     matchin.c_str()));
 	    if (fnmatch(matchin.c_str(), (*xit).c_str(), 0) == FNM_NOMATCH)
 		continue;
 
@@ -236,8 +235,8 @@ bool XapComputableSynFamMember::keyWildExpand(const string& inexp,
 		string term = *xit1;
 		if (filtertrans) {
 		    string term1 = (*filtertrans)(term);
-		    LOGDEB((" Testing [%s] against [%s]\n", 
-			    term1.c_str(), filter_exp.c_str()));
+		    LOGDEB2((" Testing [%s] against [%s]\n", 
+			     term1.c_str(), filter_exp.c_str()));
 		    if (fnmatch(filter_exp.c_str(), 
 				term1.c_str(), 0) == FNM_NOMATCH) {
 			continue;
