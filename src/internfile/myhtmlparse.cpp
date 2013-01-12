@@ -177,6 +177,7 @@ MyHtmlParser::MyHtmlParser()
     : in_script_tag(false),
       in_style_tag(false),
       in_pre_tag(false),
+      in_title_tag(false),
       pending_space(false),
       indexing_allowed(true)
 {
@@ -256,12 +257,20 @@ void MyHtmlParser::decode_entities(string &s)
 void
 MyHtmlParser::process_text(const string &text)
 {
-    LOGDEB2(("process_text: pending_space %d txt [%s]\n", pending_space,
-	    text.c_str()));
+    LOGDEB2(("process_text: title %d script %d style %d pre %d "
+	     "pending_space %d txt [%s]\n", 
+	     in_title_tag,
+	     in_script_tag,
+	     in_style_tag,
+	     in_pre_tag,
+	     pending_space,
+	     text.c_str()));
     CancelCheck::instance().checkCancel();
 
     if (!in_script_tag && !in_style_tag) {
-	if (!in_pre_tag) {
+	if (in_title_tag) {
+	    titledump += text;
+	} else if (!in_pre_tag) {
 	    string::size_type b = 0;
 	    bool only_space = true;
 	    while ((b = text.find_first_not_of(WHITESPACE, b)) != string::npos) {
@@ -461,7 +470,11 @@ MyHtmlParser::opening_tag(const string &tag)
 	    break;
 	case 't':
 	    if (tag == "table" || tag == "td" || tag == "textarea" ||
-		tag == "th") pending_space = true;
+		tag == "th") {
+		pending_space = true;
+	    } else if (tag == "title") {
+		in_title_tag = true;
+	    }
 	    break;
 	case 'u':
 	    if (tag == "ul") pending_space = true;
@@ -542,9 +555,10 @@ MyHtmlParser::closing_tag(const string &tag)
 	    break;
 	case 't':
 	    if (tag == "title") {
+		in_title_tag = false;
 		if (meta.find("title") == meta.end()|| meta["title"].empty()) {
-		    meta["title"] = dump;
-		    dump.clear();
+		    meta["title"] = titledump;
+		    titledump.clear();
 		}
 		break;
 	    }

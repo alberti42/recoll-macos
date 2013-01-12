@@ -37,9 +37,10 @@ class MyHtmlParser : public HtmlParser {
     bool in_script_tag;
     bool in_style_tag;
     bool in_pre_tag;
+    bool in_title_tag;
     bool pending_space;
     map<string,string> meta;
-    string dump, dmtime;
+    string dump, dmtime, titledump;
     // This is the charset our caller thinks the doc used (initially
     // comes from the environment/configuration, used as source for
     // conversion to utf-8)
