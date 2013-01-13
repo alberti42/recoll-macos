@@ -55,11 +55,14 @@
 #include <xapian.h>
 
 #include "synfamily.h"
-#include "unacpp.h"
 
 namespace Rcl {
 
-/* A stemming functor for using with XapComputableSynFamMember */
+/* A stemming functor for using with XapComputableSynFamMember.
+ * We could perform the change to lowercase in there too, as stemdb keys
+ * must be lower case, but then the input conversion would be repeated for each
+ * stemming language, which would be inefficient. So we let our caller make sure
+ * that the input is lower-case */
 class SynTermTransStem : public SynTermTrans {
 public:
     SynTermTransStem(const std::string& lang)
@@ -87,7 +90,10 @@ public:
     {
     }
 
-    /** Expand for a number of languages */
+    /** Expand for a number of languages 
+     *  @param langs space-separated set of languages
+     *  @param term  term to expand
+     */
     bool stemExpand(const std::string& langs,
 		    const std::string& term,
 		    std::vector<std::string>& result);
