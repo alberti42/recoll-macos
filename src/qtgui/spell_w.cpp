@@ -119,6 +119,16 @@ void SpellW::init()
     resTW->setColumnWidth(1, 150);
     resTW->installEventFilter(this);
 
+    bool stripped = false;
+#ifdef RCL_INDEX_STRIPCHARS
+    stripped = true;
+#else
+    stripped = o_index_stripchars;
+#endif
+    if (stripped) {
+	caseSensCB->setEnabled(false);
+	caseSensCB->setEnabled(false);
+    }
     modeSet(cmbidx);
 }
 
@@ -144,16 +154,23 @@ void SpellW::doExpand()
 	return;
     }
 
-    Rcl::Db::MatchType mt;
+    int mt;
     switch(mode) {
     case TYPECMB_WILD: mt = Rcl::Db::ET_WILD; break;
     case TYPECMB_REG: mt = Rcl::Db::ET_REGEXP; break;
     case TYPECMB_STEM: mt = Rcl::Db::ET_STEM; break;
     default: mt = Rcl::Db::ET_WILD;
     }
-
+    if (caseSensCB->isChecked()) {
+	mt |= Rcl::Db::ET_CASESENS;
+    }
+    if (diacSensCB->isChecked()) {
+	mt |= Rcl::Db::ET_DIACSENS;
+    }
     Rcl::TermMatchResult res;
     string expr = string((const char *)baseWordLE->text().toUtf8());
+    Rcl::DbStats dbs;
+    rcldb->dbStats(dbs);
 
     switch (mode) {
     case TYPECMB_WILD: 
@@ -169,7 +186,7 @@ void SpellW::doExpand()
 	}
         statsLBL->setText(tr("Index: %1 documents, average length %2 terms."
 			     "%3 results")
-                          .arg(res.dbdoccount).arg(res.dbavgdoclen, 0, 'f', 1)
+                          .arg(dbs.dbdoccount).arg(dbs.dbavgdoclen, 0, 'f', 1)
 			  .arg(res.entries.size()));
     }
         
@@ -239,7 +256,7 @@ void SpellW::doExpand()
 
 	for (vector<Rcl::TermMatchEntry>::iterator it = res.entries.begin(); 
 	     it != res.entries.end(); it++) {
-	    LOGDEB(("SpellW::expand: %6d [%s]\n", it->wcf, it->term.c_str()));
+	    LOGDEB2(("SpellW::expand: %6d [%s]\n", it->wcf, it->term.c_str()));
 	    char num[30];
 	    if (it->wcf)
 		sprintf(num, "%d / %d",  it->docs, it->wcf);
@@ -259,9 +276,9 @@ void SpellW::showStats()
     statsLBL->setText("");
     int row = 0;
 
-    Rcl::TermMatchResult res;
-    if (!rcldb->termMatch(Rcl::Db::ET_WILD, "", "azbogusaz", res, 1)) {
-	LOGERR(("SpellW::doExpand:rcldb::termMatch failed\n"));
+    Rcl::DbStats res;
+    if (!rcldb->dbStats(res)) {
+	LOGERR(("SpellW::doExpand:rcldb::dbStats failed\n"));
 	return;
     }
 
@@ -366,10 +383,17 @@ void SpellW::modeSet(int idx)
     comboboxchoice mode = m_c2t[idx]; 
     resTW->setRowCount(0);
    
-    if (mode == TYPECMB_STEM)
+    if (mode == TYPECMB_STEM) {
 	stemLangCMB->setEnabled(true);
-    else
+	diacSensCB->setChecked(false);
+	diacSensCB->setEnabled(false);
+	caseSensCB->setChecked(false);
+	caseSensCB->setEnabled(false);
+    } else {
 	stemLangCMB->setEnabled(false);
+	diacSensCB->setEnabled(true);
+	caseSensCB->setEnabled(true);
+    }
     if (mode == TYPECMB_STATS)
 	baseWordLE->setEnabled(false);
     else

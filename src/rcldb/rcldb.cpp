@@ -1668,6 +1668,7 @@ public:
     }
 };
 
+#ifdef RCL_INDEX_STRIPCHARS
 bool Db::stemExpand(const string &langs, const string &term, 
 		    TermMatchResult& result)
 {
@@ -1680,6 +1681,7 @@ bool Db::stemExpand(const string &langs, const string &term,
     result.entries.insert(result.entries.end(), exp.begin(), exp.end());
     return true;
 }
+#endif
 
 /** Add prefix to all strings in list. 
  * @param prefix already wrapped prefix
@@ -1693,14 +1695,7 @@ static void addPrefix(vector<TermMatchEntry>& terms, const string& prefix)
 	it->term.insert(0, prefix);
 }
 
-// Find all index terms that match a wildcard or regular expression
-// If field is set, we return a list of appropriately prefixed terms (which 
-// are going to be used to build a Xapian query).
-bool Db::termMatch(MatchType typ, const string &lang,
-		   const string &_root,
-		   TermMatchResult& res,
-		   int max, 
-		   const string& field)
+bool Db::dbStats(DbStats& res)
 {
     if (!m_ndb || !m_ndb->m_isopen)
 	return false;
@@ -1713,20 +1708,197 @@ bool Db::termMatch(MatchType typ, const string &lang,
 	   , xdb, m_reason);
     if (!m_reason.empty())
         return false;
+    return true;
+}
 
-    string droot = _root;
+// Find all index terms that match a wildcard or regular expression If
+// field is set, we return a list of appropriately prefixed terms
+// (which are going to be used to build a Xapian query).  This routine
+// performs case/diacritics/stemming expansion and possibly calls
+// idxTermMatch for wildcard/regexp expansion and filtering against
+// the main index terms.
+bool Db::termMatch(int typ_sens, const string &lang,
+		   const string &_term,
+		   TermMatchResult& res,
+		   int max, 
+		   const string& field)
+{
+    int matchtyp = matchTypeTp(typ_sens);
+    if (!m_ndb || !m_ndb->m_isopen)
+	return false;
+    Xapian::Database xrdb = m_ndb->xrdb;
 
-    // If index is stripped, get rid of capitals and accents
-#ifndef RCL_INDEX_STRIPCHARS
-    if (o_index_stripchars)
+    bool diac_sensitive = (typ_sens & ET_DIACSENS) != 0;
+    bool case_sensitive = (typ_sens & ET_CASESENS) != 0;
+
+    bool stripped = false;
+#ifdef RCL_INDEX_STRIPCHARS
+    stripped = true;
+#else
+    stripped = o_index_stripchars;
 #endif
-	if (!unacmaybefold(_root, droot, "UTF-8", UNACOP_UNACFOLD)) {
-	    LOGERR(("Db::termMatch: unac failed for [%s]\n", _root.c_str()));
+
+    LOGDEB(("Db::TermMatch: typ %d diacsens %d casesens %d lang [%s] term [%s] "
+	    "max %d field [%s] stripped %d\n",
+	    matchtyp, diac_sensitive, case_sensitive, lang.c_str(), 
+	    _term.c_str(), max, field.c_str(), stripped));
+
+    // If index is stripped, no case or diac expansion can be needed:
+    // for the processing inside this routine, everything looks like
+    // we're all-sensitive: no use of expansion db.
+    // Also, convert input to lowercase and strip its accents.
+    string term = _term;
+    if (stripped) {
+	diac_sensitive = case_sensitive = true;
+	if (!unacmaybefold(_term, term, "UTF-8", UNACOP_UNACFOLD)) {
+	    LOGERR(("Db::termMatch: unac failed for [%s]\n", _term.c_str()));
 	    return false;
 	}
+    }
 
-    string nochars = typ == ET_WILD ? cstr_wildSpecStChars : 
-	cstr_regSpecStChars;
+#ifndef RCL_INDEX_STRIPCHARS
+    // The case/diac expansion db
+    SynTermTransUnac unacfoldtrans(UNACOP_UNACFOLD);
+    XapComputableSynFamMember synac(xrdb, synFamDiCa, "all", &unacfoldtrans);
+#endif // RCL_INDEX_STRIPCHARS
+
+
+    if (matchtyp == ET_WILD || matchtyp == ET_REGEXP) {
+#ifdef RCL_INDEX_STRIPCHARS
+	idxTermMatch(typ_sens, lang, term, res, max, field);
+#else
+	RefCntr<StrMatcher> matcher;
+	if (matchtyp == ET_WILD) {
+	    matcher = RefCntr<StrMatcher>(new StrWildMatcher(term));
+	} else {
+	    matcher = RefCntr<StrMatcher>(new StrRegexpMatcher(term));
+	}
+	if (!diac_sensitive || !case_sensitive) {
+	    // Perform case/diac expansion on the exp as appropriate and
+	    // expand the result.
+	    vector<string> exp;
+	    if (diac_sensitive) {
+		// Expand for diacritics and case, filtering for same diacritics
+		SynTermTransUnac foldtrans(UNACOP_FOLD);
+		synac.synKeyExpand(matcher.getptr(), exp, &foldtrans);
+	    } else if (case_sensitive) {
+		// Expand for diacritics and case, filtering for same case
+		SynTermTransUnac unactrans(UNACOP_UNAC);
+		synac.synKeyExpand(matcher.getptr(), exp, &unactrans);
+	    } else {
+		// Expand for diacritics and case, no filtering
+		synac.synKeyExpand(matcher.getptr(), exp);
+	    }
+	    // Retrieve additional info and filter against the index itself
+	    for (vector<string>::const_iterator it = exp.begin(); 
+		 it != exp.end(); it++) {
+		idxTermMatch(ET_NONE, "", *it, res, max, field);
+	    }
+	} else {
+	    idxTermMatch(typ_sens, lang, term, res, max, field);
+	}
+
+#endif // RCL_INDEX_STRIPCHARS
+
+    } else {
+	// Expansion is STEM or NONE (which may still need case/diac exp)
+
+#ifdef RCL_INDEX_STRIPCHARS
+
+	idxTermMatch(Rcl::Db::ET_STEM, lang, term, res, max, field);
+
+#else
+	vector<string> lexp;
+	if (diac_sensitive && case_sensitive) {
+	    // No case/diac expansion
+	    lexp.push_back(term);
+	} else if (diac_sensitive) {
+	    // Expand for accents and case, filtering for same accents,
+	    SynTermTransUnac foldtrans(UNACOP_FOLD);
+	    synac.synExpand(term, lexp, &foldtrans);
+	} else if (case_sensitive) {
+	    // Expand for accents and case, filtering for same case
+	    SynTermTransUnac unactrans(UNACOP_UNAC);
+	    synac.synExpand(term, lexp, &unactrans);
+	} else {
+	    // We are neither accent- nor case- sensitive and may need stem
+	    // expansion or not. Expand for accents and case
+	    synac.synExpand(term, lexp);
+	}
+
+	if (matchTypeTp(typ_sens) == ET_STEM) {
+	    // Need stem expansion. Lowercase the result of accent and case
+	    // expansion for input to stemdb.
+	    for (unsigned int i = 0; i < lexp.size(); i++) {
+		string lower;
+		unacmaybefold(lexp[i], lower, "UTF-8", UNACOP_FOLD);
+		lexp[i] = lower;
+	    }
+	    sort(lexp.begin(), lexp.end());
+	    lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
+	    StemDb sdb(xrdb);
+	    vector<string> exp1;
+	    for (vector<string>::const_iterator it = lexp.begin(); 
+		 it != lexp.end(); it++) {
+		sdb.stemExpand(lang, *it, exp1);
+	    }
+	    LOGDEB(("ExpTerm: stem exp-> %s\n", stringsToString(exp1).c_str()));
+
+	    // Expand the resulting list for case (all stemdb content
+	    // is lowercase)
+	    lexp.clear();
+	    for (vector<string>::const_iterator it = exp1.begin(); 
+		 it != exp1.end(); it++) {
+		synac.synExpand(*it, lexp);
+	    }
+	    sort(lexp.begin(), lexp.end());
+	    lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
+	}
+
+	// Filter the result and get the stats, possibly add prefixes.
+	LOGDEB(("ExpandTerm:TM: lexp: %s\n", stringsToString(lexp).c_str()));
+	for (vector<string>::const_iterator it = lexp.begin();
+	     it != lexp.end(); it++) {
+	    idxTermMatch(Rcl::Db::ET_WILD, "", *it, res, max, field);
+	}
+    }
+#endif
+
+    TermMatchCmpByTerm tcmp;
+    sort(res.entries.begin(), res.entries.end(), tcmp);
+    TermMatchTermEqual teq;
+    vector<TermMatchEntry>::iterator uit = 
+	unique(res.entries.begin(), res.entries.end(), teq);
+    res.entries.resize(uit - res.entries.begin());
+    TermMatchCmpByWcf wcmp;
+    sort(res.entries.begin(), res.entries.end(), wcmp);
+    if (max > 0) {
+	// Would need a small max and big stem expansion...
+	res.entries.resize(MIN(res.entries.size(), (unsigned int)max));
+    }
+    return true;
+}
+
+// Second phase of wildcard/regexp term expansion after case/diac
+// expansion: expand against main index terms
+bool Db::idxTermMatch(int typ_sens, const string &lang,
+		      const string &root,
+		      TermMatchResult& res,
+		      int max, 
+		      const string& field)
+{
+    int typ = matchTypeTp(typ_sens);
+
+#ifndef RCL_INDEX_STRIPCHARS
+    if (typ == ET_STEM) {
+	LOGFATAL(("RCLDB: internal error: idxTermMatch called with ET_STEM\n"));
+	abort();
+    }
+#endif
+
+    if (!m_ndb || !m_ndb->m_isopen)
+	return false;
+    Xapian::Database xdb = m_ndb->xrdb;
 
     string prefix;
     if (!field.empty()) {
@@ -1740,8 +1912,9 @@ bool Db::termMatch(MatchType typ, const string &lang,
     }
     res.prefix = prefix;
 
+#ifdef RCL_INDEX_STRIPCHARS
     if (typ == ET_STEM) {
-	if (!stemExpand(lang, droot, res))
+	if (!stemExpand(lang, root, res))
 	    return false;
 	for (vector<TermMatchEntry>::iterator it = res.entries.begin(); 
 	     it != res.entries.end(); it++) {
@@ -1754,30 +1927,33 @@ bool Db::termMatch(MatchType typ, const string &lang,
 	}
         if (!prefix.empty())
             addPrefix(res.entries, prefix);
-    } else {
-	regex_t reg;
-	int errcode;
+    } else 
+#endif
+    {
+	RefCntr<StrMatcher> matcher;
 	if (typ == ET_REGEXP) {
-	    if ((errcode = regcomp(&reg, droot.c_str(), 
-				   REG_EXTENDED|REG_NOSUB))) {
-		char errbuf[200];
-		regerror(errcode, &reg, errbuf, 199);
-		LOGERR(("termMatch: regcomp failed: %s\n", errbuf));
-		res.entries.push_back(string(errbuf));
-		regfree(&reg);
-		return false;
+	    matcher = RefCntr<StrMatcher>(new StrRegexpMatcher(root));
+	    if (!matcher->ok()) {
+		LOGERR(("termMatch: regcomp failed: %s\n", 
+			matcher->getreason().c_str()))
+		    return false;
 	    }
+	} else if (typ == ET_WILD) {
+	    matcher = RefCntr<StrMatcher>(new StrWildMatcher(root));
 	}
 
 	// Find the initial section before any special char
-	string::size_type es = droot.find_first_of(nochars);
+	string::size_type es = string::npos;
+	if (matcher.isNotNull()) {
+	    es = matcher->baseprefixlen();
+	}
 	string is;
 	switch (es) {
-	case string::npos: is = prefix + droot; break;
+	case string::npos: is = prefix + root; break;
 	case 0: is = prefix; break;
-	default: is = prefix + droot.substr(0, es); break;
+	default: is = prefix + root.substr(0, es); break;
 	}
-	LOGDEB1(("termMatch: initsec: [%s]\n", is.c_str()));
+	LOGDEB2(("termMatch: initsec: [%s]\n", is.c_str()));
 
         for (int tries = 0; tries < 2; tries++) { 
             try {
@@ -1794,18 +1970,13 @@ bool Db::termMatch(MatchType typ, const string &lang,
                         term = (*it).substr(prefix.length());
                     else
                         term = *it;
-                    if (typ == ET_WILD) {
-                        if (fnmatch(droot.c_str(), term.c_str(), 0) == 
-                            FNM_NOMATCH)
-                            continue;
-                    } else {
-                        if (regexec(&reg, term.c_str(), 0, 0, 0))
-                            continue;
-                    }
-                    // Do we want stem expansion here? We don't do it for now
-                    res.entries.push_back(TermMatchEntry(*it, 
-                                                   xdb.get_collection_freq(*it),
-                                                   it.get_termfreq()));
+
+		    if (matcher.isNotNull() && !matcher->match(term))
+			continue;
+
+                    res.entries.push_back(
+			TermMatchEntry(*it, xdb.get_collection_freq(*it),
+				       it.get_termfreq()));
 
 		    // The problem with truncating here is that this is done
 		    // alphabetically and we may not keep the most frequent 
@@ -1828,25 +1999,8 @@ bool Db::termMatch(MatchType typ, const string &lang,
 	    LOGERR(("termMatch: %s\n", m_reason.c_str()));
 	    return false;
 	}
-
-	if (typ == ET_REGEXP) {
-	    regfree(&reg);
-	}
-
     }
 
-    TermMatchCmpByTerm tcmp;
-    sort(res.entries.begin(), res.entries.end(), tcmp);
-    TermMatchTermEqual teq;
-    vector<TermMatchEntry>::iterator uit = 
-	unique(res.entries.begin(), res.entries.end(), teq);
-    res.entries.resize(uit - res.entries.begin());
-    TermMatchCmpByWcf wcmp;
-    sort(res.entries.begin(), res.entries.end(), wcmp);
-    if (max > 0) {
-	// Would need a small max and big stem expansion...
-	res.entries.resize(MIN(res.entries.size(), (unsigned int)max));
-    }
     return true;
 }
 

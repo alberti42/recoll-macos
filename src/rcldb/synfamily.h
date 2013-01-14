@@ -39,6 +39,7 @@
 
 #include "debuglog.h"
 #include "xmacros.h"
+#include "strmatcher.h"
 
 namespace Rcl {
 
@@ -141,9 +142,10 @@ public:
     bool synExpand(const std::string& term, std::vector<std::string>& result,
 		   SynTermTrans *filtertrans = 0);
     
-    /** Expand key to wildcard/regexp  matching keys */
-    bool keyWildExpand(const std::string& in, std::vector<std::string>& result,
-		       SynTermTrans *filtertrans = 0);
+    /** Same with also wildcard/regexp expansion of entry against the keys.
+     * The input matcher will be modified to fit our key format. */
+    bool synKeyExpand(StrMatcher* in, std::vector<std::string>& result,
+		      SynTermTrans *filtertrans = 0);
 
 private:
     XapSynFamily m_family;

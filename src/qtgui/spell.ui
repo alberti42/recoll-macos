@@ -29,58 +29,75 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <layout class="QVBoxLayout">
-       <item>
-        <layout class="QGridLayout">
-         <item row="0" column="1" colspan="2">
-          <widget class="QLineEdit" name="baseWordLE">
-           <property name="minimumSize">
-            <size>
-             <width>100</width>
-             <height>0</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QPushButton" name="expandPB">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
-           </property>
-           <property name="text">
-            <string>&amp;Expand </string>
-           </property>
-           <property name="shortcut">
-            <string>Alt+E</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QComboBox" name="stemLangCMB"/>
-         </item>
-         <item row="0" column="0">
-          <widget class="QComboBox" name="expTypeCMB"/>
-         </item>
-         <item row="1" column="2">
-          <widget class="QPushButton" name="dismissPB">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="focusPolicy">
-            <enum>Qt::NoFocus</enum>
-           </property>
-           <property name="text">
-            <string>&amp;Close</string>
-           </property>
-           <property name="shortcut">
-            <string>Alt+C</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QComboBox" name="expTypeCMB"/>
+       </item>
+       <item row="0" column="1" colspan="2">
+        <widget class="QLineEdit" name="baseWordLE">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Match</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="caseSensCB">
+         <property name="text">
+          <string>Case</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QCheckBox" name="diacSensCB">
+         <property name="text">
+          <string>Accents</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QComboBox" name="stemLangCMB"/>
+       </item>
+       <item row="2" column="1">
+        <widget class="QPushButton" name="expandPB">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="text">
+          <string>&amp;Expand </string>
+         </property>
+         <property name="shortcut">
+          <string>Alt+E</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QPushButton" name="dismissPB">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="text">
+          <string>&amp;Close</string>
+         </property>
+         <property name="shortcut">
+          <string>Alt+C</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -125,7 +142,6 @@
   <tabstop>baseWordLE</tabstop>
   <tabstop>expandPB</tabstop>
   <tabstop>dismissPB</tabstop>
-  <tabstop>expTypeCMB</tabstop>
   <tabstop>stemLangCMB</tabstop>
  </tabstops>
  <resources/>

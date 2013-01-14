@@ -544,11 +544,12 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
     bool haswild = term.find_first_of(cstr_minwilds) != string::npos;
 
     // If there are no wildcards, add term to the list of user-entered terms
-    if (!haswild)
+    if (!haswild) {
 	m_hldata.uterms.insert(term);
-
+        sterm = term;
+    }
     // No stem expansion if there are wildcards or if prevented by caller
-    bool nostemexp = (mods & SearchDataClause::SDCM_NOSTEMMING) != 0;
+    bool nostemexp = (mods & SDCM_NOSTEMMING) != 0;
     if (haswild || getStemLang().empty()) {
 	LOGDEB2(("expandTerm: found wildcards or stemlang empty: no exp\n"));
 	nostemexp = true;
@@ -557,9 +558,11 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
     // noexpansion can be modified further down by possible case/diac expansion
     bool noexpansion = nostemexp && !haswild; 
 
+    int termmatchsens = 0;
+
 #ifndef RCL_INDEX_STRIPCHARS
-    bool diac_sensitive = (mods & SearchDataClause::SDCM_DIACSENS) != 0;
-    bool case_sensitive = (mods & SearchDataClause::SDCM_CASESENS) != 0;
+    bool diac_sensitive = (mods & SDCM_DIACSENS) != 0;
+    bool case_sensitive = (mods & SDCM_CASESENS) != 0;
 
     if (o_index_stripchars) {
 	diac_sensitive = case_sensitive = false;
@@ -596,134 +599,29 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 	if (!case_sensitive || !diac_sensitive)
 	    noexpansion = false;
     }
+
+    if (case_sensitive)
+	termmatchsens |= Db::ET_CASESENS;
+    if (diac_sensitive)
+	termmatchsens |= Db::ET_DIACSENS;
 #endif
 
     if (noexpansion) {
-	sterm = term;
 	oexp.push_back(prefix + term);
 	m_hldata.terms[term] = m_hldata.uterms.size() - 1;
 	LOGDEB(("ExpandTerm: final: %s\n", stringsToString(oexp).c_str()));
 	return true;
     } 
 
-#ifndef RCL_INDEX_STRIPCHARS
-    // The case/diac expansion db
-    SynTermTransUnac unacfoldtrans(UNACOP_UNACFOLD);
-    XapComputableSynFamMember synac(db.m_ndb->xrdb, synFamDiCa, "all", 
-				    &unacfoldtrans);
-#endif // RCL_INDEX_STRIPCHARS
-
+    Db::MatchType mtyp = haswild ? Db::ET_WILD : 
+	nostemexp ? Db::ET_NONE : Db::ET_STEM;
     TermMatchResult res;
-
-    if (haswild) {
-#ifndef RCL_INDEX_STRIPCHARS
-	if (!o_index_stripchars && (!diac_sensitive || !case_sensitive)) {
-	    // Perform case/diac expansion on the exp as appropriate and
-	    // expand the result.
-	    vector<string> exp;
-	    if (diac_sensitive) {
-		// Expand for diacritics and case, filtering for same diacritics
-		SynTermTransUnac foldtrans(UNACOP_FOLD);
-		synac.keyWildExpand(term, exp, &foldtrans);
-	    } else if (case_sensitive) {
-		// Expand for diacritics and case, filtering for same case
-		SynTermTransUnac unactrans(UNACOP_UNAC);
-		synac.keyWildExpand(term, exp, &unactrans);
-	    } else {
-		// Expand for diacritics and case, no filtering
-		synac.keyWildExpand(term, exp);
-	    }
-	    // There are no wildcards in the result from above but
-	    // calling termMatch gets the result into the right form
-	    for (vector<string>::const_iterator it = exp.begin(); 
-		 it != exp.end(); it++) {
-		db.termMatch(Rcl::Db::ET_WILD, getStemLang(), *it, res, 
-			     maxexpand, m_field);
-	    }
-	}
-#endif // RCL_INDEX_STRIPCHARS
-
-	// Expand the original wildcard expression even if we did the
-	// case/diac dance above,
-	db.termMatch(Rcl::Db::ET_WILD, getStemLang(), term, res, 
-		     maxexpand, m_field);
-	goto termmatchtoresult;
+    if (!db.termMatch(mtyp | termmatchsens, getStemLang(), term, res, maxexpand,
+		      m_field)) {
+	// Let it go through
     }
-
-    sterm = term;
-
-#ifdef RCL_INDEX_STRIPCHARS
-
-    db.termMatch(Rcl::Db::ET_STEM, getStemLang(), term, res, 
-		 maxexpand, m_field);
-
-#else
-
-    if (o_index_stripchars) {
-	// If the index is stripped, we can only come here if
-	// nostemexp is unset and we just need stem expansion.
-	db.termMatch(Rcl::Db::ET_STEM, getStemLang(), term, res, 
-		     maxexpand, m_field);
-    } else {
-	vector<string> lexp;
-	if (diac_sensitive && case_sensitive) {
-	    // No expansion whatsoever. 
-	    lexp.push_back(term);
-	} else if (diac_sensitive) {
-	    // Expand for accents and case, filtering for same accents,
-	    SynTermTransUnac foldtrans(UNACOP_FOLD);
-	    synac.synExpand(term, lexp, &foldtrans);
-	} else if (case_sensitive) {
-	    // Expand for accents and case, filtering for same case
-	    SynTermTransUnac unactrans(UNACOP_UNAC);
-	    synac.synExpand(term, lexp, &unactrans);
-	} else {
-	    // We are neither accent- nor case- sensitive and may need stem
-	    // expansion or not. Expand for accents and case
-	    synac.synExpand(term, lexp);
-	}
-
-	if (!nostemexp) {
-	    // Need stem expansion. Lowercase the result of accent and case
-	    // expansion for input to stemdb.
-	    for (unsigned int i = 0; i < lexp.size(); i++) {
-		string lower;
-		unacmaybefold(lexp[i], lower, "UTF-8", UNACOP_FOLD);
-		lexp[i] = lower;
-	    }
-	    sort(lexp.begin(), lexp.end());
-	    lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
-	    StemDb sdb(db.m_ndb->xrdb);
-	    vector<string> exp1;
-	    for (vector<string>::const_iterator it = lexp.begin(); 
-		 it != lexp.end(); it++) {
-		sdb.stemExpand(getStemLang(), *it, exp1);
-	    }
-	    LOGDEB(("ExpTerm: stem exp-> %s\n", stringsToString(exp1).c_str()));
-
-	    // Expand the resulting list for case (all stemdb content
-	    // is lowercase)
-	    lexp.clear();
-	    for (vector<string>::const_iterator it = exp1.begin(); 
-		 it != exp1.end(); it++) {
-		synac.synExpand(*it, lexp);
-	    }
-	    sort(lexp.begin(), lexp.end());
-	    lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
-	}
-
-	// Bogus wildcard expand to generate the result (possibly add prefixes)
-	LOGDEB(("ExpandTerm:TM: lexp: %s\n", stringsToString(lexp).c_str()));
-	for (vector<string>::const_iterator it = lexp.begin();
-	     it != lexp.end(); it++) {
-	    db.termMatch(Rcl::Db::ET_WILD, getStemLang(), *it, res,
-			 maxexpand, m_field);
-	}
-    }
-#endif
 
     // Term match entries to vector of terms
-termmatchtoresult:
     if (int(res.entries.size()) >= maxexpand && !maxexpissoft) {
 	ermsg = "Maximum term expansion size exceeded."
 	    " Maybe increase maxTermExpand.";
@@ -734,7 +632,7 @@ termmatchtoresult:
 	oexp.push_back(it->term);
     }
     // If the term does not exist at all in the db, the return from
-    // term match is going to be empty, which is not what we want (we
+    // termMatch() is going to be empty, which is not what we want (we
     // would then compute an empty Xapian query)
     if (oexp.empty())
 	oexp.push_back(prefix + term);

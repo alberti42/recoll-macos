@@ -73,6 +73,7 @@ ${depth}/utils/pxattr.cpp \
 ${depth}/utils/rclionice.cpp \
 ${depth}/utils/readfile.cpp \
 ${depth}/utils/smallut.cpp \
+${depth}/utils/strmatcher.cpp \
 ${depth}/utils/transcode.cpp \
 ${depth}/utils/wipedir.cpp \
 ${depth}/utils/x11mon.cpp \

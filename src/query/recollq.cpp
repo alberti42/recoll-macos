@@ -170,6 +170,8 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             switch (*(*argv)++) {
 	    case '-': 
 		// -- : end of options
+		if (*(*argv) != 0)
+		    Usage();
 		goto endopts;
             case 'A':   op_flags |= OPT_A; break;
             case 'a':   op_flags |= OPT_a; break;

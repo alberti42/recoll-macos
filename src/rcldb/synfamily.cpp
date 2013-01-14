@@ -28,6 +28,7 @@
 #include "xmacros.h"
 #include "synfamily.h"
 #include "smallut.h"
+#include "refcntr.h"
 
 using namespace std;
 
@@ -182,50 +183,35 @@ bool XapComputableSynFamMember::synExpand(const string& term,
     return true;
 }
 
-bool XapComputableSynFamMember::keyWildExpand(const string& inexp,
-					      vector<string>& result,
-					      SynTermTrans *filtertrans)
+bool XapComputableSynFamMember::synKeyExpand(StrMatcher* inexp,
+					     vector<string>& result,
+					     SynTermTrans *filtertrans)
 {
-    LOGDEB(("XapCompSynFam::keyWildExpand: [%s]\n", inexp.c_str()));
+    LOGDEB(("XapCompSynFam::synKeyExpand: [%s]\n", inexp->exp().c_str()));
     
-    // Transform input into our key format (e.g.: case-folded + diac-stripped)
-    string stripped_exp = (*m_trans)(inexp);
-
     // If set, compute filtering term (e.g.: only case-folded)
-    string filter_exp;
-    if (filtertrans)
-	filter_exp = (*filtertrans)(inexp);
-
-    // Find the initial section before any special chars
-    string::size_type es = stripped_exp.find_first_of(cstr_wildSpecStChars);
-    string is; // Initial section
-    switch (es) {
-    case string::npos: 
-	// No special chars, no expansion.
-	result.push_back(inexp);
-	return true;
-	break;
-    case 0: 
-	// Input starts with special char: start at bottom
-	is = m_prefix; 
-	break;
-    default: 
-	// Compute initial section
-	is = m_prefix + stripped_exp.substr(0, es); 
-	break;
+    RefCntr<StrMatcher> filter_exp;
+    if (filtertrans) {
+	filter_exp = RefCntr<StrMatcher>(inexp->clone());
+	filter_exp->setExp((*filtertrans)(inexp->exp()));
     }
 
-    // Input to matching: prefix + transformed input
-    string matchin = m_prefix + stripped_exp;
+    // Transform input into our key format (e.g.: case-folded + diac-stripped),
+    // and prepend prefix
+    inexp->setExp(m_prefix + (*m_trans)(inexp->exp()));
+    // Find the initial section before any special chars for skipping the keys
+    string::size_type es = inexp->baseprefixlen();
+    string is = inexp->exp().substr(0, es);  
     string::size_type preflen = m_prefix.size();
+    LOGDEB2(("XapCompSynFam::is: [%s]\n", is.c_str()));
 
     string ermsg;
     try {
         for (Xapian::TermIterator xit = m_family.getdb().synonym_keys_begin(is);
              xit != m_family.getdb().synonym_keys_end(is); xit++) {
 	    LOGDEB2(("  Checking1 [%s] against [%s]\n", (*xit).c_str(),
-		     matchin.c_str()));
-	    if (fnmatch(matchin.c_str(), (*xit).c_str(), 0) == FNM_NOMATCH)
+		     inexp->exp().c_str()));
+	    if (!inexp->match(*xit))
 		continue;
 
 	    // Push all the synonyms if they match the secondary filter
@@ -233,39 +219,34 @@ bool XapComputableSynFamMember::keyWildExpand(const string& inexp,
 		     m_family.getdb().synonyms_begin(*xit);
 		 xit1 != m_family.getdb().synonyms_end(*xit); xit1++) {
 		string term = *xit1;
-		if (filtertrans) {
+		if (filter_exp.isNotNull()) {
 		    string term1 = (*filtertrans)(term);
-		    LOGDEB2((" Testing [%s] against [%s]\n", 
+		    LOGDEB2(("  Testing [%s] against [%s]\n", 
 			     term1.c_str(), filter_exp.c_str()));
-		    if (fnmatch(filter_exp.c_str(), 
-				term1.c_str(), 0) == FNM_NOMATCH) {
+		    if (!filter_exp->match(term1)) {
 			continue;
 		    }
 		}
-		LOGDEB(("XapCompSynFam::keyWildExpand: Pushing %s\n", 
-			(*xit1).c_str()));
+		LOGDEB2(("XapCompSynFam::keyWildExpand: [%s]\n", 
+			 (*xit1).c_str()));
 		result.push_back(*xit1);
 	    }
 	    // Same with key itself
 	    string term = (*xit).substr(preflen);
-	    if (filtertrans) {
+	    if (filter_exp.isNotNull()) {
 		string term1 = (*filtertrans)(term);
-		LOGDEB((" Testing [%s] against [%s]\n", 
-			term1.c_str(), filter_exp.c_str()));
-		if (fnmatch(filter_exp.c_str(), 
-			    term1.c_str(), 0) == FNM_NOMATCH) {
+		LOGDEB2((" Testing [%s] against [%s]\n", 
+			term1.c_str(), filter_exp->exp().c_str()));
+		if (!filter_exp->match(term1)) {
 		    continue;
 		}
 	    }
-	    LOGDEB(("XapCompSynFam::keyWildExpand: Pushing [%s]\n", 
-		    term.c_str()));
+	    LOGDEB2(("XapCompSynFam::keyWildExpand: [%s]\n", term.c_str()));
 	    result.push_back(term);
         }
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
-        LOGERR(("XapCompSynFam::keyWildExpand: error: term [%s]\n",
-                inexp.c_str()));
-        result.push_back(inexp);
+        LOGERR(("XapCompSynFam::keyWildExpand: xapian: [%s]\n", ermsg.c_str()));
         return false;
     }
     return true;
@@ -304,6 +285,7 @@ static int        op_flags;
 #define OPT_l     0x20
 #define OPT_s     0x40
 #define OPT_e     0x80
+
 static string usage =
     " -d <dbdir> {-s|-a|-u} database dir and synfamily: stem accents/case ustem\n"
     " -l : list members\n"
