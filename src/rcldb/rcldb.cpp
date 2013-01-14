@@ -1697,7 +1697,7 @@ static void addPrefix(vector<TermMatchEntry>& terms, const string& prefix)
 // If field is set, we return a list of appropriately prefixed terms (which 
 // are going to be used to build a Xapian query).
 bool Db::termMatch(MatchType typ, const string &lang,
-		   const string &root, 
+		   const string &_root,
 		   TermMatchResult& res,
 		   int max, 
 		   const string& field)
@@ -1714,15 +1714,14 @@ bool Db::termMatch(MatchType typ, const string &lang,
     if (!m_reason.empty())
         return false;
 
-    // Get rid of capitals and accents
+    string droot = _root;
 
-    string droot = root;
-
+    // If index is stripped, get rid of capitals and accents
 #ifndef RCL_INDEX_STRIPCHARS
     if (o_index_stripchars)
 #endif
-	if (!unacmaybefold(root, droot, "UTF-8", UNACOP_UNACFOLD)) {
-	    LOGERR(("Db::termMatch: unac failed for [%s]\n", root.c_str()));
+	if (!unacmaybefold(_root, droot, "UTF-8", UNACOP_UNACFOLD)) {
+	    LOGERR(("Db::termMatch: unac failed for [%s]\n", _root.c_str()));
 	    return false;
 	}
 
@@ -1742,7 +1741,7 @@ bool Db::termMatch(MatchType typ, const string &lang,
     res.prefix = prefix;
 
     if (typ == ET_STEM) {
-	if (!stemExpand(lang, root, res))
+	if (!stemExpand(lang, droot, res))
 	    return false;
 	for (vector<TermMatchEntry>::iterator it = res.entries.begin(); 
 	     it != res.entries.end(); it++) {
@@ -1759,8 +1758,7 @@ bool Db::termMatch(MatchType typ, const string &lang,
 	regex_t reg;
 	int errcode;
 	if (typ == ET_REGEXP) {
-	    string mroot = droot;
-	    if ((errcode = regcomp(&reg, mroot.c_str(), 
+	    if ((errcode = regcomp(&reg, droot.c_str(), 
 				   REG_EXTENDED|REG_NOSUB))) {
 		char errbuf[200];
 		regerror(errcode, &reg, errbuf, 199);

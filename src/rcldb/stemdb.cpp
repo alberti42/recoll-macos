@@ -43,11 +43,18 @@ namespace Rcl {
 /**
  * Expand for one or several languages
  */
-bool StemDb::stemExpand(const std::string& langs, const std::string& term,
+bool StemDb::stemExpand(const std::string& langs, const std::string& _term,
 			vector<string>& result)
 {
     vector<string> llangs;
     stringToStrings(langs, llangs);
+    
+    // The stemdb keys may have kept their diacritics or not but they
+    // are always lower-case. It would be more logical for the term
+    // transformers to perform before doing the stemming, but this
+    // would be inefficient when there are several stemming languages
+    string term;
+    unacmaybefold(_term, term, "UTF-8", UNACOP_FOLD);
 
     for (vector<string>::const_iterator it = llangs.begin();
 	 it != llangs.end(); it++) {

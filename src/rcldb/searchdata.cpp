@@ -606,10 +606,13 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 	return true;
     } 
 
+#ifndef RCL_INDEX_STRIPCHARS
     // The case/diac expansion db
     SynTermTransUnac unacfoldtrans(UNACOP_UNACFOLD);
     XapComputableSynFamMember synac(db.m_ndb->xrdb, synFamDiCa, "all", 
 				    &unacfoldtrans);
+#endif // RCL_INDEX_STRIPCHARS
+
     TermMatchResult res;
 
     if (haswild) {
@@ -969,10 +972,11 @@ static int stringToMods(string& s)
  *   count)
  */
 bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
-					int mods, string &ermsg,
-					void *pq, int slack, bool useNear)
+					       string &ermsg, void *pq, 
+					       int slack, bool useNear)
 {
     vector<Xapian::Query> &pqueries(*(vector<Xapian::Query>*)pq);
+    int mods = m_modifiers;
 
     LOGDEB(("StringToXapianQ:pUS:: qstr [%s] fld [%s] mods 0x%x "
 	    "slack %d near %d\n", 
@@ -1094,7 +1098,7 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p)
     }
 
     vector<Xapian::Query> pqueries;
-    if (!processUserString(db, m_text, getModifiers(), m_reason, &pqueries))
+    if (!processUserString(db, m_text, m_reason, &pqueries))
 	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseSimple: resolved to null query\n"));
@@ -1185,8 +1189,7 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p)
     }
     string s = cstr_dquote + m_text + cstr_dquote;
     bool useNear = (m_tp == SCLT_NEAR);
-    if (!processUserString(db, s, getModifiers(), m_reason, &pqueries, 
-			   m_slack, useNear))
+    if (!processUserString(db, s, m_reason, &pqueries, m_slack, useNear))
 	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseDist: resolved to null query\n"));

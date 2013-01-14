@@ -265,15 +265,9 @@ public:
     {
 	m_modifiers = mod;
     }
-    virtual int getModifiers() 
-    {
-	return m_modifiers;
-    }
     virtual void addModifier(Modifier mod) 
     {
-	int imod = getModifiers();
-	imod |= mod;
-	setModifiers(Modifier(imod));
+	m_modifiers = Modifier(m_modifiers | mod);
     }
     virtual void setWeight(float w) 
     {
@@ -316,7 +310,7 @@ class SearchDataClauseSimple : public SearchDataClause {
 public:
     SearchDataClauseSimple(SClType tp, const std::string& txt, 
 			   const std::string& fld = std::string())
-	: SearchDataClause(tp), m_text(txt), m_field(fld)
+	: SearchDataClause(tp), m_text(txt), m_field(fld), m_curcl(0)
     {
 	m_haveWildCards = 
 	    (txt.find_first_of(cstr_minwilds) != std::string::npos);
@@ -345,9 +339,10 @@ protected:
     std::string  m_text;  // Raw user entry text.
     std::string  m_field; // Field specification if any
     HighlightData m_hldata;
+    // Current count of Xapian clauses, to check against expansion limit
     int  m_curcl;
 
-    bool processUserString(Rcl::Db &db, const string &iq, int mods,  
+    bool processUserString(Rcl::Db &db, const string &iq,
 			   std::string &ermsg,
 			   void* pq, int slack = 0, bool useNear = false);
     bool expandTerm(Rcl::Db &db, std::string& ermsg, int mods, 
