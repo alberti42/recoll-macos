@@ -326,7 +326,7 @@ class Db {
      * @param field if set, defines the field within with the expansion should
      *        be performed. Only used for wildcards and regexps, stemming is
      *        always global. If this is set, the resulting output terms 
-     *        will be appropriately prefix and the prefix value will be set 
+     *        will be appropriately prefixed and the prefix value will be set 
      *        in the TermMatchResult header
      */
     enum MatchType {ET_NONE=0, ET_WILD=1, ET_REGEXP=2, ET_STEM=3, 
@@ -440,10 +440,6 @@ private:
     bool i_close(bool final);
     // Reinitialize when adding/removing additional dbs
     bool adjustdbs(); 
-#ifdef RCL_INDEX_STRIPCHARS
-    bool stemExpand(const string &lang, const string &s, 
-		    TermMatchResult& result);
-#endif
     bool idxTermMatch(int typ_sens, const string &lang, const string &term, 
 		      TermMatchResult& result, int max = -1, 
 		      const string& field = cstr_null);
@@ -465,6 +461,7 @@ extern const string pathelt_prefix;
 extern const string udi_prefix;
 extern const string parent_prefix;
 extern const string mimetype_prefix;
+extern const string unsplitFilenameFieldName;
 #ifdef RCL_INDEX_STRIPCHARS
 extern const string start_of_field_term;
 extern const string end_of_field_term;

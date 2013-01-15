@@ -23,6 +23,7 @@
 #include <xapian.h>
 
 #include "unacpp.h"
+#include "synfamily.h"
 
 /** Specialization and overall creation code for the term expansion mechanism
  * defined in synfamily.h
