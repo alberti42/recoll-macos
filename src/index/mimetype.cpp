@@ -23,10 +23,7 @@
 #include <ctype.h>
 #include <string>
 #include <list>
-
-#ifndef NO_NAMESPACES
 using namespace std;
-#endif /* NO_NAMESPACES */
 
 #include "mimetype.h"
 #include "debuglog.h"
@@ -53,20 +50,13 @@ static string mimetypefromdata(const string &fn, bool usfc)
     // First try the internal identifying routine
     string mime = idFile(fn.c_str());
 
-    // Then exec 'file -i'
 #ifdef USE_SYSTEM_FILE_COMMAND
     if (usfc && mime.empty()) {
 	// Last resort: use "file -i"
-	vector<string> args;
-
-	args.push_back("-i");
-	args.push_back(fn);
-	ExecCmd ex;
+	vector<string> cmd = create_vector<string>(FILE_PROG) ("-i") (fn);
 	string result;
-	string cmd = FILE_PROG;
-	int status = ex.doexec(cmd, args, 0, &result);
-	if (status) {
-	    LOGERR(("mimetypefromdata: doexec: status 0x%x\n", status));
+	if (!ExecCmd::backtick(cmd, result)) {
+	    LOGERR(("mimetypefromdata: exec %s failed\n", FILE_PROG));
 	    return string();
 	}
 	LOGDEB2(("mimetype: [%s] \"file\" output [%s]\n", 
@@ -158,7 +148,6 @@ string mimetype(const string &fn, const struct stat *stp,
  out:
     return mtype;
 }
-
 
 
 #else // TEST->

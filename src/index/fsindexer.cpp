@@ -45,6 +45,7 @@
 #include "fileudi.h"
 #include "cancelcheck.h"
 #include "rclinit.h"
+#include "execmd.h"
 
 // When using extended attributes, we have to use the ctime. 
 // This is quite an expensive price to pay...
@@ -71,12 +72,13 @@ extern void *FsIndexerDbUpdWorker(void*);
 class InternfileTask {
 public:
     InternfileTask(const std::string &f, const struct stat *i_stp,
-		   map<string,string> lfields)
-	: fn(f), statbuf(*i_stp), localfields(lfields)
+		   map<string,string> lfields, vector<MDReaper> reapers)
+	: fn(f), statbuf(*i_stp), localfields(lfields), mdreapers(reapers)
     {}
     string fn;
     struct stat statbuf;
     map<string,string> localfields;
+    vector<MDReapers> mdreapers;
 };
 extern void *FsIndexerInternfileWorker(void*);
 #endif // IDX_THREADS
@@ -108,6 +110,7 @@ FsIndexer::FsIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc)
 {
     LOGDEB1(("FsIndexer::FsIndexer\n"));
     m_havelocalfields = m_config->hasNameAnywhere("localfields");
+    m_havemdreapers = m_config->hasNameAnywhere("metadatacmds");
 
 #ifdef IDX_THREADS
     m_stableconfig = new RclConfig(*m_config);
@@ -311,6 +314,9 @@ bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
         m_config->setKeyDir(path_getfather(*it));
 	if (m_havelocalfields)
 	    localfieldsfromconf();
+	if (m_havemdreapers)
+	    mdreapersfromconf();
+
 	bool follow = false;
 	m_config->getConfParam("followLinks", &follow);
 
@@ -396,21 +402,90 @@ out:
 // Local fields can be set for fs subtrees in the configuration file 
 void FsIndexer::localfieldsfromconf()
 {
-    LOGDEB0(("FsIndexer::localfieldsfromconf\n"));
+    LOGDEB1(("FsIndexer::localfieldsfromconf\n"));
+
+    string sfields;
+    m_config->getConfParam("localfields", sfields);
+    if (!sfields.compare(m_slocalfields)) 
+	return;
+
+    m_slocalfields = sfields;
     m_localfields.clear();
-    m_config->addLocalFields(&m_localfields);
+    if (sfields.empty())
+	return;
+
+    string value;
+    ConfSimple attrs;
+    m_config->valueSplitAttributes(sfields, value, attrs);
+    vector<string> nmlst = attrs.getNames(cstr_null);
+    for (vector<string>::const_iterator it = nmlst.begin();
+         it != nmlst.end(); it++) {
+	attrs.get(*it, m_localfields[*it]);
+    }
 }
 
+
 // 
-void FsIndexer::setlocalfields(map<string, string> fields, Rcl::Doc& doc)
+void FsIndexer::setlocalfields(const map<string, string>& fields, Rcl::Doc& doc)
 {
     for (map<string, string>::const_iterator it = fields.begin();
-         it != fields.end(); it++) {
+	 it != fields.end(); it++) {
         // Should local fields override those coming from the document
-        // ? I think not, but not too sure
+        // ? I think not, but not too sure. We could also chose to
+        // concatenate the values ?
         if (doc.meta.find(it->second) == doc.meta.end()) {
             doc.meta[it->first] = it->second;
-        }
+	}
+    }
+}
+
+// Metadata gathering commands
+void FsIndexer::mdreapersfromconf()
+{
+    LOGDEB1(("FsIndexer::mdreapersfromconf\n"));
+
+    string sreapers;
+    m_config->getConfParam("metadatacmds", sreapers);
+    if (!sreapers.compare(m_smdreapers)) 
+	return;
+
+    m_smdreapers = sreapers;
+    m_mdreapers.clear();
+    if (sreapers.empty())
+	return;
+
+    string value;
+    ConfSimple attrs;
+    m_config->valueSplitAttributes(sreapers, value, attrs);
+    vector<string> nmlst = attrs.getNames(cstr_null);
+    for (vector<string>::const_iterator it = nmlst.begin();
+         it != nmlst.end(); it++) {
+	MDReaper reaper;
+	reaper.fieldname = m_config->fieldCanon(*it);
+	string s;
+	attrs.get(*it, s);
+	stringToStrings(s, reaper.cmdv);
+	m_mdreapers.push_back(reaper);
+    }
+}
+
+void FsIndexer::reapmetadata(const vector<MDReaper>& reapers, const string& fn,
+			     Rcl::Doc& doc)
+{
+    map<char,string> smap = create_map<char, string>('f', fn);
+    for (vector<MDReaper>::const_iterator rp = reapers.begin();
+	 rp != reapers.end(); rp++) {
+	vector<string> cmd;
+	for (vector<string>::const_iterator it = rp->cmdv.begin();
+	     it != rp->cmdv.end(); it++) {
+	    string s;
+	    pcSubst(*it, s, smap);
+	    cmd.push_back(s);
+	}
+	string output;
+	if (ExecCmd::backtick(cmd, output)) {
+	    doc.meta[rp->fieldname] += string(" ") + output;
+	}
     }
 }
 
@@ -515,6 +590,8 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
         // Adjust local fields from config for this subtree
 	if (m_havelocalfields)
 	    localfieldsfromconf();
+	if (m_havemdreapers)
+	    mdreapersfromconf();
 
 	if (flg == FsTreeWalker::FtwDirReturn)
 	    return FsTreeWalker::FtwOk;
@@ -522,7 +599,8 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 
 #ifdef IDX_THREADS
     if (m_haveInternQ) {
-	InternfileTask *tp = new InternfileTask(fn, stp, m_localfields);
+	InternfileTask *tp = new InternfileTask(fn, stp, m_localfields, 
+	    m_mdreapers);
 	if (m_iwqueue.put(tp)) {
 	    return FsTreeWalker::FtwOk;
 	} else {
@@ -531,14 +609,16 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
     }
 #endif
 
-    return processonefile(m_config, m_tmpdir, fn, stp, m_localfields);
+    return processonefile(m_config, m_tmpdir, fn, stp, m_localfields, 
+			  m_mdreapers);
 }
 
 
 FsTreeWalker::Status 
 FsIndexer::processonefile(RclConfig *config, TempDir& tmpdir,
 			  const std::string &fn, const struct stat *stp,
-			  map<string, string> localfields)
+			  const map<string, string>& localfields,
+			  const vector<MDReaper>& mdreapers)
 {
     ////////////////////
     // Check db up to date ? Doing this before file type
@@ -623,9 +703,13 @@ FsIndexer::processonefile(RclConfig *config, TempDir& tmpdir,
         // We'll change the signature to ensure that the indexing will
         // be retried every time.
 
-	// Internal access path for multi-document files
-	if (doc.ipath.empty())
+	// Internal access path for multi-document files. If empty, this is
+	// for the main file.
+	if (doc.ipath.empty()) {
 	    hadNullIpath = true;
+	    if (m_havemdreapers)
+		reapmetadata(mdreapers, fn, doc);
+	} 
 
 	// Set file name, mod time and url if not done by filter
 	if (doc.fmtime.empty())
@@ -708,7 +792,8 @@ FsIndexer::processonefile(RclConfig *config, TempDir& tmpdir,
 	fileDoc.url = cstr_fileu + fn;
         if (m_havelocalfields) 
             setlocalfields(localfields, fileDoc);
-
+	if (m_havemdreapers)
+	    reapmetadata(mdreapers, fn, fileDoc);
 	char cbuf[100]; 
 	sprintf(cbuf, OFFTPC, stp->st_size);
 	fileDoc.pcbytes = cbuf;

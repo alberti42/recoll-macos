@@ -178,6 +178,14 @@ class ExecCmd {
      */
     static bool which(const string& cmd, string& exe, const char* path = 0);
 
+    /**
+     * Execute command and return stdout output in a string
+     * @param cmd input: command and args
+     * @param out output: what the command printed
+     * @return true if exec status was 0
+     */
+    static bool backtick(const std::vector<std::string> cmd, std::string& out);
+
     friend class ExecCmdRsrc;
  private:
     static bool      o_useVfork;

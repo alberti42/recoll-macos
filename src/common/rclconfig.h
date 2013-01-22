@@ -163,9 +163,6 @@ class RclConfig {
 	Doesn't depend on the keydir */
     vector<string> getDaemSkippedPaths() const;
 
-    /** conf: Add local fields to target dic */
-    bool addLocalFields(map<string, string> *tgt) const;
-
     /** 
      * mimemap: Check if file name should be ignored because of suffix
      *

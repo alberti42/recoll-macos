@@ -242,7 +242,7 @@ inline void ExecCmd::dochild(const string &cmd, const char **argv,
 
     execve(cmd.c_str(), (char *const*)argv, (char *const*)envv);
     // Hu ho
-    LOGERR(("ExecCmd::doexec: execvp(%s) failed. errno %d\n", cmd.c_str(),
+    LOGERR(("ExecCmd::doexec: execve(%s) failed. errno %d\n", cmd.c_str(),
 	    errno));
     _exit(127);
 }
@@ -634,6 +634,18 @@ bool ExecCmd::maybereap(int *status)
     }
 }
 
+// Static
+bool ExecCmd::backtick(const std::vector<std::string> cmd, std::string& out)
+{
+    vector<string>::const_iterator it = cmd.begin();
+    it++;
+    vector<string> args(it, cmd.end());
+    ExecCmd mexec;
+    int status = mexec.doexec(*cmd.begin(), args, 0, &out);
+    return status == 0;
+}
+
+/// ReExec class methods ///////////////////////////////////////////////////
 ReExec::ReExec(int argc, char *args[])
 {
     init(argc, args);
@@ -747,18 +759,21 @@ void ReExec::reexec()
     execvp(m_argv[0].c_str(), (char *const*)argv);
 }
 
+
 ////////////////////////////////////////////////////////////////////
 #else // TEST
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+
 #include <string>
 #include <iostream>
 #include <vector>
-#include "debuglog.h"
-#include "cancelcheck.h"
-
 using namespace std;
 
+#include "debuglog.h"
+#include "cancelcheck.h"
 #include "execmd.h"
 
 static int     op_flags;

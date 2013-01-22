@@ -29,7 +29,7 @@ subtreelist : $(SUBTREELIST_OBJS)
 subtreelist.o : subtreelist.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_SUBTREELIST -c subtreelist.cpp
 
-MIMETYPE_OBJS= trmimetype.o  $(BIGLIB) 
+MIMETYPE_OBJS= trmimetype.o
 mimetype : $(MIMETYPE_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o mimetype $(MIMETYPE_OBJS) \
 	       $(LIBRECOLL) $(LIBICONV) $(LIBSYS)

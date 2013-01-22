@@ -832,8 +832,8 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
     ////////////////////////////////////////////////////////////////////////
     // Load and convert document
-    // idoc came out of the index data (main text and other fields missing). 
-    // foc is the complete one what we are going to extract from storage.
+    // idoc came out of the index data (main text and some fields missing). 
+    // fdoc is the complete one what we are going to extract from storage.
     Rcl::Doc fdoc;
     int status = 1;
     LoadThread lthr(&status, fdoc, idoc);

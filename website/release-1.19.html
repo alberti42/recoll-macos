@@ -73,6 +73,13 @@
       <p>Recoll 1.19 .... Changes documented from 1.18.1 to rev 3159</p> 
 
       <ul>
+        <li>Changed format for rclaptg field. Was colon-separated,
+        now uses normal value/attributes syntax with an empty value
+        like:
+          <pre>
+            localfields = ; attr1 = val1 ; attr2 = val2
+          </pre>
+        </li>
         <li>There are new GUI configuration options to run in "search
           as you type" mode, and to disable the Qt auto-completion
           inside the simple search string, which was often more confusing

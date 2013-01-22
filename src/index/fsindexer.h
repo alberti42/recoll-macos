@@ -88,13 +88,24 @@ class FsIndexer : public FsTreeWalkerCB {
     std::vector<std::string> m_tdl;
     FIMissingStore *m_missing;
 
-
     // The configuration can set attribute fields to be inherited by
     // all files in a file system area. Ie: set "rclaptg = thunderbird"
     // inside ~/.thunderbird. The boolean is set at init to avoid
     // further wasteful processing if no local fields are set.
     bool         m_havelocalfields;
-    map<string, string> m_localfields;
+    string       m_slocalfields;
+    map<string, string>  m_localfields;
+
+    // Same idea with the metadata-gathering external commands,
+    // (e.g. used to reap tagging info: "tmsu tags %f")
+    /* Hold the description for an external metadata-gathering command */
+    struct MDReaper {
+	string fieldname;
+	vector<string> cmdv;
+    };
+    bool m_havemdreapers;
+    string m_smdreapers;
+    vector<MDReaper> m_mdreapers;
 
 #ifdef IDX_THREADS
     friend void *FsIndexerDbUpdWorker(void*);
@@ -109,11 +120,15 @@ class FsIndexer : public FsTreeWalkerCB {
 
     bool init();
     void localfieldsfromconf();
-    void setlocalfields(const map<string, string> flds, Rcl::Doc& doc);
+    void mdreapersfromconf();
+    void setlocalfields(const map<string, string>& flds, Rcl::Doc& doc);
+    void reapmetadata(const vector<MDReaper>& reapers, const string &fn,
+		      Rcl::Doc& doc);
     string getDbDir() {return m_config->getDbDir();}
     FsTreeWalker::Status 
     processonefile(RclConfig *config, TempDir& tmpdir, const string &fn, 
-		   const struct stat *, map<string,string> localfields);
+		   const struct stat *, const map<string,string>& localfields,
+		   const vector<MDReaper>& mdreapers);
 };
 
 #endif /* _fsindexer_h_included_ */

@@ -277,19 +277,20 @@ snippetMaxPosWalk = 1000000
 #defaultcharset = iso-8859-2
 
 # You can set fields on all files of a specific fs area. (rclaptg can be
-# used for application selection inside mimeview
+# used for application selection inside mimeview). 
+# Syntax is the usual name = value ; attr1 = val1 ; ... with an empty value
+# so needs initial semi-colon
 #[/some/app/directory]
-#localfields = rclaptg = someapp; otherfield = somevalue
+#localfields = ; rclaptg = someapp; otherfield = somevalue
 
-# Use app tag to enable using gnu info to open info files (as the subnodes
-# are indexed as html, we'd use firefox on a temp file else. Set this on
-# some known info storage places
-[/usr/share/info]
-localfields = rclaptg=gnuinfo
-[/usr/local/share/info]
-localfields = rclaptg=gnuinfo
-[/usr/local/info]
-localfields = rclaptg=gnuinfo
+# It's also possible to execute external commands to gather external
+# metadata, for example tmsu tags.
+# There can be several entries, separated by semi-colons, each defining
+# which field name the data goes into and the command to use. Don't forget the
+# initial semi-colon. All the field names must be different. You can use
+# aliases in the "field" file if necessary. 
+#[/some/area/of/the/fs]
+#metadatacmds = ; tags = tmsu tags %f
 
 [/usr/share/man]
 followSymlinks = 1

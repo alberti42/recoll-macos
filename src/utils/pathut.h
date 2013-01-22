@@ -109,7 +109,7 @@ private:
 
 typedef RefCntr<TempFileInternal> TempFile;
 
-/// Temporary directory class
+/// Temporary directory class. Recursively deleted by destructor.
 class TempDir {
 public:
     TempDir();
@@ -117,6 +117,7 @@ public:
     const char *dirname() {return m_dirname.c_str();}
     const string &getreason() {return m_reason;}
     bool ok() {return !m_dirname.empty();}
+    /// Recursively delete contents but not self.
     bool wipe();
 private:
     string m_dirname;

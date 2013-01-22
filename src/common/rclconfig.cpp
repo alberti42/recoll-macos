@@ -410,28 +410,6 @@ const string& RclConfig::getDefCharset(bool filename) const
     }
 }
 
-bool RclConfig::addLocalFields(map<string, string> *tgt) const
-{
-    LOGDEB0(("RclConfig::addLocalFields: keydir [%s]\n", m_keydir.c_str()));
-    string sfields;
-    if (tgt == 0 || ! getConfParam("localfields", sfields))
-        return false;
-    // Substitute ':' with '\n' inside the string. There is no way to escape ':'
-    for (string::size_type i = 0; i < sfields.size(); i++)
-        if (sfields[i] == ':')
-            sfields[i] = '\n';
-    // Parse the result with a confsimple and add the results to the metadata
-    ConfSimple conf(sfields, 1, true);
-    vector<string> nmlst = conf.getNames(cstr_null);
-    for (vector<string>::const_iterator it = nmlst.begin();
-         it != nmlst.end(); it++) {
-        conf.get(*it, (*tgt)[*it]);
-        LOGDEB(("RclConfig::addLocalFields: [%s] => [%s]\n",
-		(*it).c_str(), (*tgt)[*it].c_str()));
-    }
-    return true;
-}
-
 // Get all known document mime values. We get them from the mimeconf
 // 'index' submap.
 // It's quite possible that there are other mime types in the index
@@ -630,14 +608,17 @@ bool RclConfig::valueSplitAttributes(const string& whole, string& value,
     // Handle additional attributes. We substitute the semi-colons
     // with newlines and use a ConfSimple
     if (!attrstr.empty()) {
-        for (string::size_type i = 0; i < attrstr.size(); i++)
+        for (string::size_type i = 0; i < attrstr.size(); i++) {
             if (attrstr[i] == ';')
                 attrstr[i] = '\n';
-        attrs = ConfSimple(attrstr);
+	}
+        attrs.reparse(attrstr);
+    } else {
+	attrs.clear();
     }
+    
     return true;
 }
-
 
 bool RclConfig::getMissingHelperDesc(string& out) const
 {

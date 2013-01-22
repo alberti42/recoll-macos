@@ -158,6 +158,16 @@ public:
 	    return true;
     }
 
+    /** Clear, then reparse from string */
+    void reparse(const string& in);
+
+    /** Clear all content */
+    void clear()
+    {
+	m_submaps.clear();
+	m_order.clear();
+    }
+
     /** 
      * Get value for named parameter, from specified subsection (looks in 
      * global space if sk is empty).

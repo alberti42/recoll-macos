@@ -225,6 +225,28 @@ public:
         return m_map;
     }
 };
+template <typename T>
+class create_vector
+{
+private:
+    std::vector<T> m_vector;
+public:
+    create_vector(const T& val)
+    {
+        m_vector.push_back(val);
+    }
+
+    create_vector<T>& operator()(const T& val)
+    {
+        m_vector.push_back(val);
+        return *this;
+    }
+
+    operator std::vector<T>()
+    {
+        return m_vector;
+    }
+};
 
 #ifndef MIN
 #define MIN(A,B) (((A)<(B)) ? (A) : (B))

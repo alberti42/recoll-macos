@@ -146,6 +146,13 @@ ConfSimple::ConfSimple(int readonly, bool tildexp)
     status = readonly ? STATUS_RO : STATUS_RW;
 }
 
+void ConfSimple::reparse(const string& d)
+{
+    clear();
+    stringstream input(d, ios::in);
+    parseinput(input);
+}
+
 ConfSimple::ConfSimple(const string& d, int readonly, bool tildexp)
     : dotildexpand(tildexp), m_fmtime(0), m_holdWrites(false)
 {
