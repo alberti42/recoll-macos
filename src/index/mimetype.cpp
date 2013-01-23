@@ -31,6 +31,7 @@ using namespace std;
 #include "rclconfig.h"
 #include "smallut.h"
 #include "idfile.h"
+#include "pxattr.h"
 
 /// Identification of file from contents. This is called for files with
 /// unrecognized extensions.
@@ -115,6 +116,11 @@ string mimetype(const string &fn, const struct stat *stp,
 {
     // Use stat data if available to check for non regular files
     if (stp) {
+	// Note: the value used for directories is different from what
+	// file -i would print on Linux (inode/directory). Probably
+	// comes from bsd. Thos may surprise a user trying to use a
+	// 'mime:' filter with the query language, but it's not work
+	// changing (would force a reindex).
 	if (S_ISDIR(stp->st_mode))
 	    return "application/x-fsdirectory";
 	if (!S_ISREG(stp->st_mode))
@@ -122,6 +128,12 @@ string mimetype(const string &fn, const struct stat *stp,
     }
 
     string mtype;
+
+    // Extended attribute has priority on everything, as per:
+    // http://freedesktop.org/wiki/CommonExtendedAttributes
+    if (pxattr::get(fn, "mime_type", &mtype)) {
+	return mtype;
+    }
 
     if (cfg == 0) // ?!?
 	return mtype;
