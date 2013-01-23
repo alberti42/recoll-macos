@@ -33,6 +33,7 @@ using namespace std;
 #include "readfile.h"
 #include "md5.h"
 #include "rclconfig.h"
+#include "pxattr.h"
 
 const int MB = 1024*1024;
 const int KB = 1024;
@@ -52,6 +53,10 @@ bool MimeHandlerText::set_document_file(const string &fn)
                 m_fn.c_str(), errno));
         return false;
     }
+
+    // Check for charset defined in extended attribute as per:
+    // http://freedesktop.org/wiki/CommonExtendedAttributes
+    pxattr::get(m_fn, "charset", &m_charsetfromxattr);
 
     // Max file size parameter: texts over this size are not indexed
     int maxmbs = 20;
@@ -115,14 +120,18 @@ bool MimeHandlerText::next_document()
     if (m_havedoc == false)
 	return false;
 
-    // We transcode even if defcharset is supposedly already utf-8:
-    // this validates the encoding.
-    m_metaData[cstr_dj_keyorigcharset] = m_dfltInputCharset;
+    if (m_charsetfromxattr.empty())
+	m_metaData[cstr_dj_keyorigcharset] = m_dfltInputCharset;
+    else 
+	m_metaData[cstr_dj_keyorigcharset] = m_charsetfromxattr;
+
     m_metaData[cstr_dj_keymt] = cstr_textplain;
 
     size_t srclen = m_text.length();
     m_metaData[cstr_dj_keycontent].swap(m_text);
 
+    // We transcode even if defcharset is supposedly already utf-8:
+    // this validates the encoding.
     // txtdcode() truncates the text if transcoding fails
     (void)txtdcode("mh_text");
 

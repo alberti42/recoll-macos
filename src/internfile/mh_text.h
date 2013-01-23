@@ -56,7 +56,8 @@ private:
     string m_fn;
     off_t  m_offs; // Offset of next read in file if we're paging
     size_t m_pagesz;
-    
+    string m_charsetfromxattr; 
+
     bool readnext();
 };
 
