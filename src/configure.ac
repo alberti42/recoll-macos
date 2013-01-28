@@ -168,11 +168,11 @@ fi
 # completely trivial: we have to use ctime instead of mtime to detect
 # changes.
 AC_ARG_ENABLE(xattr,
-    AC_HELP_STRING([--enable-xattr],
+    AC_HELP_STRING([--disable-xattr],
    [Enable fetching metadata from file extended attributes. This is only
    useful if some application creates them on (part of) your data set. You also 
    need to set up appropriate mappings in the configuration.]),
-        xattrEnabled=$enableval, xattrEnabled=no)
+        xattrEnabled=$enableval, xattrEnabled=yes)
 
 if test X$xattrEnabled = Xyes ; then
   AC_DEFINE(RCL_USE_XATTR, 1, [Use file extended attributes])

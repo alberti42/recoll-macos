@@ -1354,7 +1354,7 @@ Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --disable-largefile     omit support for large files
-  --enable-xattr          Enable fetching metadata from file extended
+  --disable-xattr         Enable fetching metadata from file extended
                           attributes. This is only useful if some application
                           creates them on (part of) your data set. You also
                           need to set up appropriate mappings in the
@@ -4349,7 +4349,7 @@ fi
 if test "${enable_xattr+set}" = set; then :
   enableval=$enable_xattr; xattrEnabled=$enableval
 else
-  xattrEnabled=no
+  xattrEnabled=yes
 fi
 
 
