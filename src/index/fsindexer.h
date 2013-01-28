@@ -78,6 +78,12 @@ class FsIndexer : public FsTreeWalkerCB {
     /** Make signature for file up to date checks */
     static void makesig(const struct stat *stp, string& out);
 
+    /* Hold the description for an external metadata-gathering command */
+    struct MDReaper {
+	string fieldname;
+	vector<string> cmdv;
+    };
+
  private:
     FsTreeWalker m_walker;
     RclConfig   *m_config;
@@ -98,11 +104,6 @@ class FsIndexer : public FsTreeWalkerCB {
 
     // Same idea with the metadata-gathering external commands,
     // (e.g. used to reap tagging info: "tmsu tags %f")
-    /* Hold the description for an external metadata-gathering command */
-    struct MDReaper {
-	string fieldname;
-	vector<string> cmdv;
-    };
     bool m_havemdreapers;
     string m_smdreapers;
     vector<MDReaper> m_mdreapers;

@@ -72,13 +72,13 @@ extern void *FsIndexerDbUpdWorker(void*);
 class InternfileTask {
 public:
     InternfileTask(const std::string &f, const struct stat *i_stp,
-		   map<string,string> lfields, vector<MDReaper> reapers)
+		   map<string,string> lfields, vector<FsIndexer::MDReaper> reapers)
 	: fn(f), statbuf(*i_stp), localfields(lfields), mdreapers(reapers)
     {}
     string fn;
     struct stat statbuf;
     map<string,string> localfields;
-    vector<MDReapers> mdreapers;
+    vector<FsIndexer::MDReaper> mdreapers;
 };
 extern void *FsIndexerInternfileWorker(void*);
 #endif // IDX_THREADS
@@ -542,7 +542,7 @@ void *FsIndexerInternfileWorker(void * fsp)
 	}
 	LOGDEB0(("FsIndexerInternfileWorker: task fn %s\n", tsk->fn.c_str()));
 	if (fip->processonefile(&myconf, tmpdir, tsk->fn, &tsk->statbuf,
-		tsk->localfields) !=
+				tsk->localfields, tsk->mdreapers) !=
 	    FsTreeWalker::FtwOk) {
 	    LOGERR(("FsIndexerInternfileWorker: processone failed\n"));
 	    tqp->workerExit();
