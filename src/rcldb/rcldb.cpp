@@ -232,19 +232,22 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     ConfSimple parms(data);
     if (!parms.ok())
 	return false;
+
+    // Special cases:
     parms.get(Doc::keyurl, doc.url);
     parms.get(Doc::keytp, doc.mimetype);
     parms.get(Doc::keyfmt, doc.fmtime);
     parms.get(Doc::keydmt, doc.dmtime);
     parms.get(Doc::keyoc, doc.origcharset);
     parms.get(cstr_caption, doc.meta[Doc::keytt]);
-    parms.get(Doc::keykw, doc.meta[Doc::keykw]);
+
     parms.get(Doc::keyabs, doc.meta[Doc::keyabs]);
     // Possibly remove synthetic abstract indicator (if it's there, we
     // used to index the beginning of the text as abstract).
     doc.syntabs = false;
     if (doc.meta[Doc::keyabs].find(cstr_syntAbs) == 0) {
-	doc.meta[Doc::keyabs] = doc.meta[Doc::keyabs].substr(cstr_syntAbs.length());
+	doc.meta[Doc::keyabs] = 
+	    doc.meta[Doc::keyabs].substr(cstr_syntAbs.length());
 	doc.syntabs = true;
     }
     parms.get(Doc::keyipt, doc.ipath);
@@ -254,7 +257,7 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     parms.get(Doc::keysig, doc.sig);
     doc.xdocid = docid;
 
-    // Other, not predefined meta fields:
+    // Normal key/value pairs:
     vector<string> keys = parms.getNames(string());
     for (vector<string>::const_iterator it = keys.begin(); 
 	 it != keys.end(); it++) {
@@ -1073,8 +1076,8 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
     trimstring(doc.meta[Doc::keykw], " \t\r\n");
     doc.meta[Doc::keykw] = 
 	neutchars(truncate_to_word(doc.meta[Doc::keykw], 300), cstr_nc);
-    if (!doc.meta[Doc::keykw].empty())
-	RECORD_APPEND(record, Doc::keykw, doc.meta[Doc::keykw]);
+    // No need to explicitly append the keywords, this will be done by 
+    // the "stored" loop
 
     // If abstract is empty, we make up one with the beginning of the
     // document. This is then not indexed, but part of the doc data so
@@ -1094,16 +1097,14 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	    neutchars(truncate_to_word(doc.meta[Doc::keyabs], m_idxAbsTruncLen),
 		      cstr_nc);
     }
-    if (!doc.meta[Doc::keyabs].empty())
-	RECORD_APPEND(record, Doc::keyabs, doc.meta[Doc::keyabs]);
 
     const set<string>& stored = m_config->getStoredFields();
     for (set<string>::const_iterator it = stored.begin();
 	 it != stored.end(); it++) {
 	string nm = m_config->fieldCanon(*it);
-	if (!doc.meta[*it].empty()) {
+	if (!doc.meta[nm].empty()) {
 	    string value = 
-		neutchars(truncate_to_word(doc.meta[*it], 150), cstr_nc);
+		neutchars(truncate_to_word(doc.meta[nm], 150), cstr_nc);
 	    RECORD_APPEND(record, nm, value);
 	}
     }

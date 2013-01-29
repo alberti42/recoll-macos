@@ -47,8 +47,10 @@
 #include "rclinit.h"
 #include "execmd.h"
 
-// When using extended attributes, we have to use the ctime. 
-// This is quite an expensive price to pay...
+
+// When using extended attributes, we have to use the ctime, because
+// this is all that gets set when the attributes are modified. This
+// is quite an expensive price to pay...
 #ifdef RCL_USE_XATTR
 #define RCL_STTIME st_ctime
 #else
@@ -420,22 +422,21 @@ void FsIndexer::localfieldsfromconf()
     vector<string> nmlst = attrs.getNames(cstr_null);
     for (vector<string>::const_iterator it = nmlst.begin();
          it != nmlst.end(); it++) {
-	attrs.get(*it, m_localfields[*it]);
+	string nm = m_config->fieldCanon(*it);
+	attrs.get(*it, m_localfields[nm]);
+	LOGDEB2(("FsIndexer::localfieldsfromconf: [%s]->[%s]\n",
+		 nm.c_str(), m_localfields[nm].c_str()));
     }
 }
 
-
-// 
 void FsIndexer::setlocalfields(const map<string, string>& fields, Rcl::Doc& doc)
 {
     for (map<string, string>::const_iterator it = fields.begin();
 	 it != fields.end(); it++) {
-        // Should local fields override those coming from the document
-        // ? I think not, but not too sure. We could also chose to
-        // concatenate the values ?
-        if (doc.meta.find(it->second) == doc.meta.end()) {
-            doc.meta[it->first] = it->second;
-	}
+        // Being chosen by the user, localfields override values from
+        // the filter. The key is already canonic (see
+        // localfieldsfromconf())
+	doc.meta[it->first] = it->second;
     }
 }
 
@@ -484,7 +485,9 @@ void FsIndexer::reapmetadata(const vector<MDReaper>& reapers, const string& fn,
 	}
 	string output;
 	if (ExecCmd::backtick(cmd, output)) {
-	    doc.meta[rp->fieldname] += string(" ") + output;
+	    // addmeta() creates or appends. fieldname is already
+	    // canonic (see above)
+	    doc.addmeta(rp->fieldname, output);
 	}
     }
 }
@@ -534,7 +537,7 @@ void *FsIndexerInternfileWorker(void * fsp)
     TempDir tmpdir;
     RclConfig myconf(*(fip->m_stableconfig));
 
-    InternfileTask *tsk;
+    InternfileTask *tsk = 0;
     for (;;) {
 	if (!tqp->take(&tsk)) {
 	    tqp->workerExit();

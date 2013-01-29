@@ -80,6 +80,7 @@ static string colon_restore(const string& in)
 #ifdef RCL_USE_XATTR
 void FileInterner::reapXAttrs(const string& path)
 {
+    LOGDEB2(("FileInterner::reapXAttrs: [%s]\n", path.c_str()));
     vector<string> xnames;
     if (!pxattr::list(path, &xnames)) {
 	LOGERR(("FileInterner::reapXattrs: pxattr::list: errno %d\n", errno));
@@ -98,6 +99,8 @@ void FileInterner::reapXAttrs(const string& path)
 	    }
 	    // Encode should we ?
 	    m_XAttrsFields[mit->second] = value;
+	    LOGDEB2(("FileInterner::reapXAttrs: got [%s] -> [%s]\n", 
+		     mit->second.c_str(), value.c_str()));
 	}
     }
 }
@@ -626,7 +629,7 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 		   it->first == cstr_dj_keycharset) {
 	    // don't need/want these.
 	} else {
-	    doc.meta[it->first] = it->second;
+	    doc.addmeta(m_cfg->fieldCanon(it->first), it->second);
 	}
     }
     if (doc.meta[Rcl::Doc::keyabs].empty() && 
@@ -659,10 +662,12 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
 
 #ifdef RCL_USE_XATTR
     // Set fields from extended file attributes.
-    // These can be overriden by values from inside the file
+    // These can be later augmented by values from inside the file
     for (map<string,string>::const_iterator it = m_XAttrsFields.begin(); 
 	 it != m_XAttrsFields.end(); it++) {
-	doc.meta[it->first] = it->second;
+	LOGDEB1(("Internfile:: setting [%s] from xattrs value [%s]\n",
+		 m_cfg->fieldCanon(it->first).c_str(), it->second.c_str()));
+	doc.meta[m_cfg->fieldCanon(it->first)] = it->second;
     }
 #endif //RCL_USE_XATTR
 

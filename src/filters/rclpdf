@@ -132,7 +132,13 @@ awk 'BEGIN'\
     gsub(/>/, "\\&gt;", mid)
     mid = "<title>" mid "</title>"
     $0 = part1 mid part2
-  } 
+  }
+
+  # Recoll treats "Subject" as a "title" element (based on emails). The PDF
+  # "Subject" metadata field is more like an HTML "description"
+  if(doescape == 0 && $0 ~ /<meta ?name="Subject"/){
+      gsub(/="Subject"/, "=\"Description\"", $0)
+  }
 
   if ($0 == "<pre>"){
     # Begin of body text. need to escape some chars from now on as 

@@ -170,13 +170,29 @@ class Doc {
 	}
     }
 
+    // Create entry or append text to existing entry.
+    bool addmeta(const string& nm, const string& value) 
+    {
+	map<string,string>::iterator mit = meta.find(nm);
+	if (mit == meta.end()) {
+	    meta[nm] = value;
+	} else if (mit->second.empty()) {
+	    mit->second = value;
+	} else {
+	    mit->second += string(" - ") + value;
+	}
+	return true;
+    }
+
     void dump(bool dotext=false) const;
 
     // The official names for recoll native fields when used in a text
     // context (ie: the python interface duplicates some of the fixed
     // fields in the meta array, these are the names used). Defined in
-    // rcldoc.cpp. For fields stored in the meta[] array (ie, title,
-    // author), filters _must_ use these values
+    // rcldoc.cpp. Fields stored in the meta[] array (ie, title,
+    // author), _must_ use these canonical values, not aliases. This is 
+    // enforced in internfile.cpp and misc other bits of metadata-gathering 
+    // code
     static const string keyurl; // url
     static const string keyfn;  // file name
     static const string keyipt; // ipath

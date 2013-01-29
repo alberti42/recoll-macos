@@ -50,7 +50,7 @@ $headAndBody = 1;
 sub xapianTag {
 	my $imgtag = shift;
 	while ( ( $tagre, $xapiantag) = each %{$tagMap} ) {
-		return $xapiantag  if $imgtag =~ /$tagre/i;
+		return $xapiantag  if $imgtag =~ /^$tagre$/i;
 	}
 	return undef;
 }

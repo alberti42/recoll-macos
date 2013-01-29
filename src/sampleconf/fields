@@ -64,15 +64,12 @@ recipient = XTO
 [stored]
 ############################
 # Some fields are stored in the document data record inside the index and
-# can be returned in result lists. There is no necessity that stored fields
-# should be indexed (have a prefix in the preceding section) (example:
-# "url", but this one doesn't need to be listed here, it's stored by hard
-# code)
+# can be displayed in result lists. There is no necessity that stored fields
+# should be indexed (have a prefix in the preceding section). Example: "url"
 #
 # Some fields are stored by default, don't add them here:
-#    caption, keywords, abstract, mimetype, url
+#    caption, mimetype, url
 # Only canonical names should be used here, not aliases.
-# "author" used to be stored by default, now set here as optional
 # "rclaptg" is used for viewer specialization (depending on local config)
 # "rclbes" defines the backend type (ie normal fs, firefox cache). Should
 #   probably be hardcoded, don't remove it
@@ -81,6 +78,8 @@ recipient=
 rclaptg=
 rclbes=
 filename=
+keywords=
+abstract=
 
 [aliases]
 ##########################
