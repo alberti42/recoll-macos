@@ -1923,6 +1923,14 @@ fvwm
 	 to the first page. These work even while the focus is in the
 	 search entry.</para>
       </formalpara>
+
+      <formalpara><title>Editing a new search while the focus is not
+          in the search entry</title>
+       <para>You can use the <keycap>Ctrl-Shift-S</keycap> shortcut to
+         return the cursor to the search entry (and select the current
+         search text), while the focus is anywhere in the main
+         window.</para>
+      </formalpara>
       
       <formalpara><title>Forced opening of a preview window</title>
        <para>You can use <keycap>Shift</keycap>+Click on a result list
