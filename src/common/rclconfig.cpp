@@ -49,10 +49,13 @@ using namespace std;
 #include "readfile.h"
 #include "fstreewalk.h"
 
+// Static, logically const, RclConfig members are initialized once from the
+// first object build during process initialization.
 #ifndef RCL_INDEX_STRIPCHARS
 // We default to a case- and diacritics-less index for now
 bool o_index_stripchars = true;
 #endif
+string RclConfig::o_localecharset; 
 
 bool ParamStale::needrecompute()
 {
@@ -106,8 +109,6 @@ bool RclConfig::isDefaultConfig() const
     path_catslash(specifiedconf);
     return !defaultconf.compare(specifiedconf);
 }
-
-string RclConfig::o_localecharset; 
 
 RclConfig::RclConfig(const string *argcnf)
 {

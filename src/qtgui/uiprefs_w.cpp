@@ -41,6 +41,7 @@
 #include <qtextedit.h>
 #include <qlist.h>
 #include <QTimer>
+#include <QListWidget>
 
 #include "recoll.h"
 #include "guiutils.h"
@@ -445,6 +446,19 @@ void UIPrefsDialog::delExtraDbPB_clicked()
     }
 }
 
+static bool samedir(const string& dir1, const string& dir2)
+{
+    struct stat st1, st2;
+    if (stat(dir1.c_str(), &st1))
+	return false;
+    if (stat(dir2.c_str(), &st2))
+	return false;
+    if (st1.st_dev == st2.st_dev && st1.st_ino == st2.st_ino) {
+	return true;
+    }
+    return false;
+}
+
 /** 
  * Browse to add another index.
  * We do a textual comparison to check for duplicates, except for
@@ -453,13 +467,27 @@ void UIPrefsDialog::delExtraDbPB_clicked()
 void UIPrefsDialog::addExtraDbPB_clicked()
 {
     QString input = myGetFileName(true, 
-				  tr("Select xapian index directory "
-				     "(ie: /home/buddy/.recoll/xapiandb)"));
+				  tr("Select recoll config directory or "
+				     "xapian index directory "
+				     "(e.g.: /home/me/.recoll or "
+				     "/home/me/.recoll/xapiandb)"));
 
     if (input.isEmpty())
 	return;
-
     string dbdir = (const char *)input.toLocal8Bit();
+    if (access(path_cat(dbdir, "recoll.conf").c_str(), 0) == 0) {
+	// Chosen dir is config dir.
+	RclConfig conf(&dbdir);
+	dbdir = conf.getDbDir();
+	if (dbdir.empty()) {
+	    QMessageBox::warning(
+		0, "Recoll", tr("The selected directory looks like a Recoll "
+				"configuration directory but the configuration "
+				"could not be read"));
+	    return;
+	}
+    }
+
     LOGDEB(("ExtraDbDial: got: [%s]\n", dbdir.c_str()));
     path_catslash(dbdir);
     if (!Rcl::Db::testDbDir(dbdir)) {
@@ -467,42 +495,25 @@ void UIPrefsDialog::addExtraDbPB_clicked()
         tr("The selected directory does not appear to be a Xapian index"));
 	return;
     }
-    struct stat st1, st2;
-    stat(dbdir.c_str(), &st1);
-    string rcldbdir = theconfig->getDbDir();
-    stat(rcldbdir.c_str(), &st2);
-    path_catslash(rcldbdir);
-
-    if (st1.st_dev == st2.st_dev && st1.st_ino == st2.st_ino) {
+    if (samedir(dbdir, theconfig->getDbDir())) {
 	QMessageBox::warning(0, "Recoll", 
 			     tr("This is the main/local index!"));
 	return;
     }
 
-    // For some reason, finditem (which we used to use to detect duplicates 
-    // here) does not work anymore here: qt 4.6.3
-    QList<QListWidgetItem *>items =
-	idxLV->findItems (input, Qt::MatchFixedString|Qt::MatchCaseSensitive);
-    if (!items.empty()) {
-	    QMessageBox::warning(0, "Recoll", 
-		 tr("The selected directory is already in the index list"));
-	    return;
-    }
-#if 0
-    string nv = (const char *)input.toLocal8Bit();
-    QListViewItemIterator it(idxLV);
-    while (it.current()) {
-	QCheckListItem *item = (QCheckListItem *)it.current();
-	string ov = (const char *)item->text().toLocal8Bit();
-	if (!ov.compare(nv)) {
-	    QMessageBox::warning(0, "Recoll", 
-		 tr("The selected directory is already in the index list"));
+    for (int i = 0; i < idxLV->count(); i++) {
+	QListWidgetItem *item = idxLV->item(i);
+	string existingdir = (const char *)item->text().toLocal8Bit();
+	if (samedir(dbdir, existingdir)) {
+	    QMessageBox::warning(
+		0, "Recoll", tr("The selected directory is already in the "
+				"index list"));
 	    return;
 	}
-	++it;
     }
-#endif
-    QListWidgetItem *item = new QListWidgetItem(input, idxLV);
+
+    QListWidgetItem *item = 
+	new QListWidgetItem(QString::fromLocal8Bit(dbdir.c_str()), idxLV);
     item->setCheckState(Qt::Checked);
     idxLV->sortItems();
 }
