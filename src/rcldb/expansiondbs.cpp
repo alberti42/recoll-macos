@@ -81,8 +81,14 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
     // Walk the list of all terms, and stem/unac each.
     string ermsg;
     try {
-        for (Xapian::TermIterator it = wdb.allterms_begin(); 
-	     it != wdb.allterms_end(); it++) {
+	Xapian::TermIterator it = wdb.allterms_begin();
+	// We'd want to skip to the first non-prefixed term, but this is a bit
+	// complicated, so we just jump over most of the prefixed term and then 
+	// skip the rest one by one.
+	it.skip_to(wrap_prefix("Z"));
+        for ( ;it != wdb.allterms_end(); it++) {
+	    if (has_prefix(*it))
+		continue;
 
 	    // Detect and skip CJK terms.
 	    Utf8Iter utfit(*it);

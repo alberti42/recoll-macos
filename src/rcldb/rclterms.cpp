@@ -129,6 +129,17 @@ static void addPrefix(vector<TermMatchEntry>& terms, const string& prefix)
 	it->term.insert(0, prefix);
 }
 
+static const char *tmtptostr(int typ)
+{
+    switch (typ) {
+    case Db::ET_WILD: return "wildcard";
+    case Db::ET_REGEXP: return "regexp";
+    case Db::ET_STEM: return "stem";
+    case Db::ET_NONE:
+    default: return "none";
+    }
+}
+
 // Find all index terms that match an input along different expansion modes:
 // wildcard, regular expression, or stemming. Depending on flags we perform
 // case and/or diacritics expansion (this can be the only thing requested).
@@ -157,9 +168,9 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
     stripped = o_index_stripchars;
 #endif
 
-    LOGDEB(("Db::TermMatch: typ %d diacsens %d casesens %d lang [%s] term [%s] "
+    LOGDEB(("Db::TermMatch: typ %s diacsens %d casesens %d lang [%s] term [%s] "
 	    "max %d field [%s] stripped %d\n",
-	    matchtyp, diac_sensitive, case_sensitive, lang.c_str(), 
+	    tmtptostr(matchtyp), diac_sensitive, case_sensitive, lang.c_str(), 
 	    _term.c_str(), max, field.c_str(), stripped));
 
     // If index is stripped, no case or diac expansion can be needed:
@@ -213,6 +224,11 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
 		 it != exp.end(); it++) {
 		idxTermMatch(ET_NONE, "", *it, res, max, field);
 	    }
+	    // And also expand the original expresionn against the
+	    // main index: for the common case where the expression
+	    // had no case/diac expansion (no entry in the exp db if
+	    // the original term is lowercase and without accents).
+	    idxTermMatch(typ_sens, lang, term, res, max, field);
 	} else {
 	    idxTermMatch(typ_sens, lang, term, res, max, field);
 	}

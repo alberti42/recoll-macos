@@ -203,7 +203,7 @@ bool XapComputableSynFamMember::synKeyExpand(StrMatcher* inexp,
     string::size_type es = inexp->baseprefixlen();
     string is = inexp->exp().substr(0, es);  
     string::size_type preflen = m_prefix.size();
-    LOGDEB2(("XapCompSynFam::is: [%s]\n", is.c_str()));
+    LOGDEB2(("XapCompSynFam::synKeyExpand: init section: [%s]\n", is.c_str()));
 
     string ermsg;
     try {
@@ -246,9 +246,11 @@ bool XapComputableSynFamMember::synKeyExpand(StrMatcher* inexp,
         }
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
-        LOGERR(("XapCompSynFam::keyWildExpand: xapian: [%s]\n", ermsg.c_str()));
+        LOGERR(("XapCompSynFam::synKeyExpand: xapian: [%s]\n", ermsg.c_str()));
         return false;
     }
+    LOGDEB1(("XapCompSynFam::synKeyExpand: final: [%s]\n", 
+	     stringsToString(result).c_str()));
     return true;
 }
 
