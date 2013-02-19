@@ -45,6 +45,15 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
 
     // Erase and recreate all the expansion groups
 
+    // If langs is empty and we don't need casediac expansion, then no need to
+    // walk the big list
+    if (langs.empty()) {
+#ifndef RCL_INDEX_STRIPCHARS
+	if (o_index_stripchars)
+#endif	    
+	    return true;
+    }
+
     // Stem dbs
     vector<XapWritableComputableSynFamMember> stemdbs;
     // Note: tried to make this to work with stack-allocated objects, couldn't.
