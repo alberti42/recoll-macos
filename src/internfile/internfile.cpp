@@ -81,27 +81,39 @@ static string colon_restore(const string& in)
 void FileInterner::reapXAttrs(const string& path)
 {
     LOGDEB2(("FileInterner::reapXAttrs: [%s]\n", path.c_str()));
+    
+    // Retrieve xattrs names from files and mapping table from config
     vector<string> xnames;
     if (!pxattr::list(path, &xnames)) {
 	LOGERR(("FileInterner::reapXattrs: pxattr::list: errno %d\n", errno));
 	return;
     }
     const map<string, string>& xtof = m_cfg->getXattrToField();
+
+    // Record the xattrs: names found in the config are either skipped
+    // or mapped depending if the translation is empty. Other names
+    // are recorded as-is
     for (vector<string>::const_iterator it = xnames.begin();
 	 it != xnames.end(); it++) {
-	map<string, string>::const_iterator mit;
-	if ((mit = xtof.find(*it)) != xtof.end()) {
-	    string value;
-	    if (!pxattr::get(path, *it, &value, pxattr::PXATTR_NOFOLLOW)) {
-		LOGERR(("FileInterner::reapXattrs: pxattr::get failed"
-			"for %s, errno %d\n", (*it).c_str(), errno));
+	string key = *it;
+	map<string, string>::const_iterator mit = xtof.find(*it);
+	if (mit != xtof.end()) {
+	    if (mit->second.empty()) {
 		continue;
+	    } else {
+		key = mit->second;
 	    }
-	    // Encode should we ?
-	    m_XAttrsFields[mit->second] = value;
-	    LOGDEB2(("FileInterner::reapXAttrs: got [%s] -> [%s]\n", 
-		     mit->second.c_str(), value.c_str()));
 	}
+	string value;
+	if (!pxattr::get(path, *it, &value, pxattr::PXATTR_NOFOLLOW)) {
+	    LOGERR(("FileInterner::reapXattrs: pxattr::get failed"
+		    "for %s, errno %d\n", (*it).c_str(), errno));
+	    continue;
+	}
+	// Encode should we ?
+	m_XAttrsFields[key] = value;
+	LOGDEB2(("FileInterner::reapXAttrs: [%s] -> [%s]\n", 
+		 key.c_str(), value.c_str()));
     }
 }
 #endif // RCL_USE_XATTR

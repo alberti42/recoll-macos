@@ -117,6 +117,9 @@ url = dc:identifier xesam:url
 # following would map a quite plausible "tags" extended attribute into the
 # "keywords" field.
 tags = keywords
+# Some standard fields are not to be indexed
+mime_type =
+charset =
 
 ########################
 # Sections reserved for specific filters follow

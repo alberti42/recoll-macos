@@ -1,12 +1,18 @@
 depth = ..
 include $(depth)/mk/sysconf
 
-PROGS = trecrontab 
-      #trnetcon trcopyfile trcircache trmd5 trreadfile trfileudi \
-      #trconftree wipedir smallut  trfstreewalk trpathut transcode trbase64 \
-      #trmimeparse trexecmd utf8iter idfile
+PROGS = pxattr trecrontab \
+      trnetcon trcopyfile trcircache trmd5 trreadfile trfileudi \
+      trconftree wipedir smallut  trfstreewalk trpathut transcode trbase64 \
+      trmimeparse trexecmd utf8iter idfile
 
-all: librecoll $(PROGS)
+all: librecoll pxattr
+
+PXATTROBJS = trpxattr.o pxattr.o 
+pxattr:  $(PXATTROBJS)
+	$(CXX) -o pxattr $(PXATTROBJS)
+trpxattr.o : pxattr.cpp
+	$(CXX) -c $(CXXFLAGS) -DTEST_PXATTR -o $@ pxattr.cpp
 
 ECRONTAB_OBJS= trecrontab.o 
 trecrontab : $(ECRONTAB_OBJS)

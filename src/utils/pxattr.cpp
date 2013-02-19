@@ -405,7 +405,7 @@ list(int fd, const string& path, vector<string>* names, flags flags, nspace dom)
     return true;
 }
 
-static const string cstr_nullstring("");
+static const string nullstring("");
 
 bool get(const string& path, const string& _name, string *value,
 	 flags flags, nspace dom)
@@ -414,7 +414,7 @@ bool get(const string& path, const string& _name, string *value,
 }
 bool get(int fd, const string& _name, string *value, flags flags, nspace dom)
 {
-    return get(fd, cstr_nullstring, _name, value, flags, dom);
+    return get(fd, nullstring, _name, value, flags, dom);
 }
 bool set(const string& path, const string& _name, const string& value,
 	 flags flags, nspace dom)
@@ -424,7 +424,7 @@ bool set(const string& path, const string& _name, const string& value,
 bool set(int fd, const string& _name, const string& value, 
 	 flags flags, nspace dom)
 {
-    return set(fd, cstr_nullstring, _name, value, flags, dom);
+    return set(fd, nullstring, _name, value, flags, dom);
 }
 bool del(const string& path, const string& _name, flags flags, nspace dom) 
 {
@@ -432,7 +432,7 @@ bool del(const string& path, const string& _name, flags flags, nspace dom)
 }
 bool del(int fd, const string& _name, flags flags, nspace dom) 
 {
-    return del(fd, cstr_nullstring, _name, flags, dom);
+    return del(fd, nullstring, _name, flags, dom);
 }
 bool list(const string& path, vector<string>* names, flags flags, nspace dom)
 {
@@ -440,33 +440,37 @@ bool list(const string& path, vector<string>* names, flags flags, nspace dom)
 }
 bool list(int fd, vector<string>* names, flags flags, nspace dom)
 {
-    return list(fd, cstr_nullstring, names, flags, dom);
+    return list(fd, nullstring, names, flags, dom);
 }
 
-static const string cstr_userstring("user.");
+#if defined(__gnu_linux__) || defined(COMPAT1)
+static const string userstring("user.");
+#else
+static const string userstring("");
+#endif
 bool sysname(nspace dom, const string& pname, string* sname)
 {
     if (dom != PXATTR_USER) {
 	errno = EINVAL;
 	return false;
      }
-    *sname = cstr_userstring + pname;
+    *sname = userstring + pname;
     return true;
 }
 
 bool pxname(nspace dom, const string& sname, string* pname) 
 {
-    if (sname.find("user.") != 0) {
+    if (!userstring.empty() && sname.find(userstring) != 0) {
 	errno = EINVAL;
 	return false;
     }
-    *pname = sname.substr(cstr_userstring.length());
+    *pname = sname.substr(userstring.length());
     return true;
 }
 
 } // namespace pxattr
 
-#else // Testing / driver ->
+#else // TEST_PXATTR Testing / driver ->
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -474,35 +478,16 @@ bool pxname(nspace dom, const string& sname, string* pname)
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
+#include <ftw.h>
 
 #include <iostream>
+#include <fstream>
+#include <map>
+#include <algorithm>
+#include <string>
+using namespace std;
 
 #include "pxattr.h"
-
-static char *thisprog;
-static char usage [] =
-"pxattr [-h] -n name [-v value] pathname...\n"
-"pxattr [-h] -x name pathname...\n"
-"pxattr [-h] -l pathname...\n"
-" [-h] : don't follow symbolic links (act on link itself)\n"
-"pxattr -T: run tests on temp file in current directory" 
-"\n"
-;
-static void
-Usage(void)
-{
-    fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
-    exit(1);
-}
-
-static int     op_flags;
-#define OPT_MOINS 0x1
-#define OPT_n	  0x2 
-#define OPT_v	  0x4 
-#define OPT_h     0x8
-#define OPT_x     0x10
-#define OPT_l     0x20
-#define OPT_T     0x40
 
 static void dotests()
 {
@@ -627,22 +612,103 @@ static void dotests()
     exit(0);
 }
 
+// \-quote character c in input \ -> \\, nl -> \n cr -> \rc -> \c
+static void quote(const string& in, string& out, int c)
+{
+    out.clear();
+    for (string::const_iterator it = in.begin(); it != in.end(); it++) {
+	if (*it == '\\') {
+	    out += "\\\\";
+	} else if (*it == "\n"[0]) {
+	    out += "\\n";
+	} else if (*it == "\r"[0]) {
+	    out += "\\r";
+	} else if (*it == c) {
+	    out += "\\";
+	    out += c;
+	} else {
+	    out += *it;
+	}
+    }
+}
+
+// \-unquote input \n -> nl, \r -> cr, \c -> c
+static void unquote(const string& in, string& out)
+{
+    out.clear();
+    for (unsigned int i = 0; i < in.size(); i++) {
+	if (in[i] == '\\') {
+	    if (i == in.size() -1) {
+		out += in[i];
+	    } else {
+		int c = in[++i];
+		switch (c) {
+		case 'n': out += "\n";break;
+		case 'r': out += "\r";break;
+		default: out += c;
+		}
+	    }
+	} else {
+	    out += in[i];
+	}
+    }
+}
+
+// Find first unquoted c in input: c preceded by odd number of backslashes
+string::size_type find_first_unquoted(const string& in, int c)
+{
+    int q = 0;
+    for (unsigned int i = 0;i < in.size(); i++) {
+	if (in[i] == '\\') {
+	    q++;
+	} else if (in[i] == c) {
+	    if (q&1) {
+		// quoted
+		q = 0;
+	    } else {
+		return i;
+	    }
+	} else {
+	    q = 0;
+	}
+    }
+    return string::npos;
+}
+static const string PATH_START("Path: ");
 static void listattrs(const string& path)
 {
-    std::cout << "Path: " << path << std::endl;
     vector<string> names;
     if (!pxattr::list(path, &names)) {
+	if (errno == ENOENT) {
+	    return;
+	}
 	perror("pxattr::list");
 	exit(1);
     }
+    if (names.empty())
+	return;
+
+    // Sorting the names would not be necessary but it makes easier comparing
+    // backups
+    sort(names.begin(), names.end());
+
+    string quoted;
+    quote(path, quoted, 0);
+    cout << PATH_START << quoted << endl;
     for (vector<string>::const_iterator it = names.begin(); 
 	 it != names.end(); it++) {
 	string value;
 	if (!pxattr::get(path, *it, &value)) {
+	    if (errno == ENOENT) {
+		return;
+	    }
 	    perror("pxattr::get");
 	    exit(1);
 	}
-	std::cout << " " << *it << " => " << value << std::endl;
+	quote(*it, quoted, '=');
+	cout << " " << quoted << "=";
+	quote(value, quoted, 0);
+	cout << quoted << endl;
     }
 }
 
@@ -654,15 +720,84 @@ void setxattr(const string& path, const string& name, const string& value)
     }
 }
 
+// Restore xattrs stored in file created by pxattr -lR output
+static void restore(const char *backupnm)
+{
+    istream *input;
+    ifstream fin;
+    if (!strcmp(backupnm, "stdin")) {
+	input = &cin;
+    } else {
+	fin.open(backupnm, ios::in);
+	input = &fin;
+    }
+
+    bool done = false;
+    int linenum = 0;
+    string path;
+    map<string, string> attrs;
+    while (!done) {
+	string line;
+	getline(*input, line);
+	if (!input->good()) {
+	    if (input->bad()) {
+                cerr << "Input I/O error" << endl;
+		exit(1);
+	    }
+	    done = true;
+	} else {
+	    linenum++;
+	}
+
+	// cout << "Got line " << linenum << " : [" << line << "] done " << 
+	// done << endl;
+
+	if (line.find(PATH_START) == 0 || done) {
+	    if (!path.empty() && !attrs.empty()) {
+		for (map<string,string>::const_iterator it = attrs.begin();
+		     it != attrs.end(); it++) {
+		    setxattr(path, it->first, it->second);
+		}
+	    }
+	    if (!done) {
+		line = line.substr(PATH_START.size(), string::npos);
+		unquote(line, path);
+		attrs.clear();
+	    }
+	} else if (line.empty()) {
+	    continue;
+	} else {
+	    // Should be attribute line
+	    if (line[0] != ' ') {
+		cerr << "Found bad line (no space) at " << linenum << endl;
+		exit(1);
+	    }
+	    string::size_type pos = find_first_unquoted(line, '=');
+	    if (pos == string::npos || pos < 2 || pos >= line.size()) {
+		cerr << "Found bad line at " << linenum << endl;
+		exit(1);
+	    }
+	    string qname = line.substr(1, pos-1);
+	    pair<string,string> entry;
+	    unquote(qname, entry.first);
+	    unquote(line.substr(pos+1), entry.second);
+	    attrs.insert(entry);
+	}
+    }
+}
+
 void  printxattr(const string &path, const string& name)
 {
-    std::cout << "Path: " << path << std::endl;
+    cout << "Path: " << path << endl;
     string value;
     if (!pxattr::get(path, name, &value)) {
+	if (errno == ENOENT) {
+	    return;
+	}
 	perror("pxattr::get");
 	exit(1);
     }
-    std::cout << " " << name << " => " << value << std::endl;
+    cout << " " << name << " => " << value << endl;
 }
 
 void delxattr(const string &path, const string& name) 
@@ -673,61 +808,134 @@ void delxattr(const string &path, const string& name)
     }
 }
 
+static char *thisprog;
+static char usage [] =
+"pxattr [-h] -n name pathname [...] : show value for name\n"
+"pxattr [-h] -n name -v value pathname [...] : add/replace attribute\n"
+"pxattr [-h] -x name pathname [...] : delete attribute\n"
+"pxattr [-h] [-l] [-R] pathname [...] : list attribute names and values\n"
+" [-h] : don't follow symbolic links (act on link itself)\n"
+" [-R] : recursive listing. Args should be directory(ies)\n"
+"  For all the options above, if no pathname arguments are given, pxattr\n"
+"  will read file names on stdin, one per line.\n"
+"pxattr -S <backupfile> Restore xattrs from file created by pxattr -lR output\n"
+"               if backupfile is 'stdin', reads from stdin\n"
+"pxattr -T: run tests on temp file in current directory" 
+"\n"
+;
+static void
+Usage(void)
+{
+    fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
+    exit(1);
+}
+
+static int     op_flags;
+#define OPT_MOINS 0x1
+#define OPT_n	  0x2 
+#define OPT_v	  0x4 
+#define OPT_h     0x8
+#define OPT_x     0x10
+#define OPT_l     0x20
+#define OPT_T     0x40
+#define OPT_R     0x80
+#define OPT_S     0x100
+
+static string name, value;
+
+int processfile(const char* fn, const struct stat *sb, int typeflag)
+{
+    //cout << "processfile " << fn << " opflags " << op_flags << endl;
+
+    if (op_flags & OPT_l) {
+	listattrs(fn);
+    } else if (op_flags & OPT_n) {
+	if (op_flags & OPT_v) {
+	    setxattr(fn, name, value);
+	} else {
+	    printxattr(fn, name);
+	} 
+    } else if (op_flags & OPT_x) {
+	delxattr(fn, name);
+    } 
+    return 0;
+}
 
 int main(int argc, char **argv)
 {
-  thisprog = argv[0];
-  argc--; argv++;
+    thisprog = argv[0];
+    argc--; argv++;
 
-  string name, value;
+    while (argc > 0 && **argv == '-') {
+	(*argv)++;
+	if (!(**argv))
+	    /* Cas du "adb - core" */
+	    Usage();
+	while (**argv)
+	    switch (*(*argv)++) {
+	    case 'l':	op_flags |= OPT_l; break;
+	    case 'n':	op_flags |= OPT_n; if (argc < 2)  Usage();
+		name = *(++argv); argc--; 
+		goto b1;
+	    case 'R':	op_flags |= OPT_R; break;
+	    case 'S':	op_flags |= OPT_S; break;
+	    case 'T':	op_flags |= OPT_T; break;
+	    case 'v':	op_flags |= OPT_v; if (argc < 2)  Usage();
+		value = *(++argv); argc--; 
+		goto b1;
+	    case 'x':	op_flags |= OPT_x; if (argc < 2)  Usage();
+		name = *(++argv); argc--; 
+		goto b1;
+	    default: Usage();	break;
+	    }
+    b1: argc--; argv++;
+    }
 
-  while (argc > 0 && **argv == '-') {
-    (*argv)++;
-    if (!(**argv))
-      /* Cas du "adb - core" */
-      Usage();
-    while (**argv)
-      switch (*(*argv)++) {
-      case 'T':	op_flags |= OPT_T; break;
-      case 'l':	op_flags |= OPT_l; break;
-      case 'x':	op_flags |= OPT_x; if (argc < 2)  Usage();
-	  name = *(++argv); argc--; 
-	goto b1;
-      case 'n':	op_flags |= OPT_n; if (argc < 2)  Usage();
-	  name = *(++argv); argc--; 
-	goto b1;
-      case 'v':	op_flags |= OPT_v; if (argc < 2)  Usage();
-	  value = *(++argv); argc--; 
-	goto b1;
-      default: Usage();	break;
-      }
-  b1: argc--; argv++;
-  }
+    if (op_flags & OPT_T)  {
+	if (argc > 0)
+	    Usage();
+	dotests();
+	exit(0);
+    }
 
-  if (argc < 1 && !(op_flags & OPT_T))
-    Usage();
-  if (op_flags & OPT_l) {
-      while (argc > 0) {
-	  listattrs(*argv++);argc--;
-      } 
-  } else if (op_flags & OPT_n) {
-      if (op_flags & OPT_v) {
-	  while (argc > 0) {
-	      setxattr(*argv++, name, value);argc--;
-	  } 
-      } else {
-	  while (argc > 0) {
-	      printxattr(*argv++, name);argc--;
-	  } 
-      }
-  } else if (op_flags & OPT_x) {
-      while (argc > 0) {
-	  delxattr(*argv++, name);argc--;
-      } 
-  } else if (op_flags & OPT_T)  {
-      dotests();
-  }
-  exit(0);
+    if (op_flags & OPT_S)  {
+	if (argc != 1)
+	    Usage();
+	restore(argv[0]);
+	exit(0);
+    }
+
+    // Default option is 'list'
+    if ((op_flags&(OPT_l|OPT_n|OPT_x)) == 0)
+	op_flags |= OPT_l;
+
+    bool readstdin = false;
+    if (argc == 0)
+	readstdin = true;
+
+    for (;;) {
+	const char *fn = 0;
+	if (argc > 0) {
+	    fn = *argv++; 
+	    argc--;
+	} else if (readstdin) {
+	    static char filename[1025];
+	    if (!fgets(filename, 1024, stdin))
+		break;
+	    filename[strlen(filename)-1] = 0;
+	    fn = filename;
+	} else
+	    break;
+
+	if (op_flags & OPT_R) {
+	    if (ftw(fn, processfile, 20))
+		exit(1);
+	} else {
+	    processfile(fn, 0, 0);
+	}
+    } 
+
+    exit(0);
 }
 
 
