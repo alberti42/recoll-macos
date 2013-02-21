@@ -109,9 +109,11 @@ url = dc:identifier xesam:url
 
 [xattrtofields]
 ######################
-# Section to define translations from extended file attribute names to
-# field names. xattr use must be enabled at compile time for this to be
-# used. Enter translations as "xattrname = fieldname". Case matters.
+# Processing for extended file attributes.
+# By default, attributes are processed as document fields (after removing
+# the 'user' prefix from the name on Linux).
+# You can enter name translations as "xattrname = fieldname". Case matters.
+# Entering an empty translation will disable use of the attribute.
 # The values from the extended attributes will extend, not replace, the
 # data found from equivalent fields inside the document. As an example, the
 # following would map a quite plausible "tags" extended attribute into the
