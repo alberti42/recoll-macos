@@ -19,12 +19,49 @@ except:
 
 BUS_PATH = "/org/recoll/unitylensrecoll/scope/main"
 
-# Thumbnails standard
-# 256x256 
-THMBDIRLARGE = "~/.thumbnails/large"
-# 128x128
-THMBDIRNORMAL = "~/.thumbnails/normal"
+XDGCACHE = os.getenv('XDG_CACHE_DIR', os.path.expanduser("~/.cache"))
+THUMBDIRS = [os.path.join(XDGCACHE, "thumbnails"),
+             os.path.expanduser("~/.thumbnails")]
+             
+def _get_thumbnail_path(url):
+    """Look for a thumbnail for the input url, according to the
+    freedesktop thumbnail storage standard. The input 'url' always
+    begins with file:// and is unencoded. We encode it properly
+    and compute the path inside the thumbnail storage
+    directory. We return the path only if the thumbnail does exist
+    (no generation performed)"""
+    global THUMBDIRS
 
+    # Compute the thumbnail file name by encoding and hashing the url string
+    path = url.replace("file://", "", 1)
+    try:
+        path = "file://" + urllib.quote(path)
+    except:
+        #print "_get_thumbnail_path: urllib.quote failed"
+        return None
+    #print "_get_thumbnail: encoded path: [%s]" % (path,)
+    thumbname = hashlib.md5(path).hexdigest() + ".png"
+
+    # If the "new style" directory exists, we should stop looking in
+    # the "old style" one (there might be interesting files in there,
+    # but they may be stale, so it's best to not touch them). We do
+    # this semi-dynamically so that we catch things up if the
+    # directory gets created while we are running.
+    if os.path.exists(THUMBDIRS[0]):
+        THUMBDIRS = THUMBDIRS[0:1]
+
+    # Check in appropriate directories to see if the thumbnail file exists
+    #print "_get_thumbnail: thumbname: [%s]" % (thumbname,)
+    for topdir in THUMBDIRS:
+        for dir in ("large", "normal"): 
+            tpath = os.path.join(topdir, dir, thumbname)
+            # print "Testing [%s]" % (tpath,)
+            if os.path.exists(tpath):
+                return tpath
+
+    return None
+
+    
 # Icon names for some recoll mime types which don't have standard icon by the
 # normal method
 SPEC_MIME_ICONS = {'application/x-fsdirectory' : 'gnome-fs-directory.svg',
@@ -163,31 +200,6 @@ class Scope (Unity.Scope):
             GObject.timeout_add(TYPING_TIMEOUT, self._on_timeout, 
                     search_string, model)
 
-    def _get_thumbnail_path(self, url):
-        """Look for a thumbnail for the input url, according to the
-        freedesktop thumbnail storage standard. The input 'url' always
-        begins with file:// and is unencoded. We encode it properly
-        and compute the path inside the thumbnail storage
-        directory. We return the path only if the thumbnail does exist
-        (no generation performed)"""
-        path = url
-        path = path.replace("file://", "", 1)
-        try:
-            path = "file://" + urllib.quote(path)
-        except:
-            #print "_get_thumbnail_path: quote failed"
-            return None
-        #print "_get_thumbnail: encoded path: [%s]" % (path,)
-        thumbname = hashlib.md5(path).hexdigest() + ".png"
-        #print "_get_thumbnail: thumbname: [%s]" % (thumbname,)
-        tpath = os.path.join(os.path.expanduser(THMBDIRNORMAL), thumbname)
-        if os.path.exists(tpath):
-            return tpath
-        tpath = os.path.join(os.path.expanduser(THMBDIRLARGE), thumbname)
-        if os.path.exists(tpath):
-            return tpath
-        return None
-
     def _really_do_search(self, search_string, model):
         #print "really_do_search:", "[" + search_string + "]"
 
@@ -237,18 +249,9 @@ class Scope (Unity.Scope):
             else:
                 mimetype = doc.mimetype
                 url = doc.url
-                # doc.url is a unicode string which is badly wrong. A
-                # future version of the pyrecoll module will have a
-                # separate method to retrieve the binary
-                # version. Until this happens, try to encode
-                # back. This won't work every time (ie: if the
-                # original path could not be translated to unicode by
-                # pyrecoll, or if the unicode can't be translated back
-                # in the current locale)
-                #encoding = locale.nl_langinfo(locale.CODESET)
-                #thumbnail = self._get_thumbnail_path(url.encode(encoding,
-                #                                            errors='replace'))
-                thumbnail = self._get_thumbnail_path(doc.getbinurl())
+                # doc.url is a unicode string which is badly wrong. 
+                # Retrieve the binary path for thumbnail access.
+                thumbnail = _get_thumbnail_path(doc.getbinurl())
 
             titleorfilename = doc.title
             if titleorfilename == "":
@@ -263,9 +266,14 @@ class Scope (Unity.Scope):
                 else:
                     icon = Gio.content_type_get_icon(doc.mimetype)
                     if icon:
-                        iconname = icon.get_names()[0]
+                        # At least on Quantal, get_names() sometimes returns
+                        # a list with '(null)' in the first position...
+                        for iname in icon.get_names():
+                            if iname != '(null)':
+                                iconname = iname
+                                break
 
-            #print "iconname:", iconname
+            #print "iconname(%s) = %s" % (doc.mimetype, iconname)
 
             try:
                 abstract = self.db.makeDocAbstract(doc, query).encode('utf-8')
