@@ -150,7 +150,7 @@ Extractor_textextract(rclx_ExtractorObject* self, PyObject *args,
 }
 
 PyDoc_STRVAR(doc_Extractor_idoctofile,
-"idoctofile(ipath)\n"
+"idoctofile(ipath='', mimetype='', ofilename='')\n"
 "Extract document defined by ipath into a file, in its native format.\n"
 );
 static PyObject *

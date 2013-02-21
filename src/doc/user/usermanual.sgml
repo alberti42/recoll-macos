@@ -3557,15 +3557,15 @@ application/x-chm = execm rclchm
           </listitem>
         </varlistentry>
 
-        </variablelist>
+      </variablelist>
 
       <para>Data for an external indexer, should be stored in a
-      separate index, not the one for the &RCL; internal file system
-      indexer, except if the latter is not used at all). The reason
-      is that the main document indexer purge pass would remove all
-      the other indexer's documents, as they were not seen during
-      indexing. The main indexer documents would also probably be a
-      problem for the external indexer purge operation.</para>
+        separate index, not the one for the &RCL; internal file system
+        indexer, except if the latter is not used at all). The reason
+        is that the main document indexer purge pass would remove all
+        the other indexer's documents, as they were not seen during
+        indexing. The main indexer documents would also probably be a
+        problem for the external indexer purge operation.</para>
 
     </sect2>
 
@@ -3578,262 +3578,436 @@ application/x-chm = execm rclchm
         <para>&RCL; versions after 1.11 define a Python programming
           interface, both for searching and indexing.</para> 
 
+        <para>The API is inspired by the Python database API
+          specification, version 1.0 for &RCL; versions up to 1.18,
+          version 2.0 for &RCL; versions 1.19 and later. The package
+          structure changed with &RCL; 1.19 too. We will mostly
+          describe the new API and package structure here. A paragraph
+          at the end of this section will explain a few differences
+          and ways to write code compatible with both versions.</para>
+
         <para>The Python interface can be found in the source package,
           under <filename>python/recoll</filename>.</para>
-	<para>In order to build the module, you should first build
-	  or re-build the Recoll library using position-independant
-	  objects:
-<screen>
-  <userinput>cd recoll-xxx/</userinput>
-  <userinput>configure --enable-pic</userinput>
-  <userinput>make</userinput>
-</screen>
-	  There is no significant disadvantage in using PIC objects
-	  for the main Recoll executables, so you can use the
-	  <option>--enable-pic</option> option for the main build
-	  too.</para> 
 
 	<para>The <filename>python/recoll/</filename> directory
-	  contains the usual <filename>setup.py</filename> 
-          script which you can then use to build and install the
-          module:
-<screen>
-  <userinput>cd recoll-xxx/python/recoll</userinput>
-  <userinput>python setup.py build</userinput>
-  <userinput>python setup.py install</userinput>
-</screen>
+	  contains the usual <filename>setup.py</filename>. After
+	  configuring the main &RCL; code, you can use the script to
+	  build and install the Python module:
+          <screen>
+            <userinput>cd recoll-xxx/python/recoll</userinput>
+            <userinput>python setup.py build</userinput>
+            <userinput>python setup.py install</userinput>
+          </screen>
         </para> 
 
       </sect3>
 
-
-      <sect3 id="RCL.PROGRAM.PYTHON.MANUAL">
-        <title>Interface manual</title>
-
-      <literallayout>
-NAME
-    recoll - This is an interface to the Recoll full text indexer.
-
-FILE
-    /usr/local/lib/python2.5/site-packages/recoll.so
-
-CLASSES
-        Db
-        Doc
-        Query
-        SearchData
-    
-    class Db(__builtin__.object)
-     |  Db([confdir=None], [extra_dbs=None], [writable = False])
-     |  
-     |  A Db object holds a connection to a Recoll index. Use the connect()
-     |  function to create one.
-     |  confdir specifies a Recoll configuration directory (default: 
-     |   $RECOLL_CONFDIR or ~/.recoll).
-     |  extra_dbs is a list of external databases (xapian directories)
-     |  writable decides if we can index new data through this connection
-     |  
-     |  Methods defined here:
-     |  
-     |  
-     |  addOrUpdate(...)
-     |      addOrUpdate(udi, doc, parent_udi=None) -> None
-     |      Add or update index data for a given document
-     |      The udi string must define a unique id for the document. It is not
-     |      interpreted inside Recoll
-     |      doc is a Doc object
-     |      if parent_udi is set, this is a unique identifier for the
-     |      top-level container (ie mbox file)
-     |  
-     |  delete(...)
-     |      delete(udi) -> Bool.
-     |      Purge index from all data for udi. If udi matches a container
-     |      document, purge all subdocs (docs with a parent_udi matching udi).
-     |  
-     |  makeDocAbstract(...)
-     |      makeDocAbstract(Doc, Query) -> string
-     |      Build and return 'keyword-in-context' abstract for document
-     |      and query.
-     |  
-     |  needUpdate(...)
-     |      needUpdate(udi, sig) -> Bool.
-     |      Check if the index is up to date for the document defined by udi,
-     |      having the current signature sig.
-     |  
-     |  purge(...)
-     |      purge() -> Bool.
-     |      Delete all documents that were not touched during the just finished
-     |      indexing pass (since open-for-write). These are the documents for
-     |      the needUpdate() call was not performed, indicating that they no
-     |      longer exist in the primary storage system.
-     |  
-     |  query(...)
-     |      query() -> Query. Return a new, blank query object for this index.
-     |  
-     |  setAbstractParams(...)
-     |      setAbstractParams(maxchars, contextwords).
-     |      Set the parameters used to build 'keyword-in-context' abstracts
-     |  
-     |  ----------------------------------------------------------------------
-     |  Data and other attributes defined here:
-     |  
-    
-    class Doc(__builtin__.object)
-     |  Doc()
-     |  
-     |  A Doc object contains index data for a given document.
-     |  The data is extracted from the index when searching, or set by the
-     |  indexer program when updating. The Doc object has no useful methods but
-     |  many attributes to be read or set by its user. It matches exactly the
-     |  Rcl::Doc c++ object. Some of the attributes are predefined, but, 
-     |  especially when indexing, others can be set, the name of which will be
-     |  processed as field names by the indexing configuration.
-     |  Inputs can be specified as unicode or strings.
-     |  Outputs are unicode objects.
-     |  All dates are specified as unix timestamps, printed as strings
-     |  Predefined attributes (index/query/both):
-     |   text (index): document plain text
-     |   url (both)
-     |   fbytes (both) optional) file size in bytes
-     |   filename (both)
-     |   fmtime (both) optional file modification date. Unix time printed 
-     |      as string
-     |   dbytes (both) document text bytes
-     |   dmtime (both) document creation/modification date
-     |   ipath (both) value private to the app.: internal access path
-     |      inside file
-     |   mtype (both) mime type for original document
-     |   mtime (query) dmtime if set else fmtime
-     |   origcharset (both) charset the text was converted from
-     |   size (query) dbytes if set, else fbytes
-     |   sig (both) app-defined file modification signature. 
-     |      For up to date checks
-     |   relevancyrating (query)
-     |   abstract (both)
-     |   author (both)
-     |   title (both)
-     |   keywords (both)
-     |  
-     |  Methods defined here:
-     |  
-     |  
-     |  ----------------------------------------------------------------------
-     |  Data and other attributes defined here:
-     |  
-    
-    class Query(__builtin__.object)
-     |  Recoll Query objects are used to execute index searches. 
-     |  They must be created by the Db.query() method.
-     |  
-     |  Methods defined here:
-     |  
-     |  
-     |  execute(...)
-     |      execute(query_string, stemming=1|0, stemlang="stemming language")
-     |      
-     |      Starts a search for query_string, a Recoll search language string
-     |      (mostly Xesam-compatible).
-     |      The query can be a simple list of terms (and'ed by default), or more
-     |      complicated with field specs etc. See the Recoll manual.
-     |  
-     |  executesd(...)
-     |      executesd(SearchData)
-     |      
-     |      Starts a search for the query defined by the SearchData object.
-     |  
-     |  fetchone(...)
-     |      fetchone(None) -> Doc
-     |      
-     |      Fetches the next Doc object in the current search results.
-     |  
-     |  sortby(...)
-     |      sortby(field=fieldname, ascending=true)
-     |      Sort results by 'fieldname', in ascending or descending order.
-     |      Only one field can be used, no subsorts for now.
-     |      Must be called before executing the search
-     |  
-     |  ----------------------------------------------------------------------
-     |  Data descriptors defined here:
-     |  
-     |  next
-     |      Next index to be fetched from results. Normally increments after
-     |      each fetchone() call, but can be set/reset before the call effect
-     |      seeking. Starts at 0
-     |  
-     |  ----------------------------------------------------------------------
-     |  Data and other attributes defined here:
-     |  
-    
-    class SearchData(__builtin__.object)
-     |  SearchData()
-     |  
-     |  A SearchData object describes a query. It has a number of global
-     |  parameters and a chain of search clauses.
-     |  
-     |  Methods defined here:
-     |  
-     |  
-     |  addclause(...)
-     |      addclause(type='and'|'or'|'excl'|'phrase'|'near'|'sub',
-     |                qstring=string, slack=int, field=string, stemming=1|0,
-     |                subSearch=SearchData)
-     |      Adds a simple clause to the SearchData And/Or chain, or a subquery
-     |      defined by another SearchData object
-     |  
-     |  ----------------------------------------------------------------------
-     |  Data and other attributes defined here:
-     |  
-
-FUNCTIONS
-    connect(...)
-        connect([confdir=None], [extra_dbs=None], [writable = False])
-                 -> Db.
+      <sect3 id="RCL.PROGRAM.PYTHON.PACKAGE">
+        <title>Recoll package</title>
         
-        Connects to a Recoll database and returns a Db object.
-        confdir specifies a Recoll configuration directory
-        (the default is built like for any Recoll program).
-        extra_dbs is a list of external databases (xapian directories)
-        writable decides if we can index new data through this connection
+        <para>The <literal>recoll</literal> package contains two
+          modules:
+          <itemizedlist>
+            <listitem><para>The <literal>recoll</literal> module contains
+                functions and classes used to query (or update) the
+                index.</para></listitem> 
+            <listitem><para>The <literal>rclextract</literal> module contains
+                functions and classes used to access document
+                data.</para></listitem> 
+          </itemizedlist>
+        </para>            
+      </sect3>
+
+      <sect3 id="RCL.PROGRAM.PYTHON.RECOLL">
+        <title>The recoll module</title>
+
+        <sect4 id="RCL.PROGRAM.PYTHON.RECOLL.FUNCTIONS">
+          <title>Functions</title>
+
+          <variablelist>
+            <varlistentry>
+              <term>connect(confdir=None, extra_dbs=None,
+                writable = False)</term>
+              <listitem>
+                The <literal>connect()</literal> function connects to
+                one or several &RCL; index(es) and returns
+                a <literal>Db</literal> object.
+                <itemizedlist>
+                  <listitem><literal>confdir</literal> may specify
+                    a configuration directory. The usual defaults
+                    apply.</listitem> 
+                  <listitem><literal>extra_dbs</literal> is a list of
+                  additional indexes (Xapian directories). </listitem>
+                  <listitem><literal>writable</literal> decides if
+                    we can index new data through this
+                    connection.</listitem>
+                </itemizedlist> 
+              </listitem>
+          </varlistentry>
+
+          </variablelist>
+        </sect4>
 
 
-</literallayout>
-        </sect3>
+      <sect4 id="RCL.PROGRAM.PYTHON.RECOLL.CLASSES">
+        <title>Classes</title>
+        
+        <sect5 id="RCL.PROGRAM.PYTHON.RECOLL.CLASSES.DB">
+          <title>The Db class</title>
+
+          <para>A Db object is created by
+            a <literal>connect()</literal> function and holds a 
+            connection to a Recoll index.</para>
+          <variablelist>
+            <title>Methods</title>
+            <varlistentry>
+              <term>Db.close()</term>
+              <listitem>Closes the connection. You can't do anything
+                with the <literal>Db</literal> object after
+                this.</listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>Db.query(), Db.cursor()</term> <listitem>These
+                aliases return a blank <literal>Query</literal> object
+                for this index.</listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>Db.setAbstractParams(maxchars, contextwords)</term>
+              <listitem>Set the parameters used to build snippets.</listitem>
+            </varlistentry>
+
+          </variablelist>
+
+        </sect5>
+
+
+        <sect5 id="RCL.PROGRAM.PYTHON.RECOLL.CLASSES.QUERY">
+          <title>The Query class</title>
+
+          <para>A <literal>Query</literal> object (equivalent to a
+            cursor in the Python DB API) is created by
+            a <literal>Db.query()</literal> call. It is used to
+            execute index searches.</para>
+
+          <variablelist>
+            <title>Methods</title>
+
+            <varlistentry>
+              <term>Query.sortby(fieldname, ascending=True)</term>
+              <listitem>Sort results
+                by <replaceable>fieldname</replaceable>, in ascending
+                or descending order. Must be called before executing
+                the search.</listitem>
+            </varlistentry>
+  
+            <varlistentry>
+              <term>Query.execute(query_string, stemming=1, 
+                stemlang="english")</term>
+              <listitem>Starts a search
+              for <replaceable>query_string</replaceable>, a &RCL;
+              search language string.</listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>Query.executesd(SearchData)</term>
+              <listitem>Starts a search for the query defined by the
+                SearchData object.</listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>Query.fetchmany(size=query.arraysize)</term> 
+              
+              <listitem>Fetches
+                the next <literal>Doc</literal> objects in the current
+                search results, and returns them as an array of the
+                required size, which is by default the value of
+                the <literal>arraysize</literal> data member.</listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>Query.fetchone()</term>
+              <listitem>Fetches the next <literal>Doc</literal> object
+                from the current search results.</listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>Query.close()</term>
+              <listitem>Closes the connection. The object is unusable
+              after the call.</listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>Query.scroll(value, mode='relative')</term>
+              <listitem>Adjusts the position in the current result
+                set. <literal>mode</literal> can
+                be <literal>relative</literal>
+                or <literal>absolute</literal>. </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>Query.getgroups()</term>
+              <listitem>Retrieves the expanded query terms as a list
+              of pairs. Meaningful only after executexx
+                In each pair, the first entry is a list of user terms,
+                the second a list of query terms as derived from the
+                user terms and used in the Xapian Query. The size of
+                each list is one for simple terms, or more for group
+                and phrase clauses.</listitem>
+            </varlistentry>
+            
+            <varlistentry>
+              <term>Query.getxquery()</term>
+            <listitem>Return the Xapian query description as a Unicode string.
+              Meaningful only after executexx.</listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>Query.highlight(text, ishtml = 0, methods = object)</term>
+            <listitem>Will insert &lt;span "class=rclmatch">,
+            &lt;/span> tags around the match areas in the input text
+              and return the modified text.  <literal>ishtml</literal>
+              can be set to indicate that the input text is HTML and
+              that HTML special characters should not be escaped.
+              <literal>methods</literal> if set should be an object
+              with methods startMatch(i) and endMatch() which will be
+              called for each match and should return a begin and end
+              tag</listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>Query.makedocabstract(doc, methods = object))</term>
+              <listitem>Create a snippets abstract
+                for <literal>doc</literal> (a <literal>Doc</literal>
+                object) by selecting text around the match terms.
+                If methods is set, will also perform highlighting. See
+                the highlight method.
+              </listitem>
+            </varlistentry>
+   
+            <varlistentry>
+              <term>Query.__iter__() and Query.next()</term>
+              <listitem>So that things like <literal>for doc in
+                  query:</literal> will work.</listitem>
+            </varlistentry>
+          </variablelist>
+
+          <variablelist>
+            <title>Data descriptors</title>
+
+            <varlistentry><term>Query.arraysize</term> <listitem>Default
+                number of records processed by fetchmany (r/w).</listitem> 
+            </varlistentry>
+            <varlistentry><term>Query.rowcount</term><listitem>Number of
+                records returned by the last execute.</listitem></varlistentry>
+            <varlistentry><term>Query.rownumber</term><listitem>Next index
+                to be fetched from results. Normally increments after
+                each fetchone() call, but can be set/reset before the
+                call effect seeking. Starts at 0.</listitem>
+            </varlistentry>
+
+          </variablelist>
+
+        </sect5>
+
+
+        <sect5 id="RCL.PROGRAM.PYTHON.RECOLL.CLASSES.DOC">
+          <title>The Doc class</title>
+
+          <para>A <literal>Doc</literal> object contains index data
+            for a given document. The data is extracted from the
+            index when searching, or set by the indexer program when
+            updating. The Doc object has many attributes to be read or
+            set by its user. It matches exactly the Rcl::Doc C++
+            object. Some of the attributes are predefined, but,
+            especially when indexing, others can be set, the name of
+            which will be processed as field names by the indexing
+            configuration.  Inputs can be specified as Unicode or
+            strings. Outputs are Unicode objects. All dates are
+            specified as Unix timestamps, printed as strings. Please
+            refer to the <filename>rcldb/rcldoc.h</filename> C++ file
+            for a description of the predefined attributes.</para>
+
+          <para>At query time, only the fields that are defined
+            as <literal>stored</literal> either by default or in
+            the <filename>fields</filename> configuration file will be
+            meaningful in the <literal>Doc</literal>
+            object. Especially this will not be the case for the
+            document text. See the <literal>rclextract</literal>
+            module for accessing document contents.</para> 
+
+          <variablelist>
+            <title>Methods</title>
+
+            <varlistentry>
+              <term>get(key), [] operator</term>
+              <listitem>Retrieve the named doc attribute</listitem>
+            </varlistentry>
+            <varlistentry><term>getbinurl()</term><listitem>Retrieve
+                the URL in byte array format (no transcoding), for use as
+                parameter to a system call.</listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>items()</term>
+              <listitem>Return a dictionary of doc object
+              keys/values</listitem> 
+            </varlistentry>
+            <varlistentry>
+              <term>keys()</term>
+              <listitem>list of doc object keys (attribute
+              names).</listitem>
+            </varlistentry>
+          </variablelist>
+
+        </sect5> <!-- Doc -->
+
+        <sect5 id="RCL.PROGRAM.PYTHON.RECOLL.CLASSES.SEARCHDATA">
+          <title>The SearchData class</title>
+
+          <para>A <literal>SearchData</literal> object allows building
+            a query by combining clauses, for execution
+            by <literal>Query.executesd()</literal>. It can be used
+            in replacement of the query language approach. The
+            interface is going to change a little, so no detailed doc
+            for now...</para>
+
+          <variablelist>
+            <title>Methods</title>
+
+            <varlistentry>
+              <term>addclause(type='and'|'or'|'excl'|'phrase'|'near'|'sub',
+                qstring=string, slack=0, field='', stemming=1,
+                subSearch=SearchData)</term>
+              <listitem></listitem>
+            </varlistentry>
+          </variablelist>
+
+        </sect5> <!-- SearchData -->
+
+      </sect4> <!-- recoll.classes -->
+      </sect3> <!-- Recoll module -->
+
+      <sect3 id="RCL.PROGRAM.PYTHON.RCLEXTRACT">
+        <title>The rclextract module</title>
+
+        <para>Document content is not provided by an index query. To
+        access it, the data extraction part of the indexing process
+        must be performed (subdocument access and format
+        translation). This is not trivial in
+        general. The <literal>rclextract</literal> module currently
+        provides a single class which can be used to access the data
+        content for result documents.</para>
+
+        <sect4 id="RCL.PROGRAM.PYTHON.RCLEXTRACT.CLASSES">
+          <title>Classes</title>
+        
+          <sect5 id="RCL.PROGRAM.PYTHON.RECOLL.CLASSES.EXTRACTOR">
+            <title>The Extractor class</title>
+
+            <variablelist>
+              <title>Methods</title>
+
+              <varlistentry>
+                <term>Extractor(doc)</term>
+                <listitem>An <literal>Extractor</literal> object is
+                  built from a <literal>Doc</literal> object, output
+                  from a query.</listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Extractor.textextract(ipath)</term>
+                <listitem>Extract document defined
+                by <replaceable>ipath</replaceable> and return
+                a <literal>Doc</literal> object. The doc.text field
+                has the document text as either text/plain or
+                text/html according to doc.mimetype.</listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Extractor.idoctofile()</term>
+                <listitem>Extracts document into an output file,
+                which can be given explicitly or will be created as a
+                temporary file to be deleted by the caller.</listitem>
+              </varlistentry>
+
+          </variablelist>
+
+          </sect5> <!-- Extractor class -->
+        </sect4> <!-- rclextract classes -->
+      </sect3> <!-- rclextract module -->
+
+
 
       <sect3 id="RCL.PROGRAM.PYTHON.EXAMPLES">
         <title>Example code</title>
 
         <para>The following sample would query the index with a user
         language string. See the <filename>python/samples</filename>
-        directory inside the &RCL; source for other examples.</para>
+          directory inside the &RCL; source for other
+          examples. The <filename>recollgui</filename> subdirectory
+          has a very embryonic GUI which demonstrates the
+          highlighting and data extraction functions.</para>
 
         <programlisting>
 #!/usr/bin/env python
 <![CDATA[
-import recoll
+from recoll import recoll
 
 db = recoll.connect()
-db.setAbstractParams(maxchars=80, contextwords=2)
+db.setAbstractParams(maxchars=80, contextwords=4)
 
 query = db.query()
 nres = query.execute("some user question")
 print "Result count: ", nres
 if nres > 5:
     nres = 5
-while query.next >= 0 and query.next < nres: 
+for i in range(nres):
     doc = query.fetchone()
-    print query.next
+    print "Result #%d" % (query.rownumber,)
     for k in ("title", "size"):
         print k, ":", getattr(doc, k).encode('utf-8')
     abs = db.makeDocAbstract(doc, query).encode('utf-8')
     print abs
     print
 
-
 ]]>
 </programlisting>
 
       </sect3>
 
+      <sect3 id="RCL.PROGRAM.PYTHON.COMPAT">
+        <title>Compatibility with the previous version</title>
+
+        <para>The following code fragments can be used to ensure that
+          code can run with both the old and the new API (as long as it
+          does not use the new abilities of the new API of
+          course).</para>
+
+        <para>Adapting to the new package structure:</para>
+        <programlisting>
+<![CDATA[
+try:
+    from recoll import recoll
+    from recoll import rclextract
+    hasextract = True
+except:
+    import recoll
+    hasextract = False
+]]>
+</programlisting>
+
+        <para>Adapting to the change of nature of
+          the <literal>next</literal> <literal>Query</literal>
+          member. The same test can be used to choose to use
+          the <literal>scroll()</literal> method (new) or set
+          the <literal>next</literal> value (old).</para>
+
+        <programlisting>
+<![CDATA[
+       rownum = query.next if type(query.next) == int else \
+                 query.rownumber
+]]>
+</programlisting>
+
+      </sect3> <!-- compat with previous version -->
     </sect2>
     </sect1>
   </chapter>
