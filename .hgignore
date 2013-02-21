@@ -21,6 +21,8 @@ src/desktop/unity-lens-recoll/data/recoll.lens
 src/desktop/unity-lens-recoll/data/unity-lens-recoll.service
 src/doc/user/HTML.manifest
 src/doc/user/RCL.INDEXING.CONFIG.html
+src/doc/user/RCL.INDEXING.EXTATTR.html
+src/doc/user/RCL.INDEXING.EXTTAGS.html
 src/doc/user/RCL.INDEXING.MONITOR.html
 src/doc/user/RCL.INDEXING.PERIODIC.html
 src/doc/user/RCL.INDEXING.STORAGE.html
