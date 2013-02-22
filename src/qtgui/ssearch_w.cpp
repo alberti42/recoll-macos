@@ -36,6 +36,10 @@
 #include "wasatorcl.h"
 #include "rclhelp.h"
 
+// Typing interval after which we consider starting autosearch: no sense to do
+// this is user is typing fast and continuously
+static const int strokeTimeoutMS = 250;
+
 void SSearch::init()
 {
     // See enum above and keep in order !
@@ -103,12 +107,13 @@ void SSearch::searchTextChanged(const QString& text)
 	if (prefs.ssearchAsYouType && !m_disableAutosearch && 
 	    !m_keystroke && m_tstartqs == qs) {
 	    m_disableAutosearch = true;
-	    LOGDEB0(("SSearch::searchTextChanged: autosearch\n"));
 	    string s;
 	    int cs = partialWord(s);
+	    LOGDEB0(("SSearch::searchTextChanged: autosearch. cs %d s [%s]\n", 
+		     cs, s.c_str()));
 	    if (cs < 0) {
 		startSimpleSearch();
-	    } else if (!m_stroketimeout->isActive()) {
+	    } else if (!m_stroketimeout->isActive() && s.size() >= 2) {
 		s = qs2utf8s(queryText->currentText());
 		s += "*";
 		startSimpleSearch(s, 20);
@@ -328,6 +333,8 @@ void SSearch::setAnyTermMode()
     searchTypCMB->setCurrentIndex(SST_ANY);
 }
 
+// If text does not end with space, return last (partial) word and >0
+// else return -1
 int SSearch::partialWord(string& s)
 {
     // Extract last word in text
@@ -648,7 +655,7 @@ bool SSearch::eventFilter(QObject *target, QEvent *event)
 		QString qs = queryText->currentText();
 		LOGDEB0(("SSearch::eventFilter: start timer, qs [%s]\n", 
 			 qs2utf8s(qs).c_str()));
-		m_stroketimeout->start(200);
+		m_stroketimeout->start(strokeTimeoutMS);
 	    }
 	}
     }

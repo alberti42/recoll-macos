@@ -769,7 +769,13 @@ void RclMain::rebuildIndex()
 // Start a db query and set the reslist docsource
 void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
 {
-    LOGDEB(("RclMain::startSearch. Indexing %s\n", m_idxproc?"on":"off"));
+    LOGDEB(("RclMain::startSearch. Indexing %s Active %d\n", 
+	    m_idxproc?"on":"off", m_queryActive));
+    if (m_queryActive) {
+	LOGDEB(("startSearch: already active\n"));
+	return;
+    }
+    m_queryActive = true;
     m_source = RefCntr<DocSequence>();
 
     // The db may have been closed at the end of indexing
@@ -777,6 +783,7 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
     // If indexing is being performed, we reopen the db at each query.
     if (!maybeOpenDb(reason, m_idxproc != 0)) {
 	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
+	m_queryActive = false;
 	return;
     }
 
@@ -818,9 +825,8 @@ class QueryThread : public QThread {
 
 void RclMain::initiateQuery()
 {
-    if (m_queryActive || m_source.isNull())
+    if (m_source.isNull())
 	return;
-    m_queryActive = true;
 
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     QueryThread qthr(m_source);

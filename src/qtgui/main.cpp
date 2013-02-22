@@ -108,6 +108,7 @@ void startManual(const string& helpindex)
 
 bool maybeOpenDb(string &reason, bool force, bool *maindberror)
 {
+    LOGDEB2(("maybeOpenDb: force %d\n", force));
     if (!rcldb) {
 	reason = "Internal error: db not created";
 	return false;
