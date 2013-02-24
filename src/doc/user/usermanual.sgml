@@ -3356,36 +3356,71 @@ application/x-chm = execm rclchm
         <title>Filter HTML output</title>
 
         <para>The output HTML could be very minimal like the following
-        example:</para>
-
-        <programlisting>&lt;html>&lt;head>
-&lt;meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-&lt;/head>
-&lt;body>some text content&lt;/body>&lt;/html>
+        example:
+          <programlisting>
+&lt;html>
+  &lt;head>
+    &lt;meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  &lt;/head>
+  &lt;body>
+   Some text content
+  &lt;/body>
+&lt;/html>
           </programlisting>
+        </para>
 
         <para>You should take care to escape some
-        characters inside
-          the text by transforming them into appropriate
-          entities. "<literal>&amp;</literal>" should be transformed into
+          characters inside the text by transforming them into
+          appropriate entities. At the very minimum,
+          "<literal>&amp;</literal>" should be transformed into
           "<literal>&amp;amp;</literal>", "<literal>&lt;</literal>"
           should be transformed into
           "<literal>&amp;lt;</literal>". This is not always properly
           done by translating programs which output HTML, and of
-          course never by those which output plain text.</para>
+          course never by those which output plain text. </para>
+
+        <para>When encapsulating plain text in an HTML body, 
+          the display of a preview may be improved by enclosing the
+          text inside <literal>&lt;pre></literal> tags.</para>
 
         <para>The character set needs to be specified in the
           header. It does not need to be UTF-8 (&RCL; will take care
           of translating it), but it must be accurate for good
           results.</para>
 
-        <para>&RCL; will also make use of other header fields if
-          they are present: <literal>title</literal>,
-          <literal>description</literal>,
-          <literal>keywords</literal>.</para>
+        <para>&RCL; will process <literal>meta</literal> tags inside
+          the header as possible document fields candidates. Documents
+          fields can be processed by the indexer in different ways,
+          for searching or displaying inside query results. This is
+          described in a <link linkend="RCL.PROGRAM.FIELDS">following
+          section.</link>
+        </para>
+
+        <para>By default, the indexer will process the standard header
+          fields if they are present: <literal>title</literal>,
+          <literal>meta/description</literal>,
+          and <literal>meta/keywords</literal> are both indexed and stored
+          for query-time display.</para>
+
+        <para>A predefined non-standard <literal>meta</literal> tag
+          will also be processed by &RCL; without further
+          configuration: if a <literal>date</literal> tag is present
+          and has the right format, it will be used as the document
+          date (for display and sorting), in preference to the file
+          modification date. The date format should be as follows:
+          <programlisting>
+&lt;meta name="date" content="YYYY-mm-dd HH:MM:SS">
+or
+&lt;meta name="date" content="YYYY-mm-ddTHH:MM:SS">
+          </programlisting>
+          Example:
+          <programlisting>
+&lt;meta name="date" content="2013-02-24 17:50:00">
+          </programlisting>
+        </para>
 
         <para>Filters also have the possibility to "invent" field
-        names. This should be output as meta tags:</para>
+          names. This should also be output as meta tags:</para>
 
         <programlisting>
 &lt;meta name="somefield" content="Some textual data" /&gt;
@@ -3401,8 +3436,9 @@ application/x-chm = execm rclchm
 &lt;meta name="somefield" markup="html" content="Some &lt;i>textual&lt;/i> data" /&gt;
 </programlisting>
 
-      <para> See the following section for details about configuring
-      how field data is processed by the indexer.</para>
+        <para>As written above, the processing of fields is described
+          in a <link linkend="RCL.PROGRAM.FIELDS">further
+          section</link>.</para> 
 
       </sect2>
 
