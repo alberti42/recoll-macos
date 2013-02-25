@@ -868,7 +868,13 @@ bool RclConfig::setMimeViewerDef(const string& mt, const string& def)
 {
     if (mimeview == 0)
         return false;
-    if (!mimeview->set(mt, def, "view")) {
+    bool status;
+    if (!def.empty()) 
+	status = mimeview->set(mt, def, "view");
+    else 
+	status = mimeview->erase(mt, "view");
+
+    if (!status) {
 	m_reason = string("RclConfig:: cant set value. Readonly?");
 	return false;
     }

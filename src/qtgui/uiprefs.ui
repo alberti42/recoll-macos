@@ -168,40 +168,6 @@
 	     </layout>
            </item>
            <item>
-            <widget class="QCheckBox" name="useDesktopOpenCB">
-             <property name="text">
-              <string>Use desktop preferences to choose document editor.</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout">
-             <item>
-              <widget class="QLabel" name="textLabelallex">
-               <property name="text">
-                <string>Exceptions</string>
-               </property>
-               <property name="toolTip">
-	        <string>Mime types that should not be passed to xdg-open even when "Use desktop preferences" is set.&lt;br&gt; Useful to pass page number and search string options to, e.g. evince.</string>
-		   </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="allExLE">
-               <property name="minimumSize">
-                <size>
-                 <width>70</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
             <widget class="QPushButton" name="viewActionPB">
              <property name="text">
               <string>Choose editor applications</string>

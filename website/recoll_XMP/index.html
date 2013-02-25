@@ -80,9 +80,11 @@ journal =
 &lt; ' 
 ---
 > ' | 
-168a200,203
+168a200,205
 > # replace latex with html markup
 > l2html |
+> # replace "Subject" with "Abstract"
+> sed -e s/\&lt;meta\ name=\"Subject\"/\&lt;meta\ name=\"Abstract\"/g |
 > # add markup="html" to author meta element
 > sed -e s/\&lt;meta\ name=\"Author\"/\&lt;meta\ name=\"Author\"\ markup=\"html\"/g
 </pre>

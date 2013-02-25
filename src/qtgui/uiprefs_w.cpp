@@ -84,10 +84,6 @@ void UIPrefsDialog::init()
 	    ssAutoSpaceCB, SLOT(setDisabled(bool)));
     connect(ssAutoAllCB, SIGNAL(toggled(bool)), 
 	    ssAutoSpaceCB, SLOT(setChecked(bool)));
-    connect(useDesktopOpenCB, SIGNAL(toggled(bool)), 
-	    viewActionPB, SLOT(setDisabled(bool)));
-    connect(useDesktopOpenCB, SIGNAL(toggled(bool)), 
-	    allExLE, SLOT(setEnabled(bool)));
 
     setFromPrefs();
 }
@@ -107,12 +103,6 @@ void UIPrefsDialog::setFromPrefs()
     syntctxSB->setValue(prefs.syntAbsCtx);
 
     initStartAdvCB->setChecked(prefs.startWithAdvSearchOpen);
-
-    // External editor. Can use desktop prefs or internal
-    useDesktopOpenCB->setChecked(prefs.useDesktopOpen);
-    viewActionPB->setEnabled(!prefs.useDesktopOpen);
-    allExLE->setEnabled(prefs.useDesktopOpen);
-    allExLE->setText(QString::fromUtf8(theconfig->getMimeViewerAllEx().c_str()));
 
     keepSortCB->setChecked(prefs.keepSort);
     previewHtmlCB->setChecked(prefs.previewHtml);
@@ -255,8 +245,6 @@ void UIPrefsDialog::accept()
 	replAbsCB->isChecked();
 
     prefs.startWithAdvSearchOpen = initStartAdvCB->isChecked();
-    prefs.useDesktopOpen = useDesktopOpenCB->isChecked();
-    theconfig->setMimeViewerAllEx((const char*)allExLE->text().toUtf8());
 
     prefs.keepSort = keepSortCB->isChecked();
     prefs.previewHtml = previewHtmlCB->isChecked();

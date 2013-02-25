@@ -14,6 +14,9 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+
+#include <stdio.h>
+
 #include <vector>
 #include <utility>
 #include <string>
@@ -38,12 +41,28 @@ using namespace std;
 void ViewAction::init()
 {
     connect(closePB, SIGNAL(clicked()), this, SLOT(close()));
-    connect(chgActPB, SIGNAL(clicked()), 
-	    this, SLOT(editActions()));
+    connect(chgActPB, SIGNAL(clicked()), this, SLOT(editActions()));
     connect(actionsLV,SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
 	    this, SLOT(onItemDoubleClicked(QTableWidgetItem *)));
+    useDesktopCB->setChecked(prefs.useDesktopOpen);
+    onUseDesktopCBToggled(prefs.useDesktopOpen);
+    connect(useDesktopCB, SIGNAL(stateChanged(int)), 
+	    this, SLOT(onUseDesktopCBToggled(int)));
+    connect(setExceptCB, SIGNAL(stateChanged(int)), 
+	    this, SLOT(onSetExceptCBToggled(int)));
+    resize(QSize(640, 480).expandedTo(minimumSizeHint()));
+}
+	
+void ViewAction::onUseDesktopCBToggled(int onoff)
+{
+    prefs.useDesktopOpen = onoff != 0;
     fillLists();
-    resize(QSize(640, 250).expandedTo(minimumSizeHint()));
+    setExceptCB->setEnabled(prefs.useDesktopOpen);
+}
+
+void ViewAction::onSetExceptCBToggled(int onoff)
+{
+    newActionLE->setEnabled(onoff != 0);
 }
 
 void ViewAction::fillLists()
@@ -54,12 +73,25 @@ void ViewAction::fillLists()
     theconfig->getMimeViewerDefs(defs);
     actionsLV->setRowCount(defs.size());
     int row = 0;
+
+    set<string> viewerXs;
+    if (prefs.useDesktopOpen) {
+	string s = theconfig->getMimeViewerAllEx();
+	stringToStrings(s, viewerXs);
+    }
     for (vector<pair<string, string> >::const_iterator it = defs.begin();
 	 it != defs.end(); it++) {
 	actionsLV->setItem(row, 0, 
 	   new QTableWidgetItem(QString::fromAscii(it->first.c_str())));
-	actionsLV->setItem(row, 1, 
-	   new QTableWidgetItem(QString::fromAscii(it->second.c_str())));
+	if (!prefs.useDesktopOpen ||
+	    viewerXs.find(it->first) != viewerXs.end()) {
+	    actionsLV->setItem(
+		row, 1, 
+		new QTableWidgetItem(QString::fromAscii(it->second.c_str())));
+	} else {
+	    actionsLV->setItem(
+		row, 1, new QTableWidgetItem(tr("Desktop Default")));
+	}
 	row++;
     }
     QStringList labels(tr("MIME type"));
@@ -78,6 +110,7 @@ void ViewAction::selectMT(const QString& mt)
 	actionsLV->setCurrentItem(*it, QItemSelectionModel::Columns);
     }
 }
+
 void ViewAction::onItemDoubleClicked(QTableWidgetItem * item)
 {
     actionsLV->clearSelection();
@@ -90,21 +123,30 @@ void ViewAction::onItemDoubleClicked(QTableWidgetItem * item)
 void ViewAction::editActions()
 {
     QString action0;
+    int except0 = -1;
+
+    set<string> viewerXs;
+    string s = theconfig->getMimeViewerAllEx();
+    stringToStrings(s, viewerXs);
+
     list<string> mtypes;
     bool dowarnmultiple = true;
     for (int row = 0; row < actionsLV->rowCount(); row++) {
 	QTableWidgetItem *item0 = actionsLV->item(row, 0);
 	if (!item0->isSelected())
 	    continue;
-	mtypes.push_back((const char *)item0->text().toLocal8Bit());
+	string mtype = (const char *)item0->text().toLocal8Bit();
+	mtypes.push_back(mtype);
 	QTableWidgetItem *item1 = actionsLV->item(row, 1);
 	QString action = item1->text();
+	int except = viewerXs.find(mtype) != viewerXs.end();
 	if (action0.isEmpty()) {
 	    action0 = action;
+	    except0 = except;
 	} else {
-	    if (action != action0 && dowarnmultiple) {
+	    if ((action != action0 || except != except0) && dowarnmultiple) {
 		switch (QMessageBox::warning(0, "Recoll",
-					     tr("Changing actions with "
+					     tr("Changing entries with "
 						"different current values"),
 					     "Continue",
 					     "Cancel",
@@ -118,17 +160,26 @@ void ViewAction::editActions()
     if (action0.isEmpty())
 	return;
 
-    bool ok;
-    QString newaction = QInputDialog::getText(this, "Recoll", "Edit action:", 
-					 QLineEdit::Normal,
-					 action0, &ok);
-    if (!ok || newaction.isEmpty() ) 
-	return;
-
-    string sact = (const char *)newaction.toLocal8Bit();
-    for (list<string>::const_iterator it = mtypes.begin(); 
-	 it != mtypes.end(); it++) {
-	theconfig->setMimeViewerDef(*it, sact);
+    string sact = (const char *)newActionLE->text().toLocal8Bit();
+    trimstring(sact);
+    for (list<string>::const_iterator mit = mtypes.begin(); 
+	 mit != mtypes.end(); mit++) {
+	set<string>::iterator xit = viewerXs.find(*mit);
+	if (setExceptCB->isChecked()) {
+	    if (xit == viewerXs.end()) {
+		viewerXs.insert(*mit);
+	    }
+	} else {
+	    if (xit != viewerXs.end()) {
+		viewerXs.erase(xit);
+	    }
+	}
+	// An empty action will restore the default (erase from
+	// topmost conftree)
+	theconfig->setMimeViewerDef(*mit, sact);
     }
+
+    s = stringsToString(viewerXs);
+    theconfig->setMimeViewerAllEx(s);
     fillLists();
 }
