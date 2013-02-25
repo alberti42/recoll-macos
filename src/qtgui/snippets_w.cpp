@@ -173,6 +173,9 @@ void SnippetsW::slotEditFind()
 
 void SnippetsW::slotEditFindNext()
 {
+    if (!searchFM->isVisible())
+	slotEditFind();
+
 #ifdef SNIPPETS_WEBKIT
     browser->findText(searchLE->text());
 #else
@@ -182,6 +185,9 @@ void SnippetsW::slotEditFindNext()
 }
 void SnippetsW::slotEditFindPrevious()
 {
+    if (!searchFM->isVisible())
+	slotEditFind();
+
 #ifdef SNIPPETS_WEBKIT
     browser->findText(searchLE->text(), QWebPage::FindBackward);
 #else
