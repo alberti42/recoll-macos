@@ -853,7 +853,8 @@ void RclMain::initiateQuery()
 	    progress.show();
 	qApp->processEvents();
 	if (progress.wasCanceled()) {
-	    fileExit();
+	    // Just get out of there asap. 
+	    _exit(1);
 	}
 
 	qApp->processEvents();
