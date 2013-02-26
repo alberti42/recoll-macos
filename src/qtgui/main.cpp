@@ -351,6 +351,9 @@ int main(int argc, char **argv)
     if (!prefs.stylesheetFile.isEmpty()) {
 	applyStyleSheet(prefs.stylesheetFile);
     }
+    QIcon icon;
+    icon.addFile(QString::fromUtf8(":/images/recoll.png"));
+    app.setWindowIcon(icon);
 
     // Create main window and set its size to previous session's
     RclMain w;

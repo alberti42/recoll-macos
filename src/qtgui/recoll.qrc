@@ -12,5 +12,6 @@
   <file>images/table.png</file>
   <file>images/up.png</file>
   <file>images/down.png</file>
+  <file>images/recoll.png</file>
  </qresource>
 </RCC>
