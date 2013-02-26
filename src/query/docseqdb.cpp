@@ -69,6 +69,7 @@ int DocSequenceDb::getResCnt()
     }
     return m_rescnt;
 }
+
 static const string cstr_mre("[...]");
 
 // This one only gets called to fill-up the snippets window
@@ -81,18 +82,22 @@ bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<Rcl::Snippet>& vpabs)
 
     // Have to put the limit somewhere. 
     int maxoccs = 1000;
-    Rcl::abstract_result ret = Rcl::ABSRES_ERROR;
+    int ret = Rcl::ABSRES_ERROR;
     if (m_q->whatDb()) {
 	ret = m_q->makeDocAbstract(doc, vpabs, maxoccs, 
 				   m_q->whatDb()->getAbsCtxLen()+ 2);
     } 
-    if (vpabs.empty())
-	vpabs.push_back(Rcl::Snippet(0, doc.meta[Rcl::Doc::keyabs]));
+    LOGDEB(("DocSequenceDb::getAbstract: got ret %d vpabs len %u\n", ret,
+	    vpabs.size()));
+    if (vpabs.empty()) {
+	return true;
+    }
 
     // If the list was probably truncated, indicate it.
-    if (ret == Rcl::ABSRES_TRUNC) {
+    if (ret | Rcl::ABSRES_TRUNC) {
 	vpabs.push_back(Rcl::Snippet(-1, cstr_mre));
-    } else if (ret == Rcl::ABSRES_TERMMISS) {
+    } 
+    if (ret | Rcl::ABSRES_TERMMISS) {
 	vpabs.insert(vpabs.begin(), 
 		     Rcl::Snippet(-1, "(Words missing in snippets)"));
     }

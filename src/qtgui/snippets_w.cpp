@@ -136,25 +136,39 @@ void SnippetsW::init()
 	"<html><head>"
 	"<meta http-equiv=\"content-type\" "
 	"content=\"text/html; charset=utf-8\"></head>"
-	"<body style='overflow-x: scroll; white-space: nowrap'>"
-	"<table>"
+	"<body>"
+	"<table style='overflow-x: scroll; white-space: nowrap'>"
 	;
 
     g_hiliter.set_inputhtml(false);
+    bool nomatch = true;
 
     for (vector<Rcl::Snippet>::const_iterator it = vpabs.begin(); 
 	 it != vpabs.end(); it++) {
+	if (it->page == -1) {
+	    oss << "<tr><td colspan=\"2\">" << 
+		it->snippet << "</td></tr>" << endl;
+	    continue;
+	}
 	list<string> lr;
 	if (!g_hiliter.plaintorich(it->snippet, lr, hdata)) {
 	    LOGDEB1(("No match for [%s]\n", it->snippet.c_str()));
 	    continue;
 	}
+	nomatch = false;
 	oss << "<tr><td>";
 	if (it->page > 0) {
 	    oss << "<a href=\"P" << it->page << "T" << it->term << "\">" 
 		<< "P.&nbsp;" << it->page << "</a>";
 	}
 	oss << "</td><td>" << lr.front().c_str() << "</td></tr>" << endl;
+    }
+    oss << "</table>" << endl;
+    if (nomatch) {
+	oss.str("<html><head></head><body>");
+	oss << "<p>Sorry, no exact match was found within limits. "
+	    "Probably the document is very big "
+	    "and the snippets generator got lost in a maze...</p>" << endl;
     }
     oss << "</body></html>";
 #ifdef SNIPPETS_WEBKIT

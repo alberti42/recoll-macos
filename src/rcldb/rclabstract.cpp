@@ -309,9 +309,9 @@ int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
 //
 // DatabaseModified and other general exceptions are catched and
 // possibly retried by our caller
-abstract_result Query::Native::makeAbstract(Xapian::docid docid,
-					    vector<Snippet>& vabs, 
-					    int imaxoccs, int ictxwords)
+int Query::Native::makeAbstract(Xapian::docid docid,
+				vector<Snippet>& vabs, 
+				int imaxoccs, int ictxwords)
 {
     Chrono chron;
     LOGABS(("makeAbstract: docid %ld imaxoccs %d ictxwords %d\n", 
@@ -381,7 +381,7 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
     LOGABS(("makeAbstract:%d: mxttloccs %d ctxwords %d\n", 
 	    chron.ms(), maxtotaloccs, ctxwords));
 
-    abstract_result ret = ABSRES_OK;
+    int ret = ABSRES_OK;
 
     // Let's go populate
     for (map<double, vector<string> >::reverse_iterator mit = byQ.rbegin(); 
@@ -466,11 +466,14 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
 		    }
 
 		    // Group done ?
-		    if (grpoccs >= maxgrpoccs) 
+		    if (grpoccs >= maxgrpoccs) {
+			ret |= ABSRES_TRUNC;
+			LOGABS(("Db::makeAbstract: max group occs cutoff\n"));
 			break;
+		    }
 		    // Global done ?
 		    if (totaloccs >= maxtotaloccs) {
-			ret = ABSRES_TRUNC;
+			ret |= ABSRES_TRUNC;
 			LOGABS(("Db::makeAbstract: max occurrences cutoff\n"));
 			break;
 		    }
@@ -480,7 +483,7 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
 	    }
 
 	    if (totaloccs >= maxtotaloccs) {
-		ret = ABSRES_TRUNC;
+		ret |= ABSRES_TRUNC;
 		LOGABS(("Db::makeAbstract: max1 occurrences cutoff\n"));
 		break;
 	    }
@@ -511,7 +514,7 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
 	    if (has_prefix(*term))
 		continue;
 	    if (m_q->m_snipMaxPosWalk > 0 && cutoff-- < 0) {
-		ret = ABSRES_TERMMISS;
+		ret |= ABSRES_TERMMISS;
 		LOGDEB0(("makeAbstract: max term count cutoff %d\n", 
 			 m_q->m_snipMaxPosWalk));
 		break;
@@ -522,7 +525,7 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
 	    for (pos = xrdb.positionlist_begin(docid, *term); 
 		 pos != xrdb.positionlist_end(docid, *term); pos++) {
 		if (m_q->m_snipMaxPosWalk > 0 && cutoff-- < 0) {
-		    ret = ABSRES_TERMMISS;
+		    ret |= ABSRES_TERMMISS;
 		    LOGDEB0(("makeAbstract: max term count cutoff %d\n", 
 			    m_q->m_snipMaxPosWalk));
 		    break;

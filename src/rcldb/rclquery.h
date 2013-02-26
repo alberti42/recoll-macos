@@ -33,7 +33,7 @@ enum abstract_result {
     ABSRES_ERROR = 0,
     ABSRES_OK = 1,
     ABSRES_TRUNC = 2,
-    ABSRES_TERMMISS = 3
+    ABSRES_TERMMISS = 4
 };
 
 // Snippet entry for makeDocAbstract
@@ -110,8 +110,8 @@ class Query {
     // Returned as a snippets vector
     bool makeDocAbstract(Doc &doc, std::vector<std::string>& abstract);
     // Returned as a vector of pair<page,snippet> page is 0 if unknown
-    abstract_result makeDocAbstract(Doc &doc, std::vector<Snippet>& abst, 
-				    int maxoccs= -1, int ctxwords = -1);
+    int makeDocAbstract(Doc &doc, std::vector<Snippet>& abst, 
+			int maxoccs= -1, int ctxwords = -1);
     /** Retrieve page number for first match for term */
     int getFirstMatchPage(Doc &doc, std::string& term);
 

@@ -264,16 +264,16 @@ bool Query::getQueryTerms(vector<string>& terms)
     return true;
 }
 
-abstract_result Query::makeDocAbstract(Doc &doc,
-				       vector<Snippet>& abstract, 
-				       int maxoccs, int ctxwords)
+int Query::makeDocAbstract(Doc &doc,
+			   vector<Snippet>& abstract, 
+			   int maxoccs, int ctxwords)
 {
     LOGDEB(("makeDocAbstract: maxoccs %d ctxwords %d\n", maxoccs, ctxwords));
     if (!m_db || !m_db->m_ndb || !m_db->m_ndb->m_isopen || !m_nq) {
 	LOGERR(("Query::makeDocAbstract: no db or no nq\n"));
 	return ABSRES_ERROR;
     }
-    abstract_result ret = ABSRES_ERROR;
+    int ret = ABSRES_ERROR;
     XAPTRY(ret = m_nq->makeAbstract(doc.xdocid, abstract, maxoccs, ctxwords),
            m_db->m_ndb->xrdb, m_reason);
     if (!m_reason.empty()) {
