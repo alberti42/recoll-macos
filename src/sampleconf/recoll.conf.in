@@ -114,8 +114,8 @@ maxTermExpand = 10000
 
 # Maximum number of clauses we add to a single Xapian query. In some cases,
 # the result of term expansion can be multiplicative, and we want to avoid
-# eating all the memory. Default 100 000
-maxXapianClauses = 100000
+# eating all the memory. Default 50000
+maxXapianClauses = 50000
 
 # Where to store the database (directory). This may be an absolute path,
 # else it is taken as relative to the configuration directory (-c argument

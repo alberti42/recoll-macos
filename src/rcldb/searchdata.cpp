@@ -106,6 +106,13 @@ bool SearchData::expandFileTypes(const RclConfig *cfg, vector<string>& tps)
     return true;
 }
 
+static const char *maxXapClauseMsg = 
+    "Maximum Xapian query size exceeded. Increase maxXapianClauses "
+    "in the configuration. ";
+static const char *maxXapClauseCaseDiacMsg = 
+    "Or try to use case (C) or diacritics (D) sensitivity qualifiers."
+    ;
+
 bool SearchData::clausesToQuery(Rcl::Db &db, SClType tp, 
 				vector<SearchDataClause*>& query, 
 				string& reason, void *d)
@@ -145,13 +152,16 @@ bool SearchData::clausesToQuery(Rcl::Db &db, SClType tp,
             xq = Xapian::Query(op, xq, nq);
         }
 	if (int(xq.get_length()) >= getMaxCl()) {
-	    LOGERR(("Maximum Xapian query size exceeded."
-		    " Maybe increase maxXapianClauses."));
-	    m_reason += "Maximum Xapian query size exceeded."
-		" Maybe increase maxXapianClauses.";
+	    LOGERR(("%s\n", maxXapClauseMsg));
+	    m_reason += maxXapClauseMsg;
+	    if (!o_index_stripchars)
+		m_reason += maxXapClauseCaseDiacMsg;
 	    return false;
 	}
     }
+
+    LOGDEB0(("SearchData::clausesToQuery: got %d clauses\n", xq.get_length()));
+
     if (xq.empty())
 	xq = Xapian::Query::MatchAll;
 
@@ -163,6 +173,9 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 {
     LOGDEB(("SearchData::toNativeQuery: stemlang [%s]\n", m_stemlang.c_str()));
     m_reason.erase();
+
+    db.getConf()->getConfParam("maxTermExpand", &m_maxexp);
+    db.getConf()->getConfParam("maxXapianClauses", &m_maxcl);
 
     // Walk the clause list translating each in turn and building the 
     // Xapian query tree
@@ -624,7 +637,7 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
     // Term match entries to vector of terms
     if (int(res.entries.size()) >= maxexpand && !maxexpissoft) {
 	ermsg = "Maximum term expansion size exceeded."
-	    " Maybe increase maxTermExpand.";
+	    " Maybe use case/diacritics sensitivity or increase maxTermExpand.";
 	return false;
     }
     for (vector<TermMatchEntry>::const_iterator it = res.entries.begin(); 
@@ -956,8 +969,9 @@ bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
 				    useNear, slack);
 	    }
 	    if (m_curcl >= getMaxCl()) {
-		ermsg = "Maximum Xapian query size exceeded."
-		    " Maybe increase maxXapianClauses.";
+		ermsg = maxXapClauseMsg;
+		if (!o_index_stripchars)
+		    ermsg += maxXapClauseCaseDiacMsg;
 		break;
 	    }
 	}
