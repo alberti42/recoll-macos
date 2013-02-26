@@ -330,18 +330,15 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
     }
     listList("Match terms: ", matchedTerms);
 
-    // Retrieve the term freqencies for the query terms. This is
+    // Retrieve the term frequencies for the query terms. This is
     // actually computed only once for a query, and for all terms in
     // the query (not only the matches for this doc)
     setDbWideQTermsFreqs();
 
     // Build a sorted by quality container for the match terms We are
     // going to try and show text around the less common search terms.
-    // TOBEDONE: terms issued from an original one by stem expansion
-    // should be somehow aggregated here, else, it may happen that
-    // such a group prevents displaying matches for other terms (by
-    // removing its meaning from the maximum occurrences per term test
-    // used while walking the list below)
+    // Terms issued from an original one by stem expansion are
+    // aggregated by the qualityTerms() routine.
     multimap<double, vector<string> > byQ;
     double totalweight = qualityTerms(docid, matchedTerms, byQ);
     LOGABS(("makeAbstract:%d: computed Qcoefs.\n", chron.ms()));
@@ -430,8 +427,8 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
 		    int ipos = *pos;
 		    if (ipos < int(baseTextPosition)) // Not in text body
 			continue;
-		    LOGABS(("makeAbstract: [%s] at pos %d grpoccs %d maxgrpoccs %d\n",
-			    qterm.c_str(), ipos, grpoccs, maxgrpoccs));
+		    LOGABS(("makeAbstract: [%s] at pos %d grpoccs %d maxgrpoccs"
+			    " %d\n", qterm.c_str(), ipos, grpoccs, maxgrpoccs));
 
 		    totaloccs++;
 		    grpoccs++;
@@ -440,7 +437,8 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
 		    // step by inserting empty strings. Special provisions
 		    // for adding ellipsis and for positions overlapped by
 		    // the match term.
-		    unsigned int sta = MAX(0, ipos - ctxwords);
+		    unsigned int sta = MAX(int(baseTextPosition), 
+					   ipos - ctxwords);
 		    unsigned int sto = ipos + qtrmwrdcnt-1 + 
 			m_q->m_db->getAbsCtxLen();
 		    for (unsigned int ii = sta; ii <= sto;  ii++) {
@@ -455,7 +453,7 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
 			} else if (!sparseDoc[ii].compare(cstr_ellipsis)) {
 			    // For an empty slot, the test has a side
 			    // effect of inserting an empty string which
-			    // is what we want
+			    // is what we want.
 			    sparseDoc[ii] = emptys;
 			}
 		    }
@@ -526,7 +524,7 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
 		if (m_q->m_snipMaxPosWalk > 0 && cutoff-- < 0) {
 		    ret = ABSRES_TERMMISS;
 		    LOGDEB0(("makeAbstract: max term count cutoff %d\n", 
-			     m_q->m_snipMaxPosWalk));
+			    m_q->m_snipMaxPosWalk));
 		    break;
 		}
 		// If we are beyond the max possible position, stop
@@ -580,9 +578,11 @@ abstract_result Query::Native::makeAbstract(Xapian::docid docid,
     string term;
     for (map<unsigned int, string>::const_iterator it = sparseDoc.begin();
 	 it != sparseDoc.end(); it++) {
-	LOGDEB2(("Abtract:output %u -> [%s]\n", it->first,it->second.c_str()));
-	if (!occupiedmarker.compare(it->second))
+	LOGDEB2(("Abtract:output %u -> [%s]\n", it->first, it->second.c_str()));
+	if (!occupiedmarker.compare(it->second)) {
+	    LOGDEB(("Abstract: qtrm position not filled ??\n"));
 	    continue;
+	}
 	if (chunk.empty() && !vpbreaks.empty()) {
 	    page =  ndb->getPageNumberForPosition(vpbreaks, it->first);
 	    if (page < 0) 
