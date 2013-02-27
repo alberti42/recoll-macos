@@ -745,11 +745,18 @@ void ResTable::createPopupMenu(const QPoint& pos)
     popup->addAction(tr("&Open"), this, SLOT(menuEdit()));
     popup->addAction(tr("Copy &File Name"), this, SLOT(menuCopyFN()));
     popup->addAction(tr("Copy &URL"), this, SLOT(menuCopyURL()));
+
     if (m_detaildoc.ipath.empty())
 	popup->addAction(tr("&Write to File"), this, SLOT(menuSaveToFile()));
+
     popup->addAction(tr("Find &similar documents"), this, SLOT(menuExpand()));
-    popup->addAction(tr("Preview P&arent document/folder"), 
-		      this, SLOT(menuPreviewParent()));
+
+    RefCntr<DocSequence> source = m_model->getDocSource();
+    Rcl::Doc pdoc;
+    if (source.isNotNull() && source->getEnclosing(m_detaildoc, pdoc))
+	popup->addAction(tr("Preview P&arent document/folder"), 
+			 this, SLOT(menuPreviewParent()));
+
     popup->addAction(tr("&Open Parent document/folder"), 
 		      this, SLOT(menuOpenParent()));
     popup->popup(mapToGlobal(pos));
@@ -784,6 +791,8 @@ void ResTable::menuPreviewParent()
 	// No parent doc: show enclosing folder with app configured for
 	// directories
 	pdoc.url = path_getfather(doc.url);
+	pdoc.meta[Rcl::Doc::keychildurl] = doc.url;
+	pdoc.meta[Rcl::Doc::keyapptg] = "parentopen";
 	pdoc.mimetype = "application/x-fsdirectory";
 	emit editRequested(pdoc);
     }
@@ -804,6 +813,8 @@ void ResTable::menuOpenParent()
 	// No parent doc: show enclosing folder with app configured for
 	// directories
 	pdoc.url = path_getfather(doc.url);
+	pdoc.meta[Rcl::Doc::keychildurl] = doc.url;
+	pdoc.meta[Rcl::Doc::keyapptg] = "parentopen";
 	pdoc.mimetype = "application/x-fsdirectory";
 	emit editRequested(pdoc);
     }

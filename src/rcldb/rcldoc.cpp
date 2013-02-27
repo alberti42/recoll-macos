@@ -20,6 +20,7 @@
 
 namespace Rcl {
     const string Doc::keyurl("url");
+    const string Doc::keychildurl("childurl");
     const string Doc::keyfn("filename");
     const string Doc::keyipt("ipath");
     const string Doc::keytp("mtype");

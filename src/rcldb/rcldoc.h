@@ -194,6 +194,9 @@ class Doc {
     // enforced in internfile.cpp and misc other bits of metadata-gathering 
     // code
     static const string keyurl; // url
+    // childurl. This is set when working with the parent of the result, to hold
+    // the child of interest url, typically to highlight a directory entry
+    static const string keychildurl; 
     static const string keyfn;  // file name
     static const string keyipt; // ipath
     static const string keytp;  // mime type

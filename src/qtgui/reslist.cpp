@@ -930,13 +930,19 @@ void ResList::createPopupMenu(const QPoint& pos)
     }
 
     popup->addAction(tr("Find &similar documents"), this, SLOT(menuExpand()));
-    popup->addAction(tr("Preview P&arent document/folder"), 
-		      this, SLOT(menuPreviewParent()));
+
+    Rcl::Doc pdoc;
+    if (m_source.isNotNull() && m_source->getEnclosing(doc, pdoc))
+	popup->addAction(tr("Preview P&arent document/folder"), 
+			 this, SLOT(menuPreviewParent()));
+
     popup->addAction(tr("&Open Parent document/folder"), 
 		     this, SLOT(menuOpenParent()));
+
     if (havedoc && doc.haspages && m_source->snippetsCapable()) 
 	popup->addAction(tr("Open &Snippets window"), 
 			 this, SLOT(menuOpenSnippets()));
+
     popup->popup(mapToGlobal(pos));
 }
 
@@ -983,6 +989,8 @@ void ResList::menuOpenParent()
 	// No parent doc: show enclosing folder with app configured for
 	// directories
 	pdoc.url = path_getfather(doc.url);
+	pdoc.meta[Rcl::Doc::keychildurl] = doc.url;
+	pdoc.meta[Rcl::Doc::keyapptg] = "parentopen";
 	pdoc.mimetype = "application/x-fsdirectory";
 	emit editRequested(pdoc);
     }

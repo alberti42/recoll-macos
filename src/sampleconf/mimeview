@@ -17,7 +17,8 @@
 #  - For pages of CHM and EPUB documents where we can choose to open the 
 #    parent document instead of a temporary html file.
 xallexcepts = application/pdf application/postscript application/x-dvi \
- text/html|gnuinfo text/html|chm text/html|epub
+ text/html|gnuinfo text/html|chm text/html|epub \
+ application/x-fsdirectory|parentopen
 
 [view]
 # Pseudo entry used if the 'use desktop' preference is set in the GUI
@@ -77,7 +78,11 @@ text/rtf = libreoffice %f
 
 application/x-chm = kchmviewer %f
 application/x-dia-diagram = dia %f
+
 application/x-fsdirectory = dolphin %f
+#application/x-fsdirectory|parentopen = nautilus %(childurl)
+application/x-fsdirectory|parentopen = dolphin --select %(childurl) %f
+
 application/x-gnuinfo = xterm -e "info -f %f"
 application/x-gnumeric = gnumeric %f
 
