@@ -94,10 +94,10 @@ bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<Rcl::Snippet>& vpabs)
     }
 
     // If the list was probably truncated, indicate it.
-    if (ret | Rcl::ABSRES_TRUNC) {
+    if (ret & Rcl::ABSRES_TRUNC) {
 	vpabs.push_back(Rcl::Snippet(-1, cstr_mre));
     } 
-    if (ret | Rcl::ABSRES_TERMMISS) {
+    if (ret & Rcl::ABSRES_TERMMISS) {
 	vpabs.insert(vpabs.begin(), 
 		     Rcl::Snippet(-1, "(Words missing in snippets)"));
     }
