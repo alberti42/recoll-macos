@@ -60,11 +60,19 @@ static void listList(const string&, const vector<string>&)
 }
 #endif
 
-// Unprefix terms.
+// Unprefix terms. Actually it's not completely clear if we should
+// remove prefixes and keep all terms or prune the prefixed
+// ones. There is no good way to be sure what will provide the best
+// result in general.
+static const bool prune_prefixed_terms = true; 
 static void noPrefixList(const vector<string>& in, vector<string>& out) 
 {
     for (vector<string>::const_iterator qit = in.begin(); 
 	 qit != in.end(); qit++) {
+	if (prune_prefixed_terms) {
+	    if (has_prefix(*qit))
+		continue;
+	}
 	out.push_back(strip_prefix(*qit));
     }
     sort(out.begin(), out.end());
@@ -82,17 +90,16 @@ bool Query::Native::getMatchTerms(unsigned long xdocid, vector<string>& terms)
     terms.clear();
     Xapian::TermIterator it;
     Xapian::docid id = Xapian::docid(xdocid);
-
-    XAPTRY(terms.insert(terms.begin(),
+    vector<string> iterms;
+    XAPTRY(iterms.insert(iterms.begin(),
                         xenquire->get_matching_terms_begin(id),
                         xenquire->get_matching_terms_end(id)),
            m_q->m_db->m_ndb->xrdb, m_q->m_reason);
-
     if (!m_q->m_reason.empty()) {
 	LOGERR(("getMatchTerms: xapian error: %s\n", m_q->m_reason.c_str()));
 	return false;
     }
-
+    noPrefixList(iterms, terms);
     return true;
 }
 
@@ -259,11 +266,8 @@ int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
     Xapian::Database& xrdb(ndb->xrdb);
 
     vector<string> terms;
-    {
-	vector<string> iterms;
-        getMatchTerms(docid, iterms);
-	noPrefixList(iterms, terms);
-    }
+    getMatchTerms(docid, terms);
+
     if (terms.empty()) {
 	LOGDEB(("getFirstMatchPage: empty match term list (field match?)\n"));
 	return -1;
@@ -319,15 +323,12 @@ int Query::Native::makeAbstract(Xapian::docid docid,
 
     // The (unprefixed) terms matched by this document
     vector<string> matchedTerms;
-    {
-        vector<string> iterms;
-        getMatchTerms(docid, iterms);
-        noPrefixList(iterms, matchedTerms);
-        if (matchedTerms.empty()) {
-            LOGDEB(("makeAbstract::Empty term list\n"));
-            return ABSRES_ERROR;
-        }
+    getMatchTerms(docid, matchedTerms);
+    if (matchedTerms.empty()) {
+	LOGDEB(("makeAbstract::Empty term list\n"));
+	return ABSRES_ERROR;
     }
+
     listList("Match terms: ", matchedTerms);
 
     // Retrieve the term frequencies for the query terms. This is
