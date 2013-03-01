@@ -74,30 +74,46 @@ SearchData_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     return (PyObject *)self;
 }
 
+PyDoc_STRVAR(doc_SearchDataObject,
+"SearchData([type=AND|OR], [stemlang=somelanguage|null])\n"
+"\n"
+"A SearchData object describes a query. It has a number of global\n"
+"parameters and a chain of search clauses.\n"
+);
+
 static int
 SearchData_init(recoll_SearchDataObject *self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB(("SearchData_init\n"));
-    static const char* kwlist[] = {"type", NULL};
+    static const char* kwlist[] = {"type", "stemlang", NULL};
     char *stp = 0;
+    char *steml = 0;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|s", (char**)kwlist, &stp))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|sz", (char**)kwlist, 
+				     &stp, &steml))
 	return -1;
     Rcl::SClType tp = Rcl::SCLT_AND;
 
     if (stp && strcasecmp(stp, "or")) {
 	tp = Rcl::SCLT_OR;
     }
-    self->sd = RefCntr<Rcl::SearchData>(new Rcl::SearchData(tp, "english"));
+    string stemlang;
+    if (steml) {
+	stemlang = steml;
+    } else {
+	stemlang = "english";
+    }
+    self->sd = RefCntr<Rcl::SearchData>(new Rcl::SearchData(tp, stemlang));
     return 0;
 }
 
 /* Note: addclause necessite And/Or vient du fait que le string peut avoir
    plusieurs mots. A transferer dans l'i/f Python ou pas ? */
 PyDoc_STRVAR(doc_addclause,
-"addclause(type='and'|'or'|'excl'|'phrase'|'near'|'sub',\n"
+"addclause(type='and'|'or'|'filename'|'phrase'|'near'|'path'|'sub',\n"
 "          qstring=string, slack=int, field=string, stemming=1|0,\n"
-"          subSearch=SearchData)\n"
+"          subSearch=SearchData, exclude=0|1, anchorstart=0|1, anchorend=0|1,\n"
+"          casesens=0|1, diacsens=0|1)\n"
 "Adds a simple clause to the SearchData And/Or chain, or a subquery\n"
 "defined by another SearchData object\n"
 );
@@ -107,20 +123,12 @@ static PyObject *
 SearchData_addclause(recoll_SearchDataObject* self, PyObject *args, 
 		     PyObject *kwargs);
 
-
-
 static PyMethodDef SearchData_methods[] = {
     {"addclause", (PyCFunction)SearchData_addclause, METH_VARARGS|METH_KEYWORDS,
      doc_addclause},
     {NULL}  /* Sentinel */
 };
 
-PyDoc_STRVAR(doc_SearchDataObject,
-"SearchData()\n"
-"\n"
-"A SearchData object describes a query. It has a number of global\n"
-"parameters and a chain of search clauses.\n"
-);
 static PyTypeObject recoll_SearchDataType = {
     PyObject_HEAD_INIT(NULL)
     0,                         /*ob_size*/
@@ -174,17 +182,29 @@ SearchData_addclause(recoll_SearchDataObject* self, PyObject *args,
         return 0;
     }
     static const char *kwlist[] = {"type", "qstring", "slack", "field", 
-                                   "stemming", "subsearch", NULL};
+                                   "stemming", "subsearch", 
+				   "exclude", "anchorstart", "anchorend",
+				   "casesens", "diacsens",
+				   NULL};
     char *tp = 0;
     char *qs = 0; // needs freeing
     int slack = 0;
     char *fld = 0; // needs freeing
-    int  dostem = 1;
+    PyObject  *dostem = 0;
     recoll_SearchDataObject *sub = 0;
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ses|iesiO!", (char**)kwlist,
+    PyObject *exclude = 0;
+    PyObject *anchorstart = 0;
+    PyObject *anchorend = 0;
+    PyObject *casesens = 0;
+    PyObject *diacsens = 0;
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ses|iesOO!OOOOO", 
+				     (char**)kwlist,
 				     &tp, "utf-8", &qs, &slack,
 				     "utf-8", &fld, &dostem,
-				     &recoll_SearchDataType, &sub))
+				     &recoll_SearchDataType, &sub,
+				     &exclude, &anchorstart, &anchorend,
+				     &casesens, &diacsens
+	    ))
 	return 0;
 
     Rcl::SearchDataClause *cl = 0;
@@ -196,18 +216,17 @@ SearchData_addclause(recoll_SearchDataObject* self, PyObject *args,
 	    goto defaultcase;
 	cl = new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, qs, fld?fld:"");
 	break;
+    case 'f':
+    case 'F':
+	if (strcasecmp(tp, "filename"))
+	    goto defaultcase;
+	cl = new Rcl::SearchDataClauseFilename(qs);
+	break;
     case 'o':
     case 'O':
 	if (strcasecmp(tp, "or"))
 	    goto defaultcase;
 	cl = new Rcl::SearchDataClauseSimple(Rcl::SCLT_OR, qs, fld?fld:"");
-	break;
-    case 'e':
-    case 'E':
-	if (strcasecmp(tp, "excl"))
-	    goto defaultcase;
-	cl = new Rcl::SearchDataClauseSimple(Rcl::SCLT_OR, qs, fld?fld:"");
-	cl->setexclude(true);
 	break;
     case 'n':
     case 'N':
@@ -218,10 +237,14 @@ SearchData_addclause(recoll_SearchDataObject* self, PyObject *args,
 	break;
     case 'p':
     case 'P':
-	if (strcasecmp(tp, "phrase"))
+	if (!strcasecmp(tp, "phrase")) {
+	    cl = new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, qs, slack, 
+					       fld ? fld : "");
+	} else if (!strcasecmp(tp, "path")) {
+	    cl = new Rcl::SearchDataClausePath(qs);
+	} else {
 	    goto defaultcase;
-	cl = new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, qs, slack, 
-					   fld ? fld : "");
+	}
 	break;
     case 's':
     case 'S':
@@ -234,12 +257,27 @@ SearchData_addclause(recoll_SearchDataObject* self, PyObject *args,
         PyErr_SetString(PyExc_AttributeError, "Bad tp arg");
 	return 0;
     }
-    if (dostem == 0) {
-	cl->setModifiers(Rcl::SearchDataClause::SDCM_NOSTEMMING);
-    }
-
     PyMem_Free(qs);
     PyMem_Free(fld);
+
+    if (dostem != 0 && !PyObject_IsTrue(dostem)) {
+	cl->addModifier(Rcl::SearchDataClause::SDCM_NOSTEMMING);
+    }
+    if (exclude != 0 && !PyObject_IsTrue(exclude)) {
+	cl->setexclude(true);
+    }
+    if (anchorstart && PyObject_IsTrue(anchorstart)) {
+	cl->addModifier(Rcl::SearchDataClause::SDCM_ANCHORSTART);
+    }
+    if (anchorend && PyObject_IsTrue(anchorend)) {
+	cl->addModifier(Rcl::SearchDataClause::SDCM_ANCHOREND);
+    }
+    if (casesens && PyObject_IsTrue(casesens)) {
+	cl->addModifier(Rcl::SearchDataClause::SDCM_CASESENS);
+    }
+    if (diacsens && PyObject_IsTrue(diacsens)) {
+	cl->addModifier(Rcl::SearchDataClause::SDCM_DIACSENS);
+    }
     self->sd->addClause(cl);
     Py_RETURN_NONE;
 }
@@ -1426,7 +1464,6 @@ Db_dealloc(recoll_DbObject *self)
 static PyObject *
 Db_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    LOGDEB(("Db_new\n"));
     recoll_DbObject *self;
 
     self = (recoll_DbObject *)type->tp_alloc(type, 0);
@@ -1439,7 +1476,6 @@ Db_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 static int
 Db_init(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
 {
-    LOGDEB(("Db_init\n"));
     static const char *kwlist[] = {"confdir", "extra_dbs", "writable", NULL};
     PyObject *extradbs = 0;
     char *confdir = 0;
@@ -1459,6 +1495,8 @@ Db_init(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
     } else {
 	rclconfig = recollinit(0, 0, reason, 0);
     }
+    LOGDEB(("Db_init\n"));
+
     if (rclconfig == 0) {
 	PyErr_SetString(PyExc_EnvironmentError, reason.c_str());
 	return -1;
@@ -1786,7 +1824,6 @@ static PyTypeObject recoll_DbType = {
 static PyObject *
 recoll_connect(PyObject *self, PyObject *args, PyObject *kwargs)
 {
-    LOGDEB(("recoll_connect\n"));
     recoll_DbObject *db = (recoll_DbObject *)
 	PyObject_Call((PyObject *)&recoll_DbType, args, kwargs);
     return (PyObject *)db;
@@ -1820,21 +1857,13 @@ PyDoc_STRVAR(pyrecoll_doc_string,
 PyMODINIT_FUNC
 initrecoll(void)
 {
-    string reason;
-    rclconfig = recollinit(0, 0, reason, 0);
-    if (rclconfig == 0) {
-	PyErr_SetString(PyExc_EnvironmentError, reason.c_str());
-	return;
-    }
-    if (!rclconfig->ok()) {
-	PyErr_SetString(PyExc_EnvironmentError, 
-			"Recoll init error: bad environment ?");
-	return;
-    }
+    // Note: we can't call recollinit here, because the confdir is only really
+    // known when the first db object is created (it is an optional parameter).
+    // Using a default here may end up with variables such as stripchars being
+    // wrong
 
     PyObject* m;
-    m = Py_InitModule3("recoll", recollMethods,
-                       "Recoll extension module.");
+    m = Py_InitModule3("recoll", recollMethods, "Recoll extension module.");
     
     if (PyType_Ready(&recoll_DbType) < 0)
         return;

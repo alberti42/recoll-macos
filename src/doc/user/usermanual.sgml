@@ -3711,6 +3711,8 @@ or
                     we can index new data through this
                     connection.</listitem>
                 </itemizedlist> 
+                This call initializes the recoll module, and it should
+                always be performed before any other call or object creation.
               </listitem>
           </varlistentry>
 
