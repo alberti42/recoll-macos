@@ -68,20 +68,17 @@ void SearchData::commoninit()
     m_maxcl = 100000;
 }
 
-// Expand categories and mime type wild card exps
-// Actually, using getAllMimeTypes() here is a bit problematic because
-// there maybe other types in the index, not indexed by content, but
-// which could be searched by file name. It would probably be
-// preferable to do a termMatch() on field "mtype", which would
-// retrieve all values from the index.
-bool SearchData::expandFileTypes(const RclConfig *cfg, vector<string>& tps)
+// Expand categories and mime type wild card exps Categories are
+// expanded against the configuration, mimetypes against the index
+// (for wildcards).
+bool SearchData::expandFileTypes(Db &db, vector<string>& tps)
 {
+    const RclConfig *cfg = db.getConf();
     if (!cfg) {
 	LOGFATAL(("Db::expandFileTypes: null configuration!!\n"));
 	return false;
     }
     vector<string> exptps;
-    vector<string> alltypes = cfg->getAllMimeTypes();
 
     for (vector<string>::iterator it = tps.begin(); it != tps.end(); it++) {
 	if (cfg->isMimeCategory(*it)) {
@@ -89,19 +86,22 @@ bool SearchData::expandFileTypes(const RclConfig *cfg, vector<string>& tps)
 	    cfg->getMimeCatTypes(*it, tps);
 	    exptps.insert(exptps.end(), tps.begin(), tps.end());
 	} else {
-	    bool matched = false;
-	    for (vector<string>::const_iterator ait = alltypes.begin();
-		 ait != alltypes.end(); ait++) {
-		if (fnmatch(it->c_str(), ait->c_str(), FNM_CASEFOLD) 
-		    != FNM_NOMATCH) {
-		    exptps.push_back(*ait);
-		    matched = true;
+	    TermMatchResult res;
+	    string mt = stringtolower((const string&)*it);
+	    db.termMatch(Db::ET_WILD, "", mt, res, -1, "mtype");
+	    if (res.entries.empty()) {
+		exptps.push_back(it->c_str());
+	    } else {
+		for (vector<TermMatchEntry>::const_iterator rit = 
+			 res.entries.begin(); rit != res.entries.end(); rit++) {
+		    exptps.push_back(strip_prefix(rit->term));
 		}
 	    }
-	    if (!matched)
-		exptps.push_back(it->c_str());
 	}
     }
+    sort(exptps.begin(), exptps.end());
+    exptps.erase(unique(exptps.begin(), exptps.end()), exptps.end());
+
     tps = exptps;
     return true;
 }
@@ -259,7 +259,7 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 
     // Add the file type filtering clause if any
     if (!m_filetypes.empty()) {
-	expandFileTypes(db.getConf(), m_filetypes);
+	expandFileTypes(db, m_filetypes);
 	    
 	Xapian::Query tq;
 	for (vector<string>::iterator it = m_filetypes.begin(); 
@@ -274,7 +274,7 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 
     // Add the neg file type filtering clause if any
     if (!m_nfiletypes.empty()) {
-	expandFileTypes(db.getConf(), m_nfiletypes);
+	expandFileTypes(db, m_nfiletypes);
 	    
 	Xapian::Query tq;
 	for (vector<string>::iterator it = m_nfiletypes.begin(); 
