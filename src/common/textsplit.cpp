@@ -355,6 +355,7 @@ bool TextSplit::text_to_words(const string &in)
     m_wordStart = m_wordLen = m_prevpos = m_prevlen = m_wordpos = m_spanpos = 0;
     int curspanglue = 0;
     bool pagepending = false;
+    bool softhyphenpending = false;
 
     // Running count of non-alphanum chars. Reset when we see one;
     int nonalnumcnt = 0;
@@ -393,6 +394,16 @@ bool TextSplit::text_to_words(const string &in)
 	int cc = whatcc(c);
 	switch (cc) {
 	case SKIP:
+	    // Special-case soft-hyphen. To work, this depends on the
+	    // fact that only SKIP calls "continue" inside the
+	    // switch. All the others will do the softhyphenpending
+	    // reset after the switch
+	    if (c == 0xad) {
+		softhyphenpending = true;
+	    } else {
+		softhyphenpending = false;
+	    }
+	    // Skips the softhyphenpending reset
 	    continue;
 	case DIGIT:
 	    if (m_wordLen == 0)
@@ -444,10 +455,7 @@ bool TextSplit::text_to_words(const string &in)
 		    goto SPACE;
 		}
 	    } else {
-		if (!doemit(false, it.getBpos()))
-		    return false;
-		m_inNumber = false;
-		m_wordStart += it.appendchartostring(m_span);
+		goto SPACE;
 	    }
 	    break;
 
@@ -555,14 +563,15 @@ bool TextSplit::text_to_words(const string &in)
 	    break;
 	case '\n':
 	case '\r':
-	    if (m_span.length() && m_span[m_span.length() - 1] == '-') {
+	    if ((m_span.length() && m_span[m_span.length() - 1] == '-') ||
+		softhyphenpending) {
 		// if '-' is the last char before end of line, just
 		// ignore the line change. This is the right thing to
 		// do almost always. We'd then need a way to check if
 		// the - was added as part of the word hyphenation, or was 
 		// there in the first place, but this would need a dictionary.
-		// Also we'd need to check for a soft-hyphen and remove it,
-		// but this would require more utf-8 magic
+		// Don't reset soft-hyphen
+		continue;
 	    } else {
 		// Handle like a normal separator
 		goto SPACE;
@@ -622,6 +631,7 @@ bool TextSplit::text_to_words(const string &in)
 	    nonalnumcnt = 0;
 	    break;
 	}
+	softhyphenpending = false;
     }
     if (m_wordLen || m_span.length()) {
 	if (!doemit(true, it.getBpos()))
@@ -891,6 +901,10 @@ static string teststring =
 	    " ,able,test-domain "
 	    " -wl,--export-dynamic "
 	    " ~/.xsession-errors "
+    "soft\xc2\xadhyphen "
+    "soft\xc2\xad\nhyphen "
+    "soft\xc2\xad\n\rhyphen "
+    "hard-\nhyphen "
 ;
 
 static string teststring1 = " nouvel-an ";
