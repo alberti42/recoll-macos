@@ -124,6 +124,17 @@ RclConfig *recollinit(RclInitFlags flags,
 
 #ifndef IDX_THREADS
     ExecCmd::useVfork(true);
+#else
+    bool intern_noThr = config->getThrConf(RclConfig::ThrIntern).first == -1;
+    bool split_noThr =  config->getThrConf(RclConfig::ThrSplit).first == -1;
+    bool write_noThr = config->getThrConf(RclConfig::ThrDbWrite).first == -1;
+    if (intern_noThr && split_noThr && write_noThr) {
+	LOGDEB0(("rclinit: single-threaded execution: use vfork\n"));
+	ExecCmd::useVfork(true);
+    } else {
+	LOGDEB0(("rclinit: multi-threaded execution: do not use vfork\n"));
+	ExecCmd::useVfork(false);
+    }
 #endif
 
     int flushmb;
