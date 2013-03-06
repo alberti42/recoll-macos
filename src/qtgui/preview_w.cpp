@@ -715,12 +715,10 @@ class LoadThread : public QThread {
     int *statusp;
     Rcl::Doc& out;
     const Rcl::Doc& idoc;
-    TempDir tmpdir;
     int loglevel;
  public: 
     string missing;
     TempFile imgtmp;
-    string tdirreason;
 
     LoadThread(int *stp, Rcl::Doc& odoc, const Rcl::Doc& idc) 
 	: statusp(stp), out(odoc), idoc(idc)
@@ -731,15 +729,8 @@ class LoadThread : public QThread {
     }
     virtual void run() {
 	DebugLog::getdbl()->setloglevel(loglevel);
-	if (!tmpdir.ok()) {
-	    tdirreason = tmpdir.getreason();
-	    LOGERR(("Preview: %s\n", tdirreason.c_str()));
-	    *statusp = -1;
-	    return;
-	}
 
-	FileInterner interner(idoc, theconfig, tmpdir, 
-                              FileInterner::FIF_forPreview);
+	FileInterner interner(idoc, theconfig, FileInterner::FIF_forPreview);
 	FIMissingStore mst;
 	interner.setMissingStore(&mst);
 	// Even when previewHtml is set, we don't set the interner's
@@ -859,11 +850,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 	return false;
     if (status != 0) {
         QString explain;
-	if (!lthr.tdirreason.empty()) {
-            explain = tr("Cannot create temporary directory: ") +
-                QString::fromLocal8Bit(lthr.tdirreason.c_str());
-	    QMessageBox::critical(0, "Recoll", explain);
-	} else if (!lthr.missing.empty()) {
+	if (!lthr.missing.empty()) {
             explain = QString::fromAscii("<br>") +
                 tr("Missing helper program: ") +
                 QString::fromLocal8Bit(lthr.missing.c_str());

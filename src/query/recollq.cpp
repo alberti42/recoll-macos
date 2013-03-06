@@ -45,10 +45,9 @@ using namespace std;
 #include "smallut.h"
 #include "base64.h"
 
-bool dump_contents(RclConfig *rclconfig, TempDir& tmpdir, Rcl::Doc& idoc)
+bool dump_contents(RclConfig *rclconfig, Rcl::Doc& idoc)
 {
-    FileInterner interner(idoc, rclconfig, tmpdir,
-                          FileInterner::FIF_forPreview);
+    FileInterner interner(idoc, rclconfig, FileInterner::FIF_forPreview);
     Rcl::Doc fdoc;
     string ipath = idoc.ipath;
     if (interner.internfile(fdoc, ipath)) {
@@ -393,13 +392,7 @@ endopts:
             }
         }
         if (op_flags & OPT_d) {
-	    static TempDir tmpdir;
-	    if (!tmpdir.ok()) {
-		cerr << "Can't create temporary directory: " << 
-		    tmpdir.getreason() << endl;
-		return(1);
-	    }
-            dump_contents(rclconfig, tmpdir, doc);
+            dump_contents(rclconfig, doc);
         }	
     }
 

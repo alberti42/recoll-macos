@@ -534,7 +534,6 @@ void *FsIndexerInternfileWorker(void * fsp)
     FsIndexer *fip = (FsIndexer*)fsp;
     WorkQueue<InternfileTask*> *tqp = &fip->m_iwqueue;
     DebugLog::getdbl()->setloglevel(fip->m_loglevel);
-    TempDir tmpdir;
     RclConfig myconf(*(fip->m_stableconfig));
 
     InternfileTask *tsk = 0;
@@ -544,7 +543,7 @@ void *FsIndexerInternfileWorker(void * fsp)
 	    return (void*)1;
 	}
 	LOGDEB0(("FsIndexerInternfileWorker: task fn %s\n", tsk->fn.c_str()));
-	if (fip->processonefile(&myconf, tmpdir, tsk->fn, &tsk->statbuf,
+	if (fip->processonefile(&myconf, tsk->fn, &tsk->statbuf,
 				tsk->localfields, tsk->mdreapers) !=
 	    FsTreeWalker::FtwOk) {
 	    LOGERR(("FsIndexerInternfileWorker: processone failed\n"));
@@ -612,13 +611,12 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
     }
 #endif
 
-    return processonefile(m_config, m_tmpdir, fn, stp, m_localfields, 
-			  m_mdreapers);
+    return processonefile(m_config, fn, stp, m_localfields, m_mdreapers);
 }
 
 
 FsTreeWalker::Status 
-FsIndexer::processonefile(RclConfig *config, TempDir& tmpdir,
+FsIndexer::processonefile(RclConfig *config, 
 			  const std::string &fn, const struct stat *stp,
 			  const map<string, string>& localfields,
 			  const vector<MDReaper>& mdreapers)
@@ -659,7 +657,7 @@ FsIndexer::processonefile(RclConfig *config, TempDir& tmpdir,
     LOGDEB0(("processone: processing: [%s] %s\n", 
              displayableBytes(stp->st_size).c_str(), fn.c_str()));
 
-    FileInterner interner(fn, stp, config, tmpdir, FileInterner::FIF_none);
+    FileInterner interner(fn, stp, config, FileInterner::FIF_none);
     if (!interner.ok()) {
         // no indexing whatsoever in this case. This typically means that
         // indexallfilenames is not set

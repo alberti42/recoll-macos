@@ -16,6 +16,8 @@
  */
 #ifndef _INTERNFILE_H_INCLUDED_
 #define _INTERNFILE_H_INCLUDED_
+// The class changes according to RCL_USE_XATTR
+#include "autoconfig.h"
 
 #include <string>
 #include <vector>
@@ -27,8 +29,7 @@ using std::map;
 using std::set;
 
 #include "Filter.h"
-// The class changes according to RCL_USE_XATTR
-#include "autoconfig.h"
+#include "uncomp.h"
 #include "pathut.h"
 
 class RclConfig;
@@ -114,15 +115,14 @@ class FileInterner {
      *   mime type for the uncompressed version.
      */
     FileInterner(const string &fn, const struct stat *stp, 
-		 RclConfig *cnf, TempDir &td, int flags,
-		 const string *mtype = 0);
+		 RclConfig *cnf, int flags, const string *mtype = 0);
     
     /** 
      * Alternate constructor for the case where the data is in memory.
      * This is mainly for data extracted from the web cache. The mime type
      * must be set, input must be already uncompressed.
      */
-    FileInterner(const string &data, RclConfig *cnf, TempDir &td, 
+    FileInterner(const string &data, RclConfig *cnf, 
                  int flags, const string& mtype);
 
     /**
@@ -135,8 +135,7 @@ class FileInterner {
      *   ipath...) to retrieve the file or a file reference, which we
      *   then process normally.
      */
-    FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, TempDir &td, 
-                 int flags);
+    FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, int flags);
 
     ~FileInterner();
 
@@ -251,8 +250,6 @@ class FileInterner {
     TempFile               m_imgtmp; // Possible reference to an image temp file
     string                 m_targetMType;
     string                 m_reachedMType; // target or text/plain
-    // m_tdir and m_tfile are used only for decompressing input file if needed
-    TempDir                &m_tdir; 
     string                 m_tfile;
     bool                   m_ok; // Set after construction if ok
 #ifdef RCL_USE_XATTR
@@ -273,6 +270,8 @@ class FileInterner {
     string                 m_reason;
     FIMissingStore        *m_missingdatap;
 
+    Uncomp                 m_uncomp;
+
     // Pseudo-constructors
     void init(const string &fn, const struct stat *stp, 
               RclConfig *cnf, int flags, const string *mtype = 0);
@@ -280,7 +279,6 @@ class FileInterner {
 	      const string& mtype);
     void initcommon(RclConfig *cnf, int flags);
 
-    void tmpcleanup();
     bool dijontorcl(Rcl::Doc&);
     void collectIpathAndMT(Rcl::Doc&) const;
     TempFile dataToTempFile(const string& data, const string& mt);

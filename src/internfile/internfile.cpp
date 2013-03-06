@@ -151,60 +151,6 @@ string FileInterner::getLastIpathElt(const string& ipath)
     }
 }
 
-// Uncompress input file into a temporary one, by executing the appropriate
-// script.
-static bool uncompressfile(RclConfig *conf, const string& ifn, 
-			   const vector<string>& cmdv, TempDir& tdir, 
-			   string& tfile)
-{
-    // Make sure tmp dir is empty. we guarantee this to filters
-    if (!tdir.ok() || !tdir.wipe()) {
-	LOGERR(("uncompressfile: can't clear temp dir %s\n", tdir.dirname()));
-	return false;
-    }
-    string cmd = cmdv.front();
-
-    // Substitute file name and temp dir in command elements
-    vector<string>::const_iterator it = cmdv.begin();
-    ++it;
-    vector<string> args;
-    map<char, string> subs;
-    subs['f'] = ifn;
-    subs['t'] = tdir.dirname();
-    for (; it != cmdv.end(); it++) {
-	string ns;
-	pcSubst(*it, ns, subs);
-	args.push_back(ns);
-    }
-
-    // Execute command and retrieve output file name, check that it exists
-    ExecCmd ex;
-    int status = ex.doexec(cmd, args, 0, &tfile);
-    if (status || tfile.empty()) {
-	LOGERR(("uncompressfile: doexec: failed for [%s] status 0x%x\n", 
-		ifn.c_str(), status));
-	if (!tdir.wipe()) {
-	    LOGERR(("uncompressfile: wipedir failed\n"));
-	}
-	return false;
-    }
-    if (tfile[tfile.length() - 1] == '\n')
-	tfile.erase(tfile.length() - 1, 1);
-    return true;
-}
-
-// Delete temporary uncompressed file
-void FileInterner::tmpcleanup()
-{
-    if (m_tfile.empty())
-	return;
-    if (unlink(m_tfile.c_str()) < 0) {
-	LOGERR(("FileInterner::tmpcleanup: unlink(%s) errno %d\n", 
-		m_tfile.c_str(), errno));
-	return;
-    }
-}
-
 // Constructor: identify the input file, possibly create an
 // uncompressed temporary copy, and create the top filter for the
 // uncompressed file type.
@@ -213,9 +159,8 @@ void FileInterner::tmpcleanup()
 // processed by the first call to internfile().
 // Split into "constructor calls init()" to allow use from other constructor
 FileInterner::FileInterner(const string &fn, const struct stat *stp,
-			   RclConfig *cnf, 
-			   TempDir& td, int flags, const string *imime)
-    : m_tdir(td), m_ok(false), m_missingdatap(0)
+			   RclConfig *cnf, int flags, const string *imime)
+    : m_ok(false), m_missingdatap(0), m_uncomp((flags & FIF_forPreview) != 0)
 {
     LOGDEB0(("FileInterner::FileInterner(fn=%s)\n", fn.c_str()));
     if (fn.empty()) {
@@ -285,11 +230,11 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 	    int maxkbs = -1;
 	    if (!m_cfg->getConfParam("compressedfilemaxkbs", &maxkbs) ||
 		maxkbs < 0 || !stp || int(stp->st_size / 1024) < maxkbs) {
-		if (!uncompressfile(m_cfg, m_fn, ucmd, m_tdir, m_tfile)) {
+		if (!m_uncomp.uncompressfile(m_fn, ucmd, m_tfile)) {
 		    return;
 		}
-		LOGDEB1(("FileInterner:: after ucomp: m_tdir %s, tfile %s\n", 
-			 m_tdir.dirname(), m_tfile.c_str()));
+		LOGDEB1(("FileInterner:: after ucomp: tfile %s\n", 
+			 m_tfile.c_str()));
 		m_fn = m_tfile;
 		// Stat the uncompressed file, mainly to get the size
 		struct stat ucstat;
@@ -352,8 +297,8 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 
 // Setup from memory data (ie: out of the web cache). imime needs to be set.
 FileInterner::FileInterner(const string &data, RclConfig *cnf, 
-                           TempDir& td, int flags, const string& imime)
-    : m_tdir(td), m_ok(false), m_missingdatap(0)
+                           int flags, const string& imime)
+    : m_ok(false), m_missingdatap(0), m_uncomp((flags & FIF_forPreview) != 0)
 {
     LOGDEB0(("FileInterner::FileInterner(data)\n"));
     initcommon(cnf, flags);
@@ -416,9 +361,8 @@ void FileInterner::initcommon(RclConfig *cnf, int flags)
     m_targetMType = cstr_textplain;
 }
 
-FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, 
-                           TempDir& td, int flags)
-    : m_tdir(td), m_ok(false), m_missingdatap(0)
+FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, int flags)
+    : m_ok(false), m_missingdatap(0), m_uncomp(((flags & FIF_forPreview) != 0))
 {
     LOGDEB0(("FileInterner::FileInterner(idoc)\n"));
     initcommon(cnf, flags);
@@ -462,7 +406,6 @@ bool FileInterner::makesig(RclConfig *cnf, const Rcl::Doc& idoc, string& sig)
 
 FileInterner::~FileInterner()
 {
-    tmpcleanup();
     for (vector<Dijon::Filter*>::iterator it = m_handlers.begin();
 	 it != m_handlers.end(); it++) {
         returnMimeHandler(*it);
@@ -1012,12 +955,10 @@ bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
     LOGDEB(("FileInterner::idocToFile\n"));
     idoc.dump();
 
-    TempDir tmpdir;
-
     // We set FIF_forPreview for consistency with the previous version
     // which determined this by looking at mtype!=null. Probably
     // doesn't change anything in this case.
-    FileInterner interner(idoc, cnf, tmpdir, FIF_forPreview);
+    FileInterner interner(idoc, cnf, FIF_forPreview);
     interner.setTargetMType(idoc.mimetype);
     return interner.interntofile(otemp, tofile, idoc.ipath, idoc.mimetype);
 }
@@ -1102,6 +1043,7 @@ bool FileInterner::isCompressed(const string& fn, RclConfig *cnf)
     return false;
 }
 
+// Static.
 bool FileInterner::maybeUncompressToTemp(TempFile& temp, const string& fn, 
                                          RclConfig *cnf, const Rcl::Doc& doc)
 {
@@ -1131,16 +1073,16 @@ bool FileInterner::maybeUncompressToTemp(TempFile& temp, const string& fn,
                  fn.c_str(), maxkbs));
         return false;
     }
-    TempDir tmpdir;
     temp = 
       TempFile(new TempFileInternal(cnf->getSuffixFromMimeType(doc.mimetype)));
-    if (!tmpdir.ok() || !temp->ok()) {
-        LOGERR(("FileInterner: cant create temporary file/dir"));
+    if (!temp->ok()) {
+        LOGERR(("FileInterner: cant create temporary file"));
         return false;
     }
 
+    Uncomp uncomp;
     string uncomped;
-    if (!uncompressfile(cnf, fn, ucmd, tmpdir, uncomped)) {
+    if (!uncomp.uncompressfile(fn, ucmd, uncomped)) {
         return false;
     }
 
@@ -1233,8 +1175,7 @@ int main(int argc, char **argv)
 	perror("stat");
 	exit(1);
     }
-    TempDir tmp;
-    FileInterner interner(fn, &st, config, tmp, 0);
+    FileInterner interner(fn, &st, config, 0);
     Rcl::Doc doc;
     FileInterner::Status status = interner.internfile(doc, ipath);
     switch (status) {

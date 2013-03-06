@@ -236,14 +236,7 @@ public:
 
 void RecollProtocol::showPreview(const Rcl::Doc& idoc)
 {
-    TempDir tmpdir;
-    if (!tmpdir.ok()) {
-	error(KIO::ERR_SLAVE_DEFINED, "Cannot create temp directory");
-	return;
-    }
-
-    FileInterner interner(idoc, o_rclconfig, tmpdir, 
-                          FileInterner::FIF_forPreview);
+    FileInterner interner(idoc, o_rclconfig, FileInterner::FIF_forPreview);
     Rcl::Doc fdoc;
     string ipath = idoc.ipath;
     if (!interner.internfile(fdoc, ipath)) {

@@ -225,8 +225,8 @@ bool BeagleQueueIndexer::indexFromCache(const string& udi)
         return true;
     } else {
         Rcl::Doc doc;
-        FileInterner interner(data, m_config, m_tmpdir, 
-                              FileInterner::FIF_doUseInputMimetype,
+        FileInterner interner(data, m_config, 
+			      FileInterner::FIF_doUseInputMimetype,
                               dotdoc.mimetype);
         FileInterner::Status fis;
         try {
@@ -434,7 +434,7 @@ BeagleQueueIndexer::processone(const string &path,
         // to use beagle-generated fields like beagle:inurl
         doc.meta = dotdoc.meta;
 
-        FileInterner interner(path, stp, m_config, m_tmpdir, 
+        FileInterner interner(path, stp, m_config,
                               FileInterner::FIF_doUseInputMimetype,
                               &dotdoc.mimetype);
         FileInterner::Status fis;

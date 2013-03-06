@@ -31,6 +31,7 @@ ${depth}/internfile/mh_text.cpp \
 ${depth}/internfile/mimehandler.cpp \
 ${depth}/internfile/myhtmlparse.cpp \
 ${depth}/internfile/txtdcode.cpp \
+${depth}/internfile/uncomp.cpp \
 ${depth}/query/docseq.cpp \
 ${depth}/query/docseqdb.cpp \
 ${depth}/query/docseqhist.cpp \

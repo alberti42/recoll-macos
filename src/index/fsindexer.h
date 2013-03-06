@@ -59,7 +59,7 @@ class FsIndexer : public FsTreeWalkerCB {
     /** 
      * Top level file system tree index method for updating a given database.
      *
-     * We create the temporary directory, open the database,
+     * We open the database,
      * then call a file system walk for each top-level directory.
      */
     bool index();
@@ -88,7 +88,6 @@ class FsIndexer : public FsTreeWalkerCB {
     FsTreeWalker m_walker;
     RclConfig   *m_config;
     Rcl::Db     *m_db;
-    TempDir      m_tmpdir;
     string       m_reason;
     DbIxStatusUpdater *m_updater;
     std::vector<std::string> m_tdl;
@@ -127,7 +126,7 @@ class FsIndexer : public FsTreeWalkerCB {
 		      Rcl::Doc& doc);
     string getDbDir() {return m_config->getDbDir();}
     FsTreeWalker::Status 
-    processonefile(RclConfig *config, TempDir& tmpdir, const string &fn, 
+    processonefile(RclConfig *config, const string &fn, 
 		   const struct stat *, const map<string,string>& localfields,
 		   const vector<MDReaper>& mdreapers);
 };

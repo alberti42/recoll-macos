@@ -43,7 +43,6 @@ typedef struct {
     PyObject_HEAD
     /* Type-specific fields go here. */
     FileInterner *xtr;
-    TempDir *tmpdir;
     RclConfig *rclconfig;
 } rclx_ExtractorObject;
 
@@ -52,7 +51,6 @@ Extractor_dealloc(rclx_ExtractorObject *self)
 {
     LOGDEB(("Extractor_dealloc\n"));
     delete self->xtr;
-    delete self->tmpdir;
     self->ob_type->tp_free((PyObject*)self);
 }
 
@@ -65,7 +63,6 @@ Extractor_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     if (self == 0) 
 	return 0;
     self->xtr = 0;
-    self->tmpdir = 0;
     self->rclconfig = 0;
     return (PyObject *)self;
 }
@@ -81,13 +78,12 @@ Extractor_init(rclx_ExtractorObject *self, PyObject *args, PyObject *kwargs)
 				     recoll_DocType, &pdobj))
 	return -1;
     recoll_DocObject *dobj = (recoll_DocObject *)pdobj;
-    self->tmpdir = new TempDir;
     if (dobj->doc == 0) {
         PyErr_SetString(PyExc_AttributeError, "Null Doc ?");
 	return -1;
     }
     self->rclconfig = dobj->rclconfig;
-    self->xtr = new FileInterner(*dobj->doc, self->rclconfig, *self->tmpdir,
+    self->xtr = new FileInterner(*dobj->doc, self->rclconfig, 
 				 FileInterner::FIF_forPreview);
     return 0;
 }
