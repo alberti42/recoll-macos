@@ -181,10 +181,9 @@ fi
 # absolute performance (more about impact on usability and total 
 # resources used).
 AC_ARG_ENABLE(idxthreads,
-    AC_HELP_STRING([--enable-idxthreads],
-   [Enable multithread indexing. This can somewhat boost indexing 
-   performance.]),
-        idxthreadsEnabled=$enableval, idxthreadsEnabled=no)
+    AC_HELP_STRING([--disable-idxthreads],
+   [Disable multithread indexing.]),
+        idxthreadsEnabled=$enableval, idxthreadsEnabled=yes)
 
 if test X$idxthreadsEnabled = Xyes ; then
   AC_DEFINE(IDX_THREADS, 1, [Use multiple threads for indexing])

@@ -1359,8 +1359,7 @@ Optional Features:
                           creates them on (part of) your data set. You also
                           need to set up appropriate mappings in the
                           configuration.
-  --enable-idxthreads     Enable multithread indexing. This can somewhat boost
-                          indexing performance.
+  --disable-idxthreads    Disable multithread indexing.
   --enable-camelcase      Enable splitting camelCase words. This is not
                           enabled by default as this makes phrase matches more
                           difficult: you need to use matching case in the
@@ -4341,10 +4340,8 @@ _ACEOF
    fi
 fi
 
-# Enable use of file extended attributes.  Not by default as extended
-# attributes are little used for now, and looking for them is not
-# completely trivial: we have to use ctime instead of mtime to detect
-# changes.
+# Disable use of file extended attributes. With xattrs disabled we can use
+# mtime instead of ctime to look for file mods. Default is enabled.
 # Check whether --enable-xattr was given.
 if test "${enable_xattr+set}" = set; then :
   enableval=$enable_xattr; xattrEnabled=$enableval
@@ -4367,7 +4364,7 @@ fi
 if test "${enable_idxthreads+set}" = set; then :
   enableval=$enable_idxthreads; idxthreadsEnabled=$enableval
 else
-  idxthreadsEnabled=no
+  idxthreadsEnabled=yes
 fi
 
 
