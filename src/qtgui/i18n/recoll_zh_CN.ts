@@ -1,4 +1,6 @@
-<!DOCTYPE TS><TS>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -11,11 +13,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation>文本</translation>
+        <translation type="obsolete">文本</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation>电子表格</translation>
+        <translation type="obsolete">电子表格</translation>
     </message>
     <message>
         <source>presentations</source>
@@ -213,24 +215,24 @@ p, li { white-space: pre-wrap; }
         <translation>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN&quot; &quot;http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd&quot;&gt;
 &lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;&lt;!--This file was converted to xhtml by OpenOffice.org - see http://xml.openoffice.org/odf2xhtml for more info.--&gt;&lt;head profile=&quot;http://dublincore.org/documents/dcmi-terms/&quot;&gt;&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;application/xhtml+xml; charset=utf-8&quot;/&gt;&lt;title xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; ns_1:lang=&quot;en-US&quot;&gt;- no title specified&lt;/title&gt;&lt;meta xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; name=&quot;DCTERMS.title&quot; content=&quot;&quot; ns_1:lang=&quot;en-US&quot;/&gt;&lt;meta name=&quot;DCTERMS.language&quot; content=&quot;en-US&quot; scheme=&quot;DCTERMS.RFC4646&quot;/&gt;&lt;meta name=&quot;DCTERMS.source&quot; content=&quot;http://xml.openoffice.org/odf2xhtml&quot;/&gt;&lt;meta name=&quot;DCTERMS.issued&quot; content=&quot;2012-03-22T19:47:37&quot; scheme=&quot;DCTERMS.W3CDTF&quot;/&gt;&lt;meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-03-22T19:56:53&quot; scheme=&quot;DCTERMS.W3CDTF&quot;/&gt;&lt;meta xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; name=&quot;DCTERMS.provenance&quot; content=&quot;&quot; ns_1:lang=&quot;en-US&quot;/&gt;&lt;meta xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; name=&quot;DCTERMS.subject&quot; content=&quot;,&quot; ns_1:lang=&quot;en-US&quot;/&gt;&lt;link rel=&quot;schema.DC&quot; href=&quot;http://purl.org/dc/elements/1.1/&quot; hreflang=&quot;en&quot;/&gt;&lt;link rel=&quot;schema.DCTERMS&quot; href=&quot;http://purl.org/dc/terms/&quot; hreflang=&quot;en&quot;/&gt;&lt;link rel=&quot;schema.DCTYPE&quot; href=&quot;http://purl.org/dc/dcmitype/&quot; hreflang=&quot;en&quot;/&gt;&lt;link rel=&quot;schema.DCAM&quot; href=&quot;http://purl.org/dc/dcam/&quot; hreflang=&quot;en&quot;/&gt;&lt;style type=&quot;text/css&quot;&gt;
-<byte value="x9"/>@page {  }
-<byte value="x9"/>table { border-collapse:collapse; border-spacing:0; empty-cells:show }
-<byte value="x9"/>td, th { vertical-align:top; font-size:12pt;}
-<byte value="x9"/>h1, h2, h3, h4, h5, h6 { clear:both }
-<byte value="x9"/>ol, ul { margin:0; padding:0;}
-<byte value="x9"/>li { list-style: none; margin:0; padding:0;}
-<byte value="x9"/>&lt;!-- &quot;li span.odfLiEnd&quot; - IE 7 issue--&gt;
-<byte value="x9"/>li span. { clear: both; line-height:0; width:0; height:0; margin:0; padding:0; }
-<byte value="x9"/>span.footnodeNumber { padding-right:1em; }
-<byte value="x9"/>span.annotation_style_by_filter { font-size:95%; font-family:Arial; background-color:#fff000;  margin:0; border:0; padding:0;  }
-<byte value="x9"/>* { margin:0;}
-<byte value="x9"/>.P1 { font-size:12pt; margin-bottom:0cm; margin-top:0cm; font-family:Nimbus Roman No9 L; writing-mode:page; margin-left:0cm; margin-right:0cm; text-indent:0cm; }
-<byte value="x9"/>.T1 { font-weight:bold; }
-<byte value="x9"/>.T3 { font-style:italic; }
-<byte value="x9"/>.T4 { font-family:Courier New,courier; }
-<byte value="x9"/>&lt;!-- ODF styles with no properties representable as CSS --&gt;
-<byte value="x9"/>{ }
-<byte value="x9"/>&lt;/style&gt;&lt;/head&gt;&lt;body dir=&quot;ltr&quot; style=&quot;max-width:21.001cm;margin-top:2cm; margin-bottom:2cm; margin-left:2cm; margin-right:2cm; writing-mode:lr-tb; &quot;&gt;&lt;p class=&quot;P1&quot;&gt;&lt;span class=&quot;T1&quot;&gt;Recoll&lt;/span&gt; 批量索引计划任务(cron) &lt;/p&gt;&lt;p class=&quot;P1&quot;&gt;每个字段都可以包括一个通配符(*)、单个数字值、逗号分隔的列表(1,3,5)和范围(1-7)。更准确地说，这些字段会被&lt;span class=&quot;T3&quot;&gt;按原样&lt;/span&gt;输出到crontab 文件中，因此这里可以使用crontab 的所有语法，参考crontab(5)。&lt;/p&gt;&lt;p class=&quot;P1&quot;&gt;&lt;br/&gt;例如，在&lt;span class=&quot;T3&quot;&gt;日期&lt;/span&gt;中输入&lt;span class=&quot;T4&quot;&gt;*&lt;/span&gt;，&lt;span class=&quot;T3&quot;&gt;小时&lt;/span&gt;中输入&lt;span class=&quot;T4&quot;&gt;12,19&lt;/span&gt;，&lt;span class=&quot;T3&quot;&gt;分钟&lt;/span&gt;中输入&lt;span class=&quot;T4&quot;&gt;15 &lt;/span&gt;的话，会在每天的12:15 AM 和7:15 PM启动recollindex。&lt;/p&gt;&lt;p class=&quot;P1&quot;&gt;一个频繁执行的计划任务，其性能可能比不上实时索引。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+	@page {  }
+	table { border-collapse:collapse; border-spacing:0; empty-cells:show }
+	td, th { vertical-align:top; font-size:12pt;}
+	h1, h2, h3, h4, h5, h6 { clear:both }
+	ol, ul { margin:0; padding:0;}
+	li { list-style: none; margin:0; padding:0;}
+	&lt;!-- &quot;li span.odfLiEnd&quot; - IE 7 issue--&gt;
+	li span. { clear: both; line-height:0; width:0; height:0; margin:0; padding:0; }
+	span.footnodeNumber { padding-right:1em; }
+	span.annotation_style_by_filter { font-size:95%; font-family:Arial; background-color:#fff000;  margin:0; border:0; padding:0;  }
+	* { margin:0;}
+	.P1 { font-size:12pt; margin-bottom:0cm; margin-top:0cm; font-family:Nimbus Roman No9 L; writing-mode:page; margin-left:0cm; margin-right:0cm; text-indent:0cm; }
+	.T1 { font-weight:bold; }
+	.T3 { font-style:italic; }
+	.T4 { font-family:Courier New,courier; }
+	&lt;!-- ODF styles with no properties representable as CSS --&gt;
+	{ }
+	&lt;/style&gt;&lt;/head&gt;&lt;body dir=&quot;ltr&quot; style=&quot;max-width:21.001cm;margin-top:2cm; margin-bottom:2cm; margin-left:2cm; margin-right:2cm; writing-mode:lr-tb; &quot;&gt;&lt;p class=&quot;P1&quot;&gt;&lt;span class=&quot;T1&quot;&gt;Recoll&lt;/span&gt; 批量索引计划任务(cron) &lt;/p&gt;&lt;p class=&quot;P1&quot;&gt;每个字段都可以包括一个通配符(*)、单个数字值、逗号分隔的列表(1,3,5)和范围(1-7)。更准确地说，这些字段会被&lt;span class=&quot;T3&quot;&gt;按原样&lt;/span&gt;输出到crontab 文件中，因此这里可以使用crontab 的所有语法，参考crontab(5)。&lt;/p&gt;&lt;p class=&quot;P1&quot;&gt;&lt;br/&gt;例如，在&lt;span class=&quot;T3&quot;&gt;日期&lt;/span&gt;中输入&lt;span class=&quot;T4&quot;&gt;*&lt;/span&gt;，&lt;span class=&quot;T3&quot;&gt;小时&lt;/span&gt;中输入&lt;span class=&quot;T4&quot;&gt;12,19&lt;/span&gt;，&lt;span class=&quot;T3&quot;&gt;分钟&lt;/span&gt;中输入&lt;span class=&quot;T4&quot;&gt;15 &lt;/span&gt;的话，会在每天的12:15 AM 和7:15 PM启动recollindex。&lt;/p&gt;&lt;p class=&quot;P1&quot;&gt;一个频繁执行的计划任务，其性能可能比不上实时索引。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
 </translation>
     </message>
     <message>
@@ -254,22 +256,22 @@ p, li { white-space: pre-wrap; }
         <translation>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN&quot; &quot;http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd&quot;&gt;
 &lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;&lt;!--This file was converted to xhtml by OpenOffice.org - see http://xml.openoffice.org/odf2xhtml for more info.--&gt;&lt;head profile=&quot;http://dublincore.org/documents/dcmi-terms/&quot;&gt;&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;application/xhtml+xml; charset=utf-8&quot;/&gt;&lt;title xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; ns_1:lang=&quot;en-US&quot;&gt;- no title specified&lt;/title&gt;&lt;meta xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; name=&quot;DCTERMS.title&quot; content=&quot;&quot; ns_1:lang=&quot;en-US&quot;/&gt;&lt;meta name=&quot;DCTERMS.language&quot; content=&quot;en-US&quot; scheme=&quot;DCTERMS.RFC4646&quot;/&gt;&lt;meta name=&quot;DCTERMS.source&quot; content=&quot;http://xml.openoffice.org/odf2xhtml&quot;/&gt;&lt;meta name=&quot;DCTERMS.issued&quot; content=&quot;2012-03-22T20:08:00&quot; scheme=&quot;DCTERMS.W3CDTF&quot;/&gt;&lt;meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-03-22T20:11:47&quot; scheme=&quot;DCTERMS.W3CDTF&quot;/&gt;&lt;meta xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; name=&quot;DCTERMS.provenance&quot; content=&quot;&quot; ns_1:lang=&quot;en-US&quot;/&gt;&lt;meta xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; name=&quot;DCTERMS.subject&quot; content=&quot;,&quot; ns_1:lang=&quot;en-US&quot;/&gt;&lt;link rel=&quot;schema.DC&quot; href=&quot;http://purl.org/dc/elements/1.1/&quot; hreflang=&quot;en&quot;/&gt;&lt;link rel=&quot;schema.DCTERMS&quot; href=&quot;http://purl.org/dc/terms/&quot; hreflang=&quot;en&quot;/&gt;&lt;link rel=&quot;schema.DCTYPE&quot; href=&quot;http://purl.org/dc/dcmitype/&quot; hreflang=&quot;en&quot;/&gt;&lt;link rel=&quot;schema.DCAM&quot; href=&quot;http://purl.org/dc/dcam/&quot; hreflang=&quot;en&quot;/&gt;&lt;style type=&quot;text/css&quot;&gt;
-<byte value="x9"/>@page {  }
-<byte value="x9"/>table { border-collapse:collapse; border-spacing:0; empty-cells:show }
-<byte value="x9"/>td, th { vertical-align:top; font-size:12pt;}
-<byte value="x9"/>h1, h2, h3, h4, h5, h6 { clear:both }
-<byte value="x9"/>ol, ul { margin:0; padding:0;}
-<byte value="x9"/>li { list-style: none; margin:0; padding:0;}
-<byte value="x9"/>&lt;!-- &quot;li span.odfLiEnd&quot; - IE 7 issue--&gt;
-<byte value="x9"/>li span. { clear: both; line-height:0; width:0; height:0; margin:0; padding:0; }
-<byte value="x9"/>span.footnodeNumber { padding-right:1em; }
-<byte value="x9"/>span.annotation_style_by_filter { font-size:95%; font-family:Arial; background-color:#fff000;  margin:0; border:0; padding:0;  }
-<byte value="x9"/>* { margin:0;}
-<byte value="x9"/>.P1 { font-size:12pt; margin-bottom:0cm; margin-top:0cm; font-family:Nimbus Roman No9 L; writing-mode:page; margin-left:0cm; margin-right:0cm; text-indent:0cm; }
-<byte value="x9"/>.T2 { font-style:italic; }
-<byte value="x9"/>&lt;!-- ODF styles with no properties representable as CSS --&gt;
-<byte value="x9"/>{ }
-<byte value="x9"/>&lt;/style&gt;&lt;/head&gt;&lt;body dir=&quot;ltr&quot; style=&quot;max-width:21.001cm;margin-top:2cm; margin-bottom:2cm; margin-left:2cm; margin-right:2cm; writing-mode:lr-tb; &quot;&gt;&lt;p class=&quot;P1&quot;&gt;点击&lt;span class=&quot;T2&quot;&gt;禁用&lt;/span&gt;以停止进行自动化的批量索引，点击&lt;span class=&quot;T2&quot;&gt;启用&lt;/span&gt;以启用此功能，点击&lt;span class=&quot;T2&quot;&gt;取消&lt;/span&gt;则不改变任何东西。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+	@page {  }
+	table { border-collapse:collapse; border-spacing:0; empty-cells:show }
+	td, th { vertical-align:top; font-size:12pt;}
+	h1, h2, h3, h4, h5, h6 { clear:both }
+	ol, ul { margin:0; padding:0;}
+	li { list-style: none; margin:0; padding:0;}
+	&lt;!-- &quot;li span.odfLiEnd&quot; - IE 7 issue--&gt;
+	li span. { clear: both; line-height:0; width:0; height:0; margin:0; padding:0; }
+	span.footnodeNumber { padding-right:1em; }
+	span.annotation_style_by_filter { font-size:95%; font-family:Arial; background-color:#fff000;  margin:0; border:0; padding:0;  }
+	* { margin:0;}
+	.P1 { font-size:12pt; margin-bottom:0cm; margin-top:0cm; font-family:Nimbus Roman No9 L; writing-mode:page; margin-left:0cm; margin-right:0cm; text-indent:0cm; }
+	.T2 { font-style:italic; }
+	&lt;!-- ODF styles with no properties representable as CSS --&gt;
+	{ }
+	&lt;/style&gt;&lt;/head&gt;&lt;body dir=&quot;ltr&quot; style=&quot;max-width:21.001cm;margin-top:2cm; margin-bottom:2cm; margin-left:2cm; margin-right:2cm; writing-mode:lr-tb; &quot;&gt;&lt;p class=&quot;P1&quot;&gt;点击&lt;span class=&quot;T2&quot;&gt;禁用&lt;/span&gt;以停止进行自动化的批量索引，点击&lt;span class=&quot;T2&quot;&gt;启用&lt;/span&gt;以启用此功能，点击&lt;span class=&quot;T2&quot;&gt;取消&lt;/span&gt;则不改变任何东西。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
 </translation>
     </message>
     <message>
@@ -315,23 +317,23 @@ p, li { white-space: pre-wrap; }
         <translation>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN&quot; &quot;http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd&quot;&gt;
 &lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;&lt;!--This file was converted to xhtml by OpenOffice.org - see http://xml.openoffice.org/odf2xhtml for more info.--&gt;&lt;head profile=&quot;http://dublincore.org/documents/dcmi-terms/&quot;&gt;&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;application/xhtml+xml; charset=utf-8&quot;/&gt;&lt;title xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; ns_1:lang=&quot;en-US&quot;&gt;- no title specified&lt;/title&gt;&lt;meta xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; name=&quot;DCTERMS.title&quot; content=&quot;&quot; ns_1:lang=&quot;en-US&quot;/&gt;&lt;meta name=&quot;DCTERMS.language&quot; content=&quot;en-US&quot; scheme=&quot;DCTERMS.RFC4646&quot;/&gt;&lt;meta name=&quot;DCTERMS.source&quot; content=&quot;http://xml.openoffice.org/odf2xhtml&quot;/&gt;&lt;meta name=&quot;DCTERMS.issued&quot; content=&quot;2012-03-22T20:14:44&quot; scheme=&quot;DCTERMS.W3CDTF&quot;/&gt;&lt;meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-03-22T20:23:13&quot; scheme=&quot;DCTERMS.W3CDTF&quot;/&gt;&lt;meta xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; name=&quot;DCTERMS.provenance&quot; content=&quot;&quot; ns_1:lang=&quot;en-US&quot;/&gt;&lt;meta xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; name=&quot;DCTERMS.subject&quot; content=&quot;,&quot; ns_1:lang=&quot;en-US&quot;/&gt;&lt;link rel=&quot;schema.DC&quot; href=&quot;http://purl.org/dc/elements/1.1/&quot; hreflang=&quot;en&quot;/&gt;&lt;link rel=&quot;schema.DCTERMS&quot; href=&quot;http://purl.org/dc/terms/&quot; hreflang=&quot;en&quot;/&gt;&lt;link rel=&quot;schema.DCTYPE&quot; href=&quot;http://purl.org/dc/dcmitype/&quot; hreflang=&quot;en&quot;/&gt;&lt;link rel=&quot;schema.DCAM&quot; href=&quot;http://purl.org/dc/dcam/&quot; hreflang=&quot;en&quot;/&gt;&lt;style type=&quot;text/css&quot;&gt;
-<byte value="x9"/>@page {  }
-<byte value="x9"/>table { border-collapse:collapse; border-spacing:0; empty-cells:show }
-<byte value="x9"/>td, th { vertical-align:top; font-size:12pt;}
-<byte value="x9"/>h1, h2, h3, h4, h5, h6 { clear:both }
-<byte value="x9"/>ol, ul { margin:0; padding:0;}
-<byte value="x9"/>li { list-style: none; margin:0; padding:0;}
-<byte value="x9"/>&lt;!-- &quot;li span.odfLiEnd&quot; - IE 7 issue--&gt;
-<byte value="x9"/>li span. { clear: both; line-height:0; width:0; height:0; margin:0; padding:0; }
-<byte value="x9"/>span.footnodeNumber { padding-right:1em; }
-<byte value="x9"/>span.annotation_style_by_filter { font-size:95%; font-family:Arial; background-color:#fff000;  margin:0; border:0; padding:0;  }
-<byte value="x9"/>* { margin:0;}
-<byte value="x9"/>.P1 { font-size:12pt; margin-bottom:0cm; margin-top:0cm; font-family:Nimbus Roman No9 L; writing-mode:page; margin-left:0cm; margin-right:0cm; text-indent:0cm; }
-<byte value="x9"/>.T2 { font-weight:bold; }
-<byte value="x9"/>.T4 { font-style:italic; }
-<byte value="x9"/>&lt;!-- ODF styles with no properties representable as CSS --&gt;
-<byte value="x9"/>{ }
-<byte value="x9"/>&lt;/style&gt;&lt;/head&gt;&lt;body dir=&quot;ltr&quot; style=&quot;max-width:21.001cm;margin-top:2cm; margin-bottom:2cm; margin-left:2cm; margin-right:2cm; writing-mode:lr-tb; &quot;&gt;&lt;p class=&quot;P1&quot;&gt;&lt;span class=&quot;T2&quot;&gt;未找到对应于此配置实例的索引数据。&lt;/span&gt;&lt;br/&gt;&lt;br/&gt;如果你只想以一组合理的默认参数来索引你的家目录的话，就直接按&lt;span class=&quot;T4&quot;&gt;立即开始索引&lt;/span&gt;按钮。以后还可以调整配置参数的。&lt;/p&gt;&lt;p class=&quot;P1&quot;&gt;如果你想调整某些东西的话，就使用下面的链接来调整其中的索引配置和定时计划吧。&lt;/p&gt;&lt;p class=&quot;P1&quot;&gt;这些工具可在以后通过&lt;span class=&quot;T4&quot;&gt;选项&lt;/span&gt;菜单访问。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+	@page {  }
+	table { border-collapse:collapse; border-spacing:0; empty-cells:show }
+	td, th { vertical-align:top; font-size:12pt;}
+	h1, h2, h3, h4, h5, h6 { clear:both }
+	ol, ul { margin:0; padding:0;}
+	li { list-style: none; margin:0; padding:0;}
+	&lt;!-- &quot;li span.odfLiEnd&quot; - IE 7 issue--&gt;
+	li span. { clear: both; line-height:0; width:0; height:0; margin:0; padding:0; }
+	span.footnodeNumber { padding-right:1em; }
+	span.annotation_style_by_filter { font-size:95%; font-family:Arial; background-color:#fff000;  margin:0; border:0; padding:0;  }
+	* { margin:0;}
+	.P1 { font-size:12pt; margin-bottom:0cm; margin-top:0cm; font-family:Nimbus Roman No9 L; writing-mode:page; margin-left:0cm; margin-right:0cm; text-indent:0cm; }
+	.T2 { font-weight:bold; }
+	.T4 { font-style:italic; }
+	&lt;!-- ODF styles with no properties representable as CSS --&gt;
+	{ }
+	&lt;/style&gt;&lt;/head&gt;&lt;body dir=&quot;ltr&quot; style=&quot;max-width:21.001cm;margin-top:2cm; margin-bottom:2cm; margin-left:2cm; margin-right:2cm; writing-mode:lr-tb; &quot;&gt;&lt;p class=&quot;P1&quot;&gt;&lt;span class=&quot;T2&quot;&gt;未找到对应于此配置实例的索引数据。&lt;/span&gt;&lt;br/&gt;&lt;br/&gt;如果你只想以一组合理的默认参数来索引你的家目录的话，就直接按&lt;span class=&quot;T4&quot;&gt;立即开始索引&lt;/span&gt;按钮。以后还可以调整配置参数的。&lt;/p&gt;&lt;p class=&quot;P1&quot;&gt;如果你想调整某些东西的话，就使用下面的链接来调整其中的索引配置和定时计划吧。&lt;/p&gt;&lt;p class=&quot;P1&quot;&gt;这些工具可在以后通过&lt;span class=&quot;T4&quot;&gt;选项&lt;/span&gt;菜单访问。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
 </translation>
     </message>
     <message>
@@ -373,22 +375,22 @@ p, li { white-space: pre-wrap; }
         <translation>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN&quot; &quot;http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd&quot;&gt;
 &lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;&lt;!--This file was converted to xhtml by OpenOffice.org - see http://xml.openoffice.org/odf2xhtml for more info.--&gt;&lt;head profile=&quot;http://dublincore.org/documents/dcmi-terms/&quot;&gt;&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;application/xhtml+xml; charset=utf-8&quot;/&gt;&lt;title xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; ns_1:lang=&quot;en-US&quot;&gt;- no title specified&lt;/title&gt;&lt;meta xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; name=&quot;DCTERMS.title&quot; content=&quot;&quot; ns_1:lang=&quot;en-US&quot;/&gt;&lt;meta name=&quot;DCTERMS.language&quot; content=&quot;en-US&quot; scheme=&quot;DCTERMS.RFC4646&quot;/&gt;&lt;meta name=&quot;DCTERMS.source&quot; content=&quot;http://xml.openoffice.org/odf2xhtml&quot;/&gt;&lt;meta name=&quot;DCTERMS.issued&quot; content=&quot;2012-03-22T20:27:11&quot; scheme=&quot;DCTERMS.W3CDTF&quot;/&gt;&lt;meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-03-22T20:30:49&quot; scheme=&quot;DCTERMS.W3CDTF&quot;/&gt;&lt;meta xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; name=&quot;DCTERMS.provenance&quot; content=&quot;&quot; ns_1:lang=&quot;en-US&quot;/&gt;&lt;meta xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; name=&quot;DCTERMS.subject&quot; content=&quot;,&quot; ns_1:lang=&quot;en-US&quot;/&gt;&lt;link rel=&quot;schema.DC&quot; href=&quot;http://purl.org/dc/elements/1.1/&quot; hreflang=&quot;en&quot;/&gt;&lt;link rel=&quot;schema.DCTERMS&quot; href=&quot;http://purl.org/dc/terms/&quot; hreflang=&quot;en&quot;/&gt;&lt;link rel=&quot;schema.DCTYPE&quot; href=&quot;http://purl.org/dc/dcmitype/&quot; hreflang=&quot;en&quot;/&gt;&lt;link rel=&quot;schema.DCAM&quot; href=&quot;http://purl.org/dc/dcam/&quot; hreflang=&quot;en&quot;/&gt;&lt;style type=&quot;text/css&quot;&gt;
-<byte value="x9"/>@page {  }
-<byte value="x9"/>table { border-collapse:collapse; border-spacing:0; empty-cells:show }
-<byte value="x9"/>td, th { vertical-align:top; font-size:12pt;}
-<byte value="x9"/>h1, h2, h3, h4, h5, h6 { clear:both }
-<byte value="x9"/>ol, ul { margin:0; padding:0;}
-<byte value="x9"/>li { list-style: none; margin:0; padding:0;}
-<byte value="x9"/>&lt;!-- &quot;li span.odfLiEnd&quot; - IE 7 issue--&gt;
-<byte value="x9"/>li span. { clear: both; line-height:0; width:0; height:0; margin:0; padding:0; }
-<byte value="x9"/>span.footnodeNumber { padding-right:1em; }
-<byte value="x9"/>span.annotation_style_by_filter { font-size:95%; font-family:Arial; background-color:#fff000;  margin:0; border:0; padding:0;  }
-<byte value="x9"/>* { margin:0;}
-<byte value="x9"/>.P1 { font-size:12pt; margin-bottom:0cm; margin-top:0cm; font-family:Nimbus Roman No9 L; writing-mode:page; margin-left:0cm; margin-right:0cm; text-indent:0cm; }
-<byte value="x9"/>.T1 { font-weight:bold; }
-<byte value="x9"/>&lt;!-- ODF styles with no properties representable as CSS --&gt;
-<byte value="x9"/>{ }
-<byte value="x9"/>&lt;/style&gt;&lt;/head&gt;&lt;body dir=&quot;ltr&quot; style=&quot;max-width:21.001cm;margin-top:2cm; margin-bottom:2cm; margin-left:2cm; margin-right:2cm; writing-mode:lr-tb; &quot;&gt;&lt;p class=&quot;P1&quot;&gt;&lt;span class=&quot;T1&quot;&gt;Recoll&lt;/span&gt; 索引程序可持续运行并且在文件发生变化时对其进行索引，也可以间隔一定时间运行一次。&lt;/p&gt;&lt;p class=&quot;P1&quot;&gt;你可以读一下手册，以便更好地做出抉择（按F1）。&lt;/p&gt;&lt;p class=&quot;P1&quot;&gt;这个工具可帮助你设置一个自动进行批量索引的定时任务，或者设置成当你登录时便启动实时索引（或者两者同时进行，当然那几乎没有意义）。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+	@page {  }
+	table { border-collapse:collapse; border-spacing:0; empty-cells:show }
+	td, th { vertical-align:top; font-size:12pt;}
+	h1, h2, h3, h4, h5, h6 { clear:both }
+	ol, ul { margin:0; padding:0;}
+	li { list-style: none; margin:0; padding:0;}
+	&lt;!-- &quot;li span.odfLiEnd&quot; - IE 7 issue--&gt;
+	li span. { clear: both; line-height:0; width:0; height:0; margin:0; padding:0; }
+	span.footnodeNumber { padding-right:1em; }
+	span.annotation_style_by_filter { font-size:95%; font-family:Arial; background-color:#fff000;  margin:0; border:0; padding:0;  }
+	* { margin:0;}
+	.P1 { font-size:12pt; margin-bottom:0cm; margin-top:0cm; font-family:Nimbus Roman No9 L; writing-mode:page; margin-left:0cm; margin-right:0cm; text-indent:0cm; }
+	.T1 { font-weight:bold; }
+	&lt;!-- ODF styles with no properties representable as CSS --&gt;
+	{ }
+	&lt;/style&gt;&lt;/head&gt;&lt;body dir=&quot;ltr&quot; style=&quot;max-width:21.001cm;margin-top:2cm; margin-bottom:2cm; margin-left:2cm; margin-right:2cm; writing-mode:lr-tb; &quot;&gt;&lt;p class=&quot;P1&quot;&gt;&lt;span class=&quot;T1&quot;&gt;Recoll&lt;/span&gt; 索引程序可持续运行并且在文件发生变化时对其进行索引，也可以间隔一定时间运行一次。&lt;/p&gt;&lt;p class=&quot;P1&quot;&gt;你可以读一下手册，以便更好地做出抉择（按F1）。&lt;/p&gt;&lt;p class=&quot;P1&quot;&gt;这个工具可帮助你设置一个自动进行批量索引的定时任务，或者设置成当你登录时便启动实时索引（或者两者同时进行，当然那几乎没有意义）。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
 </translation>
     </message>
     <message>
@@ -478,7 +480,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Cannot create temporary directory: </source>
-        <translation>无法创建临时目录：</translation>
+        <translation type="obsolete">无法创建临时目录：</translation>
     </message>
     <message>
         <source>Error while loading file</source>
@@ -611,22 +613,22 @@ p, li { white-space: pre-wrap; }
         <translation>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN&quot; &quot;http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd&quot;&gt;
 &lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;&lt;!--This file was converted to xhtml by OpenOffice.org - see http://xml.openoffice.org/odf2xhtml for more info.--&gt;&lt;head profile=&quot;http://dublincore.org/documents/dcmi-terms/&quot;&gt;&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;application/xhtml+xml; charset=utf-8&quot;/&gt;&lt;title xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; ns_1:lang=&quot;en-US&quot;&gt;- no title specified&lt;/title&gt;&lt;meta xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; name=&quot;DCTERMS.title&quot; content=&quot;&quot; ns_1:lang=&quot;en-US&quot;/&gt;&lt;meta name=&quot;DCTERMS.language&quot; content=&quot;en-US&quot; scheme=&quot;DCTERMS.RFC4646&quot;/&gt;&lt;meta name=&quot;DCTERMS.source&quot; content=&quot;http://xml.openoffice.org/odf2xhtml&quot;/&gt;&lt;meta name=&quot;DCTERMS.issued&quot; content=&quot;2012-03-22T21:00:38&quot; scheme=&quot;DCTERMS.W3CDTF&quot;/&gt;&lt;meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-03-22T21:02:43&quot; scheme=&quot;DCTERMS.W3CDTF&quot;/&gt;&lt;meta xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; name=&quot;DCTERMS.provenance&quot; content=&quot;&quot; ns_1:lang=&quot;en-US&quot;/&gt;&lt;meta xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; name=&quot;DCTERMS.subject&quot; content=&quot;,&quot; ns_1:lang=&quot;en-US&quot;/&gt;&lt;link rel=&quot;schema.DC&quot; href=&quot;http://purl.org/dc/elements/1.1/&quot; hreflang=&quot;en&quot;/&gt;&lt;link rel=&quot;schema.DCTERMS&quot; href=&quot;http://purl.org/dc/terms/&quot; hreflang=&quot;en&quot;/&gt;&lt;link rel=&quot;schema.DCTYPE&quot; href=&quot;http://purl.org/dc/dcmitype/&quot; hreflang=&quot;en&quot;/&gt;&lt;link rel=&quot;schema.DCAM&quot; href=&quot;http://purl.org/dc/dcam/&quot; hreflang=&quot;en&quot;/&gt;&lt;style type=&quot;text/css&quot;&gt;
-<byte value="x9"/>@page {  }
-<byte value="x9"/>table { border-collapse:collapse; border-spacing:0; empty-cells:show }
-<byte value="x9"/>td, th { vertical-align:top; font-size:12pt;}
-<byte value="x9"/>h1, h2, h3, h4, h5, h6 { clear:both }
-<byte value="x9"/>ol, ul { margin:0; padding:0;}
-<byte value="x9"/>li { list-style: none; margin:0; padding:0;}
-<byte value="x9"/>&lt;!-- &quot;li span.odfLiEnd&quot; - IE 7 issue--&gt;
-<byte value="x9"/>li span. { clear: both; line-height:0; width:0; height:0; margin:0; padding:0; }
-<byte value="x9"/>span.footnodeNumber { padding-right:1em; }
-<byte value="x9"/>span.annotation_style_by_filter { font-size:95%; font-family:Arial; background-color:#fff000;  margin:0; border:0; padding:0;  }
-<byte value="x9"/>* { margin:0;}
-<byte value="x9"/>.P1 { font-size:12pt; margin-bottom:0cm; margin-top:0cm; font-family:Nimbus Roman No9 L; writing-mode:page; margin-left:0cm; margin-right:0cm; text-indent:0cm; }
-<byte value="x9"/>.T1 { font-weight:bold; }
-<byte value="x9"/>&lt;!-- ODF styles with no properties representable as CSS --&gt;
-<byte value="x9"/>{ }
-<byte value="x9"/>&lt;/style&gt;&lt;/head&gt;&lt;body dir=&quot;ltr&quot; style=&quot;max-width:21.001cm;margin-top:2cm; margin-bottom:2cm; margin-left:2cm; margin-right:2cm; writing-mode:lr-tb; &quot;&gt;&lt;p class=&quot;P1&quot;&gt;&lt;span class=&quot;T1&quot;&gt;Recoll&lt;/span&gt; 索引程序可以以守护进程的方式运行，在文件发生变化时便实时更新索引。这样你的索引一直是与文件同步的，但是会占用一定的系统资源。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+	@page {  }
+	table { border-collapse:collapse; border-spacing:0; empty-cells:show }
+	td, th { vertical-align:top; font-size:12pt;}
+	h1, h2, h3, h4, h5, h6 { clear:both }
+	ol, ul { margin:0; padding:0;}
+	li { list-style: none; margin:0; padding:0;}
+	&lt;!-- &quot;li span.odfLiEnd&quot; - IE 7 issue--&gt;
+	li span. { clear: both; line-height:0; width:0; height:0; margin:0; padding:0; }
+	span.footnodeNumber { padding-right:1em; }
+	span.annotation_style_by_filter { font-size:95%; font-family:Arial; background-color:#fff000;  margin:0; border:0; padding:0;  }
+	* { margin:0;}
+	.P1 { font-size:12pt; margin-bottom:0cm; margin-top:0cm; font-family:Nimbus Roman No9 L; writing-mode:page; margin-left:0cm; margin-right:0cm; text-indent:0cm; }
+	.T1 { font-weight:bold; }
+	&lt;!-- ODF styles with no properties representable as CSS --&gt;
+	{ }
+	&lt;/style&gt;&lt;/head&gt;&lt;body dir=&quot;ltr&quot; style=&quot;max-width:21.001cm;margin-top:2cm; margin-bottom:2cm; margin-left:2cm; margin-right:2cm; writing-mode:lr-tb; &quot;&gt;&lt;p class=&quot;P1&quot;&gt;&lt;span class=&quot;T1&quot;&gt;Recoll&lt;/span&gt; 索引程序可以以守护进程的方式运行，在文件发生变化时便实时更新索引。这样你的索引一直是与文件同步的，但是会占用一定的系统资源。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
 </translation>
     </message>
     <message>
@@ -931,6 +933,10 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Cannot find parent document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexing did not run yet</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1429,15 +1435,15 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Too many completions</source>
-        <translation>有太多与之相关的补全选项啦</translation>
+        <translation type="obsolete">有太多与之相关的补全选项啦</translation>
     </message>
     <message>
         <source>Completions</source>
-        <translation>补全选项</translation>
+        <translation type="obsolete">补全选项</translation>
     </message>
     <message>
         <source>Select an item:</source>
-        <translation>选择一个条目：</translation>
+        <translation type="obsolete">选择一个条目：</translation>
     </message>
     <message>
         <source>Enter query language expression. Cheat sheet:&lt;br&gt;
@@ -1456,24 +1462,24 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN&quot; &quot;http://www.w3.org/Math/DTD/mathml2/xhtml-math11-f.dtd&quot;&gt;
 &lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;&lt;!--This file was converted to xhtml by OpenOffice.org - see http://xml.openoffice.org/odf2xhtml for more info.--&gt;&lt;head profile=&quot;http://dublincore.org/documents/dcmi-terms/&quot;&gt;&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;application/xhtml+xml; charset=utf-8&quot;/&gt;&lt;title xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; ns_1:lang=&quot;en-US&quot;&gt;- no title specified&lt;/title&gt;&lt;meta xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; name=&quot;DCTERMS.title&quot; content=&quot;&quot; ns_1:lang=&quot;en-US&quot;/&gt;&lt;meta name=&quot;DCTERMS.language&quot; content=&quot;en-US&quot; scheme=&quot;DCTERMS.RFC4646&quot;/&gt;&lt;meta name=&quot;DCTERMS.source&quot; content=&quot;http://xml.openoffice.org/odf2xhtml&quot;/&gt;&lt;meta name=&quot;DCTERMS.issued&quot; content=&quot;2012-03-23T08:43:25&quot; scheme=&quot;DCTERMS.W3CDTF&quot;/&gt;&lt;meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-03-23T09:07:39&quot; scheme=&quot;DCTERMS.W3CDTF&quot;/&gt;&lt;meta xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; name=&quot;DCTERMS.provenance&quot; content=&quot;&quot; ns_1:lang=&quot;en-US&quot;/&gt;&lt;meta xmlns:ns_1=&quot;http://www.w3.org/XML/1998/namespace&quot; name=&quot;DCTERMS.subject&quot; content=&quot;,&quot; ns_1:lang=&quot;en-US&quot;/&gt;&lt;link rel=&quot;schema.DC&quot; href=&quot;http://purl.org/dc/elements/1.1/&quot; hreflang=&quot;en&quot;/&gt;&lt;link rel=&quot;schema.DCTERMS&quot; href=&quot;http://purl.org/dc/terms/&quot; hreflang=&quot;en&quot;/&gt;&lt;link rel=&quot;schema.DCTYPE&quot; href=&quot;http://purl.org/dc/dcmitype/&quot; hreflang=&quot;en&quot;/&gt;&lt;link rel=&quot;schema.DCAM&quot; href=&quot;http://purl.org/dc/dcam/&quot; hreflang=&quot;en&quot;/&gt;&lt;style type=&quot;text/css&quot;&gt;
-<byte value="x9"/>@page {  }
-<byte value="x9"/>table { border-collapse:collapse; border-spacing:0; empty-cells:show }
-<byte value="x9"/>td, th { vertical-align:top; font-size:12pt;}
-<byte value="x9"/>h1, h2, h3, h4, h5, h6 { clear:both }
-<byte value="x9"/>ol, ul { margin:0; padding:0;}
-<byte value="x9"/>li { list-style: none; margin:0; padding:0;}
-<byte value="x9"/>&lt;!-- &quot;li span.odfLiEnd&quot; - IE 7 issue--&gt;
-<byte value="x9"/>li span. { clear: both; line-height:0; width:0; height:0; margin:0; padding:0; }
-<byte value="x9"/>span.footnodeNumber { padding-right:1em; }
-<byte value="x9"/>span.annotation_style_by_filter { font-size:95%; font-family:Arial; background-color:#fff000;  margin:0; border:0; padding:0;  }
-<byte value="x9"/>* { margin:0;}
-<byte value="x9"/>.Standard { font-size:12pt; font-family:Nimbus Roman No9 L; writing-mode:page; }
-<byte value="x9"/>.T1 { font-style:italic; }
-<byte value="x9"/>.T2 { font-style:italic; }
-<byte value="x9"/>.T4 { font-weight:bold; }
-<byte value="x9"/>&lt;!-- ODF styles with no properties representable as CSS --&gt;
-<byte value="x9"/>{ }
-<byte value="x9"/>&lt;/style&gt;&lt;/head&gt;&lt;body dir=&quot;ltr&quot; style=&quot;max-width:21.001cm;margin-top:2cm; margin-bottom:2cm; margin-left:2cm; margin-right:2cm; writing-mode:lr-tb; &quot;&gt;&lt;p class=&quot;Standard&quot;&gt;输入查询语言表达式。简要说明：&lt;br/&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1 &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;2&lt;/span&gt; : &apos;词语1&apos;和&apos;词语2&apos;同时出现在任意字段中。&lt;br/&gt;&lt;span class=&quot;T2&quot;&gt;字段&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1&lt;/span&gt; : &apos;词语1&apos;出现在字段&apos;字段&apos;中。&lt;br/&gt;标准字段名/同义名：&lt;br/&gt;title/subject/caption、author/from、recipient/to、filename、ext。&lt;br/&gt;伪字段名：dir、mime/format、type/rclcat、date。&lt;br/&gt;日期段的两个示例：2009-03-01/2009-05-20 2009-03-01/P2M。&lt;br/&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1 &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;2 OR &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;3&lt;/span&gt; : 词语1 &lt;span class=&quot;T4&quot;&gt;与&lt;/span&gt; (词语2 &lt;span class=&quot;T4&quot;&gt;或&lt;/span&gt; 词语3)。&lt;br/&gt;不允许用真正的括号来表示逻辑关系。&lt;br/&gt;&lt;span class=&quot;T1&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1 &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;2&quot;&lt;/span&gt; : 词组（必须按原样出现）。可用的修饰词：&lt;br/&gt;&lt;span class=&quot;T1&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1 &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;2&quot;p&lt;/span&gt; : 以默认距离进行的无序近似搜索。&lt;br/&gt;有疑问时可使用&lt;span class=&quot;T4&quot;&gt;显示查询语句细节&lt;/span&gt;链接来查看查询语句的细节，另外请查看手册（&amp;lt;F1&amp;gt;）以了解更多内容。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+	@page {  }
+	table { border-collapse:collapse; border-spacing:0; empty-cells:show }
+	td, th { vertical-align:top; font-size:12pt;}
+	h1, h2, h3, h4, h5, h6 { clear:both }
+	ol, ul { margin:0; padding:0;}
+	li { list-style: none; margin:0; padding:0;}
+	&lt;!-- &quot;li span.odfLiEnd&quot; - IE 7 issue--&gt;
+	li span. { clear: both; line-height:0; width:0; height:0; margin:0; padding:0; }
+	span.footnodeNumber { padding-right:1em; }
+	span.annotation_style_by_filter { font-size:95%; font-family:Arial; background-color:#fff000;  margin:0; border:0; padding:0;  }
+	* { margin:0;}
+	.Standard { font-size:12pt; font-family:Nimbus Roman No9 L; writing-mode:page; }
+	.T1 { font-style:italic; }
+	.T2 { font-style:italic; }
+	.T4 { font-weight:bold; }
+	&lt;!-- ODF styles with no properties representable as CSS --&gt;
+	{ }
+	&lt;/style&gt;&lt;/head&gt;&lt;body dir=&quot;ltr&quot; style=&quot;max-width:21.001cm;margin-top:2cm; margin-bottom:2cm; margin-left:2cm; margin-right:2cm; writing-mode:lr-tb; &quot;&gt;&lt;p class=&quot;Standard&quot;&gt;输入查询语言表达式。简要说明：&lt;br/&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1 &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;2&lt;/span&gt; : &apos;词语1&apos;和&apos;词语2&apos;同时出现在任意字段中。&lt;br/&gt;&lt;span class=&quot;T2&quot;&gt;字段&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1&lt;/span&gt; : &apos;词语1&apos;出现在字段&apos;字段&apos;中。&lt;br/&gt;标准字段名/同义名：&lt;br/&gt;title/subject/caption、author/from、recipient/to、filename、ext。&lt;br/&gt;伪字段名：dir、mime/format、type/rclcat、date。&lt;br/&gt;日期段的两个示例：2009-03-01/2009-05-20 2009-03-01/P2M。&lt;br/&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1 &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;2 OR &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;3&lt;/span&gt; : 词语1 &lt;span class=&quot;T4&quot;&gt;与&lt;/span&gt; (词语2 &lt;span class=&quot;T4&quot;&gt;或&lt;/span&gt; 词语3)。&lt;br/&gt;不允许用真正的括号来表示逻辑关系。&lt;br/&gt;&lt;span class=&quot;T1&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1 &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;2&quot;&lt;/span&gt; : 词组（必须按原样出现）。可用的修饰词：&lt;br/&gt;&lt;span class=&quot;T1&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;1 &lt;/span&gt;&lt;span class=&quot;T2&quot;&gt;词语&lt;/span&gt;&lt;span class=&quot;T1&quot;&gt;2&quot;p&lt;/span&gt; : 以默认距离进行的无序近似搜索。&lt;br/&gt;有疑问时可使用&lt;span class=&quot;T4&quot;&gt;显示查询语句细节&lt;/span&gt;链接来查看查询语句的细节，另外请查看手册（&amp;lt;F1&amp;gt;）以了解更多内容。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
 </translation>
     </message>
     <message>
@@ -1581,10 +1587,6 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Prev</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>X</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>SnippetsW</name>
@@ -1618,6 +1620,18 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>No db info.</source>
         <translation>未找到数据库信息。</translation>
+    </message>
+    <message>
+        <source>Match</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Case</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Accents</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1682,6 +1696,42 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>terms may be missing. Try using a longer root.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Show index statistics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Average terms per document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smallest document length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Longest document length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Database directory size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MIME types:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>UIPrefsDialog</name>
@@ -1703,7 +1753,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)</source>
-        <translation>选择xapian索引目录（例如：/home/buddy/.recoll/xapiandb）</translation>
+        <translation type="obsolete">选择xapian索引目录（例如：/home/buddy/.recoll/xapiandb）</translation>
     </message>
     <message>
         <source>Choose</source>
@@ -1717,12 +1767,20 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Result list header (default is empty)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Select recoll config directory or xapian index directory (e.g.: /home/me/.recoll or /home/me/.recoll/xapiandb)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected directory looks like a Recoll configuration directory but the configuration could not be read</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
     <message>
         <source>Changing actions with different current values</source>
-        <translation>正在针对不同的当前值而改变动作</translation>
+        <translation type="obsolete">正在针对不同的当前值而改变动作</translation>
     </message>
     <message>
         <source>Command</source>
@@ -1731,6 +1789,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>MIME type</source>
         <translation>文件类型</translation>
+    </message>
+    <message>
+        <source>Desktop Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Changing entries with different current values</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1741,11 +1807,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
-        <translation>选中一个或多个文件类型，然后点击“修改动作”来修改用来打开这些文件的程序</translation>
+        <translation type="obsolete">选中一个或多个文件类型，然后点击“修改动作”来修改用来打开这些文件的程序</translation>
     </message>
     <message>
         <source>Change Action</source>
-        <translation>修改动作</translation>
+        <translation type="obsolete">修改动作</translation>
     </message>
     <message>
         <source>Close</source>
@@ -1753,7 +1819,31 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Select one or several mime types then click &quot;Change Action&quot;&lt;br&gt;You can also close this dialog and check &quot;Use desktop preferences&quot;&lt;br&gt;in the main panel to ignore this list and use your desktop defaults.</source>
-        <translation>选中一个或多个文件类型祟点击“修改动作”&lt;br&gt;或者可以关闭这个对话框，而在主面板中选中“使用桌面默认设置”&lt;br&gt;那样就会无视这个列表而使用桌面的默认设置。</translation>
+        <translation type="obsolete">选中一个或多个文件类型祟点击“修改动作”&lt;br&gt;或者可以关闭这个对话框，而在主面板中选中“使用桌面默认设置”&lt;br&gt;那样就会无视这个列表而使用桌面的默认设置。</translation>
+    </message>
+    <message>
+        <source>Select one or several mime types then use the controls in the bottom frame to change how they are processed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Desktop preferences by default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exception to Desktop preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Action (empty -&gt; recoll default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply to current selection</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2064,7 +2154,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
-        <translation>使用桌面系统的设置来选择文档编辑器。</translation>
+        <translation type="obsolete">使用桌面系统的设置来选择文档编辑器。</translation>
     </message>
     <message>
         <source>Choose editor applications</source>
@@ -2273,11 +2363,11 @@ The default value is 2 (percent). </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Exceptions</source>
+        <source>Disable Qt autocompletion in search entry.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Mime types that should not be passed to xdg-open even when &quot;Use desktop preferences&quot; is set.&lt;br&gt; Useful to pass page number and search string options to, e.g. evince.</source>
+        <source>Search as you type.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

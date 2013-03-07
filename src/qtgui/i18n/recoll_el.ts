@@ -1,4 +1,6 @@
-<!DOCTYPE TS><TS>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -11,11 +13,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation>κείμενα</translation>
+        <translation type="obsolete">κείμενα</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation>λογιστικά φύλλα</translation>
+        <translation type="obsolete">λογιστικά φύλλα</translation>
     </message>
     <message>
         <source>presentations</source>
@@ -411,7 +413,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Cannot create temporary directory: </source>
-        <translation>Αδυναμία δημιουργίας του προσωρινού καταλόγου:</translation>
+        <translation type="obsolete">Αδυναμία δημιουργίας του προσωρινού καταλόγου:</translation>
     </message>
     <message>
         <source>Missing helper program: </source>
@@ -866,6 +868,10 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Cannot find parent document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexing did not run yet</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1400,15 +1406,15 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Too many completions</source>
-        <translation>Πολλές πιθανές συμπληρώσεις</translation>
+        <translation type="obsolete">Πολλές πιθανές συμπληρώσεις</translation>
     </message>
     <message>
         <source>Completions</source>
-        <translation>Συμπληρώσεις</translation>
+        <translation type="obsolete">Συμπληρώσεις</translation>
     </message>
     <message>
         <source>Select an item:</source>
-        <translation>Επιλέξτε ένα αντικείμενο:</translation>
+        <translation type="obsolete">Επιλέξτε ένα αντικείμενο:</translation>
     </message>
 </context>
 <context>
@@ -1507,10 +1513,6 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Prev</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>X</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>SnippetsW</name>
@@ -1544,6 +1546,18 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>No db info.</source>
         <translation>Δεν υπάρχουν πληροφορίες για τη βάση δεδομένων.</translation>
+    </message>
+    <message>
+        <source>Match</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Case</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Accents</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1608,6 +1622,42 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>terms may be missing. Try using a longer root.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Show index statistics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Average terms per document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smallest document length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Longest document length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Database directory size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MIME types:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>UIPrefsDialog</name>
@@ -1621,7 +1671,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)</source>
-        <translation>Επιλέξτε έναν κατάλογο που περιέχει ένα ευρετήριο Xapian (π.χ. /home/buddy/.recoll/xapiandb)</translation>
+        <translation type="obsolete">Επιλέξτε έναν κατάλογο που περιέχει ένα ευρετήριο Xapian (π.χ. /home/buddy/.recoll/xapiandb)</translation>
     </message>
     <message>
         <source>The selected directory does not appear to be a Xapian index</source>
@@ -1643,6 +1693,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Result list header (default is empty)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Select recoll config directory or xapian index directory (e.g.: /home/me/.recoll or /home/me/.recoll/xapiandb)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected directory looks like a Recoll configuration directory but the configuration could not be read</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -1656,7 +1714,15 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Changing actions with different current values</source>
-        <translation>Αλλαγή των ενεργειών με διαφορετικές τρέχουσες τιμές</translation>
+        <translation type="obsolete">Αλλαγή των ενεργειών με διαφορετικές τρέχουσες τιμές</translation>
+    </message>
+    <message>
+        <source>Desktop Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Changing entries with different current values</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1667,19 +1733,43 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Select one or several mime types then click &quot;Change Action&quot;&lt;br&gt;You can also close this dialog and check &quot;Use desktop preferences&quot;&lt;br&gt;in the main panel to ignore this list and use your desktop defaults.</source>
-        <translation>Επιλέξτε έναν ή περισσότερους τύπους MIME και κάντε κλικ στο «Αλλαγή της ενέργειας»&lt;br&gt;Μπορείτε επίσης να κλείσετε το διάλογο και να επιλέξετε «Χρήση των προτιμήσεων του περιβάλλοντος εργασίας»&lt;br&gt;στο κύριο παράθυρο για να αγνοήσετε αυτή τη λίστα.</translation>
+        <translation type="obsolete">Επιλέξτε έναν ή περισσότερους τύπους MIME και κάντε κλικ στο «Αλλαγή της ενέργειας»&lt;br&gt;Μπορείτε επίσης να κλείσετε το διάλογο και να επιλέξετε «Χρήση των προτιμήσεων του περιβάλλοντος εργασίας»&lt;br&gt;στο κύριο παράθυρο για να αγνοήσετε αυτή τη λίστα.</translation>
     </message>
     <message>
         <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
-        <translation>Επιλέξτε έναν ή περισσότερους τύπους αρχείων και κάντε κλικ στο «Αλλαγή» για να αλλάξετε το πρόγραμμα που χρησιμοποιείται για το άνοιγμά τους</translation>
+        <translation type="obsolete">Επιλέξτε έναν ή περισσότερους τύπους αρχείων και κάντε κλικ στο «Αλλαγή» για να αλλάξετε το πρόγραμμα που χρησιμοποιείται για το άνοιγμά τους</translation>
     </message>
     <message>
         <source>Change Action</source>
-        <translation>Αλλαγή</translation>
+        <translation type="obsolete">Αλλαγή</translation>
     </message>
     <message>
         <source>Close</source>
         <translation>Κλείσιμο</translation>
+    </message>
+    <message>
+        <source>Select one or several mime types then use the controls in the bottom frame to change how they are processed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Desktop preferences by default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exception to Desktop preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Action (empty -&gt; recoll default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply to current selection</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1989,7 +2079,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
-        <translation>Χρήση ρυθμίσεων του περιβάλλοντος για την επιλογή της εφαρμογής προβολής.</translation>
+        <translation type="obsolete">Χρήση ρυθμίσεων του περιβάλλοντος για την επιλογή της εφαρμογής προβολής.</translation>
     </message>
     <message>
         <source>Choose editor applications</source>
@@ -2198,11 +2288,11 @@ May be slow for big documents.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Exceptions</source>
+        <source>Disable Qt autocompletion in search entry.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Mime types that should not be passed to xdg-open even when &quot;Use desktop preferences&quot; is set.&lt;br&gt; Useful to pass page number and search string options to, e.g. evince.</source>
+        <source>Search as you type.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

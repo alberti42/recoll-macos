@@ -13,11 +13,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation>textes</translation>
+        <translation type="obsolete">textes</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation>feuilles de calcul</translation>
+        <translation type="obsolete">feuilles de calcul</translation>
     </message>
     <message>
         <source>presentations</source>
@@ -450,7 +450,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Cannot create temporary directory: </source>
-        <translation>Impossible de créer un répertoire temporaire</translation>
+        <translation type="obsolete">Impossible de créer un répertoire temporaire</translation>
     </message>
     <message>
         <source>Error while loading file</source>
@@ -914,6 +914,10 @@ Please check the mimeview file</source>
     <message>
         <source>Cannot find parent document</source>
         <translation>Impossible de trouver le document parent</translation>
+    </message>
+    <message>
+        <source>Indexing did not run yet</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1431,15 +1435,15 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Completions</source>
-        <translation>Complétions</translation>
+        <translation type="obsolete">Complétions</translation>
     </message>
     <message>
         <source>Select an item:</source>
-        <translation>Sélectionner un élément:</translation>
+        <translation type="obsolete">Sélectionner un élément:</translation>
     </message>
     <message>
         <source>Too many completions</source>
-        <translation>Trop de complétions possibles</translation>
+        <translation type="obsolete">Trop de complétions possibles</translation>
     </message>
     <message>
         <source>Query language</source>
@@ -1608,7 +1612,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>X</source>
-        <translation>X</translation>
+        <translation type="obsolete">X</translation>
     </message>
     <message>
         <source>Find:</source>
@@ -1702,6 +1706,18 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
         <source>Doc. / Tot.</source>
         <translation type="obsolete">Doc. / Tot.</translation>
     </message>
+    <message>
+        <source>Match</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Case</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Accents</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SpellW</name>
@@ -1765,6 +1781,42 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
         <source>terms may be missing. Try using a longer root.</source>
         <translation>pourraient être absents. Essayer d&apos;utiliser une racine plus longue</translation>
     </message>
+    <message>
+        <source>Show index statistics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Average terms per document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smallest document length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Longest document length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Database directory size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MIME types:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>UIPrefsDialog</name>
@@ -1782,7 +1834,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)</source>
-        <translation>Sélectionner un répertoire contenant un index Xapian (ex: /home/monAmi/.recoll/xapiandb)</translation>
+        <translation type="obsolete">Sélectionner un répertoire contenant un index Xapian (ex: /home/monAmi/.recoll/xapiandb)</translation>
     </message>
     <message>
         <source>error retrieving stemming languages</source>
@@ -1799,6 +1851,14 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     <message>
         <source>Result list header (default is empty)</source>
         <translation>En-tête HTML (la valeur par défaut est vide)</translation>
+    </message>
+    <message>
+        <source>Select recoll config directory or xapian index directory (e.g.: /home/me/.recoll or /home/me/.recoll/xapiandb)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected directory looks like a Recoll configuration directory but the configuration could not be read</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2012,7 +2072,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     <name>ViewAction</name>
     <message>
         <source>Changing actions with different current values</source>
-        <translation>Changement d&apos;actions avec des valeurs actuelles differentes</translation>
+        <translation type="obsolete">Changement d&apos;actions avec des valeurs actuelles differentes</translation>
     </message>
     <message>
         <source>Mime type</source>
@@ -2025,6 +2085,14 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     <message>
         <source>MIME type</source>
         <translation>Type MIME</translation>
+    </message>
+    <message>
+        <source>Desktop Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Changing entries with different current values</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2039,11 +2107,11 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
-        <translation>Sélectionner une ou plusieurs types de fichiers, puis cliquer Changer pour modifier le programme utiliser pour les ouvrir</translation>
+        <translation type="obsolete">Sélectionner une ou plusieurs types de fichiers, puis cliquer Changer pour modifier le programme utiliser pour les ouvrir</translation>
     </message>
     <message>
         <source>Change Action</source>
-        <translation>Changer</translation>
+        <translation type="obsolete">Changer</translation>
     </message>
     <message>
         <source>Close</source>
@@ -2055,7 +2123,31 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Select one or several mime types then click &quot;Change Action&quot;&lt;br&gt;You can also close this dialog and check &quot;Use desktop preferences&quot;&lt;br&gt;in the main panel to ignore this list and use your desktop defaults.</source>
-        <translation>Sélectionner un ou plusieurs types MIME puis cliquer &quot;Modifier l&apos;Action&quot;&lt;br&gt;Vous pouvez aussi fermer ce dialogue et choisir &quot;Utiliser les préférences du bureau&quot;&lt;br&gt; dans le dialogue principal pour ignorer cette liste.</translation>
+        <translation type="obsolete">Sélectionner un ou plusieurs types MIME puis cliquer &quot;Modifier l&apos;Action&quot;&lt;br&gt;Vous pouvez aussi fermer ce dialogue et choisir &quot;Utiliser les préférences du bureau&quot;&lt;br&gt; dans le dialogue principal pour ignorer cette liste.</translation>
+    </message>
+    <message>
+        <source>Select one or several mime types then use the controls in the bottom frame to change how they are processed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Desktop preferences by default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exception to Desktop preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Action (empty -&gt; recoll default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply to current selection</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2389,7 +2481,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
-        <translation>Utiliser les réglages du bureau pour choisir l&apos;application de visualisation.</translation>
+        <translation type="obsolete">Utiliser les réglages du bureau pour choisir l&apos;application de visualisation.</translation>
     </message>
     <message>
         <source>Choose editor applications</source>
@@ -2611,11 +2703,19 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Exceptions</source>
-        <translation>Exceptions</translation>
+        <translation type="obsolete">Exceptions</translation>
     </message>
     <message>
         <source>Mime types that should not be passed to xdg-open even when &quot;Use desktop preferences&quot; is set.&lt;br&gt; Useful to pass page number and search string options to, e.g. evince.</source>
-        <translation>Types MIME qui ne doivent pas être passés à xdg-open même quand &quot;Utiliser les préférences du bureau&quot; est coché. &lt;br&gt; Utile pour pouvoir passer les paramètres de numéro de page et de terme de recherche à evince, par exemple. </translation>
+        <translation type="obsolete">Types MIME qui ne doivent pas être passés à xdg-open même quand &quot;Utiliser les préférences du bureau&quot; est coché. &lt;br&gt; Utile pour pouvoir passer les paramètres de numéro de page et de terme de recherche à evince, par exemple. </translation>
+    </message>
+    <message>
+        <source>Disable Qt autocompletion in search entry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search as you type.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

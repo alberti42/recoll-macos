@@ -1,4 +1,6 @@
-<!DOCTYPE TS><TS>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -35,14 +37,6 @@
     </message>
     <message>
         <source>message</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>texts</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>spreadsheets</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -387,10 +381,6 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Match &amp;Case</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cannot create temporary directory: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -812,6 +802,10 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Cannot find parent document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexing did not run yet</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1301,18 +1295,6 @@ Please check the mimeview file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Too many completions</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Completions</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select an item:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Enter query language expression. Cheat sheet:&lt;br&gt;
 &lt;i&gt;term1 term2&lt;/i&gt; : &apos;term1&apos; and &apos;term2&apos; in any field.&lt;br&gt;
 &lt;i&gt;field:term1&lt;/i&gt; : &apos;term1&apos; in field &apos;field&apos;.&lt;br&gt;
@@ -1433,10 +1415,6 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Prev</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>X</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>SnippetsW</name>
@@ -1469,6 +1447,18 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>No db info.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Match</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Case</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Accents</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1530,6 +1520,42 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>terms may be missing. Try using a longer root.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Show index statistics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Average terms per document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smallest document length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Longest document length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Database directory size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MIME types:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>UIPrefsDialog</name>
@@ -1550,10 +1576,6 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Choose</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1565,19 +1587,31 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Result list header (default is empty)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Select recoll config directory or xapian index directory (e.g.: /home/me/.recoll or /home/me/.recoll/xapiandb)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected directory looks like a Recoll configuration directory but the configuration could not be read</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
-    <message>
-        <source>Changing actions with different current values</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Command</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>MIME type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Desktop Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Changing entries with different current values</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1588,19 +1622,31 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Change Action</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Select one or several mime types then click &quot;Change Action&quot;&lt;br&gt;You can also close this dialog and check &quot;Use desktop preferences&quot;&lt;br&gt;in the main panel to ignore this list and use your desktop defaults.</source>
+        <source>Select one or several mime types then use the controls in the bottom frame to change how they are processed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Desktop preferences by default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exception to Desktop preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Action (empty -&gt; recoll default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply to current selection</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1887,10 +1933,6 @@ This will help searching very big text  files (ie: log files).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Use desktop preferences to choose document editor.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Choose editor applications</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2084,11 +2126,11 @@ The default value is 2 (percent). </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Exceptions</source>
+        <source>Disable Qt autocompletion in search entry.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Mime types that should not be passed to xdg-open even when &quot;Use desktop preferences&quot; is set.&lt;br&gt; Useful to pass page number and search string options to, e.g. evince.</source>
+        <source>Search as you type.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

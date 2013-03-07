@@ -13,11 +13,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation>Texty</translation>
+        <translation type="obsolete">Texty</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation>Tabulky</translation>
+        <translation type="obsolete">Tabulky</translation>
     </message>
     <message>
         <source>presentations</source>
@@ -451,7 +451,7 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     </message>
     <message>
         <source>Cannot create temporary directory: </source>
-        <translation>Nelze vytvořit dočasný adresář: </translation>
+        <translation type="obsolete">Nelze vytvořit dočasný adresář: </translation>
     </message>
     <message>
         <source>Error while loading file</source>
@@ -908,6 +908,10 @@ Prověřte soubor mimeconf</translation>
     <message>
         <source>Cannot find parent document</source>
         <translation>Nelze najít rodičovský dokument</translation>
+    </message>
+    <message>
+        <source>Indexing did not run yet</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1417,15 +1421,15 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Completions</source>
-        <translation>Doplnění</translation>
+        <translation type="obsolete">Doplnění</translation>
     </message>
     <message>
         <source>Select an item:</source>
-        <translation>Vyberte položku:</translation>
+        <translation type="obsolete">Vyberte položku:</translation>
     </message>
     <message>
         <source>Too many completions</source>
-        <translation>Příliš mnoho doplnění</translation>
+        <translation type="obsolete">Příliš mnoho doplnění</translation>
     </message>
     <message>
         <source>Query language</source>
@@ -1602,7 +1606,7 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>X</source>
-        <translation>X</translation>
+        <translation type="obsolete">X</translation>
     </message>
 </context>
 <context>
@@ -1680,6 +1684,18 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
         <source>No db info.</source>
         <translation>Žádné informace o databázi.</translation>
     </message>
+    <message>
+        <source>Match</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Case</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Accents</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SpellW</name>
@@ -1743,6 +1759,42 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
         <source>terms may be missing. Try using a longer root.</source>
         <translation>pojmy mohou chybět. Zkuste použít delší kořen.</translation>
     </message>
+    <message>
+        <source>Show index statistics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Average terms per document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smallest document length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Longest document length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Database directory size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MIME types:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>UIPrefsDialog</name>
@@ -1760,7 +1812,7 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)</source>
-        <translation>Vyberte adresář s rejstříkem Xapian Indexverzeichnis (např.: /home/benutzer/.recoll/xapiandb)</translation>
+        <translation type="obsolete">Vyberte adresář s rejstříkem Xapian Indexverzeichnis (např.: /home/benutzer/.recoll/xapiandb)</translation>
     </message>
     <message>
         <source>error retrieving stemming languages</source>
@@ -1777,6 +1829,14 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     <message>
         <source>Result list header (default is empty)</source>
         <translation>Záhlaví seznamu s výsledky (výchozí je prázdné)</translation>
+    </message>
+    <message>
+        <source>Select recoll config directory or xapian index directory (e.g.: /home/me/.recoll or /home/me/.recoll/xapiandb)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected directory looks like a Recoll configuration directory but the configuration could not be read</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1942,7 +2002,7 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     <name>ViewAction</name>
     <message>
         <source>Changing actions with different current values</source>
-        <translation>Mění se činnosti s odlišnými nynějšími hodnotami</translation>
+        <translation type="obsolete">Mění se činnosti s odlišnými nynějšími hodnotami</translation>
     </message>
     <message>
         <source>Mime type</source>
@@ -1955,6 +2015,14 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     <message>
         <source>MIME type</source>
         <translation>Typ MIME</translation>
+    </message>
+    <message>
+        <source>Desktop Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Changing entries with different current values</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1969,11 +2037,11 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
-        <translation>Vyberte jeden nebo více datových typů a klepněte na &quot;Změnit činnost&quot; pro změnu programu přiřazeného k jejich otevření</translation>
+        <translation type="obsolete">Vyberte jeden nebo více datových typů a klepněte na &quot;Změnit činnost&quot; pro změnu programu přiřazeného k jejich otevření</translation>
     </message>
     <message>
         <source>Change Action</source>
-        <translation>Změnit činnost</translation>
+        <translation type="obsolete">Změnit činnost</translation>
     </message>
     <message>
         <source>Close</source>
@@ -1985,7 +2053,31 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Select one or several mime types then click &quot;Change Action&quot;&lt;br&gt;You can also close this dialog and check &quot;Use desktop preferences&quot;&lt;br&gt;in the main panel to ignore this list and use your desktop defaults.</source>
-        <translation>Vyberte jeden nebo několik MIME typů a potom klepněte na &quot;Změnit činnost&quot;&lt;br&gt;Taktéž můžete tento dialog zavřít a zaškrtnout &quot;Použít nastavení pracovní plochy&quot;&lt;br&gt;v hlavním panelu, aby se tento seznam přehlížel a pracovní plocha se použila jako výchozí.</translation>
+        <translation type="obsolete">Vyberte jeden nebo několik MIME typů a potom klepněte na &quot;Změnit činnost&quot;&lt;br&gt;Taktéž můžete tento dialog zavřít a zaškrtnout &quot;Použít nastavení pracovní plochy&quot;&lt;br&gt;v hlavním panelu, aby se tento seznam přehlížel a pracovní plocha se použila jako výchozí.</translation>
+    </message>
+    <message>
+        <source>Select one or several mime types then use the controls in the bottom frame to change how they are processed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Desktop preferences by default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exception to Desktop preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Action (empty -&gt; recoll default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply to current selection</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2305,7 +2397,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
-        <translation>Použít nastavení pracovní plochy pro výběr editoru pro dokumenty.</translation>
+        <translation type="obsolete">Použít nastavení pracovní plochy pro výběr editoru pro dokumenty.</translation>
     </message>
     <message>
         <source>Choose editor applications</source>
@@ -2527,11 +2619,19 @@ Výchozí hodnota je 2 (procenta).</translation>
     </message>
     <message>
         <source>Exceptions</source>
-        <translation>Výjimky</translation>
+        <translation type="obsolete">Výjimky</translation>
     </message>
     <message>
         <source>Mime types that should not be passed to xdg-open even when &quot;Use desktop preferences&quot; is set.&lt;br&gt; Useful to pass page number and search string options to, e.g. evince.</source>
-        <translation>MIME typy, jež nemají být předány xdg-open, dokonce i když je nastaveno &quot;Použít nastavení plochy&quot;.&lt;br&gt;Užitečné pro předání čísla strany a hledaného řetězce, např. Evince.</translation>
+        <translation type="obsolete">MIME typy, jež nemají být předány xdg-open, dokonce i když je nastaveno &quot;Použít nastavení plochy&quot;.&lt;br&gt;Užitečné pro předání čísla strany a hledaného řetězce, např. Evince.</translation>
+    </message>
+    <message>
+        <source>Disable Qt autocompletion in search entry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search as you type.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

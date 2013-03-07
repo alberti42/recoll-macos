@@ -1,4 +1,6 @@
-<!DOCTYPE TS><TS>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -11,11 +13,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation>tekstai</translation>
+        <translation type="obsolete">tekstai</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation>skaičiuoklės</translation>
+        <translation type="obsolete">skaičiuoklės</translation>
     </message>
     <message>
         <source>presentations</source>
@@ -408,10 +410,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Match &amp;Case</source>
         <translation>Atitaikyti &amp;Atvejį </translation>
-    </message>
-    <message>
-        <source>Cannot create temporary directory: </source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Error while loading file</source>
@@ -865,6 +863,10 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Cannot find parent document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexing did not run yet</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1379,15 +1381,15 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Too many completions</source>
-        <translation>Per daug galimų užbaigimų</translation>
+        <translation type="obsolete">Per daug galimų užbaigimų</translation>
     </message>
     <message>
         <source>Completions</source>
-        <translation>Užbaigimai</translation>
+        <translation type="obsolete">Užbaigimai</translation>
     </message>
     <message>
         <source>Select an item:</source>
-        <translation>Pasirinkti įrašą:</translation>
+        <translation type="obsolete">Pasirinkti įrašą:</translation>
     </message>
     <message>
         <source>Enter query language expression. Cheat sheet:&lt;br&gt;
@@ -1538,10 +1540,6 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Prev</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <source>X</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>SnippetsW</name>
@@ -1618,6 +1616,18 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>No db info.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Match</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Case</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Accents</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SpellW</name>
@@ -1677,6 +1687,42 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>terms may be missing. Try using a longer root.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Show index statistics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Number of documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Average terms per document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smallest document length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Longest document length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Database directory size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>MIME types:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Value</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>UIPrefsDialog</name>
@@ -1698,7 +1744,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)</source>
-        <translation>Pasirinkite Xapian indekso direktoriją (pav: /home/buddy/.recoll/xapiandb)</translation>
+        <translation type="obsolete">Pasirinkite Xapian indekso direktoriją (pav: /home/buddy/.recoll/xapiandb)</translation>
     </message>
     <message>
         <source>Choose</source>
@@ -1710,6 +1756,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Result list header (default is empty)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select recoll config directory or xapian index directory (e.g.: /home/me/.recoll or /home/me/.recoll/xapiandb)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected directory looks like a Recoll configuration directory but the configuration could not be read</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1911,7 +1965,7 @@ Didelės apimties dokumentams gali lėtai veikti.</translation>
     <name>ViewAction</name>
     <message>
         <source>Changing actions with different current values</source>
-        <translation>Pakeisti veiksmus su skirtingomis dabartinėmis vertėmis</translation>
+        <translation type="obsolete">Pakeisti veiksmus su skirtingomis dabartinėmis vertėmis</translation>
     </message>
     <message>
         <source>Mime type</source>
@@ -1925,6 +1979,14 @@ Didelės apimties dokumentams gali lėtai veikti.</translation>
         <source>MIME type</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Desktop Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Changing entries with different current values</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewActionBase</name>
@@ -1934,7 +1996,7 @@ Didelės apimties dokumentams gali lėtai veikti.</translation>
     </message>
     <message>
         <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
-        <translation>Pasirinkite vieną ar kelis bylų tipus, tada paspauskite Keisti Veiksmus norėdami keisti kaip programa juos atidaro</translation>
+        <translation type="obsolete">Pasirinkite vieną ar kelis bylų tipus, tada paspauskite Keisti Veiksmus norėdami keisti kaip programa juos atidaro</translation>
     </message>
     <message>
         <source>File type</source>
@@ -1946,7 +2008,7 @@ Didelės apimties dokumentams gali lėtai veikti.</translation>
     </message>
     <message>
         <source>Change Action</source>
-        <translation>Pakeisti veiksmą</translation>
+        <translation type="obsolete">Pakeisti veiksmą</translation>
     </message>
     <message>
         <source>Close</source>
@@ -1954,7 +2016,31 @@ Didelės apimties dokumentams gali lėtai veikti.</translation>
     </message>
     <message>
         <source>Select one or several mime types then click &quot;Change Action&quot;&lt;br&gt;You can also close this dialog and check &quot;Use desktop preferences&quot;&lt;br&gt;in the main panel to ignore this list and use your desktop defaults.</source>
-        <translation>Pasirinkite vieną ar kelis mime tipus tada spauskite &quot;Keisti Veiksmus&quot;&lt;br&gt;Taip pat galite uždaryti šį langą ir patikrinti &quot;Naudoti darbalaukio nustatymus&quot;&lt;br&gt;pagrindinėje panelėje? norėdami ignoruoti šį sąrašą ir naudoti numatytasias darbalaukio.</translation>
+        <translation type="obsolete">Pasirinkite vieną ar kelis mime tipus tada spauskite &quot;Keisti Veiksmus&quot;&lt;br&gt;Taip pat galite uždaryti šį langą ir patikrinti &quot;Naudoti darbalaukio nustatymus&quot;&lt;br&gt;pagrindinėje panelėje? norėdami ignoruoti šį sąrašą ir naudoti numatytasias darbalaukio.</translation>
+    </message>
+    <message>
+        <source>Select one or several mime types then use the controls in the bottom frame to change how they are processed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Desktop preferences by default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exception to Desktop preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Action (empty -&gt; recoll default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Apply to current selection</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2286,7 +2372,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
-        <translation>Naudoti darbalaukio nustatymus parenkant dokumentų redaktorių.</translation>
+        <translation type="obsolete">Naudoti darbalaukio nustatymus parenkant dokumentų redaktorių.</translation>
     </message>
     <message>
         <source>Choose editor applications</source>
@@ -2487,11 +2573,11 @@ The default value is 2 (percent). </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Exceptions</source>
+        <source>Disable Qt autocompletion in search entry.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Mime types that should not be passed to xdg-open even when &quot;Use desktop preferences&quot; is set.&lt;br&gt; Useful to pass page number and search string options to, e.g. evince.</source>
+        <source>Search as you type.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
