@@ -95,7 +95,7 @@ bool fsocc(const string &path, int *pc, long *blocks)
     return true;
 }
 
-static const string& tmplocation()
+const string& tmplocation()
 {
     static string stmpdir;
     if (stmpdir.empty()) {

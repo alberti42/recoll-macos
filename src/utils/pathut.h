@@ -74,7 +74,10 @@ bool fsocc(const string &path, int *pc, // Percent occupied
 	   long *avmbs = 0 // Mbs available to non-superuser
 	   );
 
-/// Create temporary directory
+/// Retrieve the temp dir location: $RECOLL_TMPDIR else $TMPDIR else /tmp
+extern const string& tmplocation();
+
+/// Create temporary directory (inside the temp location)
 extern bool maketmpdir(string& tdir, string& reason);
 
 /// mkdir -p

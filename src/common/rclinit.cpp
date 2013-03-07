@@ -112,7 +112,6 @@ RclConfig *recollinit(RclInitFlags flags,
 
     // Init unac locking
     unac_init_mt();
-
     // Init smallut and pathut static values
     pathut_init_mt();
     smallut_init_mt();

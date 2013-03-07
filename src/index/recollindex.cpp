@@ -364,6 +364,18 @@ int main(int argc, char **argv)
     }
     o_reexec->atexit(cleanup);
 
+    string rundir;
+    config->getConfParam("idxrundir", rundir);
+    if (!rundir.compare("tmp")) {
+	LOGDEB(("recollindex: changing current directory to [%s]\n",
+		tmplocation().c_str()));
+	chdir(tmplocation().c_str());
+    } else if (!rundir.empty()) {
+	LOGDEB(("recollindex: changing current directory to [%s]\n",
+		rundir.c_str()));
+	chdir(rundir.c_str());
+    }
+
     bool rezero((op_flags & OPT_z) != 0);
     bool inPlaceReset((op_flags & OPT_Z) != 0);
     Pidfile pidfile(config->getPidfile());

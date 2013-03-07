@@ -51,6 +51,15 @@ logfilename = stderr
 # daemloglevel = 3
 # daemlogfilename = /dev/null
 
+# Run directory for the indexing process. The filters sometimes leave
+# garbage in the current directory, so it makes sense to have recollindex
+# chdir to some garbage bin. 3 possible values:
+#  - (literal) tmp : go to temp dir as set by env (RECOLL_TMPDIR else
+#    TMPDIR else /tmp)
+#  - Empty: stay were started
+#  - Absolute path value: go there.
+idxrundir = tmp
+
 # Decide if we store character case and diacritics in the index. If we do, 
 # searches sensitive to case and diacritics can be performed, but the index
 # will be bigger, and some marginal weirdness may sometimes occur. We
