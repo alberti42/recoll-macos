@@ -64,7 +64,7 @@ static string idFileInternal(istream& input, const char *fn)
     int lnum = 1;
     for (int loop = 1; loop < 200; loop++, lnum++) {
 
-#define LL 1024
+#define LL 2*1024
 	char cline[LL+1];
 	cline[LL] = 0;
 	input.getline(cline, LL-1);
@@ -102,15 +102,17 @@ static string idFileInternal(istream& input, const char *fn)
 	}
 
 	// emacs vm can insert VERY long header lines.
-	if (ll > 800) {
+	if (ll > LL - 20) {
 	    LOGDEB2(("idFile: Line too long\n"));
 	    return string();
 	}
 
 	// Check for mbox 'From ' line
 	if (lnum == 1 && !strncmp("From ", cline, 5)) {
-	    if (treat_mbox_as_rfc822 == -1)
+	    if (treat_mbox_as_rfc822 == -1) {
 		line1HasFrom = true;
+		LOGDEB2(("idfile: line 1 has From_\n"));
+	    }
 	    continue;
 	} 
 
