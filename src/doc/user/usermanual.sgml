@@ -30,8 +30,17 @@
       <year>2005-2012</year>
       <holder role="mailto:jfd@recoll.org">Jean-Francois Dockes</holder>
     </copyright>
-
     <abstract>
+
+    <para><literal>Permission is granted to copy, distribute and/or
+    modify this document under the terms of the GNU Free Documentation
+    License, Version 1.3 or any later version published by the Free
+    Software Foundation; with no Invariant Sections, no Front-Cover
+    Texts, and no Back-Cover Texts.  A copy of the license can be
+    found at the following
+    location: <ulink url="http://www.gnu.org/licenses/fdl.html">GNU
+          web site</ulink>.</literal></para>
+
       <para>This document introduces full text search notions
       and describes the installation and use of the &RCL;
       application. It currently describes &RCL; &RCLVERSION;.</para>
@@ -171,8 +180,8 @@
         consequence, it was impossible to search for a particular
         capitalization of a term (<literal>US</literal> /
         <literal>us</literal>), or to discriminate two terms based on
-        diacritics (<literal>sake</literal> / <literal>saké</literal>, 
-        <literal>mate</literal> / <literal>maté</literal>).</para>
+        diacritics (<literal>sake</literal> / <literal>sakÃ©</literal>, 
+        <literal>mate</literal> / <literal>matÃ©</literal>).</para>
       
       <para>As of version 1.18, &RCL; can optionally store the raw terms,
         without accent stripping or case conversion. In this configuration,
@@ -634,9 +643,9 @@ recoll
         <para>As of &RCL; version 1.18 you have a choice of building an
           index with terms stripped of character case and diacritics, or
           one with raw terms. For a source term of
-          <literal>Résumé</literal>, the former will store
+          <literal>RÃ©sumÃ©</literal>, the former will store
           <literal>resume</literal>, the latter
-          <literal>Résumé</literal>.</para>
+          <literal>RÃ©sumÃ©</literal>.</para>
         
         <para>Each type of index allows performing searches insensitive to
           case and diacritics: with a raw index, the user entry will be
@@ -648,7 +657,7 @@ recoll
           index cannot offer: using case and diacritics to discriminate
           between terms, returning different results when searching for
           <literal>US</literal> and <literal>us</literal> or
-          <literal>resume</literal> and <literal>résumé</literal>.
+          <literal>resume</literal> and <literal>rÃ©sumÃ©</literal>.
           Read the <link linkend="RCL.SEARCH.CASEDIAC">section about search
           case and diacritics sensitivity</link> for more details.</para>
 
@@ -2900,7 +2909,7 @@ dir:recoll dir:src -dir:utils -dir:common
       <para>The general default is that searches are insensitive to case
       and diacritics. An entry of <literal>resume</literal> will match any
       of <literal>Resume</literal>, <literal>RESUME</literal>,
-      <literal>résumé</literal>, <literal>Résumé</literal> etc.</para>
+      <literal>rÃ©sumÃ©</literal>, <literal>RÃ©sumÃ©</literal> etc.</para>
 
       <para>Two configuration variables can automate switching on
         sensitivity:</para> 
@@ -2912,7 +2921,7 @@ dir:recoll dir:src -dir:utils -dir:common
               sensitivity to diacritics will be turned on as soon as an
               accented character exists in a search term. When the variable
               is set to true, <literal>resume</literal> will start a
-              diacritics-unsensitive search, but <literal>résumé</literal>
+              diacritics-unsensitive search, but <literal>rÃ©sumÃ©</literal>
               will be matched exactly. The default value is
               <emphasis>false</emphasis>.</para></listitem>
         </varlistentry>
@@ -2951,7 +2960,7 @@ dir:recoll dir:src -dir:utils -dir:common
         "resume"D
       </programlisting>
       <para>will search for the term <literal>resume</literal> exactly
-      (<literal>résumé</literal> will not be a match).</para>
+      (<literal>rÃ©sumÃ©</literal> will not be a match).</para>
 
 
       <para>When either case or diacritics sensitivity is activated, stem
@@ -4926,12 +4935,12 @@ skippedPaths = ~/somedir/&lowast;.txt
             the list will turn-off both standard accent and case
             processing. Example for Swedish:</para>
                 <programlisting>
-unac_except_trans =  åå Åå ää Ää öö Öö
+unac_except_trans =  Ã¥Ã¥ Ã…Ã¥ Ã¤Ã¤ Ã„Ã¤ Ã¶Ã¶ Ã–Ã¶
             </programlisting>
 
             <para>Note that the translation is not limited to a single
             character, you could very well have something like
-            <literal>üue</literal> in the list.</para>
+            <literal>Ã¼ue</literal> in the list.</para>
 
              <para>The default value set for
              <literal>unac_except_trans</literal> can't be listed here
