@@ -90,7 +90,7 @@ public:
 	for (i = 0; i  < strlen(wild); i++)
 	    charclasses[int(wild[i])] = WILD;
 
-	char special[] = ".@+-,#'_\n\r\f";
+	char special[] = ".@+-#'_\n\r\f";
 	for (i = 0; i  < strlen(special); i++)
 	    charclasses[int(special[i])] = special[i];
 
@@ -460,14 +460,12 @@ bool TextSplit::text_to_words(const string &in)
 	    break;
 
 	case '.':
-	case ',':
 	{
 	    // Need a little lookahead here. At worse this gets the end null
 	    int nextc = it[it.getCpos()+1];
 	    int nextwhat = whatcc(nextc);
 	    if (m_inNumber) {
-		// we're eliminating 132.jpg here. Good idea ?
-		if (nextwhat != DIGIT && nextc != 'e' && nextc != 'E')
+		if (nextwhat != DIGIT)
 		    goto SPACE;
 		m_wordLen += it.appendchartostring(m_span);
 		curspanglue = cc;
