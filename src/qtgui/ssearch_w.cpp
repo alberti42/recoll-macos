@@ -84,14 +84,14 @@ void SSearch::init()
 void SSearch::timerDone()
 {
     QString qs = queryText->currentText();
-    LOGDEB0(("SSearch::timerDone: qs [%s]\n", qs2utf8s(qs).c_str()));
+    LOGDEB1(("SSearch::timerDone: qs [%s]\n", qs2utf8s(qs).c_str()));
     searchTextChanged(qs);
 }
 
 void SSearch::searchTextChanged(const QString& text)
 {
     QString qs = queryText->currentText();
-    LOGDEB0(("SSearch::searchTextChanged. ks %d qs [%s]\n", 
+    LOGDEB1(("SSearch::searchTextChanged. ks %d qs [%s]\n", 
 	     m_keystroke, qs2utf8s(text).c_str()));
     if (text.isEmpty()) {
 	searchPB->setEnabled(false);
@@ -109,7 +109,7 @@ void SSearch::searchTextChanged(const QString& text)
 	    m_disableAutosearch = true;
 	    string s;
 	    int cs = partialWord(s);
-	    LOGDEB0(("SSearch::searchTextChanged: autosearch. cs %d s [%s]\n", 
+	    LOGDEB1(("SSearch::searchTextChanged: autosearch. cs %d s [%s]\n", 
 		     cs, s.c_str()));
 	    if (cs < 0) {
 		startSimpleSearch();
