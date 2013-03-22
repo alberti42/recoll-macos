@@ -35,6 +35,7 @@ using std::string;
 #include "debuglog.h"
 #include "pathut.h"
 #include "smallut.h"
+#include "ptmutex.h"
 
 #ifndef freeZ 
 #define freeZ(X) {if (X) {free(X);X=0;}}
@@ -55,17 +56,6 @@ class DebugLogWriter {
   public:
     virtual ~DebugLogWriter() {}
     virtual int put(const char *s) = 0;
-};
-
-class DLFWImpl;
-class DebugLogFileWriter : public DebugLogWriter {
-    DLFWImpl *impl;
-  public:
-    DebugLogFileWriter();
-    ~DebugLogFileWriter();
-    virtual const char *getfilename();
-    virtual int setfilename(const char *fname, int trnc = 1);
-    virtual int put(const char *s);
 };
 
 class DLFWImpl {
@@ -116,7 +106,9 @@ class DLFWImpl {
 
  public:
 
-    DLFWImpl() : filename(0), fp(0), truncate(1) {
+    DLFWImpl() 
+	: filename(0), fp(0), truncate(1) 
+    {
 	setfilename("stderr", 0);
     }
     ~DLFWImpl() { 
@@ -126,6 +118,7 @@ class DLFWImpl {
 	maybeclosefp();
 	filename = strdup(fn);
 	truncate = trnc;
+	maybeopenfp();
 	return 0;
     }
     const char *getfilename() {
@@ -139,29 +132,45 @@ class DLFWImpl {
     }
 };
 
-DebugLogFileWriter::DebugLogFileWriter()
-{
-    impl = new DLFWImpl;
-}
+class DebugLogFileWriter : public DebugLogWriter {
+    DLFWImpl *impl;
+    PTMutexInit loglock;
+  public:
+    DebugLogFileWriter()
+    {
+	impl = new DLFWImpl;
+    }
 
-DebugLogFileWriter::~DebugLogFileWriter() 
-{ 
-    delete impl;
-}
+    virtual ~DebugLogFileWriter() 
+    { 
+	delete impl;
+    }
 
-int DebugLogFileWriter::setfilename(const char *fn, int trnc) {
-    return impl ? impl->setfilename(fn, trnc) : -1;
-}
-
-const char *DebugLogFileWriter::getfilename() 
-{
-    return impl ? impl->getfilename() : 0;
-}
-
-int DebugLogFileWriter::put(const char *s) 
-{
-    return impl ? impl->put(s) : -1;
+    virtual int setfilename(const char *fn, int trnc) 
+    {
+	PTMutexLocker lock(loglock);
+	return impl ? impl->setfilename(fn, trnc) : -1;
+    }
+    virtual const char *getfilename() 
+    {
+	PTMutexLocker lock(loglock);
+	return impl ? impl->getfilename() : 0;
+    }
+    virtual int reopen()
+    {
+	PTMutexLocker lock(loglock);
+	if (!impl)
+	    return -1;
+	string fn = impl->getfilename();
+	return impl->setfilename(fn.c_str(), 1);
+    }
+    virtual int put(const char *s) 
+    {
+	PTMutexLocker lock(loglock);
+	return impl ? impl->put(s) : -1;
+    };
 };
+
 
 static set<string> yesfiles;
 static void initfiles()
@@ -300,13 +309,21 @@ void DebugLog::poplevel()
 //////////////////////////////////////
 static DebugLogFileWriter lwriter;
 static DebugLogFileWriter *theWriter = &lwriter;
+
 const char *getfilename() 
 {
     return theWriter ? theWriter->getfilename() : 0;
 }
+
 int setfilename(const char *fname, int trnc)
 {
     return theWriter ? theWriter->setfilename(fname, trnc) : -1;
+}
+
+int reopen()
+{
+    return theWriter ? theWriter->reopen() : -1;
+
 }
 
 #if DEBUGLOG_USE_THREADS

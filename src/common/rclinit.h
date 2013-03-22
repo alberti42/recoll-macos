@@ -54,4 +54,7 @@ inline RclConfig *recollinit(void (*cleanup)(void), void (*sigcleanup)(int),
 // The main thread handles all signals.
 extern void recoll_threadinit();
 
+// Check if main thread
+extern bool recoll_ismainthread();
+
 #endif /* _RCLINIT_H_INCLUDED_ */

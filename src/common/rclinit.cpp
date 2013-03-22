@@ -33,8 +33,15 @@
 #include "smallut.h"
 #include "execmd.h"
 
-static const int catchedSigs[] = {SIGHUP, SIGINT, SIGQUIT, SIGTERM, 
-     SIGUSR1, SIGUSR2};
+static const int catchedSigs[] = {SIGINT, SIGQUIT, SIGTERM, SIGUSR1, SIGUSR2};
+
+static pthread_t mainthread_id;
+
+static void siglogreopen(int)
+{
+    if (recoll_ismainthread())
+	DebugLog::reopen();
+}
 
 RclConfig *recollinit(RclInitFlags flags, 
 		      void (*cleanup)(void), void (*sigcleanup)(int), 
@@ -54,7 +61,7 @@ RclConfig *recollinit(RclInitFlags flags,
     // We would like to block SIGCHLD globally, but we can't because
     // QT uses it. Have to block it inside execmd.cpp
 
-    // Install signal handler
+    // Install app signal handler
     if (sigcleanup) {
 	struct sigaction action;
 	action.sa_handler = sigcleanup;
@@ -105,10 +112,25 @@ RclConfig *recollinit(RclInitFlags flags,
 	int lev = atoi(loglevel.c_str());
 	DebugLog::getdbl()->setloglevel(lev);
     }
+    // Install log rotate sig handler
+    {
+	struct sigaction action;
+	action.sa_handler = siglogreopen;
+	action.sa_flags = 0;
+	sigemptyset(&action.sa_mask);
+	if (signal(SIGHUP, SIG_IGN) != SIG_IGN) {
+	    if (sigaction(SIGHUP, &action, 0) < 0) {
+		perror("Sigaction failed");
+	    }
+	}
+    }
+
 
     // Make sure the locale charset is initialized (so that multiple
     // threads don't try to do it at once).
     config->getDefCharset();
+
+    mainthread_id = pthread_self();
 
     // Init unac locking
     unac_init_mt();
@@ -160,5 +182,13 @@ void recoll_threadinit()
 
     for (unsigned int i = 0; i < sizeof(catchedSigs) / sizeof(int); i++)
 	sigaddset(&sset, catchedSigs[i]);
+    sigaddset(&sset, SIGHUP);
     pthread_sigmask(SIG_BLOCK, &sset, 0);
 }
+
+bool recoll_ismainthread()
+{
+    return pthread_equal(pthread_self(), mainthread_id);
+}
+
+

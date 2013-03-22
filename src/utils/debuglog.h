@@ -66,6 +66,8 @@ class DebugLog {
 extern DebugLog *getdbl();
 extern const char *getfilename();
 extern int setfilename(const char *fname, int trnc = 1);
+extern int reopen();
+
 #if STATICVERBOSITY >= DEBFATAL
 #define LOGFATAL(X) {if (DebugLog::getdbl()->getlevel()>=DEBFATAL){DebugLog::getdbl()->prolog(DEBFATAL,__FILE__,__LINE__) ;DebugLog::getdbl()->log X;}}
 #else
