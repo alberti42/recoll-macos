@@ -1084,11 +1084,11 @@ void RclMain::showMissingHelpers()
 	return;
     }
     QString msg = QString::fromAscii("<p>") +
-	tr("External applications/commands needed and not found "
-		     "for indexing your file types:\n\n");
-    msg += "(<i>";
+	tr("External applications/commands needed for your file types "
+	   "and not found, as stored by the last indexing pass in ");
+    msg += "<i>";
     msg += QString::fromLocal8Bit(theconfig->getConfDir().c_str());
-    msg += "/missing</i>):<pre>\n";
+    msg += "/missing</i>:<pre>\n";
     if (!miss.empty()) {
 	msg += QString::fromUtf8(miss.c_str());
     } else {
