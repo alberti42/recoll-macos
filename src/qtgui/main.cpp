@@ -51,19 +51,11 @@
 #include "recollq.h"
 
 extern RclConfig *theconfig;
-RclConfig *thestableconfig;
-PTMutexInit thestableconfiglock;
 
 // To avoid writing settings if we stopped before reading them (else
 // some kinds of errors would reset the qt/recoll settings to
 // defaults)
 static bool havereadsettings;
-
-void snapshotConfig()
-{
-    PTMutexLocker locker(thestableconfiglock);
-    thestableconfig = new RclConfig(*theconfig);
-}
 
 PTMutexInit thetempfileslock;
 static vector<TempFile>  o_tempfiles;
@@ -156,7 +148,6 @@ static void recollCleanup()
     LOGDEB2(("recollCleanup: closing database\n"));
     deleteZ(rcldb);
     deleteZ(theconfig);
-//    deleteZ(thestableconfig);
 
     PTMutexLocker locker(thetempfileslock);
     o_tempfiles.clear();
@@ -308,7 +299,6 @@ int main(int argc, char **argv)
 	exit(1);
     }
     //    fprintf(stderr, "recollinit done\n");
-    snapshotConfig();
 
     // Translations for Qt standard widgets
     QString slang = QLocale::system().name().left(2);

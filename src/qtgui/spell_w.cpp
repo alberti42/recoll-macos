@@ -306,14 +306,14 @@ void SpellW::showStats()
     resTW->setItem(row++, 1, new QTableWidgetItem(
 		       QString::number(res.maxdoclen)));
 
-    if (!thestableconfig)
+    if (!theconfig)
 	return;
 
     ExecCmd cmd;
     vector<string> args; 
     int status;
     args.push_back("-sk");
-    args.push_back(thestableconfig->getDbDir());
+    args.push_back(theconfig->getDbDir());
     string output;
     status = cmd.doexec("du", args, 0, &output);
     int dbkbytes = 0;
@@ -327,14 +327,13 @@ void SpellW::showStats()
 		       QString::fromUtf8(
 			   displayableBytes(dbkbytes*1024).c_str())));
 
-    vector<string> allmimetypes = thestableconfig->getAllMimeTypes();
+    vector<string> allmimetypes = theconfig->getAllMimeTypes();
     multimap<int, string> mtbycnt;
     for (vector<string>::const_iterator it = allmimetypes.begin();
 	 it != allmimetypes.end(); it++) {
 	string reason;
 	string q = string("mime:") + *it;
-	Rcl::SearchData *sd =
-	    wasaStringToRcl(thestableconfig, "", q, reason);
+	Rcl::SearchData *sd = wasaStringToRcl(theconfig, "", q, reason);
 	RefCntr<Rcl::SearchData> rq(sd);
 	Rcl::Query query(rcldb);
 	if (!query.setQuery(rq)) {

@@ -53,6 +53,7 @@
 #include "debuglog.h"
 #include "editdialog.h"
 #include "rclmain_w.h"
+#include "ptrans_w.h"
 
 void UIPrefsDialog::init()
 {
@@ -64,6 +65,10 @@ void UIPrefsDialog::init()
     connect(stylesheetPB, SIGNAL(clicked()), this, SLOT(showStylesheetDialog()));
     connect(resetSSPB, SIGNAL(clicked()), this, SLOT(resetStylesheet()));
 
+    connect(idxLV, SIGNAL(itemSelectionChanged()),
+	    this, SLOT(extradDbSelectChanged()));
+    connect(ptransPB, SIGNAL(clicked()),
+	    this, SLOT(extraDbEditPtrans()));
     connect(addExtraDbPB, SIGNAL(clicked()), 
 	    this, SLOT(addExtraDbPB_clicked()));
     connect(delExtraDbPB, SIGNAL(clicked()), 
@@ -396,6 +401,33 @@ void UIPrefsDialog::showViewAction(const QString& mt)
 
 ////////////////////////////////////////////
 // External / extra search indexes setup
+
+void UIPrefsDialog::extradDbSelectChanged()
+{
+    if (idxLV->selectedItems().size() <= 1) 
+	ptransPB->setEnabled(true);
+    else
+	ptransPB->setEnabled(false);
+}
+
+void UIPrefsDialog::extraDbEditPtrans()
+{
+    string dbdir;
+    if (idxLV->selectedItems().size() == 0) {
+	dbdir = theconfig->getDbDir();
+    } else if (idxLV->selectedItems().size() == 1) {
+	QListWidgetItem *item = idxLV->selectedItems()[0];
+	QString qd = item->data(Qt::DisplayRole).toString();
+	dbdir = (const char *)qd.toLocal8Bit();
+    } else {
+	QMessageBox::warning(
+	    0, "Recoll", tr("At most one index should be selected"));
+	return;
+    }
+    dbdir = path_canon(dbdir);
+    EditTrans *etrans = new EditTrans(dbdir, this);
+    etrans->show();
+}
 
 void UIPrefsDialog::togExtraDbPB_clicked()
 {

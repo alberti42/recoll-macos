@@ -35,9 +35,7 @@ extern bool maybeOpenDb(std::string &reason, bool force = true,
 bool getStemLangs(vector<string>& langs);
 
 extern RclConfig *theconfig;
-extern RclConfig *thestableconfig;
-extern PTMutexInit thestableconfiglock;
-extern void snapshotConfig();
+
 extern void rememberTempFile(TempFile);
 extern void forgetTempFile(string &fn);
 

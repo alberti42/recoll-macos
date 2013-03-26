@@ -59,6 +59,8 @@ public slots:
     virtual void setStemLang(const QString& lang);
     virtual void editParaFormat();
     virtual void editHeaderText();
+    virtual void extradDbSelectChanged();
+    virtual void extraDbEditPtrans();
 
 signals:
     void uiprefsDone();

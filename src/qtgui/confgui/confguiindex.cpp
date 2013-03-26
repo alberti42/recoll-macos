@@ -82,7 +82,6 @@ void ConfIndexW::acceptChanges()
     delete m_conf;
     m_conf = 0;
     m_rclconf->updateMainConfig();
-    snapshotConfig();
 
     hide();
 }

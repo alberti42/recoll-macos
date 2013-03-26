@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>531</width>
-    <height>422</height>
+    <height>427</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
      <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>0</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -133,39 +133,39 @@
             </widget>
            </item>
            <item>
-	     <layout class="QHBoxLayout" name="horizontalLayout">
-	       <item>
-		 <widget class="QLabel" name="label">
-		   <property name="text">
-		     <string>Plain text to HTML line style</string>
-		   </property>
-		   <property name="toolTip">
-		     <string>Lines in PRE text are not folded. Using BR loses some indentation. PRE + Wrap style may be what you want.</string>
-		   </property>
-		 </widget>
-	       </item>
-	       <item>
-		 <widget class="QRadioButton" name="plainBRRB">
-		   <property name="text">
-		     <string>&lt;BR&gt;</string>
-		   </property>
-		 </widget>
-	       </item>
-	       <item>
-		 <widget class="QRadioButton" name="plainPRERB">
-		   <property name="text">
-		     <string>&lt;PRE&gt;</string>
-		   </property>
-		 </widget>
-	       </item>
-	       <item>
-		 <widget class="QRadioButton" name="plainPREWRAPRB">
-		   <property name="text">
-		     <string>&lt;PRE&gt; + wrap</string>
-		   </property>
-		 </widget>
-	       </item>
-	     </layout>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="toolTip">
+                <string>Lines in PRE text are not folded. Using BR loses some indentation. PRE + Wrap style may be what you want.</string>
+               </property>
+               <property name="text">
+                <string>Plain text to HTML line style</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="plainBRRB">
+               <property name="text">
+                <string>&lt;BR&gt;</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="plainPRERB">
+               <property name="text">
+                <string>&lt;PRE&gt;</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="plainPREWRAPRB">
+               <property name="text">
+                <string>&lt;PRE&gt; + wrap</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
             <widget class="QPushButton" name="viewActionPB">
@@ -715,6 +715,13 @@ May be slow for big documents.</string>
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QPushButton" name="ptransPB">
+               <property name="text">
+                <string>Paths translations</string>
+               </property>
+              </widget>
+             </item>
             </layout>
            </item>
            <item>
@@ -761,7 +768,7 @@ May be slow for big documents.</string>
                 <bool>true</bool>
                </property>
                <property name="toolTip">
-                <string>Click to add another index directory to the list</string>
+                <string>Click to add another index directory to the list. You can select either a Recoll configuration directory or a Xapian index.</string>
                </property>
                <property name="text">
                 <string>Add index</string>

@@ -322,9 +322,14 @@ media = \
       image/x-xcf \
       image/bmp \
       image/x-xpmi \
+      video/3gpp \
       video/mp2p \
       video/mp2t \
       video/mp4 \
+      video/mpeg \
+      video/quicktime \
+      video/x-matroska \
+      video/x-ms-asf \
       video/x-msvideo \
 
 message = message/rfc822 \

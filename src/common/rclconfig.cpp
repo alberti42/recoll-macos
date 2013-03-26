@@ -218,7 +218,7 @@ RclConfig::RclConfig(const string *argcnf)
     if (!readFieldsConfig(cnferrloc))
 	return;
 
-    m_ptrans = new ConfSimple(path_cat(m_confdir, "ptrans").c_str(), 1);
+    m_ptrans = new ConfSimple(path_cat(m_confdir, "ptrans").c_str());
 
     m_ok = true;
     setKeyDir(cstr_null);

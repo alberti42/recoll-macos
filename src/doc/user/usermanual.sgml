@@ -1767,7 +1767,7 @@ fvwm
 
       <para>Index selection is performed in two phases. A set of all
 	usable indexes must first be defined, and then the subset of
-	indexes to be used for searching. Of course, these parameters
+	indexes to be used for searching. These parameters
 	are retained across program executions (there are kept
 	separately for each &RCL; configuration). The set of all indexes
 	is usually quite stable, while the active ones might typically
@@ -1777,6 +1777,11 @@ fvwm
 	<envar>RECOLL_CONFDIR</envar>) is always active. If this is
 	undesirable, you can set up your base configuration to index
 	an empty directory.</para>
+
+      <para>When adding a new index to the set, you can select either
+        a &RCL; configuration directory, or directly a &XAP; index
+        directory. In the first case, the &XAP; index directory will
+        be obtained from the selected configuration.</para>
 
       <para>As building the set of all indexes can be a little tedious
 	when done through the user interface, you can use the

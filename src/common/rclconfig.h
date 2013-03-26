@@ -152,7 +152,10 @@ class RclConfig {
     string getIdxStatusFile() const;
     /** Do path translation according to the ptrans table */
     void urlrewrite(const string& dbdir, string& url) const;
-
+    ConfSimple *getPTrans()
+    {
+	return m_ptrans;
+    }
     /** Get Web Queue directory name */
     string getWebQueueDir() const;
 
