@@ -150,6 +150,8 @@ class RclConfig {
     string getPidfile() const;
     /** Get indexing status file name */
     string getIdxStatusFile() const;
+    /** Do path translation according to the ptrans table */
+    void urlrewrite(const string& dbdir, string& url) const;
 
     /** Get Web Queue directory name */
     string getWebQueueDir() const;
@@ -279,6 +281,7 @@ class RclConfig {
     ConfStack<ConfSimple> *mimeconf; // but their content may depend on it.
     ConfStack<ConfSimple> *mimeview; // 
     ConfStack<ConfSimple> *m_fields;
+    ConfSimple            *m_ptrans; // Paths translations
     map<string, FieldTraits>  m_fldtotraits; // Field to field params
     map<string, string>  m_aliastocanon;
     set<string>          m_storedFields;

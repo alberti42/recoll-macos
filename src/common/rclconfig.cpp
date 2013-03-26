@@ -95,6 +95,7 @@ void RclConfig::zeroMe() {
     mimeconf = 0; 
     mimeview = 0; 
     m_fields = 0;
+    m_ptrans = 0;
     m_stopsuffixes = 0;
     m_maxsufflen = 0;
     m_stpsuffstate.init(this, 0, "recoll_noindex");
@@ -216,6 +217,8 @@ RclConfig::RclConfig(const string *argcnf)
     }
     if (!readFieldsConfig(cnferrloc))
 	return;
+
+    m_ptrans = new ConfSimple(path_cat(m_confdir, "ptrans").c_str(), 1);
 
     m_ok = true;
     setKeyDir(cstr_null);
@@ -744,7 +747,7 @@ bool RclConfig::getFieldTraits(const string& _fld, const FieldTraits **ftpp)
 		 _fld.c_str(), pit->second.pfx.c_str()));
 	return true;
     } else {
-	LOGDEB1(("RclConfig::readFieldsConfig: no prefix for field [%s]\n",
+	LOGDEB1(("RclConfig::getFieldTraits: no prefix for field [%s]\n",
 		 fld.c_str()));
 	*ftpp = 0;
 	return false;
@@ -936,6 +939,41 @@ string RclConfig::getDbDir() const
     return path_canon(dbdir);
 }
 
+void RclConfig::urlrewrite(const string& dbdir, string& url) const
+{
+    LOGDEB2(("RclConfig::urlrewrite: dbdir [%s] url [%s]\n",
+	    dbdir.c_str(), url.c_str()));
+
+    // Do path translations exist for this index ?
+    if (m_ptrans == 0 || !m_ptrans->hasSubKey(dbdir)) {
+	LOGDEB2(("RclConfig::urlrewrite: no paths translations (m_ptrans %p)\n",
+		m_ptrans));
+	return;
+    }
+
+    string path = fileurltolocalpath(url);
+    if (path.empty()) {
+	LOGDEB2(("RclConfig::urlrewrite: not file url\n"));
+	return;
+    }
+
+    // For each translation check if the prefix matches the input path,
+    // replace and return the result if it does.
+    vector<string> opaths = m_ptrans->getNames(dbdir);
+    for (vector<string>::const_iterator it = opaths.begin(); 
+	 it != opaths.end(); it++) {
+	if (it->size() <= path.size() && !path.compare(0, it->size(), *it)) {
+	    string npath;
+	    // This call always succeeds because the key comes from getNames()
+	    if (m_ptrans->get(*it, npath, dbdir)) { 
+		path = path.replace(0, it->size(), npath);
+		url = "file://" + path;
+	    }
+	    break;
+	}
+    }
+}
+
 bool RclConfig::sourceChanged() const
 {
     if (m_conf && m_conf->sourceChanged())
@@ -947,6 +985,8 @@ bool RclConfig::sourceChanged() const
     if (mimeview && mimeview->sourceChanged())
 	return true;
     if (m_fields && m_fields->sourceChanged())
+	return true;
+    if (m_ptrans && m_ptrans->sourceChanged())
 	return true;
     return false;
 }
@@ -1179,6 +1219,7 @@ void RclConfig::freeAll()
     delete mimeconf; 
     delete mimeview; 
     delete m_fields;
+    delete m_ptrans;
     delete STOPSUFFIXES;
     // just in case
     zeroMe();
@@ -1204,6 +1245,8 @@ void RclConfig::initFrom(const RclConfig& r)
 	mimeview = new ConfStack<ConfSimple>(*(r.mimeview));
     if (r.m_fields)
 	m_fields = new ConfStack<ConfSimple>(*(r.m_fields));
+    if (r.m_ptrans)
+	m_ptrans = new ConfSimple(*(r.m_ptrans));
     m_fldtotraits = r.m_fldtotraits;
     m_aliastocanon = r.m_aliastocanon;
     m_storedFields = r.m_storedFields;

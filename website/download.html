@@ -107,7 +107,7 @@
        <p><a href="recoll-1.18.1.tar.gz">recoll-1.18.1.tar.gz</a>.
        </p>
 
-<!--
+       <!--
       <h3>Snapshot</h3>
       <p>I sometimes release a source tarfile when I consider that the
       current development version is stable enough. The current
@@ -116,10 +116,10 @@
        changelog</a>, and a synthetic abstract in the
        current <a href="release-1.16.html">1.16 release notes</a>).
        <p><a href="betarecoll-2240.tar.gz">betarecoll-2240.tar.gz</a>.</p>
--->
+       -->
 
-      <h3>Prerequisites for building from source:</h3>
-        <ul>
+       <h3>Prerequisites for building from source:</h3>
+       <ul>
 	 <li>C++ compiler. Its absence sometimes manifests itself by
 	 strange messages about iconv_open (fixed after 1.13.04).</li>
 
@@ -144,22 +144,22 @@
 
          </li>
 
-        <li>X11 development files.</li>
+         <li>X11 development files.</li>
 
-        <li>zlib development files.</p>
+         <li>zlib development files.</li>
 
-        <li><p>Qt development files: Qt 4.4 or newer. The Recoll GUI
+         <li><p>Qt development files: Qt 4.4 or newer. The Recoll GUI
             will not build with Qt releases older than 4.4.</p></li>
 
-        <li><p>Qt webkit development: Qt WebKit is quite often
-            distributed apart from the main Qt lib. It is possible to
+         <li><p>Qt webkit development: Qt WebKit is quite often
+             distributed apart from the main Qt lib. It is possible to
             configure Recoll not to use Qt WebKit (see 
             configure&nbsp;--help).</p></li>
 
-        <li>Python development package: you can avoid needing this by
-          configuring with --disable-python-module.</li>
+         <li>Python development package: you can avoid needing this by
+           configuring with --disable-python-module.</li>
 
-      </ul>
+       </ul>
 
       <h3>Source repository:</h3>
       <p>The <span class="application">Recoll</span> source repository is
@@ -211,7 +211,7 @@
 
       <h3><a name="ubuntu">Ubuntu</a></h3>
 
-        <p>There are Personal Package Archives on launchpad.net for 
+      <p>There are Personal Package Archives on launchpad.net for 
           <a  href="https://launchpad.net/~recoll-backports/+archive/recoll-1.15-on">
             Recoll, kio-recoll and recoll-lens</a>. These were built from the
           latest versions, for a set of Ubuntu series. starting at
@@ -221,38 +221,60 @@
           sudo apt-get update
           sudo apt-get install recoll
           </tt></pre>
-          <p>Source code for the lens (also included in the main
-            recoll tar file):<br>
-            For 1.18 installations: <a href="recoll-lens-1.18.1.2997.tar.gz">
-              recoll-lens-1.18.1.2997.tar.gz</a><br>
-            For 1.17: <a href="recoll-lens-1.17.2.2697.tar.gz">
-              recoll-lens-1.17.2.2697.tar.gz</a></p>
 
-          <p>The packages in the standard repository and on the PPA
-            are a bit different in the sense that the Python extension
-            is included in the PPA package, but it's a separate
-            package in the standard repository. This can give rise to
-            errors about overwriting the Python module when switching
-            between versions. Typically, the error message would be
-            like the following:</p>
-          <pre><tt>
+      <p>Source code for the lens (also included in the main
+        recoll tar file):<br>
+        For 1.18 installations: <a href="recoll-lens-1.18.1.2997.tar.gz">
+          recoll-lens-1.18.1.2997.tar.gz</a><br>
+        For 1.17: <a href="recoll-lens-1.17.2.2697.tar.gz">
+          recoll-lens-1.17.2.2697.tar.gz</a></p>
+
+      <p>The packages in the standard repository and on the PPA
+        are a bit different in the sense that the Python extension
+        is included in the PPA package, but it's a separate
+        package in the standard repository. This can give rise to
+        errors about overwriting the Python module when switching
+        between versions. Typically, the error message would be
+        like the following:</p>
+
+      <pre><tt>
     ErrorMessage: trying to overwrite '/usr/lib/python2.7/dist-packages/recoll.so', which is also in package recoll 1.18.1-1~ppa1~quantal1</tt></pre>
 
-           <p>If this happens, you just need to delete
-            the previous package(s) before installing the other one(s)
-            instead of performing an upgrade.</p>
+      <p>If this happens, you just need to delete
+        the previous package(s) before installing the other one(s)
+        instead of performing an upgrade.</p>
+      
+      <blockquote>
+        <h4>Notes for Ubuntu Lucid</h4>
 
-        <h3><a name="mint">Linux Mint</a></h3>
-        <p>The Ubuntu PPA works perfectly for Mint 13 (and probably
-          other releases too). Just follow the instructions for Ubuntu.</p>
+        <ul>
+
+          <li>Under lucid you will need to add the 
+          <a href="https://launchpad.net/~xapian-backports/+archive/xapian-1.2">
+            Xapian backports PPA</a> to provide the <tt>libxapian22</tt>
+          package</li>
+
+          <li>The <tt>rclepub</tt> filter apparently needs <tt>Python
+          2.7</tt>. You will need to install it and modify the first
+            line of the filter script to execute <tt>python2.7</tt>
+            instead of <tt>python</tt>.</li>
+
+        </ul>
+      </blockquote>
+
+      <h3><a name="mint">Linux Mint</a></h3>
+
+      <p>The Ubuntu PPA works perfectly for Mint 13 (and probably
+        other releases too). Just follow the instructions for Ubuntu.</p>
         
       <h3>RPMS</h3> 
-	<p>You'll need to install the Xapian, Qt, Qt-Webkit and zlib
-	  development packages if you want use the source rpms.</p>
+      <p>You'll need to install the Xapian, Qt, Qt-Webkit and zlib
+	development packages if you want use the source rpms.</p>
 	  
       <h3>Fedora</h3>
-      <p>Recoll is present in the standard Fedora package
-	repositories starting from F-12. The new versions are tracked quite
+
+      <p>Recoll is present in the standard Fedora package repositories
+        starting from F-12. The new versions are tracked quite
 	closely, so I don't build the rpms any more (email me if you need
 	one).</p> 
 
@@ -260,9 +282,8 @@
       <blockquote>
         <p>Recoll is in the KDE:Extra repository
 
-<!--
-I now use the OpenSUSE build service to create Recoll OpenSUSE packages. 
--->
+          <!-- I now use the OpenSUSE build service to create Recoll
+          OpenSUSE packages.  -->
         You just need to add the repository to your
         software sources (Yast2->software->Software repositories).<br>
         <a href="http://download.opensuse.org/repositories/KDE:/Extra/">

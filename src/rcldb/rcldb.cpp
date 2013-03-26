@@ -233,8 +233,21 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     if (!parms.ok())
 	return false;
 
-    // Special cases:
+    // Compute what index this comes from, and check for path translations
+    string dbdir = m_rcldb->m_basedir;
+    if (!m_rcldb->m_extraDbs.empty()) {
+	// As per trac.xapian.org/wiki/FAQ/MultiDatabaseDocumentID
+	unsigned int idxi = (docid-1) % (m_rcldb->m_extraDbs.size()+1);
+	// idxi is in [0, extraDbs.size()]. 0 is the base index, 1-n index
+	// into the additional dbs array
+	if (idxi) {
+	    dbdir = m_rcldb->m_extraDbs[idxi - 1];
+	}
+    }
     parms.get(Doc::keyurl, doc.url);
+    m_rcldb->m_config->urlrewrite(dbdir, doc.url);
+
+    // Special cases:
     parms.get(Doc::keytp, doc.mimetype);
     parms.get(Doc::keyfmt, doc.fmtime);
     parms.get(Doc::keydmt, doc.dmtime);
@@ -264,6 +277,7 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
 	if (doc.meta.find(*it) == doc.meta.end())
 	    parms.get(*it, doc.meta[*it]);
     }
+    doc.meta[Doc::keyurl] = doc.url;
     doc.meta[Doc::keymt] = doc.dmtime.empty() ? doc.fmtime : doc.dmtime;
     return true;
 }
@@ -579,14 +593,16 @@ int Db::termDocCnt(const string& _term)
     return res;
 }
 
-bool Db::addQueryDb(const string &dir) 
+bool Db::addQueryDb(const string &_dir) 
 {
-    LOGDEB(("Db::addQueryDb: ndb %p iswritable %d db [%s]\n", m_ndb,
+    string dir = _dir;
+    LOGDEB0(("Db::addQueryDb: ndb %p iswritable %d db [%s]\n", m_ndb,
 	      (m_ndb)?m_ndb->m_iswritable:0, dir.c_str()));
     if (!m_ndb)
 	return false;
     if (m_ndb->m_iswritable)
 	return false;
+    dir = path_canon(dir);
     if (find(m_extraDbs.begin(), m_extraDbs.end(), dir) == m_extraDbs.end()) {
 	m_extraDbs.push_back(dir);
     }
