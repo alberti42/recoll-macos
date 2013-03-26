@@ -2603,6 +2603,60 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 </programlisting>
       </sect1>
 
+  <sect1 id="RCL.SEARCH.PTRANS">
+    <title>Path translations</title>
+    
+    <para>In some cases, the document paths stored inside the index do
+      not match the actual ones, so that document
+      previews and accesses will fail. This can occur in a number of
+      circumstances:</para>
+    <itemizedlist>
+      <listitem><para>When using multiple indexes it is a relatively common
+          occurrence that some will actually reside on a remote volume, for
+          exemple mounted via NFS. In this case, the paths used to access
+          the documents on the local machine are not necessarily the same
+          than the ones used while indexing on the remote machine. For
+          example, <filename>/home/me</filename> may have been used as
+          a <literal>topdirs</literal> elements while indexing, but the
+          directory might be mounted
+          as <filename>/net/server/home/me</filename> on the local
+          machine.</para></listitem>
+
+      <listitem><para>The case may also occur with removable
+          disks. It is perfectly possible to configure an index to
+          live with the documents on the removable disk, but it may
+          happen that the disk is not mounted at the same place so
+          that the documents paths from the index are
+          invalid.</para></listitem>
+      
+      <listitem><para>As a last exemple, one could imagine that a big
+          directory has been moved, but that it is currently
+          inconvenient to run the indexer.</para></listitem>
+    </itemizedlist>
+
+    <para>More generally, the path translation facility may be useful
+      whenever the documents paths seen by the indexer are not the same
+      as the ones which should be used at query time.</para>
+
+    <para>&RCL; has a facility for rewriting access paths when
+      extracting the data from the index. The translations can be
+      defined for the main index and for any additional query
+      index.</para>
+
+    <para>In the above NFS example, &RCL; could be instructed to
+      rewrite any <filename>file:///home/me</filename> URL from the
+      index to <filename>file:///net/server/home/me</filename>,
+      allowing accesses from the client.</para>
+
+    <para>The translations are defined in the 
+      <link linkend="RCL.INSTALL.CONFIG.PTRANS">
+        <filename>ptrans</filename></link> configuration file, which
+        can be edited by hand or from the GUI external indexes
+      configuration dialog.</para>
+  </sect1>
+
+
+
     <sect1 id="RCL.SEARCH.LANG">
       <title>The query language</title>
 
@@ -5390,6 +5444,7 @@ x-my-tag = mailmytag
          <filename>recoll.conf</filename>).</para>
 
       </sect2>
+
       <sect2 id="RCL.INSTALL.CONFIG.MIMEVIEW">
         <title>The mimeview file</title>
 
@@ -5500,6 +5555,32 @@ x-my-tag = mailmytag
         customisation to help with opening the document.</para> 
 
       </sect2>
+
+      <sect2 id="RCL.INSTALL.CONFIG.PTRANS">
+        <title>The <filename>ptrans</filename> file</title>
+
+        <para><filename>ptrans</filename> specifies query-time path
+          translations. These can be useful
+          in <link linkend="RCL.SEARCH.PTRANS">multiple
+          cases</link>.</para>
+        <para>The file has a section for any index which needs
+          translations, either the main one or additional query
+          indexes. The sections are named with the &XAP; index
+          directory names. No slash character should exist at the end
+          of the paths (all comparisons are textual). An exemple
+          should make things sufficiently clear</para>
+
+        <programlisting>
+          [/home/me/.recoll/xapiandb]
+          /this/directory/moved = /to/this/place
+
+          [/path/to/additional/xapiandb]
+          /server/volume1/docdir = /net/server/volume1/docdir
+          /server/volume2/docdir = /net/server/volume2/docdir
+        </programlisting>
+
+      </sect2>
+
 
       <sect2 id="RCL.INSTALL.CONFIG.EXAMPLES">
         <title>Examples of configuration adjustments</title>
