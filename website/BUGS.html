@@ -57,6 +57,23 @@
           case-insensitive search does not work for them (e.g.:
           searching for ds1820 will not find DS1820).</li>
 
+        <li>Category (media, message, etc.) expansion does not work
+          for mime types which have no associated filter. This is
+          quite often the case for video types (so they won't be found
+          under "media"). The workaround is to add them to the
+          ~/.recoll/mimeconf file with the rclnull filter, for
+          example:
+<pre>
+[index]
+video/mp2p = exec rclnull
+video/mp2t = exec rclnull
+video/mp4  = exec rclnull
+video/avi  = exec rclnull
+video/divx = exec rclnull
+video/x-msvideo = exec rclnull
+</pre>
+        </li>
+
         <li>On systems such as Debian Stable which use Evince version
           2.x (not 3.x) as PDF viewer, the default "Open" command for
           PDF files will not work. You need to edit the command:
@@ -64,7 +81,9 @@
           uncheck <em>Use&nbsp;desktop&nbsp;preferences...</em>, then
           click <em>Choose&nbsp;editor&nbsp;applications</em>, and for
           application/pdf, application/postscript and text/dvi, change
-          the --page-index option to --page-label.</li>
+          the --page-index option to --page-label. Then
+          re-check <em>Use&nbsp;desktop&nbsp;preferences...</em> if
+          it was initially set.</li>
 
         <li>It will sometimes happen that the result list paragraph
           format stored in the Qt preferences file will get garbled,
