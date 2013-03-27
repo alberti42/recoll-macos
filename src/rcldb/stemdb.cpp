@@ -63,7 +63,6 @@ bool StemDb::stemExpand(const std::string& langs, const std::string& _term,
 	(void)expander.synExpand(term, result);
     }
 
-#ifndef RCL_INDEX_STRIPCHARS
     if (!o_index_stripchars) {
 	string unac;
 	unacmaybefold(term, unac, "UTF-8", UNACOP_UNAC);
@@ -78,7 +77,6 @@ bool StemDb::stemExpand(const std::string& langs, const std::string& _term,
 	    (void)expander.synExpand(unac, result);
 	}
     }
-#endif 
 
     if (result.empty())
 	result.push_back(term);

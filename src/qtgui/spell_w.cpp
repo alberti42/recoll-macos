@@ -119,13 +119,7 @@ void SpellW::init()
     resTW->setColumnWidth(1, 150);
     resTW->installEventFilter(this);
 
-    bool stripped = false;
-#ifdef RCL_INDEX_STRIPCHARS
-    stripped = true;
-#else
-    stripped = o_index_stripchars;
-#endif
-    if (stripped) {
+    if (o_index_stripchars) {
 	caseSensCB->setEnabled(false);
 	caseSensCB->setEnabled(false);
     }

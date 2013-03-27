@@ -263,14 +263,12 @@ public:
 		LOGDEB2(("Aspell::buildDict: SKIP\n"));
 		continue;
 	    }
-#ifndef RCL_INDEX_STRIPCHARS
 	    if (!o_index_stripchars) {
 		string lower;
 		if (!unacmaybefold(*m_input, lower, "UTF-8", UNACOP_FOLD))
 		    continue;
 		m_input->swap(lower);
 	    }
-#endif
 	    // Got a non-empty sort-of appropriate term, let's send it to
 	    // aspell
 	    LOGDEB2(("Apell::buildDict: SEND\n"));
@@ -382,7 +380,6 @@ bool Aspell::check(const string &iterm, string& reason)
     if (iterm.empty())
         return true; //??
 
-#ifndef RCL_INDEX_STRIPCHARS
     if (!o_index_stripchars) {
 	string lower;
 	if (!unacmaybefold(mterm, lower, "UTF-8", UNACOP_FOLD)) {
@@ -391,7 +388,6 @@ bool Aspell::check(const string &iterm, string& reason)
 	}
 	mterm.swap(lower);
     }
-#endif
 
     int ret = aapi.aspell_speller_check(m_data->m_speller, 
                                         mterm.c_str(), mterm.length());
@@ -416,7 +412,6 @@ bool Aspell::suggest(Rcl::Db &db, const string &_term,
     if (mterm.empty())
         return true; //??
 
-#ifndef RCL_INDEX_STRIPCHARS
     if (!o_index_stripchars) {
 	string lower;
 	if (!unacmaybefold(mterm, lower, "UTF-8", UNACOP_FOLD)) {
@@ -425,7 +420,6 @@ bool Aspell::suggest(Rcl::Db &db, const string &_term,
 	}
 	mterm.swap(lower);
     }
-#endif
 
     AspellCanHaveError *ret;
 

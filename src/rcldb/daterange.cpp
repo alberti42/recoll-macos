@@ -36,10 +36,6 @@ using namespace std;
 
 namespace Rcl {
 
-#ifdef RCL_INDEX_STRIPCHARS
-#define bufprefix(BUF, L) {(BUF)[0] = L;}
-#define bpoffs() 1
-#else
 static inline void bufprefix(char *buf, char c)
 {
     if (o_index_stripchars) {
@@ -54,7 +50,6 @@ static inline int bpoffs()
 {
     return o_index_stripchars ? 1 : 3;
 }
-#endif
 
 Xapian::Query date_range_filter(int y1, int m1, int d1, int y2, int m2, int d2)
 {

@@ -572,7 +572,6 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 
     int termmatchsens = 0;
 
-#ifndef RCL_INDEX_STRIPCHARS
     bool diac_sensitive = (mods & SDCM_DIACSENS) != 0;
     bool case_sensitive = (mods & SDCM_CASESENS) != 0;
 
@@ -616,7 +615,6 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 	termmatchsens |= Db::ET_CASESENS;
     if (diac_sensitive)
 	termmatchsens |= Db::ET_DIACSENS;
-#endif
 
     if (noexpansion) {
 	oexp.push_back(prefix + term);
@@ -936,9 +934,7 @@ bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
             //TermProcCommongrams tpcommon(nxt, stops); nxt = &tpcommon;
             //tpcommon.onlygrams(true);
 	    TermProcPrep tpprep(nxt);
-#ifndef RCL_INDEX_STRIPCHARS
 	    if (o_index_stripchars)
-#endif
 		nxt = &tpprep;
 
 	    TextSplitQ splitter(TextSplit::Flags(TextSplit::TXTS_ONLYSPANS | 

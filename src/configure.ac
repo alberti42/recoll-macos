@@ -211,17 +211,6 @@ if test X$camelcaseEnabled = Xyes ; then
   AC_DEFINE(RCL_SPLIT_CAMELCASE, 1, [Split camelCase words])
 fi
 
-# Not by default as these are little used for now.
-AC_ARG_ENABLE(stripchars,
-    AC_HELP_STRING([--enable-stripchars],
-   [Remove diacritics and fold character case in indexed terms. This will
-   yield less precise searches but the index will be smaller]),
-        stripcharsEnabled=$enableval, stripcharsEnabled=no)
-
-if test X$stripcharsEnabled = Xyes ; then
-  AC_DEFINE(RCL_INDEX_STRIPCHARS, 1, [Remove case and accents from terms])
-fi
-
 # Disable building the python module. This is built by default, because
 # it's really the easiest way to interface and extend recoll. It forces PIC
 # objects for everything (indexing performance impact: 1%), because it's

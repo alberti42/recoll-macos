@@ -161,24 +161,18 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
     bool diac_sensitive = (typ_sens & ET_DIACSENS) != 0;
     bool case_sensitive = (typ_sens & ET_CASESENS) != 0;
 
-    bool stripped = false;
-#ifdef RCL_INDEX_STRIPCHARS
-    stripped = true;
-#else
-    stripped = o_index_stripchars;
-#endif
-
     LOGDEB0(("Db::TermMatch: typ %s diacsens %d casesens %d lang [%s] term [%s]"
 	    " max %d field [%s] stripped %d init res.size %u\n",
 	    tmtptostr(matchtyp), diac_sensitive, case_sensitive, lang.c_str(), 
-	    _term.c_str(), max, field.c_str(), stripped, res.entries.size()));
+	    _term.c_str(), max, field.c_str(), o_index_stripchars, 
+	     res.entries.size()));
 
     // If index is stripped, no case or diac expansion can be needed:
     // for the processing inside this routine, everything looks like
     // we're all-sensitive: no use of expansion db.
     // Also, convert input to lowercase and strip its accents.
     string term = _term;
-    if (stripped) {
+    if (o_index_stripchars) {
 	diac_sensitive = case_sensitive = true;
 	if (!unacmaybefold(_term, term, "UTF-8", UNACOP_UNACFOLD)) {
 	    LOGERR(("Db::termMatch: unac failed for [%s]\n", _term.c_str()));
@@ -186,17 +180,11 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
 	}
     }
 
-#ifndef RCL_INDEX_STRIPCHARS
     // The case/diac expansion db
     SynTermTransUnac unacfoldtrans(UNACOP_UNACFOLD);
     XapComputableSynFamMember synac(xrdb, synFamDiCa, "all", &unacfoldtrans);
-#endif // RCL_INDEX_STRIPCHARS
-
 
     if (matchtyp == ET_WILD || matchtyp == ET_REGEXP) {
-#ifdef RCL_INDEX_STRIPCHARS
-	idxTermMatch(typ_sens, lang, term, res, max, field);
-#else
 	RefCntr<StrMatcher> matcher;
 	if (matchtyp == ET_WILD) {
 	    matcher = RefCntr<StrMatcher>(new StrWildMatcher(term));
@@ -233,16 +221,9 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
 	    idxTermMatch(typ_sens, lang, term, res, max, field);
 	}
 
-#endif // RCL_INDEX_STRIPCHARS
-
     } else {
 	// Expansion is STEM or NONE (which may still need case/diac exp)
 
-#ifdef RCL_INDEX_STRIPCHARS
-
-	idxTermMatch(Rcl::Db::ET_STEM, lang, term, res, max, field);
-
-#else
 	vector<string> lexp;
 	if (diac_sensitive && case_sensitive) {
 	    // No case/diac expansion
@@ -297,7 +278,6 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
 	    idxTermMatch(Rcl::Db::ET_WILD, "", *it, res, max, field);
 	}
     }
-#endif
 
     TermMatchCmpByTerm tcmp;
     sort(res.entries.begin(), res.entries.end(), tcmp);
@@ -325,12 +305,10 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
 	     tmtptostr(typ), lang.c_str(), root.c_str(),
 	     max, field.c_str(), res.entries.size()));
 
-#ifndef RCL_INDEX_STRIPCHARS
     if (typ == ET_STEM) {
 	LOGFATAL(("RCLDB: internal error: idxTermMatch called with ET_STEM\n"));
 	abort();
     }
-#endif
 
     Xapian::Database xdb = m_ndb->xrdb;
 
@@ -346,109 +324,87 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
     }
     res.prefix = prefix;
 
-#ifdef RCL_INDEX_STRIPCHARS
-    if (typ == ET_STEM) {
-	vector<string> exp;
-	StemDb db(m_ndb->xrdb);
-	if (!db.stemExpand(langs, term, exp))
-	    return false;
-	res.entries.insert(result.entries.end(), exp.begin(), exp.end());
-	for (vector<TermMatchEntry>::iterator it = res.entries.begin(); 
-	     it != res.entries.end(); it++) {
-	    XAPTRY(it->wcf = xdb.get_collection_freq(it->term);
-                   it->docs = xdb.get_termfreq(it->term),
-                   xdb, m_reason);
-            if (!m_reason.empty())
-                return false;
-	    LOGDEB1(("termMatch: %d [%s]\n", it->wcf, it->term.c_str()));
+    RefCntr<StrMatcher> matcher;
+    if (typ == ET_REGEXP) {
+	matcher = RefCntr<StrMatcher>(new StrRegexpMatcher(root));
+	if (!matcher->ok()) {
+	    LOGERR(("termMatch: regcomp failed: %s\n", 
+		    matcher->getreason().c_str()))
+		return false;
 	}
-        if (!prefix.empty())
-            addPrefix(res.entries, prefix);
-    } else 
-#endif
-    {
-	RefCntr<StrMatcher> matcher;
-	if (typ == ET_REGEXP) {
-	    matcher = RefCntr<StrMatcher>(new StrRegexpMatcher(root));
-	    if (!matcher->ok()) {
-		LOGERR(("termMatch: regcomp failed: %s\n", 
-			matcher->getreason().c_str()))
-		    return false;
-	    }
-	} else if (typ == ET_WILD) {
-	    matcher = RefCntr<StrMatcher>(new StrWildMatcher(root));
-	}
+    } else if (typ == ET_WILD) {
+	matcher = RefCntr<StrMatcher>(new StrWildMatcher(root));
+    }
 
-	// Find the initial section before any special char
-	string::size_type es = string::npos;
-	if (matcher.isNotNull()) {
-	    es = matcher->baseprefixlen();
-	}
+    // Find the initial section before any special char
+    string::size_type es = string::npos;
+    if (matcher.isNotNull()) {
+	es = matcher->baseprefixlen();
+    }
 
-	// Initial section: the part of the prefix+expr before the
-	// first wildcard character. We only scan the part of the
-	// index where this matches
-	string is;
-	switch (es) {
-	case string::npos: is = prefix + root; break;
-	case 0: is = prefix; break;
-	default: is = prefix + root.substr(0, es); break;
-	}
-	LOGDEB2(("termMatch: initsec: [%s]\n", is.c_str()));
+    // Initial section: the part of the prefix+expr before the
+    // first wildcard character. We only scan the part of the
+    // index where this matches
+    string is;
+    switch (es) {
+    case string::npos: is = prefix + root; break;
+    case 0: is = prefix; break;
+    default: is = prefix + root.substr(0, es); break;
+    }
+    LOGDEB2(("termMatch: initsec: [%s]\n", is.c_str()));
 
-        for (int tries = 0; tries < 2; tries++) { 
-            try {
-                Xapian::TermIterator it = xdb.allterms_begin(); 
-                if (!is.empty())
-                    it.skip_to(is.c_str());
-                for (int rcnt = 0; it != xdb.allterms_end(); it++) {
-                    // If we're beyond the terms matching the initial
-                    // section, end
-                    if (!is.empty() && (*it).find(is) != 0)
-                        break;
+    for (int tries = 0; tries < 2; tries++) { 
+	try {
+	    Xapian::TermIterator it = xdb.allterms_begin(); 
+	    if (!is.empty())
+		it.skip_to(is.c_str());
+	    for (int rcnt = 0; it != xdb.allterms_end(); it++) {
+		// If we're beyond the terms matching the initial
+		// section, end
+		if (!is.empty() && (*it).find(is) != 0)
+		    break;
 
-		    // Else try to match the term. The matcher content
-		    // is without prefix, so we remove this if any. We
-		    // just checked that the index term did begin with
-		    // the prefix.
-                    string term;
-                    if (!prefix.empty()) {
-                        term = (*it).substr(prefix.length());
-		    } else {
-			if (has_prefix(*it)) {
-			    continue;
-			}
-                        term = *it;
-		    }
-
-		    if (matcher.isNotNull() && !matcher->match(term))
+		// Else try to match the term. The matcher content
+		// is without prefix, so we remove this if any. We
+		// just checked that the index term did begin with
+		// the prefix.
+		string term;
+		if (!prefix.empty()) {
+		    term = (*it).substr(prefix.length());
+		} else {
+		    if (has_prefix(*it)) {
 			continue;
+		    }
+		    term = *it;
+		}
 
-                    res.entries.push_back(
-			TermMatchEntry(*it, xdb.get_collection_freq(*it),
-				       it.get_termfreq()));
+		if (matcher.isNotNull() && !matcher->match(term))
+		    continue;
 
-		    // The problem with truncating here is that this is done
-		    // alphabetically and we may not keep the most frequent 
-		    // terms. OTOH, not doing it may stall the program if
-		    // we are walking the whole term list. We compromise
-		    // by cutting at 2*max
-                    if (max > 0 && ++rcnt >= 2*max)
-			break;
-                }
-                m_reason.erase();
-                break;
-            } catch (const Xapian::DatabaseModifiedError &e) {
-                m_reason = e.get_msg();
-                xdb.reopen();
-                continue;
-            } XCATCHERROR(m_reason);
-            break;
-        }
-	if (!m_reason.empty()) {
-	    LOGERR(("termMatch: %s\n", m_reason.c_str()));
-	    return false;
-	}
+		res.entries.push_back(
+		    TermMatchEntry(*it, xdb.get_collection_freq(*it),
+				   it.get_termfreq()));
+
+		// The problem with truncating here is that this is done
+		// alphabetically and we may not keep the most frequent 
+		// terms. OTOH, not doing it may stall the program if
+		// we are walking the whole term list. We compromise
+		// by cutting at 2*max
+		if (max > 0 && ++rcnt >= 2*max)
+		    break;
+	    }
+	    m_reason.erase();
+	    break;
+	} catch (const Xapian::DatabaseModifiedError &e) {
+	    m_reason = e.get_msg();
+	    xdb.reopen();
+	    continue;
+	} XCATCHERROR(m_reason);
+	break;
+    }
+    if (!m_reason.empty()) {
+	LOGERR(("termMatch: %s\n", m_reason.c_str()));
+	return false;
     }
 
     return true;

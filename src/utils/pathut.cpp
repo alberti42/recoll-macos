@@ -580,7 +580,7 @@ int Pidfile::flopen()
 {
     const char *path = m_path.c_str();
     if ((m_fd = ::open(path, O_RDWR|O_CREAT, 0644)) == -1) {
-	m_reason = "Open failed";
+	m_reason = "Open failed: [" + m_path + "]: " + strerror(errno);
 	return -1;
     }
 

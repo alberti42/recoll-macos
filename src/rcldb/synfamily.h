@@ -212,7 +212,6 @@ private:
 // Lowercase accented stem to expansion. Family member name: language
 static const std::string synFamStem("Stm");
 
-#ifndef RCL_INDEX_STRIPCHARS
 // Lowercase unaccented stem to expansion. Family member name: language
 static const std::string synFamStemUnac("StU");
 
@@ -220,7 +219,6 @@ static const std::string synFamStemUnac("StU");
 // member, named "all". This set is used for separate case/diac
 // expansion by post-filtering the results of dual expansion.
 static const std::string synFamDiCa("DCa");
-#endif // !RCL_INDEX_STRIPCHARS
 
 } // end namespace Rcl
 

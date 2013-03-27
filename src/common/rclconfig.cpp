@@ -51,10 +51,10 @@ using namespace std;
 
 // Static, logically const, RclConfig members are initialized once from the
 // first object build during process initialization.
-#ifndef RCL_INDEX_STRIPCHARS
+
 // We default to a case- and diacritics-less index for now
 bool o_index_stripchars = true;
-#endif
+
 string RclConfig::o_localecharset; 
 
 bool ParamStale::needrecompute()
@@ -138,7 +138,7 @@ RclConfig::RclConfig(const string *argcnf)
     } else {
 	const char *cp = getenv("RECOLL_CONFDIR");
 	if (cp) {
-	    m_confdir = cp;
+	    m_confdir = path_canon(cp);
 	} else {
 	    autoconfdir = true;
 	    m_confdir = path_cat(path_home(), ".recoll/");
@@ -274,13 +274,11 @@ bool RclConfig::updateMainConfig()
 	FsTreeWalker::setNoFnmPathname();
     }
 
-#ifndef RCL_INDEX_STRIPCHARS
     static int m_index_stripchars_init = 0;
     if (!m_index_stripchars_init) {
 	getConfParam("indexStripChars", &o_index_stripchars);
 	m_index_stripchars_init = 1;
     }
-#endif
 
     return true;
 }

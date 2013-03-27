@@ -116,21 +116,15 @@ static void sigcleanup(int sig)
     exit(1);
 }
 
-#ifndef RCL_INDEX_STRIPCHARS
 bool o_index_stripchars;
-#endif
 
 inline bool has_prefix(const string& trm)
 {
-#ifndef RCL_INDEX_STRIPCHARS
     if (o_index_stripchars) {
-#endif
 	return trm.size() && 'A' <= trm[0] && trm[0] <= 'Z';
-#ifndef RCL_INDEX_STRIPCHARS
     } else {
 	return trm.size() > 0 && trm[0] == ':';
     }
-#endif
 }
 
 int main(int argc, char **argv)
@@ -212,7 +206,6 @@ int main(int argc, char **argv)
 	cout << "DB: ndocs " << db->get_doccount() << " lastdocid " <<
 	    db->get_lastdocid() << " avglength " << db->get_avlength() << endl;
 
-#ifndef RCL_INDEX_STRIPCHARS
 	// If we have terms with a leading ':' it's a new style,
 	// unstripped index
 	{
@@ -223,7 +216,6 @@ int main(int argc, char **argv)
 		o_index_stripchars = false;
 	    cout<<"DB: terms are "<<(o_index_stripchars?"stripped":"raw")<<endl;
 	}
-#endif
     
 	if (op_flags & OPT_T) {
 	    Xapian::TermIterator term;

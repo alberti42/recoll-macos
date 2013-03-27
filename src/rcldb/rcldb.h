@@ -133,15 +133,11 @@ public:
 
 inline bool has_prefix(const string& trm)
 {
-#ifndef RCL_INDEX_STRIPCHARS
     if (o_index_stripchars) {
-#endif
 	return !trm.empty() && 'A' <= trm[0] && trm[0] <= 'Z';
-#ifndef RCL_INDEX_STRIPCHARS
     } else {
 	return !trm.empty() && trm[0] == ':';
     }
-#endif
 }
 
 inline string strip_prefix(const string& trm)
@@ -149,13 +145,10 @@ inline string strip_prefix(const string& trm)
     if (trm.empty())
 	return trm;
     string::size_type st = 0;
-#ifndef RCL_INDEX_STRIPCHARS
     if (o_index_stripchars) {
-#endif
 	st = trm.find_first_not_of("ABCDEFIJKLMNOPQRSTUVWXYZ");
 	if (st == string::npos)
 	    return string();
-#ifndef RCL_INDEX_STRIPCHARS
     } else {
 	if (has_prefix(trm)) {
 	    st = trm.find_last_of(":") + 1;
@@ -163,21 +156,16 @@ inline string strip_prefix(const string& trm)
 	    return trm;
 	}
     }
-#endif
     return trm.substr(st);
 }
 
 inline string wrap_prefix(const string& pfx) 
 {
-#ifndef RCL_INDEX_STRIPCHARS
     if (o_index_stripchars) {
-#endif
 	return pfx;
-#ifndef RCL_INDEX_STRIPCHARS
     } else {
 	return cstr_colon + pfx + cstr_colon;
     }
-#endif
 }
 
 /**
@@ -462,13 +450,9 @@ extern const string udi_prefix;
 extern const string parent_prefix;
 extern const string mimetype_prefix;
 extern const string unsplitFilenameFieldName;
-#ifdef RCL_INDEX_STRIPCHARS
-extern const string start_of_field_term;
-extern const string end_of_field_term;
-#else
 extern string start_of_field_term;
 extern string end_of_field_term;
-#endif
+
 }
 
 #endif /* _DB_H_INCLUDED_ */

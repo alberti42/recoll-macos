@@ -164,34 +164,32 @@ ConfSearchPanelW::ConfSearchPanelW(QWidget *parent, ConfNull *config)
     vboxLayout->setSpacing(spacing);
     vboxLayout->setMargin(margin);
 
-#ifndef RCL_INDEX_STRIPCHARS
     if (!o_index_stripchars) {
-    ConfLink lnk1(new ConfLinkRclRep(config, "autodiacsens"));
-    ConfParamBoolW* cp1 = 
-        new ConfParamBoolW(this, lnk1, tr("Automatic diacritics sensitivity"),
-                           tr("<p>Automatically trigger diacritics sensitivity "
-			      "if the search term has accented characters "
-			      "(not in unac_except_trans). Else you need to "
-			      "use the query language and the <i>D</i> "
-			      "modifier to specify "
-			      "diacritics sensitivity."
-			  ));
-    vboxLayout->addWidget(cp1);
+	ConfLink lnk1(new ConfLinkRclRep(config, "autodiacsens"));
+	ConfParamBoolW* cp1 = 
+	    new ConfParamBoolW(this, lnk1, tr("Automatic diacritics sensitivity"),
+			       tr("<p>Automatically trigger diacritics sensitivity "
+				  "if the search term has accented characters "
+				  "(not in unac_except_trans). Else you need to "
+				  "use the query language and the <i>D</i> "
+				  "modifier to specify "
+				  "diacritics sensitivity."
+				   ));
+	vboxLayout->addWidget(cp1);
 
-    ConfLink lnk2(new ConfLinkRclRep(config, "autocasesens"));
-    ConfParamBoolW* cp2 = 
-        new ConfParamBoolW(this, lnk2, 
-			   tr("Automatic character case sensitivity"),
-			   tr("<p>Automatically trigger character case "
-			      "sensitivity if the entry has upper-case "
-			      "characters in any but the first position. "
-			      "Else you need to use the query language and "
-			      "the <i>C</i> modifier to specify character-case "
-			      "sensitivity."
-			       ));
-    vboxLayout->addWidget(cp2);
+	ConfLink lnk2(new ConfLinkRclRep(config, "autocasesens"));
+	ConfParamBoolW* cp2 = 
+	    new ConfParamBoolW(this, lnk2, 
+			       tr("Automatic character case sensitivity"),
+			       tr("<p>Automatically trigger character case "
+				  "sensitivity if the entry has upper-case "
+				  "characters in any but the first position. "
+				  "Else you need to use the query language and "
+				  "the <i>C</i> modifier to specify character-case "
+				  "sensitivity."
+				   ));
+	vboxLayout->addWidget(cp2);
     }
-#endif
 
     ConfLink lnk3(new ConfLinkRclRep(config, "maxTermExpand"));
     ConfParamIntW* cp3 = 

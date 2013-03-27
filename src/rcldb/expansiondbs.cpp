@@ -48,9 +48,7 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
     // If langs is empty and we don't need casediac expansion, then no need to
     // walk the big list
     if (langs.empty()) {
-#ifndef RCL_INDEX_STRIPCHARS
 	if (o_index_stripchars)
-#endif	    
 	    return true;
     }
 
@@ -68,7 +66,6 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
 	stemdbs.back().recreate();
     }
 
-#ifndef RCL_INDEX_STRIPCHARS
     // Unaccented stem dbs
     vector<XapWritableComputableSynFamMember> unacstemdbs;
     // We can reuse the same stemmer pointers, the objects are stateless.
@@ -85,7 +82,6 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
 	diacasedb(wdb, synFamDiCa, "all", &transunac);
     if (!o_index_stripchars)
 	diacasedb.recreate();
-#endif
 
     // Walk the list of all terms, and stem/unac each.
     string ermsg;
@@ -107,7 +103,6 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
 	    }
 
 	    string lower = *it;
-#ifndef RCL_INDEX_STRIPCHARS
 	    // If the index is raw, compute the case-folded term which
 	    // is the input to the stem db, and add a synonym from the
 	    // stripped term to the cased and accented one, for accent
@@ -116,7 +111,6 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
 		unacmaybefold(*it, lower, "UTF-8", UNACOP_FOLD);
 		diacasedb.addSynonym(*it);
 	    }
-#endif
 
 	    // Dont' apply stemming to terms which don't look like
 	    // natural language words.
@@ -131,7 +125,6 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
 		stemdbs[i].addSynonym(lower);
 	    }
 
-#ifndef RCL_INDEX_STRIPCHARS
 	    // For a raw index, also maybe create a stem expansion for
 	    // the unaccented term. While this may be incorrect, it is
 	    // also necessary for searching in a diacritic-unsensitive
@@ -145,7 +138,6 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
 		    }
 		}
 	    }
-#endif
         }
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {

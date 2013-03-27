@@ -76,15 +76,9 @@ const string parent_prefix("F");
 
 // Special terms to mark begin/end of field (for anchored searches), and
 // page breaks
-#ifdef RCL_INDEX_STRIPCHARS
-const string start_of_field_term = "XXST";
-const string end_of_field_term = "XXND";
-static const string page_break_term = "XXPG";
-#else
 string start_of_field_term;
 string end_of_field_term;
 const string page_break_term = "XXPG/";
-#endif
 
 // Field name for the unsplit file name. Has to exist in the field file 
 // because of usage in termmatch()
@@ -356,7 +350,6 @@ Db::Db(const RclConfig *cfp)
       m_flushMb(-1), m_maxFsOccupPc(0)
 {
     m_config = new RclConfig(*cfp);
-#ifndef RCL_INDEX_STRIPCHARS
     if (start_of_field_term.empty()) {
 	if (o_index_stripchars) {
 	    start_of_field_term = "XXST";
@@ -366,7 +359,6 @@ Db::Db(const RclConfig *cfp)
 	    end_of_field_term = "XXND/";
 	}
     }
-#endif
 
     m_ndb = new Native(this);
     if (m_config) {
@@ -402,8 +394,8 @@ bool Db::open(OpenMode mode, OpenError *error)
 	m_reason = "Null configuration or Xapian Db";
 	return false;
     }
-    LOGDEB(("Db::open: m_isopen %d m_iswritable %d\n", m_ndb->m_isopen, 
-	    m_ndb->m_iswritable));
+    LOGDEB(("Db::open: m_isopen %d m_iswritable %d mode %d\n", m_ndb->m_isopen, 
+	    m_ndb->m_iswritable, mode));
 
     if (m_ndb->m_isopen) {
 	// We used to return an error here but I see no reason to
@@ -571,9 +563,7 @@ int Db::termDocCnt(const string& _term)
         return -1;
 
     string term = _term;
-#ifndef RCL_INDEX_STRIPCHARS
     if (o_index_stripchars)
-#endif
 	if (!unacmaybefold(_term, term, "UTF-8", UNACOP_UNACFOLD)) {
 	    LOGINFO(("Db::termDocCnt: unac failed for [%s]\n", _term.c_str()));
 	    return 0;
@@ -851,13 +841,11 @@ string Db::getSpellingSuggestion(const string& word)
 
     string term = word;
 
-#ifndef RCL_INDEX_STRIPCHARS
     if (o_index_stripchars)
-#endif
-    if (!unacmaybefold(word, term, "UTF-8", UNACOP_UNACFOLD)) {
-	LOGINFO(("Db::getSpelling: unac failed for [%s]\n", word.c_str()));
-	return string();
-    }
+	if (!unacmaybefold(word, term, "UTF-8", UNACOP_UNACFOLD)) {
+	    LOGINFO(("Db::getSpelling: unac failed for [%s]\n", word.c_str()));
+	    return string();
+	}
 
     if (!isSpellingCandidate(term))
 	return string();
@@ -903,9 +891,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
     //TermProcCommongrams tpcommon(nxt, m_stops); nxt = &tpcommon;
 
     TermProcPrep tpprep(nxt);
-#ifndef RCL_INDEX_STRIPCHARS
     if (o_index_stripchars)
-#endif
 	nxt = &tpprep;
 
     TextSplitDb splitter(newdocument, nxt);

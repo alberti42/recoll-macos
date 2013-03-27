@@ -358,11 +358,7 @@ void ResListPager::displayPage(RclConfig *config)
 		map<string, vector<string> > spellings;
 		suggest(uterms, spellings);
 		if (!spellings.empty()) {
-#ifndef RCL_INDEX_STRIPCHARS
 		    if (o_index_stripchars) {
-#else 
-		    if (true) {
-#endif
 			chunk << 
 			    trans("<p><i>Alternate spellings (accents suppressed): </i>")
 			      << "<br /><blockquote>";

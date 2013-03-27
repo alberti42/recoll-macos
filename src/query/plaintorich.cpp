@@ -93,17 +93,13 @@ class TextSplitPTR : public TextSplit {
     // (phrase or near), update positions list.
     virtual bool takeword(const std::string& term, int pos, int bts, int bte) {
 	string dumb = term;
-#ifndef RCL_INDEX_STRIPCHARS
 	if (o_index_stripchars) {
-#endif
 	    if (!unacmaybefold(term, dumb, "UTF-8", UNACOP_UNACFOLD)) {
 		LOGINFO(("PlainToRich::takeword: unac failed for [%s]\n",
 			 term.c_str()));
 		return true;
 	    }
-#ifndef RCL_INDEX_STRIPCHARS
 	}
-#endif
 
 	//LOGDEB2(("Input dumbbed term: '%s' %d %d %d\n", dumb.c_str(), 
 	// pos, bts, bte));
