@@ -168,10 +168,10 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
     stripped = o_index_stripchars;
 #endif
 
-    LOGDEB(("Db::TermMatch: typ %s diacsens %d casesens %d lang [%s] term [%s] "
-	    "max %d field [%s] stripped %d\n",
+    LOGDEB0(("Db::TermMatch: typ %s diacsens %d casesens %d lang [%s] term [%s]"
+	    " max %d field [%s] stripped %d init res.size %u\n",
 	    tmtptostr(matchtyp), diac_sensitive, case_sensitive, lang.c_str(), 
-	    _term.c_str(), max, field.c_str(), stripped));
+	    _term.c_str(), max, field.c_str(), stripped, res.entries.size()));
 
     // If index is stripped, no case or diac expansion can be needed:
     // for the processing inside this routine, everything looks like
@@ -224,7 +224,7 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
 		 it != exp.end(); it++) {
 		idxTermMatch(ET_NONE, "", *it, res, max, field);
 	    }
-	    // And also expand the original expresionn against the
+	    // And also expand the original expression against the
 	    // main index: for the common case where the expression
 	    // had no case/diac expansion (no entry in the exp db if
 	    // the original term is lowercase and without accents).
@@ -320,6 +320,10 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
 		      TermMatchResult& res, int max,  const string& field)
 {
     int typ = matchTypeTp(typ_sens);
+    LOGDEB1(("Db::idxTermMatch: typ %s lang [%s] term [%s] "
+	     "max %d field [%s] init res.size %u\n",
+	     tmtptostr(typ), lang.c_str(), root.c_str(),
+	     max, field.c_str(), res.entries.size()));
 
 #ifndef RCL_INDEX_STRIPCHARS
     if (typ == ET_STEM) {
@@ -380,6 +384,10 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
 	if (matcher.isNotNull()) {
 	    es = matcher->baseprefixlen();
 	}
+
+	// Initial section: the part of the prefix+expr before the
+	// first wildcard character. We only scan the part of the
+	// index where this matches
 	string is;
 	switch (es) {
 	case string::npos: is = prefix + root; break;
@@ -395,14 +403,23 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
                     it.skip_to(is.c_str());
                 for (int rcnt = 0; it != xdb.allterms_end(); it++) {
                     // If we're beyond the terms matching the initial
-                    // string, end
+                    // section, end
                     if (!is.empty() && (*it).find(is) != 0)
                         break;
+
+		    // Else try to match the term. The matcher content
+		    // is without prefix, so we remove this if any. We
+		    // just checked that the index term did begin with
+		    // the prefix.
                     string term;
-                    if (!prefix.empty())
+                    if (!prefix.empty()) {
                         term = (*it).substr(prefix.length());
-                    else
+		    } else {
+			if (has_prefix(*it)) {
+			    continue;
+			}
                         term = *it;
+		    }
 
 		    if (matcher.isNotNull() && !matcher->match(term))
 			continue;

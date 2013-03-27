@@ -622,7 +622,7 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
     if (noexpansion) {
 	oexp.push_back(prefix + term);
 	m_hldata.terms[term] = m_hldata.uterms.size() - 1;
-	LOGDEB(("ExpandTerm: final: %s\n", stringsToString(oexp).c_str()));
+	LOGDEB(("ExpandTerm: noexpansion: final: %s\n", stringsToString(oexp).c_str()));
 	return true;
     } 
 

@@ -26,12 +26,22 @@
 using std::string;
 
 #include "cstr.h"
-
+#include "debuglog.h"
 #include "strmatcher.h"
 
 bool StrWildMatcher::match(const string& val) const
 {
-    return fnmatch(m_sexp.c_str(), val.c_str(), 0) != FNM_NOMATCH;
+    LOGDEB2(("StrWildMatcher::match: [%s] against [%s]\n", 
+	     m_sexp.c_str(), val.c_str()));
+    int ret = fnmatch(m_sexp.c_str(), val.c_str(), FNM_NOESCAPE);
+    switch (ret) {
+    case 0: return true;
+    case FNM_NOMATCH: return false;
+    default:
+	LOGDEB0(("StrWildMatcher::match error: [%s] against [%s]\n", 
+		 m_sexp.c_str(), val.c_str()));
+	return false;
+    }
 }
 
 string::size_type StrWildMatcher::baseprefixlen() const

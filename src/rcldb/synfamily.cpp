@@ -222,7 +222,7 @@ bool XapComputableSynFamMember::synKeyExpand(StrMatcher* inexp,
 		if (filter_exp.isNotNull()) {
 		    string term1 = (*filtertrans)(term);
 		    LOGDEB2(("  Testing [%s] against [%s]\n", 
-			     term1.c_str(), filter_exp.c_str()));
+			    term1.c_str(), filter_exp->exp().c_str()));
 		    if (!filter_exp->match(term1)) {
 			continue;
 		    }
@@ -236,7 +236,7 @@ bool XapComputableSynFamMember::synKeyExpand(StrMatcher* inexp,
 	    if (filter_exp.isNotNull()) {
 		string term1 = (*filtertrans)(term);
 		LOGDEB2((" Testing [%s] against [%s]\n", 
-			term1.c_str(), filter_exp->exp().c_str()));
+			 term1.c_str(), filter_exp->exp().c_str()));
 		if (!filter_exp->match(term1)) {
 		    continue;
 		}
