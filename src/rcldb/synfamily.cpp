@@ -18,8 +18,6 @@
 
 #include "autoconfig.h"
 
-#include <fnmatch.h>
-
 #include <iostream>
 #include <algorithm>
 

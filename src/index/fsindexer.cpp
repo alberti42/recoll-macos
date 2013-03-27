@@ -21,7 +21,6 @@
 #include <unistd.h>
 #include <errno.h>
 #include <cstring>
-#include <fnmatch.h>
 
 #include <iostream>
 #include <list>

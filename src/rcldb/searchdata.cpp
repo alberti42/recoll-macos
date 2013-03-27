@@ -20,7 +20,6 @@
 #include "autoconfig.h"
 
 #include <stdio.h>
-#include <fnmatch.h>
 
 #include <string>
 #include <vector>

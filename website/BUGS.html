@@ -74,6 +74,12 @@ video/x-msvideo = exec rclnull
 </pre>
         </li>
 
+        <li>Wildcards expressions sometimes cause false matches
+          because of issues in handling errors from fnmatch(). This
+          will only occur in an UTF-8 locale where file name
+          conversion errors are possible (for old 8bit file
+          names).</li>
+
         <li>On systems such as Debian Stable which use Evince version
           2.x (not 3.x) as PDF viewer, the default "Open" command for
           PDF files will not work. You need to edit the command:

@@ -540,7 +540,7 @@ vector<string> ConfSimple::getNames(const string &sk, const char *pattern) const
     mylist.reserve(ss->second.size());
     map<string, string>::const_iterator it;
     for (it = ss->second.begin(); it != ss->second.end(); it++) {
-        if (pattern && FNM_NOMATCH == fnmatch(pattern, it->first.c_str(), 0))
+        if (pattern && 0 != fnmatch(pattern, it->first.c_str(), 0))
             continue;
 	mylist.push_back(it->first);
     }
