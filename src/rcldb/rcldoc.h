@@ -179,7 +179,10 @@ class Doc {
 	} else if (mit->second.empty()) {
 	    mit->second = value;
 	} else {
-	    mit->second += string(" - ") + value;
+	    // It may happen that the same attr exists several times
+	    // in the internfile stack. Avoid duplicating values.
+	    if (mit->second != value)
+		mit->second += string(" - ") + value;
 	}
 	return true;
     }
