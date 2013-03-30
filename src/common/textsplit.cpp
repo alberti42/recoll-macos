@@ -350,6 +350,9 @@ bool TextSplit::text_to_words(const string &in)
 	     m_flags & TXTS_KEEPWILD ? " keepwild" : "",
 	     in.substr(0,50).c_str()));
 
+    if (in.empty())
+	return true;
+
     m_span.erase();
     m_inNumber = false;
     m_wordStart = m_wordLen = m_prevpos = m_prevlen = m_wordpos = m_spanpos = 0;

@@ -28,6 +28,7 @@ using std::string;
 #include "cstr.h"
 #include "debuglog.h"
 #include "strmatcher.h"
+#include "pathut.h"
 
 bool StrWildMatcher::match(const string& val) const
 {
@@ -38,8 +39,9 @@ bool StrWildMatcher::match(const string& val) const
     case 0: return true;
     case FNM_NOMATCH: return false;
     default:
-	LOGDEB0(("StrWildMatcher::match error: [%s] against [%s]\n", 
-		 m_sexp.c_str(), val.c_str()));
+	LOGINFO(("StrWildMatcher::match:err: e [%s] s [%s] (%s) ret %d\n", 
+		 m_sexp.c_str(), val.c_str(), 
+		 url_encode(val).c_str(), ret));
 	return false;
     }
 }

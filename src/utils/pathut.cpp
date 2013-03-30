@@ -462,7 +462,7 @@ string url_encode(const string& url, string::size_type offs)
     string out = url.substr(0, offs);
     const char *cp = url.c_str();
     for (string::size_type i = offs; i < url.size(); i++) {
-	int c;
+	unsigned int c;
 	const char *h = "0123456789ABCDEF";
 	c = cp[i];
 	if (c <= 0x20 || 

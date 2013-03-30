@@ -32,7 +32,7 @@
 class Utf8Iter {
 public:
     Utf8Iter(const std::string &in) 
-	: m_s(in), m_cl(0), m_pos(0), m_charpos(0), m_error(false)
+	: m_s(in), m_cl(0), m_pos(0), m_charpos(0)
     {
 	update_cl();
     }
@@ -44,7 +44,6 @@ public:
 	m_cl = 0; 
 	m_pos = 0; 
 	m_charpos = 0; 
-	m_error = false;
 	update_cl();
     }
 
@@ -62,15 +61,15 @@ public:
 	int l;
 	while (mypos < m_s.length() && mycp != charpos) {
 	    l = get_cl(mypos);
-	    if (l <= 0)
+	    if (l <= 0 || !poslok(mypos, l) || !checkvalidat(mypos, l))
 		return (unsigned int)-1;
 	    mypos += l;
 	    ++mycp;
 	}
 	if (mypos < m_s.length() && mycp == charpos) {
 	    l = get_cl(mypos);
-	    if (poslok(mypos, l))
-		return getvalueat(mypos, get_cl(mypos));
+	    if (poslok(mypos, l) && checkvalidat(mypos, l))
+		return getvalueat(mypos, l);
 	}
 	return (unsigned int)-1;
     }
@@ -83,7 +82,7 @@ public:
 #ifdef UTF8ITER_CHECK
 	assert(m_cl != 0);
 #endif
-	if (m_cl <= 0) 
+	if (m_cl == 0)
 	    return std::string::npos;
 
 	m_pos += m_cl;
@@ -96,9 +95,9 @@ public:
     unsigned int operator*() 
     {
 #ifdef UTF8ITER_CHECK
-	assert(m_cl != 0);
+	assert(m_cl > 0);
 #endif
-	return getvalueat(m_pos, m_cl);
+	return m_cl == 0 ? (unsigned int)-1 : getvalueat(m_pos, m_cl);
     }
 
     /** Append current utf-8 possibly multi-byte character to string param.
@@ -116,15 +115,15 @@ public:
 #ifdef UTF8ITER_CHECK
 	assert(m_cl != 0);
 #endif
-	return m_s.substr(m_pos, m_cl);
+	return m_cl > 0 ? m_s.substr(m_pos, m_cl) : std::string();
     }
 
-    bool eof() {
+    bool eof() const {
 	return m_pos == m_s.length();
     }
 
-    bool error() {
-	return m_error;
+    bool error() const {
+	return m_cl == 0;
     }
 
     /** Return current byte offset in input string */
@@ -147,13 +146,11 @@ private:
     const std::string&     m_s; 
     // Character length at current position. A value of zero indicates
     // an error.
-    unsigned int      m_cl; 
+    unsigned int m_cl;
     // Current byte offset in string.
     std::string::size_type m_pos; 
     // Current character position
     unsigned int      m_charpos; 
-    // Am I ok ?
-    mutable bool      m_error;
 
     // Check position and cl against string length
     bool poslok(std::string::size_type p, int l) const {
@@ -163,7 +160,7 @@ private:
 	return p != std::string::npos && l > 0 && p + l <= m_s.length();
     }
 
-    // Update current char length in object state, minimum checking
+    // Update current char length in object state, check
     // for errors
     inline void update_cl() 
     {
@@ -176,7 +173,34 @@ private:
 	    // basically prevents the caller to discriminate error and eof.
 	    //	    m_pos = m_s.length();
 	    m_cl = 0;
-	    m_error = true;
+	    return;
+	}
+	if (!checkvalidat(m_pos, m_cl)) {
+	    m_cl = 0;
+	}
+    }
+
+    inline bool checkvalidat(std::string::size_type p, int l) const
+    {
+	switch (l) {
+	case 1: 
+	    return (unsigned char)m_s[p] < 128;
+	case 2: 
+	    return (((unsigned char)m_s[p]) & 224) == 192
+		&& (((unsigned char)m_s[p+1]) & 192) == 128;
+	case 3: 
+	    return (((unsigned char)m_s[p]) & 240) == 224
+		   && (((unsigned char)m_s[p+1]) & 192) ==  128
+		   && (((unsigned char)m_s[p+2]) & 192) ==  128
+		   ;
+	case 4: 
+	    return (((unsigned char)m_s[p]) & 248) == 240
+		   && (((unsigned char)m_s[p+1]) & 192) ==  128
+		   && (((unsigned char)m_s[p+2]) & 192) ==  128
+		   && (((unsigned char)m_s[p+3]) & 192) ==  128
+		;
+	default:
+	    return false;
 	}
     }
 
@@ -249,7 +273,6 @@ private:
 #ifdef UTF8ITER_CHECK
 	    assert(l <= 4);
 #endif
-	    m_error = true;
 	    return (unsigned int)-1;
 	}
     }

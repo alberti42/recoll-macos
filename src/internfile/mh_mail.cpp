@@ -540,8 +540,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 	!stringlowercmp("x-user-defined", charset) || 
 	!stringlowercmp("x-unknown", charset) || 
 	!stringlowercmp("unknown", charset) ) {
-        m_config->getConfParam("maildefcharset", charset);
-        if (charset.empty())
+        if (!m_config->getConfParam("maildefcharset", charset))
             charset = "CP1252";
     }
 

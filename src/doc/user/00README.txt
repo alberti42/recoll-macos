@@ -31,3 +31,7 @@ making progress.
 
 The current conclusion would seem to be that the SGML version should stay
 operational to give an easy way to make the PDF one on FreeBSD.
+
+But see also notes about dblatex on the asciidoc page. Actually asciidoc would 
+be a candidate replacement for the source format. 
+http://www.methods.co.nz/asciidoc/userguide.html
