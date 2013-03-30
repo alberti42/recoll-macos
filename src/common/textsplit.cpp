@@ -335,6 +335,17 @@ void TextSplit::discardspan()
     m_wordLen = 0;
 }
 
+static inline bool isalphanum(int what, unsigned int flgs)
+{
+    return what == A_LLETTER || what == A_ULETTER ||
+	what == DIGIT || what == LETTER ||
+	((flgs & TextSplit::TXTS_KEEPWILD) && what == WILD);
+}
+static inline bool isdigit(int what, unsigned int flgs)
+{
+    return what == DIGIT || ((flgs & TextSplit::TXTS_KEEPWILD) && what == WILD);
+}
+
 /** 
  * Splitting a text into terms to be indexed.
  * We basically emit a word every time we see a separator, but some chars are
@@ -443,7 +454,7 @@ bool TextSplit::text_to_words(const string &in)
 	    if (m_wordLen == 0) {
 		// + or - don't start a term except if this looks like
 		// it's going to be to be a number
-		if (whatcc(it[it.getCpos()+1]) == DIGIT) {
+		if (isdigit(whatcc(it[it.getCpos()+1]), m_flags)) {
 		    // -10
 		    m_inNumber = true;
 		    m_wordLen += it.appendchartostring(m_span);
@@ -452,7 +463,7 @@ bool TextSplit::text_to_words(const string &in)
 		} 
 	    } else if (m_inNumber && (m_span[m_span.length() - 1] == 'e' ||
 				      m_span[m_span.length() - 1] == 'E')) {
-		if (whatcc(it[it.getCpos()+1]) == DIGIT) {
+		if (isdigit(whatcc(it[it.getCpos()+1]), m_flags)) {
 		    m_wordLen += it.appendchartostring(m_span);
 		} else {
 		    goto SPACE;
@@ -468,7 +479,7 @@ bool TextSplit::text_to_words(const string &in)
 	    int nextc = it[it.getCpos()+1];
 	    int nextwhat = whatcc(nextc);
 	    if (m_inNumber) {
-		if (nextwhat != DIGIT)
+		if (!isdigit(nextwhat, m_flags))
 		    goto SPACE;
 		m_wordLen += it.appendchartostring(m_span);
 		curspanglue = cc;
@@ -482,13 +493,12 @@ bool TextSplit::text_to_words(const string &in)
 		// A final comma in a word will be removed by doemit
 
 		// Only letters and digits make sense after
-		if (nextwhat != A_LLETTER && nextwhat != A_ULETTER && 
-		    nextwhat != DIGIT && nextwhat != LETTER)
+		if (!isalphanum(nextwhat, m_flags))
 		    goto SPACE;
 
 		if (cc == '.') {
                     // Check for number like .1
-                    if (m_span.length() == 0 && nextwhat == DIGIT) {
+                    if (m_span.length() == 0 && isdigit(nextwhat, m_flags)) {
                         m_inNumber = true;
                         m_wordLen += it.appendchartostring(m_span);
                         curspanglue = cc;
