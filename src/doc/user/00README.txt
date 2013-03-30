@@ -1,9 +1,9 @@
 = Building the Recoll user manual
 
-The Recoll user manual usually used DocBook SGML and used the FreeBSD doc
-toolchain to produce the output formats. This had the advantage of an easy
-way to produce all formats including a PDF manual, but presented two
-problems:
+The Recoll user manual used to be written in DocBook SGML and used the
+FreeBSD doc toolchain to produce the output formats. This had the advantage
+of an easy way to produce all formats including a PDF manual, but presented
+two problems:
 
  - Dependancy on the FreeBSD platform.
  - No support for UTF-8 (last I looked), only latin1.
@@ -17,21 +17,14 @@ made was to make the anchors explicitly upper-case because the SGML
 toolchain converts them to upper-case and the XML one does not, so the only
 way to have compatibility is to make them upper-case in the first place.
 
-We still have a problem for producing the PDF manual, because few
-straightforward approaches seem to exist:
+We initially had a problem for producing the PDF manual, which motivated
+keeping the SGML version for producing the PDF with the FreeBSD SGML
+toolchain. This problem is now solved with dblatex, so that the SGML
+version now has little reason to persist and it will go away at some point
+in the future.
 
- -  http://docbookpublishing.com qui a meme une version programmatique (cf:
-     http://docbookpublishing.com/api/), mais necessite un peu de
-     configuration. 
- - FOP but this is Java and complicated.
+Asciidoc would also be a candidate as the source format, because it can
+easily produce docbook, so the future will probably be:
 
-See also http://www.valdyas.org/linguistics/printing_unicode.html 
-Does not look simple, but dates from 2002 and seems to imply that FOP is
-making progress.
-
-The current conclusion would seem to be that the SGML version should stay
-operational to give an easy way to make the PDF one on FreeBSD.
-
-But see also notes about dblatex on the asciidoc page. Actually asciidoc would 
-be a candidate replacement for the source format. 
-http://www.methods.co.nz/asciidoc/userguide.html
+asciidoc->docbook-xml-> html
+                     -> pdf

@@ -12,7 +12,7 @@
 <!ENTITY XAP "<application>Xapian</application>">
 <!ENTITY WIKI "http://bitbucket.org/medoc/recoll/wiki/">
 ]>
- 
+
 <book lang="en">
   
   <bookinfo>
@@ -1741,7 +1741,8 @@ fvwm
       <replaceable>*coll</replaceable>), the expansion can take quite
       a long time because the full index term list will have to be
       processed. The expansion is currently limited at 10000 results for
-      wildcards and regular expressions.</para>
+      wildcards and regular expressions. It is possible to change the
+      limit in the configuration file.</para>
       
       <para>Double-clicking on a term in the result list will insert
       it into the simple search entry field. You can also cut/paste
@@ -2504,7 +2505,7 @@ fvwm
       <command>konqueror</command>.</para>
 
       <para>This can be done by either explicitly inserting
-      <literal>&lt;a&nbsp;href="recoll:/..."&gt;</literal> links 
+      <literal><![CDATA[<a href="recoll://...">]]></literal> links 
       around some document areas, or automatically by adding a
       very small <application>javascript</application> program to the
       documents, like the following example, which would initiate a search by
@@ -3061,30 +3062,36 @@ dir:recoll dir:src -dir:utils -dir:common
         </listitem>
       </itemizedlist>
 
-      <para>You should be aware of a few things before using
+      <para>You should be aware of a few things when using
         wildcards.</para>
 
       <itemizedlist>
         <listitem><para>Using a wildcard character at the beginning of
-        a word can make for a slow search because &RCL; will have to
-        scan the whole index term list to find the matches.</para>
-        </listitem>
-          <listitem><para>When working with a raw index (preserving
-          character case and diacritics), the literal part of a wildcard
-          expression will be matched exactly for case and
-          diacritics.</para>
-          </listitem>
+            a word can make for a slow search because &RCL; will have to
+            scan the whole index term list to find the
+            matches. However, this is much less a problem for field
+            searches, and queries
+            like <replaceable>author:*@domain.com</replaceable> can
+            sometimes be very useful.</para></listitem>
+
+        <listitem><para>For &RCL; version 18 only, when working with a
+            raw index (preserving character case and diacritics), the
+            literal part of a wildcard expression will be matched
+            exactly for case and diacritics. This is not true any
+            more for versions 19 and later.</para></listitem>
+
         <listitem><para>Using a <literal>*</literal> at the end of a
-        word can produce more matches than you would think, and
-        strange search results. You can use the <link
-        linkend="RCL.SEARCH.GUI.TERMEXPLORER">term explorer</link> tool to
-        check what completions exist for a given term. You can also
-        see exactly what search was performed by clicking on the link
-        at the top of the result list. In general, for natural
-        language terms, stem expansion will produce better results
-        than an ending <literal>*</literal> (stem expansion is turned
-        off when any wildcard character appears in the term).</para>
-        </listitem>
+            word can produce more matches than you would think, and
+            strange search results. You can use the 
+            <link linkend="RCL.SEARCH.GUI.TERMEXPLORER">term 
+              explorer</link> tool to check what completions exist for
+            a given term. You can also see exactly what search was
+            performed by clicking on the link at the top of the result
+            list. In general, for natural language terms, stem
+            expansion will produce better results than an
+            ending <literal>*</literal> (stem expansion is turned off
+            when any wildcard character appears in the
+            term).</para></listitem> 
       </itemizedlist>
 
     </sect2> <!-- wildchars -->
@@ -4423,7 +4430,7 @@ except:
         <ulink url="mailto:jfd@recoll.org">I would
         very much welcome patches</ulink>.</para>
 
-      <para>Depending on the <application>Qt&nbsp;3</application>
+      <para>Depending on the <application>Qt 3</application>
       configuration on your system, you may have to set the
       <envar>QTDIR</envar> and <envar>QMAKESPECS</envar>
       variables in your environment:</para>
@@ -4448,7 +4455,8 @@ except:
 
 	<para>Neither <envar>QTDIR</envar> nor 
 	<envar>QMAKESPECS</envar> should be needed with 
-        Qt&nbsp;4, configuration details are entirely determined by 
+        <application>Qt 4</application>,
+        configuration details are entirely determined by  
 	<command>qmake</command> (which is quite often installed as 
 	<command>qmake-qt4</command>).</para> 
 
@@ -4769,7 +4777,7 @@ skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
               <para>Example of use for skipping text files only in a
               specific directory:</para>
               <programlisting>
-skippedPaths = ~/somedir/&lowast;.txt
+skippedPaths = ~/somedir/*.txt
               </programlisting>
             </listitem>
           </varlistentry>
