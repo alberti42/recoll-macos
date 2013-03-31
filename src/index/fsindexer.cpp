@@ -48,12 +48,14 @@
 
 
 // When using extended attributes, we have to use the ctime, because
-// this is all that gets set when the attributes are modified. This
-// is quite an expensive price to pay...
+// this is all that gets set when the attributes are modified. 
+// As of 1.19 we use ctime in all cases as this allows to detect a
+// file renamed into an existing file (e.g. when shifting logs or
+// other archives).
 #ifdef RCL_USE_XATTR
 #define RCL_STTIME st_ctime
 #else
-#define RCL_STTIME st_mtime
+#define RCL_STTIME st_ctime
 #endif // RCL_USE_XATTR
 
 using namespace std;

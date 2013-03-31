@@ -54,6 +54,11 @@
         that no debris from older releases remain (e.g.: old stemming
         files which are not used any more).</p>
 
+      <p>Installing 1.19 over an 1.18 index will force a lot of
+        reindexing anyway because we switched from using st_ctime instead
+        of st_mtime to detect file modifications, meaning that all files
+        which were modified since created will be updated.</p>
+
       <p><span class="important">Viewer exceptions</span>: 
         There is a new list of mime types that should be opened with
         the locally configured application even when <em>Use
@@ -84,6 +89,11 @@
           as you type" mode, and to disable the Qt auto-completion
           inside the simple search string, which was often more confusing
           and ennoying than useful.</li>
+
+        <li>Extended file attributes are now indexed by default. As a
+          side effect, recoll now uses st_ctime, not st_mtime to detect
+          file changes. This means that installing 1.19 will reindex
+          many files (all those that were modified since created).</li>
 
         <li>The software can now be built so that indexing is runs with
         multiple threads. This can be a major performance boost for
