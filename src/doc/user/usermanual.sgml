@@ -2780,14 +2780,16 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       <itemizedlist>
 
         <listitem><para><literal>dir</literal> for filtering the
-            results on file location (Ex:
-            <literal>dir:/home/me/somedir</literal>). <literal>-dir</literal>
+            results on file location
+            (Ex: <literal>dir:/home/me/somedir</literal>). 
+            <literal>-dir</literal>
             also works to find results not in the specified directory
-            (release >= 1.15.8). A tilde inside the value will be expanded
-            to the home directory. Wildcards will <emphasis>not</emphasis>
-            be expanded. You cannot use <literal>OR</literal> with
-            <literal>dir</literal> clauses (this restriction may go away in
-            the future).</para>
+            (release >= 1.15.8). A tilde inside the value will be
+            expanded to the home directory. Wildcards will be
+            expanded, but
+            please <link linkend="RCL.SEARCH.WILDCARDS.PATH"> have a
+            look</link> at an important limitation of wildcards in
+            path filters.</para>
 
            <para>Relative paths also make sense, for example, 
             <literal>dir:share/doc</literal> would match either
@@ -2804,17 +2806,20 @@ dir:recoll dir:src -dir:utils -dir:common
             <filename>utils</filename> or
             <filename>common</filename>.</para>
 
-          <para>Another special aspect of <literal>dir</literal> clauses is
-          that the values in the index are not transcoded to UTF-8, and
-          never lower-cased or unaccented, but stored as binary. This means
-          that you need to enter the values in the exact lower or upper
-          case, and that searches for names with diacritics may sometimes
-          be impossible because of character set conversion
-          issues. Non-ASCII UNIX file paths are an unending source of
-          trouble and are best avoided.</para> 
+          <para>You can also use <literal>OR</literal> conjunctions
+            with <literal>dir:</literal> clauses.</para>
+
+          <para>A special aspect of <literal>dir</literal> clauses is
+            that the values in the index are not transcoded to UTF-8, and
+            never lower-cased or unaccented, but stored as binary. This means
+            that you need to enter the values in the exact lower or upper
+            case, and that searches for names with diacritics may sometimes
+            be impossible because of character set conversion
+            issues. Non-ASCII UNIX file paths are an unending source of
+            trouble and are best avoided.</para> 
 
           <para>You need to use double-quotes around the path value if it
-          contains space characters.</para> 
+            contains space characters.</para> 
 
            </listitem>
 
@@ -3093,6 +3098,31 @@ dir:recoll dir:src -dir:utils -dir:common
             when any wildcard character appears in the
             term).</para></listitem> 
       </itemizedlist>
+
+      <sect3 id="RCL.SEARCH.WILDCARDS.PATH">
+        <title>Wildcards and path filtering</title>
+
+        <para>Due to the way that &RCL; processes wildcards
+          inside <literal>dir</literal> path filtering clauses, they
+          will have a multiplicative effect on the query size. A clause
+          containg wildcards in several paths elements, like, for
+          example,
+          <literal>dir:</literal><replaceable>/home/me/*/*/docdir</replaceable>,
+          will almost certainly fail if your indexed tree is of any realistic
+          size.</para>
+
+        <para>Depending on the case, you may be able to work around
+        the issue by specifying the paths elements more narrowly, with
+          a constant prefix, or by using 2
+          separate <literal>dir:</literal> clauses instead of multiple
+          wildcards, as
+          in <literal>dir:</literal><replaceable>/home/me</replaceable> <literal>dir:</literal><replaceable>docdir</replaceable>. The
+          latter query is not equivalent to the initial one because it
+          does not specify a number of directory levels, but that's
+          the best we can do (and it may be actually more useful in
+          some cases).</para>
+
+      </sect3>
 
     </sect2> <!-- wildchars -->
 
