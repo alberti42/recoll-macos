@@ -34,7 +34,8 @@ DocSequenceDb::DocSequenceDb(RefCntr<Rcl::Query> q, const string &t,
       m_queryReplaceAbstract(false),
       m_isFiltered(false),
       m_isSorted(false),
-      m_needSetQuery(false)
+      m_needSetQuery(false),
+      m_lastSQStatus(true)
 {
 }
 
@@ -227,12 +228,14 @@ bool DocSequenceDb::setQuery()
 {
     if (!m_needSetQuery)
 	return true;
+
+    m_needSetQuery = false;
     m_rescnt = -1;
-    m_needSetQuery = !m_q->setQuery(m_fsdata);
-    if (m_needSetQuery) {
+    m_lastSQStatus = m_q->setQuery(m_fsdata);
+    if (!m_lastSQStatus) {
 	m_reason = m_q->getReason();
 	LOGERR(("DocSequenceDb::setQuery: rclquery::setQuery failed: %s\n",
 		m_reason.c_str()));
     }
-    return !m_needSetQuery;
+    return m_lastSQStatus;
 }

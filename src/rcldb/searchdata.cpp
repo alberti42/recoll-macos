@@ -109,7 +109,8 @@ static const char *maxXapClauseMsg =
     "Maximum Xapian query size exceeded. Increase maxXapianClauses "
     "in the configuration. ";
 static const char *maxXapClauseCaseDiacMsg = 
-    "Or try to use case (C) or diacritics (D) sensitivity qualifiers."
+    "Or try to use case (C) or diacritics (D) sensitivity qualifiers, or less "
+    "wildcards ?"
     ;
 
 bool SearchData::clausesToQuery(Rcl::Db &db, SClType tp, 

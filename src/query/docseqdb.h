@@ -67,7 +67,7 @@ class DocSequenceDb : public DocSequence {
     bool                     m_isFiltered;
     bool                     m_isSorted;
     bool   m_needSetQuery; // search data changed, need to reapply before fetch
-
+    bool   m_lastSQStatus;
     bool setQuery();
 };
 
