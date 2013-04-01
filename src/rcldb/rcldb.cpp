@@ -917,6 +917,10 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	string path = url_gpath(doc.url);
 	vector<string> vpath;
 	stringToTokens(path, vpath, "/");
+	// If vpath is not /, the last elt is the file/dir name, not a
+	// part of the path.
+	if (vpath.size())
+	    vpath.resize(vpath.size()-1);
 	splitter.curpos = 0;
 	newdocument.add_posting(wrap_prefix(pathelt_prefix),
 				splitter.basepos + splitter.curpos++);

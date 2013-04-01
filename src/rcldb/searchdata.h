@@ -409,10 +409,10 @@ protected:
  * change but is no important enough to warrant it, this has to wait for
  * the next format change.
  */
-class SearchDataClausePath : public SearchDataClause {
+class SearchDataClausePath : public SearchDataClauseSimple {
 public:
     SearchDataClausePath(const std::string& txt, bool excl = false)
-	: SearchDataClause(SCLT_PATH), m_text(txt)
+	: SearchDataClauseSimple(SCLT_PATH, txt, "dir")
     {
 	m_exclude = excl;
 	m_haveWildCards = false;
@@ -427,13 +427,7 @@ public:
     }
 
     virtual bool toNativeQuery(Rcl::Db &, void *);
-    virtual const std::string& gettext() const
-    {
-	return m_text;
-    }
 
-protected:
-    std::string m_text;
 };
 
 /** 

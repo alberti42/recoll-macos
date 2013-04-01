@@ -33,20 +33,18 @@
 # The following ones are probably hard-coded in the c code, can't change at
 # all.
 # Also reserved: F(parentid), Q(uniqueid)
-title = S ; wdfinc = 10
 author = A
-abstract = XS
-caption = S
-title = S
-subject = S
-keywords= K
-xapyear = Y
-xapyearmon = M
 xapdate = D
+keywords= K
+xapyearmon = M
+title = S ; wdfinc = 10
 mtype = T
-rclUnsplitFN = XSFS
-filename = XSFN
 ext = XE
+dir = XP
+abstract = XS
+filename = XSFN
+rclUnsplitFN = XSFS
+xapyear = Y
 
 # Extension examples. These are actually used by default by Recoll, you can
 # add your own to search for fields produced by the filters and not handled
@@ -72,13 +70,13 @@ recipient = XTO
 # "rclaptg" is used for viewer specialization (depending on local config)
 # "rclbes" defines the backend type (ie normal fs, firefox cache). Should
 #   probably be hardcoded, don't remove it
+abstract=
 author=
-recipient=
-rclaptg=
-rclbes=
 filename=
 keywords=
-abstract=
+rclaptg=
+rclbes=
+recipient=
 
 [aliases]
 ##########################

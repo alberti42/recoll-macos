@@ -517,7 +517,7 @@ static void listVector(const string& what, const vector<string>&l)
     for (vector<string>::const_iterator it = l.begin(); it != l.end(); it++) {
         a = a + *it + " ";
     }
-    LOGDEB(("%s: %s\n", what.c_str(), a.c_str()));
+    LOGDEB0(("%s: %s\n", what.c_str(), a.c_str()));
 }
 #endif
 
@@ -1056,19 +1056,42 @@ bool SearchDataClausePath::toNativeQuery(Rcl::Db &db, void *p)
 
     if (m_text.empty()) {
 	LOGERR(("SearchDataClausePath: empty path??\n"));
+	m_reason = "Empty path ?";
 	return false;
     }
+
+    vector<Xapian::Query> orqueries;
+
+    if (m_text[0] == '/')
+	orqueries.push_back(Xapian::Query(wrap_prefix(pathelt_prefix)));
+
     vector<string> vpath;
     stringToTokens(m_text, vpath, "/");
-    vector<string> pvpath;
-    if (m_text[0] == '/')
-	pvpath.push_back(wrap_prefix(pathelt_prefix));
+
     for (vector<string>::const_iterator pit = vpath.begin(); 
 	 pit != vpath.end(); pit++){
-	pvpath.push_back(wrap_prefix(pathelt_prefix) + *pit);
+
+	string sterm;
+	vector<string> exp;
+	if (!expandTerm(db, m_reason, 
+			SDCM_NOSTEMMING|SDCM_CASESENS|SDCM_DIACSENS,
+			*pit, exp, sterm, wrap_prefix(pathelt_prefix))) {
+	    return false;
+	}
+	LOGDEB0(("SDataPath::toNative: exp size %d\n", exp.size()));
+	listVector("", exp);
+	if (exp.size() == 1)
+	    orqueries.push_back(Xapian::Query(exp[0]));
+	else 
+	    orqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 
+					      exp.begin(), exp.end()));
+	m_curcl += exp.size();
+	if (m_curcl >= getMaxCl())
+	    return false;
     }
+
     *qp = Xapian::Query(Xapian::Query::OP_PHRASE, 
-			pvpath.begin(), pvpath.end());
+			orqueries.begin(), orqueries.end());
 
     if (m_weight != 1.0) {
 	*qp = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, *qp, m_weight);
