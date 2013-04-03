@@ -243,6 +243,56 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>EditTrans</name>
+    <message>
+        <source>Source path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Local path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Config error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Original path</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>EditTransBase</name>
+    <message>
+        <source>Path Translations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Setting path translations for </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>FirstIdxDialog</name>
     <message>
         <source>First indexing setup</source>
@@ -673,12 +723,6 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>External applications/commands needed and not found for indexing your file types:
-
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>No helpers found missing</source>
         <translation type="unfinished"></translation>
     </message>
@@ -806,6 +850,10 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Indexing did not run yet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1595,6 +1643,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>The selected directory looks like a Recoll configuration directory but the configuration could not be read</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>At most one index should be selected</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -2035,10 +2087,6 @@ May be slow for big documents.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Click to add another index directory to the list</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Add index</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2131,6 +2179,14 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Search as you type.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Paths translations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click to add another index directory to the list. You can select either a Recoll configuration directory or a Xapian index.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

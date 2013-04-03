@@ -276,6 +276,56 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>EditTrans</name>
+    <message>
+        <source>Source path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Local path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Config error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Original path</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>EditTransBase</name>
+    <message>
+        <source>Path Translations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Setting path translations for </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished">Annuler</translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>FirstIdxDialog</name>
     <message>
         <source>First indexing setup</source>
@@ -772,7 +822,7 @@ Vérifier le fichier mimeconf</translation>
         <source>External applications/commands needed and not found for indexing your file types:
 
 </source>
-        <translation>Applications externes non trouvees pour indexer vos types de fichiers:
+        <translation type="obsolete">Applications externes non trouvees pour indexer vos types de fichiers:
 
 </translation>
     </message>
@@ -917,6 +967,10 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Indexing did not run yet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1860,6 +1914,10 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
         <source>The selected directory looks like a Recoll configuration directory but the configuration could not be read</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>At most one index should be selected</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>UIPrefsDialogBase</name>
@@ -2593,7 +2651,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Click to add another index directory to the list</source>
-        <translation>Cliquer pour ajouter un autre index à la liste</translation>
+        <translation type="obsolete">Cliquer pour ajouter un autre index à la liste</translation>
     </message>
     <message>
         <source>Add index</source>
@@ -2715,6 +2773,14 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Search as you type.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Paths translations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click to add another index directory to the list. You can select either a Recoll configuration directory or a Xapian index.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
