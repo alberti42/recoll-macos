@@ -1008,7 +1008,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	newdocument.add_term(make_parentterm(parent_udi));
     }
     // Dates etc.
-    time_t mtime = atol(doc.dmtime.empty() ? doc.fmtime.c_str() : 
+    time_t mtime = atoll(doc.dmtime.empty() ? doc.fmtime.c_str() : 
 			doc.dmtime.c_str());
     struct tm *tm = localtime(&mtime);
     char buf[9];

@@ -234,10 +234,10 @@ int main(int argc, const char **argv)
     while (**argv)
       switch (*(*argv)++) {
       case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
-	  cnt = atol(*(++argv)); argc--; 
+	  cnt = atoll(*(++argv)); argc--; 
 	goto b1;
       case 'o':	op_flags |= OPT_o; if (argc < 2)  Usage();
-	  offs = strtoul(*(++argv), 0, 0); argc--; 
+	  offs = strtoull(*(++argv), 0, 0); argc--; 
 	goto b1;
       default: Usage();	break;
       }

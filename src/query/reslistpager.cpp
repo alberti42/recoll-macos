@@ -187,7 +187,7 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     datebuf[0] = 0;
     if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
 	time_t mtime = doc.dmtime.empty() ?
-	    atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
+	    atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
 	struct tm *tm = localtime(&mtime);
 	strftime(datebuf, 99, dateFormat().c_str(), tm);
     }
@@ -195,9 +195,9 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     // Size information. We print both doc and file if they differ a lot
     off_t fsize = -1, dsize = -1;
     if (!doc.dbytes.empty())
-	dsize = atol(doc.dbytes.c_str());
+	dsize = atoll(doc.dbytes.c_str());
     if (!doc.fbytes.empty())
-	fsize = atol(doc.fbytes.c_str());
+	fsize = atoll(doc.fbytes.c_str());
     string sizebuf;
     if (dsize > 0) {
 	sizebuf = displayableBytes(dsize);

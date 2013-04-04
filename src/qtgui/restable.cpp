@@ -184,7 +184,7 @@ static string dategetter(const string&, const Rcl::Doc& doc)
     datebuf[0] = 0;
     if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
 	time_t mtime = doc.dmtime.empty() ?
-	    atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
+	    atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
 	struct tm *tm = localtime(&mtime);
 	strftime(datebuf, 99, "%Y-%m-%d", tm);
     }
@@ -197,7 +197,7 @@ static string datetimegetter(const string&, const Rcl::Doc& doc)
     datebuf[0] = 0;
     if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
 	time_t mtime = doc.dmtime.empty() ?
-	    atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
+	    atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
 	struct tm *tm = localtime(&mtime);
 	strftime(datebuf, 99, "%Y-%m-%d %H:%M:%S %z", tm);
     }

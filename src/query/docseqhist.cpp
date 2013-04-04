@@ -56,18 +56,18 @@ bool RclDHistoryEntry::decode(const string &value)
     switch (vall.size()) {
     case 2:
         // Old fn+ipath, null ipath case 
-        unixtime = atol((*it++).c_str());
+        unixtime = atoll((*it++).c_str());
         base64_decode(*it++, fn);
         break;
     case 3:
         if (!it->compare("U")) {
             // New udi-based entry
             it++;
-            unixtime = atol((*it++).c_str());
+            unixtime = atoll((*it++).c_str());
             base64_decode(*it++, udi);
         } else {
             // Old fn + ipath. We happen to know how to build an udi
-            unixtime = atol((*it++).c_str());
+            unixtime = atoll((*it++).c_str());
             base64_decode(*it++, fn);
             base64_decode(*it, ipath);
         }

@@ -367,22 +367,22 @@ public:
             m_reason << "readfirstblock: conf get maxsize failed";
             return false;
         }
-        m_maxsize = atol(value.c_str());
+        m_maxsize = atoll(value.c_str());
         if (!conf.get("oheadoffs", value, cstr_null)) {
             m_reason << "readfirstblock: conf get oheadoffs failed";
             return false;
         }
-        m_oheadoffs = atol(value.c_str());
+        m_oheadoffs = atoll(value.c_str());
         if (!conf.get("nheadoffs", value, cstr_null)) {
             m_reason << "readfirstblock: conf get nheadoffs failed";
             return false;
         }
-        m_nheadoffs = atol(value.c_str());
+        m_nheadoffs = atoll(value.c_str());
         if (!conf.get("npadsize", value, cstr_null)) {
             m_reason << "readfirstblock: conf get npadsize failed";
             return false;
         }
-        m_npadsize = atol(value.c_str());
+        m_npadsize = atoll(value.c_str());
         if (!conf.get("unient", value, cstr_null)) {
             m_uniquentries = false;
         } else {

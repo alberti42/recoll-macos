@@ -612,7 +612,7 @@ void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
     datebuf[0] = 0;
     if (!doc.fmtime.empty() || !doc.dmtime.empty()) {
 	time_t mtime = doc.dmtime.empty() ? 
-	    atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
+	    atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
 	struct tm *tm = localtime(&mtime);
 	strftime(datebuf, 99, "%Y-%m-%d %H:%M:%S", tm);
     }
