@@ -175,12 +175,14 @@ void MimeHandlerExec::finaldetails()
     m_metaData[cstr_dj_keymt] = cfgFilterOutputMtype.empty() ? "text/html" : 
 	cfgFilterOutputMtype;
 
-    string md5, xmd5, reason;
-    if (MD5File(m_fn, md5, &reason)) {
-	m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
-    } else {
-	LOGERR(("MimeHandlerExec: cant compute md5 for [%s]: %s\n", 
-		m_fn.c_str(), reason.c_str()));
+    if (!m_forPreview) {
+	string md5, xmd5, reason;
+	if (MD5File(m_fn, md5, &reason)) {
+	    m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
+	} else {
+	    LOGERR(("MimeHandlerExec: cant compute md5 for [%s]: %s\n", 
+		    m_fn.c_str(), reason.c_str()));
+	}
     }
 
     handle_cs(m_metaData[cstr_dj_keymt]);

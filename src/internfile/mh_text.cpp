@@ -82,10 +82,11 @@ bool MimeHandlerText::set_document_file(const string &fn)
 	LOGDEB(("file_to_string OK\n"));
         m_offs = m_text.length();
     }
-
-    string md5, xmd5;
-    MD5String(m_text, md5);
-    m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
+    if (!m_forPreview) {
+	string md5, xmd5;
+	MD5String(m_text, md5);
+	m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
+    }
     m_havedoc = true;
     return true;
 }
@@ -93,9 +94,11 @@ bool MimeHandlerText::set_document_file(const string &fn)
 bool MimeHandlerText::set_document_string(const string& otext)
 {
     m_text = otext;
-    string md5, xmd5;
-    MD5String(m_text, md5);
-    m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
+    if (!m_forPreview) {
+	string md5, xmd5;
+	MD5String(m_text, md5);
+	m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
+    }
     m_havedoc = true;
     return true;
 }

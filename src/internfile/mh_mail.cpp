@@ -94,16 +94,17 @@ bool MimeHandlerMail::set_document_file(const string &fn)
 	m_fd = -1;
     }
 
-    // Yes, we read the file twice. It would be possible in theory to add
-    // the md5 computation to the mime analysis, but ...
-    string md5, xmd5, reason;
-    if (MD5File(fn, md5, &reason)) {
-	m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
-    } else {
-	LOGERR(("MimeHandlerMail: cant compute md5 for [%s]: %s\n", fn.c_str(),
-		reason.c_str()));
+    if (!m_forPreview) {
+	// Yes, we read the file twice. It would be possible in theory
+	// to add the md5 computation to the mime analysis, but ...
+	string md5, xmd5, reason;
+	if (MD5File(fn, md5, &reason)) {
+	    m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
+	} else {
+	    LOGERR(("MimeHandlerMail: cant md5 [%s]: %s\n", fn.c_str(),
+		    reason.c_str()));
+	}
     }
-
     m_fd = open(fn.c_str(), 0);
     if (m_fd < 0) {
 	LOGERR(("MimeHandlerMail::set_document_file: open(%s) errno %d\n",
@@ -128,9 +129,11 @@ bool MimeHandlerMail::set_document_string(const string &msgtxt)
     LOGDEB2(("Message text: [%s]\n", msgtxt.c_str()));
     delete m_stream;
 
-    string md5, xmd5;
-    MD5String(msgtxt, md5);
-    m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
+    if (!m_forPreview) {
+	string md5, xmd5;
+	MD5String(msgtxt, md5);
+	m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
+    }
 
     if ((m_stream = new stringstream(msgtxt)) == 0 || !m_stream->good()) {
 	LOGERR(("MimeHandlerMail::set_document_string: stream create error."

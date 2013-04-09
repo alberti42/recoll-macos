@@ -278,19 +278,23 @@ bool MimeHandlerExecMultiple::next_document()
             }
         }
         m_metaData[cstr_dj_keymt] = mtype;
-        string md5, xmd5;
-        MD5String(m_metaData[cstr_dj_keycontent], md5);
-        m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
+	if (!m_forPreview) {
+	    string md5, xmd5;
+	    MD5String(m_metaData[cstr_dj_keycontent], md5);
+	    m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
+	}
     } else {
         m_metaData[cstr_dj_keymt] = mtype.empty() ? "text/html" : mtype;
         m_metaData.erase(cstr_dj_keyipath);
-        string md5, xmd5, reason;
-        if (MD5File(m_fn, md5, &reason)) {
-            m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
-        } else {
-            LOGERR(("MimeHandlerExecM: cant compute md5 for [%s]: %s\n",
-                    m_fn.c_str(), reason.c_str()));
-        }
+	if (!m_forPreview) {
+	    string md5, xmd5, reason;
+	    if (MD5File(m_fn, md5, &reason)) {
+		m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
+	    } else {
+		LOGERR(("MimeHandlerExecM: cant compute md5 for [%s]: %s\n",
+			m_fn.c_str(), reason.c_str()));
+	    }
+	}
     }
 
     handle_cs(m_metaData[cstr_dj_keymt], charset);

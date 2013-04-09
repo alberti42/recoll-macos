@@ -2089,9 +2089,18 @@ fvwm
                 skeleton style sheet (<filename>recoll.qss</filename>)
                 inside the <filename>/usr/share/recoll/examples</filename>
                 directory. Using a style sheet, you can change most
-                <command>recoll</command> graphical parameters: colors,
-                fonts, etc. See the sample file for a few simple
-                examples.</para>
+                <command>recoll</command> graphical parameters:
+                colors, fonts, etc. See the sample file for a few
+                simple examples.</para> 
+	      <para>You should be aware that parameters (e.g.: the
+                background color) set inside the &RCL; GUI style sheet
+                will override global system preferences, with possible
+                strange side effects: for example if you set the
+                foreground to a light color and the background to a
+                dark one in the desktop preferences, but only the
+                background is set inside the &RCL; style sheet, and it
+                is light too, then text will appear light-on-light
+                inside the &RCL; GUI.</para>
             </listitem>
 
 	    <listitem><para><guilabel>Maximum text size highlighted for
