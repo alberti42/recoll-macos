@@ -614,36 +614,80 @@ string CirCache::getReason()
     return m_d ? m_d->m_reason.str() : "Not initialized";
 }
 
-bool CirCache::create(off_t m_maxsize, int flags)
+// A scan callback which just records the last header offset and
+// padsize seen. This is used with a scan(nofold) to find the last
+// physical record in the file
+class CCScanHookRecord : public  CCScanHook {
+public:
+    off_t headoffs;
+    off_t padsize;
+    CCScanHookRecord()
+	: headoffs(0), padsize(0)
+    {
+    }
+    virtual status takeone(off_t offs, const string& udi, 
+			   const EntryHeaderData& d)
+    {
+	headoffs = offs;
+	padsize = d.padsize;
+	LOGDEB2(("CCScanHookRecord::takeone: offs %lld padsize %lld\n", 
+		 headoffs, padsize));
+        return Continue;
+    }
+};
+
+bool CirCache::create(off_t maxsize, int flags)
 {
-    LOGDEB(("CirCache::create: [%s] flags 0x%x\n", m_dir.c_str(), flags));
+    LOGDEB(("CirCache::create: [%s] maxsz %lld flags 0x%x\n", 
+	    m_dir.c_str(), maxsize, flags));
     if (m_d == 0) {
 	LOGERR(("CirCache::create: null data\n"));
 	return false;
     }
 
-    {
-	struct stat st;
-	if (stat(m_dir.c_str(), &st) < 0) {
-	    // Directory does not exist, create it
-	    if (mkdir(m_dir.c_str(), 0777) < 0) {
-		m_d->m_reason << "CirCache::create: mkdir(" << m_dir << 
-		    ") failed" << " errno " << errno;
+    struct stat st;
+    if (stat(m_dir.c_str(), &st) < 0) {
+	// Directory does not exist, create it
+	if (mkdir(m_dir.c_str(), 0777) < 0) {
+	    m_d->m_reason << "CirCache::create: mkdir(" << m_dir << 
+		") failed" << " errno " << errno;
+	    return false;
+	}
+    } else {
+	// If the file exists too, and truncate is not set, switch
+	// to open-mode. Still may need to update header params.
+	if (access(m_d->datafn(m_dir).c_str(), 0) >= 0 &&
+	    !(flags & CC_CRTRUNCATE)) {
+	    if (!open(CC_OPWRITE)) {
 		return false;
 	    }
-	} else {
-	    // Directory exists but file might still not exist:
-	    // e.g. the user is using a non default directory and
-	    // created it for us.
-	    if (access(m_d->datafn(m_dir).c_str(), 0) >= 0) {
-		// File exists, switch to "open" mode, except if we're told to 
-		// truncate.
-		if (!(flags & CC_CRTRUNCATE)) {
-		    return open(CC_OPWRITE);
-		}
+	    if (maxsize == m_d->m_maxsize &&
+		((flags & CC_CRUNIQUE) != 0) == m_d->m_uniquentries) {
+		LOGDEB(("Header unchanged, no rewrite\n"));
+		return true;
 	    }
-	    // Else fall through to create file
+	    // If the new maxsize is bigger than current size, we need
+	    // to stop recycling if this is what we are doing.
+	    if (maxsize > m_d->m_maxsize && maxsize > st.st_size) {
+		// Scan the file to find the last physical record. The
+		// ohead is set at physical eof, and nhead is the last
+		// scanned record
+		CCScanHookRecord rec;
+		m_d->scan(CIRCACHE_FIRSTBLOCK_SIZE, &rec, false);
+		m_d->m_oheadoffs = lseek(m_d->m_fd, 0, SEEK_END);
+		m_d->m_nheadoffs = rec.headoffs;
+		m_d->m_npadsize = rec.padsize;
+	    }
+	    m_d->m_maxsize = maxsize;
+	    m_d->m_uniquentries = ((flags & CC_CRUNIQUE) != 0);
+	    LOGDEB(("CirCache::create: rewriting header with "
+		    "maxsize %lld oheadoffs %lld nheadoffs %lld "
+		    "npadsize %d unient %d\n",
+		    m_d->m_maxsize, m_d->m_oheadoffs, m_d->m_nheadoffs,
+		    m_d->m_npadsize, int(m_d->m_uniquentries)));
+	    return m_d->writefirstblock();
 	}
+	// Else fallthrough to create file
     }
 
     if ((m_d->m_fd = ::open(m_d->datafn(m_dir).c_str(), 
@@ -653,7 +697,7 @@ bool CirCache::create(off_t m_maxsize, int flags)
 	return false;
     }
 
-    m_d->m_maxsize = m_maxsize;
+    m_d->m_maxsize = maxsize;
     m_d->m_oheadoffs = CIRCACHE_FIRSTBLOCK_SIZE;
     m_d->m_uniquentries = ((flags & CC_CRUNIQUE) != 0);
 
