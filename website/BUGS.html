@@ -39,9 +39,25 @@
       <h2><a name="b_latest">recoll 1.18.1</a></h2> 
       <ul>
 
-        <li>When no indexing helper applications are actually missing,
-          an ennoying popup is shown in the GUI at each end of a batch
-          indexing run (it's supposed to be shown only once).</li>
+        <li>When using the Firefox plugin, increasing the web cache
+          size only has an effect when initially creating the
+          cache. If the cache already exists, you need to delete it
+          for the new limit to take effect.</li>
+
+        <li>Sizes for documents bigger than 2 GB were improperly
+          displayed.</li> 
+
+        <li>Wildcards expressions sometimes cause false matches
+          because of issues in handling errors from fnmatch(). This
+          will only occur in an UTF-8 locale where file name
+          conversion errors are possible (for old 8bit file
+          names).</li>
+
+        <li>There are sometimes issues with CHM files character
+          encoding.</li>
+
+        <li>Sorting by field 'relevancyrating' was not equivalent to
+          natural Xapian ordering.</li>
 
         <li>Weird data in filter output text (e.g.: produced by some
           versions of pdftotext) can cause an error which will halt
@@ -57,28 +73,30 @@
           case-insensitive search does not work for them (e.g.:
           searching for ds1820 will not find DS1820).</li>
 
+
+        <li>When no indexing helper applications are actually missing,
+          an ennoying popup is shown in the GUI at each end of a batch
+          indexing run (it's supposed to be shown only once).</li>
+
         <li>Category (media, message, etc.) expansion does not work
           for mime types which have no associated filter. This is
           quite often the case for video types (so they won't be found
-          under "media"). The workaround is to add them to the
-          ~/.recoll/mimeconf file with the rclnull filter, for
-          example:
+          under "media"). <br>
+          There is a possible imperfect workaround. Create a filter
+          shell-script named rclbad inside the filters directory, with
+          only an 'exit 1' inside it, make it executable and associate
+          it to the video types, in ~/.recoll/mimeconf:
 <pre>
 [index]
-video/mp2p = exec rclnull
-video/mp2t = exec rclnull
-video/mp4  = exec rclnull
-video/avi  = exec rclnull
-video/divx = exec rclnull
-video/x-msvideo = exec rclnull
+video/mp2p = exec rclbad
+video/mp2t = exec rclbad
+video/mp4  = exec rclbad
+video/avi  = exec rclbad
+video/divx = exec rclbad
+video/x-msvideo = exec rclbad
 </pre>
         </li>
 
-        <li>Wildcards expressions sometimes cause false matches
-          because of issues in handling errors from fnmatch(). This
-          will only occur in an UTF-8 locale where file name
-          conversion errors are possible (for old 8bit file
-          names).</li>
 
         <li>On systems such as Debian Stable which use Evince version
           2.x (not 3.x) as PDF viewer, the default "Open" command for
