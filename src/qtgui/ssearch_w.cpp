@@ -352,16 +352,13 @@ int SSearch::partialWord(string& s)
 }
 
 // Create completion list for term by adding a joker at the end and calling
-// rcldb->termMatch(). This does not work well if the db is not
-// rcldb->stripped, the completion is casediac-sensitive in this case.
-//
-// What we should do instead is complete the term from the key list in
-// the casediac expansion db (stripped->unstripped synonyms table),
-// then expand each of the completed keys.
+// rcldb->termMatch().
 int SSearch::completionList(string s, QStringList& lst, int max)
 {
     if (!rcldb)
 	return -1;
+    if (s.empty())
+	return 0;
    // Query database for completions
     s += "*";
     Rcl::TermMatchResult tmres;

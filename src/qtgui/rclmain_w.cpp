@@ -1108,24 +1108,17 @@ void RclMain::showActiveTypes()
 	return;
     }
 
-    // Get list of all mime types in index. For this, we use a
-    // wildcard field search on mtype
-    Rcl::TermMatchResult matches;
-    if (!rcldb->termMatch(Rcl::Db::ET_WILD, "", "*", matches, -1, "mtype")) {
+    // All mime types in index. 
+    vector<string> vdbtypes;
+    if (!rcldb->getAllDbMimeTypes(vdbtypes)) {
 	QMessageBox::warning(0, tr("Error"), 
 			     tr("Index query error"),
 			     QMessageBox::Ok, 
 			     QMessageBox::NoButton);
 	return;
     }
-
-    // Build the set of mtypes, stripping the prefix
     set<string> mtypesfromdb;
-    for (vector<Rcl::TermMatchEntry>::const_iterator it = 
-	     matches.entries.begin(); 
-	 it != matches.entries.end(); it++) {
-	mtypesfromdb.insert(it->term.substr(matches.prefix.size()));
-    }
+    mtypesfromdb.insert(vdbtypes.begin(), vdbtypes.end());
 
     // All types listed in mimeconf:
     vector<string> mtypesfromconfig = theconfig->getAllMimeTypes();

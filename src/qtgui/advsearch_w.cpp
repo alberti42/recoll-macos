@@ -293,6 +293,9 @@ void AdvSearch::fillFileTypes()
     QStringList ql;
     if (m_ignByCats == false) {
 	vector<string> types = theconfig->getAllMimeTypes();
+	rcldb->getAllDbMimeTypes(types);
+	sort(types.begin(), types.end());
+	types.erase(unique(types.begin(), types.end()), types.end());
 	for (vector<string>::iterator it = types.begin(); 
 	     it != types.end(); it++) {
 	    QString qs = QString::fromUtf8(it->c_str());

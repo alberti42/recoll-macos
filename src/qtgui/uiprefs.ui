@@ -22,7 +22,7 @@
      <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>3</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -283,6 +283,9 @@
               <widget class="QSpinBox" name="pageLenSB">
                <property name="minimum">
                 <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>9999</number>
                </property>
                <property name="value">
                 <number>8</number>

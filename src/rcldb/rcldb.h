@@ -329,6 +329,10 @@ class Db {
     bool dbStats(DbStats& stats);
     /** Return min and max years for doc mod times in db */
     bool maxYearSpan(int *minyear, int *maxyear);
+    /** Return all mime types in index. This can be different from the
+	ones defined in the config because of 'file' command
+	usage. Inserts the types at the end of the parameter */
+    bool getAllDbMimeTypes(std::vector<std::string>&);
 
     /** Wildcard expansion specific to file names. Internal/sdata use only */
     bool filenameWildExp(const string& exp, vector<string>& names, int max);

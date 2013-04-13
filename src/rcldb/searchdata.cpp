@@ -87,7 +87,9 @@ bool SearchData::expandFileTypes(Db &db, vector<string>& tps)
 	} else {
 	    TermMatchResult res;
 	    string mt = stringtolower((const string&)*it);
-	    db.termMatch(Db::ET_WILD, "", mt, res, -1, "mtype");
+	    // We set casesens|diacsens to get an equivalent of ixTermMatch()
+	    db.termMatch(Db::ET_WILD|Db::ET_CASESENS|Db::ET_DIACSENS, string(),
+			 mt, res, -1, "mtype");
 	    if (res.entries.empty()) {
 		exptps.push_back(it->c_str());
 	    } else {

@@ -59,8 +59,8 @@ bool Db::filenameWildExp(const string& fnexp, vector<string>& names, int max)
     }
 
     TermMatchResult result;
-    if (!termMatch(ET_WILD, string(), pattern, result, max,
-		   unsplitFilenameFieldName))
+    if (!idxTermMatch(ET_WILD, string(), pattern, result, max,
+		      unsplitFilenameFieldName))
 	return false;
     for (vector<TermMatchEntry>::const_iterator it = result.entries.begin();
 	 it != result.entries.end(); it++) 
@@ -81,7 +81,7 @@ bool Db::maxYearSpan(int *minyear, int *maxyear)
     *minyear = 1000000; 
     *maxyear = -1000000;
     TermMatchResult result;
-    if (!termMatch(ET_WILD, string(), "*", result, -1, "xapyear")) {
+    if (!idxTermMatch(ET_WILD, string(), "*", result, -1, "xapyear")) {
 	LOGINFO(("Rcl::Db:maxYearSpan: termMatch failed\n"));
 	return false;
     }
@@ -94,6 +94,19 @@ bool Db::maxYearSpan(int *minyear, int *maxyear)
             if (year > *maxyear)
                 *maxyear = year;
         }
+    }
+    return true;
+}
+
+bool Db::getAllDbMimeTypes(std::vector<std::string>& exp)
+{
+    Rcl::TermMatchResult res;
+    if (!idxTermMatch(Rcl::Db::ET_WILD, "", "*", res, -1, "mtype")) {
+	return false;
+    }
+    for (vector<Rcl::TermMatchEntry>::const_iterator rit = res.entries.begin();
+	 rit != res.entries.end(); rit++) {
+	exp.push_back(Rcl::strip_prefix(rit->term));
     }
     return true;
 }
