@@ -236,6 +236,15 @@ text/x-python = text-x-python
 text/x-shellscript = source
 text/x-tex = wordprocessing
 text/xml = document
+video/3gpp = video
+video/mp2p = video
+video/mp2t = video
+video/mp4 = video
+video/mpeg = video
+video/quicktime = video
+video/x-matroska = video
+video/x-ms-asf = video
+video/x-msvideo = video
 
 [categories]
 # Categories group mime types by "kind". They can be used from the query
@@ -311,26 +320,9 @@ presentation = \
 media = \
       application/ogg \
       application/x-flac \
-      audio/mpeg \
-      audio/x-karaoke \
-      image/gif \
-      image/jp2 \
-      image/jpeg \
-      image/png \
-      image/svg+xml \
-      image/tiff \
-      image/x-xcf \
-      image/bmp \
-      image/x-xpmi \
-      video/3gpp \
-      video/mp2p \
-      video/mp2t \
-      video/mp4 \
-      video/mpeg \
-      video/quicktime \
-      video/x-matroska \
-      video/x-ms-asf \
-      video/x-msvideo \
+      audio/* \
+      image/* \
+      video/* \
 
 message = message/rfc822 \
 	  text/x-gaim-log \
