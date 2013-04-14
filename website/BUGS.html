@@ -36,44 +36,7 @@
           topmost section may also exist in older versions.</i></p>
 
       
-      <h2><a name="b_latest">recoll 1.18.1</a></h2> 
-      <ul>
-
-        <li>When using the Firefox plugin, increasing the web cache
-          size only has an effect when initially creating the
-          cache. If the cache already exists, you need to delete it
-          for the new limit to take effect.</li>
-
-        <li>Sizes for documents bigger than 2 GB were improperly
-          displayed.</li> 
-
-        <li>Wildcards expressions sometimes cause false matches
-          because of issues in handling errors from fnmatch(). This
-          will only occur in an UTF-8 locale where file name
-          conversion errors are possible (for old 8bit file
-          names).</li>
-
-        <li>There are sometimes issues with CHM files character
-          encoding.</li>
-
-        <li>Sorting by field 'relevancyrating' was not equivalent to
-          natural Xapian ordering.</li>
-
-        <li>Weird data in filter output text (e.g.: produced by some
-          versions of pdftotext) can cause an error which will halt
-          the processing of the document, which becomes
-          unsearchable. This is a relatively uncommon problem which
-          signals itself by a specific error in the indexing log, so
-          you can know if you are affected. Look for:
-          <tt>xapian add_posting error Empty termnames aren't allowed</tt>
-        </li> 
-
-        <li>Raw indexes (not default): diacritics and case expansion
-          is not applied to terms containing numbers so that a
-          case-insensitive search does not work for them (e.g.:
-          searching for ds1820 will not find DS1820).</li>
-
-
+      <h2><a name="b_latest">recoll 1.18.2</a></h2> 
         <li>When no indexing helper applications are actually missing,
           an ennoying popup is shown in the GUI at each end of a batch
           indexing run (it's supposed to be shown only once).</li>
@@ -130,6 +93,43 @@ video/x-msvideo = exec rclbad
           recoll.</li>
       </ul>
 
+
+      <h2><a name="b_1_18_1">recoll 1.18.1</a></h2> 
+      <ul>
+
+        <li>When using the Firefox plugin, increasing the web cache
+          size only has an effect when initially creating the
+          cache. If the cache already exists, you need to delete it
+          for the new limit to take effect.</li>
+
+        <li>Sizes for documents bigger than 2 GB are improperly
+          displayed.</li> 
+
+        <li>Wildcards expressions sometimes cause false matches
+          because of issues in handling errors from fnmatch(). This
+          will only occur in an UTF-8 locale where file name
+          conversion errors are possible (for old 8bit file
+          names).</li>
+
+        <li>CHM files character encoding is sometimes wrongly processed.</li>
+
+        <li>Sorting by field 'relevancyrating' is not equivalent to
+          natural Xapian ordering.</li>
+
+        <li>Weird data in filter output text (e.g.: produced by some
+          versions of pdftotext) can cause an error which will halt
+          the processing of the document, which becomes
+          unsearchable. This is a relatively uncommon problem which
+          signals itself by a specific error in the indexing log, so
+          you can know if you are affected. Look for:
+          <tt>xapian add_posting error Empty termnames aren't allowed</tt>
+        </li> 
+
+        <li>Raw indexes (not default): diacritics and case expansion
+          is not applied to terms containing numbers so that a
+          case-insensitive search does not work for them (e.g.:
+          searching for ds1820 will not find DS1820).</li>
+      </ul>
 
       <h2><a name="b_1_18_0">recoll 1.18.0</a></h2> 
       <ul>
