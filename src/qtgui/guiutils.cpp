@@ -39,24 +39,11 @@ RclConfig *theconfig;
 // qt 4.6 qtextedit to clear the margins after the float img without 
 // introducing blank space.
 const char *PrefsPack::dfltResListFormat = 
-#if 1
 	"<table><tr><td><a href='%U'><img src='%I' width='64'></a></td>"
-	"<td>%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
+	"<td>%S %L &nbsp;&nbsp;<b>%T</b><br>"
 	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i>&nbsp;%i<br>"
 	"%A %K</td></tr></table>"
-#elif 0
-	"<img src='%I' align='left'>"
-	"%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
-	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
-	"%A %K"
-#endif
     ;
-
-const char* v162reslistformat="<table><tr><td><img src='%I'></td>"
-    "<td>%R %S %L &nbsp;&nbsp;<b>%T</b><br>"
-    "%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i><br>"
-    "%A %K</td></tr></table>";
-
 
 // The global preferences structure
 PrefsPack prefs;
@@ -145,29 +132,32 @@ void rwSettings(bool writing)
 	prefs.reslistdateformat = "&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%z";
     prefs.creslistdateformat = (const char*)prefs.reslistdateformat.toUtf8();
 
-    SETTING_RW(prefs.reslistfontfamily, "/Recoll/prefs/reslist/fontFamily", String,
-	       "");
+    SETTING_RW(prefs.reslistfontfamily, "/Recoll/prefs/reslist/fontFamily", 
+	       String, "");
     SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Int, 
 	       10);
+
     QString rlfDflt = QString::fromAscii(prefs.dfltResListFormat);
-    SETTING_RW(prefs.reslistformat, "/Recoll/prefs/reslist/format", String, rlfDflt);
-    prefs.creslistformat = (const char*)prefs.reslistformat.toUtf8();
-    if (!writing) {
-	// If the current value of the format is the default for the
-	// previous version, replace it with the new default. We
-	// should have a flag to say if it was changed instead
-	if (!prefs.creslistformat.compare(v162reslistformat)) {
-	    LOGDEB(("Replacing old default format\n"));
-	    prefs.reslistformat = rlfDflt;
-	    prefs.creslistformat = (const char*)prefs.reslistformat.toUtf8();
+    if (writing) {
+	if (prefs.reslistformat.compare(rlfDflt)) {
+	    settings.setValue("/Recoll/prefs/reslist/format", 
+			      prefs.reslistformat);
+	} else {
+	    settings.remove("/Recoll/prefs/reslist/format");
 	}
+    } else {
+	prefs.reslistformat = 
+	    settings.value("/Recoll/prefs/reslist/format", rlfDflt).toString();
+	prefs.creslistformat = qs2utf8s(prefs.reslistformat);
     }
-    SETTING_RW(prefs.reslistheadertext, "/Recoll/prefs/reslist/headertext", String, "");
+
+    SETTING_RW(prefs.reslistheadertext, "/Recoll/prefs/reslist/headertext", 
+	       String, "");
     SETTING_RW(prefs.stylesheetFile, "/Recoll/prefs/stylesheet", String, "");
     SETTING_RW(prefs.queryStemLang, "/Recoll/prefs/query/stemLang", String,
 	       "english");
-    SETTING_RW(prefs.useDesktopOpen, 
-	       "/Recoll/prefs/useDesktopOpen", Bool, true);
+    SETTING_RW(prefs.useDesktopOpen, "/Recoll/prefs/useDesktopOpen", 
+	       Bool, true);
 
     SETTING_RW(prefs.keepSort, 
 	       "/Recoll/prefs/keepSort", Bool, false);
@@ -199,8 +189,7 @@ void rwSettings(bool writing)
 	       Int, 0);
     // This is not really the current program version, just a value to
     // be used in case we have incompatible changes one day
-    SETTING_RW(prefs.rclVersion, "/Recoll/prefs/rclVersion", 
-	       Int, 1009);
+    SETTING_RW(prefs.rclVersion, "/Recoll/prefs/rclVersion", Int, 1009);
 
     // Ssearch combobox history list
     if (writing) {
