@@ -255,11 +255,11 @@ bool MimeHandlerExecMultiple::next_document()
                 m_fn.c_str(), ipath.c_str()));
     }
 
-    // If this has an ipath, it is an internal doc from a
-    // multi-document file. In this case, either the filter supplies the 
-    // mimetype, or the ipath MUST be a filename-like string which we can use
-    // to compute a mime type
     if (!ipath.empty()) {
+	// If this has an ipath, it is an internal doc from a
+	// multi-document file. In this case, either the filter
+	// supplies the mimetype, or the ipath MUST be a filename-like
+	// string which we can use to compute a mime type
         m_metaData[cstr_dj_keyipath] = ipath;
         if (mtype.empty()) {
 	    LOGDEB0(("MHExecMultiple: no mime type from filter, "
@@ -284,6 +284,7 @@ bool MimeHandlerExecMultiple::next_document()
 	    m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
 	}
     } else {
+	// "Self" document.
         m_metaData[cstr_dj_keymt] = mtype.empty() ? "text/html" : mtype;
         m_metaData.erase(cstr_dj_keyipath);
 	if (!m_forPreview) {
