@@ -158,6 +158,7 @@ class Doc {
 	    return false;
 	}
     }
+    /** Nocopy getvalue. sets pointer to entry value if exists */
     bool peekmeta(const string& nm, const string **value = 0) const
     {
 	map<string,string>::const_iterator it = meta.find(nm);
