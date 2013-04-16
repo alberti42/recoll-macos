@@ -975,7 +975,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 
     ////// Special terms for other metadata. No positions for these.
     // Mime type
-    newdocument.add_term(wrap_prefix(mimetype_prefix) + doc.mimetype);
+    newdocument.add_boolean_term(wrap_prefix(mimetype_prefix) + doc.mimetype);
 
     // Simple file name indexed unsplit for specific "file name"
     // searches. This is not the same as a filename: clause inside the
@@ -991,37 +991,37 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 		utf8truncate(fn, 230);
 	    string::size_type pos = fn.rfind('.');
 	    if (pos != string::npos && pos != fn.length() - 1) {
-		newdocument.add_term(wrap_prefix(fileext_prefix) + 
-				     fn.substr(pos + 1));
+		newdocument.add_boolean_term(wrap_prefix(fileext_prefix) + 
+					     fn.substr(pos + 1));
 	    }
-	    newdocument.add_term(wrap_prefix(unsplitfilename_prefix) + fn);
+	    newdocument.add_term(wrap_prefix(unsplitfilename_prefix) + fn, 0);
 	}
     }
 
     // Udi unique term: this is used for file existence/uptodate
     // checks, and unique id for the replace_document() call.
     string uniterm = make_uniterm(udi);
-    newdocument.add_term(uniterm);
+    newdocument.add_boolean_term(uniterm);
     // Parent term. This is used to find all descendents, mostly to delete them 
     // when the parent goes away
     if (!parent_udi.empty()) {
-	newdocument.add_term(make_parentterm(parent_udi));
+	newdocument.add_boolean_term(make_parentterm(parent_udi));
     }
     // Dates etc.
     time_t mtime = atoll(doc.dmtime.empty() ? doc.fmtime.c_str() : 
-			doc.dmtime.c_str());
+			 doc.dmtime.c_str());
     struct tm *tm = localtime(&mtime);
     char buf[9];
     snprintf(buf, 9, "%04d%02d%02d",
 	    tm->tm_year+1900, tm->tm_mon + 1, tm->tm_mday);
     // Date (YYYYMMDD)
-    newdocument.add_term(wrap_prefix(xapday_prefix) + string(buf)); 
+    newdocument.add_boolean_term(wrap_prefix(xapday_prefix) + string(buf)); 
     // Month (YYYYMM)
     buf[6] = '\0';
-    newdocument.add_term(wrap_prefix(xapmonth_prefix) + string(buf));
+    newdocument.add_boolean_term(wrap_prefix(xapmonth_prefix) + string(buf));
     // Year (YYYY)
     buf[4] = '\0';
-    newdocument.add_term(wrap_prefix(xapyear_prefix) + string(buf)); 
+    newdocument.add_boolean_term(wrap_prefix(xapyear_prefix) + string(buf)); 
 
 
     //////////////////////////////////////////////////////////////////
