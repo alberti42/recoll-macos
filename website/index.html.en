@@ -51,8 +51,9 @@
         <li><a href="features.html">Detailed features</a>.
       </ul>
       <p>The current <span class="application">Recoll</span> version is
-	<a href="download.html">1.18.1</a> 
-	(<a href="release-1.18.html">Release notes</a>).</p>
+	<a href="download.html">1.18.2</a> 
+	(<a href="release-1.18.html">Release notes</a>,
+        <a href="BUGS.html">known bugs</a>).</p>
 
       <p><span class="application">Recoll</span> is based on the very
         strong <a href="http://www.xapian.org">Xapian</a> search
@@ -83,7 +84,11 @@
 
       <h2>News</h2>
       <div class="news">
+      
       <dl>
+        <dt>2012-04-14</dt><dd>1.18.2 fixes few really minor 
+          <a href="BUGS.html#b_1_18_1">bugs in 1.18.1</a>. I
+          will not package it.</dd>
         <dt>2012-12-14</dt><dd>The next version of Recoll indexing will be
           multithreaded, and much faster on most current
           processors. The conversion has been an interesting project
