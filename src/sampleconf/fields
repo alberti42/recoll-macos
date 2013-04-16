@@ -40,6 +40,7 @@ xapyearmon = M
 title = S ; wdfinc = 10
 mtype = T
 ext = XE
+rclmd5 = XM
 dir = XP
 abstract = XS
 filename = XSFN

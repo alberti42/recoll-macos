@@ -1129,13 +1129,15 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	RECORD_APPEND(record, string(cstr_mbreaks), multibreaks.str());
     }
     
-    // If the file's md5 was computed, add value. This is optionally
-    // used for query result duplicate elimination.
-    string& md5 = doc.meta[Doc::keymd5];
-    if (!md5.empty()) {
+    // If the file's md5 was computed, add value and term. 
+    // The value is optionally used for query result duplicate elimination, 
+    // and the term to find the duplicates.
+    const string *md5;
+    if (doc.peekmeta(Doc::keymd5, &md5) && !md5->empty()) {
 	string digest;
-	MD5HexScan(md5, digest);
+	MD5HexScan(*md5, digest);
 	newdocument.add_value(VALUE_MD5, digest);
+	newdocument.add_boolean_term(wrap_prefix("XM") + *md5);
     }
 
     LOGDEB0(("Rcl::Db::add: new doc record:\n%s\n", record.c_str()));
