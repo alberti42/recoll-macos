@@ -103,7 +103,8 @@ fi
 ################################### Documentation
 ###### Html doc
 RECOLLDOC=${RECOLLDOC:=doc/user}
-(cd $RECOLLDOC;make) || exit 1
+(cd $RECOLLDOC; sh xmlmake.sh) || exit 1
+rm -f $RECOLLDOC/usermanual-xml.html $RECOLLDOC/usermanual.xml
 
 ###### Text Doc
 chmod +w README INSTALL
