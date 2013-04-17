@@ -9,6 +9,7 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="robots" content="All,Index,Follow">
     <link type="text/css" rel="stylesheet" href="styles/style.css">
+    <link rel="shortcut icon" href="favicon.ico" />
 
   </head>
 
@@ -76,7 +77,7 @@
 
       <p><b><i>Recoll user ?</i></b> Maybe there are still a few useful
       	  search tricks that you don't know about. A quick look at
-	the <a href="usermanual/rcl.search.tips.html">search
+	the <a href="usermanual/rcl.search.html#RCL.SEARCH.GUI.TIPS">search
 	tips</a> might prove useful ! Also the 
         <a href="http://bitbucket.org/medoc/recoll/wiki/FaqsAndHowTos">
           Faqs and Howtos</a> on bitbucket.org, and some contributed
@@ -128,16 +129,6 @@
           <a href="https://bitbucket.org/medoc/recoll/wiki/IndexWebHistory">
             page about Recoll (trivial) configuration</a>.</dd>
 
-        <dt>2012-10-30</dt> <dd>The source for <a href="recoll-1.18.003.tar.gz">
-            recoll 1.18.003</a> is available, and this is a call to
-            volunteers to test it. There are binary packages on the recoll
-            "experimental" PPA for Ubuntu and Mint Linux users, and I can
-            build others. See this
-     <a href="http://www.freelists.org/post/recoll-user/recoll-1180-prerelease">
-            message</a> for more information. Mini-release 003 fixes a GUI
-            crash and a few other issues in 002.</dd>
-        </dd>
-
         <dt>2012-10-25</dt> <dd>A problem with a simple workaround has caused
           several reported <span class="important">recollindex
           crashes</span> recently (for 1.17). If you store and index
@@ -159,8 +150,8 @@
             EPUB documents</a>.</dd>
 
         <dt>2012-09-21</dt><dd>An
-          <a href="https://bitbucket.org/medoc/recoll/wiki/ElinksBeagle">easy
-                 way</a> to extend the "Beagle queue"
+          <a href="https://bitbucket.org/medoc/recoll/wiki/ElinksWeb">easy
+                 way</a> to extend the "Web queue"
          Recoll web history indexing mechanism to other browsers than
          Firefox (Elinks in this case).
         </dd>

@@ -14,6 +14,7 @@
     <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
     <meta name="robots" content="All,Index,Follow">
     <link type="text/css" rel="stylesheet" href="styles/style.css">
+    <link rel="shortcut icon" href="favicon.ico" />
   </head>
 
   <body>
@@ -90,12 +91,13 @@
       
       <p><b><i>Déjà utilisateur ?</i></b> Il est possible qu'il 
 	y ait encore quelques astuces qui vous aient échappées. Un coup
-	d'oeil rapide sur la page des 
-	<a href="usermanual/rcl.search.tips.html">petites recettes
-	  de recherche</a> (en anglais) pourrait s'avérer fructueux !
-        Également, en anglais, 
-        la <a href="http://bitbucket.org/medoc/recoll/wiki/FaqsAndHowTos">page
-        des questions fréquentes et trucs divers</a> sur bitbucket.org</p>
+	d'oeil rapide sur la page des <a
+        href="usermanual/rcl.search.html#RCL.SEARCH.GUI.TIPS"> petites
+        recettes de recherche</a> (en anglais) pourrait s'avérer
+        fructueux ! Également, en anglais, la 
+        <a href="http://bitbucket.org/medoc/recoll/wiki/FaqsAndHowTos">
+          page des questions fréquentes et trucs divers</a> sur
+          bitbucket.org</p> 
 
       <h2>Nouvelles: </h2>
       <dl>
@@ -142,7 +144,7 @@
           parfois en traitant certains messages mail.
         </dd>
 
-        <dt>2010-11-20 : un petit script pour activer/cacher recoll sur un
+        <dt>2010-11-20</dt><dd>Un petit script pour activer/cacher recoll sur un
           bureau gnome d'un seul coup de clavier: 
           <a href="http://bitbucket.org/medoc/recoll/wiki/HotRecoll">
             recette d'installation</a>.</dd>
