@@ -447,15 +447,17 @@ bool Query::getDoc(int xapi, Doc &doc)
 
     doc.pc = pc;
     char buf[200];
-    if (collapsecount>0) {
-	sprintf(buf,"%3d%% (%d)", pc, collapsecount+1);
+    if (collapsecount > 0) {
+	sprintf(buf,"%3d%% (%d)", pc, collapsecount + 1);
     } else {
 	sprintf(buf,"%3d%%", pc);
     }
     doc.meta[Doc::keyrr] = buf;
 
-    sprintf(buf, "%d", collapsecount);
-    doc.meta[Rcl::Doc::keycc] = buf;
+    if (collapsecount > 0) {
+	sprintf(buf, "%d", collapsecount);
+	doc.meta[Rcl::Doc::keycc] = buf;
+    }
 
     // Parse xapian document's data and populate doc fields
     return m_db->m_ndb->dbDataToRclDoc(docid, data, doc);

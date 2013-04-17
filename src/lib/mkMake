@@ -48,6 +48,7 @@ ${depth}/rcldb/expansiondbs.cpp \
 ${depth}/rcldb/rclabstract.cpp \
 ${depth}/rcldb/rcldb.cpp \
 ${depth}/rcldb/rcldoc.cpp \
+${depth}/rcldb/rcldups.cpp \
 ${depth}/rcldb/rclquery.cpp \
 ${depth}/rcldb/rclterms.cpp \
 ${depth}/rcldb/searchdata.cpp \

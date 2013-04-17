@@ -52,7 +52,7 @@
 #include "internfile.h"
 #include "indexer.h"
 #include "snippets_w.h"
-
+#include "listdialog.h"
 #include "reslist.h"
 #include "moc_reslist.cpp"
 #include "rclhelp.h"
@@ -815,6 +815,32 @@ void ResList::newSnippetsW(const Rcl::Doc& doc)
     sp->show();
 }
 
+void ResList::newDupsW(const Rcl::Doc&, const vector<Rcl::Doc>& dups)
+{
+    ListDialog dialog;
+    dialog.setWindowTitle(tr("Duplicate documents"));
+
+    dialog.groupBox->setTitle(tr("These Urls ( | ipath) share the same"
+				 " content:"));
+    // We replace the list with an editor so that the user can copy/paste
+    delete dialog.listWidget;
+    QTextEdit *editor = new QTextEdit(dialog.groupBox);
+    editor->setReadOnly(TRUE);
+    dialog.horizontalLayout->addWidget(editor);
+
+    for (vector<Rcl::Doc>::const_iterator it = dups.begin(); 
+	 it != dups.end(); it++) {
+	if (it->ipath.empty()) 
+	    editor->append(QString::fromLocal8Bit(it->url.c_str()));
+	else 
+	    editor->append(QString::fromLocal8Bit(it->url.c_str()) + " | " +
+			   QString::fromUtf8(it->ipath.c_str()));
+    }
+    editor->moveCursor(QTextCursor::Start);
+    editor->ensureCursorVisible();
+    dialog.exec();
+}
+
 void ResList::linkWasClicked(const QUrl &url)
 {
     string ascurl = (const char *)url.toString().toAscii();;
@@ -822,6 +848,7 @@ void ResList::linkWasClicked(const QUrl &url)
 
     int what = ascurl[0];
     switch (what) {
+
     // Open abstract/snippets window
     case 'A':
     {
@@ -837,12 +864,32 @@ void ResList::linkWasClicked(const QUrl &url)
     }
     break;
 
-	// Show query details
+    // Show duplicates
+    case 'D':
+    {
+	if (m_source.isNull()) 
+	    return;
+	int i = atoi(ascurl.c_str()+1) - 1;
+	Rcl::Doc doc;
+	if (!getDoc(i, doc)) {
+	    LOGERR(("ResList::linkWasClicked: can't get doc for %d\n", i));
+	    return;
+	}
+	vector<Rcl::Doc> dups;
+	if (m_source->docDups(doc, dups)) {
+	    newDupsW(doc, dups);
+	}
+    }
+    break;
+
+    // Show query details
     case 'H': 
+    {
 	emit headerClicked(); 
 	break;
+    }
 
-	// Preview and edit
+    // Preview and edit
     case 'P': 
     case 'E': 
     {

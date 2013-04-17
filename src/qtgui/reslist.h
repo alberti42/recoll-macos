@@ -146,6 +146,7 @@ class ResList : public RESLIST_PARENTCLASS
     bool scrollIsAtBottom();
     void setupArrows();
     void newSnippetsW(const Rcl::Doc &doc);
+    void newDupsW(const Rcl::Doc& doc, const std::vector<Rcl::Doc>& dups);
 };
 
 

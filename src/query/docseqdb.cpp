@@ -239,3 +239,12 @@ bool DocSequenceDb::setQuery()
     }
     return m_lastSQStatus;
 }
+
+bool DocSequenceDb::docDups(const Rcl::Doc& doc, std::vector<Rcl::Doc>& dups)
+{
+    if (m_q->whatDb()) {
+	return m_q->whatDb()->docDups(doc, dups);
+    } else {
+	return false;
+    }
+}

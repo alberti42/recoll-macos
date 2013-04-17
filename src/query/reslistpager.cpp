@@ -255,6 +255,15 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
 	linksbuf << "&nbsp;&nbsp;" << snipsbuf.str();
     }
 
+    string collapscnt;
+    if (doc.getmeta(Rcl::Doc::keycc, &collapscnt) && !collapscnt.empty()) {
+	ostringstream collpsbuf;
+	int clc = atoi(collapscnt.c_str()) + 1;
+	collpsbuf << "<a href=\"D" << docnumforlinks << "\">" 
+		  << trans("Dups") << "(" << clc << ")" << "</a>&nbsp;&nbsp;";
+	linksbuf << "&nbsp;&nbsp;" << collpsbuf.str();
+    }
+
     // Build the result list paragraph:
 
     // Subheader: this is used by history

@@ -353,6 +353,9 @@ class Db {
      */
     bool getDoc(const string &udi, Doc &doc);
 
+    /** Get duplicates (md5) of document */
+    bool docDups(const Doc& idoc, std::vector<Doc>& odocs);
+
     /* The following are mainly for the aspell module */
     /** Whole term list walking. */
     TermIter *termWalkOpen();

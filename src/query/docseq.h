@@ -108,6 +108,11 @@ class DocSequence {
     {
 	return -1;
     }
+    /** Get duplicates. */
+    virtual bool docDups(const Rcl::Doc&, std::vector<Rcl::Doc>&)
+    {
+	return false;
+    }
 
     virtual bool getEnclosing(Rcl::Doc&, Rcl::Doc&) = 0;
 
@@ -184,6 +189,13 @@ public:
 	if (m_seq.isNull())
 	    return false;
 	return m_seq->getAbstract(doc, abs);
+    }
+    /** Get duplicates. */
+    virtual bool docDups(const Rcl::Doc& doc, std::vector<Rcl::Doc>& dups)
+    {
+	if (m_seq.isNull())
+	    return false;
+	return m_seq->docDups(doc, dups);
     }
 
     virtual bool snippetsCapable()
