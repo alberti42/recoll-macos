@@ -399,7 +399,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
                 if ((status = cb.processone(top, &st, FtwDirReturn)) 
                     & (FtwStop|FtwError))
                     goto out;
-        } else if (S_ISREG(st.st_mode)) {
+        } else if (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode)) {
             if ((status = cb.processone(fn, &st, FtwRegular)) & 
                 (FtwStop|FtwError)) {
                 goto out;

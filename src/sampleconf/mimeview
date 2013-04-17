@@ -18,7 +18,7 @@
 #    parent document instead of a temporary html file.
 xallexcepts = application/pdf application/postscript application/x-dvi \
  text/html|gnuinfo text/html|chm text/html|epub \
- application/x-fsdirectory|parentopen
+ application/x-fsdirectory|parentopen inode/directory|parentopen
 
 [view]
 # Pseudo entry used if the 'use desktop' preference is set in the GUI
@@ -80,8 +80,9 @@ application/x-chm = kchmviewer %f
 application/x-dia-diagram = dia %f
 
 application/x-fsdirectory = dolphin %f
-#application/x-fsdirectory|parentopen = nautilus %(childurl)
+inode/directory = dolphin %f
 application/x-fsdirectory|parentopen = dolphin --select %(childurl) %f
+inode/directory|parentopen = dolphin --select %(childurl) %f
 
 application/x-gnuinfo = xterm -e "info -f %f"
 application/x-gnumeric = gnumeric %f

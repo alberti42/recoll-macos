@@ -1019,7 +1019,7 @@ void ResList::menuPreviewParent()
 	// No parent doc: show enclosing folder with app configured for
 	// directories
 	pdoc.url = path_getfather(doc.url);
-	pdoc.mimetype = "application/x-fsdirectory";
+	pdoc.mimetype = "inode/directory";
 	emit editRequested(pdoc);
     }
 }
@@ -1038,7 +1038,7 @@ void ResList::menuOpenParent()
 	pdoc.url = path_getfather(doc.url);
 	pdoc.meta[Rcl::Doc::keychildurl] = doc.url;
 	pdoc.meta[Rcl::Doc::keyapptg] = "parentopen";
-	pdoc.mimetype = "application/x-fsdirectory";
+	pdoc.mimetype = "inode/directory";
 	emit editRequested(pdoc);
     }
 }

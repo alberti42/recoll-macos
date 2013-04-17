@@ -37,6 +37,7 @@ using namespace std;
 #include "mh_mail.h"
 #include "mh_mbox.h"
 #include "mh_text.h"
+#include "mh_symlink.h"
 #include "mh_unknown.h"
 #include "ptmutex.h"
 
@@ -148,6 +149,9 @@ static Dijon::Filter *mhFactory(RclConfig *config, const string &mime)
     } else if ("message/rfc822" == lmime) {
 	LOGDEB2(("mhFactory(%s): returning MimeHandlerMail\n", mime.c_str()));
 	return new MimeHandlerMail(config, lmime);
+    } else if ("inode/symlink" == lmime) {
+	LOGDEB2(("mhFactory(%s): ret MimeHandlerSymlink\n", mime.c_str()));
+	return new MimeHandlerSymlink(config, lmime);
     } else if (lmime.find("text/") == 0) {
         // Try to handle unknown text/xx as text/plain. This
         // only happen if the text/xx was defined as "internal" in

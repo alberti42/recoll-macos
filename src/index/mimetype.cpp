@@ -122,9 +122,11 @@ string mimetype(const string &fn, const struct stat *stp,
 	// 'mime:' filter with the query language, but it's not work
 	// changing (would force a reindex).
 	if (S_ISDIR(stp->st_mode))
-	    return "application/x-fsdirectory";
+	    return "inode/directory";
+	if (S_ISLNK(stp->st_mode))
+	    return "inode/symlink";
 	if (!S_ISREG(stp->st_mode))
-	    return "application/x-fsspecial";
+	    return "inode/x-fsspecial";
     }
 
     string mtype;
@@ -191,7 +193,7 @@ int main(int argc, const char **argv)
     while (--argc > 0) {
 	string filename = *++argv;
 	struct stat st;
-	if (stat(filename.c_str(), &st)) {
+	if (lstat(filename.c_str(), &st)) {
 	    fprintf(stderr, "Can't stat %s\n", filename.c_str());
 	    continue;
 	}

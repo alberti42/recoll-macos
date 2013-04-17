@@ -65,6 +65,7 @@ def _get_thumbnail_path(url):
 # Icon names for some recoll mime types which don't have standard icon by the
 # normal method
 SPEC_MIME_ICONS = {'application/x-fsdirectory' : 'gnome-fs-directory.svg',
+                   'inode/directory' : 'gnome-fs-directory.svg',
                    'message/rfc822' : 'mail-read',
                    'application/x-recoll' : 'recoll'}
 

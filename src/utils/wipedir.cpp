@@ -41,7 +41,7 @@ int wipedir(const string& dir, bool selfalso, bool recurse)
     int statret;
     int ret = -1;
 
-    statret = stat(dir.c_str(), &st);
+    statret = lstat(dir.c_str(), &st);
     if (statret == -1) {
 	LOGERR(("wipedir: cant stat %s, errno %d\n", dir.c_str(), errno));
 	return -1;
@@ -70,7 +70,7 @@ int wipedir(const string& dir, bool selfalso, bool recurse)
 	string fn = path_cat(dir, ent->d_name);
 
 	struct stat st;
-	int statret = stat(fn.c_str(), &st);
+	int statret = lstat(fn.c_str(), &st);
 	if (statret == -1) {
 	    LOGERR(("wipedir: cant stat %s, errno %d\n", fn.c_str(), errno));
 	    goto out;

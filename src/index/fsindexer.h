@@ -17,8 +17,6 @@
 #ifndef _fsindexer_h_included_
 #define _fsindexer_h_included_
 
-#include <sys/stat.h>
-
 #include <list>
 
 #include "indexer.h"

@@ -102,7 +102,8 @@ static const UDSEntry resultToUDSEntry(const Rcl::Doc& doc, int num)
     char cnum[30];sprintf(cnum, "%04d", num);
     entry.insert(KIO::UDSEntry::UDS_NAME, resultBaseName + cnum);
 
-    if (!doc.mimetype.compare("application/x-fsdirectory")) {
+    if (!doc.mimetype.compare("application/x-fsdirectory") || 
+	!doc.mimetype.compare("inode/directory")) {
 	entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
     	entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
     } else {

@@ -114,6 +114,7 @@ image/tiff = execm rclimg
 image/vnd.djvu = exec rcldjvu
 image/svg+xml = exec rclsvg
 image/x-xcf = execm rclimg
+inode/symlink = internal
 message/rfc822 = internal
 text/calendar = execm rclics;mimetype=text/plain
 text/html  = internal 
@@ -212,6 +213,8 @@ image/tiff = image
 image/vnd.djvu = document
 image/x-xcf = image
 image/x-xpmi = image
+inode/directory = folder
+inode/symlink = emblem-symbolic-link
 message/rfc822 = message
 text/html = html
 text/html|chm = bookchap
@@ -340,6 +343,8 @@ other = application/vnd.sun.xml.draw \
 	application/x-tar \
         application/x-webarchive \
 	application/zip \
+        inode/directory \
+        inode/symlink \
 
 [guifilters]
 # This defines the top level filters in the GUI (accessed by the the
