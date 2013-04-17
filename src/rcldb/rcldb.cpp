@@ -85,6 +85,9 @@ const string page_break_term = "XXPG/";
 const string unsplitFilenameFieldName = "rclUnsplitFN";
 static const string unsplitfilename_prefix = "XSFS";
 
+// Empty string md5s 
+static const string cstr_md5empty("d41d8cd98f00b204e9800998ecf8427e");
+
 string version_string(){
     return string("Recoll ") + string(rclversionstr) + string(" + Xapian ") +
         string(Xapian::version_string());
@@ -1132,8 +1135,10 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
     // If the file's md5 was computed, add value and term. 
     // The value is optionally used for query result duplicate elimination, 
     // and the term to find the duplicates.
+    // We don't do this for empty docs.
     const string *md5;
-    if (doc.peekmeta(Doc::keymd5, &md5) && !md5->empty()) {
+    if (doc.peekmeta(Doc::keymd5, &md5) && !md5->empty() &&
+	md5->compare(cstr_md5empty)) {
 	string digest;
 	MD5HexScan(*md5, digest);
 	newdocument.add_value(VALUE_MD5, digest);
