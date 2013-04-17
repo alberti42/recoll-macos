@@ -148,3 +148,15 @@ text/x-python = idle %f
 text/x-gaim-log = emacsclient  %f
 text/x-purple-html-log = emacsclient  %f
 text/x-purple-log = emacsclient  %f
+
+# The video types will usually be handled by the desktop default, but they
+# need entries here to get an "Open" link
+video/3gpp = open %f
+video/mp2p = open %f
+video/mp2t = open %f
+video/mp4 = open %f
+video/mpeg = open %f
+video/quicktime = open %f
+video/x-matroska = open %f
+video/x-ms-asf = open %f
+video/x-msvideo = open %f

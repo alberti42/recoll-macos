@@ -3,6 +3,7 @@
 
 .txt = text/plain
 .text = text/plain
+.srt = text/plain
 .ini = text/x-ini
 .csv = text/x-csv
 
@@ -135,6 +136,8 @@
 # Note: file -i says audio/x-midi, but soft karaoke files are special.
 .kar = audio/x-karaoke
 .mid = audio/x-karaoke
+
+.mkv = video/x-matroska
 
 .png = image/png
 .jp2 = image/jp2
