@@ -1,3 +1,7 @@
+recoll (1.18.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+  * Release 1.18.2
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 18 Apr 2013 18:02:00 +0200
+
 recoll (1.18.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
   * Release 1.18.1 
  -- Jean-Francois Dockes <jf@dockes.org>  Mon, 05 Nov 2012 11:22:00 +0200
