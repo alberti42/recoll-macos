@@ -1266,17 +1266,27 @@ bool Db::maybeflush(off_t moretext)
 	if ((m_curtxtsz - m_flushtxtsz) / MB >= m_flushMb) {
 	    LOGDEB(("Db::add/delete: txt size >= %d Mb, flushing\n", 
 		    m_flushMb));
-	    string ermsg;
-	    try {
-		m_ndb->xwdb.flush();
-	    } XCATCHERROR(ermsg);
-	    if (!ermsg.empty()) {
-		LOGERR(("Db::add: flush() failed: %s\n", ermsg.c_str()));
-		return false;
-	    }
-	    m_flushtxtsz = m_curtxtsz;
+	    return doFlush();
 	}
     }
+    return true;
+}
+
+bool Db::doFlush()
+{
+    if (!m_ndb) {
+	LOGERR(("Db::doFLush: no ndb??\n"));
+	return false;
+    }
+    string ermsg;
+    try {
+	m_ndb->xwdb.flush();
+    } XCATCHERROR(ermsg);
+    if (!ermsg.empty()) {
+	LOGERR(("Db::doFlush: flush() failed: %s\n", ermsg.c_str()));
+	return false;
+    }
+    m_flushtxtsz = m_curtxtsz;
     return true;
 }
 

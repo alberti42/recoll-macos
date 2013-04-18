@@ -50,6 +50,46 @@ ConfIndexer::~ConfIndexer()
      deleteZ(m_beagler);
 }
 
+// Determine if this is likely the first time that the user runs
+// indexing.  We don't look at the xapiandb as this may have been
+// explicitely removed for valid reasons, but at the indexing status
+// file, which should be unexistant-or-empty only before any indexing
+// has ever run
+bool ConfIndexer::runFirstIndexing()
+{
+    // Indexing status file existing and not empty ?
+    struct stat st;
+    if (stat(m_config->getIdxStatusFile().c_str(), &st) == 0 && 
+	st.st_size > 0) {
+	LOGDEB0(("ConfIndexer::runFirstIndexing: no: status file not empty\n"));
+	exit(1);
+	return false;
+    }
+    // And only do this if the user has kept the default topdirs (~). 
+    vector<string>tdl = m_config->getTopdirs();
+    if (tdl.size() != 1 || tdl[0].compare(path_canon(path_tildexpand("~")))) {
+	LOGDEB0(("ConfIndexer::runFirstIndexing: no: not home only\n"));
+	return false;
+    }
+    return true;
+}
+
+bool ConfIndexer::firstFsIndexingSequence()
+{
+    LOGDEB(("ConfIndexer::firstFsIndexingSequence\n"));
+    deleteZ(m_fsindexer);
+    m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
+    if (!m_fsindexer) {
+	return false;
+    }
+    int flushmb = m_db.getFlushMb();
+    m_db.setFlushMb(2);
+    m_fsindexer->index(true);
+    m_db.doFlush();
+    m_db.setFlushMb(flushmb);
+    return true;
+}
+
 bool ConfIndexer::index(bool resetbefore, ixType typestorun)
 {
     Rcl::Db::OpenMode mode = resetbefore ? Rcl::Db::DbTrunc : Rcl::Db::DbUpd;
@@ -61,6 +101,9 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun)
 
     m_config->setKeyDir(cstr_null);
     if (typestorun & IxTFs) {
+	if (runFirstIndexing()) {
+	    firstFsIndexingSequence();
+	}
         deleteZ(m_fsindexer);
         m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
         if (!m_fsindexer || !m_fsindexer->index()) {

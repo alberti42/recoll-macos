@@ -377,6 +377,19 @@ class Db {
     */
     static void setInPlaceReset() {o_inPlaceReset = true;}
 
+    /** Flush interval get/set. This is used by the first indexing
+	pass to override the config value and flush more rapidly
+	initially so that the user can quickly play with queries */
+    int getFlushMb() 
+    {
+	return  m_flushMb;
+    }
+    void setFlushMb(int mb)
+    {
+	m_flushMb = mb;
+    }
+    bool doFlush();
+
     /* This has to be public for access by embedded Query::Native */
     Native *m_ndb; 
 private:

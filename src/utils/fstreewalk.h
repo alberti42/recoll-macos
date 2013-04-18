@@ -56,7 +56,7 @@ class FsTreeWalker {
     enum Status {FtwOk=0, FtwError=1, FtwStop=2, 
 		 FtwStatAll = FtwError|FtwStop};
     enum Options {FtwOptNone = 0, FtwNoRecurse = 1, FtwFollow = 2,
-                  FtwNoCanon = 4,
+                  FtwNoCanon = 4, FtwSkipDotFiles = 8,
     // Tree walking options.  Natural is close to depth first: process
     //   directory entries as we see them, recursing into subdirectories at 
     //   once 
@@ -76,7 +76,10 @@ class FsTreeWalker {
     FsTreeWalker(int opts = FtwTravNatural);
     ~FsTreeWalker();
 
-    void setOpts(Options opts, int depthswitch = 4);
+    void setOpts(int opts);
+    int getOpts();
+    void setDepthSwitch(int);
+    void setMaxDepth(int);
 
     /** 
      * Begin file system walk.
@@ -110,8 +113,8 @@ class FsTreeWalker {
 
  private:
     Status iwalk(const string &dir, struct stat *stp, FsTreeWalkerCB& cb);
-    class Internal;
-    Internal *data;
+    class Internal; 
+   Internal *data;
 };
 
 class FsTreeWalkerCB {

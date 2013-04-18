@@ -20,6 +20,7 @@
 
 #ifndef TEST_FSTREEWALK
 
+#include <stdio.h>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <errno.h>
@@ -58,8 +59,15 @@ public:
 };
 
 class FsTreeWalker::Internal {
+public:
+    Internal(int opts)
+    : options(opts), depthswitch(4), maxdepth(-1), errors(0)
+    {
+    }
     int options;
     int depthswitch;
+    int maxdepth;
+    int basedepth;
     stringstream reason;
     vector<string> skippedNames;
     vector<string> skippedPaths;
@@ -74,17 +82,11 @@ class FsTreeWalker::Internal {
 	reason << call << "(" << param << ") : " << errno << " : " << 
 	    strerror(errno) << endl;
     }
-    friend class FsTreeWalker;
 };
 
 FsTreeWalker::FsTreeWalker(int opts)
 {
-    data = new Internal;
-    if (data) {
-	data->options = opts;
-        data->depthswitch = 4;
-	data->errors = 0;
-    }
+    data = new Internal(opts);
 }
 
 FsTreeWalker::~FsTreeWalker()
@@ -92,11 +94,30 @@ FsTreeWalker::~FsTreeWalker()
     delete data;
 }
 
-void FsTreeWalker::setOpts(Options opts, int depthswitch)
+void FsTreeWalker::setOpts(int opts)
 {
     if (data) {
 	data->options = opts;
-        data->depthswitch = depthswitch;
+    }
+}
+int FsTreeWalker::getOpts()
+{
+    if (data) {
+	return data->options;
+    } else {
+	return 0;
+    }
+}
+void FsTreeWalker::setDepthSwitch(int ds)
+{
+    if (data) {
+        data->depthswitch = ds;
+    }
+}
+void FsTreeWalker::setMaxDepth(int md)
+{
+    if (data) {
+        data->maxdepth = md;
     }
 }
 
@@ -198,8 +219,7 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top,
         data->options |= FtwTravNatural;
     }
 
-    int basedepth = slashcount(top); // Only used for breadthThenDepth
-
+    data->basedepth = slashcount(top); // Only used for breadthxx
     struct stat st;
     // We always follow symlinks at this point. Makes more sense.
     if (stat(top.c_str(), &st) == -1) {
@@ -240,7 +260,7 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top,
                 if (data->options & FtwTravBreadthThenDepth) {
                     // Check if new depth warrants switch to depth first
                     // traversal (will happen on next loop iteration).
-                    int curdepth = slashcount(dir) - basedepth;
+                    int curdepth = slashcount(dir) - data->basedepth;
                     if (curdepth >= data->depthswitch) {
                         //fprintf(stderr, "SWITCHING TO DEPTH FIRST\n");
                         data->options &= ~FtwTravMask;
@@ -309,6 +329,13 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 	return status;
     }
 
+
+    int curdepth = slashcount(top) - data->basedepth;
+    if (data->maxdepth >= 0 && curdepth >= data->maxdepth) {
+	LOGDEB1(("FsTreeWalker::iwalk: Maxdepth reached: [%s]\n", top.c_str()));
+	return status;
+    }
+
     // This is a directory, read it and process entries:
 
     // Detect if directory already seen. This could just be several
@@ -345,6 +372,9 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
     while ((ent = readdir(d)) != 0) {
         string fn;
         struct stat st;
+	// Maybe skip dotfiles
+	if ((data->options & FtwSkipDotFiles) && ent->d_name[0] == '.')
+	    continue;
 	// Skip . and ..
 	if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) 
 	    continue;
@@ -439,6 +469,8 @@ static int     op_flags;
 #define OPT_m     0x80
 #define OPT_L     0x100
 #define OPT_w     0x200
+#define OPT_M     0x400
+#define OPT_D     0x800
 
 class myCB : public FsTreeWalkerCB {
  public:
@@ -489,6 +521,8 @@ static char usage [] =
 " -d : use almost depth first (dir files, then subdirs)\n"
 " -m : use breadth up to 4 deep then switch to -d\n"
 " -w : unset default FNM_PATHNAME when using fnmatch() to match skipped paths\n"
+" -M <depth>: limit depth (works with -b/m/d)\n"
+" -D : skip dotfiles\n"
 ;
 static void
 Usage(void)
@@ -501,70 +535,80 @@ int main(int argc, const char **argv)
 {
     vector<string> patterns;
     vector<string> paths;
+    int maxdepth = -1;
+
     thisprog = argv[0];
     argc--; argv++;
+    while (argc > 0 && **argv == '-') {
+	(*argv)++;
+	if (!(**argv))
+	    /* Cas du "adb - core" */
+	    Usage();
+	while (**argv)
+	    switch (*(*argv)++) {
+	    case 'b':	op_flags |= OPT_b; break;
+	    case 'c':	op_flags |= OPT_c; break;
+	    case 'd':	op_flags |= OPT_d; break;
+	    case 'D':	op_flags |= OPT_D; break;
+	    case 'L':	op_flags |= OPT_L; break;
+	    case 'm':	op_flags |= OPT_m; break;
+	    case 'M':	op_flags |= OPT_M; if (argc < 2)  Usage();
+		maxdepth = atoi(*(++argv));
+		argc--; 
+		goto b1;
+	    case 'p':	op_flags |= OPT_p; if (argc < 2)  Usage();
+		patterns.push_back(*(++argv));
+		argc--; 
+		goto b1;
+	    case 'P':	op_flags |= OPT_P; if (argc < 2)  Usage();
+		paths.push_back(*(++argv));
+		argc--; 
+		goto b1;
+	    case 'r':	op_flags |= OPT_r; break;
+	    case 'w':	op_flags |= OPT_w; break;
+	    default: Usage();	break;
+	    }
+    b1: argc--; argv++;
+    }
 
-  while (argc > 0 && **argv == '-') {
-    (*argv)++;
-    if (!(**argv))
-      /* Cas du "adb - core" */
-      Usage();
-    while (**argv)
-      switch (*(*argv)++) {
-      case 'b':	op_flags |= OPT_b; break;
-      case 'c':	op_flags |= OPT_c; break;
-      case 'd':	op_flags |= OPT_d; break;
-      case 'L':	op_flags |= OPT_L; break;
-      case 'm':	op_flags |= OPT_m; break;
-      case 'p':	op_flags |= OPT_p; if (argc < 2)  Usage();
-	  patterns.push_back(*(++argv));
-	  argc--; 
-	  goto b1;
-      case 'P':	op_flags |= OPT_P; if (argc < 2)  Usage();
-	  paths.push_back(*(++argv));
-	argc--; 
-	goto b1;
-      case 'r':	op_flags |= OPT_r; break;
-      case 'w':	op_flags |= OPT_w; break;
-      default: Usage();	break;
-      }
-  b1: argc--; argv++;
-  }
+    if (argc != 1)
+	Usage();
+    string topdir = *argv++;argc--;
 
-  if (argc != 1)
-    Usage();
-  string topdir = *argv++;argc--;
+    int opt = 0;
+    if (op_flags & OPT_r)
+	opt |= FsTreeWalker::FtwNoRecurse;
+    if (op_flags & OPT_c)
+	opt |= FsTreeWalker::FtwNoCanon;
+    if (op_flags & OPT_L)
+	opt |= FsTreeWalker::FtwFollow;
+    if (op_flags & OPT_D)
+	opt |= FsTreeWalker::FtwSkipDotFiles;
 
-  int opt = 0;
-  if (op_flags & OPT_r)
-      opt |= FsTreeWalker::FtwNoRecurse;
-  if (op_flags & OPT_c)
-      opt |= FsTreeWalker::FtwNoCanon;
-  if (op_flags & OPT_L)
-      opt |= FsTreeWalker::FtwFollow;
+    if (op_flags & OPT_b)
+	opt |= FsTreeWalker::FtwTravBreadth;
+    else if (op_flags & OPT_d)
+	opt |= FsTreeWalker::FtwTravFilesThenDirs;
+    else if (op_flags & OPT_m)
+	opt |= FsTreeWalker::FtwTravBreadthThenDepth;
 
-  if (op_flags & OPT_b)
-      opt |= FsTreeWalker::FtwTravBreadth;
-  else if (op_flags & OPT_d)
-      opt |= FsTreeWalker::FtwTravFilesThenDirs;
-  else if (op_flags & OPT_m)
-      opt |= FsTreeWalker::FtwTravBreadthThenDepth;
-
-  string reason;
-  if (!recollinit(0, 0, reason)) {
-      fprintf(stderr, "Init failed: %s\n", reason.c_str());
-      exit(1);
-  }
-  if (op_flags & OPT_w) {
-      FsTreeWalker::setNoFnmPathname();
-  }
-  FsTreeWalker walker(opt);
-  walker.setSkippedNames(patterns);
-  walker.setSkippedPaths(paths);
-  myCB cb;
-  walker.walk(topdir, cb);
-  if (walker.getErrCnt() > 0)
-      cout << walker.getReason();
+    string reason;
+    if (!recollinit(0, 0, reason)) {
+	fprintf(stderr, "Init failed: %s\n", reason.c_str());
+	exit(1);
+    }
+    if (op_flags & OPT_w) {
+	FsTreeWalker::setNoFnmPathname();
+    }
+    FsTreeWalker walker;
+    walker.setOpts(opt); 
+    walker.setMaxDepth(maxdepth);
+    walker.setSkippedNames(patterns);
+    walker.setSkippedPaths(paths);
+    myCB cb;
+    walker.walk(topdir, cb);
+    if (walker.getErrCnt() > 0)
+	cout << walker.getReason();
 }
 
 #endif // TEST_FSTREEWALK

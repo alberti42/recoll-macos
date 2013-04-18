@@ -60,7 +60,7 @@ class FsIndexer : public FsTreeWalkerCB {
      * We open the database,
      * then call a file system walk for each top-level directory.
      */
-    bool index();
+    bool index(bool quickshallow = 0);
 
     /** Index a list of files. No db cleaning or stemdb updating */
     bool indexFiles(std::list<std::string> &files, ConfIndexer::IxFlag f = 

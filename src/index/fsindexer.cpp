@@ -178,7 +178,7 @@ bool FsIndexer::init()
 }
 
 // Recursively index each directory in the topdirs:
-bool FsIndexer::index()
+bool FsIndexer::index(bool quickshallow)
 {
     Chrono chron;
     if (!init())
@@ -193,6 +193,11 @@ bool FsIndexer::index()
     }
 
     m_walker.setSkippedPaths(m_config->getSkippedPaths());
+    if (quickshallow) {
+	m_walker.setOpts(m_walker.getOpts() | FsTreeWalker::FtwSkipDotFiles);
+	m_walker.setMaxDepth(2);
+    }
+
     for (vector<string>::const_iterator it = m_tdl.begin();
 	 it != m_tdl.end(); it++) {
 	LOGDEB(("FsIndexer::index: Indexing %s into %s\n", it->c_str(), 
@@ -204,11 +209,13 @@ bool FsIndexer::index()
 
 	// Adjust the "follow symlinks" option
 	bool follow;
+	int opts = m_walker.getOpts();
 	if (m_config->getConfParam("followLinks", &follow) && follow) {
-	    m_walker.setOpts(FsTreeWalker::FtwFollow);
+	    opts |= FsTreeWalker::FtwFollow;
 	} else {
-	    m_walker.setOpts(FsTreeWalker::FtwOptNone);
+	    opts &= ~FsTreeWalker::FtwFollow;
 	}	    
+	m_walker.setOpts(opts);
 
 	int abslen;
 	if (m_config->getConfParam("idxabsmlen", &abslen))

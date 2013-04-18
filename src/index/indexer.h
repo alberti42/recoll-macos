@@ -138,6 +138,13 @@ class ConfIndexer {
     BeagleQueueIndexer *m_beagler; 
     DbIxStatusUpdater  *m_updater;
     string              m_reason;
+
+    // The first time we index, we do things a bit differently to
+    // avoid user frustration (make at least some results available
+    // fast by using several passes, the first ones to index common
+    // interesting locations).
+    bool runFirstIndexing();
+    bool firstFsIndexingSequence();
 };
 
 #endif /* _INDEXER_H_INCLUDED_ */
