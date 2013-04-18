@@ -338,8 +338,8 @@ int main(int argc, char **argv)
     havereadsettings = true;
     //    fprintf(stderr, "Settings done\n");
 
-    if (!prefs.stylesheetFile.isEmpty()) {
-	applyStyleSheet(prefs.stylesheetFile);
+    if (!prefs.qssFile.isEmpty()) {
+	applyStyleSheet(prefs.qssFile);
     }
     QIcon icon;
     icon.addFile(QString::fromUtf8(":/images/recoll.png"));

@@ -32,6 +32,7 @@ using namespace std;
 #ifdef SNIPPETS_WEBKIT
 #include <QWebSettings>
 #include <QWebFrame>
+#include <QUrl>
 #else
 #include <QTextBrowser>
 #endif
@@ -100,6 +101,8 @@ void SnippetsW::init()
 	ws->setFontFamily(QWebSettings::StandardFont, prefs.reslistfontfamily);
 	ws->setFontSize(QWebSettings::DefaultFontSize, prefs.reslistfontsize);
     }
+    if (!prefs.snipCssFile.isEmpty())
+	ws->setUserStyleSheetUrl(QUrl::fromLocalFile(prefs.snipCssFile));
 #else
     connect(browser, SIGNAL(anchorClicked(const QUrl &)), 
 	    this, SLOT(linkWasClicked(const QUrl &)));
@@ -135,7 +138,9 @@ void SnippetsW::init()
     oss << 
 	"<html><head>"
 	"<meta http-equiv=\"content-type\" "
-	"content=\"text/html; charset=utf-8\"></head>"
+	"content=\"text/html; charset=utf-8\">"
+	"<link type=\"text/css\" rel=\"stylesheet\" href=\"/tmp/style.css\">"
+	"</head>"
 	"<body>"
 	"<table style='overflow-x: scroll; white-space: nowrap'>"
 	;

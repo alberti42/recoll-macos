@@ -62,8 +62,11 @@ void UIPrefsDialog::init()
     connect(viewActionPB, SIGNAL(clicked()), this, SLOT(showViewAction()));
     connect(reslistFontPB, SIGNAL(clicked()), this, SLOT(showFontDialog()));
     connect(resetFontPB, SIGNAL(clicked()), this, SLOT(resetReslistFont()));
-    connect(stylesheetPB, SIGNAL(clicked()), this, SLOT(showStylesheetDialog()));
+
+    connect(stylesheetPB, SIGNAL(clicked()),this, SLOT(showStylesheetDialog()));
     connect(resetSSPB, SIGNAL(clicked()), this, SLOT(resetStylesheet()));
+    connect(snipCssPB, SIGNAL(clicked()),this, SLOT(showSnipCssDialog()));
+    connect(resetSnipCssPB, SIGNAL(clicked()), this, SLOT(resetSnipCss()));
 
     connect(idxLV, SIGNAL(itemSelectionChanged()),
 	    this, SLOT(extradDbSelectChanged()));
@@ -142,12 +145,20 @@ void UIPrefsDialog::setFromPrefs()
     }
 
     // Style sheet
-    stylesheetFile = prefs.stylesheetFile;
-    if (stylesheetFile.isEmpty()) {
+    qssFile = prefs.qssFile;
+    if (qssFile.isEmpty()) {
 	stylesheetPB->setText(tr("Choose"));
     } else {
-	string nm = path_getsimple((const char *)stylesheetFile.toLocal8Bit());
+	string nm = path_getsimple((const char *)qssFile.toLocal8Bit());
 	stylesheetPB->setText(QString::fromLocal8Bit(nm.c_str()));
+    }
+
+    snipCssFile = prefs.snipCssFile;
+    if (snipCssFile.isEmpty()) {
+	snipCssPB->setText(tr("Choose"));
+    } else {
+	string nm = path_getsimple((const char *)snipCssFile.toLocal8Bit());
+	snipCssPB->setText(QString::fromLocal8Bit(nm.c_str()));
     }
 
     paraFormat = prefs.reslistformat;
@@ -225,8 +236,9 @@ void UIPrefsDialog::accept()
 
     prefs.reslistfontfamily = reslistFontFamily;
     prefs.reslistfontsize = reslistFontSize;
-    prefs.stylesheetFile = stylesheetFile;
+    prefs.qssFile = qssFile;
     QTimer::singleShot(0, m_mainWindow, SLOT(applyStyleSheet()));
+    prefs.snipCssFile = snipCssFile;
     prefs.reslistformat =  paraFormat;
     prefs.reslistheadertext =  headerText;
     if (prefs.reslistformat.trimmed().isEmpty()) {
@@ -364,15 +376,26 @@ void UIPrefsDialog::showFontDialog()
 
 void UIPrefsDialog::showStylesheetDialog()
 {
-    stylesheetFile = myGetFileName(false, "Select stylesheet file", true);
-    string nm = path_getsimple((const char *)stylesheetFile.toLocal8Bit());
+    qssFile = myGetFileName(false, "Select stylesheet file", true);
+    string nm = path_getsimple((const char *)qssFile.toLocal8Bit());
     stylesheetPB->setText(QString::fromLocal8Bit(nm.c_str()));
 }
 
 void UIPrefsDialog::resetStylesheet()
 {
-    stylesheetFile = "";
+    qssFile = "";
     stylesheetPB->setText(tr("Choose"));
+}
+void UIPrefsDialog::showSnipCssDialog()
+{
+    snipCssFile = myGetFileName(false, "Select snippets window CSS file", true);
+    string nm = path_getsimple((const char *)snipCssFile.toLocal8Bit());
+    snipCssPB->setText(QString::fromLocal8Bit(nm.c_str()));
+}
+void UIPrefsDialog::resetSnipCss()
+{
+    snipCssFile = "";
+    snipCssPB->setText(tr("Choose"));
 }
 
 void UIPrefsDialog::resetReslistFont()

@@ -40,7 +40,8 @@ public:
 
     QString reslistFontFamily;
     int reslistFontSize;
-    QString stylesheetFile;
+    QString qssFile;
+    QString snipCssFile;
 
     virtual void init();
 
@@ -48,7 +49,9 @@ public slots:
     virtual void showFontDialog();
     virtual void resetReslistFont();
     virtual void showStylesheetDialog();
+    virtual void showSnipCssDialog();
     virtual void resetStylesheet();
+    virtual void resetSnipCss();
     virtual void showViewAction();
     virtual void showViewAction(const QString& mt);
     virtual void addExtraDbPB_clicked();

@@ -153,7 +153,8 @@ void rwSettings(bool writing)
 
     SETTING_RW(prefs.reslistheadertext, "/Recoll/prefs/reslist/headertext", 
 	       String, "");
-    SETTING_RW(prefs.stylesheetFile, "/Recoll/prefs/stylesheet", String, "");
+    SETTING_RW(prefs.qssFile, "/Recoll/prefs/stylesheet", String, "");
+    SETTING_RW(prefs.snipCssFile, "/Recoll/prefs/snippets/cssfile", String, "");
     SETTING_RW(prefs.queryStemLang, "/Recoll/prefs/query/stemLang", String,
 	       "english");
     SETTING_RW(prefs.useDesktopOpen, "/Recoll/prefs/useDesktopOpen", 

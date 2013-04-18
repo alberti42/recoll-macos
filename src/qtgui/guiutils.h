@@ -60,7 +60,8 @@ class PrefsPack {
     // Date strftime format
     QString reslistdateformat;
     string creslistdateformat;
-    QString stylesheetFile;
+    QString qssFile;
+    QString snipCssFile;
     QString queryStemLang;
     int mainwidth;
     int mainheight;

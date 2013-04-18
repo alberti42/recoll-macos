@@ -1983,5 +1983,5 @@ bool RclMain::eventFilter(QObject *, QEvent *event)
 
 void RclMain::applyStyleSheet()
 {
-    ::applyStyleSheet(prefs.stylesheetFile);
+    ::applyStyleSheet(prefs.qssFile);
 }

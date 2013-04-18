@@ -394,6 +394,40 @@
              </item>
             </layout>
            </item>
+           <item>
+            <layout class="QHBoxLayout">
+             <item>
+              <widget class="QLabel" name="tLSTL">
+               <property name="text">
+                <string>Snippets window CSS file</string>
+               </property>
+               <property name="wordWrap">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="snipCssPB">
+               <property name="toolTip">
+                <string>Opens a dialog to select the Snippets window CSS style sheet file</string>
+               </property>
+               <property name="text">
+                <string>Choose</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="resetSnipCssPB">
+               <property name="toolTip">
+                <string>Resets the Snippets window style</string>
+               </property>
+               <property name="text">
+                <string>Reset</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
           </layout>
          </item>
          <item>
