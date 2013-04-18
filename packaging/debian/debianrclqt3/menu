@@ -1,2 +1,0 @@
-?package(recoll):needs="X11" section="Apps/Databases"\
-  title="Personal Search Tool" command="/usr/bin/recoll"
