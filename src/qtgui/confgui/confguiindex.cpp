@@ -298,12 +298,6 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 			 "0 means no limit (this is the default)."), 0, 100);
     gl1->addWidget(w, 5, 0);
 
-    ConfLink lnkusfc(new ConfLinkRclRep(config, "usesystemfilecommand"));
-    w = new ConfParamBoolW(this, lnkusfc, tr("Use system's 'file' command"),
-		       tr("Use the system's 'file' command if internal<br>"
-			  "mime type identification fails."));
-    gl1->addWidget(w, 5, 1);
-    
     ConfLink lnknaspl(new ConfLinkRclRep(config, "noaspell"));
     ConfParamBoolW* cpasp =
     new ConfParamBoolW(this, lnknaspl, tr("No aspell usage"),
