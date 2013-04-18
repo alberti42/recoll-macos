@@ -5,11 +5,11 @@ Author: Jean-Francois Dockes <jf@dockes.org>
 Last-Update: 2012-03-26
 --- a/recollinstall.in
 +++ b/recollinstall.in
-@@ -139,5 +139,4 @@
+@@ -142,5 +142,5 @@
      ${datadir}/recoll/translations/recoll_zh.qm || exit 1
  
  
 -@NOPYTHON@(cd python/recoll;python setup.py install \
--@NOPYTHON@ --prefix=${REALPREFIX} ${ROOTFORPYTHON})
+-@NOPYTHON@ --prefix=${REALPREFIX} ${ROOTFORPYTHON} ${OPTSFORPYTHON})
 +#@NOPYTHON@(cd python/recoll;python setup.py install \
-+#    --prefix=${REALPREFIX} ${ROOTFORPYTHON})
++#NOPYTHON@ --prefix=${REALPREFIX} ${ROOTFORPYTHON} ${OPTSFORPYTHON})
