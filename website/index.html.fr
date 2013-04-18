@@ -102,6 +102,10 @@
       <h2>Nouvelles: </h2>
       <dl>
 
+        <dt>2013-04-14</dt><dd>Release 1.18.2 corrige quelques 
+          <a href="BUGS.html#b_1_18_1">problèmes mineurs de la version
+          1.18.1</a>. Elle ne sera pas distribuée sous forme binaire.</dd>
+
         <dt>2012-11-05</dt><dd>Recoll 1.18.1 est disponible. Cette
           version peut faire des recherches sensibles aux majuscules et
           aux accents, donner un accès direct à la bonne page pour les
@@ -135,9 +139,10 @@
           indexation incorrecte des messages.
         </dd>
 
-<dt>2012-10-16</dt><dd> <a href="filters/filters.html">un nouveau filtre
+        <dt>2012-10-16</dt><dd> <a href="filters/filters.html">un nouveau filtre
             pour les documents EPUB</a>.</dd> 
-<dt>2012-05-24</dt><dd> Sortie de la
+
+        <dt>2012-05-24</dt><dd> Sortie de la
           version <a href="download.html#source">1.17.3</a>. Voir
           les <a href="release-1.17.html">les notes</a>. Cette version
           corrige un "arrêt imprévu" de l'indexation qui se produisait

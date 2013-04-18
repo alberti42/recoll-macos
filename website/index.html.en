@@ -87,9 +87,10 @@
       <div class="news">
       
       <dl>
-        <dt>2012-04-14</dt><dd>1.18.2 fixes few really minor 
+        <dt>2013-04-14</dt><dd>Release 1.18.2 fixes a few really minor
           <a href="BUGS.html#b_1_18_1">bugs in 1.18.1</a>. I
           will not package it.</dd>
+
         <dt>2012-12-14</dt><dd>The next version of Recoll indexing will be
           multithreaded, and much faster on most current
           processors. The conversion has been an interesting project
