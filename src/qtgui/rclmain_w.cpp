@@ -1207,10 +1207,11 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
     // a partial index pass does no purge, so its ref date will stay
     // the same and you keep getting the message about the index being
     // out of date. The only way to fix this is to run a normal
-    // indexing pass. 
+    // indexing pass (common case: the mbox was shortened and the
+    // result msgnum is beyond the new end)
     // Also we should re-run the query after updating the index
-    // because the ipaths may be wrong in the current result list
-    // We only do this for the main index, else jump and prey (cant
+    // because the ipaths may be wrong in the current result list We
+    // only do this for the main index, else jump and prey (cant
     // update anyway, even the makesig() call might not make sense for
     // our base config)
     if (!doc.ipath.empty() && rcldb && rcldb->whatDbIdx(doc) == 0) {
@@ -1220,18 +1221,28 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
 	    string sig;
 	    FileInterner::makesig(theconfig, doc, sig);
 	    if (rcldb->needUpdate(udi, sig)) {
+		QString msg = 
+		    tr("Index not up to date for this file. "
+		       "Refusing to risk showing the wrong entry.");
+		if (m_indexerState == IXST_NOTRUNNING) {
+		    msg += tr("Click Ok to update the "
+			      "index for this file, then re-run the "
+			      "query when indexing is done. "
+			      "Else, Cancel.");
+		} else {
+		    msg += tr("Indexer running so things should improve when "
+			      "it's done");
+		}
 		int rep = 
 		    QMessageBox::warning(0, tr("Warning"), 
-				       tr("Index not up to date for this file. "
-					"Refusing to risk showing the wrong "
-					"entry. Click Ok to update the "
-					"index for this file, then re-run the "
-					"query when indexing is done. "
-					"Else, Cancel."),
+					 msg,
 					 QMessageBox::Ok,
-					 QMessageBox::Cancel,
+					 (m_indexerState == IXST_NOTRUNNING) ?
+					 QMessageBox::Cancel : 
+					 QMessageBox::NoButton,
 					 QMessageBox::NoButton);
-		if (rep == QMessageBox::Ok) {
+		if (m_indexerState == IXST_NOTRUNNING && 
+		    rep == QMessageBox::Ok) {
 		    LOGDEB(("Requesting index update for %s\n", 
 			    doc.url.c_str()));
 		    vector<Rcl::Doc> docs(1, doc);
