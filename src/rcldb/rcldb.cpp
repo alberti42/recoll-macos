@@ -1070,9 +1070,10 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
     RECORD_APPEND(record, Doc::keyds, sizebuf);
 
     // Note that we add the signature both as a value and in the data record
-    if (!doc.sig.empty())
+    if (!doc.sig.empty()) {
 	RECORD_APPEND(record, Doc::keysig, doc.sig);
-    newdocument.add_value(VALUE_SIG, doc.sig);
+	newdocument.add_value(VALUE_SIG, doc.sig);
+    }
 
     if (!doc.ipath.empty())
 	RECORD_APPEND(record, Doc::keyipt, doc.ipath);
