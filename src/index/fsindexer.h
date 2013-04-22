@@ -83,13 +83,49 @@ class FsIndexer : public FsTreeWalkerCB {
     };
 
  private:
+
+    class PurgeCandidateRecorder {
+    public:
+	PurgeCandidateRecorder() 
+	    : dorecord(false) {}
+	void setRecord(bool onoff) 
+	{
+	    dorecord = onoff;
+	}
+	void record(const string& udi)
+	{
+	    // This test does not need to be protected: the value is set at
+	    // init and never changed.
+	    if (!dorecord)
+		return;
+#ifdef IDX_THREADS
+	    PTMutexLocker locker(mutex);
+#endif
+	    udis.push_back(udi);
+	}
+	const vector<string>& getCandidates() 
+	{
+	    return udis;
+	}
+    private:
+#ifdef IDX_THREADS
+	PTMutexInit mutex;
+#endif
+	bool dorecord;
+	std::vector<std::string> udis;
+    };
+
     FsTreeWalker m_walker;
     RclConfig   *m_config;
     Rcl::Db     *m_db;
     string       m_reason;
     DbIxStatusUpdater *m_updater;
+    // Top/start directories list
     std::vector<std::string> m_tdl;
+    // Store for missing filters and associated mime types
     FIMissingStore *m_missing;
+    // Recorder for files that may need subdoc purging.
+    PurgeCandidateRecorder m_purgeCandidates;
 
     // The configuration can set attribute fields to be inherited by
     // all files in a file system area. Ie: set "rclaptg = thunderbird"

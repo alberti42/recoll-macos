@@ -313,7 +313,9 @@ bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
     int abslen;
     if (m_config->getConfParam("idxabsmlen", &abslen))
 	m_db->setAbstractParams(abslen, -1, -1);
-      
+
+    m_purgeCandidates.setRecord(true);
+
     // We use an FsTreeWalker just for handling the skipped path/name lists
     FsTreeWalker walker;
     walker.setSkippedPaths(m_config->getSkippedPaths());
@@ -365,6 +367,21 @@ out:
 	m_dwqueue.waitIdle();
     m_db->waitUpdIdle();
 #endif // IDX_THREADS
+
+    // Purge possible orphan documents
+    if (ret == true) {
+	LOGDEB(("Indexfiles: purging orphans\n"));
+	const vector<string>& purgecandidates = m_purgeCandidates.getCandidates();
+	for (vector<string>::const_iterator it = purgecandidates.begin();
+	     it != purgecandidates.end(); it++) {
+	    LOGDEB(("Indexfiles: purging orphans for %s\n", it->c_str()));
+	    m_db->purgeOrphans(*it);
+	}
+#ifdef IDX_THREADS
+	m_db->waitUpdIdle();
+#endif // IDX_THREADS
+    }
+
     LOGDEB(("FsIndexer::indexFiles: done\n"));
     return ret;
 }
@@ -622,6 +639,27 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
     return processonefile(m_config, fn, stp, m_localfields, m_mdreapers);
 }
 
+// File name transcoded to utf8 for indexing.  If this fails, the file
+// name won't be indexed, no big deal Note that we used to do the full
+// path here, but I ended up believing that it made more sense to use
+// only the file name The charset is used is the one from the locale.
+static string compute_utf8fn(RclConfig *config, const string& fn)
+{
+    string charset = config->getDefCharset(true);
+    string utf8fn; 
+    int ercnt;
+    if (!transcode(path_getsimple(fn), utf8fn, charset, "UTF-8", &ercnt)) {
+	LOGERR(("processone: fn transcode failure from [%s] to UTF-8: %s\n",
+		charset.c_str(), path_getsimple(fn).c_str()));
+    } else if (ercnt) {
+	LOGDEB(("processone: fn transcode %d errors from [%s] to UTF-8: %s\n",
+		ercnt, charset.c_str(), path_getsimple(fn).c_str()));
+    }
+    LOGDEB2(("processone: fn transcoded from [%s] to [%s] (%s->%s)\n",
+	     path_getsimple(fn).c_str(), utf8fn.c_str(), charset.c_str(), 
+	     "UTF-8"));
+    return utf8fn;
+}
 
 FsTreeWalker::Status 
 FsIndexer::processonefile(RclConfig *config, 
@@ -644,7 +682,8 @@ FsIndexer::processonefile(RclConfig *config,
     makesig(stp, sig);
     string udi;
     make_udi(fn, cstr_null, udi);
-    bool needupdate = m_db->needUpdate(udi, sig);
+    bool existingDoc;
+    bool needupdate = m_db->needUpdate(udi, sig, &existingDoc);
 
     if (!needupdate) {
 	LOGDEB0(("processone: up to date: %s\n", fn.c_str()));
@@ -673,32 +712,19 @@ FsIndexer::processonefile(RclConfig *config,
     }
     interner.setMissingStore(m_missing);
 
-    // File name transcoded to utf8 for indexing. 
-    // If this fails, the file name won't be indexed, no big deal
-    // Note that we used to do the full path here, but I ended up believing
-    // that it made more sense to use only the file name
-    // The charset is used is the one from the locale.
-    string charset = config->getDefCharset(true);
-    string utf8fn; int ercnt;
-    if (!transcode(path_getsimple(fn), utf8fn, charset, "UTF-8", &ercnt)) {
-	LOGERR(("processone: fn transcode failure from [%s] to UTF-8: %s\n",
-		charset.c_str(), path_getsimple(fn).c_str()));
-    } else if (ercnt) {
-	LOGDEB(("processone: fn transcode %d errors from [%s] to UTF-8: %s\n",
-		ercnt, charset.c_str(), path_getsimple(fn).c_str()));
-    }
-    LOGDEB2(("processone: fn transcoded from [%s] to [%s] (%s->%s)\n",
-	     path_getsimple(fn).c_str(), utf8fn.c_str(), charset.c_str(), 
-	     "UTF-8"));
+    string utf8fn = compute_utf8fn(config, fn);
 
-    string parent_udi;
-    make_udi(fn, cstr_null, parent_udi);
+    // parent_udi is initially the same as udi, it will be used if there 
+    // are subdocs.
+    string parent_udi = udi;
+
     Rcl::Doc doc;
     char ascdate[30];
     sprintf(ascdate, "%ld", long(stp->st_mtime));
 
     FileInterner::Status fis = FileInterner::FIAgain;
     bool hadNullIpath = false;
+    bool hadNonNullIpath = false;
     while (fis == FileInterner::FIAgain) {
 	doc.erase();
         try {
@@ -708,7 +734,7 @@ FsIndexer::processonefile(RclConfig *config,
             return FsTreeWalker::FtwStop;
         }
 
-        // Index at least the file name even if there was an error.
+        // We index at least the file name even if there was an error.
         // We'll change the signature to ensure that the indexing will
         // be retried every time.
 
@@ -718,7 +744,10 @@ FsIndexer::processonefile(RclConfig *config,
 	    hadNullIpath = true;
 	    if (m_havemdreapers)
 		reapmetadata(mdreapers, fn, doc);
-	} 
+	} else {
+	    hadNonNullIpath = true;
+	    make_udi(fn, doc.ipath, udi);
+	}
 
 	// Set file name, mod time and url if not done by filter
 	if (doc.fmtime.empty())
@@ -732,11 +761,9 @@ FsIndexer::processonefile(RclConfig *config,
 	char cbuf[100]; 
 	sprintf(cbuf, OFFTPC, stp->st_size);
 	doc.pcbytes = cbuf;
-	// Document signature for up to date checks: concatenate
-	// m/ctime and size. Looking for changes only, no need to
-	// parseback so no need for reversible formatting. Also set,
-	// but never used, for subdocs.
-	makesig(stp, doc.sig);
+	// Document signature for up to date checks. All subdocs inherit the
+	// file's.
+	doc.sig = sig;
 
 	// If there was an error, ensure indexing will be
 	// retried. This is for the once missing, later installed
@@ -750,14 +777,13 @@ FsIndexer::processonefile(RclConfig *config,
         // Possibly add fields from local config
         if (m_havelocalfields) 
             setlocalfields(localfields, doc);
+
 	// Add document to database. If there is an ipath, add it as a children
 	// of the file document.
-	string udi;
-	make_udi(fn, doc.ipath, udi);
-
 #ifdef IDX_THREADS
 	if (m_haveSplitQ) {
-	    DbUpdTask *tp = new DbUpdTask(udi, doc.ipath.empty() ? cstr_null : parent_udi, doc);
+	    DbUpdTask *tp = new DbUpdTask(udi, doc.ipath.empty() ? 
+					  cstr_null : parent_udi, doc);
 	    if (!m_dwqueue.put(tp)) {
 		LOGERR(("processonefile: wqueue.put failed\n"));
 		return FsTreeWalker::FtwError;
@@ -789,6 +815,15 @@ FsIndexer::processonefile(RclConfig *config,
 	}
     }
 
+    // If this doc existed and it's a container, recording for
+    // possible subdoc purge (this will be used only if we don't do a
+    // db-wide purge, e.g. if we're called from indexfiles()).
+    LOGDEB2(("processOnefile: existingDoc %d hadNonNullIpath %d\n",
+	     existingDoc, hadNonNullIpath));
+    if (existingDoc && hadNonNullIpath) {
+	m_purgeCandidates.record(parent_udi);
+    }
+
     // If we had no instance with a null ipath, we create an empty
     // document to stand for the file itself, to be used mainly for up
     // to date checks. Typically this happens for an mbox file.
@@ -806,8 +841,7 @@ FsIndexer::processonefile(RclConfig *config,
 	char cbuf[100]; 
 	sprintf(cbuf, OFFTPC, stp->st_size);
 	fileDoc.pcbytes = cbuf;
-	// Document signature for up to date checks.
-	makesig(stp, fileDoc.sig);
+	fileDoc.sig = sig;
 
 #ifdef IDX_THREADS
 	if (m_haveSplitQ) {

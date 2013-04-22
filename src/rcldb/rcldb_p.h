@@ -36,17 +36,32 @@ namespace Rcl {
 class Query;
 
 #ifdef IDX_THREADS
-// Task for the index update thread. This can be either and add/update
-// or a purge op, in which case the txtlen is (size_t)-1
+// Task for the index update thread. This can be 
+//  - add/update for a new / update documment
+//  - delete for a deleted document
+//  - purgeOrphans when a multidoc file is updated during a partial pass (no 
+//    general purge). We want to remove subDocs that possibly don't
+//    exist anymore. We find them by their different sig
+// txtlen and doc are only valid for add/update else, len is (size_t)-1 and doc
+// is empty
 class DbUpdTask {
 public:
-    DbUpdTask(const string& ud, const string& un, const Xapian::Document &d,
-	size_t tl)
-	: udi(ud), uniterm(un), doc(d), txtlen(tl)
+    enum Op {AddOrUpdate, Delete, PurgeOrphans};
+    // Note that udi and uniterm are strictly equivalent and are
+    // passed both just to avoid recomputing uniterm which is
+    // available on the caller site.
+    DbUpdTask(Op _op, const string& ud, const string& un, 
+	      const Xapian::Document &d, size_t tl)
+	: op(_op), udi(ud), uniterm(un), doc(d), txtlen(tl)
     {}
+    // Udi and uniterm equivalently designate the doc
+    Op op;
     string udi;
     string uniterm;
     Xapian::Document doc;
+    // txtlen is used to update the flush interval. It's -1 for a
+    // purge because we actually don't know it, and the code fakes a
+    // text length based on the term count.
     size_t txtlen;
 };
 #endif // IDX_THREADS
@@ -86,6 +101,8 @@ class Db::Native {
     bool addOrUpdateWrite(const string& udi, const string& uniterm, 
 			  Xapian::Document& doc, size_t txtlen);
 
+    bool purgeFileWrite(bool onlyOrphans, const string& udi, 
+			const string& uniterm);
     bool getPagePositions(Xapian::docid docid, vector<int>& vpos);
     int getPageNumberForPosition(const vector<int>& pbreaks, unsigned int pos);
 

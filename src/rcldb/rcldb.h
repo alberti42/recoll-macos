@@ -232,7 +232,7 @@ class Db {
      * Side-effect: set the existence flag for the file document 
      * and all subdocs if any (for later use by 'purge()') 
      */
-    bool needUpdate(const string &udi, const string& sig);
+    bool needUpdate(const string &udi, const string& sig, bool *existed=0);
 
     /** Add or update document identified by unique identifier.
      * @param config Config object to use. Can be the same as the member config
@@ -260,6 +260,10 @@ class Db {
 
     /** Delete document(s) for given UDI, including subdocs */
     bool purgeFile(const string &udi, bool *existed = 0);
+    /** Delete subdocs with an out of date sig. We do this to purge
+	obsolete subdocs during a partial update where no general purge
+	will be done */
+    bool purgeOrphans(const string &udi);
 
     /** Remove documents that no longer exist in the file system. This
      * depends on the update map, which is built during
@@ -442,7 +446,6 @@ private:
 #ifdef IDX_THREADS
     friend void *DbUpdWorker(void*);
 #endif // IDX_THREADS
-    bool purgeFileWrite(const string& udi, const string& uniterm);
 
     // Internal form of close, can be called during destruction
     bool i_close(bool final);
