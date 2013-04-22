@@ -421,13 +421,7 @@ bool Query::getDoc(int xapi, Doc &doc)
             data = xdoc.get_data();
             m_reason.erase();
             Chrono chron;
-            Xapian::TermIterator it = xdoc.termlist_begin();
-            it.skip_to(wrap_prefix(udi_prefix));
-            if (it != xdoc.termlist_end()) {
-                udi = *it;
-                if (!udi.empty())
-                    udi = udi.substr(wrap_prefix(udi_prefix).size());
-            }
+	    m_db->m_ndb->xdocToUdi(xdoc, udi);
             LOGDEB2(("Query::getDoc: %d ms for udi [%s], collapse count %d\n", 
 		     chron.millis(), udi.c_str(), collapsecount));
             break;

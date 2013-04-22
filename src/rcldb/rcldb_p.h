@@ -107,6 +107,20 @@ class Db::Native {
     int getPageNumberForPosition(const vector<int>& pbreaks, unsigned int pos);
 
     bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc);
+    
+    bool xdocToUdi(Xapian::Document& xdoc, string &udi)
+    {
+	Xapian::TermIterator xit = xdoc.termlist_begin();
+	xit.skip_to(wrap_prefix(udi_prefix));
+	if (xit != xdoc.termlist_end()) {
+	    udi = *xit;
+	    if (!udi.empty()) {
+		udi = udi.substr(wrap_prefix(udi_prefix).size());
+		return true;
+	    }
+	}
+	return false;
+    }
 
     /** Compute list of subdocuments for a given udi. We look for documents 
      * indexed by a parent term matching the udi, the posting list for the 
