@@ -225,6 +225,9 @@ class Doc {
     static const string keyudi;
     static const string keyapptg; // apptag. Set from localfields (fsindexer)
     static const string keybght;  // beagle hit type ("beagleHitType")
+    // Boolean used to indicate if the doc has descendants in the ipath sense
+    // (different from the file/contend parent_udi thing).
+    static const string keyanc;  
 };
 
 

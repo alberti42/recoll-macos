@@ -19,31 +19,32 @@
 #include "debuglog.h"
 
 namespace Rcl {
-    const string Doc::keyurl("url");
+    const string Doc::keyabs("abstract");
+    const string Doc::keyanc("rclanc");
+    const string Doc::keyapptg("rclaptg");
+    const string Doc::keyau("author");
+    const string Doc::keybcknd("rclbes");
+    const string Doc::keybght("beagleHitType");
+    const string Doc::keycc("collapsecount");
     const string Doc::keychildurl("childurl");
-    const string Doc::keyfn("filename");
-    const string Doc::keyipt("ipath");
-    const string Doc::keytp("mtype");
-    const string Doc::keyfmt("fmtime");
     const string Doc::keydmt("dmtime");
+    const string Doc::keyds("dbytes");
+    const string Doc::keyfmt("fmtime");
+    const string Doc::keyfn("filename");
+    const string Doc::keyfs("fbytes");
+    const string Doc::keyipt("ipath");
+    const string Doc::keykw("keywords");
+    const string Doc::keymd5("md5");
     const string Doc::keymt("mtime");
     const string Doc::keyoc("origcharset");
     const string Doc::keypcs("pcbytes");
-    const string Doc::keyfs("fbytes");
-    const string Doc::keyds("dbytes");
-    const string Doc::keysz("size");
-    const string Doc::keysig("sig");
     const string Doc::keyrr("relevancyrating");
-    const string Doc::keycc("collapsecount");
-    const string Doc::keyabs("abstract");
-    const string Doc::keyau("author");
+    const string Doc::keysig("sig");
+    const string Doc::keysz("size");
+    const string Doc::keytp("mtype");
     const string Doc::keytt("title");
-    const string Doc::keykw("keywords");
-    const string Doc::keymd5("md5");
-    const string Doc::keybcknd("rclbes");
     const string Doc::keyudi("rcludi");
-    const string Doc::keyapptg("rclaptg");
-    const string Doc::keybght("beagleHitType");
+    const string Doc::keyurl("url");
 
     void Doc::dump(bool dotext) const
     {
