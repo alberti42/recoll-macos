@@ -114,7 +114,7 @@ class DocSequence {
 	return false;
     }
 
-    virtual bool getEnclosing(Rcl::Doc&, Rcl::Doc&) = 0;
+    virtual bool getEnclosing(Rcl::Doc&, Rcl::Doc&);
 
     /** Get estimated total count in results */
     virtual int getResCnt() = 0;
@@ -159,10 +159,15 @@ class DocSequence {
 	o_sort_trans = sort;
 	o_filt_trans = filt;
     }
+
+    virtual Rcl::Db *getDb() = 0;
+
 protected:
+
     static std::string o_sort_trans;
     static std::string o_filt_trans;
     std::string          m_reason;
+
  private:
     std::string          m_title;
 };
@@ -228,14 +233,29 @@ public:
 	    return string();
 	return m_seq->getReason();
     }
-    virtual std::string title() {return m_seq->title();}
-    virtual RefCntr<DocSequence> getSourceSeq() {return m_seq;}
+    virtual std::string title() 
+    {
+	return m_seq->title();
+    }
+    virtual RefCntr<DocSequence> getSourceSeq() 
+    {
+	return m_seq;
+    }
+
+    virtual Rcl::Db *getDb()
+    {
+	if (m_seq.isNull())
+	    return 0;
+	return m_seq->getDb();
+    }
 
 protected:
+
     RefCntr<DocSequence>    m_seq;
 };
 
 class RclConfig;
+
 // A DocSource can juggle docseqs of different kinds to implement
 // sorting and filtering in ways depending on the base seqs capabilities
 class DocSource : public DocSeqModifier {

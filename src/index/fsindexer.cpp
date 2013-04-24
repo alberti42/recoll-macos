@@ -744,6 +744,12 @@ FsIndexer::processonefile(RclConfig *config,
 	    hadNullIpath = true;
 	    if (m_havemdreapers)
 		reapmetadata(mdreapers, fn, doc);
+	    if (hadNonNullIpath) {
+		// Note that only the filters can reliably compute
+		// this. What we do is dependant of the doc order (if
+		// we see the top doc first, we won't set the flag)
+		doc.haschildren = true;
+	    }
 	} else {
 	    hadNonNullIpath = true;
 	    make_udi(fn, doc.ipath, udi);
@@ -832,6 +838,7 @@ FsIndexer::processonefile(RclConfig *config,
 	Rcl::Doc fileDoc;
 	fileDoc.fmtime = ascdate;
 	fileDoc.meta[Rcl::Doc::keyfn] = utf8fn;
+	fileDoc.haschildren = true;
 	fileDoc.mimetype = interner.getMimetype();
 	fileDoc.url = cstr_fileu + fn;
         if (m_havelocalfields) 

@@ -70,6 +70,7 @@ using std::pair;
 #include "internfile.h"
 #include "docseqdb.h"
 #include "docseqhist.h"
+#include "docseqdocs.h"
 #include "confguiindex.h"
 #include "restable.h"
 #include "listdialog.h"
@@ -87,7 +88,6 @@ using namespace confgui;
 #include "rclhelp.h"
 #include "moc_rclmain_w.cpp"
 
-extern "C" int XFlush(void *);
 QString g_stringAllStem, g_stringNoStem;
 static const QKeySequence quitKeySeq("Ctrl+q");
 
@@ -274,7 +274,7 @@ void RclMain::init()
     connect(toggleFullScreenAction, SIGNAL(activated()), 
             this, SLOT(toggleFullScreen()));
     connect(actionShowQueryDetails, SIGNAL(activated()),
-	    this, SLOT(showQueryDetails()));
+	    reslist, SLOT(showQueryDetails()));
     connect(periodictimer, SIGNAL(timeout()), 
 	    this, SLOT(periodic100()));
     connect(this, SIGNAL(docSourceChanged(RefCntr<DocSequence>)),
@@ -329,6 +329,8 @@ void RclMain::init()
 	    this, SLOT(enablePrevPage(bool)));
     connect(reslist, SIGNAL(docEditClicked(Rcl::Doc)), 
 	    this, SLOT(startNativeViewer(Rcl::Doc)));
+    connect(reslist, SIGNAL(showSubDocs(Rcl::Doc)), 
+	    this, SLOT(showSubDocs(Rcl::Doc)));
     connect(reslist, SIGNAL(docSaveToFileClicked(Rcl::Doc)), 
 	    this, SLOT(saveDocToFile(Rcl::Doc)));
     connect(reslist, SIGNAL(editRequested(Rcl::Doc)), 
@@ -337,8 +339,6 @@ void RclMain::init()
 	    this, SLOT(startPreview(int, Rcl::Doc, int)));
     connect(reslist, SIGNAL(previewRequested(Rcl::Doc)), 
 	    this, SLOT(startPreview(Rcl::Doc)));
-    connect(reslist, SIGNAL(headerClicked()), 
-	    this, SLOT(showQueryDetails()));
 
     if (prefs.keepSort && prefs.sortActive) {
 	m_sortspec.field = (const char *)prefs.sortField.toUtf8();
@@ -1541,6 +1541,34 @@ static bool lookForHtmlBrowser(string &exefile)
     return false;
 }
 
+void RclMain::showSubDocs(Rcl::Doc doc)
+{
+    LOGDEB(("RclMain::showSubDocs\n"));
+    string reason;
+    if (!maybeOpenDb(reason)) {
+	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
+	return;
+    }
+    vector<Rcl::Doc> docs;
+    if (!rcldb->getSubDocs(doc, docs)) {
+	QMessageBox::warning(0, "Recoll", QString("Can't get subdocs"));
+	return;
+    }	
+    DocSequenceDocs *src = 
+	new DocSequenceDocs(rcldb, docs,
+			    qs2utf8s(tr("Sub-documents and attachments")));
+    src->setDescription(qs2utf8s(tr("Sub-documents and attachments")));
+    RefCntr<DocSequence> 
+	source(new DocSource(theconfig, RefCntr<DocSequence>(src)));
+
+    ResList *res = new ResList();
+    res->setRclMain(this);
+    res->setIsMainList(0);
+    res->setDocSource(source);
+    res->readDocSource();
+    res->show();
+}
+
 void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 {
     string apptag;
@@ -1933,19 +1961,6 @@ QString RclMain::getQueryDescription()
     if (m_source.isNull())
 	return "";
     return QString::fromUtf8(m_source->getDescription().c_str());
-}
-
-/** Show detailed expansion of a query */
-void RclMain::showQueryDetails()
-{
-    if (m_source.isNull())
-	return;
-    string oq = breakIntoLines(m_source->getDescription(), 100, 50);
-    QString str;
-    QString desc = tr("Result count (est.)") + ": " + 
-	str.setNum(m_source->getResCnt()) + "<br>";
-    desc += tr("Query details") + ": " + QString::fromUtf8(oq.c_str());
-    QMessageBox::information(this, tr("Query details"), desc);
 }
 
 // User pressed a category button: set filter params in reslist

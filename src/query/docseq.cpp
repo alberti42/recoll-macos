@@ -18,6 +18,7 @@
 #include "filtseq.h"
 #include "sortseq.h"
 #include "debuglog.h"
+#include "internfile.h"
 
 string DocSequence::o_sort_trans;
 string DocSequence::o_filt_trans;
@@ -33,6 +34,19 @@ int DocSequence::getSeqSlice(int offs, int cnt, vector<ResListEntry>& result)
 	}
     }
     return ret;
+}
+
+bool DocSequence::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc) 
+{
+    // Note: no need for setQuery here, we're just passing through a
+    // query-independant request
+
+    string udi;
+    if (!FileInterner::getEnclosing(doc.url, doc.ipath, pdoc.url, pdoc.ipath,
+                                    udi))
+        return false;
+    bool dbret =  getDb()->getDoc(udi, pdoc);
+    return dbret && pdoc.pc != -1;
 }
 
 // Remove stacked modifying sources (sort, filter) until we get to a real one
@@ -107,3 +121,4 @@ bool DocSource::setSortSpec(const DocSeqSortSpec &s)
     buildStack();
     return true;
 }
+

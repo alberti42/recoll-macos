@@ -38,7 +38,7 @@ class DocSequenceDb : public DocSequence {
 
     virtual bool getAbstract(Rcl::Doc &doc, vector<string>&);
     virtual int getFirstMatchPage(Rcl::Doc&, std::string& term);
-    virtual bool getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc);
+    virtual Rcl::Db *getDb();
     virtual bool docDups(const Rcl::Doc& doc, std::vector<Rcl::Doc>& dups);
     virtual string getDescription();
     virtual list<string> expand(Rcl::Doc &doc);

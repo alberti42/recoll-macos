@@ -121,6 +121,10 @@ class Doc {
     // Page breaks were stored during indexing.
     bool haspages; 
 
+    // Has children, either as content of file-level container or
+    // ipath descendants.
+    bool haschildren;
+
     ///////////////////////////////////////////////////////////////////
 
     void erase() {
@@ -141,9 +145,10 @@ class Doc {
 	pc = 0;
 	xdocid = 0;
 	haspages = false;
+	haschildren = false;
     }
     Doc()
-     : syntabs(false), pc(0), xdocid(0), haspages(false)
+	: syntabs(false), pc(0), xdocid(0), haspages(false), haschildren(false)
     {
     }
     /** Get value for named field. If value pointer is 0, just test existence */
@@ -225,9 +230,6 @@ class Doc {
     static const string keyudi;
     static const string keyapptg; // apptag. Set from localfields (fsindexer)
     static const string keybght;  // beagle hit type ("beagleHitType")
-    // Boolean used to indicate if the doc has descendants in the ipath sense
-    // (different from the file/contend parent_udi thing).
-    static const string keyanc;  
 };
 
 

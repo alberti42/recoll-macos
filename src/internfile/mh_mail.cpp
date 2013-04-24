@@ -183,12 +183,15 @@ bool MimeHandlerMail::next_document()
     if (m_idx == -1) {
 	m_metaData[cstr_dj_keymt] = cstr_textplain;
 	res = processMsg(m_bincdoc, 0);
-	LOGDEB1(("MimeHandlerMail::next_document: mimetype %s\n",
-		m_metaData[cstr_dj_keymt].c_str()));
+	LOGDEB1(("MimeHandlerMail::next_document: mt %s, att cnt %d\n",
+		 m_metaData[cstr_dj_keymt].c_str(), m_attachments.size()));
         const string& txt = m_metaData[cstr_dj_keycontent];
         if (m_startoftext < txt.size())
             m_metaData[cstr_dj_keyabstract] = 
                 truncate_to_word(txt.substr(m_startoftext), 250);
+	if (m_attachments.size() > 0) {
+	    m_metaData[cstr_dj_keyanc] = "t";
+	}
     } else {
         m_metaData[cstr_dj_keyabstract].clear();
 	res = processAttach();

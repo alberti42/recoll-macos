@@ -357,6 +357,29 @@ class Db {
      */
     bool getDoc(const string &udi, Doc &doc);
 
+    /** Test if documents has sub-documents. 
+     *
+     * This can always be detected for file-level documents, using the
+     * postlist for the parent term constructed with udi.
+     *
+     * For non file-level documents (e.g.: does an email inside an
+     * mbox have attachments ?), detection is dependant on the filter
+     * having set an appropriate flag at index time. Higher level code
+     * can't detect it because the doc for the parent may have been
+     * seen before any children. The flag is stored as a value in the
+     * index.
+     */
+    bool hasSubDocs(const Doc &idoc);
+
+    /** Get subdocuments of given document. 
+     *
+     * For file-level documents, these are all docs indexed by the
+     * parent term built on idoc.udi. For embedded documents, the
+     * parent doc is looked for, then its subdocs list is 
+     * filtered using the idoc ipath as a prefix.
+     */
+    bool getSubDocs(const Doc& idoc, vector<Doc>& subdocs);
+
     /** Get duplicates (md5) of document */
     bool docDups(const Doc& idoc, std::vector<Doc>& odocs);
 

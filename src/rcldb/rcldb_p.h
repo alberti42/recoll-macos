@@ -101,26 +101,39 @@ class Db::Native {
     bool addOrUpdateWrite(const string& udi, const string& uniterm, 
 			  Xapian::Document& doc, size_t txtlen);
 
+    /** Delete all documents which are contained in the input document, 
+     * which must be a file-level one.
+     * 
+     * @param onlyOrphans if true, only delete documents which have
+     * not the same signature as the input. This is used to delete docs
+     * which do not exist any more in the file after an update, for
+     * example the tail messages after a folder truncation). If false,
+     * delete all.
+     * @param udi the parent document identifier.
+     * @param uniterm equivalent to udi, passed just to avoid recomputing.
+     */
     bool purgeFileWrite(bool onlyOrphans, const string& udi, 
 			const string& uniterm);
+
     bool getPagePositions(Xapian::docid docid, vector<int>& vpos);
     int getPageNumberForPosition(const vector<int>& pbreaks, unsigned int pos);
 
     bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc);
-    
-    bool xdocToUdi(Xapian::Document& xdoc, string &udi)
-    {
-	Xapian::TermIterator xit = xdoc.termlist_begin();
-	xit.skip_to(wrap_prefix(udi_prefix));
-	if (xit != xdoc.termlist_end()) {
-	    udi = *xit;
-	    if (!udi.empty()) {
-		udi = udi.substr(wrap_prefix(udi_prefix).size());
-		return true;
-	    }
-	}
-	return false;
-    }
+
+    /** Retrieve Xapian::docid, given unique document identifier, 
+     * using the posting list for the derived term.
+     *
+     * @return 0 if not found
+     */
+    Xapian::docid getDoc(const string& udi, Xapian::Document& xdoc);
+
+    /** Retrieve unique document identifier for given Xapian document, 
+     * using the document termlist 
+     */
+    bool xdocToUdi(Xapian::Document& xdoc, string &udi);
+
+    /** Check if doc is indexed by term */
+    bool hasTerm(const string& udi, const string& term);
 
     /** Compute list of subdocuments for a given udi. We look for documents 
      * indexed by a parent term matching the udi, the posting list for the 
@@ -131,14 +144,12 @@ class Db::Native {
      * Ie: in a mail folder, all messages, attachments, attachments of
      * attached messages etc. must have the folder file document as
      * parent. 
-     * Parent-child relationships are defined by the indexer (rcldb user)
+     *
+     * Finer grain parent-child relationships are defined by the
+     * indexer (rcldb user), using the ipath.
      * 
-     * The file-system indexer currently works this way (flatly), 
-     * subDocs() could be relatively easily changed to support full recursivity
-     * if needed.
      */
     bool subDocs(const string &udi, vector<Xapian::docid>& docids);
-
 };
 
 // This is the word position offset at which we index the body text

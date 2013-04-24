@@ -69,7 +69,11 @@ class ResList : public RESLIST_PARENTCLASS
     void setFont();
     void setRclMain(RclMain *m) 
     {
-	m_parent = m;
+	m_rclmain = m;
+    }
+    void setIsMainList(bool onoff)
+    {
+	m_ismainlist = onoff;
     }
  public slots:
     virtual void setDocSource(RefCntr<DocSequence> nsource);
@@ -89,11 +93,13 @@ class ResList : public RESLIST_PARENTCLASS
     virtual void menuPreviewParent();
     virtual void menuOpenParent();
     virtual void menuOpenSnippets();
+    virtual void menuShowSubDocs();
     virtual void previewExposed(int);
     virtual void append(const QString &text);
     virtual void readDocSource();
     virtual void highlighted(const QString& link);
     virtual void createPopupMenu(const QPoint& pos);
+    virtual void showQueryDetails();
 	
  signals:
     void nextPageAvailable(bool);
@@ -102,8 +108,8 @@ class ResList : public RESLIST_PARENTCLASS
     void docPreviewClicked(int, Rcl::Doc, int);
     void docSaveToFileClicked(Rcl::Doc);
     void previewRequested(Rcl::Doc);
+    void showSubDocs(Rcl::Doc);
     void editRequested(Rcl::Doc);
-    void headerClicked();
     void docExpand(Rcl::Doc);
     void wordSelect(QString);
     void wordReplace(const QString&, const QString&);
@@ -137,7 +143,9 @@ class ResList : public RESLIST_PARENTCLASS
     // so we store the page and display it when done.
     QString    m_text; 
 #endif
-    RclMain   *m_parent;
+    RclMain   *m_rclmain;
+    bool m_ismainlist;
+    bool m_coninit;
 
     virtual void displayPage(); // Display current page
     static int newListId();

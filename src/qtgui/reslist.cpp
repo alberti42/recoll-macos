@@ -72,7 +72,7 @@ static const QKeySequence closeKeySeq("Ctrl+w");
 class QtGuiResListPager : public ResListPager {
 public:
     QtGuiResListPager(ResList *p, int ps) 
-	: ResListPager(ps), m_parent(p) 
+	: ResListPager(ps), m_reslist(p) 
     {}
     virtual bool append(const string& data);
     virtual bool append(const string& data, int idx, const Rcl::Doc& doc);
@@ -88,7 +88,7 @@ public:
     virtual string absSep() {return (const char *)(prefs.abssep.toUtf8());}
     virtual string iconUrl(RclConfig *, Rcl::Doc& doc);
 private:
-    ResList *m_parent;
+    ResList *m_reslist;
 };
 
 #if 0
@@ -110,7 +110,7 @@ bool QtGuiResListPager::append(const string& data)
 {
     LOGDEB2(("QtGuiReslistPager::appendString   : %s\n", data.c_str()));
     logdata(data.c_str());
-    m_parent->append(QString::fromUtf8(data.c_str()));
+    m_reslist->append(QString::fromUtf8(data.c_str()));
     return true;
 }
 
@@ -118,24 +118,24 @@ bool QtGuiResListPager::append(const string& data, int docnum,
 			       const Rcl::Doc&)
 {
     LOGDEB2(("QtGuiReslistPager::appendDoc: blockCount %d, %s\n",
-	    m_parent->document()->blockCount(), data.c_str()));
+	    m_reslist->document()->blockCount(), data.c_str()));
     logdata(data.c_str());
 #ifdef RESLIST_TEXTBROWSER
-    int blkcnt0 = m_parent->document()->blockCount();
-    m_parent->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
-    m_parent->textCursor().insertBlock();
-    m_parent->insertHtml(QString::fromUtf8(data.c_str()));
-    m_parent->moveCursor(QTextCursor::Start, QTextCursor::MoveAnchor);
-    m_parent->ensureCursorVisible();
-    int blkcnt1 = m_parent->document()->blockCount();
+    int blkcnt0 = m_reslist->document()->blockCount();
+    m_reslist->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
+    m_reslist->textCursor().insertBlock();
+    m_reslist->insertHtml(QString::fromUtf8(data.c_str()));
+    m_reslist->moveCursor(QTextCursor::Start, QTextCursor::MoveAnchor);
+    m_reslist->ensureCursorVisible();
+    int blkcnt1 = m_reslist->document()->blockCount();
     for (int block = blkcnt0; block < blkcnt1; block++) {
-	m_parent->m_pageParaToReldocnums[block] = docnum;
+	m_reslist->m_pageParaToReldocnums[block] = docnum;
     }
 #else
     QString sdoc = QString("<div class=\"rclresult\" rcldocnum=\"%1\">").arg(docnum);
-    m_parent->append(sdoc);
-    m_parent->append(QString::fromUtf8(data.c_str()));
-    m_parent->append("</div>");
+    m_reslist->append(sdoc);
+    m_reslist->append(QString::fromUtf8(data.c_str()));
+    m_reslist->append("</div>");
 #endif
     return true;
 }
@@ -276,7 +276,8 @@ static PlainToRichQtReslist g_hiliter;
 /////////////////////////////////////
 
 ResList::ResList(QWidget* parent, const char* name)
-    : RESLIST_PARENTCLASS(parent), m_parent(0)
+    : RESLIST_PARENTCLASS(parent), m_curPvDoc(-1), m_lstClckMod(0), 
+      m_listId(0), m_rclmain(0), m_ismainlist(true), m_coninit(false)
 {
     if (!name)
 	setObjectName("resList");
@@ -299,6 +300,7 @@ ResList::ResList(QWidget* parent, const char* name)
     page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     settings()->setAttribute(QWebSettings::JavascriptEnabled, true);
 #endif
+
     setFont();
     languageChange();
 
@@ -311,13 +313,11 @@ ResList::ResList(QWidget* parent, const char* name)
     connect(this, SIGNAL(highlighted(const QString &)), 
 	    this, SLOT(highlighted(const QString &)));
 #endif
+
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
 	    this, SLOT(createPopupMenu(const QPoint&)));
 
-    m_curPvDoc = -1;
-    m_lstClckMod = 0;
-    m_listId = 0;
     m_pager = new QtGuiResListPager(this, prefs.respagesize);
     m_pager->setHighLighter(&g_hiliter);
 }
@@ -379,6 +379,17 @@ void ResList::setDocSource(RefCntr<DocSequence> nsource)
 {
     LOGDEB(("ResList::setDocSource()\n"));
     m_source = RefCntr<DocSequence>(new DocSource(theconfig, nsource));
+    if (!m_ismainlist && !m_coninit) {
+	m_coninit = true;
+	connect(new QShortcut(closeKeySeq, this), SIGNAL (activated()), 
+		this, SLOT (close()));
+	connect(new QShortcut(quitKeySeq, this), SIGNAL (activated()), 
+		m_rclmain, SLOT (fileExit()));
+	connect(this, SIGNAL(previewRequested(Rcl::Doc)), 
+		m_rclmain, SLOT(startPreview(Rcl::Doc)));
+	connect(this, SIGNAL(docEditClicked(Rcl::Doc)), 
+		m_rclmain, SLOT(startNativeViewer(Rcl::Doc)));
+    }
 }
 
 // A query was executed, or the filtering/sorting parameters changed,
@@ -715,7 +726,6 @@ void ResList::displayPage()
 
     // Possibly color paragraph of current preview if any
     previewExposed(m_curPvDoc);
-
 }
 
 // Color paragraph (if any) of currently visible preview
@@ -804,11 +814,11 @@ void ResList::mouseDoubleClickEvent(QMouseEvent *event)
 void ResList::newSnippetsW(const Rcl::Doc& doc)
 {
     SnippetsW *sp = new SnippetsW(doc, m_source);
-    if (m_parent) {
+    if (m_rclmain) {
 	connect(sp, SIGNAL(startNativeViewer(Rcl::Doc, int, QString)),
-		m_parent, SLOT(startNativeViewer(Rcl::Doc, int, QString)));
+		m_rclmain, SLOT(startNativeViewer(Rcl::Doc, int, QString)));
 	connect(new QShortcut(quitKeySeq, sp), SIGNAL (activated()), 
-		m_parent, SLOT (fileExit()));
+		m_rclmain, SLOT (fileExit()));
     }
     connect(new QShortcut(closeKeySeq, sp), SIGNAL (activated()), 
 	    sp, SLOT (close()));
@@ -839,6 +849,18 @@ void ResList::newDupsW(const Rcl::Doc&, const vector<Rcl::Doc>& dups)
     editor->moveCursor(QTextCursor::Start);
     editor->ensureCursorVisible();
     dialog.exec();
+}
+
+void ResList::showQueryDetails()
+{
+    if (m_source.isNull())
+	return;
+    string oq = breakIntoLines(m_source->getDescription(), 100, 50);
+    QString str;
+    QString desc = tr("Result count (est.)") + ": " + 
+	str.setNum(m_source->getResCnt()) + "<br>";
+    desc += tr("Query details") + ": " + QString::fromUtf8(oq.c_str());
+    QMessageBox::information(this, tr("Query details"), desc);
 }
 
 void ResList::linkWasClicked(const QUrl &url)
@@ -885,7 +907,7 @@ void ResList::linkWasClicked(const QUrl &url)
     // Show query details
     case 'H': 
     {
-	emit headerClicked(); 
+	showQueryDetails();
 	break;
     }
 
@@ -899,10 +921,15 @@ void ResList::linkWasClicked(const QUrl &url)
 	    LOGERR(("ResList::linkWasClicked: can't get doc for %d\n", i));
 	    return;
 	}
-	if (what == 'P')
-	    emit docPreviewClicked(i, doc, m_lstClckMod);
-	else
+	if (what == 'P') {
+	    if (m_ismainlist) {
+		emit docPreviewClicked(i, doc, m_lstClckMod);
+	    } else {
+		emit previewRequested(doc);
+	    }
+	} else {
 	    emit docEditClicked(doc);
+	}
     }
     break;
 
@@ -967,7 +994,8 @@ void ResList::createPopupMenu(const QPoint& pos)
     if (havedoc)
 	doc.getmeta(Rcl::Doc::keyapptg, &apptag);
 
-    if (havedoc && !theconfig->getMimeViewerDef(doc.mimetype, apptag, 0).empty()) {
+    if (havedoc && 
+	!theconfig->getMimeViewerDef(doc.mimetype, apptag, 0).empty()) {
 	popup->addAction(tr("&Open"), this, SLOT(menuEdit()));
     }
     popup->addAction(tr("Copy &File Name"), this, SLOT(menuCopyFN()));
@@ -989,6 +1017,10 @@ void ResList::createPopupMenu(const QPoint& pos)
     if (havedoc && doc.haspages && m_source->snippetsCapable()) 
 	popup->addAction(tr("Open &Snippets window"), 
 			 this, SLOT(menuOpenSnippets()));
+
+    if (havedoc && rcldb && rcldb->hasSubDocs(doc)) 
+	popup->addAction(tr("Show subdocuments / attachments"), 
+			 this, SLOT(menuShowSubDocs()));
 
     popup->popup(mapToGlobal(pos));
 }
@@ -1049,6 +1081,13 @@ void ResList::menuOpenSnippets()
     if (!getDoc(m_popDoc, doc) || m_source.isNull()) 
 	return;
     newSnippetsW(doc);
+}
+
+void ResList::menuShowSubDocs()
+{
+    Rcl::Doc doc;
+    if (getDoc(m_popDoc, doc)) 
+	emit showSubDocs(doc);
 }
 
 void ResList::menuEdit()

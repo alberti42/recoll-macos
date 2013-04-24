@@ -20,7 +20,6 @@
 
 namespace Rcl {
     const string Doc::keyabs("abstract");
-    const string Doc::keyanc("rclanc");
     const string Doc::keyapptg("rclaptg");
     const string Doc::keyau("author");
     const string Doc::keybcknd("rclbes");

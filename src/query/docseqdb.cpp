@@ -23,7 +23,6 @@ using std::list;
 #include "docseqdb.h"
 #include "rcldb.h"
 #include "debuglog.h"
-#include "internfile.h"
 #include "wasatorcl.h"
 
 DocSequenceDb::DocSequenceDb(RefCntr<Rcl::Query> q, const string &t, 
@@ -129,17 +128,9 @@ int DocSequenceDb::getFirstMatchPage(Rcl::Doc &doc, string& term)
     return -1;
 }
 
-bool DocSequenceDb::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc) 
+Rcl::Db *DocSequenceDb::getDb()
 {
-    // Note: no need for setQuery here, we're just passing through a
-    // query-independant request
-
-    string udi;
-    if (!FileInterner::getEnclosing(doc.url, doc.ipath, pdoc.url, pdoc.ipath,
-                                    udi))
-        return false;
-    bool dbret =  m_q->whatDb()->getDoc(udi, pdoc);
-    return dbret && pdoc.pc != -1;
+    return m_q.isNotNull() ? m_q->whatDb() : 0;
 }
 
 list<string> DocSequenceDb::expand(Rcl::Doc &doc)

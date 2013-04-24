@@ -118,6 +118,7 @@ public slots:
     virtual void enableNextPage(bool);
     virtual void enablePrevPage(bool);
     virtual void docExpand(Rcl::Doc);
+    virtual void showSubDocs(Rcl::Doc);
     virtual void startPreview(int docnum, Rcl::Doc doc, int keymods);
     virtual void startPreview(Rcl::Doc);
     virtual void startNativeViewer(Rcl::Doc, int pagenum = -1, 
@@ -140,7 +141,6 @@ public slots:
     virtual void on_actionShowResultsAsTable_toggled(bool on);
     virtual void onSortDataChanged(DocSeqSortSpec);
     virtual void resultCount(int);
-    virtual void showQueryDetails();
     virtual void applyStyleSheet();
 
 signals:

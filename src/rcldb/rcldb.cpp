@@ -80,6 +80,9 @@ string start_of_field_term;
 string end_of_field_term;
 const string page_break_term = "XXPG/";
 
+// Special term to mark documents with children.
+const string has_children_term("XXC/");
+
 // Field name for the unsplit file name. Has to exist in the field file 
 // because of usage in termmatch()
 const string unsplitFilenameFieldName = "rclUnsplitFN";
@@ -233,6 +236,73 @@ bool Db::Native::subDocs(const string &udi, vector<Xapian::docid>& docids)
         LOGDEB0(("Db::Native::subDocs: returning %d ids\n", docids.size()));
         return true;
     }
+}
+
+bool Db::Native::xdocToUdi(Xapian::Document& xdoc, string &udi)
+{
+    Xapian::TermIterator xit;
+    XAPTRY(xit = xdoc.termlist_begin();
+	   xit.skip_to(wrap_prefix(udi_prefix)),
+           xrdb, m_rcldb->m_reason);
+    if (!m_rcldb->m_reason.empty()) {
+	LOGERR(("xdocToUdi: xapian error: %s\n", m_rcldb->m_reason.c_str()));
+	return false;
+    }
+    if (xit != xdoc.termlist_end()) {
+	udi = *xit;
+	if (!udi.empty()) {
+	    udi = udi.substr(wrap_prefix(udi_prefix).size());
+	    return true;
+	}
+    }
+    return false;
+}
+
+// Check if doc given by udi is indexed by term
+bool Db::Native::hasTerm(const string& udi, const string& term)
+{
+    LOGDEB2(("Native::hasTerm: udi [%s] term [%s]\n",udi.c_str(),term.c_str()));
+    Xapian::Document xdoc;
+    if (getDoc(udi, xdoc)) {
+	Xapian::TermIterator xit;
+	XAPTRY(xit = xdoc.termlist_begin();
+	       xit.skip_to(term);,
+	       xrdb, m_rcldb->m_reason);
+	if (!m_rcldb->m_reason.empty()) {
+	    LOGERR(("Rcl::Native::hasTerm: %s\n", m_rcldb->m_reason.c_str()));
+	    return false;
+	}
+	if (xit != xdoc.termlist_end() && !term.compare(*xit)) {
+	    return true;
+	}
+    }
+    return false;
+}
+
+// Retrieve Xapian document, given udi
+Xapian::docid Db::Native::getDoc(const string& udi, Xapian::Document& xdoc)
+{
+    string uniterm = make_uniterm(udi);
+    for (int tries = 0; tries < 2; tries++) {
+	try {
+            Xapian::PostingIterator docid = xrdb.postlist_begin(uniterm);
+	    if (docid == xrdb.postlist_end(uniterm)) {
+		// Udi not in Db.
+                return 0;
+            } else {
+		xdoc = xrdb.get_document(*docid);
+		return *docid;
+	    }
+	} catch (const Xapian::DatabaseModifiedError &e) {
+            m_rcldb->m_reason = e.get_msg();
+	    xrdb.reopen();
+            continue;
+	} XCATCHERROR(m_rcldb->m_reason);
+        break;
+    }
+    LOGERR(("Db::Native::getDoc: Xapian error: %s\n", 
+	    m_rcldb->m_reason.c_str()));
+    return 0;
 }
 
 // Turn data record from db into document fields
@@ -491,6 +561,7 @@ bool Db::Native::purgeFileWrite(bool orphansOnly, const string& udi,
     }
     return false;
 }
+
 
 /* Rcl::Db methods ///////////////////////////////// */
 
@@ -1210,7 +1281,9 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	leftzeropad(doc.fbytes, 12);
 	newdocument.add_value(VALUE_SIZE, doc.fbytes);
     }
-
+    if (doc.haschildren) {
+	newdocument.add_boolean_term(has_children_term);
+    }	
     if (!doc.pcbytes.empty())
 	RECORD_APPEND(record, Doc::keypcs, doc.pcbytes);
     char sizebuf[30]; 
@@ -1697,26 +1770,116 @@ bool Db::getDoc(const string &udi, Doc &doc)
     // will make partial display in case of error
     doc.meta[Rcl::Doc::keyrr] = "100%";
     doc.pc = 100;
+    Xapian::Document xdoc;
+    Xapian::docid docid;
+    if ((docid = m_ndb->getDoc(udi, xdoc))) {
+	string data = xdoc.get_data();
+	doc.meta[Rcl::Doc::keyudi] = udi;
+	return m_ndb->dbDataToRclDoc(docid, data, doc);
+    } else {
+	// Document found in history no longer in the
+	// database.  We return true (because their might be
+	// other ok docs further) but indicate the error with
+	// pc = -1
+	doc.pc = -1;
+	LOGINFO(("Db:getDoc: no such doc in index: [%s]\n", udi.c_str()));
+	return true;
+    }
+}
 
-    string uniterm = make_uniterm(udi);
+bool Db::hasSubDocs(const Doc &idoc)
+{
+    if (m_ndb == 0)
+	return false;
+    string inudi;
+    if (!idoc.getmeta(Doc::keyudi, &inudi) || inudi.empty()) {
+	LOGERR(("Db::hasSubDocs: no input udi or empty\n"));
+	return false;
+    }
+    vector<Xapian::docid> docids;
+    if (!m_ndb->subDocs(inudi, docids)) {
+	LOGDEB(("Db:getSubDocs: lower level subdocs failed\n"));
+	return false;
+    }
+    if (!docids.empty())
+	return true;
+
+    // Check if doc has an has_children term
+    if (m_ndb->hasTerm(inudi, has_children_term))
+	return true;
+    return false;
+}
+
+// Retrieve all subdocuments of a given one, which may not be a file-level
+// one (in which case, we have to retrieve this first, then filter the ipaths)
+bool Db::getSubDocs(const Doc &idoc, vector<Doc>& subdocs)
+{
+    if (m_ndb == 0)
+	return false;
+
+    string inudi;
+    if (!idoc.getmeta(Doc::keyudi, &inudi) || inudi.empty()) {
+	LOGERR(("Db::getSubDocs: no input udi or empty\n"));
+	return false;
+    }
+
+    string rootudi;
+    string ipath = idoc.ipath;
+    if (ipath.empty()) {
+	// File-level doc. Use it as root
+	rootudi = inudi;
+    } else {
+	// See if we have a parent term
+	Xapian::Document xdoc;
+	if (!m_ndb->getDoc(inudi, xdoc)) {
+	    LOGERR(("Db::getSubDocs: can't get Xapian document\n"));
+	    return false;
+	}
+	Xapian::TermIterator xit;
+	XAPTRY(xit = xdoc.termlist_begin();
+	       xit.skip_to(wrap_prefix(parent_prefix)),
+	       m_ndb->xrdb, m_reason);
+	if (!m_reason.empty()) {
+	    LOGERR(("Db::getSubDocs: xapian error: %s\n", m_reason.c_str()));
+	    return false;
+	}
+	if (xit == xdoc.termlist_end()) {
+	    LOGERR(("Db::getSubDocs: parent term not found\n"));
+	    return false;
+	}
+	rootudi = strip_prefix(*xit);
+    }
+
+    LOGDEB(("Db::getSubDocs: root: [%s]\n", rootudi.c_str()));
+
+    // Retrieve all subdoc xapian ids for the root
+    vector<Xapian::docid> docids;
+    if (!m_ndb->subDocs(rootudi, docids)) {
+	LOGDEB(("Db:getSubDocs: lower level subdocs failed\n"));
+	return false;
+    }
+
+    // Retrieve doc, filter, and build output list
     for (int tries = 0; tries < 2; tries++) {
 	try {
-            if (!m_ndb->xrdb.term_exists(uniterm)) {
-                // Document found in history no longer in the
-                // database.  We return true (because their might be
-                // other ok docs further) but indicate the error with
-                // pc = -1
-                doc.pc = -1;
-                LOGINFO(("Db:getDoc: no such doc in index: [%s] (len %d)\n",
-                         uniterm.c_str(), uniterm.length()));
-                return true;
-            }
-            Xapian::PostingIterator docid = 
-                m_ndb->xrdb.postlist_begin(uniterm);
-            Xapian::Document xdoc = m_ndb->xrdb.get_document(*docid);
-            string data = xdoc.get_data();
-            doc.meta[Rcl::Doc::keyudi] = udi;
-            return m_ndb->dbDataToRclDoc(*docid, data, doc);
+	    for (vector<Xapian::docid>::const_iterator it = docids.begin();
+		 it != docids.end(); it++) {
+		Xapian::Document xdoc = m_ndb->xrdb.get_document(*it);
+		string data = xdoc.get_data();
+		string docudi;
+		m_ndb->xdocToUdi(xdoc, docudi);
+		Doc doc;
+		doc.meta[Doc::keyudi] = docudi;
+		doc.meta[Doc::keyrr] = "100%";
+		doc.pc = 100;
+		if (!m_ndb->dbDataToRclDoc(*it, data, doc)) {
+		    LOGERR(("Db::getSubDocs: doc conversion error\n"));
+		    return false;
+		}
+		if (ipath.empty() || doc.ipath.find(ipath) == 0)
+		    subdocs.push_back(doc);
+	    }
+	    return true;
 	} catch (const Xapian::DatabaseModifiedError &e) {
             m_reason = e.get_msg();
 	    m_ndb->xrdb.reopen();
@@ -1725,7 +1888,7 @@ bool Db::getDoc(const string &udi, Doc &doc)
         break;
     }
 
-    LOGERR(("Db::getDoc: %s\n", m_reason.c_str()));
+    LOGERR(("Db::getSubDocs: Xapian error: %s\n", m_reason.c_str()));
     return false;
 }
 

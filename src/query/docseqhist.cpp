@@ -25,7 +25,6 @@ using std::list;
 #include "docseqhist.h"
 #include "rcldb.h"
 #include "fileudi.h"
-#include "internfile.h"
 #include "base64.h"
 #include "debuglog.h"
 #include "smallut.h"
@@ -145,14 +144,9 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, string *sh)
     return ret;
 }
 
-bool DocSequenceHistory::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc) 
+Rcl::Db *DocSequenceHistory::getDb()
 {
-    string udi;
-    if (!FileInterner::getEnclosing(doc.url, doc.ipath, pdoc.url, pdoc.ipath,
-                                    udi))
-        return false;
-    bool dbret = m_db->getDoc(udi, pdoc);
-    return dbret && pdoc.pc != -1;
+    return m_db;
 }
 
 int DocSequenceHistory::getResCnt()

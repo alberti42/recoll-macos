@@ -573,6 +573,8 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 	    }
 	} else if (it->first == cstr_dj_keymd) {
 	    doc.dmtime = it->second;
+	} else if (it->first == cstr_dj_keyanc) {
+	    doc.haschildren = true;
 	} else if (it->first == cstr_dj_keyorigcharset) {
 	    doc.origcharset = it->second;
 	} else if (it->first == cstr_dj_keyfn) {
