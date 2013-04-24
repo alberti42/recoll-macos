@@ -4,6 +4,7 @@ syntax: glob
 *.dep.stamp
 *~
 \#*
+ptrans
 src/Makefile
 src/autom4te.cache
 src/bincimapmime/alldeps
