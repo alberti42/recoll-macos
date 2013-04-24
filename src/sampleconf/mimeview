@@ -103,12 +103,14 @@ image/bmp = gwenview %f
 image/x-ms-bmp = gwenview %f
 image/x-xpmi = gwenview %f
 
-# Opening mail messages just does not work in general, so let's not show an
-# "open" link by default. Savvy users with a suitable config will be able
-# to set things up, and new users won't get confused
-#message/rfc822 = thunderbird -file %f
-#text/x-mail = thunderbird -file %f
-#application/x-mimehtml = thunderbird -file %f
+# Opening mail messages not always works. 
+#  - Thunderbird will only open a single-message file if it has an .emf
+#    extension
+#  - "sylpheed %f" seems to work ok as of version 3.3
+#  - "kmail --view %u" works
+message/rfc822 = thunderbird -file %f
+text/x-mail = thunderbird -file %f
+application/x-mimehtml = thunderbird -file %f
 
 text/calendar = evolution %f
 
