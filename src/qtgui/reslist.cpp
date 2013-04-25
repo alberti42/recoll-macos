@@ -389,6 +389,10 @@ void ResList::setDocSource(RefCntr<DocSequence> nsource)
 		m_rclmain, SLOT(startPreview(Rcl::Doc)));
 	connect(this, SIGNAL(docEditClicked(Rcl::Doc)), 
 		m_rclmain, SLOT(startNativeViewer(Rcl::Doc)));
+	connect(this, SIGNAL(docSaveToFileClicked(Rcl::Doc)), 
+		m_rclmain, SLOT(saveDocToFile(Rcl::Doc)));
+	connect(this, SIGNAL(editRequested(Rcl::Doc)), 
+		m_rclmain, SLOT(startNativeViewer(Rcl::Doc)));
     }
 }
 
@@ -985,14 +989,15 @@ void ResList::createPopupMenu(const QPoint& pos)
 
     if (m_popDoc < 0) 
 	return;
-    QMenu *popup = new QMenu(this);
-    popup->addAction(tr("&Preview"), this, SLOT(menuPreview()));
-
     Rcl::Doc doc;
     bool havedoc = getDoc(m_popDoc, doc);
     string apptag;
     if (havedoc)
 	doc.getmeta(Rcl::Doc::keyapptg, &apptag);
+
+    QMenu *popup = new QMenu(this);
+
+    popup->addAction(tr("&Preview"), this, SLOT(menuPreview()));
 
     if (havedoc && 
 	!theconfig->getMimeViewerDef(doc.mimetype, apptag, 0).empty()) {
@@ -1004,7 +1009,9 @@ void ResList::createPopupMenu(const QPoint& pos)
 	popup->addAction(tr("&Write to File"), this, SLOT(menuSaveToFile()));
     }
 
-    popup->addAction(tr("Find &similar documents"), this, SLOT(menuExpand()));
+    if (m_ismainlist)
+	popup->addAction(tr("Find &similar documents"), 
+			 this, SLOT(menuExpand()));
 
     Rcl::Doc pdoc;
     if (m_source.isNotNull() && m_source->getEnclosing(doc, pdoc))
@@ -1028,8 +1035,13 @@ void ResList::createPopupMenu(const QPoint& pos)
 void ResList::menuPreview()
 {
     Rcl::Doc doc;
-    if (getDoc(m_popDoc, doc))
-	emit docPreviewClicked(m_popDoc, doc, 0);
+    if (getDoc(m_popDoc, doc)) {
+	if (m_ismainlist) {
+	    emit docPreviewClicked(m_popDoc, doc, 0);
+	} else {
+	    emit previewRequested(doc);
+	}
+    }
 }
 
 void ResList::menuSaveToFile()

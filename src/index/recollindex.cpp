@@ -367,13 +367,19 @@ int main(int argc, char **argv)
     string rundir;
     config->getConfParam("idxrundir", rundir);
     if (!rundir.compare("tmp")) {
-	LOGDEB(("recollindex: changing current directory to [%s]\n",
+	LOGINFO(("recollindex: changing current directory to [%s]\n",
 		tmplocation().c_str()));
-	chdir(tmplocation().c_str());
+	if (chdir(tmplocation().c_str()) < 0) {
+	    LOGERR(("chdir(%s) failed, errno %d\n", 
+		    tmplocation().c_str(), errno));
+	}
     } else if (!rundir.empty()) {
-	LOGDEB(("recollindex: changing current directory to [%s]\n",
-		rundir.c_str()));
-	chdir(rundir.c_str());
+	LOGINFO(("recollindex: changing current directory to [%s]\n",
+		 rundir.c_str()));
+	if (chdir(rundir.c_str()) < 0) {
+	    LOGERR(("chdir(%s) failed, errno %d\n", 
+		    rundir.c_str(), errno));
+	}
     }
 
     bool rezero((op_flags & OPT_z) != 0);
