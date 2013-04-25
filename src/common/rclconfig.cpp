@@ -35,6 +35,7 @@ using std::list;
 #endif
 
 #include <iostream>
+#include <sstream>
 #include <cstdlib>
 #include <cstring>
 using namespace std;
@@ -48,6 +49,9 @@ using namespace std;
 #include "textsplit.h"
 #include "readfile.h"
 #include "fstreewalk.h"
+#include "cpuconf.h"
+
+typedef pair<int,int> RclPII;
 
 // Static, logically const, RclConfig members are initialized once from the
 // first object build during process initialization.
@@ -218,6 +222,10 @@ RclConfig::RclConfig(const string *argcnf)
     if (!readFieldsConfig(cnferrloc))
 	return;
 
+    // Default is no threading
+    m_thrConf = create_vector<RclPII>
+	(RclPII(-1, 0))(RclPII(-1, 0))(RclPII(-1, 0));
+
     m_ptrans = new ConfSimple(path_cat(m_confdir, "ptrans").c_str());
 
     m_ok = true;
@@ -368,14 +376,83 @@ bool RclConfig::getConfParam(const string &name, vector<int> *vip) const
     return true;
 }
 
-pair<int,int> RclConfig::getThrConf(ThrStage who) const
+void RclConfig::initThrConf()
 {
+    // Default is no threading
+    m_thrConf = create_vector<RclPII>
+	(RclPII(-1, 0))(RclPII(-1, 0))(RclPII(-1, 0));
+
     vector<int> vq;
     vector<int> vt;
-    if (!getConfParam("thrQSizes", &vq) || !getConfParam("thrTCounts", &vt)) {
+    if (!getConfParam("thrQSizes", &vq)) {
+	LOGINFO(("RclConfig::initThrConf: no thread info (queues)\n"));
+	goto out;
+    }
+
+    // If the first queue size is 0, autoconf is requested.
+    if (vq.size() > 0 && vq[0] == 0) {
+	LOGDEB(("RclConfig::initThrConf: autoconf requested\n"));
+	CpuConf cpus;
+	if (!getCpuConf(cpus) || cpus.ncpus < 1) {
+	    LOGERR(("RclConfig::initThrConf: could not retrieve cpu conf\n"));
+	    cpus.ncpus = 1;
+	}
+	// Arbitrarily set threads config based on number of CPUS. This also
+	// depends on the IO setup actually, so we're bound to be wrong...
+	if (cpus.ncpus == 1) {
+	    // Somewhat counter-intuitively (because of possible IO//)
+	    // it seems that the best config here is no threading
+	} else if (cpus.ncpus < 4) {
+	    // Untested so let's guess...
+	    m_thrConf = create_vector<RclPII>
+		(RclPII(2, 2))(RclPII(2, 2))(RclPII(2, 1));
+	} else if (cpus.ncpus < 6) {
+	    m_thrConf = create_vector<RclPII>
+		(RclPII(2, 4))(RclPII(2, 2))(RclPII(2, 1));
+	} else {
+	    m_thrConf = create_vector<RclPII>
+		(RclPII(2, 5))(RclPII(2, 3))(RclPII(2, 1));
+	}
+	goto out;
+    } else if (vq.size() > 0 && vq[0] < 0) {
+	// threads disabled by config
+	goto out;
+    }
+
+    if (!getConfParam("thrTCounts", &vt) ) {
+	LOGINFO(("RclConfig::initThrConf: no thread info (threads)\n"));
+	goto out;
+    }
+
+    if (vq.size() != 3 || vt.size() != 3) {
+	LOGINFO(("RclConfig::initThrConf: bad thread info vector sizes\n"));
+	goto out;
+    }
+
+    // Normal case: record info from config
+    m_thrConf.clear();
+    for (unsigned int i = 0; i < 3; i++) {
+	m_thrConf.push_back(RclPII(vq[i], vt[i]));
+    }
+
+out:
+    ostringstream sconf;
+    for (unsigned int i = 0; i < 3; i++) {
+	sconf << "(" << m_thrConf[i].first << ", " << m_thrConf[i].second <<
+	    ") ";
+    }
+
+    LOGDEB(("RclConfig::initThrConf: chosen config (ql,nt): %s\n", 
+	    sconf.str().c_str()));
+}
+
+pair<int,int> RclConfig::getThrConf(ThrStage who) const
+{
+    if (m_thrConf.size() != 3) {
+	LOGERR(("RclConfig::getThrConf: bad data in rclconfig\n"));
 	return pair<int,int>(-1,-1);
     }
-    return pair<int,int>(vq[who], vt[who]);
+    return m_thrConf[who];
 }
 
 vector<string> RclConfig::getTopdirs() const
@@ -1257,6 +1334,7 @@ void RclConfig::initFrom(const RclConfig& r)
     m_stpsuffstate.init(this, mimemap, r.m_stpsuffstate.paramname);
     m_skpnstate.init(this, m_conf, r.m_skpnstate.paramname);
     m_rmtstate.init(this, m_conf, r.m_rmtstate.paramname);
+    m_thrConf = r.m_thrConf;
 }
 
 #else // -> Test

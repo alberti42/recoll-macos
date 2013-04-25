@@ -141,8 +141,15 @@ dbdir = xapiandb
 # value to -1 disables a queue (replaced by a direct call). The thrTcounts
 # values define the number of threads to start for each queue. The last
 # value can only be one (as Xapian is single-threaded).
-thrQSizes = 2 2 2
-thrTCounts =  4 2 1
+# If the first element in thrQSizes is 0, recollindex will attempt to set
+# roughly guestimated values based on the number of CPUs. 
+#
+# The following are the best setup on my core i5 system (4 cores, no
+# hyperthreading, multiple disks).
+#thrQSizes = 2 2 2
+#thrTCounts =  4 2 1
+# The default is to let recoll guess.
+thrQSizes = 0
 
 # Maximum file system occupation before we stop indexing. The default value
 # is 0, meaning no checking. The value is a percentage, corresponding to

@@ -37,6 +37,12 @@ trreadfile.o : readfile.cpp readfile.h
 	$(CXX) -o trreadfile.o -c $(ALL_CXXFLAGS) \
 	       -DTEST_READFILE readfile.cpp
 
+CPUCONF_OBJS= trcpuconf.o 
+trcpuconf : $(CPUCONF_OBJS)
+	$(CXX) -o trcpuconf $(CPUCONF_OBJS) $(LIBRECOLL) $(LIBICONV) $(LIBSYS)
+trcpuconf.o : cpuconf.cpp cpuconf.h
+	$(CXX) -o trcpuconf.o -c $(ALL_CXXFLAGS) -DTEST_CPUCONF cpuconf.cpp
+
 CIRCACHE_OBJS= trcircache.o 
 trcircache : $(CIRCACHE_OBJS)
 	$(CXX) -o trcircache $(CIRCACHE_OBJS) \

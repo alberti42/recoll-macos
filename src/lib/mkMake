@@ -62,6 +62,7 @@ ${depth}/utils/circache.cpp \
 ${depth}/utils/closefrom.cpp \
 ${depth}/utils/conftree.cpp \
 ${depth}/utils/copyfile.cpp \
+${depth}/utils/cpuconf.cpp \
 ${depth}/utils/debuglog.cpp \
 ${depth}/utils/ecrontab.cpp \
 ${depth}/utils/execmd.cpp \

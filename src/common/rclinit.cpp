@@ -125,7 +125,6 @@ RclConfig *recollinit(RclInitFlags flags,
 	}
     }
 
-
     // Make sure the locale charset is initialized (so that multiple
     // threads don't try to do it at once).
     config->getDefCharset();
@@ -146,6 +145,9 @@ RclConfig *recollinit(RclInitFlags flags,
 #ifndef IDX_THREADS
     ExecCmd::useVfork(true);
 #else
+    // Keep threads init behind log init, but make sure it's done before
+    // we do the vfork choice !
+    config->initThrConf();
     bool intern_noThr = config->getThrConf(RclConfig::ThrIntern).first == -1;
     bool split_noThr =  config->getThrConf(RclConfig::ThrSplit).first == -1;
     bool write_noThr = config->getThrConf(RclConfig::ThrDbWrite).first == -1;

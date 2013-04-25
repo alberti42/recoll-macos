@@ -536,7 +536,7 @@ int ExecCmd::send(const string& data)
 	    break;
 	int n = con->send(data.c_str() + nwritten, data.length() - nwritten);
 	if (n < 0) {
-	    LOGERR(("ExecCmd::doexec: send failed\n"));
+	    LOGERR(("ExecCmd::send: send failed\n"));
 	    return -1;
 	}
 	nwritten += n;

@@ -201,7 +201,7 @@ inline void leftzeropad(string& s, unsigned len)
 
 // Code for static initialization of an stl map. Somewhat like Boost.assign. 
 // Ref: http://stackoverflow.com/questions/138600/initializing-a-static-stdmapint-int-in-c
-// Example use: map<int, int> m = create_map (1,2) (3,4) (5,6) (7,8);
+// Example use: map<int, int> m = create_map<int, int> (1,2) (3,4) (5,6) (7,8);
 
 template <typename T, typename U>
 class create_map

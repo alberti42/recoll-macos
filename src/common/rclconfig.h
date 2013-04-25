@@ -252,6 +252,11 @@ class RclConfig {
      * command string returned by getMimeHandlerDef */
     string findFilter(const string& cmd) const;
 
+    /** Thread config init is not done automatically because not all
+	programs need it and it uses debuglog so that it's better to
+	call it after primary init */
+    void initThrConf();
+
     ~RclConfig() {
 	freeAll();
     }
@@ -303,6 +308,7 @@ class RclConfig {
     // Limiting set of mime types to be processed. Normally empty.
     ParamStale    m_rmtstate;
     set<string>   m_restrictMTypes; 
+    vector<pair<int, int> > m_thrConf;
 
     /** Create initial user configuration */
     bool initUserConfig();
