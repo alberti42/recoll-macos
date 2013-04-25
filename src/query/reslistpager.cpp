@@ -24,8 +24,10 @@
 #include <time.h>
 
 #include <sstream>
+#include <list>
 using std::ostringstream;
 using std::endl;
+using std::list;
 
 #include "cstr.h"
 #include "reslistpager.h"

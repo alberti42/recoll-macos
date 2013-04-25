@@ -52,9 +52,10 @@ namespace Dijon
     class Filter
     {
     public:
-	/// Builds an empty filter.
-	Filter(const std::string &mime_type) : m_mimeType(mime_type) {}
 	/// Destroys the filter.
+	Filter()
+	{
+	}
 	virtual ~Filter() {}
 	virtual void setConfig(RclConfig *) = 0;
 
@@ -63,7 +64,8 @@ namespace Dijon
 	/** What data a filter supports as input.
 	 * It can be either the whole document data, its file name, or its URI.
 	 */
-	typedef enum { DOCUMENT_DATA=0, DOCUMENT_STRING, DOCUMENT_FILE_NAME, DOCUMENT_URI } DataInput;
+	typedef enum { DOCUMENT_DATA=0, DOCUMENT_STRING, DOCUMENT_FILE_NAME, 
+		       DOCUMENT_URI } DataInput;
 
 	/** Input properties supported by the filter.
 	 *
@@ -94,7 +96,8 @@ namespace Dijon
 	/** Sets a property, prior to calling set_document_XXX().
 	 * Returns false if the property is not supported.
 	 */
-	virtual bool set_property(Properties prop_name, const std::string &prop_value) = 0;
+	virtual bool set_property(Properties prop_name, 
+				  const std::string &prop_value) = 0;
 
 	/** (Re)initializes the filter with the given data.
 	 * Caller should ensure the given pointer is valid until the
@@ -103,25 +106,30 @@ namespace Dijon
 	 * Call next_document() to position the filter onto the first document.
 	 * Returns false if this input is not supported or an error occured.
 	 */
-	virtual bool set_document_data(const char *data_ptr, unsigned int data_length) = 0;
+	virtual bool set_document_data(const std::string& mtype, 
+				       const char *data_ptr, 
+				       unsigned int data_length) = 0;
 
 	/** (Re)initializes the filter with the given data.
 	 * Call next_document() to position the filter onto the first document.
 	 * Returns false if this input is not supported or an error occured.
 	 */
-	virtual bool set_document_string(const std::string &data_str) = 0;
+	virtual bool set_document_string(const std::string& mtype, 
+					 const std::string &data_str) = 0;
 
 	/** (Re)initializes the filter with the given file.
 	 * Call next_document() to position the filter onto the first document.
 	 * Returns false if this input is not supported or an error occured.
 	 */
-	virtual bool set_document_file(const std::string &file_path) = 0;
+	virtual bool set_document_file(const std::string& mtype, 
+				       const std::string &file_path) = 0;
 
 	/** (Re)initializes the filter with the given URI.
 	 * Call next_document() to position the filter onto the first document.
 	 * Returns false if this input is not supported or an error occured.
 	 */
-	virtual bool set_document_uri(const std::string &uri) = 0;
+	virtual bool set_document_uri(const std::string& mtype, 
+				      const std::string &uri) = 0;
 
 	/** Set the document size meta_data element. This is the size
 	    of the immediate containing file (ie, a .doc, a .odt), not

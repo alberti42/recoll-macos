@@ -26,11 +26,15 @@
  */
 class MimeHandlerHtml : public RecollFilter {
  public:
-    MimeHandlerHtml(RclConfig *cnf, const string& mt) 
-	: RecollFilter(cnf, mt) {}
-    virtual ~MimeHandlerHtml() {}
-    virtual bool set_document_file(const string &file_path);
-    virtual bool set_document_string(const string &data);
+    MimeHandlerHtml(RclConfig *cnf, const string& id) 
+	: RecollFilter(cnf, id) 
+    {
+    }
+    virtual ~MimeHandlerHtml() 
+    {
+    }
+    virtual bool set_document_file(const string& mt, const string &file_path);
+    virtual bool set_document_string(const string& mt, const string &data);
     virtual bool is_data_input_ok(DataInput input) const {
 	if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)
 	    return true;

@@ -28,7 +28,7 @@ using std::vector;
 using std::map;
 using std::set;
 
-#include "Filter.h"
+#include "mimehandler.h"
 #include "uncomp.h"
 #include "pathut.h"
 
@@ -262,7 +262,7 @@ class FileInterner {
 
     // Filter stack, path to the current document from which we're
     // fetching subdocs
-    vector<Dijon::Filter*> m_handlers;
+    vector<RecollFilter*> m_handlers;
     // Temporary files used for decoding the current stack
     bool                   m_tmpflgs[MAXHANDLERS];
     vector<TempFile>       m_tempfiles;

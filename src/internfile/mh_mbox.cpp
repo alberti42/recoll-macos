@@ -251,10 +251,10 @@ void MimeHandlerMbox::clear()
     RecollFilter::clear();
 }
 
-bool MimeHandlerMbox::set_document_file(const string &fn)
+bool MimeHandlerMbox::set_document_file(const string& mt, const string &fn)
 {
     LOGDEB(("MimeHandlerMbox::set_document_file(%s)\n", fn.c_str()));
-    RecollFilter::set_document_file(fn);
+    RecollFilter::set_document_file(mt, fn);
     m_fn = fn;
     if (m_vfp) {
 	fclose((FILE *)m_vfp);
@@ -598,8 +598,8 @@ int main(int argc, char **argv)
 	exit(1);
     }
     config->setKeyDir(path_getfather(filename));
-    MimeHandlerMbox mh(config, "text/x-mail");
-    if (!mh.set_document_file(filename)) {
+    MimeHandlerMbox mh(config, "some_id");
+    if (!mh.set_document_file("text/x-mail", filename)) {
 	cerr << "set_document_file failed" << endl;
 	exit(1);
     }

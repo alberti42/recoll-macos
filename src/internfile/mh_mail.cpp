@@ -46,8 +46,8 @@ using namespace std;
 static const int maxdepth = 20;
 static const string cstr_mail_charset("charset");
 
-MimeHandlerMail::MimeHandlerMail(RclConfig *cnf, const string &mt) 
-    : RecollFilter(cnf, mt), m_bincdoc(0), m_fd(-1), m_stream(0), m_idx(-1)
+MimeHandlerMail::MimeHandlerMail(RclConfig *cnf, const string &id) 
+    : RecollFilter(cnf, id), m_bincdoc(0), m_fd(-1), m_stream(0), m_idx(-1)
 {
 
     // Look for additional headers to be processed as per config:
@@ -85,10 +85,10 @@ void MimeHandlerMail::clear()
     RecollFilter::clear();
 }
 
-bool MimeHandlerMail::set_document_file(const string &fn)
+bool MimeHandlerMail::set_document_file(const string& mt, const string &fn)
 {
     LOGDEB(("MimeHandlerMail::set_document_file(%s)\n", fn.c_str()));
-    RecollFilter::set_document_file(fn);
+    RecollFilter::set_document_file(mt, fn);
     if (m_fd >= 0) {
 	close(m_fd);
 	m_fd = -1;
@@ -123,10 +123,12 @@ bool MimeHandlerMail::set_document_file(const string &fn)
     return true;
 }
 
-bool MimeHandlerMail::set_document_string(const string &msgtxt)
+bool MimeHandlerMail::set_document_string(const string& mt, 
+					  const string &msgtxt)
 {
     LOGDEB1(("MimeHandlerMail::set_document_string\n"));
     LOGDEB2(("Message text: [%s]\n", msgtxt.c_str()));
+    RecollFilter::set_document_string(mt, msgtxt);
     delete m_stream;
 
     if (!m_forPreview) {
@@ -614,11 +616,11 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 
     // Handle html stripping and transcoding to utf8
     if (!stringlowercmp("text/html", content_type.value)) {
-	MimeHandlerHtml mh(m_config, "text/html");
+	MimeHandlerHtml mh(m_config, "1234");
 	mh.set_property(Dijon::Filter::OPERATING_MODE, 
 			m_forPreview ? "view" : "index");
 	mh.set_property(Dijon::Filter::DEFAULT_CHARSET, charset);
-	mh.set_document_string(body);
+	mh.set_document_string("text/html", body);
 	mh.next_document();
 	map<string, string>::const_iterator it = 
 	    mh.get_meta_data().find(cstr_dj_keycontent);

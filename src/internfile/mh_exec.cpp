@@ -14,6 +14,14 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include "autoconfig.h"
+
+#include <sys/types.h>
+#include <sys/wait.h>
+
+#include <list>
+using namespace std;
+
 #include "cstr.h"
 #include "execmd.h"
 #include "mh_exec.h"
@@ -23,13 +31,6 @@
 #include "smallut.h"
 #include "md5.h"
 #include "rclconfig.h"
-
-#include <sys/types.h>
-#include <sys/wait.h>
-
-#ifndef NO_NAMESPACES
-using namespace std;
-#endif /* NO_NAMESPACES */
 
 // This is called periodically by ExeCmd when it is waiting for data,
 // or when it does receive some. We may choose to interrupt the

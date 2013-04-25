@@ -31,12 +31,12 @@ using std::vector;
  */
 class MimeHandlerMbox : public RecollFilter {
  public:
-    MimeHandlerMbox(RclConfig *cnf, const string& mime) 
-	: RecollFilter(cnf, mime), m_vfp(0), m_msgnum(0), 
+    MimeHandlerMbox(RclConfig *cnf, const string& id) 
+	: RecollFilter(cnf, id), m_vfp(0), m_msgnum(0), 
 	  m_lineno(0), m_fsize(0)
     {}
     virtual ~MimeHandlerMbox();
-    virtual bool set_document_file(const string &file_path);
+    virtual bool set_document_file(const string& mt, const string &file_path);
     virtual bool next_document();
     virtual bool skip_to_document(const string& ipath) {
 	m_ipath = ipath;

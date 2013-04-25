@@ -21,26 +21,23 @@
 #include <stdio.h>
 
 #include <string>
-#include <list>
-using std::string;
-using std::list;
 
-#include <Filter.h>
+#include "Filter.h"
+#include "cstr.h"
 
 class RclConfig;
 
 class RecollFilter : public Dijon::Filter {
 public:
-    RecollFilter(RclConfig *config, const string& mtype)
-	: Dijon::Filter(mtype), m_config(config), 
-	  m_forPreview(false), m_havedoc(false)
+    RecollFilter(RclConfig *config, const std::string& id)
+	: m_config(config), m_forPreview(false), m_havedoc(false), m_id(id)
     {}
     virtual ~RecollFilter() {}
     virtual void setConfig(RclConfig *config)
     {
 	m_config = config;
     }
-    virtual bool set_property(Properties p, const string &v) {
+    virtual bool set_property(Properties p, const std::string &v) {
 	switch (p) {
 	case DJF_UDI: 
 	    m_udi = v;
@@ -59,7 +56,12 @@ public:
     }
 
     // We don't use this for now
-    virtual bool set_document_uri(const std::string &) {return false;}
+    virtual bool set_document_uri(const std::string& mtype, 
+				  const std::string &) 
+    {
+	m_mimeType = mtype;
+	return false;
+    }
 
     // This does nothing right now but should be called from the
     // subclass method in case we need some common processing one day
@@ -69,12 +71,24 @@ public:
     // having a pure virtual called from here and implemented in the
     // subclass) would have to be repeated in each derived class. It's
     // just simpler this way.
-    virtual bool set_document_file(const string & /*file_path*/) {return true;}
+    virtual bool set_document_file(const std::string& mtype, 
+				   const std::string & /*file_path*/) 
+    {
+	m_mimeType = mtype;
+	return true;
+    }
 
     // Default implementations
-    virtual bool set_document_string(const std::string &) {return false;}
-    virtual bool set_document_data(const char *cp, unsigned int sz) {
-	return set_document_string(string(cp, sz));
+    virtual bool set_document_string(const std::string& mtype, 
+				     const std::string &) 
+    {
+	m_mimeType = mtype;
+	return false;
+    }
+    virtual bool set_document_data(const std::string& mtype, 
+				   const char *cp, unsigned int sz) 
+    {
+	return set_document_string(mtype, std::string(cp, sz));
     }
 
     virtual void set_docsize(size_t size)
@@ -87,7 +101,7 @@ public:
     virtual bool has_documents() const {return m_havedoc;}
 
     // Most doc types are single-doc
-    virtual bool skip_to_document(const string& s) {
+    virtual bool skip_to_document(const std::string& s) {
 	if (s.empty())
 	    return true;
 	return false;
@@ -99,8 +113,13 @@ public:
 	return false;
     }
 
-    virtual string get_error() const {
+    virtual std::string get_error() const {
 	return m_reason;
+    }
+
+    virtual const std::string& get_id() const
+    {
+	return m_id;
     }
 
     // "Call super" anti-pattern again. Must be called from derived
@@ -114,17 +133,20 @@ public:
 
     // This only makes sense if the contents are currently txt/plain
     // It converts from keyorigcharset to UTF-8 and sets keycharset.
-    bool txtdcode(const string& who);
+    bool txtdcode(const std::string& who);
 
 protected:
     bool preview() {return m_forPreview;}
 
     RclConfig *m_config;
     bool   m_forPreview;
-    string m_dfltInputCharset;
-    string m_reason;
+    std::string m_dfltInputCharset;
+    std::string m_reason;
     bool   m_havedoc;
-    string m_udi; // May be set by creator as a hint
+    std::string m_udi; // May be set by creator as a hint
+    // m_id is and md5 of the filter definition line (from mimeconf) and
+    // is used when fetching/returning filters to / from the cache.
+    std::string m_id;
 };
 
 /**
@@ -135,11 +157,11 @@ protected:
  * @param filtertypes decide if we should restrict to types in 
  *     indexedmimetypes (if this is set at all).
  */
-extern Dijon::Filter *getMimeHandler(const std::string &mtyp, RclConfig *cfg,
+extern RecollFilter *getMimeHandler(const std::string &mtyp, RclConfig *cfg,
 				     bool filtertypes=false);
 
 /// Free up filter for reuse (you can also delete it)
-extern void returnMimeHandler(Dijon::Filter *);
+extern void returnMimeHandler(RecollFilter *);
 
 /// Clean up cache at the end of an indexing pass. For people who use
 /// the GUI to index: avoid all those filter processes forever hanging

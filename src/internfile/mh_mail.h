@@ -39,10 +39,10 @@ class MHMailAttach;
  */
 class MimeHandlerMail : public RecollFilter {
 public:
-    MimeHandlerMail(RclConfig *cnf, const string &mt);
+    MimeHandlerMail(RclConfig *cnf, const string &id);
     virtual ~MimeHandlerMail();
-    virtual bool set_document_file(const string& file_path);
-    virtual bool set_document_string(const string& data);
+    virtual bool set_document_file(const string& mt, const string& file_path);
+    virtual bool set_document_string(const string& mt, const string& data);
     virtual bool is_data_input_ok(DataInput input) const {
 	if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)
 	    return true;

@@ -102,14 +102,14 @@ class MimeHandlerExecMultiple : public MimeHandlerExec {
     /////// End un-cleared stuff.
 
  public:
-    MimeHandlerExecMultiple(RclConfig *cnf, const string& mt) 
-        : MimeHandlerExec(cnf, mt)
+    MimeHandlerExecMultiple(RclConfig *cnf, const string& id) 
+        : MimeHandlerExec(cnf, id)
     {}
     // No resources to clean up, the ExecCmd destructor does it.
     virtual ~MimeHandlerExecMultiple() {}
-    virtual bool set_document_file(const string &file_path) {
+    virtual bool set_document_file(const string& mt, const string &file_path) {
         m_filefirst = true;
-        return MimeHandlerExec::set_document_file(file_path);
+        return MimeHandlerExec::set_document_file(mt, file_path);
     }
     virtual bool next_document();
 

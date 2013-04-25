@@ -62,10 +62,6 @@ using std::pair;
 #include "docseqhist.h"
 #include "rclhelp.h"
 
-#ifndef MIN
-#define MIN(A,B) ((A)<(B)?(A):(B))
-#endif
-
 // Subclass plainToRich to add <termtag>s and anchors to the preview text
 class PlainToRichQtPreview : public PlainToRich {
 public:

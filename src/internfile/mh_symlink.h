@@ -35,12 +35,16 @@
  */
 class MimeHandlerSymlink : public RecollFilter {
  public:
-    MimeHandlerSymlink(RclConfig *cnf, const std::string& mt) 
-	: RecollFilter(cnf, mt) {}
-    virtual ~MimeHandlerSymlink() {}
-    virtual bool set_document_file(const string& fn) 
+    MimeHandlerSymlink(RclConfig *cnf, const std::string& id) 
+	: RecollFilter(cnf, id) 
     {
-	RecollFilter::set_document_file(fn);
+    }
+    virtual ~MimeHandlerSymlink() 
+    {
+    }
+    virtual bool set_document_file(const string& mt, const string& fn) 
+    {
+	RecollFilter::set_document_file(mt, fn);
 	m_fn = fn;
 	return m_havedoc = true;
     }

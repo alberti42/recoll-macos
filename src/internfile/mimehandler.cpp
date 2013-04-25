@@ -30,6 +30,7 @@ using namespace std;
 #include "debuglog.h"
 #include "rclconfig.h"
 #include "smallut.h"
+#include "md5.h"
 
 #include "mh_exec.h"
 #include "mh_execm.h"
@@ -45,24 +46,26 @@ using namespace std;
 // handlers. There can be several instances for a given mime type
 // (think email attachment in email message: 2 rfc822 handlers are
 // needed simulteanously)
-static multimap<string, Dijon::Filter*>  o_handlers;
-static list<multimap<string, Dijon::Filter*>::iterator> o_hlru;
-typedef list<multimap<string, Dijon::Filter*>::iterator>::iterator hlruit_tp;
+static multimap<string, RecollFilter*>  o_handlers;
+static list<multimap<string, RecollFilter*>::iterator> o_hlru;
+typedef list<multimap<string, RecollFilter*>::iterator>::iterator hlruit_tp;
 
 static PTMutexInit o_handlers_mutex;
 
 static const unsigned int max_handlers_cache_size = 100;
 
 /* Look for mime handler in pool */
-static Dijon::Filter *getMimeHandlerFromCache(const string& key)
+static RecollFilter *getMimeHandlerFromCache(const string& key)
 {
     PTMutexLocker locker(o_handlers_mutex);
+    string xdigest;
+    MD5HexPrint(key, xdigest);
     LOGDEB(("getMimeHandlerFromCache: %s cache size %u\n", 
-	    key.c_str(), o_handlers.size()));
+	    xdigest.c_str(), o_handlers.size()));
 
-    multimap<string, Dijon::Filter *>::iterator it = o_handlers.find(key);
+    multimap<string, RecollFilter *>::iterator it = o_handlers.find(key);
     if (it != o_handlers.end()) {
-	Dijon::Filter *h = it->second;
+	RecollFilter *h = it->second;
 	hlruit_tp it1 = find(o_hlru.begin(), o_hlru.end(), it);
 	if (it1 != o_hlru.end()) {
 	    o_hlru.erase(it1);
@@ -71,20 +74,22 @@ static Dijon::Filter *getMimeHandlerFromCache(const string& key)
 	}
 	o_handlers.erase(it);
 	LOGDEB(("getMimeHandlerFromCache: %s found size %u\n", 
-		key.c_str(), o_handlers.size()));
+		xdigest.c_str(), o_handlers.size()));
 	return h;
     }
-    LOGDEB(("getMimeHandlerFromCache: %s not found\n", key.c_str()));
+    LOGDEB(("getMimeHandlerFromCache: %s not found\n", xdigest.c_str()));
     return 0;
 }
 
 /* Return mime handler to pool */
-void returnMimeHandler(Dijon::Filter *handler)
+void returnMimeHandler(RecollFilter *handler)
 {
-    typedef multimap<string, Dijon::Filter*>::value_type value_type;
+    typedef multimap<string, RecollFilter*>::value_type value_type;
 
-    if (handler==0) 
+    if (handler == 0) {
+	LOGERR(("returnMimeHandler: bad parameter\n"));
 	return;
+    }
     handler->clear();
 
     PTMutexLocker locker(o_handlers_mutex);
@@ -97,7 +102,7 @@ void returnMimeHandler(Dijon::Filter *handler)
     // at the same time either because it occurs several times in a
     // stack (ie mail attachment to mail), or because several threads
     // are processing the same mime type at the same time.
-    multimap<string, Dijon::Filter *>::iterator it;
+    multimap<string, RecollFilter *>::iterator it;
     if (o_handlers.size() >= max_handlers_cache_size) {
 	static int once = 1;
 	if (once) {
@@ -114,15 +119,15 @@ void returnMimeHandler(Dijon::Filter *handler)
 	    o_handlers.erase(it);
 	}
     }
-    it = o_handlers.insert(value_type(handler->get_mime_type(), handler));
+    it = o_handlers.insert(value_type(handler->get_id(), handler));
     o_hlru.push_front(it);
 }
 
 void clearMimeHandlerCache()
 {
     LOGDEB(("clearMimeHandlerCache()\n"));
-    typedef multimap<string, Dijon::Filter*>::value_type value_type;
-    map<string, Dijon::Filter *>::iterator it;
+    typedef multimap<string, RecollFilter*>::value_type value_type;
+    map<string, RecollFilter *>::iterator it;
     PTMutexLocker locker(o_handlers_mutex);
     for (it = o_handlers.begin(); it != o_handlers.end(); it++) {
 	delete it->second;
@@ -132,26 +137,32 @@ void clearMimeHandlerCache()
 
 /** For mime types set as "internal" in mimeconf: 
   * create appropriate handler object. */
-static Dijon::Filter *mhFactory(RclConfig *config, const string &mime)
+static RecollFilter *mhFactory(RclConfig *config, const string &mime,
+				bool nobuild, string& id)
 {
     LOGDEB2(("mhFactory(%s)\n", mime.c_str()));
     string lmime(mime);
     stringtolower(lmime);
     if (cstr_textplain == lmime) {
 	LOGDEB2(("mhFactory(%s): returning MimeHandlerText\n", mime.c_str()));
-	return new MimeHandlerText(config, lmime);
+	MD5String("MimeHandlerText", id);
+	return nobuild ? 0 : new MimeHandlerText(config, id);
     } else if ("text/html" == lmime) {
 	LOGDEB2(("mhFactory(%s): returning MimeHandlerHtml\n", mime.c_str()));
-	return new MimeHandlerHtml(config, lmime);
+	MD5String("MimeHandlerHtml", id);
+	return nobuild ? 0 : new MimeHandlerHtml(config, id);
     } else if ("text/x-mail" == lmime) {
 	LOGDEB2(("mhFactory(%s): returning MimeHandlerMbox\n", mime.c_str()));
-	return new MimeHandlerMbox(config, lmime);
+	MD5String("MimeHandlerMbox", id);
+	return nobuild ? 0 : new MimeHandlerMbox(config, id);
     } else if ("message/rfc822" == lmime) {
 	LOGDEB2(("mhFactory(%s): returning MimeHandlerMail\n", mime.c_str()));
-	return new MimeHandlerMail(config, lmime);
+	MD5String("MimeHandlerMail", id);
+	return nobuild ? 0 : new MimeHandlerMail(config, id);
     } else if ("inode/symlink" == lmime) {
 	LOGDEB2(("mhFactory(%s): ret MimeHandlerSymlink\n", mime.c_str()));
-	return new MimeHandlerSymlink(config, lmime);
+	MD5String("MimeHandlerSymlink", id);
+	return nobuild ? 0 : new MimeHandlerSymlink(config, id);
     } else if (lmime.find("text/") == 0) {
         // Try to handle unknown text/xx as text/plain. This
         // only happen if the text/xx was defined as "internal" in
@@ -159,14 +170,16 @@ static Dijon::Filter *mhFactory(RclConfig *config, const string &mime)
         // allows indexing and previewing as text/plain (no filter
         // exec) but still opening with a specific editor.
 	LOGDEB2(("mhFactory(%s): returning MimeHandlerText(x)\n",mime.c_str()));
-        return new MimeHandlerText(config, lmime); 
+	MD5String("MimeHandlerText", id);
+        return nobuild ? 0 : new MimeHandlerText(config, id); 
     } else {
 	// We should not get there. It means that "internal" was set
 	// as a handler in mimeconf for a mime type we actually can't
 	// handle.
 	LOGERR(("mhFactory: mime type [%s] set as internal but unknown\n", 
 		lmime.c_str()));
-	return new MimeHandlerUnknown(config, lmime);
+	MD5String("MimeHandlerUnknown", id);
+	return nobuild ? 0 : new MimeHandlerUnknown(config, id);
     }
 }
 
@@ -181,10 +194,11 @@ static const string cstr_mh_charset("charset");
  * a ';' inside a quoted string for now. Can't see a use for it.
  */
 MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
-                               bool multiple)
+                               bool multiple, const string& id)
 {
     ConfSimple attrs;
     string cmdstr;
+
     if (!cfg->valueSplitAttributes(hs, cmdstr, attrs)) {
 	LOGERR(("mhExecFactory: bad config line for [%s]: [%s]\n", 
 		mtype.c_str(), hs.c_str()));
@@ -200,8 +214,8 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
 	return 0;
     }
     MimeHandlerExec *h = multiple ? 
-        new MimeHandlerExecMultiple(cfg, mtype.c_str()) :
-        new MimeHandlerExec(cfg, mtype.c_str());
+	new MimeHandlerExecMultiple(cfg, id) :
+        new MimeHandlerExec(cfg, id);
     list<string>::iterator it = cmdtoks.begin();
     h->params.push_back(cfg->findFilter(*it++));
     h->params.insert(h->params.end(), it, cmdtoks.end());
@@ -228,32 +242,27 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
 }
 
 /* Get handler/filter object for given mime type: */
-Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg, 
+RecollFilter *getMimeHandler(const string &mtype, RclConfig *cfg, 
 			      bool filtertypes)
 {
     LOGDEB(("getMimeHandler: mtype [%s] filtertypes %d\n", 
 	     mtype.c_str(), filtertypes));
-    Dijon::Filter *h = 0;
+    RecollFilter *h = 0;
 
     // Get handler definition for mime type. We do this even if an
-    // appropriate handler object may be in the cache (indexed by mime
-    // type). This is fast, and necessary to conform to the
+    // appropriate handler object may be in the cache.
+    // This is fast, and necessary to conform to the
     // configuration, (ie: text/html might be filtered out by
     // indexedmimetypes but an html handler could still be in the
     // cache because it was needed by some other interning stack).
     string hs;
     hs = cfg->getMimeHandlerDef(mtype, filtertypes);
+    string id;
 
-    if (!hs.empty()) { // Got a handler definition line
-
-        // Do we already have a handler object in the cache ?
-	h = getMimeHandlerFromCache(mtype);
-	if (h != 0)
-	    goto out;
-	LOGDEB2(("getMimeHandler: %s not in cache\n", mtype.c_str()));
-
-	// Not in cache. Break definition into type and name/command
-        // string and instanciate handler object
+    if (!hs.empty()) { 
+	// Got a handler definition line
+	// Break definition into type (internal/exec/execm) 
+	// and name/command string 
         string::size_type b1 = hs.find_first_of(" \t");
         string handlertype = hs.substr(0, b1);
 	string cmdstr;
@@ -261,7 +270,30 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
 	    cmdstr = hs.substr(b1);
             trimstring(cmdstr);
 	}
-	if (!stringlowercmp("internal", handlertype)) {
+	bool internal = !stringlowercmp("internal", handlertype);
+	if (internal) {
+	    // For internal types let the factory compute the id
+	    mhFactory(cfg, cmdstr.empty() ? mtype : cmdstr, true, id);
+	} else {
+	    // exec/execm: use the md5 of the def line
+	    MD5String(hs, id);
+	}
+
+#if 0
+	{ // string xdigest; LOGDEB2(("getMimeHandler: [%s] hs [%s] id [%s]\n", 
+	  //mtype.c_str(), hs.c_str(), MD5HexPrint(id, xdigest).c_str()));
+	}
+#endif
+
+        // Do we already have a handler object in the cache ?
+	h = getMimeHandlerFromCache(id);
+	if (h != 0)
+	    goto out;
+
+	LOGDEB2(("getMimeHandler: %s not in cache\n", mtype.c_str()));
+
+	// Not in cache. 
+	if (internal) {
 	    // If there is a parameter after "internal" it's the mime
 	    // type to use. This is so that we can have bogus mime
 	    // types like text/x-purple-html-log (for ie: specific
@@ -270,14 +302,7 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
 	    // better and the latter will probably go away at some
 	    // point in the future.
 	    LOGDEB2(("handlertype internal, cmdstr [%s]\n", cmdstr.c_str()));
-	    if (!cmdstr.empty()) {
-		// Have to redo the cache thing. Maybe we should
-		// rather just recurse instead ?
-		if ((h = getMimeHandlerFromCache(cmdstr)) == 0)
-		    h = mhFactory(cfg, cmdstr);
-	    } else {
-		h = mhFactory(cfg, mtype);
-	    }
+	    h = mhFactory(cfg, cmdstr.empty() ? mtype : cmdstr, false, id);
 	    goto out;
 	} else if (!stringlowercmp("dll", handlertype)) {
 	} else {
@@ -287,10 +312,10 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
 		goto out;
 	    }
             if (!stringlowercmp("exec", handlertype)) {
-                h = mhExecFactory(cfg, mtype, cmdstr, false);
+                h = mhExecFactory(cfg, mtype, cmdstr, false, id);
 		goto out;
             } else if (!stringlowercmp("execm", handlertype)) {
-                h = mhExecFactory(cfg, mtype, cmdstr, true);
+                h = mhExecFactory(cfg, mtype, cmdstr, true, id);
 		goto out;
             } else {
 		LOGERR(("getMimeHandler: bad line for %s: %s\n", 
@@ -305,20 +330,20 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
 
     // Finally, unhandled files are either ignored or their name and
     // generic metadata is indexed, depending on configuration
-    {bool indexunknown = false;
+    {
+	bool indexunknown = false;
 	cfg->getConfParam("indexallfilenames", &indexunknown);
 	if (indexunknown) {
-	    if ((h = getMimeHandlerFromCache("application/octet-stream")) == 0)
-		h = new MimeHandlerUnknown(cfg, "application/octet-stream");
-	    goto out;
-	} else {
-	    goto out;
+	    MD5String("MimeHandlerUnknown", id);
+	    if ((h = getMimeHandlerFromCache(id)) == 0)
+		h = new MimeHandlerUnknown(cfg, id);
 	}
+	goto out;
     }
 
 out:
     if (h) {
-	h->set_property(Dijon::Filter::DEFAULT_CHARSET, cfg->getDefCharset());
+	h->set_property(RecollFilter::DEFAULT_CHARSET, cfg->getDefCharset());
 	// In multithread context, and in case this handler is out
 	// from the cache, it may have a config pointer belonging to
 	// another thread. Fix it.

@@ -263,7 +263,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 
     // Look for appropriate handler (might still return empty)
     m_mimetype = l_mime;
-    Dijon::Filter *df = getMimeHandler(l_mime, m_cfg, !m_forPreview);
+    RecollFilter *df = getMimeHandler(l_mime, m_cfg, !m_forPreview);
 
     if (!df or df->is_unknown()) {
 	// No real handler for this type, for now :( 
@@ -284,7 +284,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 #endif //RCL_USE_XATTR
 
     df->set_docsize(docsize);
-    if (!df->set_document_file(m_fn)) {
+    if (!df->set_document_file(l_mime, m_fn)) {
 	delete df;
 	LOGERR(("FileInterner:: error converting %s\n", m_fn.c_str()));
 	return;
@@ -315,7 +315,7 @@ void FileInterner::init(const string &data, RclConfig *cnf,
     m_mimetype = imime;
 
     // Look for appropriate handler (might still return empty)
-    Dijon::Filter *df = getMimeHandler(m_mimetype, m_cfg, !m_forPreview);
+    RecollFilter *df = getMimeHandler(m_mimetype, m_cfg, !m_forPreview);
 
     if (!df) {
 	// No handler for this type, for now :( if indexallfilenames
@@ -329,13 +329,13 @@ void FileInterner::init(const string &data, RclConfig *cnf,
     bool result = false;
     df->set_docsize(data.length());
     if (df->is_data_input_ok(Dijon::Filter::DOCUMENT_STRING)) {
-	result = df->set_document_string(data);
+	result = df->set_document_string(m_mimetype, data);
     } else if (df->is_data_input_ok(Dijon::Filter::DOCUMENT_DATA)) {
-	result = df->set_document_data(data.c_str(), data.length());
+	result = df->set_document_data(m_mimetype, data.c_str(), data.length());
     } else if (df->is_data_input_ok(Dijon::Filter::DOCUMENT_FILE_NAME)) {
 	TempFile temp = dataToTempFile(data, m_mimetype);
 	if (temp.isNotNull() && 
-	    (result = df->set_document_file(temp->filename()))) {
+	    (result = df->set_document_file(m_mimetype, temp->filename()))) {
 	    m_tmpflgs[m_handlers.size()] = true;
 	    m_tempfiles.push_back(temp);
 	}
@@ -406,7 +406,7 @@ bool FileInterner::makesig(RclConfig *cnf, const Rcl::Doc& idoc, string& sig)
 
 FileInterner::~FileInterner()
 {
-    for (vector<Dijon::Filter*>::iterator it = m_handlers.begin();
+    for (vector<RecollFilter*>::iterator it = m_handlers.begin();
 	 it != m_handlers.end(); it++) {
         returnMimeHandler(*it);
     }
@@ -548,7 +548,7 @@ static inline bool getKeyValue(const map<string, string>& docdata,
 
 bool FileInterner::dijontorcl(Rcl::Doc& doc)
 {
-    Dijon::Filter *df = m_handlers.back();
+    RecollFilter *df = m_handlers.back();
     if (df == 0) {
 	//??
 	LOGERR(("FileInterner::dijontorcl: null top handler ??\n"));
@@ -632,7 +632,7 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
     doc.mimetype = m_mimetype;
 
     string ipathel;
-    for (vector<Dijon::Filter*>::const_iterator hit = m_handlers.begin();
+    for (vector<RecollFilter*>::const_iterator hit = m_handlers.begin();
 	 hit != m_handlers.end(); hit++) {
 	const map<string, string>& docdata = (*hit)->get_meta_data();
 	if (getKeyValue(docdata, cstr_dj_keyipath, ipathel)) {
@@ -714,7 +714,7 @@ int FileInterner::addHandler()
 	return ADD_CONTINUE;
     }
 
-    Dijon::Filter *newflt = getMimeHandler(mimetype, m_cfg);
+    RecollFilter *newflt = getMimeHandler(mimetype, m_cfg);
     if (!newflt) {
 	// If we can't find a handler, this doc can't be handled
 	// but there can be other ones so we go on
@@ -740,13 +740,13 @@ int FileInterner::addHandler()
     bool setres = false;
     newflt->set_docsize(txt->length());
     if (newflt->is_data_input_ok(Dijon::Filter::DOCUMENT_STRING)) {
-	setres = newflt->set_document_string(*txt);
+	setres = newflt->set_document_string(mimetype, *txt);
     } else if (newflt->is_data_input_ok(Dijon::Filter::DOCUMENT_DATA)) {
-	setres = newflt->set_document_data(txt->c_str(), txt->length());
+	setres = newflt->set_document_data(mimetype,txt->c_str(),txt->length());
     } else if (newflt->is_data_input_ok(Dijon::Filter::DOCUMENT_FILE_NAME)) {
 	TempFile temp = dataToTempFile(*txt, mimetype);
 	if (temp.isNotNull() && 
-	    (setres = newflt->set_document_file(temp->filename()))) {
+	    (setres = newflt->set_document_file(mimetype, temp->filename()))) {
 	    m_tmpflgs[m_handlers.size()] = true;
 	    m_tempfiles.push_back(temp);
 	    // Hack here, but really helps perfs: if we happen to

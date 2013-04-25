@@ -39,11 +39,11 @@ const int MB = 1024*1024;
 const int KB = 1024;
 
 // Process a plain text file
-bool MimeHandlerText::set_document_file(const string &fn)
+bool MimeHandlerText::set_document_file(const string& mt, const string &fn)
 {
     LOGDEB(("MimeHandlerText::set_document_file: [%s]\n", fn.c_str()));
 
-    RecollFilter::set_document_file(fn);
+    RecollFilter::set_document_file(mt, fn);
     m_fn = fn;
 
     // file size for oversize check
@@ -91,8 +91,9 @@ bool MimeHandlerText::set_document_file(const string &fn)
     return true;
 }
 
-bool MimeHandlerText::set_document_string(const string& otext)
+bool MimeHandlerText::set_document_string(const string& mt, const string& otext)
 {
+    RecollFilter::set_document_string(mt, otext);
     m_text = otext;
     if (!m_forPreview) {
 	string md5, xmd5;

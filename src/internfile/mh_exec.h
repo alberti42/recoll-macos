@@ -56,11 +56,11 @@ class MimeHandlerExec : public RecollFilter {
     bool missingHelper;
     ////////////////
 
-    MimeHandlerExec(RclConfig *cnf, const string& mt) 
-	: RecollFilter(cnf, mt), missingHelper(false) 
+    MimeHandlerExec(RclConfig *cnf, const string& id) 
+	: RecollFilter(cnf, id), missingHelper(false) 
     {}
-    virtual bool set_document_file(const string &file_path) {
-	RecollFilter::set_document_file(file_path);
+    virtual bool set_document_file(const string& mt, const string &file_path) {
+	RecollFilter::set_document_file(mt, file_path);
 	m_fn = file_path;
 	m_havedoc = true;
 	return true;

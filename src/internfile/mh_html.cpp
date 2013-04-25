@@ -34,21 +34,23 @@ using namespace std;
 #endif /* NO_NAMESPACES */
 
 
-bool MimeHandlerHtml::set_document_file(const string &fn)
+bool MimeHandlerHtml::set_document_file(const string& mt, const string &fn)
 {
     LOGDEB0(("textHtmlToDoc: %s\n", fn.c_str()));
-    RecollFilter::set_document_file(fn);
+    RecollFilter::set_document_file(mt, fn);
     string otext;
     if (!file_to_string(fn, otext)) {
 	LOGINFO(("textHtmlToDoc: cant read: %s\n", fn.c_str()));
 	return false;
     }
     m_filename = fn;
-    return set_document_string(otext);
+    return set_document_string(mt, otext);
 }
 
-bool MimeHandlerHtml::set_document_string(const string& htext) 
+bool MimeHandlerHtml::set_document_string(const string& mt, 
+					  const string& htext) 
 {
+    RecollFilter::set_document_string(mt, htext);
     m_html = htext;
     m_havedoc = true;
 
