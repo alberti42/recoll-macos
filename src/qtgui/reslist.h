@@ -67,14 +67,8 @@ class ResList : public RESLIST_PARENTCLASS
     int listId() const {return m_listId;}
     int pageFirstDocNum();
     void setFont();
-    void setRclMain(RclMain *m) 
-    {
-	m_rclmain = m;
-    }
-    void setIsMainList(bool onoff)
-    {
-	m_ismainlist = onoff;
-    }
+    void setRclMain(RclMain *m, bool ismain);
+
  public slots:
     virtual void setDocSource(RefCntr<DocSequence> nsource);
     virtual void resetList();     // Erase current list
@@ -104,7 +98,6 @@ class ResList : public RESLIST_PARENTCLASS
  signals:
     void nextPageAvailable(bool);
     void prevPageAvailable(bool);
-    void docEditClicked(Rcl::Doc);
     void docPreviewClicked(int, Rcl::Doc, int);
     void docSaveToFileClicked(Rcl::Doc);
     void previewRequested(Rcl::Doc);
@@ -145,8 +138,7 @@ class ResList : public RESLIST_PARENTCLASS
     QString    m_text; 
 #endif
     RclMain   *m_rclmain;
-    bool m_ismainlist;
-    bool m_coninit;
+    bool m_ismainres;
 
     virtual void displayPage(); // Display current page
     static int newListId();

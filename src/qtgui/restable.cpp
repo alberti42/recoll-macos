@@ -46,6 +46,10 @@
 #include "plaintorich.h"
 #include "indexer.h"
 #include "respopup.h"
+#include "rclmain_w.h"
+
+static const QKeySequence quitKeySeq("Ctrl+q");
+static const QKeySequence closeKeySeq("Ctrl+w");
 
 // Compensate for the default and somewhat bizarre vertical placement
 // of text in cells
@@ -133,14 +137,14 @@ ResTableDetailArea::ResTableDetailArea(ResTable* parent)
 
 void ResTableDetailArea::createPopupMenu(const QPoint& pos)
 {
-    if (!m_table || m_table->m_detaildocnum < 0) {
-	LOGDEB(("ResTableDetailArea::createPopupMenu: no table/detaildoc\n"));
-	return;
+    if (m_table && m_table->m_model && m_table->m_detaildocnum >= 0) {
+	QMenu *popup = 
+	    ResultPopup::create(m_table, m_table->m_ismainres ? 
+				ResultPopup::showExpand : 0, 
+				m_table->m_model->getDocSource(),
+				m_table->m_detaildoc);
+	popup->popup(mapToGlobal(pos));
     }
-    QMenu *popup = ResultPopup::create(m_table, ResultPopup::showExpand, 
-				       m_table->m_model->getDocSource(),
-				       m_table->m_detaildoc);
-    popup->popup(mapToGlobal(pos));
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -478,7 +482,7 @@ void ResTable::init()
     tableView->setModel(m_model);
     tableView->setMouseTracking(true);
     tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    tableView->setSelectionMode(QAbstractItemView::SingleSelection);
+    tableView->setSelectionMode(QAbstractItemView::ContiguousSelection);
     tableView->setItemDelegate(new ResTableDelegate(this));
     tableView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(tableView, SIGNAL(customContextMenuRequested(const QPoint&)),
@@ -512,7 +516,8 @@ void ResTable::init()
     QShortcut *sc = new QShortcut(seq, this);
     connect(sc, SIGNAL (activated()), 
 	    tableView->selectionModel(), SLOT (clear()));
-    connect(tableView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex &)),
+    connect(tableView->selectionModel(), 
+	    SIGNAL(currentChanged(const QModelIndex&, const QModelIndex &)),
 	    this, SLOT(onTableView_currentChanged(const QModelIndex&)));
 
     m_pager = new ResTablePager(this);
@@ -539,6 +544,24 @@ void ResTable::init()
     splitter->setOrientation(Qt::Vertical);
 }
 
+void ResTable::setRclMain(RclMain *m, bool ismain) 
+{
+    m_rclmain = m;
+    m_ismainres = ismain;
+    if (!m_ismainres) {
+	connect(new QShortcut(closeKeySeq, this), SIGNAL (activated()), 
+		this, SLOT (close()));
+	connect(new QShortcut(quitKeySeq, this), SIGNAL (activated()), 
+		m_rclmain, SLOT (fileExit()));
+	connect(this, SIGNAL(previewRequested(Rcl::Doc)), 
+		m_rclmain, SLOT(startPreview(Rcl::Doc)));
+	connect(this, SIGNAL(docSaveToFileClicked(Rcl::Doc)), 
+		m_rclmain, SLOT(saveDocToFile(Rcl::Doc)));
+	connect(this, SIGNAL(editRequested(Rcl::Doc)), 
+		m_rclmain, SLOT(startNativeViewer(Rcl::Doc)));
+    }
+}
+
 int ResTable::getDetailDocNumOrTopRow()
 {
     if (m_detaildocnum >= 0)
@@ -560,6 +583,8 @@ void ResTable::makeRowVisible(int row)
 // This is called by rclmain_w prior to exiting
 void ResTable::saveColState()
 {
+    if (!m_ismainres)
+	return;
     QSettings settings;
     settings.setValue("resTableSplitterSizes", splitter->saveState());
 
@@ -718,7 +743,7 @@ void ResTable::linkWasClicked(const QUrl &url)
 	if (what == 'P')
 	    emit docPreviewClicked(i, m_detaildoc, 0);
 	else
-	    emit docEditClicked(m_detaildoc);
+	    emit editRequested(m_detaildoc);
     }
     break;
     default: 
@@ -730,19 +755,23 @@ void ResTable::linkWasClicked(const QUrl &url)
 void ResTable::createPopupMenu(const QPoint& pos)
 {
     LOGDEB(("ResTable::createPopupMenu: m_detaildocnum %d\n", m_detaildocnum));
-    if (m_detaildocnum < 0)
-	return;
-    QMenu *popup = ResultPopup::create(this, ResultPopup::showExpand, 
-				       m_model->getDocSource(),
-				       m_detaildoc);
-    popup->popup(mapToGlobal(pos));
+    if (m_detaildocnum >= 0 && m_model) {
+	QMenu *popup = 
+	    ResultPopup::create(this, m_ismainres? ResultPopup::isMain : 0, 
+				m_model->getDocSource(), m_detaildoc);
+	popup->popup(mapToGlobal(pos));
+    }
 }
 
 void ResTable::menuPreview()
 {
-    if (m_detaildocnum < 0) 
-	return;
-    emit docPreviewClicked(m_detaildocnum, m_detaildoc, 0);
+    if (m_detaildocnum >= 0) {
+	if (m_ismainres) {
+	    emit docPreviewClicked(m_detaildocnum, m_detaildoc, 0);
+	} else {
+	    emit previewRequested(m_detaildoc);
+	}
+    }
 }
 
 void ResTable::menuSaveToFile()
@@ -775,7 +804,7 @@ void ResTable::menuOpenParent()
 void ResTable::menuEdit()
 {
     if (m_detaildocnum >= 0) 
-	emit docEditClicked(m_detaildoc);
+	emit editRequested(m_detaildoc);
 }
 
 void ResTable::menuCopyFN()
@@ -850,10 +879,7 @@ void ResTable::addColumn()
     if (!m_model)
 	return;
     QAction *action = (QAction *)sender();
-    LOGDEB(("addColumn: text %s, data %s\n", 
-	    (const char *)action->text().toUtf8(),
-	    (const char *)action->data().toString().toUtf8()
-	       ));
-    string field((const char *)action->data().toString().toUtf8());
-    m_model->addColumn(m_popcolumn, field);
+    LOGDEB(("addColumn: text %s, data %s\n", qs2utf8s(action->text()).c_str(), 
+	    qs2utf8s(action->data().toString()).c_str()));
+    m_model->addColumn(m_popcolumn, qs2utf8s(action->data().toString()));
 }

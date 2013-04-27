@@ -100,6 +100,7 @@ private:
 
 class ResTablePager;
 class QUrl;
+class RclMain;
 
 class ResTable : public QWidget, public Ui::ResTable 
 {
@@ -108,7 +109,8 @@ class ResTable : public QWidget, public Ui::ResTable
 public:
     ResTable(QWidget* parent = 0) 
 	: QWidget(parent),
-	  m_model(0), m_pager(0), m_detail(0), m_detaildocnum(-1)
+	  m_model(0), m_pager(0), m_detail(0), m_detaildocnum(-1),
+	  m_rclmain(0), m_ismainres(true)
     {
 	setupUi(this);
 	init();
@@ -118,6 +120,8 @@ public:
     virtual RecollModel *getModel() {return m_model;}
     virtual ResTableDetailArea* getDetailArea() {return m_detail;}
     virtual int getDetailDocNumOrTopRow();
+
+    void setRclMain(RclMain *m, bool ismain);
 
 public slots:
     virtual void onTableView_currentChanged(const QModelIndex&);
@@ -147,7 +151,6 @@ public slots:
 
 signals:
     void docPreviewClicked(int, Rcl::Doc, int);
-    void docEditClicked(Rcl::Doc);
     void docSaveToFileClicked(Rcl::Doc);
     void previewRequested(Rcl::Doc);
     void editRequested(Rcl::Doc);
@@ -165,6 +168,8 @@ private:
     int            m_detaildocnum;
     Rcl::Doc       m_detaildoc;
     int            m_popcolumn;
+    RclMain *m_rclmain;
+    bool     m_ismainres;
 };
 
 

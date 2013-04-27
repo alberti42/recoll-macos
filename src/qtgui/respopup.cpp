@@ -53,11 +53,11 @@ QMenu *create(QWidget *me, int opts, RefCntr<DocSequence> source, Rcl::Doc& doc)
     if (opts & showExpand)
 	popup->addAction(me->tr("Find &similar documents"), 
 			 me, SLOT(menuExpand()));
-    if (doc.haspages && source->snippetsCapable()) 
+    if (doc.haspages && source.isNotNull() && source->snippetsCapable()) 
 	popup->addAction(me->tr("Open &Snippets window"), 
 			 me, SLOT(menuOpenSnippets()));
 
-    if (rcldb && rcldb->hasSubDocs(doc)) 
+    if ((opts & showSubs) && rcldb && rcldb->hasSubDocs(doc)) 
 	popup->addAction(me->tr("Show subdocuments / attachments"), 
 			 me, SLOT(menuShowSubDocs()));
     return popup;

@@ -43,6 +43,7 @@ SOURCES += \
         crontool.cpp \
         guiutils.cpp \
         main.cpp \
+        multisave.cpp \
         preview_w.cpp \
         ptrans_w.cpp \
         rclhelp.cpp \
@@ -67,6 +68,7 @@ FORMS   = \
         firstidx.ui \
         idxsched.ui \
         listdialog.ui \
+        multisave.ui \
         ptrans.ui \
         rclmain.ui \
         restable.ui \

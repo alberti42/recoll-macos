@@ -279,6 +279,8 @@ void RclMain::init()
 	    reslist, SLOT(showQueryDetails()));
     connect(periodictimer, SIGNAL(timeout()), 
 	    this, SLOT(periodic100()));
+
+    restable->setRclMain(this, true);
     connect(this, SIGNAL(docSourceChanged(RefCntr<DocSequence>)),
 	    restable, SLOT(setDocSource(RefCntr<DocSequence>)));
     connect(this, SIGNAL(searchReset()), 
@@ -290,8 +292,7 @@ void RclMain::init()
 
     connect(restable->getModel(), SIGNAL(sortDataChanged(DocSeqSortSpec)),
 	    this, SLOT(onSortDataChanged(DocSeqSortSpec)));
-    connect(restable, SIGNAL(docEditClicked(Rcl::Doc)), 
-	    this, SLOT(startNativeViewer(Rcl::Doc)));
+
     connect(restable, SIGNAL(docPreviewClicked(int, Rcl::Doc, int)), 
 	    this, SLOT(startPreview(int, Rcl::Doc, int)));
     connect(restable, SIGNAL(docExpand(Rcl::Doc)), 
@@ -305,7 +306,7 @@ void RclMain::init()
     connect(restable, SIGNAL(docSaveToFileClicked(Rcl::Doc)), 
 	    this, SLOT(saveDocToFile(Rcl::Doc)));
 
-    reslist->setRclMain(this);
+    reslist->setRclMain(this, true);
     connect(this, SIGNAL(docSourceChanged(RefCntr<DocSequence>)),
 	    reslist, SLOT(setDocSource(RefCntr<DocSequence>)));
     connect(firstPageAction, SIGNAL(activated()), 
@@ -321,8 +322,6 @@ void RclMain::init()
 
     connect(reslist, SIGNAL(hasResults(int)), 
 	    this, SLOT(resultCount(int)));
-    connect(reslist, SIGNAL(docExpand(Rcl::Doc)), 
-	    this, SLOT(docExpand(Rcl::Doc)));
     connect(reslist, SIGNAL(wordSelect(QString)),
 	    sSearch, SLOT(addTerm(QString)));
     connect(reslist, SIGNAL(wordReplace(const QString&, const QString&)),
@@ -331,8 +330,9 @@ void RclMain::init()
 	    this, SLOT(enableNextPage(bool)));
     connect(reslist, SIGNAL(prevPageAvailable(bool)), 
 	    this, SLOT(enablePrevPage(bool)));
-    connect(reslist, SIGNAL(docEditClicked(Rcl::Doc)), 
-	    this, SLOT(startNativeViewer(Rcl::Doc)));
+
+    connect(reslist, SIGNAL(docExpand(Rcl::Doc)), 
+	    this, SLOT(docExpand(Rcl::Doc)));
     connect(reslist, SIGNAL(showSnippets(Rcl::Doc)), 
 	    this, SLOT(showSnippets(Rcl::Doc)));
     connect(reslist, SIGNAL(showSubDocs(Rcl::Doc)), 
@@ -1579,9 +1579,9 @@ void RclMain::showSubDocs(Rcl::Doc doc)
     RefCntr<DocSequence> 
 	source(new DocSource(theconfig, RefCntr<DocSequence>(src)));
 
-    ResList *res = new ResList();
-    res->setRclMain(this);
-    res->setIsMainList(0);
+    ResTable *res = new ResTable();
+//    ResList *res = new ResList();
+    res->setRclMain(this, false);
     res->setDocSource(source);
     res->readDocSource();
     res->show();

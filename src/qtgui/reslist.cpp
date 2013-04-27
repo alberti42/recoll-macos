@@ -277,7 +277,7 @@ static PlainToRichQtReslist g_hiliter;
 
 ResList::ResList(QWidget* parent, const char* name)
     : RESLIST_PARENTCLASS(parent), m_curPvDoc(-1), m_lstClckMod(0), 
-      m_listId(0), m_rclmain(0), m_ismainlist(true), m_coninit(false)
+      m_listId(0), m_rclmain(0), m_ismainres(true)
 {
     if (!name)
 	setObjectName("resList");
@@ -344,6 +344,24 @@ ResList::~ResList()
     };
 }
 
+void ResList::setRclMain(RclMain *m, bool ismain) 
+{
+    m_rclmain = m;
+    m_ismainres = ismain;
+    if (!m_ismainres) {
+	connect(new QShortcut(closeKeySeq, this), SIGNAL (activated()), 
+		this, SLOT (close()));
+	connect(new QShortcut(quitKeySeq, this), SIGNAL (activated()), 
+		m_rclmain, SLOT (fileExit()));
+	connect(this, SIGNAL(previewRequested(Rcl::Doc)), 
+		m_rclmain, SLOT(startPreview(Rcl::Doc)));
+	connect(this, SIGNAL(docSaveToFileClicked(Rcl::Doc)), 
+		m_rclmain, SLOT(saveDocToFile(Rcl::Doc)));
+	connect(this, SIGNAL(editRequested(Rcl::Doc)), 
+		m_rclmain, SLOT(startNativeViewer(Rcl::Doc)));
+    }
+}
+
 void ResList::setFont()
 {
 #ifdef RESLIST_TEXTBROWSER
@@ -379,21 +397,6 @@ void ResList::setDocSource(RefCntr<DocSequence> nsource)
 {
     LOGDEB(("ResList::setDocSource()\n"));
     m_source = RefCntr<DocSequence>(new DocSource(theconfig, nsource));
-    if (!m_ismainlist && !m_coninit) {
-	m_coninit = true;
-	connect(new QShortcut(closeKeySeq, this), SIGNAL (activated()), 
-		this, SLOT (close()));
-	connect(new QShortcut(quitKeySeq, this), SIGNAL (activated()), 
-		m_rclmain, SLOT (fileExit()));
-	connect(this, SIGNAL(previewRequested(Rcl::Doc)), 
-		m_rclmain, SLOT(startPreview(Rcl::Doc)));
-	connect(this, SIGNAL(docEditClicked(Rcl::Doc)), 
-		m_rclmain, SLOT(startNativeViewer(Rcl::Doc)));
-	connect(this, SIGNAL(docSaveToFileClicked(Rcl::Doc)), 
-		m_rclmain, SLOT(saveDocToFile(Rcl::Doc)));
-	connect(this, SIGNAL(editRequested(Rcl::Doc)), 
-		m_rclmain, SLOT(startNativeViewer(Rcl::Doc)));
-    }
 }
 
 // A query was executed, or the filtering/sorting parameters changed,
@@ -912,13 +915,13 @@ void ResList::linkWasClicked(const QUrl &url)
 	    return;
 	}
 	if (what == 'P') {
-	    if (m_ismainlist) {
+	    if (m_ismainres) {
 		emit docPreviewClicked(i, doc, m_lstClckMod);
 	    } else {
 		emit previewRequested(doc);
 	    }
 	} else {
-	    emit docEditClicked(doc);
+	    emit editRequested(doc);
 	}
     }
     break;
@@ -979,8 +982,8 @@ void ResList::createPopupMenu(const QPoint& pos)
     if (!getDoc(m_popDoc, doc))
 	return;
     int options = 0;
-    if (m_ismainlist)
-	options |= ResultPopup::showExpand;
+    if (m_ismainres)
+	options |= ResultPopup::isMain;
     QMenu *popup = ResultPopup::create(this, options, m_source, doc);
     popup->popup(mapToGlobal(pos));
 }
@@ -989,7 +992,7 @@ void ResList::menuPreview()
 {
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc)) {
-	if (m_ismainlist) {
+	if (m_ismainres) {
 	    emit docPreviewClicked(m_popDoc, doc, 0);
 	} else {
 	    emit previewRequested(doc);
@@ -1042,7 +1045,7 @@ void ResList::menuEdit()
 {
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc))
-	emit docEditClicked(doc);
+	emit editRequested(doc);
 }
 
 void ResList::menuCopyFN()
