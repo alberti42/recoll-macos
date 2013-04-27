@@ -92,7 +92,7 @@ class ResList : public RESLIST_PARENTCLASS
     virtual void menuExpand();
     virtual void menuPreviewParent();
     virtual void menuOpenParent();
-    virtual void menuOpenSnippets();
+    virtual void menuShowSnippets();
     virtual void menuShowSubDocs();
     virtual void previewExposed(int);
     virtual void append(const QString &text);
@@ -108,6 +108,7 @@ class ResList : public RESLIST_PARENTCLASS
     void docPreviewClicked(int, Rcl::Doc, int);
     void docSaveToFileClicked(Rcl::Doc);
     void previewRequested(Rcl::Doc);
+    void showSnippets(Rcl::Doc);
     void showSubDocs(Rcl::Doc);
     void editRequested(Rcl::Doc);
     void docExpand(Rcl::Doc);
@@ -153,7 +154,6 @@ class ResList : public RESLIST_PARENTCLASS
     bool scrollIsAtTop();
     bool scrollIsAtBottom();
     void setupArrows();
-    void newSnippetsW(const Rcl::Doc &doc);
     void newDupsW(const Rcl::Doc& doc, const std::vector<Rcl::Doc>& dups);
 };
 

@@ -81,6 +81,7 @@ using std::pair;
 #include "indexer.h"
 #include "rclzg.h"
 #include "fileudi.h"
+#include "snippets_w.h"
 
 using namespace confgui;
 
@@ -90,6 +91,7 @@ using namespace confgui;
 
 QString g_stringAllStem, g_stringNoStem;
 static const QKeySequence quitKeySeq("Ctrl+q");
+static const QKeySequence closeKeySeq("Ctrl+w");
 
 void RclMain::init()
 {
@@ -294,6 +296,8 @@ void RclMain::init()
 	    this, SLOT(startPreview(int, Rcl::Doc, int)));
     connect(restable, SIGNAL(docExpand(Rcl::Doc)), 
 	    this, SLOT(docExpand(Rcl::Doc)));
+    connect(restable, SIGNAL(showSubDocs(Rcl::Doc)), 
+	    this, SLOT(showSubDocs(Rcl::Doc)));
     connect(restable, SIGNAL(previewRequested(Rcl::Doc)), 
 	    this, SLOT(startPreview(Rcl::Doc)));
     connect(restable, SIGNAL(editRequested(Rcl::Doc)), 
@@ -329,6 +333,8 @@ void RclMain::init()
 	    this, SLOT(enablePrevPage(bool)));
     connect(reslist, SIGNAL(docEditClicked(Rcl::Doc)), 
 	    this, SLOT(startNativeViewer(Rcl::Doc)));
+    connect(reslist, SIGNAL(showSnippets(Rcl::Doc)), 
+	    this, SLOT(showSnippets(Rcl::Doc)));
     connect(reslist, SIGNAL(showSubDocs(Rcl::Doc)), 
 	    this, SLOT(showSubDocs(Rcl::Doc)));
     connect(reslist, SIGNAL(docSaveToFileClicked(Rcl::Doc)), 
@@ -1539,6 +1545,18 @@ static bool lookForHtmlBrowser(string &exefile)
     }
     exefile.clear();
     return false;
+}
+
+void RclMain::showSnippets(Rcl::Doc doc)
+{
+    SnippetsW *sp = new SnippetsW(doc, m_source);
+    connect(sp, SIGNAL(startNativeViewer(Rcl::Doc, int, QString)),
+	    this, SLOT(startNativeViewer(Rcl::Doc, int, QString)));
+    connect(new QShortcut(quitKeySeq, sp), SIGNAL (activated()), 
+	    this, SLOT (fileExit()));
+    connect(new QShortcut(closeKeySeq, sp), SIGNAL (activated()), 
+	    sp, SLOT (close()));
+    sp->show();
 }
 
 void RclMain::showSubDocs(Rcl::Doc doc)

@@ -136,6 +136,7 @@ public slots:
     virtual void menuExpand();
     virtual void menuPreviewParent();
     virtual void menuOpenParent();
+    virtual void menuShowSubDocs();
     virtual void createHeaderPopupMenu(const QPoint&);
     virtual void deleteColumn();
     virtual void addColumn();
@@ -152,6 +153,7 @@ signals:
     void editRequested(Rcl::Doc);
     void headerClicked();
     void docExpand(Rcl::Doc);
+    void showSubDocs(Rcl::Doc);
 
     friend class ResTablePager;
     friend class ResTableDetailArea;

@@ -31,7 +31,6 @@
 #include <qtimer.h>
 #include <qmessagebox.h>
 #include <qimage.h>
-#include <qclipboard.h>
 #include <qscrollbar.h>
 #include <QTextBlock>
 #include <QShortcut>
@@ -59,6 +58,7 @@
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"
 #endif
+#include "respopup.h"
 
 static const QKeySequence quitKeySeq("Ctrl+q");
 static const QKeySequence closeKeySeq("Ctrl+w");
@@ -815,20 +815,6 @@ void ResList::mouseDoubleClickEvent(QMouseEvent *event)
 #endif
 }
 
-void ResList::newSnippetsW(const Rcl::Doc& doc)
-{
-    SnippetsW *sp = new SnippetsW(doc, m_source);
-    if (m_rclmain) {
-	connect(sp, SIGNAL(startNativeViewer(Rcl::Doc, int, QString)),
-		m_rclmain, SLOT(startNativeViewer(Rcl::Doc, int, QString)));
-	connect(new QShortcut(quitKeySeq, sp), SIGNAL (activated()), 
-		m_rclmain, SLOT (fileExit()));
-    }
-    connect(new QShortcut(closeKeySeq, sp), SIGNAL (activated()), 
-	    sp, SLOT (close()));
-    sp->show();
-}
-
 void ResList::newDupsW(const Rcl::Doc&, const vector<Rcl::Doc>& dups)
 {
     ListDialog dialog;
@@ -886,7 +872,7 @@ void ResList::linkWasClicked(const QUrl &url)
 	    LOGERR(("ResList::linkWasClicked: can't get doc for %d\n", i));
 	    return;
 	}
-	newSnippetsW(doc);
+	emit(showSnippets(doc));
     }
     break;
 
@@ -990,45 +976,12 @@ void ResList::createPopupMenu(const QPoint& pos)
     if (m_popDoc < 0) 
 	return;
     Rcl::Doc doc;
-    bool havedoc = getDoc(m_popDoc, doc);
-    string apptag;
-    if (havedoc)
-	doc.getmeta(Rcl::Doc::keyapptg, &apptag);
-
-    QMenu *popup = new QMenu(this);
-
-    popup->addAction(tr("&Preview"), this, SLOT(menuPreview()));
-
-    if (havedoc && 
-	!theconfig->getMimeViewerDef(doc.mimetype, apptag, 0).empty()) {
-	popup->addAction(tr("&Open"), this, SLOT(menuEdit()));
-    }
-    popup->addAction(tr("Copy &File Name"), this, SLOT(menuCopyFN()));
-    popup->addAction(tr("Copy &URL"), this, SLOT(menuCopyURL()));
-    if (havedoc && !doc.ipath.empty()) {
-	popup->addAction(tr("&Write to File"), this, SLOT(menuSaveToFile()));
-    }
-
+    if (!getDoc(m_popDoc, doc))
+	return;
+    int options = 0;
     if (m_ismainlist)
-	popup->addAction(tr("Find &similar documents"), 
-			 this, SLOT(menuExpand()));
-
-    Rcl::Doc pdoc;
-    if (m_source.isNotNull() && m_source->getEnclosing(doc, pdoc))
-	popup->addAction(tr("Preview P&arent document/folder"), 
-			 this, SLOT(menuPreviewParent()));
-
-    popup->addAction(tr("&Open Parent document/folder"), 
-		     this, SLOT(menuOpenParent()));
-
-    if (havedoc && doc.haspages && m_source->snippetsCapable()) 
-	popup->addAction(tr("Open &Snippets window"), 
-			 this, SLOT(menuOpenSnippets()));
-
-    if (havedoc && rcldb && rcldb->hasSubDocs(doc)) 
-	popup->addAction(tr("Show subdocuments / attachments"), 
-			 this, SLOT(menuShowSubDocs()));
-
+	options |= ResultPopup::showExpand;
+    QMenu *popup = ResultPopup::create(this, options, m_source, doc);
     popup->popup(mapToGlobal(pos));
 }
 
@@ -1054,45 +1007,28 @@ void ResList::menuSaveToFile()
 void ResList::menuPreviewParent()
 {
     Rcl::Doc doc;
-    if (!getDoc(m_popDoc, doc) || m_source.isNull()) 
-	return;
-    Rcl::Doc pdoc;
-    if (m_source->getEnclosing(doc, pdoc)) {
-	emit previewRequested(pdoc);
-    } else {
-	// No parent doc: show enclosing folder with app configured for
-	// directories
-	pdoc.url = path_getfather(doc.url);
-	pdoc.mimetype = "inode/directory";
-	emit editRequested(pdoc);
+    if (getDoc(m_popDoc, doc) && !m_source.isNull())  {
+	Rcl::Doc pdoc = ResultPopup::getParent(m_source, doc);
+	if (pdoc.mimetype == "inode/directory") {
+	    emit editRequested(pdoc);
+	} else {
+	    emit previewRequested(pdoc);
+	}
     }
 }
 
 void ResList::menuOpenParent()
 {
     Rcl::Doc doc;
-    if (!getDoc(m_popDoc, doc) || m_source.isNull()) 
-	return;
-    Rcl::Doc pdoc;
-    if (m_source->getEnclosing(doc, pdoc)) {
-	emit editRequested(pdoc);
-    } else {
-	// No parent doc: show enclosing folder with app configured for
-	// directories
-	pdoc.url = path_getfather(doc.url);
-	pdoc.meta[Rcl::Doc::keychildurl] = doc.url;
-	pdoc.meta[Rcl::Doc::keyapptg] = "parentopen";
-	pdoc.mimetype = "inode/directory";
-	emit editRequested(pdoc);
-    }
+    if (getDoc(m_popDoc, doc) && m_source.isNotNull()) 
+	emit editRequested(ResultPopup::getParent(m_source, doc));
 }
 
-void ResList::menuOpenSnippets()
+void ResList::menuShowSnippets()
 {
     Rcl::Doc doc;
-    if (!getDoc(m_popDoc, doc) || m_source.isNull()) 
-	return;
-    newSnippetsW(doc);
+    if (getDoc(m_popDoc, doc))
+	emit showSnippets(doc);
 }
 
 void ResList::menuShowSubDocs()
@@ -1111,34 +1047,16 @@ void ResList::menuEdit()
 
 void ResList::menuCopyFN()
 {
-    LOGDEB(("menuCopyFN\n"));
     Rcl::Doc doc;
-    if (getDoc(m_popDoc, doc)) {
-	LOGDEB(("menuCopyFN: Got doc, fn: [%s]\n", doc.url.c_str()));
-	// Our urls currently always begin with "file://" 
-        //
-        // Problem: setText expects a QString. Passing a (const char*)
-        // as we used to do causes an implicit conversion from
-        // latin1. File are binary and the right approach would be no
-        // conversion, but it's probably better (less worse...) to
-        // make a "best effort" tentative and try to convert from the
-        // locale's charset than accept the default conversion.
-        QString qfn = QString::fromLocal8Bit(doc.url.c_str()+7);
-	QApplication::clipboard()->setText(qfn, QClipboard::Selection);
-	QApplication::clipboard()->setText(qfn, QClipboard::Clipboard);
-    }
+    if (getDoc(m_popDoc, doc))
+	ResultPopup::copyFN(doc);
 }
 
 void ResList::menuCopyURL()
 {
     Rcl::Doc doc;
-    if (getDoc(m_popDoc, doc)) {
-	string url =  url_encode(doc.url, 7);
-	QApplication::clipboard()->setText(url.c_str(), 
-					   QClipboard::Selection);
-	QApplication::clipboard()->setText(url.c_str(), 
-					   QClipboard::Clipboard);
-    }
+    if (getDoc(m_popDoc, doc))
+	ResultPopup::copyURL(doc);
 }
 
 void ResList::menuExpand()

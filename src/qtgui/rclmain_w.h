@@ -119,6 +119,7 @@ public slots:
     virtual void enablePrevPage(bool);
     virtual void docExpand(Rcl::Doc);
     virtual void showSubDocs(Rcl::Doc);
+    virtual void showSnippets(Rcl::Doc);
     virtual void startPreview(int docnum, Rcl::Doc doc, int keymods);
     virtual void startPreview(Rcl::Doc);
     virtual void startNativeViewer(Rcl::Doc, int pagenum = -1, 

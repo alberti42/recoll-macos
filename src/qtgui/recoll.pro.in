@@ -48,6 +48,7 @@ SOURCES += \
         rclhelp.cpp \
         rclmain_w.cpp \
         rclzg.cpp \
+        respopup.cpp \
         reslist.cpp \
         restable.cpp \
         rtitool.cpp \

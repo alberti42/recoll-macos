@@ -31,7 +31,6 @@
 #include <QTextDocument>
 #include <QPainter>
 #include <QSplitter>
-#include <QClipboard>
 #include <QFileDialog>
 #include <QMessageBox>
 
@@ -46,6 +45,7 @@
 #include "rclconfig.h"
 #include "plaintorich.h"
 #include "indexer.h"
+#include "respopup.h"
 
 // Compensate for the default and somewhat bizarre vertical placement
 // of text in cells
@@ -137,18 +137,9 @@ void ResTableDetailArea::createPopupMenu(const QPoint& pos)
 	LOGDEB(("ResTableDetailArea::createPopupMenu: no table/detaildoc\n"));
 	return;
     }
-    QMenu *popup = new QMenu(this);
-    popup->addAction(tr("&Preview"), m_table, SLOT(menuPreview()));
-    popup->addAction(tr("&Open"), m_table, SLOT(menuEdit()));
-    popup->addAction(tr("Copy &File Name"), m_table, SLOT(menuCopyFN()));
-    popup->addAction(tr("Copy &URL"), m_table, SLOT(menuCopyURL()));
-    if (!m_table->m_detaildoc.ipath.empty())
-	popup->addAction(tr("&Write to File"), m_table, SLOT(menuSaveToFile()));
-    popup->addAction(tr("Find &similar documents"), m_table, SLOT(menuExpand()));
-    popup->addAction(tr("Preview P&arent document/folder"), 
-		      m_table, SLOT(menuPreviewParent()));
-    popup->addAction(tr("&Open Parent document/folder"), 
-		      m_table, SLOT(menuOpenParent()));
+    QMenu *popup = ResultPopup::create(m_table, ResultPopup::showExpand, 
+				       m_table->m_model->getDocSource(),
+				       m_table->m_detaildoc);
     popup->popup(mapToGlobal(pos));
 }
 
@@ -503,6 +494,7 @@ void ResTable::init()
 	header->setSortIndicatorShown(true);
 	header->setSortIndicator(-1, Qt::AscendingOrder);
 	header->setContextMenuPolicy(Qt::CustomContextMenu);
+	header->setStretchLastSection(1);
 	connect(header, SIGNAL(sectionResized(int,int,int)),
 		this, SLOT(saveColState()));
 	connect(header, SIGNAL(customContextMenuRequested(const QPoint&)),
@@ -740,25 +732,9 @@ void ResTable::createPopupMenu(const QPoint& pos)
     LOGDEB(("ResTable::createPopupMenu: m_detaildocnum %d\n", m_detaildocnum));
     if (m_detaildocnum < 0)
 	return;
-    QMenu *popup = new QMenu(this);
-    popup->addAction(tr("&Preview"), this, SLOT(menuPreview()));
-    popup->addAction(tr("&Open"), this, SLOT(menuEdit()));
-    popup->addAction(tr("Copy &File Name"), this, SLOT(menuCopyFN()));
-    popup->addAction(tr("Copy &URL"), this, SLOT(menuCopyURL()));
-
-    if (m_detaildoc.ipath.empty())
-	popup->addAction(tr("&Write to File"), this, SLOT(menuSaveToFile()));
-
-    popup->addAction(tr("Find &similar documents"), this, SLOT(menuExpand()));
-
-    RefCntr<DocSequence> source = m_model->getDocSource();
-    Rcl::Doc pdoc;
-    if (source.isNotNull() && source->getEnclosing(m_detaildoc, pdoc))
-	popup->addAction(tr("Preview P&arent document/folder"), 
-			 this, SLOT(menuPreviewParent()));
-
-    popup->addAction(tr("&Open Parent document/folder"), 
-		      this, SLOT(menuOpenParent()));
+    QMenu *popup = ResultPopup::create(this, ResultPopup::showExpand, 
+				       m_model->getDocSource(),
+				       m_detaildoc);
     popup->popup(mapToGlobal(pos));
 }
 
@@ -771,98 +747,59 @@ void ResTable::menuPreview()
 
 void ResTable::menuSaveToFile()
 {
-    if (m_detaildocnum < 0) 
-	return;
-    emit docSaveToFileClicked(m_detaildoc);
+    if (m_detaildocnum >= 0) 
+	emit docSaveToFileClicked(m_detaildoc);
 }
 
 void ResTable::menuPreviewParent()
 {
-    if (!m_model || m_detaildocnum < 0) 
-	return;
-    RefCntr<DocSequence> source = m_model->getDocSource();
-    if (source.isNull())
-	return;
-    Rcl::Doc& doc = m_detaildoc;
-    Rcl::Doc pdoc;
-    if (source->getEnclosing(doc, pdoc)) {
-	emit previewRequested(pdoc);
-    } else {
-	// No parent doc: show enclosing folder with app configured for
-	// directories
-	pdoc.url = path_getfather(doc.url);
-	pdoc.meta[Rcl::Doc::keychildurl] = doc.url;
-	pdoc.meta[Rcl::Doc::keyapptg] = "parentopen";
-	pdoc.mimetype = "inode/directory";
-	emit editRequested(pdoc);
+    if (m_detaildocnum >= 0 && m_model &&  
+	m_model->getDocSource().isNotNull()) {
+	Rcl::Doc pdoc = ResultPopup::getParent(m_model->getDocSource(), 
+					      m_detaildoc);
+	if (pdoc.mimetype == "inode/directory") {
+	    emit editRequested(pdoc);
+	} else {
+	    emit previewRequested(pdoc);
+	}
     }
 }
 
 void ResTable::menuOpenParent()
 {
-    if (!m_model || m_detaildocnum < 0) 
-	return;
-    RefCntr<DocSequence> source = m_model->getDocSource();
-    if (source.isNull())
-	return;
-    Rcl::Doc& doc = m_detaildoc;
-    Rcl::Doc pdoc;
-    if (source->getEnclosing(doc, pdoc)) {
-	emit editRequested(pdoc);
-    } else {
-	// No parent doc: show enclosing folder with app configured for
-	// directories
-	pdoc.url = path_getfather(doc.url);
-	pdoc.meta[Rcl::Doc::keychildurl] = doc.url;
-	pdoc.meta[Rcl::Doc::keyapptg] = "parentopen";
-	pdoc.mimetype = "inode/directory";
-	emit editRequested(pdoc);
-    }
+    if (m_detaildocnum >= 0 && m_model && m_model->getDocSource().isNotNull())
+	emit editRequested(
+	    ResultPopup::getParent(m_model->getDocSource(), m_detaildoc));
 }
 
 void ResTable::menuEdit()
 {
-    if (m_detaildocnum < 0) 
-	return;
-    emit docEditClicked(m_detaildoc);
+    if (m_detaildocnum >= 0) 
+	emit docEditClicked(m_detaildoc);
 }
 
 void ResTable::menuCopyFN()
 {
-    if (m_detaildocnum < 0) 
-	return;
-    Rcl::Doc &doc = m_detaildoc;
-
-    // Our urls currently always begin with "file://" 
-    //
-    // Problem: setText expects a QString. Passing a (const char*)
-    // as we used to do causes an implicit conversion from
-    // latin1. File are binary and the right approach would be no
-    // conversion, but it's probably better (less worse...) to
-    // make a "best effort" tentative and try to convert from the
-    // locale's charset than accept the default conversion.
-    QString qfn = QString::fromLocal8Bit(doc.url.c_str()+7);
-    QApplication::clipboard()->setText(qfn, QClipboard::Selection);
-    QApplication::clipboard()->setText(qfn, QClipboard::Clipboard);
+    if (m_detaildocnum >= 0) 
+	ResultPopup::copyFN(m_detaildoc);
 }
 
 void ResTable::menuCopyURL()
 {
-    if (m_detaildocnum < 0) 
-	return;
-    Rcl::Doc &doc = m_detaildoc;
-    string url =  url_encode(doc.url, 7);
-    QApplication::clipboard()->setText(url.c_str(), 
-				       QClipboard::Selection);
-    QApplication::clipboard()->setText(url.c_str(), 
-				       QClipboard::Clipboard);
+    if (m_detaildocnum >= 0) 
+	ResultPopup::copyURL(m_detaildoc);
 }
 
 void ResTable::menuExpand()
 {
-    if (m_detaildocnum < 0) 
-	return;
-    emit docExpand(m_detaildoc);
+    if (m_detaildocnum >= 0) 
+	emit docExpand(m_detaildoc);
+}
+
+void ResTable::menuShowSubDocs()
+{
+    if (m_detaildocnum >= 0)
+	emit showSubDocs(m_detaildoc);
 }
 
 void ResTable::createHeaderPopupMenu(const QPoint& pos)
