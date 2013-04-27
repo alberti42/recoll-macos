@@ -17,6 +17,8 @@
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
 
+#include <math.h>
+
 #include <string>
 #include <vector>
 
@@ -66,6 +68,10 @@ public:
     }
     virtual ~TextSplit() {}
 
+    virtual void setMaxWordLength(int l)
+    {
+	m_maxWordLength = l;
+    }
     /** Split text, emit words and positions. */
     virtual bool text_to_words(const string &in);
 
@@ -103,6 +109,67 @@ public:
     /** Is char CJK ? */
     static bool isCJK(int c);
 
+    /** Statistics about word length (average and dispersion) can
+     * detect bad data like undecoded base64 or other mis-identified
+     * pieces of data taken as text. In practise, this keeps some junk out 
+     * of the index, but does not decrease the index size much, and is
+     * probably not worth the trouble in general. Code kept because it
+     * probably can be useful in special cases. Base64 data does has
+     * word separators in it (+/) and is characterised by high average
+     * word length (>10, often close to 20) and high word length
+     * dispersion (avg/sigma > 0.8). In my tests, most natural
+     * language text has average word lengths around 5-8 and avg/sigma
+     * < 0.7
+     */
+#ifdef TEXTSPLIT_STATS
+    class Stats {
+    public:
+	Stats()
+	{
+	    reset();
+	}
+	void reset()
+	{
+	    count = 0;
+	    totlen = 0;
+	    sigma_acc = 0;
+	}
+	void newsamp(unsigned int len)
+	{
+	    ++count;
+	    totlen += len;
+	    double avglen = double(totlen) / double(count);
+	    sigma_acc += (avglen - len) * (avglen - len);
+	}
+	struct Values {
+	    int count;
+	    double avglen;
+	    double sigma;
+	};
+	Values get()
+	{
+	    Values v;
+	    v.count = count;
+	    v.avglen = double(totlen) / double(count);
+	    v.sigma = sqrt(sigma_acc / count);
+	    return v;
+	}
+    private:
+	int count;
+	int totlen;
+	double sigma_acc;
+    };
+
+    Stats::Values getStats()
+    {
+	return m_stats.get();
+    }
+    void resetStats()
+    {
+	m_stats.reset();
+    }
+#endif // TEXTSPLIT_STATS
+
 private:
     Flags         m_flags;
     int           m_maxWordLength;
@@ -126,6 +193,15 @@ private:
     // same term twice. We try to avoid this
     int           m_prevpos;
     unsigned int  m_prevlen;
+
+#ifdef TEXTSPLIT_STATS
+    // Stats counters. These are processed in TextSplit rather than by a 
+    // TermProc so that we can take very long words (not emitted) into
+    // account.
+    Stats         m_stats;
+#endif
+    // Word length in characters. Declared but not updated if !TEXTSPLIT_STATS
+    unsigned int  m_wordChars;
 
     // This processes cjk text:
     bool cjk_to_words(Utf8Iter *it, unsigned int *cp);

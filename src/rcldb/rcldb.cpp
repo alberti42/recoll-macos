@@ -1192,8 +1192,27 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 
     // Split and index body text
     LOGDEB2(("Db::add: split body: [%s]\n", doc.text.c_str()));
+
+#ifdef TEXTSPLIT_STATS
+    splitter.resetStats();
+#endif
     if (!splitter.text_to_words(doc.text))
         LOGDEB(("Db::addOrUpdate: split failed for main text\n"));
+
+#ifdef TEXTSPLIT_STATS
+    // Reject bad data. unrecognized base64 text is characterized by
+    // high avg word length and high variation (because there are
+    // word-splitters like +/ inside the data).
+    TextSplit::Stats::Values v = splitter.getStats();
+    // v.avglen > 15 && v.sigma > 12 
+    if (v.count > 200 && (v.avglen > 10 && v.sigma / v.avglen > 0.8)) {
+	LOGINFO(("RclDb::addOrUpdate: rejecting doc for bad stats "
+	 "count %d avglen %.4f sigma %.4f url [%s] ipath [%s] text %s\n",
+		 v.count, v.avglen, v.sigma, doc.url.c_str(), 
+		 doc.ipath.c_str(), doc.text.c_str()));
+	return true;
+    }
+#endif
 
     ////// Special terms for other metadata. No positions for these.
     // Mime type

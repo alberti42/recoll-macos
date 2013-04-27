@@ -205,6 +205,14 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
     LOGDEB3(("TextSplit::emitterm: [%s] pos %d\n", w.c_str(), pos));
 
     unsigned int l = w.length();
+
+#ifdef TEXTSPLIT_STATS
+    // Update word length statistics. Do this before we filter out
+    // long words because stats are used to detect bad text
+    if (!isspan || m_wordLen == m_span.length())
+	m_stats.newsamp(m_wordChars);
+#endif
+
     if (l > 0 && l < (unsigned)m_maxWordLength) {
 	// 1 byte word: we index single ascii letters and digits, but
 	// nothing else. We might want to turn this into a test for a
@@ -316,7 +324,7 @@ inline bool TextSplit::doemit(bool spanerase, int bp, bool spanemit)
     // Adjust state
     if (m_wordLen) {
 	m_wordpos++;
-	m_wordLen = 0;
+	m_wordLen = m_wordChars = 0;
     }
     if (spanerase) {
 	discardspan();
@@ -332,7 +340,7 @@ void TextSplit::discardspan()
     m_span.erase();
     m_spanpos = m_wordpos;
     m_wordStart = 0;
-    m_wordLen = 0;
+    m_wordLen = m_wordChars = 0;
 }
 
 static inline bool isalphanum(int what, unsigned int flgs)
@@ -345,6 +353,12 @@ static inline bool isdigit(int what, unsigned int flgs)
 {
     return what == DIGIT || ((flgs & TextSplit::TXTS_KEEPWILD) && what == WILD);
 }
+
+#ifdef TEXTSPLIT_STATS
+#define INC_WORDCHARS ++m_wordChars
+#else
+#define INC_WORDCHARS
+#endif
 
 /** 
  * Splitting a text into terms to be indexed.
@@ -366,7 +380,8 @@ bool TextSplit::text_to_words(const string &in)
 
     m_span.erase();
     m_inNumber = false;
-    m_wordStart = m_wordLen = m_prevpos = m_prevlen = m_wordpos = m_spanpos = 0;
+    m_wordStart = m_wordLen = m_wordChars = m_prevpos = m_prevlen = m_wordpos 
+	= m_spanpos = 0;
     int curspanglue = 0;
     bool pagepending = false;
     bool softhyphenpending = false;
@@ -423,6 +438,7 @@ bool TextSplit::text_to_words(const string &in)
 	    if (m_wordLen == 0)
 		m_inNumber = true;
 	    m_wordLen += it.appendchartostring(m_span);
+	    INC_WORDCHARS;
 	    nonalnumcnt = 0;
 	    break;
 
@@ -458,6 +474,7 @@ bool TextSplit::text_to_words(const string &in)
 		    // -10
 		    m_inNumber = true;
 		    m_wordLen += it.appendchartostring(m_span);
+		    INC_WORDCHARS;
 		} else {
 		    goto SPACE;
 		} 
@@ -465,6 +482,7 @@ bool TextSplit::text_to_words(const string &in)
 				      m_span[m_span.length() - 1] == 'E')) {
 		if (isdigit(whatcc(it[it.getCpos()+1]), m_flags)) {
 		    m_wordLen += it.appendchartostring(m_span);
+		    INC_WORDCHARS;
 		} else {
 		    goto SPACE;
 		}
@@ -482,6 +500,7 @@ bool TextSplit::text_to_words(const string &in)
 		if (!isdigit(nextwhat, m_flags))
 		    goto SPACE;
 		m_wordLen += it.appendchartostring(m_span);
+		INC_WORDCHARS;
 		curspanglue = cc;
 		break;
 	    } else {
@@ -501,6 +520,7 @@ bool TextSplit::text_to_words(const string &in)
                     if (m_span.length() == 0 && isdigit(nextwhat, m_flags)) {
                         m_inNumber = true;
                         m_wordLen += it.appendchartostring(m_span);
+			INC_WORDCHARS;
                         curspanglue = cc;
                         break;
                     }
@@ -567,6 +587,7 @@ bool TextSplit::text_to_words(const string &in)
 		int w = whatcc(it[it.getCpos()+1]);
 		if (w == SPACE || w == '\n' || w == '\r') {
 		    m_wordLen += it.appendchartostring(m_span);
+		    INC_WORDCHARS;
 		    break;
 		}
 	    }
@@ -639,6 +660,7 @@ bool TextSplit::text_to_words(const string &in)
                 m_inNumber = false;
             }
 	    m_wordLen += it.appendchartostring(m_span);
+	    INC_WORDCHARS;
 	    nonalnumcnt = 0;
 	    break;
 	}
@@ -738,7 +760,7 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
 
     m_span.erase();
     m_inNumber = false;
-    m_wordStart = m_wordLen = m_prevpos = m_prevlen = 0;
+    m_wordStart = m_wordLen = m_wordChars = m_prevpos = m_prevlen = 0;
     m_spanpos = m_wordpos;
     *cp = c;
     return true;
@@ -864,6 +886,7 @@ bool TextSplit::stringToStrings(const string &s, vector<string> &tokens)
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
+#include <math.h>
 
 #include <iostream>
 
@@ -880,7 +903,7 @@ class myTermProc : public Rcl::TermProc {
     int first;
     bool nooutput;
 public:
-    myTermProc() : TermProc(0), first(1), nooutput(false)  {}
+    myTermProc() : TermProc(0), first(1), nooutput(false) {}
     void setNoOut(bool val) {nooutput = val;}
     virtual bool takeword(const string &term, int pos, int bs, int be)
     {
@@ -1058,7 +1081,16 @@ int main(int argc, char **argv)
             printproc.setNoOut(true);
 
 	splitter.text_to_words(data);
-
+#ifdef TEXTSPLIT_STATS
+	TextSplit::Stats::Values v = splitter.getStats();
+	cout << "Average length: " 
+	     <<  v.avglen
+	     << " Standard deviation: " 
+	     << v.sigma
+	     << " Coef of variation "
+	     << v.sigma / v.avglen
+	     << endl;
+#endif
     }    
 }
 #endif // TEST
