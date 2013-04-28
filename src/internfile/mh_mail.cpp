@@ -507,7 +507,12 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
     it = content_disposition.params.find(string("filename"));
     if (it != content_disposition.params.end())
 	filename = it->second;
-
+    if (filename.empty()) {
+	it = content_type.params.find(string("name"));
+	if (it != content_type.params.end())
+	    filename = it->second;
+    }
+	
     if (doc->isMessageRFC822()) {
 	LOGDEB2(("walkmime: message/RFC822 part\n"));
 	
