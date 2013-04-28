@@ -981,7 +981,8 @@ void ResList::createPopupMenu(const QPoint& pos)
     Rcl::Doc doc;
     if (!getDoc(m_popDoc, doc))
 	return;
-    int options = 0;
+
+    int options =  ResultPopup::showSaveOne;
     if (m_ismainres)
 	options |= ResultPopup::isMain;
     QMenu *popup = ResultPopup::create(this, options, m_source, doc);

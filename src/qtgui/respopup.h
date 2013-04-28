@@ -18,7 +18,8 @@
 #define _RESPOPUP_H_INCLUDED_
 
 namespace ResultPopup {
-    enum Options {showExpand = 0x1, showSubs = 0x2, isMain = 0x3};
+    enum Options {showExpand = 0x1, showSubs = 0x2, isMain = 0x3,
+		  showSaveOne = 0x4, showSaveSel = 0x8};
     extern QMenu *create(QWidget *me, int opts,  
 			 RefCntr<DocSequence> source,
 			 Rcl::Doc& doc);

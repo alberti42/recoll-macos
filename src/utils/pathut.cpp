@@ -279,7 +279,7 @@ string path_suffix(const string& s)
     string::size_type dotp = s.rfind('.');
     if (dotp == string::npos)
 	return string();
-    return s.substr(dotp);
+    return s.substr(dotp+1);
 }
 
 string path_home()
@@ -879,7 +879,7 @@ int main(int argc, const char **argv)
   pidfile.remove();
 #endif
 
-#if 1
+#if 0
   if (argc != 2) {
       fprintf(stderr, "Usage: thumbpath <filepath> <size>\n");
       exit(1);
@@ -908,7 +908,16 @@ int main(int argc, const char **argv)
   exit(0);
 #endif
 
+#if 1
+    if (argc != 1) {
+	cerr << "Usage: trpathut <filename>" << endl;
+	exit(1);
+    }
+    string fn = *argv++;argc--;
+    string ext = path_suffix(fn);
+    cout << "Suffix: [" << ext << "]" << endl;
     return 0;
+#endif
 }
 
 #endif // TEST_PATHUT

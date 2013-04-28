@@ -91,8 +91,7 @@ private:
 
 bool ResTablePager::append(const string& data, int, const Rcl::Doc&)
 {
-    m_parent->m_detail->moveCursor(QTextCursor::End, 
-				      QTextCursor::MoveAnchor);
+    m_parent->m_detail->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
     m_parent->m_detail->textCursor().insertBlock();
     m_parent->m_detail->insertHtml(QString::fromUtf8(data.c_str()));
     return true;
@@ -139,11 +138,11 @@ ResTableDetailArea::ResTableDetailArea(ResTable* parent)
 void ResTableDetailArea::createPopupMenu(const QPoint& pos)
 {
     if (m_table && m_table->m_model && m_table->m_detaildocnum >= 0) {
-	QMenu *popup = 
-	    ResultPopup::create(m_table, m_table->m_ismainres ? 
-				ResultPopup::showExpand : 0, 
-				m_table->m_model->getDocSource(),
-				m_table->m_detaildoc);
+	int opts = m_table->m_ismainres ? ResultPopup::showExpand : 0;
+	opts |= ResultPopup::showSaveOne;
+	QMenu *popup = ResultPopup::create(m_table, opts, 
+					   m_table->m_model->getDocSource(),
+					   m_table->m_detaildoc);
 	popup->popup(mapToGlobal(pos));
     }
 }
@@ -483,7 +482,6 @@ void ResTable::init()
     tableView->setModel(m_model);
     tableView->setMouseTracking(true);
     tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    tableView->setSelectionMode(QAbstractItemView::ContiguousSelection);
     tableView->setItemDelegate(new ResTableDelegate(this));
     tableView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(tableView, SIGNAL(customContextMenuRequested(const QPoint&)),
@@ -549,6 +547,15 @@ void ResTable::setRclMain(RclMain *m, bool ismain)
 {
     m_rclmain = m;
     m_ismainres = ismain;
+
+    // We allow single selection only in the main table because this
+    // may have a mix of file-level docs and subdocs and multisave
+    // only works for subdocs
+    if (m_ismainres)
+	tableView->setSelectionMode(QAbstractItemView::SingleSelection);
+    else
+	tableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
     if (!m_ismainres) {
 	connect(new QShortcut(closeKeySeq, this), SIGNAL (activated()), 
 		this, SLOT (close()));
@@ -625,7 +632,8 @@ void ResTable::onTableView_currentChanged(const QModelIndex& index)
 	m_detail->clear();
 	m_detaildocnum = index.row();
 	m_detaildoc = doc;
-	m_pager->displayDoc(theconfig, index.row(), doc, m_model->m_hdata);
+	m_pager->displayDoc(theconfig, index.row(), m_detaildoc, 
+			    m_model->m_hdata);
     } else {
 	m_detaildocnum = -1;
     }
@@ -757,11 +765,19 @@ void ResTable::createPopupMenu(const QPoint& pos)
 {
     LOGDEB(("ResTable::createPopupMenu: m_detaildocnum %d\n", m_detaildocnum));
     if (m_detaildocnum >= 0 && m_model) {
-	QMenu *popup = 
-	    ResultPopup::create(this, m_ismainres? ResultPopup::isMain : 0, 
-				m_model->getDocSource(), m_detaildoc);
-	popup->addAction(this->tr("Save selection to files"), 
-			 this, SLOT(menuSaveSelection()));
+	int opts = m_ismainres? ResultPopup::isMain : 0;
+    
+	int selsz = tableView->selectionModel()->selectedRows().size();
+
+	if (selsz == 1) {
+	    opts |= ResultPopup::showSaveOne;
+	} else if (selsz > 1 && !m_ismainres) {
+	    // We don't show save multiple for the main list because not all 
+	    // docs are necessary subdocs and multisave only works with those.
+	    opts |= ResultPopup::showSaveSel;
+	}
+	QMenu *popup = ResultPopup::create(this, opts, m_model->getDocSource(),
+					   m_detaildoc);
 	popup->popup(mapToGlobal(pos));
     }
 }
@@ -847,6 +863,12 @@ void ResTable::menuExpand()
 {
     if (m_detaildocnum >= 0) 
 	emit docExpand(m_detaildoc);
+}
+
+void ResTable::menuShowSnippets()
+{
+    if (m_detaildocnum >= 0)
+	emit showSnippets(m_detaildoc);
 }
 
 void ResTable::menuShowSubDocs()

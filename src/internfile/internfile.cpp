@@ -951,11 +951,23 @@ static string urltolocalpath(string url)
 // - The internfile temporary directory gets destroyed by its destructor
 // - The output temporary file which is held in a reference-counted
 //   object and will be deleted when done with.
+// This DOES NOT work with a non-internal file (because at least one conversion 
+// is always performed).
 bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
 			      RclConfig *cnf, const Rcl::Doc& idoc)
 {
     LOGDEB(("FileInterner::idocToFile\n"));
-    idoc.dump();
+    // idoc.dump();
+
+    if (idoc.ipath.empty()) {
+	LOGDEB(("FileInterner::idocToFile: not a sub-document !\n"));
+	// We could do a copy here but it's much more complicated than
+	// it seems because the source is not necessarily a simple
+	// depending on the backend. Until we fix the Internfile
+	// constructor to not do the first conversion, it's much saner
+	// to just return an error
+	return false;
+    }
 
     // We set FIF_forPreview for consistency with the previous version
     // which determined this by looking at mtype!=null. Probably
@@ -1004,6 +1016,7 @@ bool FileInterner::interntofile(TempFile& otemp, const string& tofile,
     } else {
 	filename = tofile;
     }
+
     int fd = open(filename.c_str(), O_WRONLY|O_CREAT, 0600);
     if (fd < 0) {
 	LOGERR(("FileInterner::interntofile: open(%s) failed errno %d\n",
@@ -1018,6 +1031,7 @@ bool FileInterner::interntofile(TempFile& otemp, const string& tofile,
 	return false;
     }
     close(fd);
+
     if (tofile.empty())
 	otemp = temp;
     return true;

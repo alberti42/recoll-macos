@@ -305,6 +305,8 @@ void RclMain::init()
 	    this, SLOT(startNativeViewer(Rcl::Doc)));
     connect(restable, SIGNAL(docSaveToFileClicked(Rcl::Doc)), 
 	    this, SLOT(saveDocToFile(Rcl::Doc)));
+    connect(restable, SIGNAL(showSnippets(Rcl::Doc)), 
+	    this, SLOT(showSnippets(Rcl::Doc)));
 
     reslist->setRclMain(this, true);
     connect(this, SIGNAL(docSourceChanged(RefCntr<DocSequence>)),

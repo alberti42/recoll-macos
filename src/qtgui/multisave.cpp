@@ -90,10 +90,13 @@ void multiSave(QWidget *p, vector<Rcl::Doc>& docs)
 	string utf8fn;
 	it->getmeta(Rcl::Doc::keyfn, &utf8fn);
 	string suffix = path_suffix(utf8fn);
+	LOGDEB(("Multisave: [%s] suff [%s]\n", utf8fn.c_str(), suffix.c_str()));
 	if (suffix.empty() || suffix.size() > 10) {
 	    suffix = theconfig->getSuffixFromMimeType(it->mimetype);
+	    LOGDEB(("Multisave: suff from config [%s]\n", suffix.c_str()));
 	}
-	string simple = path_basename(utf8fn, suffix);
+	string simple = path_basename(utf8fn, string(".") + suffix);
+	LOGDEB(("Multisave: simple [%s]\n", simple.c_str()));
 	if (simple.empty())
 	    simple = "rclsave";
 	if (simple.size() > maxlen) {
@@ -104,8 +107,8 @@ void multiSave(QWidget *p, vector<Rcl::Doc>& docs)
 	    ss << simple;
 	    if (vers)
 		ss << "." << vers;
-	    if (!suffix.empty())
-		ss << suffix;
+	    if (!suffix.empty()) 
+		ss << "." << suffix;
 
 	    string fn = 
 		(const char *)QString::fromUtf8(ss.str().c_str()).toLocal8Bit();

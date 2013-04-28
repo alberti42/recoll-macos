@@ -32,16 +32,30 @@ QMenu *create(QWidget *me, int opts, RefCntr<DocSequence> source, Rcl::Doc& doc)
 {
     QMenu *popup = new QMenu(me);
 
+    LOGDEB(("ResultPopup::create: opts %x haspages %d %s %s\n", opts, 
+	    doc.haspages, source.isNull() ? 
+	    "Source is Null" : "Source not null",
+	    source.isNull() ? "" : source->snippetsCapable() ? 
+	    "snippetsCapable" : "not snippetsCapable"));
+
     string apptag;
     doc.getmeta(Rcl::Doc::keyapptg, &apptag);
+
     popup->addAction(me->tr("&Preview"), me, SLOT(menuPreview()));
+
     if (!theconfig->getMimeViewerDef(doc.mimetype, apptag, 0).empty()) {
 	popup->addAction(me->tr("&Open"), me, SLOT(menuEdit()));
     }
+
     popup->addAction(me->tr("Copy &File Name"), me, SLOT(menuCopyFN()));
     popup->addAction(me->tr("Copy &URL"), me, SLOT(menuCopyURL()));
-    if (!doc.ipath.empty())
+
+    if ((opts&showSaveOne) && !doc.ipath.empty())
 	popup->addAction(me->tr("&Write to File"), me, SLOT(menuSaveToFile()));
+
+    if ((opts&showSaveSel))
+	popup->addAction(me->tr("Save selection to files"), 
+			 me, SLOT(menuSaveSelection()));
 
     Rcl::Doc pdoc;
     if (source.isNotNull() && source->getEnclosing(doc, pdoc)) {
@@ -50,16 +64,19 @@ QMenu *create(QWidget *me, int opts, RefCntr<DocSequence> source, Rcl::Doc& doc)
 	popup->addAction(me->tr("&Open Parent document/folder"), 
 			 me, SLOT(menuOpenParent()));
     }
+
     if (opts & showExpand)
 	popup->addAction(me->tr("Find &similar documents"), 
 			 me, SLOT(menuExpand()));
+
     if (doc.haspages && source.isNotNull() && source->snippetsCapable()) 
 	popup->addAction(me->tr("Open &Snippets window"), 
-			 me, SLOT(menuOpenSnippets()));
+			 me, SLOT(menuShowSnippets()));
 
     if ((opts & showSubs) && rcldb && rcldb->hasSubDocs(doc)) 
 	popup->addAction(me->tr("Show subdocuments / attachments"), 
 			 me, SLOT(menuShowSubDocs()));
+
     return popup;
 }
 
