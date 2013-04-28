@@ -134,6 +134,7 @@ public slots:
     virtual void createPopupMenu(const QPoint& pos);
     virtual void menuPreview();
     virtual void menuSaveToFile();
+    virtual void menuSaveSelection();
     virtual void menuEdit();
     virtual void menuCopyFN();
     virtual void menuCopyURL();

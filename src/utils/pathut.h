@@ -20,79 +20,83 @@
 
 #include <string>
 #include <vector>
+#include <set>
+
 #include "refcntr.h"
 
-#ifndef NO_NAMESPACES
-using std::string;
-using std::vector;
-#endif
-
 /// Add a / at the end if none there yet.
-extern void path_catslash(string &s);
+extern void path_catslash(std::string &s);
 /// Concatenate 2 paths
-extern string path_cat(const string &s1, const string &s2);
+extern std::string path_cat(const std::string &s1, const std::string &s2);
 /// Get the simple file name (get rid of any directory path prefix
-extern string path_getsimple(const string &s);
+extern std::string path_getsimple(const std::string &s);
 /// Simple file name + optional suffix stripping
-extern string path_basename(const string &s, const string &suff=string());
+extern std::string path_basename(const std::string &s, 
+				 const std::string &suff = std::string());
+/// Component after last '.'
+extern std::string path_suffix(const std::string &s);
 /// Get the father directory
-extern string path_getfather(const string &s);
+extern std::string path_getfather(const std::string &s);
 /// Get the current user's home directory
-extern string path_home();
-/// Expand ~ at the beginning of string 
-extern string path_tildexpand(const string &s);
+extern std::string path_home();
+/// Expand ~ at the beginning of std::string 
+extern std::string path_tildexpand(const std::string &s);
 /// Use getcwd() to make absolute path if needed. Beware: ***this can fail***
 /// we return an empty path in this case.
-extern string path_absolute(const string &s);
+extern std::string path_absolute(const std::string &s);
 /// Clean up path by removing duplicated / and resolving ../ + make it absolute
-extern string path_canon(const string &s);
+extern std::string path_canon(const std::string &s);
 /// Use glob(3) to return the file names matching pattern inside dir
-extern vector<string> path_dirglob(const string &dir, 
-				   const string pattern);
+extern std::vector<std::string> path_dirglob(const std::string &dir, 
+				   const std::string pattern);
 /// Encode according to rfc 1738
-extern string url_encode(const string& url, 
-			      string::size_type offs = 0);
+extern std::string url_encode(const std::string& url, 
+			      std::string::size_type offs = 0);
 /// Transcode to utf-8 if possible or url encoding, for display.
-extern bool printableUrl(const string &fcharset, 
-			 const string &in, string &out);
+extern bool printableUrl(const std::string &fcharset, 
+			 const std::string &in, std::string &out);
 //// Convert to file path if url is like file://. This modifies the
 //// input (and returns a copy for convenience)
-extern string fileurltolocalpath(string url);
+extern std::string fileurltolocalpath(std::string url);
 /// Test for file:/// url
-extern bool urlisfileurl(const string& url);
+extern bool urlisfileurl(const std::string& url);
 
 /// Return the host+path part of an url. This is not a general
 /// routine, it does the right thing only in the recoll context
-extern string url_gpath(const string& url);
+extern std::string url_gpath(const std::string& url);
 
 /// Stat parameter and check if it's a directory
-extern bool path_isdir(const string& path);
+extern bool path_isdir(const std::string& path);
+
+/// Dump directory
+extern bool readdir(const std::string& dir, std::string& reason, 
+		    std::set<std::string>& entries);
 
 /** A small wrapper around statfs et al, to return percentage of disk
     occupation */
-bool fsocc(const string &path, int *pc, // Percent occupied
+bool fsocc(const std::string &path, int *pc, // Percent occupied
 	   long *avmbs = 0 // Mbs available to non-superuser
 	   );
 
 /// Retrieve the temp dir location: $RECOLL_TMPDIR else $TMPDIR else /tmp
-extern const string& tmplocation();
+extern const std::string& tmplocation();
 
 /// Create temporary directory (inside the temp location)
-extern bool maketmpdir(string& tdir, string& reason);
+extern bool maketmpdir(std::string& tdir, std::string& reason);
 
 /// mkdir -p
-extern bool makepath(const string& path);
+extern bool makepath(const std::string& path);
 
 /// Temporary file class
 class TempFileInternal {
 public:
-    TempFileInternal(const string& suffix);
+    TempFileInternal(const std::string& suffix);
     ~TempFileInternal();
     const char *filename() 
     {
 	return m_filename.c_str();
     }
-    const string &getreason() 
+    const std::string &getreason() 
     {
 	return m_reason;
     }
@@ -105,8 +109,8 @@ public:
 	return !m_filename.empty();
     }
 private:
-    string m_filename;
-    string m_reason;
+    std::string m_filename;
+    std::string m_reason;
     bool m_noremove;
 };
 
@@ -118,13 +122,13 @@ public:
     TempDir();
     ~TempDir();
     const char *dirname() {return m_dirname.c_str();}
-    const string &getreason() {return m_reason;}
+    const std::string &getreason() {return m_reason;}
     bool ok() {return !m_dirname.empty();}
     /// Recursively delete contents but not self.
     bool wipe();
 private:
-    string m_dirname;
-    string m_reason;
+    std::string m_dirname;
+    std::string m_reason;
     TempDir(const TempDir &) {}
     TempDir& operator=(const TempDir &) {return *this;};
 };
@@ -134,7 +138,7 @@ private:
 /// the freebsd code if it was available elsewhere
 class Pidfile {
 public:
-    Pidfile(const string& path)	: m_path(path), m_fd(-1) {}
+    Pidfile(const std::string& path)	: m_path(path), m_fd(-1) {}
     ~Pidfile();
     /// Open/create the pid file.
     /// @return 0 if ok, > 0 for pid of existing process, -1 for other error.
@@ -146,11 +150,11 @@ public:
     int close();
     /// Delete the pid file
     int remove();
-    const string& getreason() {return m_reason;}
+    const std::string& getreason() {return m_reason;}
 private:
-    string m_path;
+    std::string m_path;
     int    m_fd;
-    string m_reason;
+    std::string m_reason;
     pid_t read_pid();
     int flopen();
 };
@@ -160,7 +164,7 @@ private:
 // Freedesktop thumbnail standard path routine
 // On return, path will have the appropriate value in all cases,
 // returns true if the file already exists
-extern bool thumbPathForUrl(const string& url, int size, string& path);
+extern bool thumbPathForUrl(const std::string& url, int size, std::string& path);
 
 // Must be called in main thread before starting other threads
 extern void pathut_init_mt();

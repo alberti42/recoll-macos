@@ -68,7 +68,6 @@ FORMS   = \
         firstidx.ui \
         idxsched.ui \
         listdialog.ui \
-        multisave.ui \
         ptrans.ui \
         rclmain.ui \
         restable.ui \

@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <dirent.h>
 #include <sys/param.h>
 #include <pwd.h>
 #include <math.h>
@@ -48,11 +49,10 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <sstream>
 #include <stack>
-#ifndef NO_NAMESPACES
-using std::string;
-using std::stack;
-#endif /* NO_NAMESPACES */
+#include <set>
+using namespace std;
 
 #include "pathut.h"
 #include "transcode.h"
@@ -272,6 +272,14 @@ string path_basename(const string &s, const string &suff)
 	    return simple.substr(0, pos);
     } 
     return simple;
+}
+
+string path_suffix(const string& s)
+{
+    string::size_type dotp = s.rfind('.');
+    if (dotp == string::npos)
+	return string();
+    return s.substr(dotp);
 }
 
 string path_home()
@@ -541,6 +549,48 @@ bool printableUrl(const string &fcharset, const string &in, string &out)
 	out = url_encode(in, 7);
     }
     return true;
+}
+
+bool readdir(const string& dir, string& reason, set<string>& entries)
+{
+    struct stat st;
+    int statret;
+    ostringstream msg;
+    DIR *d = 0;
+    statret = lstat(dir.c_str(), &st);
+    if (statret == -1) {
+	msg << "readdir: cant stat " << dir << " errno " <<  errno;
+	goto out;
+    }
+    if (!S_ISDIR(st.st_mode)) {
+	msg << "readdir: " << dir <<  " not a directory";
+	goto out;
+    }
+    if (access(dir.c_str(), R_OK) < 0) {
+	msg << "readdir: no read access to " << dir;
+	goto out;
+    }
+
+    d = opendir(dir.c_str());
+    if (d == 0) {
+	msg << "readdir: cant opendir " << dir << ", errno " << errno;
+	goto out;
+    }
+
+    struct dirent *ent;
+    while ((ent = readdir(d)) != 0) {
+	if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) 
+	    continue;
+	entries.insert(ent->d_name);
+    }
+
+out:
+    if (d)
+	closedir(d);
+    reason = msg.str();
+    if (reason.empty())
+	return true;
+    return false;
 }
 
 // We do not want to mess with the pidfile content in the destructor:

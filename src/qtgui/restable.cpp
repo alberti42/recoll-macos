@@ -47,6 +47,7 @@
 #include "indexer.h"
 #include "respopup.h"
 #include "rclmain_w.h"
+#include "multisave.h"
 
 static const QKeySequence quitKeySeq("Ctrl+q");
 static const QKeySequence closeKeySeq("Ctrl+w");
@@ -759,6 +760,8 @@ void ResTable::createPopupMenu(const QPoint& pos)
 	QMenu *popup = 
 	    ResultPopup::create(this, m_ismainres? ResultPopup::isMain : 0, 
 				m_model->getDocSource(), m_detaildoc);
+	popup->addAction(this->tr("Save selection to files"), 
+			 this, SLOT(menuSaveSelection()));
 	popup->popup(mapToGlobal(pos));
     }
 }
@@ -778,6 +781,27 @@ void ResTable::menuSaveToFile()
 {
     if (m_detaildocnum >= 0) 
 	emit docSaveToFileClicked(m_detaildoc);
+}
+
+void ResTable::menuSaveSelection()
+{
+    if (m_model == 0 || m_model->getDocSource().isNull())
+	return;
+
+    QModelIndexList indexl = tableView->selectionModel()->selectedRows();
+    vector<Rcl::Doc> v;
+    for (int i = 0; i < indexl.size(); i++) {
+	Rcl::Doc doc;
+	if (m_model->getDocSource()->getDoc(indexl[i].row(), doc))
+	    v.push_back(doc);
+    }
+    if (v.size() == 0) {
+	return;
+    } else if (v.size() == 1) {
+	emit docSaveToFileClicked(v[0]);
+    } else {
+	multiSave(this, v);
+    }
 }
 
 void ResTable::menuPreviewParent()
