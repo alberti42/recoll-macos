@@ -228,8 +228,8 @@ void RclMain::init()
 
     connect(&m_watcher, SIGNAL(fileChanged(QString)), 
 	    this, SLOT(idxStatus()));
-    connect(sSearch, SIGNAL(startSearch(RefCntr<Rcl::SearchData>)), 
-	    this, SLOT(startSearch(RefCntr<Rcl::SearchData>)));
+    connect(sSearch, SIGNAL(startSearch(RefCntr<Rcl::SearchData>, bool)), 
+	    this, SLOT(startSearch(RefCntr<Rcl::SearchData>, bool)));
     connect(sSearch, SIGNAL(clearSearch()), 
 	    this, SLOT(resetSearch()));
 
@@ -281,6 +281,8 @@ void RclMain::init()
 	    this, SLOT(periodic100()));
 
     restable->setRclMain(this, true);
+    connect(actionSaveResultsAsCSV, SIGNAL(activated()), 
+	    restable, SLOT(saveAsCSV()));
     connect(this, SIGNAL(docSourceChanged(RefCntr<DocSequence>)),
 	    restable, SLOT(setDocSource(RefCntr<DocSequence>)));
     connect(this, SIGNAL(searchReset()), 
@@ -775,7 +777,7 @@ void RclMain::rebuildIndex()
 }
 
 // Start a db query and set the reslist docsource
-void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
+void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata, bool issimple)
 {
     LOGDEB(("RclMain::startSearch. Indexing %s Active %d\n", 
 	    m_idxproc?"on":"off", m_queryActive));
@@ -785,6 +787,8 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata)
     }
     m_queryActive = true;
     m_source = RefCntr<DocSequence>();
+
+    m_searchIsSimple = issimple;
 
     // The db may have been closed at the end of indexing
     string reason;
@@ -897,8 +901,9 @@ void RclMain::showAdvSearchDialog()
 	connect(new QShortcut(quitKeySeq, asearchform), SIGNAL (activated()), 
 		this, SLOT (fileExit()));
 
-	connect(asearchform, SIGNAL(startSearch(RefCntr<Rcl::SearchData>)), 
-		this, SLOT(startSearch(RefCntr<Rcl::SearchData>)));
+	connect(asearchform, 
+		SIGNAL(startSearch(RefCntr<Rcl::SearchData>, bool)), 
+		this, SLOT(startSearch(RefCntr<Rcl::SearchData>, bool)));
 	asearchform->show();
     } else {
 	// Close and reopen, in hope that makes us visible...
@@ -1464,15 +1469,15 @@ void RclMain::on_actionShowResultsAsTable_toggled(bool on)
 {
     LOGDEB(("RclMain::on_actionShowResultsAsTable_toggled(%d)\n", int(on)));
     prefs.showResultsAsTable = on;
+    displayingTable = on;
     restable->setVisible(on);
     reslist->setVisible(!on);
+    actionSaveResultsAsCSV->setEnabled(on);
     if (!on) {
-	displayingTable = false;
 	int docnum = restable->getDetailDocNumOrTopRow();
 	if (docnum >= 0)
 	    reslist->resultPageFor(docnum);
     } else {
-	displayingTable = true;
 	int docnum = reslist->pageFirstDocNum();
 	if (docnum >= 0) {
 	    restable->makeRowVisible(docnum);

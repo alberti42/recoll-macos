@@ -449,7 +449,7 @@ void AdvSearch::runSearch()
     }
     saveCnf();
     g_advshistory && g_advshistory->push(sdata);
-    emit startSearch(sdata);
+    emit startSearch(sdata, false);
 }
 
 

@@ -67,7 +67,7 @@ public slots:
     virtual void slotHistoryPrev();
 
 signals:
-    void startSearch(RefCntr<Rcl::SearchData>);
+    void startSearch(RefCntr<Rcl::SearchData>, bool);
 
 private:
     virtual void init();

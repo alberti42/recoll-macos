@@ -191,6 +191,9 @@ void QtGuiResListPager::suggest(const vector<string>uterms,
         return;
     }
 
+    bool issimple = m_reslist && m_reslist->m_rclmain && 
+	m_reslist->m_rclmain->lastSearchSimple();
+
     for (vector<string>::const_iterator uit = uterms.begin();
          uit != uterms.end(); uit++) {
         list<string> asuggs;
@@ -217,8 +220,10 @@ void QtGuiResListPager::suggest(const vector<string>uterms,
 	    // Set up the links as a <href="Sold|new">. 
 	    for (vector<string>::iterator it = sugg[*uit].begin();
 		 it != sugg[*uit].end(); it++) {
-		*it = string("<a href=\"S") + *uit + "|" + *it + "\">" +
-		    *it + "</a>";
+		if (issimple) {
+		    *it = string("<a href=\"S") + *uit + "|" + *it + "\">" +
+			*it + "</a>";
+		}
 	    }
         }
     }

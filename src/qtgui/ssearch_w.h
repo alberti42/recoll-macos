@@ -59,7 +59,7 @@ public slots:
     virtual void wrapupCompletion();
     virtual void timerDone();
 signals:
-    void startSearch(RefCntr<Rcl::SearchData>);
+    void startSearch(RefCntr<Rcl::SearchData>, bool);
     void clearSearch();
  private:
     bool m_escape;

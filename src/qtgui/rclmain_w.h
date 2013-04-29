@@ -72,7 +72,8 @@ public:
 	  m_sortspecnochange(false),
 	  m_indexerState(IXST_RUNNINGNOTMINE),
 	  m_queryActive(false),
-	  m_firstIndexing(false)
+	  m_firstIndexing(false),
+	  m_searchIsSimple(false)
     {
 	setupUi(this);
 	init();
@@ -87,6 +88,11 @@ public:
     /** Same usage: actually display the current urltoview */
     virtual void viewUrl();
 
+    bool lastSearchSimple() 
+    {
+	return m_searchIsSimple;
+    }
+
 public slots:
     virtual bool close();
     virtual void fileExit();
@@ -94,7 +100,7 @@ public slots:
     virtual void periodic100();
     virtual void toggleIndexing();
     virtual void rebuildIndex();
-    virtual void startSearch(RefCntr<Rcl::SearchData> sdata);
+    virtual void startSearch(RefCntr<Rcl::SearchData> sdata, bool issimple);
     virtual void previewClosed(Preview *w);
     virtual void showAdvSearchDialog();
     virtual void showSpellDialog();
@@ -180,6 +186,7 @@ private:
     IndexerState      m_indexerState;
     bool              m_queryActive;
     bool              m_firstIndexing;
+    bool              m_searchIsSimple; // Last search was started from simple
 
     // If set on init, will be displayed either through ext app, or
     // preview (if no ext app set)

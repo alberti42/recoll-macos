@@ -266,7 +266,7 @@ bool SSearch::startSimpleSearch(const string& u8, int maxexp)
 	sdata->setMaxExpand(maxexp);
     }
     RefCntr<Rcl::SearchData> rsdata(sdata);
-    emit startSearch(rsdata);
+    emit startSearch(rsdata, true);
     return true;
 }
 

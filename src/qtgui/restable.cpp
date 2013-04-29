@@ -675,6 +675,8 @@ void ResTable::saveAsCSV()
 				     tr("Save table to CSV file"),
 				     QString::fromLocal8Bit(path_home().c_str())
 	    );
+    if (s.isEmpty())
+	return;
     const char *tofile = s.toLocal8Bit();
     FILE *fp = fopen(tofile, "w");
     if (fp == 0) {

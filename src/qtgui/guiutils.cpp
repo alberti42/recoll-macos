@@ -40,8 +40,8 @@ RclConfig *theconfig;
 // introducing blank space.
 const char *PrefsPack::dfltResListFormat = 
 	"<table><tr><td><a href='%U'><img src='%I' width='64'></a></td>"
-	"<td>%S %L &nbsp;&nbsp;<b>%T</b><br>"
-	"%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i>&nbsp;%i<br>"
+	"<td>%L &nbsp;<i>%S</i> &nbsp;&nbsp;<b>%T</b><br>"
+	"<span style='white-space:nowrap'>%M&nbsp;%D</span>&nbsp;&nbsp;&nbsp; <i>%U</i>&nbsp;%i<br>"
 	"%A %K</td></tr></table>"
     ;
 
