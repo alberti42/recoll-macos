@@ -67,6 +67,7 @@ static int     op_flags;
 #define OPT_C     0x8000
 #define OPT_Z     0x10000
 #define OPT_n     0x20000
+#define OPT_r     0x40000
 
 ReExec *o_reexec;
 
@@ -174,8 +175,35 @@ void rclIxIonice(const RclConfig *config)
     rclionice(clss, classdata);
 }
 
-// Index a list of files. We just check that they belong to one of the
-// topdirs subtrees, and call the indexer method. 
+class MakeListWalkerCB : public FsTreeWalkerCB {
+public:
+    MakeListWalkerCB(list<string>& files)
+	: m_files(files)
+    {
+    }
+    virtual FsTreeWalker::Status 
+    processone(const string & fn, const struct stat *, FsTreeWalker::CbFlag flg) 
+    {
+	if (flg == FsTreeWalker::FtwDirEnter || flg == FsTreeWalker::FtwRegular)
+	    m_files.push_back(fn);
+	return FsTreeWalker::FtwOk;
+    }
+    list<string>& m_files;
+};
+
+// Build a list of things to index and call indexfiles.
+bool recursive_index(RclConfig *config, const string& top)
+{
+    list<string> files;
+    MakeListWalkerCB cb(files);
+    FsTreeWalker walker;
+    walker.walk(top, cb);
+    return indexfiles(config, files);
+}
+
+// Index a list of files. We just call the top indexer method, which
+// will sort out what belongs to the indexed trees and call the
+// appropriate indexers.
 //
 // This is called either from the command line or from the monitor. In
 // this case we're called repeatedly in the same process, and the
@@ -231,7 +259,7 @@ static const char usage [] =
 "    Index everything according to configuration file\n"
 "    -z : reset database before starting indexing\n"
 "    -Z : in place reset: consider all documents as changed. Can also\n"
-"         be combined with -i but not -m\n"
+"         be combined with -i or -r but not -m\n"
 #ifdef RCL_MONITOR
 "recollindex -m [-w <secs>] -x [-D] [-C]\n"
 "    Perform real time indexing. Don't become a daemon if -D is set.\n"
@@ -244,9 +272,11 @@ static const char usage [] =
 #endif /* RCL_MONITOR */
 "recollindex -e <filename [filename ...]>\n"
 "    Purge data for individual files. No stem database updates\n"
-"recollindex -i [-f] <filename [filename ...]>\n"
+"recollindex -i [-f] [-Z] <filename [filename ...]>\n"
 "    Index individual files. No database purge or stem database updates\n"
 "    -f : ignore skippedPaths and skippedNames while doing this\n"
+"recollindex -r [-f] [-Z] <top> \n"
+"   Recursive partial reindex\n"
 "recollindex -l\n"
 "    List available stemming languages\n"
 "recollindex -s <lang>\n"
@@ -324,6 +354,7 @@ int main(int argc, char **argv)
 	    case 'l': op_flags |= OPT_l; break;
 	    case 'm': op_flags |= OPT_m; break;
 	    case 'n': op_flags |= OPT_n; break;
+	    case 'r': op_flags |= OPT_r; break;
 	    case 's': op_flags |= OPT_s; break;
 #ifdef RCL_USE_ASPELL
 	    case 'S': op_flags |= OPT_S; break;
@@ -349,7 +380,7 @@ int main(int argc, char **argv)
     }
 #endif
 
-    if ((op_flags & OPT_z) && (op_flags & (OPT_i|OPT_e)))
+    if ((op_flags & OPT_z) && (op_flags & (OPT_i|OPT_e|OPT_r)))
 	Usage();
     if ((op_flags & OPT_Z) && (op_flags & (OPT_m)))
 	Usage();
@@ -420,6 +451,14 @@ int main(int argc, char **argv)
 	    status = indexfiles(config, filenames);
 	else 
 	    status = purgefiles(config, filenames);
+        if (confindexer && !confindexer->getReason().empty())
+            cerr << confindexer->getReason() << endl;
+        exit(status ? 0 : 1);
+    } else if (op_flags & OPT_r) {
+	if (argc != 1) 
+	    Usage();
+	string top = *argv++; argc--;
+	bool status = recursive_index(config, top);
         if (confindexer && !confindexer->getReason().empty())
             cerr << confindexer->getReason() << endl;
         exit(status ? 0 : 1);

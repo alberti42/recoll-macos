@@ -14,7 +14,7 @@ QTGUI = @QTGUI@
 
 all: mk/sysconf 
 	${MAKE} -C lib
-	${MAKE} -C index recollindex
+	${MAKE} -C index depend recollindex
 	@NOQTMAKE@(cd $(QTGUI); ${QMAKE} recoll.pro)
 	@NOQTMAKE@${MAKE} -C $(QTGUI) depth=.. prefix=$(prefix) exec_prefix=$(exec_prefix) libdir=$(libdir)
 	@NOPYTHON@${MAKE} -C python/recoll libdir=$(libdir)
