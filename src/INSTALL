@@ -664,10 +664,22 @@ Chapter 5. Installation and configuration
            This allows setting fields for all documents under a given
            directory. Typical usage would be to set an "rclaptg" field, to be
            used in mimeview to select a specific viewer. If several fields
-           are to be set, they should be separated with a colon (':')
-           character (which there is currently no way to escape). Ie:
-           localfields= rclaptg=gnus:other = val, then select specifier
-           viewer with mimetype|tag=... in mimeview.
+           are to be set, they should be separated with a semi-colon (';')
+           character, which there is currently no way to escape. Also note
+           the initial semi-colon. Example: localfields= ;rclaptg=gnus;other
+           = val, then select specifier viewer with mimetype|tag=... in
+           mimeview.
+
+   metadatacmds
+
+           This allows executing external commands for each file and storing
+           the output in a Recoll field. This could be used for example to
+           index external tag data. The value is a list of field names and
+           commands, don't forget an initial semi-colon. Example:
+
+ [/some/area/of/the/fs]
+ metadatacmds = ; tags = tmsu tags %f; otherfield = somecmd -xx %f
+                
 
     5.4.1.3. Parameters affecting where and how we store things:
 
@@ -897,6 +909,18 @@ Chapter 5. Installation and configuration
  # mailmytag field name
  x-my-tag = mailmytag
 
+    5.4.2.1. Extended attributes in the fields file
+
+   Recoll versions 1.19 and later process user extended file attributes as
+   documents fields by default.
+
+   Attributes are processed as fields of the same name, after removing the
+   user prefix on Linux.
+
+   The [xattrtofields] section of the fields file allows specifying
+   translations from extended attributes names to Recoll field names. An
+   empty translation disables use of the corresponding attribute data.
+
   5.4.3. The mimemap file
 
    mimemap specifies the file name extension to mime type mappings.
@@ -1004,9 +1028,28 @@ Chapter 5. Installation and configuration
    document. This could be used in combination with field customisation to
    help with opening the document.
 
-  5.4.6. Examples of configuration adjustments
+  5.4.6. The ptrans file
 
-    5.4.6.1. Adding an external viewer for an non-indexed type
+   ptrans specifies query-time path translations. These can be useful in
+   multiple cases.
+
+   The file has a section for any index which needs translations, either the
+   main one or additional query indexes. The sections are named with the
+   Xapian index directory names. No slash character should exist at the end
+   of the paths (all comparisons are textual). An exemple should make things
+   sufficiently clear
+
+           [/home/me/.recoll/xapiandb]
+           /this/directory/moved = /to/this/place
+
+           [/path/to/additional/xapiandb]
+           /server/volume1/docdir = /net/server/volume1/docdir
+           /server/volume2/docdir = /net/server/volume2/docdir
+        
+
+  5.4.7. Examples of configuration adjustments
+
+    5.4.7.1. Adding an external viewer for an non-indexed type
 
    Imagine that you have some kind of file which does not have indexable
    content, but for which you would like to have a functional Open link in
@@ -1036,7 +1079,7 @@ Chapter 5. Installation and configuration
    configuration, which you do not need to alter. mimeview can also be
    modified from the Gui.
 
-    5.4.6.2. Adding indexing support for a new file type
+    5.4.7.2. Adding indexing support for a new file type
 
    Let us now imagine that the above .blob files actually contain indexable
    text and that you know how to extract it with a command line program.
