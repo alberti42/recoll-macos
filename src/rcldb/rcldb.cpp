@@ -856,18 +856,29 @@ size_t Db::whatDbIdx(const Doc& doc)
     return doc.xdocid % (m_extraDbs.size()+1);
 }
 
-bool Db::testDbDir(const string &dir)
+bool Db::testDbDir(const string &dir, bool *stripped_p)
 {
     string aerr;
+    bool mstripped = true;
     LOGDEB(("Db::testDbDir: [%s]\n", dir.c_str()));
     try {
 	Xapian::Database db(dir);
+	// If we have terms with a leading ':' it's an
+	// unstripped index
+	Xapian::TermIterator term = db.allterms_begin(":");
+	if (term == db.allterms_end())
+	    mstripped = true;
+	else
+	    mstripped = false;
     } XCATCHERROR(aerr);
     if (!aerr.empty()) {
 	LOGERR(("Db::Open: error while trying to open database "
 		"from [%s]: %s\n", dir.c_str(), aerr.c_str()));
 	return false;
     }
+    if (stripped_p) 
+	*stripped_p = mstripped;
+
     return true;
 }
 

@@ -41,7 +41,7 @@ RclConfig *theconfig;
 const char *PrefsPack::dfltResListFormat = 
 	"<table><tr><td><a href='%U'><img src='%I' width='64'></a></td>"
 	"<td>%L &nbsp;<i>%S</i> &nbsp;&nbsp;<b>%T</b><br>"
-	"<span style='white-space:nowrap'>%M&nbsp;%D</span>&nbsp;&nbsp;&nbsp; <i>%U</i>&nbsp;%i<br>"
+	"<span style='white-space:nowrap'><i>%M</i>&nbsp;%D</span>&nbsp;&nbsp;&nbsp; <i>%U</i>&nbsp;%i<br>"
 	"%A %K</td></tr></table>"
     ;
 
@@ -290,8 +290,14 @@ void rwSettings(bool writing)
 			      prefs.allExtraDbs.end(), dbdir) != 
 		    prefs.allExtraDbs.end())
 		    continue;
-		if (!Rcl::Db::testDbDir(dbdir)) {
+		bool stripped;
+		if (!Rcl::Db::testDbDir(dbdir, &stripped)) {
 		    LOGERR(("Not a xapian index: [%s]\n", dbdir.c_str()));
+		    continue;
+		}
+		if (stripped != o_index_stripchars) {
+		    LOGERR(("Incompatible character stripping: [%s]\n",
+			    dbdir.c_str()));
 		    continue;
 		}
 		prefs.allExtraDbs.push_back(dbdir);
@@ -305,8 +311,11 @@ void rwSettings(bool writing)
 	// actually there: useful for removable volumes.
 	for (list<string>::iterator it = prefs.activeExtraDbs.begin();
 	     it != prefs.activeExtraDbs.end();) {
-	    if (!Rcl::Db::testDbDir(*it)) {
-		LOGINFO(("Not a xapian index: [%s]\n", it->c_str()));
+	    bool stripped;
+	    if (!Rcl::Db::testDbDir(*it, &stripped) || 
+		stripped != o_index_stripchars) {
+		LOGINFO(("Not a Xapian index or char stripping differs: [%s]\n",
+			 it->c_str()));
 		it = prefs.activeExtraDbs.erase(it);
 	    } else {
 		it++;
@@ -327,8 +336,11 @@ void rwSettings(bool writing)
                               prefs.activeExtraDbs.end(), dbdir) !=
                     prefs.activeExtraDbs.end())
                     continue;
-                if (!Rcl::Db::testDbDir(dbdir)) {
-                    LOGERR(("Not a xapian index: [%s]\n", dbdir.c_str()));
+		bool strpd;
+                if (!Rcl::Db::testDbDir(dbdir, &strpd) || 
+		    strpd != o_index_stripchars) {
+                    LOGERR(("Not a Xapian dir or diff. char stripping: [%s]\n",
+			    dbdir.c_str()));
                     continue;
                 }
                 prefs.activeExtraDbs.push_back(dbdir);

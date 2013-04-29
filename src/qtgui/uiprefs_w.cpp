@@ -533,9 +533,16 @@ void UIPrefsDialog::addExtraDbPB_clicked()
 
     LOGDEB(("ExtraDbDial: got: [%s]\n", dbdir.c_str()));
     path_catslash(dbdir);
-    if (!Rcl::Db::testDbDir(dbdir)) {
+    bool stripped;
+    if (!Rcl::Db::testDbDir(dbdir, &stripped)) {
 	QMessageBox::warning(0, "Recoll", 
         tr("The selected directory does not appear to be a Xapian index"));
+	return;
+    }
+    if (o_index_stripchars != stripped) {
+	QMessageBox::warning(0, "Recoll", 
+			     tr("Cant add index with different case/diacritics"
+				" stripping option"));
 	return;
     }
     if (samedir(dbdir, theconfig->getDbDir())) {

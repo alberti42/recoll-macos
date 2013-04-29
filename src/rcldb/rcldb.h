@@ -301,8 +301,9 @@ class Db {
      *   other: order of database in add_database() sequence.
      */
     size_t whatDbIdx(const Doc& doc);
+
     /** Tell if directory seems to hold xapian db */
-    static bool testDbDir(const string &dir);
+    static bool testDbDir(const string &dir, bool *stripped = 0);
 
     /** Return the index terms that match the input string
      * Expansion is performed either with either wildcard or regexp processing
