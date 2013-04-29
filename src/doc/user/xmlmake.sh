@@ -63,8 +63,8 @@ eval xsltproc $commonoptions \
     "$XSLDIR/html/docbook.xsl" \
     usermanual.xml
 
-tidy -indent usermanual-xml.html > tmpfile 
-mv -f tmpfile usermanual-xml.html
+tidy -indent usermanual.html > tmpfile 
+mv -f tmpfile usermanual.html
 
 # And the pdf with dblatex
 dblatex usermanual.xml 

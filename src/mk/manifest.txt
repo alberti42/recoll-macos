@@ -53,6 +53,7 @@ desktop/
 desktop/hotrecoll.py
 desktop/recoll-searchgui.desktop
 desktop/recoll.png
+desktop/recoll.svg
 desktop/recoll.xcf
 desktop/recoll_index_on_ac.sh
 desktop/recollindex.desktop
@@ -100,9 +101,12 @@ doc/prog/Makefile
 doc/prog/filters.txt
 doc/prog/top.txt
 doc/user/
+doc/user/00README.txt
 doc/user/Makefile
 doc/user/Makefile.fbsd
 doc/user/RCL.INDEXING.CONFIG.html
+doc/user/RCL.INDEXING.EXTATTR.html
+doc/user/RCL.INDEXING.EXTTAGS.html
 doc/user/RCL.INDEXING.MONITOR.html
 doc/user/RCL.INDEXING.PERIODIC.html
 doc/user/RCL.INDEXING.STORAGE.html
@@ -124,16 +128,15 @@ doc/user/RCL.SEARCH.COMMANDLINE.html
 doc/user/RCL.SEARCH.DESKTOP.html
 doc/user/RCL.SEARCH.KIO.html
 doc/user/RCL.SEARCH.LANG.html
+doc/user/RCL.SEARCH.PTRANS.html
 doc/user/RCL.SEARCH.html
 doc/user/bldloop
 doc/user/docbook-xsl.css
 doc/user/docbook.css
 doc/user/index.html
 doc/user/usermanual-italian.html
-doc/user/usermanual-xml.html
 doc/user/usermanual.html
 doc/user/usermanual.sgml
-doc/user/usermanual.xml
 doc/user/xmlmake.sh
 filters/
 filters/injectcommon.sh
@@ -226,6 +229,7 @@ internfile/mh_mail.cpp
 internfile/mh_mail.h
 internfile/mh_mbox.cpp
 internfile/mh_mbox.h
+internfile/mh_symlink.h
 internfile/mh_text.cpp
 internfile/mh_text.h
 internfile/mh_unknown.h
@@ -234,6 +238,8 @@ internfile/mimehandler.h
 internfile/myhtmlparse.cpp
 internfile/myhtmlparse.h
 internfile/txtdcode.cpp
+internfile/uncomp.cpp
+internfile/uncomp.h
 kde/
 kde/kioslave/
 kde/kioslave/kio_recoll/
@@ -359,6 +365,8 @@ qtgui/images/firstpage.png
 qtgui/images/history.png
 qtgui/images/nextpage.png
 qtgui/images/prevpage.png
+qtgui/images/recoll.icns
+qtgui/images/recoll.png
 qtgui/images/sortparms.png
 qtgui/images/spell.png
 qtgui/images/table.png
@@ -377,6 +385,7 @@ qtgui/mtpics/book.png
 qtgui/mtpics/bookchap.png
 qtgui/mtpics/document.png
 qtgui/mtpics/drawing.png
+qtgui/mtpics/emblem-symbolic-link.png
 qtgui/mtpics/folder.png
 qtgui/mtpics/html.png
 qtgui/mtpics/image.png
@@ -393,9 +402,15 @@ qtgui/mtpics/sownd.png
 qtgui/mtpics/spreadsheet.png
 qtgui/mtpics/text-x-python.png
 qtgui/mtpics/txt.png
+qtgui/mtpics/video.png
 qtgui/mtpics/wordprocessing.png
+qtgui/multisave.cpp
+qtgui/multisave.h
 qtgui/preview_w.cpp
 qtgui/preview_w.h
+qtgui/ptrans.ui
+qtgui/ptrans_w.cpp
+qtgui/ptrans_w.h
 qtgui/rclhelp.cpp
 qtgui/rclhelp.h
 qtgui/rclmain.ui
@@ -408,6 +423,8 @@ qtgui/recoll.pro.in
 qtgui/recoll.qrc
 qtgui/reslist.cpp
 qtgui/reslist.h
+qtgui/respopup.cpp
+qtgui/respopup.h
 qtgui/restable.cpp
 qtgui/restable.h
 qtgui/restable.ui
@@ -438,6 +455,7 @@ query/docseq.cpp
 query/docseq.h
 query/docseqdb.cpp
 query/docseqdb.h
+query/docseqdocs.h
 query/docseqhist.cpp
 query/docseqhist.h
 query/dynconf.cpp
@@ -469,9 +487,11 @@ rcldb/rcldb.h
 rcldb/rcldb_p.h
 rcldb/rcldoc.cpp
 rcldb/rcldoc.h
+rcldb/rcldups.cpp
 rcldb/rclquery.cpp
 rcldb/rclquery.h
 rcldb/rclquery_p.h
+rcldb/rclterms.cpp
 rcldb/searchdata.cpp
 rcldb/searchdata.h
 rcldb/searchdataxml.cpp
@@ -514,6 +534,8 @@ utils/conftree.cpp
 utils/conftree.h
 utils/copyfile.cpp
 utils/copyfile.h
+utils/cpuconf.cpp
+utils/cpuconf.h
 utils/debuglog.cpp
 utils/debuglog.h
 utils/ecrontab.cpp
@@ -546,6 +568,8 @@ utils/readfile.h
 utils/refcntr.h
 utils/smallut.cpp
 utils/smallut.h
+utils/strmatcher.cpp
+utils/strmatcher.h
 utils/transcode.cpp
 utils/transcode.h
 utils/utf8iter.cpp
