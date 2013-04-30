@@ -47,20 +47,22 @@
         do this is to quit all recoll programs and just delete the
         index directory
         (<span class="literal">rm&nbsp;-rf&nbsp;~/.recoll/xapiandb</span>),
-        then start recoll or
-        recollindex.  <span class="literal">recollindex&nbsp;-z</span>
-        &nbsp;will do the same in most, but not all, cases, it's
-        better to use the <tt>rm</tt> method, which will also ensure
-        that no debris from older releases remain (e.g.: old stemming
-        files which are not used any more).</p>
+        then start recoll or recollindex. <br/>
+        <span class="literal">recollindex&nbsp;-z</span> &nbsp;will do
+        the same in most, but not all, cases. It's better to use
+        the <tt>rm</tt> method, which will also ensure that no debris
+        from older releases remain (e.g.: old stemming files which are
+        not used any more).</p>
 
       <p>Installing 1.19 over an 1.18 index will force a lot of
-        reindexing anyway because we switched from using st_ctime instead
-        of st_mtime to detect file modifications, meaning that all files
-        which were modified since created will be updated.</p>
+        reindexing anyway because Recoll switched from using st_ctime
+        instead of st_mtime to detect file modifications, meaning that
+        all files which were modified since created will be
+        updated.</p>
 
-      <p><span class="important">Viewer exceptions</span>: 
-        There is a new list of mime types that should be opened with
+      <p><span class="important">Viewer exceptions</span>: as in 1.18
+        (but we kept this section for 1.17 users), 
+        there is a list of mime types that should be opened with
         the locally configured application even when <em>Use
           Desktop Preferences</em> is checked. This allows making
         use of new functions (direct access to page), which could not
@@ -73,35 +75,128 @@
         installation . This can be done from the <em>Preferences->Gui
         Configuration</em> menu.</p>
 
-      <h2>Changes</h2>
-
-      <p>Recoll 1.19 .... Changes documented from 1.18.1 to rev 3159</p> 
+      <h2>Changes in Recoll 1.19.0</h2>
 
       <ul>
+
+        <li>Indexing can use multiple threads. This can be a
+          major performance boost for people with multiprocessor
+          machines and big indexes. The threads setup is
+          roughly auto-configured when recollindex starts, based on
+          the number of processors, but it is also possible to taylor
+          it in the configuration. Here are some
+          <a href="http://www.recoll.org/idxthreads/threadingRecoll.html">
+            notes about the transformation and the performance
+            improvements</a>. There is also a 
+          <a href="http://www.recoll.org/usermanual/usermanual.html#RCL.INSTALL.CONFIG.RECOLLCONF.IDXTHREADS">
+            section in the manual</a> to describe the configuration.
+        </li> 
+
+        <li>There is a new result list/table popup menu option to
+          display all the sub-documents for a given one. This is
+          mostly useful to display the attachments to an email. The
+          resulting screen can be used to save a multiple selection of
+          the entries to files.</li>
+
+        <li>It is now possible to use OR with "dir:" clauses, and
+          wildcards have been enabled.</li>
+
+        <li>When the option to follow symbolic links is not set
+          -which is the default- symbolic links are now indexed as
+          such (name and content).</li>
+
+        <li>There are new GUI configuration options to run in "search
+          as you type" mode (which I don't find useful at all...), and
+          to disable the Qt auto-completion inside the simple search
+          string. The completion was often more confusing and ennoying than
+          useful, especially because it is case-insensitive when case
+          sometimes matter for Recoll searches (capitalization to
+          disable stemming).</li>
+        
+        <li>When the option to collapse identical results is used,
+          documents which do have duplicates are shown with a
+          link to list the clones. This function needs new data from
+          the index, so it will only completely work after a full 1.19
+          reindex.</li>
+
+        <li>Recoll should now behave reasonably on video files: index
+          the name and propose an Open button in the result list to
+          start the configured player.</li>
+
+        <li>Thanks to Recoll
+          user <a href="https://github.com/koniu">Koniu</a>, you can now
+          access your Recoll indexes through a Web 
+          browser interface. The server side is based on
+          the <a href="http://bottlepy.org/docs/dev/">Bottle Python
+            Web frameork</a> and the Recoll Python module, and can run
+            self-contained (no necessity to run apache or another web
+            server), so it's quite simple to set up. See:
+          See the <a href="https://github.com/koniu/recoll-webui/">
+            Recoll WebUI project</a> on GitHub. </li>
+
+        <li>There is a new path translation facility, with a GUI
+          interface, to make it easier to share an index from a network
+          share on clients on which the mount points might be
+          different. This could also probably be put to use to design
+          a "portable index" feature (for removable media).</li>
+
+        <li>The first indexing run after Recoll installation (for a new
+          user) will run in a fashion which will put data likely to be
+          useful into the index faster, so that an impatient user can
+          more quickly try searches.</li>
+
+        <li>Implemented cache for last file uncompressed. This will
+          much improve usage, e.g. for people fetching successive
+          messages from a compressed mail folder.</li>
+
+        <li>Recollindex will now change its current directory to a
+          temporary one (e.g. /tmp) to mitigate the problems of some
+          filters creating temporary files and not cleaning them.</li>
+
+        <li>There is a new recursive reindex option to command line
+          indexer.</li>
+
+        <li>The default result list paragraph format has been slightly
+          tweaked (removed the relevance percentage and small ordering
+          and formatting changes).</li>
+
+        <li>Mime type wildcard expansion is now performed against the
+          index, not the configuration. This fixes many problems when
+          searching for, e.g., media files indexed only by name.</li>
+
+        <li>The choice for case/diacritics sensitivity is now fully
+          processed during wildcard expansion (for case-sensitive
+          indexes).</li> 
+
+        <li>The Snippets popup (list of pages and excerpts typically
+          produced for PDF documents) can now use an external
+          CSS stylesheet. This is useful because the Qt Webkit
+          objects do not fully inherit the Qt configuration so that,
+          for example, a style sheet is needed for using
+          a different background color. The style sheet is chosen
+          from the <tt>Preferences->GUI configuration->Result
+          list</tt> panel.</li> 
+
+        <li>Improved handling of filters during indexing resulting in
+          less subprocesses.</li>
+
+        <li>Added function to import tags from external application
+          (e.g. Tmsu).</li>
+
         <li>Changed format for rclaptg field. Was colon-separated,
-        now uses normal value/attributes syntax with an empty value
-        like:
+          now uses normal value/attributes syntax with an empty value
+          like:
           <pre>
             localfields = ; attr1 = val1 ; attr2 = val2
           </pre>
         </li>
-        <li>There are new GUI configuration options to run in "search
-          as you type" mode, and to disable the Qt auto-completion
-          inside the simple search string, which was often more confusing
-          and ennoying than useful.</li>
 
         <li>Extended file attributes are now indexed by default. As a
           side effect, recoll now uses st_ctime, not st_mtime to detect
           file changes. This means that installing 1.19 will reindex
-          many files (all those that were modified since created).</li>
-
-        <li>The software can now be built so that indexing is runs with
-        multiple threads. This can be a major performance boost for
-        people with multiprocessor machines and big indexes. It is not
-        enabled by default for now, you will need to build from
-        source. I wrote some 
-          <a href="http://www.recoll.org/idxthreads/threadingRecoll.html">notes
-            about the transformation and the performance improvements</a>.</li>
+          many files (all those that were modified since created).
+          Recoll now processes the <tt>charset</tt>
+          and <tt>mime_type</tt> standardized extended attributes.</li>
 
         <li>The Python module has been expanded to include the
           interface for extracting data. This means that you could now
@@ -121,25 +216,12 @@
           Database API Specification v2.0</a> for the parts that make
           sense for a non-relational DB.</li>
 
-        <li>You can now access your Recoll indexes through a Web
-          browser interface. The server side is based on
-          the <a href="http://bottlepy.org/docs/dev/">Bottle Python
-            Web frameork</a> and the Recoll Python module, and can run
-            self-contained (no necessity to run apache or another web
-            server), so it's quite simple to set up. See:
-          the expanded Python module. See
-          the <a href="https://github.com/koniu/recoll-webui/">Recoll
-          WebUI</a> on GitHub. </li>
-
         <li>Recoll now uses a dynamic library for the code shared by
           the query interface, the indexer and the Python
           module. This should have no visible impact but was rendered
           necessary by the Python module evolutions.</li>
 
-        <li>Fixed bugs:
-          <ul>
-          </ul>
-        </li>
+        <li>And quite a few <a href="BUGS.html#b_1_18_2">Fixed bugs</a></li>
 
       </ul>
 

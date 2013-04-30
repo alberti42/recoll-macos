@@ -36,7 +36,36 @@
           topmost section may also exist in older versions.</i></p>
 
       
-      <h2><a name="b_latest">recoll 1.18.2</a></h2> 
+      <h2><a name="b_latest">recoll 1.19.0</a></h2> 
+      <ul>
+        <li>On systems such as Debian Stable which use Evince version
+          2.x (not 3.x) as PDF viewer, the default "Open" command for
+          PDF files will not work. You need to use the GUI preferences
+          tool to change the --page-index option to --page-label for
+          the evince command line used for PDF.</li>
+        <li>It will sometimes happen that the result list paragraph
+          format stored in the Qt preferences file will get garbled,
+          causing result lists with no displayed paragraphs (the
+          counts and pages are ok, the results can be seen in table
+          mode, but not in list mode). The workaround is to go to
+          <blockquote>
+            Preferences->Query configuration->User interface
+          </blockquote> and erase the result paragraph format string
+          (^A DEL in the text area), this will reset the string to the
+          default value.</li>
+
+        <li>Real time indexer: when running with gamin on FreeBSD, the
+          indexer can deadlock in the gamin dialog in some
+          cases.</li>
+
+        <li>After an upgrade, the recoll GUI sometimes crashes on
+          startup. This is fixed by removing (back it up just in case)
+          ~/.config/Recoll.org/recoll.conf, the QSettings storage for
+          recoll.</li>
+      </ul>
+
+      <h2><a name="b_1_18_2">recoll 1.18.2</a></h2> 
+      <ul>
         <li>When no indexing helper applications are actually missing,
           an ennoying popup is shown in the GUI at each end of a batch
           indexing run (it's supposed to be shown only once).</li>
@@ -61,36 +90,32 @@ video/x-msvideo = exec rclbad
         </li>
 
 
-        <li>On systems such as Debian Stable which use Evince version
-          2.x (not 3.x) as PDF viewer, the default "Open" command for
-          PDF files will not work. You need to edit the command:
-          in <em>Preferences->GUI&nbsp;configuration</em>,
-          uncheck <em>Use&nbsp;desktop&nbsp;preferences...</em>, then
-          click <em>Choose&nbsp;editor&nbsp;applications</em>, and for
-          application/pdf, application/postscript and text/dvi, change
-          the --page-index option to --page-label. Then
-          re-check <em>Use&nbsp;desktop&nbsp;preferences...</em> if
-          it was initially set.</li>
+        <li>It's possible to add an external index with a
+          case/diacritics stripping option different from the main
+          index'. Searches will mostly not work.</li>
 
-        <li>It will sometimes happen that the result list paragraph
-          format stored in the Qt preferences file will get garbled,
-          causing result lists with no displayed paragraphs (the
-          counts and pages are ok, the results can be seen in table
-          mode, but not in list mode). The workaround is to go to
-          <blockquote>
-            Preferences->Query configuration->User interface
-          </blockquote> and erase the result paragraph format string
-          (^A DEL in the text area), this will reset the string to the
-          default value.</li>
+        <li>fnmatch() errors sometimes encountered because of
+          character set and locale issues were treated as
+          matches.</li>
 
-        <li>Real time indexer: when running with gamin on FreeBSD, the
-          indexer can deadlock in the gamin dialog in some
-          cases.</li>
+        <li>When an advanced search finds no result, the spelling
+          suggestions screen which is displayed contains links which can
+          only be useful for a simple search. Clicking them will
+          result in confusion.</li>
 
-        <li>After an upgrade, the recoll GUI sometimes crashes on
-          startup. This is fixed by removing (back it up just in case)
-          ~/.config/Recoll.org/recoll.conf, the QSettings storage for
-          recoll.</li>
+        <li>When the real-time indexer updates a compound document
+          which has been shortened (typically, a truncated mbox folder),
+          the obsolete documents beyond the new end were not deleted,
+          resulting in confusing behaviour.</li>
+
+        <li>Expansions of '*' were sometimes done against the whole
+          indexes in cases where it would have been able data restricted
+          to a field, resulting in much degraded performance.</li>
+
+        <li>Wildcards were wrongly handled when splitting a string
+          before a query, so that things like <tt>recoll@*</tt> could
+          end up being split as <tt>recoll *</tt>.</li>
+
       </ul>
 
 
