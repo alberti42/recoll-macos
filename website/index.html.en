@@ -87,6 +87,14 @@
       <div class="news">
       
       <dl>
+        <dt>2013-04-30</dt><dd>Recoll 1.19.0 will soon be out, and as
+          usual, there is a pre-release source tarfile for 
+          adventurous souls who would be willing to test and
+          help the release to be as close to flawless as
+          possible. The <a href="betarecoll-3304.tar.gz">tar file</a> and the
+          the <a href="release-1.19.html">release notes</a>.
+        </dd>
+
         <dt>2013-04-30</dt><dd>Thanks to some of its users, Recoll now
           has filters to 
           <a href="http://sourceforge.net/projects/rcollnotesfiltr/">

@@ -11,11 +11,15 @@ recollindex \- indexing command for the Recoll full text search system
 <configdir>
 ]
 [
-.B \-z
+.B \-z|\-Z
 ]
+.br
+.B recollindex
 [
-.B \-m
+.B \-c
+<configdir>
 ]
+.B \-m
 [
 .B \-w
 <seconds>
@@ -26,6 +30,12 @@ recollindex \- indexing command for the Recoll full text search system
 [
 .B \-x
 ]
+[
+.B \-C
+]
+[
+.B \-n
+]
 .br
 .B recollindex 
 [
@@ -34,9 +44,26 @@ recollindex \- indexing command for the Recoll full text search system
 ]
 .B \-i 
 [
+.B \-Z
+]
+[
 .B \-f
 ]
-[<filename [filename ...]>]
+[<path [path ...]>]
+.br
+.B recollindex 
+[
+.B \-c
+<configdir>
+]
+.B \-r
+[
+.B \-Z
+]
+[
+.B \-f
+]
+<dirpath>
 .br
 .B recollindex 
 [
@@ -44,7 +71,7 @@ recollindex \- indexing command for the Recoll full text search system
 <configdir>
 ]
 .B \-e 
-[<filename [filename ...]>]
+[<path [path ...]>]
 .br
 .B recollindex
 [
@@ -87,7 +114,10 @@ file
 This will incrementally update the database with files that changed since
 the last run. If option 
 .B \-z 
-is given, the database will be erased before starting.
+is given, the database will be erased before starting. If option
+.B \-Z 
+is given, the database will not be reset, but all files will be considered
+as needing reindexing (in place reset).
 .PP
 If option 
 .B
@@ -110,10 +140,15 @@ Option
 \-x
 disables this X11 session monitoring (daemon will stay alive even if it
 cannot connect to the X11 server). You need to use this too if you use the
-daemon without an X11 context.
-.PP
-.B recollindex \-l 
-will list the names of available language stemmers.
+daemon without an X11 context. You can use option
+.B
+\-n
+to skip the initial incrementing pass which is normally performed before
+monitoring starts. Once monitoring is started, the daemon normally monitors
+the configuration and restarts from scratch if a change is made. You can
+disable this with option
+.B
+\-C
 .PP
 .B recollindex \-i
 will index individual files into the database. The stem expansion and
@@ -127,6 +162,7 @@ option. This allows fully custom file selection for a given subtree,
 for which you would add the top directory to skippedPaths, and use any
 custom tool to generate the file list (ie: a tool from a source code
 control system). 
+.PP
 .PP
 .B recollindex \-e
 will erase data for individual files from the database. The stem expansion
@@ -148,7 +184,18 @@ find /path/to/dir \-print | recollindex \-i
 to force the reindexing of a directory tree (which has to exist inside the
 file system area defined by
 .I topdirs 
-in recoll.conf).
+in recoll.conf). You could mostly accomplish the same thing with
+.PP
+.B find /path/to/dir \-print | recollindex \-f \-Z 
+.PP
+.B recollindex \-r
+mostly works like -i, but the parameter is a single directory, which will
+be recursively updated. This mostly does nothing more than 
+.B find topdir | recollindex -i
+but it may be more convenient to use when started from another program.
+.PP
+.B recollindex \-l 
+will list the names of available language stemmers.
 .PP
 .B recollindex \-s 
 will build the stem expansion database for a given language, which may or
