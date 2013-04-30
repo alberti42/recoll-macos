@@ -737,7 +737,65 @@ Chapter 5. Installation and configuration
            memory, you can try higher values between 20 and 80. In my
            experience, values beyond 100 are always counterproductive.
 
-    5.4.1.4. Miscellaneous parameters:
+    5.4.1.4. Indexing parallelism configuration
+
+   The Recoll indexing process recollindex can use multiple threads to speed
+   up indexing on multiprocessor systems. The work done to index files is
+   divided in several stages and some of the stages can be executed by
+   multiple threads. The stages are:
+
+    1. File system walking: this is always performed by the main thread.
+    2. File conversion and data extraction.
+    3. Text processing (splitting, stemming, etc.)
+    4. Xapian index update.
+
+   You can also read a longer document about the transformation of Recoll
+   indexing to multithreading.
+
+   The threads configuration is controlled by two configuration file
+   parameters.
+
+   thrQSizes
+
+           This variable defines the job input queues configuration. There
+           are three possible queues for stages 2, 3 and 4, and this
+           parameter should give the queue depth for each stage (three
+           integer values). If a value of -1 is used for a given stage, no
+           queue is used, and the thread will go on performing the next
+           stage. In practise, deep queues have not been shown to increase
+           performance. A value of 0 for the first queue tells Recoll to
+           perform autoconfiguration (no need for the two other values in
+           this case)- this is the default configuration.
+
+   thrTCounts
+
+           This defines the number of threads used for each stage. If a value
+           of -1 is used for one of the queue depths, the corresponding
+           thread count is ignored. It makes no sense to use a value other
+           than 1 for the last stage because updating the Xapian index is
+           necessarily single-threaded (and protected by a mutex).
+
+   The following example would use three queues (of depth 2), and 4 threads
+   for converting source documents, 2 for processing their text, and one to
+   update the index. This was tested to be the best configuration on the test
+   system (quadri-processor with multiple disks).
+
+ thrQSizes = 2 2 2
+ thrTCounts =  4 2 1
+
+   The following example would use a single queue, and the complete
+   processing for each document would be performed by a single thread
+   (several documents will still be processed in parallel in most cases). The
+   threads will use mutual exclusion when entering the index update stage. In
+   practise the performance would be close to the precedent case in general,
+   but worse in certain cases (e.g. a Zip archive would be performed purely
+   sequentially), so the previous approach is preferred. YMMV... The 2 last
+   values for thrTCounts are ignored.
+
+ thrQSizes = 2 -1 -1
+ thrTCounts =  6 1 1
+
+    5.4.1.5. Miscellaneous parameters:
 
    autodiacsens
 
