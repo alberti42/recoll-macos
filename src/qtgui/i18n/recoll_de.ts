@@ -866,7 +866,7 @@ Wollen Sie den Einstellungs-Dialog starten?</translation>
     </message>
     <message>
         <source>Query details</source>
-        <translation>Details zur Suchanfrage</translation>
+        <translation type="obsolete">Details zur Suchanfrage</translation>
     </message>
     <message>
         <source>Could not open external index. Db not open. Check external indexes list.</source>
@@ -930,7 +930,7 @@ Wollen Sie den Einstellungs-Dialog starten?</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation>Der Index ist für diese Datei nicht auf dem neuesten Stand. Es soll nicht das Risiko eingegangen werden, den falschen Eintrag anzuzeigen. Drücken SIe OK, um den Index für diese Datei zu aktualisieren und starten Sie die Suchanfrage erneut, wenn die Indizierung abgeschlossen ist. Drücken Sie ansonsten Abbrechen.</translation>
+        <translation type="obsolete">Der Index ist für diese Datei nicht auf dem neuesten Stand. Es soll nicht das Risiko eingegangen werden, den falschen Eintrag anzuzeigen. Drücken SIe OK, um den Index für diese Datei zu aktualisieren und starten Sie die Suchanfrage erneut, wenn die Indizierung abgeschlossen ist. Drücken Sie ansonsten Abbrechen.</translation>
     </message>
     <message>
         <source>Can&apos;t update index: indexer running</source>
@@ -960,6 +960,22 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexer running so things should improve when it&apos;s done</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sub-documents and attachments</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1119,7 +1135,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>sortByDateAsc</source>
-        <translation>sortByDateAsc</translation>
+        <translation type="obsolete">sortByDateAsc</translation>
     </message>
     <message>
         <source>Sort by dates from oldest to newest</source>
@@ -1127,7 +1143,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>sortByDateDesc</source>
-        <translation>sortByDateDesc</translation>
+        <translation type="obsolete">sortByDateDesc</translation>
     </message>
     <message>
         <source>Sort by dates from newest to oldest</source>
@@ -1139,7 +1155,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Show results as table</source>
-        <translation>Zeige Ergebnisse als Tabelle</translation>
+        <translation type="obsolete">Zeige Ergebnisse als Tabelle</translation>
     </message>
     <message>
         <source>&amp;Rebuild index</source>
@@ -1168,6 +1184,46 @@ Please check the mimeview file</source>
     <message>
         <source>&amp;GUI configuration</source>
         <translation>&amp;GUI-Einstellungen</translation>
+    </message>
+    <message>
+        <source>&amp;Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort by date, oldest first</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort by date, newest first</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show as table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show results in a spreadsheet-like table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save as CSV (spreadsheet) file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saves the result into a file which you can load in a spreadsheet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Previous Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>First Page</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1269,19 +1325,19 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Vorschau</translation>
+        <translation type="obsolete">&amp;Vorschau</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>&amp;URL kopieren</translation>
+        <translation type="obsolete">&amp;URL kopieren</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>&amp;Ähnliche Dokumente finden</translation>
+        <translation type="obsolete">&amp;Ähnliche Dokumente finden</translation>
     </message>
     <message>
         <source>Query details</source>
-        <translation type="obsolete">Suchdetails</translation>
+        <translation type="unfinished">Suchdetails</translation>
     </message>
     <message>
         <source>(show query)</source>
@@ -1289,7 +1345,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>&amp;Dateinamen kopieren</translation>
+        <translation type="obsolete">&amp;Dateinamen kopieren</translation>
     </message>
     <message>
         <source>Document history</source>
@@ -1309,19 +1365,19 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>&amp;Schreibe in Datei</translation>
+        <translation type="obsolete">&amp;Schreibe in Datei</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>Vorschau des &amp;übergeordneten Dokuments/Ordners</translation>
+        <translation type="obsolete">Vorschau des &amp;übergeordneten Dokuments/Ordners</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>Ö&amp;ffnen des übergeordneten Dokuments/Ordners</translation>
+        <translation type="obsolete">Ö&amp;ffnen des übergeordneten Dokuments/Ordners</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>&amp;Öffnen</translation>
+        <translation type="obsolete">&amp;Öffnen</translation>
     </message>
     <message>
         <source>Documents</source>
@@ -1341,7 +1397,19 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation>Öffne &amp;Schnipsel-Fenster</translation>
+        <translation type="obsolete">Öffne &amp;Schnipsel-Fenster</translation>
+    </message>
+    <message>
+        <source>Duplicate documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>These Urls ( | ipath) share the same content:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Result count (est.)</source>
+        <translation type="unfinished">Anzahl Ergebnisse (ca.)</translation>
     </message>
 </context>
 <context>
@@ -1364,35 +1432,35 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Vorschau</translation>
+        <translation type="obsolete">&amp;Vorschau</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>&amp;Öffnen</translation>
+        <translation type="obsolete">&amp;Öffnen</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>&amp;Dateinamen kopieren</translation>
+        <translation type="obsolete">&amp;Dateinamen kopieren</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>&amp;URL kopieren</translation>
+        <translation type="obsolete">&amp;URL kopieren</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>&amp;Schreibe in Datei</translation>
+        <translation type="obsolete">&amp;Schreibe in Datei</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>&amp;Ähnliche Dokumente finden</translation>
+        <translation type="obsolete">&amp;Ähnliche Dokumente finden</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>Vorschau des &amp;übergeordneten Dokuments/Ordners</translation>
+        <translation type="obsolete">Vorschau des &amp;übergeordneten Dokuments/Ordners</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>Ö&amp;ffnen des übergeordneten Dokuments/Ordners</translation>
+        <translation type="obsolete">Ö&amp;ffnen des übergeordneten Dokuments/Ordners</translation>
     </message>
     <message>
         <source>&amp;Save as CSV</source>
@@ -1407,35 +1475,82 @@ Please check the mimeview file</source>
     <name>ResTableDetailArea</name>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Vorschau</translation>
+        <translation type="obsolete">&amp;Vorschau</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>&amp;Öffnen</translation>
+        <translation type="obsolete">&amp;Öffnen</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>&amp;Dateinamen kopieren</translation>
+        <translation type="obsolete">&amp;Dateinamen kopieren</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>&amp;URL kopieren</translation>
+        <translation type="obsolete">&amp;URL kopieren</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>&amp;Schreibe in Datei</translation>
+        <translation type="obsolete">&amp;Schreibe in Datei</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>&amp;Ähnliche Dokumente finden</translation>
+        <translation type="obsolete">&amp;Ähnliche Dokumente finden</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>Vorschau des &amp;übergeordneten Dokuments/Ordners</translation>
+        <translation type="obsolete">Vorschau des &amp;übergeordneten Dokuments/Ordners</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>Ö&amp;ffnen des übergeordneten Dokuments/Ordners</translation>
+        <translation type="obsolete">Ö&amp;ffnen des übergeordneten Dokuments/Ordners</translation>
+    </message>
+</context>
+<context>
+    <name>ResultPopup</name>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="unfinished">&amp;Vorschau</translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished">&amp;Öffnen</translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="unfinished">&amp;Dateinamen kopieren</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="unfinished">&amp;URL kopieren</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="unfinished">&amp;Schreibe in Datei</translation>
+    </message>
+    <message>
+        <source>Save selection to files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="unfinished">Vorschau des &amp;übergeordneten Dokuments/Ordners</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished">Ö&amp;ffnen des übergeordneten Dokuments/Ordners</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="unfinished">&amp;Ähnliche Dokumente finden</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation type="unfinished">Öffne &amp;Schnipsel-Fenster</translation>
+    </message>
+    <message>
+        <source>Show subdocuments / attachments</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1875,6 +1990,10 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>At most one index should be selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cant add index with different case/diacritics stripping option</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2350,11 +2469,11 @@ Auf -1 setzen, um keine Obergrenze zu haben.</translation>
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
-        <translation>&apos;file&apos; Kommando benutzen</translation>
+        <translation type="obsolete">&apos;file&apos; Kommando benutzen</translation>
     </message>
     <message>
         <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
-        <translation>Benutze das &apos;file&apos; Kommando, wenn die interne Erkennung des Mime-Typs fehlschlägt.</translation>
+        <translation type="obsolete">Benutze das &apos;file&apos; Kommando, wenn die interne Erkennung des Mime-Typs fehlschlägt.</translation>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
@@ -2672,6 +2791,18 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     </message>
     <message>
         <source>Click to add another index directory to the list. You can select either a Recoll configuration directory or a Xapian index.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Snippets window CSS file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opens a dialog to select the Snippets window CSS style sheet file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resets the Snippets window style</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

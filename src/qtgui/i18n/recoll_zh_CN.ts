@@ -898,7 +898,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Query details</source>
-        <translation>查询语句细节</translation>
+        <translation type="obsolete">查询语句细节</translation>
     </message>
     <message>
         <source>Could not open external index. Db not open. Check external indexes list.</source>
@@ -962,7 +962,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation>此文件的索引已过时。程序拒绝显示错误的条目。请点击确定以更新此文件的索引，等待索引完成之后再查询。或者，取消。</translation>
+        <translation type="obsolete">此文件的索引已过时。程序拒绝显示错误的条目。请点击确定以更新此文件的索引，等待索引完成之后再查询。或者，取消。</translation>
     </message>
     <message>
         <source>Can&apos;t update index: indexer running</source>
@@ -991,6 +991,22 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexer running so things should improve when it&apos;s done</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sub-documents and attachments</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1150,7 +1166,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>sortByDateAsc</source>
-        <translation>按日期升序排列</translation>
+        <translation type="obsolete">按日期升序排列</translation>
     </message>
     <message>
         <source>Sort by dates from oldest to newest</source>
@@ -1158,7 +1174,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>sortByDateDesc</source>
-        <translation>按日期降序排列</translation>
+        <translation type="obsolete">按日期降序排列</translation>
     </message>
     <message>
         <source>Sort by dates from newest to oldest</source>
@@ -1170,7 +1186,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Show results as table</source>
-        <translation>以表格的形式显示结果</translation>
+        <translation type="obsolete">以表格的形式显示结果</translation>
     </message>
     <message>
         <source>&amp;Rebuild index</source>
@@ -1198,6 +1214,46 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;GUI configuration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort by date, oldest first</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort by date, newest first</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show as table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show results in a spreadsheet-like table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save as CSV (spreadsheet) file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saves the result into a file which you can load in a spreadsheet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Previous Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>First Page</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1284,19 +1340,19 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation>预览（&amp;P）</translation>
+        <translation type="obsolete">预览（&amp;P）</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>复制文件名（&amp;F）</translation>
+        <translation type="obsolete">复制文件名（&amp;F）</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>复制路径（&amp;U）</translation>
+        <translation type="obsolete">复制路径（&amp;U）</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>查找类似的文档（&amp;s）</translation>
+        <translation type="obsolete">查找类似的文档（&amp;s）</translation>
     </message>
     <message>
         <source>Document history</source>
@@ -1332,19 +1388,19 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>写入文件（&amp;W）</translation>
+        <translation type="obsolete">写入文件（&amp;W）</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>预览上一级文档/目录（&amp;a）</translation>
+        <translation type="obsolete">预览上一级文档/目录（&amp;a）</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>打开上一级文档/目录（&amp;O）</translation>
+        <translation type="obsolete">打开上一级文档/目录（&amp;O）</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>打开（&amp;O）</translation>
+        <translation type="obsolete">打开（&amp;O）</translation>
     </message>
     <message>
         <source>Documents</source>
@@ -1363,8 +1419,20 @@ Please check the mimeview file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Open &amp;Snippets window</source>
+        <source>Duplicate documents</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>These Urls ( | ipath) share the same content:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Result count (est.)</source>
+        <translation type="unfinished">结果数（估计值）</translation>
+    </message>
+    <message>
+        <source>Query details</source>
+        <translation type="unfinished">查询语句细节</translation>
     </message>
 </context>
 <context>
@@ -1387,35 +1455,35 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation>预览（&amp;P）</translation>
+        <translation type="obsolete">预览（&amp;P）</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>打开（&amp;O）</translation>
+        <translation type="obsolete">打开（&amp;O）</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>复制文件名（&amp;F）</translation>
+        <translation type="obsolete">复制文件名（&amp;F）</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>复制路径（&amp;U）</translation>
+        <translation type="obsolete">复制路径（&amp;U）</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>写入文件（&amp;W）</translation>
+        <translation type="obsolete">写入文件（&amp;W）</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>查找类似的文档（&amp;s）</translation>
+        <translation type="obsolete">查找类似的文档（&amp;s）</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>预览上一级文档/目录（&amp;a）</translation>
+        <translation type="obsolete">预览上一级文档/目录（&amp;a）</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>打开上一级文档/目录（&amp;O）</translation>
+        <translation type="obsolete">打开上一级文档/目录（&amp;O）</translation>
     </message>
     <message>
         <source>&amp;Save as CSV</source>
@@ -1430,35 +1498,82 @@ Please check the mimeview file</source>
     <name>ResTableDetailArea</name>
     <message>
         <source>&amp;Preview</source>
-        <translation>预览（&amp;P）</translation>
+        <translation type="obsolete">预览（&amp;P）</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>打开（&amp;O）</translation>
+        <translation type="obsolete">打开（&amp;O）</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>复制文件名（&amp;F）</translation>
+        <translation type="obsolete">复制文件名（&amp;F）</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>复制路径（&amp;U）</translation>
+        <translation type="obsolete">复制路径（&amp;U）</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>写入文件（&amp;W）</translation>
+        <translation type="obsolete">写入文件（&amp;W）</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>查找类似的文档（&amp;s）</translation>
+        <translation type="obsolete">查找类似的文档（&amp;s）</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>预览上一级文档/目录（&amp;a）</translation>
+        <translation type="obsolete">预览上一级文档/目录（&amp;a）</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>打开上一级文档/目录（&amp;O）</translation>
+        <translation type="obsolete">打开上一级文档/目录（&amp;O）</translation>
+    </message>
+</context>
+<context>
+    <name>ResultPopup</name>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="unfinished">预览（&amp;P）</translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished">打开（&amp;O）</translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="unfinished">复制文件名（&amp;F）</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="unfinished">复制路径（&amp;U）</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="unfinished">写入文件（&amp;W）</translation>
+    </message>
+    <message>
+        <source>Save selection to files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="unfinished">预览上一级文档/目录（&amp;a）</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished">打开上一级文档/目录（&amp;O）</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="unfinished">查找类似的文档（&amp;s）</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show subdocuments / attachments</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1833,6 +1948,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>At most one index should be selected</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Cant add index with different case/diacritics stripping option</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -2129,11 +2248,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
-        <translation>使用系统里的&apos;file&apos;命令</translation>
+        <translation type="obsolete">使用系统里的&apos;file&apos;命令</translation>
     </message>
     <message>
         <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
-        <translation>当内部的文件类型识别功能失效时&lt;br&gt;使用系统里的&apos;file&apos;命令。</translation>
+        <translation type="obsolete">当内部的文件类型识别功能失效时&lt;br&gt;使用系统里的&apos;file&apos;命令。</translation>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
@@ -2434,6 +2553,18 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Click to add another index directory to the list. You can select either a Recoll configuration directory or a Xapian index.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Snippets window CSS file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opens a dialog to select the Snippets window CSS style sheet file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resets the Snippets window style</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

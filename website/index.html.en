@@ -87,6 +87,18 @@
       <div class="news">
       
       <dl>
+        <dt>2013-04-30</dt><dd>Thanks to some of its users, Recoll now
+          has filters to 
+          <a href="http://sourceforge.net/projects/rcollnotesfiltr/">
+            index and retrieve Lotus Notes messages</a> 
+          (some 
+          <a href="http://richardappleby.wordpress.com/2013/04/11/you-dont-have-to-know-the-answer-to-everything-just-how-to-find-it/">
+            implementation notes from an early user</a>), and there is
+            also now a 
+            <a href="https://github.com/koniu/recoll-webui/">
+              Web browser interface</a> for querying your Recoll
+              indexes.</dd>  
+
         <dt>2013-04-14</dt><dd>Release 1.18.2 fixes a few really minor
           <a href="BUGS.html#b_1_18_1">bugs in 1.18.1</a>. I
           will not package it.</dd>
@@ -99,17 +111,11 @@
           about the transformation.</dd>
         </dd>
 
-        <dt>2012-11-23</dt><dd>Released a minor update to the very
-          stable 1.17
-          branch: <a href="download-1.17.html">1.17.4</a>.
-          <a href="release-1.17.html">release notes</a>.
-        </dd>
-
         <dt>2012-11-05</dt><dd>Recoll 1.18.1 is out. It has optional
-          character case and diacritics 
-          sensitivity, direct access to the hit page when opening PDF
-          files, complex search history, and a host of other smaller
-          improvements. See the <a href="release-1.18.html">release
+          character case and diacritics sensitivity, direct access to
+          the hit page when opening PDF files, complex search history,
+          and a host of other smaller improvements. See
+          the <a href="release-1.18.html">release
             notes</a>.
           <span class="important">Those of you not using <b>evince</b>
           as a PDF/Postscript/DVI viewer may be surprised to see the
@@ -147,9 +153,6 @@
           causes incorrect mail indexing.
         </dd>
 
-        <dt>2012-10-16</dt><dd> <a href="filters/filters.html">new filter for
-            EPUB documents</a>.</dd>
-
         <dt>2012-09-21</dt><dd>An
           <a href="https://bitbucket.org/medoc/recoll/wiki/ElinksWeb">easy
                  way</a> to extend the "Web queue"
@@ -157,36 +160,11 @@
          Firefox (Elinks in this case).
         </dd>
 
-        <dt>2012-09-13</dt> <dd>The next Recoll version will
-          acquire switchable 
-          case and diacritics sensitivity. I am writing 
-          a few pages about the
-          issues involved, they are referenced from my  
-          <a href="https://plus.google.com/u/0/113262930843833486941/posts">
-            google+</a> profile</dd>
-
         <dt>2012-09-11</dt> <dd>A new user-contributed script for those who use
           real-time indexing on laptops: stop or start indexing
           according to AC power status. See the details on
           the <a href="https://bitbucket.org/medoc/recoll/wiki/IndexOnAc.wiki">
             Wiki</a>. </dd>
-
-        <dt>2012-06-19</dt> <dd>Update info. If you are not running
-          Recoll 1.17.3, you probably should. 1.17.2 and older versions
-          have a bug which 
-          can cause a crash of the indexing process while processing email,
-          under relatively common conditions.<br>
-          Also, if you are already running 1.17.3, you may want to install
-          the updated open/libre-office filter described just below.</dd>
-
-        <dt>2012-06-01</dt> <dd>An
-          updated <a href="filters/filters.html">filter</a> for the 
-          OpenDocument format will properly handle exported Google Docs
-          files.</dd> 
-
-        <dt>2012-05-25</dt> <dd>A
-          new <a href="filters/filters.html">filter</a> for indexing 
-          tar archives.</dd>
 
         <dt>2012-04-07</dt><dd>We now have a Chinese user manual:
         Recoll现在有中文手册咯： 

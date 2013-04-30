@@ -871,7 +871,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Query details</source>
-        <translation>Подробности запроса</translation>
+        <translation type="obsolete">Подробности запроса</translation>
     </message>
     <message>
         <source>Could not open external index. Db not open. Check external indexes list.</source>
@@ -939,7 +939,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation>Индекс для этого файла устарел. Не буду рисковать показывать не тот фрагмент. Нажмите OK для обновления индекса для этого файла, затем повторите запрос. Или же Отменить.</translation>
+        <translation type="obsolete">Индекс для этого файла устарел. Не буду рисковать показывать не тот фрагмент. Нажмите OK для обновления индекса для этого файла, затем повторите запрос. Или же Отменить.</translation>
     </message>
     <message>
         <source>Can&apos;t update index: indexer running</source>
@@ -968,6 +968,22 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexer running so things should improve when it&apos;s done</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sub-documents and attachments</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1127,7 +1143,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>sortByDateAsc</source>
-        <translation>sortByDateAsc</translation>
+        <translation type="obsolete">sortByDateAsc</translation>
     </message>
     <message>
         <source>Sort by dates from oldest to newest</source>
@@ -1135,7 +1151,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>sortByDateDesc</source>
-        <translation>sortByDateDesc</translation>
+        <translation type="obsolete">sortByDateDesc</translation>
     </message>
     <message>
         <source>Sort by dates from newest to oldest</source>
@@ -1147,7 +1163,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Show results as table</source>
-        <translation>Показать результаты в виде таблицы</translation>
+        <translation type="obsolete">Показать результаты в виде таблицы</translation>
     </message>
     <message>
         <source>&amp;Rebuild index</source>
@@ -1175,6 +1191,46 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;GUI configuration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort by date, oldest first</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort by date, newest first</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show as table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show results in a spreadsheet-like table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save as CSV (spreadsheet) file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saves the result into a file which you can load in a spreadsheet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Previous Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>First Page</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1277,15 +1333,15 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Просмотр</translation>
+        <translation type="obsolete">&amp;Просмотр</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>Найти &amp;подобные документы</translation>
+        <translation type="obsolete">Найти &amp;подобные документы</translation>
     </message>
     <message>
         <source>Query details</source>
-        <translation type="obsolete">Подробности запроса</translation>
+        <translation type="unfinished">Подробности запроса</translation>
     </message>
     <message>
         <source>(show query)</source>
@@ -1293,11 +1349,11 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Скопировать &amp;имя файла</translation>
+        <translation type="obsolete">Скопировать &amp;имя файла</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>Копировать &amp;URL</translation>
+        <translation type="obsolete">Копировать &amp;URL</translation>
     </message>
     <message>
         <source>filtered</source>
@@ -1325,19 +1381,19 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>&amp;Сохранить в файл</translation>
+        <translation type="obsolete">&amp;Сохранить в файл</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>&amp;Предпросмотр родительского документа/каталога</translation>
+        <translation type="obsolete">&amp;Предпросмотр родительского документа/каталога</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Открыть родительский документ/каталог</translation>
+        <translation type="obsolete">&amp;Открыть родительский документ/каталог</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>О&amp;ткрыть</translation>
+        <translation type="obsolete">О&amp;ткрыть</translation>
     </message>
     <message>
         <source>Documents</source>
@@ -1356,8 +1412,16 @@ Please check the mimeview file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Open &amp;Snippets window</source>
+        <source>Duplicate documents</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>These Urls ( | ipath) share the same content:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Result count (est.)</source>
+        <translation type="unfinished">Результатов (примерно)</translation>
     </message>
 </context>
 <context>
@@ -1388,35 +1452,35 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Просмотр</translation>
+        <translation type="obsolete">&amp;Просмотр</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>О&amp;ткрыть</translation>
+        <translation type="obsolete">О&amp;ткрыть</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Скопировать &amp;имя файла</translation>
+        <translation type="obsolete">Скопировать &amp;имя файла</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>Копировать &amp;URL</translation>
+        <translation type="obsolete">Копировать &amp;URL</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>&amp;Сохранить в файл</translation>
+        <translation type="obsolete">&amp;Сохранить в файл</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>Найти &amp;подобные документы</translation>
+        <translation type="obsolete">Найти &amp;подобные документы</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>&amp;Предпросмотр родительского документа/каталога</translation>
+        <translation type="obsolete">&amp;Предпросмотр родительского документа/каталога</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Открыть родительский документ/каталог</translation>
+        <translation type="obsolete">&amp;Открыть родительский документ/каталог</translation>
     </message>
     <message>
         <source>&amp;Save as CSV</source>
@@ -1431,35 +1495,82 @@ Please check the mimeview file</source>
     <name>ResTableDetailArea</name>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Просмотр</translation>
+        <translation type="obsolete">&amp;Просмотр</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>О&amp;ткрыть</translation>
+        <translation type="obsolete">О&amp;ткрыть</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Скопировать &amp;имя файла</translation>
+        <translation type="obsolete">Скопировать &amp;имя файла</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>Копировать &amp;URL</translation>
+        <translation type="obsolete">Копировать &amp;URL</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>&amp;Сохранить в файл</translation>
+        <translation type="obsolete">&amp;Сохранить в файл</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>Найти &amp;подобные документы</translation>
+        <translation type="obsolete">Найти &amp;подобные документы</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>&amp;Предпросмотр родительского документа/каталога</translation>
+        <translation type="obsolete">&amp;Предпросмотр родительского документа/каталога</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Открыть родительский документ/каталог</translation>
+        <translation type="obsolete">&amp;Открыть родительский документ/каталог</translation>
+    </message>
+</context>
+<context>
+    <name>ResultPopup</name>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="unfinished">&amp;Просмотр</translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished">О&amp;ткрыть</translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="unfinished">Скопировать &amp;имя файла</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="unfinished">Копировать &amp;URL</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="unfinished">&amp;Сохранить в файл</translation>
+    </message>
+    <message>
+        <source>Save selection to files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="unfinished">&amp;Предпросмотр родительского документа/каталога</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished">&amp;Открыть родительский документ/каталог</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="unfinished">Найти &amp;подобные документы</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show subdocuments / attachments</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1889,6 +2000,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>At most one index should be selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cant add index with different case/diacritics stripping option</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2401,11 +2516,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
-        <translation>Использовать системную &apos;file&apos;</translation>
+        <translation type="obsolete">Использовать системную &apos;file&apos;</translation>
     </message>
     <message>
         <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
-        <translation>Использовать системную команду &apos;file&apos; &lt;br&gt;при сбое внутреннего определителя типов MIME.</translation>
+        <translation type="obsolete">Использовать системную команду &apos;file&apos; &lt;br&gt;при сбое внутреннего определителя типов MIME.</translation>
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
@@ -2734,6 +2849,18 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Click to add another index directory to the list. You can select either a Recoll configuration directory or a Xapian index.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Snippets window CSS file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opens a dialog to select the Snippets window CSS style sheet file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resets the Snippets window style</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

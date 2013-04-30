@@ -867,7 +867,7 @@ Chcete spustit dialog s nastavením?</translation>
     </message>
     <message>
         <source>Query details</source>
-        <translation>Podrobnosti o hledání</translation>
+        <translation type="obsolete">Podrobnosti o hledání</translation>
     </message>
     <message>
         <source>Could not open external index. Db not open. Check external indexes list.</source>
@@ -935,7 +935,7 @@ Chcete spustit dialog s nastavením?</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation>Rejstřík není pro tento soubor nejnovější. Odmítá se riziko, že by byl ukázán špatný záznam. Klepněte na OK pro obnovení rejstříku pro tento soubor, pak, až bude rejstříkování hotovo, spusťte dotaz znovu. Jinak klepněte na Zrušit.</translation>
+        <translation type="obsolete">Rejstřík není pro tento soubor nejnovější. Odmítá se riziko, že by byl ukázán špatný záznam. Klepněte na OK pro obnovení rejstříku pro tento soubor, pak, až bude rejstříkování hotovo, spusťte dotaz znovu. Jinak klepněte na Zrušit.</translation>
     </message>
     <message>
         <source>Can&apos;t update index: indexer running</source>
@@ -965,6 +965,22 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexer running so things should improve when it&apos;s done</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sub-documents and attachments</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1128,7 +1144,7 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>sortByDateAsc</source>
-        <translation>Třídit podle data vzestupně</translation>
+        <translation type="obsolete">Třídit podle data vzestupně</translation>
     </message>
     <message>
         <source>Sort by dates from oldest to newest</source>
@@ -1136,7 +1152,7 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>sortByDateDesc</source>
-        <translation>Třídit podle data sestupně</translation>
+        <translation type="obsolete">Třídit podle data sestupně</translation>
     </message>
     <message>
         <source>Sort by dates from newest to oldest</source>
@@ -1148,7 +1164,7 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Show results as table</source>
-        <translation>Ukázat výsledky jako tabulku</translation>
+        <translation type="obsolete">Ukázat výsledky jako tabulku</translation>
     </message>
     <message>
         <source>&amp;Rebuild index</source>
@@ -1177,6 +1193,46 @@ Prověřte soubor mimeconf</translation>
     <message>
         <source>&amp;GUI configuration</source>
         <translation>Nastavení uživatelského roz&amp;hraní</translation>
+    </message>
+    <message>
+        <source>&amp;Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort by date, oldest first</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort by date, newest first</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show as table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show results in a spreadsheet-like table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save as CSV (spreadsheet) file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saves the result into a file which you can load in a spreadsheet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Previous Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>First Page</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1282,19 +1338,19 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Náhled</translation>
+        <translation type="obsolete">&amp;Náhled</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>Kopírovat adresu (&amp;URL)</translation>
+        <translation type="obsolete">Kopírovat adresu (&amp;URL)</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>Najít &amp;podobné dokumenty</translation>
+        <translation type="obsolete">Najít &amp;podobné dokumenty</translation>
     </message>
     <message>
         <source>Query details</source>
-        <translation type="obsolete">Suchdetails</translation>
+        <translation type="unfinished">Suchdetails</translation>
     </message>
     <message>
         <source>(show query)</source>
@@ -1302,7 +1358,7 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Kopírovat název &amp;souboru</translation>
+        <translation type="obsolete">Kopírovat název &amp;souboru</translation>
     </message>
     <message>
         <source>Document history</source>
@@ -1322,19 +1378,19 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>&amp;Zapsat do souboru</translation>
+        <translation type="obsolete">&amp;Zapsat do souboru</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>Náhled na &amp;rodičovský dokument/složku</translation>
+        <translation type="obsolete">Náhled na &amp;rodičovský dokument/složku</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Otevřít rodičovský dokument/složku</translation>
+        <translation type="obsolete">&amp;Otevřít rodičovský dokument/složku</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>&amp;Otevřít</translation>
+        <translation type="obsolete">&amp;Otevřít</translation>
     </message>
     <message>
         <source>Documents</source>
@@ -1354,7 +1410,19 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation>Otevřít okno s úr&amp;yvky</translation>
+        <translation type="obsolete">Otevřít okno s úr&amp;yvky</translation>
+    </message>
+    <message>
+        <source>Duplicate documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>These Urls ( | ipath) share the same content:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Result count (est.)</source>
+        <translation type="unfinished">Počet výsledků (odhad)</translation>
     </message>
 </context>
 <context>
@@ -1385,35 +1453,35 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Náhled</translation>
+        <translation type="obsolete">&amp;Náhled</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>&amp;Otevřít</translation>
+        <translation type="obsolete">&amp;Otevřít</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Kopírovat název &amp;souboru</translation>
+        <translation type="obsolete">Kopírovat název &amp;souboru</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>Kopírovat adresu (&amp;URL)</translation>
+        <translation type="obsolete">Kopírovat adresu (&amp;URL)</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>&amp;Zapsat do souboru</translation>
+        <translation type="obsolete">&amp;Zapsat do souboru</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>Najít &amp;podobné dokumenty</translation>
+        <translation type="obsolete">Najít &amp;podobné dokumenty</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>Náhled na &amp;rodičovský dokument/složku</translation>
+        <translation type="obsolete">Náhled na &amp;rodičovský dokument/složku</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Otevřít rodičovský dokument/složku</translation>
+        <translation type="obsolete">&amp;Otevřít rodičovský dokument/složku</translation>
     </message>
     <message>
         <source>&amp;Save as CSV</source>
@@ -1428,35 +1496,82 @@ Prověřte soubor mimeconf</translation>
     <name>ResTableDetailArea</name>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Náhled</translation>
+        <translation type="obsolete">&amp;Náhled</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>&amp;Otevřít</translation>
+        <translation type="obsolete">&amp;Otevřít</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Kopírovat název &amp;souboru</translation>
+        <translation type="obsolete">Kopírovat název &amp;souboru</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>Kopírovat adresu (&amp;URL)</translation>
+        <translation type="obsolete">Kopírovat adresu (&amp;URL)</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>&amp;Zapsat do souboru</translation>
+        <translation type="obsolete">&amp;Zapsat do souboru</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>Najít &amp;podobné dokumenty</translation>
+        <translation type="obsolete">Najít &amp;podobné dokumenty</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>Náhled na &amp;rodičovský dokument/složku</translation>
+        <translation type="obsolete">Náhled na &amp;rodičovský dokument/složku</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Otevřít rodičovský dokument/složku</translation>
+        <translation type="obsolete">&amp;Otevřít rodičovský dokument/složku</translation>
+    </message>
+</context>
+<context>
+    <name>ResultPopup</name>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="unfinished">&amp;Náhled</translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished">&amp;Otevřít</translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="unfinished">Kopírovat název &amp;souboru</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="unfinished">Kopírovat adresu (&amp;URL)</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="unfinished">&amp;Zapsat do souboru</translation>
+    </message>
+    <message>
+        <source>Save selection to files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="unfinished">Náhled na &amp;rodičovský dokument/složku</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished">&amp;Otevřít rodičovský dokument/složku</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="unfinished">Najít &amp;podobné dokumenty</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation type="unfinished">Otevřít okno s úr&amp;yvky</translation>
+    </message>
+    <message>
+        <source>Show subdocuments / attachments</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1894,6 +2009,10 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>At most one index should be selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cant add index with different case/diacritics stripping option</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2364,11 +2483,11 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
-        <translation>Použít příkaz &apos;file&apos;</translation>
+        <translation type="obsolete">Použít příkaz &apos;file&apos;</translation>
     </message>
     <message>
         <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
-        <translation>Použít příkaz &apos;file&apos;, když vnitřní&lt;br&gt;rozpoznání MIME typu selže.</translation>
+        <translation type="obsolete">Použít příkaz &apos;file&apos;, když vnitřní&lt;br&gt;rozpoznání MIME typu selže.</translation>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
@@ -2697,6 +2816,18 @@ Výchozí hodnota je 2 (procenta).</translation>
     </message>
     <message>
         <source>Click to add another index directory to the list. You can select either a Recoll configuration directory or a Xapian index.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Snippets window CSS file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opens a dialog to select the Snippets window CSS style sheet file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resets the Snippets window style</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

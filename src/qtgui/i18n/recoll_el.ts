@@ -841,7 +841,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation>Το ευρετήριο δεν είναι ενημερωμένο για αυτό το αρχείο. Υπάρχει κίνδυνος εμφάνισης μιας εσφαλμένης καταχώρησης. Κάντε κλικ στο Εντάξει για να ενημερώσετε το ευρετήριο για αυτό το αρχείο, και επανεκκινήστε το αίτημα μετά την ολοκλήρωση της ενημέρωσης του ευρετηρίου. Διαφορετικά, κάντε κλικ στο Ακύρωση.</translation>
+        <translation type="obsolete">Το ευρετήριο δεν είναι ενημερωμένο για αυτό το αρχείο. Υπάρχει κίνδυνος εμφάνισης μιας εσφαλμένης καταχώρησης. Κάντε κλικ στο Εντάξει για να ενημερώσετε το ευρετήριο για αυτό το αρχείο, και επανεκκινήστε το αίτημα μετά την ολοκλήρωση της ενημέρωσης του ευρετηρίου. Διαφορετικά, κάντε κλικ στο Ακύρωση.</translation>
     </message>
     <message>
         <source>Can&apos;t create preview window</source>
@@ -905,7 +905,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Query details</source>
-        <translation>Λεπτομέρειες της αναζήτησης</translation>
+        <translation type="obsolete">Λεπτομέρειες της αναζήτησης</translation>
     </message>
     <message>
         <source>Bad viewer command line for %1: [%2]
@@ -926,6 +926,22 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexer running so things should improve when it&apos;s done</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sub-documents and attachments</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1105,7 +1121,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>sortByDateAsc</source>
-        <translation>sortByDateAsc</translation>
+        <translation type="obsolete">sortByDateAsc</translation>
     </message>
     <message>
         <source>Sort by dates from oldest to newest</source>
@@ -1113,7 +1129,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>sortByDateDesc</source>
-        <translation>sortByDateDesc</translation>
+        <translation type="obsolete">sortByDateDesc</translation>
     </message>
     <message>
         <source>Sort by dates from newest to oldest</source>
@@ -1125,7 +1141,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Show results as table</source>
-        <translation>Εμφάνιση των αποτελεσμάτων σε πίνακα</translation>
+        <translation type="obsolete">Εμφάνιση των αποτελεσμάτων σε πίνακα</translation>
     </message>
     <message>
         <source>&amp;Index configuration</source>
@@ -1133,6 +1149,46 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;GUI configuration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort by date, oldest first</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort by date, newest first</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show as table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show results in a spreadsheet-like table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save as CSV (spreadsheet) file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saves the result into a file which you can load in a spreadsheet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Previous Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>First Page</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1263,43 +1319,55 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Προεπισκόπηση</translation>
+        <translation type="obsolete">&amp;Προεπισκόπηση</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>&amp;Άνοιγμα</translation>
+        <translation type="obsolete">&amp;Άνοιγμα</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Αντιγραφή του ονόματος του &amp;αρχείου</translation>
+        <translation type="obsolete">Αντιγραφή του ονόματος του &amp;αρχείου</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>Αντιγραφή του &amp;URL</translation>
+        <translation type="obsolete">Αντιγραφή του &amp;URL</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>Απο&amp;θήκευση σε</translation>
+        <translation type="obsolete">Απο&amp;θήκευση σε</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>Αναζήτηση παρό&amp;μοιων εγγράφων</translation>
+        <translation type="obsolete">Αναζήτηση παρό&amp;μοιων εγγράφων</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>Προεπισκόπηση του &amp;γονικού εγγράφου/φακέλου</translation>
+        <translation type="obsolete">Προεπισκόπηση του &amp;γονικού εγγράφου/φακέλου</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>Άνοιγμα του &amp;γονικού εγγράφου/φακέλου</translation>
+        <translation type="obsolete">Άνοιγμα του &amp;γονικού εγγράφου/φακέλου</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;i&gt;Alternate spellings: &lt;/i&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Open &amp;Snippets window</source>
+        <source>Duplicate documents</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>These Urls ( | ipath) share the same content:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Result count (est.)</source>
+        <translation type="unfinished">Αριθμός αποτελεσμάτων (εκτίμ.)</translation>
+    </message>
+    <message>
+        <source>Query details</source>
+        <translation type="unfinished">Λεπτομέρειες της αναζήτησης</translation>
     </message>
 </context>
 <context>
@@ -1314,35 +1382,35 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation>Π&amp;ροεπισκόπηση</translation>
+        <translation type="obsolete">Π&amp;ροεπισκόπηση</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>Ά&amp;νοιγμα</translation>
+        <translation type="obsolete">Ά&amp;νοιγμα</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Αντιγραφή του &amp;ονόματος του αρχείου</translation>
+        <translation type="obsolete">Αντιγραφή του &amp;ονόματος του αρχείου</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>Αντιγραφή του &amp;URL</translation>
+        <translation type="obsolete">Αντιγραφή του &amp;URL</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>Απο&amp;θήκευση σε</translation>
+        <translation type="obsolete">Απο&amp;θήκευση σε</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>Αναζήτηση παρό&amp;μοιων εγγράφων</translation>
+        <translation type="obsolete">Αναζήτηση παρό&amp;μοιων εγγράφων</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>Προεπισκόπηση του &amp;γονικού εγγράφου</translation>
+        <translation type="obsolete">Προεπισκόπηση του &amp;γονικού εγγράφου</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>Άνοιγμα του &amp;γονικού εγγράφου/φακέλου</translation>
+        <translation type="obsolete">Άνοιγμα του &amp;γονικού εγγράφου/φακέλου</translation>
     </message>
     <message>
         <source>&amp;Reset sort</source>
@@ -1365,35 +1433,82 @@ Please check the mimeview file</source>
     <name>ResTableDetailArea</name>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Προεπισκόπηση</translation>
+        <translation type="obsolete">&amp;Προεπισκόπηση</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>&amp;Άνοιγμα</translation>
+        <translation type="obsolete">&amp;Άνοιγμα</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Αντιγραφή του ονόματος του &amp;αρχείου</translation>
+        <translation type="obsolete">Αντιγραφή του ονόματος του &amp;αρχείου</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>Αντιγραφή του &amp;URL</translation>
+        <translation type="obsolete">Αντιγραφή του &amp;URL</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>Απο&amp;θήκευση σε</translation>
+        <translation type="obsolete">Απο&amp;θήκευση σε</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>Αναζήτηση παρό&amp;μοιων εγγράφων</translation>
+        <translation type="obsolete">Αναζήτηση παρό&amp;μοιων εγγράφων</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>Προεπισκόπηση του &amp;γονικού εγγράφου/φακέλου</translation>
+        <translation type="obsolete">Προεπισκόπηση του &amp;γονικού εγγράφου/φακέλου</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>Άνοιγμα του &amp;γονικού εγγράφου/φακέλου</translation>
+        <translation type="obsolete">Άνοιγμα του &amp;γονικού εγγράφου/φακέλου</translation>
+    </message>
+</context>
+<context>
+    <name>ResultPopup</name>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="unfinished">Αντιγραφή του &amp;URL</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="unfinished">Απο&amp;θήκευση σε</translation>
+    </message>
+    <message>
+        <source>Save selection to files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished">Άνοιγμα του &amp;γονικού εγγράφου/φακέλου</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="unfinished">Αναζήτηση παρό&amp;μοιων εγγράφων</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show subdocuments / attachments</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1759,6 +1874,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>At most one index should be selected</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Cant add index with different case/diacritics stripping option</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -2034,11 +2153,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
-        <translation>Χρήση της εντολής &apos;file&apos; του συστήματος</translation>
+        <translation type="obsolete">Χρήση της εντολής &apos;file&apos; του συστήματος</translation>
     </message>
     <message>
         <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
-        <translation>Χρήση της εντολής &apos;file&apos; αν ο εσωτερικός εντοπισμός&lt;br&gt;του τύπου mime δεν επιφέρει αποτελέσματα.</translation>
+        <translation type="obsolete">Χρήση της εντολής &apos;file&apos; αν ο εσωτερικός εντοπισμός&lt;br&gt;του τύπου mime δεν επιφέρει αποτελέσματα.</translation>
     </message>
     <message>
         <source>No aspell usage</source>
@@ -2359,6 +2478,18 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Click to add another index directory to the list. You can select either a Recoll configuration directory or a Xapian index.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Snippets window CSS file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opens a dialog to select the Snippets window CSS style sheet file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resets the Snippets window style</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

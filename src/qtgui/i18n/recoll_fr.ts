@@ -64,7 +64,7 @@
     </message>
     <message>
         <source>Restrict file types</source>
-        <translation>Restreindre le type de fichier</translation>
+        <translation>Restreindre les types de fichier</translation>
     </message>
     <message>
         <source>Save as default</source>
@@ -279,50 +279,50 @@ p, li { white-space: pre-wrap; }
     <name>EditTrans</name>
     <message>
         <source>Source path</source>
-        <translation type="unfinished"></translation>
+        <translation>Chemin source</translation>
     </message>
     <message>
         <source>Local path</source>
-        <translation type="unfinished"></translation>
+        <translation>Chemin local</translation>
     </message>
     <message>
         <source>Config error</source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur config</translation>
     </message>
     <message>
         <source>Original path</source>
-        <translation type="unfinished"></translation>
+        <translation>Chemin Originel</translation>
     </message>
 </context>
 <context>
     <name>EditTransBase</name>
     <message>
         <source>Path Translations</source>
-        <translation type="unfinished"></translation>
+        <translation>Traductions de chemins</translation>
     </message>
     <message>
         <source>Setting path translations for </source>
-        <translation type="unfinished"></translation>
+        <translation>Ajustement des traductions de chemins pour</translation>
     </message>
     <message>
         <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner un ou plusieurs types de fichiers, puis utiliser les contrôles dans le cadre ci-dessous pour changer leur traitement</translation>
     </message>
     <message>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajouter</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Supprimer</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Annuler</translation>
+        <translation>Annuler</translation>
     </message>
     <message>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translation>Sauvegarder</translation>
     </message>
 </context>
 <context>
@@ -606,7 +606,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Beagle web history</source>
-        <translation type="obsolete">Queue Beagle</translation>
+        <translation type="obsolete">Queue Web</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -874,7 +874,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>Query details</source>
-        <translation>Détails de la recherche</translation>
+        <translation type="obsolete">Détails de la recherche</translation>
     </message>
     <message>
         <source>Could not open external index. Db not open. Check external indexes list.</source>
@@ -942,7 +942,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation>Index pas à jour pour ce fichier. Risque d&apos;afficher une entrée incorrecte. Cliquer Ok pour mettre à jour l&apos;index pour ce fichier, puis redémarrer la requête quand l&apos;indexation est terminée. Sinon, Annuler.</translation>
+        <translation type="obsolete">Index pas à jour pour ce fichier. Risque d&apos;afficher une entrée incorrecte. Cliquer Ok pour mettre à jour l&apos;index pour ce fichier, puis redémarrer la requête quand l&apos;indexation est terminée. Sinon, Annuler.</translation>
     </message>
     <message>
         <source>Can&apos;t update index: indexer running</source>
@@ -967,11 +967,27 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Indexing did not run yet</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;indexation n&apos;a pas encore eu lieu</translation>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
-        <translation type="unfinished"></translation>
+        <translation>Applications et commandes externes nécessaires pour vos types de documents, et non trouvées, telles qu&apos;enregistrées par la dernière séquence d&apos;indexation dans</translation>
+    </message>
+    <message>
+        <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
+        <translation>L&apos;index n&apos;est pas à jour pour ce fichier. Il y aurait un risque d&apos;afficher une entrée incorrecte</translation>
+    </message>
+    <message>
+        <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
+        <translation>Cliquer Ok pour mettre à jour l&apos;index pour ce fichier, puis relancer la recherche quand l&apos;indexation est terminée. Sinon cliquer Annuler</translation>
+    </message>
+    <message>
+        <source>Indexer running so things should improve when it&apos;s done</source>
+        <translation>L&apos;indexeur est en cours d&apos;execution, le fichier devrait être mis à jour</translation>
+    </message>
+    <message>
+        <source>Sub-documents and attachments</source>
+        <translation>Sous-documents et attachements</translation>
     </message>
 </context>
 <context>
@@ -1086,11 +1102,11 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>First page</source>
-        <translation>Premiere page</translation>
+        <translation>Première page</translation>
     </message>
     <message>
         <source>Go to first page of results</source>
-        <translation>Aller a la premiere page de resultats</translation>
+        <translation>Aller à la première page de résultats</translation>
     </message>
     <message>
         <source>&amp;Indexing configuration</source>
@@ -1134,7 +1150,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>sortByDateAsc</source>
-        <translation>sortByDateAsc</translation>
+        <translation type="obsolete">sortByDateAsc</translation>
     </message>
     <message>
         <source>Sort by dates from oldest to newest</source>
@@ -1142,7 +1158,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>sortByDateDesc</source>
-        <translation>sortByDateDesc</translation>
+        <translation type="obsolete">sortByDateDesc</translation>
     </message>
     <message>
         <source>Sort by dates from newest to oldest</source>
@@ -1154,7 +1170,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Show results as table</source>
-        <translation>Afficher les résultats en tableau</translation>
+        <translation type="obsolete">Afficher les résultats en tableau</translation>
     </message>
     <message>
         <source>&amp;Rebuild index</source>
@@ -1183,6 +1199,46 @@ Please check the mimeview file</source>
     <message>
         <source>&amp;GUI configuration</source>
         <translation>Confi&amp;guration de l&apos;interface</translation>
+    </message>
+    <message>
+        <source>&amp;Results</source>
+        <translation>&amp;Résultats</translation>
+    </message>
+    <message>
+        <source>Sort by date, oldest first</source>
+        <translation>Trier par date, le plus ancien en premier</translation>
+    </message>
+    <message>
+        <source>Sort by date, newest first</source>
+        <translation>Trier par date, le plus récent en premier</translation>
+    </message>
+    <message>
+        <source>Show as table</source>
+        <translation>Afficher comme un tableau</translation>
+    </message>
+    <message>
+        <source>Show results in a spreadsheet-like table</source>
+        <translation>Montrer les résultats dans un tableau </translation>
+    </message>
+    <message>
+        <source>Save as CSV (spreadsheet) file</source>
+        <translation>Sauver en format CSV (fichier tableur)</translation>
+    </message>
+    <message>
+        <source>Saves the result into a file which you can load in a spreadsheet</source>
+        <translation>Sauvegarde les résultats dans un fichier qu&apos;il sera possible de charger dans un tableur</translation>
+    </message>
+    <message>
+        <source>Next Page</source>
+        <translation>Page suivante</translation>
+    </message>
+    <message>
+        <source>Previous Page</source>
+        <translation>Page précédente</translation>
+    </message>
+    <message>
+        <source>First Page</source>
+        <translation>Première page</translation>
     </message>
 </context>
 <context>
@@ -1288,19 +1344,19 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Voir contenu</translation>
+        <translation type="obsolete">&amp;Voir contenu</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>Copier l&apos;&amp;Url</translation>
+        <translation type="obsolete">Copier l&apos;&amp;Url</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>Chercher des documents &amp;similaires</translation>
+        <translation type="obsolete">Chercher des documents &amp;similaires</translation>
     </message>
     <message>
         <source>Query details</source>
-        <translation type="obsolete">Détail de la recherche</translation>
+        <translation>Détail de la recherche</translation>
     </message>
     <message>
         <source>(show query)</source>
@@ -1308,7 +1364,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Copier le nom de &amp;Fichier</translation>
+        <translation type="obsolete">Copier le nom de &amp;Fichier</translation>
     </message>
     <message>
         <source>filtered</source>
@@ -1336,19 +1392,19 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>&amp;Sauver sous</translation>
+        <translation type="obsolete">&amp;Sauver sous</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>Prévisualiser le document p&amp;arent</translation>
+        <translation type="obsolete">Prévisualiser le document p&amp;arent</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Ouvrir le document parent</translation>
+        <translation type="obsolete">&amp;Ouvrir le document parent</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>&amp;Ouvrir</translation>
+        <translation type="obsolete">&amp;Ouvrir</translation>
     </message>
     <message>
         <source>Documents</source>
@@ -1368,7 +1424,19 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation>Ouvrir la fenêtre des e&amp;xtraits</translation>
+        <translation type="obsolete">Ouvrir la fenêtre des e&amp;xtraits</translation>
+    </message>
+    <message>
+        <source>Duplicate documents</source>
+        <translation>Documents identiques</translation>
+    </message>
+    <message>
+        <source>These Urls ( | ipath) share the same content:</source>
+        <translation>Ces URLs(| ipath) partagent le même contenu</translation>
+    </message>
+    <message>
+        <source>Result count (est.)</source>
+        <translation>Nombre de résultats (est.)</translation>
     </message>
 </context>
 <context>
@@ -1399,35 +1467,35 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Voir contenu</translation>
+        <translation type="obsolete">&amp;Voir contenu</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>&amp;Ouvrir</translation>
+        <translation type="obsolete">&amp;Ouvrir</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Copier le nom de &amp;Fichier</translation>
+        <translation type="obsolete">Copier le nom de &amp;Fichier</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>Copier l&apos;&amp;Url</translation>
+        <translation type="obsolete">Copier l&apos;&amp;Url</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>&amp;Sauver sous</translation>
+        <translation type="obsolete">&amp;Sauver sous</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>Chercher des documents &amp;similaires</translation>
+        <translation type="obsolete">Chercher des documents &amp;similaires</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>Prévisualiser le document p&amp;arent</translation>
+        <translation type="obsolete">Prévisualiser le document p&amp;arent</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Ouvrir le document parent</translation>
+        <translation type="obsolete">&amp;Ouvrir le document parent</translation>
     </message>
     <message>
         <source>&amp;Save as CSV</source>
@@ -1440,6 +1508,41 @@ Please check the mimeview file</source>
 </context>
 <context>
     <name>ResTableDetailArea</name>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="obsolete">&amp;Voir contenu</translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="obsolete">&amp;Ouvrir</translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="obsolete">Copier le nom de &amp;Fichier</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="obsolete">Copier l&apos;&amp;Url</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="obsolete">&amp;Sauver sous</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="obsolete">Chercher des documents &amp;similaires</translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="obsolete">Prévisualiser le document p&amp;arent</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation type="obsolete">&amp;Ouvrir le document parent</translation>
+    </message>
+</context>
+<context>
+    <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
         <translation>&amp;Voir contenu</translation>
@@ -1461,8 +1564,8 @@ Please check the mimeview file</source>
         <translation>&amp;Sauver sous</translation>
     </message>
     <message>
-        <source>Find &amp;similar documents</source>
-        <translation>Chercher des documents &amp;similaires</translation>
+        <source>Save selection to files</source>
+        <translation>Sauvegarder la sélection courante dans des fichiers</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
@@ -1471,6 +1574,18 @@ Please check the mimeview file</source>
     <message>
         <source>&amp;Open Parent document/folder</source>
         <translation>&amp;Ouvrir le document parent</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation>Chercher des documents &amp;similaires</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation>Ouvrir la fenêtre des e&amp;xtraits</translation>
+    </message>
+    <message>
+        <source>Show subdocuments / attachments</source>
+        <translation>Afficher les sous-documents et attachements</translation>
     </message>
 </context>
 <context>
@@ -1762,15 +1877,15 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Match</source>
-        <translation type="unfinished"></translation>
+        <translation>Faire correspondre</translation>
     </message>
     <message>
         <source>Case</source>
-        <translation type="unfinished"></translation>
+        <translation>Majuscules/Minuscules</translation>
     </message>
     <message>
         <source>Accents</source>
-        <translation type="unfinished"></translation>
+        <translation>Accents</translation>
     </message>
 </context>
 <context>
@@ -1837,39 +1952,39 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Show index statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher les statistiques de l&apos;index</translation>
     </message>
     <message>
         <source>Number of documents</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre de documents</translation>
     </message>
     <message>
         <source>Average terms per document</source>
-        <translation type="unfinished"></translation>
+        <translation>Nombre moyen de termes par document</translation>
     </message>
     <message>
         <source>Smallest document length</source>
-        <translation type="unfinished"></translation>
+        <translation>Longueur du plus petit document</translation>
     </message>
     <message>
         <source>Longest document length</source>
-        <translation type="unfinished"></translation>
+        <translation>Longueur du plus grand document</translation>
     </message>
     <message>
         <source>Database directory size</source>
-        <translation type="unfinished"></translation>
+        <translation>Taille occupee par l&apos;index</translation>
     </message>
     <message>
         <source>MIME types:</source>
-        <translation type="unfinished"></translation>
+        <translation>Types MIME</translation>
     </message>
     <message>
         <source>Item</source>
-        <translation type="unfinished"></translation>
+        <translation>Element</translation>
     </message>
     <message>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valeur</translation>
     </message>
 </context>
 <context>
@@ -1908,15 +2023,19 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Select recoll config directory or xapian index directory (e.g.: /home/me/.recoll or /home/me/.recoll/xapiandb)</source>
-        <translation type="unfinished"></translation>
+        <translation>Selection un repertoire de configuration Recoll ou un repertoire d&apos;index Xapian (Ex: /home/moi/.recoll ou /home/moi/.recoll/xapiandb)</translation>
     </message>
     <message>
         <source>The selected directory looks like a Recoll configuration directory but the configuration could not be read</source>
-        <translation type="unfinished"></translation>
+        <translation>Le repertoire selectionne ressemble a un repertoire de configuration Recoll mais la configuration n&apos;a pas pu etre chargee</translation>
     </message>
     <message>
         <source>At most one index should be selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Selectionner au plus un index</translation>
+    </message>
+    <message>
+        <source>Cant add index with different case/diacritics stripping option</source>
+        <translation>Impossible d&apos;ajouter un index avec une option differente de sensibilite a la casse et aux accents</translation>
     </message>
 </context>
 <context>
@@ -2146,11 +2265,11 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Desktop Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Défaut du bureau</translation>
     </message>
     <message>
         <source>Changing entries with different current values</source>
-        <translation type="unfinished"></translation>
+        <translation>Nous changeons des éléments avec des valeurs actuelles différentes</translation>
     </message>
 </context>
 <context>
@@ -2165,7 +2284,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
-        <translation type="obsolete">Sélectionner une ou plusieurs types de fichiers, puis cliquer Changer pour modifier le programme utiliser pour les ouvrir</translation>
+        <translation type="obsolete">Sélectionner une ou plusieurs types de fichiers, puis cliquer Changer pour modifier le programme utilisé pour les ouvrir</translation>
     </message>
     <message>
         <source>Change Action</source>
@@ -2185,27 +2304,27 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Select one or several mime types then use the controls in the bottom frame to change how they are processed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner un ou plusieurs types MIME, puis utiliser les contrôles dans le cadre du bas pour changer leur traitement</translation>
     </message>
     <message>
         <source>Use Desktop preferences by default</source>
-        <translation type="unfinished"></translation>
+        <translation>Utiliser les préférences du bureau</translation>
     </message>
     <message>
         <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner un ou plusieurs types de fichiers, puis utiliser les contrôles dans le cadre du bas pour changer leur traitement</translation>
     </message>
     <message>
         <source>Exception to Desktop preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Exception aux préférences du bureau</translation>
     </message>
     <message>
         <source>Action (empty -&gt; recoll default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Action (vide -&gt; utiliser le defaut recoll)</translation>
     </message>
     <message>
         <source>Apply to current selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Appliquer à la sélection courante</translation>
     </message>
 </context>
 <context>
@@ -2448,11 +2567,11 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
-        <translation>Utiliser la commande &apos;file&apos; du systeme</translation>
+        <translation type="obsolete">Utiliser la commande &apos;file&apos; du systeme</translation>
     </message>
     <message>
         <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
-        <translation>Utiliser la commande &apos;file&apos; si la determination&lt;br&gt;interne du type mime n&apos;obtient pas de resultat.</translation>
+        <translation type="obsolete">Utiliser la commande &apos;file&apos; si la determination&lt;br&gt;interne du type mime n&apos;obtient pas de resultat.</translation>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
@@ -2675,7 +2794,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Abstract snippet separator</source>
-        <translation>Separateur d&apos;extrait</translation>
+        <translation>Séparateur d&apos;extrait</translation>
     </message>
     <message>
         <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html.</source>
@@ -2769,19 +2888,31 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Disable Qt autocompletion in search entry.</source>
-        <translation type="unfinished"></translation>
+        <translation>Desactiver l&apos;autocompletion Qt dans l&apos;entree de recherche</translation>
     </message>
     <message>
         <source>Search as you type.</source>
-        <translation type="unfinished"></translation>
+        <translation>Lancer la recherche a chaque caractere entre</translation>
     </message>
     <message>
         <source>Paths translations</source>
-        <translation type="unfinished"></translation>
+        <translation>Traductions de chemins</translation>
     </message>
     <message>
         <source>Click to add another index directory to the list. You can select either a Recoll configuration directory or a Xapian index.</source>
-        <translation type="unfinished"></translation>
+        <translation>Cliquer pour ajouter un autre index a la liste. Vous pouvez sélectionner soit un répertoire de configuration Recoll soit un index Xapian</translation>
+    </message>
+    <message>
+        <source>Snippets window CSS file</source>
+        <translation>Feuille de style CSS pour le popup de fragments</translation>
+    </message>
+    <message>
+        <source>Opens a dialog to select the Snippets window CSS style sheet file</source>
+        <translation>Ouvre un dialogue permettant de sélectionner la feuille de style CSS pour le popup des fragments</translation>
+    </message>
+    <message>
+        <source>Resets the Snippets window style</source>
+        <translation>Réinitialise le style de la fenêtre des fragments</translation>
     </message>
 </context>
 </TS>

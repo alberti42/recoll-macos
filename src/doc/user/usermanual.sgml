@@ -5182,6 +5182,90 @@ metadatacmds = ; tags = tmsu tags %f; otherfield = somecmd -xx %f
         </variablelist>
        </sect3>
 
+       <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.IDXTHREADS">
+	<title>Indexing parallelism configuration</title>
+
+        <para>The &RCL; indexing process 
+          <command>recollindex</command> can use multiple threads to
+          speed up indexing on multiprocessor systems. The work done
+          to index files is divided in several stages and some of the
+          stages can be executed by multiple threads. The stages are:
+          <orderedlist>
+            <listitem>File system walking: this is always performed by
+              the main thread.</listitem>
+            <listitem>File conversion and data extraction.</listitem>
+            <listitem>Text processing (splitting, stemming,
+            etc.)</listitem>
+            <listitem>&XAP; index update.</listitem>
+          </orderedlist>
+        </para>
+        <para>You can also read a 
+          <ulink url="http://www.recoll.org/idxthreads/threadingRecoll.html">
+            longer document</ulink> about the transformation of
+          &RCL; indexing to multithreading.</para>
+
+        <para>The threads configuration is controlled by two
+          configuration file parameters.</para>
+
+	 <variablelist>
+
+          <varlistentry><term><varname>thrQSizes</varname></term>
+            <listitem><para>This variable defines the job input queues
+                configuration. There are three possible queues for
+                stages 2, 3 and 4, and this parameter should give the
+                queue depth for each stage (three integer values). If
+                a value of -1 is used for a given stage, no queue is
+                used, and the thread will go on performing the next
+                stage. In practise, deep queues have not been shown to
+                increase performance. A value of 0 for the first queue
+                tells &RCL; to perform autoconfiguration (no need for
+                the two other values in this case)- this is the
+                default configuration.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry><term><varname>thrTCounts</varname></term>
+            <listitem><para>This defines the number of threads used
+                for each stage. If a value of -1 is used for one of
+                the queue depths, the corresponding thread count is
+                ignored. It makes no sense to use a value other than 1
+                for the last stage because updating the &XAP; index is
+                necessarily single-threaded (and protected by a
+                mutex).</para>
+            </listitem>
+          </varlistentry>
+
+         </variablelist>
+
+         <para>The following example would use three queues (of depth 2),
+         and 4 threads for converting source documents, 2 for
+         processing their text, and one to update the index. This was
+         tested to be the best configuration on the test system
+         (quadri-processor with multiple disks).
+<programlisting>
+thrQSizes = 2 2 2
+thrTCounts =  4 2 1
+</programlisting>
+         </para>
+
+         <para>The following example would use a single queue, and the
+           complete processing for each document would be performed by
+           a single thread (several documents will still be processed
+           in parallel in most cases). The threads will use mutual
+           exclusion when entering the index update stage. In practise
+           the performance would be close to the precedent case in
+           general, but worse in certain cases (e.g. a Zip archive
+           would be performed purely sequentially), so the previous
+           approach is preferred. YMMV...  The 2 last values for
+           thrTCounts are ignored.
+<programlisting>
+thrQSizes = 2 -1 -1
+thrTCounts =  6 1 1
+</programlisting>
+         </para>
+
+       </sect3>
+
        <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.MISC">
 	<title>Miscellaneous parameters:</title>
 

@@ -809,7 +809,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Query details</source>
-        <translation type="unfinished">Sorgu detayları</translation>
+        <translation type="obsolete">Sorgu detayları</translation>
     </message>
     <message>
         <source>Could not open external index. Db not open. Check external indexes list.</source>
@@ -872,10 +872,6 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Index not up to date for this file. Refusing to risk showing the wrong entry. Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Can&apos;t update index: indexer running</source>
         <translation type="unfinished"></translation>
     </message>
@@ -902,6 +898,22 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexer running so things should improve when it&apos;s done</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sub-documents and attachments</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1060,15 +1072,7 @@ Please check the mimeview file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>sortByDateAsc</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Sort by dates from oldest to newest</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>sortByDateDesc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1077,10 +1081,6 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Show Query Details</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show results as table</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1109,6 +1109,46 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;GUI configuration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort by date, oldest first</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort by date, newest first</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show as table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show results in a spreadsheet-like table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save as CSV (spreadsheet) file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saves the result into a file which you can load in a spreadsheet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Previous Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>First Page</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1215,23 +1255,23 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Önizle</translation>
+        <translation type="obsolete">&amp;Önizle</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>&amp;Dosya Adını Kopyala</translation>
+        <translation type="obsolete">&amp;Dosya Adını Kopyala</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>&amp;Adresi Kopyala</translation>
+        <translation type="obsolete">&amp;Adresi Kopyala</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>Benzer belgeleri &amp;bul</translation>
+        <translation type="obsolete">Benzer belgeleri &amp;bul</translation>
     </message>
     <message>
         <source>Query details</source>
-        <translation type="obsolete">Sorgu detayları</translation>
+        <translation type="unfinished">Sorgu detayları</translation>
     </message>
     <message>
         <source>Document history</source>
@@ -1247,22 +1287,6 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&lt;p&gt;&lt;i&gt;Alternate spellings (accents suppressed): &lt;/i&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Write to File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Preview P&amp;arent document/folder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Open Parent document/folder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1282,7 +1306,15 @@ Please check the mimeview file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Open &amp;Snippets window</source>
+        <source>Duplicate documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>These Urls ( | ipath) share the same content:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Result count (est.)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1306,35 +1338,19 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation type="unfinished">&amp;Önizle</translation>
-    </message>
-    <message>
-        <source>&amp;Open</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">&amp;Önizle</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="unfinished">&amp;Dosya Adını Kopyala</translation>
+        <translation type="obsolete">&amp;Dosya Adını Kopyala</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="unfinished">&amp;Adresi Kopyala</translation>
-    </message>
-    <message>
-        <source>&amp;Write to File</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">&amp;Adresi Kopyala</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="unfinished">Benzer belgeleri &amp;bul</translation>
-    </message>
-    <message>
-        <source>Preview P&amp;arent document/folder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Open Parent document/folder</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Benzer belgeleri &amp;bul</translation>
     </message>
     <message>
         <source>&amp;Save as CSV</source>
@@ -1347,6 +1363,25 @@ Please check the mimeview file</source>
 </context>
 <context>
     <name>ResTableDetailArea</name>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="obsolete">&amp;Önizle</translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="obsolete">&amp;Dosya Adını Kopyala</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="obsolete">&amp;Adresi Kopyala</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="obsolete">Benzer belgeleri &amp;bul</translation>
+    </message>
+</context>
+<context>
+    <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
         <translation type="unfinished">&amp;Önizle</translation>
@@ -1368,8 +1403,8 @@ Please check the mimeview file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Find &amp;similar documents</source>
-        <translation type="unfinished">Benzer belgeleri &amp;bul</translation>
+        <source>Save selection to files</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
@@ -1377,6 +1412,18 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="unfinished">Benzer belgeleri &amp;bul</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show subdocuments / attachments</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1795,6 +1842,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>At most one index should be selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cant add index with different case/diacritics stripping option</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2260,11 +2311,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
-        <translation>Sistemdeki &apos;file&apos; komutunu kullan</translation>
+        <translation type="obsolete">Sistemdeki &apos;file&apos; komutunu kullan</translation>
     </message>
     <message>
         <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
-        <translation>İç mime tipi belirleme işlemi başarısız olursa&lt;br&gt; sistemdeki &apos;file&apos; komutunu kullan.</translation>
+        <translation type="obsolete">İç mime tipi belirleme işlemi başarısız olursa&lt;br&gt; sistemdeki &apos;file&apos; komutunu kullan.</translation>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
@@ -2562,6 +2613,18 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Click to add another index directory to the list. You can select either a Recoll configuration directory or a Xapian index.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Snippets window CSS file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opens a dialog to select the Snippets window CSS style sheet file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Resets the Snippets window style</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
