@@ -1,3 +1,7 @@
+recoll (3304-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+  * Pre-1.19.0 test
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 30 Apr 2013 11:02:00 +0200
+
 recoll (1.18.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
   * Release 1.18.2
  -- Jean-Francois Dockes <jf@dockes.org>  Mon, 18 Apr 2013 18:02:00 +0200
