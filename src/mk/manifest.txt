@@ -130,7 +130,6 @@ doc/user/RCL.SEARCH.KIO.html
 doc/user/RCL.SEARCH.LANG.html
 doc/user/RCL.SEARCH.PTRANS.html
 doc/user/RCL.SEARCH.html
-doc/user/bldloop
 doc/user/docbook-xsl.css
 doc/user/docbook.css
 doc/user/index.html
