@@ -315,6 +315,12 @@ public:
 	m_haveWildCards = 
 	    (txt.find_first_of(cstr_minwilds) != std::string::npos);
     }
+    SearchDataClauseSimple(const std::string& txt, SClType tp)
+	: SearchDataClause(tp), m_text(txt), m_curcl(0)
+    {
+	m_haveWildCards = 
+	    (txt.find_first_of(cstr_minwilds) != std::string::npos);
+    }
 
     virtual ~SearchDataClauseSimple() 
     {
@@ -365,10 +371,10 @@ protected:
  * field, especially for file names, because this makes searches for
  * "*xx" much faster (no need to scan the whole main index).
  */
-class SearchDataClauseFilename : public SearchDataClause {
+class SearchDataClauseFilename : public SearchDataClauseSimple {
 public:
     SearchDataClauseFilename(const std::string& txt)
-	: SearchDataClause(SCLT_FILENAME), m_text(txt) 
+	: SearchDataClauseSimple(txt, SCLT_FILENAME)
     {
 	// File name searches don't count when looking for wild cards.
 	m_haveWildCards = false;
@@ -383,9 +389,6 @@ public:
     }
 
     virtual bool toNativeQuery(Rcl::Db &, void *);
-
-protected:
-    std::string m_text;
 };
 
 

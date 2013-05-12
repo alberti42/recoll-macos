@@ -56,18 +56,20 @@ string SearchData::asXML()
 
     // Clause list
     os << "<CL>" << endl;
+
+    // List conjunction: default is AND, else print it.
     if (m_tp != SCLT_AND)
 	os << "<CLT>" << tpToString(m_tp) << "</CLT>" << endl;
+
     for (unsigned int i = 0; i <  m_query.size(); i++) {
 	SearchDataClause *c = m_query[i];
 	if (c->getTp() == SCLT_SUB) {
 	    LOGERR(("SearchData::asXML: can't do subclauses !\n"));
 	    continue;
 	}
-	if (c->getexclude())
-	    os << "<NEG/>" << endl;
 	if (c->getTp() == SCLT_PATH) {
-	    // Keep these apart, for compat with the older history format
+	    // Keep these apart, for compat with the older history format. NEG
+	    // is ignored here, we have 2 different tags instead.
 	    SearchDataClausePath *cl = 
 		dynamic_cast<SearchDataClausePath*>(c);
 	    if (cl->getexclude()) {
@@ -76,24 +78,36 @@ string SearchData::asXML()
 		os << "<YD>" << base64_encode(cl->gettext()) << "</YD>" << endl;
 	    }
 	    continue;
-	}
+	} else {
 
-	SearchDataClauseSimple *cl = 
-	    dynamic_cast<SearchDataClauseSimple*>(c);
-	os << "<C>" << endl;
-	if (cl->getTp() != SCLT_AND) {
-	    os << "<CT>" << tpToString(cl->getTp()) << "</CT>" << endl;
+	    os << "<C>" << endl;
+
+	    if (c->getexclude())
+		os << "<NEG/>" << endl;
+
+	    if (c->getTp() != SCLT_AND) {
+		os << "<CT>" << tpToString(c->getTp()) << "</CT>" << endl;
+	    }
+	    if (c->getTp() == SCLT_FILENAME) {
+		SearchDataClauseFilename *cl = 
+		    dynamic_cast<SearchDataClauseFilename*>(c);
+		os << "<T>" << base64_encode(cl->gettext()) << "</T>" << endl;
+	    } else {
+		SearchDataClauseSimple *cl = 
+		    dynamic_cast<SearchDataClauseSimple*>(c);
+		if (!cl->getfield().empty()) {
+		    os << "<F>" << base64_encode(cl->getfield()) << "</F>" << 
+			endl;
+		}
+		os << "<T>" << base64_encode(cl->gettext()) << "</T>" << endl;
+		if (cl->getTp() == SCLT_NEAR || cl->getTp() == SCLT_PHRASE) {
+		    SearchDataClauseDist *cld = 
+			dynamic_cast<SearchDataClauseDist*>(cl);
+		    os << "<S>" << cld->getslack() << "</S>" << endl;
+		}
+	    }
+	    os << "</C>" << endl;
 	}
-	if (cl->getTp() != SCLT_FILENAME && !cl->getfield().empty()) {
-	    os << "<F>" << base64_encode(cl->getfield()) << "</F>" << endl;
-	}
-	os << "<T>" << base64_encode(cl->gettext()) << "</T>" << endl;
-	if (cl->getTp() == SCLT_NEAR || cl->getTp() == SCLT_PHRASE) {
-	    SearchDataClauseDist *cld = 
-	    dynamic_cast<SearchDataClauseDist*>(cl);
-	    os << "<S>" << cld->getslack() << "</S>" << endl;
-	}
-	os << "</C>" << endl;
     }
     os << "</CL>" << endl;
 
