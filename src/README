@@ -8,7 +8,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    <jfd@recoll.org>
 
-   Copyright (c) 2005-2012 Jean-Francois Dockes
+   Copyright (c) 2005-2013 Jean-Francois Dockes
 
    Permission is granted to copy, distribute and/or modify this document
    under the terms of the GNU Free Documentation License, Version 1.3 or any
@@ -3103,30 +3103,37 @@ Chapter 5. Installation and configuration
 
   5.3.1. Prerequisites
 
-   C++ compiler. Up to Recoll version 1.13.04, its absence can manifest
-   itself by strange messages about a missing iconv_open.
+   If you can install any or all of the following through the package manager
+   for your system, all the better. Especially Qt is a very big piece of
+   software, but you will most probably be able to find a binary package.
 
-   Development files for Xapian core.
+   You may have to compile Xapian but this is easy.
+
+   The shopping list:
+
+     o C++ compiler. Up to Recoll version 1.13.04, its absence can manifest
+       itself by strange messages about a missing iconv_open.
+
+     o Development files for Xapian core.
 
   Important
 
-   If you are building Xapian for an older CPU (before Pentium 4 or Athlon
-   64), you need to add the --disable-sse flag to the configure command. Else
-   all Xapian application will crash with an illegal instruction error.
+       If you are building Xapian for an older CPU (before Pentium 4 or
+       Athlon 64), you need to add the --disable-sse flag to the configure
+       command. Else all Xapian application will crash with an illegal
+       instruction error.
 
-   Development files for Qt .
+     o Development files for Qt 4 . Recoll has not been tested with Qt 5 yet.
+       Recoll 1.15.9 was the last version to support Qt 3. If you do not want
+       to install or build the Qt Webkit module, Recoll has a configuration
+       option to disable its use (see further).
 
-   Development files for X11 and zlib.
+     o Development files for X11 and zlib.
+
+     o You may also need libiconv. On Linux systems, the iconv interface is
+       part of libc and you should not need to do anything special.
 
    Check the Recoll download page for up to date version information.
-
-   You will most probably be able to find a binary package for Qt for your
-   system. You may have to compile Xapian but this is not difficult (if you
-   are using FreeBSD, there is a port).
-
-   You may also need libiconv. Recoll currently uses version 1.9 (this should
-   not be critical). On Linux systems, the iconv interface is part of libc
-   and you should not need to do anything special.
 
   5.3.2. Building
 
@@ -3134,23 +3141,6 @@ Chapter 5. Installation and configuration
    versions after 2005 should be ok, maybe some older ones too (Solaris 8 is
    ok). If you build on another system, and need to modify things, I would
    very much welcome patches.
-
-   Depending on the Qt 3 configuration on your system, you may have to set
-   the QTDIR and QMAKESPECS variables in your environment:
-
-     o QTDIR should point to the directory above the one that holds the qt
-       include files (ie: if qt.h is /usr/local/qt/include/qt.h, QTDIR should
-       be /usr/local/qt).
-
-     o QMAKESPECS should be set to the name of one of the Qt mkspecs
-       sub-directories (ie: linux-g++).
-
-   On many Linux systems, QTDIR is set by the login scripts, and QMAKESPECS
-   is not needed because there is a default link in mkspecs/.
-
-   Neither QTDIR nor QMAKESPECS should be needed with Qt 4, configuration
-   details are entirely determined by qmake (which is quite often installed
-   as qmake-qt4).
 
    Configure options: 
 
@@ -3161,12 +3151,26 @@ Chapter 5. Installation and configuration
        indexing. Inotify support is enabled by default on recent Linux
        systems.
 
+     o --with-qtzeitgeist will enable sending Zeitgeist events about the
+       visited search results, and needs the Qt Zeitgeist module.
+
      o --disable-webkit is available from version 1.17 to implement the
        result list with a Qt QTextBrowser instead of a WebKit widget if you
        do not or can't depend on the latter.
 
-     o --enable-xattr will enable code to fetch data from file extended
-       attributes. This is only useful is some application stores data in
+     o --disable-idxthreads is available from version 1.19 to suppress
+       multithreading inside the indexing process. You can also use the
+       run-time configuration to restrict recollindex to using a single
+       thread, but the compile-time option may disable a few more unused
+       locks. This only applies to the use of multithreading for the core
+       index processing (data input). The Recoll monitor mode always uses at
+       least two threads of execution.
+
+     o --disable-python-module will avoid building the Python module.
+
+     o --disable-xattr will prevent fetching data from file extended
+       attributes. Beyond a few standard attributes, fetching extended
+       attributes data can only be useful is some application stores data in
        there, and also needs some simple configuration (see comments in the
        fields configuration file).
 
@@ -3187,6 +3191,10 @@ Chapter 5. Installation and configuration
      o --disable-x11mon Disable X11 connection monitoring inside recollindex.
        Together with --disable-qtgui, this allows building recoll without Qt
        and X11.
+
+     o --disable-pic will compile Recoll with position-dependant code. This
+       is incompatible with building the KIO or the Python or PHP extensions,
+       but might yield very marginally faster code.
 
      o Of course the usual autoconf configure options, like --prefix apply.
 
