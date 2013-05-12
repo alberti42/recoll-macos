@@ -1,382 +1,337 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-
 <html>
-  <head>
-    <title>Recoll download</title>
+<head>
+  <title>Recoll download</title>
+  <meta name="Author" content="Jean-Francois Dockes">
+  <meta name="Description"
+  content="recoll is a simple full-text search system for unix and linux     based on the powerful and mature xapian engine">
+  <meta name="Keywords" content="full text search, desktop search, unix, linux">
+  <meta http-equiv="Content-language" content="en">
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <meta name="robots" content="All,Index,Follow">
+  <link type="text/css" rel="stylesheet" href="styles/style.css">
+</head>
 
-    <meta name="generator" content="HTML Tidy, see www.w3.org">
-    <meta name="Author" content="Jean-Francois Dockes">
-    <meta name="Description" content=
-    "recoll is a simple full-text search system for unix and linux
-    based on the powerful and mature xapian engine">
-    <meta name="Keywords" content=
-    "full text search, desktop search, unix, linux">
-    <meta http-equiv="Content-language" content="en">
-    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
-    <meta name="robots" content="All,Index,Follow">
+<body>
 
-    <link type="text/css" rel="stylesheet" href="styles/style.css">
-  </head>
+<div class="rightlinks">
+<ul>
+  <li><a href="index.html">Home</a></li>
+  <li><b>Downloads</b></li>
+  <li><a href="doc.html">Documentation</a></li>
+  <li><a href="usermanual/rcl.install.html">Installation</a></li>
+  <li><a href="index.html#support">Support</a></li>
+</ul>
+</div>
 
-  <body>
-    
-    <div class="rightlinks">
-      <ul>
-	<li><a href="index.html">Home</a></li>
-	<li><b>Downloads</b></li>
-	<li><a href="doc.html">Documentation</a></li>
-	<li><a href="usermanual/rcl.install.html">Installation</a></li>
-	<li><a href="index.html#support">Support</a></li>
-      </ul>
-    </div>
-    
-    <div class="content">
+<div class="content">
+<h1>Recoll downloads</h1>
 
-      <h1>Recoll downloads</h1>
+<div class="intrapage">
 
-      <div class="intrapage">
-	<table width=100%>
-	  <tbody>
-	    <tr>
-	      <td><a href="#source">Source</a></td>
-              <td><a href="#packages">Packages (.rpm and .deb)</a></td>
-              <td><a href="BUGS.html">Known bugs</a></td>
-	      <td><a href="#ports">Mac ports</a></td>
-	      <td><a href="filters/filters.html">Filters</a> </td>
-	      <td><a href="#translations">Translations</a></td>
-	    </tr>
-	  </tbody>
-	</table>
-       </div>
+<table width="100%">
+  <tbody>
+    <tr>
+      <td><a href="#source">Source</a></td>
+      <td><a href="#packages">Packages (.rpm and .deb)</a></td>
+      <td><a href="BUGS.html">Known bugs</a></td>
+      <td><a href="#ports">Mac ports</a></td>
+      <td><a href="filters/filters.html">Filters</a> </td>
+      <td><a href="#translations">Translations</a></td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
-      <h2><a>General information</a></h2>
+<h2><a>General information</a></h2>
 
-      <p>The current version is 1.18.2. <a href="release-1.18.html">
-          Release notes</a>.</p>
+<p>The current version is 1.19.0. <a href="release-1.19.html">Release
+notes</a>.</p>
 
-      <p>The download page for Recoll 1.17 is
-	<a href="download-1.17.html">still available</a>.</p>
+<p>The download page for Recoll 1.18 is <a href="download-1.18.html">still
+available</a>.</p>
 
-      <p>Recoll <a href="usermanual/rcl.install.html">
-	  Installation / building manual</a>.</p> 
+<p>Recoll <a href="usermanual/rcl.install.html">Installation / building
+manual</a>.</p>
 
-      <p>The indexing filters used for some document types may need
-        external packages not installed on your system by default, and
-        not installed automatically with Recoll: <a
-	href="features.html#doctypes"> take a look at the list</a> and
-	decide what you need to
-	install. Also <a href="filters/filters.html">new or updated
-	filters</a> sometimes become available after a release. As a
-	rule, all filters are compatible with all Recoll
-	versions. Any compatibility problem will be explicitely
-	mentionned.</p>
+<p>The indexing filters used for some document types may need external packages
+not installed on your system by default, and not installed automatically with
+Recoll: <a href="features.html#doctypes">take a look at the list</a> and decide
+what you need to install. Also <a href="filters/filters.html">new or updated
+filters</a> sometimes become available after a release. As a rule, all filters
+are compatible with all Recoll versions. Any compatibility problem will be
+explicitely mentionned.</p>
 
-      <p>The Recoll term explorer tool in phonetic mode (marginally
-	useful and optional) uses the <b>aspell</b> package, version
-	0.60 (utf-8 support) or newer.</p>
+<p>The Recoll term explorer tool in phonetic mode (marginally useful and
+optional) uses the <b>aspell</b> package, version 0.60 (utf-8 support) or
+newer.</p>
 
-      <p>If you find problems with this page, the package or its
-	installation, <em>please</em> <a href="mailto:jfd@recoll.org">
-	  report them</a>.</p>
+<p>If you find problems with this page, the package or its installation,
+<em>please</em> <a href="mailto:jfd@recoll.org">report them</a>.</p>
 
-      <h4>What do the release numbers mean?</h4>
+<h4>What do the release numbers mean?</h4>
 
-      <p>The Recoll releases are numbered X.Y.Z. The X
-	would only change for really major modifications like a big
-	change in the index format, and possibly won't ever reach
-	2.</p> 
+<p>The Recoll releases are numbered X.Y.Z. The X would only change for really
+major modifications like a big change in the index format, and possibly won't
+ever reach 2.</p>
 
-      <p>Y is for functional modifications. These may bring bugs, so
-        if you don't need the new features, you may want to wait a little,
-        and especially skip the first release (X.Y.0), at least for a few
-        weeks.</p> 
+<p>Y is for functional modifications. These may bring bugs, so if you don't
+need the new features, you may want to wait a little, and especially skip the
+first release (X.Y.0), at least for a few weeks.</p>
 
-      <p>Z changes for <a href="BUGS.html">bug fixes</a> only, 
-	and moving from X.Y.Z to X.Y.Z+u should in general involve
-	little risk of regression. But, <em>any</em> change can bring
-	problems, if you are not affected by the corrected bugs (check
-	the <a href="release-1.18.html">release file</a>), there is
-	probably no necessity to upgrade anyway.</p>
+<p>Z changes for <a href="BUGS.html">bug fixes</a> only, and moving from X.Y.Z
+to X.Y.Z+u should in general involve little risk of regression. But,
+<em>any</em> change can bring problems, if you are not affected by the
+corrected bugs (check the <a href="release-1.19.html">release file</a>), there
+is probably no necessity to upgrade anyway.</p>
 
-      <h2><a name="source">Source</a></h2>
+<h2><a name="source">Source</a></h2>
 
-      <h3>Current release distribution: 1.18.2:</h3> 
-      <!-- Attention: source packages must remain here, not in a
-        subdirectory, because of all the places they're referred from
-        (package watches) -->
-       <p><a href="recoll-1.18.2.tar.gz">recoll-1.18.2.tar.gz</a>.
-       </p>
+<h3>Current release distribution: 1.19.0:</h3>
+<!-- Attention: source packages must remain here, not in a
+subdirectory, because of all the places they're referred from
+(package watches) -->
 
-       <!--
-      <h3>Snapshot</h3>
-      <p>I sometimes release a source tarfile when I consider that the
-      current development version is stable enough. The current
-      snapshot contains commits up to 2240 (see 
-       <a href="https://bitbucket.org/medoc/recoll/changesets">the
-       changelog</a>, and a synthetic abstract in the
-       current <a href="release-1.16.html">1.16 release notes</a>).
-       <p><a href="betarecoll-2240.tar.gz">betarecoll-2240.tar.gz</a>.</p>
-       -->
+<p><a href="recoll-1.19.0.tar.gz">recoll-1.19.0.tar.gz</a>. </p>
+<!--
+<h3>Snapshot</h3>
+<p>I sometimes release a source tarfile when I consider that the
+current development version is stable enough. The current
+snapshot contains commits up to 2240 (see 
+<a href="https://bitbucket.org/medoc/recoll/changesets">the
+changelog</a>, and a synthetic abstract in the
+current <a href="release-1.16.html">1.16 release notes</a>).
+<p><a href="betarecoll-2240.tar.gz">betarecoll-2240.tar.gz</a>.</p>
+-->
 
-       <h3>Prerequisites for building from source:</h3>
-       <ul>
-	 <li>C++ compiler. Its absence sometimes manifests itself by
-	 strange messages about iconv_open (fixed after 1.13.04).</li>
+<h3>Prerequisites for building from source:</h3>
+<ul>
+  <li>C++ compiler. Its absence sometimes manifests itself by strange messages
+    about iconv_open (fixed after 1.13.04).</li>
+  <li><p>Xapian core development libraries. Most Linux distributions carry them
+    in their package repository. Or you will find source and binary packages on
+    the <a href="http://www.xapian.org/download.php">Xapian download page</a>.
+    <br>
+    Recoll should still work with Xapian 1.0, but it is highly recommended to
+    use a Xapian 1.2 version.</p>
+    <p><em>Note on building Xapian for older CPUs:</em> The build
+    configurations for Xapian releases 1.0.21 and 1.2.1 or newer enable the use
+    of SSE2 floating point instructions. These instructions are not available
+    in CPUs older than Intel Pentium 4 or AMD Athlon 64. When building for such
+    a CPU, you need to add the --disable-sse flag to the Xapian library
+    configure command. If this is not done, the problem signals itself by
+    "Illegal instruction" crashes (SIGILL) in recollindex and recoll. </p>
+  </li>
+  <li>X11 development files.</li>
+  <li>zlib development files.</li>
+  <li><p>Qt development files: Qt 4.4 or newer. The Recoll GUI will not build
+    with Qt releases older than 4.4.</p>
+  </li>
+  <li><p>Qt webkit development: Qt WebKit is quite often distributed apart from
+    the main Qt lib. It is possible to configure Recoll not to use Qt WebKit
+    (see configure --help).</p>
+  </li>
+  <li>Python development package: you can avoid needing this by configuring
+    with --disable-python-module.</li>
+</ul>
 
-         <li><p>Xapian core development libraries. Most Linux distributions
-           carry them in their package repository. Or you will find source and
-	   binary packages on the 
-           <a href="http://www.xapian.org/download.php">
-           Xapian download page</a>. <br /> 
-           Recoll should still work with Xapian 1.0, but it is highly
-           recommended to use a Xapian 1.2 version.</p> 
+<h3>Source repository:</h3>
 
-           <p><em>Note on building Xapian for older CPUs:</em> The
-	     build configurations for Xapian releases 1.0.21 and
-	     1.2.1 or newer enable the use of SSE2 floating point
-	     instructions. These instructions are not available in CPUs
-	     older than Intel Pentium&nbsp;4 or AMD Athlon&nbsp;64. When
-	     building for such a CPU, you need to add the --disable-sse
-	     flag to the Xapian library configure command. If this is
-	     not done, the problem signals itself by "Illegal
-	     instruction" crashes (SIGILL) in recollindex and recoll.
-	   </p>
+<p>The <span class="application">Recoll</span> source repository is hosted on
+<a href="http://bitbucket.org/medoc/recoll/overview">bitbucket.org</a>. The
+trunk is usually a bit on the bleeding edge, but there is always a maintenance
+branch for the current production version.</p>
 
-         </li>
+<h3>Older recoll releases:</h3>
 
-         <li>X11 development files.</li>
+<p><a href="recoll-1.18.2.tar.gz">1.18.2</a>. <a
+href="recoll-1.18.1.tar.gz">1.18.1</a>. <a
+href="recoll-1.17.3.tar.gz">1.17.3</a>. <a
+href="recoll-1.16.2.tar.gz">1.16.2</a>. <a
+href="recoll-1.15.9.tar.gz">1.15.9</a>. <a
+href="recoll-1.14.4.tar.gz">1.14.4</a>. <a
+href="recoll-1.13.04.tar.gz">1.13.04</a>. <a
+href="older/recoll-1.12.4.tar.gz">1.12.4</a>. <a
+href="older/recoll-1.11.4.tar.gz">1.11.4</a>. <a
+href="older/recoll-1.10.6.tar.gz">1.10.6</a>. <a
+href="older/recoll-1.9.0.tar.gz">1.9.0</a>. <a
+href="older/recoll-1.8.2.tar.gz">1.8.2</a>. <a
+href="older/recoll-1.7.6.tar.gz">1.7.6</a>. <a
+href="older/recoll-1.6.3.tar.gz">1.6.3</a>. <a
+href="older/recoll-1.5.11.tar.gz">1.5.11</a>. <a
+href="older/recoll-1.4.3.tar.gz">1.4.3</a>. <a
+href="older/recoll-1.3.3.tar.gz">1.3.3</a>. <a
+href="older/recoll-1.2.3.tar.gz">1.2.3</a>. <a
+href="older/recoll-1.1.0.tar.gz">1.1.0</a>. <a
+href="older/recoll-1.0.16.tar.gz">1.0.16</a>. </p>
 
-         <li>zlib development files.</li>
+<h2><a name="packages">Packages</a></h2>
 
-         <li><p>Qt development files: Qt 4.4 or newer. The Recoll GUI
-            will not build with Qt releases older than 4.4.</p></li>
+<p>Packages or ports for Recoll are available in the standard repositories for
+many distributions.</p>
 
-         <li><p>Qt webkit development: Qt WebKit is quite often
-             distributed apart from the main Qt lib. It is possible to
-            configure Recoll not to use Qt WebKit (see 
-            configure&nbsp;--help).</p></li>
+<p>However they are often a bit older or built with older Xapian releases. Here
+follow a number of updated packages and instructions for a number of
+distributions.</p>
 
-         <li>Python development package: you can avoid needing this by
-           configuring with --disable-python-module.</li>
+<p>All binary packages on this page need a Qt 4 (4.4 at least) runtime
+environment. To make things easier, on systems where Xapian is not available
+from the standard package repositories, the Recoll package will have a static
+link to Xapian so that you do not need to build/install it separately.</p>
 
-       </ul>
+<h3><a name="debian">Debian</a></h3>
 
-      <h3>Source repository:</h3>
-      <p>The <span class="application">Recoll</span> source repository is
-        hosted on 
-      <a href="http://bitbucket.org/medoc/recoll/overview">bitbucket.org</a>. 
-        The trunk is usually a bit on the bleeding edge, but there is
-        always a maintenance branch for the current production version.</p>
+<p>The Debian Recoll packages are usually fairly up to date (at least in
+testing), just use the appropriate Debian repository.</p>
 
-      <h3>Older recoll releases:</h3>
-       <p>
-        <a href="recoll-1.18.1.tar.gz">1.18.1</a>.
-        <a href="recoll-1.17.3.tar.gz">1.17.3</a>.
-        <a href="recoll-1.16.2.tar.gz">1.16.2</a>.
-        <a href="recoll-1.15.9.tar.gz">1.15.9</a>.
-        <a href="recoll-1.14.4.tar.gz">1.14.4</a>.
-        <a href="recoll-1.13.04.tar.gz">1.13.04</a>.
-	<a href="recoll-1.12.4.tar.gz">1.12.4</a>.
-	<a href="recoll-1.11.4.tar.gz">1.11.4</a>.
-	<a href="recoll-1.10.6.tar.gz">1.10.6</a>.
-	<a href="recoll-1.9.0.tar.gz">1.9.0</a>.
-	<a href="older/recoll-1.8.2.tar.gz">1.8.2</a>.
-	<a href="older/recoll-1.7.6.tar.gz">1.7.6</a>.
-	<a href="older/recoll-1.6.3.tar.gz">1.6.3</a>.
-	<a href="older/recoll-1.5.11.tar.gz">1.5.11</a>. 
-	<a href="older/recoll-1.4.3.tar.gz">1.4.3</a>. 
-	<a href="older/recoll-1.3.3.tar.gz">1.3.3</a>.
-	<a href="older/recoll-1.2.3.tar.gz">1.2.3</a>.
-	<a href="older/recoll-1.1.0.tar.gz">1.1.0</a>.
-	<a href="older/recoll-1.0.16.tar.gz">1.0.16</a>.
-      </p>
+<h3><a name="ubuntu">Ubuntu</a></h3>
 
-      <h2><a name="packages">Packages</a></h2>
-
-      <p>Packages or ports for Recoll are available in the standard
-        repositories for many distributions.</p>
-      <p>However they are often a bit older or built with older Xapian 
-        releases. Here follow a number of updated packages and
-        instructions for a number of distributions.</p>
-      <p>All binary packages on this page need a Qt 4 (4.4 at least) runtime
-	environment. To make things easier, on systems where Xapian is
-	not available from the standard package repositories, the
-	Recoll package will have a static link to Xapian so that you
-	do not need to build/install it separately.</p>
-
-      <h3><a name="debian">Debian</a></h3>
-
-      <p>The Debian Recoll packages are usually fairly up to date (at
-        least in testing), just use the appropriate Debian repository.</p>
-
-      <h3><a name="ubuntu">Ubuntu</a></h3>
-
-      <p>There are Personal Package Archives on launchpad.net for 
-          <a  href="https://launchpad.net/~recoll-backports/+archive/recoll-1.15-on">
-            Recoll, kio-recoll and recoll-lens</a>. These were built from the
-          latest versions, for a set of Ubuntu series. starting at
-          Lucid. The installation is very simple:
-          <pre><tt>
+<p>There are Personal Package Archives on launchpad.net for <a
+href="https://launchpad.net/~recoll-backports/+archive/recoll-1.15-on">Recoll,
+kio-recoll and recoll-lens</a>. These were built from the latest versions, for
+a set of Ubuntu series. starting at Lucid. The installation is very simple: </p>
+<pre><tt>
           sudo add-apt-repository ppa:recoll-backports/recoll-1.15-on
           sudo apt-get update
           sudo apt-get install recoll
-          </tt></pre>
+</tt></pre>
 
-      <p>Source code for the lens (also included in the main
-        recoll tar file):<br>
-        For 1.18 installations: <a href="recoll-lens-1.18.1.2997.tar.gz">
-          recoll-lens-1.18.1.2997.tar.gz</a><br>
-        For 1.17: <a href="recoll-lens-1.17.2.2697.tar.gz">
-          recoll-lens-1.17.2.2697.tar.gz</a></p>
+<p>Source code for the lens (also included in the main recoll tar file):<br>
+For 1.19 installations: <a
+href="recoll-lens-1.19.0.3315.tar.gz">recoll-lens-1.19.0.3315.tar.gz</a><br>
+For 1.18: <a
+href="recoll-lens-1.18.1.2997.tar.gz">recoll-lens-1.18.1.2997.tar.gz</a><br>
+For 1.17: <a
+href="recoll-lens-1.17.2.2697.tar.gz">recoll-lens-1.17.2.2697.tar.gz</a></p>
 
-      <p>The packages in the standard repository and on the PPA
-        are a bit different in the sense that the Python extension
-        is included in the PPA package, but it's a separate
-        package in the standard repository. This can give rise to
-        errors about overwriting the Python module when switching
-        between versions. Typically, the error message would be
-        like the following:</p>
-
-      <pre><tt>
+<p>The packages in the standard repository and on the PPA are a bit different
+in the sense that the Python extension is included in the PPA package, but it's
+a separate package in the standard repository. This can give rise to errors
+about overwriting the Python module when switching between versions. Typically,
+the error message would be like the following:</p>
+<pre><tt>
     ErrorMessage: trying to overwrite '/usr/lib/python2.7/dist-packages/recoll.so', which is also in package recoll 1.18.1-1~ppa1~quantal1</tt></pre>
 
-      <p>If this happens, you just need to delete
-        the previous package(s) before installing the other one(s)
-        instead of performing an upgrade.</p>
-      
-      <blockquote>
-        <h4>Notes for Ubuntu Lucid</h4>
+<p>If this happens, you just need to delete the previous package(s) before
+installing the other one(s) instead of performing an upgrade.</p>
 
-        <ul>
+<blockquote>
+  <h4>Notes for Ubuntu Lucid</h4>
+  <ul>
+    <li>If you use Ubuntu 10.04 (<em>Lucid</em>), you will need to add the <a
+      href="https://launchpad.net/~xapian-backports/+archive/xapian-1.2">Xapian
+      backports PPA</a> to provide the <tt>libxapian22</tt> package</li>
+    <li>The <tt><code>rclepub</code></tt> filter apparently needs <tt>Python
+      2.7</tt>. You will need to install it and modify the first line of the
+      filter script to execute <tt>python2.7</tt> instead of
+    <tt>python</tt>.</li>
+  </ul>
+</blockquote>
 
-          <li>Under lucid you will need to add the 
-          <a href="https://launchpad.net/~xapian-backports/+archive/xapian-1.2">
-            Xapian backports PPA</a> to provide the <tt>libxapian22</tt>
-          package</li>
+<h3><a name="mint">Linux Mint</a></h3>
 
-          <li>The <tt>rclepub</tt> filter apparently needs <tt>Python
-          2.7</tt>. You will need to install it and modify the first
-            line of the filter script to execute <tt>python2.7</tt>
-            instead of <tt>python</tt>.</li>
+<p>The Ubuntu PPA works perfectly for Mint 13 (and probably other releases
+too). Just follow the instructions for Ubuntu.</p>
 
-        </ul>
-      </blockquote>
+<h3>RPMS</h3>
 
-      <h3><a name="mint">Linux Mint</a></h3>
+<p>You'll need to install the Xapian, Qt, Qt-Webkit and zlib development
+packages if you want use the source rpms.</p>
 
-      <p>The Ubuntu PPA works perfectly for Mint 13 (and probably
-        other releases too). Just follow the instructions for Ubuntu.</p>
-        
-      <h3>RPMS</h3> 
-      <p>You'll need to install the Xapian, Qt, Qt-Webkit and zlib
-	development packages if you want use the source rpms.</p>
-	  
-      <h3>Fedora</h3>
+<h3>Fedora</h3>
 
-      <p>Recoll is present in the standard Fedora package repositories
-        starting from F-12. The new versions are tracked quite
-	closely, so I don't build the rpms any more (email me if you need
-	one).</p> 
+<p>Recoll is present in the standard Fedora package repositories starting from
+F-12. The new versions are tracked quite closely, so I don't build the rpms any
+more (email me if you need one).</p>
 
-      <h3>OpenSUSE</h3>
-      <blockquote>
-        <p>Recoll is in the KDE:Extra repository
+<h3>OpenSUSE</h3>
 
-          <!-- I now use the OpenSUSE build service to create Recoll
-          OpenSUSE packages.  -->
-        You just need to add the repository to your
-        software sources (Yast2->software->Software repositories).<br>
-        <a href="http://download.opensuse.org/repositories/KDE:/Extra/">
-          Repository list (supported Suse versions)</a>. After adding the
-          appropriate repository to your software sources, you will be
-          able to install recoll and kio_recoll from the software
-          management interface. The Xapian dependancy will also be
-          satisfied from the build service repository. Some of the older
-          repositories do not build antiword, just tell the software manager
-          to "break" recoll by installing anyway, and get antiword
-          somewhere else.</p>
-      </blockquote>
+<blockquote>
+  <p>Recoll is in the KDE:Extra repository <!-- I now use the OpenSUSE build service to create Recoll
+  OpenSUSE packages. -->You just need to add the repository to your software
+  sources (Yast2-&gt;software-&gt;Software repositories).<br>
+  <a href="http://download.opensuse.org/repositories/KDE:/Extra/">Repository
+  list (supported Suse versions)</a>. After adding the appropriate repository
+  to your software sources, you will be able to install recoll and kio_recoll
+  from the software management interface. The Xapian dependancy will also be
+  satisfied from the build service repository. Some of the older repositories
+  do not build antiword, just tell the software manager to "break" recoll by
+  installing anyway, and get antiword somewhere else.</p>
+</blockquote>
 
-      <h3>Mageia</h3>
-      <blockquote>
+<h3>Mageia</h3>
 
-        <p>Mageia version 2: 
-	  <a href="mageia2/recoll-1.18.1-1.mga2.i586.rpm">
-	    mageia2/recoll-1.18.1-1.mga2.i586.rpm,
-          <a href="mageia2/recoll-debug-1.18.1-1.mga2.i586.rpm">
-            recoll-debug-1.18.1-1.mga2.i586.rpm</a>. <br>
-	  Source: 
-	<a href="mageia2/recoll-1.18.1-1.mga2.src.rpm">
-	  recoll-1.18.1-1.mga2.src.rpm</a>
-        </p>
-      </blockquote>
+<blockquote>
+  <p>Mageia version 2: <a
+  href="mageia2/recoll-1.18.1-1.mga2.i586.rpm">mageia2/recoll-1.18.1-1.mga2.i586.rpm,
+  </a><a
+  href="mageia2/recoll-debug-1.18.1-1.mga2.i586.rpm">recoll-debug-1.18.1-1.mga2.i586.rpm</a>.
+  <br>
+  Source: <a
+  href="mageia2/recoll-1.18.1-1.mga2.src.rpm">recoll-1.18.1-1.mga2.src.rpm</a>
+  </p>
+</blockquote>
 
-      <h2><a name="ports">Ports</a></h2> 
+<h2><a name="ports">Ports</a></h2>
 
-      <h3>Mac port</h3>
+<h3>Mac port</h3>
 
-      <p>It seems that Recoll will sometimes find data that Spotlight
-        misses (especially inside pdfs apparently, which is probably
-        more to the credit of poppler than recoll itself).</p>
-      <p>Recoll is in MacPorts and really easy to install:</p>
-      <ol>
-        <li><a href="https://trac.macports.org/wiki/InstallingMacPorts">
-            Install MacPorts</a>.</li>
-        <li>Type "sudo port install recoll"</li>
-      </ol>
+<p>It seems that Recoll will sometimes find data that Spotlight misses
+(especially inside pdfs apparently, which is probably more to the credit of
+poppler than recoll itself).</p>
 
-      <p>Recoll is then available from the command line and as an icon in
-        the usual MacPorts applications place.</p>
+<p>Recoll is in MacPorts and really easy to install:</p>
+<ol>
+  <li><a href="https://trac.macports.org/wiki/InstallingMacPorts">Install
+    MacPorts</a>.</li>
+  <li>Type "sudo port install recoll"</li>
+</ol>
 
-      <h2>Building on Solaris</h2>
-      <p>I did not test building the GUI on Solaris for this version. You
-          will need at least Qt 4.4. The old hints
-          in <a href="download-1.14.html">the previous page</a> may
-          still be valid.</p>
-        <p>Someone did test the indexer and Python module build, they
-          do work, with a few minor glitches. Be sure to use
-          GNU <b>make</b> and <b>install</b>.</p>
+<p>Recoll is then available from the command line and as an icon in the usual
+MacPorts applications place.</p>
 
-      <h2><a name="translations">Translations</a></h2>
+<h2>Building on Solaris</h2>
 
-      <p>Most of the translations for 1.18 are incomplete
-	The source translation files are included in the source
-	release. If your language has some english messages left and
-	you want to take a shot at fixing the problem, you can send
-	the results to <a href="mailto:jfd@recoll.org">me</a> and earn
-	my gratefulness (and your less multilingual
-	compatriot's)...</p>
+<p>I did not test building the GUI on Solaris for this version. You will need
+at least Qt 4.4. The old hints in <a href="download-1.14.html">the previous
+page</a> may still be valid.</p>
 
-      <p>You can use the <em>.ts</em> file to alter the translations if you
-	wish (use Qt's <em>linguist</em> tool to edit the source file,
-	then <em>lrelease</em> to produce the <em>.qm</em> file.).
-	The <literal>.qm</literal> file should be copied to 
-	<span class="filename">/usr/[local/]share/recoll/translations</span>
-      </p>
+<p>Someone did test the indexer and Python module build, they do work, with a
+few minor glitches. Be sure to use GNU <b>make</b> and <b>install</b>.</p>
 
-      <p><a href="translations/recoll_xx.ts">recoll_xx.ts</a> is a blank
-	Recoll 1.18 message file, handy to work on a new translation.</p>
+<h2><a name="translations">Translations</a></h2>
 
-      <p>A Czech translation for 1.18, thanks to Pavel
-	<a href="translations/recoll_cs.ts">recoll_cs.ts</a>
-	<a href="translations/recoll_cs.qm">recoll_cs.qm</a>
-      </p>
+<p>Most of the translations for 1.19 are incomplete The source translation
+files are included in the source release. If your language has some english
+messages left and you want to take a shot at fixing the problem, you can send
+the results to <a href="mailto:jfd@recoll.org">me</a> and earn my gratefulness
+(and your less multilingual compatriot's)...</p>
 
+<p>You can use the <em>.ts</em> file to alter the translations if you wish (use
+Qt's <em>linguist</em> tool to edit the source file, then <em>lrelease</em> to
+produce the <em>.qm</em> file.). The <literal>.qm</literal>file should be
+copied to <span class="filename">/usr/[local/]share/recoll/translations</span>
+</p>
+
+<p><a href="translations/recoll_xx.ts">recoll_xx.ts</a> is a blank Recoll 1.19
+message file, handy to work on a new translation.</p>
 <!--
-      <h3>Updated 1.18 translations that became available after the
-	release:</h3>
+<h3>Updated 1.18 translations that became available after the
+release:</h3>
 
-      <p>A Greek translation for 1.17, thanks to Dimitrios
-	<a href="translations/recoll_el.ts">recoll_el.ts</a>
-	<a href="translations/recoll_el.qm">recoll_el.qm</a>
-      </p>
+<p>A Czech translation for 1.18, thanks to Pavel
+<a href="translations/recoll_cs.ts">recoll_cs.ts</a>
+<a href="translations/recoll_cs.qm">recoll_cs.qm</a>
+</p>
+<p>A Greek translation for 1.17, thanks to Dimitrios
+<a href="translations/recoll_el.ts">recoll_el.ts</a>
+<a href="translations/recoll_el.qm">recoll_el.qm</a>
+</p>
 -->
-      <p>Note that, if you are running an older release,
-        you may find updated messages by looking inside the
-        appropriate maintenance branch
-        on <a href="https://bitbucket.org/medoc/recoll/src">bitbucket</a>.</p>
 
-
-    </div>
-  </body>
+<p>Note that, if you are running an older release, you may find updated
+messages by looking inside the appropriate maintenance branch on <a
+href="https://bitbucket.org/medoc/recoll/src">bitbucket</a>.</p>
+</div>
+</body>
 </html>

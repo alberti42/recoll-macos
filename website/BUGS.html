@@ -1,973 +1,791 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-  <head>
-    <title>Recoll known bugs</title>
+<head>
+  <title>Recoll known bugs</title>
+  <meta name="Author" content="Jean-Francois Dockes">
+  <meta name="Description"
+  content="recoll is a simple full-text search system for unix and linux     based on the powerful and mature xapian engine">
+  <meta name="Keywords" content="full text search, desktop search, unix, linux">
+  <meta http-equiv="Content-language" content="en">
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <meta name="robots" content="All,Index,Follow">
+  <link type="text/css" rel="stylesheet" href="styles/style.css">
+</head>
 
-    <meta name="generator" content="HTML Tidy, see www.w3.org">
-    <meta name="Author" content="Jean-Francois Dockes">
-    <meta name="Description" content=
-    "recoll is a simple full-text search system for unix and linux
-    based on the powerful and mature xapian engine">
-    <meta name="Keywords" content=
-    "full text search, desktop search, unix, linux">
-    <meta http-equiv="Content-language" content="en">
-    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
-    <meta name="robots" content="All,Index,Follow">
+<body>
 
-    <link type="text/css" rel="stylesheet" href="styles/style.css">
-  </head>
+<div class="rightlinks">
+<ul>
+  <li><a href="index.html">Home</a></li>
+  <li><a href="download.html">Downloads</a></li>
+  <li><a href="doc.html">Documentation</a></li>
+</ul>
+</div>
 
-  <body>
-    
-    <div class="rightlinks">
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="download.html">Downloads</a></li>
-        <li><a href="doc.html">Documentation</a></li>
-      </ul>
-    </div>
-    
-    <div class="content">
+<div class="content">
+<h1>Known bugs in current and older versions</h1>
 
-      <h1>Known bugs in current and older versions</h1>
+<p><i>Bugs that are listed in an older version section are supposedly fixed in
+later versions. Bugs listed in the topmost section may also exist in older
+versions.</i></p>
 
-      <p><i>Bugs that are listed in an older version section are
-          supposedly fixed in later versions. Bugs listed in the
-          topmost section may also exist in older versions.</i></p>
+<h2><a name="b_latest">recoll 1.19.0</a></h2>
+<ul>
+  <li>On systems such as Debian Stable which use Evince version 2.x (not 3.x)
+    as PDF viewer, the default "Open" command for PDF files will not work. You
+    need to use the GUI preferences tool to change the --page-index option to
+    --page-label for the evince command line used for PDF.</li>
+  <li>It will sometimes happen that the result list paragraph format stored in
+    the Qt preferences file will get garbled, causing result lists with no
+    displayed paragraphs (the counts and pages are ok, the results can be seen
+    in table mode, but not in list mode). The workaround is to go to 
 
-      
-      <h2><a name="b_latest">recoll 1.19.0</a></h2> 
-      <ul>
-        <li>On systems such as Debian Stable which use Evince version
-          2.x (not 3.x) as PDF viewer, the default "Open" command for
-          PDF files will not work. You need to use the GUI preferences
-          tool to change the --page-index option to --page-label for
-          the evince command line used for PDF.</li>
-        <li>It will sometimes happen that the result list paragraph
-          format stored in the Qt preferences file will get garbled,
-          causing result lists with no displayed paragraphs (the
-          counts and pages are ok, the results can be seen in table
-          mode, but not in list mode). The workaround is to go to
-          <blockquote>
-            Preferences->Query configuration->User interface
-          </blockquote> and erase the result paragraph format string
-          (^A DEL in the text area), this will reset the string to the
-          default value.</li>
+    <blockquote>
+      Preferences-&gt;Query configuration-&gt;User interface </blockquote>
+    and erase the result paragraph format string (^A DEL in the text area),
+    this will reset the string to the default value.</li>
+  <li>Real time indexer: when running with gamin on FreeBSD, the indexer can
+    deadlock in the gamin dialog in some cases.</li>
+  <li>After an upgrade, the recoll GUI sometimes crashes on startup. This is
+    fixed by removing (back it up just in case)
+    ~/.config/Recoll.org/recoll.conf, the QSettings storage for recoll.</li>
+</ul>
 
-        <li>Real time indexer: when running with gamin on FreeBSD, the
-          indexer can deadlock in the gamin dialog in some
-          cases.</li>
-
-        <li>After an upgrade, the recoll GUI sometimes crashes on
-          startup. This is fixed by removing (back it up just in case)
-          ~/.config/Recoll.org/recoll.conf, the QSettings storage for
-          recoll.</li>
-      </ul>
-
-      <h2><a name="b_1_18_2">recoll 1.18.2</a></h2> 
-      <ul>
-        <li>When no indexing helper applications are actually missing,
-          an ennoying popup is shown in the GUI at each end of a batch
-          indexing run (it's supposed to be shown only once).</li>
-
-        <li>Category (media, message, etc.) expansion does not work
-          for mime types which have no associated filter. This is
-          quite often the case for video types (so they won't be found
-          under "media"). <br>
-          There is a possible imperfect workaround. Create a filter
-          shell-script named rclbad inside the filters directory, with
-          only an 'exit 1' inside it, make it executable and associate
-          it to the video types, in ~/.recoll/mimeconf:
-<pre>
-[index]
+<h2><a name="b_1_18_2">recoll 1.18.2</a></h2>
+<ul>
+  <li>When no indexing helper applications are actually missing, an ennoying
+    popup is shown in the GUI at each end of a batch indexing run (it's
+    supposed to be shown only once).</li>
+  <li>Category (media, message, etc.) expansion does not work for mime types
+    which have no associated filter. This is quite often the case for video
+    types (so they won't be found under "media"). <br>
+    There is a possible imperfect workaround. Create a filter shell-script
+    named rclbad inside the filters directory, with only an 'exit 1' inside it,
+    make it executable and associate it to the video types, in
+    ~/.recoll/mimeconf: 
+    <pre>[index]
 video/mp2p = exec rclbad
 video/mp2t = exec rclbad
 video/mp4  = exec rclbad
 video/avi  = exec rclbad
 video/divx = exec rclbad
-video/x-msvideo = exec rclbad
-</pre>
-        </li>
-
-
-        <li>It's possible to add an external index with a
-          case/diacritics stripping option different from the main
-          index'. Searches will mostly not work.</li>
-
-        <li>fnmatch() errors sometimes encountered because of
-          character set and locale issues were treated as
-          matches.</li>
-
-        <li>When an advanced search finds no result, the spelling
-          suggestions screen which is displayed contains links which can
-          only be useful for a simple search. Clicking them will
-          result in confusion.</li>
-
-        <li>When the real-time indexer updates a compound document
-          which has been shortened (typically, a truncated mbox folder),
-          the obsolete documents beyond the new end were not deleted,
-          resulting in confusing behaviour.</li>
-
-        <li>Expansions of '*' were sometimes done against the whole
-          indexes in cases where it would have been able data restricted
-          to a field, resulting in much degraded performance.</li>
-
-        <li>Wildcards were wrongly handled when splitting a string
-          before a query, so that things like <tt>recoll@*</tt> could
-          end up being split as <tt>recoll *</tt>.</li>
-
-      </ul>
-
-
-      <h2><a name="b_1_18_1">recoll 1.18.1</a></h2> 
-      <ul>
-
-        <li>When using the Firefox plugin, increasing the web cache
-          size only has an effect when initially creating the
-          cache. If the cache already exists, you need to delete it
-          for the new limit to take effect.</li>
-
-        <li>Sizes for documents bigger than 2 GB are improperly
-          displayed.</li> 
-
-        <li>Wildcards expressions sometimes cause false matches
-          because of issues in handling errors from fnmatch(). This
-          will only occur in an UTF-8 locale where file name
-          conversion errors are possible (for old 8bit file
-          names).</li>
-
-        <li>CHM files character encoding is sometimes wrongly processed.</li>
-
-        <li>Sorting by field 'relevancyrating' is not equivalent to
-          natural Xapian ordering.</li>
-
-        <li>Weird data in filter output text (e.g.: produced by some
-          versions of pdftotext) can cause an error which will halt
-          the processing of the document, which becomes
-          unsearchable. This is a relatively uncommon problem which
-          signals itself by a specific error in the indexing log, so
-          you can know if you are affected. Look for:
-          <tt>xapian add_posting error Empty termnames aren't allowed</tt>
-        </li> 
-
-        <li>Raw indexes (not default): diacritics and case expansion
-          is not applied to terms containing numbers so that a
-          case-insensitive search does not work for them (e.g.:
-          searching for ds1820 will not find DS1820).</li>
-      </ul>
-
-      <h2><a name="b_1_18_0">recoll 1.18.0</a></h2> 
-      <ul>
-        <li>Thumbnails are not found on newer desktops (e.g. Ubuntu
-          Quantal) because of a change in the freedesktop.org
-          "standard".</li>
-        <li>A bug in extracting search term from click data in the
-          snippet window results in passing an incorrect term to the
-          viewer. Only affects non-ascii terms.</li>
-        <li>Using the snippets window can sometimes crash the
-          GUI.</li>
-        <li>Tilde expansion is not properly performed for the
-          "beaglequeuedir" parameter. This only affects people who
-          develop scripts over the queue feature.</li>
-        <li>The missing filter recording code is broken.</li>
-        <li>Opening embedded documents from the Unity Lens does not
-          work.</li>
-      </ul>
-
-      <h2><a name="b_1_17_3">recoll 1.17.3</a></h2> 
-      
-      <p>Fixed in 1.17.4 and 1.18:</p>
-      <ul>
-        <li>The real time monitor can be terminated for permissions-related
-          addwatch errors that should be non-fatal.</li>
-        <li>text/plain files are sometimes opened as csv (using a
-          spreadsheet...)</li> 
-        <li>Tilde expansion was wrong for the
-          beaglequeuedir/webqueuedir variable, causing problem when
-          using the new Web history indexer module with 1.17.</li>
-        <li>Fixed relatively benign memory leak in the filters
-         cache handler.</li>
-        <li>Prevent document indexing truncation caused by unac in
-          some marginal case which became quite common with the recent
-          versions of pdftotext.</li>
-      </ul>
-
-      <p>Only fixed in the 1.18 branch:</p>
-      <ul>
-        <li>Messages in Qt standard dialog messages are not translated.</li>
-        <li>The unac_except_trans mechanism can generate wrong
-          character translations in some cases.</li> 
-        <li>ODF documents exported by Google docs are badly
-          processed.</li> 
-        <li>It is impossible to open the parent of an
-          embedded document (e.g. the CHM file for an HTML page
-          inside the CHM) if the parent is itself a member of an
-          archive.</li> 
-        <li>Text inside malformed HTML files (appearing before a &lt;body&gt;
-          tag, or after a second one, or after a &lt;/body&gt; tag is
-          not indexed. As it would be displayed by current browsers,
-          this is wrong.</li>
-
-      </ul>
-
-      <h2><a name="b_1_17_2">recoll 1.17.2</a></h2> 
-
-      <ul>
-        <li>It appears that recollindex will sometimes crash while
-          indexing mail files. There are 2 separate reports about
-          this, and no resolution for now. This is not specific to
-          1.17 as one of the reports is for 1.16. Refs:
-          <a href="https://bugzilla.redhat.com/show_bug.cgi?format=multiple&id=819408">Fedora</a>
-          (maildir, processing an attachment), 
-          <a href="https://bugs.launchpad.net/ubuntu/+source/recoll/+bug/994228">Ubuntu</a>: apparently (no stack trace): 
-          <em>Recoll was indexing files in .thunderbird when the crash
-            occurred. It seemed to be indexing the INBOX file on
-            disk. </em> 
-        </li>
-        <li>There were a few small glitches when paging the result
-          list, for example going back from the last page.</li>
-      </ul>
-
-      <h2><a name="b_1_17_1">recoll 1.17.1</a></h2> 
-
-      <ul>
-        <li>You can crash the GUI by starting simultaneous queries,
-          which could be accomplished among others by quickly clicking
-          the sort order buttons.</li>
-
-        <li>When external indexes set as active are not actually
-          present, the GUI fails to open the db. It should
-          automatically inactivate them instead.</li>
-
-        <li>Does not display thumbnails for files with an URL which
-          should be encoded (ie: with embedded spaces).</li>
-
-        <li>chm filter: url-encoded internal paths are mishandled.</li>
-
-        <li>Does not compile on Solaris (flock() issue).</li>
-
-        <li>The KDE recoll applet does not work.</li>
-
-        <li>configure --disable-python-module breaks the installation
-          script.</li>
-
-        <li>The version string is not correctly updated for 1.17.1, the
-          help dialog and recollindex -v will print 1.17.0.</li>
-
-        <li>The HTML output from Python (rclexecm) filters is not
-          correctly escaped.</li>
-
-        <li>Does not compile with gcc 4.7 (missing include).</li>
-        
-      </ul>
-
-
-      <h2><a name="b_1_17_0">recoll 1.17.0</a></h2> 
-        <li>The chm filter handles badly some CHM files with encoded
-          internal URLs (the whole file or some parts are not
-          indexed). There is an updated filter on the filters section
-          of the download page.</li>
-        <li>The application style sheet is not reapplied when changed
-          from the preferences menu, you have to restart the GUI.</li>
-
-      <h2><a name="b_1_16_2">recoll 1.16.2</a></h2> 
-        <li>Real time indexer: directory moves are not handled at
-          all. Workaround: restart indexer from time to time.</li>
-        <li>Real time indexer: file move events are not detected when
-          running with inotify (at least for recent
-          versions). Workaround: restart indexer from time to time.</li>
-        <li>Cancelling a preview in the GUI will also cancel the indexing
-          thread if it is running.</li>
-        <li>Under Solaris, it is necessary to perform the initial
-          indexing with the recollindex program. For some unknown reason,
-          the recoll index thread does not work for creating the database.
-          The only idea I have is a problem with exception handling (recoll
-          catches an exception while trying the yet inexistant db).</li>
-
-      <h2><a name="b_1_16_1">recoll 1.16.1</a></h2> 
-      <ul>
-        <li>At least on OpenSUSE 12.1 / Qt 4.7.4 (and probably other
-          environments), the links to Preview or Open inside the
-          result list do not work. Also the GUI can crash if a
-          temporary directory creation fails.</li>
-        <li>The Python filters can crash under certain error
-          conditions. This is a benign error, affecting just 
-          the current document, but it causes system reports.</li>
-        <li>The query is run 2 times, in most cases. This does not
-          cause a too dramatic performance impact because of caching but
-          still...</li>
-        <li>The output from some filters (most typically text files
-          out from the zip filters) is sometimes not transcoded
-          correctly to UTF-8, causing myriads of error messages (and a
-          possible application crash due to another bug in the unac
-          code, described further).</li>
-        <li>There is a compilation issue on Linux systems with a 3.x
-          kernel.</li>
-        <li>Queries without search terms (ie: all files of a given
-          mime type) fail with an "empty query" diagnostic.</li>
-        <li>The recollq command line query program sometimes does not
-          clean up its temporary directory.</li>
-        <li>Indexing can crash on files with weird names (inconsistent with the
-          locale) for which the format of the "file -i" command is
-          unexpected. This is probably dependant on the type of system
-          and/or locale. Workaround: arrange for the offending file
-          not to be indexed (move it away or configure it out), or
-          apply <a href="files/patch-badfileoutput.diff">this patch</a>,
-          which should work with all versions from 1.13 to 1.16.1</li>
-        <li>Under certain conditions, the indexer can use all
-          available memory and crash. This is caused by a memory leak
-          in an error handling path inside unac, and can only be
-          triggered in specific conditions (all cases seen were from
-          files inside zip archives). Workaround: arrange for the
-          offending file not to be indexed (move it away or configure
-          it out), or apply <a href="files/patch-unac-icclose.diff">this
-          patch</a>, which should work with all versions from 1.13 to
-          1.16.1</li>
-        <li>The lyx filter does not correctly detect the Lyx version,
-          needed for correct indexing.</li>
-        <li>A typo in a memory reallocation call inside the firefox
-          web history indexing module may cause problems in a highly
-          improbable case.</li>
-        <li>Directory creations are not processed by the real time
-          indexer (for indexing directory names).</li> 
-      </ul>
-
-      <h2><a name="b_1_16_0">recoll 1.16.0</a></h2> 
-      <ul>
-        <li>The <tt>recoll</tt> GUI program sometimes crashes when
-          running a query while the indexing thread is active.
-          Possible workarounds:<br />
-          <ul>
-            <li>Upgrade to 1.16.1</li>
-            <li>Use the command
-              line <tt>recollindex</tt> program to perform indexing
-              (usually just type "recollindex" in a console, or see "man
-              recollindex").</li>
-            <li>Do not run queries in <tt>recoll</tt> while the indexing thread
-              is running (as indicated in the bottom status line).</li>
-          </ul>      
-        </li>
-      </ul>
-      <h2><a name="b_1_15_7">recoll 1.15.7</a></h2> 
-      <ul>
-        <li>The default filter for files in Microsoft Word format
-          (application/msword, .doc), antiword, has trouble with some
-          relatively rare files with a very small text, resulting in the
-          following error message:
-          <blockquote>
-            I'm afraid the text stream of this file is too small to
-            handle.
-          </blockquote> 
-
-          Only small files produced by Microsoft Word on a Mac, or by
-          OpenOffice will trigger this message.<br>
-
-          <b>Workaround</b>: install wvWare and modify
-          mimeconf to use the rcldoc filter (instead of directly
-          executing antiword). Rcldoc will try antiword, then will use
-          vwWare if it is available. This will result in slightly
-          slower indexing for all normal .doc files. This fix was made the
-          default in 1.16</li>
-
-        <li>Compressed man pages could not be previewed.</li>
-        <li>Sorting by document and file size in the result table does
-          not work.</li>
-        <li>idxflushmb was not handled while deleting documents in the
-          index, leading to almost unbounded memory usage.</li>
-        <li>Email messages for which there would be an error indexing
-          an attachment would not be indexed at all.</li>
-
-        <li>Performing a full index with release 1.11 or newer, over a
-          version created with a much older recoll release may
-          sometimes end with an error saying "backend doesn't
-          implement metadata".  If this happens, you need to delete
-          the index directory (typically <em>~/.recoll/xapiandb/</em>)
-          and restart indexing. For big indexes, to avoid losing
-          time, removing the directory preventively may be preferable .</li>
-
-        <li>Text files bigger than 2 GB can not be indexed.</li>
-
-        <li>Using the GUI preview while the indexing thread is running
-          will sometimes crash the GUI or provoke other
-          strangeness. This happens much more rarely than in 1.15.7,
-          but still occurs. Workaround if this happens too frequently:
-          use the standalone recollindex program instead of the GUI
-          thread.</li>
-
-        <li>Real time indexer: uncontrolled concurrent access to
-          the global configuration can cause a startup crash (mostly of
-          big file trees because of timing issues).</li>
-
-        <li>Using the result preview while the indexing thread is
-          running will sometimes crash the GUI or provoke other
-          strangeness. This is apparently due to insufficient
-          protection of resources shared by several threads. After
-          recent cleanup, the problem occurs quite seldom but it is
-          not completely gone. The current and unsatisfying
-          workaround, is to avoid the situation, for example by using
-          the standalone recollindex program instead of the GUI
-          indexing thread.</li>
-
-        <li>The GUI preview function sometimes fails with a
-          non-sensical message about a non-related missing
-          helper.</li>
-
-        <li>Most operations on the parent document in the result table
-          view are not connected and do nothing.</li>
-
-        <li>The operations on the parent document in the result list
-	  right click menu (Preview and Open), do not work, they
-	  access the file's parent directory instead.</li>
-
-        <li>The GUI option to remember sort state between invocations
-          only works for sort by date.</li>
-
-        <li>The rclzip filter can't handle utf-8 in path names for archive
-          members. An <a href="http://www.recoll.org/filters/rclzip">
-            updated filter</a> is available. </li>
-
-        <li>The rclzip and rclchm filters can't handle archive members
-          with a colon (':') in the file name or path. The files are normally
-          indexed and can be searched for, but they can't be displayed
-          (neither opened nor previewed). There is a 
-          <a href="https://bitbucket.org/medoc/recoll/changeset/3751ea8ea179">
-            patch</a> which fixes the issue (then needs full reindex for these
-          files).</li>
-
-        <li>The ignored suffixes list (recoll_noindex) is itself
-          ignored in some cases.</li> 
-
-        
-        <li>The man filter creates groff temporary png files in the
-          home directory.</li>
-
-        <li>Indexing can hang or crash after an error occurs on an
-          archive member (which should have affected only the relevant
-          document).</li>
-
-        <li>The initial indexing pass in the real-time indexer does
-          not monitor the X11 session which can create problems if the
-          user ends the section at this point.</li>
-
-        <li>Starting the indexing thread inside the GUI while another
-          indexer (batch or real-time) is active will silently
-          failed. It should show an error dialog.</li>
-
-        <li>When an open error occurs on an external index while
-          starting the GUI, the initial indexing dialog is started,
-          which is incorrect because it cannot fix the problem.</li>
-
-        <li>The result table row height is not adjusted according to
-          default font size, and the vertical position of text in cells
-          is often bad.</li>
-      </ul>
-
-
-      <h2><a name="b_1_15_5">recoll 1.15.5</a></h2> 
-      <li>The Python and PHP modules in 1.15.5 have compile errors. This
-        is solved by 
-        <a href="https://bitbucket.org/medoc/recoll/changeset/0b09b33cd06a">
-          this simple change.</a></li>
-      <li>The current stemming language is not indicated by menu
-        checkboxes.</li> 
-
-      <h2><a name="b_1_15_2">recoll 1.15.2</a></h2> 
-      <ul>
-        <li>If a result table column is both added and moved in the same
-          GUI instance, the list becomes garbled (or/and the GUI
-          crashes). Workaround: remove the Qt GUI config
-          (.config/Recoll.org/recoll.conf), and perform the operation in 2 GUI
-          sessions: add column, exit recoll, restart, move column.</li>
-
-        <li>Clicking one of the category filter checkboxes
-          (one of the media/message/text/... things) with an empty result
-          list crashes the GUI (just like this, yeah, I know, quality
-          insurance etc.). Workaround: don't click these before running the
-          first query.</li>
-
-        <li>Changing the indexing configuration parameters from the GUI
-          while the indexing thread (not an external recollindex command) is
-        running will sometimes (quite often) crash the GUI.</li>
-
-        <li>Script files (ie: .sh .pl) indexed as text do not respect
-        the maximum text file limit (a problem with, ie, shar archives
-        identified as application/x-shellscript).</li>
-
-        <li>indexing script for xml formats (ie: svg) sometimes stall for
-        30 S while xsltproc tries to access remote dtds.</li>
-
-        <li>recollindex inapproprietely sets the nice value for its whole
-        process group. In certain cases where the indexing monitor was
-        launched at session start, this could set the whole session to low
-        priority!</li>
-
-      </ul>
-
-      <h2><a name="b_1_14_4">recoll 1.14.4</a></h2> 
-      <ul>
-        <li>rclmon.sh stop would not work.</li>
-        <li>Some shell, awk, and perl scripts are not indexed. There is a
-        simple <a
-        href="https://bitbucket.org/medoc/recoll/issue/39/some-shell-and-other-scripts-are-not">
-       configuration tweak</a> workaround
-        <li>The tree walk in indexing could loop on symbolic links.</li>
-        <li> If the user-chosen result list entry format results in
-          several paragraphs (in the qt textedit sense), right clicks
-          will only work inside the first one for each entry.</li>
-      </ul>
-
-      <h2><a name="b_1_14_3">recoll 1.14.3</h2>
-      <li>Email message preview is broken.</li>
-      <li>The new mutagen-based audio tags filter (rclaudio) only
-	  works with very recent mutagen
-	  versions. See <a href="filters/filters.html">here</a> for a
-	  corrected version.</li>
-
-      <h2><a name="b_1_14_1">recoll 1.14.1</h2>
-      <li>Compressed file view fix broke help viewer.</li>
-
-      <h2><a name="b_1_14_0">recoll 1.14.0</h2>
-	<li>Does not compile with Xapian
-	  1.2. Apply <a href="files/xapian12.patch">patch</a>.</li> 
-        <li> When a mime type has an external viewer defined, but the
-          actual file is compressed (ie: xxx.txt.gz), recoll will try
-          to start the external viewer on the compressed file, which
-          will not work in most cases.</li>
-
-      <h2><a name="b_1_13_04">recoll 1.13.04</h2>
-        <p><b>Note:</b> some of the bugs listed here are not actually
-        "fixed", mostly they were problems caused by old versions of
-        external software (ie: kde, qt), and I stopped carrying them. Just
-        don't use these versions, or live with the problem.</p>
-
-        <li>In case a new style filter (persistent) crashed while indexing,
-          it was not restarted, and all further files of the same mime type
-          were not updated (ie: python zip crash on encrypted files).</li>
-
-	<li>Mac OS X + Qt 4.6.1 : the index configuration dialog
-	  crashes. Fixed with Qt 4.7.</li>
-
-        <li>If you are seeing a delay of a few seconds before the
-          result list displays for the first query of a recoll
-          instance, try changing the result list font in the query
-          preferences. This is not a recoll problem, I don't know the
-          exact cause (I've seen it happen with "Sans Serif" and go
-          away with Helvetica or Arial).</li>
-
-        <li>It seems that the recoll program sometimes segfaults when
-          exiting after the first execution ?</li>
-
-        <li>When Recoll is built with qt 4.4.0, the icons in the
-          result list are all displayed at the top of the page and
-          garbled. This appears to be a qt bug, fixed in 4.4.1. Use
-          either qt 4.3.x or 4.4.1 (stopped carrying this bug. Just don't use
-          4.4.0)</li> 
-
-        <li> Under some versions of KDE (ie: Fedora FC5 KDE
-          3.5.4-0.5.fc5), there is a problem with the window stacking
-          order. Opening the "browse" file selection dialog from the
-          advanced search dialog will stack the latter under the main
-          window, possibly making it invisible. This is quite probably
-          a Kwin bug, possibly related to
-          http://bugs.kde.org/show_bug.cgi?id=79183 or a correction
-          thereof.</li>
-
-
-      <h2><a name="b_1_13_02">recoll 1.13.02</h2>
-        <li>Stemming does not work in the 1.13 series. The stemming
-        database was not created at all. Things would sort of work as
-        long as an older stemming database was around (which is why
-        this was not discovered earlier.</li>
-       <li>Fix the lyx filter to properly handle embedded white space in
-        file paths.</li>
-
-      <h2><a name="b_1_13_01">recoll 1.13.01 + xapian 1.0.16</a></h2> 
-      <li>The GUI display is garbled under Qt 4.6.1 and newer. This is
-      a Qt bug, and a workaround was put in place in Recoll 1.13.02
-      for Qt 4.6.1. If you are using a newer version and the problem
-      is still there, you can fix the
-      4.6.1 fix to hopefully work with your Qt version: edit
-      qtgui/rclmain_w.h, around line 37 (there is only one instance),
-      change:
-<pre>
-  #if QT_VERSION == 0x040601
+video/x-msvideo = exec rclbad</pre>
+  </li>
+  <li>It is possible to add an external index with a case/diacritics stripping
+    option different from the main index'. Searches will mostly not work.</li>
+  <li>fnmatch() errors sometimes encountered because of character set and
+    locale issues were treated as matches.</li>
+  <li>When an advanced search finds no result, the spelling suggestions screen
+    which is displayed contains links which can only be useful for a simple
+    search. Clicking them will result in confusion.</li>
+  <li>When the real-time indexer updates a compound document which has been
+    shortened (typically, a truncated mbox folder), the obsolete documents
+    beyond the new end are not deleted, resulting in confusing behaviour.</li>
+  <li>Expansions of '*' inside a field were sometimes done against the whole
+    index, resulting in much degraded performance.</li>
+  <li>Wildcards were wrongly handled when splitting a string before a query, so
+    that things like <tt>recoll@*</tt> could end up being split as <tt>recoll
+    *</tt>.</li>
+</ul>
+
+<h2><a name="b_1_18_1">recoll 1.18.1</a></h2>
+<ul>
+  <li>When using the Firefox plugin, increasing the web cache size only has an
+    effect when initially creating the cache. If the cache already exists, you
+    need to delete it for the new limit to take effect.</li>
+  <li>Sizes for documents bigger than 2 GB are improperly displayed.</li>
+  <li>Wildcards expressions sometimes cause false matches because of issues in
+    handling errors from fnmatch(). This will only occur in an UTF-8 locale
+    where file name conversion errors are possible (for old 8bit file
+  names).</li>
+  <li>CHM files character encoding is sometimes wrongly processed.</li>
+  <li>Sorting by field 'relevancyrating' is not equivalent to natural Xapian
+    ordering.</li>
+  <li>Weird data in filter output text (e.g.: produced by some versions of
+    pdftotext) can cause an error which will halt the processing of the
+    document, which becomes unsearchable. This is a relatively uncommon problem
+    which signals itself by a specific error in the indexing log, so you can
+    know if you are affected. Look for: <tt>xapian add_posting error Empty
+    termnames aren't allowed</tt> </li>
+  <li>Raw indexes (not default): diacritics and case expansion is not applied
+    to terms containing numbers so that a case-insensitive search does not work
+    for them (e.g.: searching for ds1820 will not find DS1820).</li>
+</ul>
+
+<h2><a name="b_1_18_0">recoll 1.18.0</a></h2>
+<ul>
+  <li>Thumbnails are not found on newer desktops (e.g. Ubuntu Quantal) because
+    of a change in the freedesktop.org "standard".</li>
+  <li>A bug in extracting search term from click data in the snippet window
+    results in passing an incorrect term to the viewer. Only affects non-ascii
+    terms.</li>
+  <li>Using the snippets window can sometimes crash the GUI.</li>
+  <li>Tilde expansion is not properly performed for the "beaglequeuedir"
+    parameter. This only affects people who develop scripts over the queue
+    feature.</li>
+  <li>The missing filter recording code is broken.</li>
+  <li>Opening embedded documents from the Unity Lens does not work.</li>
+</ul>
+
+<h2><a name="b_1_17_3">recoll 1.17.3</a></h2>
+
+<p>Fixed in 1.17.4 and 1.18:</p>
+<ul>
+  <li>The real time monitor can be terminated for permissions-related addwatch
+    errors that should be non-fatal.</li>
+  <li>text/plain files are sometimes opened as csv (using a spreadsheet...)</li>
+  <li>Tilde expansion was wrong for the beaglequeuedir/webqueuedir variable,
+    causing problem when using the new Web history indexer module with
+  1.17.</li>
+  <li>Fixed relatively benign memory leak in the filters cache handler.</li>
+  <li>Prevent document indexing truncation caused by unac in some marginal case
+    which became quite common with the recent versions of pdftotext.</li>
+</ul>
+
+<p>Only fixed in the 1.18 branch:</p>
+<ul>
+  <li>Messages in Qt standard dialog messages are not translated.</li>
+  <li>The unac_except_trans mechanism can generate wrong character translations
+    in some cases.</li>
+  <li>ODF documents exported by Google docs are badly processed.</li>
+  <li>It is impossible to open the parent of an embedded document (e.g. the CHM
+    file for an HTML page inside the CHM) if the parent is itself a member of
+    an archive.</li>
+  <li>Text inside malformed HTML files (appearing before a &lt;body&gt; tag, or
+    after a second one, or after a &lt;/body&gt; tag is not indexed. As it
+    would be displayed by current browsers, this is wrong.</li>
+</ul>
+
+<h2><a name="b_1_17_2">recoll 1.17.2</a></h2>
+<ul>
+  <li>It appears that recollindex will sometimes crash while indexing mail
+    files. There are 2 separate reports about this, and no resolution for now.
+    This is not specific to 1.17 as one of the reports is for 1.16. Refs: <a
+    href="https://bugzilla.redhat.com/show_bug.cgi?format=multiple&amp;id=819408">Fedora</a>
+    (maildir, processing an attachment), <a
+    href="https://bugs.launchpad.net/ubuntu/+source/recoll/+bug/994228">Ubuntu</a>:
+    apparently (no stack trace): <em>Recoll was indexing files in .thunderbird
+    when the crash occurred. It seemed to be indexing the INBOX file on disk.
+    </em> </li>
+  <li>There were a few small glitches when paging the result list, for example
+    going back from the last page.</li>
+</ul>
+
+<h2><a name="b_1_17_1">recoll 1.17.1</a></h2>
+<ul>
+  <li>You can crash the GUI by starting simultaneous queries, which could be
+    accomplished among others by quickly clicking the sort order buttons.</li>
+  <li>When external indexes set as active are not actually present, the GUI
+    fails to open the db. It should automatically inactivate them instead.</li>
+  <li>Does not display thumbnails for files with an URL which should be encoded
+    (ie: with embedded spaces).</li>
+  <li>chm filter: url-encoded internal paths are mishandled.</li>
+  <li>Does not compile on Solaris (flock() issue).</li>
+  <li>The KDE recoll applet does not work.</li>
+  <li>configure --disable-python-module breaks the installation script.</li>
+  <li>The version string is not correctly updated for 1.17.1, the help dialog
+    and recollindex -v will print 1.17.0.</li>
+  <li>The HTML output from Python (rclexecm) filters is not correctly
+  escaped.</li>
+  <li>Does not compile with gcc 4.7 (missing include).</li>
+</ul>
+
+<h2><a name="b_1_17_0">recoll 1.17.0</a></h2>
+<ul>
+  <li>The chm filter handles badly some CHM files with encoded internal URLs
+    (the whole file or some parts are not indexed). There is an updated filter
+    on the filters section of the download page.</li>
+  <li>The application style sheet is not reapplied when changed from the
+    preferences menu, you have to restart the GUI.</li>
+</ul>
+
+<h2><a name="b_1_16_2">recoll 1.16.2</a></h2>
+<ul>
+  <li>Real time indexer: directory moves are not handled at all. Workaround:
+    restart indexer from time to time.</li>
+  <li>Real time indexer: file move events are not detected when running with
+    inotify (at least for recent versions). Workaround: restart indexer from
+    time to time.</li>
+  <li>Cancelling a preview in the GUI will also cancel the indexing thread if
+    it is running.</li>
+  <li>Under Solaris, it is necessary to perform the initial indexing with the
+    recollindex program. For some unknown reason, the recoll index thread does
+    not work for creating the database. The only idea I have is a problem with
+    exception handling (recoll catches an exception while trying the yet
+    inexistant db).</li>
+</ul>
+
+<h2><a name="b_1_16_1">recoll 1.16.1</a></h2>
+<ul>
+  <li>At least on OpenSUSE 12.1 / Qt 4.7.4 (and probably other environments),
+    the links to Preview or Open inside the result list do not work. Also the
+    GUI can crash if a temporary directory creation fails.</li>
+  <li>The Python filters can crash under certain error conditions. This is a
+    benign error, affecting just the current document, but it causes system
+    reports.</li>
+  <li>The query is run 2 times, in most cases. This does not cause a too
+    dramatic performance impact because of caching but still...</li>
+  <li>The output from some filters (most typically text files out from the zip
+    filters) is sometimes not transcoded correctly to UTF-8, causing myriads of
+    error messages (and a possible application crash due to another bug in the
+    unac code, described further).</li>
+  <li>There is a compilation issue on Linux systems with a 3.x kernel.</li>
+  <li>Queries without search terms (ie: all files of a given mime type) fail
+    with an "empty query" diagnostic.</li>
+  <li>The recollq command line query program sometimes does not clean up its
+    temporary directory.</li>
+  <li>Indexing can crash on files with weird names (inconsistent with the
+    locale) for which the format of the "file -i" command is unexpected. This
+    is probably dependant on the type of system and/or locale. Workaround:
+    arrange for the offending file not to be indexed (move it away or configure
+    it out), or apply <a href="files/patch-badfileoutput.diff">this patch</a>,
+    which should work with all versions from 1.13 to 1.16.1</li>
+  <li>Under certain conditions, the indexer can use all available memory and
+    crash. This is caused by a memory leak in an error handling path inside
+    unac, and can only be triggered in specific conditions (all cases seen were
+    from files inside zip archives). Workaround: arrange for the offending file
+    not to be indexed (move it away or configure it out), or apply <a
+    href="files/patch-unac-icclose.diff">this patch</a>, which should work with
+    all versions from 1.13 to 1.16.1</li>
+  <li>The lyx filter does not correctly detect the Lyx version, needed for
+    correct indexing.</li>
+  <li>A typo in a memory reallocation call inside the firefox web history
+    indexing module may cause problems in a highly improbable case.</li>
+  <li>Directory creations are not processed by the real time indexer (for
+    indexing directory names).</li>
+</ul>
+
+<h2><a name="b_1_16_0">recoll 1.16.0</a></h2>
+<ul>
+  <li>The <tt>recoll</tt> GUI program sometimes crashes when running a query
+    while the indexing thread is active. Possible workarounds:<br>
+
+    <ul>
+      <li>Upgrade to 1.16.1</li>
+      <li>Use the command line <tt>recollindex</tt> program to perform indexing
+        (usually just type "recollindex" in a console, or see "man
+        recollindex").</li>
+      <li>Do not run queries in <tt>recoll</tt> while the indexing thread is
+        running (as indicated in the bottom status line).</li>
+    </ul>
+  </li>
+</ul>
+
+<h2><a name="b_1_15_7">recoll 1.15.7</a></h2>
+<ul>
+  <li>The default filter for files in Microsoft Word format
+    (application/msword, .doc), antiword, has trouble with some relatively rare
+    files with a very small text, resulting in the following error message: 
+
+    <blockquote>
+      I'm afraid the text stream of this file is too small to handle.
+    </blockquote>
+    Only small files produced by Microsoft Word on a Mac, or by OpenOffice will
+    trigger this message.<br>
+    <b>Workaround</b>: install wvWare and modify mimeconf to use the rcldoc
+    filter (instead of directly executing antiword). Rcldoc will try antiword,
+    then will use vwWare if it is available. This will result in slightly
+    slower indexing for all normal .doc files. This fix was made the default in
+    1.16</li>
+  <li>Compressed man pages could not be previewed.</li>
+  <li>Sorting by document and file size in the result table does not work.</li>
+  <li>idxflushmb was not handled while deleting documents in the index, leading
+    to almost unbounded memory usage.</li>
+  <li>Email messages for which there would be an error indexing an attachment
+    would not be indexed at all.</li>
+  <li>Performing a full index with release 1.11 or newer, over a version
+    created with a much older recoll release may sometimes end with an error
+    saying "backend doesn't implement metadata". If this happens, you need to
+    delete the index directory (typically <em>~/.recoll/xapiandb/</em>) and
+    restart indexing. For big indexes, to avoid losing time, removing the
+    directory preventively may be preferable .</li>
+  <li>Text files bigger than 2 GB can not be indexed.</li>
+  <li>Using the GUI preview while the indexing thread is running will sometimes
+    crash the GUI or provoke other strangeness. This happens much more rarely
+    than in 1.15.7, but still occurs. Workaround if this happens too
+    frequently: use the standalone recollindex program instead of the GUI
+    thread.</li>
+  <li>Real time indexer: uncontrolled concurrent access to the global
+    configuration can cause a startup crash (mostly of big file trees because
+    of timing issues).</li>
+  <li>Using the result preview while the indexing thread is running will
+    sometimes crash the GUI or provoke other strangeness. This is apparently
+    due to insufficient protection of resources shared by several threads.
+    After recent cleanup, the problem occurs quite seldom but it is not
+    completely gone. The current and unsatisfying workaround, is to avoid the
+    situation, for example by using the standalone recollindex program instead
+    of the GUI indexing thread.</li>
+  <li>The GUI preview function sometimes fails with a non-sensical message
+    about a non-related missing helper.</li>
+  <li>Most operations on the parent document in the result table view are not
+    connected and do nothing.</li>
+  <li>The operations on the parent document in the result list right click menu
+    (Preview and Open), do not work, they access the file's parent directory
+    instead.</li>
+  <li>The GUI option to remember sort state between invocations only works for
+    sort by date.</li>
+  <li>The rclzip filter can't handle utf-8 in path names for archive members.
+    An <a href="http://www.recoll.org/filters/rclzip">updated filter</a> is
+    available. </li>
+  <li>The rclzip and rclchm filters can't handle archive members with a colon
+    (':') in the file name or path. The files are normally indexed and can be
+    searched for, but they can't be displayed (neither opened nor previewed).
+    There is a <a
+    href="https://bitbucket.org/medoc/recoll/changeset/3751ea8ea179">patch</a>
+    which fixes the issue (then needs full reindex for these files).</li>
+  <li>The ignored suffixes list (recoll_noindex) is itself ignored in some
+    cases.</li>
+  <li>The man filter creates groff temporary png files in the home
+  directory.</li>
+  <li>Indexing can hang or crash after an error occurs on an archive member
+    (which should have affected only the relevant document).</li>
+  <li>The initial indexing pass in the real-time indexer does not monitor the
+    X11 session which can create problems if the user ends the section at this
+    point.</li>
+  <li>Starting the indexing thread inside the GUI while another indexer (batch
+    or real-time) is active will silently failed. It should show an error
+    dialog.</li>
+  <li>When an open error occurs on an external index while starting the GUI,
+    the initial indexing dialog is started, which is incorrect because it
+    cannot fix the problem.</li>
+  <li>The result table row height is not adjusted according to default font
+    size, and the vertical position of text in cells is often bad.</li>
+</ul>
+
+<h2><a name="b_1_15_5">recoll 1.15.5</a></h2>
+<ul>
+  <li>The Python and PHP modules in 1.15.5 have compile errors. This is solved
+    by <a href="https://bitbucket.org/medoc/recoll/changeset/0b09b33cd06a">this
+    simple change.</a></li>
+  <li>The current stemming language is not indicated by menu checkboxes.</li>
+</ul>
+
+<h2><a name="b_1_15_2">recoll 1.15.2</a></h2>
+<ul>
+  <li>If a result table column is both added and moved in the same GUI
+    instance, the list becomes garbled (or/and the GUI crashes). Workaround:
+    remove the Qt GUI config (.config/Recoll.org/recoll.conf), and perform the
+    operation in 2 GUI sessions: add column, exit recoll, restart, move
+  column.</li>
+  <li>Clicking one of the category filter checkboxes (one of the
+    media/message/text/... things) with an empty result list crashes the GUI
+    (just like this, yeah, I know, quality insurance etc.). Workaround: don't
+    click these before running the first query.</li>
+  <li>Changing the indexing configuration parameters from the GUI while the
+    indexing thread (not an external recollindex command) is running will
+    sometimes (quite often) crash the GUI.</li>
+  <li>Script files (ie: .sh .pl) indexed as text do not respect the maximum
+    text file limit (a problem with, ie, shar archives identified as
+    application/x-shellscript).</li>
+  <li>indexing script for xml formats (ie: svg) sometimes stall for 30 S while
+    xsltproc tries to access remote dtds.</li>
+  <li>recollindex inapproprietely sets the nice value for its whole process
+    group. In certain cases where the indexing monitor was launched at session
+    start, this could set the whole session to low priority!</li>
+</ul>
+
+<h2><a name="b_1_14_4">recoll 1.14.4</a></h2>
+<ul>
+  <li>rclmon.sh stop would not work.</li>
+  <li>Some shell, awk, and perl scripts are not indexed. There is a simple <a
+    href="https://bitbucket.org/medoc/recoll/issue/39/some-shell-and-other-scripts-are-not">configuration
+    tweak</a> workaround </li>
+  <li>The tree walk in indexing could loop on symbolic links.</li>
+  <li>If the user-chosen result list entry format results in several paragraphs
+    (in the qt textedit sense), right clicks will only work inside the first
+    one for each entry.</li>
+</ul>
+
+<h2><a name="b_1_14_3">recoll 1.14.3</a></h2>
+<ul>
+  <li>Email message preview is broken.</li>
+  <li>The new mutagen-based audio tags filter (rclaudio) only works with very
+    recent mutagen versions. See <a href="filters/filters.html">here</a> for a
+    corrected version.</li>
+</ul>
+
+<h2><a name="b_1_14_1">recoll 1.14.1</a></h2>
+<ul>
+  <li>Compressed file view fix broke help viewer.</li>
+</ul>
+
+<h2><a name="b_1_14_0">recoll 1.14.0</a></h2>
+<ul>
+  <li>Does not compile with Xapian 1.2. Apply <a
+    href="files/xapian12.patch">patch</a>.</li>
+  <li>When a mime type has an external viewer defined, but the actual file is
+    compressed (ie: xxx.txt.gz), recoll will try to start the external viewer
+    on the compressed file, which will not work in most cases.</li>
+</ul>
+
+<h2><a name="b_1_13_04">recoll 1.13.04</a></h2>
+
+<p><b>Note:</b> some of the bugs listed here are not actually "fixed", mostly
+they were problems caused by old versions of external software (ie: kde, qt),
+and I stopped carrying them. Just don't use these versions, or live with the
+problem.</p>
+<ul>
+  <li>In case a new style filter (persistent) crashed while indexing, it was
+    not restarted, and all further files of the same mime type were not updated
+    (ie: python zip crash on encrypted files).</li>
+  <li>Mac OS X + Qt 4.6.1 : the index configuration dialog crashes. Fixed with
+    Qt 4.7.</li>
+  <li>If you are seeing a delay of a few seconds before the result list
+    displays for the first query of a recoll instance, try changing the result
+    list font in the query preferences. This is not a recoll problem, I don't
+    know the exact cause (I've seen it happen with "Sans Serif" and go away
+    with Helvetica or Arial).</li>
+  <li>It seems that the recoll program sometimes segfaults when exiting after
+    the first execution ?</li>
+  <li>When Recoll is built with qt 4.4.0, the icons in the result list are all
+    displayed at the top of the page and garbled. This appears to be a qt bug,
+    fixed in 4.4.1. Use either qt 4.3.x or 4.4.1 (stopped carrying this bug.
+    Just don't use 4.4.0)</li>
+  <li>Under some versions of KDE (ie: Fedora FC5 KDE 3.5.4-0.5.fc5), there is a
+    problem with the window stacking order. Opening the "browse" file selection
+    dialog from the advanced search dialog will stack the latter under the main
+    window, possibly making it invisible. This is quite probably a Kwin bug,
+    possibly related to http://bugs.kde.org/show_bug.cgi?id=79183 or a
+    correction thereof.</li>
+</ul>
+
+<h2><a name="b_1_13_02">recoll 1.13.02</a></h2>
+<ul>
+  <li>Stemming does not work in the 1.13 series. The stemming database was not
+    created at all. Things would sort of work as long as an older stemming
+    database was around (which is why this was not discovered earlier.</li>
+  <li>Fix the lyx filter to properly handle embedded white space in file
+  paths.</li>
+</ul>
+
+<h2><a name="b_1_13_01">recoll 1.13.01 + xapian 1.0.16</a></h2>
+<ul>
+  <li>The GUI display is garbled under Qt 4.6.1 and newer. This is a Qt bug,
+    and a workaround was put in place in Recoll 1.13.02 for Qt 4.6.1. If you
+    are using a newer version and the problem is still there, you can fix the
+    4.6.1 fix to hopefully work with your Qt version: edit qtgui/rclmain_w.h,
+    around line 37 (there is only one instance), change: 
+    <pre>  #if QT_VERSION == 0x040601
   to  
-  #if QT_VERSION >= 0x040601
-</pre>
-      </li>
+  #if QT_VERSION &gt;= 0x040601</pre>
+  </li>
+</ul>
 
-      <h2><a name="b_1_13_00">recoll 1.13.01 + xapian 1.0.16</a></h2> 
+<h2><a name="b_1_13_00">recoll 1.13.01 + xapian 1.0.16</a></h2>
+<ul>
+  <li>The field value was ignored in field searches for phrases or capitalized
+    words (ie: author:John or title:"the title").</li>
+  <li>The GUI would sometimes crash during the first execution, after the
+    dialog about starting configuration.</li>
+  <li>kio-recoll was not fully updated for 1.13 internals.</li>
+  <li>Would not compile on Solaris 8.</li>
+</ul>
 
-      <li>The field value was ignored in field searches for phrases or
-	capitalized words (ie: author:John or title:"the title").</li>
-      <li>The GUI would sometimes crash during the first execution,
-	after the dialog about starting configuration.</li>
-      <li>kio-recoll was not fully updated for 1.13 internals.</li>
-      <li>Would not compile on Solaris 8.</li>
+<h2><a name="b_1_12_4">1.12.4</a></h2>
+<ul>
+  <li>There are two bugs specific to 64 bits system, affecting HTML display
+    inside the preview window (wrong character set used in some cases, and
+    problems with keyword highlighting). </li>
+</ul>
 
+<h2><a name="b_1_12_3">1.12.3</a></h2>
+<ul>
+  <li>Specific File Name searches and Query Language searches for a 'filename:'
+    field sometimes give different results due to the way we handle wild card
+    expansion.</li>
+  <li>Killing recollindex sometimes left filter processes sleeping around.</li>
+  <li>The last entry in a configuration file was ignored if it was not followed
+    by a newline (either the file had no ending newline or the line ended with
+    backslash followed by the last file line.</li>
+  <li>Non-ascii characters in path names did not work well from the
+    configuration GUI (editing the configuration files did work).</li>
+  <li>Accented characters in mail headers encoded according to a lax
+    interpretation of rfc2047 were sometimes not decoded.</li>
+  <li>Recoll dumps core when exiting if the configuration was not found.</li>
+  <li>The Qt4 version sometimes did not display the status bar in the main
+    window.</li>
+  <li>Message boundaries were not detected inside mbox format files with quoted
+    strings inside the 'From ' lines. (ie [From "Smith, John" ...]).</li>
+  <li>The Term Explorer GUI dialog was not created at all if aspell was not
+    compiled int (leaving no access to wildcard, regexp and stemming
+    expansions).</li>
+  <li>Give priority to the user's PATH when looking for qmake (fixes detecting
+    the wrong qmake when more than one exists).</li>
+</ul>
 
+<h2><a name="b_1_12_2">1.12.2</a></h2>
+<ul>
+  <li>The sort tool does not work with qt3 (at least some versions), the Apply
+    button does nothing.</li>
+</ul>
 
-      <h2><a name="b_1_12_4">1.12.4</a></h2>
-        <li>There are two bugs specific to 64 bits system, affecting
-          HTML display inside the preview window (wrong character set
-          used in some cases, and problems with keyword highlighting).
-	</li>
+<h2><a name="b_1_12_1">1.12.1</a></h2>
+<ul>
+  <li>Uncatched Xapian exceptions can crash the GUI when a query is run while
+    the index is being updated.</li>
+  <li>The result list right-click pop up menu does not appear when the cursor
+    is inside a table.</li>
+  <li>Multithreaded access to Xlib can crash the real-time indexer.</li>
+  <li>A looping filter (ie: rclps trying to index loop.ps) can keep on running
+    forever and stop the indexing while eating cpu.</li>
+  <li>Filter subprocesses can sometimes be left around after indexing is
+    interrupted. Two signals are sometimes necessary to get recollindex to
+  exit.</li>
+  <li>Signals SIGUSR1 and SIGUSR2 are not blocked.</li>
+  <li>Sort does not work on queries started from the command line.</li>
+</ul>
 
+<h2><a name="b_1_12_0">1.12.0</a></h2>
+<ul>
+  <li>To compile the Python interface for recoll 1.12, you need to edit
+    setup.py and replace "rcldb/pathhash.cpp" with "utils/fileudi.cpp".</li>
+  <li>rclman outputs control characters, causing problems with preview and
+    phrase searches in manual pages.</li>
+  <li>rcllyx has trouble with 8bit characters in file names.</li>
+  <li>"recoll -q ..." processes incorrectly second and further command line
+    arguments.</li>
+  <li><a name="XapianNearPatch">The</a> following problem was corrected by
+    Xapian 1.0.11 or 1.0.12, and I can see no reason to use older versions
+    and/or the patches below. However, they're kept around in case someone
+    needs them.<br>
+    NEAR expansion errors: recoll performs stemming expansion inside NEAR
+    clauses (except if prevented by a capitalized entry). Because of a Xapian
+    bug (up to 1.0.12 (or 11?)), NEAR does not support multiple OR subclauses.
+    This manifests itself by a 'not implemented' Xapian exception or an
+    explicit error message. Workarounds: 
+    <ul>
+      <li>Prevent expansion of NEAR terms (possibly except one) by capitalizing
+        them. </li>
+      <li>Or apply the following patch to xapian, inside the "api/"
+        directory:<br>
+        0.x versions: <a
+        href="xapian/xapNearDistrib-0.x.patch">xapian/xapNearDistrib-0.x.patch</a>
+        <br>
+        1.0.[0-9]: <a
+        href="xapian/xapNearDistrib-1.0.0_9.patch">xapian/xapNearDistrib-1.0.0_9.patch</a>
+        <br>
+        1.0.10: <a
+        href="xapian/xapNearDistrib-1.0.10.patch">xapian/xapNearDistrib-1.0.10.patch</a>
+        <br>
+        or fetch the already patched source from <a href="xapian/">the local
+        xapian/ directory</a> then recompile, and install. </li>
+    </ul>
+  </li>
+</ul>
 
-      <h2><a name="b_1_12_3">1.12.3</a></h2>
-      
-        <li>Specific File Name searches and Query Language searches
-          for a 'filename:' field sometimes give different results due
-          to the way we handle wild card expansion.</li>
+<h2><a name="b_1_11_4">1.11.4</a></h2>
+<ul>
+  <li>Possibly harmful bug in strerror_r usage (GNU case).</li>
+  <li>Incorrect handling of "accents" inside Japanese katakana text.</li>
+  <li>Using the "Erase history" command on an empty history would cause recoll
+    to crash.</li>
+</ul>
 
-        <li>Killing recollindex sometimes left filter processes
-          sleeping around.</li>
+<h2><a name="b_1_11_1">1.11.1</a></h2>
+<ul>
+  <li>Unicode space characters like <em>0x3000, Ideographic space</em> where
+    not detected inside user entries like the main interface search entry.
+    Badly parsed searches would retrieve no results, when the same search
+    entered with ascii space characters would have succeeded.</li>
+  <li>Spaces were inserted inside CJK strings when building abstracts for the
+    result list.</li>
+  <li>Accent removal should not be performed for Japanese.</li>
+  <li>When using the query language, an OR part with more than two terms will
+    swallow preceding AND terms, one for each additional OR. Ex: (champagne
+    ext:odt OR ext:sxw OR ext:lyx) will be interpreted as "champagne OR ext:odt
+    OR ext:sxw OR ext:lyx" instead of the correct "champagne AND (ext:odt OR
+    ext:sxw OR ext:lyx)" Workaround until the fix is issued: add non-existing
+    terms before the OR part and check the resulting query: "champagne
+    bogusxyztv ext:odt OR ext:sxw OR ext:lyx" </li>
+  <li>The "Copy file name" and "Copy URL" entries of the right-click menus only
+    copy the data to the X11 primary selection (use middle-button click to
+    paste). This is probably a mistake, the data should be copied to the
+    clipboard too (permitting the use of the "Paste" edit menu entry or Ctrl+V
+    in the target).</li>
+  <li>Possibly harmful bug in strerror_r usage (GNU case).</li>
+</ul>
 
-        <li>The last entry in a configuration file was ignored if it
-          was not followed by a newline (either the file had no ending
-          newline or the line ended with backslash followed by the last
-          file line.</li>
-
-       <li>Non-ascii characters in path names did not work well from
-         the configuration GUI (editing the configuration files did
-         work).</li> 
-
-       <li>Accented characters in mail headers encoded according to a
-         lax interpretation of rfc2047 were sometimes not decoded.</li>
-
-       <li>Recoll dumps core when exiting if the configuration was not
-	 found.</li>
-
-       <li>The Qt4 version sometimes did not display the
-         status bar in the main window.</li>
-
-       <li>Message boundaries were not detected inside mbox format
-         files with quoted strings inside the 'From ' lines. 
-	 (ie [From "Smith, John" ...]).</li>
-
-       <li>The Term Explorer GUI dialog was not created at all if
-	 aspell was not compiled int (leaving no access to wildcard,
-	 regexp and stemming expansions).</li>
-
-       <li>Give priority to the user's PATH when looking for qmake
-	 (fixes detecting the wrong qmake when more than one exists).</li>
-
-
-      <h2><a name="b_1_12_2">1.12.2</a></h2>
-        <li>The sort tool does not work with qt3 (at least some
-	   versions), the Apply button does nothing.</li>
-
-      <h2><a name="b_1_12_1">1.12.1</a></h2>
-      <li>Uncatched Xapian exceptions can crash the GUI when a query
-        is run while the index is being updated.</li>
-      <li>The result list right-click pop up menu does not appear
-        when the cursor is inside a table.</li>
-      <li>Multithreaded access to Xlib can crash the real-time indexer.</li>
-      <li>A looping filter (ie: rclps trying to index loop.ps) can
-         keep on running forever and stop the indexing while eating cpu.</li>
-      <li>Filter subprocesses can sometimes be left around after
-         indexing is interrupted. Two signals are sometimes necessary
-         to get recollindex to exit.</li>
-      <li>Signals SIGUSR1 and SIGUSR2 are not blocked.</li>
-      <li>Sort does not work on queries started from the command line.</li>
-
-      <h2><a name="b_1_12_0">1.12.0</a></h2>
-      <ul>
-        <li>To compile the Python interface for recoll 1.12, you need
-          to edit setup.py and replace "rcldb/pathhash.cpp" with
-          "utils/fileudi.cpp".</li>
-      <li>rclman outputs control characters, causing problems with
-      preview and phrase searches in manual pages.</li>
-      <li>rcllyx has trouble with 8bit characters in file names.</li>
-      <li>"recoll -q ..." processes incorrectly second and further
-      command line arguments.</li>
-      <li><a name="XapianNearPatch">The</a> 
-      following problem was corrected by Xapian 1.0.11 or
-      1.0.12, and I can see no reason to use older versions and/or the
-      patches below. However, they're kept around in case someone
-      needs them.<br> 
-      NEAR expansion errors: recoll performs stemming expansion inside
-      NEAR clauses (except if prevented by a capitalized
-      entry). Because of a Xapian bug (up to 1.0.12 (or 11?)), NEAR
-      does not support multiple OR subclauses. This manifests itself
-      by a 'not implemented' Xapian exception or an explicit error
-      message. Workarounds:
-          <ul>
-            <li>Prevent expansion of NEAR terms (possibly except one) by
-              capitalizing them.
-
-            <li>Or apply the following patch to xapian, inside the
-              "api/" directory:<br>
-              0.x versions:
-              <a href="xapian/xapNearDistrib-0.x.patch">
-                xapian/xapNearDistrib-0.x.patch</a>
-              <br>
-              1.0.[0-9]:
-              <a href="xapian/xapNearDistrib-1.0.0_9.patch">
-                xapian/xapNearDistrib-1.0.0_9.patch</a>
-              <br>
-              1.0.10:
-              <a href="xapian/xapNearDistrib-1.0.10.patch">
-                xapian/xapNearDistrib-1.0.10.patch</a>
-              <br>
-
-              or fetch the already patched source from
-              <a href="xapian/">the local xapian/ directory</a>
-              then recompile, and install. 
-            </li>
-          </ul>
-	  </li>
-
-      </ul>
-
-      <h2><a name="b_1_11_4">1.11.4</a></h2>
-      <ul>
-        <li>Possibly harmful bug in strerror_r usage (GNU case).</li>
-        <li>Incorrect handling of  "accents" inside Japanese katakana
-          text.</li>
-        <li>Using the "Erase history" command on an empty history
-          would cause recoll to crash.</li>
-      </ul>
-
-      <h2><a name="b_1_11_1">1.11.1</a></h2>
-      <ul>
-        <li>Unicode space characters like 
-          <em>0x3000,&nbsp;Ideographic&nbsp;space</em>
-          where not detected inside user entries like the main
-          interface search entry. Badly parsed searches would retrieve no
-          results, when the same search entered with ascii space characters
-          would have succeeded.</li>
-        <li>Spaces were inserted inside CJK strings when building
-          abstracts for the result list.</li>
-        <li>Accent removal should not be performed for Japanese.</li>
-        <li>When using the query language, an OR part with more than
-          two terms will swallow preceding AND terms, one for each
-          additional OR. Ex: (champagne ext:odt OR ext:sxw OR ext:lyx)
-          will be interpreted as 
-              "champagne OR ext:odt OR ext:sxw OR ext:lyx"
-          instead of the correct
-              "champagne AND (ext:odt OR ext:sxw OR ext:lyx)"
-          Workaround until the fix is issued: add non-existing terms
-          before the OR part and check the resulting query: 
-              "champagne bogusxyztv ext:odt OR ext:sxw OR ext:lyx"
-        </li>
-        <li>The "Copy file name" and "Copy URL" entries of the
-          right-click menus only copy the data to the X11 primary
-          selection (use middle-button click to paste). This is
-          probably a mistake, the data should be copied to the
-          clipboard too (permitting the use of the "Paste" edit menu
-          entry or Ctrl+V in the target).</li>
-
-        <li>Possibly harmful bug in strerror_r usage (GNU case).</li>
-      </ul>
-
-      <h2>1.10.6</h2>
-      <ul>
-        <li> If the locale is not utf-8, non-ascii command line
-          arguments to recoll and recollq are not converted to utf-8,
-          which may prevent, for example, the kde applet from
-          working. The workaround is to apply the following one-line
-          fix to qtgui/main.cpp, recompile and install recoll:
-          <pre>
-            386c386
-            &lt;        sSearch->setSearchString(QString::fromUtf8(qstring.c_str()));
+<h2>1.10.6</h2>
+<ul>
+  <li>If the locale is not utf-8, non-ascii command line arguments to recoll
+    and recollq are not converted to utf-8, which may prevent, for example, the
+    kde applet from working. The workaround is to apply the following one-line
+    fix to qtgui/main.cpp, recompile and install recoll: 
+    <pre>            386c386
+            &lt;        sSearch-&gt;setSearchString(QString::fromUtf8(qstring.c_str()));
             ---
-            &gt;        sSearch->setSearchString(QString::fromLocal8Bit(qstring.c_str()));
-          </pre>
-        </li>
-      </ul>
+            &gt;        sSearch-&gt;setSearchString(QString::fromLocal8Bit(qstring.c_str()));
+    </pre>
+  </li>
+</ul>
 
-      <h2>1.10.1</h2>
+<h2>1.10.1</h2>
+<ul>
+  <li>A relatively simple error case can cause the indexer to stop processing
+    an mbox file (forgetting all subsequent messages). More specifically, this
+    happens when encountering more than than a few dozen errors while handling
+    attachments. This is relatively common: for exemple if an external helper
+    application is missing and multiple attachments of the affected type are
+    found (ie: multiple images and no exiftool). Workaround: install the helper
+    application. </li>
+  <li>The decoding of base-64 data in emails fails in a relatively uncommon but
+    sometimes encountered case. </li>
+  <li>In a preview window, when walking the search term hits with the
+    Previous/Next buttons, 'Previous' actually acts as 'Next' (it does work
+    normally for the local search). </li>
+  <li>Problems in detecting message separators inside Thunderbird mailboxes
+    (quite probably mainly for messages imported from outlook?). Can lead to
+    unindexed messages, and even apparently indexer crashes in some cases. </li>
+  <li>File names indexed as terms can sometimes overflow the maximum term size,
+    halting the indexing. </li>
+  <li>For Phrase/Near searches, only the first term group is highlighted in
+    preview. </li>
+</ul>
 
-      <ul>
-        <li> A relatively simple error case can cause the indexer to
-          stop processing an mbox file (forgetting all subsequent
-          messages). More specifically, this happens when encountering
-          more than than a few dozen errors while handling
-          attachments. This is relatively common: for exemple if an
-          external helper application is missing and multiple
-          attachments of the affected type are found (ie: multiple
-          images and no exiftool). Workaround: install the helper
-          application.
-        <li> The decoding of base-64 data in emails fails in a relatively uncommon 
-          but sometimes encountered case.
-        <li> In a preview window, when walking the search term hits with the
-          Previous/Next buttons, 'Previous' actually acts as 'Next' (it does work
-          normally for the local search).
-        <li> Problems in detecting message separators inside Thunderbird mailboxes
-          (quite probably mainly for messages imported from outlook?). Can lead to
-          unindexed messages, and even apparently indexer crashes in some cases.
-        <li> File names indexed as terms can sometimes overflow the maximum term
-          size, halting the indexing.
-        <li> For Phrase/Near searches, only the first term group is highlighted in
-          preview. 
-      </ul>
+<h2>1.10.0</h2>
+<ul>
+  <li>If a filter fails while trying to extract the data from a file, the file
+    will not be indexed at all (not even the file name). The file name should
+    be indexed in this case. This happens in particular in the very common case
+    where the helper application is not installed (ie: missing Exiftool -&gt;
+    no *.jpg names in the index). </li>
+  <li>If several query language "ext:" qualifiers are specified, they will be
+    joined by an AND instead of OR, resulting in no results. Using an explicit
+    OR doesn't work (actually OR + field names is generally broken). In some
+    cases, you can use a "type:" qualifier as a workaround. </li>
+</ul>
 
-      <h2>1.10.0</h2>
-      <ul>
+<h2>1.9.x</h2>
+<ul>
+  <li>Problems have been reported indexing big mailstores (several hundreds of
+    thousands of messages): resulting in a very big database and even crashes.
+  </li>
+</ul>
 
-        <li> If a filter fails while trying to extract the data from a file, the file
-          will not be indexed at all (not even the file name). The file
-          name should be indexed in this case. This happens in particular in the
-          very common case where the helper application is not installed (ie:
-          missing Exiftool -> no *.jpg names in the index).
+<h2>1.8.2</h2>
+<ul>
+  <li>Under ubuntu (at least, maybe debian too), the default awk interpreter
+    (mawk) is ancient, and the recoll pdf input filter does not work (removes
+    all space characters). This can be solved by installing the gawk package. $
+    apt-get install gawk $ update-alternatives --set awk /usr/bin/gawk </li>
+  <li>There are sometimes problems with document deletions: the index can get
+    in a state where deleted or moved documents are not purged from the index
+    (the log file says that the doc are deleted, but they aren't actually).
+    When this happens, the only solution currently is to reindex from scratch
+    (recollindex -z). This is due to a xapian bug, which is fixed in xapian
+    1.0.2, or you can apply the following patch to xapian 1.0.1 to fix it:
+    http://www.lesbonscomptes.com/recoll/xapian/xapian-delete-document.patch
+  </li>
+  <li>The dates shown for email attachments in a result list are the email
+    folder modification date. This should be inherited from the parent message
+    instead. </li>
+  <li>There are a few problems in the qt4 version of recoll: </li>
+  <li>Some accelerators (esc-spc, ctl-arrow) do not work, neither do copy/paste
+    between the result list and preview windows and x11 applications. </li>
+  <li>The qt4 q3textedit::find() method is extremely slow, so that positionning
+    to first search term in Recoll preview has been disabled, and the
+    application will sometimes appear to be looping when using the find feature
+    in the preview window (it's not looping, it's searching...) </li>
+</ul>
 
-        <li> If several query language "ext:" qualifiers are specified, they will be
-          joined by an AND instead of OR, resulting in no results. Using an
-          explicit OR doesn't work (actually OR + field names is generally
-          broken). In some cases, you can use a "type:" qualifier as a workaround.
+<h2>1.8.1</h2>
+<ul>
+  <li>This is not really a bug but .beagle really should be included in
+    "skippedNames", or you end up indexing the beagle text cache, which is not
+    really desirable. </li>
+  <li>Doc bug: the manual states that the query language supports a "mime:"
+    switch to filter mime types. There is currently no such thing. </li>
+</ul>
 
+<h2>1.7.5</h2>
+<ul>
+  <li>Debian and Ubuntu: the rclsoff Openoffice filter doesn't work, because of
+    an incorrect shell syntax (understood by bash but not sh). To fix, you edit
+    /usr[/local]/share/recoll/filters/rclsoff and can change the line: trap
+    cleanup EXIT SIGHUP SIGQUIT SIGINT SIGTERM into: trap cleanup EXIT HUP QUIT
+    INT TERM or download the updated filter from the filters page:
+    http://www.recoll.org/filters/filters.html </li>
+</ul>
 
-      </ul>
-      <h2>1.9.x</h2>
-      <ul>
-        <li> Problems have been reported indexing big mailstores (several hundreds of
-          thousands of messages): resulting in a very big database and even
-          crashes.
+<h2>1.7.3</h2>
+<ul>
+  <li>Processing will stop on first error while indexing an mbox file. This
+    could happen just because an attachment could not be decoded, and can cause
+    non-indexing of many messages. The most probable cause of error is a
+    missing filter (ie for ms-word files), so the temporary workaround would be
+    to install the missing filters. This bug is specific to 1.7 and 1.6 users
+    need not worry. A correction will be issued very soon. </li>
+  <li>Messages of type multipart/signed are not indexed. </li>
+</ul>
 
-      </ul>
-      <h2>1.8.2</h2>
-      <ul>
-        <li> Under ubuntu (at least, maybe debian too), the default awk interpreter
-          (mawk) is ancient, and the recoll pdf input filter does not
-          work (removes all space characters). This can be solved by installing the
-          gawk package. 
-          $ apt-get install gawk
-          $ update-alternatives --set awk /usr/bin/gawk
+<h2>1.6.2</h2>
+<ul>
+  <li>Relatively unfrequent issue with message boundary detection in mbox
+    files, could cause miscellaneous problems. </li>
+  <li>Executing an external viewer for a file with single-quotes in the name
+    would not work. </li>
+</ul>
 
-        <li> There are sometimes problems with document deletions: the index can
-          get in a state where deleted or moved documents are not purged from the
-          index (the log file says that the doc are deleted, but they aren't
-          actually). When this happens, the only solution currently is to reindex
-          from scratch (recollindex -z). This is due to a xapian bug, which is
-          fixed in xapian 1.0.2, or you can apply the following patch to xapian
-          1.0.1 to fix it:
-          http://www.lesbonscomptes.com/recoll/xapian/xapian-delete-document.patch 
+<h2>1.5.10</h2>
+<ul>
+  <li>If a defaultcharset was set in the configuration file for a subdirectory,
+    it would stay in effect for all subsequent files/directories (except if
+    explicitely overridden), potentially causing many transcoding errors. </li>
+</ul>
 
-        <li> The dates shown for email attachments in a result list are the email
-          folder modification date. This should be inherited from the parent
-          message instead.
+<h2>1.5.[1-7]</h2>
+<ul>
+  <li>Dates in result list come from the file's ctimes, which may be confusing
+  </li>
+  <li>Some rare MIME messages with null boundaries can crash the indexer. </li>
+</ul>
 
-        <li> There are a few problems in the qt4 version of recoll: 
-        <li> Some accelerators (esc-spc, ctl-arrow) do not work, neither do
-          copy/paste between the result list and preview windows and x11
-          applications. 
-        <li> The qt4 q3textedit::find() method is extremely slow, so that
-          positionning to first search term in Recoll preview has been disabled,
-          and the application will sometimes appear to be looping when using the
-          find feature in the preview window (it's not looping, it's searching...)
+<h2>1.5.0</h2>
+<ul>
+  <li>Under some conditions, recoll startup and exit could be very slow: the
+    simple search history list had serious problems with non-ascii strings,
+    whose size sometimes doubled at each program startup/stop. </li>
+</ul>
 
-      </ul>
-      <h2>1.8.1</h2>
-      <ul>
-        <li> This is not really a bug but .beagle really should be included in
-          "skippedNames", or you end up indexing the beagle text cache, which is
-          not really desirable.
-        <li> Doc bug: the manual states that the query language supports a "mime:"
-          switch to filter mime types. There is currently no such thing.
+<h2>1.3.3</h2>
+<ul>
+  <li>Several of the external filters did not handle path names with embedded
+    spaces (rcluncomp rclsoff rclps rclmedia rcldjvu). This is fixed in 1.4.
+  </li>
+  <li>If your QT installation is built with the QT_NO_STL flag, Recoll will not
+    compile. I have a patch for this (will be fixed in the next release),
+    contact me if you get the problem. Typical error message: main.cpp:160:
+    error: no match for 'operator+=' in 'msg += reason' </li>
+  <li>The 'None of these words' field in the complex search does not work if
+    there are no other filled fields (it transforms into an ordinary search).
+    Workaround: enter very common term(s) in the 'any of these words' field.
+  </li>
+  <li>Indexing cannot currently be conveniently and cleanly stopped when it's
+    started. You can kill the process, and keyboard interrupt might work, but
+    this may leave the database in a bad state. This is fixed in the upcoming
+    release, there is no current workaround. </li>
+</ul>
 
-
-      </ul>
-      <h2>1.7.5</h2>
-      <ul>
-        <li> Debian and Ubuntu: the rclsoff Openoffice filter doesn't work,
-          because of an incorrect shell syntax (understood by bash but not sh). To
-          fix, you edit /usr[/local]/share/recoll/filters/rclsoff and can change
-          the line:
-          trap cleanup EXIT SIGHUP SIGQUIT SIGINT SIGTERM
-          into:
-          trap cleanup EXIT HUP QUIT INT TERM
-          or download the updated filter from the filters page: 
-          http://www.recoll.org/filters/filters.html
-
-      </ul>
-      <h2>1.7.3</h2>
-      <ul>
-        <li> Processing will stop on first error while indexing an mbox file. This
-          could happen just because an attachment could not be decoded, and can
-          cause non-indexing of many messages. The most probable cause of error is
-          a missing filter (ie for ms-word files), so the temporary workaround
-          would be to install the missing filters. This bug is specific to 1.7 and
-          1.6 users need not worry. A correction will be issued very soon.
-        <li> Messages of type multipart/signed are not indexed. 
-
-      </ul>
-      <h2>1.6.2</h2>
-      <ul>
-        <li> Relatively unfrequent issue with message boundary detection in mbox
-          files, could cause miscellaneous problems.
-        <li> Executing an external viewer for a file with single-quotes in the name
-          would not work.
-
-      </ul>
-      <h2>1.5.10</h2>
-      <ul>
-        <li> If a defaultcharset was set in the configuration file for a subdirectory,
-          it would stay in effect for all subsequent files/directories (except if
-          explicitely overridden), potentially causing many transcoding errors.
-
-      </ul>
-      <h2>1.5.[1-7]</h2>
-      <ul>
-        <li> Dates in result list come from the file's ctimes, which may be confusing
-        <li> Some rare MIME messages with null boundaries can crash the indexer.
-
-      </ul>
-      <h2>1.5.0</h2>
-      <ul>
-        <li> Under some conditions, recoll startup and exit could be very slow: the
-          simple search history list had serious problems with non-ascii strings,
-          whose size sometimes doubled at each program startup/stop.
-
-      </ul>
-      <h2>1.3.3</h2>
-      <ul>
-
-        <li> Several of the external filters did not handle path names with embedded
-          spaces (rcluncomp rclsoff rclps rclmedia rcldjvu). This is fixed in 1.4.
-
-        <li> If your QT installation is built with the QT_NO_STL flag, Recoll will not
-          compile. I have a patch for this (will be fixed in the next release),
-          contact me if you get the problem. Typical error message:
-          main.cpp:160: error: no match for 'operator+=' in 'msg += reason'
-
-        <li> The 'None of these words' field in the complex search does not work if
-          there are no other filled fields (it transforms into an ordinary
-          search). Workaround: enter very common term(s) in the 'any of these
-          words' field.
-
-        <li> Indexing cannot currently be conveniently and cleanly
-          stopped when it's started. You can kill the process, and
-          keyboard interrupt might work, but this may leave the
-          database in a bad state. This is fixed in the upcoming
-          release, there is no current workaround.
-      </ul>
-
-      <h2>1.2.2</h2>
-      <ul>
-        <li> The preview window is supposed to scroll after loading the document so
-          that the first search term is visible. This does not work in many cases.
-        <li> The result list title is not shown for sorted lists
-
-          Notes on older versions:
-        <li> Trouble compiling on some linux systems (Gentoo and Slackware?). There
-          existed a quite common issue where the Recoll link will fail trying to
-          use a libstdc++.la file. This was due to a problem with the xapian-config
-          program. A workaround has been included in the configure script for
-          recoll 1.2.2, and the problem should not occur any more.
-
-        <li> Case-insensitive search should now work in most cases
-        (used to not work except for accented ascii).
-
-        <li> All directories and files with names beginning with a dot were ignored
-          by the skippedNames directive in the default recoll.conf file from
-          older versions (no indexing of mozilla or thunderbird email !). An
-          upgrade will not fix this (it will not modify an existing
-          configuration). You need to edit recoll.conf by hand and remove the .*
-          from skippedNames.</li>
-
-      </ul>
-
-    </div>
-  </body>
+<h2>1.2.2</h2>
+<ul>
+  <li>The preview window is supposed to scroll after loading the document so
+    that the first search term is visible. This does not work in many cases.
+  </li>
+  <li>The result list title is not shown for sorted lists Notes on older
+    versions: </li>
+  <li>Trouble compiling on some linux systems (Gentoo and Slackware?). There
+    existed a quite common issue where the Recoll link will fail trying to use
+    a libstdc++.la file. This was due to a problem with the xapian-config
+    program. A workaround has been included in the configure script for recoll
+    1.2.2, and the problem should not occur any more. </li>
+  <li>Case-insensitive search should now work in most cases (used to not work
+    except for accented ascii). </li>
+  <li>All directories and files with names beginning with a dot were ignored by
+    the skippedNames directive in the default recoll.conf file from older
+    versions (no indexing of mozilla or thunderbird email !). An upgrade will
+    not fix this (it will not modify an existing configuration). You need to
+    edit recoll.conf by hand and remove the .* from skippedNames.</li>
+</ul>
+</div>
+</body>
 </html>
