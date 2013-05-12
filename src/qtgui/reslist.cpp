@@ -671,9 +671,9 @@ bool ResList::scrollIsAtTop()
 	LOGDEB(("Scrollattop: cur %d min %d\n", cur, min));
 	ret = (cur == min);
     }
-#endif
     LOGDEB2(("scrollIsAtTop: returning %d\n", ret));
     return ret;
+#endif
 }
 
 // Show previous page of results. We just set the current number back

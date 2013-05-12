@@ -17,12 +17,7 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QWebView" name="browser">
-       <property name="url">
-        <url>
-         <string>about:blank</string>
-        </url>
-       </property>
+      <widget class="QWidget" name="browserw">
       </widget>
      </item>
      <item>

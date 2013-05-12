@@ -16,11 +16,6 @@
  */
 #include "autoconfig.h"
 
-// Use textBrowser or webview. Tried using textbrowser to solve a
-// crash at a point, kept the code. Search did not work, but this
-// should be easy to fix by looking at the preview code.
-#define SNIPPETS_WEBKIT
-
 #include <unistd.h>
 #include <stdio.h>
 
@@ -29,12 +24,12 @@
 #include <sstream>
 using namespace std;
 
-#ifdef SNIPPETS_WEBKIT
+#ifdef SNIPPETS_TEXTBROWSER
+#include <QTextBrowser>
+#else
 #include <QWebSettings>
 #include <QWebFrame>
 #include <QUrl>
-#else
-#include <QTextBrowser>
 #endif
 #include <QShortcut>
 
@@ -45,6 +40,14 @@ using namespace std;
 #include "rcldb.h"
 #include "rclhelp.h"
 #include "plaintorich.h"
+
+// Note: the internal search currently does not work with QTextBrowser. To be
+// fixed by looking at the preview code if someone asks for it...
+#ifdef SNIPPETS_TEXTBROWSER
+#define browser ((QTextBrowser*)browserw)
+#else
+#define browser ((QWebView*)browserw)
+#endif
 
 class PlainToRichQtSnippets : public PlainToRich {
 public:
@@ -90,20 +93,9 @@ void SnippetsW::init()
     connect(nextPB, SIGNAL(clicked()), this, SLOT(slotEditFindNext()));
     connect(prevPB, SIGNAL(clicked()), this, SLOT(slotEditFindPrevious()));
 
-#ifdef SNIPPETS_WEBKIT
-    connect(browser, SIGNAL(linkClicked(const QUrl &)), 
-	    this, SLOT(linkWasClicked(const QUrl &)));
-    browser->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    browser->page()->currentFrame()->setScrollBarPolicy(Qt::Horizontal,
-							Qt::ScrollBarAlwaysOff);
-    QWebSettings *ws = browser->page()->settings();
-    if (prefs.reslistfontfamily != "") {
-	ws->setFontFamily(QWebSettings::StandardFont, prefs.reslistfontfamily);
-	ws->setFontSize(QWebSettings::DefaultFontSize, prefs.reslistfontsize);
-    }
-    if (!prefs.snipCssFile.isEmpty())
-	ws->setUserStyleSheetUrl(QUrl::fromLocalFile(prefs.snipCssFile));
-#else
+#ifdef SNIPPETS_TEXTBROWSER
+    browserw = new QTextBrowser(this);
+    verticalLayout->insertWidget(0, browserw);
     connect(browser, SIGNAL(anchorClicked(const QUrl &)), 
 	    this, SLOT(linkWasClicked(const QUrl &)));
     browser->setReadOnly(TRUE);
@@ -116,6 +108,22 @@ void SnippetsW::init()
     } else {
 	browser->setFont(QFont());
     }
+#else
+    browserw = new QWebView(this);
+    verticalLayout->insertWidget(0, browserw);
+    browser->setUrl(QUrl(QString::fromUtf8("about:blank")));
+    connect(browser, SIGNAL(linkClicked(const QUrl &)), 
+	    this, SLOT(linkWasClicked(const QUrl &)));
+    browser->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    browser->page()->currentFrame()->setScrollBarPolicy(Qt::Horizontal,
+							Qt::ScrollBarAlwaysOff);
+    QWebSettings *ws = browser->page()->settings();
+    if (prefs.reslistfontfamily != "") {
+	ws->setFontFamily(QWebSettings::StandardFont, prefs.reslistfontfamily);
+	ws->setFontSize(QWebSettings::DefaultFontSize, prefs.reslistfontsize);
+    }
+    if (!prefs.snipCssFile.isEmpty())
+	ws->setUserStyleSheetUrl(QUrl::fromLocalFile(prefs.snipCssFile));
 #endif
 
     // Make title out of file name if none yet
@@ -176,10 +184,10 @@ void SnippetsW::init()
 	    "and the snippets generator got lost in a maze...</p>" << endl;
     }
     oss << "</body></html>";
-#ifdef SNIPPETS_WEBKIT
-    browser->setHtml(QString::fromUtf8(oss.str().c_str()));
-#else
+#ifdef SNIPPETS_TEXTBROWSER
     browser->insertHtml(QString::fromUtf8(oss.str().c_str()));
+#else
+    browser->setHtml(QString::fromUtf8(oss.str().c_str()));
 #endif
 }
 
@@ -195,10 +203,10 @@ void SnippetsW::slotEditFindNext()
     if (!searchFM->isVisible())
 	slotEditFind();
 
-#ifdef SNIPPETS_WEBKIT
-    browser->findText(searchLE->text());
-#else
+#ifdef SNIPPETS_TEXTBROWSER
     browser->find(searchLE->text(), 0);
+#else
+    browser->findText(searchLE->text());
 #endif
 
 }
@@ -207,18 +215,18 @@ void SnippetsW::slotEditFindPrevious()
     if (!searchFM->isVisible())
 	slotEditFind();
 
-#ifdef SNIPPETS_WEBKIT
-    browser->findText(searchLE->text(), QWebPage::FindBackward);
-#else
+#ifdef SNIPPETS_TEXTBROWSER
     browser->find(searchLE->text(), QTextDocument::FindBackward);
+#else
+    browser->findText(searchLE->text(), QWebPage::FindBackward);
 #endif
 }
 void SnippetsW::slotSearchTextChanged(const QString& txt)
 {
-#ifdef SNIPPETS_WEBKIT
-    browser->findText(txt);
-#else
+#ifdef SNIPPETS_TEXTBROWSER
     browser->find(txt, 0);
+#else
+    browser->findText(txt);
 #endif
 }
 
