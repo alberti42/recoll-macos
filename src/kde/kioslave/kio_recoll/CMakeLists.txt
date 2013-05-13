@@ -46,6 +46,10 @@ IF(PTHREAD_IN_LIBPTHREAD)
 	LIST(APPEND EXTRA_LIBS pthread)
 ENDIF(PTHREAD_IN_LIBPTHREAD)
 
+# Add e.g. /usr/lib/recoll to the rpath so that the dyn lib will be found at 
+# run time
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib/recoll")
+
 kde4_add_plugin(kio_recoll ${kio_recoll_SRCS})
 
 add_custom_target(rcllib
