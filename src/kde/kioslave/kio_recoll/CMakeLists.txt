@@ -46,19 +46,21 @@ IF(PTHREAD_IN_LIBPTHREAD)
 	LIST(APPEND EXTRA_LIBS pthread)
 ENDIF(PTHREAD_IN_LIBPTHREAD)
 
-# Add e.g. /usr/lib/recoll to the rpath so that the dyn lib will be found at 
-# run time
-SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib/recoll")
+# Had the idea to add e.g. /usr/lib/recoll to the rpath so that the dyn lib 
+# will be found at run time. But this does not seem to work with debian 
+# which strips RPATH by default (I think there is a way for libs in app-specific
+# paths but I did not find it. Link with the .a instead.
+#SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib/recoll")
 
 kde4_add_plugin(kio_recoll ${kio_recoll_SRCS})
 
 add_custom_target(rcllib
-                 COMMAND make
+                 COMMAND make librecoll.a
                  WORKING_DIRECTORY ${rcltop}/lib
 )
 add_dependencies(kio_recoll rcllib)
 
-target_link_libraries(kio_recoll recoll ${EXTRA_LIBS} ${KDE4_KIO_LIBS})
+target_link_libraries(kio_recoll recoll xapian z ${EXTRA_LIBS} ${KDE4_KIO_LIBS})
 
 install(TARGETS kio_recoll DESTINATION ${PLUGIN_INSTALL_DIR})
 
