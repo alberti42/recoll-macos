@@ -61,6 +61,13 @@ previous behaviour (losing the page number functionality), you need to prune
 the list after installation . This can be done from the <em>Preferences-&gt;Gui
 Configuration</em> menu.</p>
 
+<h2>Minor releases at a glance</h2>
+<ul>
+<li>1.19.1 was released 2 hours after 1.19.0 (book of records anyone?)
+  because of a bug in the advanced search history feature which crashed
+  the GUI as soon as a <i>filename</i> search was performed.</li>
+</ul>
+
 <h2>Changes in Recoll 1.19.0</h2>
 <ul>
   <li>Indexing can use multiple threads. This can be a major performance boost
@@ -79,7 +86,10 @@ Configuration</em> menu.</p>
   <li>It is now possible to use OR with "dir:" clauses, and wildcards have been
     enabled.</li>
   <li>When the option to follow symbolic links is not set -which is the
-    default- symbolic links are now indexed as such (name and content).</li>
+    default- symbolic links are now indexed as such (name and
+    content).</li>
+  <li>The advanced search panel now has a history feature. Use the
+    up/down arrows to walk the search history list.</li>
   <li>There are new GUI configuration options to run in "search as you type"
     mode (which I don't find useful at all...), and to disable the Qt
     auto-completion inside the simple search string. The completion was often
