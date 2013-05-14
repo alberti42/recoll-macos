@@ -314,13 +314,15 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     if (!parms.ok())
 	return false;
 
+    // Set xdocid at once so that we can call whatDbIdx()
+    doc.xdocid = docid;
     // Compute what index this comes from, and check for path translations
     string dbdir = m_rcldb->m_basedir;
     if (!m_rcldb->m_extraDbs.empty()) {
-	// As per trac.xapian.org/wiki/FAQ/MultiDatabaseDocumentID
-	unsigned int idxi = (docid-1) % (m_rcldb->m_extraDbs.size()+1);
-	// idxi is in [0, extraDbs.size()]. 0 is the base index, 1-n index
-	// into the additional dbs array
+	unsigned int idxi = m_rcldb->whatDbIdx(doc);
+
+	// idxi is in [0, extraDbs.size()]. 0 is for the main index,
+	// idxi-1 indexes into the additional dbs array.
 	if (idxi) {
 	    dbdir = m_rcldb->m_extraDbs[idxi - 1];
 	}
@@ -349,7 +351,6 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     parms.get(Doc::keyfs, doc.fbytes);
     parms.get(Doc::keyds, doc.dbytes);
     parms.get(Doc::keysig, doc.sig);
-    doc.xdocid = docid;
 
     // Normal key/value pairs:
     vector<string> keys = parms.getNames(string());
@@ -847,13 +848,13 @@ bool Db::rmQueryDb(const string &dir)
 // http://trac.xapian.org/wiki/FAQ/MultiDatabaseDocumentID
 size_t Db::whatDbIdx(const Doc& doc)
 {
-    LOGDEB(("Db::whatDbIdx: xdocid %lu, %u extraDbs\n", 
-	    (unsigned long)doc.xdocid, m_extraDbs.size()));
+    LOGDEB1(("Db::whatDbIdx: xdocid %lu, %u extraDbs\n", 
+	     (unsigned long)doc.xdocid, m_extraDbs.size()));
     if (doc.xdocid == 0) 
 	return (size_t)-1;
     if (m_extraDbs.size() == 0)
 	return 0;
-    return doc.xdocid % (m_extraDbs.size()+1);
+    return (doc.xdocid - 1) % (m_extraDbs.size() + 1);
 }
 
 bool Db::testDbDir(const string &dir, bool *stripped_p)

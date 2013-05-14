@@ -1232,7 +1232,12 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
 	doc.getmeta(Rcl::Doc::keyudi, &udi);
 	if (!udi.empty()) {
 	    string sig;
-	    FileInterner::makesig(theconfig, doc, sig);
+	    if (!FileInterner::makesig(theconfig, doc, sig)) {
+		QMessageBox::warning(0, "Recoll", 
+				     tr("Can't access file: ") + 
+				     QString::fromLocal8Bit(doc.url.c_str()));
+		return;
+	    }
 	    if (rcldb->needUpdate(udi, sig)) {
 		QString msg = 
 		    tr("Index not up to date for this file. "
