@@ -1,6 +1,10 @@
-recoll-lens (1.18.2.3257-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
-  * Updated lens to vers. 1.18.2
- -- Jean-Francois Dockes <jf@dockes.org>  Mon, 18 Apr 2013 13:31:00 +0100
+recoll-lens (1.19.2.3328-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+  * Updated lens to release 1.19.2, for consistency, same as 1.19.0 in fact
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 14 May 2013 08:22:00 +0100
+
+recoll-lens (1.19.0.3315-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+  * Updated lens to vers. 1.19.0
+ -- Jean-Francois Dockes <jf@dockes.org>  Sun, 12 May 2013 14:43:00 +0100
 
 recoll-lens (1.18.1.2997-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
   * Updated lens to vers. 1.18.1
