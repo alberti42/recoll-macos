@@ -11,6 +11,7 @@ cd usermanual
 thisdir=`pwd`
 (cd $docdir; find . -name '*.html' -print | cpio -vudp $thisdir)
 cp $docdir/docbook.css .
+cp $docdir/docbook-xsl.css .
 cp $docdir/usermanual.pdf recoll_user_manual.pdf
 # The freebsd tool chain generates a link to book.html in the index. Too
 # lazy to check if this can be changed
