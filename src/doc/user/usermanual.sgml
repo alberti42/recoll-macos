@@ -1856,6 +1856,12 @@ fvwm
         by an entry in the <guilabel>GUI configuration</guilabel>
         dialog, and is off by default.</para>
 
+      <para>As of release 1.19, when a result document does have
+        undisplayed duplicates, a <literal>Dups</literal>
+        link will be shown with the result list entry. Clicking the
+        link will display the paths (URLs + ipaths) for the duplicate
+        entries.</para>
+
     </sect2>
 
     <sect2 id="RCL.SEARCH.GUI.TIPS">
