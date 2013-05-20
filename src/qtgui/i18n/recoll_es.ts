@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0">
+<TS version="2.0" language="es">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -41,19 +41,19 @@
     </message>
     <message>
         <source>text</source>
-        <translation type="unfinished">texto</translation>
+        <translation>texto</translation>
     </message>
     <message>
         <source>spreadsheet</source>
-        <translation type="unfinished">hoja de cálculo</translation>
+        <translation>hoja de cálculo</translation>
     </message>
     <message>
         <source>presentation</source>
-        <translation type="unfinished">presentación</translation>
+        <translation>presentación</translation>
     </message>
     <message>
         <source>message</source>
-        <translation type="unfinished">mensaje</translation>
+        <translation>mensaje</translation>
     </message>
 </context>
 <context>
@@ -76,7 +76,7 @@
     </message>
     <message>
         <source>Restrict file types</source>
-        <translation>Restringir tipos de fichero</translation>
+        <translation>Restringir tipos de archivo</translation>
     </message>
     <message>
         <source>Check this to enable filtering on file types</source>
@@ -96,7 +96,7 @@
     </message>
     <message>
         <source>Searched file types</source>
-        <translation>Tipos de fichero buscados</translation>
+        <translation>Tipos de archivos buscados</translation>
     </message>
     <message>
         <source>All ----&gt;</source>
@@ -116,7 +116,7 @@
     </message>
     <message>
         <source>Ignored file types</source>
-        <translation>Tipos de fichero ignorados</translation>
+        <translation>Tipos de archivos ignorados</translation>
     </message>
     <message>
         <source>Enter top directory for search</source>
@@ -128,7 +128,7 @@
     </message>
     <message>
         <source>Restrict results to files in subtree:</source>
-        <translation>Restringir resultados a ficheros en subdirectorio:</translation>
+        <translation>Restringir resultados a archivos en subdirectorio:</translation>
     </message>
     <message>
         <source>Start Search</source>
@@ -218,10 +218,10 @@ p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; horario de indexado por lotes (cron) &lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Cada campo puede contener un comodín (*), un valor numérico único, listas separadas por comas (1,3,5) y rangos (1-7). Más generalmente, los campos serán usados &lt;span style=&quot; font-style:italic;&quot;&gt;tal como son&lt;/span&gt; dentro del fichero crontab, y toda la sintaxis crontab puede ser usada, ver crontab(5).&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Cada campo puede contener un comodín (*), un valor numérico único, listas separadas por comas (1,3,5) y rangos (1-7). Más generalmente, los campos serán usados &lt;span style=&quot; font-style:italic;&quot;&gt;tal como son&lt;/span&gt; dentro del archivo crontab, y toda la sintaxis crontab puede ser usada, ver crontab(5).&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;Por ejemplo, ingresar &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;*&lt;/span&gt; en &lt;span style=&quot; font-style:italic;&quot;&gt;Días, &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;12,19&lt;/span&gt; en &lt;span style=&quot; font-style:italic;&quot;&gt;Horas&lt;/span&gt; y &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;15&lt;/span&gt; en &lt;span style=&quot; font-style:italic;&quot;&gt;Minutos&lt;/span&gt; iniciaría recollindex cada día a las 12:15 AM y 7:15 PM&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Un horario con activaciones frecuentes es probablemente menos eficiente que el indexado en tiempo real.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Un horario con activaciones frecuentes es probablemente menos eficiente que la indexación en tiempo real.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Days of week (* or 0-7, 0 or 7 is Sunday)</source>
@@ -245,7 +245,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Presione &lt;span style=&quot; font-style:italic;&quot;&gt;Deshabilitar&lt;/span&gt; para detener el indexado por lotes automático, &lt;span style=&quot; font-style:italic;&quot;&gt;Habilitar&lt;/span&gt; para activarlo, &lt;span style=&quot; font-style:italic;&quot;&gt;Cancelar&lt;/span&gt; para no cambiar nada.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Presione &lt;span style=&quot; font-style:italic;&quot;&gt;Deshabilitar&lt;/span&gt; para detener la indexación automática por lotes, &lt;span style=&quot; font-style:italic;&quot;&gt;Habilitar&lt;/span&gt; para activarla, &lt;span style=&quot; font-style:italic;&quot;&gt;Cancelar&lt;/span&gt; para no cambiar nada.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Enable</source>
@@ -275,57 +275,57 @@ p, li { white-space: pre-wrap; }
     <name>EditTrans</name>
     <message>
         <source>Source path</source>
-        <translation type="unfinished"></translation>
+        <translation>Ruta de origen</translation>
     </message>
     <message>
         <source>Local path</source>
-        <translation type="unfinished"></translation>
+        <translation>Ruta local</translation>
     </message>
     <message>
         <source>Config error</source>
-        <translation type="unfinished"></translation>
+        <translation>Error de configuración</translation>
     </message>
     <message>
         <source>Original path</source>
-        <translation type="unfinished"></translation>
+        <translation>Ruta original</translation>
     </message>
 </context>
 <context>
     <name>EditTransBase</name>
     <message>
         <source>Path Translations</source>
-        <translation type="unfinished"></translation>
+        <translation>Ruta de traducciones</translation>
     </message>
     <message>
         <source>Setting path translations for </source>
-        <translation type="unfinished"></translation>
+        <translation>Establecer ruta de traducciones para</translation>
     </message>
     <message>
         <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccione uno o más tipos de archivos, y use los controles en la caja abajo para cambiar cómo se procesan</translation>
     </message>
     <message>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Añadir</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Borrar</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Cancelar</translation>
+        <translation>Cancelar</translation>
     </message>
     <message>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translation>Guardar</translation>
     </message>
 </context>
 <context>
     <name>FirstIdxDialog</name>
     <message>
         <source>First indexing setup</source>
-        <translation>Primera configuración de indexado</translation>
+        <translation>Primera configuración de indexación</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -353,7 +353,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>This will let you adjust the directories you want to index, and other parameters like excluded file paths or names, default character sets, etc.</source>
-        <translation>Esto le permite ajustar los directorios que quiere indexar y otros parámetros, como rutas de ficheros o nombres excluidos, conjuntos de caracteres estándar, etc.</translation>
+        <translation>Esto le permite ajustar los directorios que quiere indexar y otros parámetros, como rutas de archivos o nombres excluidos, conjuntos de caracteres estándar, etc.</translation>
     </message>
     <message>
         <source>Indexing schedule</source>
@@ -387,7 +387,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;La indexación de &lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; puede ejecutarse permanentemente, indexando ficheros cuando cambian, o puede ejecutarse en intervalos discretos. &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;La indexación de &lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; puede ejecutarse permanentemente, indexando archivos cuando cambian, o puede ejecutarse en intervalos discretos. &lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Leer el manual puede ayudarle a decidir entre estos dos métodos (presione F1).&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Esta herramienta puede ayudarle a configurar un horario para automatizar la ejecución de indexación por lotes, o iniciar la indexación en tiempo real cuando inicia la sesión (o ambos, lo cual rara vez tiene sentido).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
@@ -437,7 +437,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
-        <translation>El fichero de historial esta dañado o no se puede leer, por favor revíselo o bórrelo:</translation>
+        <translation>El archivo de historial esta dañado o no se puede leer, por favor revíselo o bórrelo:</translation>
     </message>
 </context>
 <context>
@@ -496,7 +496,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Error while loading file</source>
-        <translation>Error al cargar fichero</translation>
+        <translation>Error al cargar archivo</translation>
     </message>
 </context>
 <context>
@@ -531,7 +531,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Save document to file</source>
-        <translation>Guardar documento a fichero</translation>
+        <translation>Guardar documento en un archivo</translation>
     </message>
     <message>
         <source>Fold lines</source>
@@ -570,7 +570,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>These are patterns for file or directory  names which should not be indexed.</source>
-        <translation>Estos son patrones de nombres de ficheros o directorios que no deben ser indexados.</translation>
+        <translation>Estos son patrones de nombres de archivos o directorios que no deben ser indexados.</translation>
     </message>
     <message>
         <source>Default character set</source>
@@ -578,7 +578,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>This is the character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
-        <translation>Este es el conjunto de caracteres usado para leer ficheros que no identifican internamente, por ejemplo, ficheros de texto puro.&lt;br&gt;El valor por defecto está vacío, y el valor del ambiente NLS es usado.</translation>
+        <translation>Este es el conjunto de caracteres usado para leer archivos que no son identificados internamente, por ejemplo, archivos de texto puro.&lt;br&gt;El valor por defecto está vacío, y el valor del ambiente NLS es usado.</translation>
     </message>
     <message>
         <source>Follow symbolic links</source>
@@ -590,11 +590,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Index all file names</source>
-        <translation>Indexar todos los nombres de ficheros</translation>
+        <translation>Indexar todos los nombres de archivos</translation>
     </message>
     <message>
         <source>Index the names of files for which the contents cannot be identified or processed (no or unsupported mime type). Default true</source>
-        <translation>Indexar los nombres de los ficheros para los cuales los contenidos no pueden ser&lt;br&gt;identificados o procesados (tipo MIME inválido o inexistente). El valor por defecto es verdadero</translation>
+        <translation>Indexar los nombres de los archivos para los cuales los contenidos no pueden ser&lt;br&gt;identificados o procesados (tipo MIME inválido o inexistente). El valor por defecto es verdadero</translation>
     </message>
     <message>
         <source>Beagle web history</source>
@@ -602,11 +602,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Search parameters</source>
-        <translation type="unfinished">Parámetros de búsqueda</translation>
+        <translation>Parámetros de búsqueda</translation>
     </message>
     <message>
         <source>Web history</source>
-        <translation type="unfinished"></translation>
+        <translation>Historial Web</translation>
     </message>
 </context>
 <context>
@@ -626,7 +626,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;La indexación de &lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; puede configurarse para ejecutar como un demonio, actualizando el índice cuando los ficheros cambian, en tiempo real. Obtiene un índice actualizado siempre, pero recursos del sistema son utilizados permanentemente.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;La indexación de &lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; puede configurarse para ejecutar como un demonio, actualizando el índice cuando los archivos cambian, en tiempo real. Obtiene un índice actualizado siempre, pero los recursos del sistema son utilizados permanentemente.&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -643,7 +643,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Replacing file</source>
-        <translation>Reemplazando fichero</translation>
+        <translation>Reemplazando archivo</translation>
     </message>
     <message>
         <source>Can&apos;t create: </source>
@@ -663,7 +663,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Deleting file</source>
-        <translation>Borrando fichero</translation>
+        <translation>Borrando archivo</translation>
     </message>
     <message>
         <source>Removing autostart</source>
@@ -671,7 +671,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Autostart file deleted. Kill current process too ?</source>
-        <translation>Fichero de autoinicio borrado. Detener el proceso actual también?</translation>
+        <translation>Archivo de autoinicio borrado. Detener el proceso actual también?</translation>
     </message>
 </context>
 <context>
@@ -744,7 +744,7 @@ Por favor revise el fichero mimeconf</translation>
     </message>
     <message>
         <source>Cannot extract document or create temporary file</source>
-        <translation>No se puede extraer el documento o crear fichero temporal</translation>
+        <translation>No se puede extraer el documento o crear archivo temporal</translation>
     </message>
     <message>
         <source>Executing: [</source>
@@ -841,15 +841,15 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Can&apos;t access file: </source>
-        <translation>No se puede acceder al fichero:</translation>
+        <translation>No se puede accesar el archivo:</translation>
     </message>
     <message>
         <source>Can&apos;t uncompress file: </source>
-        <translation>No se puede descomprimir el fichero:</translation>
+        <translation>No se puede descomprimir el archivo:</translation>
     </message>
     <message>
         <source>Save file</source>
-        <translation>Guardar fichero</translation>
+        <translation>Guardar archivo</translation>
     </message>
     <message>
         <source>Result count (est.)</source>
@@ -938,39 +938,40 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeview file</source>
-        <translation type="unfinished"></translation>
+        <translation>Línea de comando incorrecta de visualizador para %1: [%2]
+Por favor revise el archivo mimeconf</translation>
     </message>
     <message>
         <source>Viewer command line for %1 specifies both file and parent file value: unsupported</source>
-        <translation type="unfinished"></translation>
+        <translation>Línea de comandos del visualizador para %1 especifica valores para el archivo y el archivo padre: no soportado</translation>
     </message>
     <message>
         <source>Cannot find parent document</source>
-        <translation type="unfinished"></translation>
+        <translation>No se encuentra documento padre</translation>
     </message>
     <message>
         <source>Indexing did not run yet</source>
-        <translation type="unfinished"></translation>
+        <translation>La indexación no se ha ejecutado aún</translation>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicaciones/comandos externos requeridos por sus tipos de archivos y no encontrados, como se almacenaron en el último pase de indexación en </translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
-        <translation type="unfinished"></translation>
+        <translation>El índice no está actualizado para este archivo. Rehusando mostrar la entrada equivocada.</translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation type="unfinished"></translation>
+        <translation>Presione Ok para actualizar el índice para este archivo, y ejecute de nuevo la consulta cuando la indexación termine. En caso contrario, cancele.</translation>
     </message>
     <message>
         <source>Indexer running so things should improve when it&apos;s done</source>
-        <translation type="unfinished"></translation>
+        <translation>El indexador está en ejecución, así que las cosas deberían mejorar cuando termine</translation>
     </message>
     <message>
         <source>Sub-documents and attachments</source>
-        <translation type="unfinished"></translation>
+        <translation>Sub-documentos y adjuntos</translation>
     </message>
 </context>
 <context>
@@ -989,7 +990,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;File</source>
-        <translation>&amp;Fichero</translation>
+        <translation>&amp;Archivo</translation>
     </message>
     <message>
         <source>&amp;Tools</source>
@@ -1177,51 +1178,51 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Index configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Configuración del Índice</translation>
     </message>
     <message>
         <source>&amp;GUI configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Configuración de &amp;GUI</translation>
     </message>
     <message>
         <source>&amp;Results</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Resultados</translation>
     </message>
     <message>
         <source>Sort by date, oldest first</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordenar por fecha, antiguos primero</translation>
     </message>
     <message>
         <source>Sort by date, newest first</source>
-        <translation type="unfinished"></translation>
+        <translation>Ordenar por fecha, recientes primero</translation>
     </message>
     <message>
         <source>Show as table</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar como tabla</translation>
     </message>
     <message>
         <source>Show results in a spreadsheet-like table</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar resultados en una tabla similar a una hoja de cálculo</translation>
     </message>
     <message>
         <source>Save as CSV (spreadsheet) file</source>
-        <translation type="unfinished"></translation>
+        <translation>Guardar como un archivo CSV (hoja de cálculo)</translation>
     </message>
     <message>
         <source>Saves the result into a file which you can load in a spreadsheet</source>
-        <translation type="unfinished"></translation>
+        <translation>Guardar el resultado en un archivo que se puede cargar en una hoja de cálculo</translation>
     </message>
     <message>
         <source>Next Page</source>
-        <translation type="unfinished"></translation>
+        <translation>Página Siguiente</translation>
     </message>
     <message>
         <source>Previous Page</source>
-        <translation type="unfinished"></translation>
+        <translation>Página Anterior</translation>
     </message>
     <message>
         <source>First Page</source>
-        <translation type="unfinished"></translation>
+        <translation>Primera Página</translation>
     </message>
 </context>
 <context>
@@ -1244,15 +1245,15 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>File size</source>
-        <translation>Tamaño del fichero</translation>
+        <translation>Tamaño del archivo</translation>
     </message>
     <message>
         <source>File name</source>
-        <translation>Nombre de fichero</translation>
+        <translation>Nombre del archivo</translation>
     </message>
     <message>
         <source>File date</source>
-        <translation>Fecha del fichero</translation>
+        <translation>Fecha del archivo</translation>
     </message>
     <message>
         <source> Ipath</source>
@@ -1391,23 +1392,23 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&lt;p&gt;&lt;i&gt;Alternate spellings: &lt;/i&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;&lt;i&gt;Escrituras Alternas: &lt;/i&gt;</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation type="unfinished"></translation>
+        <translation>Documentos duplicados</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation type="unfinished"></translation>
+        <translation>Estos URLs ( | ipath) comparten el mismo contenido: </translation>
     </message>
     <message>
         <source>Result count (est.)</source>
-        <translation type="unfinished">Conteo de resultados (est.)</translation>
+        <translation>Conteo de resultados (est.)</translation>
     </message>
     <message>
         <source>Query details</source>
-        <translation type="unfinished">Detalles de búsqueda</translation>
+        <translation>Detalles de búsqueda</translation>
     </message>
 </context>
 <context>
@@ -1430,11 +1431,11 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Save table to CSV file</source>
-        <translation>Guardar tabla a fichero CSV</translation>
+        <translation>Guardar tabla a archivo CSV</translation>
     </message>
     <message>
         <source>Can&apos;t open/create file: </source>
-        <translation>No se puede abrir/crear fichero:</translation>
+        <translation>No se puede abrir/crear archivo:</translation>
     </message>
     <message>
         <source>&amp;Preview</source>
@@ -1516,47 +1517,47 @@ Please check the mimeview file</source>
     <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Previsualización</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="unfinished">&amp;Abrir</translation>
+        <translation>&amp;Abrir</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="unfinished">Copiar nombre de &amp;fichero</translation>
+        <translation>Copiar nombre de &amp;archivo</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="unfinished">Copiar &amp;URL</translation>
+        <translation>Copiar &amp;URL</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation type="unfinished">&amp;Escribir a fichero</translation>
+        <translation>&amp;Escribir a archivo</translation>
     </message>
     <message>
         <source>Save selection to files</source>
-        <translation type="unfinished"></translation>
+        <translation>Guardar selección a archivos</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="unfinished">&amp;Vista previa de documento/directorio ascendente</translation>
+        <translation>&amp;Vista previa de documento o directorio ascendente</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="unfinished">&amp;Abrir documento/directorio ascendente</translation>
+        <translation>&amp;Abrir documento/directorio ascendente</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="unfinished">Buscar documentos &amp;similares</translation>
+        <translation>Buscar documentos &amp;similares</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir ventana de &amp;fragmentos</translation>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar subdocumentos / adjuntos</translation>
     </message>
 </context>
 <context>
@@ -1571,7 +1572,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>File name</source>
-        <translation>Nombre de fichero</translation>
+        <translation>Nombre de archivo</translation>
     </message>
     <message>
         <source>Query language</source>
@@ -1628,7 +1629,7 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
     <message>
         <source>Enter file name wildcard expression.</source>
-        <translation>Ingrese expresión de comodín para nombre de fichero.</translation>
+        <translation>Ingrese expresión de comodín para nombre de archivo.</translation>
     </message>
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
@@ -1730,37 +1731,37 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
     <message>
         <source>File name</source>
-        <translation>Nombre de fichero</translation>
+        <translation>Nombre de archivo</translation>
     </message>
 </context>
 <context>
     <name>Snippets</name>
     <message>
         <source>Snippets</source>
-        <translation type="unfinished"></translation>
+        <translation>Fragmentos</translation>
     </message>
     <message>
         <source>about:blank</source>
-        <translation type="unfinished"></translation>
+        <translation>about:blank</translation>
     </message>
     <message>
         <source>Find:</source>
-        <translation type="unfinished"></translation>
+        <translation>Buscar:</translation>
     </message>
     <message>
         <source>Next</source>
-        <translation type="unfinished">Siguiente</translation>
+        <translation>Siguiente</translation>
     </message>
     <message>
         <source>Prev</source>
-        <translation type="unfinished"></translation>
+        <translation>Anterior</translation>
     </message>
 </context>
 <context>
     <name>SnippetsW</name>
     <message>
         <source>Search</source>
-        <translation type="unfinished">Búsqueda</translation>
+        <translation>Buscar</translation>
     </message>
 </context>
 <context>
@@ -1791,15 +1792,15 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
     <message>
         <source>Match</source>
-        <translation type="unfinished"></translation>
+        <translation>Lenguaje</translation>
     </message>
     <message>
         <source>Case</source>
-        <translation type="unfinished"></translation>
+        <translation>Distinción de mayúsculas</translation>
     </message>
     <message>
         <source>Accents</source>
-        <translation type="unfinished"></translation>
+        <translation>Acentos</translation>
     </message>
 </context>
 <context>
@@ -1850,55 +1851,55 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
     <message>
         <source>Index: %1 documents, average length %2 terms.%3 results</source>
-        <translation type="unfinished"></translation>
+        <translation>Índice: %1 documentos, largo promedio %2 términos. %3 resultados</translation>
     </message>
     <message>
         <source>%1 results</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 resultados</translation>
     </message>
     <message>
         <source>List was truncated alphabetically, some frequent </source>
-        <translation type="unfinished"></translation>
+        <translation>La lista fue separada alfabéticamente, algunos términos </translation>
     </message>
     <message>
         <source>terms may be missing. Try using a longer root.</source>
-        <translation type="unfinished"></translation>
+        <translation>frecuentes pueden no aparecer. Intente usar una raíz más larga.</translation>
     </message>
     <message>
         <source>Show index statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar estadísticas del índice</translation>
     </message>
     <message>
         <source>Number of documents</source>
-        <translation type="unfinished"></translation>
+        <translation>Número de documentos</translation>
     </message>
     <message>
         <source>Average terms per document</source>
-        <translation type="unfinished"></translation>
+        <translation>Términos promedio por documento</translation>
     </message>
     <message>
         <source>Smallest document length</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamaño del documento más pequeño</translation>
     </message>
     <message>
         <source>Longest document length</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamaño del documento más grande</translation>
     </message>
     <message>
         <source>Database directory size</source>
-        <translation type="unfinished"></translation>
+        <translation>Tamaño del directorio de la base de datos</translation>
     </message>
     <message>
         <source>MIME types:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipos MIME:</translation>
     </message>
     <message>
         <source>Item</source>
-        <translation type="unfinished"></translation>
+        <translation>Elemento</translation>
     </message>
     <message>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor</translation>
     </message>
 </context>
 <context>
@@ -1929,27 +1930,27 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
     <message>
         <source>Result list paragraph format (erase all to reset to default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Formato de párrafo para la lista de resultados (borre todo para volver al valor por defecto)</translation>
     </message>
     <message>
         <source>Result list header (default is empty)</source>
-        <translation type="unfinished"></translation>
+        <translation>Encabezado de la lista de resultados (valor por defecto es vacío)</translation>
     </message>
     <message>
         <source>Select recoll config directory or xapian index directory (e.g.: /home/me/.recoll or /home/me/.recoll/xapiandb)</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccionar el directorio de configuración de recoll o el directorio para el índice xapian (ej: /home/me/.recoll o /home/me/.recoll/xapiandb)</translation>
     </message>
     <message>
         <source>The selected directory looks like a Recoll configuration directory but the configuration could not be read</source>
-        <translation type="unfinished"></translation>
+        <translation>El directorio seleccionado parecer ser un directorio de configuración de Recoll pero la configuración no puede ser leída</translation>
     </message>
     <message>
         <source>At most one index should be selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Al menos un índice debe ser seleccionado</translation>
     </message>
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
-        <translation type="unfinished"></translation>
+        <translation>No se puede agregar un índice con diferente opción para remover mayúsculas/minúsculas/diacríticos</translation>
     </message>
 </context>
 <context>
@@ -1972,11 +1973,11 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
     <message>
         <source>Desktop Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Valor predeterminado del ambiente de escritorio</translation>
     </message>
     <message>
         <source>Changing entries with different current values</source>
-        <translation type="unfinished"></translation>
+        <translation>Cambiando entradas con diferentes valores actuales</translation>
     </message>
 </context>
 <context>
@@ -2003,27 +2004,27 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
     <message>
         <source>Select one or several mime types then use the controls in the bottom frame to change how they are processed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccione uno o más tipos mime, y use los controles en la caja abajo para cambiar cómo se procesan.</translation>
     </message>
     <message>
         <source>Use Desktop preferences by default</source>
-        <translation type="unfinished"></translation>
+        <translation>Usar preferencias del escritorio como estándar</translation>
     </message>
     <message>
         <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleccione uno o más tipos de archivos, y use los controles en la caja abajo para cambiar cómo se procesan</translation>
     </message>
     <message>
         <source>Exception to Desktop preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Excepción de las preferencias del escritorio</translation>
     </message>
     <message>
         <source>Action (empty -&gt; recoll default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Acción (vacío -&gt; valor por defecto de recoll)</translation>
     </message>
     <message>
         <source>Apply to current selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar a la selección actual</translation>
     </message>
 </context>
 <context>
@@ -2054,18 +2055,18 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
     <message>
         <source>Process the WEB history queue</source>
-        <translation type="unfinished"></translation>
+        <translation>Procesar la cola del historial WEB</translation>
     </message>
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
-        <translation type="unfinished"></translation>
+        <translation>Habilita la indexación de páginas visitadas en Firefox.&lt;br&gt;(necesita también el plugin Recoll para Firefox)</translation>
     </message>
 </context>
 <context>
     <name>confgui::ConfIndexW</name>
     <message>
         <source>Can&apos;t write configuration file</source>
-        <translation>No se puede escribir fichero de configuración</translation>
+        <translation>No se puede escribir archivo de configuración</translation>
     </message>
 </context>
 <context>
@@ -2090,35 +2091,35 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     <name>confgui::ConfSearchPanelW</name>
     <message>
         <source>Automatic diacritics sensitivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Sensibilidad automática de diacríticos</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Habilitar automáticamente la sensibilidad de diacríticos si el término de búsqueda tiene caracteres acentuados (no presentes en unac_except_trans). De otra forma necesita usar el lenguage de búsqueda y el modificador &lt;i&gt;D&lt;/i&gt; para especificar la sensibilidad de los diacríticos.</translation>
     </message>
     <message>
         <source>Automatic character case sensitivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Sensibilidad automática a la distinción de mayúsculas/minúsculas de los caracteres</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Habilitar automáticamente la sensibilidad a las mayúsculas/minúsculas si la entrada tiene caracteres en mayúscula en una posición distinta al primer caracter. De otra forma necesita usar el lenguaje de búsqueda y el modificador &lt;i&gt;C&lt;/i&gt; para especificar la sensibilidad a las mayúsculas y minúsculas.</translation>
     </message>
     <message>
         <source>Maximum term expansion count</source>
-        <translation type="unfinished"></translation>
+        <translation>Máximo conteo de expansión de términos</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Máxima expansión de conteo para un solo término (ej: cuando se usan comodines). El valor por defecto de 10000 es razonable y evitará consultas que parecen congelarse mientras el motor de búsqueda recorre la lista de términos.</translation>
     </message>
     <message>
         <source>Maximum Xapian clauses count</source>
-        <translation type="unfinished"></translation>
+        <translation>Máximo conteo de cláusulas de Xapian</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Número máximo de cláusulas elementales agregadas a una consulta de Xapian. En algunos casos, el resultado de la expansión de términos puede ser multiplicativo, y deseamos evitar el uso excesivo de memoria. El valor por defecto de 100000 debería ser lo suficientemente alto en la mayoría de los casos, y compatible con las configuraciones de hardware típicas en la actualidad.</translation>
     </message>
 </context>
 <context>
@@ -2129,7 +2130,7 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
     <message>
         <source>Max. compressed file size (KB)</source>
-        <translation>Tamaño máximo de fichero comprimido (KB)</translation>
+        <translation>Tamaño máximo de archivo comprimido (KB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
@@ -2137,22 +2138,22 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
     <message>
         <source>Max. text file size (MB)</source>
-        <translation>Tamaño máximo para fichero de texto (MB)</translation>
+        <translation>Tamaño máximo para archivo de texto (MB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which text files will not be processed. Set to -1 for no limit. 
 This is for excluding monster log files from the index.</source>
-        <translation>Este valor establece un umbral más allá del cual los ficheros de texto no serán procesados.&lt;br&gt;Escriba 1 para no tener límites. Este valor es utilizado para excluir ficheros de registro gigantescos del índice.</translation>
+        <translation>Este valor establece un umbral más allá del cual los archivos de texto no serán procesados.&lt;br&gt;Escriba 1 para no tener límites. Este valor es utilizado para excluir archivos de registro gigantescos del índice.</translation>
     </message>
     <message>
         <source>Text file page size (KB)</source>
-        <translation>Tamaño de página para fichero de texto (KB)</translation>
+        <translation>Tamaño de página para archivo de texto (KB)</translation>
     </message>
     <message>
         <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
 This will help searching very big text  files (ie: log files).</source>
-        <translation>Si se utiliza este valor (diferente de -1), los ficheros de texto serán separados en partes de este tamaño para ser indexados.
-Esto ayuda con las búsquedas de ficheros de texto muy grandes (ej: ficheros de registro).</translation>
+        <translation>Si se utiliza este valor (diferente de -1), los archivos de texto serán separados en partes de este tamaño para ser indexados.
+Esto ayuda con las búsquedas de archivos de texto muy grandes (ej: archivos de registro).</translation>
     </message>
     <message>
         <source>Max. filter exec. time (S)</source>
@@ -2166,7 +2167,7 @@ Esto ayuda con las búsquedas de ficheros de texto muy grandes (ej: ficheros de 
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Filtros externos que se ejecuten por más tiempo del establecido serán detenidos. Esto es por el caso inusual (ej: postscript) dónde un documento puede causar que un filtro entre en un ciclo infinito. Establezca el número -1 para indicar que no hay límite.</translation>
     </message>
 </context>
 <context>
@@ -2177,7 +2178,7 @@ Esto ayuda con las búsquedas de ficheros de texto muy grandes (ej: ficheros de 
     </message>
     <message>
         <source>The list of directories where recursive indexing starts. Default: your home.</source>
-        <translation>La lista de directorios donde el indexado recursivo comienza. Valor por defecto: su directorio personal.</translation>
+        <translation>La lista de directorios donde la indexación recursiva comienza. Valor por defecto: su directorio personal.</translation>
     </message>
     <message>
         <source>Skipped paths</source>
@@ -2197,11 +2198,11 @@ Esto ayuda con las búsquedas de ficheros de texto muy grandes (ej: ficheros de 
     </message>
     <message>
         <source>Log file name</source>
-        <translation>Nombre de fichero de registro</translation>
+        <translation>Nombre de archivo de registro</translation>
     </message>
     <message>
         <source>The file where the messages will be written.&lt;br&gt;Use &apos;stderr&apos; for terminal output</source>
-        <translation>El fichero donde los mensajes serán escritos.&lt;br&gt;Use &apos;stderr&apos; para salida a la terminal</translation>
+        <translation>El archivo donde los mensajes serán escritos.&lt;br&gt;Use &apos;stderr&apos; para salida a la terminal</translation>
     </message>
     <message>
         <source>Log verbosity level</source>
@@ -2225,7 +2226,7 @@ Esto ayuda con las búsquedas de ficheros de texto muy grandes (ej: ficheros de 
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
-        <translation>Este es el porcentaje de utilización de disco donde el indexado fallará y se detendrá (para evitar llenarle el disco).&lt;br&gt;0 significa sin límites (valor por defecto).</translation>
+        <translation>Este es el porcentaje de utilización de disco donde la indexación fallará y se detendrá (para evitar llenarle el disco).&lt;br&gt;0 significa sin límites (valor por defecto).</translation>
     </message>
     <message>
         <source>No aspell usage</source>
@@ -2261,19 +2262,19 @@ Esto ayuda con las búsquedas de ficheros de texto muy grandes (ej: ficheros de 
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="unfinished"></translation>
+        <translation>El lenguaje para el diccionario aspell. Esto debería ser algo como &apos;en&apos; o &apos;fr&apos; ...&lt;br&gt;Si no se establece este valor, el ambiente NLS será utilizado para calcularlo, lo cual usualmente funciona. Para tener una idea de lo que está instalado en sus sistema, escriba &apos;aspell-config&apos; y busque archivos .dat dentro del directorio &apos;data-dir&apos;.</translation>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>El nombre de un directorio donde almacenar el índice.&lt;br&gt;Una ruta no absoluta se interpreta como relativa al directorio de configuración. El valor por defecto es &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <source>Unac exceptions</source>
-        <translation type="unfinished"></translation>
+        <translation>Excepciones Unac</translation>
     </message>
     <message>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Estas son excepciones al mecanismo unac, el cual, de forma predeterminada, elimina todos los diacríticos, y realiza una descomposición canónica. Es posible prevenir la eliminación de acentos para algunos caracteres, dependiendo de su lenguaje, y especificar descomposiciones adicionales, por ejemplo, para ligaturas. En cada entrada separada por espacios, el primer caracter es el origen, y el resto es la traducción.</translation>
     </message>
 </context>
 <context>
@@ -2416,7 +2417,7 @@ Puede ser lento para documentos grandes.</translation>
     </message>
     <message>
         <source>Query language magic file name suffixes.</source>
-        <translation>Sufijos para nombres mágicos de ficheros en el lenguaje de consulta.</translation>
+        <translation>Sufijos para nombres mágicos de archivos en el lenguaje de consulta.</translation>
     </message>
     <message>
         <source>Enable</source>
@@ -2538,51 +2539,51 @@ El valor por defecto es 2 (por ciento).</translation>
     </message>
     <message>
         <source>Plain text to HTML line style</source>
-        <translation type="unfinished"></translation>
+        <translation>Texto común a estilo de línea HTML</translation>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses some indentation. PRE + Wrap style may be what you want.</source>
-        <translation type="unfinished"></translation>
+        <translation>Las líneas en texto PRE no son dobladas. Al usar BR se pierde indentación. El estilo PRE + Wrap probablemente es lo que está buscando.</translation>
     </message>
     <message>
         <source>&lt;BR&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;BR&gt;</translation>
     </message>
     <message>
         <source>&lt;PRE&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;PRE&gt;</translation>
     </message>
     <message>
         <source>&lt;PRE&gt; + wrap</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;PRE&gt; + wrap</translation>
     </message>
     <message>
         <source>Disable Qt autocompletion in search entry.</source>
-        <translation type="unfinished"></translation>
+        <translation>Deshabilitar autocompletar de Qt en la entrada de búsqueda.</translation>
     </message>
     <message>
         <source>Search as you type.</source>
-        <translation type="unfinished"></translation>
+        <translation>Buscar al escribir.</translation>
     </message>
     <message>
         <source>Paths translations</source>
-        <translation type="unfinished"></translation>
+        <translation>Rutas de traducciones</translation>
     </message>
     <message>
         <source>Click to add another index directory to the list. You can select either a Recoll configuration directory or a Xapian index.</source>
-        <translation type="unfinished"></translation>
+        <translation>Haga clic para agregar otro directorio de índice a la lista. Puede seleccionar un directorio de configuración de Recoll o un índice Xapian.</translation>
     </message>
     <message>
         <source>Snippets window CSS file</source>
-        <translation type="unfinished"></translation>
+        <translation>Archivo CSS para la ventana de fragmentos</translation>
     </message>
     <message>
         <source>Opens a dialog to select the Snippets window CSS style sheet file</source>
-        <translation type="unfinished"></translation>
+        <translation>Abre una ventana de diálogo para el archivo de estilos CSS de la ventana de fragmentos</translation>
     </message>
     <message>
         <source>Resets the Snippets window style</source>
-        <translation type="unfinished"></translation>
+        <translation>Establece el valor por defecto para el estilo de la ventana de Fragmentos</translation>
     </message>
 </context>
 </TS>

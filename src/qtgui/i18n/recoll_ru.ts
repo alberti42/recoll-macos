@@ -41,19 +41,19 @@
     </message>
     <message>
         <source>text</source>
-        <translation type="unfinished">текст</translation>
+        <translation>текст</translation>
     </message>
     <message>
         <source>spreadsheet</source>
-        <translation type="unfinished">таблицы</translation>
+        <translation>таблицы</translation>
     </message>
     <message>
         <source>presentation</source>
-        <translation type="unfinished">презентации</translation>
+        <translation>презентации</translation>
     </message>
     <message>
         <source>message</source>
-        <translation type="unfinished">сообщения</translation>
+        <translation>сообщения</translation>
     </message>
 </context>
 <context>
@@ -275,50 +275,50 @@ p, li { white-space: pre-wrap; }
     <name>EditTrans</name>
     <message>
         <source>Source path</source>
-        <translation type="unfinished"></translation>
+        <translation>Исходный путь</translation>
     </message>
     <message>
         <source>Local path</source>
-        <translation type="unfinished"></translation>
+        <translation>Локальный путь</translation>
     </message>
     <message>
         <source>Config error</source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка конфигурации</translation>
     </message>
     <message>
         <source>Original path</source>
-        <translation type="unfinished"></translation>
+        <translation>Изначальный путь</translation>
     </message>
 </context>
 <context>
     <name>EditTransBase</name>
     <message>
         <source>Path Translations</source>
-        <translation type="unfinished"></translation>
+        <translation>Корректировка путей</translation>
     </message>
     <message>
         <source>Setting path translations for </source>
-        <translation type="unfinished"></translation>
+        <translation>Задать корректировку для</translation>
     </message>
     <message>
         <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите типы файлов и используйте кнопки ниже, чтобы изменить то, как они обрабатываются</translation>
     </message>
     <message>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Отмена</translation>
+        <translation>Отмена</translation>
     </message>
     <message>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить</translation>
     </message>
 </context>
 <context>
@@ -607,11 +607,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Search parameters</source>
-        <translation type="unfinished">Параметры поиска</translation>
+        <translation>Параметры поиска</translation>
     </message>
     <message>
         <source>Web history</source>
-        <translation type="unfinished"></translation>
+        <translation>Посещённые web-страницы</translation>
     </message>
 </context>
 <context>
@@ -947,44 +947,45 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Indexed MIME Types</source>
-        <translation type="unfinished"></translation>
+        <translation>Индексируемые MIME-типы</translation>
     </message>
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeview file</source>
-        <translation type="unfinished"></translation>
+        <translation>Неверная командная строка программы просмотра %1: [%2]
+Проверьте файл mimeview</translation>
     </message>
     <message>
         <source>Viewer command line for %1 specifies both file and parent file value: unsupported</source>
-        <translation type="unfinished"></translation>
+        <translation>Командная строка программы просмотра для %1 содержит как сам файл, так и родителя: такое не поддерживается</translation>
     </message>
     <message>
         <source>Cannot find parent document</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно найти родительский документ</translation>
     </message>
     <message>
         <source>Indexing did not run yet</source>
-        <translation type="unfinished"></translation>
+        <translation>Индексирование пока не выполнялось</translation>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
-        <translation type="unfinished"></translation>
+        <translation>Требуемые внешние программы для ваших типов файлов не найдены: см. файл </translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
-        <translation type="unfinished"></translation>
+        <translation>Индекс для этого файла устарел. Отказываюсь рисковать показывать неправильную запись.</translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation type="unfinished"></translation>
+        <translation>Нажмите ОК, чтобы обновить индекс для файла, и перезапустите очередь по окончании. Или нажмите Отмена.</translation>
     </message>
     <message>
         <source>Indexer running so things should improve when it&apos;s done</source>
-        <translation type="unfinished"></translation>
+        <translation>Индексация выполняется, так что по завершении положение должно улучшиться</translation>
     </message>
     <message>
         <source>Sub-documents and attachments</source>
-        <translation type="unfinished"></translation>
+        <translation>Вложенные документы</translation>
     </message>
 </context>
 <context>
@@ -1187,51 +1188,51 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Index configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Конфигурация &amp;индексирования</translation>
     </message>
     <message>
         <source>&amp;GUI configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Конфигурация и&amp;нтерфейса</translation>
     </message>
     <message>
         <source>&amp;Results</source>
-        <translation type="unfinished"></translation>
+        <translation>Список &amp;результатов</translation>
     </message>
     <message>
         <source>Sort by date, oldest first</source>
-        <translation type="unfinished"></translation>
+        <translation>Сортировать по датам от старых к новым</translation>
     </message>
     <message>
         <source>Sort by date, newest first</source>
-        <translation type="unfinished"></translation>
+        <translation>Сортировать по датам от новых к старым</translation>
     </message>
     <message>
         <source>Show as table</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать в виде таблицы</translation>
     </message>
     <message>
         <source>Show results in a spreadsheet-like table</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать результаты в виде таблицы</translation>
     </message>
     <message>
         <source>Save as CSV (spreadsheet) file</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить в CSV-файл</translation>
     </message>
     <message>
         <source>Saves the result into a file which you can load in a spreadsheet</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить результаты в текстовый файл с разделителями, открываемый как таблица в Office</translation>
     </message>
     <message>
         <source>Next Page</source>
-        <translation type="unfinished"></translation>
+        <translation>След. страница</translation>
     </message>
     <message>
         <source>Previous Page</source>
-        <translation type="unfinished"></translation>
+        <translation>Пред. страница</translation>
     </message>
     <message>
         <source>First Page</source>
-        <translation type="unfinished"></translation>
+        <translation>Первая страница</translation>
     </message>
 </context>
 <context>
@@ -1306,7 +1307,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>MIME type</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип MIME</translation>
     </message>
 </context>
 <context>
@@ -1341,7 +1342,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Query details</source>
-        <translation type="unfinished">Подробности запроса</translation>
+        <translation>Подробности запроса</translation>
     </message>
     <message>
         <source>(show query)</source>
@@ -1409,19 +1410,19 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&lt;p&gt;&lt;i&gt;Alternate spellings: &lt;/i&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;&lt;i&gt;Альтернативная орфография: &lt;/i&gt;</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation type="unfinished"></translation>
+        <translation>Дублированные документы</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation type="unfinished"></translation>
+        <translation>Данные URL ( | индексные пути) имеют одно и то же содержимое:</translation>
     </message>
     <message>
         <source>Result count (est.)</source>
-        <translation type="unfinished">Результатов (примерно)</translation>
+        <translation>Результатов (примерно)</translation>
     </message>
 </context>
 <context>
@@ -1530,47 +1531,47 @@ Please check the mimeview file</source>
     <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
-        <translation type="unfinished">&amp;Просмотр</translation>
+        <translation>&amp;Просмотр</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="unfinished">О&amp;ткрыть</translation>
+        <translation>О&amp;ткрыть</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="unfinished">Скопировать &amp;имя файла</translation>
+        <translation>Скопировать &amp;имя файла</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="unfinished">Копировать &amp;URL</translation>
+        <translation>Копировать &amp;URL</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation type="unfinished">&amp;Сохранить в файл</translation>
+        <translation>&amp;Сохранить в файл</translation>
     </message>
     <message>
         <source>Save selection to files</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Сохранить выделение в файлы</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="unfinished">&amp;Предпросмотр родительского документа/каталога</translation>
+        <translation>&amp;Предпросмотр родительского документа/каталога</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="unfinished">&amp;Открыть родительский документ/каталог</translation>
+        <translation>&amp;Открыть родительский документ/каталог</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="unfinished">Найти &amp;подобные документы</translation>
+        <translation>Найти &amp;подобные документы</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть окно &amp;Фрагменты</translation>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать вложенные документы</translation>
     </message>
 </context>
 <context>
@@ -1750,30 +1751,30 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>Snippets</name>
     <message>
         <source>Snippets</source>
-        <translation type="unfinished"></translation>
+        <translation>Фрагменты</translation>
     </message>
     <message>
         <source>about:blank</source>
-        <translation type="unfinished"></translation>
+        <translation>about:blank</translation>
     </message>
     <message>
         <source>Find:</source>
-        <translation type="unfinished"></translation>
+        <translation>Найти:</translation>
     </message>
     <message>
         <source>Next</source>
-        <translation type="unfinished">Следующая</translation>
+        <translation>Следующая</translation>
     </message>
     <message>
         <source>Prev</source>
-        <translation type="unfinished"></translation>
+        <translation>Предыдущая</translation>
     </message>
 </context>
 <context>
     <name>SnippetsW</name>
     <message>
         <source>Search</source>
-        <translation type="unfinished">Искать</translation>
+        <translation>Искать</translation>
     </message>
 </context>
 <context>
@@ -1846,15 +1847,15 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Match</source>
-        <translation type="unfinished"></translation>
+        <translation>Учитывать</translation>
     </message>
     <message>
         <source>Case</source>
-        <translation type="unfinished"></translation>
+        <translation>регистр</translation>
     </message>
     <message>
         <source>Accents</source>
-        <translation type="unfinished"></translation>
+        <translation>ударения</translation>
     </message>
 </context>
 <context>
@@ -1905,55 +1906,55 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Index: %1 documents, average length %2 terms.%3 results</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Индекс: %1 документ(ов), средняя длина %2 слов(о). %3 результат(ов)</translation>
     </message>
     <message>
         <source>%1 results</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 результат(ов)</translation>
     </message>
     <message>
         <source>List was truncated alphabetically, some frequent </source>
-        <translation type="unfinished"></translation>
+        <translation>Список был обрезан в алфавитном порядке, некоторые частые</translation>
     </message>
     <message>
         <source>terms may be missing. Try using a longer root.</source>
-        <translation type="unfinished"></translation>
+        <translation>слова могут отсутствовать. Попробуйте более длинный корень.</translation>
     </message>
     <message>
         <source>Show index statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать статистику индекса</translation>
     </message>
     <message>
         <source>Number of documents</source>
-        <translation type="unfinished"></translation>
+        <translation>Число документов</translation>
     </message>
     <message>
         <source>Average terms per document</source>
-        <translation type="unfinished"></translation>
+        <translation>Среднее число слов в документе</translation>
     </message>
     <message>
         <source>Smallest document length</source>
-        <translation type="unfinished"></translation>
+        <translation>Минимальная длина документа</translation>
     </message>
     <message>
         <source>Longest document length</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальная длина документа</translation>
     </message>
     <message>
         <source>Database directory size</source>
-        <translation type="unfinished"></translation>
+        <translation>Размер каталога базы данных</translation>
     </message>
     <message>
         <source>MIME types:</source>
-        <translation type="unfinished"></translation>
+        <translation>MIME-типы:</translation>
     </message>
     <message>
         <source>Item</source>
-        <translation type="unfinished"></translation>
+        <translation>Элемент</translation>
     </message>
     <message>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Значение</translation>
     </message>
 </context>
 <context>
@@ -1984,27 +1985,27 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Result list paragraph format (erase all to reset to default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Формат абзаца в списке результатов (очистите, чтобы вернуться к варианту по умолчанию)</translation>
     </message>
     <message>
         <source>Result list header (default is empty)</source>
-        <translation type="unfinished"></translation>
+        <translation>Заголовок списка результатов (по умолчанию пуст)</translation>
     </message>
     <message>
         <source>Select recoll config directory or xapian index directory (e.g.: /home/me/.recoll or /home/me/.recoll/xapiandb)</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите каталог конфигурации Recoll или индекса Xapian (например, /home/я/.recoll или /home/приятель/.recoll/xapiandb)</translation>
     </message>
     <message>
         <source>The selected directory looks like a Recoll configuration directory but the configuration could not be read</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбранный каталог выглядит как каталог конфигурации Recoll, но настройки не могут быть прочитаны</translation>
     </message>
     <message>
         <source>At most one index should be selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Следует выбирать не больше одного индекса</translation>
     </message>
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
-        <translation type="unfinished"></translation>
+        <translation>Невозможно добавить индекс с другими настройками регистра и диакритики</translation>
     </message>
 </context>
 <context>
@@ -2218,15 +2219,15 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>MIME type</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип MIME</translation>
     </message>
     <message>
         <source>Desktop Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Взять из окружения</translation>
     </message>
     <message>
         <source>Changing entries with different current values</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменение записей с различными текущими значениями</translation>
     </message>
 </context>
 <context>
@@ -2261,27 +2262,27 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Select one or several mime types then use the controls in the bottom frame to change how they are processed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите MIME-типы и используйте кнопки ниже, чтобы изменить то, как они обрабатываются</translation>
     </message>
     <message>
         <source>Use Desktop preferences by default</source>
-        <translation type="unfinished"></translation>
+        <translation>Использовать настройки окружения</translation>
     </message>
     <message>
         <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите типы файлов и используйте кнопки ниже, чтобы изменить то, как они обрабатываются</translation>
     </message>
     <message>
         <source>Exception to Desktop preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Переопределить настройки окружения</translation>
     </message>
     <message>
         <source>Action (empty -&gt; recoll default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Действие (пусто -&gt; вариант по умолчанию)</translation>
     </message>
     <message>
         <source>Apply to current selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Применить к выделению</translation>
     </message>
 </context>
 <context>
@@ -2324,11 +2325,11 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Process the WEB history queue</source>
-        <translation type="unfinished"></translation>
+        <translation>Обрабатывать посещённые web-страницы</translation>
     </message>
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
-        <translation type="unfinished"></translation>
+        <translation>Включает индексирование страниц, открывавшихся в Firefox.&lt;br&gt;(нужно дополнение Recoll для Firefox)</translation>
     </message>
 </context>
 <context>
@@ -2364,35 +2365,35 @@ This should give higher precedence to the results where the search terms appear 
     <name>confgui::ConfSearchPanelW</name>
     <message>
         <source>Automatic diacritics sensitivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Автоматическая чувствительность для диакритики</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Автоматически включает чувствительность для диакритики, если строка поиска содержит диакритические знаки (не в Unac-исключениях). В противном случае используйте язык запросов (модификатор &lt;i&gt;D&lt;/i&gt; для указания чувствительности).</translation>
     </message>
     <message>
         <source>Automatic character case sensitivity</source>
-        <translation type="unfinished"></translation>
+        <translation>Автоматическая чувствительность для регистра</translation>
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Автоматически включает чувствительность для регистра символов, если строка поиска содержит заглавные буквы (кроме первой буквы). В противном случае используйте язык запросов (модификатор &lt;i&gt;C&lt;/i&gt; для указания чувствительности).</translation>
     </message>
     <message>
         <source>Maximum term expansion count</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальное число раскрытий слов</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum expansion count for a single term (e.g.: when using wildcards). The default of 10 000 is reasonable and will avoid queries that appear frozen while the engine is walking the term list.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Максимальное число раскрытий для одного слова (напр. при использовании масок). Значение по умолчанию (10 000) является разумным и поможет избежать слишком затратных запросов.</translation>
     </message>
     <message>
         <source>Maximum Xapian clauses count</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальное число Xapian-предложений</translation>
     </message>
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Максимальное число элементарных предложений, добавляемых в запрос к Xapian. В некоторых случаях результатом раскрытия слов может стать чрезмерное потребление памяти. Значение по умолчанию (100 000) достаточно в большинстве случаев и подходит для современных аппаратных конфигураций.</translation>
     </message>
 </context>
 <context>
@@ -2441,7 +2442,8 @@ This will help searching very big text  files (ie: log files).</source>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Внешние фильтры, выполняющиеся дольше указанного предельного времени работы, принудительно завершаются. Это может помочь в тех редких случаях, когда фильтр (например, postscript) зацикливается при обработке некоторого документа. Значение, равное -1, выключает проверку времени работы.
+</translation>
     </message>
 </context>
 <context>
@@ -2536,19 +2538,19 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="unfinished"></translation>
+        <translation>Язык словаря aspell.  Обычно вроде &apos;en&apos; или &apos;ru&apos;...&lt;br&gt;Если значение не указано, будет использовано окружение (локаль), что обычно работает.  Чтобы посмотреть, какие варианты доступны в системе, наберите &apos;aspell config&apos; и проверьте, какие .dat-файлы есть в каталоге &apos;data-dir&apos;. </translation>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя каталога, в котором хранится индекс&lt;br&gt;Относительный путь берётся от каталога конфигурации.  Обычно &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <source>Unac exceptions</source>
-        <translation type="unfinished"></translation>
+        <translation>Unac-исключения</translation>
     </message>
     <message>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Это исключения для механизма Unac, который удаляет всю диакритику и выполняет каноническую декомпозицию. Можно переопределить механизм удаления для вашего языка или добавить декомпозиции (напр., для лигатур). Каждая запись отделяется пробелами и состоит из исходного символа и интерпретации.</translation>
     </message>
 </context>
 <context>
@@ -2817,51 +2819,51 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Plain text to HTML line style</source>
-        <translation type="unfinished"></translation>
+        <translation>Стиль отображения текста в HTML</translation>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses some indentation. PRE + Wrap style may be what you want.</source>
-        <translation type="unfinished"></translation>
+        <translation>Строки в PRE-тексте не переносятся. BR теряет часть отступов. PRE + перенос может быть хорошим выбором.</translation>
     </message>
     <message>
         <source>&lt;BR&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;BR&gt; (перевод строки)</translation>
     </message>
     <message>
         <source>&lt;PRE&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;PRE&gt; (преформат)</translation>
     </message>
     <message>
         <source>&lt;PRE&gt; + wrap</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;PRE&gt; + перенос</translation>
     </message>
     <message>
         <source>Disable Qt autocompletion in search entry.</source>
-        <translation type="unfinished"></translation>
+        <translation>Отключить Qt-автозавершение при вводе строки поиска.</translation>
     </message>
     <message>
         <source>Search as you type.</source>
-        <translation type="unfinished"></translation>
+        <translation>Искать по мере ввода.</translation>
     </message>
     <message>
         <source>Paths translations</source>
-        <translation type="unfinished"></translation>
+        <translation>Корректировка путей</translation>
     </message>
     <message>
         <source>Click to add another index directory to the list. You can select either a Recoll configuration directory or a Xapian index.</source>
-        <translation type="unfinished"></translation>
+        <translation>Щёлкните, чтобы добавить другой каталог индекса в список. Можно выбрать каталог конфигурации Recoll или индекс Xapian.</translation>
     </message>
     <message>
         <source>Snippets window CSS file</source>
-        <translation type="unfinished"></translation>
+        <translation>CSS-файл для окна Фрагменты</translation>
     </message>
     <message>
         <source>Opens a dialog to select the Snippets window CSS style sheet file</source>
-        <translation type="unfinished"></translation>
+        <translation>Открывает диалог выбора таблицы стилей CSS для окна Фрагменты</translation>
     </message>
     <message>
         <source>Resets the Snippets window style</source>
-        <translation type="unfinished"></translation>
+        <translation>Сбрасывает стиль окна Фрагменты</translation>
     </message>
 </context>
 </TS>

@@ -279,50 +279,50 @@ p, li { white-space: pre-wrap; }
     <name>EditTrans</name>
     <message>
         <source>Source path</source>
-        <translation type="unfinished"></translation>
+        <translation>Cesta ke zdroji</translation>
     </message>
     <message>
         <source>Local path</source>
-        <translation type="unfinished"></translation>
+        <translation>Místní cesta</translation>
     </message>
     <message>
         <source>Config error</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyba v nastavení</translation>
     </message>
     <message>
         <source>Original path</source>
-        <translation type="unfinished"></translation>
+        <translation>Původní cesta</translation>
     </message>
 </context>
 <context>
     <name>EditTransBase</name>
     <message>
         <source>Path Translations</source>
-        <translation type="unfinished"></translation>
+        <translation>Překlady cest</translation>
     </message>
     <message>
         <source>Setting path translations for </source>
-        <translation type="unfinished"></translation>
+        <translation>Nastavení překladů cest pro </translation>
     </message>
     <message>
         <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyberte jeden nebo více datových typů a použijte ovládací prvky v rámečku níže pro změnu způsobu, jakým jsou zpracovány</translation>
     </message>
     <message>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Přidat</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Smazat</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Zrušit</translation>
+        <translation>Zrušit</translation>
     </message>
     <message>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translation>Uložit</translation>
     </message>
 </context>
 <context>
@@ -961,27 +961,27 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Indexing did not run yet</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejstříkování ještě neběželo</translation>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
-        <translation type="unfinished"></translation>
+        <translation>Pro vaše souborové typy jsou potřeba vnější programy/příkazy, které ale nebyly nalezeny, jak byly uloženy při posledním rejstříkování v </translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejstřík není pro tento soubor nejnovější. Ukázání nesprávného záznamu bylo zamítnuto.</translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation type="unfinished"></translation>
+        <translation>Klepněte na tlačítko pro aktualizaci rejstříku pro tento soubor, potom dotaz, až bude rejstříkování hotovo, spusťte znovu. Jinak klepněte na Zrušit.</translation>
     </message>
     <message>
         <source>Indexer running so things should improve when it&apos;s done</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejstříkovač běží, takže věci by se po dokončení rejstříkování měly zlepšit</translation>
     </message>
     <message>
         <source>Sub-documents and attachments</source>
-        <translation type="unfinished"></translation>
+        <translation>Podřízené dokumenty a přílohy</translation>
     </message>
 </context>
 <context>
@@ -1196,43 +1196,43 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>&amp;Results</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Výsledky</translation>
     </message>
     <message>
         <source>Sort by date, oldest first</source>
-        <translation type="unfinished"></translation>
+        <translation>Roztřídit podle data, nejprve nejstarší</translation>
     </message>
     <message>
         <source>Sort by date, newest first</source>
-        <translation type="unfinished"></translation>
+        <translation>Roztřídit podle data, nejprve nejnovější</translation>
     </message>
     <message>
         <source>Show as table</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukázat jako tabulku</translation>
     </message>
     <message>
         <source>Show results in a spreadsheet-like table</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukázat výsledky v tabulce na způsob sešitu s listy v tabulkovém kalkulátoru</translation>
     </message>
     <message>
         <source>Save as CSV (spreadsheet) file</source>
-        <translation type="unfinished"></translation>
+        <translation>Uložit jako soubor CSV (tabulkový dokument)</translation>
     </message>
     <message>
         <source>Saves the result into a file which you can load in a spreadsheet</source>
-        <translation type="unfinished"></translation>
+        <translation>Uložit výsledek do souboru, jejž můžete nahrát jako sešit s listy v tabulkovém kalkulátoru</translation>
     </message>
     <message>
         <source>Next Page</source>
-        <translation type="unfinished"></translation>
+        <translation>Další strana</translation>
     </message>
     <message>
         <source>Previous Page</source>
-        <translation type="unfinished"></translation>
+        <translation>Předchozí strana</translation>
     </message>
     <message>
         <source>First Page</source>
-        <translation type="unfinished"></translation>
+        <translation>První strana</translation>
     </message>
 </context>
 <context>
@@ -1350,7 +1350,7 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Query details</source>
-        <translation type="unfinished">Suchdetails</translation>
+        <translation>Podrobnosti o hledání</translation>
     </message>
     <message>
         <source>(show query)</source>
@@ -1414,15 +1414,15 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation type="unfinished"></translation>
+        <translation>Zdvojené dokumenty</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tyto adresy ( | ipath) sdílejí totožný obsah:</translation>
     </message>
     <message>
         <source>Result count (est.)</source>
-        <translation type="unfinished">Počet výsledků (odhad)</translation>
+        <translation>Počet výsledků (odhad)</translation>
     </message>
 </context>
 <context>
@@ -1531,47 +1531,47 @@ Prověřte soubor mimeconf</translation>
     <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
-        <translation type="unfinished">&amp;Náhled</translation>
+        <translation>&amp;Náhled</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="unfinished">&amp;Otevřít</translation>
+        <translation>&amp;Otevřít</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="unfinished">Kopírovat název &amp;souboru</translation>
+        <translation>Kopírovat název &amp;souboru</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="unfinished">Kopírovat adresu (&amp;URL)</translation>
+        <translation>Kopírovat adresu (&amp;URL)</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation type="unfinished">&amp;Zapsat do souboru</translation>
+        <translation>&amp;Zapsat do souboru</translation>
     </message>
     <message>
         <source>Save selection to files</source>
-        <translation type="unfinished"></translation>
+        <translation>Uložit výběr do souborů</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="unfinished">Náhled na &amp;rodičovský dokument/složku</translation>
+        <translation>Náhled na &amp;rodičovský dokument/složku</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="unfinished">&amp;Otevřít rodičovský dokument/složku</translation>
+        <translation>&amp;Otevřít rodičovský dokument/složku</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="unfinished">Najít &amp;podobné dokumenty</translation>
+        <translation>Najít &amp;podobné dokumenty</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation type="unfinished">Otevřít okno s úr&amp;yvky</translation>
+        <translation>Otevřít okno s úr&amp;yvky</translation>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukázat podřízené dokumenty/přílohy</translation>
     </message>
 </context>
 <context>
@@ -1855,15 +1855,15 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Match</source>
-        <translation type="unfinished"></translation>
+        <translation>Shoda</translation>
     </message>
     <message>
         <source>Case</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozlišování velkých a malých písmen</translation>
     </message>
     <message>
         <source>Accents</source>
-        <translation type="unfinished"></translation>
+        <translation>Přízvuky</translation>
     </message>
 </context>
 <context>
@@ -1930,39 +1930,39 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Show index statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukázat statistiku rejstříku</translation>
     </message>
     <message>
         <source>Number of documents</source>
-        <translation type="unfinished"></translation>
+        <translation>Počet dokumentů</translation>
     </message>
     <message>
         <source>Average terms per document</source>
-        <translation type="unfinished"></translation>
+        <translation>Průměrný počet výrazů na dokument</translation>
     </message>
     <message>
         <source>Smallest document length</source>
-        <translation type="unfinished"></translation>
+        <translation>Délka nejmenšího dokumentu</translation>
     </message>
     <message>
         <source>Longest document length</source>
-        <translation type="unfinished"></translation>
+        <translation>Délka nejdelšího dokumentu</translation>
     </message>
     <message>
         <source>Database directory size</source>
-        <translation type="unfinished"></translation>
+        <translation>Velikost adresáře s databází</translation>
     </message>
     <message>
         <source>MIME types:</source>
-        <translation type="unfinished"></translation>
+        <translation>Typy MIME:</translation>
     </message>
     <message>
         <source>Item</source>
-        <translation type="unfinished"></translation>
+        <translation>Položka</translation>
     </message>
     <message>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Hodnota</translation>
     </message>
 </context>
 <context>
@@ -2001,19 +2001,19 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Select recoll config directory or xapian index directory (e.g.: /home/me/.recoll or /home/me/.recoll/xapiandb)</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyberte adresář s nastavením pro Recoll nebo rejstříkový adresář Xapianu (např.: /home/me/.recoll or /home/me/.recoll/xapiandb)</translation>
     </message>
     <message>
         <source>The selected directory looks like a Recoll configuration directory but the configuration could not be read</source>
-        <translation type="unfinished"></translation>
+        <translation>Vybraný adresář vypadá jako adresář s nastavením pro Recoll, ale nastavení se nepodařilo přečíst</translation>
     </message>
     <message>
         <source>At most one index should be selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Je potřeba vybrat alespoň jeden rejstřík</translation>
     </message>
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
-        <translation type="unfinished"></translation>
+        <translation>Nelze přidat rejstřík s odlišnou volbou pro velikost písma/diakritiku</translation>
     </message>
 </context>
 <context>
@@ -2195,11 +2195,11 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Desktop Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Výchozí plocha</translation>
     </message>
     <message>
         <source>Changing entries with different current values</source>
-        <translation type="unfinished"></translation>
+        <translation>Mění se záznamy s odlišnými nynějšími hodnotami</translation>
     </message>
 </context>
 <context>
@@ -2234,27 +2234,27 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Select one or several mime types then use the controls in the bottom frame to change how they are processed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyberte jeden nebo více MIME typů a použijte ovládací prvky v rámečku s tlačítky pro změnu způsobu, jakým jsou zpracovány.</translation>
     </message>
     <message>
         <source>Use Desktop preferences by default</source>
-        <translation type="unfinished"></translation>
+        <translation>Použít nastavení pracovní plochy jako výchozí</translation>
     </message>
     <message>
         <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyberte jeden nebo více datových typů a použijte ovládací prvky v rámečku níže pro změnu způsobu, jakým jsou zpracovány</translation>
     </message>
     <message>
         <source>Exception to Desktop preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Výjimka pro nastavení pracovní plochy</translation>
     </message>
     <message>
         <source>Action (empty -&gt; recoll default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Činnost (prázdné -&gt; výchozí pro Recoll)</translation>
     </message>
     <message>
         <source>Apply to current selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Použít na nynější výběr</translation>
     </message>
 </context>
 <context>
@@ -2804,31 +2804,31 @@ Výchozí hodnota je 2 (procenta).</translation>
     </message>
     <message>
         <source>Disable Qt autocompletion in search entry.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zakázat automatické doplňování Qt při zadávání v poli pro hledání.</translation>
     </message>
     <message>
         <source>Search as you type.</source>
-        <translation type="unfinished"></translation>
+        <translation>Hledat při psaní.</translation>
     </message>
     <message>
         <source>Paths translations</source>
-        <translation type="unfinished"></translation>
+        <translation>Překlady cest</translation>
     </message>
     <message>
         <source>Click to add another index directory to the list. You can select either a Recoll configuration directory or a Xapian index.</source>
-        <translation type="unfinished"></translation>
+        <translation>Klepnout pro přidání dalšího rejstříkového adresáře do seznamu. Můžete vybrat buď adresář s nastavením pro Recoll nebo rejstřík Xapian.</translation>
     </message>
     <message>
         <source>Snippets window CSS file</source>
-        <translation type="unfinished"></translation>
+        <translation>Soubor CSS okna s úryvky</translation>
     </message>
     <message>
         <source>Opens a dialog to select the Snippets window CSS style sheet file</source>
-        <translation type="unfinished"></translation>
+        <translation>Otevře dialog pro výběr souboru CSS se stylovým listem okna s úryvky</translation>
     </message>
     <message>
         <source>Resets the Snippets window style</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastaví znovu styl okna s úryvky</translation>
     </message>
 </context>
 </TS>
