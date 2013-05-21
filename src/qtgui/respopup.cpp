@@ -61,9 +61,11 @@ QMenu *create(QWidget *me, int opts, RefCntr<DocSequence> source, Rcl::Doc& doc)
     if (source.isNotNull() && source->getEnclosing(doc, pdoc)) {
 	popup->addAction(me->tr("Preview P&arent document/folder"), 
 			 me, SLOT(menuPreviewParent()));
-	popup->addAction(me->tr("&Open Parent document/folder"), 
-			 me, SLOT(menuOpenParent()));
     }
+    // Open parent is useful even if there is no parent because we open
+    // the enclosing folder.
+    popup->addAction(me->tr("&Open Parent document/folder"), 
+		     me, SLOT(menuOpenParent()));
 
     if (opts & showExpand)
 	popup->addAction(me->tr("Find &similar documents"), 
@@ -80,8 +82,7 @@ QMenu *create(QWidget *me, int opts, RefCntr<DocSequence> source, Rcl::Doc& doc)
     return popup;
 }
 
-Rcl::Doc getParent(RefCntr<DocSequence> source,
-			       Rcl::Doc& doc)
+Rcl::Doc getParent(RefCntr<DocSequence> source, Rcl::Doc& doc)
 {
     Rcl::Doc pdoc;
     if (source.isNull() || !source->getEnclosing(doc, pdoc)) {
