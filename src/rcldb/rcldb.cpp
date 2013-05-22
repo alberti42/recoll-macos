@@ -316,6 +316,8 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
 
     // Set xdocid at once so that we can call whatDbIdx()
     doc.xdocid = docid;
+    doc.haspages = hasPages(docid);
+
     // Compute what index this comes from, and check for path translations
     string dbdir = m_rcldb->m_basedir;
     if (!m_rcldb->m_extraDbs.empty()) {
@@ -362,6 +364,21 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     doc.meta[Doc::keyurl] = doc.url;
     doc.meta[Doc::keymt] = doc.dmtime.empty() ? doc.fmtime : doc.dmtime;
     return true;
+}
+
+bool Db::Native::hasPages(Xapian::docid docid)
+{
+    string ermsg;
+    Xapian::PositionIterator pos;
+    XAPTRY(pos = xrdb.positionlist_begin(docid, page_break_term); 
+	   if (pos != xrdb.positionlist_end(docid, page_break_term)) {
+	       return true;
+	   },
+	   xrdb, ermsg);
+    if (!ermsg.empty()) {
+	LOGERR(("Db::Native::hasPages: xapian error: %s\n", ermsg.c_str()));
+    }
+    return false;
 }
 
 // Return the positions list for the page break term

@@ -106,14 +106,15 @@ class Query {
     /** Build synthetic abstract for document, extracting chunks relevant for
      * the input query. This uses index data only (no access to the file) */
     // Abstract returned as one string
-    bool makeDocAbstract(Doc &doc, std::string& abstract);
+    bool makeDocAbstract(const Doc &doc, std::string& abstract);
     // Returned as a snippets vector
-    bool makeDocAbstract(Doc &doc, std::vector<std::string>& abstract);
+    bool makeDocAbstract(const Doc &doc, std::vector<std::string>& abstract);
     // Returned as a vector of pair<page,snippet> page is 0 if unknown
-    int makeDocAbstract(Doc &doc, std::vector<Snippet>& abst, 
+    int makeDocAbstract(const Doc &doc, std::vector<Snippet>& abst, 
 			int maxoccs= -1, int ctxwords = -1);
-    /** Retrieve page number for first match for term */
-    int getFirstMatchPage(Doc &doc, std::string& term);
+    /** Retrieve page number for first match for "significant" query term 
+     *  @param term returns the chosen term */
+    int getFirstMatchPage(const Doc &doc, std::string& term);
 
     /** Retrieve a reference to the searchData we are using */
     RefCntr<SearchData> getSD() 

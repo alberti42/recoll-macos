@@ -150,6 +150,9 @@ class Db::Native {
      * 
      */
     bool subDocs(const string &udi, vector<Xapian::docid>& docids);
+
+    /** Check if a page position list is defined */
+    bool hasPages(Xapian::docid id);
 };
 
 // This is the word position offset at which we index the body text

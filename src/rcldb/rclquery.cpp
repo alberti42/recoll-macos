@@ -264,7 +264,7 @@ bool Query::getQueryTerms(vector<string>& terms)
     return true;
 }
 
-int Query::makeDocAbstract(Doc &doc,
+int Query::makeDocAbstract(const Doc &doc,
 			   vector<Snippet>& abstract, 
 			   int maxoccs, int ctxwords)
 {
@@ -284,7 +284,7 @@ int Query::makeDocAbstract(Doc &doc,
     return ret;
 }
 
-bool Query::makeDocAbstract(Doc &doc, vector<string>& abstract)
+bool Query::makeDocAbstract(const Doc &doc, vector<string>& abstract)
 {
     vector<Snippet> vpabs;
     if (!makeDocAbstract(doc, vpabs))
@@ -293,7 +293,6 @@ bool Query::makeDocAbstract(Doc &doc, vector<string>& abstract)
 	 it != vpabs.end(); it++) {
 	string chunk;
 	if (it->page > 0) {
-	    doc.haspages = true;
 	    ostringstream ss;
 	    ss << it->page;
 	    chunk += string(" [p ") + ss.str() + "] ";
@@ -304,7 +303,7 @@ bool Query::makeDocAbstract(Doc &doc, vector<string>& abstract)
     return true;
 }
 
-bool Query::makeDocAbstract(Doc &doc, string& abstract)
+bool Query::makeDocAbstract(const Doc &doc, string& abstract)
 {
     vector<Snippet> vpabs;
     if (!makeDocAbstract(doc, vpabs))
@@ -317,9 +316,9 @@ bool Query::makeDocAbstract(Doc &doc, string& abstract)
     return m_reason.empty() ? true : false;
 }
 
-int Query::getFirstMatchPage(Doc &doc, string& term)
+int Query::getFirstMatchPage(const Doc &doc, string& term)
 {
-    LOGDEB1(("Db::getFirstMatchPages\n"));;
+    LOGDEB1(("Db::getFirstMatchPage\n"));;
     if (!m_nq) {
 	LOGERR(("Query::getFirstMatchPage: no nq\n"));
 	return false;
