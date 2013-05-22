@@ -58,6 +58,8 @@ public slots:
     virtual void completionTermChosen(const QString& text);
     virtual void wrapupCompletion();
     virtual void timerDone();
+    virtual void takeFocus();
+
 signals:
     void startSearch(RefCntr<Rcl::SearchData>, bool);
     void clearSearch();

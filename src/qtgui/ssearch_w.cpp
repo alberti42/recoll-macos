@@ -81,6 +81,15 @@ void SSearch::init()
     m_keystroke = false;
 }
 
+void SSearch::takeFocus()
+{
+    LOGDEB2(("SSearch: take focus\n"));
+    queryText->setFocus(Qt::ShortcutFocusReason);
+    // If the focus was already in the search entry, the text is not selected.
+    // Do it for consistency
+    queryText->lineEdit()->selectAll();
+}
+
 void SSearch::timerDone()
 {
     QString qs = queryText->currentText();

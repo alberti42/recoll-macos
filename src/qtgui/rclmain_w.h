@@ -142,7 +142,6 @@ public slots:
     virtual void catgFilter(int);
     virtual void initDbOpen();
     virtual void toggleFullScreen();
-    virtual void focusToSearch();
     virtual void on_actionSortByDateAsc_toggled(bool on);
     virtual void on_actionSortByDateDesc_toggled(bool on);
     virtual void on_actionShowResultsAsTable_toggled(bool on);

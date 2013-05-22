@@ -223,8 +223,7 @@ void RclMain::init()
     // A shortcut to get the focus back to the search entry. 
     QKeySequence seq("Ctrl+Shift+s");
     QShortcut *sc = new QShortcut(seq, this);
-    connect(sc, SIGNAL (activated()), 
-	    this, SLOT (focusToSearch()));
+    connect(sc, SIGNAL (activated()), sSearch, SLOT (takeFocus()));
 
     connect(&m_watcher, SIGNAL(fileChanged(QString)), 
 	    this, SLOT(idxStatus()));
@@ -464,12 +463,6 @@ void RclMain::viewUrl()
 	sleep(30);
 	fileExit();
     }
-}
-
-void RclMain::focusToSearch()
-{
-    LOGDEB(("Giving focus to sSearch\n"));
-    sSearch->queryText->setFocus(Qt::ShortcutFocusReason);
 }
 
 void RclMain::setStemLang(QAction *id)
