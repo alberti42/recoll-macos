@@ -70,8 +70,11 @@ void SSearch::init()
     // the combobox lineedit will delete the completer on setCompleter(0).
     // But the model does not belong to the completer so it's not deleted...
     m_savedModel = queryText->completer()->model();
-    if (prefs.ssearchNoComplete) 
+    if (prefs.ssearchNoComplete)
 	queryText->completer()->setModel(0);
+    // Recoll searches are always case-sensitive because of the use of
+    // capitalization to suppress stemming
+    queryText->completer()->setCaseSensitivity(Qt::CaseSensitive);
     m_displayingCompletions = false;
     m_escape = false;
     m_disableAutosearch = true;
