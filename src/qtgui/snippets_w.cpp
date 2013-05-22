@@ -150,7 +150,7 @@ void SnippetsW::init()
 	"<link type=\"text/css\" rel=\"stylesheet\" href=\"/tmp/style.css\">"
 	"</head>"
 	"<body>"
-	"<table style='overflow-x: scroll; white-space: nowrap'>"
+	"<table>"
 	;
 
     g_hiliter.set_inputhtml(false);
