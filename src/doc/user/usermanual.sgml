@@ -4512,11 +4512,11 @@ except:
             real time indexing. Inotify support is enabled by default on
             recent Linux systems.</para></listitem>
 
-	  <listitem><para><option>--with-qtzeitgeist</option> will
+	  <listitem><para><option>--with-qzeitgeist</option> will
 	      enable sending <application>Zeitgeist</application>
 	      events about the visited search results, and needs
-	      the <application>Qt Zeitgeist</application>
-	      module.</para></listitem> 
+	      the <application>qzeitgeist</application>
+	      package.</para></listitem> 
 
           <listitem><para><option>--disable-webkit</option> is available
               from version 1.17 to implement the result list with a
