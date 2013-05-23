@@ -1776,10 +1776,6 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
         <translation>Extraits</translation>
     </message>
     <message>
-        <source>about:blank</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>X</source>
         <translation type="obsolete">X</translation>
     </message>
@@ -2325,6 +2321,22 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     <message>
         <source>Apply to current selection</source>
         <translation>Appliquer à la sélection courante</translation>
+    </message>
+    <message>
+        <source>Recoll action:</source>
+        <translation>Action </translation>
+    </message>
+    <message>
+        <source>current value</source>
+        <translation>valeur actuelle</translation>
+    </message>
+    <message>
+        <source>Select same</source>
+        <translation>S&amp;eacute;lectionner par valeur</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;New Values:&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Nouveaux param&amp;egrave;tres&lt;/b&gt;</translation>
     </message>
 </context>
 <context>

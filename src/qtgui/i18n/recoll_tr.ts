@@ -1599,10 +1599,6 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>about:blank</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Find:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2095,6 +2091,22 @@ Büyük boyutlu belgelerde yavaş olabilir.</translation>
     </message>
     <message>
         <source>Apply to current selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recoll action:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>current value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select same</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;New Values:&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

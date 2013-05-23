@@ -1759,7 +1759,7 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>about:blank</source>
-        <translation>about:blank</translation>
+        <translation type="obsolete">about:blank</translation>
     </message>
     <message>
         <source>Find:</source>
@@ -2255,6 +2255,22 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     <message>
         <source>Apply to current selection</source>
         <translation>Použít na nynější výběr</translation>
+    </message>
+    <message>
+        <source>Recoll action:</source>
+        <translation>Aktion</translation>
+    </message>
+    <message>
+        <source>current value</source>
+        <translation>current value</translation>
+    </message>
+    <message>
+        <source>Select same</source>
+        <translation>Vybrat  stejný</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;New Values:&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Nové hodnoty:&lt;/b&gt;</translation>
     </message>
 </context>
 <context>

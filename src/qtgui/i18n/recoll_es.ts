@@ -1742,7 +1742,7 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
     <message>
         <source>about:blank</source>
-        <translation>about:blank</translation>
+        <translation type="obsolete">about:blank</translation>
     </message>
     <message>
         <source>Find:</source>
@@ -2025,6 +2025,22 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     <message>
         <source>Apply to current selection</source>
         <translation>Aplicar a la selección actual</translation>
+    </message>
+    <message>
+        <source>Recoll action:</source>
+        <translation>Acción</translation>
+    </message>
+    <message>
+        <source>current value</source>
+        <translation>valor</translation>
+    </message>
+    <message>
+        <source>Select same</source>
+        <translation>Seleccionar misma</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;New Values:&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Nuevos valores&lt;/b&gt;</translation>
     </message>
 </context>
 <context>

@@ -1740,7 +1740,7 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>about:blank</source>
-        <translation>about:blank</translation>
+        <translation type="obsolete">about:blank</translation>
     </message>
     <message>
         <source>Find:</source>
@@ -2236,6 +2236,22 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Apply to current selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recoll action:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>current value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select same</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;New Values:&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
