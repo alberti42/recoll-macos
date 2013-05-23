@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>632</width>
+    <width>635</width>
     <height>726</height>
    </rect>
   </property>
@@ -83,19 +83,66 @@
     </widget>
    </item>
    <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Recoll action:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="currentLBL">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::Box</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <property name="text">
+        <string>current value</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::PlainText</enum>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+       <widget class="QPushButton" name="selSamePB">
+         <property name="text">
+           <string>Select same</string>
+         </property>
+       </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
     <widget class="QFrame" name="frame">
      <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+      <enum>QFrame::Box</enum>
      </property>
      <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <property name="lineWidth">
-      <number>2</number>
+      <enum>QFrame::Plain</enum>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QLabel" name="label_new">
+            <property name="text">
+             <string>&lt;b&gt;New Values:&lt;/b&gt;</string>
+            </property>
+           </widget>
+          </item>
         <item>
          <widget class="QCheckBox" name="setExceptCB">
           <property name="text">
@@ -108,7 +155,7 @@
           <item>
            <widget class="QLabel" name="label">
             <property name="text">
-             <string>Action (empty -> recoll default)</string>
+             <string>Action (empty -&gt; recoll default)</string>
             </property>
            </widget>
           </item>

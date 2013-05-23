@@ -42,9 +42,11 @@ public:
 
 public slots:
     virtual void editActions();
+    virtual void onItemClicked(QTableWidgetItem *);
     virtual void onItemDoubleClicked(QTableWidgetItem *);
     virtual void onUseDesktopCBToggled(int);
     virtual void onSetExceptCBToggled(int);
+    virtual void onSelSameClicked();
 private:
     virtual void init();
     virtual void fillLists();

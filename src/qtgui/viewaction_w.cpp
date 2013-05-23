@@ -40,16 +40,21 @@ using namespace std;
 
 void ViewAction::init()
 {
+    selSamePB->setEnabled(false);
     connect(closePB, SIGNAL(clicked()), this, SLOT(close()));
     connect(chgActPB, SIGNAL(clicked()), this, SLOT(editActions()));
     connect(actionsLV,SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
 	    this, SLOT(onItemDoubleClicked(QTableWidgetItem *)));
+    connect(actionsLV,SIGNAL(itemClicked(QTableWidgetItem *)),
+	    this, SLOT(onItemClicked(QTableWidgetItem *)));
     useDesktopCB->setChecked(prefs.useDesktopOpen);
     onUseDesktopCBToggled(prefs.useDesktopOpen);
     connect(useDesktopCB, SIGNAL(stateChanged(int)), 
 	    this, SLOT(onUseDesktopCBToggled(int)));
     connect(setExceptCB, SIGNAL(stateChanged(int)), 
 	    this, SLOT(onSetExceptCBToggled(int)));
+    connect(selSamePB, SIGNAL(clicked()),
+	    this, SLOT(onSelSameClicked()));
     resize(QSize(640, 480).expandedTo(minimumSizeHint()));
 }
 	
@@ -67,6 +72,7 @@ void ViewAction::onSetExceptCBToggled(int onoff)
 
 void ViewAction::fillLists()
 {
+    currentLBL->clear();
     actionsLV->clear();
     actionsLV->verticalHeader()->setDefaultSectionSize(20); 
     vector<pair<string, string> > defs;
@@ -109,6 +115,51 @@ void ViewAction::selectMT(const QString& mt)
 	(*it)->setSelected(true);
 	actionsLV->setCurrentItem(*it, QItemSelectionModel::Columns);
     }
+}
+
+void ViewAction::onSelSameClicked()
+{
+    fprintf(stderr, "onSelSameClicked()\n");
+    actionsLV->clearSelection();
+    QString value = currentLBL->text();
+    if (value.isEmpty())
+	return;
+    string action = qs2utf8s(value);
+    fprintf(stderr, "value: %s\n", action.c_str());
+    vector<pair<string, string> > defs;
+    theconfig->getMimeViewerDefs(defs);
+    for (unsigned int i = 0; i < defs.size(); i++) {
+	if (defs[i].second == action) {
+	    QList<QTableWidgetItem *>items = 
+		actionsLV->findItems(QString::fromAscii(defs[i].first.c_str()), 
+				  Qt::MatchFixedString|Qt::MatchCaseSensitive);
+	    for (QList<QTableWidgetItem *>::iterator it = items.begin();
+		 it != items.end(); it++) {
+		(*it)->setSelected(true);
+		QTableWidgetItem *item1 = actionsLV->item((*it)->row(), 1);
+		item1->setSelected(true);
+	    }
+	}
+    }
+}
+
+// Fill the input fields with the row's values when the user clicks
+void ViewAction::onItemClicked(QTableWidgetItem * item)
+{
+    QTableWidgetItem *item0 = actionsLV->item(item->row(), 0);
+    string mtype = (const char *)item0->text().toLocal8Bit();
+
+    vector<pair<string, string> > defs;
+    theconfig->getMimeViewerDefs(defs);
+    for (unsigned int i = 0; i < defs.size(); i++) {
+	if (defs[i].first == mtype) {
+	    currentLBL->setText(QString::fromAscii(defs[i].second.c_str()));
+	    selSamePB->setEnabled(true);
+	    return;
+	}
+    }
+    currentLBL->clear();
+    selSamePB->setEnabled(false);
 }
 
 void ViewAction::onItemDoubleClicked(QTableWidgetItem * item)

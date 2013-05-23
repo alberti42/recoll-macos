@@ -44,8 +44,16 @@ versions.</i></p>
       Preferences-&gt;Query configuration-&gt;User interface </blockquote>
     and erase the result paragraph format string (^A DEL in the text area),
     this will reset the string to the default value.</li>
+
+  <li>A release 1.19 change in the way we handle minus characters
+    ('-')  broke support for wildcard character ranges (e.g.: <tt>[a-z]</tt>).
+    A fix would be relatively complicated, so please speak up if you
+    need it because I won't probably do it without further
+    motivation.</li>
+
   <li>Real time indexer: when running with gamin on FreeBSD, the indexer can
     deadlock in the gamin dialog in some cases.</li>
+
   <li>After an upgrade, the recoll GUI sometimes crashes on startup. This is
     fixed by removing (back it up just in case)
     ~/.config/Recoll.org/recoll.conf, the QSettings storage for recoll.</li>
