@@ -233,8 +233,8 @@ Chapter 5. Installation and configuration
        indexing. Inotify support is enabled by default on recent Linux
        systems.
 
-     o --with-qtzeitgeist will enable sending Zeitgeist events about the
-       visited search results, and needs the Qt Zeitgeist module.
+     o --with-qzeitgeist will enable sending Zeitgeist events about the
+       visited search results, and needs the qzeitgeist package.
 
      o --disable-webkit is available from version 1.17 to implement the
        result list with a Qt QTextBrowser instead of a WebKit widget if you

@@ -1432,6 +1432,10 @@ Chapter 3. Searching
    not be a duplicate of the text only). Duplicates hiding is controlled by
    an entry in the GUI configuration dialog, and is off by default.
 
+   As of release 1.19, when a result document does have undisplayed
+   duplicates, a Dups link will be shown with the result list entry. Clicking
+   the link will display the paths (URLs + ipaths) for the duplicate entries.
+
   3.1.11. Search tips, shortcuts
 
     3.1.11.1. Terms and search expansion
@@ -3151,8 +3155,8 @@ Chapter 5. Installation and configuration
        indexing. Inotify support is enabled by default on recent Linux
        systems.
 
-     o --with-qtzeitgeist will enable sending Zeitgeist events about the
-       visited search results, and needs the Qt Zeitgeist module.
+     o --with-qzeitgeist will enable sending Zeitgeist events about the
+       visited search results, and needs the qzeitgeist package.
 
      o --disable-webkit is available from version 1.17 to implement the
        result list with a Qt QTextBrowser instead of a WebKit widget if you
