@@ -52,7 +52,7 @@
         <li><a href="features.html">Detailed features</a>.
       </ul>
       <p>The current <span class="application">Recoll</span> version is
-	<a href="download.html">1.19.2</a> 
+	<a href="download.html">1.19.3</a> 
 	(<a href="release-1.19.html">Release notes</a>,
         <a href="BUGS.html">known bugs</a>).</p>
 
@@ -88,14 +88,15 @@
       
       <dl>
 
-        <dt>2013-05-18</dt><dd>Sometimes things 
-          <a href="http://www.lesbonscomptes.com/pages/happysearch.html">
-            just work</a>...</dd>
-        
-        <dt>2013-05-14</dt><dd>Recoll 1.19.2 is out. See the 
+        <dt>2013-05-23</dt><dd>Recoll 1.19.3 is out. It fixes a few very
+           minor issues in 1.19.2. See the 
            <a href="release-1.19.html">release notes</a> for a description
            of the changes.</dd>
         </dd>
+
+        <dt>2013-05-18</dt><dd>Sometimes things 
+          <a href="http://www.lesbonscomptes.com/pages/happysearch.html">
+            just work</a>...</dd>
 
         <dt>2013-04-30</dt><dd>Thanks to some of its users, Recoll now
           has filters to 
