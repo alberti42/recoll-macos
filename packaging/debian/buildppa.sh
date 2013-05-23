@@ -4,16 +4,16 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.19.2
+RCLVERS=1.19.3
 LENSVERS=1.19.2.3328
-PPAVERS=3
+PPAVERS=1
 
 case $RCLVERS in
     [23]*) PPANAME=recollexp-ppa;;
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-PPANAME=recollexp-ppa
+#PPANAME=recollexp-ppa
 
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
@@ -21,7 +21,6 @@ read rep
 ####### QT4
 debdir=debianrclqt4
 series4="lucid oneiric precise quantal raring"
-series4=
 
 for series in $series4 ; do
   rm -rf recoll-${RCLVERS}/debian
@@ -44,7 +43,7 @@ done
 
 ### KIO
 seriesk="lucid oneiric precise quantal raring"
-seriesk=precise
+seriesk=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -71,7 +70,6 @@ done
 ### Unity Lens
 seriesl="oneiric precise quantal raring"
 seriesl=
-
 debdir=debianunitylens
 topdir=recoll-lens-${LENSVERS}
 
