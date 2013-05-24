@@ -1646,7 +1646,8 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 	    execpath.erase();
 
 	// Specialcase text/html because of the help browser need
-	if (execpath.empty() && !doc.mimetype.compare("text/html")) {
+	if (execpath.empty() && !doc.mimetype.compare("text/html") && 
+	    apptag.empty()) {
 	    if (lookForHtmlBrowser(execpath)) {
 		lcmd.clear();
 		lcmd.push_back(execpath);
@@ -1837,7 +1838,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 	transcode(ncmd, prcmd, fcharset, "UTF-8");
 	QString msg = tr("Executing: [") + 
 	    QString::fromUtf8(prcmd.c_str()) + "]";
-	stb->showMessage(msg, 5000);
+	stb->showMessage(msg, 10000);
     }
 
     if (!istempfile)
