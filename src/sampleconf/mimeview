@@ -76,7 +76,6 @@ application/vnd.sun.xml.writer.template = libreoffice %f
 application/vnd.wordperfect = libreoffice %f
 text/rtf = libreoffice %f
 
-application/x-chm = kchmviewer %f
 application/x-dia-diagram = dia %f
 
 application/x-fsdirectory = dolphin %f
@@ -149,6 +148,7 @@ text/x-csv = libreoffice %f
 text/x-html-sidux-man = konqueror %f
 text/x-html-aptosid-man = iceweasel %f
 
+application/x-chm = kchmviewer %f
 # Html pages inside a chm have a chm rclaptg set by the filter. Kchmviewer
 # knows how to use the ipath (which is the internal chm path) to open the
 # file at the right place
