@@ -120,12 +120,14 @@ class Db::Native {
 
     bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc);
 
+    size_t whatDbIdx(Xapian::docid id);
+
     /** Retrieve Xapian::docid, given unique document identifier, 
      * using the posting list for the derived term.
      *
      * @return 0 if not found
      */
-    Xapian::docid getDoc(const string& udi, Xapian::Document& xdoc);
+    Xapian::docid getDoc(const string& udi, int idxi, Xapian::Document& xdoc);
 
     /** Retrieve unique document identifier for given Xapian document, 
      * using the document termlist 
@@ -133,7 +135,7 @@ class Db::Native {
     bool xdocToUdi(Xapian::Document& xdoc, string &udi);
 
     /** Check if doc is indexed by term */
-    bool hasTerm(const string& udi, const string& term);
+    bool hasTerm(const string& udi, int idxi, const string& term);
 
     /** Compute list of subdocuments for a given udi. We look for documents 
      * indexed by a parent term matching the udi, the posting list for the 
@@ -149,7 +151,7 @@ class Db::Native {
      * indexer (rcldb user), using the ipath.
      * 
      */
-    bool subDocs(const string &udi, vector<Xapian::docid>& docids);
+    bool subDocs(const string &udi, int idxi, vector<Xapian::docid>& docids);
 
     /** Check if a page position list is defined */
     bool hasPages(Xapian::docid id);

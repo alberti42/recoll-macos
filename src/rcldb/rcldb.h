@@ -228,9 +228,12 @@ class Db {
     /* Update-related methods ******************************************/
 
     /** Test if the db entry for the given udi is up to date (by
-     * comparing the input and stored sigs). 
-     * Side-effect: set the existence flag for the file document 
-     * and all subdocs if any (for later use by 'purge()') 
+     * comparing the input and stored sigs). This is used both when 
+     * indexing and querying (before opening a document using stale info),
+     * **This assumes that the udi pertains to the main index (idxi==0).**
+     * Side-effect when the db is writeable: set the existence flag
+     * for the file document and all subdocs if any (for later use by
+     * 'purge()')
      */
     bool needUpdate(const string &udi, const string& sig, bool *existed=0);
 
@@ -355,8 +358,13 @@ class Db {
     /** Get document for given udi
      *
      * Used by the 'history' feature, and to retrieve ancestor documents.
+     * @param udi the unique document identifier
+     * @param idxdoc used when there are several index as an opaque way to pass
+     *   the index id. Use a doc from the same index 
+     *   (e.g.: when looking for parent), 
+     * @param doc the output doc
      */
-    bool getDoc(const string &udi, Doc &doc);
+    bool getDoc(const string &udi, const Doc& idxdoc, Doc &doc);
 
     /** Test if documents has sub-documents. 
      *

@@ -430,7 +430,8 @@ void RclMain::viewUrl()
 	     (const char *)qurl.fragment().toLocal8Bit(), udi);
     
     Rcl::Doc doc;
-    if (!rcldb->getDoc(udi, doc) || doc.pc == -1)
+    Rcl::Doc idxdoc; // idxdoc.idxi == 0 -> works with base index only
+    if (!rcldb->getDoc(udi, idxdoc, doc) || doc.pc == -1)
 	return;
 
     // StartNativeViewer needs a db source to call getEnclosing() on.

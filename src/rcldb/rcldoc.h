@@ -48,6 +48,12 @@ class Doc {
     // Query: from doc data.
     string url;
 
+    // When we do path translation for documents from external indexes, we
+    // save the original path:
+    string idxurl;
+    // And the originating db. 0 is base, 1 first external etc.
+    int idxi;
+
     // Internal path for multi-doc files. Ascii
     // Set by FsIndexer::processone    
     string ipath;
@@ -142,13 +148,16 @@ class Doc {
 	sig.erase();
 
 	text.erase();
+
 	pc = 0;
 	xdocid = 0;
+	idxi = 0;
 	haspages = false;
 	haschildren = false;
     }
     Doc()
-	: syntabs(false), pc(0), xdocid(0), haspages(false), haschildren(false)
+	: idxi(0), syntabs(false), pc(0), xdocid(0),
+	  haspages(false), haschildren(false)
     {
     }
     /** Get value for named field. If value pointer is 0, just test existence */

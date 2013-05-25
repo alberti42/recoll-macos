@@ -38,14 +38,16 @@ int DocSequence::getSeqSlice(int offs, int cnt, vector<ResListEntry>& result)
 
 bool DocSequence::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc) 
 {
-    // Note: no need for setQuery here, we're just passing through a
-    // query-independant request
-
+    Rcl::Db *db = getDb();
+    if (db == 0) {
+	LOGERR(("DocSequence::getEnclosing: no db\n"));
+	return false;
+    }
     string udi;
-    if (!FileInterner::getEnclosing(doc.url, doc.ipath, pdoc.url, pdoc.ipath,
-                                    udi))
+    if (!FileInterner::getEnclosingUDI(doc, udi))
         return false;
-    bool dbret =  getDb()->getDoc(udi, pdoc);
+
+    bool dbret =  db->getDoc(udi, doc, pdoc);
     return dbret && pdoc.pc != -1;
 }
 

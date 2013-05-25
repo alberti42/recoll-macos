@@ -219,20 +219,25 @@ void Db::Native::maybeStartThreads()
 /* See comment in class declaration: return all subdocuments of a
  * document given by its unique id. 
 */
-bool Db::Native::subDocs(const string &udi, vector<Xapian::docid>& docids) 
+bool Db::Native::subDocs(const string &udi, int idxi, 
+			 vector<Xapian::docid>& docids) 
 {
     LOGDEB2(("subDocs: [%s]\n", uniterm.c_str()));
     string pterm = make_parentterm(udi);
-
+    vector<Xapian::docid> candidates;
     XAPTRY(docids.clear();
-           docids.insert(docids.begin(), xrdb.postlist_begin(pterm), 
-                         xrdb.postlist_end(pterm)),
+           candidates.insert(candidates.begin(), xrdb.postlist_begin(pterm), 
+			     xrdb.postlist_end(pterm)),
            xrdb, m_rcldb->m_reason);
-
     if (!m_rcldb->m_reason.empty()) {
         LOGERR(("Rcl::Db::subDocs: %s\n", m_rcldb->m_reason.c_str()));
         return false;
     } else {
+	for (unsigned int i = 0; i < candidates.size(); i++) {
+	    if (whatDbIdx(candidates[i]) == (size_t)idxi) {
+		docids.push_back(candidates[i]);
+	    }
+	}
         LOGDEB0(("Db::Native::subDocs: returning %d ids\n", docids.size()));
         return true;
     }
@@ -259,11 +264,11 @@ bool Db::Native::xdocToUdi(Xapian::Document& xdoc, string &udi)
 }
 
 // Check if doc given by udi is indexed by term
-bool Db::Native::hasTerm(const string& udi, const string& term)
+bool Db::Native::hasTerm(const string& udi, int idxi, const string& term)
 {
     LOGDEB2(("Native::hasTerm: udi [%s] term [%s]\n",udi.c_str(),term.c_str()));
     Xapian::Document xdoc;
-    if (getDoc(udi, xdoc)) {
+    if (getDoc(udi, idxi, xdoc)) {
 	Xapian::TermIterator xit;
 	XAPTRY(xit = xdoc.termlist_begin();
 	       xit.skip_to(term);,
@@ -279,20 +284,23 @@ bool Db::Native::hasTerm(const string& udi, const string& term)
     return false;
 }
 
-// Retrieve Xapian document, given udi
-Xapian::docid Db::Native::getDoc(const string& udi, Xapian::Document& xdoc)
+// Retrieve Xapian document, given udi. There may be several identical udis
+// if we are using multiple indexes.
+Xapian::docid Db::Native::getDoc(const string& udi, int idxi, 
+				 Xapian::Document& xdoc)
 {
     string uniterm = make_uniterm(udi);
     for (int tries = 0; tries < 2; tries++) {
 	try {
-            Xapian::PostingIterator docid = xrdb.postlist_begin(uniterm);
-	    if (docid == xrdb.postlist_end(uniterm)) {
-		// Udi not in Db.
-                return 0;
-            } else {
+            Xapian::PostingIterator docid;
+	    for (docid = xrdb.postlist_begin(uniterm); 
+		 docid != xrdb.postlist_end(uniterm); docid++) {
 		xdoc = xrdb.get_document(*docid);
-		return *docid;
+		if (whatDbIdx(*docid) == (size_t)idxi)
+		    return *docid;
 	    }
+	    // Udi not in Db.
+	    return 0;
 	} catch (const Xapian::DatabaseModifiedError &e) {
             m_rcldb->m_reason = e.get_msg();
 	    xrdb.reopen();
@@ -314,23 +322,27 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     if (!parms.ok())
 	return false;
 
-    // Set xdocid at once so that we can call whatDbIdx()
     doc.xdocid = docid;
     doc.haspages = hasPages(docid);
 
     // Compute what index this comes from, and check for path translations
     string dbdir = m_rcldb->m_basedir;
+    doc.idxi = 0;
     if (!m_rcldb->m_extraDbs.empty()) {
-	unsigned int idxi = m_rcldb->whatDbIdx(doc);
+	unsigned int idxi = whatDbIdx(docid);
 
 	// idxi is in [0, extraDbs.size()]. 0 is for the main index,
 	// idxi-1 indexes into the additional dbs array.
 	if (idxi) {
 	    dbdir = m_rcldb->m_extraDbs[idxi - 1];
+	    doc.idxi = idxi;
 	}
     }
-    parms.get(Doc::keyurl, doc.url);
+    parms.get(Doc::keyurl, doc.idxurl);
+    doc.url = doc.idxurl;
     m_rcldb->m_config->urlrewrite(dbdir, doc.url);
+    if (!doc.url.compare(doc.idxurl))
+	doc.idxurl.clear();
 
     // Special cases:
     parms.get(Doc::keytp, doc.mimetype);
@@ -549,7 +561,7 @@ bool Db::Native::purgeFileWrite(bool orphansOnly, const string& udi,
 	    xwdb.delete_document(*docid);
 	}
 	vector<Xapian::docid> docids;
-	subDocs(udi, docids);
+	subDocs(udi, 0, docids);
 	LOGDEB(("purgeFile: subdocs cnt %d\n", docids.size()));
 	for (vector<Xapian::docid>::iterator it = docids.begin();
 	     it != docids.end(); it++) {
@@ -865,13 +877,18 @@ bool Db::rmQueryDb(const string &dir)
 // http://trac.xapian.org/wiki/FAQ/MultiDatabaseDocumentID
 size_t Db::whatDbIdx(const Doc& doc)
 {
+    return m_ndb->whatDbIdx(doc.xdocid);
+}
+
+size_t Db::Native::whatDbIdx(Xapian::docid id)
+{
     LOGDEB1(("Db::whatDbIdx: xdocid %lu, %u extraDbs\n", 
-	     (unsigned long)doc.xdocid, m_extraDbs.size()));
-    if (doc.xdocid == 0) 
+	     (unsigned long)id, m_extraDbs.size()));
+    if (id == 0) 
 	return (size_t)-1;
-    if (m_extraDbs.size() == 0)
+    if (m_rcldb->m_extraDbs.size() == 0)
 	return 0;
-    return (doc.xdocid - 1) % (m_extraDbs.size() + 1);
+    return (id - 1) % (m_rcldb->m_extraDbs.size() + 1);
 }
 
 bool Db::testDbDir(const string &dir, bool *stripped_p)
@@ -1556,7 +1573,7 @@ bool Db::needUpdate(const string &udi, const string& sig, bool *existed)
 
 		// Set the existence flag for all the subdocs (if any)
 		vector<Xapian::docid> docids;
-		if (!m_ndb->subDocs(udi, docids)) {
+		if (!m_ndb->subDocs(udi, 0, docids)) {
 		    LOGERR(("Rcl::Db::needUpdate: can't get subdocs\n"));
 		    return true;
 		}
@@ -1808,7 +1825,7 @@ bool Db::dbStats(DbStats& res)
 // by the GUI history feature and by open parent/getenclosing
 // ! The return value is always true except for fatal errors. Document
 //  existence should be tested by looking at doc.pc
-bool Db::getDoc(const string &udi, Doc &doc)
+bool Db::getDoc(const string &udi, const Doc& idxdoc, Doc &doc)
 {
     LOGDEB(("Db:getDoc: [%s]\n", udi.c_str()));
     if (m_ndb == 0)
@@ -1820,7 +1837,8 @@ bool Db::getDoc(const string &udi, Doc &doc)
     doc.pc = 100;
     Xapian::Document xdoc;
     Xapian::docid docid;
-    if ((docid = m_ndb->getDoc(udi, xdoc))) {
+    int idxi = idxdoc.idxi;
+    if ((docid = m_ndb->getDoc(udi, idxi, xdoc))) {
 	string data = xdoc.get_data();
 	doc.meta[Rcl::Doc::keyudi] = udi;
 	return m_ndb->dbDataToRclDoc(docid, data, doc);
@@ -1845,7 +1863,7 @@ bool Db::hasSubDocs(const Doc &idoc)
 	return false;
     }
     vector<Xapian::docid> docids;
-    if (!m_ndb->subDocs(inudi, docids)) {
+    if (!m_ndb->subDocs(inudi, idoc.idxi, docids)) {
 	LOGDEB(("Db:getSubDocs: lower level subdocs failed\n"));
 	return false;
     }
@@ -1853,7 +1871,7 @@ bool Db::hasSubDocs(const Doc &idoc)
 	return true;
 
     // Check if doc has an has_children term
-    if (m_ndb->hasTerm(inudi, has_children_term))
+    if (m_ndb->hasTerm(inudi, idoc.idxi, has_children_term))
 	return true;
     return false;
 }
@@ -1879,7 +1897,7 @@ bool Db::getSubDocs(const Doc &idoc, vector<Doc>& subdocs)
     } else {
 	// See if we have a parent term
 	Xapian::Document xdoc;
-	if (!m_ndb->getDoc(inudi, xdoc)) {
+	if (!m_ndb->getDoc(inudi, idoc.idxi, xdoc)) {
 	    LOGERR(("Db::getSubDocs: can't get Xapian document\n"));
 	    return false;
 	}
@@ -1902,7 +1920,7 @@ bool Db::getSubDocs(const Doc &idoc, vector<Doc>& subdocs)
 
     // Retrieve all subdoc xapian ids for the root
     vector<Xapian::docid> docids;
-    if (!m_ndb->subDocs(rootudi, docids)) {
+    if (!m_ndb->subDocs(rootudi, idoc.idxi, docids)) {
 	LOGDEB(("Db:getSubDocs: lower level subdocs failed\n"));
 	return false;
     }

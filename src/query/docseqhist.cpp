@@ -136,7 +136,10 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, string *sh)
 	} else
 	    sh->erase();
     }
-    bool ret = m_db->getDoc(m_it->udi, doc);
+
+    // For now history does not store an index id. Use empty doc as ref.
+    Rcl::Doc idxdoc;
+    bool ret = m_db->getDoc(m_it->udi, idxdoc, doc);
     if (!ret || doc.pc == -1) {
 	doc.url = "UNKNOWN";
         doc.ipath = "";

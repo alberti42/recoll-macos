@@ -120,14 +120,12 @@ void FileInterner::reapXAttrs(const string& path)
 
 // This is used when the user wants to retrieve a search result doc's parent
 // (ie message having a given attachment)
-bool FileInterner::getEnclosing(const string &url, const string &ipath,
-				string &eurl, string &eipath, string& udi)
+bool FileInterner::getEnclosingUDI(const Rcl::Doc &doc, string& udi)
 {
-    eurl = url;
-    eipath = ipath;
+    LOGDEB(("FileInterner::getEnclosingUDI(): url [%s] ipath [%s]\n", 
+	    doc.url.c_str(), doc.ipath.c_str()));
+    string eipath = doc.ipath;
     string::size_type colon;
-    LOGDEB(("FileInterner::getEnclosing(): url [%s] ipath [%s]\n", 
-	    url.c_str(), eipath.c_str()));
     if (eipath.empty())
 	return false;
     if ((colon =  eipath.find_last_of(cstr_isep)) != string::npos) {
@@ -135,10 +133,8 @@ bool FileInterner::getEnclosing(const string &url, const string &ipath,
     } else {
 	eipath.erase();
     }
-    make_udi(url_gpath(eurl), eipath, udi);
-
-    LOGDEB(("FileInterner::getEnclosing() after: [%s]\n", eipath.c_str()));
-    return true;
+    
+    make_udi(url_gpath(doc.idxurl.empty() ? doc.url : doc.idxurl), eipath, udi);
 }
 
 string FileInterner::getLastIpathElt(const string& ipath)

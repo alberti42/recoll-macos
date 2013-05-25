@@ -195,14 +195,14 @@ class FileInterner {
     }
 
     /**
-     * Get immediate parent for document. 
+     * Get UDI for immediate parent for document. 
      *
      * This is not in general the same as the "parent" document used 
      * with Rcl::Db::addOrUpdate(). The latter is the enclosing file,
      * this would be for exemple the email containing the attachment.
+     * This is in internfile because of the ipath computation.
      */
-    static bool getEnclosing(const string &url, const string &ipath,
-			     string &eurl, string &eipath, string& udi);
+    static bool getEnclosingUDI(const Rcl::Doc &doc, string& udi);
 
     /** Return last element in ipath, like basename */
     static std::string getLastIpathElt(const std::string& ipath);
