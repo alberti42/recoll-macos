@@ -241,8 +241,7 @@ static Rcl::SearchData *wasaQueryToRcl(const RclConfig *config,
 		continue;
 	    }
 	    nclause = 
-		new Rcl::SearchDataClauseSub(Rcl::SCLT_SUB, 
-					     RefCntr<Rcl::SearchData>(sub));
+		new Rcl::SearchDataClauseSub(RefCntr<Rcl::SearchData>(sub));
 	    if (nclause == 0) {
 		LOGERR(("wasaQueryToRcl: out of memory\n"));
 		reason = "Out of memory";

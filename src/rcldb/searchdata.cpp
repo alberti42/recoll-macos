@@ -60,11 +60,18 @@ void SearchData::commoninit()
     m_maxSize = size_t(-1);
     m_minSize = size_t(-1);
     m_haveWildCards = false;
-    m_softmaxexpand = -1;
     m_autodiacsens = false;
     m_autocasesens = true;
     m_maxexp = 10000;
     m_maxcl = 100000;
+    m_softmaxexpand = -1;
+}
+
+SearchData::~SearchData() 
+{
+    LOGDEB0(("SearchData::~SearchData\n"));
+    for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++)
+	delete *it;
 }
 
 // Expand categories and mime type wild card exps Categories are
@@ -259,6 +266,15 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
         }
     }
 
+    // Add the autophrase if any
+    if (m_autophrase.isNotNull()) {
+	Xapian::Query apq;
+	if (m_autophrase->toNativeQuery(db, &apq)) {
+	    xq = xq.empty() ? apq : 
+		Xapian::Query(Xapian::Query::OP_AND_MAYBE, xq, apq);
+	}
+    }
+
     // Add the file type filtering clause if any
     if (!m_filetypes.empty()) {
 	expandFileTypes(db, m_filetypes);
@@ -376,27 +392,8 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
     // an actual user-entered phrase
     slack += 1 + nwords / 3;
     
-    SearchDataClauseDist *nclp = 
-	new SearchDataClauseDist(SCLT_PHRASE, swords, slack, field);
-
-    // If the toplevel conjunction is an OR, just OR the phrase, else 
-    // deepen the tree.
-    if (m_tp == SCLT_OR) {
-	addClause(nclp);
-    } else {
-	// My type is AND. Change it to OR and insert two queries, one
-	// being the original query as a subquery, the other the
-	// phrase.
-	SearchData *sd = new SearchData(m_tp, m_stemlang);
-	sd->m_query = m_query;
-	sd->m_stemlang = m_stemlang;
-	m_tp = SCLT_OR;
-	m_query.clear();
-	SearchDataClauseSub *oq = 
-	    new SearchDataClauseSub(SCLT_OR, RefCntr<SearchData>(sd));
-	addClause(oq);
-	addClause(nclp);
-    }
+    m_autophrase = RefCntr<SearchDataClauseDist>(
+	new SearchDataClauseDist(SCLT_PHRASE, swords, slack, field));
     return true;
 }
 
@@ -412,22 +409,6 @@ bool SearchData::addClause(SearchDataClause* cl)
     m_haveWildCards = m_haveWildCards || cl->m_haveWildCards;
     m_query.push_back(cl);
     return true;
-}
-
-// Make me all new
-void SearchData::erase() 
-{
-    LOGDEB0(("SearchData::erase\n"));
-    m_tp = SCLT_AND;
-    for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++)
-	delete *it;
-    m_query.clear();
-    m_filetypes.clear();
-    m_description.erase();
-    m_reason.erase();
-    m_haveDates = false;
-    m_minSize = size_t(-1);
-    m_maxSize = size_t(-1);
 }
 
 // Am I a file name only search ? This is to turn off term highlighting

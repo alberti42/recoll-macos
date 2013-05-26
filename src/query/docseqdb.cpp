@@ -161,7 +161,7 @@ bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs)
 	m_fsdata = RefCntr<Rcl::SearchData>(
 	    new Rcl::SearchData(Rcl::SCLT_AND, m_sdata->getStemLang()));
 	Rcl::SearchDataClauseSub *cl = 
-	    new Rcl::SearchDataClauseSub(Rcl::SCLT_SUB, m_sdata);
+	    new Rcl::SearchDataClauseSub(m_sdata);
 	m_fsdata->addClause(cl);
     
 	for (unsigned int i = 0; i < fs.crits.size(); i++) {
@@ -181,8 +181,8 @@ bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs)
 				    fs.values[i], reason);
 		if (sd)  {
 		    Rcl::SearchDataClauseSub *cl1 = 
-			new Rcl::SearchDataClauseSub(Rcl::SCLT_SUB, 
-						     RefCntr<Rcl::SearchData>(sd));
+			new Rcl::SearchDataClauseSub(
+			    RefCntr<Rcl::SearchData>(sd));
 		    m_fsdata->addClause(cl1);
 		}
 	    }

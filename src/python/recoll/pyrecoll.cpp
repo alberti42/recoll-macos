@@ -250,7 +250,7 @@ SearchData_addclause(recoll_SearchDataObject* self, PyObject *args,
     case 'S':
 	if (strcasecmp(tp, "sub"))
 	    goto defaultcase;
-	cl = new Rcl::SearchDataClauseSub(Rcl::SCLT_SUB, sub->sd);
+	cl = new Rcl::SearchDataClauseSub(sub->sd);
 	break;
     defaultcase:
     default:

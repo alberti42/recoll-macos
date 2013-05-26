@@ -46,6 +46,7 @@ enum SClType {
 };
 
 class SearchDataClause;
+class SearchDataClauseDist;
 
 /** 
     A SearchData object represents a Recoll user query, for translation
@@ -89,13 +90,7 @@ public:
 	commoninit();
     }
     
-    ~SearchData() 
-    {
-	erase();
-    }
-
-    /** Make pristine */
-    void erase();
+    ~SearchData();
 
     /** Is there anything but a file name search in here ? */
     bool fileNameOnly();
@@ -175,7 +170,10 @@ private:
     std::vector<std::string>            m_filetypes; 
     // Excluded set of file types if not empty
     std::vector<std::string>            m_nfiletypes;
-
+    // Autophrase if set. Can't be part of the normal chain because
+    // it uses OP_AND_MAYBE
+    RefCntr<SearchDataClauseDist>   m_autophrase;
+    // 
     bool                      m_haveDates;
     DateInterval              m_dates; // Restrict to date interval
     size_t                    m_maxSize;
@@ -461,8 +459,8 @@ private:
 /** Subquery */
 class SearchDataClauseSub : public SearchDataClause {
 public:
-    SearchDataClauseSub(SClType tp, RefCntr<SearchData> sub) 
-	: SearchDataClause(tp), m_sub(sub) 
+    SearchDataClauseSub(RefCntr<SearchData> sub) 
+	: SearchDataClause(SCLT_SUB), m_sub(sub) 
     {
     }
     virtual bool toNativeQuery(Rcl::Db &db, void *p)
