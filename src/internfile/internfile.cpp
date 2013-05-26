@@ -135,6 +135,7 @@ bool FileInterner::getEnclosingUDI(const Rcl::Doc &doc, string& udi)
     }
     
     make_udi(url_gpath(doc.idxurl.empty() ? doc.url : doc.idxurl), eipath, udi);
+    return true;
 }
 
 string FileInterner::getLastIpathElt(const string& ipath)
