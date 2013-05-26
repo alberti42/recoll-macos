@@ -227,6 +227,7 @@ void Preview::init()
 	searchTextCMB->addItem(s);
     }
     searchTextCMB->setEditText("");
+    searchTextCMB->setCompleter(0);
 
     layout3->addWidget(searchTextCMB);
 
