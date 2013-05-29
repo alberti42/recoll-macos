@@ -276,50 +276,50 @@ Falsche Syntax in Feldern?</translation>
     <name>EditTrans</name>
     <message>
         <source>Source path</source>
-        <translation type="unfinished"></translation>
+        <translation>Quellpfad</translation>
     </message>
     <message>
         <source>Local path</source>
-        <translation type="unfinished"></translation>
+        <translation>Lokaler Pfad</translation>
     </message>
     <message>
         <source>Config error</source>
-        <translation type="unfinished"></translation>
+        <translation>Konfigurationsfehler</translation>
     </message>
     <message>
         <source>Original path</source>
-        <translation type="unfinished"></translation>
+        <translation>Originalpfad</translation>
     </message>
 </context>
 <context>
     <name>EditTransBase</name>
     <message>
         <source>Path Translations</source>
-        <translation type="unfinished"></translation>
+        <translation>Pfadumwandlungen</translation>
     </message>
     <message>
         <source>Setting path translations for </source>
-        <translation type="unfinished"></translation>
+        <translation>Setze Pfadumwandlungen für</translation>
     </message>
     <message>
         <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
-        <translation type="unfinished"></translation>
+        <translation>Wählen Sie einen oder mehrere Dateitypen aus. Nutzen Sie dann die Bedienelemente unten, um einzustellen wie sie verarbeitet werden.</translation>
     </message>
     <message>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Hinzufügen</translation>
     </message>
     <message>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Entfernen</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished">Abbrechen</translation>
+        <translation>Abbrechen</translation>
     </message>
     <message>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translation>Speichern</translation>
     </message>
 </context>
 <context>
@@ -956,27 +956,28 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Indexing did not run yet</source>
-        <translation type="unfinished"></translation>
+        <translation>Indizierung ist noch nicht durchgeführt worden</translation>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
-        <translation type="unfinished"></translation>
+        <translation>Externe Anwendungen/Befehle, die zur Indizierung Ihrer Dateitypen gebraucht werden und nicht gefunden wurden - vom letzten Indizierungslauf hinterlegt unter
+</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
-        <translation type="unfinished"></translation>
+        <translation>Der Index ist für diese Datei nicht mehr aktuell. Einträge könnten fehlerhaft sein und werden nicht angezeigt.</translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation type="unfinished"></translation>
+        <translation>Drücken Sie Ok, um den Index für diese Datei zu aktualisieren und die Suche daraufhin zu wiederholen. Ansonsten drücken Sie auf Abbrechen.</translation>
     </message>
     <message>
         <source>Indexer running so things should improve when it&apos;s done</source>
-        <translation type="unfinished"></translation>
+        <translation>Indizierung ist im Gange. Die Resultate sollten sich nach der Fertigstelltung verbessert haben</translation>
     </message>
     <message>
         <source>Sub-documents and attachments</source>
-        <translation type="unfinished"></translation>
+        <translation>Untergeordnete Dokumente und Anhänge</translation>
     </message>
 </context>
 <context>
@@ -1187,43 +1188,43 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Results</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Ergebnisse</translation>
     </message>
     <message>
         <source>Sort by date, oldest first</source>
-        <translation type="unfinished"></translation>
+        <translation>Nach Datum sortieren (von alt nach neu)</translation>
     </message>
     <message>
         <source>Sort by date, newest first</source>
-        <translation type="unfinished"></translation>
+        <translation>Nach Datum sortieren (von neu nach alt)</translation>
     </message>
     <message>
         <source>Show as table</source>
-        <translation type="unfinished"></translation>
+        <translation>Als Tabelle anzeigen</translation>
     </message>
     <message>
         <source>Show results in a spreadsheet-like table</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeigt Ergebnisse als Tabelle an</translation>
     </message>
     <message>
         <source>Save as CSV (spreadsheet) file</source>
-        <translation type="unfinished"></translation>
+        <translation>Tabelle als CSV Datei speichern</translation>
     </message>
     <message>
         <source>Saves the result into a file which you can load in a spreadsheet</source>
-        <translation type="unfinished"></translation>
+        <translation>Speichert Resultate als Tabellenkalkulations-kompatible CSV-Datei ab</translation>
     </message>
     <message>
         <source>Next Page</source>
-        <translation type="unfinished"></translation>
+        <translation>Nächste Seite</translation>
     </message>
     <message>
         <source>Previous Page</source>
-        <translation type="unfinished"></translation>
+        <translation>Vorherige Seite</translation>
     </message>
     <message>
         <source>First Page</source>
-        <translation type="unfinished"></translation>
+        <translation>Erste Seite</translation>
     </message>
 </context>
 <context>
@@ -1337,7 +1338,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Query details</source>
-        <translation type="unfinished">Suchdetails</translation>
+        <translation>Suchdetails</translation>
     </message>
     <message>
         <source>(show query)</source>
@@ -1401,15 +1402,16 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation type="unfinished"></translation>
+        <translation>Doppelte Dokumente</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>ipath?</translatorcomment>
+        <translation>Diese URLs ( | ipath) sind inhaltsgleich:</translation>
     </message>
     <message>
         <source>Result count (est.)</source>
-        <translation type="unfinished">Anzahl Ergebnisse (ca.)</translation>
+        <translation>Anzahl Ergebnisse (ca.)</translation>
     </message>
 </context>
 <context>
@@ -1510,47 +1512,47 @@ Please check the mimeview file</source>
     <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
-        <translation type="unfinished">&amp;Vorschau</translation>
+        <translation>&amp;Vorschau</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="unfinished">&amp;Öffnen</translation>
+        <translation>&amp;Öffnen</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="unfinished">&amp;Dateinamen kopieren</translation>
+        <translation>&amp;Dateinamen kopieren</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="unfinished">&amp;URL kopieren</translation>
+        <translation>&amp;URL kopieren</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation type="unfinished">&amp;Schreibe in Datei</translation>
+        <translation>&amp;Schreibe in Datei</translation>
     </message>
     <message>
         <source>Save selection to files</source>
-        <translation type="unfinished"></translation>
+        <translation>Auswahl in Dateien sichern</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="unfinished">Vorschau des &amp;übergeordneten Dokuments/Ordners</translation>
+        <translation>Vorschau des &amp;übergeordneten Dokuments/Ordners</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="unfinished">Ö&amp;ffnen des übergeordneten Dokuments/Ordners</translation>
+        <translation>Ö&amp;ffnen des übergeordneten Dokuments/Ordners</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="unfinished">&amp;Ähnliche Dokumente finden</translation>
+        <translation>&amp;Ähnliche Dokumente finden</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation type="unfinished">Öffne &amp;Schnipsel-Fenster</translation>
+        <translation>Öffne &amp;Schnipsel-Fenster</translation>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
-        <translation type="unfinished"></translation>
+        <translation>Untergeordnete Dokumente / Anhänge anzeigen</translation>
     </message>
 </context>
 <context>
@@ -1836,15 +1838,15 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Match</source>
-        <translation type="unfinished"></translation>
+        <translation>Beachte</translation>
     </message>
     <message>
         <source>Case</source>
-        <translation type="unfinished"></translation>
+        <translation>Groß-/Kleinschreibung</translation>
     </message>
     <message>
         <source>Accents</source>
-        <translation type="unfinished"></translation>
+        <translation>Betonungszeichen</translation>
     </message>
 </context>
 <context>
@@ -1911,39 +1913,39 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Show index statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>Indexstatistiken anzeigen</translation>
     </message>
     <message>
         <source>Number of documents</source>
-        <translation type="unfinished"></translation>
+        <translation>Dokumentenzahl</translation>
     </message>
     <message>
         <source>Average terms per document</source>
-        <translation type="unfinished"></translation>
+        <translation>Durchschnittliche Zahl von Ausdrücken  pro Dokument</translation>
     </message>
     <message>
         <source>Smallest document length</source>
-        <translation type="unfinished"></translation>
+        <translation>Minimale Zahl von Ausdrücken</translation>
     </message>
     <message>
         <source>Longest document length</source>
-        <translation type="unfinished"></translation>
+        <translation>Maximale Zahl von Ausdrücken</translation>
     </message>
     <message>
         <source>Database directory size</source>
-        <translation type="unfinished"></translation>
+        <translation>Größe des Datenbankordners</translation>
     </message>
     <message>
         <source>MIME types:</source>
-        <translation type="unfinished"></translation>
+        <translation>Mime-Typen:</translation>
     </message>
     <message>
         <source>Item</source>
-        <translation type="unfinished"></translation>
+        <translation>Eintrag</translation>
     </message>
     <message>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Wert</translation>
     </message>
 </context>
 <context>
@@ -1982,19 +1984,19 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Select recoll config directory or xapian index directory (e.g.: /home/me/.recoll or /home/me/.recoll/xapiandb)</source>
-        <translation type="unfinished"></translation>
+        <translation>Wählen Sie den Recoll-Konfigurationsordner oder das Xapian-Indexverzeichnis aus (z.B. /home/ich/.recoll oder /home/ich/.recoll/xapiandb)</translation>
     </message>
     <message>
         <source>The selected directory looks like a Recoll configuration directory but the configuration could not be read</source>
-        <translation type="unfinished"></translation>
+        <translation>Der ausgewählten Ordner handelt scheint Recoll-Konfigurationsordner  zu sein, aber die Konfiguration konnte nicht ausgelesen werden</translation>
     </message>
     <message>
         <source>At most one index should be selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Bitte wählen Sie maximal einen Index aus</translation>
     </message>
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
-        <translation type="unfinished"></translation>
+        <translation>Indices mit unterschiedlichen Einstellungen zum Umgang mit Groß/-Kleinschreibung und diakritischen Zeichen können nicht hinzugefügt werden</translation>
     </message>
 </context>
 <context>
@@ -2176,11 +2178,11 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Desktop Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Desktopvoreinstellung</translation>
     </message>
     <message>
         <source>Changing entries with different current values</source>
-        <translation type="unfinished"></translation>
+        <translation>Einträge mit anderen Werten ändern</translation>
     </message>
 </context>
 <context>
@@ -2216,27 +2218,27 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Select one or several mime types then use the controls in the bottom frame to change how they are processed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wählen Sie einen oder mehrere MIME-Typen aus und nutzen Sie dann die Bedienelemente unten, um das Programm zum Öffnen anzupassen.</translation>
     </message>
     <message>
         <source>Use Desktop preferences by default</source>
-        <translation type="unfinished"></translation>
+        <translation>Standardmäßig Desktopvoreinstellungen nutzen</translation>
     </message>
     <message>
         <source>Select one or several file types, then use the controls in the frame below to change how they are processed</source>
-        <translation type="unfinished"></translation>
+        <translation>Wählen Sie einen oder mehrere Dateitypen aus. Nutzen Sie dann die Bedienelemente unten, um das Programm zum Öffnen anzupassen</translation>
     </message>
     <message>
         <source>Exception to Desktop preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Von Desktopvoreinstellungen abweichende Ausnahme</translation>
     </message>
     <message>
         <source>Action (empty -&gt; recoll default)</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktion (leer → Recoll-Voreinstellung)</translation>
     </message>
     <message>
         <source>Apply to current selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Auf aktuelle Auswahl anwenden</translation>
     </message>
     <message>
         <source>Recoll action:</source>
@@ -2577,7 +2579,7 @@ für Ergebnisse</translation>
     </message>
     <message>
         <source>Choose editor applications</source>
-        <translation>Wähle Anwendungen zum Editieren</translation>
+        <translation>Standardanwendungen auswählen</translation>
     </message>
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
@@ -2795,31 +2797,31 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     </message>
     <message>
         <source>Disable Qt autocompletion in search entry.</source>
-        <translation type="unfinished"></translation>
+        <translation>Qt-Autovervollständigung in Suchleiste deaktivieren.</translation>
     </message>
     <message>
         <source>Search as you type.</source>
-        <translation type="unfinished"></translation>
+        <translation>Suche beim Eintippen starten.</translation>
     </message>
     <message>
         <source>Paths translations</source>
-        <translation type="unfinished"></translation>
+        <translation>Pfadumwandlung</translation>
     </message>
     <message>
         <source>Click to add another index directory to the list. You can select either a Recoll configuration directory or a Xapian index.</source>
-        <translation type="unfinished"></translation>
+        <translation>Klicken Sie hier um einen weiteren Indexordner zur Liste hinzuzufügen. Sie können entweder einen Recoll-Konfigurationsordner oder einen Xapian-Index auswählen.</translation>
     </message>
     <message>
         <source>Snippets window CSS file</source>
-        <translation type="unfinished"></translation>
+        <translation>Schnipsel-Fenster CSS Datei</translation>
     </message>
     <message>
         <source>Opens a dialog to select the Snippets window CSS style sheet file</source>
-        <translation type="unfinished"></translation>
+        <translation>Öffnet einen Dialog zur Auswahl der Schnipsel-Fenster CSS Style Sheet Datei</translation>
     </message>
     <message>
         <source>Resets the Snippets window style</source>
-        <translation type="unfinished"></translation>
+        <translation>Setzt das Schnipsel-Fenster Style Sheet auf den Standardwert zurück</translation>
     </message>
 </context>
 </TS>
