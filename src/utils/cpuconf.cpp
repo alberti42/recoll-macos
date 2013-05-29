@@ -57,7 +57,7 @@ bool getCpuConf(CpuConf& conf)
 // Generic, pretend there is one
 bool getCpuConf(CpuConf& cpus)
 {
-    cpu.cpus = 1;
+    cpus.ncpus = 1;
     return true;
 }
 #endif
