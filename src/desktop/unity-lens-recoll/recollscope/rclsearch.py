@@ -105,6 +105,7 @@ class Scope (Unity.Scope):
 
         self.last_connect_time = 0
         self.timeout_id = None
+        language, self.localecharset = locale.getdefaultlocale()
 
     def _connect_db(self):
         #print "Connecting to db"
@@ -230,7 +231,7 @@ class Scope (Unity.Scope):
         # Do the recoll thing
         try:
             query = self.db.query()
-            nres = query.execute(search_string)
+            nres = query.execute(search_string.decode(self.localecharset))
         except:
             return
 

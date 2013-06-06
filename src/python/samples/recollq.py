@@ -1,10 +1,12 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """A python version of the command line query tool recollq (a bit simplified)
 The input string is always interpreted as a query language string.
 This could actually be useful for something after some customization
 """
 
 import sys
+import locale
 from getopt import getopt
 
 try:
@@ -93,6 +95,7 @@ def doquery(db, q):
 if len(sys.argv) < 2:
     Usage()
 
+language, localecharset = locale.getdefaultlocale()
 confdir=""
 extra_dbs = []
 # Snippet params
@@ -113,9 +116,9 @@ for opt,val in options:
 if len(args) == 0:
     print >> sys.stderr, "No query found in command line"
     Usage()
-q = ""
+q = u''
 for word in args:
-    q += word + " "
+    q += word.decode(localecharset) + u' '
 
 print "QUERY: [", q, "]"
 db = recoll.connect(confdir=confdir, 
