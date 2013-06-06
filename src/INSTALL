@@ -331,7 +331,7 @@ Chapter 5. Installation and configuration
 
    Recoll indexing options are set inside text configuration files located in
    a configuration directory. There can be several such directories, each of
-   which define the parameters for one index.
+   which defines the parameters for one index.
 
    The configuration files can be edited by hand or through the Index
    configuration dialog (Preferences menu). The GUI tool will try to respect
