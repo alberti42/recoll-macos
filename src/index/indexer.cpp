@@ -157,9 +157,10 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun)
 bool ConfIndexer::indexFiles(list<string>& ifiles, IxFlag flag)
 {
     list<string> myfiles;
+    string origcwd = m_config->getOrigCwd();
     for (list<string>::const_iterator it = ifiles.begin(); 
 	 it != ifiles.end(); it++) {
-	myfiles.push_back(path_canon(*it));
+	myfiles.push_back(path_canon(*it, &origcwd));
     }
     myfiles.sort();
 
@@ -239,9 +240,10 @@ bool ConfIndexer::updateDocs(std::vector<Rcl::Doc> &docs, IxFlag flag)
 bool ConfIndexer::purgeFiles(std::list<string> &files)
 {
     list<string> myfiles;
+    string origcwd = m_config->getOrigCwd();
     for (list<string>::const_iterator it = files.begin(); 
 	 it != files.end(); it++) {
-	myfiles.push_back(path_canon(*it));
+	myfiles.push_back(path_canon(*it, &origcwd));
     }
     myfiles.sort();
 

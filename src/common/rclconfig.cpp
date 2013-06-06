@@ -23,6 +23,7 @@
 #include <errno.h>
 #include <langinfo.h>
 #include <limits.h>
+#include <sys/param.h>
 
 #include <algorithm>
 #include <list>
@@ -60,6 +61,7 @@ typedef pair<int,int> RclPII;
 bool o_index_stripchars = true;
 
 string RclConfig::o_localecharset; 
+string RclConfig::o_origcwd; 
 
 bool ParamStale::needrecompute()
 {
@@ -118,6 +120,16 @@ bool RclConfig::isDefaultConfig() const
 RclConfig::RclConfig(const string *argcnf)
 {
     zeroMe();
+
+    if (o_origcwd.empty()) {
+	char buf[MAXPATHLEN];
+	if (getcwd(buf, MAXPATHLEN)) {
+	    o_origcwd = string(buf);
+	} else {
+	    fprintf(stderr, "recollxx: can't retrieve current working directory: relative path translations will fail\n");
+	}
+    }
+
     // Compute our data dir name, typically /usr/local/share/recoll
     const char *cdatadir = getenv("RECOLL_DATADIR");
     if (cdatadir == 0) {

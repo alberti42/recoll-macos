@@ -45,7 +45,7 @@ extern std::string path_tildexpand(const std::string &s);
 /// we return an empty path in this case.
 extern std::string path_absolute(const std::string &s);
 /// Clean up path by removing duplicated / and resolving ../ + make it absolute
-extern std::string path_canon(const std::string &s);
+extern std::string path_canon(const std::string &s, const std::string *cwd=0);
 /// Use glob(3) to return the file names matching pattern inside dir
 extern std::vector<std::string> path_dirglob(const std::string &dir, 
 				   const std::string pattern);

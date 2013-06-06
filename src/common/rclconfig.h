@@ -257,6 +257,11 @@ class RclConfig {
 	call it after primary init */
     void initThrConf();
 
+    const string& getOrigCwd() 
+    {
+	return o_origcwd;
+    }
+
     ~RclConfig() {
 	freeAll();
     }
@@ -301,6 +306,10 @@ class RclConfig {
 
     ParamStale   m_skpnstate;
     vector<string> m_skpnlist;
+
+    // Original current working directory. Set once at init before we do any
+    // chdir'ing and used for converting user args to absolute paths.
+    static string o_origcwd;
 
     // Parameters auto-fetched on setkeydir
     string m_defcharset;

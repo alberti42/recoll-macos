@@ -335,17 +335,22 @@ extern string path_absolute(const string &is)
 }
 
 #include <smallut.h>
-extern string path_canon(const string &is)
+extern string path_canon(const string &is, const string* cwd)
 {
     if (is.length() == 0)
 	return is;
     string s = is;
     if (s[0] != '/') {
 	char buf[MAXPATHLEN];
-	if (!getcwd(buf, MAXPATHLEN)) {
-	    return string();
+	const char *cwdp = buf;
+	if (cwd) {
+	    cwdp = cwd->c_str();
+	} else {
+	    if (!getcwd(buf, MAXPATHLEN)) {
+		return string();
+	    }
 	}
-	s = path_cat(string(buf), s); 
+	s = path_cat(string(cwdp), s); 
     }
     vector<string> elems;
     stringToTokens(s, elems, "/");
