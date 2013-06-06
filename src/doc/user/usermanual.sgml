@@ -4647,7 +4647,7 @@ except:
 
       <para>&RCL; indexing options are set inside text configuration
         files located in a configuration directory. There can be
-        several such directories, each of which define the parameters
+        several such directories, each of which defines the parameters
         for one index.</para>
 
       <para>The configuration files can be edited by hand or through
