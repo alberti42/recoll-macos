@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <sstream>
+using namespace std;
 
 #include "cstr.h"
 #include "mh_execm.h"
@@ -32,10 +33,6 @@
 
 #include <sys/types.h>
 #include <sys/wait.h>
-
-#ifndef NO_NAMESPACES
-using namespace std;
-#endif /* NO_NAMESPACES */
 
 bool MimeHandlerExecMultiple::startCmd()
 {
@@ -56,6 +53,7 @@ bool MimeHandlerExecMultiple::startCmd()
     oss << "RECOLL_FILTER_MAXMEMBERKB=" << m_maxmemberkb;
     m_cmd.putenv(oss.str());
 
+    m_cmd.putenv("RECOLL_CONFDIR", m_config->getConfDir());
     m_cmd.putenv(m_forPreview ? "RECOLL_FILTER_FORPREVIEW=yes" :
 		"RECOLL_FILTER_FORPREVIEW=no");
 

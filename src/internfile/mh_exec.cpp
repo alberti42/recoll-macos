@@ -100,6 +100,7 @@ bool MimeHandlerExec::next_document()
     ExecCmd mexec;
     MEAdv adv(filtermaxseconds);
     mexec.setAdvise(&adv);
+    mexec.putenv("RECOLL_CONFDIR", m_config->getConfDir());
     mexec.putenv(m_forPreview ? "RECOLL_FILTER_FORPREVIEW=yes" :
 		"RECOLL_FILTER_FORPREVIEW=no");
 

@@ -86,6 +86,7 @@ class ExecCmd {
      * @param envassign an environment assignment string ("name=value")
      */
     void putenv(const string &envassign);
+    void putenv(const string &name, const string& value);
 
     /** 
      * Set function objects to call whenever new data is available or on

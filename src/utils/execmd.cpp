@@ -102,6 +102,13 @@ void  ExecCmd::putenv(const string &ea)
 {
     m_env.push_back(ea);
 }
+
+void  ExecCmd::putenv(const string &name, const string& value)
+{
+    string ea = name + "=" + value;
+    putenv(ea);
+}
+
 static void msleep(int millis)
 {
     struct timespec spec;
