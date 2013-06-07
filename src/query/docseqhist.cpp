@@ -144,6 +144,11 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, string *sh)
 	doc.url = "UNKNOWN";
         doc.ipath = "";
     }
+
+    // Ensure the snippets link won't be shown as it does not make
+    // sense (no query terms...)
+    doc.haspages = 0;
+
     return ret;
 }
 
