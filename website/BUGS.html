@@ -29,7 +29,7 @@
 later versions. Bugs listed in the topmost section may also exist in older
 versions.</i></p>
 
-<h2><a name="b_latest">recoll 1.19.3</a></h2>
+<h2><a name="b_latest">recoll 1.19.4</a></h2>
 <ul>
   <li>On systems such as Debian Stable which use Evince version 2.x (not 3.x)
     as PDF viewer, the default "Open" command for PDF files will not work. You
@@ -58,6 +58,27 @@ versions.</i></p>
     fixed by removing (back it up just in case)
     ~/.config/Recoll.org/recoll.conf, the QSettings storage for
     recoll.</li>
+</ul>
+
+<h2><a name="b_1_19_3">recoll 1.19.3</a></h2>
+<ul>
+  <li>Absolute paths computations are broken by 
+    recollindex changing its working directory to /tmp, so that giving
+    relative paths to e.g. "recollindex -i" would fail.</li>
+
+  <li>The Unity Lens would fail when the query terms had accented
+    characters (or were completly non-ascii, like, for example,
+    Japanese text).</li>
+
+  <li>The "autophrase" feature could sometimes create false
+    matches.</li>
+
+  <li>There are a number of problems when using multiple indexes which
+    could contain identical paths values for actually different
+    documents (on different volumes).</li>
+
+  <li>The history list window shows snippets links, which display an
+    error message when used and make no sense (no query data).</li>
 </ul>
 
 <h2><a name="b_1_19_2">recoll 1.19.2</a></h2>
