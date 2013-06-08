@@ -137,17 +137,14 @@ void RclMain::init()
     // db not open yet (the case where it does not even exist makes
     // things complicated). So get the languages from the config
     // instead
-    string slangs;
-    list<string> langs;
-    if (theconfig->getConfParam("indexstemminglanguages", slangs)) {
-	stringToStrings(slangs, langs);
-    } else {
+    vector<string> langs;
+    if (!getStemLangs(langs)) {
 	QMessageBox::warning(0, "Recoll", 
 			     tr("error retrieving stemming languages"));
     }
     QAction *curid = prefs.queryStemLang == "ALL" ? m_idAllStem : m_idNoStem;
     QAction *id; 
-    for (list<string>::const_iterator it = langs.begin(); 
+    for (vector<string>::const_iterator it = langs.begin(); 
 	 it != langs.end(); it++) {
 	QString qlang = QString::fromAscii(it->c_str(), it->length());
 	id = preferencesMenu->addAction(qlang);

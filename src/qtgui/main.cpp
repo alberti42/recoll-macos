@@ -128,15 +128,29 @@ bool maybeOpenDb(string &reason, bool force, bool *maindberror)
     return true;
 }
 
-bool getStemLangs(vector<string>& langs)
+// Retrieve the list currently active stemming languages. We try to
+// get this from the db, as some may have been added from recollindex
+// without changing the config. If this fails, use the config. This is
+// used for setting up choice menus, not updating the configuration.
+bool getStemLangs(vector<string>& vlangs)
 {
+    // Try from db
     string reason;
-    if (!maybeOpenDb(reason)) {
-	LOGERR(("getStemLangs: %s\n", reason.c_str()));
+    if (maybeOpenDb(reason)) {
+	vlangs = rcldb->getStemLangs();
+	LOGDEB0(("getStemLangs: from index: %s\n", 
+		 stringsToString(vlangs).c_str()));
+	return true;
+    } else {
+	// Cant get the langs from the index. Maybe it just does not
+	// exist yet. So get them from the config
+	string slangs;
+	if (theconfig->getConfParam("indexstemminglanguages", slangs)) {
+	    stringToStrings(slangs, vlangs);
+	    return true;
+	}
 	return false;
     }
-    langs = rcldb->getStemLangs();
-    return true;
 }
 
 static void recollCleanup()
