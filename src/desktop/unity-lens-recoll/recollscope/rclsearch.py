@@ -9,7 +9,7 @@ import locale
 from gi.repository import Unity, GObject, Gio
 
 try:
-    import rclconfig
+    from recoll import rclconfig
     hasrclconfig = True
 except:
     hasrclconfig = False
