@@ -13,7 +13,16 @@ try:
     hasrclconfig = True
 except:
     hasrclconfig = False
-
+# As a temporary measure, we also look for rclconfig as a bare
+# module. This is so that the intermediate releases of the lens can
+# ship and use rclconfig.py with the lens code
+if not hasrclconfig:
+    try:
+        import rclconfig
+        hasrclconfig = True
+    except:
+        pass
+    
 try:
     from recoll import recoll
     from recoll import rclextract

@@ -21,7 +21,7 @@ targetdir=${targetdir-/tmp}
 
 checkmodified=${checkmodified-yes}
 
-editedfiles=`$VCCMD status . | egrep -v '^\?'`
+#editedfiles=`$VCCMD status . | egrep -v '^\?'`
 if test "$checkmodified" = "yes" -a ! -z "$editedfiles"; then
   fatal  "Edited files exist: " $editedfiles
 fi
@@ -44,6 +44,9 @@ make distclean
 yes | clean.O
 
 $TAR chfX - excludefile .  | (cd $topdir;$TAR xf -)
+
+# Temporary, until the released recoll python module includes rclconfig.py
+cp ../../python/recoll/recoll/rclconfig.py $topdir/recollscope
 
 out=$releasename.tar.gz
 (cd $targetdir ; \
