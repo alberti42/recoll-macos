@@ -1,7 +1,15 @@
 # (C) 2004 J.F.Dockes
 
-# Associations of mime types to processing filters ([index] section).
-# Other sections describe auxiliary properties associated to the mime types.
+# This file contains most of the data which determines how we
+# handle the different mime types (also see the "mimeview" file).
+# Sections:
+# top-level: Decompression parameters. Should not be at top-level, historical.
+# [index] : Associations of mime types to the filters that translate them
+#      to plain text or html.
+# [icons] : Associations of mime types to result list icons (GUI)
+# [categories] : groupings of mime types (media, text, message etc.)
+# [guifilters] : defines the filtering checkboxes in the GUI. Uses the
+#   above categories by default
 
 ## #######################################
 # Decompression: these types need a first pass to create a temp file to

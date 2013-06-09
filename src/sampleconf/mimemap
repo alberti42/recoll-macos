@@ -36,6 +36,9 @@
 .php = text/html
 .ics = text/calendar
 
+# .eml is used as an extension by several mail apps for a single message
+# saved in raw MIME format. Mainly used here to get Thunderbird to open an
+# extracted message.
 .eml = message/rfc822
 
 .pdf = application/pdf
