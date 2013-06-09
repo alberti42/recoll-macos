@@ -400,9 +400,17 @@
             variable. Example:<programlisting>
 indexedmimetypes = text/html application/pdf
           </programlisting>
-          There is no GUI way to do this, because this option runs a
-          bit contrary to &RCL; main goal which is to help you find
-          information, independantly of how it may be stored.
+          It is possible to redefine this parameter for
+          subdirectories. Example:<programlisting>
+[/path/to/my/dir]
+indexedmimetypes = application/pdf
+          </programlisting>
+          (When using sections like this, don't forget that they remain
+          in effect until the end of the file or another section
+          indicator).
+          There is no GUI way to edit the parameter, because this
+          option runs contrary to &RCL; main goal which is to help you
+          find information, independantly of how it may be stored.
         </para>
 
 
@@ -4883,7 +4891,7 @@ skippedPaths = ~/somedir/*.txt
             knows how to read. This list lets you restrict the indexed
             mime types to what you specify. If the variable is
             unspecified or the list empty (the default), all supported
-            types are processed.</para>
+            types are processed. Can be redefined for subdirectories.</para>
             </listitem>
           </varlistentry>
 
