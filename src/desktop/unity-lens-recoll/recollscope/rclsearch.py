@@ -6,8 +6,13 @@ import urllib
 import hashlib
 import os
 import locale
-
 from gi.repository import Unity, GObject, Gio
+
+try:
+    import rclconfig
+    hasrclconfig = True
+except:
+    hasrclconfig = False
 
 try:
     from recoll import recoll
@@ -106,12 +111,18 @@ class Scope (Unity.Scope):
         self.last_connect_time = 0
         self.timeout_id = None
         language, self.localecharset = locale.getdefaultlocale()
+        if hasrclconfig:
+            self.config = rclconfig.RclConfig()
 
     def _connect_db(self):
         #print "Connecting to db"
         self.db = None
+        dblist = []
+        if hasrclconfig:
+            extradbs = rclconfig.RclExtraDbs(self.config)
+            dblist = extradbs.getActDbs()
         try:
-            self.db = recoll.connect()
+            self.db = recoll.connect(extra_dbs=dblist)
             self.db.setAbstractParams(maxchars=200, contextwords=4)
         except Exception, s:
             print >> sys.stderr, "recoll-lens: Error connecting to db:", s
