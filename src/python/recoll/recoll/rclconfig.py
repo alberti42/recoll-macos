@@ -164,7 +164,7 @@ class RclConfig:
         self.cdirs = [self.confdir,]
         self.cdirs.append(os.path.join(self.datadir, "examples"))
         #print self.cdirs
-        self.config = ConfStack("recoll.conf", self.cdirs)
+        self.config = ConfStack("recoll.conf", self.cdirs, "tree")
         self.keydir = ''
 
     def getConfDir(self):
