@@ -206,7 +206,7 @@ def main(proto, extract):
                     bdata = data.encode("UTF-8")
                 else:
                     bdata = data
-                sys.stdout.write(bdata)
+                #sys.stdout.write(bdata)
                 print
                 if eof != RclExecM.noteof:
                     break
