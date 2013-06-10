@@ -2,8 +2,25 @@
 
 # Zip file filter for Recoll
 
+import os
+import fnmatch
 import rclexecm
 from zipfile import ZipFile
+
+try:
+    from recoll import rclconfig
+    hasrclconfig = True
+except:
+    hasrclconfig = False
+# As a temporary measure, we also look for rclconfig as a bare
+# module. This is so that the intermediate releases of the filter can
+# ship and use rclconfig.py with the filter code
+if not hasrclconfig:
+    try:
+        import rclconfig
+        hasrclconfig = True
+    except:
+        pass
 
 # Note about file names (python 2.6. 2.7, don't know about 3.)
 #
@@ -67,9 +84,19 @@ class ZipExtractor:
 
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
+        filename = params["filename:"]
         self.currentindex = -1
+        self.skiplist = []
+
+        if hasrclconfig:
+            config = rclconfig.RclConfig()
+            config.setKeyDir(os.path.dirname(filename))
+            skipped = config.getConfParam("zipSkippedNames")
+            if skipped is not None:
+                self.skiplist = skipped.split(" ")
+
         try:
-            self.zip = ZipFile(params["filename:"])
+            self.zip = ZipFile(filename)
             return True
         except:
             return False
@@ -101,7 +128,22 @@ class ZipExtractor:
             #self.em.rclog("getnext: EOF hit")
             return (False, "", "", rclexecm.RclExecM.eofnow)
         else:
-            ret= self.extractone(self.zip.namelist()[self.currentindex])
+            entryname = self.zip.namelist()[self.currentindex]
+
+            if hasrclconfig and len(self.skiplist) != 0:
+                while self.currentindex < len(self.zip.namelist()):
+                    entryname = self.zip.namelist()[self.currentindex]
+                    for pat in self.skiplist:
+                        if fnmatch.fnmatch(entryname, pat):
+                            entryname = None
+                            break
+                    if entryname is not None:
+                        break
+                    self.currentindex += 1
+                if entryname is None:
+                    return (False, "", "", rclexecm.RclExecM.eofnow)
+                
+            ret= self.extractone(entryname)
             self.currentindex += 1
             return ret
 
