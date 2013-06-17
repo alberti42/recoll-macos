@@ -134,11 +134,18 @@ string mimetype(const string &fn, const struct stat *stp,
     // Extended attribute has priority on everything, as per:
     // http://freedesktop.org/wiki/CommonExtendedAttributes
     if (pxattr::get(fn, "mime_type", &mtype)) {
-	return mtype;
+	LOGDEB0(("Mimetype: 'mime_type' xattr : [%s]\n", mtype.c_str()));
+	if (mtype.empty()) {
+	    LOGDEB0(("Mimetype: getxattr() returned empty mime type !\n"));
+	} else {
+	    return mtype;
+	}
     }
 
-    if (cfg == 0) // ?!?
+    if (cfg == 0)  {
+	LOGERR(("Mimetype: null config ??\n"));
 	return mtype;
+    }
 
     if (cfg->inStopSuffixes(fn)) {
 	LOGDEB(("mimetype: fn [%s] in stopsuffixes\n", fn.c_str()));
