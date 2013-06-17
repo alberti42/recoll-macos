@@ -429,9 +429,17 @@ Chapter 2. Indexing
  indexedmimetypes = text/html application/pdf
           
 
-   There is no GUI way to do this, because this option runs a bit contrary to
-   Recoll main goal which is to help you find information, independantly of
-   how it may be stored.
+   It is possible to redefine this parameter for subdirectories. Example:
+
+ [/path/to/my/dir]
+ indexedmimetypes = application/pdf
+          
+
+   (When using sections like this, don't forget that they remain in effect
+   until the end of the file or another section indicator). There is no GUI
+   way to edit the parameter, because this option runs contrary to Recoll
+   main goal which is to help you find information, independantly of how it
+   may be stored.
 
   2.1.4. Recovery
 
@@ -3411,7 +3419,8 @@ Chapter 5. Installation and configuration
            Recoll normally indexes any file which it knows how to read. This
            list lets you restrict the indexed mime types to what you specify.
            If the variable is unspecified or the list empty (the default),
-           all supported types are processed.
+           all supported types are processed. Can be redefined for
+           subdirectories.
 
    compressedfilemaxkbs
 

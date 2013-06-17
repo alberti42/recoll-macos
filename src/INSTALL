@@ -502,7 +502,8 @@ Chapter 5. Installation and configuration
            Recoll normally indexes any file which it knows how to read. This
            list lets you restrict the indexed mime types to what you specify.
            If the variable is unspecified or the list empty (the default),
-           all supported types are processed.
+           all supported types are processed. Can be redefined for
+           subdirectories.
 
    compressedfilemaxkbs
 
