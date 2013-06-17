@@ -87,6 +87,11 @@
       <div class="news">
       
       <dl>
+        <dt>2013-06-17</dt> <dd>A change in Recoll 1.19, combined with a
+          Linux <a href="https://bugzilla.kernel.org/show_bug.cgi?id=59811">
+            CIFS kernel module bug</a> makes it impossible to index
+          volumes mounted through smbfs/cifs. A workaround release
+          will be issued shortly.</dd>
 
         <dt>2013-06-07</dt><dd>Recoll 1.19.4 is out. It fixes a few
           relatively minor issues in 1.19.3. See the 

@@ -292,6 +292,7 @@ python/recoll/pyrecoll.cpp
 python/recoll/pyrecoll.h
 python/recoll/recoll/
 python/recoll/recoll/__init__.py
+python/recoll/recoll/rclconfig.py
 python/recoll/setup.py.in
 python/samples/
 python/samples/rcldlkp.py
@@ -303,6 +304,7 @@ python/samples/recollgui/rclmain.py
 python/samples/recollgui/rclmain.ui
 python/samples/recollq.py
 python/samples/recollqsd.py
+python/samples/trconfig.py
 qtgui/
 qtgui/advsearch.ui
 qtgui/advsearch_w.cpp
