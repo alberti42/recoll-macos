@@ -4,7 +4,7 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.19.3
+RCLVERS=1.19.4
 LENSVERS=1.19.2.3328
 PPAVERS=1
 

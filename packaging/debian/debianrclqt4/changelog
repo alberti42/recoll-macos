@@ -1,3 +1,7 @@
+recoll (1.19.5-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+  * Release 1.19.5: the CIFS issue.
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 18 Jun 2013 15:23:00 +0200
+
 recoll (1.19.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
   * Release 1.19.3: minor bugs and usability fixes
  -- Jean-Francois Dockes <jf@dockes.org>  Mon, 23 May 2013 10:02:00 +0200

@@ -29,17 +29,8 @@
 later versions. Bugs listed in the topmost section may also exist in older
 versions.</i></p>
 
-<h2><a name="b_latest">recoll 1.19.4</a></h2>
+<h2><a name="b_latest">recoll 1.19.5</a></h2>
 <ul>
-
-  <li>Indexing CIFS/SMBFS kernel mounts is impossible because an empty
-    mime_type extended attribute is 
-    <a href="https://bugzilla.kernel.org/show_bug.cgi?id=59811">
-      returned by the kernel</a> for all files, rendering actual
-      identification impossible. You can probably use a FUSE mount as
-      a workaround.
-  </li>
-
   <li>On systems such as Debian Stable which use Evince version 2.x (not 3.x)
     as PDF viewer, the default "Open" command for PDF files will not work. You
     need to use the GUI preferences tool to change the --page-index option to
@@ -67,6 +58,18 @@ versions.</i></p>
     fixed by removing (back it up just in case)
     ~/.config/Recoll.org/recoll.conf, the QSettings storage for
     recoll.</li>
+</ul>
+
+<h2><a name="b_1_19_4">recoll 1.19.4</a></h2>
+<ul>
+
+  <li>Indexing CIFS/SMBFS kernel mounts is impossible because an empty
+    mime_type extended attribute is 
+    <a href="https://bugzilla.kernel.org/show_bug.cgi?id=59811">
+      returned by the kernel</a> for all files, rendering actual
+      identification impossible. You can probably use a FUSE mount as
+      a workaround.
+  </li>
 </ul>
 
 <h2><a name="b_1_19_3">recoll 1.19.3</a></h2>
