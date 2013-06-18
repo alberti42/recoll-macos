@@ -1232,23 +1232,26 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
 	    if (rcldb->needUpdate(udi, sig)) {
 		QString msg = 
 		    tr("Index not up to date for this file. "
-		       "Refusing to risk showing the wrong entry.");
-		if (m_indexerState == IXST_NOTRUNNING) {
+		       "Refusing to risk showing the wrong entry. ");
+		bool ixnotact = (m_indexerState == IXST_NOTRUNNING);
+		if (ixnotact) {
 		    msg += tr("Click Ok to update the "
-			      "index for this file, then re-run the "
-			      "query when indexing is done. "
-			      "Else, Cancel.");
+			      "index for this file, then you will need to "
+			      "re-run the query when indexing is done. ");
 		} else {
-		    msg += tr("Indexer running so things should improve when "
-			      "it's done");
-		}
+		    msg += tr("The indexer is running so things should "
+			      "improve when it's done. ");
+		} 
+		msg += tr("Click Cancel to return to the list. "
+			  "Click Ignore to show the preview anyway. ");
+		QMessageBox::StandardButtons bts = 
+		    QMessageBox::Ignore | QMessageBox::Cancel;
+		if (ixnotact)
+		    bts |= QMessageBox::Ok;
 		int rep = 
 		    QMessageBox::warning(0, tr("Warning"), 
-					 msg,
-					 QMessageBox::Ok,
-					 (m_indexerState == IXST_NOTRUNNING) ?
-					 QMessageBox::Cancel : 
-					 QMessageBox::NoButton,
+					 msg, bts,
+					 ixnotact? QMessageBox::Cancel : 
 					 QMessageBox::NoButton);
 		if (m_indexerState == IXST_NOTRUNNING && 
 		    rep == QMessageBox::Ok) {
@@ -1257,7 +1260,8 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
 		    vector<Rcl::Doc> docs(1, doc);
 		    updateIdxForDocs(docs);
 		}
-		return;
+		if (rep != QMessageBox::Ignore)
+		    return;
 	    }
 	}
     }
