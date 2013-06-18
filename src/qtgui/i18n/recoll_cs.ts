@@ -112,7 +112,7 @@
     </message>
     <message>
         <source>Search for &lt;br&gt;documents&lt;br&gt;satisfying:</source>
-        <translation>Hledat dokumenty, které splňují následující hlediska:</translation>
+        <translation>Hledat &lt;br&gt;dokumenty&lt;br&gt;, které splňují následující hlediska:</translation>
     </message>
     <message>
         <source>Delete clause</source>
@@ -571,7 +571,7 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     </message>
     <message>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing&lt;br&gt;or an empty line is selected in the listbox above, or for the selected subdirectory.&lt;br&gt;You can add or remove directories by clicking the +/- buttons.</source>
-        <translation>&lt;i&gt;Parametry, které následují, jsou nastaveny buď na nejvyšší úrovni, pokud nic&lt;br&gt;nebo je v seznamu výše vybrán prázdný řádek, nebo pro vybraný podadresář.&lt;br&gt;Adresáře můžete přidat anebo odebrat klepnutím na tlačítka +/-.</translation>
+        <translation>&lt;i&gt;Parametry, které následují, jsou nastaveny buď na nejvyšší úrovni, pokud nic&lt;br&gt;, nebo pokud je v seznamu výše vybrán prázdný řádek, nebo pro vybraný podadresář.&lt;br&gt;Adresáře můžete přidat anebo odebrat klepnutím na tlačítka +/-.</translation>
     </message>
     <message>
         <source>Skipped names</source>
@@ -761,11 +761,11 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>(no stemming)</source>
-        <translation>(žádné rozšíření kmene slova)</translation>
+        <translation>Źádné rozšíření kmene slova</translation>
     </message>
     <message>
         <source>(all languages)</source>
-        <translation>(všechny jazyky)</translation>
+        <translation>Všechny jazyky</translation>
     </message>
     <message>
         <source>error retrieving stemming languages</source>
@@ -2463,7 +2463,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Index flush megabytes interval</source>
-        <translation>Interval v megabytech pro spláchnutí rejstříku</translation>
+        <translation>Interval v megabytech pro vymazání rejstříku</translation>
     </message>
     <message>
         <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
@@ -2471,7 +2471,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Max disk occupation (%)</source>
-        <translation>Největší využívání disku (%)</translation>
+        <translation>Největší obsazení disku (%)</translation>
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
@@ -2546,7 +2546,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Hide duplicate results.</source>
-        <translation>Skrýt zdvojené výsledky.</translation>
+        <translation>Skrýt zdvojené výsledky</translation>
     </message>
     <message>
         <source>Highlight color for query terms</source>
@@ -2606,7 +2606,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
-        <translation>Po spuštění automaticky otevřít dialog pro rozšířené hledání.</translation>
+        <translation>Po spuštění automaticky otevřít dialog pro rozšířené hledání</translation>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
@@ -2614,11 +2614,11 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Remember sort activation state.</source>
-        <translation>Zapamatovat si stav zapnutí hledání.</translation>
+        <translation>Zapamatovat si stav zapnutí hledání</translation>
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
-        <translation>Upřednostňovat pro náhled HTML před prostým textem.</translation>
+        <translation>Upřednostňovat pro náhled HTML před prostým textem</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -2658,7 +2658,7 @@ U velkých dokumentů může být pomalé.</translation>
     </message>
     <message>
         <source>Synthetic abstract size (characters)</source>
-        <translation>Délka vytvořeného přehledu (znaky)</translation>
+        <translation>Délka vytvořeného přehledu (počet znaků)</translation>
     </message>
     <message>
         <source>Synthetic abstract context words</source>
@@ -2670,7 +2670,7 @@ U velkých dokumentů může být pomalé.</translation>
     </message>
     <message>
         <source>Query language magic file name suffixes.</source>
-        <translation>Kouzelné přípony souborového názvu jazyka hledání.</translation>
+        <translation>Kouzelné přípony souborového názvu jazyka hledání</translation>
     </message>
     <message>
         <source>Enable</source>
