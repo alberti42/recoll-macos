@@ -686,6 +686,12 @@ recoll
           still young, so that a certain amount of weirdness cannot be
           excluded.</para> 
 
+        <para>One of the most adverse consequence of using a raw index
+          is that some phrase and proximity searches may become
+          impossible: because each term needs to be expanded, and all
+          combinations searched for, the multiplicative expansion may
+          become unmanageable.</para>
+
       </sect2>
 
 
@@ -3773,7 +3779,9 @@ or
         <title>Introduction</title>
 
         <para>&RCL; versions after 1.11 define a Python programming
-          interface, both for searching and indexing.</para> 
+          interface, both for searching and indexing. The indexing
+          portion has seen little use, but the searching one is used
+          in the Recoll Ubuntu Unity Lens and Recoll Web UI.</para> 
 
         <para>The API is inspired by the Python database API
           specification, version 1.0 for &RCL; versions up to 1.18,
@@ -3796,6 +3804,13 @@ or
             <userinput>python setup.py install</userinput>
           </screen>
         </para> 
+
+        <para>The normal &RCL; installer installs the Python
+          API along with the main code.</para>
+
+        <para>When installing from a repository, and depending on the
+          distribution, the Python API can sometimes be found in a
+          separate package.</para>
 
       </sect3>
 
@@ -3872,8 +3887,13 @@ or
             </varlistentry>
 
             <varlistentry>
-              <term>Db.setAbstractParams(maxchars, contextwords)</term>
-              <listitem>Set the parameters used to build snippets.</listitem>
+              <term>Db.setAbstractParams(maxchars,
+              contextwords)</term> <listitem>Set the parameters used
+              to build snippets (sets of keywords in context text
+              fragments). <literal>maxchars</literal> defines the
+                maximum total size of the abstract. 
+                <literal>contextwords</literal> defines how many
+                terms are shown around the keyword.</listitem>
             </varlistentry>
 
           </variablelist>
@@ -3932,7 +3952,7 @@ or
 
             <varlistentry>
               <term>Query.close()</term>
-              <listitem>Closes the connection. The object is unusable
+              <listitem>Closes the query. The object is unusable
               after the call.</listitem>
             </varlistentry>
 
@@ -3947,12 +3967,12 @@ or
             <varlistentry>
               <term>Query.getgroups()</term>
               <listitem>Retrieves the expanded query terms as a list
-              of pairs. Meaningful only after executexx
-                In each pair, the first entry is a list of user terms,
-                the second a list of query terms as derived from the
-                user terms and used in the Xapian Query. The size of
-                each list is one for simple terms, or more for group
-                and phrase clauses.</listitem>
+                of pairs. Meaningful only after executexx In each
+                pair, the first entry is a list of user terms (of size
+                one for simple terms, or more for group and phrase
+                clauses), the second a list of query terms as derived
+                from the user terms and used in the Xapian
+                Query.</listitem>
             </varlistentry>
             
             <varlistentry>
@@ -4002,7 +4022,9 @@ or
             <varlistentry><term>Query.rownumber</term><listitem>Next index
                 to be fetched from results. Normally increments after
                 each fetchone() call, but can be set/reset before the
-                call effect seeking. Starts at 0.</listitem>
+                call to effect seeking (equivalent to
+                using <literal>scroll()</literal>). Starts at
+                0.</listitem> 
             </varlistentry>
 
           </variablelist>
@@ -4089,13 +4111,15 @@ or
       <sect3 id="RCL.PROGRAM.PYTHON.RCLEXTRACT">
         <title>The rclextract module</title>
 
-        <para>Document content is not provided by an index query. To
-        access it, the data extraction part of the indexing process
-        must be performed (subdocument access and format
-        translation). This is not trivial in
-        general. The <literal>rclextract</literal> module currently
-        provides a single class which can be used to access the data
-        content for result documents.</para>
+        <para>Index queries do not provide document content (only a
+          partial and unprecise reconstruction is performed to show the
+          snippets text). In order to access the actual document data, 
+          the data extraction part of the indexing process
+          must be performed (subdocument access and format
+          translation). This is not trivial in
+          general. The <literal>rclextract</literal> module currently
+          provides a single class which can be used to access the data
+          content for result documents.</para>
 
         <sect4 id="RCL.PROGRAM.PYTHON.RCLEXTRACT.CLASSES">
           <title>Classes</title>
@@ -4118,13 +4142,25 @@ or
                 by <replaceable>ipath</replaceable> and return
                 a <literal>Doc</literal> object. The doc.text field
                 has the document text as either text/plain or
-                text/html according to doc.mimetype.</listitem>
+                text/html according to doc.mimetype. The typical use
+                would be as follows:
+                  <programlisting>
+qdoc = query.fetchone()
+extractor = recoll.Extractor(qdoc)
+text = extractor.textextract(qdoc.ipath)</programlisting>
+                </listitem>
               </varlistentry>
               <varlistentry>
-                <term>Extractor.idoctofile()</term>
+                <term>Extractor.idoctofile(ipath, targetmtype, outfile='')</term>
                 <listitem>Extracts document into an output file,
-                which can be given explicitly or will be created as a
-                temporary file to be deleted by the caller.</listitem>
+                  which can be given explicitly or will be created as a
+                  temporary file to be deleted by the caller. Typical use:
+                  <programlisting>
+qdoc = query.fetchone()
+extractor = recoll.Extractor(qdoc)
+filename = extractor.idoctofile(qdoc.ipath, qdoc.mimetype)</programlisting>
+
+                </listitem>
               </varlistentry>
 
           </variablelist>
