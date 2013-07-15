@@ -8,7 +8,7 @@ if test C$CXX = C ; then
    AC_MSG_ERROR([C++ compiler needed. Please install one (ie: gnu g++)])
 fi
 
-sys=`uname | tr / _`
+sys=`uname | tr / _ | awk -F_ '{print $1}'`
 
 if test ! -f mk/$sys ; then
    AC_MSG_NOTICE([
@@ -251,12 +251,12 @@ AC_CHECK_FUNCS(mkdtemp)
 ##### libiconv. We'd need a --with-libiconv= option
 AC_LANG(C++)
 LIBICONV=""
-S_LDFLAGS=$LDFLAGS
+S_LIBS=$LIBS
 S_CPPFLAGS=$CPPFLAGS
-for dir in ${libdir} /opt/local/lib /usr/local/lib ;do
+for dir in ${libdir} /opt/local/lib /usr/local/lib;do
   CPPFLAGS="$S_CPPFLAGS -I$dir/../include"
 
-  LDFLAGS="$S_LDFLAGS -L$dir"
+  LIBS="$S_LIBS -L$dir"
   AC_TRY_LINK([#include <stdlib.h>
 #include <iconv.h>],
       [iconv_t cd = iconv_open("","");
@@ -267,7 +267,7 @@ for dir in ${libdir} /opt/local/lib /usr/local/lib ;do
      break
   fi
 
-  LDFLAGS="$S_LDFLAGS -L$dir -liconv"
+  LIBS="$S_LIBS -L$dir -liconv"
   AC_TRY_LINK([#include <stdlib.h>
 #include <iconv.h>],
       [iconv_t cd = iconv_open("","");
@@ -280,7 +280,7 @@ for dir in ${libdir} /opt/local/lib /usr/local/lib ;do
 
 done
 
-LDFLAGS=$S_LDFLAGS
+LIBS=$S_LIBS
 CPPFLAGS=$S_CPPFLAGS
 
 if test A"$LIBICONV" = A ; then
@@ -315,8 +315,22 @@ if test X$rcl_putenv_string_const = X1 ; then
 fi
 
 
-#### Look for Xapian
-AC_PATH_PROG(XAPIAN_CONFIG, xapian-config, no)
+#### Look for Xapian. Done in a strange way to work around autoconf
+# cache
+XAPIAN_CONFIG=no
+if test "$XAPIAN_CONFIG" = "no"; then 
+    AC_PATH_PROG(XAPIAN_CONFIG0, [xapian-config], no)
+    XAPIAN_CONFIG=$XAPIAN_CONFIG0
+fi
+if test "$XAPIAN_CONFIG" = "no"; then 
+   AC_PATH_PROG(XAPIAN_CONFIG1, [xapian-config-1.3], no)
+   XAPIAN_CONFIG=$XAPIAN_CONFIG1
+fi
+if test "$XAPIAN_CONFIG" = "no"; then 
+   AC_PATH_PROG(XAPIAN_CONFIG2, [xapian-config-1.1], no)
+   XAPIAN_CONFIG=$XAPIAN_CONFIG2
+fi
+
 if test "$XAPIAN_CONFIG" = "no" ; then
    AC_MSG_ERROR([Cannot find xapian-config command in $PATH. Is
 xapian-core installed ?])
