@@ -353,7 +353,7 @@ int Query::getResCnt()
                m_resCnt = m_nq->xmset.get_matches_lower_bound(),
                m_db->m_ndb->xrdb, m_reason);
 
-        LOGDEB(("Query::getResCnt: %d mS\n", chron.millis()));
+        LOGDEB(("Query::getResCnt: %d %d mS\n", m_resCnt, chron.millis()));
 	if (!m_reason.empty())
 	    LOGERR(("xenquire->get_mset: exception: %s\n", m_reason.c_str()));
     } else {
