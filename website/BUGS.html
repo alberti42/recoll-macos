@@ -32,16 +32,26 @@ versions.</i></p>
 <h2><a name="b_latest">recoll 1.19.5</a></h2>
 <ul>
   <li>On systems such as Debian Stable which use Evince version 2.x (not 3.x)
-    as PDF viewer, the default "Open" command for PDF files will not work. You
-    need to use the GUI preferences tool to change the --page-index option to
-    --page-label for the evince command line used for PDF.</li>
+    as PDF viewer, the default "Open" command for PDF files will not
+    work. You need to use the GUI preferences tool to change the
+    --page-index option to --page-label for the evince command line
+    used for PDF.</li>
+
+  <li>There has been at least one report of a corrupted index
+    (resulting in search failures), following several interruptions of
+    a multithreaded indexer. Nothing is currently certain about this
+    issue, so, if you end up with a corrupted index, please report how
+    you got there.</li>
+
   <li>It will sometimes happen that the result list paragraph format stored in
     the Qt preferences file will get garbled, causing result lists with no
     displayed paragraphs (the counts and pages are ok, the results can be seen
     in table mode, but not in list mode). The workaround is to go to 
 
     <blockquote>
-      Preferences-&gt;Query configuration-&gt;User interface </blockquote>
+      Preferences-&gt;Query configuration-&gt;User interface 
+    </blockquote>
+
     and erase the result paragraph format string (^A DEL in the text area),
     this will reset the string to the default value.</li>
 
