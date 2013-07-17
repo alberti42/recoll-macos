@@ -2242,19 +2242,19 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Recoll action:</source>
-        <translation type="unfinished"></translation>
+        <translation>Recoll-Aktion:</translation>
     </message>
     <message>
         <source>current value</source>
-        <translation type="unfinished"></translation>
+        <translation>aktueller Wert</translation>
     </message>
     <message>
         <source>Select same</source>
-        <translation type="unfinished"></translation>
+        <translation>Das Selbe wählen</translation>
     </message>
     <message>
         <source>&lt;b&gt;New Values:&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Neuer Wert&lt;/b&gt;</translation>
     </message>
 </context>
 <context>
