@@ -4649,8 +4649,21 @@ except:
         to manually copy and modify one of the existing files (the new
         file name should be the output of <command>uname</command>
         <option>-s</option>).</para> 
+      
+      <sect3 id="RCL.INSTALL.BUILDING.BUILD.SOLARIS">
+	<title>Building on Solaris</title>
 
-    </sect2>
+	<para>We did not test building the GUI on Solaris for recent
+	  versions. You will need at least Qt 4.4. There are some hints
+	  on <ulink url="http://www.recoll.org/download-1.14.html">an old
+	    web site page</ulink>, they may still be valid.</para>
+
+	<para>Someone did test the 1.19 indexer and Python module build,
+	  they do work, with a few minor glitches. Be sure to use
+	  GNU <command>make</command> and <command>install</command>.</para> 
+	</sect3>
+
+      </sect2>
 
       <sect2 id="RCL.INSTALL.BUILDING.INSTALL">
         <title>Installation</title>
@@ -5293,7 +5306,7 @@ metadatacmds = ; tags = tmsu tags %f; otherfield = somecmd -xx %f
                 stage. In practise, deep queues have not been shown to
                 increase performance. A value of 0 for the first queue
                 tells &RCL; to perform autoconfiguration (no need for
-                the two other values in this case)- this is the
+                the two other values in this case) - this is the
                 default configuration.</para>
             </listitem>
           </varlistentry>
@@ -5335,6 +5348,14 @@ thrTCounts =  4 2 1
 <programlisting>
 thrQSizes = 2 -1 -1
 thrTCounts =  6 1 1
+</programlisting>
+         </para>
+
+         <para>The following example would disable
+           multithreading. Indexing will be performed by a single
+           thread.
+<programlisting>
+thrQSizes = -1 -1 -1
 </programlisting>
          </para>
 

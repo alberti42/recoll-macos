@@ -1,6 +1,6 @@
 /*--General-----------------------------------------------*/
 html {
-    margin 0;
+    margin: 0;
 }
 body {
        position: relative;
@@ -110,6 +110,6 @@ a.weak {
 table { empty-cells:show; }
 div.intrapage {
     background: #ccccff;
-    padding-left: 2em;
+    padding-left: 1em;
     margin-left: -2em;
 }

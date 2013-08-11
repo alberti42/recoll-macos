@@ -10,6 +10,19 @@
   <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
   <meta name="robots" content="All,Index,Follow">
   <link type="text/css" rel="stylesheet" href="styles/style.css">
+
+<script type="text/javascript">
+function showdiv(viewid)
+{
+  var ids = ["general", "bugs", "source", "packages", "ports", "filters",
+    "translations"];
+  for (var i = 0; i < ids.length; i++) {
+    document.getElementById(ids[i]).style.display = "none";
+  }
+  document.getElementById(viewid).style.display = "block";
+}
+</script>
+
 </head>
 
 <body>
@@ -19,7 +32,7 @@
   <li><a href="index.html">Home</a></li>
   <li><b>Downloads</b></li>
   <li><a href="doc.html">Documentation</a></li>
-  <li><a href="usermanual/rcl.install.html">Installation</a></li>
+  <li><a href="usermanual/RCL.INSTALL.html">Installation</a></li>
   <li><a href="index.html#support">Support</a></li>
 </ul>
 </div>
@@ -32,18 +45,27 @@
 <table width="100%">
   <tbody>
     <tr>
-      <td><a href="#source">Source</a></td>
-      <td><a href="#packages">Packages (.rpm and .deb)</a></td>
-      <td><a href="BUGS.html">Known bugs</a></td>
-      <td><a href="#ports">Mac ports</a></td>
-      <td><a href="filters/filters.html">Filters</a> </td>
-      <td><a href="#translations">Translations</a></td>
+      <td><a href="#general" onmouseover="showdiv('general')">
+	  General</a></td>
+      <td><a href="#source" onmouseover="showdiv('source')">
+	  Source</a></td>
+      <td><a href="#packages" onmouseover="showdiv('packages')">
+	  Packages (.rpm and .deb)</a></td>
+      <td><a href="BUGS.html" onmouseover="showdiv('bugs')">
+	  Known bugs</a></td>
+      <td><a href="#ports" onmouseover="showdiv('ports')">
+	  Mac ports</a></td>
+      <td><a href="filters/filters.html" onmouseover="showdiv('filters')">
+	  Updated Filters</a></td>
+      <td><a href="#translations" onmouseover="showdiv('translations')">
+	  Translations</a></td>
     </tr>
   </tbody>
 </table>
 </div>
 
-<h2><a>General information</a></h2>
+<div id="general">
+<h2><a name="general">General information</a></h2>
 
 <p>The current version is 1.19.5. <a href="release-1.19.html">Release
 notes</a>.</p>
@@ -51,16 +73,13 @@ notes</a>.</p>
 <p>The download page for Recoll 1.18 is <a href="download-1.18.html">still
 available</a>.</p>
 
-<p>Recoll <a href="usermanual/rcl.install.html">Installation / building
+<p>Recoll <a href="usermanual/RCL.INSTALL.html">Installation / building
 manual</a>.</p>
 
-<p>The indexing filters used for some document types may need external packages
-not installed on your system by default, and not installed automatically with
-Recoll: <a href="features.html#doctypes">take a look at the list</a> and decide
-what you need to install. Also <a href="filters/filters.html">new or updated
-filters</a> sometimes become available after a release. As a rule, all filters
-are compatible with all Recoll versions. Any compatibility problem will be
-explicitely mentionned.</p>
+<p>The indexing filters used for some document types may need external
+packages not installed on your system by default, and not installed
+automatically with Recoll: <a href="features.html#doctypes">take a
+look at the list</a> and decide what you need to install.</p>
 
 <p>The Recoll term explorer tool in phonetic mode (marginally useful and
 optional) uses the <b>aspell</b> package, version 0.60 (utf-8 support) or
@@ -84,7 +103,18 @@ to X.Y.Z+u should in general involve little risk of regression. But,
 <em>any</em> change can bring problems, if you are not affected by the
 corrected bugs (check the <a href="release-1.19.html">release file</a>), there
 is probably no necessity to upgrade anyway.</p>
+</div>
 
+<div id="bugs">
+  <h2><a name="bugs">Known bugs</a></h2>
+  <p>There is a <a href="BUGS.html">history of known bugs</a>, sorted
+    by fix release. Also see 
+    the <a href="https://bitbucket.org/medoc/recoll/issues">
+      issue tracker on Bitbucket</a>.
+  </p>
+</div>
+
+<div id="source">
 <h2><a name="source">Source</a></h2>
 
 <h3>Current release distribution: 1.19.5:</h3>
@@ -142,14 +172,19 @@ current <a href="release-1.16.html">1.16 release notes</a>).
 trunk is usually a bit on the bleeding edge, but there is always a maintenance
 branch for the current production version.</p>
 
+<h3>Instructions for building</h3>
+
+<p>Normally, it's just <tt>configure; make; make install</tt>. If a bit
+  more detail is needed, 
+  <a href="http://www.recoll.org/usermanual/RCL.INSTALL.BUILDING.html">
+    there is some in the manual</a>.
+
 <h3>Older recoll releases:</h3>
 
 <p>
 <a href="recoll-1.19.4.tar.gz">1.19.4</a>. 
 <a href="recoll-1.19.3.tar.gz">1.19.3</a>. 
 <a href="recoll-1.19.2.tar.gz">1.19.2</a>. 
-<a href="recoll-1.19.1.tar.gz">1.19.1</a>. 
-<a href="recoll-1.19.0.tar.gz">1.19.0</a>. 
 <a href="recoll-1.18.2.tar.gz">1.18.2</a>. 
 <a href="recoll-1.17.3.tar.gz">1.17.3</a>. 
 <a href="recoll-1.16.2.tar.gz">1.16.2</a>. 
@@ -157,20 +192,25 @@ branch for the current production version.</p>
 <a href="recoll-1.14.4.tar.gz">1.14.4</a>. 
 <a href="recoll-1.13.04.tar.gz">1.13.04</a>. 
 </p>
+</div>
 
+<div id="packages">
 <h2><a name="packages">Packages</a></h2>
 
 <p>Packages or ports for Recoll are available in the standard repositories for
 many distributions.</p>
 
 <p>However they are often a bit older or built with older Xapian releases. Here
-follow a number of updated packages and instructions for a number of
-distributions.</p>
+  follow some pointers to find newer packages for some
+  distributions. In most cases, you will just need to use an
+  alternate repository.</p>
 
-<p>All binary packages on this page need a Qt 4 (4.4 at least) runtime
-environment. To make things easier, on systems where Xapian is not available
-from the standard package repositories, the Recoll package will have a static
-link to Xapian so that you do not need to build/install it separately.</p>
+<p>I sometimes build binary packages when no appropriate repository
+  exists. Any binary package directly linked from this page need a Qt
+  4 (4.4 at least) runtime environment. To make things easier, on
+  systems where Xapian is not available from the standard package
+  repositories, the Recoll package will have a static link to Xapian
+  so that you do not need to build/install it separately.</p>
 
 <h3><a name="debian">Debian</a></h3>
 
@@ -202,8 +242,8 @@ in the sense that the Python extension is included in the PPA package, but it's
 a separate package in the standard repository. This can give rise to errors
 about overwriting the Python module when switching between versions. Typically,
 the error message would be like the following:</p>
-<pre><tt>
-    ErrorMessage: trying to overwrite '/usr/lib/python2.7/dist-packages/recoll.so', which is also in package recoll 1.18.1-1~ppa1~quantal1</tt></pre>
+<pre><tt>ErrorMessage: trying to overwrite '/usr/lib/python2.7/dist-packages/recoll.so',
+    which is also in package recoll 1.18.1-1~ppa1~quantal1</tt></pre>
 
 <p>If this happens, you just need to delete the previous package(s) before
 installing the other one(s) instead of performing an upgrade.</p>
@@ -239,23 +279,22 @@ more (email me if you need one).</p>
 
 <h3>OpenSUSE</h3>
 
-<blockquote>
-  <p>Recoll is in the KDE:Extra repository <!-- I now use the OpenSUSE build service to create Recoll
-  OpenSUSE packages. -->You just need to add the repository to your software
-  sources (Yast2-&gt;software-&gt;Software repositories).<br>
-  <a href="http://download.opensuse.org/repositories/KDE:/Extra/">Repository
-  list (supported Suse versions)</a>. After adding the appropriate repository
-  to your software sources, you will be able to install recoll and kio_recoll
-  from the software management interface. The Xapian dependancy will also be
-  satisfied from the build service repository. Some of the older repositories
-  do not build antiword, just tell the software manager to "break" recoll by
-  installing anyway, and get antiword somewhere else.</p>
-</blockquote>
+<p>Recoll is in the KDE:Extra repository 
+<!-- I now use the OpenSUSE build service to create Recoll OpenSUSE packages. -->
+You just need to add the repository to your software
+sources (Yast2-&gt;software-&gt;Software repositories).<br>
+<a href="http://download.opensuse.org/repositories/KDE:/Extra/">Repository
+  list (supported Suse versions)</a>. After adding the appropriate
+  repository to your software sources, you will be able to install
+  recoll and kio_recoll from the software management interface. The
+  Xapian dependancy will also be satisfied from the build service
+  repository. Some of the older repositories do not build antiword,
+  just tell the software manager to "break" recoll by installing
+  anyway, and get antiword somewhere else.</p>
 
 <h3>Mageia</h3>
 
-<blockquote>
-  <p>Mageia version 2: <a
+<p>Mageia version 2: <a
   href="mageia2/recoll-1.18.1-1.mga2.i586.rpm">mageia2/recoll-1.18.1-1.mga2.i586.rpm,
   </a><a
   href="mageia2/recoll-debug-1.18.1-1.mga2.i586.rpm">recoll-debug-1.18.1-1.mga2.i586.rpm</a>.
@@ -263,8 +302,10 @@ more (email me if you need one).</p>
   Source: <a
   href="mageia2/recoll-1.18.1-1.mga2.src.rpm">recoll-1.18.1-1.mga2.src.rpm</a>
   </p>
-</blockquote>
 
+</div> <!-- Packages -->
+
+<div id="ports">
 <h2><a name="ports">Ports</a></h2>
 
 <h3>Mac port</h3>
@@ -282,16 +323,17 @@ poppler than recoll itself).</p>
 
 <p>Recoll is then available from the command line and as an icon in the usual
 MacPorts applications place.</p>
+</div>
 
-<h2>Building on Solaris</h2>
+<div id="filters">
+  <h2><a name="filters">Updated filters</a></h2>
+  <p><a href="filters/filters.html">new or updated filters</a>
+      sometimes become available after a release. As a rule, all
+      filters are compatible with all Recoll versions. Any
+      compatibility problem will be explicitely mentionned.</p>
+</div>
 
-<p>I did not test building the GUI on Solaris for this version. You will need
-at least Qt 4.4. The old hints in <a href="download-1.14.html">the previous
-page</a> may still be valid.</p>
-
-<p>Someone did test the indexer and Python module build, they do work, with a
-few minor glitches. Be sure to use GNU <b>make</b> and <b>install</b>.</p>
-
+<div id="translations">
 <h2><a name="translations">Translations</a></h2>
 
 <p>Most of the translations for 1.19 are incomplete The source translation
@@ -308,11 +350,18 @@ copied to <span class="filename">/usr/[local/]share/recoll/translations</span>
 
 <p><a href="translations/recoll_xx.ts">recoll_xx.ts</a> is a blank Recoll 1.19
 message file, handy to work on a new translation.</p>
-<!--
-<h3>Updated 1.18 translations that became available after the
+
+<h3>Updated 1.19 translations that became available after the
 release:</h3>
 
-<p>A Czech translation for 1.18, thanks to Pavel
+<p>German translation, thanks to Jonatan
+<a href="translations/recoll_de.ts">recoll_de.ts</a>
+<a href="translations/recoll_de.qm">recoll_de.qm</a>
+</p>
+
+<!--
+
+<p>A Czech translation for 1.18, thanks to Jonatan
 <a href="translations/recoll_cs.ts">recoll_cs.ts</a>
 <a href="translations/recoll_cs.qm">recoll_cs.qm</a>
 </p>
@@ -325,6 +374,10 @@ release:</h3>
 <p>Note that, if you are running an older release, you may find updated
 messages by looking inside the appropriate maintenance branch on <a
 href="https://bitbucket.org/medoc/recoll/src">bitbucket</a>.</p>
-</div>
+
+</div> <!-- translations -->
+
+</div> <!-- content -->
+
 </body>
 </html>
