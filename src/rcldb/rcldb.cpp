@@ -754,13 +754,13 @@ bool Db::i_close(bool final)
     try {
 	bool w = m_ndb->m_iswritable;
 	if (w) {
+#ifdef IDX_THREADS
+	    waitUpdIdle();
+#endif
 	    if (!m_ndb->m_noversionwrite)
 		m_ndb->xwdb.set_metadata(cstr_RCL_IDX_VERSION_KEY, 
 					 cstr_RCL_IDX_VERSION);
 	    LOGDEB(("Rcl::Db:close: xapian will close. May take some time\n"));
-#ifdef IDX_THREADS
-	    waitUpdIdle();
-#endif
 	}
 	deleteZ(m_ndb);
 	if (w)
