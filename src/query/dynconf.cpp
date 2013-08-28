@@ -194,7 +194,7 @@ int main(int argc, char **argv)
 	hist.enterString(sk, value);
     } else {
 	for (int i = 0; i < 10; i++) {
-	    char docname[100];
+	    char docname[200];
 	    sprintf(docname, "A very long document document name"
 		    "is very long indeed and this is the end of "
 		    "it here and exactly here:\n%d",	i);
