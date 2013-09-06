@@ -67,7 +67,7 @@ bool ParamStale::needrecompute()
 {
     LOGDEB2(("ParamStale:: needrecompute. parent gen %d mine %d\n", 
 	     parent->m_keydirgen, savedkeydirgen));
-    if (parent->m_keydirgen != savedkeydirgen) {
+    if (active && parent->m_keydirgen != savedkeydirgen) {
 	LOGDEB2(("ParamState:: needrecompute. conffile %p\n", conffile));
 
         savedkeydirgen = parent->m_keydirgen;
@@ -90,6 +90,9 @@ void ParamStale::init(RclConfig *rconf, ConfNull *cnf, const string& nm)
     parent = rconf;
     conffile = cnf;
     paramname = nm;
+    active = false;
+    if (conffile)
+      active = conffile->hasNameAnywhere(nm);
     savedkeydirgen = -1;
 }
 
@@ -107,6 +110,7 @@ void RclConfig::zeroMe() {
     m_stpsuffstate.init(this, 0, "recoll_noindex");
     m_skpnstate.init(this, 0, "skippedNames");
     m_rmtstate.init(this, 0, "indexedmimetypes");
+    m_mdrstate.init(this, 0, "metadatacmds");
 }
 
 bool RclConfig::isDefaultConfig() const
@@ -246,6 +250,7 @@ RclConfig::RclConfig(const string *argcnf)
     m_stpsuffstate.init(this, mimemap, "recoll_noindex");
     m_skpnstate.init(this, m_conf, "skippedNames");
     m_rmtstate.init(this, m_conf, "indexedmimetypes");
+    m_mdrstate.init(this, m_conf, "metadatacmds");
     return;
 }
 
@@ -262,13 +267,14 @@ bool RclConfig::updateMainConfig()
 	m_ok = false;
         m_skpnstate.init(this, 0, "skippedNames");
         m_rmtstate.init(this, 0, "indexedmimetypes");
+        m_mdrstate.init(this, 0, "metadatacmds");
 	return false;
     }
     delete m_conf;
     m_conf = newconf;
     m_skpnstate.init(this, m_conf, "skippedNames");
     m_rmtstate.init(this, m_conf, "indexedmimetypes");
-
+    m_mdrstate.init(this, m_conf, "metadatacmds");
 
     setKeyDir(cstr_null);
     bool nocjk = false;
@@ -664,6 +670,32 @@ string RclConfig::getMimeHandlerDef(const string &mtype, bool filtertypes)
 	LOGDEB1(("getMimeHandler: no handler for '%s'\n", mtype.c_str()));
     }
     return hs;
+}
+
+const vector<MDReaper>& RclConfig::getMDReapers()
+{
+    string hs;
+    if (m_mdrstate.needrecompute()) {
+        m_mdreapers.clear();
+	// New value now stored in m_mdrstate.savedvalue
+	string& sreapers = m_mdrstate.savedvalue;
+	if (sreapers.empty())
+	  return m_mdreapers;
+	string value;
+	ConfSimple attrs;
+	valueSplitAttributes(sreapers, value, attrs);
+	vector<string> nmlst = attrs.getNames(cstr_null);
+	for (vector<string>::const_iterator it = nmlst.begin();
+	     it != nmlst.end(); it++) {
+	  MDReaper reaper;
+	  reaper.fieldname = fieldCanon(*it);
+	  string s;
+	  attrs.get(*it, s);
+	  stringToStrings(s, reaper.cmdv);
+	  m_mdreapers.push_back(reaper);
+	}
+    }
+    return m_mdreapers;
 }
 
 bool RclConfig::getGuiFilterNames(vector<string>& cats) const
@@ -1346,6 +1378,7 @@ void RclConfig::initFrom(const RclConfig& r)
     m_stpsuffstate.init(this, mimemap, r.m_stpsuffstate.paramname);
     m_skpnstate.init(this, m_conf, r.m_skpnstate.paramname);
     m_rmtstate.init(this, m_conf, r.m_rmtstate.paramname);
+    m_mdrstate.init(this, m_conf, r.m_mdrstate.paramname);
     m_thrConf = r.m_thrConf;
 }
 

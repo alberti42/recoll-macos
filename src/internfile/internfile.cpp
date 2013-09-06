@@ -118,6 +118,28 @@ void FileInterner::reapXAttrs(const string& path)
 }
 #endif // RCL_USE_XATTR
 
+void FileInterner::reapCmdMetadata(const string& fn)
+{
+    const vector<MDReaper>& reapers = m_cfg->getMDReapers();
+    if (reapers.empty())
+	return;
+    map<char,string> smap = create_map<char, string>('f', fn);
+    for (vector<MDReaper>::const_iterator rp = reapers.begin();
+	 rp != reapers.end(); rp++) {
+	vector<string> cmd;
+	for (vector<string>::const_iterator it = rp->cmdv.begin();
+	     it != rp->cmdv.end(); it++) {
+	    string s;
+	    pcSubst(*it, s, smap);
+	    cmd.push_back(s);
+	}
+	string output;
+	if (ExecCmd::backtick(cmd, output)) {
+	    m_cmdFields[rp->fieldname] =  output;
+	}
+    }
+}
+
 // This is used when the user wants to retrieve a search result doc's parent
 // (ie message having a given attachment)
 bool FileInterner::getEnclosingUDI(const Rcl::Doc &doc, string& udi)
@@ -265,12 +287,12 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
     if (!df or df->is_unknown()) {
 	// No real handler for this type, for now :( 
 	LOGDEB(("FileInterner:: unprocessed mime: [%s] [%s]\n", 
-		 l_mime.c_str(), f.c_str()));
+		l_mime.c_str(), f.c_str()));
 	if (!df)
 	    return;
     }
     df->set_property(Dijon::Filter::OPERATING_MODE, 
-			    m_forPreview ? "view" : "index");
+		     m_forPreview ? "view" : "index");
     df->set_property(Dijon::Filter::DJF_UDI, udi);
 
 #ifdef RCL_USE_XATTR
@@ -279,6 +301,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
     // file
     reapXAttrs(f);
 #endif //RCL_USE_XATTR
+    reapCmdMetadata(f);
 
     df->set_docsize(docsize);
     if (!df->set_document_file(l_mime, m_fn)) {
@@ -624,6 +647,21 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
 	doc.meta[m_cfg->fieldCanon(it->first)] = it->second;
     }
 #endif //RCL_USE_XATTR
+
+    // Set fields from external commands
+    // These override those from xattrs and can be later augmented by
+    // values from inside the file
+    for (map<string,string>::const_iterator it = m_cmdFields.begin(); 
+	 it != m_cmdFields.end(); it++) {
+	string fieldname = m_cfg->fieldCanon(it->first);
+	LOGDEB0(("Internfile:: setting [%s] from cmd value [%s]\n",
+		 fieldname.c_str(), it->second.c_str()));
+	if (fieldname == cstr_dj_keymd) {
+	    doc.dmtime = it->second;
+	} else {
+	    doc.meta[fieldname] = it->second;
+	}
+    }
 
     // If there is no ipath stack, the mimetype is the one from the file
     doc.mimetype = m_mimetype;

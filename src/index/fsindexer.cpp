@@ -75,13 +75,12 @@ extern void *FsIndexerDbUpdWorker(void*);
 class InternfileTask {
 public:
     InternfileTask(const std::string &f, const struct stat *i_stp,
-		   map<string,string> lfields, vector<FsIndexer::MDReaper> reapers)
-	: fn(f), statbuf(*i_stp), localfields(lfields), mdreapers(reapers)
+		   map<string,string> lfields)
+	: fn(f), statbuf(*i_stp), localfields(lfields)
     {}
     string fn;
     struct stat statbuf;
     map<string,string> localfields;
-    vector<FsIndexer::MDReaper> mdreapers;
 };
 extern void *FsIndexerInternfileWorker(void*);
 #endif // IDX_THREADS
@@ -113,7 +112,6 @@ FsIndexer::FsIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc)
 {
     LOGDEB1(("FsIndexer::FsIndexer\n"));
     m_havelocalfields = m_config->hasNameAnywhere("localfields");
-    m_havemdreapers = m_config->hasNameAnywhere("metadatacmds");
 
 #ifdef IDX_THREADS
     m_stableconfig = new RclConfig(*m_config);
@@ -326,8 +324,6 @@ bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
         m_config->setKeyDir(path_getfather(*it));
 	if (m_havelocalfields)
 	    localfieldsfromconf();
-	if (m_havemdreapers)
-	    mdreapersfromconf();
 
 	bool follow = false;
 	m_config->getConfParam("followLinks", &follow);
@@ -465,58 +461,6 @@ void FsIndexer::setlocalfields(const map<string, string>& fields, Rcl::Doc& doc)
     }
 }
 
-// Metadata gathering commands
-void FsIndexer::mdreapersfromconf()
-{
-    LOGDEB1(("FsIndexer::mdreapersfromconf\n"));
-
-    string sreapers;
-    m_config->getConfParam("metadatacmds", sreapers);
-    if (!sreapers.compare(m_smdreapers)) 
-	return;
-
-    m_smdreapers = sreapers;
-    m_mdreapers.clear();
-    if (sreapers.empty())
-	return;
-
-    string value;
-    ConfSimple attrs;
-    m_config->valueSplitAttributes(sreapers, value, attrs);
-    vector<string> nmlst = attrs.getNames(cstr_null);
-    for (vector<string>::const_iterator it = nmlst.begin();
-         it != nmlst.end(); it++) {
-	MDReaper reaper;
-	reaper.fieldname = m_config->fieldCanon(*it);
-	string s;
-	attrs.get(*it, s);
-	stringToStrings(s, reaper.cmdv);
-	m_mdreapers.push_back(reaper);
-    }
-}
-
-void FsIndexer::reapmetadata(const vector<MDReaper>& reapers, const string& fn,
-			     Rcl::Doc& doc)
-{
-    map<char,string> smap = create_map<char, string>('f', fn);
-    for (vector<MDReaper>::const_iterator rp = reapers.begin();
-	 rp != reapers.end(); rp++) {
-	vector<string> cmd;
-	for (vector<string>::const_iterator it = rp->cmdv.begin();
-	     it != rp->cmdv.end(); it++) {
-	    string s;
-	    pcSubst(*it, s, smap);
-	    cmd.push_back(s);
-	}
-	string output;
-	if (ExecCmd::backtick(cmd, output)) {
-	    // addmeta() creates or appends. fieldname is already
-	    // canonic (see above)
-	    doc.addmeta(rp->fieldname, output);
-	}
-    }
-}
-
 void FsIndexer::makesig(const struct stat *stp, string& out)
 {
     char cbuf[100]; 
@@ -569,7 +513,7 @@ void *FsIndexerInternfileWorker(void * fsp)
 	}
 	LOGDEB0(("FsIndexerInternfileWorker: task fn %s\n", tsk->fn.c_str()));
 	if (fip->processonefile(&myconf, tsk->fn, &tsk->statbuf,
-				tsk->localfields, tsk->mdreapers) !=
+				tsk->localfields) !=
 	    FsTreeWalker::FtwOk) {
 	    LOGERR(("FsIndexerInternfileWorker: processone failed\n"));
 	    tqp->workerExit();
@@ -617,8 +561,6 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
         // Adjust local fields from config for this subtree
 	if (m_havelocalfields)
 	    localfieldsfromconf();
-	if (m_havemdreapers)
-	    mdreapersfromconf();
 
 	if (flg == FsTreeWalker::FtwDirReturn)
 	    return FsTreeWalker::FtwOk;
@@ -626,17 +568,16 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 
 #ifdef IDX_THREADS
     if (m_haveInternQ) {
-	InternfileTask *tp = new InternfileTask(fn, stp, m_localfields, 
-	    m_mdreapers);
-	if (m_iwqueue.put(tp)) {
-	    return FsTreeWalker::FtwOk;
-	} else {
+        InternfileTask *tp = new InternfileTask(fn, stp, m_localfields);
+        if (m_iwqueue.put(tp)) {
+            return FsTreeWalker::FtwOk;
+        } else {
 	    return FsTreeWalker::FtwError;
-	}
+        }
     }
 #endif
 
-    return processonefile(m_config, fn, stp, m_localfields, m_mdreapers);
+    return processonefile(m_config, fn, stp, m_localfields);
 }
 
 // File name transcoded to utf8 for indexing.  If this fails, the file
@@ -664,8 +605,7 @@ static string compute_utf8fn(RclConfig *config, const string& fn)
 FsTreeWalker::Status 
 FsIndexer::processonefile(RclConfig *config, 
 			  const std::string &fn, const struct stat *stp,
-			  const map<string, string>& localfields,
-			  const vector<MDReaper>& mdreapers)
+			  const map<string, string>& localfields)
 {
     ////////////////////
     // Check db up to date ? Doing this before file type
@@ -742,8 +682,6 @@ FsIndexer::processonefile(RclConfig *config,
 	// for the main file.
 	if (doc.ipath.empty()) {
 	    hadNullIpath = true;
-	    if (m_havemdreapers)
-		reapmetadata(mdreapers, fn, doc);
 	    if (hadNonNullIpath) {
 		// Note that only the filters can reliably compute
 		// this. What we do is dependant of the doc order (if
@@ -843,8 +781,6 @@ FsIndexer::processonefile(RclConfig *config,
 	fileDoc.url = cstr_fileu + fn;
         if (m_havelocalfields) 
             setlocalfields(localfields, fileDoc);
-	if (m_havemdreapers)
-	    reapmetadata(mdreapers, fn, fileDoc);
 	char cbuf[100]; 
 	sprintf(cbuf, OFFTPC, stp->st_size);
 	fileDoc.pcbytes = cbuf;

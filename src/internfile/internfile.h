@@ -259,6 +259,8 @@ class FileInterner {
     // processing the internal doc hierarchy.
     map<string, string> m_XAttrsFields;
 #endif // RCL_USE_XATTR
+    // Fields gathered by executing configured external commands
+    map<string, string> m_cmdFields;
 
     // Filter stack, path to the current document from which we're
     // fetching subdocs
@@ -289,6 +291,7 @@ class FileInterner {
 #ifdef RCL_USE_XATTR
     void reapXAttrs(const string& fn);
 #endif
+    void reapCmdMetadata(const string& fn);
 };
 
  

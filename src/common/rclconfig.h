@@ -44,11 +44,18 @@ public:
     RclConfig *parent;
     ConfNull  *conffile;
     string    paramname;
+    bool      active; // Check at init if config defines name at all
     int       savedkeydirgen;
     string    savedvalue;
 
     void init(RclConfig *rconf, ConfNull *cnf, const string& nm);
     bool needrecompute();
+};
+
+// Hold the description for an external metadata-gathering command
+struct MDReaper {
+  string fieldname;
+  vector<string> cmdv;
 };
 
 // Data associated to a indexed field name: 
@@ -244,6 +251,9 @@ class RclConfig {
      *  exceptions are found in the nouncompforviewmts mimeview list */
     bool mimeViewerNeedsUncomp(const string &mimetype) const;
 
+    /** Retrieve extra metadata-gathering commands */
+    const vector<MDReaper>& getMDReapers();
+
     /** Store/retrieve missing helpers description string */
     bool getMissingHelperDesc(string&) const;
     void storeMissingHelperDesc(const string &s);
@@ -318,6 +328,11 @@ class RclConfig {
     ParamStale    m_rmtstate;
     set<string>   m_restrictMTypes; 
     vector<pair<int, int> > m_thrConf;
+
+    // Same idea with the metadata-gathering external commands,
+    // (e.g. used to reap tagging info: "tmsu tags %f")
+    ParamStale    m_mdrstate;
+    vector<MDReaper> m_mdreapers;
 
     /** Create initial user configuration */
     bool initUserConfig();
