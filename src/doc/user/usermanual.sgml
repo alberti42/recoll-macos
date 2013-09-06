@@ -4433,7 +4433,7 @@ except:
 	versions,  which use internal code.</para></listitem> 
 
 	<listitem><para>Zip archives need <application>Python</application>
-	(and the standard zipfile module).</para></listitem>
+	(and the standard zipfile module). </para></listitem>
 
 	<listitem><para>Rar archives need
 	<application>Python</application>, the
@@ -4816,7 +4816,7 @@ except:
       </para>
 
       <sect2 id="RCL.INSTALL.CONFIG.RECOLLCONF">
-        <title>Main configuration file</title>
+        <title>The main configuration file, recoll.conf</title>
 
         <para><filename>recoll.conf</filename> is the main
          configuration file. It defines things like
@@ -4921,6 +4921,21 @@ skippedPaths = ~/somedir/*.txt
 
             </listitem>
           </varlistentry>
+
+	  <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ZIPSKIPPEDNAMES">
+	    <term><varname>zipSkippedNames</varname></term>
+	    <listitem><para>A space-separated list of patterns for
+               names of files or directories that should be ignored
+               inside zip archives. This is used directly by the zip
+               filter, and has a function similar to skippedNames, but
+               works independantly. Can be redefined for filesystem
+               subdirectories. For versions up to 1.19, you will need
+               to update the Zip filter and install a supplementary
+               Python module. The details are
+               described <ulink url="https://bitbucket.org/medoc/recoll/wiki/Filtering%20out%20Zip%20archive%20members">on
+		  the &RCL; wiki</ulink>.
+	    </para></listitem>
+	  </varlistentry>
 
           <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.FOLLOWLINKS">
             <term><varname>followLinks</varname></term>
@@ -5270,7 +5285,7 @@ metadatacmds = ; tags = tmsu tags %f; otherfield = somecmd -xx %f
        </sect3>
 
        <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.IDXTHREADS">
-	<title>Indexing parallelism configuration</title>
+	<title>Parameters affecting multithread processing</title>
 
         <para>The &RCL; indexing process 
           <command>recollindex</command> can use multiple threads to
