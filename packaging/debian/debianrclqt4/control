@@ -15,6 +15,7 @@ Standards-Version: 3.9.3
 Package: recoll
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Conflicts: python-recoll
 Recommends: aspell, python, xdg-utils, xsltproc
 Suggests: antiword, catdoc, ghostscript, libimage-exiftool-perl, poppler-utils,
  pstotext, python-chm, python-mutagen, unrtf, untex
