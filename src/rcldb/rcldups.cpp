@@ -17,9 +17,6 @@
 
 ////////////////////////////////////////////////////////////////////
 
-/** Retrieve the dups of a given document. The input has to be a query result
-  * because we use the xdocid */
-
 #include "autoconfig.h"
 
 #include <string>
@@ -37,7 +34,8 @@ using namespace std;
 
 namespace Rcl {
 
-// File name wild card expansion. This is a specialisation ot termMatch
+/** Retrieve the dups of a given document. The input has to be a query result
+  * because we use the xdocid. We get the md5 from this, then the dups */
 bool Db::docDups(const Doc& idoc, vector<Doc>& odocs)
 {
     if (m_ndb == 0) {
