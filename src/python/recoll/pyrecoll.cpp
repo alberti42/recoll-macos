@@ -1628,6 +1628,83 @@ Db_makeDocAbstract(recoll_DbObject* self, PyObject *args)
 				     "UTF-8", "replace");
 }
 
+PyDoc_STRVAR(doc_Db_termMatch,
+	     "termMatch(match_type='wildcard|regexp|stem', expr, field='', "
+	     "maxlen=-1, casesens=False, diacsens=False, lang='english')"
+	     " returns the expanded term list\n"
+"\n"
+"Expands the input expression according to the mode and parameters and "
+"returns the expanded term list.\n"
+);
+static PyObject *
+Db_termMatch(recoll_DbObject* self, PyObject *args, PyObject *kwargs)
+{
+    LOGDEB(("Db_termMatch\n"));
+    static const char *kwlist[] = {"type", "expr", "field", "maxlen", 
+				   "casesens", "diacsens", "lang", NULL};
+    char *tp = 0;
+    char *expr = 0; // needs freeing
+    char *field = 0; // needs freeing
+    int maxlen = -1;
+    PyObject *casesens = 0;
+    PyObject *diacsens = 0;
+    char *lang = 0; // needs freeing
+
+    PyObject *ret = 0;
+    int typ_sens = 0;
+    Rcl::TermMatchResult result;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ses|esiOOes", 
+				     (char**)kwlist,
+				     &tp, "utf-8", &expr, "utf-8", &field, 
+				     &maxlen, &casesens,
+				     &diacsens, "utf-8", &lang))
+	return 0;
+
+    if (self->db == 0 || the_dbs.find(self->db) == the_dbs.end()) {
+	LOGERR(("Db_termMatch: db not found %p\n", self->db));
+        PyErr_SetString(PyExc_AttributeError, "db");
+	goto out;
+    }
+
+    if (!strcasecmp(tp, "wildcard")) {
+	typ_sens = Rcl::Db::ET_WILD;
+    } else if (!strcasecmp(tp, "regexp")) {
+	typ_sens = Rcl::Db::ET_REGEXP;
+    } else if (!strcasecmp(tp, "stem")) {
+	typ_sens = Rcl::Db::ET_STEM;
+    } else {
+        PyErr_SetString(PyExc_AttributeError, "Bad type arg");
+	goto out;
+    }
+    
+    if (casesens != 0 && PyObject_IsTrue(casesens)) {
+	typ_sens |= Rcl::Db::ET_CASESENS;
+    }
+    if (diacsens != 0 && PyObject_IsTrue(diacsens)) {
+	typ_sens |= Rcl::Db::ET_DIACSENS;
+    }
+
+    if (!self->db->termMatch(typ_sens, lang ? lang : "english", 
+			     expr, result, maxlen, field ? field : "")) {
+	LOGERR(("Db_termMatch: db termMatch error\n"));
+        PyErr_SetString(PyExc_AttributeError, "rcldb termMatch error");
+	goto out;
+    }
+    ret = PyList_New(result.entries.size());
+    for (unsigned int i = 0; i < result.entries.size(); i++) {
+	PyList_SetItem(ret, i, 
+		       PyUnicode_FromString(
+			   Rcl::strip_prefix(result.entries[i].term).c_str()));
+    }
+
+out:
+    PyMem_Free(expr);
+    PyMem_Free(field);
+    PyMem_Free(lang);
+    return ret;
+}
+
 static PyObject *
 Db_needUpdate(recoll_DbObject* self, PyObject *args, PyObject *kwds)
 {
@@ -1737,6 +1814,9 @@ static PyMethodDef Db_methods[] = {
      "makeDocAbstract(Doc, Query) -> string\n"
      "Build and return 'keyword-in-context' abstract for document\n"
      "and query."
+    },
+    {"termMatch", (PyCFunction)Db_termMatch, METH_VARARGS|METH_KEYWORDS,
+     doc_Db_termMatch
     },
     {"needUpdate", (PyCFunction)Db_needUpdate, METH_VARARGS,
      "needUpdate(udi, sig) -> Bool.\n"

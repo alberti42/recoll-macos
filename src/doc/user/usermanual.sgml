@@ -3896,6 +3896,20 @@ or
                 terms are shown around the keyword.</listitem>
             </varlistentry>
 
+            <varlistentry>
+              <term>Db.termMatch(match_type, expr, field='',
+	        maxlen=-1, casesens=False, diacsens=False, lang='english')
+                </term> 
+              <listitem>Expand an expression against the
+                index term list. Performs the basic function from the
+                GUI term explorer tool. <literal>match_type</literal>
+                can be either
+                of <literal>wildcard</literal>, <literal>regexp</literal>
+                or <literal>stem</literal>. Returns a list of terms
+                expanded from the input expression.
+              </listitem>
+            </varlistentry>
+
           </variablelist>
 
         </sect5>

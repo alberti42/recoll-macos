@@ -56,7 +56,7 @@ logfilename = stderr
 # chdir to some garbage bin. 3 possible values:
 #  - (literal) tmp : go to temp dir as set by env (RECOLL_TMPDIR else
 #    TMPDIR else /tmp)
-#  - Empty: stay were started
+#  - Empty: stay where started
 #  - Absolute path value: go there.
 idxrundir = tmp
 
