@@ -63,7 +63,7 @@ static const int TEXTINCELLVTRANS = -4;
 class PlainToRichQtReslist : public PlainToRich {
 public:
     virtual ~PlainToRichQtReslist() {}
-    virtual string startMatch(int) 
+    virtual string startMatch(unsigned int) 
     {
 	return string("<span style='color: ")
 	    + string((const char *)prefs.qtermcolor.toAscii()) + string("'>");
