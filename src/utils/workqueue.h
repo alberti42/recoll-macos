@@ -62,12 +62,12 @@ public:
      *    meaning no limit. hi == -1 means that the queue is disabled.
      * @param lo minimum count of tasks before worker starts. Default 1.
      */
-    WorkQueue(const string& name, int hi = 0, int lo = 1)
+    WorkQueue(const string& name, size_t hi = 0, size_t lo = 1)
         : m_name(name), m_high(hi), m_low(lo),
           m_workers_exited(0), m_clients_waiting(0), m_workers_waiting(0), 
 	  m_tottasks(0), m_nowake(0), m_workersleeps(0), m_clientsleeps(0)
     {
-        m_ok = (m_high >= 0) && (pthread_cond_init(&m_ccond, 0) == 0) &&
+        m_ok = (pthread_cond_init(&m_ccond, 0) == 0) &&
 	    (pthread_cond_init(&m_wcond, 0) == 0);
     }
 

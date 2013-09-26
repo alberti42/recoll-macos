@@ -211,7 +211,7 @@ static void datestring(char *d, int sz) {
 static void datestring(char *d, int sz)
 {
     struct tm *tmp;
-    time_t tim = time((time_t)0);
+    time_t tim = time((time_t*)0);
     tmp = localtime(&tim);
     int year = tmp->tm_year % 100;
     snprintf(d, sz, "%02d%02d%02d%02d%02d%02d", year, tmp->tm_mon+1,
