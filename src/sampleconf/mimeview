@@ -119,11 +119,11 @@ application/x-rar = ark %f
 application/x-tar = ark %f
 application/zip = ark %f
 
-application/x-awk = emacsclient  %f
-application/x-perl = emacsclient  %f
-text/x-perl = emacsclient  %f
-application/x-shellscript = emacsclient  %f
-text/x-shellscript = emacsclient  %f
+application/x-awk = emacsclient --no-wait %f
+application/x-perl = emacsclient --no-wait %f
+text/x-perl = emacsclient --no-wait %f
+application/x-shellscript = emacsclient --no-wait %f
+text/x-shellscript = emacsclient --no-wait %f
 
 # Or firefox -remote "openFile(%u)"
 text/html = firefox %u
@@ -135,15 +135,15 @@ text/html|gnuinfo = rclshowinfo %F %(title);ignoreipath=1
 
 application/x-webarchive = konqueror %f
 text/x-fictionbook = ebook-viewer %f
-application/x-tex = emacsclient  %f
-application/xml = emacsclient  %f
-text/xml = emacsclient  %f
-text/x-tex = emacsclient  %f
-text/plain = emacsclient  %f
-text/x-awk = emacsclient  %f
-text/x-c = emacsclient  %f
-text/x-c+ = emacsclient  %f
-text/x-c++ = emacsclient  %f
+application/x-tex = emacsclient --no-wait  %f
+application/xml = emacsclient --no-wait  %f
+text/xml = emacsclient --no-wait  %f
+text/x-tex = emacsclient --no-wait  %f
+text/plain = emacsclient --no-wait  %f
+text/x-awk = emacsclient --no-wait  %f
+text/x-c = emacsclient --no-wait  %f
+text/x-c+ = emacsclient --no-wait  %f
+text/x-c++ = emacsclient --no-wait  %f
 text/x-csv = libreoffice %f
 text/x-html-sidux-man = konqueror %f
 text/x-html-aptosid-man = iceweasel %f
@@ -154,12 +154,12 @@ application/x-chm = kchmviewer %f
 # file at the right place
 text/html|chm = kchmviewer --url %i %F
 
-text/x-ini = emacsclient %f
+text/x-ini = emacsclient --no-wait %f
 text/x-man = xterm -u8 -e "groff -T ascii -man %f | more"
 text/x-python = idle %f
-text/x-gaim-log = emacsclient  %f
-text/x-purple-html-log = emacsclient  %f
-text/x-purple-log = emacsclient  %f
+text/x-gaim-log = emacsclient --no-wait  %f
+text/x-purple-html-log = emacsclient --no-wait  %f
+text/x-purple-log = emacsclient --no-wait  %f
 
 # The video types will usually be handled by the desktop default, but they
 # need entries here to get an "Open" link
