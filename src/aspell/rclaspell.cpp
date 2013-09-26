@@ -25,8 +25,6 @@
 #include <dlfcn.h>
 #include <stdlib.h>
 
-using namespace std;
-
 #include ASPELL_INCLUDE
 
 #include "pathut.h"
@@ -35,6 +33,8 @@ using namespace std;
 #include "debuglog.h"
 #include "unacpp.h"
 #include "ptmutex.h"
+
+using namespace std;
 
 // Just a place where we keep the Aspell library entry points together
 class AspellApi {
