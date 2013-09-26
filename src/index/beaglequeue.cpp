@@ -40,7 +40,7 @@
 
 #include <vector>
 #include <fstream>
-#include <sstream>
+
 using namespace std;
 
 #include <sys/stat.h>
@@ -410,7 +410,7 @@ BeagleQueueIndexer::processone(const string &path,
             dotdoc.fmtime = ascdate;
 
         char cbuf[100]; 
-        sprintf(cbuf, OFFTPC, stp->st_size);
+        sprintf(cbuf, "%lld", (long long)stp->st_size);
         dotdoc.pcbytes = cbuf;
 
         // Document signature for up to date checks: none. 
@@ -457,7 +457,7 @@ BeagleQueueIndexer::processone(const string &path,
             doc.fmtime = ascdate;
 
         char cbuf[100]; 
-        sprintf(cbuf, OFFTPC, stp->st_size);
+        sprintf(cbuf, "%lld", (long long)stp->st_size);
         doc.pcbytes = cbuf;
         // Document signature for up to date checks: none. 
         doc.sig.clear();

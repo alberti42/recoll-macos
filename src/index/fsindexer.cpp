@@ -464,7 +464,7 @@ void FsIndexer::setlocalfields(const map<string, string>& fields, Rcl::Doc& doc)
 void FsIndexer::makesig(const struct stat *stp, string& out)
 {
     char cbuf[100]; 
-    sprintf(cbuf, OFFTPC "%ld", stp->st_size, (long)stp->RCL_STTIME);
+    sprintf(cbuf, "%lld" "%ld", (long long)stp->st_size, (long)stp->RCL_STTIME);
     out = cbuf;
 }
 
@@ -703,7 +703,7 @@ FsIndexer::processonefile(RclConfig *config,
 	    doc.meta[Rcl::Doc::keyfn] = utf8fn;
 
 	char cbuf[100]; 
-	sprintf(cbuf, OFFTPC, stp->st_size);
+	sprintf(cbuf, "%lld", (long long)stp->st_size);
 	doc.pcbytes = cbuf;
 	// Document signature for up to date checks. All subdocs inherit the
 	// file's.
@@ -782,7 +782,7 @@ FsIndexer::processonefile(RclConfig *config,
         if (m_havelocalfields) 
             setlocalfields(localfields, fileDoc);
 	char cbuf[100]; 
-	sprintf(cbuf, OFFTPC, stp->st_size);
+	sprintf(cbuf, "%lld", (long long)stp->st_size);
 	fileDoc.pcbytes = cbuf;
 	fileDoc.sig = sig;
 

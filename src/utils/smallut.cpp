@@ -619,7 +619,7 @@ string displayableBytes(off_t size)
 	roundable = double(size) / 1E9;
     }
     size = round(roundable);
-    sprintf(sizebuf, OFFTPC "%s", size, unit);
+    sprintf(sizebuf, "%lld" "%s", (long long)size, unit);
     return string(sizebuf);
 }
 
@@ -1250,7 +1250,7 @@ int main(int argc, char **argv)
 {
     thisprog = *argv++;argc--;
 
-#if 0
+#if 1
     if (argc <=0 ) {
         cerr << "Usage: smallut <stringtosplit>" << endl;
         exit(1);
@@ -1346,7 +1346,7 @@ int main(int argc, char **argv)
     in = "a: %a title: %(title) pcpc: %% %";
     pcSubst(in, out, substs);
     cout << "After map clear: " << in << " => " << out << endl;
-#elif 1
+#elif 0
     list<string> tokens;
     tokens.push_back("");
     tokens.push_back("a,b");
