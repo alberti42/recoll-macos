@@ -244,7 +244,7 @@ bool FsIndexer::index(bool quickshallow)
 	}
 	m_config->storeMissingHelperDesc(missing);
     }
-    LOGERR(("fsindexer index time:  %d mS\n", chron.ms()));
+    LOGINFO(("fsindexer index time:  %d mS\n", chron.ms()));
     return true;
 }
 
