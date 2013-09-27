@@ -299,7 +299,8 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
     // Get fields computed from extended attributes. We use the
     // original file, not the m_fn which may be the uncompressed temp
     // file
-    reapXAttrs(f);
+    if (!m_noxattrs)
+	reapXAttrs(f);
 #endif //RCL_USE_XATTR
     reapCmdMetadata(f);
 
@@ -379,6 +380,7 @@ void FileInterner::initcommon(RclConfig *cnf, int flags)
     for (unsigned int i = 0; i < MAXHANDLERS; i++)
 	m_tmpflgs[i] = false;
     m_targetMType = cstr_textplain;
+    m_cfg->getConfParam("noxattrfields", &m_noxattrs);
 }
 
 FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, int flags)
@@ -617,6 +619,19 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
     return true;
 }
 
+static void docfieldfrommeta(RclConfig* cfg, const string& name, 
+			     const string &value, Rcl::Doc doc)
+{
+    string fieldname = cfg->fieldCanon(name);
+    LOGDEB0(("Internfile:: setting [%s] from cmd value [%s]\n",
+	     fieldname.c_str(), value.c_str()));
+    if (fieldname == cstr_dj_keymd) {
+	doc.dmtime = value;
+    } else {
+	doc.meta[fieldname] = value;
+    }
+}
+
 // Collect the ipath from the current path in the document tree.
 // While we're at it, we also set the mimetype and filename,
 // which are special properties: we want to get them from the topmost
@@ -638,28 +653,42 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
     bool hasipath = false;
 
 #ifdef RCL_USE_XATTR
-    // Set fields from extended file attributes.
-    // These can be later augmented by values from inside the file
-    for (map<string,string>::const_iterator it = m_XAttrsFields.begin(); 
-	 it != m_XAttrsFields.end(); it++) {
-	LOGDEB1(("Internfile:: setting [%s] from xattrs value [%s]\n",
-		 m_cfg->fieldCanon(it->first).c_str(), it->second.c_str()));
-	doc.meta[m_cfg->fieldCanon(it->first)] = it->second;
+    if (!m_noxattrs) {
+	// Set fields from extended file attributes.
+	// These can be later augmented by values from inside the file
+	for (map<string,string>::const_iterator it = m_XAttrsFields.begin(); 
+	     it != m_XAttrsFields.end(); it++) {
+	    LOGDEB1(("Internfile:: setting [%s] from xattrs value [%s]\n",
+		     m_cfg->fieldCanon(it->first).c_str(), it->second.c_str()));
+	    doc.meta[m_cfg->fieldCanon(it->first)] = it->second;
+	}
     }
 #endif //RCL_USE_XATTR
 
     // Set fields from external commands
     // These override those from xattrs and can be later augmented by
-    // values from inside the file
+    // values from inside the file.
+    //
+    // This is a bit atrocious because some entry names are special:
+    // "modificationdate" will set mtime instead of an ordinary field,
+    // and the output from anything beginning with "rclmulti" will be
+    // interpreted as multiple fields in configuration file format...
     for (map<string,string>::const_iterator it = m_cmdFields.begin(); 
 	 it != m_cmdFields.end(); it++) {
-	string fieldname = m_cfg->fieldCanon(it->first);
-	LOGDEB0(("Internfile:: setting [%s] from cmd value [%s]\n",
-		 fieldname.c_str(), it->second.c_str()));
-	if (fieldname == cstr_dj_keymd) {
-	    doc.dmtime = it->second;
+	if (!it->first.compare(0, 8, "rclmulti")) {
+	    ConfSimple simple(it->second);
+	    if (simple.ok()) {
+		vector<string> names = simple.getNames("");
+		for (vector<string>::const_iterator nm = names.begin(); 
+		     nm != names.end(); nm++) {
+		    string value;
+		    if (simple.get(*nm, value)) {
+			docfieldfrommeta(m_cfg, *nm, value, doc);
+		    }
+		}
+	    }
 	} else {
-	    doc.meta[fieldname] = it->second;
+	    docfieldfrommeta(m_cfg, it->first, it->second, doc);
 	}
     }
 

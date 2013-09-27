@@ -288,6 +288,9 @@ webcachemaxmbs = 40
 # meaning-altering missing words. 
 snippetMaxPosWalk = 1000000
 
+# Disable extended attributes conversion to metadata fields
+noxattrfields = 0
+
 # You could specify different parameters for a subdirectory like this:
 #[~/hungariandocs/plain]
 #defaultcharset = iso-8859-2
