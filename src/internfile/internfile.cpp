@@ -620,7 +620,7 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 }
 
 static void docfieldfrommeta(RclConfig* cfg, const string& name, 
-			     const string &value, Rcl::Doc doc)
+			     const string &value, Rcl::Doc& doc)
 {
     string fieldname = cfg->fieldCanon(name);
     LOGDEB0(("Internfile:: setting [%s] from cmd value [%s]\n",
