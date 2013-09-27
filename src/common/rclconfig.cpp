@@ -210,9 +210,31 @@ RclConfig::RclConfig(const string *argcnf)
 		 o_localecharset.c_str()));
     }
 
+    const char *cp;
+
+    // Additional config directory, values override user ones
+    if ((cp = getenv("RECOLL_CONFTOP"))) {
+	m_cdirs.push_back(cp);
+    } 
+
+    // User config
     m_cdirs.push_back(m_confdir);
+
+    // Additional config directory, overrides system's, overridden by user's
+    if ((cp = getenv("RECOLL_CONFMID"))) {
+	m_cdirs.push_back(cp);
+    } 
+
+    // Base/installation config
     m_cdirs.push_back(path_cat(m_datadir, "examples"));
-    string cnferrloc = m_confdir + " or " + path_cat(m_datadir, "examples");
+
+    string cnferrloc;
+    for (vector<string>::const_iterator it = m_cdirs.begin();
+	 it != m_cdirs.end(); it++) {
+	if (it != m_cdirs.begin())
+	    cnferrloc += string(" or ");
+	cnferrloc += *it;
+    }
 
     // Read and process "recoll.conf"
     if (!updateMainConfig())
