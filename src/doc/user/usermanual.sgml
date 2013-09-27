@@ -3784,12 +3784,24 @@ or
           in the Recoll Ubuntu Unity Lens and Recoll Web UI.</para> 
 
         <para>The API is inspired by the Python database API
-          specification, version 1.0 for &RCL; versions up to 1.18,
-          version 2.0 for &RCL; versions 1.19 and later. The package
-          structure changed with &RCL; 1.19 too. We will mostly
-          describe the new API and package structure here. A paragraph
-          at the end of this section will explain a few differences
-          and ways to write code compatible with both versions.</para>
+          specification. There were two major changes in recent &RCL;
+          versions:
+          <itemizedlist>
+            <listitem>The basis for the &RCL; API changed from Python
+              database API version 1.0 (&RCL; versions up to 1.18.1),
+              to version 2.0 (&RCL; 1.18.2 and later).</listitem>
+            <listitem>The <literal>recoll</literal> module became a
+              package (with an internal <literal>recoll</literal>
+              module) as of &RCL; version 1.19, in order to add more
+              functions. For existing code, this only changes the way
+              the interface must be imported.</listitem>
+          </itemizedlist>
+        </para>
+
+        <para>We will mostly describe the new API and package
+          structure here. A paragraph at the end of this section will
+          explain a few differences and ways to write code
+          compatible with both versions.</para>
 
         <para>The Python interface can be found in the source package,
           under <filename>python/recoll</filename>.</para>
