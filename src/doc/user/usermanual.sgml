@@ -4743,12 +4743,29 @@ except:
         configuration parameters is given by comments inside the default
         files, and we will just give a general overview here.</para>
 
-      <para>For each index, there are two sets of configuration
-        files. System-wide configuration files are kept in a directory named
+      <para>By default, for each index, there are two sets of
+        configuration files. System-wide configuration files are kept
+        in a directory named
         like <filename>/usr/[local/]share/recoll/examples</filename>,
         and define default values, shared by all indexes. For each
         index, a parallel set of files defines the customized
         parameters.</para>
+
+      <para>In addition (as of &RCL; version 1.19.7), it is possible
+        to specify two additional configuration directories which will
+        be stacked before and after the user configuration
+        directory. These are defined by
+        the <envar>RECOLL_CONFTOP</envar>
+        and <envar>RECOLL_CONFMID</envar> environment
+        variables. Values from the top directory will override user
+        ones, values from the middle directory will override system
+        ones and be overriden by user ones. These two variables may be
+        of use to applications which augment &RCL; functionality, and
+        need to add configuration data without disturbing the user's
+        files. Please note that the two, currently single, values will
+        probably be interpreted as colon-separated lists in the
+        future: do not use colon characters inside the directory
+        paths.</para>
 
       <para>The default location of the configuration is the
         <filename>.recoll</filename>
@@ -5212,18 +5229,46 @@ unac_except_trans =  åå Åå ää Ää öö Öö
             </listitem>
            </varlistentry>
 
+          <varlistentry><term><varname>noxattrfields</varname></term>
+            <listitem><para>Recoll versions 1.19 and later
+                automatically translate file extended attributes into
+                document fields (to be processed according to the
+                parameters from the <filename>fields</filename>
+                file). Setting this variable to 1 will disable the
+                behaviour.</para></listitem>
+          </varlistentry>
+
           <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.METADATACMDS">
             <term><varname>metadatacmds</varname></term>
             <listitem><para>This allows executing external commands
-            for each file and storing the output in a &RCL;
-            field. This could be used for example to index external
-            tag data. The value is a list of field names and commands,
-            don't forget an initial semi-colon. Example: 
+                for each file and storing the output in &RCL; document
+                fields. This could be used for example to index
+                external tag data. The value is a list of field names
+                and commands, don't forget an initial
+                semi-colon. Example:
                 <programlisting>
 [/some/area/of/the/fs]
 metadatacmds = ; tags = tmsu tags %f; otherfield = somecmd -xx %f
                 </programlisting>
-              </para>
+              </para> <para>As a specially disgusting hack brought by
+                &RCL; 1.19.7, if a "field name" begins
+                with <literal>rclmulti</literal>, the data returned by
+                the command is expected to contain multiple field
+                values, in configuration file format. This allows
+                setting several fields by executing a single
+                command. Example:
+                <programlisting>
+metadatacmds = ; rclmulti1 = somecmd %f
+                </programlisting>
+                If <literal>somecmd</literal> returns data in the form
+                of:
+                <programlisting>
+field1 = value1
+field2 = "value for field2"
+                </programlisting>
+                <literal>field1</literal>
+                and <literal>field2</literal> will be set inside the
+                document metadata.</para>
             </listitem>
           </varlistentry>
 

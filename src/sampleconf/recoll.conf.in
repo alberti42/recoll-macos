@@ -308,8 +308,13 @@ noxattrfields = 0
 # which field name the data goes into and the command to use. Don't forget the
 # initial semi-colon. All the field names must be different. You can use
 # aliases in the "field" file if necessary. 
+# As a not too pretty hack conceded to convenience, any field name
+# beginning with "rclmulti" will be taken as an indication that the command
+# returns multiple field values inside a text blob formatted as a recoll
+# configuration file ("fieldname = fieldvalue" lines). The rclmultixx name
+# will be ignored, and field names and values will be parsed from the data.
 #[/some/area/of/the/fs]
-#metadatacmds = ; tags = tmsu tags %f
+#metadatacmds = ; tags = tmsu tags %f; rclmulti1 = cmdOutputsConf %f
 
 [/usr/share/man]
 followSymlinks = 1
