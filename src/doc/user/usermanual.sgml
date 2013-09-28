@@ -4757,10 +4757,11 @@ except:
         directory. These are defined by
         the <envar>RECOLL_CONFTOP</envar>
         and <envar>RECOLL_CONFMID</envar> environment
-        variables. Values from the top directory will override user
-        ones, values from the middle directory will override system
-        ones and be overriden by user ones. These two variables may be
-        of use to applications which augment &RCL; functionality, and
+        variables. Values from configuration files inside the top
+        directory will override user ones, values from configuration
+        files inside the middle directory will override system ones
+        and be overriden by user ones. These two variables may be of
+        use to applications which augment &RCL; functionality, and
         need to add configuration data without disturbing the user's
         files. Please note that the two, currently single, values will
         probably be interpreted as colon-separated lists in the
