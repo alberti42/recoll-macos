@@ -124,7 +124,11 @@ class Db::Native {
 
     /** Retrieve Xapian::docid, given unique document identifier, 
      * using the posting list for the derived term.
-     *
+     * 
+     * @param udi the unique document identifier (opaque hashed path+ipath).
+     * @param idxi the database index, at query time, when using external
+     *     databases.
+     * @param[out] xdoc the xapian document.
      * @return 0 if not found
      */
     Xapian::docid getDoc(const string& udi, int idxi, Xapian::Document& xdoc);

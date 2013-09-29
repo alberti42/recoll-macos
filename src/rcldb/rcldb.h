@@ -358,11 +358,12 @@ class Db {
     /** Get document for given udi
      *
      * Used by the 'history' feature, and to retrieve ancestor documents.
-     * @param udi the unique document identifier
-     * @param idxdoc used when there are several index as an opaque way to pass
-     *   the index id. Use a doc from the same index 
-     *   (e.g.: when looking for parent), 
-     * @param doc the output doc
+     * @param udi The unique document identifier.
+     * @param idxdoc A document from the same database as an opaque way to pass
+     *   the database id (e.g.: when looking for parent in a multi-database 
+     *   context).
+     * @param[out] doc The output Recoll document.
+     * @return True for success.
      */
     bool getDoc(const string &udi, const Doc& idxdoc, Doc &doc);
 
