@@ -439,12 +439,30 @@ bool RclMonEventQueue::pushEvent(const RclMonEvent &ev)
     return true;
 }
 
+static bool checkfileanddelete(const string& fname)
+{
+    bool ret;
+    ret = access(fname.c_str(), 0) == 0;
+    unlink(fname.c_str());
+    return ret;
+}
+
 bool startMonitor(RclConfig *conf, int opts)
 {
     if (!conf->getConfParam("monauxinterval", &auxinterval))
 	auxinterval = dfltauxinterval;
     if (!conf->getConfParam("monixinterval", &ixinterval))
 	ixinterval = dfltixinterval;
+
+    // It's possible to override the normal indexing delay by creating
+    // a file in the config directory (which we then remove). And yes
+    // there is definitely a race condition (we can suppress the delay
+    // and file before the target doc is queued), and we can't be sure
+    // that the delay suppression will be used for the doc the user
+    // intended it for. But this is used for non-critical function and
+    // the race condition should happen reasonably seldom.
+    string ixnowfilename = path_cat(conf->getConfDir(), "rclmonixnow");
+
     rclEQ.setConfig(conf);
     rclEQ.setopts(opts);
 
@@ -521,7 +539,8 @@ bool startMonitor(RclConfig *conf, int opts)
 	// Process. We don't do this every time but let the lists accumulate
         // a little, this saves processing. Start at once if list is big.
         time_t now = time(0);
-        if ((now - lastixtime > ixinterval) || 
+        if (checkfileanddelete(ixnowfilename) ||
+	    (now - lastixtime > ixinterval) || 
 	    (deleted.size() + modified.size() > 20)) {
             lastixtime = now;
 	    // Used to do the modified list first, but it does seem
