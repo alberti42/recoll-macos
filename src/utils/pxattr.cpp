@@ -24,16 +24,22 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 
 /** \file pxattr.cpp 
-    \brief This is a comment for file pxattr.cpp 
+    \brief Portable External Attributes API
  */
 
-// We want this to compile even to empty on non-supported systems. makes
-// things easier for autoconf
-#if defined(__FreeBSD__) || defined(__gnu_linux__) || defined(__APPLE__) || \
+#if defined(__gnu_linux__) || \
+    (defined(__FreeBSD_kernel__)&&defined(__GLIBC__)&&!defined(__FreeBSD__)) ||\
     defined(__CYGWIN32__)
+#define PXALINUX
+#endif
+
+// If the platform is not supported, let this file be empty instead of
+// breaking the compile, this will let the build work if the rest of
+// the software is not actually calling us.
+#if defined(__FreeBSD__) || defined(PXALINUX) || defined(__APPLE__)
+
 
 #ifndef TEST_PXATTR
-
 #include <sys/types.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -42,9 +48,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #if defined(__FreeBSD__)
 #include <sys/extattr.h>
 #include <sys/uio.h>
-#elif defined(__gnu_linux__)
-#include <sys/xattr.h>
-#elif defined(__CYGWIN32__)
+#elif defined(PXALINUX)
 #include <sys/xattr.h>
 #elif defined(__APPLE__)
 #include <sys/xattr.h>
@@ -111,7 +115,7 @@ get(int fd, const string& path, const string& _name, string *value,
 	ret = extattr_get_fd(fd, EXTATTR_NAMESPACE_USER, 
 			     name.c_str(), buf.buf, ret);
     }
-#elif defined(__gnu_linux__)
+#elif defined(PXALINUX)
     if (fd < 0) {
 	if (flags & PXATTR_NOFOLLOW) {
 	    ret = lgetxattr(path.c_str(), name.c_str(), 0, 0);
@@ -218,7 +222,7 @@ set(int fd, const string& path, const string& _name,
 	ret = extattr_set_fd(fd, EXTATTR_NAMESPACE_USER, 
 			     name.c_str(), value.c_str(), value.length());
     }
-#elif defined(__gnu_linux__)
+#elif defined(PXALINUX)
     int opts = 0;
     if (flags & PXATTR_CREATE)
 	opts = XATTR_CREATE;
@@ -278,7 +282,7 @@ del(int fd, const string& path, const string& _name, flags flags, nspace dom)
     } else {
 	ret = extattr_delete_fd(fd, EXTATTR_NAMESPACE_USER, name.c_str());
     }
-#elif defined(__gnu_linux__)
+#elif defined(PXALINUX)
     if (fd < 0) {
 	if (flags & PXATTR_NOFOLLOW) {
 	    ret = lremovexattr(path.c_str(), name.c_str());
@@ -333,7 +337,7 @@ list(int fd, const string& path, vector<string>* names, flags flags, nspace dom)
     } else {
 	ret = extattr_list_fd(fd, EXTATTR_NAMESPACE_USER, buf.buf, ret);
     }
-#elif defined(__gnu_linux__)
+#elif defined(PXALINUX)
     if (fd < 0) {
 	if (flags & PXATTR_NOFOLLOW) {
 	    ret = llistxattr(path.c_str(), 0, 0);
@@ -450,7 +454,7 @@ bool list(int fd, vector<string>* names, flags flags, nspace dom)
     return list(fd, nullstring, names, flags, dom);
 }
 
-#if defined(__gnu_linux__) || defined(COMPAT1)
+#if defined(PXALINUX) || defined(COMPAT1)
 static const string userstring("user.");
 #else
 static const string userstring("");
