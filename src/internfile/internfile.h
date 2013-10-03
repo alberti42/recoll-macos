@@ -290,10 +290,6 @@ class FileInterner {
     int addHandler();
     void checkExternalMissing(const string& msg, const string& mt);
     void processNextDocError(Rcl::Doc &doc);
-#ifdef RCL_USE_XATTR
-    void reapXAttrs(const string& fn);
-#endif
-    void reapCmdMetadata(const string& fn);
 };
 
  

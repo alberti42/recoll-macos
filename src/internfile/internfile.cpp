@@ -46,11 +46,7 @@ using namespace std;
 #include "cancelcheck.h"
 #include "copyfile.h"
 #include "fetcher.h"
-
-#ifdef RCL_USE_XATTR
-#include "pxattr.h"
-#endif // RCL_USE_XATTR
-
+#include "extrameta.h"
 
 // The internal path element separator. This can't be the same as the rcldb 
 // file to ipath separator : "|"
@@ -75,69 +71,6 @@ static string colon_restore(const string& in)
 	out += *it == cchar_colon_repl ? ':' : *it;
     }
     return out;
-}
-
-#ifdef RCL_USE_XATTR
-void FileInterner::reapXAttrs(const string& path)
-{
-    LOGDEB2(("FileInterner::reapXAttrs: [%s]\n", path.c_str()));
-    
-    // Retrieve xattrs names from files and mapping table from config
-    vector<string> xnames;
-    if (!pxattr::list(path, &xnames)) {
-	LOGERR(("FileInterner::reapXattrs: pxattr::list: errno %d\n", errno));
-	return;
-    }
-    const map<string, string>& xtof = m_cfg->getXattrToField();
-
-    // Record the xattrs: names found in the config are either skipped
-    // or mapped depending if the translation is empty. Other names
-    // are recorded as-is
-    for (vector<string>::const_iterator it = xnames.begin();
-	 it != xnames.end(); it++) {
-	string key = *it;
-	map<string, string>::const_iterator mit = xtof.find(*it);
-	if (mit != xtof.end()) {
-	    if (mit->second.empty()) {
-		continue;
-	    } else {
-		key = mit->second;
-	    }
-	}
-	string value;
-	if (!pxattr::get(path, *it, &value, pxattr::PXATTR_NOFOLLOW)) {
-	    LOGERR(("FileInterner::reapXattrs: pxattr::get failed"
-		    "for %s, errno %d\n", (*it).c_str(), errno));
-	    continue;
-	}
-	// Encode should we ?
-	m_XAttrsFields[key] = value;
-	LOGDEB2(("FileInterner::reapXAttrs: [%s] -> [%s]\n", 
-		 key.c_str(), value.c_str()));
-    }
-}
-#endif // RCL_USE_XATTR
-
-void FileInterner::reapCmdMetadata(const string& fn)
-{
-    const vector<MDReaper>& reapers = m_cfg->getMDReapers();
-    if (reapers.empty())
-	return;
-    map<char,string> smap = create_map<char, string>('f', fn);
-    for (vector<MDReaper>::const_iterator rp = reapers.begin();
-	 rp != reapers.end(); rp++) {
-	vector<string> cmd;
-	for (vector<string>::const_iterator it = rp->cmdv.begin();
-	     it != rp->cmdv.end(); it++) {
-	    string s;
-	    pcSubst(*it, s, smap);
-	    cmd.push_back(s);
-	}
-	string output;
-	if (ExecCmd::backtick(cmd, output)) {
-	    m_cmdFields[rp->fieldname] =  output;
-	}
-    }
 }
 
 // This is used when the user wants to retrieve a search result doc's parent
@@ -300,9 +233,11 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
     // original file, not the m_fn which may be the uncompressed temp
     // file
     if (!m_noxattrs)
-	reapXAttrs(f);
+	reapXAttrs(m_cfg, f, m_XAttrsFields);
 #endif //RCL_USE_XATTR
-    reapCmdMetadata(f);
+
+    // Gather metadata from external commands as configured.
+    reapMetaCmds(m_cfg, f, m_cmdFields);
 
     df->set_docsize(docsize);
     if (!df->set_document_file(l_mime, m_fn)) {
@@ -619,19 +554,6 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
     return true;
 }
 
-static void docfieldfrommeta(RclConfig* cfg, const string& name, 
-			     const string &value, Rcl::Doc& doc)
-{
-    string fieldname = cfg->fieldCanon(name);
-    LOGDEB0(("Internfile:: setting [%s] from cmd value [%s]\n",
-	     fieldname.c_str(), value.c_str()));
-    if (fieldname == cstr_dj_keymd) {
-	doc.dmtime = value;
-    } else {
-	doc.meta[fieldname] = value;
-    }
-}
-
 // Collect the ipath from the current path in the document tree.
 // While we're at it, we also set the mimetype and filename,
 // which are special properties: we want to get them from the topmost
@@ -654,43 +576,11 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
 
 #ifdef RCL_USE_XATTR
     if (!m_noxattrs) {
-	// Set fields from extended file attributes.
-	// These can be later augmented by values from inside the file
-	for (map<string,string>::const_iterator it = m_XAttrsFields.begin(); 
-	     it != m_XAttrsFields.end(); it++) {
-	    LOGDEB1(("Internfile:: setting [%s] from xattrs value [%s]\n",
-		     m_cfg->fieldCanon(it->first).c_str(), it->second.c_str()));
-	    doc.meta[m_cfg->fieldCanon(it->first)] = it->second;
-	}
+	docFieldsFromXattrs(m_cfg, m_XAttrsFields, doc);
     }
 #endif //RCL_USE_XATTR
 
-    // Set fields from external commands
-    // These override those from xattrs and can be later augmented by
-    // values from inside the file.
-    //
-    // This is a bit atrocious because some entry names are special:
-    // "modificationdate" will set mtime instead of an ordinary field,
-    // and the output from anything beginning with "rclmulti" will be
-    // interpreted as multiple fields in configuration file format...
-    for (map<string,string>::const_iterator it = m_cmdFields.begin(); 
-	 it != m_cmdFields.end(); it++) {
-	if (!it->first.compare(0, 8, "rclmulti")) {
-	    ConfSimple simple(it->second);
-	    if (simple.ok()) {
-		vector<string> names = simple.getNames("");
-		for (vector<string>::const_iterator nm = names.begin(); 
-		     nm != names.end(); nm++) {
-		    string value;
-		    if (simple.get(*nm, value)) {
-			docfieldfrommeta(m_cfg, *nm, value, doc);
-		    }
-		}
-	    }
-	} else {
-	    docfieldfrommeta(m_cfg, it->first, it->second, doc);
-	}
-    }
+    docFieldsFromMetaCmds(m_cfg, m_cmdFields, doc);
 
     // If there is no ipath stack, the mimetype is the one from the file
     doc.mimetype = m_mimetype;
