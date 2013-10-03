@@ -30,6 +30,7 @@ ${depth}/internfile/mh_mbox.cpp \
 ${depth}/internfile/mh_text.cpp \
 ${depth}/internfile/mimehandler.cpp \
 ${depth}/internfile/myhtmlparse.cpp \
+${depth}/internfile/extrameta.cpp \
 ${depth}/internfile/txtdcode.cpp \
 ${depth}/internfile/uncomp.cpp \
 ${depth}/query/docseq.cpp \

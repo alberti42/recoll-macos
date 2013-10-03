@@ -8,8 +8,8 @@ LIBS = librecoll.a $(LIBRECOLL)
 
 all: $(LIBS) 
 
-OBJS =  rclaspell.o beaglequeuecache.o cstr.o rclconfig.o rclinit.o textsplit.o unacpp.o beaglequeue.o bglfetcher.o fetcher.o fsfetcher.o fsindexer.o indexer.o mimetype.o subtreelist.o htmlparse.o internfile.o mh_exec.o mh_execm.o mh_html.o mh_mail.o mh_mbox.o mh_text.o mimehandler.o myhtmlparse.o txtdcode.o uncomp.o docseq.o docseqdb.o docseqhist.o filtseq.o dynconf.o plaintorich.o recollq.o reslistpager.o sortseq.o wasastringtoquery.o wasatorcl.o daterange.o expansiondbs.o rclabstract.o rcldb.o rcldoc.o rcldups.o rclquery.o rclterms.o searchdata.o searchdataxml.o stemdb.o stoplist.o synfamily.o unac.o base64.o circache.o closefrom.o conftree.o copyfile.o cpuconf.o debuglog.o ecrontab.o execmd.o fstreewalk.o idfile.o fileudi.o md5.o mimeparse.o netcon.o pathut.o pxattr.o rclionice.o readfile.o smallut.o strmatcher.o transcode.o wipedir.o x11mon.o mime-parsefull.o mime-parseonlyheader.o mime-printbody.o mime.o convert.o iodevice.o iofactory.o
-DEPS =  rclaspell.dep.stamp beaglequeuecache.dep.stamp cstr.dep.stamp rclconfig.dep.stamp rclinit.dep.stamp textsplit.dep.stamp unacpp.dep.stamp beaglequeue.dep.stamp bglfetcher.dep.stamp fetcher.dep.stamp fsfetcher.dep.stamp fsindexer.dep.stamp indexer.dep.stamp mimetype.dep.stamp subtreelist.dep.stamp htmlparse.dep.stamp internfile.dep.stamp mh_exec.dep.stamp mh_execm.dep.stamp mh_html.dep.stamp mh_mail.dep.stamp mh_mbox.dep.stamp mh_text.dep.stamp mimehandler.dep.stamp myhtmlparse.dep.stamp txtdcode.dep.stamp uncomp.dep.stamp docseq.dep.stamp docseqdb.dep.stamp docseqhist.dep.stamp filtseq.dep.stamp dynconf.dep.stamp plaintorich.dep.stamp recollq.dep.stamp reslistpager.dep.stamp sortseq.dep.stamp wasastringtoquery.dep.stamp wasatorcl.dep.stamp daterange.dep.stamp expansiondbs.dep.stamp rclabstract.dep.stamp rcldb.dep.stamp rcldoc.dep.stamp rcldups.dep.stamp rclquery.dep.stamp rclterms.dep.stamp searchdata.dep.stamp searchdataxml.dep.stamp stemdb.dep.stamp stoplist.dep.stamp synfamily.dep.stamp unac.dep.stamp base64.dep.stamp circache.dep.stamp closefrom.dep.stamp conftree.dep.stamp copyfile.dep.stamp cpuconf.dep.stamp debuglog.dep.stamp ecrontab.dep.stamp execmd.dep.stamp fstreewalk.dep.stamp idfile.dep.stamp fileudi.dep.stamp md5.dep.stamp mimeparse.dep.stamp netcon.dep.stamp pathut.dep.stamp pxattr.dep.stamp rclionice.dep.stamp readfile.dep.stamp smallut.dep.stamp strmatcher.dep.stamp transcode.dep.stamp wipedir.dep.stamp x11mon.dep.stamp mime-parsefull.dep.stamp mime-parseonlyheader.dep.stamp mime-printbody.dep.stamp mime.dep.stamp convert.dep.stamp iodevice.dep.stamp iofactory.dep.stamp
+OBJS =  rclaspell.o beaglequeuecache.o cstr.o rclconfig.o rclinit.o textsplit.o unacpp.o beaglequeue.o bglfetcher.o fetcher.o fsfetcher.o fsindexer.o indexer.o mimetype.o subtreelist.o htmlparse.o internfile.o mh_exec.o mh_execm.o mh_html.o mh_mail.o mh_mbox.o mh_text.o mimehandler.o myhtmlparse.o extrameta.o txtdcode.o uncomp.o docseq.o docseqdb.o docseqhist.o filtseq.o dynconf.o plaintorich.o recollq.o reslistpager.o sortseq.o wasastringtoquery.o wasatorcl.o daterange.o expansiondbs.o rclabstract.o rcldb.o rcldoc.o rcldups.o rclquery.o rclterms.o searchdata.o searchdataxml.o stemdb.o stoplist.o synfamily.o unac.o base64.o circache.o closefrom.o conftree.o copyfile.o cpuconf.o debuglog.o ecrontab.o execmd.o fstreewalk.o idfile.o fileudi.o md5.o mimeparse.o netcon.o pathut.o pxattr.o rclionice.o readfile.o smallut.o strmatcher.o transcode.o wipedir.o x11mon.o mime-parsefull.o mime-parseonlyheader.o mime-printbody.o mime.o convert.o iodevice.o iofactory.o
+DEPS =  rclaspell.dep.stamp beaglequeuecache.dep.stamp cstr.dep.stamp rclconfig.dep.stamp rclinit.dep.stamp textsplit.dep.stamp unacpp.dep.stamp beaglequeue.dep.stamp bglfetcher.dep.stamp fetcher.dep.stamp fsfetcher.dep.stamp fsindexer.dep.stamp indexer.dep.stamp mimetype.dep.stamp subtreelist.dep.stamp htmlparse.dep.stamp internfile.dep.stamp mh_exec.dep.stamp mh_execm.dep.stamp mh_html.dep.stamp mh_mail.dep.stamp mh_mbox.dep.stamp mh_text.dep.stamp mimehandler.dep.stamp myhtmlparse.dep.stamp extrameta.dep.stamp txtdcode.dep.stamp uncomp.dep.stamp docseq.dep.stamp docseqdb.dep.stamp docseqhist.dep.stamp filtseq.dep.stamp dynconf.dep.stamp plaintorich.dep.stamp recollq.dep.stamp reslistpager.dep.stamp sortseq.dep.stamp wasastringtoquery.dep.stamp wasatorcl.dep.stamp daterange.dep.stamp expansiondbs.dep.stamp rclabstract.dep.stamp rcldb.dep.stamp rcldoc.dep.stamp rcldups.dep.stamp rclquery.dep.stamp rclterms.dep.stamp searchdata.dep.stamp searchdataxml.dep.stamp stemdb.dep.stamp stoplist.dep.stamp synfamily.dep.stamp unac.dep.stamp base64.dep.stamp circache.dep.stamp closefrom.dep.stamp conftree.dep.stamp copyfile.dep.stamp cpuconf.dep.stamp debuglog.dep.stamp ecrontab.dep.stamp execmd.dep.stamp fstreewalk.dep.stamp idfile.dep.stamp fileudi.dep.stamp md5.dep.stamp mimeparse.dep.stamp netcon.dep.stamp pathut.dep.stamp pxattr.dep.stamp rclionice.dep.stamp readfile.dep.stamp smallut.dep.stamp strmatcher.dep.stamp transcode.dep.stamp wipedir.dep.stamp x11mon.dep.stamp mime-parsefull.dep.stamp mime-parseonlyheader.dep.stamp mime-printbody.dep.stamp mime.dep.stamp convert.dep.stamp iodevice.dep.stamp iofactory.dep.stamp
 
 librecoll.a : $(DEPS) $(OBJS)
 	ar ru librecoll.a $(OBJS)
@@ -73,6 +73,8 @@ mimehandler.o : ../internfile/mimehandler.cpp $(depth)/mk/localdefs
 	$(CXX) $(ALL_CXXFLAGS) -c ../internfile/mimehandler.cpp
 myhtmlparse.o : ../internfile/myhtmlparse.cpp $(depth)/mk/localdefs
 	$(CXX) $(ALL_CXXFLAGS) -c ../internfile/myhtmlparse.cpp
+extrameta.o : ../internfile/extrameta.cpp $(depth)/mk/localdefs
+	$(CXX) $(ALL_CXXFLAGS) -c ../internfile/extrameta.cpp
 txtdcode.o : ../internfile/txtdcode.cpp $(depth)/mk/localdefs
 	$(CXX) $(ALL_CXXFLAGS) -c ../internfile/txtdcode.cpp
 uncomp.o : ../internfile/uncomp.cpp $(depth)/mk/localdefs
@@ -270,6 +272,9 @@ mimehandler.dep.stamp : ../internfile/mimehandler.cpp $(depth)/mk/localdefs
 myhtmlparse.dep.stamp : ../internfile/myhtmlparse.cpp $(depth)/mk/localdefs
 	$(CXX) -M $(ALL_CXXFLAGS) ../internfile/myhtmlparse.cpp > myhtmlparse.dep
 	touch myhtmlparse.dep.stamp
+extrameta.dep.stamp : ../internfile/extrameta.cpp $(depth)/mk/localdefs
+	$(CXX) -M $(ALL_CXXFLAGS) ../internfile/extrameta.cpp > extrameta.dep
+	touch extrameta.dep.stamp
 txtdcode.dep.stamp : ../internfile/txtdcode.cpp $(depth)/mk/localdefs
 	$(CXX) -M $(ALL_CXXFLAGS) ../internfile/txtdcode.cpp > txtdcode.dep
 	touch txtdcode.dep.stamp
@@ -448,6 +453,7 @@ include mh_mbox.dep
 include mh_text.dep
 include mimehandler.dep
 include myhtmlparse.dep
+include extrameta.dep
 include txtdcode.dep
 include uncomp.dep
 include docseq.dep
