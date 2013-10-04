@@ -567,22 +567,22 @@ const char *RclIntf::event_name(int code)
     code &= ~(IN_ISDIR|IN_ONESHOT);
     switch (code) {
     case IN_ACCESS: return "IN_ACCESS";
+    case IN_MODIFY: return "IN_MODIFY";
     case IN_ATTRIB: return "IN_ATTRIB";
-    case IN_CLOSE: return "IN_CLOSE";
-    case IN_CLOSE_NOWRITE: return "IN_CLOSE_NOWRITE";
     case IN_CLOSE_WRITE: return "IN_CLOSE_WRITE";
+    case IN_CLOSE_NOWRITE: return "IN_CLOSE_NOWRITE";
+    case IN_CLOSE: return "IN_CLOSE";
+    case IN_OPEN: return "IN_OPEN";
+    case IN_MOVED_FROM: return "IN_MOVED_FROM";
+    case IN_MOVED_TO: return "IN_MOVED_TO";
+    case IN_MOVE: return "IN_MOVE";
     case IN_CREATE: return "IN_CREATE";
     case IN_DELETE: return "IN_DELETE";
     case IN_DELETE_SELF: return "IN_DELETE_SELF";
-    case IN_IGNORED: return "IN_IGNORED";
-    case IN_MODIFY: return "IN_MODIFY";
-    case IN_MOVE: return "IN_MOVE";
-    case IN_MOVED_FROM: return "IN_MOVED_FROM";
-    case IN_MOVED_TO: return "IN_MOVED_TO";
     case IN_MOVE_SELF: return "IN_MOVE_SELF";
-    case IN_OPEN: return "IN_OPEN";
-    case IN_Q_OVERFLOW: return "IN_Q_OVERFLOW";
     case IN_UNMOUNT: return "IN_UNMOUNT";
+    case IN_Q_OVERFLOW: return "IN_Q_OVERFLOW";
+    case IN_IGNORED: return "IN_IGNORED";
     default: {
 	static char msg[50];
 	sprintf(msg, "Unknown event 0x%x", code);
@@ -600,10 +600,10 @@ bool RclIntf::addWatch(const string& path, bool)
     uint32_t mask = IN_MODIFY | IN_CREATE
         | IN_MOVED_FROM | IN_MOVED_TO | IN_DELETE
 #ifdef RCL_USE_XATTR
-	// It seems that IN_ATTRIB is not needed to receive extattr
-	// modification events, which is a bit weird because only ctime is
-	// set. 
-	// | IN_ATTRIB
+	// IN_ATTRIB used to be not needed to receive extattr
+	// modification events, which was a bit weird because only ctime is
+	// set, and now it is...
+	| IN_ATTRIB
 #endif
 #ifdef IN_DONT_FOLLOW
 	| IN_DONT_FOLLOW
@@ -698,8 +698,8 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
 	eraseWatchSubTree(m_idtopath, ev.m_path);
     }
 
-    // IN_ATTRIB apparently not needed, see comment above
-    if (evp->mask & (IN_MODIFY)) {
+    // IN_ATTRIB used to be not needed, but now it is
+    if (evp->mask & (IN_MODIFY|IN_ATTRIB)) {
 	ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
     } else if (evp->mask & (IN_DELETE | IN_MOVED_FROM)) {
 	ev.m_etyp = RclMonEvent::RCLEVT_DELETE;

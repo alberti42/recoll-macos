@@ -132,6 +132,10 @@ class FsIndexer : public FsTreeWalkerCB {
     string       m_slocalfields;
     map<string, string>  m_localfields;
 
+    // Activate detection of xattr-only document updates. Experimental, so
+    // needs a config option
+    bool         m_detectxattronly;
+
 #ifdef IDX_THREADS
     friend void *FsIndexerDbUpdWorker(void*);
     friend void *FsIndexerInternfileWorker(void*);

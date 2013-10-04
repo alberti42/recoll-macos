@@ -131,6 +131,10 @@ class Doc {
     // ipath descendants.
     bool haschildren;
 
+    // During indexing: only fields from extended attributes were set, no
+    // doc content. Allows for faster reindexing of existing doc
+    bool onlyxattr;
+
     ///////////////////////////////////////////////////////////////////
 
     void erase() {
@@ -154,10 +158,11 @@ class Doc {
 	idxi = 0;
 	haspages = false;
 	haschildren = false;
+	onlyxattr = false;
     }
     Doc()
 	: idxi(0), syntabs(false), pc(0), xdocid(0),
-	  haspages(false), haschildren(false)
+	  haspages(false), haschildren(false), onlyxattr(false)
     {
     }
     /** Get value for named field. If value pointer is 0, just test existence */

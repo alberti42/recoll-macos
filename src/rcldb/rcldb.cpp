@@ -263,6 +263,110 @@ bool Db::Native::xdocToUdi(Xapian::Document& xdoc, string &udi)
     return false;
 }
 
+// Clear term from document if its frequency is 0. This should
+// probably be done by Xapian when the freq goes to 0 when removing a
+// posting, but we have to do it ourselves
+bool Db::Native::clearDocTermIfWdf0(Xapian::Document& xdoc, const string& term)
+{
+    LOGDEB1(("Db::clearDocTermIfWdf0: [%s]\n", term.c_str()));
+
+    // Find the term
+    Xapian::TermIterator xit;
+    XAPTRY(xit = xdoc.termlist_begin(); xit.skip_to(term);,
+	   xrdb, m_rcldb->m_reason);
+    if (!m_rcldb->m_reason.empty()) {
+	LOGERR(("Db::clearDocTerm...: [%s] skip failed: %s\n", 
+		term.c_str(), m_rcldb->m_reason.c_str()));
+	return false;
+    }
+    if (xit == xdoc.termlist_end() || term.compare(*xit)) {
+	LOGDEB0(("Db::clearDocTermIFWdf0: term [%s] not found. xit: [%s]\n", 
+		 term.c_str(), xit == xdoc.termlist_end() ? "EOL":(*xit).c_str()));
+	return false;
+    }
+
+    // Clear the term if its frequency is 0
+    if (xit.get_wdf() == 0) {
+	LOGDEB1(("Db::clearDocTermIfWdf0: clearing [%s]\n", term.c_str()));
+	XAPTRY(xdoc.remove_term(term), xwdb, m_rcldb->m_reason);
+	if (!m_rcldb->m_reason.empty()) {
+	    LOGDEB0(("Db::clearDocTermIfWdf0: failed [%s]: %s\n", 
+		     term.c_str(), m_rcldb->m_reason.c_str()));
+	}
+    }
+    return true;
+}
+
+// Holder for term + pos
+struct DocPosting {
+    DocPosting(string t, Xapian::termpos ps)
+	: term(t), pos(ps) {}
+    string term;
+    Xapian::termpos pos;
+};
+
+// Clear all terms for given field for given document.
+// The terms to be cleared are all those with the appropriate
+// prefix. We also remove the postings for the unprefixed terms (that
+// is, we undo what we did when indexing).
+bool Db::Native::clearField(Xapian::Document& xdoc, const string& pfx,
+			    Xapian::termcount wdfdec)
+{
+    LOGDEB1(("Db::clearField: clearing prefix [%s] for docid %u\n",
+	     pfx.c_str(), unsigned(xdoc.get_docid())));
+
+    vector<DocPosting> eraselist;
+
+    string wrapd = wrap_prefix(pfx);
+
+    m_rcldb->m_reason.clear();
+    for (int tries = 0; tries < 2; tries++) {
+	try {
+	    Xapian::TermIterator xit;
+	    xit = xdoc.termlist_begin();
+	    xit.skip_to(wrapd);
+	    while (xit != xdoc.termlist_end() && 
+		!(*xit).compare(0, wrapd.size(), wrapd)) {
+		LOGDEB1(("Db::clearfield: erasing for [%s]\n", (*xit).c_str()));
+		Xapian::PositionIterator posit;
+		for (posit = xit.positionlist_begin();
+		     posit != xit.positionlist_end(); posit++) {
+		    eraselist.push_back(DocPosting(*xit, *posit));
+		    eraselist.push_back(DocPosting(strip_prefix(*xit), *posit));
+		}
+		xit++;
+	    }
+	} catch (const Xapian::DatabaseModifiedError &e) {
+	    m_rcldb->m_reason = e.get_msg();
+	    xrdb.reopen();
+	    continue;
+	} XCATCHERROR(m_rcldb->m_reason);
+	break;
+    }
+    if (!m_rcldb->m_reason.empty()) {
+	LOGERR(("Db::clearField: failed building erase list: %s\n", 
+		m_rcldb->m_reason.c_str()));
+	return false;
+    }
+
+    // Now remove the found positions, and the terms if the wdf is 0
+    for (vector<DocPosting>::const_iterator it = eraselist.begin();
+	 it != eraselist.end(); it++) {
+	LOGDEB1(("Db::clearField: remove posting: [%s] pos [%d]\n", 
+		 it->term.c_str(), int(it->pos)));
+	XAPTRY(xdoc.remove_posting(it->term, it->pos, wdfdec);, 
+	       xwdb,m_rcldb->m_reason);
+	if (!m_rcldb->m_reason.empty()) {
+	    // Not that this normally fails for non-prefixed XXST and
+	    // ND, don't make a fuss
+	    LOGDEB1(("Db::clearFiedl: remove_posting failed for [%s],%d: %s\n",
+		     it->term.c_str(),int(it->pos), m_rcldb->m_reason.c_str()));
+	}
+	clearDocTermIfWdf0(xdoc, it->term);
+    }
+    return true;
+}
+
 // Check if doc given by udi is indexed by term
 bool Db::Native::hasTerm(const string& udi, int idxi, const string& term)
 {
@@ -460,11 +564,7 @@ bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm,
 {
 #ifdef IDX_THREADS
     Chrono chron;
-    // In the case where there is a separate (single) db update
-    // thread, we only need to protect the update map update below
-    // (against interaction with threads calling needUpdate()). Else,
-    // all threads from above need to synchronize here
-    PTMutexLocker lock(m_mutex, m_havewriteq);
+    PTMutexLocker lock(m_mutex);
 #endif
 
     // Check file system full every mbyte of indexed text. It's a bit wasteful
@@ -491,11 +591,6 @@ bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm,
     try {
 	Xapian::docid did = 
 	    xwdb.replace_document(uniterm, newdocument);
-#ifdef IDX_THREADS
-	// Need to protect against interaction with the up-to-date checks
-	// which also update the existence map
-	PTMutexLocker lock(m_mutex, !m_havewriteq);
-#endif
 	if (did < m_rcldb->updated.size()) {
 	    m_rcldb->updated[did] = true;
 	    LOGINFO(("Db::add: docid %d updated [%s]\n", did, fnc));
@@ -934,7 +1029,6 @@ bool Db::fieldToTraits(const string& fld, const FieldTraits **ftpp)
     return false;
 }
 
-
 // The splitter breaks text into words and adds postings to the Xapian
 // document. We use a single object to split all of the document
 // fields and position jumps to separate fields
@@ -1151,7 +1245,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	return false;
 
     Xapian::Document newdocument;
-
+    
     // The term processing pipeline:
     TermProcIdx tpidx;
     TermProc *nxt = &tpidx;
@@ -1165,276 +1259,287 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
     TextSplitDb splitter(newdocument, nxt);
     tpidx.setTSD(&splitter);
 
-    // If the ipath is like a path, index the last element. This is
-    // for compound documents like zip and chm for which the filter
-    // uses the file path as ipath. 
-    if (!doc.ipath.empty() && 
-	doc.ipath.find_first_not_of("0123456789") != string::npos) {
-	string utf8ipathlast;
-	// There is no way in hell we could have an idea of the
-	// charset here, so let's hope it's ascii or utf-8. We call
-	// transcode to strip the bad chars and pray
-	if (transcode(path_getsimple(doc.ipath), utf8ipathlast,
-		      "UTF-8", "UTF-8")) {
-	    splitter.text_to_words(utf8ipathlast);
-	}
-    }
-
-    // Split and index the path from the url for path-based filtering
-    {
-	string path = url_gpath(doc.url);
-	vector<string> vpath;
-	stringToTokens(path, vpath, "/");
-	// If vpath is not /, the last elt is the file/dir name, not a
-	// part of the path.
-	if (vpath.size())
-	    vpath.resize(vpath.size()-1);
-	splitter.curpos = 0;
-	newdocument.add_posting(wrap_prefix(pathelt_prefix),
-				splitter.basepos + splitter.curpos++);
-	for (vector<string>::iterator it = vpath.begin(); 
-	     it != vpath.end(); it++){
-	    if (it->length() > 230) {
-		// Just truncate it. May still be useful because of wildcards
-		*it = it->substr(0, 230);
-	    }
-	    newdocument.add_posting(wrap_prefix(pathelt_prefix) + *it, 
-				    splitter.basepos + splitter.curpos++);
-	}
-    }
-
-    // Index textual metadata.  These are all indexed as text with
-    // positions, as we may want to do phrase searches with them (this
-    // makes no sense for keywords by the way).
-    //
-    // The order has no importance, and we set a position gap of 100
-    // between fields to avoid false proximity matches.
-    map<string, string>::iterator meta_it;
-    for (meta_it = doc.meta.begin(); meta_it != doc.meta.end(); meta_it++) {
-	if (!meta_it->second.empty()) {
-	    const FieldTraits *ftp;
-	    // We don't test for an empty prefix here. Some fields are part
-	    // of the internal conf with an empty prefix (ie: abstract).
-	    if (!fieldToTraits(meta_it->first, &ftp)) {
-		LOGDEB0(("Db::add: no prefix for field [%s], no indexing\n",
-			 meta_it->first.c_str()));
-		continue;
-	    }
-	    LOGDEB0(("Db::add: field [%s] pfx [%s] inc %d: [%s]\n", 
-		     meta_it->first.c_str(), ftp->pfx.c_str(), ftp->wdfinc,
-		     meta_it->second.c_str()));
-	    splitter.setprefix(ftp->pfx);
-	    splitter.setwdfinc(ftp->wdfinc);
-	    if (!splitter.text_to_words(meta_it->second))
-                LOGDEB(("Db::addOrUpdate: split failed for %s\n", 
-                        meta_it->first.c_str()));
-	}
-    }
-    splitter.setprefix(string());
-    splitter.setwdfinc(1);
-
-    if (splitter.curpos < baseTextPosition)
-	splitter.basepos = baseTextPosition;
-
-    // Split and index body text
-    LOGDEB2(("Db::add: split body: [%s]\n", doc.text.c_str()));
-
-#ifdef TEXTSPLIT_STATS
-    splitter.resetStats();
-#endif
-    if (!splitter.text_to_words(doc.text))
-        LOGDEB(("Db::addOrUpdate: split failed for main text\n"));
-
-#ifdef TEXTSPLIT_STATS
-    // Reject bad data. unrecognized base64 text is characterized by
-    // high avg word length and high variation (because there are
-    // word-splitters like +/ inside the data).
-    TextSplit::Stats::Values v = splitter.getStats();
-    // v.avglen > 15 && v.sigma > 12 
-    if (v.count > 200 && (v.avglen > 10 && v.sigma / v.avglen > 0.8)) {
-	LOGINFO(("RclDb::addOrUpdate: rejecting doc for bad stats "
-	 "count %d avglen %.4f sigma %.4f url [%s] ipath [%s] text %s\n",
-		 v.count, v.avglen, v.sigma, doc.url.c_str(), 
-		 doc.ipath.c_str(), doc.text.c_str()));
-	return true;
-    }
-#endif
-
-    ////// Special terms for other metadata. No positions for these.
-    // Mime type
-    newdocument.add_boolean_term(wrap_prefix(mimetype_prefix) + doc.mimetype);
-
-    // Simple file name indexed unsplit for specific "file name"
-    // searches. This is not the same as a filename: clause inside the
-    // query language.
-    // We also add a term for the filename extension if any.
-    string utf8fn;
-    if (doc.getmeta(Doc::keyfn, &utf8fn) && !utf8fn.empty()) {
-	string fn;
-	if (unacmaybefold(utf8fn, fn, "UTF-8", UNACOP_UNACFOLD)) {
-	    // We should truncate after extracting the extension, but this is
-	    // a pathological case anyway
-	    if (fn.size() > 230)
-		utf8truncate(fn, 230);
-	    string::size_type pos = fn.rfind('.');
-	    if (pos != string::npos && pos != fn.length() - 1) {
-		newdocument.add_boolean_term(wrap_prefix(fileext_prefix) + 
-					     fn.substr(pos + 1));
-	    }
-	    newdocument.add_term(wrap_prefix(unsplitfilename_prefix) + fn, 0);
-	}
-    }
-
     // Udi unique term: this is used for file existence/uptodate
     // checks, and unique id for the replace_document() call.
     string uniterm = make_uniterm(udi);
-    newdocument.add_boolean_term(uniterm);
-    // Parent term. This is used to find all descendents, mostly to delete them 
-    // when the parent goes away
-    if (!parent_udi.empty()) {
-	newdocument.add_boolean_term(make_parentterm(parent_udi));
-    }
-    // Dates etc.
-    time_t mtime = atoll(doc.dmtime.empty() ? doc.fmtime.c_str() : 
-			 doc.dmtime.c_str());
-    struct tm *tm = localtime(&mtime);
-    char buf[9];
-    snprintf(buf, 9, "%04d%02d%02d",
-	    tm->tm_year+1900, tm->tm_mon + 1, tm->tm_mday);
-    // Date (YYYYMMDD)
-    newdocument.add_boolean_term(wrap_prefix(xapday_prefix) + string(buf)); 
-    // Month (YYYYMM)
-    buf[6] = '\0';
-    newdocument.add_boolean_term(wrap_prefix(xapmonth_prefix) + string(buf));
-    // Year (YYYY)
-    buf[4] = '\0';
-    newdocument.add_boolean_term(wrap_prefix(xapyear_prefix) + string(buf)); 
 
-
-    //////////////////////////////////////////////////////////////////
-    // Document data record. omindex has the following nl separated fields:
-    // - url
-    // - sample
-    // - caption (title limited to 100 chars)
-    // - mime type 
-    //
-    // The title, author, abstract and keywords fields are special,
-    // they always get stored in the document data
-    // record. Configurable other fields can be, too.
-    //
-    // We truncate stored fields abstract, title and keywords to
-    // reasonable lengths and suppress newlines (so that the data
-    // record can keep a simple syntax)
-
-    string record;
-    RECORD_APPEND(record, Doc::keyurl, doc.url);
-    RECORD_APPEND(record, Doc::keytp, doc.mimetype);
-    // We left-zero-pad the times so that they are lexico-sortable
-    leftzeropad(doc.fmtime, 11);
-    RECORD_APPEND(record, Doc::keyfmt, doc.fmtime);
-    if (!doc.dmtime.empty()) {
-	leftzeropad(doc.dmtime, 11);
-	RECORD_APPEND(record, Doc::keydmt, doc.dmtime);
-    }
-    RECORD_APPEND(record, Doc::keyoc, doc.origcharset);
-
-    if (doc.fbytes.empty())
-	doc.fbytes = doc.pcbytes;
-
-    if (!doc.fbytes.empty()) {
-	RECORD_APPEND(record, Doc::keyfs, doc.fbytes);
-	leftzeropad(doc.fbytes, 12);
-	newdocument.add_value(VALUE_SIZE, doc.fbytes);
-    }
-    if (doc.haschildren) {
-	newdocument.add_boolean_term(has_children_term);
-    }	
-    if (!doc.pcbytes.empty())
-	RECORD_APPEND(record, Doc::keypcs, doc.pcbytes);
-    char sizebuf[30]; 
-    sprintf(sizebuf, "%u", (unsigned int)doc.text.length());
-    RECORD_APPEND(record, Doc::keyds, sizebuf);
-
-    // Note that we add the signature both as a value and in the data record
-    if (!doc.sig.empty()) {
-	RECORD_APPEND(record, Doc::keysig, doc.sig);
-	newdocument.add_value(VALUE_SIG, doc.sig);
-    }
-
-    if (!doc.ipath.empty())
-	RECORD_APPEND(record, Doc::keyipt, doc.ipath);
-
-    doc.meta[Doc::keytt] = 
-	neutchars(truncate_to_word(doc.meta[Doc::keytt], 150), cstr_nc);
-    if (!doc.meta[Doc::keytt].empty())
-	RECORD_APPEND(record, cstr_caption, doc.meta[Doc::keytt]);
-
-    trimstring(doc.meta[Doc::keykw], " \t\r\n");
-    doc.meta[Doc::keykw] = 
-	neutchars(truncate_to_word(doc.meta[Doc::keykw], 300), cstr_nc);
-    // No need to explicitly append the keywords, this will be done by 
-    // the "stored" loop
-
-    // If abstract is empty, we make up one with the beginning of the
-    // document. This is then not indexed, but part of the doc data so
-    // that we can return it to a query without having to decode the
-    // original file.
-    bool syntabs = false;
-    // Note that the map accesses by operator[] create empty entries if they
-    // don't exist yet.
-    trimstring(doc.meta[Doc::keyabs], " \t\r\n");
-    if (doc.meta[Doc::keyabs].empty()) {
-	syntabs = true;
-	if (!doc.text.empty())
-	    doc.meta[Doc::keyabs] = cstr_syntAbs + 
-		neutchars(truncate_to_word(doc.text, m_idxAbsTruncLen), cstr_nc);
+    if (doc.onlyxattr) {
+	// Only updating an existing doc with new extended attributes
+	// data.  Need to read the old doc and its data record
+	// first. This is so different from the normal processing that
+	// it uses a fully separate code path (with some duplication
+	// unfortunately)
+	if (!m_ndb->docToXdocXattrOnly(&splitter, udi, doc, newdocument))
+	    return false;
     } else {
-	doc.meta[Doc::keyabs] = 
-	    neutchars(truncate_to_word(doc.meta[Doc::keyabs], m_idxAbsTruncLen),
-		      cstr_nc);
-    }
 
-    const set<string>& stored = m_config->getStoredFields();
-    for (set<string>::const_iterator it = stored.begin();
-	 it != stored.end(); it++) {
-	string nm = m_config->fieldCanon(*it);
-	if (!doc.meta[nm].empty()) {
-	    string value = 
-		neutchars(truncate_to_word(doc.meta[nm], 150), cstr_nc);
-	    RECORD_APPEND(record, nm, value);
+	// If the ipath is like a path, index the last element. This is
+	// for compound documents like zip and chm for which the filter
+	// uses the file path as ipath. 
+	if (!doc.ipath.empty() && 
+	    doc.ipath.find_first_not_of("0123456789") != string::npos) {
+	    string utf8ipathlast;
+	    // There is no way in hell we could have an idea of the
+	    // charset here, so let's hope it's ascii or utf-8. We call
+	    // transcode to strip the bad chars and pray
+	    if (transcode(path_getsimple(doc.ipath), utf8ipathlast,
+			  "UTF-8", "UTF-8")) {
+		splitter.text_to_words(utf8ipathlast);
+	    }
 	}
-    }
 
-    // If empty pages (multiple break at same pos) were recorded, save
-    // them (this is because we have no way to record them in the
-    // Xapian list
-    if (!tpidx.m_pageincrvec.empty()) {
-	ostringstream multibreaks;
-	for (unsigned int i = 0; i < tpidx.m_pageincrvec.size(); i++) {
-	    if (i != 0)
-		multibreaks << ",";
-	    multibreaks << tpidx.m_pageincrvec[i].first << "," << 
-		tpidx.m_pageincrvec[i].second;
+	// Split and index the path from the url for path-based filtering
+	{
+	    string path = url_gpath(doc.url);
+	    vector<string> vpath;
+	    stringToTokens(path, vpath, "/");
+	    // If vpath is not /, the last elt is the file/dir name, not a
+	    // part of the path.
+	    if (vpath.size())
+		vpath.resize(vpath.size()-1);
+	    splitter.curpos = 0;
+	    newdocument.add_posting(wrap_prefix(pathelt_prefix),
+				    splitter.basepos + splitter.curpos++);
+	    for (vector<string>::iterator it = vpath.begin(); 
+		 it != vpath.end(); it++){
+		if (it->length() > 230) {
+		    // Just truncate it. May still be useful because of wildcards
+		    *it = it->substr(0, 230);
+		}
+		newdocument.add_posting(wrap_prefix(pathelt_prefix) + *it, 
+					splitter.basepos + splitter.curpos++);
+	    }
 	}
-	RECORD_APPEND(record, string(cstr_mbreaks), multibreaks.str());
-    }
+
+	// Index textual metadata.  These are all indexed as text with
+	// positions, as we may want to do phrase searches with them (this
+	// makes no sense for keywords by the way).
+	//
+	// The order has no importance, and we set a position gap of 100
+	// between fields to avoid false proximity matches.
+	map<string, string>::iterator meta_it;
+	for (meta_it = doc.meta.begin(); meta_it != doc.meta.end(); meta_it++) {
+	    if (!meta_it->second.empty()) {
+		const FieldTraits *ftp;
+		// We don't test for an empty prefix here. Some fields are part
+		// of the internal conf with an empty prefix (ie: abstract).
+		if (!fieldToTraits(meta_it->first, &ftp)) {
+		    LOGDEB0(("Db::add: no prefix for field [%s], no indexing\n",
+			     meta_it->first.c_str()));
+		    continue;
+		}
+		LOGDEB0(("Db::add: field [%s] pfx [%s] inc %d: [%s]\n", 
+			 meta_it->first.c_str(), ftp->pfx.c_str(), ftp->wdfinc,
+			 meta_it->second.c_str()));
+		splitter.setprefix(ftp->pfx);
+		splitter.setwdfinc(ftp->wdfinc);
+		if (!splitter.text_to_words(meta_it->second))
+		    LOGDEB(("Db::addOrUpdate: split failed for %s\n", 
+			    meta_it->first.c_str()));
+	    }
+	}
+	splitter.setprefix(string());
+	splitter.setwdfinc(1);
+
+	if (splitter.curpos < baseTextPosition)
+	    splitter.basepos = baseTextPosition;
+
+	// Split and index body text
+	LOGDEB2(("Db::add: split body: [%s]\n", doc.text.c_str()));
+
+#ifdef TEXTSPLIT_STATS
+	splitter.resetStats();
+#endif
+	if (!splitter.text_to_words(doc.text))
+	    LOGDEB(("Db::addOrUpdate: split failed for main text\n"));
+
+#ifdef TEXTSPLIT_STATS
+	// Reject bad data. unrecognized base64 text is characterized by
+	// high avg word length and high variation (because there are
+	// word-splitters like +/ inside the data).
+	TextSplit::Stats::Values v = splitter.getStats();
+	// v.avglen > 15 && v.sigma > 12 
+	if (v.count > 200 && (v.avglen > 10 && v.sigma / v.avglen > 0.8)) {
+	    LOGINFO(("RclDb::addOrUpdate: rejecting doc for bad stats "
+		     "count %d avglen %.4f sigma %.4f url [%s] ipath [%s] text %s\n",
+		     v.count, v.avglen, v.sigma, doc.url.c_str(), 
+		     doc.ipath.c_str(), doc.text.c_str()));
+	    return true;
+	}
+#endif
+
+	////// Special terms for other metadata. No positions for these.
+	// Mime type
+	newdocument.add_boolean_term(wrap_prefix(mimetype_prefix) + doc.mimetype);
+
+	// Simple file name indexed unsplit for specific "file name"
+	// searches. This is not the same as a filename: clause inside the
+	// query language.
+	// We also add a term for the filename extension if any.
+	string utf8fn;
+	if (doc.getmeta(Doc::keyfn, &utf8fn) && !utf8fn.empty()) {
+	    string fn;
+	    if (unacmaybefold(utf8fn, fn, "UTF-8", UNACOP_UNACFOLD)) {
+		// We should truncate after extracting the extension, but this is
+		// a pathological case anyway
+		if (fn.size() > 230)
+		    utf8truncate(fn, 230);
+		string::size_type pos = fn.rfind('.');
+		if (pos != string::npos && pos != fn.length() - 1) {
+		    newdocument.add_boolean_term(wrap_prefix(fileext_prefix) + 
+						 fn.substr(pos + 1));
+		}
+		newdocument.add_term(wrap_prefix(unsplitfilename_prefix) + fn, 0);
+	    }
+	}
+
+	newdocument.add_boolean_term(uniterm);
+	// Parent term. This is used to find all descendents, mostly
+	// to delete them when the parent goes away
+	if (!parent_udi.empty()) {
+	    newdocument.add_boolean_term(make_parentterm(parent_udi));
+	}
+	// Dates etc.
+	time_t mtime = atoll(doc.dmtime.empty() ? doc.fmtime.c_str() : 
+			     doc.dmtime.c_str());
+	struct tm *tm = localtime(&mtime);
+	char buf[9];
+	snprintf(buf, 9, "%04d%02d%02d",
+		 tm->tm_year+1900, tm->tm_mon + 1, tm->tm_mday);
+	// Date (YYYYMMDD)
+	newdocument.add_boolean_term(wrap_prefix(xapday_prefix) + string(buf)); 
+	// Month (YYYYMM)
+	buf[6] = '\0';
+	newdocument.add_boolean_term(wrap_prefix(xapmonth_prefix) + string(buf));
+	// Year (YYYY)
+	buf[4] = '\0';
+	newdocument.add_boolean_term(wrap_prefix(xapyear_prefix) + string(buf)); 
+
+
+	//////////////////////////////////////////////////////////////////
+	// Document data record. omindex has the following nl separated fields:
+	// - url
+	// - sample
+	// - caption (title limited to 100 chars)
+	// - mime type 
+	//
+	// The title, author, abstract and keywords fields are special,
+	// they always get stored in the document data
+	// record. Configurable other fields can be, too.
+	//
+	// We truncate stored fields abstract, title and keywords to
+	// reasonable lengths and suppress newlines (so that the data
+	// record can keep a simple syntax)
+
+	string record;
+	RECORD_APPEND(record, Doc::keyurl, doc.url);
+	RECORD_APPEND(record, Doc::keytp, doc.mimetype);
+	// We left-zero-pad the times so that they are lexico-sortable
+	leftzeropad(doc.fmtime, 11);
+	RECORD_APPEND(record, Doc::keyfmt, doc.fmtime);
+	if (!doc.dmtime.empty()) {
+	    leftzeropad(doc.dmtime, 11);
+	    RECORD_APPEND(record, Doc::keydmt, doc.dmtime);
+	}
+	RECORD_APPEND(record, Doc::keyoc, doc.origcharset);
+
+	if (doc.fbytes.empty())
+	    doc.fbytes = doc.pcbytes;
+
+	if (!doc.fbytes.empty()) {
+	    RECORD_APPEND(record, Doc::keyfs, doc.fbytes);
+	    leftzeropad(doc.fbytes, 12);
+	    newdocument.add_value(VALUE_SIZE, doc.fbytes);
+	}
+	if (doc.haschildren) {
+	    newdocument.add_boolean_term(has_children_term);
+	}	
+	if (!doc.pcbytes.empty())
+	    RECORD_APPEND(record, Doc::keypcs, doc.pcbytes);
+	char sizebuf[30]; 
+	sprintf(sizebuf, "%u", (unsigned int)doc.text.length());
+	RECORD_APPEND(record, Doc::keyds, sizebuf);
+
+	// Note that we add the signature both as a value and in the data record
+	if (!doc.sig.empty()) {
+	    RECORD_APPEND(record, Doc::keysig, doc.sig);
+	    newdocument.add_value(VALUE_SIG, doc.sig);
+	}
+
+	if (!doc.ipath.empty())
+	    RECORD_APPEND(record, Doc::keyipt, doc.ipath);
+
+	doc.meta[Doc::keytt] = 
+	    neutchars(truncate_to_word(doc.meta[Doc::keytt], 150), cstr_nc);
+	if (!doc.meta[Doc::keytt].empty())
+	    RECORD_APPEND(record, cstr_caption, doc.meta[Doc::keytt]);
+
+	trimstring(doc.meta[Doc::keykw], " \t\r\n");
+	doc.meta[Doc::keykw] = 
+	    neutchars(truncate_to_word(doc.meta[Doc::keykw], 300), cstr_nc);
+	// No need to explicitly append the keywords, this will be done by 
+	// the "stored" loop
+
+	// If abstract is empty, we make up one with the beginning of the
+	// document. This is then not indexed, but part of the doc data so
+	// that we can return it to a query without having to decode the
+	// original file.
+	bool syntabs = false;
+	// Note that the map accesses by operator[] create empty entries if they
+	// don't exist yet.
+	trimstring(doc.meta[Doc::keyabs], " \t\r\n");
+	if (doc.meta[Doc::keyabs].empty()) {
+	    syntabs = true;
+	    if (!doc.text.empty())
+		doc.meta[Doc::keyabs] = cstr_syntAbs + 
+		    neutchars(truncate_to_word(doc.text, m_idxAbsTruncLen), cstr_nc);
+	} else {
+	    doc.meta[Doc::keyabs] = 
+		neutchars(truncate_to_word(doc.meta[Doc::keyabs], m_idxAbsTruncLen),
+			  cstr_nc);
+	}
+
+	const set<string>& stored = m_config->getStoredFields();
+	for (set<string>::const_iterator it = stored.begin();
+	     it != stored.end(); it++) {
+	    string nm = m_config->fieldCanon(*it);
+	    if (!doc.meta[nm].empty()) {
+		string value = 
+		    neutchars(truncate_to_word(doc.meta[nm], 150), cstr_nc);
+		RECORD_APPEND(record, nm, value);
+	    }
+	}
+
+	// If empty pages (multiple break at same pos) were recorded, save
+	// them (this is because we have no way to record them in the
+	// Xapian list
+	if (!tpidx.m_pageincrvec.empty()) {
+	    ostringstream multibreaks;
+	    for (unsigned int i = 0; i < tpidx.m_pageincrvec.size(); i++) {
+		if (i != 0)
+		    multibreaks << ",";
+		multibreaks << tpidx.m_pageincrvec[i].first << "," << 
+		    tpidx.m_pageincrvec[i].second;
+	    }
+	    RECORD_APPEND(record, string(cstr_mbreaks), multibreaks.str());
+	}
     
-    // If the file's md5 was computed, add value and term. 
-    // The value is optionally used for query result duplicate elimination, 
-    // and the term to find the duplicates.
-    // We don't do this for empty docs.
-    const string *md5;
-    if (doc.peekmeta(Doc::keymd5, &md5) && !md5->empty() &&
-	md5->compare(cstr_md5empty)) {
-	string digest;
-	MD5HexScan(*md5, digest);
-	newdocument.add_value(VALUE_MD5, digest);
-	newdocument.add_boolean_term(wrap_prefix("XM") + *md5);
+	// If the file's md5 was computed, add value and term. 
+	// The value is optionally used for query result duplicate elimination, 
+	// and the term to find the duplicates.
+	// We don't do this for empty docs.
+	const string *md5;
+	if (doc.peekmeta(Doc::keymd5, &md5) && !md5->empty() &&
+	    md5->compare(cstr_md5empty)) {
+	    string digest;
+	    MD5HexScan(*md5, digest);
+	    newdocument.add_value(VALUE_MD5, digest);
+	    newdocument.add_boolean_term(wrap_prefix("XM") + *md5);
+	}
+
+	LOGDEB0(("Rcl::Db::add: new doc record:\n%s\n", record.c_str()));
+	newdocument.set_data(record);
     }
-
-    LOGDEB0(("Rcl::Db::add: new doc record:\n%s\n", record.c_str()));
-    newdocument.set_data(record);
-
 #ifdef IDX_THREADS
     if (m_ndb->m_havewriteq) {
 	DbUpdTask *tp = new DbUpdTask(DbUpdTask::AddOrUpdate, udi, uniterm, 
@@ -1450,6 +1555,81 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 
     return m_ndb->addOrUpdateWrite(udi, uniterm, newdocument, 
 				   doc.text.length());
+}
+
+bool Db::Native::docToXdocXattrOnly(TextSplitDb *splitter, const string &udi, 
+				    Doc &doc, Xapian::Document& xdoc)
+{
+    LOGDEB0(("Db::docToXdocXattrOnly\n"));
+    PTMutexLocker lock(m_mutex);
+
+    // Read existing document and its data record
+    if (getDoc(udi, 0, xdoc) == 0) {
+	LOGERR(("docToXdocXattrOnly: existing doc not found\n"));
+	return false;
+    }
+    string data;
+    XAPTRY(data = xdoc.get_data(), xrdb, m_rcldb->m_reason);
+    if (!m_rcldb->m_reason.empty()) {
+        LOGERR(("Db::xattrOnly: got error: %s\n", m_rcldb->m_reason.c_str()));
+        return false;
+    }
+
+    // Clear the term lists for the incoming fields and index the new values
+    map<string, string>::iterator meta_it;
+    for (meta_it = doc.meta.begin(); meta_it != doc.meta.end(); meta_it++) {
+	const FieldTraits *ftp;
+	if (!m_rcldb->fieldToTraits(meta_it->first, &ftp) || ftp->pfx.empty()) {
+	    LOGDEB0(("Db::xattrOnly: no prefix for field [%s], skipped\n",
+		     meta_it->first.c_str()));
+	    continue;
+	}
+	// Clear the previous terms for the field
+	clearField(xdoc, ftp->pfx, ftp->wdfinc);
+	LOGDEB0(("Db::xattrOnly: field [%s] pfx [%s] inc %d: [%s]\n", 
+		 meta_it->first.c_str(), ftp->pfx.c_str(), ftp->wdfinc,
+		 meta_it->second.c_str()));
+	splitter->setprefix(ftp->pfx);
+	splitter->setwdfinc(ftp->wdfinc);
+	if (!splitter->text_to_words(meta_it->second))
+	    LOGDEB(("Db::xattrOnly: split failed for %s\n", 
+		    meta_it->first.c_str()));
+    }
+    xdoc.add_value(VALUE_SIG, doc.sig);
+
+    // Parse current data record into a dict for ease of processing
+    ConfSimple datadic(data);
+    if (!datadic.ok()) {
+	LOGERR(("db::docToXdocXattrOnly: failed turning data rec to dict\n"));
+	return false;
+    }
+
+    // For each "stored" field, check if set in doc metadata and
+    // update the value if it is
+    const set<string>& stored = m_rcldb->m_config->getStoredFields();
+    for (set<string>::const_iterator it = stored.begin();
+	 it != stored.end(); it++) {
+	string nm = m_rcldb->m_config->fieldCanon(*it);
+	if (doc.getmeta(nm, 0)) {
+	    string value = 
+		neutchars(truncate_to_word(doc.meta[nm], 150), cstr_nc);
+	    datadic.set(nm, value, "");
+	}
+    }
+
+    // Recreate the record. We want to do this with the local RECORD_APPEND
+    // method for consistency in format, instead of using ConfSimple print
+    vector<string> names = datadic.getNames("");
+    data.clear();
+    for (vector<string>::const_iterator it = names.begin(); 
+	 it != names.end(); it++) {
+	string value;
+	datadic.get(*it, value, "");
+	RECORD_APPEND(data, *it, value);
+    }
+    RECORD_APPEND(data, Doc::keysig, doc.sig);
+    xdoc.set_data(data);
+    return true;
 }
 
 #ifdef IDX_THREADS

@@ -66,6 +66,8 @@ public:
 };
 #endif // IDX_THREADS
 
+class TextSplitDb;
+
 // A class for data and methods that would have to expose
 // Xapian-specific stuff if they were in Rcl::Db. There could actually be
 // 2 different ones for indexing or query as there is not much in
@@ -140,6 +142,16 @@ class Db::Native {
 
     /** Check if doc is indexed by term */
     bool hasTerm(const string& udi, int idxi, const string& term);
+
+    /** Update existing Xapian document for pure extended attrs change */
+    bool docToXdocXattrOnly(TextSplitDb *splitter, const string &udi, 
+			    Doc &doc, Xapian::Document& xdoc);
+    /** Remove all terms currently indexed for field defined by idx prefix */
+    bool clearField(Xapian::Document& xdoc, const string& pfx, 
+		    Xapian::termcount wdfdec);
+
+    /** Check if term wdf is 0 and remove term if so */
+    bool clearDocTermIfWdf0(Xapian::Document& xdoc, const string& term);
 
     /** Compute list of subdocuments for a given udi. We look for documents 
      * indexed by a parent term matching the udi, the posting list for the 

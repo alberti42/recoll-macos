@@ -237,6 +237,10 @@ class Db {
      */
     bool needUpdate(const string &udi, const string& sig, bool *existed=0);
 
+    /** Indicate if we are doing a systematic reindex. This complements
+	needUpdate() return */
+    bool inFullReset() {return o_inPlaceReset || m_mode == DbTrunc;}
+
     /** Add or update document identified by unique identifier.
      * @param config Config object to use. Can be the same as the member config
      *   or a clone, to avoid sharing when called in multithread context.

@@ -45,7 +45,7 @@
 #include "cancelcheck.h"
 #include "rclinit.h"
 #include "execmd.h"
-
+#include "extrameta.h"
 
 // When using extended attributes, we have to use the ctime, because
 // this is all that gets set when the attributes are modified. 
@@ -104,7 +104,7 @@ public:
 
 FsIndexer::FsIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc) 
     : m_config(cnf), m_db(db), m_updater(updfunc), 
-      m_missing(new FSIFIMissingStore)
+      m_missing(new FSIFIMissingStore), m_detectxattronly(false)
 #ifdef IDX_THREADS
     , m_iwqueue("Internfile", cnf->getThrConf(RclConfig::ThrIntern).first), 
       m_dwqueue("Split", cnf->getThrConf(RclConfig::ThrSplit).first)
@@ -112,6 +112,7 @@ FsIndexer::FsIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc)
 {
     LOGDEB1(("FsIndexer::FsIndexer\n"));
     m_havelocalfields = m_config->hasNameAnywhere("localfields");
+    m_config->getConfParam("detectxattronly", &m_detectxattronly);
 
 #ifdef IDX_THREADS
     m_stableconfig = new RclConfig(*m_config);
@@ -625,6 +626,15 @@ FsIndexer::processonefile(RclConfig *config,
     bool existingDoc;
     bool needupdate = m_db->needUpdate(udi, sig, &existingDoc);
 
+    // If ctime (which we use for the sig) differs from mtime, then at most
+    // the extended attributes were changed, no need to index content.
+    // This unfortunately leaves open the case where the data was
+    // modified, then the extended attributes, in which case we will
+    // miss the data update. We would have to store both the mtime and
+    // the ctime to avoid this
+    bool xattronly = m_detectxattronly && !m_db->inFullReset() && 
+	existingDoc && needupdate && (stp->st_mtime < stp->st_ctime);
+    
     if (!needupdate) {
 	LOGDEB0(("processone: up to date: %s\n", fn.c_str()));
 	if (m_updater) {
@@ -644,14 +654,6 @@ FsIndexer::processonefile(RclConfig *config,
     LOGDEB0(("processone: processing: [%s] %s\n", 
              displayableBytes(stp->st_size).c_str(), fn.c_str()));
 
-    FileInterner interner(fn, stp, config, FileInterner::FIF_none);
-    if (!interner.ok()) {
-        // no indexing whatsoever in this case. This typically means that
-        // indexallfilenames is not set
-        return FsTreeWalker::FtwOk;
-    }
-    interner.setMissingStore(m_missing);
-
     string utf8fn = compute_utf8fn(config, fn);
 
     // parent_udi is initially the same as udi, it will be used if there 
@@ -662,128 +664,152 @@ FsIndexer::processonefile(RclConfig *config,
     char ascdate[30];
     sprintf(ascdate, "%ld", long(stp->st_mtime));
 
-    FileInterner::Status fis = FileInterner::FIAgain;
     bool hadNullIpath = false;
-    bool hadNonNullIpath = false;
-    while (fis == FileInterner::FIAgain) {
-	doc.erase();
-        try {
-            fis = interner.internfile(doc);
-        } catch (CancelExcept) {
-            LOGERR(("fsIndexer::processone: interrupted\n"));
-            return FsTreeWalker::FtwStop;
-        }
+    string mimetype;
 
-        // We index at least the file name even if there was an error.
-        // We'll change the signature to ensure that the indexing will
-        // be retried every time.
+    if (!xattronly) {
+	FileInterner interner(fn, stp, config, FileInterner::FIF_none);
+	if (!interner.ok()) {
+	    // no indexing whatsoever in this case. This typically means that
+	    // indexallfilenames is not set
+	    return FsTreeWalker::FtwOk;
+	}
+	mimetype = interner.getMimetype();
 
-	// Internal access path for multi-document files. If empty, this is
-	// for the main file.
-	if (doc.ipath.empty()) {
-	    hadNullIpath = true;
-	    if (hadNonNullIpath) {
-		// Note that only the filters can reliably compute
-		// this. What we do is dependant of the doc order (if
-		// we see the top doc first, we won't set the flag)
-		doc.haschildren = true;
+	interner.setMissingStore(m_missing);
+	FileInterner::Status fis = FileInterner::FIAgain;
+	bool hadNonNullIpath = false;
+	while (fis == FileInterner::FIAgain) {
+	    doc.erase();
+	    try {
+		fis = interner.internfile(doc);
+	    } catch (CancelExcept) {
+		LOGERR(("fsIndexer::processone: interrupted\n"));
+		return FsTreeWalker::FtwStop;
 	    }
-	} else {
-	    hadNonNullIpath = true;
-	    make_udi(fn, doc.ipath, udi);
-	}
 
-	// Set file name, mod time and url if not done by filter
-	if (doc.fmtime.empty())
-	    doc.fmtime = ascdate;
-        if (doc.url.empty())
-            doc.url = cstr_fileu + fn;
-	const string *fnp = 0;
-	if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty())
-	    doc.meta[Rcl::Doc::keyfn] = utf8fn;
+	    // We index at least the file name even if there was an error.
+	    // We'll change the signature to ensure that the indexing will
+	    // be retried every time.
 
-	char cbuf[100]; 
-	sprintf(cbuf, "%lld", (long long)stp->st_size);
-	doc.pcbytes = cbuf;
-	// Document signature for up to date checks. All subdocs inherit the
-	// file's.
-	doc.sig = sig;
-
-	// If there was an error, ensure indexing will be
-	// retried. This is for the once missing, later installed
-	// filter case. It can make indexing much slower (if there are
-	// myriads of such files, the ext script is executed for them
-	// and fails every time)
-	if (fis == FileInterner::FIError) {
-	    doc.sig += cstr_plus;
-	}
-
-        // Possibly add fields from local config
-        if (m_havelocalfields) 
-            setlocalfields(localfields, doc);
-
-	// Add document to database. If there is an ipath, add it as a children
-	// of the file document.
-#ifdef IDX_THREADS
-	if (m_haveSplitQ) {
-	    DbUpdTask *tp = new DbUpdTask(udi, doc.ipath.empty() ? 
-					  cstr_null : parent_udi, doc);
-	    if (!m_dwqueue.put(tp)) {
-		LOGERR(("processonefile: wqueue.put failed\n"));
-		return FsTreeWalker::FtwError;
-	    } 
-	} else {
-#endif
-	    if (!m_db->addOrUpdate(udi, doc.ipath.empty() ? 
-				   cstr_null : parent_udi, doc)) {
-		return FsTreeWalker::FtwError;
+	    // Internal access path for multi-document files. If empty, this is
+	    // for the main file.
+	    if (doc.ipath.empty()) {
+		hadNullIpath = true;
+		if (hadNonNullIpath) {
+		    // Note that only the filters can reliably compute
+		    // this. What we do is dependant of the doc order (if
+		    // we see the top doc first, we won't set the flag)
+		    doc.haschildren = true;
+		}
+	    } else {
+		hadNonNullIpath = true;
+		make_udi(fn, doc.ipath, udi);
 	    }
+
+	    // Set file name, mod time and url if not done by filter
+	    if (doc.fmtime.empty())
+		doc.fmtime = ascdate;
+	    if (doc.url.empty())
+		doc.url = cstr_fileu + fn;
+	    const string *fnp = 0;
+	    if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty())
+		doc.meta[Rcl::Doc::keyfn] = utf8fn;
+
+	    char cbuf[100]; 
+	    sprintf(cbuf, "%lld", (long long)stp->st_size);
+	    doc.pcbytes = cbuf;
+	    // Document signature for up to date checks. All subdocs inherit the
+	    // file's.
+	    doc.sig = sig;
+
+	    // If there was an error, ensure indexing will be
+	    // retried. This is for the once missing, later installed
+	    // filter case. It can make indexing much slower (if there are
+	    // myriads of such files, the ext script is executed for them
+	    // and fails every time)
+	    if (fis == FileInterner::FIError) {
+		doc.sig += cstr_plus;
+	    }
+
+	    // Possibly add fields from local config
+	    if (m_havelocalfields) 
+		setlocalfields(localfields, doc);
+
+	    // Add document to database. If there is an ipath, add it
+	    // as a child of the file document.
 #ifdef IDX_THREADS
-	}
+	    if (m_haveSplitQ) {
+		DbUpdTask *tp = new DbUpdTask(udi, doc.ipath.empty() ? 
+					      cstr_null : parent_udi, doc);
+		if (!m_dwqueue.put(tp)) {
+		    LOGERR(("processonefile: wqueue.put failed\n"));
+		    return FsTreeWalker::FtwError;
+		} 
+	    } else {
+#endif
+		if (!m_db->addOrUpdate(udi, doc.ipath.empty() ? 
+				       cstr_null : parent_udi, doc)) {
+		    return FsTreeWalker::FtwError;
+		}
+#ifdef IDX_THREADS
+	    }
 #endif
 
-	// Tell what we are doing and check for interrupt request
-	if (m_updater) {
+	    // Tell what we are doing and check for interrupt request
+	    if (m_updater) {
 #ifdef IDX_THREADS
-	    PTMutexLocker locker(m_updater->m_mutex);
+		PTMutexLocker locker(m_updater->m_mutex);
 #endif
-	    ++(m_updater->status.docsdone);
-            if (m_updater->status.dbtotdocs < m_updater->status.docsdone)
-                m_updater->status.dbtotdocs = m_updater->status.docsdone;
-            m_updater->status.fn = fn;
-            if (!doc.ipath.empty())
-                m_updater->status.fn += "|" + doc.ipath;
-            if (!m_updater->update()) {
-                return FsTreeWalker::FtwStop;
-            }
+		++(m_updater->status.docsdone);
+		if (m_updater->status.dbtotdocs < m_updater->status.docsdone)
+		    m_updater->status.dbtotdocs = m_updater->status.docsdone;
+		m_updater->status.fn = fn;
+		if (!doc.ipath.empty())
+		    m_updater->status.fn += "|" + doc.ipath;
+		if (!m_updater->update()) {
+		    return FsTreeWalker::FtwStop;
+		}
+	    }
 	}
-    }
 
-    // If this doc existed and it's a container, recording for
-    // possible subdoc purge (this will be used only if we don't do a
-    // db-wide purge, e.g. if we're called from indexfiles()).
-    LOGDEB2(("processOnefile: existingDoc %d hadNonNullIpath %d\n",
-	     existingDoc, hadNonNullIpath));
-    if (existingDoc && hadNonNullIpath) {
-	m_purgeCandidates.record(parent_udi);
+	// If this doc existed and it's a container, recording for
+	// possible subdoc purge (this will be used only if we don't do a
+	// db-wide purge, e.g. if we're called from indexfiles()).
+	LOGDEB2(("processOnefile: existingDoc %d hadNonNullIpath %d\n",
+		 existingDoc, hadNonNullIpath));
+	if (existingDoc && hadNonNullIpath) {
+	    m_purgeCandidates.record(parent_udi);
+	}
     }
 
     // If we had no instance with a null ipath, we create an empty
     // document to stand for the file itself, to be used mainly for up
     // to date checks. Typically this happens for an mbox file.
-    if (hadNullIpath == false) {
-	LOGDEB1(("Creating empty doc for file\n"));
+    //
+    // If xattronly is set, ONLY the extattr metadata is valid and will be used
+    // by the following step.
+    if (xattronly || hadNullIpath == false) {
+	LOGDEB(("Creating empty doc for file or pure xattr update\n"));
 	Rcl::Doc fileDoc;
-	fileDoc.fmtime = ascdate;
-	fileDoc.meta[Rcl::Doc::keyfn] = utf8fn;
-	fileDoc.haschildren = true;
-	fileDoc.mimetype = interner.getMimetype();
-	fileDoc.url = cstr_fileu + fn;
-        if (m_havelocalfields) 
-            setlocalfields(localfields, fileDoc);
-	char cbuf[100]; 
-	sprintf(cbuf, "%lld", (long long)stp->st_size);
-	fileDoc.pcbytes = cbuf;
+	if (xattronly) {
+	    map<string, string> xfields;
+	    reapXAttrs(config, fn, xfields);
+	    docFieldsFromXattrs(config, xfields, fileDoc);
+	    fileDoc.onlyxattr = true;
+	} else {
+	    fileDoc.fmtime = ascdate;
+	    fileDoc.meta[Rcl::Doc::keyfn] = utf8fn;
+	    fileDoc.haschildren = true;
+	    fileDoc.mimetype = mimetype;
+	    fileDoc.url = cstr_fileu + fn;
+	    if (m_havelocalfields) 
+		setlocalfields(localfields, fileDoc);
+	    char cbuf[100]; 
+	    sprintf(cbuf, "%lld", (long long)stp->st_size);
+	    fileDoc.pcbytes = cbuf;
+	}
+
 	fileDoc.sig = sig;
 
 #ifdef IDX_THREADS

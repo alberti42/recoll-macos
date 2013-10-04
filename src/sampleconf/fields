@@ -13,7 +13,7 @@
 #####################################################
 # This section defines what prefix the terms inside named fields will be
 # indexed with (in addition to prefix-less indexing for general search)
-# ALL prefixes MUST be all UPPERCASE. 
+# ALL prefixes MUST be all ASCII UPPERCASE (NO DIGITS)
 # 
 # The field names should be the canonic ones, not the aliases defined in
 # the following section. Don't change those which are predefined here, 
