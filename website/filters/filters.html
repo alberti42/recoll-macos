@@ -35,11 +35,11 @@
       <h1>Updated filters for Recoll</h1>
       
       <p>The following describe new and updated filters, which will be
-      part of the next release, but can be installed on the current
-      release if you need them.</p>
+        part of the next release, but can be installed on an older
+        release if you need them.</p>
 
       <p>For updated filters, you just need to copy the script to the
-      filters directory which may be typically either <span
+        filters directory which may be typically either <span
       class="filename">/usr/share/recoll/filters</span>, or <span
       class="filename">/usr/local/share/recoll/filters</span>. Please check
       that the script is executable after copying it, and make it so if
@@ -62,44 +62,50 @@
 	these updated and complete versions:
 	<a href="mimemap">mimemap</a>
 	<a href="mimeconf">mimeconf</a> 
-	<a href="mimeview">mimeview</a> </p>
+	<a href="mimeview">mimeview</a>.</p>
 
-      <blockquote>
-        <p>There is a new rclepub filter for EPUB ebooks. It is new for
-          all recoll versions before 1.18.0.</p>
-        <p>rclchm needs to be updated for all Recoll versions up
-          to and including 1.17.1.</p>
-        <p>If you are running an older Recoll version, you really
-          should upgrade.</p>
-      </blockquote>
+      <p>There is a slightly more detailed description of the filter
+      installation procedure on the 
+       <a href="https://bitbucket.org/medoc/recoll/wiki/FilterRetrofit.wiki">
+      Recoll Wiki</a>.</p>
 
+      <p>The following entries are in reverse chronologic order. Each
+        lists the latest Recoll release on which the update makes sense
+        (newer releases have an up to date version of the filter).</p>
       
-      <h2>EPUB documents</h2>
+      <p>However, if you are running a Recoll version older than 1.17,
+        you should really upgrade.</p>
+
+      <h2>EPUB documents (1.17 and older)</h2>
 
       <p>New <a href="rclepub">rclepub</a> filter for EPUB documents.
         This needs
         the <a href="http://pypi.python.org/pypi/epub/0.5.0">
-          python epub decoding module</a>. The mimeview/mimemap and
-          mimeconf files in this directory have the appropriate
-          entries.</p> 
+          python epub decoding module</a>. </p> 
 
-      <h2>Updated Open Document filter</h2>
+      <h2>CHM files (1.17.1 and older)</h2>
+      <p><a href="rclchm">rclchm</a>. The previous version of the
+        filter mishandled files which had encoded internal URLs (not
+        very frequent, but happens).</p>
+
+      <h2>Updated Open Document filter (1.17 and older)</h2>
 
       <p>The <a href="rclsoff">new filter</a> will correctly handle
-      exported Google Docs 
-      documents and also Open/LibreOffice ones in some cases. The
-      previous filters concatenated all the text inside the exported
-      Google docs without any spacing...</p>
+      exported Google Docs documents and also Open/LibreOffice ones in
+      some cases. The previous filters concatenated all the text
+      inside the exported Google docs without any spacing...</p>
 
-      <h2>TAR archives</h2>
+      <h2>TAR archives (1.17 and older)</h2>
 
       <p>New <a href="rcltar">rcltar</a> filter for tar archives. The
         indexing of tar archives is disabled by default in the sample
-        configuration (stored here). You'll need to add
-        an <tt>application/x-tar = execm rcltar</tt> line in the
-        [index] section of your $HOME/mimeconf to enable it.</p>
+        configuration (stored here). This is an <tt>execm</tt>
+        filter&nbsp;!.  You'll need to add an <br>
+        <tt>application/x-tar = execm rcltar</tt><br>
+        line in the [index] section of your
+        $HOME/mimeconf to enable it, not an <tt>exec</tt> one.</p>
 
-      <h2>XML files</h2>
+      <h2>XML files (1.17 and older)</h2>
 
       <p>By default, the current recoll version does not index xml
         content (except for known formats like dia, svg etc.). This
@@ -109,24 +115,19 @@
         one (see comment in mimeconf), and index everything, including
         a lot of garbage.</p>
 
-
-      <h2>DIA files</h2>
+      <h2>DIA files (1.16 and older)</h2>
       <p><a href="rcldia">rcldia</a> is a new filter
         for <a href="http://projects.gnome.org/dia/">Dia</a> files,
         contributed by Stefan Friedel.</p>
 
-      <h2>CHM files</h2>
-      <p><a href="rclchm">rclchm</a>. The previous version of the
-        filter mishandled files which had encoded internal URLs (not
-        very frequent, but happens).</p>
 
-      <h2>Okular annotations</h2>
+      <h2>Okular annotations (1.16 and older)</h2>
       <p><a href="rclokulnote">rclokulnote</a>. Okular lets you create
         annotations for PDF documents and stores them in xml format
         somewhere under ~/.kde. This filter does not do a nice job to
         format the data, but will at least let you find it...</p>
 
-      <h2>Gnumeric</h2>
+      <h2>Gnumeric (1.16 and older)</h2>
       <p><a href="rclgnm">rclgnm</a>. Needs xsltproc and
       gunzip. As <tt>.gnumeric</tt> was in the list of
       explicitely ignored suffixes, you can't just add the mime
@@ -136,25 +137,25 @@
         contains <tt>.gnumeric</tt>). The simplest approach may be to
         just replace the system files with those above.</p>
 
-      <h2>Rar archive support</h2>
+      <h2>Rar archive support (1.15 and older)</h2>
       <p><a href="rclrar">rclrar</a>. This is up to date in Recoll
         1.16.2 but may be added to Recoll 1.15. It needs the Python
                rarfile module. </p> 
 
-      <h2>Mimehtml support</h2>
+      <h2>Mimehtml support (1.15)</h2>
       <p>This is based on the internal mail filter, you just need to
         download and install the configuration files (mimemap and
         mimeconf. Will only work with 1.15 and later.</p>
 
-      <h2>Konqueror webarchive (.war) filter</h2>
+      <h2>Konqueror webarchive (.war) filter (1.15)</h2>
       <p><a href="rclwar">rclwar</a></p>
 
-      <h2>Updated zip archive filter</h2>
+      <h2>Updated zip archive filter (1.15)</h2>
       <p>The filter is corrected to handle utf-8 paths in zip archives: 
         <a href="rclzip">rclzip</a>. Up to date in Recoll 1.16, but
         may be useful with Recoll 1.15</p>
 
-      <h2>Updated audio tag filter</h2>
+      <h2>Updated audio tag filter (1.14)</h2>
       <p>The mutagen-based rclaudio filter delivered with recoll 1.14.2
 	used a very recent mutagen interface which will only work with
 	mutagen versions after 1.17 (probably. at least works with 1.19,
