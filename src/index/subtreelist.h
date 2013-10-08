@@ -24,7 +24,7 @@
 class RclConfig;
 
 // This queries the database with a pure directory-filter query, to
-// retrieve all the entries beside the specified path. This is used by
+// retrieve all the entries below the specified path. This is used by
 // the real time indexer to purge entries when a top directory is
 // renamed. This is really convoluted, I'd like a better way.
 extern bool subtreelist(RclConfig *config, const string& top, 
