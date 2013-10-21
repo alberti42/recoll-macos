@@ -1039,6 +1039,27 @@ fvwm
         your system is short on resources. Periodic indexing is
         adequate in most cases.</para>
 
+      <note><title>Increasing resources for inotify</title>
+	<para>On Linux systems, monitoring a big tree may imply
+	  increasing the resources available to inotify, which are
+	  normally defined in <filename>/etc/sysctl.conf</filename>.
+	  <programlisting>
+### inotify
+#
+# cat  /proc/sys/fs/inotify/max_queued_events   - 16384
+# cat  /proc/sys/fs/inotify/max_user_instances  - 128
+# cat  /proc/sys/fs/inotify/max_user_watches    - 16384
+#
+# -- Change to:
+#
+fs.inotify.max_queued_events=32768
+fs.notify.max_user_instances=256
+fs.inotify.max_user_watches=32768
+	  </programlisting>
+    
+	</para>
+      </note>
+
       <sect2 id="RCL.INDEXING.MONITOR.FASTFILES">
         <title>Slowing down the reindexing rate for fast changing
         files</title>
@@ -5265,7 +5286,7 @@ metadatacmds = ; rclmulti1 = somecmd %f
                 of:
                 <programlisting>
 field1 = value1
-field2 = "value for field2"
+field2 = value for field2
                 </programlisting>
                 <literal>field1</literal>
                 and <literal>field2</literal> will be set inside the
