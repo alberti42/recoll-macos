@@ -73,34 +73,46 @@ sub main {
 	    $ranges{$1}{$2} = $code_value;
 	}
 
-	# For kana japanese characters, we don't want to strip accents as I'm
-	# told that they are essential and stripping them does not
-	# make sense. Wonder why Unicode does these decompositions
-	# then...  Problem: the first solution used was to decompose
-	# the japanese accented kana and not remove accents. But then
+	# Test for exceptions to unaccenting. Note that this is
+	# mostly based on blocks when it should use the Unicode
+	# script property. In practise, for the script concerned,
+	# this does not look to be an issue currently
+	# (following comment made for japanese but also concerns
+	#  other exceptions)
+	# For kana japanese characters, we don't want to strip
+	# accents as I'm told that they are essential and
+	# stripping them does not make sense. 
+	# Problem: the first solution used was to decompose the
+	# Japanese accented kana and not remove accents. But then
 	# the unaccented character would match the string with
 	# accent. So now we don't decompose at all, but this means
-	# that, if the original text was decomposed, things don't work
-	# as intended as we should actually recombine the
+	# that, if the original text was decomposed, things don't
+	# work as intended as we should actually recombine the
 	# letter+accents in this case for data to be unified.
-	if($character_decomposition_mapping =~ /(<.*>)?\s*(.+)/) {
-	    # Not for Hiragana + Katakana 
-	    if (!(hex $code_value >= 0x3040 && hex $code_value <= 0x30ff) &&
-		# and Halfwidth katakana
-		!(hex $code_value >= 0xff65 && hex $code_value <= 0xff9f) ) {
+
+	# Hiragana + Katakana 
+	if (!(hex $code_value >= 0x3040 && hex $code_value <= 0x30ff)
+	    # Halfwidth katakana
+	    && !(hex $code_value >= 0xff65 && hex $code_value <= 0xff9f)
+	    #  Hindi Devanagari
+	    && !(hex $code_value >= 0x0900 && hex $code_value <= 0x097f)
+	    && !(hex $code_value >= 0xa8e0 && hex $code_value <= 0xa8ff)
+	    ) {
+	    # If a decomposition exists, record it
+	    if($character_decomposition_mapping =~ /(<.*>)?\s*(.+)/) {
 		$decomposition{$code_value} = $2;
 	    }
-	}
-	if($general_category =~ /^M/) {
-	    $mark{$code_value} = 1;
-            # For mark caracters, we generate a 0 entry in the
-            # decomposition table. This signals to the c code that no
-            # output should be generated. Slightly hacky but ok. The
-            # original code left mark character go through (generating
-            # still accented output if the input was in decomposed
-            # form). Decomposed text is rare, but, for example, macosx file
-            # names have separate combining accent characters.
-	    $decomposition{$code_value} = "0000";
+	    if($general_category =~ /^M/) {
+		$mark{$code_value} = 1;
+		# For mark caracters, we generate a 0 entry in the
+		# decomposition table. This signals to the c code that no
+		# output should be generated. Slightly hacky but ok. The
+		# original code left mark character go through (generating
+		# still accented output if the input was in decomposed
+		# form). Decomposed text is rare, but, for example, macosx file
+		# names have separate combining accent characters.
+		$decomposition{$code_value} = "0000";
+	    }
 	}
 	$name{$code_value} = $character_name;
     }
