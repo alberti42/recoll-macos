@@ -20,7 +20,7 @@
 # Documentation
 #
 man_MANS = unaccent.1 unac.3
-INCLUDES = -DUNAC_VERSION=\"$(VERSION)\"
+AM_CPPFLAGS = -DUNAC_VERSION=\"$(VERSION)\"
 
 #
 # Support programs
