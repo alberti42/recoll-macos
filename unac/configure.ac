@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
-AC_INIT(config.h.in)
+AC_INIT([unac], 1.7.0)
 VERSION=`cat ${srcdir}/.version`
 MAJOR_VERSION=[`expr $VERSION : '\([0-9][0-9]*\)'`]
 AC_SUBST(MAJOR_VERSION)
@@ -23,7 +23,7 @@ MINOR_VERSION=[`expr $VERSION : '[0-9][0-9]*\.\([0-9][0-9]*\)'`]
 AC_SUBST(MINOR_VERSION)
 MICRO_VERSION=[`expr $VERSION : '[0-9][0-9]*\.[0-9][0-9]*\.\([0-9][0-9]*\)'`]
 AC_SUBST(MICRO_VERSION)
-AM_INIT_AUTOMAKE([unac], $VERSION, nosubst)
+AM_INIT_AUTOMAKE()
 AC_PREREQ(2.13)
 
 AM_CONFIG_HEADER(config.h)
@@ -33,7 +33,7 @@ AC_PROG_MAKE_SET
 dnl
 dnl Unicode version used by unac, as published at http://www.unicode.org/Public/
 dnl
-UNICODE_VERSION=5.1.0
+UNICODE_VERSION=6.3.0
 AC_SUBST(UNICODE_VERSION)
 
 AC_PROG_CC
@@ -49,10 +49,10 @@ AM_MAINTAINER_MODE
 
 AM_ICONV
 
-AC_CHECK_FUNCS(iconv_open,,AC_MSG_ERROR([
-iconv_open not found try to install replacement from
-http://www.gnu.org/software/libiconv/
-ftp://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.8.tar.gz]))
+#AC_CHECK_FUNCS(iconv_open,,AC_MSG_ERROR([
+#iconv_open not found try to install replacement from
+#http://www.gnu.org/software/libiconv/
+#ftp://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.8.tar.gz]))
 
 AC_CHECK_FUNCS(vsnprintf)
 
