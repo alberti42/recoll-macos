@@ -382,13 +382,13 @@
           contrary to define a positive list of types to be
           indexed. In the latter case, any type not in the list will
           be ignored.</para>
-        <para>Excluding types can be done by adding name patterns to
-          the <literal>skippedNames</literal> list, which can be done
-          from the GUI Index configuration menu. It is also possible
-          to exclude a mime type independantly of the file name by
-          associating it with the <filename>rclnull</filename>
-          filter. This can be done by editing
-          the <link linkend="RCL.INSTALL.CONFIG.MIMECONF"> 
+        <para>Excluding types can be done by adding wildcard name
+          patterns to the <literal>skippedNames</literal> list, which
+          can be done from the GUI Index configuration menu. It is
+          also possible to exclude a mime type independantly of the
+          file name by associating it with
+          the <filename>rclnull</filename> filter. This can be done by
+          editing the <link linkend="RCL.INSTALL.CONFIG.MIMECONF">
             <filename>mimeconf</filename> configuration
             file</link>.</para>
 
@@ -4918,7 +4918,7 @@ except:
 
           <varlistentry><term><varname>skippedNames</varname></term>
             <listitem>
-              <para>A space-separated list of patterns for
+              <para>A space-separated list of wilcard patterns for
                names of files or directories that should be completely
                ignored. The list defined in the default file is: </para>
 <programlisting>
