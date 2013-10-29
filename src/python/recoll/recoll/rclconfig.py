@@ -75,7 +75,7 @@ class ConfTree(ConfSimple):
     which should be '/'-separated values. When a value is requested for a
     given path, it will also be searched in the sections corresponding to
     the ancestors. E.g. get(name, '/a/b') will also look in sections '/a' and
-    '/' or '' (the last 2 are equivalent"""
+    '/' or '' (the last 2 are equivalent)"""
     def get(self, nm, sk = ''):
         if sk == '' or sk[0] != '/':
             return ConfSimple.get(self, nm, sk)
@@ -161,9 +161,17 @@ class RclConfig:
         if self.datadir is None:
             self.datadir = "/usr/share/recoll"
         #print "Datadir: [%s]" % self.datadir
-        self.cdirs = [self.confdir,]
+        self.cdirs = []
+        
+        # Additional config directory, values override user ones
+        if os.environ.has_key("RECOLL_CONFTOP"):
+            self.cdirs.append(os.environ["RECOLL_CONFTOP"])
+        self.cdirs.append(self.confdir)
+        # Additional config directory, overrides system's, overridden by user's
+        if os.environ.has_key("RECOLL_CONFMID"):
+            self.cdirs.append(os.environ["RECOLL_CONFMID"])
         self.cdirs.append(os.path.join(self.datadir, "examples"))
-        #print self.cdirs
+
         self.config = ConfStack("recoll.conf", self.cdirs, "tree")
         self.keydir = ''
 
@@ -185,3 +193,6 @@ class RclExtraDbs:
         dync = RclDynConf(dyncfile)
         return dync.getStringList("actExtDbs")
     
+if __name__ == '__main__':
+    config = RclConfig()
+    print config.getConfParam("topdirs")
