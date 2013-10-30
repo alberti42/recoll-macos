@@ -4188,13 +4188,15 @@ or
                 <listitem>Extract document defined
                 by <replaceable>ipath</replaceable> and return
                 a <literal>Doc</literal> object. The doc.text field
-                has the document text as either text/plain or
+                has the document text converted to either text/plain or
                 text/html according to doc.mimetype. The typical use
                 would be as follows:
                   <programlisting>
 qdoc = query.fetchone()
 extractor = recoll.Extractor(qdoc)
-text = extractor.textextract(qdoc.ipath)</programlisting>
+doc = extractor.textextract(qdoc.ipath)
+# use doc.text, e.g. for previewing
+</programlisting>
                 </listitem>
               </varlistentry>
               <varlistentry>

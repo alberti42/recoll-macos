@@ -53,6 +53,10 @@ User query [title:"été à noël"]
 Xapian query: [(10 * (Sete PHRASE 3 Sa PHRASE 3 Snoel))]
 nres 1
 doc.title: [HTML fields test file: été à noël]
+python extract.py
+Result count: 1 1
+Text length: 3457
+bfbb63f7a245c31767585b45014dbd07
 python simple.py
 Xapian query: [(huniique:(wqf=11))]
 Result count: 2 2
