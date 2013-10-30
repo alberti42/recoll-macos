@@ -263,6 +263,10 @@ if test X$pythonEnabled = Xyes -a X$picEnabled != Xyes; then
    AC_MSG_ERROR([Python build needs PIC library])
 fi
 
+if test X$NOPIC != X; then
+    NODYNLIB=#
+fi
+
 AC_CHECK_FUNCS(mkdtemp)
 
 ##### Look for iconv. This can exist in either libc (ie: Linux, solaris) or
@@ -586,12 +590,13 @@ AC_SUBST(RCLLIBVERSION)
 
 # All object files depend on localdefs which has the cc flags. Avoid
 # changing it unless necessary
-AC_CONFIG_FILES(mk/localdefs.new:mk/localdefs.in)
-AC_CONFIG_FILES(recollinstall)
 AC_CONFIG_FILES(Makefile)
-AC_CONFIG_FILES(sampleconf/recoll.conf)
 AC_CONFIG_FILES(common/rclversion.h)
+AC_CONFIG_FILES(lib/mkMake)
+AC_CONFIG_FILES(mk/localdefs.new:mk/localdefs.in)
 AC_CONFIG_FILES(python/recoll/setup.py)
+AC_CONFIG_FILES(recollinstall)
+AC_CONFIG_FILES(sampleconf/recoll.conf)
 
 for d in bincimapmime index lib query
 do 
