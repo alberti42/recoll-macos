@@ -17,7 +17,7 @@
 
 #include <Python.h>
 #include <structmember.h>
-#include <bytearrayobject.h>
+#include <bytesobject.h>
 
 #include <strings.h>
 
@@ -344,8 +344,8 @@ Doc_getbinurl(recoll_DocObject *self)
         PyErr_SetString(PyExc_AttributeError, "doc");
 	return 0;
     }
-    return PyByteArray_FromStringAndSize(self->doc->url.c_str(), 
-					 self->doc->url.size());
+    return PyBytes_FromStringAndSize(self->doc->url.c_str(), 
+				     self->doc->url.size());
 }
 
 PyDoc_STRVAR(doc_Doc_setbinurl,
@@ -761,7 +761,7 @@ typedef struct {
     Rcl::Query *query;
     int         next; // Index of result to be fetched next or -1 if uninit
     int         rowcount; // Number of records returned by last execute
-    string      *sortfield;
+    string      *sortfield; // Need to allocate in here, main program is C.
     int         ascending;
     int         arraysize; // Default size for fetchmany
     recoll_DbObject* connection;
@@ -899,8 +899,8 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 	PyMem_Free(sstemlang);
     }
 
-    LOGDEB(("Query_execute: [%s] dostem %d stemlang [%s]\n", sutf8, dostem,
-	    stemlang.c_str()));
+    LOGDEB(("Query_execute: [%s] dostem %d stemlang [%s]\n", utf8.c_str(), 
+	    dostem, stemlang.c_str()));
 
     if (self->query == 0 || 
 	the_queries.find(self->query) == the_queries.end()) {
@@ -999,7 +999,7 @@ Query_fetchone(PyObject *_self)
 	return 0;
     }
     if (self->next >= self->rowcount) {
-        PyErr_SetString(PyExc_StopIteration, "End of list reached");
+        PyErr_SetNone(PyExc_StopIteration);
 	return 0;
     }
     if (!self->query->getDoc(self->next, *result->doc)) {
@@ -1089,12 +1089,13 @@ Query_scroll(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 	    isrelative = 0;
 	} else {
 	    PyErr_SetString(PyExc_ValueError, "bad mode value");
+	    return 0;
 	}
     } 
 
     if (self->query == 0 || 
 	the_queries.find(self->query) == the_queries.end()) {
-        PyErr_SetString(PyExc_AttributeError, "query");
+        PyErr_SetString(PyExc_AttributeError, "null query");
 	return 0;
     }
     int newpos = isrelative ? self->next + pos : pos;
@@ -1291,7 +1292,7 @@ PyDoc_STRVAR(doc_Query_getxquery,
 static PyObject *
 Query_getxquery(recoll_QueryObject* self, PyObject *, PyObject *)
 {
-    LOGDEB(("Query_getxquery\n"));
+    LOGDEB(("Query_getxquery self->query %p\n"));
 
     if (self->query == 0 || 
 	the_queries.find(self->query) == the_queries.end()) {
@@ -1587,6 +1588,7 @@ Db_query(recoll_DbObject* self)
     Py_INCREF(self);
 
     the_queries.insert(result->query);
+    Py_INCREF(result);
     return (PyObject *)result;
 }
 
