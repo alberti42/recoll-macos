@@ -1,0 +1,75 @@
+python doc.py
+Xapian query: [(TSTFLDtestfieldvalue:(wqf=11))]
+Result count: 1 1
+doc.title: [HTML fields test file: été à noël]
+doc.testfield: [testfieldvalue]
+getattr(doc, title) -> [HTML fields test file: été à noël]
+doc.get(title) -> [HTML fields test file: été à noël]
+getattr(doc, testfield) -> [testfieldvalue]
+doc.get(testfield) -> [testfieldvalue]
+getattr(doc, filename) -> [htmlfield.html]
+doc.get(filename) -> [htmlfield.html]
+
+for fld in doc.keys():
+[abstract] -> [ ThisIsTheFieldHtmlTestFile]
+[caption] -> [HTML fields test file: été à noël]
+[dbytes] -> [27]
+[fbytes] -> [266]
+[filename] -> [htmlfield.html]
+[fmtime] -> [01383142914]
+[ipath] -> []
+[mtime] -> [01383142914]
+[mtype] -> [text/html]
+[origcharset] -> [utf-8]
+[pcbytes] -> [266]
+[rcludi] -> [/home/dockes/projets/fulltext/testrecoll/html/htmlfield.html|]
+[relevancyrating] -> [100%]
+[sig] -> [2661383142914]
+[testfield] -> [testfieldvalue]
+[title] -> [HTML fields test file: été à noël]
+[url] -> [file:///home/dockes/projets/fulltext/testrecoll/html/htmlfield.html]
+
+for k,v in doc.items().items():
+[testfield] -> [testfieldvalue]
+[ipath] -> []
+[url] -> [file:///home/dockes/projets/fulltext/testrecoll/html/htmlfield.html]
+[abstract] -> [ ThisIsTheFieldHtmlTestFile]
+[pcbytes] -> [266]
+[fbytes] -> [266]
+[filename] -> [htmlfield.html]
+[mtype] -> [text/html]
+[caption] -> [HTML fields test file: été à noël]
+[fmtime] -> [01383142914]
+[dbytes] -> [27]
+[sig] -> [2661383142914]
+[mtime] -> [01383142914]
+[title] -> [HTML fields test file: été à noël]
+[rcludi] -> [/home/dockes/projets/fulltext/testrecoll/html/htmlfield.html|]
+[relevancyrating] -> [100%]
+[origcharset] -> [utf-8]
+
+Accented query:
+User query [title:"été à noël"]
+Xapian query: [(10 * (Sete PHRASE 3 Sa PHRASE 3 Snoel))]
+nres 1
+doc.title: [HTML fields test file: été à noël]
+python simple.py
+Xapian query: [(huniique:(wqf=11))]
+Result count: 2 2
+for i in range(nres):
+Home.ics
+unique.txt
+
+for doc in query:
+Home.ics
+unique.txt
+
+Catched bad mode. (ok)
+python url.py
+Xapian query: [((latin1name_uniquexxx:(wqf=11) AND XPiso8859name))]
+Result count: 1 1
+iso8859-1_????????.txt
+Contents: [LATIN1NAME_UNIQUEXXX 
+ Contenu du fichier dont le nom est:
+àáâãäåæç
+]
