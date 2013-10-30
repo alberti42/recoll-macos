@@ -81,6 +81,7 @@ src/index/alldeps.stamp
 src/index/recollindex
 src/internfile/alldeps
 src/kde/kioslave/kio_recoll/builddir
+src/lib/Makefile
 src/lib/alldeps
 src/lib/librecoll.a
 src/lib/librecoll.so*

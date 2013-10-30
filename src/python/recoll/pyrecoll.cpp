@@ -47,6 +47,10 @@ static set<Rcl::Doc *> the_docs;
 
 static RclConfig *rclconfig;
 
+#if PY_MAJOR_VERSION >=3
+#  define Py_TPFLAGS_HAVE_ITER 0
+#endif
+
 //////////////////////////////////////////////////////////////////////
 /// SEARCHDATA SearchData code
 typedef struct {
@@ -59,7 +63,7 @@ static void
 SearchData_dealloc(recoll_SearchDataObject *self)
 {
     LOGDEB(("SearchData_dealloc\n"));
-    self->ob_type->tp_free((PyObject*)self);
+    Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static PyObject *
@@ -130,8 +134,7 @@ static PyMethodDef SearchData_methods[] = {
 };
 
 static PyTypeObject recoll_SearchDataType = {
-    PyObject_HEAD_INIT(NULL)
-    0,                         /*ob_size*/
+    PyVarObject_HEAD_INIT(NULL, 0)
     "recoll.SearchData",             /*tp_name*/
     sizeof(recoll_SearchDataObject), /*tp_basicsize*/
     0,                         /*tp_itemsize*/
@@ -293,7 +296,7 @@ Doc_dealloc(recoll_DocObject *self)
     if (self->doc)
 	the_docs.erase(self->doc);
     deleteZ(self->doc);
-    self->ob_type->tp_free((PyObject*)self);
+    Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static PyObject *
@@ -463,22 +466,41 @@ static PyMethodDef Doc_methods[] = {
     {NULL}  /* Sentinel */
 };
 
+// Note that this returns None if the attribute is not found instead of raising
+// an exception as would be standard. We don't change it to keep existing code
+// working.
 static PyObject *
-Doc_getattr(recoll_DocObject *self, char *name)
+Doc_getattro(recoll_DocObject *self, PyObject *nameobj)
 {
-    LOGDEB1(("Doc_getattr: name [%s]\n", name));
-    if (self->doc == 0 || 
-	the_docs.find(self->doc) == the_docs.end()) {
+    if (self->doc == 0 || the_docs.find(self->doc) == the_docs.end()) {
         PyErr_SetString(PyExc_AttributeError, "doc");
 	return 0;
     }
-    string key = rclconfig->fieldCanon(string(name));
 
-    // Handle special cases, then check this is not a method then
-    // try retrieving key value from the meta array
-
-    string value;
     bool found = false;
+    string value;
+    string key;
+    char *name = 0;
+    PyObject* utf8o = 0;
+
+    if (PyUnicode_Check(nameobj)) {
+	utf8o = PyUnicode_AsUTF8String(nameobj);
+	if (utf8o == 0) {
+	    LOGERR(("Doc_getattro: encoding name to utf8 failed\n"));
+	    PyErr_SetString(PyExc_AttributeError, "name??");
+	    Py_RETURN_NONE;
+	}
+	name = PyBytes_AsString(utf8o);
+	Py_DECREF(utf8o);
+    }  else if (PyBytes_Check(nameobj)) {
+	name = PyBytes_AsString(nameobj);
+    } else {
+	PyErr_SetString(PyExc_AttributeError, "name not unicode nor string??");
+	Py_RETURN_NONE;
+    }
+
+    key = rclconfig->fieldCanon(string(name));
+
     switch (key.at(0)) {
     case 'u':
 	if (!key.compare(Rcl::Doc::keyurl)) {
@@ -533,48 +555,46 @@ Doc_getattr(recoll_DocObject *self, char *name)
     }
 
     if (!found) {
-	PyObject *meth = Py_FindMethod(Doc_methods, (PyObject*)self, 
-				       key.c_str());
+	// This will look up a method name (we have no other standard
+	// attributes)
+	PyObject *meth = PyObject_GenericGetAttr((PyObject*)self, nameobj);
 	if (meth) {
 	    return meth;
-	} else {
-	    PyErr_Clear();
 	}
-
+	PyErr_Clear();
+	// Else look for another attribute
 	if (self->doc->getmeta(key, 0)) {
 	    value = self->doc->meta[key];
 	    found = true;
 	}
     }
 
-    if (!found) {
-	LOGDEB(("Doc_getattr: name [%s] key [%s] Not found\n",
-		name, key.c_str()));
-	Py_RETURN_NONE;
+    if (found) {
+	LOGDEB1(("Doc_getattro: [%s] -> [%s]\n", key.c_str(), value.c_str()));
+	// Return a python unicode object
+	return PyUnicode_Decode(value.c_str(), value.size(), "utf-8",
+				"replace");
     }
-
-    LOGDEB1(("Doc_getattr: [%s] (%s) -> [%s]\n",
-	    name, key.c_str(), value.c_str()));
-    // Return a python unicode object
-    PyObject* res = PyUnicode_Decode(value.c_str(), value.size(), "utf-8",
-				     "replace");
-    return res;
+    
+    Py_RETURN_NONE;
 }
 
 static int
 Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
 {
-    if (self->doc == 0 || 
-	the_docs.find(self->doc) == the_docs.end()) {
+    if (self->doc == 0 || the_docs.find(self->doc) == the_docs.end()) {
         PyErr_SetString(PyExc_AttributeError, "doc??");
 	return -1;
     }
     LOGDEB1(("Doc_setmeta: doc %p\n", self->doc));
+
+#if PY_MAJOR_VERSION < 3
     if (PyString_Check(value)) {
 	value = PyUnicode_FromObject(value);
 	if (value == 0) 
 	    return -1;
     } 
+#endif
 
     if (!PyUnicode_Check(value)) {
 	PyErr_SetString(PyExc_AttributeError, "value not str/unicode??");
@@ -591,8 +611,8 @@ Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
 	PyErr_SetString(PyExc_AttributeError, "value??");
 	return -1;
     }
-
-    char* uvalue = PyString_AsString(putf8);
+    char* uvalue = PyBytes_AsString(putf8);
+    Py_DECREF(putf8);
     string key = rclconfig->fieldCanon(string(name));
 
     LOGDEB0(("Doc_setattr: [%s] (%s) -> [%s]\n", key.c_str(), name, uvalue));
@@ -690,14 +710,13 @@ PyDoc_STRVAR(doc_DocObject,
 " keywords (both)\n"
 );
 static PyTypeObject recoll_DocType = {
-    PyObject_HEAD_INIT(NULL)
-    0,                         /*ob_size*/
+    PyVarObject_HEAD_INIT(NULL, 0)
     "recoll.Doc",             /*tp_name*/
     sizeof(recoll_DocObject), /*tp_basicsize*/
     0,                         /*tp_itemsize*/
     (destructor)Doc_dealloc,    /*tp_dealloc*/
     0,                         /*tp_print*/
-    (getattrfunc)Doc_getattr,  /*tp_getattr*/
+    0,  /*tp_getattr*/
     (setattrfunc)Doc_setattr, /*tp_setattr*/
     0,                         /*tp_compare*/
     0,                         /*tp_repr*/
@@ -707,7 +726,7 @@ static PyTypeObject recoll_DocType = {
     0,                         /*tp_hash */
     0,                         /*tp_call*/
     0,                         /*tp_str*/
-    0,                         /*tp_getattro*/
+    (getattrofunc)Doc_getattro,/*tp_getattro*/
     0,                         /*tp_setattro*/
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,        /*tp_flags*/
@@ -768,7 +787,7 @@ Query_dealloc(recoll_QueryObject *self)
 {
     LOGDEB(("Query_dealloc\n"));
     Query_close(self);
-    self->ob_type->tp_free((PyObject*)self);
+    Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static PyObject *
@@ -1118,7 +1137,7 @@ public:
 	PyObject *res1 = res;
 	if (PyUnicode_Check(res))
 	    res1 = PyUnicode_AsUTF8String(res);
-	return PyString_AsString(res1);
+	return PyBytes_AsString(res1);
     } 
 
     virtual string endMatch() 
@@ -1131,7 +1150,7 @@ public:
 	PyObject *res1 = res;
 	if (PyUnicode_Check(res))
 	    res1 = PyUnicode_AsUTF8String(res);
-	return PyString_AsString(res1);
+	return PyBytes_AsString(res1);
     }
 
     PyObject *m_methods;
@@ -1393,8 +1412,7 @@ PyDoc_STRVAR(doc_QueryObject,
 "They must be created by the Db.query() method.\n"
 	     );
 static PyTypeObject recoll_QueryType = {
-    PyObject_HEAD_INIT(NULL)
-    0,                         /*ob_size*/
+    PyVarObject_HEAD_INIT(NULL, 0)
     "recoll.Query",             /*tp_name*/
     sizeof(recoll_QueryObject), /*tp_basicsize*/
     0,                         /*tp_itemsize*/
@@ -1458,7 +1476,7 @@ Db_dealloc(recoll_DbObject *self)
 {
     LOGDEB(("Db_dealloc\n"));
     Db_close(self);
-    self->ob_type->tp_free((PyObject*)self);
+    Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static PyObject *
@@ -1530,7 +1548,7 @@ Db_init(recoll_DbObject *self, PyObject *args, PyObject *kwargs)
 	}
 	for (int i = 0; i < dbcnt; i++) {
 	    PyObject *item = PySequence_GetItem(extradbs, i);
-	    char *s = PyString_AsString(item);
+	    char *s = PyBytes_AsString(item);
 	    Py_DECREF(item);
 	    if (!s) {
 		PyErr_SetString(PyExc_TypeError,
@@ -1857,8 +1875,7 @@ PyDoc_STRVAR(doc_DbObject,
 "writable decides if we can index new data through this connection\n"
 );
 static PyTypeObject recoll_DbType = {
-    PyObject_HEAD_INIT(NULL)
-    0,                         /*ob_size*/
+    PyVarObject_HEAD_INIT(NULL, 0)
     "recoll.Db",             /*tp_name*/
     sizeof(recoll_DbObject), /*tp_basicsize*/
     0,                         /*tp_itemsize*/
@@ -1920,7 +1937,7 @@ PyDoc_STRVAR(doc_connect,
 "writable decides if we can index new data through this connection\n"
 );
 
-static PyMethodDef recollMethods[] = {
+static PyMethodDef recoll_methods[] = {
     {"connect",  (PyCFunction)recoll_connect, METH_VARARGS|METH_KEYWORDS, 
      doc_connect},
 
@@ -1931,50 +1948,110 @@ static PyMethodDef recollMethods[] = {
 PyDoc_STRVAR(pyrecoll_doc_string,
 "This is an interface to the Recoll full text indexer.");
 
-#ifndef PyMODINIT_FUNC	/* declarations for DLL import/export */
-#define PyMODINIT_FUNC void
+struct module_state {
+    PyObject *error;
+};
+
+#if PY_MAJOR_VERSION >= 3
+#define GETSTATE(m) ((struct module_state*)PyModule_GetState(m))
+#else
+#define GETSTATE(m) (&_state)
+static struct module_state _state;
 #endif
+
+#if PY_MAJOR_VERSION >= 3
+static int recoll_traverse(PyObject *m, visitproc visit, void *arg) {
+    Py_VISIT(GETSTATE(m)->error);
+    return 0;
+}
+
+static int recoll_clear(PyObject *m) {
+    Py_CLEAR(GETSTATE(m)->error);
+    return 0;
+}
+
+static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "recoll",
+        NULL,
+        sizeof(struct module_state),
+        recoll_methods,
+        NULL,
+        recoll_traverse,
+        recoll_clear,
+        NULL
+};
+
+#define INITERROR return NULL
+
+extern "C" PyObject *
+PyInit_recoll(void)
+
+#else
+#define INITERROR return
+
 PyMODINIT_FUNC
 initrecoll(void)
+#endif
 {
     // Note: we can't call recollinit here, because the confdir is only really
     // known when the first db object is created (it is an optional parameter).
     // Using a default here may end up with variables such as stripchars being
     // wrong
 
-    PyObject* m;
-    m = Py_InitModule3("recoll", recollMethods, "Recoll extension module.");
+#if PY_MAJOR_VERSION >= 3
+    PyObject *module = PyModule_Create(&moduledef);
+#else
+    PyObject *module = Py_InitModule("recoll", recoll_methods);
+#endif
+    if (module == NULL)
+        INITERROR;
+
+    struct module_state *st = GETSTATE(module);
+    // The first parameter is a char *. Hopefully we don't initialize
+    // modules too often...
+    st->error = PyErr_NewException(strdup("recoll.Error"), NULL, NULL);
+    if (st->error == NULL) {
+        Py_DECREF(module);
+        INITERROR;
+    }
     
     if (PyType_Ready(&recoll_DbType) < 0)
-        return;
+        INITERROR;
     Py_INCREF((PyObject*)&recoll_DbType);
-    PyModule_AddObject(m, "Db", (PyObject *)&recoll_DbType);
+    PyModule_AddObject(module, "Db", (PyObject *)&recoll_DbType);
 
     if (PyType_Ready(&recoll_QueryType) < 0)
-        return;
+        INITERROR;
     Py_INCREF((PyObject*)&recoll_QueryType);
-    PyModule_AddObject(m, "Query", (PyObject *)&recoll_QueryType);
+    PyModule_AddObject(module, "Query", (PyObject *)&recoll_QueryType);
 
     if (PyType_Ready(&recoll_DocType) < 0)
-        return;
+        INITERROR;
     Py_INCREF((PyObject*)&recoll_DocType);
-    PyModule_AddObject(m, "Doc", (PyObject *)&recoll_DocType);
+    PyModule_AddObject(module, "Doc", (PyObject *)&recoll_DocType);
 
     if (PyType_Ready(&recoll_SearchDataType) < 0)
-        return;
+        INITERROR;
     Py_INCREF((PyObject*)&recoll_SearchDataType);
-    PyModule_AddObject(m, "SearchData", (PyObject *)&recoll_SearchDataType);
-    PyModule_AddStringConstant(m, "__doc__",
+    PyModule_AddObject(module, "SearchData", 
+		       (PyObject *)&recoll_SearchDataType);
+    PyModule_AddStringConstant(module, "__doc__",
                                pyrecoll_doc_string);
 
     PyObject *doctypecobject;
 
-#if PY_MAJOR_VERSION >= 2 && PY_MINOR_VERSION >=	7
+#if PY_MAJOR_VERSION >= 3 || (PY_MAJOR_VERSION >= 2 && PY_MINOR_VERSION >=  7)
     // Export a few pointers for the benefit of other recoll python modules
     doctypecobject= 
 	PyCapsule_New(&recoll_DocType, PYRECOLL_PACKAGE "recoll.doctypeptr", 0);
 #else
     doctypecobject = PyCObject_FromVoidPtr(&recoll_DocType, NULL);
 #endif
-    PyModule_AddObject(m, "doctypeptr", doctypecobject);
+
+    PyModule_AddObject(module, "doctypeptr", doctypecobject);
+
+#if PY_MAJOR_VERSION >= 3
+    return module;
+#endif
 }

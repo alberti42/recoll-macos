@@ -9,6 +9,11 @@ import sys
 import locale
 from getopt import getopt
 
+if sys.version_info[0] >= 3:
+    ISP3 = True
+else:
+    ISP3 = False
+
 try:
     from recoll import recoll
     from recoll import rclextract
@@ -21,7 +26,7 @@ allmeta = ("title", "keywords", "abstract", "url", "mimetype", "mtime",
            "ipath", "fbytes", "dbytes", "relevancyrating")
 
 def Usage():
-    print >> sys.stderr, "Usage: recollq.py [-c conf] [-i extra_index] <recoll query>"
+    print("Usage: recollq.py [-c conf] [-i extra_index] <recoll query>")
     sys.exit(1);
 
 class ptrmeths:
@@ -44,6 +49,12 @@ def extractofile(doc, outfilename=""):
                                        ofilename=outfilename)
     return outfilename
 
+def utf8string(s):
+    if ISP3:
+        return s
+    else:
+        return s.encode('utf8')
+    
 def doquery(db, q):
     # Get query object
     query = db.query()
@@ -51,14 +62,13 @@ def doquery(db, q):
 
     # Parse/run input query string
     nres = query.execute(q, stemming = 0, stemlang="english")
-    qs = u"Xapian query: [%s]" % query.getxquery()
-    print(qs.encode("utf-8"))
+    qs = "Xapian query: [%s]" % query.getxquery()
+    print(utf8string(qs))
     groups = query.getgroups()
-    print "Groups:", groups
     m = ptrmeths(groups)
 
     # Print results:
-    print "Result count: ", nres, query.rowcount
+    print("Result count: %d %d" % (nres, query.rowcount))
     if nres > 20:
         nres = 20
     #results = query.fetchmany(nres)
@@ -68,24 +78,24 @@ def doquery(db, q):
         doc = query.fetchone()
         rownum = query.next if type(query.next) == int else \
                  query.rownumber
-        print rownum, ":",
+        print("%d:"%(rownum,))
         #for k,v in doc.items().items():
-        #print "KEY:", k.encode('utf-8'), "VALUE", v.encode('utf-8')
+        #print "KEY:", utf8string(k), "VALUE", utf8string(v)
         #continue
         #outfile = extractofile(doc)
-        #print "outfile:", outfile, "url", doc.url.encode("utf-8")
+        #print "outfile:", outfile, "url", utf8string(doc.url)
         for k in ("title", "mtime", "author"):
             value = getattr(doc, k)
 #            value = doc.get(k)
             if value is None:
-                print k, ":", "(None)"
+                print("%s: (None)"%(k,))
             else:
-                print k, ":", value.encode('utf-8')
+                print("%s : %s"%(k, utf8string(value)))
         #doc.setbinurl(bytearray("toto"))
-        #burl = doc.getbinurl(); print "Bin URL :", doc.getbinurl()
+        #burl = doc.getbinurl(); print("Bin URL : [%s]"%(doc.getbinurl(),))
         abs = query.makedocabstract(doc, methods=m)
-        print abs.encode('utf-8')
-        print
+        print(utf8string(abs))
+        print('')
 #        fulldoc = extract(doc)
 #        print "FULLDOC MIMETYPE", fulldoc.mimetype, "TEXT:", fulldoc.text.encode("utf-8")
 
@@ -109,20 +119,19 @@ for opt,val in options:
     elif opt == "-i":
         extra_dbs.append(val)
     else:
-        print >> sys.stderr, "Bad opt: ", opt
+        print("Bad opt: %s"%(opt,))
         Usage()
 
 # The query should be in the remaining arg(s)
 if len(args) == 0:
-    print >> sys.stderr, "No query found in command line"
+    print("No query found in command line")
     Usage()
-q = u''
+q = ''
 for word in args:
-    q += word.decode(localecharset) + u' '
+    q += word + ' '
 
-print "QUERY: [", q, "]"
-db = recoll.connect(confdir=confdir, 
-                    extra_dbs=extra_dbs)
+print("QUERY: [%s]"%(q,))
+db = recoll.connect(confdir=confdir, extra_dbs=extra_dbs)
 db.setAbstractParams(maxchars=maxchars, contextwords=contextwords)
 
 doquery(db, q)

@@ -53,20 +53,20 @@ class ConfSimple:
             value = value.strip()
             #print "Name:", nm, "Value:", value
 
-            if not self.submaps.has_key(submapkey):
+            if not submapkey in self.submaps:
                 self.submaps[submapkey] = {}
             self.submaps[submapkey][nm] = value
 
     def get(self, nm, sk = ''):
         '''Returns None if not found, empty string if found empty'''
-        if not self.submaps.has_key(sk):
+        if not sk in self.submaps:
             return None
-        if not self.submaps[sk].has_key(nm):
+        if not nm in self.submaps[sk]:
             return None
         return self.submaps[sk][nm]
 
     def getNames(self, sk = ''):
-        if not self.submaps.has_key(sk):
+        if not sk in self.submaps:
             return None
         return self.submaps[sk].keys()
     
@@ -141,7 +141,7 @@ class RclConfig:
         # Find configuration directory
         if argcnf is not None:
             self.confdir = os.path.abspath(argcnf)
-        elif os.environ.has_key("RECOLL_CONFDIR"):
+        elif "RECOLL_CONFDIR" in os.environ:
             self.confdir = os.environ["RECOLL_CONFDIR"]
         else:
             self.confdir = os.path.expanduser("~/.recoll")
@@ -150,7 +150,7 @@ class RclConfig:
         # "configure" in the C code. We can only do our best. Have to
         # choose a preference order. Use RECOLL_DATADIR if the order is wrong
         self.datadir = None
-        if os.environ.has_key("RECOLL_DATADIR"):
+        if "RECOLL_DATADIR" in os.environ:
             self.datadir = os.environ["RECOLL_DATADIR"]
         else:
             dirs = ("/opt/local", "/usr", "/usr/local")
@@ -164,11 +164,11 @@ class RclConfig:
         self.cdirs = []
         
         # Additional config directory, values override user ones
-        if os.environ.has_key("RECOLL_CONFTOP"):
+        if "RECOLL_CONFTOP" in os.environ:
             self.cdirs.append(os.environ["RECOLL_CONFTOP"])
         self.cdirs.append(self.confdir)
         # Additional config directory, overrides system's, overridden by user's
-        if os.environ.has_key("RECOLL_CONFMID"):
+        if "RECOLL_CONFMID" in os.environ:
             self.cdirs.append(os.environ["RECOLL_CONFMID"])
         self.cdirs.append(os.path.join(self.datadir, "examples"))
 
@@ -195,4 +195,4 @@ class RclExtraDbs:
     
 if __name__ == '__main__':
     config = RclConfig()
-    print config.getConfParam("topdirs")
+    print(config.getConfParam("topdirs"))

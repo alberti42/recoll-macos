@@ -51,7 +51,7 @@ Extractor_dealloc(rclx_ExtractorObject *self)
 {
     LOGDEB(("Extractor_dealloc\n"));
     delete self->xtr;
-    self->ob_type->tp_free((PyObject*)self);
+    Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static PyObject *
@@ -191,8 +191,8 @@ Extractor_idoctofile(rclx_ExtractorObject* self, PyObject *args,
     }
     if (outfile.empty())
 	temp->setnoremove(1);
-    PyObject *result = outfile.empty() ? PyString_FromString(temp->filename()) :
-	PyString_FromString(outfile.c_str());
+    PyObject *result = outfile.empty() ? PyBytes_FromString(temp->filename()) :
+	PyBytes_FromString(outfile.c_str());
     return (PyObject *)result;
 }
 
@@ -211,8 +211,7 @@ PyDoc_STRVAR(doc_ExtractorObject,
 "object.\n"
 );
 static PyTypeObject rclx_ExtractorType = {
-    PyObject_HEAD_INIT(NULL)
-    0,                         /*ob_size*/
+    PyVarObject_HEAD_INIT(NULL, 0)
     "rclextract.Extractor",             /*tp_name*/
     sizeof(rclx_ExtractorObject), /*tp_basicsize*/
     0,                         /*tp_itemsize*/
@@ -253,17 +252,56 @@ static PyTypeObject rclx_ExtractorType = {
 };
 
 ///////////////////////////////////// Module-level stuff
-static PyMethodDef rclxMethods[] = {
+static PyMethodDef rclextract_methods[] = {
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 PyDoc_STRVAR(rclx_doc_string,
 	     "This is an interface to the Recoll text extraction features.");
 
-#ifndef PyMODINIT_FUNC	/* declarations for DLL import/export */
-#define PyMODINIT_FUNC void
+struct module_state {
+    PyObject *error;
+};
+
+#if PY_MAJOR_VERSION >= 3
+#define GETSTATE(m) ((struct module_state*)PyModule_GetState(m))
+#else
+#define GETSTATE(m) (&_state)
+static struct module_state _state;
 #endif
+
+#if PY_MAJOR_VERSION >= 3
+static int rclextract_traverse(PyObject *m, visitproc visit, void *arg) {
+    Py_VISIT(GETSTATE(m)->error);
+    return 0;
+}
+
+static int rclextract_clear(PyObject *m) {
+    Py_CLEAR(GETSTATE(m)->error);
+    return 0;
+}
+
+static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "rclextract",
+        NULL,
+        sizeof(struct module_state),
+        rclextract_methods,
+        NULL,
+        rclextract_traverse,
+        rclextract_clear,
+        NULL
+};
+
+#define INITERROR return NULL
+
+extern "C" PyObject *
+PyInit_rclextract(void)
+
+#else
+#define INITERROR return
 PyMODINIT_FUNC
 initrclextract(void)
+#endif
 {
     // We run recollinit. It's responsible for initializing some static data
     // which is distinct from pyrecoll's as we're separately dlopened
@@ -271,33 +309,53 @@ initrclextract(void)
     rclconfig = recollinit(0, 0, reason, 0);
     if (rclconfig == 0) {
 	PyErr_SetString(PyExc_EnvironmentError, reason.c_str());
-	return;
+	INITERROR;
     }
     if (!rclconfig->ok()) {
 	PyErr_SetString(PyExc_EnvironmentError, 
 			"Recoll init error: bad environment ?");
-	return;
+	INITERROR;
     }
 
-    PyObject* m = Py_InitModule("rclextract", rclxMethods);
-    PyModule_AddStringConstant(m, "__doc__", rclx_doc_string);
+#if PY_MAJOR_VERSION >= 3
+    PyObject *module = PyModule_Create(&moduledef);
+#else
+    PyObject *module = Py_InitModule("rclextract", rclextract_methods);
+#endif
+    if (module == NULL)
+        INITERROR;
+
+    struct module_state *st = GETSTATE(module);
+    // The first parameter is a char *. Hopefully we don't initialize
+    // modules too often...
+    st->error = PyErr_NewException(strdup("rclextract.Error"), NULL, NULL);
+    if (st->error == NULL) {
+        Py_DECREF(module);
+        INITERROR;
+    }
+
+    PyModule_AddStringConstant(module, "__doc__", rclx_doc_string);
 
     if (PyType_Ready(&rclx_ExtractorType) < 0)
-        return;
+        INITERROR;
     Py_INCREF(&rclx_ExtractorType);
-    PyModule_AddObject(m, "Extractor", (PyObject *)&rclx_ExtractorType);
+    PyModule_AddObject(module, "Extractor", (PyObject *)&rclx_ExtractorType);
 
-#if PY_MAJOR_VERSION >= 2 && PY_MINOR_VERSION >= 7
+#if PY_MAJOR_VERSION >= 3 || (PY_MAJOR_VERSION >= 2 && PY_MINOR_VERSION >= 7)
     recoll_DocType = (PyObject*)PyCapsule_Import(PYRECOLL_PACKAGE "recoll.doctypeptr", 0);
 #else
     PyObject *module = PyImport_ImportModule(PYRECOLL_PACKAGE "recoll");
     if (module != NULL) {
         PyObject *cobject = PyObject_GetAttrString(module, "_C_API");
         if (cobject == NULL)
-            return;
+            INITERROR;
         if (PyCObject_Check(cobject))
             recoll_DocType = (PyObject*)PyCObject_AsVoidPtr(cobject);
         Py_DECREF(cobject);
     }
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+    return module;
 #endif
 }
