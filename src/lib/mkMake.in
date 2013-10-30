@@ -118,13 +118,14 @@ defs=\$\(depth\)/mk/localdefs
 test -f $mk && chmod +w $mk
 
 NODYNLIB=@NODYNLIB@
+RCLLIBVERSION=@RCLLIBVERSION@
   
 cat > $mk <<EOF
 # DONT EDIT BY HAND: created by script mkMake
 depth = ${depth}
 include \$(depth)/mk/sysconf
 
-LIBRECOLL=librecoll.so.\$(RCLLIBVERSION)
+LIBRECOLL=librecoll.so.${RCLLIBVERSION}
 LIBS = librecoll.a
 ${NODYNLIB}LIBS = librecoll.a \$(LIBRECOLL)
 

@@ -12,7 +12,10 @@ mandir = @mandir@
 QMAKE = @QMAKE@
 QTGUI = @QTGUI@
 
+RCLLIBVERSION=@RCLLIBVERSION@
+
 all: mk/sysconf 
+	(cd lib; sh mkMake)
 	${MAKE} -C lib
 	${MAKE} -C index depend recollindex
 	@NOQTMAKE@(cd $(QTGUI); ${QMAKE} recoll.pro)
@@ -62,7 +65,7 @@ distclean: clean
 	   qtgui/recoll.pro \
 	   config.log config.status \
 	   recollinstall \
-	   lib/*.dep common/autoconfig.h
+	   lib/*.dep lib/mkMake lib/Makefile common/autoconfig.h
 	rm -f common/rclversion.h
 	rm -f index/alldeps lib/alldeps query/alldeps \
             bincimapmime/alldeps common/alldeps internfile/alldeps utils/alldeps

@@ -604,8 +604,6 @@ do
     cp -f /dev/null $d/alldeps
 done
 
-(cd lib;RCLLIBVERSION=$RCLLIBVERSION sh mkMake)
-
 AC_OUTPUT
 
 if cmp -s mk/localdefs mk/localdefs.new ; then
