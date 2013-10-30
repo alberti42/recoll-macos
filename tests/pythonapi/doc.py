@@ -22,7 +22,7 @@ else:
 db = recoll.connect()
 query = db.query()
 
-nres = query.execute("testfield:testfieldvalue", stemming=0)
+nres = query.execute("testfield:testfieldvalue1", stemming=0)
 qs = "Xapian query: [%s]" % query.getxquery()
 print(utf8string(qs))
 
