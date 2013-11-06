@@ -1,0 +1,31 @@
+Source: unity-scope-gdrive
+Section: gnome
+Priority: extra
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Build-Depends: debhelper (>= 9),
+               libaccounts-glib-dev,
+               pkg-config,
+               python3,
+               python3-distutils-extra,
+               python3-nose,
+               python3-gi,
+               gir1.2-glib-2.0,
+               gir1.2-unity-5.0 (>= 7.0),
+Standards-Version: 3.9.3
+Homepage: https://launchpad.net/unity-scope-recoll
+
+Package: unity-scope-recoll
+Architecture: all
+Depends: ${misc:Depends},
+         ${python3:Depends},
+         python3,
+         gir1.2-dee-1.0,
+         python3-gi,
+         gir1.2-unity-5.0 (>= 7.0),
+         unity-scopes-runner,
+         gir1.2-glib-2.0,
+         recoll,
+         python-recoll
+Description: Recoll scope for Unity
+ Unity scope for Recoll
+

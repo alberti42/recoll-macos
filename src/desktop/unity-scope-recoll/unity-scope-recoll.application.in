@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<application id="unity-scope-recoll">
+  <_description>Recoll search plugin</_description>
+  <translations>unity-scope-recoll</translations>
+  <desktop-entry>unity-scope-recoll.desktop</desktop-entry>
+
+
+  <services>
+    <service id="recoll">
+      <_description>Search your Recoll index</_description>
+    </service>
+  </services>
+
+</application>

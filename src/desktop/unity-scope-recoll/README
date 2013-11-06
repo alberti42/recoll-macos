@@ -1,0 +1,46 @@
+Sample Unity scope Daemon written in Python
+-------------------------------------------
+
+Dependencies
+------------
+
+Introspection data for libunity, libdee, libaccounts-glib, libsignon-glib and
+libgdata:
+
+gir1.2-unity-5.0
+gir1.2-dee-1.0
+gir1.2-accounts-1.0
+gir1.2-signon-1.0
+gir1.2-gdata-0.0
+
+Trying out the scope
+--------------------
+
+You can install the scope like this:
+
+  python setup.py install --prefix=/usr
+
+Then run the daemon with:
+
+  ./unity_recoll_daemon.py
+
+And from another terminal restart Unity like this:
+
+  setsid unity
+
+[the setsid ^^ is a small trick to detach the unity process from the terminal
+ so you can close it if you want. A bit like 'unity &' just better ;-) ]
+
+Past this step you can freely Control-C the scope daemon to stop it,
+do some changes, and restart it. No need to restart Unity, it will find
+the newly started daemon automatically.
+
+Getting rid of the scope
+------------------------
+
+Just remove the gdrive.scope file. For example, by issuing:
+
+  sudo rm /usr/share/unity/scopes/files/recoll.scope
+
+With that done, restart Unity once again with 'setsid unity' and all should
+be back to normal.
