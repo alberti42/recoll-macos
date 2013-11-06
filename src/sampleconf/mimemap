@@ -137,9 +137,13 @@
 .mp3 = audio/mpeg
 .flac = application/x-flac
 .ogg = application/ogg
+.oga = application/ogg
 # Note: file -i says audio/x-midi, but soft karaoke files are special.
 .kar = audio/x-karaoke
 .mid = audio/x-karaoke
+.aac = audio/aac
+.mp4 = audio/mp4
+.m4a = audio/mp4
 
 .mkv = video/x-matroska
 

@@ -114,6 +114,8 @@ application/x-tex = exec rcltex
 application/x-webarchive = execm rclwar
 application/zip = execm rclzip;charset=default
 audio/mpeg = execm rclaudio
+audio/mp4 = execm rclaudio
+audio/aac = execm rclaudio
 audio/x-karaoke = execm rclkar
 image/gif = execm rclimg
 image/jp2 = execm rclimg
