@@ -1,11 +1,11 @@
 [Scope]
 DBusName=org.recoll.Unity.Scope.File.Recoll
 DBusPath=/org/recoll/unity/scope/file/recoll
-Module=recoll.unity_recoll_daemon
+Module=recollscope.unity_recoll_daemon
 ModuleType=python3
 Icon=/usr/share/icons/unity-icon-theme/places/svg/service-recoll.svg
 Keywords=recoll;doc;text;
-Loader=/usr/share/unity-scopes/recoll/unity_recoll_daemon
+Loader=/usr/share/unity-scopes/recollscope/unity_recoll_daemon
 RequiredMetadata=
 OptionalMetadata=
 RemoteContent=false

@@ -20,28 +20,27 @@ from gi.repository import GData
 from gi.repository import Unity
 
 try:
-    from recoll import rclconfig
-    hasrclconfig = True
+  from recoll import rclconfig
+  hasrclconfig = True
 except:
-    hasrclconfig = False
+  hasrclconfig = False
 # As a temporary measure, we also look for rclconfig as a bare
 # module. This is so that the intermediate releases of the lens can
 # ship and use rclconfig.py with the lens code
 if not hasrclconfig:
-    try:
-        import rclconfig
-        hasrclconfig = True
-    except:
-        pass
+  try:
+    import rclconfig
+    hasrclconfig = True
+  except:
+    pass
     
-#try:
-#from recoll import recoll
-from recoll import rclextract
-hasextract = True
-#except:
-#    import recoll
-#    hasextract = False
-print("Recoll scope: hasrclconfig %d hasextract %d\n" % (hasrclconfig, hasextract))
+try:
+  from recoll import recoll
+  from recoll import rclextract
+  hasextract = True
+except:
+  import recoll
+  hasextract = False
 
 APP_NAME = "unity-scope-recoll"
 LOCAL_PATH = "/usr/share/locale/"
@@ -77,15 +76,16 @@ def _get_thumbnail_path(url):
     directory. We return the path only if the thumbnail does exist
     (no generation performed)"""
     global THUMBDIRS
+    print("_get_thumbnail_path", file=sys.stderr)
 
     # Compute the thumbnail file name by encoding and hashing the url string
-    path = url.replace("file://", "", 1)
+    path = url[7:]
     try:
         path = "file://" + urllib.quote(path)
     except:
         #print("_get_thumbnail_path: urllib.quote failed")
         return None
-    #print("_get_thumbnail: encoded path: [%s]" % (path,))
+    print("_get_thumbnail: encoded path: [%s]" % (path,), file=sys.stderr)
     thumbname = hashlib.md5(path).hexdigest() + ".png"
 
     # If the "new style" directory exists, we should stop looking in
@@ -227,7 +227,7 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
     # Do the recoll thing
     try:
       query = self.db.query()
-      nres = query.execute(search_string.decode(self.localecharset))
+      nres = query.execute(search_string)
     except Exception as msg:
       print("recoll query execute error: %s" % msg)
       return
@@ -238,16 +238,17 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
         doc = query.fetchone()
       except:
         break
+
       titleorfilename = doc.title
       if titleorfilename == "":
         titleorfilename = doc.filename
 
       # Results with an ipath get a special mime type so that they
       # get opened by starting a recoll instance.
-      mimetype, iconname = self.icon_for_type (doc)
+      url, mimetype, iconname = self.icon_for_type (doc)
 
       try:
-        abstract = self.db.makeDocAbstract(doc, query).encode('utf-8')
+        abstract = self.db.makeDocAbstract(doc, query)
       except:
         break
 
@@ -261,8 +262,17 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
         else:
           category = 1
 
+#      result_set.add_result(
+#        uri=url,
+#        icon=iconname,
+#        category=category,
+#        result_type=Unity.ResultType.PERSONAL,
+#        mimetype=mimetype,
+#        title=titleorfilename,
+#        comment=abstract,
+#        dnd_uri=doc.url)
       result_set.add_result(
-        url,
+        uri=url,
         icon=iconname,
         category=category,
         result_type=Unity.ResultType.PERSONAL,
@@ -323,7 +333,7 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
     if thumbnail:
       iconname = thumbnail
     else:
-      if SPEC_MIME_ICONS.has_key(doc.mimetype):
+      if doc.mimetype in SPEC_MIME_ICONS:
         iconname = SPEC_MIME_ICONS[doc.mimetype]
       else:
         icon = Gio.content_type_get_icon(doc.mimetype)
@@ -335,7 +345,7 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
               iconname = iname
               break
 
-    return (mimetype, iconname);
+    return (url, mimetype, iconname);
 
 
 def load_scope():
