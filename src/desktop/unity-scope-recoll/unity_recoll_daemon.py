@@ -13,6 +13,8 @@ import gettext
 import locale
 import sys
 import time
+import urllib.parse
+import hashlib
 
 from gi.repository import GLib, GObject, Gio
 from gi.repository import Accounts, Signon
@@ -76,17 +78,17 @@ def _get_thumbnail_path(url):
     directory. We return the path only if the thumbnail does exist
     (no generation performed)"""
     global THUMBDIRS
-    print("_get_thumbnail_path", file=sys.stderr)
 
     # Compute the thumbnail file name by encoding and hashing the url string
     path = url[7:]
     try:
-        path = "file://" + urllib.quote(path)
-    except:
-        #print("_get_thumbnail_path: urllib.quote failed")
+        path = "file://" + urllib.parse.quote_from_bytes(path)
+    except Exception as msg:
+        print("_get_thumbnail_path: urllib.parse.quote failed: %s" % msg, 
+              file=sys.stderr)
         return None
-    print("_get_thumbnail: encoded path: [%s]" % (path,), file=sys.stderr)
-    thumbname = hashlib.md5(path).hexdigest() + ".png"
+    #print("_get_thumbnail: encoded path: [%s]" % path, file=sys.stderr)
+    thumbname = hashlib.md5(path.encode('utf-8')).hexdigest() + ".png"
 
     # If the "new style" directory exists, we should stop looking in
     # the "old style" one (there might be interesting files in there,
@@ -101,7 +103,7 @@ def _get_thumbnail_path(url):
     for topdir in THUMBDIRS:
         for dir in ("large", "normal"): 
             tpath = os.path.join(topdir, dir, thumbname)
-            # print("Testing [%s]" % (tpath,))
+            #print("Testing [%s]" % (tpath,))
             if os.path.exists(tpath):
                 return tpath
 
@@ -116,16 +118,13 @@ class RecollScope(Unity.AbstractScope):
     self.search_in_global = True;
 
     lng, self.localecharset = locale.getdefaultlocale()
-    print("RecollScope: __init__ done", file=sys.stderr)
 
   def do_get_group_name(self):
     # The primary bus name we grab *must* match what we specify in our
     # .scope file
-    print("RecollScope: do_get_group_name", file=sys.stderr)
     return "org.recoll.Unity.Scope.File.Recoll"
 
   def do_get_unique_name(self):
-    print("RecollScope: do_get_unique_name", file=sys.stderr)
     return "/org/recoll/unity/scope/file/recoll"
 
   def do_get_filters(self):
@@ -168,9 +167,6 @@ class RecollScope(Unity.AbstractScope):
     return cats
 
   def do_get_schema (self):
-    '''
-    Adds specific metadata fields
-    '''
     print("RecollScope: do_get_schema", file=sys.stderr)
     schema = Unity.Schema.new ()
     return schema
@@ -188,10 +184,9 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
     self.set_search_context(search_context)
     if hasrclconfig:
       self.config = rclconfig.RclConfig()
-    print("RecollScopeSearch: __init__ done", file=sys.stderr)
 
   def connect_db(self):
-    print("RecollScopeSearch: Connecting to db", file=sys.stderr)
+    #print("RecollScopeSearch: connect_db", file=sys.stderr)
     self.db = None
     dblist = []
     if hasrclconfig:
@@ -205,12 +200,11 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
       return
 
   def do_run(self):
-    print("RecollScopeSearch: do_run", file=sys.stderr)
+    #print("RecollScopeSearch: do_run", file=sys.stderr)
     context = self.search_context
     filters = context.filter_state
     search_string = context.search_query
     result_set = context.result_set
-    print("Search changed to: '%s'" % search_string)
     
     # Get the list of documents
     is_global = context.search_type == Unity.SearchType.GLOBAL
@@ -224,6 +218,8 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
       datef = self.date_filter(filters)
       " ".join((search_string, catgf, datef))
     
+    print("RecollScopeSearch::do_run: Search: [%s]" % search_string)
+
     # Do the recoll thing
     try:
       query = self.db.query()
@@ -262,15 +258,6 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
         else:
           category = 1
 
-#      result_set.add_result(
-#        uri=url,
-#        icon=iconname,
-#        category=category,
-#        result_type=Unity.ResultType.PERSONAL,
-#        mimetype=mimetype,
-#        title=titleorfilename,
-#        comment=abstract,
-#        dnd_uri=doc.url)
       result_set.add_result(
         uri=url,
         icon=iconname,
@@ -287,6 +274,7 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
 
 
   def date_filter (self, filters):
+    print("RecollScopeSearch: date_filter")
     dateopt = ""
     f = filters.get_filter_by_id("modified")
     if f != None:
@@ -298,6 +286,7 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
           dateopt = "P30D/"
         elif o.props.id == "last-7-days":
           dateopt = "P7D/"
+    print("RecollScopeSearch: date_filter: return %s", dateopt)
     return dateopt
 
   def catg_filter(self, filters):
