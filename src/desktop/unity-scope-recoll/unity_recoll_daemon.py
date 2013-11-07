@@ -86,7 +86,7 @@ def _get_thumbnail_path(url):
     except Exception as msg:
         print("_get_thumbnail_path: urllib.parse.quote failed: %s" % msg, 
               file=sys.stderr)
-        return None
+        return ""
     #print("_get_thumbnail: encoded path: [%s]" % path, file=sys.stderr)
     thumbname = hashlib.md5(path.encode('utf-8')).hexdigest() + ".png"
 
@@ -107,7 +107,7 @@ def _get_thumbnail_path(url):
             if os.path.exists(tpath):
                 return tpath
 
-    return None
+    return ""
 
 
 class RecollScope(Unity.AbstractScope):
@@ -236,8 +236,10 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
         break
 
       titleorfilename = doc.title
-      if titleorfilename == "":
+      if titleorfilename is None or titleorfilename == "":
         titleorfilename = doc.filename
+      if titleorfilename is None:
+        titleorfilename = "doc.title and doc.filename are none !"
 
       # Results with an ipath get a special mime type so that they
       # get opened by starting a recoll instance.
@@ -257,6 +259,11 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
           category = 3
         else:
           category = 1
+
+      #print({"uri":url,"icon":iconname,"category":category,
+          #"mimetype":mimetype, "title":titleorfilename,
+          #"comment":abstract,
+          #"dnd_uri":doc.url})
 
       result_set.add_result(
         uri=url,
@@ -307,7 +314,7 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
     iconname = "text-x-preview"
     # Results with an ipath get a special mime type so that they
     # get opened by starting a recoll instance.
-    thumbnail = None
+    thumbnail = ""
     if doc.ipath != "":
       mimetype = "application/x-recoll"
       url = doc.url + "#" + doc.ipath
@@ -318,7 +325,7 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
       # Retrieve the binary path for thumbnail access.
       thumbnail = _get_thumbnail_path(doc.getbinurl())
 
-    iconname = None
+    iconname = ""
     if thumbnail:
       iconname = thumbnail
     else:
