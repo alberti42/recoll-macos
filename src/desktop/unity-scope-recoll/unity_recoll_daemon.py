@@ -54,6 +54,15 @@ _ = gettext.gettext
 
 THEME = "/usr/share/icons/unity-icon-theme/places/svg/"
 
+UNITY_TYPE_TO_RECOLL_CLAUSE = {
+    "documents" : "rclcat:message rclcat:spreadsheet rclcat:text",
+    "folders" : "mime:inode/directory", 
+    "images" : "rclcat:media", 
+    "audio":"rclcat:media", 
+    "videos":"rclcat:media",
+    "presentations" : "rclcat:presentation",
+    "other":"rclcat:other"
+    }
 
 # Icon names for some recoll mime types which don't have standard icon by the
 # normal method
@@ -216,8 +225,9 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
     if not is_global:
       catgf = self.catg_filter(filters)
       datef = self.date_filter(filters)
-      " ".join((search_string, catgf, datef))
-    
+      sizef = self.size_filter(filters)
+      search_string = " ".join((search_string, catgf, datef, sizef))
+  
     print("RecollScopeSearch::do_run: Search: [%s]" % search_string)
 
     # Do the recoll thing
@@ -281,20 +291,22 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
 
 
   def date_filter (self, filters):
-    print("RecollScopeSearch: date_filter")
+    #print("RecollScopeSearch: date_filter")
     dateopt = ""
     f = filters.get_filter_by_id("modified")
     if f != None:
       o = f.get_active_option()
       if o != None:
         if o.props.id == "last-year":
-          dateopt="P365D/"
+          dateopt="date:P1Y/"
         elif o.props.id == "last-30-days":
-          dateopt = "P30D/"
+          dateopt = "date:P1M/"
         elif o.props.id == "last-7-days":
-          dateopt = "P7D/"
-    print("RecollScopeSearch: date_filter: return %s", dateopt)
-    return dateopt
+          dateopt = "date:P7D/"
+    #print("RecollScopeSearch: date_filter: return [%s]" % dateopt)
+    # Until we fix the recoll bug:
+    # return dateopt
+    return ""
 
   def catg_filter(self, filters):
     f = filters.get_filter_by_id("type")
@@ -302,11 +314,27 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
     if not f.props.filtering:
       return ""
     ss = ""
-    # ("media", "message", "presentation", "spreadsheet", "text", "other")
-    for ftype in f.options:
-        if f.get_option(ftype).props.active:
-          ss += " rclcat:" + option.props.id 
+    for fopt in f.options:
+      print(fopt.props.id, file=sys.stderr)
+      if fopt.props.active:
+        if fopt.props.id in UNITY_TYPE_TO_RECOLL_CLAUSE:
+          ss += " " + UNITY_TYPE_TO_RECOLL_CLAUSE[fopt.props.id]
+    print("RecollScopSearch: catg_filter: [%s]" % ss)
+    return ss
 
+  def size_filter(self, filters):
+    print("size_filter", file=sys.stderr)
+    f = filters.get_filter_by_id("size")
+    if not f: return ""
+    print("size_filter got f", file=sys.stderr)
+    if not f.props.filtering:
+      return ""
+    print("size_filter f filtering", file=sys.stderr)
+    ss = ""
+    for fopt in f.options:
+      print(fopt.props.id, file=sys.stderr)
+
+    print("RecollScopeSearch: size_filter: [%s]" % ss)
     return ss
 
   # Send back a useful icon depending on the document type
