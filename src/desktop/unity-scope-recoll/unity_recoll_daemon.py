@@ -1,4 +1,5 @@
 #! /usr/bin/python3
+# -*- mode: python; python-indent: 2 -*-
 #
 # Copyright 2012 Canonical Ltd.  2013 Jean-Francois Dockes
 #
@@ -33,13 +34,14 @@ if not hasrclconfig:
     except:
         pass
     
-try:
-    from recoll import recoll
-    from recoll import rclextract
-    hasextract = True
-except:
-    import recoll
-    hasextract = False
+#try:
+#from recoll import recoll
+from recoll import rclextract
+hasextract = True
+#except:
+#    import recoll
+#    hasextract = False
+print("Recoll scope: hasrclconfig %d hasextract %d\n" % (hasrclconfig, hasextract))
 
 APP_NAME = "unity-scope-recoll"
 LOCAL_PATH = "/usr/share/locale/"
@@ -81,9 +83,9 @@ def _get_thumbnail_path(url):
     try:
         path = "file://" + urllib.quote(path)
     except:
-        #print "_get_thumbnail_path: urllib.quote failed"
+        #print("_get_thumbnail_path: urllib.quote failed")
         return None
-    #print "_get_thumbnail: encoded path: [%s]" % (path,)
+    #print("_get_thumbnail: encoded path: [%s]" % (path,))
     thumbname = hashlib.md5(path).hexdigest() + ".png"
 
     # If the "new style" directory exists, we should stop looking in
@@ -95,11 +97,11 @@ def _get_thumbnail_path(url):
         THUMBDIRS = THUMBDIRS[0:1]
 
     # Check in appropriate directories to see if the thumbnail file exists
-    #print "_get_thumbnail: thumbname: [%s]" % (thumbname,)
+    #print("_get_thumbnail: thumbname: [%s]" % (thumbname,))
     for topdir in THUMBDIRS:
         for dir in ("large", "normal"): 
             tpath = os.path.join(topdir, dir, thumbname)
-            # print "Testing [%s]" % (tpath,)
+            # print("Testing [%s]" % (tpath,))
             if os.path.exists(tpath):
                 return tpath
 
@@ -114,33 +116,20 @@ class RecollScope(Unity.AbstractScope):
     self.search_in_global = True;
 
     lng, self.localecharset = locale.getdefaultlocale()
-    if hasrclconfig:
-      self.config = rclconfig.RclConfig()
-    self.last_connect_time = 0
-
-  def _connect_db(self):
-    #print "Connecting to db"
-    self.db = None
-    dblist = []
-    if hasrclconfig:
-      extradbs = rclconfig.RclExtraDbs(self.config)
-      dblist = extradbs.getActDbs()
-      try:
-        self.db = recoll.connect(extra_dbs=dblist)
-        self.db.setAbstractParams(maxchars=200, contextwords=4)
-      except Exception, s:
-        print >> sys.stderr, "recoll-lens: Error connecting to db:", s
-        return
+    print("RecollScope: __init__ done", file=sys.stderr)
 
   def do_get_group_name(self):
     # The primary bus name we grab *must* match what we specify in our
     # .scope file
+    print("RecollScope: do_get_group_name", file=sys.stderr)
     return "org.recoll.Unity.Scope.File.Recoll"
 
   def do_get_unique_name(self):
+    print("RecollScope: do_get_unique_name", file=sys.stderr)
     return "/org/recoll/unity/scope/file/recoll"
 
   def do_get_filters(self):
+    print("RecollScope: do_get_filters", file=sys.stderr)
     filters = Unity.FilterSet.new()
     f = Unity.RadioOptionFilter.new ("modified", _("Last modified"), Gio.ThemedIcon.new("input-keyboard-symbolic"), False)
     f.add_option ("last-7-days", _("Last 7 days"), None)
@@ -158,6 +147,7 @@ class RecollScope(Unity.AbstractScope):
     return filters
 
   def do_get_categories(self):
+    print("RecollScope: do_get_categories", file=sys.stderr)
     cats = Unity.CategorySet.new()
     cats.add (Unity.Category.new ('global',
                                   _("Files & Folders"),
@@ -177,19 +167,45 @@ class RecollScope(Unity.AbstractScope):
                                   Unity.CategoryRenderer.VERTICAL_TILE))
     return cats
 
+  def do_get_schema (self):
+    '''
+    Adds specific metadata fields
+    '''
+    print("RecollScope: do_get_schema", file=sys.stderr)
+    schema = Unity.Schema.new ()
+    return schema
+
   def do_create_search_for_query(self, search_context):
-    return RecollScopeSearch(search_context, self.db)
+    print("RecollScope: do_create_search_for query", file=sys.stderr)
+    return RecollScopeSearch(search_context)
 
 
 class RecollScopeSearch(Unity.ScopeSearchBase):
   __g_type_name__ = "RecollScopeSearch"
 
-  def __init__(self, search_context, db):
+  def __init__(self, search_context):
     super(RecollScopeSearch, self).__init__()
     self.set_search_context(search_context)
-    self._gdocs_accounts = accounts
+    if hasrclconfig:
+      self.config = rclconfig.RclConfig()
+    print("RecollScopeSearch: __init__ done", file=sys.stderr)
+
+  def connect_db(self):
+    print("RecollScopeSearch: Connecting to db", file=sys.stderr)
+    self.db = None
+    dblist = []
+    if hasrclconfig:
+      extradbs = rclconfig.RclExtraDbs(self.config)
+      dblist = extradbs.getActDbs()
+    try:
+      self.db = recoll.connect(extra_dbs=dblist)
+      self.db.setAbstractParams(maxchars=200, contextwords=4)
+    except Exception as s:
+      print("RecollScope: Error connecting to db: %s" % s, file=sys.stderr)
+      return
 
   def do_run(self):
+    print("RecollScopeSearch: do_run", file=sys.stderr)
     context = self.search_context
     filters = context.filter_state
     search_string = context.search_query
@@ -198,10 +214,7 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
     
     # Get the list of documents
     is_global = context.search_type == Unity.SearchType.GLOBAL
-    current_time = time.time()
-    if current_time - self.last_connect_time > 10:
-      self._connect_db()
-      self.last_connect_time = current_time
+    self.connect_db()
 
     # We do not want filters to effect global results
     catgf = ""
@@ -215,8 +228,8 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
     try:
       query = self.db.query()
       nres = query.execute(search_string.decode(self.localecharset))
-    except:
-      print("recoll query execute error")
+    except Exception as msg:
+      print("recoll query execute error: %s" % msg)
       return
 
     actual_results = 0
@@ -231,7 +244,7 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
 
       # Results with an ipath get a special mime type so that they
       # get opened by starting a recoll instance.
-      mimetype, iconname = self.icon_for_type (doc):
+      mimetype, iconname = self.icon_for_type (doc)
 
       try:
         abstract = self.db.makeDocAbstract(doc, query).encode('utf-8')
@@ -243,7 +256,7 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
         category = 0
       else:
         if doc.mimetype == "inode/directory" or \
-               doc.mimetype = "application/x-fsdirectory":
+                "application/x-fsdirectory":
           category = 3
         else:
           category = 1
@@ -264,11 +277,11 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
 
 
   def date_filter (self, filters):
+    dateopt = ""
     f = filters.get_filter_by_id("modified")
     if f != None:
       o = f.get_active_option()
       if o != None:
-        dateopt = ""
         if o.props.id == "last-year":
           dateopt="P365D/"
         elif o.props.id == "last-30-days":
@@ -327,3 +340,4 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
 
 def load_scope():
   return RecollScope()
+
