@@ -42,9 +42,9 @@ clean:
 	${MAKE} -C common clean
 	${MAKE} -C index clean
 	${MAKE} -C internfile clean
-	${MAKE} -C lib clean
 	${MAKE} -C query clean
 	${MAKE} -C utils clean
+	-${MAKE} -C lib clean
 	-${MAKE} -C desktop/unity-lens-recoll clean
 	-${MAKE} -C python/recoll clean
 	@NOQTMAKE@@-${MAKE} -C $(QTGUI) clean

@@ -10,8 +10,9 @@ Build-Depends: autotools-dev,
                libx11-dev,
                libxapian-dev (>= 1.0.15),
                libz-dev,
-               python-all-dev (>= 2.6.6-3~)
-Standards-Version: 3.9.3
+               python-all-dev (>= 2.6.6-3~),
+               python3-all-dev,
+Standards-Version: 3.9.4
 X-Python-Version: >= 2.7
 Homepage: http://www.lesbonscomptes.com/recoll
 Vcs-Git: git://anonscm.debian.org/collab-maint/recoll.git
@@ -57,9 +58,23 @@ Description: Personal full text search package with a Qt GUI
 Package: python-recoll
 Architecture: any
 Section: python
-Depends: recoll (>= ${source:Version}),
+Depends: recoll (= ${binary:Version}),
          ${misc:Depends},
          ${python:Depends},
+         ${shlibs:Depends}
+Description: Python extension for recoll
+ Personal full text search package which is based on a very strong backend
+ (Xapian), for which it provides an easy to use and feature-rich interface.
+ .
+ This package provides Python extension module for recoll which can be use to
+ extend recoll such as an Ubuntu Unity Lens.
+
+Package: python3-recoll
+Architecture: any
+Section: python
+Depends: recoll (= ${binary:Version}),
+         ${misc:Depends},
+         ${python3:Depends},
          ${shlibs:Depends}
 Description: Python extension for recoll
  Personal full text search package which is based on a very strong backend

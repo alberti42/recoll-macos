@@ -1,2 +1,2 @@
-usr/lib/python*/*-packages/*.egg-info
-usr/lib/python*/*-packages/recoll/*
+usr/lib/python2*/*-packages/*.egg-info
+usr/lib/python2*/*-packages/recoll/*
