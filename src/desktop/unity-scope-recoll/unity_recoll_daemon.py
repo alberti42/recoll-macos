@@ -15,6 +15,7 @@ import sys
 import time
 import urllib.parse
 import hashlib
+import subprocess
 
 from gi.repository import GLib, GObject, Gio
 from gi.repository import Accounts, Signon
@@ -46,13 +47,34 @@ except:
 
 APP_NAME = "unity-scope-recoll"
 LOCAL_PATH = "/usr/share/locale/"
-
-locale.setlocale(locale.LC_ALL, '')
 gettext.bindtextdomain(APP_NAME, LOCAL_PATH)
 gettext.textdomain(APP_NAME)
 _ = gettext.gettext
 
-THEME = "/usr/share/icons/unity-icon-theme/places/svg/"
+GROUP_NAME = 'org.recoll.Unity.Scope.File.Recoll'
+UNIQUE_PATH = '/org/recoll/unity/scope/file/recoll'
+SEARCH_URI = ''
+SEARCH_HINT = _('Search Recoll index')
+NO_RESULTS_HINT = _('Sorry, there are no documents in the Recoll index that match your search.')
+PROVIDER_CREDITS = _('Powered by Recoll')
+SVG_DIR = '/usr/share/icons/unity-icon-theme/places/svg/'
+PROVIDER_ICON = SVG_DIR+'service-recoll.svg'
+DEFAULT_RESULT_ICON = 'recoll'
+DEFAULT_RESULT_TYPE = Unity.ResultType.PERSONAL
+
+c1 = {'id': 'documents',
+      'name': _('Documents'),
+      'icon': SVG_DIR + 'group-installed.svg',
+      'renderer': Unity.CategoryRenderer.VERTICAL_TILE}
+c2 = {'id': 'folders',
+      'name': _('Folders'),
+      'icon': SVG_DIR + 'group-folders.svg',
+      'renderer': Unity.CategoryRenderer.VERTICAL_TILE}
+CATEGORIES = [c1, c2]
+
+FILTERS = []
+
+EXTRA_METADATA = []
 
 UNITY_TYPE_TO_RECOLL_CLAUSE = {
     "documents" : "rclcat:message rclcat:spreadsheet rclcat:text",
@@ -61,11 +83,11 @@ UNITY_TYPE_TO_RECOLL_CLAUSE = {
     "audio":"rclcat:media", 
     "videos":"rclcat:media",
     "presentations" : "rclcat:presentation",
-    "other":"rclcat:other"
+    "other":"rclcat:other",
     }
 
-# Icon names for some recoll mime types which don't have standard icon by the
-# normal method
+# Icon names for some recoll mime types which don't have standard icon
+# by the normal method
 SPEC_MIME_ICONS = {'application/x-fsdirectory' : 'gnome-fs-directory.svg',
                    'inode/directory' : 'gnome-fs-directory.svg',
                    'message/rfc822' : 'mail-read',
@@ -108,16 +130,27 @@ def _get_thumbnail_path(url):
         THUMBDIRS = THUMBDIRS[0:1]
 
     # Check in appropriate directories to see if the thumbnail file exists
-    #print("_get_thumbnail: thumbname: [%s]" % (thumbname,))
+    #print("_get_thumbnail: thumbname: [%s]" % thumbname, file=sys.stderr)
     for topdir in THUMBDIRS:
         for dir in ("large", "normal"): 
             tpath = os.path.join(topdir, dir, thumbname)
-            #print("Testing [%s]" % (tpath,))
+            #print("Testing [%s]" % (tpath,), file=sys.stderr)
             if os.path.exists(tpath):
                 return tpath
 
     return ""
 
+
+class RecollScopePreviewer(Unity.ResultPreviewer):
+  def do_run(self):
+    icon = Gio.ThemedIcon.new(self.result.icon_hint)
+    preview = Unity.GenericPreview.new(self.result.title, 
+                                       self.result.comment.strip(), icon)
+    view_action = Unity.PreviewAction.new("open", _("Open"), None)
+    preview.add_action(view_action)
+    show_action = Unity.PreviewAction.new("show", _("Show in Folder"), None)
+    preview.add_action(show_action)
+    return preview
 
 class RecollScope(Unity.AbstractScope):
   __g_type_name__ = "RecollScope"
@@ -125,64 +158,103 @@ class RecollScope(Unity.AbstractScope):
   def __init__(self):
     super(RecollScope, self).__init__()
     self.search_in_global = True;
-
     lng, self.localecharset = locale.getdefaultlocale()
 
-  def do_get_group_name(self):
-    # The primary bus name we grab *must* match what we specify in our
-    # .scope file
-    return "org.recoll.Unity.Scope.File.Recoll"
+  def do_get_search_hint (self):
+    return SEARCH_HINT
 
-  def do_get_unique_name(self):
-    return "/org/recoll/unity/scope/file/recoll"
+  def do_get_schema (self):
+    #print("RecollScope: do_get_schema", file=sys.stderr)
+    schema = Unity.Schema.new ()
+    if EXTRA_METADATA:
+      for m in EXTRA_METADATA:
+        schema.add_field(m['id'], m['type'], m['field'])
+    #FIXME should be REQUIRED for credits
+    schema.add_field('provider_credits', 's', 
+                     Unity.SchemaFieldType.OPTIONAL)
+    return schema
+
+  def do_get_categories(self):
+    #print("RecollScope: do_get_categories", file=sys.stderr)
+    cs = Unity.CategorySet.new ()
+    if CATEGORIES:
+      for c in CATEGORIES:
+        cat = Unity.Category.new (c['id'], c['name'],
+                                  Gio.ThemedIcon.new(c['icon']),
+                                  c['renderer'])
+        cs.add (cat)
+    return cs
 
   def do_get_filters(self):
-    print("RecollScope: do_get_filters", file=sys.stderr)
+    #print("RecollScope: do_get_filters", file=sys.stderr)
     filters = Unity.FilterSet.new()
-    f = Unity.RadioOptionFilter.new ("modified", _("Last modified"), Gio.ThemedIcon.new("input-keyboard-symbolic"), False)
+    f = Unity.RadioOptionFilter.new(
+      "modified", _("Last modified"),     
+      Gio.ThemedIcon.new("input-keyboard-symbolic"), False)
     f.add_option ("last-7-days", _("Last 7 days"), None)
     f.add_option ("last-30-days", _("Last 30 days"), None)
     f.add_option ("last-year", _("Last year"), None);
     filters.add(f)
-    f2 = Unity.CheckOptionFilter.new ("type", _("Type"), Gio.ThemedIcon.new("input-keyboard-symbolic"), False)
-    f2.add_option ("media", _("Media"), None)
-    f2.add_option ("message", _("Message"), None)
-    f2.add_option ("presentation", _("Presentation"), None)
-    f2.add_option ("spreadsheet", _("Spreadsheet"), None)
-    f2.add_option ("text", _("Text"), None)
+
+    f2 = Unity.CheckOptionFilter.new (
+      "type", _("Type"), Gio.ThemedIcon.new("inpt-keyboard-symbolic"), False)
+    f2.add_option ("documents", _("Documents"), None)
+    f2.add_option ("folders", _("Folders"), None)
+    f2.add_option ("images", _("Images"), None)
+    f2.add_option ("audio", _("Audio"), None)
+    f2.add_option ("videos", _("Videos"), None)
+    f2.add_option ("presentations", _("Presentations"), None)
     f2.add_option ("other", _("Other"), None)
     filters.add (f2)
+
+    f3 = Unity.MultiRangeFilter.new (
+      "size", _("Size"), Gio.ThemedIcon.new("inpt-keyboard-symbolic"), False)
+    f3.add_option ("1kb", _("1KB"), None)
+    f3.add_option ("100kb", _("100KB"), None)
+    f3.add_option ("1mb", _("1MB"), None)
+    f3.add_option ("10mb", _("10MB"), None)
+    f3.add_option ("100mb", _("100MB"), None)
+    f3.add_option ("1gb", _("1GB"), None)
+    f3.add_option (">1gb", _(">1GB"), None)
+    filters.add (f3)
+
     return filters
 
-  def do_get_categories(self):
-    print("RecollScope: do_get_categories", file=sys.stderr)
-    cats = Unity.CategorySet.new()
-    cats.add (Unity.Category.new ('global',
-                                  _("Files & Folders"),
-                                  Gio.ThemedIcon.new(THEME + "group-folders.svg"),
-                                  Unity.CategoryRenderer.VERTICAL_TILE))
-    cats.add (Unity.Category.new ('recent',
-                                  _("Recent"),
-                                  Gio.ThemedIcon.new(THEME + "group-recent.svg"),
-                                  Unity.CategoryRenderer.VERTICAL_TILE))
-    cats.add (Unity.Category.new ('downloads',
-                                  _("Downloads"),
-                                  Gio.ThemedIcon.new(THEME + "group-downloads.svg"),
-                                  Unity.CategoryRenderer.VERTICAL_TILE))
-    cats.add (Unity.Category.new ('folders',
-                                  _("Folders"),
-                                  Gio.ThemedIcon.new(THEME + "group-folders.svg"),
-                                  Unity.CategoryRenderer.VERTICAL_TILE))
-    return cats
+  def do_get_group_name(self):
+    return GROUP_NAME
 
-  def do_get_schema (self):
-    print("RecollScope: do_get_schema", file=sys.stderr)
-    schema = Unity.Schema.new ()
-    return schema
+  def do_get_unique_name(self):
+    return UNIQUE_PATH
 
   def do_create_search_for_query(self, search_context):
-    print("RecollScope: do_create_search_for query", file=sys.stderr)
+    #print("RecollScope: do_create_search_for query", file=sys.stderr)
     return RecollScopeSearch(search_context)
+
+  def do_activate(self, result, metadata, id):
+    print("RecollScope: do_activate. id [%s] uri [%s]" % (id,uri), 
+          file=sys.stderr)
+    if id == 'show':
+      filename = result.uri
+      dirname = os.path.dirname(filename)
+      os.system("xdg-open '%s'" % str(dirname))
+    else:
+      uri = result.uri
+      # Pass all uri without fragments to the desktop handler
+      if uri.find("#") == -1:
+        return Unity.ActivationResponse(handled=Unity.HandledType.NOT_HANDLED,
+                                         goto_uri=uri)
+      # Pass all others to recoll
+      proc = subprocess.Popen(["recoll", uri])
+      ret = Unity.ActivationResponse(handled=Unity.HandledType.HIDE_DASH,
+                                     goto_uri=None)
+      return ret
+
+  def do_create_previewer(self, result, metadata):
+    #print("RecollScope: do_create_previewer", file=sys.stderr)
+    previewer = RecollScopePreviewer()
+    previewer.set_scope_result(result)
+    previewer.set_search_metadata(metadata)
+    return previewer
 
 
 class RecollScopeSearch(Unity.ScopeSearchBase):
@@ -212,7 +284,9 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
     #print("RecollScopeSearch: do_run", file=sys.stderr)
     context = self.search_context
     filters = context.filter_state
-    search_string = context.search_query
+    search_string = context.search_query.strip()
+    if not search_string or search_string is None:
+      return
     result_set = context.result_set
     
     # Get the list of documents
@@ -227,16 +301,19 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
       datef = self.date_filter(filters)
       sizef = self.size_filter(filters)
       search_string = " ".join((search_string, catgf, datef, sizef))
-  
-    print("RecollScopeSearch::do_run: Search: [%s]" % search_string)
+    else:
+      print("RecollScopeSearch: GLOBAL", file=sys.stderr)
 
     # Do the recoll thing
     try:
       query = self.db.query()
       nres = query.execute(search_string)
     except Exception as msg:
-      print("recoll query execute error: %s" % msg)
+      print("recoll query execute error: %s" % msg, file=sys.stderr)
       return
+
+    print("RecollScopeSearch::do_run: [%s] -> %d results" % 
+          (search_string, nres), file=sys.stderr)
 
     actual_results = 0
     for i in range(nres):
@@ -251,29 +328,19 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
       if titleorfilename is None:
         titleorfilename = "doc.title and doc.filename are none !"
 
-      # Results with an ipath get a special mime type so that they
-      # get opened by starting a recoll instance.
       url, mimetype, iconname = self.icon_for_type (doc)
 
       try:
         abstract = self.db.makeDocAbstract(doc, query)
       except:
-        break
+        pass
 
       # Ok, I don't understand this category thing for now...
-      if is_global:
-        category = 0
-      else:
-        if doc.mimetype == "inode/directory" or \
-                "application/x-fsdirectory":
-          category = 3
-        else:
-          category = 1
-
+      category = 0
       #print({"uri":url,"icon":iconname,"category":category,
-          #"mimetype":mimetype, "title":titleorfilename,
-          #"comment":abstract,
-          #"dnd_uri":doc.url})
+       #      "mimetype":mimetype, "title":titleorfilename,
+        #     "comment":abstract,
+         #    "dnd_uri":doc.url}, file=sys.stderr)
 
       result_set.add_result(
         uri=url,
@@ -289,9 +356,8 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
       if actual_results >= MAX_RESULTS:
         break
 
-
   def date_filter (self, filters):
-    #print("RecollScopeSearch: date_filter")
+    print("RecollScopeSearch: date_filter", file=sys.stderr)
     dateopt = ""
     f = filters.get_filter_by_id("modified")
     if f != None:
@@ -303,38 +369,43 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
           dateopt = "date:P1M/"
         elif o.props.id == "last-7-days":
           dateopt = "date:P7D/"
-    #print("RecollScopeSearch: date_filter: return [%s]" % dateopt)
-    # Until we fix the recoll bug:
-    # return dateopt
-    return ""
+    #print("RecollScopeSearch::date_filter:[%s]" % dateopt, file=sys.stderr)
+    return dateopt
 
   def catg_filter(self, filters):
+    print("RecollScopeSearch::catg_filter", file=sys.stderr)
     f = filters.get_filter_by_id("type")
     if not f: return ""
     if not f.props.filtering:
       return ""
     ss = ""
     for fopt in f.options:
-      print(fopt.props.id, file=sys.stderr)
       if fopt.props.active:
         if fopt.props.id in UNITY_TYPE_TO_RECOLL_CLAUSE:
           ss += " " + UNITY_TYPE_TO_RECOLL_CLAUSE[fopt.props.id]
-    print("RecollScopSearch: catg_filter: [%s]" % ss)
+    #print("RecollScopSearch::catg_filter:[%s]" % ss, file=sys.stderr)
     return ss
 
   def size_filter(self, filters):
-    print("size_filter", file=sys.stderr)
+    print("RecollScopeSearch::size_filter", file=sys.stderr)
     f = filters.get_filter_by_id("size")
     if not f: return ""
-    print("size_filter got f", file=sys.stderr)
     if not f.props.filtering:
       return ""
-    print("size_filter f filtering", file=sys.stderr)
-    ss = ""
-    for fopt in f.options:
-      print(fopt.props.id, file=sys.stderr)
-
-    print("RecollScopeSearch: size_filter: [%s]" % ss)
+    min = f.get_first_active()
+    max = f.get_last_active()
+    if min.props.id == max.props.id:
+      # Take it as < except if it's >1gb
+      if max.props.id == ">1gb":
+        ss = " size>1g"
+      else:
+        ss = " size<" + min.props.id
+    else:
+      if max.props.id == ">1gb":
+        ss = "size>" + min.props.id
+      else:
+        ss = " size>" + min.props.id + " size<" + max.props.id
+    #print("RecollScopeSearch::size_filter: [%s]" % ss, file=sys.stderr)
     return ss
 
   # Send back a useful icon depending on the document type
@@ -374,4 +445,3 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
 
 def load_scope():
   return RecollScope()
-
