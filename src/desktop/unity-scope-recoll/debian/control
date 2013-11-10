@@ -24,7 +24,7 @@ Depends: ${misc:Depends},
          unity-scopes-runner,
          gir1.2-glib-2.0,
          recoll,
-         python-recoll
+         python3-recoll
 Description: Recoll scope for Unity
  Unity scope for Recoll
 
