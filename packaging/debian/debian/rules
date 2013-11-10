@@ -33,7 +33,7 @@ build-arch: build-stamp
 build-indep: build-stamp
 build-stamp: config.status
 	dh_testdir
-	$(MAKE)
+	$(MAKE) -j 5
 	touch $@
 
 clean:
@@ -53,6 +53,9 @@ install:
 	(cd python/recoll; python setup.py install \
 	                                   --install-layout=deb \
 	                                   --prefix=$(CURDIR)/debian/tmp/usr )
+	(cd python/recoll; python3 setup.py install \
+	                                   --install-layout=deb \
+	                                   --prefix=$(CURDIR)/debian/tmp/usr )
 
 binary-arch: build install
 	dh_testdir
@@ -63,7 +66,8 @@ binary-arch: build install
 	dh_installman
 	dh_install --sourcedir=debian/tmp
 	dh_makeshlibs
-	dh_python2
+	dh_python2 -p python-recoll
+	dh_python3 -p python3-recoll
 	dh_link
 	dh_strip
 	dh_compress
