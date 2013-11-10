@@ -13,9 +13,6 @@ override_dh_auto_clean:
 override_dh_auto_build:
 	python3 setup.py build
 
-override_dh_auto_test:
-	nosetests3
-
 override_dh_auto_install:
 	python3 setup.py install --root=$(CURDIR)/debian/unity-scope-recoll --install-layout=deb
 

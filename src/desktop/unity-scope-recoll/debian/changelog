@@ -1,4 +1,4 @@
-unity-scope-recoll (0.1) saucy; urgency=low
+unity-scope-recoll (1.20.0.3506) saucy; urgency=low
 
   * Initial port of the recoll lens to the new Dash
  -- Jean-Francois Dockes <jf@dockes.org>  Wed, 06 Nov 2013 15:23:00 +0200

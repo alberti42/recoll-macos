@@ -1,0 +1,4 @@
+mkdist.sh
+debian
+autom4te.cache
+excludefile
