@@ -155,11 +155,9 @@ out=$releasename.tar.gz
 echo "$targetdir/$out created"
 
 # Check manifest against current reference
-(
 export LANG=C
 tar tzf $targetdir/$out | sort | cut -d / -f 2- | \
     diff mk/manifest.txt - || fatal "Please fix file list mk/manifest.txt"
-)
 
 # We tag .. as there is the 'packaging/' directory in there
 [ $dotag = "yes" ] && tagtop $TAG

@@ -27,7 +27,7 @@ if test "$checkmodified" = "yes" -a ! -z "$editedfiles"; then
   fatal  "Edited files exist: " $editedfiles
 fi
 
-releasename=recoll-scope-${VERSION}
+releasename=unity-scope-recoll-${VERSION}
 
 topdir=$targetdir/$releasename
 if test ! -d $topdir ; then

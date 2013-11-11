@@ -1,8 +1,8 @@
-recoll (1.20.0-1.1) raring; urgency=low
+recoll (1.20.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
-  * local package testing new release build
+  * Separate python packages and "smart" scope
 
- -- Jean-Francois Dockes <jf@dockes.org>  Sun, 30 Dec 2012 12:29:46 +0530
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 11 Nov 2013 11:01:46 +0100
 
 recoll (1.18.1-1) experimental; urgency=low
 
