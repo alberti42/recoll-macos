@@ -98,6 +98,7 @@ desktop/unity-scope-recoll/debian/rules
 desktop/unity-scope-recoll/debian/source/
 desktop/unity-scope-recoll/debian/source/format
 desktop/unity-scope-recoll/debian/watch
+desktop/unity-scope-recoll/mkdist.sh
 desktop/unity-scope-recoll/recoll.scope
 desktop/unity-scope-recoll/scratch.txt
 desktop/unity-scope-recoll/service-recoll.svg
