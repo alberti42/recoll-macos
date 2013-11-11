@@ -62,15 +62,23 @@ PROVIDER_ICON = SVG_DIR+'service-recoll.svg'
 DEFAULT_RESULT_ICON = 'recoll'
 DEFAULT_RESULT_TYPE = Unity.ResultType.PERSONAL
 
-c1 = {'id': 'documents',
-      'name': _('Documents'),
+c0 = {'id': 'global',
+      'name': _('File & Folders'),
       'icon': SVG_DIR + 'group-installed.svg',
       'renderer': Unity.CategoryRenderer.VERTICAL_TILE}
-c2 = {'id': 'folders',
+c1 = {'id': 'recent',
+      'name': _('Recent'),
+      'icon': SVG_DIR + 'group-installed.svg',
+      'renderer': Unity.CategoryRenderer.VERTICAL_TILE}
+c2 = {'id': 'download',
+      'name': _('Download'),
+      'icon': SVG_DIR + 'group-folders.svg',
+      'renderer': Unity.CategoryRenderer.VERTICAL_TILE}
+c3 = {'id': 'folders',
       'name': _('Folders'),
       'icon': SVG_DIR + 'group-folders.svg',
       'renderer': Unity.CategoryRenderer.VERTICAL_TILE}
-CATEGORIES = [c1, c2]
+CATEGORIES = [c0, c1, c2, c3]
 
 FILTERS = []
 
