@@ -30,8 +30,6 @@ LC_ALL=C ; export LC_ALL
 progname="rclppt"
 filetype=powerpoint
 
-RCLPPT_CATPPT=${RCLPPT_CATPPT:=yes}
-
 #RECFILTCOMMONCODE
 ##############################################################################
 # !! Leave the previous line unmodified!! Code imported from the
@@ -98,54 +96,68 @@ umask 77
 # !! Leave the following line unmodified !
 #ENDRECFILTCOMMONCODE
 
-if test X$RCLPPT_CATPPT = Xyes ; then
-  checkcmds catppt
+havecappt=no
+iscmd cappt && havecappt=yes
+haveunoconv=no
+iscmd unoconv && haveunoconv=yes
+iscmd pdftotext || haveunoconv=no
 
-  # output the result
-  echo '<html><head>'
-  #echo '<title>' "$title" '</title>'
-  echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">'
-  echo '</head><body>'
-  echo '<pre>'
+if test X$havecatppt = Xno -a X$haveunoconv = Xno ; then
+    # checkcmds will exit with the appropriate salutations
+    checkcmds catppt unoconv pdftotext
+fi
 
-  catppt -d utf-8 "$infile" | \
-      sed -e 's/</&lt;/g' -e 's/&/&amp;/g' 
-
-  echo '</pre>'
-  echo '</body></html>'
-
-  # exit normally
-  exit 0
-
+# This needs a temp dir because we first output pdf (outputting html
+# would produce one file per page), and pdftotext can't read from
+# stdin
+if test z"$RECOLL_TMPDIR" != z; then
+    ttdir=$RECOLL_TMPDIR
+elif test z"$TMPDIR" != z ; then
+    ttdir=$TMPDIR
 else
+    ttdir=/tmp
+fi
 
-  # Using unoconv
-  checkcmds unoconv pdftotext
+tmpdir=$ttdir/rclppt_tmp$$
+mkdir $tmpdir || exit 1
+mkdir $tmpdir/rclppttmp || exit 1
+unopdf=$tmpdir/rclppttmp/output.pdf
+cattxt=$tmpdir/rclppttmp/output.txt
+cleanup()
+{
+    # Note that we're using a constant part (rclkwdtmp), that hopefully
+    # guarantees that we can't do big mistakes here.
+    rm -rf $tmpdir/rclppttmp
+    rmdir $tmpdir
+}
+trap cleanup EXIT HUP QUIT INT TERM
 
-  # This needs a temp dir because we first output pdf (outputting html
-  # would produce one file per page), and pdftotext can't read from
-  # stdin
-  if test z"$RECOLL_TMPDIR" != z; then
-      ttdir=$RECOLL_TMPDIR
-  elif test z"$TMPDIR" != z ; then
-      ttdir=$TMPDIR
-  else
-      ttdir=/tmp
-  fi
+# Try catppt. If the output looks too small and unoconv is available, use this 
+# instead. unoconv is very slow but it handles newer files that catppt will 
+# not convert. 
+#
+# I'm not sure of the right test for detecting catppt failure. On the
+# sample I have, it outputs Azure\n1_Azure\n\n. I don't know if Azure
+# is a good marker of failure. Anyway, it seems unlikely that a real
+# ppt would have fewer than 5 lines
 
-  tmpdir=$ttdir/rclppt_tmp$$
-  mkdir $tmpdir || exit 1
-  mkdir $tmpdir/rclppttmp || exit 1
-  unopdf=$tmpdir/rclppttmp/output.pdf
-  cleanup()
-  {
-      # Note that we're using a constant part (rclkwdtmp), that hopefully
-      # guarantees that we can't do big mistakes here.
-      rm -rf $tmpdir/rclppttmp
-      rmdir $tmpdir
-  }
-    
-  trap cleanup EXIT HUP QUIT INT TERM
-  unoconv -f pdf -o $unopdf "$infile"
-  `dirname $0`/rclpdf $unopdf
+catppt -d utf-8 "$infile" > $cattxt
+lines=`wc -l < $cattxt`
+
+if test $lines -lt 5 -a X$haveunoconv = Xyes; then
+    unoconv -f pdf -o $unopdf "$infile"
+    `dirname $0`/rclpdf $unopdf
+else
+    # output the catppt result
+    echo '<html><head>'
+    #echo '<title>' "$title" '</title>'
+    echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">'
+    echo '</head><body>'
+    echo '<pre>'
+
+    catppt -d utf-8 "$infile" | \
+        sed -e 's/</&lt;/g' -e 's/&/&amp;/g' < $cattxt
+
+    echo '</pre>'
+    echo '</body></html>'
 fi
