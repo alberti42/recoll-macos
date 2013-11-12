@@ -12,9 +12,14 @@ class ConfSimple:
     lets you retrieve named values from the top level or a subsection"""
 
     def __init__(self, confname, tildexp = False):
-        f = open(confname, 'r')
-        self.dotildexpand = tildexp
         self.submaps = {}
+        self.dotildexpand = tildexp
+        try:
+            f = open(confname, 'r')
+        except Exception as exc:
+            #print("Open Exception: %s" % exc, sys.stderr)
+            # File does not exist -> empty config, not an error.
+            return
 
         self.parseinput(f)
         
@@ -37,21 +42,21 @@ class ConfSimple:
                 appending = True
                 continue
             appending = False
-            #print line
+            #print(line)
             if line[0] == '[':
                 line = line.strip('[]')
                 if self.dotildexpand:
                     submapkey = os.path.expanduser(line)
                 else:
                     submapkey = line
-                #print "Submapkey:", submapkey
+                #print("Submapkey: [%s]" % submapkey)
                 continue
             nm, sep, value = line.partition('=')
             if sep == '':
                 continue
             nm = nm.strip()
             value = value.strip()
-            #print "Name:", nm, "Value:", value
+            #print("Name: [%s] Value: [%s]" % (nm, value))
 
             if not submapkey in self.submaps:
                 self.submaps[submapkey] = {}
@@ -145,7 +150,7 @@ class RclConfig:
             self.confdir = os.environ["RECOLL_CONFDIR"]
         else:
             self.confdir = os.path.expanduser("~/.recoll")
-        #print "Confdir: [%s]" % self.confdir
+        #print("Confdir: [%s]" % self.confdir)
         # Also find datadir. This is trickier because this is set by
         # "configure" in the C code. We can only do our best. Have to
         # choose a preference order. Use RECOLL_DATADIR if the order is wrong
@@ -160,7 +165,7 @@ class RclConfig:
                     self.datadir = dd
         if self.datadir is None:
             self.datadir = "/usr/share/recoll"
-        #print "Datadir: [%s]" % self.datadir
+        #print("Datadir: [%s]" % self.datadir)
         self.cdirs = []
         
         # Additional config directory, values override user ones
@@ -196,3 +201,5 @@ class RclExtraDbs:
 if __name__ == '__main__':
     config = RclConfig()
     print(config.getConfParam("topdirs"))
+    extradbs = RclExtraDbs(config)
+    print(extradbs.getActDbs())
