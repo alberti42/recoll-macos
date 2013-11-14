@@ -149,7 +149,8 @@ lines=`wc -l < $cattxt`
 
 if test $lines -lt 5 -a X$haveunoconv = Xyes; then
     unoconv -f pdf -o "$unopdf" "$infile"
-    `dirname $0`/rclpdf "$unopdf/${infile%.*}.pdf"
+    sinfile=`basename "$infile"`
+    `dirname $0`/rclpdf "$unopdf/${sinfile%.*}.pdf"
 else
     # output the catppt result
     echo '<html><head>'
