@@ -121,20 +121,23 @@ fi
 tmpdir=$ttdir/rclppt_tmp$$
 mkdir $tmpdir || exit 1
 mkdir $tmpdir/rclppttmp || exit 1
-unopdf=$tmpdir/rclppttmp/output.pdf
+
+# We have to use a directory as output parameter to unoconv. Up to
+# version 0.5, it could not use a file name for this
+unopdf=$tmpdir/rclppttmp
 cattxt=$tmpdir/rclppttmp/output.txt
 cleanup()
 {
-    # Note that we're using a constant part (rclkwdtmp), that hopefully
-    # guarantees that we can't do big mistakes here.
+    # Note that we're using a constant part (rclppttmp), which
+    # hopefully guarantees that we can't do big mistakes here.
     rm -rf $tmpdir/rclppttmp
     rmdir $tmpdir
 }
 trap cleanup EXIT HUP QUIT INT TERM
 
-# Try catppt. If the output looks too small and unoconv is available, use this 
-# instead. unoconv is very slow but it handles newer files that catppt will 
-# not convert. 
+# Try catppt. If the output looks too small and unoconv is available,
+# use this instead. unoconv is very slow but it handles newer files
+# that catppt will not convert.
 #
 # I'm not sure of the right test for detecting catppt failure. On the
 # sample I have, it outputs Azure\n1_Azure\n\n. I don't know if Azure
@@ -145,8 +148,8 @@ catppt -d utf-8 "$infile" > $cattxt
 lines=`wc -l < $cattxt`
 
 if test $lines -lt 5 -a X$haveunoconv = Xyes; then
-    unoconv -f pdf -o $unopdf "$infile"
-    `dirname $0`/rclpdf $unopdf
+    unoconv -f pdf -o "$unopdf" "$infile"
+    `dirname $0`/rclpdf "$unopdf/${infile%.*}.pdf"
 else
     # output the catppt result
     echo '<html><head>'
