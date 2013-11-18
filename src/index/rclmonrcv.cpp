@@ -617,6 +617,10 @@ bool RclIntf::addWatch(const string& path, bool)
 	saved_errno = errno;
         LOGERR(("RclIntf::addWatch: inotify_add_watch failed. errno %d\n",
 		   saved_errno));
+        if (errno == ENOSPC) {
+            LOGERR(("RclIntf::addWatch: ENOSPC error may mean that you need"
+                    "increase the inotify kernel constants. See inotify(7)\n"));
+        }
 	return false;
     }
     m_idtopath[wd] = path;
