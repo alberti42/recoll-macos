@@ -102,6 +102,17 @@
       <h2>Nouvelles: </h2>
       <dl>
 
+        <dt>2013-11-19</dt> <dd>Un <a href="filters/filters.html">nouveau
+            filtre</a> pour les fichiers PowerPoint. L'ancien était
+            basé sur le vénérable <b>catppt</b> de <b>catdoc</b>, et,
+            le plus souvent, n'extrayait rien des fichiers PowerPoint
+            récents. (Il s'agit bien de .ppt. .pptx est traité par un
+            filtre natif).</dd>
+
+        <dt>2013-11-11</dt> <dd>La version 1.19.9 est disponible. Elle
+        corrige quelques défauts, en particulier un problème dans la
+        gestion des dates dans les requêtes.</dd> 
+
         <dt>2013-06-18</dt><dd>La version 1.19.8 est disponible.</dd>
 
         <dt>2012-11-05</dt><dd>Recoll 1.18.1 est disponible. Cette

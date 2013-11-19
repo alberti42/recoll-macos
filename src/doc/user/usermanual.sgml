@@ -1040,7 +1040,7 @@ fvwm
         adequate in most cases.</para>
 
       <note><title>Increasing resources for inotify</title>
-	<para>On Linux systems, monitoring a big tree may imply
+	<para>On Linux systems, monitoring a big tree may need
 	  increasing the resources available to inotify, which are
 	  normally defined in <filename>/etc/sysctl.conf</filename>.
 	  <programlisting>
@@ -1058,6 +1058,10 @@ fs.inotify.max_user_watches=32768
 	  </programlisting>
     
 	</para>
+        <para>Especially, you will need to trim your tree or adjust
+        the <literal>max_user_watches</literal> value if indexing exits with
+        a message about errno <literal>ENOSPC</literal> (28) from
+          <function>inotify_add_watch</function>.</para>
       </note>
 
       <sect2 id="RCL.INDEXING.MONITOR.FASTFILES">

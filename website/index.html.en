@@ -52,7 +52,7 @@
         <li><a href="features.html">Detailed features</a>.
       </ul>
       <p>The current <span class="application">Recoll</span> version is
-	<a href="download.html">1.19.8</a> 
+	<a href="download.html">1.19.9</a> 
 	(<a href="release-1.19.html">Release notes</a>,
         <a href="BUGS.html">known bugs</a>).</p>
 
@@ -88,9 +88,16 @@
       
       <dl>
 
-        <dt>2013-06-18</dt> <dd>1.19.8 is released. This mainly
-          changes the way we handle Hindi (nor more
-          diacritics-stripping).</dd> 
+        <dt>2013-11-19</dt> <dd>A <a href="filters/filters.html">new
+            filter</a> for PowerPoint files. The previous one was
+          based on the ancient <b>catppt</b> from the <b>catdoc</b>
+          utilities and usually extracted nothing from more recent
+          PowerPoint files (this is about .ppt: .pptx is handled by a native
+          Recoll filter).</dd>
+        
+        <dt>2013-11-11</dt> <dd>1.19.9 is released. This fixes a
+          number of significant bugs (query date condition handling,
+          possible GUI crashes...).</dd> 
 
         <dt>2013-07-10</dt> <dd>The
           <a href="https://github.com/koniu/recoll-webui">
