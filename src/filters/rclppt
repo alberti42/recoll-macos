@@ -17,11 +17,9 @@
 
 #================================================================
 # Handle powerpoint files for recoll. 
-# Uses catppt from the catdoc utilities
-# (http://ftp.45.free.net/~vitus/software/catdoc/)
-# In my experience, this sometimes fail to extract text, printing "Default
-# Design" ou "format par defaut" instead and only.
-#
+# Use unoconv, this is very slow, but catppt just can't handle the majority
+# of semi-modern ppt files
+
 #================================================================
 
 # set variables
@@ -96,72 +94,17 @@ umask 77
 # !! Leave the following line unmodified !
 #ENDRECFILTCOMMONCODE
 
-havecappt=no
-iscmd cappt && havecappt=yes
-haveunoconv=no
-iscmd unoconv && haveunoconv=yes
-iscmd pdftotext || haveunoconv=no
+filtersdir=`dirname $0`
+checkcmds $filtersdir/ppt-dump.py
 
-if test X$havecatppt = Xno -a X$haveunoconv = Xno ; then
-    # checkcmds will exit with the appropriate salutations
-    checkcmds catppt unoconv pdftotext
-fi
+mso="$filtersdir/ppt-dump.py --no-struct-output --dump-text"
 
-# This needs a temp dir because we first output pdf (outputting html
-# would produce one file per page), and pdftotext can't read from
-# stdin
-if test z"$RECOLL_TMPDIR" != z; then
-    ttdir=$RECOLL_TMPDIR
-elif test z"$TMPDIR" != z ; then
-    ttdir=$TMPDIR
-else
-    ttdir=/tmp
-fi
+cat <<EOF
+<html><head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+</head><body><pre>
+EOF
 
-tmpdir=$ttdir/rclppt_tmp$$
-mkdir $tmpdir || exit 1
-mkdir $tmpdir/rclppttmp || exit 1
+$mso "$infile"| sed -e 's/</&lt;/g' -e 's/&/&amp;/g' 
 
-# We have to use a directory as output parameter to unoconv. Up to
-# version 0.5, it could not use a file name for this
-unopdf=$tmpdir/rclppttmp
-cattxt=$tmpdir/rclppttmp/output.txt
-cleanup()
-{
-    # Note that we're using a constant part (rclppttmp), which
-    # hopefully guarantees that we can't do big mistakes here.
-    rm -rf $tmpdir/rclppttmp
-    rmdir $tmpdir
-}
-trap cleanup EXIT HUP QUIT INT TERM
-
-# Try catppt. If the output looks too small and unoconv is available,
-# use this instead. unoconv is very slow but it handles newer files
-# that catppt will not convert.
-#
-# I'm not sure of the right test for detecting catppt failure. On the
-# sample I have, it outputs Azure\n1_Azure\n\n. I don't know if Azure
-# is a good marker of failure. Anyway, it seems unlikely that a real
-# ppt would have fewer than 5 lines
-
-catppt -d utf-8 "$infile" > $cattxt
-lines=`wc -l < $cattxt`
-
-if test $lines -lt 5 -a X$haveunoconv = Xyes; then
-    unoconv -f pdf -o "$unopdf" "$infile"
-    sinfile=`basename "$infile"`
-    `dirname $0`/rclpdf "$unopdf/${sinfile%.*}.pdf"
-else
-    # output the catppt result
-    echo '<html><head>'
-    #echo '<title>' "$title" '</title>'
-    echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">'
-    echo '</head><body>'
-    echo '<pre>'
-
-    catppt -d utf-8 "$infile" | \
-        sed -e 's/</&lt;/g' -e 's/&/&amp;/g' < $cattxt
-
-    echo '</pre>'
-    echo '</body></html>'
-fi
+echo '</pre></body></html>'
