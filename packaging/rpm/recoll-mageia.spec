@@ -47,6 +47,7 @@ results in konqueror and dolphin.
 %install
 %makeinstall_std
 
+rm lib/librecoll.so*
 pushd kde/kioslave/kio_recoll
 %cmake_kde4
 %make
