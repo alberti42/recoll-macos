@@ -7,10 +7,7 @@
 #================================================================
 #================================================================
 # Extract text from an msword file by executing either antiword 
-#  (or wvware maybe if we need it one day)
-#
-# The default is to use antiword, the code would need modifications to
-# work with wvWare
+#  or wvware
 #
 #================================================================
 
@@ -22,9 +19,6 @@ progname="rcldoc"
 filetype=ms-word
 
 decoder="antiword -t -i 1 -m UTF-8"
-# Not ready to use this for now (it outputs html, so the code below has to
-# be simplified.)
-#decoder="wvWare -1 -c UTF-8"
 
 
 
