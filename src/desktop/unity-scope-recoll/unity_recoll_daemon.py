@@ -271,8 +271,13 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
   def __init__(self, search_context):
     super(RecollScopeSearch, self).__init__()
     self.set_search_context(search_context)
+    self.max_results = MAX_RESULTS
     if hasrclconfig:
       self.config = rclconfig.RclConfig()
+      try:
+        self.max_results = int(self.config.getConfParam("unityscopemaxresults"))
+      except:
+        pass
 
   def connect_db(self):
     #print("RecollScopeSearch: connect_db", file=sys.stderr)
@@ -361,7 +366,7 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
         dnd_uri=doc.url)
 
       actual_results += 1
-      if actual_results >= MAX_RESULTS:
+      if actual_results >= self.max_results:
         break
 
   def date_filter (self, filters):
