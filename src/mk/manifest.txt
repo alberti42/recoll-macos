@@ -164,6 +164,8 @@ doc/user/usermanual.sgml
 doc/user/xmlmake.sh
 filters/
 filters/injectcommon.sh
+filters/msodump.zip
+filters/ppt-dump.py
 filters/rclabw
 filters/rclaptosidman
 filters/rclaudio
