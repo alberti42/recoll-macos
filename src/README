@@ -867,7 +867,7 @@ Chapter 2. Indexing
 
   Increasing resources for inotify
 
-   On Linux systems, monitoring a big tree may imply increasing the resources
+   On Linux systems, monitoring a big tree may need increasing the resources
    available to inotify, which are normally defined in /etc/sysctl.conf.
 
  ### inotify
@@ -882,6 +882,10 @@ Chapter 2. Indexing
  fs.notify.max_user_instances=256
  fs.inotify.max_user_watches=32768
           
+
+   Especially, you will need to trim your tree or adjust the max_user_watches
+   value if indexing exits with a message about errno ENOSPC (28) from
+   inotify_add_watch.
 
   2.8.1. Slowing down the reindexing rate for fast changing files
 
