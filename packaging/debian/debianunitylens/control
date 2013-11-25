@@ -5,8 +5,9 @@ Maintainer: Jean-Francois Dockes <jfd@recoll.org>
 Build-Depends: debhelper (>= 7), 
 	       autotools-dev,
                recoll,
+               python-recoll,
                python
-Standards-Version: 3.9.2
+Standards-Version: 3.9.3
 
 Package: recoll-lens
 Architecture: all

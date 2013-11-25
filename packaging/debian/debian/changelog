@@ -1,8 +1,8 @@
-recoll (1.20.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.19.10-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
-  * Separate python packages and "smart" scope
+  * Support for saucy in 1.19. Separate python and python3 packages
 
- -- Jean-Francois Dockes <jf@dockes.org>  Mon, 11 Nov 2013 11:01:46 +0100
+ -- Jean-Francois Dockes <jf@dockes.org>  Sat, 23 Nov 2013 16:01:46 +0100
 
 recoll (1.18.1-1) experimental; urgency=low
 

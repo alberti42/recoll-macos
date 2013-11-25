@@ -9,7 +9,7 @@ DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 CFLAGS = -Wall -g
-LDFLAGS = -Wl,-z,defs
+#LDFLAGS = -Wl,-z,defs
 
 #build qt4 UI only
 export QMAKE=qmake-qt4
@@ -33,7 +33,7 @@ build-arch: build-stamp
 build-indep: build-stamp
 build-stamp: config.status
 	dh_testdir
-	$(MAKE) -j 5
+	$(MAKE)
 	touch $@
 
 clean:
