@@ -19,6 +19,9 @@ set(rcltop ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
 execute_process(COMMAND ${rcltop}/configure --disable-qtgui --disable-x11mon --enable-pic --prefix=${CMAKE_INSTALL_PREFIX} --mandir=${CMAKE_INSTALL_PREFIX}/share/man
 		WORKING_DIRECTORY ${rcltop}
 )
+execute_process(COMMAND /bin/sh mkMake
+		WORKING_DIRECTORY ${rcltop}/lib
+)
 
 link_directories(${rcltop}/lib ${CMAKE_INSTALL_PREFIX}/lib)
 

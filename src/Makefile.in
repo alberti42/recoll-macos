@@ -85,6 +85,7 @@ install: all
 	  /bin/sh ./recollinstall ${prefix}
 
 configure: VERSION configure.ac
+	rm -f configure
 	autoconf
 	@echo run configure and make again
 	exit 1

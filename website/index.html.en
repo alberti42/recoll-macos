@@ -35,7 +35,7 @@
     <div class="content">
 
       <h1><a href="http://www.recoll.org/">Recoll</a> is
-	a text search tool for Unix and Linux desktops.</h1>
+	a full-text search tool for Unix and Linux desktops.</h1>
 
       <p><span class="application">Recoll</span> finds keywords
         inside documents as well as file names.</p>
