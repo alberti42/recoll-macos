@@ -1,7 +1,7 @@
 Source: recoll
 Section: x11
 Priority: optional
-Maintainer: Kartik Mistry <kartik@debian.org>
+Maintainer: Jean-Francois Dockes <jfd@recoll.org>
 Build-Depends: autotools-dev,
                debhelper (>= 7),
                hardening-wrapper,
@@ -21,7 +21,7 @@ Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/recoll.git;a=summa
 Package: recoll
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
-Recommends: recoll-python, aspell, python, xdg-utils, xsltproc
+Recommends: python-recoll, aspell, python, xdg-utils, xsltproc
 Suggests: antiword,
           catdoc,
           ghostscript,

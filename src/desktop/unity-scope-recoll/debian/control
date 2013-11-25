@@ -1,12 +1,10 @@
 Source: unity-scope-recoll
 Section: gnome
 Priority: extra
-Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Maintainer: Jean-Francois Dockes <jfd@recoll.org>
 Build-Depends: debhelper (>= 9),
                pkg-config,
                python3,
-#               python3-distutils-extra,
-#               python3-nose,
                python3-gi,
                gir1.2-glib-2.0,
                gir1.2-unity-5.0 (>= 7.0),
