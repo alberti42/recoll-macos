@@ -4,9 +4,9 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.20.0
-LENSVERS=1.20.0.3519
-SCOPEVERS=1.20.0.3519
+RCLVERS=1.19.10
+LENSVERS=1.19.10.3543
+SCOPEVERS=1.19.10.3543
 PPAVERS=2
 
 case $RCLVERS in
@@ -20,38 +20,12 @@ echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
 ####### QT4
-debdir=debianrclqt4
-series="lucid oneiric precise"
-series=""
-if test X$series != X ; then
-    test -d recoll-${RCLVERS} || tar xvzf recoll_${RCLVERS}.orig.tar.gz
-fi
-
-for series in $series ; do
-  rm -rf recoll-${RCLVERS}/debian
-  cp -rp ${debdir}/ recoll-${RCLVERS}/debian || exit 1
-
-  if test -f $debdir/control-$series ; then
-      cp -f -p $debdir/control-$series recoll-${RCLVERS}/debian/control
-  else 
-      cp -f -p $debdir/control recoll-${RCLVERS}/debian/control
-  fi
-
-  sed -e s/SERIES/${series}/g \
-      -e s/PPAVERS/${PPAVERS}/g \
-      < ${debdir}/changelog > recoll-${RCLVERS}/debian/changelog
-
-  (cd recoll-${RCLVERS};debuild -S -sa)  || break
-
-  dput $PPANAME recoll_${RCLVERS}-1~ppa${PPAVERS}~${series}1_source.changes
-done
-
-####### QT4 separate python packages
 debdir=debian
-series="quantal raring saucy"
-series=""
+# Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
+series="precise quantal raring saucy"
+series="precise saucy"
 
-if test X$series != X ; then
+if test "X$series" != X ; then
     test -d recoll-${RCLVERS} || tar xvzf recoll_${RCLVERS}.orig.tar.gz
 fi
 
@@ -76,17 +50,23 @@ for series in $series ; do
 done
 
 ### KIO
-series="lucid oneiric precise quantal raring"
-series=
+series="precise quantal raring saucy"
+series="precise saucy"
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
-if test X$series != X ; then
-    test -d kio-recoll_${RCLVERS}.orig.tar.gz || \
+if test "X$series" != X ; then
+    if test ! -d kio-recoll_${RCLVERS}.orig.tar.gz ; then
         cp -p recoll_${RCLVERS}.orig.tar.gz \
-        kio-recoll_${RCLVERS}.orig.tar.gz || \
-        exit 1
-    test -d $topdir || tar xvzf recoll_${RCLVERS}.orig.tar.gz
+            kio-recoll_${RCLVERS}.orig.tar.gz || exit 1
+    fi
+    if test ! -d $topdir ; then 
+        mkdir temp
+        cd temp
+        tar xvzf ../recoll_${RCLVERS}.orig.tar.gz || exit 1
+        mv recoll-${RCLVERS} ../$topdir || exit 1
+        cd ..
+    fi
 fi
 for series in $series ; do
 
@@ -104,15 +84,15 @@ for series in $series ; do
 done
 
 ### Unity Lens
-series="oneiric precise quantal raring"
-series=
+series="precise quantal raring"
+series=precise
 
 debdir=debianunitylens
 topdir=recoll-lens-${LENSVERS}
-if test X$series != X ; then
+if test "X$series" != X ; then
     test -d $topdir ||  tar xvzf recoll-lens_${LENSVERS}.orig.tar.gz
 fi
-test -d $topdir ||
+
 for series in $series ; do
 
    rm -rf $topdir/debian
@@ -135,7 +115,7 @@ series="saucy"
 
 debdir=debianunityscope
 topdir=unity-scope-recoll-${SCOPEVERS}
-if test X$series != X ; then
+if test "X$series" != X ; then
     test -d $topdir ||  tar xvzf unity-scope-recoll_${LENSVERS}.orig.tar.gz
 fi
 for series in $series ; do
