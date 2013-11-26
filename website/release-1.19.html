@@ -63,6 +63,21 @@ Configuration</em> menu.</p>
 
 <h2><a name="minor_releases">Minor releases at a glance</a></h2>
 <ul>
+  <li>1.19.10 has a bit more changes than
+    usually goes into a Recoll minor version, and could have been
+    1.20.0 instead. On the other hand, it
+    brings some features which needed to be released, and did not
+    really warrant a major version. So here goes:
+    <ul>
+      <li>Python3 compatibility for the Python Recoll module.</li>
+      <li>A Ubuntu Unity Scope for saucy (13.10), replacing the
+        lens (and which needed Python 3).</li>
+      <li>A new PPT format text extractor. Catppt just did not extract
+        anything from more recent .ppt files.</li>
+    </ul> Mostly, if you are not running Ubuntu (Saucy or later), you
+    can just <a href="filters/filters.html">download the ppt
+    filter</a> and stay with 1.19.9. 
+  </li>
   <li>1.19.9 fixes a few <a href="BUGS.html#b_1_19_8">bugs</a>.</li>
   <li>1.19.8 changes the way we handle Hindi / Devanagari
     text (no more stripping of diacritics), and also has a fix for the
