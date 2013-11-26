@@ -41,7 +41,7 @@
         inside documents as well as file names.</p>
       <ul>
         <li>It can search
-          any <a href="features.html#doctypes">document format</a>.</li> 
+          most <a href="features.html#doctypes">document formats</a>.</li> 
         <li>It can reach any storage place: files, 
           archive members, email attachments, transparently
           handling decompression.</li>

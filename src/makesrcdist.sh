@@ -72,11 +72,11 @@ fi
 
 if test "$dotag" = "yes" ; then
   echo Creating AND TAGGING version $versionforcvs
+  tagexists $TAG  && fatal "Tag $TAG already exists"
 else
   echo Creating version $versionforcvs, no tagging
 fi
 sleep 2
-tagexists $TAG  && fatal "Tag $TAG already exists"
 
 editedfiles=`$VCCMD status . | egrep -v '^\?'`
 if test "$dotag" = "yes" -a ! -z "$editedfiles"; then

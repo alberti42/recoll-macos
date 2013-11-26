@@ -234,23 +234,20 @@ a set of Ubuntu series. starting at Lucid. The installation is very simple: </p>
 </tt></pre>
 
 <p>Source code for the lens (also included in the main recoll tar file):<br>
-For 1.19 installations: <a
-href="recoll-lens-1.19.2.3328.tar.gz">recoll-lens-1.19.2.3328.tar.gz</a><br>
-For 1.18: <a
-href="recoll-lens-1.18.1.2997.tar.gz">recoll-lens-1.18.1.2997.tar.gz</a><br>
-For 1.17: <a
-href="recoll-lens-1.17.2.2697.tar.gz">recoll-lens-1.17.2.2697.tar.gz</a></p>
+For 1.19 installations: 
+<a href="recoll-lens-1.19.10.3543.tar.gz">
+  recoll-lens-1.19.10.3543.tar.gz</a>
+<a href="unity-scope-recoll-1.19.10.3543.tar.gz">
+  unity-scope-recoll-1.19.10.3543.tar.gz</a><br>
+For 1.18: 
+<a href="recoll-lens-1.18.1.2997.tar.gz">
+  recoll-lens-1.18.1.2997.tar.gz</a><br>
+For 1.17: 
+<a href="recoll-lens-1.17.2.2697.tar.gz">
+  recoll-lens-1.17.2.2697.tar.gz</a></p>
 
-<p>The packages in the standard repository and on the PPA are a bit different
-in the sense that the Python extension is included in the PPA package, but it's
-a separate package in the standard repository. This can give rise to errors
-about overwriting the Python module when switching between versions. Typically,
-the error message would be like the following:</p>
-<pre><tt>ErrorMessage: trying to overwrite '/usr/lib/python2.7/dist-packages/recoll.so',
-    which is also in package recoll 1.18.1-1~ppa1~quantal1</tt></pre>
-
-<p>If this happens, you just need to delete the previous package(s) before
-installing the other one(s) instead of performing an upgrade.</p>
+<p>The 1.19.10 packages in the PPA now have a separate package for the Python
+  extension, like the standard ones.</p>
 
 <blockquote>
   <h4>Notes for Ubuntu Lucid</h4>
@@ -355,9 +352,9 @@ copied to <span class="filename">/usr/[local/]share/recoll/translations</span>
 <p><a href="translations/recoll_xx.ts">recoll_xx.ts</a> is a blank Recoll 1.19
 message file, handy to work on a new translation.</p>
 
-<h3>Updated 1.19 translations that became available after the
-release:</h3>
+<h3>Updated 1.19 translations that became available after the release:</h3>
 
+<p>All translations are up to date in release 1.19.10. For older ones:</p>
 <p>Greek translation, thanks to Dimitrios
 <a href="translations/recoll_el.ts">recoll_el.ts</a>
 <a href="translations/recoll_el.qm">recoll_el.qm</a>
