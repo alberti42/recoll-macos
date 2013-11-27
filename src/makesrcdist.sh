@@ -44,6 +44,13 @@ targetdir=${targetdir-/tmp}
 dotag=${dotag-yes}
 snap=${snap-no}
 
+if ! test configure -nt configure.ac -a configure -nt VERSION ;then
+    set -x
+    rm -f configure
+    autoconf || exit 1
+    set +x
+fi
+
 while getopts ts o
 do	case "$o" in
 	t)	dotag=no;;

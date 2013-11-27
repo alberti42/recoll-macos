@@ -52,7 +52,7 @@
         <li><a href="features.html">Detailed features</a>.
       </ul>
       <p>The current <span class="application">Recoll</span> version is
-	<a href="download.html">1.19.10</a> 
+	<a href="download.html">1.19.11</a> 
 	(<a href="release-1.19.html">Release notes</a>,
         <a href="BUGS.html">known bugs</a>).</p>
 
@@ -88,7 +88,7 @@
       
       <dl>
 
-        <dt>2013-11-25</dt> <dd>Release 1.19.10 is out. This brings a
+        <dt>2013-11-25</dt> <dd>Release 1.19.11 is out. This brings a
           Unity Scope for Ubuntu 13.10, python3 compatibility, and a
           new and much improved filter for PowerPoint (.ppt)
           files.</dd>

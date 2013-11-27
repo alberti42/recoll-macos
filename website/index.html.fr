@@ -48,7 +48,7 @@
       <p><span class="application">Recoll</span> est un logiciel libre
 	gratuit, dont le code source est disponible sous licence GPL.
 	La dernière version est 
-        <a class="important" href="download.html">1.19.10</a>
+        <a class="important" href="download.html">1.19.11</a>
 	(<a href="release-1.19.html">notes sur la version, en
 	anglais</a>)</p> 
 
@@ -102,7 +102,7 @@
       <h2>Nouvelles: </h2>
       <dl>
 
-        <dt>2013-11-25</dt> <dd> La version 1.19.10 est sortie. Elle
+        <dt>2013-11-25</dt> <dd> La version 1.19.11 est sortie. Elle
           apporte un Scope pour le Dash de Ubuntu Unity (am I still
           speaking French here ?), la compatibilité Python3, et un
           nouveau filtre pour les fichiers PowerPoint.</dd>
