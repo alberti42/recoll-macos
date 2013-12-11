@@ -12,7 +12,6 @@ def dotest(db, q):
     nres = query.executesd(q)
     print "Result count: ", nres
     print "Query: ", query.getxquery().encode('utf-8')
-    sys.exit(0)
     if nres > 10:
         nres = 10
     for i in range(nres):
@@ -23,19 +22,21 @@ def dotest(db, q):
                 print k, ":", getattr(doc, k).encode('utf-8')
             else:
                 print k, ": None"
-            #abs = db.makeDocAbstract(doc, query).encode('utf-8')
-            #print abs
         print
 # End dotest
 
+# addclause(type='and'|'or'|'filename'|'phrase'|'near'|'path'|'sub'
+#          qstring=string, slack=int, field=string, stemming=1|0,
+#          subSearch=SearchData, exclude=0|1, anchorstart=0|1, anchorend=0|1
+#          casesens=0|1, diacsens=0|1)
+
 #sd.addclause("and", "dockes", field="author")
 #sd.addclause("phrase", "jean francois", 1)
-#sd.addclause("excl", "plage")
 
 db = recoll.connect(confdir="/home/dockes/.recoll-prod")
 
 sd = recoll.SearchData(stemlang="english")
-sd.addclause("and", "dockes", stemming = False, casesens = False, diacsens = True)
+sd.addclause('filename', "recollqsd*")
 
 dotest(db, sd)
 
