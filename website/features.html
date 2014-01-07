@@ -156,10 +156,12 @@
 
       <ul>
         <li><span class="application">pdf</span> with the <span class=
-        "command">pdftotext</span> command, which can be installed
-        as part of <a href="http://www.foolabs.com/xpdf/">xpdf</a>
-        or <a href="http://poppler.freedesktop.org/">poppler</a>,
-        depending on your distribution.</li>
+        "command">pdftotext</span> command, which used to be installed
+        as part of <a href="http://www.foolabs.com/xpdf/">xpdf</a> but
+        is nowadays more often found with 
+          <a href="http://poppler.freedesktop.org/">poppler</a>,
+          depending on your distribution (the package name is quite
+          often <tt>poppler-utils</tt>).</li>
 
         <li><span class="application">msword</span> with <a href=
         "http://www.winfield.demon.nl/">antiword</a>.  It is also useful to
@@ -296,12 +298,13 @@ application/x-tar = execm rcltar
           from <a href="http://chardet.feedparser.org/">chardet</a>. There
           is probably a <tt>python-chardet</tt> package for your distribution,
           but you will quite probably need to build the midi
-          package. This is easy but see the 
-          to <a href="helpernotes.html#midi">notes here</a>.
+          package. This is easy but see the <a href="helpernotes.html#midi">
+            notes here</a>.
         </li> 
 
         <li><span class="application">Konqueror webarchive</span>
-          format with Python (uses the tarfile module).</li>
+          format with Python (uses the <tt>tarfile</tt> standard
+          library module).</li>
 
         <li><span class="application">Mimehtml web archive
             format</span> (support based on the mail 

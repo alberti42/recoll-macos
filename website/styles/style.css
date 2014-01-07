@@ -101,6 +101,7 @@ div.news {
 }
 
 .important {
+    font-size: 150%;
     background: yellow;
 }
 a.weak {

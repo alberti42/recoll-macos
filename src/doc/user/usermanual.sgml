@@ -7,7 +7,7 @@
 	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [ -->
 
 <!ENTITY RCL "<application>Recoll</application>">
-<!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/features.html'>Recoll helper applications page</ulink>">
+<!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/features.html'>http://www.recoll.org/features.html</ulink>">
 <!ENTITY RCLVERSION "1.19">
 <!ENTITY XAP "<application>Xapian</application>">
 <!ENTITY WIKI "http://bitbucket.org/medoc/recoll/wiki/">
@@ -4390,7 +4390,7 @@ except:
         dependancy.</para> 
 
       <para>Please note that, due to the relatively dynamic nature of this
-	information, the most up to date version is now kept on the &RCLAPPS;
+	information, the most up to date version is now kept on &RCLAPPS;
 	along with links to the home pages or best source/patches pages,
 	and misc tips. The list below is not updated often and may be quite
 	stale.</para>
@@ -4398,7 +4398,7 @@ except:
       <para>For many Linux distributions, most of the commands listed can
         be installed from the package repositories. However, the packages
         are sometimes outdated, or not the best version for &RCL;, so you
-        should take a look at the &RCLAPPS; if a file
+        should take a look at &RCLAPPS; if a file
         type is important to you.</para>
 
       <para>As of &RCL; release 1.14, a number of XML-based formats that
@@ -4420,7 +4420,7 @@ except:
         <listitem><para>Postscript files need <command>pstotext</command>. 
             The original version has an issue with shell
             character in file names, which is corrected in recent
-            packages. See the the &RCLAPPS; for more detail.</para>
+            packages. See &RCLAPPS; for more detail.</para>
           </listitem>
 
         <listitem><para>MS Word needs
@@ -4442,10 +4442,10 @@ except:
 
         <listitem><para>RTF files need <command>unrtf</command>, which, in
         its standard version, has much trouble with non-western character
-        sets. Check the &RCLAPPS;.</para></listitem>
+        sets. Check  &RCLAPPS;.</para></listitem>
 
         <listitem><para>TeX files need <command>untex</command> or
-        <command>detex</command>. Check the &RCLAPPS; for sources if it's not
+        <command>detex</command>. Check &RCLAPPS; for sources if it's not
         packaged for your distribution.</para></listitem>
 
         <listitem><para>dvi files need <command>dvips</command>.</para>
