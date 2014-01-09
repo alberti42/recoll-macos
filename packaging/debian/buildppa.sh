@@ -7,14 +7,14 @@
 RCLVERS=1.19.10
 LENSVERS=1.19.10.3543
 SCOPEVERS=1.19.10.3543
-PPAVERS=2
+PPAVERS=4
 
 case $RCLVERS in
     [23]*) PPANAME=recollexp-ppa;;
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-PPANAME=recollexp-ppa
+#PPANAME=recollexp-ppa
 
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
@@ -23,7 +23,7 @@ read rep
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
 series="precise quantal raring saucy"
-series="precise saucy"
+#series="precise saucy"
 
 if test "X$series" != X ; then
     test -d recoll-${RCLVERS} || tar xvzf recoll_${RCLVERS}.orig.tar.gz
@@ -51,7 +51,7 @@ done
 
 ### KIO
 series="precise quantal raring saucy"
-series="precise saucy"
+series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -85,7 +85,7 @@ done
 
 ### Unity Lens
 series="precise quantal raring"
-series=precise
+series=
 
 debdir=debianunitylens
 topdir=recoll-lens-${LENSVERS}
@@ -111,7 +111,7 @@ done
 
 ### Unity Scope
 series="saucy"
-#series=
+series=
 
 debdir=debianunityscope
 topdir=unity-scope-recoll-${SCOPEVERS}

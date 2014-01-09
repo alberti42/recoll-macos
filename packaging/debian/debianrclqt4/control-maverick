@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 7),
 	       autotools-dev,
 	       libqt4-dev,
                libqtwebkit-dev,
-	       libxapian-dev (>= 1.0.15),
+	       libxapian-dev (>= 1.2.0),
 	       libx11-dev,
 	       libz-dev,
                python-dev

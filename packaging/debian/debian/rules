@@ -48,8 +48,10 @@ install:
 	dh_testroot
 	dh_prep
 	dh_installdirs
-
 	$(MAKE) STRIP=ls prefix=$(CURDIR)/debian/tmp/usr install
+	# Work around recollinstall forgetting the PPT text-extract utility
+	install -m 0444 filters/msodump.zip $(CURDIR)/debian/tmp/usr/share/recoll/filters
+	install -m 0555 filters/ppt-dump.py $(CURDIR)/debian/tmp/usr/share/recoll/filters
 	(cd python/recoll; python setup.py install \
 	                                   --install-layout=deb \
 	                                   --prefix=$(CURDIR)/debian/tmp/usr )
