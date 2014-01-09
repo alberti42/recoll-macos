@@ -17,20 +17,12 @@
 
 #================================================================
 # Handle excel files for recoll. 
-# Uses xls2csv from the catdoc utilities
-# (http://ftp.45.free.net/~vitus/software/catdoc/)
-# Note: xls2csv is supposed to detect the source charset from the excel
-# file but this does not always work. If you see unexpected russian chars
-# (the russian author's default charset) in the output, you may want to add
-# ie a -s 8859-1 option to the xls2csv command line.
 #================================================================
 # set variables
 LANG=C ; export LANG
 LC_ALL=C ; export LC_ALL
 progname="rclxls"
 filetype=excel
-
-
 
 
 
@@ -100,7 +92,11 @@ umask 77
 # !! Leave the following line unmodified !
 #ENDRECFILTCOMMONCODE
 
-checkcmds xls2csv
+top=`dirname $0`
+XLSDUMP="$top/xls-dump.py"
+XMLTOCSV="$top/xlsxmltocsv.py"
+
+checkcmds $XLSDUMP $XLSTOCSV
 
 # output the result
 echo '<html><head>'
@@ -109,7 +105,8 @@ echo '<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">'
 echo '</head><body>'
 echo '<pre>'
 
-xls2csv -c'	' -b"<hr>" -d utf-8 "$infile" | \
+$XLSDUMP --dump-mode=canonical-xml --utf-8 --catch "$infile" | \
+   $XMLTOCSV | \
    sed -e 's/</&lt;/g' -e 's/&/&amp;/g' 
 
 echo '</pre>'

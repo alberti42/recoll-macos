@@ -1,36 +1,14 @@
 #!/usr/bin/env python2
-########################################################################
 #
-#  Copyright (c) 2010 Kohei Yoshida, Thorsten Behrens
-#  
-#  Permission is hereby granted, free of charge, to any person
-#  obtaining a copy of this software and associated documentation
-#  files (the "Software"), to deal in the Software without
-#  restriction, including without limitation the rights to use,
-#  copy, modify, merge, publish, distribute, sublicense, and/or sell
-#  copies of the Software, and to permit persons to whom the
-#  Software is furnished to do so, subject to the following
-#  conditions:
-#  
-#  The above copyright notice and this permission notice shall be
-#  included in all copies or substantial portions of the Software.
-#  
-#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-#  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-#  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-#  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-#  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-#  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-#  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-#  OTHER DEALINGS IN THE SOFTWARE.
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-########################################################################
 
 import sys, os.path, getopt
-sys.path.append(sys.path[0]+"/msodump.zip/src")
-import ole, pptstream, globals, olestream
-
-from globals import error
+sys.path.append(sys.path[0]+"/msodump.zip")
+from msodumper import ole, pptstream, globals, olestream
+from msodumper.globals import error
 
 def usage (exname):
     exname = os.path.basename(exname)
@@ -38,9 +16,11 @@ def usage (exname):
 
 Options:
   --help        displays this help message.
-  --no-struct-output suppress normal disassembly output
-  --dump-text   print the textual content
-"""%exname
+  --no-struct-output suppress normal structure analysis output
+  --dump-text   extract and print the textual content
+  --no-raw-dumps suppress raw hex dumps of uninterpreted areas
+  --id-select=id1[,id2 ...] limit output to selected record Ids
+""" % exname
     print msg
 
 
@@ -104,24 +84,29 @@ def main (args):
         usage(exname)
         return
 
-    params = globals.Params()
     try:
         opts, args = getopt.getopt(args, "h",
                                    ["help", "debug", "show-sector-chain",
-                                    "no-struct-output", "dump-text"])
+                                    "no-struct-output", "dump-text",
+                                    "id-select=", "no-raw-dumps"])
         for opt, arg in opts:
             if opt in ['-h', '--help']:
                 usage(exname)
                 return
             elif opt in ['--debug']:
-                params.debug = True
+                globals.params.debug = True
             elif opt in ['--show-sector-chain']:
-                params.showSectorChain = True
+                globals.params.showSectorChain = True
             elif opt in ['--no-struct-output']:
-                globals.muteOutput(1)
-                params.noStructOutput = True
+                globals.params.noStructOutput = True
             elif opt in ['--dump-text']:
-                params.dumpText = True
+                globals.params.dumpText = True
+            elif opt in ['--no-raw-dumps']:
+                globals.params.noRawDumps = True
+            elif opt in ['--id-select']:
+                globals.params.dumpedIds = arg.split(",")
+                globals.params.dumpedIds = \
+                    set([int(val) for val in globals.params.dumpedIds if val])
             else:
                 error("unknown option %s\n"%opt)
                 usage()
@@ -131,11 +116,13 @@ def main (args):
         usage(exname)
         return
 
-    dumper = PPTDumper(args[0], params)
+    dumper = PPTDumper(args[0], globals.params)
     if not dumper.dump():
         error("FAILURE\n")
-    if params.dumpText:
+    if globals.params.dumpText:
         print(globals.textdump.replace("\r", "\n"))
 
 if __name__ == '__main__':
     main(sys.argv)
+
+# vim:set filetype=python shiftwidth=4 softtabstop=4 expandtab:
