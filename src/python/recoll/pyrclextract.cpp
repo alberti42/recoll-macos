@@ -344,9 +344,9 @@ initrclextract(void)
 #if PY_MAJOR_VERSION >= 3 || (PY_MAJOR_VERSION >= 2 && PY_MINOR_VERSION >= 7)
     recoll_DocType = (PyObject*)PyCapsule_Import(PYRECOLL_PACKAGE "recoll.doctypeptr", 0);
 #else
-    PyObject *module = PyImport_ImportModule(PYRECOLL_PACKAGE "recoll");
-    if (module != NULL) {
-        PyObject *cobject = PyObject_GetAttrString(module, "_C_API");
+    PyObject *module1 = PyImport_ImportModule(PYRECOLL_PACKAGE "recoll");
+    if (module1 != NULL) {
+        PyObject *cobject = PyObject_GetAttrString(module1, "doctypeptr");
         if (cobject == NULL)
             INITERROR;
         if (PyCObject_Check(cobject))
