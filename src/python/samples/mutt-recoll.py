@@ -1,24 +1,23 @@
 #!/usr/bin/env python
 """
-mutt-notmuch-py
+Modified from github:honza/mutt-notmuch-py
 
-This is a Gmail-only version of the original mutt-notmuch script.
+This is a recoll version of the original mutt-notmuch script.
 
 It will interactively ask you for a search query and then symlink the matching
 messages to $HOME/.cache/mutt_results.
 
 Add this to your muttrc.
 
-macro index / "<enter-command>unset wait_key<enter><shell-escape>mutt-notmuch-py<enter><change-folder-readonly>~/.cache/mutt_results<enter>" \
-          "search mail (using notmuch)"
+macro index / "<enter-command>unset wait_key<enter><shell-escape>mutt-recoll.py<enter><change-folder-readonly>~/.cache/mutt_results<enter>" \
+          "search mail (using recoll)"
 
 This script overrides the $HOME/.cache/mutt_results each time you run a query.
 
 Install this by adding this file somewhere on your PATH.
 
-Tested on OSX Lion and Arch Linux.
-
 (c) 2012 - Honza Pokorny
+(c) 2014 - Jean-Francois Dockes
 Licensed under BSD
 """
 
@@ -59,12 +58,14 @@ def main(dest_box, is_gmail):
 
     empty_dir(dest_box)
 
-    files = command('notmuch search --output=files %s' % query).split('\n')
+    files = command('recoll -t -b -q %s' % query).split('\n')
 
     data = defaultdict(list)
     messages = []
 
     for f in files:
+        # Recoll outputs file:// urls
+        f = f[7:]
         if not f:
             continue
 
@@ -86,6 +87,7 @@ def main(dest_box, is_gmail):
 
         target = os.path.join(dest_box, 'cur', os.path.basename(m))
         if not os.path.exists(target):
+            print "symlink [%s] -> [%s]" % (m, target)
             os.symlink(m, target)
 
 
@@ -103,6 +105,8 @@ if __name__ == '__main__':
         dest = args[0]
     else:
         dest = '~/.cache/mutt_results'
-
+        if not os.path.exists(dest):
+            os.makedirs(dest)
+        
     # Use expanduser() so that os.symlink() won't get weirded out by tildes.
     main(os.path.expanduser(dest).rstrip('/'), options.gmail)
