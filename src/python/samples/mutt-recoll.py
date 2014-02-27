@@ -7,7 +7,7 @@ This is a recoll version of the original mutt-notmuch script.
 It will interactively ask you for a search query and then symlink the matching
 messages to $HOME/.cache/mutt_results.
 
-Add this to your muttrc.
+Add this to your .muttrc.
 
 macro index / "<enter-command>unset wait_key<enter><shell-escape>mutt-recoll.py<enter><change-folder-readonly>~/.cache/mutt_results<enter>" \
           "search mail (using recoll)"
@@ -104,7 +104,7 @@ if __name__ == '__main__':
     if args:
         dest = args[0]
     else:
-        dest = '~/.cache/mutt_results'
+        dest = os.path.expanduser('~/.cache/mutt_results')
         if not os.path.exists(dest):
             os.makedirs(dest)
         
