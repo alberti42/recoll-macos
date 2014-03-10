@@ -2835,12 +2835,11 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
         <listitem><para><literal>dir</literal> for filtering the
             results on file location
-            (Ex: <literal>dir:/home/me/somedir</literal>). 
-            <literal>-dir</literal>
+            (Ex: <literal>dir:/home/me/somedir</literal>).  <literal>-dir</literal>
             also works to find results not in the specified directory
-            (release >= 1.15.8). A tilde inside the value will be
-            expanded to the home directory. Wildcards will be
-            expanded, but
+            (release >= 1.15.8). Tilde expansion will be performed as
+            usual (except for a bug in versions 1.19 to
+            1.19.11p1). Wildcards will be expanded, but
             please <link linkend="RCL.SEARCH.WILDCARDS.PATH"> have a
             look</link> at an important limitation of wildcards in
             path filters.</para>
