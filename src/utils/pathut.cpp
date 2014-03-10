@@ -617,9 +617,7 @@ pid_t Pidfile::read_pid()
 	return (pid_t)-1;
 
     char buf[16];
-    int error;
     int i = read(fd, buf, sizeof(buf) - 1);
-    error = errno;
     ::close(fd);
     if (i <= 0)
 	return (pid_t)-1;
