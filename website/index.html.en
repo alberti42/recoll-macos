@@ -34,7 +34,8 @@
 
     <div class="content">
 
-      <h1><a href="http://www.recoll.org/">Recoll</a> is
+      <h1><img align="center" src="pics/recoll64.png"/>
+        <a href="http://www.recoll.org/">Recoll</a> is
 	a full-text search tool for Unix and Linux desktops.</h1>
 
       <p><span class="application">Recoll</span> finds keywords
@@ -87,6 +88,24 @@
       <div class="news">
       
       <dl>
+        <dt>2014-02-27</dt> <dd>I hear from time to time about
+        recollindex crashes. These appear to be quite rare, but they
+        do happen, and I think that they are linked to a yet unfound
+        bug in multithread indexing. If you experience such crashes or
+        stalls, you can disable multithreading by adding the following
+        to your recoll.conf:
+          <pre><tt>thrQSizes = -1 -1 -1</tt></pre>
+        </dd>
+
+        <dt>2014-02-27</dt><dd>While working on a 
+          <a href="https://bitbucket.org/medoc/recoll/wiki/MuttAndRecoll">
+            Recoll-Mutt interface</a> I discovered incidentally that
+            the <a href="https://github.com/koniu/recoll-webui">Recoll
+            Webui Web interface</a> works quite well with the 
+          <a href="http://links.twibright.com/">links</a> web browser
+          inside a terminal window. This appears to be an interesting
+          solution for people looking for a search interface usable in
+          a non-GUI environment.</dd>
 
         <dt>2013-11-25</dt> <dd>Release 1.19.11 is out. This brings a
           Unity Scope for Ubuntu 13.10, python3 compatibility, and a
@@ -113,12 +132,6 @@
           (previewing and downloading in addition to file:://
           urls).</dd>
 
-        <dt>2013-06-07</dt><dd>Recoll 1.19.4 is out. It fixes a few
-          relatively minor issues in 1.19.3. See the 
-          <a href="release-1.19.html#minor_releases">release notes</a> 
-          for a description of the changes.</dd>
-        </dd>
-
         <dt>2013-05-18</dt><dd>Sometimes things 
           <a href="http://www.lesbonscomptes.com/pages/happysearch.html">
             just work</a>...</dd>
@@ -135,18 +148,6 @@
               Web browser interface</a> for querying your Recoll
               indexes.</dd>  
 
-        <dt>2013-04-14</dt><dd>Release 1.18.2 fixes a few really minor
-          <a href="BUGS.html#b_1_18_1">bugs in 1.18.1</a>. I
-          will not package it.</dd>
-
-        <dt>2012-12-14</dt><dd>The next version of Recoll indexing will be
-          multithreaded, and much faster on most current
-          processors. The conversion has been an interesting project
-          with multiple stages, and I've taken 
-          <a href="idxthreads/threadingRecoll.html">a few  notes</a> 
-          about the transformation.</dd>
-        </dd>
-
         <dt>2012-11-05</dt><dd>Recoll 1.18.1 is out. It has optional
           character case and diacritics sensitivity, direct access to
           the hit page when opening PDF files, complex search history,
@@ -162,15 +163,6 @@
             application/pdf, application/postscript and
             application/dvi from the <tt>Exceptions</tt> list.
         </dd>
-
-        <dt>2012-10-30</dt> <dd>Recoll has a brand new Firefox extension for
-          indexing visited Web pages. This is very similar to the old
-          Beagle plugin, but slightly better integrated (no-fuss
-          installation), and with a new lease on life. See
-          <a href="https://sourceforge.net/projects/recollfirefox/">
-            Dave King's project page on sourceforge</a> and the
-          <a href="https://bitbucket.org/medoc/recoll/wiki/IndexWebHistory">
-            page about Recoll (trivial) configuration</a>.</dd>
 
         <dt>2012-10-25</dt> <dd>A problem with a simple workaround has caused
           several reported <span class="important">recollindex
@@ -189,13 +181,6 @@
           causes incorrect mail indexing.
         </dd>
 
-        <dt>2012-09-21</dt><dd>An
-          <a href="https://bitbucket.org/medoc/recoll/wiki/ElinksWeb">easy
-                 way</a> to extend the "Web queue"
-         Recoll web history indexing mechanism to other browsers than
-         Firefox (Elinks in this case).
-        </dd>
-
         <dt>2012-09-11</dt> <dd>A new user-contributed script for those who use
           real-time indexing on laptops: stop or start indexing
           according to AC power status. See the details on
@@ -207,16 +192,6 @@
         <a href="http://stupidbeauty.com/Blog/2012/03/recoll%E7%94%A8%E6%88%B6%E6%89%8B%E5%86%8A%E7%BF%BB%E8%AD%AF%EF%BC%8Crecoll-user-manual-2/">
           Recoll中文手册，HTML</a></dd>
 
-        <dt>2012-03-27</dt> <dd>Recoll gets a Ubuntu Unity Lens. If
-        you are running
-          an Ubuntu release where this makes sense, you can install
-          the recoll-lens package from the 
-          <a href="https://launchpad.net/~recoll-backports/+archive/recoll-1.15-on">
-            Recoll PPA</a>. The Lens uses the Recoll GUI as a proxy to
-          extract and display embedded documents, which native utilities
-          can't reach directly. And of course you still need to run
-          the GUI (or the command line recollindex) to get the indexing
-          going !</dd>
 
       </dl>
       </div>

@@ -37,7 +37,8 @@
 
     <div class="content">
 
-      <h1><a href="http://www.recoll.org/">Recoll</a> est 
+      <h1><img align="center" src="pics/recoll64.png"/>
+        <a href="http://www.recoll.org/">Recoll</a> est 
 	un outil personnel de recherche textuelle pour Unix et Linux</h1>
 
       <p>Il est basé sur le puissant moteur d'indexation <a href=
