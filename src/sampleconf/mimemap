@@ -146,6 +146,7 @@
 .m4a = audio/mp4
 
 .mkv = video/x-matroska
+.ogv = video/ogg
 
 .png = image/png
 .jp2 = image/jp2
