@@ -31,13 +31,11 @@
 #include <iostream>
 #include <cstring>
 
+using namespace std;
+
 #include "conftree.h"
 #include "pathut.h"
 #include "smallut.h"
-
-#ifndef NO_NAMESPACES
-using namespace std;
-#endif // NO_NAMESPACES
 
 #undef DEBUG
 #ifdef DEBUG
