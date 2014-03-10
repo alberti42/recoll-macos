@@ -1048,6 +1048,8 @@ bool SearchDataClausePath::toNativeQuery(Rcl::Db &db, void *p)
 
     if (m_text[0] == '/')
 	orqueries.push_back(Xapian::Query(wrap_prefix(pathelt_prefix)));
+    else
+        m_text = path_tildexpand(m_text);
 
     vector<string> vpath;
     stringToTokens(m_text, vpath, "/");
