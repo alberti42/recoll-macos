@@ -6,13 +6,16 @@ import mailbox
 import email.header
 import email.utils
 #import sys
-import recoll
+try:
+    from recoll import recoll
+except:
+    import recoll
+
 import os
 import stat
 
-#mbfile = "/Users/dockes/projets/fulltext/testrecoll/mail/fred"
-mbfile = "/Users/dockes/mail/outmail"
-rclconf = "/Users/dockes/.recoll-test"
+mbfile = os.path.expanduser("~/mbox")
+rclconf = os.path.expanduser("~/.recoll")
 
 def header_value(msg, nm, to_utf = False):
     value = msg.get(nm)
@@ -49,9 +52,11 @@ class mbox_indexer:
 
     def index(self, db):
         if not db.needUpdate(self.udi(1), self.sig()):
+            print("Index is up to date");
             return None
         mb = mailbox.mbox(self.mbfile)
         for msg in mb.values():
+            print("Indexing message %d" % self.msgnum);
             self.index_message(db, msg)
             self.msgnum += 1
 
@@ -90,14 +95,13 @@ class mbox_indexer:
         text += u"\n"
         for part in msg.walk():
             if part.is_multipart():
-                pass #print "Multipart: " + part.get_content_type()
+                pass 
             else:
                 ct = part.get_content_type()
-                #print "Simple: " + ct
                 if ct.lower() == "text/plain":
                     charset = part.get_content_charset("iso-8859-1")
-                    print "charset: ", charset
-                    print "text: ", part.get_payload(None, True)
+                    #print "charset: ", charset
+                    #print "text: ", part.get_payload(None, True)
                     text += unicode(part.get_payload(None, True), charset)
         doc.text = text
         # dbytes
