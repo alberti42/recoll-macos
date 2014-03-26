@@ -5594,6 +5594,16 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
             </listitem>
           </varlistentry>
 
+          <varlistentry><term><varname>idxmetastoredlen</varname></term>
+            <listitem><para>Maximum stored length for metadata
+                fields. This does not affect indexing (the whole field is
+                processed anyway), just the amount of data stored in the
+                index for the purpose of displaying fields inside result
+                lists or previews. The default value is 150 bytes which
+                may be too low if you have custom fields.</para>
+            </listitem>
+          </varlistentry>
+
           <varlistentry><term><varname>aspellLanguage</varname></term>
             <listitem><para>Language definitions to use when creating
             the aspell dictionary.  The value must match a set of

@@ -694,7 +694,7 @@ bool Db::o_inPlaceReset;
 
 Db::Db(const RclConfig *cfp)
     : m_ndb(0),  m_mode(Db::DbRO), m_curtxtsz(0), m_flushtxtsz(0),
-      m_occtxtsz(0), m_occFirstCheck(1),
+      m_occtxtsz(0), m_occFirstCheck(1), m_idxMetaStoredLen(150),
       m_idxAbsTruncLen(250), m_synthAbsLen(250), m_synthAbsWordCtxLen(4), 
       m_flushMb(-1), m_maxFsOccupPc(0)
 {
@@ -713,6 +713,7 @@ Db::Db(const RclConfig *cfp)
     if (m_config) {
 	m_config->getConfParam("maxfsoccuppc", &m_maxFsOccupPc);
 	m_config->getConfParam("idxflushmb", &m_flushMb);
+	m_config->getConfParam("idxmetastoredlen", &m_idxMetaStoredLen);
     }
 }
 
@@ -1469,16 +1470,14 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	if (!doc.ipath.empty())
 	    RECORD_APPEND(record, Doc::keyipt, doc.ipath);
 
-	doc.meta[Doc::keytt] = 
-	    neutchars(truncate_to_word(doc.meta[Doc::keytt], 150), cstr_nc);
-	if (!doc.meta[Doc::keytt].empty())
-	    RECORD_APPEND(record, cstr_caption, doc.meta[Doc::keytt]);
-
-	trimstring(doc.meta[Doc::keykw], " \t\r\n");
-	doc.meta[Doc::keykw] = 
-	    neutchars(truncate_to_word(doc.meta[Doc::keykw], 300), cstr_nc);
-	// No need to explicitly append the keywords, this will be done by 
-	// the "stored" loop
+        // Fields from the Meta array. Handle title specially because it has a 
+        // different name inside the data record (history...)
+        string& ttref = doc.meta[Doc::keytt];
+        ttref = neutchars(truncate_to_word(ttref, m_idxMetaStoredLen), cstr_nc);
+	if (!ttref.empty()) {
+	    RECORD_APPEND(record, cstr_caption, ttref);
+            ttref.clear();
+        }
 
 	// If abstract is empty, we make up one with the beginning of the
 	// document. This is then not indexed, but part of the doc data so
@@ -1487,25 +1486,34 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	bool syntabs = false;
 	// Note that the map accesses by operator[] create empty entries if they
 	// don't exist yet.
-	trimstring(doc.meta[Doc::keyabs], " \t\r\n");
-	if (doc.meta[Doc::keyabs].empty()) {
+        string& absref = doc.meta[Doc::keyabs];
+	trimstring(absref, " \t\r\n");
+	if (absref.empty()) {
 	    syntabs = true;
 	    if (!doc.text.empty())
-		doc.meta[Doc::keyabs] = cstr_syntAbs + 
-		    neutchars(truncate_to_word(doc.text, m_idxAbsTruncLen), cstr_nc);
+		absref = cstr_syntAbs + 
+		    neutchars(truncate_to_word(doc.text, m_idxAbsTruncLen), 
+                              cstr_nc);
 	} else {
-	    doc.meta[Doc::keyabs] = 
-		neutchars(truncate_to_word(doc.meta[Doc::keyabs], m_idxAbsTruncLen),
-			  cstr_nc);
+	    absref = neutchars(truncate_to_word(absref, m_idxAbsTruncLen), 
+                               cstr_nc);
 	}
+        // Do the append here to avoid the different truncation done
+        // in the regular "stored" loop
+        if (!absref.empty()) {
+            RECORD_APPEND(record, Doc::keyabs, absref);
+            absref.clear();
+        }
 
+        // Append all regular "stored" meta fields
 	const set<string>& stored = m_config->getStoredFields();
 	for (set<string>::const_iterator it = stored.begin();
 	     it != stored.end(); it++) {
 	    string nm = m_config->fieldCanon(*it);
 	    if (!doc.meta[nm].empty()) {
 		string value = 
-		    neutchars(truncate_to_word(doc.meta[nm], 150), cstr_nc);
+		    neutchars(truncate_to_word(doc.meta[nm], 
+                                               m_idxMetaStoredLen), cstr_nc);
 		RECORD_APPEND(record, nm, value);
 	    }
 	}
@@ -1611,8 +1619,9 @@ bool Db::Native::docToXdocXattrOnly(TextSplitDb *splitter, const string &udi,
 	 it != stored.end(); it++) {
 	string nm = m_rcldb->m_config->fieldCanon(*it);
 	if (doc.getmeta(nm, 0)) {
-	    string value = 
-		neutchars(truncate_to_word(doc.meta[nm], 150), cstr_nc);
+	    string value = neutchars(
+                truncate_to_word(doc.meta[nm], m_rcldb->m_idxMetaStoredLen), 
+                cstr_nc);
 	    datadic.set(nm, value, "");
 	}
     }

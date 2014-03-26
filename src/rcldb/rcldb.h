@@ -458,6 +458,8 @@ private:
      * after init */
     // Stop terms: those don't get indexed.
     StopList m_stops;
+    // Truncation length for stored meta fields
+    int         m_idxMetaStoredLen;
     // This is how long an abstract we keep or build from beginning of
     // text when indexing. It only has an influence on the size of the
     // db as we are free to shorten it again when displaying

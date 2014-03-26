@@ -224,6 +224,10 @@ filtermaxseconds = 1200
 # bigger db
 # idxabsmlen = 250
 
+# Truncation length of stored metadata fields. This does not affect
+# indexing, just what can be displayed inside results.
+# idxmetastoredlen = 150
+
 # Language definitions to use when creating the aspell dictionary. 
 # The value must match a set of aspell language definition files. 
 # You can type "aspell config"  to see where these are installed.
