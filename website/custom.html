@@ -12,7 +12,7 @@
     <meta name="Keywords" content=
     "full text search, desktop search, unix, linux">
     <meta http-equiv="Content-language" content="en">
-    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="robots" content="All,Index,Follow">
 
     <link type="text/css" rel="stylesheet" href="styles/style.css">
@@ -209,10 +209,22 @@ window.onload = function() {
      </a>
    </div>
 
-      <p>Et voilà! The icons will grow to their full size when the mouse is
+      <p>Et voilÃ ! The icons will grow to their full size when the mouse is
         over them.</p>
 
-
+      <h2>Alternate icons theme</h2>
+      <p>There is an alternate set of icons
+      at <a href="http://kde-look.org/content/show.php?content=145669">
+          kde-look.org</a>. If you are running KDE desktop, it should
+        be more consistent with the rest of your applications.</p>
+      <p>You do not need to replace the standard Recoll set of icons
+        to use it, just extract it somewhere, and use
+        the <tt>iconsdir</tt> variable in <i>~/.recoll/recoll.conf</i> to
+        point Recoll to it. e.g.:
+        <blockquote><pre>
+            <tt>iconsdir = /path/to/my/icons</tt>
+        </pre></blockquote>
+      </p>
 
       <h2>Result list paragraph format samples (for all versions)</h2>
 
@@ -354,7 +366,7 @@ area.</p>
     <td rowspan="4" width="40px" align="center" valign="center">
       <img src="%I" width="32" height="32">
       <p><b>%R</b></p>
-      <p><a href="P%N">Aperçu</a></p>
+      <p><a href="P%N">AperÃ§u</a></p>
     </td>
     <th colspan="3" bgcolor="lightgrey">%T</th>
   </tr>
