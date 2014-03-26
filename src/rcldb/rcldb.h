@@ -258,6 +258,7 @@ class Db {
      *  probably be renamed container_udi.
      * @param doc container for document data. Should have been filled as 
      *   much as possible depending on the document type. 
+     *   ** doc will be modified in a destructive way **
      */
     bool addOrUpdate(const string &udi, 
 		     const string &parent_udi, Doc &doc);
