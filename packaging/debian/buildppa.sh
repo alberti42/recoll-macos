@@ -4,10 +4,13 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.19.10
+RCLVERS=1.19.11p1
 LENSVERS=1.19.10.3543
 SCOPEVERS=1.19.10.3543
-PPAVERS=4
+PPAVERS=5
+
+# For the unity-scope debian directory
+RCLSRC=/home/dockes/projets/fulltext/recoll/src
 
 case $RCLVERS in
     [23]*) PPANAME=recollexp-ppa;;
@@ -15,17 +18,34 @@ case $RCLVERS in
     *)     PPANAME=recoll15-ppa;;
 esac
 #PPANAME=recollexp-ppa
-
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
+
+fatal()
+{
+    echo $*; exit 1
+}
+
+check_recoll_orig()
+{
+    if test ! -f recoll_${RCLVERS}.orig.tar.gz ; then 
+        if test -f recoll-${RCLVERS}.tar.gz ; then
+            mv recoll-${RCLVERS}.tar.gz recoll_${RCLVERS}.orig.tar.gz
+        else
+            fatal "Can find neither recoll_${RCLVERS}.orig.tar.gz nor " \
+                "recoll-${RCLVERS}.tar.gz"
+        fi
+    fi
+}
 
 ####### QT4
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
 series="precise quantal raring saucy"
-#series="precise saucy"
+series="trusty"
 
 if test "X$series" != X ; then
+    check_recoll_orig
     test -d recoll-${RCLVERS} || tar xvzf recoll_${RCLVERS}.orig.tar.gz
 fi
 
@@ -56,6 +76,7 @@ series=
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
 if test "X$series" != X ; then
+    check_recoll_orig
     if test ! -d kio-recoll_${RCLVERS}.orig.tar.gz ; then
         cp -p recoll_${RCLVERS}.orig.tar.gz \
             kio-recoll_${RCLVERS}.orig.tar.gz || exit 1
@@ -90,7 +111,16 @@ series=
 debdir=debianunitylens
 topdir=recoll-lens-${LENSVERS}
 if test "X$series" != X ; then
-    test -d $topdir ||  tar xvzf recoll-lens_${LENSVERS}.orig.tar.gz
+    if test ! -f recoll-lens_${LENSVERS}.orig.tar.gz ; then 
+        if test -f recoll-lens-${LENSVERS}.tar.gz ; then
+            mv recoll-lens-${LENSVERS}.tar.gz \
+                recoll-lens_${LENSVERS}.orig.tar.gz
+        else
+            fatal "Can find neither recoll-lens_${LENSVERS}.orig.tar.gz nor " \
+                "recoll-lens-${LENSVERS}.tar.gz"
+        fi
+    fi
+    test -d $topdir ||  tar xvzf recoll-lens_${LENSVERS}.orig.tar.gz || exit 1
 fi
 
 for series in $series ; do
@@ -110,13 +140,27 @@ for series in $series ; do
 done
 
 ### Unity Scope
-series="saucy"
+series="saucy trusty"
 series=
 
 debdir=debianunityscope
+if test ! -d ${debdir}/ ; then
+    ln -s ${RCLSRC}/desktop/unity-scope-recoll/debian $debdir
+fi
 topdir=unity-scope-recoll-${SCOPEVERS}
 if test "X$series" != X ; then
-    test -d $topdir ||  tar xvzf unity-scope-recoll_${LENSVERS}.orig.tar.gz
+    if test ! -f unity-scope-recoll_${SCOPEVERS}.orig.tar.gz ; then 
+        if test -f unity-scope-recoll-${SCOPEVERS}.tar.gz ; then
+            mv unity-scope-recoll-${SCOPEVERS}.tar.gz \
+                unity-scope-recoll_${SCOPEVERS}.orig.tar.gz
+        else
+            fatal "Can find neither " \
+                "unity-scope-recoll_${SCOPEVERS}.orig.tar.gz nor " \
+                "unity-scope-recoll-${SCOPEVERS}.tar.gz"
+        fi
+    fi
+    test -d $topdir ||  tar xvzf unity-scope-recoll_${SCOPEVERS}.orig.tar.gz \
+        || exit 1
 fi
 for series in $series ; do
 

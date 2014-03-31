@@ -1,3 +1,9 @@
+recoll (1.19.11p1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * minor fixes to 1.19.10
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 31 Mars 2014 09:54:00 +0200
+
 recoll (1.19.10-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Support for saucy in 1.19. Separate python and python3 packages
