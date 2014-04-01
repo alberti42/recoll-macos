@@ -95,10 +95,11 @@ UNITY_TYPE_TO_RECOLL_CLAUSE = {
     }
 
 # Icon names for some recoll mime types which don't have standard icon
-# by the normal method
-SPEC_MIME_ICONS = {'application/x-fsdirectory' : 'gnome-fs-directory.svg',
-                   'inode/directory' : 'gnome-fs-directory.svg',
-                   'message/rfc822' : 'mail-read',
+# by the normal method. Some keys are actually icon names, not mime types
+SPEC_MIME_ICONS = {'application/x-fsdirectory' : 'gnome-fs-directory',
+                   'inode/directory' : 'gnome-fs-directory',
+                   'message/rfc822' : 'emblem-mail',
+                   'message-rfc822' : 'emblem-mail',
                    'application/x-recoll' : 'recoll'}
 
 # Truncate results here:
@@ -205,7 +206,7 @@ class RecollScope(Unity.AbstractScope):
     filters.add(f)
 
     f2 = Unity.CheckOptionFilter.new (
-      "type", _("Type"), Gio.ThemedIcon.new("inpt-keyboard-symbolic"), False)
+      "type", _("Type"), Gio.ThemedIcon.new("input-keyboard-symbolic"), False)
     f2.add_option ("documents", _("Documents"), None)
     f2.add_option ("folders", _("Folders"), None)
     f2.add_option ("images", _("Images"), None)
@@ -216,7 +217,7 @@ class RecollScope(Unity.AbstractScope):
     filters.add (f2)
 
     f3 = Unity.MultiRangeFilter.new (
-      "size", _("Size"), Gio.ThemedIcon.new("inpt-keyboard-symbolic"), False)
+      "size", _("Size"), Gio.ThemedIcon.new("input-keyboard-symbolic"), False)
     f3.add_option ("1kb", _("1KB"), None)
     f3.add_option ("100kb", _("100KB"), None)
     f3.add_option ("1mb", _("1MB"), None)
@@ -239,12 +240,14 @@ class RecollScope(Unity.AbstractScope):
     return RecollScopeSearch(search_context)
 
   def do_activate(self, result, metadata, id):
-    print("RecollScope: do_activate. id [%s] uri [%s]" % (id,uri), 
+    print("RecollScope: do_activate. id [%s] uri [%s]" % (id, result.uri), 
           file=sys.stderr)
     if id == 'show':
       filename = result.uri
       dirname = os.path.dirname(filename)
       os.system("xdg-open '%s'" % str(dirname))
+      return Unity.ActivationResponse(handled=Unity.HandledType.HIDE_DASH,
+                                      goto_uri=None)
     else:
       uri = result.uri
       # Pass all uri without fragments to the desktop handler
@@ -441,17 +444,20 @@ class RecollScopeSearch(Unity.ScopeSearchBase):
     if thumbnail:
       iconname = thumbnail
     else:
-      if doc.mimetype in SPEC_MIME_ICONS:
-        iconname = SPEC_MIME_ICONS[doc.mimetype]
-      else:
-        icon = Gio.content_type_get_icon(doc.mimetype)
-        if icon:
-          # At least on Quantal, get_names() sometimes returns
-          # a list with '(null)' in the first position...
-          for iname in icon.get_names():
-            if iname != '(null)':
-              iconname = iname
-              break
+      content_type = Gio.content_type_from_mime_type(doc.mimetype)
+      icon = Gio.content_type_get_icon(content_type)
+      if icon:
+        # At least on Quantal, get_names() sometimes returns
+        # a list with '(null)' in the first position...
+        for iname in icon.get_names():
+          if iname != '(null)':
+            iconname = iname
+            break
+      if iconname in SPEC_MIME_ICONS:
+          iconname = SPEC_MIME_ICONS[iconname]
+      if iconname == "":
+        if doc.mimetype in SPEC_MIME_ICONS:
+          iconname = SPEC_MIME_ICONS[doc.mimetype]
 
     return (url, mimetype, iconname);
 
