@@ -110,25 +110,38 @@ XDGCACHE = os.getenv('XDG_CACHE_DIR', os.path.expanduser("~/.cache"))
 THUMBDIRS = [os.path.join(XDGCACHE, "thumbnails"),
              os.path.expanduser("~/.thumbnails")]
 
+def url_encode_for_thumb(in_s, offs):
+  h = b"0123456789ABCDEF"
+  out = in_s[:offs]
+  for i in range(offs, len(in_s)):
+    c = in_s[i]
+    if c <= 0x20 or c >= 0x7f or in_s[i] in b'"#%;<>?[\\]^`{|}':
+      out += bytes('%', 'ascii');
+      out += bytes(chr(h[(c >> 4) & 0xf]), 'ascii')
+      out += bytes(chr(h[c & 0xf]), 'ascii')
+    else:
+      out += bytes(chr(c), 'ascii')
+      pass
+  return out
+
 def _get_thumbnail_path(url):
     """Look for a thumbnail for the input url, according to the
     freedesktop thumbnail storage standard. The input 'url' always
-    begins with file:// and is unencoded. We encode it properly
+    begins with file:// and is binary. We encode it properly
     and compute the path inside the thumbnail storage
     directory. We return the path only if the thumbnail does exist
     (no generation performed)"""
     global THUMBDIRS
 
     # Compute the thumbnail file name by encoding and hashing the url string
-    path = url[7:]
     try:
-        path = "file://" + urllib.parse.quote_from_bytes(path)
+      url = url_encode_for_thumb(url, 7)
     except Exception as msg:
-        print("_get_thumbnail_path: urllib.parse.quote failed: %s" % msg, 
+        print("_get_thumbnail_path: url encode failed: %s" % msg, 
               file=sys.stderr)
         return ""
-    #print("_get_thumbnail: encoded path: [%s]" % path, file=sys.stderr)
-    thumbname = hashlib.md5(path.encode('utf-8')).hexdigest() + ".png"
+    #print("_get_thumbnail: encoded path: [%s]" % url, file=sys.stderr)
+    thumbname = hashlib.md5(url).hexdigest() + ".png"
 
     # If the "new style" directory exists, we should stop looking in
     # the "old style" one (there might be interesting files in there,
