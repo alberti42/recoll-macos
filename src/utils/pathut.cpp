@@ -300,7 +300,7 @@ string path_home()
     return homedir;
 }
 
-extern string path_tildexpand(const string &s) 
+string path_tildexpand(const string &s) 
 {
     if (s.empty() || s[0] != '~')
 	return s;
@@ -319,7 +319,7 @@ extern string path_tildexpand(const string &s)
     return o;
 }
 
-extern string path_absolute(const string &is)
+string path_absolute(const string &is)
 {
     if (is.length() == 0)
 	return is;
@@ -335,7 +335,7 @@ extern string path_absolute(const string &is)
 }
 
 #include <smallut.h>
-extern string path_canon(const string &is, const string* cwd)
+string path_canon(const string &is, const string* cwd)
 {
     if (is.length() == 0)
 	return is;
@@ -789,6 +789,21 @@ using namespace std;
 
 #include "pathut.h"
 
+void path_to_thumb(const string& _input)
+{
+    string input(_input);
+    // Make absolute path if needed
+    if (input[0] != '/')
+        input = path_absolute(input);
+
+    input = string("file://") + path_canon(input);
+
+    string path;
+    //path = url_encode(input, 7);
+    thumbPathForUrl(input, 7, path);
+    cout << path << endl;
+}
+
 const char *tstvec[] = {"", "/", "/dir", "/dir/", "/dir1/dir2",
 			 "/dir1/dir2",
 			"./dir", "./dir1/", "dir", "../dir", "/dir/toto.c",
@@ -841,7 +856,7 @@ int main(int argc, const char **argv)
 #endif    
 #if 0
     if (argc != 2) {
-	fprintf(stderr, "Usage: trpathut <dir> <pattern>\n");
+	cerr << "Usage: trpathut <dir> <pattern>" << endl;
 	exit(1);
     }
     string dir = *argv++;argc--;
@@ -882,36 +897,29 @@ int main(int argc, const char **argv)
   pidfile.remove();
 #endif
 
-#if 0
-  if (argc != 2) {
-      fprintf(stderr, "Usage: thumbpath <filepath> <size>\n");
+#if 1
+  if (argc > 1) {
+      cerr <<  "Usage: thumbpath <filepath>" << endl;
       exit(1);
   }
-
-  string input = *argv++;
-  int size = atoi(*argv++);
-
-  if (input.empty())  {
-      fprintf(stderr, "Usage: thumbpath <filepath> <size>\n");
-      exit(1);
-  }
-
-  // Make absolute path if needed
-  if (input[0] != '/') {
-      input = path_absolute(input);
-  }
-  input = string("file://") + path_canon(input);
-  string path;
-  if (thumbPathForUrl(input, size, path)) {
-      cout << "Thumbnail for [" << input << "] [" << path << "]" << endl;
+  string input;
+  if (argc == 1) {
+      input = *argv++;
+      if (input.empty())  {
+          cerr << "Usage: thumbpath <filepath>" << endl;
+          exit(1);
+      }
+      path_to_thumb(input);
   } else {
-      cout << "No thumbnail for [" << input << "] path [" << path << "]" <<endl;
+      while (getline(cin, input))
+          path_to_thumb(input);
   }
+
   
   exit(0);
 #endif
 
-#if 1
+#if 0
     if (argc != 1) {
 	cerr << "Usage: trpathut <filename>" << endl;
 	exit(1);
