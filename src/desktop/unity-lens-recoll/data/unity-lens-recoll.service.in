@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=org.recoll.UnityLensRecoll.Lens
-Exec=@DATADIR@/unity-lens-recoll/unity-recoll-daemon
