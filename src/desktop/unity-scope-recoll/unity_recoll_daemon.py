@@ -256,9 +256,7 @@ class RecollScope(Unity.AbstractScope):
     print("RecollScope: do_activate. id [%s] uri [%s]" % (id, result.uri), 
           file=sys.stderr)
     if id == 'show':
-      filename = result.uri
-      dirname = os.path.dirname(filename)
-      os.system("xdg-open '%s'" % str(dirname))
+      os.system("nautilus '%s'" % str(result.uri))
       return Unity.ActivationResponse(handled=Unity.HandledType.HIDE_DASH,
                                       goto_uri=None)
     else:
