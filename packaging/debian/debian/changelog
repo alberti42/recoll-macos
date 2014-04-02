@@ -1,8 +1,15 @@
+recoll (1.19.12-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Minor fixes to 1.19.11. Make metadata stored length a parameter. New
+    xls dumper based on mso-dumper removes catdoc dependancy
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 02 Apr 2014 15:12:00 +0200
+
 recoll (1.19.11p1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * minor fixes to 1.19.10
 
- -- Jean-Francois Dockes <jf@dockes.org>  Mon, 31 Mars 2014 09:54:00 +0200
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 27 Nov 2013 09:54:00 +0200
 
 recoll (1.19.10-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
