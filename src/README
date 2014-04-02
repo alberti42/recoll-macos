@@ -2077,10 +2077,10 @@ Chapter 3. Searching
 
      o dir for filtering the results on file location (Ex:
        dir:/home/me/somedir). -dir also works to find results not in the
-       specified directory (release >= 1.15.8). A tilde inside the value will
-       be expanded to the home directory. Wildcards will be expanded, but
-       please have a look at an important limitation of wildcards in path
-       filters.
+       specified directory (release >= 1.15.8). Tilde expansion will be
+       performed as usual (except for a bug in versions 1.19 to 1.19.11p1).
+       Wildcards will be expanded, but please have a look at an important
+       limitation of wildcards in path filters.
 
        Relative paths also make sense, for example, dir:share/doc would match
        either /usr/share/doc or /usr/local/share/doc
@@ -3092,15 +3092,15 @@ Chapter 5. Installation and configuration
    dependancy.
 
    Please note that, due to the relatively dynamic nature of this
-   information, the most up to date version is now kept on the Recoll helper
-   applications page along with links to the home pages or best
-   source/patches pages, and misc tips. The list below is not updated often
-   and may be quite stale.
+   information, the most up to date version is now kept on
+   http://www.recoll.org/features.html along with links to the home pages or
+   best source/patches pages, and misc tips. The list below is not updated
+   often and may be quite stale.
 
    For many Linux distributions, most of the commands listed can be installed
    from the package repositories. However, the packages are sometimes
    outdated, or not the best version for Recoll, so you should take a look at
-   the Recoll helper applications page if a file type is important to you.
+   http://www.recoll.org/features.html if a file type is important to you.
 
    As of Recoll release 1.14, a number of XML-based formats that were handled
    by ad hoc filter code now use the xsltproc command, which usually comes
@@ -3115,7 +3115,7 @@ Chapter 5. Installation and configuration
 
      o Postscript files need pstotext. The original version has an issue with
        shell character in file names, which is corrected in recent packages.
-       See the the Recoll helper applications page for more detail.
+       See http://www.recoll.org/features.html for more detail.
 
      o MS Word needs antiword. It is also useful to have wvWare installed as
        it may be be used as a fallback for some files which antiword does not
@@ -3129,11 +3129,12 @@ Chapter 5. Installation and configuration
        Ubuntu) package.
 
      o RTF files need unrtf, which, in its standard version, has much trouble
-       with non-western character sets. Check the Recoll helper applications
-       page.
+       with non-western character sets. Check
+       http://www.recoll.org/features.html.
 
-     o TeX files need untex or detex. Check the Recoll helper applications
-       page for sources if it's not packaged for your distribution.
+     o TeX files need untex or detex. Check
+       http://www.recoll.org/features.html for sources if it's not packaged
+       for your distribution.
 
      o dvi files need dvips.
 
@@ -3935,6 +3936,14 @@ Chapter 5. Installation and configuration
            stored text or a synthetic abstract built by extracting text
            around the search terms. If you always prefer the synthetic
            abstract, you can reduce this value and save a little space.
+
+   idxmetastoredlen
+
+           Maximum stored length for metadata fields. This does not affect
+           indexing (the whole field is processed anyway), just the amount of
+           data stored in the index for the purpose of displaying fields
+           inside result lists or previews. The default value is 150 bytes
+           which may be too low if you have custom fields.
 
    aspellLanguage
 
