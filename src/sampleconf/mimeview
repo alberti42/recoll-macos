@@ -80,8 +80,14 @@ application/x-dia-diagram = dia %f
 
 application/x-fsdirectory = dolphin %f
 inode/directory = dolphin %f
+
+# Both dolphin and nautilus can pre-select a file inside a
+# directory. Thunar can't afaik. xdg-open cant pass an additional
+# parameters so these are to be xallexcepts.
 application/x-fsdirectory|parentopen = dolphin --select %(childurl) %f
 inode/directory|parentopen = dolphin --select %(childurl) %f
+#application/x-fsdirectory|parentopen = nautilus %(childurl)
+#inode/directory|parentopen = nautilus %(childurl)
 
 application/x-gnuinfo = xterm -e "info -f %f"
 application/x-gnumeric = gnumeric %f

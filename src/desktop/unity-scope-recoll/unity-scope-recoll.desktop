@@ -1,9 +1,0 @@
-[Desktop Entry]
-Categories=Office;
-Exec=
-GenericName=unity-scope-recoll
-Icon=unity-scope-recoll
-Name=Recoll scope for Unity
-NoDisplay=true
-Terminal=false
-Type=Application

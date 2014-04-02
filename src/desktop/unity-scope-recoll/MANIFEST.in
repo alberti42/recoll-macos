@@ -1,5 +1,0 @@
-include unity-scope-recoll.service
-include recoll.scope
-include unity-scope-recoll.application.in
-include unity_recoll_daemon.py
-include COPYING

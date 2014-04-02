@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=org.recoll.Unity.Scope.File.Recoll
-Exec=/usr/bin/python3 /usr/share/unity-scopes/scope-runner-dbus.py -s files/recoll.scope
