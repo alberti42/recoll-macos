@@ -29,7 +29,7 @@ function showdiv(viewid)
 
 <div class="rightlinks">
 <ul>
-  <li><a href="index.html">Home</a></li>
+  <li><a href="index.html.en">Home</a></li>
   <li><b>Downloads</b></li>
   <li><a href="doc.html">Documentation</a></li>
   <li><a href="usermanual/RCL.INSTALL.html">Installation</a></li>
@@ -67,7 +67,7 @@ function showdiv(viewid)
 <div id="general">
 <h2><a name="general">General information</a></h2>
 
-<p>The current version is 1.19.11. <a href="release-1.19.html">Release
+<p>The current version is 1.19.12p1. <a href="release-1.19.html">Release
 notes</a>.</p>
 
 <p>The download page for Recoll 1.18 is <a href="download-1.18.html">still
@@ -117,12 +117,12 @@ is probably no necessity to upgrade anyway.</p>
 <div id="source">
 <h2><a name="source">Source</a></h2>
 
-<h3>Current release distribution: 1.19.11:</h3>
+<h3>Current release distribution: 1.19.12p1:</h3>
 <!-- Attention: source packages must remain here, not in a
 subdirectory, because of all the places they're referred from
 (package watches) -->
 
-<p><a href="recoll-1.19.11p1.tar.gz">recoll-1.19.11p1.tar.gz</a>. </p>
+<p><a href="recoll-1.19.12p1.tar.gz">recoll-1.19.12p1.tar.gz</a>. </p>
 <!--
 <h3>Snapshot</h3>
 <p>I sometimes release a source tarfile when I consider that the
@@ -133,6 +133,20 @@ changelog</a>, and a synthetic abstract in the
 current <a href="release-1.16.html">1.16 release notes</a>).
 <p><a href="betarecoll-2240.tar.gz">betarecoll-2240.tar.gz</a>.</p>
 -->
+
+<p>Source code for the Ubuntu Unity lens and scope (not included in
+the main tar file any more):<br>
+For 1.19 installations: 
+<a href="recoll-lens-1.19.10.3543.tar.gz">
+  recoll-lens-1.19.10.3543.tar.gz</a> (up to Ubuntu 13.04 Raring)<br>
+<a href="unity-scope-recoll-1.19.12.tar.gz">
+  unity-scope-recoll-1.19.12.tar.gz</a> (Ubuntu 13.10 and later).<br>
+For 1.18: 
+<a href="recoll-lens-1.18.1.2997.tar.gz">
+  recoll-lens-1.18.1.2997.tar.gz</a><br>
+For 1.17: 
+<a href="recoll-lens-1.17.2.2697.tar.gz">
+  recoll-lens-1.17.2.2697.tar.gz</a></p>
 
 <h3>Prerequisites for building from source:</h3>
 <ul>
@@ -233,21 +247,8 @@ a set of Ubuntu series. starting at Lucid. The installation is very simple: </p>
           sudo apt-get install recoll
 </tt></pre>
 
-<p>Source code for the lens (also included in the main recoll tar file):<br>
-For 1.19 installations: 
-<a href="recoll-lens-1.19.10.3543.tar.gz">
-  recoll-lens-1.19.10.3543.tar.gz</a>
-<a href="unity-scope-recoll-1.19.11.3579.tar.gz">
-  unity-scope-recoll-1.19.11.3579.tar.gz</a><br>
-For 1.18: 
-<a href="recoll-lens-1.18.1.2997.tar.gz">
-  recoll-lens-1.18.1.2997.tar.gz</a><br>
-For 1.17: 
-<a href="recoll-lens-1.17.2.2697.tar.gz">
-  recoll-lens-1.17.2.2697.tar.gz</a></p>
-
-<p>The 1.19.10/11 packages in the PPA now have a separate package for the Python
-  extension, like the standard ones.</p>
+<p>The 1.19.10/11/12 packages in the PPA now have a separate package
+  for the Python extension, like the standard ones.</p>
 
 <blockquote>
   <h4>Notes for Ubuntu Lucid</h4>
@@ -354,7 +355,7 @@ message file, handy to work on a new translation.</p>
 
 <h3>Updated 1.19 translations that became available after the release:</h3>
 
-<p>All translations are up to date in release 1.19.10. For older ones:</p>
+<p>All translations are up to date in release 1.19.12. For older ones:</p>
 <p>Greek translation, thanks to Dimitrios
 <a href="translations/recoll_el.ts">recoll_el.ts</a>
 <a href="translations/recoll_el.qm">recoll_el.qm</a>

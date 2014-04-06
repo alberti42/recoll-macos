@@ -1,3 +1,9 @@
+recoll (1.19.12p1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * 1.19.12 install forgot the xls filter 
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Sun, 06 Apr 2014 06:57:00 +0200
+
 recoll (1.19.12-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Minor fixes to 1.19.11. Make metadata stored length a parameter. 
