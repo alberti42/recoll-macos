@@ -519,6 +519,8 @@ void ResTable::init()
     connect(tableView->selectionModel(), 
 	    SIGNAL(currentChanged(const QModelIndex&, const QModelIndex &)),
 	    this, SLOT(onTableView_currentChanged(const QModelIndex&)));
+    connect(tableView, SIGNAL(doubleClicked(const QModelIndex&)), 
+            this, SLOT(onDoubleClick(const QModelIndex&)));
 
     m_pager = new ResTablePager(this);
 
@@ -774,6 +776,22 @@ void ResTable::linkWasClicked(const QUrl &url)
     default: 
 	LOGERR(("ResTable::linkWasClicked: bad link [%s]\n", ascurl));
 	break;// ?? 
+    }
+}
+
+void ResTable::onDoubleClick(const QModelIndex& index)
+{
+    if (!m_model || m_model->getDocSource().isNull())
+	return;
+    Rcl::Doc doc;
+    if (m_model->getDocSource()->getDoc(index.row(), doc)) {
+	m_detail->clear();
+	m_detaildocnum = index.row();
+	m_detaildoc = doc;
+        if (m_detaildocnum >= 0) 
+            emit editRequested(m_detaildoc);
+    } else {
+	m_detaildocnum = -1;
     }
 }
 
