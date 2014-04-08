@@ -2636,6 +2636,8 @@ Common options:
     -m : dump the whole document meta[] array for each result
     -A : output the document abstracts
     -S fld : sort by field &lt;fld&gt;
+    -s stemlang : set stemming language to use (must exist in index...)
+       Use -s "" to turn off stem expansion
     -D : sort descending
     -i &lt;dbdir&gt; : additional index, several can be given
     -e use url encoding (%xx) for urls

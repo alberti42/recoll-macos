@@ -106,7 +106,8 @@ else
 fi
 
 @NOQTMAKE@${INSTALL} -m 0444 doc/man/recoll.1 ${mandir}/man1/
-@NOCMDLINE@${INSTALL} -m 0444 doc/man/recollq.1 ${mandir}/man1/
+# Install the recollq man page in all cases, it's useful for recoll -t
+${INSTALL} -m 0444 doc/man/recollq.1 ${mandir}/man1/
 ${INSTALL} -m 0444 doc/man/recollindex.1 ${mandir}/man1/
 ${INSTALL} -m 0444 doc/man/recoll.conf.5  ${mandir}/man5/
 
