@@ -42,7 +42,8 @@
         inside documents as well as file names.</p>
       <ul>
         <li>It can search
-          most <a href="features.html#doctypes">document formats</a>.</li> 
+          most <span class="important"><a href="features.html#doctypes">document
+          formats</a></span>.</li> 
         <li>It can reach any storage place: files, 
           archive members, email attachments, transparently
           handling decompression.</li>
@@ -57,6 +58,7 @@
 	(<a href="release-1.19.html">Release notes</a>,
         <a href="BUGS.html">known bugs</a>).</p>
 
+
       <p><span class="application">Recoll</span> is based on the very
         strong <a href="http://www.xapian.org">Xapian</a> search
         engine library, for which it provides a powerful text
@@ -69,12 +71,14 @@
 	  more...). It will also help you search for it with a friendly and
 	  powerful interface, and let you open a copy of a PDF at the right
 	  page with two clicks. There is little that will remain
-	  hidden on your disk.
-        <a class="important" href="features.html">More details &hellip;</a></p>
+	  hidden on your disk.</p>
 
-      <p>If you have problems with Recoll, <a href="doc.html">
-        documentation</a> and <a href="support.html">
-        support</a> are available.</p> 
+      <p>Recoll has extensive <a href="doc.html">
+          documentation</a>. If you run into a problem, or want to
+          propose improvements, you are welcome to use
+          the <a href="support.html">
+          <span class="important">mailing list or problem
+          tracker</span></a>.</p>
 
       <p><b><i>Recoll user ?</i></b> Maybe there are still a few useful
       	  search tricks that you don't know about. A quick look at
