@@ -24,6 +24,7 @@
 
 using std::string;
 using std::vector;
+using std::pair;
 
 class Utf8Iter;
 
@@ -55,12 +56,19 @@ public:
 	o_noNumbers = true;
     }
 
-    enum Flags {TXTS_NONE = 0, 
-		TXTS_ONLYSPANS = 1,  // Only return maximum spans (a@b.com) 
-		TXTS_NOSPANS = 2,  // Only return atomic words (a, b, com)
-		TXTS_KEEPWILD = 4 // Handle wildcards as letters
+    enum Flags {
+        // Default: will return spans and words (a_b, a, b)
+        TXTS_NONE = 0, 
+        // Only return maximum spans (a@b.com, not a, b, or com) 
+        TXTS_ONLYSPANS = 1,  
+        // Special: Only return atomic words (a, b, com).  This is not
+        // used for indexing, but for position computation during
+        // abstract generation,
+        TXTS_NOSPANS = 2,  
+        // Handle wildcards as letters. This is used with ONLYSPANS
+        // for parsing a user query (never alone).
+        TXTS_KEEPWILD = 4 
     };
-
     
     TextSplit(Flags flags = Flags(TXTS_NONE))
 	: m_flags(flags), m_maxWordLength(40), m_prevpos(-1)
@@ -177,6 +185,8 @@ private:
     // Current span. Might be jf.dockes@wanadoo.f
     string        m_span; 
 
+    vector <pair<unsigned int, unsigned int> > m_words_in_span;
+
     // Current word: no punctuation at all in there. Byte offset
     // relative to the current span and byte length
     int           m_wordStart;
@@ -207,8 +217,10 @@ private:
     bool cjk_to_words(Utf8Iter *it, unsigned int *cp);
 
     bool emitterm(bool isspan, string &term, int pos, int bs, int be);
-    bool doemit(bool spanerase, int bp, bool spanemit=false);
+    bool doemit(bool spanerase, int bp);
     void discardspan();
+    bool span_is_acronym(std::string *acronym);
+    bool words_from_span();
 };
 
 #endif /* _TEXTSPLIT_H_INCLUDED_ */

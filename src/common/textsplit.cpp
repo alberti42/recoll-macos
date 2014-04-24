@@ -36,10 +36,14 @@ using namespace std;
 
 /**
  * Splitting a text into words. The code in this file works with utf-8
- * in a semi-clean way (see uproplist.h). Ascii still gets special treatment.
+ * in a semi-clean way (see uproplist.h). Ascii still gets special
+ * treatment in the sense that many special characters can only be
+ * ascii (e.g. @, _,...). However, this compromise works quite well
+ * while being much more light-weight than a full-blown Unicode
+ * approach (ICU...)
  */
 
-// Character classes: we have three main groups, and then some chars
+// Ascii character classes: we have three main groups, and then some chars
 // are their own class because they want special handling.
 // 
 // We have an array with 256 slots where we keep the character types. 
@@ -53,10 +57,10 @@ enum CharClass {LETTER=256, SPACE=257, DIGIT=258, WILD=259,
                 A_ULETTER=260, A_LLETTER=261, SKIP=262};
 static int charclasses[charclasses_size];
 
-// Real UTF-8 characters are handled with sets holding all characters
-// with interesting properties. This is far from full-blown management
-// of Unicode properties, but seems to do the job well enough in most
-// common cases
+// Non-ascii UTF-8 characters are handled with sets holding all
+// characters with interesting properties. This is far from full-blown
+// management of Unicode properties, but seems to do the job well
+// enough in most common cases
 static vector<unsigned int> vpuncblocks;
 static STD_UNORDERED_SET<unsigned int> spunc;
 static STD_UNORDERED_SET<unsigned int> visiblewhite;
@@ -195,12 +199,12 @@ bool          TextSplit::o_processCJK = true;
 unsigned int  TextSplit::o_CJKNgramLen = 2;
 bool          TextSplit::o_noNumbers = false;
 
-// Do some checking (the kind which is simpler to do here than in the
-// main loop), then send term to our client.
+// Final term checkpoint: do some checking (the kind which is simpler
+// to do here than in the main loop), then send term to our client.
 inline bool TextSplit::emitterm(bool isspan, string &w, int pos, 
 				int btstart, int btend)
 {
-    LOGDEB3(("TextSplit::emitterm: [%s] pos %d\n", w.c_str(), pos));
+    LOGDEB2(("TextSplit::emitterm: [%s] pos %d\n", w.c_str(), pos));
 
     unsigned int l = w.length();
 
@@ -236,60 +240,133 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
     return true;
 }
 
+// Check for an acronym/abbreviation ie I.B.M. This only works with
+// ascii (no non-ascii utf-8 acronym are possible)
+bool TextSplit::span_is_acronym(string *acronym)
+{
+    bool acron = false;
+
+    if (m_wordLen != m_span.length() && 
+        m_span.length() > 2 && m_span.length() <= 20) {
+        acron = true;
+        // Check odd chars are '.'
+        for (unsigned int i = 1 ; i < m_span.length(); i += 2) {
+            if (m_span[i] != '.') {
+                acron = false;
+                break;
+            }
+        }
+        if (acron) {
+            // Check that even chars are letters
+            for (unsigned int i = 0 ; i < m_span.length(); i += 2) {
+                int c = m_span[i];
+                if (!((c >= 'a' && c <= 'z')||(c >= 'A' && c <= 'Z'))) {
+                    acron = false;
+                    break;
+                }
+            }
+        }
+    }
+    if (acron) {
+        for (unsigned int i = 0; i < m_span.length(); i += 2) {
+            *acronym += m_span[i];
+        }
+    }
+    return acron;
+}
+
+
+        // Generate terms from span. Have to take into account the
+        // flags: ONLYSPANS, NOSPANS, noNumbers
+bool TextSplit::words_from_span()
+{
+#if 0
+    cerr << "Span: [" << m_span << "] " << " w_i_s size: " << 
+        m_words_in_span.size() <<  " : ";
+    for (unsigned int i = 0; i < m_words_in_span.size(); i++) {
+        cerr << " [" << m_words_in_span[i].first << " " <<
+            m_words_in_span[i].second << "] ";
+                
+    }
+    cerr << endl;
+#endif
+    unsigned int spanwords = m_words_in_span.size();
+    int pos = m_spanpos;
+
+    for (unsigned int i = 0; 
+         i < ((m_flags&TXTS_ONLYSPANS) ? 1 : spanwords); 
+         i++, pos++) {
+
+        int deb = m_words_in_span[i].first;
+
+        for (unsigned int j = ((m_flags&TXTS_ONLYSPANS) ? spanwords-1 : i);
+             j < ((m_flags&TXTS_NOSPANS) ? i+1 : spanwords);
+             j++) {
+
+            int fin = m_words_in_span[j].second;
+            //cerr << "i " << i << " j " << j << " deb " << deb << 
+            // " fin " << fin << endl;
+            if (fin - deb > int(m_span.size()))
+                break;
+            string word(m_span.substr(deb, fin-deb));
+            if (!emitterm(j != i+1, word, pos, deb, fin))
+                return false;
+        }
+    }
+    return true;
+}
+
 /**
- * A routine called from different places in text_to_words(), to
- * adjust the current state of the parser, and call the word
- * handler/emitter. Emit and reset the current word, possibly emit the current
- * span (if different). In query mode, words are not emitted, only final spans
+ * A method called at word boundaries (different places in
+ * text_to_words()), to adjust the current state of the parser, and
+ * possibly generate term(s). While inside a span (words linked by
+ * glue characters), we just keep track of the word boundaries. Once
+ * actual white-space is reached, we get called with spanerase set to
+ * true, and we process the span, calling the emitterm() routine for
+ * each generated term.
  * 
- * This is purely for factoring common code from different places in
- * text_to_words(). 
+ * The object flags can modify our behaviour, deciding if we only emit
+ * single words (bill, recoll, org), only spans (bill@recoll.org), or
+ * words and spans (bill@recoll.org, recoll.org, jf, recoll...)
  * 
  * @return true if ok, false for error. Splitting should stop in this case.
- * @param spanerase Set if the current span is at its end. Reset it.
+ * @param spanerase Set if the current span is at its end. Process it.
  * @param bp        The current BYTE position in the stream
- * @param spanemit  This is set for intermediate spans: glue char changed.
  */
-inline bool TextSplit::doemit(bool spanerase, int bp, bool spanemit)
+inline bool TextSplit::doemit(bool spanerase, int bp)
 {
-    LOGDEB2(("TextSplit::doemit: sper %d bp %d spem %d. spp %d wS %d wL %d "
-	     "inn %d span [%s]\n",
-	     spanerase, bp, spanemit, m_spanpos, m_wordStart, m_wordLen,
-	     m_inNumber, m_span.c_str()));
+    LOGDEB2(("TextSplit::doemit: sper %d bp %d spp %d spanwords %u wS %d wL %d "
+            "inn %d span [%s]\n",
+            spanerase, bp, m_spanpos, m_words_in_span.size(), 
+            m_wordStart, m_wordLen, m_inNumber, m_span.c_str()));
 
-    // Emit span? When splitting for query, we only emit final spans
-    // (spanerase)
-    bool spanemitted = false;
-    if (!(m_flags & TXTS_NOSPANS) && 
-        !((m_wordLen == m_span.length()) && 
-          (o_noNumbers) && m_inNumber) &&
-	((spanemit && !(m_flags & TXTS_ONLYSPANS)) || spanerase) ) {
+    if (m_wordLen) {
+        // We have a current word. Remember it
 
-	// Check for an acronym/abbreviation ie I.B.M.
-	if (spanerase && m_wordLen != m_span.length() && m_span.length() > 2
-	    && m_span.length() <= 20) {
-	    bool acron = true;
-	    for (unsigned int i = 1 ; i < m_span.length(); i += 2) {
-		if (m_span[i] != '.') {
-		    acron = false;
-		    break;
-		}
-	    }
-	    if (acron) {
-		string acronym;
-		for (unsigned int i = 0; i < m_span.length(); i += 2) {
-		    acronym += m_span[i];
-		}
-		if (!emitterm(false, acronym, m_spanpos, bp - m_span.length(), 
-			      bp))
-		    return false;
-	    }
-	} 
+        // Limit max span word count
+        if (m_words_in_span.size() >= 6) {
+            spanerase = true;
+        } 
 
-	// Maybe trim at end. These are chars that we would keep inside 
-	// a span, but not at the end
+        m_words_in_span.push_back(pair<int,int>(m_wordStart, 
+                                                m_wordStart + m_wordLen));
+	m_wordpos++;
+	m_wordLen = m_wordChars = 0;
+    }
+
+    if (spanerase) {
+        // We encountered a span-terminating character. Produce terms.
+
+        string acronym;
+        if (span_is_acronym(&acronym)) {
+            if (!emitterm(false, acronym, m_spanpos, bp - m_span.length(), bp))
+                return false;
+        }
+
+	// Maybe trim at end. These are chars that we might keep
+	// inside a span, but not at the end.
 	while (m_span.length() > 0) {
-	    switch (m_span[m_span.length()-1]) {
+	    switch (*(m_span.rbegin())) {
 	    case '.':
 	    case '-':
 	    case ',':
@@ -297,37 +374,26 @@ inline bool TextSplit::doemit(bool spanerase, int bp, bool spanemit)
 	    case '_':
 	    case '\'':
 		m_span.resize(m_span.length()-1);
+                if (m_words_in_span.back().second > m_span.size())
+                    m_words_in_span.back().second = m_span.size();
 		if (--bp < 0) 
 		    bp = 0;
 		break;
 	    default:
-		goto breakloop1;
+		goto breaktrimloop;
 	    }
 	}
-    breakloop1:
-	spanemitted = true;
-	if (!emitterm(true, m_span, m_spanpos, bp - m_span.length(), bp))
-	    return false;
-    }
+    breaktrimloop:
 
-    // Emit word if different from span and not 'no words' mode
-    if (!(m_flags & TXTS_ONLYSPANS) && m_wordLen && 
-        !(o_noNumbers && m_inNumber) &&
-	(!spanemitted || m_wordLen != m_span.length())) {
-	string s(m_span.substr(m_wordStart, m_wordLen));
-	if (!emitterm(false, s, m_wordpos, bp - m_wordLen, bp))
-	    return false;
-    }
-
-    // Adjust state
-    if (m_wordLen) {
-	m_wordpos++;
-	m_wordLen = m_wordChars = 0;
-    }
-    if (spanerase) {
+        if (!words_from_span()) {
+            return false;
+        }
 	discardspan();
+
     } else {
+    
 	m_wordStart = m_span.length();
+
     }
 
     return true;
@@ -335,6 +401,7 @@ inline bool TextSplit::doemit(bool spanerase, int bp, bool spanemit)
 
 void TextSplit::discardspan()
 {
+    m_words_in_span.clear();
     m_span.erase();
     m_spanpos = m_wordpos;
     m_wordStart = 0;
@@ -353,9 +420,9 @@ static inline bool isdigit(int what, unsigned int flgs)
 }
 
 #ifdef TEXTSPLIT_STATS
-#define INC_WORDCHARS ++m_wordChars
+#define STATS_INC_WORDCHARS ++m_wordChars
 #else
-#define INC_WORDCHARS
+#define STATS_INC_WORDCHARS
 #endif
 
 /** 
@@ -380,7 +447,6 @@ bool TextSplit::text_to_words(const string &in)
     m_inNumber = false;
     m_wordStart = m_wordLen = m_wordChars = m_prevpos = m_prevlen = m_wordpos 
 	= m_spanpos = 0;
-    int curspanglue = 0;
     bool pagepending = false;
     bool softhyphenpending = false;
 
@@ -419,6 +485,7 @@ bool TextSplit::text_to_words(const string &in)
 	}
 
 	int cc = whatcc(c);
+
 	switch (cc) {
 	case SKIP:
 	    // Special-case soft-hyphen. To work, this depends on the
@@ -432,18 +499,18 @@ bool TextSplit::text_to_words(const string &in)
 	    }
 	    // Skips the softhyphenpending reset
 	    continue;
+
 	case DIGIT:
+	    nonalnumcnt = 0;
 	    if (m_wordLen == 0)
 		m_inNumber = true;
 	    m_wordLen += it.appendchartostring(m_span);
-	    INC_WORDCHARS;
-	    nonalnumcnt = 0;
+	    STATS_INC_WORDCHARS;
 	    break;
 
 	case SPACE:
-	SPACE:
-	    curspanglue = 0;
 	    nonalnumcnt = 0;
+	SPACE:
 	    if (m_wordLen || m_span.length()) {
 		if (!doemit(true, it.getBpos()))
 		    return false;
@@ -464,7 +531,6 @@ bool TextSplit::text_to_words(const string &in)
 
 	case '-':
 	case '+':
-	    curspanglue = cc;
 	    if (m_wordLen == 0) {
 		// + or - don't start a term except if this looks like
 		// it's going to be to be a number
@@ -472,21 +538,38 @@ bool TextSplit::text_to_words(const string &in)
 		    // -10
 		    m_inNumber = true;
 		    m_wordLen += it.appendchartostring(m_span);
-		    INC_WORDCHARS;
-		} else {
-		    goto SPACE;
+		    STATS_INC_WORDCHARS;
+                    break;
 		} 
-	    } else if (m_inNumber && (m_span[m_span.length() - 1] == 'e' ||
+	    } else if (m_inNumber) {
+                if ((m_span[m_span.length() - 1] == 'e' ||
 				      m_span[m_span.length() - 1] == 'E')) {
-		if (isdigit(whatcc(it[it.getCpos()+1]), m_flags)) {
-		    m_wordLen += it.appendchartostring(m_span);
-		    INC_WORDCHARS;
-		} else {
-		    goto SPACE;
-		}
+                    if (isdigit(whatcc(it[it.getCpos()+1]), m_flags)) {
+                        m_wordLen += it.appendchartostring(m_span);
+                        STATS_INC_WORDCHARS;
+                        break;
+                    }
+                }
 	    } else {
-		goto SPACE;
+                if (cc == '+') {
+                    int nextc = it[it.getCpos()+1];
+                    if (nextc == '+' || nextc == -1 || visiblewhite.find(nextc) 
+                        != visiblewhite.end()) {
+                        // someword++[+...] !
+                        m_wordLen += it.appendchartostring(m_span);
+                        STATS_INC_WORDCHARS;
+                        break;
+                    }
+                } else {
+                    // Treat '-' inside span as glue char
+                    if (!doemit(false, it.getBpos()))
+                        return false;
+                    m_inNumber = false;
+                    m_wordStart += it.appendchartostring(m_span);
+                    break;
+                }
 	    }
+            goto SPACE;
 	    break;
 
 	case '.':
@@ -497,120 +580,91 @@ bool TextSplit::text_to_words(const string &in)
 	    if (m_inNumber) {
 		if (!isdigit(nextwhat, m_flags))
 		    goto SPACE;
-		m_wordLen += it.appendchartostring(m_span);
-		INC_WORDCHARS;
-		curspanglue = cc;
+                m_wordLen += it.appendchartostring(m_span);
+                STATS_INC_WORDCHARS;
 		break;
 	    } else {
-		// If . inside a word, it's spanglue, else, it's whitespace. 
-		// We also keep an initial '.' for catching .net, but this adds
-		// quite a few spurious terms !
-                // Another problem is that something like .x-errs 
-		// will be split as .x-errs, x, errs but not x-errs
-		// A final comma in a word will be removed by doemit
+		// Found '.' while not in number
 
 		// Only letters and digits make sense after
 		if (!isalphanum(nextwhat, m_flags))
 		    goto SPACE;
 
-		if (cc == '.') {
+		// Keep an initial '.' for catching .net, and .34 (aka
+		// 0.34) but this adds quite a few spurious terms !
+                if (m_span.length() == 0) {
                     // Check for number like .1
-                    if (m_span.length() == 0 && isdigit(nextwhat, m_flags)) {
+                    if (isdigit(nextwhat, m_flags)) {
                         m_inNumber = true;
-                        m_wordLen += it.appendchartostring(m_span);
-			INC_WORDCHARS;
-                        curspanglue = cc;
-                        break;
                     }
-                            
-		    if (m_wordLen) {
-			// Disputable special case: set spanemit to
-			// true when encountering a '.' while spanglue
-			// is '_'. Think of a_b.c Done to
-			// avoid breaking stuff after changing '_'
-			// from wordchar to spanglue
-			if (!doemit(false, it.getBpos(), curspanglue == '_'))
-			    return false;
-			curspanglue = cc;
-			// span length could have been adjusted by trimming
-			// inside doemit
-			if (m_span.length())
-			    m_wordStart += it.appendchartostring(m_span);
-			break;
-		    } else {
-			m_wordStart += it.appendchartostring(m_span);
-			curspanglue = cc;
-			break;
-		    }
-		}
+                    m_wordLen += it.appendchartostring(m_span);
+                    STATS_INC_WORDCHARS;
+                    break;
+                }
+
+                // '.' between words: span glue
+                if (m_wordLen) {
+                    if (!doemit(false, it.getBpos()))
+                        return false;
+                    m_wordStart += it.appendchartostring(m_span);
+                }
 	    }
-	    goto SPACE;
 	}
-	    break;
+        break;
 
 	case '@':
-	    if (m_wordLen) {
-		if (!doemit(false, it.getBpos()))
-		    return false;
-		curspanglue = cc;
-		m_inNumber = false;
-		m_wordStart += it.appendchartostring(m_span);
-	    } else {
-		goto SPACE;
-	    }
-	    break;
 	case '_':
-	    if (m_wordLen) {
-		if (!doemit(false, it.getBpos()))
-		    return false;
-		curspanglue = cc;
-		m_inNumber = false;
-	    }
-	    m_wordStart += it.appendchartostring(m_span);
-	    break;
 	case '\'':
-	    // If in word, potential span: o'brien, else, this is more 
-	    // whitespace
+	    // If in word, potential span: o'brien, jf@dockes.org,
+	    // else just ignore
 	    if (m_wordLen) {
 		if (!doemit(false, it.getBpos()))
 		    return false;
-		curspanglue = cc;
 		m_inNumber = false;
-		m_wordStart += it.appendchartostring(m_span);
+                m_wordStart += it.appendchartostring(m_span);
 	    }
 	    break;
+
 	case '#': 
 	    // Keep it only at end of word ... Special case for c# you see...
 	    if (m_wordLen > 0) {
 		int w = whatcc(it[it.getCpos()+1]);
 		if (w == SPACE || w == '\n' || w == '\r') {
 		    m_wordLen += it.appendchartostring(m_span);
-		    INC_WORDCHARS;
+		    STATS_INC_WORDCHARS;
 		    break;
 		}
 	    }
 	    goto SPACE;
 	    break;
+
 	case '\n':
 	case '\r':
-	    if ((m_span.length() && m_span[m_span.length() - 1] == '-') ||
-		softhyphenpending) {
-		// if '-' is the last char before end of line, just
-		// ignore the line change. This is the right thing to
-		// do almost always. We'd then need a way to check if
-		// the - was added as part of the word hyphenation, or was 
-		// there in the first place, but this would need a dictionary.
+	    if (m_span.length() && *m_span.rbegin() == '-') {
+                // if '-' is the last char before end of line, we
+                // strip it.  We have no way to know if this is added
+                // because of the line split or if it was part of an
+                // actual compound word (would need a dictionary to
+                // check).  As soft-hyphen *should* be used if the '-'
+                // is not part of the text, it is better to properly
+                // process a real compound word, and produce wrong
+                // output from wrong text. The word-emitting routine
+                // will strip the trailing '-'.
+                goto SPACE;
+            } else if (softhyphenpending) {
 		// Don't reset soft-hyphen
 		continue;
 	    } else {
-		// Handle like a normal separator
+		// Normal case: EOL is white space
 		goto SPACE;
 	    }
 	    break;
+
 	case '\f':
 	    pagepending = true;
 	    goto SPACE;
 	    break;
+
 #ifdef RCL_SPLIT_CAMELCASE
             // Camelcase handling. 
             // If we get uppercase ascii after lowercase ascii, emit word.
@@ -651,15 +705,14 @@ bool TextSplit::text_to_words(const string &in)
             goto NORMALCHAR;
 #endif /* CAMELCASE */
 
-
 	default:
 	NORMALCHAR:
+	    nonalnumcnt = 0;
             if (m_inNumber && c != 'e' && c != 'E') {
                 m_inNumber = false;
             }
 	    m_wordLen += it.appendchartostring(m_span);
-	    INC_WORDCHARS;
-	    nonalnumcnt = 0;
+	    STATS_INC_WORDCHARS;
 	    break;
 	}
 	softhyphenpending = false;
@@ -917,27 +970,73 @@ public:
     }
 };
 
-static string teststring = 
-	    "Un bout de texte \nnormal. 2eme phrase.3eme;quatrieme.\n"
-	    "\"Jean-Francois Dockes\" <jfd@okyz.com>\n"
-	    "n@d @net .net t@v@c c# c++ o'brien 'o'brien' l'ami\n"
-            "data123\n"
-	    "134 +134 -14 0.1 .1 2. -1.5 +1.5 1,2 1.54e10 1,2e30 .1e10 1.e-8\n"
-	    "@^#$(#$(*)\n"
-	    "192.168.4.1 one\n\rtwo\r"
-	    "Debut-\ncontinue\n" 
-	    "[olala][ululu]  (valeur) (23)\n"
-	    "utf-8 ucs-4© \\nodef\n"
-            "A b C 2 . +"
-	    "','this\n"
-	    " ,able,test-domain "
-	    " -wl,--export-dynamic "
-	    " ~/.xsession-errors "
-    "soft\xc2\xadhyphen "
-    "soft\xc2\xad\nhyphen "
-    "soft\xc2\xad\n\rhyphen "
-    "hard-\nhyphen "
-;
+#define OPT_s	  0x1 
+#define OPT_w	  0x2
+#define OPT_q	  0x4
+#define OPT_c     0x8
+#define OPT_k     0x10
+#define OPT_C     0x20
+#define OPT_n     0x40
+#define OPT_S     0x80
+#define OPT_u     0x100
+
+bool dosplit(const string& data, TextSplit::Flags flags, int op_flags)
+{
+    myTermProc printproc;
+
+    Rcl::TermProc *nxt = &printproc;
+
+//    Rcl::TermProcCommongrams commonproc(nxt, stoplist);
+//    if (op_flags & OPT_S)
+//        nxt = &commonproc;
+
+    Rcl::TermProcPrep preproc(nxt);
+    if (op_flags & OPT_u) 
+        nxt = &preproc;
+
+    Rcl::TextSplitP splitter(nxt, flags);
+
+    if (op_flags & OPT_q)
+        printproc.setNoOut(true);
+
+    splitter.text_to_words(data);
+
+#ifdef TEXTSPLIT_STATS
+	TextSplit::Stats::Values v = splitter.getStats();
+	cout << "Average length: " 
+	     <<  v.avglen
+	     << " Standard deviation: " 
+	     << v.sigma
+	     << " Coef of variation "
+	     << v.sigma / v.avglen
+	     << endl;
+#endif
+    return true;
+}
+
+static const char *teststrings[] = {
+    "Un bout de texte \nnormal. 2eme phrase.3eme;quatrieme.\n",
+    "\"Jean-Francois Dockes\" <jfd@okyz.com>\n",
+    "n@d @net .net net@ t@v@c c# c++ o'brien 'o'brien'",
+    "_network_ some_span",
+    "data123\n",
+    "134 +134 -14 0.1 .1 2. -1.5 +1.5 1,2 1.54e10 1,2e30 .1e10 1.e-8\n",
+    "@^#$(#$(*)\n",
+    "192.168.4.1 one\n\rtwo\r",
+    "[olala][ululu]  (valeur) (23)\n",
+    "utf-8 ucs-4© \\nodef\n",
+    "A b C 2 . +",
+    "','this\n",
+    " ,able,test-domain",
+    " -wl,--export-dynamic",
+    " ~/.xsession-errors",
+    "this_very_long_span_this_very_long_span_this_very_long_span",
+    "soft\xc2\xadhyphen",
+    "soft\xc2\xad\nhyphen",
+    "soft\xc2\xad\n\rhyphen",
+    "hard-\nhyphen",
+};
+const int teststrings_cnt = sizeof(teststrings)/sizeof(char *);
 
 static string teststring1 = " nouvel-an ";
 
@@ -966,15 +1065,6 @@ Usage(void)
 }
 
 static int        op_flags;
-#define OPT_s	  0x1 
-#define OPT_w	  0x2
-#define OPT_q	  0x4
-#define OPT_c     0x8
-#define OPT_k     0x10
-#define OPT_C     0x20
-#define OPT_n     0x40
-#define OPT_S     0x80
-#define OPT_u     0x100
 
 int main(int argc, char **argv)
 {
@@ -1043,9 +1133,13 @@ int main(int argc, char **argv)
 	    exit(1);
         }
     } else {
-	cout << endl << teststring << endl << endl;  
-	odata = teststring;
+        for (int i = 0; i < teststrings_cnt; i++) {
+            cout << endl << teststrings[i] << endl;  
+            dosplit(teststrings[i], flags, op_flags);
+        }
+        exit(0);
     }
+
     string& data = odata;
     string ndata;
     if ((op_flags & OPT_C)) {
@@ -1061,34 +1155,7 @@ int main(int argc, char **argv)
 	int n = TextSplit::countWords(data, flags);
 	cout << n << " words" << endl;
     } else {
-	myTermProc printproc;
-
-	Rcl::TermProc *nxt = &printproc;
-
-	Rcl::TermProcCommongrams commonproc(nxt, stoplist);
-	if (op_flags & OPT_S)
-	    nxt = &commonproc;
-
-	Rcl::TermProcPrep preproc(nxt);
-	if (op_flags & OPT_u) 
-	    nxt = &preproc;
-
-	Rcl::TextSplitP splitter(nxt, flags);
-
-        if (op_flags & OPT_q)
-            printproc.setNoOut(true);
-
-	splitter.text_to_words(data);
-#ifdef TEXTSPLIT_STATS
-	TextSplit::Stats::Values v = splitter.getStats();
-	cout << "Average length: " 
-	     <<  v.avglen
-	     << " Standard deviation: " 
-	     << v.sigma
-	     << " Coef of variation "
-	     << v.sigma / v.avglen
-	     << endl;
-#endif
+        dosplit(data, flags, op_flags);
     }    
 }
 #endif // TEST
