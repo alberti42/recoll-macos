@@ -220,7 +220,7 @@ private:
     bool doemit(bool spanerase, int bp);
     void discardspan();
     bool span_is_acronym(std::string *acronym);
-    bool words_from_span();
+    bool words_from_span(int bp);
 };
 
 #endif /* _TEXTSPLIT_H_INCLUDED_ */

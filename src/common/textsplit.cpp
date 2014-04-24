@@ -278,7 +278,7 @@ bool TextSplit::span_is_acronym(string *acronym)
 
         // Generate terms from span. Have to take into account the
         // flags: ONLYSPANS, NOSPANS, noNumbers
-bool TextSplit::words_from_span()
+bool TextSplit::words_from_span(int bp)
 {
 #if 0
     cerr << "Span: [" << m_span << "] " << " w_i_s size: " << 
@@ -292,6 +292,8 @@ bool TextSplit::words_from_span()
 #endif
     unsigned int spanwords = m_words_in_span.size();
     int pos = m_spanpos;
+    // Byte position of the span start
+    int spboffs = bp - m_span.size();
 
     for (unsigned int i = 0; 
          i < ((m_flags&TXTS_ONLYSPANS) ? 1 : spanwords); 
@@ -309,7 +311,7 @@ bool TextSplit::words_from_span()
             if (fin - deb > int(m_span.size()))
                 break;
             string word(m_span.substr(deb, fin-deb));
-            if (!emitterm(j != i+1, word, pos, deb, fin))
+            if (!emitterm(j != i+1, word, pos, spboffs+deb, spboffs+fin))
                 return false;
         }
     }
@@ -385,7 +387,7 @@ inline bool TextSplit::doemit(bool spanerase, int bp)
 	}
     breaktrimloop:
 
-        if (!words_from_span()) {
+        if (!words_from_span(bp)) {
             return false;
         }
 	discardspan();
