@@ -1,10 +1,5 @@
-<!-- Use this header for the FreeBSD sgml toolchain -->
-<!-- NOTE: the sgml version should be saved as ISO-8859-1. -->
-<!DOCTYPE BOOK PUBLIC "-//FreeBSD//DTD DocBook V4.1-Based Extension//EN" [
-
-<!-- Use this header for going XML -->
-<!-- <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [ -->
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
 
 <!ENTITY RCL "<application>Recoll</application>">
 <!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/features.html'>http://www.recoll.org/features.html</ulink>">

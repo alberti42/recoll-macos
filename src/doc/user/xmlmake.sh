@@ -28,16 +28,6 @@ XSLDIR="/usr/share/xml/docbook/stylesheet/docbook-xsl/"
 dochunky=1
 test $# -eq 1 && dochunky=0
 
-# Remove the SGML header and uncomment the XML one. Also used to iconv
-# from iso-8859-1 to UTF-8, but the SGML manual is now UTF-8 ? Would
-# that work with the sgml toolchain ??
-echo '<?xml version="1.0" encoding="UTF-8"?>' > usermanual.xml
-sed -e '\!//FreeBSD//DTD!d' \
-    -e '\!DTD DocBook XML!s/<!--//' \
-    -e '\!/docbookx.dtd!s/-->//' \
-    < usermanual.sgml \
-    >> usermanual.xml
-
 # Options common to the single-file and chunked versions
 commonoptions="--stringparam section.autolabel 1 \
   --stringparam section.autolabel.max.depth 3 \
