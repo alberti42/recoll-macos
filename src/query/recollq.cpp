@@ -58,9 +58,15 @@ bool dump_contents(RclConfig *rclconfig, Rcl::Doc& idoc)
     return true;
 }
 
-void output_fields(const vector<string>fields, Rcl::Doc& doc,
-		   Rcl::Query& query, Rcl::Db& rcldb)
+void output_fields(vector<string> fields, Rcl::Doc& doc,
+		   Rcl::Query& query, Rcl::Db& rcldb, bool printnames)
 {
+    if (fields.empty()) {
+        map<string,string>::const_iterator it;
+        for (it = doc.meta.begin();it != doc.meta.end(); it++) {
+            fields.push_back(it->first);
+        }
+    }
     for (vector<string>::const_iterator it = fields.begin();
 	 it != fields.end(); it++) {
 	string out;
@@ -71,7 +77,14 @@ void output_fields(const vector<string>fields, Rcl::Doc& doc,
 	} else {
 	    base64_encode(doc.meta[*it], out);
 	}
-	cout << out << " ";
+        // Before printnames existed, recollq printed a single blank for empty
+        // fields. This is a problem when printing names and using strtok, but
+        // have to keep the old behaviour when printnames is not set.
+        if (!(out.empty() && printnames)) {
+            if (printnames)
+                cout << *it << " ";
+            cout << out << " ";
+        }
     }
     cout << endl;
 }
@@ -82,35 +95,37 @@ static char usage [] =
 " [-o|-a|-f] [-q] <query string>\n"
 " Runs a recoll query and displays result lines. \n"
 "  Default: will interpret the argument(s) as a xesam query string\n"
-"    query may be like: \n"
-"    implicit AND, Exclusion, field spec:    t1 -t2 title:t3\n"
-"    OR has priority: t1 OR t2 t3 OR t4 means (t1 OR t2) AND (t3 OR t4)\n"
-"    Phrase: \"t1 t2\" (needs additional quoting on cmd line)\n"
-"  -o Emulate the GUI simple search in ANY TERM mode\n"
-"  -a Emulate the GUI simple search in ALL TERMS mode\n"
-"  -f Emulate the GUI simple search in filename mode\n"
-"  -q is just ignored (compatibility with the recoll GUI command line)\n"
+"  Query elements: \n"
+"   * Implicit AND, exclusion, field spec:  t1 -t2 title:t3\n"
+"   * OR has priority: t1 OR t2 t3 OR t4 means (t1 OR t2) AND (t3 OR t4)\n"
+"   * Phrase: \"t1 t2\" (needs additional quoting on cmd line)\n"
+" -o Emulate the GUI simple search in ANY TERM mode\n"
+" -a Emulate the GUI simple search in ALL TERMS mode\n"
+" -f Emulate the GUI simple search in filename mode\n"
+" -q is just ignored (compatibility with the recoll GUI command line)\n"
 "Common options:\n"
-"    -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
-"    -d also dump file contents\n"
-"    -n [first-]<cnt> define the result slice. The default value for [first]\n"
-"       is 0. Without the option, the default max count is 2000.\n"
-"       Use n=0 for no limit\n"
-"    -b : basic. Just output urls, no mime types or titles\n"
-"    -Q : no result lines, just the processed query and result count\n"
-"    -m : dump the whole document meta[] array for each result\n"
-"    -A : output the document abstracts\n"
-"    -S fld : sort by field <fld>\n"
-"    -s stemlang : set stemming language to use (must exist in index...)\n"
-"       Use -s \"\" to turn off stem expansion\n"
-"    -D : sort descending\n"
-"    -i <dbdir> : additional index, several can be given\n"
-"    -e use url encoding (%xx) for urls\n"
-"    -F <field name list> : output exactly these fields for each result.\n"
-"       The field values are encoded in base64, output in one line and \n"
-"       separated by one space character. This is the recommended format \n"
-"       for use by other programs. Use a normal query with option -m to \n"
-"       see the field names.\n"
+" -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
+" -d also dump file contents\n"
+" -n [first-]<cnt> define the result slice. The default value for [first]\n"
+"    is 0. Without the option, the default max count is 2000.\n"
+"    Use n=0 for no limit\n"
+" -b : basic. Just output urls, no mime types or titles\n"
+" -Q : no result lines, just the processed query and result count\n"
+" -m : dump the whole document meta[] array for each result\n"
+" -A : output the document abstracts\n"
+" -S fld : sort by field <fld>\n"
+"   -D : sort descending\n"
+" -s stemlang : set stemming language to use (must exist in index...)\n"
+"    Use -s \"\" to turn off stem expansion\n"
+" -i <dbdir> : additional index, several can be given\n"
+" -e use url encoding (%xx) for urls\n"
+" -F <field name list> : output exactly these fields for each result.\n"
+"    The field values are encoded in base64, output in one line and \n"
+"    separated by one space character. This is the recommended format \n"
+"    for use by other programs. Use a normal query with option -m to \n"
+"    see the field names. Use -F '' to output all fields, but you probably\n"
+"    also want option -N in this case\n"
+"  -N : with -F, print the (plain text) field names before the field values\n"
 ;
 static void
 Usage(void)
@@ -145,6 +160,7 @@ static int     op_flags;
 #define OPT_t     0x20000
 #define OPT_e     0x40000
 #define OPT_F     0x80000
+#define OPT_N     0x100000
 
 int recollq(RclConfig **cfp, int argc, char **argv)
 {
@@ -190,6 +206,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 		argc--; goto b1;
             case 'l':   op_flags |= OPT_l; break;
             case 'm':   op_flags |= OPT_m; break;
+            case 'N':   op_flags |= OPT_N; break;
 	    case 'n':	op_flags |= OPT_n; if (argc < 2)  Usage();
 	    {
 		string rescnt = *(++argv);
@@ -354,7 +371,7 @@ endopts:
 	    break;
 
 	if (op_flags & OPT_F) {
-	    output_fields(fields, doc, query, rcldb);
+	    output_fields(fields, doc, query, rcldb, op_flags & OPT_N);
 	    continue;
 	}
 
