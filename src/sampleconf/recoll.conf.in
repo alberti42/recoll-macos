@@ -22,9 +22,15 @@ skippedNames = #* bin CVS  Cache cache* .cache caughtspam tmp \
      .recoll* xapiandb recollrc recoll.conf
 
 # Wildcard expressions for paths we shouldn't go into. The database and
-# configuration directories will automatically be added in there, else the
-# default value is empty
-#skippedPaths = 
+# configuration directories will automatically be added in there.  
+# We add the usual mount point for removable media by default to remind
+# people that it is a bad idea to naively have recoll work on these
+# (esp. with the monitor: media gets indexed on mount, all data gets erased
+# on unmount...). Typically the presence of /media is mostly a reminder, it
+# would only have effect for someone who's indexing / ...
+# Explicitely adding /media/xxx to the topdirs will override this.
+skippedPaths = /media
+
 # Same for real time indexing. The idea here is that there is stuff that
 # you might want to initially index but not monitor. If daemSkippedPaths is
 # not set, the daemon uses skippedPaths.
