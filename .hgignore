@@ -73,7 +73,6 @@ src/doc/user/usermanual.pdf
 src/doc/user/usermanual.tex-pdf
 src/doc/user/usermanual.tex-pdf-tmp
 src/doc/user/usermanual.txt
-src/doc/user/usermanual.xml
 src/filters/rclexecm.pyc
 src/filters/rcllatinclass.pyc
 src/index/alldeps
