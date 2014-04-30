@@ -92,6 +92,16 @@ public:
 	for (i = 0; i  < strlen(wild); i++)
 	    charclasses[int(wild[i])] = WILD;
 
+        // Characters with special treatment:
+        //
+        // The first ones are mostly span-constructing "glue"
+        // characters, for example those typically allowing us to
+        // search for an email address as a whole (bob@isp.org instead
+        // of as a phrase "bob isp org"
+        //
+        // The case of the minus sign is a complicated one. It went
+        // from glue to non-glue to glue along Recoll versions. 
+        // See minus-hyphen-dash.txt in doc/notes
 	char special[] = ".@+-#'_\n\r\f";
 	for (i = 0; i  < strlen(special); i++)
 	    charclasses[int(special[i])] = special[i];
@@ -121,7 +131,11 @@ static inline int whatcc(unsigned int c)
     if (c <= 127) {
 	return charclasses[c]; 
     } else {
-	if (sskip.find(c) != sskip.end()) {
+        if (c == 0x2010) {
+            // Special treatment for hyphen: handle as ascii minus. See
+            // doc/notes/minus-hyphen-dash.txt
+            return 0x2010;
+        } else if (sskip.find(c) != sskip.end()) {
 	    return SKIP;
 	} else if (spunc.find(c) != spunc.end()) {
 	    return SPACE;
@@ -573,6 +587,19 @@ bool TextSplit::text_to_words(const string &in)
 	    }
             goto SPACE;
 	    break;
+
+	case 0x2010:
+            // Hyphen is replaced with ascii minus
+	    if (m_wordLen != 0) {
+                // Treat '-' inside span as glue char
+                if (!doemit(false, it.getBpos()))
+                    return false;
+                m_inNumber = false;
+                m_span += '-';
+                m_wordStart++;
+                break;
+            }
+            goto SPACE;
 
 	case '.':
 	{
@@ -1036,7 +1063,9 @@ static const char *teststrings[] = {
     "soft\xc2\xadhyphen",
     "soft\xc2\xad\nhyphen",
     "soft\xc2\xad\n\rhyphen",
-    "hard-\nhyphen",
+    "real\xe2\x80\x90hyphen",
+    "real\xe2\x80\x90\nhyphen",
+    "hyphen-\nminus",
 };
 const int teststrings_cnt = sizeof(teststrings)/sizeof(char *);
 
