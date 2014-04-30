@@ -99,7 +99,10 @@ class ConfIndexer {
     enum ixType {IxTNone, IxTFs=1, IxTBeagleQueue=2, 
                  IxTAll = IxTFs | IxTBeagleQueue};
     // Misc indexing flags
-    enum IxFlag {IxFNone = 0, IxFIgnoreSkip = 1};
+    enum IxFlag {IxFNone = 0, 
+                 IxFIgnoreSkip = 1, // Ignore skipped lists
+                 IxFNoWeb = 2, // Do not process the web queue.
+    };
 
     /** Run indexers */
     bool index(bool resetbefore, ixType typestorun);
@@ -126,7 +129,7 @@ class ConfIndexer {
     bool updateDocs(vector<Rcl::Doc> &docs, IxFlag f = IxFNone);
     static bool docsToPaths(vector<Rcl::Doc> &docs, vector<string> &paths);
     /** Purge a list of files. */
-    bool purgeFiles(list<string> &files);
+    bool purgeFiles(list<string> &files, IxFlag f = IxFNone);
 
     /** Set in place reset mode */
     void setInPlaceReset() {m_db.setInPlaceReset();}

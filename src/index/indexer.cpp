@@ -178,7 +178,7 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, IxFlag flag)
     LOGDEB2(("ConfIndexer::indexFiles: fsindexer returned %d, "
             "%d files remainining\n", ret, myfiles.size()));
 
-    if (m_dobeagle && !myfiles.empty()) {
+    if (m_dobeagle && !myfiles.empty() && !(flag & IxFNoWeb)) {
         if (!m_beagler)
             m_beagler = new BeagleQueueIndexer(m_config, &m_db, m_updater);
         if (m_beagler) {
@@ -237,7 +237,7 @@ bool ConfIndexer::updateDocs(std::vector<Rcl::Doc> &docs, IxFlag flag)
     return true;
 }
 
-bool ConfIndexer::purgeFiles(std::list<string> &files)
+bool ConfIndexer::purgeFiles(std::list<string> &files, IxFlag flag)
 {
     list<string> myfiles;
     string origcwd = m_config->getOrigCwd();
@@ -259,7 +259,7 @@ bool ConfIndexer::purgeFiles(std::list<string> &files)
     if (m_fsindexer)
         ret = m_fsindexer->purgeFiles(myfiles);
 
-    if (m_dobeagle && !myfiles.empty()) {
+    if (m_dobeagle && !myfiles.empty() && !(flag & IxFNoWeb)) {
         if (!m_beagler)
             m_beagler = new BeagleQueueIndexer(m_config, &m_db, m_updater);
         if (m_beagler) {
