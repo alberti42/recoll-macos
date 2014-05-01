@@ -448,11 +448,17 @@ int main(int argc, char **argv)
 		filenames.push_back(*argv++);
 	    }
 	}
-        bool status;
-	if (op_flags & OPT_i)
-	    status = indexfiles(config, filenames);
-	else 
+
+        // Note that -e and -i may be both set. In this case we first erase,
+        // then index. This is a slightly different from -Z -i because we 
+        // warranty that all subdocs are purged.
+        bool status = true;
+	if (op_flags & OPT_e) {
 	    status = purgefiles(config, filenames);
+        }
+        if (status && (op_flags & OPT_i)) {
+	    status = indexfiles(config, filenames);
+        }
         if (confindexer && !confindexer->getReason().empty())
             cerr << confindexer->getReason() << endl;
         exit(status ? 0 : 1);
