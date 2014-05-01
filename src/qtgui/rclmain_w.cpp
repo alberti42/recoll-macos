@@ -1192,6 +1192,85 @@ void RclMain::previewClosed(Preview *w)
     delete w;
 }
 
+// Document up to date check. The main problem we try to solve is
+// displaying the wrong message from a compacted mail folder.
+//
+// Also we should re-run the query after updating the index because
+// the ipaths may be wrong in the current result list. For now, the
+// user does this by clicking search again once the indexing is done
+//
+// We only do this for the main index, else jump and prey (cant update
+// anyway, even the makesig() call might not make sense for our base
+// config)
+bool RclMain::containerUpToDate(Rcl::Doc& doc)
+{
+    // If ipath is empty, we decide we don't care. Also, we need an index, 
+    if (doc.ipath.empty() || rcldb == 0)
+        return true;
+
+    string udi;
+    doc.getmeta(Rcl::Doc::keyudi, &udi);
+    if (udi.empty()) {
+        // Whatever...
+        return true;
+    }
+
+    string sig;
+    if (!FileInterner::makesig(theconfig, doc, sig)) {
+        QMessageBox::warning(0, "Recoll", tr("Can't access file: ") + 
+                             QString::fromLocal8Bit(doc.url.c_str()));
+        // Let's try the preview anyway...
+        return true;
+    }
+
+    if (!rcldb->needUpdate(udi, sig)) {
+        // Alles ist in ordnung
+        return true;
+    }
+
+    // We can only run indexing on the main index (dbidx 0)
+    bool ismainidx = rcldb->whatDbIdx(doc) == 0;
+    // Indexer already running?
+    bool ixnotact = (m_indexerState == IXST_NOTRUNNING);
+
+    QString msg = tr("Index not up to date for this file. "
+                     "Refusing to risk showing the wrong entry. ");
+    if (ixnotact && ismainidx) {
+        msg += tr("Click Ok to update the "
+                  "index for this file, then you will need to "
+                  "re-run the query when indexing is done. ");
+    } else if (ismainidx) {
+        msg += tr("The indexer is running so things should "
+                  "improve when it's done. ");
+    } else if (ixnotact) {
+        // Not main index
+        msg += tr("The document belongs to an external index"
+                  "which I can't update. ");
+    }
+    msg += tr("Click Cancel to return to the list. "
+              "Click Ignore to show the preview anyway. ");
+
+    QMessageBox::StandardButtons bts = 
+        QMessageBox::Ignore | QMessageBox::Cancel;
+
+    if (ixnotact &&ismainidx)
+        bts |= QMessageBox::Ok;
+
+    int rep = 
+        QMessageBox::warning(0, tr("Warning"), msg, bts,
+                             (ixnotact && ismainidx) ? 
+                             QMessageBox::Cancel : QMessageBox::NoButton);
+
+    if (m_indexerState == IXST_NOTRUNNING && rep == QMessageBox::Ok) {
+        LOGDEB(("Requesting index update for %s\n", doc.url.c_str()));
+        vector<Rcl::Doc> docs(1, doc);
+        updateIdxForDocs(docs);
+    }
+    if (rep != QMessageBox::Ignore)
+        return false;
+    return true;
+}
+
 /** 
  * Open a preview window for a given document, or load it into new tab of 
  * existing window.
@@ -1203,71 +1282,9 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
 {
     LOGDEB(("startPreview(%d, doc, %d)\n", docnum, mod));
 
-    // Document up to date check. We do this only if ipath is not
-    // empty as this does not appear to be a serious issue for single
-    // docs (the main actual problem is displaying the wrong message
-    // from a compacted mail folder)
-    //
-    // !! NOTE: there is one case where doing a partial index update
-    // will not work: if the search result does not exist in the new
-    // version of the file, it won't be purged from the index because
-    // a partial index pass does no purge, so its ref date will stay
-    // the same and you keep getting the message about the index being
-    // out of date. The only way to fix this is to run a normal
-    // indexing pass (common case: the mbox was shortened and the
-    // result msgnum is beyond the new end)
-    // Also we should re-run the query after updating the index
-    // because the ipaths may be wrong in the current result list We
-    // only do this for the main index, else jump and prey (cant
-    // update anyway, even the makesig() call might not make sense for
-    // our base config)
-    if (!doc.ipath.empty() && rcldb && rcldb->whatDbIdx(doc) == 0) {
-	string udi;
-	doc.getmeta(Rcl::Doc::keyudi, &udi);
-	if (!udi.empty()) {
-	    string sig;
-	    if (!FileInterner::makesig(theconfig, doc, sig)) {
-		QMessageBox::warning(0, "Recoll", 
-				     tr("Can't access file: ") + 
-				     QString::fromLocal8Bit(doc.url.c_str()));
-		return;
-	    }
-	    if (rcldb->needUpdate(udi, sig)) {
-		QString msg = 
-		    tr("Index not up to date for this file. "
-		       "Refusing to risk showing the wrong entry. ");
-		bool ixnotact = (m_indexerState == IXST_NOTRUNNING);
-		if (ixnotact) {
-		    msg += tr("Click Ok to update the "
-			      "index for this file, then you will need to "
-			      "re-run the query when indexing is done. ");
-		} else {
-		    msg += tr("The indexer is running so things should "
-			      "improve when it's done. ");
-		} 
-		msg += tr("Click Cancel to return to the list. "
-			  "Click Ignore to show the preview anyway. ");
-		QMessageBox::StandardButtons bts = 
-		    QMessageBox::Ignore | QMessageBox::Cancel;
-		if (ixnotact)
-		    bts |= QMessageBox::Ok;
-		int rep = 
-		    QMessageBox::warning(0, tr("Warning"), 
-					 msg, bts,
-					 ixnotact? QMessageBox::Cancel : 
-					 QMessageBox::NoButton);
-		if (m_indexerState == IXST_NOTRUNNING && 
-		    rep == QMessageBox::Ok) {
-		    LOGDEB(("Requesting index update for %s\n", 
-			    doc.url.c_str()));
-		    vector<Rcl::Doc> docs(1, doc);
-		    updateIdxForDocs(docs);
-		}
-		if (rep != QMessageBox::Ignore)
-		    return;
-	    }
-	}
-    }
+    if (!containerUpToDate(doc))
+        return;
+
     // Do the zeitgeist thing
     zg_send_event(ZGSEND_PREVIEW, doc);
 
@@ -1322,6 +1339,7 @@ void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
 	vector<string> args;
 	args.push_back("-c");
 	args.push_back(theconfig->getConfDir());
+	args.push_back("-e");
 	args.push_back("-i");
 	args.insert(args.end(), paths.begin(), paths.end());
 	m_idxproc = new ExecCmd;

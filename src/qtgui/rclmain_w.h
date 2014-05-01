@@ -205,6 +205,7 @@ private:
     virtual void showRTITool(bool modal);
     virtual void updateIdxForDocs(vector<Rcl::Doc>&);
     virtual void initiateQuery();
+    virtual bool containerUpToDate(Rcl::Doc& doc);
 };
 
 #endif // RCLMAIN_W_H
