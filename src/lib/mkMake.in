@@ -58,6 +58,7 @@ ${depth}/rcldb/stemdb.cpp \
 ${depth}/rcldb/stoplist.cpp \
 ${depth}/rcldb/synfamily.cpp \
 ${depth}/unac/unac.cpp \
+${depth}/utils/appformime.cpp \
 ${depth}/utils/base64.cpp \
 ${depth}/utils/circache.cpp \
 ${depth}/utils/closefrom.cpp \

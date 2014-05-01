@@ -30,6 +30,14 @@ trfstreewalk.o : fstreewalk.cpp fstreewalk.h
 	$(CXX) -o trfstreewalk.o -c $(ALL_CXXFLAGS) \
 	       -DTEST_FSTREEWALK fstreewalk.cpp
 
+APPFORMIME_OBJS= trappformime.o 
+trappformime : $(APPFORMIME_OBJS)
+	$(CXX) -o trappformime $(APPFORMIME_OBJS) \
+            $(LIBRECOLL) $(LIBICONV) $(LIBSYS)
+trappformime.o : appformime.cpp
+	$(CXX) -o trappformime.o -c $(ALL_CXXFLAGS) \
+	       -DTEST_APPFORMIME appformime.cpp
+
 READFILE_OBJS= trreadfile.o 
 trreadfile : $(READFILE_OBJS)
 	$(CXX) -o trreadfile $(READFILE_OBJS) $(LIBRECOLL) $(LIBICONV) $(LIBSYS)
