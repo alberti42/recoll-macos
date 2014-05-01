@@ -137,6 +137,7 @@ public slots:
     virtual void menuSaveToFile();
     virtual void menuSaveSelection();
     virtual void menuEdit();
+    virtual void menuOpenWith(QAction *);
     virtual void menuCopyFN();
     virtual void menuCopyURL();
     virtual void menuExpand();
@@ -157,6 +158,7 @@ signals:
     void docSaveToFileClicked(Rcl::Doc);
     void previewRequested(Rcl::Doc);
     void editRequested(Rcl::Doc);
+    void openWithRequested(Rcl::Doc, string cmd);
     void headerClicked();
     void docExpand(Rcl::Doc);
     void showSubDocs(Rcl::Doc);

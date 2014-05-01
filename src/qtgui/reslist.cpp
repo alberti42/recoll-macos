@@ -1027,6 +1027,15 @@ void ResList::menuEdit()
     if (getDoc(m_popDoc, doc))
 	emit editRequested(doc);
 }
+void ResList::menuOpenWith(QAction *act)
+{
+    if (act == 0)
+        return;
+    string cmd = qs2utf8s(act->data().toString());
+    Rcl::Doc doc;
+    if (getDoc(m_popDoc, doc))
+	emit openWithRequested(doc, cmd);
+}
 
 void ResList::menuCopyFN()
 {

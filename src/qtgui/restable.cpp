@@ -880,6 +880,14 @@ void ResTable::menuEdit()
     if (m_detaildocnum >= 0) 
 	emit editRequested(m_detaildoc);
 }
+void ResTable::menuOpenWith(QAction *act)
+{
+    if (act == 0)
+        return;
+    string cmd = qs2utf8s(act->data().toString());
+    if (m_detaildocnum >= 0) 
+	emit openWithRequested(m_detaildoc, cmd);
+}
 
 void ResTable::menuCopyFN()
 {

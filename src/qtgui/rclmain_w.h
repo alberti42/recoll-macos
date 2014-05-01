@@ -133,6 +133,7 @@ public slots:
     virtual void startPreview(Rcl::Doc);
     virtual void startNativeViewer(Rcl::Doc, int pagenum = -1, 
 				   QString term=QString());
+    virtual void openWith(Rcl::Doc, string);
     virtual void saveDocToFile(Rcl::Doc);
     virtual void previewNextInTab(Preview *, int sid, int docnum);
     virtual void previewPrevInTab(Preview *, int sid, int docnum);
@@ -197,6 +198,9 @@ private:
     virtual void init();
     virtual void previewPrevOrNextInTab(Preview *, int sid, int docnum, 
 					bool next);
+    virtual void execViewer(const map<string, string>& subs, bool istempfile,
+                            const string& execpath, const vector<string>& lcmd,
+                            const string& cmd, Rcl::Doc doc);
     virtual void setStemLang(const QString& lang);
     virtual void onSortCtlChanged();
     virtual void showIndexConfig(bool modal);

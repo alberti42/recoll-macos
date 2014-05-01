@@ -25,6 +25,7 @@
 #include "recoll.h"
 #include "docseq.h"
 #include "respopup.h"
+#include "appformime.h"
 
 namespace ResultPopup {
 
@@ -45,6 +46,27 @@ QMenu *create(QWidget *me, int opts, RefCntr<DocSequence> source, Rcl::Doc& doc)
 
     if (!theconfig->getMimeViewerDef(doc.mimetype, apptag, 0).empty()) {
 	popup->addAction(me->tr("&Open"), me, SLOT(menuEdit()));
+    }
+
+    if (doc.ipath.empty()) {
+        vector<DesktopDb::AppDef> aps;
+        DesktopDb *ddb = DesktopDb::getDb();
+        if (ddb && ddb->appForMime(doc.mimetype, &aps) && 
+            !aps.empty()) {
+            QMenu *sub = popup->addMenu(me->tr("Open With"));
+            if (sub) {
+                for (vector<DesktopDb::AppDef>::const_iterator it = aps.begin();
+                     it != aps.end(); it++) {
+                    QAction *act = new 
+                        QAction(QString::fromUtf8(it->name.c_str()), me);
+                    QVariant v(QString::fromUtf8(it->command.c_str()));
+                    act->setData(v);
+                    sub->addAction(act);
+                }
+                sub->connect(sub, SIGNAL(triggered(QAction *)), me, 
+                             SLOT(menuOpenWith(QAction *)));
+            }
+        }
     }
 
     popup->addAction(me->tr("Copy &File Name"), me, SLOT(menuCopyFN()));

@@ -24,6 +24,7 @@
  * code which would parse /usr/share/applications to return a list of
  * apps for a given mime type. So here goes. Note that the implementation
  * is very primitive for now (no use of cache file, no updating once built).
+ * Also, this is not thread-safe, but could be made so quite easily.
  */
 class DesktopDb {
 public:
@@ -49,7 +50,7 @@ public:
      *   problem was detected.
      */
     bool appForMime(const std::string& mime, vector<AppDef> *apps, 
-                    std::string *reason);
+                    std::string *reason = 0);
 
 private:
     DesktopDb();

@@ -534,7 +534,7 @@ string escapeShell(const string &in)
 
 
 // Substitute printf-like percent cmds inside a string
-bool pcSubst(const string& in, string& out, map<char, string>& subs)
+bool pcSubst(const string& in, string& out, const map<char, string>& subs)
 {
     string::const_iterator it;
     for (it = in.begin(); it != in.end();it++) {
@@ -547,7 +547,7 @@ bool pcSubst(const string& in, string& out, map<char, string>& subs)
 		out += '%';
 		continue;
 	    }
-	    map<char,string>::iterator tr;
+	    map<char,string>::const_iterator tr;
 	    if ((tr = subs.find(*it)) != subs.end()) {
 		out += tr->second;
 	    } else {
@@ -561,7 +561,7 @@ bool pcSubst(const string& in, string& out, map<char, string>& subs)
     return true;
 }
 
-bool pcSubst(const string& in, string& out, map<string, string>& subs)
+bool pcSubst(const string& in, string& out, const map<string, string>& subs)
 {
     out.erase();
     string::size_type i;
@@ -592,7 +592,7 @@ bool pcSubst(const string& in, string& out, map<string, string>& subs)
             } else {
                 key = in[i];
             }
-	    map<string,string>::iterator tr;
+	    map<string,string>::const_iterator tr;
 	    if ((tr = subs.find(key)) != subs.end()) {
 		out += tr->second;
 	    } else {

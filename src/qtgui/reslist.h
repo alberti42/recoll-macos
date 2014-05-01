@@ -81,6 +81,7 @@ class ResList : public RESLIST_PARENTCLASS
     virtual void menuPreview();
     virtual void menuSaveToFile();
     virtual void menuEdit();
+    virtual void menuOpenWith(QAction *);
     virtual void menuCopyFN();
     virtual void menuCopyURL();
     virtual void menuExpand();
@@ -104,6 +105,7 @@ class ResList : public RESLIST_PARENTCLASS
     void showSnippets(Rcl::Doc);
     void showSubDocs(Rcl::Doc);
     void editRequested(Rcl::Doc);
+    void openWithRequested(Rcl::Doc, string cmd);
     void docExpand(Rcl::Doc);
     void wordSelect(QString);
     void wordReplace(const QString&, const QString&);

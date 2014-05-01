@@ -301,6 +301,8 @@ void RclMain::init()
 	    this, SLOT(startPreview(Rcl::Doc)));
     connect(restable, SIGNAL(editRequested(Rcl::Doc)), 
 	    this, SLOT(startNativeViewer(Rcl::Doc)));
+    connect(restable, SIGNAL(openWithRequested(Rcl::Doc, string)), 
+	    this, SLOT(openWith(Rcl::Doc, string)));
     connect(restable, SIGNAL(docSaveToFileClicked(Rcl::Doc)), 
 	    this, SLOT(saveDocToFile(Rcl::Doc)));
     connect(restable, SIGNAL(showSnippets(Rcl::Doc)), 
@@ -341,6 +343,8 @@ void RclMain::init()
 	    this, SLOT(saveDocToFile(Rcl::Doc)));
     connect(reslist, SIGNAL(editRequested(Rcl::Doc)), 
 	    this, SLOT(startNativeViewer(Rcl::Doc)));
+    connect(reslist, SIGNAL(openWithRequested(Rcl::Doc, string)), 
+	    this, SLOT(openWith(Rcl::Doc, string)));
     connect(reslist, SIGNAL(docPreviewClicked(int, Rcl::Doc, int)), 
 	    this, SLOT(startPreview(int, Rcl::Doc, int)));
     connect(reslist, SIGNAL(previewRequested(Rcl::Doc)), 
@@ -1641,6 +1645,39 @@ void RclMain::showSubDocs(Rcl::Doc doc)
     res->show();
 }
 
+void RclMain::openWith(Rcl::Doc doc, string cmdspec)
+{
+    LOGDEB(("RclMain::openWith: %s\n", cmdspec.c_str()));
+
+    // Split the command line
+    vector<string> lcmd;
+    if (!stringToStrings(cmdspec, lcmd)) {
+	QMessageBox::warning(0, "Recoll", 
+			     tr("Bad desktop app spec for %1: [%2]\n"
+				"Please check the desktop file")
+			     .arg(QString::fromAscii(doc.mimetype.c_str()))
+			     .arg(QString::fromLocal8Bit(cmdspec.c_str())));
+	return;
+    }
+
+    // Look for the command to execute in the exec path and the filters 
+    // directory
+    string execname = lcmd.front();
+    lcmd.erase(lcmd.begin());
+    string url = doc.url;
+    string fn = fileurltolocalpath(doc.url);
+
+    // Try to keep the letters used more or less consistent with the reslist
+    // paragraph format.
+    map<string, string> subs;
+    subs["F"] = fn;
+    subs["f"] = fn;
+    subs["U"] = url;
+    subs["u"] = url;
+
+    execViewer(subs, false, execname, lcmd, cmdspec, doc);
+}
+
 void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 {
     string apptag;
@@ -1705,7 +1742,6 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 	}
     }
 
-
     // Command not found: start the user dialog to help find another one:
     if (execpath.empty()) {
 	QString mt = QString::fromAscii(doc.mimetype.c_str());
@@ -1730,7 +1766,6 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     }
     // Get rid of the command name. lcmd is now argv[1...n]
     lcmd.erase(lcmd.begin());
-
 
     // Process the command arguments to determine if we need to create
     // a temporary file.
@@ -1868,12 +1903,21 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
          it != doc.meta.end(); it++) {
         subs[it->first] = it->second;
     }
+    execViewer(subs, istempfile, execpath, lcmd, cmd, doc);
+}
+
+void RclMain::execViewer(const map<string, string>& subs, bool istempfile,
+                         const string& execpath,
+                         const vector<string>& _lcmd, const string& cmd,
+                         Rcl::Doc doc)
+{
     string ncmd;
-    for (vector<string>::iterator it = lcmd.begin(); 
-         it != lcmd.end(); it++) {
+    vector<string> lcmd;
+    for (vector<string>::const_iterator it = _lcmd.begin(); 
+         it != _lcmd.end(); it++) {
         pcSubst(*it, ncmd, subs);
         LOGDEB(("%s->%s\n", it->c_str(), ncmd.c_str()));
-        *it = ncmd;
+        lcmd.push_back(ncmd);
     }
 
     // Also substitute inside the unsplitted command line and display
