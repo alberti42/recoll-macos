@@ -251,8 +251,12 @@ ConfParamFNW::ConfParamFNW(QWidget *parent, ConfLink cflink,
     m_hl->addWidget(m_le);
 
     m_pb = new QPushButton(this);
-    m_pb->setText(tr("Choose"));
-    setSzPol(m_pb, QSizePolicy::Fixed, QSizePolicy::Fixed, 1, 0);
+    
+    QString text = tr("Choose");
+    m_pb->setText(text);
+    int width = m_pb->fontMetrics().boundingRect(text).width() + 15;
+    m_pb->setMaximumWidth(width);
+    setSzPol(m_pb, QSizePolicy::Minimum, QSizePolicy::Fixed, 0, 0);
     m_hl->addWidget(m_pb);
 
     loadValue();
@@ -302,13 +306,19 @@ ConfParamSLW::ConfParamSLW(QWidget *parent, ConfLink cflink,
     vl1->addWidget(tl);
 
     QPushButton *pbA = new QPushButton(this);
-    pbA->setText(tr("+"));
-    setSzPol(pbA, QSizePolicy::Fixed, QSizePolicy::Fixed, 0, 0);
+    QString text = tr("+");
+    pbA->setText(text);
+    int width = pbA->fontMetrics().boundingRect(text).width() + 15;
+    pbA->setMaximumWidth(width);
+    setSzPol(pbA, QSizePolicy::Minimum, QSizePolicy::Fixed, 0, 0);
     hl1->addWidget(pbA);
 
     QPushButton *pbD = new QPushButton(this);
-    setSzPol(pbD, QSizePolicy::Fixed, QSizePolicy::Fixed, 0, 0);
-    pbD->setText(tr("-"));
+    text = tr("-");
+    pbD->setText(text);
+    width = pbD->fontMetrics().boundingRect(text).width() + 15;
+    pbD->setMaximumWidth(width);
+    setSzPol(pbD, QSizePolicy::Minimum, QSizePolicy::Fixed, 0, 0);
     hl1->addWidget(pbD);
 
     vl1->addLayout(hl1);

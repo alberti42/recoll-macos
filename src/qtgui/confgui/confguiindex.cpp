@@ -107,7 +107,7 @@ void ConfIndexW::reloadPanels()
     m_widgets.push_back(w);
     tabWidget->addTab(w, QObject::tr("Global parameters"));
 	
-    w = new ConfSubPanelW(this, m_conf);
+    w = new ConfSubPanelW(this, m_conf, m_rclconf);
     m_widgets.push_back(w);
     tabWidget->addTab(w, QObject::tr("Local parameters"));
 
@@ -225,21 +225,26 @@ ConfSearchPanelW::ConfSearchPanelW(QWidget *parent, ConfNull *config)
 ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
     : QWidget(parent)
 {
+    QWidget *w = 0;
+
     QGridLayout *gl1 = new QGridLayout(this);
     gl1->setSpacing(spacing);
     gl1->setMargin(margin);
 
-    ConfLink lnktopdirs(new ConfLinkRclRep(config, "topdirs"));
-    ConfParamDNLW *etopdirs = new 
-	ConfParamDNLW(this, lnktopdirs, tr("Top directories"),
-		      tr("The list of directories where recursive "
-			 "indexing starts. Default: your home."));
-    setSzPol(etopdirs, QSizePolicy::Preferred, QSizePolicy::Preferred, 1, 3);
-    gl1->addWidget(etopdirs, 0, 0, 1, 2);
+    int gridrow = 0;
 
-    ConfLink lnkskp(new ConfLinkRclRep(config, "skippedPaths"));
+    w = new ConfParamDNLW(this, 
+                          ConfLink(new ConfLinkRclRep(config, "topdirs")), 
+                          tr("Top directories"),
+                          tr("The list of directories where recursive "
+                             "indexing starts. Default: your home."));
+    setSzPol(w, QSizePolicy::Preferred, QSizePolicy::Preferred, 1, 3);
+    gl1->addWidget(w, gridrow++, 0, 1, 2);
+
     ConfParamSLW *eskp = new 
-	ConfParamSLW(this, lnkskp, tr("Skipped paths"),
+	ConfParamSLW(this, 
+                     ConfLink(new ConfLinkRclRep(config, "skippedPaths")), 
+                     tr("Skipped paths"),
 		     tr("These are names of directories which indexing "
 			"will not enter.<br> May contain wildcards. "
 			"Must match "
@@ -249,7 +254,7 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 			"would be '/home/me/tmp*', not '/usr/home/me/tmp*')"));
     eskp->setFsEncoding(true);
     setSzPol(eskp, QSizePolicy::Preferred, QSizePolicy::Preferred, 1, 3);
-    gl1->addWidget(eskp, 1, 0, 1, 2);
+    gl1->addWidget(eskp, gridrow++, 0, 1, 2);
 
     vector<string> cstemlangs = Rcl::Db::getStemmerNames();
     QStringList stemlangs;
@@ -257,103 +262,112 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 	 it != cstemlangs.end(); it++) {
 	stemlangs.push_back(QString::fromUtf8(it->c_str()));
     }
-    ConfLink lnkidxsl(new ConfLinkRclRep(config, "indexstemminglanguages"));
-    ConfParamCSLW *eidxsl = new 
-	ConfParamCSLW(this, lnkidxsl, tr("Stemming languages"),
+    w = new 
+	ConfParamCSLW(this, 
+                      ConfLink(new ConfLinkRclRep(config, 
+                                                  "indexstemminglanguages")),
+                      tr("Stemming languages"),
 		      tr("The languages for which stemming expansion<br>"
 			 "dictionaries will be built."), stemlangs);
-    setSzPol(eidxsl, QSizePolicy::Preferred, QSizePolicy::Preferred, 1, 1);
-    gl1->addWidget(eidxsl, 2, 0, 1, 2);
+    setSzPol(w, QSizePolicy::Preferred, QSizePolicy::Preferred, 1, 1);
+    gl1->addWidget(w, gridrow, 0);
+    
 
-    ConfLink lnk4(new ConfLinkRclRep(config, "logfilename"));
-    ConfParamFNW *e4 = new 
-	ConfParamFNW(this, lnk4, tr("Log file name"),
-		     tr("The file where the messages will be written.<br>"
-			"Use 'stderr' for terminal output"), false);
-    gl1->addWidget(e4, 3, 0, 1, 2);
+    w = new ConfParamFNW(this, 
+                         ConfLink(new ConfLinkRclRep(config, "logfilename")), 
+                         tr("Log file name"),
+                         tr("The file where the messages will be written.<br>"
+                            "Use 'stderr' for terminal output"), false);
+    gl1->addWidget(w, gridrow++, 1);
 
-    QWidget *w = 0;
+    
+    w = new ConfParamIntW(this, 
+                          ConfLink(new ConfLinkRclRep(config, "loglevel")), 
+                          tr("Log verbosity level"),
+                          tr("This value adjusts the amount of "
+                             "messages,<br>from only errors to a "
+                             "lot of debugging data."), 0, 6);
+    gl1->addWidget(w, gridrow, 0);
 
-    ConfLink lnk1(new ConfLinkRclRep(config, "loglevel"));
-    w = new ConfParamIntW(this, lnk1, tr("Log verbosity level"),
-		      tr("This value adjusts the amount of "
-			 "messages,<br>from only errors to a "
-			 "lot of debugging data."), 0, 6);
-    gl1->addWidget(w, 4, 0);
-
-    ConfLink lnkidxflsh(new ConfLinkRclRep(config, "idxflushmb"));
-    w = new ConfParamIntW(this, lnkidxflsh, 
+    w = new ConfParamIntW(this, 
+                          ConfLink(new ConfLinkRclRep(config, "idxflushmb")),
                           tr("Index flush megabytes interval"),
                           tr("This value adjust the amount of "
 			 "data which is indexed between flushes to disk.<br>"
 			 "This helps control the indexer memory usage. "
 			 "Default 10MB "), 0, 1000);
-    gl1->addWidget(w, 4, 1);
+    gl1->addWidget(w, gridrow++, 1);
 
-    ConfLink lnkfsocc(new ConfLinkRclRep(config, "maxfsoccuppc"));
-    w = new ConfParamIntW(this, lnkfsocc, tr("Max disk occupation (%)"),
-		      tr("This is the percentage of disk occupation where "
-			 "indexing will fail and stop (to avoid filling up "
-			 "your disk).<br>"
-			 "0 means no limit (this is the default)."), 0, 100);
-    gl1->addWidget(w, 5, 0);
+    w = new ConfParamIntW(this, 
+                          ConfLink(new ConfLinkRclRep(config, "maxfsoccuppc")),
+                          tr("Max disk occupation (%)"),
+                          tr("This is the percentage of disk occupation where "
+                             "indexing will fail and stop (to avoid filling up "
+                             "your disk).<br>0 means no limit "
+                             "(this is the default)."), 0, 100);
+    gl1->addWidget(w, gridrow++, 0);
 
-    ConfLink lnknaspl(new ConfLinkRclRep(config, "noaspell"));
     ConfParamBoolW* cpasp =
-    new ConfParamBoolW(this, lnknaspl, tr("No aspell usage"),
-		       tr("Disables use of aspell to generate spelling "
-			  "approximation in the term explorer tool.<br> "
-			  "Useful if aspell is absent or does not work. "));
-    gl1->addWidget(cpasp, 6, 0);
+        new ConfParamBoolW(this, 
+                           ConfLink(new ConfLinkRclRep(config, "noaspell")), 
+                           tr("No aspell usage"),
+                           tr("Disables use of aspell to generate spelling "
+                              "approximation in the term explorer tool.<br> "
+                              "Useful if aspell is absent or does not work. "));
+    gl1->addWidget(cpasp, gridrow, 0);
 
-    ConfLink lnk2(new ConfLinkRclRep(config, "aspellLanguage"));
-    ConfParamStrW* cpaspl =
-        new ConfParamStrW(this, lnk2, tr("Aspell language"),
-		      tr("The language for the aspell dictionary. "
-			 "This should look like 'en' or 'fr' ...<br>"
-			 "If this value is not set, the NLS environment "
+    ConfParamStrW* cpaspl = new 
+        ConfParamStrW(this, 
+                      ConfLink(new ConfLinkRclRep(config, "aspellLanguage")),
+                      tr("Aspell language"),
+                      tr("The language for the aspell dictionary. "
+                         "This should look like 'en' or 'fr' ...<br>"
+                         "If this value is not set, the NLS environment "
 			 "will be used to compute it, which usually works. "
 			 "To get an idea of what is installed on your system, "
 			 "type 'aspell config' and look for .dat files inside "
 			 "the 'data-dir' directory. "));
     cpaspl->setEnabled(!cpasp->m_cb->isChecked());
     connect(cpasp->m_cb, SIGNAL(toggled(bool)), cpaspl,SLOT(setDisabled(bool)));
-    gl1->addWidget(cpaspl, 6, 1);
+    gl1->addWidget(cpaspl, gridrow++, 1);
 
-    ConfLink lnkdbd(new ConfLinkRclRep(config, "dbdir"));
-    ConfParamFNW *edbd = new 
-	ConfParamFNW(this, lnkdbd, tr("Database directory name"),
-		     tr("The name for a directory where to store the index<br>"
+    w = new 
+        ConfParamFNW(this, 
+                     ConfLink(new ConfLinkRclRep(config, "dbdir")),
+                     tr("Database directory name"),
+                     tr("The name for a directory where to store the index<br>"
 			"A non-absolute path is taken relative to the "
 			"configuration directory. The default is 'xapiandb'."
 			), true);
-    gl1->addWidget(edbd, 7, 0, 1, 2);
+    gl1->addWidget(w, gridrow++, 0, 1, 2);
     
-    ConfLink lnkuexc(new ConfLinkRclRep(config, "unac_except_trans"));
-    ConfParamStrW *euexc = new 
-	ConfParamStrW(this, lnkuexc, tr("Unac exceptions"),
-		     tr("<p>These are exceptions to the unac mechanism "
-			"which, by default, removes all diacritics, "
-			"and performs canonic decomposition. You can override "
-			"unaccenting for some characters, depending on your "
-			"language, and specify additional decompositions, "
-			"e.g. for ligatures. In each space-separated entry, "
-			"the first character is the source one, and the rest "
-			"is the translation."
-			));
-    gl1->addWidget(euexc, 8, 0, 1, 2);
+    w = new 
+	ConfParamStrW(this, 
+                      ConfLink(new ConfLinkRclRep(config, "unac_except_trans")),
+                      tr("Unac exceptions"),
+                      tr("<p>These are exceptions to the unac mechanism "
+                         "which, by default, removes all diacritics, "
+                         "and performs canonic decomposition. You can override "
+                         "unaccenting for some characters, depending on your "
+                         "language, and specify additional decompositions, "
+                         "e.g. for ligatures. In each space-separated entry, "
+                         "the first character is the source one, and the rest "
+                         "is the translation."
+                          ));
+    gl1->addWidget(w, gridrow++, 0, 1, 2);
 }
 
-ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
+ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config, 
+                             RclConfig *rclconf)
     : QWidget(parent), m_config(config)
 {
     QVBoxLayout *vboxLayout = new QVBoxLayout(this);
     vboxLayout->setSpacing(spacing);
     vboxLayout->setMargin(margin);
 
-    ConfLink lnksubkeydirs(new ConfLinkNullRep());
     m_subdirs = new 
-	ConfParamDNLW(this, lnksubkeydirs, 
+	ConfParamDNLW(this, 
+                      ConfLink(new ConfLinkNullRep()), 
 		      QObject::tr("<b>Customised subtrees"),
 		      QObject::tr("The list of subdirectories in the indexed "
 				  "hierarchy <br>where some parameters need "
@@ -404,16 +418,41 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
     QGridLayout *gl1 = new QGridLayout(m_groupbox);
     gl1->setSpacing(spacing);
     gl1->setMargin(margin);
+    int gridy = 0;
 
-    ConfLink lnkskn(new ConfLinkRclRep(config, "skippedNames", &m_sk));
-    ConfParamSLW *eskn = new 
-	ConfParamSLW(m_groupbox, lnkskn, 
-		     QObject::tr("Skipped names"),
-		     QObject::tr("These are patterns for file or directory "
-				 " names which should not be indexed."));
+    ConfParamSLW *eskn = new ConfParamSLW(
+        m_groupbox, 
+        ConfLink(new ConfLinkRclRep(config, "skippedNames", &m_sk)),
+        QObject::tr("Skipped names"),
+        QObject::tr("These are patterns for file or directory "
+                    " names which should not be indexed."));
     eskn->setFsEncoding(true);
     m_widgets.push_back(eskn);
-    gl1->addWidget(eskn, 0, 0, 1, 2);
+    gl1->addWidget(eskn, gridy, 0);
+
+    vector<string> amimes = rclconf->getAllMimeTypes();
+    QStringList amimesq;
+    for (vector<string>::const_iterator it = amimes.begin(); 
+	 it != amimes.end(); it++) {
+	amimesq.push_back(QString::fromUtf8(it->c_str()));
+    }
+
+    ConfParamCSLW *eincm = new ConfParamCSLW(
+        m_groupbox, 
+        ConfLink(new ConfLinkRclRep(config, "indexedmimetypes", &m_sk)),
+        tr("Only mime types"),
+        tr("An exclusive list of indexed mime types.<br>Nothing "
+           "else will be indexed. Normally empty and inactive"), amimesq);
+    m_widgets.push_back(eincm);
+    gl1->addWidget(eincm, gridy++, 1);
+
+    ConfParamCSLW *eexcm = new ConfParamCSLW(
+        m_groupbox, 
+        ConfLink(new ConfLinkRclRep(config, "excludedmimetypes", &m_sk)),
+        tr("Exclude mime types"),
+        tr("Mime types not to be indexed"), amimesq);
+    m_widgets.push_back(eexcm);
+    gl1->addWidget(eexcm, gridy, 0);
 
     vector<string> args;
     args.push_back("-l");
@@ -434,85 +473,81 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config)
 	charsets.push_back(QString::fromUtf8(it->c_str()));
     }
 
-    ConfLink lnk21(new ConfLinkRclRep(config, "defaultcharset", &m_sk));
-    ConfParamCStrW *e21 = new 
-	ConfParamCStrW(m_groupbox, lnk21, 
-		       QObject::tr("Default character set"),
-		       QObject::tr("This is the character set used for reading files "
-			  "which do not identify the character set "
-			  "internally, for example pure text files.<br>"
-			  "The default value is empty, "
-			  "and the value from the NLS environnement is used."
-			  ), charsets);
+    ConfParamCStrW *e21 = new ConfParamCStrW(
+        m_groupbox, 
+        ConfLink(new ConfLinkRclRep(config, "defaultcharset", &m_sk)), 
+        QObject::tr("Default<br>character set"),
+        QObject::tr("Character set used for reading files "
+                    "which do not identify the character set "
+                    "internally, for example pure text files.<br>"
+                    "The default value is empty, "
+                    "and the value from the NLS environnement is used."
+            ), charsets);
     m_widgets.push_back(e21);
-    gl1->addWidget(e21, 1, 0, 1, 2);
+    gl1->addWidget(e21, gridy++, 1);
 
-    ConfLink lnk3(new ConfLinkRclRep(config, "followLinks", &m_sk));
-    ConfParamBoolW *e3 = new 
-	ConfParamBoolW(m_groupbox, lnk3, 
-		        QObject::tr("Follow symbolic links"),
-		        QObject::tr("Follow symbolic links while "
-			  "indexing. The default is no, "
-			  "to avoid duplicate indexing"));
+    ConfParamBoolW *e3 = new ConfParamBoolW(
+        m_groupbox, 
+        ConfLink(new ConfLinkRclRep(config, "followLinks", &m_sk)), 
+        QObject::tr("Follow symbolic links"),
+        QObject::tr("Follow symbolic links while "
+                    "indexing. The default is no, "
+                    "to avoid duplicate indexing"));
     m_widgets.push_back(e3);
-    gl1->addWidget(e3, 2, 0);
+    gl1->addWidget(e3, gridy, 0);
 
-    ConfLink lnkafln(new ConfLinkRclRep(config, "indexallfilenames", &m_sk));
-    ConfParamBoolW *eafln = new 
-	ConfParamBoolW(m_groupbox, lnkafln, 
-		       QObject::tr("Index all file names"),
-		       QObject::tr("Index the names of files for which the contents "
-			  "cannot be identified or processed (no or "
-			  "unsupported mime type). Default true"));
+    ConfParamBoolW *eafln = new ConfParamBoolW(
+        m_groupbox, 
+        ConfLink(new ConfLinkRclRep(config, "indexallfilenames", &m_sk)), 
+        QObject::tr("Index all file names"),
+        QObject::tr("Index the names of files for which the contents "
+                    "cannot be identified or processed (no or "
+                    "unsupported mime type). Default true"));
     m_widgets.push_back(eafln);
-    gl1->addWidget(eafln, 2, 1);
+    gl1->addWidget(eafln, gridy++, 1);
 
-    ConfLink lnkzfmaxkbs(new ConfLinkRclRep(config, "compressedfilemaxkbs"));
-    ConfParamIntW *ezfmaxkbs = new 
-	ConfParamIntW(m_groupbox, lnkzfmaxkbs, 
-		      tr("Max. compressed file size (KB)"),
-		      tr("This value sets a threshold beyond which compressed"
-			 "files will not be processed. Set to -1 for no "
-			 "limit, to 0 for no decompression ever."),
-		      -1, 1000000, -1);
+    ConfParamIntW *ezfmaxkbs = new ConfParamIntW(
+        m_groupbox, 
+        ConfLink(new ConfLinkRclRep(config, "compressedfilemaxkbs", &m_sk)), 
+        tr("Max. compressed file size (KB)"),
+        tr("This value sets a threshold beyond which compressed"
+           "files will not be processed. Set to -1 for no "
+           "limit, to 0 for no decompression ever."), -1, 1000000, -1);
     m_widgets.push_back(ezfmaxkbs);
-    gl1->addWidget(ezfmaxkbs, 3, 0);
+    gl1->addWidget(ezfmaxkbs, gridy, 0);
 
-    ConfLink lnktxtmaxmbs(new ConfLinkRclRep(config, "textfilemaxmbs"));
-    ConfParamIntW *etxtmaxmbs = new 
-	ConfParamIntW(m_groupbox, lnktxtmaxmbs, 
-		      tr("Max. text file size (MB)"),
-		      tr("This value sets a threshold beyond which text "
-			 "files will not be processed. Set to -1 for no "
-			 "limit. \nThis is for excluding monster "
-                         "log files from the index."),
-		      -1, 1000000);
+    ConfParamIntW *etxtmaxmbs = new ConfParamIntW(
+        m_groupbox,
+        ConfLink(new ConfLinkRclRep(config, "textfilemaxmbs", &m_sk)), 
+        tr("Max. text file size (MB)"),
+        tr("This value sets a threshold beyond which text "
+           "files will not be processed. Set to -1 for no "
+           "limit. \nThis is for excluding monster "
+           "log files from the index."), -1, 1000000);
     m_widgets.push_back(etxtmaxmbs);
-    gl1->addWidget(etxtmaxmbs, 3, 1);
+    gl1->addWidget(etxtmaxmbs, gridy++, 1);
 
-    ConfLink lnktxtpagekbs(new ConfLinkRclRep(config, "textfilepagekbs"));
-    ConfParamIntW *etxtpagekbs = new 
-	ConfParamIntW(m_groupbox, lnktxtpagekbs, 
-		      tr("Text file page size (KB)"),
-		      tr("If this value is set (not equal to -1), text "
-                         "files will be split in chunks of this size for "
-                         "indexing.\nThis will help searching very big text "
-                         " files (ie: log files)."),
-		      -1, 1000000);
+    ConfParamIntW *etxtpagekbs = new ConfParamIntW(
+        m_groupbox, 
+        ConfLink(new ConfLinkRclRep(config, "textfilepagekbs", &m_sk)),
+        tr("Text file page size (KB)"),
+        tr("If this value is set (not equal to -1), text "
+           "files will be split in chunks of this size for "
+           "indexing.\nThis will help searching very big text "
+           " files (ie: log files)."), -1, 1000000);
     m_widgets.push_back(etxtpagekbs);
-    gl1->addWidget(etxtpagekbs, 4, 0);
+    gl1->addWidget(etxtpagekbs, gridy, 0);
 
-    ConfLink lnkfiltmaxsecs(new ConfLinkRclRep(config, "filtermaxseconds"));
-    ConfParamIntW *efiltmaxsecs = new 
-	ConfParamIntW(m_groupbox, lnkfiltmaxsecs, 
-		      tr("Max. filter exec. time (S)"),
-		      tr("External filters working longer than this will be "
-                         "aborted. This is for the rare case (ie: postscript) "
-                         "where a document could cause a filter to loop. "
-			 "Set to -1 for no limit.\n"),
-		      -1, 10000);
+    ConfParamIntW *efiltmaxsecs = new ConfParamIntW(
+        m_groupbox, 
+        ConfLink(new ConfLinkRclRep(config, "filtermaxseconds", &m_sk)), 
+        tr("Max. filter exec. time (S)"),
+        tr("External filters working longer than this will be "
+           "aborted. This is for the rare case (ie: postscript) "
+           "where a document could cause a filter to loop. "
+           "Set to -1 for no limit.\n"), -1, 10000);
     m_widgets.push_back(efiltmaxsecs);
-    gl1->addWidget(efiltmaxsecs, 4, 1);
+    gl1->addWidget(efiltmaxsecs, gridy++, 1);
 
     vboxLayout->addWidget(m_groupbox);
     subDirChanged(0, 0);

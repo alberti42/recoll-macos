@@ -397,15 +397,12 @@ indexedmimetypes = application/pdf
           in effect until the end of the file or another section
           indicator).</para>
 
-          <para>In order to set <literal>excludedmimetypes</literal>
-          or <literal>indexedmimetypes</literal>, you need to edit the
-          <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF">main
-            configuration file
-            (<filename>recoll.conf</filename>)</link>. I used to have
-            a bogus reason for this, but the really true truth is that
-            I was too lazy to extend the GUI for these relatively
-            rarely used parameters.
-        </para>
+          <para><literal>excludedmimetypes</literal> or
+          <literal>indexedmimetypes</literal>, can be set either by
+          editing the <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF">
+          main configuration file
+          (<filename>recoll.conf</filename>)</link>, or from the GUI
+          index configuration tool.</para>
 
 
 

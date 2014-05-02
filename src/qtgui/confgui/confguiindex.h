@@ -75,7 +75,7 @@ public:
 class ConfSubPanelW : public QWidget {
     Q_OBJECT
 public:
-    ConfSubPanelW(QWidget *parent, ConfNull *config);
+    ConfSubPanelW(QWidget *parent, ConfNull *config, RclConfig *rclconf);
 
 private slots:
     void subDirChanged(QListWidgetItem *, QListWidgetItem *);
