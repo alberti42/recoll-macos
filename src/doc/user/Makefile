@@ -23,6 +23,7 @@ usermanual.html: usermanual.xml
 	xsltproc ${commonoptions} \
             -o tmpfile.html "${XSLDIR}/html/docbook.xsl" usermanual.xml
 	-tidy -indent tmpfile.html > usermanual.html
+	rm -f tmpfile.html
 
 index.html: usermanual.xml
 	xsltproc ${commonoptions} \
