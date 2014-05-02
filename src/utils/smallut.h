@@ -24,12 +24,10 @@
 #include <map>
 #include <set>
 
-#ifndef NO_NAMESPACES
 using std::string;
 using std::vector;
 using std::map;
 using std::set;
-#endif /* NO_NAMESPACES */
 
 // Note these are all ascii routines
 extern int stringicmp(const string& s1, const string& s2);

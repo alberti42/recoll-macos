@@ -85,15 +85,19 @@ bool ParamStale::needrecompute()
     return false;
 }
 
-void ParamStale::init(RclConfig *rconf, ConfNull *cnf, const string& nm)
+void ParamStale::init(ConfNull *cnf)
 {
-    parent = rconf;
     conffile = cnf;
-    paramname = nm;
     active = false;
     if (conffile)
-      active = conffile->hasNameAnywhere(nm);
+      active = conffile->hasNameAnywhere(paramname);
     savedkeydirgen = -1;
+}
+
+ParamStale::ParamStale(RclConfig *rconf, const string& nm)
+    : parent(rconf), conffile(0), paramname(nm),
+      active(false), savedkeydirgen(-1)
+{
 }
 
 void RclConfig::zeroMe() {
@@ -107,10 +111,12 @@ void RclConfig::zeroMe() {
     m_ptrans = 0;
     m_stopsuffixes = 0;
     m_maxsufflen = 0;
-    m_stpsuffstate.init(this, 0, "recoll_noindex");
-    m_skpnstate.init(this, 0, "skippedNames");
-    m_rmtstate.init(this, 0, "indexedmimetypes");
-    m_mdrstate.init(this, 0, "metadatacmds");
+
+    m_stpsuffstate.init(0);
+    m_skpnstate.init(0);
+    m_rmtstate.init(0);
+    m_xmtstate.init(0);
+    m_mdrstate.init(0);
 }
 
 bool RclConfig::isDefaultConfig() const
@@ -122,6 +128,11 @@ bool RclConfig::isDefaultConfig() const
 }
 
 RclConfig::RclConfig(const string *argcnf)
+    : m_stpsuffstate(this, "recoll_noindex"),
+      m_skpnstate(this, "skippedNames"),
+      m_rmtstate(this, "indexedmimetypes"),
+      m_xmtstate(this, "excludedmimetypes"),
+      m_mdrstate(this, "metadatacmds")
 {
     zeroMe();
 
@@ -269,10 +280,12 @@ RclConfig::RclConfig(const string *argcnf)
     m_ok = true;
     setKeyDir(cstr_null);
 
-    m_stpsuffstate.init(this, mimemap, "recoll_noindex");
-    m_skpnstate.init(this, m_conf, "skippedNames");
-    m_rmtstate.init(this, m_conf, "indexedmimetypes");
-    m_mdrstate.init(this, m_conf, "metadatacmds");
+    m_stpsuffstate.init(mimemap);
+    m_skpnstate.init(m_conf);
+    m_rmtstate.init(m_conf);
+    m_xmtstate.init(m_conf);
+    m_mdrstate.init(m_conf);
+
     return;
 }
 
@@ -287,16 +300,20 @@ bool RclConfig::updateMainConfig()
 	stringsToString(m_cdirs, where);
 	m_reason = string("No/bad main configuration file in: ") + where;
 	m_ok = false;
-        m_skpnstate.init(this, 0, "skippedNames");
-        m_rmtstate.init(this, 0, "indexedmimetypes");
-        m_mdrstate.init(this, 0, "metadatacmds");
+        m_skpnstate.init(0);
+        m_rmtstate.init(0);
+        m_xmtstate.init(0);
+        m_mdrstate.init(0);
 	return false;
     }
+
     delete m_conf;
     m_conf = newconf;
-    m_skpnstate.init(this, m_conf, "skippedNames");
-    m_rmtstate.init(this, m_conf, "indexedmimetypes");
-    m_mdrstate.init(this, m_conf, "metadatacmds");
+
+    m_skpnstate.init(m_conf);
+    m_rmtstate.init(m_conf);
+    m_xmtstate.init(m_conf);
+    m_mdrstate.init(m_conf);
 
     setKeyDir(cstr_null);
     bool nocjk = false;
@@ -677,17 +694,30 @@ bool RclConfig::getMimeCatTypes(const string& cat, vector<string>& tps) const
 string RclConfig::getMimeHandlerDef(const string &mtype, bool filtertypes)
 {
     string hs;
-    if (filtertypes && m_rmtstate.needrecompute()) {
-        m_restrictMTypes.clear();
-        stringToStrings(stringtolower((const string&)m_rmtstate.savedvalue), 
-                        m_restrictMTypes);
+
+    if (filtertypes) {
+        if(m_rmtstate.needrecompute()) {
+            m_restrictMTypes.clear();
+            stringToStrings(stringtolower((const string&)m_rmtstate.savedvalue),
+                            m_restrictMTypes);
+        }
+        if (m_xmtstate.needrecompute()) {
+            m_excludeMTypes.clear();
+            stringToStrings(stringtolower((const string&)m_xmtstate.savedvalue),
+                            m_excludeMTypes);
+        }
+        if (!m_restrictMTypes.empty() && 
+            !m_restrictMTypes.count(stringtolower(mtype))) {
+            LOGDEB2(("RclConfig::getMimeHandlerDef: not in mime type list\n"));
+            return hs;
+        }
+        if (!m_excludeMTypes.empty() && 
+            m_excludeMTypes.count(stringtolower(mtype))) {
+            LOGDEB2(("RclConfig::getMimeHandlerDef: in excluded mime list\n"));
+            return hs;
+        }
     }
-    if (filtertypes && !m_restrictMTypes.empty()) {
-	string mt = mtype;
-        stringtolower(mt);
-	if (m_restrictMTypes.find(mt) == m_restrictMTypes.end())
-	    return hs;
-    }
+
     if (!mimeconf->get(mtype, hs, "index")) {
 	LOGDEB1(("getMimeHandler: no handler for '%s'\n", mtype.c_str()));
     }
@@ -1397,10 +1427,12 @@ void RclConfig::initFrom(const RclConfig& r)
     m_maxsufflen = r.m_maxsufflen;
     m_defcharset = r.m_defcharset;
 
-    m_stpsuffstate.init(this, mimemap, r.m_stpsuffstate.paramname);
-    m_skpnstate.init(this, m_conf, r.m_skpnstate.paramname);
-    m_rmtstate.init(this, m_conf, r.m_rmtstate.paramname);
-    m_mdrstate.init(this, m_conf, r.m_mdrstate.paramname);
+    m_stpsuffstate.init(mimemap);
+    m_skpnstate.init(m_conf);
+    m_rmtstate.init(m_conf);
+    m_xmtstate.init(m_conf);
+    m_mdrstate.init(m_conf);
+
     m_thrConf = r.m_thrConf;
 }
 

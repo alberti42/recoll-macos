@@ -48,7 +48,17 @@ QMenu *create(QWidget *me, int opts, RefCntr<DocSequence> source, Rcl::Doc& doc)
 	popup->addAction(me->tr("&Open"), me, SLOT(menuEdit()));
     }
 
-    if (doc.ipath.empty()) {
+    bool needopenwith = true;
+    if (!doc.ipath.empty())
+        needopenwith = false;
+    if (needopenwith) {
+        string backend;
+        doc.getmeta(Rcl::Doc::keybcknd, &backend);
+        if (!backend.empty() && backend.compare("FS"))
+            needopenwith = false;
+    }
+            
+    if (needopenwith) {
         vector<DesktopDb::AppDef> aps;
         DesktopDb *ddb = DesktopDb::getDb();
         if (ddb && ddb->appForMime(doc.mimetype, &aps) && 

@@ -291,6 +291,8 @@ template bool stringToStrings<vector<string> >(const string &,
 					       vector<string> &,const string&);
 template bool stringToStrings<set<string> >(const string &,
 					    set<string> &, const string&);
+template bool stringToStrings<STD_UNORDERED_SET<string> >
+(const string &, STD_UNORDERED_SET<string> &, const string&);
 
 template <class T> void stringsToString(const T &tokens, string &s) 
 {

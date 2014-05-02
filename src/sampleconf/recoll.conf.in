@@ -199,7 +199,12 @@ indexallfilenames = 1
 # will be indexed anyway if indexallfilenames is set as by default). Mime
 # type names should be taken from the mimemap file.
 #
-# indexedmimetypes = text/html application/pdf
+# indexedmimetypes = 
+
+# An excluded list of mime types. It can be redefined in subdirectories, 
+# so can be used to locally exclude some types.
+#
+# excludededmimetypes = 
 
 #
 # Size limit for archive members. This is passed to the filters in the

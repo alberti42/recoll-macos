@@ -22,6 +22,7 @@
 #include <set>
 #include <utility>
 #include <map>
+#include "unordered_defs.h"
 
 using std::string;
 using std::vector;
@@ -48,7 +49,8 @@ public:
     int       savedkeydirgen;
     string    savedvalue;
 
-    void init(RclConfig *rconf, ConfNull *cnf, const string& nm);
+    ParamStale(RclConfig *rconf, const string& nm);
+    void init(ConfNull *cnf);
     bool needrecompute();
 };
 
@@ -75,6 +77,19 @@ class RclConfig {
     // if this was specified on the command line and passed through
     // argcnf
     RclConfig(const string *argcnf = 0);
+
+    RclConfig(const RclConfig &r) 
+    : m_stpsuffstate(this, "recoll_noindex"),
+      m_skpnstate(this, "skippedNames"),
+      m_rmtstate(this, "indexedmimetypes"),
+      m_xmtstate(this, "excludedmimetypes"),
+      m_mdrstate(this, "metadatacmds") {
+        initFrom(r);
+    }
+
+    ~RclConfig() {
+	freeAll();
+    }
 
     // Return a writable clone of the main config. This belongs to the
     // caller (must delete it when done)
@@ -226,15 +241,21 @@ class RclConfig {
 
     /** fields: get field prefix from field name */
     bool getFieldTraits(const string& fldname, const FieldTraits **) const;
+
     const set<string>& getStoredFields() const {return m_storedFields;}
+
     set<string> getIndexedFields() const;
+
     /** Get canonic name for possible alias */
     string fieldCanon(const string& fld) const;
+
     /** Get xattr name to field names translations */
     const map<string, string>& getXattrToField() const {return m_xattrtofld;}
+
     /** Get value of a parameter inside the "fields" file. Only some filters 
-        use this (ie: mh_mail). The information specific to a given filter
-        is typically stored in a separate section(ie: [mail]) */
+     * use this (ie: mh_mail). The information specific to a given filter
+     * is typically stored in a separate section(ie: [mail]) 
+     */
     vector<string> getFieldSectNames(const string &sk, const char* = 0) const;
     bool getFieldConfParam(const string &name, const string &sk, string &value)
     const;
@@ -272,13 +293,6 @@ class RclConfig {
 	return o_origcwd;
     }
 
-    ~RclConfig() {
-	freeAll();
-    }
-
-    RclConfig(const RclConfig &r) {
-	initFrom(r);
-    }
     RclConfig& operator=(const RclConfig &r) {
 	if (this != &r) {
 	    freeAll();
@@ -326,7 +340,11 @@ class RclConfig {
     static string o_localecharset;
     // Limiting set of mime types to be processed. Normally empty.
     ParamStale    m_rmtstate;
-    set<string>   m_restrictMTypes; 
+    STD_UNORDERED_SET<string>   m_restrictMTypes; 
+    // Exclusion set of mime types. Normally empty
+    ParamStale    m_xmtstate;
+    STD_UNORDERED_SET<string>   m_excludeMTypes; 
+
     vector<pair<int, int> > m_thrConf;
 
     // Same idea with the metadata-gathering external commands,

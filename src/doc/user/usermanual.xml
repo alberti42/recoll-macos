@@ -374,20 +374,16 @@
           contrary to define a positive list of types to be
           indexed. In the latter case, any type not in the list will
           be ignored.</para>
+
         <para>Excluding types can be done by adding wildcard name
           patterns to the <literal>skippedNames</literal> list, which
-          can be done from the GUI Index configuration menu. It is
-          also possible to exclude a mime type independantly of the
-          file name by associating it with the
-          <filename>rclnull</filename> input handler. This can be done
-          by editing the <link linkend="RCL.INSTALL.CONFIG.MIMECONF">
-            <filename>mimeconf</filename> configuration
-            file</link>.</para>
+          can be done from the GUI Index configuration menu. For
+          versions 1.20 and later, you can alternatively set the
+          <literal>excludedmimetypes</literal> list in the
+          configuration file. This can be redefined for
+          subdirectories.</para>
 
-        <para>In order to define a positive list, You need to edit the 
-          <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF">main
-            configuration file
-            (<filename>recoll.conf</filename>)</link> and set
+        <para>You can also define an exclusive list of MIME types to be indexed (no others will be indexed), by settting
             the <literal>indexedmimetypes</literal> configuration
             variable. Example:<programlisting>
 indexedmimetypes = text/html application/pdf
@@ -399,12 +395,17 @@ indexedmimetypes = application/pdf
           </programlisting>
           (When using sections like this, don't forget that they remain
           in effect until the end of the file or another section
-          indicator).
-          There is no GUI way to edit the parameter, because this
-          option runs contrary to &RCL; main goal which is to help you
-          find information, independantly of how it may be stored.
-        </para>
+          indicator).</para>
 
+          <para>In order to set <literal>excludedmimetypes</literal>
+          or <literal>indexedmimetypes</literal>, you need to edit the
+          <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF">main
+            configuration file
+            (<filename>recoll.conf</filename>)</link>. I used to have
+            a bogus reason for this, but the really true truth is that
+            I was too lazy to extend the GUI for these relatively
+            rarely used parameters.
+        </para>
 
 
 
@@ -789,7 +790,7 @@ recoll
           <varlistentry>
             <term>mime_type</term>
             <listitem><para>If set, this overrides any other
-                determination of the file mime type.</para></listitem>
+                determination of the file MIME type.</para></listitem>
           </varlistentry>
           <varlistentry>
             <term>charset</term>
@@ -1253,11 +1254,11 @@ fs.inotify.max_user_watches=32768
        uncheck the <guilabel>Use desktop preferences</guilabel> option in
        the GUI preferences dialog, and click the <guilabel>Choose editor
        applications</guilabel> button to adjust the predefined &RCL;
-       choices. The tool accepts multiple selections of mime types (e.g. to
+       choices. The tool accepts multiple selections of MIME types (e.g. to
        set up the editor for the dozens of office file types).</para>
 
         <para>Even when <guilabel>Use desktop preferences</guilabel> is
-        checked, there is a small list of exceptions, for mime types where
+        checked, there is a small list of exceptions, for MIME types where
         the &RCL; choice should override the desktop one. These are
         applications which are well integrated with &RCL;, especially
         <application>evince</application> for viewing PDF and Postscript
@@ -1559,7 +1560,7 @@ fs.inotify.max_user_watches=32768
          </listitem> 
 
       <listitem><para>The second tab lets filter the results according
-          to file size, date of modification, mime type, or
+          to file size, date of modification, MIME type, or
           location.</para>
          </listitem>
      
@@ -1656,8 +1657,8 @@ fs.inotify.max_user_watches=32768
       </listitem>
 
       <listitem>   
-      <para>The next section allows filtering the results by their mime
-            types, or mime categories (ie: media/text/message/etc.).</para>
+      <para>The next section allows filtering the results by their MIME
+            types, or MIME categories (ie: media/text/message/etc.).</para>
           <para>You can transfer the types between two boxes, to define
             which will be included or excluded by the search.</para>
           <para>The state of the file type selection can be saved as
@@ -2178,7 +2179,7 @@ fs.inotify.max_user_watches=32768
            </listitem>
 
             <listitem><para><guilabel>Exceptions</guilabel>: when using the
-            desktop preferences for opening documents, these are mime types
+            desktop preferences for opening documents, these are MIME types
             that will still be opened according to &RCL; preferences. This
             is useful for passing parameters like page numbers or search
             strings to applications that support them
@@ -2403,7 +2404,7 @@ fs.inotify.max_user_watches=32768
           <listitem><formalpara><title>%D</title><para>Date</para></formalpara>
           </listitem>
           <listitem><formalpara><title>%I</title><para>Icon image
-            name. This is normally determined from the mime type. The
+            name. This is normally determined from the MIME type. The
             associations are defined inside the 
             <link linkend="RCL.INSTALL.CONFIG.MIMECONF">
               <filename>mimeconf</filename> configuration file</link>. 
@@ -2417,7 +2418,7 @@ fs.inotify.max_user_watches=32768
           <listitem><formalpara><title>%L</title><para>Precooked Preview,
             Edit, and possibly Snippets links</para></formalpara> 
           </listitem>
-          <listitem><formalpara><title>%M</title><para>Mime
+          <listitem><formalpara><title>%M</title><para>MIME
                   type</para></formalpara> 
           </listitem>
           <listitem><formalpara><title>%N</title><para>result Number inside
@@ -2922,7 +2923,7 @@ dir:recoll dir:src -dir:utils -dir:common
 
         <listitem><para><literal>mime</literal> or
             <literal>format</literal> for specifying the
-            mime type. This one is quite special because you can specify
+            MIME type. This one is quite special because you can specify
             several values which will be OR'ed (the normal default for the
             language is AND). Ex: <literal>mime:text/plain
               mime:text/html</literal>. Specifying an explicit boolean
@@ -2939,12 +2940,12 @@ dir:recoll dir:src -dir:utils -dir:common
 
         <listitem><para><literal>type</literal> or
             <literal>rclcat</literal> for specifying the category (as in
-            text/media/presentation/etc.). The classification of mime
+            text/media/presentation/etc.). The classification of MIME
             types in categories is defined in the &RCL; configuration
             (<filename>mimeconf</filename>), and can be modified or
             extended. The default category names are those which permit
             filtering results in the main GUI screen. Categories are OR'ed
-            like mime types above. This can't be negated with
+            like MIME types above. This can't be negated with
             <literal>-</literal> either.</para>
            </listitem>
 
@@ -3480,10 +3481,10 @@ dir:recoll dir:src -dir:utils -dir:common
         <title>Telling &RCL; about the handler</title>
 
       <para>There are two elements that link a file to the handler which
-      should process it: the association of file to mime type and the
-      association of a mime type with a handler.</para>
+      should process it: the association of file to MIME type and the
+      association of a MIME type with a handler.</para>
 
-      <para>The association of files to mime types is mostly based on
+      <para>The association of files to MIME types is mostly based on
         name suffixes. The types are defined inside the
         <link linkend="RCL.INSTALL.CONFIG.MIMEMAP">
         <filename>mimemap</filename> file</link>. Example:
@@ -3493,7 +3494,7 @@ dir:recoll dir:src -dir:utils -dir:common
 </programlisting>
        If no suffix association is found for the file name, &RCL; will try
        to execute the <command>file -i</command> command to determine a
-       mime type.</para>
+       MIME type.</para>
 
       <para>The association of file types to handlers is performed in
       the <link linkend="RCL.INSTALL.CONFIG.MIMECONF">
@@ -5020,9 +5021,15 @@ skippedPaths = ~/somedir/*.txt
           <varlistentry><term><varname>indexedmimetypes</varname></term>
             <listitem><para>&RCL; normally indexes any file which it
             knows how to read. This list lets you restrict the indexed
-            mime types to what you specify. If the variable is
+            MIME types to what you specify. If the variable is
             unspecified or the list empty (the default), all supported
             types are processed. Can be redefined for subdirectories.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry><term><varname>excludedmimetypes</varname></term>
+            <listitem><para> This list lets you exclude some MIME types from
+            indexing. Can be redefined for subdirectories.</para>
             </listitem>
           </varlistentry>
 
@@ -5064,17 +5071,17 @@ skippedPaths = ~/somedir/*.txt
             <listitem><para>&RCL; indexes file names in a special
             section of the database to allow specific file names
             searches using wild cards. This parameter decides if 
-            file name indexing is performed only for files with mime
+            file name indexing is performed only for files with MIME
             types that would qualify them for full text indexing, or
             for all files inside the selected subtrees, independently of
-            mime type.</para>
+            MIME type.</para>
             </listitem>
           </varlistentry>
 
           <varlistentry><term><varname>usesystemfilecommand</varname></term>
             <listitem><para>Decide if we use the
             <command>file</command> <option>-i</option> system command
-            as a final step for determining the mime type for a file
+            as a final step for determining the MIME type for a file
             (the main procedure uses suffix associations as defined in
             the <filename>mimemap</filename> file). This can be useful
             for files with suffix-less names, but it will also cause
@@ -5739,12 +5746,12 @@ x-my-tag = mailmytag
         <title>The mimemap file</title>
 
         <para><filename>mimemap</filename> specifies the
-        file name extension to mime type mappings.</para> 
+        file name extension to MIME type mappings.</para> 
 
         <para>For file names without an extension, or with an unknown
         one, the system's <command>file</command> <option>-i</option> 
 	command will be
-        executed to determine the mime type (this can be switched off
+        executed to determine the MIME type (this can be switched off
         inside the main configuration file).</para>
 
         <para>The mappings can be specified on a per-subtree basis,
@@ -5776,7 +5783,7 @@ x-my-tag = mailmytag
         <title>The mimeconf file</title>
 
         <para><filename>mimeconf</filename> specifies how the
-         different mime types are handled for indexing, and which icons
+         different MIME types are handled for indexing, and which icons
          are displayed in the <command>recoll</command> result lists.</para>
 
         <para>Changing the parameters in the [index] section is
@@ -5813,7 +5820,7 @@ x-my-tag = mailmytag
         use <command>xdg-open</command> by default).</para>
 
         <para>In this case, the <literal>xallexcepts</literal> top level
-          variable defines a list of mime type exceptions which
+          variable defines a list of MIME type exceptions which
           will be processed according to the local entries instead of being
           passed to the desktop. This is so that specific &RCL; options
           such as a page number or a search string can be passed to
@@ -5829,7 +5836,7 @@ x-my-tag = mailmytag
         <para>All viewer definition entries must be placed under a
           <literal>[view]</literal> section.</para>
 
-	<para>The keys in the file are normally mime types. You can add an
+	<para>The keys in the file are normally MIME types. You can add an
 	  application tag to specialize the choice for an area of the
 	  filesystem (using a <varname>localfields</varname> specification
 	  in <filename>mimeconf</filename>). The syntax for the key is 
@@ -5837,7 +5844,7 @@ x-my-tag = mailmytag
 
         <para>The <varname>nouncompforviewmts</varname> entry, (placed at
         the top level, outside of the <literal>[view]</literal> section),
-        holds a list of mime types that should not be uncompressed before
+        holds a list of MIME types that should not be uncompressed before
         starting the viewer (if they are found compressed, ie:
         <replaceable>mydoc.doc.gz</replaceable>).</para>
 
@@ -5871,7 +5878,7 @@ x-my-tag = mailmytag
           </listitem>
 
           <listitem><formalpara><title>%M</title>
-              <para>Mime type</para></formalpara> 
+              <para>MIME type</para></formalpara> 
           </listitem>
 
           <listitem><formalpara><title>%p</title>
@@ -5950,7 +5957,7 @@ x-my-tag = mailmytag
 		following line:<programlisting>
 .blob = application/x-blobapp
 </programlisting>
-		Note that the mime type is made up here, and you could
+		Note that the MIME type is made up here, and you could
 		call it <replaceable>diesel/oil</replaceable> just the
 		same.</para>
             </listitem>
@@ -5967,7 +5974,7 @@ application/x-blobapp = blobviewer %f
           </itemizedlist>
 
           <para>If you just wanted to change the application used by
-            &RCL; to display a mime type which it already knows, you
+            &RCL; to display a MIME type which it already knows, you
             would just need to edit <filename>mimeview</filename>. The
             entries you add in your personal file override those in the
             central configuration, which you do not need to
@@ -6001,7 +6008,7 @@ application/x-blobapp = exec rclblob
 		<filename>/usr/[local/]share/recoll/images</filename>.</para>
             </listitem>
             <listitem><para>Under the <literal>[categories]</literal>
-		section, you should add the mime type where it makes sense
+		section, you should add the MIME type where it makes sense
 		(you can also create a category). Categories may be used
 		for filtering in advanced search.</para>
             </listitem>
