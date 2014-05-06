@@ -1,3 +1,16 @@
+recoll (1.19.13-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * 1.19.13 hopefully fixes the multithreaded indexing crashes and silences
+    the noisy ppt extractor failures.
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 06 May 2014 14:22:00 +0200
+
+recoll (1.19.12p2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * 1.19.12 p1 + restable doubleclick
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Sun, 07 Apr 2014 16:17:00 +0200
+
 recoll (1.19.12p1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * 1.19.12 install forgot the xls filter 

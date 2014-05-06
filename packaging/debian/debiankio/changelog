@@ -1,3 +1,7 @@
+kio-recoll (1.19.12-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
+  * Updated package to recoll version 1.19.12
+ -- Jean-Francois Dockes <jf@dockes.org>  Wed, 02 Apr 2014 15:50:00 +0200
+
 kio-recoll (1.19.10-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
   * Updated package to recoll version 1.19.10
  -- Jean-Francois Dockes <jf@dockes.org>  Sat, 25 Nov 2013 18:00:00 +0100
