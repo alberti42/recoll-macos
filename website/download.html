@@ -67,7 +67,7 @@ function showdiv(viewid)
 <div id="general">
 <h2><a name="general">General information</a></h2>
 
-<p>The current version is 1.19.12p1. <a href="release-1.19.html">Release
+<p>The current version is 1.19.13. <a href="release-1.19.html">Release
 notes</a>.</p>
 
 <p>The download page for Recoll 1.18 is <a href="download-1.18.html">still
@@ -117,12 +117,12 @@ is probably no necessity to upgrade anyway.</p>
 <div id="source">
 <h2><a name="source">Source</a></h2>
 
-<h3>Current release distribution: 1.19.12p1:</h3>
+<h3>Current release distribution: 1.19.13:</h3>
 <!-- Attention: source packages must remain here, not in a
 subdirectory, because of all the places they're referred from
 (package watches) -->
 
-<p><a href="recoll-1.19.12p1.tar.gz">recoll-1.19.12p1.tar.gz</a>. </p>
+<p><a href="recoll-1.19.13.tar.gz">recoll-1.19.13.tar.gz</a>. </p>
 <!--
 <h3>Snapshot</h3>
 <p>I sometimes release a source tarfile when I consider that the
@@ -196,6 +196,7 @@ branch for the current production version.</p>
 <h3>Older recoll releases:</h3>
 
 <p>
+<a href="recoll-1.19.12p1.tar.gz">1.19.12p1</a>. 
 <a href="recoll-1.19.9.tar.gz">1.19.9</a>. 
 <a href="recoll-1.18.2.tar.gz">1.18.2</a>. 
 <a href="recoll-1.17.3.tar.gz">1.17.3</a>. 
@@ -244,13 +245,16 @@ a set of Ubuntu series. starting at Lucid. The installation is very simple: </p>
           sudo apt-get install recoll
 </tt></pre>
 
-<p>The 1.19.10/11/12 packages in the PPA now have a separate package
-  for the Python extension, like the standard ones.</p>
+<p>The 1.19 packages in the PPA now have a separate package
+  for the Python extension, like the standard ones, so there should be
+  no more conflict issues while switching from the PPA to the normal
+  repositories and back.</p>
 
 <blockquote>
   <h4>Notes for Ubuntu Lucid</h4>
   <ul>
-    <li>If you use Ubuntu 10.04 (<em>Lucid</em>), you will need to add the <a
+    <li>If you still use Ubuntu 10.04 (<em>Lucid</em>), you will need
+      to add the <a
       href="https://launchpad.net/~xapian-backports/+archive/xapian-1.2">Xapian
       backports PPA</a> to provide the <tt>libxapian22</tt> package</li>
     <li>The <tt><code>rclepub</code></tt> filter apparently needs <tt>Python
@@ -278,19 +282,19 @@ more (email me if you need one).</p>
 
 <h3>OpenSUSE</h3>
 
-<p>Recoll is in the KDE:Extra repository 
-<!-- I now use the OpenSUSE build service to create Recoll OpenSUSE packages. -->
-You just need to add the repository to your software
-sources (Yast2-&gt;software-&gt;Software repositories).<br>
-<a href="http://download.opensuse.org/repositories/KDE:/Extra/">Repository
-  list (supported Suse versions)</a>. After adding the appropriate
-  repository to your software sources, you will be able to install
-  recoll and kio_recoll from the software management interface. The
-  Xapian dependancy will also be satisfied from the build service
-  repository. Some of the older repositories do not build antiword,
-  just tell the software manager to "break" recoll by installing
-  anyway, and get antiword somewhere else.</p>
+<p>Recoll is in the KDE:Extra repository. You just need to add the
+  repository to your software
+  sources (Yast2-&gt;software-&gt;Software repositories).<br>
+  <a href="http://download.opensuse.org/repositories/KDE:/Extra/">
+    Repository list (supported Suse versions)</a>. 
+  After adding the appropriate repository to your software sources,
+  you will be able to install recoll and kio_recoll from the software
+  management interface. The Xapian dependancy will also be satisfied
+  from the build service repository. Some of the older repositories do
+  not build antiword, just tell the software manager to "break" recoll
+  by installing anyway, and get antiword somewhere else.</p>
 
+<!--
 <h3>Mageia</h3>
 
 <p>Mageia version 2: <a
@@ -301,6 +305,7 @@ sources (Yast2-&gt;software-&gt;Software repositories).<br>
   Source: <a
   href="mageia2/recoll-1.18.1-1.mga2.src.rpm">recoll-1.18.1-1.mga2.src.rpm</a>
   </p>
+-->>
 
 </div> <!-- Packages -->
 

@@ -29,19 +29,13 @@
 later versions. Bugs listed in the topmost section may also exist in older
 versions.</i></p>
 
-<h2><a name="b_latest">recoll 1.19.9</a></h2>
+<h2><a name="b_latest">recoll 1.19.13</a></h2>
 <ul>
   <li>On systems such as Debian Stable which use Evince version 2.x (not 3.x)
     as PDF viewer, the default "Open" command for PDF files will not
     work. You need to use the GUI preferences tool to change the
     --page-index option to --page-label for the evince command line
     used for PDF.</li>
-
-  <li>There has been at least one report of a corrupted index
-    (resulting in search failures), following several interruptions of
-    a multithreaded indexer. Nothing is currently certain about this
-    issue, so, if you end up with a corrupted index, please report how
-    you got there.</li>
 
   <li>It will sometimes happen that the result list paragraph format stored in
     the Qt preferences file will get garbled, causing result lists with no
@@ -68,6 +62,17 @@ versions.</i></p>
     fixed by removing (back it up just in case)
     ~/.config/Recoll.org/recoll.conf, the QSettings storage for
     recoll.</li>
+</ul>
+
+<h2><a name="b_1_19_12">recoll 1.19.12</a></h2>
+<ul>
+  <li>For all 1.19 releases including 1.19.12, there have been reports
+  of crashes of the multithreaded indexer. These events are quite
+  rare, and, as far as I know, they can be worked around by disabling
+  multithreading (add
+    thrQSizes&nbsp;= &nbsp;-1&nbsp;-1&nbsp;-1) to
+    ~/.recoll/recoll.conf). They may result in a corrupted index (run
+    recollindex -z if this happens). This was supposedly fixed in 1.19.13.</li>
 </ul>
 
 <h2><a name="b_1_19_8">recoll 1.19.8</a></h2>

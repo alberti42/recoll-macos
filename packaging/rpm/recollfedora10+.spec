@@ -1,6 +1,6 @@
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.19.5
+Version:        1.19.13
 Release:        1%{?dist}
 Group:          Applications/Databases
 License:        GPLv2+
@@ -83,13 +83,18 @@ exit 0
 %{python_sitearch}/recoll/rclextract.so
 %{python_sitearch}/recoll/rclconfig.py
 %{python_sitearch}/recoll/rclconfig.pyc
+%{python_sitearch}/recoll/rclconfig.pyo
 %{python_sitearch}/recoll/__init__.py
 %{python_sitearch}/recoll/__init__.pyc
+%{python_sitearch}/recoll/__init__.pyo
 %{_mandir}/man1/%{name}.1*
 %{_mandir}/man1/%{name}index.1*
 %{_mandir}/man5/%{name}.conf.5*
 
 %changelog
+* Tue May 06 2014 J.F. Dockes <jf@dockes.org> - 1.19.13
+- Update to 1.19.13
+
 * Wed Jun 19 2013 J.F. Dockes <jf@dockes.org> - 1.19.5
 - Update to 1.19.5
 
@@ -132,7 +137,7 @@ exit 0
 * Wed Feb 09 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.14.4-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
 
-* Sun Jan 28 2011 Terje Rosten <terje.rosten@ntnu.no> - 1.14.4-1
+* Fri Jan 28 2011 Terje Rosten <terje.rosten@ntnu.no> - 1.14.4-1
 - 1.14.4
 
 * Mon Nov 15 2010 Terje Rosten <terje.rosten@ntnu.no> - 1.14.2-2
@@ -177,7 +182,7 @@ exit 0
 * Fri Feb 12 2010 Terry Duell 1.13.02
 - updated to release 1.13.02
 
-* Mon Jan 12 2010 Terry Duell  1.13.01-3
+* Tue Jan 12 2010 Terry Duell  1.13.01-3
 - updated to fix Fedora desktop-file-install and install icon
 
 * Sun Jan 10 2010 Jean-Francois Dockes <jfd@recoll.org> 1.13.01-2
