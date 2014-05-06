@@ -1698,17 +1698,18 @@ bool Db::doFlush()
 bool Db::needUpdate(const string &udi, const string& sig, bool *existed)
 {
     if (m_ndb == 0)
-	return false;
+        return false;
 
-    // If we are doing an in place or full reset, no need to
-    // test. Note that there is no need to update the existence map
-    // either, it will be done when updating the index
+    // If we are doing an in place or full reset, no need to test.
     if (o_inPlaceReset || m_mode == DbTrunc) {
 	// For in place reset, pretend the doc existed, to enable subdoc purge
 	if (existed)
 	    *existed = o_inPlaceReset;
 	return true;
     }
+
+    if (existed)
+        *existed = false;
 
     string uniterm = make_uniterm(udi);
     string ermsg;
@@ -1720,72 +1721,76 @@ bool Db::needUpdate(const string &udi, const string& sig, bool *existed)
     // anyway
     PTMutexLocker lock(m_ndb->m_mutex);
 #endif
-    // We look up the document indexed by the uniterm. This is either
-    // the actual document file, or, for a multi-document file, the
-    // pseudo-doc we create to stand for the file itself.
 
-    // We try twice in case database needs to be reopened.
-    for (int tries = 0; tries < 2; tries++) {
-	try {
-	    // Get the doc or pseudo-doc
-	    Xapian::PostingIterator docid = m_ndb->xrdb.postlist_begin(uniterm);
-	    if (docid == m_ndb->xrdb.postlist_end(uniterm)) {
-		// If no document exist with this path, we do need update
-		LOGDEB(("Db::needUpdate:yes (new): [%s]\n", uniterm.c_str()));
-		if (existed)
-		    *existed = false;
-		return true;
-	    }
-	    Xapian::Document doc = m_ndb->xrdb.get_document(*docid);
-	    if (existed)
-		*existed = true;
-
-	    // Retrieve old file/doc signature from value
-	    string osig = doc.get_value(VALUE_SIG);
-	    LOGDEB2(("Db::needUpdate: oldsig [%s] new [%s]\n",
-		     osig.c_str(), sig.c_str()));
-	    // Compare new/old sig
-	    if (sig != osig) {
-		LOGDEB(("Db::needUpdate:yes: olsig [%s] new [%s] [%s]\n",
-			osig.c_str(), sig.c_str(), uniterm.c_str()));
-		// Db is not up to date. Let's index the file
-		return true;
-	    }
-
-	    LOGDEB(("Db::needUpdate:no: [%s]\n", uniterm.c_str()));
-
-	    // Up to date. 
-
-	    // Set the uptodate flag for doc / pseudo doc
-	    if (m_mode 	!= DbRO) {
-		updated[*docid] = true;
-
-		// Set the existence flag for all the subdocs (if any)
-		vector<Xapian::docid> docids;
-		if (!m_ndb->subDocs(udi, 0, docids)) {
-		    LOGERR(("Rcl::Db::needUpdate: can't get subdocs\n"));
-		    return true;
-		}
-		for (vector<Xapian::docid>::iterator it = docids.begin();
-		     it != docids.end(); it++) {
-		    if (*it < updated.size()) {
-			LOGDEB2(("Db::needUpdate: docid %d set\n", *it));
-			updated[*it] = true;
-		    }
-		}
-	    }
-	    return false;
-	} catch (const Xapian::DatabaseModifiedError &e) {
-	    LOGDEB(("Db::needUpdate: got modified error. reopen/retry\n"));
-            m_reason = e.get_msg();
-	    m_ndb->xrdb.reopen();
-            continue;
-	} XCATCHERROR(m_reason);
-        break;
+    // Try to find the document indexed by the uniterm. 
+    Xapian::PostingIterator docid;
+    XAPTRY(docid = m_ndb->xrdb.postlist_begin(uniterm), m_ndb->xrdb, m_reason);
+    if (!m_reason.empty()) {
+        LOGERR(("Db::needUpdate: xapian::postlist_begin failed: %s\n",
+                m_reason.c_str()));
+        return false;
     }
-    LOGERR(("Db::needUpdate: error while checking existence: %s\n", 
-	    m_reason.c_str()));
-    return true;
+    if (docid == m_ndb->xrdb.postlist_end(uniterm)) {
+        // No document exists with this path: we do need update
+        LOGDEB(("Db::needUpdate:yes (new): [%s]\n", uniterm.c_str()));
+        return true;
+    }
+    Xapian::Document xdoc;
+    XAPTRY(xdoc = m_ndb->xrdb.get_document(*docid), m_ndb->xrdb, m_reason);
+    if (!m_reason.empty()) {
+        LOGERR(("Db::needUpdate: get_document error: %s\n", m_reason.c_str()));
+        return true;
+    }
+
+    if (existed)
+        *existed = true;
+
+    // Retrieve old file/doc signature from value
+    string osig;
+    XAPTRY(osig = xdoc.get_value(VALUE_SIG), m_ndb->xrdb, m_reason);
+    if (!m_reason.empty()) {
+        LOGERR(("Db::needUpdate: get_value error: %s\n", m_reason.c_str()));
+        return true;
+    }
+    LOGDEB2(("Db::needUpdate: oldsig [%s] new [%s]\n",
+             osig.c_str(), sig.c_str()));
+    // Compare new/old sig
+    if (sig != osig) {
+        LOGDEB(("Db::needUpdate:yes: olsig [%s] new [%s] [%s]\n",
+                osig.c_str(), sig.c_str(), uniterm.c_str()));
+        // Db is not up to date. Let's index the file
+        return true;
+    }
+
+    // Up to date. 
+    LOGDEB(("Db::needUpdate:no: [%s]\n", uniterm.c_str()));
+
+    if (m_mode 	!= DbRO) {
+        // Set the up to date flag for the document and its subdocs
+        if (*docid >= updated.size()) {
+            LOGERR(("needUpdate: existing docid beyond "
+                    "updated.size(). Udi [%s], docid %u, "
+                    "updated.size() %u\n", udi.c_str(), 
+                    unsigned(*docid), (unsigned)updated.size()));
+        } else {
+            updated[*docid] = true;
+        }
+
+        // Set the existence flag for all the subdocs (if any)
+        vector<Xapian::docid> docids;
+        if (!m_ndb->subDocs(udi, 0, docids)) {
+            LOGERR(("Rcl::Db::needUpdate: can't get subdocs\n"));
+            return true;
+        }
+        for (vector<Xapian::docid>::iterator it = docids.begin();
+             it != docids.end(); it++) {
+            if (*it < updated.size()) {
+                LOGDEB2(("Db::needUpdate: docid %d set\n", *it));
+                updated[*it] = true;
+            }
+        }
+    }
+    return false;
 }
 
 // Return existing stem db languages
