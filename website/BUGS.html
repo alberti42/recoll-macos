@@ -31,6 +31,12 @@ versions.</i></p>
 
 <h2><a name="b_latest">recoll 1.19.13</a></h2>
 <ul>
+  <li>An off-by-one error causes an array overflow while handling too
+    deeply embedded documents (more than 20-deep). This can mostly
+    happen on a well-known pathologic recursive zip file sample. The
+    error crashes recollindex on 32 bits architectures, apparently not
+    on 64 bits ones.</li>
+
   <li>On systems such as Debian Stable which use Evince version 2.x (not 3.x)
     as PDF viewer, the default "Open" command for PDF files will not
     work. You need to use the GUI preferences tool to change the
