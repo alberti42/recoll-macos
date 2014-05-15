@@ -5361,7 +5361,9 @@ field2 = value for field2
           <varlistentry><term><varname>webcachemaxmbs</varname></term>
             <listitem><para>This is only used by the web browser
             plugin indexing code, and defines the maximum size for the web
-            page cache. Default: 40 MB.</para> 
+            page cache. Default: 40 MB. Quite unfortunately, this is only
+            taken into account when creating the cache file. You need to
+            delete the file for a change to be taken into account.</para> 
             </listitem>
            </varlistentry>
 
