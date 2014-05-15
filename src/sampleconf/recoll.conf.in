@@ -286,6 +286,8 @@ processwebqueue = 0
 webcachedir = webcache
 # This is only used by the web history indexing code, and
 # defines the maximum size for the web page cache. Default: 40 MB. 
+# ** Quite unfortunately, this is only used when creating the file, you
+#   need to delete the cache for a change to be taken into account **
 webcachemaxmbs = 40
 
 # The directory where mbox message offsets cache files are held. This is
