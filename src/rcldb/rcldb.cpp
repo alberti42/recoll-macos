@@ -559,9 +559,9 @@ int Db::Native::getPageNumberForPosition(const vector<int>& pbreaks,
     return it - pbreaks.begin() + 1;
 }
 
-// Note: we're passed a Xapian::Document* because Xapian can't do
-// reference-counting properly. We take ownership and need to delete
-// it before returning.
+// Note: we're passed a Xapian::Document* because Xapian
+// reference-counting is not mt-safe. We take ownership and need
+// to delete it before returning.
 bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm, 
 				  Xapian::Document *newdocument_ptr, 
                                   size_t textlen)
