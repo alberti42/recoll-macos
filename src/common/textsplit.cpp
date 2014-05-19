@@ -390,7 +390,8 @@ inline bool TextSplit::doemit(bool spanerase, int bp)
 	    case '_':
 	    case '\'':
 		m_span.resize(m_span.length()-1);
-                if (m_words_in_span.back().second > m_span.size())
+                if (m_words_in_span.size() &&
+                    m_words_in_span.back().second > m_span.size())
                     m_words_in_span.back().second = m_span.size();
 		if (--bp < 0) 
 		    bp = 0;
