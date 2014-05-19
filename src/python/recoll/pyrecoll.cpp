@@ -403,7 +403,7 @@ PyDoc_STRVAR(doc_Doc_items,
 static PyObject *
 Doc_items(recoll_DocObject *self)
 {
-    LOGDEB(("Doc_getbinurl\n"));
+    LOGDEB(("Doc_items\n"));
     if (self->doc == 0 || 
 	the_docs.find(self->doc) == the_docs.end()) {
         PyErr_SetString(PyExc_AttributeError, "doc");
@@ -448,12 +448,27 @@ Doc_get(recoll_DocObject *self, PyObject *args)
 	return 0;
     }
     string value;
-    if (self->doc->getmeta(key, 0)) {
-	value = self->doc->meta[key];
+    bool found = false;
+
+    // 
+    if (!key.compare("xdocid")) {
+        char cid[30];
+        sprintf(cid, "%lu", (unsigned long)self->doc->xdocid);
+        value = cid;
+        found = true;
+    } else {
+        if (self->doc->getmeta(key, 0)) {
+            value = self->doc->meta[key];
+            found = true;
+        }
+    }
+
+    if (found) {
 	return PyUnicode_Decode(value.c_str(), 
 				value.size(), 
 				"UTF-8", "replace");
     }
+
     Py_RETURN_NONE;
 }
 
@@ -552,6 +567,14 @@ Doc_getattro(recoll_DocObject *self, PyObject *nameobj)
 	    value = self->doc->text; found = true;
 	}
 	break;
+    case 'x':
+        if (!key.compare("xdocid")) {
+            char cid[30];
+            sprintf(cid, "%lu", (unsigned long)self->doc->xdocid);
+            value = cid;
+            found = true;
+        }
+        break;
     }
 
     if (!found) {

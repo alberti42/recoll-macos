@@ -74,6 +74,10 @@ void output_fields(vector<string> fields, Rcl::Doc& doc,
 	    string abstract;
 	    query.makeDocAbstract(doc, abstract);
 	    base64_encode(abstract, out);
+        } else if (!it->compare("xdocid")) {
+            char cdocid[30];
+            sprintf(cdocid, "%lu", (unsigned long)doc.xdocid);
+            base64_encode(cdocid, out);
 	} else {
 	    base64_encode(doc.meta[*it], out);
 	}
