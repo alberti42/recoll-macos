@@ -53,6 +53,7 @@ configure.ac
 desktop/
 desktop/hotrecoll.py
 desktop/recoll-searchgui.desktop
+desktop/recoll.appdata.xml
 desktop/recoll.png
 desktop/recoll.svg
 desktop/recoll.xcf
@@ -78,7 +79,6 @@ doc/prog/top.txt
 doc/user/
 doc/user/00README.txt
 doc/user/Makefile
-doc/user/Makefile.fbsd
 doc/user/RCL.INDEXING.CONFIG.html
 doc/user/RCL.INDEXING.EXTATTR.html
 doc/user/RCL.INDEXING.EXTTAGS.html
@@ -110,8 +110,7 @@ doc/user/docbook.css
 doc/user/index.html
 doc/user/usermanual-italian.html
 doc/user/usermanual.html
-doc/user/usermanual.sgml
-doc/user/xmlmake.sh
+doc/user/usermanual.xml
 filters/
 filters/injectcommon.sh
 filters/msodump.zip
@@ -276,6 +275,7 @@ python/recoll/recoll/__init__.py
 python/recoll/recoll/rclconfig.py
 python/recoll/setup.py.in
 python/samples/
+python/samples/docdups.py
 python/samples/mutt-recoll.py
 python/samples/rcldlkp.py
 python/samples/rclmbox.py
@@ -328,6 +328,8 @@ qtgui/i18n/recoll_it.qm
 qtgui/i18n/recoll_it.ts
 qtgui/i18n/recoll_lt.qm
 qtgui/i18n/recoll_lt.ts
+qtgui/i18n/recoll_pl.qm
+qtgui/i18n/recoll_pl.ts
 qtgui/i18n/recoll_ru.qm
 qtgui/i18n/recoll_ru.ts
 qtgui/i18n/recoll_tr.qm
@@ -509,6 +511,8 @@ unac/unac.h
 unac/unac_version.h
 utils/
 utils/Makefile
+utils/appformime.cpp
+utils/appformime.h
 utils/base64.cpp
 utils/base64.h
 utils/cancelcheck.h
