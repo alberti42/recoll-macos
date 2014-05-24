@@ -81,7 +81,7 @@ Chapter 5. Installation and configuration
    text file inside the configuration directory.
 
    A list of common file types which need external commands follows. Many of
-   the filters need the iconv command, which is not always listed as a
+   the handlers need the iconv command, which is not always listed as a
    dependancy.
 
    Please note that, due to the relatively dynamic nature of this
@@ -96,7 +96,7 @@ Chapter 5. Installation and configuration
    http://www.recoll.org/features.html if a file type is important to you.
 
    As of Recoll release 1.14, a number of XML-based formats that were handled
-   by ad hoc filter code now use the xsltproc command, which usually comes
+   by ad hoc handler code now use the xsltproc command, which usually comes
    with libxslt. These are: abiword, fb2 (ebooks), kword, openoffice, svg.
 
    Now for the list:
@@ -114,7 +114,7 @@ Chapter 5. Installation and configuration
        it may be be used as a fallback for some files which antiword does not
        handle.
 
-     o MS Excel and PowerPoint need catdoc.
+     o MS Excel and PowerPoint are processed by internal Python handlers.
 
      o MS Open XML (docx) needs xsltproc.
 
@@ -133,11 +133,8 @@ Chapter 5. Installation and configuration
 
      o djvu files need djvutxt and djvused from the DjVuLibre package.
 
-     o Audio files: Recoll releases before 1.13 used the id3info command from
-       the id3lib package to extract mp3 tag information, metaflac (standard
-       flac tools) for flac files, and ogginfo (vorbis tools) for ogg files.
-       Releases 1.14 and later use a single Python filter based on mutagen
-       for all audio file types.
+     o Audio files: Recoll releases 1.14 and later use a single Python
+       handler based on mutagen for all audio file types.
 
      o Pictures: Recoll uses the Exiftool Perl package to extract tag
        information. Most image file formats are supported. Note that there
@@ -145,7 +142,7 @@ Chapter 5. Installation and configuration
        aperture, etc.). This is only of interest if you store personal tags
        or textual descriptions inside the image files.
 
-     o chm: files in microsoft help format need Python and the pychm module
+     o chm: files in Microsoft help format need Python and the pychm module
        (which needs chmlib).
 
      o ICS: up to Recoll 1.13, iCalendar files need Python and the icalendar
@@ -161,11 +158,11 @@ Chapter 5. Installation and configuration
 
      o Konqueror webarchive format with Python (uses the Tarfile module).
 
-     o mimehtml web archive format (support based on the email filter, which
+     o Mimehtml web archive format (support based on the email handler, which
        introduces some mild weirdness, but still usable).
 
    Text, HTML, email folders, and Scribus files are processed internally. Lyx
-   is used to index Lyx files. Many filters need iconv and the standard sed
+   is used to index Lyx files. Many handlers need iconv and the standard sed
    and awk.
 
      ----------------------------------------------------------------------
@@ -515,10 +512,10 @@ Chapter 5. Installation and configuration
 
            A space-separated list of patterns for names of files or
            directories that should be ignored inside zip archives. This is
-           used directly by the zip filter, and has a function similar to
+           used directly by the zip handler, and has a function similar to
            skippedNames, but works independantly. Can be redefined for
            filesystem subdirectories. For versions up to 1.19, you will need
-           to update the Zip filter and install a supplementary Python
+           to update the Zip handler and install a supplementary Python
            module. The details are described on the Recoll wiki.
 
    followLinks
@@ -533,10 +530,15 @@ Chapter 5. Installation and configuration
    indexedmimetypes
 
            Recoll normally indexes any file which it knows how to read. This
-           list lets you restrict the indexed mime types to what you specify.
+           list lets you restrict the indexed MIME types to what you specify.
            If the variable is unspecified or the list empty (the default),
            all supported types are processed. Can be redefined for
            subdirectories.
+
+   excludedmimetypes
+
+           This list lets you exclude some MIME types from indexing. Can be
+           redefined for subdirectories.
 
    compressedfilemaxkbs
 
@@ -570,14 +572,14 @@ Chapter 5. Installation and configuration
            Recoll indexes file names in a special section of the database to
            allow specific file names searches using wild cards. This
            parameter decides if file name indexing is performed only for
-           files with mime types that would qualify them for full text
+           files with MIME types that would qualify them for full text
            indexing, or for all files inside the selected subtrees,
-           independently of mime type.
+           independently of MIME type.
 
    usesystemfilecommand
 
            Decide if we use the file -i system command as a final step for
-           determining the mime type for a file (the main procedure uses
+           determining the MIME type for a file (the main procedure uses
            suffix associations as defined in the mimemap file). This can be
            useful for files with suffix-less names, but it will also cause
            the indexing of many bogus "text" files.
@@ -790,6 +792,9 @@ Chapter 5. Installation and configuration
 
            This is only used by the web browser plugin indexing code, and
            defines the maximum size for the web page cache. Default: 40 MB.
+           Quite unfortunately, this is only taken into account when creating
+           the cache file. You need to delete the file for a change to be
+           taken into account.
 
    idxflushmb
 
@@ -929,15 +934,15 @@ Chapter 5. Installation and configuration
 
    filtermaxseconds
 
-           Maximum filter execution time, after which it is aborted. Some
+           Maximum handler execution time, after which it is aborted. Some
            postscript programs just loop...
 
    filtersdir
 
-           A directory to search for the external filter scripts used to
-           index some types of files. The value should not be changed, except
-           if you want to modify one of the default scripts. The value can be
-           redefined for any sub-directory.
+           A directory to search for the external input handler scripts used
+           to index some types of files. The value should not be changed,
+           except if you want to modify one of the default scripts. The value
+           can be redefined for any sub-directory.
 
    iconsdir
 
@@ -1018,17 +1023,17 @@ Chapter 5. Installation and configuration
            This section defines lists of synonyms for the canonical names
            used inside the [prefixes] and [stored] sections
 
-   filter-specific sections
+   handler-specific sections
 
-           Some filters may need specific configuration for handling fields.
-           Only the email message filter currently has such a section (named
-           [mail]). It allows indexing arbitrary email headers in addition to
-           the ones indexed by default. Other such sections may appear in the
-           future.
+           Some input handlers may need specific configuration for handling
+           fields. Only the email message handler currently has such a
+           section (named [mail]). It allows indexing arbitrary email headers
+           in addition to the ones indexed by default. Other such sections
+           may appear in the future.
 
    Here follows a small example of a personal fields file. This would extract
    a specific email header and use it as a searchable field, with data
-   displayable inside result lists. (Side note: as the email filter does no
+   displayable inside result lists. (Side note: as the email handler does no
    decoding on the values, only plain ascii headers can be indexed, and only
    the first occurrence will be used for headers that occur several times).
 
@@ -1060,10 +1065,10 @@ Chapter 5. Installation and configuration
 
   5.4.3. The mimemap file
 
-   mimemap specifies the file name extension to mime type mappings.
+   mimemap specifies the file name extension to MIME type mappings.
 
    For file names without an extension, or with an unknown one, the system's
-   file -i command will be executed to determine the mime type (this can be
+   file -i command will be executed to determine the MIME type (this can be
    switched off inside the main configuration file).
 
    The mappings can be specified on a per-subtree basis, which may be useful
@@ -1084,7 +1089,7 @@ Chapter 5. Installation and configuration
 
   5.4.4. The mimeconf file
 
-   mimeconf specifies how the different mime types are handled for indexing,
+   mimeconf specifies how the different MIME types are handled for indexing,
    and which icons are displayed in the recoll result lists.
 
    Changing the parameters in the [index] section is probably not a good idea
@@ -1108,7 +1113,7 @@ Chapter 5. Installation and configuration
    Recoll GUI preferences, all mimeview entries will be ignored except the
    one labelled application/x-all (which is set to use xdg-open by default).
 
-   In this case, the xallexcepts top level variable defines a list of mime
+   In this case, the xallexcepts top level variable defines a list of MIME
    type exceptions which will be processed according to the local entries
    instead of being passed to the desktop. This is so that specific Recoll
    options such as a page number or a search string can be passed to
@@ -1121,13 +1126,13 @@ Chapter 5. Installation and configuration
 
    All viewer definition entries must be placed under a [view] section.
 
-   The keys in the file are normally mime types. You can add an application
+   The keys in the file are normally MIME types. You can add an application
    tag to specialize the choice for an area of the filesystem (using a
    localfields specification in mimeconf). The syntax for the key is
    mimetype|tag
 
    The nouncompforviewmts entry, (placed at the top level, outside of the
-   [view] section), holds a list of mime types that should not be
+   [view] section), holds a list of MIME types that should not be
    uncompressed before starting the viewer (if they are found compressed, ie:
    mydoc.doc.gz).
 
@@ -1147,7 +1152,7 @@ Chapter 5. Installation and configuration
        will not create a temporary file to extract the subdocument, expecting
        the called application (possibly a script) to be able to handle it.
 
-     o %M. Mime type
+     o %M. MIME type
 
      o %p. Page index. Only significant for a subset of document types,
        currently only PDF, Postscript and DVI files. Can be used to start the
@@ -1200,7 +1205,7 @@ Chapter 5. Installation and configuration
 
  .blob = application/x-blobapp
 
-       Note that the mime type is made up here, and you could call it
+       Note that the MIME type is made up here, and you could call it
        diesel/oil just the same.
 
      o In $RECOLL_CONFDIR/mimeview under the [view] section, add:
@@ -1211,7 +1216,7 @@ Chapter 5. Installation and configuration
        would use %u if it liked URLs better.
 
    If you just wanted to change the application used by Recoll to display a
-   mime type which it already knows, you would just need to edit mimeview.
+   MIME type which it already knows, you would just need to edit mimeview.
    The entries you add in your personal file override those in the central
    configuration, which you do not need to alter. mimeview can also be
    modified from the Gui.
@@ -1233,17 +1238,17 @@ Chapter 5. Installation and configuration
        for the files inside the result lists. Icons are normally 64x64 pixels
        PNG files which live in /usr/[local/]share/recoll/images.
 
-     o Under the [categories] section, you should add the mime type where it
+     o Under the [categories] section, you should add the MIME type where it
        makes sense (you can also create a category). Categories may be used
        for filtering in advanced search.
 
-   The rclblob filter should be an executable program or script which exists
+   The rclblob handler should be an executable program or script which exists
    inside /usr/[local/]share/recoll/filters. It will be given a file name as
    argument and should output the text or html contents on the standard
    output.
 
-   The filter programming section describes in more detail how to write a
-   filter.
+   The filter programming section describes in more detail how to write an
+   input handler.
 
      ----------------------------------------------------------------------
 
