@@ -103,7 +103,20 @@ void UIPrefsDialog::setFromPrefs()
     pageLenSB->setValue(prefs.respagesize);
     collapseDupsCB->setChecked(prefs.collapseDuplicates);
     maxHLTSB->setValue(prefs.maxhltextmbs);
-    catgToolBarCB->setChecked(prefs.catgToolBar);
+
+    switch (prefs.filterCtlStyle) {
+    case PrefsPack::FCS_MN:
+	filterMN_RB->setChecked(1);
+	break;
+    case PrefsPack::FCS_CMB:
+	filterCMB_RB->setChecked(1);
+	break;
+    case PrefsPack::FCS_BT:
+    default:
+        fprintf(stderr, "filter ctl style %d\n", prefs.filterCtlStyle);
+	filterBT_RB->setChecked(1);
+	break;
+    }
     ssAutoSpaceCB->setChecked(prefs.ssearchOnWS);
     ssNoCompleteCB->setChecked(prefs.ssearchNoComplete);
     ssAutoAllCB->setChecked(prefs.ssearchAsYouType);
@@ -224,7 +237,15 @@ void UIPrefsDialog::accept()
     prefs.ssearchNoComplete = ssNoCompleteCB->isChecked();
     prefs.ssearchAsYouType = ssAutoAllCB->isChecked();
 
-    prefs.catgToolBar = catgToolBarCB->isChecked();
+    if (filterMN_RB->isChecked()) {
+	prefs.filterCtlStyle = PrefsPack::FCS_MN;
+    } else if (filterCMB_RB->isChecked()) {
+	prefs.filterCtlStyle = PrefsPack::FCS_CMB;
+    } else {
+	prefs.filterCtlStyle = PrefsPack::FCS_BT;
+    }
+    m_mainWindow->setFilterCtlStyle(prefs.filterCtlStyle);
+
     prefs.respagesize = pageLenSB->value();
     prefs.collapseDuplicates = collapseDupsCB->isChecked();
     prefs.maxhltextmbs = maxHLTSB->value();

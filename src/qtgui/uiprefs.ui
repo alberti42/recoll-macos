@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>531</width>
-    <height>427</height>
+    <width>542</width>
+    <height>449</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -149,6 +149,9 @@
                <property name="text">
                 <string>&lt;BR&gt;</string>
                </property>
+               <attribute name="buttonGroup">
+                <string notr="true">buttonGroup</string>
+               </attribute>
               </widget>
              </item>
              <item>
@@ -156,6 +159,9 @@
                <property name="text">
                 <string>&lt;PRE&gt;</string>
                </property>
+               <attribute name="buttonGroup">
+                <string notr="true">buttonGroup</string>
+               </attribute>
               </widget>
              </item>
              <item>
@@ -163,6 +169,9 @@
                <property name="text">
                 <string>&lt;PRE&gt; + wrap</string>
                </property>
+               <attribute name="buttonGroup">
+                <string notr="true">buttonGroup</string>
+               </attribute>
               </widget>
              </item>
             </layout>
@@ -175,14 +184,48 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="catgToolBarCB">
-             <property name="text">
-              <string>Display category filter as toolbar instead of button panel (needs restart).</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout1">
+             <item>
+              <widget class="QLabel" name="label1">
+               <property name="toolTip">
+                <string>Decide if document filters are shown as radio buttons, toolbar combobox, or menu.</string>
+               </property>
+               <property name="text">
+                <string>Document filter choice style:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="filterBT_RB">
+               <property name="text">
+                <string>Buttons Panel</string>
+               </property>
+               <attribute name="buttonGroup">
+                <string notr="true">buttonGroup_2</string>
+               </attribute>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="filterCMB_RB">
+               <property name="text">
+                <string>Toolbar Combobox</string>
+               </property>
+               <attribute name="buttonGroup">
+                <string notr="true">buttonGroup_2</string>
+               </attribute>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="filterMN_RB">
+               <property name="text">
+                <string>Menu</string>
+               </property>
+               <attribute name="buttonGroup">
+                <string notr="true">buttonGroup_2</string>
+               </attribute>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
             <widget class="QCheckBox" name="ssNoCompleteCB">
@@ -397,7 +440,7 @@
            <item>
             <layout class="QHBoxLayout">
              <item>
-              <widget class="QLabel" name="tLSTL">
+              <widget class="QLabel" name="tLSTL1">
                <property name="text">
                 <string>Snippets window CSS file</string>
                </property>
@@ -882,4 +925,8 @@ May be slow for big documents.</string>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
+ </buttongroups>
 </ui>

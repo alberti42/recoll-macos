@@ -31,6 +31,7 @@
 #include "spell_w.h"
 #include "refcntr.h"
 #include "pathut.h"
+#include "guiutils.h"
 
 class IdxSchedW;
 class ExecCmd;
@@ -68,6 +69,8 @@ public:
 	  displayingTable(0),
           m_idNoStem(0),
           m_idAllStem(0),
+          m_toolsTB(0), m_resTB(0), 
+          m_filtFRM(0), m_filtCMB(0), m_filtBGRP(0), m_filtMN(0),
 	  m_idxproc(0),
 	  m_sortspecnochange(false),
 	  m_indexerState(IXST_RUNNINGNOTMINE),
@@ -144,6 +147,7 @@ public slots:
     virtual void setStemLang(QAction *id);
     virtual void adjustPrefsMenu();
     virtual void catgFilter(int);
+    virtual void catgFilter(QAction *);
     virtual void initDbOpen();
     virtual void toggleFullScreen();
     virtual void on_actionSortByDateAsc_toggled(bool on);
@@ -152,6 +156,7 @@ public slots:
     virtual void onSortDataChanged(DocSeqSortSpec);
     virtual void resultCount(int);
     virtual void applyStyleSheet();
+    virtual void setFilterCtlStyle(int stl);
 
 signals:
     void docSourceChanged(RefCntr<DocSequence>);
@@ -175,8 +180,14 @@ private:
     QTimer         *periodictimer;
     ResTable       *restable;
     bool            displayingTable;
-    QAction          *m_idNoStem;
-    QAction          *m_idAllStem;
+    QAction        *m_idNoStem;
+    QAction        *m_idAllStem;
+    QToolBar       *m_toolsTB;
+    QToolBar       *m_resTB;
+    QFrame         *m_filtFRM;
+    QComboBox      *m_filtCMB;
+    QButtonGroup   *m_filtBGRP;
+    QMenu          *m_filtMN;
     QFileSystemWatcher m_watcher;
     vector<ExecCmd*>  m_viewers;
     ExecCmd          *m_idxproc; // Indexing process
@@ -196,6 +207,7 @@ private:
     QString          m_urltoview;
 
     virtual void init();
+    virtual void setupResTB(bool combo);
     virtual void previewPrevOrNextInTab(Preview *, int sid, int docnum, 
 					bool next);
     virtual void execViewer(const map<string, string>& subs, bool istempfile,

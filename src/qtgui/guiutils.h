@@ -45,7 +45,8 @@ class PrefsPack {
     bool ssearchAsYouType;
     // Decide if we display the doc category filter control as a
     // toolbar+combobox or as a button group under simple search
-    bool catgToolBar;
+    enum FilterCtlStyle {FCS_BT, FCS_CMB, FCS_MN};
+    int filterCtlStyle;
     int respagesize;
     int maxhltextmbs;
     QString reslistfontfamily;

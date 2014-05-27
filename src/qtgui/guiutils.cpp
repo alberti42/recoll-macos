@@ -104,7 +104,7 @@ void rwSettings(bool writing)
 	       "/Recoll/prefs/ssearch/noComplete", Bool, false);
     SETTING_RW(prefs.ssearchAsYouType, 
 	       "/Recoll/prefs/ssearch/asYouType", Bool, false);
-    SETTING_RW(prefs.catgToolBar, "/Recoll/prefs/catgToolBar", Bool, false);
+    SETTING_RW(prefs.filterCtlStyle, "/Recoll/prefs/filterCtlStyle", Int, 0);
     SETTING_RW(prefs.ssearchAutoPhrase, 
 	       "/Recoll/prefs/ssearchAutoPhrase", Bool, true);
     SETTING_RW(prefs.ssearchAutoPhraseThreshPC, 

@@ -47,29 +47,6 @@
      </widget>
     </item>
     <item>
-     <widget class="QFrame" name="catgBGRP">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <widget class="QRadioButton" name="allRDB">
-       <property name="geometry">
-        <rect>
-         <x>0</x>
-         <y>0</y>
-         <width>45</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>All</string>
-       </property>
-      </widget>
-     </widget>
-    </item>
-    <item>
      <widget class="ResList" name="reslist" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -82,46 +59,13 @@
    </layout>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QToolBar" name="Toolbar">
-   <property name="windowTitle">
-    <string>Search tools</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="toolsAdvanced_SearchAction"/>
-   <addaction name="toolsDoc_HistoryAction"/>
-   <addaction name="toolsSpellAction"/>
-  </widget>
-  <widget class="QToolBar" name="Toolbar1">
-   <property name="windowTitle">
-    <string>Result list</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="firstPageAction"/>
-   <addaction name="prevPageAction"/>
-   <addaction name="nextPageAction"/>
-   <addaction name="separator"/>
-   <addaction name="actionSortByDateAsc"/>
-   <addaction name="actionSortByDateDesc"/>
-   <addaction name="separator"/>
-   <addaction name="actionShowResultsAsTable"/>
-  </widget>
   <widget class="QMenuBar" name="MenuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="fileMenu">

@@ -52,6 +52,7 @@ using std::pair;
 #include <QFileSystemWatcher>
 #include <QThread>
 #include <QProgressDialog>
+#include <QToolBar>
 
 #include "recoll.h"
 #include "debuglog.h"
@@ -156,35 +157,62 @@ void RclMain::init()
     }
     curid->setChecked(true);
 
-    // Toolbar+combobox version of the category selector
-    QComboBox *catgCMB = 0;
-    if (prefs.catgToolBar) {
-        QToolBar *catgToolBar = new QToolBar(this);
-	catgCMB = new QComboBox(catgToolBar);
-	catgCMB->setEditable(FALSE);
-	catgCMB->addItem(tr("All"));
-        catgToolBar->setObjectName(QString::fromUtf8("catgToolBar"));
-	catgCMB->setToolTip(tr("Document category filter"));
-        catgToolBar->addWidget(catgCMB);
-        this->addToolBar(Qt::TopToolBarArea, catgToolBar);
-    }
+    m_toolsTB = new QToolBar(this);
+    m_toolsTB->setObjectName(QString::fromUtf8("m_toolsTB"));
+    m_toolsTB->addAction(toolsAdvanced_SearchAction);
+    m_toolsTB->addAction(toolsDoc_HistoryAction);
+    m_toolsTB->addAction(toolsSpellAction);
+    this->addToolBar(Qt::TopToolBarArea, m_toolsTB);
 
-    // Document categories buttons
-    QHBoxLayout *bgrphbox = new QHBoxLayout(catgBGRP);
-    QButtonGroup *bgrp  = new QButtonGroup(catgBGRP);
+    m_resTB = new QToolBar(this);
+    m_resTB->setObjectName(QString::fromUtf8("m_resTB"));
+    this->addToolBar(Qt::TopToolBarArea, m_resTB);
+
+    // Document filter buttons and combobox
+    // Combobox version of the document filter control
+    m_filtCMB = new QComboBox(m_resTB);
+    m_filtCMB->setEditable(FALSE);
+    m_filtCMB->addItem(tr("All"));
+    m_filtCMB->setToolTip(tr("Document filter"));
+    // Buttons version of the document filter control
+    m_filtFRM = new QFrame(this);
+    m_filtFRM->setObjectName(QString::fromUtf8("m_filtFRM"));
+    QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Maximum);
+    sizePolicy2.setHorizontalStretch(0);
+    sizePolicy2.setVerticalStretch(0);
+    sizePolicy2.setHeightForWidth(m_filtFRM->sizePolicy().hasHeightForWidth());
+    m_filtFRM->setSizePolicy(sizePolicy2);
+    QHBoxLayout *bgrphbox = new QHBoxLayout(m_filtFRM);
+    m_filtBGRP  = new QButtonGroup(m_filtFRM);
+    QRadioButton *allRDB = new QRadioButton(m_filtFRM);
+    verticalLayout->insertWidget(1, m_filtFRM);
+    allRDB->setObjectName(QString::fromUtf8("allRDB"));
+    allRDB->setGeometry(QRect(0, 0, 45, 20));
+    allRDB->setText(tr("All"));
     bgrphbox->addWidget(allRDB);
     int bgrpid = 0;
-    bgrp->addButton(allRDB, bgrpid++);
-    connect(bgrp, SIGNAL(buttonClicked(int)), this, SLOT(catgFilter(int)));
+    m_filtBGRP->addButton(allRDB, bgrpid++);
     allRDB->setChecked(true);
+
+    // Menu version of the document filter control
+    m_filtMN = new QMenu(MenuBar);
+    m_filtMN->setObjectName(QString::fromUtf8("m_filtMN"));
+    MenuBar->insertMenu(helpMenu->menuAction(), m_filtMN);
+    m_filtMN->setTitle("F&ilter");
+    QActionGroup *fltag = new QActionGroup(this);
+    fltag->setExclusive(true);
+    QAction *act = fltag->addAction(tr("All"));
+    m_filtMN->addAction(act);
+    act->setCheckable(true);
+    act->setData((int)0);
+
+    // Go through the filter list and setup buttons and combobox
     vector<string> cats;
     theconfig->getGuiFilterNames(cats);
-    // Text for button 0 is not used. Next statement just avoids unused
-    // variable compiler warning for catg_strings
     m_catgbutvec.push_back(catg_strings[0]);
     for (vector<string>::const_iterator it = cats.begin();
 	 it != cats.end(); it++) {
-	QRadioButton *but = new QRadioButton(catgBGRP);
+	QRadioButton *but = new QRadioButton(m_filtFRM);
 	QString catgnm = QString::fromUtf8(it->c_str(), it->length());
 	m_catgbutvec.push_back(*it);
 	// We strip text before the first colon before setting the button name.
@@ -196,15 +224,19 @@ void RclMain::init()
 	    but_txt = catgnm.right(catgnm.size()-(colon+1));
 	}
 	but->setText(tr(but_txt.toUtf8()));
-	if (prefs.catgToolBar && catgCMB)
-	    catgCMB->addItem(tr(catgnm.toUtf8()));
+        m_filtCMB->addItem(tr(but_txt.toUtf8()));
         bgrphbox->addWidget(but);
-        bgrp->addButton(but, bgrpid++);
+        m_filtBGRP->addButton(but, bgrpid++);
+        QAction *act = fltag->addAction(tr(but_txt.toUtf8()));
+        m_filtMN->addAction(act);
+        act->setCheckable(true);
+        act->setData((int)(m_catgbutvec.size()-1));
+        m_filtMN->connect(m_filtMN, SIGNAL(triggered(QAction *)), this, 
+                          SLOT(catgFilter(QAction *)));
     }
-    catgBGRP->setLayout(bgrphbox);
-
-    if (prefs.catgToolBar)
-	catgBGRP->hide();
+    m_filtFRM->setLayout(bgrphbox);
+    connect(m_filtBGRP, SIGNAL(buttonClicked(int)),this, SLOT(catgFilter(int)));
+    connect(m_filtCMB, SIGNAL(activated(int)), this, SLOT(catgFilter(int)));
 
     sSearch->queryText->installEventFilter(this);
 
@@ -266,9 +298,6 @@ void RclMain::init()
     connect(extIdxAction, SIGNAL(triggered()), 
 	    this, SLOT(showExtIdxDialog()));
 
-    if (prefs.catgToolBar && catgCMB)
-	connect(catgCMB, SIGNAL(activated(int)), 
-		this, SLOT(catgFilter(int)));
     connect(toggleFullScreenAction, SIGNAL(triggered()), 
             this, SLOT(toggleFullScreen()));
     connect(actionShowQueryDetails, SIGNAL(triggered()),
@@ -350,6 +379,8 @@ void RclMain::init()
     connect(reslist, SIGNAL(previewRequested(Rcl::Doc)), 
 	    this, SLOT(startPreview(Rcl::Doc)));
 
+    setFilterCtlStyle(prefs.filterCtlStyle);
+
     if (prefs.keepSort && prefs.sortActive) {
 	m_sortspec.field = (const char *)prefs.sortField.toUtf8();
 	m_sortspec.desc = prefs.sortDesc;
@@ -368,6 +399,49 @@ void RclMain::resultCount(int n)
 {
     actionSortByDateAsc->setEnabled(n>0);
     actionSortByDateDesc->setEnabled(n>0);
+}
+
+void RclMain::setFilterCtlStyle(int stl)
+{
+    switch (stl) {
+    case PrefsPack::FCS_MN:
+        setupResTB(false);
+        m_filtFRM->setVisible(false);
+        m_filtMN->menuAction()->setVisible(true);
+        break;
+    case PrefsPack::FCS_CMB:
+        setupResTB(true);
+        m_filtFRM->setVisible(false);
+        m_filtMN->menuAction()->setVisible(false);
+        break;
+    case PrefsPack::FCS_BT:
+    default:
+        setupResTB(false);
+        m_filtFRM->setVisible(true);
+        m_filtMN->menuAction()->setVisible(false);
+    }
+}
+
+// Set up the "results" toolbox, adding the filter combobox or not depending
+// on config option
+void RclMain::setupResTB(bool combo)
+{
+    m_resTB->clear();
+    m_resTB->addAction(firstPageAction);
+    m_resTB->addAction(prevPageAction);
+    m_resTB->addAction(nextPageAction);
+    m_resTB->addSeparator();
+    m_resTB->addAction(actionSortByDateAsc);
+    m_resTB->addAction(actionSortByDateDesc);
+    if (combo) {
+        m_resTB->addSeparator();
+        m_filtCMB->show();
+        m_resTB->addWidget(m_filtCMB);
+    } else {
+        m_filtCMB->hide();
+    }
+    m_resTB->addSeparator();
+    m_resTB->addAction(actionShowResultsAsTable);
 }
 
 // This is called by a timer right after we come up. Try to open
@@ -2080,12 +2154,34 @@ QString RclMain::getQueryDescription()
     return QString::fromUtf8(m_source->getDescription().c_str());
 }
 
-// User pressed a category button: set filter params in reslist
+// Set filter, action style
+void RclMain::catgFilter(QAction *act)
+{
+    int id = act->data().toInt();
+    catgFilter(id);
+}
+
+// User pressed a filter button: set filter params in reslist
 void RclMain::catgFilter(int id)
 {
-    LOGDEB(("RclMain::catgFilter: id %d\n"));
+    LOGDEB(("RclMain::catgFilter: id %d\n", id));
     if (id < 0 || id >= int(m_catgbutvec.size()))
 	return; 
+
+    switch (prefs.filterCtlStyle) {
+    case PrefsPack::FCS_MN:
+        m_filtCMB->setCurrentIndex(id);
+        m_filtBGRP->buttons()[id]->setChecked(true);
+        break;
+    case PrefsPack::FCS_CMB:
+        m_filtBGRP->buttons()[id]->setChecked(true);
+        m_filtMN->actions()[id]->setChecked(true);
+        break;
+    case PrefsPack::FCS_BT:
+    default:
+        m_filtCMB->setCurrentIndex(id);
+        m_filtMN->actions()[id]->setChecked(true);
+    }
 
     m_filtspec.reset();
 
