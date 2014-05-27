@@ -94,6 +94,18 @@ QString g_stringAllStem, g_stringNoStem;
 static const QKeySequence quitKeySeq("Ctrl+q");
 static const QKeySequence closeKeySeq("Ctrl+w");
 
+static Qt::ToolBarArea int2area(int in)
+{
+    switch (in) {
+    case Qt::LeftToolBarArea: return Qt::LeftToolBarArea;
+    case Qt::RightToolBarArea: return Qt::RightToolBarArea;
+    case Qt::BottomToolBarArea: return Qt::BottomToolBarArea;
+    case Qt::TopToolBarArea:
+    default:
+        return Qt::TopToolBarArea;
+    }
+}
+
 void RclMain::init()
 {
     // This is just to get the common catg strings into the message file
@@ -162,11 +174,11 @@ void RclMain::init()
     m_toolsTB->addAction(toolsAdvanced_SearchAction);
     m_toolsTB->addAction(toolsDoc_HistoryAction);
     m_toolsTB->addAction(toolsSpellAction);
-    this->addToolBar(Qt::TopToolBarArea, m_toolsTB);
+    this->addToolBar(int2area(prefs.toolArea), m_toolsTB);
 
     m_resTB = new QToolBar(this);
     m_resTB->setObjectName(QString::fromUtf8("m_resTB"));
-    this->addToolBar(Qt::TopToolBarArea, m_resTB);
+    this->addToolBar(int2area(prefs.resArea), m_resTB);
 
     // Document filter buttons and combobox
     // Combobox version of the document filter control
@@ -630,6 +642,8 @@ void RclMain::fileExit()
         prefs.mainwidth = width();
         prefs.mainheight = height();
     }
+    prefs.toolArea = toolBarArea(m_toolsTB);
+    prefs.resArea = toolBarArea(m_resTB);
     restable->saveColState();
 
     prefs.ssearchTyp = sSearch->searchTypCMB->currentIndex();

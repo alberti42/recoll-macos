@@ -68,6 +68,8 @@ class PrefsPack {
     int mainheight;
     int pvwidth; // Preview window geom
     int pvheight;
+    int toolArea; // Area for "tools" toolbar
+    int resArea; // Area for "results" toolbar
     int ssearchTyp;
     // Use single app (default: xdg-open), instead of per-mime settings
     bool useDesktopOpen; 
