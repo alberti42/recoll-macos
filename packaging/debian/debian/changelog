@@ -1,3 +1,20 @@
+recoll (1.19.14-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * 1.19.14 fixes two relatively minor but ennoying issues in indexing:
+
+   - The use of a separate readonly Database object for querying the index
+     while indexing would trigger Xapian errors, (bad block reads), and
+     subsequent up-to-date check failures (leading to unnecessary
+     reindexing). The jury is out as to the cause, but using the same
+     object for reading and writing seems to eliminate the problem.
+
+   - A spurious log message in the child process between forking and
+     executing the filter could block on a mutex, and lead to a 20 mn
+     timeout for the affected father process thread (happened only in
+     multithread mode).
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Sat, 07 Jun 2014 18:56:00 +0200
+
 recoll (1.19.13-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * 1.19.13 hopefully fixes the multithreaded indexing crashes and silences

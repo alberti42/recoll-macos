@@ -49,7 +49,7 @@
       <p><span class="application">Recoll</span> est un logiciel libre
 	gratuit, dont le code source est disponible sous licence GPL.
 	La dernière version est 
-        <a class="important" href="download.html">1.19.13</a>
+        <a class="important" href="download.html">1.19.14</a>
 	(<a href="release-1.19.html">notes sur la version, en
 	anglais</a>)</p> 
 
@@ -102,10 +102,16 @@
 
       <h2>Nouvelles: </h2>
       <dl>
+        <dt>2014-06-07</dt> <dd>La version 1.19.14 corrige encore
+          quelques problèmes dans l'indexation (erreurs dans la
+          vérification que l'index est à jour pour un document,
+          possible arrêt de l'indexation pour 20mn dans certains cas
+          rares, et autres).</dd>
 
         <dt>2014-05-06</dt> <dd> Version 1.19.13. A de bonnes chances
           de corriger les problèmes résiduels de l'indexation
           concurrente (multithread).</dd>
+
         <dt>2014-04-02</dt> <dd> Version 1.19.12. C'est la même que la
           1.19.11 à part un paramètre pour la taille des attributs
           stockés, qui n'est utile que dans des cas très

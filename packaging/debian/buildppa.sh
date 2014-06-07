@@ -4,10 +4,10 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.19.13
+RCLVERS=1.19.14
 LENSVERS=1.19.10.3543
 SCOPEVERS=1.19.12
-PPAVERS=5
+PPAVERS=1
 
 # For the unity-scope debian directory
 RCLSRC=/home/dockes/projets/fulltext/recoll/src

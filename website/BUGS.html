@@ -29,7 +29,7 @@
 later versions. Bugs listed in the topmost section may also exist in older
 versions.</i></p>
 
-<h2><a name="b_latest">recoll 1.19.13</a></h2>
+<h2><a name="b_latest">recoll 1.19.14</a></h2>
 <ul>
   <li>An off-by-one error causes an array overflow while handling too
     deeply embedded documents (more than 20-deep). This can mostly
@@ -69,6 +69,19 @@ versions.</i></p>
     ~/.config/Recoll.org/recoll.conf, the QSettings storage for
     recoll.</li>
 </ul>
+
+<h2><a name="b_1_19_13">recoll 1.19.13</a></h2>
+<ul>
+  <li>Child process could hang during the fork-exec interval and cause a
+    20 mn filter timeout.</li>
+  <li>The use of separate read/write Xapian Database objects could cause
+    errors while checking the up-to-date status of documents.</li>
+  <li>Doc category filter names displayed in combobox were incorrect
+    when the order#:name format was used.</li>
+  <li>Possible overflow of the filter stack in pathological
+    cases.</li>
+</ul>
+
 
 <h2><a name="b_1_19_12">recoll 1.19.12</a></h2>
 <ul>

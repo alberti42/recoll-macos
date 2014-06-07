@@ -54,7 +54,7 @@
         <li><a href="features.html">Detailed features</a>.
       </ul>
       <p>The current <span class="application">Recoll</span> version is
-	<a href="download.html">1.19.13</a> 
+	<a href="download.html">1.19.14</a> 
 	(<a href="release-1.19.html">Release notes</a>,
         <a href="BUGS.html">known bugs</a>).</p>
 
@@ -92,6 +92,10 @@
       <div class="news">
       
       <dl>
+        <dt>2014-06-07</dt> <dd>Version 1.19.14 is out and fixes a
+          handful of minor-to-ennoying indexing glitches (see the 
+          <a href="release-1.19.html">Release notes</a>).</dd>
+
         <dt>2014-05-06</dt> <dd>Version 1.19.13 is out and hopefully
           fixes the remaining (rare) crashes of multithreaded
           indexing.</dd>
