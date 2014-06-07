@@ -9,7 +9,7 @@
 import rclexecm
 
 try:
-    from tarfile import TarFile, open
+    import tarfile
 except:
     print "RECFILTERROR HELPERNOTFOUND python:tarfile"
     sys.exit(1);
@@ -45,7 +45,7 @@ class TarExtractor:
     def openfile(self, params):
         self.currentindex = -1
         try:
-            self.tar = open(name=params["filename:"],mode='r')
+            self.tar = tarfile.open(name=params["filename:"],mode='r')
             self.namen = [ y.name for y in filter(lambda z:z.isfile(),self.tar.getmembers())]
             return True
         except:
