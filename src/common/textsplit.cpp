@@ -1009,6 +1009,7 @@ public:
 #define OPT_n     0x40
 #define OPT_S     0x80
 #define OPT_u     0x100
+#define OPT_p     0x200
 
 bool dosplit(const string& data, TextSplit::Flags flags, int op_flags)
 {
@@ -1085,8 +1086,9 @@ static string usage =
     "   -u : use unac\n"
     "   -C [charset] : input charset\n"
     "   -S [stopfile] : stopfile to use for commongrams\n"
-    " if filename is 'stdin', will read stdin for data (end with ^D)\n"
-    "  \n\n"
+    " if filename is 'stdin', will read stdin for data (end with ^D)\n\n"
+    " textplit -p somephrase : display results from stringToStrings()\n"
+    "  \n"
     ;
 
 static void
@@ -1118,6 +1120,7 @@ int main(int argc, char **argv)
                 goto b1;
 	    case 'k':	op_flags |= OPT_k; break;
 	    case 'n':	op_flags |= OPT_n; break;
+	    case 'p':	op_flags |= OPT_p; break;
 	    case 'q':	op_flags |= OPT_q; break;
 	    case 's':	op_flags |= OPT_s; break;
             case 'S':	op_flags |= OPT_S; if (argc < 2)  Usage();
@@ -1153,6 +1156,16 @@ int main(int argc, char **argv)
     string odata, reason;
     if (argc == 1) {
 	const char *filename = *argv++;	argc--;
+        if (op_flags& OPT_p) {
+            vector<string> tokens;
+            TextSplit::stringToStrings(filename, tokens);
+            for (vector<string>::const_iterator it = tokens.begin();
+                 it != tokens.end(); it++) {
+                cout << "[" << *it << "] ";
+            }
+            cout << endl;
+            exit(0);
+        }
 	if (!strcmp(filename, "stdin")) {
 	    char buf[1024];
 	    int nread;
@@ -1165,6 +1178,8 @@ int main(int argc, char **argv)
 	    exit(1);
         }
     } else {
+        if (op_flags & OPT_p)
+            Usage();
         for (int i = 0; i < teststrings_cnt; i++) {
             cout << endl << teststrings[i] << endl;  
             dosplit(teststrings[i], flags, op_flags);
