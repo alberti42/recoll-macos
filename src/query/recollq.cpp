@@ -317,16 +317,9 @@ endopts:
 	if (op_flags & OPT_f) {
 	    clp = new Rcl::SearchDataClauseFilename(qs);
 	} else {
-	    // If there is no white space inside the query, then the user
-	    // certainly means it as a phrase.
-	    bool isreallyaphrase = false;
-	    if (!TextSplit::hasVisibleWhite(qs))
-		isreallyaphrase = true;
-	    clp = isreallyaphrase ? 
-		new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, qs, 0) :
-		new Rcl::SearchDataClauseSimple((op_flags & OPT_o)?
-						Rcl::SCLT_OR : Rcl::SCLT_AND, 
-						qs);
+	    clp = new Rcl::SearchDataClauseSimple((op_flags & OPT_o)?
+                                                  Rcl::SCLT_OR : Rcl::SCLT_AND, 
+                                                  qs);
 	}
 	if (sd)
 	    sd->addClause(clp);

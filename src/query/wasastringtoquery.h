@@ -53,12 +53,12 @@ public:
 	supports "contain" except for a size field */
     enum Rel {REL_NULL, REL_EQUALS, REL_CONTAINS, REL_LT, REL_LTE, 
 	      REL_GT, REL_GTE};
-    /** Modifiers for term handling: case/diacritics handling,
-	stemming control */
+    /** Modifiers for terms: case/diacritics handling,
+	stemming control... */
     enum Modifier {WQM_CASESENS = 1, WQM_DIACSENS = 2, WQM_NOSTEM = 4, 
 		   WQM_BOOST = 8, WQM_PROX = 0x10, WQM_SLOPPY = 0x20, 
 		   WQM_WORDS = 0x40, WQM_PHRASESLACK = 0x80, WQM_REGEX = 0x100,
-		   WQM_FUZZY = 0x200};
+		   WQM_FUZZY = 0x200, WQM_QUOTED = 0x400};
 
     typedef vector<WasaQuery*> subqlist_t;
 

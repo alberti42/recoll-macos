@@ -330,6 +330,7 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 	    unsigned int mods = 0;
 	    if (checkSubMatch(SMI_QUOTED, match, reason)) {
 		nclause->m_value = match;
+                mods |= WasaQuery::WQM_QUOTED;
 	    } else if (checkSubMatch(SMI_TERM, match, reason)) {
 		nclause->m_value = match;
 	    }

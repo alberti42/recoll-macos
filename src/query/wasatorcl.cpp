@@ -200,12 +200,8 @@ static Rcl::SearchData *wasaQueryToRcl(const RclConfig *config,
 		    LOGERR(("wasaQueryToRcl: excl clause inside OR list!\n"));
 		    continue;
 		}
-		// I'm not sure I understand the phrase/near detection
-		// thereafter anymore, maybe it would be better to have an
-		// explicit flag. Mods can only be set after a double
-		// quote.
-		if (TextSplit::hasVisibleWhite((*it)->m_value) || mods) {
 
+		if (mods & WasaQuery::WQM_QUOTED) {
 		    Rcl::SClType tp = (mods & WasaQuery::WQM_PROX)  ?
 			Rcl::SCLT_NEAR :
 			Rcl::SCLT_PHRASE;
@@ -213,12 +209,27 @@ static Rcl::SearchData *wasaQueryToRcl(const RclConfig *config,
 							    (*it)->m_slack,
 							    (*it)->m_fieldspec);
 		} else {
-		    Rcl::SClType tp = (*it)->m_exclude ? 
-			Rcl::SCLT_OR:
+                    // If term has commas or slashes inside, take it
+                    // as a list, turn the slashes/commas to spaces,
+                    // leave unquoted. Otherwise, this would end up as
+                    // a phrase query. This is a handy way to enter
+                    // multiple terms to be searched inside a
+                    // field. We interpret ',' as AND, and '/' as
+                    // OR. No mixes allowed and ',' wins.
+		    Rcl::SClType tp = (*it)->m_exclude ? Rcl::SCLT_OR:
 			Rcl::SCLT_AND;
-		    nclause = 
-			new Rcl::SearchDataClauseSimple(tp, (*it)->m_value, 
-							(*it)->m_fieldspec);
+                    string ns = neutchars((*it)->m_value, ",");
+                    if (ns.compare((*it)->m_value)) {
+                        // had ','
+                        tp = Rcl::SCLT_AND;
+                    } else {
+                        ns = neutchars((*it)->m_value, "/");
+                        if (ns.compare((*it)->m_value)) {
+                            tp = Rcl::SCLT_OR;
+                        }
+                    }
+		    nclause = new Rcl::SearchDataClauseSimple(tp, ns,
+                                                            (*it)->m_fieldspec);
 		}
 		nclause->setexclude((*it)->m_exclude);
 	    }

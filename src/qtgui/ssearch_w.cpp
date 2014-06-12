@@ -255,10 +255,6 @@ bool SSearch::startSimpleSearch(const string& u8, int maxexp)
 	Rcl::SearchDataClause *clp = 0;
 	if (tp == SST_FNM) {
 	    clp = new Rcl::SearchDataClauseFilename(u8);
-	} else if (!TextSplit::hasVisibleWhite(u8)) {
-	    // If there is no white space inside the query, then the user
-	    // certainly means it as a phrase.
-	    clp = new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, u8, 0);
 	} else {
 	    // ANY or ALL, several words.
 	    if (tp == SST_ANY) {
