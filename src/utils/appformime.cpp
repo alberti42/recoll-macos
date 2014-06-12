@@ -123,6 +123,7 @@ bool DesktopDb::appForMime(const string& mime, vector<AppDef> *apps,
     if (it == theAppMap.end()) {
         if (reason)
             *reason = string("No application found for ") + mime;
+        return false;
     }
     *apps = it->second;
     return true;
