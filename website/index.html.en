@@ -92,6 +92,16 @@
       <div class="news">
       
       <dl>
+        <dt>2014-06-17</dt> <dd>The source tarball for version 1.20.0
+          has been released. This version has
+          a <a href="release-1.20.html">number of improvements</a> over
+          1.19, but also some incompatibilities. The first minor
+          releases for 1.20 may contain some functional changes in
+          addition to bug fixes, so they may be slightly less stable
+          than 1.19, and 1.19 packages remain the "safe Recoll" for
+          now. Still, if you build from source, there are a few nice 
+          things in 1.20...</dd>
+
         <dt>2014-06-07</dt> <dd>Version 1.19.14 is out and fixes a
           handful of minor-to-ennoying indexing glitches (see the 
           <a href="release-1.19.html">Release notes</a>).</dd>

@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Recoll 1.20 series release notes</title>
+    <meta name="Author" content="Jean-Francois Dockes">
+    <meta name="Description"
+          content="recoll is a simple full-text search system for unix and linux     based on the powerful and mature xapian engine">
+    <meta name="Keywords" content="full text search, desktop search, unix, linux">
+    <meta http-equiv="Content-language" content="en">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="robots" content="All,Index,Follow">
+    <link type="text/css" rel="stylesheet" href="styles/style.css">
+  </head>
+
+  <body>
+
+    <div class="rightlinks">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="download.html">Downloads</a></li>
+        <li><a href="doc.html">Documentation</a></li>
+      </ul>
+    </div>
+
+    <div class="content">
+      <h1>Release notes for Recoll 1.20.x</h1>
+
+      <h2>Caveats</h2>
+
+      <p><em>Installing over an older version</em>: 1.19 </p>
+
+      <p>Installing 1.20 over an 1.19 index is possible, but there
+        have been small changes in the way compound words (e.g. email
+        addresses) are indexed, so it will be best to reset the
+        index. Still, in a pinch, 1.20 search can mostly use an 1.19
+        index.</p>
+
+      <p>Case/diacritics sensitivity is off by default. It can be
+        turned on <em>only</em> by editing
+        recoll.conf (
+        <a href="usermanual/usermanual.html#RCL.INDEXING.CONFIG.SENS">
+          see the manual</a>). If you do so, you must then reset the
+        index.</p> 
+
+      <p>Always reset the index if you do not know by which version it
+        was created (you're not sure it's at least 1.18). The best method
+        is to quit all Recoll programs and delete the index directory 
+        (<span class="literal">
+          rm -rf ~/.recoll/xapiandb</span>), then start <code>recoll</code>
+        or <code>recollindex</code>. <br> 
+
+        <span class="literal">recollindex -z</span> will do the same
+        in most, but not all, cases. It's better to use
+        the <tt>rm</tt> method, which will also ensure that no debris
+        from older releases remain (e.g.: old stemming files which are
+        not used any more).</p>
+
+
+      <h2><a name="minor_releases">Minor releases at a glance</a></h2>
+      <p>The rhythm of change in Recoll is slowing as the software is
+        approaching maturity, so, in order to avoid stopping progress
+        by excessive intervals between releases, the first versions 
+        of 1.20 will be allowed to contain some functional changes (as
+        opposed to only bug fixes). There will be a freeze at some
+        point.
+
+        <h2>Changes in Recoll 1.20.0</h2>
+        <ul>
+          
+          <li>An <em>Open With</em> entry was added to the result list
+            and result table popup menus. This lets you choose an
+            alternative application to open a document. The list of
+            applications is built from the information inside
+            the <span class="filename">
+              /usr/share/applications</span> desktop files.</li>
+
+          <li>A new way for specifying multiple terms to be searched
+            inside a given field: it used to be that an entry lacking
+            whitespace but splittable, like [term1,term2] was
+            transformed into a phrase search, which made sense in some
+            cases, but no so many. The code was changed so that
+            [term1,term2] now means [term1&nbsp;AND&nbsp;term2], and
+            [term1/term2] means [term1&nbsp;OR&nbsp;term2]. This is
+            useful for field searches where you would previously be
+            forced to repeat the field name for every term.
+            [somefield:term1&nbsp;somefield:term2] can now be expressed as
+            [somefield:term1,term2].
+          </li>
+
+          <li>We changed the way terms are generated from a compound
+            string (e.g. an email address). Previously, for an address
+            like <em>jfd@recoll.org</em>, only the simple terms and
+            the terms anchored at the start were generated
+            (<em>jfd</em>, <em>recoll</em>, <em>org</em>, <em>jfd@recoll</em>, <em>jfd@recoll.org</em>). The
+            new text splitter generates all the other possible terms
+            (here, <em>recoll.org</em> only), so that it is now
+            possible to search for left-truncated versions of the
+            compound, e.g., all emails from a given domain.</li>
+
+          <li>It is now possible to configure the GUI in wide form
+            factor by dragging the toolbars to one of the sides (their
+            location is remembered between sessions), and moving the
+            category filters to a menu (can be set in the 
+            "Preferences->GUI configuration" panel).</li>
+            
+          <li>We added the <em>indexedmimetypes</em> and
+            <em>excludedmimetypes</em> variables to the configuration
+            GUI, which was also compacted a bit. A bunch of
+            ininteresting variables were also removed.</li>
+            
+          <li>When indexing, we no longer add the top container
+            file-name as a term for the contained sub-documents (if
+            any). This made no sense at all in most cases. However,
+            this was sometimes useful when searching email
+            folders. Complain if you do not like this change, and I'll
+            make it configurable.</li>
+
+          <li>You can now use both <em>-e</em> and  <em>-i</em> for
+            erasing then updating the index for the given file
+            arguments with the same <em>recollindex</em> command.</li>
+
+          <li>We now allow access to the Xapian docid for Recoll
+            documents in <span class="command">recollq</span> and
+            Python API search results. This allows writing scripts
+            which combine Recoll and pure Xapian operations. A sample
+            Python program to find document duplicates, using MD5
+            terms was added. See 
+            <span class="filename">src/python/samples/docdups.py</span></li>
+
+          <li><span class="filename">/media</span> was added to the default
+            skippedPaths list mostly as a reminder that blindly
+            processing these with the general indexer is a bad idea
+            (use separate indexes instead).</li>
+
+          <li><span class="command">recollq</span>
+            and <span class="command">recoll&nbsp;-t</span> get a new 
+            option <span class="literal">-N</span>  to print field
+            names between values when 
+            <span class="literal">-F</span> is used. In addition, 
+            <span class="literal">-F&nbsp;""</span> is taken as a
+            directive to print all fields.</li>
+
+          <li>Unicode <span class="literal">hyphen</span> (0x2010) is
+            now translated to ASCII
+            <span class="literal">minus</span>
+            during indexing and searching. There is no good way to
+            handle this character, given the varius misuses of minus
+            and hyphen. This choice was deemed "less bad" than the
+            previous one.</li>
+
+        </ul>
+
+
+    </div>
+  </body>
+</html>
