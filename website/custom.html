@@ -264,6 +264,113 @@ window.onload = function() {
 <br clear="all">
 <img src="resparpics/default.png"/>
 
+<h3>Alternating bands, bigger previews, and custom paragraph
+typesetting</h3>
+
+      <p>The author's description for the following code:
+        <blockquote>
+          It uses the "Alternating Results Background" from that page,
+          plus my own layout which incorporates a larger view of image
+          files. The 'large image' is scaled down from the actual
+          image, rather than a scaled up version of the thumbnail.
+        </blockquote>
+      </p> 
+
+      <p>The header fragment has the javascript for
+        alternating backgrounds, and the CSS code:</p>
+
+<pre>
+&lt;!-- Custom Header --&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+  function altRows() {
+      var rows = document.getElementsByClassName(&quot;rclresult&quot;);
+      for (i = 0; i &lt; rows.length; i++) {
+          if (i % 2 == 0) {
+              rows[i].style.backgroundColor = &quot;#f0f0f0&quot;;
+          }
+      }
+  }
+  window.onload = function() {
+      altRows();
+  }
+&lt;/script&gt;
+
+&lt;style type=&quot;text/css&quot;&gt;
+.thumbnail { 
+   display:block;
+   position:relative;
+   padding: 4px;
+   width: auto; /* set width of thumbnail image in 'paragraph' code - not here */
+   border:none;
+   z-index:0;
+   }
+.thumbnail:hover {
+   border:none;
+   background-color: transparent;
+   z-index: 50;
+   }
+.thumbnail span {
+   position: absolute;
+   left: -9999px;
+   visibility: hidden;
+   }
+.thumbnail span img {
+   max-width:256px;  /* set 'large image' max width/height - advise keeping these  */
+   max-height:256px; /* the same to avoid inadvertently changing the aspect ratio  */
+   width:auto;   /* leave set to auto */
+   height:auto;  /* leave set to auto */
+   background-color: gray;
+   padding: 1px;
+   border: 1px solid black;
+   }
+.thumbnail:hover span {
+   visibility: visible;
+   top: 4px;   /* top/left positions 'large image' relative to top left */
+   left: 88px; /* of parent thumbnail (plus padding)                    */
+   }
+&lt;/style&gt;
+&lt;!-- End of Custom Header --&gt;
+</pre>
+
+      <p>And the paragraph format:</p>
+
+<pre>
+&lt;!-- Custom Paragraph --&gt;
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;td&gt;
+      &lt;a class=&quot;thumbnail&quot; href=&quot;#&quot;&gt;
+        &lt;img src=&quot;%I&quot; width=&quot;64px&quot; height=&quot;auto&quot;&gt;   &lt;!-- set width of thumbnail --&gt;
+        &lt;span&gt;
+          &lt;img src=&quot;%U&quot;&gt;
+        &lt;/span&gt;
+      &lt;/a&gt;
+    &lt;td&gt;
+      &lt;table&gt;
+        &lt;tr&gt;
+          &lt;td&gt;
+            &lt;div&gt;
+              &lt;b&gt;%T&lt;/b&gt;&lt;/br&gt;
+              %L&lt;/br&gt;
+              &lt;p&gt;&lt;font color=&quot;grey&quot;&gt;%A &lt;/font&gt;&lt;font color=&quot;#CD6688&quot;&gt;&lt;i&gt;%K&lt;/i&gt;&lt;/font&gt;&lt;/p&gt;
+              &lt;font color=&quot;green&quot;&gt;&lt;font size=1&gt;
+              %U&lt;/br&gt;
+              %R — %S—%D — %M
+              &lt;/font&gt;&lt;/font&gt;&lt;/br&gt;
+            &lt;/div&gt;
+          &lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/table&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+&lt;!-- End Custom Paragraph --&gt;
+</pre>
+
+      <p>Result:</p>
+<br clear="all">
+<img src="resparpics/pip.png"/>
+      
 <h3>A simpler format, suggested in Bitbucket issue #69</h3>
 
 <pre>
