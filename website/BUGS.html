@@ -31,11 +31,8 @@ versions.</i></p>
 
 <h2><a name="b_latest">recoll 1.19.14</a></h2>
 <ul>
-  <li>An off-by-one error causes an array overflow while handling too
-    deeply embedded documents (more than 20-deep). This can mostly
-    happen on a well-known pathologic recursive zip file sample. The
-    error crashes recollindex on 32 bits architectures, apparently not
-    on 64 bits ones.</li>
+  <li>The Open/LibreOffice document filter does not output white space
+    for tab-separated words in input, leading to search failures.</li>
 
   <li>On systems such as Debian Stable which use Evince version 2.x (not 3.x)
     as PDF viewer, the default "Open" command for PDF files will not
@@ -78,8 +75,11 @@ versions.</i></p>
     errors while checking the up-to-date status of documents.</li>
   <li>Doc category filter names displayed in combobox were incorrect
     when the order#:name format was used.</li>
-  <li>Possible overflow of the filter stack in pathological
-    cases.</li>
+  <li>An off-by-one error causes an array overflow while handling too
+    deeply embedded documents (more than 20-deep). This can mostly
+    happen on a well-known pathologic recursive zip file sample. The
+    error crashes recollindex on 32 bits architectures, apparently not
+    on 64 bits ones.</li>
 </ul>
 
 

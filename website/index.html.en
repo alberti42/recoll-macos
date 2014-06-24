@@ -92,6 +92,11 @@
       <div class="news">
       
       <dl>
+        <dt>2014-06-24</dt> <dd><a href="filters/filters.html#soff1">An
+            updated filter</a> for Open/LibreOffice documents. The
+          previous version merged words which were tab-separated in
+          the input.</dd>
+
         <dt>2014-06-17</dt> <dd>The source tarball for version 1.20.0
           has been released. This version has
           a <a href="release-1.20.html">number of improvements</a> over
