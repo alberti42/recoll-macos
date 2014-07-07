@@ -279,7 +279,6 @@ python/samples/docdups.py
 python/samples/mutt-recoll.py
 python/samples/rcldlkp.py
 python/samples/rclmbox.py
-python/samples/recoll/
 python/samples/recollgui/
 python/samples/recollgui/Makefile
 python/samples/recollgui/qrecoll.py
