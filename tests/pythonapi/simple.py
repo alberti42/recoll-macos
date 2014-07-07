@@ -7,6 +7,8 @@ else:
     ISP3 = False
 
 def utf8string(s):
+    if s is None:
+        return "None"
     if ISP3:
         return s
     else:

@@ -381,6 +381,11 @@ endopts:
 	    string titleorfn = doc.meta[Rcl::Doc::keytt];
 	    if (titleorfn.empty())
 		titleorfn = doc.meta[Rcl::Doc::keyfn];
+	    if (titleorfn.empty()) {
+                string url;
+                printableUrl(rclconfig->getDefCharset(), doc.url, url);
+                titleorfn = path_getsimple(url);
+            }
 
 	    char cpc[20];
 	    sprintf(cpc, "%d", doc.pc);
