@@ -455,6 +455,7 @@ BeagleQueueIndexer::processone(const string &path,
 
         if (doc.fmtime.empty())
             doc.fmtime = ascdate;
+        dotdoc.fmtime = doc.fmtime;
 
         char cbuf[100]; 
         sprintf(cbuf, "%lld", (long long)stp->st_size);
