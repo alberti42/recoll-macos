@@ -2,6 +2,8 @@
 
 import sys
 import xml.sax
+sys.path.append(sys.path[0]+"/msodump.zip")
+from msodumper.globals import error
 
 dtt = True
 
@@ -47,6 +49,8 @@ class XlsXmlHandler(xml.sax.handler.ContentHandler):
 
 try:
     xml.sax.parse(sys.stdin, XlsXmlHandler())
-except:
+except BaseException as err:
+    error("xml-parse: %s\n" % (str(sys.exc_info()[:2]),))
     sys.exit(1)
+
 sys.exit(0)
