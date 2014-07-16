@@ -1539,6 +1539,21 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	    }
 	}
 
+        // At this point, if the document "filename" field was empty,
+        // try to store the "container file name" value. This is done
+        // after indexing because we don't want search matches on
+        // this, but the filename is often useful for display
+        // purposes.
+        const string *fnp = 0;
+        if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty()) {
+            if (doc.peekmeta(Rcl::Doc::keytcfn, &fnp) && !fnp->empty()) {
+		string value = 
+		    neutchars(truncate_to_word(*fnp, 
+                                               m_idxMetaStoredLen), cstr_nc);
+		RECORD_APPEND(record, Rcl::Doc::keyfn, value);
+            }
+        }
+
 	// If empty pages (multiple break at same pos) were recorded, save
 	// them (this is because we have no way to record them in the
 	// Xapian list

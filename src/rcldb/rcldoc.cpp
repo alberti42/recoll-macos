@@ -30,6 +30,7 @@ namespace Rcl {
     const string Doc::keyds("dbytes");
     const string Doc::keyfmt("fmtime");
     const string Doc::keyfn("filename");
+    const string Doc::keytcfn("topcontainerfn");
     const string Doc::keyfs("fbytes");
     const string Doc::keyipt("ipath");
     const string Doc::keykw("keywords");

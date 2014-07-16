@@ -724,9 +724,13 @@ FsIndexer::processonefile(RclConfig *config,
 	    if (doc.url.empty())
 		doc.url = cstr_fileu + fn;
 	    const string *fnp = 0;
-	    if (doc.ipath.empty() &&
-                (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty()))
-		doc.meta[Rcl::Doc::keyfn] = utf8fn;
+	    if (doc.ipath.empty()) {
+                if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty())
+                    doc.meta[Rcl::Doc::keyfn] = utf8fn;
+            } else {
+                // subdoc: set container file name
+                doc.meta[Rcl::Doc::keytcfn] = utf8fn;
+            }
 
 	    char cbuf[100]; 
 	    sprintf(cbuf, "%lld", (long long)stp->st_size);
