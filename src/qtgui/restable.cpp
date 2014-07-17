@@ -764,6 +764,16 @@ void ResTable::linkWasClicked(const QUrl &url)
 		m_rclmain->newDupsW(m_detaildoc, dups);
 	    }
 	}
+    // Open parent folder
+    case 'F':
+    {
+        Rcl::Doc pdoc;
+        pdoc.url = url_parentfolder(m_detaildoc.url);
+        pdoc.mimetype = "inode/directory";
+        emit editRequested(pdoc);
+    }
+    break;
+
     case 'P': 
     case 'E': 
     {

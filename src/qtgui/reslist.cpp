@@ -876,6 +876,22 @@ void ResList::linkWasClicked(const QUrl &url)
     }
     break;
 
+    // Open parent folder
+    case 'F':
+    {
+	int i = atoi(ascurl.c_str()+1) - 1;
+	Rcl::Doc doc;
+	if (!getDoc(i, doc)) {
+	    LOGERR(("ResList::linkWasClicked: can't get doc for %d\n", i));
+	    return;
+	}
+        Rcl::Doc pdoc;
+        pdoc.url = url_parentfolder(doc.url);
+        pdoc.mimetype = "inode/directory";
+        emit editRequested(pdoc);
+    }
+    break;
+
     // Show query details
     case 'H': 
     {

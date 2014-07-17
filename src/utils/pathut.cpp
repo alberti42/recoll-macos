@@ -525,6 +525,20 @@ string url_gpath(const string& url)
     return path_canon(url.substr(colon+1));
 }
 
+string url_parentfolder(const string& url)
+{
+    // In general, the parent is the directory above the full path
+    string parenturl = path_getfather(url_gpath(url));
+    // But if this is http, make sure to keep the host part. Recoll
+    // only has file or http urls for now.
+    bool isfileurl = urlisfileurl(url);
+    if (!isfileurl && parenturl == "/") {
+        parenturl = url_gpath(url);
+    }
+    return isfileurl ? string("file://") + parenturl :
+        string("http://") + parenturl;
+}
+
 // Convert to file path if url is like file:
 // Note: this only works with our internal pseudo-urls which are not
 // encoded/escaped
@@ -540,6 +554,7 @@ string fileurltolocalpath(string url)
     }
     return url;
 }
+
 bool urlisfileurl(const string& url)
 {
     return url.find("file://") == 0;

@@ -2421,6 +2421,10 @@ fs.inotify.max_user_watches=32768
           <listitem><formalpara><title>%N</title><para>result Number inside
             the result page</para></formalpara> 
           </listitem>
+          <listitem><formalpara><title>%P</title><para>Parent folder
+          Url. In the case of an embedded document, this is the parent folder
+          for the top level container file.</para></formalpara>
+          </listitem>
           <listitem><formalpara><title>%R</title><para>Relevance
             percentage</para></formalpara> 
           </listitem>
@@ -2444,6 +2448,14 @@ fs.inotify.max_user_watches=32768
         <literal>&lt;a href="A%N"&gt;</literal>
         where <replaceable>docnum</replaceable> (%N) expands to the document
         number inside the result page).</para>
+
+        <para>It is also possible to use a <literal>"F%N"</literal> value
+        as a link target. This will open the document corresponding to the
+        <literal>%P</literal> parent folder expansion, usually creating a
+        file manager window on the folder where the container file
+        resides. E.g.:
+        <programlisting>&lt;a href="F%N"&gt;%P&lt;/a&gt;</programlisting>
+        </para>
 
         <para>In addition to the predefined values above, all strings
         like <literal>%(fieldname)</literal> will be replaced by the
@@ -5863,11 +5875,6 @@ x-my-tag = mailmytag
               from a  container).</para></formalpara>
           </listitem>
 
-          <listitem><formalpara><title>%F</title>
-              <para>Original file name. Same as %f except if a temporary
-              file is used.</para></formalpara> 
-          </listitem>
-
           <listitem><formalpara><title>%i</title>
               <para>Internal path, for subdocuments of containers. The
               format depends on the container type. If this appears in the
@@ -5895,7 +5902,7 @@ x-my-tag = mailmytag
               highlighting of the term.</para></formalpara>  
           </listitem>
 
-          <listitem><formalpara><title>%U, %u</title>
+          <listitem><formalpara><title>%u</title>
               <para>Url.</para></formalpara> 
           </listitem>
         </itemizedlist>
