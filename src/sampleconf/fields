@@ -113,10 +113,16 @@ url = dc:identifier xesam:url
 # You can enter name translations as "xattrname = fieldname". Case matters.
 # Entering an empty translation will disable use of the attribute.
 # The values from the extended attributes will extend, not replace, the
-# data found from equivalent fields inside the document. As an example, the
-# following would map a quite plausible "tags" extended attribute into the
-# "keywords" field.
+# data found from equivalent fields inside the document. 
+
+# As an example, the following would map a quite plausible "tags" extended
+# attribute into the "keywords" field.
 tags = keywords
+
+# Proposed or standard freedesktop.org extended attributes
+xdg.tags = keywords
+xdg.comment = abstract
+
 # Some standard fields are not to be indexed
 mime_type =
 charset =
