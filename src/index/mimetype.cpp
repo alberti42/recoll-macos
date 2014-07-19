@@ -46,15 +46,21 @@ using namespace std;
 /// current/interesting file types.
 /// As a last resort we execute 'file' (except if forbidden by config)
 
-static string mimetypefromdata(const string &fn, bool usfc)
+static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
 {
     // First try the internal identifying routine
     string mime = idFile(fn.c_str());
 
 #ifdef USE_SYSTEM_FILE_COMMAND
     if (usfc && mime.empty()) {
-	// Last resort: use "file -i"
+	// Last resort: use "file -i", or its configured replacement.
 	vector<string> cmd = create_vector<string>(FILE_PROG) ("-i") (fn);
+        string scommand;
+        if (cfg->getConfParam("systemfilecommand", scommand)) {
+            stringToStrings(scommand, cmd);
+            cmd.push_back(fn);
+        }
+
 	string result;
 	if (!ExecCmd::backtick(cmd, result)) {
 	    LOGERR(("mimetypefromdata: exec %s failed\n", FILE_PROG));
@@ -164,7 +170,7 @@ string mimetype(const string &fn, const struct stat *stp,
     // only do this if we have an actual file (as opposed to a pure
     // name).
     if (mtype.empty() && stp)
-	mtype = mimetypefromdata(fn, usfc);
+	mtype = mimetypefromdata(cfg, fn, usfc);
 
  out:
     return mtype;
