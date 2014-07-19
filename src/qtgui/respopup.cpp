@@ -120,7 +120,7 @@ Rcl::Doc getParent(RefCntr<DocSequence> source, Rcl::Doc& doc)
     if (source.isNull() || !source->getEnclosing(doc, pdoc)) {
 	// No parent doc: show enclosing folder with app configured for
 	// directories
-	pdoc.url = path_getfather(doc.url);
+        pdoc.url = url_parentfolder(doc.url);
 	pdoc.meta[Rcl::Doc::keychildurl] = doc.url;
 	pdoc.meta[Rcl::Doc::keyapptg] = "parentopen";
 	pdoc.mimetype = "inode/directory";

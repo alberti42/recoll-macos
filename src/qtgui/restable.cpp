@@ -767,10 +767,8 @@ void ResTable::linkWasClicked(const QUrl &url)
     // Open parent folder
     case 'F':
     {
-        Rcl::Doc pdoc;
-        pdoc.url = url_parentfolder(m_detaildoc.url);
-        pdoc.mimetype = "inode/directory";
-        emit editRequested(pdoc);
+        emit editRequested(ResultPopup::getParent(RefCntr<DocSequence>(),
+                                                  m_detaildoc));
     }
     break;
 

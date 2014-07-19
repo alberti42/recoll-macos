@@ -179,7 +179,14 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
 	titleOrFilename = utf8fn;
     }
 
+    // Url for the parent directory. We strip the file:// part for local
+    // paths
     string parenturl = url_parentfolder(url);
+    {
+        string localpath = fileurltolocalpath(parenturl);
+        if (!localpath.empty())
+            parenturl = localpath;
+    }
 
     // Result number
     char numbuf[20];

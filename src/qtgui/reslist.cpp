@@ -885,10 +885,8 @@ void ResList::linkWasClicked(const QUrl &url)
 	    LOGERR(("ResList::linkWasClicked: can't get doc for %d\n", i));
 	    return;
 	}
-        Rcl::Doc pdoc;
-        pdoc.url = url_parentfolder(doc.url);
-        pdoc.mimetype = "inode/directory";
-        emit editRequested(pdoc);
+        emit editRequested(ResultPopup::getParent(RefCntr<DocSequence>(),
+                                                  doc));
     }
     break;
 
