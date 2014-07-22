@@ -512,14 +512,6 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Default character set</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This is the character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Follow symbolic links</source>
         <translation type="unfinished"></translation>
     </message>
@@ -541,6 +533,14 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Web history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Default&lt;br&gt;character set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -731,10 +731,6 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Document category filter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>No external viewer configured for mime type [</source>
         <translation type="unfinished"></translation>
     </message>
@@ -849,19 +845,44 @@ Please check the mimeview file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indexer running so things should improve when it&apos;s done</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Sub-documents and attachments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Document filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index not up to date for this file. Refusing to risk showing the wrong entry. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Ok to update the index for this file, then you will need to re-run the query when indexing is done. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The indexer is running so things should improve when it&apos;s done. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The document belongs to an external indexwhich I can&apos;t update. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Cancel to return to the list. Click Ignore to show the preview anyway. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Duplicate documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>These Urls ( | ipath) share the same content:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bad desktop app spec for %1: [%2]
+Please check the desktop file</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -869,14 +890,6 @@ Please check the mimeview file</source>
     <name>RclMainBase</name>
     <message>
         <source>Recoll</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search tools</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Result list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -977,10 +990,6 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>External index dialog</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1222,14 +1231,6 @@ Please check the mimeview file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Duplicate documents</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>These Urls ( | ipath) share the same content:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Result count (est.)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1309,6 +1310,10 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open With</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1842,6 +1847,22 @@ This will help searching very big text  files (ie: log files).</source>
 </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Only mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exclude mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mime types not to be indexed</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfTopPanelW</name>
@@ -1990,10 +2011,6 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Choose editor applications</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Display category filter as toolbar instead of button panel (needs restart).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2203,6 +2220,26 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Resets the Snippets window style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decide if document filters are shown as radio buttons, toolbar combobox, or menu.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Document filter choice style:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Buttons Panel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toolbar Combobox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Menu</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

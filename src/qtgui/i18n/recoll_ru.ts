@@ -579,11 +579,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Default character set</source>
-        <translation>Кодировка по умолчанию</translation>
+        <translation type="obsolete">Кодировка по умолчанию</translation>
     </message>
     <message>
         <source>This is the character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
-        <translation>Эта кодировка будет использована при чтении файлов, в которых таковая не указывается явно (например, чисто текстовых файлов).&lt;br&gt;Обычно значение пусто, тогда оно извлекается из окружения (локали).</translation>
+        <translation type="obsolete">Эта кодировка будет использована при чтении файлов, в которых таковая не указывается явно (например, чисто текстовых файлов).&lt;br&gt;Обычно значение пусто, тогда оно извлекается из окружения (локали).</translation>
     </message>
     <message>
         <source>Follow symbolic links</source>
@@ -612,6 +612,14 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Web history</source>
         <translation>Посещённые web-страницы</translation>
+    </message>
+    <message>
+        <source>Default&lt;br&gt;character set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -841,7 +849,7 @@ Please check the mimeconf file</source>
     </message>
     <message>
         <source>Document category filter</source>
-        <translation>Фильтр категории документа</translation>
+        <translation type="obsolete">Фильтр категории документа</translation>
     </message>
     <message>
         <source>No external viewer configured for mime type [</source>
@@ -973,19 +981,56 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
-        <translation>Индекс для этого файла устарел. Отказываюсь рисковать показывать неправильную запись.</translation>
+        <translation type="obsolete">Индекс для этого файла устарел. Отказываюсь рисковать показывать неправильную запись.</translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation>Нажмите ОК, чтобы обновить индекс для файла, и перезапустите очередь по окончании. Или нажмите Отмена.</translation>
+        <translation type="obsolete">Нажмите ОК, чтобы обновить индекс для файла, и перезапустите очередь по окончании. Или нажмите Отмена.</translation>
     </message>
     <message>
         <source>Indexer running so things should improve when it&apos;s done</source>
-        <translation>Индексация выполняется, так что по завершении положение должно улучшиться</translation>
+        <translation type="obsolete">Индексация выполняется, так что по завершении положение должно улучшиться</translation>
     </message>
     <message>
         <source>Sub-documents and attachments</source>
         <translation>Вложенные документы</translation>
+    </message>
+    <message>
+        <source>Document filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index not up to date for this file. Refusing to risk showing the wrong entry. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Ok to update the index for this file, then you will need to re-run the query when indexing is done. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The indexer is running so things should improve when it&apos;s done. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The document belongs to an external indexwhich I can&apos;t update. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Cancel to return to the list. Click Ignore to show the preview anyway. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Duplicate documents</source>
+        <translation type="unfinished">Дублированные документы</translation>
+    </message>
+    <message>
+        <source>These Urls ( | ipath) share the same content:</source>
+        <translation type="unfinished">Данные URL ( | индексные пути) имеют одно и то же содержимое:</translation>
+    </message>
+    <message>
+        <source>Bad desktop app spec for %1: [%2]
+Please check the desktop file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1012,11 +1057,11 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Search tools</source>
-        <translation>Инструменты поиска</translation>
+        <translation type="obsolete">Инструменты поиска</translation>
     </message>
     <message>
         <source>Result list</source>
-        <translation>Список результатов</translation>
+        <translation type="obsolete">Список результатов</translation>
     </message>
     <message>
         <source>E&amp;xit</source>
@@ -1112,7 +1157,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>All</source>
-        <translation>все</translation>
+        <translation type="obsolete">все</translation>
     </message>
     <message>
         <source>&amp;Show missing helpers</source>
@@ -1414,11 +1459,11 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation>Дублированные документы</translation>
+        <translation type="obsolete">Дублированные документы</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation>Данные URL ( | индексные пути) имеют одно и то же содержимое:</translation>
+        <translation type="obsolete">Данные URL ( | индексные пути) имеют одно и то же содержимое:</translation>
     </message>
     <message>
         <source>Result count (est.)</source>
@@ -1572,6 +1617,10 @@ Please check the mimeview file</source>
     <message>
         <source>Show subdocuments / attachments</source>
         <translation>Показать вложенные документы</translation>
+    </message>
+    <message>
+        <source>Open With</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2461,6 +2510,22 @@ This will help searching very big text  files (ie: log files).</source>
         <translation>Внешние фильтры, выполняющиеся дольше указанного предельного времени работы, принудительно завершаются. Это может помочь в тех редких случаях, когда фильтр (например, postscript) зацикливается при обработке некоторого документа. Значение, равное -1, выключает проверку времени работы.
 </translation>
     </message>
+    <message>
+        <source>Only mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exclude mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mime types not to be indexed</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfTopPanelW</name>
@@ -2641,7 +2706,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
-        <translation>Показывать фильтр категории документа в виде выпадающего списка, а не панели с кнопками (требуется перезапуск).</translation>
+        <translation type="obsolete">Показывать фильтр категории документа в виде выпадающего списка, а не панели с кнопками (требуется перезапуск).</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
@@ -2880,6 +2945,26 @@ The default value is 2 (percent). </source>
     <message>
         <source>Resets the Snippets window style</source>
         <translation>Сбрасывает стиль окна Фрагменты</translation>
+    </message>
+    <message>
+        <source>Decide if document filters are shown as radio buttons, toolbar combobox, or menu.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Document filter choice style:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Buttons Panel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toolbar Combobox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Menu</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
