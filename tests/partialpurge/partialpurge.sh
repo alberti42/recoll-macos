@@ -14,7 +14,7 @@ d=${tstdata}/partialpurge/
     recollindex -Zi $d/testmbox
 
     echo Should have 2 results: testmbox and longmbox:
-    recollq -q deletedmessageuniqueterm
+    recollq -S url -q deletedmessageuniqueterm
   
     echo
     echo Changing file and reindexing
@@ -22,17 +22,17 @@ d=${tstdata}/partialpurge/
     recollindex -Zi $d/testmbox
 
     echo Should have 1 result: longmbox:
-    recollq -q deletedmessageuniqueterm
+    recollq  -S url -q deletedmessageuniqueterm
 
     echo
     echo Purging whole test file
     recollindex -e $d/testmbox
 
     echo Should have 1 result: longmbox:
-    recollq -q deletedmessageuniqueterm
+    recollq  -S url -q deletedmessageuniqueterm
 
     echo Should have 2 results: longmbox shortmbox:
-    recollq -q stablemessageuniqueterm
+    recollq -S url -q stablemessageuniqueterm
 
 ) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
