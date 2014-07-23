@@ -77,7 +77,9 @@
         <li>Traite la plupart des <a href="fr/features.html#doctypes">
 	    types de documents</a> courants, les messages et leurs fichiers
 	    attachés. Peut aussi traiter leurs versions comprimées
-	    (gzip ou bzip2) de tous ces documents.</li>
+	    (gzip ou bzip2) de tous ces documents.
+          <a href="features.html#doctypes">Application externes pour
+            l'extraction du texte</a>.</li>
 
         <li>Fonctions de recherche puissantes, avec expressions Booléennes,
           phrases et proximité, wildcards, filtrage sur les types de fichiers
@@ -88,6 +90,7 @@
 
 	<li><a class="weak" href="fr/features.html">
 	    (plus de détails)</a></li>
+
       </ul>
       
       <p><b><i>Déjà utilisateur ?</i></b> Il est possible qu'il 
