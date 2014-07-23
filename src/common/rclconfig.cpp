@@ -847,16 +847,19 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 	    ft.wdfinc = atoi(tval.c_str());
 	if (attrs.get("boost", tval))
 	    ft.boost = atof(tval.c_str());
+	if (attrs.get("pfxonly", tval))
+	    ft.pfxonly = stringToBool(tval);
 	m_fldtotraits[stringtolower(*it)] = ft;
 	LOGDEB2(("readFieldsConfig: [%s] -> [%s] %d %.1f\n", 
 		it->c_str(), ft.pfx.c_str(), ft.wdfinc, ft.boost));
     }
 
-    // Add prefixes for aliases  an build alias-to-canonic map while we're at it
-    // Having the aliases in the prefix map avoids an additional indirection
-    // at index time.
+    // Add prefixes for aliases and build alias-to-canonic map while
+    // we're at it. Having the aliases in the prefix map avoids an
+    // additional indirection at index time.
     tps = m_fields->getNames("aliases");
-    for (vector<string>::const_iterator it = tps.begin(); it != tps.end();it++) {
+    for (vector<string>::const_iterator it = tps.begin(); 
+         it != tps.end(); it++){
 	string canonic = stringtolower(*it); // canonic name
 	FieldTraits ft;
 	map<string, FieldTraits>::const_iterator pit = 

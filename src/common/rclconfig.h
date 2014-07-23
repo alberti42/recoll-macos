@@ -65,9 +65,11 @@ struct FieldTraits {
     string pfx; // indexing prefix, 
     int    wdfinc; // Index time term frequency increment (default 1)
     double boost; // Query time boost (default 1.0)
-    FieldTraits(int i, double f) {wdfinc = i; boost = f;}
-    FieldTraits() : wdfinc(1), boost(1.0) {}
-    FieldTraits(const string& s) : pfx(s), wdfinc(1), boost(1.0) {}
+    bool   pfxonly; // Suppress prefix-less indexing
+
+    FieldTraits() 
+        : wdfinc(1), boost(1.0), pfxonly(false)
+        {}
 };
 
 class RclConfig {
