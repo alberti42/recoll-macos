@@ -48,6 +48,7 @@ rclmd5 = XM
 dir = XP
 abstract = XS
 filename = XSFN
+containerfilename = XCFN ; pfxonly = 1
 rclUnsplitFN = XSFS
 xapyear = Y
 recipient = XTO
@@ -115,6 +116,7 @@ url = dc:identifier xesam:url
 # (e.g. an HTML meta field) and index it. 
 [queryaliases]
 #filename = fn
+#containerfilename = cfn
 
 [xattrtofields]
 ######################

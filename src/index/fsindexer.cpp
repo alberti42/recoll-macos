@@ -727,10 +727,9 @@ FsIndexer::processonefile(RclConfig *config,
 	    if (doc.ipath.empty()) {
                 if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty())
                     doc.meta[Rcl::Doc::keyfn] = utf8fn;
-            } else {
-                // subdoc: set container file name
-                doc.meta[Rcl::Doc::keytcfn] = utf8fn;
-            }
+            } 
+            // Set container file name for all docs, top or subdoc
+            doc.meta[Rcl::Doc::keytcfn] = utf8fn;
 
 	    char cbuf[100]; 
 	    sprintf(cbuf, "%lld", (long long)stp->st_size);
@@ -815,7 +814,8 @@ FsIndexer::processonefile(RclConfig *config,
 	    fileDoc.onlyxattr = true;
 	} else {
 	    fileDoc.fmtime = ascdate;
-	    fileDoc.meta[Rcl::Doc::keyfn] = utf8fn;
+	    fileDoc.meta[Rcl::Doc::keyfn] = 
+                fileDoc.meta[Rcl::Doc::keytcfn] = utf8fn;
 	    fileDoc.haschildren = true;
 	    fileDoc.mimetype = mimetype;
 	    fileDoc.url = cstr_fileu + fn;
