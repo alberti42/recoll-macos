@@ -223,7 +223,8 @@ class Db {
     /* Return configured stop words */
     const StopList& getStopList() const {return m_stops;}
     /* Field name to prefix translation (ie: author -> 'A') */
-    bool fieldToTraits(const string& fldname, const FieldTraits **ftpp);
+    bool fieldToTraits(const string& fldname, const FieldTraits **ftpp,
+                       bool isquery = false);
 
     /* Update-related methods ******************************************/
 

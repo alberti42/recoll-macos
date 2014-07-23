@@ -518,7 +518,7 @@ Doc_getattro(recoll_DocObject *self, PyObject *nameobj)
 	Py_RETURN_NONE;
     }
 
-    key = rclconfig->fieldCanon(string(name));
+    key = rclconfig->fieldQCanon(string(name));
 
     switch (key.at(0)) {
     case 'u':
@@ -640,7 +640,7 @@ Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
     }
     char* uvalue = PyBytes_AsString(putf8);
     Py_DECREF(putf8);
-    string key = rclconfig->fieldCanon(string(name));
+    string key = rclconfig->fieldQCanon(string(name));
 
     LOGDEB0(("Doc_setattr: [%s] (%s) -> [%s]\n", key.c_str(), name, uvalue));
     // We set the value in the meta array in all cases. Good idea ? or do it

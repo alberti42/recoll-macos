@@ -109,6 +109,13 @@ mtype = mime mimetype xesam:mimetype contenttype xesam:contenttype dc:format
 recipient = to xesam:recipient
 url = dc:identifier xesam:url
 
+##################
+# The queryaliases section defines aliases which are used exclusively at
+# query time: there is no risk to pick up a random field from a document
+# (e.g. an HTML meta field) and index it. 
+[queryaliases]
+#filename = fn
+
 [xattrtofields]
 ######################
 # Processing for extended file attributes.

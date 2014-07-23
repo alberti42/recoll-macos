@@ -1033,9 +1033,10 @@ bool Db::isopen()
 }
 
 // Try to translate field specification into field prefix. 
-bool Db::fieldToTraits(const string& fld, const FieldTraits **ftpp)
+bool Db::fieldToTraits(const string& fld, const FieldTraits **ftpp,
+                       bool isquery)
 {
-    if (m_config && m_config->getFieldTraits(fld, ftpp))
+    if (m_config && m_config->getFieldTraits(fld, ftpp, isquery))
 	return true;
 
     *ftpp = 0;

@@ -328,7 +328,7 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
     string prefix;
     if (!field.empty()) {
 	const FieldTraits *ftp = 0;
-	if (!fieldToTraits(field, &ftp) || ftp->pfx.empty()) {
+	if (!fieldToTraits(field, &ftp, true) || ftp->pfx.empty()) {
             LOGDEB(("Db::termMatch: field is not indexed (no prefix): [%s]\n", 
                     field.c_str()));
         } else {

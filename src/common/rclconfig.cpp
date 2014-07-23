@@ -879,6 +879,21 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 	}
     }
 
+    // Query aliases map
+    tps = m_fields->getNames("queryaliases");
+    for (vector<string>::const_iterator it = tps.begin(); 
+         it != tps.end(); it++){
+	string canonic = stringtolower(*it); // canonic name
+	string aliases;
+	m_fields->get(canonic, aliases, "queryaliases");
+	vector<string> l;
+	stringToStrings(aliases, l);
+	for (vector<string>::const_iterator ait = l.begin();
+	     ait != l.end(); ait++) {
+	    m_aliastoqcanon[stringtolower(*ait)] = canonic;
+	}
+    }
+
 #if 0
     for (map<string, FieldTraits>::const_iterator it = m_fldtotraits.begin();
 	 it != m_fldtotraits.end(); it++) {
@@ -910,10 +925,10 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 }
 
 // Return specifics for field name:
-bool RclConfig::getFieldTraits(const string& _fld, const FieldTraits **ftpp)
-    const
+bool RclConfig::getFieldTraits(const string& _fld, const FieldTraits **ftpp,
+    bool isquery) const
 {
-    string fld = fieldCanon(_fld);
+    string fld = isquery ? fieldQCanon(_fld) : fieldCanon(_fld);
     map<string, FieldTraits>::const_iterator pit = m_fldtotraits.find(fld);
     if (pit != m_fldtotraits.end()) {
 	*ftpp = &pit->second;
@@ -950,6 +965,18 @@ string RclConfig::fieldCanon(const string& f) const
     }
     LOGDEB1(("RclConfig::fieldCanon: [%s] -> [%s]\n", f.c_str(), fld.c_str()));
     return fld;
+}
+
+string RclConfig::fieldQCanon(const string& f) const
+{
+    string fld = stringtolower(f);
+    map<string, string>::const_iterator it = m_aliastoqcanon.find(fld);
+    if (it != m_aliastoqcanon.end()) {
+	LOGDEB1(("RclConfig::fieldQCanon: [%s] -> [%s]\n", 
+                f.c_str(), it->second.c_str()));
+	return it->second;
+    }
+    return fieldCanon(f);
 }
 
 vector<string> RclConfig::getFieldSectNames(const string &sk, const char* patrn)
@@ -1423,6 +1450,7 @@ void RclConfig::initFrom(const RclConfig& r)
 	m_ptrans = new ConfSimple(*(r.m_ptrans));
     m_fldtotraits = r.m_fldtotraits;
     m_aliastocanon = r.m_aliastocanon;
+    m_aliastoqcanon = r.m_aliastoqcanon;
     m_storedFields = r.m_storedFields;
     m_xattrtofld = r.m_xattrtofld;
     if (r.m_stopsuffixes)

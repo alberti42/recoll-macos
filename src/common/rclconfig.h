@@ -241,8 +241,10 @@ class RclConfig {
     /** mimeconf: get query lang frag for named filter */
     bool getGuiFilter(const string& filtername, string& frag) const;
 
-    /** fields: get field prefix from field name */
-    bool getFieldTraits(const string& fldname, const FieldTraits **) const;
+    /** fields: get field prefix from field name. Use additional query
+       aliases if isquery is set */
+    bool getFieldTraits(const string& fldname, const FieldTraits **,
+        bool isquery = false) const;
 
     const set<string>& getStoredFields() const {return m_storedFields;}
 
@@ -250,6 +252,9 @@ class RclConfig {
 
     /** Get canonic name for possible alias */
     string fieldCanon(const string& fld) const;
+
+    /** Get canonic name for possible alias, including query-only aliases */
+    string fieldQCanon(const string& fld) const;
 
     /** Get xattr name to field names translations */
     const map<string, string>& getXattrToField() const {return m_xattrtofld;}
@@ -323,6 +328,7 @@ class RclConfig {
     ConfSimple            *m_ptrans; // Paths translations
     map<string, FieldTraits>  m_fldtotraits; // Field to field params
     map<string, string>  m_aliastocanon;
+    map<string, string>  m_aliastoqcanon;
     set<string>          m_storedFields;
     map<string, string>  m_xattrtofld;
 
