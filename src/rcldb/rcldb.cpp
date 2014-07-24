@@ -1106,6 +1106,8 @@ class TextSplitDb : public TextSplitP {
     void setTraits(const FieldTraits& ftp) 
     {
         ft = ftp;
+        if (!ft.pfx.empty())
+            ft.pfx = wrap_prefix(ft.pfx);
     }
 
     friend class TermProcIdx;
