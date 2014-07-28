@@ -729,7 +729,10 @@ bool TextSplit::text_to_words(const string &in)
                 m_wordLen--;
                 if (!doemit(false, it.getBpos()))
                     return false;
-                m_wordStart--;
+                // m_wordstart could be 0 here if the span was reset
+                // for excessive length
+                if (m_wordStart)
+                    m_wordStart--;
                 m_wordLen++;
             }
             goto NORMALCHAR;
