@@ -94,10 +94,16 @@
       <div class="news">
       
       <dl>
-        <dt>2014-06-26</dt> <dd>Recoll version 1.19.14p1 fixes a
-          descriptor (and memory) leak in the Python module. Only the
-          Python package needs upgrading (no changes to the main
-          library or programs).</dd>
+        <dt>2014-07-28</dt> <dd>A nice new application to complement
+          Recoll: <a href="https://github.com/pidlug/recollfs">recollfs</a>
+          implements a Fuse filesystem where Recoll queries are
+          represented as directories, the contents of which are links
+          to the result documents.</dd>
+
+        <dt>2014-07-16</dt> <dd>Recoll version 1.19.14p2 fixes more
+          resource management issues in the Python module (only the
+          Python package needs upgrading for this), and the processing
+          of Bengali characters (no more diacritics stripping).</dd>
 
         <dt>2014-06-24</dt> <dd><a href="filters/filters.html#soff1">An
             updated filter</a> for Open/LibreOffice documents. The
