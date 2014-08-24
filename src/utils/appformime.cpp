@@ -30,21 +30,15 @@ static const string desktopext("desktop");
 
 static DesktopDb *theDb;
 
-typedef map<string, vector<DesktopDb::AppDef> > AppMap;
-static AppMap theAppMap;
-
-static std::string o_reason;
-static bool o_ok;
-
 class FstCb : public FsTreeWalkerCB {
 public:
-    FstCb(AppMap *appdefs)
+    FstCb(DesktopDb::AppMap *appdefs)
         : m_appdefs(appdefs)
         {
         }
     virtual FsTreeWalker::Status 
     processone(const string &, const struct stat *, FsTreeWalker::CbFlag);
-    AppMap *m_appdefs;
+    DesktopDb::AppMap *m_appdefs;
 };
 
 FsTreeWalker::Status FstCb::processone(const string& fn, const struct stat *, 
@@ -100,27 +94,37 @@ DesktopDb* DesktopDb::getDb()
     if (theDb == 0) {
         theDb = new DesktopDb();
     }
-    if (o_ok)
+    if (theDb && theDb->m_ok)
         return theDb;
     return 0;
 }
 
+void DesktopDb::build(const string& dir)
+{
+    FstCb procapp(&m_appMap);
+    FsTreeWalker walker;
+    if (walker.walk(dir, procapp) != FsTreeWalker::FtwOk) {
+        m_ok = false;
+        m_reason = walker.getReason();
+    }
+    m_ok = true;
+}
+
 DesktopDb::DesktopDb()
 {
-    FstCb procapp(&theAppMap);
-    FsTreeWalker walker;
-    if (walker.walk(topappsdir, procapp) != FsTreeWalker::FtwOk) {
-        o_ok = false;
-        o_reason = walker.getReason();
-    }
-    o_ok = true;
+    build(topappsdir);
+}
+
+DesktopDb::DesktopDb(const string& dir)
+{
+    build(dir);
 }
 
 bool DesktopDb::appForMime(const string& mime, vector<AppDef> *apps, 
                            string *reason)
 {
-    AppMap::const_iterator it = theAppMap.find(mime);
-    if (it == theAppMap.end()) {
+    AppMap::const_iterator it = m_appMap.find(mime);
+    if (it == m_appMap.end()) {
         if (reason)
             *reason = string("No application found for ") + mime;
         return false;
@@ -129,9 +133,27 @@ bool DesktopDb::appForMime(const string& mime, vector<AppDef> *apps,
     return true;
 }
 
+bool DesktopDb::allApps(vector<AppDef> *apps)
+{
+    map<string, AppDef> allaps;
+    for (AppMap::const_iterator it = m_appMap.begin();
+         it != m_appMap.end(); it++) {
+        for (vector<AppDef>::const_iterator it1 = it->second.begin();
+             it1 != it->second.end(); it1++) {
+            allaps.insert(pair<string, AppDef>
+                          (it1->name, AppDef(it1->name, it1->command)));
+        }
+    }
+    for (map<string, AppDef>::const_iterator it = allaps.begin();
+         it != allaps.end(); it++) {
+        apps->push_back(it->second);
+    }
+    return true;
+}
+
 const string& DesktopDb::getReason()
 {
-    return o_reason;
+    return m_reason;
 }
 
 #else // TEST_APPFORMIME
