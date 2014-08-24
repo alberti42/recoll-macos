@@ -48,6 +48,7 @@
 #include "respopup.h"
 #include "rclmain_w.h"
 #include "multisave.h"
+#include "appformime.h"
 
 static const QKeySequence quitKeySeq("Ctrl+q");
 static const QKeySequence closeKeySeq("Ctrl+w");
@@ -781,6 +782,25 @@ void ResTable::linkWasClicked(const QUrl &url)
 	    emit editRequested(m_detaildoc);
     }
     break;
+
+	// Run script. Link format Rnn|Script Name
+    case 'R':
+    {
+	int bar = s.indexOf("|");
+	if (bar == -1 || bar >= s.size()-1)
+            break;
+        string cmdname = qs2utf8s(s.right(s.size() - (bar + 1)));
+        DesktopDb ddb(path_cat(theconfig->getConfDir(), "scripts"));
+        DesktopDb::AppDef app;
+        if (ddb.appByName(cmdname, app)) {
+            QAction act(QString::fromUtf8(app.name.c_str()), this);
+            QVariant v(QString::fromUtf8(app.command.c_str()));
+            act.setData(v);
+            menuOpenWith(&act);
+        }
+    }
+    break;
+
     default: 
 	LOGERR(("ResTable::linkWasClicked: bad link [%s]\n", ascurl));
 	break;// ?? 

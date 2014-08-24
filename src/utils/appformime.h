@@ -33,6 +33,8 @@ public:
         AppDef(const std::string& nm, const std::string& cmd)
             : name(nm), command(cmd)
             {}
+        AppDef() {}
+
         std::string name;
         std::string command;
     };
@@ -63,6 +65,11 @@ public:
      * @return true 
      */
     bool allApps(vector<AppDef> *apps);
+
+    /** 
+     * Get app with given name 
+     */
+    bool appByName(const string& nm, AppDef& app);
 
     typedef map<string, vector<DesktopDb::AppDef> > AppMap;
 

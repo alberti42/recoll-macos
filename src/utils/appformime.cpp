@@ -151,6 +151,22 @@ bool DesktopDb::allApps(vector<AppDef> *apps)
     return true;
 }
 
+bool DesktopDb::appByName(const string& nm, AppDef& app)
+{
+    for (AppMap::const_iterator it = m_appMap.begin();
+         it != m_appMap.end(); it++) {
+        for (vector<AppDef>::const_iterator it1 = it->second.begin();
+             it1 != it->second.end(); it1++) {
+            if (!nm.compare(it1->name)) {
+                app.name = it1->name;
+                app.command = it1->command;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 const string& DesktopDb::getReason()
 {
     return m_reason;
