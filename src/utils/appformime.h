@@ -43,8 +43,6 @@ public:
     /** Constructor for a db based on a non-standard location */
     DesktopDb(const string& dir);
 
-    ~DesktopDb();
-
     /** In case of error: what happened ? */
     const string& getReason();
 
