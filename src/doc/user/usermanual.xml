@@ -1327,6 +1327,8 @@ fs.inotify.max_user_watches=32768
         <itemizedlist>
           <listitem><para><guilabel>Preview</guilabel></para></listitem>
           <listitem><para><guilabel>Open</guilabel></para></listitem>
+          <listitem><para><guilabel>Open With</guilabel></para></listitem>
+          <listitem><para><guilabel>Run Script</guilabel></para></listitem>
           <listitem><para><guilabel>Copy File Name</guilabel></para></listitem>
           <listitem><para><guilabel>Copy Url</guilabel></para></listitem>
           <listitem><para><guilabel>Save to File</guilabel></para></listitem>
@@ -1343,6 +1345,18 @@ fs.inotify.max_user_watches=32768
           <guilabel>Open</guilabel> entries do the same thing as the 
           corresponding links.</para>
 
+        <para><guilabel>Open With</guilabel> lets you open the document
+        with one of the applications claiming to be able to handle its MIME
+        type (the information comes from the <literal>.desktop</literal>
+        files in 
+        <filename>/usr/share/applications</filename>).</para>
+
+        <para><guilabel>Run Script</guilabel> allows starting an arbitrary
+        command on the result file. It will only appear for results which
+        are top-level files. See <link
+            linkend="RCL.SEARCH.GUI.RUNSCRIPT">further</link> for a more
+        detailed description.</para>
+
         <para>The <guilabel>Copy File Name</guilabel> and
         <guilabel>Copy Url</guilabel> copy the relevant data to the
         clipboard, for later pasting.</para> 
@@ -1354,33 +1368,34 @@ fs.inotify.max_user_watches=32768
         email attachment). It is especially useful to extract attachments
         with no associated editor.</para> 
 
-        <para>The <guilabel>Find similar</guilabel> entry will select
-          a number of relevant term from the current document and enter
-          them into the simple search field. You can then start a simple
-          search, with a good chance of finding documents related to the
-          current result.</para>
+        <para>The <guilabel>Open/Preview Parent document</guilabel> entries
+        allow working with the higher level document (e.g. the email
+        message an attachment comes from). &RCL; is sometimes not totally
+        accurate as to what it can or can't do in this area.  For example
+        the <guilabel>Parent</guilabel> entry will also appear for an
+        email which is part of an mbox folder file, but you can't actually
+        visualize the mbox (there will be an error dialog if you
+        try).</para>
 
-        <para>The <guilabel>Parent document</guilabel> entries will
-          appear for documents which are not actually files but are part
-          of, or attached to, a higher level document. This entry is mainly
-          useful for email attachments and permits viewing the message to
-          which the document is attached. Note that the entry will also
-          appear for an email which is part of an mbox folder file, but
-          that you can't actually visualize the folder (there will be an
-          error dialog if you try). &RCL; is unfortunately not yet smart
-          enough to disable the entry in this case. In other cases, the
-          <guilabel>Open</guilabel> option makes sense, for example to
-          start a <application>chm</application> viewer on the parent
-          document for a help page.</para>
+        <para>If the document is a top-level file, <guilabel>Open
+        Parent</guilabel> will start the default file manager on the
+        enclosing filesystem directory.</para>
+
+        <para>The <guilabel>Find similar</guilabel> entry will select
+        a number of relevant term from the current document and enter
+        them into the simple search field. You can then start a simple
+        search, with a good chance of finding documents related to the
+        current result. I can't remember a single instance where this
+        function was actually useful to me...</para>
 
         <para>The <guilabel>Open Snippets Window</guilabel> entry will only
-          appear for documents which support page breaks (typically
-          PDF, Postscript, DVI). The snippets window lists extracts from
-          the document, taken around search terms occurrences, along with the
-          corresponding page number, as links which can be used to start
-          the native viewer on the appropriate page. If the viewer supports
-          it, its search function will also be primed with one of the
-          search terms.</para>
+        appear for documents which support page breaks (typically
+        PDF, Postscript, DVI). The snippets window lists extracts from
+        the document, taken around search terms occurrences, along with the
+        corresponding page number, as links which can be used to start
+        the native viewer on the appropriate page. If the viewer supports
+        it, its search function will also be primed with one of the
+        search terms.</para>
 
       </sect3>
 
@@ -1419,6 +1434,50 @@ fs.inotify.max_user_watches=32768
         display.</para>
 
       </sect2>
+
+    <sect2 id="RCL.SEARCH.GUI.RUNSCRIPT">
+      <title>Running arbitrary commands on result files (1.20 and later)</title>
+
+      <para>Apart from the <guilabel>Open</guilabel> and <guilabel>Open
+      With</guilabel> operations, which allow starting an application on a
+      result document (or a temporary copy), based on its MIME type, it is
+      also possible to run arbitrary commands on results which are
+      top-level files, using the <guilabel>Run Script</guilabel> entry in
+      the results pop-up menu.</para>
+
+      <para>The commands which will appear in the <guilabel>Run
+      Script</guilabel> submenu must be defined by
+      <literal>.desktop</literal> files inside the
+      <filename>scripts</filename> subdirectory of the current
+      configuration directory.</para>
+
+      <para>Here follows an example of a <literal>.desktop</literal> file,
+      which could be named for example,
+      <filename>~/.recoll/scripts/myscript.desktop</filename> (the exact
+      file name inside the directory is irrelevant):
+      <programlisting>
+[Desktop Entry]
+Type=Application
+Name=MyFirstScript
+Exec=/home/me/bin/tryscript %F
+MimeType=*/*
+      </programlisting>
+      The <literal>Name</literal> attribute defines the label which will
+      appear inside the <guilabel>Run Script</guilabel> menu. The
+      <literal>Exec</literal> attribute defines the program to be run,
+      which does not need to actually be a script, of course. The
+      <literal>MimeType</literal> attribute is not used, but needs to exist.
+      </para>
+
+      <para>The commands defined this way can also be used from links
+      inside the <link linkend="RCL.SEARCH.GUI.CUSTOM.RESLIST.PARA">
+      result paragraph</link>.</para>
+      
+      <para>As an example, it might make sense to write a script which
+      would move the document to the trash and purge it from the &RCL;
+      index.</para>
+
+    </sect2>
 
      <sect2 id="RCL.SEARCH.GUI.THUMBNAILS">
           <title>Displaying thumbnails</title>
@@ -2467,13 +2526,19 @@ fs.inotify.max_user_watches=32768
         where <replaceable>docnum</replaceable> (%N) expands to the document
         number inside the result page).</para>
 
-        <para>It is also possible to use a <literal>"F%N"</literal> value
-        as a link target. This will open the document corresponding to the
-        <literal>%P</literal> parent folder expansion, usually creating a
-        file manager window on the folder where the container file
-        resides. E.g.:
+        <para>A link target defined as <literal>"F%N"</literal> will open
+        the document corresponding to the <literal>%P</literal> parent
+        folder expansion, usually creating a file manager window on the
+        folder where the container file resides. E.g.:
         <programlisting>&lt;a href="F%N"&gt;%P&lt;/a&gt;</programlisting>
         </para>
+
+        <para>A link target defined as
+        <literal>R%N|<replaceable>scriptname</replaceable></literal> will
+        run the corresponding script on the result file (if the document is
+        embedded, the script will be started on the top-level parent).
+        See the <link linkend="RCL.SEARCH.GUI.RUNSCRIPT">section about
+        defining scripts</link>.</para>
 
         <para>In addition to the predefined values above, all strings
         like <literal>%(fieldname)</literal> will be replaced by the
