@@ -43,7 +43,8 @@
       <ul>
         <li>It can search
           most <span class="important"><a href="features.html#doctypes">document
-          formats</a></span>.</li> 
+          formats</a></span>. <a href="features.html#doctypes">You may
+            need external applications for text extraction</a>.</li>
         <li>It can reach any storage place: files, 
           archive members, email attachments, transparently
           handling decompression.</li>
@@ -51,10 +52,11 @@
           display an even quicker text preview.</li>
         <li>The software is free, open source,
 	  and licensed under the GPL.</li>
-        <li><a href="features.html">Detailed features</a>.
+        <li><a href="features.html">Detailed features</a>.</li>  
       </ul>
+
       <p>The current <span class="application">Recoll</span> version is
-	<a href="download.html">1.19.14p1</a> 
+	<a href="download.html">1.19.14p2</a> 
 	(<a href="release-1.19.html">Release notes</a>,
         <a href="BUGS.html">known bugs</a>).</p>
 
@@ -92,10 +94,16 @@
       <div class="news">
       
       <dl>
-        <dt>2014-06-26</dt> <dd>Recoll version 1.19.14p1 fixes a
-          descriptor (and memory) leak in the Python module. Only the
-          Python package needs upgrading (no changes to the main
-          library or programs).</dd>
+        <dt>2014-07-28</dt> <dd>A nice new application to complement
+          Recoll: <a href="https://github.com/pidlug/recollfs">recollfs</a>
+          implements a Fuse filesystem where Recoll queries are
+          represented as directories, the contents of which are links
+          to the result documents.</dd>
+
+        <dt>2014-07-16</dt> <dd>Recoll version 1.19.14p2 fixes more
+          resource management issues in the Python module (only the
+          Python package needs upgrading for this), and the processing
+          of Bengali characters (no more diacritics stripping).</dd>
 
         <dt>2014-06-24</dt> <dd><a href="filters/filters.html#soff1">An
             updated filter</a> for Open/LibreOffice documents. The

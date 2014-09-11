@@ -65,9 +65,11 @@ struct FieldTraits {
     string pfx; // indexing prefix, 
     int    wdfinc; // Index time term frequency increment (default 1)
     double boost; // Query time boost (default 1.0)
-    FieldTraits(int i, double f) {wdfinc = i; boost = f;}
-    FieldTraits() : wdfinc(1), boost(1.0) {}
-    FieldTraits(const string& s) : pfx(s), wdfinc(1), boost(1.0) {}
+    bool   pfxonly; // Suppress prefix-less indexing
+
+    FieldTraits() 
+        : wdfinc(1), boost(1.0), pfxonly(false)
+        {}
 };
 
 class RclConfig {
@@ -239,8 +241,10 @@ class RclConfig {
     /** mimeconf: get query lang frag for named filter */
     bool getGuiFilter(const string& filtername, string& frag) const;
 
-    /** fields: get field prefix from field name */
-    bool getFieldTraits(const string& fldname, const FieldTraits **) const;
+    /** fields: get field prefix from field name. Use additional query
+       aliases if isquery is set */
+    bool getFieldTraits(const string& fldname, const FieldTraits **,
+        bool isquery = false) const;
 
     const set<string>& getStoredFields() const {return m_storedFields;}
 
@@ -248,6 +252,9 @@ class RclConfig {
 
     /** Get canonic name for possible alias */
     string fieldCanon(const string& fld) const;
+
+    /** Get canonic name for possible alias, including query-only aliases */
+    string fieldQCanon(const string& fld) const;
 
     /** Get xattr name to field names translations */
     const map<string, string>& getXattrToField() const {return m_xattrtofld;}
@@ -321,6 +328,7 @@ class RclConfig {
     ConfSimple            *m_ptrans; // Paths translations
     map<string, FieldTraits>  m_fldtotraits; // Field to field params
     map<string, string>  m_aliastocanon;
+    map<string, string>  m_aliastoqcanon;
     set<string>          m_storedFields;
     map<string, string>  m_xattrtofld;
 

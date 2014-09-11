@@ -656,7 +656,13 @@ bool TextSplit::text_to_words(const string &in)
 	    break;
 
 	case '#': 
-	    // Keep it only at end of word ... Special case for c# you see...
+	    // Keep it only at the beginning of a word (hashtag), 
+            if (m_wordLen == 0) {
+                m_wordLen += it.appendchartostring(m_span);
+                STATS_INC_WORDCHARS;
+                break;
+            }
+            // or at the end (special case for c# ...)
 	    if (m_wordLen > 0) {
 		int w = whatcc(it[it.getCpos()+1]);
 		if (w == SPACE || w == '\n' || w == '\r') {
@@ -729,7 +735,10 @@ bool TextSplit::text_to_words(const string &in)
                 m_wordLen--;
                 if (!doemit(false, it.getBpos()))
                     return false;
-                m_wordStart--;
+                // m_wordstart could be 0 here if the span was reset
+                // for excessive length
+                if (m_wordStart)
+                    m_wordStart--;
                 m_wordLen++;
             }
             goto NORMALCHAR;

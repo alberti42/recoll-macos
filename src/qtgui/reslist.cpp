@@ -58,6 +58,7 @@
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"
 #endif
+#include "appformime.h"
 #include "respopup.h"
 
 static const QKeySequence quitKeySeq("Ctrl+q");
@@ -876,6 +877,20 @@ void ResList::linkWasClicked(const QUrl &url)
     }
     break;
 
+    // Open parent folder
+    case 'F':
+    {
+	int i = atoi(ascurl.c_str()+1) - 1;
+	Rcl::Doc doc;
+	if (!getDoc(i, doc)) {
+	    LOGERR(("ResList::linkWasClicked: can't get doc for %d\n", i));
+	    return;
+	}
+        emit editRequested(ResultPopup::getParent(RefCntr<DocSequence>(),
+                                                  doc));
+    }
+    break;
+
     // Show query details
     case 'H': 
     {
@@ -912,6 +927,27 @@ void ResList::linkWasClicked(const QUrl &url)
     case 'p':
 	resultPageBack();
 	break;
+
+	// Run script. Link format Rnn|Script Name
+    case 'R':
+    {
+	int i = atoi(ascurl.c_str() + 1) - 1;
+	QString s = url.toString();
+	int bar = s.indexOf("|");
+	if (bar == -1 || bar >= s.size()-1)
+            break;
+        string cmdname = qs2utf8s(s.right(s.size() - (bar + 1)));
+        DesktopDb ddb(path_cat(theconfig->getConfDir(), "scripts"));
+        DesktopDb::AppDef app;
+        if (ddb.appByName(cmdname, app)) {
+            QAction act(QString::fromUtf8(app.name.c_str()), this);
+            QVariant v(QString::fromUtf8(app.command.c_str()));
+            act.setData(v);
+            m_popDoc = i;
+            menuOpenWith(&act);
+        }
+    }
+    break;
 
 	// Spelling: replacement suggestion clicked
     case 'S':

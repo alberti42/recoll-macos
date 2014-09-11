@@ -60,6 +60,8 @@ extern bool printableUrl(const std::string &fcharset,
 extern std::string fileurltolocalpath(std::string url);
 /// Test for file:/// url
 extern bool urlisfileurl(const std::string& url);
+/// 
+extern std::string url_parentfolder(const std::string& url);
 
 /// Return the host+path part of an url. This is not a general
 /// routine, it does the right thing only in the recoll context

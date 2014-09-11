@@ -64,7 +64,7 @@
         opposed to only bug fixes). There will be a freeze at some
         point.
 
-        <h2>Changes in Recoll 1.20.0</h2>
+        <h2>Changes in Recoll 1.20.0p1</h2>
         <ul>
           
           <li>An <em>Open With</em> entry was added to the result list
@@ -97,6 +97,8 @@
             possible to search for left-truncated versions of the
             compound, e.g., all emails from a given domain.</li>
 
+          <li>Recoll now indexes <em>#hashtags</em> as such.</li>
+
           <li>It is now possible to configure the GUI in wide form
             factor by dragging the toolbars to one of the sides (their
             location is remembered between sessions), and moving the
@@ -109,11 +111,40 @@
             ininteresting variables were also removed.</li>
             
           <li>When indexing, we no longer add the top container
-            file-name as a term for the contained sub-documents (if
-            any). This made no sense at all in most cases. However,
-            this was sometimes useful when searching email
-            folders. Complain if you do not like this change, and I'll
-            make it configurable.</li>
+            file name as a term for the contained sub-documents (if
+            any). This made no sense in most cases, as it meant that
+            you would get hits on all the sections from a chm or epub
+            when the top file name matched the search, when you
+            probably wanted only the parent document in this case.<br>
+            However, the container file name was sometimes useful for
+            filtering results, and it is still accessible, in a
+            different way: the top container file name is added as a
+            term to all the sub-documents, <em>only for searching with
+            a prefix</em>. The field name
+            is <span class="literal">containerfilename</span>, and no
+            match on the subdocuments will occur if the field is not
+            specified (this is different from
+            previous <span class="literal">filename</span> processing,
+            which was indexed as a general
+            term. <span class="literal">containerfilename</span> is
+            also set on files without sub-documents (e.g. a pdf).</li>
+
+          <li>A new attribute, <span class="literal">pfxonly</span>,
+            was created. This can be set on any metadata field inside
+            the <span class="literal">[prefixes]</span> section of
+            the <span class="filename">fields</span> file.</li>
+
+          <li>A new <span class="literal">[queryaliases]</span>
+            section was created in
+            the <span class="filename">fields</span>, for definining
+            field name aliases to be used only at query time (to avoid
+            unwanted collection of data on random fields during
+            indexing). The section is empty by default, but 2 obvious
+            alias are in
+            comment: <span class="literal">filename=fn</span>
+            and <span class="literal">containerfilename=cfn</span>. Setting
+            them in your personal file may save you some typing if you
+            search on file names.</li> 
 
           <li>You can now use both <em>-e</em> and  <em>-i</em> for
             erasing then updating the index for the given file
@@ -126,6 +157,20 @@
             Python program to find document duplicates, using MD5
             terms was added. See 
             <span class="filename">src/python/samples/docdups.py</span></li>
+
+          <li>The command used to identify the mime types of files
+            when the internal method is <span class="literal">file
+            -i</span> by default. It is now possible to customize this
+            command by setting
+            the <span class="literal">systemfilecommand</span> in the
+            configuration. A suggested value would
+            be <span class="filename">xdg-mime</span>, which sometimes
+            works better than <span class="filename">file</span>.</li>
+
+          <li>The result list has two new elements: %P substitution
+            for printing the parent folder name, and an <tt>F</tt>
+            link target which will open the parent folder in a
+            file manager window.</li>
 
           <li><span class="filename">/media</span> was added to the default
             skippedPaths list mostly as a reminder that blindly

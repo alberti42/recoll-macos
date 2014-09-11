@@ -160,7 +160,7 @@ void Query::setSortBy(const string& fld, bool ascending) {
     if (fld.empty()) {
 	m_sortField.erase();
     } else {
-	m_sortField = m_db->getConf()->fieldCanon(fld);
+	m_sortField = m_db->getConf()->fieldQCanon(fld);
 	m_sortAscending = ascending;
     }
     LOGDEB0(("RclQuery::setSortBy: [%s] %s\n", m_sortField.c_str(),

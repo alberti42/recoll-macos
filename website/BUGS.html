@@ -29,7 +29,7 @@
 later versions. Bugs listed in the topmost section may also exist in older
 versions.</i></p>
 
-<h2><a name="b_latest">recoll 1.19.14p1</a></h2>
+<h2><a name="b_latest">recoll 1.19.14p2</a></h2>
 <ul>
   <li>The Open/LibreOffice document filter does not output white space
     for tab-separated words in input, leading to search failures.</li>
@@ -65,6 +65,12 @@ versions.</i></p>
     fixed by removing (back it up just in case)
     ~/.config/Recoll.org/recoll.conf, the QSettings storage for
     recoll.</li>
+</ul>
+
+<h2><a name="b_1_19_14p1">recoll 1.19.14p1</a></h2>
+<ul>
+  <li>The Py_INCREF fix in 1.19.14p1 activated a bug in the Query
+    object iterator, a missing INCREF this time.</li>
 </ul>
 
 <h2><a name="b_1_19_14">recoll 1.19.14</a></h2>

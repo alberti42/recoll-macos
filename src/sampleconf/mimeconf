@@ -26,6 +26,7 @@
 #
 # The script (ie: rcluncomp) must output the uncompressed file name on
 # stdout. 
+application/gzip  =  uncompress rcluncomp gunzip %f %t
 application/x-gzip  =  uncompress rcluncomp gunzip %f %t
 application/x-compress = uncompress rcluncomp gunzip %f %t
 application/x-bzip2 =  uncompress rcluncomp bunzip2 %f %t
@@ -41,6 +42,8 @@ application/x-lzma = uncompress rcluncomp unxz %f %t
 # each filter, see the exemples below (ie: msword)
 [index]
 application/epub+zip = execm rclepub
+# Returned by xdg-mime for .js. Future-proofing
+application/javascript = internal text/plain
 
 # MSWORD: the rcldoc script handles a number of marginal case that raw
 # antiword won't:
@@ -106,6 +109,8 @@ application/x-mimehtml = internal message/rfc822
 #application/x-mobipocket-ebook = execm rclmobi
 application/x-okular-notes = exec rclokulnote
 application/x-perl = internal text/plain
+# Returned by xdg-mime for .php. Future-proofing                   
+application/x-php = internal text/plain
 application/x-rar = execm rclrar;charset=default
 application/x-scribus = exec rclscribus
 application/x-shellscript = internal text/plain
@@ -161,6 +166,7 @@ text/xml = exec rclxml
 # Icons to be used in the result list if required by gui config
 [icons]
 application/epub+zip = book
+application/javascript = source
 application/msword = wordprocessing
 application/ogg = sownd
 application/pdf = pdf
@@ -203,6 +209,7 @@ application/x-mimehtml = message
 application/x-mobipocket-ebook = document
 application/x-okular-notes = document
 application/x-perl = source
+application/x-php = source
 application/x-rar = archive
 application/x-scribus = document
 application/x-scribus = wordprocessing

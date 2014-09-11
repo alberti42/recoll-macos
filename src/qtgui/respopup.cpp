@@ -77,6 +77,27 @@ QMenu *create(QWidget *me, int opts, RefCntr<DocSequence> source, Rcl::Doc& doc)
                              SLOT(menuOpenWith(QAction *)));
             }
         }
+
+        // See if there are any desktop files in $RECOLL_CONFDIR/scripts
+        // and possibly create a "run script" menu.
+        aps.clear();
+        ddb = new DesktopDb(path_cat(theconfig->getConfDir(), "scripts"));
+        if (ddb && ddb->allApps(&aps) && !aps.empty()) {
+            QMenu *sub = popup->addMenu(me->tr("Run Script"));
+            if (sub) {
+                for (vector<DesktopDb::AppDef>::const_iterator it = aps.begin();
+                     it != aps.end(); it++) {
+                    QAction *act = new 
+                        QAction(QString::fromUtf8(it->name.c_str()), me);
+                    QVariant v(QString::fromUtf8(it->command.c_str()));
+                    act->setData(v);
+                    sub->addAction(act);
+                }
+                sub->connect(sub, SIGNAL(triggered(QAction *)), me, 
+                             SLOT(menuOpenWith(QAction *)));
+            }
+        }
+        delete ddb;
     }
 
     popup->addAction(me->tr("Copy &File Name"), me, SLOT(menuCopyFN()));
@@ -120,7 +141,7 @@ Rcl::Doc getParent(RefCntr<DocSequence> source, Rcl::Doc& doc)
     if (source.isNull() || !source->getEnclosing(doc, pdoc)) {
 	// No parent doc: show enclosing folder with app configured for
 	// directories
-	pdoc.url = path_getfather(doc.url);
+        pdoc.url = url_parentfolder(doc.url);
 	pdoc.meta[Rcl::Doc::keychildurl] = doc.url;
 	pdoc.meta[Rcl::Doc::keyapptg] = "parentopen";
 	pdoc.mimetype = "inode/directory";

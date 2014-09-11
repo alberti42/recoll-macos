@@ -34,11 +34,11 @@ for doc in query:
     for fld in ('title', 'testfield', 'filename'):
         print("getattr(doc, %s) -> [%s]"%(fld,utf8string(getattr(doc, fld))))
         print("doc.get(%s) -> [%s]"%(fld,utf8string(doc.get(fld))))
-    print("\nfor fld in doc.keys():")
-    for fld in doc.keys():
+    print("\nfor fld in sorted(doc.keys()):")
+    for fld in sorted(doc.keys()):
         print(utf8string("[%s] -> [%s]" % (fld, getattr(doc, fld))))
-    print("\nfor k,v in doc.items().items():")
-    for k,v in doc.items().items():
+    print("\nfor k,v in sorted(doc.items().items()):")
+    for k,v in sorted(doc.items().items(), key=lambda itm: itm[0]):
         print(utf8string("[%s] -> [%s]" % (k, v)))
 
 print("\nAccented query:")

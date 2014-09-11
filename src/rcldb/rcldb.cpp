@@ -1033,9 +1033,10 @@ bool Db::isopen()
 }
 
 // Try to translate field specification into field prefix. 
-bool Db::fieldToTraits(const string& fld, const FieldTraits **ftpp)
+bool Db::fieldToTraits(const string& fld, const FieldTraits **ftpp,
+                       bool isquery)
 {
-    if (m_config && m_config->getFieldTraits(fld, ftpp))
+    if (m_config && m_config->getFieldTraits(fld, ftpp, isquery))
 	return true;
 
     *ftpp = 0;
@@ -1060,8 +1061,7 @@ class TextSplitDb : public TextSplitP {
     Xapian::termpos curpos;
 
     TextSplitDb(Xapian::Document &d, TermProc *prc)
-	: TextSplitP(prc), 
-	  doc(d), basepos(1), curpos(0), wdfinc(1)
+	: TextSplitP(prc), doc(d), basepos(1), curpos(0)
     {}
 
     // Reimplement text_to_words to insert the begin and end anchor terms.
@@ -1072,7 +1072,7 @@ class TextSplitDb : public TextSplitP {
 
 	try {
 	    // Index the possibly prefixed start term.
-	    doc.add_posting(prefix + start_of_field_term, basepos, wdfinc);
+	    doc.add_posting(ft.pfx + start_of_field_term, basepos, ft.wdfinc);
 	    ++basepos;
 	} XCATCHERROR(ermsg);
 	if (!ermsg.empty()) {
@@ -1087,8 +1087,8 @@ class TextSplitDb : public TextSplitP {
 
 	try {
 	    // Index the possibly prefixed end term.
-	    doc.add_posting(prefix + end_of_field_term, basepos + curpos + 1, 
-			    wdfinc);
+	    doc.add_posting(ft.pfx + end_of_field_term, basepos + curpos + 1,
+			    ft.wdfinc);
 	    ++basepos;
 	} XCATCHERROR(ermsg);
 	if (!ermsg.empty()) {
@@ -1103,27 +1103,17 @@ class TextSplitDb : public TextSplitP {
 	return true;
     }
 
-    void setprefix(const string& pref) 
+    void setTraits(const FieldTraits& ftp) 
     {
-	if (pref.empty())
-	    prefix.clear();
-	else
-	    prefix = wrap_prefix(pref);
-    }
-
-    void setwdfinc(int i) 
-    {
-	wdfinc = i;
+        ft = ftp;
+        if (!ft.pfx.empty())
+            ft.pfx = wrap_prefix(ft.pfx);
     }
 
     friend class TermProcIdx;
 
 private:
-    // If prefix is set, we also add a posting for the prefixed terms
-    // (ie: for titles, add postings for both "term" and "Sterm")
-    string  prefix; 
-    // Some fields have more weight
-    int wdfinc;
+    FieldTraits ft;
 };
 
 class TermProcIdx : public TermProc {
@@ -1145,15 +1135,18 @@ public:
 	try {
 	    // Index without prefix, using the field-specific weighting
 	    LOGDEB1(("Emitting term at %d : [%s]\n", pos, term.c_str()));
-	    m_ts->doc.add_posting(term, pos, m_ts->wdfinc);
+            if (!m_ts->ft.pfxonly)
+                m_ts->doc.add_posting(term, pos, m_ts->ft.wdfinc);
+
 #ifdef TESTING_XAPIAN_SPELL
 	    if (Db::isSpellingCandidate(term)) {
 		m_ts->db.add_spelling(term);
 	    }
 #endif
 	    // Index the prefixed term.
-	    if (!m_ts->prefix.empty()) {
-		m_ts->doc.add_posting(m_ts->prefix + term, pos, m_ts->wdfinc);
+	    if (!m_ts->ft.pfx.empty()) {
+		m_ts->doc.add_posting(m_ts->ft.pfx + term, pos, 
+                                      m_ts->ft.wdfinc);
 	    }
 	    return true;
 	} XCATCHERROR(ermsg);
@@ -1168,7 +1161,7 @@ public:
 	    return;
 	}
 
-	m_ts->doc.add_posting(m_ts->prefix + page_break_term, pos);
+	m_ts->doc.add_posting(m_ts->ft.pfx + page_break_term, pos);
 	if (pos == m_lastpagepos) {
 	    m_pageincr++;
 	    LOGDEB2(("newpage: same pos, pageincr %d lastpagepos %d\n", 
@@ -1351,15 +1344,15 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 		LOGDEB0(("Db::add: field [%s] pfx [%s] inc %d: [%s]\n", 
 			 meta_it->first.c_str(), ftp->pfx.c_str(), ftp->wdfinc,
 			 meta_it->second.c_str()));
-		splitter.setprefix(ftp->pfx);
-		splitter.setwdfinc(ftp->wdfinc);
+                splitter.setTraits(*ftp);
 		if (!splitter.text_to_words(meta_it->second))
 		    LOGDEB(("Db::addOrUpdate: split failed for %s\n", 
 			    meta_it->first.c_str()));
 	    }
 	}
-	splitter.setprefix(string());
-	splitter.setwdfinc(1);
+
+        // Reset to no prefix and default params
+        splitter.setTraits(FieldTraits());
 
 	if (splitter.curpos < baseTextPosition)
 	    splitter.basepos = baseTextPosition;
@@ -1539,6 +1532,21 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	    }
 	}
 
+        // At this point, if the document "filename" field was empty,
+        // try to store the "container file name" value. This is done
+        // after indexing because we don't want search matches on
+        // this, but the filename is often useful for display
+        // purposes.
+        const string *fnp = 0;
+        if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty()) {
+            if (doc.peekmeta(Rcl::Doc::keytcfn, &fnp) && !fnp->empty()) {
+		string value = 
+		    neutchars(truncate_to_word(*fnp, 
+                                               m_idxMetaStoredLen), cstr_nc);
+		RECORD_APPEND(record, Rcl::Doc::keyfn, value);
+            }
+        }
+
 	// If empty pages (multiple break at same pos) were recorded, save
 	// them (this is because we have no way to record them in the
 	// Xapian list
@@ -1619,8 +1627,7 @@ bool Db::Native::docToXdocXattrOnly(TextSplitDb *splitter, const string &udi,
 	LOGDEB0(("Db::xattrOnly: field [%s] pfx [%s] inc %d: [%s]\n", 
 		 meta_it->first.c_str(), ftp->pfx.c_str(), ftp->wdfinc,
 		 meta_it->second.c_str()));
-	splitter->setprefix(ftp->pfx);
-	splitter->setwdfinc(ftp->wdfinc);
+	splitter->setTraits(*ftp);
 	if (!splitter->text_to_words(meta_it->second))
 	    LOGDEB(("Db::xattrOnly: split failed for %s\n", 
 		    meta_it->first.c_str()));

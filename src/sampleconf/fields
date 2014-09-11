@@ -29,6 +29,10 @@
 # (NOT CURRENTLY IMPLEMENTED) would automatically boost the weight of a
 # caption-based field query (ie: caption:mytitle or title:mytitle) at query
 # time.
+#
+# The pfxonly attribute can also be set on entries to express that terms
+# from the field should be indexed only with a prefix (in general, field
+# terms are indexed both with and without a prefix).
 
 # The following ones are probably hard-coded in the c code, can't change at
 # all.
@@ -44,8 +48,10 @@ rclmd5 = XM
 dir = XP
 abstract = XS
 filename = XSFN
+containerfilename = XCFN ; pfxonly = 1
 rclUnsplitFN = XSFS
 xapyear = Y
+recipient = XTO
 
 # Extension examples. These are actually used by default by Recoll, you can
 # add your own to search for fields produced by the filters and not handled
@@ -57,7 +63,6 @@ xapyear = Y
 # I hereby commit to not using XY for Recoll:
 # *** USE XY for beginning your local prefixes *** ie:
 # myfield = XYMYPREF
-recipient = XTO
 
 [stored]
 ############################
@@ -105,6 +110,14 @@ mtype = mime mimetype xesam:mimetype contenttype xesam:contenttype dc:format
 recipient = to xesam:recipient
 url = dc:identifier xesam:url
 
+##################
+# The queryaliases section defines aliases which are used exclusively at
+# query time: there is no risk to pick up a random field from a document
+# (e.g. an HTML meta field) and index it. 
+[queryaliases]
+#filename = fn
+#containerfilename = cfn
+
 [xattrtofields]
 ######################
 # Processing for extended file attributes.
@@ -113,10 +126,16 @@ url = dc:identifier xesam:url
 # You can enter name translations as "xattrname = fieldname". Case matters.
 # Entering an empty translation will disable use of the attribute.
 # The values from the extended attributes will extend, not replace, the
-# data found from equivalent fields inside the document. As an example, the
-# following would map a quite plausible "tags" extended attribute into the
-# "keywords" field.
+# data found from equivalent fields inside the document. 
+
+# As an example, the following would map a quite plausible "tags" extended
+# attribute into the "keywords" field.
 tags = keywords
+
+# Proposed or standard freedesktop.org extended attributes
+xdg.tags = keywords
+xdg.comment = abstract
+
 # Some standard fields are not to be indexed
 mime_type =
 charset =

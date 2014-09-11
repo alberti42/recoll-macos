@@ -583,11 +583,11 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     </message>
     <message>
         <source>Default character set</source>
-        <translation>Výchozí znaková sada</translation>
+        <translation type="obsolete">Výchozí znaková sada</translation>
     </message>
     <message>
         <source>This is the character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
-        <translation>Toto je znaková sada, která se používá pro čtení souborů, které svou znakovou sadu vnitřně neurčují, např.. soubory s textem.&lt;br&gt;Výchozí hodnota je prázdná a používá se hodnota prostředí NLS.</translation>
+        <translation type="obsolete">Toto je znaková sada, která se používá pro čtení souborů, které svou znakovou sadu vnitřně neurčují, např.. soubory s textem.&lt;br&gt;Výchozí hodnota je prázdná a používá se hodnota prostředí NLS.</translation>
     </message>
     <message>
         <source>Follow symbolic links</source>
@@ -616,6 +616,14 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     <message>
         <source>Web history</source>
         <translation>Historie webu</translation>
+    </message>
+    <message>
+        <source>Default&lt;br&gt;character set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -837,7 +845,7 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Document category filter</source>
-        <translation>Filtr pro skupinu dokumentu</translation>
+        <translation type="obsolete">Filtr pro skupinu dokumentu</translation>
     </message>
     <message>
         <source>No external viewer configured for mime type [</source>
@@ -969,19 +977,56 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
-        <translation>Rejstřík není pro tento soubor nejnovější. Ukázání nesprávného záznamu bylo zamítnuto.</translation>
+        <translation type="obsolete">Rejstřík není pro tento soubor nejnovější. Ukázání nesprávného záznamu bylo zamítnuto.</translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation>Klepněte na tlačítko pro aktualizaci rejstříku pro tento soubor, potom dotaz, až bude rejstříkování hotovo, spusťte znovu. Jinak klepněte na Zrušit.</translation>
+        <translation type="obsolete">Klepněte na tlačítko pro aktualizaci rejstříku pro tento soubor, potom dotaz, až bude rejstříkování hotovo, spusťte znovu. Jinak klepněte na Zrušit.</translation>
     </message>
     <message>
         <source>Indexer running so things should improve when it&apos;s done</source>
-        <translation>Rejstříkovač běží, takže věci by se po dokončení rejstříkování měly zlepšit</translation>
+        <translation type="obsolete">Rejstříkovač běží, takže věci by se po dokončení rejstříkování měly zlepšit</translation>
     </message>
     <message>
         <source>Sub-documents and attachments</source>
         <translation>Podřízené dokumenty a přílohy</translation>
+    </message>
+    <message>
+        <source>Document filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index not up to date for this file. Refusing to risk showing the wrong entry. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Ok to update the index for this file, then you will need to re-run the query when indexing is done. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The indexer is running so things should improve when it&apos;s done. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The document belongs to an external indexwhich I can&apos;t update. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Cancel to return to the list. Click Ignore to show the preview anyway. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Duplicate documents</source>
+        <translation type="unfinished">Zdvojené dokumenty</translation>
+    </message>
+    <message>
+        <source>These Urls ( | ipath) share the same content:</source>
+        <translation type="unfinished">Tyto adresy ( | ipath) sdílejí totožný obsah:</translation>
+    </message>
+    <message>
+        <source>Bad desktop app spec for %1: [%2]
+Please check the desktop file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1016,11 +1061,11 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Search tools</source>
-        <translation>Nástroje pro hledání</translation>
+        <translation type="obsolete">Nástroje pro hledání</translation>
     </message>
     <message>
         <source>Result list</source>
-        <translation>Seznam s výsledky</translation>
+        <translation type="obsolete">Seznam s výsledky</translation>
     </message>
     <message>
         <source>&amp;About Recoll</source>
@@ -1108,7 +1153,7 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>All</source>
-        <translation>Vše</translation>
+        <translation type="obsolete">Vše</translation>
     </message>
     <message>
         <source>&amp;Show missing helpers</source>
@@ -1414,11 +1459,11 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation>Zdvojené dokumenty</translation>
+        <translation type="obsolete">Zdvojené dokumenty</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation>Tyto adresy ( | ipath) sdílejí totožný obsah:</translation>
+        <translation type="obsolete">Tyto adresy ( | ipath) sdílejí totožný obsah:</translation>
     </message>
     <message>
         <source>Result count (est.)</source>
@@ -1572,6 +1617,10 @@ Prověřte soubor mimeconf</translation>
     <message>
         <source>Show subdocuments / attachments</source>
         <translation>Ukázat podřízené dokumenty/přílohy</translation>
+    </message>
+    <message>
+        <source>Open With</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2418,6 +2467,22 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
         <translation>Vnější filtry pracující déle než po tak dlouhou dobu budou přerušeny. Je to pro ten zřídkavý případ (např. postscript), kdy by dokument mohl zapříčinit vejití filtru do smyčky. Nastavte na -1 pro žádné omezení.
 </translation>
     </message>
+    <message>
+        <source>Only mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exclude mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mime types not to be indexed</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfTopPanelW</name>
@@ -2598,7 +2663,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
-        <translation>Zobrazit skupinový filtr jako nástrojový pruh místo tlačítkového panelu (potřebuje spustit program znovu).</translation>
+        <translation type="obsolete">Zobrazit skupinový filtr jako nástrojový pruh místo tlačítkového panelu (potřebuje spustit program znovu).</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
@@ -2845,6 +2910,26 @@ Výchozí hodnota je 2 (procenta).</translation>
     <message>
         <source>Resets the Snippets window style</source>
         <translation>Nastaví znovu styl okna s úryvky</translation>
+    </message>
+    <message>
+        <source>Decide if document filters are shown as radio buttons, toolbar combobox, or menu.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Document filter choice style:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Buttons Panel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toolbar Combobox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Menu</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

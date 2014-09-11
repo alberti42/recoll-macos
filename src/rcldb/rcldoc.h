@@ -246,7 +246,19 @@ class Doc {
     // childurl. This is set when working with the parent of the result, to hold
     // the child of interest url, typically to highlight a directory entry
     static const string keychildurl; 
-    static const string keyfn;  // file name
+    // file name. This is set for filesystem-level containers or
+    // documents, and not inherited by subdocuments (which can get a
+    // keyfn anyway from, e.g, an attachment filename value).  Subdocs
+    // used to inherit the file name, but this was undesirable (you
+    // usually don't want to see all subdocs when searching for the
+    // file name). Instead the container file name is now set in the
+    // document record but not indexed (see next entry).
+    static const string keyfn;  
+    // Container file name. This is set for all subdocuments of a
+    // given top level container. It is not indexed by default but
+    // stored in the document record keyfn field if this is still
+    // empty when we create it, for display purposes.
+    static const string keytcfn;
     static const string keyipt; // ipath
     static const string keytp;  // mime type
     static const string keyfmt; // file mtime

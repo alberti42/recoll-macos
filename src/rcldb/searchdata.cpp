@@ -686,7 +686,7 @@ void SearchDataClauseSimple::processSimpleSpan(Rcl::Db &db, string& ermsg,
 
     string prefix;
     const FieldTraits *ftp;
-    if (!m_field.empty() && db.fieldToTraits(m_field, &ftp)) {
+    if (!m_field.empty() && db.fieldToTraits(m_field, &ftp, true)) {
 	prefix = wrap_prefix(ftp->pfx);
     }
 
@@ -743,7 +743,7 @@ void SearchDataClauseSimple::processPhraseOrNear(Rcl::Db &db, string& ermsg,
 
     string prefix;
     const FieldTraits *ftp;
-    if (!m_field.empty() && db.fieldToTraits(m_field, &ftp)) {
+    if (!m_field.empty() && db.fieldToTraits(m_field, &ftp, true)) {
 	prefix = wrap_prefix(ftp->pfx);
     }
 

@@ -565,11 +565,11 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Default character set</source>
-        <translation>Προκαθορισμένο σύνολο χαρακτήρων</translation>
+        <translation type="obsolete">Προκαθορισμένο σύνολο χαρακτήρων</translation>
     </message>
     <message>
         <source>This is the character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
-        <translation>Το σύνολο των χαρακτήρων που χρησιμοποιείται για την ανάγνωση των αρχείων στα οποία δεν μπορεί να αναγνωριστεί το σύνολο χαρακτήρων με εσωτερικό τρόπο, για παράδειγμα τα αρχεία απλού κειμένου.&lt;br&gt;Η προκαθορισμένη τιμή είναι κενή, και το πρόγραμμα χρησιμοποιεί αυτή του περιβάλλοντος.</translation>
+        <translation type="obsolete">Το σύνολο των χαρακτήρων που χρησιμοποιείται για την ανάγνωση των αρχείων στα οποία δεν μπορεί να αναγνωριστεί το σύνολο χαρακτήρων με εσωτερικό τρόπο, για παράδειγμα τα αρχεία απλού κειμένου.&lt;br&gt;Η προκαθορισμένη τιμή είναι κενή, και το πρόγραμμα χρησιμοποιεί αυτή του περιβάλλοντος.</translation>
     </message>
     <message>
         <source>Follow symbolic links</source>
@@ -594,6 +594,14 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Web history</source>
         <translation>Ιστορικό ιστού</translation>
+    </message>
+    <message>
+        <source>Default&lt;br&gt;character set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -713,7 +721,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Document category filter</source>
-        <translation>Φίλτρο κατηγοριών των εγγράφων</translation>
+        <translation type="obsolete">Φίλτρο κατηγοριών των εγγράφων</translation>
     </message>
     <message>
         <source>Could not open external index. Db not open. Check external indexes list.</source>
@@ -931,19 +939,56 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
-        <translation>Η δεικτοδότηση δεν είναι ενημερωμένηη για αυτό το αρχείο. Πιθανός κίνδυνος εμφάνισης μιας λανθασμένης εισαγωγής.</translation>
+        <translation type="obsolete">Η δεικτοδότηση δεν είναι ενημερωμένηη για αυτό το αρχείο. Πιθανός κίνδυνος εμφάνισης μιας λανθασμένης εισαγωγής.</translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation>Κάντε κλικ στο Εντάξει για να ενημερώσετε τη δεικτοδότηση για αυτό το αρχείο, και στη συνέχεια επανεκκινήστε την αναζήτηση όταν θα έχει ολοκληρωθεί η δημιουργία του ευρετηρίου. Διαφορετικά, κλικ στο Ακύρωση.</translation>
+        <translation type="obsolete">Κάντε κλικ στο Εντάξει για να ενημερώσετε τη δεικτοδότηση για αυτό το αρχείο, και στη συνέχεια επανεκκινήστε την αναζήτηση όταν θα έχει ολοκληρωθεί η δημιουργία του ευρετηρίου. Διαφορετικά, κλικ στο Ακύρωση.</translation>
     </message>
     <message>
         <source>Indexer running so things should improve when it&apos;s done</source>
-        <translation>Η δημιουργία του ευρετηρίου βρίσκεται σε εξέλιξη, το αρχείο θα ενημερωθεί μετά το πέρας της ενημέρωσης</translation>
+        <translation type="obsolete">Η δημιουργία του ευρετηρίου βρίσκεται σε εξέλιξη, το αρχείο θα ενημερωθεί μετά το πέρας της ενημέρωσης</translation>
     </message>
     <message>
         <source>Sub-documents and attachments</source>
         <translation>Υπο-έγγραφα και συνημμένα</translation>
+    </message>
+    <message>
+        <source>Document filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index not up to date for this file. Refusing to risk showing the wrong entry. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Ok to update the index for this file, then you will need to re-run the query when indexing is done. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The indexer is running so things should improve when it&apos;s done. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The document belongs to an external indexwhich I can&apos;t update. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Cancel to return to the list. Click Ignore to show the preview anyway. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Duplicate documents</source>
+        <translation type="unfinished">Διπλότυπα έγγραφα</translation>
+    </message>
+    <message>
+        <source>These Urls ( | ipath) share the same content:</source>
+        <translation type="unfinished">Αυτά τα URL (| ipath) μοιράζονται το ίδιο περιεχόμενο:</translation>
+    </message>
+    <message>
+        <source>Bad desktop app spec for %1: [%2]
+Please check the desktop file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -954,15 +999,15 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>All</source>
-        <translation>Όλα</translation>
+        <translation type="obsolete">Όλα</translation>
     </message>
     <message>
         <source>Search tools</source>
-        <translation>Εργαλεία αναζήτησης</translation>
+        <translation type="obsolete">Εργαλεία αναζήτησης</translation>
     </message>
     <message>
         <source>Result list</source>
-        <translation>Λίστα αποτελεσμάτων</translation>
+        <translation type="obsolete">Λίστα αποτελεσμάτων</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -1356,11 +1401,11 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation>Διπλότυπα έγγραφα</translation>
+        <translation type="obsolete">Διπλότυπα έγγραφα</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation>Αυτά τα URL (| ipath) μοιράζονται το ίδιο περιεχόμενο:</translation>
+        <translation type="obsolete">Αυτά τα URL (| ipath) μοιράζονται το ίδιο περιεχόμενο:</translation>
     </message>
     <message>
         <source>Result count (est.)</source>
@@ -1510,6 +1555,10 @@ Please check the mimeview file</source>
     <message>
         <source>Show subdocuments / attachments</source>
         <translation>Εμφάνιση των υπο-εγγράφων / συνημμένων</translation>
+    </message>
+    <message>
+        <source>Open With</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2105,6 +2154,22 @@ This will help searching very big text  files (ie: log files).</source>
 </source>
         <translation>Τα εξωτερικά φίλτρα σε λειτουργία μεγαλύτερη από αυτό θα διακόπτονται. Χρήσιμο για τη σπάνια περίπτωση (π.χ. postscript) όπου ένα έγγραφο μπορεί να προκαλέσει ένα βρόγχο στο φίλτρο. Ορίστε το σε -1 για να αφαιρέσετε το όριο.</translation>
     </message>
+    <message>
+        <source>Only mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exclude mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mime types not to be indexed</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfTopPanelW</name>
@@ -2277,7 +2342,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
-        <translation>Εμφάνιση φίλτρ. κατηγορίας ως γρ. εργαλείων αντί για πίν. κουμπιών (απαιτεί επανεκκίνηση).</translation>
+        <translation type="obsolete">Εμφάνιση φίλτρ. κατηγορίας ως γρ. εργαλείων αντί για πίν. κουμπιών (απαιτεί επανεκκίνηση).</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
@@ -2504,6 +2569,26 @@ May be slow for big documents.</source>
     <message>
         <source>Resets the Snippets window style</source>
         <translation>Επαναφορά του στυλ του παραθύρου αποσπασμάτων</translation>
+    </message>
+    <message>
+        <source>Decide if document filters are shown as radio buttons, toolbar combobox, or menu.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Document filter choice style:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Buttons Panel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toolbar Combobox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Menu</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

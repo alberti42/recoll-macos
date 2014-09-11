@@ -33,13 +33,20 @@ public:
         AppDef(const std::string& nm, const std::string& cmd)
             : name(nm), command(cmd)
             {}
+        AppDef() {}
+
         std::string name;
         std::string command;
     };
 
+    /** Build/Get the db for the standard fdo directory */
     static DesktopDb* getDb();
-    static const string& getReason();
-    ~DesktopDb();
+
+    /** Constructor for a db based on a non-standard location */
+    DesktopDb(const string& dir);
+
+    /** In case of error: what happened ? */
+    const string& getReason();
 
     /**
      * Get a list of applications able to process a given MIME type.
@@ -52,10 +59,30 @@ public:
     bool appForMime(const std::string& mime, vector<AppDef> *apps, 
                     std::string *reason = 0);
 
+    /**
+     * Get all applications defs:
+     * @param[output] apps applications 
+     * @return true 
+     */
+    bool allApps(vector<AppDef> *apps);
+
+    /** 
+     * Get app with given name 
+     */
+    bool appByName(const string& nm, AppDef& app);
+
+    typedef map<string, vector<DesktopDb::AppDef> > AppMap;
+
 private:
+    /** This is used by getDb() and builds a db for the standard location */
     DesktopDb();
+    void build(const string& dir);
     DesktopDb(const DesktopDb &);
     DesktopDb& operator=(const DesktopDb &);
+
+    AppMap m_appMap;
+    std::string m_reason;
+    bool m_ok;
 };
 
 

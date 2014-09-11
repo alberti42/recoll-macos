@@ -847,16 +847,19 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 	    ft.wdfinc = atoi(tval.c_str());
 	if (attrs.get("boost", tval))
 	    ft.boost = atof(tval.c_str());
+	if (attrs.get("pfxonly", tval))
+	    ft.pfxonly = stringToBool(tval);
 	m_fldtotraits[stringtolower(*it)] = ft;
 	LOGDEB2(("readFieldsConfig: [%s] -> [%s] %d %.1f\n", 
 		it->c_str(), ft.pfx.c_str(), ft.wdfinc, ft.boost));
     }
 
-    // Add prefixes for aliases  an build alias-to-canonic map while we're at it
-    // Having the aliases in the prefix map avoids an additional indirection
-    // at index time.
+    // Add prefixes for aliases and build alias-to-canonic map while
+    // we're at it. Having the aliases in the prefix map avoids an
+    // additional indirection at index time.
     tps = m_fields->getNames("aliases");
-    for (vector<string>::const_iterator it = tps.begin(); it != tps.end();it++) {
+    for (vector<string>::const_iterator it = tps.begin(); 
+         it != tps.end(); it++){
 	string canonic = stringtolower(*it); // canonic name
 	FieldTraits ft;
 	map<string, FieldTraits>::const_iterator pit = 
@@ -873,6 +876,21 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 	    if (pit != m_fldtotraits.end())
 		m_fldtotraits[stringtolower(*ait)] = ft;
 	    m_aliastocanon[stringtolower(*ait)] = canonic;
+	}
+    }
+
+    // Query aliases map
+    tps = m_fields->getNames("queryaliases");
+    for (vector<string>::const_iterator it = tps.begin(); 
+         it != tps.end(); it++){
+	string canonic = stringtolower(*it); // canonic name
+	string aliases;
+	m_fields->get(canonic, aliases, "queryaliases");
+	vector<string> l;
+	stringToStrings(aliases, l);
+	for (vector<string>::const_iterator ait = l.begin();
+	     ait != l.end(); ait++) {
+	    m_aliastoqcanon[stringtolower(*ait)] = canonic;
 	}
     }
 
@@ -907,10 +925,10 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 }
 
 // Return specifics for field name:
-bool RclConfig::getFieldTraits(const string& _fld, const FieldTraits **ftpp)
-    const
+bool RclConfig::getFieldTraits(const string& _fld, const FieldTraits **ftpp,
+    bool isquery) const
 {
-    string fld = fieldCanon(_fld);
+    string fld = isquery ? fieldQCanon(_fld) : fieldCanon(_fld);
     map<string, FieldTraits>::const_iterator pit = m_fldtotraits.find(fld);
     if (pit != m_fldtotraits.end()) {
 	*ftpp = &pit->second;
@@ -947,6 +965,18 @@ string RclConfig::fieldCanon(const string& f) const
     }
     LOGDEB1(("RclConfig::fieldCanon: [%s] -> [%s]\n", f.c_str(), fld.c_str()));
     return fld;
+}
+
+string RclConfig::fieldQCanon(const string& f) const
+{
+    string fld = stringtolower(f);
+    map<string, string>::const_iterator it = m_aliastoqcanon.find(fld);
+    if (it != m_aliastoqcanon.end()) {
+	LOGDEB1(("RclConfig::fieldQCanon: [%s] -> [%s]\n", 
+                f.c_str(), it->second.c_str()));
+	return it->second;
+    }
+    return fieldCanon(f);
 }
 
 vector<string> RclConfig::getFieldSectNames(const string &sk, const char* patrn)
@@ -1420,6 +1450,7 @@ void RclConfig::initFrom(const RclConfig& r)
 	m_ptrans = new ConfSimple(*(r.m_ptrans));
     m_fldtotraits = r.m_fldtotraits;
     m_aliastocanon = r.m_aliastocanon;
+    m_aliastoqcanon = r.m_aliastoqcanon;
     m_storedFields = r.m_storedFields;
     m_xattrtofld = r.m_xattrtofld;
     if (r.m_stopsuffixes)

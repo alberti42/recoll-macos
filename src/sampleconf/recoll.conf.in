@@ -189,6 +189,10 @@ iconsdir = @prefix@/share/recoll/images
 # identification ? This may be useful, but will usually cause the
 # indexation of many bogus 'text' files
 usesystemfilecommand = 1
+# Actual command to use as "file -i" workalike. xdg-mime works fine here.
+# The file path will be added as a last parameter to the command line. If
+# that's not what your preferred command would like, use an intermediary script
+# systemfilecommand = xdg-mime query filetype
 
 # Should we index the file names of files with mime types we don't
 # know? (we can otherwise just ignore them)

@@ -582,11 +582,11 @@ Voreinstellung: leer.</translation>
     </message>
     <message>
         <source>Default character set</source>
-        <translation>Standard-Zeichensatz</translation>
+        <translation type="obsolete">Standard-Zeichensatz</translation>
     </message>
     <message>
         <source>This is the character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
-        <translation>DIes ist der Zeichensatz, der für Dateien benutzt wird, die
+        <translation type="obsolete">DIes ist der Zeichensatz, der für Dateien benutzt wird, die
 ihren Zeichensatz nicht intern definieren, z.B. Textdateien.
 Der Standardwert ist leer und der Wert der NLS-Umgebung wird benutzt.</translation>
     </message>
@@ -619,6 +619,14 @@ Der Standardwert ist &quot;Nein&quot;, um doppelte Indizierung zu vermeiden.</tr
     <message>
         <source>Web history</source>
         <translation>Web-Chronik</translation>
+    </message>
+    <message>
+        <source>Default&lt;br&gt;character set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -836,7 +844,7 @@ Please check the mimeconf file</source>
     </message>
     <message>
         <source>Document category filter</source>
-        <translation>Filter für Dokumenten-Kategorie</translation>
+        <translation type="obsolete">Filter für Dokumenten-Kategorie</translation>
     </message>
     <message>
         <source>No external viewer configured for mime type [</source>
@@ -965,19 +973,56 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
-        <translation>Der Index ist für diese Datei nicht mehr aktuell. Einträge könnten fehlerhaft sein und werden nicht angezeigt.</translation>
+        <translation type="obsolete">Der Index ist für diese Datei nicht mehr aktuell. Einträge könnten fehlerhaft sein und werden nicht angezeigt.</translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation>Drücken Sie Ok, um den Index für diese Datei zu aktualisieren und die Suche daraufhin zu wiederholen. Ansonsten drücken Sie auf Abbrechen.</translation>
+        <translation type="obsolete">Drücken Sie Ok, um den Index für diese Datei zu aktualisieren und die Suche daraufhin zu wiederholen. Ansonsten drücken Sie auf Abbrechen.</translation>
     </message>
     <message>
         <source>Indexer running so things should improve when it&apos;s done</source>
-        <translation>Indizierung ist im Gange. Die Resultate sollten sich nach der Fertigstelltung verbessert haben</translation>
+        <translation type="obsolete">Indizierung ist im Gange. Die Resultate sollten sich nach der Fertigstelltung verbessert haben</translation>
     </message>
     <message>
         <source>Sub-documents and attachments</source>
         <translation>Untergeordnete Dokumente und Anhänge</translation>
+    </message>
+    <message>
+        <source>Document filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index not up to date for this file. Refusing to risk showing the wrong entry. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Ok to update the index for this file, then you will need to re-run the query when indexing is done. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The indexer is running so things should improve when it&apos;s done. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The document belongs to an external indexwhich I can&apos;t update. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Cancel to return to the list. Click Ignore to show the preview anyway. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Duplicate documents</source>
+        <translation type="unfinished">Doppelte Dokumente</translation>
+    </message>
+    <message>
+        <source>These Urls ( | ipath) share the same content:</source>
+        <translation type="unfinished">Diese URLs ( | ipath) sind inhaltsgleich:</translation>
+    </message>
+    <message>
+        <source>Bad desktop app spec for %1: [%2]
+Please check the desktop file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1012,11 +1057,11 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Search tools</source>
-        <translation>Suchwerkzeuge</translation>
+        <translation type="obsolete">Suchwerkzeuge</translation>
     </message>
     <message>
         <source>Result list</source>
-        <translation>Ergebnisliste</translation>
+        <translation type="obsolete">Ergebnisliste</translation>
     </message>
     <message>
         <source>&amp;About Recoll</source>
@@ -1104,7 +1149,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>All</source>
-        <translation>Alle</translation>
+        <translation type="obsolete">Alle</translation>
     </message>
     <message>
         <source>&amp;Show missing helpers</source>
@@ -1402,12 +1447,12 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation>Doppelte Dokumente</translation>
+        <translation type="obsolete">Doppelte Dokumente</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
         <translatorcomment>ipath?</translatorcomment>
-        <translation>Diese URLs ( | ipath) sind inhaltsgleich:</translation>
+        <translation type="obsolete">Diese URLs ( | ipath) sind inhaltsgleich:</translation>
     </message>
     <message>
         <source>Result count (est.)</source>
@@ -1553,6 +1598,10 @@ Please check the mimeview file</source>
     <message>
         <source>Show subdocuments / attachments</source>
         <translation>Untergeordnete Dokumente / Anhänge anzeigen</translation>
+    </message>
+    <message>
+        <source>Open With</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2406,6 +2455,22 @@ Auf -1 setzen, um keine Obergrenze zu haben.</translation>
 Das ist für den seltenen Fall (Postscript), in dem ein Dokument eine unendliche Schleife auslöst.
 Auf -1 setzen, um keine Obergrenze zu haben.</translation>
     </message>
+    <message>
+        <source>Only mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exclude mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mime types not to be indexed</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfTopPanelW</name>
@@ -2583,7 +2648,7 @@ für Ergebnisse</translation>
     </message>
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
-        <translation>Kategorie-Filter in Werkzeugleiste statt als Radio-Buttons (Neustart erforderlich)</translation>
+        <translation type="obsolete">Kategorie-Filter in Werkzeugleiste statt als Radio-Buttons (Neustart erforderlich)</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
@@ -2822,6 +2887,26 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     <message>
         <source>Resets the Snippets window style</source>
         <translation>Setzt das Schnipsel-Fenster Style Sheet auf den Standardwert zurück</translation>
+    </message>
+    <message>
+        <source>Decide if document filters are shown as radio buttons, toolbar combobox, or menu.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Document filter choice style:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Buttons Panel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toolbar Combobox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Menu</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

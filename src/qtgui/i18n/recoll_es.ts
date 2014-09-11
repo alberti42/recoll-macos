@@ -574,11 +574,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Default character set</source>
-        <translation>Conjunto de caracteres por defecto </translation>
+        <translation type="obsolete">Conjunto de caracteres por defecto </translation>
     </message>
     <message>
         <source>This is the character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
-        <translation>Este es el conjunto de caracteres usado para leer archivos que no son identificados internamente, por ejemplo, archivos de texto puro.&lt;br&gt;El valor por defecto está vacío, y el valor del ambiente NLS es usado.</translation>
+        <translation type="obsolete">Este es el conjunto de caracteres usado para leer archivos que no son identificados internamente, por ejemplo, archivos de texto puro.&lt;br&gt;El valor por defecto está vacío, y el valor del ambiente NLS es usado.</translation>
     </message>
     <message>
         <source>Follow symbolic links</source>
@@ -607,6 +607,14 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Web history</source>
         <translation>Historial Web</translation>
+    </message>
+    <message>
+        <source>Default&lt;br&gt;character set</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -828,7 +836,7 @@ Por favor revise el fichero mimeconf</translation>
     </message>
     <message>
         <source>Document category filter</source>
-        <translation>Filtro de categorías de documentos</translation>
+        <translation type="obsolete">Filtro de categorías de documentos</translation>
     </message>
     <message>
         <source>No external viewer configured for mime type [</source>
@@ -959,19 +967,56 @@ Por favor revise el archivo mimeconf</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
-        <translation>El índice no está actualizado para este archivo. Rehusando mostrar la entrada equivocada.</translation>
+        <translation type="obsolete">El índice no está actualizado para este archivo. Rehusando mostrar la entrada equivocada.</translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation>Presione Ok para actualizar el índice para este archivo, y ejecute de nuevo la consulta cuando la indexación termine. En caso contrario, cancele.</translation>
+        <translation type="obsolete">Presione Ok para actualizar el índice para este archivo, y ejecute de nuevo la consulta cuando la indexación termine. En caso contrario, cancele.</translation>
     </message>
     <message>
         <source>Indexer running so things should improve when it&apos;s done</source>
-        <translation>El indexador está en ejecución, así que las cosas deberían mejorar cuando termine</translation>
+        <translation type="obsolete">El indexador está en ejecución, así que las cosas deberían mejorar cuando termine</translation>
     </message>
     <message>
         <source>Sub-documents and attachments</source>
         <translation>Sub-documentos y adjuntos</translation>
+    </message>
+    <message>
+        <source>Document filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index not up to date for this file. Refusing to risk showing the wrong entry. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Ok to update the index for this file, then you will need to re-run the query when indexing is done. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The indexer is running so things should improve when it&apos;s done. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The document belongs to an external indexwhich I can&apos;t update. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Cancel to return to the list. Click Ignore to show the preview anyway. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Duplicate documents</source>
+        <translation type="unfinished">Documentos duplicados</translation>
+    </message>
+    <message>
+        <source>These Urls ( | ipath) share the same content:</source>
+        <translation type="unfinished">Estos URLs ( | ipath) comparten el mismo contenido: </translation>
+    </message>
+    <message>
+        <source>Bad desktop app spec for %1: [%2]
+Please check the desktop file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -982,11 +1027,11 @@ Por favor revise el archivo mimeconf</translation>
     </message>
     <message>
         <source>Search tools</source>
-        <translation>Herramientas de búsqueda</translation>
+        <translation type="obsolete">Herramientas de búsqueda</translation>
     </message>
     <message>
         <source>Result list</source>
-        <translation>Lista de resultados</translation>
+        <translation type="obsolete">Lista de resultados</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -1098,7 +1143,7 @@ Por favor revise el archivo mimeconf</translation>
     </message>
     <message>
         <source>All</source>
-        <translation>Todo</translation>
+        <translation type="obsolete">Todo</translation>
     </message>
     <message>
         <source>&amp;Show missing helpers</source>
@@ -1396,11 +1441,11 @@ Por favor revise el archivo mimeconf</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation>Documentos duplicados</translation>
+        <translation type="obsolete">Documentos duplicados</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation>Estos URLs ( | ipath) comparten el mismo contenido: </translation>
+        <translation type="obsolete">Estos URLs ( | ipath) comparten el mismo contenido: </translation>
     </message>
     <message>
         <source>Result count (est.)</source>
@@ -1558,6 +1603,10 @@ Por favor revise el archivo mimeconf</translation>
     <message>
         <source>Show subdocuments / attachments</source>
         <translation>Mostrar subdocumentos / adjuntos</translation>
+    </message>
+    <message>
+        <source>Open With</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2185,6 +2234,22 @@ Esto ayuda con las búsquedas de archivos de texto muy grandes (ej: archivos de 
 </source>
         <translation>Filtros externos que se ejecuten por más tiempo del establecido serán detenidos. Esto es por el caso inusual (ej: postscript) dónde un documento puede causar que un filtro entre en un ciclo infinito. Establezca el número -1 para indicar que no hay límite.</translation>
     </message>
+    <message>
+        <source>Only mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Exclude mime types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mime types not to be indexed</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfTopPanelW</name>
@@ -2365,7 +2430,7 @@ Esto ayuda con las búsquedas de archivos de texto muy grandes (ej: archivos de 
     </message>
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
-        <translation>Mostrar filtros de categorías como barra de herramientas en lugar de panel de botones (necesita reinicio).</translation>
+        <translation type="obsolete">Mostrar filtros de categorías como barra de herramientas en lugar de panel de botones (necesita reinicio).</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
@@ -2600,6 +2665,26 @@ El valor por defecto es 2 (por ciento).</translation>
     <message>
         <source>Resets the Snippets window style</source>
         <translation>Establece el valor por defecto para el estilo de la ventana de Fragmentos</translation>
+    </message>
+    <message>
+        <source>Decide if document filters are shown as radio buttons, toolbar combobox, or menu.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Document filter choice style:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Buttons Panel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toolbar Combobox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Menu</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

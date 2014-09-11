@@ -3,7 +3,7 @@
 
 <!ENTITY RCL "<application>Recoll</application>">
 <!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/features.html'>http://www.recoll.org/features.html</ulink>">
-<!ENTITY RCLVERSION "1.19">
+<!ENTITY RCLVERSION "1.20">
 <!ENTITY XAP "<application>Xapian</application>">
 <!ENTITY WIKI "http://bitbucket.org/medoc/recoll/wiki/">
 ]>
@@ -22,7 +22,7 @@
     </author>
 
     <copyright>
-      <year>2005-2013</year>
+      <year>2005-2014</year>
       <holder role="mailto:jfd@recoll.org">Jean-Francois Dockes</holder>
     </copyright>
     <abstract>
@@ -1269,6 +1269,11 @@ fs.inotify.max_user_watches=32768
        <filename>mimeview</filename></link> configuration file if you find
        this more convenient.</para>
 
+       <para>Each result entry also has a right-click menu with an
+       <guilabel>Open With</guilabel> entry. This lets you choose an
+       application from the list of those which registered with the desktop
+       for the document MIME type.</para>
+
       <para>The <literal>Preview</literal> and <literal>Open</literal>
        edit links may not be present for all entries, meaning that
        &RCL; has no configured way to preview a given file type (which
@@ -2031,6 +2036,19 @@ fs.inotify.max_user_watches=32768
         also save the result list in CSV format.</para> 
       </formalpara>
 
+
+      <formalpara><title>Changing the GUI geometry</title>
+      <para>It is possible to configure the GUI in wide form
+      factor by dragging the toolbars to one of the sides (their
+      location is remembered between sessions), and moving the
+      category filters to a menu (can be set in the 
+	  <menuchoice>
+	    <guimenu>Preferences</guimenu>
+	    <guimenuitem>GUI configuration</guimenuitem>
+	    <guimenuitem>User interface</guimenuitem>
+          </menuchoice> panel).</para>
+      </formalpara>
+
       <formalpara><title>Query explanation</title>
         <para>You can get an exact description of what the query
         looked for, including stem expansion, and Boolean operators
@@ -2421,6 +2439,10 @@ fs.inotify.max_user_watches=32768
           <listitem><formalpara><title>%N</title><para>result Number inside
             the result page</para></formalpara> 
           </listitem>
+          <listitem><formalpara><title>%P</title><para>Parent folder
+          Url. In the case of an embedded document, this is the parent folder
+          for the top level container file.</para></formalpara>
+          </listitem>
           <listitem><formalpara><title>%R</title><para>Relevance
             percentage</para></formalpara> 
           </listitem>
@@ -2444,6 +2466,14 @@ fs.inotify.max_user_watches=32768
         <literal>&lt;a href="A%N"&gt;</literal>
         where <replaceable>docnum</replaceable> (%N) expands to the document
         number inside the result page).</para>
+
+        <para>It is also possible to use a <literal>"F%N"</literal> value
+        as a link target. This will open the document corresponding to the
+        <literal>%P</literal> parent folder expansion, usually creating a
+        file manager window on the folder where the container file
+        resides. E.g.:
+        <programlisting>&lt;a href="F%N"&gt;%P&lt;/a&gt;</programlisting>
+        </para>
 
         <para>In addition to the predefined values above, all strings
         like <literal>%(fieldname)</literal> will be replaced by the
@@ -2781,6 +2811,16 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       <replaceable>title:prejudice title:pride</replaceable>, and is
       unlikely to find a result.</para> 
 
+      <para>To save you some typing, recent &RCL; versions (1.20 and later)
+      interpret a comma-separated list of terms as an AND list inside the
+      field. Use slash characters ('/') for an OR list. No white space
+      is allowed. So
+      <programlisting>author:john,lennon</programlisting> will search for
+      documents with <literal>john</literal> and <literal>lennon</literal>
+      inside the <literal>author</literal> field (in any order), and
+      <programlisting>author:john/ringo</programlisting> would search for
+      <literal>john</literal> or <literal>ringo</literal>.</para>
+
       <para>Modifiers can be set on a phrase clause, for example to specify
         a proximity search (unordered). See 
         <link linkend="RCL.SEARCH.LANG.MODIFIERS">the modifier
@@ -2811,14 +2851,38 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
             any).</para>
            </listitem>
 
-        <listitem><para><literal>filename</literal> for the document's
-            file name.</para></listitem>
+           <listitem><para><literal>filename</literal> for the document's
+            file name. This is not necessarily set for all documents:
+           internal documents contained inside a compound one (for example
+           an EPUB section) do not inherit the container file name any more,
+           this was replaced by an explicit field (see next). Sub-documents
+           can still have a specific <literal>filename</literal>, if it is
+           implied by the document format, for example the attachment file
+           name for an email attachment.</para></listitem> 
 
+           <listitem><para><literal>containerfilename</literal>. This is
+           set for all documents, both top-level and contained
+           sub-documents, and is always the name of the filesystem directory
+           entry which contains the data. The terms from this field can
+           only be matched by an explicit field specification (as opposed
+           to terms from <literal>filename</literal> which are also indexed
+           as general document content). This avoids getting matches for
+           all the sub-documents when searching for the container file
+           name.</para></listitem> 
+           
         <listitem><para><literal>ext</literal> specifies the file
             name extension (Ex: <literal>ext:html</literal>)</para>
            </listitem>
 
-         </itemizedlist>
+      </itemizedlist>
+
+      <para>&RCL; 1.20 and later have a way to specify aliases for the
+      field names, which will save typing, for example by aliasing
+      <literal>filename</literal> to <replaceable>fn</replaceable> or
+      <literal>containerfilename</literal> to
+      <replaceable>cfn</replaceable>. See the <link
+      linkend="RCL.INSTALL.CONFIG.FIELDS">section about the
+      <filename>fields</filename> file</link></para> 
 
       <para>The field syntax also supports a few field-like, but
         special, criteria:</para>
@@ -5076,13 +5140,21 @@ skippedPaths = ~/somedir/*.txt
           </varlistentry>
 
           <varlistentry><term><varname>usesystemfilecommand</varname></term>
-            <listitem><para>Decide if we use the
-            <command>file</command> <option>-i</option> system command
+            <listitem><para>Decide if we execute a system command 
+            (<command>file</command> <option>-i</option> by default)
             as a final step for determining the MIME type for a file
             (the main procedure uses suffix associations as defined in
             the <filename>mimemap</filename> file). This can be useful
             for files with suffix-less names, but it will also cause
             the indexing of many bogus "text" files.</para>
+            </listitem> 
+	  </varlistentry>
+
+          <varlistentry><term><varname>systemfilecommand</varname></term>
+            <listitem><para>Command to use for mime for mime type
+            determination if <literal>usesystefilecommand</literal> is
+            set. Recent versions of <command>xdg-mime</command> sometimes
+            work better than <command>file</command>.</para>
             </listitem> 
 	  </varlistentry>
 
@@ -5657,7 +5729,8 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
 	behaviour.</para>
 
 	<para>We will only give a short description here, you should refer
-	to the comments inside the file for more detailed information.</para>
+	to the comments inside the default file for more detailed
+	information.</para>
 
 	<para>Field names should be lowercase alphabetic ASCII.</para>
 
@@ -5681,6 +5754,14 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
             <listitem><para>This section defines lists of synonyms for the
             canonical names used inside the <literal>[prefixes]</literal>
             and <literal>[stored]</literal> sections</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>[queryaliases]</term>
+            <listitem><para>This section also defines aliases for the
+            canonic field names, with the difference that the substitution
+            will only be used at query time, avoiding any possibility that
+            the value would pick-up random metadata from documents.</para>
             </listitem>
           </varlistentry>
           <varlistentry>
@@ -5712,6 +5793,10 @@ mailmytag = XMTAG
 # Store mailmytag inside the document data record (so that it can be
 # displayed - as %(mailmytag) - in result lists).
 mailmytag = 
+
+[queryaliases]
+filename = fn
+containerfilename = cfn
 
 [mail]
 # Extract the X-My-Tag mail header, and use it internally with the
@@ -5863,11 +5948,6 @@ x-my-tag = mailmytag
               from a  container).</para></formalpara>
           </listitem>
 
-          <listitem><formalpara><title>%F</title>
-              <para>Original file name. Same as %f except if a temporary
-              file is used.</para></formalpara> 
-          </listitem>
-
           <listitem><formalpara><title>%i</title>
               <para>Internal path, for subdocuments of containers. The
               format depends on the container type. If this appears in the
@@ -5895,7 +5975,7 @@ x-my-tag = mailmytag
               highlighting of the term.</para></formalpara>  
           </listitem>
 
-          <listitem><formalpara><title>%U, %u</title>
+          <listitem><formalpara><title>%u</title>
               <para>Url.</para></formalpara> 
           </listitem>
         </itemizedlist>

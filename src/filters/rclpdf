@@ -1,22 +1,18 @@
 #!/bin/sh
-# @(#$Id: rclpdf,v 1.10 2007-07-12 17:13:38 dockes Exp $  (C) 2004 J.F.Dockes
-# This is copied almost verbatim from Estraier:
 #================================================================
+# Some parts are Copyright Estraier (GPL v2).
 # Estraier: a personal full-text search system
 # Copyright (C) 2003-2004 Mikio Hirabayashi
+# Copyright (C) 2014 J.F. Dockes
+# This file is licensed under the GPL v2
 #================================================================
 #================================================================
 # Convert a pdf file to  HTML.
 #
-# We use pdftotxt from the xpdf package. This does not perfect results as
-# whitespace is sometimes either arbitrarily inserted or stripped from the
-# text. This seems to depend on the usage of option -raw, and,
-# unfortunately also of the document itself, so that there does not seem to
-# be an universally good solution
+# We use pdftotext from the xpdf/poppler-utils package. 
 #
-# Also, the filter sometimes seems to output problematic utf-8. I did not
-# check if it was actually incorrect or just mis-understood by qtextedit
-# (tobedone) 
+# pdftotext sometimes outputs unescaped text inside HTML text sections.
+# We try to correct.
 
 # Uncomment the following if you get better results without. The
 # pdftotext manual says that the option is no longer recommended The
@@ -131,6 +127,19 @@ awk 'BEGIN'\
     gsub(/</, "\\&lt;", mid)
     gsub(/>/, "\\&gt;", mid)
     mid = "<title>" mid "</title>"
+    $0 = part1 mid part2
+  }
+  if(doescape == 0 && $0 ~ /content=".*"\/>/){
+    match($0, /content=".*"\/>/)
+    part1 = substr($0, 0, RSTART-1)
+    mid = substr($0, RSTART, RLENGTH)
+    part2 = substr($0, RSTART + RLENGTH, length($0))
+    gsub(/content="/, "", mid)
+    gsub(/"\/>/, "", mid)
+    gsub(/&/, "\\&amp;", mid)
+    gsub(/</, "\\&lt;", mid)
+    gsub(/>/, "\\&gt;", mid)
+    mid = "content=\"" mid "\"/>"
     $0 = part1 mid part2
   }
 
