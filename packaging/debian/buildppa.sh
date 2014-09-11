@@ -4,7 +4,7 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.19.14
+RCLVERS=1.19.14p2
 LENSVERS=1.19.10.3543
 SCOPEVERS=1.19.12
 PPAVERS=1
@@ -41,8 +41,8 @@ check_recoll_orig()
 ####### QT4
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
-series="precise quantal raring saucy trusty"
-#series=precise
+series="precise quantal raring saucy trusty utopic"
+series="precise quantal raring saucy utopic"
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -140,7 +140,7 @@ for series in $series ; do
 done
 
 ### Unity Scope
-series="saucy trusty"
+series="saucy trusty utopic"
 series=
 
 debdir=debianunityscope
