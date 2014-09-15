@@ -96,7 +96,7 @@
       <p><b><i>Déjà utilisateur ?</i></b> Il est possible qu'il 
 	y ait encore quelques astuces qui vous aient échappées. Un coup
 	d'oeil rapide sur la page des <a
-        href="usermanual/rcl.search.html#RCL.SEARCH.GUI.TIPS"> petites
+        href="usermanual/RCL.SEARCH.html#RCL.SEARCH.GUI.TIPS"> petites
         recettes de recherche</a> (en anglais) pourrait s'avérer
         fructueux ! Également, en anglais, la 
         <a href="http://bitbucket.org/medoc/recoll/wiki/FaqsAndHowTos">
