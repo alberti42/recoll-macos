@@ -130,9 +130,15 @@
             also set on files without sub-documents (e.g. a pdf).</li>
 
           <li>A new attribute, <span class="literal">pfxonly</span>,
-            was created. This can be set on any metadata field inside
+            was created to support the above change. This can be set
+            on any metadata field inside
             the <span class="literal">[prefixes]</span> section of
-            the <span class="filename">fields</span> file.</li>
+            the <span class="filename">fields</span> file. The
+            affected field terms will be indexed <em>only with a
+            prefix</em>, so they will cause a hit only for a field
+            search (the general behaviour is that field terms are
+            indexed both prefixed and not, so they can also cause a
+            hit when searched as general terms).</li>
 
           <li>A new <span class="literal">[queryaliases]</span>
             section was created in
@@ -140,8 +146,7 @@
             field name aliases to be used only at query time (to avoid
             unwanted collection of data on random fields during
             indexing). The section is empty by default, but 2 obvious
-            alias are in
-            comment: <span class="literal">filename=fn</span>
+            aliases are commented: <span class="literal">filename=fn</span>
             and <span class="literal">containerfilename=cfn</span>. Setting
             them in your personal file may save you some typing if you
             search on file names.</li> 
@@ -192,6 +197,9 @@
             handle this character, given the varius misuses of minus
             and hyphen. This choice was deemed "less bad" than the
             previous one.</li>
+
+          <li>The purple filter (for pidgin and other messaging apps)
+            has been updated for newer log formats.</li>
 
         </ul>
 
