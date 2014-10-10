@@ -230,11 +230,13 @@ void *rclMonRcvRun(void *q)
 	if (mon->getEvent(ev, 2000)) {
 	    // Don't push events for skipped files. This would get
 	    // filtered on the processing side anyway, but causes
-	    // unnecessary wakeups and messages
+	    // unnecessary wakeups and messages. Do not test
+            // skippedPaths here, this would be incorrect (because a
+            // topdir can be under a skippedPath and this was handled
+            // while adding the watches).
 	    lconfig.setKeyDir(path_getfather(ev.m_path));
 	    walker.setSkippedNames(lconfig.getSkippedNames());
-	    if (walker.inSkippedNames(path_getsimple(ev.m_path)) || 
-		walker.inSkippedPaths(ev.m_path))
+	    if (walker.inSkippedNames(path_getsimple(ev.m_path)))
 		continue;
 
 	    if (ev.m_etyp == RclMonEvent::RCLEVT_DIRCREATE) {

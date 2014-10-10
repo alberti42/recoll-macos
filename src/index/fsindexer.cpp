@@ -259,29 +259,57 @@ static bool matchesSkipped(const vector<string>& tdl,
                            FsTreeWalker& walker,
                            const string& path)
 {
-    // First check what (if any) topdir this is in:
-    string td;
-    for (vector<string>::const_iterator it = tdl.begin(); 
-	 it != tdl.end(); it++) {
-        if (path.find(*it) == 0) {
-            td = *it;
-            break;
+    // Check path against topdirs and skippedPaths. We go up the
+    // ancestors until we find either a topdirs or a skippedPaths
+    // match. If topdirs is found first-> ok to index (it's possible
+    // and useful to configure a topdir under a skippedPath in the
+    // config). This matches what happens during the normal fs tree
+    // walk.
+    string canonpath = path_canon(path);
+    string mpath = canonpath;
+    string topdir;
+    while (mpath.length() > 1) {
+        for (vector<string>::const_iterator it = tdl.begin();  
+             it != tdl.end(); it++) {
+            // the topdirs members are already canonized.
+            LOGDEB2(("indexfiles:matchesskpp: comparing ancestor [%s] to "
+                     "topdir [%s]\n", mpath.c_str(), it->c_str()));
+            if (!mpath.compare(*it)) {
+                topdir = *it;
+                goto goodpath;
+            }
+        }
+
+        if (walker.inSkippedPaths(mpath, false)) {
+            LOGDEB(("FsIndexer::indexFiles: skipping [%s] (skpp)\n", 
+                    path.c_str()));
+            return true;
+        }
+
+        string::size_type len = mpath.length();
+        mpath = path_getfather(mpath);
+        // getfather normally returns a path ending with /, canonic
+        // paths don't (except for '/' itself).
+        if (!mpath.empty() && mpath[mpath.size()-1] == '/')
+            mpath.erase(mpath.size()-1);
+        // should not be necessary, but lets be prudent. If the
+        // path did not shorten, something is seriously amiss
+        // (could be an assert actually)
+        if (mpath.length() >= len) {
+            LOGERR(("FsIndexer::indexFile: internal Error: path [%s] did not "
+                    "shorten\n", mpath.c_str()));
+            return true;
         }
     }
-    if (td.empty()) {
-        LOGDEB(("FsIndexer::indexFiles: skipping [%s] (ntd)\n", path.c_str()));
-        return true;
-    }
+    // We get there if neither topdirs nor skippedPaths tests matched
+    LOGDEB(("FsIndexer::indexFiles: skipping [%s] (ntd)\n", path.c_str()));
+    return true;
 
-    // Check path against skippedPaths. 
-    if (walker.inSkippedPaths(path)) {
-        LOGDEB(("FsIndexer::indexFiles: skipping [%s] (skpp)\n", path.c_str()));
-        return true;
-    }
+goodpath:
 
     // Then check all path components up to the topdir against skippedNames
-    string mpath = path;
-    while (mpath.length() >= td.length() && mpath.length() > 1) {
+    mpath = canonpath;
+    while (mpath.length() >= topdir.length() && mpath.length() > 1) {
         string fn = path_getsimple(mpath);
         if (walker.inSkippedNames(fn)) {
             LOGDEB(("FsIndexer::indexFiles: skipping [%s] (skpn)\n", 
