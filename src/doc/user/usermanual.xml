@@ -5107,7 +5107,7 @@ skippedPaths = ~/somedir/*.txt
                 <listitem><para>The values in the
                 <varname>*skippedPaths</varname> variables are matched by
                 default with <literal>fnmatch(3)</literal>, with the
-                FNM_PATHNAME and FNM_LEADING_DIR flags. This means that '/'
+                FNM_PATHNAME flag. This means that '/'
                 characters must be matched explicitely. You can set
                 <varname>skippedPathsFnmPathname</varname> to 0 to disable
                 the use of FNM_PATHNAME (meaning that /*/dir3 will match

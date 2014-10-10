@@ -108,7 +108,7 @@ class FsTreeWalker {
 
     /** Test if path/name should be skipped. This can be used independantly of
       * an actual tree walk */
-    bool inSkippedPaths(const string& path, bool ckparents = true);
+    bool inSkippedPaths(const string& path, bool ckparents = false);
     bool inSkippedNames(const string& name);
 
  private:
