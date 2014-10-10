@@ -142,7 +142,6 @@
 .kar = audio/x-karaoke
 .mid = audio/x-karaoke
 .aac = audio/aac
-.mp4 = audio/mp4
 .m4a = audio/mp4
 
 .mkv = video/x-matroska
