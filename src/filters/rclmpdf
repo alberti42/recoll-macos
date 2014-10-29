@@ -18,12 +18,14 @@
 # Recoll PDF extractor, with support for attachments
 
 import os
-import fnmatch
+import sys
+import re
 import rclexecm
 import subprocess
 import distutils.spawn
 import tempfile
 import atexit
+import signal
 
 tmpdir = None
 
@@ -31,6 +33,16 @@ def finalcleanup():
     if tmpdir:
         vacuumdir(tmpdir)
         os.rmdir(tmpdir)
+
+def signal_handler(signal, frame):
+    sys.exit(1)
+
+atexit.register(finalcleanup)
+
+signal.signal(signal.SIGHUP, signal_handler)
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGQUIT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
 
 def vacuumdir(dir):
     if dir:
@@ -48,18 +60,6 @@ class PDFExtractor:
         self.em = em
         self.attextractdone = False
         
-    def extractone(self, ipath):
-        #self.em.rclog("extractone: [%s]" % ipath)
-        if not self.attextractdone:
-            if not self.extractAttach():
-                return (False, "", "", rclexecm.RclExecM.eofnow)
-        path = os.path.join(tmpdir, ipath)
-        if os.path.isfile(path):
-            f = open(path)
-            docdata = f.read();
-            f.close()
-        return (True, docdata, ipath, False)
-
     # Extract all attachments if any into temporary directory
     def extractAttach(self):
         if self.attextractdone:
@@ -79,7 +79,93 @@ class PDFExtractor:
         except Exception, e:
             self.em.rclog("extractAttach: failed: %s" % e)
             return False
-        
+
+    def extractone(self, ipath):
+        #self.em.rclog("extractone: [%s]" % ipath)
+        if not self.attextractdone:
+            if not self.extractAttach():
+                return (False, "", "", rclexecm.RclExecM.eofnow)
+        path = os.path.join(tmpdir, ipath)
+        if os.path.isfile(path):
+            f = open(path)
+            docdata = f.read();
+            f.close()
+        if self.currentindex == len(self.attachlist) - 1:
+            eof = rclexecm.RclExecM.eofnext
+        else:
+            eof = rclexecm.RclExecM.noteof
+        return (True, docdata, ipath, eof)
+
+    # pdftotext (used to?) badly escape text inside the header
+    # fields. We do it here. This is not an html parser, and depends a
+    # lot on the actual format output by pdftotext.
+    def _fixhtml(self, input):
+        #print input
+        inheader = False
+        inbody = False
+        didcs = False
+        output = ''
+        cont = ''
+        for line in input.split('\n'):
+            line = cont + line
+            cont = ''
+            if re.search('</head>', line):
+                inheader = False
+            if re.search('</pre>', line):
+                inbody = False
+            if inheader:
+                if not didcs:
+                    output += '<meta http-equiv="Content-Type"' + \
+                              'content="text/html; charset=UTF-8">\n'
+                    didcs = True
+
+                m = re.search(r'(.*<title>)(.*)(<\/title>.*)', line)
+                if not m:
+                    m = re.search(r'(.*content=")(.*)(".*/>.*)', line)
+                if m:
+                    line = m.group(1) + self.em.htmlescape(m.group(2)) + \
+                           m.group(3)
+
+                # Recoll treats "Subject" as a "title" element
+                # (based on emails). The PDF "Subject" metadata
+                # field is more like an HTML "description"
+                line = re.sub('name="Subject"', 'name="Description"', line, 1)
+
+            elif inbody:
+                # Remove end-of-line hyphenation. It's not clear that
+                # we should do this as pdftotext without the -layout
+                # option does it ?
+                #if re.search(r'[-]$', line):
+                    #m = re.search(r'(.*)[ \t]([^ \t]+)$', line)
+                    #if m:
+                        #line = m.group(1)
+                        #cont = m.group(2).rstrip('-')
+                line = self.em.htmlescape(line)
+                
+            if re.search('<head>', line):
+                inheader = True
+            if re.search('<pre>', line):
+                inbody = True
+
+            output += line + '\n'
+
+        return output
+            
+    def _selfdoc(self):
+        self.em.setmimetype('text/html')
+
+        if self.attextractdone and len(self.attachlist) == 0:
+            eof = rclexecm.RclExecM.eofnext
+        else:
+            eof = rclexecm.RclExecM.noteof
+            
+        data = subprocess.check_output([self.pdftotext, "-htmlmeta", "-enc",
+                                        "UTF-8", "-eol", "unix", "-q",
+                                        self.filename, "-"])
+        data = self._fixhtml(data)
+        #self.em.rclog("%s" % data)
+        return (True, data, "", eof)
+    
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
         self.filename = params["filename:"]
@@ -104,7 +190,9 @@ class PDFExtractor:
                     return False
             else:
                 tmpdir = tempfile.mkdtemp(prefix='rclmpdf')
-            if not "RECOLL_FILTER_FORPREVIEW" in os.environ or os.environ["RECOLL_FILTER_FORPREVIEW"] != "yes":
+
+            preview = os.environ.get("RECOLL_FILTER_FORPREVIEW", "no")
+            if preview != "yes":
                 # When indexing, extract attachments at once. This
                 # will be needed anyway and it allows generating an
                 # eofnext error instead of waiting for actual eof,
@@ -122,15 +210,7 @@ class PDFExtractor:
         if self.currentindex == -1:
             #self.em.rclog("getnext: current -1")
             self.currentindex = 0
-            self.em.setmimetype('text/html')
-            eof = rclexecm.RclExecM.noteof
-            if self.attextractdone and len(self.attachlist) == 0:
-                eof = rclexecm.RclExecM.eofnext
-
-            data = subprocess.check_output([self.pdftotext, "-htmlmeta", "-enc",
-                                            "UTF-8", "-eol", "unix", "-q",
-                                            self.filename, "-"])
-            return (True, data, "", eof)
+            return self._selfdoc()
         else:
             self.em.setmimetype('')
 
@@ -143,10 +223,6 @@ class PDFExtractor:
             try:
                 ok, data, ipath, eof = \
                     self.extractone(self.attachlist[self.currentindex])
-                if self.currentindex == len(self.attachlist) - 1:
-                    eof = rclexecm.RclExecM.eofnext
-                else:
-                    eof = rclexecm.RclExecM.noteof
                 self.currentindex += 1
 
                 #self.em.rclog("getnext: returning ok for [%s]" % ipath)
@@ -156,7 +232,6 @@ class PDFExtractor:
 
 
 # Main program: create protocol handler and extractor and run them
-atexit.register(finalcleanup)
 proto = rclexecm.RclExecM()
 extract = PDFExtractor(proto)
 rclexecm.main(proto, extract)
