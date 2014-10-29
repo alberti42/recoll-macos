@@ -725,6 +725,11 @@ FsIndexer::processonefile(RclConfig *config,
 	    // We index at least the file name even if there was an error.
 	    // We'll change the signature to ensure that the indexing will
 	    // be retried every time.
+            
+            // If there is an error and the base doc was already seen,
+            // we're done
+            if (fis == FileInterner::FIError && hadNullIpath)
+		return FsTreeWalker::FtwOk;
 
 	    // Internal access path for multi-document files. If empty, this is
 	    // for the main file.
