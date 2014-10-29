@@ -1,0 +1,162 @@
+#!/usr/bin/env python
+# Copyright (C) 2014 J.F.Dockes
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the
+# Free Software Foundation, Inc.,
+# 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+# Recoll PDF extractor, with support for attachments
+
+import os
+import fnmatch
+import rclexecm
+import subprocess
+import distutils.spawn
+import tempfile
+import atexit
+
+tmpdir = None
+
+def finalcleanup():
+    if tmpdir:
+        vacuumdir(tmpdir)
+        os.rmdir(tmpdir)
+
+def vacuumdir(dir):
+    if dir:
+        for fn in os.listdir(dir):
+            path = os.path.join(dir, fn)
+            if os.path.isfile(path):
+                os.unlink(path)
+    return True
+
+class PDFExtractor:
+    def __init__(self, em):
+        self.currentindex = 0
+        self.pdftotext = ""
+        self.pdftk = ""
+        self.em = em
+        self.attextractdone = False
+        
+    def extractone(self, ipath):
+        #self.em.rclog("extractone: [%s]" % ipath)
+        if not self.attextractdone:
+            if not self.extractAttach():
+                return (False, "", "", rclexecm.RclExecM.eofnow)
+        path = os.path.join(tmpdir, ipath)
+        if os.path.isfile(path):
+            f = open(path)
+            docdata = f.read();
+            f.close()
+        return (True, docdata, ipath, False)
+
+    # Extract all attachments if any into temporary directory
+    def extractAttach(self):
+        if self.attextractdone:
+            return True
+        self.attextractdone = True
+
+        global tmpdir
+        if not tmpdir or not self.pdftk:
+            return False
+
+        try:
+            vacuumdir(tmpdir)
+            subprocess.check_call([self.pdftk, self.filename, "unpack_files",
+                                   "output", tmpdir])
+            self.attachlist = sorted(os.listdir(tmpdir))
+            return True
+        except Exception, e:
+            self.em.rclog("extractAttach: failed: %s" % e)
+            return False
+        
+    ###### File type handler api, used by rclexecm ---------->
+    def openfile(self, params):
+        self.filename = params["filename:"]
+        #self.em.rclog("openfile: [%s]" % self.filename)
+        self.currentindex = -1
+        self.attextractdone = False
+
+        if self.pdftotext == "":
+            self.pdftotext = distutils.spawn.find_executable("pdftotext")
+            if self.pdftotext is None:
+                print("RECFILTERROR HELPERNOTFOUND pdftotext")
+                sys.exit(1);
+
+        if self.pdftk == "":
+            self.pdftk = distutils.spawn.find_executable("pdftk")
+
+        if self.pdftk:
+            global tmpdir
+            if tmpdir:
+                if not vacuumdir(tmpdir):
+                    self.em.rclog("openfile: vacuumdir %s failed" % tmpdir)
+                    return False
+            else:
+                tmpdir = tempfile.mkdtemp(prefix='rclmpdf')
+            if not "RECOLL_FILTER_FORPREVIEW" in os.environ or os.environ["RECOLL_FILTER_FORPREVIEW"] != "yes":
+                # When indexing, extract attachments at once. This
+                # will be needed anyway and it allows generating an
+                # eofnext error instead of waiting for actual eof,
+                # which avoids a bug in recollindex up to 1.20
+                self.extractAttach()
+
+        return True
+
+    def getipath(self, params):
+        ipath = params["ipath:"]
+        ok, data, ipath, eof = self.extractone(ipath)
+        return (ok, data, ipath, eof)
+        
+    def getnext(self, params):
+        if self.currentindex == -1:
+            #self.em.rclog("getnext: current -1")
+            self.currentindex = 0
+            self.em.setmimetype('text/html')
+            eof = rclexecm.RclExecM.noteof
+            if self.attextractdone and len(self.attachlist) == 0:
+                eof = rclexecm.RclExecM.eofnext
+
+            data = subprocess.check_output([self.pdftotext, "-htmlmeta", "-enc",
+                                            "UTF-8", "-eol", "unix", "-q",
+                                            self.filename, "-"])
+            return (True, data, "", eof)
+        else:
+            self.em.setmimetype('')
+
+            if not self.attextractdone:
+                if not self.extractAttach():
+                    return (False, "", "", rclexecm.RclExecM.eofnow)
+
+            if self.currentindex >= len(self.attachlist):
+                return (False, "", "", rclexecm.RclExecM.eofnow)
+            try:
+                ok, data, ipath, eof = \
+                    self.extractone(self.attachlist[self.currentindex])
+                if self.currentindex == len(self.attachlist) - 1:
+                    eof = rclexecm.RclExecM.eofnext
+                else:
+                    eof = rclexecm.RclExecM.noteof
+                self.currentindex += 1
+
+                #self.em.rclog("getnext: returning ok for [%s]" % ipath)
+                return (ok, data, ipath, eof)
+            except:
+                return (False, "", "", rclexecm.RclExecM.eofnow)
+
+
+# Main program: create protocol handler and extractor and run them
+atexit.register(finalcleanup)
+proto = rclexecm.RclExecM()
+extract = PDFExtractor(proto)
+rclexecm.main(proto, extract)
