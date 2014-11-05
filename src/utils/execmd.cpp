@@ -33,18 +33,72 @@
 #include <string>
 #include <sstream>
 #include <iostream>
-using namespace std;
 
 #include "execmd.h"
-#include "pathut.h"
-#include "debuglog.h"
-#include "smallut.h"
+
 #include "netcon.h"
 #include "closefrom.h"
+
+using namespace std;
 
 extern char **environ;
 
 bool ExecCmd::o_useVfork = false;
+
+#ifdef RECOLL_DATADIR
+#include "debuglog.h"
+#include "smallut.h"
+
+#else
+// If compiling outside of recoll, make the file as standalone as reasonable.
+
+#define LOGFATAL(X)
+#define LOGERR(X)
+#define LOGINFO(X)
+#define LOGDEB(X)
+#define LOGDEB0(X)
+#define LOGDEB1(X)
+#define LOGDEB2(X)
+#define LOGDEB3(X)
+#define LOGDEB4(X)
+
+#ifndef MIN
+#define MIN(A,B) ((A) < (B) ? (A) : (B))
+#endif
+
+static void stringToTokens(const string &s, vector<string> &tokens, 
+                    const string &delims = " \t", bool skipinit=true);
+
+static void stringToTokens(const string& str, vector<string>& tokens,
+		    const string& delims, bool skipinit)
+{
+    string::size_type startPos = 0, pos;
+
+    // Skip initial delims, return empty if this eats all.
+    if (skipinit && 
+	(startPos = str.find_first_not_of(delims, 0)) == string::npos) {
+	return;
+    }
+    while (startPos < str.size()) { 
+        // Find next delimiter or end of string (end of token)
+        pos = str.find_first_of(delims, startPos);
+
+        // Add token to the vector and adjust start
+	if (pos == string::npos) {
+	    tokens.push_back(str.substr(startPos));
+	    break;
+	} else if (pos == startPos) {
+	    // Dont' push empty tokens after first
+	    if (tokens.empty())
+		tokens.push_back(string());
+	    startPos = ++pos;
+	} else {
+	    tokens.push_back(str.substr(startPos, pos - startPos));
+	    startPos = ++pos;
+	}
+    }
+}
+#endif // RECOLL_DATADIR
 
 /* From FreeBSD's which command */
 static bool exec_is_there(const char *candidate)
