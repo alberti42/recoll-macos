@@ -16,15 +16,12 @@
  */
 #ifndef _EXECMD_H_INCLUDED_
 #define _EXECMD_H_INCLUDED_
+
 #include <signal.h>
+
 #include <string>
 #include <vector>
 #include <stack>
-#ifndef NO_NAMESPACES
-using std::string;
-using std::vector;
-using std::stack;
-#endif
 
 #include "netcon.h"
 
@@ -85,8 +82,8 @@ class ExecCmd {
      * times for several variables).
      * @param envassign an environment assignment string ("name=value")
      */
-    void putenv(const string &envassign);
-    void putenv(const string &name, const string& value);
+    void putenv(const std::string &envassign);
+    void putenv(const std::string &name, const std::string& value);
 
     /** 
      * Set function objects to call whenever new data is available or on
@@ -110,7 +107,7 @@ class ExecCmd {
      * If the parameter can't be opened for writing, the command's
      * stderr will be closed.
      */
-    void setStderr(const string &stderrFile) {m_stderrFile = stderrFile;}
+    void setStderr(const std::string &stderrFile) {m_stderrFile = stderrFile;}
 
     /**
      * Execute command. 
@@ -129,19 +126,19 @@ class ExecCmd {
      * @param output Output FROM the command.
      * @return the exec ouput status (0 if ok), or -1
      */
-    int doexec(const string &cmd, const vector<string>& args, 
-	       const string *input = 0, 
-	       string *output = 0);
+    int doexec(const std::string &cmd, const std::vector<std::string>& args, 
+	       const std::string *input = 0, 
+	       std::string *output = 0);
 
     /*
      * The next four methods can be used when a Q/A dialog needs to be 
      * performed with the command
      */
-    int startExec(const string &cmd, const vector<string>& args, 
+    int startExec(const std::string &cmd, const std::vector<std::string>& args, 
 		  bool has_input, bool has_output);
-    int send(const string& data);
-    int receive(string& data, int cnt = -1);
-    int getline(string& data);
+    int send(const std::string& data);
+    int receive(std::string& data, int cnt = -1);
+    int getline(std::string& data);
     int wait();
     /** Wait with WNOHANG set. 
 	@return true if process exited, false else.
@@ -177,7 +174,7 @@ class ExecCmd {
      * @param path exec seach path to use instead of getenv(PATH)
      * @return true if found
      */
-    static bool which(const string& cmd, string& exe, const char* path = 0);
+    static bool which(const std::string& cmd, std::string& exe, const char* path = 0);
 
     /**
      * Execute command and return stdout output in a string
@@ -191,12 +188,12 @@ class ExecCmd {
  private:
     static bool      o_useVfork;
 
-    vector<string>   m_env;
+    std::vector<std::string>   m_env;
     ExecCmdAdvise   *m_advise;
     ExecCmdProvide  *m_provide;
     bool             m_killRequest;
     int              m_timeoutMs;
-    string           m_stderrFile;
+    std::string           m_stderrFile;
     // Pipe for data going to the command
     int              m_pipein[2];
     NetconP          m_tocmd;
@@ -217,7 +214,7 @@ class ExecCmd {
 	sigemptyset(&m_blkcld);
     }
     // Child process code
-    inline void dochild(const string &cmd, const char **argv, 
+    inline void dochild(const std::string &cmd, const char **argv, 
 			const char **envv, bool has_input, bool has_output);
     /* Copyconst and assignment private and forbidden */
     ExecCmd(const ExecCmd &) {}
@@ -261,19 +258,19 @@ public:
 	return 0;
     }
     void reexec();
-    const string& getreason() {return m_reason;}
+    const std::string& getreason() {return m_reason;}
     // Insert new args into the initial argv. idx designates the place
     // before which the new args are inserted (the default of 1
     // inserts after argv[0] which would probably be an appropriate
     // place for additional options)
-    void insertArgs(const vector<string>& args, int idx = 1);
-    void removeArg(const string& arg);
+    void insertArgs(const std::vector<std::string>& args, int idx = 1);
+    void removeArg(const std::string& arg);
 private:
-    vector<string> m_argv;
-    string m_curdir;
+    std::vector<std::string> m_argv;
+    std::string m_curdir;
     int    m_cfd;
-    string m_reason;
-    stack<void (*)(void)> m_atexitfuncs;
+    std::string m_reason;
+    std::stack<void (*)(void)> m_atexitfuncs;
 };
 
 #endif /* _EXECMD_H_INCLUDED_ */

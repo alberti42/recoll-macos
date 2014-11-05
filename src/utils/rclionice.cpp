@@ -17,9 +17,13 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include <string>
+
 #include "rclionice.h"
 #include "execmd.h"
 #include "debuglog.h"
+
+using namespace std;
 
 bool rclionice(const string& clss, const string& cdata)
 {
