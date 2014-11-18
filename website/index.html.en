@@ -52,7 +52,8 @@
           display an even quicker text preview.</li>
         <li>The software is free, open source,
 	  and licensed under the GPL.</li>
-        <li><a href="features.html">Detailed features</a>.</li>  
+        <li><a href="features.html">Detailed features</a> and
+          application requirements for supported document types.</li>  
       </ul>
 
       <p>The current <span class="application">Recoll</span> version is
@@ -94,6 +95,17 @@
       <div class="news">
       
       <dl>
+        <dt>2014-11-09</dt> <dd>If you are still running anything
+          older than 1.19.14p2, <span class="important">YOU SHOULD
+          UPGRADE</span>. In
+          particular, <a href="release-1.19.html#rodb">this index
+            corruption issue</a> leading to repeated reindexing of
+            documents, and possibly query problems too, can be pretty
+          ennoying.<br/> 
+          GOTO <a href="download.html">download</a> and
+          install 1.19.14p2 or 1.20. <em>Reset your index after
+            upgrading (rm -rf ~/.recoll/xapiandb)</em>.</dd>
+
         <dt>2014-07-28</dt> <dd>A nice new application to complement
           Recoll: <a href="https://github.com/pidlug/recollfs">recollfs</a>
           implements a Fuse filesystem where Recoll queries are

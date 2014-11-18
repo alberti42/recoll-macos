@@ -34,15 +34,17 @@ be turned on <em>only</em> by editing recoll.conf (<a
 href="usermanual/usermanual.html#RCL.INDEXING.CONFIG.SENS">see the manual</a>).
 If you do so, you must then reset the index.</p>
 
-<p>Always reset the index if you do not know by which version it was created
-(you're not sure it's 1.18). The simplest way to do this is to quit all Recoll
-programs and just delete the index directory (<span
-class="literal">rm -rf ~/.recoll/xapiandb</span>), then start
-<code>recoll</code> or <code>recollindex</code>. <br>
-<span class="literal">recollindex -z</span>  will do the same in most, but
-not all, cases. It's better to use the <tt>rm</tt> method, which will also
-ensure that no debris from older releases remain (e.g.: old stemming files
-which are not used any more).</p>
+<p>To be safe, always reset the index when upgrading to 1.19. There
+  was a <a href="#rodb">persistent index corruption issue</a> in 1.18
+  and earlier versions.
+  The simplest way to do this is to quit all Recoll
+  programs and just delete the index directory (
+  <span class="literal">rm -rf ~/.recoll/xapiandb</span>), then start
+  <code>recoll</code> or <code>recollindex</code>. <br>
+  <span class="literal">recollindex -z</span>  will do the same in most, but
+  not all, cases. It's better to use the <tt>rm</tt> method, which will also
+  ensure that no debris from older releases remain (e.g.: old stemming files
+  which are not used any more).</p>
 
 <p>Installing 1.19 over an 1.18 index will force a lot of reindexing anyway
 because Recoll switched to using <i>st_ctime</i> instead of <i>st_mtime</i> to
@@ -74,12 +76,15 @@ Configuration</em> menu.</p>
   <li>1.19.14 fixes relatively minor but ennoying issues in
     indexing, plus a few other glitches:
     <ul>
-      <li>The use of a separate readonly Database object for querying
-        the index while indexing would trigger Xapian errors, (bad
-        block reads), and subsequent up-to-date check failures
-        (leading to unnecessary reindexing). The jury is out as to the
-        cause, but using the same object for reading and writing seems
-        to eliminate the problem.</li>
+      <li id="rodb" class="important">The use of a separate readonly
+        Database object 
+        for querying the index while indexing would trigger Xapian
+        errors, (bad block reads), and subsequent up-to-date check
+        failures (leading to unnecessary reindexing). The jury is out
+        as to the cause, but using the same object for reading and
+        writing seems to eliminate the problem. This is linked to
+        a <a href="http://trac.xapian.org/ticket/645">Xapian
+        ticket</a>.</li>
       <li>An unnecessary log message in the child process between
         forking and executing the filter could block on a mutex, and
         lead to a 20 mn timeout for the affected father process thread

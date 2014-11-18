@@ -76,11 +76,25 @@
       <p>However, if you are running a Recoll version older than 1.17,
         you should really upgrade.</p>
 
+      <h2>Attachments to PDF documents (1.20 and older)</h2>
+
+      <p>A new <a href="rclmpdf">rclmpdf</a> filter for processing
+        PDF files with attachments. This replaces the old <b>rclpdf</b>
+        filter. You need to add it to ~/.recoll/mimeconf until it is
+        made standard (this is still a bit experimental, and a big
+        change from the previous filter):
+        <pre><tt>
+        [index]
+        application/pdf = execm rclmpdf
+        </tt></pre>
+        Note the <tt>execm</tt> instead of <tt>exec</tt>. </p>  
+
       <h2><a name="soff1">Open/Libre-Office documents (1.19 and older)</a></h2>
 
       <p><a href="rclsoff">rclsoff</a>: the previous version did not
         produce white space between input tab-separated words, leading
         to search failures.</p>
+
 
       <h2>Purple logs (1.20 and older)</h2>
 
