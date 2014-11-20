@@ -1599,7 +1599,9 @@ bool Db::Native::docToXdocXattrOnly(TextSplitDb *splitter, const string &udi,
 				    Doc &doc, Xapian::Document& xdoc)
 {
     LOGDEB0(("Db::docToXdocXattrOnly\n"));
+#ifdef IDX_THREADS
     PTMutexLocker lock(m_mutex);
+#endif
 
     // Read existing document and its data record
     if (getDoc(udi, 0, xdoc) == 0) {
