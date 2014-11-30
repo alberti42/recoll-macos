@@ -63,6 +63,7 @@ application/vnd.ms-office = exec rcldoc
 
 application/ogg = execm rclaudio
 application/pdf = exec rclpdf
+# application/pdf = execm rclmpdf
 application/postscript = exec pstotext;charset=iso-8859-1;mimetype=text/plain
 application/vnd.ms-excel = exec rclxls
 application/vnd.ms-powerpoint = exec rclppt
