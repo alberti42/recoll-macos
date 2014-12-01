@@ -1,6 +1,6 @@
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.19.13
+Version:        1.19.14p2
 Release:        1%{?dist}
 Group:          Applications/Databases
 License:        GPLv2+
@@ -14,35 +14,37 @@ BuildRequires:  aspell-devel
 BuildRequires:  xapian-core-devel
 BuildRequires:  desktop-file-utils
 Requires:       xdg-utils
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %description
 Recoll is a personal full text search package for Linux, FreeBSD and
 other Unix systems. It is based on a very strong back end (Xapian), for
 which it provides an easy to use, feature-rich, easy administration
 interface.
+%global __provides_exclude_from ^%{_libdir}/recoll/librecoll\\.so.*$
+%global __requires_exclude      ^librecoll\\.so.*$
 
 %prep
-%setup -q
-# remove execute bit
-%{__chmod} 0644 utils/{conftree.cpp,conftree.h,debuglog.cpp,debuglog.h}
+%setup -q -n %{name}-%{version}
+chmod 0644 utils/{conftree.cpp,conftree.h,debuglog.cpp,debuglog.h}
 
 %build
 export QMAKE=qmake-qt4
 %configure
-%{__make} %{?_smp_mflags}
+make %{?_smp_mflags}
 
 %install
-%{__rm} -rf %{buildroot}
-%{__make} install DESTDIR=%{buildroot} STRIP=/bin/true INSTALL='install -p'
-%{__chmod} 0755 %{buildroot}/%{_libdir}/%{name}/lib%{name}.so.%{version}
+make install DESTDIR=%{buildroot} STRIP=/bin/true INSTALL='install -p'
 
 desktop-file-install --delete-original \
   --dir=%{buildroot}/%{_datadir}/applications \
   %{buildroot}/%{_datadir}/applications/%{name}-searchgui.desktop
 
 # use /usr/bin/xdg-open
-%{__rm} -f %{buildroot}/usr/share/recoll/filters/xdg-open
+rm -f %{buildroot}/usr/share/recoll/filters/xdg-open
+
+# fix perms
+chmod 0755 %{buildroot}/usr/share/recoll/filters/rclexecm.py
+chmod 0755 %{buildroot}%{_libdir}/recoll/librecoll.so.*
 
 %post
 touch --no-create %{_datadir}/icons/hicolor
@@ -64,45 +66,65 @@ if [ -x %{_bindir}/update-desktop-database ] ; then
 fi
 exit 0
 
-%clean
-%{__rm} -rf %{buildroot}
-
 %files
-%defattr(-, root, root, -)
 %doc COPYING ChangeLog README
 %{_bindir}/%{name}
 %{_bindir}/%{name}index
-%{_libdir}/%{name}
-%{_libdir}/%{name}/lib%{name}.so.%{version}
 %{_datadir}/%{name}
+%{_datadir}/appdata/%{name}.appdata.xml
 %{_datadir}/applications/%{name}-searchgui.desktop
 %{_datadir}/icons/hicolor/48x48/apps/%{name}.png
 %{_datadir}/pixmaps/%{name}.png
+%{_libdir}/recoll
+%{python_sitearch}/recoll
 %{python_sitearch}/Recoll*.egg-info
-%{python_sitearch}/recoll/recoll.so
-%{python_sitearch}/recoll/rclextract.so
-%{python_sitearch}/recoll/rclconfig.py
-%{python_sitearch}/recoll/rclconfig.pyc
-%{python_sitearch}/recoll/rclconfig.pyo
-%{python_sitearch}/recoll/__init__.py
-%{python_sitearch}/recoll/__init__.pyc
-%{python_sitearch}/recoll/__init__.pyo
 %{_mandir}/man1/%{name}.1*
+%{_mandir}/man1/recollq.1*
 %{_mandir}/man1/%{name}index.1*
 %{_mandir}/man5/%{name}.conf.5*
 
 %changelog
-* Tue May 06 2014 J.F. Dockes <jf@dockes.org> - 1.19.13
-- Update to 1.19.13
+* Sun Nov 09 2014 Jean-Francois Dockes <jf@dockes.org> - 1.19.14p2-1
+- 1.19.14p2
 
-* Wed Jun 19 2013 J.F. Dockes <jf@dockes.org> - 1.19.5
-- Update to 1.19.5
+* Sun Aug 17 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.19.13-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
 
-* Mon Apr 29 2013 J.F. Dockes <jf@dockes.org> - 3302 1.19 snap
-- Snapshot for packaging tests
+* Sun Jun 08 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.19.13-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 
-* Thu May 17 2012 J.F. Dockes <jf@dockes.org> - 1.17.2-1
-- 1.17.2
+* Tue May 06 2014 Terje Rosten <terje.rosten@ntnu.no> - 1.19.13-1
+- 1.19.13
+
+* Mon Jan 20 2014 Terje Rosten <terje.rosten@ntnu.no> - 1.19.11-1
+- 1.19.11
+
+* Mon Nov 11 2013 Terje Rosten <terje.rosten@ntnu.no> - 1.19.9-1
+- 1.19.9
+
+* Tue Nov 05 2013 Terje Rosten <terje.rosten@ntnu.no> - 1.19.8-1
+- 1.19.8
+
+* Sun Aug 04 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.19.4-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
+
+* Wed Jun 12 2013 Terje Rosten <terje.rosten@ntnu.no> - 1.19.4-2
+- Fix filter setup
+
+* Mon Jun 10 2013 Terje Rosten <terje.rosten@ntnu.no> - 1.19.4-1
+- 1.19.4
+
+* Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.18.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
+
+* Mon Nov 19 2012 Terje Rosten <terje.rosten@ntnu.no> - 1.18.1-1
+- 1.18.1
+
+* Sat Jul 21 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.17.3-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
+* Wed May 30 2012 Terje Rosten <terje.rosten@ntnu.no> - 1.17.3-1
+- 1.17.3
 
 * Sat Mar 31 2012 Terje Rosten <terje.rosten@ntnu.no> - 1.17.1-1
 - 1.17.1
@@ -193,3 +215,4 @@ exit 0
 
 * Wed Feb  1 2006 Jean-Francois Dockes <jfd@recoll.org> 1.2.0-1
 - initial packaging
+
