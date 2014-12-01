@@ -7,7 +7,7 @@
   content="recoll is a simple full-text search system for unix and linux     based on the powerful and mature xapian engine">
   <meta name="Keywords" content="full text search, desktop search, unix, linux">
   <meta http-equiv="Content-language" content="en">
-  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <meta name="robots" content="All,Index,Follow">
   <link type="text/css" rel="stylesheet" href="styles/style.css">
 
@@ -173,7 +173,7 @@ For 1.17:
     <p><em>Note on building Xapian for older CPUs:</em> The build
     configurations for Xapian releases 1.0.21 and 1.2.1 or newer enable the use
     of SSE2 floating point instructions. These instructions are not available
-    in CPUs older than Intel Pentium�4 or AMD Athlon�64. When building for such
+    in CPUs older than Intel Pentium 4 or AMD Athlon 64. When building for such
     a CPU, you need to add the --disable-sse flag to the Xapian library
     configure command. If this is not done, the problem signals itself by
     "Illegal instruction" crashes (SIGILL) in recollindex and recoll. </p>
@@ -185,7 +185,7 @@ For 1.17:
   </li>
   <li><p>Qt webkit development: Qt WebKit is quite often distributed apart from
     the main Qt lib. It is possible to configure Recoll not to use Qt WebKit
-    (see configure�--help).</p>
+    (see configure --help).</p>
   </li>
   <li>Python development package: you can avoid needing this by configuring
     with --disable-python-module.</li>
@@ -375,6 +375,11 @@ copied to <span class="filename">/usr/[local/]share/recoll/translations</span>
 message file, handy to work on a new translation.</p>
 
 <h3>Updated 1.19 translations that became available after the release:</h3>
+
+<p>A Simplified Chinese translation by 蔡火胜:
+<a href="translations/recoll_zh_CN.ts">recoll_zh_CN.ts</a>
+<a href="translations/recoll_zh_CN.qm">recoll_zh_CN.qm</a>
+</p>
 
 <p>A Polish translation by Tymoteusz:
 <a href="translations/recoll_pl.ts">recoll_pl.ts</a>
