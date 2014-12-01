@@ -70,6 +70,13 @@ static const QKeySequence closeKeySeq("Ctrl+w");
 #include <QWebSettings>
 #endif
 
+// Decide if we set font family and style with a css section in the
+// html <head> or with qwebsettings setfont... calls.  We currently do
+// it with websettings because this gives an instant redisplay, and
+// the css has a tendancy to not find some system fonts. Otoh,
+// SetFontSize() needs a strange offset of 3, not needed with css.
+#undef SETFONT_WITH_HEADSTYLE
+
 class QtGuiResListPager : public ResListPager {
 public:
     QtGuiResListPager(ResList *p, int ps) 
@@ -175,7 +182,18 @@ string QtGuiResListPager::prevUrl()
 
 string QtGuiResListPager::headerContent() 
 {
-    return (const char *)prefs.reslistheadertext.toUtf8();
+    string out;
+#ifdef SETFONT_WITH_HEADSTYLE
+    out = "<style type=\"text/css\">\nbody,table,select,input {\n";
+    char ftsz[30];
+    sprintf(ftsz, "%d", prefs.reslistfontsize);
+    out += string("font-family: \"") + qs2utf8s(prefs.reslistfontfamily)
+        + "\";\n";
+    out += string("font-size: ") + ftsz + "pt;\n";
+    out += string("}\n</style>\n");
+#endif
+    out += qs2utf8s(prefs.reslistheadertext);
+    return out;
 }
 
 void QtGuiResListPager::suggest(const vector<string>uterms, 
@@ -378,16 +396,20 @@ void ResList::setFont()
 	QTextBrowser::setFont(QFont());
     }
 #else
+#ifndef SETFONT_WITH_HEADSTYLE
     QWebSettings *websettings = settings();
     if (prefs.reslistfontfamily.length()) {
+        // For some reason there is (12-2014) an offset of 3 between what
+        // we request from webkit and what we get.
 	websettings->setFontSize(QWebSettings::DefaultFontSize, 
-				 prefs.reslistfontsize);
+				 prefs.reslistfontsize + 3);
 	websettings->setFontFamily(QWebSettings::StandardFont, 
 			       prefs.reslistfontfamily);
     } else {
 	websettings->resetFontSize(QWebSettings::DefaultFontSize);
 	websettings->resetFontFamily(QWebSettings::StandardFont);
     }
+#endif
 #endif
 }
 

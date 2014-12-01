@@ -38,8 +38,8 @@ using std::list;
 #include "mimehandler.h"
 
 // Default highlighter. No need for locking, this is query-only.
-static const string cstr_hlfontcolor("<font color=\"blue\">");
-static const string cstr_hlendfont("</font>");
+static const string cstr_hlfontcolor("<span style='color: blue;'>");
+static const string cstr_hlendfont("</span>");
 class PlainToRichHtReslist : public PlainToRich {
 public:
     virtual string startMatch(unsigned int) 
@@ -361,9 +361,9 @@ void ResListPager::displayPage(RclConfig *config)
 	  << headerContent()
 	  << "</head><body>" << endl
 	  << pageTop()
-	  << "<p><font size=+1><b>"
+	  << "<p><span style=\"font-size:110%;\"><b>"
 	  << m_docSource->title()
-	  << "</b></font>&nbsp;&nbsp;&nbsp;";
+	  << "</b></span>&nbsp;&nbsp;&nbsp;";
 
     if (pageEmpty()) {
 	chunk << trans("<p><b>No results found</b><br>");

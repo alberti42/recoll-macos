@@ -377,10 +377,14 @@ void UIPrefsDialog::showFontDialog()
 
     font = QFontDialog::getFont(&ok, font, this);
     if (ok) {
-	// Check if the default font was set, in which case we
-	// erase the preference
+	// We used to check if the default font was set, in which case
+	// we erased the preference, but this would result in letting
+	// webkit make a choice of default font which it usually seems
+	// to do wrong. So now always set the font. There is still a
+	// way for the user to let webkit choose the default though:
+	// click reset, then the font name and size will be empty.
 	QString s;
-	if (font.family().compare(this->font().family()) || 
+	if (1 || font.family().compare(this->font().family()) || 
 	    font.pointSize() != this->font().pointSize()) {
 	    reslistFontFamily = font.family();
 	    reslistFontSize = font.pointSize();
