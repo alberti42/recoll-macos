@@ -42,7 +42,7 @@ check_recoll_orig()
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
 series="precise quantal raring saucy trusty utopic"
-series="precise quantal raring saucy utopic"
+series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -70,14 +70,14 @@ for series in $series ; do
 done
 
 ### KIO
-series="precise quantal raring saucy trusty"
-series=
+series="precise quantal raring saucy trusty utopic"
+series=utopic
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
 if test "X$series" != X ; then
     check_recoll_orig
-    if test ! -d kio-recoll_${RCLVERS}.orig.tar.gz ; then
+    if test ! -f kio-recoll_${RCLVERS}.orig.tar.gz ; then
         cp -p recoll_${RCLVERS}.orig.tar.gz \
             kio-recoll_${RCLVERS}.orig.tar.gz || exit 1
     fi
@@ -98,7 +98,7 @@ for series in $series ; do
       -e s/PPAVERS/${PPAVERS}/g \
           < ${debdir}/changelog > $topdir/debian/changelog ;
 
-  (cd $topdir;debuild -S -sa) || break
+  (cd $topdir;debuild -S -sa) || exit 1
 
   dput $PPANAME kio-recoll_${RCLVERS}-0~ppa${PPAVERS}~${series}1_source.changes
 
@@ -141,7 +141,7 @@ done
 
 ### Unity Scope
 series="saucy trusty utopic"
-series=
+series=utopic
 
 debdir=debianunityscope
 if test ! -d ${debdir}/ ; then

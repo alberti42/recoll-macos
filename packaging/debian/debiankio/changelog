@@ -1,3 +1,7 @@
+kio-recoll (1.19.14p2-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
+  * No changes, build for Ubuntu Utopic
+ -- Jean-Francois Dockes <jf@dockes.org>  Sat, 06 Dec 2014 08:44:00 +0200
+
 kio-recoll (1.19.12-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
   * Updated package to recoll version 1.19.12
  -- Jean-Francois Dockes <jf@dockes.org>  Wed, 02 Apr 2014 15:50:00 +0200
