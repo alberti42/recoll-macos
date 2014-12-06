@@ -151,34 +151,16 @@ bool Aspell::init(string &reason)
 	return false;
     }
 
-    // We first look for the aspell library in libdir, and also try to
-    // be clever with ASPELL_PROG.
-    vector<string> libdirs;
-    libdirs.push_back(LIBDIR);
-    // If not in the standard place, the aspell library has to live
-    // under the same prefix as the aspell program.
-    {
-	string aspellPrefix = path_getfather(path_getfather(m_data->m_exec));
-	// This would probably require some more tweaking on solaris/irix etc.
-	string dir = sizeof(long) > 4 ? "lib64" : "lib";
-	string libaspell = path_cat(aspellPrefix, dir);
-	if (libaspell != LIBDIR)
-	    libdirs.push_back(libaspell);
-    }
-
     reason = "Could not open shared library ";
-    for (vector<string>::iterator it = libdirs.begin(); 
-	 it != libdirs.end(); it++) {
-	string libbase = path_cat(*it, "libaspell");
-	string lib;
-	for (unsigned int i = 0; i < nlibsuffs; i++) {
-	    lib = libbase + aspell_lib_suffixes[i];
-	    reason += string("[") + lib + "] ";
-	    if ((m_data->m_handle = dlopen(lib.c_str(), RTLD_LAZY)) != 0) {
-		reason.erase();
-		goto found;
-	    }
-	}
+    string libbase("libaspell");
+    string lib;
+    for (unsigned int i = 0; i < nlibsuffs; i++) {
+        lib = libbase + aspell_lib_suffixes[i];
+        reason += string("[") + lib + "] ";
+        if ((m_data->m_handle = dlopen(lib.c_str(), RTLD_LAZY)) != 0) {
+            reason.erase();
+            goto found;
+        }
     }
     
  found:
@@ -288,13 +270,19 @@ bool Aspell::buildDict(Rcl::Db &db, string &reason)
 
     // We create the dictionary by executing the aspell command:
     // aspell --lang=[lang] create master [dictApath]
+    string cmdstring(m_data->m_exec);
     ExecCmd aspell;
     vector<string> args;
     args.push_back(string("--lang=")+ m_lang);
+    cmdstring += string(" ") + string("--lang=") + m_lang;
     args.push_back("--encoding=utf-8");
+    cmdstring += string(" ") + "--encoding=utf-8";
     args.push_back("create");
+    cmdstring += string(" ") + "create";
     args.push_back("master");
+    cmdstring += string(" ") + "master";
     args.push_back(dicPath());
+    cmdstring += string(" ") + dicPath();
 
     // Have to disable stderr, as numerous messages about bad strings are
     // printed. We'd like to keep errors about missing databases though, so
@@ -328,14 +316,17 @@ bool Aspell::buildDict(Rcl::Db &db, string &reason)
 	}
 	if (hasdict)
 	    reason = string(
-		"\naspell dictionary creation command failed. Reason unknown.\n"
+		"\naspell dictionary creation command [") +
+                cmdstring + string("] failed. Reason unknown.\n"
 		"Try to set aspellKeepStderr = 1 in recoll.conf, and execute \n"
 		"the indexing command in a terminal to see the aspell "
 		"diagnostic output.\n");
 	else
-	    reason = string("aspell dictionary creation command failed.\n"
-			    "One possible reason might be missing language "
-			    "data files for lang = ") + m_lang;
+	    reason = string("aspell dictionary creation command failed:\n") +
+                cmdstring + "\n"
+                "One possible reason might be missing language "
+                "data files for lang = " + m_lang +
+                ". Maybe try to execute the command by hand for a better diag.";
 	return false;
     }
     db.termWalkClose(tit);

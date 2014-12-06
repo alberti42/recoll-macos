@@ -32,7 +32,6 @@ RECOLL_DATADIR = ${datadir}/recoll
 LOCALCXXFLAGS = -Wall -Wno-unused \
 	      $(INCICONV) $(XAPIANCXXFLAGS) $(X_CFLAGS) \
 	      -DRECOLL_DATADIR=\"$(RECOLL_DATADIR)\" \
-	      -DLIBDIR=\"$(libdir)\" \
 	      $(PICFLAGS) \
 	      @DEFS@
 
