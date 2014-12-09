@@ -148,14 +148,7 @@ void UIPrefsDialog::setFromPrefs()
     // Result list font family and size
     reslistFontFamily = prefs.reslistfontfamily;
     reslistFontSize = prefs.reslistfontsize;
-    QString s;
-    if (prefs.reslistfontfamily.length() == 0) {
-	reslistFontPB->setText(this->font().family() + "-" +
-			       s.setNum(this->font().pointSize()));
-    } else {
-	reslistFontPB->setText(reslistFontFamily + "-" +
-			       s.setNum(reslistFontSize));
-    }
+    setupReslistFontPB();
 
     // Style sheet
     qssFile = prefs.qssFile;
@@ -229,6 +222,17 @@ void UIPrefsDialog::setFromPrefs()
 	}
     }
     idxLV->sortItems();
+}
+
+void UIPrefsDialog::setupReslistFontPB()
+{
+    QString s;
+    if (reslistFontFamily.length() == 0) {
+	reslistFontPB->setText(tr("Default QtWebkit font"));
+    } else {
+	reslistFontPB->setText(reslistFontFamily + "-" +
+			       s.setNum(reslistFontSize));
+    }
 }
 
 void UIPrefsDialog::accept()
@@ -383,19 +387,9 @@ void UIPrefsDialog::showFontDialog()
 	// to do wrong. So now always set the font. There is still a
 	// way for the user to let webkit choose the default though:
 	// click reset, then the font name and size will be empty.
-	QString s;
-	if (1 || font.family().compare(this->font().family()) || 
-	    font.pointSize() != this->font().pointSize()) {
-	    reslistFontFamily = font.family();
-	    reslistFontSize = font.pointSize();
-	    reslistFontPB->setText(reslistFontFamily + "-" +
-			       s.setNum(reslistFontSize));
-	} else {
-	    reslistFontFamily = "";
-	    reslistFontSize = 0;
-	    reslistFontPB->setText(this->font().family() + "-" +
-				   s.setNum(this->font().pointSize()));
-	}
+        reslistFontFamily = font.family();
+        reslistFontSize = font.pointSize();
+        setupReslistFontPB();
     }
 }
 
@@ -427,8 +421,7 @@ void UIPrefsDialog::resetReslistFont()
 {
     reslistFontFamily = "";
     reslistFontSize = 0;
-    reslistFontPB->setText(this->font().family() + "-" +
-			   QString().setNum(this->font().pointSize()));
+    setupReslistFontPB();
 }
 
 void UIPrefsDialog::showViewAction()

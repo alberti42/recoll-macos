@@ -72,6 +72,7 @@ protected slots:
     virtual void accept();
     virtual void reject();
 private:
+    void setupReslistFontPB();
     // Locally stored data (pending ok/cancel)
     QString paraFormat;
     QString headerText;
