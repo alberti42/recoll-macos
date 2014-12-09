@@ -379,4 +379,9 @@ class RclConfig {
 // reset. When using multiple indexes, all must have the same value
 extern bool o_index_stripchars;
 
+// This global variable defines if we use mtime instead of ctime for
+// up-to-date tests. This is mostly incompatible with xattr indexing,
+// in addition to other issues. See recoll.conf comments. 
+extern bool o_uptodate_test_use_mtime;
+
 #endif /* _RCLCONFIG_H_INCLUDED_ */

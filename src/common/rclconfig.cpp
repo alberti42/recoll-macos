@@ -60,6 +60,8 @@ typedef pair<int,int> RclPII;
 // We default to a case- and diacritics-less index for now
 bool o_index_stripchars = true;
 
+bool o_uptodate_test_use_mtime = false;
+
 string RclConfig::o_localecharset; 
 string RclConfig::o_origcwd; 
 
@@ -342,6 +344,7 @@ bool RclConfig::updateMainConfig()
     static int m_index_stripchars_init = 0;
     if (!m_index_stripchars_init) {
 	getConfParam("indexStripChars", &o_index_stripchars);
+        getConfParam("testmodifusemtime", &o_uptodate_test_use_mtime);
 	m_index_stripchars_init = 1;
     }
 

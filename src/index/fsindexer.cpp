@@ -47,8 +47,6 @@
 #include "execmd.h"
 #include "extrameta.h"
 
-int FsIndexer::o_tstupdusemtime = -1;
-
 using namespace std;
 
 #ifdef IDX_THREADS
@@ -111,12 +109,6 @@ FsIndexer::FsIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc)
     m_havelocalfields = m_config->hasNameAnywhere("localfields");
     m_config->getConfParam("detectxattronly", &m_detectxattronly);
     
-    if (o_tstupdusemtime == -1) {
-        bool b(false);
-        m_config->getConfParam("testmodifusemtime", &b);
-        o_tstupdusemtime = b ? 1 : 0;
-    }
-
 #ifdef IDX_THREADS
     m_stableconfig = new RclConfig(*m_config);
     m_loglevel = DebugLog::getdbl()->getlevel();
@@ -497,7 +489,8 @@ void FsIndexer::makesig(const struct stat *stp, string& out)
 {
     char cbuf[100]; 
     sprintf(cbuf, "%lld" "%ld", (long long)stp->st_size, 
-            o_tstupdusemtime ? (long)stp->st_mtime : (long)stp->st_ctime);
+            o_uptodate_test_use_mtime ? 
+            (long)stp->st_mtime : (long)stp->st_ctime);
     out = cbuf;
 }
 
