@@ -47,16 +47,7 @@
 #include "execmd.h"
 #include "extrameta.h"
 
-// When using extended attributes, we have to use the ctime, because
-// this is all that gets set when the attributes are modified. 
-// As of 1.19 we use ctime in all cases as this allows to detect a
-// file renamed into an existing file (e.g. when shifting logs or
-// other archives).
-#ifdef RCL_USE_XATTR
-#define RCL_STTIME st_ctime
-#else
-#define RCL_STTIME st_ctime
-#endif // RCL_USE_XATTR
+int FsIndexer::o_tstupdusemtime = -1;
 
 using namespace std;
 
@@ -119,6 +110,12 @@ FsIndexer::FsIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc)
     LOGDEB1(("FsIndexer::FsIndexer\n"));
     m_havelocalfields = m_config->hasNameAnywhere("localfields");
     m_config->getConfParam("detectxattronly", &m_detectxattronly);
+    
+    if (o_tstupdusemtime == -1) {
+        bool b(false);
+        m_config->getConfParam("testmodifusemtime", &b);
+        o_tstupdusemtime = b ? 1 : 0;
+    }
 
 #ifdef IDX_THREADS
     m_stableconfig = new RclConfig(*m_config);
@@ -499,7 +496,8 @@ void FsIndexer::setlocalfields(const map<string, string>& fields, Rcl::Doc& doc)
 void FsIndexer::makesig(const struct stat *stp, string& out)
 {
     char cbuf[100]; 
-    sprintf(cbuf, "%lld" "%ld", (long long)stp->st_size, (long)stp->RCL_STTIME);
+    sprintf(cbuf, "%lld" "%ld", (long long)stp->st_size, 
+            o_tstupdusemtime ? (long)stp->st_mtime : (long)stp->st_ctime);
     out = cbuf;
 }
 

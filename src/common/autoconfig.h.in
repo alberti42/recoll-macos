@@ -93,9 +93,6 @@
 /* Compile the inotify interface */
 #undef RCL_USE_INOTIFY
 
-/* Use file extended attributes */
-#undef RCL_USE_XATTR
-
 /* Use multiple threads for indexing */
 #undef IDX_THREADS
 

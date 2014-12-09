@@ -5394,6 +5394,32 @@ unac_except_trans =  åå Åå ää Ää öö Öö
             </listitem>
            </varlistentry>
 
+          <varlistentry><term><varname>testmodifusemtime</varname></term>
+            <listitem><para>If true, use mtime instead of default ctime to
+              determine if a file has been modified (in addition to
+              size, which is always used). Setting this can reduce
+              re-indexing on systems where extended attributes are
+              modified (by some other application), but not indexed
+              (changing extended attributes only affects
+              ctime). Notes:
+              <itemizedlist>
+                <listitem><para>This may prevent detection of change
+                in some marginal file rename cases (the target would
+                need to have the same size and
+                mtime).</para></listitem>
+                <listitem><para>You should probably also set
+                noxattrfields to 1 in this case, except if you still
+                prefer to perform xattr indexing, for example if the
+                local file update pattern makes it of value (as in
+                general, there is a risk for pure extended attributes
+                updates without file modification to go
+                undetected).</para></listitem>
+              </itemizedlist>
+                Perform a full index reset after changing the value of
+                this parameter.
+            </para></listitem>
+          </varlistentry>
+
           <varlistentry><term><varname>noxattrfields</varname></term>
             <listitem><para>Recoll versions 1.19 and later
                 automatically translate file extended attributes into

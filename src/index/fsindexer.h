@@ -135,6 +135,10 @@ class FsIndexer : public FsTreeWalkerCB {
     // Activate detection of xattr-only document updates. Experimental, so
     // needs a config option
     bool         m_detectxattronly;
+    // Use mtime instead of ctime for up-to-date tests. This is mostly
+    // incompatible with xattr indexing, in addition to other
+    // issues. See recoll.conf comments.
+    static int o_tstupdusemtime;
 
 #ifdef IDX_THREADS
     friend void *FsIndexerDbUpdWorker(void*);

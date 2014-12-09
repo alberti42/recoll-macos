@@ -19,7 +19,6 @@
 
 #include "autoconfig.h"
 
-#ifdef RCL_USE_XATTR
 /** Extended attributes processing helper functions */
 
 #include <map>
@@ -46,7 +45,5 @@ extern void reapMetaCmds(RclConfig* config, const std::string& path,
 extern void docFieldsFromMetaCmds(
     RclConfig *cfg, const std::map<std::string, std::string>& xfields, 
     Rcl::Doc& doc);
-
-#endif /* RCL_USE_XATTR */
 
 #endif /* _REAPXATTRS_H_INCLUDED_ */

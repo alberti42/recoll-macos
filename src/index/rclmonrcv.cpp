@@ -601,12 +601,10 @@ bool RclIntf::addWatch(const string& path, bool)
     // CLOSE_WRITE is covered through MODIFY. CREATE is needed for mkdirs
     uint32_t mask = IN_MODIFY | IN_CREATE
         | IN_MOVED_FROM | IN_MOVED_TO | IN_DELETE
-#ifdef RCL_USE_XATTR
 	// IN_ATTRIB used to be not needed to receive extattr
 	// modification events, which was a bit weird because only ctime is
 	// set, and now it is...
 	| IN_ATTRIB
-#endif
 #ifdef IN_DONT_FOLLOW
 	| IN_DONT_FOLLOW
 #endif

@@ -177,19 +177,6 @@ if test X$withFam != Xno ; then
    fi
 fi
 
-# Disable use of file extended attributes. With xattrs disabled we can use
-# mtime instead of ctime to look for file mods. Default is enabled.
-AC_ARG_ENABLE(xattr,
-    AC_HELP_STRING([--disable-xattr],
-   [Enable fetching metadata from file extended attributes. This is only
-   useful if some application creates them on (part of) your data set. You also 
-   need to set up appropriate mappings in the configuration.]),
-        xattrEnabled=$enableval, xattrEnabled=yes)
-
-if test X$xattrEnabled = Xyes ; then
-  AC_DEFINE(RCL_USE_XATTR, 1, [Use file extended attributes])
-fi
-
 # Enable use of threads in the indexing pipeline.  
 # This is disabled by default as we usually care little about indexing 
 # absolute performance (more about impact on usability and total 

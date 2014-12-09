@@ -228,13 +228,11 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 		     m_forPreview ? "view" : "index");
     df->set_property(Dijon::Filter::DJF_UDI, udi);
 
-#ifdef RCL_USE_XATTR
     // Get fields computed from extended attributes. We use the
     // original file, not the m_fn which may be the uncompressed temp
     // file
     if (!m_noxattrs)
 	reapXAttrs(m_cfg, f, m_XAttrsFields);
-#endif //RCL_USE_XATTR
 
     // Gather metadata from external commands as configured.
     reapMetaCmds(m_cfg, f, m_cmdFields);
@@ -574,11 +572,9 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
     LOGDEB2(("FileInterner::collectIpathAndMT\n"));
     bool hasipath = false;
 
-#ifdef RCL_USE_XATTR
     if (!m_noxattrs) {
 	docFieldsFromXattrs(m_cfg, m_XAttrsFields, doc);
     }
-#endif //RCL_USE_XATTR
 
     docFieldsFromMetaCmds(m_cfg, m_cmdFields, doc);
 

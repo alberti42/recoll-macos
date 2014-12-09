@@ -17,8 +17,6 @@
 
 #include "autoconfig.h"
 
-#ifdef RCL_USE_XATTR
-
 #include <errno.h>
 
 #include "rclconfig.h"
@@ -145,5 +143,3 @@ void docFieldsFromMetaCmds(RclConfig *cfg, const map<string, string>& cfields,
 	}
     }
 }
-
-#endif // RCL_USE_XATTR

@@ -16,7 +16,6 @@
  */
 #ifndef _INTERNFILE_H_INCLUDED_
 #define _INTERNFILE_H_INCLUDED_
-// The class changes according to RCL_USE_XATTR
 #include "autoconfig.h"
 
 #include <string>
@@ -252,13 +251,11 @@ class FileInterner {
     string                 m_reachedMType; // target or text/plain
     string                 m_tfile;
     bool                   m_ok; // Set after construction if ok
-#ifdef RCL_USE_XATTR
     // Fields found in file extended attributes. This is kept here,
     // not in the file-level handler because we are only interested in
     // the top-level file, not any temp file necessitated by
     // processing the internal doc hierarchy.
     map<string, string> m_XAttrsFields;
-#endif // RCL_USE_XATTR
     // Fields gathered by executing configured external commands
     map<string, string> m_cmdFields;
 

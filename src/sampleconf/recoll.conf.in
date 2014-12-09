@@ -311,7 +311,23 @@ webcachemaxmbs = 40
 # meaning-altering missing words. 
 snippetMaxPosWalk = 1000000
 
-# Disable extended attributes conversion to metadata fields
+# Use mtime instead of default ctime to determine if a file has been
+# modified (in addition to size, which is always used).
+# Setting this can reduce re-indexing on systems where extended attributes
+# are used (by some other applications), but not indexed (changing
+# ext. attrs. only affects ctime). 
+# Notes:
+# - this may prevent detection of change in some marginal file rename cases
+#   (the target would need to have the same size and mtime).
+# - You should probably also set noxattrfields to 1 in this case, except if
+#   you still prefer to perform xattr indexing, for example if the local
+#   file update pattern makes it of value (as in general, there is a risk
+#   for pure extended attributes updates without file modification to go
+#   undetected). Perform a full index reset after changing this.
+testmodifusemtime = 0
+
+# Disable extended attributes conversion to metadata fields. This probably
+# needs to be set if testmodifusemtime is set.
 noxattrfields = 0
 
 # You could specify different parameters for a subdirectory like this:
