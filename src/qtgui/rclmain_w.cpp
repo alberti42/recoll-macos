@@ -106,6 +106,40 @@ static Qt::ToolBarArea int2area(int in)
     }
 }
 
+static QString configToTitle()
+{
+    string confdir = path_getsimple(theconfig->getConfDir());
+    // Lower-case version. This only works with the ascii part, but
+    // that's ok even if there are non-ascii chars in there, because
+    // we further operate only on ascii substrings.
+    string lconfdir = stringtolower((const string&)confdir);
+
+    if (!lconfdir.empty() && lconfdir[0] == '.') {
+        lconfdir = lconfdir.substr(1);
+        confdir = confdir.substr(1);
+    }
+    string::size_type pos = lconfdir.find("recoll");
+    if (pos != string::npos) {
+        lconfdir = lconfdir.substr(0, pos) + lconfdir.substr(pos+6);
+        confdir = confdir.substr(0, pos) + confdir.substr(pos+6);
+    }
+    if (!confdir.empty()) {
+        switch (confdir[0]) {
+        case '.': case '-': case '_':
+            confdir = confdir.substr(1);
+            break;
+        default:
+            break;
+        }
+    }
+    if (confdir.empty()) {
+        confdir = "Recoll";
+    } else {
+        confdir = string("Recoll - ") + confdir;
+    }
+    return QString::fromUtf8(confdir.c_str());
+}
+
 void RclMain::init()
 {
     // This is just to get the common catg strings into the message file
@@ -115,6 +149,8 @@ void RclMain::init()
             QT_TR_NOOP("spreadsheet"),  QT_TR_NOOP("text"), 
 	    QT_TR_NOOP("sorted"), QT_TR_NOOP("filtered")
     };
+    setWindowTitle(configToTitle());
+
     DocSequence::set_translations((const char *)tr("sorted").toUtf8(), 
 				(const char *)tr("filtered").toUtf8());
 
