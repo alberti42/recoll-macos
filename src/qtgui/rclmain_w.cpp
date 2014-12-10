@@ -83,6 +83,7 @@ using std::pair;
 #include "rclzg.h"
 #include "fileudi.h"
 #include "snippets_w.h"
+#include "fragbuts.h"
 
 using namespace confgui;
 
@@ -210,6 +211,7 @@ void RclMain::init()
     m_toolsTB->addAction(toolsAdvanced_SearchAction);
     m_toolsTB->addAction(toolsDoc_HistoryAction);
     m_toolsTB->addAction(toolsSpellAction);
+    m_toolsTB->addAction(actionQuery_Fragments);
     this->addToolBar(int2area(prefs.toolArea), m_toolsTB);
 
     m_resTB = new QToolBar(this);
@@ -337,6 +339,8 @@ void RclMain::init()
 	    this, SLOT(showAdvSearchDialog()));
     connect(toolsSpellAction, SIGNAL(triggered()), 
 	    this, SLOT(showSpellDialog()));
+    connect(actionQuery_Fragments, SIGNAL(triggered()), 
+	    this, SLOT(showFragButs()));
     connect(indexConfigAction, SIGNAL(triggered()), 
 	    this, SLOT(showIndexConfig()));
     connect(indexScheduleAction, SIGNAL(triggered()), 
@@ -1048,7 +1052,18 @@ void RclMain::showSpellDialog()
 	spellform->close();
         spellform->show();
     }
+}
 
+void RclMain::showFragButs()
+{
+    if (fragbuts == 0) {
+	fragbuts = new FragButs(0);
+	fragbuts->show();
+    } else {
+	// Close and reopen, in hope that makes us visible...
+	fragbuts->close();
+        fragbuts->show();
+    }
 }
 
 void RclMain::showIndexConfig()

@@ -93,6 +93,7 @@
     <addaction name="toolsAdvanced_SearchAction"/>
     <addaction name="toolsSpellAction"/>
     <addaction name="actionShowQueryDetails"/>
+    <addaction name="actionQuery_Fragments"/>
    </widget>
    <widget class="QMenu" name="preferencesMenu">
     <property name="title">
@@ -457,6 +458,15 @@
   <action name="actionFirst_Page">
    <property name="text">
     <string>First Page</string>
+   </property>
+  </action>
+  <action name="actionQuery_Fragments">
+   <property name="icon">
+    <iconset resource="recoll.qrc">
+     <normaloff>:/images/code-block.png</normaloff>:/images/code-block.png</iconset>
+   </property>
+   <property name="text">
+    <string>Query Fragments</string>
    </property>
   </action>
  </widget>

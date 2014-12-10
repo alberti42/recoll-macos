@@ -39,6 +39,7 @@ class Preview;
 class ResTable;
 class CronToolW;
 class RTIToolW;
+class FragButs;
 
 #include "ui_rclmain.h"
 
@@ -64,6 +65,7 @@ public:
 	  cronTool(0),
 	  rtiTool(0),
 	  spellform(0),
+          fragbuts(0),
 	  periodictimer(0),
 	  restable(0),
 	  displayingTable(0),
@@ -110,6 +112,7 @@ public slots:
     virtual void previewClosed(Preview *w);
     virtual void showAdvSearchDialog();
     virtual void showSpellDialog();
+    virtual void showFragButs();
     virtual void showAboutDialog();
     virtual void showMissingHelpers();
     virtual void showActiveTypes();
@@ -177,6 +180,7 @@ private:
     CronToolW      *cronTool;
     RTIToolW       *rtiTool;
     SpellW         *spellform;
+    FragButs       *fragbuts;
     QTimer         *periodictimer;
     ResTable       *restable;
     bool            displayingTable;
