@@ -1059,6 +1059,8 @@ void RclMain::showFragButs()
     if (fragbuts == 0) {
 	fragbuts = new FragButs(0);
 	fragbuts->show();
+        connect(fragbuts, SIGNAL(fragmentsChanged()),
+                this, SLOT(onFragmentsChanged()));
     } else {
 	// Close and reopen, in hope that makes us visible...
 	fragbuts->close();
@@ -2248,18 +2250,41 @@ void RclMain::catgFilter(int id)
         m_filtMN->actions()[id]->setChecked(true);
     }
 
+    m_catgbutvecidx = id;
+    setFiltSpec();
+}
+
+void RclMain::setFiltSpec()
+{
     m_filtspec.reset();
 
-    if (id != 0)  {
-	string catg = m_catgbutvec[id];
+    // "Category" buttons
+    if (m_catgbutvecidx != 0)  {
+	string catg = m_catgbutvec[m_catgbutvecidx];
 	string frag;
 	theconfig->getGuiFilter(catg, frag);
 	m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, frag);
     }
-    LOGDEB(("RclMain::catgFilter: calling setFiltSpec\n"));
+
+    // Fragments from the fragbuts buttonbox tool
+    if (fragbuts) {
+        vector<string> frags;
+        fragbuts->getfrags(frags);
+        for (vector<string>::const_iterator it = frags.begin();
+             it != frags.end(); it++) {
+            m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, *it);
+        }
+    }
+
     if (m_source.isNotNull())
 	m_source->setFiltSpec(m_filtspec);
     initiateQuery();
+}
+
+
+void RclMain::onFragmentsChanged()
+{
+    setFiltSpec();
 }
 
 void RclMain::toggleFullScreen()

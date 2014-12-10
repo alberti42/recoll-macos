@@ -74,6 +74,7 @@ public:
           m_toolsTB(0), m_resTB(0), 
           m_filtFRM(0), m_filtCMB(0), m_filtBGRP(0), m_filtMN(0),
 	  m_idxproc(0),
+          m_catgbutvecidx(0),
 	  m_sortspecnochange(false),
 	  m_indexerState(IXST_RUNNINGNOTMINE),
 	  m_queryActive(false),
@@ -151,6 +152,7 @@ public slots:
     virtual void adjustPrefsMenu();
     virtual void catgFilter(int);
     virtual void catgFilter(QAction *);
+    virtual void onFragmentsChanged();
     virtual void initDbOpen();
     virtual void toggleFullScreen();
     virtual void on_actionSortByDateAsc_toggled(bool on);
@@ -197,6 +199,7 @@ private:
     ExecCmd          *m_idxproc; // Indexing process
     map<QString, QAction*> m_stemLangToId;
     vector<string>    m_catgbutvec;
+    int               m_catgbutvecidx;
     DocSeqFiltSpec    m_filtspec;
     bool              m_sortspecnochange;
     DocSeqSortSpec    m_sortspec;
@@ -226,6 +229,7 @@ private:
     virtual void updateIdxForDocs(vector<Rcl::Doc>&);
     virtual void initiateQuery();
     virtual bool containerUpToDate(Rcl::Doc& doc);
+    virtual void setFiltSpec();
 };
 
 #endif // RCLMAIN_W_H

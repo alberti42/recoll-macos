@@ -18,6 +18,7 @@
 #include "autoconfig.h"
 
 #include <string>
+#include <vector>
 
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QVBoxLayout>
@@ -34,11 +35,13 @@
 #include "readfile.h"
 
 using namespace std;
+
 class FragButsParser : public QXmlDefaultHandler {
 public:
-    FragButsParser(QWidget *_parent)
+    FragButsParser(FragButs *_parent, vector<FragButs::ButFrag>& _buttons)
     : parent(_parent), vlw(new QVBoxLayout(parent)), 
-      vl(new QVBoxLayout()), hl(0), bg(0), radio(false)
+      vl(new QVBoxLayout()), buttons(_buttons),
+      hl(0), bg(0), radio(false)
     {
     }
 
@@ -59,20 +62,21 @@ private:
     QWidget *parent;
     QVBoxLayout *vlw;
     QVBoxLayout *vl;
+    vector<FragButs::ButFrag>& buttons;
 
     // Temporary data while parsing.
     QHBoxLayout *hl;
     QButtonGroup *bg;
     QString currentText;
     QString label;
-    QString frag;
+    string frag;
     bool radio;
 };
 
 bool FragButsParser::startElement(const QString & /* namespaceURI */,
-                  const QString & /* localName */,
-                  const QString &qName,
-                  const QXmlAttributes &attributes)
+                                  const QString & /* localName */,
+                                  const QString &qName,
+                                  const QXmlAttributes &/*attributes*/)
 {
     currentText = "";
     if (qName == "buttons") {
@@ -93,21 +97,24 @@ bool FragButsParser::endElement(const QString & /* namespaceURI */,
     if (qName == "label") {
         label = currentText;
     } else if (qName == "frag") {
-        frag = currentText;
+        frag = qs2utf8s(currentText);
     } else if (qName == "fragbut") {
         string slab = qs2utf8s(label);
         trimstring(slab, " \t\n\t");
         label = QString::fromUtf8(slab.c_str());
+        QAbstractButton *abut;
         if (radio) {
             QRadioButton *but = new QRadioButton(label, parent);
             bg->addButton(but);
             if (bg->buttons().length() == 1)
                 but->setChecked(true);
-            hl->addWidget(but);
+            abut = but;
         } else {
             QCheckBox *but = new QCheckBox(label, parent);
-            hl->addWidget(but);
+            abut = but;
         }
+        buttons.push_back(FragButs::ButFrag(abut, frag));
+        hl->addWidget(abut);
     } else if (qName == "buttons" || qName == "radiobuttons") {
         vl->addLayout(hl);
         hl = 0;
@@ -128,7 +135,7 @@ FragButs::FragButs(QWidget* parent)
         return;
     }
 
-    FragButsParser parser(this);
+    FragButsParser parser(this, m_buttons);
     QXmlSimpleReader reader;
     reader.setContentHandler(&parser);
     reader.setErrorHandler(&parser);
@@ -138,8 +145,30 @@ FragButs::FragButs(QWidget* parent)
         LOGERR(("FragButs:: parse failed for [%s]\n", conf.c_str()));
         return;
     }
+    for (vector<ButFrag>::iterator it = m_buttons.begin(); 
+         it != m_buttons.end(); it++) {
+        connect(it->button, SIGNAL(clicked(bool)), 
+                this, SLOT(onButtonClicked(bool)));
+    }
 }
 
 FragButs::~FragButs()
 {
+}
+
+void FragButs::onButtonClicked(bool on)
+{
+    LOGDEB(("FragButs::onButtonClicked: [%d]\n", int(on)));
+    emit fragmentsChanged();
+}
+
+void FragButs::getfrags(std::vector<std::string>& frags)
+{
+    for (vector<ButFrag>::iterator it = m_buttons.begin(); 
+         it != m_buttons.end(); it++) {
+        if (it->button->isChecked() && !it->fragment.empty()) {
+            LOGDEB(("FragButs: fragment [%s]\n", it->fragment.c_str()));
+            frags.push_back(it->fragment);
+        }
+    }
 }

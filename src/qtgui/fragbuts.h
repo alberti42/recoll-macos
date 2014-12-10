@@ -17,7 +17,12 @@
 
 #ifndef _FRAGBUTS_H_INCLUDED_
 #define _FRAGBUTS_H_INCLUDED_
+#include <string>
+#include <vector>
+
 #include <QWidget>
+
+class QAbstractButton;
 
 /* 
  * Display a series of user-defined buttons which activate query
@@ -27,18 +32,31 @@ class FragButs : public QWidget
 {
     Q_OBJECT;
 
- public:
+public:
 
     FragButs(QWidget* parent = 0);
     virtual ~FragButs();
 
- public slots:
-	
- signals:
+    struct ButFrag {
+        QAbstractButton *button;
+        std::string fragment;
+        ButFrag(QAbstractButton *but, const std::string& frag)
+            : button(but), fragment(frag) {
+        }
+    };
 
- private:
+    void getfrags(std::vector<std::string>&);
+
+private slots:
+    void onButtonClicked(bool);
+
+signals:
+    void fragmentsChanged();
+
+private:
     // Detect source file change
     time_t m_reftime; 
+    std::vector<ButFrag> m_buttons;
  };
 
 
