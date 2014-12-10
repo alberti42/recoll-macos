@@ -58,6 +58,7 @@ recipient = XTO
 # by default. 
 # Some values are internally reserved by recoll: 
 #   XE (file ext), XP (for path elements), XSFN, XSFS, XXST, XXND, XXPG
+rclbes = XB
 # Using XX was not a good idea. 
 #
 # I hereby commit to not using XY for Recoll:
