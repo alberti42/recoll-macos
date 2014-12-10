@@ -40,6 +40,23 @@ versions.</i></p>
     --page-index option to --page-label for the evince command line
     used for PDF.</li>
 
+  <li id="aspelljessie">
+    The aspell command used to generate the orthographic correction
+    dictionary is broken on Debian Jessie, because of an aspell
+    packaging mistake which will not be fixed for the release. Try the
+    following command, replacing 'en' by your language code:
+    <pre><tt>
+        /usr/bin/aspell --lang=en --encoding=utf-8 create master /tmp/dict.rws
+    </tt></pre>
+    If it complains about a missing <tt>/usr/share/aspell/en.dat</tt>,
+    the workaround is to link the <tt>.dat</tt> files from
+    <tt>/usr/lib/aspell</tt> to <tt>/usr/share/aspell</tt>:
+    <pre><tt>
+        cd /usr/share/aspell
+        sudo ln -s /usr/lib/aspell/*.dat .
+    </tt></pre>
+  </li>
+
   <li>It will sometimes happen that the result list paragraph format stored in
     the Qt preferences file will get garbled, causing result lists with no
     displayed paragraphs (the counts and pages are ok, the results can be seen

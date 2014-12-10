@@ -93,8 +93,15 @@
 
       <h2>News</h2>
       <div class="news">
+
       
       <dl>
+        <dt>2014-12-10</dt> <dd>The aspell command used for
+          orthographic suggestions is broken on Debian Jessie (because
+          of an aspell packaging issue), and this will not be fixed
+          for the Debian release. See the <a href="BUGS.html#aspelljessie">
+            simple workaround here</a>.</dd>
+
         <dt>2014-11-09</dt> <dd>If you are still running anything
           older than 1.19.14p2, <span class="important">YOU SHOULD
           UPGRADE</span>. In
