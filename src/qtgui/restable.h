@@ -137,6 +137,7 @@ public slots:
     virtual void menuSaveToFile();
     virtual void menuSaveSelection();
     virtual void menuEdit();
+    virtual void menuEditAndQuit();
     virtual void menuOpenWith(QAction *);
     virtual void menuCopyFN();
     virtual void menuCopyURL();
@@ -152,6 +153,7 @@ public slots:
     virtual void saveAsCSV(); 
     virtual void linkWasClicked(const QUrl&);
     virtual void makeRowVisible(int row);
+    virtual void takeFocus();
 
 signals:
     void docPreviewClicked(int, Rcl::Doc, int);

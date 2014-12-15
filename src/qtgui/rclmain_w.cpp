@@ -1639,10 +1639,14 @@ void RclMain::on_actionShowResultsAsTable_toggled(bool on)
     restable->setVisible(on);
     reslist->setVisible(!on);
     actionSaveResultsAsCSV->setEnabled(on);
+    static QShortcut tablefocseq(QKeySequence("Ctrl+r"), this);
     if (!on) {
 	int docnum = restable->getDetailDocNumOrTopRow();
 	if (docnum >= 0)
 	    reslist->resultPageFor(docnum);
+        disconnect(&tablefocseq, SIGNAL(activated()),
+                   restable, SLOT(takeFocus()));
+        sSearch->takeFocus();
     } else {
 	int docnum = reslist->pageFirstDocNum();
 	if (docnum >= 0) {
@@ -1651,6 +1655,8 @@ void RclMain::on_actionShowResultsAsTable_toggled(bool on)
 	nextPageAction->setEnabled(false);
 	prevPageAction->setEnabled(false);
 	firstPageAction->setEnabled(false);
+        connect(&tablefocseq, SIGNAL(activated()), 
+                restable, SLOT(takeFocus()));
     }
 }
 

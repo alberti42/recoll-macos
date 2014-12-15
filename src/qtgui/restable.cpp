@@ -486,6 +486,9 @@ void ResTable::init()
     tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableView->setItemDelegate(new ResTableDelegate(this));
     tableView->setContextMenuPolicy(Qt::CustomContextMenu);
+    new QShortcut(QKeySequence("Ctrl+o"), this, SLOT(menuEdit()));
+    new QShortcut(QKeySequence("Ctrl+Shift+o"), this, SLOT(menuEditAndQuit()));
+    new QShortcut(QKeySequence("Ctrl+p"), this, SLOT(menuPreview()));
     connect(tableView, SIGNAL(customContextMenuRequested(const QPoint&)),
 	    this, SLOT(createPopupMenu(const QPoint&)));
 
@@ -649,6 +652,12 @@ void ResTable::on_tableView_entered(const QModelIndex& index)
 	    index.row(), index.column()));
     if (!tableView->selectionModel()->hasSelection())
 	onTableView_currentChanged(index);
+}
+
+void ResTable::takeFocus()
+{
+//    LOGDEB(("resTable: take focus\n"));
+    tableView->setFocus(Qt::ShortcutFocusReason);
 }
 
 void ResTable::setDocSource(RefCntr<DocSequence> nsource)
@@ -907,6 +916,13 @@ void ResTable::menuEdit()
 {
     if (m_detaildocnum >= 0) 
 	emit editRequested(m_detaildoc);
+}
+void ResTable::menuEditAndQuit()
+{
+    if (m_detaildocnum >= 0) {
+	emit editRequested(m_detaildoc);
+        m_rclmain->fileExit();
+    }
 }
 void ResTable::menuOpenWith(QAction *act)
 {
