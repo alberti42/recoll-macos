@@ -142,6 +142,7 @@ ${INSTALL} -m 0644 python/recoll/recoll/rclconfig.py \
 
 ${INSTALL} -m 0444 \
            desktop/recollindex.desktop \
+           sampleconf/fragbuts.xml \
 	   sampleconf/mimeconf \
 	   sampleconf/mimeview \
 	   sampleconf/recoll.conf \

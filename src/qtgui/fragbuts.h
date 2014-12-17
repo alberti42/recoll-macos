@@ -46,7 +46,7 @@ public:
     };
 
     void getfrags(std::vector<std::string>&);
-
+	bool ok() {return m_ok;}
 private slots:
     void onButtonClicked(bool);
 
@@ -57,6 +57,7 @@ private:
     // Detect source file change
     time_t m_reftime; 
     std::vector<ButFrag> m_buttons;
+	bool m_ok;
  };
 
 

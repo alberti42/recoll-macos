@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fragbuts version="1.0">
+
+  <radiobuttons>
+
+    <fragbut>
+      <label>Include Web Results</label>
+      <frag></frag>
+    </fragbut>
+
+    <fragbut>
+      <label>Exclude Web Results</label>
+      <frag>-rclbes:BGL</frag>
+    </fragbut>
+
+    <fragbut>
+      <label>Only Web Results</label>
+      <frag>rclbes:BGL</frag>
+    </fragbut>
+
+  </radiobuttons>
+
+  <buttons>
+
+    <fragbut>
+      <label>Year 2010</label>
+      <frag>date:2010-01-01/2010-12-31</frag>
+    </fragbut>
+
+    <fragbut>
+      <label>c++ files</label>
+      <frag>ext:cpp OR ext:cxx</frag>
+    </fragbut>
+
+    <fragbut>
+      <label>My Great Directory</label>
+      <frag>dir:/my/great/directory</frag>
+    </fragbut>
+
+  </buttons>
+
+</fragbuts>

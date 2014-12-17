@@ -25,6 +25,7 @@
 #include <QtGui/QCheckBox>
 #include <QtGui/QRadioButton>
 #include <QtGui/QButtonGroup>
+#include <QtGui/QMessageBox>
 #include <QtXml/QXmlDefaultHandler>
 
 #include "fragbuts.h"
@@ -113,6 +114,7 @@ bool FragButsParser::endElement(const QString & /* namespaceURI */,
             QCheckBox *but = new QCheckBox(label, parent);
             abut = but;
         }
+	abut->setToolTip(currentText);
         buttons.push_back(FragButs::ButFrag(abut, frag));
         hl->addWidget(abut);
     } else if (qName == "buttons" || qName == "radiobuttons") {
@@ -125,12 +127,15 @@ bool FragButsParser::endElement(const QString & /* namespaceURI */,
 }
 
 FragButs::FragButs(QWidget* parent)
-    : QWidget(parent)
+    : QWidget(parent), m_ok(false)
 {
     string conf = path_cat(theconfig->getConfDir(), "fragbuts.xml");
 
     string data, reason;
     if (!file_to_string(conf, data, &reason)) {
+	QMessageBox::warning(0, "Recoll", 
+			     tr("%1 not found.").arg(
+                                 QString::fromLocal8Bit(conf.c_str())));
         LOGERR(("Fragbuts:: can't read [%s]\n", conf.c_str()));
         return;
     }
@@ -142,6 +147,9 @@ FragButs::FragButs(QWidget* parent)
     QXmlInputSource xmlInputSource;
     xmlInputSource.setData(QString::fromUtf8(data.c_str()));
     if (!reader.parse(xmlInputSource)) {
+	QMessageBox::warning(0, "Recoll", 
+			     tr("%1 could not be parsed.").arg(
+                                 QString::fromLocal8Bit(conf.c_str())));
         LOGERR(("FragButs:: parse failed for [%s]\n", conf.c_str()));
         return;
     }
@@ -150,6 +158,8 @@ FragButs::FragButs(QWidget* parent)
         connect(it->button, SIGNAL(clicked(bool)), 
                 this, SLOT(onButtonClicked(bool)));
     }
+    setWindowTitle(tr("Fragment Buttons"));
+    m_ok = true;
 }
 
 FragButs::~FragButs()

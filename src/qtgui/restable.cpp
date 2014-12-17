@@ -488,7 +488,7 @@ void ResTable::init()
     tableView->setContextMenuPolicy(Qt::CustomContextMenu);
     new QShortcut(QKeySequence("Ctrl+o"), this, SLOT(menuEdit()));
     new QShortcut(QKeySequence("Ctrl+Shift+o"), this, SLOT(menuEditAndQuit()));
-    new QShortcut(QKeySequence("Ctrl+p"), this, SLOT(menuPreview()));
+    new QShortcut(QKeySequence("Ctrl+d"), this, SLOT(menuPreview()));
     connect(tableView, SIGNAL(customContextMenuRequested(const QPoint&)),
 	    this, SLOT(createPopupMenu(const QPoint&)));
 

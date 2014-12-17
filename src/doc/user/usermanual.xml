@@ -1603,6 +1603,86 @@ MimeType=*/*
         
     </sect2>
 
+    <sect2 id="RCL.SEARCH.GUI.FRAGBUTS">
+      <title>The Query Fragments window</title>
+
+      <para>Selecting the <menuchoice><guimenu>Tools</guimenu> 
+          <guimenuitem>Query Fragments</guimenuitem></menuchoice> menu
+          entry will open a window with radio- and check-buttons which
+          can be used to activate query language fragments for
+          filtering the current query. This can be useful if you have
+          frequent reusable selectors, for example, filtering on
+          alternate directories, or searching just one category of
+          files, not covered by the standard category
+          selectors.</para>
+
+      <para>The contents of the window are entirely customizable, and
+      defined by the contents of the <filename>fragbuts.xml</filename>
+      file inside the configuration directory. The sample file
+      distributed with &RCL; (which you should be able to find under
+      <filename>/usr/share/recoll/examples/fragbuts.xml</filename>),
+      contains an example which filters the results from the WEB
+      history.</para>
+
+      <para>Here follows an example:
+<programlisting>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+&lt;fragbuts version=&quot;1.0&quot;&gt;
+
+  &lt;radiobuttons&gt;
+
+    &lt;fragbut&gt;
+      &lt;label&gt;Include Web Results&lt;/label&gt;
+      &lt;frag&gt;&lt;/frag&gt;
+    &lt;/fragbut&gt;
+
+    &lt;fragbut&gt;
+      &lt;label&gt;Exclude Web Results&lt;/label&gt;
+      &lt;frag&gt;-rclbes:BGL&lt;/frag&gt;
+    &lt;/fragbut&gt;
+
+    &lt;fragbut&gt;
+      &lt;label&gt;Only Web Results&lt;/label&gt;
+      &lt;frag&gt;rclbes:BGL&lt;/frag&gt;
+    &lt;/fragbut&gt;
+
+  &lt;/radiobuttons&gt;
+
+  &lt;buttons&gt;
+
+    &lt;fragbut&gt;
+      &lt;label&gt;Year 2010&lt;/label&gt;
+      &lt;frag&gt;date:2010-01-01/2010-12-31&lt;/frag&gt;
+    &lt;/fragbut&gt;
+
+    &lt;fragbut&gt;
+      &lt;label&gt;My Great Directory Only&lt;/label&gt;
+      &lt;frag&gt;dir:/my/great/directory&lt;/frag&gt;
+    &lt;/fragbut&gt;
+
+  &lt;/buttons&gt;
+&lt;/fragbuts&gt;
+</programlisting>
+      </para>
+      
+      <para>Each <literal>radiobuttons</literal> or
+      <literal>buttons</literal> section defines a line of
+      checkbuttons or radiobuttons inside the window. Any number of
+      buttons can be selected, but the radiobuttons in a line are
+      exclusive.</para>
+      
+      <para>Each <literal>fragbut</literal> section defines the label
+      for a button, and the Query Language fragment which will be
+      added (as an AND filter) before performing the query if the
+      button is active.</para>
+
+      <para>This feature is new in &RCL; 1.20, and will probably be
+      refined depending on user feedback.</para>
+
+    </sect2>
+
+
     <sect2 id="RCL.SEARCH.GUI.COMPLEX">
       <title>Complex/advanced search</title>
 
@@ -2134,6 +2214,21 @@ MimeType=*/*
 	 to scroll the result list, <keycap>Shift+Home</keycap> to go back
 	 to the first page. These work even while the focus is in the
 	 search entry.</para>
+      </formalpara>
+      
+      <formalpara><title>Result table: moving the focus to the table</title>
+      <para>You can use <keycap>Ctrl-r</keycap> to move the focus
+      from the search entry to the table, and then use the arrow keys
+      to change the current row. <keycap>Ctrl-Shift-s</keycap> returns to 
+      the search.</para>
+      </formalpara>
+
+      <formalpara><title>Result table: open / preview</title>
+      <para>With the focus in the result table, you can use
+      <keycap>Ctrl-o</keycap> to open the document from the current
+      row, <keycap>Ctrl-Shift-o</keycap> to open the document and close
+      <command>recoll</command>, <keycap>Ctrl-d</keycap> to preview
+      the document.</para>
       </formalpara>
 
       <formalpara><title>Editing a new search while the focus is not
