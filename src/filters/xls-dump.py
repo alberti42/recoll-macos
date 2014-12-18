@@ -77,23 +77,28 @@ class XLDumper(object):
         node.prettyPrint(sys.stdout, docroot, utf8 = self.params.utf8)
 
     def dumpCanonicalXML (self):
-        self.__parseFile()
-        docroot = node.Root()
-        root = docroot.appendElement('xls-dump')
+        try:
+            self.__parseFile()
+            docroot = node.Root()
+            root = docroot.appendElement('xls-dump')
 
-        dirEntries = self.strm.getDirectoryEntries()
-        for entry in dirEntries:
-            dirname = entry.Name
-            if dirname != "Workbook":
-                # for now, we only dump the Workbook directory stream.
-                continue
+            dirEntries = self.strm.getDirectoryEntries()
+            for entry in dirEntries:
+                dirname = entry.Name
+                if dirname != "Workbook":
+                    # for now, we only dump the Workbook directory stream.
+                    continue
+                
+                dirstrm = self.strm.getDirectoryStream(entry)
+                wbmodel = self.__buildWorkbookModel(dirstrm)
+                wbmodel.encrypted = self.strmData.encrypted
+                root.appendChild(wbmodel.createDOM())
+                
+                node.prettyPrint(sys.stdout, docroot, utf8 = self.params.utf8)
 
-            dirstrm = self.strm.getDirectoryStream(entry)
-            wbmodel = self.__buildWorkbookModel(dirstrm)
-            wbmodel.encrypted = self.strmData.encrypted
-            root.appendChild(wbmodel.createDOM())
-
-        node.prettyPrint(sys.stdout, docroot, utf8 = self.params.utf8)
+        except Exception as err:
+            print >> sys.stderr, "xls-dump.py: error: %s" % err
+            sys.exit(1)
 
     def dump (self):
         self.__parseFile()
