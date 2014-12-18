@@ -12,18 +12,18 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-                   Chapter 5. Installation and configuration
+Chapter 5. Installation and configuration
 
 5.1. Installing a binary copy
 
    There are three types of binary Recoll installations:
 
-     * Through your system normal software distribution framework (ie,
+     o Through your system normal software distribution framework (ie,
        Debian/Ubuntu apt, FreeBSD ports, etc.).
 
-     * From a package downloaded from the Recoll web site.
+     o From a package downloaded from the Recoll web site.
 
-     * From a prebuilt tree downloaded from the Recoll web site.
+     o From a prebuilt tree downloaded from the Recoll web site.
 
    In all cases, the strict software dependancies (ie on Xapian or iconv)
    will be automatically satisfied, you should not have to worry about them.
@@ -58,7 +58,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
      ----------------------------------------------------------------------
 
    Prev                                                                  Next 
-   4.3. API  Home                                    5.2. Supporting packages 
+   4.3. API                           Home           5.2. Supporting packages 
    Link: home: Recoll user manual
    Link: up: Chapter 5. Installation and configuration
    Link: prev: Chapter 5. Installation and configuration
@@ -101,64 +101,64 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Now for the list:
 
-     * Openoffice files need unzip and xsltproc.
+     o Openoffice files need unzip and xsltproc.
 
-     * PDF files need pdftotext which is part of the Xpdf or Poppler
+     o PDF files need pdftotext which is part of the Xpdf or Poppler
        packages.
 
-     * Postscript files need pstotext. The original version has an issue with
+     o Postscript files need pstotext. The original version has an issue with
        shell character in file names, which is corrected in recent packages.
        See http://www.recoll.org/features.html for more detail.
 
-     * MS Word needs antiword. It is also useful to have wvWare installed as
+     o MS Word needs antiword. It is also useful to have wvWare installed as
        it may be be used as a fallback for some files which antiword does not
        handle.
 
-     * MS Excel and PowerPoint are processed by internal Python handlers.
+     o MS Excel and PowerPoint are processed by internal Python handlers.
 
-     * MS Open XML (docx) needs xsltproc.
+     o MS Open XML (docx) needs xsltproc.
 
-     * Wordperfect files need wpd2html from the libwpd (or libwpd-tools on
+     o Wordperfect files need wpd2html from the libwpd (or libwpd-tools on
        Ubuntu) package.
 
-     * RTF files need unrtf, which, in its standard version, has much trouble
+     o RTF files need unrtf, which, in its standard version, has much trouble
        with non-western character sets. Check
        http://www.recoll.org/features.html.
 
-     * TeX files need untex or detex. Check
+     o TeX files need untex or detex. Check
        http://www.recoll.org/features.html for sources if it's not packaged
        for your distribution.
 
-     * dvi files need dvips.
+     o dvi files need dvips.
 
-     * djvu files need djvutxt and djvused from the DjVuLibre package.
+     o djvu files need djvutxt and djvused from the DjVuLibre package.
 
-     * Audio files: Recoll releases 1.14 and later use a single Python
+     o Audio files: Recoll releases 1.14 and later use a single Python
        handler based on mutagen for all audio file types.
 
-     * Pictures: Recoll uses the Exiftool Perl package to extract tag
+     o Pictures: Recoll uses the Exiftool Perl package to extract tag
        information. Most image file formats are supported. Note that there
        may not be much interest in indexing the technical tags (image size,
        aperture, etc.). This is only of interest if you store personal tags
        or textual descriptions inside the image files.
 
-     * chm: files in Microsoft help format need Python and the pychm module
+     o chm: files in Microsoft help format need Python and the pychm module
        (which needs chmlib).
 
-     * ICS: up to Recoll 1.13, iCalendar files need Python and the icalendar
+     o ICS: up to Recoll 1.13, iCalendar files need Python and the icalendar
        module. icalendar is not needed for newer versions, which use internal
        code.
 
-     * Zip archives need Python (and the standard zipfile module).
+     o Zip archives need Python (and the standard zipfile module).
 
-     * Rar archives need Python, the rarfile Python module and the unrar
+     o Rar archives need Python, the rarfile Python module and the unrar
        utility.
 
-     * Midi karaoke files need Python and the Midi module
+     o Midi karaoke files need Python and the Midi module
 
-     * Konqueror webarchive format with Python (uses the Tarfile module).
+     o Konqueror webarchive format with Python (uses the Tarfile module).
 
-     * Mimehtml web archive format (support based on the email handler, which
+     o Mimehtml web archive format (support based on the email handler, which
        introduces some mild weirdness, but still usable).
 
    Text, HTML, email folders, and Scribus files are processed internally. Lyx
@@ -191,10 +191,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    The shopping list:
 
-     * C++ compiler. Up to Recoll version 1.13.04, its absence can manifest
+     o C++ compiler. Up to Recoll version 1.13.04, its absence can manifest
        itself by strange messages about a missing iconv_open.
 
-     * Development files for Xapian core.
+     o Development files for Xapian core.
 
   Important
 
@@ -203,14 +203,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        command. Else all Xapian application will crash with an illegal
        instruction error.
 
-     * Development files for Qt 4 . Recoll has not been tested with Qt 5 yet.
+     o Development files for Qt 4 . Recoll has not been tested with Qt 5 yet.
        Recoll 1.15.9 was the last version to support Qt 3. If you do not want
        to install or build the Qt Webkit module, Recoll has a configuration
        option to disable its use (see further).
 
-     * Development files for X11 and zlib.
+     o Development files for X11 and zlib.
 
-     * You may also need libiconv. On Linux systems, the iconv interface is
+     o You may also need libiconv. On Linux systems, the iconv interface is
        part of libc and you should not need to do anything special.
 
    Check the Recoll download page for up to date version information.
@@ -224,21 +224,21 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Configure options: 
 
-     * --without-aspell will disable the code for phonetic matching of search
+     o --without-aspell will disable the code for phonetic matching of search
        terms.
 
-     * --with-fam or --with-inotify will enable the code for real time
+     o --with-fam or --with-inotify will enable the code for real time
        indexing. Inotify support is enabled by default on recent Linux
        systems.
 
-     * --with-qzeitgeist will enable sending Zeitgeist events about the
+     o --with-qzeitgeist will enable sending Zeitgeist events about the
        visited search results, and needs the qzeitgeist package.
 
-     * --disable-webkit is available from version 1.17 to implement the
+     o --disable-webkit is available from version 1.17 to implement the
        result list with a Qt QTextBrowser instead of a WebKit widget if you
        do not or can't depend on the latter.
 
-     * --disable-idxthreads is available from version 1.19 to suppress
+     o --disable-idxthreads is available from version 1.19 to suppress
        multithreading inside the indexing process. You can also use the
        run-time configuration to restrict recollindex to using a single
        thread, but the compile-time option may disable a few more unused
@@ -246,37 +246,37 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        index processing (data input). The Recoll monitor mode always uses at
        least two threads of execution.
 
-     * --disable-python-module will avoid building the Python module.
+     o --disable-python-module will avoid building the Python module.
 
-     * --disable-xattr will prevent fetching data from file extended
+     o --disable-xattr will prevent fetching data from file extended
        attributes. Beyond a few standard attributes, fetching extended
        attributes data can only be useful is some application stores data in
        there, and also needs some simple configuration (see comments in the
        fields configuration file).
 
-     * --enable-camelcase will enable splitting camelCase words. This is not
+     o --enable-camelcase will enable splitting camelCase words. This is not
        enabled by default as it has the unfortunate side-effect of making
        some phrase searches quite confusing: ie, "MySQL manual" would be
        matched by "MySQL manual" and "my sql manual" but not "mysql manual"
        (only inside phrase searches).
 
-     * --with-file-command Specify the version of the 'file' command to use
+     o --with-file-command Specify the version of the 'file' command to use
        (ie: --with-file-command=/usr/local/bin/file). Can be useful to enable
        the gnu version on systems where the native one is bad.
 
-     * --disable-qtgui Disable the Qt interface. Will allow building the
+     o --disable-qtgui Disable the Qt interface. Will allow building the
        indexer and the command line search program in absence of a Qt
        environment.
 
-     * --disable-x11mon Disable X11 connection monitoring inside recollindex.
+     o --disable-x11mon Disable X11 connection monitoring inside recollindex.
        Together with --disable-qtgui, this allows building recoll without Qt
        and X11.
 
-     * --disable-pic will compile Recoll with position-dependant code. This
+     o --disable-pic will compile Recoll with position-dependant code. This
        is incompatible with building the KIO or the Python or PHP extensions,
        but might yield very marginally faster code.
 
-     * Of course the usual autoconf configure options, like --prefix apply.
+     o Of course the usual autoconf configure options, like --prefix apply.
 
    Normal procedure:
 
@@ -318,14 +318,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-   Prev                       Up                                         Next 
-   5.2. Supporting packages  Home                 5.4. Configuration overview 
+   Prev                                Up                                Next 
+   5.2. Supporting packages           Home        5.4. Configuration overview 
    Link: home: Recoll user manual
    Link: up: Chapter 5. Installation and configuration
    Link: prev: 5.3. Building from source
 
                           5.4. Configuration overview
-   Prev              Chapter 5. Installation and configuration                
+   Prev            Chapter 5. Installation and configuration                  
 
      ----------------------------------------------------------------------
 
@@ -395,11 +395,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    There are three kinds of lines:
 
-     * Comment (starts with #) or empty.
+     o Comment (starts with #) or empty.
 
-     * Parameter affectation (name = value).
+     o Parameter affectation (name = value).
 
-     * Section definition ([somedirname]).
+     o Section definition ([somedirname]).
 
    Depending on the type of configuration file, section definitions either
    separate groups of parameters or allow redefining some parameters for a
@@ -418,12 +418,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Encoding issues. Most of the configuration parameters are plain ASCII. Two
    particular sets of values may cause encoding issues:
 
-     * File path parameters may contain non-ascii characters and should use
+     o File path parameters may contain non-ascii characters and should use
        the exact same byte values as found in the file system directory.
        Usually, this means that the configuration file should use the system
        default locale encoding.
 
-     * The unac_except_trans parameter should be encoded in UTF-8. If your
+     o The unac_except_trans parameter should be encoded in UTF-8. If your
        system locale is not UTF-8, and you need to also specify non-ascii
        file paths, this poses a difficulty because common text editors cannot
        handle multiple encodings in a single file. In this relatively
@@ -503,10 +503,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    skippedPathsFnmPathname
 
            The values in the *skippedPaths variables are matched by default
-           with fnmatch(3), with the FNM_PATHNAME and FNM_LEADING_DIR flags.
-           This means that '/' characters must be matched explicitely. You
-           can set skippedPathsFnmPathname to 0 to disable the use of
-           FNM_PATHNAME (meaning that /*/dir3 will match /dir1/dir2/dir3).
+           with fnmatch(3), with the FNM_PATHNAME flag. This means that '/'
+           characters must be matched explicitely. You can set
+           skippedPathsFnmPathname to 0 to disable the use of FNM_PATHNAME
+           (meaning that /*/dir3 will match /dir1/dir2/dir3).
 
    zipSkippedNames
 
@@ -719,6 +719,27 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            the initial semi-colon. Example: localfields= ;rclaptg=gnus;other
            = val, then select specifier viewer with mimetype|tag=... in
            mimeview.
+
+   testmodifusemtime
+
+           If true, use mtime instead of default ctime to determine if a file
+           has been modified (in addition to size, which is always used).
+           Setting this can reduce re-indexing on systems where extended
+           attributes are modified (by some other application), but not
+           indexed (changing extended attributes only affects ctime). Notes:
+
+              o This may prevent detection of change in some marginal file
+                rename cases (the target would need to have the same size and
+                mtime).
+
+              o You should probably also set noxattrfields to 1 in this case,
+                except if you still prefer to perform xattr indexing, for
+                example if the local file update pattern makes it of value
+                (as in general, there is a risk for pure extended attributes
+                updates without file modification to go undetected).
+
+           Perform a full index reset after changing the value of this
+           parameter.
 
    noxattrfields
 
@@ -1156,29 +1177,29 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    The right side of each assignment holds a command to be executed for
    opening the file. The following substitutions are performed:
 
-     * %D. Document date
+     o %D. Document date
 
-     * %f. File name. This may be the name of a temporary file if it was
+     o %f. File name. This may be the name of a temporary file if it was
        necessary to create one (ie: to extract a subdocument from a
        container).
 
-     * %i. Internal path, for subdocuments of containers. The format depends
+     o %i. Internal path, for subdocuments of containers. The format depends
        on the container type. If this appears in the command line, Recoll
        will not create a temporary file to extract the subdocument, expecting
        the called application (possibly a script) to be able to handle it.
 
-     * %M. MIME type
+     o %M. MIME type
 
-     * %p. Page index. Only significant for a subset of document types,
+     o %p. Page index. Only significant for a subset of document types,
        currently only PDF, Postscript and DVI files. Can be used to start the
        editor at the right page for a match or snippet.
 
-     * %s. Search term. The value will only be set for documents with indexed
+     o %s. Search term. The value will only be set for documents with indexed
        page numbers (ie: PDF). The value will be one of the matched search
        terms. It would allow pre-setting the value in the "Find" entry inside
        Evince for example, for easy highlighting of the term.
 
-     * %u. Url.
+     o %u. Url.
 
    In addition to the predefined values above, all strings like %(fieldname)
    will be replaced by the value of the field named fieldname for the
@@ -1215,7 +1236,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    You need two entries in the configuration files for this to work:
 
-     * In $RECOLL_CONFDIR/mimemap (typically ~/.recoll/mimemap), add the
+     o In $RECOLL_CONFDIR/mimemap (typically ~/.recoll/mimemap), add the
        following line:
 
  .blob = application/x-blobapp
@@ -1223,7 +1244,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        Note that the MIME type is made up here, and you could call it
        diesel/oil just the same.
 
-     * In $RECOLL_CONFDIR/mimeview under the [view] section, add:
+     o In $RECOLL_CONFDIR/mimeview under the [view] section, add:
 
  application/x-blobapp = blobviewer %f
 
@@ -1244,16 +1265,16 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    alteration, and also to add data to the mimeconf file (typically in
    ~/.recoll/mimeconf):
 
-     * Under the [index] section, add the following line (more about the
+     o Under the [index] section, add the following line (more about the
        rclblob indexing script later):
 
  application/x-blobapp = exec rclblob
 
-     * Under the [icons] section, you should choose an icon to be displayed
+     o Under the [icons] section, you should choose an icon to be displayed
        for the files inside the result lists. Icons are normally 64x64 pixels
        PNG files which live in /usr/[local/]share/recoll/images.
 
-     * Under the [categories] section, you should add the MIME type where it
+     o Under the [categories] section, you should add the MIME type where it
        makes sense (you can also create a category). Categories may be used
        for filtering in advanced search.
 
@@ -1267,5 +1288,5 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-   Prev                                                                 Up    
-   5.3. Building from source                                           Home   
+   Prev                                Up                                     
+   5.3. Building from source          Home                                    

@@ -85,24 +85,29 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                              3.1.3. The result table
 
-                             3.1.4. Displaying thumbnails
+                             3.1.4. Running arbitrary commands on result
+                             files (1.20 and later)
 
-                             3.1.5. The preview window
+                             3.1.5. Displaying thumbnails
 
-                             3.1.6. Complex/advanced search
+                             3.1.6. The preview window
 
-                             3.1.7. The term explorer tool
+                             3.1.7. The Query Fragments window
 
-                             3.1.8. Multiple indexes
+                             3.1.8. Complex/advanced search
 
-                             3.1.9. Document history
+                             3.1.9. The term explorer tool
 
-                             3.1.10. Sorting search results and collapsing
+                             3.1.10. Multiple indexes
+
+                             3.1.11. Document history
+
+                             3.1.12. Sorting search results and collapsing
                              duplicates
 
-                             3.1.11. Search tips, shortcuts
+                             3.1.13. Search tips, shortcuts
 
-                             3.1.12. Customizing the search interface
+                             3.1.14. Customizing the search interface
 
                 3.2. Searching with the KDE KIO slave
 
@@ -188,7 +193,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                              5.4.7. Examples of configuration adjustments
 
-                            Chapter 1. Introduction
+Chapter 1. Introduction
 
 1.1. Giving it a try
 
@@ -321,7 +326,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Python programming interface, a KDE KIO slave module, and a Ubuntu Unity
    Lens module.
 
-                              Chapter 2. Indexing
+Chapter 2. Indexing
 
 2.1. Introduction
 
@@ -339,11 +344,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Recoll indexing can be performed along two different modes:
 
-     * Periodic (or batch) indexing: indexing takes place at discrete times,
+     o Periodic (or batch) indexing: indexing takes place at discrete times,
        by executing the recollindex command. The typical usage is to have a
        nightly indexing run programmed into your cron file.
 
-     * Real time indexing: indexing takes place as soon as a file is created
+     o Real time indexing: indexing takes place as soon as a file is created
        or changed. recollindex runs as a daemon and uses a file system
        alteration monitor such as inotify, Fam or Gamin to detect file
        changes.
@@ -457,7 +462,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    the Recoll configuration directory, typically $HOME/.recoll/xapiandb/.
    This can be changed via two different methods (with different purposes):
 
-     * You can specify a different configuration directory by setting the
+     o You can specify a different configuration directory by setting the
        RECOLL_CONFDIR environment variable, or using the -c option to the
        Recoll commands. This method would typically be used to index
        different areas of the file system to different indexes. For example,
@@ -475,7 +480,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        allows you to tailor multiple configurations and indexes to handle
        whatever subset of the available data you wish to make searchable.
 
-     * For a given configuration directory, you can specify a non-default
+     o For a given configuration directory, you can specify a non-default
        storage location for the index by setting the dbdir parameter in the
        configuration file (see the configuration section). This method would
        mainly be of use if you wanted to keep the configuration directory in
@@ -898,7 +903,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    which a file, specified by a wildcard pattern, cannot be reindexed. See
    the mondelaypatterns parameter in the configuration section.
 
-                              Chapter 3. Searching
+Chapter 3. Searching
 
 3.1. Searching with the Qt graphical user interface
 
@@ -907,10 +912,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    recoll has two search modes:
 
-     * Simple search (the default, on the main screen) has a single entry
+     o Simple search (the default, on the main screen) has a single entry
        field where you can enter multiple words.
 
-     * Advanced search (a panel accessed through the Tools menu or the
+     o Advanced search (a panel accessed through the Tools menu or the
        toolbox bar icon) has multiple entry fields, which you may use to
        build a logical condition, with additional filtering on file type,
        location in the file system, modification date, and size.
@@ -954,16 +959,16 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    more efficiently on a small subset of the index (allowing wild cards on
    the left of terms without excessive penality). Things to know:
 
-     * White space in the entry should match white space in the file name,
+     o White space in the entry should match white space in the file name,
        and is not treated specially.
 
-     * The search is insensitive to character case and accents, independantly
+     o The search is insensitive to character case and accents, independantly
        of the type of index.
 
-     * An entry without any wild card character and not capitalized will be
+     o An entry without any wild card character and not capitalized will be
        prepended and appended with '*' (ie: etc -> *etc*, but Etc -> etc).
 
-     * If you have a big index (many files), excessively generic fragments
+     o If you have a big index (many files), excessively generic fragments
        may result in inefficient searches.
 
    You can search for exact phrases (adjacent words in a given order) by
@@ -1075,25 +1080,37 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    right-clicking over a paragraph in the result list. This menu has the
    following entries:
 
-     * Preview
+     o Preview
 
-     * Open
+     o Open
 
-     * Copy File Name
+     o Open With
 
-     * Copy Url
+     o Run Script
 
-     * Save to File
+     o Copy File Name
 
-     * Find similar
+     o Copy Url
 
-     * Preview Parent document
+     o Save to File
 
-     * Open Parent document
+     o Find similar
 
-     * Open Snippets Window
+     o Preview Parent document
+
+     o Open Parent document
+
+     o Open Snippets Window
 
    The Preview and Open entries do the same thing as the corresponding links.
+
+   Open With lets you open the document with one of the applications claiming
+   to be able to handle its MIME type (the information comes from the
+   .desktop files in /usr/share/applications).
+
+   Run Script allows starting an arbitrary command on the result file. It
+   will only appear for results which are top-level files. See further for a
+   more detailed description.
 
    The Copy File Name and Copy Url copy the relevant data to the clipboard,
    for later pasting.
@@ -1104,20 +1121,21 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    attachment). It is especially useful to extract attachments with no
    associated editor.
 
+   The Open/Preview Parent document entries allow working with the higher
+   level document (e.g. the email message an attachment comes from). Recoll
+   is sometimes not totally accurate as to what it can or can't do in this
+   area. For example the Parent entry will also appear for an email which is
+   part of an mbox folder file, but you can't actually visualize the mbox
+   (there will be an error dialog if you try).
+
+   If the document is a top-level file, Open Parent will start the default
+   file manager on the enclosing filesystem directory.
+
    The Find similar entry will select a number of relevant term from the
    current document and enter them into the simple search field. You can then
    start a simple search, with a good chance of finding documents related to
-   the current result.
-
-   The Parent document entries will appear for documents which are not
-   actually files but are part of, or attached to, a higher level document.
-   This entry is mainly useful for email attachments and permits viewing the
-   message to which the document is attached. Note that the entry will also
-   appear for an email which is part of an mbox folder file, but that you
-   can't actually visualize the folder (there will be an error dialog if you
-   try). Recoll is unfortunately not yet smart enough to disable the entry in
-   this case. In other cases, the Open option makes sense, for example to
-   start a chm viewer on the parent document for a help page.
+   the current result. I can't remember a single instance where this function
+   was actually useful to me...
 
    The Open Snippets Window entry will only appear for documents which
    support page breaks (typically PDF, Postscript, DVI). The snippets window
@@ -1151,7 +1169,40 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    links for starting a preview or a native application, and an equivalent
    right-click menu. Typing Esc (the Escape key) will unfreeze the display.
 
-  3.1.4. Displaying thumbnails
+  3.1.4. Running arbitrary commands on result files (1.20 and later)
+
+   Apart from the Open and Open With operations, which allow starting an
+   application on a result document (or a temporary copy), based on its MIME
+   type, it is also possible to run arbitrary commands on results which are
+   top-level files, using the Run Script entry in the results pop-up menu.
+
+   The commands which will appear in the Run Script submenu must be defined
+   by .desktop files inside the scripts subdirectory of the current
+   configuration directory.
+
+   Here follows an example of a .desktop file, which could be named for
+   example, ~/.recoll/scripts/myscript.desktop (the exact file name inside
+   the directory is irrelevant):
+
+ [Desktop Entry]
+ Type=Application
+ Name=MyFirstScript
+ Exec=/home/me/bin/tryscript %F
+ MimeType=*/*
+      
+
+   The Name attribute defines the label which will appear inside the Run
+   Script menu. The Exec attribute defines the program to be run, which does
+   not need to actually be a script, of course. The MimeType attribute is not
+   used, but needs to exist.
+
+   The commands defined this way can also be used from links inside the
+   result paragraph.
+
+   As an example, it might make sense to write a script which would move the
+   document to the trash and purge it from the Recoll index.
+
+  3.1.5. Displaying thumbnails
 
    The default format for the result list entries and the detail area of the
    result table display an icon for each result document. The icon is either
@@ -1169,7 +1220,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    There are also some pointers about thumbnail generation on the Recoll
    wiki.
 
-  3.1.5. The preview window
+  3.1.6. The preview window
 
    The preview window opens when you first click a Preview link inside the
    result list.
@@ -1202,7 +1253,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    You can print the current preview window contents by typing Ctrl-P (Ctrl +
    P) in the window text.
 
-    3.1.5.1. Searching inside the preview
+    3.1.6.1. Searching inside the preview
 
    The preview window has an internal search capability, mostly controlled by
    the panel at the bottom of the window, which works in two modes: as a
@@ -1235,7 +1286,73 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            caused by stemming or wildcards). The search will revert to the
            text mode as soon as you edit the entry area.
 
-  3.1.6. Complex/advanced search
+  3.1.7. The Query Fragments window
+
+   Selecting the Tools -> Query Fragments menu entry will open a window with
+   radio- and check-buttons which can be used to activate query language
+   fragments for filtering the current query. This can be useful if you have
+   frequent reusable selectors, for example, filtering on alternate
+   directories, or searching just one category of files, not covered by the
+   standard category selectors.
+
+   The contents of the window are entirely customizable, and defined by the
+   contents of the fragbuts.xml file inside the configuration directory. The
+   sample file distributed with Recoll (which you should be able to find
+   under /usr/share/recoll/examples/fragbuts.xml), contains an example which
+   filters the results from the WEB history.
+
+   Here follows an example:
+
+ <?xml version="1.0" encoding="UTF-8"?>
+
+ <fragbuts version="1.0">
+
+   <radiobuttons>
+
+     <fragbut>
+       <label>Include Web Results</label>
+       <frag></frag>
+     </fragbut>
+
+     <fragbut>
+       <label>Exclude Web Results</label>
+       <frag>-rclbes:BGL</frag>
+     </fragbut>
+
+     <fragbut>
+       <label>Only Web Results</label>
+       <frag>rclbes:BGL</frag>
+     </fragbut>
+
+   </radiobuttons>
+
+   <buttons>
+
+     <fragbut>
+       <label>Year 2010</label>
+       <frag>date:2010-01-01/2010-12-31</frag>
+     </fragbut>
+
+     <fragbut>
+       <label>My Great Directory Only</label>
+       <frag>dir:/my/great/directory</frag>
+     </fragbut>
+
+   </buttons>
+ </fragbuts>
+
+   Each radiobuttons or buttons section defines a line of checkbuttons or
+   radiobuttons inside the window. Any number of buttons can be selected, but
+   the radiobuttons in a line are exclusive.
+
+   Each fragbut section defines the label for a button, and the Query
+   Language fragment which will be added (as an AND filter) before performing
+   the query if the button is active.
+
+   This feature is new in Recoll 1.20, and will probably be refined depending
+   on user feedback.
+
+  3.1.8. Complex/advanced search
 
    The advanced search dialog helps you build more complex queries without
    memorizing the search language constructs. It can be opened through the
@@ -1256,23 +1373,23 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Click on the Show query details link at the top of the result page to see
    the query expansion.
 
-    3.1.6.1. Avanced search: the "find" tab
+    3.1.8.1. Avanced search: the "find" tab
 
    This part of the dialog lets you constructc a query by combining multiple
    clauses of different types. Each entry field is configurable for the
    following modes:
 
-     * All terms.
+     o All terms.
 
-     * Any term.
+     o Any term.
 
-     * None of the terms.
+     o None of the terms.
 
-     * Phrase (exact terms in order within an adjustable window).
+     o Phrase (exact terms in order within an adjustable window).
 
-     * Proximity (terms in any order within an adjustable window).
+     o Proximity (terms in any order within an adjustable window).
 
-     * Filename search.
+     o Filename search.
 
    Additional entry fields can be created by clicking the Add clause button.
 
@@ -1296,21 +1413,21 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    search for quick fox with the default slack will match the latter, and
    also a fox is a cunning and quick animal.
 
-    3.1.6.2. Avanced search: the "filter" tab
+    3.1.8.2. Avanced search: the "filter" tab
 
    This part of the dialog has several sections which allow filtering the
    results of a search according to a number of criteria
 
-     * The first section allows filtering by dates of last modification. You
+     o The first section allows filtering by dates of last modification. You
        can specify both a minimum and a maximum date. The initial values are
        set according to the oldest and newest documents found in the index.
 
-     * The next section allows filtering the results by file size. There are
+     o The next section allows filtering the results by file size. There are
        two entries for minimum and maximum size. Enter decimal numbers. You
        can use suffix multipliers: k/K, m/M, g/G, t/T for 1E3, 1E6, 1E9, 1E12
        respectively.
 
-     * The next section allows filtering the results by their MIME types, or
+     o The next section allows filtering the results by their MIME types, or
        MIME categories (ie: media/text/message/etc.).
 
        You can transfer the types between two boxes, to define which will be
@@ -1320,7 +1437,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        file type filter will not be activated at program start-up, but the
        lists will be in the restored state).
 
-     * The bottom section allows restricting the search results to a sub-tree
+     o The bottom section allows restricting the search results to a sub-tree
        of the indexed area. You can use the Invert checkbox to search for
        files not in the sub-tree instead. If you use directory filtering
        often and on big subsets of the file system, you may think of setting
@@ -1330,7 +1447,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        dirA/dirB would match either /dir1/dirA/dirB/myfile1 or
        /dir2/dirA/dirB/someother/myfile2.
 
-    3.1.6.3. Avanced search history
+    3.1.8.3. Avanced search history
 
    The advanced search tool memorizes the last 100 searches performed. You
    can walk the saved searches by using the up and down arrow keys while the
@@ -1339,7 +1456,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    The complex search history can be erased, along with the one for simple
    search, by selecting the File -> Erase Search History menu entry.
 
-  3.1.7. The term explorer tool
+  3.1.9. The term explorer tool
 
    Recoll automatically manages the expansion of search terms to their
    derivatives (ie: plural/singular, verb inflections). But there are other
@@ -1393,7 +1510,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    simple search entry field. You can also cut/paste between the result list
    and any entry field (the end of lines will be taken care of).
 
-  3.1.8. Multiple indexes
+  3.1.10. Multiple indexes
 
    See the section describing the use of multiple indexes for generalities.
    Only the aspects concerning the recoll GUI are described here.
@@ -1439,7 +1556,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    A change was made in the same update so that recoll will automatically
    deactivate unreachable indexes when starting up.
 
-  3.1.9. Document history
+  3.1.11. Document history
 
    Documents that you actually view (with the internal preview or an external
    tool) are entered into the document history, which is remembered.
@@ -1450,7 +1567,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    You can erase the document history by using the Erase document history
    entry in the File menu.
 
-  3.1.10. Sorting search results and collapsing duplicates
+  3.1.12. Sorting search results and collapsing duplicates
 
    The documents in a result list are normally sorted in order of relevance.
    It is possible to specify a different sort order, either by using the
@@ -1476,9 +1593,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    duplicates, a Dups link will be shown with the result list entry. Clicking
    the link will display the paths (URLs + ipaths) for the duplicate entries.
 
-  3.1.11. Search tips, shortcuts
+  3.1.13. Search tips, shortcuts
 
-    3.1.11.1. Terms and search expansion
+    3.1.13.1. Terms and search expansion
 
    Term completion. Typing Esc Space in the simple search entry field while
    entering a word will either complete the current word if its beginning
@@ -1515,7 +1632,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    file name search which will only look for file names, and may be faster
    than the generic search especially when using wildcards.
 
-    3.1.11.2. Working with phrases and proximity
+    3.1.13.2. Working with phrases and proximity
 
    Phrases and Proximity searches. A phrase can be looked for by enclosing it
    in double quotes. Example: "user manual" will look only for occurrences of
@@ -1545,7 +1662,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    the advanced search panel control, or the o query language modifier).
    Literal occurences of the word will be matched normally.
 
-    3.1.11.3. Others
+    3.1.13.3. Others
 
    Using fields. You can use the query language and field specifications to
    only search certain parts of documents. This can be especially helpful
@@ -1582,6 +1699,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    PageDown to scroll the result list, Shift+Home to go back to the first
    page. These work even while the focus is in the search entry.
 
+   Result table: moving the focus to the table. You can use Ctrl-r to move
+   the focus from the search entry to the table, and then use the arrow keys
+   to change the current row. Ctrl-Shift-s returns to the search.
+
+   Result table: open / preview. With the focus in the result table, you can
+   use Ctrl-o to open the document from the current row, Ctrl-Shift-o to open
+   the document and close recoll, Ctrl-d to preview the document.
+
    Editing a new search while the focus is not in the search entry. You can
    use the Ctrl-Shift-S shortcut to return the cursor to the search entry
    (and select the current search text), while the focus is anywhere in the
@@ -1600,7 +1725,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Quitting. Entering Ctrl-Q almost anywhere will close the application.
 
-  3.1.12. Customizing the search interface
+  3.1.14. Customizing the search interface
 
    You can customize some aspects of the search interface by using the GUI
    configuration entry in the Preferences menu.
@@ -1611,12 +1736,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    User interface parameters: 
 
-     * Highlight color for query terms: Terms from the user query are
+     o Highlight color for query terms: Terms from the user query are
        highlighted in the result list samples and the preview window. The
        color can be chosen here. Any Qt color string should work (ie red,
        #ff0000). The default is blue.
 
-     * Style sheet: The name of a Qt style sheet text file which is applied
+     o Style sheet: The name of a Qt style sheet text file which is applied
        to the whole Recoll application on startup. The default value is
        empty, but there is a skeleton style sheet (recoll.qss) inside the
        /usr/share/recoll/examples directory. Using a style sheet, you can
@@ -1631,17 +1756,17 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        Recoll style sheet, and it is light too, then text will appear
        light-on-light inside the Recoll GUI.
 
-     * Maximum text size highlighted for preview Inserting highlights on
+     o Maximum text size highlighted for preview Inserting highlights on
        search term inside the text before inserting it in the preview window
        involves quite a lot of processing, and can be disabled over the given
        text size to speed up loading.
 
-     * Prefer HTML to plain text for preview if set, Recoll will display HTML
+     o Prefer HTML to plain text for preview if set, Recoll will display HTML
        as such inside the preview window. If this causes problems with the Qt
        HTML display, you can uncheck it to display the plain text version
        instead.
 
-     * Plain text to HTML line style: when displaying plain text inside the
+     o Plain text to HTML line style: when displaying plain text inside the
        preview window, Recoll tries to preserve some of the original text
        line breaks and indentation. It can either use PRE HTML tags, which
        will well preserve the indentation but will force horizontal scrolling
@@ -1651,71 +1776,71 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        third option has been available in recent releases and is probably now
        the best one: use PRE tags with line wrapping.
 
-     * Use desktop preferences to choose document editor: if this is checked,
+     o Use desktop preferences to choose document editor: if this is checked,
        the xdg-open utility will be used to open files when you click the
        Open link in the result list, instead of the application defined in
        mimeview. xdg-open will in term use your desktop preferences to choose
        an appropriate application.
 
-     * Exceptions: when using the desktop preferences for opening documents,
+     o Exceptions: when using the desktop preferences for opening documents,
        these are MIME types that will still be opened according to Recoll
        preferences. This is useful for passing parameters like page numbers
        or search strings to applications that support them (e.g. evince).
        This cannot be done with xdg-open which only supports passing one
        parameter.
 
-     * Choose editor applications this will let you choose the command
+     o Choose editor applications this will let you choose the command
        started by the Open links inside the result list, for specific
        document types.
 
-     * Display category filter as toolbar... this will let you choose if the
+     o Display category filter as toolbar... this will let you choose if the
        document categories are displayed as a list or a set of buttons.
 
-     * Auto-start simple search on white space entry: if this is checked, a
+     o Auto-start simple search on white space entry: if this is checked, a
        search will be executed each time you enter a space in the simple
        search input field. This lets you look at the result list as you enter
        new terms. This is off by default, you may like it or not...
 
-     * Start with advanced search dialog open : If you use this dialog
+     o Start with advanced search dialog open : If you use this dialog
        frequently, checking the entries will get it to open when recoll
        starts.
 
-     * Remember sort activation state if set, Recoll will remember the sort
+     o Remember sort activation state if set, Recoll will remember the sort
        tool stat between invocations. It normally starts with sorting
        disabled.
 
    Result list parameters: 
 
-     * Number of results in a result page
+     o Number of results in a result page
 
-     * Result list font: There is quite a lot of information shown in the
+     o Result list font: There is quite a lot of information shown in the
        result list, and you may want to customize the font and/or font size.
        The rest of the fonts used by Recoll are determined by your generic Qt
        config (try the qtconfig command).
 
-     * Edit result list paragraph format string: allows you to change the
+     o Edit result list paragraph format string: allows you to change the
        presentation of each result list entry. See the result list
        customisation section.
 
-     * Edit result page HTML header insert: allows you to define text
+     o Edit result page HTML header insert: allows you to define text
        inserted at the end of the result page HTML header. More detail in the
        result list customisation section.
 
-     * Date format: allows specifying the format used for displaying dates
+     o Date format: allows specifying the format used for displaying dates
        inside the result list. This should be specified as an strftime()
        string (man strftime).
 
-     * Abstract snippet separator: for synthetic abstracts built from index
+     o Abstract snippet separator: for synthetic abstracts built from index
        data, which are usually made of several snippets from different parts
        of the document, this defines the snippet separator, an ellipsis by
        default.
 
    Search parameters: 
 
-     * Hide duplicate results: decides if result list entries are shown for
+     o Hide duplicate results: decides if result list entries are shown for
        identical documents found in different places.
 
-     * Stemming language: stemming obviously depends on the document's
+     o Stemming language: stemming obviously depends on the document's
        language. This listbox will let you chose among the stemming databases
        which were built during indexing (this is set in the main
        configuration file), or later added with recollindex -s (See the
@@ -1723,31 +1848,31 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        will be deleted at the next indexing pass unless they are also added
        in the configuration file.
 
-     * Automatically add phrase to simple searches: a phrase will be
+     o Automatically add phrase to simple searches: a phrase will be
        automatically built and added to simple searches when looking for Any
        terms. This will give a relevance boost to the results where the
        search terms appear as a phrase (consecutive and in order).
 
-     * Autophrase term frequency threshold percentage: very frequent terms
+     o Autophrase term frequency threshold percentage: very frequent terms
        should not be included in automatic phrase searches for performance
        reasons. The parameter defines the cutoff percentage (percentage of
        the documents where the term appears).
 
-     * Replace abstracts from documents: this decides if we should synthesize
+     o Replace abstracts from documents: this decides if we should synthesize
        and display an abstract in place of an explicit abstract found within
        the document itself.
 
-     * Dynamically build abstracts: this decides if Recoll tries to build
+     o Dynamically build abstracts: this decides if Recoll tries to build
        document abstracts (lists of snippets) when displaying the result
        list. Abstracts are constructed by taking context from the document
        information, around the search terms.
 
-     * Synthetic abstract size: adjust to taste...
+     o Synthetic abstract size: adjust to taste...
 
-     * Synthetic abstract context words: how many words should be displayed
+     o Synthetic abstract context words: how many words should be displayed
        around each term occurrence.
 
-     * Query language magic file name suffixes: a list of words which
+     o Query language magic file name suffixes: a list of words which
        automatically get turned into ext:xxx file name suffix clauses when
        starting a query language query (ie: doc xls xlsx...). This will save
        some typing for people who use file types a lot when querying.
@@ -1767,14 +1892,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    alternative indexer may also need to implement a way of purging the index
    from stale data,
 
-    3.1.12.1. The result list format
+    3.1.14.1. The result list format
 
    The result list presentation can be exhaustively customized by adjusting
    two elements:
 
-     * The paragraph format
+     o The paragraph format
 
-     * HTML code inside the header section
+     o HTML code inside the header section
 
    These can be edited from the Result list tab of the GUI configuration.
 
@@ -1796,46 +1921,49 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    This is an arbitrary HTML string where the following printf-like %
    substitutions will be performed:
 
-     * %A. Abstract
+     o %A. Abstract
 
-     * %D. Date
+     o %D. Date
 
-     * %I. Icon image name. This is normally determined from the MIME type.
+     o %I. Icon image name. This is normally determined from the MIME type.
        The associations are defined inside the mimeconf configuration file.
        If a thumbnail for the file is found at the standard Freedesktop
        location, this will be displayed instead.
 
-     * %K. Keywords (if any)
+     o %K. Keywords (if any)
 
-     * %L. Precooked Preview, Edit, and possibly Snippets links
+     o %L. Precooked Preview, Edit, and possibly Snippets links
 
-     * %M. MIME type
+     o %M. MIME type
 
-     * %N. result Number inside the result page
+     o %N. result Number inside the result page
 
-     * %P. Parent folder Url. In the case of an embedded document, this is
+     o %P. Parent folder Url. In the case of an embedded document, this is
        the parent folder for the top level container file.
 
-     * %R. Relevance percentage
+     o %R. Relevance percentage
 
-     * %S. Size information
+     o %S. Size information
 
-     * %T. Title or Filename if not set.
+     o %T. Title or Filename if not set.
 
-     * %t. Title or Filename if not set.
+     o %t. Title or Filename if not set.
 
-     * %U. Url
+     o %U. Url
 
    The format of the Preview, Edit, and Snippets links is <a href="P%N">, <a
    href="E%N"> and <a href="A%N"> where docnum (%N) expands to the document
    number inside the result page).
 
-   It is also possible to use a "F%N" value as a link target. This will open
-   the document corresponding to the %P parent folder expansion, usually
-   creating a file manager window on the folder where the container file
-   resides. E.g.:
+   A link target defined as "F%N" will open the document corresponding to the
+   %P parent folder expansion, usually creating a file manager window on the
+   folder where the container file resides. E.g.:
 
  <a href="F%N">%P</a>
+
+   A link target defined as R%N|scriptname will run the corresponding script
+   on the result file (if the document is embedded, the script will be
+   started on the top-level parent). See the section about defining scripts.
 
    In addition to the predefined values above, all strings like %(fieldname)
    will be replaced by the value of the field named fieldname for this
@@ -1928,11 +2056,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    There are several ways to obtain search results as a text stream, without
    a graphical interface:
 
-     * By passing option -t to the recoll program.
+     o By passing option -t to the recoll program.
 
-     * By using the recollq program.
+     o By using the recollq program.
 
-     * By writing a custom Python program, using the Recoll Python API.
+     o By writing a custom Python program, using the Recoll Python API.
 
    The first two methods work in the same way and accept/need the same
    arguments (except for the additional -t to recoll). The query to be
@@ -1998,7 +2126,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    actual ones, so that document previews and accesses will fail. This can
    occur in a number of circumstances:
 
-     * When using multiple indexes it is a relatively common occurrence that
+     o When using multiple indexes it is a relatively common occurrence that
        some will actually reside on a remote volume, for exemple mounted via
        NFS. In this case, the paths used to access the documents on the local
        machine are not necessarily the same than the ones used while indexing
@@ -2006,12 +2134,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        topdirs elements while indexing, but the directory might be mounted as
        /net/server/home/me on the local machine.
 
-     * The case may also occur with removable disks. It is perfectly possible
+     o The case may also occur with removable disks. It is perfectly possible
        to configure an index to live with the documents on the removable
        disk, but it may happen that the disk is not mounted at the same place
        so that the documents paths from the index are invalid.
 
-     * As a last exemple, one could imagine that a big directory has been
+     o As a last exemple, one could imagine that a big directory has been
        moved, but that it is currently inconvenient to run the indexer.
 
    More generally, the path translation facility may be useful whenever the
@@ -2095,24 +2223,24 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Recoll currently manages the following default fields:
 
-     * title, subject or caption are synonyms which specify data to be
+     o title, subject or caption are synonyms which specify data to be
        searched for in the document title or subject.
 
-     * author or from for searching the documents originators.
+     o author or from for searching the documents originators.
 
-     * recipient or to for searching the documents recipients.
+     o recipient or to for searching the documents recipients.
 
-     * keyword for searching the document-specified keywords (few documents
+     o keyword for searching the document-specified keywords (few documents
        actually have any).
 
-     * filename for the document's file name. This is not necessarily set for
+     o filename for the document's file name. This is not necessarily set for
        all documents: internal documents contained inside a compound one (for
        example an EPUB section) do not inherit the container file name any
        more, this was replaced by an explicit field (see next). Sub-documents
        can still have a specific filename, if it is implied by the document
        format, for example the attachment file name for an email attachment.
 
-     * containerfilename. This is set for all documents, both top-level and
+     o containerfilename. This is set for all documents, both top-level and
        contained sub-documents, and is always the name of the filesystem
        directory entry which contains the data. The terms from this field can
        only be matched by an explicit field specification (as opposed to
@@ -2120,7 +2248,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        content). This avoids getting matches for all the sub-documents when
        searching for the container file name.
 
-     * ext specifies the file name extension (Ex: ext:html)
+     o ext specifies the file name extension (Ex: ext:html)
 
    Recoll 1.20 and later have a way to specify aliases for the field names,
    which will save typing, for example by aliasing filename to fn or
@@ -2128,7 +2256,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    The field syntax also supports a few field-like, but special, criteria:
 
-     * dir for filtering the results on file location (Ex:
+     o dir for filtering the results on file location (Ex:
        dir:/home/me/somedir). -dir also works to find results not in the
        specified directory (release >= 1.15.8). Tilde expansion will be
        performed as usual (except for a bug in versions 1.19 to 1.19.11p1).
@@ -2160,13 +2288,13 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        You need to use double-quotes around the path value if it contains
        space characters.
 
-     * size for filtering the results on file size. Example: size<10000. You
+     o size for filtering the results on file size. Example: size<10000. You
        can use <, > or = as operators. You can specify a range like the
        following: size>100 size<1000. The usual k/K, m/M, g/G, t/T can be
        used as (decimal) multipliers. Ex: size>1k to search for files bigger
        than 1000 bytes.
 
-     * date for searching or filtering on dates. The syntax for the argument
+     o date for searching or filtering on dates. The syntax for the argument
        is based on the ISO8601 standard for dates and time intervals. Only
        dates are supported, no times. The general syntax is 2 elements
        separated by a / character. Each element can be a date or a period of
@@ -2177,22 +2305,22 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        missing element is interpreted as the lowest or highest date in the
        index. Examples:
 
-          * 2001-03-01/2002-05-01 the basic syntax for an interval of dates.
+          o 2001-03-01/2002-05-01 the basic syntax for an interval of dates.
 
-          * 2001-03-01/P1Y2M the same specified with a period.
+          o 2001-03-01/P1Y2M the same specified with a period.
 
-          * 2001/ from the beginning of 2001 to the latest date in the index.
+          o 2001/ from the beginning of 2001 to the latest date in the index.
 
-          * 2001 the whole year of 2001
+          o 2001 the whole year of 2001
 
-          * P2D/ means 2 days ago up to now if there are no documents with
+          o P2D/ means 2 days ago up to now if there are no documents with
             dates in the future.
 
-          * /2003 all documents from 2003 or older.
+          o /2003 all documents from 2003 or older.
 
        Periods can also be specified with small letters (ie: p2y).
 
-     * mime or format for specifying the MIME type. This one is quite special
+     o mime or format for specifying the MIME type. This one is quite special
        because you can specify several values which will be OR'ed (the normal
        default for the language is AND). Ex: mime:text/plain mime:text/html.
        Specifying an explicit boolean operator before a mime specification is
@@ -2201,7 +2329,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        wildcards in the value (mime:text/*). Note that mime is the ONLY field
        with an OR default. You do need to use OR with ext terms for example.
 
-     * type or rclcat for specifying the category (as in
+     o type or rclcat for specifying the category (as in
        text/media/presentation/etc.). The classification of MIME types in
        categories is defined in the Recoll configuration (mimeconf), and can
        be modified or extended. The default category names are those which
@@ -2226,22 +2354,22 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    term"modifierchars. The actual "phrase" can be a single term of course.
    Supported modifiers:
 
-     * l can be used to turn off stemming (mostly makes sense with p because
+     o l can be used to turn off stemming (mostly makes sense with p because
        stemming is off by default for phrases).
 
-     * o can be used to specify a "slack" for phrase and proximity searches:
+     o o can be used to specify a "slack" for phrase and proximity searches:
        the number of additional terms that may be found between the specified
        ones. If o is followed by an integer number, this is the slack, else
        the default is 10.
 
-     * p can be used to turn the default phrase search into a proximity one
+     o p can be used to turn the default phrase search into a proximity one
        (unordered). Example:"order any in"p
 
-     * C will turn on case sensitivity (if the index supports it).
+     o C will turn on case sensitivity (if the index supports it).
 
-     * D will turn on diacritics sensitivity (if the index supports it).
+     o D will turn on diacritics sensitivity (if the index supports it).
 
-     * A weight can be specified for a query element by specifying a decimal
+     o A weight can be specified for a query element by specifying a decimal
        value at the start of the modifiers. Example: "Important"2.5.
 
 3.6. Search case and diacritics sensitivity
@@ -2309,28 +2437,28 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    The wildcard characters are:
 
-     * * which matches 0 or more characters.
+     o * which matches 0 or more characters.
 
-     * ? which matches a single character.
+     o ? which matches a single character.
 
-     * [] which allow defining sets of characters to be matched (ex: [abc]
+     o [] which allow defining sets of characters to be matched (ex: [abc]
        matches a single character which may be 'a' or 'b' or 'c', [0-9]
        matches any number.
 
    You should be aware of a few things when using wildcards.
 
-     * Using a wildcard character at the beginning of a word can make for a
+     o Using a wildcard character at the beginning of a word can make for a
        slow search because Recoll will have to scan the whole index term list
        to find the matches. However, this is much less a problem for field
        searches, and queries like author:*@domain.com can sometimes be very
        useful.
 
-     * For Recoll version 18 only, when working with a raw index (preserving
+     o For Recoll version 18 only, when working with a raw index (preserving
        character case and diacritics), the literal part of a wildcard
        expression will be matched exactly for case and diacritics. This is
        not true any more for versions 19 and later.
 
-     * Using a * at the end of a word can produce more matches than you would
+     o Using a * at the end of a word can produce more matches than you would
        think, and strange search results. You can use the term explorer tool
        to check what completions exist for a given term. You can also see
        exactly what search was performed by clicking on the link at the top
@@ -2387,12 +2515,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Being independant of the desktop type has its drawbacks: Recoll desktop
    integration is minimal. However there are a few tools available:
 
-     * The KDE KIO Slave was described in a previous section.
+     o The KDE KIO Slave was described in a previous section.
 
-     * If you use a recent version of Ubuntu Linux, you may find the Ubuntu
+     o If you use a recent version of Ubuntu Linux, you may find the Ubuntu
        Unity Lens module useful.
 
-     * There is also an independantly developed Krunner plugin.
+     o There is also an independantly developed Krunner plugin.
 
    Here follow a few other things that may help.
 
@@ -2426,7 +2554,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    a new recoll GUI instance every time (even if it is already running). You
    may find it useful anyway.
 
-                        Chapter 4. Programming interface
+Chapter 4. Programming interface
 
    Recoll has an Application Programming Interface, usable both for indexing
    and searching, currently accessible from the Python language.
@@ -2460,14 +2588,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    There are currently (1.18 and since 1.13) two kinds of external executable
    input handlers:
 
-     * Simple exec handlers run once and exit. They can be bare programs like
+     o Simple exec handlers run once and exit. They can be bare programs like
        antiword, or scripts using other programs. They are very simple to
        write, because they just need to print the converted document to the
        standard output. Their output can be plain text or HTML. HTML is
        usually preferred because it can store metadata fields and it allows
        preserving some of the formatting for the GUI preview.
 
-     * Multiple execm handlers can process multiple files (sparing the
+     o Multiple execm handlers can process multiple files (sparing the
        process startup time which can be very significant), or multiple
        documents per file (e.g.: for zip or chm files). They communicate with
        the indexer through a simple protocol, but are nevertheless a bit more
@@ -2547,13 +2675,13 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    elements that they use in communication with the indexer. Here are a few
    guidelines:
 
-     * Use ASCII or UTF-8 (if the identifier is an integer print it, for
+     o Use ASCII or UTF-8 (if the identifier is an integer print it, for
        example, like printf %d would do).
 
-     * If at all possible, the data should make some kind of sense when
+     o If at all possible, the data should make some kind of sense when
        printed to a log file to help with debugging.
 
-     * Recoll uses a colon (:) as a separator to store a complex path
+     o Recoll uses a colon (:) as a separator to store a complex path
        internally (for deeper embedding). Colons inside the ipath elements
        output by a handler will be escaped, but would be a bad choice as a
        handler-specific separator (mostly, again, for debugging issues).
@@ -2598,18 +2726,18 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    The fragment specifies that:
 
-     * application/msword files are processed by executing the antiword
+     o application/msword files are processed by executing the antiword
        program, which outputs text/plain encoded in utf-8.
 
-     * application/ogg files are processed by the rclogg script, with default
+     o application/ogg files are processed by the rclogg script, with default
        output type (text/html, with encoding specified in the header, or
        utf-8 by default).
 
-     * text/rtf is processed by unrtf, which outputs text/html. The
+     o text/rtf is processed by unrtf, which outputs text/html. The
        iso-8859-1 encoding is specified because it is not the utf-8 default,
        and not output by unrtf in the HTML header section.
 
-     * application/x-chm is processed by a persistant handler. This is
+     o application/x-chm is processed by a persistant handler. This is
        determined by the execm keyword.
 
   4.1.4. Input handler HTML output
@@ -2703,11 +2831,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Fields can be:
 
-     * indexed, meaning that their terms are separately stored in inverted
+     o indexed, meaning that their terms are separately stored in inverted
        lists (with a specific prefix), and that a field-specific search is
        possible.
 
-     * stored, meaning that their value is recorded in the index data record
+     o stored, meaning that their value is recorded in the index data record
        for the document, and can be returned and displayed with search
        results.
 
@@ -2716,24 +2844,24 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    The sequence of events for field processing is as follows:
 
-     * During indexing, recollindex scans all meta fields in HTML documents
+     o During indexing, recollindex scans all meta fields in HTML documents
        (most document types are transformed into HTML at some point). It
        compares the name for each element to the configuration defining what
        should be done with fields (the fields file)
 
-     * If the name for the meta element matches one for a field that should
+     o If the name for the meta element matches one for a field that should
        be indexed, the contents are processed and the terms are entered into
        the index with the prefix defined in the fields file.
 
-     * If the name for the meta element matches one for a field that should
+     o If the name for the meta element matches one for a field that should
        be stored, the content of the element is stored with the document data
        record, from which it can be extracted and displayed at query time.
 
-     * At query time, if a field search is performed, the index prefix is
+     o At query time, if a field search is performed, the index prefix is
        computed and the match is only performed against appropriately
        prefixed terms in the index.
 
-     * At query time, the field can be displayed inside the result list by
+     o At query time, the field can be displayed inside the result list by
        using the appropriate directive in the definition of the result list
        paragraph format. All fields are displayed on the fields screen of the
        preview window (which you can reach through the right-click menu).
@@ -2799,10 +2927,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    The API is inspired by the Python database API specification. There were
    two major changes in recent Recoll versions:
 
-     * The basis for the Recoll API changed from Python database API version
+     o The basis for the Recoll API changed from Python database API version
        1.0 (Recoll versions up to 1.18.1), to version 2.0 (Recoll 1.18.2 and
        later).
-     * The recoll module became a package (with an internal recoll module) as
+     o The recoll module became a package (with an internal recoll module) as
        of Recoll version 1.19, in order to add more functions. For existing
        code, this only changes the way the interface must be imported.
 
@@ -2832,10 +2960,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    The recoll package contains two modules:
 
-     * The recoll module contains functions and classes used to query (or
+     o The recoll module contains functions and classes used to query (or
        update) the index.
 
-     * The rclextract module contains functions and classes used to access
+     o The rclextract module contains functions and classes used to access
        document data.
 
     4.3.2.3. The recoll module
@@ -2845,11 +2973,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    connect(confdir=None, extra_dbs=None, writable = False)
            The connect() function connects to one or several Recoll index(es)
            and returns a Db object.
-              * confdir may specify a configuration directory. The usual
+              o confdir may specify a configuration directory. The usual
                 defaults apply.
-              * extra_dbs is a list of additional indexes (Xapian
+              o extra_dbs is a list of additional indexes (Xapian
                 directories).
-              * writable decides if we can index new data through this
+              o writable decides if we can index new data through this
                 connection.
            This call initializes the recoll module, and it should always be
            performed before any other call or object creation.
@@ -3097,18 +3225,18 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
                   query.rownumber
 
 
-                   Chapter 5. Installation and configuration
+Chapter 5. Installation and configuration
 
 5.1. Installing a binary copy
 
    There are three types of binary Recoll installations:
 
-     * Through your system normal software distribution framework (ie,
+     o Through your system normal software distribution framework (ie,
        Debian/Ubuntu apt, FreeBSD ports, etc.).
 
-     * From a package downloaded from the Recoll web site.
+     o From a package downloaded from the Recoll web site.
 
-     * From a prebuilt tree downloaded from the Recoll web site.
+     o From a prebuilt tree downloaded from the Recoll web site.
 
    In all cases, the strict software dependancies (ie on Xapian or iconv)
    will be automatically satisfied, you should not have to worry about them.
@@ -3172,64 +3300,64 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Now for the list:
 
-     * Openoffice files need unzip and xsltproc.
+     o Openoffice files need unzip and xsltproc.
 
-     * PDF files need pdftotext which is part of the Xpdf or Poppler
+     o PDF files need pdftotext which is part of the Xpdf or Poppler
        packages.
 
-     * Postscript files need pstotext. The original version has an issue with
+     o Postscript files need pstotext. The original version has an issue with
        shell character in file names, which is corrected in recent packages.
        See http://www.recoll.org/features.html for more detail.
 
-     * MS Word needs antiword. It is also useful to have wvWare installed as
+     o MS Word needs antiword. It is also useful to have wvWare installed as
        it may be be used as a fallback for some files which antiword does not
        handle.
 
-     * MS Excel and PowerPoint are processed by internal Python handlers.
+     o MS Excel and PowerPoint are processed by internal Python handlers.
 
-     * MS Open XML (docx) needs xsltproc.
+     o MS Open XML (docx) needs xsltproc.
 
-     * Wordperfect files need wpd2html from the libwpd (or libwpd-tools on
+     o Wordperfect files need wpd2html from the libwpd (or libwpd-tools on
        Ubuntu) package.
 
-     * RTF files need unrtf, which, in its standard version, has much trouble
+     o RTF files need unrtf, which, in its standard version, has much trouble
        with non-western character sets. Check
        http://www.recoll.org/features.html.
 
-     * TeX files need untex or detex. Check
+     o TeX files need untex or detex. Check
        http://www.recoll.org/features.html for sources if it's not packaged
        for your distribution.
 
-     * dvi files need dvips.
+     o dvi files need dvips.
 
-     * djvu files need djvutxt and djvused from the DjVuLibre package.
+     o djvu files need djvutxt and djvused from the DjVuLibre package.
 
-     * Audio files: Recoll releases 1.14 and later use a single Python
+     o Audio files: Recoll releases 1.14 and later use a single Python
        handler based on mutagen for all audio file types.
 
-     * Pictures: Recoll uses the Exiftool Perl package to extract tag
+     o Pictures: Recoll uses the Exiftool Perl package to extract tag
        information. Most image file formats are supported. Note that there
        may not be much interest in indexing the technical tags (image size,
        aperture, etc.). This is only of interest if you store personal tags
        or textual descriptions inside the image files.
 
-     * chm: files in Microsoft help format need Python and the pychm module
+     o chm: files in Microsoft help format need Python and the pychm module
        (which needs chmlib).
 
-     * ICS: up to Recoll 1.13, iCalendar files need Python and the icalendar
+     o ICS: up to Recoll 1.13, iCalendar files need Python and the icalendar
        module. icalendar is not needed for newer versions, which use internal
        code.
 
-     * Zip archives need Python (and the standard zipfile module).
+     o Zip archives need Python (and the standard zipfile module).
 
-     * Rar archives need Python, the rarfile Python module and the unrar
+     o Rar archives need Python, the rarfile Python module and the unrar
        utility.
 
-     * Midi karaoke files need Python and the Midi module
+     o Midi karaoke files need Python and the Midi module
 
-     * Konqueror webarchive format with Python (uses the Tarfile module).
+     o Konqueror webarchive format with Python (uses the Tarfile module).
 
-     * Mimehtml web archive format (support based on the email handler, which
+     o Mimehtml web archive format (support based on the email handler, which
        introduces some mild weirdness, but still usable).
 
    Text, HTML, email folders, and Scribus files are processed internally. Lyx
@@ -3248,10 +3376,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    The shopping list:
 
-     * C++ compiler. Up to Recoll version 1.13.04, its absence can manifest
+     o C++ compiler. Up to Recoll version 1.13.04, its absence can manifest
        itself by strange messages about a missing iconv_open.
 
-     * Development files for Xapian core.
+     o Development files for Xapian core.
 
   Important
 
@@ -3260,14 +3388,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        command. Else all Xapian application will crash with an illegal
        instruction error.
 
-     * Development files for Qt 4 . Recoll has not been tested with Qt 5 yet.
+     o Development files for Qt 4 . Recoll has not been tested with Qt 5 yet.
        Recoll 1.15.9 was the last version to support Qt 3. If you do not want
        to install or build the Qt Webkit module, Recoll has a configuration
        option to disable its use (see further).
 
-     * Development files for X11 and zlib.
+     o Development files for X11 and zlib.
 
-     * You may also need libiconv. On Linux systems, the iconv interface is
+     o You may also need libiconv. On Linux systems, the iconv interface is
        part of libc and you should not need to do anything special.
 
    Check the Recoll download page for up to date version information.
@@ -3281,21 +3409,21 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Configure options: 
 
-     * --without-aspell will disable the code for phonetic matching of search
+     o --without-aspell will disable the code for phonetic matching of search
        terms.
 
-     * --with-fam or --with-inotify will enable the code for real time
+     o --with-fam or --with-inotify will enable the code for real time
        indexing. Inotify support is enabled by default on recent Linux
        systems.
 
-     * --with-qzeitgeist will enable sending Zeitgeist events about the
+     o --with-qzeitgeist will enable sending Zeitgeist events about the
        visited search results, and needs the qzeitgeist package.
 
-     * --disable-webkit is available from version 1.17 to implement the
+     o --disable-webkit is available from version 1.17 to implement the
        result list with a Qt QTextBrowser instead of a WebKit widget if you
        do not or can't depend on the latter.
 
-     * --disable-idxthreads is available from version 1.19 to suppress
+     o --disable-idxthreads is available from version 1.19 to suppress
        multithreading inside the indexing process. You can also use the
        run-time configuration to restrict recollindex to using a single
        thread, but the compile-time option may disable a few more unused
@@ -3303,37 +3431,37 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        index processing (data input). The Recoll monitor mode always uses at
        least two threads of execution.
 
-     * --disable-python-module will avoid building the Python module.
+     o --disable-python-module will avoid building the Python module.
 
-     * --disable-xattr will prevent fetching data from file extended
+     o --disable-xattr will prevent fetching data from file extended
        attributes. Beyond a few standard attributes, fetching extended
        attributes data can only be useful is some application stores data in
        there, and also needs some simple configuration (see comments in the
        fields configuration file).
 
-     * --enable-camelcase will enable splitting camelCase words. This is not
+     o --enable-camelcase will enable splitting camelCase words. This is not
        enabled by default as it has the unfortunate side-effect of making
        some phrase searches quite confusing: ie, "MySQL manual" would be
        matched by "MySQL manual" and "my sql manual" but not "mysql manual"
        (only inside phrase searches).
 
-     * --with-file-command Specify the version of the 'file' command to use
+     o --with-file-command Specify the version of the 'file' command to use
        (ie: --with-file-command=/usr/local/bin/file). Can be useful to enable
        the gnu version on systems where the native one is bad.
 
-     * --disable-qtgui Disable the Qt interface. Will allow building the
+     o --disable-qtgui Disable the Qt interface. Will allow building the
        indexer and the command line search program in absence of a Qt
        environment.
 
-     * --disable-x11mon Disable X11 connection monitoring inside recollindex.
+     o --disable-x11mon Disable X11 connection monitoring inside recollindex.
        Together with --disable-qtgui, this allows building recoll without Qt
        and X11.
 
-     * --disable-pic will compile Recoll with position-dependant code. This
+     o --disable-pic will compile Recoll with position-dependant code. This
        is incompatible with building the KIO or the Python or PHP extensions,
        but might yield very marginally faster code.
 
-     * Of course the usual autoconf configure options, like --prefix apply.
+     o Of course the usual autoconf configure options, like --prefix apply.
 
    Normal procedure:
 
@@ -3439,11 +3567,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    There are three kinds of lines:
 
-     * Comment (starts with #) or empty.
+     o Comment (starts with #) or empty.
 
-     * Parameter affectation (name = value).
+     o Parameter affectation (name = value).
 
-     * Section definition ([somedirname]).
+     o Section definition ([somedirname]).
 
    Depending on the type of configuration file, section definitions either
    separate groups of parameters or allow redefining some parameters for a
@@ -3462,12 +3590,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Encoding issues. Most of the configuration parameters are plain ASCII. Two
    particular sets of values may cause encoding issues:
 
-     * File path parameters may contain non-ascii characters and should use
+     o File path parameters may contain non-ascii characters and should use
        the exact same byte values as found in the file system directory.
        Usually, this means that the configuration file should use the system
        default locale encoding.
 
-     * The unac_except_trans parameter should be encoded in UTF-8. If your
+     o The unac_except_trans parameter should be encoded in UTF-8. If your
        system locale is not UTF-8, and you need to also specify non-ascii
        file paths, this poses a difficulty because common text editors cannot
        handle multiple encodings in a single file. In this relatively
@@ -3547,10 +3675,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    skippedPathsFnmPathname
 
            The values in the *skippedPaths variables are matched by default
-           with fnmatch(3), with the FNM_PATHNAME and FNM_LEADING_DIR flags.
-           This means that '/' characters must be matched explicitely. You
-           can set skippedPathsFnmPathname to 0 to disable the use of
-           FNM_PATHNAME (meaning that /*/dir3 will match /dir1/dir2/dir3).
+           with fnmatch(3), with the FNM_PATHNAME flag. This means that '/'
+           characters must be matched explicitely. You can set
+           skippedPathsFnmPathname to 0 to disable the use of FNM_PATHNAME
+           (meaning that /*/dir3 will match /dir1/dir2/dir3).
 
    zipSkippedNames
 
@@ -3763,6 +3891,27 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            the initial semi-colon. Example: localfields= ;rclaptg=gnus;other
            = val, then select specifier viewer with mimetype|tag=... in
            mimeview.
+
+   testmodifusemtime
+
+           If true, use mtime instead of default ctime to determine if a file
+           has been modified (in addition to size, which is always used).
+           Setting this can reduce re-indexing on systems where extended
+           attributes are modified (by some other application), but not
+           indexed (changing extended attributes only affects ctime). Notes:
+
+              o This may prevent detection of change in some marginal file
+                rename cases (the target would need to have the same size and
+                mtime).
+
+              o You should probably also set noxattrfields to 1 in this case,
+                except if you still prefer to perform xattr indexing, for
+                example if the local file update pattern makes it of value
+                (as in general, there is a risk for pure extended attributes
+                updates without file modification to go undetected).
+
+           Perform a full index reset after changing the value of this
+           parameter.
 
    noxattrfields
 
@@ -4200,29 +4349,29 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    The right side of each assignment holds a command to be executed for
    opening the file. The following substitutions are performed:
 
-     * %D. Document date
+     o %D. Document date
 
-     * %f. File name. This may be the name of a temporary file if it was
+     o %f. File name. This may be the name of a temporary file if it was
        necessary to create one (ie: to extract a subdocument from a
        container).
 
-     * %i. Internal path, for subdocuments of containers. The format depends
+     o %i. Internal path, for subdocuments of containers. The format depends
        on the container type. If this appears in the command line, Recoll
        will not create a temporary file to extract the subdocument, expecting
        the called application (possibly a script) to be able to handle it.
 
-     * %M. MIME type
+     o %M. MIME type
 
-     * %p. Page index. Only significant for a subset of document types,
+     o %p. Page index. Only significant for a subset of document types,
        currently only PDF, Postscript and DVI files. Can be used to start the
        editor at the right page for a match or snippet.
 
-     * %s. Search term. The value will only be set for documents with indexed
+     o %s. Search term. The value will only be set for documents with indexed
        page numbers (ie: PDF). The value will be one of the matched search
        terms. It would allow pre-setting the value in the "Find" entry inside
        Evince for example, for easy highlighting of the term.
 
-     * %u. Url.
+     o %u. Url.
 
    In addition to the predefined values above, all strings like %(fieldname)
    will be replaced by the value of the field named fieldname for the
@@ -4259,7 +4408,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    You need two entries in the configuration files for this to work:
 
-     * In $RECOLL_CONFDIR/mimemap (typically ~/.recoll/mimemap), add the
+     o In $RECOLL_CONFDIR/mimemap (typically ~/.recoll/mimemap), add the
        following line:
 
  .blob = application/x-blobapp
@@ -4267,7 +4416,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        Note that the MIME type is made up here, and you could call it
        diesel/oil just the same.
 
-     * In $RECOLL_CONFDIR/mimeview under the [view] section, add:
+     o In $RECOLL_CONFDIR/mimeview under the [view] section, add:
 
  application/x-blobapp = blobviewer %f
 
@@ -4288,16 +4437,16 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    alteration, and also to add data to the mimeconf file (typically in
    ~/.recoll/mimeconf):
 
-     * Under the [index] section, add the following line (more about the
+     o Under the [index] section, add the following line (more about the
        rclblob indexing script later):
 
  application/x-blobapp = exec rclblob
 
-     * Under the [icons] section, you should choose an icon to be displayed
+     o Under the [icons] section, you should choose an icon to be displayed
        for the files inside the result lists. Icons are normally 64x64 pixels
        PNG files which live in /usr/[local/]share/recoll/images.
 
-     * Under the [categories] section, you should add the MIME type where it
+     o Under the [categories] section, you should add the MIME type where it
        makes sense (you can also create a category). Categories may be used
        for filtering in advanced search.
 
