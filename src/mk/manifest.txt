@@ -137,6 +137,7 @@ filters/rcllatinclass.py
 filters/rcllatinstops.zip
 filters/rcllyx
 filters/rclman
+filters/rclmpdf
 filters/rclnull
 filters/rclokulnote
 filters/rclopxml
@@ -307,6 +308,8 @@ qtgui/editdialog.h
 qtgui/editdialog.ui
 qtgui/firstidx.h
 qtgui/firstidx.ui
+qtgui/fragbuts.cpp
+qtgui/fragbuts.h
 qtgui/guiutils.cpp
 qtgui/guiutils.h
 qtgui/i18n/
@@ -344,6 +347,7 @@ qtgui/images/
 qtgui/images/asearch.png
 qtgui/images/cancel.png
 qtgui/images/close.png
+qtgui/images/code-block.png
 qtgui/images/down.png
 qtgui/images/firstpage.png
 qtgui/images/history.png
@@ -490,6 +494,7 @@ rcldb/xmacros.h
 recollinstall.in
 sampleconf/
 sampleconf/fields
+sampleconf/fragbuts.xml
 sampleconf/mimeconf
 sampleconf/mimemap
 sampleconf/mimeview

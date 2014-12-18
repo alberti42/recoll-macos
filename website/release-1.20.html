@@ -87,6 +87,14 @@
             [somefield:term1,term2].
           </li>
 
+          <li>The Query Fragments tool was added to the GUI. This is a
+            window with customizable buttons to add arbitrary query
+            language fragments to the current search. This makes it
+            easy to define "pre-cooked" filters for things that you need
+            repeatedly. 
+            <a href="usermanual/usermanual.html#RCL.SEARCH.GUI.FRAGBUTS">
+              See the manual</a> for more details.</li>
+
           <li>We changed the way terms are generated from a compound
             string (e.g. an email address). Previously, for an address
             like <em>jfd@recoll.org</em>, only the simple terms and
@@ -96,6 +104,20 @@
             (here, <em>recoll.org</em> only), so that it is now
             possible to search for left-truncated versions of the
             compound, e.g., all emails from a given domain.</li>
+
+          <li>New keyboard accelerators for the result table: Ctrl+r
+            switches the focus from the search entry to the table,
+            Ctrl+o opens the document for the current line, Ctrl+Shift+o
+            opens document and closes recoll, Ctrl+d previews the
+            document.</li> 
+
+          <li>A special term is now indexed for results from the web
+            history: use "-rclbes:BGL" to exclude the web results,
+            "rclbes:BGL" to restrict the results to the web ones. This
+            is difficult to remember, but the Query Fragments feature
+            means that you don't need too (this is in the sample Query
+            Fragments file).</li>
+
 
           <li>Recoll now indexes <em>#hashtags</em> as such.</li>
 
