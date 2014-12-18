@@ -408,6 +408,22 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>FragButs</name>
+    <message>
+        <source>%1 not found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1:
+ %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fragment Buttons</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>IdxSchedW</name>
     <message>
         <source>Index scheduling setup</source>
@@ -1042,6 +1058,10 @@ Please check the mimeview file</source>
 Please check the desktop file</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Indexing interrupted</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1287,6 +1307,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>First Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query Fragments</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1602,6 +1626,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Open With</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run Script</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1975,6 +2003,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Default QtWebkit font</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

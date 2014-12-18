@@ -369,6 +369,22 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>FragButs</name>
+    <message>
+        <source>%1 not found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1:
+ %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fragment Buttons</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>IdxSchedW</name>
     <message>
         <source>Index scheduling setup</source>
@@ -776,7 +792,7 @@ Por favor revise el fichero mimeconf</translation>
     </message>
     <message>
         <source>Indexing interrupted</source>
-        <translation type="obsolete">Indexación interrumpida</translation>
+        <translation type="unfinished">Indexación interrumpida</translation>
     </message>
     <message>
         <source>Stop &amp;Indexing</source>
@@ -1269,6 +1285,10 @@ Please check the desktop file</source>
         <source>First Page</source>
         <translation>Primera Página</translation>
     </message>
+    <message>
+        <source>Query Fragments</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RecollModel</name>
@@ -1606,6 +1626,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Open With</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run Script</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2000,6 +2024,10 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
         <translation>No se puede agregar un índice con diferente opción para remover mayúsculas/minúsculas/diacríticos</translation>
+    </message>
+    <message>
+        <source>Default QtWebkit font</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

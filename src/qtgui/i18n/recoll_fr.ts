@@ -373,6 +373,23 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>FragButs</name>
+    <message>
+        <source>%1 not found.</source>
+        <translation>%1 non trouvé</translation>
+    </message>
+    <message>
+        <source>%1:
+ %2</source>
+        <translation>%1:
+ %2</translation>
+    </message>
+    <message>
+        <source>Fragment Buttons</source>
+        <translation>Fragments de recherche</translation>
+    </message>
+</context>
+<context>
     <name>IdxSchedW</name>
     <message>
         <source>Index scheduling setup</source>
@@ -618,11 +635,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Default&lt;br&gt;character set</source>
-        <translation type="unfinished"></translation>
+        <translation>Jeu de caractères&lt;br&gt;par défaut</translation>
     </message>
     <message>
         <source>Character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
-        <translation type="unfinished"></translation>
+        <translation>Jeu de caractères utilisé pour lire les fichiers qui n&apos;identifient pas de manière interne leur encodage, par exemple les fichiers texte purs.&lt;br&gt;La valeur par défaut est vide, et la valeur obtenue à partir de l&apos;environnement est utilisée dans ce cas.</translation>
     </message>
 </context>
 <context>
@@ -784,7 +801,7 @@ Vérifier le fichier mimeconf</translation>
     </message>
     <message>
         <source>Indexing interrupted</source>
-        <translation type="obsolete">Indexation interrompue</translation>
+        <translation>Indexation interrompue</translation>
     </message>
     <message>
         <source>Stop &amp;Indexing</source>
@@ -999,40 +1016,41 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Document filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtre de documents</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. </source>
-        <translation type="unfinished"></translation>
+        <translation>Index pas à jour pour ce fichier. Je ne veux pas risquer d&apos;afficher la mauvaise entrée.</translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then you will need to re-run the query when indexing is done. </source>
-        <translation type="unfinished"></translation>
+        <translation>Cliquer Ok pour mettre à jour l&apos;index pour ce fichier, puis attendez la fin de l&apos;indexation pour relancer la recherche.</translation>
     </message>
     <message>
         <source>The indexer is running so things should improve when it&apos;s done. </source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;indexeur est actif, les choses devraient aller mieux quand il aura fini.</translation>
     </message>
     <message>
         <source>The document belongs to an external indexwhich I can&apos;t update. </source>
-        <translation type="unfinished"></translation>
+        <translation>Le document appartient à un index externe que je ne peux pas mettre à jour.</translation>
     </message>
     <message>
         <source>Click Cancel to return to the list. Click Ignore to show the preview anyway. </source>
-        <translation type="unfinished"></translation>
+        <translation>Cliquer Annuler pour retourner à la liste. Cliquer Ignorer pour afficher tout de même.</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation type="unfinished">Documents identiques</translation>
+        <translation>Documents identiques</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation type="unfinished">Ces URLs(| ipath) partagent le même contenu</translation>
+        <translation>Ces URLs(| ipath) partagent le même contenu</translation>
     </message>
     <message>
         <source>Bad desktop app spec for %1: [%2]
 Please check the desktop file</source>
-        <translation type="unfinished"></translation>
+        <translation>Mauvaise spécification d&apos;application pour %1: [%2]
+Merci de vérifier le fichier desktop </translation>
     </message>
 </context>
 <context>
@@ -1284,6 +1302,10 @@ Please check the desktop file</source>
     <message>
         <source>First Page</source>
         <translation>Première page</translation>
+    </message>
+    <message>
+        <source>Query Fragments</source>
+        <translation>Fragments de recherche</translation>
     </message>
 </context>
 <context>
@@ -1634,7 +1656,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Open With</source>
-        <translation type="unfinished"></translation>
+        <translation>Ouvrir Avec</translation>
+    </message>
+    <message>
+        <source>Run Script</source>
+        <translation>Exécuter le Script</translation>
     </message>
 </context>
 <context>
@@ -2081,6 +2107,10 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
         <translation>Impossible d&apos;ajouter un index avec une option differente de sensibilite a la casse et aux accents</translation>
+    </message>
+    <message>
+        <source>Default QtWebkit font</source>
+        <translation>Fonte par défaut de QtWebkit</translation>
     </message>
 </context>
 <context>
@@ -2549,19 +2579,19 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Only mime types</source>
-        <translation type="unfinished"></translation>
+        <translation>Seulement ces types</translation>
     </message>
     <message>
         <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
-        <translation type="unfinished"></translation>
+        <translation>Une liste exclusive des types MIME à indexer.&lt;br&gt;Rien d&apos;autre ne sera indexé. Normalement vide et inactif</translation>
     </message>
     <message>
         <source>Exclude mime types</source>
-        <translation type="unfinished"></translation>
+        <translation>Types exclus</translation>
     </message>
     <message>
         <source>Mime types not to be indexed</source>
-        <translation type="unfinished"></translation>
+        <translation>Types MIME à ne pas indexer</translation>
     </message>
 </context>
 <context>
@@ -2993,23 +3023,23 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Decide if document filters are shown as radio buttons, toolbar combobox, or menu.</source>
-        <translation type="unfinished"></translation>
+        <translation>Décide si les filtres de documents sont affichés comme des radio-boutons, un combobox dans la barre d&apos;outils, ou un menu.</translation>
     </message>
     <message>
         <source>Document filter choice style:</source>
-        <translation type="unfinished"></translation>
+        <translation>Style de choix des filtres de documents:</translation>
     </message>
     <message>
         <source>Buttons Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Panneau de boutons</translation>
     </message>
     <message>
         <source>Toolbar Combobox</source>
-        <translation type="unfinished"></translation>
+        <translation>Combobox dans le panneau d&apos;outils</translation>
     </message>
     <message>
         <source>Menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Menu</translation>
     </message>
 </context>
 </TS>

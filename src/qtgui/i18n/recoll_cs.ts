@@ -373,6 +373,22 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>FragButs</name>
+    <message>
+        <source>%1 not found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1:
+ %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fragment Buttons</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>IdxSchedW</name>
     <message>
         <source>Index scheduling setup</source>
@@ -785,7 +801,7 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Indexing interrupted</source>
-        <translation type="obsolete">Rejstříkování přerušeno</translation>
+        <translation type="unfinished">Rejstříkování přerušeno</translation>
     </message>
     <message>
         <source>Stop &amp;Indexing</source>
@@ -1279,6 +1295,10 @@ Please check the desktop file</source>
         <source>First Page</source>
         <translation>První strana</translation>
     </message>
+    <message>
+        <source>Query Fragments</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RecollModel</name>
@@ -1620,6 +1640,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Open With</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run Script</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2063,6 +2087,10 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
         <translation>Nelze přidat rejstřík s odlišnou volbou pro velikost písma/diakritiku</translation>
+    </message>
+    <message>
+        <source>Default QtWebkit font</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
