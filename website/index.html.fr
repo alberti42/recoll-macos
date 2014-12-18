@@ -105,6 +105,11 @@
 
       <h2>Nouvelles: </h2>
       <dl>
+
+        <dt>2014-12-18</dt> <dd>Apparition de version 1.20.1 avec
+          quelques nouvelles fonctions, principalement dans l'interface
+          graphique. </dd>
+
         <dt>2014-06-07</dt> <dd>La version 1.19.14 corrige encore
           quelques problèmes dans l'indexation (erreurs dans la
           vérification que l'index est à jour pour un document,

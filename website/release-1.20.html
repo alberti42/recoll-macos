@@ -56,15 +56,7 @@
         not used any more).</p>
 
 
-      <h2><a name="minor_releases">Minor releases at a glance</a></h2>
-      <p>The rhythm of change in Recoll is slowing as the software is
-        approaching maturity, so, in order to avoid stopping progress
-        by excessive intervals between releases, the first versions 
-        of 1.20 will be allowed to contain some functional changes (as
-        opposed to only bug fixes). There will be a freeze at some
-        point.
-
-        <h2>Changes in Recoll 1.20.0p1</h2>
+        <h2>Changes in Recoll 1.20.1</h2>
         <ul>
           
           <li>An <em>Open With</em> entry was added to the result list
@@ -87,7 +79,7 @@
             [somefield:term1,term2].
           </li>
 
-          <li>The Query Fragments tool was added to the GUI. This is a
+          <li>(1.20.1) The Query Fragments tool was added to the GUI. This is a
             window with customizable buttons to add arbitrary query
             language fragments to the current search. This makes it
             easy to define "pre-cooked" filters for things that you need
@@ -105,19 +97,18 @@
             possible to search for left-truncated versions of the
             compound, e.g., all emails from a given domain.</li>
 
-          <li>New keyboard accelerators for the result table: Ctrl+r
+          <li>(1.20.1) New keyboard accelerators for the result table: Ctrl+r
             switches the focus from the search entry to the table,
             Ctrl+o opens the document for the current line, Ctrl+Shift+o
             opens document and closes recoll, Ctrl+d previews the
             document.</li> 
 
-          <li>A special term is now indexed for results from the web
+          <li>(1.20.1) A special term is now indexed for results from the web
             history: use "-rclbes:BGL" to exclude the web results,
             "rclbes:BGL" to restrict the results to the web ones. This
             is difficult to remember, but the Query Fragments feature
-            means that you don't need too (this is in the sample Query
+            means that you don't need to (this is in the sample Query
             Fragments file).</li>
-
 
           <li>Recoll now indexes <em>#hashtags</em> as such.</li>
 
@@ -197,7 +188,8 @@
           <li>The result list has two new elements: %P substitution
             for printing the parent folder name, and an <tt>F</tt>
             link target which will open the parent folder in a
-            file manager window.</li>
+            file manager window. e.g. <tt>&lt;a&nbsp;href='F%N'&gt;Open parent directory&lt;/a&gt;</tt>
+          </li>
 
           <li><span class="filename">/media</span> was added to the default
             skippedPaths list mostly as a reminder that blindly
