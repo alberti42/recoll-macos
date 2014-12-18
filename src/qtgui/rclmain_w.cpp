@@ -752,8 +752,14 @@ void RclMain::periodic100()
 	if (exited) {
 	    deleteZ(m_idxproc);
 	    if (status) {
-		QMessageBox::warning(0, "Recoll", 
-				     tr("Indexing failed"));
+                if (m_idxkilled) {
+                    QMessageBox::warning(0, "Recoll", 
+                                         tr("Indexing interrupted"));
+                    m_idxkilled = false;
+                } else {
+                    QMessageBox::warning(0, "Recoll", 
+                                         tr("Indexing failed"));
+                }
 	    } else {
 		// On the first run, show missing helpers. We only do this once
 		if (m_firstIndexing)
@@ -825,8 +831,10 @@ void RclMain::toggleIndexing()
 	    // Indexing was in progress, request stop. Let the periodic
 	    // routine check for the results.
 	    int pid = m_idxproc->getChildPid();
-	    if (pid > 0)
+	    if (pid > 0) {
 		kill(pid, SIGTERM);
+                m_idxkilled = true;
+            }
 	}
 	break;
     case IXST_RUNNINGNOTMINE:

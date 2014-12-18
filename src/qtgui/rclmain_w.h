@@ -74,6 +74,7 @@ public:
           m_toolsTB(0), m_resTB(0), 
           m_filtFRM(0), m_filtCMB(0), m_filtBGRP(0), m_filtMN(0),
 	  m_idxproc(0),
+          m_idxkilled(false),
           m_catgbutvecidx(0),
 	  m_sortspecnochange(false),
 	  m_indexerState(IXST_RUNNINGNOTMINE),
@@ -197,6 +198,7 @@ private:
     QFileSystemWatcher m_watcher;
     vector<ExecCmd*>  m_viewers;
     ExecCmd          *m_idxproc; // Indexing process
+    bool             m_idxkilled; // Killed my process
     map<QString, QAction*> m_stemLangToId;
     vector<string>    m_catgbutvec;
     int               m_catgbutvecidx;
