@@ -17,6 +17,9 @@
 
 #ifndef _FRAGBUTS_H_INCLUDED_
 #define _FRAGBUTS_H_INCLUDED_
+
+#include <time.h>
+
 #include <string>
 #include <vector>
 
@@ -47,6 +50,7 @@ public:
 
     void getfrags(std::vector<std::string>&);
 	bool ok() {return m_ok;}
+    bool isStale(time_t *reftime);
 private slots:
     void onButtonClicked(bool);
 
@@ -54,10 +58,10 @@ signals:
     void fragmentsChanged();
 
 private:
-    // Detect source file change
-    time_t m_reftime; 
     std::vector<ButFrag> m_buttons;
-	bool m_ok;
+    std::string m_fn;
+    time_t m_reftime; 
+    bool m_ok;
  };
 
 

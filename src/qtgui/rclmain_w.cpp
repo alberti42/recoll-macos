@@ -1064,6 +1064,9 @@ void RclMain::showSpellDialog()
 
 void RclMain::showFragButs()
 {
+    if (fragbuts && fragbuts->isStale(0)) {
+        deleteZ(fragbuts);
+    }
     if (fragbuts == 0) {
 	fragbuts = new FragButs(0);
         if (fragbuts->ok()) {

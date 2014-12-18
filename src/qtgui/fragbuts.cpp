@@ -17,6 +17,8 @@
 
 #include "autoconfig.h"
 
+#include <sys/stat.h>
+
 #include <string>
 #include <vector>
 
@@ -59,6 +61,19 @@ public:
 	return true;
     }
 
+    bool error(const QXmlParseException& exception) {
+        fatalError(exception);
+        return false;
+    }
+    bool fatalError(const QXmlParseException& x) {
+        errorMessage = QString("%2 at line %3 column %4")
+            .arg(x.message())
+            .arg(x.lineNumber())
+            .arg(x.columnNumber());
+        return false;
+    }
+
+    QString errorMessage;
 private:
     QWidget *parent;
     QVBoxLayout *vlw;
@@ -127,19 +142,18 @@ bool FragButsParser::endElement(const QString & /* namespaceURI */,
 }
 
 FragButs::FragButs(QWidget* parent)
-    : QWidget(parent), m_ok(false)
+    : QWidget(parent), m_reftime(0), m_ok(false)
 {
-    string conf = path_cat(theconfig->getConfDir(), "fragbuts.xml");
+    m_fn = path_cat(theconfig->getConfDir(), "fragbuts.xml");
 
     string data, reason;
-    if (!file_to_string(conf, data, &reason)) {
+    if (!file_to_string(m_fn, data, &reason)) {
 	QMessageBox::warning(0, "Recoll", 
 			     tr("%1 not found.").arg(
-                                 QString::fromLocal8Bit(conf.c_str())));
-        LOGERR(("Fragbuts:: can't read [%s]\n", conf.c_str()));
+                                 QString::fromLocal8Bit(m_fn.c_str())));
+        LOGERR(("Fragbuts:: can't read [%s]\n", m_fn.c_str()));
         return;
     }
-
     FragButsParser parser(this, m_buttons);
     QXmlSimpleReader reader;
     reader.setContentHandler(&parser);
@@ -147,10 +161,9 @@ FragButs::FragButs(QWidget* parent)
     QXmlInputSource xmlInputSource;
     xmlInputSource.setData(QString::fromUtf8(data.c_str()));
     if (!reader.parse(xmlInputSource)) {
-	QMessageBox::warning(0, "Recoll", 
-			     tr("%1 could not be parsed.").arg(
-                                 QString::fromLocal8Bit(conf.c_str())));
-        LOGERR(("FragButs:: parse failed for [%s]\n", conf.c_str()));
+	QMessageBox::warning(0, "Recoll", tr("%1:\n %2")
+                             .arg(QString::fromLocal8Bit(m_fn.c_str()))
+                             .arg(parser.errorMessage));
         return;
     }
     for (vector<ButFrag>::iterator it = m_buttons.begin(); 
@@ -159,11 +172,22 @@ FragButs::FragButs(QWidget* parent)
                 this, SLOT(onButtonClicked(bool)));
     }
     setWindowTitle(tr("Fragment Buttons"));
+    isStale(&m_reftime);
     m_ok = true;
 }
 
 FragButs::~FragButs()
 {
+}
+
+bool FragButs::isStale(time_t *reftime)
+{
+    struct stat st;
+    stat(m_fn.c_str(), &st);
+    bool ret = st.st_mtime != m_reftime;
+    if (reftime)
+        *reftime = st.st_mtime;
+    return ret;
 }
 
 void FragButs::onButtonClicked(bool on)
