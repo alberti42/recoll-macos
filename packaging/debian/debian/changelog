@@ -1,3 +1,10 @@
+recoll (1.20.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * 1.20.1 brings improved indexing of compound words like email addresses
+    and miscellaneous usability improvements in the GUI.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 19 Dec 2014 08:14:00 +0200
+
 recoll (1.19.14p2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * 1.19.14p2 fixes Bengali diacritics processing, a memory leak in the

@@ -4,13 +4,13 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.19.14p2
+RCLVERS=1.20.1
 LENSVERS=1.19.10.3543
 SCOPEVERS=1.19.12
-PPAVERS=1
+PPAVERS=2
 
 # For the unity-scope debian directory
-RCLSRC=/home/dockes/projets/fulltext/recoll/src
+RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
 
 case $RCLVERS in
     [23]*) PPANAME=recollexp-ppa;;
@@ -41,8 +41,8 @@ check_recoll_orig()
 ####### QT4
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
-series="precise quantal raring saucy trusty utopic"
-series=
+series="precise trusty utopic"
+#series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -70,8 +70,8 @@ for series in $series ; do
 done
 
 ### KIO
-series="precise quantal raring saucy trusty utopic"
-series=utopic
+series="precise trusty utopic"
+#series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -105,7 +105,7 @@ for series in $series ; do
 done
 
 ### Unity Lens
-series="precise quantal raring"
+series="precise"
 series=
 
 debdir=debianunitylens
@@ -140,11 +140,12 @@ for series in $series ; do
 done
 
 ### Unity Scope
-series="saucy trusty utopic"
-series=utopic
+series="trusty utopic"
+series=
 
 debdir=debianunityscope
 if test ! -d ${debdir}/ ; then
+    rm -f ${debdir}
     ln -s ${RCLSRC}/desktop/unity-scope-recoll/debian $debdir
 fi
 topdir=unity-scope-recoll-${SCOPEVERS}
