@@ -171,7 +171,7 @@ FragButs::FragButs(QWidget* parent)
         connect(it->button, SIGNAL(clicked(bool)), 
                 this, SLOT(onButtonClicked(bool)));
     }
-    setWindowTitle(tr("Fragment Buttons"));
+    setWindowTitle(tr("Query Fragments"));
     isStale(&m_reftime);
     m_ok = true;
 }
