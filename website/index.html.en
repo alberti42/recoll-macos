@@ -96,6 +96,12 @@
 
       
       <dl>
+        <dt>2014-12-27</dt> 
+        <dd><a href="https://www.gnu.org/software/unrtf/">
+          Unrtf 21.8</a> has been released. This fixes many issues
+          in unrtf, some with possible security implications. You
+          really want to use this version.</dd>
+
         <dt>2014-12-18</dt> <dd>Recoll 1.20.1 is out and replaces 1.19
           as the main version. I have been using 1.20 for months
           (along with a number of fearless builders-from-source), and
