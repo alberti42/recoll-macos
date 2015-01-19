@@ -50,18 +50,23 @@
     <sect1 id="RCL.INTRODUCTION.TRYIT">
       <title>Giving it a try</title>
       
-      <para>If you do not like reading manuals (who does?) and would like
-        to give &RCL; a try, just <link
-        linkend="RCL.INSTALL.BINARY">install</link> the application and
-        start the <command>recoll</command> graphical user interface (GUI),
-        which will ask to index your home directory by default, allowing
-        you to search immediately after indexing completes.</para>
+      <para>If you do not like reading manuals (who does?) but 
+        wish to give &RCL; a try, just <link
+        linkend="RCL.INSTALL.BINARY">install</link> the application
+        and start the <command>recoll</command> graphical user
+        interface (GUI), which will ask permission to index your home
+        directory by default, allowing you to search immediately after
+        indexing completes.</para>
 
       <para>Do not do this if your home directory contains a huge
         number of documents and you do not want to wait or are very
         short on disk space. In this case, you may first want to customize
         the <link linkend="RCL.INDEXING.CONFIG">configuration</link>
-        to restrict the indexed area.</para> 
+        to restrict the indexed area (for the very impatient with a completed package install, from the <command>recoll</command> GUI: <menuchoice>
+	    <guimenu>Preferences</guimenu>
+	    <guimenuitem>Indexing configuration</guimenuitem>
+          </menuchoice>, then adjust the <guilabel>Top
+          directories</guilabel> section).</para>
 
       <para>Also be aware that you may need to install the
         appropriate <link linkend="RCL.INSTALL.EXTERNAL"> supporting
@@ -74,12 +79,12 @@
       <title>Full text search</title>
 
       <para>&RCL; is a full text search application. Full text search
-        applications let you find your data by content rather
-        than by external attributes (like a file name). More
-        specifically, they will let you specify words (terms) that
-        should or should not appear in the text you are looking for,
-        and return a list of matching documents, ordered so that the
-        most <emphasis>relevant</emphasis> documents will appear
+        finds your data by content rather than by external attributes
+        (like a file name). You specify words
+        (terms) which should or should not appear in the text you are
+        looking for, and receive in return a list of matching
+        documents, ordered so that the most
+        <emphasis>relevant</emphasis> documents will appear
         first.</para>
 
       <para>You do not need to remember in what file or email message you
@@ -88,27 +93,30 @@
         these terms are prominent, in a similar way to Internet search
         engines.</para>
 
-      <para>A search application tries to determine which documents are
-        most relevant to the search terms you provide. Computer algorithms
-        for determining relevance can be very complex, and in general are
-        inferior to the power of the human mind to rapidly determine
-        relevance. The quality of relevance guessing is probably the most
-        important aspect when evaluating a search application.</para>
+      <para>Full text search applications try to determine which
+        documents are most relevant to the search terms you
+        provide. Computer algorithms for determining relevance can be
+        very complex, and in general are inferior to the power of the
+        human mind to rapidly determine relevance. The quality of
+        relevance guessing is probably the most important aspect when
+        evaluating a search application.</para>
 
-      <para>In many cases, you are looking for all the forms of a
-        word, not for a specific form or spelling. These different forms
-        may include plurals, different tenses for a verb, or terms derived
-        from the same root or <emphasis>stem</emphasis> (example: floor,
-        floors, floored, flooring...). Search applications usually expand
-        queries to all such related terms (words that reduce to the same
-        stem) and also provide a way to disable this expansion if you are
-        actually searching for a specific form.</para>
+        <para>In many cases, you are looking for all the forms of a
+        word, including plurals, different tenses for a verb, or terms
+        derived from the same root or <emphasis>stem</emphasis>
+        (example: <replaceable>floor, floors, floored,
+        flooring...</replaceable>). Queries are usually automatically
+        expanded to all such related terms (words that reduce to the
+        same stem). This can be prevented for searching for a specific
+        form.</para>
 
-      <para>Stemming, by itself, does not accommodate for misspellings or
-        phonetic searches. &RCL; supports these features through a specific
-        tool (the <literal>term explorer</literal>) which will let you
-        explore the set of index terms along different modes.</para>
-
+        <para>Stemming, by itself, does not accommodate for misspellings
+        or phonetic searches. A full text search application may also
+        support this form of approximation. For example, a search for
+        <replaceable>aliterattion</replaceable> returning no result may
+        propose, depending on index contents, <replaceable>alliteration
+        alteration alterations altercation</replaceable> as possible
+        replacement terms. </para>
 
     </sect1>
 
@@ -120,14 +128,25 @@
       library as its storage and retrieval engine. &XAP; is a very
       mature package using <ulink
       url="http://www.xapian.org/docs/intro_ir.html">a sophisticated
-      probabilistic ranking model</ulink>. &RCL; provides the mechanisms
-      and interface to get data into and out of the system.</para>
+      probabilistic ranking model</ulink>.</para>
+      
+      <para>The &XAP; library manages an index database which
+      describes where terms appear in your document files. It
+      efficiently processes the complex queries which are produced by
+      the &RCL; query expansion mechanism, and is in charge of the
+      all-important relevance computation task.</para>
 
-      <para>In practice, &XAP; works by remembering where terms appear
-      in your document files. The acquisition process is called
-      indexing. </para> 
+      <para>&RCL; provides the mechanisms and interface to get data
+      into and out of the index. This includes translating the many
+      possible document formats into pure text, handling term
+      variations (using &XAP; stemmers), and spelling approximations
+      (using the <application>aspell</application> speller),
+      interpreting user queries and presenting results.</para>
 
-      <para>The resulting index can be big (roughly the size of the
+      <para>In a shorter way, &RCL; does the dirty footwork, &XAP;
+      deals with the intelligent parts of the process.</para>
+
+      <para>The &XAP; index can be big (roughly the size of the
         original document set), but it is not a document
         archive. &RCL; can only display documents that still exist at
         the place from which they were indexed. (Actually, there is a
@@ -136,9 +155,12 @@
         punctuation and capitalization are lost).</para>
 
       <para>&RCL; stores all internal data in <application>Unicode
-      UTF-8</application> format, and it can index files with
-      different character sets, encodings, and languages into the same
-      index. It has can process many document types.</para>
+      UTF-8</application> format, and it can index files of many types
+      with different character sets, encodings, and languages into the
+      same index. It can process documents embedded inside other
+      documents (for example a pdf document stored inside a Zip
+      archive sent as an email attachment...), down to an arbitrary
+      depth.</para>
       
       <para>Stemming is the process by which &RCL; reduces words to
         their radicals so that searching does not depend, for example, on a
@@ -206,9 +228,12 @@
 
       <para>The <link linkend="RCL.INDEXING.PERIODIC.EXEC">indexing
           process</link> is started automatically the first time you
-        execute the <command>recoll</command> GUI. Indexing can also be
-        performed by executing the <command>recollindex</command>
-        command.</para>
+        execute the <command>recoll</command> GUI. Indexing can also
+        be performed by executing the <command>recollindex</command>
+        command. &RCL; indexing is multithreaded by default when
+        appropriate hardware resources are available, and can perform
+        in parallel multiple tasks among text extraction, segmentation
+        and index updates.</para>
 
       <para><link linkend="RCL.SEARCH">Searches</link> are usually
         performed inside the <command>recoll</command> GUI, which has many
@@ -220,7 +245,10 @@
           <application>Python</application>
           programming interface</link>, a <link linkend="RCL.SEARCH.KIO">
           <application>KDE</application> KIO slave module</link>, and
-        a <ulink url="&WIKI;UnityLens">Ubuntu Unity Lens</ulink> module.
+        Ubuntu Unity <ulink url="https://bitbucket.org/medoc/unity-lens-recoll">
+        Lens</ulink> (for older versions) or 
+        <ulink url="https://bitbucket.org/medoc/unity-scope-recoll">
+          Scope</ulink> (for current versions) modules.
         </para>
 
     </sect1>
@@ -236,11 +264,11 @@
       <para>Indexing is the process by which the set of documents is
 	analyzed and the data entered into the database. &RCL;
 	indexing is normally incremental: documents will only be
-	processed if they have been modified. On the first execution,
-	all documents will need processing. A full index build can be
-	forced later by specifying an option to the indexing command
-	(<command>recollindex</command> <option>-z</option>
-	or <option>-Z</option>).</para> 
+	processed if they have been modified since the last run. On
+	the first execution, all documents will need processing. A
+	full index build can be forced later by specifying an option
+	to the indexing command (<command>recollindex</command>
+	<option>-z</option> or <option>-Z</option>).</para>
 
       <para>The following sections give an overview of different
 	aspects of the indexing processes and configuration, with links
@@ -1852,6 +1880,11 @@ MimeType=*/*
       inflections). But there are other cases where the exact search
       term is not known. For example, you may not remember the exact
       spelling, or only know the beginning of the name.</para>
+
+      <para>The search will only propose replacement terms with
+      spelling variations when no matching document were found. In some
+      cases, both proper spellings and mispellings are present in the
+      index, and it may be interesting to look for them explicitely.</para>
 
       <para>The term explorer tool (started from the toolbar icon or
       from the <guilabel>Term explorer</guilabel> entry of the
@@ -4636,9 +4669,11 @@ except:
         <listitem><para>Openoffice files need <command>unzip</command> and
         <command>xsltproc</command>.</para></listitem>
 
-        <listitem><para>PDF files need <command>pdftotext</command> which
-        is part of the <application>Xpdf</application> or
-        <application>Poppler</application> packages.</para></listitem>
+        <listitem><para>PDF files need <command>pdftotext</command>
+        which is part of <application>Poppler</application> (usually
+        comes with the <literal>poppler-utils</literal>
+        package). Avoid the original one from 
+        <application>Xpdf</application>.</para></listitem>
 
         <listitem><para>Postscript files need <command>pstotext</command>. 
             The original version has an issue with shell
@@ -4663,9 +4698,11 @@ except:
         <application>libwpd-tools</application> on Ubuntu)
         package.</para></listitem>
 
-        <listitem><para>RTF files need <command>unrtf</command>, which, in
-        its standard version, has much trouble with non-western character
-        sets. Check  &RCLAPPS;.</para></listitem>
+        <listitem><para>RTF files need <command>unrtf</command>,
+        which, in its older versions, has much trouble with
+        non-western character sets. Many Linux distributions carry
+        outdated <command>unrtf</command> versions. Check
+        &RCLAPPS; for details.</para></listitem>
 
         <listitem><para>TeX files need <command>untex</command> or
         <command>detex</command>. Check &RCLAPPS; for sources if it's not
