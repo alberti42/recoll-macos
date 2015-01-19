@@ -636,6 +636,11 @@ public:
     }
 };
 
+string CirCache::getpath()
+{
+    return m_d->datafn(m_dir);
+}
+
 bool CirCache::create(off_t maxsize, int flags)
 {
     LOGDEB(("CirCache::create: [%s] maxsz %lld flags 0x%x\n", 
@@ -1296,6 +1301,8 @@ static bool inflateToDynBuf(void* inp, UINT inlen, void **outpp, UINT *outlenp)
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include <string>
 #include <iostream>
@@ -1308,6 +1315,91 @@ static bool inflateToDynBuf(void* inp, UINT inlen, void **outpp, UINT *outlenp)
 
 using namespace std;
 
+
+bool resizecc(const string& dir, int newmbs)
+{
+    RefCntr<CirCache> occ(new CirCache(dir));
+    string ofn = occ->getpath();
+
+    string backupfn = ofn + ".orig";
+    if (access(backupfn.c_str(), 0) >= 0) {
+        cerr << "Backup file " << backupfn << 
+            " exists, please move it out of the way" << endl;
+        return false;
+    }
+
+    if (!occ->open(CirCache::CC_OPWRITE)) {
+        cerr << "Open failed in " << dir << " : " << occ->getReason() << endl;
+        return false;
+    }
+    string tmpdir = path_cat(dir, "tmp");
+    if (access(tmpdir.c_str(), 0) < 0) {
+        if (mkdir(tmpdir.c_str(), 0700) < 0) {
+            cerr << "Cant create temporary directory " << tmpdir << " ";
+            perror("mkdir");
+            return false;
+        }
+    }
+
+    RefCntr<CirCache> ncc(new CirCache(tmpdir));
+    string nfn = ncc->getpath();
+    if (!ncc->create(off_t(newmbs) * 1000 * 1024, 
+                     CirCache::CC_CRUNIQUE | CirCache::CC_CRTRUNCATE)) {
+        cerr << "Cant create new file in " << tmpdir << " : " << 
+            ncc->getReason() << endl;
+	return false;
+    }
+
+    bool eof = false;
+    occ->rewind(eof);
+    int nentries = 0;
+    while (!eof) {
+        string udi, sdic, data;
+        if (!occ->getCurrent(udi, sdic, data)) {
+            cerr << "getCurrent failed: " << occ->getReason() << endl;
+            return false;
+        }
+        // Shouldn't getcurrent deal with this ?
+        if (sdic.size() == 0) {
+            //cerr << "Skip empty entry" << endl;
+            occ->next(eof);
+            continue;
+        }
+        ConfSimple dic(sdic);
+        if (!dic.ok()) {
+            cerr << "Could not parse entry attributes dic" << endl;
+            return false;
+        }
+        //cerr << "UDI: " << udi << endl;
+        if (!ncc->put(udi, &dic, data)) {
+            cerr << "put failed: " << ncc->getReason() << " sdic [" << sdic <<
+                "]" << endl;
+            return false;
+        }
+        nentries++;
+        occ->next(eof);
+    }
+
+    // Done with our objects here, there is no close() method, so delete them
+    occ.release();
+    ncc.release();
+
+    if (rename(ofn.c_str(), backupfn.c_str()) < 0) {
+        cerr << "Could not create backup " << backupfn << " : ";
+        perror("rename");
+        return false;
+    }
+    cout << "Created backup file " << backupfn << endl;
+    if (rename(nfn.c_str(), ofn.c_str()) < 0) {
+        cerr << "Could not rename new file from " << nfn << " to " << ofn << " : ";
+        perror("rename");
+        return false;
+    }
+    cout << "Resize done, copied " << nentries << " entries " << endl;
+    return true;
+}
+
+
 static char *thisprog;
 
 static char usage [] =
@@ -1317,6 +1409,7 @@ static char usage [] =
     " -g [-i instance] [-D] <dirname> <udi>: get\n"
     "   -D: also dump data\n"
     " -e <dirname> <udi> : erase\n"
+    " -s <dirname> <newmbs> : resize\n"
     ;
 static void
 Usage(FILE *fp = stderr)
@@ -1335,6 +1428,7 @@ static int     op_flags;
 #define OPT_D     0x80
 #define OPT_u     0x100
 #define OPT_e     0x200
+#define OPT_s     0x400
 
 int main(int argc, char **argv)
 {
@@ -1351,23 +1445,24 @@ int main(int argc, char **argv)
 	while (**argv)
 	    switch (*(*argv)++) {
 	    case 'c':	op_flags |= OPT_c; break;
-	    case 'e':	op_flags |= OPT_e; break;
-	    case 'p':	op_flags |= OPT_p; break;
-	    case 'g':	op_flags |= OPT_g; break;
-	    case 'd':	op_flags |= OPT_d; break;
 	    case 'D':	op_flags |= OPT_D; break;
-	    case 'u':	op_flags |= OPT_u; break;
+	    case 'd':	op_flags |= OPT_d; break;
+	    case 'e':	op_flags |= OPT_e; break;
+	    case 'g':	op_flags |= OPT_g; break;
 	    case 'i':	op_flags |= OPT_i; if (argc < 2)  Usage();
 		if ((sscanf(*(++argv), "%d", &instance)) != 1) 
 		    Usage(); 
 		argc--; 
 		goto b1;
+	    case 'p':	op_flags |= OPT_p; break;
+	    case 's':	op_flags |= OPT_s; break;
+	    case 'u':	op_flags |= OPT_u; break;
 	    default: Usage();	break;
 	    }
     b1: argc--; argv++;
     }
 
-    DebugLog::getdbl()->setloglevel(DEBDEB1);
+    DebugLog::getdbl()->setloglevel(DEBERR);
     DebugLog::setfilename("stderr");
 
     if (argc < 1)
@@ -1384,6 +1479,14 @@ int main(int argc, char **argv)
 	    cerr << "Create failed:" << cc.getReason() << endl;
 	    exit(1);
 	}
+    } else if (op_flags & OPT_s) {
+        if (argc != 1) {
+            Usage();
+        }
+        int newmbs = atoi(*argv++);argc--;
+        if (!resizecc(dir, newmbs)) {
+            exit(1);
+        }
     } else if (op_flags & OPT_p) {
 	if (argc < 1)
 	    Usage();

@@ -1,12 +1,17 @@
 depth = ..
 include $(depth)/mk/sysconf
 
+# Use a static link for some of the utility programs so that they can be
+# executed independantly of the installed version of recoll. None of them
+# are part of the official distrib anyway
+LIBRECOLL = ../lib/librecoll.a
+
 PROGS = pxattr trecrontab \
       trnetcon trcopyfile trcircache trmd5 trreadfile trfileudi \
       trconftree wipedir smallut  trfstreewalk trpathut transcode trbase64 \
       trmimeparse trexecmd utf8iter idfile
 
-all: librecoll pxattr
+all: librecoll
 
 PXATTROBJS = trpxattr.o pxattr.o 
 pxattr:  $(PXATTROBJS)

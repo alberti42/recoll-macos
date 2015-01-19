@@ -65,6 +65,8 @@ public:
     enum OpMode {CC_OPREAD, CC_OPWRITE};
     virtual bool open(OpMode mode);
 
+    virtual std::string getpath();
+
     virtual bool get(const string& udi, string& dic, string& data, 
                      int instance = -1);
 
