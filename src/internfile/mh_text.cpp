@@ -71,16 +71,10 @@ bool MimeHandlerText::set_document_file(const string& mt, const string &fn)
             ps *= KB;
             m_paging = true;
         }
+        // Note: size_t is guaranteed unsigned, so max if ps is -1
         m_pagesz = size_t(ps);
-        string reason;
-	LOGDEB(("calling file_to_string\n"));
-        // file_to_string() takes pagesz == size_t(-1) to mean read all.
-        if (!file_to_string(fn, m_text, 0, m_pagesz, &reason)) {
-            LOGERR(("MimeHandlerText: can't read file: %s\n", reason.c_str()));
+        if (!readnext())
             return false;
-        }
-	LOGDEB(("file_to_string OK\n"));
-        m_offs = m_text.length();
     }
     if (!m_forPreview) {
 	string md5, xmd5;
@@ -177,8 +171,9 @@ bool MimeHandlerText::readnext()
         return true;
     }
 
-    // If possible try to adjust the chunk to end right after a line 
-    // Don't do this for the last chunk
+    // If possible try to adjust the chunk to end right after a line
+    // Don't do this for the last chunk. Last chunk of exactly the
+    // page size might be unduly split, no big deal
     if (m_text.length() == m_pagesz) {
         string::size_type pos = m_text.find_last_of("\n\r");
         if (pos != string::npos && pos != 0) {
