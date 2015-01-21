@@ -152,6 +152,12 @@ bool MimeHandlerText::next_document()
         if (m_offs - srclen != 0)
             m_metaData[cstr_dj_keyipath] = buf;
         readnext();
+        // This ensures that the first chunk (offs==srclen) of a
+        // multi-chunk file does have an ipath. Else it stands for the
+        // whole file, which used to be the case but does not seem
+        // right
+        if (m_havedoc)
+            m_metaData[cstr_dj_keyipath] = buf;
         return true;
     }
 }
