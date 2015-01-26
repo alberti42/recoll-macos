@@ -84,6 +84,7 @@ using std::pair;
 #include "fileudi.h"
 #include "snippets_w.h"
 #include "fragbuts.h"
+#include "systray.h"
 
 using namespace confgui;
 
@@ -440,6 +441,14 @@ void RclMain::init()
 	emit sortDataChanged(m_sortspec);
     }
 
+    if (prefs.showTrayIcon && QSystemTrayIcon::isSystemTrayAvailable()) {
+        m_trayicon = new RclTrayIcon(this, 
+                                     QIcon(QString(":/images/recoll.png")));
+        m_trayicon->show();
+    } else {
+        m_trayicon = 0;
+    }
+
     fileRebuildIndexAction->setEnabled(FALSE);
     fileToggleIndexingAction->setEnabled(FALSE);
     // Start timer on a slow period (used for checking ^C). Will be
@@ -659,19 +668,22 @@ void RclMain::adjustPrefsMenu()
     setStemLang(prefs.queryStemLang);
 }
 
-void RclMain::closeEvent( QCloseEvent * )
+void RclMain::showTrayMessage(const QString& text)
 {
-    fileExit();
+    if (m_trayicon)
+        m_trayicon->showMessage("Recoll", text, 
+                                QSystemTrayIcon::Information, 1000);
 }
 
-// We also want to get rid of the advanced search form and previews
-// when we exit (not our children so that it's not systematically
-// created over the main form). 
-bool RclMain::close()
+void RclMain::closeEvent(QCloseEvent *ev)
 {
-    LOGDEB(("RclMain::close\n"));
-    fileExit();
-    return false;
+    LOGDEB(("RclMain::closeEvent\n"));
+    if (prefs.closeToTray && m_trayicon && m_trayicon->isVisible()) {
+        hide();
+        ev->ignore();
+    } else {
+        fileExit();
+    }
 }
 
 void RclMain::fileExit()
@@ -776,6 +788,7 @@ void RclMain::periodic100()
     }
     // Update the "start/stop indexing" menu entry, can't be done from
     // the "start/stop indexing" slot itself
+    IndexerState prevstate = m_indexerState;
     if (m_idxproc) {
 	m_indexerState = IXST_RUNNINGMINE;
 	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
@@ -798,6 +811,11 @@ void RclMain::periodic100()
 	    fileRebuildIndexAction->setEnabled(FALSE);
 	    periodictimer->setInterval(200);
 	}	    
+    }
+
+    if ((prevstate == IXST_RUNNINGMINE || prevstate == IXST_RUNNINGNOTMINE)
+        && m_indexerState == IXST_NOTRUNNING) {
+        showTrayMessage("Indexing done");
     }
 
     // Possibly cleanup the dead viewers
@@ -871,12 +889,15 @@ void RclMain::toggleIndexing()
 	m_idxproc->startExec("recollindex", args, false, false);
     }
     break;
+    case IXST_UNKNOWN:
+        return;
     }
 }
 
 void RclMain::rebuildIndex()
 {
     switch (m_indexerState) {
+    case IXST_UNKNOWN:
     case IXST_RUNNINGMINE:
     case IXST_RUNNINGNOTMINE:
 	return; //?? Should not have been called

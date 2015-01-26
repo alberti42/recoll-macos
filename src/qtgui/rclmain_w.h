@@ -49,12 +49,15 @@ namespace confgui {
 
 using confgui::ConfIndexW;
 
+class RclTrayIcon;
+
 class RclMain : public QMainWindow, public Ui::RclMainBase
 {
     Q_OBJECT
 
 public:
-    enum  IndexerState {IXST_NOTRUNNING, IXST_RUNNINGMINE, IXST_RUNNINGNOTMINE};
+    enum  IndexerState {IXST_UNKNOWN, IXST_NOTRUNNING, 
+                        IXST_RUNNINGMINE, IXST_RUNNINGNOTMINE};
     RclMain(QWidget * parent = 0) 
 	: QMainWindow(parent),
 	  curPreview(0),
@@ -77,7 +80,7 @@ public:
           m_idxkilled(false),
           m_catgbutvecidx(0),
 	  m_sortspecnochange(false),
-	  m_indexerState(IXST_RUNNINGNOTMINE),
+	  m_indexerState(IXST_UNKNOWN),
 	  m_queryActive(false),
 	  m_firstIndexing(false),
 	  m_searchIsSimple(false)
@@ -104,7 +107,6 @@ public:
     void newDupsW(const Rcl::Doc doc, const std::vector<Rcl::Doc> dups);
 
 public slots:
-    virtual bool close();
     virtual void fileExit();
     virtual void idxStatus();
     virtual void periodic100();
@@ -163,6 +165,7 @@ public slots:
     virtual void resultCount(int);
     virtual void applyStyleSheet();
     virtual void setFilterCtlStyle(int stl);
+    virtual void showTrayMessage(const QString& text);
 
 signals:
     void docSourceChanged(RefCntr<DocSequence>);
@@ -214,6 +217,8 @@ private:
     // If set on init, will be displayed either through ext app, or
     // preview (if no ext app set)
     QString          m_urltoview;
+
+    RclTrayIcon     *m_trayicon;
 
     virtual void init();
     virtual void setupResTB(bool combo);

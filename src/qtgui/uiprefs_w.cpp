@@ -92,7 +92,6 @@ void UIPrefsDialog::init()
 	    ssAutoSpaceCB, SLOT(setDisabled(bool)));
     connect(ssAutoAllCB, SIGNAL(toggled(bool)), 
 	    ssAutoSpaceCB, SLOT(setChecked(bool)));
-
     setFromPrefs();
 }
 
@@ -126,6 +125,8 @@ void UIPrefsDialog::setFromPrefs()
     initStartAdvCB->setChecked(prefs.startWithAdvSearchOpen);
 
     keepSortCB->setChecked(prefs.keepSort);
+    showTrayIconCB->setChecked(prefs.showTrayIcon);
+    closeToTrayCB->setChecked(prefs.closeToTray);
     previewHtmlCB->setChecked(prefs.previewHtml);
     switch (prefs.previewPlainPre) {
     case PrefsPack::PP_BR:
@@ -289,6 +290,8 @@ void UIPrefsDialog::accept()
     prefs.startWithAdvSearchOpen = initStartAdvCB->isChecked();
 
     prefs.keepSort = keepSortCB->isChecked();
+    prefs.showTrayIcon = showTrayIconCB->isChecked();
+    prefs.closeToTray = closeToTrayCB->isChecked();
     prefs.previewHtml = previewHtmlCB->isChecked();
 
     if (plainBRRB->isChecked()) {
@@ -518,6 +521,11 @@ static bool samedir(const string& dir1, const string& dir2)
 	return true;
     }
     return false;
+}
+
+void UIPrefsDialog::on_showTrayIconCB_clicked()
+{
+    closeToTrayCB->setEnabled(showTrayIconCB->checkState());
 }
 
 /** 

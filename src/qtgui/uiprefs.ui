@@ -278,6 +278,26 @@
             </widget>
            </item>
            <item>
+            <widget class="QCheckBox" name="showTrayIconCB">
+             <property name="text">
+              <string>Show system tray icon.</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="closeToTrayCB">
+             <property name="text">
+              <string>Close to tray instead of exiting.</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
             <spacer name="spacer4">
              <property name="orientation">
               <enum>Qt::Vertical</enum>

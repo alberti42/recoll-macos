@@ -252,6 +252,8 @@ void rwSettings(bool writing)
 
     SETTING_RW(prefs.fileTypesByCats, "/Recoll/prefs/query/asearchFilTypByCat",
 	       Bool, false);
+    SETTING_RW(prefs.showTrayIcon, "/Recoll/prefs/showTrayIcon", Bool, false);
+    SETTING_RW(prefs.closeToTray, "/Recoll/prefs/closeToTray", Bool, false);
 
     if (g_dynconf == 0) {
         // Happens

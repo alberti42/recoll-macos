@@ -124,6 +124,9 @@ class PrefsPack {
     // of the case where we might need an incompatible change
     int rclVersion;
 
+    bool showTrayIcon;
+    bool closeToTray;
+
     // Advanced search window clause list state
     vector<int> advSearchClauses;
 
@@ -140,8 +143,10 @@ class PrefsPack {
 	queryReplaceAbstract(false),
 	startWithAdvSearchOpen(false),
 	termMatchType(0),
-	rclVersion(1505)
-    { }
+	rclVersion(1505),
+        showTrayIcon(false),
+        closeToTray(false)
+        {}
 };
 
 /** Global preferences record */
