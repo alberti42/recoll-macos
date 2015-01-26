@@ -356,7 +356,7 @@ noxattrfields = 0
 #metadatacmds = ; tags = tmsu tags %f; rclmulti1 = cmdOutputsConf %f
 
 [/usr/share/man]
-followSymlinks = 1
+followLinks = 1
 
 # Enable thunderbird mbox format quirks where appropriate, and same for
 # mozilla/seamonkey
