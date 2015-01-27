@@ -5,10 +5,12 @@
 #include <string>
 
 #include "searchdata.h"
+#include "wasaparse.h"
+#include "wasaparse.tab.h"
 
 using namespace std;
 
-int yylex(void);
+int yylex(yy::parser::semantic_type *);
 void yyerror(char const *);
 void logwhere(const char *);
 class Expression;
@@ -16,7 +18,16 @@ static void qualify(Rcl::SearchDataClauseDist *, const string &);
 
 string stemlang("english");
 
+static void addSubQuery(Rcl::SearchData *sd, Rcl::SearchData *sq)
+{
+    sd->addClause(new Rcl::SearchDataClauseSub(RefCntr<Rcl::SearchData>(sq)));
+}
+
+static Rcl::SearchData *g_result;
 %}
+
+%skeleton "lalr1.cc"
+%defines
 
 %union {
     string *str;
@@ -48,48 +59,53 @@ string stemlang("english");
 
 query: fieldexpr 
 {
+    cerr << "q: fieldexpr" << endl;
     Rcl::SearchData *sd = new Rcl::SearchData(Rcl::SCLT_AND, stemlang);
     sd->addClause($1);
     $$ = sd;
-    cerr << "q: fieldexpr" << endl;
-}
+    g_result = sd;
+ }
 | query fieldexpr 
 {
     cerr << "q: query fieldexpr" << endl;
     $1->addClause($2);
     $$ = $1;
+    g_result = $$;
 }
 | query AND fieldexpr
 {
     cerr << "q: query AND fieldexpr" << endl;
     $1->addClause($3);
     $$ = $1;
+    g_result = $$;
 }
 | query AND orchain
 {
     cerr << "q: query AND orchain";
-    Rcl::SearchDataClauseSub *sub = 
-        new Rcl::SearchDataClauseSub(RefCntr<Rcl::SearchData>($1));
-    $1->addClause(sub);
+    addSubQuery($1, $3);
     $$ = $1;
+    g_result = $$;
 }
 | query orchain
 {
     cerr << "q: query orchain" << endl;
-    Rcl::SearchDataClauseSub *sub = 
-        new Rcl::SearchDataClauseSub(RefCntr<Rcl::SearchData>($1));
-    $1->addClause(sub);
+    addSubQuery($1, $2);
     $$ = $1;
+    g_result = $$;
 }
 | orchain
 {
     cerr << "q: orchain" << endl;
-    $$ = $1;
+    Rcl::SearchData *sd = new Rcl::SearchData(Rcl::SCLT_AND, stemlang);
+    addSubQuery(sd, $1);
+    $$ = sd;
+    g_result = $$;
 }
 | '(' query ')' 
 {
     cerr << "( query )" << endl;
     $$ = $2;
+    g_result = $$;
 }
 ;
 
@@ -284,24 +300,24 @@ static void qualify(Rcl::SearchDataClauseDist *cl, const string& quals)
 }
 
 
-static stack<int> returns;
-static string input;
-static unsigned int index;
+static stack<int> g_returns;
+static string g_input;
+static unsigned int g_index;
 
 int GETCHAR()
 {
-    if (!returns.empty()) {
-        int c = returns.top();
-        returns.pop();
+    if (!g_returns.empty()) {
+        int c = g_returns.top();
+        g_returns.pop();
         return c;
     }
-    if (index < input.size())
-        return input[index++];
+    if (g_index < g_input.size())
+        return g_input[g_index++];
     return 0;
 }
 static void UNGETCHAR(int c)
 {
-    returns.push(c);
+    g_returns.push(c);
 }
 
 // Simpler to let the quoted string reader store qualifiers in there,
@@ -318,7 +334,7 @@ static string specialinchars(":=<>()");
 static string whites(" \t\n\r");
 
 // Called with the first dquote already read
-static int parseString()
+static int parseString(yy::parser::semantic_type *yylval)
 {
     string* value = new string();
     qualifiers.clear();
@@ -345,19 +361,19 @@ static int parseString()
     }
 out:
     //cerr << "GOT QUOTED ["<<value<<"] quals [" << qualifiers << "]" << endl;
-    yylval.str = value;
-    return QUOTED;
+    yylval->str = value;
+    return yy::parser::token::QUOTED;
 }
 
 
-int yylex(void)
+int yylex(yy::parser::semantic_type *yylval)
 {
-//    cerr << "yylex: input [" << input.substr(index) << "]" << endl;
+    //cerr << "yylex: input [" << g_input.substr(g_index) << "]" << endl;
 
     if (!qualifiers.empty()) {
-        yylval.str = new string();
-        yylval.str->swap(qualifiers);
-        return QUALIFIERS;
+        yylval->str = new string();
+        yylval->str->swap(qualifiers);
+        return yy::parser::token::QUALIFIERS;
     }
 
     int c;
@@ -376,24 +392,24 @@ int yylex(void)
 
     // field-term relations
     switch (c) {
-    case '=': return EQUALS;
-    case ':': return CONTAINS;
+    case '=': return yy::parser::token::EQUALS;
+    case ':': return yy::parser::token::CONTAINS;
     case '<': {
         int c1 = GETCHAR();
         if (c1 == '=') {
-            return SMALLEREQ;
+            return yy::parser::token::SMALLEREQ;
         } else {
             UNGETCHAR(c);
-            return SMALLER;
+            return yy::parser::token::SMALLER;
         }
     }
     case '>': {
         int c1 = GETCHAR();
         if (c1 == '=') {
-            return GREATEREQ;
+            return yy::parser::token::GREATEREQ;
         } else {
             UNGETCHAR(c);
-            return GREATER;
+            return yy::parser::token::GREATER;
         }
     }
     case '(': case ')':
@@ -401,7 +417,7 @@ int yylex(void)
     }
         
     if (c == '"')
-        return parseString();
+        return parseString(yylval);
 
     UNGETCHAR(c);
 
@@ -425,29 +441,39 @@ int yylex(void)
     
     if (!word->compare("AND") || !word->compare("&&")) {
         delete word;
-        return AND;
+        return yy::parser::token::AND;
     } else if (!word->compare("OR") || !word->compare("||")) {
         delete word;
-        return OR;
+        return yy::parser::token::OR;
     }
 
 //    cerr << "Got word [" << word << "]" << endl;
-    yylval.str = word;
-    return WORD;
+    yylval->str = word;
+    return yy::parser::token::WORD;
 }
 
-int main (int argc, const char *argv[])
+void yy::parser::error(location_type const&, string const& m)
 {
-    argc--;argv++;
-    if (argc == 0)
-        return 1;
-    while (argc--) {
-        input += *argv++;
-        input += " ";
+    cerr << m << endl;
+}
+
+Rcl::SearchData *wasaparse(const string& in)
+{
+    cerr << "wasaparse(" << in << ")" << endl;
+
+    g_index = 0;
+    g_returns = stack<int>();
+    g_input = in;
+    delete g_result;
+    g_result = 0;
+
+    yy::parser parser;
+    if (parser.parse() != 0) {
+        // Error
+        cerr << "Parse failed" << endl;
+        delete g_result;
+        g_result = 0;
     }
-
-    index = 0;
-    returns = stack<int>();
-
-    return yyparse();
+    cerr << "wasaparse: returning " << g_result << endl;
+    return g_result;
 }
