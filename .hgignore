@@ -1,7 +1,7 @@
 syntax: glob
-*.o 
-*.dep 
+*.dep
 *.dep.stamp
+*.o 
 *~
 \#*
 ptrans
@@ -101,7 +101,13 @@ src/qtgui/recoll
 src/qtgui/recoll.app
 src/qtgui/recoll.pro
 src/query/alldeps
+src/query/location.hh
+src/query/position.hh
 src/query/recollq
+src/query/stack.hh
+src/query/wasaparse.output
+src/query/wasaparse.tab.cpp
+src/query/wasaparse.tab.h
 src/query/xadump
 src/recollinstall
 src/sampleconf/rclmon.sh
