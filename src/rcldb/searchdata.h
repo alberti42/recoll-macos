@@ -102,7 +102,7 @@ public:
     bool toNativeQuery(Rcl::Db &db, void *);
 
     /** We become the owner of cl and will delete it */
-    bool addClause(SearchDataClause *cl);
+    bool addClause(SearchDataClause* cl);
 
     /** If this is a simple query (one field only, no distance clauses),
      * add phrase made of query terms to query, so that docs containing the
@@ -164,7 +164,7 @@ public:
 private:
     // Combine type. Only SCLT_AND or SCLT_OR here
     SClType                   m_tp; 
-    // Complex query descriptor
+    // The clauses
     std::vector<SearchDataClause*> m_query;
     // Restricted set of filetypes if not empty.
     std::vector<std::string>            m_filetypes; 
@@ -173,14 +173,18 @@ private:
     // Autophrase if set. Can't be part of the normal chain because
     // it uses OP_AND_MAYBE
     RefCntr<SearchDataClauseDist>   m_autophrase;
-    // 
+
+    // Special stuff produced by input which looks like a clause but means
+    // something else (date and size specs)
     bool                      m_haveDates;
     DateInterval              m_dates; // Restrict to date interval
     size_t                    m_maxSize;
     size_t                    m_minSize;
+
     // Printable expanded version of the complete query, retrieved/set
     // from rcldb after the Xapian::setQuery() call
     std::string m_description; 
+    // Error diag
     std::string m_reason;
     bool   m_haveWildCards;
     std::string m_stemlang;
@@ -215,10 +219,12 @@ class SearchDataClause {
 public:
     enum Modifier {SDCM_NONE=0, SDCM_NOSTEMMING=1, SDCM_ANCHORSTART=2,
 		   SDCM_ANCHOREND=4, SDCM_CASESENS=8, SDCM_DIACSENS=16};
+    enum Relation {REL_CONTAINS, REL_EQUALS, REL_LT, REL_LTE, REL_GT, REL_GTE};
 
     SearchDataClause(SClType tp) 
     : m_tp(tp), m_parentSearch(0), m_haveWildCards(0), 
-      m_modifiers(SDCM_NONE), m_weight(1.0), m_exclude(false)
+      m_modifiers(SDCM_NONE), m_weight(1.0), m_exclude(false), 
+      m_rel(REL_CONTAINS)
     {}
     virtual ~SearchDataClause() {}
     virtual bool toNativeQuery(Rcl::Db &db, void *) = 0;
@@ -229,6 +235,9 @@ public:
     SClType getTp() const
     {
 	return m_tp;
+    }
+    void setTp(SClType tp) {
+        m_tp = tp;
     }
     void setParent(SearchData *p) 
     {
@@ -279,7 +288,12 @@ public:
     {
 	m_exclude = onoff;
     }
-
+    virtual void setrel(Relation rel) {
+        m_rel = rel;
+    }
+    virtual Relation getrel() {
+        return m_rel;
+    }
     friend class SearchData;
 protected:
     std::string      m_reason;
@@ -289,6 +303,8 @@ protected:
     Modifier    m_modifiers;
     float       m_weight;
     bool        m_exclude;
+    Relation    m_rel;
+
 private:
     SearchDataClause(const SearchDataClause&) 
     {
@@ -339,13 +355,15 @@ public:
     {
 	return m_field;
     }
+    virtual void setfield(const string& field) {
+        m_field = field;
+    }
 protected:
     std::string  m_text;  // Raw user entry text.
     std::string  m_field; // Field specification if any
     HighlightData m_hldata;
     // Current count of Xapian clauses, to check against expansion limit
     int  m_curcl;
-
     bool processUserString(Rcl::Db &db, const string &iq,
 			   std::string &ermsg,
 			   void* pq, int slack = 0, bool useNear = false);
@@ -443,6 +461,9 @@ public:
     virtual int getslack() const
     {
 	return m_slack;
+    }
+    virtual void setslack(int slack) {
+        m_slack = slack;
     }
 private:
     int m_slack;

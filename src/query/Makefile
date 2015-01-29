@@ -4,8 +4,12 @@ include $(depth)/mk/sysconf
 PROGS = xadump recollq #trhist qtry qxtry 
 SRCS = xadump.cpp 
 
-all: depend librecoll $(PROGS)
+all: wasaparse.tab.cpp depend librecoll $(PROGS)
 
+wasaparse.tab.cpp : wasaparse.y
+	bison wasaparse.y
+	mv -f wasaparse.tab.c wasaparse.tab.cpp
+	
 XADUMP_OBJS= xadump.o 
 xadump : $(XADUMP_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o xadump $(XADUMP_OBJS) \
@@ -39,3 +43,7 @@ trwasastrtoq.o : wasastringtoquery.cpp wasastringtoquery.h
 include $(depth)/mk/commontargets
 
 include alldeps
+
+distclean::
+	-rm -f location.hh position.hh stack.hh \
+            wasaparse.tab.c wasaparse.tab.cpp wasaparse.tab.h

@@ -38,7 +38,6 @@ using namespace std;
 #include "pathut.h"
 #include "searchdata.h"
 #include "rclquery.h"
-#include "wasastringtoquery.h"
 #include "wasatorcl.h"
 #include "kio_recoll.h"
 #include "docseqdb.h"

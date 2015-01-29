@@ -17,15 +17,18 @@
 
 #ifndef _WASATORCL_H_INCLUDED_
 #define _WASATORCL_H_INCLUDED_
+
 #include <string>
-using std::string;
 
-#include "rcldb.h"
-#include "searchdata.h"
-
+namespace Rcl {
+    class SearchData;
+}
 class RclConfig;
 
-extern Rcl::SearchData *wasaStringToRcl(const RclConfig *, const string& stemlang,
-					const string& query, string &reason,
-					const string& autosuffs = string());
+extern Rcl::SearchData *wasaStringToRcl(const RclConfig *, 
+                                        const std::string& stemlang,
+                                        const std::string& query, 
+                                        std::string &reason,
+                                        const std::string& autosuffs = "");
+
 #endif /* _WASATORCL_H_INCLUDED_ */

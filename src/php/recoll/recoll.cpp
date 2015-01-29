@@ -37,7 +37,6 @@
 #include "pathut.h"
 #include "rclinit.h"
 #include "debuglog.h"
-#include "wasastringtoquery.h"
 #include "wasatorcl.h"
 #include "internfile.h"
 #include "wipedir.h"

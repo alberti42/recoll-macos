@@ -42,8 +42,8 @@ ${depth}/query/plaintorich.cpp \
 ${depth}/query/recollq.cpp \
 ${depth}/query/reslistpager.cpp \
 ${depth}/query/sortseq.cpp \
-${depth}/query/wasastringtoquery.cpp \
-${depth}/query/wasatorcl.cpp \
+${depth}/query/wasaparse.cpp \
+${depth}/query/wasaparse.tab.cpp \
 ${depth}/rcldb/daterange.cpp \
 ${depth}/rcldb/expansiondbs.cpp \
 ${depth}/rcldb/rclabstract.cpp \
@@ -53,6 +53,7 @@ ${depth}/rcldb/rcldups.cpp \
 ${depth}/rcldb/rclquery.cpp \
 ${depth}/rcldb/rclterms.cpp \
 ${depth}/rcldb/searchdata.cpp \
+${depth}/rcldb/searchdatatox.cpp \
 ${depth}/rcldb/searchdataxml.cpp \
 ${depth}/rcldb/stemdb.cpp \
 ${depth}/rcldb/stoplist.cpp \

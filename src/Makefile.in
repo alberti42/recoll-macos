@@ -15,6 +15,7 @@ QTGUI = @QTGUI@
 RCLLIBVERSION=@RCLLIBVERSION@
 
 all: configure mk/sysconf 
+	${MAKE} -C query wasaparse.tab.cpp
 	(cd lib; sh mkMake)
 	${MAKE} -C lib
 	${MAKE} -C index depend recollindex
@@ -59,6 +60,7 @@ clean:
 # Note: we don't remove the top Makefile, to keep the "clean" targets
 # available but a "Make" won't work without a configure anyway
 distclean: clean
+	${MAKE} -C query distclean
 	-${MAKE} -C desktop/unity-lens-recoll distclean
 	-${MAKE} -C python/recoll distclean
 	rm -f mk/sysconf mk/localdefs sampleconf/recoll.conf \
