@@ -49,7 +49,7 @@ static void addSubQuery(WasaParserDriver *d,
 %left <str> WORD
 %left <str> QUOTED
 %left <str> QUALIFIERS
-%left AND UCONCAT
+%left AND UCONCAT '(' '-'
 %left OR
 
 %token EQUALS CONTAINS SMALLEREQ SMALLER GREATEREQ GREATER
