@@ -101,7 +101,7 @@ done
 @NOQTMAKE@${INSTALL} -m 0444 desktop/recoll.png ${datadir}/pixmaps/
 
 if test -f doc/user/usermanual.html ; then
-    ${INSTALL} -m 0444 doc/user/usermanual.html doc/user/docbook.css \
+    ${INSTALL} -m 0444 doc/user/usermanual.html doc/user/docbook-xsl.css \
 			${datadir}/recoll/doc 
 else
     echo "User manual not found -> not installed"
