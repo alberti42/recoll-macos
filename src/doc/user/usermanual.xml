@@ -2966,10 +2966,12 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
       <para>An element is composed of an optional field specification,
       and a value, separated by a colon (the field separator is the last
-      colon in the element). Example:
+      colon in the element). Examples:
       <replaceable>Eugenie</replaceable>,
       <replaceable>author:balzac</replaceable>,
-      <replaceable>dc:title:grandet</replaceable> </para>
+      <replaceable>dc:title:grandet</replaceable> 
+      <replaceable>dc:title:"eugenie grandet"</replaceable> 
+      </para>
 
       <para>The colon, if present, means "contains". Xesam defines other
       relations, which are mostly unsupported for now (except in special
@@ -2994,15 +2996,27 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       <replaceable>word3</replaceable>. Explicit
       parenthesis are <emphasis>not</emphasis> supported.</para>
 
+      <para>As of &RCL; 1.21, you can use parentheses to group
+      elements, which will sometimes make things clearer, and may
+      allow expressing combinations which would have been difficult
+      otherwise.</para>
+
       <para>An element preceded by a <literal>-</literal> specifies a
-      term that should <emphasis>not</emphasis> appear. Pure negative
-      queries are forbidden.</para>
+      term that should <emphasis>not</emphasis> appear.</para>
 
       <para>As usual, words inside quotes define a phrase
       (the order of words is significant), so that
       <replaceable>title:"prejudice pride"</replaceable> is not the same as
       <replaceable>title:prejudice title:pride</replaceable>, and is
       unlikely to find a result.</para> 
+
+      <para>Words inside phrases and capitalized words are not
+        stem-expanded. Wildcards may be used anywhere inside a term.
+        Specifying a wild-card on the left of a term can produce a very
+        slow search (or even an incorrect one if the expansion is
+        truncated because of excessive size). Also see 
+        <link linkend="RCL.SEARCH.WILDCARDS">
+          More about wildcards</link>.</para>
 
       <para>To save you some typing, recent &RCL; versions (1.20 and later)
       interpret a comma-separated list of terms as an AND list inside the
@@ -3014,10 +3028,12 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       <programlisting>author:john/ringo</programlisting> would search for
       <literal>john</literal> or <literal>ringo</literal>.</para>
 
-      <para>Modifiers can be set on a phrase clause, for example to specify
+      <para>Modifiers can be set on a double-quote value, for example to specify
         a proximity search (unordered). See 
         <link linkend="RCL.SEARCH.LANG.MODIFIERS">the modifier
-          section</link>.</para> 
+          section</link>. No space must separate the final
+          double-quote and the modifiers value, e.g. <replaceable>"two
+          one"po10</replaceable></para>
 
       <para>&RCL; currently manages the following default fields:</para>
 
@@ -3044,7 +3060,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
             any).</para>
            </listitem>
 
-           <listitem><para><literal>filename</literal> for the document's
+         <listitem><para><literal>filename</literal> for the document's
             file name. This is not necessarily set for all documents:
            internal documents contained inside a compound one (for example
            an EPUB section) do not inherit the container file name any more,
@@ -3053,7 +3069,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
            implied by the document format, for example the attachment file
            name for an email attachment.</para></listitem> 
 
-           <listitem><para><literal>containerfilename</literal>. This is
+         <listitem><para><literal>containerfilename</literal>. This is
            set for all documents, both top-level and contained
            sub-documents, and is always the name of the filesystem directory
            entry which contains the data. The terms from this field can
@@ -3084,7 +3100,8 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 
         <listitem><para><literal>dir</literal> for filtering the
             results on file location
-            (Ex: <literal>dir:/home/me/somedir</literal>).  <literal>-dir</literal>
+            (Ex: <literal>dir:/home/me/somedir</literal>). 
+            <literal>-dir</literal>
             also works to find results not in the specified directory
             (release >= 1.15.8). Tilde expansion will be performed as
             usual (except for a bug in versions 1.19 to
@@ -3203,15 +3220,7 @@ dir:recoll dir:src -dir:utils -dir:common
             <literal>-</literal> either.</para>
            </listitem>
 
-         </itemizedlist>
-
-      <para>Words inside phrases and capitalized words are not
-        stem-expanded. Wildcards may be used anywhere inside a term.
-        Specifying a wild-card on the left of a term can produce a very
-        slow search (or even an incorrect one if the expansion is
-        truncated because of excessive size). Also see 
-        <link linkend="RCL.SEARCH.WILDCARDS">
-          More about wildcards</link>.</para>
+      </itemizedlist>
 
       <para>The document input handlers used while indexing have the
         possibility to create other fields with arbitrary names, and
