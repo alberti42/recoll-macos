@@ -287,7 +287,8 @@ bool BeagleQueueIndexer::index()
             if (!eof)
                 return false;
         }
-        while (cc->next(eof)) {
+		int nentries = 0;
+        do {
             string udi;
             if (!cc->getCurrentUdi(udi)) {
                 LOGERR(("BeagleQueueIndexer:: cache file damaged\n"));
@@ -307,7 +308,8 @@ bool BeagleQueueIndexer::index()
                     return false;
                 }
             }
-        }
+			nentries++;
+        } while (cc->next(eof));
     }
 
     // Finally index the queue
