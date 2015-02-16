@@ -12,7 +12,8 @@
 
 using namespace std;
 
-int yylex(yy::parser::semantic_type *, WasaParserDriver *);
+int yylex(yy::parser::semantic_type *, yy::parser::location_type *, 
+		  WasaParserDriver *);
 void yyerror(char const *);
 static void qualify(Rcl::SearchDataClauseDist *, const string &);
 
@@ -26,6 +27,7 @@ static void addSubQuery(WasaParserDriver *d,
 
 %skeleton "lalr1.cc"
 %defines
+%locations
 %error-verbose
 
 %parse-param {WasaParserDriver* d}
@@ -330,7 +332,8 @@ out:
 }
 
 
-int yylex(yy::parser::semantic_type *yylval, WasaParserDriver *d)
+int yylex(yy::parser::semantic_type *yylval, yy::parser::location_type *, 
+		  WasaParserDriver *d)
 {
     if (!d->qualifiers().empty()) {
         yylval->str = new string();
