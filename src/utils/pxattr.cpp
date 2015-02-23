@@ -29,7 +29,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 #if defined(__gnu_linux__) || \
     (defined(__FreeBSD_kernel__)&&defined(__GLIBC__)&&!defined(__FreeBSD__)) ||\
-    defined(__CYGWIN32__)
+    defined(__CYGWIN__)
 #define PXALINUX
 #endif
 

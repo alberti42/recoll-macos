@@ -5,8 +5,13 @@ import sys
 sysname = os.uname()[0]
 top = os.path.join('..', '..')
 
+
 library_dirs = [os.path.join(top, 'lib')]
-libraries = ['recoll']
+if "CYGWIN" in os.environ:
+	libraries =  ['recoll', 'xapian', 'iconv', 'z']
+else:
+	libraries = ['recoll']
+	
 
 if 'libdir' in os.environ and os.environ['libdir'] != "":
     runtime_library_dirs = [os.path.join(os.environ['libdir'], 'recoll')]
