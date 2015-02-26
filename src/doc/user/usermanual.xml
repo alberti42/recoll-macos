@@ -4572,27 +4572,27 @@ except:
     <sect1 id="RCL.INSTALL.BINARY">
       <title>Installing a binary copy</title>
 
-      <para>There are three types of binary &RCL; installations:
-	<itemizedlist>
-	  <listitem><para>Through your system normal software distribution
-	      framework (ie, <application>Debian/Ubuntu apt</application>,
-	      <application>FreeBSD</application> ports, etc.).</para>
-	  </listitem> 
+	  
+      <para>&RCL; binary copies are always distributed as regular
+      packages for your system. They can be obtained either through
+      the system's normal software distribution framework (e.g.
+      <application>Debian/Ubuntu apt</application>,
+	   <application>FreeBSD</application> ports, etc.), or from some type
+	   of "backports" repository providing versions newer than the standard
+	   ones, or found on the &RCL; WEB site in some
+	   cases.</para>
 
-	  <listitem><para>From a package downloaded from the
-	      &RCL; web site.</para> 
-	  </listitem> 
+	   <para>There used to exist another form of binary install, as
+	   pre-compiled source trees, but these are just less convenient than
+	   the packages and don't exist any more.</para>
 
-	  <listitem><para>From a prebuilt tree downloaded from the &RCL;
-	  web site.</para> 
-	  </listitem>
-	</itemizedlist>
+	   <para>The package management tools will usually automatically
+	   deal with hard dependancies for packages obtained from a proper
+	   package repository. You will have to deal with them by hand for
+	   downloaded packages (for example, when <command>dpkg</command>
+	   complains about missing dependancies).</para>
 
-      In all cases, the strict software dependancies (ie on &XAP; or
-      <application>iconv</application>) will be automatically satisfied,
-      you should not have to worry about them.</para>
-
-      <para>You will only have to check or install <link
+      <para>In all cases, you will have to check or install <link
       linkend="RCL.INSTALL.EXTERNAL">supporting applications</link>
       for the file types that you want to index beyond those that are
       natively processed by &RCL; (text, HTML, email files, and a few
@@ -4604,34 +4604,6 @@ except:
       parameters). Most parameters can be more conveniently set from the
       GUI interface.</para>
 
-      <sect2 id="RCL.INSTALL.BINARY.PACKAGE">
-        <title>Installing through a package system</title>
-
-        <para>If you use a BSD-type port system or a prebuilt package (DEB,
-        RPM, manually or through the system software configuration
-        utility), just follow the usual procedure for your system.</para>
-
-      </sect2>
-
-      <sect2 id="RCL.INSTALL.BINARY.RCL">
-        <title>Installing a prebuilt &RCL;</title>
-
-        <para>The unpackaged binary versions on the &RCL; web site are
-        just compressed tar files of a build tree, where only the
-        useful parts were kept (executables and sample
-        configuration).</para>
-
-        <para>The executable binary files are built with a static link to
-        libxapian and libiconv, to make installation easier (no
-        dependencies).</para> 
-
-        <para>After extracting the tar file, you can proceed with
-        <link linkend="RCL.INSTALL.BUILDING.INSTALL">installation</link> as
-        if you had built the package from source (that is, just type
-        <literal>make install</literal>). The binary trees are built for
-        installation to <filename>/usr/local</filename>.</para>
-
-      </sect2>
     </sect1>
 
     <sect1 id="RCL.INSTALL.EXTERNAL">
@@ -4952,7 +4924,7 @@ except:
       <para>Normal procedure:</para>
       <screen>
         <userinput>cd recoll-xxx</userinput>
-        <userinput>configure</userinput>
+        <userinput>./configure</userinput>
         <userinput>make</userinput>
         <userinput>(practices usual hardship-repelling invocations)</userinput>
       </screen>
