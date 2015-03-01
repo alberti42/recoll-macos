@@ -200,7 +200,7 @@ bool WasaParserDriver::addClause(SearchData *sd,
         SearchDataClausePath *nclause = 
             new SearchDataClausePath(cl->gettext(), cl->getexclude());
         delete cl;
-        sd->addClause(nclause);
+        return sd->addClause(nclause);
     }
 
     if (cl->getTp() == SCLT_OR || cl->getTp() == SCLT_AND) {
