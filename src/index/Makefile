@@ -8,7 +8,7 @@ all: depend librecoll $(PROGS)
 
 RECOLLINDEX_OBJS= recollindex.o rclmonrcv.o rclmonprc.o 
 recollindex : $(RECOLLINDEX_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) $(RECOLL_LDFLAGS) -o recollindex \
+	$(CXX) $(ALL_CXXFLAGS) $(RECOLL_LDFLAGS) $(LDFLAGS) -o recollindex \
                $(RECOLLINDEX_OBJS) \
 	       $(BSTATIC) $(LIBRECOLL) $(LIBXAPIAN) $(LIBXAPIANSTATICEXTRA) \
 	       $(LIBICONV) $(BDYNAMIC) \
