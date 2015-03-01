@@ -49,8 +49,8 @@
       <p><span class="application">Recoll</span> est un logiciel libre
 	gratuit, dont le code source est disponible sous licence GPL.
 	La dernière version est 
-        <a class="important" href="download.html">1.19.14p2</a>
-	(<a href="release-1.19.html">notes sur la version, en
+        <a class="important" href="download.html">1.20.2</a>
+	(<a href="release-1.20.html">notes sur la version, en
 	anglais</a>)</p> 
 
       <p>L'interface utilisateur de 
@@ -105,6 +105,10 @@
 
       <h2>Nouvelles: </h2>
       <dl>
+
+        <dt>2015-02-28</dt> 
+        <dd>1.20.2. Corrige l'indexation au fil de l'eau de
+          l'historique web (en utilisation avec le plugin Firefox).</dd>
 
         <dt>2014-12-18</dt> <dd>Apparition de version 1.20.1 avec
           quelques nouvelles fonctions, principalement dans l'interface

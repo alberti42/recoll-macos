@@ -29,13 +29,12 @@
 later versions. Bugs listed in the topmost section may also exist in older
 versions.</i></p>
 
-<h2><a name="b_latest">recoll 1.19.14p2</a></h2>
+<h2><a name="b_latest">recoll 1.20.2</a></h2>
 <ul>
-  <li>The Open/LibreOffice document filter does not output white space
-    for tab-separated words in input, leading to search failures.</li>
 
-  <li>On systems such as Debian Stable which use Evince version 2.x (not 3.x)
-    as PDF viewer, the default "Open" command for PDF files will not
+  <li>On old systems such as Debian Squeeze which use Evince version
+	2.x (not 3.x) as PDF viewer, the default "Open" command for PDF
+	files will not
     work. You need to use the GUI preferences tool to change the
     --page-index option to --page-label for the evince command line
     used for PDF.</li>
@@ -82,6 +81,17 @@ versions.</i></p>
     fixed by removing (back it up just in case)
     ~/.config/Recoll.org/recoll.conf, the QSettings storage for
     recoll.</li>
+</ul>
+
+<h2><a name="b_1_20_1">recoll 1.20.1</a></h2>
+<ul>
+  <li>The web history queue is not processed by the real time indexer</li>
+</ul>
+
+<h2><a name="b_1_19_14_p2">recoll 1.19.14p2</a></h2>
+<ul>
+  <li>The Open/LibreOffice document filter does not output white space
+    for tab-separated words in input, leading to search failures.</li>
 </ul>
 
 <h2><a name="b_1_19_14p1">recoll 1.19.14p1</a></h2>

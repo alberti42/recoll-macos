@@ -57,7 +57,7 @@
       </ul>
 
       <p>The current <span class="application">Recoll</span> version is
-	<a href="download.html">1.20.1</a> 
+	<a href="download.html">1.20.2</a> 
 	(<a href="release-1.20.html">Release notes</a>,
         <a href="BUGS.html">known bugs</a>).</p>
 
@@ -96,6 +96,10 @@
 
       
       <dl>
+        <dt>2015-02-28</dt> 
+        <dd>Recoll 1.20.2 released. This fixes real time indexing of
+          the web history (when using the Firefox plugin).</dd>
+		
         <dt>2014-12-27</dt> 
         <dd><a href="https://www.gnu.org/software/unrtf/">
           Unrtf 21.8</a> has been released. This fixes many issues
