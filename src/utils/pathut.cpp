@@ -57,7 +57,7 @@ using namespace std;
 #include "pathut.h"
 #include "transcode.h"
 #include "wipedir.h"
-#include "md5.h"
+#include "md5ut.h"
 
 bool fsocc(const string &path, int *pc, long *blocks)
 {

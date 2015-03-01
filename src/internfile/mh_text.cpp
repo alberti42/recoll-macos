@@ -31,7 +31,7 @@ using namespace std;
 #include "mh_text.h"
 #include "debuglog.h"
 #include "readfile.h"
-#include "md5.h"
+#include "md5ut.h"
 #include "rclconfig.h"
 #include "pxattr.h"
 

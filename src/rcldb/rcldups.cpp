@@ -28,7 +28,7 @@ using namespace std;
 #include "rcldb.h"
 #include "rcldb_p.h"
 #include "xmacros.h"
-#include "md5.h"
+#include "md5ut.h"
 #include "searchdata.h"
 #include "rclquery.h"
 

@@ -36,7 +36,7 @@
 #include "mh_mbox.h"
 #include "smallut.h"
 #include "rclconfig.h"
-#include "md5.h"
+#include "md5ut.h"
 #include "conftree.h"
 #include "ptmutex.h"
 

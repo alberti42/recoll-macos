@@ -46,7 +46,7 @@ using namespace std;
 #include "searchdata.h"
 #include "rclquery.h"
 #include "rclquery_p.h"
-#include "md5.h"
+#include "md5ut.h"
 #include "rclversion.h"
 #include "cancelcheck.h"
 #include "ptmutex.h"

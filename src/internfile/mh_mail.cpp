@@ -36,7 +36,7 @@
 #include "mh_html.h"
 #include "rclconfig.h"
 #include "mimetype.h"
-#include "md5.h"
+#include "md5ut.h"
 
 // binc imap mime definitions
 #include "mime.h"

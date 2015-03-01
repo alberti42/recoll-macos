@@ -71,11 +71,11 @@ trcopyfile.o : copyfile.cpp copyfile.h
 	$(CXX) -o trcopyfile.o -c $(ALL_CXXFLAGS) \
 	       -DTEST_COPYFILE copyfile.cpp
 
-MD5_OBJS= trmd5.o 
+MD5_OBJS= trmd5.o md5.o
 trmd5 : $(MD5_OBJS)
 	$(CXX) -o trmd5 $(MD5_OBJS) $(LIBRECOLL) $(LIBICONV) $(LIBSYS)
-trmd5.o : md5.cpp md5.h
-	$(CXX) -o trmd5.o -c $(ALL_CXXFLAGS) -DTEST_MD5 md5.cpp
+trmd5.o : md5ut.cpp md5ut.h md5.h
+	$(CXX) -o trmd5.o -c $(ALL_CXXFLAGS) -DTEST_MD5 md5ut.cpp
 
 PATHUT_OBJS= trpathut.o  
 trpathut : $(PATHUT_OBJS) 

@@ -29,7 +29,7 @@ using namespace std;
 #include "debuglog.h"
 #include "cancelcheck.h"
 #include "smallut.h"
-#include "md5.h"
+#include "md5ut.h"
 #include "rclconfig.h"
 
 // This is called periodically by ExeCmd when it is waiting for data,

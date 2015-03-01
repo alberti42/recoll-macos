@@ -30,7 +30,7 @@ using namespace std;
 #include "debuglog.h"
 #include "rclconfig.h"
 #include "smallut.h"
-#include "md5.h"
+#include "md5ut.h"
 
 #include "mh_exec.h"
 #include "mh_execm.h"

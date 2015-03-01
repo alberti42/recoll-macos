@@ -26,7 +26,7 @@ using namespace std;
 #include "debuglog.h"
 #include "cancelcheck.h"
 #include "smallut.h"
-#include "md5.h"
+#include "md5ut.h"
 #include "rclconfig.h"
 #include "mimetype.h"
 #include "idfile.h"
