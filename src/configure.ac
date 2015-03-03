@@ -8,6 +8,8 @@ if test C$CXX = C ; then
    AC_MSG_ERROR([C++ compiler needed. Please install one (ie: gnu g++)])
 fi
 
+AC_C_BIGENDIAN
+
 sys=`uname | tr / _ | awk -F_ '{print $1}'`
 
 if test ! -f mk/$sys ; then

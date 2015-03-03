@@ -17,7 +17,7 @@
  * will fill a supplied 16-byte array with the digest.
  */
 
-//#include <config.h>
+#include "autoconfig.h"
 //#include <compat.h>
 
 #include <sys/types.h>
