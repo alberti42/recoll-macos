@@ -114,6 +114,7 @@ void RclConfig::zeroMe() {
     m_stopsuffixes = 0;
     m_maxsufflen = 0;
 
+    m_oldstpsuffstate.init(0);
     m_stpsuffstate.init(0);
     m_skpnstate.init(0);
     m_rmtstate.init(0);
@@ -130,7 +131,8 @@ bool RclConfig::isDefaultConfig() const
 }
 
 RclConfig::RclConfig(const string *argcnf)
-    : m_stpsuffstate(this, "recoll_noindex"),
+    : m_oldstpsuffstate(this, "recoll_noindex"),
+      m_stpsuffstate(this, "noContentSuffixes"),
       m_skpnstate(this, "skippedNames"),
       m_rmtstate(this, "indexedmimetypes"),
       m_xmtstate(this, "excludedmimetypes"),
@@ -282,7 +284,8 @@ RclConfig::RclConfig(const string *argcnf)
     m_ok = true;
     setKeyDir(cstr_null);
 
-    m_stpsuffstate.init(mimemap);
+    m_oldstpsuffstate.init(mimemap);
+    m_stpsuffstate.init(m_conf);
     m_skpnstate.init(m_conf);
     m_rmtstate.init(m_conf);
     m_xmtstate.init(m_conf);
@@ -605,17 +608,24 @@ typedef multiset<SfString, SuffCmp> SuffixStore;
 bool RclConfig::inStopSuffixes(const string& fni)
 {
     LOGDEB2(("RclConfig::inStopSuffixes(%s)\n", fni.c_str()));
-    // Beware: needrecompute() needs to be called always. 2nd test stays back.
-    if (m_stpsuffstate.needrecompute() || m_stopsuffixes == 0) {
+    // Beware: both needrecompute() need to be called always hence the
+    // bizarre way we do things
+    bool needrecompute = m_stpsuffstate.needrecompute();
+    needrecompute = needrecompute || m_oldstpsuffstate.needrecompute();
+    if (needrecompute || m_stopsuffixes == 0) {
 	// Need to initialize the suffixes
         delete STOPSUFFIXES;
 	if ((m_stopsuffixes = new SuffixStore) == 0) {
 	    LOGERR(("RclConfig::inStopSuffixes: out of memory\n"));
 	    return false;
 	}
-	list<string> stoplist;
+	vector<string> stoplist;
         stringToStrings(m_stpsuffstate.savedvalue, stoplist);
-	for (list<string>::const_iterator it = stoplist.begin(); 
+	vector<string> ostoplist;
+        stringToStrings(m_oldstpsuffstate.savedvalue, ostoplist);
+        stoplist.resize(stoplist.size() + ostoplist.size());
+        stoplist.insert(stoplist.end(), ostoplist.begin(), ostoplist.end());
+	for (vector<string>::const_iterator it = stoplist.begin(); 
 	     it != stoplist.end(); it++) {
 	    STOPSUFFIXES->insert(SfString(stringtolower(*it)));
 	    if (m_maxsufflen < it->length())
@@ -1461,7 +1471,8 @@ void RclConfig::initFrom(const RclConfig& r)
     m_maxsufflen = r.m_maxsufflen;
     m_defcharset = r.m_defcharset;
 
-    m_stpsuffstate.init(mimemap);
+    m_oldstpsuffstate.init(mimemap);
+    m_stpsuffstate.init(m_conf);
     m_skpnstate.init(m_conf);
     m_rmtstate.init(m_conf);
     m_xmtstate.init(m_conf);

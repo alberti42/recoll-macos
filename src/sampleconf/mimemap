@@ -164,17 +164,10 @@
 .mht = application/x-mimehtml
 .mhtml = application/x-mimehtml
 
-# A list of suffixes (name endings) that we don't want to touch at all.
-# Having these explicitely listed speeds things up a bit by avoiding
-# unneeded decompression or 'file' calls. File names still get indexed if
-# indexallfilenames is set (so this is different from skippedNames). It's a
-# bit unconsistent to have it listed among the suffix translations, but no
-# problem in practice.
-recoll_noindex = .md5 .map \
-       .o .lib .dll .a .sys .exe .com \
-       .mpp .mpt .vsd \
-       .dat .bak .rdf .log.gz .log .db .msf .pid \
-       ,v ~ #
+# Note: recoll_noindex has been obsoleted and moved to recoll.conf as
+# noContentSuffixes. recoll_noindex from your personal mimemap file is
+# still taken into account for now, but you should move its contents to the
+# new recoll.conf variable.
 
 # Special handling of .txt files inside ~/.gaim and ~/.purple directories
 [~/.gaim]

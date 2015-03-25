@@ -31,6 +31,20 @@ skippedNames = #* bin CVS  Cache cache* .cache caughtspam tmp \
 # Explicitely adding /media/xxx to the topdirs will override this.
 skippedPaths = /media
 
+# List of suffixes for which we don't try mime type identification (and
+# don't uncompress or index content obviously). This complements the now
+# obsoleted mimemap recoll_noindex list, which will go away in a future
+# release (the move from mimemap to recoll.conf allows editing the list
+# through the GUI). This is different from skippedNames because these are
+# name ending matches only (not wildcard patterns), and the file name
+# itself gets indexed normally.
+noContentSuffixes = .md5 .map \
+       .o .lib .dll .a .sys .exe .com \
+       .mpp .mpt .vsd \
+	   .img .img.gz .img.bz2 .img.xz .image .image.gz .image.bz2 .image.xz \
+       .dat .bak .rdf .log.gz .log .db .msf .pid \
+       ,v ~ #
+
 # Same for real time indexing. The idea here is that there is stuff that
 # you might want to initially index but not monitor. If daemSkippedPaths is
 # not set, the daemon uses skippedPaths.

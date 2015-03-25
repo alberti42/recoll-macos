@@ -81,7 +81,8 @@ class RclConfig {
     RclConfig(const string *argcnf = 0);
 
     RclConfig(const RclConfig &r) 
-    : m_stpsuffstate(this, "recoll_noindex"),
+    : m_oldstpsuffstate(this, "recoll_noindex"),
+      m_stpsuffstate(this, "noContentSuffixes"),
       m_skpnstate(this, "skippedNames"),
       m_rmtstate(this, "indexedmimetypes"),
       m_xmtstate(this, "excludedmimetypes"),
@@ -334,6 +335,7 @@ class RclConfig {
 
     void        *m_stopsuffixes;
     unsigned int m_maxsufflen;
+    ParamStale   m_oldstpsuffstate; // Values from user mimemap, now obsolete
     ParamStale   m_stpsuffstate;
 
     ParamStale   m_skpnstate;

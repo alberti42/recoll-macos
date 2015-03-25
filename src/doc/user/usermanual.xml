@@ -3,7 +3,7 @@
 
 <!ENTITY RCL "<application>Recoll</application>">
 <!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/features.html'>http://www.recoll.org/features.html</ulink>">
-<!ENTITY RCLVERSION "1.20">
+<!ENTITY RCLVERSION "1.21">
 <!ENTITY XAP "<application>Xapian</application>">
 <!ENTITY WIKI "http://bitbucket.org/medoc/recoll/wiki/">
 ]>
@@ -22,7 +22,7 @@
     </author>
 
     <copyright>
-      <year>2005-2014</year>
+      <year>2005-2015</year>
       <holder role="mailto:jfd@recoll.org">Jean-Francois Dockes</holder>
     </copyright>
     <abstract>
@@ -273,6 +273,14 @@
       <para>The following sections give an overview of different
 	aspects of the indexing processes and configuration, with links
 	to detailed sections.</para>
+
+	<para>Depending on your data, temporary files may be needed during
+	indexing, some of them possibly quite big. You can use the
+	<envar>RECOLL_TMPDIR</envar> or <envar>TMPDIR</envar> environment
+	variables to determine where they are created (the default is to
+	use <filename>/tmp</filename>). Using <envar>TMPDIR</envar> has
+	the nice property that it may also be taken into account by 
+	auxiliary commands executed by <command>recollindex</command>.</para>
 
       <sect2 id="RCL.INDEXING.INTRODUCTION.MODES">
 	<title>Indexing modes</title> 
@@ -5122,6 +5130,73 @@ except:
       </itemizedlist>
       </para>
 
+	  <sect2 id="RCL.INSTALL.CONFIG.ENVIR">
+	  <title>Environment variables</title>
+
+	  <variablelist>
+		<varlistentry>
+		  <term><varname>RECOLL_CONFDIR</varname></term>
+		<listitem><para>Defines the main configuration
+		directory.</para></listitem>
+		</varlistentry>
+
+		<varlistentry>
+		  <term><varname>RECOLL_TMPDIR, TMPDIR</varname></term>
+		<listitem><para>Locations for temporary files, in this order
+		of priority. The default if none of these is set is to use
+		<filename>/tmp</filename>. Big temporary files may be created
+		during indexing, mostly for decompressing, and also for
+		processing, e.g. email attachments.</para></listitem>
+		</varlistentry>
+
+		<varlistentry>
+		  <term><varname>RECOLL_CONFTOP, RECOLL_CONFMID</varname></term>
+		<listitem><para>Allow adding configuration directories with
+		priorities below and above the user directory (see above the
+		Configuration overview section for details).</para></listitem>
+		</varlistentry>
+
+		<varlistentry>
+		  <term><varname>RECOLL_EXTRA_DBS,
+		  RECOLL_ACTIVE_EXTRA_DBS</varname></term>
+		<listitem><para>
+		  Help for setting up external indexes. See <link
+		  linkend="RCL.SEARCH.GUI.MULTIDB">this paragraph</link> for
+		  explanations.
+		</para></listitem>
+		</varlistentry>
+
+		<varlistentry>
+		  <term><varname>RECOLL_DATADIR</varname></term>
+		<listitem><para>Defines replacement for the default location
+		of Recoll data files, normally found in, e.g.,
+		<filename>/usr/share/recoll</filename>).</para></listitem>
+		</varlistentry>
+
+		<varlistentry>
+		  <term><varname>RECOLL_FILTERSDIR</varname></term>
+		<listitem><para>Defines replacement for the default location
+		of Recoll filters, normally found in, e.g.,
+		<filename>/usr/share/recoll/filters</filename>).</para></listitem>
+		</varlistentry>
+
+		<varlistentry>
+		  <term><varname>ASPELL_PROG</varname></term>
+		<listitem><para><command>aspell</command> program to use for
+		creating the spelling dictionary. The result has to be
+		compatible with the <filename>libaspell</filename> which &RCL;
+		is using.</para></listitem>
+		</varlistentry>
+
+		<varlistentry>
+		  <term><varname>VARNAME</varname></term>
+		<listitem><para>Blabla</para></listitem>
+		</varlistentry>
+
+	  </variablelist>
+
+	  </sect2>
+
       <sect2 id="RCL.INSTALL.CONFIG.RECOLLCONF">
         <title>The main configuration file, recoll.conf</title>
 
@@ -5188,10 +5263,27 @@ skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
 
                 <para>Not even the file names are indexed for patterns
                 in this list. See the
-                <varname>recoll_noindex</varname> variable in
-                <filename>mimemap</filename> for an alternative
+                <varname>noContentSuffixes</varname> variable for an alternative
                 approach which indexes the file names.</para>
             </listitem>
+          </varlistentry>
+
+          <varlistentry><term><varname>noContentSuffixes</varname></term>
+          <listitem><para>This is a list of file name endings (not
+          wildcard expressions, nor dot-delimited suffixes). Only the
+          names of matching files will be indexed (no attempt at MIME
+          type identification, no decompression, no content
+          indexing). This can be redefined for
+          subdirectories, and edited from the GUI. The default value is:
+<programlisting>
+noContentSuffixes = .md5 .map \
+       .o .lib .dll .a .sys .exe .com \
+       .mpp .mpt .vsd \
+	   .img .img.gz .img.bz2 .img.xz .image .image.gz .image.bz2 .image.xz \
+       .dat .bak .rdf .log.gz .log .db .msf .pid \
+       ,v ~ #
+</programlisting>
+          </para></listitem>
           </varlistentry>
 
           <varlistentry><term><varname>skippedPaths</varname> and
@@ -6049,21 +6141,14 @@ x-my-tag = mailmytag
         should be handled specially, which is possible because they
         are usually all located in one place.</para>
 
-        <para><filename>mimemap</filename> also has a
-        <varname>recoll_noindex</varname> variable which is a list of
-        suffixes. Matching files will be skipped (which avoids
-        unnecessary decompressions or <command>file</command>
-        executions). This is partially redundant with
-        <varname>skippedNames</varname> in the main configuration
-        file, with a few differences: it will not affect directories,
-        it cannot be made dependant on the file-system location (it is
-        a configuration-wide parameter), and the file names will still
-        be indexed (not even the file names are indexed for patterns
-        in <varname>skippedNames</varname>.
-        <varname>recoll_noindex</varname> is used mostly for things
-        known to be unindexable by a given &RCL; version. Having it
-        there avoids cluttering the more user-oriented and locally
-        customized <varname>skippedNames</varname>.</para>
+        <para>The <varname>recoll_noindex</varname>
+        <filename>mimemap</filename> variable has been moved to
+        <filename>recoll.conf</filename> and renamed to
+        <varname>noContentSuffixes</varname>, while keeping the same
+        function, as of &RCL; version 1.21. For older &RCL; versions,
+        see the documentation for <varname>noContentSuffixes</varname>
+        but use <varname>recoll_noindex</varname> in
+        <filename>mimemap</filename>.</para>
 
       </sect2>
 

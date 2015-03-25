@@ -454,6 +454,17 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config,
     m_widgets.push_back(eexcm);
     gl1->addWidget(eexcm, gridy, 0);
 
+    ConfParamSLW *encs = new ConfParamSLW(
+        m_groupbox, 
+        ConfLink(new ConfLinkRclRep(config, "noContentSuffixes", &m_sk)),
+        QObject::tr("Ignored endings"),
+        QObject::tr("These are file name endings for files which will be "
+                    "indexed by content only \n(no MIME type identification "
+                    "attempt, no decompression, no content indexing."));
+    encs->setFsEncoding(true);
+    m_widgets.push_back(encs);
+    gl1->addWidget(encs, gridy++, 1);
+
     vector<string> args;
     args.push_back("-l");
     ExecCmd ex;
@@ -484,7 +495,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config,
                     "and the value from the NLS environnement is used."
             ), charsets);
     m_widgets.push_back(e21);
-    gl1->addWidget(e21, gridy++, 1);
+    gl1->addWidget(e21, gridy++, 0);
 
     ConfParamBoolW *e3 = new ConfParamBoolW(
         m_groupbox, 
