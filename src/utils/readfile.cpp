@@ -103,6 +103,12 @@ bool file_scan(const string &fn, FileScanDo* doer, off_t startoffs,
 	noclosing = false;
     }
 
+#if defined O_NOATIME && O_NOATIME != 0
+    if (fcntl(fd, F_SETFL, O_NOATIME) < 0) {
+        // perror("fcntl");
+    }
+#endif
+
     if (cnttoread != (size_t)-1 && cnttoread) {
 	doer->init(cnttoread+1, reason);
     } else if (st.st_size > 0) {

@@ -111,6 +111,11 @@ bool MimeHandlerMail::set_document_file(const string& mt, const string &fn)
 		fn.c_str(), errno));
 	return false;
     }
+#if defined O_NOATIME && O_NOATIME != 0
+    if (fcntl(m_fd, F_SETFL, O_NOATIME) < 0) {
+        // perror("fcntl");
+    }
+#endif
     delete m_bincdoc;
     m_bincdoc = new Binc::MimeDocument;
     m_bincdoc->parseFull(m_fd);

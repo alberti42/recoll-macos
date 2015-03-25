@@ -267,6 +267,11 @@ bool MimeHandlerMbox::set_document_file(const string& mt, const string &fn)
 		fn.c_str()));
 	return false;
     }
+#if defined O_NOATIME && O_NOATIME != 0
+    if (fcntl(fileno((FILE *)m_vfp), F_SETFL, O_NOATIME) < 0) {
+        // perror("fcntl");
+    }
+#endif
     fseek((FILE *)m_vfp, 0, SEEK_END);
     m_fsize = ftell((FILE*)m_vfp);
     fseek((FILE*)m_vfp, 0, SEEK_SET);
