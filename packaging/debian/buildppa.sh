@@ -6,11 +6,12 @@
 
 RCLVERS=1.20.1
 LENSVERS=1.19.10.3543
-SCOPEVERS=1.19.12
+SCOPEVERS=1.20.2.4
 PPAVERS=2
 
-# For the unity-scope debian directory
+# 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
+SCOPESRC=/y/home/dockes/projets/fulltext/unity-scope-recoll
 
 case $RCLVERS in
     [23]*) PPANAME=recollexp-ppa;;
@@ -42,7 +43,7 @@ check_recoll_orig()
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
 series="precise trusty utopic"
-#series=
+series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -71,7 +72,7 @@ done
 
 ### KIO
 series="precise trusty utopic"
-#series=
+series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -140,13 +141,13 @@ for series in $series ; do
 done
 
 ### Unity Scope
-series="trusty utopic"
-series=
+series="trusty utopic vivid"
+#series=
 
 debdir=debianunityscope
 if test ! -d ${debdir}/ ; then
     rm -f ${debdir}
-    ln -s ${RCLSRC}/desktop/unity-scope-recoll/debian $debdir
+    ln -s ${SCOPESRC}/debian $debdir
 fi
 topdir=unity-scope-recoll-${SCOPEVERS}
 if test "X$series" != X ; then
