@@ -611,7 +611,7 @@ bool RclConfig::inStopSuffixes(const string& fni)
     // Beware: both needrecompute() need to be called always hence the
     // bizarre way we do things
     bool needrecompute = m_stpsuffstate.needrecompute();
-    needrecompute = needrecompute || m_oldstpsuffstate.needrecompute();
+    needrecompute = m_oldstpsuffstate.needrecompute() || needrecompute;
     if (needrecompute || m_stopsuffixes == 0) {
 	// Need to initialize the suffixes
         delete STOPSUFFIXES;
@@ -619,12 +619,15 @@ bool RclConfig::inStopSuffixes(const string& fni)
 	    LOGERR(("RclConfig::inStopSuffixes: out of memory\n"));
 	    return false;
 	}
+        // Let the old customisation have priority: if recoll_noindex
+        // from mimemap is set, it the user's (the default value is
+        // gone). Else use the new variable
 	vector<string> stoplist;
-        stringToStrings(m_stpsuffstate.savedvalue, stoplist);
-	vector<string> ostoplist;
-        stringToStrings(m_oldstpsuffstate.savedvalue, ostoplist);
-        stoplist.resize(stoplist.size() + ostoplist.size());
-        stoplist.insert(stoplist.end(), ostoplist.begin(), ostoplist.end());
+        if (!m_oldstpsuffstate.savedvalue.empty()) {
+            stringToStrings(m_oldstpsuffstate.savedvalue, stoplist);
+        } else {
+            stringToStrings(m_stpsuffstate.savedvalue, stoplist);
+        }
 	for (vector<string>::const_iterator it = stoplist.begin(); 
 	     it != stoplist.end(); it++) {
 	    STOPSUFFIXES->insert(SfString(stringtolower(*it)));
