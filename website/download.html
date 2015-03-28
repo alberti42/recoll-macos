@@ -33,7 +33,7 @@ function showdiv(viewid)
   <li><b>Downloads</b></li>
   <li><a href="doc.html">Documentation</a></li>
   <li><a href="usermanual/RCL.INSTALL.html">Installation</a></li>
-  <li><a href="index.html#support">Support</a></li>
+  <li><a href="support.html">Support</a></li>
 </ul>
 </div>
 
@@ -67,7 +67,7 @@ function showdiv(viewid)
 <div id="general">
 <h2><a name="general">General information</a></h2>
 
-<p>The current version is 1.20.2. <a href="release-1.20.html">Release
+<p>The current version is 1.20.3. <a href="release-1.20.html">Release
 notes</a>.</p>
 
 <p>The download page for Recoll 1.19 is <a href="download-1.19.html">still
@@ -117,12 +117,12 @@ is probably no necessity to upgrade anyway.</p>
 <div id="source">
 <h2><a name="source">Source</a></h2>
 
-<h3>Current release distribution: 1.20.2:</h3>
+<h3>Current release distribution: 1.20.3:</h3>
 <!-- Attention: source packages must remain here, not in a
 subdirectory, because of all the places they're referred from
 (package watches) -->
 
-<p><a href="recoll-1.20.2.tar.gz">recoll-1.20.2.tar.gz</a>. </p>
+<p><a href="recoll-1.20.3.tar.gz">recoll-1.20.3.tar.gz</a>. </p>
 
 <!--
 <h3>Snapshot</h3>
@@ -138,18 +138,27 @@ current <a href="release-1.16.html">1.16 release notes</a>).
 <h3>Ubuntu Unity Lens and Scope</h3>
 
 <p>You will probably get these from the <a href="#ubuntu">PPA</a>, but
-here are the source files. These are not included in the main tar file
-any more.</p>  For 1.19 and 1.20 installations:
+  here are the source files. These are not included in the main tar file
+  any more. For recoll 1.19 and 1.20 installations (choose on the
+  Ubuntu version, not the Recoll one):
+
+<blockquote>
 <a href="recoll-lens-1.19.10.3543.tar.gz">
-  recoll-lens-1.19.10.3543.tar.gz</a> (up to Ubuntu 13.04 Raring)<br>
-<a href="unity-scope-recoll-1.19.12.tar.gz">
-  unity-scope-recoll-1.19.12.tar.gz</a> (Ubuntu 13.10 and later).<br>
-For 1.18: 
-<a href="recoll-lens-1.18.1.2997.tar.gz">
-  recoll-lens-1.18.1.2997.tar.gz</a><br>
-For 1.17: 
-<a href="recoll-lens-1.17.2.2697.tar.gz">
-  recoll-lens-1.17.2.2697.tar.gz</a></p>
+  recoll-lens-1.19.10.3543.tar.gz</a> (Recoll 0.19 or 0.20, 
+Ubuntu up to 13.04 Raring)<br>
+
+<a href="unity-scope-recoll-1.20.2.4.tar.gz">
+  unity-scope-recoll-1.20.2.4.tar.gz</a> (Recoll 0.19 or 0.20, Ubuntu
+  13.10 and later).<br>
+
+</blockquote>
+
+For Recoll 1.18: 
+<a href="recoll-lens-1.18.1.2997.tar.gz">recoll-lens-1.18.1.2997.tar.gz</a><br>
+For Recoll 1.17: 
+<a href="recoll-lens-1.17.2.2697.tar.gz">recoll-lens-1.17.2.2697.tar.gz</a>
+
+</p>
 
 <h3>Prerequisites for building from source:</h3>
 <ul>
@@ -196,12 +205,6 @@ branch for the current production version.</p>
   <a href="http://www.recoll.org/usermanual/RCL.INSTALL.BUILDING.html">
     there is some in the manual</a>.
 
-<h3>Older recoll releases:</h3>
-
-<p>A whole bunch is <a rel="nofollow" href="older">
-    <i>there</i></a>, but I can see
-  no reason whatsoever to use one of these versions.</p>
-
 </div>
 
 <div id="packages">
@@ -227,18 +230,30 @@ many distributions.</p>
 <p>The Debian Recoll packages are usually fairly up to date (at least in
 testing), just use the appropriate Debian repository.</p>
 
-<p><i>Except they're not at the moment (2014-05)...</i>. So here are
-1.20.1 packages for Debian stable (Wheezy):<br/>
-<a href="debian-stable/python3-recoll_1.20.1-1_amd64.deb">python3-recoll_1.20.1-1_amd64.deb</a><br/>
-<a href="debian-stable/python3-recoll_1.20.1-1_i386.deb">python3-recoll_1.20.1-1_i386.deb</a><br/>
-<a href="debian-stable/python-recoll_1.20.1-1_amd64.deb">python-recoll_1.20.1-1_amd64.deb</a><br/>
-<a href="debian-stable/python-recoll_1.20.1-1_i386.deb">python-recoll_1.20.1-1_i386.deb</a><br/>
-<a href="debian-stable/recoll_1.20.1-1_amd64.deb">recoll_1.20.1-1_amd64.deb</a><br/>
-<a href="debian-stable/recoll_1.20.1-1_i386.deb">recoll_1.20.1-1_i386.deb</a><br/>
+<p><i>Except they're not at the moment (2014-05)...</i>. So
+  I am maintaining a repository for packages built on Debian
+  stable (Wheezy). To add the repository to your sources:</p>
+
+<ul>
+  <li>Create and edit <span class="filename">
+      /etc/apt/sources.list.d/recoll.list</span>
+    and add the following lines:<br>
+    <div class="code">
+deb http://www.lesbonscomptes.com/recoll/debian/ unstable main
+deb-src http://www.lesbonscomptes.com/recoll/debian/ unstable main
+    </div>
+  <li>Then:
+    <div class="code">
+sudo apt-get update
+sudo apt-get install recoll
+    </div>
+  </li>
+</ul>
+
+<p>If you prefer to manually install the packages, they are here:
+<a href="debian/pool/main/r/recoll/">debian/pool/main/r/recoll/</a><br/>
 </p>
 
-<p>You can list the <a href="debian-stable">directory</a> for the 
-source package and other files such as older versions).</p>
 
 <h3><a name="ubuntu">Ubuntu</a></h3>
 
@@ -256,20 +271,6 @@ a set of Ubuntu series. starting at Lucid. The installation is very simple: </p>
   for the Python extension, like the standard ones, so there should be
   no more conflict issues while switching from the PPA to the normal
   repositories and back.</p>
-
-<blockquote>
-  <h4>Notes for Ubuntu Lucid</h4>
-  <ul>
-    <li>If you still use Ubuntu 10.04 (<em>Lucid</em>), you will need
-      to add the <a
-      href="https://launchpad.net/~xapian-backports/+archive/xapian-1.2">Xapian
-      backports PPA</a> to provide the <tt>libxapian22</tt> package</li>
-    <li>The <tt><code>rclepub</code></tt> filter apparently needs <tt>Python
-      2.7</tt>. You will need to install it and modify the first line of the
-      filter script to execute <tt>python2.7</tt> instead of
-    <tt>python</tt>.</li>
-  </ul>
-</blockquote>
 
 <h3><a name="mint">Linux Mint</a></h3>
 

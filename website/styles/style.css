@@ -113,3 +113,10 @@ div.intrapage {
     padding-left: 1em;
     margin-left: -2em;
 }
+.code {
+    white-space: pre;
+    font-size: 100%;
+    font-family: monospace;
+    margin-left: 2em;
+}
+
