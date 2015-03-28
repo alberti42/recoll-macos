@@ -4,14 +4,15 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.20.1
+RCLVERS=1.20.3
 LENSVERS=1.19.10.3543
 SCOPEVERS=1.20.2.4
-PPAVERS=2
+PPAVERS=1
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
 SCOPESRC=/y/home/dockes/projets/fulltext/unity-scope-recoll
+RCLDOWNLOAD=/y/home/dockes/projets/lesbonscomptes/recoll
 
 case $RCLVERS in
     [23]*) PPANAME=recollexp-ppa;;
@@ -30,20 +31,18 @@ fatal()
 check_recoll_orig()
 {
     if test ! -f recoll_${RCLVERS}.orig.tar.gz ; then 
-        if test -f recoll-${RCLVERS}.tar.gz ; then
-            mv recoll-${RCLVERS}.tar.gz recoll_${RCLVERS}.orig.tar.gz
-        else
+        cp -p $RCLDOWNLOAD/recoll-${RCLVERS}.tar.gz \
+            recoll_${RCLVERS}.orig.tar.gz || \
             fatal "Can find neither recoll_${RCLVERS}.orig.tar.gz nor " \
-                "recoll-${RCLVERS}.tar.gz"
-        fi
+            "recoll-${RCLVERS}.tar.gz"
     fi
 }
 
 ####### QT4
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
-series="precise trusty utopic"
-series=
+series="precise trusty utopic vivid"
+#series=precise
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -142,7 +141,7 @@ done
 
 ### Unity Scope
 series="trusty utopic vivid"
-#series=
+series=
 
 debdir=debianunityscope
 if test ! -d ${debdir}/ ; then

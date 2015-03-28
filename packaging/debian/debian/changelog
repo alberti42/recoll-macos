@@ -1,3 +1,11 @@
+recoll (1.20.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * fixes a bug where the real time indexer did not process the web queue
+  * miscellaneous usability improvements in the GUI.
+  * Copy sample fragbuts.xml file if it does not exist
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Sat, 28 Mar 2015 09:40:00 +0200
+
 recoll (1.20.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * 1.20.1 brings improved indexing of compound words like email addresses
