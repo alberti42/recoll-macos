@@ -106,8 +106,8 @@
       <h2>Nouvelles: </h2>
       <dl>
 
-        <dt>2015-03-28</dt> 
-        <dd>1.20.3. Corrige l'indexation au fil de l'eau de
+        <dt>2015-03-30</dt> 
+        <dd>1.20.4. Corrige l'indexation au fil de l'eau de
           l'historique web (en utilisation avec le plugin Firefox).</dd>
 
         <dt>2014-12-18</dt> <dd>Apparition de version 1.20.1 avec
