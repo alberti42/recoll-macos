@@ -1,3 +1,10 @@
+recoll (1.20.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * Should have been in 1.20.3: skip compressed fs image files like xxx.img.gz
+    by default (mimemap:recoll_noindex).
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 30 Mar 2015 10:06:00 +0200
+
 recoll (1.20.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * fixes a bug where the real time indexer did not process the web queue
