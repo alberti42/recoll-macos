@@ -162,6 +162,7 @@ filters/rclwpd
 filters/rclxls
 filters/rclxml
 filters/rclzip
+filters/rcl7z
 filters/recfiltcommon
 filters/xls-dump.py
 filters/xlsxmltocsv.py

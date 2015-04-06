@@ -119,6 +119,7 @@ application/x-shellscript = internal text/plain
 application/x-tex = exec rcltex
 application/x-webarchive = execm rclwar
 application/zip = execm rclzip;charset=default
+application/x-7z-compressed = execm rcl7z
 audio/mpeg = execm rclaudio
 audio/mp4 = execm rclaudio
 audio/aac = execm rclaudio
@@ -220,6 +221,7 @@ application/x-tex = wordprocessing
 application/x-webarchive = archive
 application/xml = document
 application/zip = archive
+application/x-7z-compressed = archive
 audio/mpeg = sownd
 audio/x-karaoke = sownd
 image/bmp = image
@@ -359,9 +361,10 @@ other = application/vnd.sun.xml.draw \
         application/x-fsdirectory \
         application/x-mimehtml \
         application/x-rar \
-	application/x-tar \
+        application/x-tar \
         application/x-webarchive \
-	application/zip \
+        application/zip \
+        application/x-7z-compressed \
         inode/directory \
         inode/symlink \
 

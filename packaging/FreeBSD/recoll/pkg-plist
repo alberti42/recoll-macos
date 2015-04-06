@@ -55,6 +55,7 @@ share/pixmaps/recoll.png
 %%DATADIR%%/filters/rclwpd
 %%DATADIR%%/filters/rclxls
 %%DATADIR%%/filters/rclzip
+%%DATADIR%%/filters/rcl7z
 %%DATADIR%%/filters/xdg-open
 %%DATADIR%%/images/aptosid-book.png
 %%DATADIR%%/images/aptosid-manual.png
