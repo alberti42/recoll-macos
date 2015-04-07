@@ -124,6 +124,7 @@ application/x-okular-notes = okular %f
 application/x-rar = ark %f
 application/x-tar = ark %f
 application/zip = ark %f
+application/x-7z-compressed = ark %f
 
 application/x-awk = emacsclient --no-wait %f
 application/x-perl = emacsclient --no-wait %f
