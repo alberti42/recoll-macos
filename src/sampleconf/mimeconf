@@ -133,6 +133,7 @@ image/vnd.djvu = exec rcldjvu
 image/svg+xml = exec rclsvg
 image/x-xcf = execm rclimg
 inode/symlink = internal
+inode/x-empty = exec rclnull
 message/rfc822 = internal
 text/calendar = execm rclics;mimetype=text/plain
 text/html  = internal 

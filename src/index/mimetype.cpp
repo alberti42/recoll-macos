@@ -133,6 +133,9 @@ string mimetype(const string &fn, const struct stat *stp,
 	    return "inode/symlink";
 	if (!S_ISREG(stp->st_mode))
 	    return "inode/x-fsspecial";
+	// Empty files are just this: avoid further errors with actual filters.
+	if (stp->st_size == 0) 
+	    return "inode/x-empty";
     }
 
     string mtype;
