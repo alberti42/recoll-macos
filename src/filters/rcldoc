@@ -154,12 +154,12 @@ if test $? -eq 1 ; then
     if test X"$mtype" = Xtext/rtf; then
       # RTF document disguising as msword either because it has a .doc
       # extension or because it's an attachment with a wrong mime.
-      exec `dirname $0`/rclrtf $infile
+      exec `dirname $0`/rclrtf "$infile"
     fi
     
     if test X"$mtype" = Xtext/plain; then
       # Someone gave a .doc ext to their texts. Happens...
-      exec `dirname $0`/rcltext $infile
+      exec `dirname $0`/rcltext "$infile"
     fi
 
     if test X"$mtype" = Xapplication/msword; then
