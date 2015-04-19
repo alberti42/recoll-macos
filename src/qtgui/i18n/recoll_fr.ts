@@ -386,7 +386,11 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Fragment Buttons</source>
-        <translation>Fragments de recherche</translation>
+        <translation type="obsolete">Fragments de recherche</translation>
+    </message>
+    <message>
+        <source>Query Fragments</source>
+        <translation type="unfinished">Fragments de recherche</translation>
     </message>
 </context>
 <context>
@@ -640,6 +644,38 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
         <translation>Jeu de caractères utilisé pour lire les fichiers qui n&apos;identifient pas de manière interne leur encodage, par exemple les fichiers texte purs.&lt;br&gt;La valeur par défaut est vide, et la valeur obtenue à partir de l&apos;environnement est utilisée dans ce cas.</translation>
+    </message>
+    <message>
+        <source>Ignored endings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>These are file name endings for files which will be indexed by content only 
+(no MIME type identification attempt, no decompression, no content indexing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QWidget</name>
+    <message>
+        <source>Create or choose save directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose exactly one directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not read directory: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unexpected file name collision, cancelling.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot extract document: </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1309,6 +1345,17 @@ Merci de vérifier le fichier desktop </translation>
     </message>
 </context>
 <context>
+    <name>RclTrayIcon</name>
+    <message>
+        <source>Restore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RecollModel</name>
     <message>
         <source>Abstract</source>
@@ -1715,7 +1762,7 @@ Merci de vérifier le fichier desktop </translation>
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
 Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
 </source>
-        <translation>Entrer une expression du langage de recherche. Antisèche:&lt;br&gt;
+        <translation type="obsolete">Entrer une expression du langage de recherche. Antisèche:&lt;br&gt;
 &lt;i&gt;term1 term2&lt;/i&gt; : &apos;term1&apos; ET &apos;term2&apos; champ non spécifié.&lt;br&gt;
 &lt;i&gt;field:term1&lt;/i&gt; : &apos;term1&apos; recherche dans le champ &apos;field&apos;.&lt;br&gt;
  Noms de champs standards (utiliser les mots anglais)/alias:&lt;br&gt;
@@ -1736,6 +1783,22 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
         <translation>Entrer les termes recherchés ici. Taper ESC SPC pour afficher les mots commençant par l&apos;entrée en cours.</translation>
+    </message>
+    <message>
+        <source>Enter query language expression. Cheat sheet:&lt;br&gt;
+&lt;i&gt;term1 term2&lt;/i&gt; : &apos;term1&apos; and &apos;term2&apos; in any field.&lt;br&gt;
+&lt;i&gt;field:term1&lt;/i&gt; : &apos;term1&apos; in field &apos;field&apos;.&lt;br&gt;
+ Standard field names/synonyms:&lt;br&gt;
+  title/subject/caption, author/from, recipient/to, filename, ext.&lt;br&gt;
+ Pseudo-fields: dir, mime/format, type/rclcat, date, size.&lt;br&gt;
+ Two date interval exemples: 2009-03-01/2009-05-20  2009-03-01/P2M.&lt;br&gt;
+&lt;i&gt;term1 term2 OR term3&lt;/i&gt; : term1 AND (term2 OR term3).&lt;br&gt;
+  You can use parentheses to make things clearer.&lt;br&gt;
+&lt;i&gt;&quot;term1 term2&quot;&lt;/i&gt; : phrase (must occur exactly). Possible modifiers:&lt;br&gt;
+&lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
+Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
+</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3040,6 +3103,14 @@ La valeur par défaut est 2%</translation>
     <message>
         <source>Menu</source>
         <translation>Menu</translation>
+    </message>
+    <message>
+        <source>Show system tray icon.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close to tray instead of exiting.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

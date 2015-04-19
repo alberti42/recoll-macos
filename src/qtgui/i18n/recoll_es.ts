@@ -380,7 +380,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Fragment Buttons</source>
+        <source>Query Fragments</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -630,6 +630,38 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ignored endings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>These are file name endings for files which will be indexed by content only 
+(no MIME type identification attempt, no decompression, no content indexing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QWidget</name>
+    <message>
+        <source>Create or choose save directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose exactly one directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not read directory: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unexpected file name collision, cancelling.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot extract document: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1291,6 +1323,17 @@ Please check the desktop file</source>
     </message>
 </context>
 <context>
+    <name>RclTrayIcon</name>
+    <message>
+        <source>Restore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RecollModel</name>
     <message>
         <source>Abstract</source>
@@ -1685,7 +1728,7 @@ Please check the desktop file</source>
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
 Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
 </source>
-        <translation>Ingrese expresión de lenguaje de consulta. Hoja de trucos:&lt;br&gt;
+        <translation type="obsolete">Ingrese expresión de lenguaje de consulta. Hoja de trucos:&lt;br&gt;
 &lt;i&gt;term1 term2&lt;/i&gt; : &apos;term1&apos; y &apos;term2&apos; en cualquier campo.&lt;br&gt;
 &lt;i&gt;campo:term1&lt;/i&gt; : &apos;term1&apos; en campo &apos;campo&apos;. &lt;br&gt;
  Nombres de campos estándar/sinónimos:&lt;br&gt;
@@ -1707,6 +1750,22 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     <message>
         <source>Enter search terms here. Type ESC SPC for completions of current term.</source>
         <translation>Ingrese términos de búsqueda aquí. Presione ESC ESPACIO para completar el término actual.</translation>
+    </message>
+    <message>
+        <source>Enter query language expression. Cheat sheet:&lt;br&gt;
+&lt;i&gt;term1 term2&lt;/i&gt; : &apos;term1&apos; and &apos;term2&apos; in any field.&lt;br&gt;
+&lt;i&gt;field:term1&lt;/i&gt; : &apos;term1&apos; in field &apos;field&apos;.&lt;br&gt;
+ Standard field names/synonyms:&lt;br&gt;
+  title/subject/caption, author/from, recipient/to, filename, ext.&lt;br&gt;
+ Pseudo-fields: dir, mime/format, type/rclcat, date, size.&lt;br&gt;
+ Two date interval exemples: 2009-03-01/2009-05-20  2009-03-01/P2M.&lt;br&gt;
+&lt;i&gt;term1 term2 OR term3&lt;/i&gt; : term1 AND (term2 OR term3).&lt;br&gt;
+  You can use parentheses to make things clearer.&lt;br&gt;
+&lt;i&gt;&quot;term1 term2&quot;&lt;/i&gt; : phrase (must occur exactly). Possible modifiers:&lt;br&gt;
+&lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
+Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
+</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2712,6 +2771,14 @@ El valor por defecto es 2 (por ciento).</translation>
     </message>
     <message>
         <source>Menu</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show system tray icon.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close to tray instead of exiting.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
