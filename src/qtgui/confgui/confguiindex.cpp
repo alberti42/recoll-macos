@@ -459,8 +459,8 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config,
         ConfLink(new ConfLinkRclRep(config, "noContentSuffixes", &m_sk)),
         QObject::tr("Ignored endings"),
         QObject::tr("These are file name endings for files which will be "
-                    "indexed by content only \n(no MIME type identification "
-                    "attempt, no decompression, no content indexing."));
+                    "indexed by name only \n(no MIME type identification "
+                    "attempt, no decompression, no content indexing)."));
     encs->setFsEncoding(true);
     m_widgets.push_back(encs);
     gl1->addWidget(encs, gridy++, 1);

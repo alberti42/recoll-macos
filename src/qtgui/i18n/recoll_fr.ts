@@ -390,7 +390,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Query Fragments</source>
-        <translation type="unfinished">Fragments de recherche</translation>
+        <translation>Fragments de recherche</translation>
     </message>
 </context>
 <context>
@@ -647,35 +647,36 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Ignored endings</source>
-        <translation type="unfinished"></translation>
+        <translation>Suffixes ignor&apos;es</translation>
     </message>
     <message>
         <source>These are file name endings for files which will be indexed by content only 
 (no MIME type identification attempt, no decompression, no content indexing.</source>
-        <translation type="unfinished"></translation>
+        <translation>Suffixes correspondants `a des fichiers qui seront indexe&apos;s par nom seulement  
+(pas d&apos;identification de type MIME, pas d&apos;ecompression, pas d&apos;indexation du contenu).</translation>
     </message>
 </context>
 <context>
     <name>QWidget</name>
     <message>
         <source>Create or choose save directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Créer ou choisir un répertoire d&apos;écriture</translation>
     </message>
     <message>
         <source>Choose exactly one directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir exactement un répertoire</translation>
     </message>
     <message>
         <source>Could not read directory: </source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible de lire le répertoire:</translation>
     </message>
     <message>
         <source>Unexpected file name collision, cancelling.</source>
-        <translation type="unfinished"></translation>
+        <translation>Collision de noms inattendue, abandon.</translation>
     </message>
     <message>
         <source>Cannot extract document: </source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible d&apos;extraire le document:</translation>
     </message>
 </context>
 <context>
@@ -1044,7 +1045,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Indexer running so things should improve when it&apos;s done</source>
-        <translation type="obsolete">L&apos;indexeur est en cours d&apos;execution, le fichier devrait être mis à jour</translation>
+        <translation type="obsolete">L&apos;indexeur est en cours d&apos;exécution, le fichier devrait être mis à jour</translation>
     </message>
     <message>
         <source>Sub-documents and attachments</source>
@@ -1348,11 +1349,11 @@ Merci de vérifier le fichier desktop </translation>
     <name>RclTrayIcon</name>
     <message>
         <source>Restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Restaurer</translation>
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Quitter</translation>
     </message>
 </context>
 <context>
@@ -1798,7 +1799,19 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
 Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
 </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Entrer une expression du langage de recherche. Indications:&lt;br&gt;
+&lt;i&gt;term1 term2&lt;/i&gt; : &apos;term1&apos; et &apos;term2&apos; dans un champ quelconque.&lt;br&gt;
+&lt;i&gt;field:term1&lt;/i&gt; : &apos;term1&apos; dans le champ &apos;field&apos;.&lt;br&gt;
+ Standard field names/synonyms:&lt;br&gt;
+  title/subject/caption, author/from, recipient/to, filename, ext.&lt;br&gt;
+ Pseudo-fields: dir, mime/format, type/rclcat, date, size.&lt;br&gt;
+ Two date interval exemples: 2009-03-01/2009-05-20  2009-03-01/P2M.&lt;br&gt;
+&lt;i&gt;term1 term2 OR term3&lt;/i&gt; : term1 AND (term2 OR term3).&lt;br&gt;
+  You can use parentheses to make things clearer.&lt;br&gt;
+&lt;i&gt;&quot;term1 term2&quot;&lt;/i&gt; : phrase (must occur exactly). Possible modifiers:&lt;br&gt;
+&lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
+Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
+</translation>
     </message>
 </context>
 <context>
@@ -2336,7 +2349,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Remember sort activation state.</source>
-        <translation type="obsolete">Memoriser l&apos;etat d&apos;activation du tri.</translation>
+        <translation type="obsolete">Mémoriser l&apos;état d&apos;activation du tri.</translation>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
