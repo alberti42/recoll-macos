@@ -99,7 +99,8 @@ public:
 
 FsIndexer::FsIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc) 
     : m_config(cnf), m_db(db), m_updater(updfunc), 
-      m_missing(new FSIFIMissingStore), m_detectxattronly(false)
+      m_missing(new FSIFIMissingStore), m_detectxattronly(false),
+      m_noretryfailed(false)
 #ifdef IDX_THREADS
     , m_iwqueue("Internfile", cnf->getThrConf(RclConfig::ThrIntern).first), 
       m_dwqueue("Split", cnf->getThrConf(RclConfig::ThrSplit).first)
@@ -172,8 +173,10 @@ bool FsIndexer::init()
 }
 
 // Recursively index each directory in the topdirs:
-bool FsIndexer::index(bool quickshallow)
+bool FsIndexer::index(int flags)
 {
+    bool quickshallow = (flags & ConfIndexer::IxFQuickShallow) != 0;
+    m_noretryfailed = (flags & ConfIndexer::IxFNoRetryFailed) != 0;
     Chrono chron;
     if (!init())
 	return false;
@@ -261,7 +264,7 @@ static bool matchesSkipped(const vector<string>& tdl,
         for (vector<string>::const_iterator it = tdl.begin();  
              it != tdl.end(); it++) {
             // the topdirs members are already canonized.
-            LOGDEB2(("indexfiles:matchesskpp: comparing ancestor [%s] to "
+            LOGDEB2(("matchesSkipped: comparing ancestor [%s] to "
                      "topdir [%s]\n", mpath.c_str(), it->c_str()));
             if (!mpath.compare(*it)) {
                 topdir = *it;
@@ -324,9 +327,10 @@ goodpath:
 /** 
  * Index individual files, out of a full tree run. No database purging
  */
-bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
+bool FsIndexer::indexFiles(list<string>& files, int flags)
 {
     LOGDEB(("FsIndexer::indexFiles\n"));
+    m_noretryfailed = (flags & ConfIndexer::IxFNoRetryFailed) != 0;
     int ret = false;
 
     if (!init())
@@ -354,7 +358,7 @@ bool FsIndexer::indexFiles(list<string>& files, ConfIndexer::IxFlag flag)
 
         walker.setSkippedNames(m_config->getSkippedNames());
 	// Check path against indexed areas and skipped names/paths
-        if (!(flag&ConfIndexer::IxFIgnoreSkip) && 
+        if (!(flags & ConfIndexer::IxFIgnoreSkip) && 
 	    matchesSkipped(m_tdl, walker, *it)) {
             it++; 
 	    continue;
@@ -648,8 +652,14 @@ FsIndexer::processonefile(RclConfig *config,
     makesig(stp, sig);
     string udi;
     make_udi(fn, cstr_null, udi);
-    bool existingDoc;
-    bool needupdate = m_db->needUpdate(udi, sig, &existingDoc);
+    unsigned int existingDoc;
+    string oldsig;
+    bool needupdate;
+    if (m_noretryfailed) {
+        needupdate = m_db->needUpdate(udi, sig, &existingDoc, &oldsig);
+    } else {
+        needupdate = m_db->needUpdate(udi, sig, &existingDoc, 0);
+    }
 
     // If ctime (which we use for the sig) differs from mtime, then at most
     // the extended attributes were changed, no need to index content.
@@ -659,7 +669,24 @@ FsIndexer::processonefile(RclConfig *config,
     // the ctime to avoid this
     bool xattronly = m_detectxattronly && !m_db->inFullReset() && 
 	existingDoc && needupdate && (stp->st_mtime < stp->st_ctime);
-    
+
+    LOGDEB(("processone: needupdate %d noretry %d existing %d oldsig [%s]\n",
+            needupdate, m_noretryfailed, existingDoc, oldsig.c_str()));
+
+    // If noretryfailed is set, check for a file which previously
+    // failed to index, and avoid re-processing it
+    if (needupdate && m_noretryfailed && existingDoc && 
+        !oldsig.empty() && *oldsig.rbegin() == '+') {
+        // Check that the sigs are the same except for the '+'. If the file
+        // actually changed, we always retry (maybe it was fixed)
+        string nold = oldsig.substr(0, oldsig.size()-1);
+        if (!nold.compare(sig)) {
+            LOGDEB(("processone: not retrying previously failed file\n"));
+            m_db->setExistingFlags(udi, existingDoc);
+            needupdate = false;
+        }
+    }
+
     if (!needupdate) {
 	LOGDEB0(("processone: up to date: %s\n", fn.c_str()));
 	if (m_updater) {

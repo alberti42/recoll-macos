@@ -84,13 +84,13 @@ bool ConfIndexer::firstFsIndexingSequence()
     }
     int flushmb = m_db.getFlushMb();
     m_db.setFlushMb(2);
-    m_fsindexer->index(true);
+    m_fsindexer->index(IxFQuickShallow);
     m_db.doFlush();
     m_db.setFlushMb(flushmb);
     return true;
 }
 
-bool ConfIndexer::index(bool resetbefore, ixType typestorun)
+bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
 {
     Rcl::Db::OpenMode mode = resetbefore ? Rcl::Db::DbTrunc : Rcl::Db::DbUpd;
     if (!m_db.open(mode)) {
@@ -106,7 +106,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun)
 	}
         deleteZ(m_fsindexer);
         m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
-        if (!m_fsindexer || !m_fsindexer->index()) {
+        if (!m_fsindexer || !m_fsindexer->index(flags)) {
 	    m_db.close();
             return false;
         }
@@ -154,7 +154,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun)
     return true;
 }
 
-bool ConfIndexer::indexFiles(list<string>& ifiles, IxFlag flag)
+bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
 {
     list<string> myfiles;
     string origcwd = m_config->getOrigCwd();
@@ -237,7 +237,7 @@ bool ConfIndexer::updateDocs(std::vector<Rcl::Doc> &docs, IxFlag flag)
     return true;
 }
 
-bool ConfIndexer::purgeFiles(std::list<string> &files, IxFlag flag)
+bool ConfIndexer::purgeFiles(std::list<string> &files, int flag)
 {
     list<string> myfiles;
     string origcwd = m_config->getOrigCwd();

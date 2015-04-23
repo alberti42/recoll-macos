@@ -102,10 +102,15 @@ class ConfIndexer {
     enum IxFlag {IxFNone = 0, 
                  IxFIgnoreSkip = 1, // Ignore skipped lists
                  IxFNoWeb = 2, // Do not process the web queue.
+                 // First pass: just do the top files so that the user can 
+                 // try searching asap.
+                 IxFQuickShallow = 4, 
+                 // Do not retry files which previously failed ('+' sigs)
+                 IxFNoRetryFailed = 8,
     };
 
     /** Run indexers */
-    bool index(bool resetbefore, ixType typestorun);
+    bool index(bool resetbefore, ixType typestorun, int f = IxFNone);
 
     const string &getReason() {return m_reason;}
 
@@ -122,14 +127,14 @@ class ConfIndexer {
     static vector<string> getStemmerNames();
 
     /** Index a list of files. No db cleaning or stemdb updating */
-    bool indexFiles(list<string> &files, IxFlag f = IxFNone);
+    bool indexFiles(list<string> &files, int f = IxFNone);
 
     /** Update index for list of documents given as list of docs (out of query)
      */
     bool updateDocs(vector<Rcl::Doc> &docs, IxFlag f = IxFNone);
     static bool docsToPaths(vector<Rcl::Doc> &docs, vector<string> &paths);
     /** Purge a list of files. */
-    bool purgeFiles(list<string> &files, IxFlag f = IxFNone);
+    bool purgeFiles(list<string> &files, int f = IxFNone);
 
     /** Set in place reset mode */
     void setInPlaceReset() {m_db.setInPlaceReset();}

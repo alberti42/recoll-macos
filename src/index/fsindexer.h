@@ -60,11 +60,11 @@ class FsIndexer : public FsTreeWalkerCB {
      * We open the database,
      * then call a file system walk for each top-level directory.
      */
-    bool index(bool quickshallow = 0);
+    bool index(int flags);
 
     /** Index a list of files. No db cleaning or stemdb updating */
-    bool indexFiles(std::list<std::string> &files, ConfIndexer::IxFlag f = 
-		    ConfIndexer::IxFNone);
+    bool indexFiles(std::list<std::string> &files, 
+                    int f = ConfIndexer::IxFNone);
 
     /** Purge a list of files. */
     bool purgeFiles(std::list<std::string> &files);
@@ -135,6 +135,9 @@ class FsIndexer : public FsTreeWalkerCB {
     // Activate detection of xattr-only document updates. Experimental, so
     // needs a config option
     bool         m_detectxattronly;
+
+    // No retry of previously failed files
+    bool         m_noretryfailed;
 
 #ifdef IDX_THREADS
     friend void *FsIndexerDbUpdWorker(void*);

@@ -789,7 +789,6 @@ bool Db::open(OpenMode mode, OpenError *error)
                 // (now: Xapian 1.2) and the separate objects seem to
                 // trigger other Xapian issues, so the query db is now
                 // a clone of the update one.
-//		m_ndb->xrdb = Xapian::Database(dir);
 		m_ndb->xrdb = m_ndb->xwdb;
 		LOGDEB(("Db::open: lastdocid: %d\n", 
 			m_ndb->xwdb.get_lastdocid()));
@@ -1725,22 +1724,69 @@ bool Db::doFlush()
     return true;
 }
 
+void Db::setExistingFlags(const string& udi, unsigned int docid)
+{
+    if (m_mode == DbRO)
+        return;
+    if (docid == (unsigned int)-1) {
+        LOGERR(("Db::setExistingFlags: called with bogus docid !!\n"));
+        return;
+    }
+#ifdef IDX_THREADS
+    PTMutexLocker lock(m_ndb->m_mutex);
+#endif
+    i_setExistingFlags(udi, docid);
+}
+
+void Db::i_setExistingFlags(const string& udi, unsigned int docid)
+{
+    // Set the up to date flag for the document and its subdocs
+    if (docid >= updated.size()) {
+        LOGERR(("needUpdate: existing docid beyond "
+                "updated.size(). Udi [%s], docid %u, "
+                "updated.size() %u\n", udi.c_str(), 
+                unsigned(docid), (unsigned)updated.size()));
+        return;
+    } else {
+        updated[docid] = true;
+    }
+
+    // Set the existence flag for all the subdocs (if any)
+    vector<Xapian::docid> docids;
+    if (!m_ndb->subDocs(udi, 0, docids)) {
+        LOGERR(("Rcl::Db::needUpdate: can't get subdocs\n"));
+        return;
+    }
+    for (vector<Xapian::docid>::iterator it = docids.begin();
+         it != docids.end(); it++) {
+        if (*it < updated.size()) {
+            LOGDEB2(("Db::needUpdate: docid %d set\n", *it));
+            updated[*it] = true;
+        }
+    }
+}
+
 // Test if doc given by udi has changed since last indexed (test sigs)
-bool Db::needUpdate(const string &udi, const string& sig, bool *existed)
+bool Db::needUpdate(const string &udi, const string& sig, 
+                    unsigned int *docidp, string *osigp)
 {
     if (m_ndb == 0)
         return false;
 
+    if (osigp)
+        osigp->clear();
+    if (docidp)
+        *docidp = 0;
+
     // If we are doing an in place or full reset, no need to test.
     if (o_inPlaceReset || m_mode == DbTrunc) {
-	// For in place reset, pretend the doc existed, to enable subdoc purge
-	if (existed)
-	    *existed = o_inPlaceReset;
+	// For in place reset, pretend the doc existed, to enable
+	// subdoc purge. The value is only used as a boolean in this case.
+	if (docidp && o_inPlaceReset) {
+	    *docidp = -1;
+        }
 	return true;
     }
-
-    if (existed)
-        *existed = false;
 
     string uniterm = make_uniterm(udi);
     string ermsg;
@@ -1773,8 +1819,9 @@ bool Db::needUpdate(const string &udi, const string& sig, bool *existed)
         return true;
     }
 
-    if (existed)
-        *existed = true;
+    if (docidp) {
+        *docidp = *docid;
+    }
 
     // Retrieve old file/doc signature from value
     string osig;
@@ -1785,6 +1832,11 @@ bool Db::needUpdate(const string &udi, const string& sig, bool *existed)
     }
     LOGDEB2(("Db::needUpdate: oldsig [%s] new [%s]\n",
              osig.c_str(), sig.c_str()));
+
+    if (osigp) {
+        *osigp = osig;
+    }
+
     // Compare new/old sig
     if (sig != osig) {
         LOGDEB(("Db::needUpdate:yes: olsig [%s] new [%s] [%s]\n",
@@ -1793,34 +1845,10 @@ bool Db::needUpdate(const string &udi, const string& sig, bool *existed)
         return true;
     }
 
-    // Up to date. 
+    // Up to date. Set the existance flags in the map for the doc and
+    // its subdocs.
     LOGDEB(("Db::needUpdate:no: [%s]\n", uniterm.c_str()));
-
-    if (m_mode 	!= DbRO) {
-        // Set the up to date flag for the document and its subdocs
-        if (*docid >= updated.size()) {
-            LOGERR(("needUpdate: existing docid beyond "
-                    "updated.size(). Udi [%s], docid %u, "
-                    "updated.size() %u\n", udi.c_str(), 
-                    unsigned(*docid), (unsigned)updated.size()));
-        } else {
-            updated[*docid] = true;
-        }
-
-        // Set the existence flag for all the subdocs (if any)
-        vector<Xapian::docid> docids;
-        if (!m_ndb->subDocs(udi, 0, docids)) {
-            LOGERR(("Rcl::Db::needUpdate: can't get subdocs\n"));
-            return true;
-        }
-        for (vector<Xapian::docid>::iterator it = docids.begin();
-             it != docids.end(); it++) {
-            if (*it < updated.size()) {
-                LOGDEB2(("Db::needUpdate: docid %d set\n", *it));
-                updated[*it] = true;
-            }
-        }
-    }
+    i_setExistingFlags(udi, *docid);
     return false;
 }
 

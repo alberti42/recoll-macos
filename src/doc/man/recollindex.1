@@ -13,16 +13,19 @@ recollindex \- indexing command for the Recoll full text search system
 [
 .B \-z|\-Z
 ]
+[
+.B \-k
+]
 .br
 .B recollindex
 [
 .B \-c
-<configdir>
+<cd>
 ]
 .B \-m
 [
 .B \-w
-<seconds>
+<secs>
 ]
 [
 .B \-D
@@ -34,17 +37,20 @@ recollindex \- indexing command for the Recoll full text search system
 .B \-C
 ]
 [
-.B \-n
+.B \-n|-k
 ]
 .br
 .B recollindex 
 [
 .B \-c
-<configdir>
+<cd>
 ]
 .B \-i 
 [
 .B \-Z
+]
+[
+.B \-k
 ]
 [
 .B \-f
@@ -118,6 +124,17 @@ is given, the database will be erased before starting. If option
 .B \-Z 
 is given, the database will not be reset, but all files will be considered
 as needing reindexing (in place reset).
+.PP
+By default,
+.B recollindex
+does not process again files which previously failed to index (for example
+because of a missing helper program). This behaviour is new in version
+1.21, error files were always retried in previous versions.
+If option
+.B \-k
+is given, 
+.B recollindex
+will try again to process all failed files.
 .PP
 If option 
 .B

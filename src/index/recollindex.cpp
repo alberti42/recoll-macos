@@ -68,6 +68,7 @@ static int     op_flags;
 #define OPT_Z     0x10000
 #define OPT_n     0x20000
 #define OPT_r     0x40000
+#define OPT_k     0x80000
 
 ReExec *o_reexec;
 
@@ -182,7 +183,7 @@ public:
     {
     }
     virtual FsTreeWalker::Status 
-    processone(const string & fn, const struct stat *, FsTreeWalker::CbFlag flg) 
+    processone(const string& fn, const struct stat *, FsTreeWalker::CbFlag flg) 
     {
 	if (flg == FsTreeWalker::FtwDirEnter || flg == FsTreeWalker::FtwRegular)
 	    m_files.push_back(fn);
@@ -255,11 +256,12 @@ static const char usage [] =
 "\n"
 "recollindex [-h] \n"
 "    Print help\n"
-"recollindex [-z|-Z] \n"
+"recollindex [-z|-Z] [-k]\n"
 "    Index everything according to configuration file\n"
 "    -z : reset database before starting indexing\n"
 "    -Z : in place reset: consider all documents as changed. Can also\n"
 "         be combined with -i or -r but not -m\n"
+"    -k : retry files on which we previously failed\n"
 #ifdef RCL_MONITOR
 "recollindex -m [-w <secs>] -x [-D] [-C]\n"
 "    Perform real time indexing. Don't become a daemon if -D is set.\n"
@@ -282,8 +284,8 @@ static const char usage [] =
 "recollindex -s <lang>\n"
 "    Build stem database for additional language <lang>\n"
 #ifdef FUTURE_IMPROVEMENT
-"recollindex -b\n"
-"    Process the Beagle queue\n"
+"recollindex -W\n"
+"    Process the Web queue\n"
 #endif
 #ifdef RCL_USE_ASPELL
 "recollindex -S\n"
@@ -351,6 +353,7 @@ int main(int argc, char **argv)
 	    case 'f': op_flags |= OPT_f; break;
 	    case 'h': op_flags |= OPT_h; break;
 	    case 'i': op_flags |= OPT_i; break;
+	    case 'k': op_flags |= OPT_k; break;
 	    case 'l': op_flags |= OPT_l; break;
 	    case 'm': op_flags |= OPT_m; break;
 	    case 'n': op_flags |= OPT_n; break;
@@ -415,6 +418,10 @@ int main(int argc, char **argv)
 
     bool rezero((op_flags & OPT_z) != 0);
     bool inPlaceReset((op_flags & OPT_Z) != 0);
+    int indexerFlags = ConfIndexer::IxFNone;
+    if (!(op_flags & OPT_k))
+        indexerFlags |= ConfIndexer::IxFNoRetryFailed;
+
     Pidfile pidfile(config->getPidfile());
     updater = new MyUpdater(config);
 
@@ -526,8 +533,8 @@ int main(int argc, char **argv)
 	if (!(op_flags & OPT_n)) {
 	    makeIndexerOrExit(config, inPlaceReset);
 	    LOGDEB(("Recollindex: initial indexing pass before monitoring\n"));
-	    if (!confindexer->index(rezero, ConfIndexer::IxTAll) || 
-		stopindexing) {
+	    if (!confindexer->index(rezero, ConfIndexer::IxTAll, indexerFlags)
+                || stopindexing) {
 		LOGERR(("recollindex, initial indexing pass failed, "
 			"not going into monitor mode\n"));
 		exit(1);
@@ -564,7 +571,8 @@ int main(int argc, char **argv)
     } else {
 	lockorexit(&pidfile);
 	makeIndexerOrExit(config, inPlaceReset);
-	bool status = confindexer->index(rezero, ConfIndexer::IxTAll);
+	bool status = confindexer->index(rezero, ConfIndexer::IxTAll, 
+                                         indexerFlags);
 	if (!status) 
 	    cerr << "Indexing failed" << endl;
         if (!confindexer->getReason().empty())

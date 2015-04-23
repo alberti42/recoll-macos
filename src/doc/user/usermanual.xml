@@ -270,6 +270,13 @@
 	to the indexing command (<command>recollindex</command>
 	<option>-z</option> or <option>-Z</option>).</para>
 
+      <para><command>recollindex</command> skips files which caused an
+      error during a previous pass. This is a performance
+      optimization, and a new behaviour in version 1.21 (failed files
+      were always retried by previous versions). The command line
+      option <option>-k</option> can be set to retry failed files, for
+      example after updating a filter.</para>
+
       <para>The following sections give an overview of different
 	aspects of the indexing processes and configuration, with links
 	to detailed sections.</para>
@@ -915,20 +922,25 @@ recoll
 	  querying while it is rebuilt, which can be a significant
 	  advantage if it is very big (some installations need days
 	  for a full index rebuild).</para>
+
+        <para>Option <option>-k</option> will force retrying files
+          which previously failed to be indexed, for example because
+          of a missing helper program.</para>
+
         <para>Of special interest also, maybe, are
-          the <option>-i</option> and
-          <option>-f</option> options. <option>-i</option> allows
-          indexing an explicit list of files (given as command line
-          parameters or read on <literal>stdin</literal>). 
-	  <option>-f</option> tells
+          the <option>-i</option> and <option>-f</option>
+          options. <option>-i</option> allows indexing an explicit
+          list of files (given as command line parameters or read on
+          <literal>stdin</literal>).  <option>-f</option> tells
           <command>recollindex</command> to ignore file selection
-          parameters from the configuration. Together, these options allow
-          building a custom file selection process for some area of the
-          file system, by adding the top directory to the
-          <varname>skippedPaths</varname> list and using an appropriate
-          file selection method to build the file list to be fed to
-          <command>recollindex</command> <option>-if</option>. 
-	  Trivial example:</para>  
+          parameters from the configuration. Together, these options
+          allow building a custom file selection process for some area
+          of the file system, by adding the top directory to the
+          <varname>skippedPaths</varname> list and using an
+          appropriate file selection method to build the file list to
+          be fed to <command>recollindex</command>
+          <option>-if</option>.  Trivial example:</para>
+
 	  <programlisting>
 	    find . -name indexable.txt -print | recollindex -if
 	  </programlisting>

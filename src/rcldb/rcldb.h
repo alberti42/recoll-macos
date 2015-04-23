@@ -228,15 +228,36 @@ class Db {
 
     /* Update-related methods ******************************************/
 
-    /** Test if the db entry for the given udi is up to date (by
-     * comparing the input and stored sigs). This is used both when 
-     * indexing and querying (before opening a document using stale info),
+    /** Test if the db entry for the given udi is up to date.
+     *
+     * This is done by comparing the input and stored sigs. This is
+     * used both when indexing and querying (before opening a document 
+     * using stale info).
+     *
      * **This assumes that the udi pertains to the main index (idxi==0).**
-     * Side-effect when the db is writeable: set the existence flag
-     * for the file document and all subdocs if any (for later use by
-     * 'purge()')
+     *
+     * Side-effect when the db is writeable and the document up to
+     * date: set the existence flag for the file document and all
+     * subdocs if any (for later use by 'purge()')
+     *
+     * @param udi Unique Document Identifier (as chosen by indexer).
+     * @param sig New signature (as computed by indexer).
+     * @param xdocid[output] Non-zero if doc existed. Should be considered 
+     *    as opaque, to be used for a possible later call to setExistingFlags()
+     *    Note that if inplaceReset is set, the return value is non-zero but not
+     *    an actual docid, it's only used as a flag in this case.
+     * @param osig[output] old signature.
      */
-    bool needUpdate(const string &udi, const string& sig, bool *existed=0);
+    bool needUpdate(const string &udi, const string& sig, 
+                    unsigned int *xdocid = 0, std::string *osig = 0);
+
+    /** Set the existance flags for the document and its eventual subdocuments
+     * 
+     * This can be called by the indexer after needUpdate() has returned true,
+     * if the indexer does not wish to actually re-index (e.g.: the doc is 
+     * known to cause errors).
+     */
+    void setExistingFlags(const string& udi, unsigned int docid);
 
     /** Indicate if we are doing a systematic reindex. This complements
 	needUpdate() return */
@@ -488,6 +509,8 @@ private:
     friend void *DbUpdWorker(void*);
 #endif // IDX_THREADS
 
+    // Internal form of setExistingFlags: no locking
+    void i_setExistingFlags(const string& udi, unsigned int docid);
     // Internal form of close, can be called during destruction
     bool i_close(bool final);
     // Reinitialize when adding/removing additional dbs
