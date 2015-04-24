@@ -449,6 +449,7 @@ void RclMain::init()
 
     fileRebuildIndexAction->setEnabled(false);
     fileToggleIndexingAction->setEnabled(false);
+    fileRetryFailedAction->setEnabled(false);
     // Start timer on a slow period (used for checking ^C). Will be
     // speeded up during indexing
     periodictimer->start(1000);
@@ -793,6 +794,7 @@ void RclMain::periodic100()
 	m_indexerState = IXST_RUNNINGMINE;
 	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
 	fileToggleIndexingAction->setEnabled(true);
+        fileRetryFailedAction->setEnabled(false);
 	fileRebuildIndexAction->setEnabled(false);
 	periodictimer->setInterval(200);
     } else {
@@ -800,6 +802,7 @@ void RclMain::periodic100()
 	if (pidfile.open() == 0) {
 	    m_indexerState = IXST_NOTRUNNING;
 	    fileToggleIndexingAction->setText(tr("Update &Index"));
+            fileRetryFailedAction->setEnabled(true);
 	    fileToggleIndexingAction->setEnabled(true);
 	    fileRebuildIndexAction->setEnabled(true);
 	    periodictimer->setInterval(1000);
@@ -808,6 +811,7 @@ void RclMain::periodic100()
 	    m_indexerState = IXST_RUNNINGNOTMINE;
 	    fileToggleIndexingAction->setText(tr("Stop &Indexing"));
 	    fileToggleIndexingAction->setEnabled(true);
+            fileRetryFailedAction->setEnabled(false);
 	    fileRebuildIndexAction->setEnabled(false);
 	    periodictimer->setInterval(200);
 	}	    
@@ -838,7 +842,7 @@ void RclMain::periodic100()
 	fileExit();
 }
 
-// This gets called when the "update iindex" action is activated. It executes
+// This gets called when the "update index" action is activated. It executes
 // the requested action, and disables the menu entry. This will be
 // re-enabled by the indexing status check
 void RclMain::toggleIndexing()
@@ -885,6 +889,8 @@ void RclMain::toggleIndexing()
 	vector<string> args;
 	args.push_back("-c");
 	args.push_back(theconfig->getConfDir());
+        if (fileRetryFailedAction->isChecked())
+            args.push_back("-k");
 	m_idxproc = new ExecCmd;
 	m_idxproc->startExec("recollindex", args, false, false);
     }
@@ -1529,6 +1535,7 @@ void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
 	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
     }
     fileToggleIndexingAction->setEnabled(false);
+    fileRetryFailedAction->setEnabled(false);
 }
 
 /** 

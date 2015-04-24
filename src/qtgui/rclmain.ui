@@ -60,11 +60,20 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QMenuBar" name="MenuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>25</height>
+    </rect>
+   </property>
    <widget class="QMenu" name="fileMenu">
     <property name="title">
      <string>&amp;File</string>
     </property>
     <addaction name="fileToggleIndexingAction"/>
+    <addaction name="fileRetryFailedAction"/>
     <addaction name="fileRebuildIndexAction"/>
     <addaction name="separator"/>
     <addaction name="fileEraseSearchHistoryAction"/>
@@ -459,6 +468,20 @@
    </property>
    <property name="text">
     <string>Query Fragments</string>
+   </property>
+  </action>
+  <action name="fileRetryFailedAction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>    With failed files retrying</string>
+   </property>
+   <property name="toolTip">
+    <string>Next update will retry previously failed files</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>fileToggleIndexingAction</cstring>
    </property>
   </action>
  </widget>
