@@ -287,8 +287,19 @@ class RclConfig {
     bool getMissingHelperDesc(string&) const;
     void storeMissingHelperDesc(const string &s);
 
-    /** Find exec file for external filter. cmd is the command name from the
-     * command string returned by getMimeHandlerDef */
+    /** Find exec file for external filter. 
+     *
+     * If the input is an absolute path, we just return it. Else We
+     * look in $RECOLL_FILTERSDIR, "filtersdir" from the config file,
+     * $RECOLL_CONFDIR/. If nothing is found, we return the input with
+     * the assumption that this will be used with a PATH-searching
+     * exec.
+     *
+     * @param cmd is normally the command name from the command string 
+     *    returned by getMimeHandlerDef(), but this could be used for any 
+     *    command. If cmd begins with a /, we return cmd without
+     *    further processing.
+     */
     string findFilter(const string& cmd) const;
 
     /** Thread config init is not done automatically because not all
