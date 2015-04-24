@@ -162,12 +162,22 @@
         <li><span class="application">pdf</span> with the <span class=
         "command">pdftotext</span> command, which comes with 
           <a href="http://poppler.freedesktop.org/">poppler</a>,
-          (the package name is quite
-          often <tt>poppler-utils</tt>). 
-          <em>Note: the older <span class="command">pdftotext</span> command
+          (the package name is quite often <tt>poppler-utils</tt>). <br/>
+          Note: the older <span class="command">pdftotext</span> command
             which comes with <span class="application">xpdf</span> is
             not compatible with <span class="application">
-              Recoll</span></em>.</li> 
+              Recoll</span><br/>
+
+          <em>New in 1.21</em>: if the <span class="application">
+            tesseract</span> OCR application, and the 
+          <span class="command">pdftoppm</span> command are available
+          on the system, the <span class="command">rclpdf</span>
+          filter has the capability to run OCR. See the comments at
+          the top of <span class="command">rclpdf</span> (usually
+          found
+          in <span class="filename">/usr/share/recoll/filters</span>)
+          for how to enable this and configuration details.
+        </li> 
 
         <li><span class="application">msword</span> with <a href=
         "http://www.winfield.demon.nl/">antiword</a>.  It is also useful to
