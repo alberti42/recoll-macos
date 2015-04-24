@@ -340,6 +340,12 @@ snippetMaxPosWalk = 1000000
 #   undetected). Perform a full index reset after changing this.
 testmodifusemtime = 0
 
+# Script used to heuristically check if we need to retry indexing files
+# which previously failed. The default script checks the modified dates on
+# /usr/bin and /usr/local/bin. A relative path will be looked up in the
+# filters dirs, then in the path. Use an absolute path to do otherwise.
+checkneedretryindexscript = rclcheckneedretry.sh
+
 # Disable extended attributes conversion to metadata fields. This probably
 # needs to be set if testmodifusemtime is set.
 noxattrfields = 0

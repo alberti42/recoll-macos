@@ -38,7 +38,7 @@
 
       <para>This document introduces full text search notions
       and describes the installation and use of the &RCL;
-      application. It currently describes &RCL; &RCLVERSION;.</para>
+      application. This version describes &RCL; &RCLVERSION;.</para>
     </abstract>
 
 
@@ -448,9 +448,36 @@ indexedmimetypes = application/pdf
           index configuration tool.</para>
 
 
-
       </sect2>
 
+      <sect2>
+	<title>Indexing failures</title>
+
+        <para>Indexing may fail for some documents, for a number of
+        reasons: a helper program may be missing, the document may be
+        corrupt, we may fail to uncompress a file because no file
+        system space is available, etc.</para>
+        
+        <para>&RCL; versions prior to 1.21 always retried to index
+        files which had previously caused an error. This guaranteed
+        that anything that may have become indexable (for example
+        because a helper had been installed) would be indexed. However
+        this was bad for performance because some indexing failures
+        may be quite costly (for example failing to uncompress a big
+        file because of insufficient disk space).</para>
+
+        <para>The indexer in &RCL; versions 1.21 and later do not
+        retry failed file by default. Retrying will only occur if an
+        explicit option (<option>-k</option>) is set on the
+        <command>recollindex</command> command line, or if a script
+        executed when <command>recollindex</command> starts up says
+        so. The script is defined by a configuration variable
+        (<literal>checkneedretryindexscript</literal>), and makes a
+        rather lame attempt at deciding if a helper command may have
+        been installed, by checking if any of the common
+        <filename>bin</filename> directories have changed.</para>
+
+      </sect2>
 
       <sect2>
 	<title>Recovery</title>
@@ -5862,7 +5889,7 @@ thrQSizes = -1 -1 -1
 
 	 <variablelist>
 
-          <varlistentry><term><varname>autodiacsens</varname></term>
+           <varlistentry><term><varname>autodiacsens</varname></term>
             <listitem><para>IF the index is not stripped, decide if we
                 automatically trigger diacritics sensitivity if the search
                 term has accented characters (not in
@@ -5899,6 +5926,19 @@ thrQSizes = -1 -1 -1
             daemon.</para>
             </listitem>
           </varlistentry>
+
+           <varlistentry><term><varname>checkneedretryindexscript</varname></term>
+           <listitem><para>This defines the name for a command
+           executed by <command>recollindex</command> when starting
+           indexing. If the exit status of the command is 0,
+           <command>recollindex</command> retries to index all files
+           which previously could not be indexed because of data
+           extraction errors. The default value is a script which
+           checks if any of the common <filename>bin</filename>
+           directories have changed (indicating that a helper program
+           may have been installed).</para>
+           </listitem>
+           </varlistentry>
 
           <varlistentry><term><varname>mondelaypatterns</varname></term>
             <listitem><para>This allows specify wildcard path patterns

@@ -46,6 +46,7 @@ using namespace std;
 #include "fsindexer.h"
 #include "rclionice.h"
 #include "execmd.h"
+#include "checkretryfailed.h"
 
 // Command line options
 static int     op_flags;
@@ -418,9 +419,17 @@ int main(int argc, char **argv)
 
     bool rezero((op_flags & OPT_z) != 0);
     bool inPlaceReset((op_flags & OPT_Z) != 0);
-    int indexerFlags = ConfIndexer::IxFNone;
-    if (!(op_flags & OPT_k))
-        indexerFlags |= ConfIndexer::IxFNoRetryFailed;
+
+    // We do not retry previously failed files by default. If -k is
+    // set, we do.  If the checker script says so, we do too.
+    int indexerFlags = ConfIndexer::IxFNoRetryFailed;
+    if (op_flags & OPT_k) {
+        indexerFlags &= ~ConfIndexer::IxFNoRetryFailed; 
+    } else {
+        if (checkRetryFailed(config, false)) {
+            indexerFlags &= ~ConfIndexer::IxFNoRetryFailed; 
+        }
+    }
 
     Pidfile pidfile(config->getPidfile());
     updater = new MyUpdater(config);
@@ -538,7 +547,12 @@ int main(int argc, char **argv)
 		LOGERR(("recollindex, initial indexing pass failed, "
 			"not going into monitor mode\n"));
 		exit(1);
-	    }
+	    } else {
+                // Record success of indexing pass with failed files retries.
+                if (!(indexerFlags & ConfIndexer::IxFNoRetryFailed)) {
+                    checkRetryFailed(config, true);
+                }
+            }
 	    deleteZ(confindexer);
 	    o_reexec->insertArgs(vector<string>(1, "-n"));
 	    LOGINFO(("recollindex: reexecuting with -n after initial full pass\n"));
@@ -573,6 +587,11 @@ int main(int argc, char **argv)
 	makeIndexerOrExit(config, inPlaceReset);
 	bool status = confindexer->index(rezero, ConfIndexer::IxTAll, 
                                          indexerFlags);
+
+        // Record success of indexing pass with failed files retries.
+        if (status && !(indexerFlags & ConfIndexer::IxFNoRetryFailed)) {
+            checkRetryFailed(config, true);
+        }
 	if (!status) 
 	    cerr << "Indexing failed" << endl;
         if (!confindexer->getReason().empty())

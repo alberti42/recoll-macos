@@ -14,6 +14,7 @@ ${depth}/common/textsplit.cpp \
 ${depth}/common/unacpp.cpp \
 ${depth}/index/beaglequeue.cpp \
 ${depth}/index/bglfetcher.cpp \
+${depth}/index/checkretryfailed.cpp \
 ${depth}/index/fetcher.cpp \
 ${depth}/index/fsfetcher.cpp \
 ${depth}/index/fsindexer.cpp \

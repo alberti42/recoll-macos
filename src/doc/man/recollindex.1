@@ -125,16 +125,18 @@ is given, the database will be erased before starting. If option
 is given, the database will not be reset, but all files will be considered
 as needing reindexing (in place reset).
 .PP
-By default,
+As of version 1.21, 
 .B recollindex
-does not process again files which previously failed to index (for example
-because of a missing helper program). This behaviour is new in version
-1.21, error files were always retried in previous versions.
-If option
+usually does not process again files which previously failed to index (for
+example because of a missing helper program). If option
 .B \-k
 is given, 
 .B recollindex
-will try again to process all failed files.
+will try again to process all failed files. Please note that 
+.B recollindex
+may also decide to retry failed files if the auxiliary checking script
+defined by the "checkneedretryindexscript" configuration variable indicates
+that this should happen. 
 .PP
 If option 
 .B
