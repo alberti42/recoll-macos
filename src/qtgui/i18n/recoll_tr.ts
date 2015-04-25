@@ -606,8 +606,8 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>These are file name endings for files which will be indexed by content only 
-(no MIME type identification attempt, no decompression, no content indexing.</source>
+        <source>These are file name endings for files which will be indexed by name only 
+(no MIME type identification attempt, no decompression, no content indexing).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -631,6 +631,58 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Cannot extract document: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="unfinished">&amp;Önizle</translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open With</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="unfinished">&amp;Dosya Adını Kopyala</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="unfinished">&amp;Adresi Kopyala</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save selection to files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="unfinished">Benzer belgeleri &amp;bul</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show subdocuments / attachments</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1232,6 +1284,14 @@ Please check the desktop file</source>
         <source>Query Fragments</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>    With failed files retrying</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next update will retry previously failed files</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -1468,55 +1528,19 @@ Please check the desktop file</source>
     <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
-        <translation type="unfinished">&amp;Önizle</translation>
-    </message>
-    <message>
-        <source>&amp;Open</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">&amp;Önizle</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="unfinished">&amp;Dosya Adını Kopyala</translation>
+        <translation type="obsolete">&amp;Dosya Adını Kopyala</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="unfinished">&amp;Adresi Kopyala</translation>
-    </message>
-    <message>
-        <source>&amp;Write to File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Save selection to files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Preview P&amp;arent document/folder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Open Parent document/folder</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">&amp;Adresi Kopyala</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="unfinished">Benzer belgeleri &amp;bul</translation>
-    </message>
-    <message>
-        <source>Open &amp;Snippets window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show subdocuments / attachments</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Open With</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run Script</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Benzer belgeleri &amp;bul</translation>
     </message>
 </context>
 <context>

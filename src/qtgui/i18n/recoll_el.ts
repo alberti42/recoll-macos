@@ -624,8 +624,8 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>These are file name endings for files which will be indexed by content only 
-(no MIME type identification attempt, no decompression, no content indexing.</source>
+        <source>These are file name endings for files which will be indexed by name only 
+(no MIME type identification attempt, no decompression, no content indexing).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -650,6 +650,58 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Cannot extract document: </source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open With</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="unfinished">Αντιγραφή του &amp;URL</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="unfinished">Απο&amp;θήκευση σε</translation>
+    </message>
+    <message>
+        <source>Save selection to files</source>
+        <translation type="unfinished">Αποθήκευση της επιλογής σε αρχεία</translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="unfinished">Αναζήτηση παρό&amp;μοιων εγγράφων</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation type="unfinished">Άνοιγμα του παραθύρου απο&amp;σπασμάτων</translation>
+    </message>
+    <message>
+        <source>Show subdocuments / attachments</source>
+        <translation type="unfinished">Εμφάνιση των υπο-εγγράφων / συνημμένων</translation>
     </message>
 </context>
 <context>
@@ -1293,6 +1345,14 @@ Please check the desktop file</source>
         <source>Query Fragments</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>    With failed files retrying</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next update will retry previously failed files</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -1581,55 +1641,47 @@ Please check the desktop file</source>
     <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Προεπισκόπηση</translation>
+        <translation type="obsolete">&amp;Προεπισκόπηση</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>Ά&amp;νοιγμα</translation>
+        <translation type="obsolete">Ά&amp;νοιγμα</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Αντιγραφή ο&amp;νόματος αρχείου</translation>
+        <translation type="obsolete">Αντιγραφή ο&amp;νόματος αρχείου</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>Αντιγραφή του &amp;URL</translation>
+        <translation type="obsolete">Αντιγραφή του &amp;URL</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>Απο&amp;θήκευση σε</translation>
+        <translation type="obsolete">Απο&amp;θήκευση σε</translation>
     </message>
     <message>
         <source>Save selection to files</source>
-        <translation>Αποθήκευση της επιλογής σε αρχεία</translation>
+        <translation type="obsolete">Αποθήκευση της επιλογής σε αρχεία</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>Προεπισκόπηση του &amp;γονικού εγγράφου/αρχείου</translation>
+        <translation type="obsolete">Προεπισκόπηση του &amp;γονικού εγγράφου/αρχείου</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>Άνοιγμα του γο&amp;νικού εγγράφου/φακέλου</translation>
+        <translation type="obsolete">Άνοιγμα του γο&amp;νικού εγγράφου/φακέλου</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>Αναζήτηση παρό&amp;μοιων εγγράφων</translation>
+        <translation type="obsolete">Αναζήτηση παρό&amp;μοιων εγγράφων</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation>Άνοιγμα του παραθύρου απο&amp;σπασμάτων</translation>
+        <translation type="obsolete">Άνοιγμα του παραθύρου απο&amp;σπασμάτων</translation>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
-        <translation>Εμφάνιση των υπο-εγγράφων / συνημμένων</translation>
-    </message>
-    <message>
-        <source>Open With</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run Script</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Εμφάνιση των υπο-εγγράφων / συνημμένων</translation>
     </message>
 </context>
 <context>

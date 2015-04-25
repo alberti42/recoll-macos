@@ -652,8 +652,14 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>These are file name endings for files which will be indexed by content only 
 (no MIME type identification attempt, no decompression, no content indexing.</source>
-        <translation>Suffixes correspondants `a des fichiers qui seront indexe&apos;s par nom seulement  
+        <translation type="obsolete">Suffixes correspondants `a des fichiers qui seront indexe&apos;s par nom seulement  
 (pas d&apos;identification de type MIME, pas d&apos;ecompression, pas d&apos;indexation du contenu).</translation>
+    </message>
+    <message>
+        <source>These are file name endings for files which will be indexed by name only 
+(no MIME type identification attempt, no decompression, no content indexing).</source>
+        <translation>Suffixes sélectionnant des fichiers qui seront indexés uniquement sur leur nom
+(pas d&apos;identification de type MIME, pas de décompression, pas d&apos;indexation du contenu).</translation>
     </message>
 </context>
 <context>
@@ -677,6 +683,58 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Cannot extract document: </source>
         <translation>Impossible d&apos;extraire le document:</translation>
+    </message>
+    <message>
+        <source>&amp;Preview</source>
+        <translation>&amp;Voir contenu</translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation>&amp;Ouvrir</translation>
+    </message>
+    <message>
+        <source>Open With</source>
+        <translation>Ouvrir Avec</translation>
+    </message>
+    <message>
+        <source>Run Script</source>
+        <translation>Exécuter le Script</translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation>Copier le nom de &amp;Fichier</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation>Copier l&apos;&amp;Url</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation>&amp;Sauver sous</translation>
+    </message>
+    <message>
+        <source>Save selection to files</source>
+        <translation>Sauvegarder la sélection courante dans des fichiers</translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation>Prévisualiser le document p&amp;arent</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation>&amp;Ouvrir le document parent</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation>Chercher des documents &amp;similaires</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation>Ouvrir la fenêtre des e&amp;xtraits</translation>
+    </message>
+    <message>
+        <source>Show subdocuments / attachments</source>
+        <translation>Afficher les sous-documents et attachements</translation>
     </message>
 </context>
 <context>
@@ -1344,6 +1402,14 @@ Merci de vérifier le fichier desktop </translation>
         <source>Query Fragments</source>
         <translation>Fragments de recherche</translation>
     </message>
+    <message>
+        <source>    With failed files retrying</source>
+        <translation>Avec re-traitement des fichiers en échec</translation>
+    </message>
+    <message>
+        <source>Next update will retry previously failed files</source>
+        <translation>La prochaine mise à jour de l&apos;index essaiera de traiter les fichiers actuellement en échec</translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -1660,55 +1726,55 @@ Merci de vérifier le fichier desktop </translation>
     <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Voir contenu</translation>
+        <translation type="obsolete">&amp;Voir contenu</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>&amp;Ouvrir</translation>
+        <translation type="obsolete">&amp;Ouvrir</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Copier le nom de &amp;Fichier</translation>
+        <translation type="obsolete">Copier le nom de &amp;Fichier</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>Copier l&apos;&amp;Url</translation>
+        <translation type="obsolete">Copier l&apos;&amp;Url</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>&amp;Sauver sous</translation>
+        <translation type="obsolete">&amp;Sauver sous</translation>
     </message>
     <message>
         <source>Save selection to files</source>
-        <translation>Sauvegarder la sélection courante dans des fichiers</translation>
+        <translation type="obsolete">Sauvegarder la sélection courante dans des fichiers</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>Prévisualiser le document p&amp;arent</translation>
+        <translation type="obsolete">Prévisualiser le document p&amp;arent</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Ouvrir le document parent</translation>
+        <translation type="obsolete">&amp;Ouvrir le document parent</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>Chercher des documents &amp;similaires</translation>
+        <translation type="obsolete">Chercher des documents &amp;similaires</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation>Ouvrir la fenêtre des e&amp;xtraits</translation>
+        <translation type="obsolete">Ouvrir la fenêtre des e&amp;xtraits</translation>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
-        <translation>Afficher les sous-documents et attachements</translation>
+        <translation type="obsolete">Afficher les sous-documents et attachements</translation>
     </message>
     <message>
         <source>Open With</source>
-        <translation>Ouvrir Avec</translation>
+        <translation type="obsolete">Ouvrir Avec</translation>
     </message>
     <message>
         <source>Run Script</source>
-        <translation>Exécuter le Script</translation>
+        <translation type="obsolete">Exécuter le Script</translation>
     </message>
 </context>
 <context>
@@ -1799,7 +1865,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
 Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
 </source>
-        <translation type="unfinished">Entrer une expression du langage de recherche. Indications:&lt;br&gt;
+        <translation>Entrer une expression du langage de recherche. Indications:&lt;br&gt;
 &lt;i&gt;term1 term2&lt;/i&gt; : &apos;term1&apos; et &apos;term2&apos; dans un champ quelconque.&lt;br&gt;
 &lt;i&gt;field:term1&lt;/i&gt; : &apos;term1&apos; dans le champ &apos;field&apos;.&lt;br&gt;
  Standard field names/synonyms:&lt;br&gt;
@@ -3119,11 +3185,11 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Show system tray icon.</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher l&apos;icone dans la barre d&apos;état système.</translation>
     </message>
     <message>
         <source>Close to tray instead of exiting.</source>
-        <translation type="unfinished"></translation>
+        <translation>Réduire dans la barre d&apos;état au lieu de quitter.</translation>
     </message>
 </context>
 </TS>

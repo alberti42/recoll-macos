@@ -649,8 +649,8 @@ Der Standardwert ist &quot;Nein&quot;, um doppelte Indizierung zu vermeiden.</tr
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>These are file name endings for files which will be indexed by content only 
-(no MIME type identification attempt, no decompression, no content indexing.</source>
+        <source>These are file name endings for files which will be indexed by name only 
+(no MIME type identification attempt, no decompression, no content indexing).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -675,6 +675,58 @@ Der Standardwert ist &quot;Nein&quot;, um doppelte Indizierung zu vermeiden.</tr
     <message>
         <source>Cannot extract document: </source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="unfinished">&amp;Vorschau</translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished">&amp;Öffnen</translation>
+    </message>
+    <message>
+        <source>Open With</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="unfinished">&amp;Dateinamen kopieren</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="unfinished">&amp;URL kopieren</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="unfinished">&amp;Schreibe in Datei</translation>
+    </message>
+    <message>
+        <source>Save selection to files</source>
+        <translation type="unfinished">Auswahl in Dateien sichern</translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="unfinished">Vorschau des &amp;übergeordneten Dokuments/Ordners</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished">Ö&amp;ffnen des übergeordneten Dokuments/Ordners</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="unfinished">&amp;Ähnliche Dokumente finden</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation type="unfinished">Öffne &amp;Schnipsel-Fenster</translation>
+    </message>
+    <message>
+        <source>Show subdocuments / attachments</source>
+        <translation type="unfinished">Untergeordnete Dokumente / Anhänge anzeigen</translation>
     </message>
 </context>
 <context>
@@ -1327,6 +1379,14 @@ Please check the desktop file</source>
         <source>Query Fragments</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>    With failed files retrying</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next update will retry previously failed files</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -1624,55 +1684,47 @@ Please check the desktop file</source>
     <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Vorschau</translation>
+        <translation type="obsolete">&amp;Vorschau</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>&amp;Öffnen</translation>
+        <translation type="obsolete">&amp;Öffnen</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>&amp;Dateinamen kopieren</translation>
+        <translation type="obsolete">&amp;Dateinamen kopieren</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>&amp;URL kopieren</translation>
+        <translation type="obsolete">&amp;URL kopieren</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>&amp;Schreibe in Datei</translation>
+        <translation type="obsolete">&amp;Schreibe in Datei</translation>
     </message>
     <message>
         <source>Save selection to files</source>
-        <translation>Auswahl in Dateien sichern</translation>
+        <translation type="obsolete">Auswahl in Dateien sichern</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>Vorschau des &amp;übergeordneten Dokuments/Ordners</translation>
+        <translation type="obsolete">Vorschau des &amp;übergeordneten Dokuments/Ordners</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>Ö&amp;ffnen des übergeordneten Dokuments/Ordners</translation>
+        <translation type="obsolete">Ö&amp;ffnen des übergeordneten Dokuments/Ordners</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>&amp;Ähnliche Dokumente finden</translation>
+        <translation type="obsolete">&amp;Ähnliche Dokumente finden</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation>Öffne &amp;Schnipsel-Fenster</translation>
+        <translation type="obsolete">Öffne &amp;Schnipsel-Fenster</translation>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
-        <translation>Untergeordnete Dokumente / Anhänge anzeigen</translation>
-    </message>
-    <message>
-        <source>Open With</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run Script</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Untergeordnete Dokumente / Anhänge anzeigen</translation>
     </message>
 </context>
 <context>

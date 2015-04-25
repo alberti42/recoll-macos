@@ -646,8 +646,8 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>These are file name endings for files which will be indexed by content only 
-(no MIME type identification attempt, no decompression, no content indexing.</source>
+        <source>These are file name endings for files which will be indexed by name only 
+(no MIME type identification attempt, no decompression, no content indexing).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -672,6 +672,58 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     <message>
         <source>Cannot extract document: </source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="unfinished">&amp;Náhled</translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished">&amp;Otevřít</translation>
+    </message>
+    <message>
+        <source>Open With</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="unfinished">Kopírovat název &amp;souboru</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="unfinished">Kopírovat adresu (&amp;URL)</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="unfinished">&amp;Zapsat do souboru</translation>
+    </message>
+    <message>
+        <source>Save selection to files</source>
+        <translation type="unfinished">Uložit výběr do souborů</translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="unfinished">Náhled na &amp;rodičovský dokument/složku</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished">&amp;Otevřít rodičovský dokument/složku</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="unfinished">Najít &amp;podobné dokumenty</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation type="unfinished">Otevřít okno s úr&amp;yvky</translation>
+    </message>
+    <message>
+        <source>Show subdocuments / attachments</source>
+        <translation type="unfinished">Ukázat podřízené dokumenty/přílohy</translation>
     </message>
 </context>
 <context>
@@ -1331,6 +1383,14 @@ Please check the desktop file</source>
         <source>Query Fragments</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>    With failed files retrying</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next update will retry previously failed files</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -1639,55 +1699,47 @@ Please check the desktop file</source>
     <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Náhled</translation>
+        <translation type="obsolete">&amp;Náhled</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>&amp;Otevřít</translation>
+        <translation type="obsolete">&amp;Otevřít</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Kopírovat název &amp;souboru</translation>
+        <translation type="obsolete">Kopírovat název &amp;souboru</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>Kopírovat adresu (&amp;URL)</translation>
+        <translation type="obsolete">Kopírovat adresu (&amp;URL)</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>&amp;Zapsat do souboru</translation>
+        <translation type="obsolete">&amp;Zapsat do souboru</translation>
     </message>
     <message>
         <source>Save selection to files</source>
-        <translation>Uložit výběr do souborů</translation>
+        <translation type="obsolete">Uložit výběr do souborů</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>Náhled na &amp;rodičovský dokument/složku</translation>
+        <translation type="obsolete">Náhled na &amp;rodičovský dokument/složku</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Otevřít rodičovský dokument/složku</translation>
+        <translation type="obsolete">&amp;Otevřít rodičovský dokument/složku</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>Najít &amp;podobné dokumenty</translation>
+        <translation type="obsolete">Najít &amp;podobné dokumenty</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation>Otevřít okno s úr&amp;yvky</translation>
+        <translation type="obsolete">Otevřít okno s úr&amp;yvky</translation>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
-        <translation>Ukázat podřízené dokumenty/přílohy</translation>
-    </message>
-    <message>
-        <source>Open With</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run Script</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Ukázat podřízené dokumenty/přílohy</translation>
     </message>
 </context>
 <context>
