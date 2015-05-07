@@ -251,6 +251,33 @@ static bool createstemdb(RclConfig *config, const string &lang)
     return confindexer->createStemDb(lang);
 }
 
+static bool checktopdirs(RclConfig *config)
+{
+    vector<string> tdl;
+    if (!config->getConfParam("topdirs", &tdl)) {
+        cerr << "No 'topdirs' parameter in configuration\n";
+        LOGERR(("recollindex:No 'topdirs' parameter in configuration\n"));;
+        return false;
+    }
+
+    for (vector<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
+	*it = path_tildexpand(*it);
+        if (!it->size() || (*it)[0] != '/') {
+            if ((*it)[0] == '~') {
+                cerr << "Tilde expansion failed: " << *it << endl;
+                LOGERR(("recollindex: tilde expansion failed: %s\n",
+                        it->c_str()));
+            } else {
+                cerr << "Not an absolute path: " << *it << endl;
+                LOGERR(("recollindex: not an absolute path: %s\n",
+                        it->c_str()));
+            }
+            return false;
+        }
+    }
+    return true;
+}
+
 static const char *thisprog;
 
 static const char usage [] =
@@ -398,6 +425,9 @@ int main(int argc, char **argv)
 	exit(1);
     }
     o_reexec->atexit(cleanup);
+
+    if (!checktopdirs(config))
+        exit(1);
 
     string rundir;
     config->getConfParam("idxrundir", rundir);
