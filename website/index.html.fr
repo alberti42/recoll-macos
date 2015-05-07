@@ -49,7 +49,7 @@
       <p><span class="application">Recoll</span> est un logiciel libre
 	gratuit, dont le code source est disponible sous licence GPL.
 	La dernière version est 
-        <a class="important" href="download.html">1.20.3</a>
+        <a class="important" href="download.html">1.20.6</a>
 	(<a href="release-1.20.html">notes sur la version, en
 	anglais</a>)</p> 
 
@@ -106,9 +106,9 @@
       <h2>Nouvelles: </h2>
       <dl>
 
-        <dt>2015-04-05</dt>
-        <dd>Recoll 1.20.5 est identique à 1.20.4, à quelques
-          modifications de compatibilité Qt 5 près. Testé avec Qt
+        <dt>2015-04-25</dt>
+        <dd>Recoll 1.20.6 contient des corrections dans le traitement
+          des fichiers compressés, et la compatibilité Qt 5 (Ok avec Qt
           5.3.2, ne fonctionne pas avec Qt 5.2.</dd>
 
         <dt>2015-03-30</dt> 
@@ -154,7 +154,9 @@
         <dt>2012-11-05</dt><dd>Recoll 1.18.1 est disponible. Cette
           version peut faire des recherches sensibles aux majuscules et
           aux accents, donner un accès direct à la bonne page pour les
-          documents PDF (uniquement avec <b>evince</b>), elle a un
+          documents PDF (uniquement avec <b>evince</b> par défaut,
+          mais il y a une ligne d'example pour qpdfview dans le
+          fichier de config par défaut), elle a un
           historique des recherches complexes, et plein d'autres
           petites améliorations. Les <a href="release-1.18.html">notes
             de version</a> (en anglais). <span class="important">Cette

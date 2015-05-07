@@ -58,7 +58,7 @@
       </ul>
 
       <p>The current <span class="application">Recoll</span> version is
-	<a href="download.html">1.20.4</a> 
+	<a href="download.html">1.20.6</a> 
 	(<a href="release-1.20.html">Release notes</a>,
         <a href="BUGS.html">known
           bugs</a>, <a href="release-history.html">Release history</a>).</p>
@@ -99,11 +99,14 @@
       
       <dl>
 
-        <dt>2015-04-05</dt>
-        <dd>Recoll now builds and runs with Qt 5 (5.3.2 ok, 5.2 not so
-          much). Released 1.20.5, which is exactly 1.20.4 with Qt 5
-          tweaks, and still compatible with Qt 4 of course (no reason
-          to upgrade if you are using Qt 4).</dd>
+        <dt>2015-04-25</dt>
+
+        <dd>Recoll 1.20.6 is out, with mostly small fixes to
+          compressed file handling, which may make a big difference in
+          some cases. See the <a href="release-1.20.html">release
+          notes</a>. Of course it also incorportates the Qt 5
+          compatibility from 1.20.5 (Qt
+          5.3.2 ok, 5.2 does not work).</dd>
 
         <dt>2015-03-30</dt> 
         <dd>Recoll 1.20.4 released. This fixes real time indexing of

@@ -59,6 +59,17 @@
 	  <h2><a name="minor_releases">Minor releases at a glance</a></h2>
 
 	  <ul>
+            <li>1.20.6 fixes some decompression issues with serious
+              performance and system load consequences in some cases
+              (depending on data): minimum checking that enough temp
+              space is available before uncompressing, no need to
+              uncompress tar.gz files. Also: rclscribus fixes, Danish
+              translation and fix messages in two places which were
+              not translated.<br/>
+              Uncompressing big files to /tmp for nothing (and re-doing it on
+              the next indexing pass...) was, I believe the main
+              remaining reason why Recoll indexing could cause system
+              performance issues.</li>
             <li>1.20.5 is 1.20.4 with a few Qt 5 compatibility
               tweaks. Builds and runs with Qt 5.3.2, fails with 5.2.</li>
 	    <li>1.20.4 has a fix to skip compress file system images
@@ -71,6 +82,7 @@
 	      when starting up). It also adds systray capability to
 	      the GUI.</li> 
 	  </ul>
+
 
       <h2>Changes in Recoll 1.20.1</h2>
 

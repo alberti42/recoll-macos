@@ -176,7 +176,16 @@
           the top of <span class="command">rclpdf</span> (usually
           found
           in <span class="filename">/usr/share/recoll/filters</span>)
-          for how to enable this and configuration details.
+          for how to enable this and configuration details.<br/>
+          <em>Opening PDFs at the right page</em>: the default
+          configuration uses <span class="command">evince</span>,
+          which has options for direct page access and pre-setting the
+          search strings (hits will be highlighted). There is an
+          example line in the default mimeview for doing the same
+          thing with <span class="command">qpdfview</span>
+          (<span class="literal">qpdfview --search %s %f#%p</span>).
+          Okular does not have a search string option (but it does
+          have a page number one). 
         </li> 
 
         <li><span class="application">msword</span> with <a href=
