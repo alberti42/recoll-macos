@@ -1,136 +1,224 @@
-%define name recoll
-%define version 3152
-%define release 0
-
-Name:           %{name}
-Version:        %{version}
-Release:        %{release}
-
-Summary:	Desktop Full Text Search Tool with a QT Gui
-Source0:	http://www.recoll.org/%{name}-%{version}.tar.gz
-URL:            http://www.recoll.org/
+Summary:        Desktop full text search tool with Qt GUI
+Name:           recoll
+Version:        1.20.6
+Release:        1%{?dist}
 Group:          Applications/Databases
-
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-buildroot
-License:	GPL
-
-# libxapian-devel or xapian-core-devel?
-BuildRequires: libqt4-devel zlib-devel libxapian-devel libuuid-devel python-devel
+License:        GPLv2+
+URL:            http://www.lesbonscomptes.com/recoll/
+Source0:        http://www.lesbonscomptes.com/recoll/recoll-%{version}.tar.gz
+BuildRequires:  qt-devel
+BuildRequires:  qtwebkit-devel
+BuildRequires:  python-devel
+BuildRequires:  zlib-devel
+BuildRequires:  aspell-devel
+BuildRequires:  xapian-core-devel
+BuildRequires:  desktop-file-utils
+Requires:       xdg-utils
 
 %description
 Recoll is a personal full text search package for Linux, FreeBSD and
-other Unix systems. It is based on a very strong backend (Xapian), for
+other Unix systems. It is based on a very strong back end (Xapian), for
 which it provides an easy to use, feature-rich, easy administration
 interface.
-
-# ---------------------------------------------------------------------------
+%global __provides_exclude_from ^%{_libdir}/recoll/librecoll\\.so.*$
+%global __requires_exclude      ^librecoll\\.so.*$
 
 %prep
-%setup -q
-
-# ---------------------------------------------------------------------------
+%setup -q -n %{name}-%{version}
+chmod 0644 utils/{conftree.cpp,conftree.h,debuglog.cpp,debuglog.h}
 
 %build
-
+export QMAKE=qmake-qt4
 %configure
-make %{?_smp_mflags} 
-
-# ---------------------------------------------------------------------------
+make %{?_smp_mflags}
 
 %install
-rm -rf $RPM_BUILD_ROOT
-%makeinstall
-%{__chmod} 0755 $RPM_BUILD_ROOT/%{_libdir}/%{name}/lib%{name}.so.%{version}
+make install DESTDIR=%{buildroot} STRIP=/bin/true INSTALL='install -p'
 
-# ---------------------------------------------------------------------------
+desktop-file-install --delete-original \
+  --dir=%{buildroot}/%{_datadir}/applications \
+  %{buildroot}/%{_datadir}/applications/%{name}-searchgui.desktop
 
-%clean
-rm -rf $RPM_BUILD_ROOT
+# use /usr/bin/xdg-open
+rm -f %{buildroot}/usr/share/recoll/filters/xdg-open
 
-# ---------------------------------------------------------------------------
+# fix perms
+chmod 0755 %{buildroot}/usr/share/recoll/filters/rclexecm.py
+chmod 0755 %{buildroot}%{_libdir}/recoll/librecoll.so.*
+
+%post
+touch --no-create %{_datadir}/icons/hicolor
+if [ -x %{_bindir}/gtk-update-icon-cache ] ; then
+  %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor
+fi
+if [ -x %{_bindir}/update-desktop-database ] ; then
+  %{_bindir}/update-desktop-database &> /dev/null
+fi
+exit 0
+
+%postun
+touch --no-create %{_datadir}/icons/hicolor 
+if [ -x %{_bindir}/gtk-update-icon-cache ] ; then
+  %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor
+fi
+if [ -x %{_bindir}/update-desktop-database ] ; then
+  %{_bindir}/update-desktop-database &> /dev/null
+fi
+exit 0
 
 %files
-%defattr(-,root,root,-)
-%{_bindir}/*
-%{python_sitearch}/
-%{_libdir}/%{name}
-%{_libdir}/%{name}/lib%{name}.so.%{version}
+%doc COPYING ChangeLog README
+%{_bindir}/%{name}
+%{_bindir}/%{name}index
 %{_datadir}/%{name}
-%{_datadir}/applications/recoll-searchgui.desktop
-%{_datadir}/icons/hicolor/48x48/apps/recoll.png
-%{_datadir}/pixmaps/recoll.png
-%{_mandir}/man1/recoll*
-%{_mandir}/man5/recoll*
-%if 0%{?suse_version} > 1120
-%dir %{_datadir}/applications
-%dir %{_datadir}/pixmaps
-%endif
-%dir %{_datadir}/icons/hicolor/48x48/apps
-%dir %{_datadir}/icons/hicolor/48x48
-%dir %{_datadir}/icons/hicolor
-
-# ---------------------------------------------------------------------------
+%{_datadir}/appdata/%{name}.appdata.xml
+%{_datadir}/applications/%{name}-searchgui.desktop
+%{_datadir}/icons/hicolor/48x48/apps/%{name}.png
+%{_datadir}/pixmaps/%{name}.png
+%{_libdir}/recoll
+%{python_sitearch}/recoll
+%{python_sitearch}/Recoll*.egg-info
+%{_mandir}/man1/%{name}.1*
+%{_mandir}/man1/recollq.1*
+%{_mandir}/man1/%{name}index.1*
+%{_mandir}/man5/%{name}.conf.5*
 
 %changelog
-* Thu May 17 2012 Jean-Francois Dockes <jfd@recoll.org> 1.17.2-0
-- Update to release 1.17.2
-* Sun Mar 18 2012 Jean-Francois Dockes <jfd@recoll.org> 1.17.0-0
-- Update to release 1.17.0
-* Mon Nov 07 2011 Jean-Francois Dockes <jfd@recoll.org> 1.16.2-0
-- Update to release 1.16.2
-* Mon May 02 2011 Jean-Francois Dockes <jfd@recoll.org> 1.15.8-0
-- Update to release 1.15.8
-* Fri Mar 04 2011 Jean-Francois Dockes <jfd@recoll.org> 1.15.5-0
-- Update to release 1.15.2
-* Thu Feb 15 2011 Jean-Francois Dockes <jfd@recoll.org> 1.15.2-0
-- Update to release 1.15.2
-* Thu Feb 2 2011 Jean-Francois Dockes <jfd@recoll.org> 1.15.0-0
-- Update to release 1.15.0
-* Thu Oct 28 2010 Jean-Francois Dockes <jfd@recoll.org> 1.14.3-1
-- Update to release 1.14.3
-* Thu Oct 28 2010 Jean-Francois Dockes <jfd@recoll.org> 1.14.2-1
-- Rebuilt with a Xapian built with --disable-sse
-* Sat Sep 24 2010 Jean-Francois Dockes <jfd@recoll.org> 1.14.2-0
-- Update to release 1.14.2
-* Thu Apr 14 2010 Jean-Francois Dockes <jfd@recoll.org> 1.13.04-1
-- Update to release 1.13.04
+* Sat Apr 25 2015 Jean-Francois Dockes <jf@dockes.org> - 1.20.6-1
+- 1.20.6
+
+* Fri Dec 19 2014 Jean-Francois Dockes <jf@dockes.org> - 1.20.1-1
+- 1.20.1
+
+* Sun Nov 09 2014 Jean-Francois Dockes <jf@dockes.org> - 1.19.14p2-1
+- 1.19.14p2
+
+* Sun Aug 17 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.19.13-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
+* Sun Jun 08 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.19.13-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
+* Tue May 06 2014 Terje Rosten <terje.rosten@ntnu.no> - 1.19.13-1
+- 1.19.13
+
+* Mon Jan 20 2014 Terje Rosten <terje.rosten@ntnu.no> - 1.19.11-1
+- 1.19.11
+
+* Mon Nov 11 2013 Terje Rosten <terje.rosten@ntnu.no> - 1.19.9-1
+- 1.19.9
+
+* Tue Nov 05 2013 Terje Rosten <terje.rosten@ntnu.no> - 1.19.8-1
+- 1.19.8
+
+* Sun Aug 04 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.19.4-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
+
+* Wed Jun 12 2013 Terje Rosten <terje.rosten@ntnu.no> - 1.19.4-2
+- Fix filter setup
+
+* Mon Jun 10 2013 Terje Rosten <terje.rosten@ntnu.no> - 1.19.4-1
+- 1.19.4
+
+* Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.18.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
+
+* Mon Nov 19 2012 Terje Rosten <terje.rosten@ntnu.no> - 1.18.1-1
+- 1.18.1
+
+* Sat Jul 21 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.17.3-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
+* Wed May 30 2012 Terje Rosten <terje.rosten@ntnu.no> - 1.17.3-1
+- 1.17.3
+
+* Sat Mar 31 2012 Terje Rosten <terje.rosten@ntnu.no> - 1.17.1-1
+- 1.17.1
+
+* Sun Mar 25 2012 Terje Rosten <terje.rosten@ntnu.no> - 1.17-1
+- 1.17
+
+* Tue Feb 28 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.16.2-3
+- Rebuilt for c++ ABI breakage
+
+* Wed Feb 15 2012 Terje Rosten <terje.rosten@ntnu.no> - 1.16.2-2
+- Add patch to build with gcc 4.7
+
+* Wed Feb 01 2012 Terje Rosten <terje.rosten@ntnu.no> - 1.16.2-1
+- 1.16.2
+
+* Sat Jan 14 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.16.1-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
+* Mon Oct 24 2011 Terje Rosten <terje.rosten@ntnu.no> - 1.16.1-2
+- Add patch to fix crash (bz #747472)
+
+* Tue Oct 18 2011 Terje Rosten <terje.rosten@ntnu.no> - 1.16.1-1
+- 1.16.1
+
+* Tue May 24 2011 Terje Rosten <terje.rosten@ntnu.no> - 1.15.8-2
+- add patch from upstream to fix crash.
+
+* Sun May 08 2011 Terje Rosten <terje.rosten@ntnu.no> - 1.15.8-1
+- 1.15.8
+
+* Wed Feb 09 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.14.4-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
+* Fri Jan 28 2011 Terje Rosten <terje.rosten@ntnu.no> - 1.14.4-1
+- 1.14.4
+
+* Mon Nov 15 2010 Terje Rosten <terje.rosten@ntnu.no> - 1.14.2-2
+- Add patch to fix #631704
+
+* Sun Nov  7 2010 Terje Rosten <terje.rosten@ntnu.no> - 1.14.2-1
+- 1.14.2
+
+* Thu Jul 15 2010 Terje Rosten <terje.rosten@ntnu.no> - 1.13.04-6
+- add patch to build with xapian 1.2 (from J.F. Dockes, thanks)
+
+* Sat Jul 10 2010 Terje Rosten <terje.rosten@ntnu.no> - 1.13.04-5
+- use system xdg-open
+- trim chagenlog
+
+* Fri Jul  9 2010 Terje Rosten <terje.rosten@ntnu.no> - 1.13.04-4
+- fix some review comments
+
+* Mon May 10 2010 Terje Rosten <terje.rosten@ntnu.no> - 1.13.04-3
+- use version macro in source url
+- don't strip bins, giving non empty debuginfo package
+- more explicit file listing
+- try to preserve timestamps 
+- use proper name for spec file
+- fix changelog
+- license seems to be GPLv2+
+- include some %%doc files
+- add buildroot tag
+- some source add execute bit set
+- explicit enable inotify
+- add aspell-devel to bulldreq
+- make with _smp_mflags seems to work
+- add post scripts
+- add patch to build gui with correct flags (ref: 338791)
+
+* Sun May  9 2010  J.F. Dockes <jfd@recoll.org> 1.13.04-2
+- bumped the release number to issue new rpms for fc10
+
+* Sun May  9 2010  J.F. Dockes 1.13.04
+- updated to recoll release 1.13.04 
+
+* Fri Feb 12 2010 Terry Duell 1.13.02
+- updated to release 1.13.02
+
+* Tue Jan 12 2010 Terry Duell  1.13.01-3
+- updated to fix Fedora desktop-file-install and install icon
+
+* Sun Jan 10 2010 Jean-Francois Dockes <jfd@recoll.org> 1.13.01-2
+- updated for recent fedoras: depend on xapian packages, use qt4
+
 * Thu Jan 07 2010 Jean-Francois Dockes <jfd@recoll.org> 1.13.01-1
-- Update to release 1.13.01
-* Thu Dec 10 2009 Jean-Francois Dockes <jfd@recoll.org> 1.12.4-1
-- Update to release 1.12.4
-* Wed Oct 28 2009 Jean-Francois Dockes <jfd@recoll.org> 1.12.3-1
-- Update to release 1.12.3
-* Tue Sep 20 2009 Jean-Francois Dockes <jfd@recoll.org> 1.12.2-1
-- Update to release 1.12.0
-* Thu Jan 29 2009 Jean-Francois Dockes <jfd@recoll.org> 1.12.0-1
-- Update to release 1.12.0
-* Mon Oct 13 2008 Jean-Francois Dockes <jfd@recoll.org> 1.11.0-1
-- Update to release 1.11.0
-* Thu Sep 11 2008 Jean-Francois Dockes <jfd@recoll.org> 1.10.6-1
-- Update to release 1.10.6
-* Thu May 27 2008 Jean-Francois Dockes <jfd@recoll.org> 1.10.2-1
-- Update to release 1.10.2
-* Thu Jan 31 2008 Jean-Francois Dockes <jfd@recoll.org> 1.10.1-1
-- Update to release 1.10.1
-* Wed Nov 21 2007 Jean-Francois Dockes <jfd@recoll.org> 1.10.0-1
-- Update to release 1.10.0
-* Tue Sep 11 2007 Jean-Francois Dockes <jfd@recoll.org> 1.9.0-1
-- Update to release 1.9.0
-* Tue Mar 6 2007 Jean-Francois Dockes <jfd@recoll.org> 1.8.1-1
-- Update to release 1.8.1
-* Mon Jan 15 2007 Jean-Francois Dockes <jfd@recoll.org> 1.7.5-1
-- Update to release 1.7.5
-* Mon Jan 08 2007 Jean-Francois Dockes <jfd@recoll.org> 1.7.3-1
-- Update to release 1.7.3
-* Tue Nov 28 2006 Jean-Francois Dockes <jfd@recoll.org> 1.6.1-1
-- Update to release 1.6.1
-* Mon Oct 2 2006 Jean-Francois Dockes <jfd@recoll.org> 1.4.3-1
-- Update to release 1.5.3
-* Sun May 7 2006 Jean-Francois Dockes <jfd@recoll.org> 1.4.3-1
-- Update to release 1.4.3
-* Fri Mar 31 2006 Jean-Francois Dockes <jfd@recoll.org> 1.3.3-1
-- Update to release 1.3.3
-* Thu Feb  2 2006 Jean-Francois Dockes <jfd@recoll.org> 1.2.2-1
-- Update to release 1.2.2
-* Thu Jan 10 2006 Jean-Francois Dockes <jfd@recoll.org> 1.1.0-1
-- Initial packaging
+- update to release 1.13.01
+
+* Wed Feb  1 2006 Jean-Francois Dockes <jfd@recoll.org> 1.2.0-1
+- initial packaging
+

@@ -1,3 +1,13 @@
+kio-recoll (1.20.6-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Increase the default maximum number of entries displayed in a directory
+    window (can be adjusted with the kio_max_direntries configuration
+    variable). 
+  * Display entries incrementally instead of sending the whole
+    list at once.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Sat, 25 Apr 2015 14:47:00 +0200
+
 kio-recoll (1.20.1-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
   * Updated package to version 1.20.1
  -- Jean-Francois Dockes <jf@dockes.org>  Fri, 19 Dec 2014 08:14:00 +0200

@@ -12,7 +12,7 @@ CFLAGS = -Wall -g
 #LDFLAGS = -Wl,-z,defs
 
 #build qt4 UI only
-export QMAKE=qmake-qt4
+#export QMAKE=qmake-qt4
 
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0

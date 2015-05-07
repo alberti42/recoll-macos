@@ -4,7 +4,7 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.20.4
+RCLVERS=1.20.6
 LENSVERS=1.19.10.3543
 SCOPEVERS=1.20.2.4
 PPAVERS=1
@@ -42,7 +42,7 @@ check_recoll_orig()
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
 series="precise trusty utopic vivid"
-#series=precise
+#series=trusty
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -70,8 +70,8 @@ for series in $series ; do
 done
 
 ### KIO
-series="precise trusty utopic"
-series=
+series="precise trusty utopic vivid"
+#series=trusty
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}

@@ -1,6 +1,6 @@
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.20.1
+Version:        1.20.6
 Release:        1%{?dist}
 Group:          Applications/Databases
 License:        GPLv2+
@@ -84,6 +84,9 @@ exit 0
 %{_mandir}/man5/%{name}.conf.5*
 
 %changelog
+* Sat Apr 25 2015 Jean-Francois Dockes <jf@dockes.org> - 1.20.6-1
+- 1.20.6
+
 * Fri Dec 19 2014 Jean-Francois Dockes <jf@dockes.org> - 1.20.1-1
 - 1.20.1
 

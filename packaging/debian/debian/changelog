@@ -1,3 +1,16 @@
+recoll (1.20.6-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * Fix some decompression issues with serious performance and
+    system load consequences in some cases (depending on data): minimum
+    checking that enough temp space is available before uncompressing, no
+    need to uncompress tar.gz files, set a default of 20 MBs for
+    maxcompressedfilekbs.
+  * rclscribus fixes.
+  * GUI messages: Danish translation and fix 2 dialogs which were not
+    translated improvements.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Sat, 25 Apr 2015 14:36:00 +0200
+
 recoll (1.20.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * Should have been in 1.20.3: skip compressed fs image files like xxx.img.gz
