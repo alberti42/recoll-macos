@@ -37,6 +37,9 @@ application/x-kword = kword %f
 application/x-abiword = abiword %f
 
 application/pdf  = evince --page-index=%p --find=%s %f
+# Or:
+#application/pdf  = qpdfview --search %s %f#%p
+
 application/postscript = evince --page-index=%p --find=%s %f
 application/x-dvi = evince --page-index=%p --find=%s  %f
 
