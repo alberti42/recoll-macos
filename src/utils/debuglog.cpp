@@ -398,10 +398,14 @@ DebugLog *getdbl()
 #else /* TEST_DEBUGLOG */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+
 #include "debuglog.h"
 
 #if DEBUGLOG_USE_THREADS
-#define TEST_THREADS
+//#define TEST_THREADS
 #endif
 
 #ifdef TEST_THREADS 

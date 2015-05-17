@@ -77,6 +77,9 @@ RclConfig *recollinit(RclInitFlags flags,
 
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
+    if (getenv("RECOLL_LOGDATE"))
+        DebugLog::getdbl()->logdate(1);
+
     RclConfig *config = new RclConfig(argcnf);
     if (!config || !config->ok()) {
 	reason = "Configuration could not be built:\n";
