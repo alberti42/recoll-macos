@@ -15,7 +15,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #ifndef TEST_EXECMD
-#include "autoconfig.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,8 +31,6 @@
 
 #include <vector>
 #include <string>
-#include <sstream>
-#include <iostream>
 
 #include "execmd.h"
 
@@ -219,8 +217,8 @@ public:
                         grp, errno));
             }
 	}
-	m_parent->m_tocmd.release();
-	m_parent->m_fromcmd.release();
+	m_parent->m_tocmd.reset();
+	m_parent->m_fromcmd.reset();
 	pthread_sigmask(SIG_UNBLOCK, &m_parent->m_blkcld, 0);
 	m_parent->reset();
     }
@@ -322,8 +320,8 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
 {
     { // Debug and logging
 	string command = cmd + " ";
-	for (vector<string>::const_iterator it = args.begin();it != args.end();
-	     it++) {
+	for (vector<string>::const_iterator it = args.begin();
+             it != args.end(); it++) {
 	    command += "{" + *it + "} ";
 	}
 	LOGDEB(("ExecCmd::startExec: (%d|%d) %s\n", 
@@ -539,7 +537,7 @@ int ExecCmd::doexec(const string &cmd, const vector<string>& args,
     if (input || output) {
         // Setup output
 	if (output) {
-	    NetconCli *oclicon = dynamic_cast<NetconCli *>(m_fromcmd.getptr());
+	    NetconCli *oclicon = dynamic_cast<NetconCli *>(m_fromcmd.get());
 	    if (!oclicon) {
 		LOGERR(("ExecCmd::doexec: no connection from command\n"));
 		return -1;
@@ -548,11 +546,11 @@ int ExecCmd::doexec(const string &cmd, const vector<string>& args,
 				 (new ExecReader(output, m_advise)));
 	    myloop.addselcon(m_fromcmd, Netcon::NETCONPOLL_READ);
 	    // Give up ownership 
-	    m_fromcmd.release();
+	    m_fromcmd.reset();
 	} 
         // Setup input
 	if (input) {
-	    NetconCli *iclicon = dynamic_cast<NetconCli *>(m_tocmd.getptr());
+	    NetconCli *iclicon = dynamic_cast<NetconCli *>(m_tocmd.get());
 	    if (!iclicon) {
 		LOGERR(("ExecCmd::doexec: no connection from command\n"));
 		return -1;
@@ -561,7 +559,7 @@ int ExecCmd::doexec(const string &cmd, const vector<string>& args,
 				 (new ExecWriter(input, m_provide)));
 	    myloop.addselcon(m_tocmd, Netcon::NETCONPOLL_WRITE);
 	    // Give up ownership 
-	    m_tocmd.release();
+	    m_tocmd.reset();
 	}
 
         // Do the actual reading/writing/waiting
@@ -604,7 +602,7 @@ int ExecCmd::doexec(const string &cmd, const vector<string>& args,
 
 int ExecCmd::send(const string& data)
 {
-    NetconCli *con = dynamic_cast<NetconCli *>(m_tocmd.getptr());
+    NetconCli *con = dynamic_cast<NetconCli *>(m_tocmd.get());
     if (con == 0) {
 	LOGERR(("ExecCmd::send: outpipe is closed\n"));
 	return -1;
@@ -625,7 +623,7 @@ int ExecCmd::send(const string& data)
 
 int ExecCmd::receive(string& data, int cnt)
 {
-    NetconCli *con = dynamic_cast<NetconCli *>(m_fromcmd.getptr());
+    NetconCli *con = dynamic_cast<NetconCli *>(m_fromcmd.get());
     if (con == 0) {
 	LOGERR(("ExecCmd::receive: inpipe is closed\n"));
 	return -1;
@@ -652,7 +650,7 @@ int ExecCmd::receive(string& data, int cnt)
 
 int ExecCmd::getline(string& data)
 {
-    NetconCli *con = dynamic_cast<NetconCli *>(m_fromcmd.getptr());
+    NetconCli *con = dynamic_cast<NetconCli *>(m_fromcmd.get());
     if (con == 0) {
 	LOGERR(("ExecCmd::receive: inpipe is closed\n"));
 	return -1;
@@ -714,7 +712,7 @@ bool ExecCmd::maybereap(int *status)
 }
 
 // Static
-bool ExecCmd::backtick(const std::vector<std::string> cmd, std::string& out)
+bool ExecCmd::backtick(const vector<string> cmd, string& out)
 {
     vector<string>::const_iterator it = cmd.begin();
     it++;
