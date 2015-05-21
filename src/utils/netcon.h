@@ -18,9 +18,9 @@
  */
 #include <sys/time.h>
 #include <map>
-#include "refcntr.h"
+#include <string>
 
-using std::map;
+#include "refcntr.h"
 
 /// A set of classes to manage client-server communication over a
 /// connection-oriented network, or a pipe.
@@ -45,8 +45,8 @@ public:
     enum Event {NETCONPOLL_READ = 0x1, NETCONPOLL_WRITE=0x2};
     Netcon() 
 	: m_peer(0), m_fd(-1), m_ownfd(true), m_didtimo(0), m_wantedEvents(0),
-	  m_loop(0)
-    {}
+	  m_loop(0) {
+    }
     virtual ~Netcon();
     /// Remember whom we're talking to. We let external code do this because 
     /// the application may have a non-dns method to find the peer name.
@@ -58,11 +58,17 @@ public:
     /// Set or reset the TCP_NODELAY option. 
     virtual int settcpnodelay(int on = 1); 
     /// Did the last receive() call time out ? Resets the flag.
-    virtual int timedout() {int s = m_didtimo; m_didtimo = 0; return s;}
+    virtual int timedout() {
+        int s = m_didtimo; 
+        m_didtimo = 0; 
+        return s;
+    }
     /// Return string version of last syscall error
     virtual char *sterror();
     /// Return the socket descriptor
-    virtual int getfd() {return m_fd;}
+    virtual int getfd() {
+        return m_fd;
+    }
     /// Close the current connection if it is open
     virtual void closeconn();
     /// Set/reset the non-blocking flag on the underlying fd. Returns
@@ -73,16 +79,26 @@ public:
 
     /// Decide what events the connection will be looking for
     /// (NETCONPOLL_READ, NETCONPOLL_WRITE)
-    int setselevents(int evs) {return m_wantedEvents = evs;}
+    int setselevents(int evs) {
+        return m_wantedEvents = evs;
+    }
     /// Retrieve the connection's currently monitored set of events
-    int getselevents() {return m_wantedEvents;}
+    int getselevents() {
+        return m_wantedEvents;
+    }
     /// Add events to current set
-    int addselevents(int evs) {return m_wantedEvents |= evs;}
+    int addselevents(int evs) {
+        return m_wantedEvents |= evs;
+    }
     /// Clear events from current set
-    int clearselevents(int evs) {return m_wantedEvents &= ~evs;}
+    int clearselevents(int evs) {
+        return m_wantedEvents &= ~evs;
+    }
 
     friend class SelectLoop;
-    SelectLoop *getloop() {return m_loop;}
+    SelectLoop *getloop() {
+        return m_loop;
+    }
 
     /// Utility function for a simplified select() interface: check one fd
     /// for reading or writing, for a specified maximum number of seconds.
@@ -99,7 +115,9 @@ protected:
     // Method called by the selectloop when something can be done with a netcon
     virtual int cando(Netcon::Event reason) = 0;
     // Called when added to loop
-    virtual void setloop(SelectLoop *loop) {m_loop = loop;}
+    virtual void setloop(SelectLoop *loop) {
+        m_loop = loop;
+    }
 };
 
 
@@ -114,8 +132,8 @@ public:
     SelectLoop()
 	: m_selectloopDoReturn(false), m_selectloopReturnValue(0),
 	  m_placetostart(0), 
-	  m_periodichandler(0), m_periodicparam(0), m_periodicmillis(0)
-    {}
+	  m_periodichandler(0), m_periodicparam(0), m_periodicmillis(0) {
+    }
 
     /// Loop waiting for events on the connections and call the
     /// cando() method on the object when something happens (this will in 
@@ -126,8 +144,7 @@ public:
     int doLoop();
 
     /// Call from data handler: make selectloop return the param value
-    void loopReturn(int value) 
-    {
+    void loopReturn(int value) {
 	m_selectloopDoReturn = true;
 	m_selectloopReturnValue = value;
     }
@@ -156,7 +173,7 @@ private:
     int  m_placetostart;
 
     // Map of NetconP indexed by fd
-    map<int, NetconP> m_polldata;
+    std::map<int, NetconP> m_polldata;
 
     // The last time we did the periodic thing. Initialized by setperiodic()
     struct timeval m_lasthdlcall;
@@ -192,8 +209,8 @@ public:
 /// Base class for connections that actually transfer data. T
 class NetconData : public Netcon {
 public:
-    NetconData() : m_buf(0), m_bufbase(0), m_bufbytes(0), m_bufsize(0)
-    {}
+    NetconData() : m_buf(0), m_bufbase(0), m_bufbytes(0), m_bufsize(0) {
+    }
     virtual ~NetconData();
 
     /// Write data to the connection.
@@ -218,11 +235,14 @@ public:
     virtual int readready();
     /// Check for data being available for writing
     virtual int writeready();
-    /// Read a line of text on an ascii connection
+    /// Read a line of text on an ascii connection. Returns -1 or byte count
+    /// including final 0. \n is kept
     virtual int getline(char *buf, int cnt, int timeo = -1);
     /// Set handler to be called when the connection is placed in the
     /// selectloop and an event occurs.
-    virtual void setcallback(RefCntr<NetconWorker> user) {m_user = user;}
+    virtual void setcallback(RefCntr<NetconWorker> user) {
+        m_user = user;
+    }
 
 private:
     char *m_buf;	// Buffer. Only used when doing getline()s
@@ -236,13 +256,18 @@ private:
 /// Network endpoint, client side.
 class NetconCli : public NetconData {	
 public:
-    NetconCli(int silent = 0) {m_silentconnectfailure = silent;}
+    NetconCli(int silent = 0) {
+        m_silentconnectfailure = silent;
+    }
 
-    /// Open connection to specified host and named service. 
-    int openconn(const char *host, char *serv, int timeo = -1);
+    /// Open connection to specified host and named service. Set host
+    /// to an absolute path name for an AF_UNIX service. serv is
+    /// ignored in this case.
+    int openconn(const char *host, const char *serv, int timeo = -1);
 
     /// Open connection to specified host and numeric port. port is in
-    /// HOST byte order
+    /// HOST byte order. Set host to an absolute path name for an
+    /// AF_UNIX service. serv is ignored in this case.
     int openconn(const char *host, unsigned int port, int timeo = -1);
 
     /// Reuse existing fd. 
@@ -253,7 +278,9 @@ public:
     int setconn(int fd);
 
     /// Do not log message if openconn() fails.
-    void setSilentFail(int onoff) {m_silentconnectfailure = onoff;}
+    void setSilentFail(int onoff) {
+        m_silentconnectfailure = onoff;
+    }
 
 private:
     int m_silentconnectfailure;	// No logging of connection failures if set
@@ -289,8 +316,9 @@ public:
 #endif /* NETCON_ACCESSCONTROL */
     }
     ~NetconServLis();
-    /// Open named service.
-    int openservice(char *serv, int backlog = 10);
+    /// Open named service. Used absolute pathname to create an
+    /// AF_UNIX path-based socket instead of an IP one.
+    int openservice(const char *serv, int backlog = 10);
     /// Open service by port number.
     int openservice(int port, int backlog = 10);
     /// Wait for incoming connection. Returned connected Netcon 
@@ -302,12 +330,15 @@ protected:
     /// insert the new connection in the selectloop.
     virtual int cando(Netcon::Event reason);
 
+    // Empty if port was numeric, else service name or socket path
+    std::string m_serv; 
+
 private:
 #ifdef NETCON_ACCESSCONTROL
     int permsinit;
     struct intarrayparam okaddrs;
     struct intarrayparam okmasks;
-    int initperms(char *servicename);
+    int initperms(const char *servicename);
     int initperms(int port);
     int checkperms(void *cli, int clilen);
 #endif /* NETCON_ACCESSCONTROL */
@@ -318,15 +349,15 @@ private:
 /// case of a forking server)
 class NetconServCon : public NetconData {	
 public:
-    NetconServCon(int newfd, Netcon* lis = 0) 
-    { 
+    NetconServCon(int newfd, Netcon* lis = 0) { 
 	m_liscon = lis;
 	m_fd = newfd;
     }
     /// This is for forked servers that want to get rid of the main socket
     void closeLisCon() {
-	if (m_liscon)
+	if (m_liscon) {
 	    m_liscon->closeconn();
+        }
     }
 private:
     Netcon* m_liscon;
