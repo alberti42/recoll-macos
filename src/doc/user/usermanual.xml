@@ -1075,16 +1075,17 @@ fvwm
 
       <para>If you use the daemon completely out of an
         <application>X11</application> session, you need to add option
-        <option>-x</option> to disable <application>X11</application> session monitoring (else
-        the daemon will not start).</para>
+        <option>-x</option> to disable <application>X11</application>
+        session monitoring (else the daemon will not start).</para>
 
       <para>By default, the messages from the indexing daemon will be
-        discarded. You may want to change this by setting the
-        <varname>daemlogfilename</varname> and
-        <varname>daemloglevel</varname> configuration parameters. Also the
-        log file will only be truncated when the daemon starts. If the
-        daemon runs permanently, the log file may grow quite big, depending
-        on the log level.</para>
+        setn to the same file as those from the interactive commands
+        (<literal>logfilename</literal>).  You may want to change this
+        by setting the <varname>daemlogfilename</varname> and
+        <varname>daemloglevel</varname> configuration parameters. Also
+        the log file will only be truncated when the daemon starts. If
+        the daemon runs permanently, the log file may grow quite big,
+        depending on the log level.</para>
 
       <para>When building &RCL;, the real time indexing support can be
         customised during package <link
