@@ -107,6 +107,20 @@ The
 utility allows you to perform indexing operations for the Recoll text
 search system.
 .PP
+As indexing can sometimes take a long time, the command can be interrupted
+by sending an interrupt (Ctrl-C, SIGINT) or terminate (SIGTERM)
+signal. Some time may elapse before the process exits, because it needs to
+properly flush and close the index. This can also be done from the recoll
+GUI (menu entry: File/Stop_Indexing). After such an interruption, the index
+will be somewhat inconsistent because some operations which are normally
+performed at the end of the indexing pass will have been skipped (for
+example, the stemming and spelling databases will be inexistant or out of
+date). You just need to restart indexing at a later time to restore
+consistency. The indexing will restart at the interruption point (the full
+file tree will be traversed, but files that were indexed up to the
+interruption and for which the index is still up to date will not need to
+be reindexed).
+.PP
 The 
 .B \-c 
 option specifies the configuration directory name, overriding the
