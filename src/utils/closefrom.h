@@ -20,4 +20,8 @@
 /* Close all descriptors >=  fd */
 extern int libclf_closefrom(int fd);
 
+/* Retrieve max open fd. This might be the actual max open one (not
+   thread-safe) or a system max value. */
+extern int libclf_maxfd(int flags=0);
+
 #endif /* _closefrom_h_included_ */

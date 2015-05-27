@@ -15,7 +15,11 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #ifndef TEST_EXECMD
+#ifdef RECOLL_DATADIR
+#include "autoconfig.h"
+#else
 #include "config.h"
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,6 +35,16 @@
 
 #include <vector>
 #include <string>
+#ifdef HAVE_SPAWN_H
+#ifndef __USE_GNU
+#define __USE_GNU
+#define undef__USE_GNU
+#endif
+#include <spawn.h>
+#ifdef undef__USE_GNU
+#undef __USE_GNU
+#endif
+#endif
 
 #include "execmd.h"
 
@@ -150,7 +164,18 @@ bool ExecCmd::which(const string& cmd, string& exepath, const char* path)
     return false;
 }
 
-void  ExecCmd::putenv(const string &ea)
+void ExecCmd::useVfork(bool on)
+{
+    // Just in case: there are competent people who believe that the
+    // dynamic linker can sometimes deadlock if execve() is resolved
+    // inside the vfork/exec window. Make sure it's done now. If "/" is
+    // an executable file, we have a problem.
+    const char *argv[] = {"/", 0};
+    execve("/", (char *const *)argv, environ);
+    o_useVfork  = on;
+}
+
+void ExecCmd::putenv(const string &ea)
 {
     m_env.push_back(ea);
 }
@@ -256,10 +281,17 @@ inline void ExecCmd::dochild(const string &cmd, const char **argv,
     }
 
     // Restore SIGTERM to default. Really, signal handling should be
-    // specified when creating the execmd. Help Recoll get rid of its
-    // filter children though. To be fixed one day... Not sure that
-    // all of this is needed. But an ignored sigterm and the masks are
-    // normally inherited.
+    // specified when creating the execmd, there might be other
+    // signals to reset. Resetting SIGTERM helps Recoll get rid of its
+    // filter children for now though. To be fixed one day...
+    // Note that resetting to SIG_DFL is a portable use of
+    // signal(). No need for sigaction() here.
+
+    // There is supposedely a risk of problems if another thread was
+    // calling a signal-affecting function when vfork was called. This
+    // seems acceptable though as no self-respecting thread is going
+    // to mess with the global process signal disposition.
+
     if (signal(SIGTERM, SIG_DFL) == SIG_ERR) {
 	//LOGERR(("ExecCmd::DOCHILD: signal() failed, errno %d\n", errno));
     }
@@ -307,9 +339,9 @@ inline void ExecCmd::dochild(const string &cmd, const char **argv,
     libclf_closefrom(3);
 
     execve(cmd.c_str(), (char *const*)argv, (char *const*)envv);
-    // Hu ho. This should never happened as we checked the existence of the
-    // executable before calling dochild... Until we did this, this was 
-    // the chief cause of LOG mutex deadlock
+    // Hu ho. This should never have happened as we checked the
+    // existence of the executable before calling dochild... Until we
+    // did this check, this was the chief cause of LOG mutex deadlock
     LOGERR(("ExecCmd::DOCHILD: execve(%s) failed. errno %d\n", cmd.c_str(),
 	    errno));
     _exit(127);
@@ -392,11 +424,85 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
         free(envv);
         return -1;
     }
-////////////////////////////////
+//////////////////////////////// End vfork child prepare section.
 
+#if HAVE_POSIX_SPAWN && USE_POSIX_SPAWN
+    {
+        posix_spawnattr_t attrs;
+        posix_spawnattr_init (&attrs);
+        short flags;
+        posix_spawnattr_getflags(&attrs, &flags);
+
+        flags |=  POSIX_SPAWN_USEVFORK;
+
+        posix_spawnattr_setpgroup(&attrs, 0);
+        flags |= POSIX_SPAWN_SETPGROUP;
+
+        sigset_t sset;
+        sigemptyset(&sset);
+        posix_spawnattr_setsigmask (&attrs, &sset);
+        flags |= POSIX_SPAWN_SETSIGMASK;
+
+        sigemptyset(&sset);
+        sigaddset(&sset, SIGTERM);
+        posix_spawnattr_setsigdefault(&attrs, &sset);
+        flags |= POSIX_SPAWN_SETSIGDEF;
+
+        posix_spawnattr_setflags(&attrs, flags);
+
+        posix_spawn_file_actions_t facts;
+        posix_spawn_file_actions_init(&facts);
+
+        if (has_input) {
+            posix_spawn_file_actions_addclose(&facts, m_pipein[1]);
+            if (m_pipein[0] != 0) {
+                posix_spawn_file_actions_adddup2(&facts, m_pipein[0], 0);
+                posix_spawn_file_actions_addclose(&facts, m_pipein[0]);
+            }
+        }
+        if (has_output) {
+            posix_spawn_file_actions_addclose(&facts, m_pipeout[0]);
+            if (m_pipeout[1] != 1) {
+                posix_spawn_file_actions_adddup2(&facts, m_pipeout[1], 1);
+                posix_spawn_file_actions_addclose(&facts, m_pipeout[1]);
+            }
+        }
+
+        // Do we need to redirect stderr ?
+        if (!m_stderrFile.empty()) {
+            int oflags = O_WRONLY|O_CREAT;
+#ifdef O_APPEND
+            oflags |= O_APPEND;
+#endif
+            posix_spawn_file_actions_addopen(&facts, 2, m_stderrFile.c_str(), 
+                                             oflags, 0600);
+        }
+        LOGDEB1(("using SPAWN\n"));
+
+        // posix_spawn() does not have any standard way to ask for
+        // calling closefrom(). Afaik there is a solaris extension for this,
+        // but let's just add all fds
+        for (int i = 3; i < libclf_maxfd(); i++) {
+            posix_spawn_file_actions_addclose(&facts, i);
+        }
+
+        int ret = posix_spawn(&m_pid, exe.c_str(), &facts, &attrs, 
+                              (char *const *)argv, (char *const *)envv);
+        posix_spawnattr_destroy(&attrs);
+        posix_spawn_file_actions_destroy(&facts);
+        if (ret) {
+            LOGERR(("ExecCmd::startExec: posix_spawn() failed. errno %d\n", 
+                    ret));
+            return -1;
+        }
+    }
+
+#else
     if (o_useVfork) {
+        LOGDEB1(("using VFORK\n"));
 	m_pid = vfork();
     } else {
+        LOGDEB1(("using FORK\n"));
 	m_pid = fork();
     }
     if (m_pid < 0) {
@@ -411,6 +517,7 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
 	// dochild does not return. Just in case...
 	_exit(1);
     }
+#endif
 
     // Father process
 

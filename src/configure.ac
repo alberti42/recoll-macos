@@ -32,7 +32,19 @@ fi
 AC_SYS_LARGEFILE
 
 # OpenBSD needs sys/param.h for mount.h to compile
-AC_CHECK_HEADERS([sys/param.h])
+AC_CHECK_HEADERS([sys/param.h, spawn.h])
+
+AC_CHECK_FUNCS([posix_spawn])
+
+if test "x$ac_cv_func_posix_spawn" = xyes; then :
+   AC_ARG_ENABLE(posix_spawn,
+    AC_HELP_STRING([--enable-posix_spawn],
+   [Enable the use of posix_spawn().]),
+        posixSpawnEnabled=$enableval, posixSpawnEnabled=no)
+fi
+if test X$posixSpawnEnabled = Xyes ; then
+  AC_DEFINE(USE_POSIX_SPAWN, 1, [Use posix_spawn()])
+fi
 
 # Check for where to find unordered_map etc.
 AC_LANG_PUSH([C++])

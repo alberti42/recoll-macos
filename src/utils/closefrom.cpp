@@ -50,7 +50,18 @@
  *     descriptors. Only descriptors 0, 1, 2 are shown except if
  *     fdescfs is mounted which it is not by default
  *
+ *  Solaris:
+ *   - Solaris 10+ has closefrom, and can specify closefrom to posix_spawn()
+ *
+ *  Linux:
+ *   - Has nothing. The method we used (opening /dev/fd) was very
+ *     unsafe in multithread fork/exec context. We now use a close()
+ *     loop. glibc maintainers think that closefrom() is a bad idea
+ *     *especially* because it is implemented on *BSD and Solaris. Go
+ *     figure...: https://sourceware.org/bugzilla/show_bug.cgi?id=10353
+ *
  * Interface:
+ *
  * int libclf_closefrom(fd)
  *  @param fd All open file descriptors with equal or higher numeric 
  *       values will be closed. fd needs not be a valid descriptor.
@@ -62,8 +73,12 @@
 #include <fcntl.h>
 #include <string.h>
 #include <sys/param.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
-/* #define DEBUG_CLOSEFROM*/
+#include "closefrom.h"
+
+/* #define DEBUG_CLOSEFROM */
 #ifdef DEBUG_CLOSEFROM
 #define DPRINT(X) fprintf X
 #else
@@ -110,7 +125,12 @@ int libclf_closefrom(int fd0)
 }
 
 /*************************************************************************/
-#elif (defined(linux) || defined(__linux))
+#elif 0 && (defined(linux) || defined(__linux))
+
+/* We don't do this on linux anymore because opendir() may call
+   malloc which is unsafe in the [fork-exec] interval for a
+   multithreaded program. Linux does not have a good solution for
+   implementing closefrom as far as I know */
 
 /* Use /proc/self/fd directory */
 #include <sys/types.h>
@@ -142,11 +162,16 @@ int libclf_closefrom(int fd0)
 
 /*************************************************************************/
 #else 
-/* System has no native support for this functionality whatsoever.
+
+/* System has no native support for this functionality.
  *
  * Close all descriptors up to compiled/configured maximum.
  * The caller will usually have an idea of a reasonable maximum, else
  * we retrieve a value from the system.
+ *
+ * Note that there is actually no real guarantee that no open
+ * descriptor higher than the reported limit can exist, as noted by
+ * the Solaris man page for closefrom()
  */
 
 static int closefrom_maxfd = -1;
@@ -156,21 +181,18 @@ void libclf_setmaxfd(int max)
     closefrom_maxfd = max;
 }
 
-#ifdef sun
 #include <limits.h>
+
+#ifndef OPEN_MAX
+#define OPEN_MAX 1024
 #endif
+
 int libclf_closefrom(int fd0)
 {
     int i, maxfd = closefrom_maxfd;
 
     if (maxfd < 0) {
-#ifdef _SC_OPEN_MAX
-        maxfd = sysconf(_SC_OPEN_MAX);
-        DPRINT((stderr, "Maxfd is %d after sysconf()\n", maxfd));
-#else
-        maxfd = getdtablesize();
-        DPRINT((stderr, "Maxfd is %d after getdtablesize()\n", maxfd));
-#endif 
+        maxfd = libclf_maxfd();
     }
     if (maxfd < 0)
 	maxfd = OPEN_MAX;
@@ -184,6 +206,12 @@ int libclf_closefrom(int fd0)
 }
 #endif
 
+int libclf_maxfd(int)
+{
+    struct rlimit lim;
+    getrlimit(RLIMIT_NOFILE, &lim);
+    return int(lim.rlim_cur);
+}
 
 #else /* TEST_CLOSEFROM */
 

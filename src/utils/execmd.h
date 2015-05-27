@@ -70,12 +70,10 @@ class ExecCmdProvide {
  */
 class ExecCmd {
  public:
-    // Use vfork instead of fork. This must not be called in a multithreaded 
-    // program.
-    static void useVfork(bool on)
-    {
-	o_useVfork  = on;
-    }
+    // Use vfork instead of fork. Our vfork usage is multithread-compatible as
+    // far as I can see, but just in case...
+    static void useVfork(bool on);
+
     /** 
      * Add/replace environment variable before executing command. This must
      * be called before doexec() to have an effect (possibly multiple

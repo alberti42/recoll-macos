@@ -6,7 +6,7 @@ include $(depth)/mk/sysconf
 # are part of the official distrib anyway
 LIBRECOLL = ../lib/librecoll.a
 
-PROGS = pxattr trecrontab \
+PROGS = pxattr trclosefrom trecrontab \
       trnetcon trcopyfile trcircache trmd5 trreadfile trfileudi \
       trconftree wipedir smallut  trfstreewalk trpathut transcode trbase64 \
       trmimeparse trexecmd utf8iter idfile
@@ -26,6 +26,14 @@ trecrontab : $(ECRONTAB_OBJS)
 trecrontab.o : ecrontab.cpp ecrontab.h
 	$(CXX) -o trecrontab.o -c $(ALL_CXXFLAGS) \
 	       -DTEST_ECRONTAB ecrontab.cpp
+
+CLOSEFROM_OBJS= trclosefrom.o 
+trclosefrom : $(CLOSEFROM_OBJS)
+	$(CXX) -o trclosefrom $(CLOSEFROM_OBJS) \
+            $(LIBRECOLL) $(LIBICONV) $(LIBSYS)
+trclosefrom.o : closefrom.cpp closefrom.h
+	$(CXX) -o trclosefrom.o -c $(ALL_CXXFLAGS) \
+	       -DTEST_CLOSEFROM closefrom.cpp
 
 FSTREEWALK_OBJS= trfstreewalk.o 
 trfstreewalk : $(FSTREEWALK_OBJS)

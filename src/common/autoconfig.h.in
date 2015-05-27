@@ -15,6 +15,11 @@
 /* Path to the file program */
 #undef FILE_PROG
 
+/* Define to 1 if you have the <spawn.h> header file. */
+#undef HAVE_SPAWN_H
+#undef HAVE_POSIX_SPAWN
+#undef USE_POSIX_SPAWN
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 

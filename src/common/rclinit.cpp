@@ -149,17 +149,18 @@ RclConfig *recollinit(RclInitFlags flags,
     ExecCmd::useVfork(true);
 #else
     // Keep threads init behind log init, but make sure it's done before
-    // we do the vfork choice !
+    // we do the vfork choice ! The latter is not used any more actually, 
+    // we always use vfork except if forbidden by config.
     config->initThrConf();
-    bool intern_noThr = config->getThrConf(RclConfig::ThrIntern).first == -1;
-    bool split_noThr =  config->getThrConf(RclConfig::ThrSplit).first == -1;
-    bool write_noThr = config->getThrConf(RclConfig::ThrDbWrite).first == -1;
-    if (intern_noThr && split_noThr && write_noThr) {
-	LOGDEB0(("rclinit: single-threaded execution: use vfork\n"));
-	ExecCmd::useVfork(true);
+
+    bool novfork;
+    config->getConfParam("novfork", &novfork);
+    if (novfork) {
+	LOGDEB0(("rclinit: will use fork() for starting commands\n"));
+        ExecCmd::useVfork(false);
     } else {
-	LOGDEB0(("rclinit: multi-threaded execution: do not use vfork\n"));
-	ExecCmd::useVfork(false);
+	LOGDEB0(("rclinit: will use vfork() for starting commands\n"));
+	ExecCmd::useVfork(true);
     }
 #endif
 
