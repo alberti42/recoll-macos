@@ -88,9 +88,9 @@ void CronToolW::changeCron(bool enable)
 	editCrontab(marker, id, "", "", reason);
 	accept();
     } else {
-        string mins(qs2utf8s(minsLE->text()));
-        string hours(qs2utf8s(hoursLE->text()));
-        string days(qs2utf8s(daysLE->text()));
+        string mins(qs2utf8s(minsLE->text().remove(QChar(' '))));
+        string hours(qs2utf8s(hoursLE->text().remove(QChar(' '))));
+        string days(qs2utf8s(daysLE->text().remove(QChar(' '))));
 	string sched = mins + " " + hours + "  * * " + days;
 	if (editCrontab(marker, id, sched, cmd, reason)) {
 	    accept();

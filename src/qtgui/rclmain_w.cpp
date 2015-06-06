@@ -1162,9 +1162,11 @@ void RclMain::showIndexSched(bool modal)
 		    this, SLOT(execRTITool()));
 #else
 	    indexSched->rtidxCLB->setEnabled(false);
+	    indexSched->rtidxCLB->setToolTip(tr("Disabled because the real time indexer was not compiled in."));
 #endif
 	} else {
 	    indexSched->rtidxCLB->setEnabled(false);
+	    indexSched->rtidxCLB->setToolTip(tr("This configuration tool only works for the main index."));
 	}
     } else {
 	// Close and reopen, in hope that makes us visible...
