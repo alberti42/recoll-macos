@@ -1592,6 +1592,10 @@ Please check the desktop file</source>
         <source>Result count (est.)</source>
         <translation>Результатов (примерно)</translation>
     </message>
+    <message>
+        <source>Snippets</source>
+        <translation type="unfinished">Фрагменты</translation>
+    </message>
 </context>
 <context>
     <name>ResTable</name>

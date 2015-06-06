@@ -1415,6 +1415,10 @@ Tjek venligst desktopfilen</translation>
         <source>Query details</source>
         <translation>Detaljer i Forespørgsel</translation>
     </message>
+    <message>
+        <source>Snippets</source>
+        <translation type="unfinished">Tekststumper</translation>
+    </message>
 </context>
 <context>
     <name>ResTable</name>

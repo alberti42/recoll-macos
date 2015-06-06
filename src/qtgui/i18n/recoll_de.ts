@@ -1585,6 +1585,10 @@ Please check the desktop file</source>
         <source>Result count (est.)</source>
         <translation>Anzahl Ergebnisse (ca.)</translation>
     </message>
+    <message>
+        <source>Snippets</source>
+        <translation type="unfinished">Schnipsel</translation>
+    </message>
 </context>
 <context>
     <name>ResTable</name>

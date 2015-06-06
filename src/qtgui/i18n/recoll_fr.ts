@@ -1619,6 +1619,10 @@ Merci de vérifier le fichier desktop </translation>
         <source>Result count (est.)</source>
         <translation>Nombre de résultats (est.)</translation>
     </message>
+    <message>
+        <source>Snippets</source>
+        <translation>Extraits</translation>
+    </message>
 </context>
 <context>
     <name>ResTable</name>

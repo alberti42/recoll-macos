@@ -1542,6 +1542,10 @@ Please check the desktop file</source>
         <source>Query details</source>
         <translation>Λεπτομέρειες της αναζήτησης</translation>
     </message>
+    <message>
+        <source>Snippets</source>
+        <translation type="unfinished">Αποσπάσματα</translation>
+    </message>
 </context>
 <context>
     <name>ResTable</name>

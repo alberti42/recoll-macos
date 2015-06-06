@@ -361,6 +361,7 @@ ResList::~ResList()
 	QT_TR_NOOP("Unavailable document"),
 	QT_TR_NOOP("Preview"),
 	QT_TR_NOOP("Open"),
+	QT_TR_NOOP("Snippets"),
 	QT_TR_NOOP("(show query)"),
         QT_TR_NOOP("<p><i>Alternate spellings (accents suppressed): </i>"),
         QT_TR_NOOP("<p><i>Alternate spellings: </i>"),
