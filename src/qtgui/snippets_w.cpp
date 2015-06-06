@@ -178,12 +178,12 @@ void SnippetsW::init()
     }
     oss << "</table>" << endl;
     if (nomatch) {
-	oss.str("<html><head></head><body>");
-	oss << "<p>Sorry, no exact match was found within limits. "
-	    "Probably the document is very big "
-	    "and the snippets generator got lost in a maze...</p>" << endl;
+	oss.str("<html><head></head><body>\n");
+	oss << qs2utf8s(tr("<p>Sorry, no exact match was found within limits. "
+                           "Probably the document is very big and the snippets "
+                           "generator got lost in a maze...</p>"));
     }
-    oss << "</body></html>";
+    oss << "\n</body></html>";
 #ifdef SNIPPETS_TEXTBROWSER
     browser->insertHtml(QString::fromUtf8(oss.str().c_str()));
 #else
