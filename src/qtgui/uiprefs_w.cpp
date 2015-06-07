@@ -112,7 +112,6 @@ void UIPrefsDialog::setFromPrefs()
 	break;
     case PrefsPack::FCS_BT:
     default:
-        fprintf(stderr, "filter ctl style %d\n", prefs.filterCtlStyle);
 	filterBT_RB->setChecked(1);
 	break;
     }
