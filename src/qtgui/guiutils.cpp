@@ -27,6 +27,7 @@
 #include "base64.h"
 #include "advshist.h"
 
+#include <QApplication>
 #include <QSettings>
 #include <QStringList>
 #include <QFileDialog>
@@ -145,6 +146,8 @@ void rwSettings(bool writing)
 	       String, "");
     SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Int, 
 	       10);
+
+    prefs.fontcolor = QApplication::palette().text().color().name();
 
     QString rlfDflt = QString::fromUtf8(prefs.dfltResListFormat);
     if (writing) {

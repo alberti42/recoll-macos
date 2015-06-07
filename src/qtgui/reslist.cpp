@@ -183,15 +183,17 @@ string QtGuiResListPager::prevUrl()
 string QtGuiResListPager::headerContent() 
 {
     string out;
-#ifdef SETFONT_WITH_HEADSTYLE
+
     out = "<style type=\"text/css\">\nbody,table,select,input {\n";
+#ifdef SETFONT_WITH_HEADSTYLE
     char ftsz[30];
     sprintf(ftsz, "%d", prefs.reslistfontsize);
     out += string("font-family: \"") + qs2utf8s(prefs.reslistfontfamily)
         + "\";\n";
     out += string("font-size: ") + ftsz + "pt;\n";
-    out += string("}\n</style>\n");
 #endif
+    out += string("color: ") + qs2utf8s(prefs.fontcolor) + ";\n";
+    out += string("}\n</style>\n");
     out += qs2utf8s(prefs.reslistheadertext);
     return out;
 }

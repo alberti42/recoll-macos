@@ -144,14 +144,19 @@ void SnippetsW::init()
 
     ostringstream oss;
     oss << 
-	"<html><head>"
-	"<meta http-equiv=\"content-type\" "
-	"content=\"text/html; charset=utf-8\">"
-	"<link type=\"text/css\" rel=\"stylesheet\" href=\"/tmp/style.css\">"
-	"</head>"
-	"<body>"
-	"<table>"
-	;
+      "<html><head>"
+      "<meta http-equiv=\"content-type\" "
+      "content=\"text/html; charset=utf-8\">";
+
+    oss << "<style type=\"text/css\">\nbody,table,select,input {\n";
+    oss << "color: " + qs2utf8s(prefs.fontcolor) + ";\n";
+    oss << "}\n</style>\n";
+
+    oss << 
+      "</head>"
+      "<body>"
+      "<table>"
+      ;
 
     g_hiliter.set_inputhtml(false);
     bool nomatch = true;
