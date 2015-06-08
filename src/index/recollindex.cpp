@@ -70,6 +70,7 @@ static int     op_flags;
 #define OPT_n     0x20000
 #define OPT_r     0x40000
 #define OPT_k     0x80000
+#define OPT_E     0x100000
 
 ReExec *o_reexec;
 
@@ -251,7 +252,11 @@ static bool createstemdb(RclConfig *config, const string &lang)
     return confindexer->createStemDb(lang);
 }
 
-static bool checktopdirs(RclConfig *config)
+// Check that topdir entries are valid (successfull tilde exp + abs
+// path) or fail.
+// In addition, topdirs, skippedPaths, daemSkippedPaths entries should
+// match existing files or directories. Warn if they don't
+static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
 {
     vector<string> tdl;
     if (!config->getConfParam("topdirs", &tdl)) {
@@ -273,6 +278,27 @@ static bool checktopdirs(RclConfig *config)
                         it->c_str()));
             }
             return false;
+        }
+        if (access(it->c_str(), 0) < 0) {
+            nonexist.push_back(*it);
+        }
+    }
+
+    if (config->getConfParam("skippedPaths", &tdl)) {
+        for (vector<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
+            *it = path_tildexpand(*it);
+            if (access(it->c_str(), 0) < 0) {
+                nonexist.push_back(*it);
+            }
+        }
+    }
+
+    if (config->getConfParam("daemSkippedPaths", &tdl)) {
+        for (vector<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
+            *it = path_tildexpand(*it);
+            if (access(it->c_str(), 0) < 0) {
+                nonexist.push_back(*it);
+            }
         }
     }
     return true;
@@ -311,6 +337,8 @@ static const char usage [] =
 "    List available stemming languages\n"
 "recollindex -s <lang>\n"
 "    Build stem database for additional language <lang>\n"
+"recollindex -E\n"
+"    Check configuration file for topdirs and other paths existence\n"
 #ifdef FUTURE_IMPROVEMENT
 "recollindex -W\n"
 "    Process the Web queue\n"
@@ -377,6 +405,7 @@ int main(int argc, char **argv)
 	    case 'C': op_flags |= OPT_C; break;
 	    case 'D': op_flags |= OPT_D; break;
 #endif
+	    case 'E': op_flags |= OPT_E; break;
 	    case 'e': op_flags |= OPT_e; break;
 	    case 'f': op_flags |= OPT_f; break;
 	    case 'h': op_flags |= OPT_h; break;
@@ -415,7 +444,9 @@ int main(int argc, char **argv)
 	Usage();
     if ((op_flags & OPT_Z) && (op_flags & (OPT_m)))
 	Usage();
-
+    if ((op_flags & OPT_E) && (op_flags & ~OPT_E)) {
+        Usage();
+    }
     string reason;
     RclInitFlags flags = (op_flags & OPT_m) && !(op_flags&OPT_D) ? 
 	RCLINIT_DAEMON : RCLINIT_NONE;
@@ -426,8 +457,24 @@ int main(int argc, char **argv)
     }
     o_reexec->atexit(cleanup);
 
-    if (!checktopdirs(config))
+    vector<string> nonexist;
+    if (!checktopdirs(config, nonexist))
         exit(1);
+
+    if (nonexist.size()) {
+        ostream& out = (op_flags & OPT_E) ? cout : cerr;
+        if (!(op_flags & OPT_E)) {
+            cerr << "Warning: invalid paths in topdirs, skippedPaths or "
+                "daemSkippedPaths:\n";
+        }
+        for (vector<string>::const_iterator it = nonexist.begin(); 
+             it != nonexist.end(); it++) {
+            out << *it << endl;
+        }
+    }
+    if ((op_flags & OPT_E)) {
+        exit(0);
+    }
 
     string rundir;
     config->getConfParam("idxrundir", rundir);

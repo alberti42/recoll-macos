@@ -887,6 +887,24 @@ void RclMain::toggleIndexing()
 	m_firstIndexing = !theconfig->getMissingHelperDesc(mhd);
 
 	vector<string> args;
+
+        string badpaths;
+        args.push_back("recollindex");
+        args.push_back("-E");
+        ExecCmd::backtick(args, badpaths);
+        if (!badpaths.empty()) {
+            int rep = 
+                QMessageBox::warning(0, tr("Bad paths"), 
+				     tr("Bad paths in configuration file:\n") +
+                                     QString::fromLocal8Bit(badpaths.c_str()),
+                                     QMessageBox::Ok,
+                                     QMessageBox::Cancel,
+                                     QMessageBox::NoButton);
+            if (rep == QMessageBox::Cancel)
+                return;
+        }
+
+        args.clear();
 	args.push_back("-c");
 	args.push_back(theconfig->getConfDir());
         if (fileRetryFailedAction->isChecked())
