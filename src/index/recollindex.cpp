@@ -284,7 +284,9 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
         }
     }
 
-    if (config->getConfParam("skippedPaths", &tdl)) {
+    // Check skippedPaths too, but only the user part (shallow==true), not
+    // the default values (e.g. /media, which might not exist).
+    if (config->getConfParam("skippedPaths", &tdl, true)) {
         for (vector<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
             *it = path_tildexpand(*it);
             if (access(it->c_str(), 0) < 0) {
@@ -293,7 +295,7 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
         }
     }
 
-    if (config->getConfParam("daemSkippedPaths", &tdl)) {
+    if (config->getConfParam("daemSkippedPaths", &tdl, true)) {
         for (vector<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
             *it = path_tildexpand(*it);
             if (access(it->c_str(), 0) < 0) {

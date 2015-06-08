@@ -399,14 +399,20 @@ public:
 	return false;
     }
 
-    virtual int get(const string &name, string &value, const string &sk) const
+    virtual int get(const string &name, string &value, const string &sk,
+                    bool shallow) const
     {
 	typename vector<T*>::const_iterator it;
 	for (it = m_confs.begin();it != m_confs.end();it++) {
 	    if ((*it)->get(name, value, sk))
 		return true;
+            if (shallow)
+                break;
 	}
 	return false;
+    }
+    virtual int get(const string &name, string &value, const string &sk) const {
+        return get(name, value, sk, false);
     }
 
     virtual bool hasNameAnywhere(const string& nm) const

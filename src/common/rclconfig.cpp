@@ -380,10 +380,10 @@ void RclConfig::setKeyDir(const string &dir)
 	m_defcharset.erase();
 }
 
-bool RclConfig::getConfParam(const string &name, int *ivp) const
+bool RclConfig::getConfParam(const string &name, int *ivp, bool shallow) const
 {
     string value;
-    if (!getConfParam(name, value))
+    if (!getConfParam(name, value, shallow))
 	return false;
     errno = 0;
     long lval = strtol(value.c_str(), 0, 0);
@@ -394,37 +394,39 @@ bool RclConfig::getConfParam(const string &name, int *ivp) const
     return true;
 }
 
-bool RclConfig::getConfParam(const string &name, bool *bvp) const
+bool RclConfig::getConfParam(const string &name, bool *bvp, bool shallow) const
 {
     if (!bvp) 
 	return false;
 
     *bvp = false;
     string s;
-    if (!getConfParam(name, s))
+    if (!getConfParam(name, s, shallow))
 	return false;
     *bvp = stringToBool(s);
     return true;
 }
 
-bool RclConfig::getConfParam(const string &name, vector<string> *svvp) const
+bool RclConfig::getConfParam(const string &name, vector<string> *svvp,
+    bool shallow) const
 {
     if (!svvp) 
 	return false;
     svvp->clear();
     string s;
-    if (!getConfParam(name, s))
+    if (!getConfParam(name, s, shallow))
 	return false;
     return stringToStrings(s, *svvp);
 }
 
-bool RclConfig::getConfParam(const string &name, vector<int> *vip) const
+bool RclConfig::getConfParam(const string &name, vector<int> *vip,
+    bool shallow) const
 {
     if (!vip) 
 	return false;
     vip->clear();
     vector<string> vs;
-    if (!getConfParam(name, &vs))
+    if (!getConfParam(name, &vs, shallow))
 	return false;
     vip->reserve(vs.size());
     for (unsigned int i = 0; i < vs.size(); i++) {

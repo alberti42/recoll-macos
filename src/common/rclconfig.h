@@ -123,21 +123,25 @@ class RclConfig {
     string getKeyDir() const {return m_keydir;}
 
     /** Get generic configuration parameter according to current keydir */
-    bool getConfParam(const string &name, string &value) const
+    bool getConfParam(const string &name, string &value, 
+                      bool shallow=false) const
     {
 	if (m_conf == 0)
 	    return false;
-	return m_conf->get(name, value, m_keydir);
+	return m_conf->get(name, value, m_keydir, shallow);
     }
     /** Variant with autoconversion to int */
-    bool getConfParam(const string &name, int *value) const;
+    bool getConfParam(const string &name, int *value, bool shallow=false) const;
     /** Variant with autoconversion to bool */
-    bool getConfParam(const string &name, bool *value) const;
+    bool getConfParam(const string &name, bool *value, 
+                      bool shallow=false) const;
     /** Variant with conversion to vector<string>
      *  (stringToStrings). Can fail if the string is malformed. */
-    bool getConfParam(const string &name, vector<string> *value) const;
+    bool getConfParam(const string &name, vector<string> *value, 
+                      bool shallow=false) const;
     /** Variant with conversion to vector<int> */
-    bool getConfParam(const string &name, vector<int> *value) const;
+    bool getConfParam(const string &name, vector<int> *value, 
+                      bool shallow=false) const;
 
     enum ThrStage {ThrIntern=0, ThrSplit=1, ThrDbWrite=2};
     pair<int, int> getThrConf(ThrStage who) const;
