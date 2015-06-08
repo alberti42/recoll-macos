@@ -461,6 +461,9 @@
             <layout class="QHBoxLayout">
              <item>
               <widget class="QLabel" name="tLSTL1">
+               <property name="toolTip">
+                <string>User style to apply to the snippets window.&lt;br&gt; Note: the result page header insert is also included in the snippets window header.</string>
+               </property>
                <property name="text">
                 <string>Snippets window CSS file</string>
                </property>

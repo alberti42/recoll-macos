@@ -1464,7 +1464,7 @@ fs.inotify.max_user_watches=32768
         current result. I can't remember a single instance where this
         function was actually useful to me...</para>
 
-        <para>The <guilabel>Open Snippets Window</guilabel> entry will only
+        <para id="RCL.SEARCH.GUI.RESULTLIST.MENU.SNIPPETS">The <guilabel>Open Snippets Window</guilabel> entry will only
         appear for documents which support page breaks (typically
         PDF, Postscript, DVI). The snippets window lists extracts from
         the document, taken around search terms occurrences, along with the
@@ -2615,29 +2615,39 @@ MimeType=*/*
     <sect3 id="RCL.SEARCH.GUI.CUSTOM.RESLIST">
       <title>The result list format</title>
 
-        <para>The result list presentation can be exhaustively customized
-          by adjusting two elements:</para>
-        <itemizedlist>
-          <listitem><para>The paragraph format</para></listitem>
-          <listitem><para>HTML code inside the header
-              section</para></listitem>
-        </itemizedlist>
-
-        <para>These can be edited from the <guilabel>Result list</guilabel>
-          tab of the <guilabel>GUI configuration</guilabel>.</para> 
-
-        <para>Newer versions of Recoll (from 1.17) use a WebKit HTML
-          object by default (this may be disabled at build time), and
-          total customisation is possible with full support for CSS and
+        <para>Newer versions of Recoll (from 1.17) normally use WebKit HTML
+        widgets for the result list and the 
+        <link linkend="RCL.SEARCH.GUI.RESULTLIST.MENU.SNIPPETS">
+          snippets window</link> (this may be disabled at build time). 
+          Total customisation is possible with full support for CSS and
           Javascript. Conversely, there are limits to what you can do with
           the older Qt QTextBrowser, but still, it is possible to decide
           what data each result will contain, and how it will be
           displayed.</para>
 
-        <para>No more detail will be given about the header part (only
-          useful with the WebKit build), if there are restrictions to
-          what you can do, they are beyond this author's HTML/CSS/Javascript
-          abilities... There are a few examples on the 
+        <para>The result list presentation can be exhaustively customized
+          by adjusting two elements:
+
+          <itemizedlist>
+            <listitem><para>The paragraph format</para></listitem>
+            <listitem><para>HTML code inside the header section. For
+            versions 1.21 and later, this is also used for the
+            <link linkend="RCL.SEARCH.GUI.RESULTLIST.MENU.SNIPPETS">            
+            snippets window</link> </para></listitem>
+          </itemizedlist>
+          The paragraph format and the header fragment can be edited
+          from the <guilabel>Result list</guilabel> tab of the
+          <guilabel>GUI configuration</guilabel>.
+        </para>
+
+        <para>The header fragment is used both for the result list and
+        the snippets window. The snippets list is a table and has a
+        <literal>snippets</literal> class attribute. Each paragraph in
+        the result list is a table, with class
+        <literal>respar</literal>, but this can be changed by editing
+        the paragraph format.</para>
+
+        <para>There are a few examples on the 
           <ulink url="http://www.recoll.org/custom.html">page about 
             customising the result list</ulink> on the &RCL; web site.</para>
 
@@ -2733,9 +2743,13 @@ MimeType=*/*
 
         <para>The default value for the paragraph format string is:
         <screen><![CDATA[
-<img src="%I" align="left">%R %S %L &nbsp;&nbsp;<b>%T</b><br>
-%M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i>&nbsp;%i<br>
-%A %K
+    "<table class=\"respar\">\n"
+    "<tr>\n"
+    "<td><a href='%U'><img src='%I' width='64'></a></td>\n"
+    "<td>%L &nbsp;<i>%S</i> &nbsp;&nbsp;<b>%T</b><br>\n"
+    "<span style='white-space:nowrap'><i>%M</i>&nbsp;%D</span>&nbsp;&nbsp;&nbsp; <i>%U</i>&nbsp;%i<br>\n"
+    "%A %K</td>\n"
+    "</tr></table>\n"
 ]]></screen>
 
         You may, for example, try the following for a more web-like

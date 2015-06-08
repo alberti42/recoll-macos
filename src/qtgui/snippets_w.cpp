@@ -151,11 +151,12 @@ void SnippetsW::init()
     oss << "<style type=\"text/css\">\nbody,table,select,input {\n";
     oss << "color: " + qs2utf8s(prefs.fontcolor) + ";\n";
     oss << "}\n</style>\n";
+    oss << qs2utf8s(prefs.reslistheadertext);
 
     oss << 
       "</head>"
       "<body>"
-      "<table>"
+      "<table class=\"snippets\">"
       ;
 
     g_hiliter.set_inputhtml(false);

@@ -40,10 +40,13 @@ RclConfig *theconfig;
 // qt 4.6 qtextedit to clear the margins after the float img without 
 // introducing blank space.
 const char *PrefsPack::dfltResListFormat = 
-	"<table><tr><td><a href='%U'><img src='%I' width='64'></a></td>"
-	"<td>%L &nbsp;<i>%S</i> &nbsp;&nbsp;<b>%T</b><br>"
-	"<span style='white-space:nowrap'><i>%M</i>&nbsp;%D</span>&nbsp;&nbsp;&nbsp; <i>%U</i>&nbsp;%i<br>"
-	"%A %K</td></tr></table>"
+    "<table class=\"respar\">\n"
+    "<tr>\n"
+    "<td><a href='%U'><img src='%I' width='64'></a></td>\n"
+    "<td>%L &nbsp;<i>%S</i> &nbsp;&nbsp;<b>%T</b><br>\n"
+    "<span style='white-space:nowrap'><i>%M</i>&nbsp;%D</span>&nbsp;&nbsp;&nbsp; <i>%U</i>&nbsp;%i<br>\n"
+    "%A %K</td>\n"
+    "</tr></table>\n"
     ;
 
 // The global preferences structure
