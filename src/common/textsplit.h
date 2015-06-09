@@ -76,10 +76,6 @@ public:
     }
     virtual ~TextSplit() {}
 
-    virtual void setMaxWordLength(int l)
-    {
-	m_maxWordLength = l;
-    }
     /** Split text, emit words and positions. */
     virtual bool text_to_words(const string &in);
 
