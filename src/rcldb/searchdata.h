@@ -319,7 +319,7 @@ private:
  * "Simple" data clause with user-entered query text. This can include 
  * multiple phrases and words, but no specified distance.
  */
-class TextSplitQ;
+class TermProcQ;
 class SearchDataClauseSimple : public SearchDataClause {
 public:
     SearchDataClauseSimple(SClType tp, const std::string& txt, 
@@ -375,7 +375,7 @@ protected:
     void processSimpleSpan(Rcl::Db &db, string& ermsg, const string& span, 
 			   int mods, void *pq);
     // Process phrase/near element
-    void processPhraseOrNear(Rcl::Db &db, string& ermsg, TextSplitQ *splitData, 
+    void processPhraseOrNear(Rcl::Db &db, string& ermsg, TermProcQ *splitData, 
 			     int mods, void *pq, bool useNear, int slack);
 };
 

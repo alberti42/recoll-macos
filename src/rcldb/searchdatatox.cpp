@@ -288,48 +288,50 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
     return true;
 }
 
-// Splitter callback for breaking a user string into simple terms and
+// Splitter for breaking a user string into simple terms and
 // phrases. This is for parts of the user entry which would appear as
 // a single word because there is no white space inside, but are
-// actually multiple terms to rcldb (ie term1,term2)
+// actually multiple terms to rcldb (ie term1,term2). Still, most of
+// the time, the result of our splitting will be a single term.
 class TextSplitQ : public TextSplitP {
  public:
-    TextSplitQ(Flags flags, const StopList &_stops, TermProc *prc)
-	: TextSplitP(prc, flags), 
-	  curnostemexp(false), stops(_stops), alltermcount(0), lastpos(0)
-    {}
+    TextSplitQ(Flags flags, TermProc *prc)
+	: TextSplitP(prc, flags), m_nostemexp(false) {
+    }
 
-    bool takeword(const std::string &term, int pos, int bs, int be) 
-    {
+    bool takeword(const std::string &term, int pos, int bs, int be) {
 	// Check if the first letter is a majuscule in which
 	// case we do not want to do stem expansion. Need to do this
 	// before unac of course...
-	curnostemexp = unaciscapital(term);
+	m_nostemexp = unaciscapital(term);
 
 	return TextSplitP::takeword(term, pos, bs, be);
     }
 
-    bool           curnostemexp;
-    vector<string> terms;
-    vector<bool>   nostemexps;
-    const StopList &stops;
-    // Count of terms including stopwords: this is for adjusting
-    // phrase/near slack
-    int alltermcount; 
-    int lastpos;
+    bool nostemexp() const {
+        return m_nostemexp;
+    }
+private:
+    bool m_nostemexp;
 };
 
 class TermProcQ : public TermProc {
 public:
-    TermProcQ() : TermProc(0), m_ts(0) {}
-    void setTSQ(TextSplitQ *ts) {m_ts = ts;}
+    TermProcQ() : TermProc(0), m_alltermcount(0), m_lastpos(0), m_ts(0) {}
+
+    // We need a ref to the splitter (only it knows about orig term
+    // capitalization for controlling stemming. The ref can't be set
+    // in the constructor because the splitter is not built yet when
+    // we are born (chicken and egg).
+    void setTSQ(const TextSplitQ *ts) {
+        m_ts = ts;
+    }
     
-    bool takeword(const std::string &term, int pos, int bs, int be) 
-    {
-	m_ts->alltermcount++;
-	if (m_ts->lastpos < pos)
-	    m_ts->lastpos = pos;
-	bool noexpand = be ? m_ts->curnostemexp : true;
+    bool takeword(const std::string &term, int pos, int bs, int be) {
+	m_alltermcount++;
+	if (m_lastpos < pos)
+	    m_lastpos = pos;
+	bool noexpand = be ? m_ts->nostemexp() : true;
 	LOGDEB1(("TermProcQ::takeword: pushing [%s] pos %d noexp %d\n", 
 		 term.c_str(), pos, noexpand));
 	if (m_terms[pos].size() < term.size()) {
@@ -338,17 +340,36 @@ public:
 	}
 	return true;
     }
-    bool flush()
-    {
+
+    bool flush() {
 	for (map<int, string>::const_iterator it = m_terms.begin();
 	     it != m_terms.end(); it++) {
-	    m_ts->terms.push_back(it->second);
-	    m_ts->nostemexps.push_back(m_nste[it->first]);
+	    m_vterms.push_back(it->second);
+	    m_vnostemexps.push_back(m_nste[it->first]);
 	}
 	return true;
     }
+
+    int alltermcount() const {
+        return m_alltermcount;
+    }
+    int lastpos() const {
+        return m_lastpos;
+    }
+    const vector<string>& terms() {
+        return m_vterms;
+    }
+    const vector<bool>& nostemexps() {
+        return m_vnostemexps;
+    }
 private:
-    TextSplitQ *m_ts;
+    // Count of terms including stopwords: this is for adjusting
+    // phrase/near slack
+    int m_alltermcount; 
+    int m_lastpos;
+    const TextSplitQ *m_ts;
+    vector<string> m_vterms;
+    vector<bool>   m_vnostemexps;
     map<int, string> m_terms;
     map<int, bool> m_nste;
 };
@@ -588,7 +609,7 @@ void SearchDataClauseSimple::processSimpleSpan(Rcl::Db &db, string& ermsg,
 // queries if the terms get expanded by stemming or wildcards (we
 // don't do stemming for PHRASE though)
 void SearchDataClauseSimple::processPhraseOrNear(Rcl::Db &db, string& ermsg, 
-						 TextSplitQ *splitData, 
+						 TermProcQ *splitData, 
 						 int mods, void *pq,
 						 bool useNear, int slack)
 {
@@ -613,9 +634,9 @@ void SearchDataClauseSimple::processPhraseOrNear(Rcl::Db &db, string& ermsg,
     }
 
     // Go through the list and perform stem/wildcard expansion for each element
-    vector<bool>::iterator nxit = splitData->nostemexps.begin();
-    for (vector<string>::iterator it = splitData->terms.begin();
-	 it != splitData->terms.end(); it++, nxit++) {
+    vector<bool>::const_iterator nxit = splitData->nostemexps().begin();
+    for (vector<string>::const_iterator it = splitData->terms().begin();
+	 it != splitData->terms().end(); it++, nxit++) {
 	LOGDEB0(("ProcessPhrase: processing [%s]\n", it->c_str()));
 	// Adjust when we do stem expansion. Not if disabled by
 	// caller, not inside phrases, and some versions of xapian
@@ -660,9 +681,9 @@ void SearchDataClauseSimple::processPhraseOrNear(Rcl::Db &db, string& ermsg,
     // Generate an appropriate PHRASE/NEAR query with adjusted slack
     // For phrases, give a relevance boost like we do for original terms
     LOGDEB2(("PHRASE/NEAR:  alltermcount %d lastpos %d\n", 
-             splitData->alltermcount, splitData->lastpos));
+             splitData->alltermcount(), splitData->lastpos()));
     Xapian::Query xq(op, orqueries.begin(), orqueries.end(),
-		     splitData->lastpos + 1 + slack);
+		     splitData->lastpos() + 1 + slack);
     if (op == Xapian::Query::OP_PHRASE)
 	xq = Xapian::Query(Xapian::Query::OP_SCALE_WEIGHT, xq, 
 			   original_term_wqf_booster);
@@ -772,6 +793,7 @@ bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
 	    // and the last position
 
 	    // The term processing pipeline:
+            // split -> [unac/case ->] stops -> store terms
 	    TermProcQ tpq;
 	    TermProc *nxt = &tpq;
             TermProcStop tpstop(nxt, stops); nxt = &tpstop;
@@ -783,28 +805,28 @@ bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
 
 	    TextSplitQ splitter(TextSplit::Flags(TextSplit::TXTS_ONLYSPANS | 
 						 TextSplit::TXTS_KEEPWILD), 
-				stops, nxt);
+				nxt);
 	    tpq.setTSQ(&splitter);
 	    splitter.text_to_words(*it);
 
-	    slack += splitter.lastpos - splitter.terms.size() + 1;
+	    slack += tpq.lastpos() - tpq.terms().size() + 1;
 
-	    LOGDEB0(("strToXapianQ: termcount: %d\n", splitter.terms.size()));
-	    switch (splitter.terms.size() + terminc) {
+	    LOGDEB0(("strToXapianQ: termcount: %d\n", tpq.terms().size()));
+	    switch (tpq.terms().size() + terminc) {
 	    case 0: 
 		continue;// ??
 	    case 1: {
 		int lmods = mods;
-		if (splitter.nostemexps.front())
+		if (tpq.nostemexps().front())
 		    lmods |= SearchDataClause::SDCM_NOSTEMMING;
-		m_hldata.ugroups.push_back(splitter.terms);
-		processSimpleSpan(db, ermsg, splitter.terms.front(),
+		m_hldata.ugroups.push_back(tpq.terms());
+		processSimpleSpan(db, ermsg, tpq.terms().front(),
 				  lmods, &pqueries);
 	    }
 		break;
 	    default:
-		m_hldata.ugroups.push_back(splitter.terms);
-		processPhraseOrNear(db, ermsg, &splitter, mods, &pqueries,
+		m_hldata.ugroups.push_back(tpq.terms());
+		processPhraseOrNear(db, ermsg, &tpq, mods, &pqueries,
 				    useNear, slack);
 	    }
 	    if (m_curcl >= getMaxCl()) {
@@ -846,6 +868,7 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p)
     case SCLT_OR: op = Xapian::Query::OP_OR; break;
     default:
 	LOGERR(("SearchDataClauseSimple: bad m_tp %d\n", m_tp));
+        m_reason = "Internal error";
 	return false;
     }
 
@@ -854,7 +877,9 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p)
 	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseSimple: resolved to null query\n"));
-	return true;
+        m_reason = string("Resolved to null query. Term too long ? : [" + 
+                          m_text + string("]"));
+	return false;
     }
 
     *qp = Xapian::Query(op, pqueries.begin(), pqueries.end());
@@ -970,7 +995,9 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p)
 	return false;
     if (pqueries.empty()) {
 	LOGERR(("SearchDataClauseDist: resolved to null query\n"));
-	return true;
+        m_reason = string("Resolved to null query. Term too long ? : [" + 
+                          m_text + string("]"));
+	return false;
     }
 
     *qp = *pqueries.begin();
