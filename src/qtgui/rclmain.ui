@@ -76,6 +76,9 @@
     <addaction name="fileRetryFailedAction"/>
     <addaction name="fileRebuildIndexAction"/>
     <addaction name="separator"/>
+    <addaction name="actionSave_last_query"/>
+    <addaction name="actionLoad_saved_query"/>
+    <addaction name="separator"/>
     <addaction name="fileEraseSearchHistoryAction"/>
     <addaction name="fileEraseDocHistoryAction"/>
     <addaction name="separator"/>
@@ -482,6 +485,16 @@
    </property>
    <property name="name" stdset="0">
     <cstring>fileToggleIndexingAction</cstring>
+   </property>
+  </action>
+  <action name="actionSave_last_query">
+   <property name="text">
+    <string>Save last query</string>
+   </property>
+  </action>
+  <action name="actionLoad_saved_query">
+   <property name="text">
+    <string>Load saved query</string>
    </property>
   </action>
  </widget>

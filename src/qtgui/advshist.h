@@ -33,14 +33,25 @@
  * turn the XML back into a SearchData object, which is then passed to
  * the advanced search object fromSearch() method to rebuild the
  * window state.
- */ 
+ *
+ * XML generation is performed by ../rcldb/searchdataxml.cpp. 
+ * See xmltosd.h for a schema description
+ */
 class AdvSearchHist {
 public:
     AdvSearchHist();
     ~AdvSearchHist();
+
+    // Add entry
+    bool push(RefCntr<Rcl::SearchData>);
+
+    // Get latest. does not change state
+    RefCntr<Rcl::SearchData> getnewest();
+
+    // Cursor
     RefCntr<Rcl::SearchData> getolder();
     RefCntr<Rcl::SearchData> getnewer();
-    bool push(RefCntr<Rcl::SearchData>);
+
     void clear();
 
 private:

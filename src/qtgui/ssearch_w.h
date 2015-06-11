@@ -17,6 +17,8 @@
 #ifndef _SSEARCH_W_H_INCLUDED_
 #define _SSEARCH_W_H_INCLUDED_
 
+#include <string>
+
 #include <QVariant>
 #include <QWidget>
 
@@ -28,11 +30,15 @@ class QTimer;
 
 #include "ui_ssearchb.h"
 
+struct SSearchDef;
+
 class SSearch : public QWidget, public Ui::SSearchBase
 {
     Q_OBJECT
 
 public:
+    // The values MUST NOT change, there are assumptions about them in
+    // different parts of the code
     enum SSearchType {SST_ANY = 0, SST_ALL = 1, SST_FNM = 2, SST_LANG = 3};
 
     SSearch(QWidget* parent = 0, const char * = 0)
@@ -47,7 +53,12 @@ public:
     virtual void completion();
     virtual bool eventFilter(QObject *target, QEvent *event);
     virtual bool hasSearchString();
-    virtual void setPrefs();				  
+    virtual void setPrefs();
+    // Return last performed search as XML text.
+    virtual std::string asXML();
+    // Restore ssearch UI from saved search
+    virtual bool fromXML(const SSearchDef& fxml);
+
 public slots:
     virtual void searchTextChanged(const QString & text);
     virtual void searchTypeChanged(int);
@@ -76,6 +87,7 @@ signals:
     bool m_keystroke;
     QString m_tstartqs;
     QAbstractItemModel *m_savedModel;
+    std::string m_xml; /* Saved xml version of the search, as we start it */
 
     int partialWord(string& s);
     int completionList(string s, QStringList& lst, int max = 100);

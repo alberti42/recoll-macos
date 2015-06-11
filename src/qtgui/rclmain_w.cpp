@@ -324,6 +324,11 @@ void RclMain::init()
 	    this, SLOT(eraseDocHistory()));
     connect(fileEraseSearchHistoryAction, SIGNAL(triggered()), 
 	    this, SLOT(eraseSearchHistory()));
+    connect(actionSave_last_query, SIGNAL(triggered()),
+	    this, SLOT(saveLastQuery()));
+    connect(actionLoad_saved_query, SIGNAL(triggered()),
+	    this, SLOT(loadSavedQuery()));
+
     connect(helpAbout_RecollAction, SIGNAL(triggered()), 
 	    this, SLOT(showAboutDialog()));
     connect(showMissingHelpers_Action, SIGNAL(triggered()), 
@@ -1077,6 +1082,9 @@ void RclMain::showAdvSearchDialog()
 {
     if (asearchform == 0) {
 	asearchform = new AdvSearch(0);
+        if (asearchform == 0) {
+            return;
+        }
 	connect(new QShortcut(quitKeySeq, asearchform), SIGNAL (activated()), 
 		this, SLOT (fileExit()));
 
