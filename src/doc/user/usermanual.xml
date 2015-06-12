@@ -1186,6 +1186,12 @@ fs.inotify.max_user_watches=32768
       case (they would typically be printed without white
       space).</para>
 
+      <para>Some searches can be quite complex, and you may want to
+      re-use them later, perhaps with some tweaking. &RCL; versions
+      1.21 and later can save and restore searches, using XML files. See 
+      <link linkend="RCL.SEARCH.SAVING">Saving and restoring 
+      queries</link>.</para>
+
     <sect2 id="RCL.SEARCH.GUI.SIMPLE">
       <title>Simple search</title>
 
@@ -1767,6 +1773,10 @@ MimeType=*/*
         through the <guilabel>Tools</guilabel> menu or through the main
         toolbar.</para>
 
+        <para>&RCL; keeps a history of searches. See 
+        <link linkend="RCL.SEARCH.GUI.COMPLEX.HISTORY">
+        Advanced search history</link>.</para> 
+
       <para>The dialog has two tabs:</para> 
 
       <orderedlist>
@@ -2343,6 +2353,33 @@ MimeType=*/*
         close the application.</para>
       </formalpara>
       </sect3>
+    </sect2>
+
+    <sect2 id="RCL.SEARCH.SAVING">
+      <title>Saving and restoring queries (1.21 and later)</title>
+
+      <para>Both simple and advanced query dialogs save recent
+      history, but the amount is limited: old queries will eventually
+      be forgotten. Also, important queries may be difficult to find
+      among others. This is why both types of queries can also be
+      explicitely saved to files, from the GUI menus:
+	  <menuchoice>
+	    <guimenu>File</guimenu>
+	    <guimenuitem>Save last query / Load last query</guimenuitem>
+          </menuchoice>
+      </para>
+
+      <para>The default location for saved queries is a subdirectory
+      of the current configuration directory, but saved queries are
+      ordinary files and can be written or moved anywhere.</para>
+
+      <para>Some of the saved query parameters are part of the
+      preferences (e.g. <literal>autophrase</literal> or the active
+      external indexes), and may differ when the query is
+      loaded from the time it was saved. In this case, &RCL; will warn
+      of the differences, but will not change the user
+      preferences.</para>
+
     </sect2>
 
     <sect2 id="RCL.SEARCH.GUI.CUSTOM">
