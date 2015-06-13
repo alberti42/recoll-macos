@@ -90,12 +90,28 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
     // field names, bail out.
     for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++) {
 	SClType tp = (*it)->m_tp;
-	if (tp != SCLT_AND && tp != SCLT_OR) {
-	    LOGDEB2(("SearchData::maybeAddAutoPhrase: rejected clause\n"));
+	SearchDataClauseSimple *clp = 0;
+        if (tp == SCLT_SUB) {
+            // The query language parser produces subqueries for simple terms
+            SearchDataClauseSub *subclp = 
+                dynamic_cast<SearchDataClauseSub*>(*it);
+            if (subclp == 0) {
+                LOGDEB2(("SearchData::maybeAddAutoPhrase: "
+                         "dyncast to clauseSub failed\n"));
+                return false;
+            }
+            if (!subclp->getSub()->singleSimple()) {
+                LOGDEB2(("SearchData::maybeAddAutoPhrase: !pureSingle\n"));
+                return false;
+            }
+            clp = dynamic_cast<SearchDataClauseSimple*>(
+                *(subclp->getSub()->m_query.begin()));
+        } else if (tp != SCLT_AND && tp != SCLT_OR) {
+            LOGDEB2(("SearchData::maybeAddAutoPhrase: wrong tp %d\n", tp));
 	    return false;
-	}
-	SearchDataClauseSimple *clp = 
-	    dynamic_cast<SearchDataClauseSimple*>(*it);
+	} else {
+            clp = dynamic_cast<SearchDataClauseSimple*>(*it);
+        }
 	if (clp == 0) {
 	    LOGDEB2(("SearchData::maybeAddAutoPhrase: dyncast failed\n"));
 	    return false;
@@ -180,6 +196,18 @@ bool SearchData::fileNameOnly()
     for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++)
 	if (!(*it)->isFileName())
 	    return false;
+    return true;
+}
+
+bool SearchData::singleSimple()
+{
+    if (m_query.size() != 1 || !m_filetypes.empty() || !m_nfiletypes.empty() ||
+        m_haveDates || m_maxSize != size_t(-1) || m_minSize != size_t(-1) ||
+        m_haveWildCards)
+        return false;
+    SearchDataClause *clp = *m_query.begin();
+    if (clp->getTp() != SCLT_AND && clp->getTp() != SCLT_OR)
+        return false;
     return true;
 }
 

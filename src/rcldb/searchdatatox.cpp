@@ -980,7 +980,6 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p)
     *qp = Xapian::Query();
 
     vector<Xapian::Query> pqueries;
-    Xapian::Query nq;
 
     // We produce a single phrase out of the user entry then use
     // stringToXapianQueries() to lowercase and simplify the phrase

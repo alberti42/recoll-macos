@@ -95,6 +95,9 @@ public:
     /** Is there anything but a file name search in here ? */
     bool fileNameOnly();
 
+    /** Are we a simple query with one clause? */
+    bool singleSimple();
+
     /** Do we have wildcards anywhere apart from filename searches ? */
     bool haveWildCards() {return m_haveWildCards;}
 
@@ -488,7 +491,9 @@ public:
     {
 	m_sub.getconstptr()->getTerms(hldata);
     }
-
+    virtual RefCntr<SearchData> getSub() {
+        return m_sub;
+    }
 protected:
     RefCntr<SearchData> m_sub;
 };
