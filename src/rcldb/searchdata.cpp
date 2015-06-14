@@ -25,6 +25,7 @@
 #include <vector>
 #include <algorithm>
 #include <sstream>
+#include <iostream>
 using namespace std;
 
 #include "xapian.h"
@@ -69,7 +70,7 @@ SearchData::~SearchData()
 {
     LOGDEB0(("SearchData::~SearchData\n"));
     for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++)
-	delete *it;
+        delete *it;
 }
 
 // This is called by the GUI simple search if the option is set: add
@@ -79,9 +80,13 @@ SearchData::~SearchData()
 bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
 {
     LOGDEB0(("SearchData::maybeAddAutoPhrase()\n"));
+    // cerr << "BEFORE SIMPLIFY\n"; dump(cerr);
+    simplify();
+    // cerr << "AFTER SIMPLIFY\n"; dump(cerr);
+
     if (!m_query.size()) {
-	LOGDEB2(("SearchData::maybeAddAutoPhrase: empty query\n"));
-	return false;
+        LOGDEB2(("SearchData::maybeAddAutoPhrase: empty query\n"));
+        return false;
     }
 
     string field;
@@ -89,53 +94,39 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
     // Walk the clause list. If we find any non simple clause or different
     // field names, bail out.
     for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++) {
-	SClType tp = (*it)->m_tp;
-	SearchDataClauseSimple *clp = 0;
-        if (tp == SCLT_SUB) {
-            // The query language parser produces subqueries for simple terms
-            SearchDataClauseSub *subclp = 
-                dynamic_cast<SearchDataClauseSub*>(*it);
-            if (subclp == 0) {
-                LOGDEB2(("SearchData::maybeAddAutoPhrase: "
-                         "dyncast to clauseSub failed\n"));
-                return false;
-            }
-            if (!subclp->getSub()->singleSimple()) {
-                LOGDEB2(("SearchData::maybeAddAutoPhrase: !pureSingle\n"));
-                return false;
-            }
-            clp = dynamic_cast<SearchDataClauseSimple*>(
-                *(subclp->getSub()->m_query.begin()));
-        } else if (tp != SCLT_AND && tp != SCLT_OR) {
+        SClType tp = (*it)->m_tp;
+        if (tp != SCLT_AND && tp != SCLT_OR) {
             LOGDEB2(("SearchData::maybeAddAutoPhrase: wrong tp %d\n", tp));
-	    return false;
-	} else {
-            clp = dynamic_cast<SearchDataClauseSimple*>(*it);
+            return false;
         }
-	if (clp == 0) {
-	    LOGDEB2(("SearchData::maybeAddAutoPhrase: dyncast failed\n"));
-	    return false;
-	}
-	if (it == m_query.begin()) {
-	    field = clp->getfield();
-	} else {
-	    if (clp->getfield().compare(field)) {
-		LOGDEB2(("SearchData::maybeAddAutoPhrase: diff. fields\n"));
-		return false;
-	    }
-	}
+        SearchDataClauseSimple *clp = 
+            dynamic_cast<SearchDataClauseSimple*>(*it);
+        if (clp == 0) {
+            LOGDEB2(("SearchData::maybeAddAutoPhrase: dyncast failed\n"));
+            return false;
+        }
+        if (it == m_query.begin()) {
+            field = clp->getfield();
+        } else {
+            if (clp->getfield().compare(field)) {
+                LOGDEB2(("SearchData::maybeAddAutoPhrase: diff. fields\n"));
+                return false;
+            }
+        }
 
-	// If there are wildcards or quotes in there, bail out
-	if (clp->gettext().find_first_of("\"*[?") != string::npos) { 
-	    LOGDEB2(("SearchData::maybeAddAutoPhrase: wildcards\n"));
-	    return false;
-	}
-        // Do a simple word-split here, don't bother with the full-blown
-	// textsplit. The autophrase thing is just "best effort", it's
-	// normal that it won't work in strange cases.
-	vector<string> wl;
-	stringToStrings(clp->gettext(), wl);
-	words.insert(words.end(), wl.begin(), wl.end());
+        // If there are wildcards or quotes in there, bail out
+        if (clp->gettext().find_first_of("\"*[?") != string::npos) { 
+            LOGDEB2(("SearchData::maybeAddAutoPhrase: wildcards\n"));
+            return false;
+        }
+
+        // Do a simple word-split here, not the full-blown
+        // textsplit. Spans of stopwords should not be trimmed later
+        // in this function, they will be properly split when the
+        // phrase gets processed by toNativeQuery() later on.
+        vector<string> wl;
+        stringToStrings(clp->gettext(), wl);
+        words.insert(words.end(), wl.begin(), wl.end());
     }
 
 
@@ -144,27 +135,27 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
     int slack = 0;
     int doccnt = db.docCnt();
     if (!doccnt)
-	doccnt = 1;
+        doccnt = 1;
     string swords;
     for (vector<string>::iterator it = words.begin(); 
-	 it != words.end(); it++) {
-	double freq = double(db.termDocCnt(*it)) / doccnt;
-	if (freq < freqThreshold) {
-	    if (!swords.empty())
-		swords.append(1, ' ');
-	    swords += *it;
-	} else {
-	    LOGDEB0(("Autophrase: [%s] too frequent (%.2f %%)\n", 
-		    it->c_str(), 100 * freq));
-	    slack++;
-	}
+         it != words.end(); it++) {
+        double freq = double(db.termDocCnt(*it)) / doccnt;
+        if (freq < freqThreshold) {
+            if (!swords.empty())
+                swords.append(1, ' ');
+            swords += *it;
+        } else {
+            LOGDEB0(("SearchData::Autophrase: [%s] too frequent (%.2f %%)\n", 
+                    it->c_str(), 100 * freq));
+            slack++;
+        }
     }
     
     // We can't make a phrase with a single word :)
     int nwords = TextSplit::countWords(swords);
     if (nwords <= 1) {
-	LOGDEB2(("SearchData::maybeAddAutoPhrase: ended with 1 word\n"));
-	return false;
+        LOGDEB2(("SearchData::maybeAddAutoPhrase: ended with 1 word\n"));
+        return false;
     }
 
     // Increase the slack: we want to be a little more laxist than for
@@ -172,7 +163,7 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
     slack += 1 + nwords / 3;
     
     m_autophrase = RefCntr<SearchDataClauseDist>(
-	new SearchDataClauseDist(SCLT_PHRASE, swords, slack, field));
+        new SearchDataClauseDist(SCLT_PHRASE, swords, slack, field));
     return true;
 }
 
@@ -180,9 +171,9 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
 bool SearchData::addClause(SearchDataClause* cl)
 {
     if (m_tp == SCLT_OR && cl->getexclude()) {
-	LOGERR(("SearchData::addClause: cant add EXCL to OR list\n"));
-	m_reason = "No Negative (AND_NOT) clauses allowed in OR queries";
-	return false;
+        LOGERR(("SearchData::addClause: cant add EXCL to OR list\n"));
+        m_reason = "No Negative (AND_NOT) clauses allowed in OR queries";
+        return false;
     }
     cl->setParent(this);
     m_haveWildCards = m_haveWildCards || cl->m_haveWildCards;
@@ -194,9 +185,68 @@ bool SearchData::addClause(SearchDataClause* cl)
 bool SearchData::fileNameOnly() 
 {
     for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++)
-	if (!(*it)->isFileName())
-	    return false;
+        if (!(*it)->isFileName())
+            return false;
     return true;
+}
+
+void SearchData::simplify()
+{
+    for (unsigned int i = 0; i < m_query.size(); i++) {
+        if (m_query[i]->m_tp != SCLT_SUB)
+            continue;
+        //C[est ce dyncast qui crashe??
+        SearchDataClauseSub *clsubp = 
+            dynamic_cast<SearchDataClauseSub*>(m_query[i]);
+        if (clsubp == 0) {
+            // ??
+            continue;
+        }
+        if (clsubp->getSub()->m_tp != m_tp)
+            continue;
+
+        clsubp->getSub()->simplify();
+
+        // If this subquery has special attributes, it's not a
+        // candidate for collapsing
+        if (!clsubp->getSub()->m_filetypes.empty() || 
+            !clsubp->getSub()->m_nfiletypes.empty() ||
+            clsubp->getSub()->m_haveDates || 
+            clsubp->getSub()->m_maxSize != size_t(-1) ||
+            clsubp->getSub()->m_minSize != size_t(-1) ||
+            clsubp->getSub()->m_haveWildCards)
+            continue;
+
+        bool allsametp = true;
+        for (qlist_it_t it1 = clsubp->getSub()->m_query.begin(); 
+             it1 != clsubp->getSub()->m_query.end(); it1++) {
+            // We want all AND or OR clause, and same as our conjunction
+            if (((*it1)->getTp() != SCLT_AND && (*it1)->getTp() != SCLT_OR) || 
+                (*it1)->getTp() != m_tp) {
+                allsametp = false;
+                break;
+            }
+        }
+        if (!allsametp)
+            continue;
+
+        // All ok: delete the clause_sub, and insert the queries from
+        // its searchdata in its place
+        m_query.erase(m_query.begin() + i);
+        m_query.insert(m_query.begin() + i, 
+                       clsubp->getSub()->m_query.begin(),
+                       clsubp->getSub()->m_query.end());
+        for (unsigned int j = i; 
+             j < i + clsubp->getSub()->m_query.size(); j++) {
+            m_query[j]->setParent(this);
+        }
+        i += clsubp->getSub()->m_query.size() - 1;
+
+        // We don't want the clauses to be deleted when the parent is, as we
+        // know own them.
+        clsubp->getSub()->m_query.clear();
+        delete clsubp;
+    }
 }
 
 bool SearchData::singleSimple()
@@ -206,8 +256,9 @@ bool SearchData::singleSimple()
         m_haveWildCards)
         return false;
     SearchDataClause *clp = *m_query.begin();
-    if (clp->getTp() != SCLT_AND && clp->getTp() != SCLT_OR)
+    if (clp->getTp() != SCLT_AND && clp->getTp() != SCLT_OR) {
         return false;
+    }
     return true;
 }
 
@@ -215,8 +266,76 @@ bool SearchData::singleSimple()
 void SearchData::getTerms(HighlightData &hld) const
 {
     for (qlist_cit_t it = m_query.begin(); it != m_query.end(); it++)
-	(*it)->getTerms(hld);
+        (*it)->getTerms(hld);
     return;
+}
+
+void SearchData::dump(ostream& o) const
+{
+    o << "SearchData: " << " qs " << int(m_query.size()) << 
+        " ft " << m_filetypes.size() << " nft " << m_nfiletypes.size() << 
+        " hd " << m_haveDates << " maxs " << int(m_maxSize) << " mins " << 
+        int(m_minSize) << " wc " << m_haveWildCards << "\n";
+    for (std::vector<SearchDataClause*>::const_iterator it =
+             m_query.begin(); it != m_query.end(); it++) {
+        (*it)->dump(o);
+        o << "\n";
+    }
+    o << "\n";
+}
+
+void SearchDataClause::dump(ostream& o) const
+{
+    o << "SearchDataClause??";
+}
+
+void SearchDataClauseSimple::dump(ostream& o) const
+{
+    o << "ClauseSimple: ";
+    if (m_exclude)
+        o << "- ";
+    o << "[" ;
+    if (!m_field.empty())
+        o << m_field << " : ";
+    o << m_text << "]";
+}
+
+void SearchDataClauseFilename::dump(ostream& o) const
+{
+    o << "ClauseFN: ";
+    if (m_exclude)
+        o << " - ";
+    o << "[" << m_text << "]";
+}
+
+void SearchDataClausePath::dump(ostream& o) const
+{
+    o << "ClausePath: ";
+    if (m_exclude)
+        o << " - ";
+    o << "[" << m_text << "]";
+}
+
+void SearchDataClauseDist::dump(ostream& o) const
+{
+    if (m_tp == SCLT_NEAR)
+        o << "ClauseDist: NEAR: ";
+    else
+        o << "ClauseDist: PHRA: ";
+            
+    if (m_exclude)
+        o << " - ";
+    o << "[";
+    if (!m_field.empty())
+        o << m_field << " : ";
+    o << m_text << "]";
+}
+
+void SearchDataClauseSub::dump(ostream& o) const
+{
+    o << "ClauseSub {\n";
+    m_sub.getconstptr()->dump(o);
+    o << "}";
 }
 
 } // Namespace Rcl
