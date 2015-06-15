@@ -1,0 +1,191 @@
+= Recoll command execution performance
+:Author: Jean-François Dockès
+:Email: jfd@recoll.org
+:Date: 2015-05-22
+
+== Abstract
+
+== Introduction
+
+Recoll is a big process which executes many others, mostly for extracting
+text from documents. Some of the executed processes are quite short-lived,
+and the time used by the process execution machinery can actually dominate
+the time used to translate data. This document explores possible approaches
+to improving performance without adding excessive complexity or damaging
+reliability.
+
+Studying fork/exec performance is not exactly a new venture, and there are
+many texts which address the subject. While researching, though, I found
+out that not so many were accurate and that a lot of questions were left as
+an exercise to the reader.
+
+This document will list the references I found reliable and interesting and
+describe the solution chosen along the other possible approaches.
+
+== Issues with fork
+
+The traditional way for a Unix process to start another is the
+fork()/exec() system call pair. The initial fork() duplicates the address
+space and resources (open files etc.) of the first process, then duplicates
+the thread of execution, ending up with 2 mostly identical processes.
+exec() then replaces part of the newly executing process with an address space
+initialized from an executable file, inheriting some of the old assets
+under various conditions.
+
+As processes became bigger the copying-before-discard operation wasted
+significant resources, and was optimized using two methods (at very
+different points in time):
+
+ - The first approach was to supplement fork() with the vfork() call, which
+   is similar but does not duplicate the address space: the new process
+   thread executes in the old address space. The old thread is blocked
+   until the new one calls exec() and frees up access to the memory
+   space. Any modification performed by the child thread persists when
+   the old one resumes.
+
+ - The more modern approach, which cohexists with vfork(), was to replace
+   the full duplication of the memory space with duplication of the page
+   descriptors only. The pages in the new process are marked copy-on-write
+   so that the new process has write access to its memory without
+   disturbing its parent. The problem with this approach is that the
+   operation can still be a significant resource consumer for big processes
+   mapping a lot of memory. Many processes can fall in this category not
+   because they have huge data segments, but just because they are linked
+   to many shared libraries.
+
+NOTE: Orders of magnitude: a *recollindex* process will easily grow into a
+few hundred of megabytes of virtual space. It executes the small and
+efficient *antiword* command to extract text from *ms-word* files. While
+indexing multiple such files, *recollindex* can spend '60% of its CPU time'
+doing `fork()`/`exec()` housekeeping instead of useful work (this is on Linux,
+where `fork()` uses copy-on-write).
+
+Apart from the performance cost, another issue with fork() is that a big
+process can fail executing a small command because of the temporary need to
+allocate twice its address space. This is a much discussed subject which we
+will leave aside because it generally does not concern *recollindex*, which
+in typical conditions uses a small portion of the machine virtual memory,
+so that a temporary doubling is not an issue.
+
+The Recoll indexer is multithreaded, which may introduce other issues. Here
+is what happens to threads during the fork()/exec() interval:
+
+ - fork():
+   * The parent process threads all go on their merry way.
+   * The child process is created with only one thread active, duplicated
+     from the one which called fork()
+ - vfork()
+   * The parent process thread calling vfork() is suspended, the others
+     are unaffected.
+   * The child is created with only one thread, as for fork(). 
+     This thread shares the memory space with the parent ones, without
+     having any means to synchronize with them (pthread locks are not
+     supposed to work across processes): caution needed !
+
+NOTE: for a multithreaded program using the classical pipe method to
+communicate with children, the sequence between the `pipe()` call and the
+parent `close()` of the unused side is a candidate for a critical section:
+if several threads can interleave in there, children process may inherit
+descriptors which 'belong' to other `fork()`/`exec()` operations, which may
+in turn be a problem or not depending on how descriptor cleanup is
+performed in the child (if no cleanup is performed, pipes may remain open
+at both ends which will prevents seeing EOFs etc.). Thanks to StackExchange
+user Celada for explaining this to me.
+
+For multithreaded programs, both fork() and vfork() introduce possibilities
+of deadlock, because the resources held by a non-forking thread in the
+parent process can't be released in the child because the thread is not
+duplicated. This used to happen from time to time in *recollindex* because
+of an error logging call performed if the exec() failed after the fork()
+(e.g. command not found).
+
+With vfork() it is also possible to trigger a deadlock in the parent by
+(inadvertently) modifying data in the child. This could happen just
+link:http://www.oracle.com/technetwork/server-storage/solaris10/subprocess-136439.html[because
+of dynamic linker operation] (which, seriously, should be considered a
+system bug).
+
+
+In general, the state of program data in the child process is a semi-random
+snapshot of what it was in the parent, and the official word about what you
+can do is that you can only call
+link:http://man7.org/linux/man-pages/man7/signal.7.html[async-safe library
+functions] between 'fork()' and 'exec()'. These are functions which are
+safe to call from a signal handler because they are either reentrant or
+can't be interrupted by a signal. A notable missing entry in the list is
+`malloc()`.
+
+These are normally not issues for programs which only fork to execute
+another program (but the devil is in the details as demonstrated by the
+logging call issue...).
+
+One of the approaches often proposed for working around this mine-field is
+to use an auxiliary, small, process to execute any command needed by the
+main one. The small process can just use fork() with no performance
+issues. This has the inconvenient of complicating communication a lot if
+data needs to be transferred one way or another.
+
+////
+Passing descriptors around
+http://stackoverflow.com/questions/909064/portable-way-to-pass-file-descriptor-between-different-processes
+http://www.normalesup.org/~george/comp/libancillary/
+http://stackoverflow.com/questions/28003921/sending-file-descriptor-by-linux-socket/
+
+The process would then be:
+ - Tell slave to fork/exec cmd (issue with cmd + args format)
+ - Get fds
+ - Tell slave to wait, recover status.
+////
+
+== The posix_spawn() Linux non-event
+
+Given the performance issues of `fork()` and tricky behaviour of `vfork()`,
+a "simpler" method for starting a child process was introduced by Posix:
+`posix_spawn()`.
+
+The `posix_spawn()` function is a black box, externally equivalent to a
+`fork()`/`exec()` sequence, and has parameters to specify the usual
+house-keeping performed at this time (file descriptors and signals
+management etc.). Hiding the internals gives the system a chance to
+optimize the performance and avoid `vfork()` pitfalls like the `ld.so`
+lockup described in the Oracle article.
+
+The Linux posix_spawn() is implemented by a `fork()`/`exec()` pair by default. 
+
+`vfork()` is used either if specified by an input flag or no
+signal/scheduler/process_group changes are requested. There must be a
+reason why signal handling changes would preclude `vfork()` usage, but I
+could not find it (signal handling data is stored in the kernel task_struct).
+
+The Linux glibc `posix_spawn()` currently does nothing that user code could
+not do. Still, using it would probably be a good future-proofing idea, but
+for a significant problem: there is no way to specify closing all open
+descriptors bigger than a specified value (closefrom() equivalent). This is
+available on Solaris and quite necessary in fact, because we have no way to
+be sure that all open descriptors have the CLOEXEC flag set.
+
+12500 small .doc files:
+
+fork:  real 0m46.025s user 0m26.574s sys 0m39.494s
+vfork: real 0m18.223s user 0m17.753s sys 0m1.736s
+spawn/fork: real 0m45.726s user 0m27.082s sys 0m40.575s
+spawn/vfork: real 0m18.915s user 0m18.681s sys 0m3.828s
+
+No surprise here, given the implementation of posix_spawn(), it gets the
+same times as the fork/vfork options.
+
+It is difficult to ignore the 60% reduction in execution time offered by
+using 'vfork()'.
+
+Objections to vfork: 
+  ld.so locks
+  sigaction locks
+
+https://bugzilla.redhat.com/show_bug.cgi?id=193631
+
+Is Linux vfork thread-safe ? Quoting interesting comments from Solaris
+implementation: 
+No answer to the issues cited though.
+
+https://sourceware.org/bugzilla/show_bug.cgi?id=378
+Use vfork() in posix_spawn()

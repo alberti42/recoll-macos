@@ -1,0 +1,138 @@
+= The case of the bad Xapian::Document copy
+
+== How things were supposed to work
+
+Coming from the link:threadingRecoll.html[threading *Recoll*] page, 
+you may remember that the third stage of the
+processing pipeline breaks up text into terms, producing a *Xapian*
+document (+Xapian::Document+) which is finally processed by the last stage,
+the index updater. 
+
+What happens in practise is that the main routine in this stage has a local
++Xapian::Document+ object, automatically allocated on the stack, which it
+updates appropriately and then copies into a task object which is placed on
+the input queue for the last stage.
+
+The text-splitting routine then returns, and its local +Xapian::Document+
+object is (implicitely) deleted while the stack unwinds.
+
+The idea is that the *copy* of the document which is on the queue should be
+unaffected, it is independant of the original and will further be processed
+by the index update thread, without interaction with the text-splitting one.
+
+At no point do multiple threads access the +Xapian::Document+ data, so
+there should be no problem.
+
+== The problem 
+
+Most *Xapian* objects are reference-counted, which means that the object
+itself is a small block of house-keeping variables. The actual data is
+allocated on the heap through eventual calls to new/malloc, and is shared
+by multiple copies of the object.  This is the case for +Xapian::Document+
+
+This is aboundantly documented, and users are encouraged to use copies
+instead of passing pointers around (copies are cheap because only a small
+block of auxiliary data is actually duplicated). This in general makes
+memory management easier.
+
+This is well-known, and it would not appear to be a problem in the above
+case as the +Xapian::Document+ actual data is never accessed by multiple
+threads.
+
+The problem is that the reference counter which keeps track of the object
+usage and triggers actual deletion when it goes to zero is accessed by two
+threads:
+
+ - It is decremented while the first local object is destroyed during the
+   stack unwind in the first thread
+ - It is also updated by the last stage thread, incremented if copies are
+   made, then decremented until it finally goes down to 0 when we are done
+   with the object, at which point the document data is unallocated.
+
+As the counter is not protected in any way against concurrent access, the
+actual sequence of events is undefined and at least two kinds of problems
+may occur: double deletion of the data, or accesses to already freed heap
+data (potentially thrashing other threads allocations, or reading modified
+data).
+
+A relatively simple fix for this would be to use atomic test-and-set
+operations for the counter (which is what the GNU +std::string+ does). But
+the choice made by *Xapian* to let the application deal with all
+synchronization issues is legitimate and documented, nothing to complain
+about here. I just goofed.
+
+Because the counter test and update operations are very fast, and occur
+among a lot of processing from the final stage thread, the chances of
+concurrent access are low, which is why the problem manifests itself very
+rarely. Depending on thread scheduling and all manners of semi-random
+conditions, it is basically impossible to reproduce reliably.
+
+== The fix
+
+The implemented fix was trivial: the upstream thread allocates the initial
++Xapian::Document+ on the heap, copies the pointer to the queue object, and
+forgets about it. The index-updating thread peruses the object then
++delete+'s it. Real easy.
+
+An alternative solution would have been to try and use locking to protect
+the counter updates. The only place where such locking operations could
+reasonably occur is inside the +Xapian::Document+ refcounted pointer
+object, which we can't modify. Otherwise, we would have to protect the
+_whole scopes of existence_ of the Xapian::Document object in any routine
+which creates/copies or (implicitely) deletes it, which would cause many
+problems and/or contention issues
+
+== Why did I miss this ?
+
+The mechanism of the crashes is simple enough, quasi-obvious. 
+How on earth could I miss this problem while writing the code ? 
+
+For the sake of anecdote, my first brush with atomicity for updates of
+reference counters was while debugging a System V release 4 kernel VFS file
+system module, at the time when SVR4 got a preemptive kernel with SVR4-MP,
+circa 1990... I ended up replacing a +counter+++ with +atomic_add()+ after
+a set of _interesting_ debugging sessions interspersed with kernel crashes
+and +fsck+ waits. This should have left some memories. So what went wrong ?
+Here follow a list of possible reasons:
+
+- Reasoning by analogy: std::string are safe to use in this way. The other
+  objects used in the indexing pipe are also safe. I just used
+  +Xapian::Document+ in the same way without thinking further.
+- Probably not how I would do it: faced with designing +Xapian::Document+,
+  (not clever enough to do this anyway), I'd probably conclude that not
+  wanting to deal with full-on concurrency is one thing, not protecting the
+  reference counters is another, and going too far.
+- The problem was not so easily visible because the object deletion is
+  implicitely performed during the stack unwind: this provides no clue, no
+  specific operation to think about.
+- Pure lazyness.
+
+
+As a conclusion, a humble request to library designers: when an
+interface works counter to the reasonable expectations of at least some of
+the users (for example because it looks like, but works differently, than a
+standard library interface), it is worth it to be very specific in the
+documentation and header file comments about the gotcha's. Saving people
+from their own deficiencies is a worthy goal.
+
+Here, a simple statement that the reference count was not mt-safe
+(admittedly redundant with the general statement that the *Xapian* library
+does not deal with threads), would have got me thinking and avoided the
+error.
+
+++++
+      <h2 id="comments">Comments</h2>
+
+      <div id="disqus_thread"></div>
+      <script type="text/javascript">
+        var disqus_shortname = 'lesbonscomptes'; 
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+++++
