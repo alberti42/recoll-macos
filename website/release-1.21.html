@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Recoll 1.20 series release notes</title>
+    <meta name="Author" content="Jean-Francois Dockes">
+    <meta name="Description"
+          content="recoll is a simple full-text search system for unix and linux     based on the powerful and mature xapian engine">
+    <meta name="Keywords" content="full text search, desktop search, unix, linux">
+    <meta http-equiv="Content-language" content="en">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="robots" content="All,Index,Follow">
+    <link type="text/css" rel="stylesheet" href="styles/style.css">
+  </head>
+
+  <body>
+
+    <div class="rightlinks">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="download.html">Downloads</a></li>
+        <li><a href="doc.html">Documentation</a></li>
+      </ul>
+    </div>
+
+    <div class="content">
+      <h1>Release notes for Recoll 1.20.x</h1>
+
+      <h2>Caveats</h2>
+
+      <p><em>Installing over an older version</em>: 1.19 </p>
+
+      <p>1.20 and 1.21 indexes are fully compatible. Installing 1.21
+        over an 1.19 index is possible, but there have been small
+        changes in the way compound words (e.g. email addresses) are
+        indexed, so it will be best to reset the index. Still, in a
+        pinch, 1.21 search can mostly use an 1.19 index. </p>
+
+      <p>Always reset the index if you do not know by which version it
+        was created (you're not sure it's at least 1.18). The best method
+        is to quit all Recoll programs and delete the index directory 
+        (<span class="literal">
+          rm -rf ~/.recoll/xapiandb</span>), then start <code>recoll</code>
+        or <code>recollindex</code>. <br> 
+
+        <span class="literal">recollindex -z</span> will do the same
+        in most, but not all, cases. It's better to use
+        the <tt>rm</tt> method, which will also ensure that no debris
+        from older releases remain (e.g.: old stemming files which are
+        not used any more).</p>
+
+      <p>Case/diacritics sensitivity is off by default. It can be
+        turned on <em>only</em> by editing
+        recoll.conf (
+        <a href="usermanual/usermanual.html#RCL.INDEXING.CONFIG.SENS">
+          see the manual</a>). If you do so, you must then reset the
+        index.</p> 
+
+
+      <h2>Changes in Recoll 1.21</h2>
+
+      <ul>
+        <li>Allow saving queries to files and reloading them
+          later. Available both for simple and advanced queries, and
+          based on XML files.</li>
+	<li>A Bison-based query parser replaces the old regexp-based
+	  one and allows parenthized sub-expressions and easier future
+	  expansions.</li>  
+        <li>The GUI gets a "close to system tray" function.</li>
+        <li>Avoid retrying to index previously indexed files if
+          nothing seems to have changed in the filters.</li> 
+        <li>Improve indexing speed by always using vfork() for
+          spawning external commands.</li> 
+        <li>The pdf filter gains the capability to run OCR (tesseract) on
+          image-only files.</li> 
+        <li>Improved check about when we should try to uncompress
+          stuff. Will eliminate some of the most dreadful case of
+          recollindex having an impact on system performance.</li>
+        <li>Warn if non-existent paths are listed in the configuration
+          file (help with typos).</li>
+        <li>Adjust background color for webkit-based elements (result
+          list and snippets window) according to desktop setup.</li>
+        <li>Listing the results with the KIO slave is now
+          performed with incremental updates. Bumped max entries to
+          10000.</li>
+      </ul>
+    </div>
+  </body>
+</html>

@@ -25,89 +25,99 @@
     <div class="content">
       <h1>Major Recoll releases at a glance</h1>
 
-	  <p>A summary of the major releases and the main features which
-		came with them.</p>
+      <p>A summary of the major releases and the main features which
+	came with them.</p>
 
-	  <dl>
-		<dt><a href="release-1.21.html">Release 1.21</a> (future): new
-		  query parser</dt> 
-		<dd>
-		  <ul>
-			<li>Bison-based query parser replaces old regexp-based
-			  one and allows parenthized sub-expressions and easier
-			  future expansions.</li>
-                        <li>Avoid retrying to index previously
-                          indexed files if nothing seems to have
-                          changed in the filters.</li>
-		  </ul>
-		</dd>
-		<dt><a href="release-1.20.html">Release 1.20</a>: small
-		  improvements</dt> 
-		<dd>
-		  <ul>
-		  <li><i>Open With</i> results list popup menu entry.</li>
-		  <li><i>fieldname:term1,term2</i>
-			and <i>fieldname:term1/term2</i> shortcuts for AND/OR
-			searches inside fields.</li>
-		  <li><i>Query fragments</i> tool.</li>
-		  <li>Better handling of compound terms like mail
-		  addresses.</li>
-		  <li>Selection on source collection type (Web history / File
-			system).</li>
-		  <li>Configurable GUI geometry.</li>  
-		  <li>Different handling
-			of container file / subdocuments file name searches.</li>
-		  <li>Simultaneous -e -i options to recollindex.</li>
-		  </ul>
-		</dd>
-		</dd>
-		<dt><a href="release-1.19.html">Release 1.19</a>: multithreads
-		  indexing</dt> 
-		<dd>
-		  <ul>
-			<li>Better indexing performance through
-			  multithreading.</li>
-			<li>Display list of subdocuments (e.g. attachments) for a
-			  given result.</li>
-			<li>Collapsed duplicate results display link.</li>
-			<li>Path translation facility (for portable indexes).</li>
-			<li>Caches last uncompressed file (e.g. for fast
-			  compressed mbox access).</li>
-			<li>Partial recursive reindex option to command line
-			indexer.</li>
-			<li>Can import tags from external application.</li>
-			<li>Extended attributes indexing is on by default.</li>
-			<li>New Python interface for data access. API re-modeled against
-			  newer Python Database API 2.0.</li>
-			<li>Shared librecoll.so.</li>
-		  </ul>
-		</dd>
-		<dt><a href="release-1.18.html">Release 1.18</a>: case and
-		  diacritics switchable sensitivity</dt> 
-		<dd>
-		  <ul>
-			<li>Index configuration for case and diacritics sensitivity.</li> 
-			<li>Advanced search history.</li>
-			<li>Page-level access when opening PDFs, and snippets
-			  window.</li>
-			<li>Use Xapian Synonyms tables for query expansion.</li>
-		  </ul>
-		</dd>
-		<dt><a href="release-1.17.html">Release 1.17</a>: small
-		  improvements</dt> 
-		<dd>
-		  <ul>
-			<li>Language-dependant unaccenting.</li>
-			<li>GUI dialogs for indexing schedule setup.</li>
-			<li>Phrase-based <i>dir:</i> filtering, accepting path
-			fragments. Size filtering.</li> 
-			<li>Python module default install and Unity Lens.</li>
-			<li>Result list switched to WebKit: drops qt3 support.</li>
-			<li>Indexing always performed by separate process.</li>
-			<li>Dynamic category filters (defined as language fragments).</li>
-		  </ul>
-		</dd>
-		
+      <dl>
+	<dt><a href="release-1.21.html">Release 1.21</a> (future): new
+	  query parser</dt> 
+	<dd>
+	  <ul>
+	    <li>A Bison-based query parser replaces the old
+	      regexp-based one and allows parenthized
+	      sub-expressions and easier future
+	      expansions.</li> 
+            <li>Avoid retrying to index previously
+              indexed files if nothing seems to have
+              changed in the filters.</li>
+            <li>Allow saving queries to files and reload them
+              later. Available both for simple and advanced queries, and
+              based on XML files.</li>
+            <li>Improve indexing speed by always using
+              vfork() for spawning external commands.</li>
+            <li>GUI gets "close to system tray" function.</li>
+	  </ul>
+	</dd>
+
+	<dt><a href="release-1.20.html">Release 1.20</a>: small
+	  improvements</dt> 
+	<dd>
+	  <ul>
+	    <li><i>Open With</i> results list popup menu entry.</li>
+	    <li><i>fieldname:term1,term2</i>
+	      and <i>fieldname:term1/term2</i> shortcuts for AND/OR
+	      searches inside fields.</li>
+	    <li><i>Query fragments</i> tool.</li>
+	    <li>Better handling of compound terms like mail
+	      addresses.</li>
+	    <li>Selection on source collection type (Web history / File
+	      system).</li>
+	    <li>Configurable GUI geometry.</li>  
+	    <li>Different handling
+	      of container file / subdocuments file name searches.</li>
+	    <li>Simultaneous -e -i options to recollindex.</li>
+	  </ul>
+	</dd>
+
+        <dt><a href="release-1.19.html">Release 1.19</a>: multithreads
+          indexing</dt> 
+        <dd>
+          <ul>
+            <li>Better indexing performance through
+              multithreading.</li>
+            <li>Display list of subdocuments (e.g. attachments) for a
+              given result.</li>
+            <li>Collapsed duplicate results display link.</li>
+            <li>Path translation facility (for portable indexes).</li>
+            <li>Caches last uncompressed file (e.g. for fast
+              compressed mbox access).</li>
+            <li>Partial recursive reindex option to command line
+              indexer.</li>
+            <li>Can import tags from external application.</li>
+            <li>Extended attributes indexing is on by default.</li>
+            <li>New Python interface for data access. API re-modeled against
+              newer Python Database API 2.0.</li>
+            <li>Shared librecoll.so.</li>
+          </ul>
+        </dd>
+
+        <dt><a href="release-1.18.html">Release 1.18</a>: case and
+          diacritics switchable sensitivity</dt> 
+        <dd>
+          <ul>
+            <li>Index configuration for case and diacritics sensitivity.</li> 
+            <li>Advanced search history.</li>
+            <li>Page-level access when opening PDFs, and snippets
+              window.</li>
+            <li>Use Xapian Synonyms tables for query expansion.</li>
+          </ul>
+        </dd>
+
+        <dt><a href="release-1.17.html">Release 1.17</a>: small
+          improvements</dt> 
+        <dd>
+          <ul>
+            <li>Language-dependant unaccenting.</li>
+            <li>GUI dialogs for indexing schedule setup.</li>
+            <li>Phrase-based <i>dir:</i> filtering, accepting path
+              fragments. Size filtering.</li> 
+            <li>Python module default install and Unity Lens.</li>
+            <li>Result list switched to WebKit: drops qt3 support.</li>
+            <li>Indexing always performed by separate process.</li>
+            <li>Dynamic category filters (defined as language fragments).</li>
+          </ul>
+        </dd>
+
     </div>
   </body>
 </html>
