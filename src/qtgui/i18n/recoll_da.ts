@@ -41,7 +41,7 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="obsolete">tekst</translation>
+        <translation type="obsolete">tekster</translation>
     </message>
     <message>
         <source>spreadsheets</source>
@@ -275,8 +275,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Config error</source>
-        <translation>
-Configureringsfejl</translation>
+        <translation>Konfigureringsfejl</translation>
     </message>
     <message>
         <source>Original path</source>
@@ -386,7 +385,7 @@ p, li { white-space: pre-wrap; }
     <name>IdxSchedW</name>
     <message>
         <source>Index scheduling setup</source>
-        <translation>Opsætning af Indeksplanlægning</translation>
+        <translation>Opsætning af tidsplanlægning for index</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -408,7 +407,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Cron scheduling</source>
-        <translation>Cron planlægning</translation>
+        <translation>Tidsplanlægning med cron</translation>
     </message>
     <message>
         <source>The tool will let you decide at what time indexing should run and will install a crontab entry.</source>
@@ -442,7 +441,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
-        <translation>&quot;historik&quot; filen er beskadiget eller den er ikke læs- eller skrivbar, undersøg det venligst, eller fjerne den:</translation>
+        <translation>Filen med &quot;historik&quot; er beskadiget eller den kan ikke læses eller skrives til, undersøg det venligst, eller fjern den:</translation>
     </message>
 </context>
 <context>
@@ -583,7 +582,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Index the names of files for which the contents cannot be identified or processed (no or unsupported mime type). Default true</source>
-        <translation>Indekser navnene på filer, hvor indholdet ikke kan identificeres eller behandles (ingen eller ikke-understøttet mimetype). Standard er true</translation>
+        <translation>Indekser navnene på filer, hvor indholdet ikke kan identificeres eller behandles (ingen eller ikke-understøttet mime-type). Standard er true</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -603,12 +602,13 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Ignored endings</source>
-        <translation type="unfinished"></translation>
+        <translation>ignorerede endelser</translation>
     </message>
     <message>
         <source>These are file name endings for files which will be indexed by name only 
 (no MIME type identification attempt, no decompression, no content indexing).</source>
-        <translation type="unfinished"></translation>
+        <translation>Dette er endelser på filnavne for filer, hvor kun navnet vil blive indekseret 
+(ingen forsøg på identification af MIME-type, ingen dekomprimering, ingen indeksering af indhold).</translation>
     </message>
 </context>
 <context>
@@ -667,11 +667,11 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>Forhåndsvis &amp;Forældre-dokument/mappe</translation>
+        <translation>Forhåndsvis &amp;Forælderdokument/mappe</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Åbn Forældre-dokument/mappe</translation>
+        <translation>&amp;Åbn Forælderdokument/mappe</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
@@ -879,7 +879,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>No external viewer configured for mime type [</source>
-        <translation>Ingen ekstern fremviser konfigureret for mimetype [</translation>
+        <translation>Ingen ekstern fremviser konfigureret for mime-type [</translation>
     </message>
     <message>
         <source>The viewer specified in mimeview for %1: %2 is not found.
@@ -965,7 +965,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Can&apos;t update index: indexer running</source>
-        <translation>Kan ikke opdatere indeks: indexeringsprogram kører</translation>
+        <translation>Kan ikke opdatere indeks: indekseringsprogram kører</translation>
     </message>
     <message>
         <source>Indexed MIME Types</source>
@@ -983,7 +983,7 @@ Kontroller venligst mimeview-filen</translation>
     </message>
     <message>
         <source>Cannot find parent document</source>
-        <translation>Kan ikke finde forældredokument</translation>
+        <translation>Kan ikke finde forælderdokument</translation>
     </message>
     <message>
         <source>Indexing did not run yet</source>
@@ -1039,6 +1039,14 @@ Tjek venligst desktopfilen</translation>
         <source>Indexing interrupted</source>
         <translation>indeksering afbrudt</translation>
     </message>
+    <message>
+        <source>Disabled because the real time indexer was not compiled in.</source>
+        <translation>Deaktiveret fordi realtid indeksering ikke blev kompileret ind.</translation>
+    </message>
+    <message>
+        <source>This configuration tool only works for the main index.</source>
+        <translation>Dette konfigurationsværktøj virker kun for hovedindekset.</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1088,11 +1096,11 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Document &amp;History</source>
-        <translation>Dokument&amp;Historik</translation>
+        <translation>Dokument&amp;historik</translation>
     </message>
     <message>
         <source>Document  History</source>
-        <translation>DokumentHistorik</translation>
+        <translation>Dokumenthistorik</translation>
     </message>
     <message>
         <source>&amp;Advanced Search</source>
@@ -1260,11 +1268,11 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>    With failed files retrying</source>
-        <translation type="unfinished"></translation>
+        <translation>    Forsøg igen med filer der mislykkedes</translation>
     </message>
     <message>
         <source>Next update will retry previously failed files</source>
-        <translation type="unfinished"></translation>
+        <translation>Næste opdatering vil igen forsøge med filer, der tidligere mislykkedes</translation>
     </message>
 </context>
 <context>
@@ -1417,7 +1425,7 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Snippets</source>
-        <translation type="unfinished">Tekststumper</translation>
+        <translation>Tekststumper</translation>
     </message>
 </context>
 <context>
@@ -1577,7 +1585,18 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
 Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Indtast forespørgselssprogets udtryk. Snydeark:&lt;br&gt;
+&lt;i&gt;ord1 ord2&lt;/i&gt; : &apos;ord1&apos; og &apos;ord2&apos; i et hvilken som helst felt.&lt;br&gt;
+&lt;i&gt;felt:ord1&lt;/i&gt; : &apos;ord1&apos; i feltet &apos;felt&apos;.&lt;br&gt;
+ Standard feltnavne/synonymer:&lt;br&gt;
+  titel/emne/billedtekst, forfatter/fra, modtager/til, filnavn, ekst.&lt;br&gt;
+ Pseudofelter: dir, mime/format, type/rclcat, dato, størrelse.&lt;br&gt;
+ To datointerval-eksempler: 2009-03-01/2009-05-20  2009-03-01/P2M:&lt;br&gt;.
+&lt;i&gt;ord1 ord2 OR ord3&lt;/i&gt;: ord1 AND (ord2 OR ord3).&lt;br&gt;
+  Du kan bruge parenteser for at gøre tingene klarere.&lt;br&gt;
+&lt;i&gt;&quot;ord1 ord2&quot;&lt;/i&gt; : frase (skal forekomme nøjagtigt). Mulige modifikatorer:&lt;br&gt;
+&lt;i&gt;&quot;ord1 ord2&quot;p &lt;/i&gt; : uordnet nærheds-søgning med standard afstand.&lt;br&gt;
+Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se manual (&amp;lt;F1&gt;) for flere detaljer.</translation>
     </message>
 </context>
 <context>
@@ -1681,7 +1700,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;p&gt;Sorry, no exact match was found within limits. Probably the document is very big and the snippets generator got lost in a maze...&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Desværre blev der ikke, inden for rimelige grænser, fundet en nøjagtig match. Sandsynligvis fordi dokumentet er meget stort, så tekststump-generatoren for vild i mængden...&lt;/ p&gt;</translation>
     </message>
 </context>
 <context>
@@ -1850,7 +1869,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Select recoll config directory or xapian index directory (e.g.: /home/me/.recoll or /home/me/.recoll/xapiandb)</source>
-        <translation>Vælg recoll configmappe eller xapian indeksmappe (f.eks: /home/me/.recoll eller /home/me/.recoll/xapiandb)</translation>
+        <translation>Vælg recoll konfigmappe eller xapian indeksmappe (f.eks: /home/me/.recoll eller /home/me/.recoll/xapiandb)</translation>
     </message>
     <message>
         <source>The selected directory looks like a Recoll configuration directory but the configuration could not be read</source>
@@ -1862,7 +1881,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Cant add index with different case/diacritics stripping option</source>
-        <translation>Kan ikke tilføje indeks med forskellig indstilling for stripning af store-små bogstaver/diakritiske tegn</translation>
+        <translation>Kan ikke tilføje indeks med en anden indstilling for fjernelse af store-bogstaver/diakritiske tegn</translation>
     </message>
     <message>
         <source>Default QtWebkit font</source>
@@ -1951,7 +1970,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
-        <translation>Navnet på en mappe hvor du vil gemme kopier af besøgte websider.&lt;br&gt;En relativ sti er taget i forhold til konfigurationensmappen.</translation>
+        <translation>Navnet på en mappe hvor du vil gemme kopier af besøgte websider.&lt;br&gt;En relativ sti er taget i forhold til konfigurationsmappen.</translation>
     </message>
     <message>
         <source>Max. size for the web store (MB)</source>
@@ -2102,7 +2121,7 @@ Dette vil hjælpe søgning i meget store tekstfiler (dvs.: log-filer).</translat
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation>Dette er navne på mapper, som indeksering ikke går ind i.&lt;br&gt;Kan indeholde jokertegn. Skal stemme overens med stierne, som de er set af indekseringen (dvs. hvis de øverste mapper omfatter &apos;/home/mig&apos; og &apos;/home&apos; er et link til &apos;/usr/home&apos;, en korrekt unladtSti indgang ville være &apos;/home/mig/tmp * &apos;, ikke &apos;/usr/home/mig/tmp * &apos;)</translation>
+        <translation>Dette er navne på mapper, som indeksering ikke går ind i.&lt;br&gt;Kan indeholde jokertegn. Skal stemme overens med stierne, som de er set af indekseringen (dvs. hvis de øverste mapper omfatter &apos;/home/mig&apos; og &apos;/home&apos; er et link til &apos;/usr/home&apos;, en korrekt udeladtSti indgang ville være &apos;/home/mig/tmp * &apos;, ikke &apos;/usr/home/mig/tmp * &apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
@@ -2162,7 +2181,7 @@ Dette vil hjælpe søgning i meget store tekstfiler (dvs.: log-filer).</translat
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation>Sproget for aspell ordbog. Det skal se ud som &quot;en&quot; eller &quot;fr&quot; ...&lt;br&gt;Hvis denne værdi ikke er angivet, så vil NLS omgivelser blive brugt til at finde det, det fungerer normalt. For at få en idé om, hvad der er installeret på dit system, kan du skrive &apos;aspell config &quot;og se efter .dat filer inde i &apos;data-dir&apos; mappen.</translation>
+        <translation>Sproget for aspell ordbog. Det skal se ud som &quot;en&quot; eller &quot;fr&quot; ...&lt;br&gt;Hvis denne værdi ikke er angivet, så vil NLS omgivelser blive brugt til at finde det, det fungerer normalt. For at få en idé om, hvad der er installeret på dit system, kan du skrive &apos;aspell konfig &quot;og se efter .dat filer inde i &apos;data-dir&apos; mappen.</translation>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the configuration directory. The default is &apos;xapiandb&apos;.</source>
@@ -2174,7 +2193,7 @@ Dette vil hjælpe søgning i meget store tekstfiler (dvs.: log-filer).</translat
     </message>
     <message>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation>&lt;p&gt;Disse er undtagelser fra unac mekanismen, der, som standard, fjerner alle diakritiske tegn, og udfører kanoniske nedbrydning. Du kan tilsidesætte fjernelse af accent for nogle tegn, afhængigt af dit sprog, og angive yderligere dekomponeringer, f.eks for ligaturer. I hver indgang adskilt af mellemrum, er det første tegn kildedelen, og resten er oversættelsen.</translation>
+        <translation>&lt;p&gt;Disse er undtagelser fra unac mekanismen, der, som standard, fjerner alle diakritiske tegn, og udfører kanoniske nedbrydning. Du kan tilsidesætte fjernelse af accent for nogle tegn, afhængigt af dit sprog, og angive yderligere nedbrydninger, f.eks for ligaturer. I hver indgang adskilt af mellemrum, er det første tegn kildedelen, og resten er oversættelsen.</translation>
     </message>
 </context>
 <context>
@@ -2285,7 +2304,7 @@ Kan være langsomt for store dokumenter.</translation>
     </message>
     <message>
         <source>Replace abstracts from documents</source>
-        <translation>Erstat sammendrag fra dokummenter</translation>
+        <translation>Erstat sammendrag fra dokumenter</translation>
     </message>
     <message>
         <source>Synthetic abstract size (characters)</source>
@@ -2381,7 +2400,7 @@ Kan være langsomt for store dokumenter.</translation>
     </message>
     <message>
         <source>Edit result page html header insert</source>
-        <translation>Rediger html-header-Indsæt for resultatside</translation>
+        <translation>Rediger kode for indsætnig i html-header for resultatside</translation>
     </message>
     <message>
         <source>Date format (strftime(3))</source>
@@ -2393,7 +2412,7 @@ Frequent terms are a major performance issue with phrases.
 Skipped terms augment the phrase slack, and reduce the autophrase efficiency.
 The default value is 2 (percent). </source>
         <translation>Hyppighedens procentvise tærskel, hvorover vi ikke bruger ord inde i autofrase.
-Hyppige ord er et stort ydeevneproblem med fraser.
+Hyppige ord er et stort problem for ydeevnen med fraser.
 Udeladte ord forøger frase stilstand, og reducere effektiviteten af autofrase.
 Standardværdien er 2 (procent).</translation>
     </message>
@@ -2443,7 +2462,7 @@ Standardværdien er 2 (procent).</translation>
     </message>
     <message>
         <source>Opens a dialog to select the Snippets window CSS style sheet file</source>
-        <translation>Åbner et vindue til at vælge CSS stylesheetfil for vinduet til tekststumper</translation>
+        <translation>Åbner et vindue til at vælge CSS stylesheet-fil for vinduet til tekststumper</translation>
     </message>
     <message>
         <source>Resets the Snippets window style</source>
@@ -2463,7 +2482,7 @@ Standardværdien er 2 (procent).</translation>
     </message>
     <message>
         <source>Toolbar Combobox</source>
-        <translation>værktøjslinje Comboboks</translation>
+        <translation>værktøjslinje kombinationsfelt</translation>
     </message>
     <message>
         <source>Menu</source>
