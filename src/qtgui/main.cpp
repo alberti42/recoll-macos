@@ -199,6 +199,7 @@ static int    op_flags;
 #define OPT_f     0x200
 #define OPT_a     0x400
 #define OPT_t     0x800
+#define OPT_v     0x1000
 
 static const char usage [] =
 "\n"
@@ -218,6 +219,7 @@ static const char usage [] =
 "       explicitly as -t (not ie, -at), and -q <query> MUST\n"
 "       be last on the command line if this is used.\n"
 "       Use -t -h to see the additional non-gui options\n"
+"recoll -v : print version\n"
 "recoll <url>\n"
 "   This is used to open a recoll url (including an ipath), and called\n"
 "   typically from another search interface like the Unity Dash\n"
@@ -226,6 +228,7 @@ static void
 Usage(void)
 {
     FILE *fp = (op_flags & OPT_h) ? stdout : stderr;
+    fprintf(fp, "%s\n", Rcl::version_string().c_str());
     fprintf(fp, "%s: Usage: %s", thisprog, usage);
     exit((op_flags & OPT_h)==0);
 }
@@ -269,6 +272,9 @@ int main(int argc, char **argv)
 	    case 'q':	op_flags |= OPT_q; if (argc < 2)  Usage();
 		question = *(++argv);
 		argc--; goto b1;
+            case 'v': op_flags |= OPT_v;
+                fprintf(stdout, "%s\n", Rcl::version_string().c_str());
+                return 0;
 	    case 't': op_flags |= OPT_t; break;
 	    default: Usage();
 	    }
