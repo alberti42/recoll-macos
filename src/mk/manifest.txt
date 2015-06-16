@@ -115,9 +115,11 @@ filters/
 filters/injectcommon.sh
 filters/msodump.zip
 filters/ppt-dump.py
+filters/rcl7z
 filters/rclabw
 filters/rclaptosidman
 filters/rclaudio
+filters/rclcheckneedretry.sh
 filters/rclchm
 filters/rcldia
 filters/rcldjvu
@@ -162,7 +164,6 @@ filters/rclwpd
 filters/rclxls
 filters/rclxml
 filters/rclzip
-filters/rcl7z
 filters/recfiltcommon
 filters/xls-dump.py
 filters/xlsxmltocsv.py
@@ -172,6 +173,8 @@ index/beaglequeue.cpp
 index/beaglequeue.h
 index/bglfetcher.cpp
 index/bglfetcher.h
+index/checkretryfailed.cpp
+index/checkretryfailed.h
 index/fetcher.cpp
 index/fetcher.h
 index/fsfetcher.cpp
@@ -316,6 +319,8 @@ qtgui/guiutils.h
 qtgui/i18n/
 qtgui/i18n/recoll_cs.qm
 qtgui/i18n/recoll_cs.ts
+qtgui/i18n/recoll_da.qm
+qtgui/i18n/recoll_da.ts
 qtgui/i18n/recoll_de.qm
 qtgui/i18n/recoll_de.ts
 qtgui/i18n/recoll_el.qm
@@ -402,6 +407,11 @@ qtgui/ptrans_w.cpp
 qtgui/ptrans_w.h
 qtgui/rclhelp.cpp
 qtgui/rclhelp.h
+qtgui/rclm_idx.cpp
+qtgui/rclm_preview.cpp
+qtgui/rclm_saveload.cpp
+qtgui/rclm_view.cpp
+qtgui/rclm_wins.cpp
 qtgui/rclmain.ui
 qtgui/rclmain_w.cpp
 qtgui/rclmain_w.h
@@ -431,6 +441,8 @@ qtgui/spell_w.h
 qtgui/ssearch_w.cpp
 qtgui/ssearch_w.h
 qtgui/ssearchb.ui
+qtgui/systray.cpp
+qtgui/systray.h
 qtgui/ui_rclmain.h-4.5
 qtgui/uiprefs.ui
 qtgui/uiprefs_w.cpp
@@ -438,6 +450,8 @@ qtgui/uiprefs_w.h
 qtgui/viewaction.ui
 qtgui/viewaction_w.cpp
 qtgui/viewaction_w.h
+qtgui/xmltosd.cpp
+qtgui/xmltosd.h
 query/
 query/Makefile
 query/docseq.cpp
@@ -459,9 +473,9 @@ query/reslistpager.cpp
 query/reslistpager.h
 query/sortseq.cpp
 query/sortseq.h
-query/wasastringtoquery.cpp
-query/wasastringtoquery.h
-query/wasatorcl.cpp
+query/wasaparse.cpp
+query/wasaparse.y
+query/wasaparserdriver.h
 query/wasatorcl.h
 query/xadump.cpp
 rcldb/
@@ -483,6 +497,7 @@ rcldb/rclquery_p.h
 rcldb/rclterms.cpp
 rcldb/searchdata.cpp
 rcldb/searchdata.h
+rcldb/searchdatatox.cpp
 rcldb/searchdataxml.cpp
 rcldb/stemdb.cpp
 rcldb/stemdb.h
@@ -543,6 +558,8 @@ utils/idfile.cpp
 utils/idfile.h
 utils/md5.cpp
 utils/md5.h
+utils/md5ut.cpp
+utils/md5ut.h
 utils/mimeparse.cpp
 utils/mimeparse.h
 utils/netcon.cpp
