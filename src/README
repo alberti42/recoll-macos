@@ -8,7 +8,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    <jfd@recoll.org>
 
-   Copyright (c) 2005-2014 Jean-Francois Dockes
+   Copyright (c) 2005-2015 Jean-Francois Dockes
 
    Permission is granted to copy, distribute and/or modify this document
    under the terms of the GNU Free Documentation License, Version 1.3 or any
@@ -17,8 +17,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    license can be found at the following location: GNU web site.
 
    This document introduces full text search notions and describes the
-   installation and use of the Recoll application. It currently describes
-   Recoll 1.20.
+   installation and use of the Recoll application. This version describes
+   Recoll 1.21.
 
      ----------------------------------------------------------------------
 
@@ -42,7 +42,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                              2.1.3. Document types
 
-                             2.1.4. Recovery
+                             2.1.4. Indexing failures
+
+                             2.1.5. Recovery
 
                 2.2. Index storage
 
@@ -107,7 +109,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                              3.1.13. Search tips, shortcuts
 
-                             3.1.14. Customizing the search interface
+                             3.1.14. Saving and restoring queries (1.21 and
+                             later)
+
+                             3.1.15. Customizing the search interface
 
                 3.2. Searching with the KDE KIO slave
 
@@ -163,10 +168,6 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 5.1. Installing a binary copy
 
-                             5.1.1. Installing through a package system
-
-                             5.1.2. Installing a prebuilt Recoll
-
                 5.2. Supporting packages
 
                 5.3. Building from source
@@ -179,19 +180,21 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 5.4. Configuration overview
 
-                             5.4.1. The main configuration file, recoll.conf
+                             5.4.1. Environment variables
 
-                             5.4.2. The fields file
+                             5.4.2. The main configuration file, recoll.conf
 
-                             5.4.3. The mimemap file
+                             5.4.3. The fields file
 
-                             5.4.4. The mimeconf file
+                             5.4.4. The mimemap file
 
-                             5.4.5. The mimeview file
+                             5.4.5. The mimeconf file
 
-                             5.4.6. The ptrans file
+                             5.4.6. The mimeview file
 
-                             5.4.7. Examples of configuration adjustments
+                             5.4.7. The ptrans file
+
+                             5.4.8. Examples of configuration adjustments
 
 Chapter 1. Introduction
 
@@ -352,8 +355,19 @@ Chapter 2. Indexing
    index build can be forced later by specifying an option to the indexing
    command (recollindex -z or -Z).
 
+   recollindex skips files which caused an error during a previous pass. This
+   is a performance optimization, and a new behaviour in version 1.21 (failed
+   files were always retried by previous versions). The command line option
+   -k can be set to retry failed files, for example after updating a filter.
+
    The following sections give an overview of different aspects of the
    indexing processes and configuration, with links to detailed sections.
+
+   Depending on your data, temporary files may be needed during indexing,
+   some of them possibly quite big. You can use the RECOLL_TMPDIR or TMPDIR
+   environment variables to determine where they are created (the default is
+   to use /tmp). Using TMPDIR has the nice property that it may also be taken
+   into account by auxiliary commands executed by recollindex.
 
   2.1.1. Indexing modes
 
@@ -462,7 +476,28 @@ Chapter 2. Indexing
    main configuration file (recoll.conf), or from the GUI index configuration
    tool.
 
-  2.1.4. Recovery
+  2.1.4. Indexing failures
+
+   Indexing may fail for some documents, for a number of reasons: a helper
+   program may be missing, the document may be corrupt, we may fail to
+   uncompress a file because no file system space is available, etc.
+
+   Recoll versions prior to 1.21 always retried to index files which had
+   previously caused an error. This guaranteed that anything that may have
+   become indexable (for example because a helper had been installed) would
+   be indexed. However this was bad for performance because some indexing
+   failures may be quite costly (for example failing to uncompress a big file
+   because of insufficient disk space).
+
+   The indexer in Recoll versions 1.21 and later do not retry failed file by
+   default. Retrying will only occur if an explicit option (-k) is set on the
+   recollindex command line, or if a script executed when recollindex starts
+   up says so. The script is defined by a configuration variable
+   (checkneedretryindexscript), and makes a rather lame attempt at deciding
+   if a helper command may have been installed, by checking if any of the
+   common bin directories have changed.
+
+  2.1.5. Recovery
 
    In the rare case where the index becomes corrupted (which can signal
    itself by weird search results or crashes), the index files need to be
@@ -785,6 +820,9 @@ Chapter 2. Indexing
    rebuilt, which can be a significant advantage if it is very big (some
    installations need days for a full index rebuild).
 
+   Option -k will force retrying files which previously failed to be indexed,
+   for example because of a missing helper program.
+
    Of special interest also, maybe, are the -i and -f options. -i allows
    indexing an explicit list of files (given as command line parameters or
    read on stdin). -f tells recollindex to ignore file selection parameters
@@ -867,11 +905,12 @@ Chapter 2. Indexing
    option -x to disable X11 session monitoring (else the daemon will not
    start).
 
-   By default, the messages from the indexing daemon will be discarded. You
-   may want to change this by setting the daemlogfilename and daemloglevel
-   configuration parameters. Also the log file will only be truncated when
-   the daemon starts. If the daemon runs permanently, the log file may grow
-   quite big, depending on the log level.
+   By default, the messages from the indexing daemon will be setn to the same
+   file as those from the interactive commands (logfilename). You may want to
+   change this by setting the daemlogfilename and daemloglevel configuration
+   parameters. Also the log file will only be truncated when the daemon
+   starts. If the daemon runs permanently, the log file may grow quite big,
+   depending on the log level.
 
    When building Recoll, the real time indexing support can be customised
    during package configuration with the --with[out]-fam or
@@ -945,6 +984,10 @@ Chapter 3. Searching
    composed of single or multiple characters should be entered separated by
    white space in this case (they would typically be printed without white
    space).
+
+   Some searches can be quite complex, and you may want to re-use them later,
+   perhaps with some tweaking. Recoll versions 1.21 and later can save and
+   restore searches, using XML files. See Saving and restoring queries.
 
   3.1.1. Simple search
 
@@ -1373,6 +1416,8 @@ Chapter 3. Searching
    memorizing the search language constructs. It can be opened through the
    Tools menu or through the main toolbar.
 
+   Recoll keeps a history of searches. See Advanced search history.
+
    The dialog has two tabs:
 
     1. The first tab lets you specify terms to search for, and permits
@@ -1745,7 +1790,24 @@ Chapter 3. Searching
 
    Quitting. Entering Ctrl-Q almost anywhere will close the application.
 
-  3.1.14. Customizing the search interface
+  3.1.14. Saving and restoring queries (1.21 and later)
+
+   Both simple and advanced query dialogs save recent history, but the amount
+   is limited: old queries will eventually be forgotten. Also, important
+   queries may be difficult to find among others. This is why both types of
+   queries can also be explicitely saved to files, from the GUI menus: File
+   -> Save last query / Load last query
+
+   The default location for saved queries is a subdirectory of the current
+   configuration directory, but saved queries are ordinary files and can be
+   written or moved anywhere.
+
+   Some of the saved query parameters are part of the preferences (e.g.
+   autophrase or the active external indexes), and may differ when the query
+   is loaded from the time it was saved. In this case, Recoll will warn of
+   the differences, but will not change the user preferences.
+
+  3.1.15. Customizing the search interface
 
    You can customize some aspects of the search interface by using the GUI
    configuration entry in the Preferences menu.
@@ -1912,29 +1974,33 @@ Chapter 3. Searching
    alternative indexer may also need to implement a way of purging the index
    from stale data,
 
-    3.1.14.1. The result list format
+    3.1.15.1. The result list format
+
+   Newer versions of Recoll (from 1.17) normally use WebKit HTML widgets for
+   the result list and the snippets window (this may be disabled at build
+   time). Total customisation is possible with full support for CSS and
+   Javascript. Conversely, there are limits to what you can do with the older
+   Qt QTextBrowser, but still, it is possible to decide what data each result
+   will contain, and how it will be displayed.
 
    The result list presentation can be exhaustively customized by adjusting
    two elements:
 
      o The paragraph format
 
-     o HTML code inside the header section
+     o HTML code inside the header section. For versions 1.21 and later, this
+       is also used for the snippets window
 
-   These can be edited from the Result list tab of the GUI configuration.
+   The paragraph format and the header fragment can be edited from the Result
+   list tab of the GUI configuration.
 
-   Newer versions of Recoll (from 1.17) use a WebKit HTML object by default
-   (this may be disabled at build time), and total customisation is possible
-   with full support for CSS and Javascript. Conversely, there are limits to
-   what you can do with the older Qt QTextBrowser, but still, it is possible
-   to decide what data each result will contain, and how it will be
-   displayed.
+   The header fragment is used both for the result list and the snippets
+   window. The snippets list is a table and has a snippets class attribute.
+   Each paragraph in the result list is a table, with class respar, but this
+   can be changed by editing the paragraph format.
 
-   No more detail will be given about the header part (only useful with the
-   WebKit build), if there are restrictions to what you can do, they are
-   beyond this author's HTML/CSS/Javascript abilities... There are a few
-   examples on the page about customising the result list on the Recoll web
-   site.
+   There are a few examples on the page about customising the result list on
+   the Recoll web site.
 
       The paragraph format
 
@@ -1997,9 +2063,13 @@ Chapter 3. Searching
 
    The default value for the paragraph format string is:
 
- <img src="%I" align="left">%R %S %L &nbsp;&nbsp;<b>%T</b><br>
- %M&nbsp;%D&nbsp;&nbsp;&nbsp;<i>%U</i>&nbsp;%i<br>
- %A %K
+     "<table class=\"respar\">\n"
+     "<tr>\n"
+     "<td><a href='%U'><img src='%I' width='64'></a></td>\n"
+     "<td>%L &nbsp;<i>%S</i> &nbsp;&nbsp;<b>%T</b><br>\n"
+     "<span style='white-space:nowrap'><i>%M</i>&nbsp;%D</span>&nbsp;&nbsp;&nbsp; <i>%U</i>&nbsp;%i<br>\n"
+     "%A %K</td>\n"
+     "</tr></table>\n"
 
    You may, for example, try the following for a more web-like experience:
 
@@ -2205,7 +2275,8 @@ Chapter 3. Searching
 
    An element is composed of an optional field specification, and a value,
    separated by a colon (the field separator is the last colon in the
-   element). Example: Eugenie, author:balzac, dc:title:grandet
+   element). Examples: Eugenie, author:balzac, dc:title:grandet
+   dc:title:"eugenie grandet"
 
    The colon, if present, means "contains". Xesam defines other relations,
    which are mostly unsupported for now (except in special cases, described
@@ -2218,12 +2289,21 @@ Chapter 3. Searching
    (word2 OR word3) not (word1 AND word2) OR word3. Explicit parenthesis are
    not supported.
 
-   An element preceded by a - specifies a term that should not appear. Pure
-   negative queries are forbidden.
+   As of Recoll 1.21, you can use parentheses to group elements, which will
+   sometimes make things clearer, and may allow expressing combinations which
+   would have been difficult otherwise.
+
+   An element preceded by a - specifies a term that should not appear.
 
    As usual, words inside quotes define a phrase (the order of words is
    significant), so that title:"prejudice pride" is not the same as
    title:prejudice title:pride, and is unlikely to find a result.
+
+   Words inside phrases and capitalized words are not stem-expanded.
+   Wildcards may be used anywhere inside a term. Specifying a wild-card on
+   the left of a term can produce a very slow search (or even an incorrect
+   one if the expansion is truncated because of excessive size). Also see
+   More about wildcards.
 
    To save you some typing, recent Recoll versions (1.20 and later) interpret
    a comma-separated list of terms as an AND list inside the field. Use slash
@@ -2238,8 +2318,10 @@ Chapter 3. Searching
 
    would search for john or ringo.
 
-   Modifiers can be set on a phrase clause, for example to specify a
-   proximity search (unordered). See the modifier section.
+   Modifiers can be set on a double-quote value, for example to specify a
+   proximity search (unordered). See the modifier section. No space must
+   separate the final double-quote and the modifiers value, e.g. "two
+   one"po10
 
    Recoll currently manages the following default fields:
 
@@ -2355,12 +2437,6 @@ Chapter 3. Searching
        be modified or extended. The default category names are those which
        permit filtering results in the main GUI screen. Categories are OR'ed
        like MIME types above. This can't be negated with - either.
-
-   Words inside phrases and capitalized words are not stem-expanded.
-   Wildcards may be used anywhere inside a term. Specifying a wild-card on
-   the left of a term can produce a very slow search (or even an incorrect
-   one if the expansion is truncated because of excessive size). Also see
-   More about wildcards.
 
    The document input handlers used while indexing have the possibility to
    create other fields with arbitrary names, and aliases may be defined in
@@ -3249,44 +3325,28 @@ Chapter 5. Installation and configuration
 
 5.1. Installing a binary copy
 
-   There are three types of binary Recoll installations:
+   Recoll binary copies are always distributed as regular packages for your
+   system. They can be obtained either through the system's normal software
+   distribution framework (e.g. Debian/Ubuntu apt, FreeBSD ports, etc.), or
+   from some type of "backports" repository providing versions newer than the
+   standard ones, or found on the Recoll WEB site in some cases.
 
-     o Through your system normal software distribution framework (ie,
-       Debian/Ubuntu apt, FreeBSD ports, etc.).
+   There used to exist another form of binary install, as pre-compiled source
+   trees, but these are just less convenient than the packages and don't
+   exist any more.
 
-     o From a package downloaded from the Recoll web site.
+   The package management tools will usually automatically deal with hard
+   dependancies for packages obtained from a proper package repository. You
+   will have to deal with them by hand for downloaded packages (for example,
+   when dpkg complains about missing dependancies).
 
-     o From a prebuilt tree downloaded from the Recoll web site.
-
-   In all cases, the strict software dependancies (ie on Xapian or iconv)
-   will be automatically satisfied, you should not have to worry about them.
-
-   You will only have to check or install supporting applications for the
-   file types that you want to index beyond those that are natively processed
-   by Recoll (text, HTML, email files, and a few others).
+   In all cases, you will have to check or install supporting applications
+   for the file types that you want to index beyond those that are natively
+   processed by Recoll (text, HTML, email files, and a few others).
 
    You should also maybe have a look at the configuration section (but this
    may not be necessary for a quick test with default parameters). Most
    parameters can be more conveniently set from the GUI interface.
-
-  5.1.1. Installing through a package system
-
-   If you use a BSD-type port system or a prebuilt package (DEB, RPM,
-   manually or through the system software configuration utility), just
-   follow the usual procedure for your system.
-
-  5.1.2. Installing a prebuilt Recoll
-
-   The unpackaged binary versions on the Recoll web site are just compressed
-   tar files of a build tree, where only the useful parts were kept
-   (executables and sample configuration).
-
-   The executable binary files are built with a static link to libxapian and
-   libiconv, to make installation easier (no dependencies).
-
-   After extracting the tar file, you can proceed with installation as if you
-   had built the package from source (that is, just type make install). The
-   binary trees are built for installation to /usr/local.
 
 5.2. Supporting packages
 
@@ -3487,7 +3547,7 @@ Chapter 5. Installation and configuration
    Normal procedure:
 
          cd recoll-xxx
-         configure
+         ./configure
          make
          (practices usual hardship-repelling invocations)
       
@@ -3624,7 +3684,51 @@ Chapter 5. Installation and configuration
        text files with appropriate encodings, and concatenate them to create
        the complete configuration.
 
-  5.4.1. The main configuration file, recoll.conf
+  5.4.1. Environment variables
+
+   RECOLL_CONFDIR
+
+           Defines the main configuration directory.
+
+   RECOLL_TMPDIR, TMPDIR
+
+           Locations for temporary files, in this order of priority. The
+           default if none of these is set is to use /tmp. Big temporary
+           files may be created during indexing, mostly for decompressing,
+           and also for processing, e.g. email attachments.
+
+   RECOLL_CONFTOP, RECOLL_CONFMID
+
+           Allow adding configuration directories with priorities below and
+           above the user directory (see above the Configuration overview
+           section for details).
+
+   RECOLL_EXTRA_DBS, RECOLL_ACTIVE_EXTRA_DBS
+
+           Help for setting up external indexes. See this paragraph for
+           explanations.
+
+   RECOLL_DATADIR
+
+           Defines replacement for the default location of Recoll data files,
+           normally found in, e.g., /usr/share/recoll).
+
+   RECOLL_FILTERSDIR
+
+           Defines replacement for the default location of Recoll filters,
+           normally found in, e.g., /usr/share/recoll/filters).
+
+   ASPELL_PROG
+
+           aspell program to use for creating the spelling dictionary. The
+           result has to be compatible with the libaspell which Recoll is
+           using.
+
+   VARNAME
+
+           Blabla
+
+  5.4.2. The main configuration file, recoll.conf
 
    recoll.conf is the main configuration file. It defines things like what to
    index (top directories and things to ignore), and the default character
@@ -3639,7 +3743,7 @@ Chapter 5. Installation and configuration
    Configuration menu in the recoll interface. Some can only be set by
    editing the configuration file.
 
-    5.4.1.1. Parameters affecting what documents we index:
+    5.4.2.1. Parameters affecting what documents we index:
 
    topdirs
 
@@ -3673,8 +3777,23 @@ Chapter 5. Installation and configuration
            like ~/.thunderbird or ~/.evolution in topdirs.
 
            Not even the file names are indexed for patterns in this list. See
-           the recoll_noindex variable in mimemap for an alternative approach
-           which indexes the file names.
+           the noContentSuffixes variable for an alternative approach which
+           indexes the file names.
+
+   noContentSuffixes
+
+           This is a list of file name endings (not wildcard expressions, nor
+           dot-delimited suffixes). Only the names of matching files will be
+           indexed (no attempt at MIME type identification, no decompression,
+           no content indexing). This can be redefined for subdirectories,
+           and edited from the GUI. The default value is:
+
+ noContentSuffixes = .md5 .map \
+        .o .lib .dll .a .sys .exe .com \
+        .mpp .mpt .vsd \
+            .img .img.gz .img.bz2 .img.xz .image .image.gz .image.bz2 .image.xz \
+        .dat .bak .rdf .log.gz .log .db .msf .pid \
+        ,v ~ #
 
    skippedPaths and daemSkippedPaths
 
@@ -3794,7 +3913,7 @@ Chapter 5. Installation and configuration
            Firefox plugin as ~/.recollweb/ToIndex so there should be no need
            to change it.
 
-    5.4.1.2. Parameters affecting how we generate terms:
+    5.4.2.2. Parameters affecting how we generate terms:
 
    Changing some of these parameters will imply a full reindex. Also, when
    using multiple indexes, it may not make sense to search indexes that don't
@@ -3969,7 +4088,7 @@ Chapter 5. Installation and configuration
 
            field1 and field2 will be set inside the document metadata.
 
-    5.4.1.3. Parameters affecting where and how we store things:
+    5.4.2.3. Parameters affecting where and how we store things:
 
    dbdir
 
@@ -4028,7 +4147,7 @@ Chapter 5. Installation and configuration
            memory, you can try higher values between 20 and 80. In my
            experience, values beyond 100 are always counterproductive.
 
-    5.4.1.4. Parameters affecting multithread processing
+    5.4.2.4. Parameters affecting multithread processing
 
    The Recoll indexing process recollindex can use multiple threads to speed
    up indexing on multiprocessor systems. The work done to index files is
@@ -4091,7 +4210,7 @@ Chapter 5. Installation and configuration
 
  thrQSizes = -1 -1 -1
 
-    5.4.1.5. Miscellaneous parameters:
+    5.4.2.5. Miscellaneous parameters:
 
    autodiacsens
 
@@ -4120,6 +4239,16 @@ Chapter 5. Installation and configuration
            Where the messages should go. 'stderr' can be used as a special
            value, and is the default. The daemversion is specific to the
            indexing monitor daemon.
+
+   checkneedretryindexscript
+
+           This defines the name for a command executed by recollindex when
+           starting indexing. If the exit status of the command is 0,
+           recollindex retries to index all files which previously could not
+           be indexed because of data extraction errors. The default value is
+           a script which checks if any of the common bin directories have
+           changed (indicating that a helper program may have been
+           installed).
 
    mondelaypatterns
 
@@ -4211,7 +4340,7 @@ Chapter 5. Installation and configuration
            be set for directories which hold Thunderbird data, as their
            folder format is weird.
 
-  5.4.2. The fields file
+  5.4.3. The fields file
 
    This file contains information about dynamic fields handling in Recoll.
    Some very basic fields have hard-wired behaviour, and, mostly, you should
@@ -4282,7 +4411,7 @@ Chapter 5. Installation and configuration
  # mailmytag field name
  x-my-tag = mailmytag
 
-    5.4.2.1. Extended attributes in the fields file
+    5.4.3.1. Extended attributes in the fields file
 
    Recoll versions 1.19 and later process user extended file attributes as
    documents fields by default.
@@ -4294,7 +4423,7 @@ Chapter 5. Installation and configuration
    translations from extended attributes names to Recoll field names. An
    empty translation disables use of the corresponding attribute data.
 
-  5.4.3. The mimemap file
+  5.4.4. The mimemap file
 
    mimemap specifies the file name extension to MIME type mappings.
 
@@ -4307,18 +4436,12 @@ Chapter 5. Installation and configuration
    handled specially, which is possible because they are usually all located
    in one place.
 
-   mimemap also has a recoll_noindex variable which is a list of suffixes.
-   Matching files will be skipped (which avoids unnecessary decompressions or
-   file executions). This is partially redundant with skippedNames in the
-   main configuration file, with a few differences: it will not affect
-   directories, it cannot be made dependant on the file-system location (it
-   is a configuration-wide parameter), and the file names will still be
-   indexed (not even the file names are indexed for patterns in skippedNames.
-   recoll_noindex is used mostly for things known to be unindexable by a
-   given Recoll version. Having it there avoids cluttering the more
-   user-oriented and locally customized skippedNames.
+   The recoll_noindex mimemap variable has been moved to recoll.conf and
+   renamed to noContentSuffixes, while keeping the same function, as of
+   Recoll version 1.21. For older Recoll versions, see the documentation for
+   noContentSuffixes but use recoll_noindex in mimemap.
 
-  5.4.4. The mimeconf file
+  5.4.5. The mimeconf file
 
    mimeconf specifies how the different MIME types are handled for indexing,
    and which icons are displayed in the recoll result lists.
@@ -4330,7 +4453,7 @@ Chapter 5. Installation and configuration
    recoll in the result lists (the values are the basenames of the png images
    inside the iconsdir directory (specified in recoll.conf).
 
-  5.4.5. The mimeview file
+  5.4.6. The mimeview file
 
    mimeview specifies which programs are started when you click on an Open
    link in a result list. Ie: HTML is normally displayed using firefox, but
@@ -4399,7 +4522,7 @@ Chapter 5. Installation and configuration
    document. This could be used in combination with field customisation to
    help with opening the document.
 
-  5.4.6. The ptrans file
+  5.4.7. The ptrans file
 
    ptrans specifies query-time path translations. These can be useful in
    multiple cases.
@@ -4418,9 +4541,9 @@ Chapter 5. Installation and configuration
            /server/volume2/docdir = /net/server/volume2/docdir
         
 
-  5.4.7. Examples of configuration adjustments
+  5.4.8. Examples of configuration adjustments
 
-    5.4.7.1. Adding an external viewer for an non-indexed type
+    5.4.8.1. Adding an external viewer for an non-indexed type
 
    Imagine that you have some kind of file which does not have indexable
    content, but for which you would like to have a functional Open link in
@@ -4450,7 +4573,7 @@ Chapter 5. Installation and configuration
    configuration, which you do not need to alter. mimeview can also be
    modified from the Gui.
 
-    5.4.7.2. Adding indexing support for a new file type
+    5.4.8.2. Adding indexing support for a new file type
 
    Let us now imagine that the above .blob files actually contain indexable
    text and that you know how to extract it with a command line program.

@@ -16,44 +16,28 @@ Chapter 5. Installation and configuration
 
 5.1. Installing a binary copy
 
-   There are three types of binary Recoll installations:
+   Recoll binary copies are always distributed as regular packages for your
+   system. They can be obtained either through the system's normal software
+   distribution framework (e.g. Debian/Ubuntu apt, FreeBSD ports, etc.), or
+   from some type of "backports" repository providing versions newer than the
+   standard ones, or found on the Recoll WEB site in some cases.
 
-     o Through your system normal software distribution framework (ie,
-       Debian/Ubuntu apt, FreeBSD ports, etc.).
+   There used to exist another form of binary install, as pre-compiled source
+   trees, but these are just less convenient than the packages and don't
+   exist any more.
 
-     o From a package downloaded from the Recoll web site.
+   The package management tools will usually automatically deal with hard
+   dependancies for packages obtained from a proper package repository. You
+   will have to deal with them by hand for downloaded packages (for example,
+   when dpkg complains about missing dependancies).
 
-     o From a prebuilt tree downloaded from the Recoll web site.
-
-   In all cases, the strict software dependancies (ie on Xapian or iconv)
-   will be automatically satisfied, you should not have to worry about them.
-
-   You will only have to check or install supporting applications for the
-   file types that you want to index beyond those that are natively processed
-   by Recoll (text, HTML, email files, and a few others).
+   In all cases, you will have to check or install supporting applications
+   for the file types that you want to index beyond those that are natively
+   processed by Recoll (text, HTML, email files, and a few others).
 
    You should also maybe have a look at the configuration section (but this
    may not be necessary for a quick test with default parameters). Most
    parameters can be more conveniently set from the GUI interface.
-
-  5.1.1. Installing through a package system
-
-   If you use a BSD-type port system or a prebuilt package (DEB, RPM,
-   manually or through the system software configuration utility), just
-   follow the usual procedure for your system.
-
-  5.1.2. Installing a prebuilt Recoll
-
-   The unpackaged binary versions on the Recoll web site are just compressed
-   tar files of a build tree, where only the useful parts were kept
-   (executables and sample configuration).
-
-   The executable binary files are built with a static link to libxapian and
-   libiconv, to make installation easier (no dependencies).
-
-   After extracting the tar file, you can proceed with installation as if you
-   had built the package from source (that is, just type make install). The
-   binary trees are built for installation to /usr/local.
 
      ----------------------------------------------------------------------
 
@@ -282,7 +266,7 @@ Chapter 5. Installation and configuration
    Normal procedure:
 
          cd recoll-xxx
-         configure
+         ./configure
          make
          (practices usual hardship-repelling invocations)
       
@@ -432,7 +416,51 @@ Chapter 5. Installation and configuration
        text files with appropriate encodings, and concatenate them to create
        the complete configuration.
 
-  5.4.1. The main configuration file, recoll.conf
+  5.4.1. Environment variables
+
+   RECOLL_CONFDIR
+
+           Defines the main configuration directory.
+
+   RECOLL_TMPDIR, TMPDIR
+
+           Locations for temporary files, in this order of priority. The
+           default if none of these is set is to use /tmp. Big temporary
+           files may be created during indexing, mostly for decompressing,
+           and also for processing, e.g. email attachments.
+
+   RECOLL_CONFTOP, RECOLL_CONFMID
+
+           Allow adding configuration directories with priorities below and
+           above the user directory (see above the Configuration overview
+           section for details).
+
+   RECOLL_EXTRA_DBS, RECOLL_ACTIVE_EXTRA_DBS
+
+           Help for setting up external indexes. See this paragraph for
+           explanations.
+
+   RECOLL_DATADIR
+
+           Defines replacement for the default location of Recoll data files,
+           normally found in, e.g., /usr/share/recoll).
+
+   RECOLL_FILTERSDIR
+
+           Defines replacement for the default location of Recoll filters,
+           normally found in, e.g., /usr/share/recoll/filters).
+
+   ASPELL_PROG
+
+           aspell program to use for creating the spelling dictionary. The
+           result has to be compatible with the libaspell which Recoll is
+           using.
+
+   VARNAME
+
+           Blabla
+
+  5.4.2. The main configuration file, recoll.conf
 
    recoll.conf is the main configuration file. It defines things like what to
    index (top directories and things to ignore), and the default character
@@ -447,7 +475,7 @@ Chapter 5. Installation and configuration
    Configuration menu in the recoll interface. Some can only be set by
    editing the configuration file.
 
-    5.4.1.1. Parameters affecting what documents we index:
+    5.4.2.1. Parameters affecting what documents we index:
 
    topdirs
 
@@ -481,8 +509,23 @@ Chapter 5. Installation and configuration
            like ~/.thunderbird or ~/.evolution in topdirs.
 
            Not even the file names are indexed for patterns in this list. See
-           the recoll_noindex variable in mimemap for an alternative approach
-           which indexes the file names.
+           the noContentSuffixes variable for an alternative approach which
+           indexes the file names.
+
+   noContentSuffixes
+
+           This is a list of file name endings (not wildcard expressions, nor
+           dot-delimited suffixes). Only the names of matching files will be
+           indexed (no attempt at MIME type identification, no decompression,
+           no content indexing). This can be redefined for subdirectories,
+           and edited from the GUI. The default value is:
+
+ noContentSuffixes = .md5 .map \
+        .o .lib .dll .a .sys .exe .com \
+        .mpp .mpt .vsd \
+            .img .img.gz .img.bz2 .img.xz .image .image.gz .image.bz2 .image.xz \
+        .dat .bak .rdf .log.gz .log .db .msf .pid \
+        ,v ~ #
 
    skippedPaths and daemSkippedPaths
 
@@ -602,7 +645,7 @@ Chapter 5. Installation and configuration
            Firefox plugin as ~/.recollweb/ToIndex so there should be no need
            to change it.
 
-    5.4.1.2. Parameters affecting how we generate terms:
+    5.4.2.2. Parameters affecting how we generate terms:
 
    Changing some of these parameters will imply a full reindex. Also, when
    using multiple indexes, it may not make sense to search indexes that don't
@@ -777,7 +820,7 @@ Chapter 5. Installation and configuration
 
            field1 and field2 will be set inside the document metadata.
 
-    5.4.1.3. Parameters affecting where and how we store things:
+    5.4.2.3. Parameters affecting where and how we store things:
 
    dbdir
 
@@ -836,7 +879,7 @@ Chapter 5. Installation and configuration
            memory, you can try higher values between 20 and 80. In my
            experience, values beyond 100 are always counterproductive.
 
-    5.4.1.4. Parameters affecting multithread processing
+    5.4.2.4. Parameters affecting multithread processing
 
    The Recoll indexing process recollindex can use multiple threads to speed
    up indexing on multiprocessor systems. The work done to index files is
@@ -899,7 +942,7 @@ Chapter 5. Installation and configuration
 
  thrQSizes = -1 -1 -1
 
-    5.4.1.5. Miscellaneous parameters:
+    5.4.2.5. Miscellaneous parameters:
 
    autodiacsens
 
@@ -928,6 +971,16 @@ Chapter 5. Installation and configuration
            Where the messages should go. 'stderr' can be used as a special
            value, and is the default. The daemversion is specific to the
            indexing monitor daemon.
+
+   checkneedretryindexscript
+
+           This defines the name for a command executed by recollindex when
+           starting indexing. If the exit status of the command is 0,
+           recollindex retries to index all files which previously could not
+           be indexed because of data extraction errors. The default value is
+           a script which checks if any of the common bin directories have
+           changed (indicating that a helper program may have been
+           installed).
 
    mondelaypatterns
 
@@ -1019,7 +1072,7 @@ Chapter 5. Installation and configuration
            be set for directories which hold Thunderbird data, as their
            folder format is weird.
 
-  5.4.2. The fields file
+  5.4.3. The fields file
 
    This file contains information about dynamic fields handling in Recoll.
    Some very basic fields have hard-wired behaviour, and, mostly, you should
@@ -1090,7 +1143,7 @@ Chapter 5. Installation and configuration
  # mailmytag field name
  x-my-tag = mailmytag
 
-    5.4.2.1. Extended attributes in the fields file
+    5.4.3.1. Extended attributes in the fields file
 
    Recoll versions 1.19 and later process user extended file attributes as
    documents fields by default.
@@ -1102,7 +1155,7 @@ Chapter 5. Installation and configuration
    translations from extended attributes names to Recoll field names. An
    empty translation disables use of the corresponding attribute data.
 
-  5.4.3. The mimemap file
+  5.4.4. The mimemap file
 
    mimemap specifies the file name extension to MIME type mappings.
 
@@ -1115,18 +1168,12 @@ Chapter 5. Installation and configuration
    handled specially, which is possible because they are usually all located
    in one place.
 
-   mimemap also has a recoll_noindex variable which is a list of suffixes.
-   Matching files will be skipped (which avoids unnecessary decompressions or
-   file executions). This is partially redundant with skippedNames in the
-   main configuration file, with a few differences: it will not affect
-   directories, it cannot be made dependant on the file-system location (it
-   is a configuration-wide parameter), and the file names will still be
-   indexed (not even the file names are indexed for patterns in skippedNames.
-   recoll_noindex is used mostly for things known to be unindexable by a
-   given Recoll version. Having it there avoids cluttering the more
-   user-oriented and locally customized skippedNames.
+   The recoll_noindex mimemap variable has been moved to recoll.conf and
+   renamed to noContentSuffixes, while keeping the same function, as of
+   Recoll version 1.21. For older Recoll versions, see the documentation for
+   noContentSuffixes but use recoll_noindex in mimemap.
 
-  5.4.4. The mimeconf file
+  5.4.5. The mimeconf file
 
    mimeconf specifies how the different MIME types are handled for indexing,
    and which icons are displayed in the recoll result lists.
@@ -1138,7 +1185,7 @@ Chapter 5. Installation and configuration
    recoll in the result lists (the values are the basenames of the png images
    inside the iconsdir directory (specified in recoll.conf).
 
-  5.4.5. The mimeview file
+  5.4.6. The mimeview file
 
    mimeview specifies which programs are started when you click on an Open
    link in a result list. Ie: HTML is normally displayed using firefox, but
@@ -1207,7 +1254,7 @@ Chapter 5. Installation and configuration
    document. This could be used in combination with field customisation to
    help with opening the document.
 
-  5.4.6. The ptrans file
+  5.4.7. The ptrans file
 
    ptrans specifies query-time path translations. These can be useful in
    multiple cases.
@@ -1226,9 +1273,9 @@ Chapter 5. Installation and configuration
            /server/volume2/docdir = /net/server/volume2/docdir
         
 
-  5.4.7. Examples of configuration adjustments
+  5.4.8. Examples of configuration adjustments
 
-    5.4.7.1. Adding an external viewer for an non-indexed type
+    5.4.8.1. Adding an external viewer for an non-indexed type
 
    Imagine that you have some kind of file which does not have indexable
    content, but for which you would like to have a functional Open link in
@@ -1258,7 +1305,7 @@ Chapter 5. Installation and configuration
    configuration, which you do not need to alter. mimeview can also be
    modified from the Gui.
 
-    5.4.7.2. Adding indexing support for a new file type
+    5.4.8.2. Adding indexing support for a new file type
 
    Let us now imagine that the above .blob files actually contain indexable
    text and that you know how to extract it with a command line program.
