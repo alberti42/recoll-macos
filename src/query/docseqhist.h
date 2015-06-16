@@ -58,9 +58,9 @@ private:
     RclDynConf *m_hist;
     int         m_prevnum;
     long        m_prevtime;
-    string      m_description; // This is just an nls translated 'doc history'
-    list<RclDHistoryEntry> m_hlist;
-    list<RclDHistoryEntry>::const_iterator m_it;
+    std::string m_description; // This is just an nls translated 'doc history'
+    std::list<RclDHistoryEntry> m_hlist;
+    std::list<RclDHistoryEntry>::const_iterator m_it;
 };
 
 extern bool historyEnterDoc(RclDynConf *dncf, const string& udi);

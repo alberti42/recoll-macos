@@ -52,7 +52,11 @@ SOURCES += \
         ptrans_w.cpp \
         rclhelp.cpp \
         rclmain_w.cpp \
+        rclm_idx.cpp \
+        rclm_preview.cpp \
         rclm_saveload.cpp \
+        rclm_view.cpp \
+        rclm_wins.cpp \
         rclzg.cpp \
         respopup.cpp \
         reslist.cpp \

@@ -40,7 +40,7 @@ class DocSequenceDb : public DocSequence {
     virtual int getFirstMatchPage(Rcl::Doc&, std::string& term);
     virtual bool docDups(const Rcl::Doc& doc, std::vector<Rcl::Doc>& dups);
     virtual string getDescription();
-    virtual list<string> expand(Rcl::Doc &doc);
+    virtual std::list<std::string> expand(Rcl::Doc &doc);
     virtual bool canFilter() {return true;}
     virtual bool setFiltSpec(const DocSeqFiltSpec &filtspec);
     virtual bool canSort() {return true;} 
