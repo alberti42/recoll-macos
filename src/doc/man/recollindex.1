@@ -100,6 +100,13 @@ recollindex \- indexing command for the Recoll full text search system
 <configdir>
 ]
 .B \-S
+.br
+.B recollindex
+[
+.B \-c
+<configdir>
+]
+.B \-E
 
 .SH DESCRIPTION
 The
@@ -276,6 +283,10 @@ swedish
 will rebuild the phonetic/orthographic index. This feature uses the 
 .B aspell
 package, which must be installed on the system.
+.PP
+.B recollindex \-E
+will check the configuration file for topdirs and other relevant paths
+existence (to help catch typos).
 
 .SH SEE ALSO
 .PP 
