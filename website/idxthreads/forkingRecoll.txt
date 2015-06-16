@@ -215,4 +215,8 @@ https://bugzilla.redhat.com/show_bug.cgi?id=193631
 Is Linux vfork thread-safe ? Quoting interesting comments from Solaris
 implementation: No answer to the issues cited though.
 https://sourceware.org/bugzilla/show_bug.cgi?id=378
+Aussi:
+http://blog.famzah.net/2009/11/20/fork-gets-slower-as-parent-process-use-more-memory/
+http://blog.famzah.net/2009/11/20/a-much-faster-popen-and-system-implementation-for-linux/
+Avec un workaround basé sur clone (donc linux-only). Tried it but crashes.
 ////
