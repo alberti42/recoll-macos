@@ -135,3 +135,5 @@ tests/indexedmimetypes/recoll.conf
 tests/indexedmimetypes/xapiandb
 tests/xattr/mimeview
 website/usermanual/*
+website/idxthreads/forkingRecoll.html
+website/idxthreads/xapDocCopyCrash.html
