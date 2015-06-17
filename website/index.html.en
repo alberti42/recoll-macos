@@ -99,8 +99,16 @@
       
       <dl>
 
-        <dt>2015-04-25</dt>
+        <dt>2015-06-16</dt>
+        <dd>Recoll 1.21.0 is out. This has a new query parser and
+          should be considered an instable release, please do not
+          package it (1.20.6 is the one you want for stability). It
+          also <a href="idxthreads/forkingRecoll.html">changes the way
+            filters are executed</a> for better performance. See the
+          <a href="release-1.21.html">release notes</a> for more
+          detail about the few other changes.</dd>
 
+        <dt>2015-04-25</dt>
         <dd>Recoll 1.20.6 is out, with mostly small fixes to
           compressed file handling, which may make a big difference in
           some cases. See the <a href="release-1.20.html">release
