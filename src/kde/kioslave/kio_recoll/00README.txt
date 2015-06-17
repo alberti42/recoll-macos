@@ -60,7 +60,7 @@ Recipe:
 
 mkdir builddir
 cd builddir
-cmake .. -DCMAKE_INSTALL_PREFIX=/usr
+cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DQT_QMAKE_EXECUTABLE=/usr/bin/qmake-qt4
 make
 sudo make install
 

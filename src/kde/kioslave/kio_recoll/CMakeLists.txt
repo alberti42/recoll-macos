@@ -57,11 +57,16 @@ ENDIF(PTHREAD_IN_LIBPTHREAD)
 
 kde4_add_plugin(kio_recoll ${kio_recoll_SRCS})
 
+add_custom_target(parser
+                 COMMAND make wasaparse.tab.cpp
+                 WORKING_DIRECTORY ${rcltop}/query
+)
 add_custom_target(rcllib
                  COMMAND make librecoll.a
                  WORKING_DIRECTORY ${rcltop}/lib
 )
-add_dependencies(kio_recoll rcllib)
+add_dependencies(rcllib parser)
+add_dependencies(kio_recoll parser rcllib)
 
 target_link_libraries(kio_recoll recoll xapian z ${EXTRA_LIBS} ${KDE4_KIO_LIBS})
 
