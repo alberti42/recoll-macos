@@ -1,3 +1,11 @@
+recoll (1.21.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * New bison-based query parser.
+  * Improves filter execution performance
+  * Save/reload queries
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 16 Jun 2015 18:10:00 +0200
+
 recoll (1.20.6-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * Fix some decompression issues with serious performance and

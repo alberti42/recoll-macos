@@ -1,3 +1,9 @@
+kio-recoll (1.21.0-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * No changes specific to the KIO, just use the 1.21 lib.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 16 Jun 2015 18:21:00 +0200
+
 kio-recoll (1.20.6-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Increase the default maximum number of entries displayed in a directory

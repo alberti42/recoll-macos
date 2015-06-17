@@ -5,6 +5,7 @@ Maintainer: Jean-Francois Dockes <jfd@recoll.org>
 Build-Depends: autotools-dev,
                debhelper (>= 7),
                hardening-wrapper,
+               bison,
                libqt4-dev,
                libqtwebkit-dev,
                libx11-dev,
