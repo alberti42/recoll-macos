@@ -22,20 +22,10 @@
 
 #include <string>
 #include <queue>
-#include "unordered_defs.h"
-using std::queue;
-using std::string;
+#include <list>
 
 #include "debuglog.h"
 #include "ptmutex.h"
-
-/// Store per-worker-thread data. Just an initialized timespec, and
-/// used at the moment.
-class WQTData {
-    public:
-    WQTData() {wstart.tv_sec = 0; wstart.tv_nsec = 0;}
-    struct timespec wstart;
-};
 
 /**
  * A WorkQueue manages the synchronisation around a queue of work items,
@@ -94,7 +84,7 @@ public:
                         m_name.c_str(), err));
                 return false;
             }
-            m_worker_threads.insert(pair<pthread_t, WQTData>(thr, WQTData()));
+            m_worker_threads.push_back(thr);
         }
         return true;
     }
@@ -213,11 +203,11 @@ public:
 	// Perform the thread joins and compute overall status
         // Workers return (void*)1 if ok
         void *statusall = (void*)1;
-        STD_UNORDERED_MAP<pthread_t,  WQTData>::iterator it;
+        std::list<pthread_t>::iterator it;
         while (!m_worker_threads.empty()) {
             void *status;
             it = m_worker_threads.begin();
-            pthread_join(it->first, &status);
+            pthread_join(*it, &status);
             if (status == (void *)0)
                 statusall = status;
             m_worker_threads.erase(it);
@@ -330,7 +320,7 @@ private:
 
     // Per-thread data. The data is not used currently, this could be
     // a set<pthread_t>
-    STD_UNORDERED_MAP<pthread_t, WQTData> m_worker_threads;
+    std::list<pthread_t> m_worker_threads;
 
     // Synchronization
     queue<T> m_queue;
