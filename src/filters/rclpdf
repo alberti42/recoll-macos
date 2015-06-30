@@ -127,67 +127,90 @@ trap cleanup EXIT HUP QUIT INT TERM
 
 runpdftotext()
 {
+    # Test poppler version: at some point before 0.24, poppler began
+    # to properly escape text inside the header (but not the body).
+    XYZ=`pdftotext -v 2>&1 | awk '/pdftotext/{print $3}'`
+    MAJOR=`echo $XYZ | cut -d. -f 1`
+    MINOR=`echo $XYZ | cut -d. -f 2`
+    escapeheader=1
+    escapebody=1
+    if test "$MAJOR" -gt 0 ; then
+        escapeheader=0
+    elif test "$MINOR" -ge 24; then
+        escapeheader=0;
+    fi
+
     # Run pdftotext and fix the result (add a charset tag and fix the
-    # html escaping.
+    # html escaping). The escaping is a half-hearted job. We do try to
+    # fix some header fields, only for those which are single-line.
     pdftotext $optionraw -htmlmeta -enc UTF-8 -eol unix -q "$infile" - |
     iconv -f UTF-8 -t UTF-8 -c -s |
-    awk 'BEGIN'\
+    awk -v escapeheader=$escapeheader -v escapebody=$escapebody 'BEGIN'\
 ' {
-  doescape = 0
+  inbodypre = 0
   cont = ""
-  charsetmeta = "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">"
 }
+function escapehtml(s)
+{
+  gsub(/&/, "\\&amp;", s)
+  gsub(/</, "\\&lt;", s)
+  gsub(/>/, "\\&gt;", s)
+  gsub(/"/, "\\&quot;", s)
+  return s
+}    
 {
   $0 = cont $0
   cont = ""
   # Insert charset meta tag at end of header
-  if(doescape == 0 && $0 ~ /<\/head>/) {
+  if(inbodypre == 0 && $0 ~ /<\/head>/) {
     match($0, /<\/head>/)
     part1 = substr($0, 0, RSTART-1)
     part2 = substr($0, RSTART, length($0))
-    $0 =  part1 charsetmeta part2
+    charsetmeta = "<meta http-equiv=\"Content-Type\" "\
+                  "content=\"text/html; charset=UTF-8\">"
+    $0 =  part1 charsetmeta "\n" part2
   }
-  if(doescape == 0 && $0 ~ /<title>.*<\/title>/){
+  if(inbodypre == 0 && $0 ~ /<title>.*<\/title>/){
     match($0, /<title>.*<\/title>/)
     part1 = substr($0, 0, RSTART-1)
     mid = substr($0, RSTART, RLENGTH)
     part2 = substr($0, RSTART + RLENGTH, length($0))
     gsub(/<title>/, "", mid)
     gsub(/<\/title>/, "", mid)
-    gsub(/&/, "\\&amp;", mid)
-    gsub(/</, "\\&lt;", mid)
-    gsub(/>/, "\\&gt;", mid)
+    if (escapeheader) {
+        mid = escapehtml(mid)
+    }
     mid = "<title>" mid "</title>"
     $0 = part1 mid part2
   }
-  if(doescape == 0 && $0 ~ /content=".*"\/>/){
+  # This matches all single-line meta fields
+  if(inbodypre == 0 && $0 ~ /content=".*"\/>/){
     match($0, /content=".*"\/>/)
     part1 = substr($0, 0, RSTART-1)
     mid = substr($0, RSTART, RLENGTH)
     part2 = substr($0, RSTART + RLENGTH, length($0))
     gsub(/content="/, "", mid)
     gsub(/"\/>/, "", mid)
-    gsub(/&/, "\\&amp;", mid)
-    gsub(/</, "\\&lt;", mid)
-    gsub(/>/, "\\&gt;", mid)
+    if (escapeheader) {
+        mid = escapehtml(mid)
+    }
     mid = "content=\"" mid "\"/>"
     $0 = part1 mid part2
   }
 
   # Recoll treats "Subject" as a "title" element (based on emails). The PDF
   # "Subject" metadata field is more like an HTML "description"
-  if(doescape == 0 && $0 ~ /<meta ?name="Subject"/){
+  if(inbodypre == 0 && $0 ~ /<meta ?name="Subject"/){
       gsub(/="Subject"/, "=\"Description\"", $0)
   }
 
   if ($0 == "<pre>"){
-    # Begin of body text. need to escape some chars from now on as 
-    # pdftotext sometimes doesnt do it
-    doescape++
+    # Begin of body text.
+    inbodypre++
     print $0
     next
   } else if ($0 ~ /<\/pre>/){
-    doescape--
+    inbodypre--
     print $0 
     next
   } else if ($0 ~ /[­-]$/) {
@@ -198,15 +221,9 @@ runpdftotext()
     cont = substr($0, RSTART, RLENGTH-1)
     $0 = line
     # print "LINE [" $0 "] CONT[" cont "]"
-  } else if($0 == "\f"){
-    $0 = "<hr>"
-    print 
-    next
-  }
-  if(doescape > 0){
-      gsub(/&/, "\\&amp;", $0)
-      gsub(/</, "\\&lt;", $0)
-      gsub(/>/, "\\&gt;", $0)
+  } 
+  if(inbodypre > 0 && escapebody){
+      $0 = escapehtml($0)
   }
   print $0
 }
