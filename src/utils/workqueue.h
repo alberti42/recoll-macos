@@ -323,7 +323,7 @@ private:
     std::list<pthread_t> m_worker_threads;
 
     // Synchronization
-    queue<T> m_queue;
+    std::queue<T> m_queue;
     pthread_cond_t m_ccond;
     pthread_cond_t m_wcond;
     PTMutexInit m_mutex;
