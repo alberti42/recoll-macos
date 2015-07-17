@@ -25,8 +25,8 @@
  * libraries.
  *
  * There are many reasons for closing file descriptors before
- * an exec (security,  pipe control, the possibility that a bug will trigger
- * an unwanted write, etc.)
+ * an exec (security, pipe control, the possibility that a bug will
+ *  trigger an unwanted write, etc.)
  *
  * A process has currently no POSIX way to determine the set of open file 
  * descriptors or at least the highest value. Closing all files (except a few),
@@ -54,9 +54,10 @@
  *   - Solaris 10+ has closefrom, and can specify closefrom to posix_spawn()
  *
  *  Linux:
- *   - Has nothing. The method we used (opening /dev/fd) was very
- *     unsafe in multithread fork/exec context. We now use a close()
- *     loop. glibc maintainers think that closefrom() is a bad idea
+ *   - Has nothing. The method we initially used (listing /dev/fd) could
+ *     deadlock in multithread fork/exec context. We now use a close()
+ *     loop but there is no completely reliable way to determine the high limit.
+ *     glibc maintainers think that closefrom() is a bad idea
  *     *especially* because it is implemented on *BSD and Solaris. Go
  *     figure...: https://sourceware.org/bugzilla/show_bug.cgi?id=10353
  *
@@ -206,6 +207,12 @@ int libclf_closefrom(int fd0)
 }
 #endif
 
+// Note that this will not work if the limit was lowered after a
+// higher fd was opened. But we don't call setrlimit() inside recoll
+// code, so we should be ok. It seems that sysconf(_SC_OPEN_MAX)
+// usually reports the soft limit, so it's redundant, but it could be
+// useful in case getrlimit() is not implemented (unlikely as they're
+// both POSIX.1-2001?
 int libclf_maxfd(int)
 {
     struct rlimit lim;
