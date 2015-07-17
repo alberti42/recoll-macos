@@ -294,6 +294,17 @@ packages if you want use the source rpms.</p>
   for <a href="fedora20">Fedora 20</a>. There are only x86_64 binaries
   for now, use the source rpm for other archs.</p>
 
+<h3>CentOS 7.1</h3>
+
+<p>CentOS ships neither Xapian nor Recoll. <a href="centos71">Here are
+    some packages.</a>. There are only x86_64 binaries
+  for now, use the source rpm for other archs. As far as I know, the
+  only specific issue is that CentOS does not seem to have the Qt
+  WebKit module. The Recoll build uses QTextBrowser instead of a
+  WebKit QWebView, so no Javascript or advanced CSS in the result list
+  or snippets window for you.</p>
+
+
 <h3>OpenSUSE</h3>
 
 <p>Recoll is in the KDE:Extra repository. You just need to add the
