@@ -84,6 +84,14 @@ class ExecCmd {
     void putenv(const std::string &name, const std::string& value);
 
     /** 
+     * Try to set a limit on child process vm size. This will use
+     * setrlimit() and RLIMIT_AS/VMEM if available. Parameter is in
+     * units of 2**10. Must be called before starting the command, default 
+     * is inherit from parent.
+     */
+    void setrlimit_as(int mbytes);
+
+    /** 
      * Set function objects to call whenever new data is available or on
      * select timeout / whenever new data is needed to send. Must be called
      * before doexec()
@@ -158,7 +166,7 @@ class ExecCmd {
     void zapChild() {setKill(); (void)wait();}
 
     ExecCmd()
-	: m_advise(0), m_provide(0), m_timeoutMs(1000)
+	: m_advise(0), m_provide(0), m_timeoutMs(1000), m_rlimit_as_mbytes(0)
     {
 	reset();
     }
@@ -191,6 +199,7 @@ class ExecCmd {
     ExecCmdProvide  *m_provide;
     bool             m_killRequest;
     int              m_timeoutMs;
+    int              m_rlimit_as_mbytes;
     std::string           m_stderrFile;
     // Pipe for data going to the command
     int              m_pipein[2];

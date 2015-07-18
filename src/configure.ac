@@ -34,7 +34,7 @@ AC_SYS_LARGEFILE
 # OpenBSD needs sys/param.h for mount.h to compile
 AC_CHECK_HEADERS([sys/param.h, spawn.h])
 
-AC_CHECK_FUNCS([posix_spawn])
+AC_CHECK_FUNCS([posix_spawn, setrlimit])
 
 if test "x$ac_cv_func_posix_spawn" = xyes; then :
    AC_ARG_ENABLE(posix_spawn,

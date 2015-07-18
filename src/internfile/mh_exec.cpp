@@ -77,6 +77,8 @@ bool MimeHandlerExec::next_document()
 
     int filtermaxseconds = 900;
     m_config->getConfParam("filtermaxseconds", &filtermaxseconds);
+    int filtermaxmbytes = 0;
+    m_config->getConfParam("filtermaxmbytes", &filtermaxmbytes);
 
     if (params.empty()) {
 	// Hu ho
@@ -103,6 +105,7 @@ bool MimeHandlerExec::next_document()
     mexec.putenv("RECOLL_CONFDIR", m_config->getConfDir());
     mexec.putenv(m_forPreview ? "RECOLL_FILTER_FORPREVIEW=yes" :
 		"RECOLL_FILTER_FORPREVIEW=no");
+    mexec.setrlimit_as(filtermaxmbytes);
 
     int status;
     try {

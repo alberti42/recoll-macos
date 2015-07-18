@@ -6022,18 +6022,29 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
               </listitem>
            </varlistentry>
 
-            <varlistentry><term><varname>monioniceclass, monioniceclassdata
-             </varname></term><listitem><para>These allow defining the
-             <application>ionice</application> class and data used by the
-             indexer (default class 3, no data).</para>
-              </listitem>
-            </varlistentry>
+           <varlistentry><term><varname>monioniceclass, monioniceclassdata
+           </varname></term><listitem><para>These allow defining the
+           <application>ionice</application> class and data used by the
+           indexer (default class 3, no data).</para>
+         </listitem>
+           </varlistentry>
 
-            <varlistentry><term><varname>filtermaxseconds</varname></term>
-              <listitem><para>Maximum handler execution time, after which it
-            is aborted. Some postscript programs just loop...</para> 
-              </listitem>
-            </varlistentry>
+           <varlistentry><term><varname>filtermaxseconds</varname></term>
+           <listitem><para>Maximum handler execution time, after which it
+           is aborted. Some postscript programs just loop...</para> 
+           </listitem>
+           </varlistentry>
+
+           <varlistentry><term><varname>filtermaxmbytes</varname></term>
+           <listitem><para>&RCL; 1.20.7 and later. Maximum handler memory
+           utilisation. This uses setrlimit(RLIMIT_AS) on most systems
+           (total virtual memory space size limit). Some programs may start
+           with 500 MBytes of mapped shared libraries, so take this into
+           account when choosing a value. The default is a liberal
+           2000MB.</para>
+           </listitem>
+           </varlistentry>
+
           <varlistentry><term><varname>filtersdir</varname></term>
             <listitem><para>A directory to search for the external
             input handler scripts used to index some types of files. The

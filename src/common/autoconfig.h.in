@@ -20,6 +20,9 @@
 #undef HAVE_POSIX_SPAWN
 #undef USE_POSIX_SPAWN
 
+/* Define to 1 if you have the setrlimit() call. */
+#undef HAVE_SETRLIMIT
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 

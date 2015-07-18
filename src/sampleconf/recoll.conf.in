@@ -250,6 +250,11 @@ textfilepagekbs = 1000
 # Maximum external filter execution time. Default 20mn. This is mainly
 # to avoid infinite loops in postscript files (loop.ps)
 filtermaxseconds = 1200
+# Maximum virtual memory space for filter process (setrlimit(RLIMIT_AS)),
+# in megabytes. Note that this includes any mapped libs (there is no
+# reliable Linux way to limit the data space only), so we need to be a
+# bit generous here. Anything over 2000 will be ignored on 32 bits machines.
+filtermaxmbytes = 2000
 
 # Length of abstracts we store while indexing. Longer will make for a
 # bigger db
