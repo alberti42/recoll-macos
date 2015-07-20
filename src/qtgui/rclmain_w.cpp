@@ -619,7 +619,10 @@ void RclMain::fileExit()
     prefs.resArea = toolBarArea(m_resTB);
     restable->saveColState();
 
-    prefs.ssearchTyp = sSearch->searchTypCMB->currentIndex();
+    if (prefs.ssearchTypSav) {
+	prefs.ssearchTyp = sSearch->searchTypCMB->currentIndex();
+    }
+
     if (asearchform)
 	delete asearchform;
 

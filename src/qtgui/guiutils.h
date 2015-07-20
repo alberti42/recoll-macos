@@ -74,6 +74,8 @@ class PrefsPack {
     int pvheight;
     int toolArea; // Area for "tools" toolbar
     int resArea; // Area for "results" toolbar
+    bool ssearchTypSav; // Remember last search mode (else always
+			// start with same)
     int ssearchTyp;
     // Use single app (default: xdg-open), instead of per-mime settings
     bool useDesktopOpen; 

@@ -228,6 +228,23 @@
             </layout>
            </item>
            <item>
+            <layout class="QHBoxLayout">
+             <item>
+              <widget class="QLabel" name="textLabelSST">
+               <property name="text">
+                <string>Start with simple search mode</string>
+               </property>
+               <property name="wordWrap">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="ssearchTypCMB"/>
+             </item>
+            </layout>
+           </item>
+           <item>
             <widget class="QCheckBox" name="ssNoCompleteCB">
              <property name="text">
               <string>Disable Qt autocompletion in search entry.</string>

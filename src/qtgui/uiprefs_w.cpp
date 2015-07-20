@@ -59,6 +59,13 @@ void UIPrefsDialog::init()
 {
     m_viewAction = 0;
 
+    // See enum above and keep in order !
+    ssearchTypCMB->addItem(tr("Any term"));
+    ssearchTypCMB->addItem(tr("All terms"));
+    ssearchTypCMB->addItem(tr("File name"));
+    ssearchTypCMB->addItem(tr("Query language"));
+    ssearchTypCMB->addItem(tr("Value from previous program exit"));
+
     connect(viewActionPB, SIGNAL(clicked()), this, SLOT(showViewAction()));
     connect(reslistFontPB, SIGNAL(clicked()), this, SLOT(showFontDialog()));
     connect(resetFontPB, SIGNAL(clicked()), this, SLOT(resetReslistFont()));
@@ -103,6 +110,12 @@ void UIPrefsDialog::setFromPrefs()
     collapseDupsCB->setChecked(prefs.collapseDuplicates);
     maxHLTSB->setValue(prefs.maxhltextmbs);
 
+    if (prefs.ssearchTypSav) {
+	ssearchTypCMB->setCurrentIndex(4);
+    } else {
+	ssearchTypCMB->setCurrentIndex(prefs.ssearchTyp);
+    }
+	
     switch (prefs.filterCtlStyle) {
     case PrefsPack::FCS_MN:
 	filterMN_RB->setChecked(1);
@@ -240,6 +253,15 @@ void UIPrefsDialog::accept()
     prefs.ssearchOnWS = ssAutoSpaceCB->isChecked();
     prefs.ssearchNoComplete = ssNoCompleteCB->isChecked();
     prefs.ssearchAsYouType = ssAutoAllCB->isChecked();
+
+    if (ssearchTypCMB->currentIndex() == 4) {
+	prefs.ssearchTypSav = true;
+	// prefs.ssearchTyp will be set from the current value when
+	// exiting the program
+    } else {
+	prefs.ssearchTypSav = false;
+	prefs.ssearchTyp = ssearchTypCMB->currentIndex();
+    }
 
     if (filterMN_RB->isChecked()) {
 	prefs.filterCtlStyle = PrefsPack::FCS_MN;

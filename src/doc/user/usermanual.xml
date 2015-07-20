@@ -2455,36 +2455,35 @@ MimeType=*/*
                 one: use PRE tags with line wrapping.</para>
              </listitem>
 
-            <listitem><para><guilabel>Use desktop preferences to choose
-            document editor</guilabel>: if this is checked, the
-            <command>xdg-open</command> utility will be used to open files
-            when you click the <guilabel>Open</guilabel> link in the result
-            list, instead of the application defined in
-            <filename>mimeview</filename>. <command>xdg-open</command> will
-            in term use your desktop preferences to choose an appropriate
-            application.</para>
+            <listitem><para><guilabel>Choose editor
+            applicationsr</guilabel>: this opens a dialog which allows you
+            to select the application to be used to open each MIME
+            type. The default is nornally to use the
+            <command>xdg-open</command> utility, but you can override it.</para>
            </listitem>
 
-            <listitem><para><guilabel>Exceptions</guilabel>: when using the
-            desktop preferences for opening documents, these are MIME types
-            that will still be opened according to &RCL; preferences. This
-            is useful for passing parameters like page numbers or search
-            strings to applications that support them
+            <listitem><para><guilabel>Exceptions</guilabel>: even wen
+            <command>xdg-open</command> is used by default for opening
+            documents, you can set exceptions for MIME types that will
+            still be opened according to &RCL; preferences. This is useful
+            for passing parameters like page numbers or search strings to
+            applications that support them
             (e.g. <application>evince</application>). This cannot be done
             with <command>xdg-open</command> which only supports passing
             one parameter.</para>
            </listitem>
 
-            <listitem><para><guilabel>Choose editor applications</guilabel>
-            this will let you choose the command started by the
-            <guilabel>Open</guilabel> links inside the result list, for
-            specific document types.</para>
-            </listitem>
-	    
-	    <listitem><para><guilabel>Display category filter as
-	    toolbar...</guilabel> this will let you choose if the document
-	    categories are displayed as a list or a set of buttons.</para>
+	    <listitem><para><guilabel>Document filter choice
+	    style</guilabel>: this will let you choose if the document
+	    categories are displayed as a list or a set of buttons, or a
+	    menu.</para>
 	    </listitem>
+
+            <listitem><para><guilabel>Start with simple search
+            mode</guilabel>: this lets you choose the value of the simple
+            search type on program startup. Either a fixed value
+            (e.g. <literal>Query Language</literal>, or the value in use
+            when the program last exited.</para></listitem>
 
             <listitem><para><guilabel>Auto-start simple search on white
             space entry</guilabel>: if this is checked, a search will be
