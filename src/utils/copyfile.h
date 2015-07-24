@@ -34,6 +34,10 @@ enum CopyfileFlags {COPYFILE_NONE = 0,
 extern bool copyfile(const char *src, const char *dst, std::string &reason,
 		     int flags = 0);
 
+/** Save c++ string to file */
+extern bool stringtofile(const std::string& dt, const char *dst, 
+                         std::string& reason, int flags = 0);
+
 /** Try to rename src. If this fails (different devices) copy then unlink src */
 extern bool renameormove(const char *src, const char *dst, std::string &reason);
 

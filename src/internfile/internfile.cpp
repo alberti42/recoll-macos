@@ -380,20 +380,12 @@ TempFile FileInterner::dataToTempFile(const string& dt, const string& mt)
 		temp->getreason().c_str()));
 	return TempFile();
     }
-
-    int fd = open(temp->filename(), O_WRONLY);
-    if (fd < 0) {
-	LOGERR(("FileInterner::dataToTempFile: open(%s) failed errno %d\n",
-		temp->filename(), errno));
+    string reason;
+    if (!stringtofile(dt, temp->filename(), reason)) {
+	LOGERR(("FileInterner::dataToTempFile: stringtofile: %s\n", 
+                reason.c_str()));
 	return TempFile();
     }
-    if (write(fd, dt.c_str(), dt.length()) != (int)dt.length()) {
-	close(fd);
-	LOGERR(("FileInterner::dataToTempFile: write to %s failed errno %d\n",
-		temp->filename(), errno));
-	return TempFile();
-    }
-    close(fd);
     return temp;
 }
 
@@ -892,7 +884,20 @@ static string urltolocalpath(string url)
     return url.substr(7, string::npos);
 }
 
-// Extract subdoc out of multidoc into temporary file. 
+bool FileInterner::tempFileForMT(TempFile& otemp, RclConfig* cnf, 
+                                 const string& mimetype)
+{
+    TempFile temp(new TempFileInternal(
+                      cnf->getSuffixFromMimeType(mimetype)));
+    if (!temp->ok()) {
+        LOGERR(("FileInterner::interntofile: can't create temp file\n"));
+        return false;
+    }
+    otemp = temp;
+    return true;
+}
+
+// Extract document (typically subdoc of multidoc) into temporary file. 
 // We do the usual internfile stuff: create a temporary directory,
 // then create an interner and call internfile. The target mtype is set to
 // the input mtype, so that no data conversion is performed.
@@ -901,22 +906,20 @@ static string urltolocalpath(string url)
 // - The internfile temporary directory gets destroyed by its destructor
 // - The output temporary file which is held in a reference-counted
 //   object and will be deleted when done with.
-// This DOES NOT work with a non-internal file (because at least one conversion 
-// is always performed).
+//
+// If the ipath is null, maybe we're called because the file is not
+// stored in the regular file system. We use the docfetcher to get a
+// copy (in topdocToFile())
+// 
+// We currently don't handle the case of an internal doc of a non-fs document.
+
 bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
 			      RclConfig *cnf, const Rcl::Doc& idoc)
 {
     LOGDEB(("FileInterner::idocToFile\n"));
-    // idoc.dump();
 
     if (idoc.ipath.empty()) {
-	LOGDEB(("FileInterner::idocToFile: not a sub-document !\n"));
-	// We could do a copy here but it's much more complicated than
-	// it seems because the source is not necessarily a simple
-	// depending on the backend. Until we fix the Internfile
-	// constructor to not do the first conversion, it's much saner
-	// to just return an error
-	return false;
+	return topdocToFile(otemp, tofile, cnf, idoc);
     }
 
     // We set FIF_forPreview for consistency with the previous version
@@ -925,6 +928,54 @@ bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
     FileInterner interner(idoc, cnf, FIF_forPreview);
     interner.setTargetMType(idoc.mimetype);
     return interner.interntofile(otemp, tofile, idoc.ipath, idoc.mimetype);
+}
+
+bool FileInterner::topdocToFile(TempFile& otemp, const string& tofile,
+                                RclConfig *cnf, const Rcl::Doc& idoc)
+{
+    DocFetcher *fetcher = docFetcherMake(idoc);
+    if (fetcher == 0) {
+        LOGERR(("FileInterner::idocToFile no backend\n"));
+        return false;
+    }
+    DocFetcher::RawDoc rawdoc;
+    if (!fetcher->fetch(cnf, idoc, rawdoc)) {
+        LOGERR(("FileInterner::idocToFile fetcher failed\n"));
+        return false;
+    }
+    const char *filename = "";
+    TempFile temp;
+    if (tofile.empty()) {
+        if (!tempFileForMT(temp, cnf, idoc.mimetype)) {
+            return false;
+        }
+        filename = temp->filename();
+    } else {
+        filename = tofile.c_str();
+    }
+    string reason;
+    switch (rawdoc.kind) {
+    case DocFetcher::RawDoc::RDK_FILENAME:
+        if (!copyfile(rawdoc.data.c_str(), filename, reason)) {
+            LOGERR(("FileInterner::idocToFile: copyfile: %s\n", 
+                    reason.c_str()));
+            return false;
+        }
+        break;
+    case DocFetcher::RawDoc::RDK_DATA:
+        if (!stringtofile(rawdoc.data, filename, reason)) {
+            LOGERR(("FileInterner::idocToFile: stringtofile: %s\n", 
+                    reason.c_str()));
+            return false;
+        }
+        break;
+    default:
+        LOGERR(("FileInterner::FileInterner(idoc): bad rawdoc kind ??\n"));
+    }
+
+    if (tofile.empty())
+        otemp = temp;
+    return true;
 }
 
 bool FileInterner::interntofile(TempFile& otemp, const string& tofile,
@@ -952,35 +1003,22 @@ bool FileInterner::interntofile(TempFile& otemp, const string& tofile,
         doc.mimetype = "text/html";
     }
 
-    string filename;
+    const char *filename;
     TempFile temp;
     if (tofile.empty()) {
-	TempFile temp1(new TempFileInternal(
-			   m_cfg->getSuffixFromMimeType(mimetype)));
-	temp = temp1;
-	if (!temp->ok()) {
-	    LOGERR(("FileInterner::interntofile: can't create temp file\n"));
-	    return false;
-	}
+        if (!tempFileForMT(temp, m_cfg, mimetype)) {
+            return false;
+        }
 	filename = temp->filename();
     } else {
-	filename = tofile;
+	filename = tofile.c_str();
     }
-
-    int fd = open(filename.c_str(), O_WRONLY|O_CREAT, 0600);
-    if (fd < 0) {
-	LOGERR(("FileInterner::interntofile: open(%s) failed errno %d\n",
-		filename.c_str(), errno));
+    string reason;
+    if (!stringtofile(doc.text, filename, reason)) {
+	LOGERR(("FileInterner::interntofile: stringtofile : %s\n",
+		reason.c_str()));
 	return false;
     }
-    const string& dt = doc.text;
-    if (write(fd, dt.c_str(), dt.length()) != (int)dt.length()) {
-	close(fd);
-	LOGERR(("FileInterner::interntofile: write to %s failed errno %d\n",
-		filename.c_str(), errno));
-	return false;
-    }
-    close(fd);
 
     if (tofile.empty())
 	otemp = temp;

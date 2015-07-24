@@ -111,17 +111,13 @@ void RTIToolW::accept()
 	dir = path_cat(dir, "autostart");
 	mkdir(dir.c_str(), 0700);
 
-	int fd = ::open(autostartfile.c_str(), O_WRONLY|O_CREAT, 0644);
-	if (fd < 0 || ::write(fd, text.c_str(), size_t(text.size())) 
-	    != ssize_t(text.size()) || ::close(fd) != 0) {
-	    if (fd >=0)
-		::close(fd);
+        string reason;
+        if (!stringtofile(text, autostartfile.c_str(), reason)) {
 	    QString msg = tr("Can't create: ") + 
 		QString::fromLocal8Bit(autostartfile.c_str());
 	    QMessageBox::warning(0, tr("Warning"), msg, QMessageBox::Ok);
 	    return;
 	}
-	::close(fd);
 
 	if (nowCB->isChecked()) {
 	    ExecCmd cmd;

@@ -31,6 +31,7 @@
 #include "readfile.h"
 #include "xmltosd.h"
 #include "searchdata.h"
+#include "copyfile.h"
 
 using namespace std;
 using namespace Rcl;
@@ -90,23 +91,12 @@ void RclMain::saveLastQuery()
     string tofile((const char *)s.toLocal8Bit());
 
     LOGDEB(("RclMain::saveLastQuery: XML: [%s]\n", xml.c_str()));
-
-    int fd = ::open(tofile.c_str(), O_WRONLY|O_CREAT|O_TRUNC, 0600);
-    if (fd < 0) {
-        QMessageBox::warning(this, tr("Open failed"), 
-                                 tr("Could not open/create file"));
-        return;
-    }
-    if (::write(fd, xml.c_str(), xml.size()) != int(xml.size())) {
-        ::close(fd);
+    string reason;
+    if (!stringtofile(xml, tofile.c_str(), reason)) {
         QMessageBox::warning(this, tr("Write failed"), 
                                  tr("Could not write to file"));
-        return;
     }
-    if (::close(fd) != 0) {
-        QMessageBox::warning(this, tr("Close failed"), tr("File close error"));
-        return;
-    }
+    return;
 }
 
 

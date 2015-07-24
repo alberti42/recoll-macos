@@ -35,55 +35,91 @@ using namespace std;
 
 bool copyfile(const char *src, const char *dst, string &reason, int flags)
 {
-  int sfd = -1;
-  int dfd = -1;
-  bool ret = false;
-  char buf[CPBSIZ];
-  int oflags = O_WRONLY|O_CREAT|O_TRUNC;
+    int sfd = -1;
+    int dfd = -1;
+    bool ret = false;
+    char buf[CPBSIZ];
+    int oflags = O_WRONLY|O_CREAT|O_TRUNC;
 
-  LOGDEB(("copyfile: %s to %s\n", src, dst));
+    LOGDEB(("copyfile: %s to %s\n", src, dst));
 
-  if ((sfd = open(src, O_RDONLY)) < 0) {
-      reason += string("open ") + src + ": " + strerror(errno);
-      goto out;
-  }
+    if ((sfd = ::open(src, O_RDONLY)) < 0) {
+        reason += string("open ") + src + ": " + strerror(errno);
+        goto out;
+    }
 
-  if (flags & COPYFILE_EXCL) {
-      oflags |= O_EXCL;
-  }
+    if (flags & COPYFILE_EXCL) {
+        oflags |= O_EXCL;
+    }
 
-  if ((dfd = open(dst, oflags, 0644)) < 0) {
-      reason += string("open/creat ") + dst + ": " + strerror(errno);
-      // If we fail because of an open/truncate error, we do not want to unlink
-      // the file, we might succeed...
-      flags |= COPYFILE_NOERRUNLINK;
-      goto out;
-  }
+    if ((dfd = ::open(dst, oflags, 0644)) < 0) {
+        reason += string("open/creat ") + dst + ": " + strerror(errno);
+        // If we fail because of an open/truncate error, we do not
+        // want to unlink the file, we might succeed...
+        flags |= COPYFILE_NOERRUNLINK;
+        goto out;
+    }
 
-  for (;;) {
-      int didread;
-      didread = read(sfd, buf, CPBSIZ);
-      if (didread < 0) {
-	  reason += string("read src ") + src + ": " + strerror(errno);
-	  goto out;
-      }
-      if (didread == 0)
-	  break;
-      if (write(dfd, buf, didread) != didread) {
-	  reason += string("write dst ") + src + ": " + strerror(errno);
-	  goto out;
-      }
-  }
+    for (;;) {
+        int didread;
+        didread = ::read(sfd, buf, CPBSIZ);
+        if (didread < 0) {
+            reason += string("read src ") + src + ": " + strerror(errno);
+            goto out;
+        }
+        if (didread == 0)
+            break;
+        if (::write(dfd, buf, didread) != didread) {
+            reason += string("write dst ") + src + ": " + strerror(errno);
+            goto out;
+        }
+    }
 
-  ret = true;
- out:
-  if (ret == false && !(flags&COPYFILE_NOERRUNLINK))
-    unlink(dst);
-  if (sfd >= 0)
-    close(sfd);
-  if (dfd >= 0)
-    close(dfd);
-  return ret;
+    ret = true;
+out:
+    if (ret == false && !(flags&COPYFILE_NOERRUNLINK))
+        ::unlink(dst);
+    if (sfd >= 0)
+        ::close(sfd);
+    if (dfd >= 0)
+        ::close(dfd);
+    return ret;
+}
+
+bool stringtofile(const string& dt, const char *dst, string& reason,
+                  int flags)
+{
+    LOGDEB(("stringtofile:\n"));
+    int dfd = -1;
+    bool ret = false;
+    int oflags = O_WRONLY|O_CREAT|O_TRUNC;
+
+    LOGDEB(("stringtofile: %u bytes to %s\n", (unsigned int)dt.size(), dst));
+
+    if (flags & COPYFILE_EXCL) {
+        oflags |= O_EXCL;
+    }
+
+    if ((dfd = ::open(dst, oflags, 0644)) < 0) {
+        reason += string("open/creat ") + dst + ": " + strerror(errno);
+        // If we fail because of an open/truncate error, we do not
+        // want to unlink the file, we might succeed...
+        flags |= COPYFILE_NOERRUNLINK;
+        goto out;
+    }
+
+    if (::write(dfd, dt.c_str(), size_t(dt.size())) != ssize_t(dt.size())) {
+        reason += string("write dst ") + ": " + strerror(errno);
+        goto out;
+    }
+
+    ret = true;
+out:
+    if (ret == false && !(flags&COPYFILE_NOERRUNLINK))
+        ::unlink(dst);
+    if (dfd >= 0)
+        ::close(dfd);
+    return ret;
 }
 
 bool renameormove(const char *src, const char *dst, string &reason)
@@ -117,13 +153,13 @@ bool renameormove(const char *src, const char *dst, string &reason)
     // of reasons
     if ((st1.st_mode & 0777) != (st.st_mode & 0777)) {
         if (chmod(dst, st.st_mode&0777) != 0) {
-	    reason += string("Chmod ") + dst + "Error : " + strerror(errno);
-	}
+            reason += string("Chmod ") + dst + "Error : " + strerror(errno);
+        }
     }
     if (st.st_uid != st1.st_uid || st.st_gid != st1.st_gid) {
         if (chown(dst, st.st_uid, st.st_gid) != 0) {
-	    reason += string("Chown ") + dst + "Error : " + strerror(errno);
-	}
+            reason += string("Chown ") + dst + "Error : " + strerror(errno);
+        }
     }
     struct timeval times[2];
     times[0].tv_sec = st.st_atime;
@@ -161,11 +197,11 @@ static int     op_flags;
 
 static const char *thisprog;
 static char usage [] =
-"trcopyfile [-m] src dst\n"
-" -m : move instead of copying\n"
-" -e : fail if dest exists (only for copy)\n"
-"\n"
-;
+    "trcopyfile [-m] src dst\n"
+    " -m : move instead of copying\n"
+    " -e : fail if dest exists (only for copy)\n"
+    "\n"
+    ;
 static void
 Usage(void)
 {
@@ -185,9 +221,9 @@ int main(int argc, const char **argv)
             Usage();
         while (**argv)
             switch (*(*argv)++) {
-            case 'm':	op_flags |= OPT_m; break;
-            case 'e':	op_flags |= OPT_e; break;
-            default: Usage();	break;
+            case 'm':   op_flags |= OPT_m; break;
+            case 'e':   op_flags |= OPT_e; break;
+            default: Usage();   break;
             }
         argc--; argv++;
     }
@@ -211,11 +247,11 @@ int main(int argc, const char **argv)
         cerr << reason << endl;
         exit(1);
     }  else {
-	cout << "Succeeded" << endl;
-	if (!reason.empty()) {
-	    cout << "Warnings: " << reason << endl;
-	}
-	exit(0);
+        cout << "Succeeded" << endl;
+        if (!reason.empty()) {
+            cout << "Warnings: " << reason << endl;
+        }
+        exit(0);
     }
 }
 

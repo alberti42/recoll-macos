@@ -291,11 +291,20 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     LOGDEB(("RclMain::startNV: groksipath %d wantsf %d wantsparentf %d\n", 
 	    groksipath, wantsfile, wantsparentfile));
 
+    bool notinfs = false;
+    {
+        string backend;
+        doc.getmeta(Rcl::Doc::keybcknd, &backend);
+        if (!backend.empty() && backend.compare("FS"))
+            notinfs = true;
+    }
+
     // If the command wants a file but this is not a file url, or
     // there is an ipath that it won't understand, we need a temp file:
     theconfig->setKeyDir(path_getfather(fn));
-    if (((wantsfile || wantsparentfile) && fn.empty()) ||
-	(!groksipath && !doc.ipath.empty())) {
+    if (notinfs || 
+        ((wantsfile || wantsparentfile) && fn.empty()) ||
+	(!groksipath && !doc.ipath.empty()) ) {
 	TempFile temp;
 	Rcl::Doc& thedoc = wantsparentfile ? pdoc : doc;
 	if (!FileInterner::idocToFile(temp, string(), theconfig, thedoc)) {

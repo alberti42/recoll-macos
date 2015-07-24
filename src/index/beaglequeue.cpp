@@ -217,12 +217,6 @@ bool BeagleQueueIndexer::indexFromCache(const string& udi)
         // Just index the dotdoc
         dotdoc.meta[Rcl::Doc::keybcknd] = "BGL";
         return m_db->addOrUpdate(udi, cstr_null, dotdoc);
-    } else if (stringlowercmp("webhistory", dotdoc.meta[Rcl::Doc::keybght]) ||
-               (dotdoc.mimetype.compare("text/html") &&
-                dotdoc.mimetype.compare(cstr_textplain))) {
-        LOGDEB(("BeagleQueueIndexer: skipping: hittype %s mimetype %s\n",
-                dotdoc.meta[Rcl::Doc::keybght].c_str(), dotdoc.mimetype.c_str()));
-        return true;
     } else {
         Rcl::Doc doc;
         FileInterner interner(data, m_config, 
@@ -404,7 +398,6 @@ BeagleQueueIndexer::processone(const string &path,
     char ascdate[30];
     sprintf(ascdate, "%ld", long(stp->st_mtime));
 
-    // We only process bookmarks or text/html and text/plain files.
     if (!stringlowercmp("bookmark", dotdoc.meta[Rcl::Doc::keybght])) {
         // For bookmarks, we just index the doc that was built from the
         // metadata.
@@ -422,14 +415,6 @@ BeagleQueueIndexer::processone(const string &path,
         if (!m_db->addOrUpdate(udi, cstr_null, dotdoc)) 
             return FsTreeWalker::FtwError;
 
-    } else if (stringlowercmp("webhistory", dotdoc.meta[Rcl::Doc::keybght]) ||
-               (dotdoc.mimetype.compare("text/html") &&
-                dotdoc.mimetype.compare(cstr_textplain))) {
-        LOGDEB(("BeagleQueueIndexer: skipping: hittype %s mimetype %s\n",
-                dotdoc.meta[Rcl::Doc::keybght].c_str(), dotdoc.mimetype.c_str()));
-        // Unlink them anyway
-        dounlink = true;
-        goto out;
     } else {
         Rcl::Doc doc;
         // Store the dotdoc fields in the future doc. In case someone wants

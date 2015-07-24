@@ -287,6 +287,10 @@ class FileInterner {
     int addHandler();
     void checkExternalMissing(const string& msg, const string& mt);
     void processNextDocError(Rcl::Doc &doc);
+    static bool tempFileForMT(TempFile& otemp, RclConfig *cnf, 
+                       const std::string& mimetype);
+    static bool topdocToFile(TempFile& otemp, const std::string& tofile,
+                             RclConfig *cnf, const Rcl::Doc& idoc);
 };
 
  
