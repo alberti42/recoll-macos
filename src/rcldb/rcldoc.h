@@ -233,6 +233,18 @@ class Doc {
 	return true;
     }
 
+    /* Is this document stored as a regular filesystem file ?
+     * (as opposed to e.g. a webcache file), not a subdoc, 
+     */
+    bool isFsFile() {
+        string backend;
+        getmeta(keybcknd, &backend);
+        if (!backend.empty() && backend.compare("FS"))
+            return false;
+        return true;
+    }
+
+
     void dump(bool dotext=false) const;
 
     // The official names for recoll native fields when used in a text

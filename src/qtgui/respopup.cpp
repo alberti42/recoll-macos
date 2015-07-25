@@ -103,8 +103,9 @@ QMenu *create(QWidget *me, int opts, RefCntr<DocSequence> source, Rcl::Doc& doc)
     popup->addAction(QWidget::tr("Copy &File Name"), me, SLOT(menuCopyFN()));
     popup->addAction(QWidget::tr("Copy &URL"), me, SLOT(menuCopyURL()));
 
-    if ((opts&showSaveOne) && !doc.ipath.empty())
-	popup->addAction(QWidget::tr("&Write to File"), me, SLOT(menuSaveToFile()));
+    if ((opts&showSaveOne) && (!doc.isFsFile() || !doc.ipath.empty()))
+	popup->addAction(QWidget::tr("&Write to File"), me, 
+                         SLOT(menuSaveToFile()));
 
     if ((opts&showSaveSel))
 	popup->addAction(QWidget::tr("Save selection to files"), 
@@ -117,8 +118,9 @@ QMenu *create(QWidget *me, int opts, RefCntr<DocSequence> source, Rcl::Doc& doc)
     }
     // Open parent is useful even if there is no parent because we open
     // the enclosing folder.
-    popup->addAction(QWidget::tr("&Open Parent document/folder"), 
-		     me, SLOT(menuOpenParent()));
+    if (doc.isFsFile())
+        popup->addAction(QWidget::tr("&Open Parent document/folder"), 
+                         me, SLOT(menuOpenParent()));
 
     if (opts & showExpand)
 	popup->addAction(QWidget::tr("Find &similar documents"), 
