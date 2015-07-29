@@ -279,6 +279,9 @@ void RclMain::init()
     QKeySequence seq("Ctrl+Shift+s");
     QShortcut *sc = new QShortcut(seq, this);
     connect(sc, SIGNAL (activated()), sSearch, SLOT (takeFocus()));
+    QKeySequence seql("Ctrl+l");
+    sc = new QShortcut(seql, this);
+    connect(sc, SIGNAL (activated()), sSearch, SLOT (takeFocus()));
 
     connect(&m_watcher, SIGNAL(fileChanged(QString)), 
 	    this, SLOT(idxStatus()));
