@@ -91,11 +91,11 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
 
     string field;
     vector<string> words;
-    // Walk the clause list. If we find any non simple clause or different
-    // field names, bail out.
+    // Walk the clause list. If this is not an AND list, we find any
+    // non simple clause or different field names, bail out.
     for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++) {
         SClType tp = (*it)->m_tp;
-        if (tp != SCLT_AND && tp != SCLT_OR) {
+        if (tp != SCLT_AND) {
             LOGDEB2(("SearchData::maybeAddAutoPhrase: wrong tp %d\n", tp));
             return false;
         }
