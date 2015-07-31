@@ -114,19 +114,26 @@ def main (args):
     except getopt.GetoptError:
         error("error parsing input options\n")
         usage(exname)
-        return
+        return false
 
+    status = True
     try:
         dumper = PPTDumper(args[0], globals.params)
         if not dumper.dump():
             error("ppt-dump: dump error " + args[0] + "\n")
+            status = False
     except:
         error("ppt-dump: FAILURE (bad format?) " + args[0] + "\n")
+        status = False
 
     if globals.params.dumpText:
         print(globals.textdump.replace("\r", "\n"))
-
+    return(status)
+    
 if __name__ == '__main__':
-    main(sys.argv)
+    if main(sys.argv):
+        sys.exit(0)
+    else:
+        sys.exit(1)
 
 # vim:set filetype=python shiftwidth=4 softtabstop=4 expandtab:
