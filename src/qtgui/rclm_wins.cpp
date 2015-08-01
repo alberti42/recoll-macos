@@ -85,8 +85,7 @@ void RclMain::showFragButs()
             connect(fragbuts, SIGNAL(fragmentsChanged()),
                     this, SLOT(onFragmentsChanged()));
         } else {
-            delete fragbuts;
-            fragbuts = 0;
+            deleteZ(fragbuts);
         }
     } else {
 	// Close and reopen, in hope that makes us visible...
