@@ -8,7 +8,7 @@
 
 #include "searchdata.h"
 #include "wasaparserdriver.h"
-#include "wasaparse.tab.h"
+#include "wasaparse.h"
 
 using namespace std;
 

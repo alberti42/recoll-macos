@@ -3,31 +3,20 @@ AC_CONFIG_HEADERS([common/autoconfig.h])
 AC_PREREQ(2.53)
 AC_CONFIG_SRCDIR(index/recollindex.cpp)
 
+AM_INIT_AUTOMAKE([1.10 no-define subdir-objects foreign])
+AC_DISABLE_STATIC
+LT_INIT
+AC_CONFIG_MACRO_DIR([m4])
+
 AC_PROG_CXX
 if test C$CXX = C ; then
    AC_MSG_ERROR([C++ compiler needed. Please install one (ie: gnu g++)])
 fi
 
+AC_PROG_YACC
+
+AC_PROG_LIBTOOL
 AC_C_BIGENDIAN
-
-sys=`uname | tr / _ | awk -F_ '{print $1}'`
-
-if test ! -f mk/$sys ; then
-   AC_MSG_NOTICE([
-    No system configuration file found in mk/ for uname = '$sys'. 
-    Trying with Default file. 
-    If the build fails, you'll need to write a configuration file, starting 
-    from one of the existing ones.])
-
-    sys=Default   
-fi
-(cd mk; rm -f sysconf; ln -s $sys sysconf)
-
-# There a few Recoll users on Mac OS X and a few things are just not worth
-# supporting
-if test X$sys = XDarwin ; then
-   NODYNLIB=#
-fi
 
 AC_SYS_LARGEFILE
 
@@ -199,12 +188,9 @@ AC_ARG_ENABLE(idxthreads,
     AC_HELP_STRING([--disable-idxthreads],
    [Disable multithread indexing.]),
         idxthreadsEnabled=$enableval, idxthreadsEnabled=yes)
-
+AM_CONDITIONAL(NOTHREADS, [test X$idxthreadsEnabled = Xno])
 if test X$idxthreadsEnabled = Xyes ; then
   AC_DEFINE(IDX_THREADS, 1, [Use multiple threads for indexing])
-  NOTHREADS=""
-else
-  NOTHREADS="#"
 fi
 
 # Enable CamelCase word splitting. This is optional because it causes 
@@ -221,7 +207,6 @@ AC_ARG_ENABLE(camelcase,
    "mysql manual" (in phrases only and you could raise the phrase slack to
    get a match).]),
         camelcaseEnabled=$enableval, camelcaseEnabled=no)
-
 if test X$camelcaseEnabled = Xyes ; then
   AC_DEFINE(RCL_SPLIT_CAMELCASE, 1, [Split camelCase words])
 fi
@@ -248,27 +233,9 @@ else
   NOPYTHON="#"
 fi
 
-# Build PIC objects for the library ?
-AC_ARG_ENABLE(pic,
-    AC_HELP_STRING([--disable-pic],
-   [Do not compile library objects as position independant code. 
-    This is incompatible with the php or python extensions.]),
-        picEnabled=$enableval, picEnabled=forpython)
-case $picEnabled in
-forpython) picEnabled=$pythonEnabled; NOPIC=$NOPYTHON;;
-yes) NOPIC="";;
-*) NOPIC="#";;
-esac
-
-if test X$pythonEnabled = Xyes -a X$picEnabled != Xyes; then
-   AC_MSG_ERROR([Python build needs PIC library])
-fi
-
-if test X$NOPIC != X; then
-    NODYNLIB=#
-fi
-
 AC_CHECK_FUNCS(mkdtemp)
+AC_CHECK_LIB([pthread], [pthread_create], [], [])
+AC_CHECK_LIB([dl], [dlopen], [], [])
 
 ##### Look for iconv. This can exist in either libc (ie: Linux, solaris) or
 ##### libiconv. We'd need a --with-libiconv= option
@@ -503,8 +470,6 @@ else
    QMAKE_DISABLE_WEBKIT=""
   fi
 
-
-
  ##### Using QZeitGeist lib ? Default no for now
   AC_ARG_WITH(qzeitgeist,
     AC_HELP_STRING([--with-qzeitgeist],
@@ -598,23 +563,8 @@ AC_SUBST(RCLLIBVERSION)
 # changing it unless necessary
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(common/rclversion.h)
-AC_CONFIG_FILES(lib/mkMake)
-AC_CONFIG_FILES(mk/localdefs.new:mk/localdefs.in)
 AC_CONFIG_FILES(python/recoll/setup.py)
 AC_CONFIG_FILES(recollinstall)
 AC_CONFIG_FILES(sampleconf/recoll.conf)
 
-for d in bincimapmime index lib query
-do 
-    rm -f $d/alldeps.stamp
-    cp -f /dev/null $d/alldeps
-done
-
 AC_OUTPUT
-
-if cmp -s mk/localdefs mk/localdefs.new ; then
-  rm -f mk/localdefs.new
-else
-  mv -f mk/localdefs.new mk/localdefs
-fi
-

@@ -25,7 +25,8 @@
 
 #define YYDEBUG 1
 
-#include "wasaparse.tab.h"
+// bison-generated file
+#include "wasaparse.h"
 
 using namespace std;
 using namespace Rcl;
