@@ -249,17 +249,38 @@ librecoll_la_LDFLAGS = -release $(VERSION) \
 librecoll_la_LIBADD = $(LIBXAPIAN) $(LIBICONV) $(X_LIBX11) $(LIBTHREADS)
 
 bin_PROGRAMS = recollindex
+if MAKECMDLINE
+    bin_PROGRAMS += recollq
+endif
 
 recollindex_SOURCES = \
                     index/recollindex.cpp \
                     index/rclmonprc.cpp \
                     index/rclmonrcv.cpp 
-
-recollindex_LDFLAGS = 
 recollindex_LDADD = librecoll.la
+
+recollq_SOURCES = query/recollqmain.cpp
+recollq_LDADD = librecoll.la
+
+if MAKEPYTHON
+all-local:
+	${MAKE} -C python/recoll libdir=$(libdir)
+install-exec-local:
+	(cd python/recoll; \
+        if test -f /etc/debian_version ; then \
+            OPTSFORPYTHON=--install-layout=deb; \
+        fi; \
+        set -x; \
+        python setup.py install \
+         --prefix=${prefix} --root=$${DESTDIR:-/} $${OPTSFORPYTHON})
+clean-local:
+	rm -rf python/recoll/build
+endif
 
 defconfdir = $(pkgdatadir)/examples
 defconf_DATA = \
+desktop/recollindex.desktop \
+index/rclmon.sh \
 sampleconf/fragbuts.xml \
 sampleconf/fields \
 sampleconf/recoll.conf \
@@ -269,17 +290,26 @@ sampleconf/mimemap \
 sampleconf/mimeview 
 
 filterdir = $(pkgdatadir)/filters
-filter_DATA = filters/rcl* \
+filter_DATA = \
+desktop/hotrecoll.py \
+index/rclmon.sh \
+filters/rcl* \
 filters/ppt-dump.py \
 filters/xls-dump.py \
 filters/xlsxmltocsv.py \
 filters/msodump.zip \
-desktop/hotrecoll.py \
 python/recoll/recoll/rclconfig.py 
 
-
 install-data-hook: 
-	(cd $(filterdir); \
-	chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py hotrecoll.py; \
+	(cd $(DESTDIR)/$(filterdir); \
+	chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py hotrecoll.py \
+	rclmon.sh; \
 	chmod 0644 msodump.zip rclexecm.py rcllatinstops.zip rclconfig.py) 
+
+docdir = $(pkgdatadir)/doc
+doc_DATA = doc/user/usermanual.html doc/user/docbook-xsl.css 
+
+dist_man1_MANS = doc/man/recoll.1 doc/man/recollq.1 doc/man/recollindex.1
+dist_man5_MANS = doc/man/recoll.conf.5
+
 

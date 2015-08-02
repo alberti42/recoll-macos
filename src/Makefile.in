@@ -53,10 +53,12 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = recollindex$(EXEEXT)
+bin_PROGRAMS = recollindex$(EXEEXT) $(am__EXEEXT_1)
+@MAKECMDLINE_TRUE@am__append_1 = recollq
 subdir = .
-DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(srcdir)/recollinstall.in \
+DIST_COMMON = README $(am__configure_deps) $(dist_man1_MANS) \
+	$(dist_man5_MANS) $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+	$(srcdir)/recollinstall.in \
 	$(top_srcdir)/common/autoconfig.h.in \
 	$(top_srcdir)/common/rclversion.h.in $(top_srcdir)/configure \
 	$(top_srcdir)/python/recoll/setup.py.in \
@@ -64,7 +66,10 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	INSTALL config.guess config.sub depcomp install-sh ltmain.sh \
 	missing query/wasaparse.cpp ylwrap
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
@@ -102,7 +107,9 @@ am__uninstall_files_from_dir = { \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
 am__installdirs = "$(DESTDIR)$(librcldir)" "$(DESTDIR)$(bindir)" \
-	"$(DESTDIR)$(defconfdir)" "$(DESTDIR)$(filterdir)"
+	"$(DESTDIR)$(man1dir)" "$(DESTDIR)$(man5dir)" \
+	"$(DESTDIR)$(defconfdir)" "$(DESTDIR)$(docdir)" \
+	"$(DESTDIR)$(filterdir)"
 LTLIBRARIES = $(librcl_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 librecoll_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
@@ -147,14 +154,15 @@ librecoll_la_OBJECTS = $(am_librecoll_la_OBJECTS)
 librecoll_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
 	$(CXXFLAGS) $(librecoll_la_LDFLAGS) $(LDFLAGS) -o $@
+@MAKECMDLINE_TRUE@am__EXEEXT_1 = recollq$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 am_recollindex_OBJECTS = index/recollindex.$(OBJEXT) \
 	index/rclmonprc.$(OBJEXT) index/rclmonrcv.$(OBJEXT)
 recollindex_OBJECTS = $(am_recollindex_OBJECTS)
 recollindex_DEPENDENCIES = librecoll.la
-recollindex_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(recollindex_LDFLAGS) $(LDFLAGS) -o $@
+am_recollq_OBJECTS = query/recollqmain.$(OBJEXT)
+recollq_OBJECTS = $(am_recollq_OBJECTS)
+recollq_DEPENDENCIES = librecoll.la
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/common
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -181,14 +189,20 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(librecoll_la_SOURCES) $(recollindex_SOURCES)
-DIST_SOURCES = $(librecoll_la_SOURCES) $(recollindex_SOURCES)
+SOURCES = $(librecoll_la_SOURCES) $(recollindex_SOURCES) \
+	$(recollq_SOURCES)
+DIST_SOURCES = $(librecoll_la_SOURCES) $(recollindex_SOURCES) \
+	$(recollq_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-DATA = $(defconf_DATA) $(filter_DATA)
+man1dir = $(mandir)/man1
+man5dir = $(mandir)/man5
+NROFF = nroff
+MANS = $(dist_man1_MANS) $(dist_man5_MANS)
+DATA = $(defconf_DATA) $(doc_DATA) $(filter_DATA)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -264,7 +278,6 @@ NMEDIT = @NMEDIT@
 NOCMDLINE = @NOCMDLINE@
 NODYNLIB = @NODYNLIB@
 NOPIC = @NOPIC@
-NOPYTHON = @NOPYTHON@
 NOQTMAKE = @NOQTMAKE@
 NOTHREADS = @NOTHREADS@
 OBJDUMP = @OBJDUMP@
@@ -330,7 +343,7 @@ build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
-docdir = @docdir@
+docdir = $(pkgdatadir)/doc
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 fileProg = @fileProg@
@@ -595,10 +608,13 @@ recollindex_SOURCES = \
                     index/rclmonprc.cpp \
                     index/rclmonrcv.cpp 
 
-recollindex_LDFLAGS = 
 recollindex_LDADD = librecoll.la
+recollq_SOURCES = query/recollqmain.cpp
+recollq_LDADD = librecoll.la
 defconfdir = $(pkgdatadir)/examples
 defconf_DATA = \
+desktop/recollindex.desktop \
+index/rclmon.sh \
 sampleconf/fragbuts.xml \
 sampleconf/fields \
 sampleconf/recoll.conf \
@@ -608,12 +624,19 @@ sampleconf/mimemap \
 sampleconf/mimeview 
 
 filterdir = $(pkgdatadir)/filters
-filter_DATA = filters/rcl* \
+filter_DATA = \
+desktop/hotrecoll.py \
+index/rclmon.sh \
+filters/rcl* \
 filters/ppt-dump.py \
 filters/xls-dump.py \
 filters/xlsxmltocsv.py \
-filters/msodump.zip 
+filters/msodump.zip \
+python/recoll/recoll/rclconfig.py 
 
+doc_DATA = doc/user/usermanual.html doc/user/docbook-xsl.css 
+dist_man1_MANS = doc/man/recoll.1 doc/man/recollq.1 doc/man/recollindex.1
+dist_man5_MANS = doc/man/recoll.conf.5
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -980,7 +1003,12 @@ index/rclmonrcv.$(OBJEXT): index/$(am__dirstamp) \
 	index/$(DEPDIR)/$(am__dirstamp)
 recollindex$(EXEEXT): $(recollindex_OBJECTS) $(recollindex_DEPENDENCIES) $(EXTRA_recollindex_DEPENDENCIES) 
 	@rm -f recollindex$(EXEEXT)
-	$(recollindex_LINK) $(recollindex_OBJECTS) $(recollindex_LDADD) $(LIBS)
+	$(CXXLINK) $(recollindex_OBJECTS) $(recollindex_LDADD) $(LIBS)
+query/recollqmain.$(OBJEXT): query/$(am__dirstamp) \
+	query/$(DEPDIR)/$(am__dirstamp)
+recollq$(EXEEXT): $(recollq_OBJECTS) $(recollq_DEPENDENCIES) $(EXTRA_recollq_DEPENDENCIES) 
+	@rm -f recollq$(EXEEXT)
+	$(CXXLINK) $(recollq_OBJECTS) $(recollq_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -1073,6 +1101,7 @@ mostlyclean-compile:
 	-rm -f query/plaintorich.lo
 	-rm -f query/recollq.$(OBJEXT)
 	-rm -f query/recollq.lo
+	-rm -f query/recollqmain.$(OBJEXT)
 	-rm -f query/reslistpager.$(OBJEXT)
 	-rm -f query/reslistpager.lo
 	-rm -f query/sortseq.$(OBJEXT)
@@ -1213,6 +1242,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@query/$(DEPDIR)/filtseq.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@query/$(DEPDIR)/plaintorich.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@query/$(DEPDIR)/recollq.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@query/$(DEPDIR)/recollqmain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@query/$(DEPDIR)/reslistpager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@query/$(DEPDIR)/sortseq.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@query/$(DEPDIR)/wasaparse.Plo@am__quote@
@@ -1327,6 +1357,88 @@ clean-libtool:
 
 distclean-libtool:
 	-rm -f libtool config.lt
+install-man1: $(dist_man1_MANS)
+	@$(NORMAL_INSTALL)
+	@list1='$(dist_man1_MANS)'; \
+	list2=''; \
+	test -n "$(man1dir)" \
+	  && test -n "`echo $$list1$$list2`" \
+	  || exit 0; \
+	echo " $(MKDIR_P) '$(DESTDIR)$(man1dir)'"; \
+	$(MKDIR_P) "$(DESTDIR)$(man1dir)" || exit 1; \
+	{ for i in $$list1; do echo "$$i"; done;  \
+	if test -n "$$list2"; then \
+	  for i in $$list2; do echo "$$i"; done \
+	    | sed -n '/\.1[a-z]*$$/p'; \
+	fi; \
+	} | while read p; do \
+	  if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; echo "$$p"; \
+	done | \
+	sed -e 'n;s,.*/,,;p;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,' | \
+	sed 'N;N;s,\n, ,g' | { \
+	list=; while read file base inst; do \
+	  if test "$$base" = "$$inst"; then list="$$list $$file"; else \
+	    echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man1dir)/$$inst'"; \
+	    $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man1dir)/$$inst" || exit $$?; \
+	  fi; \
+	done; \
+	for i in $$list; do echo "$$i"; done | $(am__base_list) | \
+	while read files; do \
+	  test -z "$$files" || { \
+	    echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(man1dir)'"; \
+	    $(INSTALL_DATA) $$files "$(DESTDIR)$(man1dir)" || exit $$?; }; \
+	done; }
+
+uninstall-man1:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dist_man1_MANS)'; test -n "$(man1dir)" || exit 0; \
+	files=`{ for i in $$list; do echo "$$i"; done; \
+	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
+	dir='$(DESTDIR)$(man1dir)'; $(am__uninstall_files_from_dir)
+install-man5: $(dist_man5_MANS)
+	@$(NORMAL_INSTALL)
+	@list1='$(dist_man5_MANS)'; \
+	list2=''; \
+	test -n "$(man5dir)" \
+	  && test -n "`echo $$list1$$list2`" \
+	  || exit 0; \
+	echo " $(MKDIR_P) '$(DESTDIR)$(man5dir)'"; \
+	$(MKDIR_P) "$(DESTDIR)$(man5dir)" || exit 1; \
+	{ for i in $$list1; do echo "$$i"; done;  \
+	if test -n "$$list2"; then \
+	  for i in $$list2; do echo "$$i"; done \
+	    | sed -n '/\.5[a-z]*$$/p'; \
+	fi; \
+	} | while read p; do \
+	  if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; echo "$$p"; \
+	done | \
+	sed -e 'n;s,.*/,,;p;h;s,.*\.,,;s,^[^5][0-9a-z]*$$,5,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,' | \
+	sed 'N;N;s,\n, ,g' | { \
+	list=; while read file base inst; do \
+	  if test "$$base" = "$$inst"; then list="$$list $$file"; else \
+	    echo " $(INSTALL_DATA) '$$file' '$(DESTDIR)$(man5dir)/$$inst'"; \
+	    $(INSTALL_DATA) "$$file" "$(DESTDIR)$(man5dir)/$$inst" || exit $$?; \
+	  fi; \
+	done; \
+	for i in $$list; do echo "$$i"; done | $(am__base_list) | \
+	while read files; do \
+	  test -z "$$files" || { \
+	    echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(man5dir)'"; \
+	    $(INSTALL_DATA) $$files "$(DESTDIR)$(man5dir)" || exit $$?; }; \
+	done; }
+
+uninstall-man5:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dist_man5_MANS)'; test -n "$(man5dir)" || exit 0; \
+	files=`{ for i in $$list; do echo "$$i"; done; \
+	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^5][0-9a-z]*$$,5,;x' \
+	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
+	dir='$(DESTDIR)$(man5dir)'; $(am__uninstall_files_from_dir)
 install-defconfDATA: $(defconf_DATA)
 	@$(NORMAL_INSTALL)
 	@list='$(defconf_DATA)'; test -n "$(defconfdir)" || list=; \
@@ -1348,6 +1460,27 @@ uninstall-defconfDATA:
 	@list='$(defconf_DATA)'; test -n "$(defconfdir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(defconfdir)'; $(am__uninstall_files_from_dir)
+install-docDATA: $(doc_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(doc_DATA)'; test -n "$(docdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(docdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(docdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(docdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(docdir)" || exit $$?; \
+	done
+
+uninstall-docDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(doc_DATA)'; test -n "$(docdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(docdir)'; $(am__uninstall_files_from_dir)
 install-filterDATA: $(filter_DATA)
 	@$(NORMAL_INSTALL)
 	@list='$(filter_DATA)'; test -n "$(filterdir)" || list=; \
@@ -1423,6 +1556,19 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
+	@list='$(MANS)'; if test -n "$$list"; then \
+	  list=`for p in $$list; do \
+	    if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
+	    if test -f "$$d$$p"; then echo "$$d$$p"; else :; fi; done`; \
+	  if test -n "$$list" && \
+	    grep 'ab help2man is required to generate this page' $$list >/dev/null; then \
+	    echo "error: found man pages containing the \`missing help2man' replacement text:" >&2; \
+	    grep -l 'ab help2man is required to generate this page' $$list | sed 's/^/         /' >&2; \
+	    echo "       to fix them, install help2man, remove and regenerate the man pages;" >&2; \
+	    echo "       typically \`make maintainer-clean' will remove them" >&2; \
+	    exit 1; \
+	  else :; fi; \
+	else :; fi
 	$(am__remove_distdir)
 	test -d "$(distdir)" || mkdir "$(distdir)"
 	@srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
@@ -1587,9 +1733,10 @@ distcleancheck: distclean
 check-am: all-am
 check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-am
-all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(DATA)
+@MAKEPYTHON_FALSE@all-local:
+all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(MANS) $(DATA) all-local
 installdirs:
-	for dir in "$(DESTDIR)$(librcldir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(defconfdir)" "$(DESTDIR)$(filterdir)"; do \
+	for dir in "$(DESTDIR)$(librcldir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(man5dir)" "$(DESTDIR)$(defconfdir)" "$(DESTDIR)$(docdir)" "$(DESTDIR)$(filterdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: $(BUILT_SOURCES)
@@ -1643,10 +1790,12 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 	-rm -f query/wasaparse.cpp
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
+@MAKEPYTHON_FALSE@install-exec-local:
+@MAKEPYTHON_FALSE@clean-local:
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic clean-librclLTLIBRARIES \
-	clean-libtool mostlyclean-am
+	clean-libtool clean-local mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
@@ -1667,15 +1816,15 @@ info: info-am
 
 info-am:
 
-install-data-am: install-defconfDATA install-filterDATA \
-	install-librclLTLIBRARIES
+install-data-am: install-defconfDATA install-docDATA \
+	install-filterDATA install-librclLTLIBRARIES install-man
 	@$(NORMAL_INSTALL)
 	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
 install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-binPROGRAMS
+install-exec-am: install-binPROGRAMS install-exec-local
 
 install-html: install-html-am
 
@@ -1685,7 +1834,7 @@ install-info: install-info-am
 
 install-info-am:
 
-install-man:
+install-man: install-man1 install-man5
 
 install-pdf: install-pdf-am
 
@@ -1718,39 +1867,58 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-binPROGRAMS uninstall-defconfDATA \
-	uninstall-filterDATA uninstall-librclLTLIBRARIES
+	uninstall-docDATA uninstall-filterDATA \
+	uninstall-librclLTLIBRARIES uninstall-man
+
+uninstall-man: uninstall-man1 uninstall-man5
 
 .MAKE: all check install install-am install-data-am install-strip
 
-.PHONY: CTAGS GTAGS all all-am am--refresh check check-am clean \
-	clean-binPROGRAMS clean-generic clean-librclLTLIBRARIES \
-	clean-libtool ctags dist dist-all dist-bzip2 dist-gzip \
-	dist-lzip dist-lzma dist-shar dist-tarZ dist-xz dist-zip \
-	distcheck distclean distclean-compile distclean-generic \
-	distclean-hdr distclean-libtool distclean-tags distcleancheck \
-	distdir distuninstallcheck dvi dvi-am html html-am info \
-	info-am install install-am install-binPROGRAMS install-data \
-	install-data-am install-data-hook install-defconfDATA \
+.PHONY: CTAGS GTAGS all all-am all-local am--refresh check check-am \
+	clean clean-binPROGRAMS clean-generic clean-librclLTLIBRARIES \
+	clean-libtool clean-local ctags dist dist-all dist-bzip2 \
+	dist-gzip dist-lzip dist-lzma dist-shar dist-tarZ dist-xz \
+	dist-zip distcheck distclean distclean-compile \
+	distclean-generic distclean-hdr distclean-libtool \
+	distclean-tags distcleancheck distdir distuninstallcheck dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-binPROGRAMS install-data install-data-am \
+	install-data-hook install-defconfDATA install-docDATA \
 	install-dvi install-dvi-am install-exec install-exec-am \
-	install-filterDATA install-html install-html-am install-info \
-	install-info-am install-librclLTLIBRARIES install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-binPROGRAMS uninstall-defconfDATA \
-	uninstall-filterDATA uninstall-librclLTLIBRARIES
+	install-exec-local install-filterDATA install-html \
+	install-html-am install-info install-info-am \
+	install-librclLTLIBRARIES install-man install-man1 \
+	install-man5 install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
+	uninstall-am uninstall-binPROGRAMS uninstall-defconfDATA \
+	uninstall-docDATA uninstall-filterDATA \
+	uninstall-librclLTLIBRARIES uninstall-man uninstall-man1 \
+	uninstall-man5
 
 
 CXXFLAGS ?= @CXXFLAGS@
 
-# TBD: Need to set rcl* executable and msodump.py, rclexecm.py
-# rclexecm.py rcllatinstops.zip 0644
+@MAKEPYTHON_TRUE@all-local:
+@MAKEPYTHON_TRUE@	${MAKE} -C python/recoll libdir=$(libdir)
+@MAKEPYTHON_TRUE@install-exec-local:
+@MAKEPYTHON_TRUE@	(cd python/recoll; \
+@MAKEPYTHON_TRUE@        if test -f /etc/debian_version ; then \
+@MAKEPYTHON_TRUE@            OPTSFORPYTHON=--install-layout=deb; \
+@MAKEPYTHON_TRUE@        fi; \
+@MAKEPYTHON_TRUE@        set -x; \
+@MAKEPYTHON_TRUE@        python setup.py install \
+@MAKEPYTHON_TRUE@         --prefix=${prefix} --root=$${DESTDIR:-/} $${OPTSFORPYTHON})
+@MAKEPYTHON_TRUE@clean-local:
+@MAKEPYTHON_TRUE@	rm -rf python/recoll/build
+
 install-data-hook: 
-	(cd $(filterdir); \
-        chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py; \
-        chmod 0644 msodump.zip rclexecm.py rcllatinstops.zip ) 
+	(cd $(DESTDIR)/$(filterdir); \
+	chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py hotrecoll.py \
+	rclmon.sh; \
+	chmod 0644 msodump.zip rclexecm.py rcllatinstops.zip rclconfig.py) 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

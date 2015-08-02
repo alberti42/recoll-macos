@@ -220,18 +220,16 @@ fi
 #   configure; make; cd python/recoll; make install
 #
 if test X$sys != XDarwin ; then
-AC_ARG_ENABLE(python-module,
+  AC_ARG_ENABLE(python-module,
     AC_HELP_STRING([--disable-python-module],
-   [Do not build the Python module.]),
+    [Do not build the Python module.]),
         pythonEnabled=$enableval, pythonEnabled=yes)
-if test X$pythonEnabled = Xyes ; then
-  NOPYTHON=""
 else
-  NOPYTHON="#"
+  pythonEnabled=no
 fi
-else
-  NOPYTHON="#"
-fi
+
+AM_CONDITIONAL(MAKEPYTHON, [test X$pythonEnabled = Xyes])
+
 
 AC_CHECK_FUNCS(mkdtemp)
 AC_CHECK_LIB([pthread], [pthread_create], [], [])
@@ -381,12 +379,10 @@ AC_ARG_ENABLE(qtgui,
    [Disable the QT-based graphical user interface.]),
         enableQT=$enableval, enableQT="yes")
 
-if test "$enableQT" != "yes" ; then
-   NOQTMAKE="#"
-   NOCMDLINE=""
-else
-  NOQTMAKE=""
-  NOCMDLINE="#"
+AM_CONDITIONAL(MAKEQT, [test X$enableQT = Xyes])
+AM_CONDITIONAL(MAKECMDLINE, [test X$enableQT = Xno])
+
+if test X$enableQT = Xyes ; then
 
   if test X$QTDIR != X ; then
      PATH=$PATH:$QTDIR/bin
@@ -554,7 +550,6 @@ AC_SUBST(QMAKE_DISABLE_ZEITGEIST)
 AC_SUBST(LIBQZEITGEIST)
 AC_SUBST(NOPIC)
 AC_SUBST(NOTHREADS)
-AC_SUBST(NOPYTHON)
 AC_SUBST(NODYNLIB)
 AC_SUBST(RCLVERSION)
 AC_SUBST(RCLLIBVERSION)

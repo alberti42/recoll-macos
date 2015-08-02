@@ -16,7 +16,6 @@
  */
 // Takes a query and run it, no gui, results to stdout
 
-#ifndef TEST_RECOLLQ
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -416,17 +415,3 @@ endopts:
 
     return 0;
 }
-
-#else // TEST_RECOLLQ The test driver is actually the useful program...
-#include <stdlib.h>
-
-#include "rclconfig.h"
-#include "recollq.h"
-
-static RclConfig *rclconfig;
-
-int main(int argc, char **argv)
-{
-    return(recollq(&rclconfig, argc, argv));
-}
-#endif // TEST_RECOLLQ
