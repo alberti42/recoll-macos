@@ -262,10 +262,191 @@ recollindex_LDADD = librecoll.la
 recollq_SOURCES = query/recollqmain.cpp
 recollq_LDADD = librecoll.la
 
+EXTRA_DIST = \
+qtgui/advsearch.ui \
+qtgui/advsearch_w.cpp \
+qtgui/advsearch_w.h \
+qtgui/advshist.cpp \
+qtgui/advshist.h \
+qtgui/confgui/confgui.cpp \
+qtgui/confgui/confgui.h \
+qtgui/confgui/confguiindex.cpp \
+qtgui/confgui/confguiindex.h \
+qtgui/confgui/conflinkrcl.h \
+qtgui/confgui/main.cpp \
+qtgui/confgui/trconf.pro \
+qtgui/crontool.cpp \
+qtgui/crontool.h \
+qtgui/crontool.ui \
+qtgui/editdialog.h \
+qtgui/editdialog.ui \
+qtgui/firstidx.h \
+qtgui/firstidx.ui \
+qtgui/fragbuts.cpp \
+qtgui/fragbuts.h \
+qtgui/guiutils.cpp \
+qtgui/guiutils.h \
+qtgui/i18n/recoll_cs.qm \
+qtgui/i18n/recoll_cs.ts \
+qtgui/i18n/recoll_da.qm \
+qtgui/i18n/recoll_da.ts \
+qtgui/i18n/recoll_de.qm \
+qtgui/i18n/recoll_de.ts \
+qtgui/i18n/recoll_el.qm \
+qtgui/i18n/recoll_el.ts \
+qtgui/i18n/recoll_es.qm \
+qtgui/i18n/recoll_es.ts \
+qtgui/i18n/recoll_fr.qm \
+qtgui/i18n/recoll_fr.ts \
+qtgui/i18n/recoll_it.qm \
+qtgui/i18n/recoll_it.ts \
+qtgui/i18n/recoll_lt.qm \
+qtgui/i18n/recoll_lt.ts \
+qtgui/i18n/recoll_pl.qm \
+qtgui/i18n/recoll_pl.ts \
+qtgui/i18n/recoll_ru.qm \
+qtgui/i18n/recoll_ru.ts \
+qtgui/i18n/recoll_tr.qm \
+qtgui/i18n/recoll_tr.ts \
+qtgui/i18n/recoll_uk.qm \
+qtgui/i18n/recoll_uk.ts \
+qtgui/i18n/recoll_xx.qm \
+qtgui/i18n/recoll_xx.ts \
+qtgui/i18n/recoll_zh_CN.qm \
+qtgui/i18n/recoll_zh_CN.ts \
+qtgui/i18n/recoll_zh.qm \
+qtgui/i18n/recoll_zh.ts \
+qtgui/idxsched.h \
+qtgui/idxsched.ui \
+qtgui/images/asearch.png \
+qtgui/images/cancel.png \
+qtgui/images/close.png \
+qtgui/images/code-block.png \
+qtgui/images/down.png \
+qtgui/images/firstpage.png \
+qtgui/images/history.png \
+qtgui/images/nextpage.png \
+qtgui/images/prevpage.png \
+qtgui/images/recoll.icns \
+qtgui/images/recoll.png \
+qtgui/images/sortparms.png \
+qtgui/images/spell.png \
+qtgui/images/table.png \
+qtgui/images/up.png \
+qtgui/listdialog.h \
+qtgui/listdialog.ui \
+qtgui/main.cpp \
+qtgui/mtpics/aptosid-book.png \
+qtgui/mtpics/aptosid-manual-copyright.txt \
+qtgui/mtpics/aptosid-manual.png \
+qtgui/mtpics/archive.png \
+qtgui/mtpics/bookchap.png \
+qtgui/mtpics/book.png \
+qtgui/mtpics/document.png \
+qtgui/mtpics/drawing.png \
+qtgui/mtpics/emblem-symbolic-link.png \
+qtgui/mtpics/folder.png \
+qtgui/mtpics/html.png \
+qtgui/mtpics/image.png \
+qtgui/mtpics/License_sidux.txt \
+qtgui/mtpics/message.png \
+qtgui/mtpics/mozilla_doc.png \
+qtgui/mtpics/pdf.png \
+qtgui/mtpics/pidgin.png \
+qtgui/mtpics/postscript.png \
+qtgui/mtpics/presentation.png \
+qtgui/mtpics/README \
+qtgui/mtpics/sidux-book.png \
+qtgui/mtpics/soffice.png \
+qtgui/mtpics/source.png \
+qtgui/mtpics/sownd.png \
+qtgui/mtpics/spreadsheet.png \
+qtgui/mtpics/text-x-python.png \
+qtgui/mtpics/txt.png \
+qtgui/mtpics/video.png \
+qtgui/mtpics/wordprocessing.png \
+qtgui/multisave.cpp \
+qtgui/multisave.h \
+qtgui/preview_w.cpp \
+qtgui/preview_w.h \
+qtgui/ptrans.ui \
+qtgui/ptrans_w.cpp \
+qtgui/ptrans_w.h \
+qtgui/rclhelp.cpp \
+qtgui/rclhelp.h \
+qtgui/rclmain.ui \
+qtgui/rclmain_w.cpp \
+qtgui/rclmain_w.h \
+qtgui/rclm_idx.cpp \
+qtgui/rclm_preview.cpp \
+qtgui/rclm_saveload.cpp \
+qtgui/rclm_view.cpp \
+qtgui/rclm_wins.cpp \
+qtgui/rclzg.cpp \
+qtgui/rclzg.h \
+qtgui/recoll.h \
+qtgui/recoll.pro.in \
+qtgui/recoll.qrc \
+qtgui/reslist.cpp \
+qtgui/reslist.h \
+qtgui/respopup.cpp \
+qtgui/respopup.h \
+qtgui/restable.cpp \
+qtgui/restable.h \
+qtgui/restable.ui \
+qtgui/rtitool.cpp \
+qtgui/rtitool.h \
+qtgui/rtitool.ui \
+qtgui/searchclause_w.cpp \
+qtgui/searchclause_w.h \
+qtgui/snippets.ui \
+qtgui/snippets_w.cpp \
+qtgui/snippets_w.h \
+qtgui/spell.ui \
+qtgui/spell_w.cpp \
+qtgui/spell_w.h \
+qtgui/ssearchb.ui \
+qtgui/ssearch_w.cpp \
+qtgui/ssearch_w.h \
+qtgui/systray.cpp \
+qtgui/systray.h \
+qtgui/uiprefs.ui \
+qtgui/uiprefs_w.cpp \
+qtgui/uiprefs_w.h \
+qtgui/ui_rclmain.h-4.5 \
+qtgui/viewaction.ui \
+qtgui/viewaction_w.cpp \
+qtgui/viewaction_w.h \
+qtgui/xmltosd.cpp \
+qtgui/xmltosd.h \
+\
+python/README.txt \
+python/recoll/Makefile \
+python/recoll/pyrclextract.cpp \
+python/recoll/pyrecoll.cpp \
+python/recoll/pyrecoll.h \
+python/recoll/recoll/__init__.py \
+python/recoll/recoll/__init__.pyc \
+python/recoll/recoll/rclconfig.py \
+python/recoll/setup.py.in \
+python/samples/docdups.py \
+python/samples/mutt-recoll.py \
+python/samples/rcldlkp.py \
+python/samples/rclmbox.py \
+python/samples/recollgui/Makefile \
+python/samples/recollgui/qrecoll.py \
+python/samples/recollgui/rclmain.ui \
+python/samples/recollq.py \
+python/samples/recollqsd.py \
+python/samples/trconfig.py
+
+
 if MAKEPYTHON
-all-local:
+all-local: recollpython
+recollpython: librecoll.la
 	${MAKE} -C python/recoll libdir=$(libdir)
-install-exec-local:
+install-exec-local: recollpython-install
+recollpython-install:
 	(cd python/recoll; \
         if test -f /etc/debian_version ; then \
             OPTSFORPYTHON=--install-layout=deb; \
@@ -273,8 +454,22 @@ install-exec-local:
         set -x; \
         python setup.py install \
          --prefix=${prefix} --root=$${DESTDIR:-/} $${OPTSFORPYTHON})
-clean-local:
+clean-local: recollpython-clean
+recollpython-clean:
 	rm -rf python/recoll/build
+endif
+
+if MAKEQT
+all-local: recollqt
+recollqt: librecoll.la
+	(cd $(QTGUI); ${QMAKE} PREFIX=${prefix} recoll.pro)
+	$(MAKE) -C $(QTGUI) LFLAGS="$(LDFLAGS)" 
+clean-local: recollqt-clean
+recollqt-clean:
+	-$(MAKE) -C $(QTGUI) clean
+install-exec-local: recollqt-install
+recollqt-install:
+	$(MAKE) -C $(QTGUI) INSTALL_ROOT=$(DESTDIR) PREFIX=$(prefix) install
 endif
 
 defconfdir = $(pkgdatadir)/examples
@@ -292,7 +487,6 @@ sampleconf/mimeview
 filterdir = $(pkgdatadir)/filters
 filter_DATA = \
 desktop/hotrecoll.py \
-index/rclmon.sh \
 filters/rcl* \
 filters/ppt-dump.py \
 filters/xls-dump.py \
@@ -302,8 +496,7 @@ python/recoll/recoll/rclconfig.py
 
 install-data-hook: 
 	(cd $(DESTDIR)/$(filterdir); \
-	chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py hotrecoll.py \
-	rclmon.sh; \
+	chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py hotrecoll.py; \
 	chmod 0644 msodump.zip rclexecm.py rcllatinstops.zip rclconfig.py) 
 
 docdir = $(pkgdatadir)/doc
@@ -311,5 +504,3 @@ doc_DATA = doc/user/usermanual.html doc/user/docbook-xsl.css
 
 dist_man1_MANS = doc/man/recoll.1 doc/man/recollq.1 doc/man/recollindex.1
 dist_man5_MANS = doc/man/recoll.conf.5
-
-

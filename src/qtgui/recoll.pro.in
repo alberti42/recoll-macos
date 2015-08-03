@@ -1,11 +1,11 @@
 TEMPLATE        = app
 LANGUAGE        = C++
 
-@QMAKE_ENABLE_WEBKIT@QT += webkit
-@QMAKE_DISABLE_WEBKIT@QMAKE_CXXFLAGS += -DRESLIST_TEXTBROWSER -DSNIPPETS_TEXTBROWSER
+@QMAKE_ENABLE_WEBKIT@ QT += webkit
+@QMAKE_DISABLE_WEBKIT@ QMAKE_CXXFLAGS += -DRESLIST_TEXTBROWSER -DSNIPPETS_TEXTBROWSER
 
-@QMAKE_ENABLE_ZEITGEIST@QT += dbus
-@QMAKE_ENABLE_ZEITGEIST@QMAKE_CXXFLAGS += -DUSE_ZEITGEIST
+@QMAKE_ENABLE_ZEITGEIST@ QT += dbus
+@QMAKE_ENABLE_ZEITGEIST@ QMAKE_CXXFLAGS += -DUSE_ZEITGEIST
 
 QT += xml
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets webkitwidgets printsupport
@@ -94,12 +94,12 @@ unix {
   UI_DIR = .ui
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
-  # Note: libdir may be substituted with sthing like $(exec_prefix)/lib
-  # at this point and will go as such in the Makefile. Expansion will be
-  # completed at make time.
-  LIBS += $(BSTATIC) -L../lib -lrecoll
+  LIBS += -L../.libs -lrecoll
 
   !macx {
+    # Note: libdir may be substituted with sthing like $(exec_prefix)/lib
+    # at this point and will go as such in the Makefile. Expansion will be
+    # completed at make time.
     LIBS += -Wl,-rpath=@libdir@/recoll
   }
 
@@ -110,7 +110,6 @@ unix {
               ../utils ../aspell ../rcldb ../qtgui \
               confgui
   DEPENDPATH += $$INCLUDEPATH
-  POST_TARGETDEPS = ../lib/librecoll.a
 }
 
 UNAME = $$system(uname -s)
@@ -141,3 +140,33 @@ TRANSLATIONS = \
              i18n/recoll_xx.ts \
              i18n/recoll_zh_CN.ts \
              i18n/recoll_zh.ts \
+
+unix {
+  isEmpty(PREFIX) {
+    PREFIX = /usr/local
+  }
+  message("Prefix is $$PREFIX")
+  DEFINES += PREFIX=\\\"$$PREFIX\\\"
+
+ # Installation stuff
+  target.path = "$$PREFIX/bin"
+
+  imdata.files = mtpics/*.png
+  imdata.path = $$PREFIX/share/recoll/images
+  trdata.files = i18n/*.qm
+  trdata.path = $$PREFIX/share/recoll/translations
+  desktop.files += ../desktop/recoll-searchgui.desktop
+  desktop.path = $$PREFIX/share/applications/
+  icona.files += ../desktop/recoll.png
+  icona.path = $$PREFIX/share/icons/hicolor/48x48/apps/
+  iconb.files += ../desktop/recoll.png
+  iconb.path = $$PREFIX/share/pixmaps/
+  appdata.files = ../desktop/recoll.appdata.xml
+  appdata.path = $$PREFIX/share/appdata/
+  INSTALLS += target imdata trdata desktop icona iconb appdata
+
+  # The recollinstall script used to do the following to install zh_CN as
+  # zh. Is this still needed?
+  #${INSTALL} -m 0444 ${I18N}/recoll_zh_CN.qm \
+  #  ${datadir}/recoll/translations/recoll_zh.qm || exit 1
+}

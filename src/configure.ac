@@ -234,6 +234,7 @@ AM_CONDITIONAL(MAKEPYTHON, [test X$pythonEnabled = Xyes])
 AC_CHECK_FUNCS(mkdtemp)
 AC_CHECK_LIB([pthread], [pthread_create], [], [])
 AC_CHECK_LIB([dl], [dlopen], [], [])
+AC_CHECK_LIB([z], [zlibVersion], [], [])
 
 ##### Look for iconv. This can exist in either libc (ie: Linux, solaris) or
 ##### libiconv. We'd need a --with-libiconv= option
@@ -338,8 +339,6 @@ for i in $LIBXAPIAN ; do
     esac
 done
 LIBXAPIAN=$tmpxaplib
-# Also recent xapian libs need lz even when they think they don't...
-LIBXAPIAN="$LIBXAPIAN -lz"
 LIBXAPIANDIR=`$XAPIAN_CONFIG --libs | awk '{print $1}'`
 case A"$LIBXAPIANDIR" in
   A-L*) LIBXAPIANDIR=`echo $LIBXAPIANDIR | sed -e 's/-L//'`;;
@@ -412,15 +411,13 @@ if test X$enableQT = Xyes ; then
      QMAKE="${QMAKE} -spec macx-g++"
   fi
   
-  # Discriminate qt3/4. Qt3 qmake prints its version on stderr but we don't
-  # depend on this. We try to detect the qt 4 version string instead.
+  # Check Qt version
   qmakevers="`${QMAKE} --version 2>&1`"
   #echo "qmake version: $qmakevers"
   v4=`expr "$qmakevers" : '.*Qt[ ][ ]*version[ ][ ]*4.*'`
   v5=`expr "$qmakevers" : '.*Qt[ ][ ]*version[ ][ ]*5.*'`
   if test X$v4 = X0 -a X$v5 = X0; then 
      AC_MSG_ERROR([qmake seems to be using Qt version 3 which is not supported any more])
-     QTGUI=qtgui
   else
     if test X$v4 != X0 ; then
        AC_MSG_NOTICE([using qt version 4 user interface])
@@ -436,7 +433,7 @@ if test X$enableQT = Xyes ; then
   test -f recoll.pro && chmod +w recoll.pro
   cp recoll.pro.in recoll.pro
   #echo QMAKE ${QMAKE}
-  ${QMAKE} recoll.pro
+  ${QMAKE} PREFIX=${prefix} recoll.pro
   if test $? != 0 ; then
      AC_MSG_ERROR([Cannot use qmake to generate a Makefile. Maybe you need to
   check the QTDIR and QMAKESPEC environment variables?])
@@ -449,6 +446,7 @@ if test X$enableQT = Xyes ; then
   installation. If there is no default mkspecs, you should also set QMAKESPEC])
      fi
   fi
+  rm -f Makefile recoll.pro
   cd ..
 
 
