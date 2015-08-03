@@ -17,6 +17,7 @@ src/config.guess
 src/config.sub
 src/depcomp
 src/install-sh
+src/Makefile.in
 src/ltmain.sh
 src/m4/libtool.m4
 src/m4/ltoptions.m4
@@ -64,7 +65,8 @@ src/doc/user/usermanual.html
 src/doc/user/usermanual.pdf
 src/filters/rclexecm.pyc
 src/filters/rcllatinclass.pyc
-src/index/recollindex
+src/recollindex
+src/recollq
 src/kde/kioslave/kio_recoll/builddir
 src/python/recoll/build
 src/python/recoll/recoll/__init__.pyc

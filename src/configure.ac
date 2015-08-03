@@ -352,6 +352,12 @@ XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 #echo LIBXAPIANSTATICEXTRA: $LIBXAPIANSTATICEXTRA
 #echo XAPIANCXXFLAGS: $XAPIANCXXFLAGS
 
+AC_ARG_ENABLE(xadump, 
+    AC_HELP_STRING([--enable-xadump],
+   [Enable building the xadump low level Xapian access program.]),
+        enableQT=$enableval, enableXADUMP="yes")
+AM_CONDITIONAL(MAKEXADUMP, [test X$enableXADUMP = Xyes])
+
 #### QT
 # The way qt and its tools (qmake especially) are installed is very
 # different between systems (and maybe qt versions)

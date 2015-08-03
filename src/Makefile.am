@@ -69,7 +69,6 @@ common/rclconfig.cpp \
 common/rclconfig.h \
 common/rclinit.cpp \
 common/rclinit.h \
-common/rclversion.h \
 common/textsplit.cpp \
 common/textsplit.h \
 common/unacpp.cpp \
@@ -253,6 +252,10 @@ if MAKECMDLINE
     bin_PROGRAMS += recollq
 endif
 
+if MAKEXADUMP
+   bin_PROGRAMS += xadump
+endif
+
 recollindex_SOURCES = \
                     index/recollindex.cpp \
                     index/rclmonprc.cpp \
@@ -262,7 +265,27 @@ recollindex_LDADD = librecoll.la
 recollq_SOURCES = query/recollqmain.cpp
 recollq_LDADD = librecoll.la
 
+xadump_SOURCES = query/xadump.cpp
+xadump_LDADD = librecoll.la $(LIBXAPIAN) $(LIBICONV)
+
 EXTRA_DIST = \
+bincimapmime/00README.recoll bincimapmime/AUTHORS bincimapmime/COPYING \
+\
+desktop/hotrecoll.py \
+desktop/recoll.appdata.xml \
+desktop/recollindex.desktop \
+desktop/recoll_index_on_ac.sh \
+desktop/recoll-searchgui.desktop \
+desktop/recoll.png desktop/recoll.svg desktop/recoll.xcf \
+\
+doc/man \
+doc/prog \
+doc/user/*.html doc/user/*.css doc/user/*.txt doc/user/*.xml doc/user/Makefile \
+\
+filters \
+\
+index/rclmon.sh \
+\
 qtgui/advsearch.ui \
 qtgui/advsearch_w.cpp \
 qtgui/advsearch_w.h \
@@ -274,7 +297,6 @@ qtgui/confgui/confguiindex.cpp \
 qtgui/confgui/confguiindex.h \
 qtgui/confgui/conflinkrcl.h \
 qtgui/confgui/main.cpp \
-qtgui/confgui/trconf.pro \
 qtgui/crontool.cpp \
 qtgui/crontool.h \
 qtgui/crontool.ui \
@@ -286,36 +308,21 @@ qtgui/fragbuts.cpp \
 qtgui/fragbuts.h \
 qtgui/guiutils.cpp \
 qtgui/guiutils.h \
-qtgui/i18n/recoll_cs.qm \
-qtgui/i18n/recoll_cs.ts \
-qtgui/i18n/recoll_da.qm \
-qtgui/i18n/recoll_da.ts \
-qtgui/i18n/recoll_de.qm \
-qtgui/i18n/recoll_de.ts \
-qtgui/i18n/recoll_el.qm \
-qtgui/i18n/recoll_el.ts \
-qtgui/i18n/recoll_es.qm \
-qtgui/i18n/recoll_es.ts \
-qtgui/i18n/recoll_fr.qm \
-qtgui/i18n/recoll_fr.ts \
-qtgui/i18n/recoll_it.qm \
-qtgui/i18n/recoll_it.ts \
-qtgui/i18n/recoll_lt.qm \
-qtgui/i18n/recoll_lt.ts \
-qtgui/i18n/recoll_pl.qm \
-qtgui/i18n/recoll_pl.ts \
-qtgui/i18n/recoll_ru.qm \
-qtgui/i18n/recoll_ru.ts \
-qtgui/i18n/recoll_tr.qm \
-qtgui/i18n/recoll_tr.ts \
-qtgui/i18n/recoll_uk.qm \
-qtgui/i18n/recoll_uk.ts \
-qtgui/i18n/recoll_xx.qm \
-qtgui/i18n/recoll_xx.ts \
-qtgui/i18n/recoll_zh_CN.qm \
-qtgui/i18n/recoll_zh_CN.ts \
-qtgui/i18n/recoll_zh.qm \
-qtgui/i18n/recoll_zh.ts \
+qtgui/i18n/recoll_cs.qm qtgui/i18n/recoll_cs.ts \
+qtgui/i18n/recoll_da.qm qtgui/i18n/recoll_da.ts \
+qtgui/i18n/recoll_de.qm qtgui/i18n/recoll_de.ts \
+qtgui/i18n/recoll_el.qm qtgui/i18n/recoll_el.ts \
+qtgui/i18n/recoll_es.qm qtgui/i18n/recoll_es.ts \
+qtgui/i18n/recoll_fr.qm qtgui/i18n/recoll_fr.ts \
+qtgui/i18n/recoll_it.qm qtgui/i18n/recoll_it.ts \
+qtgui/i18n/recoll_lt.qm qtgui/i18n/recoll_lt.ts \
+qtgui/i18n/recoll_pl.qm qtgui/i18n/recoll_pl.ts \
+qtgui/i18n/recoll_ru.qm qtgui/i18n/recoll_ru.ts \
+qtgui/i18n/recoll_tr.qm qtgui/i18n/recoll_tr.ts \
+qtgui/i18n/recoll_uk.qm qtgui/i18n/recoll_uk.ts \
+qtgui/i18n/recoll_xx.qm qtgui/i18n/recoll_xx.ts \
+qtgui/i18n/recoll_zh_CN.qm qtgui/i18n/recoll_zh_CN.ts \
+qtgui/i18n/recoll_zh.qm qtgui/i18n/recoll_zh.ts \
 qtgui/idxsched.h \
 qtgui/idxsched.ui \
 qtgui/images/asearch.png \
@@ -426,7 +433,6 @@ python/recoll/pyrclextract.cpp \
 python/recoll/pyrecoll.cpp \
 python/recoll/pyrecoll.h \
 python/recoll/recoll/__init__.py \
-python/recoll/recoll/__init__.pyc \
 python/recoll/recoll/rclconfig.py \
 python/recoll/setup.py.in \
 python/samples/docdups.py \
@@ -438,7 +444,15 @@ python/samples/recollgui/qrecoll.py \
 python/samples/recollgui/rclmain.ui \
 python/samples/recollq.py \
 python/samples/recollqsd.py \
-python/samples/trconfig.py
+\
+ \
+sampleconf/fields sampleconf/fragbuts.xml sampleconf/mimeconf \
+sampleconf/mimemap sampleconf/mimeview sampleconf/mimeview.mac \
+sampleconf/recoll.conf.in sampleconf/recoll.qss \
+\
+unac/AUTHORS unac/COPYING unac/README unac/README.recoll \
+\
+VERSION
 
 
 if MAKEPYTHON
@@ -499,8 +513,8 @@ install-data-hook:
 	chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py hotrecoll.py; \
 	chmod 0644 msodump.zip rclexecm.py rcllatinstops.zip rclconfig.py) 
 
-docdir = $(pkgdatadir)/doc
-doc_DATA = doc/user/usermanual.html doc/user/docbook-xsl.css 
+rdocdir = $(pkgdatadir)/doc
+rdoc_DATA = doc/user/usermanual.html doc/user/docbook-xsl.css 
 
 dist_man1_MANS = doc/man/recoll.1 doc/man/recollq.1 doc/man/recollindex.1
 dist_man5_MANS = doc/man/recoll.conf.5
