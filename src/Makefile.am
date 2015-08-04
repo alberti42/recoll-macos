@@ -237,7 +237,9 @@ utils/x11mon.cpp \
 utils/x11mon.h
 
 BUILT_SOURCES = query/wasaparse.cpp query/wasaparse.hpp
-CLEANFILES = $(BUILT_SOURCES)
+AM_YFLAGS = -d
+CLEANFILES = query/wasaparse.cpp query/wasaparse.hpp \
+           query/location.hh  query/position.hh  query/stack.hh
 
 # We use -release: the lib is only shared
 # between recoll programs from the same release.
@@ -285,6 +287,8 @@ recollq_LDADD = librecoll.la
 xadump_SOURCES = query/xadump.cpp
 xadump_LDADD = librecoll.la $(LIBXAPIAN) $(LIBICONV)
 
+# Note: I'd prefer the generated query parser files not to be distributed
+# at all, but failed to achieve this
 EXTRA_DIST = \
 bincimapmime/00README.recoll bincimapmime/AUTHORS bincimapmime/COPYING \
 \
@@ -302,6 +306,9 @@ doc/user/*.html doc/user/*.css doc/user/*.txt doc/user/*.xml doc/user/Makefile \
 filters \
 \
 index/rclmon.sh \
+\
+query/wasaparse.cpp query/wasaparse.hpp query/y.tab.h \
+query/location.hh  query/position.hh  query/stack.hh \
 \
 qtgui/advsearch.ui \
 qtgui/advsearch_w.cpp \

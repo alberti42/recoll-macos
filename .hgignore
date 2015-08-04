@@ -86,9 +86,8 @@ src/query/location.hh
 src/query/position.hh
 src/query/recollq
 src/query/stack.hh
-src/query/wasaparse.output
-src/query/wasaparse.tab.cpp
-src/query/wasaparse.tab.h
+src/query/wasaparse.cpp
+src/query/wasaparse.hpp
 src/query/xadump
 src/recollinstall
 src/sampleconf/rclmon.sh
