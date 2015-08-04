@@ -211,14 +211,7 @@ if test X$camelcaseEnabled = Xyes ; then
   AC_DEFINE(RCL_SPLIT_CAMELCASE, 1, [Split camelCase words])
 fi
 
-# Disable building the python module. This is built by default, because
-# it's really the easiest way to interface and extend recoll. It forces PIC
-# objects for everything (indexing performance impact: 1%), because it's
-# just not worth building the lib twice
-# You can still have a non-pic recoll with:
-#   configure --disable-python-module; make; make install;make clean
-#   configure; make; cd python/recoll; make install
-#
+# Disable building the python module.
 if test X$sys != XDarwin ; then
   AC_ARG_ENABLE(python-module,
     AC_HELP_STRING([--disable-python-module],
@@ -516,19 +509,21 @@ fi
 #echo X_CFLAGS "'$X_CFLAGS'" X_PRE_LIBS "'$X_PRE_LIBS'" X_LIBS \
 #      "'$X_LIBS'" X_LIBX11 "'$X_LIBX11'" X_EXTRA_LIBS "'$X_EXTRA_LIBS'"
 
-
-# We have to expand prefix in here, couldn't find a way to do it inside 
-# the qt gui .pro file or Makefile. This just means that you can't change
-# prefix at build time. It works at install time because we dont' use the
-# qtgui Makefile
+# For communicating the value of RECOLL_DATADIR to non-make-based
+# subpackages like python-recoll, we have to expand prefix in here, because
+# things like "datadir = ${prefix}/share" (which is what we'd get by
+# expanding @datadir@) don't mean a thing in Python... I guess we could
+# have a piece of shell-script text to be substituted into and executed by
+# setup.py for getting the value of pkgdatadir, but really...
 m_prefix=$prefix
 test "X$m_prefix" = "XNONE" && m_prefix=/usr/local
 m_datadir=${m_prefix}/share
-QTRECOLL_DATADIR=${m_datadir}/recoll
+RECOLL_DATADIR=${m_datadir}/recoll
 
 RCLVERSION=`cat VERSION`
 RCLLIBVERSION=$RCLVERSION
 
+AC_SUBST(RECOLL_DATADIR)
 AC_SUBST(X_CFLAGS)
 AC_SUBST(X_PRE_LIBS)
 AC_SUBST(X_LIBS)
@@ -542,19 +537,12 @@ AC_SUBST(LIBXAPIANSTATICEXTRA)
 AC_SUBST(LIBFAM)
 AC_SUBST(QMAKE)
 AC_SUBST(QTGUI)
-AC_SUBST(QTRECOLL_DATADIR)
 AC_SUBST(XAPIANCXXFLAGS)
-AC_SUBST(HAVE_MKDTEMP)
-AC_SUBST(NOQTMAKE)
-AC_SUBST(NOCMDLINE)
 AC_SUBST(QMAKE_ENABLE_WEBKIT)
 AC_SUBST(QMAKE_DISABLE_WEBKIT)
 AC_SUBST(QMAKE_ENABLE_ZEITGEIST)
 AC_SUBST(QMAKE_DISABLE_ZEITGEIST)
 AC_SUBST(LIBQZEITGEIST)
-AC_SUBST(NOPIC)
-AC_SUBST(NOTHREADS)
-AC_SUBST(NODYNLIB)
 AC_SUBST(RCLVERSION)
 AC_SUBST(RCLLIBVERSION)
 
@@ -563,7 +551,6 @@ AC_SUBST(RCLLIBVERSION)
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(common/rclversion.h)
 AC_CONFIG_FILES(python/recoll/setup.py)
-AC_CONFIG_FILES(recollinstall)
 AC_CONFIG_FILES(sampleconf/recoll.conf)
 
 AC_OUTPUT

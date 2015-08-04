@@ -247,6 +247,23 @@ librecoll_la_LDFLAGS = -release $(VERSION) \
 
 librecoll_la_LIBADD = $(LIBXAPIAN) $(LIBICONV) $(X_LIBX11) $(LIBTHREADS)
 
+# There is probably a better way to do this. The KIO needs to be linked
+# with librecoll, but librecoll is installed into a non-standard place
+# (/usr/lib/recoll). Debian packaging has something against setting an
+# rpath on the kio (cause it's not the same package as the lib), so I don't
+# know how to link it dynamically. The other thing I don't know is how to
+# force automake to build a static lib with the PIC objects. So the
+# following target, which is only used from the KIO build, deletes any .a
+# and .so and rebuilds the .a with the pic objs (the kio build calls
+# configured --disable-static).
+# Of course this is very uncomfortably close to automake/libtool internals
+# and may not work on all systems.
+PicStatic: $(librecoll_la_OBJECTS)
+	rm -f .libs/librecoll.a
+	rm -f .libs/librecoll.so
+	libtool --mode=link gcc -g -O -o librecoll.la \
+                $(librecoll_la_OBJECTS)
+
 bin_PROGRAMS = recollindex
 if MAKECMDLINE
     bin_PROGRAMS += recollq
@@ -477,7 +494,8 @@ if MAKEQT
 all-local: recollqt
 recollqt: librecoll.la
 	(cd $(QTGUI); ${QMAKE} PREFIX=${prefix} recoll.pro)
-	$(MAKE) -C $(QTGUI) LFLAGS="$(LDFLAGS)" 
+	$(MAKE) -C $(QTGUI) LFLAGS="$(LDFLAGS)" prefix=$(prefix) \
+                exec_prefix=$(exec_prefix) libdir=$(libdir)
 clean-local: recollqt-clean
 recollqt-clean:
 	-$(MAKE) -C $(QTGUI) clean
