@@ -143,7 +143,6 @@ query/reslistpager.cpp \
 query/reslistpager.h \
 query/sortseq.cpp \
 query/sortseq.h \
-query/wasaparse.h \
 query/wasaparse.ypp \
 query/wasaparseaux.cpp \
 query/wasaparserdriver.h \
@@ -237,7 +236,8 @@ utils/workqueue.h \
 utils/x11mon.cpp \
 utils/x11mon.h
 
-BUILT_SOURCES = query/wasaparse.cpp query/wasaparse.h
+BUILT_SOURCES = query/wasaparse.cpp query/wasaparse.hpp
+CLEANFILES = $(BUILT_SOURCES)
 
 # We use -release: the lib is only shared
 # between recoll programs from the same release.

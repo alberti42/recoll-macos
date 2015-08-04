@@ -13,6 +13,7 @@ libtool
 \#*
 ptrans
 src/aclocal.m4
+src/compile
 src/config.guess
 src/config.sub
 src/depcomp
@@ -29,7 +30,6 @@ src/config.log
 src/config.status
 src/configure
 src/ylwrap
-src/query/wasaparse.h
 src/Makefile
 src/autom4te.cache
 src/common/autoconfig.h
