@@ -8,3 +8,6 @@ ALL_CXXFLAGS = \
     -I../unac \
     -I../utils 
 LIBRECOLL = -L../.libs -lrecoll
+
+clean:
+	rm -f $(PROGS) *.o
