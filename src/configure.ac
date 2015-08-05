@@ -348,7 +348,7 @@ XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 AC_ARG_ENABLE(xadump, 
     AC_HELP_STRING([--enable-xadump],
    [Enable building the xadump low level Xapian access program.]),
-        enableQT=$enableval, enableXADUMP="yes")
+        enableQT=$enableval, enableXADUMP="no")
 AM_CONDITIONAL(MAKEXADUMP, [test X$enableXADUMP = Xyes])
 
 #### QT
