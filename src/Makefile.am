@@ -236,10 +236,8 @@ utils/workqueue.h \
 utils/x11mon.cpp \
 utils/x11mon.h
 
-BUILT_SOURCES = query/wasaparse.cpp query/wasaparse.hpp
+BUILT_SOURCES = query/wasaparse.cpp
 AM_YFLAGS = -d
-CLEANFILES = query/wasaparse.cpp query/wasaparse.hpp \
-           query/location.hh  query/position.hh  query/stack.hh
 
 # We use -release: the lib is only shared
 # between recoll programs from the same release.
@@ -540,6 +538,9 @@ install-data-hook:
 
 rdocdir = $(pkgdatadir)/doc
 rdoc_DATA = doc/user/usermanual.html doc/user/docbook-xsl.css 
+
+doc/user/usermanual.html:
+	$(MAKE) -C doc/user
 
 dist_man1_MANS = doc/man/recoll.1 doc/man/recollq.1 doc/man/recollindex.1
 dist_man5_MANS = doc/man/recoll.conf.5

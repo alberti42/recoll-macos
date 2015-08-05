@@ -29,7 +29,6 @@ src/missing
 src/config.log
 src/config.status
 src/configure
-src/ylwrap
 src/Makefile
 src/autom4te.cache
 src/common/autoconfig.h

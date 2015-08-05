@@ -520,7 +520,7 @@ test "X$m_prefix" = "XNONE" && m_prefix=/usr/local
 m_datadir=${m_prefix}/share
 RECOLL_DATADIR=${m_datadir}/recoll
 
-RCLVERSION=`cat VERSION`
+RCLVERSION=$PACKAGE_VERSION
 RCLLIBVERSION=$RCLVERSION
 
 AC_SUBST(RECOLL_DATADIR)
