@@ -270,6 +270,7 @@ void base64_encode(const string &in, string &out)
 #ifdef TEST_BASE64
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "readfile.h"
 
@@ -357,7 +358,7 @@ int main(int argc, char **argv)
 	    fprintf(stderr, "Decoding failed\n");
 	    exit(1);
 	}
-	write(1, odata.c_str(), 
+	::write(1, odata.c_str(), 
 	      odata.size() * sizeof(string::value_type));
 	exit(0);
     }
