@@ -67,7 +67,7 @@ static void addSubQuery(WasaParserDriver *d,
 
 topquery: query
 {
-    LOGP("PARSING\n");
+    LOGP("END PARSING\n");
     d->m_result = $1;
 }
 
