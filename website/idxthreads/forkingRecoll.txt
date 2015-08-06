@@ -7,12 +7,12 @@
 
 == Introduction
 
-Recoll is a big process which executes many others, mostly for extracting
-text from documents. Some of the executed processes are quite short-lived,
-and the time used by the process execution machinery can actually dominate
-the time used to translate data. This document explores possible approaches
-to improving performance without adding excessive complexity or damaging
-reliability.
+The Recoll indexer, *recollindex*, is a big process which executes many
+others, mostly for extracting text from documents. Some of the executed
+processes are quite short-lived, and the time used by the process execution
+machinery can actually dominate the time used to translate data. This
+document explores possible approaches to improving performance without
+adding excessive complexity or damaging reliability.
 
 Studying fork/exec performance is not exactly a new venture, and there are
 many texts which address the subject. While researching, though, I found
@@ -32,9 +32,10 @@ identical processes.
 space initialized from an executable file, inheriting some of the resources
 under various conditions.
 
-As processes became bigger the copy-before-discard operation wasted
-significant resources, and was optimized using two methods (at very
-different points in time):
+This was all fine with the small processes of the first Unix systems, but
+as time progressed, processes became bigger and the copy-before-discard
+operation was found to waste significant resources. It was optimized using
+two methods (at very different points in time):
 
  - The first approach was to supplement +fork()+ with the +vfork()+ call, which
    is similar but does not duplicate the address space: the new process
@@ -176,7 +177,7 @@ a single thread, and +fork()+ if it ran multiple ones.
 After another careful look at the code, I could see few issues with
 using +vfork()+ in the multithreaded indexer, so this was committed. 
 
-The only change necessary was to get rid on an implementation of the
+The only change necessary was to get rid of an implementation of the
 lacking Linux +closefrom()+ call (used to close all open descriptors above a
 given value). The previous Recoll implementation listed the +/proc/self/fd+
 directory to look for open descriptors but this was unsafe because of of
@@ -200,13 +201,14 @@ same times as the +fork()+/+vfork()+ options.
 
 The tests were performed on an Intel Core i5 750 (4 cores, 4 threads).
 
-The last line is just for the fun: *recollindex* 1.18 (single-threaded)
-needed almost 6 times as long to process the same files... 
-
 It would be painful to play it safe and discard the 60% reduction in
-execution time offered by using +vfork()+.
+execution time offered by using +vfork()+, so this was adopted for Recoll
+1.21. To this day, no problems were discovered, but, still crossing
+fingers...
 
-To this day, no problems were discovered, but, still crossing fingers...
+The last line in the table is just for the fun: *recollindex* 1.18
+(single-threaded) needed almost 6 times as long to process the same
+files...
 
 ////
 Objections to vfork: 
