@@ -1,7 +1,7 @@
 #! /bin/sh
 
 # ylwrap - wrapper for lex/yacc invocations.  Local version, the
-# autotools scriptversion=2015-08-05.09; # UTC doesnt work for us
+# autotools scriptversion=2015-08-06.06; # UTC doesnt work for us
 # because it does not move location.hh position.hh stack.hh into the
 # appropriate directory (which is a bug, but it's simpler to rewrite a
 # simple version for our needs than to fix the original).
@@ -11,7 +11,7 @@ fatal() {
     exit 1
 }
 usage() {
-    fatal "Usage: ylwrap query/wasaparse.ypp"
+    fatal "Usage: ylwrap query/wasaparse.y"
 }
 
 test $# -ge 1 || usage
@@ -42,7 +42,13 @@ for f in location.hh position.hh stack.hh; do
     cmp -s "${tmpdir}"/$f "${inputdir}"/$f || cp -p "${tmpdir}"/$f "${inputdir}"
 done
 
+# Fix the include line in y.tab.c (it wants to include y.tab.h, but we already
+# include it as wasaparse.h
+(cd "${tmpdir}"; \
+    sed -e 's/#include "y.tab.h"//' < y.tab.c > toto; \
+    mv -f toto y.tab.c)
+
 cmp -s "${tmpdir}"/y.tab.c "${inputdir}"/wasaparse.cpp || \
         cp -p "${tmpdir}"/y.tab.c "${inputdir}"/wasaparse.cpp
-cmp -s "${tmpdir}"/y.tab.h "${inputdir}"/wasaparse.hpp || \
-        cp -p "${tmpdir}"/y.tab.h "${inputdir}"/wasaparse.hpp
+cmp -s "${tmpdir}"/y.tab.h "${inputdir}"/wasaparse.h || \
+        cp -p "${tmpdir}"/y.tab.h "${inputdir}"/wasaparse.h
