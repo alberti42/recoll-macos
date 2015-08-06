@@ -305,6 +305,19 @@ filters \
 \
 index/rclmon.sh \
 \
+kde/kioslave/kio_recoll/00README.txt \
+kde/kioslave/kio_recoll/CMakeLists.txt \
+kde/kioslave/kio_recoll/data/help.html \
+kde/kioslave/kio_recoll/data/searchable.html \
+kde/kioslave/kio_recoll/data/welcome.html \
+kde/kioslave/kio_recoll/dirif.cpp \
+kde/kioslave/kio_recoll/htmlif.cpp \
+kde/kioslave/kio_recoll/kio_recoll.cpp \
+kde/kioslave/kio_recoll/kio_recoll.h \
+kde/kioslave/kio_recoll/recollf.protocol \
+kde/kioslave/kio_recoll/recollnolist.protocol \
+kde/kioslave/kio_recoll/recoll.protocol \
+\
 query/wasaparse.cpp query/wasaparse.hpp query/y.tab.h \
 query/location.hh  query/position.hh  query/stack.hh \
 \
@@ -476,6 +489,10 @@ unac/AUTHORS unac/COPYING unac/README unac/README.recoll \
 \
 VERSION
 
+# EXTRA_DIST: The Php Code does not build anymore. No need to ship it until
+# someone fixes it:
+# php/00README.txt php/recoll/config.m4 php/recoll/make.sh 
+# php/recoll/php_recoll.h php/recoll/recoll.cpp php/sample/shell.php 
 
 if MAKEPYTHON
 all-local: recollpython
