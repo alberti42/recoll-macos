@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-    <title>Recoll 1.20 series release notes</title>
+    <title>Recoll 1.21 series release notes</title>
     <meta name="Author" content="Jean-Francois Dockes">
     <meta name="Description"
           content="recoll is a simple full-text search system for unix and linux     based on the powerful and mature xapian engine">
@@ -23,7 +23,7 @@
     </div>
 
     <div class="content">
-      <h1>Release notes for Recoll 1.20.x</h1>
+      <h1>Release notes for Recoll 1.21.x</h1>
 
       <h2>Caveats</h2>
 
@@ -55,8 +55,23 @@
           see the manual</a>). If you do so, you must then reset the
         index.</p> 
 
+      <h2>Minor releases</h2>
+      <ul>
+        <li>1.21.1: 
+        <ul>
+          <li>Force memory usage limits on external filters.</li>
+          <li>GUI: add Ctrl+l as a shortcut to return focus to the
+            search entry (compat with web browsers).</li>
+          <li>result list popup allows saving results from web cache
+            to files.</li>
+          <li>The web history indexer also processes non-html files
+            (e.g.: pdfs).</li>
+          
+        </ul>
+        </li>
+      </ul>
 
-      <h2>Changes in Recoll 1.21</h2>
+      <h2>Changes in Recoll 1.21.0</h2>
 
       <ul>
         <li>Allow saving queries to files and reloading them
@@ -71,9 +86,10 @@
         <li>Improve indexing speed by always using vfork() for
           spawning external commands.</li> 
         <li>The pdf filter gains the capability to run OCR (tesseract) on
-          image-only files.</li> 
-        <li>Improved check about when we should try to uncompress
-          stuff. Will eliminate some of the most dreadful case of
+          image-only files. This happens automatically on image-only
+          pdfs if tesseract is available.</li> 
+        <li>Improved checks about when we should try to uncompress
+          stuff. Will eliminate some of the most dreadful cases of
           recollindex having an impact on system performance.</li>
         <li>Warn if non-existent paths are listed in the configuration
           file (help with typos).</li>

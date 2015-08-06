@@ -709,6 +709,12 @@ bool TextSplit::text_to_words(const string &in)
             // confusing. 
             // ie "MySQL manual" is matched by "MySQL manual" and 
             // "my sql manual" but not "mysql manual"
+
+            // A possibility would be to emit both my and sql at the
+            // same position. All non-phrase searches would work, and
+            // both "MySQL manual" and "mysql manual" phrases would
+            // match too. "my sql manual" would not match, but this is
+            // not an issue.
 	case A_ULETTER:
 	    if (m_span.length() && 
                 charclasses[(unsigned char)m_span[m_span.length() - 1]] == 

@@ -2917,7 +2917,11 @@ MimeType=*/*
     use the <filename>Makefile</filename> in the
     <filename>query</filename> directory to build it. This is a very
     simple program, and if you can program a little c++, you may find it
-    useful to taylor its output format to your needs.</para>
+    useful to taylor its output format to your needs. Not that recollq is
+    only really useful on systems where the Qt libraries (or even the X11
+    ones) are not available. Otherwise, just use <literal>recoll
+    -t</literal>, which takes the exact same parameters and options which
+    are described for <command>recollq</command></para> 
 
     <para><command>recollq</command> has a man page (not installed by
     default, look in the <filename>doc/man</filename> directory). The
