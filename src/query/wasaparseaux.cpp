@@ -108,11 +108,11 @@ bool WasaParserDriver::addClause(SearchData *sd,
         return sd->addClause(cl);
     }
 
-
-    const string& fld = cl->getfield();
+    const string& ofld = cl->getfield();
+    string fld = stringtolower(ofld);
 
     // MIME types and categories
-    if (!stringicmp("mime", fld) ||!stringicmp("format", fld)) {
+    if (!fld.compare("mime") || !fld.compare("format")) {
         if (cl->getexclude()) {
             sd->remFiletype(cl->gettext());
         } else {
@@ -122,7 +122,7 @@ bool WasaParserDriver::addClause(SearchData *sd,
         return true;
     } 
 
-    if (!stringicmp("rclcat", fld) || !stringicmp("type", fld)) {
+    if (!fld.compare("rclcat") || !fld.compare("type")) {
         vector<string> mtypes;
         if (m_config && m_config->getMimeCatTypes(cl->gettext(), mtypes)) {
             for (vector<string>::iterator mit = mtypes.begin();
@@ -139,7 +139,7 @@ bool WasaParserDriver::addClause(SearchData *sd,
     }
 
     // Handle "date" spec
-    if (!stringicmp("date", fld)) {
+    if (!fld.compare("date")) {
         DateInterval di;
         if (!parsedateinterval(cl->gettext(), &di)) {
             LOGERR(("Bad date interval format: %s\n",
@@ -156,7 +156,7 @@ bool WasaParserDriver::addClause(SearchData *sd,
     } 
 
     // Handle "size" spec
-    if (!stringicmp("size", fld)) {
+    if (!fld.compare("size")) {
         char *cp;
         size_t size = strtoll(cl->gettext().c_str(), &cp, 10);
         if (*cp != 0) {
@@ -196,7 +196,7 @@ bool WasaParserDriver::addClause(SearchData *sd,
         return true;
     }
 
-    if (!stringicmp("dir", fld)) {
+    if (!fld.compare("dir")) {
         // dir filtering special case
         SearchDataClausePath *nclause = 
             new SearchDataClausePath(cl->gettext(), cl->getexclude());
@@ -226,11 +226,10 @@ bool WasaParserDriver::addClause(SearchData *sd,
 
         if (tp != SCLT_FILENAME) {
             SearchDataClauseSimple *ncl = 
-                new SearchDataClauseSimple(tp, ns, fld);
+                new SearchDataClauseSimple(tp, ns, ofld);
             delete cl;
             return sd->addClause(ncl);
         }
     }
     return sd->addClause(cl);
 }
-
