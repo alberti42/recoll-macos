@@ -25,6 +25,7 @@
 #include <vector>
 #include <algorithm>
 #include <sstream>
+#include <iostream>
 using namespace std;
 
 #include "xapian.h"
@@ -53,9 +54,10 @@ typedef  vector<SearchDataClause *>::iterator qlist_it_t;
 
 static const int original_term_wqf_booster = 10;
 
-// Expand categories and mime type wild card exps Categories are
-// expanded against the configuration, mimetypes against the index
-// (for wildcards).
+// Expand doc categories and mime type wild card expressions 
+//
+// Categories are expanded against the configuration, mimetypes
+// against the index.
 bool SearchData::expandFileTypes(Db &db, vector<string>& tps)
 {
     const RclConfig *cfg = db.getConf();
@@ -101,6 +103,8 @@ static const char *maxXapClauseCaseDiacMsg =
     "wildcards ?"
     ;
 
+
+// Walk the clauses list, translate each and add to top Xapian Query
 bool SearchData::clausesToQuery(Rcl::Db &db, SClType tp, 
 				vector<SearchDataClause*>& query, 
 				string& reason, void *d)
@@ -484,7 +488,8 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
     if (noexpansion) {
 	oexp.push_back(prefix + term);
 	m_hldata.terms[term] = term;
-	LOGDEB(("ExpandTerm: noexpansion: final: %s\n", stringsToString(oexp).c_str()));
+	LOGDEB(("ExpandTerm: noexpansion: final: %s\n", 
+                stringsToString(oexp).c_str()));
 	return true;
     } 
 
@@ -568,6 +573,8 @@ void SearchDataClauseSimple::processSimpleSpan(Rcl::Db &db, string& ermsg,
     string prefix;
     const FieldTraits *ftp;
     if (!m_field.empty() && db.fieldToTraits(m_field, &ftp, true)) {
+	if (ftp->noterms)
+	    addModifier(SDCM_NOTERMS);
 	prefix = wrap_prefix(ftp->pfx);
     }
 

@@ -66,9 +66,9 @@ struct FieldTraits {
     int    wdfinc; // Index time term frequency increment (default 1)
     double boost; // Query time boost (default 1.0)
     bool   pfxonly; // Suppress prefix-less indexing
-
+    bool   noterms; // Don't add term to highlight data (e.g.: rclbes)
     FieldTraits() 
-        : wdfinc(1), boost(1.0), pfxonly(false)
+        : wdfinc(1), boost(1.0), pfxonly(false), noterms(false)
         {}
 };
 

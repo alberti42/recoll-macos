@@ -96,9 +96,6 @@ public:
     /** Is there anything but a file name search in here ? */
     bool fileNameOnly();
 
-    /** Are we a simple query with one clause? */
-    bool singleSimple();
-
     /** Do we have wildcards anywhere apart from filename searches ? */
     bool haveWildCards() {return m_haveWildCards;}
 
@@ -228,7 +225,9 @@ private:
 class SearchDataClause {
 public:
     enum Modifier {SDCM_NONE=0, SDCM_NOSTEMMING=1, SDCM_ANCHORSTART=2,
-		   SDCM_ANCHOREND=4, SDCM_CASESENS=8, SDCM_DIACSENS=16};
+		   SDCM_ANCHOREND=4, SDCM_CASESENS=8, SDCM_DIACSENS=16,
+		   SDCM_NOTERMS=32 // Don't include terms for highlighting
+    };
     enum Relation {REL_CONTAINS, REL_EQUALS, REL_LT, REL_LTE, REL_GT, REL_GTE};
 
     SearchDataClause(SClType tp) 
@@ -278,13 +277,12 @@ public:
     {
 	return m_parentSearch ? m_parentSearch->getSoftMaxExp() : -1;
     }
-    virtual void setModifiers(Modifier mod) 
-    {
-	m_modifiers = mod;
-    }
     virtual void addModifier(Modifier mod) 
     {
-	m_modifiers = Modifier(m_modifiers | mod);
+	m_modifiers = m_modifiers | mod;
+    }
+    virtual unsigned int getmodifiers() {
+	return m_modifiers;
     }
     virtual void setWeight(float w) 
     {
@@ -312,7 +310,7 @@ protected:
     SClType     m_tp;
     SearchData *m_parentSearch;
     bool        m_haveWildCards;
-    Modifier    m_modifiers;
+    unsigned int  m_modifiers;
     float       m_weight;
     bool        m_exclude;
     Relation    m_rel;

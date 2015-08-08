@@ -867,6 +867,8 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 	    ft.boost = atof(tval.c_str());
 	if (attrs.get("pfxonly", tval))
 	    ft.pfxonly = stringToBool(tval);
+	if (attrs.get("noterms", tval))
+	    ft.noterms = stringToBool(tval);
 	m_fldtotraits[stringtolower(*it)] = ft;
 	LOGDEB2(("readFieldsConfig: [%s] -> [%s] %d %.1f\n", 
 		it->c_str(), ft.pfx.c_str(), ft.wdfinc, ft.boost));

@@ -43,12 +43,12 @@ keywords= K
 xapyearmon = M
 title = S ; wdfinc = 10
 mtype = T
-ext = XE
+ext = XE; noterms = 1
 rclmd5 = XM
-dir = XP
+dir = XP ; noterms = 1
 abstract = XS
-filename = XSFN
-containerfilename = XCFN ; pfxonly = 1
+filename = XSFN ; noterms = 1
+containerfilename = XCFN ; pfxonly = 1 ; noterms = 1
 rclUnsplitFN = XSFS
 xapyear = Y
 recipient = XTO
@@ -58,7 +58,7 @@ recipient = XTO
 # by default. 
 # Some values are internally reserved by recoll: 
 #   XE (file ext), XP (for path elements), XSFN, XSFS, XXST, XXND, XXPG
-rclbes = XB
+rclbes = XB ; noterms = 1
 # Using XX was not a good idea. 
 #
 # I hereby commit to not using XY for Recoll:

@@ -181,7 +181,8 @@ bool SearchData::addClause(SearchDataClause* cl)
     return true;
 }
 
-// Am I a file name only search ? This is to turn off term highlighting
+// Am I a file name only search ? This is to turn off term highlighting.
+// There can't be a subclause in a filename search: no possible need to recurse
 bool SearchData::fileNameOnly() 
 {
     for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++)
@@ -190,6 +191,7 @@ bool SearchData::fileNameOnly()
     return true;
 }
 
+// The query language creates a lot of subqueries. See if we can merge them.
 void SearchData::simplify()
 {
     for (unsigned int i = 0; i < m_query.size(); i++) {
@@ -249,30 +251,35 @@ void SearchData::simplify()
     }
 }
 
-bool SearchData::singleSimple()
-{
-    if (m_query.size() != 1 || !m_filetypes.empty() || !m_nfiletypes.empty() ||
-        m_haveDates || m_maxSize != size_t(-1) || m_minSize != size_t(-1) ||
-        m_haveWildCards)
-        return false;
-    SearchDataClause *clp = *m_query.begin();
-    if (clp->getTp() != SCLT_AND && clp->getTp() != SCLT_OR) {
-        return false;
-    }
-    return true;
-}
-
-// Extract all term data
+// Extract terms and groups for highlighting
 void SearchData::getTerms(HighlightData &hld) const
 {
-    for (qlist_cit_t it = m_query.begin(); it != m_query.end(); it++)
-        (*it)->getTerms(hld);
+    for (qlist_cit_t it = m_query.begin(); it != m_query.end(); it++) {
+	if (!((*it)->getmodifiers() & SearchDataClause::SDCM_NOTERMS) &&
+	    !(*it)->getexclude()) {
+	    (*it)->getTerms(hld);
+	}
+    }
     return;
+}
+
+static const char * tpToString(SClType t)
+{
+    switch (t) {
+    case SCLT_AND: return "AND";
+    case SCLT_OR: return "OR";
+    case SCLT_FILENAME: return "FILENAME";
+    case SCLT_PHRASE: return "PHRASE";
+    case SCLT_NEAR: return "NEAR";
+    case SCLT_PATH: return "PATH";
+    case SCLT_SUB: return "SUB";
+    default: return "UNKNOWN";
+    }
 }
 
 void SearchData::dump(ostream& o) const
 {
-    o << "SearchData: " << " qs " << int(m_query.size()) << 
+    o << "SearchData: " << tpToString(m_tp) << " qs " << int(m_query.size()) << 
         " ft " << m_filetypes.size() << " nft " << m_nfiletypes.size() << 
         " hd " << m_haveDates << " maxs " << int(m_maxSize) << " mins " << 
         int(m_minSize) << " wc " << m_haveWildCards << "\n";
@@ -291,7 +298,7 @@ void SearchDataClause::dump(ostream& o) const
 
 void SearchDataClauseSimple::dump(ostream& o) const
 {
-    o << "ClauseSimple: ";
+    o << "ClauseSimple: " << tpToString(m_tp) << " ";
     if (m_exclude)
         o << "- ";
     o << "[" ;
@@ -319,9 +326,9 @@ void SearchDataClausePath::dump(ostream& o) const
 void SearchDataClauseDist::dump(ostream& o) const
 {
     if (m_tp == SCLT_NEAR)
-        o << "ClauseDist: NEAR: ";
+        o << "ClauseDist: NEAR ";
     else
-        o << "ClauseDist: PHRA: ";
+        o << "ClauseDist: PHRA ";
             
     if (m_exclude)
         o << " - ";

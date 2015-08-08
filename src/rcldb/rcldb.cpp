@@ -71,8 +71,8 @@ static const string xapday_prefix = "D";
 static const string xapmonth_prefix = "M";
 static const string xapyear_prefix = "Y";
 const string pathelt_prefix = "XP";
-const string udi_prefix("Q");
-const string parent_prefix("F");
+static const string udi_prefix("Q");
+static const string parent_prefix("F");
 
 // Special terms to mark begin/end of field (for anchored searches), and
 // page breaks
