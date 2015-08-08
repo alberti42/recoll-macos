@@ -8,9 +8,6 @@ PROGS = pxattr trclosefrom trecrontab \
 
 all: $(PROGS)
 
-clean: 
-	rm -f *.o $(PROGS)
-
 PXATTROBJS = trpxattr.o pxattr.o 
 pxattr:  $(PXATTROBJS)
 	$(CXX) -o pxattr $(PXATTROBJS)

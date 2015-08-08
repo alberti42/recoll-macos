@@ -7,7 +7,7 @@ ALL_CXXFLAGS = \
     -I../rcldb \
     -I../unac \
     -I../utils 
-LIBRECOLL = -L../.libs -lrecoll
+LIBRECOLL = -L../.libs -lrecoll -Wl,-rpath=$(shell pwd)/../.libs
 
 clean:
 	rm -f $(PROGS) *.o
