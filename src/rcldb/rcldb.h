@@ -21,9 +21,9 @@
 
 #include <string>
 #include <vector>
+#include MEMORY_INCLUDE
 
 #include "cstr.h"
-#include "refcntr.h"
 #include "rcldoc.h"
 #include "stoplist.h"
 #include "rclconfig.h"

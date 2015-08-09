@@ -16,13 +16,12 @@
  */
 #ifndef _FILTSEQ_H_INCLUDED_
 #define _FILTSEQ_H_INCLUDED_
+#include "autoconfig.h"
 
 #include <vector>
 #include <string>
-using std::string;
-using std::vector;
+#include MEMORY_INCLUDE
 
-#include "refcntr.h"
 #include "docseq.h"
 
 class RclConfig;
@@ -33,17 +32,17 @@ class RclConfig;
  */
 class DocSeqFiltered : public DocSeqModifier {
 public:
-    DocSeqFiltered(RclConfig *conf, RefCntr<DocSequence> iseq, 
+    DocSeqFiltered(RclConfig *conf, STD_SHARED_PTR<DocSequence> iseq, 
 		   DocSeqFiltSpec &filtspec);
     virtual ~DocSeqFiltered() {}
     virtual bool canFilter() {return true;}
     virtual bool setFiltSpec(const DocSeqFiltSpec &filtspec);
-    virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0);
+    virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = 0);
     virtual int getResCnt() {return m_seq->getResCnt();}
  private:
     RclConfig     *m_config;    
     DocSeqFiltSpec m_spec;
-    vector<int>    m_dbindices;
+    std::vector<int>    m_dbindices;
 };
 
 #endif /* _FILTSEQ_H_INCLUDED_ */

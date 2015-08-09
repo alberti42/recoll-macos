@@ -16,11 +16,13 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include "autoconfig.h"
+
 #include <sys/time.h>
 #include <map>
 #include <string>
 
-#include "refcntr.h"
+#include MEMORY_INCLUDE
 
 /// A set of classes to manage client-server communication over a
 /// connection-oriented network, or a pipe.
@@ -37,7 +39,7 @@
 
 /// Base class for all network endpoints:
 class Netcon;
-typedef RefCntr<Netcon> NetconP;
+typedef STD_SHARED_PTR<Netcon> NetconP;
 class SelectLoop;
 
 class Netcon {
@@ -240,7 +242,7 @@ public:
     virtual int getline(char *buf, int cnt, int timeo = -1);
     /// Set handler to be called when the connection is placed in the
     /// selectloop and an event occurs.
-    virtual void setcallback(RefCntr<NetconWorker> user) {
+    virtual void setcallback(STD_SHARED_PTR<NetconWorker> user) {
         m_user = user;
     }
 
@@ -249,7 +251,7 @@ private:
     char *m_bufbase;    // Pointer to current 1st byte of useful data
     int m_bufbytes;	// Bytes of data.
     int m_bufsize;	// Total buffer size
-    RefCntr<NetconWorker> m_user;
+    STD_SHARED_PTR<NetconWorker> m_user;
     virtual int cando(Netcon::Event reason); // Selectloop slot
 };
 

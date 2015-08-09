@@ -1330,7 +1330,7 @@ using namespace std;
 
 bool resizecc(const string& dir, int newmbs)
 {
-    RefCntr<CirCache> occ(new CirCache(dir));
+    STD_SHARED_PTR<CirCache> occ(new CirCache(dir));
     string ofn = occ->getpath();
 
     string backupfn = ofn + ".orig";
@@ -1353,7 +1353,7 @@ bool resizecc(const string& dir, int newmbs)
         }
     }
 
-    RefCntr<CirCache> ncc(new CirCache(tmpdir));
+    STD_SHARED_PTR<CirCache> ncc(new CirCache(tmpdir));
     string nfn = ncc->getpath();
     if (!ncc->create(off_t(newmbs) * 1000 * 1024, 
                      CirCache::CC_CRUNIQUE | CirCache::CC_CRTRUNCATE)) {

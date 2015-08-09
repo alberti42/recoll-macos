@@ -65,7 +65,7 @@ ResListPager::ResListPager(int pagesize)
 
 void ResListPager::resultPageNext()
 {
-    if (m_docSource.isNull()) {
+    if (!m_docSource) {
 	LOGDEB(("ResListPager::resultPageNext: null source\n"));
 	return;
     }
@@ -123,7 +123,7 @@ static string maybeEscapeHtml(const string& fld)
 
 void ResListPager::resultPageFor(int docnum)
 {
-    if (m_docSource.isNull()) {
+    if (!m_docSource) {
 	LOGDEB(("ResListPager::resultPageFor: null source\n"));
 	return;
     }
@@ -227,7 +227,7 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
 
     string richabst;
     bool needabstract = parFormat().find("%A") != string::npos;
-    if (needabstract && m_docSource.isNotNull()) {
+    if (needabstract && m_docSource) {
 	vector<string> vabs;
 	m_docSource->getAbstract(doc, vabs);
 	m_hiliter->set_inputhtml(false);
@@ -344,7 +344,7 @@ bool ResListPager::getDoc(int num, Rcl::Doc& doc)
 void ResListPager::displayPage(RclConfig *config)
 {
     LOGDEB(("ResListPager::displayPage\n"));
-    if (m_docSource.isNull()) {
+    if (!m_docSource) {
 	LOGDEB(("ResListPager::displayPage: null source\n"));
 	return;
     }

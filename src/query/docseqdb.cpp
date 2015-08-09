@@ -25,8 +25,8 @@ using std::list;
 #include "debuglog.h"
 #include "wasatorcl.h"
 
-DocSequenceDb::DocSequenceDb(RefCntr<Rcl::Query> q, const string &t, 
-			     RefCntr<Rcl::SearchData> sdata) 
+DocSequenceDb::DocSequenceDb(STD_SHARED_PTR<Rcl::Query> q, const string &t, 
+			     STD_SHARED_PTR<Rcl::SearchData> sdata) 
     : DocSequence(t), m_q(q), m_sdata(sdata), m_fsdata(sdata),
       m_rescnt(-1), 
       m_queryBuildAbstract(true),
@@ -131,7 +131,7 @@ int DocSequenceDb::getFirstMatchPage(Rcl::Doc &doc, string& term)
 
 Rcl::Db *DocSequenceDb::getDb()
 {
-    return m_q.isNotNull() ? m_q->whatDb() : 0;
+    return m_q ? m_q->whatDb() : 0;
 }
 
 list<string> DocSequenceDb::expand(Rcl::Doc &doc)
@@ -162,7 +162,7 @@ bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs)
     PTMutexLocker locker(o_dblock);
     if (fs.isNotNull()) {
 	// We build a search spec by adding a filtering layer to the base one.
-	m_fsdata = RefCntr<Rcl::SearchData>(
+	m_fsdata = STD_SHARED_PTR<Rcl::SearchData>(
 	    new Rcl::SearchData(Rcl::SCLT_AND, m_sdata->getStemLang()));
 	Rcl::SearchDataClauseSub *cl = 
 	    new Rcl::SearchDataClauseSub(m_sdata);
@@ -175,7 +175,7 @@ bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs)
 		break;
 	    case DocSeqFiltSpec::DSFS_QLANG:
 	    {
-		if (m_q.isNull())
+		if (!m_q)
 		    break;
 		    
 		string reason;
@@ -186,7 +186,7 @@ bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs)
 		if (sd)  {
 		    Rcl::SearchDataClauseSub *cl1 = 
 			new Rcl::SearchDataClauseSub(
-			    RefCntr<Rcl::SearchData>(sd));
+			    STD_SHARED_PTR<Rcl::SearchData>(sd));
 		    m_fsdata->addClause(cl1);
 		}
 	    }

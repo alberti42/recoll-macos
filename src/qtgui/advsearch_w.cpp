@@ -364,7 +364,7 @@ using namespace Rcl;
 void AdvSearch::runSearch()
 {
     string stemLang = prefs.stemlang();
-    RefCntr<SearchData> sdata(new SearchData(conjunctCMB->currentIndex() == 0 ?
+    STD_SHARED_PTR<SearchData> sdata(new SearchData(conjunctCMB->currentIndex() == 0 ?
 					     SCLT_AND : SCLT_OR, stemLang));
     bool hasclause = false;
 
@@ -455,7 +455,7 @@ void AdvSearch::runSearch()
 
 // Set up fields from existing search data, which must be compatible
 // with what we can do...
-void AdvSearch::fromSearch(RefCntr<SearchData> sdata)
+void AdvSearch::fromSearch(STD_SHARED_PTR<SearchData> sdata)
 {
     if (sdata->m_tp == SCLT_OR)
 	conjunctCMB->setCurrentIndex(1);
@@ -553,8 +553,8 @@ void AdvSearch::slotHistoryNext()
 {
     if (g_advshistory == 0)
 	return;
-    RefCntr<Rcl::SearchData> sd = g_advshistory->getnewer();
-    if (sd.isNull())
+    STD_SHARED_PTR<Rcl::SearchData> sd = g_advshistory->getnewer();
+    if (!sd)
 	return;
     fromSearch(sd);
 }
@@ -563,8 +563,8 @@ void AdvSearch::slotHistoryPrev()
 {
     if (g_advshistory == 0)
 	return;
-    RefCntr<Rcl::SearchData> sd = g_advshistory->getolder();
-    if (sd.isNull())
+    STD_SHARED_PTR<Rcl::SearchData> sd = g_advshistory->getolder();
+    if (!sd)
 	return;
     fromSearch(sd);
 }

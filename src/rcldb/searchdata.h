@@ -29,7 +29,7 @@
 #include <ostream>
 
 #include "rcldb.h"
-#include "refcntr.h"
+#include MEMORY_INCLUDE
 #include "smallut.h"
 #include "cstr.h"
 #include "hldata.h"
@@ -174,7 +174,7 @@ private:
     std::vector<std::string>            m_nfiletypes;
     // Autophrase if set. Can't be part of the normal chain because
     // it uses OP_AND_MAYBE
-    RefCntr<SearchDataClauseDist>   m_autophrase;
+    STD_SHARED_PTR<SearchDataClauseDist>   m_autophrase;
 
     // Special stuff produced by input which looks like a clause but means
     // something else (date and size specs)
@@ -487,7 +487,7 @@ private:
 /** Subquery */
 class SearchDataClauseSub : public SearchDataClause {
 public:
-    SearchDataClauseSub(RefCntr<SearchData> sub) 
+    SearchDataClauseSub(STD_SHARED_PTR<SearchData> sub) 
 	: SearchDataClause(SCLT_SUB), m_sub(sub) 
     {
     }
@@ -501,15 +501,15 @@ public:
 
     virtual void getTerms(HighlightData& hldata) const
     {
-	m_sub.getconstptr()->getTerms(hldata);
+	m_sub.get()->getTerms(hldata);
     }
-    virtual RefCntr<SearchData> getSub() {
+    virtual STD_SHARED_PTR<SearchData> getSub() {
         return m_sub;
     }
     virtual void dump(ostream& o) const;
 
 protected:
-    RefCntr<SearchData> m_sub;
+    STD_SHARED_PTR<SearchData> m_sub;
 };
 
 } // Namespace Rcl

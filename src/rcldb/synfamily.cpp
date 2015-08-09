@@ -20,13 +20,13 @@
 
 #include <iostream>
 #include <algorithm>
+#include MEMORY_INCLUDE
 
 #include "debuglog.h"
 #include "cstr.h"
 #include "xmacros.h"
 #include "synfamily.h"
 #include "smallut.h"
-#include "refcntr.h"
 
 using namespace std;
 
@@ -188,9 +188,9 @@ bool XapComputableSynFamMember::synKeyExpand(StrMatcher* inexp,
     LOGDEB(("XapCompSynFam::synKeyExpand: [%s]\n", inexp->exp().c_str()));
     
     // If set, compute filtering term (e.g.: only case-folded)
-    RefCntr<StrMatcher> filter_exp;
+    STD_SHARED_PTR<StrMatcher> filter_exp;
     if (filtertrans) {
-	filter_exp = RefCntr<StrMatcher>(inexp->clone());
+	filter_exp = STD_SHARED_PTR<StrMatcher>(inexp->clone());
 	filter_exp->setExp((*filtertrans)(inexp->exp()));
     }
 
@@ -217,7 +217,7 @@ bool XapComputableSynFamMember::synKeyExpand(StrMatcher* inexp,
 		     m_family.getdb().synonyms_begin(*xit);
 		 xit1 != m_family.getdb().synonyms_end(*xit); xit1++) {
 		string term = *xit1;
-		if (filter_exp.isNotNull()) {
+		if (filter_exp) {
 		    string term1 = (*filtertrans)(term);
 		    LOGDEB2(("  Testing [%s] against [%s]\n", 
 			    term1.c_str(), filter_exp->exp().c_str()));
@@ -231,7 +231,7 @@ bool XapComputableSynFamMember::synKeyExpand(StrMatcher* inexp,
 	    }
 	    // Same with key itself
 	    string term = (*xit).substr(preflen);
-	    if (filter_exp.isNotNull()) {
+	    if (filter_exp) {
 		string term1 = (*filtertrans)(term);
 		LOGDEB2((" Testing [%s] against [%s]\n", 
 			 term1.c_str(), filter_exp->exp().c_str()));

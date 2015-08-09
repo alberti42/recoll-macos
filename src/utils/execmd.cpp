@@ -690,7 +690,7 @@ int ExecCmd::doexec(const string &cmd, const vector<string>& args,
 		LOGERR(("ExecCmd::doexec: no connection from command\n"));
 		return -1;
 	    }
-	    oclicon->setcallback(RefCntr<NetconWorker>
+	    oclicon->setcallback(STD_SHARED_PTR<NetconWorker>
 				 (new ExecReader(output, m_advise)));
 	    myloop.addselcon(m_fromcmd, Netcon::NETCONPOLL_READ);
 	    // Give up ownership 
@@ -703,7 +703,7 @@ int ExecCmd::doexec(const string &cmd, const vector<string>& args,
 		LOGERR(("ExecCmd::doexec: no connection from command\n"));
 		return -1;
 	    }
-	    iclicon->setcallback(RefCntr<NetconWorker>
+	    iclicon->setcallback(STD_SHARED_PTR<NetconWorker>
 				 (new ExecWriter(input, m_provide)));
 	    myloop.addselcon(m_tocmd, Netcon::NETCONPOLL_WRITE);
 	    // Give up ownership 

@@ -21,9 +21,9 @@ namespace ResultPopup {
     enum Options {showExpand = 0x1, showSubs = 0x2, isMain = 0x3,
 		  showSaveOne = 0x4, showSaveSel = 0x8};
     extern QMenu *create(QWidget *me, int opts,  
-			 RefCntr<DocSequence> source,
+			 STD_SHARED_PTR<DocSequence> source,
 			 Rcl::Doc& doc);
-    extern Rcl::Doc getParent(RefCntr<DocSequence> source,
+    extern Rcl::Doc getParent(STD_SHARED_PTR<DocSequence> source,
 			      Rcl::Doc& doc);
     extern void copyFN(const Rcl::Doc &doc);
     extern void copyURL(const Rcl::Doc &doc);

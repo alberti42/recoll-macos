@@ -1028,13 +1028,13 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 	theconfig->setKeyDir(path_getfather(fn));
 	if (fn.empty() || !idoc.ipath.empty()) {
 	    TempFile temp = lthr.imgtmp;
-	    if (temp.isNotNull()) {
+	    if (temp) {
 		LOGDEB1(("Preview: load: got temp file from internfile\n"));
 	    } else if (!FileInterner::idocToFile(temp, string(), 
 						 theconfig, idoc)) {
-		temp.release(); // just in case.
+		temp.reset(); // just in case.
 	    }
-	    if (temp.isNotNull()) {
+	    if (temp) {
 		rememberTempFile(temp);
 		fn = temp->filename();
 		editor->m_tmpfilename = fn;

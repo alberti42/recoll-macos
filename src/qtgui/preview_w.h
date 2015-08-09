@@ -16,6 +16,7 @@
  */
 #ifndef _PREVIEW_W_H_INCLUDED_
 #define _PREVIEW_W_H_INCLUDED_
+#include "autoconfig.h"
 
 // Always use a qtextbrowser for now, there is no compelling reason to
 // switch to webkit here
@@ -24,6 +25,8 @@
 #endif
 
 #include <stdio.h>
+
+#include MEMORY_INCLUDE
 
 #include <QComboBox>
 #include <qvariant.h>
@@ -39,7 +42,6 @@
 #include <qimage.h>
 
 #include "rcldb.h"
-#include "refcntr.h"
 #include "plaintorich.h"
 #include "rclmain_w.h"
 

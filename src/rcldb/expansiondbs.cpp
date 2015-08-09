@@ -21,7 +21,7 @@
 #include "debuglog.h"
 #include "utf8iter.h"
 #include "smallut.h"
-#include "refcntr.h"
+#include MEMORY_INCLUDE
 #include "textsplit.h"
 #include "xmacros.h"
 #include "rcldb.h"
@@ -56,13 +56,13 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
     vector<XapWritableComputableSynFamMember> stemdbs;
     // Note: tried to make this to work with stack-allocated objects, couldn't.
     // Looks like a bug in copy constructors somewhere, can't guess where
-    vector<RefCntr<SynTermTransStem> > stemmers;
+    vector<STD_SHARED_PTR<SynTermTransStem> > stemmers;
     for (unsigned int i = 0; i < langs.size(); i++) {
-	stemmers.push_back(RefCntr<SynTermTransStem>
+	stemmers.push_back(STD_SHARED_PTR<SynTermTransStem>
 			   (new SynTermTransStem(langs[i])));
 	stemdbs.push_back(
 	    XapWritableComputableSynFamMember(wdb, synFamStem, langs[i], 
-					      stemmers.back().getptr()));
+					      stemmers.back().get()));
 	stemdbs.back().recreate();
     }
 
@@ -73,7 +73,7 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
 	for (unsigned int i = 0; i < langs.size(); i++) {
 	    unacstemdbs.push_back(
 		XapWritableComputableSynFamMember(wdb, synFamStemUnac, langs[i], 
-						  stemmers.back().getptr()));
+						  stemmers.back().get()));
 	    unacstemdbs.back().recreate();
 	}
     }

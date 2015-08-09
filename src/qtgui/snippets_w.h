@@ -16,10 +16,14 @@
  */
 #ifndef _SNIPPETS_W_H_INCLUDED_
 #define _SNIPPETS_W_H_INCLUDED_
+
+#include "autoconfig.h"
+
+#include MEMORY_INCLUDE
+
 #include <QString>
 
 #include "rcldoc.h"
-#include "refcntr.h"
 #include "docseq.h"
 #include "rclmain_w.h"
 
@@ -29,7 +33,7 @@ class SnippetsW : public QWidget, public Ui::Snippets
 {
     Q_OBJECT
 public:
-    SnippetsW(Rcl::Doc doc, RefCntr<DocSequence> source, QWidget* parent = 0) 
+    SnippetsW(Rcl::Doc doc, STD_SHARED_PTR<DocSequence> source, QWidget* parent = 0) 
 	: QWidget(parent), m_doc(doc), m_source(source)
     {
 	setupUi((QDialog*)this);
@@ -48,7 +52,7 @@ signals:
 private:
     void init();
     Rcl::Doc m_doc;
-    RefCntr<DocSequence> m_source;
+    STD_SHARED_PTR<DocSequence> m_source;
 };
 
 #endif /* _SNIPPETS_W_H_INCLUDED_ */

@@ -20,7 +20,7 @@
 #include <vector>
 
 #include "recoll.h"
-#include "refcntr.h"
+#include MEMORY_INCLUDE
 #include "searchdata.h"
 
 /** Advanced search history. 
@@ -43,14 +43,14 @@ public:
     ~AdvSearchHist();
 
     // Add entry
-    bool push(RefCntr<Rcl::SearchData>);
+    bool push(STD_SHARED_PTR<Rcl::SearchData>);
 
     // Get latest. does not change state
-    RefCntr<Rcl::SearchData> getnewest();
+    STD_SHARED_PTR<Rcl::SearchData> getnewest();
 
     // Cursor
-    RefCntr<Rcl::SearchData> getolder();
-    RefCntr<Rcl::SearchData> getnewer();
+    STD_SHARED_PTR<Rcl::SearchData> getolder();
+    STD_SHARED_PTR<Rcl::SearchData> getnewer();
 
     void clear();
 
@@ -58,7 +58,7 @@ private:
     bool read();
 
     int m_current;
-    std::vector<RefCntr<Rcl::SearchData> > m_entries;
+    std::vector<STD_SHARED_PTR<Rcl::SearchData> > m_entries;
 };
 
 #endif // _ADVSHIST_H_INCLUDED_

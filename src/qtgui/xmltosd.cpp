@@ -51,7 +51,7 @@ public:
     }
 
     // The object we set up
-    RefCntr<SearchData> sd;
+    STD_SHARED_PTR<SearchData> sd;
     bool isvalid;
 
 private:
@@ -94,8 +94,8 @@ bool SDHXMLHandler::startElement(const QString & /* namespaceURI */,
         }
 	resetTemps();
 	// A new search descriptor. Allocate data structure
-	sd = RefCntr<SearchData>(new SearchData);
-	if (sd.isNull()) {
+	sd = STD_SHARED_PTR<SearchData>(new SearchData);
+	if (!sd) {
 	    LOGERR(("SDHXMLHandler::startElement: out of memory\n"));
 	    return false;
 	}
@@ -208,7 +208,7 @@ bool SDHXMLHandler::endElement(const QString & /* namespaceURI */,
 }
 
 
-RefCntr<Rcl::SearchData> xmlToSearchData(const string& xml)
+STD_SHARED_PTR<Rcl::SearchData> xmlToSearchData(const string& xml)
 {
     SDHXMLHandler handler;
     QXmlSimpleReader reader;
@@ -221,7 +221,7 @@ RefCntr<Rcl::SearchData> xmlToSearchData(const string& xml)
     if (!reader.parse(xmlInputSource) || !handler.isvalid) {
         LOGERR(("xmlToSearchData: parse failed for [%s]\n", 
                 xml.c_str()));
-        return RefCntr<SearchData>();
+        return STD_SHARED_PTR<SearchData>();
     }
     return handler.sd;
 }

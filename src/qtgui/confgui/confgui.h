@@ -36,6 +36,8 @@
  * destroyed and recreated as a copy if Cancel is pressed (you have to 
  * delete/recreate the widgets in this case as the links are no longer valid).
  */
+#include "autoconfig.h"
+
 #include <string>
 #include <limits.h>
 
@@ -43,9 +45,7 @@
 #include <qstring.h>
 #include <qwidget.h>
 
-#include "refcntr.h"
-
-using std::string;
+#include MEMORY_INCLUDE
 
 class QHBoxLayout;
 class QLineEdit;
@@ -61,21 +61,21 @@ namespace confgui {
     class ConfLinkRep {
     public:
 	virtual ~ConfLinkRep() {}
-	virtual bool set(const string& val) = 0;
-	virtual bool get(string& val) = 0;
+	virtual bool set(const std::string& val) = 0;
+	virtual bool get(std::string& val) = 0;
     };
-    typedef RefCntr<ConfLinkRep> ConfLink;
+    typedef STD_SHARED_PTR<ConfLinkRep> ConfLink;
 
     // Useful to store/manage data which has no direct representation in
     // the config, ie list of subkey directories
     class ConfLinkNullRep : public ConfLinkRep {
     public:
 	virtual ~ConfLinkNullRep() {}
-	virtual bool set(const string&)
+	virtual bool set(const std::string&)
 	{
 	    return true;
 	}
-	virtual bool get(string& val) {val = ""; return true;}
+	virtual bool get(std::string& val) {val = ""; return true;}
     };
 
     // A widget to let the user change one configuration

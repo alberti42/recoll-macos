@@ -64,9 +64,9 @@ void RclMain::viewUrl()
     // StartNativeViewer needs a db source to call getEnclosing() on.
     Rcl::Query *query = new Rcl::Query(rcldb);
     DocSequenceDb *src = 
-	new DocSequenceDb(RefCntr<Rcl::Query>(query), "", 
-			  RefCntr<Rcl::SearchData>(new Rcl::SearchData));
-    m_source = RefCntr<DocSequence>(src);
+	new DocSequenceDb(STD_SHARED_PTR<Rcl::Query>(query), "", 
+			  STD_SHARED_PTR<Rcl::SearchData>(new Rcl::SearchData));
+    m_source = STD_SHARED_PTR<DocSequence>(src);
 
 
     // Start a native viewer if the mimetype has one defined, else a
@@ -269,7 +269,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 	// We want the path for the parent document. For example to
 	// open the chm file, not the internal page. Note that we just
 	// override the other file name in this case.
-	if (m_source.isNull() || !m_source->getEnclosing(doc, pdoc)) {
+	if (!m_source || !m_source->getEnclosing(doc, pdoc)) {
 	    QMessageBox::warning(0, "Recoll",
 				 tr("Cannot find parent document"));
 	    return;
@@ -330,7 +330,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
                 return;
             }
         }
-        if (!temp.isNull()) {
+        if (temp) {
 	    rememberTempFile(temp);
             fn = temp->filename();
             url = string("file://") + fn;
@@ -342,7 +342,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     if (pagenum == -1) {
 	pagenum = 1;
 	string lterm;
-	if (m_source.isNotNull())
+	if (m_source)
 	    pagenum = m_source->getFirstMatchPage(doc, lterm);
 	if (pagenum == -1)
 	    pagenum = 1;

@@ -162,7 +162,7 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
     // an actual user-entered phrase
     slack += 1 + nwords / 3;
     
-    m_autophrase = RefCntr<SearchDataClauseDist>(
+    m_autophrase = STD_SHARED_PTR<SearchDataClauseDist>(
         new SearchDataClauseDist(SCLT_PHRASE, swords, slack, field));
     return true;
 }
@@ -341,7 +341,7 @@ void SearchDataClauseDist::dump(ostream& o) const
 void SearchDataClauseSub::dump(ostream& o) const
 {
     o << "ClauseSub {\n";
-    m_sub.getconstptr()->dump(o);
+    m_sub->dump(o);
     o << "}";
 }
 

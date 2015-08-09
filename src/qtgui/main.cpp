@@ -70,8 +70,8 @@ void forgetTempFile(string &fn)
     PTMutexLocker locker(thetempfileslock);
     for (vector<TempFile>::iterator it = o_tempfiles.begin();
 	 it != o_tempfiles.end(); it++) {
-	if ((*it).isNotNull() && !fn.compare((*it)->filename())) {
-	    it->release();
+	if ((*it) && !fn.compare((*it)->filename())) {
+	    it->reset();
 	}
     }
     fn.erase();

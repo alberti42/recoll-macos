@@ -56,9 +56,9 @@ bool DocSequence::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc)
 // Remove stacked modifying sources (sort, filter) until we get to a real one
 void DocSource::stripStack()
 {
-    if (m_seq.isNull())
+    if (!m_seq)
 	return;
-    while (m_seq->getSourceSeq().isNotNull()) {
+    while (m_seq->getSourceSeq()) {
 	m_seq = m_seq->getSourceSeq();
     }
 }
@@ -68,7 +68,7 @@ bool DocSource::buildStack()
     LOGDEB2(("DocSource::buildStack()\n"));
     stripStack();
 
-    if (m_seq.isNull())
+    if (!m_seq)
 	return false;
 
     // Filtering must be done before sorting, (which may
@@ -80,7 +80,7 @@ bool DocSource::buildStack()
     } else {
 	if (m_fspec.isNotNull()) {
 	    m_seq = 
-		RefCntr<DocSequence>(new DocSeqFiltered(m_config, m_seq, m_fspec));
+		STD_SHARED_PTR<DocSequence>(new DocSeqFiltered(m_config, m_seq, m_fspec));
 	} 
     }
     
@@ -90,7 +90,7 @@ bool DocSource::buildStack()
 	}
     } else {
 	if (m_sspec.isNotNull()) {
-	    m_seq = RefCntr<DocSequence>(new DocSeqSorted(m_seq, m_sspec));
+	    m_seq = STD_SHARED_PTR<DocSequence>(new DocSeqSorted(m_seq, m_sspec));
 	}
     }
     return true;
@@ -98,7 +98,7 @@ bool DocSource::buildStack()
 
 string DocSource::title()
 {
-    if (m_seq.isNull())
+    if (!m_seq)
 	return string();
     string qual;
     if (m_fspec.isNotNull() && !m_sspec.isNotNull())

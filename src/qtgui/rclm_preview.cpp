@@ -231,7 +231,7 @@ void RclMain::previewPrevOrNextInTab(Preview * w, int sid, int docnum, bool nxt)
 	docnum++;
     else 
 	docnum--;
-    if (docnum < 0 || m_source.isNull() || docnum >= m_source->getResCnt()) {
+    if (docnum < 0 || !m_source || docnum >= m_source->getResCnt()) {
 	QApplication::beep();
 	return;
     }

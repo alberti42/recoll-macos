@@ -59,7 +59,7 @@ void RclMain::saveLastQuery()
         xml = sSearch->asXML();
     } else {
         if (g_advshistory) {
-            RefCntr<Rcl::SearchData> sd;
+            STD_SHARED_PTR<Rcl::SearchData> sd;
             sd = g_advshistory->getnewest();
             if (sd) {
                 xml = sd->asXML();
@@ -118,7 +118,7 @@ void RclMain::loadSavedQuery()
     }
 
     // Try to parse as SearchData
-    RefCntr<SearchData> sd = xmlToSearchData(xml);
+    STD_SHARED_PTR<SearchData> sd = xmlToSearchData(xml);
     if (sd) {
         showAdvSearchDialog();
         asearchform->fromSearch(sd);

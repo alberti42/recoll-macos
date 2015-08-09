@@ -287,7 +287,7 @@ void FileInterner::init(const string &data, RclConfig *cnf,
 	result = df->set_document_data(m_mimetype, data.c_str(), data.length());
     } else if (df->is_data_input_ok(Dijon::Filter::DOCUMENT_FILE_NAME)) {
 	TempFile temp = dataToTempFile(data, m_mimetype);
-	if (temp.isNotNull() && 
+	if (temp && 
 	    (result = df->set_document_file(m_mimetype, temp->filename()))) {
 	    m_tmpflgs[m_handlers.size()] = true;
 	    m_tempfiles.push_back(temp);
@@ -701,7 +701,7 @@ int FileInterner::addHandler()
 	setres = newflt->set_document_data(mimetype,txt->c_str(),txt->length());
     } else if (newflt->is_data_input_ok(Dijon::Filter::DOCUMENT_FILE_NAME)) {
 	TempFile temp = dataToTempFile(*txt, mimetype);
-	if (temp.isNotNull() && 
+	if (temp && 
 	    (setres = newflt->set_document_file(mimetype, temp->filename()))) {
 	    m_tmpflgs[m_handlers.size()] = true;
 	    m_tempfiles.push_back(temp);
@@ -743,7 +743,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, const string& ipath
     LOGDEB(("FileInterner::internfile. ipath [%s]\n", ipath.c_str()));
 
     // Get rid of possible image tempfile from older call
-    m_imgtmp.release();
+    m_imgtmp.reset();
 
     if (m_handlers.size() < 1) {
 	// Just means the constructor failed

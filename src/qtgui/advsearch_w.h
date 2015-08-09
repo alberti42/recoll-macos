@@ -24,7 +24,7 @@
 
 #include "searchclause_w.h"
 #include "recoll.h"
-#include "refcntr.h"
+#include MEMORY_INCLUDE
 #include "searchdata.h"
 #include "advshist.h"
 
@@ -56,7 +56,7 @@ public slots:
     virtual void restrictFtCB_toggled(bool);
     virtual void restrictCtCB_toggled(bool);
     virtual void runSearch();
-    virtual void fromSearch(RefCntr<Rcl::SearchData> sdata);
+    virtual void fromSearch(STD_SHARED_PTR<Rcl::SearchData> sdata);
     virtual void browsePB_clicked();
     virtual void saveFileTypes();
     virtual void delClause();
@@ -67,7 +67,7 @@ public slots:
     virtual void slotHistoryPrev();
 
 signals:
-    void startSearch(RefCntr<Rcl::SearchData>, bool);
+    void startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool);
 
 private:
     virtual void init();

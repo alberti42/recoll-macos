@@ -57,12 +57,12 @@
  * </SD>
  */ 
 
-#include "refcntr.h"
+#include MEMORY_INCLUDE
 #include "searchdata.h"
 
 // Parsing XML from advanced search history or saved advanced search to to
 // SearchData structure:
-RefCntr<Rcl::SearchData> xmlToSearchData(const string& xml);
+STD_SHARED_PTR<Rcl::SearchData> xmlToSearchData(const string& xml);
 
 // Parsing XML from saved simple search to ssearch parameters
 struct SSearchDef {

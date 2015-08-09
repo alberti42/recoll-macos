@@ -55,15 +55,15 @@ static RclConfig *rclconfig;
 typedef struct {
     PyObject_HEAD
     /* Type-specific fields go here. */
-    RefCntr<Rcl::SearchData> sd;
+    STD_SHARED_PTR<Rcl::SearchData> sd;
 } recoll_SearchDataObject;
 
 static void 
 SearchData_dealloc(recoll_SearchDataObject *self)
 {
     LOGDEB(("SearchData_dealloc. Releasing. Count before: %d\n",
-            self->sd.getcnt()));
-    self->sd.release();
+            self->sd.use_count()));
+    self->sd.reset();
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
@@ -108,7 +108,7 @@ SearchData_init(recoll_SearchDataObject *self, PyObject *args, PyObject *kwargs)
     } else {
 	stemlang = "english";
     }
-    self->sd = RefCntr<Rcl::SearchData>(new Rcl::SearchData(tp, stemlang));
+    self->sd = STD_SHARED_PTR<Rcl::SearchData>(new Rcl::SearchData(tp, stemlang));
     return 0;
 }
 
@@ -180,7 +180,7 @@ SearchData_addclause(recoll_SearchDataObject* self, PyObject *args,
 		     PyObject *kwargs)
 {
     LOGDEB0(("SearchData_addclause\n"));
-    if (self->sd.isNull()) {
+    if (!self->sd) {
 	LOGERR(("SearchData_addclause: not init??\n"));
         PyErr_SetString(PyExc_AttributeError, "sd");
         return 0;
@@ -951,7 +951,7 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 	return 0;
     }
 
-    RefCntr<Rcl::SearchData> rq(sd);
+    STD_SHARED_PTR<Rcl::SearchData> rq(sd);
     self->query->setSortBy(*self->sortfield, self->ascending);
     self->query->setQuery(rq);
     int cnt = self->query->getResCnt();
@@ -1222,8 +1222,8 @@ Query_highlight(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 	return 0;
     }
 
-    RefCntr<Rcl::SearchData> sd = self->query->getSD();
-    if (sd.isNull()) {
+    STD_SHARED_PTR<Rcl::SearchData> sd = self->query->getSD();
+    if (!sd) {
 	PyErr_SetString(PyExc_ValueError, "Query not initialized");
 	return 0;
     }
@@ -1273,8 +1273,8 @@ Query_makedocabstract(recoll_QueryObject* self, PyObject *args,PyObject *kwargs)
         PyErr_SetString(PyExc_AttributeError, "query");
         return 0;
     }
-    RefCntr<Rcl::SearchData> sd = self->query->getSD();
-    if (sd.isNull()) {
+    STD_SHARED_PTR<Rcl::SearchData> sd = self->query->getSD();
+    if (!sd) {
 	PyErr_SetString(PyExc_ValueError, "Query not initialized");
 	return 0;
     }
@@ -1329,8 +1329,8 @@ Query_getxquery(recoll_QueryObject* self, PyObject *, PyObject *)
         PyErr_SetString(PyExc_AttributeError, "query");
 	return 0;
     }
-    RefCntr<Rcl::SearchData> sd = self->query->getSD();
-    if (sd.isNull()) {
+    STD_SHARED_PTR<Rcl::SearchData> sd = self->query->getSD();
+    if (!sd) {
 	PyErr_SetString(PyExc_ValueError, "Query not initialized");
 	return 0;
     }
@@ -1357,8 +1357,8 @@ Query_getgroups(recoll_QueryObject* self, PyObject *, PyObject *)
         PyErr_SetString(PyExc_AttributeError, "query");
 	return 0;
     }
-    RefCntr<Rcl::SearchData> sd = self->query->getSD();
-    if (sd.isNull()) {
+    STD_SHARED_PTR<Rcl::SearchData> sd = self->query->getSD();
+    if (!sd) {
 	PyErr_SetString(PyExc_ValueError, "Query not initialized");
 	return 0;
     }

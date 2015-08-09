@@ -29,15 +29,14 @@
 
 namespace ResultPopup {
 
-QMenu *create(QWidget *me, int opts, RefCntr<DocSequence> source, Rcl::Doc& doc)
+QMenu *create(QWidget *me, int opts, STD_SHARED_PTR<DocSequence> source, Rcl::Doc& doc)
 {
     QMenu *popup = new QMenu(me);
 
     LOGDEB(("ResultPopup::create: opts %x haspages %d %s %s\n", opts, 
-	    doc.haspages, source.isNull() ? 
-	    "Source is Null" : "Source not null",
-	    source.isNull() ? "" : source->snippetsCapable() ? 
-	    "snippetsCapable" : "not snippetsCapable"));
+	    doc.haspages, source ? "Source not null" : "Source is Null",
+	    source ? (source->snippetsCapable() ? 
+		      "snippetsCapable" : "not snippetsCapable") : ""));
 
     string apptag;
     doc.getmeta(Rcl::Doc::keyapptg, &apptag);
@@ -112,7 +111,7 @@ QMenu *create(QWidget *me, int opts, RefCntr<DocSequence> source, Rcl::Doc& doc)
 			 me, SLOT(menuSaveSelection()));
 
     Rcl::Doc pdoc;
-    if (source.isNotNull() && source->getEnclosing(doc, pdoc)) {
+    if (source && source->getEnclosing(doc, pdoc)) {
 	popup->addAction(QWidget::tr("Preview P&arent document/folder"), 
 			 me, SLOT(menuPreviewParent()));
     }
@@ -126,7 +125,7 @@ QMenu *create(QWidget *me, int opts, RefCntr<DocSequence> source, Rcl::Doc& doc)
 	popup->addAction(QWidget::tr("Find &similar documents"), 
 			 me, SLOT(menuExpand()));
 
-    if (doc.haspages && source.isNotNull() && source->snippetsCapable()) 
+    if (doc.haspages && source && source->snippetsCapable()) 
 	popup->addAction(QWidget::tr("Open &Snippets window"), 
 			 me, SLOT(menuShowSnippets()));
 
@@ -137,10 +136,10 @@ QMenu *create(QWidget *me, int opts, RefCntr<DocSequence> source, Rcl::Doc& doc)
     return popup;
 }
 
-Rcl::Doc getParent(RefCntr<DocSequence> source, Rcl::Doc& doc)
+Rcl::Doc getParent(STD_SHARED_PTR<DocSequence> source, Rcl::Doc& doc)
 {
     Rcl::Doc pdoc;
-    if (source.isNull() || !source->getEnclosing(doc, pdoc)) {
+    if (!source || !source->getEnclosing(doc, pdoc)) {
 	// No parent doc: show enclosing folder with app configured for
 	// directories
         pdoc.url = url_parentfolder(doc.url);

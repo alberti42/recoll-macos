@@ -35,7 +35,7 @@
 #include <QMessageBox>
 
 #include "recoll.h"
-#include "refcntr.h"
+#include MEMORY_INCLUDE
 #include "docseq.h"
 #include "debuglog.h"
 #include "restable.h"
@@ -272,7 +272,7 @@ RecollModel::RecollModel(const QStringList fields, QObject *parent)
 int RecollModel::rowCount(const QModelIndex&) const
 {
     LOGDEB2(("RecollModel::rowCount\n"));
-    if (m_source.isNull())
+    if (!m_source)
 	return 0;
     return m_source->getResCnt();
 }
@@ -290,13 +290,13 @@ void RecollModel::readDocSource()
     endResetModel();
 }
 
-void RecollModel::setDocSource(RefCntr<DocSequence> nsource)
+void RecollModel::setDocSource(STD_SHARED_PTR<DocSequence> nsource)
 {
     LOGDEB(("RecollModel::setDocSource\n"));
-    if (nsource.isNull()) {
-	m_source = RefCntr<DocSequence>();
+    if (!nsource) {
+	m_source = STD_SHARED_PTR<DocSequence>();
     } else {
-	m_source = RefCntr<DocSequence>(new DocSource(theconfig, nsource));
+	m_source = STD_SHARED_PTR<DocSequence>(new DocSource(theconfig, nsource));
 	m_hdata.clear();
 	m_source->getTerms(m_hdata);
     }
@@ -356,7 +356,7 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
 {
     LOGDEB2(("RecollModel::data: row %d col %d role %d\n", index.row(),
             index.column(), role));
-    if (m_source.isNull() || role != Qt::DisplayRole || !index.isValid() ||
+    if (!m_source || role != Qt::DisplayRole || !index.isValid() ||
 	index.column() >= int(m_fields.size())) {
 	return QVariant();
     }
@@ -375,7 +375,7 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
 
 void RecollModel::saveAsCSV(FILE *fp)
 {
-    if (m_source.isNull())
+    if (!m_source)
 	return;
 
     int cols = columnCount();
@@ -637,7 +637,7 @@ void ResTable::onTableView_currentChanged(const QModelIndex& index)
     LOGDEB2(("ResTable::onTableView_currentChanged(%d, %d)\n", 
 	    index.row(), index.column()));
 
-    if (!m_model || m_model->getDocSource().isNull())
+    if (!m_model || !m_model->getDocSource())
 	return;
     Rcl::Doc doc;
     if (m_model->getDocSource()->getDoc(index.row(), doc)) {
@@ -665,7 +665,7 @@ void ResTable::takeFocus()
     tableView->setFocus(Qt::ShortcutFocusReason);
 }
 
-void ResTable::setDocSource(RefCntr<DocSequence> nsource)
+void ResTable::setDocSource(STD_SHARED_PTR<DocSequence> nsource)
 {
     LOGDEB(("ResTable::setDocSource\n"));
     if (m_model)
@@ -680,7 +680,7 @@ void ResTable::setDocSource(RefCntr<DocSequence> nsource)
 void ResTable::resetSource()
 {
     LOGDEB(("ResTable::resetSource\n"));
-    setDocSource(RefCntr<DocSequence>());
+    setDocSource(STD_SHARED_PTR<DocSequence>());
 }
 
 void ResTable::saveAsCSV()
@@ -782,7 +782,7 @@ void ResTable::linkWasClicked(const QUrl &url)
     // Open parent folder
     case 'F':
     {
-        emit editRequested(ResultPopup::getParent(RefCntr<DocSequence>(),
+        emit editRequested(ResultPopup::getParent(STD_SHARED_PTR<DocSequence>(),
                                                   m_detaildoc));
     }
     break;
@@ -823,7 +823,7 @@ void ResTable::linkWasClicked(const QUrl &url)
 
 void ResTable::onDoubleClick(const QModelIndex& index)
 {
-    if (!m_model || m_model->getDocSource().isNull())
+    if (!m_model || !m_model->getDocSource())
 	return;
     Rcl::Doc doc;
     if (m_model->getDocSource()->getDoc(index.row(), doc)) {
@@ -877,7 +877,7 @@ void ResTable::menuSaveToFile()
 
 void ResTable::menuSaveSelection()
 {
-    if (m_model == 0 || m_model->getDocSource().isNull())
+    if (m_model == 0 || !m_model->getDocSource())
 	return;
 
     QModelIndexList indexl = tableView->selectionModel()->selectedRows();
@@ -899,7 +899,7 @@ void ResTable::menuSaveSelection()
 void ResTable::menuPreviewParent()
 {
     if (m_detaildocnum >= 0 && m_model &&  
-	m_model->getDocSource().isNotNull()) {
+	m_model->getDocSource()) {
 	Rcl::Doc pdoc = ResultPopup::getParent(m_model->getDocSource(), 
 					      m_detaildoc);
 	if (pdoc.mimetype == "inode/directory") {
@@ -912,7 +912,7 @@ void ResTable::menuPreviewParent()
 
 void ResTable::menuOpenParent()
 {
-    if (m_detaildocnum >= 0 && m_model && m_model->getDocSource().isNotNull())
+    if (m_detaildocnum >= 0 && m_model && m_model->getDocSource())
 	emit editRequested(
 	    ResultPopup::getParent(m_model->getDocSource(), m_detaildoc));
 }

@@ -34,7 +34,7 @@
 #include "guiutils.h"
 #include "searchdata.h"
 #include "ssearch_w.h"
-#include "refcntr.h"
+#include MEMORY_INCLUDE
 #include "textsplit.h"
 #include "wasatorcl.h"
 #include "rclhelp.h"
@@ -309,7 +309,7 @@ bool SSearch::startSimpleSearch(const string& u8, int maxexp)
     m_xml = xml.str();
     LOGDEB(("SSearch::startSimpleSearch:xml:[%s]\n", m_xml.c_str()));
 
-    RefCntr<Rcl::SearchData> rsdata(sdata);
+    STD_SHARED_PTR<Rcl::SearchData> rsdata(sdata);
     emit startSearch(rsdata, true);
     return true;
 }

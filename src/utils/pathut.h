@@ -16,13 +16,15 @@
  */
 #ifndef _PATHUT_H_INCLUDED_
 #define _PATHUT_H_INCLUDED_
+#include "autoconfig.h"
+
 #include <unistd.h>
 
 #include <string>
 #include <vector>
 #include <set>
 
-#include "refcntr.h"
+#include MEMORY_INCLUDE
 
 /// Add a / at the end if none there yet.
 extern void path_catslash(std::string &s);
@@ -116,7 +118,7 @@ private:
     bool m_noremove;
 };
 
-typedef RefCntr<TempFileInternal> TempFile;
+typedef STD_SHARED_PTR<TempFileInternal> TempFile;
 
 /// Temporary directory class. Recursively deleted by destructor.
 class TempDir {

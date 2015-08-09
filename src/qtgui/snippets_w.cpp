@@ -65,7 +65,7 @@ static PlainToRichQtSnippets g_hiliter;
 
 void SnippetsW::init()
 {
-    if (m_source.isNull())
+    if (!m_source)
 	return;
 
     QPushButton *searchButton = new QPushButton(tr("Search"));

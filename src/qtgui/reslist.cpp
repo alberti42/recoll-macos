@@ -47,7 +47,7 @@
 #include "pathut.h"
 #include "mimehandler.h"
 #include "plaintorich.h"
-#include "refcntr.h"
+#include MEMORY_INCLUDE
 #include "internfile.h"
 #include "indexer.h"
 #include "snippets_w.h"
@@ -423,10 +423,10 @@ int ResList::newListId()
 
 extern "C" int XFlush(void *);
 
-void ResList::setDocSource(RefCntr<DocSequence> nsource)
+void ResList::setDocSource(STD_SHARED_PTR<DocSequence> nsource)
 {
     LOGDEB(("ResList::setDocSource()\n"));
-    m_source = RefCntr<DocSequence>(new DocSource(theconfig, nsource));
+    m_source = STD_SHARED_PTR<DocSequence>(new DocSource(theconfig, nsource));
 }
 
 // A query was executed, or the filtering/sorting parameters changed,
@@ -435,7 +435,7 @@ void ResList::readDocSource()
 {
     LOGDEB(("ResList::readDocSource()\n"));
     resetView();
-    if (m_source.isNull())
+    if (!m_source)
 	return;
     m_listId = newListId();
 
@@ -449,7 +449,7 @@ void ResList::readDocSource()
 void ResList::resetList() 
 {
     LOGDEB(("ResList::resetList()\n"));
-    setDocSource(RefCntr<DocSequence>());
+    setDocSource(STD_SHARED_PTR<DocSequence>());
     resetView();
 }
 
@@ -481,7 +481,7 @@ bool ResList::displayingHistory()
     // We want to reset the displayed history if it is currently
     // shown. Using the title value is an ugly hack
     string htstring = string((const char *)tr("Document history").toUtf8());
-    if (m_source.isNull() || m_source->title().empty())
+    if (!m_source || m_source->title().empty())
 	return false;
     return m_source->title().find(htstring) == 0;
 }
@@ -850,7 +850,7 @@ void ResList::mouseDoubleClickEvent(QMouseEvent *event)
 
 void ResList::showQueryDetails()
 {
-    if (m_source.isNull())
+    if (!m_source)
 	return;
     string oq = breakIntoLines(m_source->getDescription(), 100, 50);
     QString str;
@@ -871,7 +871,7 @@ void ResList::linkWasClicked(const QUrl &url)
     // Open abstract/snippets window
     case 'A':
     {
-	if (m_source.isNull()) 
+	if (!m_source) 
 	    return;
 	int i = atoi(ascurl.c_str()+1) - 1;
 	Rcl::Doc doc;
@@ -886,7 +886,7 @@ void ResList::linkWasClicked(const QUrl &url)
     // Show duplicates
     case 'D':
     {
-	if (m_source.isNull()) 
+	if (!m_source) 
 	    return;
 	int i = atoi(ascurl.c_str()+1) - 1;
 	Rcl::Doc doc;
@@ -910,7 +910,7 @@ void ResList::linkWasClicked(const QUrl &url)
 	    LOGERR(("ResList::linkWasClicked: can't get doc for %d\n", i));
 	    return;
 	}
-        emit editRequested(ResultPopup::getParent(RefCntr<DocSequence>(),
+        emit editRequested(ResultPopup::getParent(STD_SHARED_PTR<DocSequence>(),
                                                   doc));
     }
     break;
@@ -1050,7 +1050,7 @@ void ResList::menuSaveToFile()
 void ResList::menuPreviewParent()
 {
     Rcl::Doc doc;
-    if (getDoc(m_popDoc, doc) && !m_source.isNull())  {
+    if (getDoc(m_popDoc, doc) && m_source)  {
 	Rcl::Doc pdoc = ResultPopup::getParent(m_source, doc);
 	if (pdoc.mimetype == "inode/directory") {
 	    emit editRequested(pdoc);
@@ -1063,7 +1063,7 @@ void ResList::menuPreviewParent()
 void ResList::menuOpenParent()
 {
     Rcl::Doc doc;
-    if (getDoc(m_popDoc, doc) && m_source.isNotNull()) 
+    if (getDoc(m_popDoc, doc) && m_source) 
 	emit editRequested(ResultPopup::getParent(m_source, doc));
 }
 

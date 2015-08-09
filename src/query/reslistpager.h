@@ -17,10 +17,11 @@
 
 #ifndef _reslistpager_h_included_
 #define _reslistpager_h_included_
+#include "autoconfig.h"
 
 #include <vector>
+#include MEMORY_INCLUDE
 
-#include "refcntr.h"
 #include "docseq.h"
 #include "hldata.h"
 
@@ -39,7 +40,7 @@ public:
     {
         m_hiliter = ptr;
     }
-    void setDocSource(RefCntr<DocSequence> src, int winfirst = -1)
+    void setDocSource(STD_SHARED_PTR<DocSequence> src, int winfirst = -1)
     {
         m_pagesize = m_newpagesize;
 	m_winfirst = winfirst;
@@ -87,8 +88,9 @@ public:
 		    const HighlightData& hdata, const string& sh = "");
     bool pageEmpty() {return m_respage.size() == 0;}
 
-    string queryDescription() {return m_docSource.isNull() ? "" :
-	    m_docSource->getDescription();}
+    string queryDescription() {
+	return m_docSource ? m_docSource->getDescription() : "";
+    }
 
     bool getDoc(int num, Rcl::Doc &doc);
 
@@ -127,7 +129,7 @@ private:
     int                  m_winfirst;
     bool                 m_hasNext;
     PlainToRich         *m_hiliter;
-    RefCntr<DocSequence> m_docSource;
+    STD_SHARED_PTR<DocSequence> m_docSource;
     std::vector<ResListEntry> m_respage;
 };
 

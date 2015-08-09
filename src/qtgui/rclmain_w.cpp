@@ -52,7 +52,7 @@
 #include "uiprefs_w.h"
 #include "guiutils.h"
 #include "reslist.h"
-#include "refcntr.h"
+#include MEMORY_INCLUDE
 #include "ssearch_w.h"
 #include "internfile.h"
 #include "docseqdb.h"
@@ -285,8 +285,8 @@ void RclMain::init()
 
     connect(&m_watcher, SIGNAL(fileChanged(QString)), 
 	    this, SLOT(idxStatus()));
-    connect(sSearch, SIGNAL(startSearch(RefCntr<Rcl::SearchData>, bool)), 
-	    this, SLOT(startSearch(RefCntr<Rcl::SearchData>, bool)));
+    connect(sSearch, SIGNAL(startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool)), 
+	    this, SLOT(startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool)));
     connect(sSearch, SIGNAL(clearSearch()), 
 	    this, SLOT(resetSearch()));
 
@@ -344,8 +344,8 @@ void RclMain::init()
     restable->setRclMain(this, true);
     connect(actionSaveResultsAsCSV, SIGNAL(triggered()), 
 	    restable, SLOT(saveAsCSV()));
-    connect(this, SIGNAL(docSourceChanged(RefCntr<DocSequence>)),
-	    restable, SLOT(setDocSource(RefCntr<DocSequence>)));
+    connect(this, SIGNAL(docSourceChanged(STD_SHARED_PTR<DocSequence>)),
+	    restable, SLOT(setDocSource(STD_SHARED_PTR<DocSequence>)));
     connect(this, SIGNAL(searchReset()), 
 	    restable, SLOT(resetSource()));
     connect(this, SIGNAL(resultsReady()), 
@@ -374,8 +374,8 @@ void RclMain::init()
 	    this, SLOT(showSnippets(Rcl::Doc)));
 
     reslist->setRclMain(this, true);
-    connect(this, SIGNAL(docSourceChanged(RefCntr<DocSequence>)),
-	    reslist, SLOT(setDocSource(RefCntr<DocSequence>)));
+    connect(this, SIGNAL(docSourceChanged(STD_SHARED_PTR<DocSequence>)),
+	    reslist, SLOT(setDocSource(STD_SHARED_PTR<DocSequence>)));
     connect(firstPageAction, SIGNAL(triggered()), 
 	    reslist, SLOT(resultPageFirst()));
     connect(prevPageAction, SIGNAL(triggered()), 
@@ -636,7 +636,7 @@ void RclMain::fileExit()
 }
 
 // Start a db query and set the reslist docsource
-void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata, bool issimple)
+void RclMain::startSearch(STD_SHARED_PTR<Rcl::SearchData> sdata, bool issimple)
 {
     LOGDEB(("RclMain::startSearch. Indexing %s Active %d\n", 
 	    m_idxproc?"on":"off", m_queryActive));
@@ -646,7 +646,7 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata, bool issimple)
     }
     m_queryActive = true;
     restable->setEnabled(false);
-    m_source = RefCntr<DocSequence>();
+    m_source = STD_SHARED_PTR<DocSequence>();
 
     m_searchIsSimple = issimple;
 
@@ -665,11 +665,11 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata, bool issimple)
 
     curPreview = 0;
     DocSequenceDb *src = 
-	new DocSequenceDb(RefCntr<Rcl::Query>(query), 
+	new DocSequenceDb(STD_SHARED_PTR<Rcl::Query>(query), 
 			  string(tr("Query results").toUtf8()), sdata);
     src->setAbstractParams(prefs.queryBuildAbstract, 
                            prefs.queryReplaceAbstract);
-    m_source = RefCntr<DocSequence>(src);
+    m_source = STD_SHARED_PTR<DocSequence>(src);
     m_source->setSortSpec(m_sortspec);
     m_source->setFiltSpec(m_filtspec);
 
@@ -680,9 +680,9 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata, bool issimple)
 
 class QueryThread : public QThread {
     int loglevel;
-    RefCntr<DocSequence> m_source;
+    STD_SHARED_PTR<DocSequence> m_source;
  public: 
-    QueryThread(RefCntr<DocSequence> source)
+    QueryThread(STD_SHARED_PTR<DocSequence> source)
 	: m_source(source)
     {
 	loglevel = DebugLog::getdbl()->getlevel();
@@ -698,7 +698,7 @@ class QueryThread : public QThread {
 
 void RclMain::initiateQuery()
 {
-    if (m_source.isNull())
+    if (!m_source)
 	return;
 
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -778,7 +778,7 @@ void RclMain::onSortCtlChanged()
 	prefs.sortActive = prefs.sortDesc = false;
 	prefs.sortField = "";
     }
-    if (m_source.isNotNull())
+    if (m_source)
 	m_source->setSortSpec(m_sortspec);
     emit sortDataChanged(m_sortspec);
     initiateQuery();
@@ -796,7 +796,7 @@ void RclMain::onSortDataChanged(DocSeqSortSpec spec)
 	actionSortByDateAsc->setChecked(!spec.desc);
     }
     m_sortspecnochange = false;
-    if (m_source.isNotNull())
+    if (m_source)
 	m_source->setSortSpec(spec);
     m_sortspec = spec;
 
@@ -896,8 +896,8 @@ void RclMain::showSubDocs(Rcl::Doc doc)
 	new DocSequenceDocs(rcldb, docs,
 			    qs2utf8s(tr("Sub-documents and attachments")));
     src->setDescription(qs2utf8s(tr("Sub-documents and attachments")));
-    RefCntr<DocSequence> 
-	source(new DocSource(theconfig, RefCntr<DocSequence>(src)));
+    STD_SHARED_PTR<DocSequence> 
+	source(new DocSource(theconfig, STD_SHARED_PTR<DocSequence>(src)));
 
     ResTable *res = new ResTable();
     res->setRclMain(this, false);
@@ -938,7 +938,7 @@ void RclMain::showDocHistory()
 {
     LOGDEB(("RclMain::showDocHistory\n"));
     emit searchReset();
-    m_source = RefCntr<DocSequence>();
+    m_source = STD_SHARED_PTR<DocSequence>();
     curPreview = 0;
 
     string reason;
@@ -947,8 +947,8 @@ void RclMain::showDocHistory()
 	return;
     }
     // Construct a bogus SearchData structure
-    RefCntr<Rcl::SearchData>searchdata = 
-	RefCntr<Rcl::SearchData>(new Rcl::SearchData(Rcl::SCLT_AND, cstr_null));
+    STD_SHARED_PTR<Rcl::SearchData>searchdata = 
+	STD_SHARED_PTR<Rcl::SearchData>(new Rcl::SearchData(Rcl::SCLT_AND, cstr_null));
     searchdata->setDescription((const char *)tr("History data").toUtf8());
 
 
@@ -957,8 +957,8 @@ void RclMain::showDocHistory()
 	new DocSequenceHistory(rcldb, g_dynconf, 
 			       string(tr("Document history").toUtf8()));
     src->setDescription((const char *)tr("History data").toUtf8());
-    DocSource *source = new DocSource(theconfig, RefCntr<DocSequence>(src));
-    m_source = RefCntr<DocSequence>(source);
+    DocSource *source = new DocSource(theconfig, STD_SHARED_PTR<DocSequence>(src));
+    m_source = STD_SHARED_PTR<DocSequence>(source);
     m_source->setSortSpec(m_sortspec);
     m_source->setFiltSpec(m_filtspec);
     emit docSourceChanged(m_source);
@@ -1013,7 +1013,7 @@ void RclMain::enablePrevPage(bool yesno)
 
 QString RclMain::getQueryDescription()
 {
-    if (m_source.isNull())
+    if (!m_source)
 	return "";
     return QString::fromUtf8(m_source->getDescription().c_str());
 }
@@ -1073,7 +1073,7 @@ void RclMain::setFiltSpec()
         }
     }
 
-    if (m_source.isNotNull())
+    if (m_source)
 	m_source->setFiltSpec(m_filtspec);
     initiateQuery();
 }

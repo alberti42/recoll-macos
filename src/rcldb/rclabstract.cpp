@@ -157,7 +157,7 @@ double Query::Native::qualityTerms(Xapian::docid docid,
     if (doclen == 0) 
 	doclen = 1;
     HighlightData hld;
-    if (!m_q->m_sd.isNull()) {
+    if (m_q->m_sd) {
 	m_q->m_sd->getTerms(hld);
     }
 

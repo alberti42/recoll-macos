@@ -17,7 +17,7 @@
 #ifndef _DOCSEQDB_H_INCLUDED_
 #define _DOCSEQDB_H_INCLUDED_
 #include "docseq.h"
-#include "refcntr.h"
+#include MEMORY_INCLUDE
 
 #include "searchdata.h"
 #include "rclquery.h"
@@ -25,8 +25,8 @@
 /** A DocSequence from a Db query */
 class DocSequenceDb : public DocSequence {
  public:
-    DocSequenceDb(RefCntr<Rcl::Query> q, const string &t, 
-		  RefCntr<Rcl::SearchData> sdata);
+    DocSequenceDb(STD_SHARED_PTR<Rcl::Query> q, const string &t, 
+		  STD_SHARED_PTR<Rcl::SearchData> sdata);
     virtual ~DocSequenceDb() {}
     virtual bool getDoc(int num, Rcl::Doc &doc, string * = 0);
     virtual int getResCnt();
@@ -60,9 +60,9 @@ class DocSequenceDb : public DocSequence {
 protected:
     virtual Rcl::Db *getDb();
 private:
-    RefCntr<Rcl::Query>      m_q;
-    RefCntr<Rcl::SearchData> m_sdata;
-    RefCntr<Rcl::SearchData> m_fsdata; // Filtered 
+    STD_SHARED_PTR<Rcl::Query>      m_q;
+    STD_SHARED_PTR<Rcl::SearchData> m_sdata;
+    STD_SHARED_PTR<Rcl::SearchData> m_fsdata; // Filtered 
     int                      m_rescnt;
     bool                     m_queryBuildAbstract;
     bool                     m_queryReplaceAbstract;

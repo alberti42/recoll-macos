@@ -19,6 +19,8 @@
 
 
 #ifndef TEST_NETCON
+#include "autoconfig.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1230,8 +1232,8 @@ int trycli(char *host, char *serv)
         }
     }
 #else
-    RefCntr<NetconWorker> worker =
-        RefCntr<NetconWorker>(new CliNetconWorker());
+    STD_SHARED_PTR<NetconWorker> worker =
+        STD_SHARED_PTR<NetconWorker>(new CliNetconWorker());
     clicon->setcallback(worker);
     SelectLoop myloop;
     myloop.addselcon(con, Netcon::NETCONPOLL_WRITE);
@@ -1296,8 +1298,8 @@ protected:
         if (con == 0) {
             return -1;
         }
-        RefCntr<NetconWorker> worker =
-            RefCntr<NetconWorker>(new ServNetconWorker());
+        STD_SHARED_PTR<NetconWorker> worker =
+            STD_SHARED_PTR<NetconWorker>(new ServNetconWorker());
         con->setcallback(worker);
         m_loop.addselcon(NetconP(con), NETCONPOLL_READ);
         return 1;

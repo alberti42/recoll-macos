@@ -16,13 +16,15 @@
  */
 #ifndef _DOCSEQ_H_INCLUDED_
 #define _DOCSEQ_H_INCLUDED_
+
+#include "autoconfig.h"
+
 #include <string>
 #include <list>
 #include <vector>
-
+#include MEMORY_INCLUDE
 
 #include "rcldoc.h"
-#include "refcntr.h"
 #include "hldata.h"
 #include "ptmutex.h"
 
@@ -153,7 +155,7 @@ class DocSequence {
     virtual bool canSort() {return false;}
     virtual bool setFiltSpec(const DocSeqFiltSpec &) {return false;}
     virtual bool setSortSpec(const DocSeqSortSpec &) {return false;}
-    virtual RefCntr<DocSequence> getSourceSeq() {return RefCntr<DocSequence>();}
+    virtual STD_SHARED_PTR<DocSequence> getSourceSeq() {return STD_SHARED_PTR<DocSequence>();}
 
     static void set_translations(const std::string& sort, const std::string& filt)
     {
@@ -179,59 +181,59 @@ protected:
  */
 class DocSeqModifier : public DocSequence {
 public:
-    DocSeqModifier(RefCntr<DocSequence> iseq) 
+    DocSeqModifier(STD_SHARED_PTR<DocSequence> iseq) 
 	: DocSequence(""), m_seq(iseq) 
     {}
     virtual ~DocSeqModifier() {}
 
     virtual bool getAbstract(Rcl::Doc& doc, std::vector<std::string>& abs) 
     {
-	if (m_seq.isNull())
+	if (!m_seq)
 	    return false;
 	return m_seq->getAbstract(doc, abs);
     }
     virtual bool getAbstract(Rcl::Doc& doc, 
 			     std::vector<Rcl::Snippet>& abs) 
     {
-	if (m_seq.isNull())
+	if (!m_seq)
 	    return false;
 	return m_seq->getAbstract(doc, abs);
     }
     /** Get duplicates. */
     virtual bool docDups(const Rcl::Doc& doc, std::vector<Rcl::Doc>& dups)
     {
-	if (m_seq.isNull())
+	if (!m_seq)
 	    return false;
 	return m_seq->docDups(doc, dups);
     }
 
     virtual bool snippetsCapable()
     {
-	if (m_seq.isNull())
+	if (!m_seq)
 	    return false;
 	return m_seq->snippetsCapable();
     }
     virtual std::string getDescription() 
     {
-	if (m_seq.isNull())
+	if (!m_seq)
 	    return "";
 	return m_seq->getDescription();
     }
     virtual void getTerms(HighlightData& hld)
     {
-	if (m_seq.isNull())
+	if (!m_seq)
 	    return;
 	m_seq->getTerms(hld);
     }
     virtual bool getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc) 
     {
-	if (m_seq.isNull())
+	if (!m_seq)
 	    return false;
 	return m_seq->getEnclosing(doc, pdoc);
     }
     virtual std::string getReason() 
     {
-	if (m_seq.isNull())
+	if (!m_seq)
 	    return string();
 	return m_seq->getReason();
     }
@@ -239,7 +241,7 @@ public:
     {
 	return m_seq->title();
     }
-    virtual RefCntr<DocSequence> getSourceSeq() 
+    virtual STD_SHARED_PTR<DocSequence> getSourceSeq() 
     {
 	return m_seq;
     }
@@ -247,12 +249,12 @@ public:
 protected:
     virtual Rcl::Db *getDb()
     {
-	if (m_seq.isNull())
+	if (!m_seq)
 	    return 0;
 	return m_seq->getDb();
     }
 
-    RefCntr<DocSequence>    m_seq;
+    STD_SHARED_PTR<DocSequence>    m_seq;
 };
 
 class RclConfig;
@@ -261,7 +263,7 @@ class RclConfig;
 // sorting and filtering in ways depending on the base seqs capabilities
 class DocSource : public DocSeqModifier {
 public:
-    DocSource(RclConfig *config, RefCntr<DocSequence> iseq) 
+    DocSource(RclConfig *config, STD_SHARED_PTR<DocSequence> iseq) 
 	: DocSeqModifier(iseq), m_config(config)
     {}
     virtual bool canFilter() {return true;}
@@ -270,13 +272,13 @@ public:
     virtual bool setSortSpec(const DocSeqSortSpec &);
     virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = 0)
     {
-	if (m_seq.isNull())
+	if (!m_seq)
 	    return false;
 	return m_seq->getDoc(num, doc, sh);
     }
     virtual int getResCnt()
     {
-	if (m_seq.isNull())
+	if (!m_seq)
 	    return 0;
 	return m_seq->getResCnt();
     }

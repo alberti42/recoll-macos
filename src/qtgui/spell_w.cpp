@@ -332,7 +332,7 @@ void SpellW::showStats()
 	string reason;
 	string q = string("mime:") + *it;
 	Rcl::SearchData *sd = wasaStringToRcl(theconfig, "", q, reason);
-	RefCntr<Rcl::SearchData> rq(sd);
+	STD_SHARED_PTR<Rcl::SearchData> rq(sd);
 	Rcl::Query query(rcldb);
 	if (!query.setQuery(rq)) {
 	    LOGERR(("Query setup failed: %s",query.getReason().c_str()));

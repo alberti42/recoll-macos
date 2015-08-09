@@ -29,7 +29,7 @@
 #include "rcldb.h"
 #include "searchdata.h"
 #include "spell_w.h"
-#include "refcntr.h"
+#include MEMORY_INCLUDE
 #include "pathut.h"
 #include "guiutils.h"
 
@@ -114,7 +114,7 @@ public slots:
     virtual void periodic100();
     virtual void toggleIndexing();
     virtual void rebuildIndex();
-    virtual void startSearch(RefCntr<Rcl::SearchData> sdata, bool issimple);
+    virtual void startSearch(STD_SHARED_PTR<Rcl::SearchData> sdata, bool issimple);
     virtual void previewClosed(Preview *w);
     virtual void showAdvSearchDialog();
     virtual void showSpellDialog();
@@ -172,7 +172,7 @@ public slots:
     virtual void showTrayMessage(const QString& text);
 
 signals:
-    void docSourceChanged(RefCntr<DocSequence>);
+    void docSourceChanged(STD_SHARED_PTR<DocSequence>);
     void stemLangChanged(const QString& lang);
     void sortDataChanged(DocSeqSortSpec);
     void resultsReady();
@@ -212,7 +212,7 @@ private:
     DocSeqFiltSpec    m_filtspec;
     bool              m_sortspecnochange;
     DocSeqSortSpec    m_sortspec;
-    RefCntr<DocSequence> m_source;
+    STD_SHARED_PTR<DocSequence> m_source;
     IndexerState      m_indexerState;
     bool              m_queryActive;
     bool              m_firstIndexing;

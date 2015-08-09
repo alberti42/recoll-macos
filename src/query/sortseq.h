@@ -16,11 +16,12 @@
  */
 #ifndef _SORTSEQ_H_INCLUDED_
 #define _SORTSEQ_H_INCLUDED_
+#include "autoconfig.h"
 
 #include <vector>
 #include <string>
+#include MEMORY_INCLUDE
 
-#include "refcntr.h"
 #include "docseq.h"
 
 /** 
@@ -29,7 +30,7 @@
  */
 class DocSeqSorted : public DocSeqModifier {
  public:
-    DocSeqSorted(RefCntr<DocSequence> iseq, DocSeqSortSpec &sortspec)
+    DocSeqSorted(STD_SHARED_PTR<DocSequence> iseq, DocSeqSortSpec &sortspec)
 	:  DocSeqModifier(iseq)
     {
 	setSortSpec(sortspec);

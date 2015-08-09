@@ -33,38 +33,38 @@ AdvSearchHist::AdvSearchHist()
 
 AdvSearchHist::~AdvSearchHist()
 {
-    for (vector<RefCntr<SearchData> >::iterator it = m_entries.begin();
+    for (vector<STD_SHARED_PTR<SearchData> >::iterator it = m_entries.begin();
 	 it != m_entries.end(); it++) {
-	it->release();
+	it->reset();
     }
 }
 
-RefCntr<Rcl::SearchData> AdvSearchHist::getnewest() 
+STD_SHARED_PTR<Rcl::SearchData> AdvSearchHist::getnewest() 
 {
     if (m_entries.empty())
-        return RefCntr<Rcl::SearchData>();
+        return STD_SHARED_PTR<Rcl::SearchData>();
 
     return m_entries[0];
 }
 
-RefCntr<Rcl::SearchData> AdvSearchHist::getolder()
+STD_SHARED_PTR<Rcl::SearchData> AdvSearchHist::getolder()
 {
     m_current++;
     if (m_current >= int(m_entries.size())) {
 	m_current--;
-	return RefCntr<Rcl::SearchData>();
+	return STD_SHARED_PTR<Rcl::SearchData>();
     }
     return m_entries[m_current];
 }
 
-RefCntr<Rcl::SearchData> AdvSearchHist::getnewer()
+STD_SHARED_PTR<Rcl::SearchData> AdvSearchHist::getnewer()
 {
     if (m_current == -1 || m_current == 0 || m_entries.empty())
-	return RefCntr<Rcl::SearchData>();
+	return STD_SHARED_PTR<Rcl::SearchData>();
     return m_entries[--m_current];
 }
 
-bool AdvSearchHist::push(RefCntr<SearchData> sd)
+bool AdvSearchHist::push(STD_SHARED_PTR<SearchData> sd)
 {
     m_entries.insert(m_entries.begin(), sd);
     if (m_current != -1)
@@ -83,7 +83,7 @@ bool AdvSearchHist::read()
     
     for (list<string>::const_iterator it = lxml.begin(); it != lxml.end();
 	 it++) {
-        RefCntr<SearchData> sd = xmlToSearchData(*it);
+        STD_SHARED_PTR<SearchData> sd = xmlToSearchData(*it);
         if (sd)
             m_entries.push_back(sd);
     }

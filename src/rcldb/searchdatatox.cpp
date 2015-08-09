@@ -250,7 +250,7 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
     }
 
     // Add the autophrase if any
-    if (m_autophrase.isNotNull()) {
+    if (m_autophrase) {
 	Xapian::Query apq;
 	if (m_autophrase->toNativeQuery(db, &apq)) {
 	    xq = xq.empty() ? apq : 

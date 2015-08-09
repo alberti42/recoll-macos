@@ -330,7 +330,7 @@ endopts:
 	return 1;
     }
 
-    RefCntr<Rcl::SearchData> rq(sd);
+    STD_SHARED_PTR<Rcl::SearchData> rq(sd);
     Rcl::Query query(&rcldb);
     if (op_flags & OPT_S) {
 	query.setSortBy(sortfield, (op_flags & OPT_D) ? false : true);

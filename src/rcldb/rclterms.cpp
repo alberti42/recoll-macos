@@ -198,11 +198,11 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
     XapComputableSynFamMember synac(xrdb, synFamDiCa, "all", &unacfoldtrans);
 
     if (matchtyp == ET_WILD || matchtyp == ET_REGEXP) {
-	RefCntr<StrMatcher> matcher;
+	STD_SHARED_PTR<StrMatcher> matcher;
 	if (matchtyp == ET_WILD) {
-	    matcher = RefCntr<StrMatcher>(new StrWildMatcher(term));
+	    matcher = STD_SHARED_PTR<StrMatcher>(new StrWildMatcher(term));
 	} else {
-	    matcher = RefCntr<StrMatcher>(new StrRegexpMatcher(term));
+	    matcher = STD_SHARED_PTR<StrMatcher>(new StrRegexpMatcher(term));
 	}
 	if (!diac_sensitive || !case_sensitive) {
 	    // Perform case/diac expansion on the exp as appropriate and
@@ -211,14 +211,14 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
 	    if (diac_sensitive) {
 		// Expand for diacritics and case, filtering for same diacritics
 		SynTermTransUnac foldtrans(UNACOP_FOLD);
-		synac.synKeyExpand(matcher.getptr(), exp, &foldtrans);
+		synac.synKeyExpand(matcher.get(), exp, &foldtrans);
 	    } else if (case_sensitive) {
 		// Expand for diacritics and case, filtering for same case
 		SynTermTransUnac unactrans(UNACOP_UNAC);
-		synac.synKeyExpand(matcher.getptr(), exp, &unactrans);
+		synac.synKeyExpand(matcher.get(), exp, &unactrans);
 	    } else {
 		// Expand for diacritics and case, no filtering
-		synac.synKeyExpand(matcher.getptr(), exp);
+		synac.synKeyExpand(matcher.get(), exp);
 	    }
 	    // Retrieve additional info and filter against the index itself
 	    for (vector<string>::const_iterator it = exp.begin(); 
@@ -337,21 +337,21 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
     }
     res.prefix = prefix;
 
-    RefCntr<StrMatcher> matcher;
+    STD_SHARED_PTR<StrMatcher> matcher;
     if (typ == ET_REGEXP) {
-	matcher = RefCntr<StrMatcher>(new StrRegexpMatcher(root));
+	matcher = STD_SHARED_PTR<StrMatcher>(new StrRegexpMatcher(root));
 	if (!matcher->ok()) {
 	    LOGERR(("termMatch: regcomp failed: %s\n", 
 		    matcher->getreason().c_str()))
 		return false;
 	}
     } else if (typ == ET_WILD) {
-	matcher = RefCntr<StrMatcher>(new StrWildMatcher(root));
+	matcher = STD_SHARED_PTR<StrMatcher>(new StrWildMatcher(root));
     }
 
     // Find the initial section before any special char
     string::size_type es = string::npos;
-    if (matcher.isNotNull()) {
+    if (matcher) {
 	es = matcher->baseprefixlen();
     }
 
@@ -391,7 +391,7 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
 		    term = *it;
 		}
 
-		if (matcher.isNotNull() && !matcher->match(term))
+		if (matcher && !matcher->match(term))
 		    continue;
 
 		res.entries.push_back(
