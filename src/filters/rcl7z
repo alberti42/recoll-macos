@@ -6,7 +6,7 @@
 # This is a modified version of rclzip, with some help from rcltar
 # Python pylzma library required. See http://www.joachim-bauch.de/projects/pylzma/ 
 
-
+import sys
 import os
 import fnmatch
 import rclexecm
