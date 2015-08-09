@@ -19,9 +19,6 @@
 #include <math.h>
 
 #include <map>
-#include "unordered_defs.h"
-
-using namespace std;
 
 #include "debuglog.h"
 #include "rcldb.h"
@@ -32,6 +29,8 @@ using namespace std;
 #include "searchdata.h"
 #include "utf8iter.h"
 #include "hldata.h"
+
+using namespace std;
 
 namespace Rcl {
 // This is used as a marker inside the abstract frag lists, but

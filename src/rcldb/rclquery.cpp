@@ -14,6 +14,7 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include "autoconfig.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -21,7 +22,6 @@
 
 #include <vector>
 #include <sstream>
-using namespace std;
 
 #include "xapian.h"
 
@@ -36,6 +36,8 @@ using namespace std;
 #include "smallut.h"
 #include "searchdata.h"
 #include "unacpp.h"
+
+using namespace std;
 
 namespace Rcl {
 // This is used as a marker inside the abstract frag lists, but

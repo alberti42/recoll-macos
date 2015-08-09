@@ -48,6 +48,12 @@
 /* Define to 1 if you have the `setrlimit' function. */
 #undef HAVE_SETRLIMIT
 
+/* Has std::shared_ptr */
+#undef HAVE_SHARED_PTR_STD
+
+/* Has std::tr1::shared_ptr */
+#undef HAVE_SHARED_PTR_TR1
+
 /* Define to 1 if you have the <spawn.h> header file. */
 #undef HAVE_SPAWN_H
 
@@ -171,3 +177,5 @@
 
 /* Define for large files, on AIX-style hosts. */
 #undef _LARGE_FILES
+
+#include "conf_post.h"

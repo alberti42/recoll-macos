@@ -1,5 +1,6 @@
 AC_INIT([Recoll], m4_esyscmd_s(cat VERSION))
 AC_CONFIG_HEADERS([common/autoconfig.h])
+AH_BOTTOM([#include "conf_post.h"])
 AC_PREREQ(2.53)
 AC_CONFIG_SRCDIR(index/recollindex.cpp)
 
@@ -41,6 +42,21 @@ AC_CHECK_HEADER(tr1/unordered_map,[AC_DEFINE([HAVE_TR1_UNORDERED],
     [],["Have tr1"])],[])
 AC_CHECK_HEADER(unordered_map,[AC_DEFINE([HAVE_CXX0X_UNORDERED],
     [],["Have C++0x"])],[])
+AC_TRY_COMPILE([
+    #include <memory>
+  ],[
+    std::shared_ptr<int> ptr;
+  ], rcl_shared_ptr_std="1", rcl_shared_ptr_std="0")
+AC_TRY_COMPILE([
+    #include <tr1/memory>
+  ],[
+    std::tr1::shared_ptr<int> ptr;
+  ], rcl_shared_ptr_tr1="1", rcl_shared_ptr_tr1="0")
+if test X$rcl_shared_ptr_std = X1; then 
+   AC_DEFINE(HAVE_SHARED_PTR_STD, [], [Has std::shared_ptr])
+elif test X$rcl_shared_ptr_tr1 = X1; then 
+   AC_DEFINE(HAVE_SHARED_PTR_TR1, [], [Has std::tr1::shared_ptr])
+fi
 AC_LANG_POP([C++])
 
 AC_CHECK_HEADERS([sys/mount.h sys/statfs.h sys/statvfs.h sys/vfs.h], [], [],

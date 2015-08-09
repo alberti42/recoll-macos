@@ -16,9 +16,8 @@
  */
 
 #ifndef TEST_SMALLUT
-#ifdef HAVE_CONFIG_H
 #include "autoconfig.h"
-#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -34,13 +33,15 @@
 #include <string>
 #include <iostream>
 #include <list>
-#include "unordered_defs.h"
-using namespace std;
+#include UNORDERED_MAP_INCLUDE
+#include UNORDERED_SET_INCLUDE
 
 #include "smallut.h"
 #include "utf8iter.h"
 #include "hldata.h"
 #include "cstr.h"
+
+using namespace std;
 
 void map_ss_cp_noshr(const map<string,string> s, map<string,string> *d)
 {

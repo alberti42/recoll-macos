@@ -16,20 +16,20 @@
  */
 #ifndef _RCLCONFIG_H_INCLUDED_
 #define _RCLCONFIG_H_INCLUDED_
+#include "autoconfig.h"
 
 #include <string>
 #include <vector>
 #include <set>
 #include <utility>
 #include <map>
-#include "unordered_defs.h"
+#include UNORDERED_SET_INCLUDE
 
 using std::string;
 using std::vector;
 using std::pair;
 using std::set;
 using std::map;
-
 
 #include "conftree.h"
 #include "smallut.h"

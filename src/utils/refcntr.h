@@ -2,6 +2,7 @@
 #define _REFCNTR_H_
 
 // See Stroustrup C++ 3rd ed, p. 783
+// This is only used if std::shared_ptr is not available
 template <class X> class RefCntr {
     X   *rep;
     int *pcount;

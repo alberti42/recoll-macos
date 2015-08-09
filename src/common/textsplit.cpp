@@ -24,8 +24,7 @@
 #include <string>
 #include <algorithm>
 #include <cstring>
-#include "unordered_defs.h"
-using namespace std;
+#include UNORDERED_SET_INCLUDE
 
 #include "textsplit.h"
 #include "debuglog.h"
@@ -33,6 +32,7 @@ using namespace std;
 #include "utf8iter.h"
 #include "uproplist.h"
 
+using namespace std;
 
 /**
  * Splitting a text into words. The code in this file works with utf-8

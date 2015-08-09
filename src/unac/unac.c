@@ -31,7 +31,8 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include "unordered_defs.h"
+#include UNORDERED_MAP_INCLUDE
+
 using std::string;
 
 #include "smallut.h"
