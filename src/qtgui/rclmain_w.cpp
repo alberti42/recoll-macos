@@ -19,6 +19,7 @@
 #include <fcntl.h>
 
 #include <utility>
+#include MEMORY_INCLUDE
 
 #include <qapplication.h>
 #include <qmessagebox.h>
@@ -52,7 +53,6 @@
 #include "uiprefs_w.h"
 #include "guiutils.h"
 #include "reslist.h"
-#include MEMORY_INCLUDE
 #include "ssearch_w.h"
 #include "internfile.h"
 #include "docseqdb.h"
