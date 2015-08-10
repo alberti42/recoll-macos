@@ -63,6 +63,7 @@ bincimapmime/mime.cc \
 bincimapmime/mime.h \
 common/beaglequeuecache.cpp \
 common/beaglequeuecache.h \
+common/conf_post.h \
 common/cstr.cpp \
 common/cstr.h \
 common/rclconfig.cpp \
