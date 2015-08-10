@@ -562,6 +562,7 @@ dist_man1_MANS = doc/man/recoll.1 doc/man/recollq.1 doc/man/recollindex.1
 dist_man5_MANS = doc/man/recoll.conf.5
 
 dist-hook:
-	if test ! -z "`hg status`";then echo Local directory is modified ; \
-  	  exit 1; fi
+	modified=`hg status | grep -v /$(distdir)/`; \
+	if test ! -z "$$modified"; then \
+            echo Local directory is modified: $$modified ; exit 1; fi
 	hg tag -f -m "Release $(VERSION) tagged" RECOLL-$(VERSION)
