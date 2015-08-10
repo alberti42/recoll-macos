@@ -1,5 +1,6 @@
 %{
 #define YYDEBUG 1
+#include "autoconfig.h"
 
 #include <stdio.h>
 
@@ -8,7 +9,7 @@
 
 #include "searchdata.h"
 #include "wasaparserdriver.h"
-#include "wasaparse.h"
+#include "wasaparse.hpp"
 
 using namespace std;
 
@@ -27,7 +28,7 @@ static void qualify(Rcl::SearchDataClauseDist *, const string &);
 static void addSubQuery(WasaParserDriver *d,
                         Rcl::SearchData *sd, Rcl::SearchData *sq)
 {
-    sd->addClause(new Rcl::SearchDataClauseSub(RefCntr<Rcl::SearchData>(sq)));
+    sd->addClause(new Rcl::SearchDataClauseSub(STD_SHARED_PTR<Rcl::SearchData>(sq)));
 }
 
 %}

@@ -73,7 +73,6 @@ common/textsplit.cpp \
 common/textsplit.h \
 common/unacpp.cpp \
 common/unacpp.h \
-common/unordered_defs.h \
 common/uproplist.h \
 index/beaglequeue.cpp \
 index/beaglequeue.h \
@@ -318,7 +317,6 @@ kde/kioslave/kio_recoll/recollf.protocol \
 kde/kioslave/kio_recoll/recollnolist.protocol \
 kde/kioslave/kio_recoll/recoll.protocol \
 \
-query/wasaparse.cpp query/wasaparse.hpp query/y.tab.h \
 query/location.hh  query/position.hh  query/stack.hh \
 \
 qtgui/advsearch.ui \
@@ -561,3 +559,8 @@ doc/user/usermanual.html:
 
 dist_man1_MANS = doc/man/recoll.1 doc/man/recollq.1 doc/man/recollindex.1
 dist_man5_MANS = doc/man/recoll.conf.5
+
+dist-hook:
+	if test ! -z "`hg status`";then echo Local directory is modified ; \
+  	  exit 1; fi
+	hg tag -f -m "Release $(VERSION) tagged" RECOLL-$(VERSION)

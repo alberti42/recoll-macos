@@ -86,7 +86,7 @@ src/query/position.hh
 src/query/recollq
 src/query/stack.hh
 src/query/wasaparse.cpp
-src/query/wasaparse.h
+src/query/wasaparse.hpp
 src/sampleconf/rclmon.sh
 src/sampleconf/recoll.conf
 src/utils/alldeps
