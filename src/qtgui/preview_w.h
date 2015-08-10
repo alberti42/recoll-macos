@@ -132,14 +132,20 @@ class Preview : public QWidget {
     friend class PreviewTextEdit;
 
 public slots:
+    // Search stuff
     virtual void searchTextChanged(const QString& text);
     virtual void searchTextFromIndex(int);
     virtual void doSearch(const QString& str, bool next, bool reverse,
 			  bool wo = false);
     virtual void nextPressed();
     virtual void prevPressed();
+
+    // Tabs management
     virtual void currentChanged(int);
     virtual void closeCurrentTab();
+    virtual void emitShowNext();
+    virtual void emitShowPrev();
+
     virtual void emitSaveDocToFile();
     virtual void togglePlainPre();
 

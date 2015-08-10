@@ -21,9 +21,6 @@
 
 #include <list>
 #include <utility>
-#ifndef NO_NAMESPACES
-using std::pair;
-#endif /* NO_NAMESPACES */
 
 #include <qmessagebox.h>
 #include <qthread.h>
@@ -48,6 +45,7 @@ using std::pair;
 #include <qclipboard.h>
 #include <qimage.h>
 #include <qurl.h>
+#include <QShortcut>
 
 #include "debuglog.h"
 #include "pathut.h"
@@ -61,6 +59,12 @@ using std::pair;
 #include "guiutils.h"
 #include "docseqhist.h"
 #include "rclhelp.h"
+
+static const QKeySequence closeKS(Qt::Key_Escape);
+static const QKeySequence nextDocInTabKS(Qt::ShiftModifier+Qt::Key_Down);
+static const QKeySequence prevDocInTabKS(Qt::ShiftModifier+Qt::Key_Up);
+static const QKeySequence closeTabKS(Qt::ControlModifier+Qt::Key_W);
+static const QKeySequence printTabKS(Qt::ControlModifier+Qt::Key_P);
 
 // Subclass plainToRich to add <termtag>s and anchors to the preview text
 class PlainToRichQtPreview : public PlainToRich {
@@ -281,6 +285,17 @@ void Preview::init()
 	    this, SLOT(currentChanged(int)));
     connect(bt, SIGNAL(clicked()), this, SLOT(closeCurrentTab()));
 
+    connect(new QShortcut(closeKS, this), SIGNAL (activated()), 
+	    this, SLOT (close()));
+    connect(new QShortcut(nextDocInTabKS, this), SIGNAL (activated()), 
+	    this, SLOT (emitShowNext()));
+    connect(new QShortcut(prevDocInTabKS, this), SIGNAL (activated()), 
+	    this, SLOT (emitShowPrev()));
+    connect(new QShortcut(closeTabKS, this), SIGNAL (activated()), 
+	    this, SLOT (closeCurrentTab()));
+    connect(new QShortcut(printTabKS, this), SIGNAL (activated()), 
+	    this, SIGNAL (printCurrentPreviewRequest()));
+
     m_dynSearchActive = false;
     m_canBeep = true;
     if (prefs.pvwidth > 100) {
@@ -289,6 +304,26 @@ void Preview::init()
     m_loading = false;
     currentChanged(pvTab->currentIndex());
     m_justCreated = true;
+}
+
+void Preview::emitShowNext()
+{
+    if (m_loading)
+	return;
+    PreviewTextEdit *edit = currentEditor();
+    if (edit) {
+	emit(showNext(this, m_searchId, edit->m_docnum));
+    }
+}
+
+void Preview::emitShowPrev()
+{
+    if (m_loading)
+	return;
+    PreviewTextEdit *edit = currentEditor();
+    if (edit) {
+	emit(showPrev(this, m_searchId, edit->m_docnum));
+    }
 }
 
 void Preview::closeEvent(QCloseEvent *e)
@@ -333,40 +368,15 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 #endif
 	return false;
     }
-    
-    LOGDEB2(("Preview::eventFilter: keyEvent\n"));
 
     PreviewTextEdit *edit = currentEditor();
     QKeyEvent *keyEvent = (QKeyEvent *)event;
-    if (keyEvent->key() == Qt::Key_Escape) {
-	close();
-	return true;
-    } else if (keyEvent->key() == Qt::Key_Down &&
-	       (keyEvent->modifiers() & Qt::ShiftModifier)) {
-	LOGDEB2(("Preview::eventFilter: got Shift-Up\n"));
-	if (edit) 
-	    emit(showNext(this, m_searchId, edit->m_docnum));
-	return true;
-    } else if (keyEvent->key() == Qt::Key_Up &&
-	       (keyEvent->modifiers() & Qt::ShiftModifier)) {
-	LOGDEB2(("Preview::eventFilter: got Shift-Down\n"));
-	if (edit) 
-	    emit(showPrev(this, m_searchId, edit->m_docnum));
-	return true;
-    } else if (keyEvent->key() == Qt::Key_W &&
-	       (keyEvent->modifiers() & Qt::ControlModifier)) {
-	LOGDEB2(("Preview::eventFilter: got ^W\n"));
-	closeCurrentTab();
-	return true;
-    } else if (keyEvent->key() == Qt::Key_P &&
-	       (keyEvent->modifiers() & Qt::ControlModifier)) {
-	LOGDEB2(("Preview::eventFilter: got ^P\n"));
-	emit(printCurrentPreviewRequest());
-	return true;
-    } else if (m_dynSearchActive) {
+
+    if (m_dynSearchActive) {
 	if (keyEvent->key() == Qt::Key_F3) {
 	    LOGDEB2(("Preview::eventFilter: got F3\n"));
-	    doSearch(searchTextCMB->currentText(), true, false);
+	    doSearch(searchTextCMB->currentText(), true, 
+		     (keyEvent->modifiers() & Qt::ShiftModifier) != 0);
 	    return true;
 	}
 	if (target != searchTextCMB)
