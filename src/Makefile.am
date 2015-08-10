@@ -521,7 +521,8 @@ recollqt-clean:
 	-$(MAKE) -C $(QTGUI) clean
 install-exec-local: recollqt-install
 recollqt-install:
-	$(MAKE) -C $(QTGUI) INSTALL_ROOT=$(DESTDIR) PREFIX=$(prefix) install
+	$(MAKE) -C $(QTGUI) LFLAGS="$(LDFLAGS)" prefix=$(prefix) \
+                exec_prefix=$(exec_prefix) libdir=$(libdir) install
 endif
 
 defconfdir = $(pkgdatadir)/examples
