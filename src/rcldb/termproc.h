@@ -14,13 +14,12 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
 #ifndef _TERMPROC_H_INCLUDED_
 #define _TERMPROC_H_INCLUDED_
 
 #include "textsplit.h"
 #include "stoplist.h"
+#include "smallut.h"
 
 namespace Rcl {
 
@@ -140,14 +139,43 @@ public:
             }
             return true;
         }
-        // It may happen in some weird cases that the output from unac is
-        // empty (if the word actually consisted entirely of diacritics ...)
-        // The consequence is that a phrase search won't work without addional
-        // slack.
-        if (otrm.empty())
+
+        if (otrm.empty()) {
+	    // It may happen in some weird cases that the output from
+	    // unac is empty (if the word actually consisted entirely
+	    // of diacritics ...)  The consequence is that a phrase
+	    // search won't work without addional slack.
             return true;
-        else
-            return TermProc::takeword(otrm, pos, bs, be);
+	}
+
+	// It may also occur that unac introduces spaces in the string
+	// (when removing isolated accents, may happen for Greek
+	// for example). This is a pathological situation. We
+	// index all the resulting terms at the same pos because
+	// the surrounding code is not designed to handle a pos
+	// change in here. This means that phrase searches and
+	// snippets will be wrong, but at least searching for the
+	// terms will work.
+	bool hasspace = false;
+	for (string::const_iterator it = otrm.begin();it < otrm.end();it++) {
+	    if (*it == ' ') {
+		hasspace=true;
+		break;
+	    }
+	}
+	if (hasspace) {
+	    vector<string> terms;
+	    stringToTokens(otrm, terms, " ", true);
+	    for (vector<string>::const_iterator it = terms.begin(); 
+		 it < terms.end(); it++) {
+		if (!TermProc::takeword(*it, pos, bs, be)) {
+		    return false;
+		}
+	    }
+	    return true;
+	} else {
+	    return TermProc::takeword(otrm, pos, bs, be);
+	}
     }
 
     virtual bool flush()
