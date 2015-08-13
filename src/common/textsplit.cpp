@@ -290,8 +290,8 @@ bool TextSplit::span_is_acronym(string *acronym)
 }
 
 
-        // Generate terms from span. Have to take into account the
-        // flags: ONLYSPANS, NOSPANS, noNumbers
+// Generate terms from span. Have to take into account the
+// flags: ONLYSPANS, NOSPANS, noNumbers
 bool TextSplit::words_from_span(int bp)
 {
 #if 0
@@ -308,6 +308,17 @@ bool TextSplit::words_from_span(int bp)
     int pos = m_spanpos;
     // Byte position of the span start
     int spboffs = bp - m_span.size();
+
+    if (spanwords == 2 && m_span[m_words_in_span[0].second] == '-') {
+	unsigned int s0 = m_words_in_span[0].first;
+	unsigned int l0 = m_words_in_span[0].second - m_words_in_span[0].first;
+	unsigned int s1 = m_words_in_span[1].first;
+	unsigned int l1 = m_words_in_span[1].second - m_words_in_span[1].first;
+	string word = m_span.substr(s0, l0) + m_span.substr(s1, l1);
+	if (l0 && l1) 
+	    emitterm(false, word,
+		     m_spanpos, spboffs, spboffs + m_words_in_span[1].second);
+    }
 
     for (unsigned int i = 0; 
          i < ((m_flags&TXTS_ONLYSPANS) ? 1 : spanwords); 
@@ -655,16 +666,16 @@ bool TextSplit::text_to_words(const string &in)
 	    }
 	    break;
 
-	case '#': 
+	case '#':  {
+	    int w = whatcc(it[it.getCpos()+1]);
 	    // Keep it only at the beginning of a word (hashtag), 
-            if (m_wordLen == 0) {
+            if (m_wordLen == 0 && isalphanum(w, m_flags)) {
                 m_wordLen += it.appendchartostring(m_span);
                 STATS_INC_WORDCHARS;
                 break;
             }
             // or at the end (special case for c# ...)
 	    if (m_wordLen > 0) {
-		int w = whatcc(it[it.getCpos()+1]);
 		if (w == SPACE || w == '\n' || w == '\r') {
 		    m_wordLen += it.appendchartostring(m_span);
 		    STATS_INC_WORDCHARS;
@@ -672,6 +683,7 @@ bool TextSplit::text_to_words(const string &in)
 		}
 	    }
 	    goto SPACE;
+	}
 	    break;
 
 	case '\n':
