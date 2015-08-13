@@ -26,14 +26,18 @@
 // where this is a good old 8bit-encoded text document left-over when
 // the locale was switched to utf-8. We try to guess a charset
 // according to the locale language and use it. This is a very rough
-// heuristic, but may be better than discarding the data.
+// heuristic, but may be better than discarding the data. 
+// If we still get a significant number of decode errors, the doc is
+// quite probably binary, so just fail.
 static bool alternate_decode(const string& in, string& out)
 {
     string lang = localelang();
     string code = langtocode(lang);
     LOGDEB(("RecollFilter::txtdcode: trying alternate decode from %s\n",
 	    code.c_str()));
-    return transcode(in, out, code, cstr_utf8);
+    int ecnt;
+    bool ret = transcode(in, out, code, cstr_utf8, &ecnt);
+    return ecnt > 5 ? false : ret;
 }
 
 bool RecollFilter::txtdcode(const string& who)
@@ -58,8 +62,11 @@ bool RecollFilter::txtdcode(const string& who)
 
 	if (samecharset(ocs, cstr_utf8)) {
 	    ret = alternate_decode(itext, otext);
+	} else {
+	    ret = false;
 	}
 	if (!ret) {
+	    LOGDEB(("txtdcode: failed. Doc is not text?\n"));
 	    itext.erase();
 	    return false;
 	}
