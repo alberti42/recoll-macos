@@ -22,10 +22,6 @@
 #include <string>
 #include <vector>
 
-using std::string;
-using std::vector;
-using std::pair;
-
 class Utf8Iter;
 
 /** 
@@ -77,10 +73,10 @@ public:
     virtual ~TextSplit() {}
 
     /** Split text, emit words and positions. */
-    virtual bool text_to_words(const string &in);
+    virtual bool text_to_words(const std::string &in);
 
     /** Process one output word: to be implemented by the actual user class */
-    virtual bool takeword(const string& term, 
+    virtual bool takeword(const std::string& term, 
 			  int pos,  // term pos
 			  int bts,  // byte offset of first char in term
 			  int bte   // byte offset of first char after term
@@ -96,10 +92,10 @@ public:
     // Static utility functions:
 
     /** Count words in string, as the splitter would generate them */
-    static int countWords(const string &in, Flags flgs = TXTS_ONLYSPANS);
+    static int countWords(const std::string &in, Flags flgs = TXTS_ONLYSPANS);
 
     /** Check if this is visibly not a single block of text */
-    static bool hasVisibleWhite(const string &in);
+    static bool hasVisibleWhite(const std::string &in);
 
     /** Split text span into strings, at white space, allowing for substrings
      * quoted with " . Escaping with \ works as usual inside the quoted areas.
@@ -108,7 +104,7 @@ public:
      * non-utf-8 input (iso-8859 config files work ok). This hopefully
      * handles all Unicode whitespace, but needs correct utf-8 input
      */
-    static bool stringToStrings(const string &s, vector<string> &tokens);
+    static bool stringToStrings(const std::string &s, std::vector<std::string> &tokens);
 
     /** Is char CJK ? */
     static bool isCJK(int c);
@@ -179,9 +175,9 @@ private:
     int           m_maxWordLength;
 
     // Current span. Might be jf.dockes@wanadoo.f
-    string        m_span; 
+    std::string        m_span; 
 
-    vector <pair<unsigned int, unsigned int> > m_words_in_span;
+    std::vector <std::pair<unsigned int, unsigned int> > m_words_in_span;
 
     // Current word: no punctuation at all in there. Byte offset
     // relative to the current span and byte length
@@ -212,7 +208,7 @@ private:
     // This processes cjk text:
     bool cjk_to_words(Utf8Iter *it, unsigned int *cp);
 
-    bool emitterm(bool isspan, string &term, int pos, int bs, int be);
+    bool emitterm(bool isspan, std::string &term, int pos, int bs, int be);
     bool doemit(bool spanerase, int bp);
     void discardspan();
     bool span_is_acronym(std::string *acronym);
