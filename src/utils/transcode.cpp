@@ -20,9 +20,8 @@
 
 #include <string>
 #include <iostream>
-#ifndef NO_NAMESPACES
+
 using std::string;
-#endif /* NO_NAMESPACES */
 
 #include <errno.h>
 #include <iconv.h>
@@ -165,7 +164,6 @@ error:
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <unistd.h>
 #include <fcntl.h>
 
 #include <string>
@@ -219,16 +217,16 @@ int main(int argc, char **argv)
 	cerr << out << endl;
 	exit(1);
     }
-    int fd = open(ofilename.c_str(), O_CREAT|O_TRUNC|O_WRONLY, 0666);
-    if (fd < 0) {
+    FILE *fp = fopen(ofilename.c_str(), "wb");
+    if (fp == 0) {
 	perror("Open/create output");
 	exit(1);
     }
-    if (write(fd, out.c_str(), out.length()) != (int)out.length()) {
-	perror("write");
+    if (fwrite(out.c_str(), 1, out.length(), fp) != (int)out.length()) {
+	perror("fwrite");
 	exit(1);
     }
-    close(fd);
+    fclose(fp);
     exit(0);
 }
 #endif

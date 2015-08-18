@@ -1,8 +1,32 @@
+/* Copyright (C) 2014 J.F.Dockes
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program; if not, write to the
+ *   Free Software Foundation, Inc.,
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+// Test program for the workqueue module
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <errno.h>
 #include <string.h>
+
+#ifdef _WIN32
+#include <windows.h>
+static inline unsigned int sleep(unsigned int s) {Sleep(s * 1000); return 0;}
+#else
+#include <unistd.h>
+#endif
 
 #include "workqueue.h"
 
@@ -80,9 +104,9 @@ int main(int argc, char **argv)
   if (argc != 0)
     Usage();
 
-  WorkQueue<Task> wq(10);
+  WorkQueue<Task> wq("testwq", 10);
 
-  if (!wq.start(&worker, &wq)) {
+  if (!wq.start(2, &worker, &wq)) {
       fprintf(stderr, "Start failed\n");
       exit(1);
   }

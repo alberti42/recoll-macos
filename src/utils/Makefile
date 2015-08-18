@@ -14,6 +14,18 @@ pxattr:  $(PXATTROBJS)
 trpxattr.o : pxattr.cpp
 	$(CXX) -c $(CXXFLAGS) -DTEST_PXATTR -o $@ pxattr.cpp
 
+PTMUTEXOBJS = ptmutex.o
+ptmutex:  $(PTMUTEXOBJS)
+	$(CXX) -o ptmutex $(PTMUTEXOBJS)  $(LIBRECOLL)
+ptmutex.o : ptmutex.cpp
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
+
+WORKQUEUEOBJS = workqueue.o
+workqueue:  $(WORKQUEUEOBJS)
+	$(CXX) -o workqueue $(WORKQUEUEOBJS)  $(LIBRECOLL) -lpthread
+workqueue.o : workqueue.cpp
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
+
 ECRONTAB_OBJS= trecrontab.o 
 trecrontab : $(ECRONTAB_OBJS)
 	$(CXX) -o trecrontab $(ECRONTAB_OBJS) $(LIBRECOLL)

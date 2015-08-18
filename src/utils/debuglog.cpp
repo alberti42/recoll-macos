@@ -21,7 +21,9 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef _WIN32
 #include <fcntl.h>
+#endif
 
 #ifdef INCLUDE_NEW_H
 #include <new.h>
@@ -41,11 +43,8 @@ using std::string;
 #define freeZ(X) {if (X) {free(X);X=0;}}
 #endif
 
-#ifndef NO_NAMESPACES
 using namespace std;
 namespace DebugLog {
-
-#endif // NO_NAMESPACES
 
 bool DebugLog::isspecialname(const char *logname) 
 {
@@ -193,7 +192,7 @@ static bool fileInFiles(const string& file)
     return false;
 }
 
-#ifdef _WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 static void datestring(char *d, int sz) {
     SYSTEMTIME buf;
@@ -390,16 +389,19 @@ DebugLog *getdbl()
 }
 #endif
 
-#ifndef NO_NAMESPACES
 }
-#endif // NO_NAMESPACES
 
 ////////////////////////////////////////// TEST DRIVER //////////////////
 #else /* TEST_DEBUGLOG */
 
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef _WIN32
+#include <windows.h>
+static inline unsigned int sleep(unsigned int s) {Sleep(s * 1000); return 0;}
+#else
 #include <unistd.h>
+#endif
 #include <string.h>
 
 #include "debuglog.h"

@@ -22,11 +22,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
-#include <unistd.h>
 #include <errno.h>
 #include <time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <string.h>
 #include <math.h>
 
@@ -1084,7 +1081,8 @@ void catstrerror(string *reason, const char *what, int _errno)
     // normally default to the posix version.
     // At worse we get no message at all here.
     errbuf[0] = 0;
-    strerror_r(_errno, errbuf, ERRBUFSZ);
+    // We don't use ret, it's there to silence a cc warning
+    char *ret = (char *)strerror_r(_errno, errbuf, ERRBUFSZ);
     reason->append(errbuf);
 #endif
 }

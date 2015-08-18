@@ -176,7 +176,6 @@ const string& DesktopDb::getReason()
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <errno.h>
 #include <string.h>
 
@@ -212,8 +211,7 @@ int main(int argc, char **argv)
   vector<DesktopDb::AppDef> appdefs;
   DesktopDb *ddb = DesktopDb::getDb();
   if (ddb == 0) {
-      cerr << "Could not initialize desktop db: " << DesktopDb::getReason()
-           << endl;
+      cerr << "Could not create desktop db\n";
       exit(1);
   }
   if (!ddb->appForMime(mime, &appdefs, &reason)) {

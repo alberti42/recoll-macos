@@ -22,18 +22,13 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#ifndef O_STREAMING
-#define O_STREAMING 0
-#endif
 #include <errno.h>
 #include <cstdio>
 #include <cstring>
 
 #include <string>
 
-#ifndef NO_NAMESPACES
 using std::string;
-#endif /* NO_NAMESPACES */
 
 #include "readfile.h"
 #include "smallut.h"
@@ -78,7 +73,7 @@ bool file_scan(const string &fn, FileScanDo* doer, string *reason)
     return file_scan(fn, doer, 0, size_t(-1), reason);
 }
 
-const int RDBUFSZ = 4096;
+const int RDBUFSZ = 8192;
 // Note: the fstat() + reserve() (in init()) calls divide cpu usage almost by 2
 // on both linux i586 and macosx (compared to just append())
 // Also tried a version with mmap, but it's actually slower on the mac and not
@@ -95,7 +90,7 @@ bool file_scan(const string &fn, FileScanDo* doer, off_t startoffs,
 
     // If we have a file name, open it, else use stdin.
     if (!fn.empty()) {
-	fd = open(fn.c_str(), O_RDONLY|O_STREAMING);
+	fd = open(fn.c_str(), O_RDONLY);
 	if (fd < 0 || fstat(fd, &st) < 0) {
 	    catstrerror(reason, "open/stat", errno);
 	    return false;
@@ -170,7 +165,6 @@ bool file_scan(const string &fn, FileScanDo* doer, off_t startoffs,
 #include <stdio.h>
 #include <sys/stat.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <sys/types.h>
 
 #include <string>

@@ -20,9 +20,7 @@
 #include <cstring>
 #include <string>
 
-#ifndef NO_NAMESPACES
 using std::string;
-#endif /* NO_NAMESPACES */
 
 #undef DEBUG_BASE64 
 #ifdef DEBUG_BASE64
@@ -270,7 +268,6 @@ void base64_encode(const string &in, string &out)
 #ifdef TEST_BASE64
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 #include "readfile.h"
 
@@ -358,8 +355,8 @@ int main(int argc, char **argv)
 	    fprintf(stderr, "Decoding failed\n");
 	    exit(1);
 	}
-	::write(1, odata.c_str(), 
-	      odata.size() * sizeof(string::value_type));
+	fwrite(odata.c_str(), 1,
+	       odata.size() * sizeof(string::value_type), stdout);
 	exit(0);
     }
 }

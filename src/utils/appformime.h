@@ -18,6 +18,8 @@
 #define _APPFORMIME_H_INCLUDED_
 
 #include <string>
+#include <map>
+#include <vector>
 
 /**
  * Rather strangely, I could not find a reasonably simple piece of
@@ -71,12 +73,12 @@ public:
      */
     bool appByName(const string& nm, AppDef& app);
 
-    typedef map<string, vector<DesktopDb::AppDef> > AppMap;
+    typedef std::map<std::string, std::vector<DesktopDb::AppDef> > AppMap;
 
 private:
     /** This is used by getDb() and builds a db for the standard location */
     DesktopDb();
-    void build(const string& dir);
+    void build(const std::string& dir);
     DesktopDb(const DesktopDb &);
     DesktopDb& operator=(const DesktopDb &);
 

@@ -15,7 +15,6 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #ifndef TEST_IDFILE
-#include <unistd.h> // for access(2)
 #include <stdlib.h>
 #include <ctype.h>
 #include <cstring>
@@ -26,9 +25,7 @@
 #include "idfile.h"
 #include "debuglog.h"
 
-#ifndef NO_NAMESPACES
 using namespace std;
-#endif /* NO_NAMESPACES */
 
 // Bogus code to avoid bogus valgrind mt warnings about the
 // initialization of treat_mbox_...  which I can't even remember the
@@ -179,7 +176,6 @@ string idFileMem(const string& data)
 #include <string>
 #include <iostream>
 
-#include <unistd.h>
 #include <fcntl.h>
 
 using namespace std;
