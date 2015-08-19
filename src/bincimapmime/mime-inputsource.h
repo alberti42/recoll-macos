@@ -26,12 +26,18 @@
 #ifndef mime_inputsource_h_included
 #define mime_inputsource_h_included
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+// Data source for MIME parser
+
+// Note about large files: we might want to change the unsigned int
+// used for offsets into an off_t for intellectual satisfaction, but
+// in the context of recoll, we could only get into trouble if a
+// *single message* exceeded 2GB, which seems rather unlikely. When
+// parsing a mailbox files, we read each message in memory and use the
+// stream input source (from a memory buffer, no file offsets). When
+// parsing a raw message file, it's only one message.
 
 #include <string.h>
-#include <unistd.h>
+#include "safeunistd.h"
 
 #include <iostream>
 
