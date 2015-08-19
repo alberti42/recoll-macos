@@ -93,17 +93,21 @@ int stopindexing;
 class MyUpdater : public DbIxStatusUpdater {
  public:
     MyUpdater(const RclConfig *config) 
-	: m_prevphase(DbIxStatus::DBIXS_NONE)
-    {
-	m_fd = open(config->getIdxStatusFile().c_str(), 
-		    O_WRONLY|O_CREAT|O_TRUNC, 0600);
-	if (m_fd < 0)
-	    LOGERR(("Can't open/create status file: [%s]\n",
-		    config->getIdxStatusFile().c_str()));
+	: m_fd(-1), m_stfilename(config->getIdxStatusFile()),
+	  m_prevphase(DbIxStatus::DBIXS_NONE) {
     }
 
     virtual bool update() 
     {
+	if (m_fd < 0) {
+	    m_fd = open(m_stfilename.c_str(), 
+			O_WRONLY|O_CREAT|O_TRUNC, 0600);
+	    if (m_fd < 0) {
+		LOGERR(("Can't open/create status file: [%s]\n",
+			m_stfilename.c_str()));
+		return stopindexing ? false : true;
+	    }
+	}
 	// Update the status file. Avoid doing it too often
 	if (status.phase != m_prevphase || m_chron.millis() > 300) {
 	    m_prevphase = status.phase;
@@ -143,6 +147,7 @@ class MyUpdater : public DbIxStatusUpdater {
 
 private:
     int    m_fd;
+    string m_stfilename;
     Chrono m_chron;
     DbIxStatus::Phase m_prevphase;
 };

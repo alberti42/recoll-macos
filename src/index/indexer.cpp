@@ -19,8 +19,7 @@
 #endif
 
 #include <stdio.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include "safesystat.h"
 #include <errno.h>
 
 #include <algorithm>
@@ -59,10 +58,9 @@ bool ConfIndexer::runFirstIndexing()
 {
     // Indexing status file existing and not empty ?
     struct stat st;
-    if (stat(m_config->getIdxStatusFile().c_str(), &st) == 0 && 
+    if (stat(m_config->getIdxStatusFile().c_str(), &st) == 0 &&
 	st.st_size > 0) {
 	LOGDEB0(("ConfIndexer::runFirstIndexing: no: status file not empty\n"));
-	exit(1);
 	return false;
     }
     // And only do this if the user has kept the default topdirs (~). 
