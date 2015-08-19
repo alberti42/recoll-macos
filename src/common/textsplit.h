@@ -52,6 +52,13 @@ public:
 	o_noNumbers = true;
     }
 
+    // Given [co-worker] as input, do we also generate [coworker] ?
+    // Set by rclconfig
+    static bool o_deHyphenate;
+    static void deHyphenate(bool on) {
+	o_deHyphenate = on;
+    }
+
     enum Flags {
         // Default: will return spans and words (a_b, a, b)
         TXTS_NONE = 0, 

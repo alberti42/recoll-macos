@@ -134,6 +134,13 @@ indexstemminglanguages = english
 # are not performed by unac, but I cant imagine someone typing the composed
 # forms in a search.
 unac_except_trans = ßss œoe Œoe æae Æae ﬀff ﬁfi ﬂfl
+# Turn off the indexing of numbers: may reduce the index size if you have
+# no use for them 
+# nonumbers = 0
+
+# Turn off indexing "coworker" for an input of "co-worker" (in addition to
+# co, worker, "co worker". Default is on as of version 1.22
+# dehyphenate = 1
 
 # Maximum expansion count for a single term (ie: when using wildcards).
 # We used to not limit this at all (except for filenames where the limit

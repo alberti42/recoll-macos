@@ -212,6 +212,7 @@ bool TextSplit::isCJK(int c)
 bool          TextSplit::o_processCJK = true;
 unsigned int  TextSplit::o_CJKNgramLen = 2;
 bool          TextSplit::o_noNumbers = false;
+bool          TextSplit::o_deHyphenate = false;
 
 // Final term checkpoint: do some checking (the kind which is simpler
 // to do here than in the main loop), then send term to our client.
@@ -309,7 +310,8 @@ bool TextSplit::words_from_span(int bp)
     // Byte position of the span start
     int spboffs = bp - m_span.size();
 
-    if (spanwords == 2 && m_span[m_words_in_span[0].second] == '-') {
+    if (o_deHyphenate && spanwords == 2 && 
+	m_span[m_words_in_span[0].second] == '-') {
 	unsigned int s0 = m_words_in_span[0].first;
 	unsigned int l0 = m_words_in_span[0].second - m_words_in_span[0].first;
 	unsigned int s1 = m_words_in_span[1].first;

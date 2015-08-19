@@ -5591,6 +5591,15 @@ skippedPaths = ~/somedir/*.txt
             </listitem>
           </varlistentry>
 
+          <varlistentry><term><varname>dehyphenate</varname></term>
+            <listitem><para>Determines if, given an input of
+            <literal>co-worker</literal>, we add a term for
+            <literal>coworker</literal>. This possibility is new in version
+            1.22, and on by default. Setting the variable to off allows
+            restoring the previous behaviour.</para>
+            </listitem>
+          </varlistentry>
+
           <varlistentry><term><varname>nocjk</varname></term>
             <listitem><para>If this set to true, specific east asian
             (Chinese Korean Japanese) characters/word splitting is

@@ -321,8 +321,9 @@ bool RclConfig::updateMainConfig()
     m_mdrstate.init(m_conf);
 
     setKeyDir(cstr_null);
-    bool nocjk = false;
-    if (getConfParam("nocjk", &nocjk) && nocjk == true) {
+
+    bool bvalue = false;
+    if (getConfParam("nocjk", &bvalue) && bvalue == true) {
 	TextSplit::cjkProcessing(false);
     } else {
 	int ngramlen;
@@ -333,14 +334,18 @@ bool RclConfig::updateMainConfig()
 	}
     }
 
-    bool nonum = false;
-    if (getConfParam("nonumbers", &nonum) && nonum == true) {
+    bvalue = false;
+    if (getConfParam("nonumbers", &bvalue) && bvalue == true) {
 	TextSplit::noNumbers();
     }
 
-    bool fnmpathname = true;
-    if (getConfParam("skippedPathsFnmPathname", &fnmpathname)
-	&& fnmpathname == false) {
+    bvalue = false;
+    if (getConfParam("dehyphenate", &bvalue)) {
+	TextSplit::deHyphenate(bvalue);
+    }
+
+    bvalue = true;
+    if (getConfParam("skippedPathsFnmPathname", &bvalue) && bvalue == false) {
 	FsTreeWalker::setNoFnmPathname();
     }
 
