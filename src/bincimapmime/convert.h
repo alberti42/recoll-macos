@@ -23,10 +23,6 @@
  *  Foundation, Inc., 59 Temple Street #330, Boston, MA 02111-1307, USA.
  *  --------------------------------------------------------------------
  */
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #ifndef convert_h_included
 #define convert_h_included
 #include <string>
@@ -35,7 +31,6 @@
 #include <iostream>
 
 #include <stdio.h>
-#include <sys/stat.h>
 #include <cstdlib>
 #include <cstring>
 

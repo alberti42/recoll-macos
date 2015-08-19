@@ -107,7 +107,7 @@ unix {
        @LIBICONV@ $(BDYNAMIC) @LIBQZEITGEIST@ -lz
 
   INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
-              ../utils ../aspell ../rcldb ../qtgui \
+              ../utils ../aspell ../rcldb ../qtgui ../xaposix \
               confgui
   DEPENDPATH += $$INCLUDEPATH
 }

@@ -19,16 +19,38 @@
 #include "autoconfig.h"
 
 #include <stdio.h>
-#include <errno.h>
-#include <sys/stat.h>
-#include <assert.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/uio.h>
-#include <unistd.h>
 #include <stdlib.h>
+#include <errno.h>
+#include "safefcntl.h"
+#include <sys/types.h>
+#include "safesysstat.h"
+#include "safeunistd.h"
+#include <assert.h>
 #include <memory.h>
 #include <zlib.h>
+
+#ifndef _WIN32
+#include <sys/uio.h>
+#else
+struct iovec {
+    void *iov_base;
+    size_t iov_len;
+};
+static ssize_t writev(int fd, const struct iovec *iov, int iovcnt)
+{
+    ssize_t tot = 0;
+    for (int i = 0; i < iovcnt; i++) {
+        ssize_t ret = ::write(fd, iov[i].iov_base, iov[i].iov_len);
+        if (ret > 0)
+            tot += ret;
+        if (ret != (ssize_t)iov[i].iov_len) {
+            return ret == -1 ? -1 : tot;
+        }
+    }
+    return tot;
+}
+#endif
+
 
 #include <sstream>
 #include <iostream>
@@ -189,15 +211,15 @@ public:
         UdiH h(udi);
 
         LOGDEB2(("Circache::khEnter: h %s offs %lu udi [%s]\n", 
-				 h.asHexString().c_str(), (ULONG)ofs, udi.c_str()));
+                 h.asHexString().c_str(), (ULONG)ofs, udi.c_str()));
 
         pair<kh_type::iterator, kh_type::iterator> p = m_ofskh.equal_range(h);
 
         if (p.first != m_ofskh.end() && p.first->first == h) {
             for (kh_type::iterator it = p.first; it != p.second; it++) {
                 LOGDEB2(("Circache::khEnter: col h %s, ofs %lu\n", 
-						 it->first.asHexString().c_str(),
-						 (ULONG)it->second));
+                         it->first.asHexString().c_str(),
+                         (ULONG)it->second));
                 if (it->second == ofs) {
                     // (h,offs) already there. Happens
                     LOGDEB2(("Circache::khEnter: already there\n"));
@@ -228,7 +250,7 @@ public:
         UdiH h(udi);
 
         LOGDEB2(("Circache::khFind: h %s udi [%s]\n", 
-				 h.asHexString().c_str(), udi.c_str()));
+                 h.asHexString().c_str(), udi.c_str()));
 
         pair<kh_type::iterator, kh_type::iterator> p = m_ofskh.equal_range(h);
 
@@ -319,10 +341,10 @@ public:
 
     bool writefirstblock()
     {
-		if (m_fd < 0) {
-			m_reason << "writefirstblock: not open ";
-			return false;
-		}
+        if (m_fd < 0) {
+            m_reason << "writefirstblock: not open ";
+            return false;
+        }
 
         ostringstream s;
         s << 
@@ -348,10 +370,10 @@ public:
 
     bool readfirstblock()
     {
-		if (m_fd < 0) {
-			m_reason << "readfirstblock: not open ";
-			return false;
-		}
+        if (m_fd < 0) {
+            m_reason << "readfirstblock: not open ";
+            return false;
+        }
 
         char bf[CIRCACHE_FIRSTBLOCK_SIZE];
 
@@ -394,14 +416,14 @@ public:
 
     bool writeEntryHeader(off_t offset, const EntryHeaderData& d)
     {
-		if (m_fd < 0) {
-			m_reason << "writeEntryHeader: not open ";
-			return false;
-		}
+        if (m_fd < 0) {
+            m_reason << "writeEntryHeader: not open ";
+            return false;
+        }
         char bf[CIRCACHE_HEADER_SIZE];
         memset(bf, 0, CIRCACHE_HEADER_SIZE);
         snprintf(bf, CIRCACHE_HEADER_SIZE, 
-				 headerformat, d.dicsize, d.datasize, d.padsize, d.flags);
+                 headerformat, d.dicsize, d.datasize, d.padsize, d.flags);
         if (lseek(m_fd, offset, 0) != offset) {
             m_reason << "CirCache::weh: lseek(" << offset << 
                 ") failed: errno " << errno;
@@ -416,10 +438,10 @@ public:
 
     CCScanHook::status readEntryHeader(off_t offset, EntryHeaderData& d)
     {
-		if (m_fd < 0) {
-			m_reason << "readEntryHeader: not open ";
+        if (m_fd < 0) {
+            m_reason << "readEntryHeader: not open ";
             return CCScanHook::Error;
-		}
+        }
 
         if (lseek(m_fd, offset, 0) != offset) {
             m_reason << "readEntryHeader: lseek(" << offset << 
@@ -452,10 +474,10 @@ public:
     CCScanHook::status scan(off_t startoffset, CCScanHook *user, 
                             bool fold = false)
     {
-		if (m_fd < 0) {
-			m_reason << "scan: not open ";
+        if (m_fd < 0) {
+            m_reason << "scan: not open ";
             return CCScanHook::Error;
-		}
+        }
 
         off_t so0 = startoffset;
         bool already_folded = false;
@@ -623,16 +645,16 @@ public:
     off_t headoffs;
     off_t padsize;
     CCScanHookRecord()
-		: headoffs(0), padsize(0)
+        : headoffs(0), padsize(0)
     {
     }
     virtual status takeone(off_t offs, const string& udi, 
-						   const EntryHeaderData& d)
+                           const EntryHeaderData& d)
     {
-		headoffs = offs;
-		padsize = d.padsize;
-		LOGDEB2(("CCScanHookRecord::takeone: offs %lld padsize %lld\n", 
-				 headoffs, padsize));
+        headoffs = offs;
+        padsize = d.padsize;
+        LOGDEB2(("CCScanHookRecord::takeone: offs %lld padsize %lld\n", 
+                 headoffs, padsize));
         return Continue;
     }
 };
@@ -645,62 +667,62 @@ string CirCache::getpath()
 bool CirCache::create(off_t maxsize, int flags)
 {
     LOGDEB(("CirCache::create: [%s] maxsz %lld flags 0x%x\n", 
-			m_dir.c_str(), maxsize, flags));
+            m_dir.c_str(), maxsize, flags));
     if (m_d == 0) {
-		LOGERR(("CirCache::create: null data\n"));
-		return false;
+        LOGERR(("CirCache::create: null data\n"));
+        return false;
     }
 
     struct stat st;
     if (stat(m_dir.c_str(), &st) < 0) {
-		// Directory does not exist, create it
-		if (mkdir(m_dir.c_str(), 0777) < 0) {
-			m_d->m_reason << "CirCache::create: mkdir(" << m_dir << 
-				") failed" << " errno " << errno;
-			return false;
-		}
+        // Directory does not exist, create it
+        if (mkdir(m_dir.c_str(), 0777) < 0) {
+            m_d->m_reason << "CirCache::create: mkdir(" << m_dir << 
+                ") failed" << " errno " << errno;
+            return false;
+        }
     } else {
-		// If the file exists too, and truncate is not set, switch
-		// to open-mode. Still may need to update header params.
-		if (access(m_d->datafn(m_dir).c_str(), 0) >= 0 &&
-			!(flags & CC_CRTRUNCATE)) {
-			if (!open(CC_OPWRITE)) {
-				return false;
-			}
-			if (maxsize == m_d->m_maxsize &&
-				((flags & CC_CRUNIQUE) != 0) == m_d->m_uniquentries) {
-				LOGDEB(("Header unchanged, no rewrite\n"));
-				return true;
-			}
-			// If the new maxsize is bigger than current size, we need
-			// to stop recycling if this is what we are doing.
-			if (maxsize > m_d->m_maxsize && maxsize > st.st_size) {
-				// Scan the file to find the last physical record. The
-				// ohead is set at physical eof, and nhead is the last
-				// scanned record
-				CCScanHookRecord rec;
-				m_d->scan(CIRCACHE_FIRSTBLOCK_SIZE, &rec, false);
-				m_d->m_oheadoffs = lseek(m_d->m_fd, 0, SEEK_END);
-				m_d->m_nheadoffs = rec.headoffs;
-				m_d->m_npadsize = rec.padsize;
-			}
-			m_d->m_maxsize = maxsize;
-			m_d->m_uniquentries = ((flags & CC_CRUNIQUE) != 0);
-			LOGDEB(("CirCache::create: rewriting header with "
-					"maxsize %lld oheadoffs %lld nheadoffs %lld "
-					"npadsize %d unient %d\n",
-					m_d->m_maxsize, m_d->m_oheadoffs, m_d->m_nheadoffs,
-					m_d->m_npadsize, int(m_d->m_uniquentries)));
-			return m_d->writefirstblock();
-		}
-		// Else fallthrough to create file
+        // If the file exists too, and truncate is not set, switch
+        // to open-mode. Still may need to update header params.
+        if (access(m_d->datafn(m_dir).c_str(), 0) >= 0 &&
+            !(flags & CC_CRTRUNCATE)) {
+            if (!open(CC_OPWRITE)) {
+                return false;
+            }
+            if (maxsize == m_d->m_maxsize &&
+                ((flags & CC_CRUNIQUE) != 0) == m_d->m_uniquentries) {
+                LOGDEB(("Header unchanged, no rewrite\n"));
+                return true;
+            }
+            // If the new maxsize is bigger than current size, we need
+            // to stop recycling if this is what we are doing.
+            if (maxsize > m_d->m_maxsize && maxsize > st.st_size) {
+                // Scan the file to find the last physical record. The
+                // ohead is set at physical eof, and nhead is the last
+                // scanned record
+                CCScanHookRecord rec;
+                m_d->scan(CIRCACHE_FIRSTBLOCK_SIZE, &rec, false);
+                m_d->m_oheadoffs = lseek(m_d->m_fd, 0, SEEK_END);
+                m_d->m_nheadoffs = rec.headoffs;
+                m_d->m_npadsize = rec.padsize;
+            }
+            m_d->m_maxsize = maxsize;
+            m_d->m_uniquentries = ((flags & CC_CRUNIQUE) != 0);
+            LOGDEB(("CirCache::create: rewriting header with "
+                    "maxsize %lld oheadoffs %lld nheadoffs %lld "
+                    "npadsize %d unient %d\n",
+                    m_d->m_maxsize, m_d->m_oheadoffs, m_d->m_nheadoffs,
+                    m_d->m_npadsize, int(m_d->m_uniquentries)));
+            return m_d->writefirstblock();
+        }
+        // Else fallthrough to create file
     }
 
     if ((m_d->m_fd = ::open(m_d->datafn(m_dir).c_str(), 
-							O_CREAT | O_RDWR | O_TRUNC, 0666)) < 0) {
+                            O_CREAT | O_RDWR | O_TRUNC, 0666)) < 0) {
         m_d->m_reason << "CirCache::create: open/creat(" << 
             m_d->datafn(m_dir) << ") failed " << "errno " << errno;
-		return false;
+        return false;
     }
 
     m_d->m_maxsize = maxsize;
@@ -721,15 +743,15 @@ bool CirCache::create(off_t maxsize, int flags)
 bool CirCache::open(OpMode mode)
 {
     if (m_d == 0) {
-		LOGERR(("CirCache::open: null data\n"));
-		return false;
+        LOGERR(("CirCache::open: null data\n"));
+        return false;
     }
 
     if (m_d->m_fd >= 0)
         ::close(m_d->m_fd);
 
     if ((m_d->m_fd = ::open(m_d->datafn(m_dir).c_str(), 
-							mode == CC_OPREAD ? O_RDONLY : O_RDWR)) < 0) {
+                            mode == CC_OPREAD ? O_RDONLY : O_RDWR)) < 0) {
         m_d->m_reason << "CirCache::open: open(" << m_d->datafn(m_dir) << 
             ") failed " << "errno " << errno;
         return false;
@@ -938,13 +960,13 @@ public:
     UINT sizeseen;
     vector<pair<string, off_t> > squashed_udis;
     CCScanHookSpacer(int sz)
-		: sizewanted(sz), sizeseen(0) {assert(sz > 0);}
+        : sizewanted(sz), sizeseen(0) {assert(sz > 0);}
 
     virtual status takeone(off_t offs, const string& udi, 
                            const EntryHeaderData& d)
     {
         LOGDEB2(("Circache:ScanSpacer:off %u dcsz %u dtsz %u pdsz %u udi[%s]\n",
-				 (UINT)offs, d.dicsize, d.datasize, d.padsize, udi.c_str()));
+                 (UINT)offs, d.dicsize, d.datasize, d.padsize, udi.c_str()));
         sizeseen += CIRCACHE_HEADER_SIZE + d.dicsize + d.datasize + d.padsize;
         squashed_udis.push_back(make_pair(udi, offs));
         if (sizeseen >= sizewanted)
@@ -1030,10 +1052,10 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
         if (m_d->readEntryHeader(m_d->m_nheadoffs, pd) != CCScanHook::Continue){
             return false;
         }
-		if (int(pd.padsize) != m_d->m_npadsize) {
-			m_d->m_reason << "CirCache::put: logic error: bad padsize ";
-			return false;
-		}
+        if (int(pd.padsize) != m_d->m_npadsize) {
+            m_d->m_reason << "CirCache::put: logic error: bad padsize ";
+            return false;
+        }
         if (pd.dicsize == 0) {
             // erased entry. Also recover the header space, no need to rewrite
             // the header, we're going to write on it.
@@ -1093,7 +1115,7 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
     char head[CIRCACHE_HEADER_SIZE];
     memset(head, 0, CIRCACHE_HEADER_SIZE);
     snprintf(head, CIRCACHE_HEADER_SIZE, 
-			 headerformat, dic.size(), datalen, npadsize, flags);
+             headerformat, dic.size(), datalen, npadsize, flags);
     struct iovec vecs[3];
     vecs[0].iov_base = head;
     vecs[0].iov_len = CIRCACHE_HEADER_SIZE;
@@ -1133,19 +1155,19 @@ bool CirCache::rewind(bool& eof)
 
     eof = false;
 
-	off_t fsize = lseek(m_d->m_fd, 0, SEEK_END);
-	if (fsize == (off_t)-1) {
-		LOGERR(("CirCache::rewind: seek to EOF failed\n"));
-		return false;
-	}
+    off_t fsize = lseek(m_d->m_fd, 0, SEEK_END);
+    if (fsize == (off_t)-1) {
+        LOGERR(("CirCache::rewind: seek to EOF failed\n"));
+        return false;
+    }
     // Read oldest header. This is either at the position pointed to
     // by oheadoffs, or after the first block if the file is still
     // growing.
-	if (m_d->m_oheadoffs == fsize) {
-		m_d->m_itoffs = CIRCACHE_FIRSTBLOCK_SIZE;
-	} else {
-		m_d->m_itoffs = m_d->m_oheadoffs;
-	}
+    if (m_d->m_oheadoffs == fsize) {
+        m_d->m_itoffs = CIRCACHE_FIRSTBLOCK_SIZE;
+    } else {
+        m_d->m_itoffs = m_d->m_oheadoffs;
+    }
     CCScanHook::status st = m_d->readEntryHeader(m_d->m_itoffs, m_d->m_ithd);
 
     switch(st) {
@@ -1222,11 +1244,11 @@ bool CirCache::getCurrent(string& udi, string& dic, string& data)
 }
 
 static void *allocmem(
-    void *cp,	/* The array to grow. may be NULL */
-    int	 sz,	/* Unit size in bytes */
+    void *cp,   /* The array to grow. may be NULL */
+    int  sz,    /* Unit size in bytes */
     int  *np,    /* Pointer to current allocation number */
-    int	 min,   /* Number to allocate the first time */
-    int	 maxinc) /* Maximum increment */
+    int  min,   /* Number to allocate the first time */
+    int  maxinc) /* Maximum increment */
 {
     if (cp == 0) {
         cp = malloc(min * sz);
@@ -1274,7 +1296,7 @@ static bool inflateToDynBuf(void* inp, UINT inlen, void **outpp, UINT *outlenp)
                  d_stream.avail_out, d_stream.total_out));
         if (d_stream.avail_out == 0) {
             if ((outp = (char*)allocmem(outp, inlen, &alloc, 
-										imul, mxinc)) == 0) {
+                                        imul, mxinc)) == 0) {
                 LOGERR(("Inflate: out of memory, current alloc %d\n", 
                         alloc*inlen));
                 inflateEnd(&d_stream);
@@ -1310,11 +1332,11 @@ static bool inflateToDynBuf(void* inp, UINT inlen, void **outpp, UINT *outlenp)
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <errno.h>
 #include <string.h>
-#include <sys/stat.h>
 #include <sys/types.h>
+#include "safesysstat.h"
+#include "safeunistd.h"
 
 #include <string>
 #include <iostream>
@@ -1359,16 +1381,16 @@ bool resizecc(const string& dir, int newmbs)
                      CirCache::CC_CRUNIQUE | CirCache::CC_CRTRUNCATE)) {
         cerr << "Cant create new file in " << tmpdir << " : " << 
             ncc->getReason() << endl;
-		return false;
+        return false;
     }
 
     bool eof = false;
-	if (!occ->rewind(eof)) {
-		if (!eof) {
-			cerr << "Initial rewind failed" << endl;
-			return false;
-		}
-	}
+    if (!occ->rewind(eof)) {
+        if (!eof) {
+            cerr << "Initial rewind failed" << endl;
+            return false;
+        }
+    }
     int nentries = 0;
     while (!eof) {
         string udi, sdic, data;
@@ -1420,14 +1442,14 @@ bool resizecc(const string& dir, int newmbs)
 static char *thisprog;
 
 static char usage [] = 
-" -c [-u] <dirname> : create\n"
-" -p <dirname> <apath> [apath ...] : put files\n"
-" -d <dirname> : dump\n"
-" -g [-i instance] [-D] <dirname> <udi>: get\n"
-"   -D: also dump data\n"
-" -e <dirname> <udi> : erase\n"
-" -s <dirname> <newmbs> : resize\n"
-;
+                                                                 " -c [-u] <dirname> : create\n"
+                                                                 " -p <dirname> <apath> [apath ...] : put files\n"
+                                                                 " -d <dirname> : dump\n"
+                                                                 " -g [-i instance] [-D] <dirname> <udi>: get\n"
+                                                                 "   -D: also dump data\n"
+                                                                 " -e <dirname> <udi> : erase\n"
+                                                                 " -s <dirname> <newmbs> : resize\n"
+                                                                 ;
 static void
 Usage(FILE *fp = stderr)
 {
@@ -1437,7 +1459,7 @@ Usage(FILE *fp = stderr)
 
 static int     op_flags;
 #define OPT_MOINS 0x1
-#define OPT_c	  0x2 
+#define OPT_c     0x2 
 #define OPT_p     0x8
 #define OPT_g     0x10
 #define OPT_d     0x20
@@ -1455,27 +1477,27 @@ int main(int argc, char **argv)
     argc--; argv++;
 
     while (argc > 0 && **argv == '-') {
-		(*argv)++;
-		if (!(**argv))
-			/* Cas du "adb - core" */
-			Usage();
-		while (**argv)
-			switch (*(*argv)++) {
-			case 'c':	op_flags |= OPT_c; break;
-			case 'D':	op_flags |= OPT_D; break;
-			case 'd':	op_flags |= OPT_d; break;
-			case 'e':	op_flags |= OPT_e; break;
-			case 'g':	op_flags |= OPT_g; break;
-			case 'i':	op_flags |= OPT_i; if (argc < 2)  Usage();
-				if ((sscanf(*(++argv), "%d", &instance)) != 1) 
-					Usage(); 
-				argc--; 
-				goto b1;
-			case 'p':	op_flags |= OPT_p; break;
-			case 's':	op_flags |= OPT_s; break;
-			case 'u':	op_flags |= OPT_u; break;
-			default: Usage();	break;
-			}
+        (*argv)++;
+        if (!(**argv))
+            /* Cas du "adb - core" */
+            Usage();
+        while (**argv)
+            switch (*(*argv)++) {
+            case 'c':   op_flags |= OPT_c; break;
+            case 'D':   op_flags |= OPT_D; break;
+            case 'd':   op_flags |= OPT_d; break;
+            case 'e':   op_flags |= OPT_e; break;
+            case 'g':   op_flags |= OPT_g; break;
+            case 'i':   op_flags |= OPT_i; if (argc < 2)  Usage();
+                if ((sscanf(*(++argv), "%d", &instance)) != 1) 
+                    Usage(); 
+                argc--; 
+                goto b1;
+            case 'p':   op_flags |= OPT_p; break;
+            case 's':   op_flags |= OPT_s; break;
+            case 'u':   op_flags |= OPT_u; break;
+            default: Usage();   break;
+            }
     b1: argc--; argv++;
     }
 
@@ -1483,19 +1505,19 @@ int main(int argc, char **argv)
     DebugLog::setfilename("stderr");
 
     if (argc < 1)
-		Usage();
+        Usage();
     string dir = *argv++;argc--;
 
     CirCache cc(dir);
 
     if (op_flags & OPT_c) {
-		int flags = 0;
-		if (op_flags & OPT_u)
-			flags |= CirCache::CC_CRUNIQUE;
-		if (!cc.create(100*1024, flags)) {
-			cerr << "Create failed:" << cc.getReason() << endl;
-			exit(1);
-		}
+        int flags = 0;
+        if (op_flags & OPT_u)
+            flags |= CirCache::CC_CRUNIQUE;
+        if (!cc.create(100*1024, flags)) {
+            cerr << "Create failed:" << cc.getReason() << endl;
+            exit(1);
+        }
     } else if (op_flags & OPT_s) {
         if (argc != 1) {
             Usage();
@@ -1505,72 +1527,72 @@ int main(int argc, char **argv)
             exit(1);
         }
     } else if (op_flags & OPT_p) {
-		if (argc < 1)
-			Usage();
-		if (!cc.open(CirCache::CC_OPWRITE)) {
-			cerr << "Open failed: " << cc.getReason() << endl;
-			exit(1);
-		}
-		while (argc) {
-			string fn = *argv++;argc--;
-			char dic[1000];
-			string data, reason;
-			if (!file_to_string(fn, data, &reason)) {
-				cerr << "File_to_string: " << reason << endl;
-				exit(1);
-			}
-			string udi;
-			make_udi(fn, "", udi);
-			sprintf(dic, "#whatever...\nmimetype = text/plain\nudi=%s\n", 
-					udi.c_str());
-			string sdic;
-			sdic.assign(dic, strlen(dic));
-			ConfSimple conf(sdic);
+        if (argc < 1)
+            Usage();
+        if (!cc.open(CirCache::CC_OPWRITE)) {
+            cerr << "Open failed: " << cc.getReason() << endl;
+            exit(1);
+        }
+        while (argc) {
+            string fn = *argv++;argc--;
+            char dic[1000];
+            string data, reason;
+            if (!file_to_string(fn, data, &reason)) {
+                cerr << "File_to_string: " << reason << endl;
+                exit(1);
+            }
+            string udi;
+            make_udi(fn, "", udi);
+            sprintf(dic, "#whatever...\nmimetype = text/plain\nudi=%s\n", 
+                    udi.c_str());
+            string sdic;
+            sdic.assign(dic, strlen(dic));
+            ConfSimple conf(sdic);
    
-			if (!cc.put(udi, &conf, data, 0)) {
-				cerr << "Put failed: " << cc.getReason() << endl;
-				cerr << "conf: ["; conf.write(cerr); cerr << "]" << endl;
-				exit(1);
-			}
-		}
-		cc.open(CirCache::CC_OPREAD);
+            if (!cc.put(udi, &conf, data, 0)) {
+                cerr << "Put failed: " << cc.getReason() << endl;
+                cerr << "conf: ["; conf.write(cerr); cerr << "]" << endl;
+                exit(1);
+            }
+        }
+        cc.open(CirCache::CC_OPREAD);
     } else if (op_flags & OPT_g) {
-		if (!cc.open(CirCache::CC_OPREAD)) {
-			cerr << "Open failed: " << cc.getReason() << endl;
-			exit(1);
-		}
-		while (argc) {
-			string udi = *argv++;argc--;
-			string dic, data;
-			if (!cc.get(udi, dic, data, instance)) {
-				cerr << "Get failed: " << cc.getReason() << endl;
-				exit(1);
-			}
-			cout << "Dict: [" << dic << "]" << endl;
-			if (op_flags & OPT_D)
-				cout << "Data: [" << data << "]" << endl;
-		}
+        if (!cc.open(CirCache::CC_OPREAD)) {
+            cerr << "Open failed: " << cc.getReason() << endl;
+            exit(1);
+        }
+        while (argc) {
+            string udi = *argv++;argc--;
+            string dic, data;
+            if (!cc.get(udi, dic, data, instance)) {
+                cerr << "Get failed: " << cc.getReason() << endl;
+                exit(1);
+            }
+            cout << "Dict: [" << dic << "]" << endl;
+            if (op_flags & OPT_D)
+                cout << "Data: [" << data << "]" << endl;
+        }
     } else if (op_flags & OPT_e) {
-		if (!cc.open(CirCache::CC_OPWRITE)) {
-			cerr << "Open failed: " << cc.getReason() << endl;
-			exit(1);
-		}
-		while (argc) {
-			string udi = *argv++;argc--;
-			string dic, data;
-			if (!cc.erase(udi)) {
-				cerr << "Erase failed: " << cc.getReason() << endl;
-				exit(1);
-			}
-		}
+        if (!cc.open(CirCache::CC_OPWRITE)) {
+            cerr << "Open failed: " << cc.getReason() << endl;
+            exit(1);
+        }
+        while (argc) {
+            string udi = *argv++;argc--;
+            string dic, data;
+            if (!cc.erase(udi)) {
+                cerr << "Erase failed: " << cc.getReason() << endl;
+                exit(1);
+            }
+        }
     } else if (op_flags & OPT_d) {
-		if (!cc.open(CirCache::CC_OPREAD)) {
-			cerr << "Open failed: " << cc.getReason() << endl;
-			exit(1);
-		}
-		cc.dump();
+        if (!cc.open(CirCache::CC_OPREAD)) {
+            cerr << "Open failed: " << cc.getReason() << endl;
+            exit(1);
+        }
+        cc.dump();
     } else
-		Usage();
+        Usage();
 
     exit(0);
 }

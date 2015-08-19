@@ -28,7 +28,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/file.h>
-#include <sys/stat.h>
+#include "safesysstat.h"
 #include <glob.h>
 
 // Let's include all files where statfs can be defined and hope for no
@@ -423,6 +423,14 @@ bool path_isdir(const string& path)
     if (S_ISDIR(st.st_mode))
 	return true;
     return false;
+}
+
+long long path_filesize(const string& path)
+{
+    struct stat st;
+    if (stat(path.c_str(), &st) < 0) 
+	return -1;
+    return (long long)st.st_size;
 }
 
 // Allowed punctuation in the path part of an URI according to RFC2396

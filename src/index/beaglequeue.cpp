@@ -16,10 +16,9 @@
  */
 #include "autoconfig.h"
 
-#include <unistd.h>
-#include <sys/types.h>
 #include <string.h>
 #include <errno.h>
+#include "safesysstat.h"
 
 #include "cstr.h"
 #include "pathut.h"
@@ -42,9 +41,6 @@
 #include <fstream>
 
 using namespace std;
-
-#include <sys/stat.h>
-
 
 // Beagle creates a file named .xxx (where xxx is the name for the main file
 // in the queue), to hold external metadata (http or created by Beagle).

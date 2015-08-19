@@ -21,7 +21,8 @@ COMMONCPPFLAGS = -I. \
     -I$(top_srcdir)/internfile \
     -I$(top_srcdir)/rcldb \
     -I$(top_srcdir)/unac \
-    -I$(top_srcdir)/utils 
+    -I$(top_srcdir)/utils \
+    -I$(top_srcdir)/xaposix
 
 AM_CPPFLAGS = -Wall -Wno-unused \
     $(COMMONCPPFLAGS) \
@@ -50,10 +51,6 @@ aspell/rclaspell.h \
 bincimapmime/config.h \
 bincimapmime/convert.cc \
 bincimapmime/convert.h \
-bincimapmime/iodevice.cc \
-bincimapmime/iodevice.h \
-bincimapmime/iofactory.cc \
-bincimapmime/iofactory.h \
 bincimapmime/mime-inputsource.h \
 bincimapmime/mime-parsefull.cc \
 bincimapmime/mime-parseonlyheader.cc \

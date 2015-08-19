@@ -20,10 +20,9 @@
 
 #ifndef TEST_CONFTREE
 
-#include <unistd.h> // for access(2)
 #include <ctype.h>
 #include <fnmatch.h>
-#include <sys/stat.h>
+#include "safesysstat.h"
 
 #include <fstream>
 #include <sstream>

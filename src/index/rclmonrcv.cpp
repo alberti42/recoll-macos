@@ -16,11 +16,12 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#include <unistd.h>
-#include <sys/stat.h>
+#include "autoconfig.h"
+
 #include <errno.h>
 #include <cstdio>
 #include <cstring>
+#include "safesysstat.h"
 
 #include "debuglog.h"
 #include "rclmon.h"
@@ -298,7 +299,6 @@ bool eraseWatchSubTree(map<int, string>& idtopath, const string& top)
 #include <fam.h>
 #include <sys/select.h>
 #include <setjmp.h>
-#include <unistd.h>
 #include <signal.h>
 
 /** FAM based monitor class. We have to keep a record of FAM watch

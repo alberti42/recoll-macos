@@ -17,14 +17,11 @@
 #ifndef TEST_READFILE
 #include "autoconfig.h"
 
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
 #include <errno.h>
-#include <cstdio>
-#include <cstring>
+#include "safefcntl.h"
+#include <sys/types.h>
+#include "safesysstat.h"
+#include "safeunistd.h"
 
 #include <string>
 
@@ -163,9 +160,9 @@ bool file_scan(const string &fn, FileScanDo* doer, off_t startoffs,
 #include "autoconfig.h"
 
 #include <stdio.h>
-#include <sys/stat.h>
-#include <stdlib.h>
 #include <sys/types.h>
+#include "safesysstat.h"
+#include <stdlib.h>
 
 #include <string>
 #include <iostream>

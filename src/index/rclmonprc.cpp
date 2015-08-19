@@ -25,10 +25,7 @@
  */
 
 #include <pthread.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <errno.h>
-#include <signal.h>
 #include <fnmatch.h>
 
 #include <cstring>

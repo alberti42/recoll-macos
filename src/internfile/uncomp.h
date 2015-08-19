@@ -43,8 +43,8 @@ public:
 
 private:
     TempDir *m_dir;
-    string   m_tfile;
-    string   m_srcpath;
+    std::string   m_tfile;
+    std::string   m_srcpath;
     bool m_docache;
 
     class UncompCache {
@@ -59,8 +59,8 @@ private:
 	}
 	PTMutexInit m_lock;
 	TempDir *m_dir;
-	string   m_tfile;
-	string   m_srcpath;
+	std::string   m_tfile;
+	std::string   m_srcpath;
     };
     static UncompCache o_cache;
 };

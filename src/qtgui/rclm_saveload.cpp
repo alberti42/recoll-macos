@@ -18,9 +18,7 @@
 
 /** Saving and restoring named queries */
 
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
+#include "safesysstat.h"
 
 #include <QSettings>
 #include <QMessageBox>

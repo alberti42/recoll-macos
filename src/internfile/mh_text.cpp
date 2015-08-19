@@ -17,15 +17,11 @@
 #include "autoconfig.h"
 
 #include <stdio.h>
-#include <unistd.h>
-#include <sys/stat.h>
 #include <errno.h>
 
 #include <iostream>
 #include <string>
-#ifndef NO_NAMESPACES
 using namespace std;
-#endif /* NO_NAMESPACES */
 
 #include "cstr.h"
 #include "mh_text.h"
@@ -34,6 +30,7 @@ using namespace std;
 #include "md5ut.h"
 #include "rclconfig.h"
 #include "pxattr.h"
+#include "pathut.h"
 
 const int MB = 1024*1024;
 const int KB = 1024;
@@ -47,8 +44,8 @@ bool MimeHandlerText::set_document_file(const string& mt, const string &fn)
     m_fn = fn;
 
     // file size for oversize check
-    struct stat st;
-    if (stat(m_fn.c_str(), &st) < 0) {
+    long long fsize = path_filesize(m_fn);
+    if (fsize < 0) {
         LOGERR(("MimeHandlerText::set_document_file: stat(%s) errno %d\n",
                 m_fn.c_str(), errno));
         return false;
@@ -62,7 +59,7 @@ bool MimeHandlerText::set_document_file(const string& mt, const string &fn)
     int maxmbs = 20;
     m_config->getConfParam("textfilemaxmbs", &maxmbs);
 
-    if (maxmbs == -1 || st.st_size / MB <= maxmbs) {
+    if (maxmbs == -1 || fsize / MB <= maxmbs) {
         // Text file page size: if set, we split text files into
         // multiple documents
         int ps = 1000;

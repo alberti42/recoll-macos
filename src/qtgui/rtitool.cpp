@@ -17,12 +17,9 @@
 #include "autoconfig.h"
 
 #include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <signal.h>
-#include <sys/stat.h>
+#include "safesysstat.h"
+
 #include <string>
-using std::string;
 
 #include <QCheckBox>
 #include <QMessageBox>
@@ -34,6 +31,8 @@ using std::string;
 #include "copyfile.h"
 #include "readfile.h"
 #include "execmd.h"
+
+using std::string;
 
 static const char *rautostartfile = ".config/autostart/recollindex.desktop";
 

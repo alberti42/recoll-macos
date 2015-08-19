@@ -4,7 +4,7 @@ include ../utils/utmkdefs.mk
 PROGS = pxattr trclosefrom trecrontab \
       trnetcon trcopyfile trcircache trmd5 trreadfile trfileudi \
       trconftree wipedir smallut  trfstreewalk trpathut transcode trbase64 \
-      trmimeparse trexecmd utf8iter idfile
+      trmimeparse trexecmd utf8iter idfile ptmutex workqueue trappformime
 
 all: $(PROGS)
 

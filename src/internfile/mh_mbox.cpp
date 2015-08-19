@@ -18,13 +18,11 @@
 #include "autoconfig.h"
 
 #include <stdio.h>
-#include <fcntl.h>
 #include <errno.h>
-#include <unistd.h>
+#include <sys/types.h>
+#include "safesysstat.h"
 #include <time.h>
 #include <regex.h>
-#include <sys/stat.h>
-#include <errno.h>
 
 #include <cstring>
 #include <map>
@@ -272,9 +270,15 @@ bool MimeHandlerMbox::set_document_file(const string& mt, const string &fn)
         // perror("fcntl");
     }
 #endif
-    fseek((FILE *)m_vfp, 0, SEEK_END);
-    m_fsize = ftell((FILE*)m_vfp);
-    fseek((FILE*)m_vfp, 0, SEEK_SET);
+    // Used to use ftell() here: no good beyond 2GB
+    {struct stat st;
+	if (fstat(fileno((FILE*)m_vfp), &st) < 0) {
+	    LOGERR(("MimeHandlerMbox:setdocfile: fstat(%s) failed errno %d\n",
+		    fn.c_str(), errno));
+	    return false;
+	}
+	m_fsize = st.st_size;
+    }
     m_havedoc = true;
     m_offsets.clear();
     m_quirks = 0;

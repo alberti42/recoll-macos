@@ -18,20 +18,20 @@
 #include "autoconfig.h"
 
 #include <errno.h>
-#include <sys/stat.h>
 
 #include <string>
 #include <vector>
 #include <map>
-using std::map;
-using std::string;
-using std::vector;
 
 #include "uncomp.h"
 #include "debuglog.h"
 #include "smallut.h"
 #include "execmd.h"
 #include "pathut.h"
+
+using std::map;
+using std::string;
+using std::vector;
 
 Uncomp::UncompCache Uncomp::o_cache;
 
@@ -70,8 +70,8 @@ bool Uncomp::uncompressfile(const string& ifn,
                 m_dir->dirname()));
         // Hope for the best
     } else {
-        struct stat stb;
-        if (stat(ifn.c_str(), &stb) < 0) {
+	long long fsize = path_filesize(ifn);
+        if (fsize < 0) {
             LOGERR(("uncompressfile: stat input file %s errno %d\n", 
                     ifn.c_str(), errno));
             return false;
@@ -82,7 +82,7 @@ bool Uncomp::uncompressfile(const string& ifn,
         // have enough space before trying. We take a little margin
 
         // use same Mb def as fsocc()
-        long long filembs = stb.st_size / (1024 * 1024); 
+        long long filembs = fsize / (1024 * 1024); 
         
         if (availmbs < 2 * filembs + 1) {
             LOGERR(("uncompressfile. %lld MBs available in %s not enough "

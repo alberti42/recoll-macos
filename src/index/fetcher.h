@@ -17,7 +17,7 @@
 #ifndef _FETCHER_H_INCLUDED_
 #define _FETCHER_H_INCLUDED_
 
-#include <sys/stat.h>
+#include "safesysstat.h"
 #include <string>
 
 #include "rcldoc.h"

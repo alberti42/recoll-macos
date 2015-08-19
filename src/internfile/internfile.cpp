@@ -19,11 +19,11 @@
 #include "autoconfig.h"
 
 #include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <errno.h>
+#include "safefcntl.h"
+#include <sys/types.h>
+#include "safesysstat.h"
+#include "safeunistd.h"
 
 #include <string>
 #include <iostream>
@@ -1117,7 +1117,7 @@ bool FileInterner::maybeUncompressToTemp(TempFile& temp, const string& fn,
 #include <stdlib.h>
 #include <iostream>
 #include <string>
-#include <sys/stat.h>
+#include "safesysstat.h"
 
 using namespace std;
 

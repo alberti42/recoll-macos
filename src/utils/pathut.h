@@ -72,6 +72,9 @@ extern std::string url_gpath(const std::string& url);
 /// Stat parameter and check if it's a directory
 extern bool path_isdir(const std::string& path);
 
+/// Retrieve file size
+extern long long path_filesize(const std::string& path);
+
 /// Dump directory
 extern bool readdir(const std::string& dir, std::string& reason, 
 		    std::set<std::string>& entries);

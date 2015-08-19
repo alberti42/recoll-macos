@@ -17,29 +17,22 @@
 #ifndef TEST_RCLCONFIG
 #include "autoconfig.h"
 
-#include <unistd.h>
-#include <fcntl.h>
 #include <stdio.h>
 #include <errno.h>
 #include <langinfo.h>
 #include <limits.h>
+#include "safesysstat.h"
 #include <sys/param.h>
-
-#include <algorithm>
-#include <list>
-using std::list;
-
-#include <sys/types.h>
-#include <sys/stat.h>
 #ifdef __FreeBSD__
 #include <osreldate.h>
 #endif
 
+#include <algorithm>
+#include <list>
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
 #include <cstring>
-using namespace std;
 
 #include "cstr.h"
 #include "pathut.h"
@@ -51,6 +44,8 @@ using namespace std;
 #include "readfile.h"
 #include "fstreewalk.h"
 #include "cpuconf.h"
+
+using namespace std;
 
 typedef pair<int,int> RclPII;
 

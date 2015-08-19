@@ -16,11 +16,11 @@
  */
 #ifndef TEST_COPYFILE
 #include <stdio.h>
-#include <fcntl.h>
 #include <errno.h>
-#include <unistd.h>
+#include "safefcntl.h"
 #include <sys/types.h>
-#include <sys/stat.h>
+#include "safesysstat.h"
+#include "safeunistd.h"
 #include <sys/time.h>
 #include <utime.h>
 

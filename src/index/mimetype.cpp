@@ -18,7 +18,7 @@
 #ifndef TEST_MIMETYPE
 #include "autoconfig.h"
 
-#include <sys/stat.h>
+#include "safesysstat.h"
 
 #include <ctype.h>
 #include <string>
@@ -185,7 +185,7 @@ string mimetype(const string &fn, const struct stat *stp,
 #else // TEST->
 
 #include <stdio.h>
-#include <sys/stat.h>
+#include "safesysstat.h"
 
 #include <cstdlib>
 #include <iostream>

@@ -19,7 +19,6 @@
 #endif
 
 #include <stdio.h>
-#include "safesystat.h"
 #include <errno.h>
 
 #include <algorithm>
@@ -30,6 +29,7 @@
 #include "fsindexer.h"
 #include "beaglequeue.h"
 #include "mimehandler.h"
+#include "pathut.h"
 
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"
@@ -57,14 +57,12 @@ ConfIndexer::~ConfIndexer()
 bool ConfIndexer::runFirstIndexing()
 {
     // Indexing status file existing and not empty ?
-    struct stat st;
-    if (stat(m_config->getIdxStatusFile().c_str(), &st) == 0 &&
-	st.st_size > 0) {
+    if (path_filesize(m_config->getIdxStatusFile()) > 0) {
 	LOGDEB0(("ConfIndexer::runFirstIndexing: no: status file not empty\n"));
 	return false;
     }
     // And only do this if the user has kept the default topdirs (~). 
-    vector<string>tdl = m_config->getTopdirs();
+    vector<string> tdl = m_config->getTopdirs();
     if (tdl.size() != 1 || tdl[0].compare(path_canon(path_tildexpand("~")))) {
 	LOGDEB0(("ConfIndexer::runFirstIndexing: no: not home only\n"));
 	return false;

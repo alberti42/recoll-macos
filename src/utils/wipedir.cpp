@@ -19,21 +19,21 @@
 #ifndef TEST_WIPEDIR
 #include "autoconfig.h"
 
-#include <unistd.h>
-#include <fcntl.h>
-#include <dirent.h>
-#include <sys/stat.h>
 #include <errno.h>
+#include "safefcntl.h"
+#include <sys/types.h>
+#include "safesysstat.h"
+#include "safeunistd.h"
+#include <dirent.h>
 
 #include <cstring>
 #include <string>
-#ifndef NO_NAMESPACES
-using namespace std;
-#endif /* NO_NAMESPACES */
 
 #include "debuglog.h"
 #include "pathut.h"
 #include "wipedir.h"
+
+using namespace std;
 
 int wipedir(const string& dir, bool selfalso, bool recurse)
 {
@@ -114,7 +114,6 @@ int wipedir(const string& dir, bool selfalso, bool recurse)
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>
 
 #include "wipedir.h"
 
