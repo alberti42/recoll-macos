@@ -987,6 +987,7 @@ void ReExec::reexec()
 
 ////////////////////////////////////////////////////////////////////
 #else // TEST
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -994,12 +995,103 @@ void ReExec::reexec()
 
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <vector>
 using namespace std;
 
 #include "debuglog.h"
 #include "cancelcheck.h"
 #include "execmd.h"
+#include "smallut.h"
+
+// Testing with rclaudio: use an mp3 as parameter
+static const string tstcmd("/usr/share/recoll/filters/rclaudio");
+static const string mimetype("audio/mpeg");
+bool exercise_mhexecm(const string& filename)
+{
+    ExecCmd cmd;
+
+    vector<string>myparams; 
+
+    if (cmd.startExec(tstcmd, myparams, 1, 1) < 0) {
+	cerr << "startExec " << tstcmd << " failed. Missing command?\n";
+	return false;
+    }
+
+    // Build request message
+    ostringstream obuf;
+    obuf << "FileName: " << filename.length() << "\n" << filename;
+    obuf << "Mimetype: " << mimetype.length() << "\n" << mimetype;
+    // Bogus parameter should be skipped by filter
+    obuf << "BogusParam: " << string("bogus").length() << "\n" << "bogus";
+    obuf << "\n";
+    cerr << "SENDING: [" << obuf.str() << "]\n";
+    // Send it 
+    if (cmd.send(obuf.str()) < 0) {
+	// The real code calls zapchild here, but we don't need it as
+	// this will be handled by ~ExecCmd
+        //cmd.zapChild();
+        cerr << "send error\n";
+        return false;
+    }
+
+    // Read answer
+    for (int loop=0;;loop++) {
+        string name, data;
+
+	// Code from mh_execm.cpp: readDataElement
+	string ibuf;
+	// Read name and length
+	if (cmd.getline(ibuf) <= 0) {
+	    cerr << "getline error\n";
+	    return false;
+	}
+	// Empty line (end of message)
+	if (!ibuf.compare("\n")) {
+	    cerr << "Got empty line\n";
+	    name.clear();
+	    return true;
+	}
+
+	// Filters will sometimes abort before entering the real protocol, ie if
+	// a module can't be loaded. Check the special filter error first word:
+	if (ibuf.find("RECFILTERROR ") == 0) {
+	    cerr << "Got RECFILTERROR\n";
+	    return false;
+	}
+
+	// We're expecting something like Name: len\n
+	vector<string> tokens;
+	stringToTokens(ibuf, tokens);
+	if (tokens.size() != 2) {
+	    cerr << "bad line in filter output: [" << ibuf << "]\n";
+	    return false;
+	}
+	vector<string>::iterator it = tokens.begin();
+	name = *it++;
+	string& slen = *it;
+	int len;
+	if (sscanf(slen.c_str(), "%d", &len) != 1) {
+	    cerr << "bad line in filter output (no len): [" << ibuf << "]\n";
+	    return false;
+	}
+	// Read element data
+	data.erase();
+	if (len > 0 && cmd.receive(data, len) != len) {
+	    cerr << "MHExecMultiple: expected " << len << 
+		" bytes of data, got " << data.length() << endl;
+	    return false;
+	}
+
+	// Empty element: end of message
+        if (name.empty())
+            break;
+	cerr << "Got name: [" << name << "] data [" << data << "]\n";
+    }
+
+    return true;
+}
+
 
 static int     op_flags;
 #define OPT_MOINS 0x1
@@ -1007,6 +1099,7 @@ static int     op_flags;
 #define OPT_w     0x8
 #define OPT_c     0x10
 #define OPT_r     0x20
+#define OPT_m     0x40
 
 const char *data = "Une ligne de donnees\n";
 class MEAdv : public ExecCmdAdvise {
@@ -1055,6 +1148,7 @@ static char usage [] =
 "trexecmd [-c|-r] cmd [arg1 arg2 ...]\n" 
 " -c : test cancellation (ie: trexecmd -c sleep 1000)\n"
 " -r : test reexec\n"
+" -m <path to mp3 file>: test execm: needs installed and working rclaudio/mutagen\n"
 "trexecmd -w cmd : do the which thing\n"
 ;
 static void Usage(void)
@@ -1070,6 +1164,7 @@ int main(int argc, char *argv[])
     reexec.init(argc, argv);
 
     if (0) {
+	// Disabled: For testing reexec arg handling
 	vector<string> newargs;
 	newargs.push_back("newarg");
 	newargs.push_back("newarg1");
@@ -1092,6 +1187,7 @@ int main(int argc, char *argv[])
 	    case 'c':	op_flags |= OPT_c; break;
 	    case 'r':	op_flags |= OPT_r; break;
 	    case 'w':	op_flags |= OPT_w; break;
+	    case 'm':	op_flags |= OPT_m; break;
 	    default: Usage();	break;
 	    }
     b1: argc--; argv++;
@@ -1100,7 +1196,7 @@ int main(int argc, char *argv[])
     if (argc < 1)
 	Usage();
 
-    string cmd = *argv++; argc--;
+    string arg1 = *argv++; argc--;
     vector<string> l;
     while (argc > 0) {
 	l.push_back(*argv++); argc--;
@@ -1110,6 +1206,7 @@ int main(int argc, char *argv[])
     signal(SIGPIPE, SIG_IGN);
 
     if (op_flags & OPT_r) {
+	// Test reexec
 	chdir("/");
         argv[0] = strdup("");
 	sleep(1);
@@ -1117,13 +1214,21 @@ int main(int argc, char *argv[])
     }
 
     if (op_flags & OPT_w) {
+	// Test "which" method
 	string path;
-	if (ExecCmd::which(cmd, path)) {
+	if (ExecCmd::which(arg1, path)) {
 	    cout << path << endl;
 	    exit(0);
 	} 
 	exit(1);
     }
+
+    if (op_flags & OPT_m) {
+	return exercise_mhexecm(arg1) ? 0 : 1;
+    }
+
+    //////////////
+    // Default: execute command line arguments
     ExecCmd mexec;
     MEAdv adv;
     adv.cmd = &mexec;
@@ -1144,7 +1249,7 @@ int main(int argc, char *argv[])
 
     int status = -1;
     try {
-	status = mexec.doexec(cmd, l, ip, &output);
+	status = mexec.doexec(arg1, l, ip, &output);
     } catch (CancelExcept) {
 	cerr << "CANCELLED" << endl;
     }
