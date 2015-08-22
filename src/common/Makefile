@@ -1,5 +1,5 @@
 
-PROGS = unacpp textsplit rclconfig
+PROGS = unacpp textsplit rclconfig syngroups
 
 all: $(PROGS) 
 
@@ -22,5 +22,12 @@ rclconfig : $(RCLCONFIG_OBJS)
 trrclconfig.o : rclconfig.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -DTEST_RCLCONFIG -c -o trrclconfig.o \
 	       rclconfig.cpp
+
+SYNGROUPS_OBJS= trsyngroups.o 
+syngroups : $(SYNGROUPS_OBJS) 
+	$(CXX) $(ALL_CXXFLAGS) -o syngroups $(SYNGROUPS_OBJS) $(LIBRECOLL) 
+trsyngroups.o : syngroups.cpp 
+	$(CXX) $(ALL_CXXFLAGS) -DTEST_SYNGROUPS -c -o trsyngroups.o \
+	       syngroups.cpp
 
 include ../utils/utmkdefs.mk

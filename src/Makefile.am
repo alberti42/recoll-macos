@@ -67,6 +67,8 @@ common/rclconfig.cpp \
 common/rclconfig.h \
 common/rclinit.cpp \
 common/rclinit.h \
+common/syngroups.cpp \
+common/syngroups.h \
 common/textsplit.cpp \
 common/textsplit.h \
 common/unacpp.cpp \
