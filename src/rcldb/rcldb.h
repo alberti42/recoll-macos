@@ -29,6 +29,7 @@
 #include "rclconfig.h"
 #include "utf8iter.h"
 #include "textsplit.h"
+#include "syngroups.h"
 
 using std::string;
 using std::vector;
@@ -480,6 +481,9 @@ private:
      * after init */
     // Stop terms: those don't get indexed.
     StopList m_stops;
+    // Synonym groups
+    SynGroups m_syngroups;
+
     // Truncation length for stored meta fields
     int         m_idxMetaStoredLen;
     // This is how long an abstract we keep or build from beginning of

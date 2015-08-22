@@ -1144,21 +1144,44 @@ string RclConfig::getMimeIconPath(const string &mtype, const string &apptag)
     return path_cat(iconpath, iconname) + ".png";
 }
 
-string RclConfig::getDbDir() const
+// Return path defined by varname. May be absolute or relative to
+// confdir, with default in confdir
+string RclConfig::getConfdirPath(const char *varname, const char *dflt) const
 {
-    string dbdir;
-    if (!getConfParam("dbdir", dbdir)) {
-	LOGERR(("RclConfig::getDbDir: no db directory in configuration\n"));
+    string result;
+    if (!getConfParam(varname, result)) {
+	result = path_cat(getConfDir(), dflt);
     } else {
-	dbdir = path_tildexpand(dbdir);
+	result = path_tildexpand(result);
 	// If not an absolute path, compute relative to config dir
-	if (dbdir.at(0) != '/') {
-	    LOGDEB1(("Dbdir not abs, catting with confdir\n"));
-	    dbdir = path_cat(getConfDir(), dbdir);
+	if (result.at(0) != '/') {
+	    result = path_cat(getConfDir(), result);
 	}
     }
-    LOGDEB1(("RclConfig::getDbDir: dbdir: [%s]\n", dbdir.c_str()));
-    return path_canon(dbdir);
+    return path_canon(result);
+
+}
+
+string RclConfig::getDbDir() const
+{
+    return getConfdirPath("dbdir", "xapiandb");
+}
+
+string RclConfig::getStopfile() const
+{
+    return getConfdirPath("stoplistfile", "stoplist.txt");
+}
+
+string RclConfig::getSynGroupsFile() const
+{
+    return getConfdirPath("syngroupsfile", "syngroups.txt");
+}
+
+// The index status file is fast changing, so it's possible to put it outside
+// of the config directory (for ssds, not sure this is really useful).
+string RclConfig::getIdxStatusFile() const
+{
+    return getConfdirPath("idxstatusfile", "idxstatus.txt");
 }
 
 void RclConfig::urlrewrite(const string& dbdir, string& url) const
@@ -1213,30 +1236,9 @@ bool RclConfig::sourceChanged() const
     return false;
 }
 
-string RclConfig::getStopfile() const
-{
-    return path_cat(getConfDir(), "stoplist.txt");
-}
 string RclConfig::getPidfile() const
 {
     return path_cat(getConfDir(), "index.pid");
-}
-
-// The index status file is fast changing, so it's possible to put it outside
-// of the config directory (for ssds, not sure this is really useful).
-string RclConfig::getIdxStatusFile() const
-{
-    string path;
-    if (!getConfParam("idxstatusfile", path)) {
-	return path_cat(getConfDir(), "idxstatus.txt");
-    } else {
-	path = path_tildexpand(path);
-	// If not an absolute path, compute relative to config dir
-	if (path.at(0) != '/') {
-	    path = path_cat(getConfDir(), path);
-	}
-	return path_canon(path);
-    }
 }
 
 string RclConfig::getWebQueueDir() const

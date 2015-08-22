@@ -171,10 +171,13 @@ class RclConfig {
      * need for other status */
     vector<string> getTopdirs() const;
 
+    string getConfdirPath(const char *varname, const char *dflt) const;
     /** Get database directory */
     string getDbDir() const;
     /** Get stoplist file name */
     string getStopfile() const;
+    /** Get synonym groups file name */
+    string getSynGroupsFile() const;
     /** Get indexing pid file name */
     string getPidfile() const;
     /** Get indexing status file name */

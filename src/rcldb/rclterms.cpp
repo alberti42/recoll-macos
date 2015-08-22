@@ -235,7 +235,8 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
 	}
 
     } else {
-	// Expansion is STEM or NONE (which may still need case/diac exp)
+	// Expansion is STEM or NONE (which may still need synonyms
+	// and case/diac exp)
 
 	vector<string> lexp;
 	if (diac_sensitive && case_sensitive) {
@@ -272,6 +273,30 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
 		sdb.stemExpand(lang, *it, exp1);
 	    }
 	    LOGDEB(("ExpTerm: stem exp-> %s\n", stringsToString(exp1).c_str()));
+
+	    lexp.clear();
+	    // Expand the result for synonyms. Note that doing it here
+	    // means that multi-term synonyms will not work
+	    // (e.g. stakhanovist -> "hard at work". We would have to
+	    // separate the multi-word expansions for our caller to
+	    // add them as phrases to the query. Not impossible, but
+	    // let's keep it at single words for now.
+	    if (m_syngroups.ok()) {
+		LOGDEB(("ExpTerm: got syngroups\n"));
+		for (vector<string>::const_iterator it = exp1.begin(); 
+		     it != exp1.end(); it++) {
+		    vector<string> sg = m_syngroups.getgroup(*it);
+		    if (!sg.empty()) {
+			LOGDEB(("ExpTerm: syns: %s -> %s\n", 
+				it->c_str(), stringsToString(sg).c_str()));
+			lexp.insert(lexp.end(), sg.begin(), sg.end());
+		    }
+		}
+		sort(lexp.begin(), lexp.end());
+		lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
+		// Keep result in exp1 for next step
+		exp1.swap(lexp);
+	    }
 
 	    // Expand the resulting list for case (all stemdb content
 	    // is lowercase)

@@ -63,20 +63,29 @@ SynGroups::~SynGroups()
 
 const int LL = 1024;
 
-SynGroups::SynGroups(const string& fn)
+SynGroups::SynGroups()
     : m(new Internal)
 {
+}
+
+bool SynGroups::setfile(const string& fn)
+{
+    LOGDEB(("SynGroups::setfile(%s)\n", fn.c_str()));
     if (!m) {
-	LOGERR(("SynGroups::SynGroups:: new Internal failed: no mem ?\n"));
-	return;
+	LOGERR(("SynGroups:setfile:: new Internal failed: no mem ?\n"));
+	return false;
     }
+
+    // Don't set ok to true.
+    if (fn.empty())
+	return true;
 
     ifstream input;
     input.open(fn.c_str(), ios::in);
     if (!input.is_open()) {
-	LOGERR(("SynGroups::SynGroups:: could not open %s errno %d\n",
+	LOGERR(("SynGroups:setfile:: could not open %s errno %d\n",
 		fn.c_str(), errno));
-	return;
+	return false;
     }	    
 
     char cline[LL];
@@ -91,7 +100,7 @@ SynGroups::SynGroups(const string& fn)
 	if (!input.good()) {
 	    if (input.bad()) {
                 LOGDEB(("Parse: input.bad()\n"));
-		return;
+		return false;
 	    }
 	    // Must be eof ? But maybe we have a partial line which
 	    // must be processed. This happens if the last line before
@@ -130,7 +139,7 @@ SynGroups::SynGroups(const string& fn)
 
 	vector<string> words;
 	if (!stringToStrings(line, words)) {
-	    LOGERR(("SynGroups::SynGroups: %s: bad line %d: %s\n",
+	    LOGERR(("SynGroups:setfile: %s: bad line %d: %s\n",
 		    fn.c_str(), lnum, line.c_str()));
 	    continue;
 	}
@@ -138,7 +147,7 @@ SynGroups::SynGroups(const string& fn)
 	if (words.empty())
 	    continue;
 	if (words.size() == 1) {
-	    LOGDEB(("SynGroups::SynGroups: single term group at line %d ??\n",
+	    LOGDEB(("SynGroups:setfile: single term group at line %d ??\n",
 		    lnum));
 	    continue;
 	}
@@ -148,8 +157,11 @@ SynGroups::SynGroups(const string& fn)
 	     it != words.end(); it++) {
 	    m->terms[*it] = lnum;
 	}
+	LOGDEB(("SynGroups::setfile: group: [%s]\n", 
+		stringsToString(m->groups[lnum]).c_str()));
     }
     m->ok = true;
+    return true;
 }
 
 vector<string> SynGroups::getgroup(const string& term)

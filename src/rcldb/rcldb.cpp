@@ -762,6 +762,10 @@ bool Db::open(OpenMode mode, OpenError *error)
     }
     if (!m_config->getStopfile().empty())
 	m_stops.setFile(m_config->getStopfile());
+    // Synonyms are only used at query time for now
+    if (mode == DbRO)
+	m_syngroups.setfile(m_config->getSynGroupsFile());
+
     string dir = m_config->getDbDir();
     string ermsg;
     try {

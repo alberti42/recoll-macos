@@ -26,8 +26,9 @@
 // in a group are equivalent.
 class SynGroups {
 public:
-    SynGroups(const std::string& fname);
+    SynGroups();
     ~SynGroups();
+    bool setfile(const std::string& fname);
     std::vector<std::string> getgroup(const std::string& term);
     bool ok();
 private:
