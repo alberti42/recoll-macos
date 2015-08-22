@@ -16,6 +16,8 @@
  */
 #include "autoconfig.h"
 
+#include "safeunistd.h"
+
 #include <list>
 
 #include <QMessageBox>

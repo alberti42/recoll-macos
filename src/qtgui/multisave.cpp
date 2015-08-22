@@ -123,7 +123,7 @@ void multiSave(QWidget *p, vector<Rcl::Doc>& docs)
     
     for (unsigned int i = 0; i != docs.size(); i++) {
 	string fn = path_cat(dir, filenames[i]);
-	if (access(fn.c_str(), 0) == 0) {
+	if (path_exists(fn)) {
 	    QMessageBox::warning(0, "Recoll",
 				 QWidget::tr("Unexpected file name collision, "
 				       "cancelling."));

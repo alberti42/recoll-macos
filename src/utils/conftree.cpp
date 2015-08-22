@@ -172,7 +172,7 @@ ConfSimple::ConfSimple(const char *fname, int readonly, bool tildexp)
 	// It seems that there is no separate 'create if not exists' 
 	// open flag. Have to truncate to create, but dont want to do 
 	// this to an existing file !
-	if (access(fname, 0) < 0) {
+	if (!path_exists(fname)) {
 	    mode |= ios::trunc;
 	}
 	input.open(fname, mode);

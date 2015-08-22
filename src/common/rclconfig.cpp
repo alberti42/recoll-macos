@@ -22,6 +22,7 @@
 #include <langinfo.h>
 #include <limits.h>
 #include "safesysstat.h"
+#include "safeunistd.h"
 #include <sys/param.h>
 #ifdef __FreeBSD__
 #include <osreldate.h>
@@ -179,7 +180,7 @@ RclConfig::RclConfig(const string *argcnf)
     // want to avoid the imperfect test in isDefaultConfig() if we actually know
     // this is the default conf
     if (!autoconfdir && !isDefaultConfig()) {
-	if (access(m_confdir.c_str(), 0) < 0) {
+	if (!path_exists(m_confdir)) {
 	    m_reason = "Explicitly specified configuration "
 		"directory must exist"
 		" (won't be automatically created). Use mkdir first";
@@ -187,7 +188,7 @@ RclConfig::RclConfig(const string *argcnf)
 	}
     }
 
-    if (access(m_confdir.c_str(), 0) < 0) {
+    if (!path_exists(m_confdir)) {
 	if (!initUserConfig()) 
 	    return;
     }
@@ -1401,7 +1402,7 @@ bool RclConfig::initUserConfig()
 
     // Use protective 700 mode to create the top configuration
     // directory: documents can be reconstructed from index data.
-    if (access(m_confdir.c_str(), 0) < 0 && 
+    if (!path_exists(m_confdir) && 
 	mkdir(m_confdir.c_str(), 0700) < 0) {
 	m_reason += string("mkdir(") + m_confdir + ") failed: " + 
 	    strerror(errno);
@@ -1410,7 +1411,7 @@ bool RclConfig::initUserConfig()
     string lang = localelang();
     for (int i = 0; i < ncffiles; i++) {
 	string dst = path_cat(m_confdir, string(configfiles[i])); 
-	if (access(dst.c_str(), 0) < 0) {
+	if (!path_exists(dst)) {
 	    FILE *fp = fopen(dst.c_str(), "w");
 	    if (fp) {
 		fprintf(fp, "%s\n", blurb);

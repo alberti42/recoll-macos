@@ -22,6 +22,7 @@
 #include <cstdio>
 #include <cstring>
 #include "safesysstat.h"
+#include "safeunistd.h"
 
 #include "debuglog.h"
 #include "rclmon.h"

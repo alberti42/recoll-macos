@@ -19,6 +19,7 @@
 #include <string.h>
 #include <errno.h>
 #include "safesysstat.h"
+#include "safeunistd.h"
 
 #include "cstr.h"
 #include "pathut.h"

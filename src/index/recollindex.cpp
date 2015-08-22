@@ -24,6 +24,7 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <fcntl.h>
+#include "safeunistd.h"
 
 #include <iostream>
 #include <list>

@@ -30,6 +30,16 @@
 
 using namespace std;
 
+// Note that we are storing each term twice. I don't think that the
+// size could possibly be a serious issue, but if it was, we could
+// reduce the storage a bit by storing (short hash)-> vector<int>
+// correspondances in the direct map, and then checking all the
+// resulting groups for the input word.
+//
+// As it is, a word can only index one group (the last it is found
+// in). It can be part of several groups though (appear in
+// expansions). I really don't know what we should do with multiple
+// groups anyway
 class SynGroups::Internal {
 public:
     Internal() : ok(false) {
@@ -40,10 +50,12 @@ public:
     // Group num to group
     STD_UNORDERED_MAP<int, vector<string> > groups;
 };
+
 bool SynGroups::ok() 
 {
     return m && m->ok;
 }
+
 SynGroups::~SynGroups()
 {
     delete m;
@@ -215,7 +227,7 @@ int main(int argc, char **argv)
     cout << group.size() << " terms in group\n";
     for (vector<string>::const_iterator it = group.begin();
 	 it != group.end(); it++) {
-	cout << *it << " ";
+	cout << "[" << *it << "] ";
     }
     cout << endl;
     return 0;

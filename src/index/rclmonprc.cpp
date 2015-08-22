@@ -27,6 +27,7 @@
 #include <pthread.h>
 #include <errno.h>
 #include <fnmatch.h>
+#include "safeunistd.h"
 
 #include <cstring>
 #include <cstdio>
@@ -439,7 +440,7 @@ bool RclMonEventQueue::pushEvent(const RclMonEvent &ev)
 static bool checkfileanddelete(const string& fname)
 {
     bool ret;
-    ret = access(fname.c_str(), 0) == 0;
+    ret = path_exists(fname);
     unlink(fname.c_str());
     return ret;
 }

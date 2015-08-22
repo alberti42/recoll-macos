@@ -41,7 +41,7 @@ static QString prevDir()
         settings.value("/Recoll/prefs/lastQuerySaveDir").toString();
     string defpath = path_cat(theconfig->getConfDir(), "saved_queries");
     if (prevdir.isEmpty()) {
-        if (access(defpath.c_str(), 0) != 0) {
+        if (!path_exists(defpath)) {
             mkdir(defpath.c_str(), 0700);
         }
         return QString::fromLocal8Bit(defpath.c_str());

@@ -17,6 +17,7 @@
 #include "autoconfig.h"
 
 #include <fcntl.h>
+#include "safeunistd.h"
 
 #include <utility>
 #include MEMORY_INCLUDE

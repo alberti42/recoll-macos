@@ -565,7 +565,7 @@ void UIPrefsDialog::addExtraDbPB_clicked()
     if (input.isEmpty())
 	return;
     string dbdir = (const char *)input.toLocal8Bit();
-    if (access(path_cat(dbdir, "recoll.conf").c_str(), 0) == 0) {
+    if (path_exists(path_cat(dbdir, "recoll.conf"))) {
 	// Chosen dir is config dir.
 	RclConfig conf(&dbdir);
 	dbdir = conf.getDbDir();

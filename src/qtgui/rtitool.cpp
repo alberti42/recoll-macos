@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include "safesysstat.h"
+#include "safeunistd.h"
 
 #include <string>
 
@@ -60,7 +61,7 @@ void RTIToolW::init()
     connect(this->sesCB, SIGNAL(clicked(bool)), 
 	    this, SLOT(sesclicked(bool)));
     string autostartfile = path_cat(path_home(), rautostartfile);
-    if (access(autostartfile.c_str(), 0) == 0) {
+    if (path_exists(autostartfile)) {
 	sesCB->setChecked(true);
     }
 }
@@ -80,7 +81,7 @@ void RTIToolW::accept()
     if (sesCB->isChecked()) {
 	// Setting up daemon indexing autostart
 
-	if (::access(autostartfile.c_str(), 0) == 0) {
+	if (path_exists(autostartfile)) {
 	    QString msg = tr("Replacing: ") + 
 		QString::fromLocal8Bit(autostartfile.c_str());
 	
@@ -96,7 +97,7 @@ void RTIToolW::accept()
 	if (theconfig) {
 	    string sourcefile = path_cat(theconfig->getDatadir(), "examples");
 	    sourcefile = path_cat(sourcefile, "recollindex.desktop");
-	    if (::access(sourcefile.c_str(), 0) == 0) {
+	    if (path_exists(sourcefile)) {
 		file_to_string(sourcefile, text);
 	    }
 	}
@@ -138,7 +139,7 @@ void RTIToolW::accept()
 	exitdial = true;
     } else {
 	// Turning autostart off
-	if (::access(autostartfile.c_str(), 0) == 0) {
+	if (path_exists(autostartfile)) {
 	    QString msg = tr("Deleting: ") + 
 		QString::fromLocal8Bit(autostartfile.c_str());
 	

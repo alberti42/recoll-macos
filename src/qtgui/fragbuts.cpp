@@ -148,7 +148,7 @@ FragButs::FragButs(QWidget* parent)
     m_fn = path_cat(theconfig->getConfDir(), "fragbuts.xml");
 
     string data, reason;
-    if (access(m_fn.c_str(), 0) != 0) {
+    if (!path_exists(m_fn)) {
         // config does not exist: try to create it from sample
         string src = path_cat(theconfig->getDatadir(), "examples");
         src = path_cat(src, "fragbuts.xml");

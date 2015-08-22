@@ -18,8 +18,6 @@
 #define _PATHUT_H_INCLUDED_
 #include "autoconfig.h"
 
-#include <unistd.h>
-
 #include <string>
 #include <vector>
 #include <set>
@@ -74,6 +72,11 @@ extern bool path_isdir(const std::string& path);
 
 /// Retrieve file size
 extern long long path_filesize(const std::string& path);
+
+/// Check that path is traversable and last element exists
+/// Returns true if last elt could be checked to exist. False may mean that
+/// the file/dir does not exist or that an error occurred. 
+extern bool path_exists(const std::string& path);
 
 /// Dump directory
 extern bool readdir(const std::string& dir, std::string& reason, 

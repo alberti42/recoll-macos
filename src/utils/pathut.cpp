@@ -433,6 +433,11 @@ long long path_filesize(const string& path)
     return (long long)st.st_size;
 }
 
+bool path_exists(const string& path)
+{
+    return access(path.c_str(), 0) == 0;
+}
+
 // Allowed punctuation in the path part of an URI according to RFC2396
 // -_.!~*'():@&=+$,
 /*

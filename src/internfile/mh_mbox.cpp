@@ -294,7 +294,7 @@ bool MimeHandlerMbox::set_document_file(const string& mt, const string &fn)
 
     // And double check for thunderbird 
     string tbirdmsf = fn + ".msf";
-    if ((m_quirks&MBOXQUIRK_TBIRD) == 0 && access(tbirdmsf.c_str(), 0) == 0) {
+    if ((m_quirks&MBOXQUIRK_TBIRD) == 0 && path_exists(tbirdmsf)) {
 	LOGDEB(("MimeHandlerMbox: detected unconfigured tbird mbox in %s\n",
 		fn.c_str()));
 	m_quirks |= MBOXQUIRK_TBIRD;
