@@ -364,8 +364,16 @@ XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 AC_ARG_ENABLE(xadump, 
     AC_HELP_STRING([--enable-xadump],
    [Enable building the xadump low level Xapian access program.]),
-        enableQT=$enableval, enableXADUMP="no")
+        enableXADUMP=$enableval, enableXADUMP="no")
 AM_CONDITIONAL(MAKEXADUMP, [test X$enableXADUMP = Xyes])
+
+AC_ARG_ENABLE(userdoc,
+    AC_HELP_STRING([--disable-userdoc],
+       [Disable building the user manual. (Avoids the need for docbook xml/xsl files and TeX tools.]),
+        enableUserdoc=$enableval, enableUserdoc="yes")
+AM_CONDITIONAL(MAKEUSERDOC, [test X$enableUserdoc = Xyes])
+
+
 
 #### QT
 # The way qt and its tools (qmake especially) are installed is very

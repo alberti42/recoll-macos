@@ -4872,11 +4872,28 @@ except:
         <para>The shopping list:</para>
         <itemizedlist>
 
+          <listitem><para>The <literal>autoconf</literal>,
+          <literal>automake</literal> and <literal>libtool</literal>
+          triad. Only <literal>autoconf</literal> is needed up to &RCL;
+          1.21.</para></listitem>
+
           <listitem><para>C++ compiler. Up to &RCL; version 1.13.04,
               its absence can manifest itself by strange messages
               about a missing iconv_open.</para>
           </listitem>
 
+          <listitem><para><command>bison</command> command (for &RCL; 1.21
+          and later).</para>
+          </listitem>
+
+          <listitem><para><command>xsltproc</command> command. For building
+          the documentation (for &RCL; 1.21
+          and later). This sometimes comes with the
+          <literal>libxslt</literal> package. And also the Docbook XML and
+          style sheet files.</para>
+          </listitem>
+
+          
           <listitem><para>Development files
               for <ulink url="http://www.xapian.org"> <application>Xapian
                   core</application></ulink>.</para> 
@@ -4905,6 +4922,11 @@ except:
         <listitem>
 	  <para>Development files for <application>X11</application> and
 	    <application>zlib</application>.</para>
+        </listitem>
+
+        <listitem>
+          <para>Development files for Python (or use
+          <literal>--disable-python-module</literal>).</para>
         </listitem>
 
         <listitem>
@@ -5009,11 +5031,17 @@ except:
 	    <application>Qt</application> and
 	    <application>X11</application>.</para> </listitem>
 
-	  <listitem><para><option>--disable-pic</option> will compile
-	      &RCL; with position-dependant code. This is incompatible with
-	      building the KIO or the <application>Python</application>
-	      or <application>PHP</application> extensions, but might
-	      yield very marginally faster code.</para></listitem>
+	  <listitem><para><option>--disable-userdoc</option> 
+          will avoid building the user manual. This avoids having to
+          install the Docbook XML/XSL files and the TeX toolchain used for
+          translating the manual to PDF.</para></listitem>
+
+	  <listitem><para><option>--disable-pic</option> (&RCL; versions up
+            to 1.21 only) will compile
+	    &RCL; with position-dependant code. This is incompatible with
+	    building the KIO or the <application>Python</application>
+	    or <application>PHP</application> extensions, but might
+	  yield very marginally faster code.</para></listitem>
 
 	  <listitem><para>Of course the usual 
 	  <application>autoconf</application> <command>configure</command>
@@ -5023,7 +5051,8 @@ except:
          </para>
 	</formalpara>
 
-      <para>Normal procedure:</para>
+      <para>Normal procedure (for source extracted from a tar
+      distribution):</para>
       <screen>
         <userinput>cd recoll-xxx</userinput>
         <userinput>./configure</userinput>
@@ -5031,15 +5060,12 @@ except:
         <userinput>(practices usual hardship-repelling invocations)</userinput>
       </screen>
 
-
-      <para>There is little auto-configuration. The
-        <command>configure</command> script will mainly link one of
-        the system-specific files in the <filename>mk</filename>
-        directory to <filename>mk/sysconf</filename>. If your system
-        is not known yet, it will tell you as much, and you may want
-        to manually copy and modify one of the existing files (the new
-        file name should be the output of <command>uname</command>
-        <option>-s</option>).</para> 
+      <para>When building from source cloned from the BitBucket repository,
+      you also need to install <application>autoconf</application>,
+      <application>automake</application>, and
+      <application>libtool</application> and you must execute <literal>sh
+      autogen.sh</literal> in the top source directory before running
+      <literal>configure</literal>.</para>
       
       <sect3 id="RCL.INSTALL.BUILDING.BUILD.SOLARIS">
 	<title>Building on Solaris</title>

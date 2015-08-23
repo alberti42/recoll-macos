@@ -552,11 +552,12 @@ install-data-hook:
 	chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py hotrecoll.py; \
 	chmod 0644 msodump.zip rclexecm.py rcllatinstops.zip rclconfig.py) 
 
+if MAKEUSERDOC
 rdocdir = $(pkgdatadir)/doc
 rdoc_DATA = doc/user/usermanual.html doc/user/docbook-xsl.css 
-
-doc/user/usermanual.html:
+doc/user/usermanual.html: doc/user/usermanual.xml
 	$(MAKE) -C doc/user
+endif
 
 dist_man1_MANS = doc/man/recoll.1 doc/man/recollq.1 doc/man/recollindex.1
 dist_man5_MANS = doc/man/recoll.conf.5
