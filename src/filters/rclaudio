@@ -52,7 +52,9 @@ class AudioTagExtractor:
                 tags = MP3(filename, ID3=EasyID3)
             elif mimetype == "application/ogg":
                 tags = OggVorbis(filename)
-            elif mimetype == "application/x-flac":
+            elif mimetype == "application/x-flac" or \
+                     mimetype == "audio/x-flac" or \
+                     mimetype == "audio/flac":
                 tags = FLAC(filename)
             else:
                 raise Exception, "Bad mime type %s" % mimetype
@@ -98,6 +100,14 @@ class AudioTagExtractor:
             self.currentindex += 1
             return ret
 
-proto = rclexecm.RclExecM()
-extract = AudioTagExtractor(proto)
-rclexecm.main(proto, extract)
+def makeObject():
+    print("makeObject");
+    proto = rclexecm.RclExecM()
+    print("makeObject: rclexecm ok");
+    extract = AudioTagExtractor(proto)
+    return 17
+
+if __name__ == '__main__':
+    proto = rclexecm.RclExecM()
+    extract = AudioTagExtractor(proto)
+    rclexecm.main(proto, extract)

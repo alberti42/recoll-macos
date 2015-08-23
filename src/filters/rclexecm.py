@@ -15,7 +15,10 @@ class RclExecM:
     fileerror = 2
     
     def __init__(self):
-        self.myname = os.path.basename(sys.argv[0])
+        try:
+            self.myname = os.path.basename(sys.argv[0])
+        except:
+            self.myname = "???"
         self.mimetype = ""
 
         if os.environ.get("RECOLL_FILTER_MAXMEMBERKB"):
@@ -165,6 +168,7 @@ class RclExecM:
             self.processmessage(processor, params)
 
 
+  
 # Common main routine for all python execm filters: either run the
 # normal protocol engine or a local loop to test without recollindex
 def main(proto, extract):
@@ -173,7 +177,20 @@ def main(proto, extract):
     else:
         # Got a file name parameter: TESTING without an execm parent
         # Loop on all entries or get specific ipath
-        params = {'filename:':sys.argv[1]}
+        def mimetype_with_file(f):
+            cmd = 'file -i "' + f + '"'
+            fileout = os.popen(cmd).read()
+            lst = fileout.split(':')
+            mimetype = lst[len(lst)-1].strip()
+            lst = mimetype.split(';')
+            return lst[0].strip()
+        def mimetype_with_xdg(f):
+            cmd = 'xdg-mime query filetype "' + f + '"'
+            return os.popen(cmd).read().strip()
+        params = {'filename:': sys.argv[1]}
+        # Some filters (e.g. rclaudio) need/get a MIME type from the indexer
+        mimetype = mimetype_with_xdg(sys.argv[1])
+        params['mimetype:'] = mimetype
         if not extract.openfile(params):
             print "Open error"
             sys.exit(1)
