@@ -3344,6 +3344,11 @@ dir:recoll dir:src -dir:utils -dir:common
             stemming is off by default for phrases).</para>
             </listitem>
 
+            <listitem><para><literal>s</literal> can be used to turn off
+            synonym expansion, if a synonyms file is in place (only for
+            &RCL; 1.22 and later).</para>
+            </listitem>
+
             <listitem><para><literal>o</literal> can be used to specify a
             "slack" for phrase and proximity searches: the number of
             additional terms that may be found between the specified

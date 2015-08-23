@@ -282,6 +282,11 @@ static void qualify(Rcl::SearchDataClauseDist *cl, const string& quals)
                 //cerr << "set slack " << cl->getslack() << " done" << endl;
             }
             break;
+        case 's': 
+            cl->addModifier(Rcl::SearchDataClause::SDCM_NOSYNS);
+            break;
+	case 'S':
+            break;
         case '.':case '0':case '1':case '2':case '3':case '4':
         case '5':case '6':case '7':case '8':case '9':
         {

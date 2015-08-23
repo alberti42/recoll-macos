@@ -224,9 +224,10 @@ private:
 
 class SearchDataClause {
 public:
-    enum Modifier {SDCM_NONE=0, SDCM_NOSTEMMING=1, SDCM_ANCHORSTART=2,
-		   SDCM_ANCHOREND=4, SDCM_CASESENS=8, SDCM_DIACSENS=16,
-		   SDCM_NOTERMS=32 // Don't include terms for highlighting
+    enum Modifier {SDCM_NONE=0, SDCM_NOSTEMMING=0x1, SDCM_ANCHORSTART=0x2,
+		   SDCM_ANCHOREND=0x4, SDCM_CASESENS=0x8, SDCM_DIACSENS=0x10,
+		   SDCM_NOTERMS=0x20, // Don't include terms for highlighting
+		   SDCM_NOSYNS = 0x40, // Don't perform synonym expansion
     };
     enum Relation {REL_CONTAINS, REL_EQUALS, REL_LT, REL_LTE, REL_GT, REL_GTE};
 
@@ -382,7 +383,8 @@ protected:
     bool expandTerm(Rcl::Db &db, std::string& ermsg, int mods, 
 		    const std::string& term, 
 		    std::vector<std::string>& exp, 
-                    std::string& sterm, const std::string& prefix);
+                    std::string& sterm, const std::string& prefix,
+		    std::vector<std::string>* multiwords = 0);
     // After splitting entry on whitespace: process non-phrase element
     void processSimpleSpan(Rcl::Db &db, string& ermsg, const string& span, 
 			   int mods, void *pq);

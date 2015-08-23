@@ -379,17 +379,6 @@ private:
 };
 
 
-#if 1
-static void listVector(const string& what, const vector<string>&l)
-{
-    string a;
-    for (vector<string>::const_iterator it = l.begin(); it != l.end(); it++) {
-        a = a + *it + " ";
-    }
-    LOGDEB0(("%s: %s\n", what.c_str(), a.c_str()));
-}
-#endif
-
 /** Expand term into term list, using appropriate mode: stem, wildcards, 
  *  diacritics... 
  *
@@ -400,12 +389,16 @@ static void listVector(const string& what, const vector<string>&l)
  * @param prefix field prefix in index. We could recompute it, but the caller
  *  has it already. Used in the simple case where there is nothing to expand, 
  *  and we just return the prefixed term (else Db::termMatch deals with it).
+ * @param multiwords it may happen that synonym processing results in multi-word
+ *   expansions which should be processed as phrases.
  */
 bool SearchDataClauseSimple::expandTerm(Rcl::Db &db, 
 					string& ermsg, int mods, 
 					const string& term, 
 					vector<string>& oexp, string &sterm,
-					const string& prefix)
+					const string& prefix,
+					vector<string>* multiwords
+    )
 {
     LOGDEB0(("expandTerm: mods 0x%x fld [%s] trm [%s] lang [%s]\n",
 	     mods, m_field.c_str(), term.c_str(), getStemLang().c_str()));
@@ -436,13 +429,12 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 	nostemexp = true;
     }
 
-    // noexpansion can be modified further down by possible case/diac expansion
-    bool noexpansion = nostemexp && !haswild; 
-
-    int termmatchsens = 0;
-
     bool diac_sensitive = (mods & SDCM_DIACSENS) != 0;
     bool case_sensitive = (mods & SDCM_CASESENS) != 0;
+    bool synonyms = (mods & SDCM_NOSYNS) == 0;
+
+    // noexpansion can be modified further down by possible case/diac expansion
+    bool noexpansion = nostemexp && !haswild && !synonyms; 
 
     if (o_index_stripchars) {
 	diac_sensitive = case_sensitive = false;
@@ -480,10 +472,6 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 	    noexpansion = false;
     }
 
-    if (case_sensitive)
-	termmatchsens |= Db::ET_CASESENS;
-    if (diac_sensitive)
-	termmatchsens |= Db::ET_DIACSENS;
 
     if (noexpansion) {
 	oexp.push_back(prefix + term);
@@ -493,11 +481,19 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 	return true;
     } 
 
+    int termmatchsens = 0;
+    if (case_sensitive)
+	termmatchsens |= Db::ET_CASESENS;
+    if (diac_sensitive)
+	termmatchsens |= Db::ET_DIACSENS;
+    if (synonyms)
+	termmatchsens |= Db::ET_SYNEXP;
+	
     Db::MatchType mtyp = haswild ? Db::ET_WILD : 
 	nostemexp ? Db::ET_NONE : Db::ET_STEM;
     TermMatchResult res;
-    if (!db.termMatch(mtyp | termmatchsens, getStemLang(), term, res, maxexpand,
-		      m_field)) {
+    if (!db.termMatch(mtyp | termmatchsens, getStemLang(), 
+		      term, res, maxexpand,  m_field, multiwords)) {
 	// Let it go through
     }
 
@@ -560,9 +556,17 @@ void multiply_groups(vector<vector<string> >::const_iterator vvit,
     }
 }
 
-void SearchDataClauseSimple::processSimpleSpan(Rcl::Db &db, string& ermsg,
-					       const string& span, 
-					       int mods, void * pq)
+static void prefix_vector(vector<string>& v, const string& prefix)
+{
+    for (vector<string>::iterator it = v.begin(); it != v.end(); it++) {
+	*it = prefix + *it;
+    }
+}
+
+void SearchDataClauseSimple::
+processSimpleSpan(Rcl::Db &db, string& ermsg,
+		  const string& span, 
+		  int mods, void * pq)
 {
     vector<Xapian::Query>& pqueries(*(vector<Xapian::Query>*)pq);
     LOGDEB0(("StringToXapianQ::processSimpleSpan: [%s] mods 0x%x\n",
@@ -574,11 +578,12 @@ void SearchDataClauseSimple::processSimpleSpan(Rcl::Db &db, string& ermsg,
     const FieldTraits *ftp;
     if (!m_field.empty() && db.fieldToTraits(m_field, &ftp, true)) {
 	if (ftp->noterms)
-	    addModifier(SDCM_NOTERMS);
+	    addModifier(SDCM_NOTERMS); // Don't add terms to highlight data
 	prefix = wrap_prefix(ftp->pfx);
     }
 
-    if (!expandTerm(db, ermsg, mods, span, exp, sterm, prefix))
+    vector<string> multiwords;
+    if (!expandTerm(db, ermsg, mods, span, exp, sterm, prefix, &multiwords))
 	return;
     
     // Set up the highlight data. No prefix should go in there
@@ -608,6 +613,23 @@ void SearchDataClauseSimple::processSimpleSpan(Rcl::Db &db, string& ermsg,
 			   Xapian::Query(prefix+sterm, 
 					 original_term_wqf_booster));
     }
+
+    // Push phrases for the multi-word expansions
+    for (vector<string>::const_iterator mwp = multiwords.begin();
+	 mwp != multiwords.end(); mwp++) {
+	vector<string> phr;
+	// We just do a basic split to keep things a bit simpler here
+	// (no textsplit). This means though that no punctuation is
+	// allowed in multi-word synonyms.
+	stringToTokens(*mwp, phr);
+	if (!prefix.empty())
+	    prefix_vector(phr, prefix);
+	xq = Xapian::Query(Xapian::Query::OP_OR, xq, 
+			   Xapian::Query(Xapian::Query::OP_PHRASE, 
+					 phr.begin(), phr.end()));
+	m_curcl++;
+    }
+
     pqueries.push_back(xq);
 }
 
@@ -660,8 +682,8 @@ void SearchDataClauseSimple::processPhraseOrNear(Rcl::Db &db, string& ermsg,
 	vector<string> exp;
 	if (!expandTerm(db, ermsg, lmods, *it, exp, sterm, prefix))
 	    return;
-	LOGDEB0(("ProcessPhraseOrNear: exp size %d\n", exp.size()));
-	listVector("", exp);
+	LOGDEB0(("ProcessPhraseOrNear: exp size %d, exp: %s\n", exp.size(),
+		 stringsToString(exp).c_str()));
 	// groups is used for highlighting, we don't want prefixes in there.
 	vector<string> noprefs;
 	for (vector<string>::const_iterator it = exp.begin(); 
@@ -957,8 +979,8 @@ bool SearchDataClausePath::toNativeQuery(Rcl::Db &db, void *p)
 			*pit, exp, sterm, wrap_prefix(pathelt_prefix))) {
 	    return false;
 	}
-	LOGDEB0(("SDataPath::toNative: exp size %d\n", exp.size()));
-	listVector("", exp);
+	LOGDEB0(("SDataPath::toNative: exp size %d. Exp: %s\n", exp.size(),
+		 stringsToString(exp).c_str()));
 	if (exp.size() == 1)
 	    orqueries.push_back(Xapian::Query(exp[0]));
 	else 

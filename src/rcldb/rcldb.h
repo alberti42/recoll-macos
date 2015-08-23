@@ -341,8 +341,9 @@ class Db {
      * Stem expansion is performed if lang is not empty 
      * 
      * @param typ_sens defines the kind of expansion: none, wildcard, 
-     *    regexp or stemming. "none" will still expand case and
-     *    diacritics depending on the casesens and diacsens flags.
+     *    regexp or stemming. "none" may still expand case,
+     *    diacritics and synonyms, depending on the casesens, diacsens and 
+     *    synexp flags.
      * @param lang sets the stemming language(s). Can be a space-separated list
      * @param term is the term to expand
      * @param result is the main output
@@ -354,14 +355,14 @@ class Db {
      *        in the TermMatchResult header
      */
     enum MatchType {ET_NONE=0, ET_WILD=1, ET_REGEXP=2, ET_STEM=3, 
-		    ET_DIACSENS=8, ET_CASESENS=16};
+		    ET_DIACSENS=8, ET_CASESENS=16, ET_SYNEXP=32};
     int matchTypeTp(int tp) 
     {
 	return tp & 7;
     }
     bool termMatch(int typ_sens, const string &lang, const string &term, 
-		   TermMatchResult& result, int max = -1, 
-		   const string& field = cstr_null);
+		   TermMatchResult& result, int max = -1,
+		   const string& field = "", vector<string> *multiwords = 0);
     bool dbStats(DbStats& stats);
     /** Return min and max years for doc mod times in db */
     bool maxYearSpan(int *minyear, int *maxyear);

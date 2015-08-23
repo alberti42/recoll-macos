@@ -164,7 +164,8 @@ static const char *tmtptostr(int typ)
 // using the main index terms (filtering, retrieving stats, expansion
 // in some cases).
 bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
-		   TermMatchResult& res, int max,  const string& field)
+		   TermMatchResult& res, int max,  const string& field,
+		   vector<string>* multiwords)
 {
     int matchtyp = matchTypeTp(typ_sens);
     if (!m_ndb || !m_ndb->m_isopen)
@@ -256,7 +257,7 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
 	    synac.synExpand(term, lexp);
 	}
 
-	if (matchTypeTp(typ_sens) == ET_STEM) {
+	if (matchtyp == ET_STEM || (typ_sens & ET_SYNEXP)) {
 	    // Need stem expansion. Lowercase the result of accent and case
 	    // expansion for input to stemdb.
 	    for (unsigned int i = 0; i < lexp.size(); i++) {
@@ -266,45 +267,60 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
 	    }
 	    sort(lexp.begin(), lexp.end());
 	    lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
-	    StemDb sdb(xrdb);
-	    vector<string> exp1;
-	    for (vector<string>::const_iterator it = lexp.begin(); 
-		 it != lexp.end(); it++) {
-		sdb.stemExpand(lang, *it, exp1);
-	    }
-	    LOGDEB(("ExpTerm: stem exp-> %s\n", stringsToString(exp1).c_str()));
 
-	    lexp.clear();
+	    if (matchtyp == ET_STEM) {
+		StemDb sdb(xrdb);
+		vector<string> exp1;
+		for (vector<string>::const_iterator it = lexp.begin(); 
+		     it != lexp.end(); it++) {
+		    sdb.stemExpand(lang, *it, exp1);
+		}
+		exp1.swap(lexp);
+		sort(lexp.begin(), lexp.end());
+		lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
+		LOGDEB(("ExpTerm: stemexp: %s\n", 
+			stringsToString(lexp).c_str()));
+	    }
+
 	    // Expand the result for synonyms. Note that doing it here
 	    // means that multi-term synonyms will not work
 	    // (e.g. stakhanovist -> "hard at work". We would have to
 	    // separate the multi-word expansions for our caller to
 	    // add them as phrases to the query. Not impossible, but
 	    // let's keep it at single words for now.
-	    if (m_syngroups.ok()) {
+	    if (m_syngroups.ok() && (typ_sens & ET_SYNEXP)) {
 		LOGDEB(("ExpTerm: got syngroups\n"));
-		for (vector<string>::const_iterator it = exp1.begin(); 
-		     it != exp1.end(); it++) {
+		vector<string> exp1(lexp);
+		for (vector<string>::const_iterator it = lexp.begin(); 
+		     it != lexp.end(); it++) {
 		    vector<string> sg = m_syngroups.getgroup(*it);
 		    if (!sg.empty()) {
 			LOGDEB(("ExpTerm: syns: %s -> %s\n", 
 				it->c_str(), stringsToString(sg).c_str()));
-			lexp.insert(lexp.end(), sg.begin(), sg.end());
+			for (vector<string>::const_iterator it1 = sg.begin();
+			     it1 != sg.end(); it1++) {
+			    if (it1->find_first_of(" ") != string::npos) {
+				if (multiwords)
+				    multiwords->push_back(*it1);
+			    } else {
+				exp1.push_back(*it);
+			    }
+			}
 		    }
 		}
+		lexp.swap(exp1);
 		sort(lexp.begin(), lexp.end());
 		lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
-		// Keep result in exp1 for next step
-		exp1.swap(lexp);
 	    }
 
 	    // Expand the resulting list for case (all stemdb content
 	    // is lowercase)
-	    lexp.clear();
-	    for (vector<string>::const_iterator it = exp1.begin(); 
-		 it != exp1.end(); it++) {
-		synac.synExpand(*it, lexp);
+	    vector<string> exp1;
+	    for (vector<string>::const_iterator it = lexp.begin(); 
+		 it != lexp.end(); it++) {
+		synac.synExpand(*it, exp1);
 	    }
+	    exp1.swap(lexp);
 	    sort(lexp.begin(), lexp.end());
 	    lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
 	}
