@@ -300,10 +300,11 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
 			for (vector<string>::const_iterator it1 = sg.begin();
 			     it1 != sg.end(); it1++) {
 			    if (it1->find_first_of(" ") != string::npos) {
-				if (multiwords)
+				if (multiwords) {
 				    multiwords->push_back(*it1);
+				}
 			    } else {
-				exp1.push_back(*it);
+				exp1.push_back(*it1);
 			    }
 			}
 		    }

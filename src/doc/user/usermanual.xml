@@ -3358,7 +3358,7 @@ dir:recoll dir:src -dir:utils -dir:common
 
             <listitem><para><literal>p</literal> can be used to turn the
             default phrase search into a proximity one
-            (unordered). Example:<literal>"order any in"p</literal></para>
+            (unordered). Example: <literal>"order any in"p</literal></para>
             </listitem>
 
             <listitem><para><literal>C</literal> will turn on case
