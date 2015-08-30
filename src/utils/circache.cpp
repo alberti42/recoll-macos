@@ -184,7 +184,7 @@ public:
     // Offset of last write (newest header)
     off_t m_nheadoffs;
     // Pad size for newest entry. 
-    int   m_npadsize;
+    off_t m_npadsize;
     // Keep history or only last entry
     bool  m_uniquentries; 
     ///////////////////// End header entries
@@ -1009,7 +1009,7 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
 
     // Data compression ?
     const char *datap = data.c_str();
-    unsigned int datalen = data.size();
+    size_t datalen = data.size();
     unsigned short flags = 0;
     TempBuf compbuf;
     if (!(iflags & NoCompHint)) {

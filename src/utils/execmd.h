@@ -16,7 +16,7 @@
  */
 #ifndef _EXECMD_H_INCLUDED_
 #define _EXECMD_H_INCLUDED_
-
+#ifndef _WIN32
 #include <signal.h>
 
 #include <string>
@@ -279,5 +279,5 @@ private:
     std::string m_reason;
     std::stack<void (*)(void)> m_atexitfuncs;
 };
-
+#endif /* !_WIN32 */
 #endif /* _EXECMD_H_INCLUDED_ */

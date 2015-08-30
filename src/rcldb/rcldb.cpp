@@ -18,7 +18,7 @@
 
 #include <stdio.h>
 #include <cstring>
-#include <unistd.h>
+#include "safeunistd.h"
 #include <math.h>
 #include <time.h>
 
@@ -1420,10 +1420,11 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	time_t mtime = atoll(doc.dmtime.empty() ? doc.fmtime.c_str() : 
 			     doc.dmtime.c_str());
         struct tm tmb;
-	localtime_r(&mtime, &tmb);
+		struct tm *tmbp = &tmb;
+	tmbp = localtime_r(&mtime, &tmb);
 	char buf[9];
 	snprintf(buf, 9, "%04d%02d%02d",
-		 tmb.tm_year+1900, tmb.tm_mon + 1, tmb.tm_mday);
+		 tmbp->tm_year+1900, tmbp->tm_mon + 1, tmbp->tm_mday);
 	// Date (YYYYMMDD)
 	newdocument.add_boolean_term(wrap_prefix(xapday_prefix) + string(buf)); 
 	// Month (YYYYMM)

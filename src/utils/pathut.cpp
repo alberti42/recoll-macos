@@ -19,17 +19,19 @@
 #include "autoconfig.h"
 
 #include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <dirent.h>
+#include "safefcntl.h"
+#include "safeunistd.h"
+#include "dirent.h"
+#ifndef _WIN32
 #include <sys/param.h>
 #include <pwd.h>
+#include <sys/file.h>
+#include <glob.h>
+#endif
 #include <math.h>
 #include <errno.h>
 #include <sys/types.h>
-#include <sys/file.h>
 #include "safesysstat.h"
-#include <glob.h>
 
 // Let's include all files where statfs can be defined and hope for no
 // conflict...
@@ -61,6 +63,9 @@ using namespace std;
 
 bool fsocc(const string &path, int *pc, long long *blocks)
 {
+#ifdef _WIN32
+	return false;
+#else
 #ifdef sun
     struct statvfs buf;
     if (statvfs(path.c_str(), &buf) != 0) {
@@ -94,6 +99,7 @@ bool fsocc(const string &path, int *pc, long long *blocks)
 	}
     }
     return true;
+#endif
 }
 
 const string& tmplocation()
@@ -112,6 +118,7 @@ const string& tmplocation()
 
 bool maketmpdir(string& tdir, string& reason)
 {
+#ifndef _WIN32
     tdir = path_cat(tmplocation(), "rcltmpXXXXXX");
 
     char *cp = strdup(tdir.c_str());
@@ -146,11 +153,15 @@ bool maketmpdir(string& tdir, string& reason)
 #endif
 
     return true;
+#else
+	return false;
+#endif
 }
 
 TempFileInternal::TempFileInternal(const string& suffix)
     : m_noremove(false)
 {
+#ifndef _WIN32
     string filename = path_cat(tmplocation(), "rcltmpfXXXXXX");
     char *cp = strdup(filename.c_str());
     if (!cp) {
@@ -177,6 +188,7 @@ TempFileInternal::TempFileInternal(const string& suffix)
 	m_reason = string("Could not open/create") + m_filename;
 	m_filename.erase();
     }
+#endif
 }
 
 TempFileInternal::~TempFileInternal()
@@ -285,6 +297,9 @@ string path_suffix(const string& s)
 
 string path_home()
 {
+#ifdef _WIN32
+	return "c:\\";
+#else
     uid_t uid = getuid();
 
     struct passwd *entry = getpwuid(uid);
@@ -299,10 +314,14 @@ string path_home()
     string homedir = entry->pw_dir;
     path_catslash(homedir);
     return homedir;
+#endif
 }
 
 string path_tildexpand(const string &s) 
 {
+#ifdef _WIN32
+	return s;
+#else
     if (s.empty() || s[0] != '~')
 	return s;
     string o = s;
@@ -318,6 +337,7 @@ string path_tildexpand(const string &s)
 	    o.replace(0, l+1, entry->pw_dir);
     }
     return o;
+#endif
 }
 
 string path_absolute(const string &is)
@@ -402,6 +422,9 @@ bool makepath(const string& ipath)
 
 vector<string> path_dirglob(const string &dir, const string pattern)
 {
+#ifdef _WIN32
+	return vector<string>();
+#else
     vector<string> res;
     glob_t mglob;
     string mypat=path_cat(dir, pattern);
@@ -413,6 +436,7 @@ vector<string> path_dirglob(const string &dir, const string pattern)
     }
     globfree(&mglob);
     return res;
+#endif
 }
 
 bool path_isdir(const string& path)
@@ -680,6 +704,9 @@ int Pidfile::flopen()
 	return -1;
     }
 #else
+#ifdef _WIN32
+	return 0;
+#else
     int operation = LOCK_EX | LOCK_NB;
     if (flock(m_fd, operation) == -1) {
 	int serrno = errno;
@@ -688,6 +715,7 @@ int Pidfile::flopen()
 	m_reason = "flock failed";
 	return -1;
     }
+#endif // ! win32
 #endif // ! sun
 
     if (ftruncate(m_fd, 0) != 0) {

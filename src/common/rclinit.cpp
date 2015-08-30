@@ -31,9 +31,13 @@
 #include "pathut.h"
 #include "unac.h"
 #include "smallut.h"
+#ifndef _WIN32
 #include "execmd.h"
+#endif
 
+#ifndef _WIN32
 static const int catchedSigs[] = {SIGINT, SIGQUIT, SIGTERM, SIGUSR1, SIGUSR2};
+#endif
 
 static pthread_t mainthread_id;
 
@@ -52,7 +56,9 @@ RclConfig *recollinit(RclInitFlags flags,
 
     // We ignore SIGPIPE always. All pieces of code which can write to a pipe
     // must check write() return values.
+#ifndef _WIN32
     signal(SIGPIPE, SIG_IGN);
+#endif
     
     // Make sure the locale is set. This is only for converting file names 
     // to utf8 for indexing.
@@ -63,6 +69,7 @@ RclConfig *recollinit(RclInitFlags flags,
 
     // Install app signal handler
     if (sigcleanup) {
+#ifndef _WIN32
 	struct sigaction action;
 	action.sa_handler = sigcleanup;
 	action.sa_flags = 0;
@@ -73,8 +80,8 @@ RclConfig *recollinit(RclInitFlags flags,
 		    perror("Sigaction failed");
 		}
 	    }
+#endif
     }
-
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
     if (getenv("RECOLL_LOGDATE"))
@@ -116,6 +123,7 @@ RclConfig *recollinit(RclInitFlags flags,
 	DebugLog::getdbl()->setloglevel(lev);
     }
     // Install log rotate sig handler
+#ifndef _WIN32
     {
 	struct sigaction action;
 	action.sa_handler = siglogreopen;
@@ -127,6 +135,7 @@ RclConfig *recollinit(RclInitFlags flags,
 	    }
 	}
     }
+#endif
 
     // Make sure the locale charset is initialized (so that multiple
     // threads don't try to do it at once).
@@ -146,7 +155,9 @@ RclConfig *recollinit(RclInitFlags flags,
 	unac_set_except_translations(unacex.c_str());
 
 #ifndef IDX_THREADS
+#ifndef _WIN32
     ExecCmd::useVfork(true);
+#endif
 #else
     // Keep threads init behind log init, but make sure it's done before
     // we do the vfork choice ! The latter is not used any more actually, 
@@ -156,11 +167,15 @@ RclConfig *recollinit(RclInitFlags flags,
     bool novfork;
     config->getConfParam("novfork", &novfork);
     if (novfork) {
+#ifndef _WIN32
 	LOGDEB0(("rclinit: will use fork() for starting commands\n"));
         ExecCmd::useVfork(false);
+#endif
     } else {
+#ifndef _WIN32
 	LOGDEB0(("rclinit: will use vfork() for starting commands\n"));
 	ExecCmd::useVfork(true);
+#endif
     }
 #endif
 
@@ -183,6 +198,7 @@ RclConfig *recollinit(RclInitFlags flags,
 // to block possible signals
 void recoll_threadinit()
 {
+#ifndef _WIN32
     sigset_t sset;
     sigemptyset(&sset);
 
@@ -190,6 +206,7 @@ void recoll_threadinit()
 	sigaddset(&sset, catchedSigs[i]);
     sigaddset(&sset, SIGHUP);
     pthread_sigmask(SIG_BLOCK, &sset, 0);
+#endif
 }
 
 bool recoll_ismainthread()

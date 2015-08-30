@@ -15,6 +15,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #ifndef TEST_IDFILE
+#include "autoconfig.h"
+
 #include <stdlib.h>
 #include <ctype.h>
 #include <cstring>
@@ -82,11 +84,11 @@ static string idFileInternal(istream& input, const char *fn)
 	}
 
 	// gcount includes the \n
-	int ll = input.gcount() - 1; 
+	std::streamsize ll = input.gcount() - 1; 
 	if (ll > 0)
 	    gotnonempty = true;
 
-	LOGDEB2(("idfile: lnum %d ll %d: [%s]\n", lnum, ll, cline));
+	LOGDEB2(("idfile: lnum %d ll %u: [%s]\n", lnum, (unsigned int)ll, cline));
 
 	// Check for a few things that can't be found in a mail file,
 	// (optimization to get a quick negative)

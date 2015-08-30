@@ -122,7 +122,7 @@ namespace Binc {
     for (std::string::const_iterator i = s_in.begin(); i != s_in.end(); ++i) {
       unsigned char c = (unsigned char)*i;
       if (c <= 31 || c >= 127 || c == '\"' || c == '\\')
-	return "{" + toString(s_in.length()) + "}\r\n" + s_in;
+	return "{" + toString((unsigned long)s_in.length()) + "}\r\n" + s_in;
     }
     
     return "\"" + s_in + "\"";

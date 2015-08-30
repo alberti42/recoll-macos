@@ -43,7 +43,6 @@
 #include "fileudi.h"
 #include "cancelcheck.h"
 #include "rclinit.h"
-#include "execmd.h"
 #include "extrameta.h"
 
 using namespace std;

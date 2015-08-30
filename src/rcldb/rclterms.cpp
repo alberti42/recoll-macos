@@ -401,10 +401,14 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
     // first wildcard character. We only scan the part of the
     // index where this matches
     string is;
-    switch (es) {
-    case string::npos: is = prefix + root; break;
-    case 0: is = prefix; break;
-    default: is = prefix + root.substr(0, es); break;
+	if (es == string::npos) {
+		is = prefix + root;
+	}
+	else if (es == 0) {
+		is = prefix;
+
+	} else {
+		is = prefix + root.substr(0, es);
     }
     LOGDEB2(("termMatch: initsec: [%s]\n", is.c_str()));
 

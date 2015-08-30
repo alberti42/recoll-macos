@@ -708,8 +708,78 @@ typedef int clockid_t;
 #undef USE_CLOCK_GETTIME
 #endif
 
+#ifdef WIN32
+#include "safewindows.h"
+// Note: struct timespec is defined by pthread.h (from pthreads-w32)
+#ifndef CLOCK_REALTIME
+#define CLOCK_REALTIME 0
+#endif
+
+LARGE_INTEGER getFILETIMEoffset()
+{
+	SYSTEMTIME s;
+	FILETIME f;
+	LARGE_INTEGER t;
+
+	s.wYear = 1970;
+	s.wMonth = 1;
+	s.wDay = 1;
+	s.wHour = 0;
+	s.wMinute = 0;
+	s.wSecond = 0;
+	s.wMilliseconds = 0;
+	SystemTimeToFileTime(&s, &f);
+	t.QuadPart = f.dwHighDateTime;
+	t.QuadPart <<= 32;
+	t.QuadPart |= f.dwLowDateTime;
+	return (t);
+}
+
+int clock_gettime(int X, struct timespec *tv)
+{
+	LARGE_INTEGER           t;
+	FILETIME            f;
+	double                  microseconds;
+	static LARGE_INTEGER    offset;
+	static double           frequencyToMicroseconds;
+	static int              initialized = 0;
+	static BOOL             usePerformanceCounter = 0;
+
+	if (!initialized) {
+		LARGE_INTEGER performanceFrequency;
+		initialized = 1;
+		usePerformanceCounter = QueryPerformanceFrequency(&performanceFrequency);
+		if (usePerformanceCounter) {
+			QueryPerformanceCounter(&offset);
+			frequencyToMicroseconds = (double)performanceFrequency.QuadPart / 1000000.;
+		}
+		else {
+			offset = getFILETIMEoffset();
+			frequencyToMicroseconds = 10.;
+		}
+	}
+	if (usePerformanceCounter) QueryPerformanceCounter(&t);
+	else {
+		GetSystemTimeAsFileTime(&f);
+		t.QuadPart = f.dwHighDateTime;
+		t.QuadPart <<= 32;
+		t.QuadPart |= f.dwLowDateTime;
+	}
+
+	t.QuadPart -= offset.QuadPart;
+	microseconds = (double)t.QuadPart / frequencyToMicroseconds;
+	t.QuadPart = (long long)microseconds;
+	tv->tv_sec = t.QuadPart / 1000000;
+	tv->tv_nsec = (t.QuadPart % 1000000) * 1000;
+	return (0);
+}
+#define USE_CLOCK_GETTIME
+#else /* -> !_WIN32 */
+
 #ifndef USE_CLOCK_GETTIME
 #include <sys/time.h>
+#endif
+
 #endif
 
 static void gettime(clockid_t clk_id, struct timespec *ts)
@@ -740,29 +810,29 @@ Chrono::Chrono()
 }
 
 // Reset and return value before rest in milliseconds
-long Chrono::restart()
+time_t Chrono::restart()
 {
   struct timespec tv;
   gettime(CLOCK_REALTIME, &tv);
-  long ret = MILLIS(tv);
+  time_t ret = MILLIS(tv);
   m_secs = tv.tv_sec;
   m_nsecs = tv.tv_nsec;
   return ret;
 }
 
 // Get current timer value, milliseconds
-long Chrono::millis(int frozen)
+time_t Chrono::millis(int frozen)
 {
     return nanos() / 1000000;
 }
 
 //
-long Chrono::micros(int frozen)
+time_t Chrono::micros(int frozen)
 {
     return nanos() / 1000;
 }
 
-long long Chrono::nanos(int frozen)
+time_t Chrono::nanos(int frozen)
 {
   if (frozen) {
     return NANOS(frozen_tv);
@@ -773,12 +843,12 @@ long long Chrono::nanos(int frozen)
   }
 }
 
-float Chrono::secs(int frozen)
+double Chrono::secs(int frozen)
 {
   struct timespec tv;
   gettime(CLOCK_REALTIME, &tv);
-  float secs = (float)(frozen?frozen_tv.tv_sec:tv.tv_sec - m_secs);
-  float nsecs = (float)(frozen?frozen_tv.tv_nsec:tv.tv_nsec - m_nsecs); 
+  double secs = (double)(frozen?frozen_tv.tv_sec:tv.tv_sec - m_secs);
+  double nsecs = (double)(frozen?frozen_tv.tv_nsec:tv.tv_nsec - m_nsecs); 
   return secs + nsecs * 1e-9;
 }
 
@@ -818,7 +888,7 @@ static bool parsedate(vector<string>::const_iterator& it,
         return false;
     }
     if (it == end || sscanf(it++->c_str(), "%d", &dip->d1) != 1) {
-        return -1;
+        return false;
     }
 
     return true;
@@ -1062,7 +1132,7 @@ void catstrerror(string *reason, const char *what, int _errno)
 
     reason->append(" : ");
 
-#ifdef sun
+#if defined(sun) || defined(_WIN32)
     // Note: sun strerror is noted mt-safe ??
     reason->append(strerror(_errno));
 #else

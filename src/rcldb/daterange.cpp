@@ -29,7 +29,7 @@
 #include <vector>
 using namespace std;
 
-#include "xapian.h"
+#include <xapian.h>
 
 #include "debuglog.h"
 #include "rclconfig.h"

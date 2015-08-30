@@ -19,11 +19,13 @@
 
 #include <stdio.h>
 #include <errno.h>
+#ifndef _WIN32
 #include <langinfo.h>
+#include <sys/param.h>
+#endif
 #include <limits.h>
 #include "safesysstat.h"
 #include "safeunistd.h"
-#include <sys/param.h>
 #ifdef __FreeBSD__
 #include <osreldate.h>
 #endif
@@ -200,6 +202,7 @@ RclConfig::RclConfig(const string *argcnf)
     // is called from the main thread at once, by constructing a config
     // from recollinit
     if (o_localecharset.empty()) {
+#ifndef _WIN32
 	const char *cp;
 	cp = nl_langinfo(CODESET);
 	// We don't keep US-ASCII. It's better to use a superset
@@ -217,6 +220,9 @@ RclConfig::RclConfig(const string *argcnf)
 	    // Use cp1252 instead of iso-8859-1, it's a superset.
 	    o_localecharset = string(cstr_cp1252);
 	}
+#else
+        o_localecharset = "UTF-8";
+#endif
 	LOGDEB1(("RclConfig::getDefCharset: localecharset [%s]\n",
 		 o_localecharset.c_str()));
     }

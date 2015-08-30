@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <unistd.h>
+#include "safeunistd.h"
 #include <time.h>
 #include <cstdlib>
 

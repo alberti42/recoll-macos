@@ -25,7 +25,7 @@
  */
 #ifndef mime_inputsource_h_included
 #define mime_inputsource_h_included
-
+#include "autoconfig.h"
 // Data source for MIME parser
 
 // Note about large files: we might want to change the unsigned int

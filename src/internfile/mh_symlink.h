@@ -18,7 +18,7 @@
 #define _MH_SYMLINK_H_INCLUDED_
 
 #include <string>
-#include <unistd.h>
+#include "safeunistd.h"
 #include <errno.h>
 
 #include "cstr.h"

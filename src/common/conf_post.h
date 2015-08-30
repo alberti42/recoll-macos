@@ -26,3 +26,37 @@
 #  define STD_SHARED_PTR    RefCntr
 #endif
 
+#ifdef _WIN32
+#include "safewindows.h"
+typedef int pid_t;
+inline int readlink(const char *cp, void *buf, int cnt) {
+	return -1;
+}
+#define HAVE_STRUCT_TIMESPEC
+#define strdup _strdup
+#define timegm _mkgmtime
+// gmtime is supposedly thread-safe on windows
+#define gmtime_r(A, B) gmtime(A)
+#define localtime_r(A,B) localtime(A)
+
+typedef DWORD32 u_int32_t;
+typedef DWORD64 u_int64_t;
+typedef unsigned __int8 u_int8_t;
+typedef int mode_t;
+typedef int ssize_t;
+#define strncasecmp _strnicmp
+#define ftruncate _chsize
+#define PATH_MAX MAX_PATH
+#define MAXPATHLEN PATH_MAX
+#define R_OK 4
+#define W_OK 2
+#define X_OK 4
+#define RECOLL_DATADIR "C:\\recoll\\"
+#define S_ISLNK(X) false
+#define lstat stat
+#define fseeko _fseeki64 
+#define ftello _ftelli64
+
+#endif
+
+

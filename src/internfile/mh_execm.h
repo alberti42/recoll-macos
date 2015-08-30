@@ -98,7 +98,9 @@ text/plainData: 10
 class MimeHandlerExecMultiple : public MimeHandlerExec {
     /////////
     // Things not reset by "clear()", additionally to those in MimeHandlerExec
+#ifndef _WIN32
     ExecCmd  m_cmd;
+#endif
     /////// End un-cleared stuff.
 
  public:

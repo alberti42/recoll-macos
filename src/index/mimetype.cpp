@@ -27,7 +27,9 @@ using namespace std;
 
 #include "mimetype.h"
 #include "debuglog.h"
+#ifndef _WIN32
 #include "execmd.h"
+#endif
 #include "rclconfig.h"
 #include "smallut.h"
 #include "idfile.h"

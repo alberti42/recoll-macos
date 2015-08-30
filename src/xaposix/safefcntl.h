@@ -34,7 +34,9 @@
 #ifdef _MSC_VER
 // MSVC #define-s open but also defines a function called open, so just undef
 // the macro.
-# undef open
+// Jf/recoll: don't do this, open() seems to be finally deprecated in vs 2015, we need _open(). Hopefully recoll has
+// no open() methods..
+//# undef open
 #else
 
 inline int fcntl_open_(const char *filename, int flags, mode_t mode) {

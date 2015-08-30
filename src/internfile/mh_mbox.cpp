@@ -22,7 +22,11 @@
 #include <sys/types.h>
 #include "safesysstat.h"
 #include <time.h>
+#ifndef _WIN32
 #include <regex.h>
+#else 
+#include <regex>
+#endif
 
 #include <cstring>
 #include <map>
@@ -70,6 +74,14 @@ static PTMutexInit o_mcache_mutex;
  * offsets for all message "From_" lines follow. The format is purely
  * binary, values are not even byte-swapped to be proc-idependant.
  */
+
+#ifdef _WIN32
+// vc++ does not let define an array of size o_b1size because non-const??
+#define M_o_b1size 1024
+#else
+#define M_o_b1size o_b1size;
+#endif
+
 class MboxCache {
 public:
     typedef MimeHandlerMbox::mbhoff_type mbhoff_type;
@@ -98,7 +110,7 @@ public:
         }
         FpKeeper keeper(&fp);
 
-        char blk1[o_b1size];
+        char blk1[M_o_b1size];
         if (fread(blk1, 1, o_b1size, fp) != o_b1size) {
             LOGDEB0(("MboxCache::get_offsets: read blk1 errno %d\n", errno));
             return -1;
@@ -226,7 +238,6 @@ private:
 };
 
 const size_t MboxCache::o_b1size = 1024;
-
 static class MboxCache o_mcache;
 
 static const string cstr_keyquirks("mhmboxquirks");
@@ -376,9 +387,20 @@ static const  char *frompat =
 // exactly like: From ^M (From followed by space and eol). We only
 // test for this if QUIRKS_TBIRD is set
 static const char *miniTbirdFrom = "^From $";
-
+#ifndef _WIN32
 static regex_t fromregex;
 static regex_t minifromregex;
+#define M_regexec(A,B,C,D,E) regexec(&(A),B,C,D,E)
+#else
+basic_regex<char> fromregex;
+basic_regex<char> minifromregex;
+#define REG_ICASE std::regex_constants::icase
+#define REG_NOSUB std::regex_constants::nosubs
+#define REG_EXTENDED std::regex_constants::extended
+#define M_regexec(A, B, C, D, E) regex_match(B,A)
+
+#endif
+
 static bool regcompiled;
 static PTMutexInit o_regex_mutex;
 
@@ -390,8 +412,13 @@ static void compileregexes()
     // that we are alone.
     if (regcompiled)
 	return;
+#ifndef _WIN32
     regcomp(&fromregex, frompat, REG_NOSUB|REG_EXTENDED);
     regcomp(&minifromregex, miniTbirdFrom, REG_NOSUB|REG_EXTENDED);
+#else
+		fromregex = basic_regex<char>(frompat, REG_NOSUB | REG_EXTENDED);
+		minifromregex = basic_regex<char>(miniTbirdFrom, REG_NOSUB | REG_EXTENDED);
+#endif
     regcompiled = true;
 }
 
@@ -440,9 +467,9 @@ bool MimeHandlerMbox::next_document()
             (off = o_mcache.get_offset(m_config, m_udi, mtarg)) >= 0 && 
             fseeko(fp, (off_t)off, SEEK_SET) >= 0 && 
             fgets(line, LL, fp) &&
-            (!regexec(&fromregex, line, 0, 0, 0) || 
+            (!M_regexec(fromregex, line, 0, 0, 0) || 
 	     ((m_quirks & MBOXQUIRK_TBIRD) && 
-	      !regexec(&minifromregex, line, 0, 0, 0)))	) {
+	      !M_regexec(minifromregex, line, 0, 0, 0)))	) {
                 LOGDEB0(("MimeHandlerMbox: Cache: From_ Ok\n"));
                 fseeko(fp, (off_t)off, SEEK_SET);
                 m_msgnum = mtarg -1;
@@ -485,9 +512,9 @@ bool MimeHandlerMbox::next_document()
 		/* The 'F' compare is redundant but it improves performance
 		   A LOT */
 		if (line[0] == 'F' && (
-		    !regexec(&fromregex, line, 0, 0, 0) || 
+		    !M_regexec(fromregex, line, 0, 0, 0) || 
 		    ((m_quirks & MBOXQUIRK_TBIRD) && 
-		     !regexec(&minifromregex, line, 0, 0, 0)))
+		     !M_regexec(minifromregex, line, 0, 0, 0)))
 		    ) {
 		    LOGDEB1(("MimeHandlerMbox: msgnum %d, "
 		     "From_ at line %d: [%s]\n", m_msgnum, m_lineno, line));
