@@ -51,7 +51,7 @@ static inline bool is_except_char(unsigned short c, string& trans)
     trans = it->second;
     return true;
 }
-#endif /* RECOLL_DATADIR */
+#endif /* BUILDING_RECOLL*/
 
 /*
  * If configure.in has not defined this symbol, assume const. It
@@ -14195,7 +14195,7 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
     /*
      * Lookup the tables for decomposition information
      */
-#ifdef RECOLL_DATADIR
+#ifdef BUILDING_RECOLL
     // Exception unac/fold values set by user. There should be 3 arrays for
     // unac/fold/unac+fold. For now there is only one array, which used to
     // be set for unac+fold, and is mostly or only used to prevent diacritics
@@ -14218,11 +14218,11 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
 	    l = trans.size() / 2;
 	}
     } else {
-#endif /* RECOLL_DATADIR */
+#endif /* BUILDING_RECOLL */
 	unac_uf_char_utf16_(c, p, l, what)
-#ifdef RECOLL_DATADIR
+#ifdef BUILDING_RECOLL
     }
-#endif /* RECOLL_DATADIR */
+#endif /* BUILDING_RECOLL */
 
     /*
      * Explain what's done in great detail
@@ -14560,7 +14560,7 @@ const char* unac_version(void)
   return UNAC_VERSION;
 }
 
-#ifdef RECOLL_DATADIR
+#ifdef BUILDING_RECOLL
 void unac_set_except_translations(const char *spectrans)
 {
     except_trans.clear();
@@ -14613,4 +14613,4 @@ void unac_set_except_translations(const char *spectrans)
 	free(out);
     }
 }
-#endif /* RECOLL_DATADIR */
+#endif /* BUILDING_RECOLL */

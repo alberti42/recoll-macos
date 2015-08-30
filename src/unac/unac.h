@@ -114,7 +114,7 @@ int fold_string(const char* charset,
 /* To be called before starting threads in mt programs */
 void unac_init_mt();
 
-#ifdef RECOLL_DATADIR
+#ifdef BUILDING_RECOLL
 #include <string>
 /** 
  * Set exceptions for unaccenting, for characters which should not be
@@ -128,7 +128,7 @@ void unac_init_mt();
  *  can't be an exception character, deal with it...
  */
 void unac_set_except_translations(const char *spectrans);
-#endif /* RECOLL_DATADIR */
+#endif /* BUILDING_RECOLL */
 
 /*
  * Return unac version number.

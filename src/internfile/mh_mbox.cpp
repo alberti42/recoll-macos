@@ -79,7 +79,7 @@ static PTMutexInit o_mcache_mutex;
 // vc++ does not let define an array of size o_b1size because non-const??
 #define M_o_b1size 1024
 #else
-#define M_o_b1size o_b1size;
+#define M_o_b1size o_b1size
 #endif
 
 class MboxCache {
