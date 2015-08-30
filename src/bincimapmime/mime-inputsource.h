@@ -199,7 +199,7 @@ namespace Binc {
     s.seekg(0, ios::end);
     std::streampos lst = s.tellg();
     s.seekg(st);
-    size_t nbytes = lst - st;
+    size_t nbytes = size_t(lst - st);
     if (nbytes > nb) {
 	nbytes = nb;
     }

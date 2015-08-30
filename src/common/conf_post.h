@@ -46,7 +46,7 @@ typedef int mode_t;
 typedef int ssize_t;
 #define strncasecmp _strnicmp
 #define strcasecmp _stricmp
-#define ftruncate _chsize
+#define ftruncate _chsize_s
 #define PATH_MAX MAX_PATH
 #define MAXPATHLEN PATH_MAX
 #define R_OK 4
@@ -56,7 +56,7 @@ typedef int ssize_t;
 #define S_ISLNK(X) false
 #define lstat stat
 #define fseeko _fseeki64 
-#define ftello _ftelli64
+#define ftello (off_t)_ftelli64
 #define timegm _mkgmtime
 #endif
 

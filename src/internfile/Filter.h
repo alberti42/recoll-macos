@@ -140,7 +140,7 @@ namespace Dijon
 	    stat() calls The value is stored inside metaData, docsize
 	    key
 	*/
-	virtual void set_docsize(size_t size) = 0;
+	virtual void set_docsize(off_t size) = 0;
 
 	// Going from one nested document to the next.
 

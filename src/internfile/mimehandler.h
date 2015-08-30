@@ -91,7 +91,7 @@ public:
 	return set_document_string(mtype, std::string(cp, sz));
     }
 
-    virtual void set_docsize(size_t size)
+    virtual void set_docsize(off_t size)
     {
 	char csize[30];
 	sprintf(csize, "%lld", (long long)size);

@@ -637,7 +637,7 @@ string displayableBytes(off_t size)
 	unit = " GB ";
 	roundable = double(size) / 1E9;
     }
-    size = round(roundable);
+    size = off_t(round(roundable));
     sprintf(sizebuf, "%lld" "%s", (long long)size, unit);
     return string(sizebuf);
 }

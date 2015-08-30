@@ -104,7 +104,7 @@ bool file_scan(const string &fn, FileScanDo* doer, off_t startoffs,
     if (cnttoread != (size_t)-1 && cnttoread) {
 	doer->init(cnttoread+1, reason);
     } else if (st.st_size > 0) {
-	doer->init(st.st_size+1, reason);
+      doer->init(size_t(st.st_size+1), reason);
     } else {
 	doer->init(0, reason);
     }
@@ -123,7 +123,7 @@ bool file_scan(const string &fn, FileScanDo* doer, off_t startoffs,
     for (;;) {
         size_t toread = RDBUFSZ;
         if (startoffs > 0 && curoffs < startoffs) {
-            toread = MIN(RDBUFSZ, startoffs - curoffs);
+	  toread = size_t(MIN(RDBUFSZ, startoffs - curoffs));
         }
 
         if (cnttoread != size_t(-1)) {

@@ -169,7 +169,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
             l_mime = *imime;
     }
 
-    size_t docsize = stp->st_size;
+    off_t docsize = stp->st_size;
 
     if (!l_mime.empty()) {
 	// Has mime: check for a compressed file. If so, create a

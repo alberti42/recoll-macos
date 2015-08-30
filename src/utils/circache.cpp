@@ -956,10 +956,10 @@ bool CirCache::erase(const string& udi)
 // entry. 
 class CCScanHookSpacer : public  CCScanHook {
 public:
-    UINT sizewanted;
-    UINT sizeseen;
+    off_t sizewanted;
+    off_t sizeseen;
     vector<pair<string, off_t> > squashed_udis;
-    CCScanHookSpacer(int sz)
+    CCScanHookSpacer(off_t sz)
         : sizewanted(sz), sizeseen(0) {assert(sz > 0);}
 
     virtual status takeone(off_t offs, const string& udi, 
@@ -1035,15 +1035,15 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
 
     // Characteristics for the new entry.
     int nsize = CIRCACHE_HEADER_SIZE + dic.size() + datalen;
-    int nwriteoffs = m_d->m_oheadoffs;
-    int npadsize = 0;
+    off_t nwriteoffs = m_d->m_oheadoffs;
+    off_t npadsize = 0;
     bool extending = false;
 
     LOGDEB(("CirCache::put: nsz %d oheadoffs %d\n", nsize, m_d->m_oheadoffs));
 
     // Check if we can recover some pad space from the (physically) previous
     // entry.
-    int recovpadsize = m_d->m_oheadoffs == CIRCACHE_FIRSTBLOCK_SIZE ?
+    off_t recovpadsize = m_d->m_oheadoffs == CIRCACHE_FIRSTBLOCK_SIZE ?
         0 : m_d->m_npadsize;
     if (recovpadsize != 0) {
         // Need to read the latest entry's header, to rewrite it with a 
@@ -1082,7 +1082,7 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
     } else {
         // Scan the file until we have enough space for the new entry,
         // and determine the pad size up to the 1st preserved entry
-        int scansize = nsize - recovpadsize;
+        off_t scansize = nsize - recovpadsize;
         LOGDEB(("CirCache::put: scanning for size %d from offs %u\n",
                 scansize, (UINT)m_d->m_oheadoffs));
         CCScanHookSpacer spacer(scansize);

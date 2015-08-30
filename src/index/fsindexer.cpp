@@ -329,7 +329,7 @@ bool FsIndexer::indexFiles(list<string>& files, int flags)
 {
     LOGDEB(("FsIndexer::indexFiles\n"));
     m_noretryfailed = (flags & ConfIndexer::IxFNoRetryFailed) != 0;
-    int ret = false;
+    bool ret = false;
 
     if (!init())
         return false;
@@ -702,7 +702,7 @@ FsIndexer::processonefile(RclConfig *config,
     }
 
     LOGDEB0(("processone: processing: [%s] %s\n", 
-             displayableBytes(stp->st_size).c_str(), fn.c_str()));
+             displayableBytes(off_t(stp->st_size)).c_str(), fn.c_str()));
 
     string utf8fn = compute_utf8fn(config, fn);
 

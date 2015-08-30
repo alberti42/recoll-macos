@@ -26,7 +26,6 @@
 #include <sys/param.h>
 #include <pwd.h>
 #include <sys/file.h>
-#include <glob.h>
 #endif
 #include <math.h>
 #include <errno.h>
@@ -418,25 +417,6 @@ bool makepath(const string& ipath)
 	path += "/";
     }
     return true;
-}
-
-vector<string> path_dirglob(const string &dir, const string pattern)
-{
-#ifdef _WIN32
-	return vector<string>();
-#else
-    vector<string> res;
-    glob_t mglob;
-    string mypat=path_cat(dir, pattern);
-    if (glob(mypat.c_str(), 0, 0, &mglob)) {
-	return res;
-    }
-    for (int i = 0; i < int(mglob.gl_pathc); i++) {
-	res.push_back(mglob.gl_pathv[i]);
-    }
-    globfree(&mglob);
-    return res;
-#endif
 }
 
 bool path_isdir(const string& path)

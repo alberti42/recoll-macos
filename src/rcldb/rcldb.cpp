@@ -549,8 +549,7 @@ bool Db::Native::getPagePositions(Xapian::docid docid, vector<int>& vpos)
     return true;
 }
 
-int Db::Native::getPageNumberForPosition(const vector<int>& pbreaks, 
-					 unsigned int pos)
+int Db::Native::getPageNumberForPosition(const vector<int>& pbreaks, int pos)
 {
     if (pos < baseTextPosition) // Not in text body
 	return -1;
