@@ -82,7 +82,7 @@ bool Query::Native::getMatchTerms(unsigned long xdocid, vector<string>& terms)
 {
     if (!xenquire) {
 	LOGERR(("Query::getMatchTerms: no query opened\n"));
-	return -1;
+	return false;
     }
 
     terms.clear();

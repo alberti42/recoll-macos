@@ -25,10 +25,10 @@
 
 #include <string>
 
-using std::string;
-
 #include "readfile.h"
 #include "smallut.h"
+
+using std::string;
 
 #ifndef MIN
 #define MIN(A,B) ((A) < (B) ? (A) : (B))

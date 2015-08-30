@@ -465,10 +465,14 @@ void RclConfig::initThrConf()
     if (vq.size() > 0 && vq[0] == 0) {
 	LOGDEB(("RclConfig::initThrConf: autoconf requested\n"));
 	CpuConf cpus;
+#ifdef _WIN32
+	cpus.ncpus = 1;
+#else
 	if (!getCpuConf(cpus) || cpus.ncpus < 1) {
 	    LOGERR(("RclConfig::initThrConf: could not retrieve cpu conf\n"));
 	    cpus.ncpus = 1;
 	}
+#endif
 	// Arbitrarily set threads config based on number of CPUS. This also
 	// depends on the IO setup actually, so we're bound to be wrong...
 	if (cpus.ncpus == 1) {

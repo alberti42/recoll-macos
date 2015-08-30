@@ -45,6 +45,7 @@ typedef unsigned __int8 u_int8_t;
 typedef int mode_t;
 typedef int ssize_t;
 #define strncasecmp _strnicmp
+#define strcasecmp _stricmp
 #define ftruncate _chsize
 #define PATH_MAX MAX_PATH
 #define MAXPATHLEN PATH_MAX
@@ -56,7 +57,7 @@ typedef int ssize_t;
 #define lstat stat
 #define fseeko _fseeki64 
 #define ftello _ftelli64
-
+#define timegm _mkgmtime
 #endif
 
 

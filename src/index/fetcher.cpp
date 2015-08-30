@@ -33,8 +33,10 @@ DocFetcher *docFetcherMake(const Rcl::Doc& idoc)
     idoc.getmeta(Rcl::Doc::keybcknd, &backend);
     if (backend.empty() || !backend.compare("FS")) {
 	return new FSDocFetcher;
+#ifndef DISABLE_WEB_INDEXER
     } else if (!backend.compare("BGL")) {
 	return new BGLDocFetcher;
+#endif
     } else {
 	LOGERR(("DocFetcherFactory: unknown backend [%s]\n", backend.c_str()));
 	return 0;

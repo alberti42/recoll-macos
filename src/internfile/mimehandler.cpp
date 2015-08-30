@@ -195,6 +195,9 @@ static const string cstr_mh_charset("charset");
 MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
                                bool multiple, const string& id)
 {
+#ifdef _WIN32
+	return 0;
+#else
     ConfSimple attrs;
     string cmdstr;
 
@@ -238,6 +241,7 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
 #endif
 
     return h;
+#endif
 }
 
 /* Get handler/filter object for given mime type: */

@@ -14,9 +14,7 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifdef HAVE_CONFIG_H
 #include "autoconfig.h"
-#endif
 
 #include <stdio.h>
 #include <errno.h>
@@ -27,7 +25,9 @@
 #include "debuglog.h"
 #include "indexer.h"
 #include "fsindexer.h"
+#ifndef DISABLE_WEB_INDEXER
 #include "beaglequeue.h"
+#endif
 #include "mimehandler.h"
 #include "pathut.h"
 
@@ -46,7 +46,9 @@ ConfIndexer::ConfIndexer(RclConfig *cnf, DbIxStatusUpdater *updfunc)
 ConfIndexer::~ConfIndexer()
 {
      deleteZ(m_fsindexer);
+#ifndef DISABLE_WEB_INDEXER
      deleteZ(m_beagler);
+#endif
 }
 
 // Determine if this is likely the first time that the user runs
@@ -107,7 +109,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
             return false;
         }
     }
-
+#ifndef DISABLE_WEB_INDEXER
     if (m_dobeagle && (typestorun & IxTBeagleQueue)) {
         deleteZ(m_beagler);
         m_beagler = new BeagleQueueIndexer(m_config, &m_db, m_updater);
@@ -116,7 +118,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
             return false;
         }
     }
-
+#endif
     if (typestorun == IxTAll) {
         // Get rid of all database entries that don't exist in the
         // filesystem anymore. Only if all *configured* indexers ran.
@@ -173,6 +175,7 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
         ret = m_fsindexer->indexFiles(myfiles, flag);
     LOGDEB2(("ConfIndexer::indexFiles: fsindexer returned %d, "
             "%d files remainining\n", ret, myfiles.size()));
+#ifndef DISABLE_WEB_INDEXER
 
     if (m_dobeagle && !myfiles.empty() && !(flag & IxFNoWeb)) {
         if (!m_beagler)
@@ -183,7 +186,7 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
             ret = false;
         }
     }
-
+#endif
     // The close would be done in our destructor, but we want status here
     if (!m_db.close()) {
 	LOGERR(("ConfIndexer::index: error closing database in %s\n", 
@@ -255,6 +258,7 @@ bool ConfIndexer::purgeFiles(std::list<string> &files, int flag)
     if (m_fsindexer)
         ret = m_fsindexer->purgeFiles(myfiles);
 
+#ifndef DISABLE_WEB_INDEXER
     if (m_dobeagle && !myfiles.empty() && !(flag & IxFNoWeb)) {
         if (!m_beagler)
             m_beagler = new BeagleQueueIndexer(m_config, &m_db, m_updater);
@@ -264,6 +268,7 @@ bool ConfIndexer::purgeFiles(std::list<string> &files, int flag)
             ret = false;
         }
     }
+#endif
 
     // The close would be done in our destructor, but we want status here
     if (!m_db.close()) {

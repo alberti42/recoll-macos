@@ -31,7 +31,13 @@ Library General Public License for more details.  */
 
 /* Match STRING against the filename pattern PATTERN,
    returning zero if it matches, FNM_NOMATCH if not.  */
-extern int fnmatch (const char *pattern, const char *string, int flags);
+#ifdef __cplusplus
+extern "C" {
+#endif
+extern int fnmatch (const char *pattern, const char *str, int flags);
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif	/* fnmatch.h */

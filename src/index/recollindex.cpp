@@ -42,7 +42,9 @@ using namespace std;
 #include "x11mon.h"
 #include "cancelcheck.h"
 #include "rcldb.h"
+#ifndef DISABLE_WEB_INDEXER
 #include "beaglequeue.h"
+#endif
 #include "recollindex.h"
 #include "fsindexer.h"
 #ifndef _WIN32
@@ -135,6 +137,7 @@ class MyUpdater : public DbIxStatusUpdater {
 	    return false;
 	}
 
+#ifndef DISABLE_X11MON
 	// If we are in the monitor, we also need to check X11 status
 	// during the initial indexing pass (else the user could log
 	// out and the indexing would go on, not good (ie: if the user
@@ -144,7 +147,7 @@ class MyUpdater : public DbIxStatusUpdater {
 	    stopindexing = true;
 	    return false;
 	}
-
+#endif
 	return true;
     }
 
@@ -520,9 +523,11 @@ int main(int argc, char **argv)
     if (op_flags & OPT_k) {
         indexerFlags &= ~ConfIndexer::IxFNoRetryFailed; 
     } else {
+#ifndef _WIN32
         if (checkRetryFailed(config, false)) {
             indexerFlags &= ~ConfIndexer::IxFNoRetryFailed; 
         }
+#endif
     }
 
     Pidfile pidfile(config->getPidfile());
@@ -646,10 +651,12 @@ int main(int argc, char **argv)
 			"not going into monitor mode\n"));
 		exit(1);
 	    } else {
+#ifndef _WIN32
                 // Record success of indexing pass with failed files retries.
                 if (!(indexerFlags & ConfIndexer::IxFNoRetryFailed)) {
                     checkRetryFailed(config, true);
                 }
+#endif
             }
 	    deleteZ(confindexer);
 #ifndef _WIN32
@@ -687,11 +694,12 @@ int main(int argc, char **argv)
 	makeIndexerOrExit(config, inPlaceReset);
 	bool status = confindexer->index(rezero, ConfIndexer::IxTAll, 
                                          indexerFlags);
-
+#ifndef _WIN32
         // Record success of indexing pass with failed files retries.
         if (status && !(indexerFlags & ConfIndexer::IxFNoRetryFailed)) {
             checkRetryFailed(config, true);
         }
+#endif
 	if (!status) 
 	    cerr << "Indexing failed" << endl;
         if (!confindexer->getReason().empty())

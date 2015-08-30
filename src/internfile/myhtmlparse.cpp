@@ -23,6 +23,10 @@
  * -----END-LICENCE-----
  */
 #include <time.h>
+#ifdef _WIN32
+// Local implementation in windows directory
+#include "strptime.h" 
+#endif
 #include <stdio.h>
 #include <algorithm>
 #include <cstring>

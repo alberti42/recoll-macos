@@ -16,15 +16,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#ifdef RECOLL_DATADIR
+#ifdef BUILDING_RECOLL
 #include "autoconfig.h"
 #else
 #include "config.h"
 #endif /* RECOLL */
-#endif /* HAVE_CONFIG_H */
 
-#ifdef RECOLL_DATADIR
+#ifdef BUILDING_RECOLL
 /* Yes, recoll unac is actually c++, lets face modernity, I will not be
    caught writing another binary search  */
 #include <vector>

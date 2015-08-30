@@ -13,10 +13,9 @@ Library General Public License for more details.  */
 
 /* Modified slightly by Brian Berliner <berliner@sun.com> and
    Jim Blandy <jimb@cyclic.com> for CVS use */
+/* Modified slightly by j.f. dockes for recoll use */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+#include "autoconfig.h"
 
 /* Some file systems are case-insensitive.  If FOLD_FN_CHAR is
    #defined, it maps the character C onto its "canonical" form.  In a
@@ -27,27 +26,13 @@ Library General Public License for more details.  */
 #define FOLD_FN_CHAR(c) (c)
 #endif
 
-/* IGNORE(@ */
-/* #include <ansidecl.h> */
-/* @) */
 #include <errno.h>
-#include <fnmatch.h>
+#include "fnmatch.h"
 
-#if !defined(__GNU_LIBRARY__) && !defined(STDC_HEADERS)
-extern int errno;
-#endif
 
 /* Match STRING against the filename pattern PATTERN, returning zero if
    it matches, nonzero if not.  */
-int
-#if __STDC__
-fnmatch (const char *pattern, const char *string, int flags)
-#else
-fnmatch (pattern, string, flags)
-    char *pattern;
-    char *string;
-    int flags;
-#endif
+int fnmatch (const char *pattern, const char *string, int flags)
 {
   register const char *p = pattern, *n = string;
   register char c;

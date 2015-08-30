@@ -18,10 +18,13 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include "safefcntl.h"
+#include <sys/types.h>
+#include "safesysstat.h"
+#include "safeunistd.h"
 
 #include <iostream>
 #include <string>
-using namespace std;
 
 #include "cstr.h"
 #include "mh_text.h"
@@ -31,6 +34,8 @@ using namespace std;
 #include "rclconfig.h"
 #include "pxattr.h"
 #include "pathut.h"
+
+using namespace std;
 
 const int MB = 1024*1024;
 const int KB = 1024;
@@ -51,9 +56,11 @@ bool MimeHandlerText::set_document_file(const string& mt, const string &fn)
         return false;
     }
 
+#ifndef _WIN32
     // Check for charset defined in extended attribute as per:
     // http://freedesktop.org/wiki/CommonExtendedAttributes
     pxattr::get(m_fn, "charset", &m_charsetfromxattr);
+#endif
 
     // Max file size parameter: texts over this size are not indexed
     int maxmbs = 20;
