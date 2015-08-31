@@ -469,7 +469,7 @@ bool RclFAM::getEvent(RclMonEvent& ev, int msecs)
     MONDEB(("RclFAM::getEvent: FAMNextEvent returned\n"));
     
     map<int,string>::const_iterator it;
-    if ((fe.filename[0] != '/') && 
+    if ((!path_isabsolute(fe.filename)) && 
 	(it = m_idtopath.find(fe.fr.reqnum)) != m_idtopath.end()) {
 	ev.m_path = path_cat(it->second, fe.filename);
     } else {

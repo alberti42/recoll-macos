@@ -196,7 +196,7 @@ public:
                 m_dir = "mboxcache";
             m_dir = path_tildexpand(m_dir);
             // If not an absolute path, compute relative to config dir
-            if (m_dir.at(0) != '/')
+            if (!path_isabsolute(m_dir))
                 m_dir = path_cat(config->getConfDir(), m_dir);
             m_ok = true;
         }

@@ -258,7 +258,7 @@ static bool matchesSkipped(const vector<string>& tdl,
     string canonpath = path_canon(path);
     string mpath = canonpath;
     string topdir;
-    while (mpath.length() > 1) {
+    while (!path_isroot(mpath)) { // we assume root not in skipped paths.
         for (vector<string>::const_iterator it = tdl.begin();  
              it != tdl.end(); it++) {
             // the topdirs members are already canonized.
@@ -280,7 +280,7 @@ static bool matchesSkipped(const vector<string>& tdl,
         mpath = path_getfather(mpath);
         // getfather normally returns a path ending with /, canonic
         // paths don't (except for '/' itself).
-        if (!mpath.empty() && mpath[mpath.size()-1] == '/')
+        if (!path_isroot(mpath) && mpath[mpath.size()-1] == '/')
             mpath.erase(mpath.size()-1);
         // should not be necessary, but lets be prudent. If the
         // path did not shorten, something is seriously amiss

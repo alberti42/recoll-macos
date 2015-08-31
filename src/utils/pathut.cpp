@@ -380,10 +380,11 @@ string path_getfather(const string &s) {
     if (father.empty())
 	return "./";
 
+    if (path_isroot(father))
+        return father;
+    
     if (father[father.length() - 1] == '/') {
-	// Input ends with /. Strip it, handle special case for root
-	if (father.length() == 1)
-	    return father;
+	// Input ends with /. Strip it, root special case was tested above
 	father.erase(father.length()-1);
     }
 
@@ -512,6 +513,17 @@ string path_tildexpand(const string &s)
 #endif
     }
     return o;
+}
+
+bool path_isroot(const string& path)
+{
+    if (path.size() == 1 && path[0] == '/')
+        return true;
+#ifdef _WIN32
+    if (path.size == 3 && isalpha(path[0]) && path[1] == ':' && path[2] == '/')
+        return true;
+#endif
+    return false;
 }
 
 bool path_isabsolute(const string &path)

@@ -111,6 +111,9 @@ extern const std::string& path_sharedatadir();
 /// Test if path is absolute
 extern bool path_isabsolute(const std::string& s);
 
+/// Test if path is root (x:/). root is defined by root/.. == root
+extern bool path_isroot(const std::string& p);
+
 /// Temporary file class
 class TempFileInternal {
 public:

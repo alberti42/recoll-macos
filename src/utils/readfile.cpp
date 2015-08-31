@@ -78,6 +78,11 @@ const int RDBUFSZ = 8192;
 bool file_scan(const string &fn, FileScanDo* doer, off_t startoffs, 
                size_t cnttoread, string *reason)
 {
+    if (startoffs < 0) {
+        *reason += " file_scan: negative startoffs not allowed";
+        return false;
+    }
+    
     bool ret = false;
     bool noclosing = true;
     int fd = 0;

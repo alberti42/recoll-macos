@@ -75,7 +75,7 @@ class DLFWImpl {
 	} else {
 	    fp = fopen(filename, (truncate) ? "w" : "a");
 	    if (fp) {
-		setvbuf(fp, 0, _IOLBF, 0);
+		setvbuf(fp, 0, _IOLBF, BUFSIZ);
 #ifdef O_APPEND
 		{
 		    int flgs = 0;
@@ -83,7 +83,10 @@ class DLFWImpl {
 		    fcntl(fileno(fp), F_SETFL, flgs|O_APPEND);
 		}
 #endif
-	    }
+	    } else {
+                fprintf(stderr, "Debuglog: could not open [%s] errno %d\n",
+                        filename, errno);
+            }
 	}
 	return;
     }

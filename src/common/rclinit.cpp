@@ -112,7 +112,7 @@ RclConfig *recollinit(RclInitFlags flags,
     if (!logfilename.empty()) {
 	logfilename = path_tildexpand(logfilename);
 	// If not an absolute path or , compute relative to config dir
-	if (logfilename.at(0) != '/' && 
+	if (!path_isabsolute(logfilename) && 
 	    !DebugLog::DebugLog::isspecialname(logfilename.c_str())) {
 	    logfilename = path_cat(config->getConfDir(), logfilename);
 	}

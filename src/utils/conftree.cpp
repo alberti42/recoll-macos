@@ -574,8 +574,8 @@ bool ConfSimple::hasNameAnywhere(const string& nm) const
 int ConfTree::get(const std::string &name, string &value, const string &sk)
     const
 {
-    if (sk.empty() || sk[0] != '/') {
-	//	LOGDEB((stderr, "ConfTree::get: looking in global space\n"));
+    if (sk.empty() || !path_isabsolute(sk) ) {
+        // LOGDEB((stderr, "ConfTree::get: looking in global space for sk [%s]\n", sk.c_str()));
 	return ConfSimple::get(name, value, sk);
     }
 
@@ -588,15 +588,21 @@ int ConfTree::get(const std::string &name, string &value, const string &sk)
 
     // Look in subkey and up its parents until root ('')
     for (;;) {
-	//	LOGDEB((stderr,"ConfTree::get: looking for '%s' in '%s'\n",
-	//		name.c_str(), msk.c_str()));
+	LOGDEB((stderr,"ConfTree::get: looking for '%s' in '%s'\n",
+                name.c_str(), msk.c_str()));
 	if (ConfSimple::get(name, value, msk))
 	    return 1;
 	string::size_type pos = msk.rfind("/");
 	if (pos != string::npos) {
 	    msk.replace(pos, string::npos, string());
-	} else
+	} else {
+#ifdef _WIN32
+            if (msk.size() == 2 && isalpha(msk[0]) && msk[1] == ':')
+                msk.clear();
+            else
+#endif
 	    break;
+        }
     }
     return 0;
 }
