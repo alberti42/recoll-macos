@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{A513D65F-798C-4166-B66E-49F69ADA4F59}</ProjectGuid>
+    <ProjectGuid>{C1D0CCD2-0015-44AC-A606-AC48BB80C133}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>recollindex</RootNamespace>
+    <RootNamespace>recollq</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -87,14 +87,11 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>__WIN32__;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\pthreads-w32\Pre-built.2\include;C:\Users\Bill\recoll\src\xaposix;C:\Users\Bill\recoll\src\utils;C:\Users\Bill\recoll\src\unac;C:\Users\Bill\recoll\src\rcldb;C:\Users\Bill\recoll\src\internfile;C:\Users\Bill\recoll\src\index;C:\Users\Bill\recoll\src\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\xapian\xapian-core-1.2.8\win32\Debug;C:\Users\Bill\recoll\src\windows\Debug;C:\pthreads-w32\Pre-built.2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>C:\Users\Bill\recoll\src\windows\Debug\Win32ProjectRecoll.lib;C:\xapian\xapian-core-1.2.8\win32\Debug\xapian-core.lib;C:\Iconv\lib\iconv.lib;C:\Iconv\lib/charset.lib;C:\zlib\lib\zdll.lib;Ws2_32.lib;Rpcrt4.lib;pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -105,6 +102,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>__WIN32__;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\pthreads-w32\Pre-built.2\include;C:\Users\Bill\recoll\src\xaposix;C:\Users\Bill\recoll\src\utils;C:\Users\Bill\recoll\src\unac;C:\Users\Bill\recoll\src\rcldb;C:\Users\Bill\recoll\src\internfile;C:\Users\Bill\recoll\src\index;C:\Users\Bill\recoll\src\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4800</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,7 +146,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\index\recollindex.cpp" />
+    <ClCompile Include="..\..\query\docseq.cpp" />
+    <ClCompile Include="..\..\query\docseqdb.cpp" />
+    <ClCompile Include="..\..\query\docseqhist.cpp" />
+    <ClCompile Include="..\..\query\dynconf.cpp" />
+    <ClCompile Include="..\..\query\filtseq.cpp" />
+    <ClCompile Include="..\..\query\plaintorich.cpp" />
+    <ClCompile Include="..\..\query\recollq.cpp" />
+    <ClCompile Include="..\..\query\recollqmain.cpp" />
+    <ClCompile Include="..\..\query\reslistpager.cpp" />
+    <ClCompile Include="..\..\query\sortseq.cpp" />
+    <ClCompile Include="..\..\query\wasaparse.cpp" />
+    <ClCompile Include="..\..\query\wasaparseaux.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\query\docseq.h" />
+    <ClInclude Include="..\..\query\docseqdb.h" />
+    <ClInclude Include="..\..\query\docseqdocs.h" />
+    <ClInclude Include="..\..\query\docseqhist.h" />
+    <ClInclude Include="..\..\query\dynconf.h" />
+    <ClInclude Include="..\..\query\filtseq.h" />
+    <ClInclude Include="..\..\query\plaintorich.h" />
+    <ClInclude Include="..\..\query\recollq.h" />
+    <ClInclude Include="..\..\query\reslistpager.h" />
+    <ClInclude Include="..\..\query\sortseq.h" />
+    <ClInclude Include="..\..\query\wasaparse.hpp" />
+    <ClInclude Include="..\..\query\wasaparserdriver.h" />
+    <ClInclude Include="..\..\query\wasatorcl.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

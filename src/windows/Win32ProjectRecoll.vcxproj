@@ -90,10 +90,10 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BUILDING_RECOLL;__WIN32__;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>C:\xapian\xapian-core-1.2.8\include;C:\Users\Bill\recoll\src\internfile;C:\Users\Bill\recoll\src\rcldb;C:\Users\Bill\recoll\src\index;C:\Users\Bill\recoll\src\bincimapmime;C:\Users\Bill\recoll\src\unac;C:\Users\Bill\recoll\src\windows;C:\zlib\include;C:\pthreads-w32\Pre-built.2\include;C:\Users\Bill\recoll\src\xaposix;C:\Users\Bill\recoll\src\common;C:\Users\Bill\recoll\src\utils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4800</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>C:\Iconv\include;C:\xapian\xapian-core-1.2.8\include;C:\Users\Bill\recoll\src\internfile;C:\Users\Bill\recoll\src\rcldb;C:\Users\Bill\recoll\src\index;C:\Users\Bill\recoll\src\bincimapmime;C:\Users\Bill\recoll\src\unac;C:\Users\Bill\recoll\src\windows;C:\zlib\include;C:\pthreads-w32\Pre-built.2\include;C:\Users\Bill\recoll\src\xaposix;C:\Users\Bill\recoll\src\common;C:\Users\Bill\recoll\src\utils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4800;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -152,6 +152,7 @@
     <ClInclude Include="..\utils\pathut.h" />
     <ClInclude Include="..\utils\readfile.h" />
     <ClInclude Include="..\utils\smallut.h" />
+    <ClInclude Include="..\utils\strmatcher.h" />
     <ClInclude Include="..\utils\wipedir.h" />
     <ClInclude Include="..\xaposix\safefcntl.h" />
     <ClInclude Include="..\xaposix\safesysstat.h" />
@@ -220,6 +221,7 @@
     <ClCompile Include="..\utils\pathut.cpp" />
     <ClCompile Include="..\utils\readfile.cpp" />
     <ClCompile Include="..\utils\smallut.cpp" />
+    <ClCompile Include="..\utils\strmatcher.cpp" />
     <ClCompile Include="..\utils\transcode.cpp" />
     <ClCompile Include="..\utils\wipedir.cpp" />
     <ClCompile Include="..\xaposix\safe.cc" />

@@ -122,7 +122,8 @@ void RclConfig::zeroMe() {
 
 bool RclConfig::isDefaultConfig() const
 {
-    string defaultconf = path_cat(path_canon(path_home()), ".recoll/");
+    string defaultconf = path_cat(path_homedata(),
+                                  path_defaultrecollconfsubdir());
     string specifiedconf = path_canon(m_confdir);
     path_catslash(specifiedconf);
     return !defaultconf.compare(specifiedconf);
@@ -148,14 +149,8 @@ RclConfig::RclConfig(const string *argcnf)
     }
 
     // Compute our data dir name, typically /usr/local/share/recoll
-    const char *cdatadir = getenv("RECOLL_DATADIR");
-    if (cdatadir == 0) {
-	// If not in environment, use the compiled-in constant. 
-	m_datadir = RECOLL_DATADIR;
-    } else {
-	m_datadir = cdatadir;
-    }
-
+    m_datadir = path_sharedatadir();
+    fprintf(stderr, "RclConfig::RclConfig:: datadir: [%s]\n", m_datadir.c_str());
     // We only do the automatic configuration creation thing for the default
     // config dir, not if it was specified through -c or RECOLL_CONFDIR
     bool autoconfdir = false;
@@ -174,9 +169,10 @@ RclConfig::RclConfig(const string *argcnf)
 	    m_confdir = path_canon(cp);
 	} else {
 	    autoconfdir = true;
-	    m_confdir = path_cat(path_home(), ".recoll/");
+	    m_confdir = path_cat(path_homedata(), path_defaultrecollconfsubdir());
 	}
     }
+    fprintf(stderr, "RclConfig::RclConfig:: confdir: [%s]\n", m_confdir.c_str());
 
     // Note: autoconfdir and isDefaultConfig() are normally the same. We just 
     // want to avoid the imperfect test in isDefaultConfig() if we actually know
@@ -1164,7 +1160,7 @@ string RclConfig::getConfdirPath(const char *varname, const char *dflt) const
     } else {
 	result = path_tildexpand(result);
 	// If not an absolute path, compute relative to config dir
-	if (result.at(0) != '/') {
+	if (!path_isabsolute(result)) {
 	    result = path_cat(getConfDir(), result);
 	}
     }
@@ -1320,7 +1316,7 @@ vector<string> RclConfig::getDaemSkippedPaths() const
 string RclConfig::findFilter(const string &icmd) const
 {
     // If the path is absolute, this is it
-    if (icmd[0] == '/')
+    if (path_isabsolute(icmd))
 	return icmd;
 
     string cmd;

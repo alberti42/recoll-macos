@@ -416,8 +416,8 @@ static void compileregexes()
     regcomp(&fromregex, frompat, REG_NOSUB|REG_EXTENDED);
     regcomp(&minifromregex, miniTbirdFrom, REG_NOSUB|REG_EXTENDED);
 #else
-		fromregex = basic_regex<char>(frompat, REG_NOSUB | REG_EXTENDED);
-		minifromregex = basic_regex<char>(miniTbirdFrom, REG_NOSUB | REG_EXTENDED);
+    fromregex = basic_regex<char>(frompat, REG_NOSUB | REG_EXTENDED);
+    minifromregex = basic_regex<char>(miniTbirdFrom, REG_NOSUB | REG_EXTENDED);
 #endif
     regcompiled = true;
 }

@@ -22,7 +22,9 @@
 #include "safefcntl.h"
 #include "safeunistd.h"
 #include "dirent.h"
-#ifndef _WIN32
+#ifdef _WIN32
+#include "safewindows.h"
+#else
 #include <sys/param.h>
 #include <pwd.h>
 #include <sys/file.h>
@@ -31,6 +33,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include "safesysstat.h"
+#include "ptmutex.h"
 
 // Let's include all files where statfs can be defined and hope for no
 // conflict...
@@ -53,12 +56,98 @@
 #include <sstream>
 #include <stack>
 #include <set>
-using namespace std;
+#include <vector>
 
 #include "pathut.h"
 #include "transcode.h"
 #include "wipedir.h"
 #include "md5ut.h"
+
+using namespace std;
+
+#ifdef _WIN32
+/// Convert \ separators to /
+void path_slashize(string& s)
+{
+    for (string::size_type i = 0; i < s.size(); i++) {
+        if (s[i] == '\\')
+            s[i] = '/';
+    }
+}
+static bool path_strlookslikedrive(const string& s)
+{
+    return s.size() == 2 && isalpha(s[0]) && s[1] == ':';
+}
+
+static bool path_hasdrive(const string& s)
+{
+    if (s.size() >= 2 && isalpha(s[0]) && s[1] == ':')
+        return true;
+    return false;
+}
+static bool path_isdriveabs(const string& s)
+{
+    if (s.size() >= 3 && isalpha(s[0]) && s[1] == ':' && s[2] == '/')
+        return true;
+    return false;
+}
+
+#include <Shlwapi.h>
+#pragma comment(lib, "shlwapi.lib")
+
+string path_tchartoutf8(TCHAR *text)
+{
+#ifdef UNICODE
+    // Simple C
+    // const size_t size = ( wcslen(text) + 1 ) * sizeof(wchar_t);
+    // wcstombs(&buffer[0], text, size);
+    // std::vector<char> buffer(size);
+    // Or:
+    // Windows API
+    std::vector<char> buffer;
+    int size = WideCharToMultiByte(CP_UTF8, 0, text, -1, NULL, 0, NULL, NULL);
+    if (size > 0) {
+        buffer.resize(size);
+        WideCharToMultiByte(CP_UTF8, 0, text, -1, 
+                            &buffer[0], int(buffer.size()), NULL, NULL);
+    } else {
+        return string();
+    }
+    return string(&buffer[0]);
+#else
+    path = text;
+#endif
+}
+
+string path_thisexecpath()
+{
+    TCHAR text[MAX_PATH];
+    DWORD length = GetModuleFileName(NULL, text, MAX_PATH);
+#ifdef NTDDI_WIN8_future
+    PathCchRemoveFileSpec(text, MAX_PATH);
+#else
+    PathRemoveFileSpec(text);
+#endif
+    string path = path_tchartoutf8(text);
+    if (path.empty())
+        path = "c:/";
+
+    return path;
+}
+
+string path_wingettempfilename(TCHAR *pref)
+{
+    TCHAR buf[(MAX_PATH +1)*sizeof(TCHAR)];
+    TCHAR dbuf[(MAX_PATH +1)*sizeof(TCHAR)];
+    GetTempPath(MAX_PATH+1, dbuf);
+    GetTempFileName(dbuf, pref, 0, buf);
+    // Windows will have created a temp file, we delete it.
+    string filename = path_tchartoutf8(buf);
+    unlink(filename.c_str());
+    return filename;
+}
+#endif
+
 
 bool fsocc(const string &path, int *pc, long long *blocks)
 {
@@ -108,11 +197,45 @@ const string& tmplocation()
         const char *tmpdir = getenv("RECOLL_TMPDIR");
         if (tmpdir == 0) 
             tmpdir = getenv("TMPDIR");
-        if (tmpdir == 0)
-            tmpdir = "/tmp";
-        stmpdir = string(tmpdir);
+        if (tmpdir == 0) 
+            tmpdir = getenv("TMP");
+        if (tmpdir == 0) 
+            tmpdir = getenv("TEMP");
+        if (tmpdir == 0) {
+#ifdef _WIN32
+            TCHAR bufw[(MAX_PATH+1)*sizeof(TCHAR)];
+            GetTempPath(MAX_PATH+1, bufw);
+            stmpdir = path_tchartoutf8(bufw);
+#else
+            stmpdir = "/tmp";
+#endif
+        } else {
+            stmpdir = tmpdir;
+        }
+        stmpdir = path_canon(stmpdir);
     }
+
     return stmpdir;
+}
+
+// Location for sample config, filters, etc. (e.g. /usr/share/recoll/)
+const string& path_sharedatadir()
+{
+    static string datadir;
+    if (datadir.empty()) {
+#ifdef _WIN32
+        datadir = path_cat(path_thisexecpath(), "Share");
+#else
+        const char *cdatadir = getenv("RECOLL_DATADIR");
+        if (cdatadir == 0) {
+            // If not in environment, use the compiled-in constant. 
+            datadir = RECOLL_DATADIR;
+        } else {
+            datadir = cdatadir;
+        }
+#endif
+    }
+    return datadir;
 }
 
 bool maketmpdir(string& tdir, string& reason)
@@ -142,8 +265,18 @@ bool maketmpdir(string& tdir, string& reason)
     }	
     tdir = cp;
     free(cp);
+    // At this point the directory does not exist yet if mktemp was used
+    
+#else // _WIN32
+    // There is a race condition between name computation and
+    // mkdir. try to make sure that we at least don't shoot ourselves
+    // in the foot
+    static PTMutexInit mlock;
+    PTMutexLocker lock(mlock);
+    tdir = path_wingettempfilename(TEXT("rcltmp"));
+#endif
 
-#ifndef HAVE_MKDTEMP
+#if !defined(HAVE_MKDTEMP) || defined(_WIN32)
     if (mkdir(tdir.c_str(), 0700) < 0) {
 	reason = string("maketmpdir: mkdir ") + tdir + " failed";
 	tdir.erase();
@@ -152,9 +285,6 @@ bool maketmpdir(string& tdir, string& reason)
 #endif
 
     return true;
-#else
-	return false;
-#endif
 }
 
 TempFileInternal::TempFileInternal(const string& suffix)
@@ -178,16 +308,22 @@ TempFileInternal::TempFileInternal(const string& suffix)
     }
     close(fd);
     unlink(cp);
-    
     filename = cp;
     free(cp);
+#else
+    // There is a race condition between name computation and
+    // mkdir. try to make sure that we at least don't shoot ourselves
+    // in the foot
+    static PTMutexInit mlock;
+    PTMutexLocker lock(mlock);
+    string filename = path_wingettempfilename(TEXT("recoll"));
+#endif
 
     m_filename = filename + suffix;
     if (close(open(m_filename.c_str(), O_CREAT|O_EXCL, 0600)) != 0) {
 	m_reason = string("Could not open/create") + m_filename;
 	m_filename.erase();
     }
-#endif
 }
 
 TempFileInternal::~TempFileInternal()
@@ -297,7 +433,26 @@ string path_suffix(const string& s)
 string path_home()
 {
 #ifdef _WIN32
-	return "c:\\";
+    string dir;
+    const char *cp = getenv("USERPROFILE");
+    if (cp != 0) {
+        dir = cp;
+    }
+    if (dir.empty()) {
+        cp = getenv("HOMEDRIVE");
+        if (cp != 0) {
+            const char *cp1 = getenv("HOMEPATH");
+            if (cp1 != 0) {
+                dir = string(cp) + string(cp1);
+            }
+        }
+    }
+    if (dir.empty()) {
+        dir = "C:\\";
+    }
+    dir = path_canon(dir);
+    path_catslash(dir);
+    return dir;
 #else
     uid_t uid = getuid();
 
@@ -316,11 +471,27 @@ string path_home()
 #endif
 }
 
-string path_tildexpand(const string &s) 
+// The default place to store the default config and other stuff (e.g webqueue)
+string path_homedata()
 {
 #ifdef _WIN32
-	return s;
+    const char *cp = getenv("LOCALAPPDATA");
+    string dir;
+    if (cp != 0) {
+        dir = path_canon(cp);
+    }
+    if (dir.empty()) {
+        dir = path_cat(path_home(), "AppData/Local/");
+    }
+    return dir;
 #else
+    // We should use an xdg-conforming location, but, history...
+    return path_home();
+#endif
+}
+
+string path_tildexpand(const string &s) 
+{
     if (s.empty() || s[0] != '~')
 	return s;
     string o = s;
@@ -330,15 +501,31 @@ string path_tildexpand(const string &s)
 	o.replace(0, 2, path_home());
     } else {
 	string::size_type pos = s.find('/');
-	int l = (pos == string::npos) ? s.length() - 1 : pos - 1;
+        string::size_type l = (pos == string::npos) ? s.length() - 1 : pos - 1;
+#ifdef _WIN32
+        // Dont know what this means. Just replace with HOME
+        o.replace(0, l+1, path_home());
+#else
 	struct passwd *entry = getpwnam(s.substr(1, l).c_str());
 	if (entry)
 	    o.replace(0, l+1, entry->pw_dir);
+#endif
     }
     return o;
-#endif
 }
 
+bool path_isabsolute(const string &path)
+{
+    if (!path.empty() && (path[0] == '/'
+#ifdef _WIN32
+                          || path_isdriveabs(path)
+#endif
+            )) {
+        return true;
+    } 
+    return false;
+}
+    
 string path_absolute(const string &is)
 {
     if (is.length() == 0)
@@ -360,7 +547,15 @@ string path_canon(const string &is, const string* cwd)
     if (is.length() == 0)
 	return is;
     string s = is;
-    if (s[0] != '/') {
+#ifdef _WIN32
+    path_slashize(s);
+    // fix possible path from file: absolute url
+    if (s.size() && s[0] == '/' && path_hasdrive(s.substr(1))) {
+        s = s.substr(1);
+    }
+#endif
+
+    if (!path_isabsolute(s)) {
 	char buf[MAXPATHLEN];
 	const char *cwdp = buf;
 	if (cwd) {
@@ -389,7 +584,13 @@ string path_canon(const string &is, const string* cwd)
     if (!cleaned.empty()) {
 	for (vector<string>::const_iterator it = cleaned.begin(); 
 	     it != cleaned.end(); it++) {
-	    ret += "/";
+            ret += "/";
+#ifdef _WIN32
+            if (it == cleaned.begin() && path_strlookslikedrive(*it)) {
+                // Get rid of just added initial "/"
+                ret.clear();
+            }
+#endif
 	    ret += *it;
 	}
     } else {
@@ -406,6 +607,10 @@ bool makepath(const string& ipath)
     path = "/";
     for (vector<string>::const_iterator it = elems.begin(); 
 	 it != elems.end(); it++){
+#ifdef _WIN32
+        if (it == elems.begin() && path_strlookslikedrive(*it))
+            path = "";
+#endif
 	path += *it;
 	// Not using path_isdir() here, because this cant grok symlinks
 	// If we hit an existing file, no worry, mkdir will just fail.
@@ -557,6 +762,16 @@ string url_parentfolder(const string& url)
         string("http://") + parenturl;
 }
 
+
+string path_defaultrecollconfsubdir()
+{
+#ifdef _WIN32
+    return "Recoll";
+#else
+    return ".recoll";
+#endif
+}
+
 // Convert to file path if url is like file:
 // Note: this only works with our internal pseudo-urls which are not
 // encoded/escaped
@@ -566,6 +781,13 @@ string fileurltolocalpath(string url)
         url = url.substr(7, string::npos);
     else
         return string();
+#ifdef _WIN32
+    // Absolute file urls are like: file:///c:/mydir/...
+    // Get rid of the initial '/'
+    if (url.size() >= 3 && url[0] == '/' && isalpha(url[1]) && url[2] == ':') {
+        url = url.substr(1);
+    }
+#endif
     string::size_type pos;
     if ((pos = url.find_last_of("#")) != string::npos) {
         url.erase(pos);
@@ -816,6 +1038,7 @@ void pathut_init_mt()
     path_home();
     tmplocation();
     thumbnailsdir();
+    path_sharedatadir();
 }
 
 

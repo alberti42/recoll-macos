@@ -97,6 +97,20 @@ extern bool maketmpdir(std::string& tdir, std::string& reason);
 /// mkdir -p
 extern bool makepath(const std::string& path);
 
+#ifdef _WIN32
+/// Convert \ separators to /
+extern void path_slashize(std::string& s);
+#endif
+
+/// Sub-directory for default recoll config (e.g: .recoll)
+extern std::string path_defaultrecollconfsubdir();
+/// Where we create the user data subdirs
+extern std::string path_homedata();
+/// e.g. /usr/share/recoll. Depends on OS and config
+extern const std::string& path_sharedatadir();
+/// Test if path is absolute
+extern bool path_isabsolute(const std::string& s);
+
 /// Temporary file class
 class TempFileInternal {
 public:

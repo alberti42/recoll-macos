@@ -280,7 +280,7 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
 
     for (vector<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
 	*it = path_tildexpand(*it);
-        if (!it->size() || (*it)[0] != '/') {
+        if (!it->size() || !path_isabsolute(*it)) {
             if ((*it)[0] == '~') {
                 cerr << "Tilde expansion failed: " << *it << endl;
                 LOGERR(("recollindex: tilde expansion failed: %s\n",

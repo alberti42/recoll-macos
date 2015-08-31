@@ -21,13 +21,15 @@
 #include "autoconfig.h"
 
 #include <string>
-using namespace std;
 
 #include "debuglog.h"
 #include "rcldb.h"
 #include "rcldb_p.h"
 #include "stemdb.h"
 #include "expansiondbs.h"
+#include "strmatcher.h"
+
+using namespace std;
 
 namespace Rcl {
 
