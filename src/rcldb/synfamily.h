@@ -118,6 +118,7 @@ protected:
 class SynTermTrans {
 public:
     virtual std::string operator()(const std::string&) = 0;
+    virtual std::string name() { return "SynTermTrans: unknown";}
 };
 
 /** A member (set of root-synonyms associations) of a SynFamily for
