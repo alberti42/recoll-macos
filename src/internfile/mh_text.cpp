@@ -43,10 +43,15 @@ const int KB = 1024;
 // Process a plain text file
 bool MimeHandlerText::set_document_file(const string& mt, const string &fn)
 {
-    LOGDEB(("MimeHandlerText::set_document_file: [%s]\n", fn.c_str()));
+    LOGDEB(("MimeHandlerText::set_document_file: [%s] offs %lld\n",
+            fn.c_str(), m_offs));
 
     RecollFilter::set_document_file(mt, fn);
+
     m_fn = fn;
+    // This should not be necessary, but it happens on msw that offset is large
+    // negative at this point, could not find the reason (still trying).
+    m_offs = 0;
 
     // file size for oversize check
     long long fsize = path_filesize(m_fn);

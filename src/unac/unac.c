@@ -29,6 +29,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <iostream>
 #include UNORDERED_MAP_INCLUDE
 
 using std::string;
@@ -14169,7 +14170,7 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
 			       char** outp, size_t* out_lengthp, int what)
 {
   char* out;
-  int out_size;
+  size_t out_size;
   int out_length;
   unsigned int i;
 
@@ -14189,7 +14190,7 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
   for(i = 0; i < in_length; i += 2) {
     unsigned short c;
     unsigned short* p;
-    int l;
+    size_t l;
     int k;
     c = (in[i] << 8) | (in[i + 1] & 0xff);
     /*
@@ -14435,10 +14436,11 @@ static int convert(const char* from, const char* to,
 	  const char* tmp = space;
 	  size_t tmp_length = 2;
 	  if(iconv(cd, (ICONV_CONST char **) &tmp, &tmp_length, &out, &out_remain) == (size_t)-1) {
-	    if(errno == E2BIG)
+              if(errno == E2BIG) {
 	      /* fall thru to the E2BIG case below */;
-	    else
-	      goto out;
+              } else {
+                  goto out;
+              }
 	  } else {
 	    /* The offending character was replaced by a SPACE, skip it. */
 	    in += 2;
@@ -14454,7 +14456,7 @@ static int convert(const char* from, const char* to,
 	  /*
 	   * The output does not fit in the current out buffer, enlarge it.
 	   */
-	  int length = out - out_base;
+	  size_t length = out - out_base;
 	  out_size *= 2;
 	  {
 	      char *saved = out_base;

@@ -125,7 +125,9 @@ static string idFileInternal(istream& input, const char *fn)
 	// Except for a possible first line with 'From ', lines must
 	// begin with whitespace or have a colon 
 	// (hope no one comes up with a longer header name !
-	if (!isspace(cline[0])) {
+	// Take care to convert to unsigned char because ms ctype does
+	// like negative values
+	if (!isspace((unsigned char)cline[0])) {
 	    char *cp = strchr(cline, ':');
 	    if (cp == 0 || (cp - cline) > 70) {
 		LOGDEB2(("idfile: can't be mail header line: [%s]\n", cline));

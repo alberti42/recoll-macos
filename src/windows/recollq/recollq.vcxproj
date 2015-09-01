@@ -108,7 +108,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\xapian\xapian-core-1.2.8\win32\x64\Debug;C:\Users\Bill\recoll\src\windows\x64\Debug;C:\pthreads-w32\Pre-built.2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Win32ProjectRecoll.lib;C:\zlib64\zlib-win64\x64\Debug\zlib.lib;xapian-core.lib;C:\iconv64\Debug_x64\libiconvD.lib;Ws2_32.lib;Rpcrt4.lib;pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Win32ProjectRecoll.lib;C:\zlib64\zlib-win64\x64\Debug\zlib.lib;xapian-core.lib;C:\iconv64\libiconv\x64\Debug\libiconv.lib;Ws2_32.lib;Rpcrt4.lib;pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

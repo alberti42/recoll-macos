@@ -520,7 +520,7 @@ bool path_isroot(const string& path)
     if (path.size() == 1 && path[0] == '/')
         return true;
 #ifdef _WIN32
-    if (path.size == 3 && isalpha(path[0]) && path[1] == ':' && path[2] == '/')
+    if (path.size() == 3 && isalpha(path[0]) && path[1] == ':' && path[2] == '/')
         return true;
 #endif
     return false;

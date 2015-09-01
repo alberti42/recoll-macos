@@ -19,7 +19,6 @@
 #include <sys/types.h>
 
 #include <string>
-using std::string;
 
 #include "mimehandler.h"
 
@@ -30,22 +29,22 @@ using std::string;
  */
 class MimeHandlerText : public RecollFilter {
  public:
-    MimeHandlerText(RclConfig *cnf, const string& id) 
-        : RecollFilter(cnf, id), m_paging(false), m_offs(0) 
+    MimeHandlerText(RclConfig *cnf, const std::string& id) 
+        : RecollFilter(cnf, id), m_paging(false), m_offs(0), m_pagesz(0)
     {
     }
     virtual ~MimeHandlerText() 
     {
     }
-    virtual bool set_document_file(const string& mt, const string &file_path);
-    virtual bool set_document_string(const string&, const string&);
+    virtual bool set_document_file(const std::string& mt, const std::string &file_path);
+    virtual bool set_document_string(const std::string&, const std::string&);
     virtual bool is_data_input_ok(DataInput input) const {
 	if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)
 	    return true;
 	return false;
     }
     virtual bool next_document();
-    virtual bool skip_to_document(const string& s);
+    virtual bool skip_to_document(const std::string& s);
     virtual void clear() 
     {
         m_paging = false;
@@ -56,11 +55,11 @@ class MimeHandlerText : public RecollFilter {
     }
 private:
     bool   m_paging;
-    string m_text;
-    string m_fn;
+    std::string m_text;
+    std::string m_fn;
     off_t  m_offs; // Offset of next read in file if we're paging
     size_t m_pagesz;
-    string m_charsetfromxattr; 
+    std::string m_charsetfromxattr; 
 
     bool readnext();
 };
