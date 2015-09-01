@@ -144,8 +144,11 @@ bool XapComputableSynFamMember::synExpand(const string& term,
 
     string key = m_prefix + root;
 
-    LOGDEB(("XapCompSynFamMbr::synExpand([%s]): term [%s] root [%s] \n", 
-	    m_prefix.c_str(), term.c_str(), root.c_str()));
+    LOGDEB(("XapCompSynFamMbr::synExpand([%s]): term [%s] root [%s] "
+            "m_trans: %s filter: %s\n", 
+            m_prefix.c_str(), term.c_str(), root.c_str(), 
+            m_trans->name().c_str(),
+            filtertrans ? filtertrans->name().c_str() : "none"));
 
     string ermsg;
     try {

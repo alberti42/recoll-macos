@@ -66,6 +66,7 @@ src/filters/rclexecm.pyc
 src/filters/rcllatinclass.pyc
 src/recollindex
 src/recollq
+src/xadump
 src/kde/kioslave/kio_recoll/builddir
 src/python/recoll/build
 src/python/recoll/recoll/__init__.pyc

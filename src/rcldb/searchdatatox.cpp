@@ -464,8 +464,10 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 
 	// If we are sensitive to case or diacritics turn stemming off
 	if (diac_sensitive || case_sensitive) {
-	    LOGDEB0(("expandTerm: diac or case sens set -> stemexpand off\n"));
+	    LOGDEB0(("expandTerm: diac or case sens set -> "
+                     "stemexpand and synonyms off\n"));
 	    nostemexp = true;
+            synonyms = false;
 	}
 
 	if (!case_sensitive || !diac_sensitive)

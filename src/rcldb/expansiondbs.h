@@ -43,6 +43,14 @@ public:
     : m_op(op)
     {
     }
+    virtual std::string name() {
+        std::string nm("Unac: ");
+        if (m_op & UNACOP_UNAC)
+            nm  += "UNAC ";
+        if (m_op & UNACOP_FOLD)
+            nm  += "FOLD ";
+        return nm;
+    }
     virtual std::string operator()(const std::string& in)
     {
 	string out;

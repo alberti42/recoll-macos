@@ -260,6 +260,8 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
 	}
 
 	if (matchtyp == ET_STEM || (typ_sens & ET_SYNEXP)) {
+            // Note: if any of the above conds is true, we are insensitive to
+            // diacs and case (enforced in searchdatatox:termexpand
 	    // Need stem expansion. Lowercase the result of accent and case
 	    // expansion for input to stemdb.
 	    for (unsigned int i = 0; i < lexp.size(); i++) {
@@ -318,14 +320,14 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
 
 	    // Expand the resulting list for case (all stemdb content
 	    // is lowercase)
-	    vector<string> exp1;
-	    for (vector<string>::const_iterator it = lexp.begin(); 
-		 it != lexp.end(); it++) {
-		synac.synExpand(*it, exp1);
-	    }
-	    exp1.swap(lexp);
-	    sort(lexp.begin(), lexp.end());
-	    lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
+            vector<string> exp1;
+            for (vector<string>::const_iterator it = lexp.begin(); 
+                 it != lexp.end(); it++) {
+                synac.synExpand(*it, exp1);
+            }
+            exp1.swap(lexp);
+            sort(lexp.begin(), lexp.end());
+            lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
 	}
 
 	// Filter the result and get the stats, possibly add prefixes.
