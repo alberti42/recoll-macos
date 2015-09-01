@@ -400,9 +400,20 @@ AC_ARG_ENABLE(qtgui,
     AC_HELP_STRING([--disable-qtgui],
    [Disable the QT-based graphical user interface.]),
         enableQT=$enableval, enableQT="yes")
-
 AM_CONDITIONAL(MAKEQT, [test X$enableQT = Xyes])
-AM_CONDITIONAL(MAKECMDLINE, [test X$enableQT = Xno])
+
+AC_ARG_ENABLE(recollq, 
+    AC_HELP_STRING([--enable-recollq],
+   [Enable building the recollq command line query tool (recoll -t without
+   need for Qt). This is done by default if --disable-qtgui is set but this
+   option enables forcing it.]),
+        enableRECOLLQ=$enableval, enableRECOLLQ="no")
+
+if text X"$enableRECOLLQ" != X ; then
+    AM_CONDITIONAL(MAKECMDLINE, [test X$enableRECOLLQ = Xyes])
+else
+    AM_CONDITIONAL(MAKECMDLINE, [test X$enableQT = Xno])
+fi
 
 if test X$enableQT = Xyes ; then
 
