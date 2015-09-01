@@ -128,7 +128,7 @@ public:
             return -1;
         }
         mbhoff_type offset = -1;
-        int ret;
+        size_t ret;
         if ((ret = fread(&offset, 1, sizeof(mbhoff_type), fp))
             != sizeof(mbhoff_type)) {
             LOGDEB0(("MboxCache::get_offsets: read ret %d errno %d\n", 
@@ -318,7 +318,7 @@ bool MimeHandlerMbox::set_document_file(const string& mt, const string &fn)
 typedef char line_type[LL+10];
 static inline void stripendnl(line_type& line, int& ll)
 {
-    ll = strlen(line);
+    ll = int(strlen(line));
     while (ll > 0) {
 	if (line[ll-1] == '\n' || line[ll-1] == '\r') {
 	    line[ll-1] = 0;

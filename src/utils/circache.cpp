@@ -1013,10 +1013,10 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
     unsigned short flags = 0;
     TempBuf compbuf;
     if (!(iflags & NoCompHint)) {
-        ULONG len = compressBound(data.size());
+        uLong len = compressBound(static_cast<uLong>(data.size()));
         char *bf = compbuf.setsize(len);
         if (bf != 0 &&
-            compress((Bytef*)bf, &len, (Bytef*)data.c_str(), data.size()) 
+            compress((Bytef*)bf, &len, (Bytef*)data.c_str(), static_cast<uLong>(data.size()))
             == Z_OK) {
             if (float(len) < 0.9 * float(data.size())) {
                 // bf is local but it's our static buffer address
@@ -1034,7 +1034,7 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
     }
 
     // Characteristics for the new entry.
-    int nsize = CIRCACHE_HEADER_SIZE + dic.size() + datalen;
+    off_t nsize = CIRCACHE_HEADER_SIZE + dic.size() + datalen;
     off_t nwriteoffs = m_d->m_oheadoffs;
     off_t npadsize = 0;
     bool extending = false;

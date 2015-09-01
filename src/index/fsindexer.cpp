@@ -144,13 +144,11 @@ FsIndexer::~FsIndexer()
     void *status;
     if (m_haveInternQ) {
 	status = m_iwqueue.setTerminateAndWait();
-	LOGDEB0(("FsIndexer: internfile wrkr status: %ld (1->ok)\n", 
-		 long(status)));
+	LOGDEB0(("FsIndexer: internfile wrkr status: %p (1->ok)\n", status));
     }
     if (m_haveSplitQ) {
 	status = m_dwqueue.setTerminateAndWait();
-	LOGDEB0(("FsIndexer: dbupd worker status: %ld (1->ok)\n", 
-		 long(status)));
+	LOGDEB0(("FsIndexer: dbupd worker status: %p (1->ok)\n", status));
     }
     delete m_stableconfig;
 #endif // IDX_THREADS

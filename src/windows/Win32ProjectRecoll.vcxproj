@@ -138,6 +138,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\bincimapmime\convert.h" />
     <ClInclude Include="..\common\autoconfig.h" />
     <ClInclude Include="..\common\conf_post.h" />
     <ClInclude Include="..\index\indexer.h" />

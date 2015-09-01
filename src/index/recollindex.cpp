@@ -292,7 +292,7 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
             }
             return false;
         }
-        if (access(it->c_str(), 0) < 0) {
+        if (!path_exists(*it)) {
             nonexist.push_back(*it);
         }
     }
@@ -302,7 +302,7 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
     if (config->getConfParam("skippedPaths", &tdl, true)) {
         for (vector<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
             *it = path_tildexpand(*it);
-            if (access(it->c_str(), 0) < 0) {
+            if (!path_exists(*it)) {
                 nonexist.push_back(*it);
             }
         }
@@ -311,7 +311,7 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
     if (config->getConfParam("daemSkippedPaths", &tdl, true)) {
         for (vector<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
             *it = path_tildexpand(*it);
-            if (access(it->c_str(), 0) < 0) {
+            if (!path_exists(*it)) {
                 nonexist.push_back(*it);
             }
         }

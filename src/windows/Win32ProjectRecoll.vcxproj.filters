@@ -81,10 +81,13 @@
     <ClInclude Include="..\index\mimetype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\utils\wipedir.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\utils\strmatcher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\bincimapmime\convert.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils\wipedir.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

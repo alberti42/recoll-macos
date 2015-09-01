@@ -219,11 +219,11 @@ bool          TextSplit::o_deHyphenate = false;
 // Final term checkpoint: do some checking (the kind which is simpler
 // to do here than in the main loop), then send term to our client.
 inline bool TextSplit::emitterm(bool isspan, string &w, int pos, 
-				int btstart, int btend)
+				size_t btstart, size_t btend)
 {
     LOGDEB2(("TextSplit::emitterm: [%s] pos %d\n", w.c_str(), pos));
 
-    unsigned int l = w.length();
+    size_t l = w.length();
 
 #ifdef TEXTSPLIT_STATS
     // Update word length statistics. Do this before we filter out
@@ -247,9 +247,9 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
 	    }
 	}
 	if (pos != m_prevpos || l != m_prevlen) {
-	    bool ret = takeword(w, pos, btstart, btend);
+	    bool ret = takeword(w, pos, int(btstart), int(btend));
 	    m_prevpos = pos;
-	    m_prevlen = w.length();
+	    m_prevlen = int(w.length());
 	    return ret;
 	}
 	LOGDEB2(("TextSplit::emitterm:dup: [%s] pos %d\n", w.c_str(), pos));
@@ -295,7 +295,7 @@ bool TextSplit::span_is_acronym(string *acronym)
 
 // Generate terms from span. Have to take into account the
 // flags: ONLYSPANS, NOSPANS, noNumbers
-bool TextSplit::words_from_span(int bp)
+bool TextSplit::words_from_span(size_t bp)
 {
 #if 0
     cerr << "Span: [" << m_span << "] " << " w_i_s size: " << 
@@ -307,10 +307,10 @@ bool TextSplit::words_from_span(int bp)
     }
     cerr << endl;
 #endif
-    unsigned int spanwords = m_words_in_span.size();
+    int spanwords = int(m_words_in_span.size());
     int pos = m_spanpos;
     // Byte position of the span start
-    int spboffs = bp - m_span.size();
+    size_t spboffs = bp - m_span.size();
 
     if (o_deHyphenate && spanwords == 2 && 
 	m_span[m_words_in_span[0].second] == '-') {
@@ -324,13 +324,13 @@ bool TextSplit::words_from_span(int bp)
 		     m_spanpos, spboffs, spboffs + m_words_in_span[1].second);
     }
 
-    for (unsigned int i = 0; 
+    for (int i = 0; 
          i < ((m_flags&TXTS_ONLYSPANS) ? 1 : spanwords); 
          i++, pos++) {
 
         int deb = m_words_in_span[i].first;
 
-        for (unsigned int j = ((m_flags&TXTS_ONLYSPANS) ? spanwords-1 : i);
+        for (int j = ((m_flags&TXTS_ONLYSPANS) ? spanwords-1 : i);
              j < ((m_flags&TXTS_NOSPANS) ? i+1 : spanwords);
              j++) {
 
@@ -364,11 +364,11 @@ bool TextSplit::words_from_span(int bp)
  * @param spanerase Set if the current span is at its end. Process it.
  * @param bp        The current BYTE position in the stream
  */
-inline bool TextSplit::doemit(bool spanerase, int bp)
+inline bool TextSplit::doemit(bool spanerase, size_t bp)
 {
     LOGDEB2(("TextSplit::doemit: sper %d bp %d spp %d spanwords %u wS %d wL %d "
             "inn %d span [%s]\n",
-            spanerase, bp, m_spanpos, m_words_in_span.size(), 
+             spanerase, int(bp), m_spanpos, m_words_in_span.size(), 
             m_wordStart, m_wordLen, m_inNumber, m_span.c_str()));
 
     if (m_wordLen) {
@@ -406,8 +406,8 @@ inline bool TextSplit::doemit(bool spanerase, int bp)
 	    case '\'':
 		m_span.resize(m_span.length()-1);
                 if (m_words_in_span.size() &&
-                    m_words_in_span.back().second > m_span.size())
-                    m_words_in_span.back().second = m_span.size();
+                    m_words_in_span.back().second > int(m_span.size()))
+                    m_words_in_span.back().second = int(m_span.size());
 		if (--bp < 0) 
 		    bp = 0;
 		break;
@@ -424,7 +424,7 @@ inline bool TextSplit::doemit(bool spanerase, int bp)
 
     } else {
     
-	m_wordStart = m_span.length();
+	m_wordStart = int(m_span.length());
 
     }
 
@@ -832,16 +832,16 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
 	}
 
 	// Take note of byte offset for this character.
-	boffs[nchars-1] = it.getBpos();
+	boffs[nchars-1] = int(it.getBpos());
 
 	// Output all new ngrams: they begin at each existing position
 	// and end after the new character. onlyspans->only output
 	// maximum words, nospans=> single chars
 	if (!(m_flags & TXTS_ONLYSPANS) || nchars == o_CJKNgramLen) {
-	    unsigned int btend = it.getBpos() + it.getBlen();
-	    unsigned int loopbeg = (m_flags & TXTS_NOSPANS) ? nchars-1 : 0;
-	    unsigned int loopend = (m_flags & TXTS_ONLYSPANS) ? 1 : nchars;
-	    for (unsigned int i = loopbeg; i < loopend; i++) {
+	    int btend = int(it.getBpos() + it.getBlen());
+	    int loopbeg = (m_flags & TXTS_NOSPANS) ? nchars-1 : 0;
+	    int loopend = (m_flags & TXTS_ONLYSPANS) ? 1 : nchars;
+	    for (int i = loopbeg; i < loopend; i++) {
 		if (!takeword(it.buffer().substr(boffs[i], 
 						       btend-boffs[i]),
 				m_wordpos - (nchars-i-1), boffs[i], btend)) {
@@ -862,7 +862,7 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
     // If onlyspans is set, there may be things to flush in the buffer
     // first
     if ((m_flags & TXTS_ONLYSPANS) && nchars > 0 && nchars != o_CJKNgramLen)  {
-	unsigned int btend = it.getBpos(); // Current char is out
+	int btend = int(it.getBpos()); // Current char is out
 	if (!takeword(it.buffer().substr(boffs[0], btend-boffs[0]),
 			    m_wordpos - nchars,
 			    boffs[0], btend)) {

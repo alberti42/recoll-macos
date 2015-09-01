@@ -840,7 +840,7 @@ bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
 	    tpq.setTSQ(&splitter);
 	    splitter.text_to_words(*it);
 
-	    slack += tpq.lastpos() - tpq.terms().size() + 1;
+	    slack += tpq.lastpos() - int(tpq.terms().size()) + 1;
 
 	    LOGDEB0(("strToXapianQ: termcount: %d\n", tpq.terms().size()));
 	    switch (tpq.terms().size() + terminc) {

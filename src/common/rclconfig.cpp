@@ -639,7 +639,7 @@ bool RclConfig::inStopSuffixes(const string& fni)
 	     it != stoplist.end(); it++) {
 	    STOPSUFFIXES->insert(SfString(stringtolower(*it)));
 	    if (m_maxsufflen < it->length())
-		m_maxsufflen = it->length();
+		m_maxsufflen = int(it->length());
 	}
     }
 

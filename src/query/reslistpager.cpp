@@ -77,7 +77,7 @@ void ResListPager::resultPageNext()
     if (m_winfirst < 0) {
 	m_winfirst = 0;
     } else {
-	m_winfirst += m_respage.size();
+	m_winfirst += int(m_respage.size());
     }
     // Get the next page of results. Note that we look ahead by one to
     // determine if there is actually a next page
@@ -102,7 +102,7 @@ void ResListPager::resultPageNext()
 	    // Next button. We'd need to remove the Next link from the page
 	    // too.
 	    // Restore the m_winfirst value, let the current result vector alone
-	    m_winfirst -= m_respage.size();
+	    m_winfirst -= int(m_respage.size());
 	} else {
 	    // No results at all (on first page)
 	    m_winfirst = -1;
@@ -213,9 +213,9 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     // Size information. We print both doc and file if they differ a lot
     off_t fsize = -1, dsize = -1;
     if (!doc.dbytes.empty())
-	dsize = atoll(doc.dbytes.c_str());
+	dsize = static_cast<off_t>(atoll(doc.dbytes.c_str()));
     if (!doc.fbytes.empty())
-	fsize = atoll(doc.fbytes.c_str());
+	fsize =  static_cast<off_t>(atoll(doc.fbytes.c_str()));
     string sizebuf;
     if (dsize > 0) {
 	sizebuf = displayableBytes(dsize);

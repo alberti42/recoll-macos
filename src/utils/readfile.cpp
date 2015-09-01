@@ -134,7 +134,7 @@ bool file_scan(const string &fn, FileScanDo* doer, off_t startoffs,
         if (cnttoread != size_t(-1)) {
             toread = MIN(toread, cnttoread - totread);
         }
-	int n = read(fd, buf, toread);
+	ssize_t n = static_cast<ssize_t>(read(fd, buf, toread));
 	if (n < 0) {
 	    catstrerror(reason, "read", errno);
 	    goto out;

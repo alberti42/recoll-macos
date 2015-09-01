@@ -54,7 +54,7 @@ int stringicmp(const string & s1, const string& s2)
 {
     string::const_iterator it1 = s1.begin();
     string::const_iterator it2 = s2.begin();
-    int size1 = s1.length(), size2 = s2.length();
+    string::size_type size1 = s1.length(), size2 = s2.length();
     char c1, c2;
 
     if (size1 < size2) {
@@ -114,7 +114,7 @@ int stringlowercmp(const string & s1, const string& s2)
 {
     string::const_iterator it1 = s1.begin();
     string::const_iterator it2 = s2.begin();
-    int size1 = s1.length(), size2 = s2.length();
+    string::size_type size1 = s1.length(), size2 = s2.length();
     char c2;
 
     if (size1 < size2) {
@@ -143,7 +143,7 @@ int stringuppercmp(const string & s1, const string& s2)
 {
     string::const_iterator it1 = s1.begin();
     string::const_iterator it2 = s2.begin();
-    int size1 = s1.length(), size2 = s2.length();
+    string::size_type size1 = s1.length(), size2 = s2.length();
     char c2;
 
     if (size1 < size2) {
@@ -486,7 +486,7 @@ void utf8truncate(string &s, int maxlen)
     if (s.size() <= string::size_type(maxlen))
 	return;
     Utf8Iter iter(s);
-    int pos = 0;
+    string::size_type pos = 0;
     while (iter++ != string::npos) 
 	if (iter.getBpos() < string::size_type(maxlen))
 	    pos = iter.getBpos();
@@ -1176,7 +1176,7 @@ void HighlightData::toString(std::string& out)
 	    int(groups.size()), int(grpsugidx.size()), int(ugroups.size()));
     out.append(cbuf);
 
-    unsigned int ugidx = (unsigned int)-1;
+    size_t ugidx = (size_t)-1;
     for (unsigned int i = 0; i < groups.size(); i++) {
 	if (ugidx != grpsugidx[i]) {
 	    ugidx = grpsugidx[i];
@@ -1205,7 +1205,7 @@ void HighlightData::append(const HighlightData& hl)
 
     groups.insert(groups.end(), hl.groups.begin(), hl.groups.end());
     slacks.insert(slacks.end(), hl.slacks.begin(), hl.slacks.end());
-    for (std::vector<unsigned int>::const_iterator it = hl.grpsugidx.begin(); 
+    for (std::vector<size_t>::const_iterator it = hl.grpsugidx.begin(); 
 	 it != hl.grpsugidx.end(); it++) {
 	grpsugidx.push_back(*it + ugsz0);
     }

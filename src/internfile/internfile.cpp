@@ -629,7 +629,7 @@ void FileInterner::popHandler()
 {
     if (m_handlers.empty())
 	return;
-    int i = m_handlers.size() - 1;
+    size_t i = m_handlers.size() - 1;
     if (m_tmpflgs[i]) {
 	m_tempfiles.pop_back();
 	m_tmpflgs[i] = false;

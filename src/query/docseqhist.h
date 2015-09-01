@@ -16,6 +16,7 @@
  */
 #ifndef _DOCSEQHIST_H_INCLUDED_
 #define _DOCSEQHIST_H_INCLUDED_
+#include <time.h>
 
 #include "docseq.h"
 #include "dynconf.h"
@@ -28,13 +29,13 @@ namespace Rcl {
 class RclDHistoryEntry : public DynConfEntry {
  public:
     RclDHistoryEntry() : unixtime(0) {}
-    RclDHistoryEntry(long t, const string& u) 
+    RclDHistoryEntry(time_t t, const string& u) 
 	: unixtime(t), udi(u) {}
     virtual ~RclDHistoryEntry() {}
     virtual bool decode(const string &value);
     virtual bool encode(string& value);
     virtual bool equal(const DynConfEntry& other);
-    long unixtime;
+    time_t unixtime;
     string udi;
 };
 
@@ -57,7 +58,7 @@ private:
     Rcl::Db    *m_db;
     RclDynConf *m_hist;
     int         m_prevnum;
-    long        m_prevtime;
+    time_t      m_prevtime;
     std::string m_description; // This is just an nls translated 'doc history'
     std::list<RclDHistoryEntry> m_hlist;
     std::list<RclDHistoryEntry>::const_iterator m_it;

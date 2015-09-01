@@ -306,7 +306,7 @@ void Binc::MimePart::parseMessageRFC822(vector<Binc::MimePart> *members,
 bool Binc::MimePart::skipUntilBoundary(const string &delimiter,
 				       unsigned int *nlines, bool *eof)
 {
-  int endpos = delimiter.length();
+  string::size_type endpos = delimiter.length();
   char *delimiterqueue = 0;
   int delimiterpos = 0;
   const char *delimiterStr = delimiter.c_str();
@@ -340,7 +340,7 @@ bool Binc::MimePart::skipUntilBoundary(const string &delimiter,
       delimiterpos = 0;
       
     if (compareStringToQueue(delimiterStr, delimiterqueue,
-			     delimiterpos, endpos)) {
+			     delimiterpos, int(endpos))) {
       foundBoundary = true;
       break;
     }
@@ -451,7 +451,7 @@ void Binc::MimePart::parseMultipart(const string &boundary,
   skipUntilBoundary(delimiter, nlines, eof);
 
   if (!eof)
-    *boundarysize = delimiter.size();
+    *boundarysize = int(delimiter.size());
 
   postBoundaryProcessing(eof, nlines, boundarysize, foundendofpart);
 
@@ -484,7 +484,7 @@ void Binc::MimePart::parseMultipart(const string &boundary,
     skipUntilBoundary(delimiter, nlines, eof);
 
     if (!*eof)
-      *boundarysize = delimiter.size();
+      *boundarysize = int(delimiter.size());
 
     postBoundaryProcessing(eof, nlines, boundarysize, foundendofpart);
   }
@@ -528,7 +528,7 @@ void Binc::MimePart::parseSinglePart(const string &toboundary,
   //    *boundarysize = _toboundary.length();
 
   char *boundaryqueue = 0;
-  int endpos = _toboundary.length();
+  size_t endpos = _toboundary.length();
   if (toboundary != "") {
     boundaryqueue = new char[endpos];
     memset(boundaryqueue, 0, endpos);
@@ -553,8 +553,8 @@ void Binc::MimePart::parseSinglePart(const string &toboundary,
       boundarypos = 0;
       
     if (compareStringToQueue(_toboundaryStr, boundaryqueue,
-			     boundarypos, endpos)) {
-      *boundarysize = _toboundary.length();
+			     boundarypos, int(endpos))) {
+      *boundarysize = static_cast<int>(_toboundary.length());
       break;
     }
   }

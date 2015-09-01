@@ -46,7 +46,7 @@ struct HighlightData {
      * user term or group may generate many processed/expanded terms
      * or groups, this is how we relate an expansion to its source.
      */
-    std::vector<unsigned int> grpsugidx;
+    std::vector<size_t> grpsugidx;
 
     void clear()
     {

@@ -433,7 +433,7 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     string dbdir = m_rcldb->m_basedir;
     doc.idxi = 0;
     if (!m_rcldb->m_extraDbs.empty()) {
-	unsigned int idxi = whatDbIdx(docid);
+	int idxi = int(whatDbIdx(docid));
 
 	// idxi is in [0, extraDbs.size()]. 0 is for the main index,
 	// idxi-1 indexes into the additional dbs array.
@@ -555,7 +555,7 @@ int Db::Native::getPageNumberForPosition(const vector<int>& pbreaks, int pos)
 	return -1;
     vector<int>::const_iterator it = 
 	upper_bound(pbreaks.begin(), pbreaks.end(), pos);
-    return it - pbreaks.begin() + 1;
+    return int(it - pbreaks.begin() + 1);
 }
 
 // Note: we're passed a Xapian::Document* because Xapian

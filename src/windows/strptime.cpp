@@ -38,7 +38,7 @@ char * strptime(const char *s, const char *format, struct tm *tm)
 			case 'A': // weekday name
 				tm->tm_wday = -1;
 				working = false;
-				for (size_t i = 0; i < 7; ++i)
+				for (int i = 0; i < 7; ++i)
 				{
 					size_t len = strlen(strp_weekdays[i]);
 					if (!strnicmp(strp_weekdays[i], s, len))
@@ -62,7 +62,7 @@ char * strptime(const char *s, const char *format, struct tm *tm)
 			case 'h': // month name
 				tm->tm_mon = -1;
 				working = false;
-				for (size_t i = 0; i < 12; ++i)
+				for (int i = 0; i < 12; ++i)
 				{
 					size_t len = strlen(strp_monthnames[i]);
 					if (!strnicmp(strp_monthnames[i], s, len))

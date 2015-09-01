@@ -86,7 +86,7 @@ public:
 	return false;
     }
     virtual bool set_document_data(const std::string& mtype, 
-				   const char *cp, unsigned int sz) 
+				   const char *cp, size_t sz) 
     {
 	return set_document_string(mtype, std::string(cp, sz));
     }

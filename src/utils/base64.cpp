@@ -217,7 +217,7 @@ void base64_encode(const string &in, string &out)
 
     out.clear();
 
-    int srclength = in.length();
+    string::size_type srclength = in.length();
     int sidx = 0;
     while (2 < srclength) {
 	input[0] = in[sidx++];

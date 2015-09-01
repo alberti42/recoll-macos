@@ -108,7 +108,7 @@ namespace Dijon
 	 */
 	virtual bool set_document_data(const std::string& mtype, 
 				       const char *data_ptr, 
-				       unsigned int data_length) = 0;
+				       size_t data_length) = 0;
 
 	/** (Re)initializes the filter with the given data.
 	 * Call next_document() to position the filter onto the first document.

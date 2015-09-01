@@ -105,6 +105,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>__WIN32__;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\pthreads-w32\Pre-built.2\include;C:\Users\Bill\recoll\src\xaposix;C:\Users\Bill\recoll\src\utils;C:\Users\Bill\recoll\src\unac;C:\Users\Bill\recoll\src\rcldb;C:\Users\Bill\recoll\src\internfile;C:\Users\Bill\recoll\src\index;C:\Users\Bill\recoll\src\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4800</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

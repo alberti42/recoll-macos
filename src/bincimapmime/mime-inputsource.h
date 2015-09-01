@@ -49,7 +49,7 @@ namespace Binc {
     inline MimeInputSource(int fd, unsigned int start = 0);
     virtual inline ~MimeInputSource(void);
 
-    virtual inline size_t fillRaw(char *raw, size_t nbytes);
+    virtual inline ssize_t fillRaw(char *raw, size_t nbytes);
     virtual inline void reset(void);
 
     virtual inline bool fillInputBuffer(void);
@@ -87,7 +87,7 @@ namespace Binc {
   {
   }
 
-  inline size_t MimeInputSource::fillRaw(char *raw, size_t nbytes)
+  inline ssize_t MimeInputSource::fillRaw(char *raw, size_t nbytes)
   {
       return read(fd, raw, nbytes);
   }
@@ -179,7 +179,7 @@ namespace Binc {
     class MimeInputSourceStream : public MimeInputSource {
   public:
     inline MimeInputSourceStream(istream& s, unsigned int start = 0);
-    virtual inline size_t fillRaw(char *raw, size_t nb);
+    virtual inline ssize_t fillRaw(char *raw, size_t nb);
     virtual inline void reset(void);
   private:
       istream& s;
@@ -191,7 +191,7 @@ namespace Binc {
   {
   }
 
-  inline size_t MimeInputSourceStream::fillRaw(char *raw, size_t nb)
+  inline ssize_t MimeInputSourceStream::fillRaw(char *raw, size_t nb)
   {
     // Why can't streams tell how many characters were actually read
     // when hitting eof ?
@@ -204,11 +204,11 @@ namespace Binc {
 	nbytes = nb;
     }
     if (nbytes <= 0) {
-	return (size_t)-1;
+	return (ssize_t)-1;
     }
 
     s.read(raw, nbytes);
-    return nbytes;
+    return static_cast<ssize_t>(nbytes);
   }
 
   inline void MimeInputSourceStream::reset(void)
