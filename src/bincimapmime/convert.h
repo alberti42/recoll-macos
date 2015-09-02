@@ -25,6 +25,7 @@
  */
 #ifndef convert_h_included
 #define convert_h_included
+#include <stddef.h>
 #include <string>
 #include <vector>
 #include <iomanip>

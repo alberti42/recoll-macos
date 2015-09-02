@@ -308,7 +308,7 @@ bool Binc::MimePart::skipUntilBoundary(const string &delimiter,
 {
   string::size_type endpos = delimiter.length();
   char *delimiterqueue = 0;
-  int delimiterpos = 0;
+  string::size_type delimiterpos = 0;
   const char *delimiterStr = delimiter.c_str();
   if (delimiter != "") {
     delimiterqueue = new char[endpos];
@@ -540,7 +540,7 @@ void Binc::MimePart::parseSinglePart(const string &toboundary,
   string line;
   bool toboundaryIsEmpty = (toboundary == "");
   char c;
-  int boundarypos = 0;
+  string::size_type boundarypos = 0;
   while (mimeSource->getChar(&c)) {
     if (c == '\n') { ++*nbodylines; ++*nlines; }
 

@@ -223,7 +223,7 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
 {
     LOGDEB2(("TextSplit::emitterm: [%s] pos %d\n", w.c_str(), pos));
 
-    size_t l = w.length();
+    int l = int(w.length());
 
 #ifdef TEXTSPLIT_STATS
     // Update word length statistics. Do this before we filter out
@@ -232,7 +232,7 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
 	m_stats.newsamp(m_wordChars);
 #endif
 
-    if (l > 0 && l < (unsigned)m_maxWordLength) {
+    if (l > 0 && l < m_maxWordLength) {
 	// 1 byte word: we index single ascii letters and digits, but
 	// nothing else. We might want to turn this into a test for a
 	// single utf8 character instead ?

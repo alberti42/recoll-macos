@@ -15,7 +15,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-
+#include <limits.h>
 #include <string>
 #include <utility>
 #include <list>
@@ -417,7 +417,7 @@ bool PlainToRich::plaintorich(const string& in,
 	// If we still have terms positions, check (byte) position. If
 	// we are at or after a term match, mark.
 	if (tPosIt != tPosEnd) {
-	    size_t ibyteidx = chariter.getBpos();
+	    int ibyteidx = int(chariter.getBpos());
 	    if (ibyteidx == tPosIt->offs.first) {
 		if (!intag && ibyteidx >= (int)headend) {
 		    *olit += startMatch((unsigned int)(tPosIt->grpidx));

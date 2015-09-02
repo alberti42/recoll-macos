@@ -14171,8 +14171,8 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
 {
   char* out;
   size_t out_size;
-  int out_length;
-  unsigned int i;
+  size_t out_length;
+  size_t i;
 
   out_size = in_length > 0 ? in_length : 1024;
 
@@ -14191,7 +14191,7 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
     unsigned short c;
     unsigned short* p;
     size_t l;
-    int k;
+    size_t k;
     c = (in[i] << 8) | (in[i + 1] & 0xff);
     /*
      * Lookup the tables for decomposition information
@@ -14236,7 +14236,7 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
       if(l == 0) {
 	DEBUG_APPEND("untouched\n");
       } else {
-	int i;
+	size_t i;
 	for(i = 0; i < l; i++)
 	  DEBUG_APPEND("0x%04x ", p[i]);
 	DEBUG_APPEND("\n");

@@ -270,7 +270,7 @@ public:
     {
 	return m_parentSearch ? m_parentSearch->getMaxExp() : 10000;
     }
-    int getMaxCl() 
+    size_t getMaxCl() 
     {
 	return m_parentSearch ? m_parentSearch->getMaxCl() : 100000;
     }

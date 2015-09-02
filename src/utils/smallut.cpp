@@ -1341,7 +1341,7 @@ int main(int argc, char **argv)
 {
     thisprog = *argv++;argc--;
 
-#if 1
+#if 0
     if (argc <=0 ) {
         cerr << "Usage: smallut <stringtosplit>" << endl;
         exit(1);
@@ -1446,8 +1446,37 @@ int main(int argc, char **argv)
     string out;
     stringsToCSV(tokens, out);
     cout << "CSV line: [" << out << "]" << endl;
-#endif
+#elif 1
+    string sshort("ABC");
+    string slong("ABCD");
+    string sshortsmaller("ABB");
+    
+    vector<pair<string,string> > cmps;
+    cmps.push_back(pair<string,string>(sshort,sshort));
+    cmps.push_back(pair<string,string>(sshort,slong));
+    cmps.push_back(pair<string,string>(slong,sshort));
+    cmps.push_back(pair<string,string>(sshortsmaller,sshort));
+    cmps.push_back(pair<string,string>(sshort, sshortsmaller));
 
+    for (vector<pair<string,string> >::const_iterator it = cmps.begin();
+         it != cmps.end(); it++) {
+        cout << it->first << " " << it->second << " " << 
+            stringicmp(it->first, it->second) << endl;
+    }
+    cout << endl;
+    for (vector<pair<string,string> >::const_iterator it = cmps.begin();
+         it != cmps.end(); it++) {
+        cout << it->first << " " << it->second << " " << 
+            stringlowercmp(stringtolower(it->first), it->second) << endl;
+    }
+    cout << endl;
+    for (vector<pair<string,string> >::const_iterator it = cmps.begin();
+         it != cmps.end(); it++) {
+        cout << it->first << " " << it->second << " " << 
+            stringuppercmp(it->first, it->second) << endl;
+    }
+
+#endif
 }
 
 #endif

@@ -244,7 +244,7 @@ void base64_encode(const string &in, string &out)
     if (0 != srclength) {
 	/* Get what's left. */
 	input[0] = input[1] = input[2] = '\0';
-	for (int i = 0; i < srclength; i++)
+	for (string::size_type i = 0; i < srclength; i++)
 	    input[i] = in[sidx++];
 	
 	output[0] = input[0] >> 2;

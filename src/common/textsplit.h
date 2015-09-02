@@ -184,7 +184,7 @@ private:
     // Current span. Might be jf.dockes@wanadoo.f
     std::string        m_span; 
 
-    std::vector <std::pair<unsigned int, unsigned int> > m_words_in_span;
+    std::vector <std::pair<int, int> > m_words_in_span;
 
     // Current word: no punctuation at all in there. Byte offset
     // relative to the current span and byte length
