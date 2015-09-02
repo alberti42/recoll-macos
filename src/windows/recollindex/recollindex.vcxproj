@@ -93,8 +93,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\xapian\xapian-core-1.2.8\win32\Debug;C:\Users\Bill\recoll\src\windows\Debug;C:\pthreads-w32\Pre-built.2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>C:\Users\Bill\recoll\src\windows\Debug\Win32ProjectRecoll.lib;C:\xapian\xapian-core-1.2.8\win32\Debug\xapian-core.lib;C:\Iconv\lib\iconv.lib;C:\Iconv\lib/charset.lib;C:\zlib\lib\zdll.lib;Ws2_32.lib;Rpcrt4.lib;pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\zlib64\zlib-win64\win32\Debug;C:\xapian\xapian-core-1.2.8\win32\win32\Debug;C:\Users\Bill\recoll\src\windows\win32\Debug;C:\pthreads-w32\Pre-built.2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Win32ProjectRecoll.lib;xapian-core.lib;libiconv.lib;zlib.lib;Ws2_32.lib;Rpcrt4.lib;pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
