@@ -310,7 +310,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 	istempfile = true;
 	rememberTempFile(temp);
 	fn = temp->filename();
-	url = string("file://") + fn;
+	url = path_pathtofileurl(fn);
     }
 
     // If using an actual file, check that it exists, and if it is
@@ -335,7 +335,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
         if (temp) {
 	    rememberTempFile(temp);
             fn = temp->filename();
-            url = string("file://") + fn;
+            url = path_pathtofileurl(fn);
         }
     }
 
@@ -430,16 +430,16 @@ void RclMain::startManual()
 void RclMain::startManual(const string& index)
 {
     Rcl::Doc doc;
-    doc.url = "file://";
-    doc.url = path_cat(doc.url, theconfig->getDatadir());
-    doc.url = path_cat(doc.url, "doc");
-    doc.url = path_cat(doc.url, "usermanual.html");
+    string path = theconfig->getDatadir();
+    path = path_cat(path, "doc");
+    path = path_cat(path, "usermanual.html");
     LOGDEB(("RclMain::startManual: help index is %s\n", 
 	    index.empty()?"(null)":index.c_str()));
     if (!index.empty()) {
-	doc.url += "#";
-	doc.url += index;
+	path += "#";
+	path += index;
     }
+    doc.url = path_pathtofileurl(path);
     doc.mimetype = "text/html";
     startNativeViewer(doc);
 }
