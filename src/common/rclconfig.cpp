@@ -1212,7 +1212,7 @@ void RclConfig::urlrewrite(const string& dbdir, string& url) const
 	    // This call always succeeds because the key comes from getNames()
 	    if (m_ptrans->get(*it, npath, dbdir)) { 
 		path = path.replace(0, it->size(), npath);
-		url = "file://" + path;
+		url = path_pathtofileurl(path);
 	    }
 	    break;
 	}

@@ -22,6 +22,8 @@
 #ifndef _WIN32
 #include <sys/time.h>
 #include <sys/resource.h>
+#else
+#include <direct.h>
 #endif
 #include "safefcntl.h"
 #include "safeunistd.h"

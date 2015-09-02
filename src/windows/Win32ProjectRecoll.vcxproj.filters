@@ -90,6 +90,9 @@
     <ClInclude Include="..\utils\wipedir.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\utils\cpuconf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\utils\smallut.cpp">
@@ -285,6 +288,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\utils\strmatcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\utils\cpuconf.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

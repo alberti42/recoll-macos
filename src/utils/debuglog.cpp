@@ -74,7 +74,7 @@ class DLFWImpl {
 	    fp = fopen(filename, (truncate) ? "w" : "a");
 	    if (fp) {
 		setvbuf(fp, 0, _IOLBF, BUFSIZ);
-#ifdef O_APPEND
+#if defined(O_APPEND) && !defined(_WIN32)
 		{
 		    int flgs = 0;
 		    fcntl(fileno(fp), F_GETFL, &flgs);

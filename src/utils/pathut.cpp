@@ -22,6 +22,7 @@
 #include "safefcntl.h"
 #include "safeunistd.h"
 #include "dirent.h"
+#include "cstr.h"
 #ifdef _WIN32
 #include "safewindows.h"
 #else
@@ -816,6 +817,17 @@ string fileurltolocalpath(string url)
         url.erase(pos);
     }
     return url;
+}
+
+string path_pathtofileurl(const string& path)
+{
+	// We're supposed to receive a canonic absolute path, but on windows we
+	// may need to add a '/' in front of the drive spec
+	string url(cstr_fileu);
+	if (path.empty() || path[0] != '/')
+		url.push_back('/');
+	url += path;
+	return url;
 }
 
 bool urlisfileurl(const string& url)

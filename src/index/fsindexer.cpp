@@ -769,7 +769,7 @@ FsIndexer::processonefile(RclConfig *config,
 	    if (doc.fmtime.empty())
 		doc.fmtime = ascdate;
 	    if (doc.url.empty())
-		doc.url = cstr_fileu + fn;
+		doc.url = path_pathtofileurl(fn);
 	    const string *fnp = 0;
 	    if (doc.ipath.empty()) {
                 if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty())
@@ -865,7 +865,7 @@ FsIndexer::processonefile(RclConfig *config,
                 fileDoc.meta[Rcl::Doc::keytcfn] = utf8fn;
 	    fileDoc.haschildren = true;
 	    fileDoc.mimetype = mimetype;
-	    fileDoc.url = cstr_fileu + fn;
+	    fileDoc.url = path_pathtofileurl(fn);
 	    if (m_havelocalfields) 
 		setlocalfields(localfields, fileDoc);
 	    char cbuf[100]; 

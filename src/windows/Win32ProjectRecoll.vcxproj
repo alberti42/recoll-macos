@@ -145,6 +145,7 @@
     <ClInclude Include="..\index\mimetype.h" />
     <ClInclude Include="..\internfile\internfile.h" />
     <ClInclude Include="..\internfile\mh_symlink.h" />
+    <ClInclude Include="..\utils\cpuconf.h" />
     <ClInclude Include="..\utils\debuglog.h" />
     <ClInclude Include="..\utils\execmd.h" />
     <ClInclude Include="..\utils\md5.h" />
@@ -212,6 +213,7 @@
     <ClCompile Include="..\utils\circache.cpp" />
     <ClCompile Include="..\utils\conftree.cpp" />
     <ClCompile Include="..\utils\copyfile.cpp" />
+    <ClCompile Include="..\utils\cpuconf.cpp" />
     <ClCompile Include="..\utils\debuglog.cpp" />
     <ClCompile Include="..\utils\fileudi.cpp" />
     <ClCompile Include="..\utils\fstreewalk.cpp" />
