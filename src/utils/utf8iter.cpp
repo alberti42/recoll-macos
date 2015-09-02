@@ -32,6 +32,15 @@ using namespace std;
 #define UTF8ITER_CHECK
 #include "utf8iter.h"
 #include "readfile.h"
+#include "textsplit.h"
+
+void tryempty()
+{
+    Utf8Iter it("");
+    cout << "EOF ? " << it.eof() << endl;
+    TextSplit::isCJK(*it);
+    exit(0);
+}
 
 const char *thisprog;
 static char usage [] =
