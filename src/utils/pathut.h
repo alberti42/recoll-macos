@@ -97,11 +97,6 @@ extern bool maketmpdir(std::string& tdir, std::string& reason);
 /// mkdir -p
 extern bool makepath(const std::string& path);
 
-#ifdef _WIN32
-/// Convert \ separators to /
-extern void path_slashize(std::string& s);
-#endif
-
 /// Sub-directory for default recoll config (e.g: .recoll)
 extern std::string path_defaultrecollconfsubdir();
 /// Where we create the user data subdirs

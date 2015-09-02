@@ -47,6 +47,7 @@ typedef int ssize_t;
 #define strncasecmp _strnicmp
 #define strcasecmp _stricmp
 #define ftruncate _chsize_s
+#define chdir _chdir
 #define PATH_MAX MAX_PATH
 #define MAXPATHLEN PATH_MAX
 #define R_OK 4

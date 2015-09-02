@@ -250,6 +250,14 @@ bool maketmpdir(string& tdir, string& reason)
 	return false;
     }
 
+    // There is a race condition between name computation and
+    // mkdir. try to make sure that we at least don't shoot ourselves
+    // in the foot
+#if !defined(HAVE_MKDTEMP) || defined(_WIN32)
+    static PTMutexInit mlock;
+    PTMutexLocker lock(mlock);
+#endif
+
     if (!
 #ifdef HAVE_MKDTEMP
 	mkdtemp(cp)
@@ -265,8 +273,6 @@ bool maketmpdir(string& tdir, string& reason)
     }	
     tdir = cp;
     free(cp);
-    // At this point the directory does not exist yet if mktemp was used
-    
 #else // _WIN32
     // There is a race condition between name computation and
     // mkdir. try to make sure that we at least don't shoot ourselves
@@ -275,6 +281,9 @@ bool maketmpdir(string& tdir, string& reason)
     PTMutexLocker lock(mlock);
     tdir = path_wingettempfilename(TEXT("rcltmp"));
 #endif
+
+    // At this point the directory does not exist yet except if we used
+    // mkdtemp
 
 #if !defined(HAVE_MKDTEMP) || defined(_WIN32)
     if (mkdir(tdir.c_str(), 0700) < 0) {
@@ -290,6 +299,13 @@ bool maketmpdir(string& tdir, string& reason)
 TempFileInternal::TempFileInternal(const string& suffix)
     : m_noremove(false)
 {
+    // Because we need a specific suffix, can't use mkstemp
+    // well. There is a race condition between name computation and
+    // file creation. try to make sure that we at least don't shoot
+    // our own selves in the foot. maybe we'll use mkstemps one day.
+    static PTMutexInit mlock;
+    PTMutexLocker lock(mlock);
+
 #ifndef _WIN32
     string filename = path_cat(tmplocation(), "rcltmpfXXXXXX");
     char *cp = strdup(filename.c_str());
@@ -298,8 +314,8 @@ TempFileInternal::TempFileInternal(const string& suffix)
 	return;
     }
 
-    // Yes using mkstemp this way is awful (bot the suffix adding and
-    // using mkstemp() just to avoid the warnings)
+    // Using mkstemp this way is awful (bot the suffix adding and
+    // using mkstemp() instead of mktemp just to avoid the warnings)
     int fd;
     if ((fd = mkstemp(cp)) < 0) {
 	free(cp);
@@ -311,11 +327,6 @@ TempFileInternal::TempFileInternal(const string& suffix)
     filename = cp;
     free(cp);
 #else
-    // There is a race condition between name computation and
-    // mkdir. try to make sure that we at least don't shoot ourselves
-    // in the foot
-    static PTMutexInit mlock;
-    PTMutexLocker lock(mlock);
     string filename = path_wingettempfilename(TEXT("recoll"));
 #endif
 

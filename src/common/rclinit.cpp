@@ -31,9 +31,7 @@
 #include "pathut.h"
 #include "unac.h"
 #include "smallut.h"
-#ifndef _WIN32
 #include "execmd.h"
-#endif
 
 #ifndef _WIN32
 static const int catchedSigs[] = {SIGINT, SIGQUIT, SIGTERM, SIGUSR1, SIGUSR2};

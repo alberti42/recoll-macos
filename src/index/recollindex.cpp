@@ -494,7 +494,7 @@ int main(int argc, char **argv)
     if ((op_flags & OPT_E)) {
         exit(0);
     }
-#ifndef _WIN32
+
     string rundir;
     config->getConfParam("idxrundir", rundir);
     if (!rundir.compare("tmp")) {
@@ -512,7 +512,6 @@ int main(int argc, char **argv)
 		    rundir.c_str(), errno));
 	}
     }
-#endif
 
     bool rezero((op_flags & OPT_z) != 0);
     bool inPlaceReset((op_flags & OPT_Z) != 0);
