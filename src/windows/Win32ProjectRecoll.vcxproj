@@ -58,15 +58,19 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="SolutionSettings\SolutionSettings.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="SolutionSettings\SolutionSettings.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="SolutionSettings\SolutionSettings.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="SolutionSettings\SolutionSettings.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -80,7 +84,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>BUILDING_RECOLL;WIN32;__WIN32__;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Iconv64\include;C:\xapian\xapian-core-1.2.8\include;C:\Users\Bill\recoll\src\internfile;C:\Users\Bill\recoll\src\rcldb;C:\Users\Bill\recoll\src\index;C:\Users\Bill\recoll\src\bincimapmime;C:\Users\Bill\recoll\src\unac;C:\Users\Bill\recoll\src\windows;C:\zlib64\zlib-win64;C:\pthreads-w32\Pre-built.2\include;C:\Users\Bill\recoll\src\xaposix;C:\Users\Bill\recoll\src\common;C:\Users\Bill\recoll\src\utils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Iconv64\include;C:\xapian\xapian-core-1.2.8\include;C:\Users\Bill\recoll\src\internfile;C:\Users\Bill\recoll\src\rcldb;C:\Users\Bill\recoll\src\index;C:\Users\Bill\recoll\src\bincimapmime;C:\Users\Bill\recoll\src\unac;C:\Users\Bill\recoll\src\windows;C:\zlib;C:\pthreads-w32\Pre-built.2\include;C:\Users\Bill\recoll\src\xaposix;C:\Users\Bill\recoll\src\common;C:\Users\Bill\recoll\src\utils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4800;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -95,7 +99,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>BUILDING_RECOLL;__WIN32__;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Iconv64\include;C:\xapian\xapian-core-1.2.8\include;C:\Users\Bill\recoll\src\internfile;C:\Users\Bill\recoll\src\rcldb;C:\Users\Bill\recoll\src\index;C:\Users\Bill\recoll\src\bincimapmime;C:\Users\Bill\recoll\src\unac;C:\Users\Bill\recoll\src\windows;C:\zlib64\zlib-win64;C:\pthreads-w32\Pre-built.2\include;C:\Users\Bill\recoll\src\xaposix;C:\Users\Bill\recoll\src\common;C:\Users\Bill\recoll\src\utils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Iconv64\include;C:\xapian\xapian-core-1.2.8\include;C:\Users\Bill\recoll\src\internfile;C:\Users\Bill\recoll\src\rcldb;C:\Users\Bill\recoll\src\index;C:\Users\Bill\recoll\src\bincimapmime;C:\Users\Bill\recoll\src\unac;C:\Users\Bill\recoll\src\windows;C:\zlib;C:\pthreads-w32\Pre-built.2\include;C:\Users\Bill\recoll\src\xaposix;C:\Users\Bill\recoll\src\common;C:\Users\Bill\recoll\src\utils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4800;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
