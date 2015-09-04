@@ -34,6 +34,7 @@
 #include "pathut.h"
 #include "unac.h"
 #include "smallut.h"
+#include "execmd.h"
 
 static pthread_t mainthread_id;
 
