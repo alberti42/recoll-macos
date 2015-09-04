@@ -409,7 +409,7 @@ AC_ARG_ENABLE(recollq,
    option enables forcing it.]),
         enableRECOLLQ=$enableval, enableRECOLLQ="no")
 
-if text X"$enableRECOLLQ" != X ; then
+if test X"$enableRECOLLQ" != X ; then
     AM_CONDITIONAL(MAKECMDLINE, [test X$enableRECOLLQ = Xyes])
 else
     AM_CONDITIONAL(MAKECMDLINE, [test X$enableQT = Xno])
