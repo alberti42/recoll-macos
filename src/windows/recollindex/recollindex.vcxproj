@@ -58,19 +58,25 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\SolutionSettings\SolutionSettings.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\SolutionSettings\SolutionSettings.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\SolutionSettings\SolutionSettings.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\SolutionSettings\SolutionSettings.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -88,12 +94,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>__WIN32__;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\pthreads-w32\Pre-built.2\include;C:\Users\Bill\recoll\src\xaposix;C:\Users\Bill\recoll\src\utils;C:\Users\Bill\recoll\src\unac;C:\Users\Bill\recoll\src\rcldb;C:\Users\Bill\recoll\src\internfile;C:\Users\Bill\recoll\src\index;C:\Users\Bill\recoll\src\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(pthreads)\include;$(solutiondir)..\xaposix;$(solutiondir)..\utils;$(solutiondir)..\unac;$(solutiondir)..\rcldb;$(solutiondir)..\internfile;$(solutiondir)..\index;$(solutiondir)..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\zlib64\zlib-win64\win32\Debug;C:\xapian\xapian-core-1.2.8\win32\win32\Debug;C:\Users\Bill\recoll\src\windows\win32\Debug;C:\pthreads-w32\Pre-built.2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(libiconv)\libiconv\$(Platform)\$(Configuration)\;$(zlib)\$(PLatform)\$(Configuration)\;$(xapian)\win32\$(PLatform)\$(Configuration)\;$(solutiondir)$(PLatform)\$(Configuration)\;$(pthreads)\lib\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Win32ProjectRecoll.lib;xapian-core.lib;libiconv.lib;zlib.lib;Ws2_32.lib;Rpcrt4.lib;pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -104,14 +110,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>__WIN32__;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\pthreads-w32\Pre-built.2\include;C:\Users\Bill\recoll\src\xaposix;C:\Users\Bill\recoll\src\utils;C:\Users\Bill\recoll\src\unac;C:\Users\Bill\recoll\src\rcldb;C:\Users\Bill\recoll\src\internfile;C:\Users\Bill\recoll\src\index;C:\Users\Bill\recoll\src\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(pthreads)\include;$(solutiondir)..\xaposix;$(solutiondir)..\utils;$(solutiondir)..\unac;$(solutiondir)..\rcldb;$(solutiondir)..\internfile;$(solutiondir)..\index;$(solutiondir)..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4800</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\xapian\xapian-core-1.2.8\win32\x64\Debug;C:\Users\Bill\recoll\src\windows\x64\Debug;C:\pthreads-w32\Pre-built.2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Win32ProjectRecoll.lib;C:\zlib64\zlib-win64\x64\Debug\zlib.lib;xapian-core.lib;C:\iconv64\libiconv\x64\Debug\libiconv.lib;Ws2_32.lib;Rpcrt4.lib;pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(libiconv)\libiconv\$(Platform)\$(Configuration);$(zlib)\$(PLatform)\$(Configuration)\;$(xapian)\win32\$(PLatform)\$(Configuration)\;$(solutiondir)$(PLatform)\$(Configuration)\;$(pthreads)\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Win32ProjectRecoll.lib;zlib.lib;xapian-core.lib;libiconv.lib;Ws2_32.lib;Rpcrt4.lib;pthreadVC2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

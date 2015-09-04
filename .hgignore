@@ -11,6 +11,16 @@ libtool
 *.lo
 *~
 \#*
+*.obj
+*.sdf
+*.tlog
+*.lib
+*.idb
+*.log
+*.pdb
+.vs
+*.exe
+*.ilk
 ptrans
 src/aclocal.m4
 src/compile

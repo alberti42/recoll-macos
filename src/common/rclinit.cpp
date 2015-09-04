@@ -17,6 +17,9 @@
 #include "autoconfig.h"
 
 #include <stdio.h>
+#ifdef _WIN32
+#include "safewindows.h"
+#endif
 #include <signal.h>
 #include <locale.h>
 #include <pthread.h>
@@ -31,11 +34,6 @@
 #include "pathut.h"
 #include "unac.h"
 #include "smallut.h"
-#include "execmd.h"
-
-#ifndef _WIN32
-static const int catchedSigs[] = {SIGINT, SIGQUIT, SIGTERM, SIGUSR1, SIGUSR2};
-#endif
 
 static pthread_t mainthread_id;
 
@@ -45,29 +43,20 @@ static void siglogreopen(int)
 	DebugLog::reopen();
 }
 
-RclConfig *recollinit(RclInitFlags flags, 
-		      void (*cleanup)(void), void (*sigcleanup)(int), 
-		      string &reason, const string *argcnf)
+#ifndef _WIN32
+// We would like to block SIGCHLD globally, but we can't because
+// QT uses it. Have to block it inside execmd.cpp
+static const int catchedSigs[] = {SIGINT, SIGQUIT, SIGTERM, SIGUSR1, SIGUSR2};
+void initAsyncSigs(void (*sigcleanup)(int))
 {
-    if (cleanup)
-	atexit(cleanup);
-
     // We ignore SIGPIPE always. All pieces of code which can write to a pipe
     // must check write() return values.
 #ifndef _WIN32
     signal(SIGPIPE, SIG_IGN);
 #endif
-    
-    // Make sure the locale is set. This is only for converting file names 
-    // to utf8 for indexing.
-    setlocale(LC_CTYPE, "");
-
-    // We would like to block SIGCHLD globally, but we can't because
-    // QT uses it. Have to block it inside execmd.cpp
 
     // Install app signal handler
     if (sigcleanup) {
-#ifndef _WIN32
 	struct sigaction action;
 	action.sa_handler = sigcleanup;
 	action.sa_flags = 0;
@@ -78,13 +67,93 @@ RclConfig *recollinit(RclInitFlags flags,
 		    perror("Sigaction failed");
 		}
 	    }
-#endif
     }
+
+    // Install log rotate sig handler
+    {
+	struct sigaction action;
+	action.sa_handler = siglogreopen;
+	action.sa_flags = 0;
+	sigemptyset(&action.sa_mask);
+	if (signal(SIGHUP, SIG_IGN) != SIG_IGN) {
+	    if (sigaction(SIGHUP, &action, 0) < 0) {
+		perror("Sigaction failed");
+	    }
+	}
+    }
+}
+#else
+
+// Windows signals etc.
+//
+// ^C can be caught by the signal() emulation, but not ^Break
+// apparently, which is why we use the native approach too
+//
+// When a keyboard interrupt occurs, windows creates a thread inside
+// the process and calls the handler. The process exits when the
+// handler returns or after at most 10S
+//
+// In practise, only recollindex sets sigcleanup(), and the routine
+// just sets a global termination flag. So we just call it and sleep,
+// hoping that cleanup does not take more than what Windows will let
+// us live.
+
+static void (*l_sigcleanup)(int);
+
+static BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
+{
+    if (l_sigcleanup == 0)
+        return FALSE;
+
+    switch(fdwCtrlType) { 
+    case CTRL_C_EVENT: 
+    case CTRL_CLOSE_EVENT: 
+    case CTRL_BREAK_EVENT: 
+    case CTRL_LOGOFF_EVENT: 
+    case CTRL_SHUTDOWN_EVENT:
+        l_sigcleanup(SIGINT);
+        Sleep(10000);
+        return TRUE;
+    default: 
+        return FALSE; 
+    } 
+} 
+ 
+static const int catchedSigs[] = {SIGINT, SIGTERM};
+void initAsyncSigs(void (*sigcleanup)(int))
+{
+    // Install app signal handler
+    if (sigcleanup) {
+        l_sigcleanup = sigcleanup;
+	for (unsigned int i = 0; i < sizeof(catchedSigs) / sizeof(int); i++) {
+	    if (signal(catchedSigs[i], SIG_IGN) != SIG_IGN) {
+		signal(catchedSigs[i], sigcleanup);
+	    }
+        }
+    }
+    SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE);
+}
+
+#endif
+
+RclConfig *recollinit(RclInitFlags flags, 
+		      void (*cleanup)(void), void (*sigcleanup)(int), 
+		      string &reason, const string *argcnf)
+{
+    if (cleanup)
+	atexit(cleanup);
+
+    // Make sure the locale is set. This is only for converting file names 
+    // to utf8 for indexing.
+    setlocale(LC_CTYPE, "");
+
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
     if (getenv("RECOLL_LOGDATE"))
         DebugLog::getdbl()->logdate(1);
 
+    initAsyncSigs(sigcleanup);
+    
     RclConfig *config = new RclConfig(argcnf);
     if (!config || !config->ok()) {
 	reason = "Configuration could not be built:\n";
@@ -120,20 +189,6 @@ RclConfig *recollinit(RclInitFlags flags,
 	int lev = atoi(loglevel.c_str());
 	DebugLog::getdbl()->setloglevel(lev);
     }
-    // Install log rotate sig handler
-#ifndef _WIN32
-    {
-	struct sigaction action;
-	action.sa_handler = siglogreopen;
-	action.sa_flags = 0;
-	sigemptyset(&action.sa_mask);
-	if (signal(SIGHUP, SIG_IGN) != SIG_IGN) {
-	    if (sigaction(SIGHUP, &action, 0) < 0) {
-		perror("Sigaction failed");
-	    }
-	}
-    }
-#endif
 
     // Make sure the locale charset is initialized (so that multiple
     // threads don't try to do it at once).
@@ -192,8 +247,8 @@ RclConfig *recollinit(RclInitFlags flags,
     return config;
 }
 
-// Signals are handled by the main thread. All others should call this routine
-// to block possible signals
+// Signals are handled by the main thread. All others should call this
+// routine to block possible signals
 void recoll_threadinit()
 {
 #ifndef _WIN32
@@ -204,6 +259,13 @@ void recoll_threadinit()
 	sigaddset(&sset, catchedSigs[i]);
     sigaddset(&sset, SIGHUP);
     pthread_sigmask(SIG_BLOCK, &sset, 0);
+#else
+    // Not sure that this is needed at all or correct under windows.
+    for (unsigned int i = 0; i < sizeof(catchedSigs) / sizeof(int); i++) {
+        if (signal(catchedSigs[i], SIG_IGN) != SIG_IGN) {
+            signal(catchedSigs[i], SIG_IGN);
+        }
+    }
 #endif
 }
 

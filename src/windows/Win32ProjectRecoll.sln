@@ -15,6 +15,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "recollq", "recollq\recollq.
 		{23FF40E1-BA87-4E5F-9B22-2EB760FF403D} = {23FF40E1-BA87-4E5F-9B22-2EB760FF403D}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SolutionSettings", "SolutionSettings\SolutionSettings.vcxproj", "{7713CDF1-27B3-4F9B-B207-C7CEB801C24B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -47,6 +49,14 @@ Global
 		{C1D0CCD2-0015-44AC-A606-AC48BB80C133}.Release|x64.Build.0 = Release|x64
 		{C1D0CCD2-0015-44AC-A606-AC48BB80C133}.Release|x86.ActiveCfg = Release|Win32
 		{C1D0CCD2-0015-44AC-A606-AC48BB80C133}.Release|x86.Build.0 = Release|Win32
+		{7713CDF1-27B3-4F9B-B207-C7CEB801C24B}.Debug|x64.ActiveCfg = Debug|x64
+		{7713CDF1-27B3-4F9B-B207-C7CEB801C24B}.Debug|x64.Build.0 = Debug|x64
+		{7713CDF1-27B3-4F9B-B207-C7CEB801C24B}.Debug|x86.ActiveCfg = Debug|Win32
+		{7713CDF1-27B3-4F9B-B207-C7CEB801C24B}.Debug|x86.Build.0 = Debug|Win32
+		{7713CDF1-27B3-4F9B-B207-C7CEB801C24B}.Release|x64.ActiveCfg = Release|x64
+		{7713CDF1-27B3-4F9B-B207-C7CEB801C24B}.Release|x64.Build.0 = Release|x64
+		{7713CDF1-27B3-4F9B-B207-C7CEB801C24B}.Release|x86.ActiveCfg = Release|Win32
+		{7713CDF1-27B3-4F9B-B207-C7CEB801C24B}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
