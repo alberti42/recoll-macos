@@ -805,6 +805,7 @@ string fileurltolocalpath(string url)
         url = url.substr(7, string::npos);
     else
         return string();
+
 #ifdef _WIN32
     // Absolute file urls are like: file:///c:/mydir/...
     // Get rid of the initial '/'
@@ -812,10 +813,17 @@ string fileurltolocalpath(string url)
         url = url.substr(1);
     }
 #endif
+
+    // Removing the fragment part. This is exclusively used when
+    // executing a viewer for the recoll manual, and we only strip the
+    // part after # if it is preceded by .html
     string::size_type pos;
-    if ((pos = url.find_last_of("#")) != string::npos) {
-        url.erase(pos);
+    if ((pos = url.rfind(".html#")) != string::npos) {
+        url.erase(pos+5);
+    } else if ((pos = url.rfind(".htm#")) != string::npos) {
+        url.erase(pos+4);
     }
+
     return url;
 }
 
@@ -1192,7 +1200,7 @@ int main(int argc, const char **argv)
   pidfile.remove();
 #endif
 
-#if 1
+#if 0
   if (argc > 1) {
       cerr <<  "Usage: thumbpath <filepath>" << endl;
       exit(1);
@@ -1224,6 +1232,19 @@ int main(int argc, const char **argv)
     cout << "Suffix: [" << ext << "]" << endl;
     return 0;
 #endif
+
+#if 1
+    if (argc != 1) {
+	cerr << "Usage: trpathut url" << endl;
+	exit(1);
+    }
+    string url = *argv++;argc--;
+
+    cout << "File: [" << fileurltolocalpath(url) << "]\n";
+    return 0;
+#endif
+
+
 }
 
 #endif // TEST_PATHUT
