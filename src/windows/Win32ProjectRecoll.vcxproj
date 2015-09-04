@@ -84,7 +84,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>BUILDING_RECOLL;WIN32;__WIN32__;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Iconv64\include;C:\xapian\xapian-core-1.2.8\include;C:\Users\Bill\recoll\src\internfile;C:\Users\Bill\recoll\src\rcldb;C:\Users\Bill\recoll\src\index;C:\Users\Bill\recoll\src\bincimapmime;C:\Users\Bill\recoll\src\unac;C:\Users\Bill\recoll\src\windows;C:\zlib;C:\pthreads-w32\Pre-built.2\include;C:\Users\Bill\recoll\src\xaposix;C:\Users\Bill\recoll\src\common;C:\Users\Bill\recoll\src\utils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(libiconv)\include;$(xapian)\include;$(solutiondir)..\internfile;$(solutiondir)..\rcldb;$(solutiondir)..\index;$(solutiondir)..\bincimapmime;$(solutiondir)..\unac;$(solutiondir)..\windows;$(zlib);$(pthreads)\include;$(solutiondir)..\xaposix;$(solutiondir)..\common;$(solutiondir)..\utils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4800;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -99,7 +99,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>BUILDING_RECOLL;__WIN32__;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Iconv64\include;C:\xapian\xapian-core-1.2.8\include;C:\Users\Bill\recoll\src\internfile;C:\Users\Bill\recoll\src\rcldb;C:\Users\Bill\recoll\src\index;C:\Users\Bill\recoll\src\bincimapmime;C:\Users\Bill\recoll\src\unac;C:\Users\Bill\recoll\src\windows;C:\zlib;C:\pthreads-w32\Pre-built.2\include;C:\Users\Bill\recoll\src\xaposix;C:\Users\Bill\recoll\src\common;C:\Users\Bill\recoll\src\utils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(libiconv)\include;$(xapian)\include;$(solutiondir)..\internfile;$(solutiondir)..\rcldb;$(solutiondir)..\index;$(solutiondir)..\bincimapmime;$(solutiondir)..\unac;$(solutiondir)..\windows;$(zlib);$(pthreads)\include;$(solutiondir)..\xaposix;$(solutiondir)..\common;$(solutiondir)..\utils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4800;4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>

@@ -2,10 +2,10 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <pthreads>C:\pthreads-w32\Pre-built.2</pthreads>
-    <libiconv>c:\iconv64</libiconv>
-    <xapian>C:\xapian\xapian-core-1.2.8</xapian>
-    <zlib>C:\zlib</zlib>
+    <pthreads>C:\recolldeps\pthreads-w32\Pre-built.2</pthreads>
+    <libiconv>c:\recolldeps\iconv64</libiconv>
+    <xapian>C:\recolldeps\xapian\xapian-core-1.2.8</xapian>
+    <zlib>C:\recolldeps\zlib</zlib>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup />
