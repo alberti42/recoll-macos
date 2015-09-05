@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include "safesysstat.h"
 #include "safeunistd.h"
+#include <signal.h>
 
 #include <string>
 
