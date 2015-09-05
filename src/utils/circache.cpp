@@ -1335,8 +1335,8 @@ static bool inflateToDynBuf(void* inp, UINT inlen, void **outpp, UINT *outlenp)
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
-#include "safesysstat.h"
-#include "safeunistd.h"
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include <string>
 #include <iostream>
@@ -1420,8 +1420,8 @@ bool resizecc(const string& dir, int newmbs)
     }
 
     // Done with our objects here, there is no close() method, so delete them
-    occ.release();
-    ncc.release();
+    occ.reset();
+    ncc.reset();
 
     if (rename(ofn.c_str(), backupfn.c_str()) < 0) {
         cerr << "Could not create backup " << backupfn << " : ";
