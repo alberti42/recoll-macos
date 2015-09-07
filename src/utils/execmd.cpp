@@ -1086,7 +1086,9 @@ void ReExec::reexec()
 using namespace std;
 
 
-// Testing with rclaudio: use an mp3 as parameter
+// Testing the rclexecm protocol outside of recoll. Here we use the
+// rcldoc.py filter, you can try with rclaudio too, adjust the file arg
+// accordingly
 static const string tstcmd("/home/dockes/projets/fulltext/win-recoll/src/filters/rcldoc.py");
 static const string mimetype("text/html");
 bool exercise_mhexecm(vector<string>& files)
@@ -1178,33 +1180,53 @@ bool exercise_mhexecm(vector<string>& files)
     return true;
 }
 
+static char *thisprog;
+static char usage [] =
+"trexecmd [-c -r -i -o] cmd [arg1 arg2 ...]\n" 
+"   -c : test cancellation (ie: trexecmd -c sleep 1000)\n"
+"   -r : run reexec. Must be separate option.\n"
+"   -i : command takes input\n"
+"   -o : command produces output\n"
+"    If -i is set, we send /etc/group contents to whatever command is run\n"
+"    If -o is set, we print whatever comes out\n"
+"trexecmd -m <file.doc> [...]: test execm:\n"
+"trexecmd -w cmd : do the 'which' thing\n"
+;
+
+static void Usage(void)
+{
+    fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
+    exit(1);
+}
 
 static int     op_flags;
 #define OPT_MOINS 0x1
-#define OPT_b	  0x4 
+#define OPT_i     0x4
 #define OPT_w     0x8
 #define OPT_c     0x10
 #define OPT_r     0x20
 #define OPT_m     0x40
+#define OPT_o     0x80
 
-const char *data = "Une ligne de donnees\n";
+// Data sink for data coming out of the command. We also use it to set a cancellation after a moment.
 class MEAdv : public ExecCmdAdvise {
 public:
-    ExecCmd *cmd;
     void newData(int cnt) {
 	if (op_flags & OPT_c) {
 	    static int  callcnt;
-	    if (callcnt++ == 3) {
-		throw CancelExcept();
+	    if (callcnt++ == 10) {
+                // Just sets the cancellation flag
+		CancelCheck::instance().setCancel();
+                // Would be called from somewhere else and throws an
+                // exception. We call it here for simplicity
+                CancelCheck::instance().checkCancel();
 	    }
 	}
 	cerr << "newData(" << cnt << ")" << endl;
-	//	CancelCheck::instance().setCancel();
-	//	CancelCheck::instance().checkCancel();
-	//	cmd->setCancel();
     }
 };
 
+// Data provider, used if the -i flag is set
 class MEPv : public ExecCmdProvide {
 public:
     FILE *m_fp;
@@ -1229,22 +1251,8 @@ public:
 };
 
 
-static char *thisprog;
-static char usage [] =
-"trexecmd [-c|-r] cmd [arg1 arg2 ...]\n" 
-" -c : test cancellation (ie: trexecmd -c sleep 1000)\n"
-" -r : test reexec\n"
-" -m <file.doc> [...]: test execm:\n"
-"trexecmd -w cmd : do the which thing\n"
-;
-static void Usage(void)
-{
-    fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
-    exit(1);
-}
 
 ReExec reexec;
-
 int main(int argc, char *argv[])
 {
     reexec.init(argc, argv);
@@ -1274,6 +1282,8 @@ int main(int argc, char *argv[])
 	    case 'r':	op_flags |= OPT_r; break;
 	    case 'w':	op_flags |= OPT_w; break;
 	    case 'm':	op_flags |= OPT_m; break;
+	    case 'i':	op_flags |= OPT_i; break;
+	    case 'o':	op_flags |= OPT_o; break;
 	    default: Usage();	break;
 	    }
     b1: argc--; argv++;
@@ -1287,15 +1297,22 @@ int main(int argc, char *argv[])
     while (argc > 0) {
 	l.push_back(*argv++); argc--;
     }
+
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
     signal(SIGPIPE, SIG_IGN);
 
     if (op_flags & OPT_r) {
-	// Test reexec
+	// Test reexec. Normally only once, next time we fall through
+        // because we remove the -r option (only works if it was isolated, not like -rc
 	chdir("/");
         argv[0] = strdup("");
 	sleep(1);
+        cerr << "Calling reexec\n";
+        // We remove the -r arg from list, otherwise we are going to
+        // loop (which you can try by commenting out the following
+        // line)
+        reexec.removeArg("-r");
         reexec.reexec();
     }
 
@@ -1304,45 +1321,69 @@ int main(int argc, char *argv[])
 	string path;
 	if (ExecCmd::which(arg1, path)) {
 	    cout << path << endl;
-	    exit(0);
+            return 0;
 	} 
-	exit(1);
-    }
-
-    if (op_flags & OPT_m) {
+	return 1;
+    } else if (op_flags & OPT_m) {
         l.insert(l.begin(), arg1);
 	return exercise_mhexecm(l) ? 0 : 1;
+    } else {
+        if ((op_flags& OPT_i) && (op_flags & OPT_o)) {
+            // It's a chance we don't use this in recoll because there
+            // is a bug: the input (to cmd) fd is not closed at the
+            // end of input so the command blocks and we deadlock
+            // (until a possible cancellation). We need to add code to
+            // actually signal the end of input (provide::newData()
+            // must not be void, but for example return -1 at eof, or
+            // if it is not set we do it when the input string is
+            // empty), and actually close the descriptor. Netcon won't
+            // do it for us, this has to be done in execcmd.
+            cerr << "Can't set -i and -o at the moment\n";
+            return 1;
+        }
+        // Default: execute command line arguments
+        ExecCmd mexec;
+
+        // Set callback to be called whenever there is new data
+        // available and at a periodic interval, to check for
+        // cancellation
+        MEAdv adv;
+        mexec.setAdvise(&adv);
+        mexec.setTimeout(5);
+
+        // Stderr output goes there
+        mexec.setStderr("/tmp/trexecStderr");
+        
+        // A few environment variables. Check with trexecmd env
+        mexec.putenv("TESTVARIABLE1=TESTVALUE1");
+        mexec.putenv("TESTVARIABLE2=TESTVALUE2");
+        mexec.putenv("TESTVARIABLE3=TESTVALUE3");
+
+        string input, output;
+        MEPv  pv(&input);
+        
+        string *ip = 0;
+        if (op_flags  & OPT_i) {
+            ip = &input;
+            mexec.setProvide(&pv);
+        }
+        string *op = 0;
+        if (op_flags & OPT_o) {
+            op = &output;
+        }
+
+        int status = -1;
+        try {
+            status = mexec.doexec(arg1, l, ip, op);
+        } catch (CancelExcept) {
+            cerr << "CANCELLED" << endl;
+        }
+
+        fprintf(stderr, "Status: 0x%x\n", status);
+        if (op_flags & OPT_o) {
+            cout << output;
+        }
+        exit (status >> 8);
     }
-
-    //////////////
-    // Default: execute command line arguments
-    ExecCmd mexec;
-    MEAdv adv;
-    adv.cmd = &mexec;
-    mexec.setAdvise(&adv);
-    mexec.setTimeout(5);
-    mexec.setStderr("/tmp/trexecStderr");
-    mexec.putenv("TESTVARIABLE1=TESTVALUE1");
-    mexec.putenv("TESTVARIABLE2=TESTVALUE2");
-    mexec.putenv("TESTVARIABLE3=TESTVALUE3");
-
-    string input, output;
-    //    input = data;
-    string *ip = 0;
-    ip = &input;
-
-    MEPv  pv(&input);
-    mexec.setProvide(&pv);
-
-    int status = -1;
-    try {
-	status = mexec.doexec(arg1, l, ip, &output);
-    } catch (CancelExcept) {
-	cerr << "CANCELLED" << endl;
-    }
-
-    fprintf(stderr, "Status: 0x%x\n", status);
-    cout << output;
-    exit (status >> 8);
 }
 #endif // TEST

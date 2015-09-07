@@ -39,7 +39,7 @@ class ExecCmdAdvise {
 
 /** 
  * Callback function object to get more input data. Data has to be provided
- * in the initial input string, set it to empty to signify eof.
+ * into the initial input string, set it to empty to signify eof.
  */
 class ExecCmdProvide {
  public:
@@ -90,16 +90,21 @@ class ExecCmd {
 
     /** 
      * Set function objects to call whenever new data is available or on
-     * select timeout / whenever new data is needed to send. Must be called
-     * before doexec()
+     * select timeout. The data itself is stored in the output string.
+     * Must be set before calling doexec.
      */
     void setAdvise(ExecCmdAdvise *adv);
+    /*
+     * Set function object to call whenever new data is needed. The
+     * data should be stored in the input string. Must be set before
+     * calling doexec()
+     */
     void setProvide(ExecCmdProvide *p);
 
     /**
      * Set select timeout in milliseconds. The default is 1 S. 
      * This is NOT a time after which an error will occur, but the period of
-     * the calls to the cancellation check routine.
+     * the calls to the advise routine (which normally checks for cancellation).
      */
     void setTimeout(int mS);
 
@@ -127,7 +132,7 @@ class ExecCmd {
      * @param args the argument vector (NOT including argv[0]).
      * @param input Input to send TO the command.
      * @param output Output FROM the command.
-     * @return the exec ouput status (0 if ok), or -1
+     * @return the exec output status (0 if ok), or -1
      */
     int doexec(const std::string &cmd, const std::vector<std::string>& args, 
 	       const std::string *input = 0, 
