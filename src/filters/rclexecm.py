@@ -233,6 +233,7 @@ class Executor:
     def extractone(self, params):
         #self.em.rclog("extractone %s %s" % (params["filename:"], \
         # params["mimetype:"]))
+        self.flt.reset()
         ok = False
         if not params.has_key("filename:"):
             self.em.rclog("extractone: no mime or file name")

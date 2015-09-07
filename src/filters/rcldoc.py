@@ -6,7 +6,7 @@ import sys
 import os
 
 # Processing the output from antiword: create html header and tail, process
-# continuation lines escape HTML special characters, accumulate the data
+# continuation lines escape, HTML special characters, accumulate the data.
 class WordProcessData:
     def __init__(self, em):
         self.em = em
@@ -74,15 +74,19 @@ class WordPassData:
         self.em.setmimetype("text/html")
         return self.out
         
+
 # Filter for msword docs. Try antiword, and if this fails, check for
-# an rtf or text document (.doc are sometimes like this). Also try
+# an rtf or text document (.doc are sometimes like this...). Also try
 # vwWare if the doc is actually a word doc
 class WordFilter:
     def __init__(self, em, td):
         self.em = em
         self.ntry = 0
-        self.thisdir = td
-        
+        self.execdir = td
+
+    def reset(self):
+        self.ntry = 0
+            
     def hasControlChars(self, data):
         for c in data:
             if c < chr(32) and c != '\n' and c != '\t' and \
@@ -108,7 +112,7 @@ class WordFilter:
             return "text/plain"
 
     def getCmd(self, fn):
-        '''Return command to execute and postprocessor according to
+        '''Return command to execute, and postprocessor, according to
         our state: first try antiword, then others depending on mime
         identification. Do 2 tries at most'''
         if self.ntry == 0:
@@ -116,16 +120,16 @@ class WordFilter:
             return (["antiword", "-t", "-i", "1", "-m", "UTF-8"],
                     WordProcessData(self.em))
         elif self.ntry == 1:
-            ntry = 2
+            self.ntry = 2
             # antiword failed. Check for an rtf file, or text and
             # process accordingly. It the doc is actually msword, try
             # wvWare.
             mt = self.mimetype(fn)
             if mt == "text/plain":
-                return ([os.path.join(self.thisdir,"rcltext")],
+                return ([os.path.join(self.execdir,"rcltext")],
                        WordPassData(self.em))
             elif mt == "text/rtf":
-                return ([os.path.join(self.thisdir, "rclrtf")],
+                return ([os.path.join(self.execdir, "rclrtf")],
                         WordPassData(self.em))
             elif mt == "application/msword":
                 return (["wvWare", "--nographics", "--charset=utf-8"],
@@ -136,8 +140,8 @@ class WordFilter:
             return ([],None)
 
 if __name__ == '__main__':
-    thisdir = os.path.dirname(sys.argv[0])
+    execdir = os.path.dirname(sys.argv[0])
     proto = rclexecm.RclExecM()
-    filter = WordFilter(proto, thisdir)
+    filter = WordFilter(proto, execdir)
     extract = rclexecm.Executor(proto, filter)
     rclexecm.main(proto, extract)
