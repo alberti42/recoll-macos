@@ -66,8 +66,10 @@ class WordPassData:
     def __init__(self, em):
         self.out = ""
         self.em = em
+
     def takeLine(self, line):
         self.out += line
+
     def wrapData(self):
         self.em.setmimetype("text/html")
         return self.out
@@ -112,7 +114,7 @@ class WordFilter:
         if self.ntry == 0:
             self.ntry = 1
             return (["antiword", "-t", "-i", "1", "-m", "UTF-8"],
-                    WordPassData(self.em))
+                    WordProcessData(self.em))
         elif self.ntry == 1:
             ntry = 2
             # antiword failed. Check for an rtf file, or text and
@@ -132,7 +134,7 @@ class WordFilter:
                 return ([],None)
         else:
             return ([],None)
-            
+
 if __name__ == '__main__':
     thisdir = os.path.dirname(sys.argv[0])
     proto = rclexecm.RclExecM()
