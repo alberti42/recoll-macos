@@ -1071,22 +1071,25 @@ void ReExec::reexec()
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <signal.h>
 
 #include <string>
 #include <iostream>
 #include <sstream>
 #include <vector>
-using namespace std;
 
 #include "debuglog.h"
 #include "cancelcheck.h"
 #include "execmd.h"
 #include "smallut.h"
 
+using namespace std;
+
+
 // Testing with rclaudio: use an mp3 as parameter
-static const string tstcmd("/usr/share/recoll/filters/rclaudio");
-static const string mimetype("audio/mpeg");
-bool exercise_mhexecm(const string& filename)
+static const string tstcmd("/home/dockes/projets/fulltext/win-recoll/src/filters/rcldoc.py");
+static const string mimetype("text/html");
+bool exercise_mhexecm(vector<string>& files)
 {
     ExecCmd cmd;
 
@@ -1097,77 +1100,81 @@ bool exercise_mhexecm(const string& filename)
 	return false;
     }
 
-    // Build request message
-    ostringstream obuf;
-    obuf << "FileName: " << filename.length() << "\n" << filename;
-    obuf << "Mimetype: " << mimetype.length() << "\n" << mimetype;
-    // Bogus parameter should be skipped by filter
-    obuf << "BogusParam: " << string("bogus").length() << "\n" << "bogus";
-    obuf << "\n";
-    cerr << "SENDING: [" << obuf.str() << "]\n";
-    // Send it 
-    if (cmd.send(obuf.str()) < 0) {
-	// The real code calls zapchild here, but we don't need it as
-	// this will be handled by ~ExecCmd
-        //cmd.zapChild();
-        cerr << "send error\n";
-        return false;
+    for (vector<string>::const_iterator it = files.begin();
+         it != files.end(); it++) {
+        // Build request message
+        ostringstream obuf;
+        obuf << "Filename: " << (*it).length() << "\n" << (*it);
+        obuf << "Mimetype: " << mimetype.length() << "\n" << mimetype;
+        // Bogus parameter should be skipped by filter
+        obuf << "BogusParam: " << string("bogus").length() << "\n" << "bogus";
+        obuf << "\n";
+        cerr << "SENDING: [" << obuf.str() << "]\n";
+        // Send it 
+        if (cmd.send(obuf.str()) < 0) {
+            // The real code calls zapchild here, but we don't need it as
+            // this will be handled by ~ExecCmd
+            //cmd.zapChild();
+            cerr << "send error\n";
+            return false;
+        }
+
+        // Read answer
+        for (int loop=0;;loop++) {
+            string name, data;
+
+            // Code from mh_execm.cpp: readDataElement
+            string ibuf;
+            // Read name and length
+            if (cmd.getline(ibuf) <= 0) {
+                cerr << "getline error\n";
+                return false;
+            }
+            // Empty line (end of message)
+            if (!ibuf.compare("\n")) {
+                cerr << "Got empty line\n";
+                name.clear();
+                break;
+            }
+
+            // Filters will sometimes abort before entering the real
+            // protocol, ie if a module can't be loaded. Check the
+            // special filter error first word:
+            if (ibuf.find("RECFILTERROR ") == 0) {
+                cerr << "Got RECFILTERROR\n";
+                return false;
+            }
+
+            // We're expecting something like Name: len\n
+            vector<string> tokens;
+            stringToTokens(ibuf, tokens);
+            if (tokens.size() != 2) {
+                cerr << "bad line in filter output: [" << ibuf << "]\n";
+                return false;
+            }
+            vector<string>::iterator it = tokens.begin();
+            name = *it++;
+            string& slen = *it;
+            int len;
+            if (sscanf(slen.c_str(), "%d", &len) != 1) {
+                cerr << "bad line in filter output (no len): [" << 
+                    ibuf << "]\n";
+                return false;
+            }
+            // Read element data
+            data.erase();
+            if (len > 0 && cmd.receive(data, len) != len) {
+                cerr << "MHExecMultiple: expected " << len << 
+                    " bytes of data, got " << data.length() << endl;
+                return false;
+            }
+
+            // Empty element: end of message
+            if (name.empty())
+                break;
+            cerr << "Got name: [" << name << "] data [" << data << "]\n";
+        }
     }
-
-    // Read answer
-    for (int loop=0;;loop++) {
-        string name, data;
-
-	// Code from mh_execm.cpp: readDataElement
-	string ibuf;
-	// Read name and length
-	if (cmd.getline(ibuf) <= 0) {
-	    cerr << "getline error\n";
-	    return false;
-	}
-	// Empty line (end of message)
-	if (!ibuf.compare("\n")) {
-	    cerr << "Got empty line\n";
-	    name.clear();
-	    return true;
-	}
-
-	// Filters will sometimes abort before entering the real protocol, ie if
-	// a module can't be loaded. Check the special filter error first word:
-	if (ibuf.find("RECFILTERROR ") == 0) {
-	    cerr << "Got RECFILTERROR\n";
-	    return false;
-	}
-
-	// We're expecting something like Name: len\n
-	vector<string> tokens;
-	stringToTokens(ibuf, tokens);
-	if (tokens.size() != 2) {
-	    cerr << "bad line in filter output: [" << ibuf << "]\n";
-	    return false;
-	}
-	vector<string>::iterator it = tokens.begin();
-	name = *it++;
-	string& slen = *it;
-	int len;
-	if (sscanf(slen.c_str(), "%d", &len) != 1) {
-	    cerr << "bad line in filter output (no len): [" << ibuf << "]\n";
-	    return false;
-	}
-	// Read element data
-	data.erase();
-	if (len > 0 && cmd.receive(data, len) != len) {
-	    cerr << "MHExecMultiple: expected " << len << 
-		" bytes of data, got " << data.length() << endl;
-	    return false;
-	}
-
-	// Empty element: end of message
-        if (name.empty())
-            break;
-	cerr << "Got name: [" << name << "] data [" << data << "]\n";
-    }
-
     return true;
 }
 
@@ -1227,7 +1234,7 @@ static char usage [] =
 "trexecmd [-c|-r] cmd [arg1 arg2 ...]\n" 
 " -c : test cancellation (ie: trexecmd -c sleep 1000)\n"
 " -r : test reexec\n"
-" -m <path to mp3 file>: test execm: needs installed and working rclaudio/mutagen\n"
+" -m <file.doc> [...]: test execm:\n"
 "trexecmd -w cmd : do the which thing\n"
 ;
 static void Usage(void)
@@ -1303,7 +1310,8 @@ int main(int argc, char *argv[])
     }
 
     if (op_flags & OPT_m) {
-	return exercise_mhexecm(arg1) ? 0 : 1;
+        l.insert(l.begin(), arg1);
+	return exercise_mhexecm(l) ? 0 : 1;
     }
 
     //////////////
