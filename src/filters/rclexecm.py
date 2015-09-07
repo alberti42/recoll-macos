@@ -20,6 +20,8 @@
 import sys
 import os
 import subprocess
+import tempfile
+import shutil
 
 ############################################
 # RclExecM implements the
@@ -217,8 +219,11 @@ class Executor:
             proc = subprocess.Popen(cmd + [filename],
                                     stdout = subprocess.PIPE)
             stdout = proc.stdout
-        except subprocess.CalledProcessError, err:
-            self.em.rclog("extractone: extract failed: [%s]" % err)
+        except subprocess.CalledProcessError as err:
+            self.em.rclog("extractone: Popen() error: %s" % err)
+            return (False, "")
+        except OSError as err:
+            self.em.rclog("extractone: Popen OS error: %s" % err)
             return (False, "")
 
         for line in stdout:
@@ -237,7 +242,7 @@ class Executor:
         ok = False
         if not params.has_key("filename:"):
             self.em.rclog("extractone: no mime or file name")
-            return (ok, docdata, "", RclExecM.eofnow)
+            return (ok, "", "", RclExecM.eofnow)
 
         fn = params["filename:"]
         while True:
@@ -253,7 +258,6 @@ class Executor:
         else:
             return (ok, "", "", RclExecM.eofnow)
         
-
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
         self.currentindex = 0
@@ -270,7 +274,56 @@ class Executor:
             self.currentindex += 1
             return ret
 
-  
+# Helper routine to test for program accessibility
+def which(program):
+    def is_exe(fpath):
+        return os.path.exists(fpath) and os.access(fpath, os.X_OK)
+    def ext_candidates(fpath):
+        yield fpath
+        for ext in os.environ.get("PATHEXT", "").split(os.pathsep):
+            yield fpath + ext
+
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            exe_file = os.path.join(path, program)
+            for candidate in ext_candidates(exe_file):
+                if is_exe(candidate):
+                    return candidate
+    return None
+
+# Temp dir helper
+class SafeTmpDir:
+    def __init__(self, em):
+        self.em = em
+        self.toptmp = ""
+        self.tmpdir = ""
+
+    def __del__(self):
+        try:
+            if self.toptmp:
+                shutil.rmtree(self.tmpdir, True)
+                os.rmdir(self.toptmp)
+        except Exception as err:
+            self.em.rclog("delete dir failed for " + self.toptmp)
+
+    def getpath(self):
+        if not self.tmpdir:
+            envrcltmp = os.getenv('RECOLL_TMPDIR')
+            if envrcltmp:
+                self.toptmp = tempfile.mkdtemp(prefix='rcltmp', dir=envrcltmp)
+            else:
+                self.toptmp = tempfile.mkdtemp(prefix='rcltmp')
+
+            self.tmpdir = os.path.join(self.toptmp, 'rclsofftmp')
+            os.makedirs(self.tmpdir)
+
+        return self.tmpdir
+   
+
 # Common main routine for all python execm filters: either run the
 # normal protocol engine or a local loop to test without recollindex
 def main(proto, extract):

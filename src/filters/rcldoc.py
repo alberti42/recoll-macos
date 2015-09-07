@@ -140,7 +140,13 @@ class WordFilter:
             return ([],None)
 
 if __name__ == '__main__':
+    # Remember where we execute filters from, in case we need to exec another
     execdir = os.path.dirname(sys.argv[0])
+    # Check that we have antiword. We could fallback to wvWare, but
+    # this is not what the old filter did.
+    if not rclexecm.which("antiword"):
+        print("RECFILTERROR HELPERNOTFOUND antiword")
+        sys.exit(1)
     proto = rclexecm.RclExecM()
     filter = WordFilter(proto, execdir)
     extract = rclexecm.Executor(proto, filter)
