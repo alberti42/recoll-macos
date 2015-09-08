@@ -15,7 +15,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #ifndef TEST_EXECMD
-#ifdef RECOLL_DATADIR
+#ifdef BUILDING_RECOLL
 #include "autoconfig.h"
 #else
 #include "config.h"
