@@ -16,6 +16,7 @@
  */
 #ifndef _EXECMD_H_INCLUDED_
 #define _EXECMD_H_INCLUDED_
+#include "autoconfig.h"
 
 #include <string>
 #include <vector>

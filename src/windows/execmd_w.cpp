@@ -5,39 +5,60 @@
 #include <iostream>
 #include <string>
 
+#include "debuglog.h"
+
 using namespace std;
+
+static void printError(const string& text)
+{
+    DWORD err = GetLastError();
+    LOGERR(("%s : err: %d\n", text.c_str(), err));
+}
 
 class ExecCmd::Internal {
 public:
     Internal()
-        : m_advise(0), m_provide(0), m_timeoutMs(1000),
-          m_pid(-1), m_hOutputRead(NULL), m_hInputWrite(NULL) {
+        : advise(0), provide(0), timeoutMs(1000),
+          hOutputRead(NULL), hInputWrite(NULL) {
     }
 
     std::vector<std::string>   m_env;
-    ExecCmdAdvise   *m_advise;
-    ExecCmdProvide  *m_provide;
-    bool             m_killRequest;
-    int              m_timeoutMs;
-    string           m_stderrFile;
+    ExecCmdAdvise   *advise;
+    ExecCmdProvide  *provide;
+    bool             killRequest;
+    int              timeoutMs;
+    string           stderrFile;
     // Subprocess id
-    pid_t            m_pid;
-    HANDLE           m_hOutputRead;
-    HANDLE           m_hInputWrite;
-    OVERLAPPED       m_oOutputRead; // Do these need resource control?
-    OVERLAPPED       m_oInputWrite;
-    PROCESS_INFORMATION m_piProcInfo;
+    HANDLE           hOutputRead;
+    HANDLE           hInputWrite;
+    OVERLAPPED       oOutputRead; // Do these need resource control?
+    OVERLAPPED       oInputWrite;
+    PROCESS_INFORMATION piProcInfo;
 
     // Reset internal state indicators. Any resources should have been
     // previously freed
     void reset() {
-        m_killRequest = false;
-        m_hOutputRead = NULL;
-        m_hInputWrite = NULL;
-        memset(&m_oOutputRead, 0, sizeof(m_oOutputRead));
-        memset(&m_oInputWrite, 0, sizeof(m_oInputWrite));
-        m_pid = -1;
+        killRequest = false;
+        hOutputRead = NULL;
+        hInputWrite = NULL;
+        memset(&oOutputRead, 0, sizeof(oOutputRead));
+        memset(&oInputWrite, 0, sizeof(oInputWrite));
+        ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
     }
+    void releaseResources() {
+        if (hOutputRead)
+            CloseHandle(hOutputRead);
+        if (hInputWrite)
+            CloseHandle(hInputWrite);
+        if (oOutputRead.hEvent)
+            CloseHandle(oOutputRead.hEvent);
+        if (oInputWrite.hEvent)
+            CloseHandle(oInputWrite.hEvent);
+        reset();
+    }
+    bool PreparePipes(bool has_input, HANDLE *hChildInput,
+                      bool has_output, HANDLE *hChildOutput,
+                      HANDLE *hChildError);
 };
 
 ExecCmd::ExecCmd()
@@ -47,37 +68,56 @@ ExecCmd::ExecCmd()
         m->reset();
     }
 }
+ExecCmd::~ExecCmd()
+{
+    if (m)
+        m->releaseResources();
+}
+
+bool ExecCmd::which(const string& cmd, string& exe, const char* path)
+{
+    return false;
+}
 
 void ExecCmd::setAdvise(ExecCmdAdvise *adv)
 {
-    m->m_advise = adv;
+    m->advise = adv;
 }
 void ExecCmd::setProvide(ExecCmdProvide *p)
 {
-    m->m_provide = p;
+    m->provide = p;
 }
 void ExecCmd::setTimeout(int mS)
 {
     if (mS > 30) {
-        m->m_timeoutMs = mS;
+        m->timeoutMs = mS;
     }
 }
 void ExecCmd::setStderr(const std::string& stderrFile)
 {
-    m->m_stderrFile = stderrFile;
+    m->stderrFile = stderrFile;
 }
 pid_t ExecCmd::getChildPid()
 {
-    return m->m_pid;
+    return m->piProcInfo.dwProcessId;
 }
 void ExecCmd::setKill()
 {
-    m->m_killRequest = true;
+    m->killRequest = true;
 }
 void ExecCmd::zapChild()
 {
     setKill();
     (void)wait();
+}
+void ExecCmd::putenv(const string &envassign)
+{
+    m->m_env.push_back(envassign);
+}
+void ExecCmd::putenv(const string &name, const string& value)
+{
+    string ea = name + "=" + value;
+    putenv(ea);
 }
 
 
@@ -90,43 +130,48 @@ bool ExecCmd::Internal::PreparePipes(bool has_input,HANDLE *hChildInput,
     HANDLE hOutputWrite = NULL;
     HANDLE hErrorWrite = NULL;
     HANDLE hInputRead = NULL;
-    m_hOutputRead = NULL;
-    m_hInputWrite = NULL;
-    memset(&m_oOutputRead, 0, sizeof(m_oOutputRead));
-    memset(&m_oInputWrite, 0, sizeof(m_oInputWrite));
+    hOutputRead = NULL;
+    hInputWrite = NULL;
+    memset(&oOutputRead, 0, sizeof(oOutputRead));
+    memset(&oInputWrite, 0, sizeof(oInputWrite));
 
     // manual reset event
-    m_oOutputRead.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-    if (m_oOutputRead.hEvent == INVALID_HANDLE_VALUE) {
+    oOutputRead.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+    if (oOutputRead.hEvent == INVALID_HANDLE_VALUE) {
+        LOGERR(("ExecCmd::PreparePipes: CreateEvent failed\n"));
         goto errout;
     }
 
     // manual reset event
-    m_oInputWrite.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-    if (m_oInputWrite.hEvent == INVALID_HANDLE_VALUE) {
+    oInputWrite.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+    if (oInputWrite.hEvent == INVALID_HANDLE_VALUE) {
+        LOGERR(("ExecCmd::PreparePipes: CreateEvent failed\n"));
         goto errout;
     }
+
+    SECURITY_ATTRIBUTES sa;
+    // Set up the security attributes struct.
+    sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+    sa.bInheritHandle = TRUE; // this is the critical bit
+    sa.lpSecurityDescriptor = NULL;
 
     if (has_output) {
+        LOGDEB(("ExecCmd::preparePipes: has output\n"));
         // src for this code: https://www.daniweb.com/software-development/cpp/threads/295780/using-named-pipes-with-asynchronous-io-redirection-to-winapi
         // ONLY IMPORTANT CHANGE
         // set inheritance flag to TRUE in CreateProcess
         // you need this for the client to inherit the handles
 
-        SECURITY_ATTRIBUTES sa;
-        // Set up the security attributes struct.
-        sa.nLength = sizeof(SECURITY_ATTRIBUTES);
-        sa.bInheritHandle = TRUE; // this is the critical bit
-        sa.lpSecurityDescriptor = NULL;
-
+       
         // Create the child output named pipe.
         // This creates a inheritable, one-way handle for the server to read
         hOutputReadTmp = CreateNamedPipe(
             TEXT("\\\\.\\pipe\\outstreamPipe"),
             PIPE_ACCESS_INBOUND | FILE_FLAG_OVERLAPPED,
-            PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
+            PIPE_WAIT,
             1, 4096, 4096, 0, &sa);
         if (hOutputReadTmp == INVALID_HANDLE_VALUE) {
+            printError("preparePipes: CreateNamedPipe(out tmp)");
             goto errout;
         }
 
@@ -143,7 +188,10 @@ bool ExecCmd::Internal::PreparePipes(bool has_input,HANDLE *hChildInput,
             0, &sa, OPEN_EXISTING, // very important flag!
             FILE_ATTRIBUTE_NORMAL, 0 // no template file for OPEN_EXISTING
             );
-
+        if (hOutputWrite == INVALID_HANDLE_VALUE) {
+            printError("preparePipes: CreateFile(outputWrite)");
+            goto errout;
+        }
 
         // All is well?  not quite. Our main server-side handle was
         // created shareable.
@@ -156,9 +204,10 @@ bool ExecCmd::Internal::PreparePipes(bool has_input,HANDLE *hChildInput,
         // the child inherits the properties and, as a result,
         // non-closeable handles to the pipes are created.
         if (!DuplicateHandle(GetCurrentProcess(), hOutputReadTmp,
-                             GetCurrentProcess(), &m_hOutputRead,
+                             GetCurrentProcess(), &hOutputRead,
                              0, FALSE, // Make it uninheritable.
                              DUPLICATE_SAME_ACCESS)) {
+            printError("preparePipes: DuplicateHandle(readtmp->outputread)");
             goto errout;
         }
         // now we kill the original, inheritable server-side handle.  That
@@ -166,30 +215,44 @@ bool ExecCmd::Internal::PreparePipes(bool has_input,HANDLE *hChildInput,
         // getting it. Child-proofing.  Close inheritable copies of the
         // handles you do not want to be inherited.
         if (!CloseHandle(hOutputReadTmp)) {
+            printError("preparePipes: CloseHandle(readtmp)");
             goto errout;
         }
         hOutputReadTmp = NULL;
-    }
-
-
-#if 0 // Nope, can't do this, we certainly don't want to mix stdout and stderr
-    // Have to take the give stderr output file instead
-    if (!m->m_stderrFile.empty()) {
-        // Open the file and make the handle inheritable
     } else {
-        // Duplicate our own stderr. Does passing NULL work for this ?
+        // Not using child output. Let the child have our standard output.
+        HANDLE hstd = GetStdHandle(STD_OUTPUT_HANDLE);
+        if (hstd == INVALID_HANDLE_VALUE) {
+            printError("preparePipes: GetStdHandle(stdout)");
+            goto errout;
+        }
+        if (!DuplicateHandle(GetCurrentProcess(), hstd,
+                             GetCurrentProcess(), &hOutputWrite,
+                             0, TRUE, 
+                             DUPLICATE_SAME_ACCESS)) {
+            printError("preparePipes: DuplicateHandle(stdout)");
+            goto errout;
+        }
     }
 
-    // we're going to give the same pipe for stderr, so duplicate for that:
-    // Create a duplicate of the output write handle for the std error
-    // write handle. This is necessary in case the child application
-    // closes one of its std output handles.
-    if (!DuplicateHandle(GetCurrentProcess(), hOutputWrite,
-                         GetCurrentProcess(), &hErrorWrite,
-                         0, TRUE, DUPLICATE_SAME_ACCESS)) {
-        goto errout;
+    // Have to take the give stderr output file instead
+    if (!stderrFile.empty()) {
+        // Open the file set up the child handle: TBD
+    } else {
+        // Let the child inherit our standard input
+        HANDLE hstd = GetStdHandle(STD_ERROR_HANDLE);
+        if (hstd == INVALID_HANDLE_VALUE) {
+            printError("preparePipes: GetStdHandle(stderr)");
+            goto errout;
+        }
+        if (!DuplicateHandle(GetCurrentProcess(), hstd,
+                             GetCurrentProcess(), &hErrorWrite,
+                             0, TRUE,
+                             DUPLICATE_SAME_ACCESS)) {
+            printError("preparePipes: DuplicateHandle(stderr)");
+            goto errout;
+        }
     }
-#endif
 
     if (has_input) {
         // now same procedure for input pipe
@@ -200,6 +263,7 @@ bool ExecCmd::Internal::PreparePipes(bool has_input,HANDLE *hChildInput,
             PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
             1, 4096, 4096, 0, &sa);
         if (hInputWriteTmp == INVALID_HANDLE_VALUE) {
+            printError("preparePipes: CreateNamedPipe(inputWTmp)");
             goto errout;
         }
 
@@ -209,17 +273,37 @@ bool ExecCmd::Internal::PreparePipes(bool has_input,HANDLE *hChildInput,
             0, &sa, OPEN_EXISTING, // very important flag!
             FILE_ATTRIBUTE_NORMAL, 0 // no template file for OPEN_EXISTING
             );
-
+        if (hInputRead == INVALID_HANDLE_VALUE) {
+            printError("preparePipes: CreateFile(inputRead)");
+            goto errout;
+        }
+        
         if (!DuplicateHandle(GetCurrentProcess(), hInputWriteTmp,
-                             GetCurrentProcess(), &m_hInputWrite,
+                             GetCurrentProcess(), &hInputWrite,
                              0, FALSE, // Make it uninheritable.
                              DUPLICATE_SAME_ACCESS)) {
+            printError("preparePipes: DuplicateHandle(inputWTmp->inputW)");
             goto errout;
         }
         if (!CloseHandle(hInputWriteTmp)) {
+            printError("preparePipes: CloseHandle(inputWTmp)");
             goto errout;
         }
         hInputWriteTmp = NULL;
+    } else {
+        // Let the child inherit our standard input
+        HANDLE hstd = GetStdHandle(STD_INPUT_HANDLE);
+        if (hstd == INVALID_HANDLE_VALUE) {
+            printError("preparePipes: GetStdHandle(stdin)");
+            goto errout;
+        }
+        if (!DuplicateHandle(GetCurrentProcess(), hstd,
+                             GetCurrentProcess(), &hInputRead,
+                             0, TRUE,
+                             DUPLICATE_SAME_ACCESS)) {
+            printError("preparePipes: DuplicateHandle(stdin)");
+            goto errout;
+        }
     }
 
     *hChildInput = hInputRead;
@@ -228,41 +312,35 @@ bool ExecCmd::Internal::PreparePipes(bool has_input,HANDLE *hChildInput,
     return true;
 
 errout:
-    if (hInputWriteTmp)
-        CloseHandle(hInputWriteTmp);
-    if (hOutputReadTmp)
-        CloseHandle(hOutputReadTmp);
-    if (m_hOutputRead)
-        CloseHandle(m_hOutputRead);
-    if (m_hInputWrite)
-        CloseHandle(m_hInputWrite);
-    if (m_oOutputRead.hEvent)
-        CloseHandle(m_oOutputRead.hEvent);
-    if (m_oInputWrite.hEvent)
-        CloseHandle(m_oInputWrite.hEvent);
+    releaseResources();
     if (hOutputWrite)
         CloseHandle(hOutputWrite);
     if (hInputRead)
         CloseHandle(hInputRead);
     if (hErrorWrite)
         CloseHandle(hErrorWrite);
+    if (hInputWriteTmp)
+        CloseHandle(hInputWriteTmp);
+    if (hOutputReadTmp)
+        CloseHandle(hOutputReadTmp);
+    return false;
 }
 
 /**
-    This routine appends the given argument to a command line such
-    that CommandLineToArgvW will return the argument string unchanged.
-    Arguments in a command line should be separated by spaces; this
-    function does not add these spaces. The caller must append spaces 
-    between calls.
+   This routine appends the given argument to a command line such
+   that CommandLineToArgvW will return the argument string unchanged.
+   Arguments in a command line should be separated by spaces; this
+   function does not add these spaces. The caller must append spaces 
+   between calls.
     
-    @param arg Supplies the argument to encode.
+   @param arg Supplies the argument to encode.
 
-    @param cmdLine Supplies the command line to which we append
-      the encoded argument string.
+   @param cmdLine Supplies the command line to which we append
+   the encoded argument string.
 
-    @force Supplies an indication of whether we should quote
-           the argument even if it does not contain any characters that 
-           would ordinarily require quoting.
+   @force Supplies an indication of whether we should quote
+   the argument even if it does not contain any characters that 
+   would ordinarily require quoting.
 */
 static void argQuote(const string& arg,
                      string& cmdLine,
@@ -318,28 +396,27 @@ static string argvToCmdLine(const string& cmd, const vector<string>& args)
 
 // Create a child process 
 int ExecCmd::startExec(const string &cmd, const vector<string>& args,
-		       bool has_input, bool has_output)
+                       bool has_input, bool has_output)
 {
     { // Debug and logging
-	string command = cmd + " ";
-	for (vector<string>::const_iterator it = args.begin();
+        string command = cmd + " ";
+        for (vector<string>::const_iterator it = args.begin();
              it != args.end(); it++) {
-	    command += "{" + *it + "} ";
-	}
-	LOGDEB(("ExecCmd::startExec: (%d|%d) %s\n", 
-		has_input, has_output, command.c_str()));
+            command += "{" + *it + "} ";
+        }
+        LOGDEB(("ExecCmd::startExec: (%d|%d) %s\n", 
+                has_input, has_output, command.c_str()));
     }
 
     string cmdline = argvToCmdLine(cmd, args);
-
-    // The resource manager ensures resources are freed if we return early
-    //ExecCmdRsrc e(this->m);
 
     HANDLE hInputRead;
     HANDLE hOutputWrite;
     HANDLE hErrorWrite;
     if (!m->PreparePipes(has_input, &hInputRead, has_output, 
                          &hOutputWrite, &hErrorWrite)) {
+        LOGERR(("ExecCmd::startExec: preparePipes failed\n"));
+        m->releaseResources();
         return false;
     }
 
@@ -347,12 +424,10 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
     BOOL bSuccess = FALSE;
 
     // Set up members of the PROCESS_INFORMATION structure. 
-
-    ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
+    ZeroMemory(&m->piProcInfo, sizeof(PROCESS_INFORMATION));
 
     // Set up members of the STARTUPINFO structure. 
     // This structure specifies the STDIN and STDOUT handles for redirection.
-
     ZeroMemory(&siStartInfo, sizeof(STARTUPINFO));
     siStartInfo.cb = sizeof(STARTUPINFO);
     siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
@@ -361,8 +436,12 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
     siStartInfo.hStdError = hErrorWrite;
 
     // Create the child process. 
+    // Need a writable buffer for the command line, for some reason.
+    LPSTR buf = (LPSTR)malloc(cmdline.size() + 1);
+    memcpy(buf, cmdline.c_str(), cmdline.size());
+    buf[cmdline.size()] = 0;
     bSuccess = CreateProcess(NULL,
-                             cmdline.c_str(), // command line 
+                             buf, // command line 
                              NULL,          // process security attributes 
                              NULL,          // primary thread security attrs 
                              TRUE,         // handles are inherited 
@@ -370,25 +449,50 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
                              NULL,          // use parent's environment 
                              NULL,          // use parent's current directory 
                              &siStartInfo,  // STARTUPINFO pointer 
-                             &piProcInfo);  // receives PROCESS_INFORMATION 
+                             &m->piProcInfo);  // receives PROCESS_INFORMATION 
+    free(buf);
     if (!bSuccess) {
+        printError("ExecCmd::doexec: CreateProcess");
+        m->releaseResources();
         return false;
     }
-    m->pid = piProcInfo.dwProcessId;
     return true;
 }
 
+enum WaitResult {
+    Ok, Quit, Timeout
+};
+
+static WaitResult Wait(HANDLE hdl, int timeout) 
+{
+    //HANDLE hdls[2] = { hdl, eQuit };
+    HANDLE hdls[1] = { hdl};
+    LOGDEB(("ExecCmd::Wait\n"));
+    DWORD res = WaitForMultipleObjects(1, hdls, FALSE, timeout);
+    if (res == WAIT_OBJECT_0) {
+        LOGDEB(("ExecCmd::Wait: returning Ok\n"));
+        return Ok;
+    } else if (res == (WAIT_OBJECT_0 + 1)) {
+        LOGDEB(("ExecCmd::Wait: returning Quit\n"));
+        return Quit;
+    } else if (res == WAIT_TIMEOUT) {
+        LOGDEB(("ExecCmd::Wait: returning Timeout\n"));
+        return Timeout;
+    }
+    printError("Wait: WaitForMultipleObjects: unknown, returning Timout\n");
+    return Timeout;
+}
 
 
 // Read from a file and write its contents to the pipe for the child's
 // STDIN.  Stop when there is no more data.
 int ExecCmd::send(const string& data)
 {
-    DWORD dwRead, dwWritten;
+    DWORD dwWritten;
     BOOL bSuccess = false;
 
-    bSuccess = WriteFile(m->m_hInputWrite, data.c_str(), data.size(), 
-                         NULL, &m->m_oInputWrite);
+    bSuccess = WriteFile(m->hInputWrite, data.c_str(), (DWORD)data.size(), 
+                         NULL, &m->oInputWrite);
     DWORD err = GetLastError();
 
     // TODO: some more decision, either the operation completes immediately
@@ -396,96 +500,116 @@ int ExecCmd::send(const string& data)
     // and ERROR_IO_PENDING
     // in the first case bytes read/written parameter can be used directly
     if (!bSuccess && err != ERROR_IO_PENDING) {
-        return;
+        return -1;
     }
 
-    WaitResult waitRes = Wait(oInputWrite.hEvent, 5000);
+    WaitResult waitRes = Wait(m->oInputWrite.hEvent, 5000);
     if (waitRes == Ok) {
-        if (!GetOverlappedResult(m->m_hInputWrite, 
-                                 &m->m_oInputWrite, &dwWritten, TRUE)) {
-            ErrorExit("GetOverlappedResult");
+        if (!GetOverlappedResult(m->hInputWrite, 
+                                 &m->oInputWrite, &dwWritten, TRUE)) {
+            printError("GetOverlappedResult");
+            return -1;
         }
     } else if (waitRes == Quit) {
-        if (!CancelIo(hInputWrite)) 
-            ErrorExit("CancelIo");
-        return;
+        if (!CancelIo(m->hInputWrite)) {
+            printError("CancelIo");
+        }
+        return -1;
     } else if (waitRes == Timeout) {
-        if (!CancelIo(hInputWrite)) 
-            ErrorExit("CancelIo");
-        return;
+        if (!CancelIo(m->hInputWrite)) {
+            printError("CancelIo");
+        }
+        return -1;
     }
+    return dwWritten;
 }
+
+#ifndef MIN
+#define MIN(A,B) ((A)<(B)?(A):(B))
+#endif
 
 // Read output from the child process's pipe for STDOUT
 // and write to cout in this programme
 // Stop when there is no more data. 
 // @arg cnt count to read, -1 means read to end of data.
-int ExecCmd::receive(const string& data, int cnt)
+int ExecCmd::receive(string& data, int cnt)
 {
     DWORD dwRead;
     const int BUFSIZE = 8192;
     CHAR chBuf[BUFSIZE];
     BOOL bSuccess = FALSE;
     int totread = 0;
-
+    LOGDEB(("ExecCmd::receive: cnt %d\n", cnt));
     while (true) {
         int toread = cnt > 0 ? MIN(cnt - totread, BUFSIZE) : BUFSIZE;
-        bSuccess = ReadFile(m->m_hOutputRead, chBuf, toread, 
-                            NULL, &m->m_oOutputRead);
+        LOGDEB(("ExecCmd::receive: calling ReadFile with cnt %d\n", toread))
+        bSuccess = ReadFile(m->hOutputRead, chBuf, toread,
+				            NULL, &m->oOutputRead);
         DWORD err = GetLastError();
-        if (!bSuccess && err != ERROR_IO_PENDING) 
+        if (!bSuccess && err != ERROR_IO_PENDING) {
+            LOGERR(("ExecCmd::receive: ReadFile error: %d\n", int(err)));
             break;
+        }
 
-        WaitResult waitRes = Wait(oOutputRead.hEvent, 5000);
+        WaitResult waitRes = Wait(m->oOutputRead.hEvent, 5000);
         if (waitRes == Ok) {
-            if (!GetOverlappedResult(hOutputRead, &oOutputRead, &dwRead, TRUE)) {
-                ErrorExit("GetOverlappedResult");
+            if (!GetOverlappedResult(m->hOutputRead, &m->oOutputRead, &dwRead, TRUE)) {
+                printError("GetOverlappedResult");
+                return -1;
             }
+            LOGDEB(("ExecCmd::receive: got %d bytes\n", int(dwRead)));
             totread += dwRead;
-            data.append(buf, dwRead);
+            data.append(chBuf, dwRead);
         } else if (waitRes == Quit) {
-            if (!CancelIo(hOutputRead)) 
-                ErrorExit("CancelIo");
+            if (!CancelIo(m->hOutputRead)) {
+                printError("CancelIo");
+            }
             break;
         } else if (waitRes == Timeout) {
-            if (!CancelIo(hOutputRead)) 
-                ErrorExit("CancelIo");
+            if (!CancelIo(m->hOutputRead)) {
+                printError("CancelIo");
+            }
             break;
         }
     }
     return totread;
 }
 
+int ExecCmd::getline(std::string& data)
+{
+    return -1;
+}
+
 int ExecCmd::wait() 
 {
     // Wait until child process exits.
-    WaitForSingleObject(m->m_piProcInfo.hProcess, INFINITE);
+    WaitForSingleObject(m->piProcInfo.hProcess, INFINITE);
 
     // Get exit code
     DWORD exit_code = 0;
-    GetExitCodeProcess(m->m_piProcInfo.hProcess, &exit_code);
+    GetExitCodeProcess(m->piProcInfo.hProcess, &exit_code);
 
     // Close handles to the child process and its primary thread.
-    CloseHandle(m->m_piProcInfo.hProcess);
-    CloseHandle(m->m_piProcInfo.hThread);
+    CloseHandle(m->piProcInfo.hProcess);
+    CloseHandle(m->piProcInfo.hThread);
     return (int)exit_code;
 }
 
 
 int ExecCmd::doexec(const string &cmd, const vector<string>& args,
-		    const string *input, string *output)
+                    const string *input, string *output)
 {
     if (input && output) {
         LOGERR(("ExecCmd::doexec: can't do both input and output\n"));
         return -1;
     }
     if (startExec(cmd, args, input != 0, output != 0) < 0) {
-	return -1;
+        return -1;
     }
     if (input) {
-        receive(*input);
+        send(*input);
     } else if (output) {
-        send(*output);
+        receive(*output);
     }
     return wait();
 }

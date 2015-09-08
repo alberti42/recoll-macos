@@ -42,7 +42,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -236,6 +236,7 @@
     <ClCompile Include="..\utils\wipedir.cpp" />
     <ClCompile Include="..\xaposix\safe.cc" />
     <ClCompile Include="dirent.c" />
+    <ClCompile Include="execmd_w.cpp" />
     <ClCompile Include="fnmatch.c" />
     <ClCompile Include="strptime.cpp" />
   </ItemGroup>

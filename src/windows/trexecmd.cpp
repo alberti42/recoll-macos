@@ -1,11 +1,12 @@
+#include "autoconfig.h"
+
 #include "execmd.h"
 
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+#include "safeunistd.h"
 #include <string.h>
-#include <signal.h>
 
 #include <string>
 #include <iostream>
@@ -31,8 +32,8 @@ bool exercise_mhexecm(const string& cmdstr, const string& mimetype,
     vector<string> myparams; 
 
     if (cmd.startExec(cmdstr, myparams, 1, 1) < 0) {
-	cerr << "startExec " << cmdstr << " failed. Missing command?\n";
-	return false;
+        cerr << "startExec " << cmdstr << " failed. Missing command?\n";
+        return false;
     }
 
     for (vector<string>::const_iterator it = files.begin();
@@ -115,22 +116,22 @@ bool exercise_mhexecm(const string& cmdstr, const string& mimetype,
 
 static char *thisprog;
 static char usage [] =
-"trexecmd [-c -r -i -o] cmd [arg1 arg2 ...]\n" 
-"   -c : test cancellation (ie: trexecmd -c sleep 1000)\n"
-"   -r : run reexec. Must be separate option.\n"
-"   -i : command takes input\n"
-"   -o : command produces output\n"
-"    If -i is set, we send /etc/group contents to whatever command is run\n"
-"    If -o is set, we print whatever comes out\n"
-"trexecmd -m <filter> <mimetype> <file> [file ...]: test execm:\n"
-"     <filter> should be the path to an execm filter\n"
-"     <mimetype> the type of the file parameters\n"
-"trexecmd -w cmd : do the 'which' thing\n"
-;
+                                                           "trexecmd [-c -r -i -o] cmd [arg1 arg2 ...]\n" 
+                                                           "   -c : test cancellation (ie: trexecmd -c sleep 1000)\n"
+                                                           "   -r : run reexec. Must be separate option.\n"
+                                                           "   -i : command takes input\n"
+                                                           "   -o : command produces output\n"
+                                                           "    If -i is set, we send /etc/group contents to whatever command is run\n"
+                                                           "    If -o is set, we print whatever comes out\n"
+                                                           "trexecmd -m <filter> <mimetype> <file> [file ...]: test execm:\n"
+                                                           "     <filter> should be the path to an execm filter\n"
+                                                           "     <mimetype> the type of the file parameters\n"
+                                                           "trexecmd -w cmd : do the 'which' thing\n"
+                                                           ;
 
-static void Usage(void)
+static void Usage(FILE *fp = stderr)
 {
-    fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
+    fprintf(fp, "%s: usage:\n%s", thisprog, usage);
     exit(1);
 }
 
@@ -148,17 +149,17 @@ static int     op_flags;
 class MEAdv : public ExecCmdAdvise {
 public:
     void newData(int cnt) {
-	if (op_flags & OPT_c) {
-	    static int  callcnt;
-	    if (callcnt++ == 10) {
+        if (op_flags & OPT_c) {
+            static int  callcnt;
+            if (callcnt++ == 10) {
                 // Just sets the cancellation flag
-		CancelCheck::instance().setCancel();
+                CancelCheck::instance().setCancel();
                 // Would be called from somewhere else and throws an
                 // exception. We call it here for simplicity
                 CancelCheck::instance().checkCancel();
-	    }
-	}
-	cerr << "newData(" << cnt << ")" << endl;
+            }
+        }
+        cerr << "newData(" << cnt << ")" << endl;
     }
 };
 
@@ -168,21 +169,21 @@ public:
     FILE *m_fp;
     string *m_input;
     MEPv(string *i) 
-	: m_input(i)
-    {
-	m_fp = fopen("/etc/group", "r");
-    }
+        : m_input(i)
+        {
+            m_fp = fopen("/etc/group", "r");
+        }
     ~MEPv() {
-	if (m_fp)
-	    fclose(m_fp);
+        if (m_fp)
+            fclose(m_fp);
     }
     void newData() {
-	char line[1024];
-	if (m_fp && fgets(line, 1024, m_fp)) {
-	    m_input->assign((const char *)line);
-	} else {
-	    m_input->erase();
-	}
+        char line[1024];
+        if (m_fp && fgets(line, 1024, m_fp)) {
+            m_input->assign((const char *)line);
+        } else {
+            m_input->erase();
+        }
     }
 };
 
@@ -195,14 +196,14 @@ int main(int argc, char *argv[])
     reexec.init(argc, argv);
 
     if (0) {
-	// Disabled: For testing reexec arg handling
-	vector<string> newargs;
-	newargs.push_back("newarg");
-	newargs.push_back("newarg1");
-	newargs.push_back("newarg2");
-	newargs.push_back("newarg3");
-	newargs.push_back("newarg4");
-	reexec.insertArgs(newargs, 2);
+        // Disabled: For testing reexec arg handling
+        vector<string> newargs;
+        newargs.push_back("newarg");
+        newargs.push_back("newarg1");
+        newargs.push_back("newarg2");
+        newargs.push_back("newarg3");
+        newargs.push_back("newarg4");
+        reexec.insertArgs(newargs, 2);
     }
 #endif
 
@@ -210,30 +211,31 @@ int main(int argc, char *argv[])
     argc--; argv++;
 
     while (argc > 0 && **argv == '-') {
-	(*argv)++;
-	if (!(**argv))
-	    /* Cas du "adb - core" */
-	    Usage();
-	while (**argv)
-	    switch (*(*argv)++) {
-	    case 'c':	op_flags |= OPT_c; break;
-	    case 'r':	op_flags |= OPT_r; break;
-	    case 'w':	op_flags |= OPT_w; break;
-	    case 'm':	op_flags |= OPT_m; break;
-	    case 'i':	op_flags |= OPT_i; break;
-	    case 'o':	op_flags |= OPT_o; break;
-	    default: Usage();	break;
-	    }
+        (*argv)++;
+        if (!(**argv))
+            /* Cas du "adb - core" */
+            Usage();
+        while (**argv)
+            switch (*(*argv)++) {
+            case 'c':   op_flags |= OPT_c; break;
+            case 'r':   op_flags |= OPT_r; break;
+            case 'w':   op_flags |= OPT_w; break;
+            case 'm':   op_flags |= OPT_m; break;
+            case 'i':   op_flags |= OPT_i; break;
+            case 'o':   op_flags |= OPT_o; break;
+            case'h': Usage(stdout);
+            default: Usage();   break;
+            }
     b1: argc--; argv++;
     }
 
     if (argc < 1)
-	Usage();
+        Usage();
 
     string arg1 = *argv++; argc--;
     vector<string> l;
     while (argc > 0) {
-	l.push_back(*argv++); argc--;
+        l.push_back(*argv++); argc--;
     }
 
     DebugLog::getdbl()->setloglevel(DEBDEB1);
@@ -243,19 +245,19 @@ int main(int argc, char *argv[])
 #endif
 
     if (op_flags & OPT_w) {
-	// Test "which" method
-	string path;
-	if (ExecCmd::which(arg1, path)) {
-	    cout << path << endl;
+        // Test "which" method
+        string path;
+        if (ExecCmd::which(arg1, path)) {
+            cout << path << endl;
             return 0;
-	} 
-	return 1;
+        } 
+        return 1;
     } else if (op_flags & OPT_m) {
         if (l.size() < 2)
             Usage();
         string mimetype = l[0];
         l.erase(l.begin());
-	return exercise_mhexecm(arg1, mimetype, l) ? 0 : 1;
+        return exercise_mhexecm(arg1, mimetype, l) ? 0 : 1;
     } else {
         // Default: execute command line arguments
         ExecCmd mexec;
@@ -263,13 +265,13 @@ int main(int argc, char *argv[])
         // Set callback to be called whenever there is new data
         // available and at a periodic interval, to check for
         // cancellation
+#ifdef LATER
         MEAdv adv;
         mexec.setAdvise(&adv);
         mexec.setTimeout(5);
-
         // Stderr output goes there
-        mexec.setStderr("/tmp/trexecStderr");
-        
+		mexec.setStderr("/tmp/trexecStderr");
+#endif
         // A few environment variables. Check with trexecmd env
         mexec.putenv("TESTVARIABLE1=TESTVALUE1");
         mexec.putenv("TESTVARIABLE2=TESTVALUE2");
@@ -297,7 +299,7 @@ int main(int argc, char *argv[])
 
         fprintf(stderr, "Status: 0x%x\n", status);
         if (op_flags & OPT_o) {
-            cout << output;
+            cout << "data received: [" << output <<"]\n";
         }
         exit (status >> 8);
     }

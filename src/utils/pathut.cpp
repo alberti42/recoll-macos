@@ -116,7 +116,7 @@ string path_tchartoutf8(TCHAR *text)
     }
     return string(&buffer[0]);
 #else
-    path = text;
+    return text;
 #endif
 }
 

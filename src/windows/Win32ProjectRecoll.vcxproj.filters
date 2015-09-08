@@ -293,6 +293,9 @@
     <ClCompile Include="..\utils\cpuconf.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="execmd_w.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
