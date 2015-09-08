@@ -223,7 +223,7 @@ int main(int argc, char *argv[])
             case 'm':   op_flags |= OPT_m; break;
             case 'i':   op_flags |= OPT_i; break;
             case 'o':   op_flags |= OPT_o; break;
-            case'h': Usage(stdout);
+			case'h': cout << "MESSAGE FROM TREXECMD\n"; return 0;
             default: Usage();   break;
             }
     b1: argc--; argv++;
@@ -297,10 +297,11 @@ int main(int argc, char *argv[])
             cerr << "CANCELLED" << endl;
         }
 
-        fprintf(stderr, "Status: 0x%x\n", status);
-        if (op_flags & OPT_o) {
-            cout << "data received: [" << output <<"]\n";
-        }
-        exit (status >> 8);
+        fprintf(stderr, "trexecmd::main: Status: 0x%x\n", status);
+		if (op_flags & OPT_o) {
+			cout << "data received: [" << output << "]\n";
+		}
+		cerr << "trexecmd::main: exiting\n";
+		return status >> 8;
     }
 }

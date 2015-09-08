@@ -46,6 +46,10 @@ public:
         ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
     }
     void releaseResources() {
+        if (piProcInfo.hProcess)
+            CloseHandle(piProcInfo.hProcess);
+        if (piProcInfo.hThread)
+            CloseHandle(piProcInfo.hThread);
         if (hOutputRead)
             CloseHandle(hOutputRead);
         if (hInputWrite)
@@ -156,12 +160,10 @@ bool ExecCmd::Internal::PreparePipes(bool has_input,HANDLE *hChildInput,
     sa.lpSecurityDescriptor = NULL;
 
     if (has_output) {
-        LOGDEB(("ExecCmd::preparePipes: has output\n"));
         // src for this code: https://www.daniweb.com/software-development/cpp/threads/295780/using-named-pipes-with-asynchronous-io-redirection-to-winapi
         // ONLY IMPORTANT CHANGE
         // set inheritance flag to TRUE in CreateProcess
         // you need this for the client to inherit the handles
-
        
         // Create the child output named pipe.
         // This creates a inheritable, one-way handle for the server to read
@@ -174,7 +176,6 @@ bool ExecCmd::Internal::PreparePipes(bool has_input,HANDLE *hChildInput,
             printError("preparePipes: CreateNamedPipe(out tmp)");
             goto errout;
         }
-
 
         // However, the client can not use an inbound server handle.
         // Client needs a write-only, outgoing handle.
@@ -235,8 +236,9 @@ bool ExecCmd::Internal::PreparePipes(bool has_input,HANDLE *hChildInput,
         }
     }
 
-    // Have to take the give stderr output file instead
-    if (!stderrFile.empty()) {
+    // Stderr: output to file or inherit. We don't support the file thing
+    // for the moment
+    if (false && !stderrFile.empty()) {
         // Open the file set up the child handle: TBD
     } else {
         // Let the child inherit our standard input
@@ -327,24 +329,20 @@ errout:
 }
 
 /**
-   This routine appends the given argument to a command line such
-   that CommandLineToArgvW will return the argument string unchanged.
+   Append the given argument to a command line such that
+   CommandLineToArgvW will return the argument string unchanged.
    Arguments in a command line should be separated by spaces; this
    function does not add these spaces. The caller must append spaces 
    between calls.
     
    @param arg Supplies the argument to encode.
-
    @param cmdLine Supplies the command line to which we append
    the encoded argument string.
-
-   @force Supplies an indication of whether we should quote
+   @param force Supplies an indication of whether we should quote
    the argument even if it does not contain any characters that 
    would ordinarily require quoting.
 */
-static void argQuote(const string& arg,
-                     string& cmdLine,
-                     bool force = false)
+static void argQuote(const string& arg, string& cmdLine, bool force = false)
 {
     // Don't quote unless we actually need to do so
     if (!force && !arg.empty() && 
@@ -388,7 +386,7 @@ static string argvToCmdLine(const string& cmd, const vector<string>& args)
     argQuote(cmd, cmdline);
     for (auto it = args.begin(); it != args.end(); it++) {
         cmdline.append(" ");
-        argQuote(cmd, cmdline);
+        argQuote(*it, cmdline);
     }
     return cmdline;
 }
@@ -398,6 +396,7 @@ static string argvToCmdLine(const string& cmd, const vector<string>& args)
 int ExecCmd::startExec(const string &cmd, const vector<string>& args,
                        bool has_input, bool has_output)
 {
+    bool ret = false;
     { // Debug and logging
         string command = cmd + " ";
         for (vector<string>::const_iterator it = args.begin();
@@ -450,13 +449,24 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
                              NULL,          // use parent's current directory 
                              &siStartInfo,  // STARTUPINFO pointer 
                              &m->piProcInfo);  // receives PROCESS_INFORMATION 
-    free(buf);
     if (!bSuccess) {
         printError("ExecCmd::doexec: CreateProcess");
-        m->releaseResources();
-        return false;
+    } else {
+        ret = true;
     }
-    return true;
+    free(buf);
+    // Close child-side handles else we'll never see eofs
+    if (!CloseHandle(hOutputWrite))
+        printError("CloseHandle");
+    if (!CloseHandle(hInputRead))
+        printError("CloseHandle");
+    if (!CloseHandle(hErrorWrite)) 
+        printError("CloseHandle");
+
+    if (!ret)
+        m->releaseResources();
+
+    return ret;
 }
 
 enum WaitResult {
@@ -467,16 +477,16 @@ static WaitResult Wait(HANDLE hdl, int timeout)
 {
     //HANDLE hdls[2] = { hdl, eQuit };
     HANDLE hdls[1] = { hdl};
-    LOGDEB(("ExecCmd::Wait\n"));
+    LOGDEB0(("ExecCmd::Wait()\n"));
     DWORD res = WaitForMultipleObjects(1, hdls, FALSE, timeout);
     if (res == WAIT_OBJECT_0) {
-        LOGDEB(("ExecCmd::Wait: returning Ok\n"));
+        LOGDEB0(("ExecCmd::Wait: returning Ok\n"));
         return Ok;
     } else if (res == (WAIT_OBJECT_0 + 1)) {
-        LOGDEB(("ExecCmd::Wait: returning Quit\n"));
+        LOGDEB0(("ExecCmd::Wait: returning Quit\n"));
         return Quit;
     } else if (res == WAIT_TIMEOUT) {
-        LOGDEB(("ExecCmd::Wait: returning Timeout\n"));
+        LOGDEB0(("ExecCmd::Wait: returning Timeout\n"));
         return Timeout;
     }
     printError("Wait: WaitForMultipleObjects: unknown, returning Timout\n");
@@ -484,8 +494,7 @@ static WaitResult Wait(HANDLE hdl, int timeout)
 }
 
 
-// Read from a file and write its contents to the pipe for the child's
-// STDIN.  Stop when there is no more data.
+// Send data to the child.
 int ExecCmd::send(const string& data)
 {
     DWORD dwWritten;
@@ -534,38 +543,41 @@ int ExecCmd::send(const string& data)
 // @arg cnt count to read, -1 means read to end of data.
 int ExecCmd::receive(string& data, int cnt)
 {
-    DWORD dwRead;
-    const int BUFSIZE = 8192;
-    CHAR chBuf[BUFSIZE];
-    BOOL bSuccess = FALSE;
     int totread = 0;
     LOGDEB(("ExecCmd::receive: cnt %d\n", cnt));
     while (true) {
+        const int BUFSIZE = 8192;
+        CHAR chBuf[BUFSIZE];
         int toread = cnt > 0 ? MIN(cnt - totread, BUFSIZE) : BUFSIZE;
-        LOGDEB(("ExecCmd::receive: calling ReadFile with cnt %d\n", toread))
-        bSuccess = ReadFile(m->hOutputRead, chBuf, toread,
+        BOOL bSuccess = ReadFile(m->hOutputRead, chBuf, toread,
 				            NULL, &m->oOutputRead);
         DWORD err = GetLastError();
+        LOGDEB1(("receive: ReadFile: success %d err %d\n",
+                 int(bSuccess), int(err)));
         if (!bSuccess && err != ERROR_IO_PENDING) {
             LOGERR(("ExecCmd::receive: ReadFile error: %d\n", int(err)));
             break;
         }
 
-        WaitResult waitRes = Wait(m->oOutputRead.hEvent, 5000);
+        WaitResult waitRes = Wait(m->oOutputRead.hEvent, 1000);
         if (waitRes == Ok) {
-            if (!GetOverlappedResult(m->hOutputRead, &m->oOutputRead, &dwRead, TRUE)) {
+            DWORD dwRead;
+            if (!GetOverlappedResult(m->hOutputRead, &m->oOutputRead,
+                                     &dwRead, TRUE)) {
                 printError("GetOverlappedResult");
                 return -1;
             }
-            LOGDEB(("ExecCmd::receive: got %d bytes\n", int(dwRead)));
             totread += dwRead;
             data.append(chBuf, dwRead);
+            LOGDEB1(("ExecCmd::receive: got %d bytes\n", int(dwRead)));
         } else if (waitRes == Quit) {
             if (!CancelIo(m->hOutputRead)) {
                 printError("CancelIo");
             }
             break;
         } else if (waitRes == Timeout) {
+            // We only want to cancel if m_advise says so here. Is the io still
+            // valid at this point ?
             if (!CancelIo(m->hOutputRead)) {
                 printError("CancelIo");
             }
@@ -577,6 +589,7 @@ int ExecCmd::receive(string& data, int cnt)
 
 int ExecCmd::getline(std::string& data)
 {
+    LOGERR(("ExecCmd::getline not implemented\n"));
     return -1;
 }
 
@@ -589,9 +602,8 @@ int ExecCmd::wait()
     DWORD exit_code = 0;
     GetExitCodeProcess(m->piProcInfo.hProcess, &exit_code);
 
-    // Close handles to the child process and its primary thread.
-    CloseHandle(m->piProcInfo.hProcess);
-    CloseHandle(m->piProcInfo.hThread);
+    // Release all resources
+    m->releaseResources();
     return (int)exit_code;
 }
 
