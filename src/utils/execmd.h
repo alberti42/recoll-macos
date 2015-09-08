@@ -188,9 +188,8 @@ class ExecCmd {
      */
     static bool backtick(const std::vector<std::string> cmd, std::string& out);
 
-    friend class ExecCmdRsrc;
- private:
     class Internal;
+ private:
     Internal *m;
     /* Copyconst and assignment are private and forbidden */
     ExecCmd(const ExecCmd &) {}
