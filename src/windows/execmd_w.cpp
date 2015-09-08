@@ -512,7 +512,7 @@ int ExecCmd::send(const string& data)
         return -1;
     }
 
-    WaitResult waitRes = Wait(m->oInputWrite.hEvent, 5000);
+    WaitResult waitRes = Wait(m->oInputWrite.hEvent, m->timeoutMs);
     if (waitRes == Ok) {
         if (!GetOverlappedResult(m->hInputWrite, 
                                  &m->oInputWrite, &dwWritten, TRUE)) {
@@ -569,7 +569,9 @@ int ExecCmd::receive(string& data, int cnt)
             }
             totread += dwRead;
             data.append(chBuf, dwRead);
-            LOGDEB1(("ExecCmd::receive: got %d bytes\n", int(dwRead)));
+			if (m->advise)
+				m->advise->newData(dwRead);
+            LOGDEB(("ExecCmd::receive: got %d bytes\n", int(dwRead)));
         } else if (waitRes == Quit) {
             if (!CancelIo(m->hOutputRead)) {
                 printError("CancelIo");
@@ -577,11 +579,16 @@ int ExecCmd::receive(string& data, int cnt)
             break;
         } else if (waitRes == Timeout) {
             // We only want to cancel if m_advise says so here. Is the io still
-            // valid at this point ?
-            if (!CancelIo(m->hOutputRead)) {
-                printError("CancelIo");
-            }
-            break;
+            // valid at this point ? Should we catch a possible exception to CancelIo?
+			if (m->advise)
+				m->advise->newData(0);
+			if (m->killRequest) {
+				LOGINFO(("ExecCmd::doexec: cancel request\n"));
+				if (!CancelIo(m->hOutputRead)) {
+					printError("CancelIo");
+				}
+				break;
+			}
         }
     }
     return totread;

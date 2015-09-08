@@ -151,11 +151,12 @@ public:
     void newData(int cnt) {
         if (op_flags & OPT_c) {
             static int  callcnt;
-            if (callcnt++ == 10) {
+            if (callcnt++ == 5) {
                 // Just sets the cancellation flag
                 CancelCheck::instance().setCancel();
                 // Would be called from somewhere else and throws an
                 // exception. We call it here for simplicity
+				cerr << "newData: should throw !\n";
                 CancelCheck::instance().checkCancel();
             }
         }
@@ -223,7 +224,13 @@ int main(int argc, char *argv[])
             case 'm':   op_flags |= OPT_m; break;
             case 'i':   op_flags |= OPT_i; break;
             case 'o':   op_flags |= OPT_o; break;
-			case'h': cout << "MESSAGE FROM TREXECMD\n"; return 0;
+			case'h': 
+				for (int i = 0; i < 10; i++) {
+					cout << "MESSAGE " << i << " FROM TREXECMD\n";
+					cout.flush();
+					sleep(1);
+				}
+				return 0;
             default: Usage();   break;
             }
     b1: argc--; argv++;
@@ -265,10 +272,10 @@ int main(int argc, char *argv[])
         // Set callback to be called whenever there is new data
         // available and at a periodic interval, to check for
         // cancellation
-#ifdef LATER
         MEAdv adv;
         mexec.setAdvise(&adv);
-        mexec.setTimeout(5);
+        //mexec.setTimeout(5);
+#ifdef LATER
         // Stderr output goes there
 		mexec.setStderr("/tmp/trexecStderr");
 #endif

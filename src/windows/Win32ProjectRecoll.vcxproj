@@ -152,6 +152,7 @@
     <ClInclude Include="..\index\mimetype.h" />
     <ClInclude Include="..\internfile\internfile.h" />
     <ClInclude Include="..\internfile\mh_symlink.h" />
+    <ClInclude Include="..\utils\cancelcheck.h" />
     <ClInclude Include="..\utils\cpuconf.h" />
     <ClInclude Include="..\utils\debuglog.h" />
     <ClInclude Include="..\utils\execmd.h" />
