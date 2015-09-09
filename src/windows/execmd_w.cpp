@@ -23,27 +23,32 @@ static void printError(const string& text)
 class ExecCmd::Internal {
 public:
     Internal()
-        : m_advise(0), m_provide(0), m_timeoutMs(1000),
-          m_hOutputRead(NULL), m_hInputWrite(NULL) {
+        : m_advise(0), m_provide(0), m_timeoutMs(1000) {
+        reset();
     }
 
-    vector<string>   m_env;
+    STD_UNORDERED_MAP<string, string>   m_env;
     ExecCmdAdvise   *m_advise;
     ExecCmdProvide  *m_provide;
-
-    bool             m_killRequest;
     int              m_timeoutMs;
+
+    // We need buffered I/O for getline. The Unix version uses netcon's
+    string m_buf;	// Buffer. Only used when doing getline()s
+    size_t m_bufoffs;    // Pointer to current 1st byte of useful data
+    bool             m_killRequest;
     string           m_stderrFile;
-    // Subprocess id
     HANDLE           m_hOutputRead;
     HANDLE           m_hInputWrite;
-    OVERLAPPED       m_oOutputRead; // Do these need resource control?
+    OVERLAPPED       m_oOutputRead;
     OVERLAPPED       m_oInputWrite;
     PROCESS_INFORMATION m_piProcInfo;
 
+    
     // Reset internal state indicators. Any resources should have been
-    // previously freed
+    // previously freed. 
     void reset() {
+        m_bufoffs = 0;
+        m_stderrFile.erase();
         m_killRequest = false;
         m_hOutputRead = NULL;
         m_hInputWrite = NULL;
@@ -52,6 +57,7 @@ public:
         ZeroMemory(&m_piProcInfo, sizeof(PROCESS_INFORMATION));
     }
     void releaseResources() {
+        m_buf.resize(0);
         if (m_piProcInfo.hProcess)
             CloseHandle(m_piProcInfo.hProcess);
         if (m_piProcInfo.hThread)
@@ -69,6 +75,7 @@ public:
     bool preparePipes(bool has_input, HANDLE *hChildInput,
                       bool has_output, HANDLE *hChildOutput,
                       HANDLE *hChildError);
+    char *mergeEnvironment();
 };
 
 ExecCmd::ExecCmd()
@@ -82,6 +89,60 @@ ExecCmd::~ExecCmd()
 {
     if (m)
         m->releaseResources();
+}
+
+
+char *ExecCmd::Internal::mergeEnvironment()
+{
+    // Parse existing environment.
+    char *envir = GetEnvironmentStrings();
+    char *cp0 = envir;
+    STD_UNORDERED_MAP<string, string> envirmap;
+
+    string name, value;
+    for (char *cp1 = cp0;;cp1++) {
+        if (*cp1 == '=') {
+            name = string(cp0, cp1 - cp0);
+            cp0 = cp1 + 1;
+        } else if (*cp1 == 0) {
+            value = string(cp0, cp1 - cp0);
+            envirmap[name] = value;
+            LOGDEB1(("mergeEnvir: [%s] = [%s]\n", name.c_str(), value.c_str()));
+            cp0 = cp1 + 1;
+            if (*cp0 == 0)
+                break;
+        }
+    }
+
+    FreeEnvironmentStrings(envir);
+
+    // Merge our values
+    for (auto it = m_env.begin(); it != m_env.end(); it++) {
+        envirmap[it->first] = it->second;
+    }
+
+    // Create environment block
+    size_t sz = 0;
+    for (auto it = envirmap.begin(); it != envirmap.end(); it++) {
+        sz += it->first.size() + it->second.size() + 2; // =, 0
+    }
+    sz++; // final 0
+    char *nenvir = (char *)malloc(sz);
+    if (nenvir == 0)
+        return nenvir;
+    char *cp = nenvir;
+    for (auto it = envirmap.begin(); it != envirmap.end(); it++) {
+        memcpy(cp, it->first.c_str(), it->first.size());
+        cp += it->first.size();
+        *cp++ = '=';
+        memcpy(cp, it->second.c_str(), it->second.size());
+        cp += it->second.size();
+        *cp++ = 0;
+    }
+    // Final double-zero
+    *cp++ = 0;
+    
+    return nenvir;
 }
 
 // In mt programs the static vector computations below needs a call
@@ -197,21 +258,21 @@ void ExecCmd::zapChild()
 }
 void ExecCmd::putenv(const string &envassign)
 {
-    m->m_env.push_back(envassign);
+    vector<string> v;
+    stringToTokens(envassign, v, "=");
+    if (v.size() == 2) {
+        m->m_env[v[0]] = v[1];
+    }
 }
 void ExecCmd::putenv(const string &name, const string& value)
 {
-    string ea = name + "=" + value;
-    putenv(ea);
+    m->m_env[name] = value;
 }
-
 
 bool ExecCmd::Internal::preparePipes(bool has_input,HANDLE *hChildInput, 
                                      bool has_output, HANDLE *hChildOutput, 
                                      HANDLE *hChildError)
 {
-    HANDLE hInputWriteTmp = NULL;
-    HANDLE hOutputReadTmp = NULL;
     HANDLE hOutputWrite = NULL;
     HANDLE hErrorWrite = NULL;
     HANDLE hInputRead = NULL;
@@ -247,14 +308,15 @@ bool ExecCmd::Internal::preparePipes(bool has_input,HANDLE *hChildInput,
         // you need this for the client to inherit the handles
        
         // Create the child output named pipe.
-        // This creates a inheritable, one-way handle for the server to read
-        hOutputReadTmp = CreateNamedPipe(
+        // This creates a non-inheritable, one-way handle for the server to read
+        sa.bInheritHandle = FALSE; 
+        m_hOutputRead = CreateNamedPipe(
             TEXT("\\\\.\\pipe\\outstreamPipe"),
             PIPE_ACCESS_INBOUND | FILE_FLAG_OVERLAPPED,
             PIPE_WAIT,
             1, 4096, 4096, 0, &sa);
-        if (hOutputReadTmp == INVALID_HANDLE_VALUE) {
-            printError("preparePipes: CreateNamedPipe(out tmp)");
+        if (m_hOutputRead == INVALID_HANDLE_VALUE) {
+            printError("preparePipes: CreateNamedPipe(outputR)");
             goto errout;
         }
 
@@ -264,6 +326,7 @@ bool ExecCmd::Internal::preparePipes(bool has_input,HANDLE *hChildInput,
         // write-only.  Again, must be created with the inheritable
         // attribute, and the options are important.
         // use CreateFile to open a new handle to the existing pipe...
+        sa.bInheritHandle = TRUE; 
         hOutputWrite = CreateFile(
             TEXT("\\\\.\\pipe\\outstreamPipe"),
             FILE_WRITE_DATA | SYNCHRONIZE,
@@ -274,32 +337,6 @@ bool ExecCmd::Internal::preparePipes(bool has_input,HANDLE *hChildInput,
             printError("preparePipes: CreateFile(outputWrite)");
             goto errout;
         }
-        // All is well?  not quite. Our main server-side handle was
-        // created shareable.
-        // That means the client will receive it, and we have a
-        // problem because pipe termination conditions rely on knowing
-        // when the last handle closes.
-        // So, the only answer is to create another one, just for the server...
-        // Create new output read handle and the input write
-        // handles. Set the Inheritance property to FALSE. Otherwise,
-        // the child inherits the properties and, as a result,
-        // non-closeable handles to the pipes are created.
-        if (!DuplicateHandle(GetCurrentProcess(), hOutputReadTmp,
-                             GetCurrentProcess(), &m_hOutputRead,
-                             0, FALSE, // Make it uninheritable.
-                             DUPLICATE_SAME_ACCESS)) {
-            printError("preparePipes: DuplicateHandle(readtmp->outputread)");
-            goto errout;
-        }
-        // now we kill the original, inheritable server-side handle.  That
-        // will keep the pipe open, but keep the client program from
-        // getting it. Child-proofing.  Close inheritable copies of the
-        // handles you do not want to be inherited.
-        if (!CloseHandle(hOutputReadTmp)) {
-            printError("preparePipes: CloseHandle(readtmp)");
-            goto errout;
-        }
-        hOutputReadTmp = NULL;
     } else {
         // Not using child output. Let the child have our standard output.
         HANDLE hstd = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -312,6 +349,47 @@ bool ExecCmd::Internal::preparePipes(bool has_input,HANDLE *hChildInput,
                              0, TRUE, 
                              DUPLICATE_SAME_ACCESS)) {
             printError("preparePipes: DuplicateHandle(stdout)");
+            goto errout;
+        }
+    }
+
+    if (has_input) {
+        // now same procedure for input pipe
+
+        sa.bInheritHandle = FALSE; 
+        HANDLE m_hInputWrite = CreateNamedPipe(
+            TEXT("\\\\.\\pipe\\instreamPipe"),
+            PIPE_ACCESS_OUTBOUND | FILE_FLAG_OVERLAPPED,
+            PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
+            1, 4096, 4096, 0, &sa);
+        if (m_hInputWrite == INVALID_HANDLE_VALUE) {
+            printError("preparePipes: CreateNamedPipe(inputW)");
+            goto errout;
+        }
+
+        sa.bInheritHandle = TRUE;
+        hInputRead = CreateFile(
+            TEXT("\\\\.\\pipe\\instreamPipe"),
+            FILE_READ_DATA | SYNCHRONIZE,
+            0, &sa, OPEN_EXISTING, // very important flag!
+            FILE_ATTRIBUTE_NORMAL, 0 // no template file for OPEN_EXISTING
+            );
+        if (hInputRead == INVALID_HANDLE_VALUE) {
+            printError("preparePipes: CreateFile(inputRead)");
+            goto errout;
+        }
+    } else {
+        // Let the child inherit our standard input
+        HANDLE hstd = GetStdHandle(STD_INPUT_HANDLE);
+        if (hstd == INVALID_HANDLE_VALUE) {
+            printError("preparePipes: GetStdHandle(stdin)");
+            goto errout;
+        }
+        if (!DuplicateHandle(GetCurrentProcess(), hstd,
+                             GetCurrentProcess(), &hInputRead,
+                             0, TRUE,
+                             DUPLICATE_SAME_ACCESS)) {
+            printError("preparePipes: DuplicateHandle(stdin)");
             goto errout;
         }
     }
@@ -336,57 +414,6 @@ bool ExecCmd::Internal::preparePipes(bool has_input,HANDLE *hChildInput,
         }
     }
 
-    if (has_input) {
-        // now same procedure for input pipe
-
-        HANDLE m_hInputWriteTmp = CreateNamedPipe(
-            TEXT("\\\\.\\pipe\\instreamPipe"),
-            PIPE_ACCESS_OUTBOUND | FILE_FLAG_OVERLAPPED,
-            PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
-            1, 4096, 4096, 0, &sa);
-        if (m_hInputWriteTmp == INVALID_HANDLE_VALUE) {
-            printError("preparePipes: CreateNamedPipe(inputWTmp)");
-            goto errout;
-        }
-
-        hInputRead = CreateFile(
-            TEXT("\\\\.\\pipe\\instreamPipe"),
-            FILE_READ_DATA | SYNCHRONIZE,
-            0, &sa, OPEN_EXISTING, // very important flag!
-            FILE_ATTRIBUTE_NORMAL, 0 // no template file for OPEN_EXISTING
-            );
-        if (hInputRead == INVALID_HANDLE_VALUE) {
-            printError("preparePipes: CreateFile(inputRead)");
-            goto errout;
-        }
-        
-        if (!DuplicateHandle(GetCurrentProcess(), m_hInputWriteTmp,
-                             GetCurrentProcess(), &m_hInputWrite,
-                             0, FALSE, // Make it uninheritable.
-                             DUPLICATE_SAME_ACCESS)) {
-            printError("preparePipes: DuplicateHandle(inputWTmp->inputW)");
-            goto errout;
-        }
-        if (!CloseHandle(m_hInputWriteTmp)) {
-            printError("preparePipes: CloseHandle(inputWTmp)");
-            goto errout;
-        }
-        m_hInputWriteTmp = NULL;
-    } else {
-        // Let the child inherit our standard input
-        HANDLE hstd = GetStdHandle(STD_INPUT_HANDLE);
-        if (hstd == INVALID_HANDLE_VALUE) {
-            printError("preparePipes: GetStdHandle(stdin)");
-            goto errout;
-        }
-        if (!DuplicateHandle(GetCurrentProcess(), hstd,
-                             GetCurrentProcess(), &hInputRead,
-                             0, TRUE,
-                             DUPLICATE_SAME_ACCESS)) {
-            printError("preparePipes: DuplicateHandle(stdin)");
-            goto errout;
-        }
-    }
 
     *hChildInput = hInputRead;
     *hChildOutput = hOutputWrite;
@@ -401,10 +428,6 @@ errout:
         CloseHandle(hInputRead);
     if (hErrorWrite)
         CloseHandle(hErrorWrite);
-    if (hInputWriteTmp)
-        CloseHandle(hInputWriteTmp);
-    if (hOutputReadTmp)
-        CloseHandle(hOutputReadTmp);
     return false;
 }
 
@@ -471,7 +494,6 @@ static string argvToCmdLine(const string& cmd, const vector<string>& args)
     return cmdline;
 }
 
-
 // Create a child process 
 int ExecCmd::startExec(const string &cmd, const vector<string>& args,
                        bool has_input, bool has_output)
@@ -487,6 +509,9 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
                 has_input, has_output, command.c_str()));
     }
 
+    // Possibly clean up
+    m->releaseResources();
+    
     string cmdline = argvToCmdLine(cmd, args);
 
     HANDLE hInputRead;
@@ -514,6 +539,7 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
     siStartInfo.hStdInput = hInputRead;
     siStartInfo.hStdError = hErrorWrite;
 
+    char *envir = m->mergeEnvironment();
     // Create the child process. 
     // Need a writable buffer for the command line, for some reason.
     LPSTR buf = (LPSTR)malloc(cmdline.size() + 1);
@@ -525,7 +551,7 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
                              NULL,          // primary thread security attrs 
                              TRUE,         // handles are inherited 
                              0,             // creation flags 
-                             NULL,          // use parent's environment 
+                             envir,          // Merged environment 
                              NULL,          // use parent's current directory 
                              &siStartInfo,  // STARTUPINFO pointer 
                              &m->m_piProcInfo);  // receives PROCESS_INFORMATION 
@@ -534,6 +560,7 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
     } else {
         ret = true;
     }
+    free(envir);
     free(buf);
     // Close child-side handles else we'll never see eofs
     if (!CloseHandle(hOutputWrite))
@@ -589,6 +616,7 @@ int ExecCmd::send(const string& data)
     // and ERROR_IO_PENDING
     // in the first case bytes read/written parameter can be used directly
     if (!bSuccess && err != ERROR_IO_PENDING) {
+        LOGERR(("ExecCmd::send: WriteFile: got err %d\n", err));
         return -1;
     }
 
@@ -596,15 +624,17 @@ int ExecCmd::send(const string& data)
     if (waitRes == Ok) {
         if (!GetOverlappedResult(m->m_hInputWrite, 
                                  &m->m_oInputWrite, &dwWritten, TRUE)) {
-            printError("GetOverlappedResult");
+            err = GetLastError();
             return -1;
         }
     } else if (waitRes == Quit) {
+        printError("ExecCmd::send: got Quit");
         if (!CancelIo(m->m_hInputWrite)) {
             printError("CancelIo");
         }
         return -1;
     } else if (waitRes == Timeout) {
+        printError("ExecCmd::send: got Timeout");
         if (!CancelIo(m->m_hInputWrite)) {
             printError("CancelIo");
         }
@@ -625,6 +655,18 @@ int ExecCmd::receive(string& data, int cnt)
 {
     int totread = 0;
     LOGDEB(("ExecCmd::receive: cnt %d\n", cnt));
+
+    // If there is buffered data, use it (remains from a previous getline())
+    if (m->m_bufoffs < m->m_buf.size()) {
+        int bufcnt = int(m->m_buf.size() - m->m_bufoffs);
+        int toread = (cnt > 0) ? MIN(cnt, bufcnt) : bufcnt;
+        data.append(m->m_buf, m->m_bufoffs, toread);
+        m->m_bufoffs += toread;
+        totread += toread;
+        if (cnt > 0 && totread == cnt) {
+            return cnt;
+        }
+    }
     while (true) {
         const int BUFSIZE = 8192;
         CHAR chBuf[BUFSIZE];
@@ -635,7 +677,8 @@ int ExecCmd::receive(string& data, int cnt)
         LOGDEB1(("receive: ReadFile: success %d err %d\n",
                  int(bSuccess), int(err)));
         if (!bSuccess && err != ERROR_IO_PENDING) {
-            LOGERR(("ExecCmd::receive: ReadFile error: %d\n", int(err)));
+            if (err != ERROR_BROKEN_PIPE)
+                LOGERR(("ExecCmd::receive: ReadFile error: %d\n", int(err)));
             break;
         }
 
@@ -644,14 +687,20 @@ int ExecCmd::receive(string& data, int cnt)
             DWORD dwRead;
             if (!GetOverlappedResult(m->m_hOutputRead, &m->m_oOutputRead,
                                      &dwRead, TRUE)) {
-                printError("GetOverlappedResult");
-                return -1;
+                err = GetLastError();
+                if (err && err != ERROR_BROKEN_PIPE) {
+                    LOGERR(("ExecCmd::recv:GetOverlappedResult: err %d\n",
+                            err));
+                    return -1;
+                }
             }
-            totread += dwRead;
-            data.append(chBuf, dwRead);
-			if (m->m_advise)
-				m->m_advise->newData(dwRead);
-            LOGDEB(("ExecCmd::receive: got %d bytes\n", int(dwRead)));
+            if (dwRead > 0) {
+                totread += dwRead;
+                data.append(chBuf, dwRead);
+                if (m->m_advise)
+                    m->m_advise->newData(dwRead);
+                LOGDEB(("ExecCmd::receive: got %d bytes\n", int(dwRead)));
+            }
         } else if (waitRes == Quit) {
             if (!CancelIo(m->m_hOutputRead)) {
                 printError("CancelIo");
@@ -674,9 +723,43 @@ int ExecCmd::receive(string& data, int cnt)
     return totread;
 }
 
-int ExecCmd::getline(std::string& data)
+int ExecCmd::getline(string& data)
 {
-    LOGERR(("ExecCmd::getline not implemented\n"));
+    LOGDEB2(("ExecCmd::getline: cnt %d, timeo %d\n", cnt, timeo));
+    data.erase();
+    if (m->m_buf.empty()) {
+        m->m_buf.resize(4096);
+        m->m_bufoffs = 0;
+    }
+
+    for (;;) {
+        // Transfer from buffer. Have to take a lot of care to keep counts and
+        // pointers consistant in all end cases
+        int nn = int(m->m_buf.size() - m->m_bufoffs);
+        bool foundnl = false;
+        for (; nn > 0;) {
+            nn--;
+            char c = m->m_buf[m->m_bufoffs++];
+            data += c;
+            if (c == '\n') {
+                foundnl = true;
+                break;
+            }
+        }
+        if (foundnl)
+            return int(data.size());
+
+        // Read more
+        m->m_buf.erase();
+        if (receive(m->m_buf) < 0) {
+            return -1;
+        }
+        if (m->m_buf.empty()) {
+            return int(data.size());
+        }
+        m->m_bufoffs = 0;
+    }
+    //??
     return -1;
 }
 

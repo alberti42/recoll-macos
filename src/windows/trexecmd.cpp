@@ -2,7 +2,6 @@
 
 #include "execmd.h"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "safeunistd.h"
@@ -165,7 +164,7 @@ public:
                 CancelCheck::instance().checkCancel();
             }
         }
-        cerr << "newData(" << cnt << ")" << endl;
+        //cerr << "newData(" << cnt << ")" << endl;
     }
 };
 
@@ -229,13 +228,13 @@ int main(int argc, char *argv[])
             case 'm':   op_flags |= OPT_m; break;
             case 'i':   op_flags |= OPT_i; break;
             case 'o':   op_flags |= OPT_o; break;
-			case'h': 
-				for (int i = 0; i < 10; i++) {
-					cout << "MESSAGE " << i << " FROM TREXECMD\n";
-					cout.flush();
-					//sleep(1);
-				}
-				return 0;
+            case'h': 
+                for (int i = 0; i < 10; i++) {
+                    cout << "MESSAGE " << i << " FROM TREXECMD\n";
+                    cout.flush();
+                    //sleep(1);
+                }
+                return 0;
             default: Usage();   break;
             }
     b1: argc--; argv++;
@@ -250,7 +249,7 @@ int main(int argc, char *argv[])
         l.push_back(*argv++); argc--;
     }
 
-    DebugLog::getdbl()->setloglevel(DEBDEB1);
+    DebugLog::getdbl()->setloglevel(DEBINFO);
     DebugLog::setfilename("stderr");
 #if 0
     signal(SIGPIPE, SIG_IGN);
@@ -282,7 +281,7 @@ int main(int argc, char *argv[])
         //mexec.setTimeout(5);
 #ifdef LATER
         // Stderr output goes there
-		mexec.setStderr("/tmp/trexecStderr");
+        mexec.setStderr("/tmp/trexecStderr");
 #endif
         // A few environment variables. Check with trexecmd env
         mexec.putenv("TESTVARIABLE1=TESTVALUE1");
@@ -303,17 +302,22 @@ int main(int argc, char *argv[])
         }
 
         int status = -1;
-        try {
-            status = mexec.doexec(arg1, l, ip, op);
-        } catch (CancelExcept) {
-            cerr << "CANCELLED" << endl;
+        for (int i=0;i < 10000; i++) {
+            output.clear();
+            try {
+                status = mexec.doexec(arg1, l, ip, op);
+            } catch (CancelExcept) {
+                cerr << "CANCELLED" << endl;
+            }
+            //fprintf(stderr, "Status: 0x%x\n", status);
+            if (op_flags & OPT_o) {
+                //cout << "data received: [" << output << "]\n";
+                cerr << "status " << status << " bytes received " <<
+                    output.size() << endl;
+            }
+            if (status)
+                break;
         }
-
-        fprintf(stderr, "trexecmd::main: Status: 0x%x\n", status);
-		if (op_flags & OPT_o) {
-			cout << "data received: [" << output << "]\n";
-		}
-		cerr << "trexecmd::main: exiting\n";
-		return status >> 8;
+        return status >> 8;
     }
 }
