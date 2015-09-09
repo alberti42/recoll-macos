@@ -1,3 +1,4 @@
+#include "autoconfig.h"
 
 #include "execmd.h"
 
@@ -6,6 +7,10 @@
 #include <string>
 
 #include "debuglog.h"
+#include "safesysstat.h"
+#include "safeunistd.h"
+#include "smallut.h"
+#include "pathut.h"
 
 using namespace std;
 
@@ -18,49 +23,50 @@ static void printError(const string& text)
 class ExecCmd::Internal {
 public:
     Internal()
-        : advise(0), provide(0), timeoutMs(1000),
-          hOutputRead(NULL), hInputWrite(NULL) {
+        : m_advise(0), m_provide(0), m_timeoutMs(1000),
+          m_hOutputRead(NULL), m_hInputWrite(NULL) {
     }
 
-    std::vector<std::string>   m_env;
-    ExecCmdAdvise   *advise;
-    ExecCmdProvide  *provide;
-    bool             killRequest;
-    int              timeoutMs;
-    string           stderrFile;
+    vector<string>   m_env;
+    ExecCmdAdvise   *m_advise;
+    ExecCmdProvide  *m_provide;
+
+    bool             m_killRequest;
+    int              m_timeoutMs;
+    string           m_stderrFile;
     // Subprocess id
-    HANDLE           hOutputRead;
-    HANDLE           hInputWrite;
-    OVERLAPPED       oOutputRead; // Do these need resource control?
-    OVERLAPPED       oInputWrite;
-    PROCESS_INFORMATION piProcInfo;
+    HANDLE           m_hOutputRead;
+    HANDLE           m_hInputWrite;
+    OVERLAPPED       m_oOutputRead; // Do these need resource control?
+    OVERLAPPED       m_oInputWrite;
+    PROCESS_INFORMATION m_piProcInfo;
 
     // Reset internal state indicators. Any resources should have been
     // previously freed
     void reset() {
-        killRequest = false;
-        hOutputRead = NULL;
-        hInputWrite = NULL;
-        memset(&oOutputRead, 0, sizeof(oOutputRead));
-        memset(&oInputWrite, 0, sizeof(oInputWrite));
-        ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
+        m_killRequest = false;
+        m_hOutputRead = NULL;
+        m_hInputWrite = NULL;
+        memset(&m_oOutputRead, 0, sizeof(m_oOutputRead));
+        memset(&m_oInputWrite, 0, sizeof(m_oInputWrite));
+        ZeroMemory(&m_piProcInfo, sizeof(PROCESS_INFORMATION));
     }
     void releaseResources() {
-        if (piProcInfo.hProcess)
-            CloseHandle(piProcInfo.hProcess);
-        if (piProcInfo.hThread)
-            CloseHandle(piProcInfo.hThread);
-        if (hOutputRead)
-            CloseHandle(hOutputRead);
-        if (hInputWrite)
-            CloseHandle(hInputWrite);
-        if (oOutputRead.hEvent)
-            CloseHandle(oOutputRead.hEvent);
-        if (oInputWrite.hEvent)
-            CloseHandle(oInputWrite.hEvent);
+        if (m_piProcInfo.hProcess)
+            CloseHandle(m_piProcInfo.hProcess);
+        if (m_piProcInfo.hThread)
+            CloseHandle(m_piProcInfo.hThread);
+        if (m_hOutputRead)
+            CloseHandle(m_hOutputRead);
+        if (m_hInputWrite)
+            CloseHandle(m_hInputWrite);
+        if (m_oOutputRead.hEvent)
+            CloseHandle(m_oOutputRead.hEvent);
+        if (m_oInputWrite.hEvent)
+            CloseHandle(m_oInputWrite.hEvent);
         reset();
     }
-    bool PreparePipes(bool has_input, HANDLE *hChildInput,
+    bool preparePipes(bool has_input, HANDLE *hChildInput,
                       bool has_output, HANDLE *hChildOutput,
                       HANDLE *hChildError);
 };
@@ -78,36 +84,111 @@ ExecCmd::~ExecCmd()
         m->releaseResources();
 }
 
+// In mt programs the static vector computations below needs a call
+// from main before going mt. This is done by rclinit and saves having
+// to take a lock on every call
+static bool is_exe(const string& path)
+{
+    struct stat st;
+    if (access(path.c_str(), X_OK) == 0 && stat(path.c_str(), &st) == 0 &&
+	S_ISREG(st.st_mode)) {
+	return true;
+    }
+    return false;
+}
+static bool is_exe_base(const string& path)
+{
+    static vector<string> exts;
+    if (exts.empty()) {
+        const char *ep = getenv("PATHEXT");
+        if (!ep || !*ep) {
+            ep = ".com;.exe;.bat;.cmd";
+        }
+        string eps(ep);
+        trimstring(eps, ";");
+        stringToTokens(eps, exts, ";");
+    }
+
+    if (is_exe(path))
+        return true;
+    for (auto it = exts.begin(); it != exts.end(); it++) {
+        if (is_exe(path + *it))
+            return true;
+    }
+    return false;
+}
+
+static void make_path_vec(const char *ep, vector<string>& vec)
+{
+    if (ep && *ep) {
+        string eps(ep);
+        trimstring(eps, ";");
+        stringToTokens(eps, vec, ";");
+    }
+    vec.insert(vec.begin(), ".\\");
+}
+
 bool ExecCmd::which(const string& cmd, string& exe, const char* path)
 {
+    static vector<string> s_pathelts;
+    vector<string> pathelts;
+    vector<string> *pep;
+
+    if (path) {
+        make_path_vec(path, pathelts);
+        pep = &pathelts;
+    } else {
+        if (s_pathelts.empty()) {
+            const char *ep = getenv("PATH");
+            make_path_vec(ep, s_pathelts);
+        }
+        pep = &s_pathelts;
+    }
+
+    if (cmd.find_first_of("/\\") != string::npos) {
+        if (is_exe_base(cmd)) {
+            exe = cmd;
+            return true;
+        }
+        exe.clear();
+        return false;
+    }
+
+    for (auto it = pep->begin(); it != pep->end(); it++) {
+        exe = path_cat(*it, cmd);
+        if (is_exe_base(exe)) {
+            return true;
+        }
+    }
+    exe.clear();
     return false;
 }
 
 void ExecCmd::setAdvise(ExecCmdAdvise *adv)
 {
-    m->advise = adv;
+    m->m_advise = adv;
 }
 void ExecCmd::setProvide(ExecCmdProvide *p)
 {
-    m->provide = p;
+    m->m_provide = p;
 }
 void ExecCmd::setTimeout(int mS)
 {
     if (mS > 30) {
-        m->timeoutMs = mS;
+        m->m_timeoutMs = mS;
     }
 }
 void ExecCmd::setStderr(const std::string& stderrFile)
 {
-    m->stderrFile = stderrFile;
+    m->m_stderrFile = stderrFile;
 }
 pid_t ExecCmd::getChildPid()
 {
-    return m->piProcInfo.dwProcessId;
+    return m->m_piProcInfo.dwProcessId;
 }
 void ExecCmd::setKill()
 {
-    m->killRequest = true;
+    m->m_killRequest = true;
 }
 void ExecCmd::zapChild()
 {
@@ -125,7 +206,7 @@ void ExecCmd::putenv(const string &name, const string& value)
 }
 
 
-bool ExecCmd::Internal::PreparePipes(bool has_input,HANDLE *hChildInput, 
+bool ExecCmd::Internal::preparePipes(bool has_input,HANDLE *hChildInput, 
                                      bool has_output, HANDLE *hChildOutput, 
                                      HANDLE *hChildError)
 {
@@ -134,22 +215,22 @@ bool ExecCmd::Internal::PreparePipes(bool has_input,HANDLE *hChildInput,
     HANDLE hOutputWrite = NULL;
     HANDLE hErrorWrite = NULL;
     HANDLE hInputRead = NULL;
-    hOutputRead = NULL;
-    hInputWrite = NULL;
-    memset(&oOutputRead, 0, sizeof(oOutputRead));
-    memset(&oInputWrite, 0, sizeof(oInputWrite));
+    m_hOutputRead = NULL;
+    m_hInputWrite = NULL;
+    memset(&m_oOutputRead, 0, sizeof(m_oOutputRead));
+    memset(&m_oInputWrite, 0, sizeof(m_oInputWrite));
 
     // manual reset event
-    oOutputRead.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-    if (oOutputRead.hEvent == INVALID_HANDLE_VALUE) {
-        LOGERR(("ExecCmd::PreparePipes: CreateEvent failed\n"));
+    m_oOutputRead.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+    if (m_oOutputRead.hEvent == INVALID_HANDLE_VALUE) {
+        LOGERR(("ExecCmd::preparePipes: CreateEvent failed\n"));
         goto errout;
     }
 
     // manual reset event
-    oInputWrite.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-    if (oInputWrite.hEvent == INVALID_HANDLE_VALUE) {
-        LOGERR(("ExecCmd::PreparePipes: CreateEvent failed\n"));
+    m_oInputWrite.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+    if (m_oInputWrite.hEvent == INVALID_HANDLE_VALUE) {
+        LOGERR(("ExecCmd::preparePipes: CreateEvent failed\n"));
         goto errout;
     }
 
@@ -193,7 +274,6 @@ bool ExecCmd::Internal::PreparePipes(bool has_input,HANDLE *hChildInput,
             printError("preparePipes: CreateFile(outputWrite)");
             goto errout;
         }
-
         // All is well?  not quite. Our main server-side handle was
         // created shareable.
         // That means the client will receive it, and we have a
@@ -205,7 +285,7 @@ bool ExecCmd::Internal::PreparePipes(bool has_input,HANDLE *hChildInput,
         // the child inherits the properties and, as a result,
         // non-closeable handles to the pipes are created.
         if (!DuplicateHandle(GetCurrentProcess(), hOutputReadTmp,
-                             GetCurrentProcess(), &hOutputRead,
+                             GetCurrentProcess(), &m_hOutputRead,
                              0, FALSE, // Make it uninheritable.
                              DUPLICATE_SAME_ACCESS)) {
             printError("preparePipes: DuplicateHandle(readtmp->outputread)");
@@ -238,7 +318,7 @@ bool ExecCmd::Internal::PreparePipes(bool has_input,HANDLE *hChildInput,
 
     // Stderr: output to file or inherit. We don't support the file thing
     // for the moment
-    if (false && !stderrFile.empty()) {
+    if (false && !m_stderrFile.empty()) {
         // Open the file set up the child handle: TBD
     } else {
         // Let the child inherit our standard input
@@ -259,12 +339,12 @@ bool ExecCmd::Internal::PreparePipes(bool has_input,HANDLE *hChildInput,
     if (has_input) {
         // now same procedure for input pipe
 
-        HANDLE hInputWriteTmp = CreateNamedPipe(
+        HANDLE m_hInputWriteTmp = CreateNamedPipe(
             TEXT("\\\\.\\pipe\\instreamPipe"),
             PIPE_ACCESS_OUTBOUND | FILE_FLAG_OVERLAPPED,
             PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
             1, 4096, 4096, 0, &sa);
-        if (hInputWriteTmp == INVALID_HANDLE_VALUE) {
+        if (m_hInputWriteTmp == INVALID_HANDLE_VALUE) {
             printError("preparePipes: CreateNamedPipe(inputWTmp)");
             goto errout;
         }
@@ -280,18 +360,18 @@ bool ExecCmd::Internal::PreparePipes(bool has_input,HANDLE *hChildInput,
             goto errout;
         }
         
-        if (!DuplicateHandle(GetCurrentProcess(), hInputWriteTmp,
-                             GetCurrentProcess(), &hInputWrite,
+        if (!DuplicateHandle(GetCurrentProcess(), m_hInputWriteTmp,
+                             GetCurrentProcess(), &m_hInputWrite,
                              0, FALSE, // Make it uninheritable.
                              DUPLICATE_SAME_ACCESS)) {
             printError("preparePipes: DuplicateHandle(inputWTmp->inputW)");
             goto errout;
         }
-        if (!CloseHandle(hInputWriteTmp)) {
+        if (!CloseHandle(m_hInputWriteTmp)) {
             printError("preparePipes: CloseHandle(inputWTmp)");
             goto errout;
         }
-        hInputWriteTmp = NULL;
+        m_hInputWriteTmp = NULL;
     } else {
         // Let the child inherit our standard input
         HANDLE hstd = GetStdHandle(STD_INPUT_HANDLE);
@@ -412,7 +492,7 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
     HANDLE hInputRead;
     HANDLE hOutputWrite;
     HANDLE hErrorWrite;
-    if (!m->PreparePipes(has_input, &hInputRead, has_output, 
+    if (!m->preparePipes(has_input, &hInputRead, has_output, 
                          &hOutputWrite, &hErrorWrite)) {
         LOGERR(("ExecCmd::startExec: preparePipes failed\n"));
         m->releaseResources();
@@ -423,7 +503,7 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
     BOOL bSuccess = FALSE;
 
     // Set up members of the PROCESS_INFORMATION structure. 
-    ZeroMemory(&m->piProcInfo, sizeof(PROCESS_INFORMATION));
+    ZeroMemory(&m->m_piProcInfo, sizeof(PROCESS_INFORMATION));
 
     // Set up members of the STARTUPINFO structure. 
     // This structure specifies the STDIN and STDOUT handles for redirection.
@@ -448,7 +528,7 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
                              NULL,          // use parent's environment 
                              NULL,          // use parent's current directory 
                              &siStartInfo,  // STARTUPINFO pointer 
-                             &m->piProcInfo);  // receives PROCESS_INFORMATION 
+                             &m->m_piProcInfo);  // receives PROCESS_INFORMATION 
     if (!bSuccess) {
         printError("ExecCmd::doexec: CreateProcess");
     } else {
@@ -500,8 +580,8 @@ int ExecCmd::send(const string& data)
     DWORD dwWritten;
     BOOL bSuccess = false;
 
-    bSuccess = WriteFile(m->hInputWrite, data.c_str(), (DWORD)data.size(), 
-                         NULL, &m->oInputWrite);
+    bSuccess = WriteFile(m->m_hInputWrite, data.c_str(), (DWORD)data.size(), 
+                         NULL, &m->m_oInputWrite);
     DWORD err = GetLastError();
 
     // TODO: some more decision, either the operation completes immediately
@@ -512,20 +592,20 @@ int ExecCmd::send(const string& data)
         return -1;
     }
 
-    WaitResult waitRes = Wait(m->oInputWrite.hEvent, m->timeoutMs);
+    WaitResult waitRes = Wait(m->m_oInputWrite.hEvent, m->m_timeoutMs);
     if (waitRes == Ok) {
-        if (!GetOverlappedResult(m->hInputWrite, 
-                                 &m->oInputWrite, &dwWritten, TRUE)) {
+        if (!GetOverlappedResult(m->m_hInputWrite, 
+                                 &m->m_oInputWrite, &dwWritten, TRUE)) {
             printError("GetOverlappedResult");
             return -1;
         }
     } else if (waitRes == Quit) {
-        if (!CancelIo(m->hInputWrite)) {
+        if (!CancelIo(m->m_hInputWrite)) {
             printError("CancelIo");
         }
         return -1;
     } else if (waitRes == Timeout) {
-        if (!CancelIo(m->hInputWrite)) {
+        if (!CancelIo(m->m_hInputWrite)) {
             printError("CancelIo");
         }
         return -1;
@@ -549,8 +629,8 @@ int ExecCmd::receive(string& data, int cnt)
         const int BUFSIZE = 8192;
         CHAR chBuf[BUFSIZE];
         int toread = cnt > 0 ? MIN(cnt - totread, BUFSIZE) : BUFSIZE;
-        BOOL bSuccess = ReadFile(m->hOutputRead, chBuf, toread,
-				            NULL, &m->oOutputRead);
+        BOOL bSuccess = ReadFile(m->m_hOutputRead, chBuf, toread,
+				            NULL, &m->m_oOutputRead);
         DWORD err = GetLastError();
         LOGDEB1(("receive: ReadFile: success %d err %d\n",
                  int(bSuccess), int(err)));
@@ -559,32 +639,32 @@ int ExecCmd::receive(string& data, int cnt)
             break;
         }
 
-        WaitResult waitRes = Wait(m->oOutputRead.hEvent, 1000);
+        WaitResult waitRes = Wait(m->m_oOutputRead.hEvent, 1000);
         if (waitRes == Ok) {
             DWORD dwRead;
-            if (!GetOverlappedResult(m->hOutputRead, &m->oOutputRead,
+            if (!GetOverlappedResult(m->m_hOutputRead, &m->m_oOutputRead,
                                      &dwRead, TRUE)) {
                 printError("GetOverlappedResult");
                 return -1;
             }
             totread += dwRead;
             data.append(chBuf, dwRead);
-			if (m->advise)
-				m->advise->newData(dwRead);
+			if (m->m_advise)
+				m->m_advise->newData(dwRead);
             LOGDEB(("ExecCmd::receive: got %d bytes\n", int(dwRead)));
         } else if (waitRes == Quit) {
-            if (!CancelIo(m->hOutputRead)) {
+            if (!CancelIo(m->m_hOutputRead)) {
                 printError("CancelIo");
             }
             break;
         } else if (waitRes == Timeout) {
             // We only want to cancel if m_advise says so here. Is the io still
             // valid at this point ? Should we catch a possible exception to CancelIo?
-			if (m->advise)
-				m->advise->newData(0);
-			if (m->killRequest) {
+			if (m->m_advise)
+				m->m_advise->newData(0);
+			if (m->m_killRequest) {
 				LOGINFO(("ExecCmd::doexec: cancel request\n"));
-				if (!CancelIo(m->hOutputRead)) {
+				if (!CancelIo(m->m_hOutputRead)) {
 					printError("CancelIo");
 				}
 				break;
@@ -603,11 +683,11 @@ int ExecCmd::getline(std::string& data)
 int ExecCmd::wait() 
 {
     // Wait until child process exits.
-    WaitForSingleObject(m->piProcInfo.hProcess, INFINITE);
+    WaitForSingleObject(m->m_piProcInfo.hProcess, INFINITE);
 
     // Get exit code
     DWORD exit_code = 0;
-    GetExitCodeProcess(m->piProcInfo.hProcess, &exit_code);
+    GetExitCodeProcess(m->m_piProcInfo.hProcess, &exit_code);
 
     // Release all resources
     m->releaseResources();

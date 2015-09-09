@@ -202,7 +202,11 @@ RclConfig *recollinit(RclInitFlags flags,
     // Init smallut and pathut static values
     pathut_init_mt();
     smallut_init_mt();
-
+    // Init execmd.h static PATH and PATHELT splitting
+    {string bogus;
+        ExecCmd::which("nosuchcmd", bogus);
+    }
+    
     // Init Unac translation exceptions
     string unacex;
     if (config->getConfParam("unac_except_trans", unacex) && !unacex.empty()) 

@@ -373,20 +373,29 @@ bool TempDir::wipe()
     return true;
 }
 
-void path_catslash(string &s) {
+void path_catslash(string &s)
+{
+#ifdef WIN32
+    path_slashize(s);
+#endif
     if (s.empty() || s[s.length() - 1] != '/')
 	s += '/';
 }
 
-string path_cat(const string &s1, const string &s2) {
+string path_cat(const string &s1, const string &s2)
+{
     string res = s1;
     path_catslash(res);
     res +=  s2;
     return res;
 }
 
-string path_getfather(const string &s) {
+string path_getfather(const string &s)
+{
     string father = s;
+#ifdef WIN32
+    path_slashize(father);
+#endif
 
     // ??
     if (father.empty())
@@ -409,8 +418,12 @@ string path_getfather(const string &s) {
     return father;
 }
 
-string path_getsimple(const string &s) {
+string path_getsimple(const string &s)
+{
     string simple = s;
+#ifdef WIN32
+    path_slashize(simple);
+#endif
 
     if (simple.empty())
 	return simple;
@@ -508,6 +521,10 @@ string path_tildexpand(const string &s)
     if (s.empty() || s[0] != '~')
 	return s;
     string o = s;
+#ifdef WIN32
+    path_slashize(o);
+#endif
+    
     if (s.length() == 1) {
 	o.replace(0, 1, path_home());
     } else if  (s[1] == '/') {
@@ -532,7 +549,8 @@ bool path_isroot(const string& path)
     if (path.size() == 1 && path[0] == '/')
         return true;
 #ifdef _WIN32
-    if (path.size() == 3 && isalpha(path[0]) && path[1] == ':' && path[2] == '/')
+    if (path.size() == 3 && isalpha(path[0]) && path[1] == ':' &&
+        (path[2] == '/' || path[2] == '\\'))
         return true;
 #endif
     return false;
@@ -555,12 +573,15 @@ string path_absolute(const string &is)
     if (is.length() == 0)
 	return is;
     string s = is;
-    if (s[0] != '/') {
+    if (!path_isabsolute(s)) {
 	char buf[MAXPATHLEN];
 	if (!getcwd(buf, MAXPATHLEN)) {
 	    return string();
 	}
-	s = path_cat(string(buf), s); 
+	s = path_cat(string(buf), s);
+#ifdef _WIN32
+        path_slashize(s);
+#endif
     }
     return s;
 }

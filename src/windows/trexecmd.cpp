@@ -27,9 +27,14 @@ using namespace std;
 bool exercise_mhexecm(const string& cmdstr, const string& mimetype, 
                       vector<string>& files)
 {
-    ExecCmd cmd;
+	if (files.empty())
+		return false;
 
-    vector<string> myparams; 
+    ExecCmd cmd;
+	vector<string> myparams; 
+	// Hack for windows: the command is always "Python somescript"
+	myparams.push_back(files[0]);
+	files.erase(files.begin());
 
     if (cmd.startExec(cmdstr, myparams, 1, 1) < 0) {
         cerr << "startExec " << cmdstr << " failed. Missing command?\n";
@@ -228,7 +233,7 @@ int main(int argc, char *argv[])
 				for (int i = 0; i < 10; i++) {
 					cout << "MESSAGE " << i << " FROM TREXECMD\n";
 					cout.flush();
-					sleep(1);
+					//sleep(1);
 				}
 				return 0;
             default: Usage();   break;
