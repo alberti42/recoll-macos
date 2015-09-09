@@ -357,10 +357,10 @@ bool ExecCmd::Internal::preparePipes(bool has_input,HANDLE *hChildInput,
         // now same procedure for input pipe
 
         sa.bInheritHandle = FALSE; 
-        HANDLE m_hInputWrite = CreateNamedPipe(
+        m_hInputWrite = CreateNamedPipe(
             TEXT("\\\\.\\pipe\\instreamPipe"),
             PIPE_ACCESS_OUTBOUND | FILE_FLAG_OVERLAPPED,
-            PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
+            PIPE_WAIT,
             1, 4096, 4096, 0, &sa);
         if (m_hInputWrite == INVALID_HANDLE_VALUE) {
             printError("preparePipes: CreateNamedPipe(inputW)");
@@ -584,10 +584,10 @@ static WaitResult Wait(HANDLE hdl, int timeout)
 {
     //HANDLE hdls[2] = { hdl, eQuit };
     HANDLE hdls[1] = { hdl};
-    LOGDEB0(("ExecCmd::Wait()\n"));
+    LOGDEB1(("ExecCmd::Wait()\n"));
     DWORD res = WaitForMultipleObjects(1, hdls, FALSE, timeout);
     if (res == WAIT_OBJECT_0) {
-        LOGDEB0(("ExecCmd::Wait: returning Ok\n"));
+        LOGDEB1(("ExecCmd::Wait: returning Ok\n"));
         return Ok;
     } else if (res == (WAIT_OBJECT_0 + 1)) {
         LOGDEB0(("ExecCmd::Wait: returning Quit\n"));
@@ -604,11 +604,9 @@ static WaitResult Wait(HANDLE hdl, int timeout)
 // Send data to the child.
 int ExecCmd::send(const string& data)
 {
-    DWORD dwWritten;
-    BOOL bSuccess = false;
-
-    bSuccess = WriteFile(m->m_hInputWrite, data.c_str(), (DWORD)data.size(), 
-                         NULL, &m->m_oInputWrite);
+    LOGDEB2(("ExecCmd::send: cnt %d\n", int(data.size())));
+    BOOL bSuccess = WriteFile(m->m_hInputWrite, data.c_str(),
+                              (DWORD)data.size(), NULL, &m->m_oInputWrite);
     DWORD err = GetLastError();
 
     // TODO: some more decision, either the operation completes immediately
@@ -621,10 +619,12 @@ int ExecCmd::send(const string& data)
     }
 
     WaitResult waitRes = Wait(m->m_oInputWrite.hEvent, m->m_timeoutMs);
+    DWORD dwWritten;
     if (waitRes == Ok) {
         if (!GetOverlappedResult(m->m_hInputWrite, 
                                  &m->m_oInputWrite, &dwWritten, TRUE)) {
             err = GetLastError();
+            LOGERR(("ExecCmd::send: GetOverLappedResult: err %d\n", err));
             return -1;
         }
     } else if (waitRes == Quit) {
@@ -640,6 +640,7 @@ int ExecCmd::send(const string& data)
         }
         return -1;
     }
+    LOGDEB2(("ExecCmd::send: returning %d\n", int(dwWritten)));
     return dwWritten;
 }
 
@@ -651,10 +652,12 @@ int ExecCmd::send(const string& data)
 // and write to cout in this programme
 // Stop when there is no more data. 
 // @arg cnt count to read, -1 means read to end of data.
+//      0 means read whatever comes back on the first read;
 int ExecCmd::receive(string& data, int cnt)
 {
+    LOGDEB1(("ExecCmd::receive: cnt %d\n", cnt));
+
     int totread = 0;
-    LOGDEB(("ExecCmd::receive: cnt %d\n", cnt));
 
     // If there is buffered data, use it (remains from a previous getline())
     if (m->m_bufoffs < m->m_buf.size()) {
@@ -663,7 +666,7 @@ int ExecCmd::receive(string& data, int cnt)
         data.append(m->m_buf, m->m_bufoffs, toread);
         m->m_bufoffs += toread;
         totread += toread;
-        if (cnt > 0 && totread == cnt) {
+        if (cnt == 0 || (cnt > 0 && totread == cnt)) {
             return cnt;
         }
     }
@@ -699,7 +702,7 @@ int ExecCmd::receive(string& data, int cnt)
                 data.append(chBuf, dwRead);
                 if (m->m_advise)
                     m->m_advise->newData(dwRead);
-                LOGDEB(("ExecCmd::receive: got %d bytes\n", int(dwRead)));
+                LOGDEB1(("ExecCmd::recv: ReadFile: %d bytes\n", int(dwRead)));
             }
         } else if (waitRes == Quit) {
             if (!CancelIo(m->m_hOutputRead)) {
@@ -707,19 +710,23 @@ int ExecCmd::receive(string& data, int cnt)
             }
             break;
         } else if (waitRes == Timeout) {
-            // We only want to cancel if m_advise says so here. Is the io still
-            // valid at this point ? Should we catch a possible exception to CancelIo?
-			if (m->m_advise)
-				m->m_advise->newData(0);
-			if (m->m_killRequest) {
-				LOGINFO(("ExecCmd::doexec: cancel request\n"));
-				if (!CancelIo(m->m_hOutputRead)) {
-					printError("CancelIo");
-				}
-				break;
-			}
+            // We only want to cancel if m_advise says so here. Is the
+            // io still valid at this point ? Should we catch a
+            // possible exception to CancelIo?
+            if (m->m_advise)
+                m->m_advise->newData(0);
+            if (m->m_killRequest) {
+                LOGINFO(("ExecCmd::doexec: cancel request\n"));
+                if (!CancelIo(m->m_hOutputRead)) {
+                    printError("CancelIo");
+                }
+                break;
+            }
         }
+        if (cnt == 0)
+            break;
     }
+    LOGDEB1(("ExecCmd::receive: returning %d bytes\n", totread));
     return totread;
 }
 
@@ -728,7 +735,7 @@ int ExecCmd::getline(string& data)
     LOGDEB2(("ExecCmd::getline: cnt %d, timeo %d\n", cnt, timeo));
     data.erase();
     if (m->m_buf.empty()) {
-        m->m_buf.resize(4096);
+        m->m_buf.reserve(4096);
         m->m_bufoffs = 0;
     }
 
@@ -740,21 +747,27 @@ int ExecCmd::getline(string& data)
         for (; nn > 0;) {
             nn--;
             char c = m->m_buf[m->m_bufoffs++];
+            if (c == '\r')
+                continue;
             data += c;
             if (c == '\n') {
                 foundnl = true;
                 break;
             }
         }
-        if (foundnl)
+
+        if (foundnl) {
+            LOGDEB2(("ExecCmd::getline: ret: [%s]\n", data.c_str()));
             return int(data.size());
+        }
 
         // Read more
         m->m_buf.erase();
-        if (receive(m->m_buf) < 0) {
+        if (receive(m->m_buf, 0) < 0) {
             return -1;
         }
         if (m->m_buf.empty()) {
+            LOGDEB(("ExecCmd::getline: eof? ret: [%s]\n", data.c_str()));
             return int(data.size());
         }
         m->m_bufoffs = 0;
@@ -789,7 +802,30 @@ int ExecCmd::doexec(const string &cmd, const vector<string>& args,
         return -1;
     }
     if (input) {
-        send(*input);
+        if (!input->empty()) {
+            if (send(*input) != input->size()) {
+                LOGERR(("ExecCmd::doexec: send failed\n"));
+                CloseHandle(m->m_hInputWrite);
+                m->m_hInputWrite = NULL;
+                return wait();
+            }
+        }
+        if (m->m_provide) {
+            for (;;) {
+                m->m_provide->newData();
+                if (input->empty()) {
+                    CloseHandle(m->m_hInputWrite);
+                    m->m_hInputWrite = NULL;
+                    break;
+                }
+                if (send(*input) != input->size()) {
+                    LOGERR(("ExecCmd::doexec: send failed\n"));
+                    CloseHandle(m->m_hInputWrite);
+                    m->m_hInputWrite = NULL;
+                    break;
+                }
+            }
+        }
     } else if (output) {
         receive(*output);
     }

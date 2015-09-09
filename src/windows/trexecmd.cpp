@@ -19,10 +19,11 @@
 
 using namespace std;
 
-
 // Testing the rclexecm protocol outside of recoll. Here we use the
-// rcldoc.py filter, you can try with rclaudio too, adjust the file arg
-// accordingly
+// rcldoc.py filter, you can try with rclaudio too, adjust the file
+// arg accordingly. This simplified driver only really works with
+// single-doc files (else it extracts only the first doc, usually the
+// empty self-doc).
 bool exercise_mhexecm(const string& cmdstr, const string& mimetype, 
                       vector<string>& files)
 {
@@ -171,24 +172,25 @@ public:
 // Data provider, used if the -i flag is set
 class MEPv : public ExecCmdProvide {
 public:
-    FILE *m_fp;
     string *m_input;
+    int  m_cnt;
     MEPv(string *i) 
-        : m_input(i)
-        {
-            m_fp = fopen("/etc/group", "r");
-        }
+        : m_input(i), m_cnt(0) {
+    }
     ~MEPv() {
-        if (m_fp)
-            fclose(m_fp);
     }
     void newData() {
-        char line[1024];
-        if (m_fp && fgets(line, 1024, m_fp)) {
-            m_input->assign((const char *)line);
+        if (m_cnt++ < 10) {
+            char num[30];
+            sprintf(num, "%d", m_cnt);
+            *m_input = string("This is an input chunk ") + string(num) +
+                string("\n");
         } else {
             m_input->erase();
         }
+    }
+    void reset() {
+        m_cnt = 0;
     }
 };
 
@@ -249,7 +251,7 @@ int main(int argc, char *argv[])
         l.push_back(*argv++); argc--;
     }
 
-    DebugLog::getdbl()->setloglevel(DEBINFO);
+    DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
 #if 0
     signal(SIGPIPE, SIG_IGN);
@@ -302,8 +304,9 @@ int main(int argc, char *argv[])
         }
 
         int status = -1;
-        for (int i=0;i < 10000; i++) {
+        for (int i = 0; i < 1; i++) {
             output.clear();
+            pv.reset();
             try {
                 status = mexec.doexec(arg1, l, ip, op);
             } catch (CancelExcept) {
@@ -312,8 +315,8 @@ int main(int argc, char *argv[])
             //fprintf(stderr, "Status: 0x%x\n", status);
             if (op_flags & OPT_o) {
                 //cout << "data received: [" << output << "]\n";
-                cerr << "status " << status << " bytes received " <<
-                    output.size() << endl;
+                cerr << "iter " << i << " status " <<
+                    status << " bytes received " << output.size() << endl;
             }
             if (status)
                 break;
