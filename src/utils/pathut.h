@@ -78,6 +78,9 @@ extern long long path_filesize(const std::string& path);
 /// the file/dir does not exist or that an error occurred. 
 extern bool path_exists(const std::string& path);
 
+/// Return separator for PATH environment variable
+extern std::string path_PATHsep();
+
 /// Dump directory
 extern bool readdir(const std::string& dir, std::string& reason, 
 		    std::set<std::string>& entries);

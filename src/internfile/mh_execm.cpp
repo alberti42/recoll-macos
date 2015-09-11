@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes 
+	/* Copyright (C) 2005 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -32,7 +32,7 @@ using namespace std;
 #include "idfile.h"
 
 #include <sys/types.h>
-#include <sys/wait.h>
+#include "safesyswait.h"
 
 bool MimeHandlerExecMultiple::startCmd()
 {

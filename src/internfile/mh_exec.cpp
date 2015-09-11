@@ -17,10 +17,10 @@
 #include "autoconfig.h"
 
 #include <sys/types.h>
-#include <sys/wait.h>
+#include <time.h>
+#include "safesyswait.h"
 
 #include <list>
-using namespace std;
 
 #include "cstr.h"
 #include "execmd.h"
@@ -31,6 +31,8 @@ using namespace std;
 #include "smallut.h"
 #include "md5ut.h"
 #include "rclconfig.h"
+
+using namespace std;
 
 // This is called periodically by ExeCmd when it is waiting for data,
 // or when it does receive some. We may choose to interrupt the

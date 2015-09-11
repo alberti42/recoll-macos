@@ -239,6 +239,17 @@ const string& path_sharedatadir()
     return datadir;
 }
 
+string path_PATHsep()
+{
+    static const string w(";");
+    static const string u(":");
+#ifdef _WIN32
+    return w;
+#else
+    return u;
+#endif
+}
+
 bool maketmpdir(string& tdir, string& reason)
 {
 #ifndef _WIN32

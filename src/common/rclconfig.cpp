@@ -47,6 +47,7 @@
 #include "readfile.h"
 #include "fstreewalk.h"
 #include "cpuconf.h"
+#include "execmd.h"
 
 using namespace std;
 
@@ -1305,47 +1306,45 @@ vector<string> RclConfig::getDaemSkippedPaths() const
 }
 
 
-// Look up an executable filter.  We look in $RECOLL_FILTERSDIR,
-// filtersdir in config file, then let the system use the PATH
+// Look up an executable filter.  We add $RECOLL_FILTERSDIR,
+// and filtersdir from the config file to the PATH, then use execmd::which()
 string RclConfig::findFilter(const string &icmd) const
 {
     // If the path is absolute, this is it
     if (path_isabsolute(icmd))
 	return icmd;
 
-    string cmd;
-    const char *cp;
+    const char *cp = getenv("PATH");
+    if (!cp) //??
+        cp = "";
+    string PATH(cp);
 
-    // Filters dir from environment ?
-    if ((cp = getenv("RECOLL_FILTERSDIR"))) {
-	cmd = path_cat(cp, icmd);
-	if (access(cmd.c_str(), X_OK) == 0)
-	    return cmd;
-    } 
+    // For historical reasons: check in personal config directory
+    PATH = getConfDir() + path_PATHsep() + PATH;
 
-    // Filters dir as configuration parameter?
-    if (getConfParam(string("filtersdir"), cmd)) {
-	cmd = path_cat(cmd, icmd);
-        cmd = path_tildexpand(cmd);
-        if (access(cmd.c_str(), X_OK) == 0)
-            return cmd;
+    string temp;
+    // Prepend $datadir/filters
+    temp = path_cat(m_datadir, "filters");
+    PATH = temp + path_PATHsep() + PATH;
+
+    // Prepend possible configuration parameter?
+    if (getConfParam(string("filtersdir"), temp)) {
+        temp = path_tildexpand(temp);
+        PATH = temp + path_PATHsep() + PATH;
     }
 
-    // Filters dir as datadir subdir. Actually the standard case, but
-    // this is normally the same value found in config file (previous step)
-    cmd = path_cat(m_datadir, "filters");
-    cmd = path_cat(cmd, icmd);
-    if (access(cmd.c_str(), X_OK) == 0)
-	return cmd;
+    // Prepend possible environment variable
+    if ((cp = getenv("RECOLL_FILTERSDIR"))) {
+        PATH = string(cp) + path_PATHsep() + PATH;
+    } 
 
-    // Last resort for historical reasons: check in personal config
-    // directory
-    cmd = path_cat(getConfDir(), icmd);
-    if (access(cmd.c_str(), X_OK) == 0)
-	return cmd;
-
-    // Let the shell try to find it...
-    return icmd;
+    string cmd;
+    if (ExecCmd::which(icmd, cmd, PATH.c_str())) {
+        return cmd;
+    } else {
+        // Let the shell try to find it...
+        return icmd;
+    }
 }
 
 /** 

@@ -96,6 +96,12 @@
     <ClInclude Include="..\utils\cancelcheck.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\internfile\mh_exec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\internfile\mh_execm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\utils\smallut.cpp">
@@ -297,6 +303,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="execmd_w.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\internfile\mh_exec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\internfile\mh_execm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -190,6 +190,26 @@ static void make_path_vec(const char *ep, vector<string>& vec)
     vec.insert(vec.begin(), ".\\");
 }
 
+static std::string pipeUniqueName(std::string nClass, std::string prefix)
+{
+	std::stringstream uName;
+
+	long currCnt;
+	// PID + multi-thread-protected static counter to be unique
+	{
+		static long cnt = 0;
+		currCnt = InterlockedIncrement(&cnt);
+	}
+	DWORD pid = GetCurrentProcessId();
+
+	// naming convention
+	uName << "\\\\.\\" << nClass << "\\";
+	uName << "pid-" << pid << "-cnt-" << currCnt << "-";
+	uName << prefix;
+
+	return uName.str();
+}
+
 enum WaitResult {
     Ok, Quit, Timeout
 };
@@ -420,24 +440,9 @@ void ExecCmd::putenv(const string &name, const string& value)
     m->m_env[name] = value;
 }
 
-static std::string pipeUniqueName(std::string nClass, std::string prefix)
+void ExecCmd::setrlimit_as(int mbytes)
 {
-    std::stringstream uName;
-
-    long currCnt;
-    // PID + multi-thread-protected static counter to be unique
-    {
-        static long cnt = 0;
-        currCnt = InterlockedIncrement(&cnt);
-    }
-    DWORD pid = GetCurrentProcessId();
-
-    // naming convention
-    uName << "\\\\.\\" << nClass << "\\";
-    uName << "pid-" << pid << "-cnt-" << currCnt << "-";
-    uName << prefix;
-
-    return uName.str();
+	// Later maybe
 }
 
 bool ExecCmd::Internal::preparePipes(bool has_input,HANDLE *hChildInput, 

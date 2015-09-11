@@ -151,6 +151,8 @@
     <ClInclude Include="..\index\indexer.h" />
     <ClInclude Include="..\index\mimetype.h" />
     <ClInclude Include="..\internfile\internfile.h" />
+    <ClInclude Include="..\internfile\mh_exec.h" />
+    <ClInclude Include="..\internfile\mh_execm.h" />
     <ClInclude Include="..\internfile\mh_symlink.h" />
     <ClInclude Include="..\utils\cancelcheck.h" />
     <ClInclude Include="..\utils\cpuconf.h" />
@@ -193,6 +195,8 @@
     <ClCompile Include="..\internfile\extrameta.cpp" />
     <ClCompile Include="..\internfile\htmlparse.cpp" />
     <ClCompile Include="..\internfile\internfile.cpp" />
+    <ClCompile Include="..\internfile\mh_exec.cpp" />
+    <ClCompile Include="..\internfile\mh_execm.cpp" />
     <ClCompile Include="..\internfile\mh_html.cpp" />
     <ClCompile Include="..\internfile\mh_mail.cpp" />
     <ClCompile Include="..\internfile\mh_mbox.cpp" />

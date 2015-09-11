@@ -17,10 +17,10 @@
 #ifndef _MIMETYPE_H_INCLUDED_
 #define _MIMETYPE_H_INCLUDED_
 
+#include "safesysstat.h"
 #include <string>
 
 class RclConfig;
-struct stat;
 
 /**
  * Try to determine a mime type for file. 
