@@ -1,7 +1,7 @@
 # (C) 2004 J.F.Dockes. License: GPL
 #
 # Recoll default configuration file. This typically lives in
-# @prefix@/share/recoll/examples and provides default values. You can
+# $prefix/share/recoll/examples and provides default values. You can
 # override selected parameters by adding assigments to
 # ~/.recoll/recoll.conf (or $RECOLL_CONFDIR/recoll.conf)
 #
@@ -199,12 +199,13 @@ maxfsoccuppc = 0
 idxflushmb = 10
 
 # Place to search for executable filters. If RECOLL_FILTERSDIR is set in
-# the environment, we use it instead
-filtersdir = @prefix@/share/recoll/filters
+# the environment, we use it instead. Defaults to $prefix/share/recoll/filters
+# filtersdir = /path/to/my/filters
 
 # Place to search for icons. The only reason to change this would be if you
-# want to change the icons displayed in the result list
-iconsdir = @prefix@/share/recoll/images
+# want to change the icons displayed in the result list.
+# Defaults to $prefix/share/recoll/images
+# iconsdir = /path/to/my/icons
 
 # Should we use the system's 'file -i' command as a final step in file type
 # identification ? This may be useful, but will usually cause the

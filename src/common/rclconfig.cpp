@@ -1322,12 +1322,14 @@ string RclConfig::findFilter(const string &icmd) const
 	if (access(cmd.c_str(), X_OK) == 0)
 	    return cmd;
     } 
+
     // Filters dir as configuration parameter?
     if (getConfParam(string("filtersdir"), cmd)) {
 	cmd = path_cat(cmd, icmd);
-	if (access(cmd.c_str(), X_OK) == 0)
-	    return cmd;
-    } 
+        cmd = path_tildexpand(cmd);
+        if (access(cmd.c_str(), X_OK) == 0)
+            return cmd;
+    }
 
     // Filters dir as datadir subdir. Actually the standard case, but
     // this is normally the same value found in config file (previous step)
