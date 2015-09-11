@@ -49,6 +49,9 @@ class RclExecM:
         else:
             self.maxmembersize = 50 * 1024
         self.maxmembersize = self.maxmembersize * 1024
+        if sys.platform == "win32":
+            import msvcrt
+            msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
 
     def rclog(self, s, doexit = 0, exitvalue = 1):
         print >> sys.stderr, "RCLMFILT:", self.myname, ":", s
@@ -216,14 +219,15 @@ class Executor:
         We expect cmd as a list of command name + arguments'''
 
         try:
-            proc = subprocess.Popen(cmd + [filename],
+            fullcmd = cmd + [filename]
+            proc = subprocess.Popen(fullcmd,
                                     stdout = subprocess.PIPE)
             stdout = proc.stdout
         except subprocess.CalledProcessError as err:
-            self.em.rclog("extractone: Popen() error: %s" % err)
+            self.em.rclog("extractone: Popen(%s) error: %s" % (fullcmd, err))
             return (False, "")
         except OSError as err:
-            self.em.rclog("extractone: Popen OS error: %s" % err)
+            self.em.rclog("extractone: Popen(%s) OS error: %s" % (fullcmd, err))
             return (False, "")
 
         for line in stdout:
@@ -231,6 +235,7 @@ class Executor:
 
         proc.wait()
         if proc.returncode:
+            self.em.rclog("extractone: [%s] returncode %d" % (returncode))
             return False, postproc.wrapData()
         else:
             return True, postproc.wrapData()
@@ -283,12 +288,17 @@ def which(program):
         for ext in os.environ.get("PATHEXT", "").split(os.pathsep):
             yield fpath + ext
 
+    def path_candidates():
+        yield os.path.dirname(sys.argv[0])
+        for path in os.environ["PATH"].split(os.pathsep):
+            yield path
+            
     fpath, fname = os.path.split(program)
     if fpath:
         if is_exe(program):
             return program
     else:
-        for path in os.environ["PATH"].split(os.pathsep):
+        for path in path_candidates():
             exe_file = os.path.join(path, program)
             for candidate in ext_candidates(exe_file):
                 if is_exe(candidate):

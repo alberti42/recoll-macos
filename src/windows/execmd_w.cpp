@@ -658,6 +658,7 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
 
     // Create the child process. 
     // Need a writable buffer for the command line, for some reason.
+    LOGDEB1(("ExecCmd:startExec: cmdline [%s]\n", cmdline.c_str()));
     LPSTR buf = (LPSTR)malloc(cmdline.size() + 1);
     memcpy(buf, cmdline.c_str(), cmdline.size());
     buf[cmdline.size()] = 0;
@@ -818,7 +819,7 @@ int ExecCmd::receive(string& data, int cnt)
                 break;
             }
         }
-        if (cnt == 0)
+        if ((cnt == 0 && totread > 0) || (cnt > 0 && totread == cnt))
             break;
     }
     LOGDEB1(("ExecCmd::receive: returning %d bytes\n", totread));

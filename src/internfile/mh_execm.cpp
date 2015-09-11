@@ -90,6 +90,9 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
         LOGERR(("MHExecMultiple: getline error\n"));
         return false;
     }
+    
+    LOGDEB1(("MHEM:rde: line [%s]\n", ibuf.c_str()));
+
     // Empty line (end of message) ?
     if (!ibuf.compare("\n")) {
         LOGDEB(("MHExecMultiple: Got empty line\n"));
@@ -163,7 +166,7 @@ bool MimeHandlerExecMultiple::next_document()
 	return false;
     }
 
-    if (m_cmd.getChildPid() < 0 && !startCmd()) {
+    if (m_cmd.getChildPid() <= 0 && !startCmd()) {
         return false;
     }
 

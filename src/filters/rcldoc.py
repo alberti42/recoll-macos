@@ -117,23 +117,33 @@ class WordFilter:
         identification. Do 2 tries at most'''
         if self.ntry == 0:
             self.ntry = 1
-            return (["antiword", "-t", "-i", "1", "-m", "UTF-8"],
-                    WordProcessData(self.em))
+            cmd = rclexecm.which("antiword")
+            if cmd:
+                return ([cmd, "-t", "-i", "1", "-m", "UTF-8"],
+                        WordProcessData(self.em))
+            else:
+                return ([],None)
         elif self.ntry == 1:
             self.ntry = 2
             # antiword failed. Check for an rtf file, or text and
             # process accordingly. It the doc is actually msword, try
             # wvWare.
             mt = self.mimetype(fn)
+            self.em.rclog("rcldoc.py: actual MIME type %s" % mt)
             if mt == "text/plain":
-                return ([os.path.join(self.execdir,"rcltext")],
+                return ([python, os.path.join(self.execdir, "rcltext")],
                        WordPassData(self.em))
             elif mt == "text/rtf":
-                return ([os.path.join(self.execdir, "rclrtf")],
-                        WordPassData(self.em))
+                cmd = [python, os.path.join(self.execdir, "rclrtf.py")]
+                self.em.rclog("rcldoc.py: returning cmd %s" % cmd)
+                return (cmd, WordPassData(self.em))
             elif mt == "application/msword":
-                return (["wvWare", "--nographics", "--charset=utf-8"],
-                        WordPassData(self.em))
+                cmd = rclexecm.which("wvWare")
+                if cmd:
+                    return ([cmd, "--nographics", "--charset=utf-8"],
+                            WordPassData(self.em))
+                else:
+                    return ([],None)    
             else:
                 return ([],None)
         else:
