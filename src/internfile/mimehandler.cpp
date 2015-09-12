@@ -205,7 +205,7 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
     }
 
     // Split command name and args, and build exec object
-    list<string> cmdtoks;
+    vector<string> cmdtoks;
     stringToStrings(cmdstr, cmdtoks);
     if (cmdtoks.empty()) {
 	LOGERR(("mhExecFactory: bad config line for [%s]: [%s]\n", 
@@ -215,7 +215,23 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
     MimeHandlerExec *h = multiple ? 
 	new MimeHandlerExecMultiple(cfg, id) :
         new MimeHandlerExec(cfg, id);
-    list<string>::iterator it = cmdtoks.begin();
+    vector<string>::iterator it = cmdtoks.begin();
+
+#ifdef _WIN32
+    // Special-case python on windows: we need to also locate the
+    // first argument which is the script name "python somescript.py". 
+    // On Unix, thanks to #!, we just run "somescript.py"
+    if (!stringlowercmp("python", *it)) {
+        if (cmdtoks.size() < 2) {
+            LOGERR(("mhExecFactory: python line has no script?. [%s]: [%s]\n", 
+                    mtype.c_str(), hs.c_str()));
+        }
+        vector<string>::iterator it1(it);
+        it1++;
+        *it1 = cfg->findFilter(*it1);
+    }
+#endif
+            
     h->params.push_back(cfg->findFilter(*it++));
     h->params.insert(h->params.end(), it, cmdtoks.end());
 
