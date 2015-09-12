@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import rclexecm
+import rclexec1
 import re
 import sys
 import os
@@ -46,7 +47,10 @@ class RTFFilter:
             return ([],None)
 
 if __name__ == '__main__':
+    if not rclexecm.which("unrtf"):
+        print("RECFILTERROR HELPERNOTFOUND antiword")
+        sys.exit(1)
     proto = rclexecm.RclExecM()
     filter = RTFFilter(proto)
-    extract = rclexecm.Executor(proto, filter)
+    extract = rclexec1.Executor(proto, filter)
     rclexecm.main(proto, extract)

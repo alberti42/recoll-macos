@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import rclexecm
+import rclexec1
 import re
 import sys
 import os
@@ -131,10 +132,11 @@ class WordFilter:
             mt = self.mimetype(fn)
             self.em.rclog("rcldoc.py: actual MIME type %s" % mt)
             if mt == "text/plain":
-                return ([python, os.path.join(self.execdir, "rcltext")],
+                return ([python, os.path.join(self.execdir, "rcltext.py")],
                        WordPassData(self.em))
             elif mt == "text/rtf":
-                cmd = [python, os.path.join(self.execdir, "rclrtf.py")]
+                cmd = ["python", os.path.join(self.execdir, "rclrtf.py"),
+                       "-s"]
                 self.em.rclog("rcldoc.py: returning cmd %s" % cmd)
                 return (cmd, WordPassData(self.em))
             elif mt == "application/msword":
@@ -159,5 +161,5 @@ if __name__ == '__main__':
         sys.exit(1)
     proto = rclexecm.RclExecM()
     filter = WordFilter(proto, execdir)
-    extract = rclexecm.Executor(proto, filter)
+    extract = rclexec1.Executor(proto, filter)
     rclexecm.main(proto, extract)
