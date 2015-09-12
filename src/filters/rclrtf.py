@@ -20,7 +20,7 @@ class RTFProcessData:
     def takeLine(self, line):
         if not self.gothead:
             if self.patendhead.search(line):
-                self.out +=  '<meta http-equiv="Content-Type"' + \
+                self.out +=  '<meta http-equiv="Content-Type" ' + \
                              'content="text/html;charset=UTF-8">' + "\n"
                 self.out += line + "\n"
                 self.gothead = 1

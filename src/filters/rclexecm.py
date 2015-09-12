@@ -54,6 +54,7 @@ class RclExecM:
         if sys.platform == "win32":
             import msvcrt
             msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
+            msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
 
     def rclog(self, s, doexit = 0, exitvalue = 1):
         print("RCLMFILT: %s: %s" % (self.myname, s), file=sys.stderr)
