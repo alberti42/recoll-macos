@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\trexecmd.cpp">
+    <ClCompile Include="..\..\..\utils\trexecmd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
