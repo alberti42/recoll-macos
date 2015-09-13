@@ -911,6 +911,24 @@ int ExecCmd::getline(string& data)
 }
 
 // Wait for command status and clean up all resources.
+// We would like to avoid blocking here too, but there is no simple
+// way to do this. The 2 possible approaches would be to:
+//  - Use signals (alarm), waitpid() is interruptible. but signals and
+//    threads... This would need a specialized thread, inter-thread comms etc.
+//  - Use an intermediary process when starting the command. The
+//    process forks a timer process, and the real command, then calls
+//    a blocking waitpid on all at the end, and is guaranteed to get
+//    at least the timer process status, thus yielding a select()
+//    equivalent. This is bad too, because the timeout is on the whole
+//    exec, not just the wait
+// Just calling waitpid() with WNOHANG with a sleep() between tries
+// does not work: the first waitpid() usually comes too early and
+// reaps nothing, resulting in almost always one sleep() or more.
+// 
+// So no timeout here. This has not been a problem in practise inside recoll.
+// In case of need, using a semi-busy loop with short sleeps
+// increasing from a few mS might work without creating too much
+// overhead.
 int ExecCmd::wait()
 {
     ExecCmdRsrc e(this->m);
@@ -923,7 +941,7 @@ int ExecCmd::wait()
         LOGDEB(("ExecCmd::wait: got status 0x%x\n", status));
 	m->m_pid = -1;
     }
-    // Let the ExecCmdRsrc cleanup
+    // Let the ExecCmdRsrc cleanup, it will do the killing/waiting if needed
     return status;
 }
 
