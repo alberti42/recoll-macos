@@ -6,6 +6,9 @@
 #include <stdlib.h>
 #include "safeunistd.h"
 #include <string.h>
+#ifndef _WIN32
+#include <signal.h>
+#endif
 
 #include <string>
 #include <iostream>
@@ -27,14 +30,17 @@ using namespace std;
 bool exercise_mhexecm(const string& cmdstr, const string& mimetype, 
                       vector<string>& files)
 {
-	if (files.empty())
-		return false;
+    if (files.empty())
+        return false;
 
     ExecCmd cmd;
-	vector<string> myparams; 
-	// Hack for windows: the command is always "Python somescript"
-	myparams.push_back(files[0]);
-	files.erase(files.begin());
+    vector<string> myparams; 
+
+#ifdef _WIN32
+    // Hack for windows: the command is always "Python somescript"
+    myparams.push_back(files[0]);
+    files.erase(files.begin());
+#endif
 
     if (cmd.startExec(cmdstr, myparams, 1, 1) < 0) {
         cerr << "startExec " << cmdstr << " failed. Missing command?\n";
@@ -121,17 +127,18 @@ bool exercise_mhexecm(const string& cmdstr, const string& mimetype,
 
 static char *thisprog;
 static char usage [] =
-                                                           "trexecmd [-c -r -i -o] cmd [arg1 arg2 ...]\n" 
-                                                           "   -c : test cancellation (ie: trexecmd -c sleep 1000)\n"
-                                                           "   -r : run reexec. Must be separate option.\n"
-                                                           "   -i : command takes input\n"
-                                                           "   -o : command produces output\n"
-                                                           "    If -i is set, we send /etc/group contents to whatever command is run\n"
-                                                           "    If -o is set, we print whatever comes out\n"
-                                                           "trexecmd -m <filter> <mimetype> <file> [file ...]: test execm:\n"
-                                                           "     <filter> should be the path to an execm filter\n"
-                                                           "     <mimetype> the type of the file parameters\n"
-                                                           "trexecmd -w cmd : do the 'which' thing\n"
+"trexecmd [-c -r -i -o] [-e <fn>] cmd [arg1 arg2 ...]\n" 
+"   -c : test cancellation (ie: trexecmd -c sleep 1000)\n"
+"   -r : run reexec. Must be separate option.\n"
+"   -i : command takes input\n"
+"   -o : command produces output\n"
+"   -e <fn> : send stderr to file named fn (will truncate it)\n"
+"    If -i is set, we send /etc/group contents to whatever command is run\n"
+"    If -o is set, we print whatever comes out\n"
+"trexecmd -m <filter> <mimetype> <file> [file ...]: test execm:\n"
+"     <filter> should be the path to an execm filter\n"
+"     <mimetype> the type of the file parameters\n"
+"trexecmd -w cmd : do the 'which' thing\n"
                                                            ;
 
 static void Usage(FILE *fp = stderr)
@@ -148,6 +155,7 @@ static int     op_flags;
 #define OPT_r     0x20
 #define OPT_m     0x40
 #define OPT_o     0x80
+#define OPT_e     0x100
 
 // Data sink for data coming out of the command. We also use it to set
 // a cancellation after a moment.
@@ -161,7 +169,7 @@ public:
                 CancelCheck::instance().setCancel();
                 // Would be called from somewhere else and throws an
                 // exception. We call it here for simplicity
-				cerr << "newData: should throw !\n";
+                cerr << "newData: should throw !\n";
                 CancelCheck::instance().checkCancel();
             }
         }
@@ -175,7 +183,7 @@ public:
     string *m_input;
     int  m_cnt;
     MEPv(string *i) 
-        : m_input(i), m_cnt(0) {
+    : m_input(i), m_cnt(0) {
     }
     ~MEPv() {
     }
@@ -199,7 +207,7 @@ public:
 ReExec reexec;
 int main(int argc, char *argv[])
 {
-#if 0
+#ifndef _WIN32
     reexec.init(argc, argv);
 
     if (0) {
@@ -214,6 +222,7 @@ int main(int argc, char *argv[])
     }
 #endif
 
+    string stderrFile;
     thisprog = argv[0];
     argc--; argv++;
 
@@ -225,18 +234,26 @@ int main(int argc, char *argv[])
         while (**argv)
             switch (*(*argv)++) {
             case 'c':   op_flags |= OPT_c; break;
-            case 'r':   op_flags |= OPT_r; break;
-            case 'w':   op_flags |= OPT_w; break;
-            case 'm':   op_flags |= OPT_m; break;
-            case 'i':   op_flags |= OPT_i; break;
-            case 'o':   op_flags |= OPT_o; break;
-            case'h': 
+            case 'e':
+                op_flags |= OPT_e;
+                if (argc < 2) {
+                    Usage();
+                }
+                stderrFile = *(++argv); argc--;
+                goto b1;
+
+            case 'h': 
                 for (int i = 0; i < 10; i++) {
                     cout << "MESSAGE " << i << " FROM TREXECMD\n";
                     cout.flush();
                     //sleep(1);
                 }
                 return 0;
+            case 'i':   op_flags |= OPT_i; break;
+            case 'o':   op_flags |= OPT_o; break;
+            case 'm':   op_flags |= OPT_m; break;
+            case 'r':   op_flags |= OPT_r; break;
+            case 'w':   op_flags |= OPT_w; break;
             default: Usage();   break;
             }
     b1: argc--; argv++;
@@ -253,9 +270,25 @@ int main(int argc, char *argv[])
 
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
-#if 0
+#ifndef _WIN32
     signal(SIGPIPE, SIG_IGN);
+
+    if (op_flags & OPT_r) {
+        // Test reexec. Normally only once, next time we fall through
+        // because we remove the -r option (only works if it was
+        // isolated, not like -rc
+        chdir("/");
+        argv[0] = strdup("");
+        sleep(1);
+        cerr << "Calling reexec\n";
+        // We remove the -r arg from list, otherwise we are going to
+        // loop (which you can try by commenting out the following
+        // line)
+        reexec.removeArg("-r");
+        reexec.reexec();
+    }
 #endif
+
 
     if (op_flags & OPT_w) {
         // Test "which" method
@@ -281,10 +314,10 @@ int main(int argc, char *argv[])
         MEAdv adv;
         mexec.setAdvise(&adv);
         //mexec.setTimeout(5);
-#ifdef LATER
         // Stderr output goes there
-        mexec.setStderr("/tmp/trexecStderr");
-#endif
+        if (!stderrFile.empty())
+            mexec.setStderr(stderrFile);
+
         // A few environment variables. Check with trexecmd env
         mexec.putenv("TESTVARIABLE1=TESTVALUE1");
         mexec.putenv("TESTVARIABLE2=TESTVALUE2");
