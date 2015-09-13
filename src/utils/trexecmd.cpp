@@ -135,6 +135,7 @@ static char usage [] =
 "   -e <fn> : send stderr to file named fn (will truncate it)\n"
 "    If -i is set, we send /etc/group contents to whatever command is run\n"
 "    If -o is set, we print whatever comes out\n"
+"trexecmd -f bogus filter for testing. Uses same options\n"
 "trexecmd -m <filter> <mimetype> <file> [file ...]: test execm:\n"
 "     <filter> should be the path to an execm filter\n"
 "     <mimetype> the type of the file parameters\n"
@@ -156,12 +157,31 @@ static int     op_flags;
 #define OPT_m     0x40
 #define OPT_o     0x80
 #define OPT_e     0x100
+#define OPT_f     0x200
+
+void childfilter()
+{
+    const int bs = 1024;
+    char buf[bs];
+    if (op_flags & OPT_c)
+        sleep(2000);
+    if (op_flags& OPT_i) {
+        while (read(0, buf, bs) > 0);
+    }
+    if (op_flags& OPT_o) {
+        for (int i = 0; i < 10; i++) {
+            printf("This is DATA 1  2 3\n");
+        }
+    }
+    exit(0);
+}
 
 // Data sink for data coming out of the command. We also use it to set
 // a cancellation after a moment.
 class MEAdv : public ExecCmdAdvise {
 public:
     void newData(int cnt) {
+        cerr << "newData(" << cnt << ")" << endl;
         if (op_flags & OPT_c) {
             static int  callcnt;
             if (callcnt++ == 5) {
@@ -173,7 +193,6 @@ public:
                 CancelCheck::instance().checkCancel();
             }
         }
-        //cerr << "newData(" << cnt << ")" << endl;
     }
 };
 
@@ -242,6 +261,7 @@ int main(int argc, char *argv[])
                 stderrFile = *(++argv); argc--;
                 goto b1;
 
+            case 'f':   op_flags |= OPT_f; break;
             case 'h': 
                 for (int i = 0; i < 10; i++) {
                     cout << "MESSAGE " << i << " FROM TREXECMD\n";
@@ -257,6 +277,10 @@ int main(int argc, char *argv[])
             default: Usage();   break;
             }
     b1: argc--; argv++;
+    }
+
+    if (op_flags & OPT_f) {
+        childfilter();
     }
 
     if (argc < 1)
@@ -347,7 +371,7 @@ int main(int argc, char *argv[])
             }
             //fprintf(stderr, "Status: 0x%x\n", status);
             if (op_flags & OPT_o) {
-                //cout << "data received: [" << output << "]\n";
+                cout << "data received: [" << output << "]\n";
                 cerr << "iter " << i << " status " <<
                     status << " bytes received " << output.size() << endl;
             }
