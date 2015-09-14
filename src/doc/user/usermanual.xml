@@ -4930,7 +4930,7 @@ except:
         </listitem>
 
         <listitem>
-          <para>Development files for <application>Python</application 
+          <para>Development files for <application>Python</application>
           (or use <literal>--disable-python-module</literal>).</para>
         </listitem>
 
