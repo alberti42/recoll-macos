@@ -223,12 +223,12 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
     vector<string>::iterator it = cmdtoks.begin();
 
 #ifdef _WIN32
-    // Special-case python on windows: we need to also locate the
+    // Special-case python and perl on windows: we need to also locate the
     // first argument which is the script name "python somescript.py". 
     // On Unix, thanks to #!, we just run "somescript.py"
-    if (!stringlowercmp("python", *it)) {
+    if (!stringlowercmp("python", *it) || !stringlowercmp("perl", *it)) {
         if (cmdtoks.size() < 2) {
-            LOGERR(("mhExecFactory: python line has no script?. [%s]: [%s]\n", 
+            LOGERR(("mhExecFactory: python/perl cmd: no script?. [%s]: [%s]\n", 
                     mtype.c_str(), hs.c_str()));
         }
         vector<string>::iterator it1(it);
