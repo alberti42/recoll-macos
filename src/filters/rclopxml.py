@@ -199,7 +199,7 @@ class OXExtractor:
 
         docdata += '</body></html>'
 
-        return (True, docdata, "", rclexecm.RclExecM.eofnow)
+        return (True, docdata, "", rclexecm.RclExecM.eofnext)
     
 
     ###### File type handler api, used by rclexecm ---------->

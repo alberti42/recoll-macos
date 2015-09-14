@@ -222,10 +222,10 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
         new MimeHandlerExec(cfg, id);
     vector<string>::iterator it = cmdtoks.begin();
 
-#ifdef _WIN32
     // Special-case python and perl on windows: we need to also locate the
     // first argument which is the script name "python somescript.py". 
-    // On Unix, thanks to #!, we just run "somescript.py"
+    // On Unix, thanks to #!, we usually just run "somescript.py", but need
+    // the same change if we ever want to use the same cmdling as windows
     if (!stringlowercmp("python", *it) || !stringlowercmp("perl", *it)) {
         if (cmdtoks.size() < 2) {
             LOGERR(("mhExecFactory: python/perl cmd: no script?. [%s]: [%s]\n", 
@@ -235,7 +235,6 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
         it1++;
         *it1 = cfg->findFilter(*it1);
     }
-#endif
             
     h->params.push_back(cfg->findFilter(*it++));
     h->params.insert(h->params.end(), it, cmdtoks.end());

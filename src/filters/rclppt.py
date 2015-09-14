@@ -43,7 +43,7 @@ class PPTFilter:
         cmd = rclexecm.which("ppt-dump.py")
         if cmd:
             # ppt-dump.py often exits 1 with valid data. Ignore exit value
-            return ([cmd, "--no-struct-output", "--dump-text"],
+            return (["python", cmd, "--no-struct-output", "--dump-text"],
                     PPTProcessData(self.em), rclexec1.Executor.opt_ignxval)
         else:
             return ([], None)

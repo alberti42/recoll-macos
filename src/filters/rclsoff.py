@@ -165,7 +165,7 @@ class OOExtractor:
             self.em.rclog("bad data in %s" % fn)
             return (False, "", "", rclexecm.RclExecM.eofnow)
 
-        return (True, docdata, "", rclexecm.RclExecM.eofnow)
+        return (True, docdata, "", rclexecm.RclExecM.eofnext)
     
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):

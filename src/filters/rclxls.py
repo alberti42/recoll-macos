@@ -49,7 +49,8 @@ class XLSFilter:
         cmd = rclexecm.which("xls-dump.py")
         if cmd:
             # xls-dump.py often exits 1 with valid data. Ignore exit value
-            return ([cmd, "--dump-mode=canonical-xml", "--utf-8", "--catch"],
+            return (["python", cmd, "--dump-mode=canonical-xml", \
+                     "--utf-8", "--catch"],
                     XLSProcessData(self.em), rclexec1.Executor.opt_ignxval)
         else:
             return ([], None)
