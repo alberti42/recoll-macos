@@ -20,7 +20,7 @@ class TxtDump:
         # No charset, so recoll will have to use its config to guess it
         txt = '<html><head><title></title></head><body><pre>'
         try:
-            f = open(fn, "r")
+            f = open(fn, "rb")
             txt += self.em.htmlescape(f.read())
         except Exception as err:
             self.em.rclog("TxtDump: %s : %s" % (fn, err))

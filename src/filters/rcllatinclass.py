@@ -109,7 +109,7 @@ class European8859TextClassifier:
 
 
 if __name__ == "__main__":
-    f = open(sys.argv[1])
+    f = open(sys.argv[1], "rb")
     rawtext = f.read()
     f.close()
 

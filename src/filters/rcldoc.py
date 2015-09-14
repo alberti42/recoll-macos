@@ -99,7 +99,7 @@ class WordFilter:
         rtfprolog ="{\\rtf1"
         docprolog = b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1"
         try:
-            f = open(fn, "r")
+            f = open(fn, "rb")
         except:
             return ""
         data = f.read(100)
