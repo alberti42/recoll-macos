@@ -39,6 +39,7 @@ using namespace std;
 #include "mh_text.h"
 #include "mh_symlink.h"
 #include "mh_unknown.h"
+#include "mh_null.h"
 #include "ptmutex.h"
 
 // Performance help: we use a pool of already known and created
@@ -162,6 +163,10 @@ static RecollFilter *mhFactory(RclConfig *config, const string &mime,
 	LOGDEB2(("mhFactory(%s): ret MimeHandlerSymlink\n", mime.c_str()));
 	MD5String("MimeHandlerSymlink", id);
 	return nobuild ? 0 : new MimeHandlerSymlink(config, id);
+    } else if ("application/x-zerosize" == lmime) {
+	LOGDEB(("mhFactory(%s): ret MimeHandlerNull\n", mime.c_str()));
+	MD5String("MimeHandlerNull", id);
+	return nobuild ? 0 : new MimeHandlerNull(config, id);
     } else if (lmime.find("text/") == 0) {
         // Try to handle unknown text/xx as text/plain. This
         // only happen if the text/xx was defined as "internal" in
