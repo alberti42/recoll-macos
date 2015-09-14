@@ -35,16 +35,20 @@ class RTFProcessData:
 class RTFFilter:
     def __init__(self, em):
         self.em = em
+        self.ntry = 0
 
     def reset(self):
-        pass
+        self.ntry = 0
             
     def getCmd(self, fn):
+        if self.ntry:
+            return ([], None)
+        self.ntry = 1
         cmd = rclexecm.which("unrtf")
         if cmd:
             return ([cmd, "--nopict", "--html"], RTFProcessData(self.em))
         else:
-            return ([],None)
+            return ([], None)
 
 if __name__ == '__main__':
     if not rclexecm.which("unrtf"):

@@ -34,12 +34,14 @@ import rclexecm
 # the object which we receive as a parameter, which in turn is defined
 # in the actual executable filter (e.g. rcldoc.py)
 class Executor:
+    opt_ignxval = 1
+    
     def __init__(self, em, flt):
         self.em = em
         self.flt = flt
         self.currentindex = 0
 
-    def runCmd(self, cmd, filename, postproc):
+    def runCmd(self, cmd, filename, postproc, opt):
         ''' Substitute parameters and execute command, process output
         with the specific postprocessor and return the complete text.
         We expect cmd as a list of command name + arguments'''
@@ -60,7 +62,7 @@ class Executor:
             postproc.takeLine(line.strip())
 
         proc.wait()
-        if proc.returncode:
+        if (opt & self.opt_ignxval) == 0 and proc.returncode:
             self.em.rclog("extractone: [%s] returncode %d" % \
                           (filename, proc.returncode))
             return False, postproc.wrapData()
@@ -78,9 +80,12 @@ class Executor:
 
         fn = params["filename:"]
         while True:
-            cmd, postproc = self.flt.getCmd(fn)
+            cmdseq = self.flt.getCmd(fn)
+            cmd = cmdseq[0]
+            postproc = cmdseq[1]
+            opt = cmdseq[2] if len(cmdseq) == 3 else 0
             if cmd:
-                ok, data = self.runCmd(cmd, fn, postproc)
+                ok, data = self.runCmd(cmd, fn, postproc, opt)
                 if ok:
                     break
             else:
