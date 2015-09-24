@@ -17,7 +17,6 @@
 #include "autoconfig.h"
 
 #include <stdio.h>
-#include <unistd.h>
 
 #include <algorithm>
 #include <list>

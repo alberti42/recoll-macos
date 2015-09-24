@@ -16,9 +16,6 @@
  */
 #include "autoconfig.h"
 
-#include <fcntl.h>
-#include "safeunistd.h"
-
 #include <utility>
 #include MEMORY_INCLUDE
 
@@ -138,10 +135,14 @@ void RclMain::init()
 
     // idxstatus file. Make sure it exists before trying to watch it
     // (case where we're started on an older index, or if the status
-    // file was deleted since indexing
-    ::close(::open(theconfig->getIdxStatusFile().c_str(), O_CREAT, 0600));
-    m_watcher.addPath(QString::fromLocal8Bit(
-			  theconfig->getIdxStatusFile().c_str()));
+    // file was deleted since indexing)
+    QString idxfn = 
+        QString::fromLocal8Bit(theconfig->getIdxStatusFile().c_str());
+    QFile qf(idxfn);
+    qf.open(QIODevice::ReadWrite);
+    qf.setPermissions(QFile::ReadOwner|QFile::WriteOwner);
+    qf.close();
+    m_watcher.addPath(idxfn);
     // At least some versions of qt4 don't display the status bar if
     // it's not created here.
     (void)statusBar();
@@ -728,7 +729,7 @@ void RclMain::initiateQuery()
 	qApp->processEvents();
 	if (progress.wasCanceled()) {
 	    // Just get out of there asap. 
-	    _exit(1);
+	    exit(1);
 	}
 
 	qApp->processEvents();

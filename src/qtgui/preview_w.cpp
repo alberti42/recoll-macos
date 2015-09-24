@@ -16,8 +16,6 @@
  */
 #include "autoconfig.h"
 
-#include "safeunistd.h"
-
 #include <list>
 #include <utility>
 
@@ -45,6 +43,7 @@
 #include <qimage.h>
 #include <qurl.h>
 #include <QShortcut>
+#include <QTimer>
 
 #include "debuglog.h"
 #include "pathut.h"
@@ -70,123 +69,113 @@ class PlainToRichQtPreview : public PlainToRich {
 public:
 
     PlainToRichQtPreview()
-	: m_curanchor(1), m_lastanchor(0)
-    {
+        : m_curanchor(1), m_lastanchor(0) {
     }    
     void clear() {
-	m_curanchor = 1; 
-	m_lastanchor = 0;
-	m_groupanchors.clear();
-	m_groupcuranchors.clear();
+        m_curanchor = 1; 
+        m_lastanchor = 0;
+        m_groupanchors.clear();
+        m_groupcuranchors.clear();
     }
 
-    bool haveAnchors()
-    {
-	return m_lastanchor != 0;
+    bool haveAnchors() {
+        return m_lastanchor != 0;
     }
 
-    virtual string header() 
-    {
-	if (!m_inputhtml) {
-	    switch (prefs.previewPlainPre) {
-	    case PrefsPack::PP_BR:
-		m_eolbr = true;
-		return "<qt><head><title></title></head><body>";
-	    case PrefsPack::PP_PRE:
-		m_eolbr = false;
-		return "<qt><head><title></title></head><body><pre>";
-	    case PrefsPack::PP_PREWRAP:
-		m_eolbr = false;
-		return "<qt><head><title></title></head><body>"
-		    "<pre style=\"white-space: pre-wrap\">";
-	    }
-	}
-	return cstr_null;
+    virtual string header() {
+        if (!m_inputhtml) {
+            switch (prefs.previewPlainPre) {
+            case PrefsPack::PP_BR:
+                m_eolbr = true;
+                return "<qt><head><title></title></head><body>";
+            case PrefsPack::PP_PRE:
+                m_eolbr = false;
+                return "<qt><head><title></title></head><body><pre>";
+            case PrefsPack::PP_PREWRAP:
+                m_eolbr = false;
+                return "<qt><head><title></title></head><body>"
+                    "<pre style=\"white-space: pre-wrap\">";
+            }
+        }
+        return cstr_null;
     }
 
-    virtual string startMatch(unsigned int grpidx)
-    {
-	LOGDEB2(("startMatch, grpidx %u\n", grpidx));
-	grpidx = m_hdata->grpsugidx[grpidx];
-	LOGDEB2(("startMatch, ugrpidx %u\n", grpidx));
-	m_groupanchors[grpidx].push_back(++m_lastanchor);
-	m_groupcuranchors[grpidx] = 0; 
-	return string("<span style='color: ").
-	    append((const char *)(prefs.qtermcolor.toUtf8())).
-	    append(";font-weight: bold;").
-	    append("'>").
-	    append("<a name=\"").
-	    append(termAnchorName(m_lastanchor)).
-	    append("\">");
+    virtual string startMatch(unsigned int grpidx) {
+        LOGDEB2(("startMatch, grpidx %u\n", grpidx));
+        grpidx = m_hdata->grpsugidx[grpidx];
+        LOGDEB2(("startMatch, ugrpidx %u\n", grpidx));
+        m_groupanchors[grpidx].push_back(++m_lastanchor);
+        m_groupcuranchors[grpidx] = 0; 
+        return string("<span style='color: ").
+            append((const char *)(prefs.qtermcolor.toUtf8())).
+            append(";font-weight: bold;").
+            append("'>").
+            append("<a name=\"").
+            append(termAnchorName(m_lastanchor)).
+            append("\">");
     }
 
-    virtual string endMatch() 
-    {
-	return string("</a></span>");
+    virtual string endMatch() {
+        return string("</a></span>");
     }
 
-    virtual string termAnchorName(int i) const
-    {
-	static const char *termAnchorNameBase = "TRM";
-	char acname[sizeof(termAnchorNameBase) + 20];
-	sprintf(acname, "%s%d", termAnchorNameBase, i);
-	return string(acname);
+    virtual string termAnchorName(int i) const {
+        static const char *termAnchorNameBase = "TRM";
+        char acname[sizeof(termAnchorNameBase) + 20];
+        sprintf(acname, "%s%d", termAnchorNameBase, i);
+        return string(acname);
     }
 
-    virtual string startChunk() 
-    { 
-	return "<pre>";
+    virtual string startChunk() { 
+        return "<pre>";
     }
 
-    int nextAnchorNum(int grpidx)
-    {
-	LOGDEB2(("nextAnchorNum: group %d\n", grpidx));
-	map<unsigned int, unsigned int>::iterator curit = 
-	    m_groupcuranchors.find(grpidx);
-	map<unsigned int, vector<int> >::iterator vecit = 
-	    m_groupanchors.find(grpidx);
-	if (grpidx == -1 || curit == m_groupcuranchors.end() ||
-	    vecit == m_groupanchors.end()) {
-	    if (m_curanchor >= m_lastanchor)
-		m_curanchor = 1;
-	    else
-		m_curanchor++;
-	} else {
-	    if (curit->second >= vecit->second.size() -1)
-		m_groupcuranchors[grpidx] = 0;
-	    else 
-		m_groupcuranchors[grpidx]++;
-	    m_curanchor = vecit->second[m_groupcuranchors[grpidx]];
-	    LOGDEB2(("nextAnchorNum: curanchor now %d\n", m_curanchor));
-	}
-	return m_curanchor;
+    int nextAnchorNum(int grpidx) {
+        LOGDEB2(("nextAnchorNum: group %d\n", grpidx));
+        map<unsigned int, unsigned int>::iterator curit = 
+            m_groupcuranchors.find(grpidx);
+        map<unsigned int, vector<int> >::iterator vecit = 
+            m_groupanchors.find(grpidx);
+        if (grpidx == -1 || curit == m_groupcuranchors.end() ||
+            vecit == m_groupanchors.end()) {
+            if (m_curanchor >= m_lastanchor)
+                m_curanchor = 1;
+            else
+                m_curanchor++;
+        } else {
+            if (curit->second >= vecit->second.size() -1)
+                m_groupcuranchors[grpidx] = 0;
+            else 
+                m_groupcuranchors[grpidx]++;
+            m_curanchor = vecit->second[m_groupcuranchors[grpidx]];
+            LOGDEB2(("nextAnchorNum: curanchor now %d\n", m_curanchor));
+        }
+        return m_curanchor;
     }
 
-    int prevAnchorNum(int grpidx)
-    {
-	map<unsigned int, unsigned int>::iterator curit = 
-	    m_groupcuranchors.find(grpidx);
-	map<unsigned int, vector<int> >::iterator vecit = 
-	    m_groupanchors.find(grpidx);
-	if (grpidx == -1 || curit == m_groupcuranchors.end() ||
-	    vecit == m_groupanchors.end()) {
-	    if (m_curanchor <= 1)
-		m_curanchor = m_lastanchor;
-	    else
-		m_curanchor--;
-	} else {
-	    if (curit->second <= 0)
-		m_groupcuranchors[grpidx] = vecit->second.size() -1;
-	    else 
-		m_groupcuranchors[grpidx]--;
-	    m_curanchor = vecit->second[m_groupcuranchors[grpidx]];
-	}
-	return m_curanchor;
+    int prevAnchorNum(int grpidx) {
+        map<unsigned int, unsigned int>::iterator curit = 
+            m_groupcuranchors.find(grpidx);
+        map<unsigned int, vector<int> >::iterator vecit = 
+            m_groupanchors.find(grpidx);
+        if (grpidx == -1 || curit == m_groupcuranchors.end() ||
+            vecit == m_groupanchors.end()) {
+            if (m_curanchor <= 1)
+                m_curanchor = m_lastanchor;
+            else
+                m_curanchor--;
+        } else {
+            if (curit->second <= 0)
+                m_groupcuranchors[grpidx] = vecit->second.size() -1;
+            else 
+                m_groupcuranchors[grpidx]--;
+            m_curanchor = vecit->second[m_groupcuranchors[grpidx]];
+        }
+        return m_curanchor;
     }
 
-    QString curAnchorName() const
-    {
-	return QString::fromUtf8(termAnchorName(m_curanchor).c_str());
+    QString curAnchorName() const {
+        return QString::fromUtf8(termAnchorName(m_curanchor).c_str());
     }
 
 private:
@@ -227,13 +216,13 @@ void Preview::init()
     searchTextCMB->setInsertPolicy(QComboBox::NoInsert);
     searchTextCMB->setDuplicatesEnabled(false);
     for (unsigned int i = 0; i < m_hData.ugroups.size(); i++) {
-	QString s;
-	for (unsigned int j = 0; j < m_hData.ugroups[i].size(); j++) {
-	    s.append(QString::fromUtf8(m_hData.ugroups[i][j].c_str()));
-	    if (j != m_hData.ugroups[i].size()-1)
-		s.append(" ");
-	}
-	searchTextCMB->addItem(s);
+        QString s;
+        for (unsigned int j = 0; j < m_hData.ugroups[i].size(); j++) {
+            s.append(QString::fromUtf8(m_hData.ugroups[i][j].c_str()));
+            if (j != m_hData.ugroups[i].size()-1)
+                s.append(" ");
+        }
+        searchTextCMB->addItem(s);
     }
     searchTextCMB->setEditText("");
     searchTextCMB->setCompleter(0);
@@ -270,35 +259,35 @@ void Preview::init()
 
     (void)new HelpClient(this);
     HelpClient::installMap((const char *)objectName().toUtf8(), 
-			   "RCL.SEARCH.PREVIEW");
+                           "RCL.SEARCH.PREVIEW");
 
     // signals and slots connections
     connect(searchTextCMB, SIGNAL(activated(int)), 
-	    this, SLOT(searchTextFromIndex(int)));
+            this, SLOT(searchTextFromIndex(int)));
     connect(searchTextCMB, SIGNAL(editTextChanged(const QString&)), 
-	    this, SLOT(searchTextChanged(const QString&)));
+            this, SLOT(searchTextChanged(const QString&)));
     connect(nextButton, SIGNAL(clicked()), this, SLOT(nextPressed()));
     connect(prevButton, SIGNAL(clicked()), this, SLOT(prevPressed()));
     connect(clearPB, SIGNAL(clicked()), searchTextCMB, SLOT(clearEditText()));
     connect(pvTab, SIGNAL(currentChanged(int)), 
-	    this, SLOT(currentChanged(int)));
+            this, SLOT(currentChanged(int)));
     connect(bt, SIGNAL(clicked()), this, SLOT(closeCurrentTab()));
 
     connect(new QShortcut(closeKS, this), SIGNAL (activated()), 
-	    this, SLOT (close()));
+            this, SLOT (close()));
     connect(new QShortcut(nextDocInTabKS, this), SIGNAL (activated()), 
-	    this, SLOT (emitShowNext()));
+            this, SLOT (emitShowNext()));
     connect(new QShortcut(prevDocInTabKS, this), SIGNAL (activated()), 
-	    this, SLOT (emitShowPrev()));
+            this, SLOT (emitShowPrev()));
     connect(new QShortcut(closeTabKS, this), SIGNAL (activated()), 
-	    this, SLOT (closeCurrentTab()));
+            this, SLOT (closeCurrentTab()));
     connect(new QShortcut(printTabKS, this), SIGNAL (activated()), 
-	    this, SIGNAL (printCurrentPreviewRequest()));
+            this, SIGNAL (printCurrentPreviewRequest()));
 
     m_dynSearchActive = false;
     m_canBeep = true;
     if (prefs.pvwidth > 100) {
-	resize(prefs.pvwidth, prefs.pvheight);
+        resize(prefs.pvwidth, prefs.pvheight);
     }
     m_loading = false;
     currentChanged(pvTab->currentIndex());
@@ -308,20 +297,20 @@ void Preview::init()
 void Preview::emitShowNext()
 {
     if (m_loading)
-	return;
+        return;
     PreviewTextEdit *edit = currentEditor();
     if (edit) {
-	emit(showNext(this, m_searchId, edit->m_docnum));
+        emit(showNext(this, m_searchId, edit->m_docnum));
     }
 }
 
 void Preview::emitShowPrev()
 {
     if (m_loading)
-	return;
+        return;
     PreviewTextEdit *edit = currentEditor();
     if (edit) {
-	emit(showPrev(this, m_searchId, edit->m_docnum));
+        emit(showPrev(this, m_searchId, edit->m_docnum));
     }
 }
 
@@ -329,9 +318,9 @@ void Preview::closeEvent(QCloseEvent *e)
 {
     LOGDEB(("Preview::closeEvent. m_loading %d\n", m_loading));
     if (m_loading) {
-	CancelCheck::instance().setCancel();
-	e->ignore();
-	return;
+        CancelCheck::instance().setCancel();
+        e->ignore();
+        return;
     }
     prefs.pvwidth = width();
     prefs.pvheight = height();
@@ -340,10 +329,10 @@ void Preview::closeEvent(QCloseEvent *e)
     for (int i = 0; i < pvTab->count(); i++) {
         QWidget *tw = pvTab->widget(i);
         if (tw) {
-	    PreviewTextEdit *edit = 
-		tw->findChild<PreviewTextEdit*>("pvEdit");
+            PreviewTextEdit *edit = 
+                tw->findChild<PreviewTextEdit*>("pvEdit");
             if (edit) {
-		forgetTempFile(edit->m_tmpfilename);
+                forgetTempFile(edit->m_tmpfilename);
             }
         }
     }
@@ -358,52 +347,52 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 {
     if (event->type() != QEvent::KeyPress) {
 #if 0
-    LOGDEB(("Preview::eventFilter(): %s\n", eventTypeToStr(event->type())));
-	if (event->type() == QEvent::MouseButtonRelease) {
-	    QMouseEvent *mev = (QMouseEvent *)event;
-	    LOGDEB(("Mouse: GlobalY %d y %d\n", mev->globalY(),
-		    mev->y()));
-	}
+        LOGDEB(("Preview::eventFilter(): %s\n", eventTypeToStr(event->type())));
+        if (event->type() == QEvent::MouseButtonRelease) {
+            QMouseEvent *mev = (QMouseEvent *)event;
+            LOGDEB(("Mouse: GlobalY %d y %d\n", mev->globalY(),
+                    mev->y()));
+        }
 #endif
-	return false;
+        return false;
     }
 
     PreviewTextEdit *edit = currentEditor();
     QKeyEvent *keyEvent = (QKeyEvent *)event;
 
     if (m_dynSearchActive) {
-	if (keyEvent->key() == Qt::Key_F3) {
-	    LOGDEB2(("Preview::eventFilter: got F3\n"));
-	    doSearch(searchTextCMB->currentText(), true, 
-		     (keyEvent->modifiers() & Qt::ShiftModifier) != 0);
-	    return true;
-	}
-	if (target != searchTextCMB)
-	    return QApplication::sendEvent(searchTextCMB, event);
+        if (keyEvent->key() == Qt::Key_F3) {
+            LOGDEB2(("Preview::eventFilter: got F3\n"));
+            doSearch(searchTextCMB->currentText(), true, 
+                     (keyEvent->modifiers() & Qt::ShiftModifier) != 0);
+            return true;
+        }
+        if (target != searchTextCMB)
+            return QApplication::sendEvent(searchTextCMB, event);
     } else {
-	if (edit && 
-	    (target == edit || target == edit->viewport())) {
-	    if (keyEvent->key() == Qt::Key_Slash ||
-		(keyEvent->key() == Qt::Key_F &&
-		 (keyEvent->modifiers() & Qt::ControlModifier))) {
-		LOGDEB2(("Preview::eventFilter: got / or C-F\n"));
-		searchTextCMB->setFocus();
-		m_dynSearchActive = true;
-		return true;
-	    } else if (keyEvent->key() == Qt::Key_Space) {
-		LOGDEB2(("Preview::eventFilter: got Space\n"));
-		int value = edit->verticalScrollBar()->value();
-		value += edit->verticalScrollBar()->pageStep();
-		edit->verticalScrollBar()->setValue(value);
-		return true;
-	    } else if (keyEvent->key() == Qt::Key_Backspace) {
-		LOGDEB2(("Preview::eventFilter: got Backspace\n"));
-		int value = edit->verticalScrollBar()->value();
-		value -= edit->verticalScrollBar()->pageStep();
-		edit->verticalScrollBar()->setValue(value);
-		return true;
-	    }
-	}
+        if (edit && 
+            (target == edit || target == edit->viewport())) {
+            if (keyEvent->key() == Qt::Key_Slash ||
+                (keyEvent->key() == Qt::Key_F &&
+                 (keyEvent->modifiers() & Qt::ControlModifier))) {
+                LOGDEB2(("Preview::eventFilter: got / or C-F\n"));
+                searchTextCMB->setFocus();
+                m_dynSearchActive = true;
+                return true;
+            } else if (keyEvent->key() == Qt::Key_Space) {
+                LOGDEB2(("Preview::eventFilter: got Space\n"));
+                int value = edit->verticalScrollBar()->value();
+                value += edit->verticalScrollBar()->pageStep();
+                edit->verticalScrollBar()->setValue(value);
+                return true;
+            } else if (keyEvent->key() == Qt::Key_Backspace) {
+                LOGDEB2(("Preview::eventFilter: got Backspace\n"));
+                int value = edit->verticalScrollBar()->value();
+                value -= edit->verticalScrollBar()->pageStep();
+                edit->verticalScrollBar()->setValue(value);
+                return true;
+            }
+        }
     }
 
     return false;
@@ -412,15 +401,15 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 void Preview::searchTextChanged(const QString & text)
 {
     LOGDEB1(("Search line text changed. text: '%s'\n", 
-	     (const char *)text.toUtf8()));
+             (const char *)text.toUtf8()));
     m_searchTextFromIndex = -1;
     if (text.isEmpty()) {
-	m_dynSearchActive = false;
-	clearPB->setEnabled(false);
+        m_dynSearchActive = false;
+        clearPB->setEnabled(false);
     } else {
-	m_dynSearchActive = true;
-	clearPB->setEnabled(true);
-	doSearch(text, false, false);
+        m_dynSearchActive = true;
+        clearPB->setEnabled(true);
+        doSearch(text, false, false);
     }
 }
 
@@ -436,7 +425,7 @@ PreviewTextEdit *Preview::currentEditor()
     QWidget *tw = pvTab->currentWidget();
     PreviewTextEdit *edit = 0;
     if (tw) {
-	edit = tw->findChild<PreviewTextEdit*>("pvEdit");
+        edit = tw->findChild<PreviewTextEdit*>("pvEdit");
     }
     return edit;
 }
@@ -446,7 +435,7 @@ void Preview::emitSaveDocToFile()
 {
     PreviewTextEdit *ce = currentEditor();
     if (ce && !ce->m_dbdoc.url.empty()) {
-	emit saveDocToFile(ce->m_dbdoc);
+        emit saveDocToFile(ce->m_dbdoc);
     }
 }
 
@@ -455,40 +444,40 @@ void Preview::emitSaveDocToFile()
 // false, the search string has been modified, we search for the new string, 
 // starting from the current position
 void Preview::doSearch(const QString &_text, bool next, bool reverse, 
-		       bool wordOnly)
+                       bool wordOnly)
 {
     LOGDEB(("Preview::doSearch: text [%s] idx %d next %d rev %d word %d\n", 
-	    (const char *)_text.toUtf8(), m_searchTextFromIndex, int(next), 
-	    int(reverse), int(wordOnly)));
+            (const char *)_text.toUtf8(), m_searchTextFromIndex, int(next), 
+            int(reverse), int(wordOnly)));
     QString text = _text;
 
     bool matchCase = matchCheck->isChecked();
     PreviewTextEdit *edit = currentEditor();
     if (edit == 0) {
-	// ??
-	return;
+        // ??
+        return;
     }
 
     if (text.isEmpty() || m_searchTextFromIndex != -1) {
-	if (!edit->m_plaintorich->haveAnchors()) {
-	    LOGDEB(("NO ANCHORS\n"));
-	    return;
-	}
-	// The combobox indices are equal to the search ugroup indices
-	// in hldata, that's how we built the list.
-	if (reverse) {
-	    edit->m_plaintorich->prevAnchorNum(m_searchTextFromIndex);
-	} else {
-	    edit->m_plaintorich->nextAnchorNum(m_searchTextFromIndex);
-	}
-	QString aname = edit->m_plaintorich->curAnchorName();
-	LOGDEB(("Calling scrollToAnchor(%s)\n", (const char *)aname.toUtf8()));
-	edit->scrollToAnchor(aname);
-	// Position the cursor approximately at the anchor (top of
-	// viewport) so that searches start from here
-	QTextCursor cursor = edit->cursorForPosition(QPoint(0, 0));
-	edit->setTextCursor(cursor);
-	return;
+        if (!edit->m_plaintorich->haveAnchors()) {
+            LOGDEB(("NO ANCHORS\n"));
+            return;
+        }
+        // The combobox indices are equal to the search ugroup indices
+        // in hldata, that's how we built the list.
+        if (reverse) {
+            edit->m_plaintorich->prevAnchorNum(m_searchTextFromIndex);
+        } else {
+            edit->m_plaintorich->nextAnchorNum(m_searchTextFromIndex);
+        }
+        QString aname = edit->m_plaintorich->curAnchorName();
+        LOGDEB(("Calling scrollToAnchor(%s)\n", (const char *)aname.toUtf8()));
+        edit->scrollToAnchor(aname);
+        // Position the cursor approximately at the anchor (top of
+        // viewport) so that searches start from here
+        QTextCursor cursor = edit->cursorForPosition(QPoint(0, 0));
+        edit->setTextCursor(cursor);
+        return;
     }
 
     // If next is false, the user added characters to the current
@@ -497,43 +486,43 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
     // to look for the next occurrence instead of trying to lenghten
     // the current match
     if (!next) {
-	QTextCursor cursor = edit->textCursor();
-	cursor.setPosition(cursor.anchor(), QTextCursor::KeepAnchor);
-	edit->setTextCursor(cursor);
+        QTextCursor cursor = edit->textCursor();
+        cursor.setPosition(cursor.anchor(), QTextCursor::KeepAnchor);
+        edit->setTextCursor(cursor);
     }
     Chrono chron;
     LOGDEB(("Preview::doSearch: first find call\n"));
     QTextDocument::FindFlags flags = 0;
     if (reverse)
-	flags |= QTextDocument::FindBackward;
+        flags |= QTextDocument::FindBackward;
     if (wordOnly)
-	flags |= QTextDocument::FindWholeWords;
+        flags |= QTextDocument::FindWholeWords;
     if (matchCase)
-	flags |= QTextDocument::FindCaseSensitively;
+        flags |= QTextDocument::FindCaseSensitively;
     bool found = edit->find(text, flags);
     LOGDEB(("Preview::doSearch: first find call return: found %d %.2f S\n", 
             found, chron.secs()));
     // If not found, try to wrap around. 
     if (!found) { 
-	LOGDEB(("Preview::doSearch: wrapping around\n"));
-	if (reverse) {
-	    edit->moveCursor (QTextCursor::End);
-	} else {
-	    edit->moveCursor (QTextCursor::Start);
-	}
-	LOGDEB(("Preview::doSearch: 2nd find call\n"));
+        LOGDEB(("Preview::doSearch: wrapping around\n"));
+        if (reverse) {
+            edit->moveCursor (QTextCursor::End);
+        } else {
+            edit->moveCursor (QTextCursor::Start);
+        }
+        LOGDEB(("Preview::doSearch: 2nd find call\n"));
         chron.restart();
-	found = edit->find(text, flags);
-	LOGDEB(("Preview::doSearch: 2nd find call return found %d %.2f S\n",
+        found = edit->find(text, flags);
+        LOGDEB(("Preview::doSearch: 2nd find call return found %d %.2f S\n",
                 found, chron.secs()));
     }
 
     if (found) {
-	m_canBeep = true;
+        m_canBeep = true;
     } else {
-	if (m_canBeep)
-	    QApplication::beep();
-	m_canBeep = false;
+        if (m_canBeep)
+            QApplication::beep();
+        m_canBeep = false;
     }
     LOGDEB(("Preview::doSearch: return\n"));
 }
@@ -556,12 +545,12 @@ void Preview::currentChanged(int index)
     LOGDEB2(("PreviewTextEdit::currentChanged\n"));
     QWidget *tw = pvTab->widget(index);
     PreviewTextEdit *edit = 
-	tw->findChild<PreviewTextEdit*>("pvEdit");
+        tw->findChild<PreviewTextEdit*>("pvEdit");
     LOGDEB1(("Preview::currentChanged(). Editor: %p\n", edit));
     
     if (edit == 0) {
-	LOGERR(("Editor child not found\n"));
-	return;
+        LOGERR(("Editor child not found\n"));
+        return;
     }
     edit->setFocus();
     // Disconnect the print signal and reconnect it to the current editor
@@ -578,16 +567,16 @@ void Preview::closeCurrentTab()
 {
     LOGDEB1(("Preview::closeCurrentTab: m_loading %d\n", m_loading));
     if (m_loading) {
-	CancelCheck::instance().setCancel();
-	return;
+        CancelCheck::instance().setCancel();
+        return;
     }
     PreviewTextEdit *e = currentEditor();
     if (e)
-	forgetTempFile(e->m_tmpfilename);
+        forgetTempFile(e->m_tmpfilename);
     if (pvTab->count() > 1) {
-	pvTab->removeTab(pvTab->currentIndex());
+        pvTab->removeTab(pvTab->currentIndex());
     } else {
-	close();
+        close();
     }
 }
 
@@ -611,12 +600,12 @@ void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
     QString title;
     string ctitle;
     if (doc.getmeta(Rcl::Doc::keytt, &ctitle) && !ctitle.empty()) {
-	title = QString::fromUtf8(ctitle.c_str(), ctitle.length());
+        title = QString::fromUtf8(ctitle.c_str(), ctitle.length());
     } else {
         title = QString::fromLocal8Bit(path_getsimple(doc.url).c_str());
     }
     if (title.length() > 20) {
-	title = title.left(10) + "..." + title.right(10);
+        title = title.left(10) + "..." + title.right(10);
     }
     int curidx = pvTab->currentIndex();
     pvTab->setTabText(curidx, title);
@@ -624,10 +613,10 @@ void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
     char datebuf[100];
     datebuf[0] = 0;
     if (!doc.fmtime.empty() || !doc.dmtime.empty()) {
-	time_t mtime = doc.dmtime.empty() ? 
-	    atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
-	struct tm *tm = localtime(&mtime);
-	strftime(datebuf, 99, "%Y-%m-%d %H:%M:%S", tm);
+        time_t mtime = doc.dmtime.empty() ? 
+            atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
+        struct tm *tm = localtime(&mtime);
+        strftime(datebuf, 99, "%Y-%m-%d %H:%M:%S", tm);
     }
     LOGDEB(("Doc.url: [%s]\n", doc.url.c_str()));
     string url;
@@ -635,15 +624,15 @@ void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
     string tiptxt = url + string("\n");
     tiptxt += doc.mimetype + " " + string(datebuf) + "\n";
     if (!ctitle.empty())
-	tiptxt += ctitle + "\n";
+        tiptxt += ctitle + "\n";
     pvTab->setTabToolTip(curidx,
-			 QString::fromUtf8(tiptxt.c_str(), tiptxt.length()));
+                         QString::fromUtf8(tiptxt.c_str(), tiptxt.length()));
 
     PreviewTextEdit *e = currentEditor();
     if (e) {
-	e->m_url = doc.url;
-	e->m_ipath = doc.ipath;
-	e->m_docnum = docnum;
+        e->m_url = doc.url;
+        e->m_ipath = doc.ipath;
+        e->m_docnum = docnum;
     }
 }
 
@@ -652,16 +641,16 @@ bool Preview::makeDocCurrent(const Rcl::Doc& doc, int docnum, bool sametab)
     LOGDEB(("Preview::makeDocCurrent: %s\n", doc.url.c_str()));
 
     if (m_loading) {
-	LOGERR(("Already loading\n"));
-	return false;
+        LOGERR(("Already loading\n"));
+        return false;
     }
 
     /* Check if we already have this page */
     for (int i = 0; i < pvTab->count(); i++) {
         QWidget *tw = pvTab->widget(i);
         if (tw) {
-	    PreviewTextEdit *edit = 
-		tw->findChild<PreviewTextEdit*>("pvEdit");
+            PreviewTextEdit *edit = 
+                tw->findChild<PreviewTextEdit*>("pvEdit");
             if (edit && !edit->m_url.compare(doc.url) && 
                 !edit->m_ipath.compare(doc.ipath)) {
                 pvTab->setCurrentIndex(i);
@@ -672,12 +661,12 @@ bool Preview::makeDocCurrent(const Rcl::Doc& doc, int docnum, bool sametab)
 
     // if just created the first tab was created during init
     if (!sametab && !m_justCreated && !addEditorTab()) {
-	return false;
+        return false;
     }
     m_justCreated = false;
     if (!loadDocInCurrentTab(doc, docnum)) {
-	closeCurrentTab();
-	return false;
+        closeCurrentTab();
+        return false;
     }
     raise();
     return true;
@@ -686,20 +675,20 @@ void Preview::togglePlainPre()
 {
     switch (prefs.previewPlainPre) {
     case PrefsPack::PP_BR:
-	prefs.previewPlainPre = PrefsPack::PP_PRE;
-	break;
+        prefs.previewPlainPre = PrefsPack::PP_PRE;
+        break;
     case PrefsPack::PP_PRE:
-	prefs.previewPlainPre = PrefsPack::PP_BR;
-	break;
+        prefs.previewPlainPre = PrefsPack::PP_BR;
+        break;
     case PrefsPack::PP_PREWRAP:
     default:
-	prefs.previewPlainPre = PrefsPack::PP_PRE;
-	break;
+        prefs.previewPlainPre = PrefsPack::PP_PRE;
+        break;
     }
     
     PreviewTextEdit *editor = currentEditor();
     if (editor)
-	loadDocInCurrentTab(editor->m_dbdoc, editor->m_docnum);
+        loadDocInCurrentTab(editor->m_dbdoc, editor->m_docnum);
 }
 
 void Preview::emitWordSelect(QString word)
@@ -729,53 +718,52 @@ class LoadThread : public QThread {
     Rcl::Doc& out;
     const Rcl::Doc& idoc;
     int loglevel;
- public: 
+public: 
     string missing;
     TempFile imgtmp;
 
     LoadThread(int *stp, Rcl::Doc& odoc, const Rcl::Doc& idc) 
-	: statusp(stp), out(odoc), idoc(idc)
-	{
-	    loglevel = DebugLog::getdbl()->getlevel();
-	}
+        : statusp(stp), out(odoc), idoc(idc)
+        {
+            loglevel = DebugLog::getdbl()->getlevel();
+        }
     ~LoadThread() {
     }
     virtual void run() {
-	DebugLog::getdbl()->setloglevel(loglevel);
-
-	FileInterner interner(idoc, theconfig, FileInterner::FIF_forPreview);
-	FIMissingStore mst;
-	interner.setMissingStore(&mst);
-	// Even when previewHtml is set, we don't set the interner's
-	// target mtype to html because we do want the html filter to
-	// do its work: we won't use the text/plain, but we want the
-	// text/html to be converted to utf-8 (for highlight processing)
-	try {
+        DebugLog::getdbl()->setloglevel(loglevel);
+        FileInterner interner(idoc, theconfig, FileInterner::FIF_forPreview);
+        FIMissingStore mst;
+        interner.setMissingStore(&mst);
+        // Even when previewHtml is set, we don't set the interner's
+        // target mtype to html because we do want the html filter to
+        // do its work: we won't use the text/plain, but we want the
+        // text/html to be converted to utf-8 (for highlight processing)
+        try {
             string ipath = idoc.ipath;
-	    FileInterner::Status ret = interner.internfile(out, ipath);
-	    if (ret == FileInterner::FIDone || ret == FileInterner::FIAgain) {
-		// FIAgain is actually not nice here. It means that the record
-		// for the *file* of a multidoc was selected. Actually this
-		// shouldn't have had a preview link at all, but we don't know
-		// how to handle it now. Better to show the first doc than
-		// a mysterious error. Happens when the file name matches a
-		// a search term.
-		*statusp = 0;
-		// If we prefer html and it is available, replace the
-		// text/plain document text
-		if (prefs.previewHtml && !interner.get_html().empty()) {
-		    out.text = interner.get_html();
-		    out.mimetype = "text/html";
-		}
-		imgtmp = interner.get_imgtmp();
-	    } else {
-		out.mimetype = interner.getMimetype();
-		mst.getMissingExternal(missing);
-		*statusp = -1;
-	    }
-	} catch (CancelExcept) {
-	    *statusp = -1;
-	}
+            FileInterner::Status ret = interner.internfile(out, ipath);
+            if (ret == FileInterner::FIDone || ret == FileInterner::FIAgain) {
+                // FIAgain is actually not nice here. It means that the record
+                // for the *file* of a multidoc was selected. Actually this
+                // shouldn't have had a preview link at all, but we don't know
+                // how to handle it now. Better to show the first doc than
+                // a mysterious error. Happens when the file name matches a
+                // a search term.
+                *statusp = 0;
+                // If we prefer html and it is available, replace the
+                // text/plain document text
+                if (prefs.previewHtml && !interner.get_html().empty()) {
+                    out.text = interner.get_html();
+                    out.mimetype = "text/html";
+                }
+                imgtmp = interner.get_imgtmp();
+            } else {
+                out.mimetype = interner.getMimetype();
+                mst.getMissingExternal(missing);
+                *statusp = -1;
+            }
+        } catch (CancelExcept) {
+            *statusp = -1;
+        }
     }
 };
 
@@ -792,21 +780,21 @@ class ToRichThread : public QThread {
     list<string> &out;
     int loglevel;
     PlainToRichQtPreview *ptr;
- public:
+public:
     ToRichThread(string &i, const HighlightData& hd, list<string> &o, 
-		 PlainToRichQtPreview *_ptr)
-	: in(i), hdata(hd), out(o), ptr(_ptr)
-    {
-	    loglevel = DebugLog::getdbl()->getlevel();
-    }
+                 PlainToRichQtPreview *_ptr)
+        : in(i), hdata(hd), out(o), ptr(_ptr)
+        {
+            loglevel = DebugLog::getdbl()->getlevel();
+        }
     virtual void run()
-    {
-	DebugLog::getdbl()->setloglevel(loglevel);
-	try {
-	    ptr->plaintorich(in, out, hdata, CHUNKL);
-	} catch (CancelExcept) {
-	}
-    }
+        {
+            DebugLog::getdbl()->setloglevel(loglevel);
+            try {
+                ptr->plaintorich(in, out, hdata, CHUNKL);
+            } catch (CancelExcept) {
+            }
+        }
 };
 
 class LoadGuard {
@@ -826,13 +814,15 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     setCurTabProps(idoc, docnum);
 
     QString msg = QString("Loading: %1 (size %2 bytes)")
-	.arg(QString::fromLocal8Bit(idoc.url.c_str()))
-	.arg(QString::fromUtf8(idoc.fbytes.c_str()));
+        .arg(QString::fromLocal8Bit(idoc.url.c_str()))
+        .arg(QString::fromUtf8(idoc.fbytes.c_str()));
 
-    // Create progress dialog and aux objects
-    const int nsteps = 20;
-    QProgressDialog progress(msg, tr("Cancel"), 0, nsteps, this);
+    QProgressDialog progress(msg, tr("Cancel"), 0, 0, this);
     progress.setMinimumDuration(2000);
+    QEventLoop loop;
+    QTimer tT;
+    tT.setSingleShot(true);
+    connect(&tT, SIGNAL(timeout()), &loop, SLOT(quit()));
 
     ////////////////////////////////////////////////////////////////////////
     // Load and convert document
@@ -841,42 +831,44 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     Rcl::Doc fdoc;
     int status = 1;
     LoadThread lthr(&status, fdoc, idoc);
+    connect(&lthr, SIGNAL(finished()), &loop, SLOT(quit()));
+
     lthr.start();
-    int prog;
-    for (prog = 1;;prog++) {
-	if (lthr.wait(100))
-	    break;
-	progress.setValue(prog);
-	qApp->processEvents();
-	if (progress.wasCanceled()) {
-	    CancelCheck::instance().setCancel();
-	}
-	if (prog >= 5)
-	    sleep(1);
+    for (int i = 0;;i++) {
+        tT.start(1000); 
+        loop.exec();
+        if (lthr.isFinished())
+            break;
+        if (progress.wasCanceled()) {
+            CancelCheck::instance().setCancel();
+        }
+        if (i == 2)
+            progress.show();
     }
 
     LOGDEB(("loadDocInCurrentTab: after file load: cancel %d status %d"
-	    " text length %d\n", 
-	    CancelCheck::instance().cancelState(), status, fdoc.text.length()));
+            " text length %d\n", 
+            CancelCheck::instance().cancelState(), status, fdoc.text.length()));
 
     if (CancelCheck::instance().cancelState())
-	return false;
+        return false;
     if (status != 0) {
+        progress.close();
         QString explain;
-	if (!lthr.missing.empty()) {
+        if (!lthr.missing.empty()) {
             explain = QString::fromUtf8("<br>") +
                 tr("Missing helper program: ") +
                 QString::fromLocal8Bit(lthr.missing.c_str());
-	    QMessageBox::warning(0, "Recoll",
-				 tr("Can't turn doc into internal "
-				    "representation for ") +
-				 fdoc.mimetype.c_str() + explain);
+            QMessageBox::warning(0, "Recoll",
+                                 tr("Can't turn doc into internal "
+                                    "representation for ") +
+                                 fdoc.mimetype.c_str() + explain);
         } else {
-	    QMessageBox::warning(0, "Recoll", 
-				  tr("Error while loading file"));
-	}
+            QMessageBox::warning(0, "Recoll", 
+                                 tr("Error while loading file"));
+        }
 
-	return false;
+        return false;
     }
     // Reset config just in case.
     theconfig->setKeyDir("");
@@ -887,7 +879,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     // should at least do special char escaping, in case a '&' or '<'
     // somehow slipped through previous processing.
     bool highlightTerms = fdoc.text.length() < 
-	(unsigned long)prefs.maxhltextmbs * 1024 * 1024;
+        (unsigned long)prefs.maxhltextmbs * 1024 * 1024;
 
     // Final text is produced in chunks so that we can display the top
     // while still inserting at bottom
@@ -905,9 +897,9 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 #if 0
     string path = fileurltolocalpath(idoc.url);
     if (!path.empty()) {
-	path = path_getfather(path);
-	QStringList paths(QString::fromLocal8Bit(path.c_str()));
-	editor->setSearchPaths(paths);
+        path = path_getfather(path);
+        QStringList paths(QString::fromLocal8Bit(path.c_str()));
+        editor->setSearchPaths(paths);
     }
 #endif
 
@@ -919,104 +911,99 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     // For testing qtextedit bugs...
     highlightTerms = true;
     const char *textlist[] =
-    {
-        "Du plain text avec un\n <termtag>termtag</termtag> fin de ligne:",
-        "texte apres le tag\n",
-    };
+        {
+            "Du plain text avec un\n <termtag>termtag</termtag> fin de ligne:",
+            "texte apres le tag\n",
+        };
     const int listl = sizeof(textlist) / sizeof(char*);
     for (int i = 0 ; i < listl ; i++)
         qrichlst.push_back(QString::fromUtf8(textlist[i]));
 #else
     if (highlightTerms) {
-	progress.setLabelText(tr("Creating preview text"));
-	qApp->processEvents();
+        progress.setLabelText(tr("Creating preview text"));
+        qApp->processEvents();
 
-	if (inputishtml) {
-	    LOGDEB1(("Preview: got html %s\n", fdoc.text.c_str()));
-	    editor->m_plaintorich->set_inputhtml(true);
-	} else {
-	    LOGDEB1(("Preview: got plain %s\n", fdoc.text.c_str()));
-	    editor->m_plaintorich->set_inputhtml(false);
-	}
-	list<string> richlst;
-	ToRichThread rthr(fdoc.text, m_hData, richlst, editor->m_plaintorich);
-	rthr.start();
+        if (inputishtml) {
+            LOGDEB1(("Preview: got html %s\n", fdoc.text.c_str()));
+            editor->m_plaintorich->set_inputhtml(true);
+        } else {
+            LOGDEB1(("Preview: got plain %s\n", fdoc.text.c_str()));
+            editor->m_plaintorich->set_inputhtml(false);
+        }
+        list<string> richlst;
+        ToRichThread rthr(fdoc.text, m_hData, richlst, editor->m_plaintorich);
+        connect(&rthr, SIGNAL(finished()), &loop, SLOT(quit()));
+        rthr.start();
 
-	for (;;prog++) {
-	    if (rthr.wait(100))
-		break;
-	    progress.setValue(nsteps);
-	    qApp->processEvents();
-	    if (progress.wasCanceled()) {
-		CancelCheck::instance().setCancel();
-	    }
-	    if (prog >= 5)
-		sleep(1);
-	}
+        for (;;) {
+            tT.start(1000); 
+            loop.exec();
+            if (rthr.isFinished())
+                break;
+            if (progress.wasCanceled()) {
+                CancelCheck::instance().setCancel();
+            }
+        }
 
-	// Conversion to rich text done
-	if (CancelCheck::instance().cancelState()) {
-	    if (richlst.size() == 0 || richlst.front().length() == 0) {
-		// We can't call closeCurrentTab here as it might delete
-		// the object which would be a nasty surprise to our
-		// caller.
-		return false;
-	    } else {
-		richlst.back() += "<b>Cancelled !</b>";
-	    }
-	}
-	// Convert C++ string list to QString list
-	for (list<string>::iterator it = richlst.begin(); 
-	     it != richlst.end(); it++) {
-	    qrichlst.push_back(QString::fromUtf8(it->c_str(), it->length()));
-	}
+        // Conversion to rich text done
+        if (CancelCheck::instance().cancelState()) {
+            if (richlst.size() == 0 || richlst.front().length() == 0) {
+                // We can't call closeCurrentTab here as it might delete
+                // the object which would be a nasty surprise to our
+                // caller.
+                return false;
+            } else {
+                richlst.back() += "<b>Cancelled !</b>";
+            }
+        }
+        // Convert C++ string list to QString list
+        for (list<string>::iterator it = richlst.begin(); 
+             it != richlst.end(); it++) {
+            qrichlst.push_back(QString::fromUtf8(it->c_str(), it->length()));
+        }
     } else {
-	LOGDEB(("Preview: no hilighting\n"));
-	// No plaintorich() call.  In this case, either the text is
-	// html and the html quoting is hopefully correct, or it's
-	// plain-text and there is no need to escape special
-	// characters. We'd still want to split in chunks (so that the
-	// top is displayed faster), but we must not cut tags, and
-	// it's too difficult on html. For text we do the splitting on
-	// a QString to avoid utf8 issues.
-	QString qr = QString::fromUtf8(fdoc.text.c_str(), fdoc.text.length());
-	int l = 0;
-	if (inputishtml) {
-	    qrichlst.push_back(qr);
-	} else {
+        LOGDEB(("Preview: no hilighting\n"));
+        // No plaintorich() call.  In this case, either the text is
+        // html and the html quoting is hopefully correct, or it's
+        // plain-text and there is no need to escape special
+        // characters. We'd still want to split in chunks (so that the
+        // top is displayed faster), but we must not cut tags, and
+        // it's too difficult on html. For text we do the splitting on
+        // a QString to avoid utf8 issues.
+        QString qr = QString::fromUtf8(fdoc.text.c_str(), fdoc.text.length());
+        int l = 0;
+        if (inputishtml) {
+            qrichlst.push_back(qr);
+        } else {
             editor->setPlainText("");
             editor->m_format = Qt::PlainText;
-	    for (int pos = 0; pos < (int)qr.length(); pos += l) {
-		l = MIN(CHUNKL, qr.length() - pos);
-		qrichlst.push_back(qr.mid(pos, l));
-	    }
-	}
+            for (int pos = 0; pos < (int)qr.length(); pos += l) {
+                l = MIN(CHUNKL, qr.length() - pos);
+                qrichlst.push_back(qr.mid(pos, l));
+            }
+        }
     }
 #endif
 
 
-
     ///////////////////////////////////////////////////////////
     // Load text into editor window.
-    prog = 2 * nsteps / 3;
     progress.setLabelText(tr("Loading preview text into editor"));
     qApp->processEvents();
-    int instep = 0;
     for (list<QString>::iterator it = qrichlst.begin(); 
-	 it != qrichlst.end(); it++, prog++, instep++) {
-	progress.setValue(prog);
-	qApp->processEvents();
+         it != qrichlst.end(); it++) {
+        qApp->processEvents();
 
-	editor->append(*it);
+        editor->append(*it);
         // We need to save the rich text for printing, the editor does
         // not do it consistently for us.
         editor->m_richtxt.append(*it);
 
-	if (progress.wasCanceled()) {
+        if (progress.wasCanceled()) {
             editor->append("<b>Cancelled !</b>");
-	    LOGDEB(("loadDocInCurrentTab: cancelled in editor load\n"));
-	    break;
-	}
+            LOGDEB(("loadDocInCurrentTab: cancelled in editor load\n"));
+            break;
+        }
     }
 
     progress.close();
@@ -1038,53 +1025,53 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
     // If this is an image, display it instead of the text.
     if (!idoc.mimetype.compare(0, 6, "image/")) {
-	string fn = fileurltolocalpath(idoc.url);
+        string fn = fileurltolocalpath(idoc.url);
 
-	// If the command wants a file but this is not a file url, or
-	// there is an ipath that it won't understand, we need a temp file:
-	theconfig->setKeyDir(path_getfather(fn));
-	if (fn.empty() || !idoc.ipath.empty()) {
-	    TempFile temp = lthr.imgtmp;
-	    if (temp) {
-		LOGDEB1(("Preview: load: got temp file from internfile\n"));
-	    } else if (!FileInterner::idocToFile(temp, string(), 
-						 theconfig, idoc)) {
-		temp.reset(); // just in case.
-	    }
-	    if (temp) {
-		rememberTempFile(temp);
-		fn = temp->filename();
-		editor->m_tmpfilename = fn;
-	    } else {
-		editor->m_tmpfilename.erase();
-		fn.erase();
-	    }
-	}
+        // If the command wants a file but this is not a file url, or
+        // there is an ipath that it won't understand, we need a temp file:
+        theconfig->setKeyDir(path_getfather(fn));
+        if (fn.empty() || !idoc.ipath.empty()) {
+            TempFile temp = lthr.imgtmp;
+            if (temp) {
+                LOGDEB1(("Preview: load: got temp file from internfile\n"));
+            } else if (!FileInterner::idocToFile(temp, string(), 
+                                                 theconfig, idoc)) {
+                temp.reset(); // just in case.
+            }
+            if (temp) {
+                rememberTempFile(temp);
+                fn = temp->filename();
+                editor->m_tmpfilename = fn;
+            } else {
+                editor->m_tmpfilename.erase();
+                fn.erase();
+            }
+        }
 
-	if (!fn.empty()) {
-	    editor->m_image = QImage(fn.c_str());
-	    if (!editor->m_image.isNull())
-		editor->displayImage();
-	}
-     }
+        if (!fn.empty()) {
+            editor->m_image = QImage(fn.c_str());
+            if (!editor->m_image.isNull())
+                editor->displayImage();
+        }
+    }
 
 
     // Position the editor so that the first search term is visible
     if (searchTextCMB->currentText().length() != 0) {
-	// If there is a current search string, perform the search
-	m_canBeep = true;
-	doSearch(searchTextCMB->currentText(), true, false);
+        // If there is a current search string, perform the search
+        m_canBeep = true;
+        doSearch(searchTextCMB->currentText(), true, false);
     } else {
-	// Position to the first query term
-	if (editor->m_plaintorich->haveAnchors()) {
-	    QString aname = editor->m_plaintorich->curAnchorName();
-	    LOGDEB2(("Call movetoanchor(%s)\n", (const char *)aname.toUtf8()));
-	    editor->scrollToAnchor(aname);
-	    // Position the cursor approximately at the anchor (top of
-	    // viewport) so that searches start from here
-	    QTextCursor cursor = editor->cursorForPosition(QPoint(0, 0));
-	    editor->setTextCursor(cursor);
-	}
+        // Position to the first query term
+        if (editor->m_plaintorich->haveAnchors()) {
+            QString aname = editor->m_plaintorich->curAnchorName();
+            LOGDEB2(("Call movetoanchor(%s)\n", (const char *)aname.toUtf8()));
+            editor->scrollToAnchor(aname);
+            // Position the cursor approximately at the anchor (top of
+            // viewport) so that searches start from here
+            QTextCursor cursor = editor->cursorForPosition(QPoint(0, 0));
+            editor->setTextCursor(cursor);
+        }
     }
 
 
@@ -1108,7 +1095,7 @@ PreviewTextEdit::PreviewTextEdit(QWidget* parent, const char* nm, Preview *pv)
     setContextMenuPolicy(Qt::CustomContextMenu);
     setObjectName(nm);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
-	    this, SLOT(createPopupMenu(const QPoint&)));
+            this, SLOT(createPopupMenu(const QPoint&)));
     setOpenExternalLinks(false);
     setOpenLinks(false);
 }
@@ -1124,35 +1111,35 @@ void PreviewTextEdit::createPopupMenu(const QPoint& pos)
     QMenu *popup = new QMenu(this);
     switch (m_curdsp) {
     case PTE_DSPTXT:
-	popup->addAction(tr("Show fields"), this, SLOT(displayFields()));
-	if (!m_image.isNull())
-	    popup->addAction(tr("Show image"), this, SLOT(displayImage()));
-	break;
+        popup->addAction(tr("Show fields"), this, SLOT(displayFields()));
+        if (!m_image.isNull())
+            popup->addAction(tr("Show image"), this, SLOT(displayImage()));
+        break;
     case PTE_DSPFLDS:
-	popup->addAction(tr("Show main text"), this, SLOT(displayText()));
-	if (!m_image.isNull())
-	    popup->addAction(tr("Show image"), this, SLOT(displayImage()));
-	break;
+        popup->addAction(tr("Show main text"), this, SLOT(displayText()));
+        if (!m_image.isNull())
+            popup->addAction(tr("Show image"), this, SLOT(displayImage()));
+        break;
     case PTE_DSPIMG:
     default:
-	popup->addAction(tr("Show fields"), this, SLOT(displayFields()));
-	popup->addAction(tr("Show main text"), this, SLOT(displayText()));
-	break;
+        popup->addAction(tr("Show fields"), this, SLOT(displayFields()));
+        popup->addAction(tr("Show main text"), this, SLOT(displayText()));
+        break;
     }
     popup->addAction(tr("Select All"), this, SLOT(selectAll()));
     popup->addAction(tr("Copy"), this, SLOT(copy()));
     popup->addAction(tr("Print"), this, SLOT(print()));
     if (prefs.previewPlainPre) {
-	popup->addAction(tr("Fold lines"), m_preview, SLOT(togglePlainPre()));
+        popup->addAction(tr("Fold lines"), m_preview, SLOT(togglePlainPre()));
     } else {
-	popup->addAction(tr("Preserve indentation"), 
-			 m_preview, SLOT(togglePlainPre()));
+        popup->addAction(tr("Preserve indentation"), 
+                         m_preview, SLOT(togglePlainPre()));
     }
     // Need to check ipath until we fix the internfile bug that always
     // has it convert to html for top level docs
     if (!m_dbdoc.url.empty() && !m_dbdoc.ipath.empty())
-	popup->addAction(tr("Save document to file"), 
-			 m_preview, SLOT(emitSaveDocToFile()));
+        popup->addAction(tr("Save document to file"), 
+                         m_preview, SLOT(emitSaveDocToFile()));
     popup->popup(mapToGlobal(pos));
 }
 
@@ -1161,9 +1148,9 @@ void PreviewTextEdit::displayText()
 {
     LOGDEB1(("PreviewTextEdit::displayText()\n"));
     if (m_format == Qt::PlainText)
-	setPlainText(m_richtxt);
+        setPlainText(m_richtxt);
     else
-	setHtml(m_richtxt);
+        setHtml(m_richtxt);
     m_curdsp = PTE_DSPTXT;
 }
 
@@ -1175,15 +1162,15 @@ void PreviewTextEdit::displayFields()
     QString txt = "<html><head></head><body>\n";
     txt += "<b>" + QString::fromLocal8Bit(m_url.c_str());
     if (!m_ipath.empty())
-	txt += "|" + QString::fromUtf8(m_ipath.c_str());
+        txt += "|" + QString::fromUtf8(m_ipath.c_str());
     txt += "</b><br><br>";
     txt += "<dl>\n";
     for (map<string,string>::const_iterator it = m_fdoc.meta.begin();
-	 it != m_fdoc.meta.end(); it++) {
-	if (!it->second.empty())
-	    txt += "<dt>" + QString::fromUtf8(it->first.c_str()) + "</dt> " 
-		+ "<dd>" + QString::fromUtf8(escapeHtml(it->second).c_str()) 
-		+ "</dd>\n";
+         it != m_fdoc.meta.end(); it++) {
+        if (!it->second.empty())
+            txt += "<dt>" + QString::fromUtf8(it->first.c_str()) + "</dt> " 
+                + "<dd>" + QString::fromUtf8(escapeHtml(it->second).c_str()) 
+                + "</dd>\n";
     }
     txt += "</dl></body></html>";
     setHtml(txt);
@@ -1194,15 +1181,15 @@ void PreviewTextEdit::displayImage()
 {
     LOGDEB1(("PreviewTextEdit::displayImage()\n"));
     if (m_image.isNull())
-	displayText();
+        displayText();
 
     setPlainText("");
     if (m_image.width() > width() || 
-	m_image.height() > height()) {
-	m_image = m_image.scaled(width(), height(), Qt::KeepAspectRatio);
+        m_image.height() > height()) {
+        m_image = m_image.scaled(width(), height(), Qt::KeepAspectRatio);
     }
     document()->addResource(QTextDocument::ImageResource, QUrl("image"), 
-			    m_image);
+                            m_image);
     QTextCursor cursor = textCursor();
     cursor.insertImage("image");
     m_curdsp = PTE_DSPIMG;
@@ -1213,7 +1200,7 @@ void PreviewTextEdit::mouseDoubleClickEvent(QMouseEvent *event)
     LOGDEB2(("PreviewTextEdit::mouseDoubleClickEvent\n"));
     QTextEdit::mouseDoubleClickEvent(event);
     if (textCursor().hasSelection() && m_preview)
-	m_preview->emitWordSelect(textCursor().selectedText());
+        m_preview->emitWordSelect(textCursor().selectedText());
 }
 
 void PreviewTextEdit::print()
@@ -1221,7 +1208,7 @@ void PreviewTextEdit::print()
     LOGDEB(("PreviewTextEdit::print\n"));
     if (!m_preview)
         return;
-	
+        
 #ifndef QT_NO_PRINTER
     QPrinter printer;
     QPrintDialog *dialog = new QPrintDialog(&printer, this);
