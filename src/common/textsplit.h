@@ -184,7 +184,7 @@ private:
     // Current span. Might be jf.dockes@wanadoo.f
     std::string        m_span; 
 
-    std::vector <std::pair<unsigned int, unsigned int> > m_words_in_span;
+    std::vector <std::pair<int, int> > m_words_in_span;
 
     // Current word: no punctuation at all in there. Byte offset
     // relative to the current span and byte length
@@ -201,7 +201,7 @@ private:
     // It may happen that our cleanup would result in emitting the
     // same term twice. We try to avoid this
     int           m_prevpos;
-    unsigned int  m_prevlen;
+    int           m_prevlen;
 
 #ifdef TEXTSPLIT_STATS
     // Stats counters. These are processed in TextSplit rather than by a 
@@ -215,11 +215,11 @@ private:
     // This processes cjk text:
     bool cjk_to_words(Utf8Iter *it, unsigned int *cp);
 
-    bool emitterm(bool isspan, std::string &term, int pos, int bs, int be);
-    bool doemit(bool spanerase, int bp);
+    bool emitterm(bool isspan, std::string &term, int pos, size_t bs,size_t be);
+    bool doemit(bool spanerase, size_t bp);
     void discardspan();
     bool span_is_acronym(std::string *acronym);
-    bool words_from_span(int bp);
+    bool words_from_span(size_t bp);
 };
 
 #endif /* _TEXTSPLIT_H_INCLUDED_ */

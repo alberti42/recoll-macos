@@ -78,6 +78,9 @@ extern long long path_filesize(const std::string& path);
 /// the file/dir does not exist or that an error occurred. 
 extern bool path_exists(const std::string& path);
 
+/// Return separator for PATH environment variable
+extern std::string path_PATHsep();
+
 /// Dump directory
 extern bool readdir(const std::string& dir, std::string& reason, 
 		    std::set<std::string>& entries);
@@ -96,6 +99,21 @@ extern bool maketmpdir(std::string& tdir, std::string& reason);
 
 /// mkdir -p
 extern bool makepath(const std::string& path);
+
+/// Sub-directory for default recoll config (e.g: .recoll)
+extern std::string path_defaultrecollconfsubdir();
+/// Where we create the user data subdirs
+extern std::string path_homedata();
+/// e.g. /usr/share/recoll. Depends on OS and config
+extern const std::string& path_sharedatadir();
+/// Test if path is absolute
+extern bool path_isabsolute(const std::string& s);
+
+/// Test if path is root (x:/). root is defined by root/.. == root
+extern bool path_isroot(const std::string& p);
+
+/// Turn absolute path into file:// url
+extern std::string path_pathtofileurl(const std::string& path);
 
 /// Temporary file class
 class TempFileInternal {

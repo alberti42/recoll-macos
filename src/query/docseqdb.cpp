@@ -14,16 +14,19 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include "autoconfig.h"
+
 #include <math.h>
 #include <time.h>
 
 #include <list>
-using std::list;
 
 #include "docseqdb.h"
 #include "rcldb.h"
 #include "debuglog.h"
 #include "wasatorcl.h"
+
+using std::list;
 
 DocSequenceDb::DocSequenceDb(STD_SHARED_PTR<Rcl::Query> q, const string &t, 
 			     STD_SHARED_PTR<Rcl::SearchData> sdata) 

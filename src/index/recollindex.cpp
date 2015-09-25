@@ -14,16 +14,18 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifdef HAVE_CONFIG_H
 #include "autoconfig.h"
-#endif
 
 #include <stdio.h>
 #include <signal.h>
 #include <errno.h>
+#ifndef _WIN32
 #include <sys/time.h>
 #include <sys/resource.h>
-#include <fcntl.h>
+#else
+#include <direct.h>
+#endif
+#include "safefcntl.h"
 #include "safeunistd.h"
 
 #include <iostream>
@@ -42,10 +44,14 @@ using namespace std;
 #include "x11mon.h"
 #include "cancelcheck.h"
 #include "rcldb.h"
+#ifndef DISABLE_WEB_INDEXER
 #include "beaglequeue.h"
+#endif
 #include "recollindex.h"
 #include "fsindexer.h"
+#ifndef _WIN32
 #include "rclionice.h"
+#endif
 #include "execmd.h"
 #include "checkretryfailed.h"
 
@@ -133,6 +139,7 @@ class MyUpdater : public DbIxStatusUpdater {
 	    return false;
 	}
 
+#ifndef DISABLE_X11MON
 	// If we are in the monitor, we also need to check X11 status
 	// during the initial indexing pass (else the user could log
 	// out and the indexing would go on, not good (ie: if the user
@@ -142,7 +149,7 @@ class MyUpdater : public DbIxStatusUpdater {
 	    stopindexing = true;
 	    return false;
 	}
-
+#endif
 	return true;
     }
 
@@ -177,11 +184,13 @@ static void makeIndexerOrExit(RclConfig *config, bool inPlaceReset)
 
 void rclIxIonice(const RclConfig *config)
 {
+#ifndef _WIN32
     string clss, classdata;
     if (!config->getConfParam("monioniceclass", clss) || clss.empty())
 	clss = "3";
     config->getConfParam("monioniceclassdata", classdata);
     rclionice(clss, classdata);
+#endif
 }
 
 class MakeListWalkerCB : public FsTreeWalkerCB {
@@ -273,7 +282,7 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
 
     for (vector<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
 	*it = path_tildexpand(*it);
-        if (!it->size() || (*it)[0] != '/') {
+        if (!it->size() || !path_isabsolute(*it)) {
             if ((*it)[0] == '~') {
                 cerr << "Tilde expansion failed: " << *it << endl;
                 LOGERR(("recollindex: tilde expansion failed: %s\n",
@@ -285,7 +294,7 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
             }
             return false;
         }
-        if (access(it->c_str(), 0) < 0) {
+        if (!path_exists(*it)) {
             nonexist.push_back(*it);
         }
     }
@@ -295,7 +304,7 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
     if (config->getConfParam("skippedPaths", &tdl, true)) {
         for (vector<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
             *it = path_tildexpand(*it);
-            if (access(it->c_str(), 0) < 0) {
+            if (!path_exists(*it)) {
                 nonexist.push_back(*it);
             }
         }
@@ -304,7 +313,7 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
     if (config->getConfParam("daemSkippedPaths", &tdl, true)) {
         for (vector<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
             *it = path_tildexpand(*it);
-            if (access(it->c_str(), 0) < 0) {
+            if (!path_exists(*it)) {
                 nonexist.push_back(*it);
             }
         }
@@ -393,8 +402,10 @@ int main(int argc, char **argv)
     // The reexec struct is used by the daemon to shed memory after
     // the initial indexing pass and to restart when the configuration
     // changes
+#ifndef _WIN32
     o_reexec = new ReExec;
     o_reexec->init(argc, argv);
+#endif
 
     thisprog = argv[0];
     argc--; argv++;
@@ -463,7 +474,9 @@ int main(int argc, char **argv)
 	cerr << "Configuration problem: " << reason << endl;
 	exit(1);
     }
+#ifndef _WIN32
     o_reexec->atexit(cleanup);
+#endif
 
     vector<string> nonexist;
     if (!checktopdirs(config, nonexist))
@@ -511,9 +524,11 @@ int main(int argc, char **argv)
     if (op_flags & OPT_k) {
         indexerFlags &= ~ConfIndexer::IxFNoRetryFailed; 
     } else {
+#ifndef _WIN32
         if (checkRetryFailed(config, false)) {
             indexerFlags &= ~ConfIndexer::IxFNoRetryFailed; 
         }
+#endif
     }
 
     Pidfile pidfile(config->getPidfile());
@@ -522,12 +537,13 @@ int main(int argc, char **argv)
     // Log something at LOGINFO to reset the trace file. Else at level
     // 3 it's not even truncated if all docs are up to date.
     LOGINFO(("recollindex: starting up\n"));
-
+#ifndef _WIN32
     if (setpriority(PRIO_PROCESS, 0, 20) != 0) {
         LOGINFO(("recollindex: can't setpriority(), errno %d\n", errno));
     }
     // Try to ionice. This does not work on all platforms
     rclIxIonice(config);
+#endif
 
     if (op_flags & (OPT_i|OPT_e)) {
 	lockorexit(&pidfile);
@@ -596,15 +612,17 @@ int main(int argc, char **argv)
 	lockorexit(&pidfile);
 	if (!(op_flags&OPT_D)) {
 	    LOGDEB(("recollindex: daemonizing\n"));
+#ifndef _WIN32
 	    if (daemon(0,0) != 0) {
 	      fprintf(stderr, "daemon() failed, errno %d\n", errno);
 	      LOGERR(("daemon() failed, errno %d\n", errno));
 	      exit(1);
 	    }
+#endif
 	}
 	// Need to rewrite pid, it changed
 	pidfile.write_pid();
-
+#ifndef _WIN32
         // Not too sure if I have to redo the nice thing after daemon(),
         // can't hurt anyway (easier than testing on all platforms...)
         if (setpriority(PRIO_PROCESS, 0, 20) != 0) {
@@ -612,6 +630,7 @@ int main(int argc, char **argv)
         }
 	// Try to ionice. This does not work on all platforms
 	rclIxIonice(config);
+#endif
 
 	if (sleepsecs > 0) {
 	    LOGDEB(("recollindex: sleeping %d\n", sleepsecs));
@@ -633,12 +652,15 @@ int main(int argc, char **argv)
 			"not going into monitor mode\n"));
 		exit(1);
 	    } else {
+#ifndef _WIN32
                 // Record success of indexing pass with failed files retries.
                 if (!(indexerFlags & ConfIndexer::IxFNoRetryFailed)) {
                     checkRetryFailed(config, true);
                 }
+#endif
             }
 	    deleteZ(confindexer);
+#ifndef _WIN32
 	    o_reexec->insertArgs(vector<string>(1, "-n"));
 	    LOGINFO(("recollindex: reexecuting with -n after initial full pass\n"));
 	    // Note that -n will be inside the reexec when we come
@@ -646,6 +668,7 @@ int main(int argc, char **argv)
 	    // starting a config change exec to ensure that we do a
 	    // purging pass in this case.
 	    o_reexec->reexec();
+#endif
 	}
         if (updater) {
 	    updater->status.phase = DbIxStatus::DBIXS_MONITOR;
@@ -672,11 +695,12 @@ int main(int argc, char **argv)
 	makeIndexerOrExit(config, inPlaceReset);
 	bool status = confindexer->index(rezero, ConfIndexer::IxTAll, 
                                          indexerFlags);
-
+#ifndef _WIN32
         // Record success of indexing pass with failed files retries.
         if (status && !(indexerFlags & ConfIndexer::IxFNoRetryFailed)) {
             checkRetryFailed(config, true);
         }
+#endif
 	if (!status) 
 	    cerr << "Indexing failed" << endl;
         if (!confindexer->getReason().empty())

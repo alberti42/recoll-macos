@@ -31,7 +31,6 @@ using namespace std;
 #include "rclconfig.h"
 #include "smallut.h"
 #include "md5ut.h"
-
 #include "mh_exec.h"
 #include "mh_execm.h"
 #include "mh_html.h"
@@ -40,6 +39,7 @@ using namespace std;
 #include "mh_text.h"
 #include "mh_symlink.h"
 #include "mh_unknown.h"
+#include "mh_null.h"
 #include "ptmutex.h"
 
 // Performance help: we use a pool of already known and created
@@ -163,6 +163,10 @@ static RecollFilter *mhFactory(RclConfig *config, const string &mime,
 	LOGDEB2(("mhFactory(%s): ret MimeHandlerSymlink\n", mime.c_str()));
 	MD5String("MimeHandlerSymlink", id);
 	return nobuild ? 0 : new MimeHandlerSymlink(config, id);
+    } else if ("application/x-zerosize" == lmime) {
+	LOGDEB(("mhFactory(%s): ret MimeHandlerNull\n", mime.c_str()));
+	MD5String("MimeHandlerNull", id);
+	return nobuild ? 0 : new MimeHandlerNull(config, id);
     } else if (lmime.find("text/") == 0) {
         // Try to handle unknown text/xx as text/plain. This
         // only happen if the text/xx was defined as "internal" in
@@ -206,7 +210,7 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
     }
 
     // Split command name and args, and build exec object
-    list<string> cmdtoks;
+    vector<string> cmdtoks;
     stringToStrings(cmdstr, cmdtoks);
     if (cmdtoks.empty()) {
 	LOGERR(("mhExecFactory: bad config line for [%s]: [%s]\n", 
@@ -216,7 +220,22 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
     MimeHandlerExec *h = multiple ? 
 	new MimeHandlerExecMultiple(cfg, id) :
         new MimeHandlerExec(cfg, id);
-    list<string>::iterator it = cmdtoks.begin();
+    vector<string>::iterator it = cmdtoks.begin();
+
+    // Special-case python and perl on windows: we need to also locate the
+    // first argument which is the script name "python somescript.py". 
+    // On Unix, thanks to #!, we usually just run "somescript.py", but need
+    // the same change if we ever want to use the same cmdling as windows
+    if (!stringlowercmp("python", *it) || !stringlowercmp("perl", *it)) {
+        if (cmdtoks.size() < 2) {
+            LOGERR(("mhExecFactory: python/perl cmd: no script?. [%s]: [%s]\n", 
+                    mtype.c_str(), hs.c_str()));
+        }
+        vector<string>::iterator it1(it);
+        it1++;
+        *it1 = cfg->findFilter(*it1);
+    }
+            
     h->params.push_back(cfg->findFilter(*it++));
     h->params.insert(h->params.end(), it, cmdtoks.end());
 

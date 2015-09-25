@@ -15,6 +15,8 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #ifndef TEST_IDFILE
+#include "autoconfig.h"
+
 #include <stdlib.h>
 #include <ctype.h>
 #include <cstring>
@@ -82,11 +84,11 @@ static string idFileInternal(istream& input, const char *fn)
 	}
 
 	// gcount includes the \n
-	int ll = input.gcount() - 1; 
+	std::streamsize ll = input.gcount() - 1; 
 	if (ll > 0)
 	    gotnonempty = true;
 
-	LOGDEB2(("idfile: lnum %d ll %d: [%s]\n", lnum, ll, cline));
+	LOGDEB2(("idfile: lnum %d ll %u: [%s]\n", lnum, (unsigned int)ll, cline));
 
 	// Check for a few things that can't be found in a mail file,
 	// (optimization to get a quick negative)
@@ -123,7 +125,9 @@ static string idFileInternal(istream& input, const char *fn)
 	// Except for a possible first line with 'From ', lines must
 	// begin with whitespace or have a colon 
 	// (hope no one comes up with a longer header name !
-	if (!isspace(cline[0])) {
+	// Take care to convert to unsigned char because ms ctype does
+	// like negative values
+	if (!isspace((unsigned char)cline[0])) {
 	    char *cp = strchr(cline, ':');
 	    if (cp == 0 || (cp - cline) > 70) {
 		LOGDEB2(("idfile: can't be mail header line: [%s]\n", cline));

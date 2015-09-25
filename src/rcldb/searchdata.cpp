@@ -242,7 +242,7 @@ void SearchData::simplify()
              j < i + clsubp->getSub()->m_query.size(); j++) {
             m_query[j]->setParent(this);
         }
-        i += clsubp->getSub()->m_query.size() - 1;
+        i += int(clsubp->getSub()->m_query.size()) - 1;
 
         // We don't want the clauses to be deleted when the parent is, as we
         // know own them.

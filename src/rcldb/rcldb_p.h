@@ -120,7 +120,7 @@ class Db::Native {
 			const string& uniterm);
 
     bool getPagePositions(Xapian::docid docid, vector<int>& vpos);
-    int getPageNumberForPosition(const vector<int>& pbreaks, unsigned int pos);
+    int getPageNumberForPosition(const vector<int>& pbreaks, int pos);
 
     bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc);
 

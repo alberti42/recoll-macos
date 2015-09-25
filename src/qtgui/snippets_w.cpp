@@ -16,7 +16,6 @@
  */
 #include "autoconfig.h"
 
-#include <unistd.h>
 #include <stdio.h>
 
 #include <string>

@@ -109,8 +109,8 @@ trfileudi.o : fileudi.cpp fileudi.h
 EXECMD_OBJS= trexecmd.o 
 trexecmd : $(EXECMD_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o trexecmd $(EXECMD_OBJS) $(LIBRECOLL)
-trexecmd.o : execmd.cpp execmd.h
-	$(CXX) -o trexecmd.o -c $(ALL_CXXFLAGS) -DTEST_EXECMD execmd.cpp
+trexecmd.o : trexecmd.cpp execmd.h
+	$(CXX) -o trexecmd.o -c $(ALL_CXXFLAGS) -I../xaposix trexecmd.cpp
 
 TRANSCODE_OBJS= trtranscode.o   
 transcode : $(TRANSCODE_OBJS)

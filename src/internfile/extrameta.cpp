@@ -46,7 +46,7 @@ void reapXAttrs(const RclConfig* cfg, const string& path,
 		map<string, string>& xfields)
 {
     LOGDEB2(("reapXAttrs: [%s]\n", path.c_str()));
-    
+#ifndef _WIN32
     // Retrieve xattrs names from files and mapping table from config
     vector<string> xnames;
     if (!pxattr::list(path, &xnames)) {
@@ -79,6 +79,7 @@ void reapXAttrs(const RclConfig* cfg, const string& path,
 	xfields[key] = value;
 	LOGDEB2(("reapXAttrs: [%s] -> [%s]\n", key.c_str(), value.c_str()));
     }
+#endif
 }
 
 void docFieldsFromXattrs(RclConfig *cfg, const map<string, string>& xfields, 
@@ -93,6 +94,7 @@ void docFieldsFromXattrs(RclConfig *cfg, const map<string, string>& xfields,
 void reapMetaCmds(RclConfig* cfg, const string& path, 
 		  map<string, string>& cfields)
 {
+#ifndef _WIN32
     const vector<MDReaper>& reapers = cfg->getMDReapers();
     if (reapers.empty())
 	return;
@@ -111,6 +113,7 @@ void reapMetaCmds(RclConfig* cfg, const string& path,
 	    cfields[rp->fieldname] =  output;
 	}
     }
+#endif
 }
 
 // Set fields from external commands

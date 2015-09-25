@@ -16,21 +16,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#ifdef RECOLL_DATADIR
+#ifdef BUILDING_RECOLL
 #include "autoconfig.h"
 #else
 #include "config.h"
 #endif /* RECOLL */
-#endif /* HAVE_CONFIG_H */
 
-#ifdef RECOLL_DATADIR
+#ifdef BUILDING_RECOLL
 /* Yes, recoll unac is actually c++, lets face modernity, I will not be
    caught writing another binary search  */
 #include <vector>
 #include <map>
 #include <string>
 #include <algorithm>
+#include <iostream>
 #include UNORDERED_MAP_INCLUDE
 
 using std::string;
@@ -53,7 +52,7 @@ static inline bool is_except_char(unsigned short c, string& trans)
     trans = it->second;
     return true;
 }
-#endif /* RECOLL_DATADIR */
+#endif /* BUILDING_RECOLL*/
 
 /*
  * If configure.in has not defined this symbol, assume const. It
@@ -14171,9 +14170,9 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
 			       char** outp, size_t* out_lengthp, int what)
 {
   char* out;
-  int out_size;
-  int out_length;
-  unsigned int i;
+  size_t out_size;
+  size_t out_length;
+  size_t i;
 
   out_size = in_length > 0 ? in_length : 1024;
 
@@ -14191,13 +14190,13 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
   for(i = 0; i < in_length; i += 2) {
     unsigned short c;
     unsigned short* p;
-    int l;
-    int k;
+    size_t l;
+    size_t k;
     c = (in[i] << 8) | (in[i + 1] & 0xff);
     /*
      * Lookup the tables for decomposition information
      */
-#ifdef RECOLL_DATADIR
+#ifdef BUILDING_RECOLL
     // Exception unac/fold values set by user. There should be 3 arrays for
     // unac/fold/unac+fold. For now there is only one array, which used to
     // be set for unac+fold, and is mostly or only used to prevent diacritics
@@ -14220,11 +14219,11 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
 	    l = trans.size() / 2;
 	}
     } else {
-#endif /* RECOLL_DATADIR */
+#endif /* BUILDING_RECOLL */
 	unac_uf_char_utf16_(c, p, l, what)
-#ifdef RECOLL_DATADIR
+#ifdef BUILDING_RECOLL
     }
-#endif /* RECOLL_DATADIR */
+#endif /* BUILDING_RECOLL */
 
     /*
      * Explain what's done in great detail
@@ -14237,7 +14236,7 @@ int unacmaybefold_string_utf16(const char* in, size_t in_length,
       if(l == 0) {
 	DEBUG_APPEND("untouched\n");
       } else {
-	int i;
+	size_t i;
 	for(i = 0; i < l; i++)
 	  DEBUG_APPEND("0x%04x ", p[i]);
 	DEBUG_APPEND("\n");
@@ -14437,10 +14436,11 @@ static int convert(const char* from, const char* to,
 	  const char* tmp = space;
 	  size_t tmp_length = 2;
 	  if(iconv(cd, (ICONV_CONST char **) &tmp, &tmp_length, &out, &out_remain) == (size_t)-1) {
-	    if(errno == E2BIG)
+              if(errno == E2BIG) {
 	      /* fall thru to the E2BIG case below */;
-	    else
-	      goto out;
+              } else {
+                  goto out;
+              }
 	  } else {
 	    /* The offending character was replaced by a SPACE, skip it. */
 	    in += 2;
@@ -14456,7 +14456,7 @@ static int convert(const char* from, const char* to,
 	  /*
 	   * The output does not fit in the current out buffer, enlarge it.
 	   */
-	  int length = out - out_base;
+	  size_t length = out - out_base;
 	  out_size *= 2;
 	  {
 	      char *saved = out_base;
@@ -14562,7 +14562,7 @@ const char* unac_version(void)
   return UNAC_VERSION;
 }
 
-#ifdef RECOLL_DATADIR
+#ifdef BUILDING_RECOLL
 void unac_set_except_translations(const char *spectrans)
 {
     except_trans.clear();
@@ -14615,4 +14615,4 @@ void unac_set_except_translations(const char *spectrans)
 	free(out);
     }
 }
-#endif /* RECOLL_DATADIR */
+#endif /* BUILDING_RECOLL */

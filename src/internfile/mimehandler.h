@@ -86,12 +86,12 @@ public:
 	return false;
     }
     virtual bool set_document_data(const std::string& mtype, 
-				   const char *cp, unsigned int sz) 
+				   const char *cp, size_t sz) 
     {
 	return set_document_string(mtype, std::string(cp, sz));
     }
 
-    virtual void set_docsize(size_t size)
+    virtual void set_docsize(off_t size)
     {
 	char csize[30];
 	sprintf(csize, "%lld", (long long)size);

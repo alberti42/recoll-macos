@@ -14,13 +14,15 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include "autoconfig.h"
 
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <unistd.h>
+#include "safeunistd.h"
 #include <time.h>
 #include <cstdlib>
+#include "safesysstat.h"
 
 #include <map>
 #include <sstream>

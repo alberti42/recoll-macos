@@ -16,6 +16,8 @@
  */
 #include "autoconfig.h"
 
+#include <signal.h>
+
 #include <QMessageBox>
 #include <QTimer>
 

@@ -16,6 +16,8 @@
  */
 
 #ifndef TEST_MD5
+#include "autoconfig.h"
+
 #include <stdio.h>
 #include <string.h>
 

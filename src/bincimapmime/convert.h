@@ -25,6 +25,7 @@
  */
 #ifndef convert_h_included
 #define convert_h_included
+#include <stddef.h>
 #include <string>
 #include <vector>
 #include <iomanip>
@@ -93,7 +94,7 @@ namespace Binc {
     std::string tmp;
     for (std::string::const_iterator i = s.begin();
 	 i != s.end() && i + 1 != s.end(); i += 2) {
-      int n;
+      ptrdiff_t n;
       unsigned char c = *i;
       unsigned char d = *(i + 1);
       
@@ -122,7 +123,7 @@ namespace Binc {
     for (std::string::const_iterator i = s_in.begin(); i != s_in.end(); ++i) {
       unsigned char c = (unsigned char)*i;
       if (c <= 31 || c >= 127 || c == '\"' || c == '\\')
-	return "{" + toString(s_in.length()) + "}\r\n" + s_in;
+	return "{" + toString((unsigned long)s_in.length()) + "}\r\n" + s_in;
     }
     
     return "\"" + s_in + "\"";
@@ -145,7 +146,7 @@ namespace Binc {
   //----------------------------------------------------------------------
   inline void chomp(std::string &s_in, const std::string &chars = " \t\r\n")
   {
-    int n = s_in.length();
+    std::string::size_type n = s_in.length();
     while (n > 1 && chars.find(s_in[n - 1]) != std::string::npos)
       s_in.resize(n-- - 1);
   }
@@ -290,7 +291,7 @@ namespace Binc {
     BincStream &operator << (char t);
 
     //--
-    std::string popString(unsigned int size);
+    std::string popString(std::string::size_type size);
 
     //--
     char popChar(void);

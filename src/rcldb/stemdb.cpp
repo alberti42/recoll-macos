@@ -22,11 +22,12 @@
 
 #include "autoconfig.h"
 
-#include <unistd.h>
+#include "safeunistd.h"
 
 #include <algorithm>
 #include <map>
 #include <iostream>
+#include <string>
 using namespace std;
 
 #include <xapian.h>

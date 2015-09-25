@@ -22,7 +22,8 @@ COMMONCPPFLAGS = -I. \
     -I$(top_srcdir)/rcldb \
     -I$(top_srcdir)/unac \
     -I$(top_srcdir)/utils \
-    -I$(top_srcdir)/xaposix
+    -I$(top_srcdir)/xaposix \
+    -DBUILDING_RECOLL
 
 AM_CPPFLAGS = -Wall -Wno-unused \
     $(COMMONCPPFLAGS) \

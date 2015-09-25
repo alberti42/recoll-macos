@@ -840,7 +840,7 @@ bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
 	    tpq.setTSQ(&splitter);
 	    splitter.text_to_words(*it);
 
-	    slack += tpq.lastpos() - tpq.terms().size() + 1;
+	    slack += tpq.lastpos() - int(tpq.terms().size()) + 1;
 
 	    LOGDEB0(("strToXapianQ: termcount: %d\n", tpq.terms().size()));
 	    switch (tpq.terms().size() + terminc) {
@@ -963,7 +963,7 @@ bool SearchDataClausePath::toNativeQuery(Rcl::Db &db, void *p)
 
     vector<Xapian::Query> orqueries;
 
-    if (m_text[0] == '/')
+    if (path_isabsolute(m_text))
 	orqueries.push_back(Xapian::Query(wrap_prefix(pathelt_prefix)));
     else
         m_text = path_tildexpand(m_text);

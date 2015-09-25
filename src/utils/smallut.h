@@ -153,7 +153,7 @@ class Chrono {
  public:
   Chrono();
   /** Reset origin */
-  long restart();
+  time_t restart();
   /** Snapshot current time */
   static void refnow();
   /** Get current elapsed since creation or restart
@@ -162,14 +162,14 @@ class Chrono {
    * allow for using one actual system call to get values from many
    * chrono objects, like when examining timeouts in a queue)
    */
-  long millis(int frozen = 0);
-  long ms() {return millis();}
-  long micros(int frozen = 0);
-  long long nanos(int frozen = 0);
-  float secs(int frozen = 0);
+  time_t millis(int frozen = 0);
+  time_t ms() {return millis();}
+  time_t micros(int frozen = 0);
+  time_t nanos(int frozen = 0);
+  double secs(int frozen = 0);
  private:
-  long	m_secs;
-  long 	m_nsecs; 
+  time_t	m_secs;
+  time_t 	m_nsecs; 
 };
 
 /** Temp buffer with automatic deallocation */

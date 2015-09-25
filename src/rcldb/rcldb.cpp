@@ -18,7 +18,7 @@
 
 #include <stdio.h>
 #include <cstring>
-#include <unistd.h>
+#include "safeunistd.h"
 #include <math.h>
 #include <time.h>
 
@@ -433,7 +433,7 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     string dbdir = m_rcldb->m_basedir;
     doc.idxi = 0;
     if (!m_rcldb->m_extraDbs.empty()) {
-	unsigned int idxi = whatDbIdx(docid);
+	int idxi = int(whatDbIdx(docid));
 
 	// idxi is in [0, extraDbs.size()]. 0 is for the main index,
 	// idxi-1 indexes into the additional dbs array.
@@ -549,14 +549,13 @@ bool Db::Native::getPagePositions(Xapian::docid docid, vector<int>& vpos)
     return true;
 }
 
-int Db::Native::getPageNumberForPosition(const vector<int>& pbreaks, 
-					 unsigned int pos)
+int Db::Native::getPageNumberForPosition(const vector<int>& pbreaks, int pos)
 {
-    if (pos < baseTextPosition) // Not in text body
+    if (pos < int(baseTextPosition)) // Not in text body
 	return -1;
     vector<int>::const_iterator it = 
 	upper_bound(pbreaks.begin(), pbreaks.end(), pos);
-    return it - pbreaks.begin() + 1;
+    return int(it - pbreaks.begin() + 1);
 }
 
 // Note: we're passed a Xapian::Document* because Xapian
@@ -1420,10 +1419,11 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	time_t mtime = atoll(doc.dmtime.empty() ? doc.fmtime.c_str() : 
 			     doc.dmtime.c_str());
         struct tm tmb;
-	localtime_r(&mtime, &tmb);
+		struct tm *tmbp = &tmb;
+	tmbp = localtime_r(&mtime, &tmb);
 	char buf[9];
 	snprintf(buf, 9, "%04d%02d%02d",
-		 tmb.tm_year+1900, tmb.tm_mon + 1, tmb.tm_mday);
+		 tmbp->tm_year+1900, tmbp->tm_mon + 1, tmbp->tm_mday);
 	// Date (YYYYMMDD)
 	newdocument.add_boolean_term(wrap_prefix(xapday_prefix) + string(buf)); 
 	// Month (YYYYMM)

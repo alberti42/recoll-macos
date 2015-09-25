@@ -43,7 +43,6 @@
 #include "fileudi.h"
 #include "cancelcheck.h"
 #include "rclinit.h"
-#include "execmd.h"
 #include "extrameta.h"
 
 using namespace std;
@@ -145,13 +144,11 @@ FsIndexer::~FsIndexer()
     void *status;
     if (m_haveInternQ) {
 	status = m_iwqueue.setTerminateAndWait();
-	LOGDEB0(("FsIndexer: internfile wrkr status: %ld (1->ok)\n", 
-		 long(status)));
+	LOGDEB0(("FsIndexer: internfile wrkr status: %p (1->ok)\n", status));
     }
     if (m_haveSplitQ) {
 	status = m_dwqueue.setTerminateAndWait();
-	LOGDEB0(("FsIndexer: dbupd worker status: %ld (1->ok)\n", 
-		 long(status)));
+	LOGDEB0(("FsIndexer: dbupd worker status: %p (1->ok)\n", status));
     }
     delete m_stableconfig;
 #endif // IDX_THREADS
@@ -259,7 +256,7 @@ static bool matchesSkipped(const vector<string>& tdl,
     string canonpath = path_canon(path);
     string mpath = canonpath;
     string topdir;
-    while (mpath.length() > 1) {
+    while (!path_isroot(mpath)) { // we assume root not in skipped paths.
         for (vector<string>::const_iterator it = tdl.begin();  
              it != tdl.end(); it++) {
             // the topdirs members are already canonized.
@@ -281,7 +278,7 @@ static bool matchesSkipped(const vector<string>& tdl,
         mpath = path_getfather(mpath);
         // getfather normally returns a path ending with /, canonic
         // paths don't (except for '/' itself).
-        if (!mpath.empty() && mpath[mpath.size()-1] == '/')
+        if (!path_isroot(mpath) && mpath[mpath.size()-1] == '/')
             mpath.erase(mpath.size()-1);
         // should not be necessary, but lets be prudent. If the
         // path did not shorten, something is seriously amiss
@@ -330,7 +327,7 @@ bool FsIndexer::indexFiles(list<string>& files, int flags)
 {
     LOGDEB(("FsIndexer::indexFiles\n"));
     m_noretryfailed = (flags & ConfIndexer::IxFNoRetryFailed) != 0;
-    int ret = false;
+    bool ret = false;
 
     if (!init())
         return false;
@@ -703,7 +700,7 @@ FsIndexer::processonefile(RclConfig *config,
     }
 
     LOGDEB0(("processone: processing: [%s] %s\n", 
-             displayableBytes(stp->st_size).c_str(), fn.c_str()));
+             displayableBytes(off_t(stp->st_size)).c_str(), fn.c_str()));
 
     string utf8fn = compute_utf8fn(config, fn);
 
@@ -772,7 +769,7 @@ FsIndexer::processonefile(RclConfig *config,
 	    if (doc.fmtime.empty())
 		doc.fmtime = ascdate;
 	    if (doc.url.empty())
-		doc.url = cstr_fileu + fn;
+		doc.url = path_pathtofileurl(fn);
 	    const string *fnp = 0;
 	    if (doc.ipath.empty()) {
                 if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty())
@@ -868,7 +865,7 @@ FsIndexer::processonefile(RclConfig *config,
                 fileDoc.meta[Rcl::Doc::keytcfn] = utf8fn;
 	    fileDoc.haschildren = true;
 	    fileDoc.mimetype = mimetype;
-	    fileDoc.url = cstr_fileu + fn;
+	    fileDoc.url = path_pathtofileurl(fn);
 	    if (m_havelocalfields) 
 		setlocalfields(localfields, fileDoc);
 	    char cbuf[100]; 

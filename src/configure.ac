@@ -408,12 +408,12 @@ AC_ARG_ENABLE(recollq,
    need for Qt). This is done by default if --disable-qtgui is set but this
    option enables forcing it.]),
         enableRECOLLQ=$enableval, enableRECOLLQ="no")
-
-if text X"$enableRECOLLQ" != X ; then
+if test X"$enableRECOLLQ" != X ; then
     AM_CONDITIONAL(MAKECMDLINE, [test X$enableRECOLLQ = Xyes])
 else
     AM_CONDITIONAL(MAKECMDLINE, [test X$enableQT = Xno])
 fi
+
 
 if test X$enableQT = Xyes ; then
 
@@ -586,6 +586,5 @@ AC_SUBST(RCLLIBVERSION)
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(common/rclversion.h)
 AC_CONFIG_FILES(python/recoll/setup.py)
-AC_CONFIG_FILES(sampleconf/recoll.conf)
 
 AC_OUTPUT

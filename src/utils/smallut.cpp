@@ -54,10 +54,10 @@ int stringicmp(const string & s1, const string& s2)
 {
     string::const_iterator it1 = s1.begin();
     string::const_iterator it2 = s2.begin();
-    int size1 = s1.length(), size2 = s2.length();
+    string::size_type size1 = s1.length(), size2 = s2.length();
     char c1, c2;
 
-    if (size1 > size2) {
+    if (size1 < size2) {
 	while (it1 != s1.end()) { 
 	    c1 = ::toupper(*it1);
 	    c2 = ::toupper(*it2);
@@ -66,7 +66,7 @@ int stringicmp(const string & s1, const string& s2)
 	    }
 	    ++it1; ++it2;
 	}
-	return size1 == size2 ? 0 : 1;
+	return size1 == size2 ? 0 : -1;
     } else {
 	while (it2 != s2.end()) { 
 	    c1 = ::toupper(*it1);
@@ -76,7 +76,7 @@ int stringicmp(const string & s1, const string& s2)
 	    }
 	    ++it1; ++it2;
 	}
-	return size1 == size2 ? 0 : -1;
+	return size1 == size2 ? 0 : 1;
     }
 }
 void stringtolower(string& io)
@@ -114,10 +114,10 @@ int stringlowercmp(const string & s1, const string& s2)
 {
     string::const_iterator it1 = s1.begin();
     string::const_iterator it2 = s2.begin();
-    int size1 = s1.length(), size2 = s2.length();
+    string::size_type size1 = s1.length(), size2 = s2.length();
     char c2;
 
-    if (size1 > size2) {
+    if (size1 < size2) {
 	while (it1 != s1.end()) { 
 	    c2 = ::tolower(*it2);
 	    if (*it1 != c2) {
@@ -125,7 +125,7 @@ int stringlowercmp(const string & s1, const string& s2)
 	    }
 	    ++it1; ++it2;
 	}
-	return size1 == size2 ? 0 : 1;
+	return size1 == size2 ? 0 : -1;
     } else {
 	while (it2 != s2.end()) { 
 	    c2 = ::tolower(*it2);
@@ -134,7 +134,7 @@ int stringlowercmp(const string & s1, const string& s2)
 	    }
 	    ++it1; ++it2;
 	}
-	return size1 == size2 ? 0 : -1;
+	return size1 == size2 ? 0 : 1;
     }
 }
 
@@ -143,10 +143,10 @@ int stringuppercmp(const string & s1, const string& s2)
 {
     string::const_iterator it1 = s1.begin();
     string::const_iterator it2 = s2.begin();
-    int size1 = s1.length(), size2 = s2.length();
+    string::size_type size1 = s1.length(), size2 = s2.length();
     char c2;
 
-    if (size1 > size2) {
+    if (size1 < size2) {
 	while (it1 != s1.end()) { 
 	    c2 = ::toupper(*it2);
 	    if (*it1 != c2) {
@@ -154,7 +154,7 @@ int stringuppercmp(const string & s1, const string& s2)
 	    }
 	    ++it1; ++it2;
 	}
-	return size1 == size2 ? 0 : 1;
+	return size1 == size2 ? 0 : -1;
     } else {
 	while (it2 != s2.end()) { 
 	    c2 = ::toupper(*it2);
@@ -163,7 +163,7 @@ int stringuppercmp(const string & s1, const string& s2)
 	    }
 	    ++it1; ++it2;
 	}
-	return size1 == size2 ? 0 : -1;
+	return size1 == size2 ? 0 : 1;
     }
 }
 
@@ -486,7 +486,7 @@ void utf8truncate(string &s, int maxlen)
     if (s.size() <= string::size_type(maxlen))
 	return;
     Utf8Iter iter(s);
-    int pos = 0;
+    string::size_type pos = 0;
     while (iter++ != string::npos) 
 	if (iter.getBpos() < string::size_type(maxlen))
 	    pos = iter.getBpos();
@@ -637,7 +637,7 @@ string displayableBytes(off_t size)
 	unit = " GB ";
 	roundable = double(size) / 1E9;
     }
-    size = round(roundable);
+    size = off_t(round(roundable));
     sprintf(sizebuf, "%lld" "%s", (long long)size, unit);
     return string(sizebuf);
 }
@@ -708,8 +708,78 @@ typedef int clockid_t;
 #undef USE_CLOCK_GETTIME
 #endif
 
+#ifdef WIN32
+#include "safewindows.h"
+// Note: struct timespec is defined by pthread.h (from pthreads-w32)
+#ifndef CLOCK_REALTIME
+#define CLOCK_REALTIME 0
+#endif
+
+LARGE_INTEGER getFILETIMEoffset()
+{
+	SYSTEMTIME s;
+	FILETIME f;
+	LARGE_INTEGER t;
+
+	s.wYear = 1970;
+	s.wMonth = 1;
+	s.wDay = 1;
+	s.wHour = 0;
+	s.wMinute = 0;
+	s.wSecond = 0;
+	s.wMilliseconds = 0;
+	SystemTimeToFileTime(&s, &f);
+	t.QuadPart = f.dwHighDateTime;
+	t.QuadPart <<= 32;
+	t.QuadPart |= f.dwLowDateTime;
+	return (t);
+}
+
+int clock_gettime(int X, struct timespec *tv)
+{
+	LARGE_INTEGER           t;
+	FILETIME            f;
+	double                  microseconds;
+	static LARGE_INTEGER    offset;
+	static double           frequencyToMicroseconds;
+	static int              initialized = 0;
+	static BOOL             usePerformanceCounter = 0;
+
+	if (!initialized) {
+		LARGE_INTEGER performanceFrequency;
+		initialized = 1;
+		usePerformanceCounter = QueryPerformanceFrequency(&performanceFrequency);
+		if (usePerformanceCounter) {
+			QueryPerformanceCounter(&offset);
+			frequencyToMicroseconds = (double)performanceFrequency.QuadPart / 1000000.;
+		}
+		else {
+			offset = getFILETIMEoffset();
+			frequencyToMicroseconds = 10.;
+		}
+	}
+	if (usePerformanceCounter) QueryPerformanceCounter(&t);
+	else {
+		GetSystemTimeAsFileTime(&f);
+		t.QuadPart = f.dwHighDateTime;
+		t.QuadPart <<= 32;
+		t.QuadPart |= f.dwLowDateTime;
+	}
+
+	t.QuadPart -= offset.QuadPart;
+	microseconds = (double)t.QuadPart / frequencyToMicroseconds;
+	t.QuadPart = (long long)microseconds;
+	tv->tv_sec = t.QuadPart / 1000000;
+	tv->tv_nsec = (t.QuadPart % 1000000) * 1000;
+	return (0);
+}
+#define USE_CLOCK_GETTIME
+#else /* -> !_WIN32 */
+
 #ifndef USE_CLOCK_GETTIME
 #include <sys/time.h>
+#endif
+
 #endif
 
 static void gettime(clockid_t clk_id, struct timespec *ts)
@@ -740,29 +810,29 @@ Chrono::Chrono()
 }
 
 // Reset and return value before rest in milliseconds
-long Chrono::restart()
+time_t Chrono::restart()
 {
   struct timespec tv;
   gettime(CLOCK_REALTIME, &tv);
-  long ret = MILLIS(tv);
+  time_t ret = MILLIS(tv);
   m_secs = tv.tv_sec;
   m_nsecs = tv.tv_nsec;
   return ret;
 }
 
 // Get current timer value, milliseconds
-long Chrono::millis(int frozen)
+time_t Chrono::millis(int frozen)
 {
     return nanos() / 1000000;
 }
 
 //
-long Chrono::micros(int frozen)
+time_t Chrono::micros(int frozen)
 {
     return nanos() / 1000;
 }
 
-long long Chrono::nanos(int frozen)
+time_t Chrono::nanos(int frozen)
 {
   if (frozen) {
     return NANOS(frozen_tv);
@@ -773,12 +843,12 @@ long long Chrono::nanos(int frozen)
   }
 }
 
-float Chrono::secs(int frozen)
+double Chrono::secs(int frozen)
 {
   struct timespec tv;
   gettime(CLOCK_REALTIME, &tv);
-  float secs = (float)(frozen?frozen_tv.tv_sec:tv.tv_sec - m_secs);
-  float nsecs = (float)(frozen?frozen_tv.tv_nsec:tv.tv_nsec - m_nsecs); 
+  double secs = (double)(frozen?frozen_tv.tv_sec:tv.tv_sec - m_secs);
+  double nsecs = (double)(frozen?frozen_tv.tv_nsec:tv.tv_nsec - m_nsecs); 
   return secs + nsecs * 1e-9;
 }
 
@@ -818,7 +888,7 @@ static bool parsedate(vector<string>::const_iterator& it,
         return false;
     }
     if (it == end || sscanf(it++->c_str(), "%d", &dip->d1) != 1) {
-        return -1;
+        return false;
     }
 
     return true;
@@ -1062,7 +1132,7 @@ void catstrerror(string *reason, const char *what, int _errno)
 
     reason->append(" : ");
 
-#ifdef sun
+#if defined(sun) || defined(_WIN32)
     // Note: sun strerror is noted mt-safe ??
     reason->append(strerror(_errno));
 #else
@@ -1106,7 +1176,7 @@ void HighlightData::toString(std::string& out)
 	    int(groups.size()), int(grpsugidx.size()), int(ugroups.size()));
     out.append(cbuf);
 
-    unsigned int ugidx = (unsigned int)-1;
+    size_t ugidx = (size_t)-1;
     for (unsigned int i = 0; i < groups.size(); i++) {
 	if (ugidx != grpsugidx[i]) {
 	    ugidx = grpsugidx[i];
@@ -1135,7 +1205,7 @@ void HighlightData::append(const HighlightData& hl)
 
     groups.insert(groups.end(), hl.groups.begin(), hl.groups.end());
     slacks.insert(slacks.end(), hl.slacks.begin(), hl.slacks.end());
-    for (std::vector<unsigned int>::const_iterator it = hl.grpsugidx.begin(); 
+    for (std::vector<size_t>::const_iterator it = hl.grpsugidx.begin(); 
 	 it != hl.grpsugidx.end(); it++) {
 	grpsugidx.push_back(*it + ugsz0);
     }
@@ -1271,7 +1341,7 @@ int main(int argc, char **argv)
 {
     thisprog = *argv++;argc--;
 
-#if 1
+#if 0
     if (argc <=0 ) {
         cerr << "Usage: smallut <stringtosplit>" << endl;
         exit(1);
@@ -1376,8 +1446,37 @@ int main(int argc, char **argv)
     string out;
     stringsToCSV(tokens, out);
     cout << "CSV line: [" << out << "]" << endl;
-#endif
+#elif 1
+    string sshort("ABC");
+    string slong("ABCD");
+    string sshortsmaller("ABB");
+    
+    vector<pair<string,string> > cmps;
+    cmps.push_back(pair<string,string>(sshort,sshort));
+    cmps.push_back(pair<string,string>(sshort,slong));
+    cmps.push_back(pair<string,string>(slong,sshort));
+    cmps.push_back(pair<string,string>(sshortsmaller,sshort));
+    cmps.push_back(pair<string,string>(sshort, sshortsmaller));
 
+    for (vector<pair<string,string> >::const_iterator it = cmps.begin();
+         it != cmps.end(); it++) {
+        cout << it->first << " " << it->second << " " << 
+            stringicmp(it->first, it->second) << endl;
+    }
+    cout << endl;
+    for (vector<pair<string,string> >::const_iterator it = cmps.begin();
+         it != cmps.end(); it++) {
+        cout << it->first << " " << it->second << " " << 
+            stringlowercmp(stringtolower(it->first), it->second) << endl;
+    }
+    cout << endl;
+    for (vector<pair<string,string> >::const_iterator it = cmps.begin();
+         it != cmps.end(); it++) {
+        cout << it->first << " " << it->second << " " << 
+            stringuppercmp(it->first, it->second) << endl;
+    }
+
+#endif
 }
 
 #endif

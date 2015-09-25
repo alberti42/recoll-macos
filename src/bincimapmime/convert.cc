@@ -47,7 +47,7 @@ BincStream::~BincStream(void)
 }
 
 //------------------------------------------------------------------------
-string BincStream::popString(unsigned int size)
+string BincStream::popString(std::string::size_type size)
 {
   if (size > nstr.length())
     size = nstr.length();

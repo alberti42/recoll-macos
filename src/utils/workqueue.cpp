@@ -21,12 +21,7 @@
 #include <errno.h>
 #include <string.h>
 
-#ifdef _WIN32
-#include <windows.h>
-static inline unsigned int sleep(unsigned int s) {Sleep(s * 1000); return 0;}
-#else
-#include <unistd.h>
-#endif
+#include "safeunistd.h"
 
 #include "workqueue.h"
 

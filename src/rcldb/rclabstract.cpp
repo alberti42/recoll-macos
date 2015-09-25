@@ -82,7 +82,7 @@ bool Query::Native::getMatchTerms(unsigned long xdocid, vector<string>& terms)
 {
     if (!xenquire) {
 	LOGERR(("Query::getMatchTerms: no query opened\n"));
-	return -1;
+	return false;
     }
 
     terms.clear();
@@ -386,7 +386,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
     for (multimap<double, vector<string> >::reverse_iterator mit = byQ.rbegin(); 
 	 mit != byQ.rend(); mit++) {
 	unsigned int maxgrpoccs;
-	float q;
+	double q;
 	if (byQ.size() == 1) {
 	    maxgrpoccs = maxtotaloccs;
 	    q = 1.0;

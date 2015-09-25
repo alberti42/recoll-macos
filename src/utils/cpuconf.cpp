@@ -62,7 +62,6 @@ bool getCpuConf(CpuConf& cpus)
 }
 #endif
 
-
 #else // TEST_CPUCONF
 
 #include <stdlib.h>

@@ -161,10 +161,10 @@ bool WasaParserDriver::addClause(SearchData *sd,
         size_t size = strtoll(cl->gettext().c_str(), &cp, 10);
         if (*cp != 0) {
             switch (*cp) {
-            case 'k': case 'K': size *= 1E3;break;
-            case 'm': case 'M': size *= 1E6;break;
-            case 'g': case 'G': size *= 1E9;break;
-            case 't': case 'T': size *= 1E12;break;
+            case 'k': case 'K': size *= 1000;break;
+            case 'm': case 'M': size *= 1000*1000;break;
+            case 'g': case 'G': size *= 1000*1000*1000;break;
+            case 't': case 'T': size *= size_t(1000)*1000*1000*1000;break;
             default: 
                 m_reason = string("Bad multiplier suffix: ") + *cp;
                 delete cl;

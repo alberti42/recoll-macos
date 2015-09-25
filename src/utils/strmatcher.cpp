@@ -19,16 +19,21 @@
 
 #include <stdio.h>
 #include <sys/types.h>
+#ifdef _WIN32
+#include <regex>
+#else
 #include <regex.h>
+#endif
 #include <fnmatch.h>
 
 #include <string>
-using std::string;
 
 #include "cstr.h"
 #include "debuglog.h"
-#include "strmatcher.h"
 #include "pathut.h"
+#include "strmatcher.h"
+
+using namespace std;
 
 bool StrWildMatcher::match(const string& val) const
 {
@@ -60,9 +65,25 @@ StrRegexpMatcher::StrRegexpMatcher(const string& exp)
 bool StrRegexpMatcher::setExp(const string& exp)
 {
     if (m_compiled) {
+#ifdef _WIN32
+        delete (regex*)m_compiled;
+#else
 	regfree((regex_t*)m_compiled);
 	delete (regex_t*)m_compiled;
+#endif
     }
+    m_compiled = 0;
+    
+#ifdef _WIN32
+    try {
+        m_compiled = new regex(exp, std::regex_constants::nosubs | 
+                               std::regex_constants::extended);
+    } catch (...) {
+        m_reason = string("StrRegexpMatcher:regcomp failed for ")
+	    + exp + string("syntax error ?");
+        return false;
+    }
+#else
     m_compiled = new regex_t;
     if ((m_errcode = 
 	 regcomp((regex_t*)m_compiled, exp.c_str(), REG_EXTENDED|REG_NOSUB))) {
@@ -72,6 +93,7 @@ bool StrRegexpMatcher::setExp(const string& exp)
 	    + exp + string(errbuf);
 	return false;
     }
+#endif
     m_sexp = exp;
     return true;
 }
@@ -79,8 +101,12 @@ bool StrRegexpMatcher::setExp(const string& exp)
 StrRegexpMatcher::~StrRegexpMatcher()
 {
     if (m_compiled) {
+#ifdef _WIN32
+        delete (regex *)m_compiled;
+#else
 	regfree((regex_t*)m_compiled);
 	delete (regex_t*)m_compiled;
+#endif
     }
 }
 
@@ -88,7 +114,11 @@ bool StrRegexpMatcher::match(const string& val) const
 {
     if (m_errcode) 
 	return false;
+#ifdef _WIN32
+    return regex_match(val, *((regex *)m_compiled));
+#else
     return regexec((regex_t*)m_compiled, val.c_str(), 0, 0, 0) != REG_NOMATCH;
+#endif
 }
 
 string::size_type StrRegexpMatcher::baseprefixlen() const

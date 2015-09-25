@@ -35,7 +35,7 @@ using std::list;
 bool RclDHistoryEntry::encode(string& value)
 {
     char chartime[30];
-    sprintf(chartime,"%ld", unixtime);
+    sprintf(chartime,"%lld", (long long)unixtime);
     string budi;
     base64_encode(udi, budi);
     value = string("U ") + string(chartime) + " " + budi;
@@ -161,5 +161,5 @@ int DocSequenceHistory::getResCnt()
 {	
     if (m_hlist.empty())
 	m_hlist = getDocHistory(m_hist);
-    return m_hlist.size();
+    return int(m_hlist.size());
 }

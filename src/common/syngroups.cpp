@@ -110,7 +110,7 @@ bool SynGroups::setfile(const string& fn)
 	lnum++;
 
         {
-            int ll = strlen(cline);
+            size_t ll = strlen(cline);
             while (ll > 0 && (cline[ll-1] == '\n' || cline[ll-1] == '\r')) {
                 cline[ll-1] = 0;
                 ll--;

@@ -14,11 +14,8 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
 #include "autoconfig.h"
 
-#include <unistd.h>
 #include <cstdlib>
 
 #include <qapplication.h>
@@ -164,14 +161,6 @@ static void recollCleanup()
     LOGDEB2(("recollCleanup: done\n"));
 }
 
-static void sigcleanup(int)
-{
-    // We used to not call exit from here, because of the idxthread, but
-    // this is now gone, so...
-    recollNeedsExit = 1;
-    exit(1);
-}
-
 void applyStyleSheet(const QString& ssfname)
 {
     const char *cfname = (const char *)ssfname.toLocal8Bit();
@@ -305,7 +294,7 @@ int main(int argc, char **argv)
 
 
     string reason;
-    theconfig = recollinit(recollCleanup, sigcleanup, reason, &a_config);
+    theconfig = recollinit(recollCleanup, 0, reason, &a_config);
     if (!theconfig || !theconfig->ok()) {
 	QString msg = "Configuration problem: ";
 	msg += QString::fromUtf8(reason.c_str());

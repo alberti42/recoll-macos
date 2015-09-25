@@ -19,11 +19,13 @@
 
 #include <stdio.h>
 #include <errno.h>
+#ifndef _WIN32
 #include <langinfo.h>
+#include <sys/param.h>
+#endif
 #include <limits.h>
 #include "safesysstat.h"
 #include "safeunistd.h"
-#include <sys/param.h>
 #ifdef __FreeBSD__
 #include <osreldate.h>
 #endif
@@ -45,6 +47,7 @@
 #include "readfile.h"
 #include "fstreewalk.h"
 #include "cpuconf.h"
+#include "execmd.h"
 
 using namespace std;
 
@@ -120,7 +123,8 @@ void RclConfig::zeroMe() {
 
 bool RclConfig::isDefaultConfig() const
 {
-    string defaultconf = path_cat(path_canon(path_home()), ".recoll/");
+    string defaultconf = path_cat(path_homedata(),
+                                  path_defaultrecollconfsubdir());
     string specifiedconf = path_canon(m_confdir);
     path_catslash(specifiedconf);
     return !defaultconf.compare(specifiedconf);
@@ -146,14 +150,7 @@ RclConfig::RclConfig(const string *argcnf)
     }
 
     // Compute our data dir name, typically /usr/local/share/recoll
-    const char *cdatadir = getenv("RECOLL_DATADIR");
-    if (cdatadir == 0) {
-	// If not in environment, use the compiled-in constant. 
-	m_datadir = RECOLL_DATADIR;
-    } else {
-	m_datadir = cdatadir;
-    }
-
+    m_datadir = path_sharedatadir();
     // We only do the automatic configuration creation thing for the default
     // config dir, not if it was specified through -c or RECOLL_CONFDIR
     bool autoconfdir = false;
@@ -172,7 +169,7 @@ RclConfig::RclConfig(const string *argcnf)
 	    m_confdir = path_canon(cp);
 	} else {
 	    autoconfdir = true;
-	    m_confdir = path_cat(path_home(), ".recoll/");
+	    m_confdir = path_cat(path_homedata(), path_defaultrecollconfsubdir());
 	}
     }
 
@@ -200,6 +197,7 @@ RclConfig::RclConfig(const string *argcnf)
     // is called from the main thread at once, by constructing a config
     // from recollinit
     if (o_localecharset.empty()) {
+#ifndef _WIN32
 	const char *cp;
 	cp = nl_langinfo(CODESET);
 	// We don't keep US-ASCII. It's better to use a superset
@@ -217,6 +215,9 @@ RclConfig::RclConfig(const string *argcnf)
 	    // Use cp1252 instead of iso-8859-1, it's a superset.
 	    o_localecharset = string(cstr_cp1252);
 	}
+#else
+        o_localecharset = "UTF-8";
+#endif
 	LOGDEB1(("RclConfig::getDefCharset: localecharset [%s]\n",
 		 o_localecharset.c_str()));
     }
@@ -635,7 +636,7 @@ bool RclConfig::inStopSuffixes(const string& fni)
 	     it != stoplist.end(); it++) {
 	    STOPSUFFIXES->insert(SfString(stringtolower(*it)));
 	    if (m_maxsufflen < it->length())
-		m_maxsufflen = it->length();
+		m_maxsufflen = int(it->length());
 	}
     }
 
@@ -1154,7 +1155,7 @@ string RclConfig::getConfdirPath(const char *varname, const char *dflt) const
     } else {
 	result = path_tildexpand(result);
 	// If not an absolute path, compute relative to config dir
-	if (result.at(0) != '/') {
+	if (!path_isabsolute(result)) {
 	    result = path_cat(getConfDir(), result);
 	}
     }
@@ -1212,7 +1213,7 @@ void RclConfig::urlrewrite(const string& dbdir, string& url) const
 	    // This call always succeeds because the key comes from getNames()
 	    if (m_ptrans->get(*it, npath, dbdir)) { 
 		path = path.replace(0, it->size(), npath);
-		url = "file://" + path;
+		url = path_pathtofileurl(path);
 	    }
 	    break;
 	}
@@ -1305,45 +1306,45 @@ vector<string> RclConfig::getDaemSkippedPaths() const
 }
 
 
-// Look up an executable filter.  We look in $RECOLL_FILTERSDIR,
-// filtersdir in config file, then let the system use the PATH
+// Look up an executable filter.  We add $RECOLL_FILTERSDIR,
+// and filtersdir from the config file to the PATH, then use execmd::which()
 string RclConfig::findFilter(const string &icmd) const
 {
     // If the path is absolute, this is it
-    if (icmd[0] == '/')
+    if (path_isabsolute(icmd))
 	return icmd;
 
-    string cmd;
-    const char *cp;
+    const char *cp = getenv("PATH");
+    if (!cp) //??
+        cp = "";
+    string PATH(cp);
 
-    // Filters dir from environment ?
+    // For historical reasons: check in personal config directory
+    PATH = getConfDir() + path_PATHsep() + PATH;
+
+    string temp;
+    // Prepend $datadir/filters
+    temp = path_cat(m_datadir, "filters");
+    PATH = temp + path_PATHsep() + PATH;
+
+    // Prepend possible configuration parameter?
+    if (getConfParam(string("filtersdir"), temp)) {
+        temp = path_tildexpand(temp);
+        PATH = temp + path_PATHsep() + PATH;
+    }
+
+    // Prepend possible environment variable
     if ((cp = getenv("RECOLL_FILTERSDIR"))) {
-	cmd = path_cat(cp, icmd);
-	if (access(cmd.c_str(), X_OK) == 0)
-	    return cmd;
-    } 
-    // Filters dir as configuration parameter?
-    if (getConfParam(string("filtersdir"), cmd)) {
-	cmd = path_cat(cmd, icmd);
-	if (access(cmd.c_str(), X_OK) == 0)
-	    return cmd;
+        PATH = string(cp) + path_PATHsep() + PATH;
     } 
 
-    // Filters dir as datadir subdir. Actually the standard case, but
-    // this is normally the same value found in config file (previous step)
-    cmd = path_cat(m_datadir, "filters");
-    cmd = path_cat(cmd, icmd);
-    if (access(cmd.c_str(), X_OK) == 0)
-	return cmd;
-
-    // Last resort for historical reasons: check in personal config
-    // directory
-    cmd = path_cat(getConfDir(), icmd);
-    if (access(cmd.c_str(), X_OK) == 0)
-	return cmd;
-
-    // Let the shell try to find it...
-    return icmd;
+    string cmd;
+    if (ExecCmd::which(icmd, cmd, PATH.c_str())) {
+        return cmd;
+    } else {
+        // Let the shell try to find it...
+        return icmd;
+    }
 }
 
 /** 

@@ -16,20 +16,18 @@
  */
 #ifndef _INDEXER_H_INCLUDED_
 #define _INDEXER_H_INCLUDED_
+#include "rclconfig.h"
 
 #include <string>
 #include <list>
 #include <map>
 #include <vector>
 
-#ifndef NO_NAMESPACES
 using std::string;
 using std::list;
 using std::map;
 using std::vector;
-#endif
 
-#include "rclconfig.h"
 #include "rcldb.h"
 #include "rcldoc.h"
 #ifdef IDX_THREADS

@@ -35,7 +35,7 @@ BeagleQueueCache::BeagleQueueCache(RclConfig *cnf)
         ccdir = "webcache";
     ccdir = path_tildexpand(ccdir);
     // If not an absolute path, compute relative to config dir
-    if (ccdir.at(0) != '/')
+    if (!path_isabsolute(ccdir))
         ccdir = path_cat(cnf->getConfDir(), ccdir);
 
     int maxmbs = 40;

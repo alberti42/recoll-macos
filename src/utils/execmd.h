@@ -16,14 +16,11 @@
  */
 #ifndef _EXECMD_H_INCLUDED_
 #define _EXECMD_H_INCLUDED_
-
-#include <signal.h>
+#include "autoconfig.h"
 
 #include <string>
 #include <vector>
 #include <stack>
-
-#include "netcon.h"
 
 /** 
  * Callback function object to advise of new data arrival, or just periodic 
@@ -42,7 +39,7 @@ class ExecCmdAdvise {
 
 /** 
  * Callback function object to get more input data. Data has to be provided
- * in the initial input string, set it to empty to signify eof.
+ * into the initial input string, set it to empty to signify eof.
  */
 class ExecCmdProvide {
  public:
@@ -93,18 +90,23 @@ class ExecCmd {
 
     /** 
      * Set function objects to call whenever new data is available or on
-     * select timeout / whenever new data is needed to send. Must be called
-     * before doexec()
+     * select timeout. The data itself is stored in the output string.
+     * Must be set before calling doexec.
      */
-    void setAdvise(ExecCmdAdvise *adv) {m_advise = adv;}
-    void setProvide(ExecCmdProvide *p) {m_provide = p;}
+    void setAdvise(ExecCmdAdvise *adv);
+    /*
+     * Set function object to call whenever new data is needed. The
+     * data should be stored in the input string. Must be set before
+     * calling doexec()
+     */
+    void setProvide(ExecCmdProvide *p);
 
     /**
      * Set select timeout in milliseconds. The default is 1 S. 
      * This is NOT a time after which an error will occur, but the period of
-     * the calls to the cancellation check routine.
+     * the calls to the advise routine (which normally checks for cancellation).
      */
-    void setTimeout(int mS) {if (mS > 30) m_timeoutMs = mS;}
+    void setTimeout(int mS);
 
     /** 
      * Set destination for stderr data. The default is to let it alone (will 
@@ -113,7 +115,7 @@ class ExecCmd {
      * If the parameter can't be opened for writing, the command's
      * stderr will be closed.
      */
-    void setStderr(const std::string &stderrFile) {m_stderrFile = stderrFile;}
+    void setStderr(const std::string &stderrFile);
 
     /**
      * Execute command. 
@@ -130,7 +132,7 @@ class ExecCmd {
      * @param args the argument vector (NOT including argv[0]).
      * @param input Input to send TO the command.
      * @param output Output FROM the command.
-     * @return the exec ouput status (0 if ok), or -1
+     * @return the exec output status (0 if ok), or -1
      */
     int doexec(const std::string &cmd, const std::vector<std::string>& args, 
 	       const std::string *input = 0, 
@@ -151,25 +153,21 @@ class ExecCmd {
 	@param O: status, the wait(2) call's status value */
     bool maybereap(int *status);
 
-    pid_t getChildPid() {return m_pid;}
+    pid_t getChildPid();
 
     /** 
      * Cancel/kill command. This can be called from another thread or
      * from the advise callback, which could also raise an exception to 
      * accomplish the same thing
      */
-    void setKill() {m_killRequest = true;}
+    void setKill();
 
     /**
      * Get rid of current process (become ready for start). 
      */
-    void zapChild() {setKill(); (void)wait();}
+    void zapChild();
 
-    ExecCmd()
-	: m_advise(0), m_provide(0), m_timeoutMs(1000), m_rlimit_as_mbytes(0)
-    {
-	reset();
-    }
+    ExecCmd();
     ~ExecCmd();
 
     /**
@@ -190,40 +188,10 @@ class ExecCmd {
      */
     static bool backtick(const std::vector<std::string> cmd, std::string& out);
 
-    friend class ExecCmdRsrc;
+    class Internal;
  private:
-    static bool      o_useVfork;
-
-    std::vector<std::string>   m_env;
-    ExecCmdAdvise   *m_advise;
-    ExecCmdProvide  *m_provide;
-    bool             m_killRequest;
-    int              m_timeoutMs;
-    int              m_rlimit_as_mbytes;
-    std::string           m_stderrFile;
-    // Pipe for data going to the command
-    int              m_pipein[2];
-    NetconP          m_tocmd;
-    // Pipe for data coming out
-    int              m_pipeout[2];
-    NetconP          m_fromcmd;
-    // Subprocess id
-    pid_t            m_pid;
-    // Saved sigmask
-    sigset_t         m_blkcld;
-
-    // Reset internal state indicators. Any resources should have been
-    // previously freed
-    void reset() {
-	m_killRequest = false;
-	m_pipein[0] = m_pipein[1] = m_pipeout[0] = m_pipeout[1] = -1;
-	m_pid = -1;
-	sigemptyset(&m_blkcld);
-    }
-    // Child process code
-    inline void dochild(const std::string &cmd, const char **argv, 
-			const char **envv, bool has_input, bool has_output);
-    /* Copyconst and assignment private and forbidden */
+    Internal *m;
+    /* Copyconst and assignment are private and forbidden */
     ExecCmd(const ExecCmd &) {}
     ExecCmd& operator=(const ExecCmd &) {return *this;};
 };

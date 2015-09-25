@@ -15,14 +15,18 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #ifndef TEST_COPYFILE
+#include "autoconfig.h"
+
 #include <stdio.h>
 #include <errno.h>
 #include "safefcntl.h"
 #include <sys/types.h>
 #include "safesysstat.h"
 #include "safeunistd.h"
+#ifndef _WIN32
 #include <sys/time.h>
 #include <utime.h>
+#endif
 
 #include <cstring>
 
@@ -43,7 +47,7 @@ bool copyfile(const char *src, const char *dst, string &reason, int flags)
 
     LOGDEB(("copyfile: %s to %s\n", src, dst));
 
-    if ((sfd = ::open(src, O_RDONLY)) < 0) {
+    if ((sfd = ::open(src, O_RDONLY, 0)) < 0) {
         reason += string("open ") + src + ": " + strerror(errno);
         goto out;
     }
@@ -149,6 +153,7 @@ bool renameormove(const char *src, const char *dst, string &reason)
         return false;
     }
 
+#ifndef _WIN32
     // Try to preserve modes, owner, times. This may fail for a number
     // of reasons
     if ((st1.st_mode & 0777) != (st.st_mode & 0777)) {
@@ -167,7 +172,7 @@ bool renameormove(const char *src, const char *dst, string &reason)
     times[1].tv_sec = st.st_mtime;
     times[1].tv_usec = 0;
     utimes(dst, times);
-
+#endif
     // All ok, get rid of origin
     if (unlink(src) < 0) {
         reason += string("Can't unlink ") + src + "Error : " + strerror(errno);

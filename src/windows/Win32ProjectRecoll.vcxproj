@@ -1,0 +1,254 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{23FF40E1-BA87-4E5F-9B22-2EB760FF403D}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Win32ProjectRecoll</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="SolutionSettings\SolutionSettings.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="SolutionSettings\SolutionSettings.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="SolutionSettings\SolutionSettings.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="SolutionSettings\SolutionSettings.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>BUILDING_RECOLL;WIN32;__WIN32__;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>$(libiconv)\include;$(xapian)\include;$(solutiondir)..\internfile;$(solutiondir)..\rcldb;$(solutiondir)..\index;$(solutiondir)..\bincimapmime;$(solutiondir)..\unac;$(solutiondir)..\windows;$(zlib);$(pthreads)\include;$(solutiondir)..\xaposix;$(solutiondir)..\common;$(solutiondir)..\utils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4800;4996</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>BUILDING_RECOLL;__WIN32__;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>false</SDLCheck>
+      <AdditionalIncludeDirectories>$(libiconv)\include;$(xapian)\include;$(solutiondir)..\internfile;$(solutiondir)..\rcldb;$(solutiondir)..\index;$(solutiondir)..\bincimapmime;$(solutiondir)..\unac;$(solutiondir)..\windows;$(zlib);$(pthreads)\include;$(solutiondir)..\xaposix;$(solutiondir)..\common;$(solutiondir)..\utils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4800;4996</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\bincimapmime\convert.h" />
+    <ClInclude Include="..\common\autoconfig.h" />
+    <ClInclude Include="..\common\conf_post.h" />
+    <ClInclude Include="..\index\indexer.h" />
+    <ClInclude Include="..\index\mimetype.h" />
+    <ClInclude Include="..\internfile\internfile.h" />
+    <ClInclude Include="..\internfile\mh_exec.h" />
+    <ClInclude Include="..\internfile\mh_execm.h" />
+    <ClInclude Include="..\internfile\mh_symlink.h" />
+    <ClInclude Include="..\utils\cancelcheck.h" />
+    <ClInclude Include="..\utils\cpuconf.h" />
+    <ClInclude Include="..\utils\debuglog.h" />
+    <ClInclude Include="..\utils\execmd.h" />
+    <ClInclude Include="..\utils\md5.h" />
+    <ClInclude Include="..\utils\md5ut.h" />
+    <ClInclude Include="..\utils\mimeparse.h" />
+    <ClInclude Include="..\utils\pathut.h" />
+    <ClInclude Include="..\utils\readfile.h" />
+    <ClInclude Include="..\utils\smallut.h" />
+    <ClInclude Include="..\utils\strmatcher.h" />
+    <ClInclude Include="..\utils\wipedir.h" />
+    <ClInclude Include="..\xaposix\safefcntl.h" />
+    <ClInclude Include="..\xaposix\safesysstat.h" />
+    <ClInclude Include="..\xaposix\safeunistd.h" />
+    <ClInclude Include="..\xaposix\safewindows.h" />
+    <ClInclude Include="fnmatch.h" />
+    <ClInclude Include="strptime.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\bincimapmime\convert.cc" />
+    <ClCompile Include="..\bincimapmime\mime-parsefull.cc" />
+    <ClCompile Include="..\bincimapmime\mime-parseonlyheader.cc" />
+    <ClCompile Include="..\bincimapmime\mime-printbody.cc" />
+    <ClCompile Include="..\bincimapmime\mime.cc" />
+    <ClCompile Include="..\common\cstr.cpp" />
+    <ClCompile Include="..\common\rclconfig.cpp" />
+    <ClCompile Include="..\common\rclinit.cpp" />
+    <ClCompile Include="..\common\syngroups.cpp" />
+    <ClCompile Include="..\common\textsplit.cpp" />
+    <ClCompile Include="..\common\unacpp.cpp" />
+    <ClCompile Include="..\index\fetcher.cpp" />
+    <ClCompile Include="..\index\fsfetcher.cpp" />
+    <ClCompile Include="..\index\fsindexer.cpp" />
+    <ClCompile Include="..\index\indexer.cpp" />
+    <ClCompile Include="..\index\mimetype.cpp" />
+    <ClCompile Include="..\index\subtreelist.cpp" />
+    <ClCompile Include="..\internfile\extrameta.cpp" />
+    <ClCompile Include="..\internfile\htmlparse.cpp" />
+    <ClCompile Include="..\internfile\internfile.cpp" />
+    <ClCompile Include="..\internfile\mh_exec.cpp" />
+    <ClCompile Include="..\internfile\mh_execm.cpp" />
+    <ClCompile Include="..\internfile\mh_html.cpp" />
+    <ClCompile Include="..\internfile\mh_mail.cpp" />
+    <ClCompile Include="..\internfile\mh_mbox.cpp" />
+    <ClCompile Include="..\internfile\mh_text.cpp" />
+    <ClCompile Include="..\internfile\mimehandler.cpp" />
+    <ClCompile Include="..\internfile\myhtmlparse.cpp" />
+    <ClCompile Include="..\internfile\txtdcode.cpp" />
+    <ClCompile Include="..\internfile\uncomp.cpp" />
+    <ClCompile Include="..\rcldb\daterange.cpp" />
+    <ClCompile Include="..\rcldb\expansiondbs.cpp" />
+    <ClCompile Include="..\rcldb\rclabstract.cpp" />
+    <ClCompile Include="..\rcldb\rcldb.cpp" />
+    <ClCompile Include="..\rcldb\rcldoc.cpp" />
+    <ClCompile Include="..\rcldb\rcldups.cpp" />
+    <ClCompile Include="..\rcldb\rclquery.cpp" />
+    <ClCompile Include="..\rcldb\rclterms.cpp" />
+    <ClCompile Include="..\rcldb\searchdata.cpp" />
+    <ClCompile Include="..\rcldb\searchdatatox.cpp" />
+    <ClCompile Include="..\rcldb\searchdataxml.cpp" />
+    <ClCompile Include="..\rcldb\stemdb.cpp" />
+    <ClCompile Include="..\rcldb\stoplist.cpp" />
+    <ClCompile Include="..\rcldb\synfamily.cpp" />
+    <ClCompile Include="..\unac\unac.cpp" />
+    <ClCompile Include="..\utils\appformime.cpp" />
+    <ClCompile Include="..\utils\base64.cpp" />
+    <ClCompile Include="..\utils\circache.cpp" />
+    <ClCompile Include="..\utils\conftree.cpp" />
+    <ClCompile Include="..\utils\copyfile.cpp" />
+    <ClCompile Include="..\utils\cpuconf.cpp" />
+    <ClCompile Include="..\utils\debuglog.cpp" />
+    <ClCompile Include="..\utils\fileudi.cpp" />
+    <ClCompile Include="..\utils\fstreewalk.cpp" />
+    <ClCompile Include="..\utils\idfile.cpp" />
+    <ClCompile Include="..\utils\md5.cpp" />
+    <ClCompile Include="..\utils\md5ut.cpp" />
+    <ClCompile Include="..\utils\mimeparse.cpp" />
+    <ClCompile Include="..\utils\pathut.cpp" />
+    <ClCompile Include="..\utils\readfile.cpp" />
+    <ClCompile Include="..\utils\smallut.cpp" />
+    <ClCompile Include="..\utils\strmatcher.cpp" />
+    <ClCompile Include="..\utils\transcode.cpp" />
+    <ClCompile Include="..\utils\wipedir.cpp" />
+    <ClCompile Include="..\xaposix\safe.cc" />
+    <ClCompile Include="dirent.c" />
+    <ClCompile Include="execmd_w.cpp" />
+    <ClCompile Include="fnmatch.c" />
+    <ClCompile Include="strptime.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

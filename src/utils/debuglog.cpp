@@ -21,10 +21,8 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#ifndef _WIN32
-#include <fcntl.h>
-#endif
-
+#include <errno.h>
+#include <safefcntl.h> // in case O_APPEND is in there
 #ifdef INCLUDE_NEW_H
 #include <new.h>
 #endif
@@ -75,15 +73,18 @@ class DLFWImpl {
 	} else {
 	    fp = fopen(filename, (truncate) ? "w" : "a");
 	    if (fp) {
-		setvbuf(fp, 0, _IOLBF, 0);
-#ifdef O_APPEND
+		setvbuf(fp, 0, _IOLBF, BUFSIZ);
+#if defined(O_APPEND) && !defined(_WIN32)
 		{
 		    int flgs = 0;
 		    fcntl(fileno(fp), F_GETFL, &flgs);
 		    fcntl(fileno(fp), F_SETFL, flgs|O_APPEND);
 		}
 #endif
-	    }
+	    } else {
+                fprintf(stderr, "Debuglog: could not open [%s] errno %d\n",
+                        filename, errno);
+            }
 	}
 	return;
     }

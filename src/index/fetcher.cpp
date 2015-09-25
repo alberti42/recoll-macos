@@ -14,9 +14,8 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifdef HAVE_CONFIG_H
 #include "autoconfig.h"
-#endif
+
 
 #include "debuglog.h"
 
@@ -34,8 +33,10 @@ DocFetcher *docFetcherMake(const Rcl::Doc& idoc)
     idoc.getmeta(Rcl::Doc::keybcknd, &backend);
     if (backend.empty() || !backend.compare("FS")) {
 	return new FSDocFetcher;
+#ifndef DISABLE_WEB_INDEXER
     } else if (!backend.compare("BGL")) {
 	return new BGLDocFetcher;
+#endif
     } else {
 	LOGERR(("DocFetcherFactory: unknown backend [%s]\n", backend.c_str()));
 	return 0;

@@ -15,7 +15,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-
+#include <limits.h>
 #include <string>
 #include <utility>
 #include <list>
@@ -54,8 +54,8 @@ struct MatchEntry {
     pair<int, int> offs;
     // Index of the search group this comes from: this is to relate a 
     // match to the original user input.
-    unsigned int grpidx;
-    MatchEntry(int sta, int sto, unsigned int idx) 
+    size_t grpidx;
+    MatchEntry(int sta, int sto, size_t idx) 
 	: offs(sta, sto), grpidx(idx)
     {
     }
@@ -105,7 +105,7 @@ class TextSplitPTR : public TextSplit {
 	// pos, bts, bte));
 
 	// If this word is a search term, remember its byte-offset span. 
-	map<string, unsigned int>::const_iterator it = m_terms.find(dumb);
+	map<string, size_t>::const_iterator it = m_terms.find(dumb);
 	if (it != m_terms.end()) {
 	    tboffs.push_back(MatchEntry(bts, bte, (*it).second));
 	}
@@ -135,7 +135,7 @@ private:
     int m_wcount;
 
     // In: user query terms
-    map<string, unsigned int>    m_terms; 
+    map<string, size_t>    m_terms; 
 
     // m_gterms holds all the terms in m_groups, as a set for quick lookup
     set<string>    m_gterms;
@@ -214,7 +214,7 @@ static bool do_proximity_test(int window, vector<vector<int>* >& plists,
 bool TextSplitPTR::matchGroup(unsigned int grpidx)
 {
     const vector<string>& terms = m_hdata.groups[grpidx];
-    int window = m_hdata.groups[grpidx].size() + m_hdata.slacks[grpidx];
+    int window = int(m_hdata.groups[grpidx].size() + m_hdata.slacks[grpidx]);
 
     LOGDEB1(("TextSplitPTR::matchGroup:d %d: %s\n", window,
 	    vecStringToString(terms).c_str()));
@@ -270,7 +270,7 @@ bool TextSplitPTR::matchGroup(unsigned int grpidx)
     for (vector<int>::iterator it = plists[0]->begin(); 
 	 it != plists[0]->end(); it++) {
 	int pos = *it;
-	int sta = int(10E9), sto = 0;
+	int sta = INT_MAX, sto = 0;
 	LOGDEB2(("MatchGroup: Testing at pos %d\n", pos));
 	if (do_proximity_test(window,plists, 1, pos, pos, &sta, &sto, minpos)) {
 	    LOGDEB1(("TextSplitPTR::matchGroup: MATCH termpos [%d,%d]\n", 
@@ -417,10 +417,10 @@ bool PlainToRich::plaintorich(const string& in,
 	// If we still have terms positions, check (byte) position. If
 	// we are at or after a term match, mark.
 	if (tPosIt != tPosEnd) {
-	    int ibyteidx = chariter.getBpos();
+	    int ibyteidx = int(chariter.getBpos());
 	    if (ibyteidx == tPosIt->offs.first) {
 		if (!intag && ibyteidx >= (int)headend) {
-		    *olit += startMatch(tPosIt->grpidx);
+		    *olit += startMatch((unsigned int)(tPosIt->grpidx));
 		}
                 inrcltag = 1;
 	    } else if (ibyteidx == tPosIt->offs.second) {

@@ -169,7 +169,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
             l_mime = *imime;
     }
 
-    size_t docsize = stp->st_size;
+    off_t docsize = stp->st_size;
 
     if (!l_mime.empty()) {
 	// Has mime: check for a compressed file. If so, create a
@@ -216,7 +216,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
     m_mimetype = l_mime;
     RecollFilter *df = getMimeHandler(l_mime, m_cfg, !m_forPreview);
 
-    if (!df or df->is_unknown()) {
+    if (!df || df->is_unknown()) {
 	// No real handler for this type, for now :( 
 	LOGDEB(("FileInterner:: unprocessed mime: [%s] [%s]\n", 
 		l_mime.c_str(), f.c_str()));
@@ -629,7 +629,7 @@ void FileInterner::popHandler()
 {
     if (m_handlers.empty())
 	return;
-    int i = m_handlers.size() - 1;
+    size_t i = m_handlers.size() - 1;
     if (m_tmpflgs[i]) {
 	m_tempfiles.pop_back();
 	m_tmpflgs[i] = false;

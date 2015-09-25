@@ -1,10 +1,34 @@
-#!/usr/bin/env python
+#################################
+# Copyright (C) 2014 J.F.Dockes
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the
+#   Free Software Foundation, Inc.,
+#   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+########################################################
+## Recoll multifilter communication module and utilities
 
-###########################################
-## Generic recoll multifilter communication code
+from __future__ import print_function
+
 import sys
 import os
+import tempfile
+import shutil
+import getopt
 
+############################################
+# RclExecM implements the
+# communication protocol with the recollindex process. It calls the
+# object specific of the document type to actually get the data.
 class RclExecM:
     noteof  = 0
     eofnext = 1
@@ -27,9 +51,13 @@ class RclExecM:
         else:
             self.maxmembersize = 50 * 1024
         self.maxmembersize = self.maxmembersize * 1024
+        if sys.platform == "win32":
+            import msvcrt
+            msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
+            msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
 
     def rclog(self, s, doexit = 0, exitvalue = 1):
-        print >> sys.stderr, "RCLMFILT:", self.myname, ":", s
+        print("RCLMFILT: %s: %s" % (self.myname, s), file=sys.stderr)
         if doexit:
             sys.exit(exitvalue)
 
@@ -87,29 +115,29 @@ class RclExecM:
                 self.rclog("GOT UNICODE for ipath [%s]" % (ipath,))
                 docdata = docdata.encode("UTF-8")
 
-            print "Document:", len(docdata)
+            print("Document: %d" % len(docdata))
             sys.stdout.write(docdata)
 
             if len(ipath):
-                print "Ipath:", len(ipath)
+                print("Ipath: %d" % len(ipath))
                 sys.stdout.write(ipath)
 
             if len(self.mimetype):
-                print "Mimetype:", len(self.mimetype)
+                print("Mimetype: %d" % len(self.mimetype))
                 sys.stdout.write(self.mimetype)
 
         # If we're at the end of the contents, say so
         if iseof == RclExecM.eofnow:
-            print "Eofnow: 0"
+            print("Eofnow: 0")
         elif iseof == RclExecM.eofnext:
-            print "Eofnext: 0"
+            print("Eofnext: 0")
         if iserror == RclExecM.subdocerror:
-            print "Subdocerror: 0"
+            print("Subdocerror: 0")
         elif iserror == RclExecM.fileerror:
-            print "Fileerror: 0"
+            print("Fileerror: 0")
   
         # End of message
-        print
+        print()
         sys.stdout.flush()
         #self.rclog("done writing data")
 
@@ -168,67 +196,161 @@ class RclExecM:
             self.processmessage(processor, params)
 
 
-  
+# Helper routine to test for program accessibility
+def which(program):
+    def is_exe(fpath):
+        return os.path.exists(fpath) and os.access(fpath, os.X_OK)
+    def ext_candidates(fpath):
+        yield fpath
+        for ext in os.environ.get("PATHEXT", "").split(os.pathsep):
+            yield fpath + ext
+
+    def path_candidates():
+        yield os.path.dirname(sys.argv[0])
+        for path in os.environ["PATH"].split(os.pathsep):
+            yield path
+            
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in path_candidates():
+            exe_file = os.path.join(path, program)
+            for candidate in ext_candidates(exe_file):
+                if is_exe(candidate):
+                    return candidate
+    return None
+
+# Temp dir helper
+class SafeTmpDir:
+    def __init__(self, em):
+        self.em = em
+        self.toptmp = ""
+        self.tmpdir = ""
+
+    def __del__(self):
+        try:
+            if self.toptmp:
+                shutil.rmtree(self.tmpdir, True)
+                os.rmdir(self.toptmp)
+        except Exception as err:
+            self.em.rclog("delete dir failed for " + self.toptmp)
+
+    def getpath(self):
+        if not self.tmpdir:
+            envrcltmp = os.getenv('RECOLL_TMPDIR')
+            if envrcltmp:
+                self.toptmp = tempfile.mkdtemp(prefix='rcltmp', dir=envrcltmp)
+            else:
+                self.toptmp = tempfile.mkdtemp(prefix='rcltmp')
+
+            self.tmpdir = os.path.join(self.toptmp, 'rclsofftmp')
+            os.makedirs(self.tmpdir)
+
+        return self.tmpdir
+   
+
 # Common main routine for all python execm filters: either run the
 # normal protocol engine or a local loop to test without recollindex
 def main(proto, extract):
     if len(sys.argv) == 1:
         proto.mainloop(extract)
-    else:
-        # Got a file name parameter: TESTING without an execm parent
-        # Loop on all entries or get specific ipath
-        def mimetype_with_file(f):
-            cmd = 'file -i "' + f + '"'
-            fileout = os.popen(cmd).read()
-            lst = fileout.split(':')
-            mimetype = lst[len(lst)-1].strip()
-            lst = mimetype.split(';')
-            return lst[0].strip()
-        def mimetype_with_xdg(f):
-            cmd = 'xdg-mime query filetype "' + f + '"'
-            return os.popen(cmd).read().strip()
-        params = {'filename:': sys.argv[1]}
-        # Some filters (e.g. rclaudio) need/get a MIME type from the indexer
-        mimetype = mimetype_with_xdg(sys.argv[1])
-        params['mimetype:'] = mimetype
-        if not extract.openfile(params):
-            print "Open error"
-            sys.exit(1)
-        ipath = ""
-        if len(sys.argv) == 3:
-            ipath = sys.argv[2]
+        # mainloop does not return. Just in case
+        sys.exit(1)
 
-        if ipath != "":
-            params['ipath:'] = ipath
-            ok, data, ipath, eof = extract.getipath(params)
-            if ok:
-                print "== Found entry for ipath %s (mimetype [%s]):" % \
-                      (ipath, proto.mimetype)
-                if isinstance(data, unicode):
-                    bdata = data.encode("UTF-8")
-                else:
-                    bdata = data
+
+    # Not running the main loop: either acting as single filter (when called
+    # from other filter for example), or debugging
+    def usage():
+        print("Usage: rclexecm.py [-d] [-s] [-i ipath] [filename]",
+              file=sys.stderr)
+        sys.exit(1)
+        
+    actAsSingle = False
+    debugDumpData = False
+    ipath = ""
+
+    args = sys.argv[1:]
+    opts, args = getopt.getopt(args, "hdsi:")
+    for opt, arg in opts:
+        if opt in ['-h']:
+            usage()
+        elif opt in ['-s']:
+            actAsSingle = True
+        elif opt in ['-i']:
+            ipath = arg
+        elif opt in ['-d']:
+            debugDumpData = True
+        else:
+            print("unknown option %s\n"%opt, file=sys.stderr)
+            usage()
+
+    if len(args) != 1:
+        usage()
+        
+    def mimetype_with_file(f):
+        cmd = 'file -i "' + f + '"'
+        fileout = os.popen(cmd).read()
+        lst = fileout.split(':')
+        mimetype = lst[len(lst)-1].strip()
+        lst = mimetype.split(';')
+        return lst[0].strip()
+
+    def mimetype_with_xdg(f):
+        cmd = 'xdg-mime query filetype "' + f + '"'
+        return os.popen(cmd).read().strip()
+
+    def debprint(s):
+        if not actAsSingle:
+            print(s)
+            
+    params = {'filename:': args[0]}
+    # Some filters (e.g. rclaudio) need/get a MIME type from the indexer
+    mimetype = mimetype_with_xdg(args[0])
+    params['mimetype:'] = mimetype
+
+    if not extract.openfile(params):
+        print("Open error", file=sys.stderr)
+        sys.exit(1)
+
+    if ipath != "" or actAsSingle:
+        params['ipath:'] = ipath
+        ok, data, ipath, eof = extract.getipath(params)
+        if ok:
+            debprint("== Found entry for ipath %s (mimetype [%s]):" % \
+                  (ipath, proto.mimetype))
+            if isinstance(data, unicode):
+                bdata = data.encode("UTF-8")
+            else:
+                bdata = data
+            if debugDumpData or actAsSingle:
                 sys.stdout.write(bdata)
-                print
-            else:
-                print "Got error, eof %d"%eof
+                print()
             sys.exit(0)
+        else:
+            print("Got error, eof %d"%eof, file=sys.stderr)
+            sys.exit(1)
 
-        ecnt = 0   
-        while 1:
-            ok, data, ipath, eof = extract.getnext(params)
-            if ok:
-                ecnt = ecnt + 1
-                print "== Entry %d ipath %s (mimetype [%s]):" % \
-                      (ecnt, ipath, proto.mimetype)
-                if isinstance(data, unicode):
-                    bdata = data.encode("UTF-8")
-                else:
-                    bdata = data
-                #sys.stdout.write(bdata)
-                print
-                if eof != RclExecM.noteof:
-                    break
+    ecnt = 0   
+    while 1:
+        ok, data, ipath, eof = extract.getnext(params)
+        if ok:
+            ecnt = ecnt + 1
+            debprint("== Entry %d ipath %s (mimetype [%s]):" % \
+                  (ecnt, ipath, proto.mimetype))
+            if isinstance(data, unicode):
+                bdata = data.encode("UTF-8")
             else:
-                print "Not ok, eof %d" % eof
-                break
+                bdata = data
+            if debugDumpData:
+                sys.stdout.write(bdata)
+                print()
+            if eof != RclExecM.noteof:
+                sys.exit(0)
+        else:
+            print("Not ok, eof %d" % eof, file=sys.stderr)
+            sys.exit(1)
+        # Not sure this makes sense, but going on looping certainly does not
+        if actAsSingle:
+            sys.exit(0)

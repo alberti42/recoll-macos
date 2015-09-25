@@ -50,7 +50,7 @@ public:
     /** "Direct" access. Awfully inefficient as we skip from start or current
      * position at best. This can only be useful for a lookahead from the
      * current position */
-    unsigned int operator[](unsigned int charpos) const 
+    unsigned int operator[](std::string::size_type charpos) const 
     {
 	std::string::size_type mypos = 0;
 	unsigned int mycp = 0;

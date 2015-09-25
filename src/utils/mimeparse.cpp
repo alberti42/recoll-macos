@@ -16,6 +16,7 @@
  */
 
 #ifndef TEST_MIMEPARSE
+#include "autoconfig.h"
 
 #include <string>
 #include <vector>
@@ -32,10 +33,7 @@
 #include "transcode.h"
 #include "smallut.h"
 
-
-#ifndef NO_NAMESPACES
 using namespace std;
-#endif /* NO_NAMESPACES */
 
 //#define DEBUG_MIMEPARSE 
 #ifdef DEBUG_MIMEPARSE

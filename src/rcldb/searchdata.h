@@ -270,7 +270,7 @@ public:
     {
 	return m_parentSearch ? m_parentSearch->getMaxExp() : 10000;
     }
-    int getMaxCl() 
+    size_t getMaxCl() 
     {
 	return m_parentSearch ? m_parentSearch->getMaxCl() : 100000;
     }
@@ -376,7 +376,7 @@ protected:
     std::string  m_field; // Field specification if any
     HighlightData m_hldata;
     // Current count of Xapian clauses, to check against expansion limit
-    int  m_curcl;
+    size_t  m_curcl;
     bool processUserString(Rcl::Db &db, const string &iq,
 			   std::string &ermsg,
 			   void* pq, int slack = 0, bool useNear = false);
