@@ -424,9 +424,20 @@ void AdvSearch::runSearch()
 
     if (!subtreeCMB->currentText().isEmpty()) {
 	QString current = subtreeCMB->currentText();
-	sdata->addClause(new Rcl::SearchDataClausePath(
-			     (const char*)current.toLocal8Bit(),
-			     direxclCB->isChecked()));
+
+        Rcl::SearchDataClausePath *pathclause = 
+            new Rcl::SearchDataClausePath((const char*)current.toLocal8Bit(), 
+                                          direxclCB->isChecked());
+        if (sdata->getTp() == SCLT_AND) {
+            sdata->addClause(pathclause);
+        } else {
+            STD_SHARED_PTR<SearchData> 
+                nsdata(new SearchData(SCLT_AND, stemLang));
+            nsdata->addClause(new Rcl::SearchDataClauseSub(sdata));
+            nsdata->addClause(pathclause);
+            sdata = nsdata;
+        }
+
 	// Keep history clean and sorted. Maybe there would be a
 	// simpler way to do this
 	list<QString> entries;
