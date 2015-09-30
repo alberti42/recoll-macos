@@ -6158,7 +6158,13 @@ mondelaypatterns = *.log:20 "this one has spaces*:10"
             <literal>tbird</literal> flag is defined, and it should be set
             for directories which hold
             <application>Thunderbird</application> data, as their folder
-            format is weird.</para>
+            format is weird. Example: 
+            <programlisting>[/path/to/my/mozilla/mail] 
+mhmboxquirks = tbird</programlisting>
+             It should be noted that later &RCL;
+             versions have improved automatic detection of
+             <application>Thunderbird</application> folders, so that this
+             should not be needed at all in most cases.</para>
               </listitem>
             </varlistentry>
 
