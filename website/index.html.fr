@@ -49,8 +49,8 @@
       <p><span class="application">Recoll</span> est un logiciel libre
 	gratuit, dont le code source est disponible sous licence GPL.
 	La dernière version est 
-        <a class="important" href="download.html">1.20.6</a>
-	(<a href="release-1.20.html">notes sur la version, en
+        <a class="important" href="download.html">1.21.2</a>
+	(<a href="release-1.21.html">notes sur la version, en
 	anglais</a>)</p> 
 
       <p>L'interface utilisateur de 
@@ -105,6 +105,13 @@
 
       <h2>Nouvelles: </h2>
       <dl>
+        <dt>2014-10-01</dt>
+        <dd>Recoll 1.21.2 devient la version de production. La
+        principale modification de la version 1.21 est l'utilisation
+        d'un nouvel interpréteur pour le langage d'interrogation,
+        autorisant l'utilisation de parenthèses. Également: évite de
+        réessayer l'indexation de fichiers en erreur, fonction de
+        sauvegarde/restauration des recherches.</dd>
 
         <dt>2015-04-25</dt>
         <dd>Recoll 1.20.6 contient des corrections dans le traitement
