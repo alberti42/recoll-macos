@@ -443,6 +443,8 @@ qtgui/searchclause_w.h \
 qtgui/snippets.ui \
 qtgui/snippets_w.cpp \
 qtgui/snippets_w.h \
+qtgui/specialindex.h \
+qtgui/specialindex.ui \
 qtgui/spell.ui \
 qtgui/spell_w.cpp \
 qtgui/spell_w.h \
@@ -482,7 +484,7 @@ python/samples/recollqsd.py \
  \
 sampleconf/fields sampleconf/fragbuts.xml sampleconf/mimeconf \
 sampleconf/mimemap sampleconf/mimeview sampleconf/mimeview.mac \
-sampleconf/recoll.conf.in sampleconf/recoll.qss \
+sampleconf/recoll.conf sampleconf/recoll.qss \
 \
 unac/AUTHORS unac/COPYING unac/README unac/README.recoll \
 \
