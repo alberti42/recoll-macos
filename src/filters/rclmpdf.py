@@ -22,7 +22,6 @@ import sys
 import re
 import rclexecm
 import subprocess
-import distutils.spawn
 import tempfile
 import atexit
 import signal
@@ -39,10 +38,22 @@ def signal_handler(signal, frame):
 
 atexit.register(finalcleanup)
 
-signal.signal(signal.SIGHUP, signal_handler)
-signal.signal(signal.SIGINT, signal_handler)
-signal.signal(signal.SIGQUIT, signal_handler)
-signal.signal(signal.SIGTERM, signal_handler)
+try:
+    signal.signal(signal.SIGHUP, signal_handler)
+except:
+    pass
+try:
+    signal.signal(signal.SIGINT, signal_handler)
+except:
+    pass
+try:
+    signal.signal(signal.SIGQUIT, signal_handler)
+except:
+    pass
+try:
+    signal.signal(signal.SIGTERM, signal_handler)
+except:
+    pass
 
 def vacuumdir(dir):
     if dir:
@@ -173,14 +184,14 @@ class PDFExtractor:
         self.currentindex = -1
         self.attextractdone = False
 
-        if self.pdftotext == "":
-            self.pdftotext = distutils.spawn.find_executable("pdftotext")
-            if self.pdftotext is None:
+        if not self.pdftotext:
+            self.pdftotext = rclexecm.which("pdftotext")
+            if not self.pdftotext:
                 print("RECFILTERROR HELPERNOTFOUND pdftotext")
                 sys.exit(1);
 
-        if self.pdftk == "":
-            self.pdftk = distutils.spawn.find_executable("pdftk")
+        if not self.pdftk:
+            self.pdftk = rclexecm.which("pdftk")
 
         if self.pdftk:
             global tmpdir
