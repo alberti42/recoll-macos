@@ -24,6 +24,9 @@ import os
 import tempfile
 import shutil
 import getopt
+import rclconfig
+
+my_config = rclconfig.RclConfig()
 
 ############################################
 # RclExecM implements the
@@ -207,6 +210,10 @@ def which(program):
 
     def path_candidates():
         yield os.path.dirname(sys.argv[0])
+        rclpath = my_config.getConfParam("recollhelperpath")
+        if rclpath:
+            for path in rclpath.split(os.pathsep):
+                yield path
         for path in os.environ["PATH"].split(os.pathsep):
             yield path
             

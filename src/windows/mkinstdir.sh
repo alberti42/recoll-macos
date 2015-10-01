@@ -53,6 +53,7 @@ copyrecoll()
     cc $RECOLL/sampleconf/recoll.qss    $DESTDIR/Share/examples
 
     cp $RECOLL/filters/*                $FILTERS || exit 1
+    cp $RECOLL/python/recoll/recoll/rclconfig.py $FILTERS || exit 1
 }
 
 copyantiword()
