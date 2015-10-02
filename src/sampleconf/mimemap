@@ -39,7 +39,7 @@
 
 # .eml is used as an extension by several mail apps for a single message
 # saved in raw MIME format. Mainly used here to get Thunderbird to open an
-# extracted message.
+# extracted message. Also used by Windows Live Mail
 .eml = message/rfc822
 
 .pdf = application/pdf
