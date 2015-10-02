@@ -31,10 +31,17 @@ class RTIToolW : public QDialog, public Ui::RTIToolW {
 	init();
     }
 public slots:
+#ifdef _WIN32
+    void sesclicked(bool) {}
+    void accept() {}
+private:
+    void init() {}
+#else
     void sesclicked(bool);
     void accept();
 private:
     void init();
+#endif
 };
 
 

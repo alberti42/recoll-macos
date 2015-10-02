@@ -427,6 +427,18 @@ void ExecCmd::zapChild()
     setKill();
     (void)wait();
 }
+
+bool ExecCmd::requestChildExit()
+{
+    if (m_piProcInfo.hProcess) {
+        LOGDEB(("ExecCmd: GenerateConsoleCtrlEvent -> %d\n",
+                m_piProcInfo.dwProcessId));
+        return GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT,
+                                        m_piProcInfo.dwProcessId);
+    }
+    return false;
+}
+
 void ExecCmd::putenv(const string &envassign)
 {
     vector<string> v;

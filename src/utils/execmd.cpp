@@ -190,6 +190,14 @@ void ExecCmd::zapChild()
     (void)wait();
 }
 
+bool ExecCmd::requestChildExit()
+{
+    if (m->m_pid > 0) {
+        if (kill(m->m_pid, SIGTERM) == 0)
+            return true;
+    }
+    return false;
+}
 
 /* From FreeBSD's which command */
 static bool exec_is_there(const char *candidate)

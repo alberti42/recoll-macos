@@ -42,6 +42,9 @@ inline int readlink(const char *cp, void *buf, int cnt) {
 #define PATH_MAX MAX_PATH
 #define MAXPATHLEN PATH_MAX
 typedef int mode_t;
+#define fseeko _fseeki64
+#define ftello (off_t)_ftelli64
+#define ftruncate _chsize_s
 #endif
 
 typedef DWORD32 u_int32_t;
@@ -50,7 +53,6 @@ typedef unsigned __int8 u_int8_t;
 typedef int ssize_t;
 #define strncasecmp _strnicmp
 #define strcasecmp _stricmp
-#define ftruncate _chsize_s
 #define chdir _chdir
 
 #define R_OK 4
@@ -59,8 +61,6 @@ typedef int ssize_t;
 #define RECOLL_DATADIR "C:\\recoll\\"
 #define S_ISLNK(X) false
 #define lstat stat
-#define fseeko _fseeki64 
-#define ftello (off_t)_ftelli64
 #define timegm _mkgmtime
 #endif
 

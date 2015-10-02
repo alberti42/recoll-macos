@@ -616,6 +616,77 @@ bool pcSubst(const string& in, string& out, const map<string, string>& subs)
     }
     return true;
 }
+inline static int ulltorbuf(unsigned long long val, char *rbuf)
+{
+    int idx;
+    for (idx = 0; val; idx++) {
+        rbuf[idx] = '0' + val % 10;
+        val /= 10;
+    } while (val);
+    rbuf[idx] = 0;
+    return idx;
+}
+
+inline static void ullcopyreverse(const char *rbuf, string& buf, int idx)
+{
+    buf.reserve(idx+1);
+    for (int i = idx - 1; i >= 0; i--) {
+        buf.push_back(rbuf[i]);
+    }
+    buf.push_back(0);
+}
+
+void ulltodecstr(unsigned long long val, string& buf)
+{
+    buf.clear();
+    if (val == 0) {
+        buf = "0";
+        return;
+    }
+
+    char rbuf[30];
+    int idx = ulltorbuf(val, rbuf);
+
+    ullcopyreverse(rbuf, buf, idx);
+    return;
+}
+
+void lltodecstr(long long val, string& buf)
+{
+    buf.clear();
+    if (val == 0) {
+        buf = "0";
+        return;
+    }
+
+    bool neg = val < 0;
+    if (neg)
+        val = -val;
+
+    char rbuf[30];
+    int idx = ulltorbuf(val, rbuf);
+
+    if (neg)
+        rbuf[idx++] = '-';
+    rbuf[idx] = 0;
+
+    ullcopyreverse(rbuf, buf, idx);
+    return;
+}
+
+string lltodecstr(long long val)
+{
+    string buf;
+    lltodecstr(val, buf);
+    return buf;
+}
+
+string ulltodecstr(unsigned long long val)
+{
+    string buf;
+    ulltodecstr(val, buf);
+    return buf;
+}
 
 // Convert byte count into unit (KB/MB...) appropriate for display
 string displayableBytes(off_t size)

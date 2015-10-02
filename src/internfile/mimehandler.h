@@ -24,6 +24,7 @@
 
 #include "Filter.h"
 #include "cstr.h"
+#include "smallut.h"
 
 class RclConfig;
 
@@ -93,9 +94,7 @@ public:
 
     virtual void set_docsize(off_t size)
     {
-	char csize[30];
-	sprintf(csize, "%lld", (long long)size);
-	m_metaData[cstr_dj_keydocsize] = csize;
+	m_metaData[cstr_dj_keydocsize] = ulltodecstr(size);
     }
 
     virtual bool has_documents() const {return m_havedoc;}
