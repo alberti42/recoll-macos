@@ -157,17 +157,26 @@ class ExecCmd {
 
     /** 
      * Cancel/kill command. This can be called from another thread or
-     * from the advise callback, which could also raise an exception to 
-     * accomplish the same thing
+     * from the advise callback, which could also raise an exception
+     * to accomplish the same thing. In the owner thread, any I/O loop
+     * will exit at the next iteration, and the process will be waited for.
      */
     void setKill();
 
     /**
-     * Get rid of current process (become ready for start). 
+     * Get rid of current process (become ready for start). This will signal
+     * politely the process to stop, wait a moment, then terminate it. This
+     * is a blocking call.
      */
     void zapChild();
 
-    ExecCmd();
+    /**
+     * Request process termination (SIGTERM or equivalent). This returns 
+     * immediately
+     */
+    bool requestChildExit();
+
+     ExecCmd();
     ~ExecCmd();
 
     /**

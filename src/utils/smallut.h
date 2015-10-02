@@ -134,6 +134,11 @@ extern string truncate_to_word(const string &input, string::size_type maxlen);
 /** Truncate in place in an utf8-legal way */
 extern void utf8truncate(string &s, int maxlen);
 
+void ulltodecstr(unsigned long long val, string& buf);
+void lltodecstr(long long val, string& buf);
+string lltodecstr(long long val);
+string ulltodecstr(unsigned long long val);
+
 /** Convert byte count into unit (KB/MB...) appropriate for display */
 string displayableBytes(off_t size);
 

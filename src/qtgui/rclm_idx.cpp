@@ -175,15 +175,21 @@ void RclMain::toggleIndexing()
 	if (m_idxproc) {
 	    // Indexing was in progress, request stop. Let the periodic
 	    // routine check for the results.
-	    int pid = m_idxproc->getChildPid();
-	    if (pid > 0) {
-		kill(pid, SIGTERM);
+            if (m_idxproc->requestChildExit()) {
                 m_idxkilled = true;
             }
 	}
 	break;
     case IXST_RUNNINGNOTMINE:
     {
+#ifdef _WIN32
+        QMessageBox::warning(0, tr("Warning"),
+                             tr("The current indexing process "
+                                "was not started from this "
+                                "interface, can't kill it"),
+                             QMessageBox::Ok,
+                             QMessageBox::NoButton);
+#else
 	int rep = 
 	    QMessageBox::information(0, tr("Warning"), 
 				     tr("The current indexing process "
@@ -199,7 +205,8 @@ void RclMain::toggleIndexing()
 	    if (pid > 0)
 		kill(pid, SIGTERM);
 	}
-    }		
+#endif
+    }
     break;
     case IXST_NOTRUNNING:
     {

@@ -1,3 +1,4 @@
+#ifndef _WIN32
 /* Copyright (C) 2005 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -174,3 +175,4 @@ out:
     if (exitdial)
 	QDialog::accept();
 }
+#endif
