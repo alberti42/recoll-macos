@@ -21,7 +21,7 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 #define FILE_PROG "/usr/bin/file"
 
 /* "Have C++0x" */
-#undef HAVE_CXX0X_UNORDERED
+#define HAVE_CXX0X_UNORDERED 1
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1

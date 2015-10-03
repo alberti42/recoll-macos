@@ -28,6 +28,25 @@
 
 #ifdef _WIN32
 #include "safewindows.h"
+
+#undef RCL_ICONV_INBUF_CONST
+
+#ifdef _MSC_VER
+// gmtime is supposedly thread-safe on windows
+#define gmtime_r(A, B) gmtime(A)
+#define localtime_r(A,B) localtime(A)
+typedef int mode_t;
+#define fseeko _fseeki64
+#define ftello (off_t)_ftelli64
+#define ftruncate _chsize_s
+#define PATH_MAX MAX_PATH
+#define RCL_ICONV_INBUF_CONST 1
+#else
+// Gminw
+#undef RCL_ICONV_INBUF_CONST
+#endif
+
+
 typedef int pid_t;
 inline int readlink(const char *cp, void *buf, int cnt) {
 	return -1;
@@ -35,18 +54,9 @@ inline int readlink(const char *cp, void *buf, int cnt) {
 #define HAVE_STRUCT_TIMESPEC
 #define strdup _strdup
 #define timegm _mkgmtime
-#ifdef _MSC_VER
-// gmtime is supposedly thread-safe on windows
-#define gmtime_r(A, B) gmtime(A)
-#define localtime_r(A,B) localtime(A)
-#define PATH_MAX MAX_PATH
-#define MAXPATHLEN PATH_MAX
-typedef int mode_t;
-#define fseeko _fseeki64
-#define ftello (off_t)_ftelli64
-#define ftruncate _chsize_s
-#endif
 
+
+#define MAXPATHLEN PATH_MAX
 typedef DWORD32 u_int32_t;
 typedef DWORD64 u_int64_t;
 typedef unsigned __int8 u_int8_t;

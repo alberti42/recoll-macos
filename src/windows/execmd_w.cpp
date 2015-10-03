@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include UNORDERED_MAP_INCLUDE
 
 #include "debuglog.h"
 #include "safesysstat.h"
@@ -430,11 +431,11 @@ void ExecCmd::zapChild()
 
 bool ExecCmd::requestChildExit()
 {
-    if (m_piProcInfo.hProcess) {
+    if (m->m_piProcInfo.hProcess) {
         LOGDEB(("ExecCmd: GenerateConsoleCtrlEvent -> %d\n",
-                m_piProcInfo.dwProcessId));
+                m->m_piProcInfo.dwProcessId));
         return GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT,
-                                        m_piProcInfo.dwProcessId);
+                                        m->m_piProcInfo.dwProcessId);
     }
     return false;
 }
