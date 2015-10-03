@@ -85,9 +85,10 @@ bool Uncomp::uncompressfile(const string& ifn,
         long long filembs = fsize / (1024 * 1024); 
         
         if (availmbs < 2 * filembs + 1) {
-            LOGERR(("uncompressfile. %lld MBs available in %s not enough "
-                    "to uncompress %s of size %lld mbs\n", availmbs,
-                    m_dir->dirname(), ifn.c_str(), filembs));
+            LOGERR(("uncompressfile. %s MBs available in %s not enough "
+                    "to uncompress %s of size %s mbs\n", 
+                    lltodecstr(availmbs).c_str(), m_dir->dirname(), 
+                    ifn.c_str(), lltodecstr(filembs).c_str()));
             return false;
         }
     }

@@ -219,9 +219,8 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 
     if (m_minSize != size_t(-1) || m_maxSize != size_t(-1)) {
         Xapian::Query sq;
-	char min[50], max[50];
-	sprintf(min, "%lld", (long long)m_minSize);
-	sprintf(max, "%lld", (long long)m_maxSize);
+	string min = lltodecstr(m_minSize);
+	string max = lltodecstr(m_maxSize);
 	if (m_minSize == size_t(-1)) {
 	    string value(max);
 	    leftzeropad(value, 12);

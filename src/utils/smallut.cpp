@@ -633,7 +633,6 @@ inline static void ullcopyreverse(const char *rbuf, string& buf, int idx)
     for (int i = idx - 1; i >= 0; i--) {
         buf.push_back(rbuf[i]);
     }
-    buf.push_back(0);
 }
 
 void ulltodecstr(unsigned long long val, string& buf)
@@ -691,7 +690,6 @@ string ulltodecstr(unsigned long long val)
 // Convert byte count into unit (KB/MB...) appropriate for display
 string displayableBytes(off_t size)
 {
-    char sizebuf[50];
     const char *unit;
     
     double roundable = 0;
@@ -709,8 +707,7 @@ string displayableBytes(off_t size)
 	roundable = double(size) / 1E9;
     }
     size = off_t(round(roundable));
-    sprintf(sizebuf, "%lld" "%s", (long long)size, unit);
-    return string(sizebuf);
+    return lltodecstr(size).append(unit);
 }
 
 string breakIntoLines(const string& in, unsigned int ll, 

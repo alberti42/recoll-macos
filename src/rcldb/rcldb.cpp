@@ -26,6 +26,7 @@
 #include <vector>
 #include <algorithm>
 #include <sstream>
+#include <iostream>
 
 using namespace std;
 
@@ -1690,8 +1691,8 @@ void Db::waitUpdIdle()
 	    LOGERR(("Db::waitUpdIdle: flush() failed: %s\n", ermsg.c_str()));
 	}
 	m_ndb->m_totalworkns += chron.nanos();
-	LOGINFO(("Db::waitUpdIdle: total xapian work %lld mS\n",
-		 m_ndb->m_totalworkns/1000000));
+	LOGINFO(("Db::waitUpdIdle: total xapian work %s mS\n",
+		 lltodecstr(m_ndb->m_totalworkns/1000000).c_str()));
     }
 }
 #endif

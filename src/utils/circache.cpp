@@ -653,8 +653,8 @@ public:
     {
         headoffs = offs;
         padsize = d.padsize;
-        LOGDEB2(("CCScanHookRecord::takeone: offs %lld padsize %lld\n", 
-                 headoffs, padsize));
+        LOGDEB2(("CCScanHookRecord::takeone: offs %s padsize %s\n", 
+                 lltodecstr(headoffs).c_str(), lltodecstr(padsize).c_str()));
         return Continue;
     }
 };
@@ -666,8 +666,8 @@ string CirCache::getpath()
 
 bool CirCache::create(off_t maxsize, int flags)
 {
-    LOGDEB(("CirCache::create: [%s] maxsz %lld flags 0x%x\n", 
-            m_dir.c_str(), maxsize, flags));
+    LOGDEB(("CirCache::create: [%s] maxsz %s flags 0x%x\n", 
+            m_dir.c_str(), lltodecstr((long long)maxsize).c_str(), flags));
     if (m_d == 0) {
         LOGERR(("CirCache::create: null data\n"));
         return false;
@@ -708,10 +708,12 @@ bool CirCache::create(off_t maxsize, int flags)
             }
             m_d->m_maxsize = maxsize;
             m_d->m_uniquentries = ((flags & CC_CRUNIQUE) != 0);
-            LOGDEB(("CirCache::create: rewriting header with "
-                    "maxsize %lld oheadoffs %lld nheadoffs %lld "
+            LOGDEB2(("CirCache::create: rewriting header with "
+                    "maxsize %s oheadoffs %s nheadoffs %s "
                     "npadsize %d unient %d\n",
-                    m_d->m_maxsize, m_d->m_oheadoffs, m_d->m_nheadoffs,
+                     lltodecstr(m_d->m_maxsize).c_str(), 
+                     lltodecstr(m_d->m_oheadoffs).c_str(), 
+                     lltodecstr(m_d->m_nheadoffs).c_str(),
                     m_d->m_npadsize, int(m_d->m_uniquentries)));
             return m_d->writefirstblock();
         }

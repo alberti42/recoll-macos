@@ -401,9 +401,7 @@ BeagleQueueIndexer::processone(const string &path,
         if (dotdoc.fmtime.empty())
             dotdoc.fmtime = ascdate;
 
-        char cbuf[100]; 
-        sprintf(cbuf, "%lld", (long long)stp->st_size);
-        dotdoc.pcbytes = cbuf;
+        dotdoc.pcbytes = lltodecstr(stp->st_size);
 
         // Document signature for up to date checks: none. 
         dotdoc.sig.clear();
@@ -441,9 +439,7 @@ BeagleQueueIndexer::processone(const string &path,
             doc.fmtime = ascdate;
         dotdoc.fmtime = doc.fmtime;
 
-        char cbuf[100]; 
-        sprintf(cbuf, "%lld", (long long)stp->st_size);
-        doc.pcbytes = cbuf;
+        doc.pcbytes = lltodecstr(stp->st_size);
         // Document signature for up to date checks: none. 
         doc.sig.clear();
         doc.url = dotdoc.url;

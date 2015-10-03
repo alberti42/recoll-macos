@@ -43,8 +43,8 @@ const int KB = 1024;
 // Process a plain text file
 bool MimeHandlerText::set_document_file(const string& mt, const string &fn)
 {
-    LOGDEB(("MimeHandlerText::set_document_file: [%s] offs %lld\n",
-            fn.c_str(), m_offs));
+    LOGDEB(("MimeHandlerText::set_document_file: [%s] offs %s\n",
+            fn.c_str(), lltodecstr(m_offs).c_str()));
 
     RecollFilter::set_document_file(mt, fn);
 
@@ -109,8 +109,9 @@ bool MimeHandlerText::set_document_string(const string& mt, const string& otext)
 
 bool MimeHandlerText::skip_to_document(const string& ipath)
 {
-    long long t;
-    if (sscanf(ipath.c_str(), "%lld", &t) != 1) {
+    char *endptr;
+    long long t = strtoll(ipath.c_str(), &endptr, 10);
+    if (endptr == ipath.c_str()) {
 	LOGERR(("MimeHandlerText::skip_to_document: bad ipath offs [%s]\n",
 		ipath.c_str()));
 	return false;
@@ -156,8 +157,7 @@ bool MimeHandlerText::next_document()
         // first chunk). This is a hack. The right thing to do would
         // be to use a different mtype for files over the page size,
         // and keep text/plain only for smaller files.
-        char buf[30];
-        sprintf(buf, "%lld", (long long)(m_offs - srclen));
+        string buf = lltodecstr(m_offs - srclen);
         if (m_offs - srclen != 0)
             m_metaData[cstr_dj_keyipath] = buf;
         readnext();

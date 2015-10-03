@@ -487,11 +487,8 @@ void FsIndexer::setlocalfields(const map<string, string>& fields, Rcl::Doc& doc)
 
 void FsIndexer::makesig(const struct stat *stp, string& out)
 {
-    char cbuf[100]; 
-    sprintf(cbuf, "%lld" "%ld", (long long)stp->st_size, 
-            o_uptodate_test_use_mtime ? 
-            (long)stp->st_mtime : (long)stp->st_ctime);
-    out = cbuf;
+    out = lltodecstr(stp->st_size) + 
+        lltodecstr(o_uptodate_test_use_mtime ? stp->st_mtime : stp->st_ctime);
 }
 
 #ifdef IDX_THREADS
@@ -778,9 +775,7 @@ FsIndexer::processonefile(RclConfig *config,
             // Set container file name for all docs, top or subdoc
             doc.meta[Rcl::Doc::keytcfn] = utf8fn;
 
-	    char cbuf[100]; 
-	    sprintf(cbuf, "%lld", (long long)stp->st_size);
-	    doc.pcbytes = cbuf;
+	    doc.pcbytes = lltodecstr(stp->st_size);
 	    // Document signature for up to date checks. All subdocs inherit the
 	    // file's.
 	    doc.sig = sig;
@@ -868,9 +863,7 @@ FsIndexer::processonefile(RclConfig *config,
 	    fileDoc.url = path_pathtofileurl(fn);
 	    if (m_havelocalfields) 
 		setlocalfields(localfields, fileDoc);
-	    char cbuf[100]; 
-	    sprintf(cbuf, "%lld", (long long)stp->st_size);
-	    fileDoc.pcbytes = cbuf;
+	    fileDoc.pcbytes = lltodecstr(stp->st_size);
 	}
 
 	fileDoc.sig = sig;

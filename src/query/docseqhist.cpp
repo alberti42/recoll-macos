@@ -34,11 +34,9 @@ using std::list;
 // The U distinguishes udi-based entries from older fn+ipath ones
 bool RclDHistoryEntry::encode(string& value)
 {
-    char chartime[30];
-    sprintf(chartime,"%lld", (long long)unixtime);
     string budi;
     base64_encode(udi, budi);
-    value = string("U ") + string(chartime) + " " + budi;
+    value = string("U ") + lltodecstr(unixtime) + " " + budi;
     return true;
 }
 
