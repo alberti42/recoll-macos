@@ -287,11 +287,15 @@ void RclMain::init()
 
     connect(&m_watcher, SIGNAL(fileChanged(QString)), 
 	    this, SLOT(idxStatus()));
+#ifdef _WIN32
+    connect(sSearch, SIGNAL(startSearch(std::shared_ptr<Rcl::SearchData>, bool)), 
+	    this, SLOT(startSearch(std::shared_ptr<Rcl::SearchData>, bool)));
+#else
     connect(sSearch, SIGNAL(startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool)), 
 	    this, SLOT(startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool)));
+#endif
     connect(sSearch, SIGNAL(clearSearch()), 
 	    this, SLOT(resetSearch()));
-
     connect(preferencesMenu, SIGNAL(triggered(QAction*)),
 	    this, SLOT(setStemLang(QAction*)));
     connect(preferencesMenu, SIGNAL(aboutToShow()),
@@ -348,8 +352,14 @@ void RclMain::init()
     restable->setRclMain(this, true);
     connect(actionSaveResultsAsCSV, SIGNAL(triggered()), 
 	    restable, SLOT(saveAsCSV()));
+#ifdef _WIN32
+    connect(this, SIGNAL(docSourceChanged(std::shared_ptr<DocSequence>)),
+	    restable, SLOT(setDocSource(std::shared_ptr<DocSequence>)));
+#else
     connect(this, SIGNAL(docSourceChanged(STD_SHARED_PTR<DocSequence>)),
 	    restable, SLOT(setDocSource(STD_SHARED_PTR<DocSequence>)));
+#endif
+   
     connect(this, SIGNAL(searchReset()), 
 	    restable, SLOT(resetSource()));
     connect(this, SIGNAL(resultsReady()), 
@@ -378,8 +388,13 @@ void RclMain::init()
 	    this, SLOT(showSnippets(Rcl::Doc)));
 
     reslist->setRclMain(this, true);
+#ifdef _WIN32
+    connect(this, SIGNAL(docSourceChanged(std::shared_ptr<DocSequence>)),
+	    reslist, SLOT(setDocSource(std::shared_ptr<DocSequence>)));
+#else
     connect(this, SIGNAL(docSourceChanged(STD_SHARED_PTR<DocSequence>)),
 	    reslist, SLOT(setDocSource(STD_SHARED_PTR<DocSequence>)));
+#endif
     connect(firstPageAction, SIGNAL(triggered()), 
 	    reslist, SLOT(resultPageFirst()));
     connect(prevPageAction, SIGNAL(triggered()), 

@@ -14,8 +14,11 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include "autoconfig.h"
+
 #include <sstream>
 #include <set>
+#include MEMORY_INCLUDE
 
 #include <qapplication.h>
 #include <qinputdialog.h>
@@ -34,7 +37,6 @@
 #include "guiutils.h"
 #include "searchdata.h"
 #include "ssearch_w.h"
-#include MEMORY_INCLUDE
 #include "textsplit.h"
 #include "wasatorcl.h"
 #include "rclhelp.h"
