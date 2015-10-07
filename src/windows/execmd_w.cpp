@@ -538,7 +538,10 @@ bool ExecCmd::Internal::preparePipes(bool has_input,HANDLE *hChildInput,
                              0, TRUE, 
                              DUPLICATE_SAME_ACCESS)) {
             printError("preparePipes: DuplicateHandle(stdout)");
-            goto errout;
+            // This occurs when the parent process is a GUI app. Ignoring the error works, but
+            // not too sure this is the right approach. Maybe look a bit more at:
+            // https://support.microsoft.com/en-us/kb/190351
+            //goto errout;
         }
     }
 
@@ -580,7 +583,7 @@ bool ExecCmd::Internal::preparePipes(bool has_input,HANDLE *hChildInput,
                              0, TRUE,
                              DUPLICATE_SAME_ACCESS)) {
             printError("preparePipes: DuplicateHandle(stdin)");
-            goto errout;
+            //goto errout;
         }
     }
 
@@ -588,6 +591,7 @@ bool ExecCmd::Internal::preparePipes(bool has_input,HANDLE *hChildInput,
     // for the moment
     if (false && !m_stderrFile.empty()) {
         // Open the file set up the child handle: TBD
+        printError("preparePipes: m_stderrFile not empty");
     } else {
         // Let the child inherit our standard input
         HANDLE hstd = GetStdHandle(STD_ERROR_HANDLE);
@@ -600,7 +604,7 @@ bool ExecCmd::Internal::preparePipes(bool has_input,HANDLE *hChildInput,
                              0, TRUE,
                              DUPLICATE_SAME_ACCESS)) {
             printError("preparePipes: DuplicateHandle(stderr)");
-            goto errout;
+            //goto errout;
         }
     }
 
@@ -662,10 +666,13 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
     // This structure specifies the STDIN and STDOUT handles for redirection.
     ZeroMemory(&siStartInfo, sizeof(STARTUPINFO));
     siStartInfo.cb = sizeof(STARTUPINFO);
-    siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
+    siStartInfo.dwFlags |= STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
     siStartInfo.hStdOutput = hOutputWrite;
     siStartInfo.hStdInput = hInputRead;
     siStartInfo.hStdError = hErrorWrite;
+    // This is to hide the console when starting a cmd line command from
+    // the GUI. Also note STARTF_USESHOWWINDOW above
+    siStartInfo.wShowWindow = SW_HIDE;
 
     char *envir = mergeEnvironment(m->m_env);
 
@@ -969,7 +976,7 @@ int ExecCmd::doexec(const string &cmd, const vector<string>& args,
     
     if (input) {
         if (!input->empty()) {
-            if (send(*input) != input->size()) {
+            if (send(*input) != (int)input->size()) {
                 LOGERR(("ExecCmd::doexec: send failed\n"));
                 CloseHandle(m->m_hInputWrite);
                 m->m_hInputWrite = NULL;
@@ -984,7 +991,7 @@ int ExecCmd::doexec(const string &cmd, const vector<string>& args,
                     m->m_hInputWrite = NULL;
                     break;
                 }
-                if (send(*input) != input->size()) {
+                if (send(*input) != (int)input->size()) {
                     LOGERR(("ExecCmd::doexec: send failed\n"));
                     CloseHandle(m->m_hInputWrite);
                     m->m_hInputWrite = NULL;
