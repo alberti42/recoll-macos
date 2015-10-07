@@ -41,20 +41,22 @@ typedef int mode_t;
 #define ftruncate _chsize_s
 #define PATH_MAX MAX_PATH
 #define RCL_ICONV_INBUF_CONST 1
-#else
-// Gminw
-#undef RCL_ICONV_INBUF_CONST
-#endif
+#define HAVE_STRUCT_TIMESPEC
+#define strdup _strdup
+#define timegm _mkgmtime
 
+#else // End _MSC_VER -> Gminw
+
+#define timegm portable_timegm
+
+#undef RCL_ICONV_INBUF_CONST
+
+#endif // GMinw only
 
 typedef int pid_t;
 inline int readlink(const char *cp, void *buf, int cnt) {
 	return -1;
 }
-#define HAVE_STRUCT_TIMESPEC
-#define strdup _strdup
-#define timegm _mkgmtime
-
 
 #define MAXPATHLEN PATH_MAX
 typedef DWORD32 u_int32_t;
@@ -67,11 +69,12 @@ typedef int ssize_t;
 
 #define R_OK 4
 #define W_OK 2
+#ifndef X_OK
 #define X_OK 4
+#endif
 #define RECOLL_DATADIR "C:\\recoll\\"
 #define S_ISLNK(X) false
 #define lstat stat
-#define timegm _mkgmtime
 #endif
 
 

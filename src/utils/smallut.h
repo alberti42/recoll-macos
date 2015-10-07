@@ -153,6 +153,11 @@ bool pcSubst(const string& in, string& out, const map<string, string>& subs);
 /** Append system error message */
 void catstrerror(string *reason, const char *what, int _errno);
 
+/** Portable timegm. MS C has _mkgmtime, but there is a bug in Gminw which
+ * makes it inaccessible */
+struct tm;
+time_t portable_timegm(struct tm *tm);
+
 /** Compute times to help with perf issues */
 class Chrono {
  public:

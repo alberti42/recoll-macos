@@ -151,18 +151,10 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
 			      const HighlightData& hdata, const string& sh)
 {
     ostringstream chunk;
-    int percent;
-    if (doc.pc == -1) {
-	percent = 0;
-	// Document not available, maybe other further, will go on.
-	doc.meta[Rcl::Doc::keyabs] = string(trans("Unavailable document"));
-    } else {
-	percent = doc.pc;
-    }
 
     // Determine icon to display if any
     string iconurl = iconUrl(config, doc);
-
+    
     // Printable url: either utf-8 if transcoding succeeds, or url-encoded
     string url;
     printableUrl(config->getDefCharset(), doc.url, url);
@@ -493,7 +485,7 @@ string ResListPager::iconUrl(RclConfig *config, Rcl::Doc& doc)
     string apptag;
     doc.getmeta(Rcl::Doc::keyapptg, &apptag);
 
-    return cstr_fileu + config->getMimeIconPath(doc.mimetype, apptag);
+    return path_pathtofileurl(config->getMimeIconPath(doc.mimetype, apptag));
 }
 
 bool ResListPager::append(const string& data)

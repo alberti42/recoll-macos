@@ -4,7 +4,6 @@
 #include <time.h>
 #include <ctype.h>
 
-#ifdef _MSC_VER
 const char * strp_weekdays[] =
 { "sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday" };
 const char * strp_monthnames[] =
@@ -252,4 +251,3 @@ char * strptime(const char *s, const char *format, struct tm *tm)
 	}
 	return (working ? (char *)s : 0);
 }
-#endif // _MSC_VER

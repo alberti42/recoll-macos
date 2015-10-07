@@ -33,12 +33,12 @@ static bool urltopath(RclConfig* cnf,
 		      const Rcl::Doc& idoc, string& fn, struct stat& st)
 {
     // The url has to be like file://
-    if (idoc.url.find(cstr_fileu) != 0) {
+    fn = fileurltolocalpath(idoc.url);
+    if (fn.empty()) {
 	LOGERR(("FSDocFetcher::fetch/sig: non fs url: [%s]\n", 
 		idoc.url.c_str()));
 	return false;
     }
-    fn = idoc.url.substr(7, string::npos);
     cnf->setKeyDir(path_getfather(fn));
     bool follow = false;
     cnf->getConfParam("followLinks", &follow);

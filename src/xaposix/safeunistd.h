@@ -51,7 +51,8 @@
 #endif
 
 #ifdef __WIN32__
-
+#ifdef _MSC_VER
+/* Recent MinGW versions define this */
 inline unsigned int
 sleep(unsigned int seconds)
 {
@@ -72,7 +73,7 @@ sleep(unsigned int seconds)
     xapian_sleep_milliseconds(seconds * 1000u);
     return 0;
 }
-
-#endif
+#endif /* _MSC_VER*/
+#endif /* __WIN32__ */
 
 #endif /* XAPIAN_INCLUDED_SAFEUNISTD_H */

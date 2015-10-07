@@ -12,7 +12,7 @@ QT += webkit
 QT += xml
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets webkitwidgets printsupport
 
-CONFIG  += qt warn_on thread release 
+CONFIG  += qt warn_on thread debug
 
 HEADERS += \
         advsearch_w.h \
@@ -100,11 +100,12 @@ INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
 windows{
     contains(QMAKE_CC, gcc){
         # MingW
-        QMAKE_CXXFLAGS += -std=c++0x -Wno-unused-parameter
+        QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
     }
     contains(QMAKE_CC, cl){
         # Visual Studio
     }
+    LIBS += C:/recoll/src/build-librecoll-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/librecoll.dll
 }
 
 

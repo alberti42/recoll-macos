@@ -995,12 +995,47 @@ static bool parseperiod(vector<string>::const_iterator& it,
     return true;
 }
 
+#ifdef _WIN32
+int setenv(const char *name, const char *value, int overwrite)
+{
+    if(!overwrite) {
+        const char *cp = getenv(name);
+        if (cp)
+            return -1;
+    }
+    return _putenv_s(name, value);
+}
+void unsetenv(const char *name)
+{
+    _putenv_s(name, "");
+}
+#endif
+
+time_t portable_timegm(struct tm *tm)
+{
+    time_t ret;
+    char *tz;
+
+    tz = getenv("TZ");
+    setenv("TZ", "", 1);
+    tzset();
+    ret = mktime(tm);
+    if (tz)
+        setenv("TZ", tz, 1);
+    else
+        unsetenv("TZ");
+    tzset();
+    return ret;
+}
+
+#if 0
 static void cerrdip(const string& s, DateInterval *dip)
 {
     cerr << s << dip->y1 << "-" << dip->m1 << "-" << dip->d1 << "/"
          << dip->y2 << "-" << dip->m2 << "-" << dip->d2 
          << endl;
 }
+#endif
 
 // Compute date + period. Won't work out of the unix era. 
 // or pre-1970 dates. Just convert everything to unixtime and
@@ -1015,13 +1050,8 @@ static bool addperiod(DateInterval *dp, DateInterval *pp)
     tm.tm_year = dp->y1 - 1900 + pp->y1;
     tm.tm_mon = dp->m1 + pp->m1 -1;
     tm.tm_mday = dp->d1 + pp->d1;
-#ifdef sun
     time_t tres = mktime(&tm);
     localtime_r(&tres, &tm);
-#else
-    time_t tres = timegm(&tm);
-    gmtime_r(&tres, &tm);
-#endif
     dp->y1 = tm.tm_year + 1900;
     dp->m1 = tm.tm_mon + 1;
     dp->d1 = tm.tm_mday;
