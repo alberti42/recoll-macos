@@ -6,13 +6,13 @@
 ##############
 # Local values (to be adjusted)
 # Target directory where we copy things. 
-DESTDIR=/cygdrive/c/recollinst
+DESTDIR=c:/recollinst
 
 # Recoll src/build tree
-RECOLL=/cygdrive/c/recoll/src
+RECOLL=c:/recoll/src
 
-UNRTF=/cygdrive/c/unrtf
-ANTIWORD=/cygdrive/c/recolldeps/antiword
+UNRTF=c:/unrtf
+ANTIWORD=c:/recolldeps/antiword
 
 CONFIGURATION=Debug
 PLATFORM=x64
@@ -52,8 +52,12 @@ copyrecoll()
     cc $RECOLL/sampleconf/recoll.conf   $DESTDIR/Share/examples
     cc $RECOLL/sampleconf/recoll.qss    $DESTDIR/Share/examples
 
-    cp $RECOLL/filters/*                $FILTERS || exit 1
-    cp $RECOLL/python/recoll/recoll/rclconfig.py $FILTERS || exit 1
+    cp $RECOLL/filters/*                $FILTERS || fatal Copy Filters failed
+    cp $RECOLL/python/recoll/recoll/rclconfig.py $FILTERS || fatal Copy rclconfig.py failed
+
+    cp $RECOLL/qtgui/mtpics/*  $DESTDIR/Share/images
+    
+    cp $RECOLL/qtgui/i18n/*.qm $DESTDIR/Share/translations 
 }
 
 copyantiword()
@@ -79,9 +83,10 @@ copyunrtf()
 }
 
 
-test -d $DESTDIR || mkdir -p $DESTDIR || exit 1
-test -d $DESTDIR/Share/examples || mkdir -p $DESTDIR/Share/examples ||  exit 1
-test -d $FILTERS || mkdir -p $FILTERS || exit 1
+for d in doc examples filters images translations; do
+    test -d $DESTDIR/Share/$d || mkdir -p $DESTDIR/Share/$d ||  exit 1
+done
+
 copyrecoll
 copyunrtf
 copyantiword

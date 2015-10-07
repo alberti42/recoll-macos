@@ -267,6 +267,13 @@ void RclMain::rebuildIndex()
 					 QMessageBox::Cancel,
 					 QMessageBox::NoButton);
 	if (rep == QMessageBox::Ok) {
+#ifdef _WIN32
+            // Under windows, it's necessary to close the db here, else Xapian
+            // won't be able to do what it wants with the (open) files. Of course
+            // if there are several GUI instances, this won't work...
+            if (rcldb)
+                rcldb->close();
+#endif // _WIN32
 	    // Could also mean that no helpers are missing, but then we
 	    // won't try to show a message anyway (which is what
 	    // firstIndexing is used for)

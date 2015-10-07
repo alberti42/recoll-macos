@@ -146,6 +146,12 @@ void RclMain::execIndexSched()
 }
 void RclMain::showIndexSched(bool modal)
 {
+#ifdef _WIN32
+    QMessageBox::information(this, tr("Index scheduling"),
+                             tr("Sorry, not available under Windows for now, use the File menu entries "
+                                "to update the index"));
+    return;
+#endif    
     LOGDEB(("showIndexSched()\n"));
     if (indexSched == 0) {
 	indexSched = new IdxSchedW(this);
