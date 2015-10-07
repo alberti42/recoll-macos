@@ -39,16 +39,6 @@ using std::set;
 #include "cancelcheck.h"
 #include "unacpp.h"
 
-// For debug printing
-static string vecStringToString(const vector<string>& t)
-{
-    string sterms;
-    for (vector<string>::const_iterator it = t.begin(); it != t.end(); it++) {
-	sterms += "[" + *it + "] ";
-    }
-    return sterms;
-}
-
 struct MatchEntry {
     // Start/End byte offsets in the document text
     pair<int, int> offs;

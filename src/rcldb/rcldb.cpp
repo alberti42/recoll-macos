@@ -1501,13 +1501,11 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	// document. This is then not indexed, but part of the doc data so
 	// that we can return it to a query without having to decode the
 	// original file.
-	bool syntabs = false;
 	// Note that the map accesses by operator[] create empty entries if they
 	// don't exist yet.
         string& absref = doc.meta[Doc::keyabs];
 	trimstring(absref, " \t\r\n");
 	if (absref.empty()) {
-	    syntabs = true;
 	    if (!doc.text.empty())
 		absref = cstr_syntAbs + 
 		    neutchars(truncate_to_word(doc.text, m_idxAbsTruncLen), 

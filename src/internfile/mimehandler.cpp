@@ -126,7 +126,6 @@ void returnMimeHandler(RecollFilter *handler)
 void clearMimeHandlerCache()
 {
     LOGDEB(("clearMimeHandlerCache()\n"));
-    typedef multimap<string, RecollFilter*>::value_type value_type;
     multimap<string, RecollFilter *>::iterator it;
     PTMutexLocker locker(o_handlers_mutex);
     for (it = o_handlers.begin(); it != o_handlers.end(); it++) {

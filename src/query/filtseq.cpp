@@ -106,7 +106,6 @@ bool DocSeqFiltered::getDoc(int idx, Rcl::Doc &doc, string *)
 
 	// Loop until we get enough docs
 	Rcl::Doc tdoc;
-	int i = 0;
 	while (idx >= (int)m_dbindices.size()) {
 	    if (!m_seq->getDoc(backend_idx, tdoc)) 
 		return false;

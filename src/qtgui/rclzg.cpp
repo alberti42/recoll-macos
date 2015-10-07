@@ -16,6 +16,8 @@
  */
 
 #ifdef USE_ZEITGEIST
+#include "autoconfig.h"
+
 #include "rclzg.h"
 
 #include "debuglog.h"

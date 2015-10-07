@@ -757,7 +757,6 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, const string& ipath
     // We set the ipath for the first handler here, others are set
     // when they're pushed on the stack
     vector<string> vipath;
-    int vipathidx = 0;
     if (!ipath.empty()) {
 	vector<string> lipath;
 	stringToTokens(ipath, lipath, cstr_isep, true);

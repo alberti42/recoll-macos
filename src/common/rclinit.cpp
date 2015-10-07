@@ -38,13 +38,13 @@
 
 static pthread_t mainthread_id;
 
+#ifndef _WIN32
 static void siglogreopen(int)
 {
     if (recoll_ismainthread())
 	DebugLog::reopen();
 }
 
-#ifndef _WIN32
 // We would like to block SIGCHLD globally, but we can't because
 // QT uses it. Have to block it inside execmd.cpp
 static const int catchedSigs[] = {SIGINT, SIGQUIT, SIGTERM, SIGUSR1, SIGUSR2};

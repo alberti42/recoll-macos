@@ -132,18 +132,6 @@ public:
     }
 };
 
-/** Add prefix to all strings in list. 
- * @param prefix already wrapped prefix
- */
-static void addPrefix(vector<TermMatchEntry>& terms, const string& prefix)
-{
-    if (prefix.empty())
-        return;
-    for (vector<TermMatchEntry>::iterator it = terms.begin(); 
-         it != terms.end(); it++)
-        it->term.insert(0, prefix);
-}
-
 static const char *tmtptostr(int typ)
 {
     switch (typ) {

@@ -173,7 +173,6 @@ double Query::Native::qualityTerms(Xapian::docid docid,
     map<string, vector<string> > byRoot;
     for (vector<string>::const_iterator qit = terms.begin(); 
 	 qit != terms.end(); qit++) {
-	bool found = false;
 	map<string, string>::const_iterator eit = hld.terms.find(*qit);
 	if (eit != hld.terms.end()) {
 	    byRoot[eit->second].push_back(*qit);
@@ -280,7 +279,6 @@ int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
 
     // We try to use a page which matches the "best" term. Get a sorted list
     multimap<double, vector<string> > byQ;
-    double totalweight = qualityTerms(docid, terms, byQ);
 
     for (multimap<double, vector<string> >::reverse_iterator mit = byQ.rbegin(); 
 	 mit != byQ.rend(); mit++) {
