@@ -34,29 +34,39 @@
 
 using namespace std;
 
-// This is called periodically by ExeCmd when it is waiting for data,
-// or when it does receive some. We may choose to interrupt the
-// command.
-class MEAdv : public ExecCmdAdvise {
-public:
-    MEAdv(int maxsecs) : m_filtermaxseconds(maxsecs) {m_start = time(0L);}
-    void newData(int n) {
-        LOGDEB1(("MHExec:newData(%d)\n", n));
-        if (m_filtermaxseconds > 0 && 
-            time(0L) - m_start > m_filtermaxseconds) {
-            LOGERR(("MimeHandlerExec: filter timeout (%d S)\n",
-                    m_filtermaxseconds));
-            CancelCheck::instance().setCancel();
-        }
-        // If a cancel request was set by the signal handler (or by us
-        // just above), this will raise an exception. Another approach
-        // would be to call ExeCmd::setCancel().
-	CancelCheck::instance().checkCancel();
-    }
-    time_t m_start;
-    int m_filtermaxseconds;
-};
+MimeHandlerExec::MimeHandlerExec(RclConfig *cnf, const std::string& id)
+    : RecollFilter(cnf, id), missingHelper(false), m_filtermaxseconds(900),
+      m_filtermaxmbytes(0) 
+{
+    m_config->getConfParam("filtermaxseconds", &m_filtermaxseconds);
+    m_config->getConfParam("filtermaxmbytes", &m_filtermaxmbytes);
+}
 
+MEAdv::MEAdv(int maxsecs) 
+  : m_filtermaxseconds(maxsecs) 
+{
+    m_start = time(0L);
+}
+void MEAdv::reset()
+{
+    m_start = time(0L);
+
+}
+
+void MEAdv::newData(int n) 
+{
+    LOGDEB2(("MHExec:newData(%d)\n", n));
+    if (m_filtermaxseconds > 0 && 
+        time(0L) - m_start > m_filtermaxseconds) {
+        LOGERR(("MimeHandlerExec: filter timeout (%d S)\n",
+                m_filtermaxseconds));
+        CancelCheck::instance().setCancel();
+    }
+    // If a cancel request was set by the signal handler (or by us
+    // just above), this will raise an exception. Another approach
+    // would be to call ExeCmd::setCancel().
+    CancelCheck::instance().checkCancel();
+}
 
 bool MimeHandlerExec::skip_to_document(const string& ipath) 
 {
@@ -76,11 +86,6 @@ bool MimeHandlerExec::next_document()
 	LOGDEB(("MimeHandlerExec::next_document(): helper known missing\n"));
 	return false;
     }
-
-    int filtermaxseconds = 900;
-    m_config->getConfParam("filtermaxseconds", &filtermaxseconds);
-    int filtermaxmbytes = 0;
-    m_config->getConfParam("filtermaxmbytes", &filtermaxmbytes);
 
     if (params.empty()) {
 	// Hu ho
@@ -102,12 +107,12 @@ bool MimeHandlerExec::next_document()
     string& output = m_metaData[cstr_dj_keycontent];
     output.erase();
     ExecCmd mexec;
-    MEAdv adv(filtermaxseconds);
+    MEAdv adv(m_filtermaxseconds);
     mexec.setAdvise(&adv);
     mexec.putenv("RECOLL_CONFDIR", m_config->getConfDir());
     mexec.putenv(m_forPreview ? "RECOLL_FILTER_FORPREVIEW=yes" :
 		"RECOLL_FILTER_FORPREVIEW=no");
-    mexec.setrlimit_as(filtermaxmbytes);
+    mexec.setrlimit_as(m_filtermaxmbytes);
 
     int status;
     try {

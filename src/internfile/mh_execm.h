@@ -120,6 +120,7 @@ private:
     bool readDataElement(string& name, string& data);
     bool m_filefirst;
     int  m_maxmemberkb;
+    MEAdv m_adv;
 };
 
 #endif /* _MH_EXECM_H_INCLUDED_ */

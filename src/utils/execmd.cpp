@@ -907,8 +907,22 @@ int ExecCmd::getline(string& data)
     }
     const int BS = 1024;
     char buf[BS];
-    int n = con->getline(buf, BS);
+    int timeosecs = m->m_timeoutMs / 1000;
+    if (timeosecs == 0)
+        timeosecs = 1;
+
+    // Note that we only go once through here, except in case of
+    // timeout, which is why I think that the goto is more expressive
+    // than a loop
+again:
+    int n = con->getline(buf, BS, timeosecs);
     if (n < 0) {
+        if (con->timedout()) {
+            LOGDEB(("ExecCmd::getline: timeout\n"));
+            if (m->m_advise)
+                m->m_advise->newData(0);
+            goto again;
+        }
 	LOGERR(("ExecCmd::getline: error\n"));
     } else if (n > 0) {
 	data.append(buf, n);

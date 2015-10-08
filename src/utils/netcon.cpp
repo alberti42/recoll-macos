@@ -117,8 +117,7 @@ int Netcon::select1(int fd, int timeo, int write)
         ret = select(fd+1, &rd, 0, 0, &tv);
     }
     if (!FD_ISSET(fd, &rd)) {
-        LOGERR(("Netcon::select1: fd not ready after select ??\n"));
-        return -1;
+        LOGDEB2(("Netcon::select1: fd %d timeout\n",fd));
     }
     return ret;
 }

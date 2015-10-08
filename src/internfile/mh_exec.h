@@ -19,10 +19,9 @@
 
 #include <string>
 #include <vector>
-using std::vector;
-using std::string;
 
 #include "mimehandler.h"
+#include "execmd.h"
 
 /** 
  * Turn external document into internal one by executing an external filter.
@@ -45,28 +44,33 @@ class MimeHandlerExec : public RecollFilter {
 
     // Parameters: this has been built by our creator, from config file 
     // data. We always add the file name at the end before actual execution
-    vector<string> params;
+    std::vector<std::string> params;
     // Filter output type. The default for ext. filters is to output html, 
     // but some don't, in which case the type is defined in the config.
-    string cfgFilterOutputMtype;
+    std::string cfgFilterOutputMtype;
     // Output character set if the above type is not text/html. For
     // those filters, the output charset has to be known: ie set by a command
     // line option.
-    string cfgFilterOutputCharset; 
+    std::string cfgFilterOutputCharset; 
     bool missingHelper;
+    // Resource management values
+    int m_filtermaxseconds;
+    int m_filtermaxmbytes;
     ////////////////
 
-    MimeHandlerExec(RclConfig *cnf, const string& id) 
-	: RecollFilter(cnf, id), missingHelper(false) 
-    {}
-    virtual bool set_document_file(const string& mt, const string &file_path) {
+    MimeHandlerExec(RclConfig *cnf, const std::string& id);
+
+    virtual bool set_document_file(const std::string& mt, 
+                                   const std::string &file_path) {
 	RecollFilter::set_document_file(mt, file_path);
 	m_fn = file_path;
 	m_havedoc = true;
 	return true;
     }
+
     virtual bool next_document();
-    virtual bool skip_to_document(const string& ipath); 
+    virtual bool skip_to_document(const std::string& ipath); 
+
     virtual void clear() {
 	m_fn.erase(); 
 	m_ipath.erase();
@@ -74,17 +78,36 @@ class MimeHandlerExec : public RecollFilter {
     }
 
 protected:
-    string m_fn;
-    string m_ipath;
+    std::string m_fn;
+    std::string m_ipath;
 
     // Set up the character set metadata fields and possibly transcode
     // text/plain output. 
     // @param charset when called from mh_execm, a possible explicit
     //       value from the filter (else the data will come from the config)
-    virtual void handle_cs(const string& mt, const string& charset = string());
+    virtual void handle_cs(const std::string& mt, 
+                           const std::string& charset = std::string());
 
 private:
     virtual void finaldetails();
+};
+
+
+// This is called periodically by ExeCmd when it is waiting for data,
+// or when it does receive some. We may choose to interrupt the
+// command.
+class MEAdv : public ExecCmdAdvise {
+public:
+    MEAdv(int maxsecs = 900);
+    // Reset start time to now
+    void reset();
+    void setmaxsecs(int maxsecs) {
+        m_filtermaxseconds = maxsecs;
+    }
+    void newData(int n);
+private:
+    time_t m_start;
+    int m_filtermaxseconds;
 };
 
 #endif /* _MH_EXEC_H_INCLUDED_ */

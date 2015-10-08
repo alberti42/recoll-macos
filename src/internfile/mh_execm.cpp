@@ -47,9 +47,6 @@ bool MimeHandlerExecMultiple::startCmd()
     // Command name
     string cmd = params.front();
     
-    int filtermaxmbytes = 0;
-    m_config->getConfParam("filtermaxmbytes", &filtermaxmbytes);
-
     m_maxmemberkb = 50000;
     m_config->getConfParam("membermaxkbs", &m_maxmemberkb);
     ostringstream oss;
@@ -60,7 +57,9 @@ bool MimeHandlerExecMultiple::startCmd()
     m_cmd.putenv(m_forPreview ? "RECOLL_FILTER_FORPREVIEW=yes" :
 		"RECOLL_FILTER_FORPREVIEW=no");
 
-    m_cmd.setrlimit_as(filtermaxmbytes);
+    m_cmd.setrlimit_as(m_filtermaxmbytes);
+    m_adv.setmaxsecs(m_filtermaxseconds);
+    m_cmd.setAdvise(&m_adv);
 
     // Build parameter list: delete cmd name
     vector<string>myparams(params.begin() + 1, params.end());
@@ -198,6 +197,8 @@ bool MimeHandlerExecMultiple::next_document()
         return false;
     }
 
+    m_adv.reset();
+
     // Read answer (multiple elements)
     LOGDEB1(("MHExecMultiple: reading answer\n"));
     bool eofnext_received = false;
@@ -209,7 +210,13 @@ bool MimeHandlerExecMultiple::next_document()
     string charset;
     for (int loop=0;;loop++) {
         string name, data;
-        if (!readDataElement(name, data)) {
+        try {
+            if (!readDataElement(name, data)) {
+                m_cmd.zapChild();
+                return false;
+            }
+        } catch (CancelExcept) {
+            LOGINFO(("MHExecMultiple: timeout or interrupt\n"));
             m_cmd.zapChild();
             return false;
         }
