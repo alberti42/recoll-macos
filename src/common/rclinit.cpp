@@ -52,9 +52,7 @@ void initAsyncSigs(void (*sigcleanup)(int))
 {
     // We ignore SIGPIPE always. All pieces of code which can write to a pipe
     // must check write() return values.
-#ifndef _WIN32
     signal(SIGPIPE, SIG_IGN);
-#endif
 
     // Install app signal handler
     if (sigcleanup) {
@@ -213,9 +211,7 @@ RclConfig *recollinit(RclInitFlags flags,
 	unac_set_except_translations(unacex.c_str());
 
 #ifndef IDX_THREADS
-#ifndef _WIN32
     ExecCmd::useVfork(true);
-#endif
 #else
     // Keep threads init behind log init, but make sure it's done before
     // we do the vfork choice ! The latter is not used any more actually, 
@@ -225,15 +221,11 @@ RclConfig *recollinit(RclInitFlags flags,
     bool novfork;
     config->getConfParam("novfork", &novfork);
     if (novfork) {
-#ifndef _WIN32
 	LOGDEB0(("rclinit: will use fork() for starting commands\n"));
         ExecCmd::useVfork(false);
-#endif
     } else {
-#ifndef _WIN32
 	LOGDEB0(("rclinit: will use vfork() for starting commands\n"));
 	ExecCmd::useVfork(true);
-#endif
     }
 #endif
 

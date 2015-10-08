@@ -94,7 +94,6 @@ void docFieldsFromXattrs(RclConfig *cfg, const map<string, string>& xfields,
 void reapMetaCmds(RclConfig* cfg, const string& path, 
 		  map<string, string>& cfields)
 {
-#ifndef _WIN32
     const vector<MDReaper>& reapers = cfg->getMDReapers();
     if (reapers.empty())
 	return;
@@ -113,7 +112,6 @@ void reapMetaCmds(RclConfig* cfg, const string& path,
 	    cfields[rp->fieldname] =  output;
 	}
     }
-#endif
 }
 
 // Set fields from external commands

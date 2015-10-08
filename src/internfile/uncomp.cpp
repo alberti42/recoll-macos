@@ -109,12 +109,8 @@ bool Uncomp::uncompressfile(const string& ifn,
     }
 
     // Execute command and retrieve output file name, check that it exists
-#ifndef _WIN32
     ExecCmd ex;
     int status = ex.doexec(cmd, args, 0, &tfile);
-#else
-	int status = -1;
-#endif
     if (status || tfile.empty()) {
 	LOGERR(("uncompressfile: doexec: failed for [%s] status 0x%x\n", 
 		ifn.c_str(), status));

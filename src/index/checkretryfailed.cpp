@@ -28,6 +28,9 @@ using namespace std;
 
 bool checkRetryFailed(RclConfig *conf, bool record)
 {
+#ifdef _WIN32
+    return true;
+#else
     string cmd;
 
     if (!conf->getConfParam("checkneedretryindexscript", cmd)) {
@@ -51,4 +54,5 @@ bool checkRetryFailed(RclConfig *conf, bool record)
         return true;
     } 
     return false;
+#endif
 }

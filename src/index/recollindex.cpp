@@ -556,11 +556,9 @@ int main(int argc, char **argv)
     if (op_flags & OPT_k) {
         indexerFlags &= ~ConfIndexer::IxFNoRetryFailed; 
     } else {
-#ifndef _WIN32
         if (checkRetryFailed(config, false)) {
             indexerFlags &= ~ConfIndexer::IxFNoRetryFailed; 
         }
-#endif
     }
 
     Pidfile pidfile(config->getPidfile());
@@ -684,12 +682,10 @@ int main(int argc, char **argv)
 			"not going into monitor mode\n"));
 		exit(1);
 	    } else {
-#ifndef _WIN32
                 // Record success of indexing pass with failed files retries.
                 if (!(indexerFlags & ConfIndexer::IxFNoRetryFailed)) {
                     checkRetryFailed(config, true);
                 }
-#endif
             }
 	    deleteZ(confindexer);
 #ifndef _WIN32
@@ -727,12 +723,10 @@ int main(int argc, char **argv)
 	makeIndexerOrExit(config, inPlaceReset);
 	bool status = confindexer->index(rezero, ConfIndexer::IxTAll, 
                                          indexerFlags);
-#ifndef _WIN32
         // Record success of indexing pass with failed files retries.
         if (status && !(indexerFlags & ConfIndexer::IxFNoRetryFailed)) {
             checkRetryFailed(config, true);
         }
-#endif
 	if (!status) 
 	    cerr << "Indexing failed" << endl;
         if (!confindexer->getReason().empty())
