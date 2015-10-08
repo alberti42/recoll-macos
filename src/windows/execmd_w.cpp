@@ -376,6 +376,12 @@ ExecCmd::~ExecCmd()
     }
 }
 
+// This does nothing under windows, but defining it avoids ifdefs in multiple
+// places
+void ExecCmd::useVfork(bool)
+{
+}
+
 bool ExecCmd::which(const string& cmd, string& exe, const char* path)
 {
     static vector<string> s_pathelts;

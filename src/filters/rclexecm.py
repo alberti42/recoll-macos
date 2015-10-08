@@ -73,6 +73,10 @@ class RclExecM:
         if sys.platform != "win32":
             outfile.write(data)
         else:
+            # On windows, writing big chunks can fail with a "not enough space"
+            # error. Seems a combined windows/python bug, depending on versions.
+            # See https://bugs.python.org/issue11395
+            # In any case, just break it up
             total = len(data)
             bs = 4*1024
             offset = 0

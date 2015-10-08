@@ -17,9 +17,10 @@ ANTIWORD=c:/recolldeps/antiword
 CONFIGURATION=Debug
 PLATFORM=x64
 
-GUIBIN=c:/recoll/src/build-librecoll-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/librecoll.dll
-GUILIB=c:/Users/Bill/recoll/src/build-recoll-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/recoll.exe
-
+LIBR=C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/librecoll.dll
+GUIBIN=C:/Users/Bill/recoll/src/build-recoll-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/recoll.exe
+RCLIDX=C:/recoll/src/windows/build-recollindex-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/recollindex.exe
+RCLQ=C:/recoll/src/windows/build-recollq-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/recollq.exe
 
 ################
 # Script:
@@ -41,11 +42,14 @@ cc()
 
 copyrecoll()
 {
-    bindir=$RECOLL/windows/$PLATFORM/$CONFIGURATION/
-
-    cc  $bindir/recollindex.exe         $DESTDIR
-    cc  $bindir/recollq.exe             $DESTDIR
-    cc  $bindir/pthreadVC2.dll          $DESTDIR
+#    bindir=$RECOLL/windows/$PLATFORM/$CONFIGURATION/
+#    cc  $bindir/recollindex.exe         $DESTDIR
+#    cc  $bindir/recollq.exe             $DESTDIR
+#    cc  $bindir/pthreadVC2.dll          $DESTDIR
+    cp $LIBR $DESTDIR || fatal copy librecoll
+    cp $GUIBIN $DESTDIR || fatal copy recoll.exe
+    cp $RCLIDX $DESTDIR || fatal copy recollindex.exe
+    cp $RCLQ $DESTDIR || fatal copy recollq.exe
 
     cc $RECOLL/sampleconf/fields        $DESTDIR/Share/examples
     cc $RECOLL/sampleconf/fragbuts.xml  $DESTDIR/Share/examples
@@ -62,8 +66,6 @@ copyrecoll()
     
     cp $RECOLL/qtgui/i18n/*.qm $DESTDIR/Share/translations
 
-    cp $GUIBIN $DESTDIR || fatal copy recoll.exe
-    cp $GUILIB $DESTDIR || fatal copy Gui librecoll
 }
 
 copyantiword()
