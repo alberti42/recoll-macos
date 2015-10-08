@@ -58,12 +58,34 @@ class RclExecM:
             import msvcrt
             msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
             msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
-
+        self.debugfile = None
+        if self.debugfile:
+            self.errfout = open(self.debugfile, "ab")
+        else:
+            self.errfout = sys.stderr
+        
     def rclog(self, s, doexit = 0, exitvalue = 1):
-        print("RCLMFILT: %s: %s" % (self.myname, s), file=sys.stderr)
+        print("RCLMFILT: %s: %s" % (self.myname, s), file=self.errfout)
         if doexit:
             sys.exit(exitvalue)
 
+    def breakwrite(self, outfile, data):
+        if sys.platform != "win32":
+            outfile.write(data)
+        else:
+            total = len(data)
+            bs = 4*1024
+            offset = 0
+            while total > 0:
+                if total < bs:
+                    tow = total
+                else:
+                    tow = bs
+                #self.rclog("Total %d Writing %d to stdout: %s" % (total,tow,data[offset:offset+tow]))
+                outfile.write(data[offset:offset+tow])
+                offset += tow
+                total -= tow
+                
     # Note: tried replacing this with a multiple replacer according to
     #  http://stackoverflow.com/a/15221068, which was **10 times** slower
     def htmlescape(self, txt):
@@ -119,7 +141,7 @@ class RclExecM:
                 docdata = docdata.encode("UTF-8")
 
             print("Document: %d" % len(docdata))
-            sys.stdout.write(docdata)
+            self.breakwrite(sys.stdout, docdata)
 
             if len(ipath):
                 print("Ipath: %d" % len(ipath))
@@ -332,7 +354,7 @@ def main(proto, extract):
             else:
                 bdata = data
             if debugDumpData or actAsSingle:
-                sys.stdout.write(bdata)
+                proto.breakwrite(sys.stdout, bdata)
                 print()
             sys.exit(0)
         else:
@@ -351,7 +373,7 @@ def main(proto, extract):
             else:
                 bdata = data
             if debugDumpData:
-                sys.stdout.write(bdata)
+                proto.breakwrite(sys.stdout, bdata)
                 print()
             if eof != RclExecM.noteof:
                 sys.exit(0)

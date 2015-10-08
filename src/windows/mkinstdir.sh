@@ -17,6 +17,9 @@ ANTIWORD=c:/recolldeps/antiword
 CONFIGURATION=Debug
 PLATFORM=x64
 
+GUIBIN=c:/recoll/src/build-librecoll-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/librecoll.dll
+GUILIB=c:/Users/Bill/recoll/src/build-recoll-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/recoll.exe
+
 
 ################
 # Script:
@@ -57,7 +60,10 @@ copyrecoll()
 
     cp $RECOLL/qtgui/mtpics/*  $DESTDIR/Share/images
     
-    cp $RECOLL/qtgui/i18n/*.qm $DESTDIR/Share/translations 
+    cp $RECOLL/qtgui/i18n/*.qm $DESTDIR/Share/translations
+
+    cp $GUIBIN $DESTDIR || fatal copy recoll.exe
+    cp $GUILIB $DESTDIR || fatal copy Gui librecoll
 }
 
 copyantiword()

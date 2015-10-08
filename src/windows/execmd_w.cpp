@@ -11,6 +11,7 @@
 #include "safesysstat.h"
 #include "safeunistd.h"
 #include "safewindows.h"
+#include <psapi.h>
 #include "smallut.h"
 #include "pathut.h"
 
@@ -89,7 +90,7 @@ static string argvToCmdLine(const string& cmd, const vector<string>& args)
 }
 
 // Merge the father environment with the variable specified in m_env
-char *mergeEnvironment(const STD_UNORDERED_MAP<string, string>& addenv)
+static char *mergeEnvironment(const STD_UNORDERED_MAP<string, string>& addenv)
 {
     // Parse existing environment.
     char *envir = GetEnvironmentStrings();
@@ -235,13 +236,27 @@ static WaitResult Wait(HANDLE hdl, int timeout)
     return Timeout;
 }
 
+static int getVMMBytes(HANDLE hProcess)
+{
+    PROCESS_MEMORY_COUNTERS pmc;
+    const int MB = 1024 * 1024;
+    if (GetProcessMemoryInfo(hProcess, &pmc, sizeof(pmc))) {
+        LOGDEB2(("ExecCmd: getVMMBytes paged Kbs %d non paged %d Kbs\n",
+                 int(pmc.QuotaPagedPoolUsage/1024),
+                 int(pmc.QuotaNonPagedPoolUsage/1024)));
+        return int(pmc.QuotaPagedPoolUsage /MB +
+                   pmc.QuotaNonPagedPoolUsage / MB);
+    }
+    return -1;
+}
+
 ////////////////////////////////////////////////////////
 // ExecCmd:
 
 class ExecCmd::Internal {
 public:
     Internal()
-        : m_advise(0), m_provide(0), m_timeoutMs(1000) {
+        : m_advise(0), m_provide(0), m_timeoutMs(1000), m_rlimit_as_mbytes(0) {
         reset();
     }
 
@@ -249,6 +264,7 @@ public:
     ExecCmdAdvise   *m_advise;
     ExecCmdProvide  *m_provide;
     int              m_timeoutMs;
+    int m_rlimit_as_mbytes;
 
     // We need buffered I/O for getline. The Unix version uses netcon's
     string m_buf;	// Buffer. Only used when doing getline()s
@@ -278,6 +294,7 @@ public:
     bool preparePipes(bool has_input, HANDLE *hChildInput,
                       bool has_output, HANDLE *hChildOutput,
                       HANDLE *hChildError);
+    bool tooBig();
 };
 
 // ExecCmd resource releaser class. Using a separate object makes it
@@ -455,7 +472,21 @@ void ExecCmd::putenv(const string &name, const string& value)
 
 void ExecCmd::setrlimit_as(int mbytes)
 {
-	// Later maybe
+    m->m_rlimit_as_mbytes = mbytes;
+}
+
+bool ExecCmd::Internal::tooBig()
+{
+    if (m_rlimit_as_mbytes <= 0)
+        return false;
+    int mbytes = getVMMBytes(m_piProcInfo.hProcess);
+    if (mbytes > m_rlimit_as_mbytes) {
+        LOGINFO(("ExecCmd:: process mbytes %d > set limit %d\n",
+                mbytes, m_rlimit_as_mbytes));
+        m_killRequest = true;
+        return true;
+    }
+    return false;
 }
 
 bool ExecCmd::Internal::preparePipes(bool has_input,HANDLE *hChildInput, 
@@ -781,11 +812,11 @@ int ExecCmd::receive(string& data, int cnt)
         }
     }
     while (true) {
-        const int BUFSIZE = 8192;
+        const int BUFSIZE = 4096;
         CHAR chBuf[BUFSIZE];
         int toread = cnt > 0 ? MIN(cnt - totread, BUFSIZE) : BUFSIZE;
         BOOL bSuccess = ReadFile(m->m_hOutputRead, chBuf, toread,
-				            NULL, &m->m_oOutputRead);
+                                 NULL, &m->m_oOutputRead);
         DWORD err = GetLastError();
         LOGDEB1(("receive: ReadFile: success %d err %d\n",
                  int(bSuccess), int(err)));
@@ -795,7 +826,8 @@ int ExecCmd::receive(string& data, int cnt)
             break;
         }
 
-        WaitResult waitRes = Wait(m->m_oOutputRead.hEvent, 1000);
+    waitagain:
+        WaitResult waitRes = Wait(m->m_oOutputRead.hEvent, m->m_timeoutMs);
         if (waitRes == Ok) {
             DWORD dwRead;
             if (!GetOverlappedResult(m->m_hOutputRead, &m->m_oOutputRead,
@@ -820,6 +852,13 @@ int ExecCmd::receive(string& data, int cnt)
             }
             break;
         } else if (waitRes == Timeout) {
+            LOGDEB0(("ExecCmd::receive: timeout (%d mS)\n", m->m_timeoutMs));
+            if (m->tooBig()) {
+                if (!CancelIo(m->m_hOutputRead)) {
+                    printError("CancelIo");
+                }
+                return -1;
+            }
             // We only want to cancel if m_advise says so here.
             if (m->m_advise) {
                 try {
@@ -838,6 +877,7 @@ int ExecCmd::receive(string& data, int cnt)
                 }
                 break;
             }
+            goto waitagain;
         }
         if ((cnt == 0 && totread > 0) || (cnt > 0 && totread == cnt))
             break;
@@ -901,7 +941,19 @@ int ExecCmd::wait()
     DWORD exit_code = -1;
     if (!m->m_killRequest && m->m_piProcInfo.hProcess) {
         // Wait until child process exits.
-        WaitForSingleObject(m->m_piProcInfo.hProcess, INFINITE);
+        while (WaitForSingleObject(m->m_piProcInfo.hProcess, m->m_timeoutMs)
+               == WAIT_TIMEOUT) {
+            LOGDEB(("ExecCmd::wait: timeout (ok)\n"));
+            if (m->m_advise) {
+                m->m_advise->newData(0);
+            }
+            if (m->tooBig()) {
+                // Let cleaner work to kill the child
+                m->m_killRequest = true;
+                return -1;
+            }
+        }
+
         exit_code = 0;
         GetExitCodeProcess(m->m_piProcInfo.hProcess, &exit_code);
         // Clean up, here to avoid cleaner trying to kill the now

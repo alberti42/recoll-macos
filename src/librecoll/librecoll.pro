@@ -13,6 +13,7 @@ DEFINES += LIBRECOLL_LIBRARY BUILDING_RECOLL
 DEFINES -= UNICODE
 DEFINES -= _UNICODE
 DEFINES += _MBCS
+DEFINES += PSAPI_VERSION=1
 
 SOURCES += \
 ../aspell/rclaspell.cpp \
@@ -119,7 +120,7 @@ windows{
         # Visual Studio
     }
   LIBS += c:/recolldeps/xapian/xapian-core-1.2.21/.libs/libxapian-22.dll \
-       c:/recolldeps/zlib-1.2.8/zlib1.dll -liconv -lshlwapi -lkernel32
+       c:/recolldeps/zlib-1.2.8/zlib1.dll -liconv -lshlwapi -lpsapi -lkernel32
 }
 
 unix {
