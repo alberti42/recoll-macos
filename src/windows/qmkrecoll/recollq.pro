@@ -27,7 +27,7 @@ windows {
         # Visual Studio
     }
   LIBS += \
-    C:/recoll/src/build-librecoll-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/librecoll.dll \
+    C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/librecoll.dll \
     c:/recolldeps/xapian/xapian-core-1.2.21/.libs/libxapian-22.dll \
     c:/recolldeps/zlib-1.2.8/zlib1.dll \
     -liconv -lshlwapi -lpsapi -lkernel32
