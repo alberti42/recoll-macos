@@ -17,6 +17,7 @@ ANTIWORD=c:/recolldeps/antiword
 CONFIGURATION=Debug
 PLATFORM=x64
 
+LIBXAPIAN=c:/recolldeps/xapian/xapian-core-1.2.21/.libs/libxapian-22.dll
 LIBR=C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/librecoll.dll
 GUIBIN=C:/Users/Bill/recoll/src/build-recoll-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/recoll.exe
 RCLIDX=C:/recoll/src/windows/build-recollindex-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/recollindex.exe
@@ -40,16 +41,21 @@ cc()
     cp $1 $2 || exit 1
 }
 
+copyxapian()
+{
+    cc $LIBXAPIAN $DESTDIR
+}
+
 copyrecoll()
 {
 #    bindir=$RECOLL/windows/$PLATFORM/$CONFIGURATION/
 #    cc  $bindir/recollindex.exe         $DESTDIR
 #    cc  $bindir/recollq.exe             $DESTDIR
 #    cc  $bindir/pthreadVC2.dll          $DESTDIR
-    cp $LIBR $DESTDIR || fatal copy librecoll
-    cp $GUIBIN $DESTDIR || fatal copy recoll.exe
-    cp $RCLIDX $DESTDIR || fatal copy recollindex.exe
-    cp $RCLQ $DESTDIR || fatal copy recollq.exe
+    cc $LIBR $DESTDIR 
+    cc $GUIBIN $DESTDIR
+    cc $RCLIDX $DESTDIR
+    cc $RCLQ $DESTDIR 
 
     cc $RECOLL/sampleconf/fields        $DESTDIR/Share/examples
     cc $RECOLL/sampleconf/fragbuts.xml  $DESTDIR/Share/examples
@@ -59,13 +65,11 @@ copyrecoll()
     cc $RECOLL/sampleconf/recoll.conf   $DESTDIR/Share/examples
     cc $RECOLL/sampleconf/recoll.qss    $DESTDIR/Share/examples
 
+    cc $RECOLL/python/recoll/recoll/rclconfig.py $FILTERS
+
     cp $RECOLL/filters/*                $FILTERS || fatal Copy Filters failed
-    cp $RECOLL/python/recoll/recoll/rclconfig.py $FILTERS || fatal Copy rclconfig.py failed
-
-    cp $RECOLL/qtgui/mtpics/*  $DESTDIR/Share/images
-    
+    cp $RECOLL/qtgui/mtpics/*  $DESTDIR/Share/images || fatal copy images 
     cp $RECOLL/qtgui/i18n/*.qm $DESTDIR/Share/translations
-
 }
 
 copyantiword()
@@ -95,6 +99,7 @@ for d in doc examples filters images translations; do
     test -d $DESTDIR/Share/$d || mkdir -p $DESTDIR/Share/$d ||  exit 1
 done
 
+copyxapian
 copyrecoll
 copyunrtf
 copyantiword

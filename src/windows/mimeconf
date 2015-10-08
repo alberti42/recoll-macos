@@ -1,0 +1,53 @@
+# The system-wide configuration files for recoll are located in:
+#   [RECOLLINSTALLDIR]/Share/examples
+# The default configuration files are commented, you should take a look
+# at them for an explanation of what can be set (you could also take a look
+# at the manual instead).
+# Values set in this file will override the system-wide values for the file
+# with the same name in the central directory. The syntax for setting
+# values is identical.
+
+[index]
+application/msword = execm python rcldoc.py
+text/rtf = execm python rclrtf.py
+application/pdf = execm python rclmpdf.py
+application/vnd.ms-excel = execm python rclxls.py
+application/vnd.ms-powerpoint = execm python rclppt.py
+
+application/vnd.oasis.opendocument.text = execm python rclsoff.py
+application/vnd.oasis.opendocument.text-template = execm python rclsoff.py
+application/vnd.oasis.opendocument.presentation = execm python rclsoff.py 
+application/vnd.oasis.opendocument.spreadsheet = execm python rclsoff.py
+application/vnd.oasis.opendocument.graphics = execm python rclsoff.py
+application/vnd.sun.xml.calc = execm python rclsoff.py
+application/vnd.sun.xml.calc.template = execm python rclsoff.py
+application/vnd.sun.xml.draw = execm python rclsoff.py
+application/vnd.sun.xml.draw.template = execm python rclsoff.py
+application/vnd.sun.xml.impress = execm python rclsoff.py
+application/vnd.sun.xml.impress.template = execm python rclsoff.py
+application/vnd.sun.xml.math = execm python rclsoff.py
+application/vnd.sun.xml.writer = execm python rclsoff.py
+application/vnd.sun.xml.writer.global = execm python rclsoff.py
+application/vnd.sun.xml.writer.template = execm python rclsoff.py
+
+application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
+ execm python rclopxml.py
+application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
+ execm python rclopxml.py
+application/vnd.openxmlformats-officedocument.presentationml.template = \
+ execm python rclopxml.py
+application/vnd.openxmlformats-officedocument.presentationml.presentation = \
+ execm python rclopxml.py
+application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = \
+ execm python rclopxml.py
+application/vnd.openxmlformats-officedocument.spreadsheetml.template =\
+ execm python rclopxml.py
+
+application/zip = execm python rclzip;charset=default
+
+image/gif = execm perl rclimg
+image/jp2 = execm perl rclimg
+image/jpeg = execm perl rclimg
+image/png = execm perl rclimg
+image/tiff = execm perl rclimg
+image/x-xcf = execm perl rclimg

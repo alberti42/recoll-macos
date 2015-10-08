@@ -1,0 +1,72 @@
+= Building Recoll on Windows
+
+The port of Recoll to Windows was begun using Microsoft VS 2015, and
+there are functional project files for recollindex and recollq in this
+directory.
+
+However, no version of Qt supporting VS 2015 was available when needed
+(10-2015), so that the port was completed using the MinGW version of Qt.
+
+At this point it is easiest to use MinGW for everything.
+
+Both the GUI and the non-GUI parts (library, recollindex, recollq) are
+built using Qt qmake/qcreator projects:
+
+  windows/qmkrecoll/librecoll.pro
+  windows/qmkrecoll/recollq.pro
+  windows/qmkrecoll/recollindex.pro
+  qtgui/recoll.pro
+
+Only the names of the intermediary files (xapian and recoll libs) should
+need adjustment in the project files. Just open librecoll.pro in qtcreator,
+build it, see where it puts the lib, and adjust the other files.
+
+== Walkthrough
+
+Here follows a tentative recipee for building recoll on windows 7. This was
+reconstructed after actually doing it, and not tried again on a pristine
+system, so there may be things missing
+
+ - Install Qt 5.x, use the MinGW binary version
+
+ - Install the current version of MinGW, possibly check compatibility with
+   the one which comes with Qt (versions not too far away). The reason for
+   doing this is that the Qt copy does not come with msys, which is
+   convenient for working with non-qmake projects (zlib and Xapian).
+
+ - Start a command window with the appropriate MinGW/Msys environment (use
+   MinGW/msys/x.x/msys.bat). All the following is done from the msys window
+   (so that commands like tar etc. are available). Except for the
+   qt-creator parts of course.
+
+ - Extract zlib (use a tar distrib and msys tar).
+ - From the top of the extracted zlib tree, as from instructions inside
+   Makefile.gcc: 
+        make -fwin32/Makefile.gcc
+        make test testdll -fwin32/Makefile.gcc
+
+ - Extract xapian
+ - Configure with:
+     LDFLAGS=-Lc:/recolldeps/zlib-1.2.8 \
+     CPPFLAGS=-Ic:/recolldeps/zlib-1.2.8 \
+     ./configure
+    (Change according to where you built zlib, of course).
+ - make
+ - This will produce .libs/libxapian-22.dll which I just used in the recoll
+   .pro files and also copied into the install bin directory.
+
+ - Then update the .pro files with the Xapian location (includes and lib)
+ - Build librecoll.pro
+ - Update the other project files with the librecoll location
+ - Build them
+ - Update the windows/mkinstdir.sh with the actual locations of the libs etc.
+
+Curiously, there does not seem to be a need to copy zlib1.dll to the
+install dir ???
+
+Then build unrtf and antiword (or get them from somewhere...). Update, then
+finally run mkinstdir.sh
+
+You should have a working recoll installation.
+
+
