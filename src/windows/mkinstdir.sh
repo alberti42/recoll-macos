@@ -1,28 +1,42 @@
 #!/bin/sh
 
 # Script to make a prototype recoll install directory from locally compiled
-# software. *** Needs cygwin ***
+# software. *** Needs msys or cygwin ***
 
-##############
+################################
 # Local values (to be adjusted)
+
 # Target directory where we copy things. 
 DESTDIR=c:/recollinst
 
-# Recoll src/build tree
-RECOLL=c:/recoll/src
+# Recoll src tree
+RCL=c:/recoll/src/
 
+# Note: unrtf not under recolldeps because it's a clone from the
+# original mercurial repository 
 UNRTF=c:/unrtf
+
+# antiword is under recolldeps: it's not really maintained any more
+# and has no public repository
 ANTIWORD=c:/recolldeps/antiword
 
 CONFIGURATION=Debug
 PLATFORM=x64
 
 LIBXAPIAN=c:/recolldeps/xapian/xapian-core-1.2.21/.libs/libxapian-22.dll
-LIBR=C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/librecoll.dll
-GUIBIN=C:/recoll/src/build-recoll-win-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/recoll.exe
-RCLIDX=C:/recoll/src/windows/build-recollindex-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/recollindex.exe
-RCLQ=C:/recoll/src/windows/build-recollq-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/recollq.exe
-RCLS=C:/recoll/src/windows/build-rclstartw-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/rclstartw.exe
+
+# Qt arch
+QTA=Desktop_Qt_5_5_0_MinGW_32bit
+
+RCLW=$RCL/windows/
+
+LIBR=$RCLW/build-librecoll-${QTA}-Debug/debug/librecoll.dll
+GUIBIN=$RCL/src/build-recoll-win-${QTA}-Debug/debug/recoll.exe
+RCLIDX=$RCLW/build-recollindex-${QTA}-Debug/debug/recollindex.exe
+RCLQ=$RCLW/build-recollq-${QTA}-Debug/debug/recollq.exe
+RCLS=$RCLW/build-rclstartw-${QTA}-Debug/debug/rclstartw.exe
+
+
 ################
 # Script:
 
@@ -35,42 +49,40 @@ fatal()
 }
 
 # checkcopy. 
-cc()
+chkcp()
 {
-    test -f $1 || fatal $1 does not exist
-    cp $1 $2 || exit 1
+    cp $@ || fatal cp $@ failed
 }
 
 copyxapian()
 {
-    cc $LIBXAPIAN $DESTDIR
+    chkcp $LIBXAPIAN $DESTDIR
 }
 
 copyrecoll()
 {
-#    bindir=$RECOLL/windows/$PLATFORM/$CONFIGURATION/
-#    cc  $bindir/recollindex.exe         $DESTDIR
-#    cc  $bindir/recollq.exe             $DESTDIR
-#    cc  $bindir/pthreadVC2.dll          $DESTDIR
-    cc $LIBR $DESTDIR 
-    cc $GUIBIN $DESTDIR
-    cc $RCLIDX $DESTDIR
-    cc $RCLQ $DESTDIR 
-    cc $RCLS $DESTDIR 
+#    bindir=$RCL/windows/$PLATFORM/$CONFIGURATION/
+#    chkcp  $bindir/recollindex.exe         $DESTDIR
+#    chkcp  $bindir/recollq.exe             $DESTDIR
+#    chkcp  $bindir/pthreadVC2.dll          $DESTDIR
+    chkcp $LIBR $DESTDIR 
+    chkcp $GUIBIN $DESTDIR
+    chkcp $RCLIDX $DESTDIR
+    chkcp $RCLQ $DESTDIR 
+    chkcp $RCLS $DESTDIR 
 
-    cc $RECOLL/sampleconf/fields        $DESTDIR/Share/examples
-    cc $RECOLL/sampleconf/fragbuts.xml  $DESTDIR/Share/examples
-    cc $RECOLL/windows/mimeconf         $DESTDIR/Share/examples
-    cc $RECOLL/sampleconf/mimemap       $DESTDIR/Share/examples
-    cc $RECOLL/windows/mimeview         $DESTDIR/Share/examples
-    cc $RECOLL/sampleconf/recoll.conf   $DESTDIR/Share/examples
-    cc $RECOLL/sampleconf/recoll.qss    $DESTDIR/Share/examples
+    chkcp $RCL/sampleconf/fields        $DESTDIR/Share/examples
+    chkcp $RCL/sampleconf/fragbuts.xml  $DESTDIR/Share/examples
+    chkcp $RCL/windows/mimeconf         $DESTDIR/Share/examples
+    chkcp $RCL/sampleconf/mimemap       $DESTDIR/Share/examples
+    chkcp $RCL/windows/mimeview         $DESTDIR/Share/examples
+    chkcp $RCL/sampleconf/recoll.conf   $DESTDIR/Share/examples
+    chkcp $RCL/sampleconf/recoll.qss    $DESTDIR/Share/examples
 
-    cc $RECOLL/python/recoll/recoll/rclconfig.py $FILTERS
-
-    cp $RECOLL/filters/*                $FILTERS || fatal Copy Filters failed
-    cp $RECOLL/qtgui/mtpics/*  $DESTDIR/Share/images || fatal copy images 
-    cp $RECOLL/qtgui/i18n/*.qm $DESTDIR/Share/translations
+    chkcp $RCL/python/recoll/recoll/rclconfig.py $FILTERS
+    chkcp $RCL/filters/*       $FILTERS 
+    chkcp $RCL/qtgui/mtpics/*  $DESTDIR/Share/images
+    chkcp $RCL/qtgui/i18n/*.qm $DESTDIR/Share/translations
 }
 
 copyantiword()
@@ -78,26 +90,24 @@ copyantiword()
     bindir=$ANTIWORD/Win32-only/$PLATFORM/$CONFIGURATION
 
     test -d $Filters/Resources || mkdir -p $FILTERS/Resources || exit 1
-
-    cc  $bindir/antiword.exe            $FILTERS
-    
-    cp  $ANTIWORD/Resources/*           $FILTERS/Resources || exit 1
+    chkcp  $bindir/antiword.exe            $FILTERS
+    chkcp  $ANTIWORD/Resources/*           $FILTERS/Resources
 }
 
 copyunrtf()
 {
     bindir=$UNRTF/Windows/$PLATFORM/$CONFIGURATION
 
-    cc  $bindir/unrtf.exe               $FILTERS
-
     test -d $FILTERS/Share || mkdir -p $FILTERS/Share || exit 1
-    cp  $UNRTF/outputs/*.conf           $FILTERS/Share || exit 1
-    cc  $UNRTF/outputs/SYMBOL.charmap   $FILTERS/Share
+    chkcp  $bindir/unrtf.exe               $FILTERS
+    chkcp  $UNRTF/outputs/*.conf           $FILTERS/Share
+    chkcp  $UNRTF/outputs/SYMBOL.charmap   $FILTERS/Share
 }
 
 
 for d in doc examples filters images translations; do
-    test -d $DESTDIR/Share/$d || mkdir -p $DESTDIR/Share/$d ||  exit 1
+    test -d $DESTDIR/Share/$d || mkdir -p $DESTDIR/Share/$d || \
+        fatal mkdir $d failed
 done
 
 copyxapian
