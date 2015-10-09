@@ -1,0 +1,36 @@
+## ##########################################
+# External viewers, launched by the recoll GUI when you click on a result
+# 'edit' link
+#
+# MS WINDOWS VERSION
+#
+# Mime types which we should not uncompress if they are found gzipped or
+# bzipped because the native viewer knows how to handle. These would be
+# exceptions and the list is normally empty
+#nouncompforviewmts = 
+
+# For releases 1.18 and later: exceptions when using the x-all entry: these
+# types will use their local definition. This is useful, e.g.: 
+#
+#  - for pdf, where we can pass additional parameters like page to open and
+#    search string
+#  - For pages of CHM and EPUB documents where we can choose to open the 
+#    parent document instead of a temporary html file.
+xallexcepts = \
+ text/html|gnuinfo text/html|chm text/html|epub \
+ application/x-fsdirectory|parentopen inode/directory|parentopen
+
+[view]
+# Pseudo entry used if the 'use desktop' preference is set in the GUI
+application/x-all = cmd /c start %u
+
+application/epub+zip = ebook-viewer %f
+# Open the parent epub document for epub parts instead of opening them as
+# html documents. This is almost always what we want.
+text/html|epub = cmd /c start %F;ignoreipath=1
+
+# directory. Thunar can't afaik. xdg-open cant pass an additional
+# parameters so these are to be xallexcepts.
+application/x-fsdirectory|parentopen = cmd /c start %f
+inode/directory|parentopen = cmd /c start %f
+

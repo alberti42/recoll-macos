@@ -98,6 +98,18 @@
 
       
       <dl>
+        <dt>2015-10-08</dt>
+        <dd><a href="pics/windows-recoll.html">
+            <img align="left" width="100" alt="Recoll on MS-Windows" 
+                 src="pics/windows-recoll-thumb.png"></a>
+          Recoll on Microsoft Windows ! This is still and a lot if
+          integration work remains (don't ask me for a package), but
+          the indexer and the GUI are mostly functional. This is an
+          almost-native port, based on Qt and the Windows API, no need
+          for Cygwin. Thanks to Christian Motz for helping with the
+          filter interface (and the rest). </dd>
+        <br clear="all">
+
         <dt>2015-10-01</dt>
         <dd>Release 1.21.2 is out, and replaces 1.20 as production
           release. </dd>
