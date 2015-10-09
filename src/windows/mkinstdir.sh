@@ -20,8 +20,8 @@ UNRTF=c:/unrtf
 # and has no public repository
 ANTIWORD=c:/recolldeps/antiword
 
-CONFIGURATION=Debug
-PLATFORM=x64
+CONFIGURATION=Release
+PLATFORM=Win32
 
 LIBXAPIAN=c:/recolldeps/xapian/xapian-core-1.2.21/.libs/libxapian-22.dll
 
@@ -31,7 +31,7 @@ QTA=Desktop_Qt_5_5_0_MinGW_32bit
 RCLW=$RCL/windows/
 
 LIBR=$RCLW/build-librecoll-${QTA}-Debug/debug/librecoll.dll
-GUIBIN=$RCL/src/build-recoll-win-${QTA}-Debug/debug/recoll.exe
+GUIBIN=$RCL/build-recoll-win-${QTA}-Debug/debug/recoll.exe
 RCLIDX=$RCLW/build-recollindex-${QTA}-Debug/debug/recollindex.exe
 RCLQ=$RCLW/build-recollq-${QTA}-Debug/debug/recollq.exe
 RCLS=$RCLW/build-rclstartw-${QTA}-Debug/debug/rclstartw.exe
