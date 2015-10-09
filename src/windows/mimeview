@@ -30,10 +30,10 @@ application/x-all = rclstartw %f
 ####### Special ones
 # Open the parent epub document for epub parts instead of opening them as
 # html documents. This is almost always what we want.
-text/html|epub = cmd /c start %F;ignoreipath=1
+text/html|epub = rclstartw %F;ignoreipath=1
 # Parent open for fs file.
-application/x-fsdirectory|parentopen = cmd /c start %f
-inode/directory|parentopen = cmd /c start %f
+application/x-fsdirectory|parentopen = rclstartw %f
+inode/directory|parentopen = rclstartw %f
 
 ###### The following are not used at all on windows, but the types need to
 ###### be listed for an "Open" link to appear in the result list
