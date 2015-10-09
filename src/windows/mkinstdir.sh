@@ -59,9 +59,9 @@ copyrecoll()
 
     cc $RECOLL/sampleconf/fields        $DESTDIR/Share/examples
     cc $RECOLL/sampleconf/fragbuts.xml  $DESTDIR/Share/examples
-    cc $RECOLL/sampleconf/mimeconf      $DESTDIR/Share/examples
+    cc $RECOLL/windows/mimeconf         $DESTDIR/Share/examples
     cc $RECOLL/sampleconf/mimemap       $DESTDIR/Share/examples
-    cc $RECOLL/sampleconf/mimeview      $DESTDIR/Share/examples
+    cc $RECOLL/windows/mimeview         $DESTDIR/Share/examples
     cc $RECOLL/sampleconf/recoll.conf   $DESTDIR/Share/examples
     cc $RECOLL/sampleconf/recoll.qss    $DESTDIR/Share/examples
 
