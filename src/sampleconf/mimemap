@@ -3,7 +3,7 @@
 
 .txt = text/plain
 .text = text/plain
-.srt = text/plain
+.srt = text/x-srt
 .ini = text/x-ini
 .csv = text/x-csv
 

@@ -134,6 +134,7 @@ application/x-perl = emacsclient --no-wait %f
 text/x-perl = emacsclient --no-wait %f
 application/x-shellscript = emacsclient --no-wait %f
 text/x-shellscript = emacsclient --no-wait %f
+text/x-srt = emacsclient --no-wait %f
 
 # Or firefox -remote "openFile(%u)"
 text/html = firefox %u

@@ -157,6 +157,7 @@ text/x-purple-log = exec rclpurple
 text/x-purple-html-log = internal text/html
 text/x-python = exec rclpython
 text/x-shellscript = internal text/plain
+text/x-srt = internal text/plain
 text/x-tex = exec rcltex
 
 application/xml = exec rclxml

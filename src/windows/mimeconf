@@ -146,6 +146,7 @@ text/x-mail = internal
 text/x-perl = internal text/plain
 text/x-python = exec python rclpython
 text/x-shellscript = internal text/plain
+text/x-srt = internal text/plain
 
 application/xml = execm python rclxml
 text/xml = execm python rclxml
