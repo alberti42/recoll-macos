@@ -3,6 +3,7 @@
 
 TEMPLATE        = app
 LANGUAGE        = C++
+TARGET          = recoll
 
 QT += webkit
 

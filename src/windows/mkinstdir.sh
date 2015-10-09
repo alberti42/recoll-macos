@@ -19,7 +19,7 @@ PLATFORM=x64
 
 LIBXAPIAN=c:/recolldeps/xapian/xapian-core-1.2.21/.libs/libxapian-22.dll
 LIBR=C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/librecoll.dll
-GUIBIN=C:/Users/Bill/recoll/src/build-recoll-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/recoll.exe
+GUIBIN=C:/recoll/src/build-recoll-win-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/recoll.exe
 RCLIDX=C:/recoll/src/windows/build-recollindex-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/recollindex.exe
 RCLQ=C:/recoll/src/windows/build-recollq-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/recollq.exe
 RCLS=C:/recoll/src/windows/build-rclstartw-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/rclstartw.exe
