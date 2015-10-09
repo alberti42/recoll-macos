@@ -399,7 +399,9 @@ void RclMain::execViewer(const map<string, string>& subs, bool istempfile,
     // Also substitute inside the unsplitted command line and display
     // in status bar
     pcSubst(cmd, ncmd, subs);
+#ifndef _WIN32
     ncmd += " &";
+#endif
     QStatusBar *stb = statusBar();
     if (stb) {
 	string fcharset = theconfig->getDefCharset(true);
@@ -417,7 +419,7 @@ void RclMain::execViewer(const map<string, string>& subs, bool istempfile,
     zg_send_event(ZGSEND_OPEN, doc);
 
     // We keep pushing back and never deleting. This can't be good...
-    ExecCmd *ecmd = new ExecCmd;
+    ExecCmd *ecmd = new ExecCmd(ExecCmd::EXF_SHOWWINDOW);
     m_viewers.push_back(ecmd);
     ecmd->startExec(execpath, lcmd, false, false);
 }

@@ -361,6 +361,10 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 	case EPERM:
 	case EACCES:
 	case ENOENT:
+#ifdef _WIN32
+            // We get this quite a lot, don't know why. To be checked.
+        case EINVAL:
+#endif
 	    goto out;
 	default:
 	    status = FtwError;

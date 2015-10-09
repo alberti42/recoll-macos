@@ -6,8 +6,11 @@ LANGUAGE        = C++
 
 QT += webkit
 
-# QT += dbus
-# QMAKE_CXXFLAGS += -DUSE_ZEITGEIST
+DEFINES += BUILDING_RECOLL
+DEFINES -= UNICODE
+DEFINES -= _UNICODE
+DEFINES += _MBCS
+DEFINES += PSAPI_VERSION=1
 
 QT += xml
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets webkitwidgets printsupport
@@ -106,7 +109,7 @@ windows {
     contains(QMAKE_CC, cl){
         # Visual Studio
     }
-    LIBS += C:/recoll/src/build-librecoll-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/librecoll.dll
+    LIBS += C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/librecoll.dll
 }
 
 TRANSLATIONS = \

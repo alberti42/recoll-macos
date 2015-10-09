@@ -176,7 +176,14 @@ class ExecCmd {
      */
     bool requestChildExit();
 
-     ExecCmd();
+    enum ExFlags {EXF_NONE,
+                  // Only does anything on windows. Used when starting
+                  // a viewer. The default is to hide the window,
+                  // because it avoids windows appearing and
+                  // disappearing when executing stuff for previewing
+                  EXF_SHOWWINDOW = 1, 
+    };
+    ExecCmd(int flags = 0);
     ~ExecCmd();
 
     /**

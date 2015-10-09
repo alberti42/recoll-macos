@@ -255,8 +255,9 @@ static int getVMMBytes(HANDLE hProcess)
 
 class ExecCmd::Internal {
 public:
-    Internal()
-        : m_advise(0), m_provide(0), m_timeoutMs(1000), m_rlimit_as_mbytes(0) {
+    Internal(int flags)
+        : m_advise(0), m_provide(0), m_timeoutMs(1000), m_rlimit_as_mbytes(0),
+          m_flags(flags) {
         reset();
     }
 
@@ -265,7 +266,8 @@ public:
     ExecCmdProvide  *m_provide;
     int              m_timeoutMs;
     int m_rlimit_as_mbytes;
-
+    int m_flags;
+    
     // We need buffered I/O for getline. The Unix version uses netcon's
     string m_buf;	// Buffer. Only used when doing getline()s
     size_t m_bufoffs;    // Pointer to current 1st byte of useful data
@@ -360,9 +362,9 @@ private:
     bool    m_active;
 };
 
-ExecCmd::ExecCmd()
+ExecCmd::ExecCmd(int flags)
 {
-    m = new Internal();
+    m = new Internal(flags);
     if (m) {
         m->reset();
     }
@@ -703,7 +705,11 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
     // This structure specifies the STDIN and STDOUT handles for redirection.
     ZeroMemory(&siStartInfo, sizeof(STARTUPINFO));
     siStartInfo.cb = sizeof(STARTUPINFO);
-    siStartInfo.dwFlags |= STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+    if (m->m_flags & EXF_SHOWWINDOW) {
+        siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
+    } else {
+        siStartInfo.dwFlags |= STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+    }
     siStartInfo.hStdOutput = hOutputWrite;
     siStartInfo.hStdInput = hInputRead;
     siStartInfo.hStdError = hErrorWrite;

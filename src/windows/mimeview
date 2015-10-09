@@ -22,7 +22,10 @@ xallexcepts = \
 
 [view]
 # Pseudo entry used if the 'use desktop' preference is set in the GUI
-application/x-all = cmd /c start %u
+# Could not get the cmd-based ones to work (tried quoting "start %u" too)
+#application/x-all = c:/Windows/System32/cmd /c start %u
+#application/x-all = cmd /c start %u
+application/x-all = rclstartw %f
 
 ####### Special ones
 # Open the parent epub document for epub parts instead of opening them as
@@ -53,7 +56,10 @@ application/x-dvi = evince --page-index=%p --find=%s  %f
 application/x-lyx = lyx %f
 application/x-scribus = scribus %f
 
-application/msword = libreoffice %f
+#application/msword = libreoffice %f
+application/msword = \
+ "C:/Program Files (x86)/LibreOffice 5/program/soffice.exe" %f
+ 
 application/vnd.ms-excel = libreoffice %f
 application/vnd.ms-powerpoint = libreoffice %f
 

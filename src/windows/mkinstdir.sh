@@ -22,7 +22,7 @@ LIBR=C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_5_0_MinGW_32bit-Debug/de
 GUIBIN=C:/Users/Bill/recoll/src/build-recoll-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/recoll.exe
 RCLIDX=C:/recoll/src/windows/build-recollindex-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/recollindex.exe
 RCLQ=C:/recoll/src/windows/build-recollq-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/recollq.exe
-
+RCLS=C:/recoll/src/windows/build-rclstartw-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/rclstartw.exe
 ################
 # Script:
 
@@ -56,6 +56,7 @@ copyrecoll()
     cc $GUIBIN $DESTDIR
     cc $RCLIDX $DESTDIR
     cc $RCLQ $DESTDIR 
+    cc $RCLS $DESTDIR 
 
     cc $RECOLL/sampleconf/fields        $DESTDIR/Share/examples
     cc $RECOLL/sampleconf/fragbuts.xml  $DESTDIR/Share/examples

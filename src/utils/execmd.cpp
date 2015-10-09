@@ -153,7 +153,7 @@ public:
 };
 bool ExecCmd::Internal::o_useVfork = false;
 
-ExecCmd::ExecCmd()
+ExecCmd::ExecCmd(int)
 {
     m = new Internal();
     if (m)
