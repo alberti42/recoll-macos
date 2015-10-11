@@ -41,7 +41,7 @@ check_recoll_orig()
 ####### QT4
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
-#series="precise trusty utopic vivid"
+#series="precise trusty vivid"
 series=
 
 if test "X$series" != X ; then
@@ -70,7 +70,7 @@ for series in $series ; do
 done
 
 ### KIO
-series="precise trusty utopic vivid"
+series="precise trusty vivid"
 series=vivid
 
 debdir=debiankio
@@ -140,7 +140,7 @@ for series in $series ; do
 done
 
 ### Unity Scope
-series="trusty utopic vivid"
+series="trusty vivid"
 series=
 
 debdir=debianunityscope
