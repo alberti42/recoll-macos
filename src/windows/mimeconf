@@ -135,7 +135,8 @@ message/rfc822 = internal
 text/calendar = execm python rclics;mimetype=text/plain
 text/html  = internal 
 text/plain = internal 
-text/rtf = execm python rclrtf.py
+text/rtf = exec unrtf --nopict --html;mimetype=text/html
+#text/rtf = execm python rclrtf.py
 text/x-c = internal
 text/x-c++ = internal
 text/x-c+ = internal

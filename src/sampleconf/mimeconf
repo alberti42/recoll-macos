@@ -51,7 +51,7 @@ application/javascript = internal text/plain
 #  - with unrtf: rtf files disguising as doc files.
 # The default is now again to use rcldoc. Use raw antiword if speed is more
 # important for you than catching all data, 
-application/msword = exec rcldoc
+application/msword = execm rcldoc.py
 #application/msword = exec antiword -t -i 1 -m UTF-8;mimetype=text/plain
 # You can also use wvware directly but it's much slower.
 # application/msword = exec wvWare --charset=utf-8 --nographics
@@ -59,41 +59,40 @@ application/msword = exec rcldoc
 # Also Handle the mime type returned by "file -i" for a suffix-less word
 # file. This could probably just as well be an excel file, but we have to
 # chose one.
-application/vnd.ms-office = exec rcldoc
+application/vnd.ms-office = execm rcldoc.py
 
 application/ogg = execm rclaudio
-application/pdf = exec rclpdf
-# application/pdf = execm rclmpdf.py
+application/pdf = execm rclmpdf.py
 application/postscript = exec pstotext;charset=iso-8859-1;mimetype=text/plain
-application/vnd.ms-excel = exec rclxls
-application/vnd.ms-powerpoint = exec rclppt
-application/vnd.oasis.opendocument.text = exec rclsoff
-application/vnd.oasis.opendocument.text-template = exec rclsoff
-application/vnd.oasis.opendocument.presentation = exec rclsoff 
-application/vnd.oasis.opendocument.spreadsheet = exec rclsoff
-application/vnd.oasis.opendocument.graphics = exec rclsoff
+application/vnd.ms-excel = execm rclxls.py
+application/vnd.ms-powerpoint = execm rclppt.py
+application/vnd.oasis.opendocument.text = execm rclsoff.py
+application/vnd.oasis.opendocument.text-template = execm rclsoff.py
+application/vnd.oasis.opendocument.presentation = execm rclsoff.py 
+application/vnd.oasis.opendocument.spreadsheet = execm rclsoff.py
+application/vnd.oasis.opendocument.graphics = execm rclsoff.py
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
- exec rclopxml
+ execm rclopxml.py
 application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
- exec rclopxml
+ execm rclopxml.py
 application/vnd.openxmlformats-officedocument.presentationml.template = \
- exec rclopxml
+ execm rclopxml.py
 application/vnd.openxmlformats-officedocument.presentationml.presentation = \
- exec rclopxml
+ execm rclopxml.py
 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = \
- exec rclopxml
+ execm rclopxml.py
 application/vnd.openxmlformats-officedocument.spreadsheetml.template =\
- exec rclopxml
-application/vnd.sun.xml.calc = exec rclsoff
-application/vnd.sun.xml.calc.template = exec rclsoff
-application/vnd.sun.xml.draw = exec rclsoff
-application/vnd.sun.xml.draw.template = exec rclsoff
-application/vnd.sun.xml.impress = exec rclsoff
-application/vnd.sun.xml.impress.template = exec rclsoff
-application/vnd.sun.xml.math = exec rclsoff
-application/vnd.sun.xml.writer = exec rclsoff
-application/vnd.sun.xml.writer.global = exec rclsoff
-application/vnd.sun.xml.writer.template = exec rclsoff
+ execm rclopxml.py
+application/vnd.sun.xml.calc = execm rclsoff.py
+application/vnd.sun.xml.calc.template = execm rclsoff.py
+application/vnd.sun.xml.draw = execm rclsoff.py
+application/vnd.sun.xml.draw.template = execm rclsoff.py
+application/vnd.sun.xml.impress = execm rclsoff.py
+application/vnd.sun.xml.impress.template = execm rclsoff.py
+application/vnd.sun.xml.math = execm rclsoff.py
+application/vnd.sun.xml.writer = execm rclsoff.py
+application/vnd.sun.xml.writer.global = execm rclsoff.py
+application/vnd.sun.xml.writer.template = execm rclsoff.py
 application/vnd.wordperfect = exec wpd2html;mimetype=text/html
 application/x-abiword = exec rclabw
 application/x-awk = internal text/plain
@@ -101,7 +100,7 @@ application/x-chm = execm rclchm
 application/x-dia-diagram = execm rcldia;mimetype=text/plain
 application/x-dvi = exec rcldvi
 application/x-flac = execm rclaudio
-application/x-gnote = exec rclxml
+application/x-gnote = execm rclxml.py
 application/x-gnuinfo = execm rclinfo
 application/x-gnumeric = exec rclgnm
 application/x-kword = exec rclkwd
@@ -124,14 +123,14 @@ audio/mpeg = execm rclaudio
 audio/mp4 = execm rclaudio
 audio/aac = execm rclaudio
 audio/x-karaoke = execm rclkar
-image/gif = execm rclimg
-image/jp2 = execm rclimg
-image/jpeg = execm rclimg
-image/png = execm rclimg
-image/tiff = execm rclimg
+image/gif = execm rclimg.py
+image/jp2 = execm rclimg.py
+image/jpeg = execm rclimg.py
+image/png = execm rclimg.py
+image/tiff = execm rclimg.py
 image/vnd.djvu = exec rcldjvu
-image/svg+xml = exec rclsvg
-image/x-xcf = execm rclimg
+image/svg+xml = execm rclsvg.py
+image/x-xcf = execm rclimg.py
 inode/symlink = internal
 application/x-zerosize = internal
 inode/x-empty = internal application/x-zerosize
@@ -159,9 +158,8 @@ text/x-python = exec rclpython
 text/x-shellscript = internal text/plain
 text/x-srt = internal text/plain
 text/x-tex = exec rcltex
-
-application/xml = exec rclxml
-text/xml = exec rclxml
+application/xml = execm rclxml.py
+text/xml = execm rclxml.py
 # Using these instead of the two above would index all parameter and tag
 # names, attribute values etc, instead of just the text content.
 #application/xml = internal text/plain

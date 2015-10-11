@@ -8,7 +8,6 @@ import sys
 import os
 import xml.sax
 
-# Processing the output from unrtf
 class XLSProcessData:
     def __init__(self, em):
         self.em = em
@@ -16,8 +15,6 @@ class XLSProcessData:
         self.gotdata = 0
         self.xmldata = ""
         
-    # Some versions of unrtf put out a garbled charset line.
-    # Apart from this, we pass the data untouched.
     def takeLine(self, line):
         if not self.gotdata:
             self.out += '''<html><head>''' + \

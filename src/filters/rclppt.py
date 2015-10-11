@@ -6,15 +6,12 @@ import re
 import sys
 import os
 
-# Processing the output from unrtf
 class PPTProcessData:
     def __init__(self, em):
         self.em = em
         self.out = ""
         self.gotdata = 0
 
-    # Some versions of unrtf put out a garbled charset line.
-    # Apart from this, we pass the data untouched.
     def takeLine(self, line):
         if not self.gotdata:
             self.out += '''<html><head>''' + \
@@ -22,7 +19,7 @@ class PPTProcessData:
                         '''content="text/html;charset=UTF-8">''' + \
                         '''</head><body><pre>'''
             self.gotdata = True
-        self.out += self.em.htmlescape(line)
+        self.out += self.em.htmlescape(line) + "<br>\n"
 
     def wrapData(self):
         return self.out + '''</pre></body></html>'''

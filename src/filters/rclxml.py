@@ -74,7 +74,7 @@ class XMLExtractor:
             self.em.rclog("%s: bad data: " % (fn, err))
             return (False, "", "", rclexecm.RclExecM.eofnow)
 
-        return (True, docdata, "", rclexecm.RclExecM.eofnow)
+        return (True, docdata, "", rclexecm.RclExecM.eofnext)
     
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):

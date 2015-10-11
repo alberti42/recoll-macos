@@ -90,11 +90,8 @@ src/qtgui/Makefile
 src/qtgui/qrc_recoll.cpp
 src/qtgui/recoll
 src/qtgui/recoll.app
-src/query/alldeps
-src/query/recollq
 src/sampleconf/rclmon.sh
 src/sampleconf/recoll.conf
-src/utils/alldeps
 tests/casediac/aspdict.en.rws
 tests/casediac/idxstatus.txt
 tests/casediac/index.pid
