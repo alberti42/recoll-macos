@@ -89,6 +89,7 @@ src/qtgui/.ui/*
 src/qtgui/Makefile
 src/qtgui/qrc_recoll.cpp
 src/qtgui/recoll
+src/qtgui/recoll.pro
 src/qtgui/recoll.app
 src/sampleconf/rclmon.sh
 src/sampleconf/recoll.conf

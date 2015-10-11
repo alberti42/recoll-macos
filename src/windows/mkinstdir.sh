@@ -25,6 +25,11 @@ PLATFORM=Win32
 
 LIBXAPIAN=c:/recolldeps/xapian/xapian-core-1.2.21/.libs/libxapian-22.dll
 
+MUTAGEN=C:/recolldeps/mutagen-1.31/
+
+# Where to copy the Qt Dlls from:
+QTBIN=C:/Qt/5.5/mingw492_32/bin
+
 # Qt arch
 QTA=Desktop_Qt_5_5_0_MinGW_32bit
 
@@ -52,6 +57,19 @@ fatal()
 chkcp()
 {
     cp $@ || fatal cp $@ failed
+}
+
+# Note: can't build static recoll as there is no static qtwebkit (ref: 5.5.0)
+copyqt()
+{
+    for dll in Qt5Cored.dll Qt5Guid.dll Qt5MultimediaWidgetsd.dll \
+        Qt5Multimediad.dll Qt5Networkd.dll Qt5OpenGLd.dll \
+        Qt5Positioningd.dll Qt5PrintSupportd.dll Qt5Qmld.dll Qt5Quickd.dll \
+        Qt5Sensorsd.dll Qt5Sqld.dll Qt5WebChanneld.dll Qt5WebKitWidgetsd.dll \
+        Qt5WebKitd.dll Qt5Widgetsd.dll Qt5Xmld.dll icudt54.dll \
+        icuin54.dll icuuc54.dll ; do 
+        chkcp $QTBIN/$dll $DESTDIR
+    done
 }
 
 copyxapian()
@@ -104,6 +122,12 @@ copyunrtf()
     chkcp  $UNRTF/outputs/SYMBOL.charmap   $FILTERS/Share
 }
 
+copymutagen()
+{
+    cp -rp $MUTAGEN/build/lib/mutagen $FILTERS
+    # chkcp to check that mutagen is where we think it is
+    chkcp $MUTAGEN/build/lib/mutagen/mp3.py $FILTERS/mutagen
+}
 
 for d in doc examples filters images translations; do
     test -d $DESTDIR/Share/$d || mkdir -p $DESTDIR/Share/$d || \
