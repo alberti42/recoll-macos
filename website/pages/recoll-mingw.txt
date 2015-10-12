@@ -1,0 +1,185 @@
+= Building Recoll on Microsoft Windows MinGW
+
+This document describes building a Recoll distribution, starting from a
+pristine Windows machine, using the http://www.mingw.org/[MinGW] port of gcc
+and associated tools. 
+
+The resulting package only needs Python and 7-zip to be installed on the
+target system.
+
+== Installing MinGW and MSYS
+
+Download the installer from http://www.mingw.org/, and run it.
+
+In the following, a number of commands will use a command window with an
+MinGW environment. This can be easily created by executing
+C:\MinGW\msys\1.0\msys.bat from File Explorer.
+
+== Tortoise HG
+
+This is needed because there is no source package for recoll or its
+dependancies for now, you are going to clone Bitbucket repositories.
+
+Get it from http://tortoisehg.bitbucket.org/download/index.html
+
+Then clone the repositories for
+https://medoc@bitbucket.org/medoc/recoll[recoll] to C:/recoll and
+https://medoc@bitbucket.org/medoc/recoll-windows-deps[some of the
+dependancies] to C:/recolldeps
+
+You can change the target names, but there will be more script editing
+later on then (nothing much).
+
+== zlib
+
+Download from http://zlib.net/zlib-1.2.8.tar.gz
+Then, from an MSYS command window (see above):
+
+     cd c:/temp
+     tar xzf path-to-tar-file
+     cd zlib-1.2.8
+     make -f Win32/Makefile.gcc
+
+== Xapian
+
+Download from:
+http://oligarchy.co.uk/xapian/1.2.21/xapian-core-1.2.21.tar.xz
+
+    cd c:/recolldeps
+    tar xf path-to-tar-file
+    cd xapian-core-1.2.21
+
+- Edit common/safeunistd.h to neutralize the sleep() function definition as
+  this conflicts with the definition which is part of recent mingw
+  editions. Replace the "#ifdef __WIN32__" with "#if 0". This is
+  already fixed in later Xapian versions
+
+Then: 
+
+    CPPFLAGS=-IC:/temp/zlib-1.2.8 LDFLAGS=-Lc:/temp/zlib-1.2.8 ./configure
+    make
+
+== Qt
+
+Download and install Qt 5.5.x (mingw version) from: http://www.qt.io/download/
+
+Note: it is not possible to build a static webkit, so the installation is
+necessarily dynamic, which means that the Qt DLLS will need to be copied
+into the installation directory. This is done by the installation-building
+script (using `windeployqt`)
+
+== Recoll
+
+You need to use the source from the repository, there is no release
+supporting Windows at the moment.
+
+- If not already done, clone the recoll repository from:
+  https://medoc@bitbucket.org/medoc/recoll to `C:/recoll`
+
+- Start qtcreator and open c:/recoll/src/windows/qmkrecoll/librecoll.pro At
+  the bottom of the file, you may need to fix the locations for the xapian
+  and zlib dlls.
+
+- Build librecoll.pro
+
+- Do the same (adjust locations and build) for:
+  c:/recoll/src/windows/qmkrecoll/rclstartw.pro
+  c:/recoll/src/windows/qmkrecoll/recollindex.pro
+  c:/recoll/src/windows/qmkrecoll/recollq.pro
+  c:/recoll/src/qtgui/recoll-win.pro
+
+
+== Helper applications
+
+There are a number of useful files stored in a BitBucket repository, you
+will need to clone it on the windows machine (the final script,
+mkinstdir.sh, expects C:/recolldeps as a cloned location).
+
+    https://medoc@bitbucket.org/medoc/recoll-windows-deps
+
+== 7-zip
+
+7-zip is used for all decompression tasks. Install it from
+http://www.7-zip.org/ 
+
+== Python
+
+All Recoll helper scripts (data extractors) are written in Python, and not
+yet compatible with Python3. You need to install and download Python 2.7
+from https://www.python.org/downloads/release/python-2710/
+
+== Python modules
+
+Some data formats need library modules not delivered as part of the base
+Python installation
+
+=== libxml2/libxslt
+
+The precompiled binary is from :
+http://users.skynet.be/sbi/libxml-python/
+http://users.skynet.be/sbi/libxml-python/binaries/libxml2-python-2.7.7.win32-py2.7.exe
+
+The useful parts are stored in recoll-windows-deps repo
+
+Slightly newer dlls, which should be compatible, here:
+https://www.zlatkovic.com/libxml.en.html
+
+This will be copied into the installation by the mkinstdir.sh script.
+
+=== mutagen 
+
+Download and extract mutagen from https://pypi.python.org/pypi/mutagen
+Then in the mutagen directory (e.g. C:/temp/mutagen-1.31):
+
+     python setup.py build
+
+=== pyexiv2
+
+I did not attempt a build (needs boost-python, scons).
+Used an installer from http://tilloy.net/dev/pyexiv2/download.html
+
+The resulting site-packages data is stored in the recoll-windows-deps
+directory and copied into the filters directory by the mkinstdir.sh script
+
+=== epub 
+
+Download from: http://pypi.python.org/pypi/epub/
+
+Extract, then execute the following in the extracted directory (e.g.:
+C:/temp/epub-0.5.2):
+ 
+   python setup.py
+
+The module will be copied by mkinstdir.sh
+
+
+== Non-Python helpers
+
+== unrtf 
+
+I initially built unrtf with VS 2015, and I was too lazy to do it again
+with mingw. The project files are in the Windows directory in the official
+repository: 
+            
+    hg clone http://hg.savannah.gnu.org/hgweb/unrtf/
+
+== antiword
+
+Use the source from recoll-windows-deps (C:/recolldeps/unrtf)
+
+     make -f Makefile.mingw.
+
+== Poppler
+
+Did not try to compile. Used the binaries from 
+http://blog.alivate.com.au/poppler-windows/ 
+
+There is a copy in the recoll-windows-deps repository, it will be copied by
+the mkinstdir.sh script.
+
+== Building the install directory
+
+
+Once the builds above are performed, edit the mkinstdir.sh script to adjust
+the locations, and use it to build the installation directory
+
