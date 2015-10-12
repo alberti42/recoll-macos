@@ -25,6 +25,8 @@ test -d $DESTDIR || mkdir $DESTDIR || fatal cant create $DESTDIR
 # Recoll src tree
 RCL=c:/recoll/src/
 
+ReleaseBuild=y
+
 # Note: unrtf not under recolldeps because it's a clone from the
 # original mercurial repository 
 UNRTF=c:/unrtf
@@ -47,11 +49,18 @@ QTA=Desktop_Qt_5_5_0_MinGW_32bit
 
 RCLW=$RCL/windows/
 
-LIBR=$RCLW/build-librecoll-${QTA}-Debug/debug/librecoll.dll
-GUIBIN=$RCL/build-recoll-win-${QTA}-Debug/debug/recoll.exe
-RCLIDX=$RCLW/build-recollindex-${QTA}-Debug/debug/recollindex.exe
-RCLQ=$RCLW/build-recollq-${QTA}-Debug/debug/recollq.exe
-RCLS=$RCLW/build-rclstartw-${QTA}-Debug/debug/rclstartw.exe
+if test X$ReleaseBuild = X'y'; then
+    qtsdir=release
+    qtlibsuff=
+else
+    qtsdir=debug
+    qtlibsuff=d
+fi
+LIBR=$RCLW/build-librecoll-${QTA}-${qtsdir}/${qtsdir}/librecoll.dll
+GUIBIN=$RCL/build-recoll-win-${QTA}-${qtsdir}/${qtsdir}/recoll.exe
+RCLIDX=$RCLW/build-recollindex-${QTA}-${qtsdir}/${qtsdir}/recollindex.exe
+RCLQ=$RCLW/build-recollq-${QTA}-${qtsdir}/${qtsdir}/recollq.exe
+RCLS=$RCLW/build-rclstartw-${QTA}-${qtsdir}/${qtsdir}/rclstartw.exe
 
 
 # Needed for a VS build (which we did not ever complete because of
@@ -73,13 +82,17 @@ chkcp()
 # Note: can't build static recoll as there is no static qtwebkit (ref: 5.5.0)
 copyqt()
 {
-    for dll in Qt5Cored.dll Qt5Guid.dll Qt5MultimediaWidgetsd.dll \
-        Qt5Multimediad.dll Qt5Networkd.dll Qt5OpenGLd.dll \
-        Qt5Positioningd.dll Qt5PrintSupportd.dll Qt5Qmld.dll Qt5Quickd.dll \
-        Qt5Sensorsd.dll Qt5Sqld.dll Qt5WebChanneld.dll Qt5WebKitWidgetsd.dll \
-        Qt5WebKitd.dll Qt5Widgetsd.dll Qt5Xmld.dll icudt54.dll \
+    for dll in Qt5Core${qtlibsuff}.dll Qt5Gui${qtlibsuff}.dll \
+        Qt5MultimediaWidgets${qtlibsuff}.dll \
+        Qt5Multimedia${qtlibsuff}.dll Qt5Network${qtlibsuff}.dll \
+        Qt5OpenGL${qtlibsuff}.dll Qt5Positioning${qtlibsuff}.dll \
+        Qt5PrintSupport${qtlibsuff}.dll Qt5Qml${qtlibsuff}.dll \
+        Qt5Quick${qtlibsuff}.dll Qt5Sensors${qtlibsuff}.dll \
+        Qt5Sql${qtlibsuff}.dll Qt5WebChannel${qtlibsuff}.dll \
+        Qt5WebKitWidgets${qtlibsuff}.dll Qt5WebKit${qtlibsuff}.dll \
+        Qt5Widgets${qtlibsuff}.dll Qt5Xml${qtlibsuff}.dll icudt54.dll \
         icuin54.dll icuuc54.dll libgcc_s_dw2-1.dll libwinpthread-1.dll \
-               libstdc++-6.dll ; do 
+        libstdc++-6.dll ; do 
         chkcp $QTBIN/$dll $DESTDIR
     done
 }
@@ -170,7 +183,8 @@ copyxslt()
 copypoppler()
 {
     for f in pdftotext.exe libpoppler.dll freetype6.dll jpeg62.dll \
-             libpng16-16.dll zlib1.dll libtiff3.dll; do
+             libpng16-16.dll zlib1.dll libtiff3.dll \
+             libgcc_s_dw2-1.dll libstdc++-6.dll; do
         chkcp $POPPLER/bin/$f $FILTERS/
     done
 }

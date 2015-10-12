@@ -16,8 +16,6 @@ DEFINES += PSAPI_VERSION=1
 QT += xml
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets webkitwidgets printsupport
 
-CONFIG  += qt warn_on thread debug
-
 HEADERS += \
         advsearch_w.h \
         advshist.h \
@@ -102,7 +100,7 @@ INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
               ../utils ../aspell ../rcldb ../qtgui ../xaposix \
               confgui
 windows {
-    ICON = images/recoll.icns
+    RC_FILE = recoll.rc
     contains(QMAKE_CC, gcc){
         # MingW
         QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
