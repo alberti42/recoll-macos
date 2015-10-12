@@ -51,10 +51,8 @@ RCLW=$RCL/windows/
 
 if test X$ReleaseBuild = X'y'; then
     qtsdir=release
-    qtlibsuff=
 else
     qtsdir=debug
-    qtlibsuff=d
 fi
 LIBR=$RCLW/build-librecoll-${QTA}-${qtsdir}/${qtsdir}/librecoll.dll
 GUIBIN=$RCL/build-recoll-win-${QTA}-${qtsdir}/${qtsdir}/recoll.exe
@@ -82,19 +80,8 @@ chkcp()
 # Note: can't build static recoll as there is no static qtwebkit (ref: 5.5.0)
 copyqt()
 {
-    for dll in Qt5Core${qtlibsuff}.dll Qt5Gui${qtlibsuff}.dll \
-        Qt5MultimediaWidgets${qtlibsuff}.dll \
-        Qt5Multimedia${qtlibsuff}.dll Qt5Network${qtlibsuff}.dll \
-        Qt5OpenGL${qtlibsuff}.dll Qt5Positioning${qtlibsuff}.dll \
-        Qt5PrintSupport${qtlibsuff}.dll Qt5Qml${qtlibsuff}.dll \
-        Qt5Quick${qtlibsuff}.dll Qt5Sensors${qtlibsuff}.dll \
-        Qt5Sql${qtlibsuff}.dll Qt5WebChannel${qtlibsuff}.dll \
-        Qt5WebKitWidgets${qtlibsuff}.dll Qt5WebKit${qtlibsuff}.dll \
-        Qt5Widgets${qtlibsuff}.dll Qt5Xml${qtlibsuff}.dll icudt54.dll \
-        icuin54.dll icuuc54.dll libgcc_s_dw2-1.dll libwinpthread-1.dll \
-        libstdc++-6.dll ; do 
-        chkcp $QTBIN/$dll $DESTDIR
-    done
+    cd $DESTDIR
+    $QTBIN/windeployqt recoll.exe
 }
 
 copyxapian()
@@ -180,6 +167,7 @@ copyxslt()
     chkcp $PYXSLT/libxslt.py $FILTERS/
     cp -rp $PYXSLT/* $FILTERS
 }
+
 copypoppler()
 {
     for f in pdftotext.exe libpoppler.dll freetype6.dll jpeg62.dll \
@@ -189,17 +177,16 @@ copypoppler()
     done
 }
 
-
-
 for d in doc examples filters images translations; do
     test -d $DESTDIR/Share/$d || mkdir -p $DESTDIR/Share/$d || \
         fatal mkdir $d failed
 done
 
+# copyrecoll must stay before copyqt so that windeployqt can do its thing
+copyrecoll
 copyqt
 copyxapian
 copyzlib
-copyrecoll
 copypoppler
 copyantiword
 copyunrtf
