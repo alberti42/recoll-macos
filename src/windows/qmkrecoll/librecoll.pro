@@ -116,11 +116,11 @@ windows {
     contains(QMAKE_CC, cl){
         # Visual Studio
     }
-  LIBS += c:/recolldeps/xapian/xapian-core-1.2.21/.libs/libxapian-22.dll \
-       c:/recolldeps/zlib-1.2.8/zlib1.dll -liconv -lshlwapi -lpsapi -lkernel32
+  LIBS += c:/temp/xapian-core-1.2.21/.libs/libxapian-22.dll \
+       c:/temp/zlib-1.2.8/zlib1.dll -liconv -lshlwapi -lpsapi -lkernel32
 
   INCLUDEPATH += ../../windows \
-            C:/recolldeps/xapian/xapian-core-1.2.8/include
+            C:/temp/xapian-core-1.2.21/include
 }
 
 unix {

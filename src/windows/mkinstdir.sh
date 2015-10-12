@@ -1,13 +1,26 @@
 #!/bin/sh
 
+fatal()
+{
+    echo $*
+    exit 1
+}
+Usage()
+{
+    fatal mkinstdir.sh targetdir
+}
+
+test $# -eq 1 || Usage
+
+DESTDIR=$1
+
+test -d $DESTDIR || mkdir $DESTDIR || fatal cant create $DESTDIR
+
 # Script to make a prototype recoll install directory from locally compiled
 # software. *** Needs msys or cygwin ***
 
 ################################
 # Local values (to be adjusted)
-
-# Target directory where we copy things. 
-DESTDIR=c:/recollinst
 
 # Recoll src tree
 RCL=c:/recoll/src/
@@ -15,17 +28,16 @@ RCL=c:/recoll/src/
 # Note: unrtf not under recolldeps because it's a clone from the
 # original mercurial repository 
 UNRTF=c:/unrtf
-
 # antiword is under recolldeps: it's not really maintained any more
 # and has no public repository
 ANTIWORD=c:/recolldeps/antiword
-
-CONFIGURATION=Release
-PLATFORM=Win32
-
-LIBXAPIAN=c:/recolldeps/xapian/xapian-core-1.2.21/.libs/libxapian-22.dll
-
-MUTAGEN=C:/recolldeps/mutagen-1.31/
+PYXSLT=C:/recolldeps/pyxslt
+PYEXIV2=C:/recolldeps/pyexiv2
+LIBXAPIAN=c:/temp/xapian-core-1.2.21/.libs/libxapian-22.dll
+MUTAGEN=C:/temp/mutagen-1.31/
+EPUB=C:/temp/epub-0.5.2
+ZLIB=c:/temp/zlib-1.2.8
+POPPLER=c:/temp/poppler-0.36/
 
 # Where to copy the Qt Dlls from:
 QTBIN=C:/Qt/5.5/mingw492_32/bin
@@ -42,16 +54,15 @@ RCLQ=$RCLW/build-recollq-${QTA}-Debug/debug/recollq.exe
 RCLS=$RCLW/build-rclstartw-${QTA}-Debug/debug/rclstartw.exe
 
 
+# Needed for a VS build (which we did not ever complete because of
+# missing Qt VS2015 support). Needed for unrtf
+CONFIGURATION=Release
+PLATFORM=Win32
+
 ################
 # Script:
 
 FILTERS=$DESTDIR/Share/filters
-
-fatal()
-{
-    echo $*
-    exit 1
-}
 
 # checkcopy. 
 chkcp()
@@ -67,7 +78,8 @@ copyqt()
         Qt5Positioningd.dll Qt5PrintSupportd.dll Qt5Qmld.dll Qt5Quickd.dll \
         Qt5Sensorsd.dll Qt5Sqld.dll Qt5WebChanneld.dll Qt5WebKitWidgetsd.dll \
         Qt5WebKitd.dll Qt5Widgetsd.dll Qt5Xmld.dll icudt54.dll \
-        icuin54.dll icuuc54.dll ; do 
+        icuin54.dll icuuc54.dll libgcc_s_dw2-1.dll libwinpthread-1.dll \
+               libstdc++-6.dll ; do 
         chkcp $QTBIN/$dll $DESTDIR
     done
 }
@@ -75,6 +87,10 @@ copyqt()
 copyxapian()
 {
     chkcp $LIBXAPIAN $DESTDIR
+}
+copyzlib()
+{
+    chkcp $ZLIB/zlib1.dll $DESTDIR
 }
 
 copyrecoll()
@@ -105,7 +121,10 @@ copyrecoll()
 
 copyantiword()
 {
-    bindir=$ANTIWORD/Win32-only/$PLATFORM/$CONFIGURATION
+    # MS VS
+    #bindir=$ANTIWORD/Win32-only/$PLATFORM/$CONFIGURATION
+    # MINGW
+    bindir=$ANTIWORD/
 
     test -d $Filters/Resources || mkdir -p $FILTERS/Resources || exit 1
     chkcp  $bindir/antiword.exe            $FILTERS
@@ -129,12 +148,48 @@ copymutagen()
     chkcp $MUTAGEN/build/lib/mutagen/mp3.py $FILTERS/mutagen
 }
 
+copyepub()
+{
+    cp -rp $EPUB/build/lib/epub $FILTERS
+    # chkcp to check that epub is where we think it is
+    chkcp $EPUB/build/lib/epub/opf.py $FILTERS/epub
+}
+
+copypyexiv2()
+{
+    cp -rp $PYEXIV2/pyexiv2 $FILTERS
+    # Check
+    chkcp $PYEXIV2/pyexiv2/exif.py $FILTERS/pyexiv2
+}
+
+copyxslt()
+{
+    chkcp $PYXSLT/libxslt.py $FILTERS/
+    cp -rp $PYXSLT/* $FILTERS
+}
+copypoppler()
+{
+    for f in pdftotext.exe libpoppler.dll freetype6.dll jpeg62.dll \
+             libpng16-16.dll zlib1.dll libtiff3.dll; do
+        chkcp $POPPLER/bin/$f $FILTERS/
+    done
+}
+
+
+
 for d in doc examples filters images translations; do
     test -d $DESTDIR/Share/$d || mkdir -p $DESTDIR/Share/$d || \
         fatal mkdir $d failed
 done
 
+copyqt
 copyxapian
+copyzlib
 copyrecoll
-copyunrtf
+copypoppler
 copyantiword
+copyunrtf
+copyxslt
+copymutagen
+copyepub
+copypyexiv2
