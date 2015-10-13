@@ -62,9 +62,9 @@ RCLS=$RCLW/build-rclstartw-${QTA}-${qtsdir}/${qtsdir}/rclstartw.exe
 
 
 # Needed for a VS build (which we did not ever complete because of
-# missing Qt VS2015 support). Needed for unrtf
-CONFIGURATION=Release
-PLATFORM=Win32
+# missing Qt VS2015 support).
+#CONFIGURATION=Release
+#PLATFORM=Win32
 
 ################
 # Script:
@@ -82,12 +82,14 @@ copyqt()
 {
     cd $DESTDIR
     $QTBIN/windeployqt recoll.exe
+    chkcp $QTBIN/libwinpthread-1.dll $DESTDIR
 }
 
 copyxapian()
 {
     chkcp $LIBXAPIAN $DESTDIR
 }
+
 copyzlib()
 {
     chkcp $ZLIB/zlib1.dll $DESTDIR
@@ -133,7 +135,8 @@ copyantiword()
 
 copyunrtf()
 {
-    bindir=$UNRTF/Windows/$PLATFORM/$CONFIGURATION
+#    bindir=$UNRTF/Windows/$PLATFORM/$CONFIGURATION
+     bindir=$UNRTF/Windows/
 
     test -d $FILTERS/Share || mkdir -p $FILTERS/Share || exit 1
     chkcp  $bindir/unrtf.exe               $FILTERS
@@ -158,8 +161,7 @@ copyepub()
 copypyexiv2()
 {
     cp -rp $PYEXIV2/pyexiv2 $FILTERS
-    # Check
-    chkcp $PYEXIV2/pyexiv2/exif.py $FILTERS/pyexiv2
+    chkcp $PYEXIV2/libexiv2python.pyd $FILTERS/
 }
 
 copyxslt()
@@ -170,10 +172,12 @@ copyxslt()
 
 copypoppler()
 {
+    test -d $FILTERS/poppler || mkdir $FILTERS/poppler || \
+        fatal cant create poppler dir
     for f in pdftotext.exe libpoppler.dll freetype6.dll jpeg62.dll \
              libpng16-16.dll zlib1.dll libtiff3.dll \
              libgcc_s_dw2-1.dll libstdc++-6.dll; do
-        chkcp $POPPLER/bin/$f $FILTERS/
+        chkcp $POPPLER/bin/$f $FILTERS/poppler
     done
 }
 

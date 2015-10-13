@@ -70,6 +70,7 @@ class PDFExtractor:
         self.pdftk = ""
         self.em = em
         self.attextractdone = False
+        self.attachlist = []
         
     # Extract all attachments if any into temporary directory
     def extractAttach(self):
@@ -79,7 +80,8 @@ class PDFExtractor:
 
         global tmpdir
         if not tmpdir or not self.pdftk:
-            return False
+            # no big deal
+            return True
 
         try:
             vacuumdir(tmpdir)
@@ -89,7 +91,8 @@ class PDFExtractor:
             return True
         except Exception, e:
             self.em.rclog("extractAttach: failed: %s" % e)
-            return False
+            # Return true anyway, pdf attachments are no big deal
+            return True
 
     def extractone(self, ipath):
         #self.em.rclog("extractone: [%s]" % ipath)
@@ -187,6 +190,8 @@ class PDFExtractor:
         if not self.pdftotext:
             self.pdftotext = rclexecm.which("pdftotext")
             if not self.pdftotext:
+                self.pdftotext = rclexecm.which("poppler/pdftotext")
+            if not self.pdftotext:
                 print("RECFILTERROR HELPERNOTFOUND pdftotext")
                 sys.exit(1);
 
@@ -209,7 +214,8 @@ class PDFExtractor:
                 # eofnext error instead of waiting for actual eof,
                 # which avoids a bug in recollindex up to 1.20
                 self.extractAttach()
-
+        else:
+            self.attextractdone = True
         return True
 
     def getipath(self, params):
@@ -218,8 +224,8 @@ class PDFExtractor:
         return (ok, data, ipath, eof)
         
     def getnext(self, params):
+        # self.em.rclog("getnext: current %d" % self.currentindex)
         if self.currentindex == -1:
-            #self.em.rclog("getnext: current -1")
             self.currentindex = 0
             return self._selfdoc()
         else:

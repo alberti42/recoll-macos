@@ -1369,7 +1369,21 @@ bool RclConfig::getUncompressor(const string &mtype, vector<string>& cmd) const
     if (stringlowercmp("uncompress", *it++)) 
 	return false;
     cmd.clear();
-    cmd.push_back(findFilter(*it++));
+    cmd.push_back(findFilter(*it));
+
+    // Special-case python and perl on windows: we need to also locate the
+    // first argument which is the script name "python somescript.py". 
+    // On Unix, thanks to #!, we usually just run "somescript.py", but need
+    // the same change if we ever want to use the same cmdling as windows
+    if (!stringlowercmp("python", *it) || !stringlowercmp("perl", *it)) {
+        it++;
+        if (tokens.size() < 3) {
+            LOGERR(("getUncpressor: python/perl cmd: no script?. [%s]\n", mtype.c_str()));
+        } else {
+            *it = findFilter(*it);
+        }
+    }
+    
     cmd.insert(cmd.end(), it, tokens.end());
     return true;
 }

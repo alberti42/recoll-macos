@@ -145,6 +145,7 @@ string path_wingettempfilename(TCHAR *pref)
     // Windows will have created a temp file, we delete it.
     string filename = path_tchartoutf8(buf);
     unlink(filename.c_str());
+    path_slashize(filename);
     return filename;
 }
 #endif
