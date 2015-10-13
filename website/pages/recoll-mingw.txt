@@ -15,6 +15,12 @@ In the following, a number of commands will use a command window with an
 MinGW environment. This can be easily created by executing
 C:\MinGW\msys\1.0\msys.bat from File Explorer.
 
+Note: you should take care to use the gcc compiler which comes with Qt for
+all the following builds. For this, you will want to execute the following
+command in the command window:
+
+    export PATH=c:/qt/tools/mingw492_32/bin:$PATH
+
 == Tortoise HG
 
 This is needed because there is no source package for recoll or its
@@ -30,15 +36,26 @@ dependancies] to C:/recolldeps
 You can change the target names, but there will be more script editing
 later on then (nothing much).
 
+== Qt
+
+Download and install Qt 5.5.x (mingw version) from: http://www.qt.io/download/
+
+Note: it is not possible to build a static webkit, so the installation is
+necessarily dynamic, which means that the Qt DLLS will need to be copied
+into the installation directory. This is done by the installation-building
+script (using `windeployqt`)
+
+
 == zlib
 
 Download from http://zlib.net/zlib-1.2.8.tar.gz
 Then, from an MSYS command window (see above):
 
      cd c:/temp
+     export PATH=c:/qt/tools/mingw492_32/bin:$PATH
      tar xzf path-to-tar-file
      cd zlib-1.2.8
-     make -f Win32/Makefile.gcc
+     make -f win32/Makefile.gcc
 
 == Xapian
 
@@ -56,17 +73,9 @@ http://oligarchy.co.uk/xapian/1.2.21/xapian-core-1.2.21.tar.xz
 
 Then: 
 
+    export PATH=c:/qt/tools/mingw492_32/bin:$PATH
     CPPFLAGS=-IC:/temp/zlib-1.2.8 LDFLAGS=-Lc:/temp/zlib-1.2.8 ./configure
     make
-
-== Qt
-
-Download and install Qt 5.5.x (mingw version) from: http://www.qt.io/download/
-
-Note: it is not possible to build a static webkit, so the installation is
-necessarily dynamic, which means that the Qt DLLS will need to be copied
-into the installation directory. This is done by the installation-building
-script (using `windeployqt`)
 
 == Recoll
 

@@ -226,6 +226,14 @@ class RclExecM:
 
 
 # Helper routine to test for program accessibility
+# Note that this works a bit differently from Linux 'which', which
+# won't search the PATH if there is a path part in the program name,
+# even if not absolute (e.g. will just try subdir/cmd in current
+# dir). We will find such a command if it exists in a matching subpath
+# of any PATH element.
+# This is very useful esp. on Windows so that we can have several bin
+# filter directories under filters (to avoid dll clashes). The
+# corresponding c++ routine in recoll execcmd works the same.
 def which(program):
     def is_exe(fpath):
         return os.path.exists(fpath) and os.access(fpath, os.X_OK)
@@ -242,9 +250,8 @@ def which(program):
                 yield path
         for path in os.environ["PATH"].split(os.pathsep):
             yield path
-            
-    fpath, fname = os.path.split(program)
-    if fpath:
+
+    if os.path.isabs(program):
         if is_exe(program):
             return program
     else:
@@ -296,7 +303,9 @@ def main(proto, extract):
     # Not running the main loop: either acting as single filter (when called
     # from other filter for example), or debugging
     def usage():
-        print("Usage: rclexecm.py [-d] [-s] [-i ipath] [filename]",
+        print("Usage: rclexecm.py [-d] [-s] [-i ipath] <filename>",
+              file=sys.stderr)
+        print("       rclexecm.py -w <prog>",
               file=sys.stderr)
         sys.exit(1)
         
@@ -305,7 +314,7 @@ def main(proto, extract):
     ipath = ""
 
     args = sys.argv[1:]
-    opts, args = getopt.getopt(args, "hdsi:")
+    opts, args = getopt.getopt(args, "hdsi:w:")
     for opt, arg in opts:
         if opt in ['-h']:
             usage()
@@ -313,6 +322,13 @@ def main(proto, extract):
             actAsSingle = True
         elif opt in ['-i']:
             ipath = arg
+        elif opt in ['-w']:
+            ret = which(arg)
+            if ret:
+                print("%s" % ret)
+                sys.exit(0)
+            else:
+                sys.exit(1)
         elif opt in ['-d']:
             debugDumpData = True
         else:
