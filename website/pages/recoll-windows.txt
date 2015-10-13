@@ -1,0 +1,63 @@
+= Trying out Recoll on Windows
+
+The Windows port of Recoll has reached a point where it can be tested. At
+least, it will not break your system, and it does not crash too often.
+
+It was only built and tried on Windows 7.
+
+We would be very eager to get some feedback from some actual Windows user
+(I am only a visitor to Windows...). Is this useful at all ? What would 
+make more useful ? 
+
+There is no installer for the moment, the program and its auxiliary files
+are stored in a Zip file. This is quite big, because it contains a good
+part of the Qt 5.5.0 dlls (I can't produce a static build because of WebKit).
+
+The Zip creates a `recoll` directory. As far as I know, there is no
+assumption where it should reside, I use `c:/recoll`, but anywhere
+else should be ok.
+
+http://www.lesbonscomptes.com/recoll/windows/[Download directory]
+
+Besides extracting the Zip, you need to:
+
+ - Download and install Python 2.7 from
+   https://www.python.org/downloads/release/python-2710/. Most Recoll data
+   extraction filters have at least a Python part, so you will not be able
+   to do much without this.
+ - Download and install the 7-zip program from http://www.7-zip.org/. This
+   is only useful if you need to index compressed files.
+
+ - Update your PATH variable with the locations of the `python` and `7z`
+   executables.
+
+   * From Windows Explorer, click `Computer` in the left pane, then 
+     `System Properties` from the top, then `Avanced System Settings` from
+     the left pane, then `Environment Variables` at the bottom of the
+     popup. 
+   * Check that the locations for `python` (`C:\Python27`), and `7z`
+     (`C:\Program Files\7-Zip`) are either in the User or System PATH
+     variable. If they are not in there already , update or create the user
+     PATH and add them as: `C:\Python27;C:\Program Files\7-Zip` (use a
+     semi-colon as separator).
+
+
+Know problems:
+
+ - The default result list font is particularly ugly. Change it from 
+   `Preferences->GUI Configuration->Result List->Result List Font`
+
+ - The GUI sometimes crashes when you click `Preview` or `Open`. This does
+   not occur often, and usually for one of the first tries after starting
+   the program. Don't despair.
+
+ - There is no real-time or scheduled indexing as on Linux. For now, you
+   create and update the index by using the `File` menu (or executing
+   `recollindex.exe` from a command window).
+
+ - I'm quite convinced that there are still problems with file path case
+   insensitivity. The best approach when setting up the config is
+   to use the exact case for now.
+
+ - I'll add the others here as they are found ...
+

@@ -1,4 +1,4 @@
-= Building Recoll on Microsoft Windows MinGW
+= Building Recoll on Microsoft Windows with MinGW
 
 This document describes building a Recoll distribution, starting from a
 pristine Windows machine, using the http://www.mingw.org/[MinGW] port of gcc
@@ -15,11 +15,11 @@ In the following, a number of commands will use a command window with an
 MinGW environment. This can be easily created by executing
 C:\MinGW\msys\1.0\msys.bat from File Explorer.
 
-Note: you should take care to use the gcc compiler which comes with Qt for
+NOTE: you should take care to use the gcc compiler which comes with Qt for
 all the following builds. For this, you will want to execute the following
 command in the command window:
 
-    export PATH=c:/qt/tools/mingw492_32/bin:$PATH
+    export PATH=/c/qt/tools/mingw492_32/bin:$PATH
 
 == Tortoise HG
 
@@ -49,10 +49,14 @@ script (using `windeployqt`)
 == zlib
 
 Download from http://zlib.net/zlib-1.2.8.tar.gz
+
+Don't forget the PATH update if not done yet:
+
+     export PATH=/c/qt/tools/mingw492_32/bin:$PATH
+
 Then, from an MSYS command window (see above):
 
      cd c:/temp
-     export PATH=c:/qt/tools/mingw492_32/bin:$PATH
      tar xzf path-to-tar-file
      cd zlib-1.2.8
      make -f win32/Makefile.gcc
@@ -61,6 +65,12 @@ Then, from an MSYS command window (see above):
 
 Download from:
 http://oligarchy.co.uk/xapian/1.2.21/xapian-core-1.2.21.tar.xz
+
+Don't forget the PATH update if not done yet:
+
+     export PATH=/c/qt/tools/mingw492_32/bin:$PATH
+
+Then:
 
     cd c:/recolldeps
     tar xf path-to-tar-file
@@ -73,8 +83,7 @@ http://oligarchy.co.uk/xapian/1.2.21/xapian-core-1.2.21.tar.xz
 
 Then: 
 
-    export PATH=c:/qt/tools/mingw492_32/bin:$PATH
-    CPPFLAGS=-IC:/temp/zlib-1.2.8 LDFLAGS=-Lc:/temp/zlib-1.2.8 ./configure
+    CPPFLAGS=-I/c/temp/zlib-1.2.8 LDFLAGS=-L/c/temp/zlib-1.2.8 ./configure
     make
 
 == Recoll
@@ -85,13 +94,14 @@ supporting Windows at the moment.
 - If not already done, clone the recoll repository from:
   https://medoc@bitbucket.org/medoc/recoll to `C:/recoll`
 
-- Start qtcreator and open c:/recoll/src/windows/qmkrecoll/librecoll.pro At
-  the bottom of the file, you may need to fix the locations for the xapian
-  and zlib dlls.
+- Start `QtCreator` and open
+  `c:/recoll/src/windows/qmkrecoll/librecoll.pro`. At the bottom of the
+  file, you may need to fix the locations for the xapian and zlib dlls.
 
 - Build librecoll.pro
 
 - Do the same (adjust locations and build) for:
+
   c:/recoll/src/windows/qmkrecoll/rclstartw.pro
   c:/recoll/src/windows/qmkrecoll/recollindex.pro
   c:/recoll/src/windows/qmkrecoll/recollq.pro
@@ -114,7 +124,7 @@ http://www.7-zip.org/
 == Python
 
 All Recoll helper scripts (data extractors) are written in Python, and not
-yet compatible with Python3. You need to install and download Python 2.7
+yet compatible with Python3. You need to download and install Python 2.7
 from https://www.python.org/downloads/release/python-2710/
 
 == Python modules
@@ -138,43 +148,48 @@ This will be copied into the installation by the mkinstdir.sh script.
 === mutagen 
 
 Download and extract mutagen from https://pypi.python.org/pypi/mutagen
-Then in the mutagen directory (e.g. C:/temp/mutagen-1.31):
+Then in the mutagen directory (e.g. C:/temp/mutagen-1.31 where it is
+expected by `mkinstdir.sh`):
 
      python setup.py build
 
-=== pyexiv2
-
-I did not attempt a build (needs boost-python, scons).
-Used an installer from http://tilloy.net/dev/pyexiv2/download.html
-
-The resulting site-packages data is stored in the recoll-windows-deps
-directory and copied into the filters directory by the mkinstdir.sh script
+The module will be copied by mkinstdir.sh
 
 === epub 
 
 Download from: http://pypi.python.org/pypi/epub/
 
 Extract, then execute the following in the extracted directory (e.g.:
-C:/temp/epub-0.5.2):
+`C:/temp/epub-0.5.2` which is expected by `mkinstdir.sh`):
  
    python setup.py
 
 The module will be copied by mkinstdir.sh
+
+=== pyexiv2
+
+I did not attempt a build (needs boost-python, scons).
+Used an installer from http://tilloy.net/dev/pyexiv2/download.html
+
+The resulting site-packages data is stored in the recolldeps
+repository and copied into the filters directory by the mkinstdir.sh
+script. 
 
 
 == Non-Python helpers
 
 == unrtf 
 
-I initially built unrtf with VS 2015, and I was too lazy to do it again
-with mingw. The project files are in the Windows directory in the official
-repository: 
-            
+The current unrtf sources can be built with MinGW.
+
     hg clone http://hg.savannah.gnu.org/hgweb/unrtf/
+
+    cd c:/unrtf/Windows
+    make -f Makefile.mingw
 
 == antiword
 
-Use the source from recoll-windows-deps (C:/recolldeps/unrtf)
+Use the source from recoll-windows-deps (C:/recolldeps/antiword)
 
      make -f Makefile.mingw.
 
@@ -188,7 +203,5 @@ the mkinstdir.sh script.
 
 == Building the install directory
 
-
 Once the builds above are performed, edit the mkinstdir.sh script to adjust
 the locations, and use it to build the installation directory
-
