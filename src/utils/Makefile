@@ -14,6 +14,12 @@ pxattr:  $(PXATTROBJS)
 trpxattr.o : pxattr.cpp
 	$(CXX) -c $(CXXFLAGS) -DTEST_PXATTR -o $@ pxattr.cpp
 
+CHRONOOBJS = trchrono.o chrono.o 
+trchrono:  $(CHRONOOBJS)
+	$(CXX) -o chrono $(CHRONOOBJS)
+trchrono.o : chrono.cpp
+	$(CXX) -c $(CXXFLAGS) -DTEST_CHRONO -o $@ chrono.cpp
+
 PTMUTEXOBJS = ptmutex.o
 ptmutex:  $(PTMUTEXOBJS)
 	$(CXX) -o ptmutex $(PTMUTEXOBJS)  $(LIBRECOLL)

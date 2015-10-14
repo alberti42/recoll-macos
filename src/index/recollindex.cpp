@@ -40,6 +40,7 @@ using namespace std;
 #include "rclinit.h"
 #include "indexer.h"
 #include "smallut.h"
+#include "chrono.h"
 #include "pathut.h"
 #include "rclmon.h"
 #include "x11mon.h"

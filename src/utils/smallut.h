@@ -158,30 +158,6 @@ void catstrerror(string *reason, const char *what, int _errno);
 struct tm;
 time_t portable_timegm(struct tm *tm);
 
-/** Compute times to help with perf issues */
-class Chrono {
- public:
-  Chrono();
-  /** Reset origin */
-  time_t restart();
-  /** Snapshot current time */
-  static void refnow();
-  /** Get current elapsed since creation or restart
-   *
-   *  @param frozen give time since the last refnow call (this is to
-   * allow for using one actual system call to get values from many
-   * chrono objects, like when examining timeouts in a queue)
-   */
-  time_t millis(int frozen = 0);
-  time_t ms() {return millis();}
-  time_t micros(int frozen = 0);
-  time_t nanos(int frozen = 0);
-  double secs(int frozen = 0);
- private:
-  time_t	m_secs;
-  time_t 	m_nsecs; 
-};
-
 /** Temp buffer with automatic deallocation */
 struct TempBuf {
     TempBuf() 

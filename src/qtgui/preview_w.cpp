@@ -51,6 +51,7 @@
 #include "recoll.h"
 #include "plaintorich.h"
 #include "smallut.h"
+#include "chrono.h"
 #include "wipedir.h"
 #include "cancelcheck.h"
 #include "preview_w.h"

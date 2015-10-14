@@ -39,6 +39,7 @@
 #include "debuglog.h"
 #include "internfile.h"
 #include "smallut.h"
+#include "chrono.h"
 #include "wipedir.h"
 #include "fileudi.h"
 #include "cancelcheck.h"
@@ -239,7 +240,7 @@ bool FsIndexer::index(int flags)
 	}
 	m_config->storeMissingHelperDesc(missing);
     }
-    LOGINFO(("fsindexer index time:  %d mS\n", chron.ms()));
+    LOGINFO(("fsindexer index time:  %d mS\n", chron.millis()));
     return true;
 }
 

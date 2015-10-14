@@ -18,10 +18,12 @@
 
 #include "autoconfig.h"
 
+#include MEMORY_INCLUDE
+
 #include "debuglog.h"
 #include "utf8iter.h"
 #include "smallut.h"
-#include MEMORY_INCLUDE
+#include "chrono.h"
 #include "textsplit.h"
 #include "xmacros.h"
 #include "rcldb.h"

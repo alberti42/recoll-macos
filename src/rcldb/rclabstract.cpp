@@ -29,6 +29,7 @@
 #include "searchdata.h"
 #include "utf8iter.h"
 #include "hldata.h"
+#include "chrono.h"
 
 using namespace std;
 

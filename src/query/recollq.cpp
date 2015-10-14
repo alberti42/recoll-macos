@@ -38,6 +38,7 @@
 #include "transcode.h"
 #include "textsplit.h"
 #include "smallut.h"
+#include "chrono.h"
 #include "base64.h"
 
 using namespace std;

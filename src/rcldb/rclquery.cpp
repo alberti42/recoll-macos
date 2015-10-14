@@ -34,6 +34,7 @@
 #include "rclquery_p.h"
 #include "conftree.h"
 #include "smallut.h"
+#include "chrono.h"
 #include "searchdata.h"
 #include "unacpp.h"
 

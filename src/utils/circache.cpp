@@ -29,6 +29,8 @@
 #include <memory.h>
 #include <zlib.h>
 
+#include "chrono.h"
+
 #ifndef _WIN32
 #include <sys/uio.h>
 #else

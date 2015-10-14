@@ -35,6 +35,7 @@ using std::set;
 #include "textsplit.h"
 #include "utf8iter.h"
 #include "smallut.h"
+#include "chrono.h"
 #include "plaintorich.h"
 #include "cancelcheck.h"
 #include "unacpp.h"

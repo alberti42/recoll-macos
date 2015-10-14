@@ -43,6 +43,7 @@ using namespace std;
 #include "conftree.h"
 #include "pathut.h"
 #include "smallut.h"
+#include "chrono.h"
 #include "utf8iter.h"
 #include "searchdata.h"
 #include "rclquery.h"

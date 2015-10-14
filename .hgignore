@@ -117,3 +117,5 @@ tests/xattr/mimeview
 website/usermanual/*
 website/idxthreads/forkingRecoll.html
 website/idxthreads/xapDocCopyCrash.html
+website/pages/recoll-mingw.html
+website/pages/recoll-windows.html
