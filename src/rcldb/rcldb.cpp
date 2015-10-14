@@ -1307,7 +1307,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 
 	// Split and index the path from the url for path-based filtering
 	{
-	    string path = url_gpath(doc.url);
+	    string path = url_gpathS(doc.url);
 	    vector<string> vpath;
 	    stringToTokens(path, vpath, "/");
 	    // If vpath is not /, the last elt is the file/dir name, not a

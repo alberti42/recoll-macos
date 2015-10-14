@@ -805,6 +805,29 @@ string url_gpath(const string& url)
     return path_canon(url.substr(colon+1));
 }
 
+string url_gpathS(const string& url)
+{
+#ifdef _WIN32
+    string u = url_gpath(url);
+    string nu;
+    if (path_hasdrive(u)) {
+        nu.append(1, '/');
+        nu.append(1, u[0]);
+        if (path_isdriveabs(u)) {
+            nu.append(u.substr(2));
+        } else {
+            // This should be an error really
+            nu.append(1, '/');
+            nu.append(u.substr(2));
+        }
+    }
+    return nu;
+#else
+    return url_gpath(url);
+#endif
+}
+
+
 string url_parentfolder(const string& url)
 {
     // In general, the parent is the directory above the full path

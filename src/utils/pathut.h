@@ -67,6 +67,12 @@ extern std::string url_parentfolder(const std::string& url);
 /// routine, it does the right thing only in the recoll context
 extern std::string url_gpath(const std::string& url);
 
+/// Same but, in the case of a Windows local path, also turn "c:/" into
+/// "/c/" This should be used only for splitting the path in rcldb, it
+/// would better be local in there, but I prefer to keep all the
+/// system-specific path stuff in pathut
+extern std::string url_gpathS(const std::string& url);
+
 /// Stat parameter and check if it's a directory
 extern bool path_isdir(const std::string& path);
 
