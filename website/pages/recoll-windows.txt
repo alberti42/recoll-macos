@@ -1,4 +1,5 @@
 = Trying out Recoll on Windows
+Jean-Francois Dockes <jf at dockes.org>
 
 The Windows port of Recoll has reached a point where it can be tested. At
 least, it will not break your system, and it does not crash too often.

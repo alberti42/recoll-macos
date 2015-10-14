@@ -1,4 +1,5 @@
 = Building Recoll on Microsoft Windows with MinGW
+Jean-Francois Dockes <jf at dockes.org>
 
 This document describes building a Recoll distribution, starting from a
 pristine Windows machine, using the http://www.mingw.org/[MinGW] port of gcc
