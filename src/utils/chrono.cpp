@@ -58,7 +58,7 @@ typedef int clockid_t;
 #undef USE_CLOCK_GETTIME
 #endif
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <stdint.h> // portable: uint64_t   MSVC: __int64 

@@ -108,7 +108,7 @@ windows {
     contains(QMAKE_CC, cl){
         # Visual Studio
     }
-    LIBS += C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_5_0_MinGW_32bit-Debug/debug/librecoll.dll
+    LIBS += C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_5_0_MinGW_32bit-Release/release/librecoll.dll
 }
 
 TRANSLATIONS = \
