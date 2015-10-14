@@ -16,6 +16,19 @@ Library General Public License for more details.  */
 /* Modified slightly by j.f. dockes for recoll use */
 
 #include "autoconfig.h"
+#ifdef _WIN32
+#include <ctype.h>
+static inline int fold_fn_char(int c)
+{
+    /* Only ASCII for now... */
+    if (c == '\\')
+        return '/';
+    if (c > 0 && c <= 127)
+        return tolower(c);
+    return c;
+}
+#define FOLD_FN_CHAR(c) fold_fn_char(c)
+#endif /* _WIN32 */
 
 /* Some file systems are case-insensitive.  If FOLD_FN_CHAR is
    #defined, it maps the character C onto its "canonical" form.  In a
