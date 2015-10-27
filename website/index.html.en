@@ -98,6 +98,21 @@
 
       
       <dl>
+        <dt>2015-10-17</dt>
+        <dd>A bug in the verification of configuration file path variables
+          generates spurious warnings from recollindex when the
+          skippedPaths variable contains elements with wildcards. This
+          has no consequence except for the spurious error
+          message.</dd>
+
+        <dt>2015-10-14</dt>
+        <dd>I think that Recoll for MS-Windows is ready for
+        testing. Have a look at
+          the <a href="pages/recoll-windows.html">installation
+          page</a>, and you can
+          even <a href="pages/recoll-mingw.html">build it
+          yourself</a></dd>
+
         <dt>2015-10-08</dt>
         <dd><a href="pics/windows-recoll.html">
             <img align="left" width="100" alt="Recoll on MS-Windows" 

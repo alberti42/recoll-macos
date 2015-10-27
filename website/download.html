@@ -224,12 +224,14 @@ many distributions.</p>
 
 <h3><a name="debian">Debian</a></h3>
 
-<p>The Debian Recoll packages are usually fairly up to date (at least in
-testing), just use the appropriate Debian repository.</p>
+<p>The Debian Recoll packages are usually fairly up to date, just use
+  the appropriate Debian repository.</p>
 
-<p><i>Except they're not at the moment (2015-05)...</i>. So
-  I am maintaining a repository for packages built for Debian
-  Wheezy. To add the repository to your sources:</p>
+<p><i>Except they're not at the moment (2015-10)...</i>. So
+  I am maintaining a repository for packages built for Debian Wheezy,
+  which also work on Jessie. This currently has recoll 1.20.6 (the
+  standard repos have 1.17...) To add the repository to your
+  sources:</p>
 
 <ul>
   <li>Create and edit <span class="filename">
@@ -251,8 +253,8 @@ sudo apt-get install recoll
 <a href="debian/pool/main/r/recoll/">debian/pool/main/r/recoll/</a><br/>
 </p>
 
-<p>The official Debian repository has 1.20.3 packages for Sid. I guess
-  that they should run on Jessie. Contact me if this does not work for you.</p>
+<p>Note: the 1.21.0 packages which are in the repositories for
+  Stretch/testing can't be installed on Wheezy or Jessie.</p>
 
 <h3><a name="ubuntu">Ubuntu</a></h3>
 

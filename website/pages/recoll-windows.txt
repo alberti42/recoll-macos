@@ -1,14 +1,16 @@
 = Trying out Recoll on Windows
 Jean-Francois Dockes <jf at dockes.org>
 
+image:recoll-windows10-thumb.png[link="recoll-windows10.png"]
+
 The Windows port of Recoll has reached a point where it can be tested. At
 least, it will not break your system, and it does not crash too often.
 
-It was only built and tried on Windows 7.
+It was built on Windows 7, and tried on Windows 7 and 10.
 
-We would be very eager to get some feedback from some actual Windows user
+I would be very eager to get some feedback from some actual Windows user
 (I am only a visitor to Windows...). Is this useful at all ? What would 
-make more useful ? 
+make it more useful ? 
 
 There is no installer for the moment, the program and its auxiliary files
 are stored in a Zip file. This is quite big, because it contains a good
@@ -18,7 +20,10 @@ The Zip creates a `recoll` directory. As far as I know, there is no
 assumption where it should reside, I use `c:/recoll`, but anywhere
 else should be ok.
 
-http://www.lesbonscomptes.com/recoll/windows/[Download directory]
+You can get the Zip file either from the 
+http://www.lesbonscomptes.com/recoll/windows/[download directory on
+lesbonscomptes] or from 
+https://bitbucket.org/medoc/recoll/downloads/[the one on bitbucket].
 
 Besides extracting the Zip, you need to:
 
@@ -42,8 +47,12 @@ Besides extracting the Zip, you need to:
      PATH and add them as: `C:\Python27;C:\Program Files\7-Zip` (use a
      semi-colon as separator).
 
+Windows tricks:
 
-Know problems:
+ - When filtering the search with a `dir:` clause, an absolute path
+   should be specified as `/c/mydir` instead of `c:/mydir`
+
+Known problems:
 
  - The default result list font is particularly ugly. Change it from 
    `Preferences->GUI Configuration->Result List->Result List Font`
