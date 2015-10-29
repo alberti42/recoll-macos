@@ -79,6 +79,7 @@ SOURCES += \
 ../../unac/unac.cpp \
 ../../utils/appformime.cpp \
 ../../utils/base64.cpp \
+../../utils/cancelcheck.cpp \
 ../../utils/chrono.cpp \
 ../../utils/circache.cpp \
 ../../utils/conftree.cpp \

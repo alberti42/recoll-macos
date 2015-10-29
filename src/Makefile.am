@@ -181,6 +181,7 @@ utils/appformime.cpp \
 utils/appformime.h \
 utils/base64.cpp \
 utils/base64.h \
+utils/cancelcheck.cpp \
 utils/cancelcheck.h \
 utils/chrono.h \
 utils/chrono.cpp \
