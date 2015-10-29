@@ -39,10 +39,7 @@ class CancelExcept {};
 
 class CancelCheck {
  public:
-    static CancelCheck& instance() {
-	static CancelCheck ck;
-	return ck;
-    }
+    static CancelCheck& instance();
     void setCancel(bool on = true) {
 	cancelRequested = on;
     }
