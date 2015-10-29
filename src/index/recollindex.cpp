@@ -90,6 +90,7 @@ static ConfIndexer *confindexer;
 static void cleanup()
 {
     deleteZ(confindexer);
+    recoll_exitready();
 }
 
 // Global stop request flag. This is checked in a number of place in the

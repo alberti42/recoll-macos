@@ -2,6 +2,8 @@
 QT       -= core gui
 
 TARGET = recollindex
+CONFIG += console
+CONFIG -= app_bundle
 TEMPLATE = app
 
 DEFINES += BUILDING_RECOLL
@@ -9,7 +11,7 @@ DEFINES -= UNICODE
 DEFINES -= _UNICODE
 DEFINES += _MBCS
 DEFINES += PSAPI_VERSION=1
-
+DEFINES += RCL_MONITOR
 
 SOURCES += \
 ../../index/recollindex.cpp \

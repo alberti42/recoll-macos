@@ -43,7 +43,9 @@ using std::vector;
 #include "execmd.h"
 #include "recollindex.h"
 #include "pathut.h"
+#ifndef _WIN32
 #include "x11mon.h"
+#endif
 #include "subtreelist.h"
 
 typedef unsigned long mttcast;
@@ -510,9 +512,13 @@ bool startMonitor(RclConfig *conf, int opts)
 
 	// x11IsAlive() can't be called from ok() because both threads call it
 	// and Xlib is not multithreaded.
+#ifndef _WIN32
         bool x11dead = !(opts & RCLMON_NOX11) && !x11IsAlive();
         if (x11dead)
             LOGDEB(("RclMonprc: x11 is dead\n"));
+#else
+        bool x11dead = false;
+#endif
 	if (!rclEQ.ok() || x11dead) {
 	    rclEQ.unlock();
 	    break;
@@ -609,8 +615,13 @@ bool startMonitor(RclConfig *conf, int opts)
     }
     LOGDEB(("Rclmonprc: calling queue setTerminate\n"));
     rclEQ.setTerminate();
-    // Wait for receiver thread before returning
-    pthread_join(rcv_thrid, 0);
+
+    // We used to wait for the receiver thread here before returning,
+    // but this is not useful and may waste time / risk problems
+    // during our limited time window for exiting. To be reviewed if
+    // we ever need several monitor invocations in the same process
+    // (can't foresee any reason why we'd want to do this).
+    //   pthread_join(rcv_thrid, 0);
     LOGDEB(("Monitor: returning\n"));
     return true;
 }

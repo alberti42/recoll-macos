@@ -38,6 +38,23 @@
 
 static pthread_t mainthread_id;
 
+// Signal etc. processing. We want to be able to properly close the
+// index if we are currently writing to it.
+//
+// This is active if the sigcleanup parameter to recollinit is set,
+// which only recollindex does. We arrange for the handler to be
+// called when process termination is requested either by the system
+// or a user keyboard intr.
+//
+// The recollindex handler just sets a global termination flag (plus
+// the cancelcheck thing), which are tested in all timeout loops
+// etc. When the flag is seen, the main thread processing returns, and
+// recollindex calls exit().
+//
+// The other parameter, to recollinit(), cleanup, is set as an
+// atexit() routine, it does the job of actually signalling the
+// workers to stop and tidy up. It's automagically called by exit().
+
 #ifndef _WIN32
 static void siglogreopen(int)
 {
@@ -81,7 +98,11 @@ void initAsyncSigs(void (*sigcleanup)(int))
 	}
     }
 }
-#else
+void recoll_exitready()
+{
+}
+
+#else // _WIN32 ->
 
 // Windows signals etc.
 //
@@ -92,15 +113,27 @@ void initAsyncSigs(void (*sigcleanup)(int))
 // the process and calls the handler. The process exits when the
 // handler returns or after at most 10S
 //
-// In practise, only recollindex sets sigcleanup(), and the routine
-// just sets a global termination flag. So we just call it and sleep,
-// hoping that cleanup does not take more than what Windows will let
-// us live.
+// This should also work, with different signals (CTRL_LOGOFF_EVENT,
+// CTRL_SHUTDOWN_EVENT) when the user exits or the system shuts down).
+//
+// Unfortunately, this is not the end of the story. It seems that in
+// recent Windows version "some kinds" of apps will not reliably
+// receive the signals. "Some kind" is variably defined, for example a
+// simple test program works when built with vs 2015, but not
+// mingw. See the following discussion thread for tentative
+// explanations, it seems that importing or not from user32.dll is the
+// determining factor.
+// https://social.msdn.microsoft.com/Forums/windowsdesktop/en-US/abf09824-4e4c-4f2c-ae1e-5981f06c9c6e/windows-7-console-application-has-no-way-of-trapping-logoffshutdown-event?forum=windowscompatibility
+// In any case, it appears that the only reliable way to be advised of
+// system shutdown or user exit is to create an "invisible window" and
+// process window messages, which we now do.
 
 static void (*l_sigcleanup)(int);
+static HANDLE eWorkFinished = INVALID_HANDLE_VALUE;
 
 static BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
 {
+    LOGDEB(("CtrlHandler\n"));
     if (l_sigcleanup == 0)
         return FALSE;
 
@@ -110,17 +143,82 @@ static BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
     case CTRL_BREAK_EVENT: 
     case CTRL_LOGOFF_EVENT: 
     case CTRL_SHUTDOWN_EVENT:
+    {
         l_sigcleanup(SIGINT);
-        Sleep(10000);
+        LOGDEB0(("CtrlHandler: waiting for exit ready\n"));
+	DWORD res = WaitForSingleObject(eWorkFinished, INFINITE);
+	if (res != WAIT_OBJECT_0) {
+            LOGERR(("CtrlHandler: exit ack wait failed\n"));
+	}
+        LOGDEB0(("CtrlHandler: got exit ready event, exiting\n"));
         return TRUE;
+    }
     default: 
         return FALSE; 
     } 
 } 
- 
+
+LRESULT CALLBACK MainWndProc(HWND hwnd , UINT msg , WPARAM wParam,
+                             LPARAM lParam)
+{
+    switch (msg) {
+    case WM_QUERYENDSESSION:
+    case WM_ENDSESSION:
+    case WM_DESTROY:
+    case WM_CLOSE:
+    {
+        l_sigcleanup(SIGINT);
+        LOGDEB(("MainWndProc: got end message, waiting for work finished\n"));
+	DWORD res = WaitForSingleObject(eWorkFinished, INFINITE);
+	if (res != WAIT_OBJECT_0) {
+            LOGERR(("MainWndProc: exit ack wait failed\n"));
+	}
+        LOGDEB(("MainWindowProc: got exit ready event, exiting\n"));
+        return TRUE;
+    }
+    default:
+        return DefWindowProc(hwnd, msg, wParam, lParam);
+    }
+    return TRUE;
+}
+
+bool CreateInvisibleWindow()
+{
+    HWND hwnd;
+    WNDCLASS wc = {0};
+
+    wc.lpfnWndProc = (WNDPROC)MainWndProc;
+    wc.hInstance = GetModuleHandle(NULL);
+    wc.hIcon = LoadIcon(GetModuleHandle(NULL), "TestWClass");
+    wc.lpszClassName = "TestWClass";
+    RegisterClass(&wc);
+
+    hwnd =
+        CreateWindowEx(0, "TestWClass", "TestWClass", WS_OVERLAPPEDWINDOW,
+                       CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+                       CW_USEDEFAULT, (HWND) NULL, (HMENU) NULL,
+                       GetModuleHandle(NULL), (LPVOID) NULL);
+    if (!hwnd) {
+        return FALSE;
+    }
+    return TRUE;
+}
+
+DWORD WINAPI RunInvisibleWindowThread(LPVOID lpParam)
+{
+    MSG msg;
+    CreateInvisibleWindow();
+    while (GetMessage(&msg, (HWND) NULL , 0 , 0)) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+    return 0;
+}
+
 static const int catchedSigs[] = {SIGINT, SIGTERM};
 void initAsyncSigs(void (*sigcleanup)(int))
 {
+    DWORD tid;
     // Install app signal handler
     if (sigcleanup) {
         l_sigcleanup = sigcleanup;
@@ -130,7 +228,20 @@ void initAsyncSigs(void (*sigcleanup)(int))
 	    }
         }
     }
+    HANDLE hInvisiblethread =
+        CreateThread(NULL, 0, RunInvisibleWindowThread, NULL, 0, &tid);
     SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE);
+    eWorkFinished = CreateEvent(NULL, TRUE, FALSE, NULL);
+    if (eWorkFinished == INVALID_HANDLE_VALUE) {
+        LOGERR(("initAsyncSigs: error creating exitready event\n"));
+    }
+}
+void recoll_exitready()
+{
+    LOGDEB(("recoll_exitready()\n"));
+    if (!SetEvent(eWorkFinished)) {
+        LOGERR(("recoll_exitready: SetEvent failed\n"));
+    }
 }
 
 #endif

@@ -57,4 +57,9 @@ extern void recoll_threadinit();
 // Check if main thread
 extern bool recoll_ismainthread();
 
+// Should be called while exiting asap when critical cleanup (db
+// close) has been performed. Only useful for the indexer (writes to
+// the db), and only actually does something on Windows.
+extern void recoll_exitready();
+
 #endif /* _RCLINIT_H_INCLUDED_ */
