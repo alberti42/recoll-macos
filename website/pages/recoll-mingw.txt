@@ -202,6 +202,64 @@ http://blog.alivate.com.au/poppler-windows/
 There is a copy in the recoll-windows-deps repository, it will be copied by
 the mkinstdir.sh script.
 
+== libwpd
+
+We use the wpd2html tool from libwpd 0.10.0, unmodified. This depends on
+librevenge 0.0.1 which has been slightly modified to not depend on boost (a
+500 MB install if you can believe it). Both files can be found under the
+libwpd directory of the recoll-windows-deps repository.
+
+    mkdir c:/temp/libwpd
+    cd c:/temp/libwpd
+
+    tar xf librevenge-0.0.1.jfd.tar.gz
+    cd librevenge-0.0.1.jfd
+    CPPFLAGS=-I/c/temp/zlib-1.2.8 LDFLAGS=-L/c/temp/zlib-1.2.8 configure --disable-tests --without-docs
+    make
+
+    cd ..
+
+    tar xf /data/source/00DISTS/libwpd-0.10.0.tar.gz
+    cd libwpd-0.10.0
+    REVENGE_CFLAGS=-Ic:/temp/libwpd/librevenge-0.0.1.jfd/inc \
+    REVENGE_LIBS="-Lc:/temp/libwpd/librevenge-0.0.1.jfd/src/lib/.libs -lrevenge-0.0" \
+    REVENGE_GENERATORS_CFLAGS=-Ic:/temp/libwpd/librevenge-0.0.1.jfd/inc \
+    REVENGE_GENERATORS_LIBS="-Lc:/temp/libwpd/librevenge-0.0.1.jfd/src/lib/.libs -lrevenge-generators-0.0" \
+    REVENGE_STREAM_CFLAGS=-Ic:/temp/libwpd/librevenge-0.0.1.jfd/inc \
+    REVENGE_STREAM_LIBS="-Lc:/temp/libwpd/librevenge-0.0.1.jfd/src/lib/.libs -lrevenge-stream-0.0" \
+    configure --without-docs
+    make
+
+== chm
+
+This build uses a slightly modified pychm python modules: for
+simplification, the relevant C files from chmlib were included in the
+python module itself (in addition to its own C extension file).
+
+The source package is inside the recoll-windows-deps repository as
+pychm-0.8.4.1-git.tar.gz. The build result is also stored, and will be used
+directly by the install building script, so the following instructions are
+for reference.
+
+To build the pychm module:
+
+    cd c:/temp
+    tar xf pychm-0.8.4.1-git.tar.gz
+    cd pychm-0.8.4.1-git
+    python setup.py build
+    
+Will probably complain about a missing vc++ compiler, and indicate where to
+download VC++ for Python 2.7 (an official Microsoft location). Do it, then
+repeat the command:
+
+    python setup.py build
+    python setup.py bdist
+
+This creates a zip file inside the dist subdirectory. The contents of this
+zip are extracted and the chm/ directory is stored in the
+recoll-windows-deps repo for convenience (under pychm/chm) and copied to
+the recoll install dir by the install script.
+
 == Building the install directory
 
 Once the builds above are performed, edit the mkinstdir.sh script to adjust
