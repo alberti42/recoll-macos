@@ -40,6 +40,12 @@ MUTAGEN=C:/temp/mutagen-1.31/
 EPUB=C:/temp/epub-0.5.2
 ZLIB=c:/temp/zlib-1.2.8
 POPPLER=c:/temp/poppler-0.36/
+LIBWPD=c:/temp/libwpd/libwpd-0.10.0/
+LIBREVENGE=c:/temp/libwpd/librevenge-0.0.1.jfd/
+
+# Where to find libgcc_s_dw2-1.dll for progs which need it copied
+gccpath=`which gcc`
+MINGWBIN=`dirname $gccpath`
 
 # Where to copy the Qt Dlls from:
 QTBIN=C:/Qt/5.5/mingw492_32/bin
@@ -181,20 +187,37 @@ copypoppler()
     done
 }
 
+copywpd()
+{
+    DEST=$FILTERS/wpd
+    test -d $DEST || mkdir $DEST || fatal cant create poppler dir $DEST
+
+    for f in librevenge-0.0.dll librevenge-generators-0.0.dll \
+             librevenge-stream-0.0.dll; do
+        chkcp $LIBREVENGE/src/lib/.libs/$f $DEST
+    done
+    chkcp $LIBWPD/src/lib/.libs/libwpd-0.10.dll $DEST
+    chkcp $LIBWPD/src/conv/html/.libs/wpd2html.exe $DEST
+    chkcp $MINGWBIN/libgcc_s_dw2-1.dll $DEST
+    chkcp $MINGWBIN/libstdc++-6.dll $DEST
+    chkcp $ZLIB/zlib1.dll $DEST
+}
+
 for d in doc examples filters images translations; do
     test -d $DESTDIR/Share/$d || mkdir -p $DESTDIR/Share/$d || \
         fatal mkdir $d failed
 done
 
 # copyrecoll must stay before copyqt so that windeployqt can do its thing
-copyrecoll
-copyqt
-copyxapian
-copyzlib
-copypoppler
-copyantiword
-copyunrtf
-copyxslt
-copymutagen
-copyepub
-copypyexiv2
+#copyrecoll
+#copyqt
+#copyxapian
+#copyzlib
+#copypoppler
+#copyantiword
+#copyunrtf
+#copyxslt
+#copymutagen
+#copyepub
+#copypyexiv2
+copywpd

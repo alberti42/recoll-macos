@@ -79,6 +79,8 @@ application/vnd.sun.xml.writer = execm python rclsoff.py
 application/vnd.sun.xml.writer.global = execm python rclsoff.py
 application/vnd.sun.xml.writer.template = execm python rclsoff.py
 
+application/vnd.wordperfect = exec wpd/wpd2html;mimetype=text/html
+
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
  execm python rclopxml.py
 application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
