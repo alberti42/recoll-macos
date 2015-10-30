@@ -1264,7 +1264,19 @@ int main(int argc, char **argv)
 {
     thisprog = *argv++;argc--;
 
-#if 0
+#if 1
+    if (argc <=0 ) {
+        cerr << "Usage: smallut <stringtosplit>" << endl;
+        exit(1);
+    }
+    string s = *argv++;argc--;
+    vector<string> vs;
+    stringToTokens(s, vs, "/");
+    for (vector<string>::const_iterator it = vs.begin(); it != vs.end(); it++)
+        cerr << "[" << *it << "] ";
+    cerr << endl;
+    exit(0);
+#elif 0
     if (argc <=0 ) {
         cerr << "Usage: smallut <stringtosplit>" << endl;
         exit(1);
@@ -1369,7 +1381,7 @@ int main(int argc, char **argv)
     string out;
     stringsToCSV(tokens, out);
     cout << "CSV line: [" << out << "]" << endl;
-#elif 1
+#elif 0
     string sshort("ABC");
     string slong("ABCD");
     string sshortsmaller("ABB");
