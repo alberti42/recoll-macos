@@ -401,7 +401,7 @@ bool ExecCmd::which(const string& cmd, string& exe, const char* path)
         pep = &s_pathelts;
     }
 
-    if (cmd.find_first_of("/\\") != string::npos) {
+    if (path_isabsolute(cmd)) {
         if (is_exe_base(cmd)) {
             exe = cmd;
             return true;
