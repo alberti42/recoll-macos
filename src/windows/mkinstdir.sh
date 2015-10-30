@@ -42,6 +42,7 @@ ZLIB=c:/temp/zlib-1.2.8
 POPPLER=c:/temp/poppler-0.36/
 LIBWPD=c:/temp/libwpd/libwpd-0.10.0/
 LIBREVENGE=c:/temp/libwpd/librevenge-0.0.1.jfd/
+CHM=c:/recolldeps/pychm
 
 # Where to find libgcc_s_dw2-1.dll for progs which need it copied
 gccpath=`which gcc`
@@ -87,8 +88,11 @@ chkcp()
 copyqt()
 {
     cd $DESTDIR
+    PATH=$QTBIN:$PATH
+    export PATH
     $QTBIN/windeployqt recoll.exe
     chkcp $QTBIN/libwinpthread-1.dll $DESTDIR
+    chkcp $QTBIN/libstdc++-6.dll $DESTDIR
 }
 
 copyxapian()
@@ -202,6 +206,11 @@ copywpd()
     chkcp $MINGWBIN/libstdc++-6.dll $DEST
     chkcp $ZLIB/zlib1.dll $DEST
 }
+copychm()
+{
+    DEST=$FILTERS
+    cp -rp $CHM/chm $DEST || fatal "can't copy pychm"
+}
 
 for d in doc examples filters images translations; do
     test -d $DESTDIR/Share/$d || mkdir -p $DESTDIR/Share/$d || \
@@ -209,15 +218,16 @@ for d in doc examples filters images translations; do
 done
 
 # copyrecoll must stay before copyqt so that windeployqt can do its thing
-#copyrecoll
-#copyqt
-#copyxapian
-#copyzlib
-#copypoppler
-#copyantiword
-#copyunrtf
-#copyxslt
-#copymutagen
-#copyepub
-#copypyexiv2
+copyrecoll
+copyqt
+copyxapian
+copyzlib
+copypoppler
+copyantiword
+copyunrtf
+copyxslt
+copymutagen
+copyepub
+copypyexiv2
 copywpd
+copychm
