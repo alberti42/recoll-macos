@@ -1353,41 +1353,9 @@ static bool inflateToDynBuf(void* inp, UINT inlen, void **outpp, UINT *outlenp)
 
 using namespace std;
 
-
-bool resizecc(const string& dir, int newmbs)
+// Copy all entries from occ to ncc. Both are already open.
+bool copyall(RefCntr<CirCache> occ, RefCntr<CirCache> ncc, int& nentries)
 {
-    STD_SHARED_PTR<CirCache> occ(new CirCache(dir));
-    string ofn = occ->getpath();
-
-    string backupfn = ofn + ".orig";
-    if (access(backupfn.c_str(), 0) >= 0) {
-        cerr << "Backup file " << backupfn << 
-            " exists, please move it out of the way" << endl;
-        return false;
-    }
-
-    if (!occ->open(CirCache::CC_OPWRITE)) {
-        cerr << "Open failed in " << dir << " : " << occ->getReason() << endl;
-        return false;
-    }
-    string tmpdir = path_cat(dir, "tmp");
-    if (access(tmpdir.c_str(), 0) < 0) {
-        if (mkdir(tmpdir.c_str(), 0700) < 0) {
-            cerr << "Cant create temporary directory " << tmpdir << " ";
-            perror("mkdir");
-            return false;
-        }
-    }
-
-    STD_SHARED_PTR<CirCache> ncc(new CirCache(tmpdir));
-    string nfn = ncc->getpath();
-    if (!ncc->create(off_t(newmbs) * 1000 * 1024, 
-                     CirCache::CC_CRUNIQUE | CirCache::CC_CRTRUNCATE)) {
-        cerr << "Cant create new file in " << tmpdir << " : " << 
-            ncc->getReason() << endl;
-        return false;
-    }
-
     bool eof = false;
     if (!occ->rewind(eof)) {
         if (!eof) {
@@ -1395,7 +1363,7 @@ bool resizecc(const string& dir, int newmbs)
             return false;
         }
     }
-    int nentries = 0;
+    nentries = 0;
     while (!eof) {
         string udi, sdic, data;
         if (!occ->getCurrent(udi, sdic, data)) {
@@ -1422,19 +1390,74 @@ bool resizecc(const string& dir, int newmbs)
         nentries++;
         occ->next(eof);
     }
+    return true;
+}
 
-    // Done with our objects here, there is no close() method, so delete them
-    occ.reset();
-    ncc.reset();
+// Resize circache. This can't be done easily if the write point is
+// inside the file (we already reached the old max size). We create a
+// new file with the new size and copy the old entries into it. The
+// old file is then renamed into a backup and the new file renamed in
+// place.
+bool resizecc(const string& dir, int newmbs)
+{
+    // Create object for existing file and get the file name
+    RefCntr<CirCache> occ(new CirCache(dir));
+    string ofn = occ->getpath();
 
+    // Check for previous backup
+    string backupfn = ofn + ".orig";
+    if (access(backupfn.c_str(), 0) >= 0) {
+        cerr << "Backup file " << backupfn << 
+            " exists, please move it out of the way" << endl;
+        return false;
+    }
+
+    if (!occ->open(CirCache::CC_OPREAD)) {
+        cerr << "Open failed in " << dir << " : " << occ->getReason() << endl;
+        return false;
+    }
+
+    // Create the new empty file in a temporary directory
+    string tmpdir = path_cat(dir, "tmp");
+    if (access(tmpdir.c_str(), 0) < 0) {
+        if (mkdir(tmpdir.c_str(), 0700) < 0) {
+            cerr << "Cant create temporary directory " << tmpdir << " ";
+            perror("mkdir");
+            return false;
+        }
+    }
+    RefCntr<CirCache> ncc(new CirCache(tmpdir));
+    string nfn = ncc->getpath();
+    if (!ncc->create(off_t(newmbs) * 1000 * 1024, 
+                     CirCache::CC_CRUNIQUE | CirCache::CC_CRTRUNCATE)) {
+        cerr << "Cant create new file in " << tmpdir << " : " << 
+            ncc->getReason() << endl;
+        return false;
+    }
+
+    int nentries;
+    if (!copyall(occ, ncc, nentries)) {
+        cerr << "Copy failed\n";
+        return false;
+    }
+
+    // Done with our objects here, there is no close() method, so
+    // delete them
+    occ.release();
+    ncc.release();
+
+    // Create backup by renaming the old file
     if (rename(ofn.c_str(), backupfn.c_str()) < 0) {
         cerr << "Could not create backup " << backupfn << " : ";
         perror("rename");
         return false;
     }
     cout << "Created backup file " << backupfn << endl;
+
+    // Move the new file in place.
     if (rename(nfn.c_str(), ofn.c_str()) < 0) {
-        cerr << "Could not rename new file from " << nfn << " to " << ofn << " : ";
+        cerr << "Could not rename new file from " << nfn << " to " <<
+            ofn << " : ";
         perror("rename");
         return false;
     }
@@ -1442,18 +1465,50 @@ bool resizecc(const string& dir, int newmbs)
     return true;
 }
 
+// Append all entries from sdir to ddir
+bool appendcc(const string ddir, const string& sdir)
+{
+    // Open source file
+    RefCntr<CirCache> occ(new CirCache(sdir));
+    if (!occ->open(CirCache::CC_OPREAD)) {
+        cerr << "Open failed in " << sdir << " : " << occ->getReason() << endl;
+        return false;
+    }
+    // Open dest file
+    RefCntr<CirCache> ncc(new CirCache(ddir));
+    if (!ncc->open(CirCache::CC_OPWRITE)) {
+        cerr << "Open failed in " << ddir << " : " << ncc->getReason() << endl;
+        return false;
+    }
+
+    int nentries;
+    if (!copyall(occ, ncc, nentries)) {
+        cerr << "Copy failed\n";
+        return false;
+    }
+
+    occ.release();
+    ncc.release();
+
+    cout << "Copy done, copied " << nentries << " entries " << endl;
+    return true;
+}
 
 static char *thisprog;
 
-static char usage [] = 
-                                                                 " -c [-u] <dirname> : create\n"
-                                                                 " -p <dirname> <apath> [apath ...] : put files\n"
-                                                                 " -d <dirname> : dump\n"
-                                                                 " -g [-i instance] [-D] <dirname> <udi>: get\n"
-                                                                 "   -D: also dump data\n"
-                                                                 " -e <dirname> <udi> : erase\n"
-                                                                 " -s <dirname> <newmbs> : resize\n"
-                                                                 ;
+static char usage [] =
+" -c [-u] <dirname> : create\n"
+" -p <dirname> <apath> [apath ...] : put files\n"
+" -d <dirname> : dump\n"
+" -g [-i instance] [-D] <dirname> <udi>: get\n"
+"   -D: also dump data\n"
+" -e <dirname> <udi> : erase\n"
+" -s <dirname> <newmbs> : resize\n"
+" -a <targetdir> <dir> [<dir> ...]: append old content to target\n"
+"  The target should be first resized to hold all the data, else only\n"
+"  as many entries as capacity permit will be retained\n"
+;
+
 static void
 Usage(FILE *fp = stderr)
 {
@@ -1472,6 +1527,7 @@ static int     op_flags;
 #define OPT_u     0x100
 #define OPT_e     0x200
 #define OPT_s     0x400
+#define OPT_a     0x800
 
 int main(int argc, char **argv)
 {
@@ -1487,6 +1543,7 @@ int main(int argc, char **argv)
             Usage();
         while (**argv)
             switch (*(*argv)++) {
+            case 'a':   op_flags |= OPT_a; break;
             case 'c':   op_flags |= OPT_c; break;
             case 'D':   op_flags |= OPT_D; break;
             case 'd':   op_flags |= OPT_d; break;
@@ -1529,6 +1586,16 @@ int main(int argc, char **argv)
         int newmbs = atoi(*argv++);argc--;
         if (!resizecc(dir, newmbs)) {
             exit(1);
+        }
+    } else if (op_flags & OPT_a) {
+        if (argc < 1) {
+            Usage();
+        }
+        while (argc) {
+            if (!appendcc(dir, *argv++)) {
+                return 1;
+            }
+            argc--;
         }
     } else if (op_flags & OPT_p) {
         if (argc < 1)
