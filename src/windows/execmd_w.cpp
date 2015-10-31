@@ -147,8 +147,8 @@ static bool is_exe(const string& path)
 {
     struct stat st;
     if (access(path.c_str(), X_OK) == 0 && stat(path.c_str(), &st) == 0 &&
-	S_ISREG(st.st_mode)) {
-	return true;
+        S_ISREG(st.st_mode)) {
+        return true;
     }
     return false;
 }
@@ -194,22 +194,22 @@ static void make_path_vec(const char *ep, vector<string>& vec)
 
 static std::string pipeUniqueName(std::string nClass, std::string prefix)
 {
-	std::stringstream uName;
+    std::stringstream uName;
 
-	long currCnt;
-	// PID + multi-thread-protected static counter to be unique
-	{
-		static long cnt = 0;
-		currCnt = InterlockedIncrement(&cnt);
-	}
-	DWORD pid = GetCurrentProcessId();
+    long currCnt;
+    // PID + multi-thread-protected static counter to be unique
+    {
+        static long cnt = 0;
+        currCnt = InterlockedIncrement(&cnt);
+    }
+    DWORD pid = GetCurrentProcessId();
 
-	// naming convention
-	uName << "\\\\.\\" << nClass << "\\";
-	uName << "pid-" << pid << "-cnt-" << currCnt << "-";
-	uName << prefix;
+    // naming convention
+    uName << "\\\\.\\" << nClass << "\\";
+    uName << "pid-" << pid << "-cnt-" << currCnt << "-";
+    uName << prefix;
 
-	return uName.str();
+    return uName.str();
 }
 
 enum WaitResult {
@@ -269,7 +269,7 @@ public:
     int m_flags;
     
     // We need buffered I/O for getline. The Unix version uses netcon's
-    string m_buf;	// Buffer. Only used when doing getline()s
+    string m_buf;       // Buffer. Only used when doing getline()s
     size_t m_bufoffs;    // Pointer to current 1st byte of useful data
     bool             m_killRequest;
     string           m_stderrFile;
@@ -299,6 +299,58 @@ public:
     bool tooBig();
 };
 
+// Sending a break to a subprocess is only possible if we share the
+// same console We temporarily ignore breaks, attach to the Console,
+// send the break, and restore normal break processing
+static bool sendIntr(int pid)
+{
+    LOGDEB(("execmd_w: sendIntr -> %d\n", pid));
+    bool needDetach = false;
+    if (GetConsoleWindow() == NULL) {
+        needDetach = true;
+        LOGDEB(("execmd_w: sendIntr attaching console\n"));
+        if (!AttachConsole((unsigned int) pid)) {
+            int err = GetLastError();
+            LOGERR(("execmd_w: sendIntr: AttachConsole failed: %d\n", err));
+            return false;
+        }
+    }
+
+#if 0
+    // Would need to do this for sending to all processes on this console
+    // Disable Ctrl-C handling for our program
+    if (!SetConsoleCtrlHandler(NULL, true)) {
+        int err = GetLastError();
+        LOGERR(("execmd_w:sendIntr:SetCons.Ctl.Hndlr.(NULL, true) failed: %d\n",
+                err));
+        return false;
+    }
+#endif
+
+    // Note: things don't work with CTRL_C (process not advised, sometimes
+    // stays apparently blocked), no idea why
+    bool ret = GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT, pid);
+    if (!ret) {
+        int err = GetLastError();
+        LOGERR(("execmd_w:sendIntr:Gen.Cons.CtrlEvent failed: %d\n", err));
+    }
+
+#if 0
+    // Restore Ctrl-C handling for our program
+    SetConsoleCtrlHandler(NULL, false);
+#endif
+
+    if (needDetach) {
+        LOGDEB(("execmd_w: sendIntr detaching console\n"));
+        if (!FreeConsole()) {
+            int err = GetLastError();
+            LOGERR(("execmd_w: sendIntr: FreeConsole failed: %d\n", err));
+        }
+    }
+
+    return ret;
+}
+
 // ExecCmd resource releaser class. Using a separate object makes it
 // easier that resources are released under all circumstances,
 // esp. exceptions
@@ -311,9 +363,9 @@ public:
         m_active = false;
     }
     ~ExecCmdRsrc() {
-	if (!m_active || !m_parent)
-	    return;
-	LOGDEB1(("~ExecCmdRsrc: working. mypid: %d\n", (int)getpid()));
+        if (!m_active || !m_parent)
+            return;
+        LOGDEB1(("~ExecCmdRsrc: working. mypid: %d\n", (int)getpid()));
         if (m_parent->m_hOutputRead)
             CloseHandle(m_parent->m_hOutputRead);
         if (m_parent->m_hInputWrite)
@@ -324,15 +376,10 @@ public:
             CloseHandle(m_parent->m_oInputWrite.hEvent);
 
         if (m_parent->m_piProcInfo.hProcess) {
-	    LOGDEB(("ExecCmd: GenerateConsoleCtrlEvent -> %d\n",
-                    m_parent->m_piProcInfo.dwProcessId));
-
-            BOOL bSuccess =
-                GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT,
-                                         m_parent->m_piProcInfo.dwProcessId);
-	    if (bSuccess) {
+            BOOL bSuccess = sendIntr(m_parent->m_piProcInfo.dwProcessId);
+            if (bSuccess) {
                 // Give it a chance, then terminate
-		for (int i = 0; i < 3; i++) {
+                for (int i = 0; i < 3; i++) {
                     WaitResult res = Wait(m_parent->m_piProcInfo.hProcess,
                                           i == 0 ? 5 : (i == 1 ? 100 : 2000));
                     switch (res) {
@@ -345,17 +392,17 @@ public:
                                              0xffff);
                         }
                     }
-		}
-	    } else {
+                }
+            } else {
                 TerminateProcess(m_parent->m_piProcInfo.hProcess,
                                  0xffff);
             }
-            breakloop:
+        breakloop:
             CloseHandle(m_parent->m_piProcInfo.hProcess);
-	}
+        }
         if (m_parent->m_piProcInfo.hThread)
             CloseHandle(m_parent->m_piProcInfo.hThread);
-	m_parent->reset();
+        m_parent->reset();
     }
 private:
     ExecCmd::Internal *m_parent;
@@ -457,10 +504,7 @@ void ExecCmd::zapChild()
 bool ExecCmd::requestChildExit()
 {
     if (m->m_piProcInfo.hProcess) {
-        LOGDEB(("ExecCmd: GenerateConsoleCtrlEvent -> %d\n",
-                m->m_piProcInfo.dwProcessId));
-        return GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT,
-                                        m->m_piProcInfo.dwProcessId);
+        return sendIntr(m->m_piProcInfo.dwProcessId);
     }
     return false;
 }
@@ -490,7 +534,7 @@ bool ExecCmd::Internal::tooBig()
     int mbytes = getVMMBytes(m_piProcInfo.hProcess);
     if (mbytes > m_rlimit_as_mbytes) {
         LOGINFO(("ExecCmd:: process mbytes %d > set limit %d\n",
-                mbytes, m_rlimit_as_mbytes));
+                 mbytes, m_rlimit_as_mbytes));
         m_killRequest = true;
         return true;
     }
@@ -986,8 +1030,8 @@ bool ExecCmd::maybereap(int *status)
     *status = -1;
 
     if (m->m_piProcInfo.hProcess == NULL) {
-	// Already waited for ??
-	return true;
+        // Already waited for ??
+        return true;
     }
 
     WaitResult res = Wait(m->m_piProcInfo.hProcess, 1);
@@ -1005,8 +1049,8 @@ bool ExecCmd::maybereap(int *status)
         }
         return true;
     default:
-	e.inactivate();
-	return false;
+        e.inactivate();
+        return false;
     }
 }
 
