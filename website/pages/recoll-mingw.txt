@@ -5,8 +5,8 @@ This document describes building a Recoll distribution, starting from a
 pristine Windows machine, using the http://www.mingw.org/[MinGW] port of gcc
 and associated tools. 
 
-The resulting package only needs Python and 7-zip to be installed on the
-target system.
+The resulting package only needs Python (and optionally 7-zip) to be
+installed on the target system.
 
 == Installing MinGW and MSYS
 
@@ -263,4 +263,12 @@ the recoll install dir by the install script.
 == Building the install directory
 
 Once the builds above are performed, edit the mkinstdir.sh script to adjust
-the locations, and use it to build the installation directory
+the locations, and use it to build the installation directory. The
+innosetup script expects it to be c:/install/recoll
+
+== Building the setup executable
+
+Install Inno Setup and use src/windows/recoll-setup.iss to generate the
+installation executable.
+
+
