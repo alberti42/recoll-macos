@@ -1382,6 +1382,8 @@ bool RclConfig::getUncompressor(const string &mtype, vector<string>& cmd) const
         } else {
             *it = findFilter(*it);
         }
+    } else {
+        it++;
     }
     
     cmd.insert(cmd.end(), it, tokens.end());
