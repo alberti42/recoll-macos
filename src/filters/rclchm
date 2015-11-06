@@ -2,6 +2,11 @@
 """Extract Html files from a Microsoft Compiled Html Help file (.chm)
 Needs at least python 2.2 for HTMLParser (chmlib needs 2.2 too)"""
 
+from __future__ import print_function
+
+# Note: this is not converted to python3, libchm does not have a
+# python3 wrapper at this point (2015-11)
+
 # Do we return individual chapters as html pages or concatenate everything?
 rclchm_catenate = 0
 # Use special html type to allow for mimeconf/mimeview Open magic,
@@ -23,13 +28,13 @@ import rclexecm
 try:
     from chm import chm,chmlib
 except:
-    print "RECFILTERROR HELPERNOTFOUND python:chm"
+    print("RECFILTERROR HELPERNOTFOUND python:chm")
     sys.exit(1);
 
 try:
     from HTMLParser import HTMLParser
 except:
-    print "RECFILTERROR HELPERNOTFOUND python:HTMLParser"
+    print("RECFILTERROR HELPERNOTFOUND python:HTMLParser")
     sys.exit(1);
 
 # Small helper routines
@@ -37,11 +42,11 @@ def getfile(chmfile, path):
     """Extract internal file text from chm object, given path"""
     res, ui = chmfile.ResolveObject(path)
     if res != chmlib.CHM_RESOLVE_SUCCESS:
-        #print "ResolveObject failed", path
+        #print("ResolveObject failed: %s" % path, file=sys.stderr)
         return ""
     res, doc = chmfile.RetrieveObject(ui)
     if not res:
-        print "RetrieveObject failed", path
+        print("RetrieveObject failed: %s" % path, file=sys.stderr)
         return ""
     return doc
 

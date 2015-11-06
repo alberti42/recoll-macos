@@ -33,7 +33,7 @@ class TarExtractor:
             else:
                 docdata = self.tar.extractfile(ipath).read()
             ok = True
-        except Exception, err:
+        except Exception as err:
             ok = False
         iseof = rclexecm.RclExecM.noteof
         if self.currentindex >= len(self.namen) -1:
@@ -59,7 +59,7 @@ class TarExtractor:
         try:
             ipath = ipath.decode("utf-8")
             return self.extractone(ipath)
-        except Exception, err:
+        except Exception as err:
             return (ok, data, ipath, eof)
 
     def getnext(self, params):

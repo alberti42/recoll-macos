@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 # Read a .kar midi karaoke file and translate to recoll indexable format
+# This does not work with Python3 yet because python:midi doesn't 
+from __future__ import print_function
 
 import rclexecm
 import sys
@@ -15,9 +17,9 @@ except:
     pass
 
 try:
-    import midi
+    from midi import midi
 except:
-    print "RECFILTERROR HELPERNOTFOUND python:midi"
+    print("RECFILTERROR HELPERNOTFOUND python:midi")
     sys.exit(1);
 
 try:
@@ -106,12 +108,12 @@ class KarTextExtractor:
         if data:
             try:
                 data = data.decode(self.encoding, 'ignore')
-            except Exception, err:
+            except Exception as err:
                 self.em.rclog("Decode failed: " + str(err))
                 return ""
             try:
                 data = data.encode('utf-8')
-            except Exception, err:
+            except Exception as err:
                 self.em.rclog("Encode failed: " + str(err))
                 return ""
             
@@ -127,7 +129,7 @@ class KarTextExtractor:
         just one our users could use if there is trouble with guessing
         encodings'''
 
-        rexp = r'\(([^\)]+)\)\.[a-zA-Z]+$'
+        rexp = b'''\(([^\)]+)\)\.[a-zA-Z]+$'''
         m = re.search(rexp, fn)
         if m:
             return m.group(1)
@@ -165,7 +167,7 @@ class KarTextExtractor:
                 if count > 0:
                     confidence = 1.0
                     encoding = code
-            except Exception, err:
+            except Exception as err:
                 self.em.rclog("stopwords-based classifier failed: %s" % err)
                 return (encoding, confidence)
 
@@ -177,7 +179,7 @@ class KarTextExtractor:
         docdata = ""
         ok = False
 
-        if not params.has_key("filename:"):
+        if "filename:" not in params:
             self.em.rclog("extractone: no mime or file name")
             return (ok, docdata, "", rclexecm.RclExecM.eofnow)
         filename = params["filename:"]
@@ -191,7 +193,7 @@ class KarTextExtractor:
                 self.encoding = ""
 
         # Mimetype not used for now
-        if not params.has_key("mimetype:"):
+        if "mimetype:" not in params:
             mimetype = 'audio/x-midi'
         else:
             mimetype = params["mimetype:"]
@@ -199,8 +201,8 @@ class KarTextExtractor:
         # Read in and midi-decode the file
         try:
             stream = midi.read_midifile(filename)
-        except Exception, err:
-            self.em.rclog("extractone: midi extract failed: [%s]" % err)
+        except Exception as err:
+            self.em.rclog("extractone: read_midifile failed: [%s]" % err)
             return (ok, docdata, "", rclexecm.RclExecM.eofnow)
 
         title = None

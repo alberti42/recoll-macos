@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
-# Python-based Image Tag extractor for Recoll. This is less thorough than the 
-# Perl-based rclimg script, but useful if you don't want to have to install Perl
-# (e.g. on Windows).
+# Python-based Image Tag extractor for Recoll. This is less thorough
+# than the Perl-based rclimg script, but useful if you don't want to
+# have to install Perl (e.g. on Windows).
 #
 # Uses pyexiv2. Also tried Pillow, found it useless for tags.
 #
+from __future__ import print_function
 
 import sys
 import os
@@ -15,7 +16,7 @@ import re
 try:
     import pyexiv2
 except:
-    print "RECFILTERROR HELPERNOTFOUND python:pyexiv2"
+    print("RECFILTERROR HELPERNOTFOUND python:pyexiv2")
     sys.exit(1);
 
 khexre = re.compile('.*\.0[xX][0-9a-fA-F]+$')
@@ -48,7 +49,7 @@ class ImgTagExtractor:
     def extractone(self, params):
         #self.em.rclog("extractone %s" % params["filename:"])
         ok = False
-        if not params.has_key("filename:"):
+        if "filename:" not in params:
             self.em.rclog("extractone: no file name")
             return (ok, docdata, "", rclexecm.RclExecM.eofnow)
         filename = params["filename:"]
@@ -62,11 +63,11 @@ class ImgTagExtractor:
                 # we skip numeric keys and undecoded makernote data
                 if k != 'Exif.Photo.MakerNote' and not khexre.match(k):
                     mdic[k] = str(metadata[k].raw_value)
-        except Exception, err:
+        except Exception as err:
             self.em.rclog("extractone: extract failed: [%s]" % err)
             return (ok, "", "", rclexecm.RclExecM.eofnow)
 
-        docdata = "<html><head>\n"
+        docdata = b'<html><head>\n'
 
         ttdata = set()
         for k in pyexiv2_titles:
@@ -77,25 +78,28 @@ class ImgTagExtractor:
             for v in ttdata:
                 v = v.replace('[', '').replace(']', '').replace("'", "")
                 title += v + " "
-            docdata += '<title>' + title + '</title>\n'
+            docdata += rclexecm.makebytes("<title>" + title + "</title>\n")
 
         for k in exiv2_dates:
             if k in mdic:
                 # Recoll wants: %Y-%m-%d %H:%M:%S.
                 # We get 2014:06:27 14:58:47
-                dt = mdic[k].replace(':', '-', 2)
-                docdata += '<meta name="date" content="' + dt + '">\n'
+                dt = mdic[k].replace(":", "-", 2)
+                docdata += b'<meta name="date" content="' + \
+                           rclexecm.makebytes(dt) + b'">\n'
                 break
 
-        for k,v in mdic.iteritems():
+        for k,v in mdic.items():
             if k ==  'Xmp.digiKam.TagsList':
-                docdata += '<meta name="keywords" content="' + \
-                           self.em.htmlescape(mdic[k]) + '">\n'
+                docdata += b'<meta name="keywords" content="' + \
+                           rclexecm.makebytes(self.em.htmlescape(mdic[k])) + \
+                           b'">\n'
 
-        docdata += "</head><body>\n"
-        for k,v in mdic.iteritems():
-            docdata += k + " : " + self.em.htmlescape(mdic[k]) + "<br />\n"
-        docdata += "</body></html>"
+        docdata += b'</head><body>\n'
+        for k,v in mdic.items():
+            docdata += rclexecm.makebytes(k + " : " + \
+                                     self.em.htmlescape(mdic[k]) + "<br />\n")
+        docdata += b'</body></html>'
 
         self.em.setmimetype("text/html")
 

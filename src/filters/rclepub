@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Extract Html content from an EPUB file (.chm)"""
+from __future__ import print_function
 
 rclepub_html_mtype = "text/html"
 
@@ -12,7 +13,7 @@ import rclexecm
 try:
     import epub
 except:
-    print "RECFILTERROR HELPERNOTFOUND python:epub"
+    print("RECFILTERROR HELPERNOTFOUND python:epub")
     sys.exit(1);
 
 class rclEPUB:
@@ -63,11 +64,11 @@ class rclEPUB:
             if item is None:
                 raise Exception("Item not found for id %s" % (id,))
             doc = self.book.read_item(item)
-            doc = re.sub('''</[hH][eE][aA][dD]>''',
-                         '''<meta name="rclaptg" content="epub"></head>''', doc)
+            doc = re.sub(b'''</[hH][eE][aA][dD]>''',
+                        b'''<meta name="rclaptg" content="epub"></head>''', doc)
             self.em.setmimetype(rclepub_html_mtype)
             return (True, doc, id, iseof)
-        except Exception, err:
+        except Exception as err:
             self.em.rclog("extractone: failed: [%s]" % err)
             return (False, "", id, iseof)
 
@@ -76,11 +77,11 @@ class rclEPUB:
         self.currentindex = -1
         self.contents = []
         try:
-            self.book = epub.open(params["filename:"])
-        except Exception, err:
+            self.book = epub.open_epub(params["filename:"].decode('UTF-8'))
+        except Exception as err:
             self.em.rclog("openfile: epub.open failed: [%s]" % err)
             return False
-        for id, item in self.book.opf.manifest.iteritems():
+        for id, item in self.book.opf.manifest.items():
             if item.media_type == 'application/xhtml+xml':
                 self.contents.append(id)
         return True

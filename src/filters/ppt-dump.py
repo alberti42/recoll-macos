@@ -52,7 +52,7 @@ class PPTDumper(object):
 
             try:
                 dirstrm = strm.getDirectoryStreamByName(dirname)
-            except Exception, err:
+            except Exception as err:
                 error("getDirectoryStreamByName(%s): %s - %s\n" % (dirname,str(err),self.filepath))
                 # The previous version was killed by the exception
                 # here, so the equivalent is to break, but maybe there

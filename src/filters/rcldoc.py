@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 
 import rclexecm
 import rclexec1
@@ -11,32 +12,32 @@ import os
 class WordProcessData:
     def __init__(self, em):
         self.em = em
-        self.out = ""
-        self.cont = ""
+        self.out = b''
+        self.cont = b''
         self.gotdata = False
         # Line with continued word (ending in -)
         # we strip the - which is not nice for actually hyphenated word.
         # What to do ?
-        self.patcont = re.compile('''[\w][-]$''')
+        self.patcont = re.compile(b'''[\w][-]$''')
         # Pattern for breaking continuation at last word start
-        self.patws = re.compile('''([\s])([\w]+)(-)$''')
+        self.patws = re.compile(b'''([\s])([\w]+)(-)$''')
 
     def takeLine(self, line):
         if not self.gotdata:
-            if line == "":
+            if line == b'':
                 return
-            self.out = '<html><head><title></title>' + \
-                       '<meta http-equiv="Content-Type"' + \
-                       'content="text/html;charset=UTF-8">' + \
-                       '</head><body><p>'
+            self.out = b'<html><head><title></title>' + \
+                       b'<meta http-equiv="Content-Type"' + \
+                       b'content="text/html;charset=UTF-8">' + \
+                       b'</head><body><p>'
             self.gotdata = True
 
         if self.cont:
             line = self.cont + line
             self.cont = ""
 
-        if line == "\f":
-            self.out += "</p><hr><p>"
+        if line == b'\f':
+            self.out += '</p><hr><p>'
             return
 
         if self.patcont.search(line):
@@ -47,16 +48,16 @@ class WordProcessData:
                 line = line[0:match.start(1)]
             else:
                 self.cont = line
-                line = ""
+                line = b''
 
         if line:
-            self.out += self.em.htmlescape(line) + "<br>"
+            self.out += self.em.htmlescape(line) + b'<br>'
         else:
-            self.out += "<br>"
+            self.out += b'<br>'
 
     def wrapData(self):
         if self.gotdata:
-            self.out += "</p></body></html>"
+            self.out += b'</p></body></html>'
         self.em.setmimetype("text/html")
         return self.out
 
@@ -65,7 +66,7 @@ class WordProcessData:
 # output HTML
 class WordPassData:
     def __init__(self, em):
-        self.out = ""
+        self.out = b''
         self.em = em
 
     def takeLine(self, line):
@@ -96,8 +97,8 @@ class WordFilter:
         return False
 
     def mimetype(self, fn):
-        rtfprolog ="{\\rtf1"
-        docprolog = b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1"
+        rtfprolog = b'{\\rtf1'
+        docprolog = b'\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1'
         try:
             f = open(fn, "rb")
         except:
@@ -132,7 +133,7 @@ class WordFilter:
             mt = self.mimetype(fn)
             self.em.rclog("rcldoc.py: actual MIME type %s" % mt)
             if mt == "text/plain":
-                return ([python, os.path.join(self.execdir, "rcltext.py")],
+                return (["python", os.path.join(self.execdir, "rcltext.py")],
                        WordPassData(self.em))
             elif mt == "text/rtf":
                 cmd = ["python", os.path.join(self.execdir, "rclrtf.py"),

@@ -72,7 +72,7 @@ class ZipExtractor:
             else:
                 docdata = self.zip.read(ipath)
             ok = True
-        except Exception, err:
+        except Exception as err:
             self.em.rclog("extractone: failed: [%s]" % err)
             ok = False
         iseof = rclexecm.RclExecM.noteof
@@ -98,7 +98,7 @@ class ZipExtractor:
         try:
             self.zip = ZipFile(filename)
             return True
-        except Exception, err:
+        except Exception as err:
             self.em.rclog("openfile: failed: [%s]" % err)
             return False
 
@@ -111,7 +111,7 @@ class ZipExtractor:
         try:
             ipath = ipath.decode("utf-8")
             return self.extractone(ipath)
-        except Exception, err:
+        except Exception as err:
             return (ok, data, ipath, eof)
         
     def getnext(self, params):

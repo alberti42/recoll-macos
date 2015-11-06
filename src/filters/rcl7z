@@ -15,7 +15,7 @@ try:
     import pylzma
     from py7zlib import Archive7z
 except:
-    print "RECFILTERROR HELPERNOTFOUND python:pylzma"
+    print("RECFILTERROR HELPERNOTFOUND python:pylzma")
     sys.exit(1);
 
 try:
@@ -40,19 +40,17 @@ class SevenZipExtractor:
             
     def extractone(self, ipath):
         #self.em.rclog("extractone: [%s]" % ipath)
-        docdata = ""
+        docdata = b''
         try:
             docdata = self.sevenzip.getmember(ipath).read()
             ok = True
-        except Exception, err:
+        except Exception as err:
             self.em.rclog("extractone: failed: [%s]" % err)
             ok = False
         iseof = rclexecm.RclExecM.noteof
         if self.currentindex >= len(self.sevenzip.getnames()) -1:
             iseof = rclexecm.RclExecM.eofnext
-        if isinstance(ipath, unicode):
-            ipath = ipath.encode("utf-8")
-        return (ok, docdata, ipath, iseof)
+        return (ok, docdata, rclexecm.makebytes(ipath), iseof)
 
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
@@ -71,7 +69,7 @@ class SevenZipExtractor:
             fp = open(filename, 'rb')
             self.sevenzip = Archive7z(fp)
             return True
-        except Exception, err:
+        except Exception as err:
             self.em.rclog("openfile: failed: [%s]" % err)
             return False
 
@@ -84,7 +82,7 @@ class SevenZipExtractor:
         try:
             ipath = ipath.decode("utf-8")
             return self.extractone(ipath)
-        except Exception, err:
+        except Exception as err:
             return (ok, data, ipath, eof)
         
     def getnext(self, params):

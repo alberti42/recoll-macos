@@ -75,7 +75,7 @@ class ConfSimple:
     def getNames(self, sk = ''):
         if not sk in self.submaps:
             return None
-        return self.submaps[sk].keys()
+        return list(self.submaps[sk].keys())
     
 class ConfTree(ConfSimple):
     """A ConfTree adds path-hierarchical interpretation of the section keys,

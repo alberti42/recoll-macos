@@ -12,7 +12,7 @@ try:
     from mutagen.flac import FLAC
     from mutagen.oggvorbis import OggVorbis
 except:
-    print "RECFILTERROR HELPERNOTFOUND python:mutagen"
+    print("RECFILTERROR HELPERNOTFOUND python:mutagen")
     sys.exit(1);
 
 # prototype for the html document we're returning
@@ -42,23 +42,24 @@ class AudioTagExtractor:
         #self.em.rclog("extractone %s %s" % (params["filename:"], params["mimetype:"]))
         docdata = ""
         ok = False
-        if not params.has_key("mimetype:") or  not params.has_key("filename:"):
+        if not "mimetype:" in params or not "filename:" in params:
             self.em.rclog("extractone: no mime or file name")
             return (ok, docdata, "", rclexecm.RclExecM.eofnow)
         filename = params["filename:"]
         mimetype = params["mimetype:"]
         try:
-            if mimetype == "audio/mpeg":
+            if mimetype == b'audio/mpeg':
                 tags = MP3(filename, ID3=EasyID3)
-            elif mimetype == "application/ogg":
+            elif mimetype == b'application/ogg' or \
+                     mimetype == b'audio/x-vorbis+ogg':
                 tags = OggVorbis(filename)
-            elif mimetype == "application/x-flac" or \
-                     mimetype == "audio/x-flac" or \
-                     mimetype == "audio/flac":
+            elif mimetype == b'application/x-flac' or \
+                     mimetype == 'audio/x-flac' or \
+                     mimetype == b'audio/flac':
                 tags = FLAC(filename)
             else:
-                raise Exception, "Bad mime type %s" % mimetype
-        except Exception, err:
+                raise Exception("Bad mime type %s" % mimetype)
+        except Exception as err:
             self.em.rclog("extractone: extract failed: [%s]" % err)
             return (ok, docdata, "", rclexecm.RclExecM.eofnow)
 
@@ -66,21 +67,22 @@ class AudioTagExtractor:
         artist = ""
         title = ""
         try:
-            album = self.em.htmlescape(tags["album"][0].encode("utf-8"))
+            album = self.em.htmlescape(tags["album"][0])
         except:
             pass
         try:
-            artist = self.em.htmlescape(tags["artist"][0].encode("utf-8"))
+            artist = self.em.htmlescape(tags["artist"][0])
         except:
             pass
         try:
-            title = self.em.htmlescape(tags["title"][0].encode("utf-8"))
+            title = self.em.htmlescape(tags["title"][0])
         except:
             pass
         self.em.setmimetype("text/html")
-        alldata = self.em.htmlescape(tags.pprint().encode("utf-8"))
+        alldata = self.em.htmlescape(tags.pprint())
         alldata = alldata.replace("\n", "<br>")
-        docdata = htmltemplate % (album, artist, title, alldata)
+        docdata = (htmltemplate % (album, artist, title, alldata))\
+                  .encode('UTF-8')
         ok = True
         return (ok, docdata, "", rclexecm.RclExecM.eofnext)
 

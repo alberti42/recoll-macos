@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 
 import rclexecm
 import rclexec1
@@ -10,24 +11,24 @@ import os
 class RTFProcessData:
     def __init__(self, em):
         self.em = em
-        self.out = ""
+        self.out = b''
         self.gothead = 0
-        self.patendhead = re.compile('''</head>''')
-        self.patcharset = re.compile('''^<meta http-equiv=''')
+        self.patendhead = re.compile(b'''</head>''')
+        self.patcharset = re.compile(b'''^<meta http-equiv=''')
 
     # Some versions of unrtf put out a garbled charset line.
     # Apart from this, we pass the data untouched.
     def takeLine(self, line):
         if not self.gothead:
             if self.patendhead.search(line):
-                self.out +=  '<meta http-equiv="Content-Type" ' + \
-                             'content="text/html;charset=UTF-8">' + "\n"
-                self.out += line + "\n"
+                self.out +=  b'<meta http-equiv="Content-Type" ' + \
+                             b'content="text/html;charset=UTF-8">' + b'\n'
+                self.out += line + b'\n'
                 self.gothead = 1
             elif not self.patcharset.search(line):
-                self.out += line + "\n"
+                self.out += line + b'\n'
         else:
-            self.out += line + "\n"
+            self.out += line + b'\n'
 
     def wrapData(self):
         return self.out
@@ -52,7 +53,7 @@ class RTFFilter:
 
 if __name__ == '__main__':
     if not rclexecm.which("unrtf"):
-        print("RECFILTERROR HELPERNOTFOUND antiword")
+        print("RECFILTERROR HELPERNOTFOUND unrtf")
         sys.exit(1)
     proto = rclexecm.RclExecM()
     filter = RTFFilter(proto)

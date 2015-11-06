@@ -43,7 +43,7 @@ class RarExtractor:
         try:
             rarinfo = self.rar.getinfo(ipath)
             isdir = rarinfo.isdir()
-        except Exception, err:
+        except Exception as err:
             self.em.rclog("extractone: getinfo failed: [%s]" % err)
             return (True, docdata, ipath, false)
 
@@ -56,7 +56,7 @@ class RarExtractor:
                 else:
                     docdata = self.rar.read(ipath)
                 ok = True
-            except Exception, err:
+            except Exception as err:
                 self.em.rclog("extractone: failed: [%s]" % err)
                 ok = False
         else:
@@ -89,7 +89,7 @@ class RarExtractor:
         try:
             ipath = ipath.decode("utf-8")
             return self.extractone(ipath)
-        except Exception, err:
+        except Exception as err:
             return (ok, data, ipath, eof)
         
     def getnext(self, params):

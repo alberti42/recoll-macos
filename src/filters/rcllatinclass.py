@@ -13,6 +13,8 @@ epsilon with dasia (in unicode but not iso). Can this be replaced by either epsi
 with acute accent ?
 """
 
+from __future__ import print_function
+
 import sys
 import string
 import glob
@@ -117,7 +119,7 @@ if __name__ == "__main__":
 
     lang,code,count = classifier.classify(rawtext)
     if count > 0:
-        print "%s %s %d" % (code, lang, count)
+        print("%s %s %d" % (code, lang, count))
     else:
-        print "UNKNOWN UNKNOWN 0"
+        print("UNKNOWN UNKNOWN 0")
         
