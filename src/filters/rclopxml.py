@@ -152,25 +152,26 @@ class OXExtractor:
         fn = params["filename:"]
 
         try:
-            zip = ZipFile(fn)
+            f = open(fn, 'rb')
+            zip = ZipFile(f)
         except Exception as err:
             self.em.rclog("unzip failed: " + str(err))
             return (False, "", "", rclexecm.RclExecM.eofnow)
 
-        docdata = '<html><head>'
+        docdata = b'<html><head>'
 
         try:
             metadata = zip.read("docProps/core.xml")
             if metadata:
                 res = rclxslt.apply_sheet_data(meta_stylesheet, metadata)
                 docdata += res
-        except:
+        except Exception as err:
             # To be checked. I'm under the impression that I get this when
             # nothing matches?
-            # self.em.rclog("no/bad metadata in %s" % fn)
+            self.em.rclog("no/bad metadata in %s: %s" % (fn, err))
             pass
 
-        docdata += '</head><body>'
+        docdata += b'</head><body>'
 
         try:
             content= zip.read('word/document.xml')
@@ -197,7 +198,7 @@ class OXExtractor:
         except:
             pass
 
-        docdata += '</body></html>'
+        docdata += b'</body></html>'
 
         return (True, docdata, "", rclexecm.RclExecM.eofnext)
     
