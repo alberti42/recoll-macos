@@ -16,6 +16,8 @@
 #   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ######################################
 
+from __future__ import print_function
+
 import sys
 import rclexecm
 import rclxslt
@@ -104,7 +106,7 @@ class SVGExtractor:
         self.currentindex = 0
 
     def extractone(self, params):
-        if not params.has_key("filename:"):
+        if "filename:" not in params:
             self.em.rclog("extractone: no mime or file name")
             return (False, "", "", rclexecm.RclExecM.eofnow)
         fn = params["filename:"]

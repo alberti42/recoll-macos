@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
+# Wrapping a text file. Recoll does it internally in most cases, but
+# this is for use by another filter.
+
+from __future__ import print_function
+
 import rclexecm
 import sys
 
-# Wrapping a text file. Recoll does it internally in most cases, but
-# there is a reason this exists, just can't remember it ...
 class TxtDump:
     def __init__(self, em):
         self.em = em
@@ -12,7 +15,7 @@ class TxtDump:
     def extractone(self, params):
         #self.em.rclog("extractone %s %s" % (params["filename:"], \
         #params["mimetype:"]))
-        if not params.has_key("filename:"):
+        if not "filename:" in params:
             self.em.rclog("extractone: no file name")
             return (False, "", "", rclexecm.RclExecM.eofnow)
 

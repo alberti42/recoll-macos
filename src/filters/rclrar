@@ -18,12 +18,14 @@
 #   Free Software Foundation, Inc.,
 #   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
+from __future__ import print_function
+
 import sys
 import rclexecm
 try:
     from rarfile import RarFile
 except:
-    print "RECFILTERROR HELPERNOTFOUND python:rarfile"
+    print("RECFILTERROR HELPERNOTFOUND python:rarfile")
     sys.exit(1);
 
 # Requires RarFile python module. Try "sudo pip install rarfile"
@@ -67,9 +69,7 @@ class RarExtractor:
         iseof = rclexecm.RclExecM.noteof
         if self.currentindex >= len(self.rar.namelist()) -1:
             iseof = rclexecm.RclExecM.eofnext
-        if isinstance(ipath, unicode):
-            ipath = ipath.encode("utf-8")
-        return (ok, docdata, ipath, iseof)
+        return (ok, docdata, rclexecm.makebytes(ipath), iseof)
 
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):

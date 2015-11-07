@@ -62,7 +62,7 @@ class XMLExtractor:
         self.currentindex = 0
 
     def extractone(self, params):
-        if not params.has_key("filename:"):
+        if "filename:" not in params:
             self.em.rclog("extractone: no mime or file name")
             return (False, "", "", rclexecm.RclExecM.eofnow)
         fn = params["filename:"]

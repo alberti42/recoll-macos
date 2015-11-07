@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 """Extract Html files from a Microsoft Compiled Html Help file (.chm)
 Needs at least python 2.2 for HTMLParser (chmlib needs 2.2 too)"""
 

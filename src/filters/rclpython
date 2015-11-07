@@ -22,6 +22,8 @@
 # - parse script encoding and allow output in any encoding by using unicode
 #   as intermediate
 
+from __future__ import print_function
+
 __version__ = '0.3'
 __date__ = '2005-07-04'
 __license__ = 'GPL'
@@ -29,9 +31,26 @@ __author__ = 'Jürgen Hermann, Mike Brown, Christopher Arndt'
 
 
 # Imports
-import cgi, string, sys, cStringIO
+import cgi, string, sys
+PY2 = sys.version < '3'
+if PY2:
+    import cStringIO
+else:
+    import io
 import keyword, token, tokenize
 
+if PY2:
+    def makebytes(data):
+        if isinstance(data, unicode):
+            return data.encode("UTF-8")
+        else:
+            return data
+else:
+    def makebytes(data):
+        if isinstance(data, bytes):
+            return data
+        else:
+            return data.encode("UTF-8")
 
 #############################################################################
 ### Python Source Parser (does Hilighting)
@@ -57,7 +76,7 @@ _HTML_HEADER = """\
 <html>
 <head>
   <title>%%(title)s</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="Generator" content="colorize.py (version %s)">
 </head>
 <body>
@@ -114,7 +133,7 @@ class Parser:
     def __init__(self, raw, out=sys.stdout):
         """ Store the source text.
         """
-        self.raw = string.strip(string.expandtabs(raw))
+        self.raw = raw.expandtabs().strip()
         self.out = out
 
     def format(self):
@@ -124,35 +143,44 @@ class Parser:
         self.lines = [0, 0]
         pos = 0
         while 1:
-            pos = string.find(self.raw, '\n', pos) + 1
+            pos = self.raw.find(b'\n', pos) + 1
             if not pos: break
             self.lines.append(pos)
         self.lines.append(len(self.raw))
 
         # parse the source and write it
         self.pos = 0
-        text = cStringIO.StringIO(self.raw)
-        self.out.write(self.stylesheet)
-        self.out.write('<pre class="code">\n')
+        if PY2:
+            text = cStringIO.StringIO(self.raw)
+        else:
+            text = io.BytesIO(self.raw)
+        self.out.write(makebytes(self.stylesheet))
+        self.out.write(b'<pre class="code">\n')
         try:
-            tokenize.tokenize(text.readline, self)
-        except tokenize.TokenError, ex:
+            if PY2:
+                tokenize.tokenize(text.readline, self)
+            else:
+                for a,b,c,d,e in tokenize.tokenize(text.readline):
+                    self(a,b,c,d,e)
+        except tokenize.TokenError as ex:
             msg = ex[0]
             line = ex[1][0]
             self.out.write("<h3>ERROR: %s</h3>%s\n" % (
                 msg, self.raw[self.lines[line]:]))
-        except IndentationError, ex:
+        except IndentationError as ex:
             msg = ex[0]
             self.out.write("<h3>ERROR: %s</h3>\n" % (msg))
-        self.out.write('\n</pre>')
+        self.out.write(b'\n</pre>')
 
-    def __call__(self, toktype, toktext, (srow,scol), (erow,ecol), line):
+    def __call__(self, toktype, toktext, startpos, endpos, line):
         """ Token handler.
         """
         if 0:
-            print "type", toktype, token.tok_name[toktype], "text", toktext,
-            print "start", srow,scol, "end", erow,ecol, "<br>"
-
+            print("type %s %s text %s start %s %s end %s %s<br>\n" % \
+                  (toktype, token.tok_name[toktype], toktext, \
+                   srow, scol,erow,ecol))
+        srow, scol = startpos
+        erow, ecol = endpos
         # calculate new positions
         oldpos = self.pos
         newpos = self.lines[srow] + scol
@@ -160,7 +188,7 @@ class Parser:
 
         # handle newlines
         if toktype in [token.NEWLINE, tokenize.NL]:
-            self.out.write('\n')
+            self.out.write(b'\n')
             return
 
         # send the original whitespace, if needed
@@ -180,9 +208,9 @@ class Parser:
         css_class = _css_classes.get(toktype, 'text')
 
         # send text
-        self.out.write('<span class="%s">' % (css_class,))
-        self.out.write(cgi.escape(toktext))
-        self.out.write('</span>')
+        self.out.write(makebytes('<span class="%s">' % (css_class,)))
+        self.out.write(makebytes(cgi.escape(toktext)))
+        self.out.write(b'</span>')
 
 
 def colorize_file(file=None, outstream=sys.stdout, standalone=True):
@@ -205,7 +233,7 @@ def colorize_file(file=None, outstream=sys.stdout, standalone=True):
             filename = 'STREAM'
     elif file is not None:
         try:
-            sourcefile = open(file)
+            sourcefile = open(file, 'rb')
             filename = basename(file)
         except IOError:
             raise SystemExit("File %s unknown." % file)
@@ -215,22 +243,26 @@ def colorize_file(file=None, outstream=sys.stdout, standalone=True):
     source = sourcefile.read()
 
     if standalone:
-        outstream.write(_HTML_HEADER % {'title': filename})
+        outstream.write(makebytes(_HTML_HEADER % {'title': filename}))
     Parser(source, out=outstream).format()
     if standalone:
-        outstream.write(_HTML_FOOTER)
+        outstream.write(makebytes(_HTML_FOOTER))
 
     if file:
         sourcefile.close()
 
 if __name__ == "__main__":
     import os
+    if PY2:
+        out = sys.stdout
+    else:
+        out = sys.stdout.buffer
     if os.environ.get('PATH_TRANSLATED'):
         filepath = os.environ.get('PATH_TRANSLATED')
-        print 'Content-Type: text/html; charset="iso-8859-1"\n'
-        colorize_file(filepath)
+        print('Content-Type: text/html; charset="iso-8859-1"\n')
+        colorize_file(filepath, out)
     elif len(sys.argv) > 1:
         filepath = sys.argv[1]
-        colorize_file(filepath)
+        colorize_file(filepath, out)
     else:
         colorize_file()

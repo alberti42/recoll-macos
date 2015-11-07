@@ -16,6 +16,8 @@
 #   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ######################################
 
+from __future__ import print_function
+
 import sys
 import rclexecm
 import rclxslt
@@ -130,19 +132,19 @@ class OOExtractor:
         self.currentindex = 0
 
     def extractone(self, params):
-        if not params.has_key("filename:"):
+        if "filename:" not in params:
             self.em.rclog("extractone: no mime or file name")
             return (False, "", "", rclexecm.RclExecM.eofnow)
         fn = params["filename:"]
 
         try:
-            zip = ZipFile(fn)
+            zip = ZipFile(fn.decode('UTF-8'))
         except Exception as err:
-            self.em.rclog("unzip failed: " + str(err))
+            self.em.rclog("unzip failed: %s" % err)
             return (False, "", "", rclexecm.RclExecM.eofnow)
 
-        docdata = '<html><head><meta http-equiv="Content-Type"' \
-                  'content="text/html; charset=UTF-8"></head><body>'
+        docdata = b'<html><head><meta http-equiv="Content-Type"' \
+                  b'content="text/html; charset=UTF-8"></head><body>'
 
         try:
             metadata = zip.read("meta.xml")
@@ -160,9 +162,9 @@ class OOExtractor:
             if content:
                 res = rclxslt.apply_sheet_data(stylesheet_content, content)
                 docdata += res
-            docdata += '</body></html>'
+            docdata += b'</body></html>'
         except Exception as err:
-            self.em.rclog("bad data in %s" % fn)
+            self.em.rclog("bad data in %s: %s" % (fn, err))
             return (False, "", "", rclexecm.RclExecM.eofnow)
 
         return (True, docdata, "", rclexecm.RclExecM.eofnext)

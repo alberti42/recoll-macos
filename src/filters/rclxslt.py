@@ -17,36 +17,54 @@
 
 # Helper module for xslt-based filters
 
+from __future__ import print_function
+
 import sys
 
-try:
-    import libxml2
-    import libxslt
-except:
-    print "RECFILTERROR HELPERNOTFOUND python:libxml2/python:libxslt1"
-    sys.exit(1);
+PY2 = sys.version < '3'
 
-libxml2.substituteEntitiesDefault(1)
-
-def apply_sheet_data(sheet, data):
-    styledoc = libxml2.parseMemory(sheet, len(sheet))
-    style = libxslt.parseStylesheetDoc(styledoc)
-    doc = libxml2.parseMemory(data, len(data))
-    result = style.applyStylesheet(doc, None)
-    res = style.saveResultToString(result)
-    style.freeStylesheet()
-    doc.freeDoc()
-    result.freeDoc()
-    return res
-
-def apply_sheet_file(sheet, fn):
-    styledoc = libxml2.parseMemory(sheet, len(sheet))
-    style = libxslt.parseStylesheetDoc(styledoc)
-    doc = libxml2.parseFile(fn)
-    result = style.applyStylesheet(doc, None)
-    res = style.saveResultToString(result)
-    style.freeStylesheet()
-    doc.freeDoc()
-    result.freeDoc()
-    return res
+if PY2:
+    try:
+        import libxml2
+        import libxslt
+        libxml2.substituteEntitiesDefault(1)
+    except:
+        print("RECFILTERROR HELPERNOTFOUND python:libxml2/python:libxslt1")
+        sys.exit(1);
+    def apply_sheet_data(sheet, data):
+        styledoc = libxml2.parseMemory(sheet, len(sheet))
+        style = libxslt.parseStylesheetDoc(styledoc)
+        doc = libxml2.parseMemory(data, len(data))
+        result = style.applyStylesheet(doc, None)
+        res = style.saveResultToString(result)
+        style.freeStylesheet()
+        doc.freeDoc()
+        result.freeDoc()
+        return res
+    def apply_sheet_file(sheet, fn):
+        styledoc = libxml2.parseMemory(sheet, len(sheet))
+        style = libxslt.parseStylesheetDoc(styledoc)
+        doc = libxml2.parseFile(fn)
+        result = style.applyStylesheet(doc, None)
+        res = style.saveResultToString(result)
+        style.freeStylesheet()
+        doc.freeDoc()
+        result.freeDoc()
+        return res
+else:
+    try:
+        from lxml import etree
+    except:
+        print("RECFILTERROR HELPERNOTFOUND python3:lxml")
+        sys.exit(1);
+    def apply_sheet_data(sheet, data):
+        styledoc = etree.fromstring(sheet)
+        transform = etree.XSLT(styledoc)
+        doc = etree.fromstring(data)
+        return etree.tostring(transform(doc))
+    def apply_sheet_file(sheet, fn):
+        styledoc = etree.fromstring(sheet)
+        transform = etree.XSLT(styledoc)
+        doc = etree.parse(fn)
+        return etree.tostring(transform(doc))
 

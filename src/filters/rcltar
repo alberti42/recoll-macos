@@ -6,12 +6,14 @@
 # It works not only for tar-files, but automatically for gzipped and
 # bzipped tar-files at well.
 
+from __future__ import print_function
+
 import rclexecm
 
 try:
     import tarfile
 except:
-    print "RECFILTERROR HELPERNOTFOUND python:tarfile"
+    print("RECFILTERROR HELPERNOTFOUND python:tarfile")
     sys.exit(1);
 
 class TarExtractor:
@@ -38,15 +40,15 @@ class TarExtractor:
         iseof = rclexecm.RclExecM.noteof
         if self.currentindex >= len(self.namen) -1:
             iseof = rclexecm.RclExecM.eofnext
-        if isinstance(ipath, unicode):
-            ipath = ipath.encode("utf-8")
-        return (ok, docdata, ipath, iseof)
+        return (ok, docdata, rclexecm.makebytes(ipath), iseof)
 
     def openfile(self, params):
         self.currentindex = -1
         try:
             self.tar = tarfile.open(name=params["filename:"],mode='r')
-            self.namen = [ y.name for y in filter(lambda z:z.isfile(),self.tar.getmembers())]
+            #self.namen = [ y.name for y in filter(lambda z:z.isfile(),self.tar.getmembers())]
+            self.namen = [ y.name for y in [z for z in self.tar.getmembers() if z.isfile()]]
+
             return True
         except:
             return False

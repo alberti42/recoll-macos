@@ -1,9 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
+
+# mso-dumper is not compatible with python3
+
+from __future__ import print_function
 
 import sys, os.path, optparse
 sys.path.append(sys.path[0]+"/msodump.zip")
@@ -97,7 +101,7 @@ class XLDumper(object):
                 node.prettyPrint(sys.stdout, docroot, utf8 = self.params.utf8)
 
         except Exception as err:
-            print >> sys.stderr, "xls-dump.py: error: %s" % err
+            print("xls-dump.py: error: %s" % err, file=sys.stderr)
             sys.exit(1)
 
     def dump (self):

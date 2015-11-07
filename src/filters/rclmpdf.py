@@ -17,6 +17,8 @@
 
 # Recoll PDF extractor, with support for attachments
 
+from __future__ import print_function
+
 import os
 import sys
 import re
@@ -89,7 +91,7 @@ class PDFExtractor:
                                    "output", tmpdir])
             self.attachlist = sorted(os.listdir(tmpdir))
             return True
-        except Exception, e:
+        except Exception as e:
             self.em.rclog("extractAttach: failed: %s" % e)
             # Return true anyway, pdf attachments are no big deal
             return True

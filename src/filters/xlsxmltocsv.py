@@ -1,4 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
+
+# Transform XML output from xls-dump.py into csv format.
+# Note: msodumper is not compatible with python3.
+
+from __future__ import print_function
 
 import sys
 import xml.sax
@@ -28,7 +33,7 @@ class XlsXmlHandler(xml.sax.handler.ContentHandler):
             if "value" in attrs:
                 value = attrs["value"].encode("UTF-8")
             else:
-                value = unicode()
+                value = b''
             if "col" in attrs:
                 self.cells[int(attrs["col"])] = value
             else:
@@ -42,7 +47,7 @@ class XlsXmlHandler(xml.sax.handler.ContentHandler):
     def endElement(self, name, ):
         if name == "row":
             curidx = 0
-            for idx, value in self.cells.iteritems():
+            for idx, value in self.cells.items():
                 self.output += sepstring * (idx - curidx)
                 self.output += "%s%s%s" % (dquote, value, dquote)
                 curidx = idx

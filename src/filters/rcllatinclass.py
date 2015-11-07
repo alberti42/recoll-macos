@@ -16,11 +16,14 @@ with acute accent ?
 from __future__ import print_function
 
 import sys
-import string
+PY3 = sys.version > '3'
+if not PY3:
+    import string
 import glob
 import os
 import os.path
 from zipfile import ZipFile
+
 
 class European8859TextClassifier:
     def __init__(self, langzip=""):
@@ -33,9 +36,12 @@ class European8859TextClassifier:
         self.readlanguages(langzip)
 
         # Table to translate from punctuation to spaces
-        self.punct = '''*?[].@+-,#_$%&={};.,:!"''' + "'\n\r"
-        spaces = len(self.punct) * " "
-        self.spacetable = string.maketrans(self.punct, spaces)
+        self.punct = b'''0123456789<>/*?[].@+-,#_$%&={};.,:!"''' + b"'\n\r"
+        spaces = len(self.punct) * b' '
+        if PY3:
+            self.spacetable = bytes.maketrans(self.punct, spaces)
+        else:
+            self.spacetable = string.maketrans(self.punct, spaces)
 
     def readlanguages(self, langzip):
         """Extract the stop words lists from the zip file.
@@ -53,7 +59,7 @@ class European8859TextClassifier:
             text = zip.read(fn)
             words = text.split()
             for word in words:
-                if self.allwords.has_key(word):
+                if word in self.allwords:
                     self.allwords[word].append((lang, code))
                 else:
                     self.allwords[word] = [(lang, code)]
@@ -64,7 +70,7 @@ class European8859TextClassifier:
 
         # Limit to reasonable size.
         if len(rawtext) > 10000:
-            i = rawtext.find(" ", 9000)
+            i = rawtext.find(b' ', 9000)
             if i == -1:
                 i = 9000
             rawtext = rawtext[0:i]
@@ -79,9 +85,9 @@ class European8859TextClassifier:
         dict = {}
         for w in words:
             dict[w] = dict.get(w, 0) + 1
-        lfreq = [a[0] for a in sorted(dict.iteritems(), \
+        lfreq = [a[0] for a in sorted(dict.items(), \
                        key=lambda entry: entry[1], reverse=True)[0:ntest]]
-        #print lfreq
+        #print(lfreq)
 
         # Build a dict (lang,code)->matchcount
         langstats = {}
@@ -91,9 +97,9 @@ class European8859TextClassifier:
                 langstats[lc] = langstats.get(lc, 0) + 1
 
         # Get a list of (lang,code) sorted by match count
-        lcfreq = sorted(langstats.iteritems(), \
+        lcfreq = sorted(langstats.items(), \
                         key=lambda entry: entry[1], reverse=True)
-        #print lcfreq[0:3]
+        #print(lcfreq[0:3])
         if len(lcfreq) != 0:
             lc,maxcount = lcfreq[0]
             maxlang = lc[0]

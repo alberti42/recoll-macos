@@ -1,5 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
+# Extractor for Excel files.
+# Mso-dumper is not compatible with Python3
 import rclexecm
 import rclexec1
 import xlsxmltocsv

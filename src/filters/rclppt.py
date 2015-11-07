@@ -1,4 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
+
+# Recoll PPT text extractor
+# Msodump is not compatible with Python3 AFAIK, so this is stuck to
+# Python2 too
+
+from __future__ import print_function
 
 import rclexecm
 import rclexec1
