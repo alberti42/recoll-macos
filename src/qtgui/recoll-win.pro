@@ -28,6 +28,8 @@ HEADERS += \
         idxsched.h \
         listdialog.h \
         preview_w.h \
+        preview_load.h \
+        preview_plaintorich.h \
         ptrans_w.h \
         rclhelp.h \
         rclmain_w.h \
@@ -54,6 +56,8 @@ SOURCES += \
         main.cpp \
         multisave.cpp \
         preview_w.cpp \
+        preview_load.cpp \
+        preview_plaintorich.cpp \
         ptrans_w.cpp \
         rclhelp.cpp \
         rclmain_w.cpp \
