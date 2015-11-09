@@ -49,7 +49,6 @@
 #include "pathut.h"
 #include "internfile.h"
 #include "recoll.h"
-#include "plaintorich.h"
 #include "smallut.h"
 #include "chrono.h"
 #include "wipedir.h"
@@ -58,135 +57,14 @@
 #include "guiutils.h"
 #include "docseqhist.h"
 #include "rclhelp.h"
+#include "preview_load.h"
+#include "preview_plaintorich.h"
 
 static const QKeySequence closeKS(Qt::Key_Escape);
 static const QKeySequence nextDocInTabKS(Qt::ShiftModifier+Qt::Key_Down);
 static const QKeySequence prevDocInTabKS(Qt::ShiftModifier+Qt::Key_Up);
 static const QKeySequence closeTabKS(Qt::ControlModifier+Qt::Key_W);
 static const QKeySequence printTabKS(Qt::ControlModifier+Qt::Key_P);
-
-// Subclass plainToRich to add <termtag>s and anchors to the preview text
-class PlainToRichQtPreview : public PlainToRich {
-public:
-
-    PlainToRichQtPreview()
-        : m_curanchor(1), m_lastanchor(0) {
-    }    
-    void clear() {
-        m_curanchor = 1; 
-        m_lastanchor = 0;
-        m_groupanchors.clear();
-        m_groupcuranchors.clear();
-    }
-
-    bool haveAnchors() {
-        return m_lastanchor != 0;
-    }
-
-    virtual string header() {
-        if (!m_inputhtml) {
-            switch (prefs.previewPlainPre) {
-            case PrefsPack::PP_BR:
-                m_eolbr = true;
-                return "<qt><head><title></title></head><body>";
-            case PrefsPack::PP_PRE:
-                m_eolbr = false;
-                return "<qt><head><title></title></head><body><pre>";
-            case PrefsPack::PP_PREWRAP:
-                m_eolbr = false;
-                return "<qt><head><title></title></head><body>"
-                    "<pre style=\"white-space: pre-wrap\">";
-            }
-        }
-        return cstr_null;
-    }
-
-    virtual string startMatch(unsigned int grpidx) {
-        LOGDEB2(("startMatch, grpidx %u\n", grpidx));
-        grpidx = m_hdata->grpsugidx[grpidx];
-        LOGDEB2(("startMatch, ugrpidx %u\n", grpidx));
-        m_groupanchors[grpidx].push_back(++m_lastanchor);
-        m_groupcuranchors[grpidx] = 0; 
-        return string("<span style='color: ").
-            append((const char *)(prefs.qtermcolor.toUtf8())).
-            append(";font-weight: bold;").
-            append("'>").
-            append("<a name=\"").
-            append(termAnchorName(m_lastanchor)).
-            append("\">");
-    }
-
-    virtual string endMatch() {
-        return string("</a></span>");
-    }
-
-    virtual string termAnchorName(int i) const {
-        static const char *termAnchorNameBase = "TRM";
-        char acname[sizeof(termAnchorNameBase) + 20];
-        sprintf(acname, "%s%d", termAnchorNameBase, i);
-        return string(acname);
-    }
-
-    virtual string startChunk() { 
-        return "<pre>";
-    }
-
-    int nextAnchorNum(int grpidx) {
-        LOGDEB2(("nextAnchorNum: group %d\n", grpidx));
-        map<unsigned int, unsigned int>::iterator curit = 
-            m_groupcuranchors.find(grpidx);
-        map<unsigned int, vector<int> >::iterator vecit = 
-            m_groupanchors.find(grpidx);
-        if (grpidx == -1 || curit == m_groupcuranchors.end() ||
-            vecit == m_groupanchors.end()) {
-            if (m_curanchor >= m_lastanchor)
-                m_curanchor = 1;
-            else
-                m_curanchor++;
-        } else {
-            if (curit->second >= vecit->second.size() -1)
-                m_groupcuranchors[grpidx] = 0;
-            else 
-                m_groupcuranchors[grpidx]++;
-            m_curanchor = vecit->second[m_groupcuranchors[grpidx]];
-            LOGDEB2(("nextAnchorNum: curanchor now %d\n", m_curanchor));
-        }
-        return m_curanchor;
-    }
-
-    int prevAnchorNum(int grpidx) {
-        map<unsigned int, unsigned int>::iterator curit = 
-            m_groupcuranchors.find(grpidx);
-        map<unsigned int, vector<int> >::iterator vecit = 
-            m_groupanchors.find(grpidx);
-        if (grpidx == -1 || curit == m_groupcuranchors.end() ||
-            vecit == m_groupanchors.end()) {
-            if (m_curanchor <= 1)
-                m_curanchor = m_lastanchor;
-            else
-                m_curanchor--;
-        } else {
-            if (curit->second <= 0)
-                m_groupcuranchors[grpidx] = vecit->second.size() -1;
-            else 
-                m_groupcuranchors[grpidx]--;
-            m_curanchor = vecit->second[m_groupcuranchors[grpidx]];
-        }
-        return m_curanchor;
-    }
-
-    QString curAnchorName() const {
-        return QString::fromUtf8(termAnchorName(m_curanchor).c_str());
-    }
-
-private:
-    int m_curanchor;
-    int m_lastanchor;
-    // Lists of anchor numbers (match locations) for the term (groups)
-    // in the query (the map key is and index into HighlightData.groups).
-    map<unsigned int, vector<int> > m_groupanchors;
-    map<unsigned int, unsigned int> m_groupcuranchors;
-};
 
 void Preview::init()
 {
@@ -713,91 +591,15 @@ void Preview::emitWordSelect(QString word)
   beginning of the text displayed faster
 */
 
-/* A thread to to the file reading / format conversion */
-class LoadThread : public QThread {
-    int *statusp;
-    Rcl::Doc& out;
-    const Rcl::Doc& idoc;
-    int loglevel;
-public: 
-    string missing;
-    TempFile imgtmp;
-
-    LoadThread(int *stp, Rcl::Doc& odoc, const Rcl::Doc& idc) 
-        : statusp(stp), out(odoc), idoc(idc)
-        {
-            loglevel = DebugLog::getdbl()->getlevel();
-        }
-    ~LoadThread() {
-    }
-    virtual void run() {
-        DebugLog::getdbl()->setloglevel(loglevel);
-        FileInterner interner(idoc, theconfig, FileInterner::FIF_forPreview);
-        FIMissingStore mst;
-        interner.setMissingStore(&mst);
-        // Even when previewHtml is set, we don't set the interner's
-        // target mtype to html because we do want the html filter to
-        // do its work: we won't use the text/plain, but we want the
-        // text/html to be converted to utf-8 (for highlight processing)
-        try {
-            string ipath = idoc.ipath;
-            FileInterner::Status ret = interner.internfile(out, ipath);
-            if (ret == FileInterner::FIDone || ret == FileInterner::FIAgain) {
-                // FIAgain is actually not nice here. It means that the record
-                // for the *file* of a multidoc was selected. Actually this
-                // shouldn't have had a preview link at all, but we don't know
-                // how to handle it now. Better to show the first doc than
-                // a mysterious error. Happens when the file name matches a
-                // a search term.
-                *statusp = 0;
-                // If we prefer html and it is available, replace the
-                // text/plain document text
-                if (prefs.previewHtml && !interner.get_html().empty()) {
-                    out.text = interner.get_html();
-                    out.mimetype = "text/html";
-                }
-                imgtmp = interner.get_imgtmp();
-            } else {
-                out.mimetype = interner.getMimetype();
-                mst.getMissingExternal(missing);
-                *statusp = -1;
-            }
-        } catch (CancelExcept) {
-            *statusp = -1;
-        }
-    }
-};
-
 
 // Insert into editor by chunks so that the top becomes visible
 // earlier for big texts. This provokes some artifacts (adds empty line),
 // so we can't set it too low.
 #define CHUNKL 500*1000
 
-/* A thread to convert to rich text (mark search terms) */
-class ToRichThread : public QThread {
-    string &in;
-    const HighlightData &hdata;
-    list<string> &out;
-    int loglevel;
-    PlainToRichQtPreview *ptr;
-public:
-    ToRichThread(string &i, const HighlightData& hd, list<string> &o, 
-                 PlainToRichQtPreview *_ptr)
-        : in(i), hdata(hd), out(o), ptr(_ptr)
-        {
-            loglevel = DebugLog::getdbl()->getlevel();
-        }
-    virtual void run()
-        {
-            DebugLog::getdbl()->setloglevel(loglevel);
-            try {
-                ptr->plaintorich(in, out, hdata, CHUNKL);
-            } catch (CancelExcept) {
-            }
-        }
-};
-
+// Make sure we don't ever reenter loadDocInCurrentTab: note that I
+// don't think it's actually possible, this must be the result of a
+// misguided debug session.
 class LoadGuard {
     bool *m_bp;
 public:
@@ -829,9 +631,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     // Load and convert document
     // idoc came out of the index data (main text and some fields missing). 
     // fdoc is the complete one what we are going to extract from storage.
-    Rcl::Doc fdoc;
-    int status = 1;
-    LoadThread lthr(&status, fdoc, idoc);
+    LoadThread lthr(theconfig, idoc, prefs.previewHtml, this);
     connect(&lthr, SIGNAL(finished()), &loop, SLOT(quit()));
 
     lthr.start();
@@ -843,17 +643,18 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
         if (progress.wasCanceled()) {
             CancelCheck::instance().setCancel();
         }
-        if (i == 2)
+        if (i == 1)
             progress.show();
     }
 
     LOGDEB(("loadDocInCurrentTab: after file load: cancel %d status %d"
             " text length %d\n", 
-            CancelCheck::instance().cancelState(), status, fdoc.text.length()));
+            CancelCheck::instance().cancelState(), lthr.status,
+            lthr.fdoc.text.length()));
 
     if (CancelCheck::instance().cancelState())
         return false;
-    if (status != 0) {
+    if (lthr.status != 0) {
         progress.close();
         QString explain;
         if (!lthr.missing.empty()) {
@@ -863,10 +664,14 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
             QMessageBox::warning(0, "Recoll",
                                  tr("Can't turn doc into internal "
                                     "representation for ") +
-                                 fdoc.mimetype.c_str() + explain);
+                                 lthr.fdoc.mimetype.c_str() + explain);
         } else {
-            QMessageBox::warning(0, "Recoll", 
-                                 tr("Error while loading file"));
+            if (progress.wasCanceled()) {
+                //QMessageBox::warning(0, "Recoll", tr("Canceled"));
+            } else {
+                QMessageBox::warning(0, "Recoll", 
+                                     tr("Error while loading file"));
+            }
         }
 
         return false;
@@ -879,12 +684,11 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     // We don't do the highlighting for very big texts: too long. We
     // should at least do special char escaping, in case a '&' or '<'
     // somehow slipped through previous processing.
-    bool highlightTerms = fdoc.text.length() < 
+    bool highlightTerms = lthr.fdoc.text.length() < 
         (unsigned long)prefs.maxhltextmbs * 1024 * 1024;
 
     // Final text is produced in chunks so that we can display the top
     // while still inserting at bottom
-    list<QString> qrichlst;
     PreviewTextEdit *editor = currentEditor();
 
     editor->m_plaintorich->clear();
@@ -906,33 +710,24 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
     editor->setHtml("");
     editor->m_format = Qt::RichText;
-    bool inputishtml = !fdoc.mimetype.compare("text/html");
-
-#if 0
-    // For testing qtextedit bugs...
-    highlightTerms = true;
-    const char *textlist[] =
-        {
-            "Du plain text avec un\n <termtag>termtag</termtag> fin de ligne:",
-            "texte apres le tag\n",
-        };
-    const int listl = sizeof(textlist) / sizeof(char*);
-    for (int i = 0 ; i < listl ; i++)
-        qrichlst.push_back(QString::fromUtf8(textlist[i]));
-#else
+    bool inputishtml = !lthr.fdoc.mimetype.compare("text/html");
+    QStringList qrichlst;
+    
+#if 1
     if (highlightTerms) {
         progress.setLabelText(tr("Creating preview text"));
         qApp->processEvents();
 
         if (inputishtml) {
-            LOGDEB1(("Preview: got html %s\n", fdoc.text.c_str()));
+            LOGDEB1(("Preview: got html %s\n", lthr.fdoc.text.c_str()));
             editor->m_plaintorich->set_inputhtml(true);
         } else {
-            LOGDEB1(("Preview: got plain %s\n", fdoc.text.c_str()));
+            LOGDEB1(("Preview: got plain %s\n", lthr.fdoc.text.c_str()));
             editor->m_plaintorich->set_inputhtml(false);
         }
-        list<string> richlst;
-        ToRichThread rthr(fdoc.text, m_hData, richlst, editor->m_plaintorich);
+
+        ToRichThread rthr(lthr.fdoc.text, m_hData, editor->m_plaintorich,
+                          qrichlst, this);
         connect(&rthr, SIGNAL(finished()), &loop, SLOT(quit()));
         rthr.start();
 
@@ -948,22 +743,18 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
         // Conversion to rich text done
         if (CancelCheck::instance().cancelState()) {
-            if (richlst.size() == 0 || richlst.front().length() == 0) {
+            if (qrichlst.size() == 0 || qrichlst.front().size() == 0) {
                 // We can't call closeCurrentTab here as it might delete
                 // the object which would be a nasty surprise to our
                 // caller.
                 return false;
             } else {
-                richlst.back() += "<b>Cancelled !</b>";
+                qrichlst.back() += "<b>Cancelled !</b>";
             }
         }
-        // Convert C++ string list to QString list
-        for (list<string>::iterator it = richlst.begin(); 
-             it != richlst.end(); it++) {
-            qrichlst.push_back(QString::fromUtf8(it->c_str(), it->length()));
-        }
     } else {
-        LOGDEB(("Preview: no hilighting\n"));
+        LOGDEB(("Preview: no hilighting, loading %d bytes\n",
+                int(lthr.fdoc.text.size())));
         // No plaintorich() call.  In this case, either the text is
         // html and the html quoting is hopefully correct, or it's
         // plain-text and there is no need to escape special
@@ -971,7 +762,8 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
         // top is displayed faster), but we must not cut tags, and
         // it's too difficult on html. For text we do the splitting on
         // a QString to avoid utf8 issues.
-        QString qr = QString::fromUtf8(fdoc.text.c_str(), fdoc.text.length());
+        QString qr = QString::fromUtf8(lthr.fdoc.text.c_str(),
+                                       lthr.fdoc.text.length());
         int l = 0;
         if (inputishtml) {
             qrichlst.push_back(qr);
@@ -984,6 +776,16 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
             }
         }
     }
+#else // For testing qtextedit bugs...
+    highlightTerms = true;
+    const char *textlist[] =
+        {
+            "Du plain text avec un\n <termtag>termtag</termtag> fin de ligne:",
+            "texte apres le tag\n",
+        };
+    const int listl = sizeof(textlist) / sizeof(char*);
+    for (int i = 0 ; i < listl ; i++)
+        qrichlst.push_back(QString::fromUtf8(textlist[i]));
 #endif
 
 
@@ -991,7 +793,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     // Load text into editor window.
     progress.setLabelText(tr("Loading preview text into editor"));
     qApp->processEvents();
-    for (list<QString>::iterator it = qrichlst.begin(); 
+    for (QStringList::iterator it = qrichlst.begin();
          it != qrichlst.end(); it++) {
         qApp->processEvents();
 
@@ -1016,10 +818,10 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     // Maybe the text was actually empty ? Switch to fields then. Else free-up 
     // the text memory in the loaded document. We still have a copy of the text
     // in editor->m_richtxt
-    bool textempty = fdoc.text.empty();
+    bool textempty = lthr.fdoc.text.empty();
     if (!textempty)
-        fdoc.text.clear(); 
-    editor->m_fdoc = fdoc;
+        lthr.fdoc.text.clear(); 
+    editor->m_fdoc = lthr.fdoc;
     editor->m_dbdoc = idoc;
     if (textempty)
         editor->displayFields();
@@ -1032,7 +834,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
         // there is an ipath that it won't understand, we need a temp file:
         theconfig->setKeyDir(path_getfather(fn));
         if (fn.empty() || !idoc.ipath.empty()) {
-            TempFile temp = lthr.imgtmp;
+            TempFile temp = lthr.tmpimg;
             if (temp) {
                 LOGDEB1(("Preview: load: got temp file from internfile\n"));
             } else if (!FileInterner::idocToFile(temp, string(), 
@@ -1089,8 +891,8 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 }
 
 PreviewTextEdit::PreviewTextEdit(QWidget* parent, const char* nm, Preview *pv) 
-    : QTextBrowser(parent), m_preview(pv), 
-      m_plaintorich(new PlainToRichQtPreview()), 
+    : QTextBrowser(parent), m_preview(pv),
+      m_plaintorich(new PlainToRichQtPreview()),
       m_dspflds(false), m_docnum(-1) 
 {
     setContextMenuPolicy(Qt::CustomContextMenu);
@@ -1099,11 +901,6 @@ PreviewTextEdit::PreviewTextEdit(QWidget* parent, const char* nm, Preview *pv)
             this, SLOT(createPopupMenu(const QPoint&)));
     setOpenExternalLinks(false);
     setOpenLinks(false);
-}
-
-PreviewTextEdit::~PreviewTextEdit()
-{
-    delete m_plaintorich;
 }
 
 void PreviewTextEdit::createPopupMenu(const QPoint& pos)

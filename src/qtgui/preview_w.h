@@ -56,7 +56,6 @@ class PreviewTextEdit : public PREVIEW_PARENTCLASS {
     Q_OBJECT;
 public:
     PreviewTextEdit(QWidget* parent, const char* name, Preview *pv);
-    virtual ~PreviewTextEdit();
     void moveToAnchor(const QString& name);
     enum DspType {PTE_DSPTXT, PTE_DSPFLDS, PTE_DSPIMG};
 
@@ -74,7 +73,7 @@ protected:
 
 private:
     Preview *m_preview;
-    PlainToRichQtPreview *m_plaintorich;
+    STD_SHARED_PTR<PlainToRichQtPreview> m_plaintorich;
     
     bool   m_dspflds;
     string m_url; // filename for this tab
