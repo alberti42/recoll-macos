@@ -153,6 +153,7 @@ copyunrtf()
     chkcp  $bindir/unrtf.exe               $FILTERS
     chkcp  $UNRTF/outputs/*.conf           $FILTERS/Share
     chkcp  $UNRTF/outputs/SYMBOL.charmap   $FILTERS/Share
+    chkcp $MINGWBIN/libiconv-2.dll $FILTERS
 }
 
 copymutagen()
