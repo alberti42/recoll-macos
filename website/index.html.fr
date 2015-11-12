@@ -105,7 +105,24 @@
 
       <h2>Nouvelles: </h2>
       <dl>
-        <dt>2014-10-01</dt>
+
+        <dt>2015-11-09</dt>
+
+        <dd>Recoll indexe Windows ! Il y a encore quelques éléments
+          manquants, comme l'indexation temps-réel, et la traduction
+          en Français, mais ça marche suffisamment bien pour être
+          essayé. Il y a un installeur standard, donc si vous n'aimez
+          pas, c'est facile à désinstaller...
+          Pas de traduction Française pour le moment. Il y
+          a <a href="pages/recoll-windows.html"> quelques
+            explications en Anglais sur l'installation </a> (triviale,
+            il faut just installer Recoll et ajouter Python 2.7), et
+          <a href="http://www.recoll.org/windows/recoll-setup-1.22.0-20151109.exe">
+            l'installeur est là</a>. Si vous l'essayez, dites moi ce
+            que vous en pensez !
+        </dd>
+        
+        <dt>2015-10-01</dt>
         <dd>Recoll 1.21.2 devient la version de production. La
         principale modification de la version 1.21 est l'utilisation
         d'un nouvel interpréteur pour le langage d'interrogation,
