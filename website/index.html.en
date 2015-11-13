@@ -99,12 +99,19 @@
       <dl>
 
         <dt>2015-11-09</dt>
-        <dd><span class="important">Recoll for
+        <dd>
+        <dd><a href="pics/windows-recoll.html">
+            <img align="left" width="100" alt="Recoll on MS-Windows" 
+                 src="pics/windows-recoll-thumb.png"></a>
+          <span class="important">Recoll for
             MS-Windows</span>. Still a few things missing (like
           real-time monitoring), but it does work, and it has a proper
           installer, so you can easily get rid of it if you don't like
-          it. <a href="pages/recoll-windows.html">Have a look.</a>. I
-          would love some feedback!
+          it. <a href="pages/recoll-windows.html">Have a look.</a>.
+          This is an almost-native port, based on Qt and the Windows
+          API, no need for Cygwin. Thanks to Christian Motz for
+          helping with the filter interface (and the rest).  I would
+          love some feedback!<br clear="all">
         </dd>
 
         <dt>2015-10-17</dt>
@@ -113,18 +120,6 @@
           skippedPaths variable contains elements with wildcards. This
           has no consequence except for the spurious error
           message.</dd>
-
-        <dt>2015-10-08</dt>
-        <dd><a href="pics/windows-recoll.html">
-            <img align="left" width="100" alt="Recoll on MS-Windows" 
-                 src="pics/windows-recoll-thumb.png"></a>
-          Recoll on Microsoft Windows ! This is still and a lot if
-          integration work remains (don't ask me for a package), but
-          the indexer and the GUI are mostly functional. This is an
-          almost-native port, based on Qt and the Windows API, no need
-          for Cygwin. Thanks to Christian Motz for helping with the
-          filter interface (and the rest). </dd>
-        <br clear="all">
 
         <dt>2015-10-01</dt>
         <dd>Release 1.21.2 is out, and replaces 1.20 as production

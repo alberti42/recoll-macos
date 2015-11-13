@@ -3025,6 +3025,10 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         <filename>ptrans</filename></link> configuration file, which
         can be edited by hand or from the GUI external indexes
       configuration dialog.</para>
+
+      <note><para>Due to a current bug, the GUI must be restarted
+      after changing the <filename>ptrans</filename> values (even when they
+      were changed from the GUI).</para></note>
   </sect1>
 
 
@@ -3296,19 +3300,15 @@ dir:recoll dir:src -dir:utils -dir:common
 
         <listitem><para><literal>mime</literal> or
             <literal>format</literal> for specifying the
-            MIME type. This one is quite special because you can specify
-            several values which will be OR'ed (the normal default for the
-            language is AND). Ex: <literal>mime:text/plain
-              mime:text/html</literal>. Specifying an explicit boolean
-            operator before a
-            <literal>mime</literal> specification is not supported and
-            will produce strange results. You can filter out certain types
-            by using negation (<literal>-mime:some/type</literal>), and you can
-            use wildcards in the value (<literal>mime:text/*</literal>).
-            Note that <literal>mime</literal> is
-            the ONLY field with an OR default. You do need to use
-            <literal>OR</literal> with <literal>ext</literal> terms for
-            example.</para> 
+            MIME type. These clauses are processed besides the normal
+            Boolean logic of the search. Multiple values will be OR'ed
+            (instead of the normal AND). You can specify types to be
+            excluded, with the usual <literal>-</literal>, and use
+            wildcards. Example: <replaceable>mime:text/*
+            -mime:text/plain</replaceable> 
+            Specifying an explicit boolean
+            operator before a <literal>mime</literal> specification is not
+            supported and will produce strange results. </para>
            </listitem>
 
         <listitem><para><literal>type</literal> or
@@ -3318,11 +3318,17 @@ dir:recoll dir:src -dir:utils -dir:common
             (<filename>mimeconf</filename>), and can be modified or
             extended. The default category names are those which permit
             filtering results in the main GUI screen. Categories are OR'ed
-            like MIME types above. This can't be negated with
-            <literal>-</literal> either.</para>
+            like MIME types above, and can be negated with
+            <literal>-</literal>.</para>
            </listitem>
 
       </itemizedlist>
+
+      <note><para>
+        <literal>mime</literal> is the <emphasis>only</emphasis> field with an
+        <literal>OR</literal> default. You do need to use
+        <literal>OR</literal> with <literal>ext</literal> terms for
+      example.</para> </note>
 
       <para>The document input handlers used while indexing have the
         possibility to create other fields with arbitrary names, and
