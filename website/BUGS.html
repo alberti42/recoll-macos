@@ -29,9 +29,13 @@
 later versions. Bugs listed in the topmost section may also exist in older
 versions.</i></p>
 
-<h2><a name="b_latest">recoll 1.20.2</a></h2>
+<h2><a name="b_latest">recoll 1.22.0</a></h2>
 <ul>
 
+  <li>The GUI must be restarted after changing the path translation
+    values (ptrans), even when they are changed from the GUI
+    preferences.</li>
+  
   <li>On old systems such as Debian Squeeze which use Evince version
 	2.x (not 3.x) as PDF viewer, the default "Open" command for PDF
 	files will not
@@ -85,13 +89,24 @@ versions.</i></p>
 
 <h2><a name="b_1_21_2">recoll 1.21.2</a></h2>
 <ul>
+  <li>Indexed file paths have a limit around 1010 after which the
+    results can't be properly displayed in the GUI (the files are
+    indexed and can be found, and displayed by a command line search,
+    but the GUI display is garbled).</li>
   <li>A bug in the verification of configuration file path variables
     generates spurious warnings from recollindex 
     when the skippedPaths variable contains elements with
     wildcards. This has no consequence except for the spurious error
     message.</li>
+  <li>Web cache: the GUI config tool capped the cache size at
+    1 GB, and actually reset a bigger size
+    utility.</li>
+  <li>The directory filter for advanced search in "Any Clause" mode:
+    would not filter but add an ORed clause.</li>
+  <li>Parentheses around phrases would trigger a syntax error.</li> 
+  <li>Fixed a few boundary conditions detected by VC++</li>
+  <li>External filters had no memory usage limit.</li>
 </ul>
-
 
 <h2><a name="b_1_20_1">recoll 1.20.1</a></h2>
 <ul>
