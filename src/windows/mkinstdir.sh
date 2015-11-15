@@ -153,7 +153,9 @@ copyunrtf()
     chkcp  $bindir/unrtf.exe               $FILTERS
     chkcp  $UNRTF/outputs/*.conf           $FILTERS/Share
     chkcp  $UNRTF/outputs/SYMBOL.charmap   $FILTERS/Share
-    chkcp $MINGWBIN/libiconv-2.dll $FILTERS
+    # libiconv2 is not present in qt, get it from mingw direct. is C, should
+    # be compatible
+    chkcp c:/MinGW/bin/libiconv-2.dll $FILTERS
 }
 
 copymutagen()
