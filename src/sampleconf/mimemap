@@ -18,6 +18,9 @@
 .cc  = text/x-c
 .cxx = text/x-c
 .hxx = text/x-c
+.cs = text/x-csharp
+.css = text/css
+.js = application/javascript
 .f   = text/x-fortran
 .py  = text/x-python
 .awk = application/x-awk

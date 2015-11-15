@@ -142,6 +142,9 @@ text/rtf = exec unrtf --nopict --html;mimetype=text/html
 text/x-c = internal
 text/x-c++ = internal
 text/x-c+ = internal
+text/x-csharp = internal text/plain
+text/css = internal text/plain
+application/javascript = internal text/plain
 text/x-csv = internal text/plain
 text/x-fictionbook = exec rclfb2
 text/x-gaim-log = exec rclgaim
