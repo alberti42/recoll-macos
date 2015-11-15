@@ -186,6 +186,7 @@
     <ClCompile Include="..\common\syngroups.cpp" />
     <ClCompile Include="..\common\textsplit.cpp" />
     <ClCompile Include="..\common\unacpp.cpp" />
+    <ClCompile Include="..\index\checkretryfailed.cpp" />
     <ClCompile Include="..\index\fetcher.cpp" />
     <ClCompile Include="..\index\fsfetcher.cpp" />
     <ClCompile Include="..\index\fsindexer.cpp" />
@@ -222,6 +223,8 @@
     <ClCompile Include="..\unac\unac.cpp" />
     <ClCompile Include="..\utils\appformime.cpp" />
     <ClCompile Include="..\utils\base64.cpp" />
+    <ClCompile Include="..\utils\cancelcheck.cpp" />
+    <ClCompile Include="..\utils\chrono.cpp" />
     <ClCompile Include="..\utils\circache.cpp" />
     <ClCompile Include="..\utils\conftree.cpp" />
     <ClCompile Include="..\utils\copyfile.cpp" />

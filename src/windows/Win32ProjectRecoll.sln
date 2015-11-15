@@ -4,15 +4,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Win32ProjectRecoll", "Win32ProjectRecoll.vcxproj", "{23FF40E1-BA87-4E5F-9B22-2EB760FF403D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7713CDF1-27B3-4F9B-B207-C7CEB801C24B} = {7713CDF1-27B3-4F9B-B207-C7CEB801C24B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "recollindex", "recollindex\recollindex.vcxproj", "{A513D65F-798C-4166-B66E-49F69ADA4F59}"
 	ProjectSection(ProjectDependencies) = postProject
 		{23FF40E1-BA87-4E5F-9B22-2EB760FF403D} = {23FF40E1-BA87-4E5F-9B22-2EB760FF403D}
+		{7713CDF1-27B3-4F9B-B207-C7CEB801C24B} = {7713CDF1-27B3-4F9B-B207-C7CEB801C24B}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "recollq", "recollq\recollq.vcxproj", "{C1D0CCD2-0015-44AC-A606-AC48BB80C133}"
 	ProjectSection(ProjectDependencies) = postProject
 		{23FF40E1-BA87-4E5F-9B22-2EB760FF403D} = {23FF40E1-BA87-4E5F-9B22-2EB760FF403D}
+		{7713CDF1-27B3-4F9B-B207-C7CEB801C24B} = {7713CDF1-27B3-4F9B-B207-C7CEB801C24B}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SolutionSettings", "SolutionSettings\SolutionSettings.vcxproj", "{7713CDF1-27B3-4F9B-B207-C7CEB801C24B}"

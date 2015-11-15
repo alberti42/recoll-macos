@@ -110,7 +110,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;__WIN32__;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(pthreads)\include;$(solutiondir)..\xaposix;$(solutiondir)..\utils;$(solutiondir)..\unac;$(solutiondir)..\rcldb;$(solutiondir)..\internfile;$(solutiondir)..\index;$(solutiondir)..\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(pthreads)\include;$(solutiondir)..\xaposix;$(solutiondir)..\utils;$(solutiondir)..\unac;$(solutiondir)..\rcldb;$(solutiondir)..\internfile;$(solutiondir)..\index;$(solutiondir)..\common;$(solutiondir)..\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4800</DisableSpecificWarnings>
     </ClCompile>
     <Link>

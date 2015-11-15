@@ -4,7 +4,7 @@
   <PropertyGroup Label="UserMacros">
     <pthreads>C:\recolldeps\pthreads-w32\Pre-built.2</pthreads>
     <libiconv>c:\recolldeps\iconv64</libiconv>
-    <xapian>C:\recolldeps\xapian\xapian-core-1.2.8</xapian>
+    <xapian>C:\recolldeps\xapian-core-1.2.21</xapian>
     <zlib>C:\recolldeps\zlib</zlib>
   </PropertyGroup>
   <PropertyGroup />
