@@ -120,24 +120,24 @@ class PDFExtractor:
         inheader = False
         inbody = False
         didcs = False
-        output = ''
-        cont = ''
-        for line in input.split('\n'):
+        output = b''
+        cont = b''
+        for line in input.split(b'\n'):
             line = cont + line
-            cont = ''
-            if re.search('</head>', line):
+            cont = b''
+            if re.search(b'</head>', line):
                 inheader = False
-            if re.search('</pre>', line):
+            if re.search(b'</pre>', line):
                 inbody = False
             if inheader:
                 if not didcs:
-                    output += '<meta http-equiv="Content-Type"' + \
-                              'content="text/html; charset=UTF-8">\n'
+                    output += b'<meta http-equiv="Content-Type"' + \
+                              b'content="text/html; charset=UTF-8">\n'
                     didcs = True
 
-                m = re.search(r'(.*<title>)(.*)(<\/title>.*)', line)
+                m = re.search(rb'(.*<title>)(.*)(<\/title>.*)', line)
                 if not m:
-                    m = re.search(r'(.*content=")(.*)(".*/>.*)', line)
+                    m = re.search(rb'(.*content=")(.*)(".*/>.*)', line)
                 if m:
                     line = m.group(1) + self.em.htmlescape(m.group(2)) + \
                            m.group(3)
@@ -145,7 +145,7 @@ class PDFExtractor:
                 # Recoll treats "Subject" as a "title" element
                 # (based on emails). The PDF "Subject" metadata
                 # field is more like an HTML "description"
-                line = re.sub('name="Subject"', 'name="Description"', line, 1)
+                line = re.sub(b'name="Subject"', b'name="Description"', line, 1)
 
             elif inbody:
                 # Remove end-of-line hyphenation. It's not clear that
@@ -158,12 +158,12 @@ class PDFExtractor:
                         #cont = m.group(2).rstrip('-')
                 line = self.em.htmlescape(line)
                 
-            if re.search('<head>', line):
+            if re.search(b'<head>', line):
                 inheader = True
-            if re.search('<pre>', line):
+            if re.search(b'<pre>', line):
                 inbody = True
 
-            output += line + '\n'
+            output += line + b'\n'
 
         return output
             

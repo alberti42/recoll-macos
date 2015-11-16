@@ -21,7 +21,7 @@ class TxtDump:
 
         fn = params["filename:"]
         # No charset, so recoll will have to use its config to guess it
-        txt = '<html><head><title></title></head><body><pre>'
+        txt = b'<html><head><title></title></head><body><pre>'
         try:
             f = open(fn, "rb")
             txt += self.em.htmlescape(f.read())
@@ -29,7 +29,7 @@ class TxtDump:
             self.em.rclog("TxtDump: %s : %s" % (fn, err))
             return (False, "", "", rclexecm.RclExecM.eofnow)
             
-        txt += '</pre></body></html>'
+        txt += b'</pre></body></html>'
         return (True, txt, "", rclexecm.RclExecM.eofnext)
         
     ###### File type handler api, used by rclexecm ---------->

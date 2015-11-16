@@ -32,13 +32,17 @@ class InfoExtractor:
         nodename, docdata = self.contents[index]
         nodename = self.em.htmlescape(nodename)
         docdata = self.em.htmlescape(docdata)
+        print("type(docdata) = %s type(nodename) = %s"% \
+              (type(docdata), type(nodename)), file=sys.stderr)
         # strange whitespace to avoid changing the module tests (same as old)
-        docdata = b'\n<html>\n  <head>\n      <title>' + nodename + \
+        docdata = b'\n<html>\n  <head>\n      <title>' + \
+                  nodename + \
                   b'</title>\n' + \
-                  '      <meta name="rclaptg" content="gnuinfo">\n' + \
+                  b'      <meta name="rclaptg" content="gnuinfo">\n' + \
                   b'   </head>\n   <body>\n' + \
                   b'   <pre style="white-space: pre-wrap">\n   ' + \
-                  docdata + b'\n   </pre></body>\n</html>\n'
+                  docdata + \
+                  b'\n   </pre></body>\n</html>\n'
 
         iseof = rclexecm.RclExecM.noteof
         if self.currentindex >= len(self.contents) -1:

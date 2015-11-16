@@ -23,15 +23,15 @@ class TarExtractor:
         self.namen = []
 
     def extractone(self, ipath):
-        docdata = ""
+        docdata = b''
         try:
             info = self.tar.getmember(ipath)
             if info.size > self.em.maxmembersize:
                 # skip
-                docdata = ""
+                docdata = b''
                 self.em.rclog("extractone: entry %s size %d too big" %
                               (ipath, info.size))
-                docdata = "" # raise TarError("Member too big")
+                docdata = b'' # raise TarError("Member too big")
             else:
                 docdata = self.tar.extractfile(ipath).read()
             ok = True
@@ -45,7 +45,7 @@ class TarExtractor:
     def openfile(self, params):
         self.currentindex = -1
         try:
-            self.tar = tarfile.open(name=params["filename:"],mode='r')
+            self.tar = tarfile.open(name=params["filename:"], mode='r')
             #self.namen = [ y.name for y in filter(lambda z:z.isfile(),self.tar.getmembers())]
             self.namen = [ y.name for y in [z for z in self.tar.getmembers() if z.isfile()]]
 

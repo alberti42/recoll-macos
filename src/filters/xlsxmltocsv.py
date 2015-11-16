@@ -1,14 +1,33 @@
 #!/usr/bin/env python2
+# Copyright (C) 2015 J.F.Dockes
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the
+#   Free Software Foundation, Inc.,
+#   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 # Transform XML output from xls-dump.py into csv format.
-# Note: msodumper is not compatible with python3.
+#
+# Note: this would be difficult to make compatible with python 3 <= 3.4
+# because of the use of % interpolation on what should be bytes.
+# The python2 restriction is not a big issue at this point because
+# msodumper is not compatible with python3 anyway
+# % interpolation for bytes is planned for python 3.5, at which point
+# porting this module will become trivial.
 
 from __future__ import print_function
 
 import sys
 import xml.sax
-sys.path.append(sys.path[0]+"/msodump.zip")
-from msodumper.globals import error
 
 dtt = True
 
@@ -62,7 +81,7 @@ if __name__ == '__main__':
         xml.sax.parse(sys.stdin, handler)
         print(handler.output)
     except BaseException as err:
-        error("xml-parse: %s\n" % (str(sys.exc_info()[:2]),))
+        print("xml-parse: %s\n" % (str(sys.exc_info()[:2]),), file=sys.stderr)
         sys.exit(1)
 
     sys.exit(0)
