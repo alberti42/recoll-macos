@@ -1,14 +1,21 @@
 #!/bin/sh
 
-# Check /usr/bin and /usr/local/bin modification date against recorded
-# state, as recorded inside ~/.config/Recoll.org/needidxretrydate
+# This script is called by recollindex to determine if it would be
+# worth retrying files which previously failed to index.
+#
+# This is the default implementation, it is pointed to by the
+# 'checkneedretryindexscript' variable in the default recoll.conf
+#
+# The script exits with 0 if retrying should be performed (something
+# changed), 1 else.
+#
+# We check /usr/bin and /usr/local/bin modification date against the
+# previous value recorded inside ~/.config/Recoll.org/needidxretrydate
 #
 # If any argument is given, we record the new state instead of
 # generating it (this should be used at the end of an indexing pass
 # with retry set).
 #
-# The script exits with 0 if retrying should be performed (something
-# changed), 1 else.
 
 # Bin dirs to be tested:
 bindirs="/usr/bin /usr/local/bin $HOME/bin /opt/*/bin"
