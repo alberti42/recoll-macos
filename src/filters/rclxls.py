@@ -1,7 +1,9 @@
 #!/usr/bin/env python2
 
 # Extractor for Excel files.
-# Mso-dumper is not compatible with Python3
+# Mso-dumper is not compatible with Python3. We use sys.executable to
+# start the actual extractor, so we need to use python2 too.
+
 import rclexecm
 import rclexec1
 import xlsxmltocsv
@@ -48,7 +50,7 @@ class XLSFilter:
         cmd = rclexecm.which("xls-dump.py")
         if cmd:
             # xls-dump.py often exits 1 with valid data. Ignore exit value
-            return (["python", cmd, "--dump-mode=canonical-xml", \
+            return ([sys.executable, cmd, "--dump-mode=canonical-xml", \
                      "--utf-8", "--catch"],
                     XLSProcessData(self.em), rclexec1.Executor.opt_ignxval)
         else:

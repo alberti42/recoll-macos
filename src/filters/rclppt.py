@@ -1,8 +1,8 @@
 #!/usr/bin/env python2
 
 # Recoll PPT text extractor
-# Msodump is not compatible with Python3 AFAIK, so this is stuck to
-# Python2 too
+# Mso-dumper is not compatible with Python3. We use sys.executable to
+# start the actual extractor, so we need to use python2 too.
 
 from __future__ import print_function
 
@@ -46,7 +46,7 @@ class PPTFilter:
         cmd = rclexecm.which("ppt-dump.py")
         if cmd:
             # ppt-dump.py often exits 1 with valid data. Ignore exit value
-            return (["python", cmd, "--no-struct-output", "--dump-text"],
+            return ([sys.executable, cmd, "--no-struct-output", "--dump-text"],
                     PPTProcessData(self.em), rclexec1.Executor.opt_ignxval)
         else:
             return ([], None)
