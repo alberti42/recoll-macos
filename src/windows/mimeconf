@@ -154,12 +154,13 @@ text/x-python = exec python rclpython
 text/x-shellscript = internal text/plain
 text/x-srt = internal text/plain
 
-application/xml = execm python rclxml.py
-text/xml = execm python rclxml.py
-# Using these instead of the two above would index all parameter and tag
-# names, attribute values etc, instead of just the text content.
-#application/xml = internal text/plain
-#text/xml = internal text/plain
+# Generic XML is best indexed as text, else it generates too many errors
+# All parameter and tag names, attribute values etc, are indexed as
+# text. rclxml.py tries to just index the text content.
+#application/xml = execm rclxml.py
+#text/xml = execm rclxml.py
+application/xml = internal text/plain
+text/xml = internal text/plain
 
 ## #############################################
 # Icons to be used in the result list if required by gui config
