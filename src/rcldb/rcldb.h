@@ -456,6 +456,9 @@ class Db {
     }
     bool doFlush();
 
+    // Use empty fn for no synonyms
+    bool setSynGroupsFile(const std::string& fn);
+    
     /* This has to be public for access by embedded Query::Native */
     Native *m_ndb; 
 private:
@@ -477,13 +480,20 @@ private:
     // First fs occup check ?
     int         m_occFirstCheck;
 
+    // Synonym groups. There is no strict reason that this has to be
+    // an Rcl::Db member, as it is only used when building each It
+    // could be a SearchData member, or even a parameter to
+    // Query::setQuery(). Otoh, building the syngroups structure from
+    // a file may be expensive and it's unlikely to change with every
+    // query, so it makes sense to cache it, and Rcl::Db is not a bad
+    // place for this.
+    SynGroups m_syngroups;
+
     /***************
      * Parameters cached out of the configuration files. Logically const 
      * after init */
     // Stop terms: those don't get indexed.
     StopList m_stops;
-    // Synonym groups
-    SynGroups m_syngroups;
 
     // Truncation length for stored meta fields
     int         m_idxMetaStoredLen;

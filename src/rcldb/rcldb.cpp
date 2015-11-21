@@ -764,9 +764,6 @@ bool Db::open(OpenMode mode, OpenError *error)
     }
     if (!m_config->getStopfile().empty())
 	m_stops.setFile(m_config->getStopfile());
-    // Synonyms are only used at query time for now
-    if (mode == DbRO)
-	m_syngroups.setfile(m_config->getSynGroupsFile());
 
     string dir = m_config->getDbDir();
     string ermsg;
@@ -1241,6 +1238,11 @@ void Db::setAbstractParams(int idxtrunc, int syntlen, int syntctxlen)
 	m_synthAbsWordCtxLen = syntctxlen;
 }
 
+bool Db::setSynGroupsFile(const string& fn)
+{
+    return m_syngroups.setfile(fn);
+}
+    
 static const string cstr_nc("\n\r\x0c\\");
 #define RECORD_APPEND(R, NM, VAL) {R += NM + "=" + VAL + "\n";}
 

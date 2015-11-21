@@ -270,16 +270,10 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
                 exp1.swap(lexp);
                 sort(lexp.begin(), lexp.end());
                 lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
-                LOGDEB(("ExpTerm: stemexp: %s\n", 
+                LOGDEB(("ExpTerm: stemexp: %s\n",
                         stringsToString(lexp).c_str()));
             }
 
-            // Expand the result for synonyms. Note that doing it here
-            // means that multi-term synonyms will not work
-            // (e.g. stakhanovist -> "hard at work". We would have to
-            // separate the multi-word expansions for our caller to
-            // add them as phrases to the query. Not impossible, but
-            // let's keep it at single words for now.
             if (m_syngroups.ok() && (typ_sens & ET_SYNEXP)) {
                 LOGDEB(("ExpTerm: got syngroups\n"));
                 vector<string> exp1(lexp);
