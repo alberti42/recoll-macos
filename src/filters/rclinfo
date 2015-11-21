@@ -32,8 +32,6 @@ class InfoExtractor:
         nodename, docdata = self.contents[index]
         nodename = self.em.htmlescape(nodename)
         docdata = self.em.htmlescape(docdata)
-        print("type(docdata) = %s type(nodename) = %s"% \
-              (type(docdata), type(nodename)), file=sys.stderr)
         # strange whitespace to avoid changing the module tests (same as old)
         docdata = b'\n<html>\n  <head>\n      <title>' + \
                   nodename + \
