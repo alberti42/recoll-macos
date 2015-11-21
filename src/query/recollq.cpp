@@ -119,6 +119,7 @@ static char usage [] =
 "   -D : sort descending\n"
 " -s stemlang : set stemming language to use (must exist in index...)\n"
 "    Use -s \"\" to turn off stem expansion\n"
+" -T <synonyms file>: use the parameter (Thesaurus) for word expansion"
 " -i <dbdir> : additional index, several can be given\n"
 " -e use url encoding (%xx) for urls\n"
 " -F <field name list> : output exactly these fields for each result.\n"
@@ -148,21 +149,22 @@ static int     op_flags;
 #define OPT_c     0x8
 #define OPT_D     0x10
 #define OPT_d     0x20
-#define OPT_f     0x40
-#define OPT_i     0x80
-#define OPT_l     0x100
-#define OPT_m     0x200
-#define OPT_n     0x400
-#define OPT_o     0x800
-#define OPT_P     0x1000
-#define OPT_Q     0x2000
-#define OPT_q     0x4000
-#define OPT_S     0x8000
-#define OPT_s     0x10000
-#define OPT_t     0x20000
-#define OPT_e     0x40000
-#define OPT_F     0x80000
-#define OPT_N     0x100000
+#define OPT_e     0x40
+#define OPT_F     0x80
+#define OPT_f     0x100
+#define OPT_i     0x200
+#define OPT_l     0x400
+#define OPT_m     0x800
+#define OPT_N     0x1000
+#define OPT_n     0x2000
+#define OPT_o     0x4000
+#define OPT_P     0x8000
+#define OPT_Q     0x10000
+#define OPT_q     0x20000
+#define OPT_S     0x40000
+#define OPT_s     0x80000
+#define OPT_T     0x100000
+#define OPT_t     0x200000
 
 int recollq(RclConfig **cfp, int argc, char **argv)
 {
@@ -172,7 +174,8 @@ int recollq(RclConfig **cfp, int argc, char **argv)
     list<string> extra_dbs;
     string sf;
     vector<string> fields;
-
+    string syngroupsfn;
+    
     int firstres = 0;
     int maxcount = 2000;
     thisprog = argv[0];
@@ -235,6 +238,9 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 		stemlang = *(++argv);
 		argc--; goto b1;
             case 't':   op_flags |= OPT_t; break;
+	    case 'T':	op_flags |= OPT_T; if (argc < 2)  Usage();
+		syngroupsfn = *(++argv);
+		argc--; goto b1;
             default: Usage();   break;
             }
     b1: argc--; argv++;
@@ -267,7 +273,13 @@ endopts:
             }
         }
     }
-
+    if (!syngroupsfn.empty()) {
+        if (!rcldb.setSynGroupsFile(syngroupsfn)) {
+            cerr << "Can't use synonyms file: " << syngroupsfn << endl;
+            exit(1);
+        }
+    }
+    
     if (!rcldb.open(Rcl::Db::DbRO)) {
 	cerr << "Cant open database in " << rclconfig->getDbDir() << 
 	    " reason: " << rcldb.getReason() << endl;
