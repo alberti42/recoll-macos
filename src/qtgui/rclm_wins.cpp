@@ -255,17 +255,8 @@ void RclMain::showUIPrefs()
 
 void RclMain::showExtIdxDialog()
 {
-    if (uiprefs == 0) {
-	uiprefs = new UIPrefsDialog(this);
-	connect(new QShortcut(quitKeySeq, uiprefs), SIGNAL (activated()), 
-		this, SLOT (fileExit()));
-	connect(uiprefs, SIGNAL(uiprefsDone()), this, SLOT(setUIPrefs()));
-    } else {
-	// Close and reopen, in hope that makes us visible...
-	uiprefs->close();
-    }
+    showUIPrefs();
     uiprefs->tabWidget->setCurrentIndex(3);
-    uiprefs->show();
 }
 
 void RclMain::showAboutDialog()
