@@ -2994,9 +2994,9 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
     <programlisting>
 hi hello "good morning"
 
-# not sure about до свидания though. Is this english ?
+# not sure about "au revoir" though. Is this english ?
 bye goodbye "see you" \
-  "до свидания" 
+  "au revoir" 
     </programlisting>
     As usual lines beginning with a <literal>#</literal> are comments,
     empty lines are ignored, and lines can be continued by ending them with
