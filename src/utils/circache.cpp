@@ -341,34 +341,33 @@ public:
             return  path_cat(d, "circache.crch");
         }
 
-    bool writefirstblock()
-        {
-            if (m_fd < 0) {
-                m_reason << "writefirstblock: not open ";
-                return false;
-            }
-
-            ostringstream s;
-            s << 
-                "maxsize = " << m_maxsize << "\n" <<
-                "oheadoffs = " << m_oheadoffs << "\n" <<
-                "nheadoffs = " << m_nheadoffs << "\n" <<
-                "npadsize = " << m_npadsize   << "\n" <<
-                "unient = " << m_uniquentries << "\n" <<
-                "                                                              " <<
-                "                                                              " <<
-                "                                                              " <<
-                "\0";
-
-            int sz = int(s.str().size());
-            assert(sz < CIRCACHE_FIRSTBLOCK_SIZE);
-            lseek(m_fd, 0, 0);
-            if (write(m_fd, s.str().c_str(), sz) != sz) {
-                m_reason << "writefirstblock: write() failed: errno " << errno;
-                return false;
-            }
-            return true;
+    bool writefirstblock() {
+        if (m_fd < 0) {
+            m_reason << "writefirstblock: not open ";
+            return false;
         }
+
+        ostringstream s;
+        s << 
+            "maxsize = " << m_maxsize << "\n" <<
+            "oheadoffs = " << m_oheadoffs << "\n" <<
+            "nheadoffs = " << m_nheadoffs << "\n" <<
+            "npadsize = " << m_npadsize   << "\n" <<
+            "unient = " << m_uniquentries << "\n" <<
+            "                                                              " <<
+            "                                                              " <<
+            "                                                              " <<
+            "\0";
+
+        int sz = int(s.str().size());
+        assert(sz < CIRCACHE_FIRSTBLOCK_SIZE);
+        lseek(m_fd, 0, 0);
+        if (write(m_fd, s.str().c_str(), sz) != sz) {
+            m_reason << "writefirstblock: write() failed: errno " << errno;
+            return false;
+        }
+        return true;
+    }
 
     bool readfirstblock()
         {
@@ -1354,7 +1353,8 @@ static bool inflateToDynBuf(void* inp, UINT inlen, void **outpp, UINT *outlenp)
 using namespace std;
 
 // Copy all entries from occ to ncc. Both are already open.
-bool copyall(RefCntr<CirCache> occ, RefCntr<CirCache> ncc, int& nentries)
+bool copyall(STD_SHARED_PTR<CirCache> occ,
+             STD_SHARED_PTR<CirCache> ncc, int& nentries)
 {
     bool eof = false;
     if (!occ->rewind(eof)) {
@@ -1393,6 +1393,12 @@ bool copyall(RefCntr<CirCache> occ, RefCntr<CirCache> ncc, int& nentries)
     return true;
 }
 
+#warning resizecc is not useful, create(newsize) works !
+
+// Wrote the following at a point where I thought that simple resizing
+// did not work. Upon further study (or updates?), it appears it does
+// ! So the following code is not useful actually
+
 // Resize circache. This can't be done easily if the write point is
 // inside the file (we already reached the old max size). We create a
 // new file with the new size and copy the old entries into it. The
@@ -1401,7 +1407,7 @@ bool copyall(RefCntr<CirCache> occ, RefCntr<CirCache> ncc, int& nentries)
 bool resizecc(const string& dir, int newmbs)
 {
     // Create object for existing file and get the file name
-    RefCntr<CirCache> occ(new CirCache(dir));
+    STD_SHARED_PTR<CirCache> occ(new CirCache(dir));
     string ofn = occ->getpath();
 
     // Check for previous backup
@@ -1426,7 +1432,7 @@ bool resizecc(const string& dir, int newmbs)
             return false;
         }
     }
-    RefCntr<CirCache> ncc(new CirCache(tmpdir));
+    STD_SHARED_PTR<CirCache> ncc(new CirCache(tmpdir));
     string nfn = ncc->getpath();
     if (!ncc->create(off_t(newmbs) * 1000 * 1024, 
                      CirCache::CC_CRUNIQUE | CirCache::CC_CRTRUNCATE)) {
@@ -1443,8 +1449,8 @@ bool resizecc(const string& dir, int newmbs)
 
     // Done with our objects here, there is no close() method, so
     // delete them
-    occ.release();
-    ncc.release();
+    occ.reset();
+    ncc.reset();
 
     // Create backup by renaming the old file
     if (rename(ofn.c_str(), backupfn.c_str()) < 0) {
@@ -1469,13 +1475,13 @@ bool resizecc(const string& dir, int newmbs)
 bool appendcc(const string ddir, const string& sdir)
 {
     // Open source file
-    RefCntr<CirCache> occ(new CirCache(sdir));
+    STD_SHARED_PTR<CirCache> occ(new CirCache(sdir));
     if (!occ->open(CirCache::CC_OPREAD)) {
         cerr << "Open failed in " << sdir << " : " << occ->getReason() << endl;
         return false;
     }
     // Open dest file
-    RefCntr<CirCache> ncc(new CirCache(ddir));
+    STD_SHARED_PTR<CirCache> ncc(new CirCache(ddir));
     if (!ncc->open(CirCache::CC_OPWRITE)) {
         cerr << "Open failed in " << ddir << " : " << ncc->getReason() << endl;
         return false;
@@ -1487,8 +1493,8 @@ bool appendcc(const string ddir, const string& sdir)
         return false;
     }
 
-    occ.release();
-    ncc.release();
+    occ.reset();
+    ncc.reset();
 
     cout << "Copy done, copied " << nentries << " entries " << endl;
     return true;
@@ -1497,7 +1503,7 @@ bool appendcc(const string ddir, const string& sdir)
 static char *thisprog;
 
 static char usage [] =
-" -c [-u] <dirname> : create\n"
+" -c [-u] <dirname> <sizekbs>: create\n"
 " -p <dirname> <apath> [apath ...] : put files\n"
 " -d <dirname> : dump\n"
 " -g [-i instance] [-D] <dirname> <udi>: get\n"
@@ -1572,10 +1578,14 @@ int main(int argc, char **argv)
     CirCache cc(dir);
 
     if (op_flags & OPT_c) {
+        if (argc != 1) {
+            Usage();
+        }
+        off_t sizekb = atoi(*argv++);argc--;
         int flags = 0;
         if (op_flags & OPT_u)
             flags |= CirCache::CC_CRUNIQUE;
-        if (!cc.create(100*1024, flags)) {
+        if (!cc.create(sizekb*1024, flags)) {
             cerr << "Create failed:" << cc.getReason() << endl;
             exit(1);
         }

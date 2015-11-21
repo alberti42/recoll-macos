@@ -149,7 +149,12 @@ ConfBeaglePanelW::ConfBeaglePanelW(QWidget *parent, ConfNull *config)
     ConfLink lnk3(new ConfLinkRclRep(config, "webcachemaxmbs"));
     ConfParamIntW *cp3 =
         new ConfParamIntW(this, lnk3, tr("Max. size for the web store (MB)"),
-		      tr("Entries will be recycled once the size is reached"),
+		      tr("Entries will be recycled once the size is reached."
+                         "<br>"
+                         "Only increasing the size really makes sense because "
+                         "reducing the value will not truncate an existing "
+                         "file (only waste space at the end)."
+                          ),
                           -1, 1000*1000); // Max 1TB...
     cp3->setEnabled(cp1->m_cb->isChecked());
     connect(cp1->m_cb, SIGNAL(toggled(bool)), cp3, SLOT(setEnabled(bool)));
