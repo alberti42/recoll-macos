@@ -2975,6 +2975,52 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
 </programlisting>
       </sect1>
 
+  <sect1 id="RCL.SEARCH.SYNONYMS">
+    <title>Using Synonyms (&RCL; 1.22 and later)</title>
+
+    <para>There are a number of different uses for synonyms in text
+    search. They can be used at index time (either to increase or decrease
+    the number of indexed terms), or at query time, to reduce user terms to
+    a set of canonical ones, or to expand queries to match texts containing
+    synonyms of the user terms.</para>
+    
+    <para>Only the last approach is used in &RCL;. Synonym groups can be
+    defined so that a user query term which is found to be part of a
+    synonym group will be optionally expanded into an OR query for all
+    synonyms.</para>
+
+    <para>In practise, synonym groups are defined inside ordinary text
+    files. Each line in the file defines a group. Example:
+    <programlisting>
+hi hello "good morning"
+
+# not sure about до свидания though. Is this english ?
+bye goodbye "see you" \
+  "до свидания" 
+    </programlisting>
+    As usual lines beginning with a <literal>#</literal> are comments,
+    empty lines are ignored, and lines can be continued by ending them with
+    a backslash.
+    </para>
+
+    <para>The synonyms are searched for matches with user terms after these
+    are stem-expanded, but the contents of the synonyms file itself is not
+    subjected to stem expansion (1.22). This means that a match
+    will not be found if the form present in the synonyms file is not
+    present anywhere in the document set.</para>
+    
+    <para>Multi-word synonyms are supported, but be aware that these will
+    generate phrase queries, which may degrade performance (and also, no
+    stemming).</para>
+
+    <para>A synonyms file can be specified in the GUI preferences, or as an
+    option to <command>recollq</command>.</para>
+    
+    <para>This feature is new in &RCL; 1.22 and will probably need to be
+    refined after some user feedback.</para>
+    
+  </sect1>
+      
   <sect1 id="RCL.SEARCH.PTRANS">
     <title>Path translations</title>
     
