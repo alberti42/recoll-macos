@@ -46,9 +46,9 @@ public:
     }
     bool ok;
     // Term to group num 
-    STD_UNORDERED_MAP<string, int> terms;
+    STD_UNORDERED_MAP<string, unsigned int> terms;
     // Group num to group
-    STD_UNORDERED_MAP<int, vector<string> > groups;
+    vector<vector<string> > groups;
 };
 
 bool SynGroups::ok() 
@@ -61,8 +61,6 @@ SynGroups::~SynGroups()
     delete m;
 }
 
-const int LL = 1024;
-
 SynGroups::SynGroups()
     : m(new Internal)
 {
@@ -72,13 +70,18 @@ bool SynGroups::setfile(const string& fn)
 {
     LOGDEB(("SynGroups::setfile(%s)\n", fn.c_str()));
     if (!m) {
-	LOGERR(("SynGroups:setfile:: new Internal failed: no mem ?\n"));
-	return false;
+        m = new Internal;
+        if (!m) {
+            LOGERR(("SynGroups:setfile:: new Internal failed: no mem ?\n"));
+            return false;
+        }
     }
 
-    // Don't set ok to true.
-    if (fn.empty())
+    if (fn.empty()) {
+        delete m;
+        m = 0;
 	return true;
+    }
 
     ifstream input;
     input.open(fn.c_str(), ios::in);
@@ -88,18 +91,19 @@ bool SynGroups::setfile(const string& fn)
 	return false;
     }	    
 
-    char cline[LL];
+    string cline;
     bool appending = false;
     string line;
     bool eof = false;
     int lnum = 0;
 
     for (;;) {
-        cline[0] = 0;
-	input.getline(cline, LL-1);
+        cline.clear();
+	getline(input, cline);
 	if (!input.good()) {
 	    if (input.bad()) {
-                LOGDEB(("Parse: input.bad()\n"));
+                LOGERR(("Syngroup::setfile(%s):Parse: input.bad()\n",
+                        fn.c_str()));
 		return false;
 	    }
 	    // Must be eof ? But maybe we have a partial line which
@@ -110,10 +114,11 @@ bool SynGroups::setfile(const string& fn)
 	lnum++;
 
         {
-            size_t ll = strlen(cline);
-            while (ll > 0 && (cline[ll-1] == '\n' || cline[ll-1] == '\r')) {
-                cline[ll-1] = 0;
-                ll--;
+            string::size_type pos = cline.find_last_not_of("\n\r");
+            if (pos == string::npos) {
+                cline.clear();
+            } else if (pos != cline.length()-1) {
+                cline.erase(pos+1);
             }
         }
 
@@ -147,18 +152,18 @@ bool SynGroups::setfile(const string& fn)
 	if (words.empty())
 	    continue;
 	if (words.size() == 1) {
-	    LOGDEB(("SynGroups:setfile: single term group at line %d ??\n",
-		    lnum));
+	    LOGERR(("Syngroup::setfile(%s):single term group at line %d ??\n",
+		    fn.c_str(), lnum));
 	    continue;
 	}
 
-	m->groups[lnum] = words;
+	m->groups.push_back(words);
 	for (vector<string>::const_iterator it = words.begin();
 	     it != words.end(); it++) {
-	    m->terms[*it] = lnum;
+	    m->terms[*it] = m->groups.size()-1;
 	}
-	LOGDEB(("SynGroups::setfile: group: [%s]\n", 
-		stringsToString(m->groups[lnum]).c_str()));
+	LOGDEB1(("SynGroups::setfile: group: [%s]\n", 
+		stringsToString(m->groups.back()).c_str()));
     }
     m->ok = true;
     return true;
@@ -170,28 +175,26 @@ vector<string> SynGroups::getgroup(const string& term)
     if (!ok())
 	return ret;
 
-    STD_UNORDERED_MAP<string, int>::const_iterator it1 = m->terms.find(term);
+    STD_UNORDERED_MAP<string, unsigned int>::const_iterator it1 =
+        m->terms.find(term);
     if (it1 == m->terms.end()) {
 	LOGDEB1(("SynGroups::getgroup: [%s] not found in direct map\n", 
 		 term.c_str()));
 	return ret;
     }
 
-    // Group num to group
-    STD_UNORDERED_MAP<int, vector<string> >::const_iterator it2 = 
-	m->groups.find(it1->second);
-    
-    if (it2 == m->groups.end()) {
-	LOGERR(("SynGroups::getgroup: %s found in direct map but no group\n",
-		term.c_str()));
-	return ret;
+    unsigned int idx = it1->second;
+    if (idx >= m->groups.size()) {
+        LOGERR(("SynGroups::getgroup: line index higher than line count !\n"));
+        return ret;
     }
-    return it2->second;
+    return m->groups[idx];
 }
 
 #else
 
 #include "syngroups.h"
+#include "debuglog.h"
 
 #include <string>
 #include <iostream>
@@ -229,7 +232,10 @@ int main(int argc, char **argv)
     string fn = *argv++;argc--;
     string word = *argv++;argc--;
 
-    SynGroups syns(fn);
+    DebugLog::getdbl()->setloglevel(DEBDEB1);
+    DebugLog::setfilename("stderr");
+    SynGroups syns;
+    syns.setfile(fn);
     if (!syns.ok()) {
 	cerr << "Initialization failed\n";
 	return 1;
