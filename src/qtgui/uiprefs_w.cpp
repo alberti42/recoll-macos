@@ -45,7 +45,6 @@
 
 #include "recoll.h"
 #include "guiutils.h"
-#include "rcldb.h"
 #include "rclconfig.h"
 #include "pathut.h"
 #include "uiprefs_w.h"
@@ -73,6 +72,7 @@ void UIPrefsDialog::init()
     connect(stylesheetPB, SIGNAL(clicked()),this, SLOT(showStylesheetDialog()));
     connect(resetSSPB, SIGNAL(clicked()), this, SLOT(resetStylesheet()));
     connect(snipCssPB, SIGNAL(clicked()),this, SLOT(showSnipCssDialog()));
+    connect(synFilePB, SIGNAL(clicked()),this, SLOT(showSynFileDialog()));
     connect(resetSnipCssPB, SIGNAL(clicked()), this, SLOT(resetSnipCss()));
 
     connect(idxLV, SIGNAL(itemSelectionChanged()),
@@ -214,6 +214,15 @@ void UIPrefsDialog::setFromPrefs()
     autoSuffsCB->setChecked(prefs.autoSuffsEnable);
     autoSuffsLE->setText(prefs.autoSuffs);
 
+    synFileCB->setChecked(prefs.synFileEnable);
+    synFile = prefs.synFile;
+    if (synFile.isEmpty()) {
+	synFilePB->setText(tr("Choose"));
+    } else {
+	string nm = path_getsimple((const char *)synFile.toLocal8Bit());
+	synFilePB->setText(QString::fromLocal8Bit(nm.c_str()));
+    }
+
     // Initialize the extra indexes listboxes
     idxLV->clear();
     for (list<string>::iterator it = prefs.allExtraDbs.begin(); 
@@ -326,10 +335,12 @@ void UIPrefsDialog::accept()
     prefs.syntAbsLen = syntlenSB->value();
     prefs.syntAbsCtx = syntctxSB->value();
 
-    
     prefs.autoSuffsEnable = autoSuffsCB->isChecked();
     prefs.autoSuffs = autoSuffsLE->text();
 
+    prefs.synFileEnable = synFileCB->isChecked();
+    prefs.synFile = synFile;
+    
     prefs.allExtraDbs.clear();
     prefs.activeExtraDbs.clear();
     for (int i = 0; i < idxLV->count(); i++) {
@@ -439,6 +450,15 @@ void UIPrefsDialog::resetSnipCss()
 {
     snipCssFile = "";
     snipCssPB->setText(tr("Choose"));
+}
+
+void UIPrefsDialog::showSynFileDialog()
+{
+    synFile = myGetFileName(false, "Select synonyms file", true);
+    if (synFile.isEmpty())
+        return;
+    string nm = path_getsimple((const char *)synFile.toLocal8Bit());
+    synFilePB->setText(QString::fromLocal8Bit(nm.c_str()));
 }
 
 void UIPrefsDialog::resetReslistFont()

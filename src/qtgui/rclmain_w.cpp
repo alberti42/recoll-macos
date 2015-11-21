@@ -153,6 +153,9 @@ void RclMain::init()
     // Set the focus to the search terms entry:
     sSearch->queryText->setFocus();
 
+    enbSynAction->setDisabled(prefs.synFile.isEmpty());
+    enbSynAction->setChecked(prefs.synFileEnable);
+    
     // Stemming language menu
     g_stringNoStem = tr("(no stemming)");
     g_stringAllStem = tr("(all languages)");
@@ -341,6 +344,8 @@ void RclMain::init()
 	    this, SLOT(showUIPrefs()));
     connect(extIdxAction, SIGNAL(triggered()), 
 	    this, SLOT(showExtIdxDialog()));
+    connect(enbSynAction, SIGNAL(toggled(bool)),
+            this, SLOT(setSynEnabled(bool)));
 
     connect(toggleFullScreenAction, SIGNAL(triggered()), 
             this, SLOT(toggleFullScreen()));
@@ -457,6 +462,13 @@ void RclMain::init()
     // Start timer on a slow period (used for checking ^C). Will be
     // speeded up during indexing
     periodictimer->start(1000);
+}
+
+void RclMain::setSynEnabled(bool on)
+{
+    prefs.synFileEnable = on;
+    if (uiprefs)
+        uiprefs->synFileCB->setChecked(prefs.synFileEnable);
 }
 
 void RclMain::resultCount(int n)
@@ -677,6 +689,17 @@ void RclMain::startSearch(STD_SHARED_PTR<Rcl::SearchData> sdata, bool issimple)
 	m_queryActive = false;
         restable->setEnabled(true);
 	return;
+    }
+
+    if (prefs.synFileEnable && !prefs.synFile.isEmpty()) {
+        string sf = (const char *)prefs.synFile.toLocal8Bit();
+        if (!rcldb->setSynGroupsFile(sf)) {
+            QMessageBox::warning(0, "Recoll",
+                                 tr("Can't set synonyms file (parse error?)"));
+            return;
+        }
+    } else {
+        rcldb->setSynGroupsFile("");
     }
 
     Rcl::Query *query = new Rcl::Query(rcldb);
@@ -1014,6 +1037,8 @@ void RclMain::setUIPrefs()
     LOGDEB(("Recollmain::setUIPrefs\n"));
     reslist->setFont();
     sSearch->setPrefs();
+    enbSynAction->setDisabled(prefs.synFile.isEmpty());
+    enbSynAction->setChecked(prefs.synFileEnable);
 }
 
 void RclMain::enableNextPage(bool yesno)

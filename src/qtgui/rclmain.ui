@@ -109,6 +109,8 @@
     <addaction name="queryPrefsAction"/>
     <addaction name="extIdxAction"/>
     <addaction name="separator"/>
+    <addaction name="enbSynAction"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="helpMenu">
     <property name="title">
@@ -346,7 +348,7 @@
   </action>
   <action name="indexScheduleAction">
    <property name="text">
-    <string>&amp;Indexing schedule</string>
+    <string>Indexing &amp;schedule</string>
    </property>
    <property name="name" stdset="0">
     <cstring>indexScheduleAction</cstring>
@@ -369,6 +371,20 @@
    </property>
    <property name="name" stdset="0">
     <cstring>extIdxAction</cstring>
+   </property>
+  </action>
+  <action name="enbSynAction">
+   <property name="text">
+    <string>Enable synonyms</string>
+   </property>
+   <property name="iconText">
+    <string>Enable synonyms</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>enbSynAction</cstring>
+   </property>
+   <property name="checkable">
+    <bool>true</bool>
    </property>
   </action>
   <action name="toggleFullScreenAction">

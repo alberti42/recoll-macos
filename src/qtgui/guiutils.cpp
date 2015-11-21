@@ -202,6 +202,10 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.autoSuffsEnable, 
 	       "/Recoll/prefs/query/autoSuffsEnable", Bool, false);
 
+    SETTING_RW(prefs.synFileEnable, 
+	       "/Recoll/prefs/query/synFileEnable", Bool, false);
+    SETTING_RW(prefs.synFile, "/Recoll/prefs/query/synfile", String, "");
+    
     SETTING_RW(prefs.termMatchType, "/Recoll/prefs/query/termMatchType", 
 	       Int, 0);
     // This is not really the current program version, just a value to

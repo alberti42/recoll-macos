@@ -115,6 +115,9 @@ class PrefsPack {
     // language entry. 
     QString autoSuffs;
     bool    autoSuffsEnable;
+    // Synonyms file
+    QString synFile;
+    bool    synFileEnable;
 
     QStringList restableFields;
     vector<int> restableColWidths;

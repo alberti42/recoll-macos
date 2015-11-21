@@ -42,6 +42,7 @@ public:
     int reslistFontSize;
     QString qssFile;
     QString snipCssFile;
+    QString synFile;
 
     virtual void init();
 
@@ -49,6 +50,7 @@ public slots:
     virtual void showFontDialog();
     virtual void resetReslistFont();
     virtual void showStylesheetDialog();
+    virtual void showSynFileDialog();
     virtual void showSnipCssDialog();
     virtual void resetStylesheet();
     virtual void resetSnipCss();
