@@ -135,9 +135,9 @@ class PDFExtractor:
                               b'content="text/html; charset=UTF-8">\n'
                     didcs = True
 
-                m = re.search(rb'(.*<title>)(.*)(<\/title>.*)', line)
+                m = re.search(b'''(.*<title>)(.*)(<\/title>.*)''', line)
                 if not m:
-                    m = re.search(rb'(.*content=")(.*)(".*/>.*)', line)
+                    m = re.search(b'''(.*content=")(.*)(".*/>.*)''', line)
                 if m:
                     line = m.group(1) + self.em.htmlescape(m.group(2)) + \
                            m.group(3)
