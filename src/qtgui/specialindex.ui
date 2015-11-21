@@ -53,7 +53,7 @@
           </size>
          </property>
          <property name="toolTip">
-          <string>Directory to recursively index</string>
+          <string>Directory to recursively index. This must be inside the regular indexed area&lt;br&gt; as defined in the configuration file (topdirs).</string>
          </property>
         </widget>
        </item>
