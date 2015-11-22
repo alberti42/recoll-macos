@@ -1047,6 +1047,79 @@ Tjek venligst desktopfilen</translation>
         <source>This configuration tool only works for the main index.</source>
         <translation>Dette konfigurationsværktøj virker kun for hovedindekset.</translation>
     </message>
+    <message>
+        <source>The current indexing process was not started from this interface, can&apos;t kill it</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bad paths</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bad paths in configuration file:
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Selection patterns need topdir</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Selection patterns can only be used with a start directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No preserved previous search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose file to save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saved Queries (*.rclq)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Write failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not write to file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Read failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not open file: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Load error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not load saved query</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index scheduling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sorry, not available under Windows for now, use the File menu entries to update the index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t set synonyms file (parse error?)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1208,7 +1281,7 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>&amp;Indexing schedule</source>
-        <translation>&amp;Tidsplan for Indeksering</translation>
+        <translation type="obsolete">&amp;Tidsplan for Indeksering</translation>
     </message>
     <message>
         <source>E&amp;xternal index dialog</source>
@@ -1273,6 +1346,30 @@ Tjek venligst desktopfilen</translation>
     <message>
         <source>Next update will retry previously failed files</source>
         <translation>Næste opdatering vil igen forsøge med filer, der tidligere mislykkedes</translation>
+    </message>
+    <message>
+        <source>Indexing &amp;schedule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable synonyms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save last query</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Load saved query</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Special Indexing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexing with special options</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1598,6 +1695,30 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
 &lt;i&gt;&quot;ord1 ord2&quot;p &lt;/i&gt; : uordnet nærheds-søgning med standard afstand.&lt;br&gt;
 Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se manual (&amp;lt;F1&gt;) for flere detaljer.</translation>
     </message>
+    <message>
+        <source>Stemming languages for stored query: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> differ from current preferences (kept)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto suffixes for stored query: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External indexes for stored query: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Autophrase is set but it was unset for stored query</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Autophrase is unset but it was set for stored query</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SSearchBase</name>
@@ -1701,6 +1822,49 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     <message>
         <source>&lt;p&gt;Sorry, no exact match was found within limits. Probably the document is very big and the snippets generator got lost in a maze...&lt;/p&gt;</source>
         <translation>&lt;p&gt;Desværre blev der ikke, inden for rimelige grænser, fundet en nøjagtig match. Sandsynligvis fordi dokumentet er meget stort, så tekststump-generatoren for vild i mængden...&lt;/ p&gt;</translation>
+    </message>
+</context>
+<context>
+    <name>SpecIdxW</name>
+    <message>
+        <source>Special Indexing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do not retry previously failed files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Else only modified or failed files will be processed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Erase selected files data before indexing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Directory to recursively index. This must be inside the regular indexed area&lt;br&gt; as defined in the configuration file (topdirs).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Browse</source>
+        <translation type="unfinished">Gennemse</translation>
+    </message>
+    <message>
+        <source>Start directory (else use regular topdirs):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Leave empty to select all files. You can use multiple space-separated shell-type patterns.&lt;br&gt;Patterns with embedded spaces should be quoted with double quotes.&lt;br&gt;Can only be used if the start target is set.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Selection patterns:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Top indexed entity</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1887,6 +2051,26 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
         <source>Default QtWebkit font</source>
         <translation>Standard skrifttype for QtWebkit</translation>
     </message>
+    <message>
+        <source>Any term</source>
+        <translation type="unfinished">Vilkårlig ord</translation>
+    </message>
+    <message>
+        <source>All terms</source>
+        <translation type="unfinished">Alle ord</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation type="unfinished">Filnavn</translation>
+    </message>
+    <message>
+        <source>Query language</source>
+        <translation type="unfinished">Forespørgselssprog</translation>
+    </message>
+    <message>
+        <source>Value from previous program exit</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -1962,7 +2146,7 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     <name>confgui::ConfBeaglePanelW</name>
     <message>
         <source>Entries will be recycled once the size is reached</source>
-        <translation>Indgangene vil blive genbrugt, når størrelsen er nået</translation>
+        <translation type="obsolete">Indgangene vil blive genbrugt, når størrelsen er nået</translation>
     </message>
     <message>
         <source>Web page store directory name</source>
@@ -1983,6 +2167,10 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
         <translation>Aktiverer indeksering af sider besøgt af Firefox.&lt;br&gt;(Du skal også installere Firefox Recoll plugin)</translation>
+    </message>
+    <message>
+        <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2495,6 +2683,18 @@ Standardværdien er 2 (procent).</translation>
     <message>
         <source>Close to tray instead of exiting.</source>
         <translation>Luk til systembakke i stedet for at afslutte.</translation>
+    </message>
+    <message>
+        <source>Start with simple search mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User style to apply to the snippets window.&lt;br&gt; Note: the result page header insert is also included in the snippets window header.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Synonyms file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
