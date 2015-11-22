@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: Jean-Francois Dockes <jfd@recoll.org>
 Build-Depends: autotools-dev,
                debhelper (>= 7),
+               dh-python,
                hardening-wrapper,
                bison,
                libqt4-dev,
@@ -13,7 +14,7 @@ Build-Depends: autotools-dev,
                libz-dev,
                python-all-dev (>= 2.6.6-3~),
                python3-all-dev,
-Standards-Version: 3.9.4
+Standards-Version: 3.9.6
 X-Python-Version: >= 2.7
 Homepage: http://www.lesbonscomptes.com/recoll
 Vcs-Git: git://anonscm.debian.org/collab-maint/recoll.git
@@ -21,8 +22,8 @@ Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/recoll.git;a=summa
 
 Package: recoll
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}
-Recommends: python-recoll, aspell, python, xdg-utils, xsltproc
+Depends: ${misc:Depends}, ${shlibs:Depends}, python2, python
+Recommends: python-recoll, aspell, xdg-utils, xsltproc
 Suggests: antiword,
           catdoc,
           ghostscript,

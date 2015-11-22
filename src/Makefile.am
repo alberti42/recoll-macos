@@ -113,6 +113,7 @@ internfile/mh_mail.cpp \
 internfile/mh_mail.h \
 internfile/mh_mbox.cpp \
 internfile/mh_mbox.h \
+internfile/mh_null.h \
 internfile/mh_symlink.h \
 internfile/mh_text.cpp \
 internfile/mh_text.h \
@@ -237,7 +238,11 @@ utils/wipedir.cpp \
 utils/wipedir.h \
 utils/workqueue.h \
 utils/x11mon.cpp \
-utils/x11mon.h
+utils/x11mon.h \
+xaposix/safefcntl.h \
+xaposix/safesysstat.h \
+xaposix/safesyswait.h \
+xaposix/safeunistd.h
 
 BUILT_SOURCES = query/wasaparse.cpp
 AM_YFLAGS = -d
@@ -358,8 +363,8 @@ qtgui/i18n/recoll_ru.qm qtgui/i18n/recoll_ru.ts \
 qtgui/i18n/recoll_tr.qm qtgui/i18n/recoll_tr.ts \
 qtgui/i18n/recoll_uk.qm qtgui/i18n/recoll_uk.ts \
 qtgui/i18n/recoll_xx.qm qtgui/i18n/recoll_xx.ts \
-qtgui/i18n/recoll_zh_CN.qm qtgui/i18n/recoll_zh_CN.ts \
 qtgui/i18n/recoll_zh.qm qtgui/i18n/recoll_zh.ts \
+qtgui/i18n/recoll_zh_CN.qm qtgui/i18n/recoll_zh_CN.ts \
 qtgui/idxsched.h \
 qtgui/idxsched.ui \
 qtgui/images/asearch.png \
@@ -380,26 +385,26 @@ qtgui/images/up.png \
 qtgui/listdialog.h \
 qtgui/listdialog.ui \
 qtgui/main.cpp \
+qtgui/mtpics/License_sidux.txt \
+qtgui/mtpics/README \
 qtgui/mtpics/aptosid-book.png \
 qtgui/mtpics/aptosid-manual-copyright.txt \
 qtgui/mtpics/aptosid-manual.png \
 qtgui/mtpics/archive.png \
-qtgui/mtpics/bookchap.png \
 qtgui/mtpics/book.png \
+qtgui/mtpics/bookchap.png \
 qtgui/mtpics/document.png \
 qtgui/mtpics/drawing.png \
 qtgui/mtpics/emblem-symbolic-link.png \
 qtgui/mtpics/folder.png \
 qtgui/mtpics/html.png \
 qtgui/mtpics/image.png \
-qtgui/mtpics/License_sidux.txt \
 qtgui/mtpics/message.png \
 qtgui/mtpics/mozilla_doc.png \
 qtgui/mtpics/pdf.png \
 qtgui/mtpics/pidgin.png \
 qtgui/mtpics/postscript.png \
 qtgui/mtpics/presentation.png \
-qtgui/mtpics/README \
 qtgui/mtpics/sidux-book.png \
 qtgui/mtpics/soffice.png \
 qtgui/mtpics/source.png \
@@ -411,6 +416,10 @@ qtgui/mtpics/video.png \
 qtgui/mtpics/wordprocessing.png \
 qtgui/multisave.cpp \
 qtgui/multisave.h \
+qtgui/preview_load.cpp \
+qtgui/preview_load.h \
+qtgui/preview_plaintorich.cpp \
+qtgui/preview_plaintorich.h \
 qtgui/preview_w.cpp \
 qtgui/preview_w.h \
 qtgui/ptrans.ui \
@@ -418,14 +427,14 @@ qtgui/ptrans_w.cpp \
 qtgui/ptrans_w.h \
 qtgui/rclhelp.cpp \
 qtgui/rclhelp.h \
-qtgui/rclmain.ui \
-qtgui/rclmain_w.cpp \
-qtgui/rclmain_w.h \
 qtgui/rclm_idx.cpp \
 qtgui/rclm_preview.cpp \
 qtgui/rclm_saveload.cpp \
 qtgui/rclm_view.cpp \
 qtgui/rclm_wins.cpp \
+qtgui/rclmain.ui \
+qtgui/rclmain_w.cpp \
+qtgui/rclmain_w.h \
 qtgui/rclzg.cpp \
 qtgui/rclzg.h \
 qtgui/recoll.h \
@@ -489,7 +498,7 @@ sampleconf/fields sampleconf/fragbuts.xml sampleconf/mimeconf \
 sampleconf/mimemap sampleconf/mimeview sampleconf/mimeview.mac \
 sampleconf/recoll.conf sampleconf/recoll.qss \
 \
-unac/AUTHORS unac/COPYING unac/README unac/README.recoll \
+unac/AUTHORS unac/COPYING unac/README unac/README.recoll unac/unac.c \
 \
 VERSION
 
