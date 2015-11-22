@@ -4,7 +4,7 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.21.0
+RCLVERS=1.22.0
 LENSVERS=1.19.10.3543
 SCOPEVERS=1.20.2.4
 PPAVERS=1
@@ -42,7 +42,7 @@ check_recoll_orig()
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
 #series="precise trusty vivid"
-series=
+series=trusty
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -71,7 +71,7 @@ done
 
 ### KIO
 series="precise trusty vivid"
-series=vivid
+series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -155,9 +155,14 @@ if test "X$series" != X ; then
             mv unity-scope-recoll-${SCOPEVERS}.tar.gz \
                 unity-scope-recoll_${SCOPEVERS}.orig.tar.gz
         else
-            fatal "Can find neither " \
-                "unity-scope-recoll_${SCOPEVERS}.orig.tar.gz nor " \
-                "unity-scope-recoll-${SCOPEVERS}.tar.gz"
+            if test -f $RCLDOWNLOAD/unity-scope-recoll-${SCOPEVERS}.tar.gz;then
+                cp -p $RCLDOWNLOAD/unity-scope-recoll-${SCOPEVERS}.tar.gz \
+                   unity-scope-recoll_${SCOPEVERS}.orig.tar.gz || fatal copy
+            else
+                fatal "Can find neither " \
+                      "unity-scope-recoll_${SCOPEVERS}.orig.tar.gz nor " \
+                      "$RCLDOWNLOAD/unity-scope-recoll-${SCOPEVERS}.tar.gz"
+            fi
         fi
     fi
     test -d $topdir ||  tar xvzf unity-scope-recoll_${SCOPEVERS}.orig.tar.gz \
