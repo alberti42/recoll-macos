@@ -23,10 +23,6 @@
  *  Foundation, Inc., 59 Temple Street #330, Boston, MA 02111-1307, USA.
  *  --------------------------------------------------------------------
  */
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>

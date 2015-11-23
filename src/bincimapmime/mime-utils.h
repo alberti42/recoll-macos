@@ -25,11 +25,6 @@
  */
 #ifndef mime_utils_h_included
 #define mime_utils_h_included
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
