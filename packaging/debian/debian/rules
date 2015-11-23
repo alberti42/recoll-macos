@@ -12,6 +12,9 @@ DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 CFLAGS += -Wall -g
 #LDFLAGS += -Wl,-z,defs
 
+#build qt4 UI only
+export QMAKE=qmake-qt4
+
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
 else
