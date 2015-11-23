@@ -2,8 +2,8 @@
 	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
 
 <!ENTITY RCL "<application>Recoll</application>">
-<!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/features.html'>http://www.recoll.org/features.html</ulink>">
-<!ENTITY RCLVERSION "1.21">
+<!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/features.html#doctypes'>http://www.recoll.org/features.html</ulink>">
+<!ENTITY RCLVERSION "1.22">
 <!ENTITY XAP "<application>Xapian</application>">
 <!ENTITY WIKI "http://bitbucket.org/medoc/recoll/wiki/">
 ]>
@@ -466,7 +466,7 @@ indexedmimetypes = application/pdf
         may be quite costly (for example failing to uncompress a big
         file because of insufficient disk space).</para>
 
-        <para>The indexer in &RCL; versions 1.21 and later do not
+        <para>The indexer in &RCL; versions 1.21 and later does not
         retry failed file by default. Retrying will only occur if an
         explicit option (<option>-k</option>) is set on the
         <command>recollindex</command> command line, or if a script
@@ -508,11 +508,9 @@ indexedmimetypes = application/pdf
           option to the &RCL; commands. This method would typically be
           used to index different areas of the file system to
           different indexes. For example, if you were to issue the
-          following commands: 
-          <programlisting>
-export RECOLL_CONFDIR=~/.indexes-email
-recoll
-          </programlisting> Then &RCL; would use configuration files
+          following command: 
+          <programlisting>recoll -c ~/.indexes-email</programlisting> Then
+          &RCL; would use configuration files 
           stored in <filename>~/.indexes-email/</filename> and,
           (unless specified otherwise in
           <filename>recoll.conf</filename>) would look for 
@@ -592,11 +590,10 @@ recoll
           complete reconstruction. If confidential data is indexed,
           access to the database directory should be restricted. </para>
 
-        <para>&RCL; (since version 1.4) will create the configuration
-          directory with a mode of 0700 (access by owner only). As the
-          index data directory is by default a sub-directory of the
-          configuration directory, this should result in appropriate
-          protection.</para> 
+        <para>&RCL; will create the configuration directory with a mode of
+        0700 (access by owner only). As the index data directory is by
+        default a sub-directory of the configuration directory, this should
+        result in appropriate protection.</para>
 
         <para>If you use another setup, you should think of the kind
           of protection you need for your index, set the directory
@@ -2989,6 +2986,13 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
     synonym group will be optionally expanded into an OR query for all
     synonyms.</para>
 
+    <para>What is it good for ? The synonyms function is probably not going
+    to help you find your letters to Mr. Smith. It is best used for
+    domain-specific searches. For example, it was initially suggested by a
+    user performing searches among historical documents: the synonyms file
+    would contains nicknames and aliases for each of the persons of
+    interest.</para>
+
     <para>In practise, synonym groups are defined inside ordinary text
     files. Each line in the file defines a group. Example:
     <programlisting>
@@ -3018,7 +3022,8 @@ bye goodbye "see you" \
     
     <para>This feature is new in &RCL; 1.22 and will probably need to be
     refined after some user feedback.</para>
-    
+
+   
   </sect1>
       
   <sect1 id="RCL.SEARCH.PTRANS">
