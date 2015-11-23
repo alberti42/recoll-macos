@@ -460,28 +460,6 @@ if test X$enableQT = Xyes ; then
     fi
     QTGUI=qtgui
   fi
-  
-  cd $QTGUI
-  # We just want a .pro file: no problem with unsubstituted variables at 
-  # this point.
-  test -f recoll.pro && chmod +w recoll.pro
-  cp recoll.pro.in recoll.pro
-  #echo QMAKE ${QMAKE}
-  ${QMAKE} PREFIX=${prefix} recoll.pro
-  if test $? != 0 ; then
-     AC_MSG_ERROR([Cannot use qmake to generate a Makefile. Maybe you need to
-  check the QTDIR and QMAKESPEC environment variables?])
-  fi
-  # is QTDIR set and do we actually need it ?
-  if test X$QTDIR = X ; then
-     QTDIRNEEDED=`grep INCPATH Makefile | grep = | grep QTDIR`
-     if test "X$QTDIRNEEDED" != "X" ; then
-         AC_MSG_ERROR([You need to set the QTDIR variable to point to the QT
-  installation. If there is no default mkspecs, you should also set QMAKESPEC])
-     fi
-  fi
-  rm -f Makefile recoll.pro
-  cd ..
 
 
  ##### Using Qt webkit for reslist display? Else Qt textbrowser
@@ -586,5 +564,6 @@ AC_SUBST(RCLLIBVERSION)
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(common/rclversion.h)
 AC_CONFIG_FILES(python/recoll/setup.py)
+AC_CONFIG_FILES(python/recoll/Makefile)
 
 AC_OUTPUT

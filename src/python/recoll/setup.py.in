@@ -3,10 +3,16 @@ import os
 import sys
 
 sysname = os.uname()[0]
-top = os.path.join('..', '..')
 
+# For shadow builds: references to the source tree
+top = os.path.join('@srcdir@', '..', '..')
+pytop = '@srcdir@'
 
-library_dirs = [os.path.join(top, '.libs')]
+# For shadow builds: reference to the top of the local tree (for finding
+# generated .h files, e.g. autoconfig.h)
+localtop = os.path.join(os.path.dirname(__file__), '..', '..')
+
+library_dirs = [os.path.join(localtop, '.libs')]
 if "CYGWIN" in os.environ:
 	libraries =  ['recoll', 'xapian', 'iconv', 'z']
 else:
@@ -26,6 +32,8 @@ module1 = Extension('recoll',
                                      ],
                     include_dirs = ['/usr/local/include',
                                     os.path.join(top, 'utils'), 
+                                    os.path.join(top, 'common'),
+                                    os.path.join(localtop, 'common'),
                                     os.path.join(top, 'common'), 
                                     os.path.join(top, 'rcldb'), 
                                     os.path.join(top, 'query'), 
@@ -34,7 +42,7 @@ module1 = Extension('recoll',
                     libraries = libraries,
                     library_dirs = library_dirs,
                     runtime_library_dirs = runtime_library_dirs,
-                    sources = ['pyrecoll.cpp'])
+                    sources = [os.path.join(pytop, 'pyrecoll.cpp')])
 
 module2 = Extension('rclextract',
                     define_macros = [('MAJOR_VERSION', '1'),
@@ -45,13 +53,14 @@ module2 = Extension('rclextract',
                     include_dirs = ['/usr/local/include',
                                     os.path.join(top, 'utils'), 
                                     os.path.join(top, 'common'), 
+                                    os.path.join(localtop, 'common'),
                                     os.path.join(top, 'internfile'), 
                                     os.path.join(top, 'rcldb'), 
                                     ],
                     libraries = libraries,
                     library_dirs = library_dirs,
                     runtime_library_dirs = runtime_library_dirs,
-                    sources = ['pyrclextract.cpp'])
+                    sources = [os.path.join(pytop, 'pyrclextract.cpp')])
 
 setup (name = 'Recoll',
        version = '1.0',

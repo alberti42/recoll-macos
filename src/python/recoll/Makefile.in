@@ -1,5 +1,6 @@
 all:
 	echo libdir: $(libdir)
+	test '@srcdir@' = '.' || cp -rp @srcdir@/recoll .
 	libdir=$(libdir) python setup.py build
 install:
 	sudo python setup.py install

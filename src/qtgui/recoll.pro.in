@@ -1,6 +1,7 @@
 TEMPLATE        = app
 LANGUAGE        = C++
 
+VPATH = @srcdir@
 DEFINES += BUILDING_RECOLL
 
 @QMAKE_ENABLE_WEBKIT@ QT += webkit
@@ -114,9 +115,10 @@ unix {
   LIBS +=  @LIBXAPIAN@ $(LIBXAPIANSTATICEXTRA) \
        @LIBICONV@ $(BDYNAMIC) @LIBQZEITGEIST@ -lz
 
-  INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
-              ../utils ../aspell ../rcldb ../qtgui ../xaposix \
-              confgui
+  INCLUDEPATH += ../common @srcdir@/../common @srcdir@/../index \
+              @srcdir@/../internfile @srcdir@/../query @srcdir@/../unac \
+              @srcdir@/../utils @srcdir@/../aspell @srcdir@/../rcldb \
+              @srcdir@/../qtgui @srcdir@/../xaposix @srcdir@/confgui 
   DEPENDPATH += $$INCLUDEPATH
 }
 
@@ -159,17 +161,17 @@ unix {
  # Installation stuff
   target.path = "$$PREFIX/bin"
 
-  imdata.files = mtpics/*.png
+  imdata.files = @srcdir@/mtpics/*.png
   imdata.path = $$PREFIX/share/recoll/images
-  trdata.files = i18n/*.qm
+  trdata.files = @srcdir@/i18n/*.qm
   trdata.path = $$PREFIX/share/recoll/translations
-  desktop.files += ../desktop/recoll-searchgui.desktop
+  desktop.files += @srcdir@/../desktop/recoll-searchgui.desktop
   desktop.path = $$PREFIX/share/applications/
-  icona.files += ../desktop/recoll.png
+  icona.files += @srcdir@/../desktop/recoll.png
   icona.path = $$PREFIX/share/icons/hicolor/48x48/apps/
-  iconb.files += ../desktop/recoll.png
+  iconb.files += @srcdir@/../desktop/recoll.png
   iconb.path = $$PREFIX/share/pixmaps/
-  appdata.files = ../desktop/recoll.appdata.xml
+  appdata.files = @srcdir@/../desktop/recoll.appdata.xml
   appdata.path = $$PREFIX/share/appdata/
   INSTALLS += target imdata trdata desktop icona iconb appdata
 
