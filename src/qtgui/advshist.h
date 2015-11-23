@@ -16,6 +16,7 @@
  */
 #ifndef _ADVSHIST_H_INCLUDED_
 #define _ADVSHIST_H_INCLUDED_
+#include "autoconfig.h"
 
 #include <vector>
 

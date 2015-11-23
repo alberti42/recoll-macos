@@ -67,6 +67,20 @@
 #include "rclhelp.h"
 #include "moc_rclmain_w.cpp"
 
+/* Qt5 moc expands macros when defining signals. The SIGNAL() macro is
+   a stringification, so it does not expand macros. We have signals
+   where one of the types is a #define (for the variations on
+   std::shared_ptr). In qt5, the connection does not work because the
+   signal string is different between the definition and the connect
+   call, because of the different macro expansion. We have to use
+   another level of macro in Qt5 to force macro expansion, but not in
+   Qt4, so we both define the XSIGNAL and XSLOT macros here, and have
+   ifdefs in the code. What a mess... */
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#define XSIGNAL(X) SIGNAL(X)
+#define XSLOT(X) SLOT(X)
+#endif
+
 using std::pair;
 
 QString g_stringAllStem, g_stringNoStem;
@@ -288,13 +302,15 @@ void RclMain::init()
     sc = new QShortcut(seql, this);
     connect(sc, SIGNAL (activated()), sSearch, SLOT (takeFocus()));
 
-    connect(&m_watcher, SIGNAL(fileChanged(QString)), 
-	    this, SLOT(idxStatus()));
-#ifdef _WIN32
-    connect(sSearch, SIGNAL(startSearch(std::shared_ptr<Rcl::SearchData>, bool)), 
-	    this, SLOT(startSearch(std::shared_ptr<Rcl::SearchData>, bool)));
+    connect(&m_watcher, SIGNAL(fileChanged(QString)), this, SLOT(idxStatus()));
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    connect(sSearch,
+            XSIGNAL(startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool)), 
+	    this, XSLOT(startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool)));
 #else
-    connect(sSearch, SIGNAL(startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool)), 
+    connect(sSearch,
+            SIGNAL(startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool)), 
 	    this, SLOT(startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool)));
 #endif
     connect(sSearch, SIGNAL(clearSearch()), 
@@ -357,9 +373,9 @@ void RclMain::init()
     restable->setRclMain(this, true);
     connect(actionSaveResultsAsCSV, SIGNAL(triggered()), 
 	    restable, SLOT(saveAsCSV()));
-#ifdef _WIN32
-    connect(this, SIGNAL(docSourceChanged(std::shared_ptr<DocSequence>)),
-	    restable, SLOT(setDocSource(std::shared_ptr<DocSequence>)));
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    connect(this, XSIGNAL(docSourceChanged(STD_SHARED_PTR<DocSequence>)),
+	    restable, XSLOT(setDocSource(STD_SHARED_PTR<DocSequence>)));
 #else
     connect(this, SIGNAL(docSourceChanged(STD_SHARED_PTR<DocSequence>)),
 	    restable, SLOT(setDocSource(STD_SHARED_PTR<DocSequence>)));
@@ -393,9 +409,9 @@ void RclMain::init()
 	    this, SLOT(showSnippets(Rcl::Doc)));
 
     reslist->setRclMain(this, true);
-#ifdef _WIN32
-    connect(this, SIGNAL(docSourceChanged(std::shared_ptr<DocSequence>)),
-	    reslist, SLOT(setDocSource(std::shared_ptr<DocSequence>)));
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    connect(this, XSIGNAL(docSourceChanged(STD_SHARED_PTR<DocSequence>)),
+	    reslist, XSLOT(setDocSource(STD_SHARED_PTR<DocSequence>)));
 #else
     connect(this, SIGNAL(docSourceChanged(STD_SHARED_PTR<DocSequence>)),
 	    reslist, SLOT(setDocSource(STD_SHARED_PTR<DocSequence>)));

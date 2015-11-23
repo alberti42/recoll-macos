@@ -17,14 +17,10 @@
 
 #ifndef _RESLIST_H_INCLUDED_
 #define _RESLIST_H_INCLUDED_
+#include "autoconfig.h"
 
 #include <list>
 #include <utility>
-
-#ifndef NO_NAMESPACES
-using std::list;
-using std::pair;
-#endif
 
 #ifdef RESLIST_TEXTBROWSER
 #include <QTextBrowser>
@@ -133,7 +129,7 @@ class ResList : public RESLIST_PARENTCLASS
     // docnum. Built while we insert text into the qtextedit
     std::map<int,int>  m_pageParaToReldocnums;
     virtual int docnumfromparnum(int);
-    virtual pair<int,int> parnumfromdocnum(int);
+    virtual std::pair<int,int> parnumfromdocnum(int);
 #else
     // Webview makes it more difficult to append text incrementally,
     // so we store the page and display it when done.

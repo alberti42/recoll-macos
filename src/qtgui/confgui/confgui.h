@@ -16,6 +16,8 @@
  */
 #ifndef _confgui_h_included_
 #define _confgui_h_included_
+#include "autoconfig.h"
+
 /**
  * This file defines a number of simple classes (virtual base: ConfParamW) 
  * which let the user input configuration parameters. 
@@ -36,7 +38,6 @@
  * destroyed and recreated as a copy if Cancel is pressed (you have to 
  * delete/recreate the widgets in this case as the links are no longer valid).
  */
-#include "autoconfig.h"
 
 #include <string>
 #include <limits.h>

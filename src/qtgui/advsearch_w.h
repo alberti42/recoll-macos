@@ -16,6 +16,7 @@
  */
 #ifndef _ADVSEARCH_W_H_INCLUDED_
 #define _ADVSEARCH_W_H_INCLUDED_
+#include "autoconfig.h"
 
 #include <vector>
 

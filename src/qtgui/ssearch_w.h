@@ -16,6 +16,7 @@
  */
 #ifndef _SSEARCH_W_H_INCLUDED_
 #define _SSEARCH_W_H_INCLUDED_
+#include "autoconfig.h"
 
 #include <string>
 

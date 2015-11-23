@@ -16,6 +16,7 @@
  */
 #ifndef _RESPOPUP_H_INCLUDED_
 #define _RESPOPUP_H_INCLUDED_
+#include "autoconfig.h"
 
 namespace ResultPopup {
     enum Options {showExpand = 0x1, showSubs = 0x2, isMain = 0x3,

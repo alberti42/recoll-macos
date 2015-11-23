@@ -16,6 +16,7 @@
  */
 #ifndef RCLMAIN_W_H
 #define RCLMAIN_W_H
+#include "autoconfig.h"
 
 #include <qvariant.h>
 #include <qmainwindow.h>
