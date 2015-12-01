@@ -661,6 +661,18 @@ indexedmimetypes = application/pdf
 	<option>-c</option> option to <command>recoll</command> and
 	<command>recollindex</command>.</para>
 
+        <para>When working with the <command>recoll</command> index
+        configuration GUI, the configuration directory for which parameters
+        are modified is the one which was selected by
+        <envar>RECOLL_CONFDIR</envar> or the <option>-c</option> parameter,
+        and there is no way to switch configurations within the GUI.</para>
+
+        <para>Additional configuration directory (beyond
+        <filename>~/.recoll</filename>) must be created by hand
+        (<command>mkdir</command> or such), the GUI will not do it. This is
+        to avoid mistakenly creating additional directories when an
+        argument is mistyped.</para>
+        
         <para>A typical usage scenario for the multiple index feature
 	would be for a system administrator to set up a central index
 	for shared data, that you choose to search or not in addition to
@@ -5190,19 +5202,30 @@ except:
         the <guilabel>Index configuration</guilabel> dialog 
         (<guilabel>Preferences</guilabel> menu). The GUI tool will try
         to respect your formatting and comments as much as possible,
-        so it is quite possible to use both ways.</para>
+        so it is quite possible to use both approaches on the same
+      configuration.</para> 
 
       <para>The most accurate documentation for the
         configuration parameters is given by comments inside the default
         files, and we will just give a general overview here.</para>
 
-      <para>By default, for each index, there are two sets of
+      <para>For each index, there are at least two sets of
         configuration files. System-wide configuration files are kept
         in a directory named
         like <filename>/usr/[local/]share/recoll/examples</filename>,
         and define default values, shared by all indexes. For each
         index, a parallel set of files defines the customized
         parameters.</para>
+
+      <para>The default location of the customized configuration is the
+        <filename>.recoll</filename>
+        directory in your home. Most people will only use this
+        directory.</para> 
+
+      <para>This location can be changed, or others can be added with the
+        <envar>RECOLL_CONFDIR</envar> environment variable or the
+        <option>-c</option> option parameter to <command>recoll</command> and
+        <command>recollindex</command>.</para>
 
       <para>In addition (as of &RCL; version 1.19.7), it is possible
         to specify two additional configuration directories which will
@@ -5221,17 +5244,7 @@ except:
         future: do not use colon characters inside the directory
         paths.</para>
 
-      <para>The default location of the configuration is the
-        <filename>.recoll</filename>
-        directory in your home. Most people will only use this
-        directory.</para> 
-
-      <para>This location can be changed, or others can be added with the
-        <envar>RECOLL_CONFDIR</envar> environment variable or the
-        <option>-c</option> option parameter to <command>recoll</command> and
-        <command>recollindex</command>.</para>
-
-      <para>If the <filename>.recoll</filename> directory does not
+        <para>If the <filename>.recoll</filename> directory does not
         exist when <command>recoll</command> or
         <command>recollindex</command> are started, it will be created
         with a set of empty configuration files.
@@ -5243,7 +5256,6 @@ except:
        default location, not if <option>-c</option> or
        <envar>RECOLL_CONFDIR</envar> were used (in the latter
        cases, you will have to create the directory).</para>
-      
 
         <para>All configuration files share the same format. For
         example, a short extract of the main configuration file might
@@ -5269,6 +5281,9 @@ except:
           </listitem>
         </itemizedlist>
 
+        <para>Long lines can be broken by ending each incomplete part with
+        a backslash (<literal>\</literal>).</para>
+        
         <para>Depending on the type of configuration file, section
         definitions either separate groups of parameters or allow
         redefining some parameters for a directory sub-tree. They stay
@@ -5283,15 +5298,31 @@ except:
         character (~) is expanded to the name of the user's home
         directory, as a shell would do.</para> 
         
-        <para>White space is used for separation inside  lists.
-        List elements with embedded spaces can be quoted using
-        double-quotes.</para>
+        <para>Some parameters are lists of strings. White space is used for
+        separation. List elements with embedded spaces can be quoted using
+        double-quotes. Double quotes inside these elements can be escaped
+        with a backslash.</para>
 
-      <formalpara>
-        <title>Encoding issues</title>
-        <para>Most of the configuration parameters are plain ASCII. Two
-        particular sets of values may cause encoding issues:</para>
-      </formalpara>
+        <para>No value inside a configuration file can contain a newline
+        character. Long lines can be continued by escaping the
+        physical newline with backslash, even inside quoted strings.</para>
+        <programlisting>
+astringlist =  "some string \
+with spaces"
+thesame = "some string with spaces"        
+        </programlisting>
+
+        <para>Parameters which are not part of string lists can't be
+        quoted, and leading and trailing space characters are
+        stripped before the value is used.</para>
+
+        <formalpara>
+          <title>Encoding issues</title>
+          <para>Most of the configuration parameters are plain ASCII. Two
+          particular sets of values may cause encoding issues:</para>
+        </formalpara>
+
+
       <para>
       <itemizedlist>
         <listitem><para>File path parameters may contain non-ascii
