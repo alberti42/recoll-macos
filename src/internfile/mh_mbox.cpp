@@ -22,10 +22,15 @@
 #include <sys/types.h>
 #include "safesysstat.h"
 #include <time.h>
-#ifndef _WIN32
-#include <regex.h>
-#else 
+
+#if 1 || defined(_WIN32)
+#define USING_STD_REGEX
+#endif
+
+#ifdef USING_STD_REGEX
 #include <regex>
+#else
+#include <regex.h>
 #endif
 
 #include <cstring>
@@ -387,17 +392,16 @@ static const  char *frompat =
 // exactly like: From ^M (From followed by space and eol). We only
 // test for this if QUIRKS_TBIRD is set
 static const char *miniTbirdFrom = "^From $";
-#ifndef _WIN32
+#ifndef USING_STD_REGEX
 static regex_t fromregex;
 static regex_t minifromregex;
 #define M_regexec(A,B,C,D,E) regexec(&(A),B,C,D,E)
 #else
 basic_regex<char> fromregex;
 basic_regex<char> minifromregex;
-#define REG_ICASE std::regex_constants::icase
 #define REG_NOSUB std::regex_constants::nosubs
 #define REG_EXTENDED std::regex_constants::extended
-#define M_regexec(A, B, C, D, E) regex_match(B,A)
+#define M_regexec(A, B, C, D, E) (!regex_match(B,A))
 
 #endif
 
@@ -412,7 +416,7 @@ static void compileregexes()
     // that we are alone.
     if (regcompiled)
 	return;
-#ifndef _WIN32
+#ifndef USING_STD_REGEX
     regcomp(&fromregex, frompat, REG_NOSUB|REG_EXTENDED);
     regcomp(&minifromregex, miniTbirdFrom, REG_NOSUB|REG_EXTENDED);
 #else
@@ -516,7 +520,7 @@ bool MimeHandlerMbox::next_document()
 		    ((m_quirks & MBOXQUIRK_TBIRD) && 
 		     !M_regexec(minifromregex, line, 0, 0, 0)))
 		    ) {
-		    LOGDEB1(("MimeHandlerMbox: msgnum %d, "
+		    LOGDEB0(("MimeHandlerMbox: msgnum %d, "
 		     "From_ at line %d: [%s]\n", m_msgnum, m_lineno, line));
 		    if (storeoffsets)
 			m_offsets.push_back(message_end);
