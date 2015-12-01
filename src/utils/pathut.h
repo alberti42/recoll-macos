@@ -121,6 +121,11 @@ extern bool path_isroot(const std::string& p);
 /// Turn absolute path into file:// url
 extern std::string path_pathtofileurl(const std::string& path);
 
+#ifdef _WIN32
+/// Convert \ separators to /
+void path_slashize(std::string& s);
+#endif
+
 /// Temporary file class
 class TempFileInternal {
 public:

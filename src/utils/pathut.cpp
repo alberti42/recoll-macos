@@ -123,7 +123,7 @@ string path_tchartoutf8(TCHAR *text)
 string path_thisexecpath()
 {
     TCHAR text[MAX_PATH];
-    DWORD length = GetModuleFileName(NULL, text, MAX_PATH);
+    GetModuleFileName(NULL, text, MAX_PATH);
 #ifdef NTDDI_WIN8_future
     PathCchRemoveFileSpec(text, MAX_PATH);
 #else
@@ -162,9 +162,9 @@ bool fsocc(const string &path, int *pc, long long *avmbs)
         return false;
     }
     if (pc)
-        *pc = int(100 * double(freebytesavail) / double(totalbytes));
+        *pc = int((100 * freebytesavail.QuadPart) / totalbytes.QuadPart);
     if (avmbs)
-        *avmbs = totalbytes / FSOCC_MB;
+        *avmbs = int(totalbytes.QuadPart / FSOCC_MB);
     return true;
 #else
 #ifdef sun
@@ -398,7 +398,7 @@ bool TempDir::wipe()
 
 void path_catslash(string &s)
 {
-#ifdef WIN32
+#ifdef _WIN32
     path_slashize(s);
 #endif
     if (s.empty() || s[s.length() - 1] != '/')
@@ -416,7 +416,7 @@ string path_cat(const string &s1, const string &s2)
 string path_getfather(const string &s)
 {
     string father = s;
-#ifdef WIN32
+#ifdef _WIN32
     path_slashize(father);
 #endif
 
@@ -444,7 +444,7 @@ string path_getfather(const string &s)
 string path_getsimple(const string &s)
 {
     string simple = s;
-#ifdef WIN32
+#ifdef _WIN32
     path_slashize(simple);
 #endif
 
@@ -544,7 +544,7 @@ string path_tildexpand(const string &s)
     if (s.empty() || s[0] != '~')
 	return s;
     string o = s;
-#ifdef WIN32
+#ifdef _WIN32
     path_slashize(o);
 #endif
     

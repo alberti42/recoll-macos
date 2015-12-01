@@ -376,15 +376,27 @@ void ConfParamSLW::showInputDialog()
 void ConfParamSLW::listToConf()
 {
     list<string> ls;
+    LOGDEB2(("ConfParamSLW::listToConf. m_fsencoding %d\n", int(m_fsencoding)));
     for (int i = 0; i < m_lb->count(); i++) {
         // General parameters are encoded as utf-8. File names as
         // local8bit There is no hope for 8bit file names anyway
         // except for luck: the original encoding is unknown.
+        // As a special Windows hack, if fsencoding is set, we convert
+        // backslashes to slashes. This is an awful hack because
+        // fsencoding does not necessarily imply that the values are
+        // paths, and it will come back to haunt us one day.
 	QString text = m_lb->item(i)->text();
-        if (m_fsencoding)
+        if (m_fsencoding) {
+#ifdef _WIN32
+            string pth((const char *)(text.toLocal8Bit()));
+            path_slashize(pth);
+            ls.push_back(pth);
+#else
             ls.push_back((const char *)(text.toLocal8Bit()));
-        else
+#endif
+        } else {
             ls.push_back((const char *)(text.toUtf8()));
+        }
     }
     string s;
     stringsToString(ls, s);
