@@ -161,8 +161,10 @@ bool fsocc(const string &path, int *pc, long long *avmbs)
                             &totalbytes, NULL)) {
         return false;
     }
-    *pc = int(100 * double(freebytesavail) / double(totalbytes));
-    *avmbs = totalbytes / FSOCC_MB;
+    if (pc)
+        *pc = int(100 * double(freebytesavail) / double(totalbytes));
+    if (avmbs)
+        *avmbs = totalbytes / FSOCC_MB;
     return true;
 #else
 #ifdef sun
@@ -184,14 +186,15 @@ bool fsocc(const string &path, int *pc, long long *avmbs)
     if (FSOCC_TOTAVAIL > 0) {
 	fpc = 100.0 * FSOCC_USED / FSOCC_TOTAVAIL;
     }
-    *pc = int(fpc);
-    if (blocks) {
-	*blocks = 0;
+    if (pc)
+        *pc = int(fpc);
+    if (avmbs) {
+	*avmbs = 0;
 	if (buf.f_bsize > 0) {
 	    int ratio = buf.f_bsize > FSOCC_MB ? buf.f_bsize / FSOCC_MB :
 		FSOCC_MB / buf.f_bsize;
 
-	    *blocks = buf.f_bsize > FSOCC_MB ? 
+	    *avmbs = buf.f_bsize > FSOCC_MB ? 
                 ((long long)buf.f_bavail) * ratio :
 		((long long)buf.f_bavail) / ratio;
 	}
