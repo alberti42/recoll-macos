@@ -30,7 +30,8 @@ class RclConfig;
  * up the global signal handling. other threads must call recoll_threadinit()
  * when starting.
  *
- * @param flags   misc modifiers
+ * @param flags   misc modifiers. These are currently only used to customize 
+ *      the log file and verbosity.
  * @param cleanup function to call before exiting (atexit)
  * @param sigcleanup function to call on terminal signal (INT/HUP...) This 
  *       should typically set a flag which tells the program (recoll, 
@@ -41,7 +42,7 @@ class RclConfig;
  *               default and environment
  * @return the parsed configuration.
  */
-enum RclInitFlags {RCLINIT_NONE=0, RCLINIT_DAEMON=1};
+enum RclInitFlags {RCLINIT_NONE=0, RCLINIT_DAEMON=1, RCLINIT_IDX=2};
 extern RclConfig *recollinit(RclInitFlags flags,
 			     void (*cleanup)(void), void (*sigcleanup)(int), 
 			     string &reason, const string *argcnf = 0);

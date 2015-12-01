@@ -274,12 +274,19 @@ RclConfig *recollinit(RclInitFlags flags,
 	return 0;
     }
 
-    // Retrieve the log file name and level
+    // Retrieve the log file name and level. Daemon and batch indexing
+    // processes may use specific values, else fall back on common
+    // ones.
     string logfilename, loglevel;
     if (flags & RCLINIT_DAEMON) {
 	config->getConfParam(string("daemlogfilename"), logfilename);
 	config->getConfParam(string("daemloglevel"), loglevel);
     }
+    if ((flags & RCLINIT_IDX) && logfilename.empty())
+	config->getConfParam(string("idxlogfilename"), logfilename);
+    if ((flags & RCLINIT_IDX) && loglevel.empty()) 
+	config->getConfParam(string("idxloglevel"), loglevel);
+
     if (logfilename.empty())
 	config->getConfParam(string("logfilename"), logfilename);
     if (loglevel.empty())
