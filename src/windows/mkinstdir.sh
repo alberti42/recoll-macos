@@ -209,7 +209,9 @@ copywpd()
     chkcp $MINGWBIN/libgcc_s_dw2-1.dll $DEST
     chkcp $MINGWBIN/libstdc++-6.dll $DEST
     chkcp $ZLIB/zlib1.dll $DEST
+    chkcp $QTBIN/libwinpthread-1.dll $DEST
 }
+
 copychm()
 {
     DEST=$FILTERS

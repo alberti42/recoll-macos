@@ -151,10 +151,19 @@ string path_wingettempfilename(TCHAR *pref)
 #endif
 
 
-bool fsocc(const string &path, int *pc, long long *blocks)
+bool fsocc(const string &path, int *pc, long long *avmbs)
 {
+    static const int FSOCC_MB = 1024*1024;
 #ifdef _WIN32
-	return false;
+    ULARGE_INTEGER freebytesavail;
+    ULARGE_INTEGER totalbytes;
+    if (!GetDiskFreeSpaceEx(path.c_str(), &freebytesavail,
+                            &totalbytes, NULL)) {
+        return false;
+    }
+    *pc = int(100 * double(freebytesavail) / double(totalbytes));
+    *avmbs = totalbytes / FSOCC_MB;
+    return true;
 #else
 #ifdef sun
     struct statvfs buf;
@@ -178,7 +187,6 @@ bool fsocc(const string &path, int *pc, long long *blocks)
     *pc = int(fpc);
     if (blocks) {
 	*blocks = 0;
-#define FSOCC_MB (1024*1024)
 	if (buf.f_bsize > 0) {
 	    int ratio = buf.f_bsize > FSOCC_MB ? buf.f_bsize / FSOCC_MB :
 		FSOCC_MB / buf.f_bsize;
