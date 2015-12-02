@@ -172,8 +172,21 @@ bool MimeHandlerExecMultiple::next_document()
     // Send request to child process. This maybe the first/only
     // request for a given file, or a continuation request. We send an
     // empty file name in the latter case.
+    // We also compute the file md5 before starting the extraction:
+    // under Windows, we may not be able to do it while the file
+    // is opened by the filter
     ostringstream obuf;
+    string file_md5;
     if (m_filefirst) {
+	if (!m_forPreview) {
+	    string md5, xmd5, reason;
+	    if (MD5File(m_fn, md5, &reason)) {
+		file_md5 = MD5HexPrint(md5, xmd5);
+	    } else {
+		LOGERR(("MimeHandlerExecM: cant compute md5 for [%s]: %s\n",
+			m_fn.c_str(), reason.c_str()));
+	    }
+	}
         obuf << "FileName: " << m_fn.length() << "\n" << m_fn;
         // m_filefirst is set to true by set_document_file()
         m_filefirst = false;
@@ -301,14 +314,8 @@ bool MimeHandlerExecMultiple::next_document()
         m_metaData[cstr_dj_keymt] = mtype.empty() ? "text/html" : mtype;
         m_metaData.erase(cstr_dj_keyipath);
 	if (!m_forPreview) {
-	    string md5, xmd5, reason;
-	    if (MD5File(m_fn, md5, &reason)) {
-		m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
-	    } else {
-		LOGERR(("MimeHandlerExecM: cant compute md5 for [%s]: %s\n",
-			m_fn.c_str(), reason.c_str()));
-	    }
-	}
+            m_metaData[cstr_dj_keymd5] = file_md5;
+        }
     }
 
     handle_cs(m_metaData[cstr_dj_keymt], charset);
