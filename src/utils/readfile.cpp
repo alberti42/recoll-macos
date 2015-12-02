@@ -22,7 +22,9 @@
 #include <sys/types.h>
 #include "safesysstat.h"
 #include "safeunistd.h"
-
+#ifndef _WIN32
+#define O_BINARY 0
+#endif
 #include <string>
 
 #include "readfile.h"
@@ -92,7 +94,7 @@ bool file_scan(const string &fn, FileScanDo* doer, off_t startoffs,
 
     // If we have a file name, open it, else use stdin.
     if (!fn.empty()) {
-	fd = open(fn.c_str(), O_RDONLY);
+	fd = open(fn.c_str(), O_RDONLY|O_BINARY);
 	if (fd < 0 || fstat(fd, &st) < 0) {
 	    catstrerror(reason, "open/stat", errno);
 	    return false;

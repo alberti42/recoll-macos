@@ -33,6 +33,7 @@
 
 #ifndef _WIN32
 #include <sys/uio.h>
+#define O_BINARY 0
 #else
 struct iovec {
     void *iov_base;
@@ -722,7 +723,7 @@ bool CirCache::create(off_t maxsize, int flags)
     }
 
     if ((m_d->m_fd = ::open(m_d->datafn(m_dir).c_str(), 
-                            O_CREAT | O_RDWR | O_TRUNC, 0666)) < 0) {
+                            O_CREAT|O_RDWR|O_TRUNC|O_BINARY, 0666)) < 0) {
         m_d->m_reason << "CirCache::create: open/creat(" << 
             m_d->datafn(m_dir) << ") failed " << "errno " << errno;
         return false;
@@ -754,7 +755,8 @@ bool CirCache::open(OpMode mode)
         ::close(m_d->m_fd);
 
     if ((m_d->m_fd = ::open(m_d->datafn(m_dir).c_str(), 
-                            mode == CC_OPREAD ? O_RDONLY : O_RDWR)) < 0) {
+                            mode == CC_OPREAD ?
+                            O_RDONLY|O_BINARY : O_RDWR|O_BINARY)) < 0) {
         m_d->m_reason << "CirCache::open: open(" << m_d->datafn(m_dir) << 
             ") failed " << "errno " << errno;
         return false;

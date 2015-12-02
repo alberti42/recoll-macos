@@ -23,7 +23,7 @@
 #include "safesysstat.h"
 #include <time.h>
 
-#if 1 || defined(_WIN32)
+#if defined(_WIN32)
 #define USING_STD_REGEX
 #endif
 
