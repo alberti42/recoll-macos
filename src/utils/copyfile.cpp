@@ -26,6 +26,7 @@
 #ifndef _WIN32
 #include <sys/time.h>
 #include <utime.h>
+#define O_BINARY 0
 #endif
 
 #include <cstring>
@@ -43,7 +44,7 @@ bool copyfile(const char *src, const char *dst, string &reason, int flags)
     int dfd = -1;
     bool ret = false;
     char buf[CPBSIZ];
-    int oflags = O_WRONLY|O_CREAT|O_TRUNC;
+    int oflags = O_WRONLY|O_CREAT|O_TRUNC|O_BINARY;
 
     LOGDEB(("copyfile: %s to %s\n", src, dst));
 
@@ -96,7 +97,7 @@ bool stringtofile(const string& dt, const char *dst, string& reason,
     LOGDEB(("stringtofile:\n"));
     int dfd = -1;
     bool ret = false;
-    int oflags = O_WRONLY|O_CREAT|O_TRUNC;
+    int oflags = O_WRONLY|O_CREAT|O_TRUNC|O_BINARY;
 
     LOGDEB(("stringtofile: %u bytes to %s\n", (unsigned int)dt.size(), dst));
 
