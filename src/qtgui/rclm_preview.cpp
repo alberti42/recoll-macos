@@ -53,8 +53,10 @@ void RclMain::previewClosed(Preview *w)
 // config)
 bool RclMain::containerUpToDate(Rcl::Doc& doc)
 {
+    static bool ignore_out_of_date_preview = false;
+
     // If ipath is empty, we decide we don't care. Also, we need an index, 
-    if (doc.ipath.empty() || rcldb == 0)
+    if (ignore_out_of_date_preview || doc.ipath.empty() || rcldb == 0)
         return true;
 
     string udi;
@@ -93,11 +95,12 @@ bool RclMain::containerUpToDate(Rcl::Doc& doc)
                   "improve when it's done. ");
     } else if (ixnotact) {
         // Not main index
-        msg += tr("The document belongs to an external index"
+        msg += tr("The document belongs to an external index "
                   "which I can't update. ");
     }
-    msg += tr("Click Cancel to return to the list. "
-              "Click Ignore to show the preview anyway. ");
+    msg += tr("Click Cancel to return to the list. <br>"
+              "Click Ignore to show the preview anyway (and remember for "
+              "this session).");
 
     QMessageBox::StandardButtons bts = 
         QMessageBox::Ignore | QMessageBox::Cancel;
@@ -115,9 +118,12 @@ bool RclMain::containerUpToDate(Rcl::Doc& doc)
         vector<Rcl::Doc> docs(1, doc);
         updateIdxForDocs(docs);
     }
-    if (rep != QMessageBox::Ignore)
+    if (rep == QMessageBox::Ignore) {
+        ignore_out_of_date_preview = true;
+        return true;
+    } else {
         return false;
-    return true;
+    }
 }
 
 /** 
