@@ -251,28 +251,45 @@ int ConfSimple::get(const string &nm, string &value, const string &sk) const
 }
 
 // Appropriately output a subkey (nm=="") or variable line.
-// Splits long lines
+// We can't make any assumption about the data except that it does not
+// contain line breaks.
+// Avoid long lines if possible (for hand-editing)
+// We used to break at arbitrary places, but this was ennoying for
+// files with pure UTF-8 encoding (some files can be binary anyway),
+// because it made later editing difficult, as the file would no
+// longer have a valid encoding.
+// Any ASCII byte would be a safe break point for utf-8, but could
+// break some other encoding with, e.g. escape sequences? So break at
+// whitespace (is this safe with all encodings?).
+// Note that the choice of break point does not affect the validity of
+// the file data (when read back by conftree), only its ease of
+// editing with a normal editor.
 static ConfSimple::WalkerCode varprinter(void *f, const string &nm, 
 					 const string &value)
 {
-    ostream *output = (ostream *)f;
+    ostream& output = *((ostream *)f);
     if (nm.empty()) {
-	*output << "\n[" << value << "]\n";
+	output << "\n[" << value << "]\n";
     } else {
-	string value1;
-	if (value.length() < 60) {
-	    value1 = value;
+        output << nm << " = ";
+	if (nm.length() + value.length() < 75) {
+	    output << value;
 	} else {
-	    string::size_type pos = 0;
-	    while (pos < value.length()) {
-		string::size_type len = MIN(60, value.length() - pos);
-		value1 += value.substr(pos, len);
-		pos += len;
-		if (pos < value.length())
-		    value1 += "\\\n";
+            string::size_type ll = 0;
+	    for (string::size_type pos = 0; pos < value.length(); pos++) {
+                string::value_type c = value[pos];
+                output << c;
+                ll++;
+                // Break at whitespace if line too long and "a lot" of
+                // remaining data
+                if (ll > 50 && (value.length() - pos) > 10 &&
+                    (c == ' ' || c == '\t')) {
+                    ll = 0;
+                    output << "\\\n";
+                }
 	    }
 	}
-	*output << nm << " = " << value1 << "\n";
+        output << "\n";
     }
     return ConfSimple::WALK_CONTINUE;
 }
