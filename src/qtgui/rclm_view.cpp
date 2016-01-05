@@ -147,7 +147,7 @@ void RclMain::openWith(Rcl::Doc doc, string cmdspec)
     map<string, string> subs;
     subs["F"] = fn;
     subs["f"] = fn;
-    subs["U"] = url;
+    subs["U"] = url_encode(url);
     subs["u"] = url;
 
     execViewer(subs, false, execname, lcmd, cmdspec, doc);
@@ -372,7 +372,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     subs["M"] = doc.mimetype;
     subs["p"] = cpagenum;
     subs["s"] = (const char*)term.toLocal8Bit();
-    subs["U"] = url;
+    subs["U"] = url_encode(url);
     subs["u"] = url;
     // Let %(xx) access all metadata.
     for (map<string,string>::const_iterator it = doc.meta.begin();
