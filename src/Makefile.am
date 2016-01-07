@@ -622,7 +622,9 @@ if MAKEUSERDOC
 rdocdir = $(pkgdatadir)/doc
 rdoc_DATA = doc/user/usermanual.html doc/user/docbook-xsl.css 
 doc/user/usermanual.html: doc/user/usermanual.xml
-	$(MAKE) -C doc/user
+	mkdir -p doc/user
+	cp -p $(top_srcdir)/doc/user/Makefile doc/user
+	$(MAKE) -C doc/user VPATH=../../$(VPATH)/doc/user usermanual.html
 endif
 
 dist_man1_MANS = doc/man/recoll.1 doc/man/recollq.1 doc/man/recollindex.1

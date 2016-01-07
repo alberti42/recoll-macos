@@ -23,7 +23,7 @@ all: usermanual.html usermanual.pdf
 
 usermanual.html: usermanual.xml
 	xsltproc ${commonoptions} \
-            -o tmpfile.html "${XSLDIR}/html/docbook.xsl" usermanual.xml
+            -o tmpfile.html "${XSLDIR}/html/docbook.xsl" $<
 	-tidy -indent tmpfile.html > usermanual.html
 	rm -f tmpfile.html
 
@@ -31,10 +31,10 @@ index.html: usermanual.xml
 	xsltproc ${commonoptions} \
             --stringparam use.id.as.filename 1 \
             --stringparam root.filename index \
-            "${XSLDIR}/html/chunk.xsl" usermanual.xml
+            "${XSLDIR}/html/chunk.xsl" $<
 
 usermanual.pdf: usermanual.xml
-	dblatex usermanual.xml 
+	dblatex $<
 
 clean:
 	rm -f RCL.*.html usermanual.pdf usermanual.html index.html tmpfile.html
