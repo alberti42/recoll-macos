@@ -17,7 +17,9 @@ commonoptions=--stringparam section.autolabel 1 \
   --stringparam generate.toc "book toc,title,figure,table,example,equation"
 
 
-all: usermanual.html index.html usermanual.pdf
+# index.html chunk format target replaced by nicer webhelp (needs separate
+# make) in webhelp/ subdir
+all: usermanual.html usermanual.pdf 
 
 usermanual.html: usermanual.xml
 	xsltproc ${commonoptions} \
