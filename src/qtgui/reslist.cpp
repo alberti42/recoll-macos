@@ -331,7 +331,8 @@ ResList::ResList(QWidget* parent, const char* name)
     languageChange();
 
     (void)new HelpClient(this);
-    HelpClient::installMap(qs2utf8s(this->objectName()), "RCL.SEARCH.RESLIST");
+    HelpClient::installMap(qs2utf8s(this->objectName()),
+                           "RCL.SEARCH.GUI.RESLIST");
 
 #if 0
     // See comments in "highlighted

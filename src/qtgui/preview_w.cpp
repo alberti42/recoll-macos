@@ -138,7 +138,7 @@ void Preview::init()
 
     (void)new HelpClient(this);
     HelpClient::installMap((const char *)objectName().toUtf8(), 
-                           "RCL.SEARCH.PREVIEW");
+                           "RCL.SEARCH.GUI.PREVIEW");
 
     // signals and slots connections
     connect(searchTextCMB, SIGNAL(activated(int)), 

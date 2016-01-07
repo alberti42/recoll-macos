@@ -153,7 +153,7 @@ void SSearch::searchTypeChanged(int typ)
 			       "RCL.SEARCH.LANG");
     else 
 	HelpClient::installMap((const char *)this->objectName().toUtf8(), 
-			       "RCL.SEARCH.SIMPLE");
+			       "RCL.SEARCH.GUI.SIMPLE");
 
     // Also fix tooltips
     switch (typ) {

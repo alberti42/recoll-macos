@@ -162,7 +162,8 @@ void RclMain::init()
     (void)statusBar();
 
     (void)new HelpClient(this);
-    HelpClient::installMap((const char *)this->objectName().toUtf8(), "RCL.SEARCH.SIMPLE");
+    HelpClient::installMap((const char *)this->objectName().toUtf8(),
+                           "RCL.SEARCH.GUI.SIMPLE");
 
     // Set the focus to the search terms entry:
     sSearch->queryText->setFocus();

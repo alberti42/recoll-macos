@@ -52,7 +52,7 @@ void AdvSearch::init()
 {
     (void)new HelpClient(this);
     HelpClient::installMap((const char *)objectName().toUtf8(), 
-			   "RCL.SEARCH.COMPLEX");
+			   "RCL.SEARCH.GUI.COMPLEX");
 
     // signals and slots connections
     connect(delFiltypPB, SIGNAL(clicked()), this, SLOT(delFiltypPB_clicked()));

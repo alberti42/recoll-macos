@@ -97,7 +97,7 @@ void SpellW::init()
 
     (void)new HelpClient(this);
     HelpClient::installMap((const char *)this->objectName().toUtf8(), 
-			   "RCL.SEARCH.TERMEXPLORER");
+			   "RCL.SEARCH.GUI.TERMEXPLORER");
 
     // signals and slots connections
     connect(baseWordLE, SIGNAL(textChanged(const QString&)), 
