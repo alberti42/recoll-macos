@@ -434,7 +434,7 @@ void RclMain::startManual(const string& index)
     Rcl::Doc doc;
     string path = theconfig->getDatadir();
     path = path_cat(path, "doc");
-    path = path_cat(path, "usermanual.html");
+    path = path_cat(path, "index.html");
     LOGDEB(("RclMain::startManual: help index is %s\n", 
 	    index.empty()?"(null)":index.c_str()));
     if (!index.empty()) {

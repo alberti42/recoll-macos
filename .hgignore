@@ -70,7 +70,6 @@ src/doc/user/RCL.SEARCH.LANG.html
 src/doc/user/RCL.SEARCH.PTRANS.html
 src/doc/user/RCL.SEARCH.html
 src/doc/user/index.html
-src/doc/user/usermanual.html
 src/doc/user/usermanual.pdf
 src/filters/rclexecm.pyc
 src/filters/rcllatinclass.pyc
