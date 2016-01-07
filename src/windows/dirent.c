@@ -103,7 +103,13 @@ struct dirent *readdir(DIR *dir)
         if(!dir->result.d_name || _findnext(dir->handle, &dir->info) != -1)
         {
             result         = &dir->result;
+            result->d_mtime = dir->info.time_write;
+            result->d_size = dir->info.size;
             result->d_name = dir->info.name;
+            if (dir->info.attrib & _A_SUBDIR)
+                result->d_mode = S_IFDIR;
+            else
+                result->d_mode = S_IFREG;
         }
     }
     else

@@ -38,15 +38,16 @@
 #include "pathut.h"
 #include "fstreewalk.h"
 
-#ifndef NO_NAMESPACES
 using namespace std;
-#endif /* NO_NAMESPACES */
 
 bool FsTreeWalker::o_useFnmPathname = true;
 
 const int FsTreeWalker::FtwTravMask = FtwTravNatural|
     FtwTravBreadth|FtwTravFilesThenDirs|FtwTravBreadthThenDepth;
 
+#ifndef _WIN32
+// dev/ino means nothing on Windows. It seems that FileId could replace it
+// but we only use this for cycle detection which we just disable.
 class DirId {
 public:
     dev_t dev;
@@ -57,6 +58,7 @@ public:
 	return dev < r.dev || (dev == r.dev && ino < r.ino);
     }
 };
+#endif
 
 class FsTreeWalker::Internal {
 public:
@@ -75,7 +77,9 @@ public:
     // of directory paths to be processed, and we do not recurse.
     deque<string> dirs;
     int errors;
+#ifndef _WIN32
     set<DirId> donedirs;
+#endif
     void logsyserr(const char *call, const string &param) 
     {
 	errors++;
@@ -344,6 +348,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
     // no point in entering again.
     // For now, we'll ignore the "other kind of cycle" part and only monitor
     // this is FtwFollow is set
+#ifndef _WIN32
     if (data->options & FtwFollow) {
 	DirId dirid(stp->st_dev, stp->st_ino);
 	if (data->donedirs.find(dirid) != data->donedirs.end()) {
@@ -353,7 +358,8 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 	}
 	data->donedirs.insert(dirid);
     }
-
+#endif
+    
     DIR *d = opendir(top.c_str());
     if (d == 0) {
 	data->logsyserr("opendir", top);
@@ -390,12 +396,25 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 	}
 
         fn = path_cat(top, ent->d_name);
+#ifdef _WIN32
+        // readdir gets the useful attrs, no inode indirection on windows
+        memset(&st, 0, sizeof(st));
+        st.st_mtime = ent->d_mtime;
+        st.st_size = ent->d_size;
+        st.st_mode = ent->d_mode;
+        // ctime is really creation time on Windows. Just use mtime
+        // for all. We only use ctime on Unix to catch xattr changes
+        // anyway.
+        st.st_ctime = st.st_mtime;
+#else
         int statret = (data->options & FtwFollow) ? stat(fn.c_str(), &st) :
             lstat(fn.c_str(), &st);
         if (statret == -1) {
             data->logsyserr("stat", fn);
             continue;
         }
+#endif
+
         if (!data->skippedPaths.empty()) {
             // We do not check the ancestors. This means that you can have
             // a topdirs member under a skippedPath, to index a portion of

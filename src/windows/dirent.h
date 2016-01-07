@@ -21,6 +21,12 @@ typedef struct DIR DIR;
 struct dirent
 {
     char *d_name;
+    // The native call we use, findfirst/next return file attributes at once,
+    // no need for a separate stat() call in most cases
+    // Note that ctime is actually creation time. No use for posix.
+    time_t d_mtime;
+    off_t d_size;
+    int   d_mode; // S_IFREG or S_IFDIR only
 };
 
 DIR           *opendir(const char *);

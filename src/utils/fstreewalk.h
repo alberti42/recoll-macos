@@ -120,6 +120,7 @@ class FsTreeWalker {
 class FsTreeWalkerCB {
  public:
     virtual ~FsTreeWalkerCB() {}
+    // Only st_mtime, st_ctime, st_size, st_mode (filetype bits: dir/reg/lnk),
     virtual FsTreeWalker::Status 
 	processone(const string &, const struct stat *, FsTreeWalker::CbFlag) 
 	= 0;
