@@ -20,8 +20,8 @@ alink="#0000FF">
     <div class="titlepage">
       <div>
         <div>
-          <h1 class="title"><a name="idp33265328" id=
-          "idp33265328"></a>Recoll user manual</h1>
+          <h1 class="title"><a name="idp45717744" id=
+          "idp45717744"></a>Recoll user manual</h1>
         </div>
 
         <div>
@@ -109,13 +109,13 @@ alink="#0000FF">
                 multiple indexes</a></span></dt>
 
                 <dt><span class="sect2">2.1.3. <a href=
-                "#idp65268448">Document types</a></span></dt>
+                "#idp51287344">Document types</a></span></dt>
 
                 <dt><span class="sect2">2.1.4. <a href=
-                "#idp65288128">Indexing failures</a></span></dt>
+                "#idp51307024">Indexing failures</a></span></dt>
 
                 <dt><span class="sect2">2.1.5. <a href=
-                "#idp65295136">Recovery</a></span></dt>
+                "#idp51314032">Recovery</a></span></dt>
               </dl>
             </dd>
 
@@ -488,6 +488,29 @@ alink="#0000FF">
         </div>
       </div>
 
+      <p>This document introduces full text search notions and
+      describes the installation and use of the <span class=
+      "application">Recoll</span> application. This version
+      describes <span class="application">Recoll</span> 1.22.</p>
+
+      <p><span class="application">Recoll</span> was for a long
+      time dedicated to Unix-like systems. It was only lately
+      (2015) ported to <span class="application">MS-Windows</span>.
+      Many references in this manual, especially file locations,
+      are specific to Unix, and not valid on <span class=
+      "application">Windows</span>. Some described features are
+      also not available on <span class=
+      "application">Windows</span>.</p>
+
+      <p>The manual will be progressively updated for <span class=
+      "application">Windows</span>. Until this happens, most
+      references to files can be translated by looking under the
+      Recoll installation directory (esp. the <code class=
+      "filename">Share</code> subdirectory). The user configuration
+      is stored by default under <code class=
+      "filename">AppData/Local/Recoll</code> inside the user
+      directory, along with the index itself.</p>
+
       <div class="sect1">
         <div class="titlepage">
           <div>
@@ -544,8 +567,8 @@ alink="#0000FF">
         </div>
 
         <p><span class="application">Recoll</span> is a full text
-        search application. Full text search finds your data by
-        content rather than by external attributes (like a file
+        search application, which means that it finds your data by
+        content rather than by external attributes (like the file
         name). You specify words (terms) which should or should not
         appear in the text you are looking for, and receive in
         return a list of matching documents, ordered so that the
@@ -679,28 +702,25 @@ alink="#0000FF">
         it is much less cumbersome than separating your documents
         according to what language they are written in.</p>
 
-        <p>Before version 1.18, <span class=
-        "application">Recoll</span> stripped most accents and
-        diacritics from terms, and converted them to lower case
-        before either storing them in the index or searching for
-        them. As a consequence, it was impossible to search for a
-        particular capitalization of a term (<code class=
-        "literal">US</code> / <code class="literal">us</code>), or
-        to discriminate two terms based on diacritics (<code class=
-        "literal">sake</code> / <code class=
-        "literal">sak&eacute;</code>, <code class=
+        <p>By default, <span class="application">Recoll</span>
+        strips most accents and diacritics from terms, and converts
+        them to lower case before either storing them in the index
+        or searching for them. As a consequence, it is impossible
+        to search for a particular capitalization of a term
+        (<code class="literal">US</code> / <code class=
+        "literal">us</code>), or to discriminate two terms based on
+        diacritics (<code class="literal">sake</code> /
+        <code class="literal">sak&eacute;</code>, <code class=
         "literal">mate</code> / <code class=
         "literal">mat&eacute;</code>).</p>
 
-        <p>As of version 1.18, <span class=
-        "application">Recoll</span> can optionally store the raw
-        terms, without accent stripping or case conversion. In this
-        configuration, it is still possible (and most common) for a
-        query to be insensitive to case and/or diacritics.
-        Appropriate term expansions are performed before actually
-        accessing the main index. This is described in more detail
-        in the <a class="link" href="#RCL.INDEXING.CONFIG.SENS"
-        title=
+        <p><span class="application">Recoll</span> versions 1.18
+        and newer can optionally store the raw terms, without
+        accent stripping or case conversion. In this configuration,
+        default searches will behave as before, but it is possible
+        to perform searches sensitive to case and diacritics. This
+        is described in more detail in the <a class="link" href=
+        "#RCL.INDEXING.CONFIG.SENS" title=
         "2.3.2.&nbsp;Index case and diacritics sensitivity">section
         about index case and diacritics sensitivity</a>.</p>
 
@@ -711,20 +731,19 @@ alink="#0000FF">
         "2.3.&nbsp;Index configuration">configuration files</a>. A
         default configuration is copied into a standard location
         (usually something like <code class=
-        "filename">/usr/[local/]share/recoll/examples</code>)
-        during installation. The default values set by the
-        configuration files in this directory may be overridden by
-        values that you set inside your personal configuration,
-        found by default in the <code class=
-        "filename">.recoll</code> sub-directory of your home
-        directory. The default configuration will index your home
-        directory with default parameters and should be sufficient
-        for giving <span class="application">Recoll</span> a try,
-        but you may want to adjust it later, which can be done
-        either by editing the text files or by using configuration
-        menus in the <span class=
-        "command"><strong>recoll</strong></span> GUI. Some other
-        parameters affecting only the <span class=
+        "filename">/usr/share/recoll/examples</code>) during
+        installation. The default values set by the configuration
+        files in this directory may be overridden by values set
+        inside your personal configuration, found by default in the
+        <code class="filename">.recoll</code> sub-directory of your
+        home directory. The default configuration will index your
+        home directory with default parameters and should be
+        sufficient for giving <span class=
+        "application">Recoll</span> a try, but you may want to
+        adjust it later, which can be done either by editing the
+        text files or by using configuration menus in the
+        <span class="command"><strong>recoll</strong></span> GUI.
+        Some other parameters affecting only the <span class=
         "command"><strong>recoll</strong></span> GUI are stored in
         the standard location defined by <span class=
         "application">Qt</span>.</p>
@@ -943,8 +962,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp65268448" id=
-                "idp65268448"></a>2.1.3.&nbsp;Document types</h3>
+                <h3 class="title"><a name="idp51287344" id=
+                "idp51287344"></a>2.1.3.&nbsp;Document types</h3>
               </div>
             </div>
           </div>
@@ -1037,8 +1056,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp65288128" id=
-                "idp65288128"></a>2.1.4.&nbsp;Indexing
+                <h3 class="title"><a name="idp51307024" id=
+                "idp51307024"></a>2.1.4.&nbsp;Indexing
                 failures</h3>
               </div>
             </div>
@@ -1078,8 +1097,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp65295136" id=
-                "idp65295136"></a>2.1.5.&nbsp;Recovery</h3>
+                <h3 class="title"><a name="idp51314032" id=
+                "idp51314032"></a>2.1.5.&nbsp;Recovery</h3>
               </div>
             </div>
           </div>
@@ -4586,15 +4605,14 @@ bye goodbye "see you" \
           </ul>
         </div>
 
-        <p>More generally, the path translation facility may be
-        useful whenever the documents paths seen by the indexer are
-        not the same as the ones which should be used at query
-        time.</p>
-
         <p><span class="application">Recoll</span> has a facility
         for rewriting access paths when extracting the data from
         the index. The translations can be defined for the main
         index and for any additional query index.</p>
+
+        <p>The path translation facility will be useful whenever
+        the documents paths seen by the indexer are not the same as
+        the ones which should be used at query time.</p>
 
         <p>In the above NFS example, <span class=
         "application">Recoll</span> could be instructed to rewrite
@@ -4608,7 +4626,11 @@ bye goodbye "see you" \
         "5.4.7.&nbsp;The ptrans file"><code class=
         "filename">ptrans</code></a> configuration file, which can
         be edited by hand or from the GUI external indexes
-        configuration dialog.</p>
+        configuration dialog: <span class=
+        "guimenu">Preferences</span> &rarr; <span class=
+        "guimenuitem">External index dialog</span>, then click the
+        <span class="guilabel">Paths translations</span> button on
+        the right below the index list.</p>
 
         <div class="note" style=
         "margin-left: 0.5in; margin-right: 0.5in;">
@@ -6958,7 +6980,12 @@ except:
         "application">FreeBSD</span> ports, etc.), or from some
         type of "backports" repository providing versions newer
         than the standard ones, or found on the <span class=
-        "application">Recoll</span> WEB site in some cases.</p>
+        "application">Recoll</span> WEB site in some cases. The
+        most up-to-date information about Recoll packages can
+        usually be found on the <a class="ulink" href=
+        "http://www.recoll.org/download.html" target=
+        "_top"><span class="application">Recoll</span> WEB site
+        downloads page</a></p>
 
         <p>There used to exist another form of binary install, as
         pre-compiled source trees, but these are just less
@@ -6997,6 +7024,18 @@ except:
               packages</h2>
             </div>
           </div>
+        </div>
+
+        <div class="note" style=
+        "margin-left: 0.5in; margin-right: 0.5in;">
+          <h3 class="title">Note</h3>
+
+          <p>The <span class="application">Windows</span>
+          installation of <span class="application">Recoll</span>
+          is self-contained, and only needs Python 2.7 to be
+          externally installed. <span class=
+          "application">Windows</span> users can skip this
+          section.</p>
         </div>
 
         <p><span class="application">Recoll</span> uses external
@@ -7638,9 +7677,9 @@ except:
         <p>For each index, there are at least two sets of
         configuration files. System-wide configuration files are
         kept in a directory named like <code class=
-        "filename">/usr/[local/]share/recoll/examples</code>, and
-        define default values, shared by all indexes. For each
-        index, a parallel set of files defines the customized
+        "filename">/usr/share/recoll/examples</code>, and define
+        default values, shared by all indexes. For each index, a
+        parallel set of files defines the customized
         parameters.</p>
 
         <p>The default location of the customized configuration is
@@ -9549,7 +9588,7 @@ application/x-blobapp = exec rclblob
                   displayed for the files inside the result lists.
                   Icons are normally 64x64 pixels PNG files which
                   live in <code class=
-                  "filename">/usr/[local/]share/recoll/images</code>.</p>
+                  "filename">/usr/share/recoll/images</code>.</p>
                 </li>
 
                 <li class="listitem">
@@ -9566,9 +9605,9 @@ application/x-blobapp = exec rclblob
             "replaceable"><code>rclblob</code></em> handler should
             be an executable program or script which exists inside
             <code class=
-            "filename">/usr/[local/]share/recoll/filters</code>. It
-            will be given a file name as argument and should output
-            the text or html contents on the standard output.</p>
+            "filename">/usr/share/recoll/filters</code>. It will be
+            given a file name as argument and should output the
+            text or html contents on the standard output.</p>
 
             <p>The <a class="link" href="#RCL.PROGRAM.FILTERS"
             title=
