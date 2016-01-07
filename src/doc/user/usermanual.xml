@@ -5,6 +5,7 @@
 <!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/features.html#doctypes'>http://www.recoll.org/features.html</ulink>">
 <!ENTITY RCLVERSION "1.22">
 <!ENTITY XAP "<application>Xapian</application>">
+<!ENTITY WIN "<application>Windows</application>">
 <!ENTITY WIKI "http://bitbucket.org/medoc/recoll/wiki/">
 ]>
 
@@ -25,8 +26,8 @@
       <year>2005-2015</year>
       <holder role="mailto:jfd@recoll.org">Jean-Francois Dockes</holder>
     </copyright>
-    <abstract>
 
+    <abstract>
     <para><literal>Permission is granted to copy, distribute and/or
     modify this document under the terms of the GNU Free Documentation
     License, Version 1.3 or any later version published by the Free
@@ -47,7 +48,25 @@
   <chapter id="RCL.INTRODUCTION">
     <title>Introduction</title>
 
-    <sect1 id="RCL.INTRODUCTION.TRYIT">
+      <para>This document introduces full text search notions
+      and describes the installation and use of the &RCL;
+      application. This version describes &RCL; &RCLVERSION;.</para>
+
+      <para>&RCL; was for a long time dedicated to Unix-like systems. It
+      was only lately (2015) ported to
+      <application>MS-Windows</application>. Many references in this
+      manual, especially file locations, are specific to Unix, and not
+      valid on &WIN;. Some described features are also not available on
+      &WIN;.</para>
+
+      <para>The manual will be progressively updated for &WIN;. Until this
+      happens, most references to files can be translated by looking under
+      the Recoll installation directory (esp. the
+      <filename>Share</filename> subdirectory). The user configuration is
+      stored by default under <filename>AppData/Local/Recoll</filename>
+      inside the user directory, along with the index itself.</para>
+      
+      <sect1 id="RCL.INTRODUCTION.TRYIT">
       <title>Giving it a try</title>
       
       <para>If you do not like reading manuals (who does?) but 
@@ -78,9 +97,9 @@
     <sect1 id="RCL.INTRODUCTION.SEARCH"> 
       <title>Full text search</title>
 
-      <para>&RCL; is a full text search application. Full text search
+      <para>&RCL; is a full text search application, which means that it
         finds your data by content rather than by external attributes
-        (like a file name). You specify words
+        (like the file name). You specify words
         (terms) which should or should not appear in the text you are
         looking for, and receive in return a list of matching
         documents, ordered so that the most
@@ -188,23 +207,22 @@
         cumbersome than separating your documents according to what
         language they are written in.</para>
 
-      <para>Before version 1.18, &RCL; stripped most accents and
-        diacritics from terms, and converted them to lower case before
+      <para>By default, &RCL; strips most accents and
+        diacritics from terms, and converts them to lower case before
         either storing them in the index or searching for them. As a
-        consequence, it was impossible to search for a particular
+        consequence, it is impossible to search for a particular
         capitalization of a term (<literal>US</literal> /
         <literal>us</literal>), or to discriminate two terms based on
         diacritics (<literal>sake</literal> / <literal>saké</literal>, 
         <literal>mate</literal> / <literal>maté</literal>).</para>
       
-      <para>As of version 1.18, &RCL; can optionally store the raw terms,
-        without accent stripping or case conversion. In this configuration,
-        it is still possible (and most common) for a query to be
-        insensitive to case and/or diacritics. Appropriate term expansions
-        are performed before actually accessing the main index. This is
-        described in more detail in the <link
-        linkend="RCL.INDEXING.CONFIG.SENS">section about index case and
-        diacritics sensitivity</link>.</para>
+        <para>&RCL; versions 1.18 and newer can optionally store the raw
+        terms, without accent stripping or case conversion. In this
+        configuration, default searches will behave as before, but it is
+        possible to perform searches sensitive to case and
+        diacritics. This is described in more detail
+        in the <link linkend="RCL.INDEXING.CONFIG.SENS">section about index
+        case and diacritics sensitivity</link>.</para>
 
       <para>&RCL; has many parameters which define exactly what to
         index, and how to classify and decode the source
@@ -212,12 +230,12 @@
         linkend="RCL.INDEXING.CONFIG">configuration files</link>. A
         default configuration is copied into a standard location
         (usually something like
-        <filename>/usr/[local/]share/recoll/examples</filename>)
+        <filename>/usr/share/recoll/examples</filename>)
         during installation. The default values set by the
         configuration files in this directory may be overridden by
-        values that you set inside your personal configuration, found
+        values set inside your personal configuration, found
         by default in the <filename>.recoll</filename> sub-directory
-        of your home directory.  The default configuration will index
+        of your home directory. The default configuration will index
         your home directory with default parameters and should be
         sufficient for giving &RCL; a try, but you may want to adjust
         it later, which can be done either by editing the text files
@@ -3069,14 +3087,14 @@ bye goodbye "see you" \
           inconvenient to run the indexer.</para></listitem>
     </itemizedlist>
 
-    <para>More generally, the path translation facility may be useful
-      whenever the documents paths seen by the indexer are not the same
-      as the ones which should be used at query time.</para>
-
     <para>&RCL; has a facility for rewriting access paths when
       extracting the data from the index. The translations can be
       defined for the main index and for any additional query
       index.</para>
+
+      <para>The path translation facility will be useful
+      whenever the documents paths seen by the indexer are not the same
+      as the ones which should be used at query time.</para>
 
     <para>In the above NFS example, &RCL; could be instructed to
       rewrite any <filename>file:///home/me</filename> URL from the
@@ -3087,7 +3105,12 @@ bye goodbye "see you" \
       <link linkend="RCL.INSTALL.CONFIG.PTRANS">
         <filename>ptrans</filename></link> configuration file, which
         can be edited by hand or from the GUI external indexes
-      configuration dialog.</para>
+        configuration dialog: <menuchoice>
+	    <guimenu>Preferences</guimenu>
+	    <guimenuitem>External index dialog</guimenuitem>
+          </menuchoice>, then click the <guilabel>Paths
+          translations</guilabel> button on the right below the index
+          list.</para>
 
       <note><para>Due to a current bug, the GUI must be restarted
       after changing the <filename>ptrans</filename> values (even when they
@@ -4756,7 +4779,11 @@ except:
 	   <application>FreeBSD</application> ports, etc.), or from some type
 	   of "backports" repository providing versions newer than the standard
 	   ones, or found on the &RCL; WEB site in some
-	   cases.</para>
+	   cases. The most up-to-date information about Recoll packages can
+           usually be found on the
+           <ulink url="http://www.recoll.org/download.html">
+         <application>Recoll</application> WEB site downloads
+      page</ulink></para> 
 
 	   <para>There used to exist another form of binary install, as
 	   pre-compiled source trees, but these are just less convenient than
@@ -4785,6 +4812,10 @@ except:
     <sect1 id="RCL.INSTALL.EXTERNAL">
       <title>Supporting packages</title>
 
+      <note><para>The &WIN; installation of &RCL; is self-contained, and
+      only needs Python 2.7 to be externally installed. &WIN; users can
+      skip this section.</para></note>
+      
       <para>&RCL; uses external applications to index some file
         types. You need to install them for the file types that you wish to
         have indexed (these are run-time optional dependencies. None is
@@ -5212,7 +5243,7 @@ except:
       <para>For each index, there are at least two sets of
         configuration files. System-wide configuration files are kept
         in a directory named
-        like <filename>/usr/[local/]share/recoll/examples</filename>,
+        like <filename>/usr/share/recoll/examples</filename>,
         and define default values, shared by all indexes. For each
         index, a parallel set of files defines the customized
         parameters.</para>
@@ -6625,7 +6656,7 @@ application/x-blobapp = exec rclblob
 		section, you should choose an icon to be displayed for the
 		files inside the result lists. Icons are normally 64x64
 		pixels PNG files which live in
-		<filename>/usr/[local/]share/recoll/images</filename>.</para>
+		<filename>/usr/share/recoll/images</filename>.</para>
             </listitem>
             <listitem><para>Under the <literal>[categories]</literal>
 		section, you should add the MIME type where it makes sense
@@ -6636,7 +6667,7 @@ application/x-blobapp = exec rclblob
 
           <para>The <replaceable>rclblob</replaceable> handler should
             be an executable program or script which exists inside
-            <filename>/usr/[local/]share/recoll/filters</filename>. It
+            <filename>/usr/share/recoll/filters</filename>. It
             will be given a file name as argument and should output the
             text or html contents on the standard output.</para>
 

@@ -57,18 +57,19 @@ LUCENE_CORE_JAR   := $(DOCBOOK_EXTENSIONS_DIR)/lucene-core-3.0.0.jar
 
 classpath := $(INDEXER_JAR):$(TAGSOUP_JAR):$(LUCENE_ANALYZER_JAR):$(LUCENE_CORE_JAR)
 
-all: webhelp
+all: copyfiles docs/index.html # index
 
-webhelp: $(INPUT_XML) copyfiles chunk # index
+${OUTPUT_DIR}/favicon.ico: template/favicon.ico
+	cp -p  template/favicon.ico ${OUTPUT_DIR}/favicon.ico
+${OUTPUT_DIR}/common/main.js: template/common/main.js
+	cp -rp template/common ${OUTPUT_DIR}
 
-copyfiles:
-	-rm -rf $(OUTPUT_DIR)
-	mkdir -p $(OUTPUT_DIR)
-	cp -r template/common ${OUTPUT_DIR}
-	test ! -d $(USER_IMAGES_PARENT_DIR)/images/ || cp -r $(USER_IMAGES_PARENT_DIR)/images ${OUTPUT_DIR}/images
-	cp template/favicon.ico ${OUTPUT_DIR}/
+copyfiles: ${OUTPUT_DIR}/favicon.ico ${OUTPUT_DIR}/common/main.js
 
-chunk:
+# test ! -d $(USER_IMAGES_PARENT_DIR)/images/ || \
+#     cp -rp $(USER_IMAGES_PARENT_DIR)/images ${OUTPUT_DIR}/images
+
+docs/index.html: ${INPUT_XML}
 	xsltproc  --xinclude --output xincluded-profiled.xml  \
                   --stringparam  profile.arch ${PROFILE.ARCH} \
                   --stringparam  profile.audience ${PROFILE.AUDIENCE} \
@@ -88,12 +89,11 @@ chunk:
                   --stringparam  profile.value ${PROFILE.VALUE} \
                   ${DOCBOOK_DIST}/profiling/profile.xsl  \
                   ${INPUT_XML}
-
 	xsltproc ${OTHER_XSLTPROC_ARGS} \
                 ${DOCBOOK_DIST}/webhelp/xsl/webhelp.xsl \
                 xincluded-profiled.xml 
-
 	rm xincluded-profiled.xml
+
 index:
 	java \
                 -DhtmlDir=$(OUTPUT_DIR) \
@@ -110,4 +110,5 @@ index:
 
 clean:
 	$(RM) -r ${OUTPUT_DIR}
+	mkdir -p $(OUTPUT_DIR)
 

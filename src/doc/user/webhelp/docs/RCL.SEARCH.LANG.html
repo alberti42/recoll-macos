@@ -1,0 +1,323 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+<title>The query language -  - Recoll user manual</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"></meta><link rel="home" href="index.html" title="Recoll user manual"></link><link rel="up" href="RCL.SEARCH.html" title="Searching"></link><link rel="prev" href="RCL.SEARCH.PTRANS.html" title="Path translations"></link><link rel="next" href="RCL.SEARCH.LANG.MODIFIERS.html" title="Modifiers"></link><meta name="Section-title" content="The query language"></meta><script type="text/javascript">
+            //The id for tree cookie
+            var treeCookieId = "treeview-7584";
+            var language = "en";
+            var w = new Object();
+            //Localization
+            txt_filesfound = 'Results';
+            txt_enter_at_least_1_char = "You must enter at least one character.";
+            txt_browser_not_supported = "JavaScript is disabled on your browser. Please enable JavaScript to enjoy all the features of this site.";
+            txt_please_wait = "Please wait. Search in progress...";
+            txt_results_for = "Results for: ";
+        </script><link rel="shortcut icon" href="favicon.ico" type="image/x-icon"></link><link rel="stylesheet" type="text/css" href="common/css/positioning.css"></link><link rel="stylesheet" type="text/css" href="common/jquery/theme-redmond/jquery-ui-1.8.2.custom.css"></link><link rel="stylesheet" type="text/css" href="common/jquery/treeview/jquery.treeview.css"></link><style type="text/css">
+
+#noscript{
+    font-weight:bold;
+	background-color: #55AA55;
+    font-weight: bold;
+    height: 25spx;
+    z-index: 3000;
+	top:0px;
+	width:100%;
+	position: relative;
+	border-bottom: solid 5px black;
+	text-align:center;
+	color: white;
+}
+
+input {
+    margin-bottom: 5px;
+    margin-top: 2px;
+}
+.folder {
+    display: block;
+    height: 22px;
+    padding-left: 20px;
+    background: transparent url(common/jquery/treeview/images/folder.gif) 0 0px no-repeat;
+}
+span.contentsTab {
+    padding-left: 20px;
+    background: url(common/images/toc-icon.png) no-repeat 0 center;
+}
+span.searchTab {
+    padding-left: 20px;
+    background: url(common/images/search-icon.png) no-repeat 0 center;
+}
+
+/* Overide jquery treeview's defaults for ul. */
+.treeview ul {
+    background-color: transparent;
+    margin-top: 4px;
+}		
+#webhelp-currentid {
+    background-color: #D8D8D8 !important;
+}
+.treeview .hover { color: black; }
+.filetree li span a { text-decoration: none; font-size: 12px; color: #517291; }
+
+/* Override jquery-ui's default css customizations. These are supposed to take precedence over those.*/
+.ui-widget-content {
+    border: 0px; 
+    background: none; 
+    color: none;     
+}
+.ui-widget-header {
+    color: #e9e8e9;
+    border-left: 1px solid #e5e5e5;
+    border-right: 1px solid #e5e5e5;
+    border-bottom: 1px solid #bbc4c5;
+    border-top: 4px solid #e5e5e5;
+    border: medium none;
+    background: #F4F4F4; /* old browsers */
+    background: -moz-linear-gradient(top, #F4F4F4 0%, #E6E4E5 100%); /* firefox */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#F4F4F4), color-stop(100%,#E6E4E5)); /* webkit */    
+    font-weight: none;
+}
+.ui-widget-header a { color: none; }
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default { 
+border: none; background: none; font-weight: none; color: none; }
+.ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited { color: black; text-decoration: none; }
+.ui-state-hover, .ui-widget-content .ui-state-hover, .ui-widget-header .ui-state-hover, .ui-state-focus, .ui-widget-content .ui-state-focus, .ui-widget-header .ui-state-focus { border: none; background: none; font-weight: none; color: none; }
+
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active { border: none; background: none; font-weight: none; color: none; }
+.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited { 
+    color: black; text-decoration: none; 	
+    background: #C6C6C6; /* old browsers */
+    background: -moz-linear-gradient(top, #C6C6C6 0%, #D8D8D8 100%); /* firefox */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#C6C6C6), color-stop(100%,#D8D8D8)); /* webkit */
+    -webkit-border-radius:15px; -moz-border-radius:10px;
+    border: 1px solid #f1f1f1;
+}    
+.ui-corner-all { border-radius: 0 0 0 0; }
+
+.ui-tabs { padding: .2em;}
+.ui-tabs .ui-tabs-nav li { top: 0px; margin: -2px 0 1px; text-transform: uppercase; font-size: 10.5px;}
+.ui-tabs .ui-tabs-nav li a { padding: .25em 2em .25em 1em; margin: .5em; text-shadow: 0 1px 0 rgba(255,255,255,.5); }
+       /**
+	 *	Basic Layout Theme
+	 * 
+	 *	This theme uses the default layout class-names for all classes
+	 *	Add any 'custom class-names', from options: paneClass, resizerClass, togglerClass
+	 */
+
+	.ui-layout-pane { /* all 'panes' */ 
+		background: #FFF; 
+		border: 1px solid #BBB; 
+		padding: 05x; 
+		overflow: auto;
+	} 
+        
+	.ui-layout-resizer { /* all 'resizer-bars' */ 
+		background: #DDD; 
+                top:100px
+	} 
+
+	.ui-layout-toggler { /* all 'toggler-buttons' */ 
+		background: #AAA; 
+	} 
+    
+       </style><!--[if IE]>
+	<link rel="stylesheet" type="text/css" href="../common/css/ie.css"/>
+	<![endif]--><script type="text/javascript" src="common/browserDetect.js"></script><script type="text/javascript" src="common/jquery/jquery-1.7.2.min.js"></script><script type="text/javascript" src="common/jquery/jquery.ui.all.js"></script><script type="text/javascript" src="common/jquery/jquery.cookie.js"></script><script type="text/javascript" src="common/jquery/treeview/jquery.treeview.min.js"></script><script type="text/javascript" src="common/jquery/layout/jquery.layout.js"></script><script type="text/javascript" src="search/l10n.js"></script><script type="text/javascript" src="search/htmlFileInfoList.js"></script><script type="text/javascript" src="search/nwSearchFnt.js"></script><script type="text/javascript" src="search/stemmers/en_stemmer.js"><!--//make this scalable to other languages as well.--></script><script type="text/javascript" src="search/index-1.js"></script><script type="text/javascript" src="search/index-2.js"></script><script type="text/javascript" src="search/index-3.js"></script></head><body><noscript><div id="noscript">JavaScript is disabled on your browser. Please enable JavaScript to enjoy all the features of this site.</div></noscript><div id="header"><a href="index.html"><img style="margin-right: 2px; height: 59px; padding-right: 25px; padding-top: 8px" align="right" src="common/images/logo.png" alt=" Documentation"></img></a><h1>Recoll user manual<br></br>Searching</h1><div id="navheader"><table class="navLinks"><tr><td><a id="showHideButton" href="#" onclick="myLayout.toggle('west')" class="pointLeft" tabindex="5" title="Hide TOC tree">Sidebar
+                            </a></td><td><a accesskey="p" class="navLinkPrevious" tabindex="5" href="RCL.SEARCH.PTRANS.html">Prev</a>
+                                        |
+                                        <a accesskey="u" class="navLinkUp" tabindex="5" href="RCL.SEARCH.html">Up</a>
+                                    |
+                                    <a accesskey="n" class="navLinkNext" tabindex="5" href="RCL.SEARCH.LANG.MODIFIERS.html">Next</a></td></tr></table></div></div><div id="content"><div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="RCL.SEARCH.LANG"></a>The query language</h2></div></div></div><div class="toc"><dl class="toc"><dt><span class="sect2"><a href="RCL.SEARCH.LANG.MODIFIERS.html">Modifiers</a></span></dt></dl></div><p>The query language processor is activated in the GUI
+      simple search entry when the search mode selector is set to
+      <span class="guilabel">Query Language</span>. It can also be used with the KIO
+      slave or the command line search. It broadly has the same
+      capabilities as the complex search interface in the
+      GUI.</p><p>The language is based on the (seemingly defunct) 
+        <a class="ulink" href="http://www.xesam.org/main/XesamUserSearchLanguage95" target="_top">
+          Xesam</a> user search language specification.</p><p>If the results of a query language search puzzle you and you
+        doubt what has been actually searched for, you can use the GUI
+        <code class="literal">Show Query</code> link at the top of the result list to
+        check the exact query which was finally executed by Xapian.</p><p>Here follows a sample request that we are going to
+        explain:</p><pre class="programlisting">
+          author:"john doe" Beatles OR Lennon Live OR Unplugged -potatoes
+      </pre><p>This would search for all documents with 
+      <em class="replaceable"><code>John Doe</code></em>
+      appearing as a phrase in the author field (exactly what this is
+      would depend on the document type, ie: the
+      <code class="literal">From:</code> header, for an email message),
+      and containing either <em class="replaceable"><code>beatles</code></em> or
+      <em class="replaceable"><code>lennon</code></em> and either
+      <em class="replaceable"><code>live</code></em> or
+      <em class="replaceable"><code>unplugged</code></em> but not
+      <em class="replaceable"><code>potatoes</code></em> (in any part of the document).</p><p>An element is composed of an optional field specification,
+      and a value, separated by a colon (the field separator is the last
+      colon in the element). Examples:
+      <em class="replaceable"><code>Eugenie</code></em>,
+      <em class="replaceable"><code>author:balzac</code></em>,
+      <em class="replaceable"><code>dc:title:grandet</code></em> 
+      <em class="replaceable"><code>dc:title:"eugenie grandet"</code></em> 
+      </p><p>The colon, if present, means "contains". Xesam defines other
+      relations, which are mostly unsupported for now (except in special
+      cases, described further down).</p><p>All elements in the search entry are normally combined
+      with an implicit AND. It is possible to specify that elements be
+      OR'ed instead, as in <em class="replaceable"><code>Beatles</code></em>
+      <code class="literal">OR</code> <em class="replaceable"><code>Lennon</code></em>. The
+      <code class="literal">OR</code> must be entered literally (capitals), and
+      it has priority over the AND associations:
+      <em class="replaceable"><code>word1</code></em>
+      <em class="replaceable"><code>word2</code></em> <code class="literal">OR</code>
+      <em class="replaceable"><code>word3</code></em> 
+      means 
+      <em class="replaceable"><code>word1</code></em> AND 
+      (<em class="replaceable"><code>word2</code></em> <code class="literal">OR</code>
+      <em class="replaceable"><code>word3</code></em>)
+      not 
+      (<em class="replaceable"><code>word1</code></em> AND
+      <em class="replaceable"><code>word2</code></em>) <code class="literal">OR</code>
+      <em class="replaceable"><code>word3</code></em>. Explicit
+      parenthesis are <span class="emphasis"><em>not</em></span> supported.</p><p>As of <span class="application">Recoll</span> 1.21, you can use parentheses to group
+      elements, which will sometimes make things clearer, and may
+      allow expressing combinations which would have been difficult
+      otherwise.</p><p>An element preceded by a <code class="literal">-</code> specifies a
+      term that should <span class="emphasis"><em>not</em></span> appear.</p><p>As usual, words inside quotes define a phrase
+      (the order of words is significant), so that
+      <em class="replaceable"><code>title:"prejudice pride"</code></em> is not the same as
+      <em class="replaceable"><code>title:prejudice title:pride</code></em>, and is
+      unlikely to find a result.</p><p>Words inside phrases and capitalized words are not
+        stem-expanded. Wildcards may be used anywhere inside a term.
+        Specifying a wild-card on the left of a term can produce a very
+        slow search (or even an incorrect one if the expansion is
+        truncated because of excessive size). Also see 
+        <a class="link" href="RCL.SEARCH.WILDCARDS.html" title="More about wildcards">
+          More about wildcards</a>.</p><p>To save you some typing, recent <span class="application">Recoll</span> versions (1.20 and later)
+      interpret a comma-separated list of terms as an AND list inside the
+      field. Use slash characters ('/') for an OR list. No white space
+      is allowed. So
+      </p><pre class="programlisting">author:john,lennon</pre><p> will search for
+      documents with <code class="literal">john</code> and <code class="literal">lennon</code>
+      inside the <code class="literal">author</code> field (in any order), and
+      </p><pre class="programlisting">author:john/ringo</pre><p> would search for
+      <code class="literal">john</code> or <code class="literal">ringo</code>.</p><p>Modifiers can be set on a double-quote value, for example to specify
+        a proximity search (unordered). See 
+        <a class="link" href="RCL.SEARCH.LANG.MODIFIERS.html" title="Modifiers">the modifier
+          section</a>. No space must separate the final
+          double-quote and the modifiers value, e.g. <em class="replaceable"><code>"two
+          one"po10</code></em></p><p><span class="application">Recoll</span> currently manages the following default fields:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">title</code>,
+            <code class="literal">subject</code> or <code class="literal">caption</code> are
+            synonyms which specify data to be searched for in the
+            document title or subject.</p></li><li class="listitem"><p><code class="literal">author</code> or
+            <code class="literal">from</code> for searching the documents
+            originators.</p></li><li class="listitem"><p><code class="literal">recipient</code> or
+            <code class="literal">to</code> for searching the documents
+            recipients.</p></li><li class="listitem"><p><code class="literal">keyword</code> for searching the
+            document-specified keywords (few documents actually have
+            any).</p></li><li class="listitem"><p><code class="literal">filename</code> for the document's
+            file name. This is not necessarily set for all documents:
+           internal documents contained inside a compound one (for example
+           an EPUB section) do not inherit the container file name any more,
+           this was replaced by an explicit field (see next). Sub-documents
+           can still have a specific <code class="literal">filename</code>, if it is
+           implied by the document format, for example the attachment file
+           name for an email attachment.</p></li><li class="listitem"><p><code class="literal">containerfilename</code>. This is
+           set for all documents, both top-level and contained
+           sub-documents, and is always the name of the filesystem directory
+           entry which contains the data. The terms from this field can
+           only be matched by an explicit field specification (as opposed
+           to terms from <code class="literal">filename</code> which are also indexed
+           as general document content). This avoids getting matches for
+           all the sub-documents when searching for the container file
+           name.</p></li><li class="listitem"><p><code class="literal">ext</code> specifies the file
+            name extension (Ex: <code class="literal">ext:html</code>)</p></li></ul></div><p><span class="application">Recoll</span> 1.20 and later have a way to specify aliases for the
+      field names, which will save typing, for example by aliasing
+      <code class="literal">filename</code> to <em class="replaceable"><code>fn</code></em> or
+      <code class="literal">containerfilename</code> to
+      <em class="replaceable"><code>cfn</code></em>. See the <a class="link" href="RCL.INSTALL.CONFIG.FIELDS.html" title="The fields file">section about the
+      <code class="filename">fields</code> file</a></p><p>The field syntax also supports a few field-like, but
+        special, criteria:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="literal">dir</code> for filtering the
+            results on file location
+            (Ex: <code class="literal">dir:/home/me/somedir</code>). 
+            <code class="literal">-dir</code>
+            also works to find results not in the specified directory
+            (release &gt;= 1.15.8). Tilde expansion will be performed as
+            usual (except for a bug in versions 1.19 to
+            1.19.11p1). Wildcards will be expanded, but
+            please <a class="link" href="RCL.SEARCH.WILDCARDS.PATH.html" title="Wildcards and path filtering"> have a
+            look</a> at an important limitation of wildcards in
+            path filters.</p><p>Relative paths also make sense, for example, 
+            <code class="literal">dir:share/doc</code> would match either
+            <code class="filename">/usr/share/doc</code> or
+            <code class="filename">/usr/local/share/doc</code> </p><p>Several <code class="literal">dir</code> clauses can be specified,
+          both positive and negative. For example the following makes sense:
+            </p><pre class="programlisting">
+dir:recoll dir:src -dir:utils -dir:common
+            </pre><p> This would select results which have both
+            <code class="filename">recoll</code> and <code class="filename">src</code> in the
+            path (in any order), and which have not either
+            <code class="filename">utils</code> or
+            <code class="filename">common</code>.</p><p>You can also use <code class="literal">OR</code> conjunctions
+            with <code class="literal">dir:</code> clauses.</p><p>A special aspect of <code class="literal">dir</code> clauses is
+            that the values in the index are not transcoded to UTF-8, and
+            never lower-cased or unaccented, but stored as binary. This means
+            that you need to enter the values in the exact lower or upper
+            case, and that searches for names with diacritics may sometimes
+            be impossible because of character set conversion
+            issues. Non-ASCII UNIX file paths are an unending source of
+            trouble and are best avoided.</p><p>You need to use double-quotes around the path value if it
+            contains space characters.</p></li><li class="listitem"><p><code class="literal">size</code> for filtering the
+            results on file size. Example: 
+            <code class="literal">size&lt;10000</code>. You can use
+            <code class="literal">&lt;</code>, <code class="literal">&gt;</code> or
+            <code class="literal">=</code> as operators. You can specify a range like the
+            following: <code class="literal">size&gt;100 size&lt;1000</code>. The usual
+            <code class="literal">k/K, m/M, g/G, t/T</code> can be used as (decimal)
+            multipliers. Ex: <code class="literal">size&gt;1k</code> to search for files
+            bigger than 1000 bytes.</p></li><li class="listitem"><p><code class="literal">date</code> for searching or filtering
+            on dates. The syntax for the argument is based on the ISO8601
+            standard for dates and time intervals. Only dates are supported, no
+            times. The general syntax is 2 elements separated by a
+            <code class="literal">/</code> character. Each element can be a date or a
+            period of time. Periods are specified as 
+            <code class="literal">P</code><em class="replaceable"><code>n</code></em><code class="literal">Y</code><em class="replaceable"><code>n</code></em><code class="literal">M</code><em class="replaceable"><code>n</code></em><code class="literal">D</code>. 
+            The <em class="replaceable"><code>n</code></em> numbers are the respective numbers
+            of years, months or days, any of which may be missing. Dates are
+            specified as  
+            <em class="replaceable"><code>YYYY</code></em>-<em class="replaceable"><code>MM</code></em>-<em class="replaceable"><code>DD</code></em>. 
+            The days and months parts may be missing. If the
+            <code class="literal">/</code> is present but an element is missing, the
+            missing element is interpreted as the lowest or highest date in the
+            index. Examples:</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p><code class="literal">2001-03-01/2002-05-01</code> the
+	        basic syntax for an interval of dates.</p></li><li class="listitem"><p><code class="literal">2001-03-01/P1Y2M</code> the
+	        same specified with a period.</p></li><li class="listitem"><p><code class="literal">2001/</code> from the beginning of
+	        2001 to the latest date in the index.</p></li><li class="listitem"><p><code class="literal">2001</code> the whole year of
+	        2001</p></li><li class="listitem"><p><code class="literal">P2D/</code> means 2 days ago up to
+	        now if there are no documents with dates in the future.</p></li><li class="listitem"><p><code class="literal">/2003</code> all documents from
+	        2003 or older.</p></li></ul></div><p>Periods can also be specified with small letters (ie:
+	    p2y).</p></li><li class="listitem"><p><code class="literal">mime</code> or
+            <code class="literal">format</code> for specifying the
+            MIME type. These clauses are processed besides the normal
+            Boolean logic of the search. Multiple values will be OR'ed
+            (instead of the normal AND). You can specify types to be
+            excluded, with the usual <code class="literal">-</code>, and use
+            wildcards. Example: <em class="replaceable"><code>mime:text/*
+            -mime:text/plain</code></em> 
+            Specifying an explicit boolean
+            operator before a <code class="literal">mime</code> specification is not
+            supported and will produce strange results. </p></li><li class="listitem"><p><code class="literal">type</code> or
+            <code class="literal">rclcat</code> for specifying the category (as in
+            text/media/presentation/etc.). The classification of MIME
+            types in categories is defined in the <span class="application">Recoll</span> configuration
+            (<code class="filename">mimeconf</code>), and can be modified or
+            extended. The default category names are those which permit
+            filtering results in the main GUI screen. Categories are OR'ed
+            like MIME types above, and can be negated with
+            <code class="literal">-</code>.</p></li></ul></div><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>
+        <code class="literal">mime</code> is the <span class="emphasis"><em>only</em></span> field with an
+        <code class="literal">OR</code> default. You do need to use
+        <code class="literal">OR</code> with <code class="literal">ext</code> terms for
+      example.</p></div><p>The document input handlers used while indexing have the
+        possibility to create other fields with arbitrary names, and
+        aliases may be defined in the configuration, so that the exact
+        field search possibilities may be different for you if someone
+        took care of the customisation.</p></div><script type="text/javascript" src="common/main.js"></script><script type="text/javascript" src="common/splitterInit.js"></script><div class="navfooter"><hr></hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="RCL.SEARCH.PTRANS.html">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="RCL.SEARCH.html">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="RCL.SEARCH.LANG.MODIFIERS.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top"> </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> </td></tr></table></div></div><div id="sidebar"><div id="leftnavigation" style="padding-top:3px;"><div id="tabs"><ul><li><a href="#treeDiv" style="outline:0;" tabindex="1"><span class="contentsTab">Contents</span></a></li><li><a href="#searchDiv" style="outline:0;" tabindex="1" onclick="doSearch()"><span class="searchTab">Search</span></a></li></ul><div id="treeDiv"><img src="common/images/loading.gif" alt="loading table of contents..." id="tocLoading" style="display:block;"></img><div id="ulTreeDiv" style="display:none"><ul id="tree" class="filetree"><li><span class="file"><a href="RCL.INTRODUCTION.html" tabindex="1">Introduction</a></span><ul><li><span class="file"><a href="RCL.INTRODUCTION.TRYIT.html" tabindex="1">Giving it a try</a></span></li><li><span class="file"><a href="RCL.INTRODUCTION.SEARCH.html" tabindex="1">Full text search</a></span></li><li><span class="file"><a href="RCL.INTRODUCTION.RECOLL.html" tabindex="1">Recoll overview</a></span></li></ul></li><li><span class="file"><a href="RCL.INDEXING.html" tabindex="1">Indexing</a></span><ul><li><span class="file"><a href="RCL.INDEXING.INTRODUCTION.html" tabindex="1">Introduction</a></span><ul><li><span class="file"><a href="RCL.INDEXING.INTRODUCTION.MODES.html" tabindex="1">Indexing modes</a></span></li><li><span class="file"><a href="RCL.INDEXING.INTRODUCTION.CONFIG.html" tabindex="1">Configurations, multiple indexes</a></span></li><li><span class="file"><a href="ch02s01s03.html" tabindex="1">Document types</a></span></li><li><span class="file"><a href="ch02s01s04.html" tabindex="1">Indexing failures</a></span></li><li><span class="file"><a href="ch02s01s05.html" tabindex="1">Recovery</a></span></li></ul></li><li><span class="file"><a href="RCL.INDEXING.STORAGE.html" tabindex="1">Index storage</a></span><ul><li><span class="file"><a href="RCL.INDEXING.STORAGE.FORMAT.html" tabindex="1">Xapian index formats</a></span></li><li><span class="file"><a href="RCL.INDEXING.STORAGE.SECURITY.html" tabindex="1">Security aspects</a></span></li></ul></li><li><span class="file"><a href="RCL.INDEXING.CONFIG.html" tabindex="1">Index configuration</a></span><ul><li><span class="file"><a href="RCL.INDEXING.CONFIG.MULTIPLE.html" tabindex="1">Multiple indexes</a></span></li><li><span class="file"><a href="RCL.INDEXING.CONFIG.SENS.html" tabindex="1">Index case and diacritics sensitivity</a></span></li><li><span class="file"><a href="RCL.INDEXING.CONFIG.GUI.html" tabindex="1">The index configuration GUI</a></span></li></ul></li><li><span class="file"><a href="RCL.INDEXING.WEBQUEUE.html" tabindex="1">Indexing WEB pages you wisit</a></span></li><li><span class="file"><a href="RCL.INDEXING.EXTATTR.html" tabindex="1">Extended attributes data</a></span></li><li><span class="file"><a href="RCL.INDEXING.EXTTAGS.html" tabindex="1">Importing external tags</a></span></li><li><span class="file"><a href="RCL.INDEXING.PERIODIC.html" tabindex="1">Periodic indexing</a></span><ul><li><span class="file"><a href="RCL.INDEXING.PERIODIC.EXEC.html" tabindex="1">Running indexing</a></span></li><li><span class="file"><a href="RCL.INDEXING.PERIODIC.AUTOMAT.html" tabindex="1">Using cron to automate
+          indexing</a></span></li></ul></li><li><span class="file"><a href="RCL.INDEXING.MONITOR.html" tabindex="1">Real time indexing</a></span><ul><li><span class="file"><a href="RCL.INDEXING.MONITOR.FASTFILES.html" tabindex="1">Slowing down the reindexing rate for fast changing
+        files</a></span></li></ul></li></ul></li><li><span class="file"><a href="RCL.SEARCH.html" tabindex="1">Searching</a></span><ul><li><span class="file"><a href="RCL.SEARCH.GUI.html" tabindex="1">Searching with the Qt graphical user interface</a></span><ul><li><span class="file"><a href="RCL.SEARCH.GUI.SIMPLE.html" tabindex="1">Simple search</a></span></li><li><span class="file"><a href="RCL.SEARCH.GUI.RESLIST.html" tabindex="1">The default result list</a></span><ul><li><span class="file"><a href="RCL.SEARCH.GUI.RESLIST.SUGGS.html" tabindex="1">No results: the spelling suggestions</a></span></li><li><span class="file"><a href="RCL.SEARCH.GUI.RESULTLIST.MENU.html" tabindex="1">The result list right-click menu</a></span></li></ul></li><li><span class="file"><a href="RCL.SEARCH.GUI.RESTABLE.html" tabindex="1">The result table</a></span></li><li><span class="file"><a href="RCL.SEARCH.GUI.RUNSCRIPT.html" tabindex="1">Running arbitrary commands on result files (1.20 and later)</a></span></li><li><span class="file"><a href="RCL.SEARCH.GUI.THUMBNAILS.html" tabindex="1">Displaying thumbnails</a></span></li><li><span class="file"><a href="RCL.SEARCH.GUI.PREVIEW.html" tabindex="1">The preview window</a></span><ul><li><span class="file"><a href="RCL.SEARCH.GUI.PREVIEW.SEARCH.html" tabindex="1">Searching inside the preview</a></span></li></ul></li><li><span class="file"><a href="RCL.SEARCH.GUI.FRAGBUTS.html" tabindex="1">The Query Fragments window</a></span></li><li><span class="file"><a href="RCL.SEARCH.GUI.COMPLEX.html" tabindex="1">Complex/advanced search</a></span><ul><li><span class="file"><a href="RCL.SEARCH.GUI.COMPLEX.TERMS.html" tabindex="1">Avanced search: the "find" tab</a></span></li><li><span class="file"><a href="RCL.SEARCH.GUI.COMPLEX.FILTER.html" tabindex="1">Avanced search: the "filter" tab</a></span></li><li><span class="file"><a href="RCL.SEARCH.GUI.COMPLEX.HISTORY.html" tabindex="1">Avanced search history</a></span></li></ul></li><li><span class="file"><a href="RCL.SEARCH.GUI.TERMEXPLORER.html" tabindex="1">The term explorer tool</a></span></li><li><span class="file"><a href="RCL.SEARCH.GUI.MULTIDB.html" tabindex="1">Multiple indexes</a></span></li><li><span class="file"><a href="RCL.SEARCH.GUI.HISTORY.html" tabindex="1">Document history</a></span></li><li><span class="file"><a href="RCL.SEARCH.GUI.SORT.html" tabindex="1">Sorting search results and collapsing duplicates</a></span></li><li><span class="file"><a href="RCL.SEARCH.GUI.TIPS.html" tabindex="1">Search tips, shortcuts</a></span><ul><li><span class="file"><a href="RCL.SEARCH.GUI.TIPS.TERMS.html" tabindex="1">Terms and search expansion</a></span></li><li><span class="file"><a href="RCL.SEARCH.GUI.TIPS.PHRASES.html" tabindex="1">Working with phrases and proximity</a></span></li><li><span class="file"><a href="RCL.SEARCH.GUI.TIPS.MISC.html" tabindex="1">Others</a></span></li></ul></li><li><span class="file"><a href="RCL.SEARCH.SAVING.html" tabindex="1">Saving and restoring queries (1.21 and later)</a></span></li><li><span class="file"><a href="RCL.SEARCH.GUI.CUSTOM.html" tabindex="1">Customizing the search interface</a></span><ul><li><span class="file"><a href="RCL.SEARCH.GUI.CUSTOM.RESLIST.html" tabindex="1">The result list format</a></span><ul><li><span class="file"><a href="RCL.SEARCH.GUI.CUSTOM.RESLIST.html#RCL.SEARCH.GUI.CUSTOM.RESLIST.PARA" tabindex="1">The paragraph format</a></span></li></ul></li></ul></li></ul></li><li><span class="file"><a href="RCL.SEARCH.KIO.html" tabindex="1">Searching with the KDE KIO slave</a></span><ul><li><span class="file"><a href="RCL.SEARCH.KIO.INTRO.html" tabindex="1">What's this</a></span></li><li><span class="file"><a href="RCL.SEARCH.KIO.SEARCHABLEDOCS.html" tabindex="1">Searchable documents</a></span></li></ul></li><li><span class="file"><a href="RCL.SEARCH.COMMANDLINE.html" tabindex="1">Searching on the command line</a></span></li><li><span class="file"><a href="RCL.SEARCH.SYNONYMS.html" tabindex="1">Using Synonyms (Recoll 1.22 and later)</a></span></li><li><span class="file"><a href="RCL.SEARCH.PTRANS.html" tabindex="1">Path translations</a></span></li><li id="webhelp-currentid"><span class="file"><a href="RCL.SEARCH.LANG.html" tabindex="1">The query language</a></span><ul><li><span class="file"><a href="RCL.SEARCH.LANG.MODIFIERS.html" tabindex="1">Modifiers</a></span></li></ul></li><li><span class="file"><a href="RCL.SEARCH.CASEDIAC.html" tabindex="1">Search case and diacritics sensitivity</a></span></li><li><span class="file"><a href="RCL.SEARCH.ANCHORWILD.html" tabindex="1">Anchored searches and wildcards</a></span><ul><li><span class="file"><a href="RCL.SEARCH.WILDCARDS.html" tabindex="1">More about wildcards</a></span><ul><li><span class="file"><a href="RCL.SEARCH.WILDCARDS.PATH.html" tabindex="1">Wildcards and path filtering</a></span></li></ul></li><li><span class="file"><a href="RCL.SEARCH.ANCHOR.html" tabindex="1">Anchored searches</a></span></li></ul></li><li><span class="file"><a href="RCL.SEARCH.DESKTOP.html" tabindex="1">Desktop integration</a></span><ul><li><span class="file"><a href="RCL.SEARCH.SHORTCUT.html" tabindex="1">Hotkeying recoll</a></span></li><li><span class="file"><a href="RCL.KICKER-APPLET.html" tabindex="1">The KDE Kicker Recoll applet</a></span></li></ul></li></ul></li><li><span class="file"><a href="RCL.PROGRAM.html" tabindex="1">Programming interface</a></span><ul><li><span class="file"><a href="RCL.PROGRAM.FILTERS.html" tabindex="1">Writing a document input handler</a></span><ul><li><span class="file"><a href="RCL.PROGRAM.FILTERS.SIMPLE.html" tabindex="1">Simple input handlers</a></span></li><li><span class="file"><a href="RCL.PROGRAM.FILTERS.MULTIPLE.html" tabindex="1">"Multiple" handlers</a></span></li><li><span class="file"><a href="RCL.PROGRAM.FILTERS.ASSOCIATION.html" tabindex="1">Telling Recoll about the handler</a></span></li><li><span class="file"><a href="RCL.PROGRAM.FILTERS.HTML.html" tabindex="1">Input handler HTML output</a></span></li><li><span class="file"><a href="RCL.PROGRAM.FILTERS.PAGES.html" tabindex="1">Page numbers</a></span></li></ul></li><li><span class="file"><a href="RCL.PROGRAM.FIELDS.html" tabindex="1">Field data processing</a></span></li><li><span class="file"><a href="RCL.PROGRAM.API.html" tabindex="1">API</a></span><ul><li><span class="file"><a href="RCL.PROGRAM.API.ELEMENTS.html" tabindex="1">Interface elements</a></span></li><li><span class="file"><a href="RCL.PROGRAM.API.PYTHON.html" tabindex="1">Python interface</a></span><ul><li><span class="file"><a href="RCL.PROGRAM.PYTHON.INTRO.html" tabindex="1">Introduction</a></span></li><li><span class="file"><a href="RCL.PROGRAM.PYTHON.PACKAGE.html" tabindex="1">Recoll package</a></span></li><li><span class="file"><a href="RCL.PROGRAM.PYTHON.RECOLL.html" tabindex="1">The recoll module</a></span><ul><li><span class="file"><a href="RCL.PROGRAM.PYTHON.RECOLL.html#RCL.PROGRAM.PYTHON.RECOLL.FUNCTIONS" tabindex="1">Functions</a></span></li><li><span class="file"><a href="RCL.PROGRAM.PYTHON.RECOLL.html#RCL.PROGRAM.PYTHON.RECOLL.CLASSES" tabindex="1">Classes</a></span><ul><li><span class="file"><a href="RCL.PROGRAM.PYTHON.RECOLL.html#RCL.PROGRAM.PYTHON.RECOLL.CLASSES.DB" tabindex="1">The Db class</a></span></li><li><span class="file"><a href="RCL.PROGRAM.PYTHON.RECOLL.html#RCL.PROGRAM.PYTHON.RECOLL.CLASSES.QUERY" tabindex="1">The Query class</a></span></li><li><span class="file"><a href="RCL.PROGRAM.PYTHON.RECOLL.html#RCL.PROGRAM.PYTHON.RECOLL.CLASSES.DOC" tabindex="1">The Doc class</a></span></li><li><span class="file"><a href="RCL.PROGRAM.PYTHON.RECOLL.html#RCL.PROGRAM.PYTHON.RECOLL.CLASSES.SEARCHDATA" tabindex="1">The SearchData class</a></span></li></ul></li></ul></li><li><span class="file"><a href="RCL.PROGRAM.PYTHON.RCLEXTRACT.html" tabindex="1">The rclextract module</a></span><ul><li><span class="file"><a href="RCL.PROGRAM.PYTHON.RCLEXTRACT.html#RCL.PROGRAM.PYTHON.RCLEXTRACT.CLASSES" tabindex="1">Classes</a></span><ul><li><span class="file"><a href="RCL.PROGRAM.PYTHON.RCLEXTRACT.html#RCL.PROGRAM.PYTHON.RECOLL.CLASSES.EXTRACTOR" tabindex="1">The Extractor class</a></span></li></ul></li></ul></li><li><span class="file"><a href="RCL.PROGRAM.PYTHON.EXAMPLES.html" tabindex="1">Example code</a></span></li><li><span class="file"><a href="RCL.PROGRAM.PYTHON.COMPAT.html" tabindex="1">Compatibility with the previous version</a></span></li></ul></li></ul></li></ul></li><li><span class="file"><a href="RCL.INSTALL.html" tabindex="1">Installation and configuration</a></span><ul><li><span class="file"><a href="RCL.INSTALL.BINARY.html" tabindex="1">Installing a binary copy</a></span></li><li><span class="file"><a href="RCL.INSTALL.EXTERNAL.html" tabindex="1">Supporting packages</a></span></li><li><span class="file"><a href="RCL.INSTALL.BUILDING.html" tabindex="1">Building from source</a></span><ul><li><span class="file"><a href="RCL.INSTALL.BUILDING.PREREQS.html" tabindex="1">Prerequisites</a></span></li><li><span class="file"><a href="RCL.INSTALL.BUILDING.BUILD.html" tabindex="1">Building</a></span><ul><li><span class="file"><a href="RCL.INSTALL.BUILDING.BUILD.SOLARIS.html" tabindex="1">Building on Solaris</a></span></li></ul></li><li><span class="file"><a href="RCL.INSTALL.BUILDING.INSTALL.html" tabindex="1">Installation</a></span></li></ul></li><li><span class="file"><a href="RCL.INSTALL.CONFIG.html" tabindex="1">Configuration overview</a></span><ul><li><span class="file"><a href="RCL.INSTALL.CONFIG.ENVIR.html" tabindex="1">Environment variables</a></span></li><li><span class="file"><a href="RCL.INSTALL.CONFIG.RECOLLCONF.html" tabindex="1">The main configuration file, recoll.conf</a></span><ul><li><span class="file"><a href="RCL.INSTALL.CONFIG.RECOLLCONF.FILES.html" tabindex="1">Parameters affecting what documents we index:</a></span></li><li><span class="file"><a href="RCL.INSTALL.CONFIG.RECOLLCONF.TERMS.html" tabindex="1">Parameters affecting how we generate terms:</a></span></li><li><span class="file"><a href="RCL.INSTALL.CONFIG.RECOLLCONF.STORAGE.html" tabindex="1">Parameters affecting where and how we store things:</a></span></li><li><span class="file"><a href="RCL.INSTALL.CONFIG.RECOLLCONF.IDXTHREADS.html" tabindex="1">Parameters affecting multithread processing</a></span></li><li><span class="file"><a href="RCL.INSTALL.CONFIG.RECOLLCONF.MISC.html" tabindex="1">Miscellaneous parameters:</a></span></li></ul></li><li><span class="file"><a href="RCL.INSTALL.CONFIG.FIELDS.html" tabindex="1">The fields file</a></span><ul><li><span class="file"><a href="RCL.INSTALL.CONFIG.FIELDS.XATTR.html" tabindex="1">Extended attributes in the fields file</a></span></li></ul></li><li><span class="file"><a href="RCL.INSTALL.CONFIG.MIMEMAP.html" tabindex="1">The mimemap file</a></span></li><li><span class="file"><a href="RCL.INSTALL.CONFIG.MIMECONF.html" tabindex="1">The mimeconf file</a></span></li><li><span class="file"><a href="RCL.INSTALL.CONFIG.MIMEVIEW.html" tabindex="1">The mimeview file</a></span></li><li><span class="file"><a href="RCL.INSTALL.CONFIG.PTRANS.html" tabindex="1">The ptrans file</a></span></li><li><span class="file"><a href="RCL.INSTALL.CONFIG.EXAMPLES.html" tabindex="1">Examples of configuration adjustments</a></span><ul><li><span class="file"><a href="RCL.INSTALL.CONFIG.EXAMPLES.ADDVIEW.html" tabindex="1">Adding an external viewer for an non-indexed type</a></span></li><li><span class="file"><a href="RCL.INSTALL.CONFIG.EXAMPLES.ADDINDEX.html" tabindex="1">Adding indexing support for a new file type</a></span></li></ul></li></ul></li></ul></li></ul></div></div><div id="searchDiv"><div id="search"><form onsubmit="Verifie(searchForm);return false" name="searchForm" class="searchForm"><div><input id="textToSearch" name="textToSearch" type="search" placeholder="Search" class="searchText" tabindex="1"></input> &nbsp; <input onclick="Verifie(searchForm)" type="button" class="searchButton" value="Go" id="doSearch" tabindex="1"></input></div></form></div><div id="searchResults"><center></center></div><p class="searchHighlight"><a href="#" onclick="toggleHighlight()">Search Highlighter (On/Off)</a></p></div></div></div></div></body></html>
