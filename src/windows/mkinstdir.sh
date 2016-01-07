@@ -118,6 +118,7 @@ copyrecoll()
     chkcp $RCLS $DESTDIR 
 
     chkcp $RCL/COPYING                  $DESTDIR/COPYING.txt
+    chkcp $RCL/doc/user/usermanual.html $DESTDIR/Share/doc
     chkcp $RCL/sampleconf/fields        $DESTDIR/Share/examples
     chkcp $RCL/sampleconf/fragbuts.xml  $DESTDIR/Share/examples
     chkcp $RCL/windows/mimeconf         $DESTDIR/Share/examples
