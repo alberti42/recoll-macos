@@ -10,6 +10,7 @@
     Rights:  See end of file.
     
 */
+#include <sys/stat.h>
 
 #ifdef __cplusplus
 extern "C"
