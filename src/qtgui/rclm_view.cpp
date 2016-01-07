@@ -431,17 +431,28 @@ void RclMain::startManual()
 
 void RclMain::startManual(const string& index)
 {
-    Rcl::Doc doc;
-    string path = theconfig->getDatadir();
-    path = path_cat(path, "doc");
-    path = path_cat(path, "index.html");
+    string docdir = path_cat(theconfig->getDatadir(), "doc");
+
+    // The single page user manual is nicer if we have an index. Else
+    // the webhelp one is nicer if it is present
+    string usermanual = path_cat(docdir, "usermanual.html");
+    string webhelp = path_cat(docdir, "webhelp");
+    webhelp = path_cat(webhelp, "index.html");
+    bool has_wh = path_exists(webhelp);
+    
     LOGDEB(("RclMain::startManual: help index is %s\n", 
 	    index.empty()?"(null)":index.c_str()));
     if (!index.empty()) {
-	path += "#";
-	path += index;
+	usermanual += "#";
+	usermanual += index;
     }
-    doc.url = path_pathtofileurl(path);
+
+    Rcl::Doc doc;
+    if (has_wh && index.empty()) {
+        doc.url = path_pathtofileurl(webhelp);
+    } else {
+        doc.url = path_pathtofileurl(usermanual);
+    }
     doc.mimetype = "text/html";
     startNativeViewer(doc);
 }
