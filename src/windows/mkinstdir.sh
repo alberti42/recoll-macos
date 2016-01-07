@@ -119,6 +119,9 @@ copyrecoll()
 
     chkcp $RCL/COPYING                  $DESTDIR/COPYING.txt
     chkcp $RCL/doc/user/usermanual.html $DESTDIR/Share/doc
+    chkcp $RCL/doc/user/docbook-xsl.css $DESTDIR/Share/doc
+    mkdir -p $DESTDIR/Share/doc/webhelp
+    cp -rp $RCL/doc/user/webhelp/docs/* $DESTDIR/Share/doc/webhelp
     chkcp $RCL/sampleconf/fields        $DESTDIR/Share/examples
     chkcp $RCL/sampleconf/fragbuts.xml  $DESTDIR/Share/examples
     chkcp $RCL/windows/mimeconf         $DESTDIR/Share/examples

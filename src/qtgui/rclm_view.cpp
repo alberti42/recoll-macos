@@ -442,13 +442,21 @@ void RclMain::startManual(const string& index)
     
     LOGDEB(("RclMain::startManual: help index is %s\n", 
 	    index.empty()?"(null)":index.c_str()));
-    if (!index.empty()) {
+    bool indexempty = index.empty();
+
+#ifdef _WIN32
+    // On Windows I could not find any way to pass the fragment through
+    // rclstartw (tried to set text/html as exception with rclstartw %u).
+    // So always start the webhelp
+    indexempty = true;
+#endif
+    
+    if (!indexempty) {
 	usermanual += "#";
 	usermanual += index;
     }
-
     Rcl::Doc doc;
-    if (has_wh && index.empty()) {
+    if (has_wh && indexempty) {
         doc.url = path_pathtofileurl(webhelp);
     } else {
         doc.url = path_pathtofileurl(usermanual);
