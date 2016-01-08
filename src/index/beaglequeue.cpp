@@ -342,7 +342,7 @@ bool BeagleQueueIndexer::indexFiles(list<string>& files)
             it++; continue;
         }
         struct stat st;
-        if (lstat(it->c_str(), &st) != 0) {
+        if (path_fileprops(*it, &st) != 0) {
             LOGERR(("BeagleQueueIndexer::indexfiles: cant stat [%s]\n", 
                     it->c_str()));
             it++; continue;

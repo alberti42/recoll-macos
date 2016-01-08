@@ -20,7 +20,6 @@
 #include <errno.h>
 #include "safefcntl.h"
 #include <sys/types.h>
-#include "safesysstat.h"
 #include "safeunistd.h"
 
 #include <iostream>
@@ -56,7 +55,7 @@ bool MimeHandlerText::set_document_file(const string& mt, const string &fn)
     // file size for oversize check
     long long fsize = path_filesize(m_fn);
     if (fsize < 0) {
-        LOGERR(("MimeHandlerText::set_document_file: stat(%s) errno %d\n",
+        LOGERR(("MimeHandlerText::set_document_file: stat %s errno %d\n",
                 m_fn.c_str(), errno));
         return false;
     }

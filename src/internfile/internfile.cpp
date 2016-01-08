@@ -195,7 +195,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 		m_fn = m_tfile;
 		// Stat the uncompressed file, mainly to get the size
 		struct stat ucstat;
-		if (stat(m_fn.c_str(), &ucstat) != 0) {
+		if (path_fileprops(m_fn, &ucstat) != 0) {
 		    LOGERR(("FileInterner: can't stat the uncompressed file"
 			    "[%s] errno %d\n", m_fn.c_str(), errno));
 		    return;
@@ -1042,7 +1042,7 @@ bool FileInterner::isCompressed(const string& fn, RclConfig *cnf)
 {
     LOGDEB(("FileInterner::isCompressed: [%s]\n", fn.c_str()));
     struct stat st;
-    if (stat(fn.c_str(), &st) < 0) {
+    if (path_fileprops(fn, &st) < 0) {
         LOGERR(("FileInterner::isCompressed: can't stat [%s]\n", fn.c_str()));
         return false;
     }
@@ -1066,7 +1066,7 @@ bool FileInterner::maybeUncompressToTemp(TempFile& temp, const string& fn,
 {
     LOGDEB(("FileInterner::maybeUncompressToTemp: [%s]\n", fn.c_str()));
     struct stat st;
-    if (stat(fn.c_str(), &st) < 0) {
+    if (path_fileprops(fn.c_str(), &st) < 0) {
         LOGERR(("FileInterner::maybeUncompressToTemp: can't stat [%s]\n", 
                 fn.c_str()));
         return false;

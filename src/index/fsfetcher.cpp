@@ -21,11 +21,11 @@
 
 #include "debuglog.h"
 #include "cstr.h"
-
 #include "fetcher.h"
 #include "fsfetcher.h"
 #include "fsindexer.h"
 #include "debuglog.h"
+#include "pathut.h"
 
 using std::string;
 
@@ -43,7 +43,7 @@ static bool urltopath(RclConfig* cnf,
     bool follow = false;
     cnf->getConfParam("followLinks", &follow);
 
-    if ((follow ? stat(fn.c_str(), &st) : lstat(fn.c_str(), &st))< 0) {
+    if (path_fileprops(fn, &st, follow) < 0) {
 	LOGERR(("FSDocFetcher::fetch: stat errno %d for [%s]\n", 
 		errno, fn.c_str()));
 	return false;

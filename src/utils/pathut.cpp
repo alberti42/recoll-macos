@@ -710,6 +710,28 @@ long long path_filesize(const string& path)
     return (long long)st.st_size;
 }
 
+int path_fileprops(const std::string path, struct stat *stp, bool follow)
+{
+    if (!stp)
+        return -1;
+    memset(stp, 0, sizeof(struct stat));
+    struct stat mst;
+    int ret = follow ? stat(path.c_str(), &mst) : lstat(path.c_str(), &mst);
+    if (ret != 0)
+        return ret;
+    stp->st_size = mst.st_size;
+    stp->st_mode = mst.st_mode;
+    stp->st_mtime = mst.st_mtime;
+#ifdef _WIN32
+    stp->st_ctime = mst.st_mtime;
+#else
+    stp->st_ino = mst.st_ino;
+    stp->st_dev = mst.st_dev;
+    stp->st_ctime = mst.st_ctime;
+#endif
+    return 0;
+}
+
 bool path_exists(const string& path)
 {
     return access(path.c_str(), 0) == 0;

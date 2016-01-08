@@ -362,10 +362,9 @@ bool FsIndexer::indexFiles(list<string>& files, int flags)
         }
 
 	struct stat stb;
-	int ststat = follow ? stat(it->c_str(), &stb) : 
-	    lstat(it->c_str(), &stb);
+	int ststat = path_fileprops(*it, &stb, follow);
 	if (ststat != 0) {
-	    LOGERR(("FsIndexer::indexFiles: lstat(%s): %s", it->c_str(),
+	    LOGERR(("FsIndexer::indexFiles: (l)stat %s: %s", it->c_str(),
 		    strerror(errno)));
             it++; 
 	    continue;

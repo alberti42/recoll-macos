@@ -79,6 +79,17 @@ extern bool path_isdir(const std::string& path);
 /// Retrieve file size
 extern long long path_filesize(const std::string& path);
 
+/// Retrieve essential file attributes. This is used rather than a
+/// bare stat() to ensure consistent use of the time fields (on
+/// windows, we set ctime=mtime as ctime is actually the creation
+/// time, for which we have no use).
+/// Only st_mtime, st_ctime, st_size, st_mode (file type bits) are set on
+/// all systems. st_dev and st_ino are set for special posix usage.
+/// The rest is zeroed.
+struct stat;
+extern int path_fileprops(const std::string path, struct stat *stp,
+                          bool follow = true);
+
 /// Check that path is traversable and last element exists
 /// Returns true if last elt could be checked to exist. False may mean that
 /// the file/dir does not exist or that an error occurred. 

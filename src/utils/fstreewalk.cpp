@@ -21,7 +21,6 @@
 
 #include <stdio.h>
 #include <dirent.h>
-#include <sys/stat.h>
 #include <errno.h>
 #include <fnmatch.h>
 #include "safesysstat.h"
@@ -226,7 +225,7 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top,
     data->basedepth = slashcount(top); // Only used for breadthxx
     struct stat st;
     // We always follow symlinks at this point. Makes more sense.
-    if (stat(top.c_str(), &st) == -1) {
+    if (path_fileprops(top, &st) == -1) {
 	// Note that we do not return an error if the stat call
 	// fails. A temp file may have gone away.
 	data->logsyserr("stat", top);
@@ -288,7 +287,7 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top,
 
         // If changing parent directory, advise our user.
         if (!nfather.empty()) {
-            if (stat(nfather.c_str(), &st) == -1) {
+            if (path_fileprops(nfather, &st) == -1) {
                 data->logsyserr("stat", nfather);
 		return errno == ENOENT ? FtwOk : FtwError;
             }
@@ -298,7 +297,7 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top,
             }
         }
 
-        if (stat(dir.c_str(), &st) == -1) {
+        if (path_fileprops(dir, &st) == -1) {
             data->logsyserr("stat", dir);
 	    return errno == ENOENT ? FtwOk : FtwError;
         }
@@ -397,7 +396,8 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 
         fn = path_cat(top, ent->d_name);
 #ifdef _WIN32
-        // readdir gets the useful attrs, no inode indirection on windows
+        // readdir gets the useful attrs, no inode indirection on windows,
+        // spare the path_fileprops() call, but make sure we mimick it.
         memset(&st, 0, sizeof(st));
         st.st_mtime = ent->d_mtime;
         st.st_size = ent->d_size;
@@ -407,8 +407,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
         // anyway.
         st.st_ctime = st.st_mtime;
 #else
-        int statret = (data->options & FtwFollow) ? stat(fn.c_str(), &st) :
-            lstat(fn.c_str(), &st);
+        int statret =  path_fileprops(fn.c_str(), &st, data->options&FtwFollow);
         if (statret == -1) {
             data->logsyserr("stat", fn);
             continue;

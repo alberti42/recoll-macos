@@ -553,6 +553,9 @@ void UIPrefsDialog::delExtraDbPB_clicked()
 
 static bool samedir(const string& dir1, const string& dir2)
 {
+#ifdef _WIN32
+    return !dir1.compare(dir2);
+#else
     struct stat st1, st2;
     if (stat(dir1.c_str(), &st1))
 	return false;
@@ -562,6 +565,7 @@ static bool samedir(const string& dir1, const string& dir2)
 	return true;
     }
     return false;
+#endif
 }
 
 void UIPrefsDialog::on_showTrayIconCB_clicked()
