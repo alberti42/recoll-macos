@@ -18,7 +18,6 @@ more useful ? You can use the Disqus comments section at the bottom of this
 page, send an email, or use the
 https://bitbucket.org/medoc/recoll/issues[BitBucket Recoll issues tracker].
 
-
 Procedure: 
 
 - Download the Recoll setup file from the
@@ -45,6 +44,9 @@ Procedure:
 The default result list font is particularly ugly. Change it from 
 `Preferences->GUI Configuration->Result List->Result List Font`
   
+For those of you who would like to build themselves and possibly work on
+improving the Windows version, the link:recoll-mingw.html[build instructions].
+
 == Recoll Windows tips and tricks
 
 (not much for now...)
