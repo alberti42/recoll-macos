@@ -136,6 +136,8 @@ class PrefsPack {
     bool showTrayIcon;
     bool closeToTray;
 
+    int showTempFileWarning;
+    
     // Advanced search window clause list state
     vector<int> advSearchClauses;
 

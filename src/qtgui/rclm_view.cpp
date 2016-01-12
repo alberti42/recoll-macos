@@ -22,6 +22,8 @@
 
 #include <QMessageBox>
 
+#include "qxtconfirmationmessage.h"
+
 #include "debuglog.h"
 #include "fileudi.h"
 #include "execmd.h"
@@ -288,8 +290,9 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 	}
     }
 
+    bool enterHistory = false;
     bool istempfile = false;
-
+    
     LOGDEB(("RclMain::startNV: groksipath %d wantsf %d wantsparentf %d\n", 
 	    groksipath, wantsfile, wantsparentfile));
 
@@ -307,7 +310,8 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 				    "temporary file"));
 	    return;
 	}
-	istempfile = true;
+	enterHistory = true;
+        istempfile = true;
 	rememberTempFile(temp);
 	fn = temp->filename();
 	url = path_pathtofileurl(fn);
@@ -333,10 +337,24 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
             }
         }
         if (temp) {
+            istempfile = true;
 	    rememberTempFile(temp);
             fn = temp->filename();
             url = path_pathtofileurl(fn);
         }
+    }
+
+    if (istempfile) {
+        QxtConfirmationMessage confirm(
+            QMessageBox::Warning,
+            "Recoll",
+            tr("Opening a temporary copy. Edits will be lost if you don't save"
+               "<br/>them to a permanent location."),
+            "Do not show this warning next time "
+            "(open GUI preferences to restore)");
+        confirm.setSettingsPath("Recoll/prefs");
+        confirm.setOverrideSettingsKey("showTempFileWarning");
+        confirm.exec();
     }
 
     // If we are not called with a page number (which would happen for a call
@@ -379,10 +397,10 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
          it != doc.meta.end(); it++) {
         subs[it->first] = it->second;
     }
-    execViewer(subs, istempfile, execpath, lcmd, cmd, doc);
+    execViewer(subs, enterHistory, execpath, lcmd, cmd, doc);
 }
 
-void RclMain::execViewer(const map<string, string>& subs, bool istempfile,
+void RclMain::execViewer(const map<string, string>& subs, bool enterHistory,
                          const string& execpath,
                          const vector<string>& _lcmd, const string& cmd,
                          Rcl::Doc doc)
@@ -412,7 +430,7 @@ void RclMain::execViewer(const map<string, string>& subs, bool istempfile,
 	stb->showMessage(msg, 10000);
     }
 
-    if (!istempfile)
+    if (!enterHistory)
 	historyEnterDoc(g_dynconf, doc.meta[Rcl::Doc::keyudi]);
     
     // Do the zeitgeist thing

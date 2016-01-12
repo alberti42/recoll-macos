@@ -22,11 +22,11 @@ HEADERS += \
         confgui/confgui.h \
         confgui/confguiindex.h \
         crontool.h \
-        editdialog.h \
+        widgets/editdialog.h \
         firstidx.h \
         fragbuts.h \
         idxsched.h \
-        listdialog.h \
+        widgets/listdialog.h \
         preview_w.h \
         preview_load.h \
         preview_plaintorich.h \
@@ -78,15 +78,16 @@ SOURCES += \
         systray.cpp \
         uiprefs_w.cpp \
         viewaction_w.cpp \
+        widgets/qxtconfirmationmessage.cpp \
         xmltosd.cpp
 
 FORMS   = \
         advsearch.ui \
         crontool.ui \
-        editdialog.ui \
+        widgets/editdialog.ui \
         firstidx.ui \
         idxsched.ui \
-        listdialog.ui \
+        widgets/listdialog.ui \
         ptrans.ui \
         rclmain.ui \
         restable.ui \
@@ -102,7 +103,7 @@ RESOURCES = recoll.qrc
 
 INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
               ../utils ../aspell ../rcldb ../qtgui ../xaposix \
-              confgui
+              confgui widgets
 windows {
     RC_FILE = recoll.rc
     contains(QMAKE_CC, gcc){

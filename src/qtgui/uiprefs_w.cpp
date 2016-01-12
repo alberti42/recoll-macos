@@ -139,6 +139,7 @@ void UIPrefsDialog::setFromPrefs()
     keepSortCB->setChecked(prefs.keepSort);
     showTrayIconCB->setChecked(prefs.showTrayIcon);
     closeToTrayCB->setChecked(prefs.closeToTray);
+    showTempFileWarningCB->setChecked(prefs.showTempFileWarning == -1);
     previewHtmlCB->setChecked(prefs.previewHtml);
     switch (prefs.previewPlainPre) {
     case PrefsPack::PP_BR:
@@ -322,6 +323,8 @@ void UIPrefsDialog::accept()
     prefs.keepSort = keepSortCB->isChecked();
     prefs.showTrayIcon = showTrayIconCB->isChecked();
     prefs.closeToTray = closeToTrayCB->isChecked();
+    prefs.showTempFileWarning = showTempFileWarningCB->isChecked() ?
+        -1 : 1024;
     prefs.previewHtml = previewHtmlCB->isChecked();
 
     if (plainBRRB->isChecked()) {
@@ -371,6 +374,7 @@ void UIPrefsDialog::editParaFormat()
     if (result == QDialog::Accepted)
 	paraFormat = dialog.plainTextEdit->toPlainText();
 }
+
 void UIPrefsDialog::editHeaderText()
 {
     EditDialog dialog(this);
