@@ -29,8 +29,42 @@
 later versions. Bugs listed in the topmost section may also exist in older
 versions.</i></p>
 
-<h2><a name="b_latest">recoll 1.22.0</a></h2>
+<h2><a name="b_latest">recoll 1.21.4, 1.22.0</a></h2>
 <ul>
+
+ <li>There have been multiple occurrences of an indexing problem
+   resulting in a damaged index. The cause is not completely determined,
+   but there is a suspicion that a Xapian bug may be involved at least
+   in some cases.  The index is damaged in such a way that some search
+   results are missing, and that many document up-to-date checks can
+   fail. This makes partial/incremental indexing very expensive because
+   many documents are reindexed (for nothing, the index data is lost
+   anyway).<br/>
+
+   You can see a partial description in Bitbucket Recoll issue #257, but
+   part of the discussion happened on the Xapian mailing list.<br/>
+
+   The problem would signal itself by the following kind of message in
+   the indexer log:<br/>
+
+   <pre><tt>
+:2:../rcldb/rcldb.cpp:1818:Db::needUpdate: get_document error: Document XX not found
+   </tt></pre>
+
+   Also, messages about Xapian being unable to read some blocks. More
+   generally, any error message (beginning with :2:) originating in the rcldb
+   module is highly suspicious.<br/>
+
+   If you get this message, the index is damaged, only deleting it and
+   reindexing can recover it.<br/>
+
+   Olly Betts, the Xapian index developper, thinks that the origin may
+   be a problem which was fixed in Xapian 1.2.21, so, updating Xapian
+   may help. All Xapian 1.2.x versions are binary-compatible (you can
+   just drop them on Recoll), and there are backports repository for
+   several common Linux versions, get in touch if you have a
+   problem.<br/>
+ </li>
 
   <li>The GUI must be restarted after changing the path translation
     values (ptrans), even when they are changed from the GUI

@@ -97,7 +97,14 @@
       <div class="news">
       
       <dl>
-        
+
+        <dt>2016-01-12</dt><dd>It seems that we currently have a
+          relatively frequent problem resulting in damaged indexes. If
+          you are experimenting heavy reindexing (incremental indexing
+          takes longer than it should), or missing search results,
+          please take a look at the top of
+          the <a href="BUGS.html">known bugs page</a></dd>
+
         <dt>2016-01-12</dt><dd>Release 1.21.4 is out.</dd>
 
         <dt>2015-11-09</dt>
