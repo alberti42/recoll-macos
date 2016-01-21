@@ -623,7 +623,8 @@ rdocdir = $(pkgdatadir)/doc
 rdoc_DATA = doc/user/usermanual.html doc/user/docbook-xsl.css 
 doc/user/usermanual.html: doc/user/usermanual.xml
 	mkdir -p doc/user
-	cp -p $(top_srcdir)/doc/user/Makefile doc/user
+	test -f doc/user/Makefile  || \
+		cp -p $(top_srcdir)/doc/user/Makefile doc/user
 	$(MAKE) -C doc/user VPATH=../../$(VPATH)/doc/user usermanual.html
 endif
 
