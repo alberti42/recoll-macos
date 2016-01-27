@@ -3185,11 +3185,10 @@ bye goodbye "see you" \
       not 
       (<replaceable>word1</replaceable> AND
       <replaceable>word2</replaceable>) <literal>OR</literal>
-      <replaceable>word3</replaceable>. Explicit
-      parenthesis are <emphasis>not</emphasis> supported.</para>
+      <replaceable>word3</replaceable>. </para>
 
-      <para>As of &RCL; 1.21, you can use parentheses to group
-      elements, which will sometimes make things clearer, and may
+      <para>With &RCL; versions 1.21 and later, you can use parentheses to
+      group elements, which will sometimes make things clearer, and may
       allow expressing combinations which would have been difficult
       otherwise.</para>
 
