@@ -364,11 +364,12 @@ bool TextSplit::words_from_span(size_t bp)
  * @param spanerase Set if the current span is at its end. Process it.
  * @param bp        The current BYTE position in the stream
  */
-inline bool TextSplit::doemit(bool spanerase, size_t bp)
+inline bool TextSplit::doemit(bool spanerase, size_t _bp)
 {
+    int bp = int(_bp);
     LOGDEB2(("TextSplit::doemit: sper %d bp %d spp %d spanwords %u wS %d wL %d "
             "inn %d span [%s]\n",
-             spanerase, int(bp), m_spanpos, m_words_in_span.size(), 
+             spanerase, bp, m_spanpos, m_words_in_span.size(), 
             m_wordStart, m_wordLen, m_inNumber, m_span.c_str()));
 
     if (m_wordLen) {
