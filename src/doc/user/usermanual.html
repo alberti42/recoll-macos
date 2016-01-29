@@ -20,8 +20,8 @@ alink="#0000FF">
     <div class="titlepage">
       <div>
         <div>
-          <h1 class="title"><a name="idp49231008" id=
-          "idp49231008"></a>Recoll user manual</h1>
+          <h1 class="title"><a name="idp46033312" id=
+          "idp46033312"></a>Recoll user manual</h1>
         </div>
 
         <div>
@@ -109,13 +109,13 @@ alink="#0000FF">
                 multiple indexes</a></span></dt>
 
                 <dt><span class="sect2">2.1.3. <a href=
-                "#idp54827888">Document types</a></span></dt>
+                "#idp51664016">Document types</a></span></dt>
 
                 <dt><span class="sect2">2.1.4. <a href=
-                "#idp54847568">Indexing failures</a></span></dt>
+                "#idp51683696">Indexing failures</a></span></dt>
 
                 <dt><span class="sect2">2.1.5. <a href=
-                "#idp54854576">Recovery</a></span></dt>
+                "#idp51690704">Recovery</a></span></dt>
               </dl>
             </dd>
 
@@ -962,8 +962,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp54827888" id=
-                "idp54827888"></a>2.1.3.&nbsp;Document types</h3>
+                <h3 class="title"><a name="idp51664016" id=
+                "idp51664016"></a>2.1.3.&nbsp;Document types</h3>
               </div>
             </div>
           </div>
@@ -1056,8 +1056,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp54847568" id=
-                "idp54847568"></a>2.1.4.&nbsp;Indexing
+                <h3 class="title"><a name="idp51683696" id=
+                "idp51683696"></a>2.1.4.&nbsp;Indexing
                 failures</h3>
               </div>
             </div>
@@ -1097,8 +1097,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp54854576" id=
-                "idp54854576"></a>2.1.5.&nbsp;Recovery</h3>
+                <h3 class="title"><a name="idp51690704" id=
+                "idp51690704"></a>2.1.5.&nbsp;Recovery</h3>
               </div>
             </div>
           </div>
@@ -4661,8 +4661,8 @@ bye goodbye "see you" \
         broadly has the same capabilities as the complex search
         interface in the GUI.</p>
 
-        <p>The language is based on the (seemingly defunct)
-        <a class="ulink" href=
+        <p>The language was based on the now defunct <a class=
+        "ulink" href=
         "http://www.xesam.org/main/XesamUserSearchLanguage95"
         target="_top">Xesam</a> user search language
         specification.</p>
@@ -4727,9 +4727,9 @@ bye goodbye "see you" \
         "literal">OR</code> <em class=
         "replaceable"><code>word3</code></em>.</p>
 
-        <p>With <span class="application">Recoll</span> versions
-        1.21 and later, you can use parentheses to group elements,
-        which will sometimes make things clearer, and may allow
+        <p><span class="application">Recoll</span> versions 1.21
+        and later, allow using parentheses to group elements, which
+        will sometimes make things clearer, and may allow
         expressing combinations which would have been difficult
         otherwise.</p>
 
@@ -4857,6 +4857,12 @@ author:john/ringo
         "link" href="#RCL.INSTALL.CONFIG.FIELDS" title=
         "5.4.3.&nbsp;The fields file">section about the
         <code class="filename">fields</code> file</a></p>
+
+        <p>The document input handlers used while indexing have the
+        possibility to create other fields with arbitrary names,
+        and aliases may be defined in the configuration, so that
+        the exact field search possibilities may be different for
+        you if someone took care of the customisation.</p>
 
         <p>The field syntax also supports a few field-like, but
         special, criteria:</p>
@@ -5038,18 +5044,25 @@ dir:recoll dir:src -dir:utils -dir:common
         "margin-left: 0.5in; margin-right: 0.5in;">
           <h3 class="title">Note</h3>
 
-          <p><code class="literal">mime</code> is the <span class=
+          <p><code class="literal">mime</code>, <code class=
+          "literal">rclcat</code>, <code class=
+          "literal">size</code> and <code class=
+          "literal">date</code> criteria always affect the whole
+          query (they are applied as a final filter), even if set
+          with other terms inside a parenthese.</p>
+        </div>
+
+        <div class="note" style=
+        "margin-left: 0.5in; margin-right: 0.5in;">
+          <h3 class="title">Note</h3>
+
+          <p><code class="literal">mime</code> (or the equivalent
+          <code class="literal">rclcat</code>) is the <span class=
           "emphasis"><em>only</em></span> field with an
           <code class="literal">OR</code> default. You do need to
           use <code class="literal">OR</code> with <code class=
           "literal">ext</code> terms for example.</p>
         </div>
-
-        <p>The document input handlers used while indexing have the
-        possibility to create other fields with arbitrary names,
-        and aliases may be defined in the configuration, so that
-        the exact field search possibilities may be different for
-        you if someone took care of the customisation.</p>
 
         <div class="sect2">
           <div class="titlepage">

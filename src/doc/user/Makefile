@@ -19,8 +19,11 @@ commonoptions=--stringparam section.autolabel 1 \
 
 # index.html chunk format target replaced by nicer webhelp (needs separate
 # make) in webhelp/ subdir
-all: usermanual.html usermanual.pdf 
+all: usermanual.html usermanual.pdf webh
 
+webh:
+	make -C webhelp
+        
 usermanual.html: usermanual.xml
 	xsltproc ${commonoptions} \
             -o tmpfile.html "${XSLDIR}/html/docbook.xsl" $<
