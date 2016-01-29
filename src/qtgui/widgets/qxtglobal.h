@@ -49,6 +49,8 @@
 
 //--------------------------export macros------------------------------
 
+#define QXT_STATIC
+
 #define QXT_DLLEXPORT DO_NOT_USE_THIS_ANYMORE
 
 #if !defined(QXT_STATIC) && !defined(QXT_DOXYGEN_RUN)

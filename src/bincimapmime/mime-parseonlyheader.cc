@@ -115,7 +115,7 @@ int Binc::MimePart::doParseOnlyHeader(MimeInputSource *ms,
       if (c == '\n') ++nlines;
       if (c == ':') break;
       if (c == '\n') {
-	for (string::size_type i = name.length() - 1; i >= 0; --i)
+    for (int i = int(name.length()) - 1; i >= 0; --i)
 	  mimeSource->ungetChar();
 
 	quit = true;

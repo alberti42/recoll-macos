@@ -27,6 +27,7 @@ HEADERS += \
         fragbuts.h \
         idxsched.h \
         widgets/listdialog.h \
+        widgets/qxtconfirmationmessage.h \
         preview_w.h \
         preview_load.h \
         preview_plaintorich.h \
