@@ -210,14 +210,35 @@ void SearchData::simplify()
         clsubp->getSub()->simplify();
 
         // If this subquery has special attributes, it's not a
-        // candidate for collapsing
+        // candidate for collapsing, except if it has no clauses, because
+        // then, we just pick the attributes.
         if (!clsubp->getSub()->m_filetypes.empty() || 
             !clsubp->getSub()->m_nfiletypes.empty() ||
             clsubp->getSub()->m_haveDates || 
             clsubp->getSub()->m_maxSize != size_t(-1) ||
             clsubp->getSub()->m_minSize != size_t(-1) ||
-            clsubp->getSub()->m_haveWildCards)
-            continue;
+            clsubp->getSub()->m_haveWildCards) {
+            if (!clsubp->getSub()->m_query.empty())
+                continue;
+            m_filetypes.insert(m_filetypes.end(),
+                               clsubp->getSub()->m_filetypes.begin(),
+                               clsubp->getSub()->m_filetypes.end());
+            m_nfiletypes.insert(m_nfiletypes.end(),
+                               clsubp->getSub()->m_nfiletypes.begin(),
+                               clsubp->getSub()->m_nfiletypes.end());
+            if (clsubp->getSub()->m_haveDates && !m_haveDates) {
+                m_dates = clsubp->getSub()->m_dates;
+            }
+            if (m_maxSize == size_t(-1))
+                m_maxSize = clsubp->getSub()->m_maxSize;
+            if (m_minSize == size_t(-1))
+                m_minSize = clsubp->getSub()->m_minSize;
+            m_haveWildCards = m_haveWildCards ||
+                clsubp->getSub()->m_haveWildCards;
+            // And then let the clauses processing go on, there are
+            // none anyway, we will just delete the subquery.
+        }
+        
 
         bool allsametp = true;
         for (qlist_it_t it1 = clsubp->getSub()->m_query.begin(); 
@@ -277,18 +298,22 @@ static const char * tpToString(SClType t)
     }
 }
 
+static string dumptabs;
+
 void SearchData::dump(ostream& o) const
 {
-    o << "SearchData: " << tpToString(m_tp) << " qs " << int(m_query.size()) << 
+    o << dumptabs <<
+        "SearchData: " << tpToString(m_tp) << " qs " << int(m_query.size()) << 
         " ft " << m_filetypes.size() << " nft " << m_nfiletypes.size() << 
         " hd " << m_haveDates << " maxs " << int(m_maxSize) << " mins " << 
         int(m_minSize) << " wc " << m_haveWildCards << "\n";
     for (std::vector<SearchDataClause*>::const_iterator it =
              m_query.begin(); it != m_query.end(); it++) {
+        o << dumptabs;
         (*it)->dump(o);
         o << "\n";
     }
-    o << "\n";
+//    o << dumptabs << "\n";
 }
 
 void SearchDataClause::dump(ostream& o) const
@@ -341,8 +366,10 @@ void SearchDataClauseDist::dump(ostream& o) const
 void SearchDataClauseSub::dump(ostream& o) const
 {
     o << "ClauseSub {\n";
+    dumptabs += '\t';
     m_sub->dump(o);
-    o << "}";
+    dumptabs.erase(dumptabs.size()- 1);
+    o << dumptabs << "}";
 }
 
 } // Namespace Rcl

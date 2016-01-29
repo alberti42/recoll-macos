@@ -123,7 +123,7 @@ namespace yy {
     /// Symbol semantic values.
     union semantic_type
     {
-    #line 44 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:372
+    #line 46 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:372
 
     std::string *str;
     Rcl::SearchDataClauseSimple *cl;
