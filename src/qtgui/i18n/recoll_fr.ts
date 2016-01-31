@@ -738,6 +738,13 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
 </context>
 <context>
+    <name>QxtConfirmationMessage</name>
+    <message>
+        <source>Do not show again.</source>
+        <translation>Ne plus afficher.</translation>
+    </message>
+</context>
+<context>
     <name>RTIToolW</name>
     <message>
         <source>Real time indexing automatic start</source>
@@ -1127,11 +1134,11 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>The document belongs to an external indexwhich I can&apos;t update. </source>
-        <translation>Le document appartient à un index externe que je ne peux pas mettre à jour.</translation>
+        <translation type="obsolete">Le document appartient à un index externe que je ne peux pas mettre à jour.</translation>
     </message>
     <message>
         <source>Click Cancel to return to the list. Click Ignore to show the preview anyway. </source>
-        <translation>Cliquer Annuler pour retourner à la liste. Cliquer Ignorer pour afficher tout de même.</translation>
+        <translation type="obsolete">Cliquer Annuler pour retourner à la liste. Cliquer Ignorer pour afficher tout de même.</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
@@ -1148,25 +1155,21 @@ Please check the desktop file</source>
 Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
-        <source>The current indexing process was not started from this interface, can&apos;t kill it</source>
-        <translation>L&apos;indexation en cours n&apos;a pas été démarrée depuis cette interface, impossible de l&apos;arrêter </translation>
-    </message>
-    <message>
         <source>Bad paths</source>
-        <translation>Chemins incorrects</translation>
+        <translation>Chemins inexistants</translation>
     </message>
     <message>
         <source>Bad paths in configuration file:
 </source>
-        <translation>Chemins incorrects dans le fichier de configuration</translation>
+        <translation>Chemins inexistants définis dans le fichier de configuration:</translation>
     </message>
     <message>
         <source>Selection patterns need topdir</source>
-        <translation>L&apos;utilisation de schémas de sélection nécessite l&apos;entrée d&apos;un répertoire de tête</translation>
+        <translation>Les schémas de sélection nécessitent un répertoire de départ</translation>
     </message>
     <message>
         <source>Selection patterns can only be used with a start directory</source>
-        <translation>Les schémas de sélection ne peuvent être utilisés qu&apos;en spécifiant un répertoire de tête</translation>
+        <translation>Les schémas de sélection ne peuvent être utilisés qu&apos;avec un répertoire de départ</translation>
     </message>
     <message>
         <source>No search</source>
@@ -1178,15 +1181,15 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Choose file to save</source>
-        <translation>Choisir le fichier à sauver</translation>
+        <translation>Choisir un fichier pour sauvegarder</translation>
     </message>
     <message>
         <source>Saved Queries (*.rclq)</source>
-        <translation>Recherches sauvegardées (*.rclq)</translation>
+        <translation>Recherches Sauvegardées (*.rclq)</translation>
     </message>
     <message>
         <source>Write failed</source>
-        <translation>L&apos;écriture a échoué</translation>
+        <translation>Échec d&apos;écriture</translation>
     </message>
     <message>
         <source>Could not write to file</source>
@@ -1194,11 +1197,11 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Read failed</source>
-        <translation>La lecture a échoué</translation>
+        <translation>Erreur de lecture</translation>
     </message>
     <message>
         <source>Could not open file: </source>
-        <translation>Impossible d&apos;ouvrir le fichier</translation>
+        <translation>Impossible d&apos;ouvrir le fichier:</translation>
     </message>
     <message>
         <source>Load error</source>
@@ -1206,7 +1209,35 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Could not load saved query</source>
-        <translation>Impossible de charger la recherche sauvegardée</translation>
+        <translation>Le chargement de la recherche sauvegardée a échoué</translation>
+    </message>
+    <message>
+        <source>Opening a temporary copy. Edits will be lost if you don&apos;t save&lt;br/&gt;them to a permanent location.</source>
+        <translation>Ouverture d&apos;un fichier temporaire. Les modification seront perdues&lt;br/&gt;si vous ne les sauvez pas dans un emplacement permanent.</translation>
+    </message>
+    <message>
+        <source>Do not show this warning next time (use GUI preferences to restore).</source>
+        <translation>Ne plus afficher ce message (utiliser le dialogue de préférences pour rétablir).</translation>
+    </message>
+    <message>
+        <source>Disabled because the real time indexer was not compiled in.</source>
+        <translation>Désactivé parce que l&apos;indexeur au fil de l&apos;eau n&apos;est pas disponible dans cet exécutable.</translation>
+    </message>
+    <message>
+        <source>This configuration tool only works for the main index.</source>
+        <translation>Cet outil de configuration ne travaille que sur l&apos;index principal.</translation>
+    </message>
+    <message>
+        <source>The current indexing process was not started from this interface, can&apos;t kill it</source>
+        <translation>Le processus d&apos;indexation en cours n&apos;a pas été démarré depuis cette interface, impossible de l&apos;arrêter</translation>
+    </message>
+    <message>
+        <source>The document belongs to an external index which I can&apos;t update. </source>
+        <translation>Le document appartient à un index externe que je ne peux pas mettre à jour.</translation>
+    </message>
+    <message>
+        <source>Click Cancel to return to the list. &lt;br&gt;Click Ignore to show the preview anyway (and remember for this session).</source>
+        <translation>Cliquer Annulation pour retourner à la liste.&lt;br&gt;Cliquer Ignorer pour afficher la prévisualisation de toutes facons (mémoriser l&apos;option pour la session).</translation>
     </message>
     <message>
         <source>Index scheduling</source>
@@ -1214,19 +1245,11 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Sorry, not available under Windows for now, use the File menu entries to update the index</source>
-        <translation>Non disponible sous Windows pour le moment; utiliser les entrés du menu &quot;Fichier&quot; pour mettre à jour l&apos;indexe</translation>
-    </message>
-    <message>
-        <source>Disabled because the real time indexer was not compiled in.</source>
-        <translation>Inactif parce que l&apos;indexation temps réel n&apos;est pas disponible</translation>
-    </message>
-    <message>
-        <source>This configuration tool only works for the main index.</source>
-        <translation>Cet outil de configuration ne fonctionne qu&apos;avec l&apos;index principal</translation>
+        <translation>Désolé, pas disponible pour Windows pour le moment, utiliser les entrées du menu fichier pour mettre à jour l&apos;index</translation>
     </message>
     <message>
         <source>Can&apos;t set synonyms file (parse error?)</source>
-        <translation>Impossible d&apos;activer le fichier de synonymes (erreur de syntaxe?)</translation>
+        <translation>Impossible d&apos;ouvrir le fichier des synonymes (erreur dans le fichier?)</translation>
     </message>
 </context>
 <context>
@@ -1492,14 +1515,6 @@ Merci de vérifier le fichier desktop </translation>
         <translation>La prochaine mise à jour de l&apos;index essaiera de traiter les fichiers actuellement en échec</translation>
     </message>
     <message>
-        <source>Indexing &amp;schedule</source>
-        <translation>&amp;Calendrier d&apos;indexation</translation>
-    </message>
-    <message>
-        <source>Enable synonyms</source>
-        <translation>Activer le traitement de synonymes</translation>
-    </message>
-    <message>
         <source>Save last query</source>
         <translation>Sauvegarder la dernière recherche</translation>
     </message>
@@ -1513,7 +1528,15 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Indexing with special options</source>
-        <translation>Indexation avec options spéciales</translation>
+        <translation>Indexation avec des options spéciales</translation>
+    </message>
+    <message>
+        <source>Indexing &amp;schedule</source>
+        <translation>Programme d&apos;indexation</translation>
+    </message>
+    <message>
+        <source>Enable synonyms</source>
+        <translation>Activer les synonymes</translation>
     </message>
 </context>
 <context>
@@ -1990,27 +2013,27 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Stemming languages for stored query: </source>
-        <translation>Langues d&apos;expansion pour la recherche sauvegardée</translation>
+        <translation>Les langages d&apos;expansion pour la recherche sauvegardée:</translation>
     </message>
     <message>
         <source> differ from current preferences (kept)</source>
-        <translation>diffèrent des préférences actuelles (conservées)</translation>
+        <translation>diffèrent des préférences en cours (conservées)</translation>
     </message>
     <message>
         <source>Auto suffixes for stored query: </source>
-        <translation>Suffixes automatique pour la recherche sauvegardée</translation>
+        <translation>L&apos;option de suffixe automatique pour la recherche sauvegardée:</translation>
     </message>
     <message>
         <source>External indexes for stored query: </source>
-        <translation>Index externes pour la recherche sauvegardée</translation>
+        <translation>Les index externes pour la recherche sauvegardée:</translation>
     </message>
     <message>
         <source>Autophrase is set but it was unset for stored query</source>
-        <translation>La recherche par phrases automatiques est active, mais elle était inactive pour la recherche sauvegardée</translation>
+        <translation>L&apos;option autophrase est positionnée, mais ne l&apos;était pas pour la recherche sauvegardée</translation>
     </message>
     <message>
         <source>Autophrase is unset but it was set for stored query</source>
-        <translation>La recherche par phrases automatiques est inactive, mais elle était active pour la recherche sauvegardée</translation>
+        <translation>L&apos;option autophrase est désactivée  mais était active pour la recherche sauvegardée</translation>
     </message>
 </context>
 <context>
@@ -2199,19 +2222,19 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Do not retry previously failed files.</source>
-        <translation>Ne pas réessayer les fichiers précédemment en erreur</translation>
+        <translation>Ne pas réessayer les fichiers en erreur.</translation>
     </message>
     <message>
         <source>Else only modified or failed files will be processed.</source>
-        <translation>Dans le cas contraire, seuls les fichiers modifiés ou en erreur seront traités</translation>
+        <translation>Sinon, seulement les fichiers modifiés ou en erreur seront traités.</translation>
     </message>
     <message>
         <source>Erase selected files data before indexing.</source>
-        <translation>Effacer les données pour les fichiers sélectionnés avant indexation</translation>
+        <translation>Effacer les données pour les fichiers sélectionnés avant de réindexer.</translation>
     </message>
     <message>
-        <source>Directory to recursively index. This must be inside the regular indexed area&lt;br&gt; as defined in the configuration file (topdirs).</source>
-        <translation>Répertoire à indexer récursivement. Il doit se trouver sous un répertoire configuré (topdirs)</translation>
+        <source>Directory to recursively index</source>
+        <translation type="obsolete">Répertoire à indexer récursivement</translation>
     </message>
     <message>
         <source>Browse</source>
@@ -2219,11 +2242,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Start directory (else use regular topdirs):</source>
-        <translation>Répertoire de départ (utiliser la configuration normale si vide)</translation>
+        <translation>Répertoire de départ (sinon utiliser la variable normale topdirs):</translation>
     </message>
     <message>
         <source>Leave empty to select all files. You can use multiple space-separated shell-type patterns.&lt;br&gt;Patterns with embedded spaces should be quoted with double quotes.&lt;br&gt;Can only be used if the start target is set.</source>
-        <translation>Laisser vide pour sélectionner tous les fichiers. Vous pouvez utiliser des schémas de type shell multiples.&lt;br&gt;Les schémas contenant des espaces doivent être entourés d&apos;apostrophes doubles.&lt;br&gt;Ne peut être utilisé que si le répertoire de départ est positionné.</translation>
+        <translation>Laisser vide pour sélectionner tous les fichiers. Vous pouvez utiliser plusieurs schémas séparés par des espaces.&lt;br&gt;Les schémas contenant des espaces doivent ere enclos dans des apostrophes doubles.&lt;br&gt;Ne peut être utilisé que si le répertoire de départ est positionné.</translation>
     </message>
     <message>
         <source>Selection patterns:</source>
@@ -2231,7 +2254,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Top indexed entity</source>
-        <translation>Entité indexée de départ</translation>
+        <translation>Objet indexé de démarrage</translation>
+    </message>
+    <message>
+        <source>Directory to recursively index. This must be inside the regular indexed area&lt;br&gt; as defined in the configuration file (topdirs).</source>
+        <translation>Répertoire à indexer récursivement. Il doit être à l&apos;intérieur de la zone normale&lt;br&gt;définie par la variable topdirs.</translation>
     </message>
 </context>
 <context>
@@ -2452,7 +2479,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Value from previous program exit</source>
-        <translation>Valeur provenant de l&apos;exécution précédente</translation>
+        <translation>Valeur obtenue de la dernière exécution</translation>
     </message>
 </context>
 <context>
@@ -2808,7 +2835,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
-        <translation>Des entrées seront recyclées quand la taille sera atteinte.&lt;br&gt;Diminuer la taille n&apos;a pas vraiment d&apos;effet parce que le fichier existant ne sera pas tronqué.</translation>
+        <translation>Les entrées seront recyclées quand la taille sera atteinte.&lt;br&gt;Seule l&apos;augmentation de la taille a un sens parce que réduire la valeur ne tronquera pas un fichier existant (mais gachera de l&apos;espace à la fin).</translation>
     </message>
 </context>
 <context>
@@ -3400,8 +3427,12 @@ La valeur par défaut est 2%</translation>
         <translation>Démarrer en mode recherche simple</translation>
     </message>
     <message>
+        <source>Show warning when opening temporary file.</source>
+        <translation>Afficher un avertissement quand on édite une copie temporaire.</translation>
+    </message>
+    <message>
         <source>User style to apply to the snippets window.&lt;br&gt; Note: the result page header insert is also included in the snippets window header.</source>
-        <translation>Style utilisateur à appliquer à la fenêtre d&apos;extraits.&lt;br&gt;Note: l&apos;insert d&apos;en-tête de page de résultats est aussi inclus dans l&apos;en-tête de la fenêtre d&apos;extraits.</translation>
+        <translation>Style utilisateur à appliquer à la fenêtre &quot;snippets&quot;.&lt;br&gt;Note: l&apos;en tête de page de résultat est aussi inclus dans la fenêtre &quot;snippets&quot;.</translation>
     </message>
     <message>
         <source>Synonyms file</source>

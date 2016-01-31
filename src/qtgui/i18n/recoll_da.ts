@@ -1137,7 +1137,11 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Opening a temporary copy. Edits will be lost if you don&apos;t save&lt;br/&gt;them to a permanent location.</source>
-        <translation>Åbner en midlertidig kopi. Ændringer vil gå tabt, hvis du ikke gemmer&lt;br/&gt;dem til en permanent sted.</translation>
+        <translation>Åbner en midlertidig kopi. Ændringer vil gå tabt, hvis du ikke gemmer&lt;br/&gt;dem til et permanent sted.</translation>
+    </message>
+    <message>
+        <source>Do not show this warning next time (use GUI preferences to restore).</source>
+        <translation>Vis ikke denne advarsel næste gang (brug GUI præferencer for at gendanne).</translation>
     </message>
 </context>
 <context>
