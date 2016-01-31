@@ -48,7 +48,7 @@
 
 using namespace std;
 
-//#define LOG_PARSER
+// #define LOG_PARSER
 #ifdef LOG_PARSER
 #define LOGP(X) {cerr << X;}
 #else
