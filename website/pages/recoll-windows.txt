@@ -18,6 +18,13 @@ more useful ? You can use the Disqus comments section at the bottom of this
 page, send an email, or use the
 https://bitbucket.org/medoc/recoll/issues[BitBucket Recoll issues tracker].
 
+NOTE: Especially, I would very much like information about system
+compatibility. It seems that Recoll does not work on Windows XP, and there is
+little I can do about it. I know that it runs on Windows 7 32 bits, and
+Windows 10 64 bits (my two Virtualbox instances). I have a report that the
+installer crashes on Windows 7 64 bits, but I would really like more data
+points. Please send me news of your success or failure.
+
 Procedure: 
 
 - Download the Recoll setup file from the
