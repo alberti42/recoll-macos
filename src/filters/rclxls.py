@@ -57,7 +57,7 @@ class XLSFilter:
             return ([], None)
 
 if __name__ == '__main__':
-    if not rclexecm.which("ppt-dump.py"):
+    if not rclexecm.which("xls-dump.py"):
         print("RECFILTERROR HELPERNOTFOUND ppt-dump.py")
         sys.exit(1)
     proto = rclexecm.RclExecM()
