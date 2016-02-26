@@ -44,7 +44,8 @@ using namespace std;
 /// So we first call the internal file identifier, which currently
 /// only knows about mail, but in which we can add the more
 /// current/interesting file types.
-/// As a last resort we execute 'file' (except if forbidden by config)
+/// As a last resort we execute 'file' or its configured replacement
+/// (except if forbidden by config)
 
 static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
 {
@@ -54,20 +55,35 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
 #ifdef USE_SYSTEM_FILE_COMMAND
     if (usfc && mime.empty()) {
 	// Last resort: use "file -i", or its configured replacement.
-	vector<string> cmd = create_vector<string>(FILE_PROG) ("-i") (fn);
+
+        // 'file' fallback if the configured command (default:
+        // xdg-mime) is not found
+	static const vector<string> tradfilecmd =
+            create_vector<string>(FILE_PROG) ("-i") (fn);
+
+        vector<string> cmd;
         string scommand;
         if (cfg->getConfParam("systemfilecommand", scommand)) {
             stringToStrings(scommand, cmd);
+            string exe;
+            if (cmd.empty()) {
+                cmd = tradfilecmd;
+            } else if (!ExecCmd::which(cmd[0], exe)) {
+                cmd = tradfilecmd;
+            } else {
+                cmd[0] = exe;
+            }
             cmd.push_back(fn);
         }
 
 	string result;
 	if (!ExecCmd::backtick(cmd, result)) {
-	    LOGERR(("mimetypefromdata: exec %s failed\n", FILE_PROG));
+	    LOGERR(("mimetypefromdata: exec %s failed\n",
+                    stringsToString(cmd).c_str()));
 	    return string();
 	}
-	LOGDEB2(("mimetype: [%s] \"file\" output [%s]\n", 
-		 result.c_str(), fn.c_str()));
+	trimstring(result, " \t\n\r");
+	LOGDEB2(("mimetype: systemfilecommand output [%s]\n", result.c_str()));
 	
 	// The normal output from "file -i" looks like the following:
 	//   thefilename.xxx: text/plain; charset=us-ascii
@@ -75,8 +91,7 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
 	//     mimetype.cpp: text/x-c charset=us-ascii
 	// And sometimes we only get the mime type. This apparently happens
 	// when 'file' believes that the file name is binary
-
-	trimstring(result, " \t\n\r");
+        // xdg-mime only outputs the MIME type.
 
 	// If there is no colon and there is a slash, this is hopefuly
 	// the mime type
