@@ -13,13 +13,17 @@ import os
 import xml.sax
 
 class XLSProcessData:
-    def __init__(self, em):
+    def __init__(self, em, ishtml = False):
         self.em = em
         self.out = ""
         self.gotdata = 0
         self.xmldata = ""
+        self.ishtml = ishtml
         
     def takeLine(self, line):
+        if self.ishtml:
+            self.out += line + "\n"
+            return
         if not self.gotdata:
             self.out += '''<html><head>''' + \
                         '''<meta http-equiv="Content-Type" ''' + \
@@ -29,6 +33,8 @@ class XLSProcessData:
         self.xmldata += line
 
     def wrapData(self):
+        if self.ishtml:
+            return self.out
         handler =  xlsxmltocsv.XlsXmlHandler()
         data = xml.sax.parseString(self.xmldata, handler)
         self.out += self.em.htmlescape(handler.output)
@@ -47,6 +53,14 @@ class XLSFilter:
         if self.ntry:
             return ([], None)
         self.ntry = 1
+        # Some HTML files masquerade as XLS
+        try:
+            data = open(fn, 'rb').read(512)
+            if data.find('html') != -1 or data.find('HTML') != -1:
+                return ("cat", XLSProcessData(self.em, True))
+        except Exception as err:
+            self.em.rclog("Error reading %s:%s" % (fn, str(err)))
+            pass
         cmd = rclexecm.which("xls-dump.py")
         if cmd:
             # xls-dump.py often exits 1 with valid data. Ignore exit value
