@@ -46,30 +46,43 @@ class Executor:
     def runCmd(self, cmd, filename, postproc, opt):
         ''' Substitute parameters and execute command, process output
         with the specific postprocessor and return the complete text.
-        We expect cmd as a list of command name + arguments'''
+        We expect cmd as a list of command name + arguments, except that, for
+        the special value "cat", we just read the file'''
 
-        try:
-            fullcmd = cmd + [filename]
-            proc = subprocess.Popen(fullcmd,
-                                    stdout = subprocess.PIPE)
-            stdout = proc.stdout
-        except subprocess.CalledProcessError as err:
-            self.em.rclog("extractone: Popen(%s) error: %s" % (fullcmd, err))
-            return (False, "")
-        except OSError as err:
-            self.em.rclog("extractone: Popen(%s) OS error: %s" % (fullcmd, err))
-            return (False, "")
-
-        for line in stdout:
-            postproc.takeLine(line.strip())
-
-        proc.wait()
-        if (opt & self.opt_ignxval) == 0 and proc.returncode:
-            self.em.rclog("extractone: [%s] returncode %d" % \
-                          (filename, proc.returncode))
-            return False, postproc.wrapData()
-        else:
+        if cmd == "cat":
+            try:
+                data = open(filename, 'rb').read()
+                ok = True
+            except Exception as err:
+                self.em.rclog("runCmd: error reading %s: %s"%(filename, err))
+                return(False, "")
+            for line in data.split('\n'):
+                postproc.takeLine(line)
             return True, postproc.wrapData()
+        else:
+            try:
+                fullcmd = cmd + [filename]
+                proc = subprocess.Popen(fullcmd,
+                                        stdout = subprocess.PIPE)
+                stdout = proc.stdout
+            except subprocess.CalledProcessError as err:
+                self.em.rclog("extractone: Popen(%s) error: %s" % (fullcmd, err))
+                return (False, "")
+            except OSError as err:
+                self.em.rclog("extractone: Popen(%s) OS error: %s" %
+                              (fullcmd, err))
+                return (False, "")
+
+            for line in stdout:
+                postproc.takeLine(line.strip())
+
+            proc.wait()
+            if (opt & self.opt_ignxval) == 0 and proc.returncode:
+                self.em.rclog("extractone: [%s] returncode %d" % \
+                              (filename, proc.returncode))
+                return False, postproc.wrapData()
+            else:
+                return True, postproc.wrapData()
 
     def extractone(self, params):
         #self.em.rclog("extractone %s %s" % (params["filename:"], \

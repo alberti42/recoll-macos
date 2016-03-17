@@ -718,6 +718,13 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
 </context>
 <context>
+    <name>QxtConfirmationMessage</name>
+    <message>
+        <source>Do not show again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RTIToolW</name>
     <message>
         <source>Real time indexing automatic start</source>
@@ -1098,14 +1105,6 @@ Por favor revise el archivo mimeconf</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The document belongs to an external indexwhich I can&apos;t update. </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Click Cancel to return to the list. Click Ignore to show the preview anyway. </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Duplicate documents</source>
         <translation type="unfinished">Documentos duplicados</translation>
     </message>
@@ -1197,6 +1196,22 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Can&apos;t set synonyms file (parse error?)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The document belongs to an external index which I can&apos;t update. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Cancel to return to the list. &lt;br&gt;Click Ignore to show the preview anyway (and remember for this session).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opening a temporary copy. Edits will be lost if you don&apos;t save&lt;br/&gt;them to a permanent location.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do not show this warning next time (use GUI preferences to restore).</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3047,6 +3062,10 @@ El valor por defecto es 2 (por ciento).</translation>
     </message>
     <message>
         <source>Synonyms file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show warning when opening temporary file.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

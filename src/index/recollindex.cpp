@@ -325,25 +325,8 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
         }
     }
 
-    // Check skippedPaths too, but only the user part (shallow==true), not
-    // the default values (e.g. /media, which might not exist).
-    if (config->getConfParam("skippedPaths", &tdl, true)) {
-        for (vector<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
-            *it = path_tildexpand(*it);
-            if (!path_exists(*it)) {
-                nonexist.push_back(*it);
-            }
-        }
-    }
+    // We'd like to check skippedPaths too, but these are wildcard exprs, so reasonably can't
 
-    if (config->getConfParam("daemSkippedPaths", &tdl, true)) {
-        for (vector<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
-            *it = path_tildexpand(*it);
-            if (!path_exists(*it)) {
-                nonexist.push_back(*it);
-            }
-        }
-    }
     return true;
 }
 

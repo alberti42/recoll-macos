@@ -3129,7 +3129,7 @@ bye goodbye "see you" \
       capabilities as the complex search interface in the
       GUI.</para>
 
-      <para>The language is based on the (seemingly defunct) 
+      <para>The language was based on the now defunct
         <ulink url="http://www.xesam.org/main/XesamUserSearchLanguage95">
           Xesam</ulink> user search language specification.</para>
 
@@ -3187,7 +3187,7 @@ bye goodbye "see you" \
       <replaceable>word2</replaceable>) <literal>OR</literal>
       <replaceable>word3</replaceable>. </para>
 
-      <para>With &RCL; versions 1.21 and later, you can use parentheses to
+      <para>&RCL; versions 1.21 and later, allow using parentheses to
       group elements, which will sometimes make things clearer, and may
       allow expressing combinations which would have been difficult
       otherwise.</para>
@@ -3284,8 +3284,14 @@ bye goodbye "see you" \
       linkend="RCL.INSTALL.CONFIG.FIELDS">section about the
       <filename>fields</filename> file</link></para> 
 
+      <para>The document input handlers used while indexing have the
+      possibility to create other fields with arbitrary names, and
+      aliases may be defined in the configuration, so that the exact
+      field search possibilities may be different for you if someone
+      took care of the customisation.</para>
+
       <para>The field syntax also supports a few field-like, but
-        special, criteria:</para>
+      special, criteria:</para>
 
       <itemizedlist>
 
@@ -3315,7 +3321,7 @@ dir:recoll dir:src -dir:utils -dir:common
             path (in any order), and which have not either
             <filename>utils</filename> or
             <filename>common</filename>.</para>
-
+            
           <para>You can also use <literal>OR</literal> conjunctions
             with <literal>dir:</literal> clauses.</para>
 
@@ -3409,17 +3415,19 @@ dir:recoll dir:src -dir:utils -dir:common
 
       </itemizedlist>
 
-      <note><para>
-        <literal>mime</literal> is the <emphasis>only</emphasis> field with an
-        <literal>OR</literal> default. You do need to use
-        <literal>OR</literal> with <literal>ext</literal> terms for
-      example.</para> </note>
+        <note><para>
+          <literal>mime</literal>, <literal>rclcat</literal>,
+          <literal>size</literal> and <literal>date</literal> criteria
+          always affect the whole query (they are applied as a final
+          filter), even if set with other terms inside a parenthese.</para>
+          </note>
 
-      <para>The document input handlers used while indexing have the
-        possibility to create other fields with arbitrary names, and
-        aliases may be defined in the configuration, so that the exact
-        field search possibilities may be different for you if someone
-        took care of the customisation.</para>
+          <note><para>
+            <literal>mime</literal> (or the equivalent
+            <literal>rclcat</literal>) is the <emphasis>only</emphasis>
+            field with an <literal>OR</literal> default. You do need to use
+            <literal>OR</literal> with <literal>ext</literal> terms for
+          example.</para> </note>
 
       <sect2 id="RCL.SEARCH.LANG.MODIFIERS">
         <title>Modifiers</title>
@@ -3476,17 +3484,19 @@ dir:recoll dir:src -dir:utils -dir:common
 
       <para>For &RCL; versions 1.18 and later, and <emphasis>when working
           with a raw index</emphasis> (not the default), searches can be
-          made sensitive
-        to character case and diacritics. How this happens is controlled by
-        configuration variables and what search data is entered.</para>
+          sensitive to character case and diacritics. How this happens
+          is controlled by configuration variables and what search data is
+          entered.</para>
 
-      <para>The general default is that searches are insensitive to case
-      and diacritics. An entry of <literal>resume</literal> will match any
-      of <literal>Resume</literal>, <literal>RESUME</literal>,
+      <para>The general default is that searches entered without upper-case
+      or accented characters are insensitive to case and diacritics. An
+      entry of <literal>resume</literal> will match any of
+      <literal>Resume</literal>, <literal>RESUME</literal>,
       <literal>résumé</literal>, <literal>Résumé</literal> etc.</para>
 
       <para>Two configuration variables can automate switching on
-        sensitivity:</para> 
+        sensitivity (they were documented but actually did nothing until
+      &RCL; 1.22):</para>
 
       <variablelist>
 
