@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Recoll"
-#define MyAppVersion "1.22.0-20160129"
+#define MyAppVersion "1.22.0-20160317"
 #define MyAppPublisher "Recoll.org"
 #define MyAppURL "http://www.recoll.org"
 #define MyAppExeName "recoll.exe"
@@ -27,6 +27,7 @@ OutputBaseFilename=recoll-setup-{#MyAppVersion}
 SetupIconFile=C:\recoll\src\desktop\recoll.ico
 Compression=lzma
 SolidCompression=yes
+PrivilegesRequired=lowest
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
