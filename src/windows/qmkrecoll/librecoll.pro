@@ -91,6 +91,7 @@ SOURCES += \
 ../../windows/fnmatch.c \
 ../../utils/fileudi.cpp \
 ../../utils/fstreewalk.cpp \
+../../utils/hldata.cpp \
 ../../utils/idfile.cpp \
 ../../utils/md5.cpp \
 ../../utils/md5ut.cpp \
@@ -98,6 +99,7 @@ SOURCES += \
 ../../utils/pathut.cpp \
 ../../utils/pxattr.cpp \
 ../../utils/rclionice.cpp \
+../../utils/rclutil.cpp \
 ../../utils/readfile.cpp \
 ../../utils/smallut.cpp \
 ../../utils/strmatcher.cpp \

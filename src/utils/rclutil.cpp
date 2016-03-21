@@ -56,6 +56,79 @@ void map_ss_cp_noshr(const map<string, string> s, map<string, string> *d)
     }
 }
 
+#ifdef _WIN32
+static bool path_hasdrive(const string& s)
+{
+    if (s.size() >= 2 && isalpha(s[0]) && s[1] == ':') {
+        return true;
+    }
+    return false;
+}
+static bool path_isdriveabs(const string& s)
+{
+    if (s.size() >= 3 && isalpha(s[0]) && s[1] == ':' && s[2] == '/') {
+        return true;
+    }
+    return false;
+}
+
+#include <Shlwapi.h>
+#pragma comment(lib, "shlwapi.lib")
+
+string path_tchartoutf8(TCHAR *text)
+{
+#ifdef UNICODE
+    // Simple C
+    // const size_t size = ( wcslen(text) + 1 ) * sizeof(wchar_t);
+    // wcstombs(&buffer[0], text, size);
+    // std::vector<char> buffer(size);
+    // Or:
+    // Windows API
+    std::vector<char> buffer;
+    int size = WideCharToMultiByte(CP_UTF8, 0, text, -1, NULL, 0, NULL, NULL);
+    if (size > 0) {
+        buffer.resize(size);
+        WideCharToMultiByte(CP_UTF8, 0, text, -1,
+                            &buffer[0], int(buffer.size()), NULL, NULL);
+    } else {
+        return string();
+    }
+    return string(&buffer[0]);
+#else
+    return text;
+#endif
+}
+string path_thisexecpath()
+{
+    TCHAR text[MAX_PATH];
+    GetModuleFileName(NULL, text, MAX_PATH);
+#ifdef NTDDI_WIN8_future
+    PathCchRemoveFileSpec(text, MAX_PATH);
+#else
+    PathRemoveFileSpec(text);
+#endif
+    string path = path_tchartoutf8(text);
+    if (path.empty()) {
+        path = "c:/";
+    }
+
+    return path;
+}
+string path_wingettempfilename(TCHAR *pref)
+{
+    TCHAR buf[(MAX_PATH + 1)*sizeof(TCHAR)];
+    TCHAR dbuf[(MAX_PATH + 1)*sizeof(TCHAR)];
+    GetTempPath(MAX_PATH + 1, dbuf);
+    GetTempFileName(dbuf, pref, 0, buf);
+    // Windows will have created a temp file, we delete it.
+    string filename = path_tchartoutf8(buf);
+    unlink(filename.c_str());
+    path_slashize(filename);
+    return filename;
+}
+
+#endif // _WIN32
+
 string path_defaultrecollconfsubdir()
 {
 #ifdef _WIN32

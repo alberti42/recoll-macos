@@ -98,67 +98,10 @@ static bool path_isdriveabs(const string& s)
     }
     return false;
 }
-
-#include <Shlwapi.h>
-#pragma comment(lib, "shlwapi.lib")
-
-string path_tchartoutf8(TCHAR *text)
-{
-#ifdef UNICODE
-    // Simple C
-    // const size_t size = ( wcslen(text) + 1 ) * sizeof(wchar_t);
-    // wcstombs(&buffer[0], text, size);
-    // std::vector<char> buffer(size);
-    // Or:
-    // Windows API
-    std::vector<char> buffer;
-    int size = WideCharToMultiByte(CP_UTF8, 0, text, -1, NULL, 0, NULL, NULL);
-    if (size > 0) {
-        buffer.resize(size);
-        WideCharToMultiByte(CP_UTF8, 0, text, -1,
-                            &buffer[0], int(buffer.size()), NULL, NULL);
-    } else {
-        return string();
-    }
-    return string(&buffer[0]);
-#else
-    return text;
-#endif
-}
-
-string path_thisexecpath()
-{
-    TCHAR text[MAX_PATH];
-    GetModuleFileName(NULL, text, MAX_PATH);
-#ifdef NTDDI_WIN8_future
-    PathCchRemoveFileSpec(text, MAX_PATH);
-#else
-    PathRemoveFileSpec(text);
-#endif
-    string path = path_tchartoutf8(text);
-    if (path.empty()) {
-        path = "c:/";
-    }
-
-    return path;
-}
-
-string path_wingettempfilename(TCHAR *pref)
-{
-    TCHAR buf[(MAX_PATH + 1)*sizeof(TCHAR)];
-    TCHAR dbuf[(MAX_PATH + 1)*sizeof(TCHAR)];
-    GetTempPath(MAX_PATH + 1, dbuf);
-    GetTempFileName(dbuf, pref, 0, buf);
-    // Windows will have created a temp file, we delete it.
-    string filename = path_tchartoutf8(buf);
-    unlink(filename.c_str());
-    path_slashize(filename);
-    return filename;
-}
 #endif
 
 #if defined(HAVE_SYS_MOUNT_H) || defined(HAVE_SYS_STATFS_H) || \
-    defined(HAVE_SYS_STATVFS_H) || defined(HAVE_SYS_VFS_H)
+    defined(HAVE_SYS_STATVFS_H) || defined(HAVE_SYS_VFS_H) || defined(_WIN32)
 bool fsocc(const string& path, int *pc, long long *avmbs)
 {
     static const int FSOCC_MB = 1024 * 1024;
