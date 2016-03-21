@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <set>
+#include <map>
 
 /** Store data about user search terms and their expansions. This is used
  * mostly for highlighting result text and walking the matches, generating 

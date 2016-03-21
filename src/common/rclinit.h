@@ -18,40 +18,39 @@
 #define _RCLINIT_H_INCLUDED_
 
 #include <string>
-#ifndef NO_NAMESPACES
-using std::string;
-#endif
 
 class RclConfig;
 /**
  * Initialize by reading configuration, opening log file, etc.
- * 
+ *
  * This must be called from the main thread before starting any others. It sets
  * up the global signal handling. other threads must call recoll_threadinit()
  * when starting.
  *
- * @param flags   misc modifiers. These are currently only used to customize 
+ * @param flags   misc modifiers. These are currently only used to customize
  *      the log file and verbosity.
  * @param cleanup function to call before exiting (atexit)
- * @param sigcleanup function to call on terminal signal (INT/HUP...) This 
- *       should typically set a flag which tells the program (recoll, 
- *       recollindex etc.. to exit as soon as possible (after closing the db, 
+ * @param sigcleanup function to call on terminal signal (INT/HUP...) This
+ *       should typically set a flag which tells the program (recoll,
+ *       recollindex etc.. to exit as soon as possible (after closing the db,
  *       etc.). cleanup will then be called by exit().
  * @param reason in case of error: output string explaining things
  * @param argcnf Configuration directory name from the command line (overriding
  *               default and environment
  * @return the parsed configuration.
  */
-enum RclInitFlags {RCLINIT_NONE=0, RCLINIT_DAEMON=1, RCLINIT_IDX=2};
+enum RclInitFlags {RCLINIT_NONE = 0, RCLINIT_DAEMON = 1, RCLINIT_IDX = 2};
 extern RclConfig *recollinit(RclInitFlags flags,
-			     void (*cleanup)(void), void (*sigcleanup)(int), 
-			     string &reason, const string *argcnf = 0);
-inline RclConfig *recollinit(void (*cleanup)(void), void (*sigcleanup)(int), 
-			     string &reason, const string *argcnf = 0) {
+                             void (*cleanup)(void), void (*sigcleanup)(int),
+                             std::string& reason, const string *argcnf = 0);
+inline RclConfig *recollinit(void (*cleanup)(void), void (*sigcleanup)(int),
+                             std::string& reason,
+                             const std::string *argcnf = 0)
+{
     return recollinit(RCLINIT_NONE, cleanup, sigcleanup, reason, argcnf);
 }
 
-// Threads need to call this to block signals.  
+// Threads need to call this to block signals.
 // The main thread handles all signals.
 extern void recoll_threadinit();
 

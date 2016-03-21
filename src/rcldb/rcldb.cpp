@@ -42,6 +42,7 @@ using namespace std;
 #include "unacpp.h"
 #include "conftree.h"
 #include "pathut.h"
+#include "rclutil.h"
 #include "smallut.h"
 #include "chrono.h"
 #include "utf8iter.h"
@@ -124,6 +125,21 @@ static inline string make_parentterm(const string& udi)
     string pterm(wrap_prefix(parent_prefix));
     pterm.append(udi);
     return pterm;
+}
+
+static void utf8truncate(string& s, int maxlen)
+{
+    if (s.size() <= string::size_type(maxlen)) {
+        return;
+    }
+    Utf8Iter iter(s);
+    string::size_type pos = 0;
+    while (iter++ != string::npos)
+        if (iter.getBpos() < string::size_type(maxlen)) {
+            pos = iter.getBpos();
+        }
+
+    s.erase(pos);
 }
 
 Db::Native::Native(Db *db) 

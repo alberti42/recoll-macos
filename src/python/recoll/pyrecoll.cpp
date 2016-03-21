@@ -32,6 +32,7 @@ using namespace std;
 #include "searchdata.h"
 #include "rclquery.h"
 #include "pathut.h"
+#include "rclutil.h"
 #include "wasatorcl.h"
 #include "debuglog.h"
 #include "pathut.h"

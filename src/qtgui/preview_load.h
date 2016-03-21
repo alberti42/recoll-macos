@@ -23,6 +23,7 @@
 
 #include "rcldoc.h"
 #include "pathut.h"
+#include "rclutil.h"
 #include "rclconfig.h"
 
 /* 

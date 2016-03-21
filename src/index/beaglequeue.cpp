@@ -23,6 +23,7 @@
 
 #include "cstr.h"
 #include "pathut.h"
+#include "rclutil.h"
 #include "debuglog.h"
 #include "fstreewalk.h"
 #include "beaglequeue.h"

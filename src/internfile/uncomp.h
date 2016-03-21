@@ -21,6 +21,7 @@
 #include <string>
 
 #include "pathut.h"
+#include "rclutil.h"
 #include "ptmutex.h"
 
 /// Uncompression script interface.

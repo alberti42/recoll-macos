@@ -32,9 +32,11 @@
 #include <iostream>
 #include UNORDERED_MAP_INCLUDE
 
-using std::string;
 
 #include "smallut.h"
+
+using std::string;
+using std::vector;
 
 /* 
    Storage for the exception translations. These are chars which

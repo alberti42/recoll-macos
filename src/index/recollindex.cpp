@@ -42,6 +42,7 @@ using namespace std;
 #include "smallut.h"
 #include "chrono.h"
 #include "pathut.h"
+#include "rclutil.h"
 #include "rclmon.h"
 #include "x11mon.h"
 #include "cancelcheck.h"

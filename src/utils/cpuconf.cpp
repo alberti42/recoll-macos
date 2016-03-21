@@ -18,9 +18,15 @@
 #ifndef TEST_CPUCONF
 
 #include "autoconfig.h"
+
+#include <stdlib.h>
+
 #include "cpuconf.h"
 #include "execmd.h"
 #include "smallut.h"
+
+using std::string;
+using std::vector;
 
 #if defined(__gnu_linux__) 
 bool getCpuConf(CpuConf& conf)

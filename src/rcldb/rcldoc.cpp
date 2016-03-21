@@ -14,9 +14,11 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include "autoconfig.h"
 
 #include "rcldoc.h"
 #include "debuglog.h"
+#include "rclutil.h"
 
 namespace Rcl {
     const string Doc::keyabs("abstract");
@@ -69,6 +71,32 @@ namespace Rcl {
         }
         if (dotext)
             LOGDEB(("Rcl::Doc::dump: text: \n[%s]\n", text.c_str()));
+    }
+
+    // Copy ensuring no shared string data, for threading issues.
+    void Doc::copyto(Doc *d) const
+    {
+	d->url.assign(url.begin(), url.end());
+        d->idxurl.assign(idxurl.begin(), idxurl.end());
+        d->idxi = idxi;
+	d->ipath.assign(ipath.begin(), ipath.end());
+	d->mimetype.assign(mimetype.begin(), mimetype.end());
+	d->fmtime.assign(fmtime.begin(), fmtime.end());
+	d->dmtime.assign(dmtime.begin(), dmtime.end());
+	d->origcharset.assign(origcharset.begin(), origcharset.end());
+        map_ss_cp_noshr(meta, &d->meta);
+	d->syntabs = syntabs;
+	d->pcbytes.assign(pcbytes.begin(), pcbytes.end());
+	d->fbytes.assign(fbytes.begin(), fbytes.end());
+	d->dbytes.assign(dbytes.begin(), dbytes.end());
+	d->sig.assign(sig.begin(), sig.end());
+        d->text.assign(text.begin(), text.end());
+	d->pc = pc;
+	d->xdocid = xdocid;
+	d->idxi = idxi;
+	d->haspages = haspages;
+	d->haschildren = haschildren;
+	d->onlyxattr = onlyxattr;
     }
 }
 

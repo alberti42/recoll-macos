@@ -21,6 +21,7 @@
 
 #include "rclconfig.h"
 #include "rcldb.h"
+#include "rclutil.h"
 #include "ptmutex.h"
 
 #include <QString>

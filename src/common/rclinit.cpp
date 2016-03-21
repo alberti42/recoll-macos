@@ -32,6 +32,7 @@
 #include "rclconfig.h"
 #include "rclinit.h"
 #include "pathut.h"
+#include "rclutil.h"
 #include "unac.h"
 #include "smallut.h"
 #include "execmd.h"
@@ -318,6 +319,8 @@ RclConfig *recollinit(RclInitFlags flags,
     // Init smallut and pathut static values
     pathut_init_mt();
     smallut_init_mt();
+    rclutil_init_mt();
+    
     // Init execmd.h static PATH and PATHELT splitting
     {string bogus;
         ExecCmd::which("nosuchcmd", bogus);
@@ -388,5 +391,4 @@ bool recoll_ismainthread()
 {
     return pthread_equal(pthread_self(), mainthread_id);
 }
-
 

@@ -28,6 +28,7 @@
 
 #include "cstr.h"
 #include "pathut.h"
+#include "rclutil.h"
 #include "conftree.h"
 #include "rclconfig.h"
 #include "fstreewalk.h"

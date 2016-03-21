@@ -71,6 +71,28 @@ typedef unsigned char UCHAR;
 typedef unsigned int UINT;
 typedef unsigned long ULONG;
 
+/** Temp buffer with automatic deallocation */
+struct TempBuf {
+    TempBuf()
+        : m_buf(0) {
+    }
+    TempBuf(int n) {
+        m_buf = (char *)malloc(n);
+    }
+    ~TempBuf() {
+        if (m_buf) {
+            free(m_buf);
+        }
+    }
+    char *setsize(int n) {
+        return (m_buf = (char *)realloc(m_buf, n));
+    }
+    char *buf() {
+        return m_buf;
+    }
+    char *m_buf;
+};
+
 static bool inflateToDynBuf(void *inp, UINT inlen, void **outpp, UINT *outlenp);
 
 /*

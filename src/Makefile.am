@@ -207,6 +207,7 @@ utils/fileudi.h \
 utils/fstreewalk.cpp \
 utils/fstreewalk.h \
 utils/hldata.h \
+utils/hldata.cpp \
 utils/idfile.cpp \
 utils/idfile.h \
 utils/md5.cpp \
@@ -224,6 +225,8 @@ utils/pxattr.cpp \
 utils/pxattr.h \
 utils/rclionice.cpp \
 utils/rclionice.h \
+utils/rclutil.h \
+utils/rclutil.cpp \
 utils/readfile.cpp \
 utils/readfile.h \
 utils/refcntr.h \

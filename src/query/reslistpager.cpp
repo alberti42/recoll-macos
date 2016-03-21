@@ -34,6 +34,7 @@ using std::list;
 #include "debuglog.h"
 #include "rclconfig.h"
 #include "smallut.h"
+#include "rclutil.h"
 #include "plaintorich.h"
 #include "mimehandler.h"
 

@@ -163,33 +163,11 @@ class Doc {
 	onlyxattr = false;
     }
     // Copy ensuring no shared string data, for threading issues.
-    void copyto(Doc *d) const {
-	d->url.assign(url.begin(), url.end());
-        d->idxurl.assign(idxurl.begin(), idxurl.end());
-        d->idxi = idxi;
-	d->ipath.assign(ipath.begin(), ipath.end());
-	d->mimetype.assign(mimetype.begin(), mimetype.end());
-	d->fmtime.assign(fmtime.begin(), fmtime.end());
-	d->dmtime.assign(dmtime.begin(), dmtime.end());
-	d->origcharset.assign(origcharset.begin(), origcharset.end());
-        map_ss_cp_noshr(meta, &d->meta);
-	d->syntabs = syntabs;
-	d->pcbytes.assign(pcbytes.begin(), pcbytes.end());
-	d->fbytes.assign(fbytes.begin(), fbytes.end());
-	d->dbytes.assign(dbytes.begin(), dbytes.end());
-	d->sig.assign(sig.begin(), sig.end());
-        d->text.assign(text.begin(), text.end());
-	d->pc = pc;
-	d->xdocid = xdocid;
-	d->idxi = idxi;
-	d->haspages = haspages;
-	d->haschildren = haschildren;
-	d->onlyxattr = onlyxattr;
-    }
+    void copyto(Doc *d) const;
+
     Doc()
 	: idxi(0), syntabs(false), pc(0), xdocid(0),
-	  haspages(false), haschildren(false), onlyxattr(false)
-    {
+	  haspages(false), haschildren(false), onlyxattr(false) {
     }
     /** Get value for named field. If value pointer is 0, just test existence */
     bool getmeta(const string& nm, string *value = 0) const
