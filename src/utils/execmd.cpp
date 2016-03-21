@@ -1134,13 +1134,15 @@ void ReExec::reexec()
 #include <vector>
 
 #include "debuglog.h"
-#include "cancelcheck.h"
 #include "execmd.h"
+#ifdef BUILDING_RECOLL
 #include "smallut.h"
+#include "cancelcheck.h"
+#endif
 
 using namespace std;
 
-
+#ifdef BUILDING_RECOLL
 // Testing the rclexecm protocol outside of recoll. Here we use the
 // rcldoc.py filter, you can try with rclaudio too, adjust the file arg
 // accordingly
@@ -1233,6 +1235,7 @@ bool exercise_mhexecm(const string& cmdstr, const string& mimetype,
     }
     return true;
 }
+#endif
 
 static char *thisprog;
 static char usage [] =
@@ -1270,6 +1273,7 @@ class MEAdv : public ExecCmdAdvise {
 public:
     void newData(int cnt) {
 	if (op_flags & OPT_c) {
+#ifdef BUILDING_RECOLL
 	    static int  callcnt;
 	    if (callcnt++ == 10) {
                 // Just sets the cancellation flag
@@ -1278,6 +1282,7 @@ public:
                 // exception. We call it here for simplicity
                 CancelCheck::instance().checkCancel();
 	    }
+#endif
 	}
 	cerr << "newData(" << cnt << ")" << endl;
     }
@@ -1338,12 +1343,14 @@ int main(int argc, char *argv[])
 	    case 'c':	op_flags |= OPT_c; break;
 	    case 'r':	op_flags |= OPT_r; break;
 	    case 'w':	op_flags |= OPT_w; break;
+#ifdef BUILDING_RECOLL
 	    case 'm':	op_flags |= OPT_m; break;
+#endif
 	    case 'i':	op_flags |= OPT_i; break;
 	    case 'o':	op_flags |= OPT_o; break;
 	    default: Usage();	break;
 	    }
-    b1: argc--; argv++;
+        argc--; argv++;
     }
 
     if (argc < 1)
@@ -1381,12 +1388,14 @@ int main(int argc, char *argv[])
             return 0;
 	} 
 	return 1;
+#ifdef BUILDING_RECOLL
     } else if (op_flags & OPT_m) {
         if (l.size() < 2)
             Usage();
         string mimetype = l[0];
         l.erase(l.begin());
 	return exercise_mhexecm(arg1, mimetype, l) ? 0 : 1;
+#endif
     } else {
         // Default: execute command line arguments
         ExecCmd mexec;
@@ -1422,7 +1431,7 @@ int main(int argc, char *argv[])
         int status = -1;
         try {
             status = mexec.doexec(arg1, l, ip, op);
-        } catch (CancelExcept) {
+        } catch (...) {
             cerr << "CANCELLED" << endl;
         }
 

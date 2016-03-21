@@ -16,7 +16,6 @@
  */
 #ifndef _EXECMD_H_INCLUDED_
 #define _EXECMD_H_INCLUDED_
-#include "autoconfig.h"
 
 #include <string>
 #include <vector>
@@ -137,6 +136,17 @@ class ExecCmd {
     int doexec(const std::string &cmd, const std::vector<std::string>& args, 
 	       const std::string *input = 0, 
 	       std::string *output = 0);
+
+    /** Same as doexec but cmd and args in one vector */
+    int doexec1(const std::vector<std::string>& args, 
+                const std::string *input = 0, 
+                std::string *output = 0) {
+        if (args.empty())
+            return -1;
+        return doexec(args[0],
+                      std::vector<std::string>(args.begin() + 1, args.end()),
+                      input, output);
+    }
 
     /*
      * The next four methods can be used when a Q/A dialog needs to be 

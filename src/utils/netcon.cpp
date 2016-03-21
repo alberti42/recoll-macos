@@ -19,7 +19,11 @@
 
 
 #ifndef TEST_NETCON
+#ifdef BUILDING_RECOLL
 #include "autoconfig.h"
+#else
+#include "config.h"
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,7 +47,7 @@
 #include <map>
 
 
-#ifdef RECOLL_DATADIR
+#ifdef BUILDING_RECOLL
 #include "debuglog.h"
 
 #else
