@@ -20,8 +20,8 @@ alink="#0000FF">
     <div class="titlepage">
       <div>
         <div>
-          <h1 class="title"><a name="idp46033312" id=
-          "idp46033312"></a>Recoll user manual</h1>
+          <h1 class="title"><a name="idp49189152" id=
+          "idp49189152"></a>Recoll user manual</h1>
         </div>
 
         <div>
@@ -109,13 +109,13 @@ alink="#0000FF">
                 multiple indexes</a></span></dt>
 
                 <dt><span class="sect2">2.1.3. <a href=
-                "#idp51664016">Document types</a></span></dt>
+                "#idp55074208">Document types</a></span></dt>
 
                 <dt><span class="sect2">2.1.4. <a href=
-                "#idp51683696">Indexing failures</a></span></dt>
+                "#idp55093888">Indexing failures</a></span></dt>
 
                 <dt><span class="sect2">2.1.5. <a href=
-                "#idp51690704">Recovery</a></span></dt>
+                "#idp55100896">Recovery</a></span></dt>
               </dl>
             </dd>
 
@@ -962,8 +962,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp51664016" id=
-                "idp51664016"></a>2.1.3.&nbsp;Document types</h3>
+                <h3 class="title"><a name="idp55074208" id=
+                "idp55074208"></a>2.1.3.&nbsp;Document types</h3>
               </div>
             </div>
           </div>
@@ -1056,8 +1056,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp51683696" id=
-                "idp51683696"></a>2.1.4.&nbsp;Indexing
+                <h3 class="title"><a name="idp55093888" id=
+                "idp55093888"></a>2.1.4.&nbsp;Indexing
                 failures</h3>
               </div>
             </div>
@@ -1097,8 +1097,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp51690704" id=
-                "idp51690704"></a>2.1.5.&nbsp;Recovery</h3>
+                <h3 class="title"><a name="idp55100896" id=
+                "idp55100896"></a>2.1.5.&nbsp;Recovery</h3>
               </div>
             </div>
           </div>
@@ -5152,12 +5152,13 @@ dir:recoll dir:src -dir:utils -dir:common
         <p>For <span class="application">Recoll</span> versions
         1.18 and later, and <span class="emphasis"><em>when working
         with a raw index</em></span> (not the default), searches
-        can be made sensitive to character case and diacritics. How
-        this happens is controlled by configuration variables and
-        what search data is entered.</p>
+        can be sensitive to character case and diacritics. How this
+        happens is controlled by configuration variables and what
+        search data is entered.</p>
 
-        <p>The general default is that searches are insensitive to
-        case and diacritics. An entry of <code class=
+        <p>The general default is that searches entered without
+        upper-case or accented characters are insensitive to case
+        and diacritics. An entry of <code class=
         "literal">resume</code> will match any of <code class=
         "literal">Resume</code>, <code class=
         "literal">RESUME</code>, <code class=
@@ -5165,7 +5166,8 @@ dir:recoll dir:src -dir:utils -dir:common
         "literal">R&eacute;sum&eacute;</code> etc.</p>
 
         <p>Two configuration variables can automate switching on
-        sensitivity:</p>
+        sensitivity (they were documented but actually did nothing
+        until <span class="application">Recoll</span> 1.22):</p>
 
         <div class="variablelist">
           <dl class="variablelist">
