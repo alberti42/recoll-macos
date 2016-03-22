@@ -101,7 +101,7 @@ extern bool readdir(const std::string& dir, std::string& reason,
 bool fsocc(const std::string& path, int *pc, long long *avmbs = 0);
 
 /// mkdir -p
-extern bool makepath(const std::string& path);
+extern bool path_makepath(const std::string& path, int mode);
 
 /// Where we create the user data subdirs
 extern std::string path_homedata();

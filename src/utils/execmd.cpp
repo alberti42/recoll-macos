@@ -37,6 +37,7 @@
 
 #include <vector>
 #include <string>
+#include <stdexcept>
 #ifdef HAVE_SPAWN_H
 #ifndef __USE_GNU
 #define __USE_GNU
@@ -52,6 +53,7 @@
 
 #include "netcon.h"
 #include "closefrom.h"
+#include "smallut.h"
 
 using namespace std;
 
@@ -59,7 +61,6 @@ extern char **environ;
 
 #ifdef BUILDING_RECOLL
 #include "debuglog.h"
-#include "smallut.h"
 
 #else
 // If compiling outside of recoll, make the file as standalone as reasonable.
@@ -74,42 +75,6 @@ extern char **environ;
 #define LOGDEB3(X)
 #define LOGDEB4(X)
 
-#ifndef MIN
-#define MIN(A,B) ((A) < (B) ? (A) : (B))
-#endif
-
-static void stringToTokens(const string &s, vector<string> &tokens, 
-                    const string &delims = " \t", bool skipinit=true);
-
-static void stringToTokens(const string& str, vector<string>& tokens,
-		    const string& delims, bool skipinit)
-{
-    string::size_type startPos = 0, pos;
-
-    // Skip initial delims, return empty if this eats all.
-    if (skipinit && 
-	(startPos = str.find_first_not_of(delims, 0)) == string::npos) {
-	return;
-    }
-    while (startPos < str.size()) { 
-        // Find next delimiter or end of string (end of token)
-        pos = str.find_first_of(delims, startPos);
-
-        // Add token to the vector and adjust start
-	if (pos == string::npos) {
-	    tokens.push_back(str.substr(startPos));
-	    break;
-	} else if (pos == startPos) {
-	    // Dont' push empty tokens after first
-	    if (tokens.empty())
-		tokens.push_back(string());
-	    startPos = ++pos;
-	} else {
-	    tokens.push_back(str.substr(startPos, pos - startPos));
-	    startPos = ++pos;
-	}
-    }
-}
 #endif // BUILDING_RECOLL
 
 class ExecCmd::Internal {
@@ -932,6 +897,30 @@ again:
     return n;
 }
 
+class GetlineWatchdog : public ExecCmdAdvise {
+public:
+    GetlineWatchdog(int secs) : m_secs(secs), tstart(time(0)) {}
+    void newData(int cnt) {
+        if (time(0) - tstart >= m_secs) {
+            throw std::runtime_error("getline timeout");
+        }
+    }
+    int m_secs;
+    time_t tstart;
+};
+
+int ExecCmd::getline(string& data, int timeosecs)
+{
+    GetlineWatchdog gwd(timeosecs);
+    setAdvise(&gwd);
+    try {
+        return getline(data);
+    } catch (...) {
+        return -1;
+    }
+}
+
+
 // Wait for command status and clean up all resources.
 // We would like to avoid blocking here too, but there is no simple
 // way to do this. The 2 possible approaches would be to:
@@ -1250,6 +1239,7 @@ static char usage [] =
 "     <filter> should be the path to an execm filter\n"
 "     <mimetype> the type of the file parameters\n"
 "trexecmd -w cmd : do the 'which' thing\n"
+"trexecmd -l cmd test getline\n"
 ;
 
 static void Usage(void)
@@ -1266,6 +1256,7 @@ static int     op_flags;
 #define OPT_r     0x20
 #define OPT_m     0x40
 #define OPT_o     0x80
+#define OPT_l     0x100
 
 // Data sink for data coming out of the command. We also use it to set
 // a cancellation after a moment.
@@ -1347,6 +1338,7 @@ int main(int argc, char *argv[])
 	    case 'm':	op_flags |= OPT_m; break;
 #endif
 	    case 'i':	op_flags |= OPT_i; break;
+	    case 'l':	op_flags |= OPT_l; break;
 	    case 'o':	op_flags |= OPT_o; break;
 	    default: Usage();	break;
 	    }
@@ -1362,8 +1354,10 @@ int main(int argc, char *argv[])
 	l.push_back(*argv++); argc--;
     }
 
+#ifdef BUILDING_RECOLL
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
+#endif
     signal(SIGPIPE, SIG_IGN);
 
     if (op_flags & OPT_r) {
@@ -1396,6 +1390,20 @@ int main(int argc, char *argv[])
         l.erase(l.begin());
 	return exercise_mhexecm(arg1, mimetype, l) ? 0 : 1;
 #endif
+    } else if (op_flags & OPT_l) {
+        ExecCmd mexec;
+
+        if (mexec.startExec(arg1, l, false, true) < 0) {
+            cerr << "Startexec failed\n";
+            exit(1);
+        }
+        string output;
+        int ret = mexec.getline(output, 2);
+        cerr << "Got ret " << ret << " output " << output << endl;
+        cerr << "Waiting\n";
+        int status = mexec.wait();
+        cerr << "Got status " << status << endl;
+        exit (status);
     } else {
         // Default: execute command line arguments
         ExecCmd mexec;

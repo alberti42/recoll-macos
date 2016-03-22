@@ -66,6 +66,7 @@
 #include <vector>
 
 #include "pathut.h"
+#include "smallut.h"
 
 using namespace std;
 
@@ -396,7 +397,6 @@ string path_absolute(const string& is)
     return s;
 }
 
-#include <smallut.h>
 string path_canon(const string& is, const string* cwd)
 {
     if (is.length() == 0) {
@@ -456,7 +456,7 @@ string path_canon(const string& is, const string* cwd)
     return ret;
 }
 
-bool makepath(const string& ipath)
+bool path_makepath(const string& ipath, int mode)
 {
     string path = path_canon(ipath);
     vector<string> elems;
@@ -473,7 +473,7 @@ bool makepath(const string& ipath)
         // Not using path_isdir() here, because this cant grok symlinks
         // If we hit an existing file, no worry, mkdir will just fail.
         if (access(path.c_str(), 0) != 0) {
-            if (mkdir(path.c_str(), 0700) != 0)  {
+            if (mkdir(path.c_str(), mode) != 0)  {
                 return false;
             }
         }

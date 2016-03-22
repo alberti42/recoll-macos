@@ -15,7 +15,11 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #ifndef TEST_READFILE
+#ifdef BUILDING_RECOLL
 #include "autoconfig.h"
+#else
+#include "config.h"
+#endif
 
 #include <errno.h>
 #include "safefcntl.h"
@@ -31,10 +35,6 @@
 #include "smallut.h"
 
 using std::string;
-
-#ifndef MIN
-#define MIN(A,B) ((A) < (B) ? (A) : (B))
-#endif
 
 class FileToString : public FileScanDo {
 public:

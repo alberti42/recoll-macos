@@ -156,7 +156,13 @@ class ExecCmd {
 		  bool has_input, bool has_output);
     int send(const std::string& data);
     int receive(std::string& data, int cnt = -1);
+
+    /** Read line. Will call back periodically to check for cancellation */
     int getline(std::string& data);
+
+    /** Read line. Timeout after timeosecs seconds */
+    int getline(std::string& data, int timeosecs);
+    
     int wait();
     /** Wait with WNOHANG set. 
 	@return true if process exited, false else.

@@ -49,6 +49,7 @@
  * (useful to have central/personal config files)
  */
 
+#include <time.h>
 #include <algorithm>
 #include <map>
 #include <string>

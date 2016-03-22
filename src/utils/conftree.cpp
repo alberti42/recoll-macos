@@ -1,4 +1,4 @@
-/* Copyright (C) 2003 J.F.Dockes
+/* Copyright (C) 2003-2016 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -14,15 +14,26 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#include "autoconfig.h"
-
 #ifndef TEST_CONFTREE
+
+#ifdef BUILDING_RECOLL
+#include "autoconfig.h"
+#else
+#include "config.h"
+#endif
 
 #include "conftree.h"
 
 #include <ctype.h>
 #include <fnmatch.h>
+#ifdef _WIN32
 #include "safesysstat.h"
+#else
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <pwd.h>
+#endif
 
 #include <algorithm>
 #include <cstring>
@@ -671,6 +682,10 @@ const
 #include <sstream>
 #include <iostream>
 #include <vector>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "conftree.h"
 #include "smallut.h"

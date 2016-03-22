@@ -259,7 +259,7 @@ bool BeagleQueueIndexer::index()
         return false;
     LOGDEB(("BeagleQueueIndexer::processqueue: [%s]\n", m_queuedir.c_str()));
     m_config->setKeyDir(m_queuedir);
-    if (!makepath(m_queuedir)) {
+    if (!path_makepath(m_queuedir, 0700)) {
 	LOGERR(("BeagleQueueIndexer:: can't create queuedir [%s] errno %d\n", 
 		m_queuedir.c_str(), errno));
 	return false;
