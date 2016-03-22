@@ -21,8 +21,8 @@
 
 #include <string>
 
-/** 
- * Read file in chunks, calling an accumulator for each chunk. Can be used 
+/**
+ * Read file in chunks, calling an accumulator for each chunk. Can be used
  * for reading in a file, computing an md5...
  */
 class FileScanDo {
@@ -31,20 +31,20 @@ public:
     virtual bool init(size_t size, std::string *reason) = 0;
     virtual bool data(const char *buf, int cnt, std::string* reason) = 0;
 };
-bool file_scan(const std::string &filename, FileScanDo* doer, std::string *reason = 0);
-/* Same but only process count cnt from offset offs. Set cnt to size_t(-1) 
+bool file_scan(const std::string& filename, FileScanDo* doer, std::string *reason = 0);
+/* Same but only process count cnt from offset offs. Set cnt to size_t(-1)
  * for no limit */
-bool file_scan(const std::string &fn, FileScanDo* doer, off_t offs, size_t cnt,
+bool file_scan(const std::string& fn, FileScanDo* doer, off_t offs, size_t cnt,
                std::string *reason = 0);
 
 /**
  * Read file into string.
  * @return true for ok, false else
  */
-bool file_to_string(const std::string &filename, std::string &data, std::string *reason = 0);
+bool file_to_string(const std::string& filename, std::string& data, std::string *reason = 0);
 
 /** Read file chunk into string. Set cnt to size_t(-1) for whole file */
-bool file_to_string(const std::string &filename, std::string &data, 
+bool file_to_string(const std::string& filename, std::string& data,
                     off_t offs, size_t cnt, std::string *reason = 0);
 
 #endif /* _READFILE_H_INCLUDED_ */

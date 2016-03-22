@@ -21,27 +21,27 @@
 #include <vector>
 #include <stack>
 
-/** 
- * Callback function object to advise of new data arrival, or just periodic 
- * heartbeat if cnt is 0. 
+/**
+ * Callback function object to advise of new data arrival, or just periodic
+ * heartbeat if cnt is 0.
  *
  * To interrupt the command, the code using ExecCmd should either
- * raise an exception inside newData() (and catch it in doexec's caller), or 
- * call ExecCmd::setKill() 
- * 
+ * raise an exception inside newData() (and catch it in doexec's caller), or
+ * call ExecCmd::setKill()
+ *
  */
 class ExecCmdAdvise {
- public:
+public:
     virtual ~ExecCmdAdvise() {}
     virtual void newData(int cnt) = 0;
 };
 
-/** 
+/**
  * Callback function object to get more input data. Data has to be provided
  * into the initial input string, set it to empty to signify eof.
  */
 class ExecCmdProvide {
- public:
+public:
     virtual ~ExecCmdProvide() {}
     virtual void newData() = 0;
 };
@@ -51,43 +51,43 @@ class ExecCmdProvide {
  * asynchronous io as appropriate for things to work).
  *
  * Input to the command can be provided either once in a parameter to doexec
- * or provided in chunks by setting a callback which will be called to 
+ * or provided in chunks by setting a callback which will be called to
  * request new data. In this case, the 'input' parameter to doexec may be
  * empty (but not null)
  *
  * Output from the command is normally returned in a single string, but a
  * callback can be set to be called whenever new data arrives, in which case
  * it is permissible to consume the data and erase the string.
- * 
+ *
  * Note that SIGPIPE should be ignored and SIGCLD blocked when calling doexec,
  * else things might fail randomly. (This is not done inside the class because
  * of concerns with multithreaded programs).
  *
  */
 class ExecCmd {
- public:
+public:
     // Use vfork instead of fork. Our vfork usage is multithread-compatible as
     // far as I can see, but just in case...
     static void useVfork(bool on);
 
-    /** 
+    /**
      * Add/replace environment variable before executing command. This must
      * be called before doexec() to have an effect (possibly multiple
      * times for several variables).
      * @param envassign an environment assignment string ("name=value")
      */
-    void putenv(const std::string &envassign);
-    void putenv(const std::string &name, const std::string& value);
+    void putenv(const std::string& envassign);
+    void putenv(const std::string& name, const std::string& value);
 
-    /** 
+    /**
      * Try to set a limit on child process vm size. This will use
      * setrlimit() and RLIMIT_AS/VMEM if available. Parameter is in
-     * units of 2**10. Must be called before starting the command, default 
+     * units of 2**10. Must be called before starting the command, default
      * is inherit from parent.
      */
     void setrlimit_as(int mbytes);
 
-    /** 
+    /**
      * Set function objects to call whenever new data is available or on
      * select timeout. The data itself is stored in the output string.
      * Must be set before calling doexec.
@@ -101,59 +101,60 @@ class ExecCmd {
     void setProvide(ExecCmdProvide *p);
 
     /**
-     * Set select timeout in milliseconds. The default is 1 S. 
+     * Set select timeout in milliseconds. The default is 1 S.
      * This is NOT a time after which an error will occur, but the period of
      * the calls to the advise routine (which normally checks for cancellation).
      */
     void setTimeout(int mS);
 
-    /** 
-     * Set destination for stderr data. The default is to let it alone (will 
+    /**
+     * Set destination for stderr data. The default is to let it alone (will
      * usually go to the terminal or to wherever the desktop messages go).
      * There is currently no option to put stderr data into a program variable
      * If the parameter can't be opened for writing, the command's
      * stderr will be closed.
      */
-    void setStderr(const std::string &stderrFile);
+    void setStderr(const std::string& stderrFile);
 
     /**
-     * Execute command. 
+     * Execute command.
      *
-     * Both input and output can be specified, and asynchronous 
+     * Both input and output can be specified, and asynchronous
      * io (select-based) is used to prevent blocking. This will not
      * work if input and output need to be synchronized (ie: Q/A), but
      * works ok for filtering.
-     * The function is exception-safe. In case an exception occurs in the 
+     * The function is exception-safe. In case an exception occurs in the
      * advise callback, fds and pids will be cleaned-up properly.
      *
-     * @param cmd the program to execute. This must be an absolute file name 
+     * @param cmd the program to execute. This must be an absolute file name
      *   or exist in the PATH.
      * @param args the argument vector (NOT including argv[0]).
      * @param input Input to send TO the command.
      * @param output Output FROM the command.
      * @return the exec output status (0 if ok), or -1
      */
-    int doexec(const std::string &cmd, const std::vector<std::string>& args, 
-	       const std::string *input = 0, 
-	       std::string *output = 0);
+    int doexec(const std::string& cmd, const std::vector<std::string>& args,
+               const std::string *input = 0,
+               std::string *output = 0);
 
     /** Same as doexec but cmd and args in one vector */
-    int doexec1(const std::vector<std::string>& args, 
-                const std::string *input = 0, 
+    int doexec1(const std::vector<std::string>& args,
+                const std::string *input = 0,
                 std::string *output = 0) {
-        if (args.empty())
+        if (args.empty()) {
             return -1;
+        }
         return doexec(args[0],
                       std::vector<std::string>(args.begin() + 1, args.end()),
                       input, output);
     }
 
     /*
-     * The next four methods can be used when a Q/A dialog needs to be 
+     * The next four methods can be used when a Q/A dialog needs to be
      * performed with the command
      */
-    int startExec(const std::string &cmd, const std::vector<std::string>& args, 
-		  bool has_input, bool has_output);
+    int startExec(const std::string& cmd, const std::vector<std::string>& args,
+                  bool has_input, bool has_output);
     int send(const std::string& data);
     int receive(std::string& data, int cnt = -1);
 
@@ -162,16 +163,16 @@ class ExecCmd {
 
     /** Read line. Timeout after timeosecs seconds */
     int getline(std::string& data, int timeosecs);
-    
+
     int wait();
-    /** Wait with WNOHANG set. 
-	@return true if process exited, false else.
-	@param O: status, the wait(2) call's status value */
+    /** Wait with WNOHANG set.
+    @return true if process exited, false else.
+    @param O: status, the wait(2) call's status value */
     bool maybereap(int *status);
 
     pid_t getChildPid();
 
-    /** 
+    /**
      * Cancel/kill command. This can be called from another thread or
      * from the advise callback, which could also raise an exception
      * to accomplish the same thing. In the owner thread, any I/O loop
@@ -187,7 +188,7 @@ class ExecCmd {
     void zapChild();
 
     /**
-     * Request process termination (SIGTERM or equivalent). This returns 
+     * Request process termination (SIGTERM or equivalent). This returns
      * immediately
      */
     bool requestChildExit();
@@ -197,8 +198,8 @@ class ExecCmd {
                   // a viewer. The default is to hide the window,
                   // because it avoids windows appearing and
                   // disappearing when executing stuff for previewing
-                  EXF_SHOWWINDOW = 1, 
-    };
+                  EXF_SHOWWINDOW = 1,
+                 };
     ExecCmd(int flags = 0);
     ~ExecCmd();
 
@@ -221,37 +222,39 @@ class ExecCmd {
     static bool backtick(const std::vector<std::string> cmd, std::string& out);
 
     class Internal;
- private:
+private:
     Internal *m;
     /* Copyconst and assignment are private and forbidden */
-    ExecCmd(const ExecCmd &) {}
-    ExecCmd& operator=(const ExecCmd &) {return *this;};
+    ExecCmd(const ExecCmd&) {}
+    ExecCmd& operator=(const ExecCmd&) {
+        return *this;
+    };
 };
 
 
-/** 
- * Rexecute self process with the same arguments. 
+/**
+ * Rexecute self process with the same arguments.
  *
  * Note that there are some limitations:
- *  - argv[0] has to be valid: an executable name which will be found in 
- *    the path when exec is called in the initial working directory. This is 
+ *  - argv[0] has to be valid: an executable name which will be found in
+ *    the path when exec is called in the initial working directory. This is
  *    by no means guaranteed. The shells do this, but argv[0] could be an
  *    arbitrary string.
  *  - The initial working directory must be found and remain valid.
  *  - We don't try to do anything with fd 0,1,2. If they were changed by the
- *    program, their initial meaning won't be the same as at the moment of the 
+ *    program, their initial meaning won't be the same as at the moment of the
  *    initial invocation.
- *  - We don't restore the signals. Signals set to be blocked 
+ *  - We don't restore the signals. Signals set to be blocked
  *    or ignored by the program will remain ignored even if this was not their
  *    initial state.
  *  - The environment is also not restored.
  *  - Others system aspects ?
- *  - Other program state: application-dependant. Any external cleanup 
- *    (temp files etc.) must be performed by the application. ReExec() 
- *    duplicates the atexit() function to make this easier, but the 
+ *  - Other program state: application-dependant. Any external cleanup
+ *    (temp files etc.) must be performed by the application. ReExec()
+ *    duplicates the atexit() function to make this easier, but the
  *    ReExec().atexit() calls must be done explicitely, this is not automatic
- * 
- * In short, this is usable in reasonably controlled situations and if there 
+ *
+ * In short, this is usable in reasonably controlled situations and if there
  * are no security issues involved, but this does not perform miracles.
  */
 class ReExec {
@@ -259,13 +262,14 @@ public:
     ReExec() {}
     ReExec(int argc, char *argv[]);
     void init(int argc, char *argv[]);
-    int atexit(void (*function)(void))
-    {
-	m_atexitfuncs.push(function);
-	return 0;
+    int atexit(void (*function)(void)) {
+        m_atexitfuncs.push(function);
+        return 0;
     }
     void reexec();
-    const std::string& getreason() {return m_reason;}
+    const std::string& getreason() {
+        return m_reason;
+    }
     // Insert new args into the initial argv. idx designates the place
     // before which the new args are inserted (the default of 1
     // inserts after argv[0] which would probably be an appropriate
