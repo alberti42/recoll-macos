@@ -376,16 +376,17 @@ p, li { white-space: pre-wrap; }
     <name>FragButs</name>
     <message>
         <source>%1 not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 nenalezen.</translation>
     </message>
     <message>
         <source>%1:
  %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1:
+ %2</translation>
     </message>
     <message>
         <source>Query Fragments</source>
-        <translation type="unfinished"></translation>
+        <translation>Kousky hledání</translation>
     </message>
 </context>
 <context>
@@ -635,102 +636,96 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     </message>
     <message>
         <source>Default&lt;br&gt;character set</source>
-        <translation type="unfinished"></translation>
+        <translation>Výchozí&lt;br&gt;znaková sada</translation>
     </message>
     <message>
         <source>Character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
-        <translation type="unfinished"></translation>
+        <translation>Toto je znaková sada, která se používá pro čtení souborů, které svou znakovou sadu vnitřně neurčují, např.. soubory s textem.&lt;br&gt;Výchozí hodnota je prázdná a používá se hodnota prostředí NLS.</translation>
     </message>
     <message>
         <source>Ignored endings</source>
-        <translation type="unfinished"></translation>
+        <translation>Přehlížená zakončení</translation>
     </message>
     <message>
         <source>These are file name endings for files which will be indexed by name only 
 (no MIME type identification attempt, no decompression, no content indexing).</source>
-        <translation type="unfinished"></translation>
+        <translation>Toto jsou zakončení souborů pro soubory, které se budou rejstříkovat výhradně podle svého názvu
+(žádné určování typu MIME, žádné rozbalování, žádné rejstříkování obsahu).</translation>
     </message>
 </context>
 <context>
     <name>QWidget</name>
     <message>
         <source>Create or choose save directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Vytvořit nebo vybrat ukládací adresář</translation>
     </message>
     <message>
         <source>Choose exactly one directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Vybrat přesně jeden adresář</translation>
     </message>
     <message>
         <source>Could not read directory: </source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se číst z adresáře: </translation>
     </message>
     <message>
         <source>Unexpected file name collision, cancelling.</source>
-        <translation type="unfinished"></translation>
+        <translation>Neočekávaný střet v souborovém názvu. Ruší se.</translation>
     </message>
     <message>
         <source>Cannot extract document: </source>
-        <translation type="unfinished"></translation>
+        <translation>Nelze vytáhnout dokument: </translation>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation type="unfinished">&amp;Náhled</translation>
+        <translation>&amp;Náhled</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="unfinished">&amp;Otevřít</translation>
+        <translation>&amp;Otevřít</translation>
     </message>
     <message>
         <source>Open With</source>
-        <translation type="unfinished"></translation>
+        <translation>Otevřít s</translation>
     </message>
     <message>
         <source>Run Script</source>
-        <translation type="unfinished"></translation>
+        <translation>Spustit skript</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="unfinished">Kopírovat název &amp;souboru</translation>
+        <translation>Kopírovat název &amp;souboru</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="unfinished">Kopírovat adresu (&amp;URL)</translation>
+        <translation>Kopírovat adresu (&amp;URL)</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation type="unfinished">&amp;Zapsat do souboru</translation>
+        <translation>&amp;Zapsat do souboru</translation>
     </message>
     <message>
         <source>Save selection to files</source>
-        <translation type="unfinished">Uložit výběr do souborů</translation>
+        <translation>Uložit výběr do souborů</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="unfinished">Náhled na &amp;rodičovský dokument/složku</translation>
+        <translation>Náhled na &amp;rodičovský dokument/složku</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="unfinished">&amp;Otevřít rodičovský dokument/složku</translation>
+        <translation>&amp;Otevřít rodičovský dokument/složku</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="unfinished">Najít &amp;podobné dokumenty</translation>
+        <translation>Najít &amp;podobné dokumenty</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation type="unfinished">Otevřít okno s úr&amp;yvky</translation>
+        <translation>Otevřít okno s úr&amp;yvky</translation>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
-        <translation type="unfinished">Ukázat podřízené dokumenty/přílohy</translation>
-    </message>
-</context>
-<context>
-    <name>QxtConfirmationMessage</name>
-    <message>
-        <source>Do not show again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukázat podřízené dokumenty/přílohy</translation>
     </message>
 </context>
 <context>
@@ -892,7 +887,7 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Indexing interrupted</source>
-        <translation type="unfinished">Rejstříkování přerušeno</translation>
+        <translation>Rejstříkování přerušeno</translation>
     </message>
     <message>
         <source>Stop &amp;Indexing</source>
@@ -1100,129 +1095,41 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Document filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtr dokumentu</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. </source>
-        <translation type="unfinished"></translation>
+        <translation>Rejstřík není pro tento soubor nejnovější. Ukázání nesprávného záznamu bylo zamítnuto. </translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then you will need to re-run the query when indexing is done. </source>
-        <translation type="unfinished"></translation>
+        <translation>Klepněte na tlačítko pro aktualizaci rejstříku pro tento soubor, potom dotaz, až bude rejstříkování hotovo, spusťte znovu. </translation>
     </message>
     <message>
         <source>The indexer is running so things should improve when it&apos;s done. </source>
-        <translation type="unfinished"></translation>
+        <translation>Rejstříkovač běží, takže věci by se po dokončení rejstříkování měly zlepšit. </translation>
+    </message>
+    <message>
+        <source>The document belongs to an external indexwhich I can&apos;t update. </source>
+        <translation>Dokument je součástí vnějšího rejstříku, který nelze aktualizovat. </translation>
+    </message>
+    <message>
+        <source>Click Cancel to return to the list. Click Ignore to show the preview anyway. </source>
+        <translation>Klepněte na tlačítko Zrušit pro návrat do seznamu. Klepněte na tlačítko Přehlížet, aby byl přesto ukázán náhled. </translation>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation type="unfinished">Zdvojené dokumenty</translation>
+        <translation>Zdvojené dokumenty</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation type="unfinished">Tyto adresy ( | ipath) sdílejí totožný obsah:</translation>
+        <translation>Tyto adresy ( | ipath) sdílejí totožný obsah:</translation>
     </message>
     <message>
         <source>Bad desktop app spec for %1: [%2]
 Please check the desktop file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The current indexing process was not started from this interface, can&apos;t kill it</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bad paths</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bad paths in configuration file:
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Selection patterns need topdir</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Selection patterns can only be used with a start directory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No preserved previous search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Choose file to save</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Saved Queries (*.rclq)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Write failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Could not write to file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Read failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Could not open file: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Load error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Could not load saved query</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Index scheduling</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sorry, not available under Windows for now, use the File menu entries to update the index</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Disabled because the real time indexer was not compiled in.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This configuration tool only works for the main index.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Can&apos;t set synonyms file (parse error?)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The document belongs to an external index which I can&apos;t update. </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Click Cancel to return to the list. &lt;br&gt;Click Ignore to show the preview anyway (and remember for this session).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Opening a temporary copy. Edits will be lost if you don&apos;t save&lt;br/&gt;them to a permanent location.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Do not show this warning next time (use GUI preferences to restore).</source>
-        <translation type="unfinished"></translation>
+        <translation>Chybná specifikace aplikace pro %1: [%2]
+Prověřte soubor pracovní plochy</translation>
     </message>
 </context>
 <context>
@@ -1421,7 +1328,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>&amp;Indexing schedule</source>
-        <translation type="obsolete">Rozvrh &amp;rejstříkování</translation>
+        <translation>Rozvrh &amp;rejstříkování</translation>
     </message>
     <message>
         <source>E&amp;xternal index dialog</source>
@@ -1477,50 +1384,26 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Query Fragments</source>
-        <translation type="unfinished"></translation>
+        <translation>Kousky hledání</translation>
     </message>
     <message>
         <source>    With failed files retrying</source>
-        <translation type="unfinished"></translation>
+        <translation>S novým pokusem o zpracování selhavších souborů</translation>
     </message>
     <message>
         <source>Next update will retry previously failed files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indexing &amp;schedule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable synonyms</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Save last query</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Load saved query</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Special Indexing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indexing with special options</source>
-        <translation type="unfinished"></translation>
+        <translation>Nová aktualizace rejstříku se pokusí znovu zpracovat nyní nezpracované soubory</translation>
     </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
     <message>
         <source>Restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Obnovit</translation>
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukončit</translation>
     </message>
 </context>
 <context>
@@ -1714,7 +1597,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Snippets</source>
-        <translation type="unfinished">Úryvky</translation>
+        <translation>Úryvky</translation>
     </message>
 </context>
 <context>
@@ -1954,31 +1837,19 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
 Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
 </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stemming languages for stored query: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> differ from current preferences (kept)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Auto suffixes for stored query: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>External indexes for stored query: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Autophrase is set but it was unset for stored query</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Autophrase is unset but it was set for stored query</source>
-        <translation type="unfinished"></translation>
+        <translation>Zadejte výraz jazyka hledání. Seznam:&lt;br&gt;
+&lt;i&gt;term1 term2&lt;/i&gt; : &apos;term1&apos; a &apos;term2&apos; do kteréhokoli pole.&lt;br&gt;
+&lt;i&gt;field:term1&lt;/i&gt; : &apos;term1&apos; do pole &apos;field&apos;.&lt;br&gt;
+ Obvyklé názvy polí/synonyma:&lt;br&gt;
+  title/subject/caption, author/from, recipient/to, filename, ext.&lt;br&gt;
+ Pseudopole: dir, mime/format, type/rclcat, date.&lt;br&gt;
+ Příklady intervalů dvou dat: 2009-03-01/2009-05-20  2009-03-01/P2M.&lt;br&gt;
+&lt;i&gt;term1 term2 OR term3&lt;/i&gt; : term1 AND (term2 OR term3).&lt;br&gt;
+  Můžete použít kulaté závorky, aby byly věci zřetelnější.&lt;br&gt;
+&lt;i&gt;&quot;term1 term2&quot;&lt;/i&gt; : větný úsek (musí se objevit přesně). Možné modifikátory:&lt;br&gt;
+&lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : neuspořádané hledání podle blízkosti s výchozí vzdáleností.&lt;br&gt;
+Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku pochybnost, a podívejte se do příručky (&amp;lt;F1&gt;) na další podrobnosti.
+</translation>
     </message>
 </context>
 <context>
@@ -2118,7 +1989,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;p&gt;Sorry, no exact match was found within limits. Probably the document is very big and the snippets generator got lost in a maze...&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;V rámci omezení hledání nebyla bohužel nalezena žádná shoda. Pravděpodobně je dokument velice velký a vyvíječ úryvků se v něm ztratil (nebo skončil ve škarpě)...&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
@@ -2157,49 +2028,6 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Apply</source>
         <translation type="obsolete">Übernehmen</translation>
-    </message>
-</context>
-<context>
-    <name>SpecIdxW</name>
-    <message>
-        <source>Special Indexing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Do not retry previously failed files.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Else only modified or failed files will be processed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Erase selected files data before indexing.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Directory to recursively index. This must be inside the regular indexed area&lt;br&gt; as defined in the configuration file (topdirs).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Browse</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start directory (else use regular topdirs):</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Leave empty to select all files. You can use multiple space-separated shell-type patterns.&lt;br&gt;Patterns with embedded spaces should be quoted with double quotes.&lt;br&gt;Can only be used if the start target is set.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Selection patterns:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Top indexed entity</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2396,27 +2224,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Default QtWebkit font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Any term</source>
-        <translation type="unfinished">Jakýkoli výraz</translation>
-    </message>
-    <message>
-        <source>All terms</source>
-        <translation type="unfinished">Všechny výrazy</translation>
-    </message>
-    <message>
-        <source>File name</source>
-        <translation type="unfinished">Název souboru</translation>
-    </message>
-    <message>
-        <source>Query language</source>
-        <translation type="unfinished">Jazyk hledání</translation>
-    </message>
-    <message>
-        <source>Value from previous program exit</source>
-        <translation type="unfinished"></translation>
+        <translation>Výchozí písmo QtWebkit</translation>
     </message>
 </context>
 <context>
@@ -2688,7 +2496,7 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Entries will be recycled once the size is reached</source>
-        <translation type="obsolete">Záznamy budou opětně použity, jakmile bude velikost dosažena</translation>
+        <translation>Záznamy budou opětně použity, jakmile bude velikost dosažena</translation>
     </message>
     <message>
         <source>Web page store directory name</source>
@@ -2709,10 +2517,6 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
         <translation>Povolí rejstříkování Firefoxem navštívených stránek.&lt;br&gt;(také je potřeba, abyste nainstalovali přídavný modul Recollu pro Firefox)</translation>
-    </message>
-    <message>
-        <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2827,19 +2631,19 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Only mime types</source>
-        <translation type="unfinished"></translation>
+        <translation>Pouze typy MIME</translation>
     </message>
     <message>
         <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
-        <translation type="unfinished"></translation>
+        <translation>Vybraný seznam rejstříkovaných typů MIME.&lt;br&gt;Nic jiného se nebude rejstříkovat. Obyčejně je seznam prázdný a nečinný</translation>
     </message>
     <message>
         <source>Exclude mime types</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyloučené typy MIME</translation>
     </message>
     <message>
         <source>Mime types not to be indexed</source>
-        <translation type="unfinished"></translation>
+        <translation>Typy MIME, které se nemají rejstříkovat</translation>
     </message>
 </context>
 <context>
@@ -2969,7 +2773,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Hide duplicate results.</source>
-        <translation>Skrýt zdvojené výsledky</translation>
+        <translation>Skrýt zdvojené výsledky.</translation>
     </message>
     <message>
         <source>Highlight color for query terms</source>
@@ -3271,47 +3075,31 @@ Výchozí hodnota je 2 (procenta).</translation>
     </message>
     <message>
         <source>Decide if document filters are shown as radio buttons, toolbar combobox, or menu.</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozhodnout, zda se dokumentové filtry ukazují jako kulatá tlačítka, rozbalovací seznamy v nástrojovém pruhu, nebo jako nabídka.</translation>
     </message>
     <message>
         <source>Document filter choice style:</source>
-        <translation type="unfinished"></translation>
+        <translation>Styl výběru filtrů dokumentů:</translation>
     </message>
     <message>
         <source>Buttons Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Panel s tlačítky</translation>
     </message>
     <message>
         <source>Toolbar Combobox</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozbalovací seznam v nástrojovém panelu</translation>
     </message>
     <message>
         <source>Menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Nabídka</translation>
     </message>
     <message>
         <source>Show system tray icon.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukázat ikonu v oznamovací oblasti panelu.</translation>
     </message>
     <message>
         <source>Close to tray instead of exiting.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start with simple search mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>User style to apply to the snippets window.&lt;br&gt; Note: the result page header insert is also included in the snippets window header.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Synonyms file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show warning when opening temporary file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zavřít do oznamovací oblasti panelu namísto ukončení.</translation>
     </message>
 </context>
 </TS>
