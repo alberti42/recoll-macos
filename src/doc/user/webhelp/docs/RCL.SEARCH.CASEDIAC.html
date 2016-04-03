@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
 <title>Search case and diacritics sensitivity -  - Recoll user manual</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"></meta><link rel="home" href="index.html" title="Recoll user manual"></link><link rel="up" href="RCL.SEARCH.html" title="Searching"></link><link rel="prev" href="RCL.SEARCH.LANG.MODIFIERS.html" title="Modifiers"></link><link rel="next" href="RCL.SEARCH.ANCHORWILD.html" title="Anchored searches and wildcards"></link><meta name="Section-title" content="Search case and diacritics sensitivity"></meta><script type="text/javascript">
             //The id for tree cookie
-            var treeCookieId = "treeview-7598";
+            var treeCookieId = "treeview-7677";
             var language = "en";
             var w = new Object();
             //Localization
@@ -129,13 +129,15 @@ border: none; background: none; font-weight: none; color: none; }
                                     |
                                     <a accesskey="n" class="navLinkNext" tabindex="5" href="RCL.SEARCH.ANCHORWILD.html">Next</a></td></tr></table></div></div><div id="content"><div class="sect1"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="RCL.SEARCH.CASEDIAC"></a>Search case and diacritics sensitivity</h2></div></div></div><p>For <span class="application">Recoll</span> versions 1.18 and later, and <span class="emphasis"><em>when working
           with a raw index</em></span> (not the default), searches can be
-          made sensitive
-        to character case and diacritics. How this happens is controlled by
-        configuration variables and what search data is entered.</p><p>The general default is that searches are insensitive to case
-      and diacritics. An entry of <code class="literal">resume</code> will match any
-      of <code class="literal">Resume</code>, <code class="literal">RESUME</code>,
+          sensitive to character case and diacritics. How this happens
+          is controlled by configuration variables and what search data is
+          entered.</p><p>The general default is that searches entered without upper-case
+      or accented characters are insensitive to case and diacritics. An
+      entry of <code class="literal">resume</code> will match any of
+      <code class="literal">Resume</code>, <code class="literal">RESUME</code>,
       <code class="literal">résumé</code>, <code class="literal">Résumé</code> etc.</p><p>Two configuration variables can automate switching on
-        sensitivity:</p><div class="variablelist"><dl class="variablelist"><dt><span class="term">autodiacsens</span></dt><dd><p>If this is set, search
+        sensitivity (they were documented but actually did nothing until
+      <span class="application">Recoll</span> 1.22):</p><div class="variablelist"><dl class="variablelist"><dt><span class="term">autodiacsens</span></dt><dd><p>If this is set, search
               sensitivity to diacritics will be turned on as soon as an
               accented character exists in a search term. When the variable
               is set to true, <code class="literal">resume</code> will start a

@@ -907,16 +907,60 @@ indexedmimetypes = application/pdf
       <title>Importing external tags</title>
 
       <para>During indexing, it is possible to import metadata for
-        each file by executing commands. For example, this could
-        extract user tag data for the file and store it in a field for
-        indexing.</para>
+      each file by executing commands. For example, this could
+      extract user tag data for the file and store it in a field for
+      indexing.</para>
 
       <para>See the 
-        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.METADATACMDS">section
-          about the <literal>metadatacmds</literal> field</link> in
-        the main configuration chapter for more detail.</para>
+      <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.METADATACMDS">section
+      about the <literal>metadatacmds</literal> field</link> in
+      the main configuration chapter for a description of the
+      configuration syntax.</para>
 
-    </sect1>
+      <para>As an example, if you would want &RCL; to use tags managed by
+      <application>tmsu</application>, you would add the following to the
+      configuration file:</para>
+
+      <programlisting>[/some/area/of/the/fs]
+metadatacmds = ; tags = tmsu tags %f
+      </programlisting>
+
+      <para>You may want to restrict this processing to a subset of
+      the directory tree, because it may slow down indexing a bit
+      (<literal>[some/area/of/the/fs]</literal>).</para>
+      <para>Note the initial semi-colon after the equal sign.</para>
+
+      <para>In the example above, the output of <command>tmsu</command> is
+      used to set a field named <literal>tags</literal>. The field name is
+      arbitrary and could be <literal>tmsu</literal> or
+      <literal>myfield</literal> just the same, but <literal>tags</literal>
+      is an alias for the standard &RCL; <literal>keywords</literal> field,
+      and the <command>tmsu</command> output will just augment its
+      contents. This will avoid the need to extend the <link
+      linkend="RCL.PROGRAM.FIELDS">field configuration</link>.</para>
+
+      <para>Once re-indexing is performed (you'll need to force the file
+      reindexing, &RCL; will not detect the need by itself), you will 
+      be able to search from the query language, through any of its
+      aliases: <literal>tags:some/alternate/values</literal> or
+      <literal>tags:all,these,values</literal> (the compact field search
+      syntax is supported for recoll 1.20 and later. For 
+      older versions, you would need to repeat the <literal>tags:</literal>
+      specifier for each term, e.g. <literal>tags:some OR
+      tags:alternate</literal>).</para> 
+
+      <para>You should be aware that tags changes will not be detected by
+      the indexer if the file itself did not change. One possible
+      workaround would be to update the file <literal>ctime</literal> when
+      you modify the tags, which 
+      would be consistent with how extended attributes function. A pair of
+      <command>chmod</command> commands could accomplish this, or a
+      <literal>touch -a</literal> . Alternatively, just
+      couple the tag update with a <literal>recollindex -e -i
+      filename.</literal></para>
+
+</sect1>
+
 
     <sect1 id="RCL.INDEXING.PERIODIC">
       <title>Periodic indexing</title>

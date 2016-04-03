@@ -20,8 +20,8 @@ alink="#0000FF">
     <div class="titlepage">
       <div>
         <div>
-          <h1 class="title"><a name="idp49189152" id=
-          "idp49189152"></a>Recoll user manual</h1>
+          <h1 class="title"><a name="idp53258720" id=
+          "idp53258720"></a>Recoll user manual</h1>
         </div>
 
         <div>
@@ -109,13 +109,13 @@ alink="#0000FF">
                 multiple indexes</a></span></dt>
 
                 <dt><span class="sect2">2.1.3. <a href=
-                "#idp55074208">Document types</a></span></dt>
+                "#idp58828400">Document types</a></span></dt>
 
                 <dt><span class="sect2">2.1.4. <a href=
-                "#idp55093888">Indexing failures</a></span></dt>
+                "#idp58848080">Indexing failures</a></span></dt>
 
                 <dt><span class="sect2">2.1.5. <a href=
-                "#idp55100896">Recovery</a></span></dt>
+                "#idp58855088">Recovery</a></span></dt>
               </dl>
             </dd>
 
@@ -962,8 +962,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp55074208" id=
-                "idp55074208"></a>2.1.3.&nbsp;Document types</h3>
+                <h3 class="title"><a name="idp58828400" id=
+                "idp58828400"></a>2.1.3.&nbsp;Document types</h3>
               </div>
             </div>
           </div>
@@ -1056,8 +1056,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp55093888" id=
-                "idp55093888"></a>2.1.4.&nbsp;Indexing
+                <h3 class="title"><a name="idp58848080" id=
+                "idp58848080"></a>2.1.4.&nbsp;Indexing
                 failures</h3>
               </div>
             </div>
@@ -1097,8 +1097,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp55100896" id=
-                "idp55100896"></a>2.1.5.&nbsp;Recovery</h3>
+                <h3 class="title"><a name="idp58855088" id=
+                "idp58855088"></a>2.1.5.&nbsp;Recovery</h3>
               </div>
             </div>
           </div>
@@ -1665,7 +1665,63 @@ recoll -c ~/.indexes-email
         <p>See the <a class="link" href=
         "#RCL.INSTALL.CONFIG.RECOLLCONF.METADATACMDS">section about
         the <code class="literal">metadatacmds</code> field</a> in
-        the main configuration chapter for more detail.</p>
+        the main configuration chapter for a description of the
+        configuration syntax.</p>
+
+        <p>As an example, if you would want <span class=
+        "application">Recoll</span> to use tags managed by
+        <span class="application">tmsu</span>, you would add the
+        following to the configuration file:</p>
+        <pre class="programlisting">
+[/some/area/of/the/fs]
+metadatacmds = ; tags = tmsu tags %f
+      
+</pre>
+
+        <p>You may want to restrict this processing to a subset of
+        the directory tree, because it may slow down indexing a bit
+        (<code class="literal">[some/area/of/the/fs]</code>).</p>
+
+        <p>Note the initial semi-colon after the equal sign.</p>
+
+        <p>In the example above, the output of <span class=
+        "command"><strong>tmsu</strong></span> is used to set a
+        field named <code class="literal">tags</code>. The field
+        name is arbitrary and could be <code class=
+        "literal">tmsu</code> or <code class=
+        "literal">myfield</code> just the same, but <code class=
+        "literal">tags</code> is an alias for the standard
+        <span class="application">Recoll</span> <code class=
+        "literal">keywords</code> field, and the <span class=
+        "command"><strong>tmsu</strong></span> output will just
+        augment its contents. This will avoid the need to extend
+        the <a class="link" href="#RCL.PROGRAM.FIELDS" title=
+        "4.2.&nbsp;Field data processing">field
+        configuration</a>.</p>
+
+        <p>Once re-indexing is performed (you'll need to force the
+        file reindexing, <span class="application">Recoll</span>
+        will not detect the need by itself), you will be able to
+        search from the query language, through any of its aliases:
+        <code class="literal">tags:some/alternate/values</code> or
+        <code class="literal">tags:all,these,values</code> (the
+        compact field search syntax is supported for recoll 1.20
+        and later. For older versions, you would need to repeat the
+        <code class="literal">tags:</code> specifier for each term,
+        e.g. <code class="literal">tags:some OR
+        tags:alternate</code>).</p>
+
+        <p>You should be aware that tags changes will not be
+        detected by the indexer if the file itself did not change.
+        One possible workaround would be to update the file
+        <code class="literal">ctime</code> when you modify the
+        tags, which would be consistent with how extended
+        attributes function. A pair of <span class=
+        "command"><strong>chmod</strong></span> commands could
+        accomplish this, or a <code class="literal">touch -a</code>
+        . Alternatively, just couple the tag update with a
+        <code class="literal">recollindex -e -i
+        filename.</code></p>
       </div>
 
       <div class="sect1">
