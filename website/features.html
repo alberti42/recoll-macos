@@ -101,6 +101,13 @@
         the only additional package you will need is the Python language
         installation.</p>
 
+      <p>Many formats are processed
+        by <span class="application">Python</span> scripts. The Python
+        dependency will not always be mentionned. In general, Recoll
+        expects Python 2.x to be available (many, but not all, scripts
+        are compatible with Python 3). Formats which are processed
+        using <span class="application">Python</span> and its standard
+        library are listed in the <i>native</i> section.</p>
         
       <h4>File types indexed natively</h4>
 
@@ -131,7 +138,31 @@
           and <span class="application">Powerpoint</span>
           for <span class="application">Recoll</span> versions 1.19.12
           and later.</li>
+
+        <li><span class="application">Tar</span> archives. Tar file
+        indexing is disabled by default (because tar archives don't
+        typically contain the kind of documents that people search
+        for), you will need to enable it explicitely, like with the
+        following in your
+          <span class="filename">$HOME/.recoll/mimeconf</span> file:
+          <pre>
+[index]
+application/x-tar = execm rcltar
+</pre>
+        </li> 
+
+        <li><span class="application">Zip</span> archives.</li>
+        <li><span class="application">Konqueror webarchive</span>
+          format with Python (uses the <tt>tarfile</tt> standard
+          library module).</li>
+
+        <li><span class="application">Mimehtml web archive
+            format</span> (support based on the mail 
+          filter, which introduces some mild weirdness, but still
+          usable).</li>
       </ul>
+
+
 
       <h4>File types indexed with external helpers</h4>
 
@@ -141,7 +172,8 @@
       <h5>The XML ones</h5>
 
       <p>The following types need <span class="command">
-          xsltproc</span> from the <b>libxslt</b> package.
+          xsltproc</span> from the <b>libxslt</b> package, (and the
+          Python2 libxslt module for recoll 1.22).
         Quite a few also need <span class="command">unzip</span>:</p>
 
       <ul>
@@ -210,7 +242,6 @@
         class="literal">libwpd-tools</span> or such, not the base <a
         span="literal">libwpd</a> package.</li>
 
-
         <li><span class="application">Lyx</span> files (needs 
           <span class="application">Lyx</span> to be installed).</li>
 
@@ -234,28 +265,14 @@
         <li><span class="application">EPUB</span> files
           with <span class="command">Python</span> and this
           <a href="http://pypi.python.org/pypi/epub/">Python epub</a>
-            decoding module.</li>
+            decoding module, which is packaged on Fedora, but not Debian.</li>
         
-        <li><span class="application">Tar</span> archives (needs <span
-        class="command">Python</span>). Tar file indexing is disabled
-        by default (because tar archives don't typically contain the
-        kind of documents that people search for), you will need to
-        enable it explicitely, like with the following in your
-          <span class="filename">$HOME/.recoll/mimeconf</span> file:
-          <pre>
-[index]
-application/x-tar = execm rcltar
-</pre>
-        </li> 
-
-        <li><span class="application">Zip</span> archives (needs <span
-        class="command">Python</span>).</li>
-
         <li><span class="application">Rar</span> archives (needs <span
         class="command">Python</span>), the
         <a href="http://pypi.python.org/pypi/rarfile/">rarfile</a> Python
         module and the <a
-        href="http://www.rarlab.com/rar_add.htm">unrar</a> utility.</li>
+        href="http://www.rarlab.com/rar_add.htm">unrar</a>
+        utility. The Python module is packaged by Fedora, not by Debian.</li>
 
         <li><span class="application">7zip</span> archives (needs 
           <span class="command">Python</span> and  
@@ -348,15 +365,6 @@ application/x-tar = execm rcltar
           package. This is easy but see the <a href="helpernotes.html#midi">
             notes here</a>.
         </li> 
-
-        <li><span class="application">Konqueror webarchive</span>
-          format with Python (uses the <tt>tarfile</tt> standard
-          library module).</li>
-
-        <li><span class="application">Mimehtml web archive
-            format</span> (support based on the mail 
-          filter, which introduces some mild weirdness, but still
-          usable).</li>
 
       </ul>
 

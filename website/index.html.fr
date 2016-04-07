@@ -104,9 +104,12 @@
           bitbucket.org</p> 
 
       <h2>Nouvelles: </h2>
-      <dl>
 
+      <dl>
         
+        <dt>2016-04-07</dt><dd>Release 1.21.6: compatibilité KDE5 pour le
+          KIO slave.</dd>
+
         <dt>2016-01-29</dt><dd>Version 1.21.5. Cetter version corrige
           un problème de l'interpréteur de langage
           d'interrogation. Une requête incorrecte était généré quand
