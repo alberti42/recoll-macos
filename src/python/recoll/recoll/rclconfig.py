@@ -145,6 +145,7 @@ class RclDynConf:
     
 class RclConfig:
     def __init__(self, argcnf = None):
+        self.config = None
         platsys = platform.system()
         # Find configuration directory
         if argcnf is not None:
@@ -191,7 +192,6 @@ class RclConfig:
             self.cdirs.append(os.environ["RECOLL_CONFMID"])
         self.cdirs.append(os.path.join(self.datadir, "examples"))
         #print("Config dirs: %s" % self.cdirs, file=sys.stderr)
-        self.config = ConfStack("recoll.conf", self.cdirs, "tree")
         self.keydir = ''
 
     def getConfDir(self):
@@ -201,6 +201,8 @@ class RclConfig:
         self.keydir = dir
 
     def getConfParam(self, nm):
+        if not self.config:
+            self.config = ConfStack("recoll.conf", self.cdirs, "tree")
         return self.config.get(nm, self.keydir)
         
 class RclExtraDbs:
