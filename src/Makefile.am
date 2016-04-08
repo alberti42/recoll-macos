@@ -566,7 +566,7 @@ filters/rclcheckneedretry.sh \
 filters/rclchm \
 filters/rclconfig.py \
 filters/rcldia \
-filters/rcldjvu \
+filters/rcldjvu.py \
 filters/rcldoc.py \
 filters/rcldvi \
 filters/rclepub \
