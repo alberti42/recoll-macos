@@ -16,6 +16,20 @@
 # 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 # Recoll PDF extractor, with support for attachments
+#
+# pdftotext sometimes outputs unescaped text inside HTML text sections.
+# We try to correct.
+#
+# If pdftotext produces no text and tesseract is available, we try to
+# perform OCR. As this can be very slow and the result not always
+# good, we only do this if a file named $RECOLL_CONFDIR/ocrpdf exists
+#
+# We guess the OCR language in order of preference:
+#  - From the content of a ".ocrpdflang" file if it exists in the same
+#    directory as the PDF
+#  - From an RECOLL_TESSERACT_LANG environment variable
+#  - From the content of $RECOLL_CONFDIR/ocrpdf
+#  - Default to "eng"
 
 from __future__ import print_function
 
@@ -27,6 +41,8 @@ import subprocess
 import tempfile
 import atexit
 import signal
+import rclconfig
+import glob
 
 tmpdir = None
 
@@ -40,22 +56,15 @@ def signal_handler(signal, frame):
 
 atexit.register(finalcleanup)
 
-try:
-    signal.signal(signal.SIGHUP, signal_handler)
-except:
-    pass
-try:
-    signal.signal(signal.SIGINT, signal_handler)
-except:
-    pass
-try:
-    signal.signal(signal.SIGQUIT, signal_handler)
-except:
-    pass
-try:
-    signal.signal(signal.SIGTERM, signal_handler)
-except:
-    pass
+# Not all signals necessary exist on all systems, use catch
+try: signal.signal(signal.SIGHUP, signal_handler)
+except: pass
+try: signal.signal(signal.SIGINT, signal_handler)
+except: pass
+try: signal.signal(signal.SIGQUIT, signal_handler)
+except: pass
+try: signal.signal(signal.SIGTERM, signal_handler)
+except: pass
 
 def vacuumdir(dir):
     if dir:
@@ -68,11 +77,30 @@ def vacuumdir(dir):
 class PDFExtractor:
     def __init__(self, em):
         self.currentindex = 0
-        self.pdftotext = ""
-        self.pdftk = ""
+        self.pdftotext = None
         self.em = em
+
+        self.confdir = rclconfig.RclConfig().getConfDir()
+
+        # See if we'll try to perform OCR. Need the commands and the
+        # presence of a file in the config dir (could be replaced by a
+        # config variable now that we actually use rclconfig)
+        self.ocrpossible = False
+        if os.path.isfile(os.path.join(self.confdir, "ocrpdf")):
+            self.tesseract = rclexecm.which("tesseract")
+            if self.tesseract:
+                self.pdftoppm = rclexecm.which("pdftoppm")
+                if self.pdftoppm:
+                    self.ocrpossible = True
+                    self.maybemaketmpdir()
+        # self.em.rclog("OCRPOSSIBLE: %d" % self.ocrpossible)
+
+        # Pdftk is optionally used to extract attachments
         self.attextractdone = False
         self.attachlist = []
+        self.pdftk = rclexecm.which("pdftk")
+        if self.pdftk:
+            self.maybemaketmpdir()
         
     # Extract all attachments if any into temporary directory
     def extractAttach(self):
@@ -112,9 +140,93 @@ class PDFExtractor:
             eof = rclexecm.RclExecM.noteof
         return (True, docdata, ipath, eof)
 
+
+    # Try to guess tesseract language. This should depend on the input
+    # file, but we have no general way to determine it. So use the
+    # environment and hope for the best.
+    def guesstesseractlang(self):
+        tesseractlang = ""
+        pdflangfile = os.path.join(os.path.dirname(self.filename), ".ocrpdflang")
+        if os.path.isfile(pdflangfile):
+            tesseractlang = open(pdflangfile, "r").read().strip()
+        if tesseractlang:
+            return tesseractlang
+
+        tesseractlang = os.environ.get("RECOLL_TESSERACT_LANG", "");
+        if tesseractlang:
+            return tesseractlang
+        
+        tesseractlang = \
+                      open(os.path.join(self.confdir, "ocrpdf"), "r").read().strip()
+        if tesseractlang:
+            return tesseractlang
+
+        # Half-assed trial to guess from LANG then default to english
+        localelang = os.environ.get("LANG", "").split("_")[0]
+        if localelang == "en":
+            tesseractlang = "eng"
+        elif localelang == "de":
+            tesseractlang = "deu"
+        elif localelang == "fr":
+            tesseractlang = "fra"
+        if tesseractlang:
+            return tesseractlang
+
+        if not tesseractlang:
+            tesseractlang = "eng"
+        return tesseractlang
+
+    # PDF has no text content and tesseract is available. Give OCR a try
+    def ocrpdf(self):
+
+        global tmpdir
+        if not tmpdir:
+            return ""
+
+        tesseractlang = self.guesstesseractlang()
+        # self.em.rclog("tesseractlang %s" % tesseractlang)
+
+        tesserrorfile = os.path.join(tmpdir, "tesserrorfile")
+        tmpfile = os.path.join(tmpdir, "ocrXXXXXX")
+
+        # Split pdf pages
+        try:
+            vacuumdir(tmpdir)
+            subprocess.check_call([self.pdftoppm, "-r", "300", self.filename,
+                                   tmpfile])
+        except Exception as e:
+            self.em.rclog("pdftoppm failed: %s" % e)
+            return ""
+
+        files = glob.glob(tmpfile + "*")
+        for f in files:
+            try:
+                out = subprocess.check_output([self.tesseract, f, f, "-l",
+                                               tesseractlang],
+                                              stderr = subprocess.STDOUT)
+            except Exception as e:
+                self.em.rclog("tesseract failed: %s" % e)
+
+            errlines = out.split('\n')
+            if len(errlines) > 2:
+                self.em.rclog("Tesseract error: %s" % out)
+
+        # Concatenate the result files
+        files = glob.glob(tmpfile + "*" + ".txt")
+        data = ""
+        for f in files:
+            data += open(f, "r").read()
+
+        if not data:
+            return ""
+        return '''<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"></head><body><pre>''' + \
+        self.em.htmlescape(data) + \
+        '''</pre></body></html>'''
+
     # pdftotext (used to?) badly escape text inside the header
     # fields. We do it here. This is not an html parser, and depends a
     # lot on the actual format output by pdftotext.
+    # We also determine if the doc has actual content, for triggering OCR
     def _fixhtml(self, input):
         #print input
         inheader = False
@@ -122,6 +234,7 @@ class PDFExtractor:
         didcs = False
         output = b''
         cont = b''
+        isempty = True
         for line in input.split(b'\n'):
             line = cont + line
             cont = b''
@@ -148,6 +261,10 @@ class PDFExtractor:
                 line = re.sub(b'name="Subject"', b'name="Description"', line, 1)
 
             elif inbody:
+                s = line[0:1]
+                if s != "\x0c" and s != "<":
+                    isempty = False
+                    
                 # Remove end-of-line hyphenation. It's not clear that
                 # we should do this as pdftotext without the -layout
                 # option does it ?
@@ -165,7 +282,7 @@ class PDFExtractor:
 
             output += line + b'\n'
 
-        return output
+        return output, isempty
             
     def _selfdoc(self):
         self.em.setmimetype('text/html')
@@ -178,10 +295,22 @@ class PDFExtractor:
         data = subprocess.check_output([self.pdftotext, "-htmlmeta", "-enc",
                                         "UTF-8", "-eol", "unix", "-q",
                                         self.filename, "-"])
-        data = self._fixhtml(data)
-        #self.em.rclog("%s" % data)
+
+        data, isempty = self._fixhtml(data)
+        #self.em.rclog("ISEMPTY: %d : data: \n%s" % (isempty, data))
+        if isempty and self.ocrpossible:
+            data = self.ocrpdf()
         return (True, data, "", eof)
-    
+
+    def maybemaketmpdir(self):
+        global tmpdir
+        if tmpdir:
+            if not vacuumdir(tmpdir):
+                self.em.rclog("openfile: vacuumdir %s failed" % tmpdir)
+                return False
+        else:
+            tmpdir = tempfile.mkdtemp(prefix='rclmpdf')
+        
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
         self.filename = params["filename:"]
@@ -197,18 +326,7 @@ class PDFExtractor:
                 print("RECFILTERROR HELPERNOTFOUND pdftotext")
                 sys.exit(1);
 
-        if not self.pdftk:
-            self.pdftk = rclexecm.which("pdftk")
-
         if self.pdftk:
-            global tmpdir
-            if tmpdir:
-                if not vacuumdir(tmpdir):
-                    self.em.rclog("openfile: vacuumdir %s failed" % tmpdir)
-                    return False
-            else:
-                tmpdir = tempfile.mkdtemp(prefix='rclmpdf')
-
             preview = os.environ.get("RECOLL_FILTER_FORPREVIEW", "no")
             if preview != "yes":
                 # When indexing, extract attachments at once. This
