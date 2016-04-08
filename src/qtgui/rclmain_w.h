@@ -122,6 +122,7 @@ public slots:
     virtual void previewClosed(Preview *w);
     virtual void showAdvSearchDialog();
     virtual void showSpellDialog();
+    virtual void showIndexStatistics();
     virtual void showFragButs();
     virtual void showSpecIdx();
     virtual void showAboutDialog();

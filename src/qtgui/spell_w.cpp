@@ -22,9 +22,6 @@
 #include <list>
 #include <map>
 #include <string>
-using std::list;
-using std::multimap;
-using std::string;
 
 #include <qmessagebox.h>
 #include <qpushbutton.h>
@@ -53,6 +50,10 @@ using std::string;
 #include "rclaspell.h"
 #endif
 
+using std::list;
+using std::multimap;
+using std::string;
+
 void SpellW::init()
 {
     m_c2t.clear();
@@ -72,15 +73,6 @@ void SpellW::init()
 #endif
     expTypeCMB->addItem(tr("Show index statistics"));
     m_c2t.push_back(TYPECMB_STATS);
-
-    int typ = prefs.termMatchType;
-    vector<comboboxchoice>::const_iterator it = 
-	std::find(m_c2t.begin(), m_c2t.end(), typ);
-    if (it == m_c2t.end())
-	it = m_c2t.begin();
-    int cmbidx = it - m_c2t.begin();
-
-    expTypeCMB->setCurrentIndex(cmbidx);
 
     // Stemming language combobox
     stemLangCMB->clear();
@@ -105,7 +97,7 @@ void SpellW::init()
     connect(baseWordLE, SIGNAL(returnPressed()), this, SLOT(doExpand()));
     connect(expandPB, SIGNAL(clicked()), this, SLOT(doExpand()));
     connect(dismissPB, SIGNAL(clicked()), this, SLOT(close()));
-    connect(expTypeCMB, SIGNAL(activated(int)), this, SLOT(modeSet(int)));
+    connect(expTypeCMB, SIGNAL(activated(int)), this, SLOT(onModeChanged(int)));
 
     resTW->setShowGrid(0);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
@@ -122,11 +114,18 @@ void SpellW::init()
     resTW->setColumnWidth(1, 150);
     resTW->installEventFilter(this);
 
-    if (o_index_stripchars) {
-	caseSensCB->setEnabled(false);
-	caseSensCB->setEnabled(false);
-    }
-    modeSet(cmbidx);
+    int idx = cmbIdx((comboboxchoice)prefs.termMatchType);
+    expTypeCMB->setCurrentIndex(idx);
+    onModeChanged(idx);
+}
+
+int SpellW::cmbIdx(comboboxchoice mode)
+{
+    vector<comboboxchoice>::const_iterator it = 
+	std::find(m_c2t.begin(), m_c2t.end(), mode);
+    if (it == m_c2t.end())
+	it = m_c2t.begin();
+    return it - m_c2t.begin();
 }
 
 static const int maxexpand = 10000;
@@ -306,6 +305,8 @@ void SpellW::showStats()
     if (!theconfig)
 	return;
 
+    baseWordLE->setText(QString::fromLocal8Bit(theconfig->getDbDir().c_str()));
+
     ExecCmd cmd;
     vector<string> args; 
     int status;
@@ -313,9 +314,9 @@ void SpellW::showStats()
     args.push_back(theconfig->getDbDir());
     string output;
     status = cmd.doexec("du", args, 0, &output);
-    int dbkbytes = 0;
+    long long dbkbytes = 0;
     if (!status) {
-	dbkbytes = atoi(output.c_str());
+	dbkbytes = atoll(output.c_str());
     }
     resTW->setRowCount(row+1);
     resTW->setItem(row, 0,
@@ -372,12 +373,34 @@ void SpellW::textDoubleClicked(int row, int)
         emit(wordSelect(item->text()));
 }
 
-void SpellW::modeSet(int idx)
+void SpellW::onModeChanged(int idx)
 {
     if (idx < 0 || idx > int(m_c2t.size()))
 	return;
-    comboboxchoice mode = m_c2t[idx]; 
+    comboboxchoice mode = m_c2t[idx];
+    setModeCommon(mode);
+}
+
+void SpellW::setMode(comboboxchoice mode)
+{
+    expTypeCMB->setCurrentIndex(cmbIdx(mode));
+    setModeCommon(mode);
+}
+
+void SpellW::setModeCommon(comboboxchoice mode)
+{
+    if (m_prevmode == TYPECMB_STATS) {
+        baseWordLE->setText("");
+    }
+    m_prevmode = mode;
     resTW->setRowCount(0);
+    if (o_index_stripchars) {
+	caseSensCB->setEnabled(false);
+	diacSensCB->setEnabled(false);
+    } else {
+	caseSensCB->setEnabled(true);
+	diacSensCB->setEnabled(true);
+    }
    
     if (mode == TYPECMB_STEM) {
 	stemLangCMB->setEnabled(true);
@@ -387,8 +410,6 @@ void SpellW::modeSet(int idx)
 	caseSensCB->setEnabled(false);
     } else {
 	stemLangCMB->setEnabled(false);
-	diacSensCB->setEnabled(true);
-	caseSensCB->setEnabled(true);
     }
     if (mode == TYPECMB_STATS)
 	baseWordLE->setEnabled(false);
@@ -400,6 +421,8 @@ void SpellW::modeSet(int idx)
 	QStringList labels(tr("Item"));
 	labels.push_back(tr("Value"));
 	resTW->setHorizontalHeaderLabels(labels);
+	diacSensCB->setEnabled(false);
+	caseSensCB->setEnabled(false);
 	doExpand();
     } else {
 	QStringList labels(tr("Term"));

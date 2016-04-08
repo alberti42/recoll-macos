@@ -74,6 +74,14 @@ void RclMain::showSpellDialog()
     }
 }
 
+void RclMain::showIndexStatistics()
+{
+    showSpellDialog();
+    if (spellform == 0)
+        return;
+    spellform->setMode(SpellW::TYPECMB_STATS);
+}
+
 void RclMain::showFragButs()
 {
     if (fragbuts && fragbuts->isStale(0)) {

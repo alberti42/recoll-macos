@@ -25,34 +25,41 @@
 #include "ui_spell.h"
 class SpellW : public QWidget, public Ui::SpellBase
 {
-    Q_OBJECT
+    Q_OBJECT;
 public:
     SpellW(QWidget* parent = 0) 
-	: QWidget(parent) 
-    {
+	: QWidget(parent), m_prevmode(TYPECMB_NONE) {
 	setupUi(this);
 	init();
     }
 	
     virtual bool eventFilter(QObject *target, QEvent *event );
+
+    enum comboboxchoice {TYPECMB_NONE, TYPECMB_WILD, TYPECMB_REG, TYPECMB_STEM, 
+			 TYPECMB_ASPELL, TYPECMB_STATS};
 public slots:
     virtual void doExpand();
     virtual void wordChanged(const QString&);
     virtual void textDoubleClicked();
     virtual void textDoubleClicked(int, int);
-    virtual void modeSet(int);
+    virtual void setMode(comboboxchoice);
 
+private slots:
+    virtual void onModeChanged(int);
+    
 signals:
     void wordSelect(QString);
 
 private:
-    enum comboboxchoice {TYPECMB_WILD, TYPECMB_REG, TYPECMB_STEM, 
-			 TYPECMB_ASPELL, TYPECMB_STATS};
     // combobox index to expansion type
-    std::vector<comboboxchoice> m_c2t; 
+    std::vector<comboboxchoice> m_c2t;
+    comboboxchoice m_prevmode;
+
     void init();
     void copy();
     void showStats();
+    int cmbIdx(comboboxchoice mode);
+    void setModeCommon(comboboxchoice mode);
 };
 
 #endif /* _ASPELL_W_H_INCLUDED_ */

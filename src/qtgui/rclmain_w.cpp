@@ -334,7 +334,8 @@ void RclMain::init()
 	    this, SLOT(saveLastQuery()));
     connect(actionLoad_saved_query, SIGNAL(triggered()),
 	    this, SLOT(loadSavedQuery()));
-
+    connect(actionShow_index_statistics, SIGNAL(triggered()),
+            this, SLOT(showIndexStatistics()));
     connect(helpAbout_RecollAction, SIGNAL(triggered()), 
 	    this, SLOT(showAboutDialog()));
     connect(showMissingHelpers_Action, SIGNAL(triggered()), 

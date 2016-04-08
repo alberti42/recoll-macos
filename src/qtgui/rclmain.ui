@@ -84,6 +84,7 @@
     <addaction name="separator"/>
     <addaction name="showMissingHelpers_Action"/>
     <addaction name="showActiveTypes_Action"/>
+    <addaction name="actionShow_index_statistics"/>
     <addaction name="separator"/>
     <addaction name="toggleFullScreenAction"/>
     <addaction name="separator"/>
@@ -374,6 +375,9 @@
    </property>
   </action>
   <action name="enbSynAction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Enable synonyms</string>
    </property>
@@ -382,9 +386,6 @@
    </property>
    <property name="name" stdset="0">
     <cstring>enbSynAction</cstring>
-   </property>
-   <property name="checkable">
-    <bool>true</bool>
    </property>
   </action>
   <action name="toggleFullScreenAction">
@@ -519,6 +520,11 @@
    </property>
    <property name="toolTip">
     <string>Indexing with special options</string>
+   </property>
+  </action>
+  <action name="actionShow_index_statistics">
+   <property name="text">
+    <string>Show index statistics</string>
    </property>
   </action>
  </widget>
