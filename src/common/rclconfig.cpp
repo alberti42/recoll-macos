@@ -337,6 +337,9 @@ bool RclConfig::updateMainConfig()
 	m_index_stripchars_init = 1;
     }
 
+    if (getConfParam("cachedir", m_cachedir)) {
+        m_cachedir = path_canon(path_tildexpand(m_cachedir));
+    }
     return true;
 }
 
@@ -810,7 +813,7 @@ bool RclConfig::getMissingHelperDesc(string& out) const
 
 void RclConfig::storeMissingHelperDesc(const string &s)
 {
-    string fmiss = path_cat(getConfDir(), "missing");
+    string fmiss = path_cat(getCacheDir(), "missing");
     FILE *fp = fopen(fmiss.c_str(), "w");
     if (fp) {
 	if (s.size() > 0 && fwrite(s.c_str(), s.size(), 1, fp) != 1) {
@@ -1147,9 +1150,43 @@ string RclConfig::getConfdirPath(const char *varname, const char *dflt) const
 
 }
 
+string RclConfig::getCacheDir() const
+{
+    return m_cachedir.empty() ? getConfDir() : m_cachedir;
+}
+
+// Return path defined by varname. May be absolute or relative to
+// confdir, with default in confdir
+string RclConfig::getCachedirPath(const char *varname, const char *dflt) const
+{
+    string result;
+    if (!getConfParam(varname, result)) {
+	result = path_cat(getCacheDir(), dflt);
+    } else {
+	result = path_tildexpand(result);
+	// If not an absolute path, compute relative to cache dir
+	if (!path_isabsolute(result)) {
+	    result = path_cat(getCacheDir(), result);
+	}
+    }
+    return path_canon(result);
+}
+
 string RclConfig::getDbDir() const
 {
-    return getConfdirPath("dbdir", "xapiandb");
+    return getCachedirPath("dbdir", "xapiandb");
+}
+string RclConfig::getWebcacheDir() const
+{
+    return getCachedirPath("webcachedir", "webcache");
+}
+string RclConfig::getMboxcacheDir() const
+{
+    return getCachedirPath("mboxcachedir", "mboxcache");
+}
+string RclConfig::getAspellcacheDir() const
+{
+    return getCachedirPath("aspellDicDir", "");
 }
 
 string RclConfig::getStopfile() const
@@ -1164,9 +1201,14 @@ string RclConfig::getSynGroupsFile() const
 
 // The index status file is fast changing, so it's possible to put it outside
 // of the config directory (for ssds, not sure this is really useful).
+// To enable being quite xdg-correct we should add a getRundirPath()
 string RclConfig::getIdxStatusFile() const
 {
-    return getConfdirPath("idxstatusfile", "idxstatus.txt");
+    return getCachedirPath("idxstatusfile", "idxstatus.txt");
+}
+string RclConfig::getPidfile() const
+{
+    return path_cat(getCacheDir(), "index.pid");
 }
 
 void RclConfig::urlrewrite(const string& dbdir, string& url) const
@@ -1221,11 +1263,6 @@ bool RclConfig::sourceChanged() const
     return false;
 }
 
-string RclConfig::getPidfile() const
-{
-    return path_cat(getConfDir(), "index.pid");
-}
-
 string RclConfig::getWebQueueDir() const
 {
     string webqueuedir;
@@ -1253,6 +1290,9 @@ vector<string> RclConfig::getSkippedPaths() const
     // don't do this.
     skpl.push_back(getDbDir());
     skpl.push_back(getConfDir());
+    if (getCacheDir().compare(getConfDir())) {
+        skpl.push_back(getCacheDir());
+    }
     // And the web queue dir
     skpl.push_back(getWebQueueDir());
     for (vector<string>::iterator it = skpl.begin(); it != skpl.end(); it++) {
@@ -1457,6 +1497,7 @@ void RclConfig::initFrom(const RclConfig& r)
 	return;
     m_reason = r.m_reason;
     m_confdir = r.m_confdir;
+    m_cachedir = r.m_cachedir;
     m_datadir = r.m_datadir;
     m_keydir = r.m_keydir;
     m_cdirs = r.m_cdirs;

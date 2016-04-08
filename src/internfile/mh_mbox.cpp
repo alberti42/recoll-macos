@@ -196,13 +196,7 @@ public:
             }
             m_minfsize = minmbs * 1000 * 1000;
 
-            config->getConfParam("mboxcachedir", m_dir);
-            if (m_dir.empty())
-                m_dir = "mboxcache";
-            m_dir = path_tildexpand(m_dir);
-            // If not an absolute path, compute relative to config dir
-            if (!path_isabsolute(m_dir))
-                m_dir = path_cat(config->getConfDir(), m_dir);
+            m_dir = config->getMboxcacheDir();
             m_ok = true;
         }
         return m_ok;

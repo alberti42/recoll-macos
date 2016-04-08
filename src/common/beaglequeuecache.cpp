@@ -29,14 +29,7 @@ const string cstr_bgc_mimetype("mimetype");
 
 BeagleQueueCache::BeagleQueueCache(RclConfig *cnf) 
 {
-    string ccdir;
-    cnf->getConfParam("webcachedir", ccdir);
-    if (ccdir.empty())
-        ccdir = "webcache";
-    ccdir = path_tildexpand(ccdir);
-    // If not an absolute path, compute relative to config dir
-    if (!path_isabsolute(ccdir))
-        ccdir = path_cat(cnf->getConfDir(), ccdir);
+    string ccdir = cnf->getWebcacheDir();
 
     int maxmbs = 40;
     cnf->getConfParam("webcachemaxmbs", &maxmbs);

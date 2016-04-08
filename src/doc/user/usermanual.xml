@@ -5982,7 +5982,31 @@ field2 = value for field2
        <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.STORAGE">
 	<title>Parameters affecting where and how we store things:</title>
 
-	<variablelist>
+
+          <variablelist>
+          
+          <varlistentry><term><varname>cachedir</varname></term>
+            <listitem>
+            <para>When not explicitly specified, the &RCL; data directories
+            are stored relative to the configuration directory. If
+            <literal>cachedir</literal> is set, the directories are stored
+            under the specified value instead (e.g. if
+            <literal>cachedir</literal> is set to
+            <filename>~/.cache/recoll</filename>, the default
+            <literal>dbdir</literal> would be
+            <filename>~/.cache/recoll/xapiandb</filename> instead of
+            <filename>~/.recoll/xapiandb</filename> ). This affects the
+            default values for <literal>dbdir</literal>,
+            <literal>webcachedir</literal>,
+            <literal>mboxcachedir</literal>, and
+            <literal>aspellDicDir</literal>, which can still be
+            individually specified to override
+            <literal>cachedir</literal>. Note that if you have multiple
+            configurations, each must have a different
+            <literal>cachedir</literal>.</para>
+            </listitem>
+          </varlistentry>
+
           <varlistentry><term><varname>dbdir</varname></term>
             <listitem><para>The name of the Xapian data directory. It
             will be created if needed when the index is

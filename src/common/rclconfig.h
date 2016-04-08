@@ -109,6 +109,7 @@ class RclConfig {
      *  constructor it it is the default one (~/.recoll) and it did 
      *  not exist yet. */
     string getConfDir() const {return m_confdir;}
+    string getCacheDir() const;
 
     /** Check if the config files were modified since we read them */
     bool sourceChanged() const;
@@ -172,8 +173,12 @@ class RclConfig {
     vector<string> getTopdirs() const;
 
     string getConfdirPath(const char *varname, const char *dflt) const;
-    /** Get database directory */
+    string getCachedirPath(const char *varname, const char *dflt) const;
+    /** Get database and other directories */
     string getDbDir() const;
+    string getWebcacheDir() const;
+    string getMboxcacheDir() const;
+    string getAspellcacheDir() const;
     /** Get stoplist file name */
     string getStopfile() const;
     /** Get synonym groups file name */
@@ -333,6 +338,11 @@ class RclConfig {
     int m_ok;
     string m_reason;    // Explanation for bad state
     string m_confdir;   // User directory where the customized files are stored
+    // Normally same as confdir. Set to store all bulk data elsewhere.
+    // Provides defaults top location for dbdir, webcachedir,
+    // mboxcachedir, aspellDictDir, which can still be used to
+    // override.
+    string m_cachedir;  
     string m_datadir;   // Example: /usr/local/share/recoll
     string m_keydir;    // Current directory used for parameter fetches.
     int    m_keydirgen; // To help with knowing when to update computed data.

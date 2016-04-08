@@ -220,17 +220,7 @@ bool Aspell::ok() const
 
 string Aspell::dicPath()
 {
-    string ccdir;
-    m_config->getConfParam("aspellDicDir", ccdir);
-    if (ccdir.empty()) {
-        ccdir = m_config->getConfDir();
-    } else {
-        ccdir = path_tildexpand(ccdir);
-        // If not an absolute path, compute relative to config dir
-        if (!path_isabsolute(ccdir))
-            ccdir = path_cat(m_config->getConfDir(), ccdir);
-    }
-
+    string ccdir = m_config->getAspellcacheDir();
     return path_cat(ccdir, string("aspdict.") + m_lang + string(".rws"));
 }
 
