@@ -608,6 +608,7 @@ filters/rclwar \
 filters/rclwpd \
 filters/rclxls.py \
 filters/rclxml.py \
+filters/rclxmp.py \
 filters/rclxslt.py \
 filters/rclzip \
 filters/ppt-dump.py \
