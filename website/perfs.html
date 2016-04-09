@@ -43,9 +43,10 @@
 	store an index. Obviously, your data set will never fit one of
 	the samples, so the results cannot be exactly predicted.</p>
 
-      <p>The following data was obtained on a machine with a 1800 Mhz
+      <p>The following very old data was obtained on a machine with a
+        1800 Mhz
 	AMD Duron CPU, 768Mb of Ram, and a 7200 RPM 160 GBytes IDE
-	disk, running Suse 10.1.</p>
+	disk, running Suse 10.1. More recent data follows.</p>
 
       <p><b>recollindex</b> (version 1.8.2 with xapian 1.0.0) is
 	executed with the default flush threshold value. 
@@ -106,8 +107,74 @@
 	performance degradation. The resulting index is bigger though,
 	the exact reason is not known to me, possibly because of
 	additional fragmentation </p>
+
+      <p>There is more recent performance data (2012) at the end of
+        the <a href="idxthreads/threadingRecoll.html">article about
+          converting Recoll indexing to multithreading</a></p>
+
+      <p>Update, March 2016: I took another sample of PDF performance
+        data on a more modern machine, with Recoll multithreading turned
+        on. The machine has an Intel Core I7-4770T Cpu, which has 4
+        physical cores, and supports hyper-threading for a total of 8
+        threads, 8 GBytes of RAM, and SSD storage (incidentally the PC is
+        fanless, this is not a "beast" computer).</p>
+        
+      <table border=1>
+	<thead>
+	  <tr>
+	    <th>Data</th>
+	    <th>Data size</th>
+	    <th>Indexing time</th>
+	    <th>Index size</th>
+	    <th>Peak process memory usage</th>
+	  </tr>
+	<tbody>
+	  <tr>
+	    <td>Random pdfs harvested on Google<br>
+	    Recoll 1.21.5, <em>idxflushmb</em> set to 200, thread
+	    parameters 6/4/1</td>
+	    <td>11 GB, 5320 files</td>
+	    <td>3 mn 15 S</td>
+	    <td>400 MB</td>
+	    <td>545 MB</td>
+	  </tr>
+	</tbody>
+      </table>
+        
+      <p>The indexing process used 21 mn of CPU during these 3mn15 of
+        real time, we are not letting these cores stay idle
+        much... The improvement compared to the numbers above is quite
+        spectacular (a factor of 11, approximately), mostly due to the
+        multiprocessing, but also to the faster CPU and the SSD
+        storage. Note that the peak memory value is for the
+        recollindex process, and does not take into account the
+        multiple Python and pdftotext instances (which are relatively
+        small but things add up...).</p>
+      
+      <h5>Improving indexing performance with hardware:</h5>
+      <p>I think
+      that the following multi-step approach has a good chance to
+        improve performance:
+        <ul>
+          <li>Check that multithreading is enabled (it is, by default
+            with recent Recoll versions).</li>
+          <li>Increase the flush threshold until the machine begins to
+            have memory issues. Maybe add memory.</li>
+          <li>Store the index on an SSD. If possible, also store the
+            data on an SSD. Actually, when using many threads, it is
+            probably almost more important to have the data on an
+            SSD.</li>
+          <li>If you have many files which will need temporary copies
+            (email attachments, archive members, compressed files): use
+            a memory temporary directory. Add memory.</li>
+          <li>More CPUs...</li>
+        </ul>
       </p>
 
+      <p>At some point, the index writing may become the
+        bottleneck. As far as I can think, the only possible approach
+        then is to partition the index.</p>
+      
     </div>
   </body>
 </html>

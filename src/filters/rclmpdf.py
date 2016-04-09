@@ -233,11 +233,8 @@ class PDFExtractor:
         inbody = False
         didcs = False
         output = b''
-        cont = b''
         isempty = True
         for line in input.split(b'\n'):
-            line = cont + line
-            cont = b''
             if re.search(b'</head>', line):
                 inheader = False
             if re.search(b'</pre>', line):
@@ -264,17 +261,11 @@ class PDFExtractor:
                 s = line[0:1]
                 if s != "\x0c" and s != "<":
                     isempty = False
-                    
-                # Remove end-of-line hyphenation. It's not clear that
-                # we should do this as pdftotext without the -layout
-                # option does it ?
-                #if re.search(r'[-]$', line):
-                    #m = re.search(r'(.*)[ \t]([^ \t]+)$', line)
-                    #if m:
-                        #line = m.group(1)
-                        #cont = m.group(2).rstrip('-')
+                # We used to remove end-of-line hyphenation (and join
+                # lines), but but it's not clear that we should do
+                # this as pdftotext without the -layout option does it ?
                 line = self.em.htmlescape(line)
-                
+
             if re.search(b'<head>', line):
                 inheader = True
             if re.search(b'<pre>', line):
