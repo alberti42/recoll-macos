@@ -315,7 +315,7 @@ fi
 
 #### Look for Xapian. Done in a strange way to work around autoconf
 # cache
-XAPIAN_CONFIG=no
+XAPIAN_CONFIG=${XAPIAN_CONFIG:-no}
 if test "$XAPIAN_CONFIG" = "no"; then 
     AC_PATH_PROG(XAPIAN_CONFIG0, [xapian-config], no)
     XAPIAN_CONFIG=$XAPIAN_CONFIG0
