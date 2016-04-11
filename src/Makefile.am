@@ -585,7 +585,7 @@ filters/rcllatinclass.py \
 filters/rcllatinstops.zip \
 filters/rcllyx \
 filters/rclman \
-filters/rclmpdf.py \
+filters/rclpdf.py \
 filters/rclokulnote \
 filters/rclopxml.py \
 filters/rclppt.py \
