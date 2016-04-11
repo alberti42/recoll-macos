@@ -20,8 +20,8 @@ alink="#0000FF">
     <div class="titlepage">
       <div>
         <div>
-          <h1 class="title"><a name="idp53258720" id=
-          "idp53258720"></a>Recoll user manual</h1>
+          <h1 class="title"><a name="idp48862656" id=
+          "idp48862656"></a>Recoll user manual</h1>
         </div>
 
         <div>
@@ -109,13 +109,13 @@ alink="#0000FF">
                 multiple indexes</a></span></dt>
 
                 <dt><span class="sect2">2.1.3. <a href=
-                "#idp58828400">Document types</a></span></dt>
+                "#idp54428144">Document types</a></span></dt>
 
                 <dt><span class="sect2">2.1.4. <a href=
-                "#idp58848080">Indexing failures</a></span></dt>
+                "#idp54447824">Indexing failures</a></span></dt>
 
                 <dt><span class="sect2">2.1.5. <a href=
-                "#idp58855088">Recovery</a></span></dt>
+                "#idp48768496">Recovery</a></span></dt>
               </dl>
             </dd>
 
@@ -900,6 +900,22 @@ alink="#0000FF">
           "command"><strong>recoll</strong></span> GUI:
           <span class="guimenu">Preferences</span> &rarr;
           <span class="guimenuitem">Indexing schedule</span></p>
+
+          <p>The <span class="guimenu">File</span> menu also has
+          entries to start or stop the current indexing operation.
+          Stopping indexing is performed by killing the
+          <span class="command"><strong>recollindex</strong></span>
+          process, which will checkpoint its state and exit. A
+          later restart of indexing will mostly resume from where
+          things stopped (the file tree walk has to be restarted
+          from the beginning).</p>
+
+          <p>When the real time indexer is running, only a stop
+          operation is available from the menu. When no indexing is
+          running, you have a choice of updating the index or
+          rebuilding it (the first choice only processes changed
+          files, the second one zeroes the index before starting so
+          that all files are processed).</p>
         </div>
 
         <div class="sect2">
@@ -962,8 +978,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp58828400" id=
-                "idp58828400"></a>2.1.3.&nbsp;Document types</h3>
+                <h3 class="title"><a name="idp54428144" id=
+                "idp54428144"></a>2.1.3.&nbsp;Document types</h3>
               </div>
             </div>
           </div>
@@ -1056,8 +1072,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp58848080" id=
-                "idp58848080"></a>2.1.4.&nbsp;Indexing
+                <h3 class="title"><a name="idp54447824" id=
+                "idp54447824"></a>2.1.4.&nbsp;Indexing
                 failures</h3>
               </div>
             </div>
@@ -1097,8 +1113,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp58855088" id=
-                "idp58855088"></a>2.1.5.&nbsp;Recovery</h3>
+                <h3 class="title"><a name="idp48768496" id=
+                "idp48768496"></a>2.1.5.&nbsp;Recovery</h3>
               </div>
             </div>
           </div>
@@ -8667,6 +8683,36 @@ field2 = value for field2
 
             <div class="variablelist">
               <dl class="variablelist">
+                <dt><span class="term"><code class=
+                "varname">cachedir</code></span></dt>
+
+                <dd>
+                  <p>When not explicitly specified, the
+                  <span class="application">Recoll</span> data
+                  directories are stored relative to the
+                  configuration directory. If <code class=
+                  "literal">cachedir</code> is set, the directories
+                  are stored under the specified value instead
+                  (e.g. if <code class="literal">cachedir</code> is
+                  set to <code class=
+                  "filename">~/.cache/recoll</code>, the default
+                  <code class="literal">dbdir</code> would be
+                  <code class=
+                  "filename">~/.cache/recoll/xapiandb</code>
+                  instead of <code class=
+                  "filename">~/.recoll/xapiandb</code> ). This
+                  affects the default values for <code class=
+                  "literal">dbdir</code>, <code class=
+                  "literal">webcachedir</code>, <code class=
+                  "literal">mboxcachedir</code>, and <code class=
+                  "literal">aspellDicDir</code>, which can still be
+                  individually specified to override <code class=
+                  "literal">cachedir</code>. Note that if you have
+                  multiple configurations, each must have a
+                  different <code class=
+                  "literal">cachedir</code>.</p>
+                </dd>
+
                 <dt><span class="term"><code class=
                 "varname">dbdir</code></span></dt>
 

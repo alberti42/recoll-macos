@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
 <title>Parameters affecting where and how we store things: -  - Recoll user manual</title><meta name="generator" content="DocBook XSL Stylesheets V1.78.1"></meta><link rel="home" href="index.html" title="Recoll user manual"></link><link rel="up" href="RCL.INSTALL.CONFIG.RECOLLCONF.html" title="The main configuration file, recoll.conf"></link><link rel="prev" href="RCL.INSTALL.CONFIG.RECOLLCONF.TERMS.html" title="Parameters affecting how we generate terms:"></link><link rel="next" href="RCL.INSTALL.CONFIG.RECOLLCONF.IDXTHREADS.html" title="Parameters affecting multithread processing"></link><meta name="Section-title" content="Parameters affecting where and how we store things:"></meta><script type="text/javascript">
             //The id for tree cookie
-            var treeCookieId = "treeview-7677";
+            var treeCookieId = "treeview-7734";
             var language = "en";
             var w = new Object();
             //Localization
@@ -127,7 +127,23 @@ border: none; background: none; font-weight: none; color: none; }
                                         |
                                         <a accesskey="u" class="navLinkUp" tabindex="5" href="RCL.INSTALL.CONFIG.RECOLLCONF.html">Up</a>
                                     |
-                                    <a accesskey="n" class="navLinkNext" tabindex="5" href="RCL.INSTALL.CONFIG.RECOLLCONF.IDXTHREADS.html">Next</a></td></tr></table></div></div><div id="content"><div class="sect3"><div class="titlepage"><div><div><h4 class="title"><a id="RCL.INSTALL.CONFIG.RECOLLCONF.STORAGE"></a>Parameters affecting where and how we store things:</h4></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="varname">dbdir</code></span></dt><dd><p>The name of the Xapian data directory. It
+                                    <a accesskey="n" class="navLinkNext" tabindex="5" href="RCL.INSTALL.CONFIG.RECOLLCONF.IDXTHREADS.html">Next</a></td></tr></table></div></div><div id="content"><div class="sect3"><div class="titlepage"><div><div><h4 class="title"><a id="RCL.INSTALL.CONFIG.RECOLLCONF.STORAGE"></a>Parameters affecting where and how we store things:</h4></div></div></div><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="varname">cachedir</code></span></dt><dd><p>When not explicitly specified, the <span class="application">Recoll</span> data directories
+            are stored relative to the configuration directory. If
+            <code class="literal">cachedir</code> is set, the directories are stored
+            under the specified value instead (e.g. if
+            <code class="literal">cachedir</code> is set to
+            <code class="filename">~/.cache/recoll</code>, the default
+            <code class="literal">dbdir</code> would be
+            <code class="filename">~/.cache/recoll/xapiandb</code> instead of
+            <code class="filename">~/.recoll/xapiandb</code> ). This affects the
+            default values for <code class="literal">dbdir</code>,
+            <code class="literal">webcachedir</code>,
+            <code class="literal">mboxcachedir</code>, and
+            <code class="literal">aspellDicDir</code>, which can still be
+            individually specified to override
+            <code class="literal">cachedir</code>. Note that if you have multiple
+            configurations, each must have a different
+            <code class="literal">cachedir</code>.</p></dd><dt><span class="term"><code class="varname">dbdir</code></span></dt><dd><p>The name of the Xapian data directory. It
             will be created if needed when the index is
             initialized. If this is not an absolute path, it will be
             interpreted relative to the configuration directory. The

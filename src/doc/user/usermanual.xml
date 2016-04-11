@@ -352,6 +352,21 @@
 	    <guimenuitem>Indexing schedule</guimenuitem>
           </menuchoice>
          </para>
+
+         <para>The <menuchoice><guimenu>File</guimenu>
+         </menuchoice> menu also has entries to start or stop
+         the current indexing operation. Stopping indexing is performed by
+         killing the <command>recollindex</command> process, which will
+         checkpoint its state and exit. A later restart of indexing will
+         mostly resume from where things stopped (the file tree walk has to
+         be restarted from the beginning).</para>
+
+         <para>When the real time indexer is running, only a stop operation
+         is available from the menu. When no indexing is running, you have
+         a choice of updating the index or rebuilding it (the first choice
+         only processes changed files, the second one zeroes the index
+         before starting so that all files are processed).</para>
+
 	</sect2>
 
       <sect2 id="RCL.INDEXING.INTRODUCTION.CONFIG">
