@@ -81,12 +81,18 @@ class PDFExtractor:
         self.em = em
 
         self.confdir = rclconfig.RclConfig().getConfDir()
+        cf_doocr = rclconfig.RclConfig().getConfParam("pdfocr")
+        cf_attach = rclconfig.RclConfig().getConfParam("pdfattach")
+        
+        self.pdftotext = rclexecm.which("pdftotext")
+        if not self.pdftotext:
+            self.pdftotext = rclexecm.which("poppler/pdftotext")
 
         # See if we'll try to perform OCR. Need the commands and the
-        # presence of a file in the config dir (could be replaced by a
-        # config variable now that we actually use rclconfig)
+        # either the presence of a file in the config dir (historical)
+        # or a set config variable.
         self.ocrpossible = False
-        if os.path.isfile(os.path.join(self.confdir, "ocrpdf")):
+        if cf_doocr or os.path.isfile(os.path.join(self.confdir, "ocrpdf")):
             self.tesseract = rclexecm.which("tesseract")
             if self.tesseract:
                 self.pdftoppm = rclexecm.which("pdftoppm")
@@ -95,10 +101,15 @@ class PDFExtractor:
                     self.maybemaketmpdir()
         # self.em.rclog("OCRPOSSIBLE: %d" % self.ocrpossible)
 
-        # Pdftk is optionally used to extract attachments
+        # Pdftk is optionally used to extract attachments. This takes
+        # a hit on perfmance even in the absence of any attachments,
+        # so it can be disabled in the configuration.
         self.attextractdone = False
         self.attachlist = []
-        self.pdftk = rclexecm.which("pdftk")
+        if cf_attach:
+            self.pdftk = rclexecm.which("pdftk")
+        else:
+            self.pdftk = None
         if self.pdftk:
             self.maybemaketmpdir()
         
@@ -310,12 +321,8 @@ class PDFExtractor:
         self.attextractdone = False
 
         if not self.pdftotext:
-            self.pdftotext = rclexecm.which("pdftotext")
-            if not self.pdftotext:
-                self.pdftotext = rclexecm.which("poppler/pdftotext")
-            if not self.pdftotext:
-                print("RECFILTERROR HELPERNOTFOUND pdftotext")
-                sys.exit(1);
+            print("RECFILTERROR HELPERNOTFOUND pdftotext")
+            sys.exit(1);
 
         if self.pdftk:
             preview = os.environ.get("RECOLL_FILTER_FORPREVIEW", "no")
