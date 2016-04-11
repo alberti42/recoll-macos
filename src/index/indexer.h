@@ -47,12 +47,16 @@ class DbIxStatus {
     string fn;   // Last file processed
     int docsdone;  // Documents actually updated
     int filesdone; // Files tested (updated or not)
+    int fileerrors; // Failed files (e.g.: missing input handler).
     int dbtotdocs;  // Doc count in index at start
-    void reset() 
-    {
+    // Total files in index.This is actually difficult to compute from
+    // the index so it's preserved from last indexing
+    int totfiles;
+    
+    void reset() {
 	phase = DBIXS_FILES;
 	fn.erase();
-	docsdone = filesdone = dbtotdocs = 0;
+	docsdone = filesdone = fileerrors = dbtotdocs = totfiles = 0;
     }
     DbIxStatus() {reset();}
 };

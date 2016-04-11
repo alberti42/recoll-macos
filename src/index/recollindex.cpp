@@ -104,39 +104,38 @@ int stopindexing;
 class MyUpdater : public DbIxStatusUpdater {
  public:
     MyUpdater(const RclConfig *config) 
-	: m_fd(-1), m_stfilename(config->getIdxStatusFile()),
+	: m_file(config->getIdxStatusFile().c_str()),
 	  m_prevphase(DbIxStatus::DBIXS_NONE) {
+        // The total number of files included in the index is actually
+        // difficult to compute from the index itself. For display
+        // purposes, we save it in the status file from indexing to
+        // indexing (mostly...)
+        string stf;
+        if (m_file.get("totfiles", stf)) {
+            status.totfiles = atoi(stf.c_str());
+        }
     }
 
     virtual bool update() 
     {
-	if (m_fd < 0) {
-	    m_fd = open(m_stfilename.c_str(), 
-			O_WRONLY|O_CREAT|O_TRUNC, 0600);
-	    if (m_fd < 0) {
-		LOGERR(("Can't open/create status file: [%s]\n",
-			m_stfilename.c_str()));
-		return stopindexing ? false : true;
-	    }
-	}
-	// Update the status file. Avoid doing it too often
-	if (status.phase != m_prevphase || m_chron.millis() > 300) {
+	// Update the status file. Avoid doing it too often. Always do
+	// it at the end (status DONE)
+	if (status.phase == DbIxStatus::DBIXS_DONE || 
+            status.phase != m_prevphase || m_chron.millis() > 300) {
+            if (status.totfiles < status.filesdone) {
+                status.totfiles = status.filesdone;
+            }
 	    m_prevphase = status.phase;
 	    m_chron.restart();
-	    lseek(m_fd, 0, 0);
-	    int fd1 = dup(m_fd);
-	    FILE *fp = fdopen(fd1, "w");
-	    fprintf(fp, "phase = %d\n", int(status.phase));
-	    fprintf(fp, "docsdone = %d\n", status.docsdone);
-	    fprintf(fp, "filesdone = %d\n", status.filesdone);
-	    fprintf(fp, "dbtotdocs = %d\n", status.dbtotdocs);
-	    fprintf(fp, "fn = %s\n", status.fn.c_str());
-	    if (ftruncate(m_fd, off_t(ftell(fp))) < 0) {
-		// ? kill compiler warning about ignoring ftruncate return
-		LOGDEB(("Status update: ftruncate failed\n"));
-	    }
-            // Flush data and closes fd1. m_fd still valid
-	    fclose(fp); 
+            m_file.holdWrites(true);
+            m_file.set("phase", int(status.phase));
+	    m_file.set("docsdone", status.docsdone);
+	    m_file.set("filesdone", status.filesdone);
+	    m_file.set("fileerrors", status.fileerrors);
+	    m_file.set("dbtotdocs", status.dbtotdocs);
+	    m_file.set("totfiles", status.totfiles);
+	    m_file.set("fn", status.fn);
+            m_file.holdWrites(false);
 	}
 
 	if (stopindexing) {
@@ -158,8 +157,7 @@ class MyUpdater : public DbIxStatusUpdater {
     }
 
 private:
-    int    m_fd;
-    string m_stfilename;
+    ConfSimple m_file;
     Chrono m_chron;
     DbIxStatus::Phase m_prevphase;
 };

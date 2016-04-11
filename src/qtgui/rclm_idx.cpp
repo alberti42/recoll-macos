@@ -39,12 +39,11 @@ void RclMain::idxStatus()
     cs.get("phase", val);
     status.phase = DbIxStatus::Phase(atoi(val.c_str()));
     cs.get("fn", status.fn);
-    cs.get("docsdone", val);
-    status.docsdone = atoi(val.c_str());
-    cs.get("filesdone", val);
-    status.filesdone = atoi(val.c_str());
-    cs.get("dbtotdocs", val);
-    status.dbtotdocs = atoi(val.c_str());
+    cs.get("docsdone", &status.docsdone);
+    cs.get("filesdone", &status.filesdone);
+    cs.get("fileerrors", &status.fileerrors);
+    cs.get("dbtotdocs", &status.dbtotdocs);
+    cs.get("totfiles", &status.totfiles);
 
     QString phs;
     switch (status.phase) {
@@ -60,11 +59,14 @@ void RclMain::idxStatus()
     msg += phs + " ";
     if (status.phase == DbIxStatus::DBIXS_FILES) {
 	char cnts[100];
-	if (status.dbtotdocs > 0)
-	    sprintf(cnts,"(%d/%d/%d) ", status.docsdone, status.filesdone, 
-		    status.dbtotdocs);
-	else
-	    sprintf(cnts, "(%d/%d) ", status.docsdone, status.filesdone);
+	if (status.dbtotdocs > 0) {
+	    sprintf(cnts, "(%d docs/%d files/%d errors/%d tot files) ",
+                    status.docsdone, status.filesdone, status.fileerrors,
+		    status.totfiles);
+        } else {
+	    sprintf(cnts, "(%d docs/%d files/%d errors) ",
+                    status.docsdone, status.filesdone, status.fileerrors);
+        }
 	msg += QString::fromUtf8(cnts) + " ";
     }
     string mf;int ecnt = 0;

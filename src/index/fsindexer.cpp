@@ -183,7 +183,6 @@ bool FsIndexer::index(int flags)
 #ifdef IDX_THREADS
 	PTMutexLocker locker(m_updater->m_mutex);
 #endif
-	m_updater->status.reset();
 	m_updater->status.dbtotdocs = m_db->docCnt();
     }
 
@@ -823,8 +822,14 @@ FsIndexer::processonefile(RclConfig *config,
 		if (m_updater->status.dbtotdocs < m_updater->status.docsdone)
 		    m_updater->status.dbtotdocs = m_updater->status.docsdone;
 		m_updater->status.fn = fn;
-		if (!doc.ipath.empty())
+		if (!doc.ipath.empty()) {
 		    m_updater->status.fn += "|" + doc.ipath;
+                } else {
+                    if (fis == FileInterner::FIError) {
+                        ++(m_updater->status.fileerrors);
+                    }
+                    ++(m_updater->status.filesdone);
+                }
 		if (!m_updater->update()) {
 		    return FsTreeWalker::FtwStop;
 		}
