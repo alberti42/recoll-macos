@@ -82,13 +82,17 @@
     <addaction name="fileEraseSearchHistoryAction"/>
     <addaction name="fileEraseDocHistoryAction"/>
     <addaction name="separator"/>
+    <addaction name="fileExitAction"/>
+   </widget>
+   <widget class="QMenu" name="viewMenu">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
     <addaction name="showMissingHelpers_Action"/>
     <addaction name="showActiveTypes_Action"/>
     <addaction name="actionShow_index_statistics"/>
     <addaction name="separator"/>
     <addaction name="toggleFullScreenAction"/>
-    <addaction name="separator"/>
-    <addaction name="fileExitAction"/>
    </widget>
    <widget class="QMenu" name="toolsMenu">
     <property name="title">
@@ -139,6 +143,7 @@
     <addaction name="actionSaveResultsAsCSV"/>
    </widget>
    <addaction name="fileMenu"/>
+   <addaction name="viewMenu"/>
    <addaction name="toolsMenu"/>
    <addaction name="menuResults"/>
    <addaction name="preferencesMenu"/>
@@ -190,7 +195,7 @@
   </action>
   <action name="showMissingHelpers_Action">
    <property name="text">
-    <string>&amp;Show missing helpers</string>
+    <string>Missing &amp;helpers</string>
    </property>
    <property name="name" stdset="0">
     <cstring>showMissingHelpers_Action</cstring>
@@ -198,7 +203,7 @@
   </action>
   <action name="showActiveTypes_Action">
    <property name="text">
-    <string>&amp;Show indexed types</string>
+    <string>Indexed &amp;MIME types</string>
    </property>
    <property name="name" stdset="0">
     <cstring>showActiveTypes_Action</cstring>
@@ -524,7 +529,7 @@
   </action>
   <action name="actionShow_index_statistics">
    <property name="text">
-    <string>Show index statistics</string>
+    <string>Index &amp;statistics</string>
    </property>
   </action>
  </widget>

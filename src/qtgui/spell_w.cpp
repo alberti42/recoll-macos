@@ -45,6 +45,7 @@
 #include "rclhelp.h"
 #include "wasatorcl.h"
 #include "execmd.h"
+#include "indexer.h"
 
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"
@@ -292,18 +293,47 @@ void SpellW::showStats()
 
     resTW->setRowCount(row+1);
     resTW->setItem(row, 0,
-		   new QTableWidgetItem(tr("Smallest document length")));
+		   new QTableWidgetItem(tr("Smallest document length (terms)")));
     resTW->setItem(row++, 1, new QTableWidgetItem(
 		       QString::number(res.mindoclen)));
 
     resTW->setRowCount(row+1);
     resTW->setItem(row, 0,
-		   new QTableWidgetItem(tr("Longest document length")));
+		   new QTableWidgetItem(tr("Longest document length (terms)")));
     resTW->setItem(row++, 1, new QTableWidgetItem(
 		       QString::number(res.maxdoclen)));
 
     if (!theconfig)
 	return;
+
+    ConfSimple cs(theconfig->getIdxStatusFile().c_str(), 1);
+    DbIxStatus st;
+    cs.get("fn", st.fn);
+    cs.get("docsdone", &st.docsdone);
+    cs.get("filesdone", &st.filesdone);
+    cs.get("fileerrors", &st.fileerrors);
+    cs.get("dbtotdocs", &st.dbtotdocs);
+    cs.get("totfiles", &st.totfiles);
+
+    resTW->setRowCount(row+1);
+    resTW->setItem(row, 0,
+		   new QTableWidgetItem(tr("Results from last indexing:")));
+    resTW->setItem(row++, 1, new QTableWidgetItem(""));
+    resTW->setRowCount(row+1);
+    resTW->setItem(row, 0,
+		   new QTableWidgetItem(tr("  Documents created/updated")));
+    resTW->setItem(row++, 1,
+                   new QTableWidgetItem(QString::number(st.docsdone)));
+    resTW->setRowCount(row+1);
+    resTW->setItem(row, 0,
+		   new QTableWidgetItem(tr("  Files tested")));
+    resTW->setItem(row++, 1,
+                   new QTableWidgetItem(QString::number(st.filesdone)));
+    resTW->setRowCount(row+1);
+    resTW->setItem(row, 0,
+		   new QTableWidgetItem(tr("  Unindexed files")));
+    resTW->setItem(row++, 1,
+                   new QTableWidgetItem(QString::number(st.fileerrors)));
 
     baseWordLE->setText(QString::fromLocal8Bit(theconfig->getDbDir().c_str()));
 
@@ -348,7 +378,7 @@ void SpellW::showStats()
     for (multimap<int, string>::const_reverse_iterator it = mtbycnt.rbegin();
 	 it != mtbycnt.rend(); it++) {
 	resTW->setRowCount(row+1);
-	resTW->setItem(row, 0, new QTableWidgetItem(
+	resTW->setItem(row, 0, new QTableWidgetItem(QString("    ") +
 			   QString::fromUtf8(it->second.c_str())));
 	resTW->setItem(row++, 1, new QTableWidgetItem(
 			   QString::number(it->first)));
