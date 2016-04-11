@@ -47,7 +47,7 @@ application/x-lzma = uncompress python rcluncomp.py 7z %f %t
 # each filter, see the exemples below (ie: msword)
 [index]
 application/msword = execm python rcldoc.py
-application/pdf = execm python rclmpdf.py
+application/pdf = execm python rclpdf.py
 application/vnd.ms-excel = execm python rclxls.py
 application/vnd.ms-powerpoint = execm python rclppt.py
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
