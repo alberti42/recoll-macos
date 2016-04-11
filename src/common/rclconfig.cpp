@@ -120,6 +120,7 @@ bool RclConfig::isDefaultConfig() const
 {
     string defaultconf = path_cat(path_homedata(),
                                   path_defaultrecollconfsubdir());
+    path_catslash(defaultconf);
     string specifiedconf = path_canon(m_confdir);
     path_catslash(specifiedconf);
     return !defaultconf.compare(specifiedconf);
