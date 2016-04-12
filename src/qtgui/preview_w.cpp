@@ -832,7 +832,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
         // If the command wants a file but this is not a file url, or
         // there is an ipath that it won't understand, we need a temp file:
-        theconfig->setKeyDir(path_getfather(fn));
+        theconfig->setKeyDir(fn.empty() ? "" : path_getfather(fn));
         if (fn.empty() || !idoc.ipath.empty()) {
             TempFile temp = lthr.tmpimg;
             if (temp) {
