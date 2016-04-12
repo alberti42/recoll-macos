@@ -24,14 +24,14 @@
  * specified maximum size, then is rewritten from the start,
  * overwriting older entries.
  *
- * Data objects inside the cache each have two parts: a data segment and an 
+ * Data objects inside the cache each have two parts: a data segment and an
  * attribute (metadata) dictionary.
  * They are named using the same identifiers that are used inside the Recoll
  * index (the UDI).
  *
  * Inside the file. the UDIs are stored inside the entry dictionary
  * under the key "udi".
- * 
+ *
  * It is assumed that the dictionary are small (they are routinely read/parsed)
  *
  */
@@ -40,26 +40,23 @@
 
 #include <string>
 
-#ifndef NO_NAMESPACES
-using std::string;
-#endif
-
 class ConfSimple;
 class CirCacheInternal;
 
 class CirCache {
 public:
-    CirCache(const string& dir);
+    CirCache(const std::string& dir);
     virtual ~CirCache();
 
-    virtual string getReason();
+    virtual std::string getReason();
 
-    enum CreateFlags {CC_CRNONE=0, 
-		      // Unique entries: erase older instances when same udi
-		      // is stored.
-		      CC_CRUNIQUE=1,
-		      // Truncate file (restart from scratch).
-		      CC_CRTRUNCATE = 2};
+    enum CreateFlags {CC_CRNONE = 0,
+                      // Unique entries: erase older instances when same udi
+                      // is stored.
+                      CC_CRUNIQUE = 1,
+                      // Truncate file (restart from scratch).
+                      CC_CRTRUNCATE = 2
+                     };
     virtual bool create(off_t maxsize, int flags);
 
     enum OpMode {CC_OPREAD, CC_OPWRITE};
@@ -67,15 +64,15 @@ public:
 
     virtual std::string getpath();
 
-    virtual bool get(const string& udi, string& dic, string& data, 
-                     int instance = -1);
+    virtual bool get(const std::string& udi, std::string& dic,
+                     std::string& data, int instance = -1);
 
     // Note: the dicp MUST have an udi entry
     enum PutFlags {NoCompHint = 1};
-    virtual bool put(const string& udi, const ConfSimple *dicp, 
-                     const string& data, unsigned int flags = 0);
+    virtual bool put(const std::string& udi, const ConfSimple *dicp,
+                     const std::string& data, unsigned int flags = 0);
 
-    virtual bool erase(const string& udi);
+    virtual bool erase(const std::string& udi);
 
     /** Walk the archive.
      *
@@ -86,10 +83,11 @@ public:
     /** Back to oldest */
     virtual bool rewind(bool& eof);
     /** Get entry under cursor */
-    virtual bool getCurrent(string& udi, string& dic, string& data);
+    virtual bool getCurrent(std::string& udi, std::string& dic,
+                            std::string& data);
     /** Get current entry udi only. Udi can be empty (erased empty), caller
      * should call again */
-    virtual bool getCurrentUdi(string& udi);
+    virtual bool getCurrentUdi(std::string& udi);
     /** Skip to next. (false && !eof) -> error, (false&&eof)->EOF. */
     virtual bool next(bool& eof);
 
@@ -98,10 +96,12 @@ public:
 
 protected:
     CirCacheInternal *m_d;
-    string m_dir;
+    std::string m_dir;
 private:
     CirCache(const CirCache&) {}
-    CirCache& operator=(const CirCache&) {return *this;}
+    CirCache& operator=(const CirCache&) {
+        return *this;
+    }
 };
 
 #endif /* _circache_h_included_ */
