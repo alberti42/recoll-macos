@@ -64,6 +64,7 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
         vector<string> cmd;
         string scommand;
         if (cfg->getConfParam("systemfilecommand", scommand)) {
+            LOGDEB2(("mimetype: syscmd from config: %s\n", scommand.c_str()));
             stringToStrings(scommand, cmd);
             string exe;
             if (cmd.empty()) {
@@ -74,6 +75,10 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
                 cmd[0] = exe;
             }
             cmd.push_back(fn);
+        } else {
+            LOGDEB(("mimetype:systemfilecommand not found, using %s\n",
+                    stringsToString(tradfilecmd).c_str()));
+            cmd = tradfilecmd;
         }
 
 	string result;
