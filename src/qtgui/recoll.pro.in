@@ -41,6 +41,7 @@ HEADERS += \
         systray.h \
         uiprefs_w.h \
         viewaction_w.h \
+        webcache.h \
         widgets/editdialog.h \
         widgets/listdialog.h \
         widgets/qxtconfirmationmessage.h
@@ -78,6 +79,7 @@ SOURCES += \
         systray.cpp \
         uiprefs_w.cpp \
         viewaction_w.cpp \
+        webcache.cpp \
         widgets/qxtconfirmationmessage.cpp \
         xmltosd.cpp
 
@@ -98,7 +100,8 @@ FORMS   = \
         ssearchb.ui \
         uiprefs.ui \
         viewaction.ui \
-
+        webcache.ui
+        
 RESOURCES = recoll.qrc
 
 unix {

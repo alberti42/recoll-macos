@@ -1,0 +1,61 @@
+/* Copyright (C) 2016 J.F.Dockes
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program; if not, write to the
+ *   Free Software Foundation, Inc.,
+ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+#ifndef _WEBCACHE_H_INCLUDED_
+#define _WEBCACHE_H_INCLUDED_
+#include "autoconfig.h"
+
+#include <vector>
+#include <string>
+#include MEMORY_INCLUDE
+
+#include "ui_webcache.h"
+
+#include <QAbstractTableModel>
+
+class WebcacheModelInternal;
+
+class WebcacheModel : public QAbstractTableModel {
+    Q_OBJECT;
+
+public:
+    WebcacheModel(QObject *parent = 0);
+
+    // Reimplemented methods
+    virtual int rowCount (const QModelIndex& = QModelIndex()) const;
+    virtual int columnCount(const QModelIndex& = QModelIndex()) const;
+    virtual QVariant headerData (int col, Qt::Orientation orientation, 
+				 int role = Qt::DisplayRole) const;
+    virtual QVariant data(const QModelIndex& index, 
+			   int role = Qt::DisplayRole ) const;
+public slots:
+    void setSearchFilter(const QString&);
+    
+private:
+    WebcacheModelInternal *m;
+};
+
+class WebcacheEdit : public QDialog, public Ui::Webcache {
+    Q_OBJECT;
+
+public:
+    WebcacheEdit(QWidget *parent);
+private:
+    WebcacheModel *m_model;
+};
+
+
+#endif /* _WEBCACHE_H_INCLUDED_ */

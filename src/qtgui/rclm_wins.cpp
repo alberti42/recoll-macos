@@ -30,6 +30,7 @@
 #include "fragbuts.h"
 #include "specialindex.h"
 #include "rclmain_w.h"
+#include "webcache.h"
 
 using namespace std;
 
@@ -71,6 +72,19 @@ void RclMain::showSpellDialog()
 	// Close and reopen, in hope that makes us visible...
 	spellform->close();
         spellform->show();
+    }
+}
+
+void RclMain::showWebcacheDialog()
+{
+    if (webcache == 0) {
+	webcache = new WebcacheEdit(0);
+	connect(new QShortcut(quitKeySeq, webcache), SIGNAL (activated()), 
+		this, SLOT (fileExit()));
+	webcache->show();
+    } else {
+	webcache->close();
+        webcache->show();
     }
 }
 

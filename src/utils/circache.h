@@ -64,8 +64,9 @@ public:
 
     virtual std::string getpath();
 
+    // Set data to 0 if you just want the header
     virtual bool get(const std::string& udi, std::string& dic,
-                     std::string& data, int instance = -1);
+                     std::string *data = 0, int instance = -1);
 
     // Note: the dicp MUST have an udi entry
     enum PutFlags {NoCompHint = 1};
@@ -84,7 +85,7 @@ public:
     virtual bool rewind(bool& eof);
     /** Get entry under cursor */
     virtual bool getCurrent(std::string& udi, std::string& dic,
-                            std::string& data);
+                            std::string *data = 0);
     /** Get current entry udi only. Udi can be empty (erased empty), caller
      * should call again */
     virtual bool getCurrentUdi(std::string& udi);
@@ -93,6 +94,18 @@ public:
 
     /* Debug. This writes the entry headers to stdout */
     virtual bool dump();
+
+    /* Utility: append all entries from sdir to ddir. 
+     * 
+     * This does not need to be a member at all, just using the namespace here.
+     *
+     * @param ddir destination circache (must be previously created
+     *     with appropriate size)
+     * @param sdir source circache
+     * @ret number of entries copied or -a
+     */
+    static int append(const std::string ddir, const std::string& sdir,
+                      std::string *reason = 0);
 
 protected:
     CirCacheInternal *m_d;

@@ -350,6 +350,8 @@ void RclMain::init()
 	    this, SLOT(showAdvSearchDialog()));
     connect(toolsSpellAction, SIGNAL(triggered()), 
 	    this, SLOT(showSpellDialog()));
+    connect(actionWebcache_Editor, SIGNAL(triggered()),
+            this, SLOT(showWebcacheDialog()));
     connect(actionQuery_Fragments, SIGNAL(triggered()), 
 	    this, SLOT(showFragButs()));
     connect(actionSpecial_Indexing, SIGNAL(triggered()), 

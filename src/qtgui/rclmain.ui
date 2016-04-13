@@ -103,6 +103,7 @@
     <addaction name="toolsSpellAction"/>
     <addaction name="actionShowQueryDetails"/>
     <addaction name="actionQuery_Fragments"/>
+    <addaction name="actionWebcache_Editor"/>
    </widget>
    <widget class="QMenu" name="preferencesMenu">
     <property name="title">
@@ -530,6 +531,11 @@
   <action name="actionShow_index_statistics">
    <property name="text">
     <string>Index &amp;statistics</string>
+   </property>
+  </action>
+  <action name="actionWebcache_Editor">
+   <property name="text">
+    <string>Webcache Editor</string>
    </property>
   </action>
  </widget>

@@ -42,6 +42,7 @@ class CronToolW;
 class RTIToolW;
 class FragButs;
 class SpecIdxW;
+class WebcacheEdit;
 
 #include "ui_rclmain.h"
 
@@ -73,6 +74,7 @@ public:
           fragbuts(0),
           specidx(0),
 	  periodictimer(0),
+          webcache(0),
 	  restable(0),
 	  displayingTable(0),
           m_idNoStem(0),
@@ -122,6 +124,7 @@ public slots:
     virtual void previewClosed(Preview *w);
     virtual void showAdvSearchDialog();
     virtual void showSpellDialog();
+    virtual void showWebcacheDialog();
     virtual void showIndexStatistics();
     virtual void showFragButs();
     virtual void showSpecIdx();
@@ -200,6 +203,7 @@ private:
     FragButs       *fragbuts;
     SpecIdxW       *specidx;
     QTimer         *periodictimer;
+    WebcacheEdit   *webcache;
     ResTable       *restable;
     bool            displayingTable;
     QAction        *m_idNoStem;

@@ -62,7 +62,7 @@ bool BeagleQueueCache::getFromCache(const string& udi, Rcl::Doc &dotdoc,
 	LOGERR(("BeagleQueueCache::getFromCache: cache is null\n"));
 	return false;
     }
-    if (!m_cache->get(udi, dict, data)) {
+    if (!m_cache->get(udi, dict, &data)) {
 	LOGDEB(("BeagleQueueCache::getFromCache: get failed\n"));
 	return false;
     }
