@@ -29,6 +29,11 @@
 #endif
 
 #include <QDebug>
+#include <QSettings>
+#include <QCloseEvent>
+#include <QShortcut>
+#include <QMenu>
+#include <QClipboard>
 
 #include "recoll.h"
 #include "webcache.h"
@@ -58,10 +63,17 @@ public:
 WebcacheModel::WebcacheModel(QObject *parent)
     : QAbstractTableModel(parent), m(new WebcacheModelInternal())
 {
-    qDebug() << "WebcacheModel::WebcacheModel()";
+    //qDebug() << "WebcacheModel::WebcacheModel()";
+    reload();
+}
+
+void WebcacheModel::reload()
+{
     m->cache =
         STD_SHARED_PTR<BeagleQueueCache>(new BeagleQueueCache(theconfig));
-
+    m->all.clear();
+    m->disp.clear();
+    
     if (m->cache) {
         bool eof;
         m->cache->cc()->rewind(eof);
@@ -80,6 +92,21 @@ WebcacheModel::WebcacheModel(QObject *parent)
                 break;
         }
     }
+    emit dataChanged(createIndex(0,0,0), createIndex(1, m->all.size(),0));
+}
+
+bool WebcacheModel::deleteIdx(unsigned int idx)
+{
+    if (idx > m->disp.size() || !m->cache)
+        return false;
+    return m->cache->cc()->erase(m->disp[idx].udi, true);
+}
+
+string WebcacheModel::getURL(unsigned int idx)
+{
+    if (idx > m->disp.size() || !m->cache)
+        return string();
+    return m->disp[idx].url;
 }
 
 int WebcacheModel::rowCount(const QModelIndex&) const
@@ -181,15 +208,120 @@ void WebcacheModel::setSearchFilter(const QString& _txt)
     emit dataChanged(createIndex(0,0,0), createIndex(1, m->all.size(),0));
 }
 
+static const int ROWHEIGHTPAD = 2;
+static const char *cwnm = "/Recoll/prefs/webcachecolw";
+static const char *wwnm = "/Recoll/prefs/webcachew";
+static const char *whnm = "/Recoll/prefs/webcacheh";
+static const QKeySequence closeKS(Qt::ControlModifier+Qt::Key_W);
 
 WebcacheEdit::WebcacheEdit(QWidget *parent)
     : QDialog(parent)
 {
-    qDebug() << "WebcacheEdit::WebcacheEdit()";
+    //qDebug() << "WebcacheEdit::WebcacheEdit()";
     setupUi(this);
     m_model = new WebcacheModel(this);
-    webcacheTV->setModel(m_model);
+    tableview->setModel(m_model);
+    tableview->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tableview->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    tableview->setContextMenuPolicy(Qt::CustomContextMenu);
+    tableview->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    
+    QSettings settings;
+    QStringList wl;
+    wl = settings.value(cwnm).toStringList();
+    QHeaderView *header = tableview->horizontalHeader();
+    if (header) {
+	if (int(wl.size()) == header->count()) {
+	    for (int i = 0; i < header->count(); i++) {
+		header->resizeSection(i, wl[i].toInt());
+	    }
+	}
+    }
+    connect(header, SIGNAL(sectionResized(int,int,int)),
+            this, SLOT(saveColState()));
+
+    header = tableview->verticalHeader();
+    if (header) {
+	header->setDefaultSectionSize(QApplication::fontMetrics().height() + 
+				      ROWHEIGHTPAD);
+    }
+
+    int width = settings.value(wwnm, 0).toInt();
+    int height = settings.value(whnm, 0).toInt();
+    if (width && height) {
+        resize(QSize(width, height));
+    }
+
     connect(searchLE, SIGNAL(textEdited(const QString&)),
             m_model, SLOT(setSearchFilter(const QString&)));
+    connect(new QShortcut(closeKS, this), SIGNAL (activated()), 
+            this, SLOT (close()));
+    connect(tableview, SIGNAL(customContextMenuRequested(const QPoint&)),
+	    this, SLOT(createPopupMenu(const QPoint&)));
+
 }
 
+void WebcacheEdit::createPopupMenu(const QPoint& pos)
+{
+    int selsz = tableview->selectionModel()->selectedRows().size();
+    if (selsz <= 0) {
+        return;
+    }
+    QMenu *popup = new QMenu(this);
+    if (selsz == 1) {
+        popup->addAction(tr("Copy URL"), this, SLOT(copyURL()));
+    }
+    popup->addAction(tr("Delete selection"), this, SLOT(deleteSelected()));
+        
+    popup->popup(tableview->mapToGlobal(pos));
+}
+
+void WebcacheEdit::deleteSelected()
+{
+    QModelIndexList selection = tableview->selectionModel()->selectedRows();
+    for (int i = 0; i < selection.size(); i++) {
+        m_model->deleteIdx(selection[i].row());
+    }
+    m_model->reload();
+    m_model->setSearchFilter(searchLE->text());
+    tableview->clearSelection();
+}
+
+void WebcacheEdit::copyURL()
+{
+    QModelIndexList selection = tableview->selectionModel()->selectedRows();
+    if (selection.size() != 1)
+        return;
+    string url = m_model->getURL(selection[0].row());
+    if (!url.empty()) {
+        url =  url_encode(url, 7);
+        QApplication::clipboard()->setText(url.c_str(), 
+                                           QClipboard::Selection);
+        QApplication::clipboard()->setText(url.c_str(), 
+                                           QClipboard::Clipboard);
+    }
+}
+
+void WebcacheEdit::saveColState()
+{
+    //qDebug() << "void WebcacheEdit::saveColState()";
+    QHeaderView *header = tableview->horizontalHeader();
+    QStringList newwidths;
+    for (int vi = 0; vi < header->count(); vi++) {
+	int li = header->logicalIndex(vi);
+	newwidths.push_back(lltodecstr(header->sectionSize(li)).c_str());
+    }
+    
+    QSettings settings;
+    settings.setValue(cwnm, newwidths);
+}
+
+void WebcacheEdit::closeEvent(QCloseEvent *event)
+{
+    if (!isFullScreen()) {
+        QSettings settings;
+        settings.setValue(wwnm, width());
+        settings.setValue(whnm, height());
+    }
+    event->accept();
+}

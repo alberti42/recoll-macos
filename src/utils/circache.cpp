@@ -441,7 +441,8 @@ public:
         return true;
     }
 
-    bool writeEntryHeader(off_t offset, const EntryHeaderData& d) {
+    bool writeEntryHeader(off_t offset, const EntryHeaderData& d,
+                          bool eraseData = false) {
         if (m_fd < 0) {
             m_reason << "writeEntryHeader: not open ";
             return false;
@@ -458,6 +459,17 @@ public:
         if (write(m_fd, bf, CIRCACHE_HEADER_SIZE) !=  CIRCACHE_HEADER_SIZE) {
             m_reason << "CirCache::weh: write failed. errno " << errno;
             return false;
+        }
+        if (eraseData == true) {
+            if (d.dicsize || d.datasize) {
+                m_reason << "CirCache::weh: erase requested but not empty";
+                return false;
+            }
+            string buf(d.padsize, ' ');
+            if (write(m_fd, buf.c_str(), d.padsize) != d.padsize) {
+                m_reason << "CirCache::weh: write failed. errno " << errno;
+                return false;
+            }
         }
         return true;
     }
@@ -928,7 +940,7 @@ bool CirCache::get(const string& udi, string& dic, string *data, int instance)
     return bret;
 }
 
-bool CirCache::erase(const string& udi)
+bool CirCache::erase(const string& udi, bool reallyclear)
 {
     if (m_d == 0) {
         LOGERR(("CirCache::erase: null data\n"));
@@ -960,21 +972,21 @@ bool CirCache::erase(const string& udi)
     }
 
     for (vector<off_t>::iterator it = ofss.begin(); it != ofss.end(); it++) {
-        LOGDEB(("CirCache::erase: reading at %lu\n", (unsigned long)*it));
+        LOGDEB2(("CirCache::erase: reading at %lu\n", (unsigned long)*it));
         EntryHeaderData d;
         string fudi;
         if (!m_d->readHUdi(*it, d, fudi)) {
             return false;
         }
-        LOGDEB(("CirCache::erase: found fudi [%s]\n", fudi.c_str()));
+        LOGDEB2(("CirCache::erase: found fudi [%s]\n", fudi.c_str()));
         if (!fudi.compare(udi)) {
             EntryHeaderData nd;
             nd.padsize = d.dicsize + d.datasize + d.padsize;
-            LOGDEB(("CirCache::erase: rewriting at %lu\n", (unsigned long)*it));
+            LOGDEB2(("CirCache::erase: rewrite at %lu\n", (unsigned long)*it));
             if (*it == m_d->m_nheadoffs) {
                 m_d->m_npadsize = nd.padsize;
             }
-            if (!m_d->writeEntryHeader(*it, nd)) {
+            if (!m_d->writeEntryHeader(*it, nd, reallyclear)) {
                 LOGERR(("CirCache::erase: write header failed\n"));
                 return false;
             }
@@ -1050,8 +1062,8 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
         uLong len = compressBound(static_cast<uLong>(data.size()));
         char *bf = compbuf.setsize(len);
         if (bf != 0 &&
-                compress((Bytef*)bf, &len, (Bytef*)data.c_str(), static_cast<uLong>(data.size()))
-                == Z_OK) {
+                compress((Bytef*)bf, &len, (Bytef*)data.c_str(),
+                         static_cast<uLong>(data.size())) == Z_OK) {
             if (float(len) < 0.9 * float(data.size())) {
                 // bf is local but it's our static buffer address
                 datap = bf;

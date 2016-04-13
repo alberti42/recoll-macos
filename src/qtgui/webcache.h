@@ -27,6 +27,7 @@
 #include <QAbstractTableModel>
 
 class WebcacheModelInternal;
+class QCloseEvent;
 
 class WebcacheModel : public QAbstractTableModel {
     Q_OBJECT;
@@ -41,9 +42,13 @@ public:
 				 int role = Qt::DisplayRole) const;
     virtual QVariant data(const QModelIndex& index, 
 			   int role = Qt::DisplayRole ) const;
+    bool deleteIdx(unsigned int idx);
+    std::string getURL(unsigned int idx);
+    void reload();
+
 public slots:
     void setSearchFilter(const QString&);
-    
+
 private:
     WebcacheModelInternal *m;
 };
@@ -53,6 +58,13 @@ class WebcacheEdit : public QDialog, public Ui::Webcache {
 
 public:
     WebcacheEdit(QWidget *parent);
+public slots:
+    void saveColState();
+    void createPopupMenu(const QPoint&);
+    void deleteSelected();
+    void copyURL();
+protected:
+    void closeEvent(QCloseEvent *);
 private:
     WebcacheModel *m_model;
 };

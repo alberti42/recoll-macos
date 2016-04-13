@@ -73,7 +73,7 @@ public:
     virtual bool put(const std::string& udi, const ConfSimple *dicp,
                      const std::string& data, unsigned int flags = 0);
 
-    virtual bool erase(const std::string& udi);
+    virtual bool erase(const std::string& udi, bool reallyclear = false);
 
     /** Walk the archive.
      *
