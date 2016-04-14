@@ -485,7 +485,7 @@ qtgui/xmltosd.cpp \
 qtgui/xmltosd.h \
 \
 python/README.txt \
-python/recoll/Makefile \
+python/recoll/Makefile.in \
 python/recoll/pyrclextract.cpp \
 python/recoll/pyrecoll.cpp \
 python/recoll/pyrecoll.h \
@@ -641,7 +641,7 @@ dist_man1_MANS = doc/man/recoll.1 doc/man/recollq.1 doc/man/recollindex.1
 dist_man5_MANS = doc/man/recoll.conf.5
 
 dist-hook:
-	modified=`hg status | grep -v /$(distdir)/`; \
+	modified=`hg status | grep -v /$(distdir)/|grep -v debianunitysco`; \
 	if test ! -z "$$modified"; then \
             echo Local directory is modified: $$modified ; exit 1; fi
 	hg tag -f -m "Release $(VERSION) tagged" RECOLL-$(VERSION)
