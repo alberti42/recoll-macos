@@ -23,6 +23,8 @@
 #include "mimehandler.h"
 #include "execmd.h"
 
+class HandlerTimeout {};
+    
 /** 
  * Turn external document into internal one by executing an external filter.
  *

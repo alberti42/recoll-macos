@@ -60,7 +60,7 @@ void MEAdv::newData(int n)
         time(0L) - m_start > m_filtermaxseconds) {
         LOGERR(("MimeHandlerExec: filter timeout (%d S)\n",
                 m_filtermaxseconds));
-        CancelCheck::instance().setCancel();
+        throw HandlerTimeout();
     }
     // If a cancel request was set by the signal handler (or by us
     // just above), this will raise an exception. Another approach
@@ -117,6 +117,9 @@ bool MimeHandlerExec::next_document()
     int status;
     try {
         status = mexec.doexec(cmd, myparams, 0, &output);
+    } catch (HandlerTimeout) {
+	LOGERR(("MimeHandlerExec: handler timeout\n"));
+        status = 0x110f;
     } catch (CancelExcept) {
 	LOGERR(("MimeHandlerExec: cancelled\n"));
         status = 0x110f;

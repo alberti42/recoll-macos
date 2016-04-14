@@ -228,8 +228,12 @@ bool MimeHandlerExecMultiple::next_document()
                 m_cmd.zapChild();
                 return false;
             }
+        } catch (HandlerTimeout) {
+            LOGINFO(("MHExecMultiple: timeout\n"));
+            m_cmd.zapChild();
+            return false;
         } catch (CancelExcept) {
-            LOGINFO(("MHExecMultiple: timeout or interrupt\n"));
+            LOGINFO(("MHExecMultiple: interrupt\n"));
             m_cmd.zapChild();
             return false;
         }
