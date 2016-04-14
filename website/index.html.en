@@ -98,6 +98,11 @@
       
       <dl>
 
+        <dt>2016-04-14</dt><dd>Release 1.22.0 is now available from
+          the download area. The binary packages should wait until
+          enough brave souls have tested it. See
+          the <a href="release-1.22.html">the release notes</a>.</dd>
+
         <dt>2016-04-07</dt><dd>Release 1.21.6  adds KDE5 compatibility
           for the KIO slave.</dd>
         

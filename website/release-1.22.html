@@ -59,16 +59,44 @@
 
       <ul>
 
-      2015-11-17:
-      - synonyms
-      - python3 compat for most filters. Appropriate shebang lines.
-      - Windows port
-      - New build system
-      - Filters converted to python mexec -> faster in most cases.
-      - Make dehyphenate (co-worker->coworker) optional
-      
+        <li>The main "feature" in recoll 1.22 is that it has
+          a <a href="pages/recoll-windows.html">Microsoft Windows
+            version</a>. This is has been tested on Windows 7 and 
+          Windows 10, and it works mostly like the Unix version, with
+          the notable exceptions that it has no real-time mode (need to
+          start indexing by hand from the GUI, or arrange something with
+          the command-line recollindex.exe). Also there are a few very
+          Unix-y file types which are not processed on Windows, and the
+          indexer is single-threaded.</li>
 
+        <li>Synonyms: users can define term synonyms groups in
+          ordinary text files. They are used only at query times to
+          expand a query to synonym terms.
+          <a href="http://www.lesbonscomptes.com/recoll/usermanual/webhelp/docs/RCL.SEARCH.SYNONYMS.html">
+            More details</a>.</li>
+        
+        <li>Most input handlers are now compatible with
+          Python3. Actually the only ones which are not are kept back by
+          the library they use. Also most external handlers are now
+          persistent, and quite a few shell-script have been converted
+          to Python for use on Windows.</li> 
+
+        <li>The build system has been converted to use the autotools in
+          a fairly standard way. The Windows build is based on Qt
+          Creator and MinGW.</li>
+
+        <li>Make dehyphenation (co-worker->coworker in addition to the
+          normal terms) optional, active by default.</li>
+
+        <li>For people using the Firefox web page indexer add-on: a
+          new tool in the GUI to list and delete entries from the Web
+          cache.</li>
+      
+        <li>Improved index statistics in the GUI, and improved display
+          while the indexer is working.</li>
+        
       </ul>
+
     </div>
   </body>
 </html>

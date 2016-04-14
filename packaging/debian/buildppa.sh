@@ -7,7 +7,7 @@
 RCLVERS=1.22.0
 LENSVERS=1.19.10.3543
 SCOPEVERS=1.20.2.4
-PPAVERS=1
+PPAVERS=3
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
@@ -41,7 +41,7 @@ check_recoll_orig()
 ####### QT4
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
-#series="precise trusty vivid"
+series="precise trusty utopic vivid wily xenial"
 series=trusty
 
 if test "X$series" != X ; then
@@ -70,7 +70,7 @@ for series in $series ; do
 done
 
 ### KIO
-series="precise trusty vivid"
+series="precise trusty utopic vivid wily xenial"
 series=
 
 debdir=debiankio
@@ -140,7 +140,7 @@ for series in $series ; do
 done
 
 ### Unity Scope
-series="trusty vivid"
+series="trusty utopic vivid wily xenial"
 series=
 
 debdir=debianunityscope
