@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Recoll"
-#define MyAppVersion "1.22.0-20160317"
+#define MyAppVersion "1.22.0-20160414"
 #define MyAppPublisher "Recoll.org"
 #define MyAppURL "http://www.recoll.org"
 #define MyAppExeName "recoll.exe"
@@ -19,7 +19,6 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 LicenseFile=C:\install\recoll\COPYING.txt
 OutputDir=C:\Temp
@@ -27,7 +26,11 @@ OutputBaseFilename=recoll-setup-{#MyAppVersion}
 SetupIconFile=C:\recoll\src\desktop\recoll.ico
 Compression=lzma
 SolidCompression=yes
-PrivilegesRequired=lowest
+;; Use either prv=adm and defaultdir={pf} or prv=lowest and defaultdir=userpf
+;PrivilegesRequired=lowest
+;DefaultDirName={userpf}\{#MyAppName}
+PrivilegesRequired=admin
+DefaultDirName={pf}\{#MyAppName}
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
