@@ -74,14 +74,15 @@ src/doc/user/usermanual.pdf
 src/filters/rclexecm.pyc
 src/filters/rcllatinclass.pyc
 src/recollindex
-src/recollq
-src/xadump
 src/kde/kioslave/kio_recoll/builddir
+src/python/recoll/Makefile
 src/python/recoll/build
 src/python/recoll/recoll/__init__.pyc
 src/python/recoll/setup.py
 src/python/samples/recollgui/rclmain.py
 src/python/samples/recollgui/rclmain.pyc
+src/recollq
+src/xadump
 src/qtgui/.moc/*
 src/qtgui/.obj/*
 src/qtgui/.ui/*
