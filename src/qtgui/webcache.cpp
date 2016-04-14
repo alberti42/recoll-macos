@@ -21,6 +21,10 @@
 #include MEMORY_INCLUDE
 #include UNORDERED_MAP_INCLUDE
 
+#ifdef _WIN32
+#define USING_STD_REGEX
+#endif
+
 #ifndef USING_STD_REGEX
 #include <sys/types.h>
 #include <regex.h>
@@ -99,7 +103,7 @@ void WebcacheModel::reload()
                 break;
         }
     }
-    emit dataChanged(createIndex(0,0,0), createIndex(1, m->all.size(),0));
+    emit dataChanged(createIndex(0,0), createIndex(1, m->all.size()));
 }
 
 bool WebcacheModel::deleteIdx(unsigned int idx)
@@ -194,9 +198,9 @@ void WebcacheModel::setSearchFilter(const QString& _txt)
         return;
     }
 #else
-    basic_regex exp;
+    basic_regex<char> exp;
     try {
-        exp = basic_regexp(txt, std::regex_constants::nosubs |
+        exp = basic_regex<char>(txt, std::regex_constants::nosubs |
                            std::regex_constants::extended);
     } catch(...) {
         return;
@@ -212,7 +216,7 @@ void WebcacheModel::setSearchFilter(const QString& _txt)
             // m->all[i].url.c_str();
         }
     }
-    emit dataChanged(createIndex(0,0,0), createIndex(1, m->all.size(),0));
+    emit dataChanged(createIndex(0,0), createIndex(1, m->all.size()));
 }
 
 static const int ROWHEIGHTPAD = 2;

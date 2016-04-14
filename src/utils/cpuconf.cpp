@@ -14,21 +14,21 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
 #ifndef TEST_CPUCONF
 
 #include "autoconfig.h"
+#include "cpuconf.h"
+
+#if defined(__gnu_linux__) 
 
 #include <stdlib.h>
-
-#include "cpuconf.h"
 #include "execmd.h"
 #include "smallut.h"
 
 using std::string;
 using std::vector;
 
-#if defined(__gnu_linux__) 
+// It seems that we could use sysconf as on macosx actually
 bool getCpuConf(CpuConf& conf)
 {
     vector<string> cmdv = create_vector<string>("sh")("-c")
@@ -56,8 +56,35 @@ bool getCpuConf(CpuConf& conf)
 	conf.ncpus = 1;
     return true;
 }
-//#elif defined(__APPLE__)
 
+#elif 0 && defined(_WIN32)
+// On windows, indexing is actually twice slower with threads enabled +
+// there is a bug and the process does not exit at the end of indexing.
+// Until these are solved, pretend there is only 1 cpu
+#include <thread>
+bool getCpuConf(CpuConf& cpus)
+{
+#if 0
+    // Native way
+    SYSTEM_INFO sysinfo;
+    GetSystemInfo( &sysinfo );
+    cpus.ncpus = sysinfo.dwNumberOfProcessors;
+#else
+    // c++11
+    cpus.ncpus = std::thread::hardware_concurrency();
+#endif
+    return true;
+}
+
+#elif defined(__APPLE__)
+
+#include <unistd.h>
+bool getCpuConf(CpuConf& cpus)
+{
+    cpus.ncpus = sysconf( _SC_NPROCESSORS_ONLN );
+    return true;
+}
+        
 #else // Any other system
 
 // Generic, pretend there is one

@@ -45,6 +45,7 @@ HEADERS += \
         systray.h \
         uiprefs_w.h \
         viewaction_w.h \
+        webcache.h
 
 SOURCES += \
         advsearch_w.cpp \
@@ -79,6 +80,7 @@ SOURCES += \
         systray.cpp \
         uiprefs_w.cpp \
         viewaction_w.cpp \
+        webcache.cpp \
         widgets/qxtconfirmationmessage.cpp \
         xmltosd.cpp
 
@@ -99,6 +101,7 @@ FORMS   = \
         ssearchb.ui \
         uiprefs.ui \
         viewaction.ui \
+        webcache.ui
 
 RESOURCES = recoll.qrc
 

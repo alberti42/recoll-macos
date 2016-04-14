@@ -337,7 +337,9 @@ RclConfig *recollinit(RclInitFlags flags,
     // Keep threads init behind log init, but make sure it's done before
     // we do the vfork choice ! The latter is not used any more actually, 
     // we always use vfork except if forbidden by config.
-    config->initThrConf();
+    if ((flags & RCLINIT_IDX)) {
+        config->initThrConf();
+    }
 
     bool novfork;
     config->getConfParam("novfork", &novfork);

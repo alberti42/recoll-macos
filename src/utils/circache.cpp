@@ -466,7 +466,7 @@ public:
                 return false;
             }
             string buf(d.padsize, ' ');
-            if (write(m_fd, buf.c_str(), d.padsize) != d.padsize) {
+            if (write(m_fd, buf.c_str(), d.padsize) != (ssize_t)d.padsize) {
                 m_reason << "CirCache::weh: write failed. errno " << errno;
                 return false;
             }
