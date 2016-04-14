@@ -273,7 +273,7 @@ PicStatic: $(librecoll_la_OBJECTS)
 	rm -f .libs/librecoll.a
 	rm -f .libs/librecoll.so
 	libtool --mode=link gcc -g -O -o librecoll.la \
-                $(librecoll_la_OBJECTS)
+		$(librecoll_la_OBJECTS)
 
 bin_PROGRAMS = recollindex
 if MAKECMDLINE
@@ -345,8 +345,6 @@ qtgui/confgui/main.cpp \
 qtgui/crontool.cpp \
 qtgui/crontool.h \
 qtgui/crontool.ui \
-qtgui/editdialog.h \
-qtgui/editdialog.ui \
 qtgui/firstidx.h \
 qtgui/firstidx.ui \
 qtgui/fragbuts.cpp \
@@ -385,8 +383,6 @@ qtgui/images/sortparms.png \
 qtgui/images/spell.png \
 qtgui/images/table.png \
 qtgui/images/up.png \
-qtgui/listdialog.h \
-qtgui/listdialog.ui \
 qtgui/main.cpp \
 qtgui/mtpics/License_sidux.txt \
 qtgui/mtpics/README \
@@ -463,18 +459,28 @@ qtgui/specialindex.ui \
 qtgui/spell.ui \
 qtgui/spell_w.cpp \
 qtgui/spell_w.h \
-qtgui/ssearchb.ui \
 qtgui/ssearch_w.cpp \
 qtgui/ssearch_w.h \
+qtgui/ssearchb.ui \
 qtgui/systray.cpp \
 qtgui/systray.h \
+qtgui/ui_rclmain.h-4.5 \
 qtgui/uiprefs.ui \
 qtgui/uiprefs_w.cpp \
 qtgui/uiprefs_w.h \
-qtgui/ui_rclmain.h-4.5 \
 qtgui/viewaction.ui \
 qtgui/viewaction_w.cpp \
 qtgui/viewaction_w.h \
+qtgui/webcache.ui \
+qtgui/webcache.cpp \
+qtgui/webcache.h \
+qtgui/widgets/editdialog.h \
+qtgui/widgets/editdialog.ui \
+qtgui/widgets/listdialog.h \
+qtgui/widgets/listdialog.ui \
+qtgui/widgets/qxtconfirmationmessage.cpp \
+qtgui/widgets/qxtconfirmationmessage.h \
+qtgui/widgets/qxtglobal.h \
 qtgui/xmltosd.cpp \
 qtgui/xmltosd.h \
 \
@@ -564,7 +570,6 @@ filters/rclaptosidman \
 filters/rclaudio \
 filters/rclcheckneedretry.sh \
 filters/rclchm \
-filters/rclconfig.py \
 filters/rcldia \
 filters/rcldjvu.py \
 filters/rcldoc.py \
