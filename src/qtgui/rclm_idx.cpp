@@ -17,6 +17,7 @@
 #include "autoconfig.h"
 
 #include <signal.h>
+#include "safeunistd.h"
 
 #include <QMessageBox>
 #include <QTimer>
@@ -30,7 +31,7 @@
 
 using namespace std;
 
-void RclMain::idxStatus()
+void RclMain::updateIdxStatus()
 {
     ConfSimple cs(theconfig->getIdxStatusFile().c_str(), 1);
     QString msg = tr("Indexing in progress: ");
@@ -109,7 +110,7 @@ void RclMain::periodic100()
 	    // update/show status even if the status file did not
 	    // change (else the status line goes blank during
 	    // lengthy operations).
-	    idxStatus();
+	    updateIdxStatus();
 	}
     }
     // Update the "start/stop indexing" menu entry, can't be done from
@@ -124,7 +125,16 @@ void RclMain::periodic100()
 	periodictimer->setInterval(200);
     } else {
 	Pidfile pidfile(theconfig->getPidfile());
-	if (pidfile.open() == 0) {
+        pid_t pid = pidfile.open();
+        if (pid == getpid()) {
+            // Locked by me
+	    m_indexerState = IXST_NOTRUNNING;
+	    fileToggleIndexingAction->setText(tr("Index locked"));
+	    fileToggleIndexingAction->setEnabled(false);
+	    fileRebuildIndexAction->setEnabled(false);
+            actionSpecial_Indexing->setEnabled(false);
+	    periodictimer->setInterval(1000);
+        } else if (pid == 0) {
 	    m_indexerState = IXST_NOTRUNNING;
 	    fileToggleIndexingAction->setText(tr("Update &Index"));
 	    fileToggleIndexingAction->setEnabled(true);

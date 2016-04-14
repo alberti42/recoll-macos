@@ -303,7 +303,8 @@ void RclMain::init()
     sc = new QShortcut(seql, this);
     connect(sc, SIGNAL (activated()), sSearch, SLOT (takeFocus()));
 
-    connect(&m_watcher, SIGNAL(fileChanged(QString)), this, SLOT(idxStatus()));
+    connect(&m_watcher, SIGNAL(fileChanged(QString)),
+            this, SLOT(updateIdxStatus()));
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     connect(sSearch,
@@ -350,8 +351,12 @@ void RclMain::init()
 	    this, SLOT(showAdvSearchDialog()));
     connect(toolsSpellAction, SIGNAL(triggered()), 
 	    this, SLOT(showSpellDialog()));
+#ifdef _WIN32
+    actionWebcache_Editor->setEnabled(false);
+#else
     connect(actionWebcache_Editor, SIGNAL(triggered()),
             this, SLOT(showWebcacheDialog()));
+#endif
     connect(actionQuery_Fragments, SIGNAL(triggered()), 
 	    this, SLOT(showFragButs()));
     connect(actionSpecial_Indexing, SIGNAL(triggered()), 

@@ -77,15 +77,46 @@ void RclMain::showSpellDialog()
 
 void RclMain::showWebcacheDialog()
 {
+    switch (indexerState()) {
+    case RclMain::IXST_UNKNOWN:
+        QMessageBox::warning(0, "Recoll", tr("Unknown indexer state. "
+                                             "Can't access webcache file."));
+        return;
+    case RclMain::IXST_RUNNINGMINE:
+    case RclMain::IXST_RUNNINGNOTMINE:
+        QMessageBox::warning(0, "Recoll", tr("Indexer is running. "
+                                             "Can't access webcache file."));
+        return;
+    case RclMain::IXST_NOTRUNNING:
+        break;
+    }
+
+    if (!m_pidfile) {
+        m_pidfile = new Pidfile(theconfig->getPidfile());
+        if (m_pidfile->open() != 0) {
+            deleteZ(m_pidfile);
+            return;
+        }
+        if (m_pidfile->write_pid() != 0) {
+            deleteZ(m_pidfile);
+            return;
+        }
+    }
+    
     if (webcache == 0) {
-	webcache = new WebcacheEdit(0);
-	connect(new QShortcut(quitKeySeq, webcache), SIGNAL (activated()), 
+	webcache = new WebcacheEdit(this);
+        webcache->setAttribute(Qt::WA_DeleteOnClose);
+        connect(new QShortcut(quitKeySeq, webcache), SIGNAL (activated()), 
 		this, SLOT (fileExit()));
-	webcache->show();
-    } else {
-	webcache->close();
+        connect(webcache, SIGNAL(destroyed(QObject*)),
+                this, SLOT(onWebcacheDestroyed(QObject*)) );
         webcache->show();
     }
+}
+void RclMain::onWebcacheDestroyed(QObject *)
+{
+    deleteZ(m_pidfile);
+    webcache = 0;
 }
 
 void RclMain::showIndexStatistics()

@@ -34,12 +34,15 @@
 #include <QShortcut>
 #include <QMenu>
 #include <QClipboard>
+#include <QTimer>
+#include <QMessageBox>
 
 #include "recoll.h"
 #include "webcache.h"
 #include "beaglequeuecache.h"
 #include "circache.h"
 #include "conftree.h"
+#include "rclmain_w.h"
 
 using namespace std;
 
@@ -65,6 +68,10 @@ WebcacheModel::WebcacheModel(QObject *parent)
 {
     //qDebug() << "WebcacheModel::WebcacheModel()";
     reload();
+}
+WebcacheModel::~WebcacheModel()
+{
+    delete m;
 }
 
 void WebcacheModel::reload()
@@ -214,8 +221,8 @@ static const char *wwnm = "/Recoll/prefs/webcachew";
 static const char *whnm = "/Recoll/prefs/webcacheh";
 static const QKeySequence closeKS(Qt::ControlModifier+Qt::Key_W);
 
-WebcacheEdit::WebcacheEdit(QWidget *parent)
-    : QDialog(parent)
+WebcacheEdit::WebcacheEdit(RclMain *parent)
+    : QDialog(parent), m_recoll(parent), m_modified(false)
 {
     //qDebug() << "WebcacheEdit::WebcacheEdit()";
     setupUi(this);
@@ -271,7 +278,26 @@ void WebcacheEdit::createPopupMenu(const QPoint& pos)
     if (selsz == 1) {
         popup->addAction(tr("Copy URL"), this, SLOT(copyURL()));
     }
-    popup->addAction(tr("Delete selection"), this, SLOT(deleteSelected()));
+    if (m_recoll) {
+        RclMain::IndexerState ixstate = m_recoll->indexerState();
+        switch (ixstate) {
+        case RclMain::IXST_UNKNOWN:
+            QMessageBox::warning(0, "Recoll",
+                                 tr("Unknown indexer state. "
+                                    "Can't edit webcache file."));
+            break;
+        case RclMain::IXST_RUNNINGMINE:
+        case RclMain::IXST_RUNNINGNOTMINE:
+            QMessageBox::warning(0, "Recoll",
+                                 tr("Indexer is running. "
+                                    "Can't edit webcache file."));
+            break;
+        case RclMain::IXST_NOTRUNNING:
+            popup->addAction(tr("Delete selection"),
+                             this, SLOT(deleteSelected()));
+            break;
+        }
+    }
         
     popup->popup(tableview->mapToGlobal(pos));
 }
@@ -280,7 +306,9 @@ void WebcacheEdit::deleteSelected()
 {
     QModelIndexList selection = tableview->selectionModel()->selectedRows();
     for (int i = 0; i < selection.size(); i++) {
-        m_model->deleteIdx(selection[i].row());
+        if (m_model->deleteIdx(selection[i].row())) {
+            m_modified = true;
+        }
     }
     m_model->reload();
     m_model->setSearchFilter(searchLE->text());
@@ -318,6 +346,12 @@ void WebcacheEdit::saveColState()
 
 void WebcacheEdit::closeEvent(QCloseEvent *event)
 {
+    if (m_modified) {
+        QMessageBox::information(0, "Recoll",
+                                 tr("Webcache was modified, you will need "
+                                    "to run the indexer after closing this "
+                                    "window."));
+    }
     if (!isFullScreen()) {
         QSettings settings;
         settings.setValue(wwnm, width());

@@ -47,80 +47,84 @@ class WebcacheEdit;
 #include "ui_rclmain.h"
 
 namespace confgui {
-    class ConfIndexW;
+class ConfIndexW;
 }
 
 using confgui::ConfIndexW;
 
 class RclTrayIcon;
 
-class RclMain : public QMainWindow, public Ui::RclMainBase
-{
-    Q_OBJECT
+class RclMain : public QMainWindow, public Ui::RclMainBase {
+    Q_OBJECT;
 
 public:
-    enum  IndexerState {IXST_UNKNOWN, IXST_NOTRUNNING, 
-                        IXST_RUNNINGMINE, IXST_RUNNINGNOTMINE};
-    RclMain(QWidget * parent = 0) 
-	: QMainWindow(parent),
-	  curPreview(0),
-	  asearchform(0),
-	  uiprefs(0),
-	  indexConfig(0),
-	  indexSched(0),
-	  cronTool(0),
-	  rtiTool(0),
-	  spellform(0),
+    RclMain(QWidget * parent = 0)
+        : QMainWindow(parent),
+          curPreview(0),
+          asearchform(0),
+          uiprefs(0),
+          indexConfig(0),
+          indexSched(0),
+          cronTool(0),
+          rtiTool(0),
+          spellform(0),
           fragbuts(0),
           specidx(0),
-	  periodictimer(0),
+          periodictimer(0),
           webcache(0),
-	  restable(0),
-	  displayingTable(0),
+          restable(0),
+          displayingTable(0),
           m_idNoStem(0),
           m_idAllStem(0),
-          m_toolsTB(0), m_resTB(0), 
+          m_toolsTB(0), m_resTB(0),
           m_filtFRM(0), m_filtCMB(0), m_filtBGRP(0), m_filtMN(0),
-	  m_idxproc(0),
+          m_idxproc(0),
           m_idxkilled(false),
           m_catgbutvecidx(0),
-	  m_sortspecnochange(false),
-	  m_indexerState(IXST_UNKNOWN),
-	  m_queryActive(false),
-	  m_firstIndexing(false),
-	  m_searchIsSimple(false)
-    {
-	setupUi(this);
-	init();
+          m_sortspecnochange(false),
+          m_indexerState(IXST_UNKNOWN),
+          m_queryActive(false),
+          m_firstIndexing(false),
+          m_searchIsSimple(false),
+          m_pidfile(0) {
+        setupUi(this);
+        init();
     }
     ~RclMain() {}
+
     QString getQueryDescription();
 
     /** This is only called from main() to set an URL to be displayed (using
-	recoll as a doc extracter for embedded docs */
-    virtual void setUrlToView(const QString& u) {m_urltoview = u;}
+    recoll as a doc extracter for embedded docs */
+    virtual void setUrlToView(const QString& u) {
+        m_urltoview = u;
+    }
     /** Same usage: actually display the current urltoview */
     virtual void viewUrl();
 
-    bool lastSearchSimple() 
-    {
-	return m_searchIsSimple;
+    bool lastSearchSimple() {
+        return m_searchIsSimple;
     }
 
     // Takes copies of the args instead of refs. Lazy and safe.
     void newDupsW(const Rcl::Doc doc, const std::vector<Rcl::Doc> dups);
 
-protected:
-    virtual void showEvent(QShowEvent *);
+    enum  IndexerState {IXST_UNKNOWN, IXST_NOTRUNNING,
+                        IXST_RUNNINGMINE, IXST_RUNNINGNOTMINE};
 
+    IndexerState indexerState() const {
+        return m_indexerState;
+    }
+
+                            
 public slots:
     virtual void fileExit();
-    virtual void idxStatus();
     virtual void periodic100();
     virtual void toggleIndexing();
     virtual void rebuildIndex();
     virtual void specialIndex();
-    virtual void startSearch(STD_SHARED_PTR<Rcl::SearchData> sdata, bool issimple);
+    virtual void startSearch(STD_SHARED_PTR<Rcl::SearchData> sdata,
+                             bool issimple);
     virtual void previewClosed(Preview *w);
     virtual void showAdvSearchDialog();
     virtual void showSpellDialog();
@@ -153,8 +157,8 @@ public slots:
     virtual void showSnippets(Rcl::Doc);
     virtual void startPreview(int docnum, Rcl::Doc doc, int keymods);
     virtual void startPreview(Rcl::Doc);
-    virtual void startNativeViewer(Rcl::Doc, int pagenum = -1, 
-				   QString term=QString());
+    virtual void startNativeViewer(Rcl::Doc, int pagenum = -1,
+                                   QString term = QString());
     virtual void openWith(Rcl::Doc, string);
     virtual void saveDocToFile(Rcl::Doc);
     virtual void previewNextInTab(Preview *, int sid, int docnum);
@@ -181,6 +185,9 @@ public slots:
     virtual void setFilterCtlStyle(int stl);
     virtual void showTrayMessage(const QString& text);
 
+private slots:
+    virtual void updateIdxStatus();
+    virtual void onWebcacheDestroyed(QObject *);
 signals:
     void docSourceChanged(STD_SHARED_PTR<DocSequence>);
     void stemLangChanged(const QString& lang);
@@ -189,7 +196,9 @@ signals:
     void searchReset();
 
 protected:
-    virtual void closeEvent( QCloseEvent * );
+    virtual void closeEvent(QCloseEvent *);
+    virtual void showEvent(QShowEvent *);
+
 
 private:
     Preview        *curPreview;
@@ -236,10 +245,13 @@ private:
 
     RclTrayIcon     *m_trayicon;
 
+    // We sometimes take the indexer lock (e.g.: when editing the webcache)
+    Pidfile         *m_pidfile;
+    
     virtual void init();
     virtual void setupResTB(bool combo);
-    virtual void previewPrevOrNextInTab(Preview *, int sid, int docnum, 
-					bool next);
+    virtual void previewPrevOrNextInTab(Preview *, int sid, int docnum,
+                                        bool next);
     virtual void execViewer(const map<string, string>& subs, bool enterHistory,
                             const string& execpath, const vector<string>& lcmd,
                             const string& cmd, Rcl::Doc doc);

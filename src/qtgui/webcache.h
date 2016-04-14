@@ -34,6 +34,7 @@ class WebcacheModel : public QAbstractTableModel {
 
 public:
     WebcacheModel(QObject *parent = 0);
+    ~WebcacheModel();
 
     // Reimplemented methods
     virtual int rowCount (const QModelIndex& = QModelIndex()) const;
@@ -44,20 +45,22 @@ public:
 			   int role = Qt::DisplayRole ) const;
     bool deleteIdx(unsigned int idx);
     std::string getURL(unsigned int idx);
-    void reload();
 
 public slots:
     void setSearchFilter(const QString&);
+    void reload();
 
 private:
     WebcacheModelInternal *m;
 };
 
+class RclMain;
+
 class WebcacheEdit : public QDialog, public Ui::Webcache {
     Q_OBJECT;
 
 public:
-    WebcacheEdit(QWidget *parent);
+    WebcacheEdit(RclMain *parent);
 public slots:
     void saveColState();
     void createPopupMenu(const QPoint&);
@@ -67,6 +70,8 @@ protected:
     void closeEvent(QCloseEvent *);
 private:
     WebcacheModel *m_model;
+    RclMain *m_recoll;
+    bool m_modified;
 };
 
 
