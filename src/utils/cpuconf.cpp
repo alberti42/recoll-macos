@@ -44,6 +44,14 @@ bool getCpuConf(CpuConf& conf)
 }
 
 #elif defined(__FreeBSD__) 
+
+#include <stdlib.h>
+#include "execmd.h"
+#include "smallut.h"
+
+using std::string;
+using std::vector;
+
 bool getCpuConf(CpuConf& conf)
 {
     vector<string> cmdv = create_vector<string>("sysctl")("hw.ncpu");
