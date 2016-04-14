@@ -1190,6 +1190,18 @@ Please check the desktop file</source>
         <source>Do not show this warning next time (use GUI preferences to restore).</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Index locked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown indexer state. Can&apos;t access webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexer is running. Can&apos;t access webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1251,11 +1263,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>&amp;Show missing helpers</source>
-        <translation>Ε&amp;μφάνιση των ελλειπουσών εφαρμογών</translation>
+        <translation type="obsolete">Ε&amp;μφάνιση των ελλειπουσών εφαρμογών</translation>
     </message>
     <message>
         <source>&amp;Show indexed types</source>
-        <translation>Εμ&amp;φάνιση των τύπων με ευρετήριο</translation>
+        <translation type="obsolete">Εμ&amp;φάνιση των τύπων με ευρετήριο</translation>
     </message>
     <message>
         <source>&amp;About Recoll</source>
@@ -1471,6 +1483,26 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Indexing with special options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;View</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Missing &amp;helpers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexed &amp;MIME types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index &amp;statistics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Webcache Editor</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2185,11 +2217,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Smallest document length</source>
-        <translation>Μικρότερο μήκος εγγράφου</translation>
+        <translation type="obsolete">Μικρότερο μήκος εγγράφου</translation>
     </message>
     <message>
         <source>Longest document length</source>
-        <translation>Μεγαλύτερο μήκος εγγράφου</translation>
+        <translation type="obsolete">Μεγαλύτερο μήκος εγγράφου</translation>
     </message>
     <message>
         <source>Database directory size</source>
@@ -2206,6 +2238,30 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Value</source>
         <translation>Τιμή</translation>
+    </message>
+    <message>
+        <source>Smallest document length (terms)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Longest document length (terms)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Results from last indexing:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Documents created/updated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Files tested</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Unindexed files</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2367,6 +2423,51 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>&lt;b&gt;New Values:&lt;/b&gt;</source>
         <translation>&lt;b&gt;Νέες τιμές:&lt;/b&gt;</translation>
+    </message>
+</context>
+<context>
+    <name>Webcache</name>
+    <message>
+        <source>Webcache editor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search regexp</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>WebcacheEdit</name>
+    <message>
+        <source>Copy URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown indexer state. Can&apos;t edit webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexer is running. Can&apos;t edit webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Webcache was modified, you will need to run the indexer after closing this window.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>WebcacheModel</name>
+    <message>
+        <source>MIME</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Url</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

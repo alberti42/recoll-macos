@@ -729,6 +729,13 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     </message>
 </context>
 <context>
+    <name>QxtConfirmationMessage</name>
+    <message>
+        <source>Do not show again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RTIToolW</name>
     <message>
         <source>Real time indexing automatic start</source>
@@ -1111,11 +1118,11 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>The document belongs to an external indexwhich I can&apos;t update. </source>
-        <translation>Dokument je součástí vnějšího rejstříku, který nelze aktualizovat. </translation>
+        <translation type="obsolete">Dokument je součástí vnějšího rejstříku, který nelze aktualizovat. </translation>
     </message>
     <message>
         <source>Click Cancel to return to the list. Click Ignore to show the preview anyway. </source>
-        <translation>Klepněte na tlačítko Zrušit pro návrat do seznamu. Klepněte na tlačítko Přehlížet, aby byl přesto ukázán náhled. </translation>
+        <translation type="obsolete">Klepněte na tlačítko Zrušit pro návrat do seznamu. Klepněte na tlačítko Přehlížet, aby byl přesto ukázán náhled. </translation>
     </message>
     <message>
         <source>Duplicate documents</source>
@@ -1130,6 +1137,115 @@ Prověřte soubor mimeconf</translation>
 Please check the desktop file</source>
         <translation>Chybná specifikace aplikace pro %1: [%2]
 Prověřte soubor pracovní plochy</translation>
+    </message>
+    <message>
+        <source>Index locked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The current indexing process was not started from this interface, can&apos;t kill it</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bad paths</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bad paths in configuration file:
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Selection patterns need topdir</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Selection patterns can only be used with a start directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The document belongs to an external index which I can&apos;t update. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Cancel to return to the list. &lt;br&gt;Click Ignore to show the preview anyway (and remember for this session).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No preserved previous search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose file to save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saved Queries (*.rclq)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Write failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not write to file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Read failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not open file: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Load error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not load saved query</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opening a temporary copy. Edits will be lost if you don&apos;t save&lt;br/&gt;them to a permanent location.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do not show this warning next time (use GUI preferences to restore).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown indexer state. Can&apos;t access webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexer is running. Can&apos;t access webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index scheduling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sorry, not available under Windows for now, use the File menu entries to update the index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disabled because the real time indexer was not compiled in.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This configuration tool only works for the main index.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t set synonyms file (parse error?)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1260,7 +1376,7 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>&amp;Show missing helpers</source>
-        <translation>&amp;Ukázat chybějící pomocné programy</translation>
+        <translation type="obsolete">&amp;Ukázat chybějící pomocné programy</translation>
     </message>
     <message>
         <source>PgDown</source>
@@ -1320,7 +1436,7 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>&amp;Show indexed types</source>
-        <translation>&amp;Ukázat rejstříkované typy</translation>
+        <translation type="obsolete">&amp;Ukázat rejstříkované typy</translation>
     </message>
     <message>
         <source>Shift+PgUp</source>
@@ -1328,7 +1444,7 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>&amp;Indexing schedule</source>
-        <translation>Rozvrh &amp;rejstříkování</translation>
+        <translation type="obsolete">Rozvrh &amp;rejstříkování</translation>
     </message>
     <message>
         <source>E&amp;xternal index dialog</source>
@@ -1393,6 +1509,50 @@ Prověřte soubor pracovní plochy</translation>
     <message>
         <source>Next update will retry previously failed files</source>
         <translation>Nová aktualizace rejstříku se pokusí znovu zpracovat nyní nezpracované soubory</translation>
+    </message>
+    <message>
+        <source>&amp;View</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Missing &amp;helpers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexed &amp;MIME types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexing &amp;schedule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable synonyms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save last query</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Load saved query</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Special Indexing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexing with special options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index &amp;statistics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Webcache Editor</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1851,6 +2011,30 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
 Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku pochybnost, a podívejte se do příručky (&amp;lt;F1&gt;) na další podrobnosti.
 </translation>
     </message>
+    <message>
+        <source>Stemming languages for stored query: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> differ from current preferences (kept)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto suffixes for stored query: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External indexes for stored query: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Autophrase is set but it was unset for stored query</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Autophrase is unset but it was set for stored query</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SSearchBase</name>
@@ -2031,6 +2215,49 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
 </context>
 <context>
+    <name>SpecIdxW</name>
+    <message>
+        <source>Special Indexing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do not retry previously failed files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Else only modified or failed files will be processed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Erase selected files data before indexing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Directory to recursively index. This must be inside the regular indexed area&lt;br&gt; as defined in the configuration file (topdirs).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Browse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start directory (else use regular topdirs):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Leave empty to select all files. You can use multiple space-separated shell-type patterns.&lt;br&gt;Patterns with embedded spaces should be quoted with double quotes.&lt;br&gt;Can only be used if the start target is set.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Selection patterns:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Top indexed entity</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SpellBase</name>
     <message>
         <source>Term Explorer</source>
@@ -2149,11 +2376,11 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Smallest document length</source>
-        <translation>Délka nejmenšího dokumentu</translation>
+        <translation type="obsolete">Délka nejmenšího dokumentu</translation>
     </message>
     <message>
         <source>Longest document length</source>
-        <translation>Délka nejdelšího dokumentu</translation>
+        <translation type="obsolete">Délka nejdelšího dokumentu</translation>
     </message>
     <message>
         <source>Database directory size</source>
@@ -2170,6 +2397,30 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     <message>
         <source>Value</source>
         <translation>Hodnota</translation>
+    </message>
+    <message>
+        <source>Smallest document length (terms)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Longest document length (terms)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Results from last indexing:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Documents created/updated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Files tested</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Unindexed files</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2225,6 +2476,26 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     <message>
         <source>Default QtWebkit font</source>
         <translation>Výchozí písmo QtWebkit</translation>
+    </message>
+    <message>
+        <source>Any term</source>
+        <translation type="unfinished">Jakýkoli výraz</translation>
+    </message>
+    <message>
+        <source>All terms</source>
+        <translation type="unfinished">Všechny výrazy</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation type="unfinished">Název souboru</translation>
+    </message>
+    <message>
+        <source>Query language</source>
+        <translation type="unfinished">Jazyk hledání</translation>
+    </message>
+    <message>
+        <source>Value from previous program exit</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2485,6 +2756,51 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
 </context>
 <context>
+    <name>Webcache</name>
+    <message>
+        <source>Webcache editor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search regexp</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>WebcacheEdit</name>
+    <message>
+        <source>Copy URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown indexer state. Can&apos;t edit webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexer is running. Can&apos;t edit webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Webcache was modified, you will need to run the indexer after closing this window.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>WebcacheModel</name>
+    <message>
+        <source>MIME</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Url</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>confgui::ConfBeaglePanelW</name>
     <message>
         <source>Steal Beagle indexing queue</source>
@@ -2496,7 +2812,7 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Entries will be recycled once the size is reached</source>
-        <translation>Záznamy budou opětně použity, jakmile bude velikost dosažena</translation>
+        <translation type="obsolete">Záznamy budou opětně použity, jakmile bude velikost dosažena</translation>
     </message>
     <message>
         <source>Web page store directory name</source>
@@ -2517,6 +2833,10 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
         <translation>Povolí rejstříkování Firefoxem navštívených stránek.&lt;br&gt;(také je potřeba, abyste nainstalovali přídavný modul Recollu pro Firefox)</translation>
+    </message>
+    <message>
+        <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3100,6 +3420,22 @@ Výchozí hodnota je 2 (procenta).</translation>
     <message>
         <source>Close to tray instead of exiting.</source>
         <translation>Zavřít do oznamovací oblasti panelu namísto ukončení.</translation>
+    </message>
+    <message>
+        <source>Start with simple search mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show warning when opening temporary file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User style to apply to the snippets window.&lt;br&gt; Note: the result page header insert is also included in the snippets window header.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Synonyms file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

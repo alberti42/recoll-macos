@@ -1143,6 +1143,18 @@ Tjek venligst desktopfilen</translation>
         <source>Do not show this warning next time (use GUI preferences to restore).</source>
         <translation>Vis ikke denne advarsel næste gang (brug GUI præferencer for at gendanne).</translation>
     </message>
+    <message>
+        <source>Index locked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown indexer state. Can&apos;t access webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexer is running. Can&apos;t access webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1252,7 +1264,7 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>&amp;Show missing helpers</source>
-        <translation>&amp;Vis manglende hjælpere</translation>
+        <translation type="obsolete">&amp;Vis manglende hjælpere</translation>
     </message>
     <message>
         <source>PgDown</source>
@@ -1296,7 +1308,7 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>&amp;Show indexed types</source>
-        <translation>&amp;Vis indekserede typer</translation>
+        <translation type="obsolete">&amp;Vis indekserede typer</translation>
     </message>
     <message>
         <source>Shift+PgUp</source>
@@ -1393,6 +1405,26 @@ Tjek venligst desktopfilen</translation>
     <message>
         <source>Indexing with special options</source>
         <translation>Indeksering med særlige indstillinger </translation>
+    </message>
+    <message>
+        <source>&amp;View</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Missing &amp;helpers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexed &amp;MIME types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index &amp;statistics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Webcache Editor</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2001,11 +2033,11 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Smallest document length</source>
-        <translation>Mindste dokumentlængde</translation>
+        <translation type="obsolete">Mindste dokumentlængde</translation>
     </message>
     <message>
         <source>Longest document length</source>
-        <translation>Længste dokumentlængde</translation>
+        <translation type="obsolete">Længste dokumentlængde</translation>
     </message>
     <message>
         <source>Database directory size</source>
@@ -2022,6 +2054,30 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     <message>
         <source>Value</source>
         <translation>Værdi</translation>
+    </message>
+    <message>
+        <source>Smallest document length (terms)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Longest document length (terms)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Results from last indexing:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Documents created/updated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Files tested</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Unindexed files</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2163,6 +2219,51 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     <message>
         <source>&lt;b&gt;New Values:&lt;/b&gt;</source>
         <translation>&lt;b&gt;Nye værdier:&lt;/b&gt;</translation>
+    </message>
+</context>
+<context>
+    <name>Webcache</name>
+    <message>
+        <source>Webcache editor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search regexp</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>WebcacheEdit</name>
+    <message>
+        <source>Copy URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown indexer state. Can&apos;t edit webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexer is running. Can&apos;t edit webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Webcache was modified, you will need to run the indexer after closing this window.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>WebcacheModel</name>
+    <message>
+        <source>MIME</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Url</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

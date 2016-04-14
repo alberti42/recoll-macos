@@ -1251,6 +1251,18 @@ Merci de vérifier le fichier desktop </translation>
         <source>Can&apos;t set synonyms file (parse error?)</source>
         <translation>Impossible d&apos;ouvrir le fichier des synonymes (erreur dans le fichier?)</translation>
     </message>
+    <message>
+        <source>Index locked</source>
+        <translation>L&apos;index est verrouillé</translation>
+    </message>
+    <message>
+        <source>Unknown indexer state. Can&apos;t access webcache file.</source>
+        <translation>État de l&apos;indexeur inconnu. Impossible d&apos;accéder au fichier webcache.</translation>
+    </message>
+    <message>
+        <source>Indexer is running. Can&apos;t access webcache file.</source>
+        <translation>L&apos;indexeur est actif. Impossible d&apos;accéder au fichier webcache.</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1380,7 +1392,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>&amp;Show missing helpers</source>
-        <translation>Afficher les application&amp;s manquantes</translation>
+        <translation type="obsolete">Afficher les application&amp;s manquantes</translation>
     </message>
     <message>
         <source>PgDown</source>
@@ -1440,7 +1452,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>&amp;Show indexed types</source>
-        <translation>&amp;Afficher les types indexés</translation>
+        <translation type="obsolete">&amp;Afficher les types indexés</translation>
     </message>
     <message>
         <source>Shift+PgUp</source>
@@ -1537,6 +1549,26 @@ Merci de vérifier le fichier desktop </translation>
     <message>
         <source>Enable synonyms</source>
         <translation>Activer les synonymes</translation>
+    </message>
+    <message>
+        <source>&amp;View</source>
+        <translation>&amp;Voir</translation>
+    </message>
+    <message>
+        <source>Missing &amp;helpers</source>
+        <translation>&amp;Traducteurs manquants</translation>
+    </message>
+    <message>
+        <source>Indexed &amp;MIME types</source>
+        <translation>Types &amp;MIME indexés</translation>
+    </message>
+    <message>
+        <source>Index &amp;statistics</source>
+        <translation>&amp;Statistiques de l&apos;index</translation>
+    </message>
+    <message>
+        <source>Webcache Editor</source>
+        <translation>Editeur &amp;Webcache</translation>
     </message>
 </context>
 <context>
@@ -2384,11 +2416,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Smallest document length</source>
-        <translation>Longueur du plus petit document</translation>
+        <translation type="obsolete">Longueur du plus petit document</translation>
     </message>
     <message>
         <source>Longest document length</source>
-        <translation>Longueur du plus grand document</translation>
+        <translation type="obsolete">Longueur du plus grand document</translation>
     </message>
     <message>
         <source>Database directory size</source>
@@ -2405,6 +2437,30 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Value</source>
         <translation>Valeur</translation>
+    </message>
+    <message>
+        <source>Smallest document length (terms)</source>
+        <translation>Taille minimale document (termes)</translation>
+    </message>
+    <message>
+        <source>Longest document length (terms)</source>
+        <translation>Taille maximale document (termes)</translation>
+    </message>
+    <message>
+        <source>Results from last indexing:</source>
+        <translation>Résultats de la dernière indexation:</translation>
+    </message>
+    <message>
+        <source>  Documents created/updated</source>
+        <translation>  Documents créés ou mis à jour</translation>
+    </message>
+    <message>
+        <source>  Files tested</source>
+        <translation>  Fichiers testés</translation>
+    </message>
+    <message>
+        <source>  Unindexed files</source>
+        <translation>  Fichiers non indexés</translation>
     </message>
 </context>
 <context>
@@ -2785,6 +2841,51 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     <message>
         <source>&lt;b&gt;New Values:&lt;/b&gt;</source>
         <translation>&lt;b&gt;Nouveaux param&amp;egrave;tres&lt;/b&gt;</translation>
+    </message>
+</context>
+<context>
+    <name>Webcache</name>
+    <message>
+        <source>Webcache editor</source>
+        <translation>Editeur Webcache</translation>
+    </message>
+    <message>
+        <source>Search regexp</source>
+        <translation>Recherche (regexp)</translation>
+    </message>
+</context>
+<context>
+    <name>WebcacheEdit</name>
+    <message>
+        <source>Copy URL</source>
+        <translation>Copier l&apos;URL</translation>
+    </message>
+    <message>
+        <source>Unknown indexer state. Can&apos;t edit webcache file.</source>
+        <translation>État indexeur inconnu. Impossible d&apos;éditer le fichier webcache.</translation>
+    </message>
+    <message>
+        <source>Indexer is running. Can&apos;t edit webcache file.</source>
+        <translation>L&apos;indexeur est actif. Impossible d&apos;accéder au fichier webcache.</translation>
+    </message>
+    <message>
+        <source>Delete selection</source>
+        <translation>Détruire les entrées sélectionnées</translation>
+    </message>
+    <message>
+        <source>Webcache was modified, you will need to run the indexer after closing this window.</source>
+        <translation>Le fichier webcache a été modifié, il faudra redémarrer l&apos;indexation après avoir fermé cette fenêtre.</translation>
+    </message>
+</context>
+<context>
+    <name>WebcacheModel</name>
+    <message>
+        <source>MIME</source>
+        <translation>MIME</translation>
+    </message>
+    <message>
+        <source>Url</source>
+        <translation>Url</translation>
     </message>
 </context>
 <context>
