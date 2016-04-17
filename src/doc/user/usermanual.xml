@@ -57,10 +57,8 @@
       <application>MS-Windows</application>. Many references in this
       manual, especially file locations, are specific to Unix, and not
       valid on &WIN;. Some described features are also not available on
-      &WIN;.</para>
-
-      <para>The manual will be progressively updated for &WIN;. Until this
-      happens, most references to files can be translated by looking under
+      &WIN;. The manual will be progressively updated. Until this happens,
+      most references to shared files can be translated by looking under
       the Recoll installation directory (esp. the
       <filename>Share</filename> subdirectory). The user configuration is
       stored by default under <filename>AppData/Local/Recoll</filename>
@@ -87,11 +85,16 @@
           </menuchoice>, then adjust the <guilabel>Top
           directories</guilabel> section).</para>
 
-      <para>Also be aware that you may need to install the
+      <para>Also be aware that, on Unix/Linux, you may need to install the
         appropriate <link linkend="RCL.INSTALL.EXTERNAL"> supporting
         applications</link> for document types that need them (for
         example <application>antiword</application> for
-        <application>Microsoft Word</application> files).</para>
+      <application>Microsoft Word</application> files).</para>
+
+      <para>The &RCL; installation for &WIN; is self-contained and includes
+      most useful auxiliary programs. You will just need to install Python
+      2.7.</para>
+
     </sect1>
 
     <sect1 id="RCL.INTRODUCTION.SEARCH"> 
@@ -3062,28 +3065,32 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       </sect1>
 
   <sect1 id="RCL.SEARCH.SYNONYMS">
-    <title>Using Synonyms (&RCL; 1.22 and later)</title>
+    <title>Using Synonyms (1.22)</title>
 
-    <para>There are a number of different uses for synonyms in text
-    search. They can be used at index time (either to increase or decrease
-    the number of indexed terms), or at query time, to reduce user terms to
-    a set of canonical ones, or to expand queries to match texts containing
-    synonyms of the user terms.</para>
+    <formalpara><title>Term synonyms:</title>
+    <para>there are a number of ways to use term synonyms for searching text:
+    <itemizedlist>
+      <listitem><para>At index creation time, they can be used to alter the 
+      indexed terms, either increasing or decreasing their number, by
+      expanding the original terms to all synonyms, or by
+      reducing all synonym terms to a canonical one.</para></listitem>
+      <listitem><para>At query time, they can be used to match texts
+      containing terms which are synonyms of the ones specified by the user,
+      either by expanding the query for all synonyms, or by reducing the user
+      entry to canonical terms (the latter only works if the corresponding
+      processing has been performed while creating the index).</para></listitem>
+    </itemizedlist>
+    </para>
+    </formalpara>
     
-    <para>Only the last approach is used in &RCL;. Synonym groups can be
-    defined so that a user query term which is found to be part of a
-    synonym group will be optionally expanded into an OR query for all
-    synonyms.</para>
+    <para>&RCL; only uses synonyms at query time. A user query term which
+    part of a synonym group will be optionally expanded into an
+    <literal>OR</literal> query for all terms in the group.</para>
 
-    <para>What is it good for ? The synonyms function is probably not going
-    to help you find your letters to Mr. Smith. It is best used for
-    domain-specific searches. For example, it was initially suggested by a
-    user performing searches among historical documents: the synonyms file
-    would contains nicknames and aliases for each of the persons of
-    interest.</para>
+   <para>Synonym groups are defined inside ordinary text files. Each line
+   in the file defines a group.</para> 
 
-    <para>In practise, synonym groups are defined inside ordinary text
-    files. Each line in the file defines a group. Example:
+   <para>Example:
     <programlisting>
 hi hello "good morning"
 
@@ -3091,26 +3098,37 @@ hi hello "good morning"
 bye goodbye "see you" \
   "au revoir" 
     </programlisting>
-    As usual lines beginning with a <literal>#</literal> are comments,
+    </para>
+
+    <para>As usual, lines beginning with a <literal>#</literal> are comments,
     empty lines are ignored, and lines can be continued by ending them with
     a backslash.
     </para>
 
-    <para>The synonyms are searched for matches with user terms after these
-    are stem-expanded, but the contents of the synonyms file itself is not
-    subjected to stem expansion (1.22). This means that a match
-    will not be found if the form present in the synonyms file is not
-    present anywhere in the document set.</para>
-    
     <para>Multi-word synonyms are supported, but be aware that these will
-    generate phrase queries, which may degrade performance (and also, no
-    stemming).</para>
+    generate phrase queries, which may degrade performance and will disable
+    stemming expansion for the phrase terms.</para>
 
-    <para>A synonyms file can be specified in the GUI preferences, or as an
-    option to <command>recollq</command>.</para>
+    <para>The synonyms file can be specified in the <guilabel>Search
+    parameters</guilabel> tab of the <guilabel>GUI configuration</guilabel>
+    <guilabel>Preferences</guilabel> menu entry, or as an option for
+    command-line searches.</para>
+
+    <para>Once the file is defined, the use of synonyms can be enabled or
+    disabled directly from the <guilabel>Preferences</guilabel>
+    menu.</para>
     
-    <para>This feature is new in &RCL; 1.22 and will probably need to be
-    refined after some user feedback.</para>
+    <para>The synonyms are searched for matches with user terms after the
+    latter are stem-expanded, but the contents of the synonyms file itself
+    is not subjected to stem expansion. This means that a match will not be
+    found if the form present in the synonyms file is not present anywhere
+    in the document set.</para>
+
+    <para>The synonyms function is probably not going to help you find your
+    letters to Mr. Smith. It is best used for domain-specific searches. For
+    example, it was initially suggested by a user performing searches among
+    historical documents: the synonyms file would contains nicknames and
+    aliases for each of the persons of interest.</para>
 
    
   </sect1>

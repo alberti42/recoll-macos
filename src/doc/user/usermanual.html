@@ -20,8 +20,8 @@ alink="#0000FF">
     <div class="titlepage">
       <div>
         <div>
-          <h1 class="title"><a name="idp48862656" id=
-          "idp48862656"></a>Recoll user manual</h1>
+          <h1 class="title"><a name="idp59627200" id=
+          "idp59627200"></a>Recoll user manual</h1>
         </div>
 
         <div>
@@ -109,13 +109,13 @@ alink="#0000FF">
                 multiple indexes</a></span></dt>
 
                 <dt><span class="sect2">2.1.3. <a href=
-                "#idp54428144">Document types</a></span></dt>
+                "#idp65068656">Document types</a></span></dt>
 
                 <dt><span class="sect2">2.1.4. <a href=
-                "#idp54447824">Indexing failures</a></span></dt>
+                "#idp65088336">Indexing failures</a></span></dt>
 
                 <dt><span class="sect2">2.1.5. <a href=
-                "#idp48768496">Recovery</a></span></dt>
+                "#idp65095792">Recovery</a></span></dt>
               </dl>
             </dd>
 
@@ -293,9 +293,8 @@ alink="#0000FF">
             line</a></span></dt>
 
             <dt><span class="sect1">3.4. <a href=
-            "#RCL.SEARCH.SYNONYMS">Using Synonyms (<span class=
-            "application">Recoll</span> 1.22 and
-            later)</a></span></dt>
+            "#RCL.SEARCH.SYNONYMS">Using Synonyms
+            (1.22)</a></span></dt>
 
             <dt><span class="sect1">3.5. <a href=
             "#RCL.SEARCH.PTRANS">Path translations</a></span></dt>
@@ -500,12 +499,10 @@ alink="#0000FF">
       are specific to Unix, and not valid on <span class=
       "application">Windows</span>. Some described features are
       also not available on <span class=
-      "application">Windows</span>.</p>
-
-      <p>The manual will be progressively updated for <span class=
-      "application">Windows</span>. Until this happens, most
-      references to files can be translated by looking under the
-      Recoll installation directory (esp. the <code class=
+      "application">Windows</span>. The manual will be
+      progressively updated. Until this happens, most references to
+      shared files can be translated by looking under the Recoll
+      installation directory (esp. the <code class=
       "filename">Share</code> subdirectory). The user configuration
       is stored by default under <code class=
       "filename">AppData/Local/Recoll</code> inside the user
@@ -546,12 +543,18 @@ alink="#0000FF">
         the <span class="guilabel">Top directories</span>
         section).</p>
 
-        <p>Also be aware that you may need to install the
-        appropriate <a class="link" href="#RCL.INSTALL.EXTERNAL"
-        title="5.2.&nbsp;Supporting packages">supporting
-        applications</a> for document types that need them (for
-        example <span class="application">antiword</span> for
-        <span class="application">Microsoft Word</span> files).</p>
+        <p>Also be aware that, on Unix/Linux, you may need to
+        install the appropriate <a class="link" href=
+        "#RCL.INSTALL.EXTERNAL" title=
+        "5.2.&nbsp;Supporting packages">supporting applications</a>
+        for document types that need them (for example <span class=
+        "application">antiword</span> for <span class=
+        "application">Microsoft Word</span> files).</p>
+
+        <p>The <span class="application">Recoll</span> installation
+        for <span class="application">Windows</span> is
+        self-contained and includes most useful auxiliary programs.
+        You will just need to install Python 2.7.</p>
       </div>
 
       <div class="sect1">
@@ -978,8 +981,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp54428144" id=
-                "idp54428144"></a>2.1.3.&nbsp;Document types</h3>
+                <h3 class="title"><a name="idp65068656" id=
+                "idp65068656"></a>2.1.3.&nbsp;Document types</h3>
               </div>
             </div>
           </div>
@@ -1072,8 +1075,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp54447824" id=
-                "idp54447824"></a>2.1.4.&nbsp;Indexing
+                <h3 class="title"><a name="idp65088336" id=
+                "idp65088336"></a>2.1.4.&nbsp;Indexing
                 failures</h3>
               </div>
             </div>
@@ -1113,8 +1116,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp48768496" id=
-                "idp48768496"></a>2.1.5.&nbsp;Recovery</h3>
+                <h3 class="title"><a name="idp65095792" id=
+                "idp65095792"></a>2.1.5.&nbsp;Recovery</h3>
               </div>
             </div>
           </div>
@@ -4562,36 +4565,46 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
               <h2 class="title" style="clear: both"><a name=
               "RCL.SEARCH.SYNONYMS" id=
               "RCL.SEARCH.SYNONYMS"></a>3.4.&nbsp;Using Synonyms
-              (<span class="application">Recoll</span> 1.22 and
-              later)</h2>
+              (1.22)</h2>
             </div>
           </div>
         </div>
 
-        <p>There are a number of different uses for synonyms in
-        text search. They can be used at index time (either to
-        increase or decrease the number of indexed terms), or at
-        query time, to reduce user terms to a set of canonical
-        ones, or to expand queries to match texts containing
-        synonyms of the user terms.</p>
+        <p><b>Term synonyms:&nbsp;</b>there are a number of ways to
+        use term synonyms for searching text:</p>
 
-        <p>Only the last approach is used in <span class=
-        "application">Recoll</span>. Synonym groups can be defined
-        so that a user query term which is found to be part of a
-        synonym group will be optionally expanded into an OR query
-        for all synonyms.</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist" style="list-style-type: disc;">
+            <li class="listitem">
+              <p>At index creation time, they can be used to alter
+              the indexed terms, either increasing or decreasing
+              their number, by expanding the original terms to all
+              synonyms, or by reducing all synonym terms to a
+              canonical one.</p>
+            </li>
 
-        <p>What is it good for ? The synonyms function is probably
-        not going to help you find your letters to Mr. Smith. It is
-        best used for domain-specific searches. For example, it was
-        initially suggested by a user performing searches among
-        historical documents: the synonyms file would contains
-        nicknames and aliases for each of the persons of
-        interest.</p>
+            <li class="listitem">
+              <p>At query time, they can be used to match texts
+              containing terms which are synonyms of the ones
+              specified by the user, either by expanding the query
+              for all synonyms, or by reducing the user entry to
+              canonical terms (the latter only works if the
+              corresponding processing has been performed while
+              creating the index).</p>
+            </li>
+          </ul>
+        </div>
 
-        <p>In practise, synonym groups are defined inside ordinary
-        text files. Each line in the file defines a group.
-        Example:</p>
+        <p><span class="application">Recoll</span> only uses
+        synonyms at query time. A user query term which part of a
+        synonym group will be optionally expanded into an
+        <code class="literal">OR</code> query for all terms in the
+        group.</p>
+
+        <p>Synonym groups are defined inside ordinary text files.
+        Each line in the file defines a group.</p>
+
+        <p>Example:</p>
         <pre class="programlisting">
 hi hello "good morning"
 
@@ -4601,29 +4614,39 @@ bye goodbye "see you" \
     
 </pre>
 
-        <p>As usual lines beginning with a <code class=
+        <p>As usual, lines beginning with a <code class=
         "literal">#</code> are comments, empty lines are ignored,
         and lines can be continued by ending them with a
         backslash.</p>
 
-        <p>The synonyms are searched for matches with user terms
-        after these are stem-expanded, but the contents of the
-        synonyms file itself is not subjected to stem expansion
-        (1.22). This means that a match will not be found if the
-        form present in the synonyms file is not present anywhere
-        in the document set.</p>
-
         <p>Multi-word synonyms are supported, but be aware that
         these will generate phrase queries, which may degrade
-        performance (and also, no stemming).</p>
+        performance and will disable stemming expansion for the
+        phrase terms.</p>
 
-        <p>A synonyms file can be specified in the GUI preferences,
-        or as an option to <span class=
-        "command"><strong>recollq</strong></span>.</p>
+        <p>The synonyms file can be specified in the <span class=
+        "guilabel">Search parameters</span> tab of the <span class=
+        "guilabel">GUI configuration</span> <span class=
+        "guilabel">Preferences</span> menu entry, or as an option
+        for command-line searches.</p>
 
-        <p>This feature is new in <span class=
-        "application">Recoll</span> 1.22 and will probably need to
-        be refined after some user feedback.</p>
+        <p>Once the file is defined, the use of synonyms can be
+        enabled or disabled directly from the <span class=
+        "guilabel">Preferences</span> menu.</p>
+
+        <p>The synonyms are searched for matches with user terms
+        after the latter are stem-expanded, but the contents of the
+        synonyms file itself is not subjected to stem expansion.
+        This means that a match will not be found if the form
+        present in the synonyms file is not present anywhere in the
+        document set.</p>
+
+        <p>The synonyms function is probably not going to help you
+        find your letters to Mr. Smith. It is best used for
+        domain-specific searches. For example, it was initially
+        suggested by a user performing searches among historical
+        documents: the synonyms file would contains nicknames and
+        aliases for each of the persons of interest.</p>
       </div>
 
       <div class="sect1">
