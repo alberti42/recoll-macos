@@ -63,7 +63,6 @@ public slots:
     virtual void delClause();
     virtual void addClause();
     virtual void addClause(int);
-    virtual bool close();
     virtual void slotHistoryNext();
     virtual void slotHistoryPrev();
 

@@ -164,12 +164,6 @@ void AdvSearch::saveCnf()
     }
 }
 
-bool AdvSearch::close()
-{
-    saveCnf();
-    return QWidget::close();
-}
-
 void AdvSearch::addClause()
 {
     addClause(0);
