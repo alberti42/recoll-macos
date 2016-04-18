@@ -97,6 +97,8 @@
       <div class="news">
       
       <dl>
+        <dt>2016-04-18</dt><dd>Found a <a href="BUGS.html#GUIADV">GUI
+            crash bug</a> with a reasonably easy workaround.</dd>
 
         <dt>2016-04-14</dt><dd>Release 1.22.0 is now available from
           the download area. The binary packages should wait until
