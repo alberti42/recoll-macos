@@ -4635,7 +4635,6 @@ or
           </variablelist>
 
           <variablelist>
-            <title>Data descriptors</title>
 
             <varlistentry><term>Query.arraysize</term> <listitem>Default
                 number of records processed by fetchmany (r/w).</listitem> 
