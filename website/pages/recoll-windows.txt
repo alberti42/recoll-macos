@@ -91,7 +91,7 @@ Changes in 20160414
 - Fixed a bug which had the whole indexing stop if a script would time out
   on a specific file (it will very rarely happen that a pathologically bad
   file can throw an input handler in a loop).
--
+
 
 Changes in 20160317
 

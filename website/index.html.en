@@ -71,12 +71,12 @@
 	interface.</p>
 
       <p class="remark">Recoll will index an <b>MS-Word</b> document
-      stored as an <b>attachment</b> to an <b>e-mail message</b> inside
-	  a <b>Thunderbird folder</b> archived in a <b>Zip file</b> (and
-	  more...). It will also help you search for it with a friendly and
-	  powerful interface, and let you open a copy of a PDF at the right
-	  page with two clicks. There is little that will remain
-	  hidden on your disk.</p>
+        stored as an <b>attachment</b> to an <b>e-mail message</b> inside
+	a <b>Thunderbird folder</b> archived in a <b>Zip file</b> (and
+	more...). It will also help you search for it with a friendly and
+	powerful interface, and let you open a copy of a PDF at the right
+	page with two clicks. There is little that will remain
+	hidden on your disk.</p>
 
       <p>Recoll has extensive <a href="doc.html">
           documentation</a>. If you run into a problem, or want to
@@ -96,8 +96,16 @@
       <h2>News</h2>
       <div class="news">
       
-      <dl>
-        <dt>2016-04-18</dt><dd>Found a <a href="BUGS.html#GUIADV">GUI
+        <dl>
+
+          <dt>2016-04-21</dt><dd>I experimented with installing
+            the <a href="https://github.com/koniu/recoll-webui">Recoll
+              Web UI</a> with Apache, and found out
+            that <a href="pages/recoll-webui-install-wsgi.html">this
+            is really easy</a>, actually both easier to set up and
+            more useful than running it standalone.</dd>
+          
+          <dt>2016-04-18</dt><dd>Found a <a href="BUGS.html#GUIADV">GUI
             crash bug</a> with a reasonably easy workaround.</dd>
 
         <dt>2016-04-14</dt><dd>Release 1.22.0 is now available from
@@ -122,7 +130,6 @@
           the <a href="BUGS.html">known bugs page</a></dd>
 
         <dt>2015-11-09</dt>
-        <dd>
         <dd><a href="pics/windows-recoll.html">
             <img align="left" width="100" alt="Recoll on MS-Windows" 
                  src="pics/windows-recoll-thumb.png"></a>

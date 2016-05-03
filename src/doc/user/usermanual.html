@@ -20,8 +20,8 @@ alink="#0000FF">
     <div class="titlepage">
       <div>
         <div>
-          <h1 class="title"><a name="idp59627200" id=
-          "idp59627200"></a>Recoll user manual</h1>
+          <h1 class="title"><a name="idp57237872" id=
+          "idp57237872"></a>Recoll user manual</h1>
         </div>
 
         <div>
@@ -109,13 +109,13 @@ alink="#0000FF">
                 multiple indexes</a></span></dt>
 
                 <dt><span class="sect2">2.1.3. <a href=
-                "#idp65068656">Document types</a></span></dt>
+                "#idp63233312">Document types</a></span></dt>
 
                 <dt><span class="sect2">2.1.4. <a href=
-                "#idp65088336">Indexing failures</a></span></dt>
+                "#idp63252992">Indexing failures</a></span></dt>
 
                 <dt><span class="sect2">2.1.5. <a href=
-                "#idp65095792">Recovery</a></span></dt>
+                "#idp63260448">Recovery</a></span></dt>
               </dl>
             </dd>
 
@@ -981,8 +981,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp65068656" id=
-                "idp65068656"></a>2.1.3.&nbsp;Document types</h3>
+                <h3 class="title"><a name="idp63233312" id=
+                "idp63233312"></a>2.1.3.&nbsp;Document types</h3>
               </div>
             </div>
           </div>
@@ -1075,8 +1075,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp65088336" id=
-                "idp65088336"></a>2.1.4.&nbsp;Indexing
+                <h3 class="title"><a name="idp63252992" id=
+                "idp63252992"></a>2.1.4.&nbsp;Indexing
                 failures</h3>
               </div>
             </div>
@@ -1116,8 +1116,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp65095792" id=
-                "idp65095792"></a>2.1.5.&nbsp;Recovery</h3>
+                <h3 class="title"><a name="idp63260448" id=
+                "idp63260448"></a>2.1.5.&nbsp;Recovery</h3>
               </div>
             </div>
           </div>
@@ -6379,32 +6379,41 @@ or
 
             <p><span class="application">Recoll</span> versions
             after 1.11 define a Python programming interface, both
-            for searching and indexing. The indexing portion has
-            seen little use, but the searching one is used in the
-            Recoll Ubuntu Unity Lens and Recoll Web UI.</p>
+            for searching and indexing.</p>
 
-            <p>The API is inspired by the Python database API
-            specification. There were two major changes in recent
+            <p>The search interface is used in the Recoll Ubuntu
+            Unity Lens and Recoll WebUI.</p>
+
+            <p>The indexing section of the API has seen little use,
+            and is more a proof of concept. In truth it is waiting
+            for its killer app...</p>
+
+            <p>The search API is modeled along the Python database
+            API specification. There were two major changes along
             <span class="application">Recoll</span> versions:</p>
 
             <div class="itemizedlist">
               <ul class="itemizedlist" style=
               "list-style-type: disc;">
-                <li class="listitem">The basis for the <span class=
-                "application">Recoll</span> API changed from Python
-                database API version 1.0 (<span class=
-                "application">Recoll</span> versions up to 1.18.1),
-                to version 2.0 (<span class=
-                "application">Recoll</span> 1.18.2 and later).</li>
+                <li class="listitem">
+                  <p>The basis for the <span class=
+                  "application">Recoll</span> API changed from
+                  Python database API version 1.0 (<span class=
+                  "application">Recoll</span> versions up to
+                  1.18.1), to version 2.0 (<span class=
+                  "application">Recoll</span> 1.18.2 and
+                  later).</p>
+                </li>
 
-                <li class="listitem">The <code class=
-                "literal">recoll</code> module became a package
-                (with an internal <code class=
-                "literal">recoll</code> module) as of <span class=
-                "application">Recoll</span> version 1.19, in order
-                to add more functions. For existing code, this only
-                changes the way the interface must be
-                imported.</li>
+                <li class="listitem">
+                  <p>The <code class="literal">recoll</code> module
+                  became a package (with an internal <code class=
+                  "literal">recoll</code> module) as of
+                  <span class="application">Recoll</span> version
+                  1.19, in order to add more functions. For
+                  existing code, this only changes the way the
+                  interface must be imported.</p>
+                </li>
               </ul>
             </div>
 
@@ -6433,13 +6442,38 @@ or
           
 </pre>
 
+            <p>As of <span class="application">Recoll</span> 1.19,
+            the module can be compiled for Python3.</p>
+
             <p>The normal <span class="application">Recoll</span>
-            installer installs the Python API along with the main
-            code.</p>
+            installer installs the Python2 API along with the main
+            code. The Python3 version must be explicitely built and
+            installed.</p>
 
             <p>When installing from a repository, and depending on
             the distribution, the Python API can sometimes be found
             in a separate package.</p>
+
+            <p>The following small sample will run a query and list
+            the title and url for each of the results. It would
+            work with <span class="application">Recoll</span> 1.19
+            and later. The <code class=
+            "filename">python/samples</code> source directory
+            contains several examples of Python programming with
+            <span class="application">Recoll</span>, exercising the
+            extension more completely, and especially its data
+            extraction features.</p>
+            <pre class="programlisting">
+          from recoll import recoll
+
+          db = recoll.connect()
+          query = db.query()
+          nres = query.execute("some query")
+          results = query.fetchmany(20)
+          for doc in results:
+              print(doc.url, doc.title)
+        
+</pre>
           </div>
 
           <div class="sect3">
@@ -6564,8 +6598,6 @@ or
                 connection to a Recoll index.</p>
 
                 <div class="variablelist">
-                  <p class="title"><b>Methods</b></p>
-
                   <dl class="variablelist">
                     <dt><span class="term">Db.close()</span></dt>
 
@@ -6628,8 +6660,6 @@ or
                 execute index searches.</p>
 
                 <div class="variablelist">
-                  <p class="title"><b>Methods</b></p>
-
                   <dl class="variablelist">
                     <dt><span class="term">Query.sortby(fieldname,
                     ascending=True)</span></dt>
@@ -6805,8 +6835,6 @@ or
                 document contents.</p>
 
                 <div class="variablelist">
-                  <p class="title"><b>Methods</b></p>
-
                   <dl class="variablelist">
                     <dt><span class="term">get(key), []
                     operator</span></dt>
@@ -6854,8 +6882,6 @@ or
                 detailed doc for now...</p>
 
                 <div class="variablelist">
-                  <p class="title"><b>Methods</b></p>
-
                   <dl class="variablelist">
                     <dt><span class=
                     "term">addclause(type='and'|'or'|'excl'|'phrase'|'near'|'sub',
@@ -6914,8 +6940,6 @@ or
                 </div>
 
                 <div class="variablelist">
-                  <p class="title"><b>Methods</b></p>
-
                   <dl class="variablelist">
                     <dt><span class=
                     "term">Extractor(doc)</span></dt>

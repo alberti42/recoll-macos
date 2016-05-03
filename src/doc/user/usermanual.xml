@@ -4354,23 +4354,27 @@ or
         <title>Introduction</title>
 
         <para>&RCL; versions after 1.11 define a Python programming
-          interface, both for searching and indexing. The indexing
-          portion has seen little use, but the searching one is used
-          in the Recoll Ubuntu Unity Lens and Recoll Web UI.</para> 
+        interface, both for searching and indexing.</para>
 
-        <para>The API is inspired by the Python database API
-          specification. There were two major changes in recent &RCL;
-          versions:
-          <itemizedlist>
-            <listitem>The basis for the &RCL; API changed from Python
-              database API version 1.0 (&RCL; versions up to 1.18.1),
-              to version 2.0 (&RCL; 1.18.2 and later).</listitem>
-            <listitem>The <literal>recoll</literal> module became a
-              package (with an internal <literal>recoll</literal>
-              module) as of &RCL; version 1.19, in order to add more
-              functions. For existing code, this only changes the way
-              the interface must be imported.</listitem>
-          </itemizedlist>
+        <para>The search interface is used in the Recoll Ubuntu Unity Lens
+        and Recoll WebUI.</para>
+
+        <para>The indexing section of the API has seen little use, and is
+        more a proof of concept. In truth it is waiting for its killer
+        app...</para>
+        
+        <para>The search API is modeled along the Python database API
+        specification. There were two major changes along &RCL; versions:
+        <itemizedlist>
+          <listitem><para>The basis for the &RCL; API changed from Python
+          database API version 1.0 (&RCL; versions up to 1.18.1),
+          to version 2.0 (&RCL; 1.18.2 and later).</para></listitem>
+          <listitem><para>The <literal>recoll</literal> module became a
+          package (with an internal <literal>recoll</literal>
+          module) as of &RCL; version 1.19, in order to add more
+          functions. For existing code, this only changes the way
+          the interface must be imported.</para></listitem>
+        </itemizedlist>
         </para>
 
         <para>We will mostly describe the new API and package
@@ -4392,13 +4396,33 @@ or
           </screen>
         </para> 
 
-        <para>The normal &RCL; installer installs the Python
-          API along with the main code.</para>
+        <para>As of &RCL; 1.19, the module can be compiled for
+        Python3.</para>
+
+        <para>The normal &RCL; installer installs the Python2
+          API along with the main code. The Python3 version must be
+        explicitely built and installed.</para>
 
         <para>When installing from a repository, and depending on the
-          distribution, the Python API can sometimes be found in a
-          separate package.</para>
+        distribution, the Python API can sometimes be found in a
+        separate package.</para>
 
+        <para>The following small sample will run a query and list
+        the title and url for each of the results. It would work with &RCL;
+        1.19 and later. The <filename>python/samples</filename> source directory
+        contains several examples of Python programming with &RCL;,
+        exercising the extension more completely, and especially its data
+        extraction features.</para>
+        <programlisting>
+          from recoll import recoll
+
+          db = recoll.connect()
+          query = db.query()
+          nres = query.execute("some query")
+          results = query.fetchmany(20)
+          for doc in results:
+              print(doc.url, doc.title)
+        </programlisting>
       </sect3>
 
       <sect3 id="RCL.PROGRAM.PYTHON.PACKAGE">
@@ -4460,7 +4484,6 @@ or
             a <literal>connect()</literal> call and holds a 
             connection to a Recoll index.</para>
           <variablelist>
-            <title>Methods</title>
             <varlistentry>
               <term>Db.close()</term>
               <listitem>Closes the connection. You can't do anything
@@ -4511,7 +4534,6 @@ or
             execute index searches.</para>
 
           <variablelist>
-            <title>Methods</title>
 
             <varlistentry>
               <term>Query.sortby(fieldname, ascending=True)</term>
@@ -4659,7 +4681,6 @@ or
             module for accessing document contents.</para> 
 
           <variablelist>
-            <title>Methods</title>
 
             <varlistentry>
               <term>get(key), [] operator</term>
@@ -4694,7 +4715,6 @@ or
             for now...</para>
 
           <variablelist>
-            <title>Methods</title>
 
             <varlistentry>
               <term>addclause(type='and'|'or'|'excl'|'phrase'|'near'|'sub',
@@ -4729,7 +4749,6 @@ or
             <title>The Extractor class</title>
 
             <variablelist>
-              <title>Methods</title>
 
               <varlistentry>
                 <term>Extractor(doc)</term>
