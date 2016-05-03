@@ -240,8 +240,6 @@ utils/utf8iter.h \
 utils/wipedir.cpp \
 utils/wipedir.h \
 utils/workqueue.h \
-utils/x11mon.cpp \
-utils/x11mon.h \
 xaposix/safefcntl.h \
 xaposix/safesysstat.h \
 xaposix/safesyswait.h \
@@ -256,7 +254,7 @@ AM_YFLAGS = -d
 librecoll_la_LDFLAGS = -release $(VERSION) \
     -Wl,--no-undefined -Wl,--warn-unresolved-symbols
 
-librecoll_la_LIBADD = $(LIBXAPIAN) $(LIBICONV) $(X_LIBX11) $(LIBTHREADS)
+librecoll_la_LIBADD = $(LIBXAPIAN) $(LIBICONV) $(LIBTHREADS)
 
 # There is probably a better way to do this. The KIO needs to be linked
 # with librecoll, but librecoll is installed into a non-standard place
@@ -287,8 +285,10 @@ endif
 recollindex_SOURCES = \
                     index/recollindex.cpp \
                     index/rclmonprc.cpp \
-                    index/rclmonrcv.cpp 
-recollindex_LDADD = librecoll.la
+                    index/rclmonrcv.cpp \
+                    utils/x11mon.cpp \
+                    utils/x11mon.h 
+recollindex_LDADD = librecoll.la $(X_LIBX11)
 
 recollq_SOURCES = query/recollqmain.cpp
 recollq_LDADD = librecoll.la
