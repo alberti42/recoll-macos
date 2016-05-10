@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.6.7" />
+<meta name="generator" content="AsciiDoc 8.6.9" />
 <title>Converting Recoll indexing to multithreading</title>
 <style type="text/css">
 /* Shared CSS for AsciiDoc xhtml11 and html5 backends */
@@ -87,9 +87,15 @@ ul, ol, li > p {
 ul > li     { color: #aaa; }
 ul > li > * { color: black; }
 
-pre {
+.monospaced, code, pre {
+  font-family: "Courier New", Courier, monospace;
+  font-size: inherit;
+  color: navy;
   padding: 0;
   margin: 0;
+}
+pre {
+  white-space: pre-wrap;
 }
 
 #author {
@@ -219,7 +225,7 @@ div.exampleblock > div.content {
 }
 
 div.imageblock div.content { padding-left: 0; }
-span.image img { border-style: none; }
+span.image img { border-style: none; vertical-align: text-bottom; }
 a.image:visited { color: white; }
 
 dl {
@@ -415,12 +421,6 @@ div.unbreakable { page-break-inside: avoid; }
  *
  * */
 
-tt {
-  font-family: "Courier New", Courier, monospace;
-  font-size: inherit;
-  color: navy;
-}
-
 div.tableblock {
   margin-top: 1.0em;
   margin-bottom: 1.5em;
@@ -453,12 +453,6 @@ div.tableblock > table[frame="vsides"] {
  * html5 specific
  *
  * */
-
-.monospaced {
-  font-family: "Courier New", Courier, monospace;
-  font-size: inherit;
-  color: navy;
-}
 
 table.tableblock {
   margin-top: 1.0em;
@@ -539,6 +533,8 @@ body.manpage div.sectionbody {
 @media print {
   body.manpage div#toc { display: none; }
 }
+
+
 </style>
 <script type="text/javascript">
 /*<![CDATA[*/
@@ -739,7 +735,7 @@ asciidoc.install();
 <div id="header">
 <h1>Converting Recoll indexing to multithreading</h1>
 <span id="author">Jean-François Dockès</span><br />
-<span id="email"><tt>&lt;<a href="mailto:jfd@recoll.org">jfd@recoll.org</a>&gt;</tt></span><br />
+<span id="email"><code>&lt;<a href="mailto:jfd@recoll.org">jfd@recoll.org</a>&gt;</code></span><br />
 <span id="revdate">2012-12-03</span>
 </div>
 <div id="content">
@@ -785,7 +781,7 @@ trouble though, and linking the GUI and indexing process lifetimes was a
 bad idea, so, in recent versions, the indexing is always performed by an
 external process. Still, this experience had put in light most of the
 problem areas, and prepared the code for further work.</p></div>
-<div class="paragraph"><p>It should be noted that, as <tt>recollindex</tt> is both <em>nice</em>'d and <em>ionice</em>'d
+<div class="paragraph"><p>It should be noted that, as <code>recollindex</code> is both <em>nice</em>'d and <em>ionice</em>'d
 as a lowest priority process, it will only use free computing power on the
 machine, and will step down as soon as anything else wants to work.</p></div>
 <div class="sidebarblock">
@@ -800,7 +796,7 @@ on the document sizes). May I also suggest in this case that, if your
 machine can take more memory, it may be a good idea to procure some, as
 memory is nowadays quite cheap, and memory-starved machines are not fun.</p></div>
 </div></div>
-<div class="paragraph"><p>In general, augmenting the machine utilisation by <tt>recollindex</tt> just does
+<div class="paragraph"><p>In general, augmenting the machine utilisation by <code>recollindex</code> just does
 not change its responsiveness. My PC has a an Intel Pentium Core i5 750 (4
 cores, no hyperthreading), which is far from being a high performance CPU
 (nowadays&#8230;), and I often forget that I am running indexing tests, it is
@@ -815,7 +811,7 @@ just not noticeable. The machine does have a lot of memory though (12GB).</p></d
 <img src="nothreads.png" alt="Basic flow" />
 </div>
 </div>
-<div class="paragraph"><p>There are 4 main steps in the <tt>recollindex</tt> processing pipeline:</p></div>
+<div class="paragraph"><p>There are 4 main steps in the <code>recollindex</code> processing pipeline:</p></div>
 <div class="olist arabic"><ol class="arabic">
 <li>
 <p>
@@ -1056,8 +1052,8 @@ experiment. For example, the following data defines the configuration that
 was finally found to be best overall on my hardware:</p></div>
 <div class="literalblock">
 <div class="content">
-<pre><tt>thrQSizes = 2 2 2
-thrTCounts =  4 2 1</tt></pre>
+<pre><code>thrQSizes = 2 2 2
+thrTCounts =  4 2 1</code></pre>
 </div></div>
 <div class="paragraph"><p>This is using 3 queues of depth 2, 4 threads working on file conversion, 2
 on text splitting and other document processing, and 1 on Xapian updating
@@ -1070,11 +1066,9 @@ on text splitting and other document processing, and 1 on Xapian updating
 <div class="sectionbody">
 <div class="paragraph"><p>So the big question after all the work: was it worth it ? I could only get
 a real answer when the program stopped crashing, so this took some time and
-a little faith&#8230;</p></div>
-<div class="paragraph"><p>The answer is mostly yes, as far as I&#8217;m concerned. Indexing tests running
-almost twice as fast are good for my blood pressure and I don&#8217;t need a
-faster PC, I&#8217;ll buy more red wine instead (good for my health too, or maybe
-not). And it was a fun project anyway.</p></div>
+a little faith, but the answer is positive, as far as I&#8217;m
+concerned. Performance has improved significantly and this was a fun
+project.</p></div>
 <div class="tableblock">
 <table rules="all"
 width="70%"
@@ -1221,8 +1215,8 @@ writable <strong>Xapian</strong> database).</p></div>
 parameters (one can also use a deeper front queue, this changes little):</p></div>
 <div class="literalblock">
 <div class="content">
-<pre><tt>thrQSizes = 2 -1 -1
-thrTCounts =  4 0 0</tt></pre>
+<pre><code>thrQSizes = 2 -1 -1
+thrTCounts =  4 0 0</code></pre>
 </div></div>
 <div class="paragraph"><p>In practise, the performance is close to the one for the multistage
 version.</p></div>
@@ -1267,12 +1261,12 @@ was over.</p></div>
 <div class="sect2">
 <h3 id="_fork_performance_issues">Fork performance issues</h3>
 <div class="paragraph"><p>On a quite unrelated note, something that I discovered while evaluating the
-program performance is that forking a big process like <tt>recollindex</tt> can be
+program performance is that forking a big process like <code>recollindex</code> can be
 quite expensive. Even if the memory space of the forked process is not
 copied (it&#8217;s Copy On Write, and we write very little before the following
 exec), just duplicating the memory maps can be slow when the process uses a
 few hundred megabytes.</p></div>
-<div class="paragraph"><p>I modified the single-threaded version of <tt>recollindex</tt> to use <strong>vfork</strong>
+<div class="paragraph"><p>I modified the single-threaded version of <code>recollindex</code> to use <strong>vfork</strong>
 instead of <strong>fork</strong>, but this can&#8217;t be used with multiple threads (no
 modification of the process memory space is allowed in the child between
 <strong>vfork</strong> and <strong>exec</strong>, so we&#8217;d have to have a way to suspend all the threads
@@ -1289,7 +1283,7 @@ the executing of ephemeral external commands.</p></div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-12-14 15:55:12 CET
+Last updated 2016-05-08 08:30:29 CEST
 </div>
 </div>
 </body>

@@ -279,12 +279,10 @@ unfloat::[]
 
 So the big question after all the work: was it worth it ? I could only get
 a real answer when the program stopped crashing, so this took some time and
-a little faith...
+a little faith, but the answer is positive, as far as I'm
+concerned. Performance has improved significantly and this was a fun
+project.
 
-The answer is mostly yes, as far as I'm concerned. Indexing tests running
-almost twice as fast are good for my blood pressure and I don't need a
-faster PC, I'll buy more red wine instead (good for my health too, or maybe
-not). And it was a fun project anyway.
 
 .Results on a variety of file system areas:
 [options="header", width="70%"]
