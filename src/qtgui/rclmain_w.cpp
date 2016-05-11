@@ -18,6 +18,7 @@
 
 #include <utility>
 #include MEMORY_INCLUDE
+#include <stdlib.h>
 
 #include <qapplication.h>
 #include <qmessagebox.h>
@@ -687,8 +688,13 @@ void RclMain::fileExit()
 
     rwSettings(true);
 
-    // Let the exit handler clean up the rest (internal recoll stuff).
-    exit(0);
+    // We should do the right thing and let exit() call all the
+    // cleanup handlers. But we have few persistent resources and qt
+    // exit is a great source of crashes and pita. So do our own
+    // cleanup:
+    deleteAllTempFiles();
+    // and scram out
+    _Exit(0);
 }
 
 // Start a db query and set the reslist docsource
