@@ -39,6 +39,7 @@ extern RclConfig *theconfig;
 
 extern void rememberTempFile(TempFile);
 extern void forgetTempFile(string &fn);
+extern void deleteAllTempFiles();
 
 extern Rcl::Db *rcldb;
 extern int recollNeedsExit;

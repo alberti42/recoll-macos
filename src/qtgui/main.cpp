@@ -75,6 +75,11 @@ void forgetTempFile(string &fn)
     fn.erase();
 }    
 
+void deleteAllTempFiles()
+{
+    PTMutexLocker locker(thetempfileslock);
+    o_tempfiles.clear();
+}
 
 Rcl::Db *rcldb;
 
@@ -152,9 +157,8 @@ static void recollCleanup()
     deleteZ(rcldb);
     deleteZ(theconfig);
 
-    PTMutexLocker locker(thetempfileslock);
-    o_tempfiles.clear();
-
+    deleteAllTempFiles();
+    
 #ifdef RCL_USE_ASPELL
     deleteZ(aspell);
 #endif
