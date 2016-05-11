@@ -98,6 +98,9 @@
       
         <dl>
 
+          <dt>2016-05-11</dt><dd>Release 1.21.7 fixes an ennoying but
+            benign GUI crash-on-exit bug reported on Fedora 23 (qt5).</dd>
+          
           <dt>2016-04-21</dt><dd>I experimented with installing
             the <a href="https://github.com/koniu/recoll-webui">Recoll
               Web UI</a> with Apache, and found out

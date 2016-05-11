@@ -29,7 +29,7 @@
 later versions. Bugs listed in the topmost section may also exist in older
 versions.</i></p>
 
-<h2><a name="b_latest">recoll 1.21.6, 1.22.0</a></h2>
+<h2><a name="b_latest">recoll 1.21.7, 1.22.0</a></h2>
 <ul>
 
  <li>There have been multiple occurrences of an indexing problem
@@ -131,6 +131,16 @@ versions.</i></p>
     fixed by removing (back it up just in case)
     ~/.config/Recoll.org/recoll.conf, the QSettings storage for
     recoll.</li>
+</ul>
+
+<h2><a name="b_1_21_6">recoll 1.21.6</a></h2>
+<ul>
+  <li>The GUI dumps core on exit on Fedora23 + qt5 (maybe on other
+    platforms too). This has no real consequences apart from an
+    ennoying system pop up).</li>
+  <li>Starting the advanced search tool may crash the GUI if the saved
+    configuration has more than the default count of search clauses
+    (five).</li>
 </ul>
 
 <h2><a name="b_1_21_4">recoll 1.21.4</a></h2>

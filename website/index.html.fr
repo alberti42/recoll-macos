@@ -107,6 +107,10 @@
 
       <dl>
         
+        <dt>2016-05-11</dt><dd>Release 1.21.7: corrige un crash bénin
+          mais agaçant au moment de quitter l'interface utilisateur
+          (Fedora 23 / qt5).</dd>
+
         <dt>2016-04-07</dt><dd>Release 1.21.6: compatibilité KDE5 pour le
           KIO slave.</dd>
 
