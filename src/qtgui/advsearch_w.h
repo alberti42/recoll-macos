@@ -44,7 +44,6 @@ public:
 	setupUi(this);
 	init();
     }
-    ~AdvSearch(){}
 
 public slots:
     virtual void delFiltypPB_clicked();

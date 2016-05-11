@@ -683,9 +683,6 @@ void RclMain::fileExit()
 	prefs.ssearchTyp = sSearch->searchTypCMB->currentIndex();
     }
 
-    if (asearchform)
-	delete asearchform;
-
     rwSettings(true);
 
     // We should do the right thing and let exit() call all the
