@@ -23,13 +23,17 @@
 #endif
 
 #include <stdio.h>
+#include <math.h>
+#include <errno.h>
+
 #ifdef _WIN32
 #include "dirent.h"
 #include "safefcntl.h"
 #include "safeunistd.h"
 #include "safewindows.h"
 #include "safesysstat.h"
-#else
+
+#else // Not windows ->
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/param.h>
@@ -37,24 +41,9 @@
 #include <sys/file.h>
 #include <sys/stat.h>
 #include <dirent.h>
-#endif
-#include <math.h>
-#include <errno.h>
+#include <sys/statvfs.h>
 #include <sys/types.h>
 
-// Let's include all files where statfs can be defined and hope for no
-// conflict...
-#ifdef HAVE_SYS_MOUNT_H
-#include <sys/mount.h>
-#endif
-#ifdef HAVE_SYS_STATFS_H
-#include <sys/statfs.h>
-#endif
-#ifdef HAVE_SYS_STATVFS_H
-#include <sys/statvfs.h>
-#endif
-#ifdef HAVE_SYS_VFS_H
-#include <sys/vfs.h>
 #endif
 
 #include <cstdlib>
@@ -101,8 +90,6 @@ static bool path_isdriveabs(const string& s)
 }
 #endif
 
-#if defined(HAVE_SYS_MOUNT_H) || defined(HAVE_SYS_STATFS_H) || \
-    defined(HAVE_SYS_STATVFS_H) || defined(HAVE_SYS_VFS_H) || defined(_WIN32)
 bool fsocc(const string& path, int *pc, long long *avmbs)
 {
     static const int FSOCC_MB = 1024 * 1024;
@@ -120,36 +107,29 @@ bool fsocc(const string& path, int *pc, long long *avmbs)
         *avmbs = int(totalbytes.QuadPart / FSOCC_MB);
     }
     return true;
-#else
-#ifdef sun
+#else // not windows ->
+
     struct statvfs buf;
     if (statvfs(path.c_str(), &buf) != 0) {
         return false;
     }
-#else
-    struct statfs buf;
-    if (statfs(path.c_str(), &buf) != 0) {
-        return false;
-    }
-#endif
 
-    // used blocks
-    double fpc = 0.0;
-#define FSOCC_USED (double(buf.f_blocks - buf.f_bfree))
-#define FSOCC_TOTAVAIL (FSOCC_USED + double(buf.f_bavail))
-    if (FSOCC_TOTAVAIL > 0) {
-        fpc = 100.0 * FSOCC_USED / FSOCC_TOTAVAIL;
-    }
     if (pc) {
+        double fsocc_used = double(buf.f_blocks - buf.f_bfree);
+        double fsocc_totavail = fsocc_used + double(buf.f_bavail);
+        double fpc = 100.0;
+        if (fsocc_totavail > 0) {
+            fpc = 100.0 * fsocc_used / fsocc_totavail;
+        }
         *pc = int(fpc);
     }
     if (avmbs) {
         *avmbs = 0;
         if (buf.f_bsize > 0) {
-            int ratio = buf.f_bsize > FSOCC_MB ? buf.f_bsize / FSOCC_MB :
-                        FSOCC_MB / buf.f_bsize;
+            int ratio = buf.f_frsize > FSOCC_MB ? buf.f_frsize / FSOCC_MB :
+                        FSOCC_MB / buf.f_frsize;
 
-            *avmbs = buf.f_bsize > FSOCC_MB ?
+            *avmbs = buf.f_frsize > FSOCC_MB ?
                      ((long long)buf.f_bavail) * ratio :
                      ((long long)buf.f_bavail) / ratio;
         }
@@ -157,7 +137,7 @@ bool fsocc(const string& path, int *pc, long long *avmbs)
     return true;
 #endif
 }
-#endif // we have found an appropriate include file
+
 
 string path_PATHsep()
 {
@@ -877,22 +857,6 @@ using namespace std;
 
 #include "pathut.h"
 
-void path_to_thumb(const string& _input)
-{
-    string input(_input);
-    // Make absolute path if needed
-    if (input[0] != '/') {
-        input = path_absolute(input);
-    }
-
-    input = string("file://") + path_canon(input);
-
-    string path;
-    //path = url_encode(input, 7);
-    thumbPathForUrl(input, 7, path);
-    cout << path << endl;
-}
-
 const char *tstvec[] = {"", "/", "/dir", "/dir/", "/dir1/dir2",
                         "/dir1/dir2",
                         "./dir", "./dir1/", "dir", "../dir", "/dir/toto.c",
@@ -992,29 +956,6 @@ int main(int argc, const char **argv)
 #endif
 
 #if 0
-    if (argc > 1) {
-        cerr <<  "Usage: thumbpath <filepath>" << endl;
-        exit(1);
-    }
-    string input;
-    if (argc == 1) {
-        input = *argv++;
-        if (input.empty())  {
-            cerr << "Usage: thumbpath <filepath>" << endl;
-            exit(1);
-        }
-        path_to_thumb(input);
-    } else {
-        while (getline(cin, input)) {
-            path_to_thumb(input);
-        }
-    }
-
-
-    exit(0);
-#endif
-
-#if 0
     if (argc != 1) {
         cerr << "Usage: trpathut <filename>" << endl;
         exit(1);
@@ -1026,7 +967,7 @@ int main(int argc, const char **argv)
     return 0;
 #endif
 
-#if 1
+#if 0
     if (argc != 1) {
         cerr << "Usage: trpathut url" << endl;
         exit(1);
@@ -1037,6 +978,26 @@ int main(int argc, const char **argv)
     cout << "File: [" << fileurltolocalpath(url) << "]\n";
     return 0;
 #endif
+
+#if 1
+    if (argc != 1) {
+        cerr << "Usage: trpathut path" << endl;
+        exit(1);
+    }
+    string path = *argv++;
+    argc--;
+
+    int pc;
+    long long avmbs;
+    if (fsocc(path, &pc, &avmbs)) {
+        cout << "Percent occup " << pc << " avmbs " << avmbs << endl;
+        return 0;
+    } else {
+        cerr << "fsocc failed\n";
+        return 1;
+    }
+#endif
+
 
 
 }
