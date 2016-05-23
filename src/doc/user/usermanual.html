@@ -20,8 +20,8 @@ alink="#0000FF">
     <div class="titlepage">
       <div>
         <div>
-          <h1 class="title"><a name="idp37043056" id=
-          "idp37043056"></a>Recoll user manual</h1>
+          <h1 class="title"><a name="idp49492016" id=
+          "idp49492016"></a>Recoll user manual</h1>
         </div>
 
         <div>
@@ -109,13 +109,13 @@ alink="#0000FF">
                 multiple indexes</a></span></dt>
 
                 <dt><span class="sect2">2.1.3. <a href=
-                "#idp42671856">Document types</a></span></dt>
+                "#idp55120704">Document types</a></span></dt>
 
                 <dt><span class="sect2">2.1.4. <a href=
-                "#idp42691536">Indexing failures</a></span></dt>
+                "#idp55140304">Indexing failures</a></span></dt>
 
                 <dt><span class="sect2">2.1.5. <a href=
-                "#idp42698992">Recovery</a></span></dt>
+                "#idp55147760">Recovery</a></span></dt>
               </dl>
             </dd>
 
@@ -981,8 +981,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp42671856" id=
-                "idp42671856"></a>2.1.3.&nbsp;Document types</h3>
+                <h3 class="title"><a name="idp55120704" id=
+                "idp55120704"></a>2.1.3.&nbsp;Document types</h3>
               </div>
             </div>
           </div>
@@ -1075,8 +1075,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp42691536" id=
-                "idp42691536"></a>2.1.4.&nbsp;Indexing
+                <h3 class="title"><a name="idp55140304" id=
+                "idp55140304"></a>2.1.4.&nbsp;Indexing
                 failures</h3>
               </div>
             </div>
@@ -1116,8 +1116,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp42698992" id=
-                "idp42698992"></a>2.1.5.&nbsp;Recovery</h3>
+                <h3 class="title"><a name="idp55147760" id=
+                "idp55147760"></a>2.1.5.&nbsp;Recovery</h3>
               </div>
             </div>
           </div>
@@ -1701,10 +1701,9 @@ metadatacmds = ; tags = tmsu tags %f
         "margin-left: 0.5in; margin-right: 0.5in;">
           <h3 class="title">Note</h3>
 
-          <p>This is just an example. Depending on the <span class=
-          "application">tmsu</span> version, you may need/want to
-          add options like <code class=
-          "literal">--database=/some/db</code>.</p>
+          <p>Depending on the <span class="application">tmsu</span>
+          version, you may need/want to add options like
+          <code class="literal">--database=/some/db</code>.</p>
         </div>
 
         <p>You may want to restrict this processing to a subset of
@@ -5719,7 +5718,7 @@ dir:recoll dir:src -dir:utils -dir:common
         <span class="command"><strong>recollindex</strong></span>.
         This latter kind will not be described here.</p>
 
-        <p>There are currently (1.18 and since 1.13) two kinds of
+        <p>There are currently (since version 1.13) two kinds of
         external executable input handlers:</p>
 
         <div class="itemizedlist">
@@ -5870,14 +5869,20 @@ dir:recoll dir:src -dir:utils -dir:common
           <p>If you can program and want to write an <code class=
           "literal">execm</code> handler, it should not be too
           difficult to make sense of one of the existing modules.
-          For example, look at <span class=
-          "command"><strong>rclzip</strong></span> which uses Zip
-          file paths as identifiers (<code class=
-          "literal">ipath</code>), and <span class=
-          "command"><strong>rclics</strong></span>, which uses an
-          integer index. Also have a look at the comments inside
-          the <code class="filename">internfile/mh_execm.h</code>
-          file and possibly at the corresponding module.</p>
+          There is a sample one with many comments, not actually
+          used by <span class="application">Recoll</span>, which
+          would index a text file as one document per line. Look
+          for <code class="filename">rcltxtlines.py</code> in the
+          <code class="filename">src/filters</code> directory in
+          the <span class="application">Recoll</span> <a class=
+          "ulink" href="https://bitbucket.org/medoc/recoll/src"
+          target="_top">BitBucket repository</a> (the sample not in
+          the distributed release at the moment).</p>
+
+          <p>You can also have a look at the slightly more complex
+          <span class="command"><strong>rclzip</strong></span>
+          which uses Zip file paths as identifiers (<code class=
+          "literal">ipath</code>).</p>
 
           <p><code class="literal">execm</code> handlers sometimes
           need to make a choice for the nature of the <code class=
@@ -5958,15 +5963,17 @@ dir:recoll dir:src -dir:utils -dir:common
 
           <p>If no suffix association is found for the file name,
           <span class="application">Recoll</span> will try to
-          execute the <span class="command"><strong>file
-          -i</strong></span> command to determine a MIME type.</p>
+          execute a system command (typically <span class=
+          "command"><strong>file -i</strong></span> or <span class=
+          "command"><strong>xdg-mime</strong></span>) to determine
+          a MIME type.</p>
 
-          <p>The association of file types to handlers is performed
-          in the <a class="link" href=
+          <p>The second element is the association of MIME types to
+          handlers in the <a class="link" href=
           "#RCL.INSTALL.CONFIG.MIMECONF" title=
           "5.4.5.&nbsp;The mimeconf file"><code class=
           "filename">mimeconf</code> file</a>. A sample will
-          probably be of better help than a long explanation:</p>
+          probably be better than a long explanation:</p>
           <pre class="programlisting">
 
 [index]
@@ -9404,18 +9411,24 @@ x-my-tag = mailmytag
           file name extension to MIME type mappings.</p>
 
           <p>For file names without an extension, or with an
-          unknown one, the system's <span class=
+          unknown one, a system command (<span class=
           "command"><strong>file</strong></span> <code class=
-          "option">-i</code> command will be executed to determine
-          the MIME type (this can be switched off inside the main
-          configuration file).</p>
+          "option">-i</code>, or <span class=
+          "command"><strong>xdg-mime</strong></span>) will be
+          executed to determine the MIME type (this can be switched
+          off, or the command changed inside the main configuration
+          file).</p>
 
           <p>The mappings can be specified on a per-subtree basis,
           which may be useful in some cases. Example: <span class=
-          "application">gaim</span> logs have a <code class=
-          "filename">.txt</code> extension but should be handled
+          "application">okular</span> notes have a <code class=
+          "filename">.xml</code> extension but should be handled
           specially, which is possible because they are usually all
-          located in one place.</p>
+          located in one place. Example:</p>
+          <pre class="programlisting">
+[~/.kde/share/apps/okular/docdata]
+.xml = application/x-okular-notes
+</pre>
 
           <p>The <code class="varname">recoll_noindex</code>
           <code class="filename">mimemap</code> variable has been

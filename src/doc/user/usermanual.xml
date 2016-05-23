@@ -3877,7 +3877,7 @@ dir:recoll dir:src -dir:utils -dir:common
           inside <command>recollindex</command>. This latter kind will not
           be described here.</para>
 
-        <para>There are currently (1.18 and since 1.13) two kinds of
+        <para>There are currently (since version 1.13) two kinds of
         external executable input handlers:
           <itemizedlist>
 	    <listitem><para>Simple <literal>exec</literal> handlers
@@ -3988,13 +3988,18 @@ dir:recoll dir:src -dir:utils -dir:common
 
         <para>If you can program and want to write
           an <literal>execm</literal> handler, it should not be too
-          difficult to make sense of one of the existing modules. For
-          example, look at <command>rclzip</command> which uses Zip
-          file paths as identifiers (<literal>ipath</literal>),
-          and <command>rclics</command>, which uses an integer
-          index. Also have a look at the comments inside
-          the <filename>internfile/mh_execm.h</filename> file and
-          possibly at the corresponding module.</para>
+          difficult to make sense of one of the existing modules. There is
+          a sample one with many comments, not actually used by &RCL;,
+          which would index a text file as one document per line. Look for
+          <filename>rcltxtlines.py</filename> in the
+          <filename>src/filters</filename> directory in the &RCL; <ulink
+          url="https://bitbucket.org/medoc/recoll/src">BitBucket
+          repository</ulink> (the sample
+        not in the distributed release at the moment).</para>
+
+        <para>You can also have a look at the slightly more complex
+        <command>rclzip</command> which uses Zip
+        file paths as identifiers (<literal>ipath</literal>).</para>
 
         <para><literal>execm</literal> handlers sometimes need to make
           a choice for the nature of the <literal>ipath</literal>
@@ -4045,13 +4050,13 @@ dir:recoll dir:src -dir:utils -dir:common
 .doc = application/msword
 </programlisting>
        If no suffix association is found for the file name, &RCL; will try
-       to execute the <command>file -i</command> command to determine a
-       MIME type.</para>
+       to execute a system command (typically <command>file -i</command> or
+       <command>xdg-mime</command>) to determine a MIME type.</para>
 
-      <para>The association of file types to handlers is performed in
-      the <link linkend="RCL.INSTALL.CONFIG.MIMECONF">
+      <para>The second element is the association of MIME types to handlers
+      in the <link linkend="RCL.INSTALL.CONFIG.MIMECONF">
       <filename>mimeconf</filename> file</link>. A sample will probably be
-      of better help than a long explanation:</para>
+      better than a long explanation:</para>
 <programlisting>
 
 [index]
@@ -6543,18 +6548,20 @@ x-my-tag = mailmytag
         <para><filename>mimemap</filename> specifies the
         file name extension to MIME type mappings.</para> 
 
-        <para>For file names without an extension, or with an unknown
-        one, the system's <command>file</command> <option>-i</option> 
-	command will be
-        executed to determine the MIME type (this can be switched off
-        inside the main configuration file).</para>
+        <para>For file names without an extension, or with an unknown one,
+        a system command (<command>file</command> <option>-i</option>, or
+        <command>xdg-mime</command>) will be executed to determine the MIME
+        type (this can be switched off, or the command changed inside the
+        main configuration file).</para>
 
         <para>The mappings can be specified on a per-subtree basis,
         which may be useful in some cases. Example:
-        <application>gaim</application> logs have a
-        <filename>.txt</filename> extension but 
+        <application>okular</application> notes have a
+        <filename>.xml</filename> extension but 
         should be handled specially, which is possible because they
-        are usually all located in one place.</para>
+        are usually all located in one place. Example:
+        <programlisting>[~/.kde/share/apps/okular/docdata]
+.xml = application/x-okular-notes</programlisting></para>
 
         <para>The <varname>recoll_noindex</varname>
         <filename>mimemap</filename> variable has been moved to
