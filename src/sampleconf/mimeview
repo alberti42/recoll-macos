@@ -115,6 +115,7 @@ image/x-xpmi = gwenview %f
 #  - Thunderbird will only open a single-message file if it has an .emf
 #    extension
 #  - "sylpheed %f" seems to work ok as of version 3.3
+#  - claws-mail: no can do apparently
 #  - "kmail --view %u" works
 message/rfc822 = thunderbird -file %f
 text/x-mail = thunderbird -file %f
