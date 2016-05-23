@@ -943,6 +943,10 @@ indexedmimetypes = application/pdf
 metadatacmds = ; tags = tmsu tags %f
       </programlisting>
 
+      <note><para>Depending on the <application>tmsu</application> version,
+      you may need/want to add options like
+      <literal>--database=/some/db</literal>.</para></note>
+      
       <para>You may want to restrict this processing to a subset of
       the directory tree, because it may slow down indexing a bit
       (<literal>[some/area/of/the/fs]</literal>).</para>
