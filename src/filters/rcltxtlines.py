@@ -27,14 +27,14 @@ class rclTXTLINES:
         self.em = em
 
     # This is called once for every processed file during indexing, or
-    # query preview. It usually creates some kind of table of
-    # contents, and resets the current index in it, because we don't
-    # know at this point if this is for indexing (will walk all
-    # entries) or previewing (will request one). Actually we could
-    # know from the environment but it's just simpler this way in
-    # general. Note that there is no close call, openfile() will just
-    # be called repeatedly during indexing, and should clear any
-    # existing state
+    # query preview. For multi-document files, it usually creates some
+    # kind of table of contents, and resets the current index in it,
+    # because we don't know at this point if this is for indexing
+    # (will walk all entries) or previewing (will request
+    # one). Actually we could know from the environment but it's just
+    # simpler this way in general. Note that there is no close call,
+    # openfile() will just be called repeatedly during indexing, and
+    # should clear any existing state
     def openfile(self, params):
         """Open the text file, create a contents array"""
         self.currentindex = -1
@@ -46,20 +46,18 @@ class rclTXTLINES:
         self.lines = f.readlines()
         return True
 
-    # This is called for query preview to request one specific
-    # entry. Here our internal paths are stringified line numbers, but
-    # they could be tar archive paths or whatever we returned during
-    # indexing.
-    def getipath(self, params):
-        return self.extractone(int(params["ipath:"]))
-
     # This is called during indexing to walk the contents. The first
     # time, we return a 'self' document, which may be empty (e.g. for
     # a tar file), or might contain data (e.g. for an email body,
-    # further docs being the attachments).
+    # further docs being the attachments), and may also be the only
+    # document returned (for single document files).
     def getnext(self, params):
 
         # Self doc. Here empty.
+        #
+        # This could also be the only entry if this file type holds a
+        # single document. We return eofnext in this case
+        #
         # !Note that the self doc has an *empty* ipath
         if self.currentindex == -1:
             self.currentindex = 0
@@ -76,6 +74,13 @@ class rclTXTLINES:
             ret= self.extractone(self.currentindex)
             self.currentindex += 1
             return ret
+
+    # This is called for query preview to request one specific (or the
+    # only) entry. Here our internal paths are stringified line
+    # numbers, but they could be tar archive paths or whatever we
+    # returned during indexing.
+    def getipath(self, params):
+        return self.extractone(int(params["ipath:"]))
 
     # Most handlers factorize common code from getipath() and
     # getnext() in an extractone() method, but this is not part of the
