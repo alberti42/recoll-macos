@@ -19,7 +19,7 @@ case $RCLVERS in
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-PPANAME=recollexp-ppa
+#PPANAME=recollexp-ppa
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
@@ -42,7 +42,7 @@ check_recoll_orig()
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
 series="precise trusty utopic vivid wily xenial"
-series=trusty
+series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -141,7 +141,7 @@ done
 
 ### Unity Scope
 series="trusty utopic vivid wily xenial"
-series=
+series=xenial
 
 debdir=debianunityscope
 if test ! -d ${debdir}/ ; then
