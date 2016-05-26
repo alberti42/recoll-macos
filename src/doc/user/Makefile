@@ -25,7 +25,7 @@ webh:
 	make -C webhelp
         
 usermanual.html: usermanual.xml
-	xsltproc ${commonoptions} \
+	xsltproc --xinclude ${commonoptions} \
             -o tmpfile.html "${XSLDIR}/html/docbook.xsl" $<
 	-tidy -indent tmpfile.html > usermanual.html
 	rm -f tmpfile.html
