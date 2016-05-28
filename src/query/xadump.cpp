@@ -45,6 +45,7 @@ static string usage =
     " -i docid -X : delete document docid\n"
     " -i docid -b : 'rebuild' document from term positions\n"
     " -i docid -T : term list for doc docid\n"
+    " -i docid -r : reconstructed text for docid\n"
     " -t term -E  : term existence test\n"
     " -t term -F  : retrieve term frequency data for given term\n"
     " -t term -P  : retrieve postings for term\n"
@@ -83,6 +84,7 @@ static int        op_flags;
 #define OPT_t     0x4000
 #define OPT_x     0x8000
 #define OPT_l     0x10000
+#define OPT_r     0x20000
 
 // Compute an exploded version of string, inserting a space between each char.
 // (no character combining possible)
@@ -127,6 +129,27 @@ inline bool has_prefix(const string& trm)
     }
 }
 
+
+void wholedoc(Xapian::Database* db, int docid)
+{
+    vector<string> buf;
+    Xapian::TermIterator term;
+    for (term = db->termlist_begin(docid);
+         term != db->termlist_end(docid); term++) {
+        Xapian::PositionIterator pos;
+        for (pos = db->positionlist_begin(docid, *term);
+             pos != db->positionlist_end(docid, *term); pos++) {
+            if (buf.size() < *pos)
+                buf.resize(2*((*pos)+1));
+            buf[(*pos)] = *term;
+        }
+    }
+    for (vector<string>::iterator it = buf.begin(); it != buf.end(); it++) {
+        if (!it->empty())
+            cout << *it << " ";
+    }
+}
+
 int main(int argc, char **argv)
 {
     string dbdir = path_cat(path_home(), ".recoll/xapiandb");
@@ -165,6 +188,7 @@ int main(int argc, char **argv)
 	    case 'n':	op_flags |= OPT_n; break;
 	    case 'P':	op_flags |= OPT_P; break;
 	    case 'q':	op_flags |= OPT_q; break;
+	    case 'r':	op_flags |= OPT_r; break;
 	    case 's':	op_flags |= OPT_s; break;
 	    case 'T':	op_flags |= OPT_T; break;
 	    case 't':	op_flags |= OPT_t; if (argc < 2)  Usage();
@@ -259,6 +283,8 @@ int main(int argc, char **argv)
 	    Xapian::Document doc = db->get_document(docid);
 	    string data = doc.get_data();
 	    cout << data << endl;
+	} else if (op_flags & OPT_r) {
+	    wholedoc(db, docid);
 	} else if (op_flags & OPT_X) {
 	    Xapian::Document doc = db->get_document(docid);
 	    string data = doc.get_data();
