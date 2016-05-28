@@ -283,6 +283,9 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     else
 	chunk << "<p style='margin: 0px;padding: 0px;clear: both;'>";
 
+    char xdocidbuf[100];
+    sprintf(xdocidbuf, "%lu", doc.xdocid);
+    
     // Configurable stuff
     map<string, string> subs;
     subs["A"] = !richabst.empty() ? richabst : "";
@@ -302,7 +305,8 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     subs["t"] = maybeEscapeHtml(doc.meta[Rcl::Doc::keytt]);
     subs["U"] = url;
     subs["u"] = urlOrLocal;
-
+    subs["x"] = xdocidbuf;
+    
     // Let %(xx) access all metadata. HTML-neuter everything:
     for (map<string,string>::iterator it = doc.meta.begin(); 
 	 it != doc.meta.end(); it++) {
