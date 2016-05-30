@@ -614,6 +614,11 @@ Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
         PyErr_SetString(PyExc_AttributeError, "doc??");
 	return -1;
     }
+    if (!rclconfig || !rclconfig->ok()) {
+	PyErr_SetString(PyExc_EnvironmentError,
+                        "Configuration not initialized");
+	return -1;
+    }
 
 #if PY_MAJOR_VERSION < 3
     if (PyString_Check(value)) {
