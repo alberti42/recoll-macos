@@ -5118,7 +5118,7 @@ for i in range(nres):
       </sect3>
 
       <sect3 id="RCL.PROGRAM.PYTHONAPI.UPDATE.ACCESS">
-        <title>Query data access for external indexers</title>
+        <title>Query data access for external indexers (1.23)</title>
 
         <para>&RCL; has internal methods to access document data for its
         internal (filesystem) indexer. An external indexer needs to provide
