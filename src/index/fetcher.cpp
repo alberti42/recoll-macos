@@ -18,12 +18,14 @@
 
 
 #include "debuglog.h"
+#include "rclconfig.h"
 
 #include "fetcher.h"
 #include "fsfetcher.h"
 #include "bglfetcher.h"
+#include "exefetcher.h"
 
-DocFetcher *docFetcherMake(const Rcl::Doc& idoc)
+DocFetcher *docFetcherMake(RclConfig *config, const Rcl::Doc& idoc)
 {
     if (idoc.url.empty()) {
         LOGERR(("docFetcherMakeg:: no url in doc!\n"));
@@ -38,7 +40,11 @@ DocFetcher *docFetcherMake(const Rcl::Doc& idoc)
 	return new BGLDocFetcher;
 #endif
     } else {
-	LOGERR(("DocFetcherFactory: unknown backend [%s]\n", backend.c_str()));
-	return 0;
+        DocFetcher *f = exeDocFetcherMake(config, backend);
+        if (!f) {
+            LOGERR(("DocFetcherFactory: unknown backend [%s]\n",
+                    backend.c_str()));
+        }
+	return f;
     }
 }

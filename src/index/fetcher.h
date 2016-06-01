@@ -42,7 +42,7 @@ public:
     /** A RawDoc is the data for a document-holding entity either as a
        memory block, or pointed to by a file name */
     struct RawDoc {
-	enum RawDocKind {RDK_FILENAME, RDK_DATA};
+	enum RawDocKind {RDK_FILENAME, RDK_DATA, RDK_DATADIRECT};
 	RawDocKind kind;
 	std::string data; // Doc data or file name
 	struct stat st; // Only used if RDK_FILENAME
@@ -71,6 +71,6 @@ public:
 };
 
 /** Return an appropriate fetcher object given the backend string identifier */
-DocFetcher *docFetcherMake(const Rcl::Doc& idoc);
+DocFetcher *docFetcherMake(RclConfig *config, const Rcl::Doc& idoc);
 
 #endif /* _FETCHER_H_INCLUDED_ */

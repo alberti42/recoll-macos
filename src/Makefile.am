@@ -81,6 +81,8 @@ index/bglfetcher.cpp \
 index/bglfetcher.h \
 index/checkretryfailed.cpp \
 index/checkretryfailed.h \
+index/exefetcher.cpp \
+index/exefetcher.h \
 index/fetcher.cpp \
 index/fetcher.h \
 index/fsfetcher.cpp \

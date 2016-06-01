@@ -275,7 +275,8 @@ class FileInterner {
     Uncomp                 m_uncomp;
 
     bool                   m_noxattrs; // disable xattrs usage
-
+    bool                   m_direct; // External app did the extraction
+    
     // Pseudo-constructors
     void init(const string &fn, const struct stat *stp, 
               RclConfig *cnf, int flags, const string *mtype = 0);

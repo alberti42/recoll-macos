@@ -319,6 +319,7 @@ void FileInterner::initcommon(RclConfig *cnf, int flags)
 	m_tmpflgs[i] = false;
     m_targetMType = cstr_textplain;
     m_cfg->getConfParam("noxattrfields", &m_noxattrs);
+    m_direct = false;
 }
 
 FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, int flags)
@@ -327,7 +328,7 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, int flags)
     LOGDEB0(("FileInterner::FileInterner(idoc)\n"));
     initcommon(cnf, flags);
 
-    DocFetcher *fetcher = docFetcherMake(idoc);
+    DocFetcher *fetcher = docFetcherMake(cnf, idoc);
     if (fetcher == 0) {
         LOGERR(("FileInterner:: no backend\n"));
         return;
@@ -344,6 +345,10 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, int flags)
     case DocFetcher::RawDoc::RDK_DATA:
         init(rawdoc.data, cnf, flags, idoc.mimetype);
 	break;
+    case DocFetcher::RawDoc::RDK_DATADIRECT:
+        init(rawdoc.data, cnf, flags, idoc.mimetype);
+        m_direct = true;
+        break;
     default:
 	LOGERR(("FileInterner::FileInterner(idoc): bad rawdoc kind ??\n"));
     }
@@ -352,7 +357,7 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, int flags)
 
 bool FileInterner::makesig(RclConfig *cnf, const Rcl::Doc& idoc, string& sig)
 {
-    DocFetcher *fetcher = docFetcherMake(idoc);
+    DocFetcher *fetcher = docFetcherMake(cnf, idoc);
     if (fetcher == 0) {
         LOGERR(("FileInterner::makesig no backend for doc\n"));
         return false;
@@ -763,7 +768,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, const string& ipath
     // We set the ipath for the first handler here, others are set
     // when they're pushed on the stack
     vector<string> vipath;
-    if (!ipath.empty()) {
+    if (!ipath.empty() && !m_direct) {
 	vector<string> lipath;
 	stringToTokens(ipath, lipath, cstr_isep, true);
 	for (vector<string>::iterator it = lipath.begin();
@@ -946,7 +951,7 @@ bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
 bool FileInterner::topdocToFile(TempFile& otemp, const string& tofile,
                                 RclConfig *cnf, const Rcl::Doc& idoc)
 {
-    DocFetcher *fetcher = docFetcherMake(idoc);
+    DocFetcher *fetcher = docFetcherMake(cnf, idoc);
     if (fetcher == 0) {
         LOGERR(("FileInterner::idocToFile no backend\n"));
         return false;
