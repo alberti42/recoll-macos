@@ -1,0 +1,5 @@
+[MBOX]
+fetch = python \
+/home/dockes/projets/fulltext/recoll/src/python/samples/rclmbox.py fetch
+makesig = python \
+/home/dockes/projets/fulltext/recoll/src/python/samples/rclmbox.py makesig
