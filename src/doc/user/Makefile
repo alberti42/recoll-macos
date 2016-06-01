@@ -19,7 +19,7 @@ commonoptions=--stringparam section.autolabel 1 \
 
 # index.html chunk format target replaced by nicer webhelp (needs separate
 # make) in webhelp/ subdir
-all: usermanual.html usermanual.pdf webh
+all: usermanual.html webh usermanual.pdf
 
 webh:
 	make -C webhelp

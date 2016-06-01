@@ -262,7 +262,7 @@
         are other ways to perform &RCL; searches: mostly a <link
         linkend="RCL.SEARCH.COMMANDLINE">
           command line interface</link>, a 
-        <link linkend="RCL.PROGRAM.API.PYTHON">
+        <link linkend="RCL.PROGRAM.PYTHONAPI">
           <application>Python</application>
           programming interface</link>, a <link linkend="RCL.SEARCH.KIO">
           <application>KDE</application> KIO slave module</link>, and
@@ -3094,7 +3094,7 @@ MimeType=*/*
       </listitem>
       <listitem><para>By writing a custom
       <application>Python</application> program, using the 
-      <link linkend="RCL.PROGRAM.API.PYTHON">Recoll Python API</link>.</para>
+      <link linkend="RCL.PROGRAM.PYTHONAPI">Recoll Python API</link>.</para>
       </listitem>
     </itemizedlist>
 
@@ -3950,7 +3950,7 @@ dir:recoll dir:src -dir:utils -dir:common
       <sect1 id="RCL.PROGRAM.FILTERS">
         <title>Writing a document input handler</title>
         
-        <note><title>Terminology</title>The small programs or pieces
+        <note><title>Terminology</title><para>The small programs or pieces
         of code which handle the processing of the different document
         types for &RCL; used to be called <literal>filters</literal>,
         which is still reflected in the name of the directory which
@@ -3960,7 +3960,7 @@ dir:recoll dir:src -dir:utils -dir:common
         content. However these modules may have other behaviours, and
         the term <literal>input handler</literal> is now progressively
         substituted in the documentation. <literal>filter</literal> is
-        still used in many places though.</note>
+        still used in many places though.</para></note>
 
         <para>&RCL; input handlers cooperate to translate from the multitude
         of input document formats, simple ones
@@ -4392,83 +4392,26 @@ or
     </sect1>
 
 
-    <sect1 id="RCL.PROGRAM.API">
-      <title>API</title>
+    <sect1 id="RCL.PROGRAM.PYTHONAPI">
+      <title>Python API</title>
 
-    <sect2 id="RCL.PROGRAM.API.ELEMENTS">
-      <title>Interface elements</title>
-
-      <para>A few elements in the interface are specific and and need
-      an explanation.</para>
-
-      <variablelist>
-
-        <varlistentry>
-          <term>udi</term> <listitem><para>An udi (unique document
-            identifier) identifies a document. Because of limitations
-            inside the index engine, it is restricted in length (to
-            200 bytes), which is why a regular URI cannot be used. The
-            structure and contents of the udi is defined by the
-            application and opaque to the index engine. For example,
-            the internal file system indexer uses the complete
-            document path (file path + internal path), truncated to
-            length, the suppressed part being replaced by a hash
-            value.</para> </listitem>
-        </varlistentry>
-
-        <varlistentry> 
-          <term>ipath</term> 
-          
-          <listitem><para>This data value (set as a field in the Doc
-          object) is stored, along with the URL, but not indexed by
-          &RCL;. Its contents are not interpreted, and its use is up
-          to the application. For example, the &RCL; internal file
-          system indexer stores the part of the document access path
-          internal to the container file (<literal>ipath</literal> in
-          this case is a list of subdocument sequential numbers). url
-          and ipath are returned in every search result and permit
-          access to the original document.</para>
-          </listitem>
-        </varlistentry>
-
-        <varlistentry> 
-          <term>Stored and indexed fields</term> 
-          
-          <listitem><para>The <filename>fields</filename> file inside
-          the &RCL; configuration defines which document fields are
-          either "indexed" (searchable), "stored" (retrievable with
-          search results), or both.</para>
-          </listitem>
-        </varlistentry>
-
-      </variablelist>
-
-      <para>Data for an external indexer, should be stored in a
-        separate index, not the one for the &RCL; internal file system
-        indexer, except if the latter is not used at all). The reason
-        is that the main document indexer purge pass would remove all
-        the other indexer's documents, as they were not seen during
-        indexing. The main indexer documents would also probably be a
-        problem for the external indexer purge operation.</para>
-
-    </sect2>
-
-    <sect2 id="RCL.PROGRAM.API.PYTHON">
-      <title>Python interface</title>
-
-      <sect3 id="RCL.PROGRAM.PYTHON.INTRO">
+      <sect2 id="RCL.PROGRAM.PYTHONAPI.INTRO">
         <title>Introduction</title>
 
         <para>&RCL; versions after 1.11 define a Python programming
-        interface, both for searching and indexing.</para>
+        interface, both for searching and creating/updating an
+        index.</para>
 
-        <para>The search interface is used in the Recoll Ubuntu Unity Lens
-        and Recoll WebUI.</para>
+        <para>The search interface is used in the &RCL; Ubuntu Unity Lens
+        and the &RCL; Web UI. It can run queries on any &RCL;
+        configuration.</para>
 
-        <para>The indexing section of the API has seen little use, and is
-        more a proof of concept. In truth it is waiting for its killer
-        app...</para>
-        
+        <para>The index update section of the API may be used to create and
+        update &RCL; indexes on specific configurations (separate from the
+        ones created by <command>recollindex</command>). The resulting
+        databases can be queried alone, or in conjunction with regular
+        ones, through the GUI or any of the query interfaces.</para>
+
         <para>The search API is modeled along the Python database API
         specification. There were two major changes along &RCL; versions:
         <itemizedlist>
@@ -4483,10 +4426,9 @@ or
         </itemizedlist>
         </para>
 
-        <para>We will mostly describe the new API and package
-          structure here. A paragraph at the end of this section will
-          explain a few differences and ways to write code
-          compatible with both versions.</para>
+        <para>We will describe the new API and package structure here. A
+        paragraph at the end of this section will explain a few differences
+        and ways to write code compatible with both versions.</para>
 
         <para>The Python interface can be found in the source package,
           under <filename>python/recoll</filename>.</para>
@@ -4513,44 +4455,140 @@ or
         distribution, the Python API can sometimes be found in a
         separate package.</para>
 
-        <para>The following small sample will run a query and list
-        the title and url for each of the results. It would work with &RCL;
-        1.19 and later. The <filename>python/samples</filename> source directory
-        contains several examples of Python programming with &RCL;,
-        exercising the extension more completely, and especially its data
-        extraction features.</para>
-        <programlisting>
-          from recoll import recoll
+        <para>As an introduction, the following small sample will run a
+        query and list the title and url for each of the results. It would
+        work with &RCL; 1.19 and later. The
+        <filename>python/samples</filename> source directory contains
+        several examples of Python programming with &RCL;, exercising the
+        extension more completely, and especially its data extraction
+        features.</para>
 
-          db = recoll.connect()
-          query = db.query()
-          nres = query.execute("some query")
-          results = query.fetchmany(20)
-          for doc in results:
-              print(doc.url, doc.title)
-        </programlisting>
-      </sect3>
+        <programlisting><![CDATA[
+#!/usr/bin/env python
 
-      <sect3 id="RCL.PROGRAM.PYTHON.PACKAGE">
+from recoll import recoll
+
+db = recoll.connect()
+query = db.query()
+nres = query.execute("some query")
+results = query.fetchmany(20)
+for doc in results:
+    print(doc.url, doc.title)
+]]></programlisting>
+
+      </sect2>
+      
+    <sect2 id="RCL.PROGRAM.PYTHONAPI.ELEMENTS">
+      <title>Interface elements</title>
+
+      <para>A few elements in the interface are specific and and need
+      an explanation.</para>
+
+      <variablelist>
+
+        <varlistentry id="RCL.PROGRAM.PYTHONAPI.ELEMENTS.UDI">> 
+          <term>ipath</term> 
+          
+          <listitem><para>This data value (set as a field in the Doc
+          object) is stored, along with the URL, but not indexed by
+          &RCL;. Its contents are not interpreted by the index layer, and
+          its use is up to the application. For example, the &RCL; file
+          system indexer uses the <literal>ipath</literal> to store the
+          part of the document access path internal to (possibly
+          imbricated) container documents. <literal>ipath</literal> in
+          this case is a vector of access elements (e.g, the first part
+          could be a path inside a zip file to an archive member which
+          happens to be an mbox file, the second element would be the
+          message sequential number inside the mbox
+          etc.). <literal>url</literal> and <literal>ipath</literal> are 
+          returned in every search result and define the access to the
+          original document. <literal>ipath</literal> is empty for
+          top-level document/files (e.g. a PDF document which is a
+          filesystem file). The &RCL; GUI knows about the structure of the
+          <literal>ipath</literal> values used by the filesystem indexer,
+          and uses it for such functions as opening the parent of a given
+          document.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry id="RCL.PROGRAM.PYTHONAPI.ELEMENTS.UDI">
+          <term>udi</term>
+
+          <listitem><para>An <literal>udi</literal> (unique document
+          identifier) identifies a document. Because of limitations inside
+          the index engine, it is restricted in length (to 200 bytes),
+          which is why a regular URI cannot be used. The structure and
+          contents of the <literal>udi</literal> is defined by the
+          application and opaque to the index engine. For example, the
+          internal file system indexer uses the complete document path
+          (file path + internal path), truncated to length, the suppressed
+          part being replaced by a hash value. The <literal>udi</literal>
+          is not explicit in the query interface (it is used "under the
+          hood" by the <filename>rclextract</filename> module), but it is
+          an explicit element of the update interface.</para> </listitem>
+        </varlistentry>
+
+        <varlistentry id="RCL.PROGRAM.PYTHONAPI.ELEMENTS.PARENTUDI">
+          <term>parent_udi</term>
+
+          <listitem><para>If this attribute is set on a document when
+          entering it in the index, it designates its physical container
+          document. In a multilevel hierarchy, this may not be the
+          immediate parent. <literal>parent_udi</literal> is optional, but
+          its use by an indexer may simplify index maintenance, as &RCL;
+          will automatically delete all children defined by
+          <literal>parent_udi == udi</literal> when the document designated
+          by <literal>udi</literal> is destroyed. e.g. if a
+          <literal>Zip</literal> archive contains entries which are
+          themselves containers, like <literal>mbox</literal> files, all
+          the subdocuments inside the <literal>Zip</literal> file (mbox,
+          messages, message attachments, etc.) would have the same
+          <literal>parent_udi</literal>, matching the
+          <literal>udi</literal> for the <literal>Zip</literal> file, and
+          all would be destroyed when the <literal>Zip</literal> file
+          (identified by its <literal>udi</literal>) is removed from the
+          index. The standard filesystem indexer uses
+          <literal>parent_udi</literal>.</para></listitem>
+        </varlistentry>
+
+        <varlistentry> 
+          <term>Stored and indexed fields</term> 
+          
+          <listitem><para>The <filename>fields</filename> file inside
+          the &RCL; configuration defines which document fields are
+          either "indexed" (searchable), "stored" (retrievable with
+          search results), or both.</para>
+          </listitem>
+        </varlistentry>
+
+      </variablelist>
+
+    </sect2>
+
+    <sect2 id="RCL.PROGRAM.PYTHONAPI.SEARCH">
+      <title>Python search interface</title>
+
+      <sect3 id="RCL.PROGRAM.PYTHONAPI.PACKAGE">
         <title>Recoll package</title>
         
         <para>The <literal>recoll</literal> package contains two
           modules:
           <itemizedlist>
             <listitem><para>The <literal>recoll</literal> module contains
-                functions and classes used to query (or update) the
-                index.</para></listitem> 
+            functions and classes used to query (or update) the
+            index. This section will only describe the query part, see
+            further for the update part.</para></listitem> 
             <listitem><para>The <literal>rclextract</literal> module contains
-                functions and classes used to access document
-                data.</para></listitem> 
+            functions and classes used to access document
+            data.</para></listitem> 
           </itemizedlist>
         </para>            
       </sect3>
 
-      <sect3 id="RCL.PROGRAM.PYTHON.RECOLL">
+      <sect3 id="RCL.PROGRAM.PYTHONAPI.RECOLL">
         <title>The recoll module</title>
 
-        <sect4 id="RCL.PROGRAM.PYTHON.RECOLL.FUNCTIONS">
+        <sect4 id="RCL.PROGRAM.PYTHONAPI.RECOLL.FUNCTIONS">
           <title>Functions</title>
 
           <variablelist>
@@ -4558,32 +4596,32 @@ or
               <term>connect(confdir=None, extra_dbs=None,
                 writable = False)</term>
               <listitem>
-                The <literal>connect()</literal> function connects to
+                <para>The <literal>connect()</literal> function connects to
                 one or several &RCL; index(es) and returns
-                a <literal>Db</literal> object.
+                a <literal>Db</literal> object.</para>
                 <itemizedlist>
-                  <listitem><literal>confdir</literal> may specify
+                  <listitem><para><literal>confdir</literal> may specify
                     a configuration directory. The usual defaults
-                    apply.</listitem> 
-                  <listitem><literal>extra_dbs</literal> is a list of
-                  additional indexes (Xapian directories). </listitem>
-                  <listitem><literal>writable</literal> decides if
+                    apply.</para></listitem> 
+                  <listitem><para><literal>extra_dbs</literal> is a list of
+                  additional indexes (Xapian directories).</para></listitem>
+                  <listitem><para><literal>writable</literal> decides if
                     we can index new data through this
-                    connection.</listitem>
+                    connection.</para></listitem>
                 </itemizedlist> 
-                This call initializes the recoll module, and it should
-                always be performed before any other call or object creation.
+                <para>This call initializes the recoll module, and it should
+                always be performed before any other call or object
+                creation.</para> 
               </listitem>
           </varlistentry>
-
           </variablelist>
         </sect4>
 
 
-      <sect4 id="RCL.PROGRAM.PYTHON.RECOLL.CLASSES">
+      <sect4 id="RCL.PROGRAM.PYTHONAPI.RECOLL.CLASSES">
         <title>Classes</title>
         
-        <sect5 id="RCL.PROGRAM.PYTHON.RECOLL.CLASSES.DB">
+        <sect5 id="RCL.PROGRAM.PYTHONAPI.RECOLL.CLASSES.DB">
           <title>The Db class</title>
 
           <para>A Db object is created by
@@ -4592,38 +4630,38 @@ or
           <variablelist>
             <varlistentry>
               <term>Db.close()</term>
-              <listitem>Closes the connection. You can't do anything
+              <listitem><para>Closes the connection. You can't do anything
                 with the <literal>Db</literal> object after
-                this.</listitem>
+                this.</para></listitem>
             </varlistentry>
             <varlistentry>
-              <term>Db.query(), Db.cursor()</term> <listitem>These
+              <term>Db.query(), Db.cursor()</term> <listitem><para>These
                 aliases return a blank <literal>Query</literal> object
-                for this index.</listitem>
+                for this index.</para></listitem>
             </varlistentry>
 
             <varlistentry>
               <term>Db.setAbstractParams(maxchars,
-              contextwords)</term> <listitem>Set the parameters used
+              contextwords)</term> <listitem><para>Set the parameters used
               to build snippets (sets of keywords in context text
               fragments). <literal>maxchars</literal> defines the
                 maximum total size of the abstract. 
                 <literal>contextwords</literal> defines how many
-                terms are shown around the keyword.</listitem>
+                terms are shown around the keyword.</para></listitem>
             </varlistentry>
 
             <varlistentry>
               <term>Db.termMatch(match_type, expr, field='',
 	        maxlen=-1, casesens=False, diacsens=False, lang='english')
                 </term> 
-              <listitem>Expand an expression against the
+              <listitem><para>Expand an expression against the
                 index term list. Performs the basic function from the
                 GUI term explorer tool. <literal>match_type</literal>
                 can be either
                 of <literal>wildcard</literal>, <literal>regexp</literal>
                 or <literal>stem</literal>. Returns a list of terms
                 expanded from the input expression.
-              </listitem>
+              </para></listitem>
             </varlistentry>
 
           </variablelist>
@@ -4631,7 +4669,7 @@ or
         </sect5>
 
 
-        <sect5 id="RCL.PROGRAM.PYTHON.RECOLL.CLASSES.QUERY">
+        <sect5 id="RCL.PROGRAM.PYTHONAPI.RECOLL.CLASSES.QUERY">
           <title>The Query class</title>
 
           <para>A <literal>Query</literal> object (equivalent to a
@@ -4643,76 +4681,77 @@ or
 
             <varlistentry>
               <term>Query.sortby(fieldname, ascending=True)</term>
-              <listitem>Sort results
+              <listitem><para>Sort results
                 by <replaceable>fieldname</replaceable>, in ascending
                 or descending order. Must be called before executing
-                the search.</listitem>
+                the search.</para></listitem>
             </varlistentry>
   
             <varlistentry>
               <term>Query.execute(query_string, stemming=1, 
                 stemlang="english")</term>
-              <listitem>Starts a search
+              <listitem><para>Starts a search
               for <replaceable>query_string</replaceable>, a &RCL;
-              search language string.</listitem>
+              search language string.</para></listitem>
             </varlistentry>
 
             <varlistentry>
               <term>Query.executesd(SearchData)</term>
-              <listitem>Starts a search for the query defined by the
-                SearchData object.</listitem>
+              <listitem><para>Starts a search for the query defined by the
+                SearchData object.</para></listitem>
             </varlistentry>
 
             <varlistentry>
               <term>Query.fetchmany(size=query.arraysize)</term> 
               
-              <listitem>Fetches
+              <listitem><para>Fetches
                 the next <literal>Doc</literal> objects in the current
                 search results, and returns them as an array of the
                 required size, which is by default the value of
-                the <literal>arraysize</literal> data member.</listitem>
+                the <literal>arraysize</literal> data member.</para></listitem>
             </varlistentry>
 
             <varlistentry>
               <term>Query.fetchone()</term>
-              <listitem>Fetches the next <literal>Doc</literal> object
-                from the current search results.</listitem>
+              <listitem><para>Fetches the next <literal>Doc</literal> object
+                from the current search results.</para></listitem>
             </varlistentry>
 
             <varlistentry>
               <term>Query.close()</term>
-              <listitem>Closes the query. The object is unusable
-              after the call.</listitem>
+              <listitem><para>Closes the query. The object is unusable
+              after the call.</para></listitem>
             </varlistentry>
 
             <varlistentry>
               <term>Query.scroll(value, mode='relative')</term>
-              <listitem>Adjusts the position in the current result
+              <listitem><para>Adjusts the position in the current result
                 set. <literal>mode</literal> can
                 be <literal>relative</literal>
-                or <literal>absolute</literal>. </listitem>
+                or <literal>absolute</literal>. </para></listitem>
             </varlistentry>
 
             <varlistentry>
               <term>Query.getgroups()</term>
-              <listitem>Retrieves the expanded query terms as a list
+              <listitem><para>Retrieves the expanded query terms as a list
                 of pairs. Meaningful only after executexx In each
                 pair, the first entry is a list of user terms (of size
                 one for simple terms, or more for group and phrase
                 clauses), the second a list of query terms as derived
                 from the user terms and used in the Xapian
-                Query.</listitem>
+                Query.</para></listitem>
             </varlistentry>
             
             <varlistentry>
               <term>Query.getxquery()</term>
-            <listitem>Return the Xapian query description as a Unicode string.
-              Meaningful only after executexx.</listitem>
+            <listitem><para>Return the Xapian query description as a
+            Unicode string. 
+            Meaningful only after executexx.</para></listitem>
             </varlistentry>
 
             <varlistentry>
               <term>Query.highlight(text, ishtml = 0, methods = object)</term>
-            <listitem>Will insert &lt;span "class=rclmatch">,
+            <listitem><para>Will insert &lt;span "class=rclmatch">,
             &lt;/span> tags around the match areas in the input text
               and return the modified text.  <literal>ishtml</literal>
               can be set to indicate that the input text is HTML and
@@ -4720,39 +4759,41 @@ or
               <literal>methods</literal> if set should be an object
               with methods startMatch(i) and endMatch() which will be
               called for each match and should return a begin and end
-              tag</listitem>
+              tag</para></listitem>
             </varlistentry>
 
             <varlistentry>
               <term>Query.makedocabstract(doc, methods = object))</term>
-              <listitem>Create a snippets abstract
+              <listitem><para>Create a snippets abstract
                 for <literal>doc</literal> (a <literal>Doc</literal>
                 object) by selecting text around the match terms.
                 If methods is set, will also perform highlighting. See
                 the highlight method.
-              </listitem>
+              </para></listitem>
             </varlistentry>
    
             <varlistentry>
               <term>Query.__iter__() and Query.next()</term>
-              <listitem>So that things like <literal>for doc in
-                  query:</literal> will work.</listitem>
+              <listitem><para>So that things like <literal>for doc in
+                  query:</literal> will work.</para></listitem>
             </varlistentry>
           </variablelist>
 
           <variablelist>
 
-            <varlistentry><term>Query.arraysize</term> <listitem>Default
-                number of records processed by fetchmany (r/w).</listitem> 
+            <varlistentry><term>Query.arraysize</term>
+            <listitem><para>Default number of records processed by fetchmany
+            (r/w).</para></listitem>  
             </varlistentry>
-            <varlistentry><term>Query.rowcount</term><listitem>Number of
-                records returned by the last execute.</listitem></varlistentry>
-            <varlistentry><term>Query.rownumber</term><listitem>Next index
-                to be fetched from results. Normally increments after
-                each fetchone() call, but can be set/reset before the
-                call to effect seeking (equivalent to
-                using <literal>scroll()</literal>). Starts at
-                0.</listitem> 
+            <varlistentry><term>Query.rowcount</term><listitem><para>Number
+            of records returned by the last
+            execute.</para></listitem></varlistentry>
+            <varlistentry><term>Query.rownumber</term><listitem><para>Next index
+            to be fetched from results. Normally increments after
+            each fetchone() call, but can be set/reset before the
+            call to effect seeking (equivalent to
+            using <literal>scroll()</literal>). Starts at
+            0.</para></listitem> 
             </varlistentry>
 
           </variablelist>
@@ -4760,7 +4801,7 @@ or
         </sect5>
 
 
-        <sect5 id="RCL.PROGRAM.PYTHON.RECOLL.CLASSES.DOC">
+        <sect5 id="RCL.PROGRAM.PYTHONAPI.RECOLL.CLASSES.DOC">
           <title>The Doc class</title>
 
           <para>A <literal>Doc</literal> object contains index data
@@ -4789,27 +4830,52 @@ or
 
             <varlistentry>
               <term>get(key), [] operator</term>
-              <listitem>Retrieve the named doc attribute</listitem>
+
+              <listitem><para>Retrieve the named doc
+              attribute. You can also use
+              <literal>getattr(doc, key)</literal> or
+              <literal>doc.key</literal>.</para></listitem>  
             </varlistentry>
-            <varlistentry><term>getbinurl()</term><listitem>Retrieve
-                the URL in byte array format (no transcoding), for use as
-                parameter to a system call.</listitem>
+
+            <varlistentry>
+              <term>doc.key = value</term>
+
+              <listitem><para>Set the the named doc
+              attribute. You can also use
+              <literal>setattr(doc, key, value)</literal>.</para></listitem>  
             </varlistentry>
+
+            <varlistentry>
+              <term>getbinurl()</term>
+
+              <listitem><para>Retrieve the URL in byte array format (no
+              transcoding), for use as parameter to a system
+              call.</para></listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>setbinurl(url)</term>
+
+              <listitem><para>Set the URL in byte array format (no
+              transcoding).</para></listitem>
+            </varlistentry>
+
             <varlistentry>
               <term>items()</term>
-              <listitem>Return a dictionary of doc object
-              keys/values</listitem> 
+              <listitem><para>Return a dictionary of doc object
+              keys/values</para></listitem> 
             </varlistentry>
+
             <varlistentry>
               <term>keys()</term>
-              <listitem>list of doc object keys (attribute
-              names).</listitem>
+              <listitem><para>list of doc object keys (attribute
+              names).</para></listitem>
             </varlistentry>
           </variablelist>
 
         </sect5> <!-- Doc -->
 
-        <sect5 id="RCL.PROGRAM.PYTHON.RECOLL.CLASSES.SEARCHDATA">
+        <sect5 id="RCL.PROGRAM.PYTHONAPI.RECOLL.CLASSES.SEARCHDATA">
           <title>The SearchData class</title>
 
           <para>A <literal>SearchData</literal> object allows building
@@ -4825,7 +4891,7 @@ or
               <term>addclause(type='and'|'or'|'excl'|'phrase'|'near'|'sub',
                 qstring=string, slack=0, field='', stemming=1,
                 subSearch=SearchData)</term>
-              <listitem></listitem>
+              <listitem><para></para></listitem>
             </varlistentry>
           </variablelist>
 
@@ -4834,7 +4900,7 @@ or
       </sect4> <!-- recoll.classes -->
       </sect3> <!-- Recoll module -->
 
-      <sect3 id="RCL.PROGRAM.PYTHON.RCLEXTRACT">
+      <sect3 id="RCL.PROGRAM.PYTHONAPI.RCLEXTRACT">
         <title>The rclextract module</title>
 
         <para>Index queries do not provide document content (only a
@@ -4847,23 +4913,23 @@ or
           provides a single class which can be used to access the data
           content for result documents.</para>
 
-        <sect4 id="RCL.PROGRAM.PYTHON.RCLEXTRACT.CLASSES">
+        <sect4 id="RCL.PROGRAM.PYTHONAPI.RCLEXTRACT.CLASSES">
           <title>Classes</title>
         
-          <sect5 id="RCL.PROGRAM.PYTHON.RECOLL.CLASSES.EXTRACTOR">
+          <sect5 id="RCL.PROGRAM.PYTHONAPI.RCLEXTRACT.CLASSES.EXTRACTOR">
             <title>The Extractor class</title>
 
             <variablelist>
 
               <varlistentry>
                 <term>Extractor(doc)</term>
-                <listitem>An <literal>Extractor</literal> object is
+                <listitem><para>An <literal>Extractor</literal> object is
                   built from a <literal>Doc</literal> object, output
-                  from a query.</listitem>
+                  from a query.</para></listitem>
               </varlistentry>
               <varlistentry>
                 <term>Extractor.textextract(ipath)</term>
-                <listitem>Extract document defined
+                <listitem><para>Extract document defined
                 by <replaceable>ipath</replaceable> and return
                 a <literal>Doc</literal> object. The doc.text field
                 has the document text converted to either text/plain or
@@ -4875,11 +4941,11 @@ extractor = recoll.Extractor(qdoc)
 doc = extractor.textextract(qdoc.ipath)
 # use doc.text, e.g. for previewing
 </programlisting>
-                </listitem>
+</para></listitem>
               </varlistentry>
               <varlistentry>
                 <term>Extractor.idoctofile(ipath, targetmtype, outfile='')</term>
-                <listitem>Extracts document into an output file,
+                <listitem><para>Extracts document into an output file,
                   which can be given explicitly or will be created as a
                   temporary file to be deleted by the caller. Typical use:
                   <programlisting>
@@ -4887,7 +4953,7 @@ qdoc = query.fetchone()
 extractor = recoll.Extractor(qdoc)
 filename = extractor.idoctofile(qdoc.ipath, qdoc.mimetype)</programlisting>
 
-                </listitem>
+</para></listitem>
               </varlistentry>
 
           </variablelist>
@@ -4896,10 +4962,8 @@ filename = extractor.idoctofile(qdoc.ipath, qdoc.mimetype)</programlisting>
         </sect4> <!-- rclextract classes -->
       </sect3> <!-- rclextract module -->
 
-
-
-      <sect3 id="RCL.PROGRAM.PYTHON.EXAMPLES">
-        <title>Example code</title>
+      <sect3 id="RCL.PROGRAM.PYTHONAPI.SEARCH.EXAMPLE">
+        <title>Search API usage example</title>
 
         <para>The following sample would query the index with a user
         language string. See the <filename>python/samples</filename>
@@ -4934,17 +4998,189 @@ for i in range(nres):
 </programlisting>
 
       </sect3>
+    </sect2>
 
-      <sect3 id="RCL.PROGRAM.PYTHON.COMPAT">
-        <title>Compatibility with the previous version</title>
 
-        <para>The following code fragments can be used to ensure that
-          code can run with both the old and the new API (as long as it
-          does not use the new abilities of the new API of
-          course).</para>
+    <sect2 id="RCL.PROGRAM.PYTHONAPI.UPDATE">
+      <title>Creating Python external indexers</title>
 
-        <para>Adapting to the new package structure:</para>
-        <programlisting>
+      <para>The update API can be used to create an index from data which
+      is not accessible to the regular &RCL; indexer, or structured to
+      present difficulties to the &RCL; input handlers.</para>
+
+      <para>An indexer created using this API will be have equivalent work
+      to do as the the Recoll file system indexer: look for modified
+      documents, extract their text, call the API for indexing it, take
+      care of purging the index out of data from documents which do not
+      exist in the document store any more.</para>
+      
+      <para>The data for such an external indexer should be stored in an
+      index separate from any used by the &RCL; internal file system
+      indexer. The reason is that the main document indexer purge pass
+      (removal of deleted documents) would also remove all the documents
+      belonging to the external indexer, as they were not seen during the
+      filesystem walk. The main indexer documents would also probably be a
+      problem for the external indexer own purge operation.</para>
+
+      <para>While there would be ways to enable multiple foreign indexers
+      to cooperate on a single index, it is just simpler to use separate
+      ones, and use the multiple index access capabilities of the query
+      interface, if needed.</para>
+
+      <para>There are two parts in the update interface:</para>
+
+      <itemizedlist>
+        <listitem><para>Methods inside the <filename>recoll</filename>
+        module allow inserting data into the index, to make it accessible by
+        the normal query interface.</para></listitem>
+        <listitem><para>An interface based on scripts execution is defined
+        to allow either the GUI or the <filename>rclextract</filename>
+        module to access original document data for previewing or
+        editing.</para></listitem>
+      </itemizedlist>
+
+      <sect3 id="RCL.PROGRAM.PYTHONAPI.UPDATE.UPDATE">
+        <title>Python update interface</title>
+
+        <para>The update methods are part of the
+        <filename>recoll</filename> module described above. The connect()
+        method is used with a <literal>writable=true</literal> parameter to
+        obtain a writable <literal>Db</literal> object. The following
+        <literal>Db</literal> object methods are then available.</para>
+
+        <variablelist>
+
+          <varlistentry>
+            <term>addOrUpdate(udi, doc, parent_udi=None)</term>
+            <listitem><para>Add or update index data for a given document
+            The <literal>
+            <link linkend="RCL.PROGRAM.PYTHONAPI.ELEMENTS.UDI">
+              udi</link></literal> string must define a unique id for
+            the document. It is an opaque interface element and not
+            interpreted inside Recoll. <literal>doc</literal> is a
+            <literal>
+              <link linkend="RCL.PROGRAM.PYTHONAPI.RECOLL.CLASSES.DOC">
+            Doc</link></literal> object, created from the data to be
+            indexed (the main text should be in
+            <literal>doc.text</literal>). If <literal>
+            <link linkend="RCL.PROGRAM.PYTHONAPI.ELEMENTS.PARENTUDI">
+              parent_udi</link></literal> is set, this is a unique
+              identifier for the top-level container (e.g. for the
+              filesystem indexer, this would be the one which is an actual
+              file).</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>delete(udi)</term>
+            <listitem><para>Purge index from all data for
+            <literal>udi</literal>, and all documents (if any) which have a
+            matrching <literal>parent_udi</literal>.  </para> </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>needUpdate(udi, sig)</term>
+            <listitem><para>Test if the index needs to be updated for the
+            document identified by <literal>udi</literal>. If this call is
+            to be used, the <literal>doc.sig</literal> field should contain
+            a signature value when calling
+            <literal>addOrUpdate()</literal>. The
+            <literal>needUpdate()</literal> call then compares its
+            parameter value with the stored <literal>sig</literal> for
+            <literal>udi</literal>. <literal>sig</literal> is an opaque
+            value, compared as a string.</para>
+            <para>The filesystem indexer uses a
+            concatenation of the decimal string values for file size and
+            update time, but a hash of the contents could also be
+            used.</para>
+            <para>As a side effect, if the return value is false (the index
+            is up to date), the call will set the existence flag for the
+            document (and any subdocument defined by its
+            <literal>parent_udi</literal>), so that a later
+            <literal>purge()</literal> call will preserve them).</para>
+            <para>The use of <literal>needUpdate()</literal> and
+            <literal>purge()</literal> is optional, and the indexer may use
+            another method for checking the need to reindex or to delete
+            stale entries.</para></listitem>
+          </varlistentry>
+          
+          <varlistentry>
+            <term>purge()</term>
+            <listitem><para>Delete all documents that were not touched
+            during the just finished indexing pass (since
+            open-for-write). These are the documents for the needUpdate()
+            call was not performed, indicating that they no longer exist in
+            the primary storage system.</para></listitem> 
+          </varlistentry>
+
+        </variablelist>
+        
+      </sect3>
+
+      <sect3 id="RCL.PROGRAM.PYTHONAPI.UPDATE.ACCESS">
+        <title>Query data access for external indexers</title>
+
+        <para>&RCL; has internal methods to access document data for its
+        internal (filesystem) indexer. An external indexer needs to provide
+        data access methods if it needs integration with the GUI
+        (e.g. preview function), or support for the
+        <filename>rclextract</filename> module.</para>
+
+        <para>The index data and the access method are linked by the
+        <literal>rclbes</literal> (recoll backend storage) 
+        <literal>Doc</literal> field. You should set this to a short string
+        value identifying your indexer (e.g. the filesystem indexer uses either
+        "FS" or an empty value, the Web history indexer uses "BGL").</para>
+
+        <para>The link is actually performed inside a
+        <filename>backends</filename> configuration file (stored in the
+        configuration directory). This defines commands to execute to
+        access data from the specified indexer. Example, for the mbox
+        indexing sample found in the Recoll source (which sets
+        <literal>rclbes="MBOX"</literal>):</para>
+        <programlisting>[MBOX]
+fetch = /path/to/recoll/src/python/samples/rclmbox.py fetch
+makesig = path/to/recoll/src/python/samples/rclmbox.py makesig
+        </programlisting>
+        <para><literal>fetch</literal> and <literal>makesig</literal>
+        define two commands to execute to respectively retrieve the
+        document text and compute the document signature (the example
+        implementation uses the same script with different first parameters
+        to perform both operations).</para>
+
+        <para>The scripts are called with three additional arguments:
+        <literal>udi</literal>, <literal>url</literal>,
+        <literal>ipath</literal>, stored with the document when it was
+        indexed, and may use any or all to perform the requested
+        operation. The caller expects the result data on
+        <literal>stdout</literal>.</para>
+
+      </sect3>
+
+      <sect3 id="RCL.PROGRAM.PYTHONAPI.UPDATE.SAMPLES">
+        <title>External indexer samples</title>
+
+        <para>The Recoll source tree has two samples of external indexers
+        in the <filename>src/python/samples</filename> directory. The more
+        interesting one is <filename>rclmbox.py</filename> which indexes a
+        directory containing <literal>mbox</literal> folder files. It
+        exercises most features in the update interface, and has a data
+        access interface.</para>
+
+        <para>See the comments inside the file for more information.</para>
+      </sect3>
+    </sect2>
+    
+    <sect2 id="RCL.PROGRAM.PYTHONAPI.COMPAT">
+      <title>Package compatibility with the previous version</title>
+      
+      <para>The following code fragments can be used to ensure that
+      code can run with both the old and the new API (as long as it
+      does not use the new abilities of the new API of
+      course).</para>
+
+      <para>Adapting to the new package structure:</para>
+      <programlisting>
 <![CDATA[
 try:
     from recoll import recoll
@@ -4954,23 +5190,24 @@ except:
     import recoll
     hasextract = False
 ]]>
-</programlisting>
+      </programlisting>
 
-        <para>Adapting to the change of nature of
-          the <literal>next</literal> <literal>Query</literal>
-          member. The same test can be used to choose to use
-          the <literal>scroll()</literal> method (new) or set
-          the <literal>next</literal> value (old).</para>
+      <para>Adapting to the change of nature of
+      the <literal>next</literal> <literal>Query</literal>
+      member. The same test can be used to choose to use
+      the <literal>scroll()</literal> method (new) or set
+      the <literal>next</literal> value (old).</para>
 
-        <programlisting>
+      <programlisting>
 <![CDATA[
        rownum = query.next if type(query.next) == int else \
                  query.rownumber
 ]]>
-</programlisting>
+      </programlisting>
 
-      </sect3> <!-- compat with previous version -->
-    </sect2>
+      </sect2> <!-- compat with previous version -->
+
+      
     </sect1>
   </chapter>
 
