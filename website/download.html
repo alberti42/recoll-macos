@@ -14,13 +14,13 @@
     <script type="text/javascript">
       function showdiv(viewid)
       {
-      var ids = ["general", "bugs", "source", "packages", "ports", "filters",
-      "translations"];
-      for (var i = 0; i < ids.length; i++) {
-                          document.getElementById(ids[i]).style.display = "none";
-                          }
-                          document.getElementById(viewid).style.display = "block";
-                          }
+          var ids = ["general", "bugs", "source", "packages",
+              "windows", "ports", "filters", "translations"];
+          for (var i = 0; i < ids.length; i++) {
+              document.getElementById(ids[i]).style.display = "none";
+          }
+          document.getElementById(viewid).style.display = "block";
+      }
                           </script>
 
   </head>
@@ -348,17 +348,17 @@
         -->
 
 
-        <div id="windows">
-          <h3><a name="windows">Microsoft Windows Setup Files</a></h3>
-
-          <p>The port of Recoll to Windows is still a bit experimental and
-            lacking things like real-time indexing or spelling
-            suggestions. However it works well enough to be useful. More info
-            and links to the setup
-            files <a href="pages/recoll-windows.html">here</a>.</p>
-        </div> <!-- windows -->
-
       </div> <!-- Packages -->
+
+      <div id="windows">
+        <h2><a name="windows">Microsoft Windows Setup Files</a></h2>
+
+        <p>The port of Recoll to Windows is still a bit experimental and
+          lacking things like real-time indexing or spelling
+          suggestions. However it works well enough to be useful. More info
+          and links to the setup
+          files <a href="pages/recoll-windows.html">here</a>.</p>
+      </div> <!-- windows -->
 
       <div id="ports">
         <h2><a name="ports">Ports</a></h2>
@@ -402,7 +402,7 @@
         <p>You can use the <em>.ts</em> file to alter the translations
           if you wish (use Qt's <em>linguist</em> tool to edit the
           source file, then <em>lrelease</em> to produce
-          the <em>.qm</em> file.). The <literal>.qm</literal>file
+          the <em>.qm</em> file.). The <em>.qm</em>file
           should be copied
           to <span class="filename">/usr/[local/]share/recoll/translations</span>
         </p>
