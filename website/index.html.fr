@@ -49,8 +49,8 @@
       <p><span class="application">Recoll</span> est un logiciel libre
 	gratuit, dont le code source est disponible sous licence GPL.
 	La dernière version est 
-        <a class="important" href="download.html">1.21.5</a>
-	(<a href="release-1.21.html">notes sur la version, en
+        <a class="important" href="download.html">1.22.1</a>
+	(<a href="release-1.22.html">notes sur la version, en
 	anglais</a>)</p> 
 
       <p>L'interface utilisateur de 
@@ -106,24 +106,17 @@
       <h2>Nouvelles: </h2>
 
       <dl>
-        
+
+        <dt>2016-06-15</dt><dd>La version 1.22.1 est disponible et va
+          progressivement remplacer 1.21 comme version
+          principale. <a href="release-1.22.html">Notes de version</a>
+          (en anglais).</dd>
+          
         <dt>2016-05-11</dt><dd>Release 1.21.7: corrige un crash bénin
           mais agaçant au moment de quitter l'interface utilisateur
           (Fedora 23 / qt5).</dd>
 
-        <dt>2016-04-07</dt><dd>Release 1.21.6: compatibilité KDE5 pour le
-          KIO slave.</dd>
-
-        <dt>2016-01-29</dt><dd>Version 1.21.5. Cetter version corrige
-          un problème de l'interpréteur de langage
-          d'interrogation. Une requête incorrecte était généré quand
-          des types MIME ou des catégories multiples étaient
-          spécifiées, avec en conséquences des résultats
-          manquants.</dd>
-
-
         <dt>2015-11-09</dt>
-
         <dd>Recoll indexe Windows ! Il y a encore quelques éléments
           manquants, comme l'indexation temps-réel, et la traduction
           en Français, mais ça marche suffisamment bien pour être
@@ -131,83 +124,12 @@
           pas, c'est facile à désinstaller...
           Pas de traduction Française pour le moment. Il y
           a <a href="pages/recoll-windows.html"> quelques
-            explications en Anglais sur l'installation </a> (triviale,
-            il faut just installer Recoll et ajouter Python 2.7), et
-          <a href="http://www.recoll.org/windows/recoll-setup-1.22.0-20151115.exe">
-            l'installeur est là</a>. Si vous l'essayez, dites moi ce
-            que vous en pensez !
-        </dd>
-        
-        <dt>2015-10-01</dt>
-        <dd>Recoll 1.21.2 devient la version de production. La
-        principale modification de la version 1.21 est l'utilisation
-        d'un nouvel interpréteur pour le langage d'interrogation,
-        autorisant l'utilisation de parenthèses. Également: évite de
-        réessayer l'indexation de fichiers en erreur, fonction de
-        sauvegarde/restauration des recherches.</dd>
-
-        <dt>2015-04-25</dt>
-        <dd>Recoll 1.20.6 contient des corrections dans le traitement
-          des fichiers compressés, et la compatibilité Qt 5 (Ok avec Qt
-          5.3.2, ne fonctionne pas avec Qt 5.2.</dd>
-
-        <dt>2015-03-30</dt> 
-        <dd>1.20.4. Corrige l'indexation au fil de l'eau de
-          l'historique web (en utilisation avec le plugin Firefox).</dd>
-
-        <dt>2014-12-18</dt> <dd>Apparition de version 1.20.1 avec
-          quelques nouvelles fonctions, principalement dans l'interface
-          graphique. </dd>
-
-        <dt>2014-06-07</dt> <dd>La version 1.19.14 corrige encore
-          quelques problèmes dans l'indexation (erreurs dans la
-          vérification que l'index est à jour pour un document,
-          possible arrêt de l'indexation pour 20mn dans certains cas
-          rares, et autres).</dd>
-
-        <dt>2014-05-06</dt> <dd> Version 1.19.13. A de bonnes chances
-          de corriger les problèmes résiduels de l'indexation
-          concurrente (multithread).</dd>
-
-        <dt>2014-04-02</dt> <dd> Version 1.19.12. C'est la même que la
-          1.19.11 à part un paramètre pour la taille des attributs
-          stockés, qui n'est utile que dans des cas très
-          particuliers. Inutile de mettre à jour en général.</dd>
-        <dt>2013-11-25</dt> <dd> La version 1.19.11 est sortie. Elle
-          apporte un Scope pour le Dash de Ubuntu Unity (am I still
-          speaking French here ?), la compatibilité Python3, et un
-          nouveau filtre pour les fichiers PowerPoint.</dd>
-
-        <dt>2013-11-19</dt> <dd>Un <a href="filters/filters.html">nouveau
-            filtre</a> pour les fichiers PowerPoint. L'ancien était
-            basé sur le vénérable <b>catppt</b> de <b>catdoc</b>, et,
-            le plus souvent, n'extrayait rien des fichiers PowerPoint
-            récents. (Il s'agit bien de .ppt. .pptx est traité par un
-            filtre natif).</dd>
-
-        <dt>2013-11-11</dt> <dd>La version 1.19.9 est disponible. Elle
-        corrige quelques défauts, en particulier un problème dans la
-        gestion des dates dans les requêtes.</dd> 
-
-        <dt>2013-06-18</dt><dd>La version 1.19.8 est disponible.</dd>
-
-        <dt>2012-11-05</dt><dd>Recoll 1.18.1 est disponible. Cette
-          version peut faire des recherches sensibles aux majuscules et
-          aux accents, donner un accès direct à la bonne page pour les
-          documents PDF (uniquement avec <b>evince</b> par défaut,
-          mais il y a une ligne d'example pour qpdfview dans le
-          fichier de config par défaut), elle a un
-          historique des recherches complexes, et plein d'autres
-          petites améliorations. Les <a href="release-1.18.html">notes
-            de version</a> (en anglais). <span class="important">Cette
-            version utilise <b>evince</b> par défaut comme visualiseur
-            PDF même si recoll est configuré pour utiliser les
-            préférences du bureau. Vous pouvez retrouver le
-            comportement antérieur en éditant la liste "exceptions"
-            dans la configuration GUI.</span>
+            explications en Anglais sur l'installation </a>.
+          Si vous l'essayez, dites moi ce que vous en pensez !
         </dd>
 
-        <dt>2012-10-25</dt><dd> Un problème avec une solution simple peut provoquer
+        <dt>2012-10-25</dt><dd> Un problème avec une solution simple
+          peut provoquer 
           des <span class="important">plantages de
           recollindex</span>. 
           Si vous indexez des messages mail Mozilla/Thunderbird
@@ -224,16 +146,6 @@
           et à se planter. Dans les cas moins graves (avec des
           fichiers de taille "raisonnable"), cela provoque aussi une
           indexation incorrecte des messages.
-        </dd>
-
-        <dt>2012-10-16</dt><dd> <a href="filters/filters.html">un nouveau filtre
-            pour les documents EPUB</a>.</dd> 
-
-        <dt>2012-05-24</dt><dd> Sortie de la
-          version <a href="download.html#source">1.17.3</a>. Voir
-          les <a href="release-1.17.html">les notes</a>. Cette version
-          corrige un "arrêt imprévu" de l'indexation qui se produisait
-          parfois en traitant certains messages mail.
         </dd>
 
         <dt>2010-11-20</dt><dd>Un petit script pour activer/cacher recoll sur un

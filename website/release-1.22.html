@@ -36,9 +36,9 @@
         pinch, 1.22 search can mostly use an 1.19 index. </p>
 
       <p>Always reset the index if you do not know by which version it
-        was created (you're not sure it's at least 1.18). The best method
-        is to quit all Recoll programs and delete the index directory 
-        (<span class="literal">
+        was created (e.g.: you're not sure it's at least 1.18). The
+        best method is to quit all Recoll programs and delete the
+        index directory (<span class="literal">
           rm -rf ~/.recoll/xapiandb</span>), then start <code>recoll</code>
         or <code>recollindex</code>. <br> 
 
@@ -69,21 +69,23 @@
           Unix-y file types which are not processed on Windows, and the
           indexer is single-threaded.</li>
 
-        <li>Synonyms: users can define term synonyms groups in
-          ordinary text files. They are used only at query times to
-          expand a query to synonym terms.
+        <li>It is now possible to define synonyms groups, used only at
+          query-time to expand the query terms to their defined
+          synonyms.
           <a href="http://www.lesbonscomptes.com/recoll/usermanual/webhelp/docs/RCL.SEARCH.SYNONYMS.html">
             More details</a>.</li>
         
-        <li>Most input handlers are now compatible with
-          Python3. Actually the only ones which are not are kept back by
-          the library they use. Also most external handlers are now
-          persistent, and quite a few shell-script have been converted
-          to Python for use on Windows.</li> 
+        <li>Many shell-script input handlers have been converted to
+          Python and are now persistent. Most are compatible with
+          Python3 (the only ones which are not are kept back by the
+          library they use). There are still a few shell handlers,
+          mostly for less used and Linux-only formats. And a single
+          Perl-based one (rclimg, which uses the excellent exiftool
+          Perl library).</li>
 
-        <li>The build system has been converted to use the autotools in
-          a fairly standard way. The Windows build is based on Qt
-          Creator and MinGW.</li>
+        <li>The Unix/Linux build system has been converted to use the
+          autotools in a fairly standard way. The Windows build is
+          based on Qt Creator and MinGW.</li>
 
         <li>Make dehyphenation (co-worker->coworker in addition to the
           normal terms) optional, active by default.</li>
@@ -96,6 +98,25 @@
           while the indexer is working.</li>
         
       </ul>
+
+      <h2>Minor releases</h2>
+      <ul>
+        <li>1.22.1:
+          <ul>
+            <li>Sidestep bus error in qt exit code by calling _exit()
+              instead of exit() in GUI exit code.</li>
+            <li>Eliminate the dependance of librecoll.so on libX11.</li>
+            <li>Hungarian translation.</li>
+            <li>GUI: enable displaying the Xapian docid in the result
+              list with %x.</li>
+            <li>GUI, advanced search: fix crash which occurred when
+              restoring clause list bigger than the default size (6
+              clauses).</li>
+            <li>The documentation (user manual and man page) for
+              recoll.conf is now generated from the structured
+              comments in the sample file.</li>
+          </ul>
+        </li>
 
     </div>
   </body>

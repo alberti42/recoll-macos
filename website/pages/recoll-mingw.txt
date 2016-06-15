@@ -149,7 +149,7 @@ This will be copied into the installation by the mkinstdir.sh script.
 === mutagen 
 
 Download and extract mutagen from https://pypi.python.org/pypi/mutagen
-Then in the mutagen directory (e.g. C:/temp/mutagen-1.31 where it is
+Then in the mutagen directory (e.g. C:/temp/mutagen-1.32 where it is
 expected by `mkinstdir.sh`):
 
      python setup.py build
@@ -219,7 +219,7 @@ libwpd directory of the recoll-windows-deps repository.
 
     cd ..
 
-    tar xf /data/source/00DISTS/libwpd-0.10.0.tar.gz
+    tar xf /c/recolldeps/libwpd/libwpd-0.10.0.tar.gz
     cd libwpd-0.10.0
     REVENGE_CFLAGS=-Ic:/temp/libwpd/librevenge-0.0.1.jfd/inc \
     REVENGE_LIBS="-Lc:/temp/libwpd/librevenge-0.0.1.jfd/src/lib/.libs -lrevenge-0.0" \
