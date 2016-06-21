@@ -116,8 +116,8 @@ url = dc:identifier xesam:url
 # query time: there is no risk to pick up a random field from a document
 # (e.g. an HTML meta field) and index it. 
 [queryaliases]
-#filename = fn
-#containerfilename = cfn
+filename = fn
+containerfilename = cfn
 
 [xattrtofields]
 ######################
