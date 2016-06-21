@@ -49,7 +49,7 @@
       <p><span class="application">Recoll</span> est un logiciel libre
 	gratuit, dont le code source est disponible sous licence GPL.
 	La dernière version est 
-        <a class="important" href="download.html">1.22.2</a>
+        <a class="important" href="download.html">1.22.3</a>
 	(<a href="release-1.22.html">notes sur la version, en
 	anglais</a>)</p> 
 
@@ -107,7 +107,7 @@
 
       <dl>
 
-        <dt>2016-06-15</dt><dd>La version 1.22.2 est disponible et va
+        <dt>2016-06-15</dt><dd>La version 1.22.3 est disponible et va
           progressivement remplacer 1.21 comme version
           principale. <a href="release-1.22.html">Notes de version</a>
           (en anglais).</dd>

@@ -106,11 +106,23 @@
 
       <h2>Minor releases</h2>
       <ul>
+        <li>1.22.3:
+          <ul>
+            <li>Python module: do not limit result fetches to initial
+              Xapian result count, which is often underestimated.</li>
+            <li>Small bug fix in the text splitter: which resulted in
+              missing results when matching a file name extension
+              using, e.g. filename:doc$ instead of ext:doc.</li>
+            <li>Added suffix associations for .java and .sql, to fix
+              problems caused by the switch from 'file' to 'xdg-mime'.</li>
+          </ul>
+        </li>
         <li>1.22.2:
           <ul>
             <li>Small fixes for building the KIO</li>
             <li>Fixed debian packaging issues.</li>
           </ul>
+        </li>
         <li>1.22.1:
           <ul>
             <li>Sidestep bus error in qt exit code by calling _exit()

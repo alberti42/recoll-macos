@@ -29,7 +29,7 @@
 later versions. Bugs listed in the topmost section may also exist in older
 versions.</i></p>
 
-<h2><a name="b_latest">recoll 1.21.7, 1.22.0</a></h2>
+<h2><a name="b_latest">recoll 1.21.7, 1.22.3</a></h2>
 <ul>
 
  <li>There have been multiple occurrences of an indexing problem
@@ -66,14 +66,6 @@ versions.</i></p>
    problem.<br/>
  </li>
 
- <li><a name="GUIADV" />GUI: Starting the advanced search tool may
-   crash the GUI if the saved configuration has more than the default
-   count of search clauses (five). The bug is present in 1.21 and
-   1.22, but apparently more "active" in 1.22. There is an easy
-   workaround: edit <tt>~/.config/Recoll.org/recoll.conf</tt> and
-   delete the line which begins
-   with <tt>prefs\adv\clauseList=</tt></li>
- 
  <li>For indexes with case and diacritics sensitivity (not the
    default), the autocasesens and autodiacsens configuration variable do
    not work as described in the manual (they have no effect).</li>
@@ -131,6 +123,31 @@ versions.</i></p>
     fixed by removing (back it up just in case)
     ~/.config/Recoll.org/recoll.conf, the QSettings storage for
     recoll.</li>
+</ul>
+
+<h2><a name="b_1_22_2">recoll 1.22.2</a></h2>
+<ul>
+ <li>The Python module limits result fetches to the Xapian result
+   count, which is estimated and usually smaller than the actual
+   number of results which can be read.</li>
+ <li>A bug in the text splitter made it impossible to match, for
+   example, filename:doc$ for files with names containing a space or
+   other word-breaking character before the '.'</li>
+ <li>The change from 'file' to 'xdg-mime' as file type identifier
+   command caused problem for some types of files (.java, .sql), because
+   of  new and different returned types. Fixed by a mimemap/mimeconf
+   adjustment.</li>
+</ul>
+
+<h2><a name="b_1_22_0">recoll 1.22.0</a></h2>
+<ul>
+ <li><a name="GUIADV" />GUI: Starting the advanced search tool may
+   crash the GUI if the saved configuration has more than the default
+   count of search clauses (five). The bug is present in 1.21 only
+   There is an easy
+   workaround: edit <tt>~/.config/Recoll.org/recoll.conf</tt> and
+   delete the line which begins
+   with <tt>prefs\adv\clauseList=</tt></li>
 </ul>
 
 <h2><a name="b_1_21_6">recoll 1.21.6</a></h2>
