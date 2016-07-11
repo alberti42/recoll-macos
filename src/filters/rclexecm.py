@@ -66,6 +66,8 @@ class RclExecM:
             self.myname = "???"
         self.mimetype = b""
 
+        self.fields = {}
+        
         if os.environ.get("RECOLL_FILTER_MAXMEMBERKB"):
             self.maxmembersize = \
             int(os.environ.get("RECOLL_FILTER_MAXMEMBERKB"))
@@ -125,6 +127,9 @@ class RclExecM:
     def setmimetype(self, mt):
         self.mimetype = makebytes(mt)
 
+    def setfield(self, nm, value):
+        self.fields[nm] = value
+
     # Read single parameter from process input: line with param name and size
     # followed by data. The param name is returned as str/unicode, the data
     # as bytes
@@ -160,35 +165,44 @@ class RclExecM:
         return (paramname, paramdata)
 
     if PY3:
-        def senditem(self, nm, len, data):
-            sys.stdout.buffer.write(makebytes("%s: %d\n" % (nm, len)))
-            self.breakwrite(sys.stdout.buffer, makebytes(data))
+        def senditem(self, nm, data):
+            data = makebytes(data)
+            l = len(data)
+            sys.stdout.buffer.write(makebytes("%s: %d\n" % (nm, l)))
+            self.breakwrite(sys.stdout.buffer, data)
     else:
-        def senditem(self, nm, len, data):
-            sys.stdout.write(makebytes("%s: %d\n" % (nm, len)))
-            self.breakwrite(sys.stdout, makebytes(data))
+        def senditem(self, nm, data):
+            data = makebytes(data)
+            l = len(data)
+            sys.stdout.write(makebytes("%s: %d\n" % (nm, l)))
+            self.breakwrite(sys.stdout, data)
         
     # Send answer: document, ipath, possible eof.
     def answer(self, docdata, ipath, iseof = noteof, iserror = noerror):
 
         if iserror != RclExecM.fileerror and iseof != RclExecM.eofnow:
-            self.senditem("Document", len(docdata), docdata)
+            self.senditem("Document", docdata)
 
             if len(ipath):
-                self.senditem("Ipath", len(ipath), ipath)
+                self.senditem("Ipath", ipath)
 
             if len(self.mimetype):
-                self.senditem("Mimetype", len(self.mimetype), self.mimetype)
+                self.senditem("Mimetype", self.mimetype)
 
+            for nm,value in self.fields.iteritems():
+                #self.rclog("Senditem: [%s] -> [%s]" % (nm, value))
+                self.senditem("%s:"%nm, value)
+            self.fields = {}
+            
         # If we're at the end of the contents, say so
         if iseof == RclExecM.eofnow:
-            self.senditem("Eofnow", 0, b'')
+            self.senditem("Eofnow", b'')
         elif iseof == RclExecM.eofnext:
-            self.senditem("Eofnext", 0, b'')
+            self.senditem("Eofnext", b'')
         if iserror == RclExecM.subdocerror:
-            self.senditem("Subdocerror", 0, b'')
+            self.senditem("Subdocerror", b'')
         elif iserror == RclExecM.fileerror:
-            self.senditem("Fileerror", 0, b'')
+            self.senditem("Fileerror", b'')
   
         # End of message
         print()

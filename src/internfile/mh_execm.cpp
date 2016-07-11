@@ -169,6 +169,8 @@ bool MimeHandlerExecMultiple::next_document()
         return false;
     }
 
+    m_metaData.clear();
+    
     // Send request to child process. This maybe the first/only
     // request for a given file, or a continuation request. We send an
     // empty file name in the latter case.
@@ -260,8 +262,14 @@ bool MimeHandlerExecMultiple::next_document()
         } else if (!stringlowercmp("mimetype:", name)) {
             mtype = data;
             LOGDEB(("MHExecMultiple: got mimetype [%s]\n", data.c_str()));
+        } else {
+            string nm = stringtolower((const string&)name);
+            trimstring(nm, ":");
+            LOGDEB(("MHExecMultiple: got [%s] -> [%s]\n", nm.c_str(),
+                    data.c_str()));
+            m_metaData[nm] += data;
         }
-        if (loop == 10) {
+        if (loop == 20) {
             // ?? 
             LOGERR(("MHExecMultiple: filter sent too many parameters\n"));
             return false;

@@ -21,6 +21,7 @@
 from __future__ import print_function
 
 import os
+import posixpath
 import fnmatch
 import rclexecm
 from zipfile import ZipFile
@@ -89,6 +90,16 @@ class ZipExtractor:
                 #raise BadZipfile()
             else:
                 docdata = self.zip.read(ipath)
+            try:
+                # We are assuming here that the zip uses forward slash
+                # separators, which is not necessarily the case. At
+                # worse, we'll get a wrong or no file name, which is
+                # no big deal (the ipath is the important data
+                # element).
+                filename = posixpath.basename(ipath)
+                self.em.setfield("filename", filename)
+            except:
+                pass
             ok = True
         except Exception as err:
             self.em.rclog("extractone: failed: [%s]" % err)
