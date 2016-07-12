@@ -96,7 +96,8 @@ private:
                       LOGGER_LOCAL_LOGINC)
 
 #define LOGGER_DOLOG(L,X) LOGGER_PRT << ":" << L << ":" <<            \
-                                  __FILE__ << ":" << __LINE__ << "::" << X
+                                  __FILE__ << ":" << __LINE__ << "::" << X \
+    << std::flush
 
 #if LOGGER_STATICVERBOSITY >= 7
 #define LOGDEB2(X) {                                                    \
