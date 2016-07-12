@@ -25,7 +25,7 @@
 #include <string>
 using namespace std;
 
-#include "debuglog.h"
+#include "log.h"
 #include "rcldoc.h"
 #include "internfile.h"
 #include "rclconfig.h"
@@ -49,7 +49,7 @@ typedef struct {
 static void 
 Extractor_dealloc(rclx_ExtractorObject *self)
 {
-    LOGDEB(("Extractor_dealloc\n"));
+    LOGDEB("Extractor_dealloc\n" );
     delete self->xtr;
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
@@ -57,7 +57,7 @@ Extractor_dealloc(rclx_ExtractorObject *self)
 static PyObject *
 Extractor_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    LOGDEB(("Extractor_new\n"));
+    LOGDEB("Extractor_new\n" );
     rclx_ExtractorObject *self = 
 	(rclx_ExtractorObject *)type->tp_alloc(type, 0);
     if (self == 0) 
@@ -70,7 +70,7 @@ Extractor_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 static int
 Extractor_init(rclx_ExtractorObject *self, PyObject *args, PyObject *kwargs)
 {
-    LOGDEB(("Extractor_init\n"));
+    LOGDEB("Extractor_init\n" );
     static const char* kwlist[] = {"doc", NULL};
     PyObject *pdobj;
 
@@ -99,7 +99,7 @@ static PyObject *
 Extractor_textextract(rclx_ExtractorObject* self, PyObject *args, 
 		      PyObject *kwargs)
 {
-    LOGDEB(("Extractor_textextract\n"));
+    LOGDEB("Extractor_textextract\n" );
     static const char* kwlist[] = {"ipath", NULL};
     char *sipath = 0;
 
@@ -153,7 +153,7 @@ static PyObject *
 Extractor_idoctofile(rclx_ExtractorObject* self, PyObject *args, 
 		     PyObject *kwargs)
 {
-    LOGDEB(("Extractor_idoctofile\n"));
+    LOGDEB("Extractor_idoctofile\n" );
     static const char* kwlist[] = {"ipath", "mimetype", "ofilename", NULL};
     char *sipath = 0;
     char *smt = 0;
@@ -359,3 +359,4 @@ initrclextract(void)
     return module;
 #endif
 }
+

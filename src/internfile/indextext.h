@@ -18,9 +18,6 @@
 #define _INDEXTEXT_H_INCLUDED_
 /* Note: this only exists to help with using myhtmlparse.cc */
 
-// Minimize changes to myhtmlparse.cpp
-#include "debuglog.h"
-
 #include <string>
 
 // lets hope that the charset includes ascii values...

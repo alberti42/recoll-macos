@@ -15,7 +15,7 @@
 #include <sstream>
 #include <vector>
 
-#include "debuglog.h"
+#include "log.h"
 #include "cancelcheck.h"
 #include "execmd.h"
 #include "smallut.h"
@@ -381,3 +381,4 @@ int main(int argc, char *argv[])
         return status >> 8;
     }
 }
+

@@ -25,7 +25,7 @@
 #include <sstream>
 #include UNORDERED_MAP_INCLUDE
 
-#include "debuglog.h"
+#include "log.h"
 #include "safesysstat.h"
 #include "safeunistd.h"
 #include "safewindows.h"
@@ -41,7 +41,7 @@ using namespace std;
 static void printError(const string& text)
 {
     DWORD err = GetLastError();
-    LOGERR(("%s : err: %d\n", text.c_str(), err));
+    LOGERR(text << " : err: "  << err << "\n");
 }
 
 /**
@@ -123,7 +123,7 @@ static char *mergeEnvironment(const STD_UNORDERED_MAP<string, string>& addenv)
         } else if (*cp1 == 0) {
             value = string(cp0, cp1 - cp0);
             envirmap[name] = value;
-            LOGDEB1(("mergeEnvir: [%s] = [%s]\n", name.c_str(), value.c_str()));
+            LOGDEB1("mergeEnvir: ["  << (name) << "] = ["  << (value) << "]\n" );
             cp0 = cp1 + 1;
             if (*cp0 == 0)
                 break;
@@ -238,16 +238,16 @@ static WaitResult Wait(HANDLE hdl, int timeout)
 {
     //HANDLE hdls[2] = { hdl, eQuit };
     HANDLE hdls[1] = { hdl};
-    LOGDEB1(("Wait()\n"));
+    LOGDEB1("Wait()\n" );
     DWORD res = WaitForMultipleObjects(1, hdls, FALSE, timeout);
     if (res == WAIT_OBJECT_0) {
-        LOGDEB1(("Wait: returning Ok\n"));
+        LOGDEB1("Wait: returning Ok\n" );
         return Ok;
     } else if (res == (WAIT_OBJECT_0 + 1)) {
-        LOGDEB0(("Wait: returning Quit\n"));
+        LOGDEB0("Wait: returning Quit\n" );
         return Quit;
     } else if (res == WAIT_TIMEOUT) {
-        LOGDEB0(("Wait: returning Timeout\n"));
+        LOGDEB0("Wait: returning Timeout\n" );
         return Timeout;
     }
     printError("Wait: WaitForMultipleObjects: unknown, returning Timout\n");
@@ -259,9 +259,7 @@ static int getVMMBytes(HANDLE hProcess)
     PROCESS_MEMORY_COUNTERS pmc;
     const int MB = 1024 * 1024;
     if (GetProcessMemoryInfo(hProcess, &pmc, sizeof(pmc))) {
-        LOGDEB2(("ExecCmd: getVMMBytes paged Kbs %d non paged %d Kbs\n",
-                 int(pmc.QuotaPagedPoolUsage/1024),
-                 int(pmc.QuotaNonPagedPoolUsage/1024)));
+        LOGDEB2("ExecCmd: getVMMBytes paged Kbs "  << (int(pmc.QuotaPagedPoolUsage/1024)) << " non paged "  << (int(pmc.QuotaNonPagedPoolUsage/1024)) << " Kbs\n" );
         return int(pmc.QuotaPagedPoolUsage /MB +
                    pmc.QuotaNonPagedPoolUsage / MB);
     }
@@ -322,14 +320,14 @@ public:
 // send the break, and restore normal break processing
 static bool sendIntr(int pid)
 {
-    LOGDEB(("execmd_w: sendIntr -> %d\n", pid));
+    LOGDEB("execmd_w: sendIntr -> "  << (pid) << "\n" );
     bool needDetach = false;
     if (GetConsoleWindow() == NULL) {
         needDetach = true;
-        LOGDEB(("execmd_w: sendIntr attaching console\n"));
+        LOGDEB("execmd_w: sendIntr attaching console\n" );
         if (!AttachConsole((unsigned int) pid)) {
             int err = GetLastError();
-            LOGERR(("execmd_w: sendIntr: AttachConsole failed: %d\n", err));
+            LOGERR("execmd_w: sendIntr: AttachConsole failed: "  << (err) << "\n" );
             return false;
         }
     }
@@ -339,8 +337,7 @@ static bool sendIntr(int pid)
     // Disable Ctrl-C handling for our program
     if (!SetConsoleCtrlHandler(NULL, true)) {
         int err = GetLastError();
-        LOGERR(("execmd_w:sendIntr:SetCons.Ctl.Hndlr.(NULL, true) failed: %d\n",
-                err));
+        LOGERR("execmd_w:sendIntr:SetCons.Ctl.Hndlr.(NULL, true) failed: "  << (err) << "\n" );
         return false;
     }
 #endif
@@ -350,7 +347,7 @@ static bool sendIntr(int pid)
     bool ret = GenerateConsoleCtrlEvent(CTRL_BREAK_EVENT, pid);
     if (!ret) {
         int err = GetLastError();
-        LOGERR(("execmd_w:sendIntr:Gen.Cons.CtrlEvent failed: %d\n", err));
+        LOGERR("execmd_w:sendIntr:Gen.Cons.CtrlEvent failed: "  << (err) << "\n" );
     }
 
 #if 0
@@ -359,10 +356,10 @@ static bool sendIntr(int pid)
 #endif
 
     if (needDetach) {
-        LOGDEB(("execmd_w: sendIntr detaching console\n"));
+        LOGDEB("execmd_w: sendIntr detaching console\n" );
         if (!FreeConsole()) {
             int err = GetLastError();
-            LOGERR(("execmd_w: sendIntr: FreeConsole failed: %d\n", err));
+            LOGERR("execmd_w: sendIntr: FreeConsole failed: "  << (err) << "\n" );
         }
     }
 
@@ -383,7 +380,7 @@ public:
     ~ExecCmdRsrc() {
         if (!m_active || !m_parent)
             return;
-        LOGDEB1(("~ExecCmdRsrc: working. mypid: %d\n", (int)getpid()));
+        LOGDEB1("~ExecCmdRsrc: working. mypid: "  << ((int)getpid()) << "\n" );
         if (m_parent->m_hOutputRead)
             CloseHandle(m_parent->m_hOutputRead);
         if (m_parent->m_hInputWrite)
@@ -551,8 +548,7 @@ bool ExecCmd::Internal::tooBig()
         return false;
     int mbytes = getVMMBytes(m_piProcInfo.hProcess);
     if (mbytes > m_rlimit_as_mbytes) {
-        LOGINFO(("ExecCmd:: process mbytes %d > set limit %d\n",
-                 mbytes, m_rlimit_as_mbytes));
+        LOGINFO("ExecCmd:: process mbytes "  << (mbytes) << " > set limit "  << (m_rlimit_as_mbytes) << "\n" );
         m_killRequest = true;
         return true;
     }
@@ -573,14 +569,14 @@ bool ExecCmd::Internal::preparePipes(bool has_input,HANDLE *hChildInput,
     // manual reset event
     m_oOutputRead.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
     if (m_oOutputRead.hEvent == INVALID_HANDLE_VALUE) {
-        LOGERR(("ExecCmd::preparePipes: CreateEvent failed\n"));
+        LOGERR("ExecCmd::preparePipes: CreateEvent failed\n" );
         goto errout;
     }
 
     // manual reset event
     m_oInputWrite.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
     if (m_oInputWrite.hEvent == INVALID_HANDLE_VALUE) {
-        LOGERR(("ExecCmd::preparePipes: CreateEvent failed\n"));
+        LOGERR("ExecCmd::preparePipes: CreateEvent failed\n" );
         goto errout;
     }
 
@@ -734,8 +730,7 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
              it != args.end(); it++) {
             command += "{" + *it + "} ";
         }
-        LOGDEB(("ExecCmd::startExec: (%d|%d) %s\n", 
-                has_input, has_output, command.c_str()));
+        LOGDEB("ExecCmd::startExec: ("  << (has_input) << "|"  << (has_output) << ") "  << (command) << "\n" );
     }
 
     // What if we're called twice ? First make sure we're clean
@@ -753,7 +748,7 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
     HANDLE hErrorWrite;
     if (!m->preparePipes(has_input, &hInputRead, has_output, 
                          &hOutputWrite, &hErrorWrite)) {
-        LOGERR(("ExecCmd::startExec: preparePipes failed\n"));
+        LOGERR("ExecCmd::startExec: preparePipes failed\n" );
         return false;
     }
 
@@ -783,7 +778,7 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
 
     // Create the child process. 
     // Need a writable buffer for the command line, for some reason.
-    LOGDEB1(("ExecCmd:startExec: cmdline [%s]\n", cmdline.c_str()));
+    LOGDEB1("ExecCmd:startExec: cmdline ["  << (cmdline) << "]\n" );
     LPSTR buf = (LPSTR)malloc(cmdline.size() + 1);
     memcpy(buf, cmdline.c_str(), cmdline.size());
     buf[cmdline.size()] = 0;
@@ -819,7 +814,7 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
 // Send data to the child.
 int ExecCmd::send(const string& data)
 {
-    LOGDEB2(("ExecCmd::send: cnt %d\n", int(data.size())));
+    LOGDEB2("ExecCmd::send: cnt "  << (int(data.size())) << "\n" );
     BOOL bSuccess = WriteFile(m->m_hInputWrite, data.c_str(),
                               (DWORD)data.size(), NULL, &m->m_oInputWrite);
     DWORD err = GetLastError();
@@ -829,7 +824,7 @@ int ExecCmd::send(const string& data)
     // and ERROR_IO_PENDING
     // in the first case bytes read/written parameter can be used directly
     if (!bSuccess && err != ERROR_IO_PENDING) {
-        LOGERR(("ExecCmd::send: WriteFile: got err %d\n", err));
+        LOGERR("ExecCmd::send: WriteFile: got err "  << (err) << "\n" );
         return -1;
     }
 
@@ -839,7 +834,7 @@ int ExecCmd::send(const string& data)
         if (!GetOverlappedResult(m->m_hInputWrite, 
                                  &m->m_oInputWrite, &dwWritten, TRUE)) {
             err = GetLastError();
-            LOGERR(("ExecCmd::send: GetOverLappedResult: err %d\n", err));
+            LOGERR("ExecCmd::send: GetOverLappedResult: err "  << (err) << "\n" );
             return -1;
         }
     } else if (waitRes == Quit) {
@@ -855,7 +850,7 @@ int ExecCmd::send(const string& data)
         }
         return -1;
     }
-    LOGDEB2(("ExecCmd::send: returning %d\n", int(dwWritten)));
+    LOGDEB2("ExecCmd::send: returning "  << (int(dwWritten)) << "\n" );
     return dwWritten;
 }
 
@@ -870,7 +865,7 @@ int ExecCmd::send(const string& data)
 //      0 means read whatever comes back on the first read;
 int ExecCmd::receive(string& data, int cnt)
 {
-    LOGDEB1(("ExecCmd::receive: cnt %d\n", cnt));
+    LOGDEB1("ExecCmd::receive: cnt "  << (cnt) << "\n" );
 
     int totread = 0;
 
@@ -892,11 +887,10 @@ int ExecCmd::receive(string& data, int cnt)
         BOOL bSuccess = ReadFile(m->m_hOutputRead, chBuf, toread,
                                  NULL, &m->m_oOutputRead);
         DWORD err = GetLastError();
-        LOGDEB1(("receive: ReadFile: success %d err %d\n",
-                 int(bSuccess), int(err)));
+        LOGDEB1("receive: ReadFile: success "  << (int(bSuccess)) << " err "  << (int(err)) << "\n" );
         if (!bSuccess && err != ERROR_IO_PENDING) {
             if (err != ERROR_BROKEN_PIPE)
-                LOGERR(("ExecCmd::receive: ReadFile error: %d\n", int(err)));
+                LOGERR("ExecCmd::receive: ReadFile error: "  << (int(err)) << "\n" );
             break;
         }
 
@@ -908,8 +902,7 @@ int ExecCmd::receive(string& data, int cnt)
                                      &dwRead, TRUE)) {
                 err = GetLastError();
                 if (err && err != ERROR_BROKEN_PIPE) {
-                    LOGERR(("ExecCmd::recv:GetOverlappedResult: err %d\n",
-                            err));
+                    LOGERR("ExecCmd::recv:GetOverlappedResult: err "  << (err) << "\n" );
                     return -1;
                 }
             }
@@ -918,7 +911,7 @@ int ExecCmd::receive(string& data, int cnt)
                 data.append(chBuf, dwRead);
                 if (m->m_advise)
                     m->m_advise->newData(dwRead);
-                LOGDEB1(("ExecCmd::recv: ReadFile: %d bytes\n", int(dwRead)));
+                LOGDEB1("ExecCmd::recv: ReadFile: "  << (int(dwRead)) << " bytes\n" );
             }
         } else if (waitRes == Quit) {
             if (!CancelIo(m->m_hOutputRead)) {
@@ -926,7 +919,7 @@ int ExecCmd::receive(string& data, int cnt)
             }
             break;
         } else if (waitRes == Timeout) {
-            LOGDEB0(("ExecCmd::receive: timeout (%d mS)\n", m->m_timeoutMs));
+            LOGDEB0("ExecCmd::receive: timeout ("  << (m->m_timeoutMs) << " mS)\n" );
             if (m->tooBig()) {
                 if (!CancelIo(m->m_hOutputRead)) {
                     printError("CancelIo");
@@ -945,7 +938,7 @@ int ExecCmd::receive(string& data, int cnt)
                 }
             }
             if (m->m_killRequest) {
-                LOGINFO(("ExecCmd::doexec: cancel request\n"));
+                LOGINFO("ExecCmd::doexec: cancel request\n" );
                 if (!CancelIo(m->m_hOutputRead)) {
                     printError("CancelIo");
                 }
@@ -956,13 +949,13 @@ int ExecCmd::receive(string& data, int cnt)
         if ((cnt == 0 && totread > 0) || (cnt > 0 && totread == cnt))
             break;
     }
-    LOGDEB1(("ExecCmd::receive: returning %d bytes\n", totread));
+    LOGDEB1("ExecCmd::receive: returning "  << (totread) << " bytes\n" );
     return totread;
 }
 
 int ExecCmd::getline(string& data)
 {
-    LOGDEB2(("ExecCmd::getline: cnt %d, timeo %d\n", cnt, timeo));
+    LOGDEB2("ExecCmd::getline: cnt "  << (cnt) << ", timeo "  << (timeo) << "\n" );
     data.erase();
     if (m->m_buf.empty()) {
         m->m_buf.reserve(4096);
@@ -987,7 +980,7 @@ int ExecCmd::getline(string& data)
         }
 
         if (foundnl) {
-            LOGDEB2(("ExecCmd::getline: ret: [%s]\n", data.c_str()));
+            LOGDEB2("ExecCmd::getline: ret: ["  << (data) << "]\n" );
             return int(data.size());
         }
 
@@ -997,7 +990,7 @@ int ExecCmd::getline(string& data)
             return -1;
         }
         if (m->m_buf.empty()) {
-            LOGDEB(("ExecCmd::getline: eof? ret: [%s]\n", data.c_str()));
+            LOGDEB("ExecCmd::getline: eof? ret: ["  << (data) << "]\n" );
             return int(data.size());
         }
         m->m_bufoffs = 0;
@@ -1017,7 +1010,7 @@ int ExecCmd::wait()
         // Wait until child process exits.
         while (WaitForSingleObject(m->m_piProcInfo.hProcess, m->m_timeoutMs)
                == WAIT_TIMEOUT) {
-            LOGDEB(("ExecCmd::wait: timeout (ok)\n"));
+            LOGDEB("ExecCmd::wait: timeout (ok)\n" );
             if (m->m_advise) {
                 m->m_advise->newData(0);
             }
@@ -1087,7 +1080,7 @@ int ExecCmd::doexec(const string &cmd, const vector<string>& args,
                     const string *input, string *output)
 {
     if (input && output) {
-        LOGERR(("ExecCmd::doexec: can't do both input and output\n"));
+        LOGERR("ExecCmd::doexec: can't do both input and output\n" );
         return -1;
     }
 
@@ -1103,7 +1096,7 @@ int ExecCmd::doexec(const string &cmd, const vector<string>& args,
     if (input) {
         if (!input->empty()) {
             if (send(*input) != (int)input->size()) {
-                LOGERR(("ExecCmd::doexec: send failed\n"));
+                LOGERR("ExecCmd::doexec: send failed\n" );
                 CloseHandle(m->m_hInputWrite);
                 m->m_hInputWrite = NULL;
                 return -1;
@@ -1118,7 +1111,7 @@ int ExecCmd::doexec(const string &cmd, const vector<string>& args,
                     break;
                 }
                 if (send(*input) != (int)input->size()) {
-                    LOGERR(("ExecCmd::doexec: send failed\n"));
+                    LOGERR("ExecCmd::doexec: send failed\n" );
                     CloseHandle(m->m_hInputWrite);
                     m->m_hInputWrite = NULL;
                     break;
@@ -1131,3 +1124,4 @@ int ExecCmd::doexec(const string &cmd, const vector<string>& args,
     cleaner.inactivate();
     return wait();
 }
+

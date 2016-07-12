@@ -25,16 +25,15 @@
 #include "searchdata.h"
 #include "rclquery.h"
 #include "subtreelist.h"
-#include "debuglog.h"
+#include "log.h"
 
 bool subtreelist(RclConfig *config, const string& top, 
 		 vector<string>& paths)
 {
-    LOGDEB(("subtreelist: top: [%s]\n", top.c_str()));
+    LOGDEB("subtreelist: top: ["  << (top) << "]\n" );
     Rcl::Db rcldb(config);
     if (!rcldb.open(Rcl::Db::DbRO)) {
-	LOGERR(("subtreelist: can't open database in [%s]: %s\n",
-		config->getDbDir().c_str(), rcldb.getReason().c_str()));
+	LOGERR("subtreelist: can't open database in ["  << (config->getDbDir()) << "]: "  << (rcldb.getReason()) << "\n" );
 	return false;
     }
 
@@ -129,3 +128,4 @@ int main(int argc, char **argv)
     exit(0);
 }
 #endif
+

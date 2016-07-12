@@ -32,7 +32,7 @@
 #include <cstring>
 
 #include "copyfile.h"
-#include "debuglog.h"
+#include "log.h"
 
 using namespace std;
 
@@ -46,7 +46,7 @@ bool copyfile(const char *src, const char *dst, string &reason, int flags)
     char buf[CPBSIZ];
     int oflags = O_WRONLY|O_CREAT|O_TRUNC|O_BINARY;
 
-    LOGDEB(("copyfile: %s to %s\n", src, dst));
+    LOGDEB("copyfile: "  << (src) << " to "  << (dst) << "\n" );
 
     if ((sfd = ::open(src, O_RDONLY, 0)) < 0) {
         reason += string("open ") + src + ": " + strerror(errno);
@@ -94,12 +94,12 @@ out:
 bool stringtofile(const string& dt, const char *dst, string& reason,
                   int flags)
 {
-    LOGDEB(("stringtofile:\n"));
+    LOGDEB("stringtofile:\n" );
     int dfd = -1;
     bool ret = false;
     int oflags = O_WRONLY|O_CREAT|O_TRUNC|O_BINARY;
 
-    LOGDEB(("stringtofile: %u bytes to %s\n", (unsigned int)dt.size(), dst));
+    LOGDEB("stringtofile: "  << ((unsigned int)dt.size()) << " bytes to "  << (dst) << "\n" );
 
     if (flags & COPYFILE_EXCL) {
         oflags |= O_EXCL;
@@ -262,3 +262,4 @@ int main(int argc, const char **argv)
 }
 
 #endif
+

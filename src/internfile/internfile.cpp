@@ -35,7 +35,7 @@ using namespace std;
 #include "internfile.h"
 #include "rcldoc.h"
 #include "mimetype.h"
-#include "debuglog.h"
+#include "log.h"
 #include "mimehandler.h"
 #include "execmd.h"
 #include "pathut.h"
@@ -76,8 +76,7 @@ static string colon_restore(const string& in)
 // (ie message having a given attachment)
 bool FileInterner::getEnclosingUDI(const Rcl::Doc &doc, string& udi)
 {
-    LOGDEB(("FileInterner::getEnclosingUDI(): url [%s] ipath [%s]\n", 
-	    doc.url.c_str(), doc.ipath.c_str()));
+    LOGDEB("FileInterner::getEnclosingUDI(): url ["  << (doc.url) << "] ipath ["  << (doc.ipath) << "]\n" );
     string eipath = doc.ipath;
     string::size_type colon;
     if (eipath.empty())
@@ -119,9 +118,9 @@ FileInterner::FileInterner(const string &fn, const struct stat *stp,
 			   RclConfig *cnf, int flags, const string *imime)
     : m_ok(false), m_missingdatap(0), m_uncomp((flags & FIF_forPreview) != 0)
 {
-    LOGDEB0(("FileInterner::FileInterner(fn=%s)\n", fn.c_str()));
+    LOGDEB0("FileInterner::FileInterner(fn="  << (fn) << ")\n" );
     if (fn.empty()) {
-	LOGERR(("FileInterner::FileInterner: empty file name!\n"));
+	LOGERR("FileInterner::FileInterner: empty file name!\n" );
 	return;
     }
     initcommon(cnf, flags);
@@ -132,7 +131,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
                         int flags, const string *imime)
 {
     if (f.empty()) {
-	LOGERR(("FileInterner::init: empty file name!\n"));
+	LOGERR("FileInterner::init: empty file name!\n" );
 	return;
     }
     m_fn = f;
@@ -157,13 +156,14 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
     // (e.g. the beagle indexer sets it).
     if (flags & FIF_doUseInputMimetype) {
         if (!imime) {
-            LOGERR(("FileInterner:: told to use null imime\n"));
+            LOGERR("FileInterner:: told to use null imime\n" );
             return;
         }
         l_mime = *imime;
     } else {
-        LOGDEB(("FileInterner::init fn [%s] mime [%s] preview %d\n", 
-                f.c_str(), imime?imime->c_str() : "(null)", m_forPreview));
+        LOGDEB("FileInterner::init fn ["  << f << "] mime ["  <<
+               (imime?imime->c_str() : "(null)") << "] preview " << m_forPreview
+               << "\n" );
 
         // Run mime type identification in any case (see comment above).
         l_mime = mimetype(m_fn, stp, m_cfg, usfci);
@@ -190,14 +190,12 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 		if (!m_uncomp.uncompressfile(m_fn, ucmd, m_tfile)) {
 		    return;
 		}
-		LOGDEB1(("FileInterner:: after ucomp: tfile %s\n", 
-			 m_tfile.c_str()));
+		LOGDEB1("FileInterner:: after ucomp: tfile "  << (m_tfile) << "\n" );
 		m_fn = m_tfile;
 		// Stat the uncompressed file, mainly to get the size
 		struct stat ucstat;
 		if (path_fileprops(m_fn, &ucstat) != 0) {
-		    LOGERR(("FileInterner: can't stat the uncompressed file"
-			    "[%s] errno %d\n", m_fn.c_str(), errno));
+		    LOGERR("FileInterner: can't stat the uncompressed file["  << (m_fn) << "] errno "  << (errno) << "\n" );
 		    return;
 		} else {
 		    docsize = ucstat.st_size;
@@ -206,8 +204,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 		if (l_mime.empty() && imime)
 		    l_mime = *imime;
 	    } else {
-		LOGINFO(("FileInterner:: %s over size limit %d kbs\n",
-			 m_fn.c_str(), maxkbs));
+		LOGINFO("FileInterner:: "  << (m_fn) << " over size limit "  << (maxkbs) << " kbs\n" );
 	    }
 	}
     }
@@ -215,7 +212,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
     if (l_mime.empty()) {
 	// No mime type. We let it through as config may warrant that
 	// we index all file names
-	LOGDEB0(("FileInterner:: no mime: [%s]\n", m_fn.c_str()));
+	LOGDEB0("FileInterner:: no mime: ["  << (m_fn) << "]\n" );
     }
 
     // Look for appropriate handler (might still return empty)
@@ -224,8 +221,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 
     if (!df || df->is_unknown()) {
 	// No real handler for this type, for now :( 
-	LOGDEB(("FileInterner:: unprocessed mime: [%s] [%s]\n", 
-		l_mime.c_str(), f.c_str()));
+	LOGDEB("FileInterner:: unprocessed mime: ["  << (l_mime) << "] ["  << (f) << "]\n" );
 	if (!df)
 	    return;
     }
@@ -245,12 +241,12 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
     df->set_docsize(docsize);
     if (!df->set_document_file(l_mime, m_fn)) {
 	delete df;
-	LOGERR(("FileInterner:: error converting %s\n", m_fn.c_str()));
+	LOGERR("FileInterner:: error converting "  << (m_fn) << "\n" );
 	return;
     }
 
     m_handlers.push_back(df);
-    LOGDEB(("FileInterner:: init ok %s [%s]\n", l_mime.c_str(), m_fn.c_str()));
+    LOGDEB("FileInterner:: init ok "  << (l_mime) << " ["  << (m_fn) << "]\n" );
     m_ok = true;
 }
 
@@ -259,7 +255,7 @@ FileInterner::FileInterner(const string &data, RclConfig *cnf,
                            int flags, const string& imime)
     : m_ok(false), m_missingdatap(0), m_uncomp((flags & FIF_forPreview) != 0)
 {
-    LOGDEB0(("FileInterner::FileInterner(data)\n"));
+    LOGDEB0("FileInterner::FileInterner(data)\n" );
     initcommon(cnf, flags);
     init(data, cnf, flags, imime);
 }
@@ -268,7 +264,7 @@ void FileInterner::init(const string &data, RclConfig *cnf,
                         int flags, const string& imime)
 {
     if (imime.empty()) {
-	LOGERR(("FileInterner: inmemory constructor needs input mime type\n"));
+	LOGERR("FileInterner: inmemory constructor needs input mime type\n" );
         return;
     }
     m_mimetype = imime;
@@ -279,7 +275,7 @@ void FileInterner::init(const string &data, RclConfig *cnf,
     if (!df) {
 	// No handler for this type, for now :( if indexallfilenames
 	// is set in the config, this normally wont happen (we get mh_unknown)
-	LOGDEB(("FileInterner:: unprocessed mime [%s]\n", m_mimetype.c_str()));
+	LOGDEB("FileInterner:: unprocessed mime ["  << (m_mimetype) << "]\n" );
 	return;
     }
     df->set_property(Dijon::Filter::OPERATING_MODE, 
@@ -300,8 +296,7 @@ void FileInterner::init(const string &data, RclConfig *cnf,
 	}
     }
     if (!result) {
-	LOGINFO(("FileInterner:: set_doc failed inside for mtype %s\n", 
-                 m_mimetype.c_str()));
+	LOGINFO("FileInterner:: set_doc failed inside for mtype "  << (m_mimetype) << "\n" );
 	delete df;
 	return;
     }
@@ -325,17 +320,17 @@ void FileInterner::initcommon(RclConfig *cnf, int flags)
 FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, int flags)
     : m_ok(false), m_missingdatap(0), m_uncomp(((flags & FIF_forPreview) != 0))
 {
-    LOGDEB0(("FileInterner::FileInterner(idoc)\n"));
+    LOGDEB0("FileInterner::FileInterner(idoc)\n" );
     initcommon(cnf, flags);
 
     DocFetcher *fetcher = docFetcherMake(cnf, idoc);
     if (fetcher == 0) {
-        LOGERR(("FileInterner:: no backend\n"));
+        LOGERR("FileInterner:: no backend\n" );
         return;
     }
     DocFetcher::RawDoc rawdoc;
     if (!fetcher->fetch(cnf, idoc, rawdoc)) {
-	LOGERR(("FileInterner:: fetcher failed\n"));
+	LOGERR("FileInterner:: fetcher failed\n" );
 	return;
     }
     switch (rawdoc.kind) {
@@ -350,7 +345,7 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, int flags)
         m_direct = true;
         break;
     default:
-	LOGERR(("FileInterner::FileInterner(idoc): bad rawdoc kind ??\n"));
+	LOGERR("FileInterner::FileInterner(idoc): bad rawdoc kind ??\n" );
     }
     return;
 }
@@ -359,7 +354,7 @@ bool FileInterner::makesig(RclConfig *cnf, const Rcl::Doc& idoc, string& sig)
 {
     DocFetcher *fetcher = docFetcherMake(cnf, idoc);
     if (fetcher == 0) {
-        LOGERR(("FileInterner::makesig no backend for doc\n"));
+        LOGERR("FileInterner::makesig no backend for doc\n" );
         return false;
     }
 
@@ -386,14 +381,12 @@ TempFile FileInterner::dataToTempFile(const string& dt, const string& mt)
     // Create temp file with appropriate suffix for mime type
     TempFile temp(new TempFileInternal(m_cfg->getSuffixFromMimeType(mt)));
     if (!temp->ok()) {
-	LOGERR(("FileInterner::dataToTempFile: cant create tempfile: %s\n",
-		temp->getreason().c_str()));
+	LOGERR("FileInterner::dataToTempFile: cant create tempfile: "  << (temp->getreason()) << "\n" );
 	return TempFile();
     }
     string reason;
     if (!stringtofile(dt, temp->filename(), reason)) {
-	LOGERR(("FileInterner::dataToTempFile: stringtofile: %s\n", 
-                reason.c_str()));
+	LOGERR("FileInterner::dataToTempFile: stringtofile: "  << (reason) << "\n" );
 	return TempFile();
     }
     return temp;
@@ -404,7 +397,7 @@ TempFile FileInterner::dataToTempFile(const string& dt, const string& mt)
 // RECFILTERROR HELPERNOTFOUND program1 [program2 ...]
 void FileInterner::checkExternalMissing(const string& msg, const string& mt)
 {
-    LOGDEB2(("checkExternalMissing: [%s]\n", msg.c_str()));
+    LOGDEB2("checkExternalMissing: ["  << (msg) << "]\n" );
     if (m_missingdatap && msg.find("RECFILTERROR") == 0) {
 	vector<string> verr;
 	stringToStrings(msg, verr);
@@ -496,10 +489,10 @@ static inline bool getKeyValue(const map<string, string>& docdata,
     it = docdata.find(key);
     if (it != docdata.end()) {
 	value = it->second;
-	LOGDEB2(("getKeyValue: [%s]->[%s]\n", key.c_str(), value.c_str()));
+	LOGDEB2("getKeyValue: ["  << (key) << "]->["  << (value) << "]\n" );
 	return true;
     }
-    LOGDEB2(("getKeyValue: no value for [%s]\n", key.c_str()));
+    LOGDEB2("getKeyValue: no value for ["  << (key) << "]\n" );
     return false;
 }
 
@@ -508,7 +501,7 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
     RecollFilter *df = m_handlers.back();
     if (df == 0) {
 	//??
-	LOGERR(("FileInterner::dijontorcl: null top handler ??\n"));
+	LOGERR("FileInterner::dijontorcl: null top handler ??\n" );
 	return false;
     }
     const map<string, string>& docdata = df->get_meta_data();
@@ -575,7 +568,7 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 // actually complicated.
 void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
 {
-    LOGDEB2(("FileInterner::collectIpathAndMT\n"));
+    LOGDEB2("FileInterner::collectIpathAndMT\n" );
     bool hasipath = false;
 
     if (!m_noxattrs) {
@@ -624,7 +617,7 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
 
     // Trim empty tail elements in ipath.
     if (hasipath) {
-	LOGDEB2(("IPATH [%s]\n", doc.ipath.c_str()));
+	LOGDEB2("IPATH ["  << (doc.ipath) << "]\n" );
 	string::size_type sit = doc.ipath.find_last_not_of(cstr_isep);
 	if (sit == string::npos)
 	    doc.ipath.erase();
@@ -660,8 +653,7 @@ int FileInterner::addHandler()
     getKeyValue(docdata, cstr_dj_keycharset, charset);
     getKeyValue(docdata, cstr_dj_keymt, mimetype);
 
-    LOGDEB(("FileInterner::addHandler: next_doc is %s target [%s]\n", 
-	    mimetype.c_str(), m_targetMType.c_str()));
+    LOGDEB("FileInterner::addHandler: next_doc is "  << (mimetype) << " target ["  << (m_targetMType) << "]\n" );
 
     // If we find a document of the target type (text/plain in
     // general), we're done decoding. If we hit text/plain, we're done
@@ -669,7 +661,7 @@ int FileInterner::addHandler()
     if (!stringicmp(mimetype, m_targetMType) || 
 	!stringicmp(mimetype, cstr_textplain)) {
 	m_reachedMType = mimetype;
-	LOGDEB1(("FileInterner::addHandler: target reached\n"));
+	LOGDEB1("FileInterner::addHandler: target reached\n" );
 	return ADD_BREAK;
     }
 
@@ -677,7 +669,7 @@ int FileInterner::addHandler()
     if (m_handlers.size() >= MAXHANDLERS) {
 	// Stack too big. Skip this and go on to check if there is
 	// something else in the current back()
-	LOGERR(("FileInterner::addHandler: stack too high\n"));
+	LOGERR("FileInterner::addHandler: stack too high\n" );
 	return ADD_CONTINUE;
     }
 
@@ -685,8 +677,7 @@ int FileInterner::addHandler()
     if (!newflt) {
 	// If we can't find a handler, this doc can't be handled
 	// but there can be other ones so we go on
-	LOGINFO(("FileInterner::addHandler: no filter for [%s]\n",
-		 mimetype.c_str()));
+	LOGINFO("FileInterner::addHandler: no filter for ["  << (mimetype) << "]\n" );
 	return ADD_CONTINUE;
     }
     newflt->set_property(Dijon::Filter::OPERATING_MODE, 
@@ -725,8 +716,7 @@ int FileInterner::addHandler()
 	}
     }
     if (!setres) {
-	LOGINFO(("FileInterner::addHandler: set_doc failed inside %s "
-		 " for mtype %s\n", m_fn.c_str(), mimetype.c_str()));
+	LOGINFO("FileInterner::addHandler: set_doc failed inside "  << (m_fn) << "  for mtype "  << (mimetype) << "\n" );
 	delete newflt;
 	if (m_forPreview)
 	    return ADD_ERROR;
@@ -734,7 +724,7 @@ int FileInterner::addHandler()
     }
     // add handler and go on, maybe this one will give us text...
     m_handlers.push_back(newflt);
-    LOGDEB1(("FileInterner::addHandler: added\n"));
+    LOGDEB1("FileInterner::addHandler: added\n" );
     return ADD_OK;
 }
 
@@ -744,21 +734,19 @@ void FileInterner::processNextDocError(Rcl::Doc &doc)
     collectIpathAndMT(doc);
     m_reason = m_handlers.back()->get_error();
     checkExternalMissing(m_reason, doc.mimetype);
-    LOGERR(("FileInterner::internfile: next_document error "
-	    "[%s%s%s] %s %s\n", m_fn.c_str(), doc.ipath.empty() ? "" : "|", 
-	    doc.ipath.c_str(), doc.mimetype.c_str(), m_reason.c_str()));
+    LOGERR("FileInterner::internfile: next_document error ["  << (m_fn) << ""  << (doc.ipath.empty() ? "" : "|") << ""  << (doc.ipath) << "] "  << (doc.mimetype) << " "  << (m_reason) << "\n" );
 }
 
 FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, const string& ipath)
 {
-    LOGDEB(("FileInterner::internfile. ipath [%s]\n", ipath.c_str()));
+    LOGDEB("FileInterner::internfile. ipath ["  << (ipath) << "]\n" );
 
     // Get rid of possible image tempfile from older call
     m_imgtmp.reset();
 
     if (m_handlers.size() < 1) {
 	// Just means the constructor failed
-	LOGDEB(("FileInterner::internfile: no handler: constructor failed\n"));
+	LOGDEB("FileInterner::internfile: no handler: constructor failed\n" );
 	return FIError;
     }
 
@@ -777,7 +765,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, const string& ipath
 	}
 	vipath.insert(vipath.begin(), lipath.begin(), lipath.end());
 	if (!m_handlers.back()->skip_to_document(vipath[m_handlers.size()-1])){
-	    LOGERR(("FileInterner::internfile: can't skip\n"));
+	    LOGERR("FileInterner::internfile: can't skip\n" );
 	    return FIError;
 	}
     }
@@ -793,7 +781,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, const string& ipath
     while (!m_handlers.empty()) {
         CancelCheck::instance().checkCancel();
 	if (loop++ > 1000) {
-	    LOGERR(("FileInterner:: looping!\n"));
+	    LOGERR("FileInterner:: looping!\n" );
 	    return FIError;
 	}
 	// If there are no more docs at the current top level we pop and
@@ -805,7 +793,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, const string& ipath
 	    if (m_forPreview) {
                 m_reason += "Requested document does not exist. ";
                 m_reason += m_handlers.back()->get_error();
-                LOGERR(("FileInterner: requested document does not exist\n"));
+                LOGERR("FileInterner: requested document does not exist\n" );
 		return FIError;
             }
 	    popHandler();
@@ -820,7 +808,7 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, const string& ipath
 	    if (m_forPreview) {
                 m_reason += "Requested document does not exist. ";
                 m_reason += m_handlers.back()->get_error();
-                LOGERR(("FileInterner: requested document does not exist\n"));
+                LOGERR("FileInterner: requested document does not exist\n" );
 		return FIError;
             }
 	    popHandler();
@@ -831,20 +819,20 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, const string& ipath
 	// handler to stack.
 	switch (addHandler()) {
 	case ADD_OK: // Just go through: handler has been stacked, use it
-	    LOGDEB2(("addHandler returned OK\n"));
+	    LOGDEB2("addHandler returned OK\n" );
 	    break; 
 	case ADD_CONTINUE: 
 	    // forget this doc and retrieve next from current handler
 	    // (ipath stays same)
-	    LOGDEB2(("addHandler returned CONTINUE\n"));
+	    LOGDEB2("addHandler returned CONTINUE\n" );
 	    continue;
 	case ADD_BREAK: 
 	    // Stop looping: doc type ok, need complete its processing
 	    // and return it
-	    LOGDEB2(("addHandler returned BREAK\n"));
+	    LOGDEB2("addHandler returned BREAK\n" );
 	    goto breakloop; // when you have to you have to
 	case ADD_ERROR: 
-	    LOGDEB2(("addHandler returned ERROR\n"));
+	    LOGDEB2("addHandler returned ERROR\n" );
 	    return FIError;
 	}
 
@@ -858,14 +846,14 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, const string& ipath
 	if (!ipath.empty()) {
 	    if (m_handlers.size() <= vipath.size() &&
 		!m_handlers.back()->skip_to_document(vipath[m_handlers.size()-1])) {
-		LOGERR(("FileInterner::internfile: can't skip\n"));
+		LOGERR("FileInterner::internfile: can't skip\n" );
 		return FIError;
 	    }
 	}
     }
  breakloop:
     if (m_handlers.empty()) {
-	LOGDEB(("FileInterner::internfile: conversion ended with no doc\n"));
+	LOGDEB("FileInterner::internfile: conversion ended with no doc\n" );
 	return FIError;
     }
 
@@ -908,7 +896,7 @@ bool FileInterner::tempFileForMT(TempFile& otemp, RclConfig* cnf,
     TempFile temp(new TempFileInternal(
                       cnf->getSuffixFromMimeType(mimetype)));
     if (!temp->ok()) {
-        LOGERR(("FileInterner::interntofile: can't create temp file\n"));
+        LOGERR("FileInterner::interntofile: can't create temp file\n" );
         return false;
     }
     otemp = temp;
@@ -934,7 +922,7 @@ bool FileInterner::tempFileForMT(TempFile& otemp, RclConfig* cnf,
 bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
 			      RclConfig *cnf, const Rcl::Doc& idoc)
 {
-    LOGDEB(("FileInterner::idocToFile\n"));
+    LOGDEB("FileInterner::idocToFile\n" );
 
     if (idoc.ipath.empty()) {
 	return topdocToFile(otemp, tofile, cnf, idoc);
@@ -953,12 +941,12 @@ bool FileInterner::topdocToFile(TempFile& otemp, const string& tofile,
 {
     DocFetcher *fetcher = docFetcherMake(cnf, idoc);
     if (fetcher == 0) {
-        LOGERR(("FileInterner::idocToFile no backend\n"));
+        LOGERR("FileInterner::idocToFile no backend\n" );
         return false;
     }
     DocFetcher::RawDoc rawdoc;
     if (!fetcher->fetch(cnf, idoc, rawdoc)) {
-        LOGERR(("FileInterner::idocToFile fetcher failed\n"));
+        LOGERR("FileInterner::idocToFile fetcher failed\n" );
         return false;
     }
     const char *filename = "";
@@ -975,20 +963,18 @@ bool FileInterner::topdocToFile(TempFile& otemp, const string& tofile,
     switch (rawdoc.kind) {
     case DocFetcher::RawDoc::RDK_FILENAME:
         if (!copyfile(rawdoc.data.c_str(), filename, reason)) {
-            LOGERR(("FileInterner::idocToFile: copyfile: %s\n", 
-                    reason.c_str()));
+            LOGERR("FileInterner::idocToFile: copyfile: "  << (reason) << "\n" );
             return false;
         }
         break;
     case DocFetcher::RawDoc::RDK_DATA:
         if (!stringtofile(rawdoc.data, filename, reason)) {
-            LOGERR(("FileInterner::idocToFile: stringtofile: %s\n", 
-                    reason.c_str()));
+            LOGERR("FileInterner::idocToFile: stringtofile: "  << (reason) << "\n" );
             return false;
         }
         break;
     default:
-        LOGERR(("FileInterner::FileInterner(idoc): bad rawdoc kind ??\n"));
+        LOGERR("FileInterner::FileInterner(idoc): bad rawdoc kind ??\n" );
     }
 
     if (tofile.empty())
@@ -1000,13 +986,13 @@ bool FileInterner::interntofile(TempFile& otemp, const string& tofile,
 				const string& ipath, const string& mimetype)
 {
     if (!ok()) {
-	LOGERR(("FileInterner::interntofile: constructor failed\n"));
+	LOGERR("FileInterner::interntofile: constructor failed\n" );
 	return false;
     }
     Rcl::Doc doc;
     Status ret = internfile(doc, ipath);
     if (ret == FileInterner::FIError) {
-	LOGERR(("FileInterner::interntofile: internfile() failed\n"));
+	LOGERR("FileInterner::interntofile: internfile() failed\n" );
 	return false;
     }
 
@@ -1033,8 +1019,7 @@ bool FileInterner::interntofile(TempFile& otemp, const string& tofile,
     }
     string reason;
     if (!stringtofile(doc.text, filename, reason)) {
-	LOGERR(("FileInterner::interntofile: stringtofile : %s\n",
-		reason.c_str()));
+	LOGERR("FileInterner::interntofile: stringtofile : "  << (reason) << "\n" );
 	return false;
     }
 
@@ -1045,16 +1030,15 @@ bool FileInterner::interntofile(TempFile& otemp, const string& tofile,
 
 bool FileInterner::isCompressed(const string& fn, RclConfig *cnf)
 {
-    LOGDEB(("FileInterner::isCompressed: [%s]\n", fn.c_str()));
+    LOGDEB("FileInterner::isCompressed: ["  << (fn) << "]\n" );
     struct stat st;
     if (path_fileprops(fn, &st) < 0) {
-        LOGERR(("FileInterner::isCompressed: can't stat [%s]\n", fn.c_str()));
+        LOGERR("FileInterner::isCompressed: can't stat ["  << (fn) << "]\n" );
         return false;
     }
     string l_mime = mimetype(fn, &st, cnf, true);
     if (l_mime.empty()) {
-        LOGERR(("FileInterner::isUncompressed: can't get mime for [%s]\n", 
-                fn.c_str()));
+        LOGERR("FileInterner::isUncompressed: can't get mime for ["  << (fn) << "]\n" );
         return false;
     }
 
@@ -1069,17 +1053,15 @@ bool FileInterner::isCompressed(const string& fn, RclConfig *cnf)
 bool FileInterner::maybeUncompressToTemp(TempFile& temp, const string& fn, 
                                          RclConfig *cnf, const Rcl::Doc& doc)
 {
-    LOGDEB(("FileInterner::maybeUncompressToTemp: [%s]\n", fn.c_str()));
+    LOGDEB("FileInterner::maybeUncompressToTemp: ["  << (fn) << "]\n" );
     struct stat st;
     if (path_fileprops(fn.c_str(), &st) < 0) {
-        LOGERR(("FileInterner::maybeUncompressToTemp: can't stat [%s]\n", 
-                fn.c_str()));
+        LOGERR("FileInterner::maybeUncompressToTemp: can't stat ["  << (fn) << "]\n" );
         return false;
     }
     string l_mime = mimetype(fn, &st, cnf, true);
     if (l_mime.empty()) {
-        LOGERR(("FileInterner::maybeUncompress.: can't id. mime for [%s]\n", 
-                fn.c_str()));
+        LOGERR("FileInterner::maybeUncompress.: can't id. mime for ["  << (fn) << "]\n" );
         return false;
     }
 
@@ -1091,14 +1073,13 @@ bool FileInterner::maybeUncompressToTemp(TempFile& temp, const string& fn,
     int maxkbs = -1;
     if (cnf->getConfParam("compressedfilemaxkbs", &maxkbs) &&
         maxkbs >= 0 && int(st.st_size / 1024) > maxkbs) {
-        LOGINFO(("FileInterner:: %s over size limit %d kbs\n",
-                 fn.c_str(), maxkbs));
+        LOGINFO("FileInterner:: "  << (fn) << " over size limit "  << (maxkbs) << " kbs\n" );
         return false;
     }
     temp = 
       TempFile(new TempFileInternal(cnf->getSuffixFromMimeType(doc.mimetype)));
     if (!temp->ok()) {
-        LOGERR(("FileInterner: cant create temporary file"));
+        LOGERR("FileInterner: cant create temporary file" );
         return false;
     }
 
@@ -1113,9 +1094,7 @@ bool FileInterner::maybeUncompressToTemp(TempFile& temp, const string& fn,
     // uncompressed file, hopefully staying on the same dev.
     string reason;
     if (!renameormove(uncomped.c_str(), temp->filename(), reason)) {
-        LOGERR(("FileInterner::maybeUncompress: move [%s] -> [%s] "
-                "failed: %s\n", 
-                uncomped.c_str(), temp->filename(), reason.c_str()));
+        LOGERR("FileInterner::maybeUncompress: move ["  << (uncomped) << "] -> ["  << (temp->filename()) << "] failed: "  << (reason) << "\n" );
         return false;
     }
     return true;
@@ -1131,7 +1110,8 @@ bool FileInterner::maybeUncompressToTemp(TempFile& temp, const string& fn,
 
 using namespace std;
 
-#include "debuglog.h"
+#include "log.h"
+
 #include "rclinit.h"
 #include "internfile.h"
 #include "rclconfig.h"
@@ -1232,3 +1212,4 @@ int main(int argc, char **argv)
 }
 
 #endif // TEST_INTERNFILE
+

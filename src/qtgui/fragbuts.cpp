@@ -34,7 +34,7 @@
 #include "pathut.h"
 #include "smallut.h"
 #include "recoll.h"
-#include "debuglog.h"
+#include "log.h"
 #include "readfile.h"
 #include "copyfile.h"
 
@@ -158,7 +158,7 @@ FragButs::FragButs(QWidget* parent)
 	QMessageBox::warning(0, "Recoll", 
 			     tr("%1 not found.").arg(
                                  QString::fromLocal8Bit(m_fn.c_str())));
-        LOGERR(("Fragbuts:: can't read [%s]\n", m_fn.c_str()));
+        LOGERR("Fragbuts:: can't read ["  << (m_fn) << "]\n" );
         return;
     }
     FragButsParser parser(this, m_buttons);
@@ -199,7 +199,7 @@ bool FragButs::isStale(time_t *reftime)
 
 void FragButs::onButtonClicked(bool on)
 {
-    LOGDEB(("FragButs::onButtonClicked: [%d]\n", int(on)));
+    LOGDEB("FragButs::onButtonClicked: ["  << (int(on)) << "]\n" );
     emit fragmentsChanged();
 }
 
@@ -208,8 +208,9 @@ void FragButs::getfrags(std::vector<std::string>& frags)
     for (vector<ButFrag>::iterator it = m_buttons.begin(); 
          it != m_buttons.end(); it++) {
         if (it->button->isChecked() && !it->fragment.empty()) {
-            LOGDEB(("FragButs: fragment [%s]\n", it->fragment.c_str()));
+            LOGDEB("FragButs: fragment ["  << (it->fragment) << "]\n" );
             frags.push_back(it->fragment);
         }
     }
 }
+

@@ -21,7 +21,7 @@
 
 #include "rclionice.h"
 #include "execmd.h"
-#include "debuglog.h"
+#include "log.h"
 
 using namespace std;
 
@@ -30,7 +30,7 @@ bool rclionice(const string& clss, const string& cdata)
     string ionicexe;
     if (!ExecCmd::which("ionice", ionicexe)) {
 	// ionice not found, bail out
-	LOGDEB0(("rclionice: ionice not found\n"));
+	LOGDEB0("rclionice: ionice not found\n" );
 	return false;
     }
     vector<string> args;
@@ -51,8 +51,9 @@ bool rclionice(const string& clss, const string& cdata)
     int status = cmd.doexec(ionicexe, args);
 
     if (status) {
-	LOGERR(("rclionice: failed, status 0x%x\n", status));
+	LOGERR("rclionice: failed, status 0x"  << (status) << "\n" );
 	return false;
     }
     return true;
 }
+

@@ -19,7 +19,7 @@
 
 #include "advshist.h"
 #include "guiutils.h"
-#include "debuglog.h"
+#include "log.h"
 #include "xmltosd.h"
 
 using namespace std;
@@ -94,3 +94,4 @@ void AdvSearchHist::clear()
 {
     g_dynconf->eraseAll(advSearchHistSk);
 }
+

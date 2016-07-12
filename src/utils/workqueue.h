@@ -24,7 +24,7 @@
 #include <queue>
 #include <list>
 
-#include "debuglog.h"
+#include "log.h"
 #include "ptmutex.h"
 
 /**
@@ -60,7 +60,7 @@ public:
 
     ~WorkQueue() 
     {
-        LOGDEB2(("WorkQueue::~WorkQueue:%s\n", m_name.c_str()));
+        LOGDEB2("WorkQueue::~WorkQueue:"  << (m_name) << "\n" );
         if (!m_worker_threads.empty())
             setTerminateAndWait();
     }
@@ -80,8 +80,7 @@ public:
             int err;
             pthread_t thr;
             if ((err = pthread_create(&thr, 0, start_routine, arg))) {
-                LOGERR(("WorkQueue:%s: pthread_create failed, err %d\n",
-                        m_name.c_str(), err));
+                LOGERR("WorkQueue:"  << (m_name) << ": pthread_create failed, err "  << (err) << "\n" );
                 return false;
             }
             m_worker_threads.push_back(thr);
@@ -97,8 +96,7 @@ public:
     {
 	PTMutexLocker lock(m_mutex);
         if (!lock.ok() || !ok()) {
-	    LOGERR(("WorkQueue::put:%s: !ok or mutex_lock failed\n", 
-		    m_name.c_str()));
+	    LOGERR("WorkQueue::put:"  << (m_name) << ": !ok or mutex_lock failed\n" );
             return false;
 	}
 
@@ -144,8 +142,7 @@ public:
     {
 	PTMutexLocker lock(m_mutex);
         if (!lock.ok() || !ok()) {
-            LOGERR(("WorkQueue::waitIdle:%s: not ok or can't lock\n",
-                    m_name.c_str()));
+            LOGERR("WorkQueue::waitIdle:"  << (m_name) << ": not ok or can't lock\n" );
             return false;
         }
 
@@ -157,8 +154,7 @@ public:
             if (pthread_cond_wait(&m_ccond, lock.getMutex())) {
 		m_clients_waiting--;
                 m_ok = false;
-                LOGERR(("WorkQueue::waitIdle:%s: cond_wait failed\n",
-			   m_name.c_str()));
+                LOGERR("WorkQueue::waitIdle:"  << (m_name) << ": cond_wait failed\n" );
                 return false;
             }
 	    m_clients_waiting--;
@@ -176,7 +172,7 @@ public:
     void* setTerminateAndWait()
     {
 	PTMutexLocker lock(m_mutex);
-        LOGDEB(("setTerminateAndWait:%s\n", m_name.c_str()));
+        LOGDEB("setTerminateAndWait:"  << (m_name) << "\n" );
 
 	if (m_worker_threads.empty()) {
 	    // Already called ?
@@ -189,17 +185,14 @@ public:
             pthread_cond_broadcast(&m_wcond);
 	    m_clients_waiting++;
             if (pthread_cond_wait(&m_ccond, lock.getMutex())) {
-                LOGERR(("WorkQueue::setTerminate:%s: cond_wait failed\n",
-			   m_name.c_str()));
+                LOGERR("WorkQueue::setTerminate:"  << (m_name) << ": cond_wait failed\n" );
 		m_clients_waiting--;
                 return (void*)0;
             }
 	    m_clients_waiting--;
         }
 
-	LOGINFO(("%s: tasks %u nowakes %u wsleeps %u csleeps %u\n", 
-		m_name.c_str(), m_tottasks, m_nowake, m_workersleeps, 
-		m_clientsleeps));
+	LOGINFO(""  << (m_name) << ": tasks "  << (m_tottasks) << " nowakes "  << (m_nowake) << " wsleeps "  << (m_workersleeps) << " csleeps "  << (m_clientsleeps) << "\n" );
 	// Perform the thread joins and compute overall status
         // Workers return (void*)1 if ok
         void *statusall = (void*)1;
@@ -218,7 +211,7 @@ public:
 	    m_tottasks = m_nowake = m_workersleeps = m_clientsleeps = 0;
         m_ok = true;
 
-        LOGDEB(("setTerminateAndWait:%s done\n", m_name.c_str()));
+        LOGDEB("setTerminateAndWait:"  << (m_name) << " done\n" );
         return statusall;
     }
 
@@ -231,7 +224,7 @@ public:
     {
 	PTMutexLocker lock(m_mutex);
         if (!lock.ok() || !ok()) {
-	    LOGDEB(("WorkQueue::take:%s: not ok\n", m_name.c_str()));
+	    LOGDEB("WorkQueue::take:"  << (m_name) << ": not ok\n" );
             return false;
 	}
 
@@ -243,8 +236,7 @@ public:
             if (pthread_cond_wait(&m_wcond, lock.getMutex()) || !ok()) {
 		// !ok is a normal condition when shutting down
 		if (ok())
-		    LOGERR(("WorkQueue::take:%s: cond_wait failed or !ok\n",
-			    m_name.c_str()));
+		    LOGERR("WorkQueue::take:"  << (m_name) << ": cond_wait failed or !ok\n" );
                 m_workers_waiting--;
                 return false;
             }
@@ -275,7 +267,7 @@ public:
      */
     void workerExit()
     {
-	LOGDEB(("workerExit:%s\n", m_name.c_str()));
+	LOGDEB("workerExit:"  << (m_name) << "\n" );
 	PTMutexLocker lock(m_mutex);
         m_workers_exited++;
         m_ok = false;
@@ -294,9 +286,7 @@ private:
     {
 	bool isok = m_ok && m_workers_exited == 0 && !m_worker_threads.empty();
 	if (!isok) {
-	    LOGDEB(("WorkQueue:ok:%s: not ok m_ok %d m_workers_exited %d "
-		    "m_worker_threads size %d\n", m_name.c_str(),
-		    m_ok, m_workers_exited, int(m_worker_threads.size())));
+	    LOGDEB("WorkQueue:ok:"  << (m_name) << ": not ok m_ok "  << (m_ok) << " m_workers_exited "  << (m_workers_exited) << " m_worker_threads size "  << (int(m_worker_threads.size())) << "\n" );
 	}
         return isok;
     }
@@ -339,3 +329,4 @@ private:
 };
 
 #endif /* _WORKQUEUE_H_INCLUDED_ */
+

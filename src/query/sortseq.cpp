@@ -16,7 +16,7 @@
  */
 #include <algorithm>
 
-#include "debuglog.h"
+#include "log.h"
 #include "sortseq.h"
 
 using std::string;
@@ -30,7 +30,7 @@ public:
     // behaves as operator< 
     int operator()(const Rcl::Doc *x, const Rcl::Doc *y) 
     { 
-	LOGDEB1(("Comparing .. \n"));
+	LOGDEB1("Comparing .. \n" );
 
 	map<string,string>::const_iterator xit, yit;
 	xit = x->meta.find(ss.field);
@@ -43,15 +43,15 @@ public:
 
 bool DocSeqSorted::setSortSpec(const DocSeqSortSpec &sortspec)
 {
-    LOGDEB(("DocSeqSorted::setSortSpec\n"));
+    LOGDEB("DocSeqSorted::setSortSpec\n" );
     m_spec = sortspec;
     int count = m_seq->getResCnt();
-    LOGDEB(("DocSeqSorted:: count %d\n", count));
+    LOGDEB("DocSeqSorted:: count "  << (count) << "\n" );
     m_docs.resize(count);
     int i;
     for (i = 0; i < count; i++) {
 	if (!m_seq->getDoc(i, m_docs[i])) {
-	    LOGERR(("DocSeqSorted: getDoc failed for doc %d\n", i));
+	    LOGERR("DocSeqSorted: getDoc failed for doc "  << (i) << "\n" );
 	    count = i;
 	    break;
 	}
@@ -68,9 +68,10 @@ bool DocSeqSorted::setSortSpec(const DocSeqSortSpec &sortspec)
 
 bool DocSeqSorted::getDoc(int num, Rcl::Doc &doc, string *)
 {
-    LOGDEB(("DocSeqSorted::getDoc(%d)\n", num));
+    LOGDEB("DocSeqSorted::getDoc("  << (num) << ")\n" );
     if (num < 0 || num >= int(m_docsp.size()))
 	return false;
     doc = *m_docsp[num];
     return true;
 }
+

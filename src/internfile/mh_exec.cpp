@@ -26,7 +26,7 @@
 #include "execmd.h"
 #include "mh_exec.h"
 #include "mh_html.h"
-#include "debuglog.h"
+#include "log.h"
 #include "cancelcheck.h"
 #include "smallut.h"
 #include "md5ut.h"
@@ -55,11 +55,10 @@ void MEAdv::reset()
 
 void MEAdv::newData(int n) 
 {
-    LOGDEB2(("MHExec:newData(%d)\n", n));
+    LOGDEB2("MHExec:newData("  << (n) << ")\n" );
     if (m_filtermaxseconds > 0 && 
         time(0L) - m_start > m_filtermaxseconds) {
-        LOGERR(("MimeHandlerExec: filter timeout (%d S)\n",
-                m_filtermaxseconds));
+        LOGERR("MimeHandlerExec: filter timeout ("  << (m_filtermaxseconds) << " S)\n" );
         throw HandlerTimeout();
     }
     // If a cancel request was set by the signal handler (or by us
@@ -70,7 +69,7 @@ void MEAdv::newData(int n)
 
 bool MimeHandlerExec::skip_to_document(const string& ipath) 
 {
-    LOGDEB(("MimeHandlerExec:skip_to_document: [%s]\n", ipath.c_str()));
+    LOGDEB("MimeHandlerExec:skip_to_document: ["  << (ipath) << "]\n" );
     m_ipath = ipath;
     return true;
 }
@@ -83,13 +82,13 @@ bool MimeHandlerExec::next_document()
 	return false;
     m_havedoc = false;
     if (missingHelper) {
-	LOGDEB(("MimeHandlerExec::next_document(): helper known missing\n"));
+	LOGDEB("MimeHandlerExec::next_document(): helper known missing\n" );
 	return false;
     }
 
     if (params.empty()) {
 	// Hu ho
-	LOGERR(("MimeHandlerExec::mkDoc: empty params\n"));
+	LOGERR("MimeHandlerExec::mkDoc: empty params\n" );
 	m_reason = "RECFILTERROR BADCONFIG";
 	return false;
     }
@@ -118,16 +117,15 @@ bool MimeHandlerExec::next_document()
     try {
         status = mexec.doexec(cmd, myparams, 0, &output);
     } catch (HandlerTimeout) {
-	LOGERR(("MimeHandlerExec: handler timeout\n"));
+	LOGERR("MimeHandlerExec: handler timeout\n" );
         status = 0x110f;
     } catch (CancelExcept) {
-	LOGERR(("MimeHandlerExec: cancelled\n"));
+	LOGERR("MimeHandlerExec: cancelled\n" );
         status = 0x110f;
     }
 
     if (status) {
-	LOGERR(("MimeHandlerExec: command status 0x%x for %s\n", 
-		status, cmd.c_str()));
+	LOGERR("MimeHandlerExec: command status 0x"  << (status) << " for "  << (cmd) << "\n" );
 	if (WIFEXITED(status) && WEXITSTATUS(status) == 127) {
 	    // That's how execmd signals a failed exec (most probably
 	    // a missing command). Let'hope no filter uses the same value as
@@ -195,10 +193,10 @@ void MimeHandlerExec::finaldetails()
 	if (MD5File(m_fn, md5, &reason)) {
 	    m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
 	} else {
-	    LOGERR(("MimeHandlerExec: cant compute md5 for [%s]: %s\n", 
-		    m_fn.c_str(), reason.c_str()));
+	    LOGERR("MimeHandlerExec: cant compute md5 for ["  << (m_fn) << "]: "  << (reason) << "\n" );
 	}
     }
 
     handle_cs(m_metaData[cstr_dj_keymt]);
 }
+

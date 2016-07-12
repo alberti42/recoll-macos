@@ -18,7 +18,7 @@
 #include "cstr.h"
 #include "transcode.h"
 #include "mimehandler.h"
-#include "debuglog.h"
+#include "log.h"
 #include "smallut.h"
 
 
@@ -33,8 +33,7 @@ static bool alternate_decode(const string& in, string& out)
 {
     string lang = localelang();
     string code = langtocode(lang);
-    LOGDEB(("RecollFilter::txtdcode: trying alternate decode from %s\n",
-	    code.c_str()));
+    LOGDEB("RecollFilter::txtdcode: trying alternate decode from "  << (code) << "\n" );
     int ecnt;
     bool ret = transcode(in, out, code, cstr_utf8, &ecnt);
     return ecnt > 5 ? false : ret;
@@ -43,22 +42,18 @@ static bool alternate_decode(const string& in, string& out)
 bool RecollFilter::txtdcode(const string& who)
 {
     if (m_metaData[cstr_dj_keymt].compare(cstr_textplain)) {
-	LOGERR(("%s::txtdcode: called on non txt/plain: %s\n", who.c_str(),
-		m_metaData[cstr_dj_keymt].c_str()));
+	LOGERR(""  << (who) << "::txtdcode: called on non txt/plain: "  << (m_metaData[cstr_dj_keymt]) << "\n" );
 	return false;
     }
 
     string& ocs = m_metaData[cstr_dj_keyorigcharset];
     string& itext = m_metaData[cstr_dj_keycontent];
-    LOGDEB1(("%s::txtdcode: %d bytes from [%s] to UTF-8\n", 
-	     who.c_str(), itext.size(), ocs.c_str()));
+    LOGDEB1(""  << (who) << "::txtdcode: "  << (itext.size()) << " bytes from ["  << (ocs) << "] to UTF-8\n" );
     int ecnt;
     string otext;
     bool ret = transcode(itext, otext, ocs, cstr_utf8, &ecnt);
     if (!ret || ecnt > int(itext.size() / 100)) {
-	LOGERR(("%s::txtdcode: transcode %d bytes to UTF-8 failed "
-		"for input charset [%s] ret %d ecnt %d\n", 
-		who.c_str(), itext.size(), ocs.c_str(), ret, ecnt));
+	LOGERR(""  << (who) << "::txtdcode: transcode "  << (itext.size()) << " bytes to UTF-8 failed for input charset ["  << (ocs) << "] ret "  << (ret) << " ecnt "  << (ecnt) << "\n" );
 
 	if (samecharset(ocs, cstr_utf8)) {
 	    ret = alternate_decode(itext, otext);
@@ -66,7 +61,7 @@ bool RecollFilter::txtdcode(const string& who)
 	    ret = false;
 	}
 	if (!ret) {
-	    LOGDEB(("txtdcode: failed. Doc is not text?\n"));
+	    LOGDEB("txtdcode: failed. Doc is not text?\n" );
 	    itext.erase();
 	    return false;
 	}
@@ -76,4 +71,5 @@ bool RecollFilter::txtdcode(const string& who)
     m_metaData[cstr_dj_keycharset] = cstr_utf8;
     return true;
 }
+
 

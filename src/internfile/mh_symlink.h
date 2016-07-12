@@ -25,7 +25,7 @@
 #include "mimehandler.h"
 #include "transcode.h"
 #include "pathut.h"
-#include "debuglog.h"
+#include "log.h"
 
 /** Index symlink target 
  *
@@ -61,8 +61,7 @@ class MimeHandlerSymlink : public RecollFilter {
 	    transcode(path_getsimple(slc), m_metaData[cstr_dj_keycontent], 
 		      m_config->getDefCharset(true), "UTF-8");
 	} else {
-	    LOGDEB(("Symlink: readlink [%s] failed, errno %d\n", m_fn.c_str(),
-		    errno));
+	    LOGDEB("Symlink: readlink ["  << (m_fn) << "] failed, errno "  << (errno) << "\n" );
 	}
 	m_metaData[cstr_dj_keymt] = cstr_textplain;
 	return true;
@@ -72,3 +71,4 @@ private:
 };
 
 #endif /* _MH_SYMLINK_H_INCLUDED_ */
+

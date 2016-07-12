@@ -31,7 +31,7 @@ using std::set;
 
 #include "rcldb.h"
 #include "rclconfig.h"
-#include "debuglog.h"
+#include "log.h"
 #include "textsplit.h"
 #include "utf8iter.h"
 #include "smallut.h"
@@ -86,14 +86,12 @@ class TextSplitPTR : public TextSplit {
 	string dumb = term;
 	if (o_index_stripchars) {
 	    if (!unacmaybefold(term, dumb, "UTF-8", UNACOP_UNACFOLD)) {
-		LOGINFO(("PlainToRich::takeword: unac failed for [%s]\n",
-			 term.c_str()));
+		LOGINFO("PlainToRich::takeword: unac failed for ["  << (term) << "]\n" );
 		return true;
 	    }
 	}
 
-	//LOGDEB2(("Input dumbbed term: '%s' %d %d %d\n", dumb.c_str(), 
-	// pos, bts, bte));
+	//LOGDEB2("Input dumbbed term: '"  << (dumb) << "' "  << (// pos) << " "  << (bts) << " "  << (bte) << "\n" );
 
 	// If this word is a search term, remember its byte-offset span. 
 	map<string, size_t>::const_iterator it = m_terms.find(dumb);
@@ -106,7 +104,7 @@ class TextSplitPTR : public TextSplit {
 	    // Term group (phrase/near) handling
 	    m_plists[dumb].push_back(pos);
 	    m_gpostobytes[pos] = pair<int,int>(bts, bte);
-	    //LOGDEB2(("Recorded bpos for %d: %d %d\n", pos, bts, bte));
+	    //LOGDEB2("Recorded bpos for "  << (pos) << ": "  << (bts) << " "  << (bte) << "\n" );
 	}
 
 	// Check for cancellation request
@@ -169,8 +167,7 @@ static bool do_proximity_test(int window, vector<vector<int>* >& plists,
 			      unsigned int i, int min, int max, 
 			      int *sp, int *ep, int minpos)
 {
-    LOGDEB1(("do_prox_test: win %d i %d min %d max %d minpos %d\n", 
-	     window, i, min, max, minpos));
+    LOGDEB1("do_prox_test: win "  << (window) << " i "  << (i) << " min "  << (min) << " max "  << (max) << " minpos "  << (minpos) << "\n" );
     int tmp = max + 1 - window;
     if (tmp < minpos)
 	tmp = minpos;
@@ -207,8 +204,7 @@ bool TextSplitPTR::matchGroup(unsigned int grpidx)
     const vector<string>& terms = m_hdata.groups[grpidx];
     int window = int(m_hdata.groups[grpidx].size() + m_hdata.slacks[grpidx]);
 
-    LOGDEB1(("TextSplitPTR::matchGroup:d %d: %s\n", window,
-	    vecStringToString(terms).c_str()));
+    LOGDEB1("TextSplitPTR::matchGroup:d "  << (window) << ": "  << (vecStringToString(terms)) << "\n" );
 
     // The position lists we are going to work with. We extract them from the 
     // (string->plist) map
@@ -224,8 +220,7 @@ bool TextSplitPTR::matchGroup(unsigned int grpidx)
 	 it != terms.end(); it++) {
 	map<string, vector<int> >::iterator pl = m_plists.find(*it);
 	if (pl == m_plists.end()) {
-	    LOGDEB1(("TextSplitPTR::matchGroup: [%s] not found in m_plists\n",
-		    (*it).c_str()));
+	    LOGDEB1("TextSplitPTR::matchGroup: ["  << ((*it)) << "] not found in m_plists\n" );
 	    return false;
 	}
 	plists.push_back(&(pl->second));
@@ -234,7 +229,7 @@ bool TextSplitPTR::matchGroup(unsigned int grpidx)
     // I think this can't actually happen, was useful when we used to
     // prune the groups, but doesn't hurt.
     if (plists.size() < 2) {
-	LOGDEB1(("TextSplitPTR::matchGroup: no actual groups found\n"));
+	LOGDEB1("TextSplitPTR::matchGroup: no actual groups found\n" );
 	return false;
     }
     // Sort the positions lists so that the shorter is first
@@ -245,11 +240,10 @@ bool TextSplitPTR::matchGroup(unsigned int grpidx)
 	it =  plistToTerm.find(plists[0]);
 	if (it == plistToTerm.end()) {
 	    // SuperWeird
-	    LOGERR(("matchGroup: term for first list not found !?!\n"));
+	    LOGERR("matchGroup: term for first list not found !?!\n" );
 	    return false;
 	}
-	LOGDEB1(("matchGroup: walking the shortest plist. Term [%s], len %d\n",
-		it->second.c_str(), plists[0]->size()));
+	LOGDEB1("matchGroup: walking the shortest plist. Term ["  << (it->second) << "], len "  << (plists[0]->size()) << "\n" );
     }
 
     // Minpos is the highest end of a found match. While looking for
@@ -262,10 +256,9 @@ bool TextSplitPTR::matchGroup(unsigned int grpidx)
 	 it != plists[0]->end(); it++) {
 	int pos = *it;
 	int sta = INT_MAX, sto = 0;
-	LOGDEB2(("MatchGroup: Testing at pos %d\n", pos));
+	LOGDEB2("MatchGroup: Testing at pos "  << (pos) << "\n" );
 	if (do_proximity_test(window,plists, 1, pos, pos, &sta, &sto, minpos)) {
-	    LOGDEB1(("TextSplitPTR::matchGroup: MATCH termpos [%d,%d]\n", 
-		     sta, sto)); 
+	    LOGDEB1("TextSplitPTR::matchGroup: MATCH termpos ["  << (sta) << ","  << (sto) << "]\n" ); 
 	    // Maybe extend the window by 1st term position, this was not
 	    // done by do_prox..
 	    SETMINMAX(pos, sta, sto);
@@ -274,15 +267,14 @@ bool TextSplitPTR::matchGroup(unsigned int grpidx)
 	    map<int, pair<int, int> >::iterator i1 =  m_gpostobytes.find(sta);
 	    map<int, pair<int, int> >::iterator i2 =  m_gpostobytes.find(sto);
 	    if (i1 != m_gpostobytes.end() && i2 != m_gpostobytes.end()) {
-		LOGDEB2(("TextSplitPTR::matchGroup: pushing bpos %d %d\n",
-			i1->second.first, i2->second.second));
+		LOGDEB2("TextSplitPTR::matchGroup: pushing bpos "  << (i1->second.first) << " "  << (i2->second.second) << "\n" );
 		tboffs.push_back(MatchEntry(i1->second.first, 
 					    i2->second.second, grpidx));
 	    } else {
-		LOGDEB0(("matchGroup: no bpos found for %d or %d\n", sta, sto));
+		LOGDEB0("matchGroup: no bpos found for "  << (sta) << " or "  << (sto) << "\n" );
 	    }
 	} else {
-	    LOGDEB1(("matchGroup: no group match found at this position\n"));
+	    LOGDEB1("matchGroup: no group match found at this position\n" );
 	}
     }
 
@@ -333,7 +325,7 @@ bool PlainToRich::plaintorich(const string& in,
 {
     Chrono chron;
     bool ret = true;
-    LOGDEB1(("plaintorichich: in: [%s]\n", in.c_str()));
+    LOGDEB1("plaintorichich: in: ["  << (in) << "]\n" );
 
     m_hdata = &hdata;
     // Compute the positions for the query terms.  We use the text
@@ -343,10 +335,10 @@ bool PlainToRich::plaintorich(const string& in,
     // Note: the splitter returns the term locations in byte, not
     // character, offsets.
     splitter.text_to_words(in);
-    LOGDEB2(("plaintorich: split done %d mS\n", chron.millis()));
+    LOGDEB2("plaintorich: split done "  << (chron.millis()) << " mS\n" );
     // Compute the positions for NEAR and PHRASE groups.
     splitter.matchGroups();
-    LOGDEB2(("plaintorich: group match done %d mS\n", chron.millis()));
+    LOGDEB2("plaintorich: group match done "  << (chron.millis()) << " mS\n" );
 
     out.clear();
     out.push_back("");
@@ -359,7 +351,7 @@ bool PlainToRich::plaintorich(const string& in,
     // a term match when we are actually looking for a group match
     // (the snippet generator does this...).
     if (splitter.tboffs.empty()) {
-	LOGDEB1(("plaintorich: no term matches\n"));
+	LOGDEB1("plaintorich: no term matches\n" );
 	ret = false;
     }
 
@@ -372,7 +364,7 @@ bool PlainToRich::plaintorich(const string& in,
 #if 0
     for (vector<pair<int, int> >::const_iterator it = splitter.tboffs.begin();
 	 it != splitter.tboffs.end(); it++) {
-	LOGDEB2(("plaintorich: region: %d %d\n", it->first, it->second));
+	LOGDEB2("plaintorich: region: "  << (it->first) << " "  << (it->second) << "\n" );
     }
 #endif
 
@@ -532,6 +524,7 @@ bool PlainToRich::plaintorich(const string& in,
 	fclose(fp);
     }
 #endif
-    LOGDEB2(("plaintorich: done %d mS\n", chron.millis()));
+    LOGDEB2("plaintorich: done "  << (chron.millis()) << " mS\n" );
     return ret;
 }
+

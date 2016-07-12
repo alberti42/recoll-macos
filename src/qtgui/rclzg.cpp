@@ -20,7 +20,7 @@
 
 #include "rclzg.h"
 
-#include "debuglog.h"
+#include "log.h"
 #include "pathut.h"
 
 #include <QString>
@@ -78,9 +78,9 @@ void zg_send_event(ZgSendType, const Rcl::Doc& doc)
   QtZeitgeist::DataModel::EventList events;
   events.push_back(event);
 
-  LOGDEB(("zg_send_event, sending for %s %s\n", 
-	  doc.mimetype.c_str(), doc.url.c_str()));
+  LOGDEB("zg_send_event, sending for "  << (doc.mimetype) << " "  << (doc.url) << "\n" );
   zglogger.insertEvents(events);
 }
 
 #endif
+

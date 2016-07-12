@@ -19,12 +19,11 @@
 #include <errno.h>
 #include "safesysstat.h"
 
-#include "debuglog.h"
+#include "log.h"
 #include "cstr.h"
 #include "fetcher.h"
 #include "fsfetcher.h"
 #include "fsindexer.h"
-#include "debuglog.h"
 #include "pathut.h"
 
 using std::string;
@@ -35,8 +34,7 @@ static bool urltopath(RclConfig* cnf,
     // The url has to be like file://
     fn = fileurltolocalpath(idoc.url);
     if (fn.empty()) {
-	LOGERR(("FSDocFetcher::fetch/sig: non fs url: [%s]\n", 
-		idoc.url.c_str()));
+	LOGERR("FSDocFetcher::fetch/sig: non fs url: ["  << (idoc.url) << "]\n" );
 	return false;
     }
     cnf->setKeyDir(path_getfather(fn));
@@ -44,8 +42,7 @@ static bool urltopath(RclConfig* cnf,
     cnf->getConfParam("followLinks", &follow);
 
     if (path_fileprops(fn, &st, follow) < 0) {
-	LOGERR(("FSDocFetcher::fetch: stat errno %d for [%s]\n", 
-		errno, fn.c_str()));
+	LOGERR("FSDocFetcher::fetch: stat errno "  << (errno) << " for ["  << (fn) << "]\n" );
 	return false;
     }
     return true;
@@ -70,4 +67,5 @@ bool FSDocFetcher::makesig(RclConfig* cnf, const Rcl::Doc& idoc, string& sig)
     FsIndexer::makesig(&st, sig);
     return true;
 }
+
 

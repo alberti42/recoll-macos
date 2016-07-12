@@ -28,7 +28,7 @@
 #include <string.h>
 #endif
 
-#include "debuglog.h"
+#include "log.h"
 #include "rclconfig.h"
 #include "rclinit.h"
 #include "pathut.h"
@@ -60,7 +60,7 @@ static pthread_t mainthread_id;
 static void siglogreopen(int)
 {
     if (recoll_ismainthread())
-	DebugLog::reopen();
+        Logger::getTheLog("")->reopen("");
 }
 
 // We would like to block SIGCHLD globally, but we can't because
@@ -258,10 +258,7 @@ RclConfig *recollinit(RclInitFlags flags,
     // to utf8 for indexing.
     setlocale(LC_CTYPE, "");
 
-    DebugLog::getdbl()->setloglevel(DEBDEB1);
-    DebugLog::setfilename("stderr");
-    if (getenv("RECOLL_LOGDATE"))
-        DebugLog::getdbl()->logdate(1);
+    Logger::getTheLog("")->setLogLevel(Logger::LLDEB1);
 
     initAsyncSigs(sigcleanup);
     
@@ -297,15 +294,15 @@ RclConfig *recollinit(RclInitFlags flags,
     if (!logfilename.empty()) {
 	logfilename = path_tildexpand(logfilename);
 	// If not an absolute path or , compute relative to config dir
-	if (!path_isabsolute(logfilename) && 
-	    !DebugLog::DebugLog::isspecialname(logfilename.c_str())) {
+	if (!path_isabsolute(logfilename) &&
+            logfilename.compare("stderr")) {
 	    logfilename = path_cat(config->getConfDir(), logfilename);
 	}
-	DebugLog::setfilename(logfilename.c_str());
+        Logger::getTheLog("")->reopen(logfilename);
     }
     if (!loglevel.empty()) {
 	int lev = atoi(loglevel.c_str());
-	DebugLog::getdbl()->setloglevel(lev);
+        Logger::getTheLog("")->setLogLevel(Logger::LogLevel(lev));
     }
 
     // Make sure the locale charset is initialized (so that multiple

@@ -20,7 +20,7 @@
 #include <qmenu.h>
 #include <qclipboard.h>
 
-#include "debuglog.h"
+#include "log.h"
 #include "smallut.h"
 #include "recoll.h"
 #include "docseq.h"
@@ -33,10 +33,8 @@ QMenu *create(QWidget *me, int opts, STD_SHARED_PTR<DocSequence> source, Rcl::Do
 {
     QMenu *popup = new QMenu(me);
 
-    LOGDEB(("ResultPopup::create: opts %x haspages %d %s %s\n", opts, 
-	    doc.haspages, source ? "Source not null" : "Source is Null",
-	    source ? (source->snippetsCapable() ? 
-		      "snippetsCapable" : "not snippetsCapable") : ""));
+    LOGDEB("ResultPopup::create: opts "  << (opts) << " haspages "  << (doc.haspages) << " "  << (source ? "Source not null" : "Source is Null") << " "  << (source ? (source->snippetsCapable() ? 
+		      "snippetsCapable" : "not snippetsCapable") : "") << "\n" );
 
     string apptag;
     doc.getmeta(Rcl::Doc::keyapptg, &apptag);
@@ -175,3 +173,4 @@ void copyURL(const Rcl::Doc &doc)
 }
 
 }
+

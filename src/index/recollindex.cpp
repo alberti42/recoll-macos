@@ -36,7 +36,7 @@
 
 using namespace std;
 
-#include "debuglog.h"
+#include "log.h"
 #include "rclinit.h"
 #include "indexer.h"
 #include "smallut.h"
@@ -148,7 +148,7 @@ class MyUpdater : public DbIxStatusUpdater {
 	// out and the indexing would go on, not good (ie: if the user
 	// logs in again, the new recollindex will fail).
 	if ((op_flags & OPT_m) && !(op_flags & OPT_x) && !x11IsAlive()) {
-	    LOGDEB(("X11 session went away during initial indexing pass\n"));
+	    LOGDEB("X11 session went away during initial indexing pass\n" );
 	    stopindexing = true;
 	    return false;
 	}
@@ -166,7 +166,7 @@ static MyUpdater *updater;
 static void sigcleanup(int sig)
 {
     fprintf(stderr, "Got signal, registering stop request\n");
-    LOGDEB(("Got signal, registering stop request\n"));
+    LOGDEB("Got signal, registering stop request\n" );
     CancelCheck::instance().setCancel();
     stopindexing = 1;
 }
@@ -301,7 +301,7 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
     vector<string> tdl;
     if (!config->getConfParam("topdirs", &tdl)) {
         cerr << "No 'topdirs' parameter in configuration\n";
-        LOGERR(("recollindex:No 'topdirs' parameter in configuration\n"));;
+        LOGERR("recollindex:No 'topdirs' parameter in configuration\n" );;
         return false;
     }
 
@@ -310,12 +310,10 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
         if (!it->size() || !path_isabsolute(*it)) {
             if ((*it)[0] == '~') {
                 cerr << "Tilde expansion failed: " << *it << endl;
-                LOGERR(("recollindex: tilde expansion failed: %s\n",
-                        it->c_str()));
+                LOGERR("recollindex: tilde expansion failed: " << *it << "\n" );
             } else {
                 cerr << "Not an absolute path: " << *it << endl;
-                LOGERR(("recollindex: not an absolute path: %s\n",
-                        it->c_str()));
+                LOGERR("recollindex: not an absolute path: "  << *it << "\n" );
             }
             return false;
         }
@@ -516,18 +514,14 @@ int main(int argc, char **argv)
     string rundir;
     config->getConfParam("idxrundir", rundir);
     if (!rundir.compare("tmp")) {
-	LOGINFO(("recollindex: changing current directory to [%s]\n",
-		tmplocation().c_str()));
+	LOGINFO("recollindex: changing current directory to ["  << (tmplocation()) << "]\n" );
 	if (chdir(tmplocation().c_str()) < 0) {
-	    LOGERR(("chdir(%s) failed, errno %d\n", 
-		    tmplocation().c_str(), errno));
+	    LOGERR("chdir("  << (tmplocation()) << ") failed, errno "  << (errno) << "\n" );
 	}
     } else if (!rundir.empty()) {
-	LOGINFO(("recollindex: changing current directory to [%s]\n",
-		 rundir.c_str()));
+	LOGINFO("recollindex: changing current directory to ["  << (rundir) << "]\n" );
 	if (chdir(rundir.c_str()) < 0) {
-	    LOGERR(("chdir(%s) failed, errno %d\n", 
-		    rundir.c_str(), errno));
+	    LOGERR("chdir("  << (rundir) << ") failed, errno "  << (errno) << "\n" );
 	}
     }
 
@@ -550,10 +544,10 @@ int main(int argc, char **argv)
 
     // Log something at LOGINFO to reset the trace file. Else at level
     // 3 it's not even truncated if all docs are up to date.
-    LOGINFO(("recollindex: starting up\n"));
+    LOGINFO("recollindex: starting up\n" );
 #ifndef _WIN32
     if (setpriority(PRIO_PROCESS, 0, 20) != 0) {
-        LOGINFO(("recollindex: can't setpriority(), errno %d\n", errno));
+        LOGINFO("recollindex: can't setpriority(), errno "  << (errno) << "\n" );
     }
     // Try to ionice. This does not work on all platforms
     rclIxIonice(config);
@@ -625,11 +619,11 @@ int main(int argc, char **argv)
 	    Usage();
 	lockorexit(&pidfile);
 	if (!(op_flags&OPT_D)) {
-	    LOGDEB(("recollindex: daemonizing\n"));
+	    LOGDEB("recollindex: daemonizing\n" );
 #ifndef _WIN32
 	    if (daemon(0,0) != 0) {
 	      fprintf(stderr, "daemon() failed, errno %d\n", errno);
-	      LOGERR(("daemon() failed, errno %d\n", errno));
+	      LOGERR("daemon() failed, errno "  << (errno) << "\n" );
 	      exit(1);
 	    }
 #endif
@@ -640,30 +634,29 @@ int main(int argc, char **argv)
         // Not too sure if I have to redo the nice thing after daemon(),
         // can't hurt anyway (easier than testing on all platforms...)
         if (setpriority(PRIO_PROCESS, 0, 20) != 0) {
-            LOGINFO(("recollindex: can't setpriority(), errno %d\n", errno));
+            LOGINFO("recollindex: can't setpriority(), errno "  << (errno) << "\n" );
         }
 	// Try to ionice. This does not work on all platforms
 	rclIxIonice(config);
 #endif
 
 	if (sleepsecs > 0) {
-	    LOGDEB(("recollindex: sleeping %d\n", sleepsecs));
+	    LOGDEB("recollindex: sleeping "  << (sleepsecs) << "\n" );
 	    for (int i = 0; i < sleepsecs; i++) {
 	      sleep(1);
 	      // Check that x11 did not go away while we were sleeping.
 	      if (!(op_flags & OPT_x) && !x11IsAlive()) {
-		LOGDEB(("X11 session went away during initial sleep period\n"));
+		LOGDEB("X11 session went away during initial sleep period\n" );
 		exit(0);
 	      }
 	    }
 	}
 	if (!(op_flags & OPT_n)) {
 	    makeIndexerOrExit(config, inPlaceReset);
-	    LOGDEB(("Recollindex: initial indexing pass before monitoring\n"));
+	    LOGDEB("Recollindex: initial indexing pass before monitoring\n" );
 	    if (!confindexer->index(rezero, ConfIndexer::IxTAll, indexerFlags)
                 || stopindexing) {
-		LOGERR(("recollindex, initial indexing pass failed, "
-			"not going into monitor mode\n"));
+		LOGERR("recollindex, initial indexing pass failed, not going into monitor mode\n" );
 		exit(1);
 	    } else {
                 // Record success of indexing pass with failed files retries.
@@ -674,7 +667,7 @@ int main(int argc, char **argv)
 	    deleteZ(confindexer);
 #ifndef _WIN32
 	    o_reexec->insertArgs(vector<string>(1, "-n"));
-	    LOGINFO(("recollindex: reexecuting with -n after initial full pass\n"));
+	    LOGINFO("recollindex: reexecuting with -n after initial full pass\n" );
 	    // Note that -n will be inside the reexec when we come
 	    // back, but the monitor will explicitely strip it before
 	    // starting a config change exec to ensure that we do a
@@ -724,3 +717,4 @@ int main(int argc, char **argv)
 	return !status;
     }
 }
+

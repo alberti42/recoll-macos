@@ -27,7 +27,6 @@
 #ifdef IDX_THREADS
 #include "workqueue.h"
 #endif // IDX_THREADS
-#include "debuglog.h"
 #include "xmacros.h"
 #include "ptmutex.h"
 
@@ -82,7 +81,6 @@ class Db::Native {
     bool m_noversionwrite; //Set if open failed because of version mismatch!
 #ifdef IDX_THREADS
     WorkQueue<DbUpdTask*> m_wqueue;
-    int  m_loglevel;
     PTMutexInit m_mutex;
     long long  m_totalworkns;
     bool m_havewriteq;

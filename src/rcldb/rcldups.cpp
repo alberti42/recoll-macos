@@ -24,7 +24,7 @@ using namespace std;
 
 #include <xapian.h>
 
-#include "debuglog.h"
+#include "log.h"
 #include "rcldb.h"
 #include "rcldb_p.h"
 #include "xmacros.h"
@@ -39,11 +39,11 @@ namespace Rcl {
 bool Db::docDups(const Doc& idoc, vector<Doc>& odocs)
 {
     if (m_ndb == 0) {
-	LOGERR(("Db::docDups: no db\n"));
+	LOGERR("Db::docDups: no db\n" );
 	return false;
     }
     if (idoc.xdocid == 0) {
-	LOGERR(("Db::docDups: null xdocid in input doc\n"));
+	LOGERR("Db::docDups: null xdocid in input doc\n" );
 	return false;
     }
     // Get the xapian doc
@@ -51,7 +51,7 @@ bool Db::docDups(const Doc& idoc, vector<Doc>& odocs)
     XAPTRY(xdoc = m_ndb->xrdb.get_document(Xapian::docid(idoc.xdocid)), 
 	   m_ndb->xrdb, m_reason);
     if (!m_reason.empty()) {
-	LOGERR(("Db::docDups: xapian error: %s\n", m_reason.c_str()));
+	LOGERR("Db::docDups: xapian error: "  << (m_reason) << "\n" );
 	return false;
     }
 
@@ -59,11 +59,11 @@ bool Db::docDups(const Doc& idoc, vector<Doc>& odocs)
     string digest;
     XAPTRY(digest = xdoc.get_value(VALUE_MD5), m_ndb->xrdb, m_reason);
     if (!m_reason.empty()) {
-	LOGERR(("Db::docDups: xapian error: %s\n", m_reason.c_str()));
+	LOGERR("Db::docDups: xapian error: "  << (m_reason) << "\n" );
 	return false;
     }
     if (digest.empty()) {
-	LOGDEB(("Db::docDups: doc has no md5\n"));
+	LOGDEB("Db::docDups: doc has no md5\n" );
 	return false;
     }
     string md5;
@@ -79,14 +79,14 @@ bool Db::docDups(const Doc& idoc, vector<Doc>& odocs)
     Query query(this);
     query.setCollapseDuplicates(0);
     if (!query.setQuery(sd)) {
-	LOGERR(("Db::docDups: setQuery failed\n"));
+	LOGERR("Db::docDups: setQuery failed\n" );
 	return false;
     }
     int cnt = query.getResCnt();
     for (int i = 0; i < cnt; i++) {
 	Doc doc;
 	if (!query.getDoc(i, doc)) {
-	    LOGERR(("Db::docDups: getDoc failed at %d (cnt %d)\n", i, cnt));
+	    LOGERR("Db::docDups: getDoc failed at "  << (i) << " (cnt "  << (cnt) << ")\n" );
 	    return false;
 	}
 	odocs.push_back(doc);
@@ -98,18 +98,19 @@ bool Db::docDups(const Doc& idoc, vector<Doc>& odocs)
     {
 	vector<Doc> dups;
 	bool ret;
-	LOGDEB(("DOCDUPS\n"));
+	LOGDEB("DOCDUPS\n" );
 	ret = m_db->docDups(doc, dups);
 	if (!ret) {
-	    LOGDEB(("docDups failed\n"));
+	    LOGDEB("docDups failed\n" );
 	} else if (dups.size() == 1) {
-	    LOGDEB(("No dups\n"));
+	    LOGDEB("No dups\n" );
 	} else {
 	    for (unsigned int i = 0; i < dups.size(); i++) {
-		LOGDEB(("Dup: %s\n", dups[i].url.c_str()));
+		LOGDEB("Dup: "  << (dups[i].url) << "\n" );
 	    }
 	}
     }
 #endif
 
 }
+

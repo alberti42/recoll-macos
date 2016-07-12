@@ -22,7 +22,7 @@
 #include <vector>
 
 
-#include "debuglog.h"
+#include "log.h"
 #include "transcode.h"
 
 #ifndef NO_NAMESPACES
@@ -182,3 +182,4 @@ int main(int argc, char **argv)
     }
     exit(0);
 }
+

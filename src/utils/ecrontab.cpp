@@ -22,7 +22,7 @@
 #include "ecrontab.h"
 #include "execmd.h"
 #include "smallut.h"
-#include "debuglog.h"
+#include "log.h"
 
 // Read crontab file and split it into lines.
 static bool eCrontabGetLines(vector<string>& lines)
@@ -128,8 +128,7 @@ bool checkCrontabUnmanaged(const string& marker, const string& data)
 bool getCrontabSched(const string& marker, const string& id, 
 		     vector<string>& sched) 
 {
-    LOGDEB0(("getCrontabSched: marker[%s], id[%s]\n",
-	     marker.c_str(), id.c_str()));
+    LOGDEB0("getCrontabSched: marker["  << (marker) << "], id["  << (id) << "]\n" );
     vector<string> lines;
     if (!eCrontabGetLines(lines)) {
 	// No crontab, answer is no
@@ -270,3 +269,4 @@ int main(int argc, char **argv)
   exit(0);
 }
 #endif // TEST
+

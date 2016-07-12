@@ -16,7 +16,7 @@
  */
 
 #ifndef TEST_STOPLIST
-#include "debuglog.h"
+#include "log.h"
 #include "readfile.h"
 #include "unacpp.h"
 #include "smallut.h"
@@ -32,8 +32,7 @@ bool StopList::setFile(const string &filename)
     m_stops.clear();
     string stoptext, reason;
     if (!file_to_string(filename, stoptext, &reason)) {
-	LOGDEB0(("StopList::StopList: file_to_string(%s) failed: %s\n", 
-		 filename.c_str(), reason.c_str()));
+	LOGDEB0("StopList::StopList: file_to_string("  << (filename) << ") failed: "  << (reason) << "\n" );
 	return false;
     }
     set<string> stops;
@@ -116,3 +115,4 @@ int main(int argc, char **argv)
 }
 
 #endif // TEST_STOPLIST
+

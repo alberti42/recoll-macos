@@ -32,7 +32,7 @@ using namespace std;
 #endif
 #include <QShortcut>
 
-#include "debuglog.h"
+#include "log.h"
 #include "recoll.h"
 #include "snippets_w.h"
 #include "guiutils.h"
@@ -170,7 +170,7 @@ void SnippetsW::init()
 	}
 	list<string> lr;
 	if (!g_hiliter.plaintorich(it->snippet, lr, hdata)) {
-	    LOGDEB1(("No match for [%s]\n", it->snippet.c_str()));
+	    LOGDEB1("No match for ["  << (it->snippet) << "]\n" );
 	    continue;
 	}
 	nomatch = false;
@@ -238,7 +238,7 @@ void SnippetsW::slotSearchTextChanged(const QString& txt)
 void SnippetsW::linkWasClicked(const QUrl &url)
 {
     string ascurl = (const char *)url.toString().toUtf8();
-    LOGDEB(("Snippets::linkWasClicked: [%s]\n", ascurl.c_str()));
+    LOGDEB("Snippets::linkWasClicked: ["  << (ascurl) << "]\n" );
 
     if (ascurl.size() > 3) {
 	int what = ascurl[0];
@@ -259,6 +259,7 @@ void SnippetsW::linkWasClicked(const QUrl &url)
 	}
 	}
     }
-    LOGERR(("Snippets::linkWasClicked: bad link [%s]\n", ascurl.c_str()));
+    LOGERR("Snippets::linkWasClicked: bad link ["  << (ascurl) << "]\n" );
 }
+
 

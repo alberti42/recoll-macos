@@ -23,7 +23,7 @@
 #include <QTimer>
 
 #include "execmd.h"
-#include "debuglog.h"
+#include "log.h"
 #include "transcode.h"
 #include "indexer.h"
 #include "rclmain_w.h"
@@ -83,7 +83,7 @@ void RclMain::updateIdxStatus()
 // indexing, a possible need to exit, and cleanup exited viewers
 void RclMain::periodic100()
 {
-    LOGDEB2(("Periodic100\n"));
+    LOGDEB2("Periodic100\n" );
     if (m_idxproc) {
 	// An indexing process was launched. If its' done, see status.
 	int status;
@@ -268,7 +268,7 @@ void RclMain::rebuildIndex()
     case IXST_NOTRUNNING:
     {
         if (m_idxproc) {
-            LOGERR(("RclMain::rebuildIndex: current indexer exec not null\n"));
+            LOGERR("RclMain::rebuildIndex: current indexer exec not null\n" );
             return;
         }
 	int rep = 
@@ -354,7 +354,7 @@ static string execToString(const string& cmd, const vector<string>& args)
 
 void RclMain::specialIndex()
 {
-    LOGDEB(("RclMain::specialIndex\n"));
+    LOGDEB("RclMain::specialIndex\n" );
     switch (m_indexerState) {
     case IXST_UNKNOWN:
     case IXST_RUNNINGMINE:
@@ -365,7 +365,7 @@ void RclMain::specialIndex()
         break;
     }
     if (m_idxproc) {
-        LOGERR(("RclMain::rebuildIndex: current indexer exec not null\n"));
+        LOGERR("RclMain::rebuildIndex: current indexer exec not null\n" );
         return;
     }
     if (!specidx) // ??
@@ -418,8 +418,7 @@ void RclMain::specialIndex()
         args.push_back(top);
     }
     m_idxproc = new ExecCmd;
-    LOGINFO(("specialIndex: exec: %s\n", 
-            execToString("recollindex", args).c_str()));
+    LOGINFO("specialIndex: exec: " << execToString("recollindex", args) <<endl);
     m_idxproc->startExec("recollindex", args, false, false);
 }
 
@@ -448,4 +447,5 @@ void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
     fileToggleIndexingAction->setEnabled(false);
     actionSpecial_Indexing->setEnabled(false);
 }
+
 

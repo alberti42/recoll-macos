@@ -19,7 +19,7 @@
 #include <QShortcut>
 #include <QMessageBox>
 
-#include "debuglog.h"
+#include "log.h"
 #include "internfile.h"
 #include "listdialog.h"
 #include "confgui/confguiindex.h"
@@ -171,7 +171,7 @@ void RclMain::execIndexConfig()
 }
 void RclMain::showIndexConfig(bool modal)
 {
-    LOGDEB(("showIndexConfig()\n"));
+    LOGDEB("showIndexConfig()\n" );
     if (indexConfig == 0) {
 	indexConfig = new ConfIndexW(0, theconfig);
 	connect(new QShortcut(quitKeySeq, indexConfig), SIGNAL (activated()), 
@@ -205,7 +205,7 @@ void RclMain::showIndexSched(bool modal)
                                 "to update the index"));
     return;
 #endif    
-    LOGDEB(("showIndexSched()\n"));
+    LOGDEB("showIndexSched()\n" );
     if (indexSched == 0) {
 	indexSched = new IdxSchedW(this);
 	connect(new QShortcut(quitKeySeq, indexSched), SIGNAL (activated()), 
@@ -246,7 +246,7 @@ void RclMain::execCronTool()
 }
 void RclMain::showCronTool(bool modal)
 {
-    LOGDEB(("showCronTool()\n"));
+    LOGDEB("showCronTool()\n" );
     if (cronTool == 0) {
 	cronTool = new CronToolW(0);
 	connect(new QShortcut(quitKeySeq, cronTool), SIGNAL (activated()), 
@@ -273,7 +273,7 @@ void RclMain::execRTITool()
 }
 void RclMain::showRTITool(bool modal)
 {
-    LOGDEB(("showRTITool()\n"));
+    LOGDEB("showRTITool()\n" );
     if (rtiTool == 0) {
 	rtiTool = new RTIToolW(0);
 	connect(new QShortcut(quitKeySeq, rtiTool), SIGNAL (activated()), 
@@ -453,3 +453,4 @@ void RclMain::showSnippets(Rcl::Doc doc)
 	    sp, SLOT (close()));
     sp->show();
 }
+

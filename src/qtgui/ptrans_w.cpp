@@ -34,7 +34,7 @@ using namespace std;
 #include <qlayout.h>
 
 #include "recoll.h"
-#include "debuglog.h"
+#include "log.h"
 #include "guiutils.h"
 #include "conftree.h"
 
@@ -133,3 +133,4 @@ void EditTrans::on_transTW_itemSelectionChanged()
     else 
 	delPB->setEnabled(1);
 }
+

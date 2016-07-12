@@ -30,7 +30,7 @@
 #include "pathut.h"
 #include "execmd.h"
 #include "rclaspell.h"
-#include "debuglog.h"
+#include "log.h"
 #include "unacpp.h"
 #include "ptmutex.h"
 
@@ -84,7 +84,7 @@ public:
         : m_handle(0), m_speller(0) 
     {}
     ~AspellData() {
-        LOGDEB2(("~AspellData\n"));
+        LOGDEB2("~AspellData\n" );
 	if (m_handle) {
 	    dlclose(m_handle);
             m_handle = 0;
@@ -93,7 +93,7 @@ public:
             // Dumps core if I do this?? 
             //aapi.delete_aspell_speller(m_speller);
             m_speller = 0;
-            LOGDEB2(("~AspellData: speller done\n"));
+            LOGDEB2("~AspellData: speller done\n" );
         }
     }
 
@@ -240,9 +240,9 @@ public:
     {}
     void newData() {
 	while (m_db.termWalkNext(m_tit, *m_input)) {
-	    LOGDEB2(("Aspell::buildDict: term: [%s]\n", m_input->c_str()));
+	    LOGDEB2("Aspell::buildDict: term: ["  << (m_input) << "]\n" );
 	    if (!Rcl::Db::isSpellingCandidate(*m_input)) {
-		LOGDEB2(("Aspell::buildDict: SKIP\n"));
+		LOGDEB2("Aspell::buildDict: SKIP\n" );
 		continue;
 	    }
 	    if (!o_index_stripchars) {
@@ -253,7 +253,7 @@ public:
 	    }
 	    // Got a non-empty sort-of appropriate term, let's send it to
 	    // aspell
-	    LOGDEB2(("Apell::buildDict: SEND\n"));
+	    LOGDEB2("Apell::buildDict: SEND\n" );
 	    m_input->append("\n");
 	    return;
 	}
@@ -370,7 +370,7 @@ bool Aspell::make_speller(string& reason)
 
 bool Aspell::check(const string &iterm, string& reason)
 {
-    LOGDEB2(("Aspell::check [%s]\n", iterm.c_str()));
+    LOGDEB2("Aspell::check ["  << (iterm) << "]\n" );
     string mterm(iterm);
 
     if (!ok() || !make_speller(reason))
@@ -381,7 +381,7 @@ bool Aspell::check(const string &iterm, string& reason)
     if (!o_index_stripchars) {
 	string lower;
 	if (!unacmaybefold(mterm, lower, "UTF-8", UNACOP_FOLD)) {
-	    LOGERR(("Aspell::check : cant lowercase input\n"));
+	    LOGERR("Aspell::check : cant lowercase input\n" );
 	    return false;
 	}
 	mterm.swap(lower);
@@ -413,7 +413,7 @@ bool Aspell::suggest(Rcl::Db &db, const string &_term,
     if (!o_index_stripchars) {
 	string lower;
 	if (!unacmaybefold(mterm, lower, "UTF-8", UNACOP_FOLD)) {
-	    LOGERR(("Aspell::check : cant lowercase input\n"));
+	    LOGERR("Aspell::check : cant lowercase input\n" );
 	    return false;
 	}
 	mterm.swap(lower);
@@ -584,3 +584,4 @@ int main(int argc, char **argv)
 #endif // RCL_USE_ASPELL
 
 #endif // TEST_RCLASPELL test driver
+

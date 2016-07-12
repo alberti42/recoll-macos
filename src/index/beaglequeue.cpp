@@ -24,7 +24,7 @@
 #include "cstr.h"
 #include "pathut.h"
 #include "rclutil.h"
-#include "debuglog.h"
+#include "log.h"
 #include "fstreewalk.h"
 #include "beaglequeue.h"
 #include "beaglequeuecache.h"
@@ -62,7 +62,7 @@ public:
         m_input.getline(cline, LL-1);
         if (!m_input.good()) {
             if (m_input.bad()) {
-                LOGERR(("beagleDotFileRead: input.bad()\n"));
+                LOGERR("beagleDotFileRead: input.bad()\n" );
             }
             return false;
         }
@@ -72,7 +72,7 @@ public:
             ll--;
         }
         line.assign(cline, ll);
-        LOGDEB2(("BeagleDotFile:readLine: [%s]\n", line.c_str()));
+        LOGDEB2("BeagleDotFile:readLine: ["  << (line) << "]\n" );
         return true;
     }
 
@@ -83,7 +83,7 @@ public:
 
 	m_input.open(m_fn.c_str(), ios::in);
         if (!m_input.good()) {
-            LOGERR(("BeagleDotFile: open failed for [%s]\n", m_fn.c_str()));
+            LOGERR("BeagleDotFile: open failed for ["  << (m_fn) << "]\n" );
             return false;
         }
 
@@ -185,7 +185,7 @@ BeagleQueueIndexer::BeagleQueueIndexer(RclConfig *cnf, Rcl::Db *db,
 
 BeagleQueueIndexer::~BeagleQueueIndexer()
 {
-    LOGDEB(("BeagleQueueIndexer::~\n"));
+    LOGDEB("BeagleQueueIndexer::~\n" );
     deleteZ(m_cache);
 }
 
@@ -202,12 +202,12 @@ bool BeagleQueueIndexer::indexFromCache(const string& udi)
     string hittype;
 
     if (!m_cache || !m_cache->getFromCache(udi, dotdoc, data, &hittype)) {
-	LOGERR(("BeagleQueueIndexer::indexFromCache: cache failed\n"));
+	LOGERR("BeagleQueueIndexer::indexFromCache: cache failed\n" );
         return false;
     }
 
     if (hittype.empty()) {
-        LOGERR(("BeagleIndexer::index: cc entry has no hit type\n"));
+        LOGERR("BeagleIndexer::index: cc entry has no hit type\n" );
         return false;
     }
         
@@ -224,11 +224,11 @@ bool BeagleQueueIndexer::indexFromCache(const string& udi)
         try {
             fis = interner.internfile(doc);
         } catch (CancelExcept) {
-            LOGERR(("BeagleQueueIndexer: interrupted\n"));
+            LOGERR("BeagleQueueIndexer: interrupted\n" );
             return false;
         }
         if (fis != FileInterner::FIDone) {
-            LOGERR(("BeagleQueueIndexer: bad status from internfile\n"));
+            LOGERR("BeagleQueueIndexer: bad status from internfile\n" );
             return false;
         }
 
@@ -257,15 +257,14 @@ bool BeagleQueueIndexer::index()
 {
     if (!m_db)
         return false;
-    LOGDEB(("BeagleQueueIndexer::processqueue: [%s]\n", m_queuedir.c_str()));
+    LOGDEB("BeagleQueueIndexer::processqueue: ["  << (m_queuedir) << "]\n" );
     m_config->setKeyDir(m_queuedir);
     if (!path_makepath(m_queuedir, 0700)) {
-	LOGERR(("BeagleQueueIndexer:: can't create queuedir [%s] errno %d\n", 
-		m_queuedir.c_str(), errno));
+	LOGERR("BeagleQueueIndexer:: can't create queuedir ["  << (m_queuedir) << "] errno "  << (errno) << "\n" );
 	return false;
     }
     if (!m_cache || !m_cache->cc()) {
-        LOGERR(("BeagleQueueIndexer: cache initialization failed\n"));
+        LOGERR("BeagleQueueIndexer: cache initialization failed\n" );
         return false;
     }
     CirCache *cc = m_cache->cc();
@@ -283,7 +282,7 @@ bool BeagleQueueIndexer::index()
         do {
             string udi;
             if (!cc->getCurrentUdi(udi)) {
-                LOGERR(("BeagleQueueIndexer:: cache file damaged\n"));
+                LOGERR("BeagleQueueIndexer:: cache file damaged\n" );
                 break;
             }
             if (udi.empty())
@@ -296,7 +295,7 @@ bool BeagleQueueIndexer::index()
                     indexFromCache(udi);
                     updstatus(udi);
                 } catch (CancelExcept) {
-                    LOGERR(("BeagleQueueIndexer: interrupted\n"));
+                    LOGERR("BeagleQueueIndexer: interrupted\n" );
                     return false;
                 }
             }
@@ -308,17 +307,17 @@ bool BeagleQueueIndexer::index()
     FsTreeWalker walker(FsTreeWalker::FtwNoRecurse);
     walker.addSkippedName(".*");
     FsTreeWalker::Status status = walker.walk(m_queuedir, *this);
-    LOGDEB(("BeagleQueueIndexer::processqueue: done: status %d\n", status));
+    LOGDEB("BeagleQueueIndexer::processqueue: done: status "  << (status) << "\n" );
     return true;
 }
 
 // Index a list of files (sent by the real time monitor)
 bool BeagleQueueIndexer::indexFiles(list<string>& files)
 {
-    LOGDEB(("BeagleQueueIndexer::indexFiles\n"));
+    LOGDEB("BeagleQueueIndexer::indexFiles\n" );
 
     if (!m_db) {
-        LOGERR(("BeagleQueueIndexer::indexfiles no db??\n"));
+        LOGERR("BeagleQueueIndexer::indexfiles no db??\n" );
         return false;
     }
     for (list<string>::iterator it = files.begin(); it != files.end();) {
@@ -327,8 +326,7 @@ bool BeagleQueueIndexer::indexFiles(list<string>& files)
         }
         string father = path_getfather(*it);
         if (father.compare(m_queuedir)) {
-            LOGDEB(("BeagleQueueIndexer::indexfiles: skipping [%s] (nq)\n", 
-                    it->c_str()));
+            LOGDEB("BeagleQueueIndexer::indexfiles: skipping ["  << *it << "] (nq)\n" );
             it++; continue;
         }
         // Pb: we are often called with the dot file, before the
@@ -344,13 +342,11 @@ bool BeagleQueueIndexer::indexFiles(list<string>& files)
         }
         struct stat st;
         if (path_fileprops(*it, &st) != 0) {
-            LOGERR(("BeagleQueueIndexer::indexfiles: cant stat [%s]\n", 
-                    it->c_str()));
+            LOGERR("BeagleQueueIndexer::indexfiles: cant stat ["  << *it << "]\n" );
             it++; continue;
         }
 	if (!S_ISREG(st.st_mode)) {
-	    LOGDEB(("BeagleQueueIndexer::indexfiles: skipping [%s] (nr)\n", 
-		    it->c_str()));
+	    LOGDEB("BeagleQueueIndexer::indexfiles: skipping ["  << *it << "] (nr)\n" );
             it++; continue;
 	}
 
@@ -378,7 +374,7 @@ BeagleQueueIndexer::processone(const string &path,
 
     string dotpath = path_cat(path_getfather(path), 
                               string(".") + path_getsimple(path));
-    LOGDEB(("BeagleQueueIndexer: prc1: [%s]\n", path.c_str()));
+    LOGDEB("BeagleQueueIndexer: prc1: ["  << (path) << "]\n" );
 
     BeagleDotFile dotfile(m_config, dotpath);
     Rcl::Doc dotdoc;
@@ -392,7 +388,7 @@ BeagleQueueIndexer::processone(const string &path,
     udipath = path_cat(dotdoc.meta[Rcl::Doc::keybght], url_gpath(dotdoc.url));
     make_udi(udipath, cstr_null, udi);
 
-    LOGDEB(("BeagleQueueIndexer: prc1: udi [%s]\n", udi.c_str()));
+    LOGDEB("BeagleQueueIndexer: prc1: udi ["  << (udi) << "]\n" );
     char ascdate[30];
     sprintf(ascdate, "%ld", long(stp->st_mtime));
 
@@ -424,11 +420,11 @@ BeagleQueueIndexer::processone(const string &path,
         try {
             fis = interner.internfile(doc);
         } catch (CancelExcept) {
-            LOGERR(("BeagleQueueIndexer: interrupted\n"));
+            LOGERR("BeagleQueueIndexer: interrupted\n" );
             goto out;
         }
         if (fis != FileInterner::FIDone && fis != FileInterner::FIAgain) {
-            LOGERR(("BeagleQueueIndexer: bad status from internfile\n"));
+            LOGERR("BeagleQueueIndexer: bad status from internfile\n" );
             // TOBEDONE: internfile can return FIAgain here if it is
             // paging a big text file, we should loop. Means we're
             // only indexing the first page for text/plain files
@@ -461,12 +457,11 @@ BeagleQueueIndexer::processone(const string &path,
         string fdata;
         file_to_string(path, fdata);
         if (!m_cache || !m_cache->cc()) {
-            LOGERR(("BeagleQueueIndexer: cache initialization failed\n"));
+            LOGERR("BeagleQueueIndexer: cache initialization failed\n" );
             goto out;
         }
         if (!m_cache->cc()->put(udi, &dotfile.m_fields, fdata, 0)) {
-            LOGERR(("BeagleQueueIndexer::prc1: cache_put failed; %s\n",
-                    m_cache->cc()->getReason().c_str()));
+            LOGERR("BeagleQueueIndexer::prc1: cache_put failed; "  << (m_cache->cc()->getReason()) << "\n" );
             goto out;
         }
     }
@@ -479,3 +474,4 @@ out:
     }
     return FsTreeWalker::FtwOk;
 }
+

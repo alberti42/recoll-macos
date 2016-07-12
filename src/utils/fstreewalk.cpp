@@ -33,7 +33,7 @@
 #include <set>
 
 #include "cstr.h"
-#include "debuglog.h"
+#include "log.h"
 #include "pathut.h"
 #include "fstreewalk.h"
 
@@ -335,7 +335,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
 
     int curdepth = slashcount(top) - data->basedepth;
     if (data->maxdepth >= 0 && curdepth >= data->maxdepth) {
-	LOGDEB1(("FsTreeWalker::iwalk: Maxdepth reached: [%s]\n", top.c_str()));
+	LOGDEB1("FsTreeWalker::iwalk: Maxdepth reached: ["  << (top) << "]\n" );
 	return status;
     }
 
@@ -351,8 +351,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
     if (data->options & FtwFollow) {
 	DirId dirid(stp->st_dev, stp->st_ino);
 	if (data->donedirs.find(dirid) != data->donedirs.end()) {
-	    LOGINFO(("Not processing [%s] (already seen as other path)\n", 
-		     top.c_str()));
+	    LOGINFO("Not processing ["  << (top) << "] (already seen as other path)\n" );
 	    return status;
 	}
 	data->donedirs.insert(dirid);
@@ -634,3 +633,4 @@ int main(int argc, const char **argv)
 }
 
 #endif // TEST_FSTREEWALK
+

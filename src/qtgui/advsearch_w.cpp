@@ -38,7 +38,7 @@ using namespace std;
 
 #include "recoll.h"
 #include "rclconfig.h"
-#include "debuglog.h"
+#include "log.h"
 #include "searchdata.h"
 #include "guiutils.h"
 #include "rclhelp.h"
@@ -443,7 +443,7 @@ void AdvSearch::runSearch()
 	entries.push_back(subtreeCMB->currentText());
 	entries.sort();
 	entries.unique();
-	LOGDEB(("Subtree list now has %d entries\n", entries.size()));
+	LOGDEB("Subtree list now has "  << (entries.size()) << " entries\n" );
 	subtreeCMB->clear();
 	for (list<QString>::iterator it = entries.begin(); 
 	     it != entries.end(); it++) {
@@ -479,7 +479,7 @@ void AdvSearch::fromSearch(STD_SHARED_PTR<SearchData> sdata)
     for (unsigned int i = 0; i < sdata->m_query.size(); i++) {
 	// Set fields from clause
 	if (sdata->m_query[i]->getTp() == SCLT_SUB) {
-	    LOGERR(("AdvSearch::fromSearch: SUB clause found !\n"));
+	    LOGERR("AdvSearch::fromSearch: SUB clause found !\n" );
 	    continue;
 	}
 	if (sdata->m_query[i]->getTp() == SCLT_PATH) {
@@ -575,4 +575,5 @@ void AdvSearch::slotHistoryPrev()
 	return;
     fromSearch(sd);
 }
+
 

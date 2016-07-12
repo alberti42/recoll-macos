@@ -33,7 +33,7 @@
 #include "transcode.h"
 #include "mimeparse.h"
 #include "mh_mail.h"
-#include "debuglog.h"
+#include "log.h"
 #include "smallut.h"
 #include "mh_html.h"
 #include "rclconfig.h"
@@ -89,7 +89,7 @@ void MimeHandlerMail::clear()
 
 bool MimeHandlerMail::set_document_file(const string& mt, const string &fn)
 {
-    LOGDEB(("MimeHandlerMail::set_document_file(%s)\n", fn.c_str()));
+    LOGDEB("MimeHandlerMail::set_document_file("  << (fn) << ")\n" );
     RecollFilter::set_document_file(mt, fn);
     if (m_fd >= 0) {
 	close(m_fd);
@@ -103,14 +103,12 @@ bool MimeHandlerMail::set_document_file(const string& mt, const string &fn)
 	if (MD5File(fn, md5, &reason)) {
 	    m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
 	} else {
-	    LOGERR(("MimeHandlerMail: cant md5 [%s]: %s\n", fn.c_str(),
-		    reason.c_str()));
+	    LOGERR("MimeHandlerMail: cant md5 ["  << (fn) << "]: "  << (reason) << "\n" );
 	}
     }
     m_fd = open(fn.c_str(), 0);
     if (m_fd < 0) {
-	LOGERR(("MimeHandlerMail::set_document_file: open(%s) errno %d\n",
-		fn.c_str(), errno));
+	LOGERR("MimeHandlerMail::set_document_file: open("  << (fn) << ") errno "  << (errno) << "\n" );
 	return false;
     }
 #if defined O_NOATIME && O_NOATIME != 0
@@ -122,8 +120,7 @@ bool MimeHandlerMail::set_document_file(const string& mt, const string &fn)
     m_bincdoc = new Binc::MimeDocument;
     m_bincdoc->parseFull(m_fd);
     if (!m_bincdoc->isHeaderParsed() && !m_bincdoc->isAllParsed()) {
-	LOGERR(("MimeHandlerMail::mkDoc: mime parse error for %s\n",
-		fn.c_str()));
+	LOGERR("MimeHandlerMail::mkDoc: mime parse error for "  << (fn) << "\n" );
 	return false;
     }
     m_havedoc = true;
@@ -133,8 +130,8 @@ bool MimeHandlerMail::set_document_file(const string& mt, const string &fn)
 bool MimeHandlerMail::set_document_string(const string& mt, 
 					  const string &msgtxt)
 {
-    LOGDEB1(("MimeHandlerMail::set_document_string\n"));
-    LOGDEB2(("Message text: [%s]\n", msgtxt.c_str()));
+    LOGDEB1("MimeHandlerMail::set_document_string\n" );
+    LOGDEB2("Message text: ["  << (msgtxt) << "]\n" );
     RecollFilter::set_document_string(mt, msgtxt);
     delete m_stream;
 
@@ -145,19 +142,17 @@ bool MimeHandlerMail::set_document_string(const string& mt,
     }
 
     if ((m_stream = new stringstream(msgtxt)) == 0 || !m_stream->good()) {
-	LOGERR(("MimeHandlerMail::set_document_string: stream create error."
-		"msgtxt.size() %d\n", int(msgtxt.size())));
+	LOGERR("MimeHandlerMail::set_document_string: stream create error.msgtxt.size() "  << (int(msgtxt.size())) << "\n" );
 	return false;
     }
     delete m_bincdoc;
     if ((m_bincdoc = new Binc::MimeDocument) == 0) {
-	LOGERR(("MimeHandlerMail::set_doc._string: new Binc:Document failed."
-		" Out of memory?"));
+	LOGERR("MimeHandlerMail::set_doc._string: new Binc:Document failed. Out of memory?" );
 	return false;
     }
     m_bincdoc->parseFull(*m_stream);
     if (!m_bincdoc->isHeaderParsed() && !m_bincdoc->isAllParsed()) {
-	LOGERR(("MimeHandlerMail::set_document_string: mime parse error\n"));
+	LOGERR("MimeHandlerMail::set_document_string: mime parse error\n" );
 	return false;
     }
     m_havedoc = true;
@@ -166,14 +161,14 @@ bool MimeHandlerMail::set_document_string(const string& mt,
 
 bool MimeHandlerMail::skip_to_document(const string& ipath) 
 {
-    LOGDEB(("MimeHandlerMail::skip_to_document(%s)\n", ipath.c_str()));
+    LOGDEB("MimeHandlerMail::skip_to_document("  << (ipath) << ")\n" );
     if (m_idx == -1) {
 	// No decoding done yet. If ipath is null need do nothing
 	if (ipath.empty() || ipath == "-1")
 	    return true;
 	// ipath points to attachment: need to decode message
 	if (!next_document()) {
-	    LOGERR(("MimeHandlerMail::skip_to_doc: next_document failed\n"));
+	    LOGERR("MimeHandlerMail::skip_to_doc: next_document failed\n" );
 	    return false;
 	}
     }
@@ -183,8 +178,7 @@ bool MimeHandlerMail::skip_to_document(const string& ipath)
 
 bool MimeHandlerMail::next_document()
 {
-    LOGDEB(("MimeHandlerMail::next_document m_idx %d m_havedoc %d\n",
-	    m_idx, m_havedoc));
+    LOGDEB("MimeHandlerMail::next_document m_idx "  << (m_idx) << " m_havedoc "  << (m_havedoc) << "\n" );
     if (!m_havedoc)
 	return false;
     bool res = false;
@@ -192,8 +186,7 @@ bool MimeHandlerMail::next_document()
     if (m_idx == -1) {
 	m_metaData[cstr_dj_keymt] = cstr_textplain;
 	res = processMsg(m_bincdoc, 0);
-	LOGDEB1(("MimeHandlerMail::next_document: mt %s, att cnt %d\n",
-		 m_metaData[cstr_dj_keymt].c_str(), m_attachments.size()));
+	LOGDEB1("MimeHandlerMail::next_document: mt "  << (m_metaData[cstr_dj_keymt]) << ", att cnt "  << (m_attachments.size()) << "\n" );
         const string& txt = m_metaData[cstr_dj_keycontent];
         if (m_startoftext < txt.size())
             m_metaData[cstr_dj_keyabstract] = 
@@ -228,16 +221,16 @@ static bool decodeBody(const string& cte, // Content transfer encoding
 
     if (!stringlowercmp("quoted-printable", cte)) {
 	if (!qp_decode(body, decoded)) {
-	    LOGERR(("decodeBody: quoted-printable decoding failed !\n"));
-	    LOGDEB(("      Body: \n%s\n", body.c_str()));
+	    LOGERR("decodeBody: quoted-printable decoding failed !\n" );
+	    LOGDEB("      Body: \n"  << (body) << "\n" );
 	    return false;
 	}
 	*respp = &decoded;
     } else if (!stringlowercmp("base64", cte)) {
 	if (!base64_decode(body, decoded)) {
 	    // base64 encoding errors are actually relatively common
-	    LOGERR(("decodeBody: base64 decoding failed !\n"));
-	    LOGDEB(("      Body: \n%s\n", body.c_str()));
+	    LOGERR("decodeBody: base64 decoding failed !\n" );
+	    LOGDEB("      Body: \n"  << (body) << "\n" );
 	    return false;
 	}
 	*respp = &decoded;
@@ -247,7 +240,7 @@ static bool decodeBody(const string& cte, // Content transfer encoding
 
 bool MimeHandlerMail::processAttach()
 {
-    LOGDEB(("MimeHandlerMail::processAttach() m_idx %d\n", m_idx));
+    LOGDEB("MimeHandlerMail::processAttach() m_idx "  << (m_idx) << "\n" );
     if (!m_havedoc)
 	return false;
     if (m_idx >= (int)m_attachments.size()) {
@@ -261,10 +254,7 @@ bool MimeHandlerMail::processAttach()
     m_metaData[cstr_dj_keycharset] = att->m_charset;
     m_metaData[cstr_dj_keyfn] = att->m_filename;
     m_metaData[cstr_dj_keytitle] = att->m_filename + "  (" + m_subject + ")";
-    LOGDEB1(("  processAttach:ct [%s] cs [%s] fn [%s]\n", 
-	    att->m_contentType.c_str(),
-	    att->m_charset.c_str(),
-	    att->m_filename.c_str()));
+    LOGDEB1("  processAttach:ct ["  << (att->m_contentType) << "] cs ["  << (att->m_charset) << "] fn ["  << (att->m_filename) << "]\n" );
 
     // Erase current content and replace
     m_metaData[cstr_dj_keycontent] = string();
@@ -315,11 +305,10 @@ bool MimeHandlerMail::processAttach()
 // text
 bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
 {
-    LOGDEB2(("MimeHandlerMail::processMsg: depth %d\n", depth));
+    LOGDEB2("MimeHandlerMail::processMsg: depth "  << (depth) << "\n" );
     if (depth++ >= maxdepth) {
 	// Have to stop somewhere
-	LOGINFO(("MimeHandlerMail::processMsg: maxdepth %d exceeded\n", 
-		maxdepth));
+	LOGINFO("MimeHandlerMail::processMsg: maxdepth "  << (maxdepth) << " exceeded\n" );
 	// Return true anyway, better to index partially than not at all
 	return true;
     }
@@ -371,7 +360,7 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
 		m_metaData[cstr_dj_keymd] = ascuxtime;
 	    } else {
 		// Leave mtime field alone, ftime will be used instead.
-		LOGDEB(("rfc2822Date...: failed: [%s]\n", decoded.c_str()));
+		LOGDEB("rfc2822Date...: failed: ["  << (decoded) << "]\n" );
 	    }
 	}
 	if (preview())
@@ -405,12 +394,10 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
 
     text += '\n';
     m_startoftext = text.size();
-    LOGDEB2(("MimeHandlerMail::processMsg:ismultipart %d mime subtype '%s'\n",
-	    doc->isMultipart(), doc->getSubType().c_str()));
+    LOGDEB2("MimeHandlerMail::processMsg:ismultipart "  << (doc->isMultipart()) << " mime subtype '"  << (doc->getSubType()) << "'\n" );
     walkmime(doc, depth);
 
-    LOGDEB2(("MimeHandlerMail::processMsg:text:[%s]\n", 
-	    m_metaData[cstr_dj_keycontent].c_str()));
+    LOGDEB2("MimeHandlerMail::processMsg:text:["  << (m_metaData[cstr_dj_keycontent]) << "]\n" );
     return true;
 }
 
@@ -426,17 +413,16 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
 // message/rfc822 may also be of interest.
 void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 {
-    LOGDEB2(("MimeHandlerMail::walkmime: depth %d\n", depth));
+    LOGDEB2("MimeHandlerMail::walkmime: depth "  << (depth) << "\n" );
     if (depth++ >= maxdepth) {
-	LOGINFO(("walkmime: max depth (%d) exceeded\n", maxdepth));
+	LOGINFO("walkmime: max depth ("  << (maxdepth) << ") exceeded\n" );
 	return;
     }
 
     string& out = m_metaData[cstr_dj_keycontent];
 
     if (doc->isMultipart()) {
-	LOGDEB2(("walkmime: ismultipart %d subtype '%s'\n", 
-		doc->isMultipart(), doc->getSubType().c_str()));
+	LOGDEB2("walkmime: ismultipart "  << (doc->isMultipart()) << " subtype '"  << (doc->getSubType()) << "'\n" );
 	// We only handle alternative, related and mixed (no digests). 
 	std::vector<Binc::MimePart>::iterator it;
 
@@ -459,22 +445,22 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 		// Get and parse content-type header
 		Binc::HeaderItem hi;
 		if (!it->h.getFirstHeader("Content-Type", hi)) {
-		    LOGDEB(("walkmime:no ctent-type header for part %d\n", i));
+		    LOGDEB("walkmime:no ctent-type header for part "  << (i) << "\n" );
 		    continue;
 		}
 		MimeHeaderValue content_type;
 		parseMimeHeaderValue(hi.getValue(), content_type);
-		LOGDEB2(("walkmime: C-type: %s\n",content_type.value.c_str()));
+		LOGDEB2("walkmime: C-type: "  << (content_type.value) << "\n" );
 		if (!stringlowercmp(cstr_textplain, content_type.value))
 		    ittxt = it;
 		else if (!stringlowercmp("text/html", content_type.value)) 
 		    ithtml = it;
 	    }
 	    if (ittxt != doc->members.end()) {
-		LOGDEB2(("walkmime: alternative: chose text/plain part\n"))
+		LOGDEB2("walkmime: alternative: chose text/plain part\n" );
 		    walkmime(&(*ittxt), depth);
 	    } else if (ithtml != doc->members.end()) {
-		LOGDEB2(("walkmime: alternative: chose text/html part\n"))
+		LOGDEB2("walkmime: alternative: chose text/html part\n" );
 		    walkmime(&(*ithtml), depth);
 	    }
 	}
@@ -490,7 +476,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
     if (doc->h.getFirstHeader("Content-Type", hi)) {
 	ctt = hi.getValue();
     }
-    LOGDEB2(("walkmime:content-type: %s\n", ctt.c_str()));
+    LOGDEB2("walkmime:content-type: "  << (ctt) << "\n" );
     MimeHeaderValue content_type;
     parseMimeHeaderValue(ctt, content_type);
 	    
@@ -501,7 +487,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
     }
     MimeHeaderValue content_disposition;
     parseMimeHeaderValue(ctd, content_disposition);
-    LOGDEB2(("Content_disposition:[%s]\n", content_disposition.value.c_str()));
+    LOGDEB2("Content_disposition:["  << (content_disposition.value) << "]\n" );
     string dispindic;
     if (stringlowercmp("inline", content_disposition.value))
 	dispindic = "Attachment";
@@ -521,7 +507,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
     }
 	
     if (doc->isMessageRFC822()) {
-	LOGDEB2(("walkmime: message/RFC822 part\n"));
+	LOGDEB2("walkmime: message/RFC822 part\n" );
 	
 	// The first part is the already parsed message.  Call
 	// processMsg instead of walkmime so that mail headers get
@@ -542,7 +528,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
     }
 
     // "Simple" part. 
-    LOGDEB2(("walkmime: simple  part\n"));
+    LOGDEB2("walkmime: simple  part\n" );
     // Normally the default charset is us-ascii. But it happens that 8
     // bit chars exist in a message that is stated as us-ascii. Ie the
     // mailer used by yahoo support ('KANA') does this. We could
@@ -589,7 +575,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 	}
 	MHMailAttach *att = new MHMailAttach;
 	if (att == 0) {
-	    LOGERR(("Out of memory\n"));
+	    LOGERR("Out of memory\n" );
 	    return;
 	}
 	att->m_contentType = content_type.value;
@@ -598,11 +584,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 	att->m_charset = charset;
 	att->m_contentTransferEncoding = cte;
 	att->m_part = doc;
-	LOGDEB(("walkmime: attachmnt: ct [%s] cte [%s] cs [%s] fn [%s]\n", 
-		att->m_contentType.c_str(),
-		att->m_contentTransferEncoding.c_str(),
-		att->m_charset.c_str(),
-		filename.c_str()));
+	LOGDEB("walkmime: attachmnt: ct ["  << (att->m_contentType) << "] cte ["  << (att->m_contentTransferEncoding) << "] cs ["  << (att->m_charset) << "] fn ["  << (filename) << "]\n" );
 	m_attachments.push_back(att);
 	return;
     }
@@ -612,15 +594,14 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
     // filter stack work: this would create another subdocument, but
     // we want instead to decode a body part of this message document.
 
-    LOGDEB2(("walkmime: final: body start offset %d, length %d\n", 
-	     doc->getBodyStartOffset(), doc->getBodyLength()));
+    LOGDEB2("walkmime: final: body start offset "  << (doc->getBodyStartOffset()) << ", length "  << (doc->getBodyLength()) << "\n" );
     string body;
     doc->getBody(body, 0, doc->bodylength);
     {
 	string decoded;
 	const string *bdp;
 	if (!decodeBody(cte, body, decoded, &bdp)) {
-	    LOGERR(("MimeHandlerMail::walkmime: failed decoding body\n"));
+	    LOGERR("MimeHandlerMail::walkmime: failed decoding body\n" );
 	}
 	if (bdp != &body)
 	    body.swap(decoded);
@@ -641,10 +622,9 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
     } else {
 	string utf8;
 	// Transcode to utf-8 
-	LOGDEB1(("walkmime: transcoding from %s to UTF-8\n", charset.c_str()));
+	LOGDEB1("walkmime: transcoding from "  << (charset) << " to UTF-8\n" );
 	if (!transcode(body, utf8, charset, cstr_utf8)) {
-	    LOGERR(("walkmime: transcode failed from cs '%s' to UTF-8\n",
-		    charset.c_str()));
+	    LOGERR("walkmime: transcode failed from cs '"  << (charset) << "' to UTF-8\n" );
 	    out += body;
 	} else {
 	    out += utf8;
@@ -654,5 +634,6 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
     if (out.length() && out[out.length()-1] != '\n')
 	out += '\n';
     
-    LOGDEB2(("walkmime: out now: [%s]\n", out.c_str()));
+    LOGDEB2("walkmime: out now: ["  << (out) << "]\n" );
 }
+

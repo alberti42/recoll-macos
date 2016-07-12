@@ -17,7 +17,7 @@
 
 #include "cstr.h"
 #include "mimehandler.h"
-#include "debuglog.h"
+#include "log.h"
 #include "readfile.h"
 #include "transcode.h"
 #include "mimeparse.h"
@@ -36,11 +36,11 @@ using namespace std;
 
 bool MimeHandlerHtml::set_document_file(const string& mt, const string &fn)
 {
-    LOGDEB0(("textHtmlToDoc: %s\n", fn.c_str()));
+    LOGDEB0("textHtmlToDoc: "  << (fn) << "\n" );
     RecollFilter::set_document_file(mt, fn);
     string otext;
     if (!file_to_string(fn, otext)) {
-	LOGINFO(("textHtmlToDoc: cant read: %s\n", fn.c_str()));
+	LOGINFO("textHtmlToDoc: cant read: "  << (fn) << "\n" );
 	return false;
     }
     m_filename = fn;
@@ -73,14 +73,12 @@ bool MimeHandlerHtml::next_document()
     m_filename.erase();
 
     string charset = m_dfltInputCharset;
-    LOGDEB(("MHHtml::next_doc.: default supposed input charset: [%s]\n", 
-	    charset.c_str()));
+    LOGDEB("MHHtml::next_doc.: default supposed input charset: ["  << (charset) << "]\n" );
     // Override default input charset if someone took care to set one:
     map<string,string>::const_iterator it = m_metaData.find(cstr_dj_keycharset);
     if (it != m_metaData.end() && !it->second.empty()) {
 	charset = it->second;
-	LOGDEB(("MHHtml: next_doc.: input charset from ext. metadata: [%s]\n", 
-		charset.c_str()));
+	LOGDEB("MHHtml: next_doc.: input charset from ext. metadata: ["  << (charset) << "]\n" );
     }
 
     // - We first try to convert from the supposed charset
@@ -93,14 +91,13 @@ bool MimeHandlerHtml::next_document()
     MyHtmlParser result;
     for (int pass = 0; pass < 2; pass++) {
 	string transcoded;
-	LOGDEB(("Html::mkDoc: pass %d\n", pass));
+	LOGDEB("Html::mkDoc: pass "  << (pass) << "\n" );
 	MyHtmlParser p;
 
 	// Try transcoding. If it fails, use original text.
 	int ecnt;
 	if (!transcode(m_html, transcoded, charset, "UTF-8", &ecnt)) {
-	    LOGDEB(("textHtmlToDoc: transcode failed from cs '%s' to UTF-8 for"
-		    "[%s]", charset.c_str(), fn.empty()?"unknown":fn.c_str()));
+	    LOGDEB("textHtmlToDoc: transcode failed from cs '"  << (charset) << "' to UTF-8 for["  << (fn.empty()?"unknown":fn) << "]" );
 	    transcoded = m_html;
 	    // We don't know the charset, at all
 	    p.reset_charsets();
@@ -108,11 +105,9 @@ bool MimeHandlerHtml::next_document()
 	} else {
 	    if (ecnt) {
 		if (pass == 0) {
-		    LOGDEB(("textHtmlToDoc: init transcode had %d errors for "
-			    "[%s]\n", ecnt, fn.empty()?"unknown":fn.c_str()));
+		    LOGDEB("textHtmlToDoc: init transcode had "  << (ecnt) << " errors for ["  << (fn.empty()?"unknown":fn) << "]\n" );
 		} else {
-		    LOGERR(("textHtmlToDoc: final transcode had %d errors for "
-			    "[%s]\n", ecnt, fn.empty()?"unknown":fn.c_str()));
+		    LOGERR("textHtmlToDoc: final transcode had "  << (ecnt) << " errors for ["  << (fn.empty()?"unknown":fn) << "]\n" );
 		}
 	    }
 	    // charset has the putative source charset, transcoded is now
@@ -150,16 +145,15 @@ bool MimeHandlerHtml::next_document()
 		break;
 	    }
 
-	    LOGDEB(("textHtmlToDoc: charset [%s] doc charset [%s]\n",
-		    charset.c_str(), result.get_charset().c_str()));
+	    LOGDEB("textHtmlToDoc: charset ["  << (charset) << "] doc charset ["  << (result.get_charset()) << "]\n" );
 	    if (!result.get_charset().empty() && 
 		!samecharset(result.get_charset(), result.fromcharset)) {
-		LOGDEB(("textHtmlToDoc: reparse for charsets\n"));
+		LOGDEB("textHtmlToDoc: reparse for charsets\n" );
 		// Set the origin charset as specified in document before
 		// transcoding again
 		charset = result.get_charset();
 	    } else {
-		LOGERR(("textHtmlToDoc:: error: non charset exception\n"));
+		LOGERR("textHtmlToDoc:: error: non charset exception\n" );
 		return false;
 	    }
 	}
@@ -181,3 +175,4 @@ bool MimeHandlerHtml::next_document()
     }
     return true;
 }
+

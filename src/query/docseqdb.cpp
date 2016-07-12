@@ -23,7 +23,7 @@
 
 #include "docseqdb.h"
 #include "rcldb.h"
-#include "debuglog.h"
+#include "log.h"
 #include "wasatorcl.h"
 
 using std::list;
@@ -77,7 +77,7 @@ static const string cstr_mre("[...]");
 // We ignore most abstract/snippets preferences.
 bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<Rcl::Snippet>& vpabs)
 {
-    LOGDEB(("DocSequenceDb::getAbstract/pair\n"));
+    LOGDEB("DocSequenceDb::getAbstract/pair\n" );
     PTMutexLocker locker(o_dblock);
     if (!setQuery())
 	return false;
@@ -89,8 +89,7 @@ bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<Rcl::Snippet>& vpabs)
 	ret = m_q->makeDocAbstract(doc, vpabs, maxoccs, 
 				   m_q->whatDb()->getAbsCtxLen()+ 2);
     } 
-    LOGDEB(("DocSequenceDb::getAbstract: got ret %d vpabs len %u\n", ret,
-	    vpabs.size()));
+    LOGDEB("DocSequenceDb::getAbstract: got ret "  << (ret) << " vpabs len "  << (vpabs.size()) << "\n" );
     if (vpabs.empty()) {
 	return true;
     }
@@ -161,7 +160,7 @@ string DocSequenceDb::title()
 
 bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs) 
 {
-    LOGDEB(("DocSequenceDb::setFiltSpec\n"));
+    LOGDEB("DocSequenceDb::setFiltSpec\n" );
     PTMutexLocker locker(o_dblock);
     if (fs.isNotNull()) {
 	// We build a search spec by adding a filtering layer to the base one.
@@ -209,8 +208,7 @@ bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs)
 
 bool DocSequenceDb::setSortSpec(const DocSeqSortSpec &spec) 
 {
-    LOGDEB(("DocSequenceDb::setSortSpec: fld [%s] %s\n", 
-	    spec.field.c_str(), spec.desc ? "desc" : "asc"));
+    LOGDEB("DocSequenceDb::setSortSpec: fld ["  << (spec.field) << "] "  << (spec.desc ? "desc" : "asc") << "\n" );
     PTMutexLocker locker(o_dblock);
     if (spec.isNotNull()) {
 	m_q->setSortBy(spec.field, !spec.desc);
@@ -233,8 +231,7 @@ bool DocSequenceDb::setQuery()
     m_lastSQStatus = m_q->setQuery(m_fsdata);
     if (!m_lastSQStatus) {
 	m_reason = m_q->getReason();
-	LOGERR(("DocSequenceDb::setQuery: rclquery::setQuery failed: %s\n",
-		m_reason.c_str()));
+	LOGERR("DocSequenceDb::setQuery: rclquery::setQuery failed: "  << (m_reason) << "\n" );
     }
     return m_lastSQStatus;
 }
@@ -248,3 +245,4 @@ bool DocSequenceDb::docDups(const Rcl::Doc& doc, std::vector<Rcl::Doc>& dups)
 	return false;
     }
 }
+

@@ -27,7 +27,7 @@
 
 #include "cstr.h"
 #include "mh_text.h"
-#include "debuglog.h"
+#include "log.h"
 #include "readfile.h"
 #include "md5ut.h"
 #include "rclconfig.h"
@@ -42,8 +42,7 @@ const int KB = 1024;
 // Process a plain text file
 bool MimeHandlerText::set_document_file(const string& mt, const string &fn)
 {
-    LOGDEB(("MimeHandlerText::set_document_file: [%s] offs %s\n",
-            fn.c_str(), lltodecstr(m_offs).c_str()));
+    LOGDEB("MimeHandlerText::set_document_file: ["  << (fn) << "] offs "  << (lltodecstr(m_offs)) << "\n" );
 
     RecollFilter::set_document_file(mt, fn);
 
@@ -55,8 +54,7 @@ bool MimeHandlerText::set_document_file(const string& mt, const string &fn)
     // file size for oversize check
     long long fsize = path_filesize(m_fn);
     if (fsize < 0) {
-        LOGERR(("MimeHandlerText::set_document_file: stat %s errno %d\n",
-                m_fn.c_str(), errno));
+        LOGERR("MimeHandlerText::set_document_file: stat "  << (m_fn) << " errno "  << (errno) << "\n" );
         return false;
     }
 
@@ -111,8 +109,7 @@ bool MimeHandlerText::skip_to_document(const string& ipath)
     char *endptr;
     long long t = strtoll(ipath.c_str(), &endptr, 10);
     if (endptr == ipath.c_str()) {
-	LOGERR(("MimeHandlerText::skip_to_document: bad ipath offs [%s]\n",
-		ipath.c_str()));
+	LOGERR("MimeHandlerText::skip_to_document: bad ipath offs ["  << (ipath) << "]\n" );
 	return false;
     }
     m_offs = (off_t)t;
@@ -122,7 +119,7 @@ bool MimeHandlerText::skip_to_document(const string& ipath)
 
 bool MimeHandlerText::next_document()
 {
-    LOGDEB(("MimeHandlerText::next_document: m_havedoc %d\n", int(m_havedoc)));
+    LOGDEB("MimeHandlerText::next_document: m_havedoc "  << (int(m_havedoc)) << "\n" );
 
     if (m_havedoc == false)
 	return false;
@@ -175,7 +172,7 @@ bool MimeHandlerText::readnext()
     string reason;
     m_text.clear();
     if (!file_to_string(m_fn, m_text, m_offs, m_pagesz, &reason)) {
-        LOGERR(("MimeHandlerText: can't read file: %s\n", reason.c_str()));
+        LOGERR("MimeHandlerText: can't read file: "  << (reason) << "\n" );
         m_havedoc = false;
         return false;
     }
@@ -197,3 +194,4 @@ bool MimeHandlerText::readnext()
     m_offs += m_text.length();
     return true;
 }
+

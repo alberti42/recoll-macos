@@ -27,7 +27,7 @@
 #include UNORDERED_SET_INCLUDE
 
 #include "textsplit.h"
-#include "debuglog.h"
+#include "log.h"
 //#define UTF8ITER_CHECK
 #include "utf8iter.h"
 #include "uproplist.h"
@@ -221,7 +221,7 @@ bool          TextSplit::o_deHyphenate = false;
 inline bool TextSplit::emitterm(bool isspan, string &w, int pos, 
 				size_t btstart, size_t btend)
 {
-    LOGDEB2(("TextSplit::emitterm: [%s] pos %d\n", w.c_str(), pos));
+    LOGDEB2("TextSplit::emitterm: ["  << (w) << "] pos "  << (pos) << "\n" );
 
     int l = int(w.length());
 
@@ -252,7 +252,7 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
 	    m_prevlen = int(w.length());
 	    return ret;
 	}
-	LOGDEB2(("TextSplit::emitterm:dup: [%s] pos %d\n", w.c_str(), pos));
+	LOGDEB2("TextSplit::emitterm:dup: ["  << (w) << "] pos "  << (pos) << "\n" );
     }
     return true;
 }
@@ -369,10 +369,7 @@ bool TextSplit::words_from_span(size_t bp)
 inline bool TextSplit::doemit(bool spanerase, size_t _bp)
 {
     int bp = int(_bp);
-    LOGDEB2(("TextSplit::doemit: sper %d bp %d spp %d spanwords %u wS %d wL %d "
-            "inn %d span [%s]\n",
-             spanerase, bp, m_spanpos, m_words_in_span.size(), 
-            m_wordStart, m_wordLen, m_inNumber, m_span.c_str()));
+    LOGDEB2("TextSplit::doemit: sper "  << (spanerase) << " bp "  << (bp) << " spp "  << (m_spanpos) << " spanwords "  << (m_words_in_span.size()) << " wS "  << (m_wordStart) << " wL "  << (m_wordLen) << " inn "  << (m_inNumber) << " span ["  << (m_span) << "]\n" );
 
     if (m_wordLen) {
         // We have a current word. Remember it
@@ -468,12 +465,12 @@ static inline bool isdigit(int what, unsigned int flgs)
  */
 bool TextSplit::text_to_words(const string &in)
 {
-    LOGDEB1(("TextSplit::text_to_words: docjk %d (%d) %s%s%s [%s]\n", 
-	     o_processCJK, o_CJKNgramLen,
-	     m_flags & TXTS_NOSPANS ? " nospans" : "",
-	     m_flags & TXTS_ONLYSPANS ? " onlyspans" : "",
-	     m_flags & TXTS_KEEPWILD ? " keepwild" : "",
-	     in.substr(0,50).c_str()));
+    LOGDEB1("TextSplit::text_to_words: docjk " << o_processCJK << "(" <<
+            o_CJKNgramLen <<  ")" << 
+            (m_flags & TXTS_NOSPANS ? " nospans" : "") << 
+            (m_flags & TXTS_ONLYSPANS ? " onlyspans" : "") << 
+            (m_flags & TXTS_KEEPWILD ? " keepwild" : "") << 
+            "[" << in.substr(0,50) << "]\n");
 
     if (in.empty())
 	return true;
@@ -495,7 +492,7 @@ bool TextSplit::text_to_words(const string &in)
 	nonalnumcnt++;
 
 	if (c == (unsigned int)-1) {
-	    LOGERR(("Textsplit: error occured while scanning UTF-8 string\n"));
+	    LOGERR("Textsplit: error occured while scanning UTF-8 string\n" );
 	    return false;
 	}
 
@@ -509,7 +506,7 @@ bool TextSplit::text_to_words(const string &in)
 
 	    // Hand off situation to the cjk routine.
 	    if (!cjk_to_words(&it, &c)) {
-		LOGERR(("Textsplit: scan error in cjk handler\n"));
+		LOGERR("Textsplit: scan error in cjk handler\n" );
 		return false;
 	    }
 
@@ -805,7 +802,7 @@ bool TextSplit::text_to_words(const string &in)
 // be better off converting the whole buffer to utf32 on entry...
 bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
 {
-    LOGDEB1(("cjk_to_words: m_wordpos %d\n", m_wordpos));
+    LOGDEB1("cjk_to_words: m_wordpos "  << (m_wordpos) << "\n" );
     Utf8Iter &it = *itp;
 
     // We use an offset buffer to remember the starts of the utf-8
@@ -908,9 +905,8 @@ bool TextSplit::hasVisibleWhite(const string &in)
     Utf8Iter it(in);
     for (; !it.eof(); it++) {
 	unsigned int c = (unsigned char)*it;
-	LOGDEB3(("TextSplit::hasVisibleWhite: testing 0x%04x\n", c));
 	if (c == (unsigned int)-1) {
-	    LOGERR(("hasVisibleWhite: error while scanning UTF-8 string\n"));
+	    LOGERR("hasVisibleWhite: error while scanning UTF-8 string\n" );
 	    return false;
 	}
 	if (visiblewhite.find(c) != visiblewhite.end())
@@ -931,10 +927,8 @@ template <class T> bool u8stringToStrings(const string &s, T &tokens)
 	unsigned int c = *it;
 	if (visiblewhite.find(c) != visiblewhite.end()) 
 	    c = ' ';
-	LOGDEB3(("TextSplit::stringToStrings: 0x%04x\n", c));
 	if (c == (unsigned int)-1) {
-	    LOGERR(("TextSplit::stringToStrings: error while "
-		    "scanning UTF-8 string\n"));
+	    LOGERR("TextSplit::stringToStrings: error while scanning UTF-8 string\n" );
 	    return false;
 	}
 
@@ -1011,7 +1005,8 @@ bool TextSplit::stringToStrings(const string &s, vector<string> &tokens)
 
 #include "textsplit.h"
 #include "readfile.h"
-#include "debuglog.h"
+#include "log.h"
+
 #include "transcode.h"
 #include "unacpp.h"
 #include "termproc.h"
@@ -1244,3 +1239,4 @@ int main(int argc, char **argv)
     }    
 }
 #endif // TEST
+

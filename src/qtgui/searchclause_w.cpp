@@ -17,8 +17,7 @@
 #include "autoconfig.h"
 
 #include "recoll.h"
-#include "debuglog.h"
-
+#include "log.h"
 #include "searchclause_w.h"
 
 #include <qvariant.h>
@@ -142,7 +141,7 @@ SearchDataClause *SearchClauseW::getClause()
 
 void SearchClauseW::setFromClause(SearchDataClauseSimple *cl)
 {
-    LOGDEB(("SearchClauseW::setFromClause\n"));
+    LOGDEB("SearchClauseW::setFromClause\n" );
     switch(cl->getTp()) {
     case SCLT_OR: if (cl->getexclude()) tpChange(2); else tpChange(0); break;
     case SCLT_AND: tpChange(1); break;
@@ -151,7 +150,7 @@ void SearchClauseW::setFromClause(SearchDataClauseSimple *cl)
     case SCLT_FILENAME:	tpChange(5); break;
     default: return;
     }
-    LOGDEB(("SearchClauseW::setFromClause: calling erase\n"));
+    LOGDEB("SearchClauseW::setFromClause: calling erase\n" );
     clear();
 
     QString text = QString::fromUtf8(cl->gettext().c_str());
@@ -220,3 +219,4 @@ void SearchClauseW::tpChange(int index)
 	fldCMB->show();
     }
 }
+

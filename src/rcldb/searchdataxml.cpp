@@ -25,11 +25,12 @@
 #include <string>
 #include <vector>
 #include <sstream>
-using namespace std;
 
 #include "searchdata.h"
-#include "debuglog.h"
+#include "log.h"
 #include "base64.h"
+
+using namespace std;
 
 namespace Rcl {
 
@@ -48,7 +49,7 @@ static string tpToString(SClType tp)
 
 string SearchData::asXML()
 {
-    LOGDEB(("SearchData::asXML\n"));
+    LOGDEB("SearchData::asXML\n" );
     ostringstream os;
 
     // Searchdata
@@ -64,7 +65,7 @@ string SearchData::asXML()
     for (unsigned int i = 0; i <  m_query.size(); i++) {
 	SearchDataClause *c = m_query[i];
 	if (c->getTp() == SCLT_SUB) {
-	    LOGERR(("SearchData::asXML: can't do subclauses !\n"));
+	    LOGERR("SearchData::asXML: can't do subclauses !\n" );
 	    continue;
 	}
 	if (c->getTp() == SCLT_PATH) {
@@ -159,3 +160,4 @@ string SearchData::asXML()
 
 
 }
+

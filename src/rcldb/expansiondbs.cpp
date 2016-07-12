@@ -20,7 +20,7 @@
 
 #include MEMORY_INCLUDE
 
-#include "debuglog.h"
+#include "log.h"
 #include "utf8iter.h"
 #include "smallut.h"
 #include "chrono.h"
@@ -41,8 +41,7 @@ namespace Rcl {
 bool createExpansionDbs(Xapian::WritableDatabase& wdb, 
 			const vector<string>& langs)
 {
-    LOGDEB(("StemDb::createExpansionDbs: languages: %s\n", 
-	    stringsToString(langs).c_str()));
+    LOGDEB("StemDb::createExpansionDbs: languages: "  << (stringsToString(langs)) << "\n" );
     Chrono cron;
 
     // Erase and recreate all the expansion groups
@@ -102,7 +101,7 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
             if (utfit.eof()) // Empty term?? Seems to happen.
                 continue;
 	    if (TextSplit::isCJK(*utfit)) {
-		// LOGDEB(("stemskipped: Skipping CJK\n"));
+		// LOGDEB("stemskipped: Skipping CJK\n" );
 		continue;
 	    }
 
@@ -119,7 +118,7 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
 	    // Dont' apply stemming to terms which don't look like
 	    // natural language words.
             if (!Db::isSpellingCandidate(*it)) {
-                LOGDEB1(("createExpansionDbs: skipped: [%s]\n", (*it).c_str()));
+                LOGDEB1("createExpansionDbs: skipped: ["  << ((*it)) << "]\n" );
                 continue;
             }
 
@@ -145,12 +144,13 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
         }
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
-        LOGERR(("Db::createStemDb: map build failed: %s\n", ermsg.c_str()));
+        LOGERR("Db::createStemDb: map build failed: "  << (ermsg) << "\n" );
         return false;
     }
 
-    LOGDEB(("StemDb::createExpansionDbs: done: %.2f S\n", cron.secs()));
+    LOGDEB("StemDb::createExpansionDbs: done: "  << (cron.secs()) << " S\n" );
     return true;
 }
 
 }    
+

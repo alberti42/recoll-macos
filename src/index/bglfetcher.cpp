@@ -16,11 +16,10 @@
  */
 #include "autoconfig.h"
 
-#include "debuglog.h"
 #include "rcldoc.h"
 #include "fetcher.h"
 #include "bglfetcher.h"
-#include "debuglog.h"
+#include "log.h"
 #include "ptmutex.h"
 #include "beaglequeuecache.h"
 
@@ -32,7 +31,7 @@ bool BGLDocFetcher::fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out)
 {
     string udi;
     if (!idoc.getmeta(Rcl::Doc::keyudi, &udi) || udi.empty()) {
-	LOGERR(("BGLDocFetcher:: no udi in idoc\n"));
+	LOGERR("BGLDocFetcher:: no udi in idoc\n" );
 	return false;
     }
     Rcl::Doc dotdoc;
@@ -43,13 +42,12 @@ bool BGLDocFetcher::fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out)
 	// deleted when the program exits.
 	static BeagleQueueCache o_beagler(cnf);
 	if (!o_beagler.getFromCache(udi, dotdoc, out.data)) {
-	    LOGINFO(("BGLDocFetcher::fetch: failed for [%s]\n", udi.c_str()));
+	    LOGINFO("BGLDocFetcher::fetch: failed for ["  << (udi) << "]\n" );
 	    return false;
 	}
     }
     if (dotdoc.mimetype.compare(idoc.mimetype)) {
-	LOGINFO(("BGLDocFetcher:: udi [%s], mimetp mismatch: in: [%s], bgl "
-		 "[%s]\n", idoc.mimetype.c_str(), dotdoc.mimetype.c_str()));
+	LOGINFO("BGLDocFetcher:: udi ["  << (udi) << "], mimetp mismatch: in: ["  << (idoc.mimetype) << "], bgl ["  << (dotdoc.mimetype) << "]\n" );
     }
     out.kind = RawDoc::RDK_DATA;
     return true;
@@ -61,4 +59,5 @@ bool BGLDocFetcher::makesig(RclConfig* cnf, const Rcl::Doc& idoc, string& sig)
     sig.clear();
     return true;
 }
+
 

@@ -39,7 +39,7 @@ using namespace std;
 
 #include "pathut.h"
 #include "confguiindex.h"
-#include "debuglog.h"
+#include "log.h"
 #include "rclconfig.h"
 #include "execmd.h"
 #include "conflinkrcl.h"
@@ -89,9 +89,6 @@ int main(int argc, char **argv)
 	argc--; argv++;
     }
 
-    DebugLog::getdbl()->setloglevel(DEBDEB1);
-    DebugLog::setfilename("stderr");
-
     string a_config = "tstconfdir";
     config = new RclConfig(&a_config);
     if (config == 0 || !config->ok()) {
@@ -130,3 +127,4 @@ int main(int argc, char **argv)
     // Let's go
     return app.exec();
 }
+

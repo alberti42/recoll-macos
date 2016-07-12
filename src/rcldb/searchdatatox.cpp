@@ -34,7 +34,7 @@ using namespace std;
 #include "rcldb.h"
 #include "rcldb_p.h"
 #include "searchdata.h"
-#include "debuglog.h"
+#include "log.h"
 #include "smallut.h"
 #include "textsplit.h"
 #include "unacpp.h"
@@ -62,7 +62,7 @@ bool SearchData::expandFileTypes(Db &db, vector<string>& tps)
 {
     const RclConfig *cfg = db.getConf();
     if (!cfg) {
-	LOGFATAL(("Db::expandFileTypes: null configuration!!\n"));
+	LOGFATAL("Db::expandFileTypes: null configuration!!\n" );
 	return false;
     }
     vector<string> exptps;
@@ -113,13 +113,12 @@ bool SearchData::clausesToQuery(Rcl::Db &db, SClType tp,
     for (qlist_it_t it = query.begin(); it != query.end(); it++) {
 	Xapian::Query nq;
 	if (!(*it)->toNativeQuery(db, &nq)) {
-	    LOGERR(("SearchData::clausesToQuery: toNativeQuery failed: %s\n",
-		    (*it)->getReason().c_str()));
+	    LOGERR("SearchData::clausesToQuery: toNativeQuery failed: "  << ((*it)->getReason()) << "\n" );
 	    reason += (*it)->getReason() + " ";
 	    return false;
 	}	    
         if (nq.empty()) {
-            LOGDEB(("SearchData::clausesToQuery: skipping empty clause\n"));
+            LOGDEB("SearchData::clausesToQuery: skipping empty clause\n" );
             continue;
         }
 	// If this structure is an AND list, must use AND_NOT for excl clauses.
@@ -144,7 +143,7 @@ bool SearchData::clausesToQuery(Rcl::Db &db, SClType tp,
             xq = Xapian::Query(op, xq, nq);
         }
 	if (int(xq.get_length()) >= getMaxCl()) {
-	    LOGERR(("%s\n", maxXapClauseMsg));
+	    LOGERR(""  << (maxXapClauseMsg) << "\n" );
 	    m_reason += maxXapClauseMsg;
 	    if (!o_index_stripchars)
 		m_reason += maxXapClauseCaseDiacMsg;
@@ -152,7 +151,7 @@ bool SearchData::clausesToQuery(Rcl::Db &db, SClType tp,
 	}
     }
 
-    LOGDEB0(("SearchData::clausesToQuery: got %d clauses\n", xq.get_length()));
+    LOGDEB0("SearchData::clausesToQuery: got "  << (xq.get_length()) << " clauses\n" );
 
     if (xq.empty())
 	xq = Xapian::Query::MatchAll;
@@ -163,7 +162,7 @@ bool SearchData::clausesToQuery(Rcl::Db &db, SClType tp,
 
 bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 {
-    LOGDEB(("SearchData::toNativeQuery: stemlang [%s]\n", m_stemlang.c_str()));
+    LOGDEB("SearchData::toNativeQuery: stemlang ["  << (m_stemlang) << "]\n" );
     m_reason.erase();
 
     db.getConf()->getConfParam("maxTermExpand", &m_maxexp);
@@ -175,8 +174,7 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
     // Xapian query tree
     Xapian::Query xq;
     if (!clausesToQuery(db, m_tp, m_query, m_reason, &xq)) {
-	LOGERR(("SearchData::toNativeQuery: clausesToQuery failed. reason: %s\n", 
-		m_reason.c_str()));
+	LOGERR("SearchData::toNativeQuery: clausesToQuery failed. reason: "  << (m_reason) << "\n" );
 	return false;
     }
 
@@ -185,7 +183,7 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
         if (m_dates.y1 == 0 || m_dates.y2 == 0) {
             int minyear = 1970, maxyear = 2100;
             if (!db.maxYearSpan(&minyear, &maxyear)) {
-                LOGERR(("Can't retrieve index min/max dates\n"));
+                LOGERR("Can't retrieve index min/max dates\n" );
                 //whatever, go on.
             }
 
@@ -200,18 +198,16 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
                 m_dates.d2 = 31;
             }
         }
-        LOGDEB(("Db::toNativeQuery: date interval: %d-%d-%d/%d-%d-%d\n",
-                m_dates.y1, m_dates.m1, m_dates.d1,
-                m_dates.y2, m_dates.m2, m_dates.d2));
+        LOGDEB("Db::toNativeQuery: date interval: "  << (m_dates.y1) << "-"  << (m_dates.m1) << "-"  << (m_dates.d1) << "/"  << (m_dates.y2) << "-"  << (m_dates.m2) << "-"  << (m_dates.d2) << "\n" );
         Xapian::Query dq = date_range_filter(m_dates.y1, m_dates.m1, m_dates.d1,
                 m_dates.y2, m_dates.m2, m_dates.d2);
         if (dq.empty()) {
-            LOGINFO(("Db::toNativeQuery: date filter is empty\n"));
+            LOGINFO("Db::toNativeQuery: date filter is empty\n" );
         }
         // If no probabilistic query is provided then promote the daterange
         // filter to be THE query instead of filtering an empty query.
         if (xq.empty()) {
-            LOGINFO(("Db::toNativeQuery: proba query is empty\n"));
+            LOGINFO("Db::toNativeQuery: proba query is empty\n" );
             xq = dq;
         } else {
             xq = Xapian::Query(Xapian::Query::OP_FILTER, xq, dq);
@@ -243,7 +239,7 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
         // If no probabilistic query is provided then promote the
         // filter to be THE query instead of filtering an empty query.
         if (xq.empty()) {
-            LOGINFO(("Db::toNativeQuery: proba query is empty\n"));
+            LOGINFO("Db::toNativeQuery: proba query is empty\n" );
             xq = sq;
         } else {
             xq = Xapian::Query(Xapian::Query::OP_FILTER, xq, sq);
@@ -267,7 +263,7 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 	for (vector<string>::iterator it = m_filetypes.begin(); 
 	     it != m_filetypes.end(); it++) {
 	    string term = wrap_prefix(mimetype_prefix) + *it;
-	    LOGDEB0(("Adding file type term: [%s]\n", term.c_str()));
+	    LOGDEB0("Adding file type term: ["  << (term) << "]\n" );
 	    tq = tq.empty() ? Xapian::Query(term) : 
 		Xapian::Query(Xapian::Query::OP_OR, tq, Xapian::Query(term));
 	}
@@ -282,7 +278,7 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 	for (vector<string>::iterator it = m_nfiletypes.begin(); 
 	     it != m_nfiletypes.end(); it++) {
 	    string term = wrap_prefix(mimetype_prefix) + *it;
-	    LOGDEB0(("Adding negative file type term: [%s]\n", term.c_str()));
+	    LOGDEB0("Adding negative file type term: ["  << (term) << "]\n" );
 	    tq = tq.empty() ? Xapian::Query(term) : 
 		Xapian::Query(Xapian::Query::OP_OR, tq, Xapian::Query(term));
 	}
@@ -337,8 +333,7 @@ public:
 	if (m_lastpos < pos)
 	    m_lastpos = pos;
 	bool noexpand = be ? m_ts->nostemexp() : true;
-	LOGDEB1(("TermProcQ::takeword: pushing [%s] pos %d noexp %d\n", 
-		 term.c_str(), pos, noexpand));
+	LOGDEB1("TermProcQ::takeword: pushing ["  << (term) << "] pos "  << (pos) << " noexp "  << (noexpand) << "\n" );
 	if (m_terms[pos].size() < term.size()) {
 	    m_terms[pos] = term;
 	    m_nste[pos] = noexpand;
@@ -401,8 +396,7 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 					vector<string>* multiwords
     )
 {
-    LOGDEB0(("expandTerm: mods 0x%x fld [%s] trm [%s] lang [%s]\n",
-	     mods, m_field.c_str(), term.c_str(), getStemLang().c_str()));
+    LOGDEB0("expandTerm: mods 0x"  << (mods) << " fld ["  << (m_field) << "] trm ["  << (term) << "] lang ["  << (getStemLang()) << "]\n" );
     sterm.clear();
     oexp.clear();
     if (term.empty())
@@ -426,7 +420,7 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
     // No stem expansion if there are wildcards or if prevented by caller
     bool nostemexp = (mods & SDCM_NOSTEMMING) != 0;
     if (haswild || getStemLang().empty()) {
-	LOGDEB2(("expandTerm: found wildcards or stemlang empty: no exp\n"));
+	LOGDEB2("expandTerm: found wildcards or stemlang empty: no exp\n" );
 	nostemexp = true;
     }
 
@@ -448,7 +442,7 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 	// performed (conversion+comparison) will automatically ignore
 	// accented characters which are actually a separate letter
 	if (getAutoDiac() && unachasaccents(term)) {
-	    LOGDEB0(("expandTerm: term has accents -> diac-sensitive\n"));
+	    LOGDEB0("expandTerm: term has accents -> diac-sensitive\n" );
 	    diac_sensitive = true;
 	}
 
@@ -459,14 +453,13 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 	Utf8Iter it(term);
 	it++;
 	if (getAutoCase() && unachasuppercase(term.substr(it.getBpos()))) {
-	    LOGDEB0(("expandTerm: term has uppercase -> case-sensitive\n"));
+	    LOGDEB0("expandTerm: term has uppercase -> case-sensitive\n" );
 	    case_sensitive = true;
 	}
 
 	// If we are sensitive to case or diacritics turn stemming off
 	if (diac_sensitive || case_sensitive) {
-	    LOGDEB0(("expandTerm: diac or case sens set -> "
-                     "stemexpand and synonyms off\n"));
+	    LOGDEB0("expandTerm: diac or case sens set -> stemexpand and synonyms off\n" );
 	    nostemexp = true;
             synonyms = false;
 	}
@@ -479,8 +472,7 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
     if (noexpansion) {
 	oexp.push_back(prefix + term);
 	m_hldata.terms[term] = term;
-	LOGDEB(("ExpandTerm: noexpansion: final: %s\n", 
-                stringsToString(oexp).c_str()));
+	LOGDEB("ExpandTerm: noexpansion: final: "  << (stringsToString(oexp)) << "\n" );
 	return true;
     } 
 
@@ -521,7 +513,7 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 	 it != oexp.end(); it++) {
 	m_hldata.terms[strip_prefix(*it)] = term;
     }
-    LOGDEB(("ExpandTerm: final: %s\n", stringsToString(oexp).c_str()));
+    LOGDEB("ExpandTerm: final: "  << (stringsToString(oexp)) << "\n" );
     return true;
 }
 
@@ -572,8 +564,7 @@ processSimpleSpan(Rcl::Db &db, string& ermsg,
 		  int mods, void * pq)
 {
     vector<Xapian::Query>& pqueries(*(vector<Xapian::Query>*)pq);
-    LOGDEB0(("StringToXapianQ::processSimpleSpan: [%s] mods 0x%x\n",
-	    span.c_str(), (unsigned int)mods));
+    LOGDEB0("StringToXapianQ::processSimpleSpan: ["  << (span) << "] mods 0x"  << ((unsigned int)mods) << "\n" );
     vector<string> exp;  
     string sterm; // dumb version of user term
 
@@ -669,7 +660,7 @@ void SearchDataClauseSimple::processPhraseOrNear(Rcl::Db &db, string& ermsg,
     vector<bool>::const_iterator nxit = splitData->nostemexps().begin();
     for (vector<string>::const_iterator it = splitData->terms().begin();
 	 it != splitData->terms().end(); it++, nxit++) {
-	LOGDEB0(("ProcessPhrase: processing [%s]\n", it->c_str()));
+	LOGDEB0("ProcessPhrase: processing ["  << *it << "]\n" );
 	// Adjust when we do stem expansion. Not if disabled by
 	// caller, not inside phrases, and some versions of xapian
 	// will accept only one OR clause inside NEAR.
@@ -685,8 +676,7 @@ void SearchDataClauseSimple::processPhraseOrNear(Rcl::Db &db, string& ermsg,
 	vector<string> exp;
 	if (!expandTerm(db, ermsg, lmods, *it, exp, sterm, prefix))
 	    return;
-	LOGDEB0(("ProcessPhraseOrNear: exp size %d, exp: %s\n", exp.size(),
-		 stringsToString(exp).c_str()));
+	LOGDEB0("ProcessPhraseOrNear: exp size "  << (exp.size()) << ", exp: "  << (stringsToString(exp)) << "\n" );
 	// groups is used for highlighting, we don't want prefixes in there.
 	vector<string> noprefs;
 	for (vector<string>::const_iterator it = exp.begin(); 
@@ -712,8 +702,7 @@ void SearchDataClauseSimple::processPhraseOrNear(Rcl::Db &db, string& ermsg,
 
     // Generate an appropriate PHRASE/NEAR query with adjusted slack
     // For phrases, give a relevance boost like we do for original terms
-    LOGDEB2(("PHRASE/NEAR:  alltermcount %d lastpos %d\n", 
-             splitData->alltermcount(), splitData->lastpos()));
+    LOGDEB2("PHRASE/NEAR:  alltermcount "  << (splitData->alltermcount()) << " lastpos "  << (splitData->lastpos()) << "\n" );
     Xapian::Query xq(op, orqueries.begin(), orqueries.end(),
 		     splitData->lastpos() + 1 + slack);
     if (op == Xapian::Query::OP_PHRASE)
@@ -783,9 +772,7 @@ bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
     vector<Xapian::Query> &pqueries(*(vector<Xapian::Query>*)pq);
     int mods = m_modifiers;
 
-    LOGDEB(("StringToXapianQ:pUS:: qstr [%s] fld [%s] mods 0x%x "
-	    "slack %d near %d\n", 
-	    iq.c_str(), m_field.c_str(), mods, slack, useNear));
+    LOGDEB("StringToXapianQ:pUS:: qstr ["  << (iq) << "] fld ["  << (m_field) << "] mods 0x"  << (mods) << " slack "  << (slack) << " near "  << (useNear) << "\n" );
     ermsg.erase();
     m_curcl = 0;
     const StopList stops = db.getStopList();
@@ -805,7 +792,7 @@ bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
     try {
 	for (vector<string>::iterator it = phrases.begin(); 
 	     it != phrases.end(); it++) {
-	    LOGDEB0(("strToXapianQ: phrase/word: [%s]\n", it->c_str()));
+	    LOGDEB0("strToXapianQ: phrase/word: ["  << *it << "]\n" );
 	    // Anchoring modifiers
 	    int amods = stringToMods(*it);
 	    int terminc = amods != 0 ? 1 : 0;
@@ -843,7 +830,7 @@ bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
 
 	    slack += tpq.lastpos() - int(tpq.terms().size()) + 1;
 
-	    LOGDEB0(("strToXapianQ: termcount: %d\n", tpq.terms().size()));
+	    LOGDEB0("strToXapianQ: termcount: "  << (tpq.terms().size()) << "\n" );
 	    switch (tpq.terms().size() + terminc) {
 	    case 0: 
 		continue;// ??
@@ -878,7 +865,7 @@ bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
 	ermsg = "Caught unknown exception";
     }
     if (!ermsg.empty()) {
-	LOGERR(("stringToXapianQueries: %s\n", ermsg.c_str()));
+	LOGERR("stringToXapianQueries: "  << (ermsg) << "\n" );
 	return false;
     }
     return true;
@@ -887,9 +874,7 @@ bool SearchDataClauseSimple::processUserString(Rcl::Db &db, const string &iq,
 // Translate a simple OR or AND search clause. 
 bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p)
 {
-    LOGDEB(("SearchDataClauseSimple::toNativeQuery: fld [%s] val [%s] "
-            "stemlang [%s]\n", m_field.c_str(), m_text.c_str(),
-            getStemLang().c_str()));
+    LOGDEB("SearchDataClauseSimple::toNativeQuery: fld ["  << (m_field) << "] val ["  << (m_text) << "] stemlang ["  << (getStemLang()) << "]\n" );
 
     Xapian::Query *qp = (Xapian::Query *)p;
     *qp = Xapian::Query();
@@ -899,7 +884,7 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p)
     case SCLT_AND: op = Xapian::Query::OP_AND; break;
     case SCLT_OR: op = Xapian::Query::OP_OR; break;
     default:
-	LOGERR(("SearchDataClauseSimple: bad m_tp %d\n", m_tp));
+	LOGERR("SearchDataClauseSimple: bad m_tp "  << (m_tp) << "\n" );
         m_reason = "Internal error";
 	return false;
     }
@@ -908,7 +893,7 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p)
     if (!processUserString(db, m_text, m_reason, &pqueries))
 	return false;
     if (pqueries.empty()) {
-	LOGERR(("SearchDataClauseSimple: resolved to null query\n"));
+	LOGERR("SearchDataClauseSimple: resolved to null query\n" );
         m_reason = string("Resolved to null query. Term too long ? : [" + 
                           m_text + string("]"));
 	return false;
@@ -952,12 +937,12 @@ bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p)
 // Translate a dir: path filtering clause. See comments in .h
 bool SearchDataClausePath::toNativeQuery(Rcl::Db &db, void *p)
 {
-    LOGDEB(("SearchDataClausePath::toNativeQuery: [%s]\n", m_text.c_str()));
+    LOGDEB("SearchDataClausePath::toNativeQuery: ["  << (m_text) << "]\n" );
     Xapian::Query *qp = (Xapian::Query *)p;
     *qp = Xapian::Query();
 
     if (m_text.empty()) {
-	LOGERR(("SearchDataClausePath: empty path??\n"));
+	LOGERR("SearchDataClausePath: empty path??\n" );
 	m_reason = "Empty path ?";
 	return false;
     }
@@ -982,8 +967,7 @@ bool SearchDataClausePath::toNativeQuery(Rcl::Db &db, void *p)
 			*pit, exp, sterm, wrap_prefix(pathelt_prefix))) {
 	    return false;
 	}
-	LOGDEB0(("SDataPath::toNative: exp size %d. Exp: %s\n", exp.size(),
-		 stringsToString(exp).c_str()));
+	LOGDEB0("SDataPath::toNative: exp size "  << (exp.size()) << ". Exp: "  << (stringsToString(exp)) << "\n" );
 	if (exp.size() == 1)
 	    orqueries.push_back(Xapian::Query(exp[0]));
 	else 
@@ -1006,7 +990,7 @@ bool SearchDataClausePath::toNativeQuery(Rcl::Db &db, void *p)
 // Translate NEAR or PHRASE clause. 
 bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p)
 {
-    LOGDEB(("SearchDataClauseDist::toNativeQuery\n"));
+    LOGDEB("SearchDataClauseDist::toNativeQuery\n" );
 
     Xapian::Query *qp = (Xapian::Query *)p;
     *qp = Xapian::Query();
@@ -1025,7 +1009,7 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p)
     if (!processUserString(db, s, m_reason, &pqueries, m_slack, useNear))
 	return false;
     if (pqueries.empty()) {
-	LOGERR(("SearchDataClauseDist: resolved to null query\n"));
+	LOGERR("SearchDataClauseDist: resolved to null query\n" );
         m_reason = string("Resolved to null query. Term too long ? : [" + 
                           m_text + string("]"));
 	return false;
@@ -1039,3 +1023,4 @@ bool SearchDataClauseDist::toNativeQuery(Rcl::Db &db, void *p)
 }
 
 } // Namespace Rcl
+

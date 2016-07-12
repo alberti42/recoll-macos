@@ -35,7 +35,7 @@
 #include <QClipboard>
 #include <QKeyEvent>
 
-#include "debuglog.h"
+#include "log.h"
 #include "recoll.h"
 #include "spell_w.h"
 #include "guiutils.h"
@@ -147,7 +147,7 @@ void SpellW::doExpand()
     string reason;
     if (!maybeOpenDb(reason)) {
 	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
-	LOGDEB(("SpellW::doExpand: db error: %s\n", reason.c_str()));
+	LOGDEB("SpellW::doExpand: db error: "  << (reason) << "\n" );
 	return;
     }
 
@@ -178,7 +178,7 @@ void SpellW::doExpand()
 	string l_stemlang = qs2utf8s(stemLangCMB->currentText());
 
 	if (!rcldb->termMatch(mt, l_stemlang, expr, res, maxexpand)) {
-	    LOGERR(("SpellW::doExpand:rcldb::termMatch failed\n"));
+	    LOGERR("SpellW::doExpand:rcldb::termMatch failed\n" );
 	    return;
 	}
         statsLBL->setText(tr("Index: %1 documents, average length %2 terms."
@@ -192,19 +192,19 @@ void SpellW::doExpand()
 #ifdef RCL_USE_ASPELL
     case TYPECMB_ASPELL: 
     {
-	LOGDEB(("SpellW::doExpand: aspelling\n"));
+	LOGDEB("SpellW::doExpand: aspelling\n" );
 	if (!aspell) {
 	    QMessageBox::warning(0, "Recoll",
 				 tr("Aspell init failed. "
 				    "Aspell not installed?"));
-	    LOGDEB(("SpellW::doExpand: aspell init error\n"));
+	    LOGDEB("SpellW::doExpand: aspell init error\n" );
 	    return;
 	}
 	list<string> suggs;
 	if (!aspell->suggest(*rcldb, expr, suggs, reason)) {
 	    QMessageBox::warning(0, "Recoll",
 				 tr("Aspell expansion error. "));
-	    LOGERR(("SpellW::doExpand:suggest failed: %s\n", reason.c_str()));
+	    LOGERR("SpellW::doExpand:suggest failed: "  << (reason) << "\n" );
 	}
 	for (list<string>::const_iterator it = suggs.begin(); 
 	     it != suggs.end(); it++) 
@@ -253,7 +253,7 @@ void SpellW::doExpand()
 
 	for (vector<Rcl::TermMatchEntry>::iterator it = res.entries.begin(); 
 	     it != res.entries.end(); it++) {
-	    LOGDEB2(("SpellW::expand: %6d [%s]\n", it->wcf, it->term.c_str()));
+	    LOGDEB2("SpellW::expand: "  << (it->wcf) << " ["  << (it->term) << "]\n" );
 	    char num[30];
 	    if (it->wcf)
 		sprintf(num, "%d / %d",  it->docs, it->wcf);
@@ -275,7 +275,7 @@ void SpellW::showStats()
 
     Rcl::DbStats res;
     if (!rcldb->dbStats(res)) {
-	LOGERR(("SpellW::doExpand:rcldb::dbStats failed\n"));
+	LOGERR("SpellW::doExpand:rcldb::dbStats failed\n" );
 	return;
     }
 
@@ -365,7 +365,7 @@ void SpellW::showStats()
 	STD_SHARED_PTR<Rcl::SearchData> rq(sd);
 	Rcl::Query query(rcldb);
 	if (!query.setQuery(rq)) {
-	    LOGERR(("Query setup failed: %s",query.getReason().c_str()));
+	    LOGERR("Query setup failed: "  << (query.getReason()) << "" );
 	    return;
 	}
 	int cnt = query.getResCnt();
@@ -521,3 +521,4 @@ bool SpellW::eventFilter(QObject *target, QEvent *event)
     }
     return false;
 }
+

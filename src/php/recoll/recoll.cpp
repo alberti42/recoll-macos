@@ -36,7 +36,7 @@
 #include "rclconfig.h"
 #include "pathut.h"
 #include "rclinit.h"
-#include "debuglog.h"
+#include "log.h"
 #include "wasatorcl.h"
 #include "internfile.h"
 #include "wipedir.h"
@@ -238,3 +238,4 @@ extern "C" {
 ZEND_GET_MODULE(recoll)
 }
 #endif
+

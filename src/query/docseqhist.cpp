@@ -26,7 +26,7 @@ using std::list;
 #include "rcldb.h"
 #include "fileudi.h"
 #include "base64.h"
-#include "debuglog.h"
+#include "log.h"
 #include "smallut.h"
 
 // Encode document history entry: 
@@ -77,7 +77,7 @@ bool RclDHistoryEntry::decode(const string &value)
         // Old style entry found, make an udi, using the fs udi maker
         make_udi(fn, ipath, udi);
     }
-    LOGDEB1(("RclDHistoryEntry::decode: udi [%s]\n", udi.c_str()));
+    LOGDEB1("RclDHistoryEntry::decode: udi ["  << (udi) << "]\n" );
     return true;
 }
 
@@ -89,8 +89,7 @@ bool RclDHistoryEntry::equal(const DynConfEntry& other)
 
 bool historyEnterDoc(RclDynConf *dncf, const string& udi)
 {
-    LOGDEB1(("historyEnterDoc: [%s] into %s\n", 
-	    udi.c_str(), dncf->getFilename().c_str()));
+    LOGDEB1("historyEnterDoc: ["  << (udi) << "] into "  << (dncf->getFilename()) << "\n" );
     RclDHistoryEntry ne(time(0), udi);
     RclDHistoryEntry scratch;
     return dncf->insertNew(docHistSubKey, ne, scratch, 200);
@@ -161,3 +160,4 @@ int DocSequenceHistory::getResCnt()
 	m_hlist = getDocHistory(m_hist);
     return int(m_hlist.size());
 }
+

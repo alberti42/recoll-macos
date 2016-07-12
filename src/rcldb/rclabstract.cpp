@@ -20,7 +20,7 @@
 
 #include <map>
 
-#include "debuglog.h"
+#include "log.h"
 #include "rcldb.h"
 #include "rcldb_p.h"
 #include "rclquery.h"
@@ -50,7 +50,7 @@ static void listList(const string& what, const vector<string>&l)
     for (vector<string>::const_iterator it = l.begin(); it != l.end(); it++) {
         a = a + *it + " ";
     }
-    LOGDEB(("%s: %s\n", what.c_str(), a.c_str()));
+    LOGDEB(""  << (what) << ": "  << (a) << "\n" );
 }
 #else
 #define LOGABS LOGDEB2
@@ -82,7 +82,7 @@ static void noPrefixList(const vector<string>& in, vector<string>& out)
 bool Query::Native::getMatchTerms(unsigned long xdocid, vector<string>& terms)
 {
     if (!xenquire) {
-	LOGERR(("Query::getMatchTerms: no query opened\n"));
+	LOGERR("Query::getMatchTerms: no query opened\n" );
 	return false;
     }
 
@@ -95,7 +95,7 @@ bool Query::Native::getMatchTerms(unsigned long xdocid, vector<string>& terms)
                         xenquire->get_matching_terms_end(id)),
            m_q->m_db->m_ndb->xrdb, m_q->m_reason);
     if (!m_q->m_reason.empty()) {
-	LOGERR(("getMatchTerms: xapian error: %s\n", m_q->m_reason.c_str()));
+	LOGERR("getMatchTerms: xapian error: "  << (m_q->m_reason) << "\n" );
 	return false;
     }
     noPrefixList(iterms, terms);
@@ -178,7 +178,7 @@ double Query::Native::qualityTerms(Xapian::docid docid,
 	if (eit != hld.terms.end()) {
 	    byRoot[eit->second].push_back(*qit);
 	} else {
-	    LOGDEB0(("qualityTerms: [%s] not found in hld\n", (*qit).c_str()));
+	    LOGDEB0("qualityTerms: ["  << ((*qit)) << "] not found in hld\n" );
 	    byRoot[*qit].push_back(*qit);
 	}
     }
@@ -257,7 +257,7 @@ double Query::Native::qualityTerms(Xapian::docid docid,
 int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
 {
     if (!m_q|| !m_q->m_db || !m_q->m_db->m_ndb || !m_q->m_db->m_ndb->m_isopen) {
-	LOGERR(("Query::getFirstMatchPage: no db\n"));
+	LOGERR("Query::getFirstMatchPage: no db\n" );
 	return -1;
     }
     Rcl::Db::Native *ndb(m_q->m_db->m_ndb);
@@ -267,7 +267,7 @@ int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
     getMatchTerms(docid, terms);
 
     if (terms.empty()) {
-	LOGDEB(("getFirstMatchPage: empty match term list (field match?)\n"));
+	LOGDEB("getFirstMatchPage: empty match term list (field match?)\n" );
 	return -1;
     }
 
@@ -322,7 +322,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
     vector<string> matchedTerms;
     getMatchTerms(docid, matchedTerms);
     if (matchedTerms.empty()) {
-	LOGDEB(("makeAbstract::Empty term list\n"));
+	LOGDEB("makeAbstract::Empty term list\n" );
 	return ABSRES_ERROR;
     }
 
@@ -342,7 +342,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
     LOGABS(("makeAbstract:%d: computed Qcoefs.\n", chron.ms()));
     // This can't happen, but would crash us
     if (totalweight == 0.0) {
-	LOGERR(("makeAbstract: totalweight == 0.0 !\n"));
+	LOGERR("makeAbstract: totalweight == 0.0 !\n" );
 	return ABSRES_ERROR;
     }
 
@@ -494,7 +494,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
     // This can happen if there are term occurences in the keywords
     // etc. but not elsewhere ?
     if (totaloccs == 0) {
-	LOGDEB(("makeAbstract: no occurrences\n"));
+	LOGDEB("makeAbstract: no occurrences\n" );
 	return ABSRES_OK;
     }
 
@@ -513,8 +513,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
 		continue;
 	    if (m_q->m_snipMaxPosWalk > 0 && cutoff-- < 0) {
 		ret |= ABSRES_TERMMISS;
-		LOGDEB0(("makeAbstract: max term count cutoff %d\n", 
-			 m_q->m_snipMaxPosWalk));
+		LOGDEB0("makeAbstract: max term count cutoff "  << (m_q->m_snipMaxPosWalk) << "\n" );
 		break;
 	    }
 
@@ -524,8 +523,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
 		 pos != xrdb.positionlist_end(docid, *term); pos++) {
 		if (m_q->m_snipMaxPosWalk > 0 && cutoff-- < 0) {
 		    ret |= ABSRES_TERMMISS;
-		    LOGDEB0(("makeAbstract: max term count cutoff %d\n", 
-			    m_q->m_snipMaxPosWalk));
+		    LOGDEB0("makeAbstract: max term count cutoff "  << (m_q->m_snipMaxPosWalk) << "\n" );
 		    break;
 		}
 		// If we are beyond the max possible position, stop
@@ -539,8 +537,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
 		    // at the same position, we want to keep only the
 		    // first one (ie: dockes and dockes@wanadoo.fr)
 		    if (vit->second.empty()) {
-			LOGDEB2(("makeAbstract: populating: [%s] at %d\n", 
-				 (*term).c_str(), *pos));
+			LOGDEB2("makeAbstract: populating: ["  << ((*term)) << "] at "  << (*pos) << "\n" );
 			sparseDoc[*pos] = *term;
 		    }
 		}
@@ -557,11 +554,11 @@ int Query::Native::makeAbstract(Xapian::docid docid,
 	 it++, ipos++) {
 	if (it->empty()) {
 	    if (!epty)
-		LOGDEB(("makeAbstract:vec[%d]: [%s]\n", ipos, it->c_str()));
+		LOGDEB("makeAbstract:vec["  << (ipos) << "]: ["  << (it) << "]\n" );
 	    epty=true;
 	} else {
 	    epty = false;
-	    LOGDEB(("makeAbstract:vec[%d]: [%s]\n", ipos, it->c_str()));
+	    LOGDEB("makeAbstract:vec["  << (ipos) << "]: ["  << (it) << "]\n" );
 	}
     }
 #endif
@@ -579,9 +576,9 @@ int Query::Native::makeAbstract(Xapian::docid docid,
     string term;
     for (map<unsigned int, string>::const_iterator it = sparseDoc.begin();
 	 it != sparseDoc.end(); it++) {
-	LOGDEB2(("Abtract:output %u -> [%s]\n", it->first, it->second.c_str()));
+	LOGDEB2("Abtract:output "  << (it->first) << " -> ["  << (it->second) << "]\n" );
 	if (!occupiedmarker.compare(it->second)) {
-	    LOGDEB(("Abstract: qtrm position not filled ??\n"));
+	    LOGDEB("Abstract: qtrm position not filled ??\n" );
 	    continue;
 	}
 	if (chunk.empty() && !vpbreaks.empty()) {
@@ -611,9 +608,10 @@ int Query::Native::makeAbstract(Xapian::docid docid,
     if (!chunk.empty())
 	vabs.push_back(Snippet(page, chunk).setTerm(term));
 
-    LOGDEB2(("makeAbtract: done in %d mS\n", chron.millis()));
+    LOGDEB2("makeAbtract: done in "  << (chron.millis()) << " mS\n" );
     return ret;
 }
 
 
 }
+

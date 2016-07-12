@@ -20,7 +20,7 @@
 #include "cstr.h"
 #include "beaglequeuecache.h"
 #include "circache.h"
-#include "debuglog.h"
+#include "log.h"
 #include "rclconfig.h"
 #include "pathut.h"
 #include "rcldoc.h"
@@ -34,12 +34,11 @@ BeagleQueueCache::BeagleQueueCache(RclConfig *cnf)
     int maxmbs = 40;
     cnf->getConfParam("webcachemaxmbs", &maxmbs);
     if ((m_cache = new CirCache(ccdir)) == 0) {
-	LOGERR(("BeagleQueueCache: cant create CirCache object\n"));
+	LOGERR("BeagleQueueCache: cant create CirCache object\n" );
 	return;
     }
     if (!m_cache->create(off_t(maxmbs)*1000*1024, CirCache::CC_CRUNIQUE)) {
-	LOGERR(("BeagleQueueCache: cache file creation failed: %s\n",
-		m_cache->getReason().c_str()));
+	LOGERR("BeagleQueueCache: cache file creation failed: "  << (m_cache->getReason()) << "\n" );
 	delete m_cache;
 	m_cache = 0;
 	return;
@@ -59,11 +58,11 @@ bool BeagleQueueCache::getFromCache(const string& udi, Rcl::Doc &dotdoc,
     string dict;
 
     if (m_cache == 0) {
-	LOGERR(("BeagleQueueCache::getFromCache: cache is null\n"));
+	LOGERR("BeagleQueueCache::getFromCache: cache is null\n" );
 	return false;
     }
     if (!m_cache->get(udi, dict, &data)) {
-	LOGDEB(("BeagleQueueCache::getFromCache: get failed\n"));
+	LOGDEB("BeagleQueueCache::getFromCache: get failed\n" );
 	return false;
     }
 
@@ -86,3 +85,4 @@ bool BeagleQueueCache::getFromCache(const string& udi, Rcl::Doc &dotdoc,
     dotdoc.meta[Rcl::Doc::keyudi] = udi;
     return true;
 }
+

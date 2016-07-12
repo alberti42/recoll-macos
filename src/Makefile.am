@@ -25,7 +25,7 @@ COMMONCPPFLAGS = -I. \
     -I$(top_srcdir)/xaposix \
     -DBUILDING_RECOLL
 
-AM_CPPFLAGS = -Wall -Wno-unused \
+AM_CPPFLAGS = -Wall -Wno-unused -std=c++11 \
     $(COMMONCPPFLAGS) \
     $(INCICONV) \
     $(XAPIANCXXFLAGS) \
@@ -198,8 +198,6 @@ utils/copyfile.cpp \
 utils/copyfile.h \
 utils/cpuconf.cpp \
 utils/cpuconf.h \
-utils/debuglog.cpp \
-utils/debuglog.h \
 utils/ecrontab.cpp \
 utils/ecrontab.h \
 utils/execmd.cpp \
@@ -212,6 +210,8 @@ utils/hldata.h \
 utils/hldata.cpp \
 utils/idfile.cpp \
 utils/idfile.h \
+utils/log.cpp \
+utils/log.h \
 utils/md5.cpp \
 utils/md5.h \
 utils/md5ut.cpp \

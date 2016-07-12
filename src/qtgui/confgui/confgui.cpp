@@ -40,7 +40,7 @@
 
 #include "confgui.h"
 #include "smallut.h"
-#include "debuglog.h"
+#include "log.h"
 #include "rcldb.h"
 #include "guiutils.h"
 
@@ -376,7 +376,7 @@ void ConfParamSLW::showInputDialog()
 void ConfParamSLW::listToConf()
 {
     list<string> ls;
-    LOGDEB2(("ConfParamSLW::listToConf. m_fsencoding %d\n", int(m_fsencoding)));
+    LOGDEB2("ConfParamSLW::listToConf. m_fsencoding "  << (int(m_fsencoding)) << "\n" );
     for (int i = 0; i < m_lb->count(); i++) {
         // General parameters are encoded as utf-8. File names as
         // local8bit There is no hope for 8bit file names anyway
@@ -423,7 +423,7 @@ void ConfParamSLW::deleteSelected()
     }
     for (vector<int>::reverse_iterator it = idxes.rbegin(); 
 	 it != idxes.rend(); it++) {
-	LOGDEB0(("deleteSelected: %d was selected\n", *it));
+	LOGDEB0("deleteSelected: "  << (*it) << " was selected\n" );
 	QListWidgetItem *item = m_lb->takeItem(*it);
 	emit entryDeleted(item->text());
 	delete item;
@@ -476,3 +476,4 @@ void ConfParamCSLW::showInputDialog()
 }
 
 } // Namespace confgui
+

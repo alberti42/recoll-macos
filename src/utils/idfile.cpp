@@ -25,7 +25,7 @@
 #include <sstream>
 
 #include "idfile.h"
-#include "debuglog.h"
+#include "log.h"
 
 using namespace std;
 
@@ -76,7 +76,7 @@ static string idFileInternal(istream& input, const char *fn)
 	input.getline(cline, LL-1);
 	if (input.fail()) {
 	    if (input.bad()) {
-		LOGERR(("idfile: error while reading [%s]\n", fn));
+		LOGERR("idfile: error while reading ["  << (fn) << "]\n" );
 		return string();
 	    }
 	    // Must be eof ?
@@ -88,7 +88,7 @@ static string idFileInternal(istream& input, const char *fn)
 	if (ll > 0)
 	    gotnonempty = true;
 
-	LOGDEB2(("idfile: lnum %d ll %u: [%s]\n", lnum, (unsigned int)ll, cline));
+	LOGDEB2("idfile: lnum "  << (lnum) << " ll "  << ((unsigned int)ll) << ": ["  << (cline) << "]\n" );
 
 	// Check for a few things that can't be found in a mail file,
 	// (optimization to get a quick negative)
@@ -98,7 +98,7 @@ static string idFileInternal(istream& input, const char *fn)
 	    // Accept a few empty lines at the beginning of the file,
 	    // otherwise this is the end of headers
 	    if (gotnonempty || lnum > 10) {
-		LOGDEB2(("Got empty line\n"));
+		LOGDEB2("Got empty line\n" );
 		break;
 	    } else {
 		// Don't increment the line counter for initial empty lines.
@@ -109,7 +109,7 @@ static string idFileInternal(istream& input, const char *fn)
 
 	// emacs vm can insert VERY long header lines.
 	if (ll > LL - 20) {
-	    LOGDEB2(("idFile: Line too long\n"));
+	    LOGDEB2("idFile: Line too long\n" );
 	    return string();
 	}
 
@@ -117,7 +117,7 @@ static string idFileInternal(istream& input, const char *fn)
 	if (lnum == 1 && !strncmp("From ", cline, 5)) {
 	    if (treat_mbox_as_rfc822 == -1) {
 		line1HasFrom = true;
-		LOGDEB2(("idfile: line 1 has From_\n"));
+		LOGDEB2("idfile: line 1 has From_\n" );
 	    }
 	    continue;
 	} 
@@ -130,7 +130,7 @@ static string idFileInternal(istream& input, const char *fn)
 	if (!isspace((unsigned char)cline[0])) {
 	    char *cp = strchr(cline, ':');
 	    if (cp == 0 || (cp - cline) > 70) {
-		LOGDEB2(("idfile: can't be mail header line: [%s]\n", cline));
+		LOGDEB2("idfile: can't be mail header line: ["  << (cline) << "]\n" );
 		break;
 	    }
 	}
@@ -160,7 +160,7 @@ string idFile(const char *fn)
     ifstream input;
     input.open(fn, ios::in);
     if (!input.is_open()) {
-	LOGERR(("idFile: could not open [%s]\n", fn));
+	LOGERR("idFile: could not open ["  << (fn) << "]\n" );
 	return string();
     }
     return idFileInternal(input, fn);
@@ -184,7 +184,8 @@ string idFileMem(const string& data)
 
 using namespace std;
 
-#include "debuglog.h"
+#include "log.h"
+
 #include "idfile.h"
 
 int main(int argc, char **argv)
@@ -203,3 +204,4 @@ int main(int argc, char **argv)
 }
 
 #endif
+

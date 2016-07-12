@@ -37,9 +37,10 @@
 using std::list;
 using std::vector;
 
-#include "debuglog.h"
+#include "log.h"
 #include "rclmon.h"
-#include "debuglog.h"
+#include "log.h"
+
 #include "execmd.h"
 #include "recollindex.h"
 #include "pathut.h"
@@ -167,7 +168,7 @@ void RclEQData::readDelayPats(int dfltsecs)
 
     vector<string> dplist;
     if (!stringToStrings(patstring, dplist)) {
-	LOGERR(("rclEQData: bad pattern list: [%s]\n", patstring.c_str()));
+	LOGERR("rclEQData: bad pattern list: ["  << (patstring) << "]\n" );
 	return;
     }
 
@@ -182,8 +183,7 @@ void RclEQData::readDelayPats(int dfltsecs)
 	    dp.seconds = dfltsecs;
 	}
 	m_delaypats.push_back(dp);
-	LOGDEB2(("rclmon::readDelayPats: add [%s] %d\n", 
-		 dp.pattern.c_str(), dp.seconds));
+	LOGDEB2("rclmon::readDelayPats: add ["  << (dp.pattern) << "] "  << (dp.seconds) << "\n" );
     }
 }
 
@@ -246,14 +246,12 @@ bool RclMonEventQueue::wait(int seconds, bool *top)
 		MONDEB(("RclMonEventQueue:: timeout\n"));
 		return true;
 	    }
-	    LOGERR(("RclMonEventQueue::wait:pthread_cond_timedwait failed"
-		    "with err %d\n", err));
+	    LOGERR("RclMonEventQueue::wait:pthread_cond_timedwait failedwith err "  << (err) << "\n" );
 	    return false;
 	}
     } else {
 	if ((err = pthread_cond_wait(&m_data->m_cond, &m_data->m_mutex))) {
-	    LOGERR(("RclMonEventQueue::wait: pthread_cond_wait failed"
-		    "with err %d\n", err));
+	    LOGERR("RclMonEventQueue::wait: pthread_cond_wait failedwith err "  << (err) << "\n" );
 	    return false;
 	}
     }
@@ -265,7 +263,7 @@ bool RclMonEventQueue::lock()
 {
     MONDEB(("RclMonEventQueue:: lock\n"));
     if (pthread_mutex_lock(&m_data->m_mutex)) {
-	LOGERR(("RclMonEventQueue::lock: pthread_mutex_lock failed\n"));
+	LOGERR("RclMonEventQueue::lock: pthread_mutex_lock failed\n" );
 	return false;
     }
     MONDEB(("RclMonEventQueue:: lock return\n"));
@@ -276,7 +274,7 @@ bool RclMonEventQueue::unlock()
 {
     MONDEB(("RclMonEventQueue:: unlock\n"));
     if (pthread_mutex_unlock(&m_data->m_mutex)) {
-	LOGERR(("RclMonEventQueue::lock: pthread_mutex_unlock failed\n"));
+	LOGERR("RclMonEventQueue::lock: pthread_mutex_unlock failed\n" );
 	return false;
     }
     return true;
@@ -298,15 +296,15 @@ RclConfig *RclMonEventQueue::getConfig()
 bool RclMonEventQueue::ok()
 {
     if (m_data == 0) {
-	LOGINFO(("RclMonEventQueue: not ok: bad state\n"));
+	LOGINFO("RclMonEventQueue: not ok: bad state\n" );
 	return false;
     }
     if (stopindexing) {
-	LOGINFO(("RclMonEventQueue: not ok: stop request\n"));
+	LOGINFO("RclMonEventQueue: not ok: stop request\n" );
 	return false;
     }
     if (!m_data->m_ok) {
-	LOGINFO(("RclMonEventQueue: not ok: queue terminated\n"));
+	LOGINFO("RclMonEventQueue: not ok: queue terminated\n" );
 	return false;
     }
     return true;
@@ -489,15 +487,15 @@ bool startMonitor(RclConfig *conf, int opts)
     rclEQ.setopts(opts);
 
     if (pthread_create(&rcv_thrid, 0, &rclMonRcvRun, &rclEQ) != 0) {
-	LOGERR(("startMonitor: cant create event-receiving thread\n"));
+	LOGERR("startMonitor: cant create event-receiving thread\n" );
 	return false;
     }
 
     if (!rclEQ.lock()) {
-	LOGERR(("startMonitor: cant lock queue ???\n"));
+	LOGERR("startMonitor: cant lock queue ???\n" );
 	return false;
     }
-    LOGDEB(("start_monitoring: entering main loop\n"));
+    LOGDEB("start_monitoring: entering main loop\n" );
 
     bool timedout;
     time_t lastauxtime = time(0);
@@ -515,7 +513,7 @@ bool startMonitor(RclConfig *conf, int opts)
 #ifndef _WIN32
         bool x11dead = !(opts & RCLMON_NOX11) && !x11IsAlive();
         if (x11dead)
-            LOGDEB(("RclMonprc: x11 is dead\n"));
+            LOGDEB("RclMonprc: x11 is dead\n" );
 #else
         bool x11dead = false;
 #endif
@@ -533,11 +531,11 @@ bool startMonitor(RclConfig *conf, int opts)
 	    switch (ev.evtype()) {
 	    case RclMonEvent::RCLEVT_MODIFY:
 	    case RclMonEvent::RCLEVT_DIRCREATE:
-		LOGDEB0(("Monitor: Modify/Check on %s\n", ev.m_path.c_str()));
+		LOGDEB0("Monitor: Modify/Check on "  << (ev.m_path) << "\n" );
 		modified.push_back(ev.m_path);
 		break;
 	    case RclMonEvent::RCLEVT_DELETE:
-		LOGDEB0(("Monitor: Delete on %s\n", ev.m_path.c_str()));
+		LOGDEB0("Monitor: Delete on "  << (ev.m_path) << "\n" );
 		// If this is for a directory (which the caller should
 		// tell us because he knows), we should purge the db
 		// of all the subtree, because on a directory rename,
@@ -556,7 +554,7 @@ bool startMonitor(RclConfig *conf, int opts)
 		}
 		break;
 	    default:
-		LOGDEB(("Monitor: got Other on [%s]\n", ev.m_path.c_str()));
+		LOGDEB("Monitor: got Other on ["  << (ev.m_path) << "]\n" );
 	    }
 	}
 	// Unlock queue before processing lists
@@ -603,7 +601,7 @@ bool startMonitor(RclConfig *conf, int opts)
 
 	// Check for a config change
 	if (!(opts & RCLMON_NOCONFCHECK) && o_reexec && conf->sourceChanged()) {
-	    LOGDEB(("Rclmonprc: config changed, reexecuting myself\n"));
+	    LOGDEB("Rclmonprc: config changed, reexecuting myself\n" );
 	    // We never want to have a -n option after a config
 	    // change. -n was added by the reexec after the initial
 	    // pass even if it was not given on the command line
@@ -613,7 +611,7 @@ bool startMonitor(RclConfig *conf, int opts)
 	// Lock queue before waiting again
 	rclEQ.lock();
     }
-    LOGDEB(("Rclmonprc: calling queue setTerminate\n"));
+    LOGDEB("Rclmonprc: calling queue setTerminate\n" );
     rclEQ.setTerminate();
 
     // We used to wait for the receiver thread here before returning,
@@ -622,8 +620,9 @@ bool startMonitor(RclConfig *conf, int opts)
     // we ever need several monitor invocations in the same process
     // (can't foresee any reason why we'd want to do this).
     //   pthread_join(rcv_thrid, 0);
-    LOGDEB(("Monitor: returning\n"));
+    LOGDEB("Monitor: returning\n" );
     return true;
 }
 
 #endif // RCL_MONITOR
+

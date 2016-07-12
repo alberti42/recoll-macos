@@ -27,7 +27,7 @@ using std::string;
 #include <iconv.h>
 
 #include "transcode.h"
-#include "debuglog.h"
+#include "log.h"
 #include "ptmutex.h"
 #ifdef RCL_ICONV_INBUF_CONST
 #define ICV_P2_TYPE const char**
@@ -48,7 +48,7 @@ using std::string;
 bool transcode(const string &in, string &out, const string &icode,
 	       const string &ocode, int *ecnt)
 {
-    LOGDEB2(("Transcode: %s -> %s\n", icode.c_str(), ocode.c_str()));
+    LOGDEB2("Transcode: "  << (icode) << " -> "  << (ocode) << "\n" );
 #ifdef ICONV_CACHE_OPEN
     static iconv_t ic = (iconv_t)-1;
     static string cachedicode;
@@ -106,9 +106,8 @@ bool transcode(const string &in, string &out, const string &icode,
 		" : " + strerror(errno);
 #endif
 	    if (errno == EILSEQ) {
-		LOGDEB1(("transcode:iconv: bad input seq.: shift, retry\n"));
-		LOGDEB1((" Input consumed %d output produced %d\n",
-			 ip - in.c_str(), out.length() + OBSIZ - osiz));
+		LOGDEB1("transcode:iconv: bad input seq.: shift, retry\n" );
+		LOGDEB1(" Input consumed "  << (ip - in) << " output produced "  << (out.length() + OBSIZ - osiz) << "\n" );
 		out.append(obuf, OBSIZ - osiz);
 		out += "?";
 		mecnt++;
@@ -151,8 +150,7 @@ error:
     }
 
     if (mecnt)
-	LOGDEB(("transcode: [%s]->[%s] %d errors\n", 
-		 icode.c_str(), ocode.c_str(), mecnt));
+	LOGDEB("transcode: ["  << (icode) << "]->["  << (ocode) << "] "  << (mecnt) << " errors\n" );
     if (ecnt)
 	*ecnt = mecnt;
     return ret;
@@ -230,3 +228,4 @@ int main(int argc, char **argv)
     exit(0);
 }
 #endif
+

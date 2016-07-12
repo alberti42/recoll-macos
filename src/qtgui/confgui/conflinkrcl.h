@@ -25,7 +25,7 @@
  */
 #include "confgui.h"
 #include "conftree.h"
-#include "debuglog.h"
+#include "log.h"
 
 namespace confgui {
 
@@ -42,10 +42,10 @@ public:
     {
 	if (!m_conf)
 	    return false;
-	LOGDEB1(("Setting [%s] value to [%s]\n",  m_nm.c_str(), val.c_str()));
+	LOGDEB1("Setting ["  << (m_nm) << "] value to ["  << (val) << "]\n" );
 	bool ret = m_conf->set(m_nm, val, m_sk?*m_sk:"");
 	if (!ret)
-	    LOGERR(("Value set failed\n"));
+	    LOGERR("Value set failed\n" );
 	return ret;
     }
     virtual bool get(string& val) 
@@ -53,9 +53,7 @@ public:
 	if (!m_conf)
 	    return false;
 	bool ret = m_conf->get(m_nm, val, m_sk?*m_sk:"");
-	LOGDEB1(("ConfLinkRcl::get: [%s] sk [%s] -> [%s]\n", 
-		 m_nm.c_str(), m_sk?m_sk->c_str():"",
-		 ret ? val.c_str() : "no value"));
+	LOGDEB1("ConfLinkRcl::get: ["  << (m_nm) << "] sk ["  << (m_sk?m_sk:"") << "] -> ["  << (ret ? val : "no value") << "]\n" );
 	return ret;
     }
 private:
@@ -67,3 +65,4 @@ private:
 } // Namespace confgui
 
 #endif /* _CONFLINKRCL_H_INCLUDED_ */
+

@@ -22,7 +22,7 @@
 
 #include "recoll.h"
 #include "rclhelp.h"
-#include "debuglog.h"
+#include "log.h"
 
 map<string, string> HelpClient::helpmap;
 
@@ -42,7 +42,7 @@ bool HelpClient::eventFilter(QObject *obj, QEvent *event)
     static time_t last_start;
     if (event->type() == QEvent::KeyPress || 
 	event->type() == QEvent::ShortcutOverride) {
-	//	LOGDEB(("HelpClient::eventFilter: %d\n", (int)event->type()));
+	//	LOGDEB("HelpClient::eventFilter: "  << ((int)event->type()) << "\n" );
 	QKeyEvent *ke = static_cast<QKeyEvent *>(event);
 	if (ke->key() == Qt::Key_F1 || ke->key() == Qt::Key_Help) {
 	    if (obj->isWidgetType()) {
@@ -57,11 +57,10 @@ bool HelpClient::eventFilter(QObject *obj, QEvent *event)
 		if (time(0) - last_start > 5) {
 		    last_start = time(0);
 		    if (it != helpmap.end()) {
-			LOGDEB(("HelpClient::eventFilter: %s->%s\n",
-				it->first.c_str(), it->second.c_str()));
+			LOGDEB("HelpClient::eventFilter: "  << (it->first) << "->"  << (it->second) << "\n" );
 			startManual(it->second);
 		    } else {
-			LOGDEB(("HelpClient::eventFilter: no help section\n"));
+			LOGDEB("HelpClient::eventFilter: no help section\n" );
 			startManual("");
 		    }
 		}
@@ -71,3 +70,4 @@ bool HelpClient::eventFilter(QObject *obj, QEvent *event)
     }
     return false;
 }
+

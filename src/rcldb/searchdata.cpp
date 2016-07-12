@@ -34,7 +34,7 @@ using namespace std;
 #include "rcldb.h"
 #include "rcldb_p.h"
 #include "searchdata.h"
-#include "debuglog.h"
+#include "log.h"
 #include "smallut.h"
 #include "textsplit.h"
 #include "unacpp.h"
@@ -68,7 +68,7 @@ void SearchData::commoninit()
 
 SearchData::~SearchData() 
 {
-    LOGDEB0(("SearchData::~SearchData\n"));
+    LOGDEB0("SearchData::~SearchData\n" );
     for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++)
         delete *it;
 }
@@ -79,13 +79,13 @@ SearchData::~SearchData()
 // We remove very common terms from the query to avoid performance issues.
 bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
 {
-    LOGDEB0(("SearchData::maybeAddAutoPhrase()\n"));
+    LOGDEB0("SearchData::maybeAddAutoPhrase()\n" );
     // cerr << "BEFORE SIMPLIFY\n"; dump(cerr);
     simplify();
     // cerr << "AFTER SIMPLIFY\n"; dump(cerr);
 
     if (!m_query.size()) {
-        LOGDEB2(("SearchData::maybeAddAutoPhrase: empty query\n"));
+        LOGDEB2("SearchData::maybeAddAutoPhrase: empty query\n" );
         return false;
     }
 
@@ -96,27 +96,27 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
     for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++) {
         SClType tp = (*it)->m_tp;
         if (tp != SCLT_AND) {
-            LOGDEB2(("SearchData::maybeAddAutoPhrase: wrong tp %d\n", tp));
+            LOGDEB2("SearchData::maybeAddAutoPhrase: wrong tp "  << (tp) << "\n" );
             return false;
         }
         SearchDataClauseSimple *clp = 
             dynamic_cast<SearchDataClauseSimple*>(*it);
         if (clp == 0) {
-            LOGDEB2(("SearchData::maybeAddAutoPhrase: dyncast failed\n"));
+            LOGDEB2("SearchData::maybeAddAutoPhrase: dyncast failed\n" );
             return false;
         }
         if (it == m_query.begin()) {
             field = clp->getfield();
         } else {
             if (clp->getfield().compare(field)) {
-                LOGDEB2(("SearchData::maybeAddAutoPhrase: diff. fields\n"));
+                LOGDEB2("SearchData::maybeAddAutoPhrase: diff. fields\n" );
                 return false;
             }
         }
 
         // If there are wildcards or quotes in there, bail out
         if (clp->gettext().find_first_of("\"*[?") != string::npos) { 
-            LOGDEB2(("SearchData::maybeAddAutoPhrase: wildcards\n"));
+            LOGDEB2("SearchData::maybeAddAutoPhrase: wildcards\n" );
             return false;
         }
 
@@ -145,8 +145,8 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
                 swords.append(1, ' ');
             swords += *it;
         } else {
-            LOGDEB0(("SearchData::Autophrase: [%s] too frequent (%.2f %%)\n", 
-                    it->c_str(), 100 * freq));
+            LOGDEB0("SearchData::Autophrase: ["  << *it << "] too frequent ("
+                    << (100 * freq) << " %" << ")\n" );
             slack++;
         }
     }
@@ -154,7 +154,7 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
     // We can't make a phrase with a single word :)
     int nwords = TextSplit::countWords(swords);
     if (nwords <= 1) {
-        LOGDEB2(("SearchData::maybeAddAutoPhrase: ended with 1 word\n"));
+        LOGDEB2("SearchData::maybeAddAutoPhrase: ended with 1 word\n" );
         return false;
     }
 
@@ -171,7 +171,7 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
 bool SearchData::addClause(SearchDataClause* cl)
 {
     if (m_tp == SCLT_OR && cl->getexclude()) {
-        LOGERR(("SearchData::addClause: cant add EXCL to OR list\n"));
+        LOGERR("SearchData::addClause: cant add EXCL to OR list\n" );
         m_reason = "No Negative (AND_NOT) clauses allowed in OR queries";
         return false;
     }
@@ -373,3 +373,4 @@ void SearchDataClauseSub::dump(ostream& o) const
 }
 
 } // Namespace Rcl
+

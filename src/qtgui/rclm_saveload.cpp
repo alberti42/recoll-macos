@@ -25,7 +25,7 @@
 #include <QFileDialog>
 
 #include "rclmain_w.h"
-#include "debuglog.h"
+#include "log.h"
 #include "readfile.h"
 #include "xmltosd.h"
 #include "searchdata.h"
@@ -88,7 +88,7 @@ void RclMain::saveLastQuery()
     
     string tofile((const char *)s.toLocal8Bit());
 
-    LOGDEB(("RclMain::saveLastQuery: XML: [%s]\n", xml.c_str()));
+    LOGDEB("RclMain::saveLastQuery: XML: ["  << (xml) << "]\n" );
     string reason;
     if (!stringtofile(xml, tofile.c_str(), reason)) {
         QMessageBox::warning(this, tr("Write failed"), 
@@ -132,3 +132,4 @@ void RclMain::loadSavedQuery()
     QMessageBox::warning(this, tr("Load error"), 
                          tr("Could not load saved query"));
 }
+

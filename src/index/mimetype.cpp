@@ -26,7 +26,7 @@
 using namespace std;
 
 #include "mimetype.h"
-#include "debuglog.h"
+#include "log.h"
 #include "execmd.h"
 #include "rclconfig.h"
 #include "smallut.h"
@@ -64,7 +64,7 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
         vector<string> cmd;
         string scommand;
         if (cfg->getConfParam("systemfilecommand", scommand)) {
-            LOGDEB2(("mimetype: syscmd from config: %s\n", scommand.c_str()));
+            LOGDEB2("mimetype: syscmd from config: "  << (scommand) << "\n" );
             stringToStrings(scommand, cmd);
             string exe;
             if (cmd.empty()) {
@@ -76,19 +76,17 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
             }
             cmd.push_back(fn);
         } else {
-            LOGDEB(("mimetype:systemfilecommand not found, using %s\n",
-                    stringsToString(tradfilecmd).c_str()));
+            LOGDEB("mimetype:systemfilecommand not found, using "  << (stringsToString(tradfilecmd)) << "\n" );
             cmd = tradfilecmd;
         }
 
 	string result;
 	if (!ExecCmd::backtick(cmd, result)) {
-	    LOGERR(("mimetypefromdata: exec %s failed\n",
-                    stringsToString(cmd).c_str()));
+	    LOGERR("mimetypefromdata: exec "  << (stringsToString(cmd)) << " failed\n" );
 	    return string();
 	}
 	trimstring(result, " \t\n\r");
-	LOGDEB2(("mimetype: systemfilecommand output [%s]\n", result.c_str()));
+	LOGDEB2("mimetype: systemfilecommand output ["  << (result) << "]\n" );
 	
 	// The normal output from "file -i" looks like the following:
 	//   thefilename.xxx: text/plain; charset=us-ascii
@@ -109,8 +107,7 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
 	if (result.find(fn) != 0) {
 	    // Garbage "file" output. Maybe the result of a charset
 	    // conversion attempt?
-	    LOGERR(("mimetype: can't interpret 'file' output: [%s]\n",
-		    result.c_str()));
+	    LOGERR("mimetype: can't interpret 'file' output: ["  << (result) << "]\n" );
 	    return string();
 	}
 	result = result.substr(fn.size());
@@ -164,9 +161,9 @@ string mimetype(const string &fn, const struct stat *stp,
     // Extended attribute has priority on everything, as per:
     // http://freedesktop.org/wiki/CommonExtendedAttributes
     if (pxattr::get(fn, "mime_type", &mtype)) {
-	LOGDEB0(("Mimetype: 'mime_type' xattr : [%s]\n", mtype.c_str()));
+	LOGDEB0("Mimetype: 'mime_type' xattr : ["  << (mtype) << "]\n" );
 	if (mtype.empty()) {
-	    LOGDEB0(("Mimetype: getxattr() returned empty mime type !\n"));
+	    LOGDEB0("Mimetype: getxattr() returned empty mime type !\n" );
 	} else {
 	    return mtype;
 	}
@@ -174,12 +171,12 @@ string mimetype(const string &fn, const struct stat *stp,
 #endif
 
     if (cfg == 0)  {
-	LOGERR(("Mimetype: null config ??\n"));
+	LOGERR("Mimetype: null config ??\n" );
 	return mtype;
     }
 
     if (cfg->inStopSuffixes(fn)) {
-	LOGDEB(("mimetype: fn [%s] in stopsuffixes\n", fn.c_str()));
+	LOGDEB("mimetype: fn ["  << (fn) << "] in stopsuffixes\n" );
 	return mtype;
     }
 
@@ -211,7 +208,8 @@ string mimetype(const string &fn, const struct stat *stp,
 #include <cstdlib>
 #include <iostream>
 
-#include "debuglog.h"
+#include "log.h"
+
 #include "rclconfig.h"
 #include "rclinit.h"
 #include "mimetype.h"
@@ -245,3 +243,4 @@ int main(int argc, const char **argv)
 
 
 #endif // TEST
+

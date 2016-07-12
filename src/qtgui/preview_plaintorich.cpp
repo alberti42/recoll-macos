@@ -26,7 +26,7 @@
 #include "preview_plaintorich.h"
 
 #include "plaintorich.h"
-#include "debuglog.h"
+#include "log.h"
 #include "guiutils.h"
 #include "cancelcheck.h"
 
@@ -71,9 +71,9 @@ string  PlainToRichQtPreview::PlainToRichQtPreview::header()
 
 string PlainToRichQtPreview::startMatch(unsigned int grpidx)
 {
-    LOGDEB2(("startMatch, grpidx %u\n", grpidx));
+    LOGDEB2("startMatch, grpidx "  << (grpidx) << "\n" );
     grpidx = m_hdata->grpsugidx[grpidx];
-    LOGDEB2(("startMatch, ugrpidx %u\n", grpidx));
+    LOGDEB2("startMatch, ugrpidx "  << (grpidx) << "\n" );
     m_groupanchors[grpidx].push_back(++m_lastanchor);
     m_groupcuranchors[grpidx] = 0; 
     return string("<span style='color: ").
@@ -105,7 +105,7 @@ string  PlainToRichQtPreview::startChunk()
 
 int  PlainToRichQtPreview::nextAnchorNum(int grpidx)
 {
-    LOGDEB2(("nextAnchorNum: group %d\n", grpidx));
+    LOGDEB2("nextAnchorNum: group "  << (grpidx) << "\n" );
     map<unsigned int, unsigned int>::iterator curit = 
         m_groupcuranchors.find(grpidx);
     map<unsigned int, vector<int> >::iterator vecit = 
@@ -122,7 +122,7 @@ int  PlainToRichQtPreview::nextAnchorNum(int grpidx)
         else 
             m_groupcuranchors[grpidx]++;
         m_curanchor = vecit->second[m_groupcuranchors[grpidx]];
-        LOGDEB2(("nextAnchorNum: curanchor now %d\n", m_curanchor));
+        LOGDEB2("nextAnchorNum: curanchor now "  << (m_curanchor) << "\n" );
     }
     return m_curanchor;
 }
@@ -161,7 +161,6 @@ ToRichThread::ToRichThread(const string &i, const HighlightData& hd,
                            QObject *parent)
     : QThread(parent), m_input(i), m_hdata(hd), m_ptr(ptr), m_output(qrichlist)
 {
-    m_loglevel = DebugLog::getdbl()->getlevel();
 }
 
 // Insert into editor by chunks so that the top becomes visible
@@ -171,7 +170,6 @@ ToRichThread::ToRichThread(const string &i, const HighlightData& hd,
 
 void ToRichThread::run()
 {
-    DebugLog::getdbl()->setloglevel(m_loglevel);
     list<string> out;
     try {
         m_ptr->plaintorich(m_input, out, m_hdata, CHUNKL);
@@ -185,3 +183,4 @@ void ToRichThread::run()
         m_output.push_back(QString::fromUtf8(it->c_str(), it->length()));
     }
 }
+

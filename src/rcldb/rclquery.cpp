@@ -27,7 +27,7 @@
 
 #include "cstr.h"
 #include "rclconfig.h"
-#include "debuglog.h"
+#include "log.h"
 #include "rcldb.h"
 #include "rcldb_p.h"
 #include "rclquery.h"
@@ -132,7 +132,7 @@ public:
 	    sortterm = sortterm.substr(i1, sortterm.size()-i1);
 	}
 
-	LOGDEB2(("QSorter: [%s] -> [%s]\n", term.c_str(), sortterm.c_str()));
+	LOGDEB2("QSorter: ["  << (term) << "] -> ["  << (sortterm) << "]\n" );
 	return sortterm;
     }
 
@@ -166,8 +166,7 @@ void Query::setSortBy(const string& fld, bool ascending) {
 	m_sortField = m_db->getConf()->fieldQCanon(fld);
 	m_sortAscending = ascending;
     }
-    LOGDEB0(("RclQuery::setSortBy: [%s] %s\n", m_sortField.c_str(),
-	     m_sortAscending ? "ascending" : "descending"));
+    LOGDEB0("RclQuery::setSortBy: ["  << (m_sortField) << "] "  << (m_sortAscending ? "ascending" : "descending") << "\n" );
 }
 
 //#define ISNULL(X) (X).isNull()
@@ -176,10 +175,10 @@ void Query::setSortBy(const string& fld, bool ascending) {
 // Prepare query out of user search data
 bool Query::setQuery(STD_SHARED_PTR<SearchData> sdata)
 {
-    LOGDEB(("Query::setQuery:\n"));
+    LOGDEB("Query::setQuery:\n" );
 
     if (!m_db || ISNULL(m_nq)) {
-	LOGERR(("Query::setQuery: not initialised!\n"));
+	LOGERR("Query::setQuery: not initialised!\n" );
 	return false;
     }
     m_resCnt = -1;
@@ -233,7 +232,7 @@ bool Query::setQuery(STD_SHARED_PTR<SearchData> sdata)
     }
 
     if (!m_reason.empty()) {
-	LOGDEB(("Query::SetQuery: xapian error %s\n", m_reason.c_str()));
+	LOGDEB("Query::SetQuery: xapian error "  << (m_reason) << "\n" );
 	return false;
     }
 	
@@ -242,7 +241,7 @@ bool Query::setQuery(STD_SHARED_PTR<SearchData> sdata)
 
     sdata->setDescription(d);
     m_sd = sdata;
-    LOGDEB(("Query::SetQuery: Q: %s\n", sdata->getDescription().c_str()));
+    LOGDEB("Query::SetQuery: Q: "  << (sdata->getDescription()) << "\n" );
     return true;
 }
 
@@ -261,7 +260,7 @@ bool Query::getQueryTerms(vector<string>& terms)
 	}
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
-	LOGERR(("getQueryTerms: xapian error: %s\n", ermsg.c_str()));
+	LOGERR("getQueryTerms: xapian error: "  << (ermsg) << "\n" );
 	return false;
     }
     return true;
@@ -271,17 +270,16 @@ int Query::makeDocAbstract(const Doc &doc,
 			   vector<Snippet>& abstract, 
 			   int maxoccs, int ctxwords)
 {
-    LOGDEB(("makeDocAbstract: maxoccs %d ctxwords %d\n", maxoccs, ctxwords));
+    LOGDEB("makeDocAbstract: maxoccs "  << (maxoccs) << " ctxwords "  << (ctxwords) << "\n" );
     if (!m_db || !m_db->m_ndb || !m_db->m_ndb->m_isopen || !m_nq) {
-	LOGERR(("Query::makeDocAbstract: no db or no nq\n"));
+	LOGERR("Query::makeDocAbstract: no db or no nq\n" );
 	return ABSRES_ERROR;
     }
     int ret = ABSRES_ERROR;
     XAPTRY(ret = m_nq->makeAbstract(doc.xdocid, abstract, maxoccs, ctxwords),
            m_db->m_ndb->xrdb, m_reason);
     if (!m_reason.empty()) {
-	LOGDEB(("makeDocAbstract: makeAbstract error, reason: %s\n", 
-		m_reason.c_str()));
+	LOGDEB("makeDocAbstract: makeAbstract error, reason: "  << (m_reason) << "\n" );
 	return ABSRES_ERROR;
     }
     return ret;
@@ -321,9 +319,9 @@ bool Query::makeDocAbstract(const Doc &doc, string& abstract)
 
 int Query::getFirstMatchPage(const Doc &doc, string& term)
 {
-    LOGDEB1(("Db::getFirstMatchPage\n"));;
+    LOGDEB1("Db::getFirstMatchPage\n" );;
     if (!m_nq) {
-	LOGERR(("Query::getFirstMatchPage: no nq\n"));
+	LOGERR("Query::getFirstMatchPage: no nq\n" );
 	return false;
     }
     int pagenum = -1;
@@ -341,7 +339,7 @@ static const int qquantum = 50;
 int Query::getResCnt()
 {
     if (ISNULL(m_nq) || !m_nq->xenquire) {
-	LOGERR(("Query::getResCnt: no query opened\n"));
+	LOGERR("Query::getResCnt: no query opened\n" );
 	return -1;
     }
     if (m_resCnt >= 0)
@@ -356,9 +354,9 @@ int Query::getResCnt()
                m_resCnt = m_nq->xmset.get_matches_lower_bound(),
                m_db->m_ndb->xrdb, m_reason);
 
-        LOGDEB(("Query::getResCnt: %d %d mS\n", m_resCnt, chron.millis()));
+        LOGDEB("Query::getResCnt: "  << (m_resCnt) << " "  << (chron.millis()) << " mS\n" );
 	if (!m_reason.empty())
-	    LOGERR(("xenquire->get_mset: exception: %s\n", m_reason.c_str()));
+	    LOGERR("xenquire->get_mset: exception: "  << (m_reason) << "\n" );
     } else {
         m_resCnt = m_nq->xmset.get_matches_lower_bound();
     }
@@ -375,9 +373,9 @@ int Query::getResCnt()
 // on subsequent calls is probably only due to disk caching.
 bool Query::getDoc(int xapi, Doc &doc)
 {
-    LOGDEB1(("Query::getDoc: xapian enquire index %d\n", xapi));
+    LOGDEB1("Query::getDoc: xapian enquire index "  << (xapi) << "\n" );
     if (ISNULL(m_nq) || !m_nq->xenquire) {
-	LOGERR(("Query::getDoc: no query opened\n"));
+	LOGERR("Query::getDoc: no query opened\n" );
 	return false;
     }
 
@@ -385,27 +383,23 @@ bool Query::getDoc(int xapi, Doc &doc)
     int last = first + m_nq->xmset.size() -1;
 
     if (!(xapi >= first && xapi <= last)) {
-	LOGDEB(("Fetching for first %d, count %d\n", xapi, qquantum));
+	LOGDEB("Fetching for first "  << (xapi) << ", count "  << (qquantum) << "\n" );
 
 	XAPTRY(m_nq->xmset = m_nq->xenquire->get_mset(xapi, qquantum,  
 						      (const Xapian::RSet *)0),
                m_db->m_ndb->xrdb, m_reason);
 
         if (!m_reason.empty()) {
-            LOGERR(("enquire->get_mset: exception: %s\n", m_reason.c_str()));
+            LOGERR("enquire->get_mset: exception: "  << (m_reason) << "\n" );
             return false;
 	}
 	if (m_nq->xmset.empty()) {
-            LOGDEB(("enquire->get_mset: got empty result\n"));
+            LOGDEB("enquire->get_mset: got empty result\n" );
 	    return false;
         }
 	first = m_nq->xmset.get_firstitem();
 	last = first + m_nq->xmset.size() -1;
     }
-
-    LOGDEB1(("Query::getDoc: Qry [%s] win [%d-%d] Estimated results: %d",
-            m_nq->query.get_description().c_str(), 
-            first, last, m_nq->xmset.get_matches_lower_bound()));
 
     Xapian::Document xdoc;
     Xapian::docid docid = 0;
@@ -424,8 +418,7 @@ bool Query::getDoc(int xapi, Doc &doc)
             m_reason.erase();
             Chrono chron;
 	    m_db->m_ndb->xdocToUdi(xdoc, udi);
-            LOGDEB2(("Query::getDoc: %d ms for udi [%s], collapse count %d\n", 
-		     chron.millis(), udi.c_str(), collapsecount));
+            LOGDEB2("Query::getDoc: "  << (chron.millis()) << " ms for udi ["  << (udi) << "], collapse count "  << (collapsecount) << "\n" );
             break;
         } catch (Xapian::DatabaseModifiedError &error) {
             // retry or end of loop
@@ -436,7 +429,7 @@ bool Query::getDoc(int xapi, Doc &doc)
         break;
     }
     if (!m_reason.empty()) {
-        LOGERR(("Query::getDoc: %s\n", m_reason.c_str()));
+        LOGERR("Query::getDoc: "  << (m_reason) << "\n" );
         return false;
     }
     doc.meta[Rcl::Doc::keyudi] = udi;
@@ -461,10 +454,10 @@ bool Query::getDoc(int xapi, Doc &doc)
 
 vector<string> Query::expand(const Doc &doc)
 {
-    LOGDEB(("Rcl::Query::expand()\n"));
+    LOGDEB("Rcl::Query::expand()\n" );
     vector<string> res;
     if (ISNULL(m_nq) || !m_nq->xenquire) {
-	LOGERR(("Query::expand: no query opened\n"));
+	LOGERR("Query::expand: no query opened\n" );
 	return res;
     }
 
@@ -474,11 +467,11 @@ vector<string> Query::expand(const Doc &doc)
 	    rset.add_document(Xapian::docid(doc.xdocid));
 	    // We don't exclude the original query terms.
 	    Xapian::ESet eset = m_nq->xenquire->get_eset(20, rset, false);
-	    LOGDEB(("ESet terms:\n"));
+	    LOGDEB("ESet terms:\n" );
 	    // We filter out the special terms
 	    for (Xapian::ESetIterator it = eset.begin(); 
 		 it != eset.end(); it++) {
-		LOGDEB((" [%s]\n", (*it).c_str()));
+		LOGDEB(" ["  << ((*it)) << "]\n" );
 		if ((*it).empty() || has_prefix(*it))
 		    continue;
 		res.push_back(*it);
@@ -496,7 +489,7 @@ vector<string> Query::expand(const Doc &doc)
     }
 
     if (!m_reason.empty()) {
-        LOGERR(("Query::expand: xapian error %s\n", m_reason.c_str()));
+        LOGERR("Query::expand: xapian error "  << (m_reason) << "\n" );
         res.clear();
     }
 
@@ -504,3 +497,4 @@ vector<string> Query::expand(const Doc &doc)
 }
 
 }
+

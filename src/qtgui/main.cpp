@@ -36,7 +36,7 @@
 #include "recoll.h"
 #include "smallut.h"
 #include "rclinit.h"
-#include "debuglog.h"
+#include "log.h"
 #include "rclmain_w.h"
 #include "ssearch_w.h"
 #include "guiutils.h"
@@ -98,7 +98,7 @@ void startManual(const string& helpindex)
 
 bool maybeOpenDb(string &reason, bool force, bool *maindberror)
 {
-    LOGDEB2(("maybeOpenDb: force %d\n", force));
+    LOGDEB2("maybeOpenDb: force "  << (force) << "\n" );
     if (!rcldb) {
 	reason = "Internal error: db not created";
 	return false;
@@ -109,7 +109,7 @@ bool maybeOpenDb(string &reason, bool force, bool *maindberror)
     rcldb->rmQueryDb("");
     for (list<string>::const_iterator it = prefs.activeExtraDbs.begin();
 	 it != prefs.activeExtraDbs.end(); it++) {
-	LOGDEB(("main: adding [%s]\n", it->c_str()));
+	LOGDEB("main: adding ["  << *it << "]\n" );
 	rcldb->addQueryDb(*it);
     }
     Rcl::Db::OpenError error;
@@ -136,8 +136,7 @@ bool getStemLangs(vector<string>& vlangs)
     string reason;
     if (maybeOpenDb(reason)) {
 	vlangs = rcldb->getStemLangs();
-	LOGDEB0(("getStemLangs: from index: %s\n", 
-		 stringsToString(vlangs).c_str()));
+	LOGDEB0("getStemLangs: from index: "  << (stringsToString(vlangs)) << "\n" );
 	return true;
     } else {
 	// Cant get the langs from the index. Maybe it just does not
@@ -153,7 +152,7 @@ bool getStemLangs(vector<string>& vlangs)
 
 static void recollCleanup()
 {
-    LOGDEB2(("recollCleanup: closing database\n"));
+    LOGDEB2("recollCleanup: closing database\n" );
     deleteZ(rcldb);
     deleteZ(theconfig);
 
@@ -163,13 +162,13 @@ static void recollCleanup()
     deleteZ(aspell);
 #endif
 
-    LOGDEB2(("recollCleanup: done\n"));
+    LOGDEB2("recollCleanup: done\n" );
 }
 
 void applyStyleSheet(const QString& ssfname)
 {
     const char *cfname = (const char *)ssfname.toLocal8Bit();
-    LOGDEB0(("Applying style sheet: [%s]\n", cfname));
+    LOGDEB0("Applying style sheet: ["  << (cfname) << "]\n" );
     if (cfname && *cfname) {
 	string stylesheet;
 	file_to_string(cfname, stylesheet);
@@ -327,7 +326,7 @@ int main(int argc, char **argv)
     aspell = new Aspell(theconfig);
     aspell->init(reason);
     if (!aspell || !aspell->ok()) {
-	LOGDEB(("Aspell speller creation failed %s\n", reason.c_str()));
+	LOGDEB("Aspell speller creation failed "  << (reason) << "\n" );
 	aspell = 0;
     }
 #endif
@@ -396,7 +395,7 @@ int main(int argc, char **argv)
 	mainWindow->
 	    sSearch->setSearchString(QString::fromLocal8Bit(question.c_str()));
     } else if (!urltoview.empty()) {
-	LOGDEB(("MAIN: got urltoview [%s]\n", urltoview.c_str()));
+	LOGDEB("MAIN: got urltoview ["  << (urltoview) << "]\n" );
 	mainWindow->setUrlToView(QString::fromLocal8Bit(urltoview.c_str()));
     }
     return app.exec();
@@ -404,7 +403,7 @@ int main(int argc, char **argv)
 
 QString myGetFileName(bool isdir, QString caption, bool filenosave)
 {
-    LOGDEB1(("myFileDialog: isdir %d\n", isdir));
+    LOGDEB1("myFileDialog: isdir "  << (isdir) << "\n" );
     QFileDialog dialog(0, caption);
 
     if (isdir) {
@@ -430,3 +429,4 @@ QString myGetFileName(bool isdir, QString caption, bool filenosave)
     }
     return QString();
 }
+

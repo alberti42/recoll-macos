@@ -49,7 +49,7 @@
 #include "pathut.h"
 #include "uiprefs_w.h"
 #include "viewaction_w.h"
-#include "debuglog.h"
+#include "log.h"
 #include "editdialog.h"
 #include "rclmain_w.h"
 #include "ptrans_w.h"
@@ -606,7 +606,7 @@ void UIPrefsDialog::addExtraDbPB_clicked()
 	}
     }
 
-    LOGDEB(("ExtraDbDial: got: [%s]\n", dbdir.c_str()));
+    LOGDEB("ExtraDbDial: got: ["  << (dbdir) << "]\n" );
     path_catslash(dbdir);
     bool stripped;
     if (!Rcl::Db::testDbDir(dbdir, &stripped)) {
@@ -642,3 +642,4 @@ void UIPrefsDialog::addExtraDbPB_clicked()
     item->setCheckState(Qt::Checked);
     idxLV->sortItems();
 }
+

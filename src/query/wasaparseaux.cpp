@@ -21,7 +21,7 @@
 #include "wasatorcl.h"
 #include "wasaparserdriver.h"
 #include "searchdata.h"
-#include "debuglog.h"
+#include "log.h"
 
 #define YYDEBUG 1
 
@@ -177,14 +177,12 @@ bool WasaParserDriver::addClause(SearchData *sd,
     if (!fld.compare("date")) {
         DateInterval di;
         if (!parsedateinterval(cl->gettext(), &di)) {
-            LOGERR(("Bad date interval format: %s\n",
-                    cl->gettext().c_str()));
+            LOGERR("Bad date interval format: "  << (cl->gettext()) << "\n" );
             m_reason = "Bad date interval format";
             delete cl;
             return false;
         }
-        LOGDEB(("addClause:: date span:  %d-%d-%d/%d-%d-%d\n",
-                di.y1,di.m1,di.d1, di.y2,di.m2,di.d2));
+        LOGDEB("addClause:: date span:  "  << (di.y1) << "-"  << (di.m1) << "-"  << (di.d1) << "/"  << (di.y2) << "-"  << (di.m2) << "-"  << (di.d2) << "\n" );
         m_haveDates = true;
         m_dates = di;
         delete cl;
@@ -268,3 +266,4 @@ bool WasaParserDriver::addClause(SearchData *sd,
     }
     return sd->addClause(cl);
 }
+

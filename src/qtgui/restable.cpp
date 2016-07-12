@@ -37,7 +37,7 @@
 #include "recoll.h"
 #include MEMORY_INCLUDE
 #include "docseq.h"
-#include "debuglog.h"
+#include "log.h"
 #include "restable.h"
 #include "guiutils.h"
 #include "reslistpager.h"
@@ -271,7 +271,7 @@ RecollModel::RecollModel(const QStringList fields, QObject *parent)
 
 int RecollModel::rowCount(const QModelIndex&) const
 {
-    LOGDEB2(("RecollModel::rowCount\n"));
+    LOGDEB2("RecollModel::rowCount\n" );
     if (!m_source)
 	return 0;
     return m_source->getResCnt();
@@ -279,20 +279,20 @@ int RecollModel::rowCount(const QModelIndex&) const
 
 int RecollModel::columnCount(const QModelIndex&) const
 {
-    LOGDEB2(("RecollModel::columnCount\n"));
+    LOGDEB2("RecollModel::columnCount\n" );
     return m_fields.size();
 }
 
 void RecollModel::readDocSource()
 {
-    LOGDEB(("RecollModel::readDocSource()\n"));
+    LOGDEB("RecollModel::readDocSource()\n" );
     beginResetModel();
     endResetModel();
 }
 
 void RecollModel::setDocSource(STD_SHARED_PTR<DocSequence> nsource)
 {
-    LOGDEB(("RecollModel::setDocSource\n"));
+    LOGDEB("RecollModel::setDocSource\n" );
     if (!nsource) {
 	m_source = STD_SHARED_PTR<DocSequence>();
     } else {
@@ -317,7 +317,7 @@ void RecollModel::deleteColumn(int col)
 
 void RecollModel::addColumn(int col, const string& field)
 {
-    LOGDEB(("AddColumn: col %d fld [%s]\n", col, field.c_str()));
+    LOGDEB("AddColumn: col "  << (col) << " fld ["  << (field) << "]\n" );
     if (col >= 0 && col < int(m_fields.size())) {
 	col++;
 	vector<string>::iterator it = m_fields.begin();
@@ -335,8 +335,7 @@ void RecollModel::addColumn(int col, const string& field)
 QVariant RecollModel::headerData(int idx, Qt::Orientation orientation, 
 				 int role) const
 {
-    LOGDEB2(("RecollModel::headerData: idx %d orientation %s role %d\n",
-            idx, orientation == Qt::Vertical ? "vertical":"horizontal", role));
+    LOGDEB2("RecollModel::headerData: idx "  << (idx) << " orientation "  << (orientation == Qt::Vertical ? "vertical":"horizontal") << " role "  << (role) << "\n" );
     if (orientation == Qt::Vertical && role == Qt::DisplayRole) {
         return idx;
     }
@@ -354,8 +353,7 @@ QVariant RecollModel::headerData(int idx, Qt::Orientation orientation,
 
 QVariant RecollModel::data(const QModelIndex& index, int role) const
 {
-    LOGDEB2(("RecollModel::data: row %d col %d role %d\n", index.row(),
-            index.column(), role));
+    LOGDEB2("RecollModel::data: row "  << (index.row()) << " col "  << (index.column()) << " role "  << (role) << "\n" );
     if (!m_source || role != Qt::DisplayRole || !index.isValid() ||
 	index.column() >= int(m_fields.size())) {
 	return QVariant();
@@ -410,7 +408,7 @@ void RecollModel::sort(int column, Qt::SortOrder order)
 {
     if (m_ignoreSort)
 	return;
-    LOGDEB(("RecollModel::sort(%d, %d)\n", column, int(order)));
+    LOGDEB("RecollModel::sort("  << (column) << ", "  << (int(order)) << ")\n" );
     
     DocSeqSortSpec spec;
     if (column >= 0 && column < int(m_fields.size())) {
@@ -592,7 +590,7 @@ int ResTable::getDetailDocNumOrTopRow()
 
 void ResTable::makeRowVisible(int row)
 {
-    LOGDEB(("ResTable::showRow(%d)\n", row));
+    LOGDEB("ResTable::showRow("  << (row) << ")\n" );
     QModelIndex modelIndex = m_model->index(row, 0);
     tableView->scrollTo(modelIndex, QAbstractItemView::PositionAtTop);
     tableView->selectionModel()->clear();
@@ -611,7 +609,7 @@ void ResTable::saveColState()
     QHeaderView *header = tableView->horizontalHeader();
     const vector<string>& vf = m_model->getFields();
     if (!header) {
-	LOGERR(("ResTable::saveColState: no table header ??\n"));
+	LOGERR("ResTable::saveColState: no table header ??\n" );
 	return;
     }
 
@@ -622,7 +620,7 @@ void ResTable::saveColState()
     for (int vi = 0; vi < header->count(); vi++) {
 	int li = header->logicalIndex(vi);
 	if (li < 0 || li >= int(vf.size())) {
-	    LOGERR(("saveColState: logical index beyond list size!\n"));
+	    LOGERR("saveColState: logical index beyond list size!\n" );
 	    continue;
 	}
 	newfields.push_back(QString::fromUtf8(vf[li].c_str()));
@@ -634,8 +632,7 @@ void ResTable::saveColState()
 
 void ResTable::onTableView_currentChanged(const QModelIndex& index)
 {
-    LOGDEB2(("ResTable::onTableView_currentChanged(%d, %d)\n", 
-	    index.row(), index.column()));
+    LOGDEB2("ResTable::onTableView_currentChanged("  << (index.row()) << ", "  << (index.column()) << ")\n" );
 
     if (!m_model || !m_model->getDocSource())
 	return;
@@ -653,21 +650,20 @@ void ResTable::onTableView_currentChanged(const QModelIndex& index)
 
 void ResTable::on_tableView_entered(const QModelIndex& index)
 {
-    LOGDEB2(("ResTable::on_tableView_entered(%d, %d)\n", 
-	    index.row(), index.column()));
+    LOGDEB2("ResTable::on_tableView_entered("  << (index.row()) << ", "  << (index.column()) << ")\n" );
     if (!tableView->selectionModel()->hasSelection())
 	onTableView_currentChanged(index);
 }
 
 void ResTable::takeFocus()
 {
-//    LOGDEB(("resTable: take focus\n"));
+//    LOGDEB("resTable: take focus\n" );
     tableView->setFocus(Qt::ShortcutFocusReason);
 }
 
 void ResTable::setDocSource(STD_SHARED_PTR<DocSequence> nsource)
 {
-    LOGDEB(("ResTable::setDocSource\n"));
+    LOGDEB("ResTable::setDocSource\n" );
     if (m_model)
 	m_model->setDocSource(nsource);
     if (m_pager)
@@ -679,13 +675,13 @@ void ResTable::setDocSource(STD_SHARED_PTR<DocSequence> nsource)
 
 void ResTable::resetSource()
 {
-    LOGDEB(("ResTable::resetSource\n"));
+    LOGDEB("ResTable::resetSource\n" );
     setDocSource(STD_SHARED_PTR<DocSequence>());
 }
 
 void ResTable::saveAsCSV()
 {
-    LOGDEB(("ResTable::saveAsCSV\n"));
+    LOGDEB("ResTable::saveAsCSV\n" );
     if (!m_model)
 	return;
     QString s = 
@@ -709,8 +705,7 @@ void ResTable::saveAsCSV()
 // This is called when the sort order is changed from another widget
 void ResTable::onSortDataChanged(DocSeqSortSpec spec)
 {
-    LOGDEB(("ResTable::onSortDataChanged: [%s] desc %d\n", 
-	    spec.field.c_str(), int(spec.desc)));
+    LOGDEB("ResTable::onSortDataChanged: ["  << (spec.field) << "] desc "  << (int(spec.desc)) << "\n" );
     QHeaderView *header = tableView->horizontalHeader();
     if (!header || !m_model)
 	return;
@@ -734,7 +729,7 @@ void ResTable::onSortDataChanged(DocSeqSortSpec spec)
 
 void ResTable::resetSort()
 {
-    LOGDEB(("ResTable::resetSort()\n"));
+    LOGDEB("ResTable::resetSort()\n" );
     QHeaderView *header = tableView->horizontalHeader();
     if (header)
 	header->setSortIndicator(-1, Qt::AscendingOrder); 
@@ -745,7 +740,7 @@ void ResTable::resetSort()
 
 void ResTable::readDocSource(bool resetPos)
 {
-    LOGDEB(("ResTable::readDocSource(%d)\n", int(resetPos)));
+    LOGDEB("ResTable::readDocSource("  << (int(resetPos)) << ")\n" );
     if (resetPos)
 	tableView->verticalScrollBar()->setSliderPosition(0);
 
@@ -761,7 +756,7 @@ void ResTable::linkWasClicked(const QUrl &url)
     }
     QString s = url.toString();
     const char *ascurl = s.toUtf8();
-    LOGDEB(("ResTable::linkWasClicked: [%s]\n", ascurl));
+    LOGDEB("ResTable::linkWasClicked: ["  << (ascurl) << "]\n" );
 
     int i = atoi(ascurl+1) -1;
     int what = ascurl[0];
@@ -821,7 +816,7 @@ void ResTable::linkWasClicked(const QUrl &url)
     break;
 
     default: 
-	LOGERR(("ResTable::linkWasClicked: bad link [%s]\n", ascurl));
+	LOGERR("ResTable::linkWasClicked: bad link ["  << (ascurl) << "]\n" );
 	break;// ?? 
     }
 }
@@ -844,7 +839,7 @@ void ResTable::onDoubleClick(const QModelIndex& index)
 
 void ResTable::createPopupMenu(const QPoint& pos)
 {
-    LOGDEB(("ResTable::createPopupMenu: m_detaildocnum %d\n", m_detaildocnum));
+    LOGDEB("ResTable::createPopupMenu: m_detaildocnum "  << (m_detaildocnum) << "\n" );
     if (m_detaildocnum >= 0 && m_model) {
 	int opts = m_ismainres? ResultPopup::isMain : 0;
     
@@ -975,7 +970,7 @@ void ResTable::menuShowSubDocs()
 
 void ResTable::createHeaderPopupMenu(const QPoint& pos)
 {
-    LOGDEB(("ResTable::createHeaderPopupMenu(%d, %d)\n", pos.x(), pos.y()));
+    LOGDEB("ResTable::createHeaderPopupMenu("  << (pos.x()) << ", "  << (pos.y()) << ")\n" );
     QHeaderView *header = tableView->horizontalHeader();
     if (!header || !m_model)
 	return;
@@ -1021,7 +1016,7 @@ void ResTable::addColumn()
     if (!m_model)
 	return;
     QAction *action = (QAction *)sender();
-    LOGDEB(("addColumn: text %s, data %s\n", qs2utf8s(action->text()).c_str(), 
-	    qs2utf8s(action->data().toString()).c_str()));
+    LOGDEB("addColumn: text "  << (qs2utf8s(action->text())) << ", data "  << (qs2utf8s(action->data().toString())) << "\n" );
     m_model->addColumn(m_popcolumn, qs2utf8s(action->data().toString()));
 }
+

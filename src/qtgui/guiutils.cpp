@@ -20,7 +20,7 @@
 #include <cstdio>
 
 #include "recoll.h"
-#include "debuglog.h"
+#include "log.h"
 #include "smallut.h"
 #include "guiutils.h"
 #include "pathut.h"
@@ -73,7 +73,7 @@ static bool havereadsettings;
 
 void rwSettings(bool writing)
 {
-    LOGDEB1(("rwSettings: write %d\n", int(writing)));
+    LOGDEB1("rwSettings: write "  << (int(writing)) << "\n" );
     if (writing && !havereadsettings)
         return;
     QSettings settings("Recoll.org", "recoll");
@@ -312,12 +312,11 @@ void rwSettings(bool writing)
 		    continue;
 		bool stripped;
 		if (!Rcl::Db::testDbDir(dbdir, &stripped)) {
-		    LOGERR(("Not a xapian index: [%s]\n", dbdir.c_str()));
+		    LOGERR("Not a xapian index: ["  << (dbdir) << "]\n" );
 		    continue;
 		}
 		if (stripped != o_index_stripchars) {
-		    LOGERR(("Incompatible character stripping: [%s]\n",
-			    dbdir.c_str()));
+		    LOGERR("Incompatible character stripping: ["  << (dbdir) << "]\n" );
 		    continue;
 		}
 		prefs.allExtraDbs.push_back(dbdir);
@@ -334,8 +333,7 @@ void rwSettings(bool writing)
 	    bool stripped;
 	    if (!Rcl::Db::testDbDir(*it, &stripped) || 
 		stripped != o_index_stripchars) {
-		LOGINFO(("Not a Xapian index or char stripping differs: [%s]\n",
-			 it->c_str()));
+		LOGINFO("Not a Xapian index or char stripping differs: ["  << *it << "]\n" );
 		it = prefs.activeExtraDbs.erase(it);
 	    } else {
 		it++;
@@ -359,8 +357,7 @@ void rwSettings(bool writing)
 		bool strpd;
                 if (!Rcl::Db::testDbDir(dbdir, &strpd) || 
 		    strpd != o_index_stripchars) {
-                    LOGERR(("Not a Xapian dir or diff. char stripping: [%s]\n",
-			    dbdir.c_str()));
+                    LOGERR("Not a Xapian dir or diff. char stripping: ["  << (dbdir) << "]\n" );
                     continue;
                 }
                 prefs.activeExtraDbs.push_back(dbdir);
@@ -414,3 +411,4 @@ string PrefsPack::stemlang()
     }
     return stemLang;
 }
+

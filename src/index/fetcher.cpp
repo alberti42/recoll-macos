@@ -17,7 +17,7 @@
 #include "autoconfig.h"
 
 
-#include "debuglog.h"
+#include "log.h"
 #include "rclconfig.h"
 
 #include "fetcher.h"
@@ -28,7 +28,7 @@
 DocFetcher *docFetcherMake(RclConfig *config, const Rcl::Doc& idoc)
 {
     if (idoc.url.empty()) {
-        LOGERR(("docFetcherMakeg:: no url in doc!\n"));
+        LOGERR("docFetcherMakeg:: no url in doc!\n" );
         return 0;
     }
     string backend;
@@ -42,9 +42,9 @@ DocFetcher *docFetcherMake(RclConfig *config, const Rcl::Doc& idoc)
     } else {
         DocFetcher *f = exeDocFetcherMake(config, backend);
         if (!f) {
-            LOGERR(("DocFetcherFactory: unknown backend [%s]\n",
-                    backend.c_str()));
+            LOGERR("DocFetcherFactory: unknown backend ["  << (backend) << "]\n" );
         }
 	return f;
     }
 }
+

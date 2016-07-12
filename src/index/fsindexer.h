@@ -142,7 +142,6 @@ class FsIndexer : public FsTreeWalkerCB {
 #ifdef IDX_THREADS
     friend void *FsIndexerDbUpdWorker(void*);
     friend void *FsIndexerInternfileWorker(void*);
-    int m_loglevel;
     WorkQueue<InternfileTask*> m_iwqueue;
     WorkQueue<DbUpdTask*> m_dwqueue;
     bool m_haveInternQ;

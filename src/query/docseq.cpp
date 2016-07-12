@@ -19,7 +19,7 @@
 #include "docseq.h"
 #include "filtseq.h"
 #include "sortseq.h"
-#include "debuglog.h"
+#include "log.h"
 #include "internfile.h"
 
 PTMutexInit DocSequence::o_dblock;
@@ -43,7 +43,7 @@ bool DocSequence::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc)
 {
     Rcl::Db *db = getDb();
     if (db == 0) {
-	LOGERR(("DocSequence::getEnclosing: no db\n"));
+	LOGERR("DocSequence::getEnclosing: no db\n" );
 	return false;
     }
     PTMutexLocker locker(o_dblock);
@@ -67,7 +67,7 @@ void DocSource::stripStack()
 
 bool DocSource::buildStack()
 {
-    LOGDEB2(("DocSource::buildStack()\n"));
+    LOGDEB2("DocSource::buildStack()\n" );
     stripStack();
 
     if (!m_seq)
@@ -77,7 +77,7 @@ bool DocSource::buildStack()
     // truncates the original list)
     if (m_seq->canFilter()) {
 	if (!m_seq->setFiltSpec(m_fspec)) {
-	    LOGERR(("DocSource::buildStack: setfiltspec failed\n"));
+	    LOGERR("DocSource::buildStack: setfiltspec failed\n" );
 	}
     } else {
 	if (m_fspec.isNotNull()) {
@@ -88,7 +88,7 @@ bool DocSource::buildStack()
     
     if (m_seq->canSort()) {
 	if (!m_seq->setSortSpec(m_sspec)) {
-	    LOGERR(("DocSource::buildStack: setsortspec failed\n"));
+	    LOGERR("DocSource::buildStack: setsortspec failed\n" );
 	}
     } else {
 	if (m_sspec.isNotNull()) {
@@ -114,7 +114,7 @@ string DocSource::title()
 
 bool DocSource::setFiltSpec(const DocSeqFiltSpec &f) 
 {
-    LOGDEB2(("DocSource::setFiltSpec\n"));
+    LOGDEB2("DocSource::setFiltSpec\n" );
     m_fspec = f;
     buildStack();
     return true;
@@ -122,9 +122,10 @@ bool DocSource::setFiltSpec(const DocSeqFiltSpec &f)
 
 bool DocSource::setSortSpec(const DocSeqSortSpec &s) 
 {
-    LOGDEB2(("DocSource::setSortSpec\n"));
+    LOGDEB2("DocSource::setSortSpec\n" );
     m_sspec = s;
     buildStack();
     return true;
 }
+
 

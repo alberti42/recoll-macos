@@ -29,7 +29,6 @@
 #ifdef _WIN32
 #include "safewindows.h"
 
-#undef RCL_ICONV_INBUF_CONST
 
 #ifdef _MSC_VER
 // gmtime is supposedly thread-safe on windows
@@ -47,15 +46,15 @@ typedef int mode_t;
 
 #else // End _MSC_VER -> Gminw
 
-#define timegm portable_timegm
-
 #undef RCL_ICONV_INBUF_CONST
+#define timegm portable_timegm
 
 #endif // GMinw only
 
 typedef int pid_t;
-inline int readlink(const char *cp, void *buf, int cnt) {
-	return -1;
+inline int readlink(const char *cp, void *buf, int cnt)
+{
+    return -1;
 }
 
 #define MAXPATHLEN PATH_MAX
@@ -72,9 +71,8 @@ typedef int ssize_t;
 #ifndef X_OK
 #define X_OK 4
 #endif
-#define RECOLL_DATADIR "C:\\recoll\\"
+
 #define S_ISLNK(X) false
 #define lstat stat
-#endif
 
-
+#endif // _WIN32

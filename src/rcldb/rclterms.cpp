@@ -22,7 +22,7 @@
 
 #include <string>
 
-#include "debuglog.h"
+#include "log.h"
 #include "rcldb.h"
 #include "rcldb_p.h"
 #include "stemdb.h"
@@ -49,7 +49,7 @@ bool Db::filenameWildExp(const string& fnexp, vector<string>& names, int max)
         pattern = "*" + pattern + "*";
     } // else let it be
 
-    LOGDEB(("Rcl::Db::filenameWildExp: pattern: [%s]\n", pattern.c_str()));
+    LOGDEB("Rcl::Db::filenameWildExp: pattern: ["  << (pattern) << "]\n" );
 
     // We inconditionnally lowercase and strip the pattern, as is done
     // during indexing. This seems to be the only sane possible
@@ -79,12 +79,12 @@ bool Db::filenameWildExp(const string& fnexp, vector<string>& names, int max)
 // Walk the Y terms and return min/max
 bool Db::maxYearSpan(int *minyear, int *maxyear)
 {
-    LOGDEB(("Rcl::Db:maxYearSpan\n"));
+    LOGDEB("Rcl::Db:maxYearSpan\n" );
     *minyear = 1000000; 
     *maxyear = -1000000;
     TermMatchResult result;
     if (!idxTermMatch(ET_WILD, string(), "*", result, -1, "xapyear")) {
-        LOGINFO(("Rcl::Db:maxYearSpan: termMatch failed\n"));
+        LOGINFO("Rcl::Db:maxYearSpan: termMatch failed\n" );
         return false;
     }
     for (vector<TermMatchEntry>::const_iterator it = result.entries.begin();
@@ -165,11 +165,7 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
     bool diac_sensitive = (typ_sens & ET_DIACSENS) != 0;
     bool case_sensitive = (typ_sens & ET_CASESENS) != 0;
 
-    LOGDEB0(("Db::TermMatch: typ %s diacsens %d casesens %d lang [%s] term [%s]"
-            " max %d field [%s] stripped %d init res.size %u\n",
-            tmtptostr(matchtyp), diac_sensitive, case_sensitive, lang.c_str(), 
-            _term.c_str(), max, field.c_str(), o_index_stripchars, 
-             res.entries.size()));
+    LOGDEB0("Db::TermMatch: typ "  << (tmtptostr(matchtyp)) << " diacsens "  << (diac_sensitive) << " casesens "  << (case_sensitive) << " lang ["  << (lang) << "] term ["  << (_term) << "] max "  << (max) << " field ["  << (field) << "] stripped "  << (o_index_stripchars) << " init res.size "  << (res.entries.size()) << "\n" );
 
     // If index is stripped, no case or diac expansion can be needed:
     // for the processing inside this routine, everything looks like
@@ -179,7 +175,7 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
     if (o_index_stripchars) {
         diac_sensitive = case_sensitive = true;
         if (!unacmaybefold(_term, term, "UTF-8", UNACOP_UNACFOLD)) {
-            LOGERR(("Db::termMatch: unac failed for [%s]\n", _term.c_str()));
+            LOGERR("Db::termMatch: unac failed for ["  << (_term) << "]\n" );
             return false;
         }
     }
@@ -270,19 +266,17 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
                 exp1.swap(lexp);
                 sort(lexp.begin(), lexp.end());
                 lexp.erase(unique(lexp.begin(), lexp.end()), lexp.end());
-                LOGDEB(("ExpTerm: stemexp: %s\n",
-                        stringsToString(lexp).c_str()));
+                LOGDEB("ExpTerm: stemexp: "  << (stringsToString(lexp)) << "\n" );
             }
 
             if (m_syngroups.ok() && (typ_sens & ET_SYNEXP)) {
-                LOGDEB(("ExpTerm: got syngroups\n"));
+                LOGDEB("ExpTerm: got syngroups\n" );
                 vector<string> exp1(lexp);
                 for (vector<string>::const_iterator it = lexp.begin(); 
                      it != lexp.end(); it++) {
                     vector<string> sg = m_syngroups.getgroup(*it);
                     if (!sg.empty()) {
-                        LOGDEB(("ExpTerm: syns: %s -> %s\n", 
-                                it->c_str(), stringsToString(sg).c_str()));
+                        LOGDEB("ExpTerm: syns: "  << *it << " -> "  << (stringsToString(sg)) << "\n" );
                         for (vector<string>::const_iterator it1 = sg.begin();
                              it1 != sg.end(); it1++) {
                             if (it1->find_first_of(" ") != string::npos) {
@@ -313,7 +307,7 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
         }
 
         // Filter the result and get the stats, possibly add prefixes.
-        LOGDEB(("ExpandTerm:TM: lexp: %s\n", stringsToString(lexp).c_str()));
+        LOGDEB("ExpandTerm:TM: lexp: "  << (stringsToString(lexp)) << "\n" );
         for (vector<string>::const_iterator it = lexp.begin();
              it != lexp.end(); it++) {
             idxTermMatch(Rcl::Db::ET_WILD, "", *it, res, max, field);
@@ -341,13 +335,10 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
                       TermMatchResult& res, int max,  const string& field)
 {
     int typ = matchTypeTp(typ_sens);
-    LOGDEB1(("Db::idxTermMatch: typ %s lang [%s] term [%s] "
-             "max %d field [%s] init res.size %u\n",
-             tmtptostr(typ), lang.c_str(), root.c_str(),
-             max, field.c_str(), res.entries.size()));
+    LOGDEB1("Db::idxTermMatch: typ "  << (tmtptostr(typ)) << " lang ["  << (lang) << "] term ["  << (root) << "] max "  << (max) << " field ["  << (field) << "] init res.size "  << (res.entries.size()) << "\n" );
 
     if (typ == ET_STEM) {
-        LOGFATAL(("RCLDB: internal error: idxTermMatch called with ET_STEM\n"));
+        LOGFATAL("RCLDB: internal error: idxTermMatch called with ET_STEM\n" );
         abort();
     }
 
@@ -357,8 +348,7 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
     if (!field.empty()) {
         const FieldTraits *ftp = 0;
         if (!fieldToTraits(field, &ftp, true) || ftp->pfx.empty()) {
-            LOGDEB(("Db::termMatch: field is not indexed (no prefix): [%s]\n", 
-                    field.c_str()));
+            LOGDEB("Db::termMatch: field is not indexed (no prefix): ["  << (field) << "]\n" );
         } else {
             prefix = wrap_prefix(ftp->pfx);
         }
@@ -369,8 +359,7 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
     if (typ == ET_REGEXP) {
         matcher = STD_SHARED_PTR<StrMatcher>(new StrRegexpMatcher(root));
         if (!matcher->ok()) {
-            LOGERR(("termMatch: regcomp failed: %s\n", 
-                    matcher->getreason().c_str()))
+            LOGERR("termMatch: regcomp failed: "  << (matcher->getreason()));
                 return false;
         }
     } else if (typ == ET_WILD) {
@@ -394,7 +383,7 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
     } else {
         is = prefix + root.substr(0, es);
     }
-    LOGDEB2(("termMatch: initsec: [%s]\n", is.c_str()));
+    LOGDEB2("termMatch: initsec: ["  << (is) << "]\n" );
 
     for (int tries = 0; tries < 2; tries++) { 
         try {
@@ -446,7 +435,7 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
         break;
     }
     if (!m_reason.empty()) {
-        LOGERR(("termMatch: %s\n", m_reason.c_str()));
+        LOGERR("termMatch: "  << (m_reason) << "\n" );
         return false;
     }
 
@@ -468,7 +457,7 @@ TermIter *Db::termWalkOpen()
         tit->db = m_ndb->xrdb;
         XAPTRY(tit->it = tit->db.allterms_begin(), tit->db, m_reason);
         if (!m_reason.empty()) {
-            LOGERR(("Db::termWalkOpen: xapian error: %s\n", m_reason.c_str()));
+            LOGERR("Db::termWalkOpen: xapian error: "  << (m_reason) << "\n" );
             return 0;
         }
     }
@@ -484,7 +473,7 @@ bool Db::termWalkNext(TermIter *tit, string &term)
         , tit->db, m_reason);
 
     if (!m_reason.empty()) {
-        LOGERR(("Db::termWalkOpen: xapian error: %s\n", m_reason.c_str()));
+        LOGERR("Db::termWalkOpen: xapian error: "  << (m_reason) << "\n" );
     }
     return false;
 }
@@ -504,7 +493,7 @@ bool Db::termExists(const string& word)
            m_ndb->xrdb, m_reason);
 
     if (!m_reason.empty()) {
-        LOGERR(("Db::termWalkOpen: xapian error: %s\n", m_reason.c_str()));
+        LOGERR("Db::termWalkOpen: xapian error: "  << (m_reason) << "\n" );
         return false;
     }
     return true;
@@ -515,8 +504,7 @@ bool Db::stemDiffers(const string& lang, const string& word,
 {
     Xapian::Stem stemmer(lang);
     if (!stemmer(word).compare(stemmer(base))) {
-        LOGDEB2(("Rcl::Db::stemDiffers: same for %s and %s\n", 
-                word.c_str(), base.c_str()));
+        LOGDEB2("Rcl::Db::stemDiffers: same for "  << (word) << " and "  << (base) << "\n" );
         return false;
     }
     return true;

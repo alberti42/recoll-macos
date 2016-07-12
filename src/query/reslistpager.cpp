@@ -31,7 +31,7 @@ using std::list;
 
 #include "cstr.h"
 #include "reslistpager.h"
-#include "debuglog.h"
+#include "log.h"
 #include "rclconfig.h"
 #include "smallut.h"
 #include "rclutil.h"
@@ -67,13 +67,12 @@ ResListPager::ResListPager(int pagesize)
 void ResListPager::resultPageNext()
 {
     if (!m_docSource) {
-	LOGDEB(("ResListPager::resultPageNext: null source\n"));
+	LOGDEB("ResListPager::resultPageNext: null source\n" );
 	return;
     }
 
     int resCnt = m_docSource->getResCnt();
-    LOGDEB(("ResListPager::resultPageNext: rescnt %d, winfirst %d\n", 
-	    resCnt, m_winfirst));
+    LOGDEB("ResListPager::resultPageNext: rescnt "  << (resCnt) << ", winfirst "  << (m_winfirst) << "\n" );
 
     if (m_winfirst < 0) {
 	m_winfirst = 0;
@@ -125,13 +124,12 @@ static string maybeEscapeHtml(const string& fld)
 void ResListPager::resultPageFor(int docnum)
 {
     if (!m_docSource) {
-	LOGDEB(("ResListPager::resultPageFor: null source\n"));
+	LOGDEB("ResListPager::resultPageFor: null source\n" );
 	return;
     }
 
     int resCnt = m_docSource->getResCnt();
-    LOGDEB(("ResListPager::resultPageFor(%d): rescnt %d, winfirst %d\n", 
-	    docnum, resCnt, m_winfirst));
+    LOGDEB("ResListPager::resultPageFor("  << (docnum) << "): rescnt "  << (resCnt) << ", winfirst "  << (m_winfirst) << "\n" );
     m_winfirst = (docnum / m_pagesize) * m_pagesize;
 
     // Get the next page of results.
@@ -324,7 +322,7 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     // the table approach for 1.15 for now (in guiutils.cpp)
 //	chunk << "<br style='clear:both;height:0;line-height:0;'>" << endl;
 
-    LOGDEB2(("Chunk: [%s]\n", (const char *)chunk.rdbuf()->str().c_str()));
+    LOGDEB2("Chunk: ["  << ((const char *)chunk.rdbuf()->str()) << "]\n" );
     append(chunk.rdbuf()->str(), i, doc);
 }
 
@@ -340,13 +338,13 @@ bool ResListPager::getDoc(int num, Rcl::Doc& doc)
 
 void ResListPager::displayPage(RclConfig *config)
 {
-    LOGDEB(("ResListPager::displayPage\n"));
+    LOGDEB("ResListPager::displayPage\n" );
     if (!m_docSource) {
-	LOGDEB(("ResListPager::displayPage: null source\n"));
+	LOGDEB("ResListPager::displayPage: null source\n" );
 	return;
     }
     if (m_winfirst < 0 && !pageEmpty()) {
-	LOGDEB(("ResListPager::displayPage: sequence error: winfirst < 0\n"));
+	LOGDEB("ResListPager::displayPage: sequence error: winfirst < 0\n" );
 	return;
     }
 
@@ -525,4 +523,5 @@ const string &ResListPager::dateFormat()
     static const string cstr_format("&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%z");
     return cstr_format;
 }
+
 

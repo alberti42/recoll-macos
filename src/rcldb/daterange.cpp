@@ -31,7 +31,7 @@ using namespace std;
 
 #include <xapian.h>
 
-#include "debuglog.h"
+#include "log.h"
 #include "rclconfig.h"
 
 namespace Rcl {
@@ -123,4 +123,5 @@ Xapian::Query date_range_filter(int y1, int m1, int d1, int y2, int m2, int d2)
 
 
 }
+
 

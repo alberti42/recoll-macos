@@ -37,7 +37,7 @@
 
 #include <xapian.h>
 
-#include "debuglog.h"
+#include "log.h"
 #include "xmacros.h"
 #include "strmatcher.h"
 
@@ -168,10 +168,9 @@ public:
 
     virtual bool addSynonym(const std::string& term)
     {
-	LOGDEB2(("addSynonym:me %p term [%s] m_trans %p\n", this,
-		term.c_str(), m_trans));
+	LOGDEB2("addSynonym:me "  << (this) << " term ["  << (term) << "] m_trans "  << (m_trans) << "\n" );
 	std::string transformed = (*m_trans)(term);
-	LOGDEB2(("addSynonym: transformed [%s]\n", transformed.c_str()));
+	LOGDEB2("addSynonym: transformed ["  << (transformed) << "]\n" );
 	if (transformed == term)
 	    return true;
 
@@ -180,8 +179,7 @@ public:
 	    m_family.getdb().add_synonym(m_prefix + transformed, term);
 	} XCATCHERROR(ermsg);
 	if (!ermsg.empty()) {
-	    LOGERR(("XapWritableComputableSynFamMember::addSynonym: "
-		    "xapian error %s\n", ermsg.c_str()));
+	    LOGERR("XapWritableComputableSynFamMember::addSynonym: xapian error "  << (ermsg) << "\n" );
 	    return false;
 	}
 	return true;
@@ -224,3 +222,4 @@ static const std::string synFamDiCa("DCa");
 } // end namespace Rcl
 
 #endif /* _SYNFAMILY_H_INCLUDED_ */
+

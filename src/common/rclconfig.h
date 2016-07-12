@@ -315,7 +315,7 @@ class RclConfig {
     string findFilter(const string& cmd) const;
 
     /** Thread config init is not done automatically because not all
-	programs need it and it uses debuglog so that it's better to
+	programs need it and it uses the debug log so that it's better to
 	call it after primary init */
     void initThrConf();
 

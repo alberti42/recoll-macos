@@ -33,7 +33,7 @@ using namespace std;
 #include <xapian.h>
 
 #include "stemdb.h"
-#include "debuglog.h"
+#include "log.h"
 #include "smallut.h"
 #include "synfamily.h"
 #include "unacpp.h"
@@ -85,10 +85,10 @@ bool StemDb::stemExpand(const std::string& langs, const std::string& _term,
     sort(result.begin(), result.end());
     vector<string>::iterator uit = unique(result.begin(), result.end());
     result.resize(uit - result.begin());
-    LOGDEB1(("stemExpand:%s: %s ->  %s\n", langs.c_str(), term.c_str(),
-	     stringsToString(result).c_str()));
+    LOGDEB1("stemExpand:"  << (langs) << ": "  << (term) << " ->  "  << (stringsToString(result)) << "\n" );
     return true;
 }
 
 
 }
+

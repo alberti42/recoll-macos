@@ -37,7 +37,7 @@
 #include "mimeparse.h"
 #include "smallut.h"
 #include "cancelcheck.h"
-#include "debuglog.h"
+#include "log.h"
 #include "transcode.h"
 
 static const string cstr_html_charset("charset");
@@ -193,7 +193,7 @@ MyHtmlParser::MyHtmlParser()
 
 void MyHtmlParser::decode_entities(string &s)
 {
-    LOGDEB2(("MyHtmlParser::decode_entities\n"));
+    LOGDEB2("MyHtmlParser::decode_entities\n" );
     // This has no meaning whatsoever if the character encoding is unknown,
     // so don't do it. If charset known, caller has converted text to utf-8, 
     // and this is also how we translate entities
@@ -261,14 +261,7 @@ void MyHtmlParser::decode_entities(string &s)
 void
 MyHtmlParser::process_text(const string &text)
 {
-    LOGDEB2(("process_text: title %d script %d style %d pre %d "
-	     "pending_space %d txt [%s]\n", 
-	     in_title_tag,
-	     in_script_tag,
-	     in_style_tag,
-	     in_pre_tag,
-	     pending_space,
-	     text.c_str()));
+    LOGDEB2("process_text: title "  << (in_title_tag) << " script "  << (in_script_tag) << " style "  << (in_style_tag) << " pre "  << (in_pre_tag) << " pending_space "  << (pending_space) << " txt ["  << (text) << "]\n" );
     CancelCheck::instance().checkCancel();
 
     if (!in_script_tag && !in_style_tag) {
@@ -307,7 +300,7 @@ MyHtmlParser::process_text(const string &text)
 bool
 MyHtmlParser::opening_tag(const string &tag)
 {
-    LOGDEB2(("opening_tag: [%s]\n", tag.c_str()));
+    LOGDEB2("opening_tag: ["  << (tag) << "]\n" );
 #if 0
     cout << "TAG: " << tag << ": " << endl;
     map<string, string>::const_iterator x;
@@ -419,10 +412,7 @@ MyHtmlParser::opening_tag(const string &tag)
 				charset = k->second;
 				if (!charset.empty() && 
 				    !samecharset(charset, fromcharset)) {
-				    LOGDEB1(("Doc http-equiv charset '%s' "
-					    "differs from dir deflt '%s'\n",
-					    charset.c_str(), 
-					    fromcharset.c_str()));
+				    LOGDEB1("Doc http-equiv charset '"  << (charset) << "' differs from dir deflt '"  << (fromcharset) << "'\n" );
 				    throw false;
 				}
 			    }
@@ -436,10 +426,7 @@ MyHtmlParser::opening_tag(const string &tag)
 		    charset = newcharset;
 		    if (!charset.empty() && 
 			!samecharset(charset, fromcharset)) {
-			LOGDEB1(("Doc html5 charset '%s' "
-				 "differs from dir deflt '%s'\n",
-				 charset.c_str(), 
-				 fromcharset.c_str()));
+			LOGDEB1("Doc html5 charset '"  << (charset) << "' differs from dir deflt '"  << (fromcharset) << "'\n" );
 			throw false;
 		    }
 		}
@@ -494,7 +481,7 @@ MyHtmlParser::opening_tag(const string &tag)
 bool
 MyHtmlParser::closing_tag(const string &tag)
 {
-    LOGDEB2(("closing_tag: [%s]\n", tag.c_str()));
+    LOGDEB2("closing_tag: ["  << (tag) << "]\n" );
     if (tag.empty()) return true;
     switch (tag[0]) {
 	case 'a':
@@ -592,3 +579,4 @@ void
 MyHtmlParser::do_eof()
 {
 }
+

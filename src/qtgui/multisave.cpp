@@ -30,7 +30,7 @@ using namespace std;
 #include "recoll.h"
 #include "multisave.h"
 #include "smallut.h"
-#include "debuglog.h"
+#include "log.h"
 #include "pathut.h"
 #include "internfile.h"
 
@@ -52,7 +52,7 @@ void multiSave(QWidget *p, vector<Rcl::Doc>& docs)
 	return;
     }
     string dir((const char *)dirl[0].toLocal8Bit());
-    LOGDEB2(("multiSave: got dir %s\n", dir.c_str()));
+    LOGDEB2("multiSave: got dir "  << (dir) << "\n" );
 
     /* Save doc to files in target directory. Issues:
        - It is quite common to have docs in the array with the save
@@ -90,13 +90,13 @@ void multiSave(QWidget *p, vector<Rcl::Doc>& docs)
 	string utf8fn;
 	it->getmeta(Rcl::Doc::keyfn, &utf8fn);
 	string suffix = path_suffix(utf8fn);
-	LOGDEB(("Multisave: [%s] suff [%s]\n", utf8fn.c_str(), suffix.c_str()));
+	LOGDEB("Multisave: ["  << (utf8fn) << "] suff ["  << (suffix) << "]\n" );
 	if (suffix.empty() || suffix.size() > 10) {
 	    suffix = theconfig->getSuffixFromMimeType(it->mimetype);
-	    LOGDEB(("Multisave: suff from config [%s]\n", suffix.c_str()));
+	    LOGDEB("Multisave: suff from config ["  << (suffix) << "]\n" );
 	}
 	string simple = path_basename(utf8fn, string(".") + suffix);
-	LOGDEB(("Multisave: simple [%s]\n", simple.c_str()));
+	LOGDEB("Multisave: simple ["  << (simple) << "]\n" );
 	if (simple.empty())
 	    simple = "rclsave";
 	if (simple.size() > maxlen) {
@@ -141,3 +141,4 @@ void multiSave(QWidget *p, vector<Rcl::Doc>& docs)
 	}
     }
 }
+

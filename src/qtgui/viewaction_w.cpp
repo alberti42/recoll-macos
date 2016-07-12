@@ -34,7 +34,7 @@ using namespace std;
 #include <qlayout.h>
 
 #include "recoll.h"
-#include "debuglog.h"
+#include "log.h"
 #include "guiutils.h"
 
 #include "viewaction_w.h"
@@ -234,3 +234,4 @@ void ViewAction::editActions()
     theconfig->setMimeViewerAllEx(s);
     fillLists();
 }
+

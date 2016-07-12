@@ -29,7 +29,7 @@
 #include <string>
 
 #include "cstr.h"
-#include "debuglog.h"
+#include "log.h"
 #include "pathut.h"
 #include "strmatcher.h"
 
@@ -37,16 +37,13 @@ using namespace std;
 
 bool StrWildMatcher::match(const string& val) const
 {
-    LOGDEB2(("StrWildMatcher::match: [%s] against [%s]\n", 
-	     m_sexp.c_str(), val.c_str()));
+    LOGDEB2("StrWildMatcher::match: ["  << (m_sexp) << "] against ["  << (val) << "]\n" );
     int ret = fnmatch(m_sexp.c_str(), val.c_str(), FNM_NOESCAPE);
     switch (ret) {
     case 0: return true;
     case FNM_NOMATCH: return false;
     default:
-	LOGINFO(("StrWildMatcher::match:err: e [%s] s [%s] (%s) ret %d\n", 
-		 m_sexp.c_str(), val.c_str(), 
-		 url_encode(val).c_str(), ret));
+	LOGINFO("StrWildMatcher::match:err: e ["  << (m_sexp) << "] s ["  << (val) << "] ("  << (url_encode(val)) << ") ret "  << (ret) << "\n" );
 	return false;
     }
 }
@@ -130,3 +127,4 @@ bool StrRegexpMatcher::ok() const
 {
     return !m_errcode;
 }
+

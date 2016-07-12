@@ -16,7 +16,7 @@
  */
 #include <string>
 
-#include "debuglog.h"
+#include "log.h"
 #include "preview_load.h"
 #include "internfile.h"
 #include "rcldoc.h"
@@ -29,14 +29,10 @@ LoadThread::LoadThread(RclConfig *config, const Rcl::Doc& idc,
     : QThread(parent), status(1), m_idoc(idc), m_previewHtml(pvhtm),
       m_config(*config)
 {
-    // Save log level while we're running in the calling thread.
-    m_loglevel = DebugLog::getdbl()->getlevel();
 }
 
 void LoadThread::run()
 {
-    DebugLog::getdbl()->setloglevel(m_loglevel);
-
     FileInterner interner(m_idoc, &m_config, FileInterner::FIF_forPreview);
     FIMissingStore mst;
     interner.setMissingStore(&mst);
@@ -69,7 +65,8 @@ void LoadThread::run()
             status = -1;
         }
     } catch (CancelExcept) {
-        LOGDEB(("LoadThread: cancelled\n"));
+        LOGDEB("LoadThread: cancelled\n" );
         status = -1;
     }
 }
+

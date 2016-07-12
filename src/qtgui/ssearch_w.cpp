@@ -33,7 +33,7 @@
 #include <QTimer>
 #include <QCompleter>
 
-#include "debuglog.h"
+#include "log.h"
 #include "guiutils.h"
 #include "searchdata.h"
 #include "ssearch_w.h"
@@ -95,7 +95,7 @@ void SSearch::init()
 
 void SSearch::takeFocus()
 {
-    LOGDEB2(("SSearch: take focus\n"));
+    LOGDEB2("SSearch: take focus\n" );
     queryText->setFocus(Qt::ShortcutFocusReason);
     // If the focus was already in the search entry, the text is not selected.
     // Do it for consistency
@@ -105,15 +105,14 @@ void SSearch::takeFocus()
 void SSearch::timerDone()
 {
     QString qs = queryText->currentText();
-    LOGDEB1(("SSearch::timerDone: qs [%s]\n", qs2utf8s(qs).c_str()));
+    LOGDEB1("SSearch::timerDone: qs ["  << (qs2utf8s(qs)) << "]\n" );
     searchTextChanged(qs);
 }
 
 void SSearch::searchTextChanged(const QString& text)
 {
     QString qs = queryText->currentText();
-    LOGDEB1(("SSearch::searchTextChanged. ks %d qs [%s]\n", 
-	     m_keystroke, qs2utf8s(text).c_str()));
+    LOGDEB1("SSearch::searchTextChanged. ks "  << (m_keystroke) << " qs ["  << (qs2utf8s(text)) << "]\n" );
     if (text.isEmpty()) {
 	searchPB->setEnabled(false);
 	clearqPB->setEnabled(false);
@@ -130,8 +129,7 @@ void SSearch::searchTextChanged(const QString& text)
 	    m_disableAutosearch = true;
 	    string s;
 	    int cs = partialWord(s);
-	    LOGDEB1(("SSearch::searchTextChanged: autosearch. cs %d s [%s]\n", 
-		     cs, s.c_str()));
+	    LOGDEB1("SSearch::searchTextChanged: autosearch. cs "  << (cs) << " s ["  << (s) << "]\n" );
 	    if (cs < 0) {
 		startSimpleSearch();
 	    } else if (!m_stroketimeout->isActive() && s.size() >= 2) {
@@ -146,7 +144,7 @@ void SSearch::searchTextChanged(const QString& text)
 
 void SSearch::searchTypeChanged(int typ)
 {
-    LOGDEB(("Search type now %d\n", typ));
+    LOGDEB("Search type now "  << (typ) << "\n" );
     // Adjust context help
     if (typ == SST_LANG)
 	HelpClient::installMap((const char *)this->objectName().toUtf8(), 
@@ -188,7 +186,7 @@ void SSearch::searchTypeChanged(int typ)
 void SSearch::startSimpleSearch()
 {
     QString qs = queryText->currentText();
-    LOGDEB(("SSearch::startSimpleSearch(): qs [%s]\n", qs2utf8s(qs).c_str()));
+    LOGDEB("SSearch::startSimpleSearch(): qs ["  << (qs2utf8s(qs)) << "]\n" );
     if (qs.length() == 0)
 	return;
 
@@ -201,7 +199,7 @@ void SSearch::startSimpleSearch()
     if (!startSimpleSearch(u8))
 	return;
 
-    LOGDEB(("startSimpleSearch: updating history\n"));
+    LOGDEB("startSimpleSearch: updating history\n" );
     // Search terms history:
     // We want to have the new text at the top and any older identical
     // entry to be erased. There is no standard qt policy to do this ? 
@@ -242,7 +240,7 @@ string SSearch::asXML()
 
 bool SSearch::startSimpleSearch(const string& u8, int maxexp)
 {
-    LOGDEB(("SSearch::startSimpleSearch(%s)\n", u8.c_str()));
+    LOGDEB("SSearch::startSimpleSearch("  << (u8) << ")\n" );
     string stemlang = prefs.stemlang();
 
     ostringstream xml;
@@ -309,7 +307,7 @@ bool SSearch::startSimpleSearch(const string& u8, int maxexp)
 
     xml << "</SD>\n";
     m_xml = xml.str();
-    LOGDEB(("SSearch::startSimpleSearch:xml:[%s]\n", m_xml.c_str()));
+    LOGDEB("SSearch::startSimpleSearch:xml:["  << (m_xml) << "]\n" );
 
     STD_SHARED_PTR<Rcl::SearchData> rsdata(sdata);
     emit startSearch(rsdata, true);
@@ -392,7 +390,7 @@ bool SSearch::hasSearchString()
 static const char* punct = " \t()<>\"'[]{}!^*.,:;\n\r";
 void SSearch::addTerm(QString term)
 {
-    LOGDEB(("SSearch::AddTerm: [%s]\n", (const char *)term.toUtf8()));
+    LOGDEB("SSearch::AddTerm: ["  << ((const char *)term.toUtf8()) << "]\n" );
     string t = (const char *)term.toUtf8();
     string::size_type pos = t.find_last_not_of(punct);
     if (pos == string::npos)
@@ -414,8 +412,7 @@ void SSearch::addTerm(QString term)
 
 void SSearch::onWordReplace(const QString& o, const QString& n)
 {
-    LOGDEB(("SSearch::onWordReplace: o [%s] n [%s]\n",
-	    qs2utf8s(o).c_str(), qs2utf8s(n).c_str()));
+    LOGDEB("SSearch::onWordReplace: o ["  << (qs2utf8s(o)) << "] n ["  << (qs2utf8s(n)) << "]\n" );
     QString txt = queryText->currentText();
     QRegExp exp = QRegExp(QString("\\b") + o + QString("\\b"));
     exp.setCaseSensitivity(Qt::CaseInsensitive);
@@ -476,7 +473,7 @@ int SSearch::completionList(string s, QStringList& lst, int max)
 // Complete last word in input by querying db for all possible terms.
 void SSearch::completion()
 {
-    LOGDEB(("SSearch::completion\n"));
+    LOGDEB("SSearch::completion\n" );
 
     m_disableAutosearch = true;
     m_stroketimeout->stop();
@@ -506,7 +503,7 @@ void SSearch::completion()
 	return;
     }
     if (lst.size() >= maxdpy) {
-	LOGDEB0(("SSearch::completion(): truncating list\n"));
+	LOGDEB0("SSearch::completion(): truncating list\n" );
 	lst = lst.mid(0, maxdpy);
 	lst.append("[...]");
     }
@@ -542,7 +539,7 @@ void SSearch::completionTermChosen(const QString& text)
 
 void SSearch::wrapupCompletion()
 {
-    LOGDEB(("SSearch::wrapupCompletion\n"));
+    LOGDEB("SSearch::wrapupCompletion\n" );
 
     queryText->clear();
     queryText->addItems(prefs.ssearchHistory);
@@ -707,9 +704,7 @@ bool SSearch::eventFilter(QObject *target, QEvent *event)
 	event->type() == QEvent::UpdateRequest ||
 	event->type() == QEvent::Paint)
 	return false;
-    LOGDEB2(("SSearch::eventFilter: target %p (%p) type %s\n", 
-	     target, queryText->lineEdit(),
-	     eventTypeToStr(event->type())));
+    LOGDEB2("SSearch::eventFilter: target "  << (target) << " ("  << (queryText->lineEdit()) << ") type "  << (eventTypeToStr(event->type())) << "\n" );
 #endif
 
     if (target == queryText->view()) {
@@ -725,16 +720,15 @@ bool SSearch::eventFilter(QObject *target, QEvent *event)
 
     if (event->type() == QEvent::KeyPress)  {
 	QKeyEvent *ke = (QKeyEvent *)event;
-	LOGDEB1(("SSearch::eventFilter: keyPress (m_escape %d) key %d\n", 
-		 m_escape, ke->key()));
+	LOGDEB1("SSearch::eventFilter: keyPress (m_escape "  << (m_escape) << ") key "  << (ke->key()) << "\n" );
 	if (ke->key() == Qt::Key_Escape) {
-	    LOGDEB(("Escape\n"));
+	    LOGDEB("Escape\n" );
 	    m_escape = true;
 	    m_disableAutosearch = true;
 	    m_stroketimeout->stop();
 	    return true;
 	} else if (m_escape && ke->key() == Qt::Key_Space) {
-	    LOGDEB(("Escape space\n"));
+	    LOGDEB("Escape space\n" );
 	    ke->accept();
 	    completion();
 	    m_escape = false;
@@ -750,11 +744,11 @@ bool SSearch::eventFilter(QObject *target, QEvent *event)
 	    if (prefs.ssearchAsYouType) {
 		m_disableAutosearch = false;
 		QString qs = queryText->currentText();
-		LOGDEB0(("SSearch::eventFilter: start timer, qs [%s]\n", 
-			 qs2utf8s(qs).c_str()));
+		LOGDEB0("SSearch::eventFilter: start timer, qs ["  << (qs2utf8s(qs)) << "]\n" );
 		m_stroketimeout->start(strokeTimeoutMS);
 	    }
 	}
     }
     return false;
 }
+

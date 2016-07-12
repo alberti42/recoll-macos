@@ -24,7 +24,7 @@
 
 #include "unacpp.h"
 #include "unac.h"
-#include "debuglog.h"
+#include "log.h"
 #include "utf8iter.h"
 
 bool unacmaybefold(const string &in, string &out, 
@@ -68,7 +68,7 @@ bool unacmaybefold(const string &in, string &out,
 // testing user-entered terms, so we don't really care.
 bool unaciscapital(const string& in)
 {
-    LOGDEB2(("unaciscapital: [%s]\n", in.c_str()));
+    LOGDEB2("unaciscapital: ["  << (in) << "]\n" );
     if (in.empty())
 	return false;
     Utf8Iter it(in);
@@ -77,7 +77,7 @@ bool unaciscapital(const string& in)
 
     string lower;
     if (!unacmaybefold(shorter, lower, "UTF-8", UNACOP_FOLD)) {
-	LOGINFO(("unaciscapital: unac/fold failed for [%s]\n", in.c_str()));
+	LOGINFO("unaciscapital: unac/fold failed for ["  << (in) << "]\n" );
 	return false;
     } 
     Utf8Iter it1(lower);
@@ -88,13 +88,13 @@ bool unaciscapital(const string& in)
 }
 bool unachasuppercase(const string& in)
 {
-    LOGDEB2(("unachasuppercase: [%s]\n", in.c_str()));
+    LOGDEB2("unachasuppercase: ["  << (in) << "]\n" );
     if (in.empty())
 	return false;
 
     string lower;
     if (!unacmaybefold(in, lower, "UTF-8", UNACOP_FOLD)) {
-	LOGINFO(("unachasuppercase: unac/fold failed for [%s]\n", in.c_str()));
+	LOGINFO("unachasuppercase: unac/fold failed for ["  << (in) << "]\n" );
 	return false;
     } 
     if (lower != in)
@@ -104,13 +104,13 @@ bool unachasuppercase(const string& in)
 }
 bool unachasaccents(const string& in)
 {
-    LOGDEB2(("unachasaccents: [%s]\n", in.c_str()));
+    LOGDEB2("unachasaccents: ["  << (in) << "]\n" );
     if (in.empty())
 	return false;
 
     string noac;
     if (!unacmaybefold(in, noac, "UTF-8", UNACOP_UNAC)) {
-	LOGINFO(("unachasaccents: unac/unac failed for [%s]\n", in.c_str()));
+	LOGINFO("unachasaccents: unac/unac failed for ["  << (in) << "]\n" );
 	return false;
     } 
     if (noac != in)
@@ -247,3 +247,4 @@ int main(int argc, char **argv)
 }
 
 #endif
+

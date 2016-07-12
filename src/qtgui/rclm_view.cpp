@@ -24,7 +24,7 @@
 
 #include "qxtconfirmationmessage.h"
 
-#include "debuglog.h"
+#include "log.h"
 #include "fileudi.h"
 #include "execmd.h"
 #include "transcode.h"
@@ -47,9 +47,7 @@ void RclMain::viewUrl()
 	return;
 
     QUrl qurl(m_urltoview);
-    LOGDEB(("RclMain::viewUrl: Path [%s] fragment [%s]\n", 
-	    (const char *)qurl.path().toLocal8Bit(),
-	    (const char *)qurl.fragment().toLocal8Bit()));
+    LOGDEB("RclMain::viewUrl: Path ["  << ((const char *)qurl.path().toLocal8Bit()) << "] fragment ["  << ((const char *)qurl.fragment().toLocal8Bit()) << "]\n" );
 
     /* In theory, the url might not be for a file managed by the fs
        indexer so that the make_udi() call here would be
@@ -124,7 +122,7 @@ static bool lookForHtmlBrowser(string &exefile)
 
 void RclMain::openWith(Rcl::Doc doc, string cmdspec)
 {
-    LOGDEB(("RclMain::openWith: %s\n", cmdspec.c_str()));
+    LOGDEB("RclMain::openWith: "  << (cmdspec) << "\n" );
 
     // Split the command line
     vector<string> lcmd;
@@ -159,11 +157,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 {
     string apptag;
     doc.getmeta(Rcl::Doc::keyapptg, &apptag);
-    LOGDEB(("RclMain::startNativeViewer: mtype [%s] apptag [%s] page %d "
-	    "term [%s] url [%s] ipath [%s]\n", 
-	    doc.mimetype.c_str(), apptag.c_str(), pagenum, 
-	    (const char *)(term.toUtf8()), doc.url.c_str(), doc.ipath.c_str()
-	       ));
+    LOGDEB("RclMain::startNativeViewer: mtype ["  << (doc.mimetype) << "] apptag ["  << (apptag) << "] page "  << (pagenum) << " term ["  << ((const char *)(term.toUtf8())) << "] url ["  << (doc.url) << "] ipath ["  << (doc.ipath) << "]\n" );
 
     // Look for appropriate viewer
     string cmdplusattr = theconfig->getMimeViewerDef(doc.mimetype, apptag, 
@@ -293,8 +287,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     bool enterHistory = false;
     bool istempfile = false;
     
-    LOGDEB(("RclMain::startNV: groksipath %d wantsf %d wantsparentf %d\n",
-            groksipath, wantsfile, wantsparentfile));
+    LOGDEB("RclMain::startNV: groksipath "  << (groksipath) << " wantsf "  << (wantsfile) << " wantsparentf "  << (wantsparentfile) << "\n" );
 
     // If the command wants a file but this is not a file url, or
     // there is an ipath that it won't understand, we need a temp file:
@@ -409,7 +402,7 @@ void RclMain::execViewer(const map<string, string>& subs, bool enterHistory,
     for (vector<string>::const_iterator it = _lcmd.begin(); 
          it != _lcmd.end(); it++) {
         pcSubst(*it, ncmd, subs);
-        LOGDEB(("%s->%s\n", it->c_str(), ncmd.c_str()));
+        LOGDEB(""  << *it << "->"  << (ncmd) << "\n" );
         lcmd.push_back(ncmd);
     }
 
@@ -457,8 +450,7 @@ void RclMain::startManual(const string& index)
     webhelp = path_cat(webhelp, "index.html");
     bool has_wh = path_exists(webhelp);
     
-    LOGDEB(("RclMain::startManual: help index is %s\n", 
-	    index.empty()?"(null)":index.c_str()));
+    LOGDEB("RclMain::startManual: help index is "  << (index.empty()?"(null)":index) << "\n" );
     bool indexempty = index.empty();
 
 #ifdef _WIN32
@@ -481,3 +473,4 @@ void RclMain::startManual(const string& index)
     doc.mimetype = "text/html";
     startNativeViewer(doc);
 }
+

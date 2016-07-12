@@ -17,7 +17,7 @@
 #include "autoconfig.h"
 
 #include "rcldoc.h"
-#include "debuglog.h"
+#include "log.h"
 #include "rclutil.h"
 
 namespace Rcl {
@@ -50,27 +50,26 @@ namespace Rcl {
 
     void Doc::dump(bool dotext) const
     {
-        LOGDEB(("Rcl::Doc::dump: url: [%s]\n", url.c_str()));
-        LOGDEB(("Rcl::Doc::dump: idxurl: [%s]\n", idxurl.c_str()));
-        LOGDEB(("Rcl::Doc::dump: ipath: [%s]\n", ipath.c_str()));
-        LOGDEB(("Rcl::Doc::dump: mimetype: [%s]\n", mimetype.c_str()));
-        LOGDEB(("Rcl::Doc::dump: fmtime: [%s]\n", fmtime.c_str()));
-        LOGDEB(("Rcl::Doc::dump: dmtime: [%s]\n", dmtime.c_str()));
-        LOGDEB(("Rcl::Doc::dump: origcharset: [%s]\n", origcharset.c_str()));
-        LOGDEB(("Rcl::Doc::dump: syntabs: [%d]\n", syntabs));
-        LOGDEB(("Rcl::Doc::dump: pcbytes: [%s]\n", pcbytes.c_str()));
-        LOGDEB(("Rcl::Doc::dump: fbytes: [%s]\n", fbytes.c_str()));
-        LOGDEB(("Rcl::Doc::dump: dbytes: [%s]\n", dbytes.c_str()));
-        LOGDEB(("Rcl::Doc::dump: sig: [%s]\n", sig.c_str()));
-        LOGDEB(("Rcl::Doc::dump: pc: [%d]\n", pc));
-        LOGDEB(("Rcl::Doc::dump: xdocid: [%lu]\n", (unsigned long)xdocid));
+        LOGDEB("Rcl::Doc::dump: url: ["  << (url) << "]\n" );
+        LOGDEB("Rcl::Doc::dump: idxurl: ["  << (idxurl) << "]\n" );
+        LOGDEB("Rcl::Doc::dump: ipath: ["  << (ipath) << "]\n" );
+        LOGDEB("Rcl::Doc::dump: mimetype: ["  << (mimetype) << "]\n" );
+        LOGDEB("Rcl::Doc::dump: fmtime: ["  << (fmtime) << "]\n" );
+        LOGDEB("Rcl::Doc::dump: dmtime: ["  << (dmtime) << "]\n" );
+        LOGDEB("Rcl::Doc::dump: origcharset: ["  << (origcharset) << "]\n" );
+        LOGDEB("Rcl::Doc::dump: syntabs: ["  << (syntabs) << "]\n" );
+        LOGDEB("Rcl::Doc::dump: pcbytes: ["  << (pcbytes) << "]\n" );
+        LOGDEB("Rcl::Doc::dump: fbytes: ["  << (fbytes) << "]\n" );
+        LOGDEB("Rcl::Doc::dump: dbytes: ["  << (dbytes) << "]\n" );
+        LOGDEB("Rcl::Doc::dump: sig: ["  << (sig) << "]\n" );
+        LOGDEB("Rcl::Doc::dump: pc: ["  << (pc) << "]\n" );
+        LOGDEB("Rcl::Doc::dump: xdocid: ["  << ((unsigned long)xdocid) << "]\n" );
         for (map<string, string>::const_iterator it = meta.begin();
              it != meta.end(); it++) {
-            LOGDEB(("Rcl::Doc::dump: meta[%s]: [%s]\n", 
-                    (*it).first.c_str(), (*it).second.c_str()));
+            LOGDEB("Rcl::Doc::dump: meta["  << ((*it).first) << "]: ["  << ((*it).second) << "]\n" );
         }
         if (dotext)
-            LOGDEB(("Rcl::Doc::dump: text: \n[%s]\n", text.c_str()));
+            LOGDEB("Rcl::Doc::dump: text: \n["  << (text) << "]\n" );
     }
 
     // Copy ensuring no shared string data, for threading issues.
@@ -99,4 +98,5 @@ namespace Rcl {
 	d->onlyxattr = onlyxattr;
     }
 }
+
 

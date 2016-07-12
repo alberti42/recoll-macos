@@ -42,7 +42,7 @@
 #include "rclutil.h"
 #include "rclconfig.h"
 #include "conftree.h"
-#include "debuglog.h"
+#include "log.h"
 #include "smallut.h"
 #include "textsplit.h"
 #include "readfile.h"
@@ -67,10 +67,9 @@ string RclConfig::o_origcwd;
 
 bool ParamStale::needrecompute()
 {
-    LOGDEB2(("ParamStale:: needrecompute. parent gen %d mine %d\n", 
-	     parent->m_keydirgen, savedkeydirgen));
+    LOGDEB2("ParamStale:: needrecompute. parent gen "  << (parent->m_keydirgen) << " mine "  << (savedkeydirgen) << "\n" );
     if (active && parent->m_keydirgen != savedkeydirgen) {
-	LOGDEB2(("ParamState:: needrecompute. conffile %p\n", conffile));
+	LOGDEB2("ParamState:: needrecompute. conffile "  << (conffile) << "\n" );
 
         savedkeydirgen = parent->m_keydirgen;
         string newvalue;
@@ -79,8 +78,7 @@ bool ParamStale::needrecompute()
         conffile->get(paramname, newvalue, parent->m_keydir);
         if (newvalue.compare(savedvalue)) {
             savedvalue = newvalue;
-	    LOGDEB2(("ParamState:: needrecompute. return true newvalue [%s]\n",
-		     newvalue.c_str()));
+	    LOGDEB2("ParamState:: needrecompute. return true newvalue ["  << (newvalue) << "]\n" );
             return true;
         }
     }
@@ -216,8 +214,7 @@ RclConfig::RclConfig(const string *argcnf)
         // interface, Windows will never use utf-8
         o_localecharset = "UTF-8";
 #endif
-	LOGDEB1(("RclConfig::getDefCharset: localecharset [%s]\n",
-		 o_localecharset.c_str()));
+	LOGDEB1("RclConfig::getDefCharset: localecharset ["  << (o_localecharset) << "]\n" );
     }
 
     const char *cp;
@@ -425,8 +422,7 @@ bool RclConfig::getConfParam(const string &name, vector<int> *vip,
 	char *ep;
 	vip->push_back(strtol(vs[i].c_str(), &ep, 0));
 	if (ep == vs[i].c_str()) {
-	    LOGDEB(("RclConfig::getConfParam: bad int value in [%s]\n",
-		    name.c_str()));
+	    LOGDEB("RclConfig::getConfParam: bad int value in ["  << (name) << "]\n" );
 	    return false;
 	}
     }
@@ -442,16 +438,16 @@ void RclConfig::initThrConf()
     vector<int> vq;
     vector<int> vt;
     if (!getConfParam("thrQSizes", &vq)) {
-	LOGINFO(("RclConfig::initThrConf: no thread info (queues)\n"));
+	LOGINFO("RclConfig::initThrConf: no thread info (queues)\n" );
 	goto out;
     }
 
     // If the first queue size is 0, autoconf is requested.
     if (vq.size() > 0 && vq[0] == 0) {
-	LOGDEB(("RclConfig::initThrConf: autoconf requested\n"));
+	LOGDEB("RclConfig::initThrConf: autoconf requested\n" );
 	CpuConf cpus;
 	if (!getCpuConf(cpus) || cpus.ncpus < 1) {
-	    LOGERR(("RclConfig::initThrConf: could not retrieve cpu conf\n"));
+	    LOGERR("RclConfig::initThrConf: could not retrieve cpu conf\n" );
 	    cpus.ncpus = 1;
 	}
 	// Arbitrarily set threads config based on number of CPUS. This also
@@ -477,12 +473,12 @@ void RclConfig::initThrConf()
     }
 
     if (!getConfParam("thrTCounts", &vt) ) {
-	LOGINFO(("RclConfig::initThrConf: no thread info (threads)\n"));
+	LOGINFO("RclConfig::initThrConf: no thread info (threads)\n" );
 	goto out;
     }
 
     if (vq.size() != 3 || vt.size() != 3) {
-	LOGINFO(("RclConfig::initThrConf: bad thread info vector sizes\n"));
+	LOGINFO("RclConfig::initThrConf: bad thread info vector sizes\n" );
 	goto out;
     }
 
@@ -499,14 +495,13 @@ out:
 	    ") ";
     }
 
-    LOGDEB(("RclConfig::initThrConf: chosen config (ql,nt): %s\n", 
-	    sconf.str().c_str()));
+    LOGDEB("RclConfig::initThrConf: chosen config (ql,nt): "  << (sconf.str()) << "\n" );
 }
 
 pair<int,int> RclConfig::getThrConf(ThrStage who) const
 {
     if (m_thrConf.size() != 3) {
-	LOGERR(("RclConfig::getThrConf: bad data in rclconfig\n"));
+	LOGERR("RclConfig::getThrConf: bad data in rclconfig\n" );
 	return pair<int,int>(-1,-1);
     }
     return m_thrConf[who];
@@ -516,8 +511,7 @@ vector<string> RclConfig::getTopdirs() const
 {
     vector<string> tdl;
     if (!getConfParam("topdirs", &tdl)) {
-	LOGERR(("RclConfig::getTopdirs: no top directories in config or "
-		"bad list format\n"));
+	LOGERR("RclConfig::getTopdirs: no top directories in config or bad list format\n" );
 	return tdl;
     }
 
@@ -601,7 +595,7 @@ typedef multiset<SfString, SuffCmp> SuffixStore;
 
 bool RclConfig::inStopSuffixes(const string& fni)
 {
-    LOGDEB2(("RclConfig::inStopSuffixes(%s)\n", fni.c_str()));
+    LOGDEB2("RclConfig::inStopSuffixes("  << (fni) << ")\n" );
     // Beware: both needrecompute() need to be called always hence the
     // bizarre way we do things
     bool needrecompute = m_stpsuffstate.needrecompute();
@@ -610,7 +604,7 @@ bool RclConfig::inStopSuffixes(const string& fni)
 	// Need to initialize the suffixes
         delete STOPSUFFIXES;
 	if ((m_stopsuffixes = new SuffixStore) == 0) {
-	    LOGERR(("RclConfig::inStopSuffixes: out of memory\n"));
+	    LOGERR("RclConfig::inStopSuffixes: out of memory\n" );
 	    return false;
 	}
         // Let the old customisation have priority: if recoll_noindex
@@ -637,11 +631,10 @@ bool RclConfig::inStopSuffixes(const string& fni)
     stringtolower(fn);
     SuffixStore::const_iterator it = STOPSUFFIXES->find(fn);
     if (it != STOPSUFFIXES->end()) {
-	LOGDEB2(("RclConfig::inStopSuffixes: Found (%s) [%s]\n", 
-		fni.c_str(), (*it).m_str.c_str()));
+	LOGDEB2("RclConfig::inStopSuffixes: Found ("  << (fni) << ") ["  << ((*it).m_str) << "]\n" );
 	return true;
     } else {
-	LOGDEB2(("RclConfig::inStopSuffixes: not found [%s]\n", fni.c_str()));
+	LOGDEB2("RclConfig::inStopSuffixes: not found ["  << (fni) << "]\n" );
 	return false;
     }
 }
@@ -718,18 +711,18 @@ string RclConfig::getMimeHandlerDef(const string &mtype, bool filtertypes)
         }
         if (!m_restrictMTypes.empty() && 
             !m_restrictMTypes.count(stringtolower(mtype))) {
-            LOGDEB2(("RclConfig::getMimeHandlerDef: not in mime type list\n"));
+            LOGDEB2("RclConfig::getMimeHandlerDef: not in mime type list\n" );
             return hs;
         }
         if (!m_excludeMTypes.empty() && 
             m_excludeMTypes.count(stringtolower(mtype))) {
-            LOGDEB2(("RclConfig::getMimeHandlerDef: in excluded mime list\n"));
+            LOGDEB2("RclConfig::getMimeHandlerDef: in excluded mime list\n" );
             return hs;
         }
     }
 
     if (!mimeconf->get(mtype, hs, "index")) {
-	LOGDEB1(("getMimeHandler: no handler for '%s'\n", mtype.c_str()));
+	LOGDEB1("getMimeHandler: no handler for '"  << (mtype) << "'\n" );
     }
     return hs;
 }
@@ -820,7 +813,7 @@ void RclConfig::storeMissingHelperDesc(const string &s)
     FILE *fp = fopen(fmiss.c_str(), "w");
     if (fp) {
 	if (s.size() > 0 && fwrite(s.c_str(), s.size(), 1, fp) != 1) {
-            LOGERR(("storeMissingHelperDesc: fwrite failed\n"));
+            LOGERR("storeMissingHelperDesc: fwrite failed\n" );
         }
 	fclose(fp);
     }
@@ -830,7 +823,7 @@ void RclConfig::storeMissingHelperDesc(const string &s)
 // things for speed (theses are used a lot during indexing)
 bool RclConfig::readFieldsConfig(const string& cnferrloc)
 {
-    LOGDEB2(("RclConfig::readFieldsConfig\n"));
+    LOGDEB2("RclConfig::readFieldsConfig\n" );
     m_fields = new ConfStack<ConfSimple>("fields", m_cdirs, true);
     if (m_fields == 0 || !m_fields->ok()) {
 	m_reason = string("No/bad fields file in: ") + cnferrloc;
@@ -848,8 +841,7 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 	ConfSimple attrs;
 	FieldTraits ft;
 	if (!valueSplitAttributes(val, ft.pfx, attrs)) {
-	    LOGERR(("readFieldsConfig: bad config line for [%s]: [%s]\n", 
-		    it->c_str(), val.c_str()));
+	    LOGERR("readFieldsConfig: bad config line for ["  << *it << "]: ["  << (val) << "]\n" );
 	    return 0;
 	}
 	string tval;
@@ -862,8 +854,7 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 	if (attrs.get("noterms", tval))
 	    ft.noterms = stringToBool(tval);
 	m_fldtotraits[stringtolower(*it)] = ft;
-	LOGDEB2(("readFieldsConfig: [%s] -> [%s] %d %.1f\n", 
-		it->c_str(), ft.pfx.c_str(), ft.wdfinc, ft.boost));
+	LOGDEB2("readFieldsConfig: ["  << *it << "] -> ["  << (ft.pfx) << "] "  << (ft.wdfinc) << " "  << (ft.boost) << "\n" );
     }
 
     // Add prefixes for aliases and build alias-to-canonic map while
@@ -909,9 +900,7 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 #if 0
     for (map<string, FieldTraits>::const_iterator it = m_fldtotraits.begin();
 	 it != m_fldtotraits.end(); it++) {
-	LOGDEB(("readFieldsConfig: [%s] -> [%s] %d %.1f\n", 
-		it->c_str(), it->second.pfx.c_str(), it->second.wdfinc, 
-		it->second.boost));
+	LOGDEB("readFieldsConfig: ["  << *it << "] -> ["  << (it->second.pfx) << "] "  << (it->second.wdfinc) << " "  << (it->second.boost) << "\n" );
     }
 #endif
 
@@ -944,12 +933,10 @@ bool RclConfig::getFieldTraits(const string& _fld, const FieldTraits **ftpp,
     map<string, FieldTraits>::const_iterator pit = m_fldtotraits.find(fld);
     if (pit != m_fldtotraits.end()) {
 	*ftpp = &pit->second;
-	LOGDEB1(("RclConfig::getFieldTraits: [%s]->[%s]\n", 
-		 _fld.c_str(), pit->second.pfx.c_str()));
+	LOGDEB1("RclConfig::getFieldTraits: ["  << (_fld) << "]->["  << (pit->second.pfx) << "]\n" );
 	return true;
     } else {
-	LOGDEB1(("RclConfig::getFieldTraits: no prefix for field [%s]\n",
-		 fld.c_str()));
+	LOGDEB1("RclConfig::getFieldTraits: no prefix for field ["  << (fld) << "]\n" );
 	*ftpp = 0;
 	return false;
     }
@@ -971,11 +958,10 @@ string RclConfig::fieldCanon(const string& f) const
     string fld = stringtolower(f);
     map<string, string>::const_iterator it = m_aliastocanon.find(fld);
     if (it != m_aliastocanon.end()) {
-	LOGDEB1(("RclConfig::fieldCanon: [%s] -> [%s]\n", 
-		 f.c_str(), it->second.c_str()));
+	LOGDEB1("RclConfig::fieldCanon: ["  << (f) << "] -> ["  << (it->second) << "]\n" );
 	return it->second;
     }
-    LOGDEB1(("RclConfig::fieldCanon: [%s] -> [%s]\n", f.c_str(), fld.c_str()));
+    LOGDEB1("RclConfig::fieldCanon: ["  << (f) << "] -> ["  << (fld) << "]\n" );
     return fld;
 }
 
@@ -984,8 +970,7 @@ string RclConfig::fieldQCanon(const string& f) const
     string fld = stringtolower(f);
     map<string, string>::const_iterator it = m_aliastoqcanon.find(fld);
     if (it != m_aliastoqcanon.end()) {
-	LOGDEB1(("RclConfig::fieldQCanon: [%s] -> [%s]\n", 
-                f.c_str(), it->second.c_str()));
+	LOGDEB1("RclConfig::fieldQCanon: ["  << (f) << "] -> ["  << (it->second) << "]\n" );
 	return it->second;
     }
     return fieldCanon(f);
@@ -1031,8 +1016,7 @@ bool RclConfig::setMimeViewerAllEx(const string& allex)
 string RclConfig::getMimeViewerDef(const string &mtype, const string& apptag,
 				   bool useall) const
 {
-    LOGDEB2(("RclConfig::getMimeViewerDef: mtype [%s] apptag [%s]\n",
-	     mtype.c_str(), apptag.c_str()));
+    LOGDEB2("RclConfig::getMimeViewerDef: mtype ["  << (mtype) << "] apptag ["  << (apptag) << "]\n" );
     string hs;
     if (mimeview == 0)
 	return hs;
@@ -1216,19 +1200,17 @@ string RclConfig::getPidfile() const
 
 void RclConfig::urlrewrite(const string& dbdir, string& url) const
 {
-    LOGDEB2(("RclConfig::urlrewrite: dbdir [%s] url [%s]\n",
-	    dbdir.c_str(), url.c_str()));
+    LOGDEB2("RclConfig::urlrewrite: dbdir ["  << (dbdir) << "] url ["  << (url) << "]\n" );
 
     // Do path translations exist for this index ?
     if (m_ptrans == 0 || !m_ptrans->hasSubKey(dbdir)) {
-	LOGDEB2(("RclConfig::urlrewrite: no paths translations (m_ptrans %p)\n",
-		m_ptrans));
+	LOGDEB2("RclConfig::urlrewrite: no paths translations (m_ptrans "  << (m_ptrans) << ")\n" );
 	return;
     }
 
     string path = fileurltolocalpath(url);
     if (path.empty()) {
-	LOGDEB2(("RclConfig::urlrewrite: not file url\n"));
+	LOGDEB2("RclConfig::urlrewrite: not file url\n" );
 	return;
     }
 
@@ -1387,7 +1369,7 @@ bool RclConfig::getUncompressor(const string &mtype, vector<string>& cmd) const
     vector<string> tokens;
     stringToStrings(hs, tokens);
     if (tokens.empty()) {
-	LOGERR(("getUncompressor: empty spec for mtype %s\n", mtype.c_str()));
+	LOGERR("getUncompressor: empty spec for mtype "  << (mtype) << "\n" );
 	return false;
     }
     vector<string>::iterator it = tokens.begin();
@@ -1405,7 +1387,7 @@ bool RclConfig::getUncompressor(const string &mtype, vector<string>& cmd) const
     if (!stringlowercmp("python", *it) || !stringlowercmp("perl", *it)) {
         it++;
         if (tokens.size() < 3) {
-            LOGERR(("getUncpressor: python/perl cmd: no script?. [%s]\n", mtype.c_str()));
+            LOGERR("getUncpressor: python/perl cmd: no script?. ["  << (mtype) << "]\n" );
         } else {
             *it = findFilter(*it);
         }
@@ -1552,7 +1534,8 @@ void RclConfig::initParamStale(ConfNull *cnf, ConfNull *mimemap)
 
 using namespace std;
 
-#include "debuglog.h"
+#include "log.h"
+
 #include "rclinit.h"
 #include "rclconfig.h"
 #include "cstr.h"
@@ -1727,3 +1710,4 @@ int main(int argc, char **argv)
 }
 
 #endif // TEST_RCLCONFIG
+

@@ -51,7 +51,6 @@ public:
     
 private:
     Rcl::Doc m_idoc;
-    int m_loglevel;
     bool m_previewHtml;
     RclConfig m_config;
 };

@@ -21,7 +21,7 @@
 
 #include "rclconfig.h"
 #include "execmd.h"
-#include "debuglog.h"
+#include "log.h"
 #include "checkretryfailed.h"
 
 using namespace std;
@@ -34,8 +34,7 @@ bool checkRetryFailed(RclConfig *conf, bool record)
     string cmd;
 
     if (!conf->getConfParam("checkneedretryindexscript", cmd)) {
-        LOGDEB(("checkRetryFailed: 'checkneedretryindexscript' "
-                "not set in config\n"));
+        LOGDEB("checkRetryFailed: 'checkneedretryindexscript' not set in config\n" );
         // We could toss a dice ? Say no retry in this case.
         return false;
     }
@@ -56,3 +55,4 @@ bool checkRetryFailed(RclConfig *conf, bool record)
     return false;
 #endif
 }
+

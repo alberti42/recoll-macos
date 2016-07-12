@@ -73,8 +73,7 @@ public:
     virtual std::string operator()(const std::string& in)
     {
 	string out = m_stemmer(in);
-	LOGDEB2(("SynTermTransStem(%s): in [%s] out [%s]\n", m_lang.c_str(),
-		 in.c_str(), out.c_str()));
+	LOGDEB2("SynTermTransStem("  << (m_lang) << "): in ["  << (in) << "] out ["  << (out) << "]\n" );
 	return out;
     }
     Xapian::Stem m_stemmer;
@@ -102,3 +101,4 @@ public:
 }
 
 #endif /* _STEMDB_H_INCLUDED_ */
+

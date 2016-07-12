@@ -29,7 +29,7 @@
 #include <cstring>
 #include <string>
 
-#include "debuglog.h"
+#include "log.h"
 #include "pathut.h"
 #include "wipedir.h"
 
@@ -43,22 +43,22 @@ int wipedir(const string& dir, bool selfalso, bool recurse)
 
     statret = lstat(dir.c_str(), &st);
     if (statret == -1) {
-	LOGERR(("wipedir: cant stat %s, errno %d\n", dir.c_str(), errno));
+	LOGERR("wipedir: cant stat "  << (dir) << ", errno "  << (errno) << "\n" );
 	return -1;
     }
     if (!S_ISDIR(st.st_mode)) {
-	LOGERR(("wipedir: %s not a directory\n", dir.c_str()));
+	LOGERR("wipedir: "  << (dir) << " not a directory\n" );
 	return -1;
     }
 
     if (access(dir.c_str(), R_OK|W_OK|X_OK) < 0) {
-	LOGERR(("wipedir: no write access to %s\n", dir.c_str()));
+	LOGERR("wipedir: no write access to "  << (dir) << "\n" );
 	return -1;
     }
 
     DIR *d = opendir(dir.c_str());
     if (d == 0) {
-	LOGERR(("wipedir: cant opendir %s, errno %d\n", dir.c_str(), errno));
+	LOGERR("wipedir: cant opendir "  << (dir) << ", errno "  << (errno) << "\n" );
 	return -1;
     }
     int remaining = 0;
@@ -72,7 +72,7 @@ int wipedir(const string& dir, bool selfalso, bool recurse)
 	struct stat st;
 	int statret = lstat(fn.c_str(), &st);
 	if (statret == -1) {
-	    LOGERR(("wipedir: cant stat %s, errno %d\n", fn.c_str(), errno));
+	    LOGERR("wipedir: cant stat "  << (fn) << ", errno "  << (errno) << "\n" );
 	    goto out;
 	}
 	if (S_ISDIR(st.st_mode)) {
@@ -87,8 +87,7 @@ int wipedir(const string& dir, bool selfalso, bool recurse)
 	    }
 	} else {
 	    if (unlink(fn.c_str()) < 0) {
-		LOGERR(("wipedir: cant unlink %s, errno %d\n", 
-			fn.c_str(), errno));
+		LOGERR("wipedir: cant unlink "  << (fn) << ", errno "  << (errno) << "\n" );
 		goto out;
 	    }
 	}
@@ -97,8 +96,7 @@ int wipedir(const string& dir, bool selfalso, bool recurse)
     ret = remaining;
     if (selfalso && ret == 0) {
 	if (rmdir(dir.c_str()) < 0) {
-	    LOGERR(("wipedir: rmdir(%s) failed, errno %d\n",
-		    dir.c_str(), errno));
+	    LOGERR("wipedir: rmdir("  << (dir) << ") failed, errno "  << (errno) << "\n" );
 	    ret = -1;
 	}
     }
@@ -167,3 +165,4 @@ int main(int argc, const char **argv)
 }
 
 #endif
+

@@ -23,7 +23,7 @@
 #include "dynconf.h"
 #include "base64.h"
 #include "smallut.h"
-#include "debuglog.h"
+#include "log.h"
 
 using namespace std;
 
@@ -44,13 +44,13 @@ bool RclDynConf::insertNew(const string &sk, DynConfEntry &n, DynConfEntry &s,
     for (it = names.begin(); it != names.end(); it++) {
 	string oval;
 	if (!m_data.get(*it, oval, sk)) {
-	    LOGDEB(("No data for %s\n", (*it).c_str()));
+	    LOGDEB("No data for "  << ((*it)) << "\n" );
 	    continue;
 	}
 	s.decode(oval);
 
 	if (s.equal(n)) {
-	    LOGDEB(("Erasing old entry\n"));
+	    LOGDEB("Erasing old entry\n" );
 	    m_data.erase(*it, sk);
 	    changed = true;
 	}
@@ -80,9 +80,9 @@ bool RclDynConf::insertNew(const string &sk, DynConfEntry &n, DynConfEntry &s,
 
     string value;
     n.encode(value);
-    LOGDEB1(("Encoded value [%s] (%d)\n", value.c_str(), value.size()));
+    LOGDEB1("Encoded value ["  << (value) << "] ("  << (value.size()) << ")\n" );
     if (!m_data.set(string(nname), value, sk)) {
-	LOGERR(("RclDHistory::insertNew: set failed\n"));
+	LOGERR("RclDHistory::insertNew: set failed\n" );
 	return false;
     }
     return true;
@@ -124,7 +124,8 @@ list<string> RclDynConf::getStringList(const string sk)
 #include <iostream>
 
 #include "history.h"
-#include "debuglog.h"
+#include "log.h"
+
 
 #ifndef NO_NAMESPACES
 using namespace std;
@@ -211,3 +212,4 @@ int main(int argc, char **argv)
 }
 
 #endif
+

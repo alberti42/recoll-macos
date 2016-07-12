@@ -24,7 +24,7 @@
 #include <map>
 
 #include "uncomp.h"
-#include "debuglog.h"
+#include "log.h"
 #include "smallut.h"
 #include "execmd.h"
 #include "pathut.h"
@@ -57,7 +57,7 @@ bool Uncomp::uncompressfile(const string& ifn,
     }
     // Make sure tmp dir is empty. we guarantee this to filters
     if (!m_dir || !m_dir->ok() || !m_dir->wipe()) {
-	LOGERR(("uncompressfile: can't clear temp dir %s\n", m_dir->dirname()));
+	LOGERR("uncompressfile: can't clear temp dir "  << (m_dir->dirname()) << "\n" );
 	return false;
     }
 
@@ -66,14 +66,12 @@ bool Uncomp::uncompressfile(const string& ifn,
     int pc;
     long long availmbs;
     if (!fsocc(m_dir->dirname(), &pc, &availmbs)) {
-        LOGERR(("uncompressfile: can't retrieve avail space for %s\n", 
-                m_dir->dirname()));
+        LOGERR("uncompressfile: can't retrieve avail space for "  << (m_dir->dirname()) << "\n" );
         // Hope for the best
     } else {
 	long long fsize = path_filesize(ifn);
         if (fsize < 0) {
-            LOGERR(("uncompressfile: stat input file %s errno %d\n", 
-                    ifn.c_str(), errno));
+            LOGERR("uncompressfile: stat input file "  << (ifn) << " errno "  << (errno) << "\n" );
             return false;
         }
         // We need at least twice the file size for the uncompressed
@@ -85,10 +83,7 @@ bool Uncomp::uncompressfile(const string& ifn,
         long long filembs = fsize / (1024 * 1024); 
         
         if (availmbs < 2 * filembs + 1) {
-            LOGERR(("uncompressfile. %s MBs available in %s not enough "
-                    "to uncompress %s of size %s mbs\n", 
-                    lltodecstr(availmbs).c_str(), m_dir->dirname(), 
-                    ifn.c_str(), lltodecstr(filembs).c_str()));
+            LOGERR("uncompressfile. "  << (lltodecstr(availmbs)) << " MBs available in "  << (m_dir->dirname()) << " not enough to uncompress "  << (ifn) << " of size "  << (lltodecstr(filembs)) << " mbs\n" );
             return false;
         }
     }
@@ -112,10 +107,9 @@ bool Uncomp::uncompressfile(const string& ifn,
     ExecCmd ex;
     int status = ex.doexec(cmd, args, 0, &tfile);
     if (status || tfile.empty()) {
-	LOGERR(("uncompressfile: doexec: failed for [%s] status 0x%x\n", 
-		ifn.c_str(), status));
+	LOGERR("uncompressfile: doexec: failed for ["  << (ifn) << "] status 0x"  << (status) << "\n" );
 	if (!m_dir->wipe()) {
-	    LOGERR(("uncompressfile: wipedir failed\n"));
+	    LOGERR("uncompressfile: wipedir failed\n" );
 	}
 	return false;
     }
@@ -138,4 +132,5 @@ Uncomp::~Uncomp()
 	delete m_dir;
     }
 }
+
 

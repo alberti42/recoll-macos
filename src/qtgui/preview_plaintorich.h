@@ -64,7 +64,6 @@ public:
     virtual void run();
 
 private:
-    int m_loglevel;
     const string &m_input;
     const HighlightData &m_hdata;
     STD_SHARED_PTR<PlainToRichQtPreview> m_ptr;

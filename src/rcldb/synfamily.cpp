@@ -22,7 +22,7 @@
 #include <algorithm>
 #include MEMORY_INCLUDE
 
-#include "debuglog.h"
+#include "log.h"
 #include "cstr.h"
 #include "xmacros.h"
 #include "synfamily.h"
@@ -39,7 +39,7 @@ bool XapWritableSynFamily::createMember(const string& membername)
 	m_wdb.add_synonym(memberskey(), membername);
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
-	LOGERR(("XapSynFamily::createMember: error: %s\n", ermsg.c_str()));
+	LOGERR("XapSynFamily::createMember: error: "  << (ermsg) << "\n" );
 	return false;
     }
     return true;
@@ -68,7 +68,7 @@ bool XapSynFamily::getMembers(vector<string>& members)
 	}
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
-	LOGERR(("XapSynFamily::getMembers: xapian error %s\n", ermsg.c_str()));
+	LOGERR("XapSynFamily::getMembers: xapian error "  << (ermsg) << "\n" );
 	return false;
     }
     return true;
@@ -90,7 +90,7 @@ bool XapSynFamily::listMap(const string& membername)
 	}
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
-	LOGERR(("XapSynFamily::listMap: xapian error %s\n", ermsg.c_str()));
+	LOGERR("XapSynFamily::listMap: xapian error "  << (ermsg) << "\n" );
 	return false;
     }
     vector<string>members;
@@ -107,21 +107,19 @@ bool XapSynFamily::listMap(const string& membername)
 bool XapSynFamily::synExpand(const string& member, const string& term,
                              vector<string>& result)
 {
-    LOGDEB(("XapSynFamily::synExpand:(%s) %s for %s\n",
-              m_prefix1.c_str(), term.c_str(), member.c_str()));
+    LOGDEB("XapSynFamily::synExpand:("  << (m_prefix1) << ") "  << (term) << " for "  << (member) << "\n" );
 
     string key = entryprefix(member) + term;
     string ermsg;
     try {
         for (Xapian::TermIterator xit = m_rdb.synonyms_begin(key);
              xit != m_rdb.synonyms_end(key); xit++) {
-            LOGDEB2(("  Pushing %s\n", (*xit).c_str()));
+            LOGDEB2("  Pushing "  << ((*xit)) << "\n" );
             result.push_back(*xit);
         }
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
-        LOGERR(("synFamily::synExpand: error for member [%s] term [%s]\n",
-                member.c_str(), term.c_str()));
+        LOGERR("synFamily::synExpand: error for member ["  << (member) << "] term ["  << (term) << "]\n" );
         result.push_back(term);
         return false;
     }
@@ -144,43 +142,37 @@ bool XapComputableSynFamMember::synExpand(const string& term,
 
     string key = m_prefix + root;
 
-    LOGDEB(("XapCompSynFamMbr::synExpand([%s]): term [%s] root [%s] "
-            "m_trans: %s filter: %s\n", 
-            m_prefix.c_str(), term.c_str(), root.c_str(), 
-            m_trans->name().c_str(),
-            filtertrans ? filtertrans->name().c_str() : "none"));
+    LOGDEB("XapCompSynFamMbr::synExpand(["  << (m_prefix) << "]): term ["  << (term) << "] root ["  << (root) << "] m_trans: "  << (m_trans->name()) << " filter: "  << (filtertrans ? filtertrans->name() : "none") << "\n" );
 
     string ermsg;
     try {
 	for (Xapian::TermIterator xit = m_family.getdb().synonyms_begin(key);
 	     xit != m_family.getdb().synonyms_end(key); xit++) {
 	    if (!filtertrans || (*filtertrans)(*xit) == filter_root) {
-		LOGDEB2(("  Pushing %s\n", (*xit).c_str()));
+		LOGDEB2("  Pushing "  << ((*xit)) << "\n" );
 		result.push_back(*xit);
 	    }
 	}
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
-	LOGERR(("XapSynDb::synExpand: error for term [%s] (key %s)\n",
-		term.c_str(), key.c_str()));
+	LOGERR("XapSynDb::synExpand: error for term ["  << (term) << "] (key "  << (key) << ")\n" );
 	result.push_back(term);
 	return false;
     }
 
     // If the input term and root are not in the list, add them
     if (find(result.begin(), result.end(), term) == result.end()) {
-	LOGDEB2(("  Pushing %s\n", term.c_str()));
+	LOGDEB2("  Pushing "  << (term) << "\n" );
 	result.push_back(term);
     }
     if (root != term && 
 	find(result.begin(), result.end(), root) == result.end()) {
 	if (!filtertrans || (*filtertrans)(root) == filter_root) {
-	    LOGDEB2(("  Pushing %s\n", root.c_str()));
+	    LOGDEB2("  Pushing "  << (root) << "\n" );
 	    result.push_back(root);
 	}
     }
-    LOGDEB(("XapCompSynFamMbr::synExpand([%s]): term [%s] -> [%s]\n",
-	    m_prefix.c_str(), term.c_str(), stringsToString(result).c_str()));
+    LOGDEB("XapCompSynFamMbr::synExpand(["  << (m_prefix) << "]): term ["  << (term) << "] -> ["  << (stringsToString(result)) << "]\n" );
     return true;
 }
 
@@ -188,7 +180,7 @@ bool XapComputableSynFamMember::synKeyExpand(StrMatcher* inexp,
 					     vector<string>& result,
 					     SynTermTrans *filtertrans)
 {
-    LOGDEB(("XapCompSynFam::synKeyExpand: [%s]\n", inexp->exp().c_str()));
+    LOGDEB("XapCompSynFam::synKeyExpand: ["  << (inexp->exp()) << "]\n" );
     
     // If set, compute filtering term (e.g.: only case-folded)
     STD_SHARED_PTR<StrMatcher> filter_exp;
@@ -204,14 +196,13 @@ bool XapComputableSynFamMember::synKeyExpand(StrMatcher* inexp,
     string::size_type es = inexp->baseprefixlen();
     string is = inexp->exp().substr(0, es);  
     string::size_type preflen = m_prefix.size();
-    LOGDEB2(("XapCompSynFam::synKeyExpand: init section: [%s]\n", is.c_str()));
+    LOGDEB2("XapCompSynFam::synKeyExpand: init section: ["  << (is) << "]\n" );
 
     string ermsg;
     try {
         for (Xapian::TermIterator xit = m_family.getdb().synonym_keys_begin(is);
              xit != m_family.getdb().synonym_keys_end(is); xit++) {
-	    LOGDEB2(("  Checking1 [%s] against [%s]\n", (*xit).c_str(),
-		     inexp->exp().c_str()));
+	    LOGDEB2("  Checking1 ["  << ((*xit)) << "] against ["  << (inexp->exp()) << "]\n" );
 	    if (!inexp->match(*xit))
 		continue;
 
@@ -222,36 +213,32 @@ bool XapComputableSynFamMember::synKeyExpand(StrMatcher* inexp,
 		string term = *xit1;
 		if (filter_exp) {
 		    string term1 = (*filtertrans)(term);
-		    LOGDEB2(("  Testing [%s] against [%s]\n", 
-			    term1.c_str(), filter_exp->exp().c_str()));
+		    LOGDEB2("  Testing ["  << (term1) << "] against ["  << (filter_exp->exp()) << "]\n" );
 		    if (!filter_exp->match(term1)) {
 			continue;
 		    }
 		}
-		LOGDEB2(("XapCompSynFam::keyWildExpand: [%s]\n", 
-			 (*xit1).c_str()));
+		LOGDEB2("XapCompSynFam::keyWildExpand: ["  << ((*xit1)) << "]\n" );
 		result.push_back(*xit1);
 	    }
 	    // Same with key itself
 	    string term = (*xit).substr(preflen);
 	    if (filter_exp) {
 		string term1 = (*filtertrans)(term);
-		LOGDEB2((" Testing [%s] against [%s]\n", 
-			 term1.c_str(), filter_exp->exp().c_str()));
+		LOGDEB2(" Testing ["  << (term1) << "] against ["  << (filter_exp->exp()) << "]\n" );
 		if (!filter_exp->match(term1)) {
 		    continue;
 		}
 	    }
-	    LOGDEB2(("XapCompSynFam::keyWildExpand: [%s]\n", term.c_str()));
+	    LOGDEB2("XapCompSynFam::keyWildExpand: ["  << (term) << "]\n" );
 	    result.push_back(term);
         }
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
-        LOGERR(("XapCompSynFam::synKeyExpand: xapian: [%s]\n", ermsg.c_str()));
+        LOGERR("XapCompSynFam::synKeyExpand: xapian: ["  << (ermsg) << "]\n" );
         return false;
     }
-    LOGDEB1(("XapCompSynFam::synKeyExpand: final: [%s]\n", 
-	     stringsToString(result).c_str()));
+    LOGDEB1("XapCompSynFam::synKeyExpand: final: ["  << (stringsToString(result)) << "]\n" );
     return true;
 }
 
@@ -401,3 +388,4 @@ int main(int argc, char **argv)
 }
 
 #endif // TEST_SYNFAMILY
+

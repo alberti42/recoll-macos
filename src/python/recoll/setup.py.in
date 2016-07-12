@@ -18,6 +18,7 @@ if "CYGWIN" in os.environ:
 else:
 	libraries = ['recoll']
 	
+extra_compile_args = ['-std=c++11']
 
 if 'libdir' in os.environ and os.environ['libdir'] != "":
     runtime_library_dirs = [os.path.join(os.environ['libdir'], 'recoll')]
@@ -39,6 +40,7 @@ module1 = Extension('recoll',
                                     os.path.join(top, 'query'), 
                                     os.path.join(top, 'unac')
                                     ],
+                    extra_compile_args = extra_compile_args,
                     libraries = libraries,
                     library_dirs = library_dirs,
                     runtime_library_dirs = runtime_library_dirs,
@@ -57,6 +59,7 @@ module2 = Extension('rclextract',
                                     os.path.join(top, 'internfile'), 
                                     os.path.join(top, 'rcldb'), 
                                     ],
+                    extra_compile_args = extra_compile_args,
                     libraries = libraries,
                     library_dirs = library_dirs,
                     runtime_library_dirs = runtime_library_dirs,

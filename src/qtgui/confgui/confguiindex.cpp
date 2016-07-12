@@ -35,7 +35,7 @@ using std::list;
 #include "recoll.h"
 #include "confguiindex.h"
 #include "smallut.h"
-#include "debuglog.h"
+#include "log.h"
 #include "rcldb.h"
 #include "conflinkrcl.h"
 #include "execmd.h"
@@ -68,9 +68,9 @@ ConfIndexW::ConfIndexW(QWidget *parent, RclConfig *config)
 
 void ConfIndexW::acceptChanges()
 {
-    LOGDEB(("ConfIndexW::acceptChanges()\n"));
+    LOGDEB("ConfIndexW::acceptChanges()\n" );
     if (!m_conf) {
-	LOGERR(("ConfIndexW::acceptChanges: no config\n"));
+	LOGERR("ConfIndexW::acceptChanges: no config\n" );
 	return;
     }
     // Let the changes to disk
@@ -88,7 +88,7 @@ void ConfIndexW::acceptChanges()
 
 void ConfIndexW::rejectChanges()
 {
-    LOGDEB(("ConfIndexW::rejectChanges()\n"));
+    LOGDEB("ConfIndexW::rejectChanges()\n" );
     // Discard local changes.
     delete m_conf;
     m_conf = 0;
@@ -477,7 +477,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config,
     string cmd = "iconv";
     int status = ex.doexec(cmd, args, 0, &icout);
     if (status) {
-	LOGERR(("Can't get list of charsets from 'iconv -l'"));
+	LOGERR("Can't get list of charsets from 'iconv -l'" );
     }
     icout = neutchars(icout, ",");
     list<string> ccsets;
@@ -579,7 +579,7 @@ void ConfSubPanelW::reloadAll()
 
 void ConfSubPanelW::subDirChanged(QListWidgetItem *current, QListWidgetItem *)
 {
-    LOGDEB(("ConfSubPanelW::subDirChanged\n"));
+    LOGDEB("ConfSubPanelW::subDirChanged\n" );
 	
     if (current == 0 || current->text() == "") {
 	m_sk = "";
@@ -588,13 +588,13 @@ void ConfSubPanelW::subDirChanged(QListWidgetItem *current, QListWidgetItem *)
 	m_sk = (const char *) current->text().toUtf8();
 	m_groupbox->setTitle(current->text());
     }
-    LOGDEB(("ConfSubPanelW::subDirChanged: now [%s]\n", m_sk.c_str()));
+    LOGDEB("ConfSubPanelW::subDirChanged: now ["  << (m_sk) << "]\n" );
     reloadAll();
 }
 
 void ConfSubPanelW::subDirDeleted(QString sbd)
 {
-    LOGDEB(("ConfSubPanelW::subDirDeleted(%s)\n", (const char *)sbd.toUtf8()));
+    LOGDEB("ConfSubPanelW::subDirDeleted("  << ((const char *)sbd.toUtf8()) << ")\n" );
     if (sbd == "") {
 	// Can't do this, have to reinsert it
 	QTimer::singleShot(0, this, SLOT(restoreEmpty()));
@@ -606,8 +606,9 @@ void ConfSubPanelW::subDirDeleted(QString sbd)
 
 void ConfSubPanelW::restoreEmpty()
 {
-    LOGDEB(("ConfSubPanelW::restoreEmpty()\n"));
+    LOGDEB("ConfSubPanelW::restoreEmpty()\n" );
     m_subdirs->getListBox()->insertItem(0, "");
 }
 
 } // Namespace confgui
+
