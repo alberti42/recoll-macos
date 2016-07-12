@@ -1,4 +1,4 @@
-ALL_CXXFLAGS = \
+ALL_CXXFLAGS = -std=c++11 \
     -I../aspell \
     -I../bincimapmime \
     -I../common \

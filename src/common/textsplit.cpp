@@ -1165,8 +1165,6 @@ int main(int argc, char **argv)
 	    }
     b1: argc--; argv++;
     }
-    DebugLog::getdbl()->setloglevel(DEBDEB1);
-    DebugLog::setfilename("stderr");
 
     TextSplit::Flags flags = TextSplit::TXTS_NONE;
 
