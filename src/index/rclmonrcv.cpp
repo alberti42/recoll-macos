@@ -102,7 +102,7 @@ public:
 		    if (ev.m_etyp !=  RclMonEvent::RCLEVT_NONE)
 			m_queue->pushEvent(ev);
 		} else {
-		    MONDEB(("rclMonRcvRun: no event pending\n"));
+		    MONDEB("rclMonRcvRun: no event pending\n");
 		    break;
 		}
 	    }
@@ -210,7 +210,8 @@ void *rclMonRcvRun(void *q)
     }
 
     // Forever wait for monitoring events and add them to queue:
-    MONDEB(("rclMonRcvRun: waiting for events. q->ok() %d\n", queue->ok()));
+    MONDEB("rclMonRcvRun: waiting for events. q->ok(): " << queue->ok() <<
+           std::endl);
     while (queue->ok() && mon->ok()) {
 	RclMonEvent ev;
 	// Note: I could find no way to get the select
@@ -264,7 +265,7 @@ terminate:
 bool eraseWatchSubTree(map<int, string>& idtopath, const string& top)
 {
     bool found = false;
-    MONDEB(("Clearing map for [%s]\n", top.c_str()));
+    MONDEB("Clearing map for [" << top << "]\n");
     map<int,string>::iterator it = idtopath.begin();
     while (it != idtopath.end()) {
 	if (it->second.find(top) == 0) {
@@ -362,7 +363,7 @@ bool RclFAM::addWatch(const string& path, bool isdir)
 	return false;
     bool ret = false;
 
-    MONDEB(("RclFAM::addWatch: adding %s\n", path.c_str()));
+    MONDEB("RclFAM::addWatch: adding " << path << std::endl);
 
     // It happens that the following call block forever. 
     // We'd like to be able to at least terminate on a signal here, but
@@ -401,14 +402,14 @@ bool RclFAM::getEvent(RclMonEvent& ev, int msecs)
 {
     if (!ok())
 	return false;
-    MONDEB(("RclFAM::getEvent:\n"));
+    MONDEB("RclFAM::getEvent:\n");
 
     fd_set readfds;
     int fam_fd = FAMCONNECTION_GETFD(&m_conn);
     FD_ZERO(&readfds);
     FD_SET(fam_fd, &readfds);
 
-    MONDEB(("RclFAM::getEvent: select. fam_fd is %d\n", fam_fd));
+    MONDEB("RclFAM::getEvent: select. fam_fd is " << fam_fd << std::endl);
     // Fam / gamin is sometimes a bit slow to send events. Always add
     // a little timeout, because if we fail to retrieve enough events,
     // we risk deadlocking in addwatch()
@@ -426,11 +427,11 @@ bool RclFAM::getEvent(RclMonEvent& ev, int msecs)
 	return false;
     } else if (ret == 0) {
 	// timeout
-	MONDEB(("RclFAM::getEvent: select timeout\n"));
+	MONDEB("RclFAM::getEvent: select timeout\n");
 	return false;
     }
 
-    MONDEB(("RclFAM::getEvent: select returned %d\n", ret));
+    MONDEB("RclFAM::getEvent: select returned " << ret << std::endl);
 
     if (!FD_ISSET(fam_fd, &readfds))
 	return false;
@@ -441,18 +442,18 @@ bool RclFAM::getEvent(RclMonEvent& ev, int msecs)
     // around the issue, but we did not need this in the past and this
     // is most weird.
     if (FAMPending(&m_conn) <= 0) {
-	MONDEB(("RclFAM::getEvent: FAMPending says no events\n"));
+	MONDEB("RclFAM::getEvent: FAMPending says no events\n");
 	return false;
     }
 
-    MONDEB(("RclFAM::getEvent: call FAMNextEvent\n"));
+    MONDEB("RclFAM::getEvent: call FAMNextEvent\n");
     FAMEvent fe;
     if (FAMNextEvent(&m_conn, &fe) < 0) {
 	LOGERR("RclFAM::getEvent: FAMNextEvent failed, errno "  << (errno) << "\n" );
 	close();
 	return false;
     }
-    MONDEB(("RclFAM::getEvent: FAMNextEvent returned\n"));
+    MONDEB("RclFAM::getEvent: FAMNextEvent returned\n");
     
     map<int,string>::const_iterator it;
     if ((!path_isabsolute(fe.filename)) && 
@@ -462,8 +463,8 @@ bool RclFAM::getEvent(RclMonEvent& ev, int msecs)
 	ev.m_path = fe.filename;
     }
 
-    MONDEB(("RclFAM::getEvent: %-12s %s\n", 
-	    event_name(fe.code), ev.m_path.c_str()));
+    MONDEB("RclFAM::getEvent: " << event_name(fe.code) < " " <<
+           ev.m_path << std::endl);
 
     switch (fe.code) {
     case FAMCreated:
@@ -584,7 +585,7 @@ bool RclIntf::addWatch(const string& path, bool)
 {
    if (!ok())
        return false;
-   MONDEB(("RclIntf::addWatch: adding %s\n", path.c_str()));
+   MONDEB("RclIntf::addWatch: adding " << path << std::endl);
     // CLOSE_WRITE is covered through MODIFY. CREATE is needed for mkdirs
     uint32_t mask = IN_MODIFY | IN_CREATE
         | IN_MOVED_FROM | IN_MOVED_TO | IN_DELETE
@@ -619,7 +620,7 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
     if (!ok())
 	return false;
     ev.m_etyp = RclMonEvent::RCLEVT_NONE;
-    MONDEB(("RclIntf::getEvent:\n"));
+    MONDEB("RclIntf::getEvent:\n");
 
     if (m_evp == 0) {
 	fd_set readfds;
@@ -631,23 +632,24 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
 	    timeout.tv_usec = (msecs % 1000) * 1000;
 	}
 	int ret;
-	MONDEB(("RclIntf::getEvent: select\n"));
+	MONDEB("RclIntf::getEvent: select\n");
 	if ((ret=select(m_fd + 1, &readfds, 0, 0, msecs >= 0 ? &timeout : 0)) < 0) {
 	    LOGERR("RclIntf::getEvent: select failed, errno "  << (errno) << "\n" );
 	    close();
 	    return false;
 	} else if (ret == 0) {
-	    MONDEB(("RclIntf::getEvent: select timeout\n"));
+	    MONDEB("RclIntf::getEvent: select timeout\n");
 	    // timeout
 	    return false;
 	}
-	MONDEB(("RclIntf::getEvent: select returned\n"));
+	MONDEB("RclIntf::getEvent: select returned\n");
 
 	if (!FD_ISSET(m_fd, &readfds))
 	    return false;
 	int rret;
 	if ((rret=read(m_fd, m_evbuf, sizeof(m_evbuf))) <= 0) {
-	    LOGERR("RclIntf::getEvent: read failed, "  << (sizeof(m_evbuf)) << "->"  << (rret) << " errno "  << (errno) << "\n" );
+	    LOGERR("RclIntf::getEvent: read failed, "  << sizeof(m_evbuf) <<
+                   "->"  << rret << " errno "  << errno << "\n");
 	    close();
 	    return false;
 	}
@@ -673,8 +675,8 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
 	ev.m_path = path_cat(ev.m_path, evp->name);
     }
 
-    MONDEB(("RclIntf::getEvent: %-12s %s\n", 
-	    event_name(evp->mask), ev.m_path.c_str()));
+    MONDEB("RclIntf::getEvent: " << event_name(evp->mask) << " " <<
+           ev.m_path << std::endl);
 
     if ((evp->mask & IN_MOVED_FROM) && (evp->mask & IN_ISDIR)) {
 	// We get this when a directory is renamed. Erase the subtree
