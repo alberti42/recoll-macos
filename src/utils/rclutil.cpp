@@ -35,7 +35,8 @@
 #include <errno.h>
 #include <sys/types.h>
 #include "safesysstat.h"
-#include "ptmutex.h"
+
+#include <mutex>
 
 #include "rclutil.h"
 #include "pathut.h"
@@ -238,8 +239,8 @@ bool maketmpdir(string& tdir, string& reason)
     // mkdir. try to make sure that we at least don't shoot ourselves
     // in the foot
 #if !defined(HAVE_MKDTEMP) || defined(_WIN32)
-    static PTMutexInit mlock;
-    PTMutexLocker lock(mlock);
+    static std::mutex mmutex;
+    std::unique_lock lock(mmutex);
 #endif
 
     if (!
@@ -261,8 +262,8 @@ bool maketmpdir(string& tdir, string& reason)
     // There is a race condition between name computation and
     // mkdir. try to make sure that we at least don't shoot ourselves
     // in the foot
-    static PTMutexInit mlock;
-    PTMutexLocker lock(mlock);
+    static std::mutex mmutex;
+    std::unique_lock lock(mmutex);
     tdir = path_wingettempfilename(TEXT("rcltmp"));
 #endif
 
@@ -287,8 +288,8 @@ TempFileInternal::TempFileInternal(const string& suffix)
     // well. There is a race condition between name computation and
     // file creation. try to make sure that we at least don't shoot
     // our own selves in the foot. maybe we'll use mkstemps one day.
-    static PTMutexInit mlock;
-    PTMutexLocker lock(mlock);
+    static std::mutex mmutex;
+    std::unique_lock<std::mutex> lock(mmutex);
 
 #ifndef _WIN32
     string filename = path_cat(tmplocation(), "rcltmpfXXXXXX");

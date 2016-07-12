@@ -22,11 +22,12 @@
 #endif
 #include <signal.h>
 #include <locale.h>
-#include <pthread.h>
 #include <cstdlib>
 #if !defined(PUTENV_ARG_CONST)
 #include <string.h>
 #endif
+
+#include <thread>
 
 #include "log.h"
 #include "rclconfig.h"
@@ -37,7 +38,7 @@
 #include "smallut.h"
 #include "execmd.h"
 
-static pthread_t mainthread_id;
+std::thread::id mainthread_id;
 
 // Signal etc. processing. We want to be able to properly close the
 // index if we are currently writing to it.
@@ -309,10 +310,8 @@ RclConfig *recollinit(RclInitFlags flags,
     // threads don't try to do it at once).
     config->getDefCharset();
 
-    mainthread_id = pthread_self();
+    mainthread_id = std::this_thread::get_id();
 
-    // Init unac locking
-    unac_init_mt();
     // Init smallut and pathut static values
     pathut_init_mt();
     smallut_init_mt();
@@ -388,6 +387,6 @@ void recoll_threadinit()
 
 bool recoll_ismainthread()
 {
-    return pthread_equal(pthread_self(), mainthread_id);
+    return std::this_thread::get_id() == mainthread_id;
 }
 

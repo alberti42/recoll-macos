@@ -52,7 +52,6 @@ using namespace std;
 #include "md5ut.h"
 #include "rclversion.h"
 #include "cancelcheck.h"
-#include "ptmutex.h"
 #include "termproc.h"
 #include "expansiondbs.h"
 #include "rclinit.h"
@@ -571,7 +570,7 @@ bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm,
 {
 #ifdef IDX_THREADS
     Chrono chron;
-    PTMutexLocker lock(m_mutex);
+    std::unique_lock<std::mutex> lock(m_mutex);
 #endif
     STD_SHARED_PTR<Xapian::Document> doc_cleaner(newdocument_ptr);
 
@@ -640,7 +639,7 @@ bool Db::Native::purgeFileWrite(bool orphansOnly, const string& udi,
     // be called by a single thread) to protect about multiple acces
     // to xrdb from subDocs() which is also called from needupdate()
     // (called from outside the write thread !
-    PTMutexLocker lock(m_mutex);
+    std::unique_lock<std::mutex> lock(m_mutex);
 #endif // IDX_THREADS
 
     string ermsg;
@@ -1586,7 +1585,7 @@ bool Db::Native::docToXdocXattrOnly(TextSplitDb *splitter, const string &udi,
 {
     LOGDEB0("Db::docToXdocXattrOnly\n" );
 #ifdef IDX_THREADS
-    PTMutexLocker lock(m_mutex);
+    std::unique_lock<std::mutex> lock(m_mutex);
 #endif
 
     // Read existing document and its data record
@@ -1714,7 +1713,7 @@ void Db::setExistingFlags(const string& udi, unsigned int docid)
         return;
     }
 #ifdef IDX_THREADS
-    PTMutexLocker lock(m_ndb->m_mutex);
+    std::unique_lock<std::mutex> lock(m_ndb->m_mutex);
 #endif
     i_setExistingFlags(udi, docid);
 }
@@ -1774,7 +1773,7 @@ bool Db::needUpdate(const string &udi, const string& sig,
     // thread which also updates the existence map, and even multiple
     // accesses to the readonly Xapian::Database are not allowed
     // anyway
-    PTMutexLocker lock(m_ndb->m_mutex);
+    std::unique_lock<std::mutex> lock(m_ndb->m_mutex);
 #endif
 
     // Try to find the document indexed by the uniterm. 
@@ -1890,7 +1889,7 @@ bool Db::purge()
     // else we need to lock out other top level threads. This is just
     // a precaution as they should have been waited for by the top
     // level actor at this point
-    PTMutexLocker lock(m_ndb->m_mutex, m_ndb->m_havewriteq);
+    std::unique_lock<std::mutex> lock(m_ndb->m_mutex);
 #endif // IDX_THREADS
 
     // For xapian versions up to 1.0.1, deleting a non-existant
@@ -1957,7 +1956,7 @@ bool Db::docExists(const string& uniterm)
 {
 #ifdef IDX_THREADS
     // Need to protect read db against multiaccess. 
-    PTMutexLocker lock(m_ndb->m_mutex);
+    std::unique_lock<std::mutex> lock(m_ndb->m_mutex);
 #endif
 
     string ermsg;

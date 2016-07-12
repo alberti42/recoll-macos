@@ -39,7 +39,7 @@ bool Uncomp::uncompressfile(const string& ifn,
 			    const vector<string>& cmdv, string& tfile)
 {
     if (m_docache) {
-	PTMutexLocker lock(o_cache.m_lock);
+        std::unique_lock<std::mutex> lock(o_cache.m_lock);
 	if (!o_cache.m_srcpath.compare(ifn)) {
 	    m_dir = o_cache.m_dir;
 	    m_tfile = tfile = o_cache.m_tfile;
@@ -123,7 +123,7 @@ bool Uncomp::uncompressfile(const string& ifn,
 Uncomp::~Uncomp()
 {
     if (m_docache) {
-	PTMutexLocker lock(o_cache.m_lock);
+        std::unique_lock<std::mutex> lock(o_cache.m_lock);
 	delete o_cache.m_dir;
 	o_cache.m_dir = m_dir;
 	o_cache.m_tfile = m_tfile;

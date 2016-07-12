@@ -17,10 +17,6 @@
 #ifndef _LOG_H_X_INCLUDED_
 #define _LOG_H_X_INCLUDED_
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <fstream> 
 #include <iostream>
 #include <string>

@@ -21,6 +21,8 @@
 
 #ifdef RCL_USE_ASPELL
 
+#include <mutex>
+
 #include <unistd.h>
 #include <dlfcn.h>
 #include <stdlib.h>
@@ -32,7 +34,6 @@
 #include "rclaspell.h"
 #include "log.h"
 #include "unacpp.h"
-#include "ptmutex.h"
 
 using namespace std;
 
@@ -63,7 +64,7 @@ public:
 
 };
 static AspellApi aapi;
-static PTMutexInit o_aapi_mutex;
+static std::mutex o_aapi_mutex;
 
 #define NMTOPTR(NM, TP)							\
     if ((aapi.NM = TP dlsym(m_data->m_handle, #NM)) == 0) {		\
@@ -114,7 +115,7 @@ Aspell::~Aspell()
 
 bool Aspell::init(string &reason)
 {
-    PTMutexLocker locker(o_aapi_mutex);
+    std::unique_lock<std::mutex> locker(o_aapi_mutex);
     deleteZ(m_data);
 
     // Language: we get this from the configuration, else from the NLS

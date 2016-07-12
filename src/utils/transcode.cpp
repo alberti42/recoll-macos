@@ -20,7 +20,7 @@
 
 #include <string>
 #include <iostream>
-
+#include <mutex>
 using std::string;
 
 #include <errno.h>
@@ -28,7 +28,7 @@ using std::string;
 
 #include "transcode.h"
 #include "log.h"
-#include "ptmutex.h"
+
 #ifdef RCL_ICONV_INBUF_CONST
 #define ICV_P2_TYPE const char**
 #else
@@ -53,8 +53,8 @@ bool transcode(const string &in, string &out, const string &icode,
     static iconv_t ic = (iconv_t)-1;
     static string cachedicode;
     static string cachedocode;
-    static PTMutexInit o_cachediconv_mutex;
-    PTMutexLocker locker(o_cachediconv_mutex);
+    static std::mutex o_cachediconv_mutex;
+    std::unique_lock<std::mutex> lock(o_cachediconv_mutex);
 #else 
     iconv_t ic;
 #endif

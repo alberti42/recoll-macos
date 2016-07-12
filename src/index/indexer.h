@@ -22,6 +22,7 @@
 #include <list>
 #include <map>
 #include <vector>
+#include <mutex>
 
 using std::string;
 using std::list;
@@ -30,9 +31,6 @@ using std::vector;
 
 #include "rcldb.h"
 #include "rcldoc.h"
-#ifdef IDX_THREADS
-#include "ptmutex.h"
-#endif
 
 class FsIndexer;
 class BeagleQueueIndexer;
@@ -66,7 +64,7 @@ class DbIxStatus {
 class DbIxStatusUpdater {
  public:
 #ifdef IDX_THREADS
-    PTMutexInit m_mutex;
+    std::mutex m_mutex;
 #endif
     DbIxStatus status;
     virtual ~DbIxStatusUpdater(){}
@@ -75,7 +73,7 @@ class DbIxStatusUpdater {
     virtual bool update(DbIxStatus::Phase phase, const string& fn)
     {
 #ifdef IDX_THREADS
-	PTMutexLocker lock(m_mutex);
+	std::unique_lock<std::mutex>  lock(m_mutex);
 #endif
         status.phase = phase;
         status.fn = fn;

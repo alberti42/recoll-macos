@@ -16,16 +16,17 @@
  */
 #include "autoconfig.h"
 
+#include <mutex>
+
 #include "rcldoc.h"
 #include "fetcher.h"
 #include "bglfetcher.h"
 #include "log.h"
-#include "ptmutex.h"
 #include "beaglequeuecache.h"
 
 // We use a single beagle cache object to access beagle data. We protect it 
 // against multiple thread access.
-static PTMutexInit o_beagler_mutex;
+static std::mutex o_beagler_mutex;
 
 bool BGLDocFetcher::fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out)
 {
@@ -36,7 +37,7 @@ bool BGLDocFetcher::fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out)
     }
     Rcl::Doc dotdoc;
     {
-	PTMutexLocker locker(o_beagler_mutex);
+        std::unique_lock<std::mutex> locker(o_beagler_mutex);
 	// Retrieve from our webcache (beagle data). The beagler
 	// object is created at the first call of this routine and
 	// deleted when the program exits.

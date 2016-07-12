@@ -24,7 +24,6 @@
  * initialization function.
  */
 
-#include <pthread.h>
 #include <errno.h>
 #include <fnmatch.h>
 #include "safeunistd.h"
@@ -34,6 +33,11 @@
 #include <cstdlib>
 #include <list>
 #include <vector>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <chrono>
+
 using std::list;
 using std::vector;
 
@@ -50,8 +54,6 @@ using std::vector;
 #include "subtreelist.h"
 
 typedef unsigned long mttcast;
-
-static pthread_t rcv_thrid;
 
 // Seconds between auxiliary db (stem, spell) updates:
 static const int dfltauxinterval = 60 *60;
@@ -135,13 +137,13 @@ public:
     vector<DelayPat> m_delaypats;
     RclConfig *m_config;
     bool       m_ok;
-    pthread_mutex_t m_mutex;
-    pthread_cond_t m_cond;
+
+    std::mutex m_mutex;
+    std::condition_variable m_cond;
+
     RclEQData() 
-	: m_config(0), m_ok(false)
+	: m_config(0), m_ok(true)
     {
-	if (!pthread_mutex_init(&m_mutex, 0) && !pthread_cond_init(&m_cond, 0))
-	    m_ok = true;
     }
     void readDelayPats(int dfltsecs);
     DelayPat searchDelayPats(const string& path)
@@ -192,8 +194,8 @@ void RclEQData::readDelayPats(int dfltsecs)
 // when necessary.
 void RclEQData::delayInsert(const queue_type::iterator &qit)
 {
-    MONDEB(("RclEQData::delayInsert: minclock %lu\n", 
-            (mttcast)qit->second.m_minclock));
+    MONDEB("RclEQData::delayInsert: minclock " << qit->second.m_minclock <<
+           std::endl);
     for (delays_type::iterator dit = m_delays.begin(); 
 	 dit != m_delays.end(); dit++) {
 	queue_type::iterator qit1 = *dit;
@@ -222,62 +224,33 @@ void RclMonEventQueue::setopts(int opts)
 }
 
 /** Wait until there is something to process on the queue, or timeout.
- *  Must be called with the queue locked 
+ *  returns a queue lock
  */
-bool RclMonEventQueue::wait(int seconds, bool *top)
+std::unique_lock<std::mutex> RclMonEventQueue::wait(int seconds, bool *top)
 {
-    MONDEB(("RclMonEventQueue::wait\n"));
+    std::unique_lock<std::mutex> lock(m_data->m_mutex);
+    
+    MONDEB("RclMonEventQueue::wait, seconds: " << seconds << std::endl);
     if (!empty()) {
-	MONDEB(("RclMonEventQueue:: imm return\n"));
-	return true;
+	MONDEB("RclMonEventQueue:: immediate return\n");
+	return lock;
     }
 
     int err;
     if (seconds > 0) {
-	struct timespec to;
-	to.tv_sec = time(0L) + seconds;
-	to.tv_nsec = 0;
 	if (top)
 	    *top = false;
-	if ((err = 
-	     pthread_cond_timedwait(&m_data->m_cond, &m_data->m_mutex, &to))) {
-	    if (err == ETIMEDOUT) {
-		*top = true;
-		MONDEB(("RclMonEventQueue:: timeout\n"));
-		return true;
-	    }
-	    LOGERR("RclMonEventQueue::wait:pthread_cond_timedwait failedwith err "  << (err) << "\n" );
-	    return false;
-	}
+	if (m_data->m_cond.wait_for(lock, std::chrono::seconds(seconds)) ==
+            std::cv_status::timeout) {
+            *top = true;
+            MONDEB("RclMonEventQueue:: timeout\n");
+            return lock;
+        }
     } else {
-	if ((err = pthread_cond_wait(&m_data->m_cond, &m_data->m_mutex))) {
-	    LOGERR("RclMonEventQueue::wait: pthread_cond_wait failedwith err "  << (err) << "\n" );
-	    return false;
-	}
+	m_data->m_cond.wait(lock);
     }
-    MONDEB(("RclMonEventQueue:: normal return\n"));
-    return true;
-}
-
-bool RclMonEventQueue::lock()
-{
-    MONDEB(("RclMonEventQueue:: lock\n"));
-    if (pthread_mutex_lock(&m_data->m_mutex)) {
-	LOGERR("RclMonEventQueue::lock: pthread_mutex_lock failed\n" );
-	return false;
-    }
-    MONDEB(("RclMonEventQueue:: lock return\n"));
-    return true;
-}
-
-bool RclMonEventQueue::unlock()
-{
-    MONDEB(("RclMonEventQueue:: unlock\n"));
-    if (pthread_mutex_unlock(&m_data->m_mutex)) {
-	LOGERR("RclMonEventQueue::lock: pthread_mutex_unlock failed\n" );
-	return false;
-    }
-    return true;
+    MONDEB("RclMonEventQueue:: non-timeout return\n");
+    return lock;
 }
 
 void RclMonEventQueue::setConfig(RclConfig *cnf)
@@ -312,37 +285,36 @@ bool RclMonEventQueue::ok()
 
 void RclMonEventQueue::setTerminate()
 {
-    MONDEB(("RclMonEventQueue:: setTerminate\n"));
-    lock();
+    MONDEB("RclMonEventQueue:: setTerminate\n");
+    std::unique_lock<std::mutex> lock(m_data->m_mutex);
     m_data->m_ok = false;
-    pthread_cond_broadcast(&m_data->m_cond);
-    unlock();
+    m_data->m_cond.notify_all();
 }
 
 // Must be called with the queue locked
 bool RclMonEventQueue::empty()
 {
     if (m_data == 0) {
-	MONDEB(("RclMonEventQueue::empty(): true (m_data==0)\n"));
+	MONDEB("RclMonEventQueue::empty(): true (m_data==0)\n");
 	return true;
     }
     if (!m_data->m_iqueue.empty()) {
-	MONDEB(("RclMonEventQueue::empty(): false (m_iqueue not empty)\n"));
+	MONDEB("RclMonEventQueue::empty(): false (m_iqueue not empty)\n");
 	return true;
     }
     if (m_data->m_dqueue.empty()) {
-	MONDEB(("RclMonEventQueue::empty(): true (m_Xqueue both empty)\n"));
+	MONDEB("RclMonEventQueue::empty(): true (m_Xqueue both empty)\n");
 	return true;
     }
     // Only dqueue has events. Have to check the delays (only the
     // first, earliest one):
     queue_type::iterator qit = *(m_data->m_delays.begin());
     if (qit->second.m_minclock > time(0)) {
-	MONDEB(("RclMonEventQueue::empty(): true (no delay ready %lu)\n",
-		(mttcast)qit->second.m_minclock));
+	MONDEB("RclMonEventQueue::empty(): true (no delay ready " << 
+               qit->second.m_minclock << ")\n");
 	return true;
     }
-    MONDEB(("RclMonEventQueue::empty(): returning false (delay expired)\n"));
+    MONDEB("RclMonEventQueue::empty(): returning false (delay expired)\n");
     return false;
 }
 
@@ -352,15 +324,15 @@ bool RclMonEventQueue::empty()
 RclMonEvent RclMonEventQueue::pop()
 {
     time_t now = time(0);
-    MONDEB(("RclMonEventQueue::pop(), now %lu\n", (mttcast)now));
+    MONDEB("RclMonEventQueue::pop(), now " << now << std::endl);
 
     // Look at the delayed events, get rid of the expired/unactive
     // ones, possibly return an expired/needidx one.
     while (!m_data->m_delays.empty()) {
 	delays_type::iterator dit = m_data->m_delays.begin();
 	queue_type::iterator qit = *dit;
-	MONDEB(("RclMonEventQueue::pop(): in delays: evt minclock %lu\n", 
-		(mttcast)qit->second.m_minclock));
+	MONDEB("RclMonEventQueue::pop(): in delays: evt minclock " << 
+		qit->second.m_minclock << std::endl);
 	if (qit->second.m_minclock <= now) {
 	    if (qit->second.m_needidx) {
 		RclMonEvent ev = qit->second;
@@ -399,8 +371,8 @@ RclMonEvent RclMonEventQueue::pop()
 // special processing to limit their reindexing rate.
 bool RclMonEventQueue::pushEvent(const RclMonEvent &ev)
 {
-    MONDEB(("RclMonEventQueue::pushEvent for %s\n", ev.m_path.c_str()));
-    lock();
+    MONDEB("RclMonEventQueue::pushEvent for " << ev.m_path << std::endl);
+    std::unique_lock<std::mutex> lock(m_data->m_mutex);
 
     DelayPat pat = m_data->searchDelayPats(ev.m_path);
     if (pat.seconds != 0) {
@@ -432,8 +404,7 @@ bool RclMonEventQueue::pushEvent(const RclMonEvent &ev)
 	m_data->m_iqueue[ev.m_path] = ev;
     }
 
-    pthread_cond_broadcast(&m_data->m_cond);
-    unlock();
+    m_data->m_cond.notify_all();
     return true;
 }
 
@@ -482,19 +453,12 @@ bool startMonitor(RclConfig *conf, int opts)
     if (!conf->getConfParam("monixinterval", &ixinterval))
 	ixinterval = dfltixinterval;
 
-
     rclEQ.setConfig(conf);
     rclEQ.setopts(opts);
 
-    if (pthread_create(&rcv_thrid, 0, &rclMonRcvRun, &rclEQ) != 0) {
-	LOGERR("startMonitor: cant create event-receiving thread\n" );
-	return false;
-    }
-
-    if (!rclEQ.lock()) {
-	LOGERR("startMonitor: cant lock queue ???\n" );
-	return false;
-    }
+    std::thread treceive(rclMonRcvRun, &rclEQ);
+    treceive.detach();
+    
     LOGDEB("start_monitoring: entering main loop\n" );
 
     bool timedout;
@@ -504,61 +468,62 @@ bool startMonitor(RclConfig *conf, int opts)
     list<string> modified;
     list<string> deleted;
 
+    ;
+    
     // Set a relatively short timeout for better monitoring of exit requests
-    while (rclEQ.wait(2, &timedout)) {
-	// Queue is locked.
+    while (true) {
+        {
+            std::unique_lock<std::mutex> lock = rclEQ.wait(2, &timedout);
 
-	// x11IsAlive() can't be called from ok() because both threads call it
-	// and Xlib is not multithreaded.
+            // x11IsAlive() can't be called from ok() because both
+            // threads call it and Xlib is not multithreaded.
 #ifndef _WIN32
-        bool x11dead = !(opts & RCLMON_NOX11) && !x11IsAlive();
-        if (x11dead)
-            LOGDEB("RclMonprc: x11 is dead\n" );
+            bool x11dead = !(opts & RCLMON_NOX11) && !x11IsAlive();
+            if (x11dead)
+                LOGDEB("RclMonprc: x11 is dead\n" );
 #else
-        bool x11dead = false;
+            bool x11dead = false;
 #endif
-	if (!rclEQ.ok() || x11dead) {
-	    rclEQ.unlock();
-	    break;
-	}
+            if (!rclEQ.ok() || x11dead) {
+                break;
+            }
 	    
-	// Process event queue
-	for (;;) {
-	    // Retrieve event
-	    RclMonEvent ev = rclEQ.pop();
-	    if (ev.m_path.empty())
-		break;
-	    switch (ev.evtype()) {
-	    case RclMonEvent::RCLEVT_MODIFY:
-	    case RclMonEvent::RCLEVT_DIRCREATE:
-		LOGDEB0("Monitor: Modify/Check on "  << (ev.m_path) << "\n" );
-		modified.push_back(ev.m_path);
-		break;
-	    case RclMonEvent::RCLEVT_DELETE:
-		LOGDEB0("Monitor: Delete on "  << (ev.m_path) << "\n" );
-		// If this is for a directory (which the caller should
-		// tell us because he knows), we should purge the db
-		// of all the subtree, because on a directory rename,
-		// inotify will only generate one event for the
-		// renamed top, not the subentries. This is relatively
-		// complicated to do though, and we currently do not
-		// do it, and just wait for a restart to do a full run and
-		// purge.
-		deleted.push_back(ev.m_path);
-		if (ev.evflags() & RclMonEvent::RCLEVT_ISDIR) {
-		    vector<string> paths;
-		    if (subtreelist(conf, ev.m_path, paths)) {
-			deleted.insert(deleted.end(),
-				       paths.begin(), paths.end());
-		    }
-		}
-		break;
-	    default:
-		LOGDEB("Monitor: got Other on ["  << (ev.m_path) << "]\n" );
-	    }
-	}
-	// Unlock queue before processing lists
-	rclEQ.unlock();
+            // Process event queue
+            for (;;) {
+                // Retrieve event
+                RclMonEvent ev = rclEQ.pop();
+                if (ev.m_path.empty())
+                    break;
+                switch (ev.evtype()) {
+                case RclMonEvent::RCLEVT_MODIFY:
+                case RclMonEvent::RCLEVT_DIRCREATE:
+                    LOGDEB0("Monitor: Modify/Check on "  << ev.m_path << "\n");
+                    modified.push_back(ev.m_path);
+                    break;
+                case RclMonEvent::RCLEVT_DELETE:
+                    LOGDEB0("Monitor: Delete on "  << (ev.m_path) << "\n" );
+                    // If this is for a directory (which the caller should
+                    // tell us because he knows), we should purge the db
+                    // of all the subtree, because on a directory rename,
+                    // inotify will only generate one event for the
+                    // renamed top, not the subentries. This is relatively
+                    // complicated to do though, and we currently do not
+                    // do it, and just wait for a restart to do a full run and
+                    // purge.
+                    deleted.push_back(ev.m_path);
+                    if (ev.evflags() & RclMonEvent::RCLEVT_ISDIR) {
+                        vector<string> paths;
+                        if (subtreelist(conf, ev.m_path, paths)) {
+                            deleted.insert(deleted.end(),
+                                           paths.begin(), paths.end());
+                        }
+                    }
+                    break;
+                default:
+                    LOGDEB("Monitor: got Other on ["  << (ev.m_path) << "]\n" );
+                }
+            }
+        }
 
 	// Process. We don't do this every time but let the lists accumulate
         // a little, this saves processing. Start at once if list is big.
@@ -608,8 +573,6 @@ bool startMonitor(RclConfig *conf, int opts)
 	    o_reexec->removeArg("-n");
 	    o_reexec->reexec();
 	}
-	// Lock queue before waiting again
-	rclEQ.lock();
     }
     LOGDEB("Rclmonprc: calling queue setTerminate\n" );
     rclEQ.setTerminate();
@@ -619,7 +582,6 @@ bool startMonitor(RclConfig *conf, int opts)
     // during our limited time window for exiting. To be reviewed if
     // we ever need several monitor invocations in the same process
     // (can't foresee any reason why we'd want to do this).
-    //   pthread_join(rcv_thrid, 0);
     LOGDEB("Monitor: returning\n" );
     return true;
 }

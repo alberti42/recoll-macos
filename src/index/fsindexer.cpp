@@ -85,13 +85,13 @@ extern void *FsIndexerInternfileWorker(void*);
 // main thread either before or after the exciting part
 class FSIFIMissingStore : public FIMissingStore {
 #ifdef IDX_THREADS
-    PTMutexInit m_mutex;
+    std::mutex m_mutex;
 #endif
 public:
     virtual void addMissing(const string& prog, const string& mt)
     {
 #ifdef IDX_THREADS
-	PTMutexLocker locker(m_mutex);
+        std::unique_lock<std::mutex> locker(m_mutex);
 #endif
 	FIMissingStore::addMissing(prog, mt);
     }
@@ -178,7 +178,7 @@ bool FsIndexer::index(int flags)
 
     if (m_updater) {
 #ifdef IDX_THREADS
-	PTMutexLocker locker(m_updater->m_mutex);
+        std::unique_lock<std::mutex> locker(m_updater->m_mutex);
 #endif
 	m_updater->status.dbtotdocs = m_db->docCnt();
     }
@@ -554,7 +554,7 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 {
     if (m_updater) {
 #ifdef IDX_THREADS
-	PTMutexLocker locker(m_updater->m_mutex);
+        std::unique_lock<std::mutex> locker(m_updater->m_mutex);
 #endif
 	if (!m_updater->update()) {
 	    return FsTreeWalker::FtwStop;
@@ -668,7 +668,7 @@ FsIndexer::processonefile(RclConfig *config,
 	LOGDEB0("processone: up to date: "  << (fn) << "\n" );
 	if (m_updater) {
 #ifdef IDX_THREADS
-	    PTMutexLocker locker(m_updater->m_mutex);
+            std::unique_lock<std::mutex> locker(m_updater->m_mutex);
 #endif
 	    // Status bar update, abort request etc.
 	    m_updater->status.fn = fn;
@@ -799,7 +799,7 @@ FsIndexer::processonefile(RclConfig *config,
 	    // Tell what we are doing and check for interrupt request
 	    if (m_updater) {
 #ifdef IDX_THREADS
-		PTMutexLocker locker(m_updater->m_mutex);
+                std::unique_lock<std::mutex> locker(m_updater->m_mutex);
 #endif
 		++(m_updater->status.docsdone);
 		if (m_updater->status.dbtotdocs < m_updater->status.docsdone)

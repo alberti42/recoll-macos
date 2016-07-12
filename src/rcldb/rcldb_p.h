@@ -21,6 +21,7 @@
 #include "autoconfig.h"
 
 #include <map>
+#include <mutex>
 
 #include <xapian.h>
 
@@ -28,7 +29,6 @@
 #include "workqueue.h"
 #endif // IDX_THREADS
 #include "xmacros.h"
-#include "ptmutex.h"
 
 namespace Rcl {
 
@@ -81,7 +81,7 @@ class Db::Native {
     bool m_noversionwrite; //Set if open failed because of version mismatch!
 #ifdef IDX_THREADS
     WorkQueue<DbUpdTask*> m_wqueue;
-    PTMutexInit m_mutex;
+    std::mutex m_mutex;
     long long  m_totalworkns;
     bool m_havewriteq;
     void maybeStartThreads();

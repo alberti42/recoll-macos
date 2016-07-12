@@ -18,11 +18,11 @@
 #define _fsindexer_h_included_
 
 #include <list>
+#include <mutex>
 
 #include "indexer.h"
 #include "fstreewalk.h"
 #ifdef IDX_THREADS
-#include "ptmutex.h"
 #include "workqueue.h"
 #endif // IDX_THREADS
 
@@ -93,7 +93,7 @@ class FsIndexer : public FsTreeWalkerCB {
 	    if (!dorecord)
 		return;
 #ifdef IDX_THREADS
-	    PTMutexLocker locker(mutex);
+	    std::unique_lock<std::mutex> locker(mutex);
 #endif
 	    udis.push_back(udi);
 	}
@@ -103,7 +103,7 @@ class FsIndexer : public FsTreeWalkerCB {
 	}
     private:
 #ifdef IDX_THREADS
-	PTMutexInit mutex;
+        std::mutex mutex;
 #endif
 	bool dorecord;
 	std::vector<std::string> udis;

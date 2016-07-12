@@ -19,10 +19,10 @@
 
 #include <vector>
 #include <string>
+#include <mutex>
 
 #include "pathut.h"
 #include "rclutil.h"
-#include "ptmutex.h"
 
 /// Uncompression script interface.
 class Uncomp {
@@ -58,7 +58,7 @@ private:
 	{
 	    delete m_dir;
 	}
-	PTMutexInit m_lock;
+        std::mutex m_lock;
 	TempDir *m_dir;
 	std::string   m_tfile;
 	std::string   m_srcpath;

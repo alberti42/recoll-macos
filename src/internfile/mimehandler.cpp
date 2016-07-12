@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <mutex>
 using namespace std;
 
 #include "cstr.h"
@@ -40,7 +41,6 @@ using namespace std;
 #include "mh_symlink.h"
 #include "mh_unknown.h"
 #include "mh_null.h"
-#include "ptmutex.h"
 
 // Performance help: we use a pool of already known and created
 // handlers. There can be several instances for a given mime type
@@ -50,14 +50,14 @@ static multimap<string, RecollFilter*>  o_handlers;
 static list<multimap<string, RecollFilter*>::iterator> o_hlru;
 typedef list<multimap<string, RecollFilter*>::iterator>::iterator hlruit_tp;
 
-static PTMutexInit o_handlers_mutex;
+static std::mutex o_handlers_mutex;
 
 static const unsigned int max_handlers_cache_size = 100;
 
 /* Look for mime handler in pool */
 static RecollFilter *getMimeHandlerFromCache(const string& key)
 {
-    PTMutexLocker locker(o_handlers_mutex);
+    std::unique_lock<std::mutex> locker(o_handlers_mutex);
     string xdigest;
     MD5HexPrint(key, xdigest);
     LOGDEB("getMimeHandlerFromCache: "  << (xdigest) << " cache size "  << (o_handlers.size()) << "\n" );
@@ -90,7 +90,7 @@ void returnMimeHandler(RecollFilter *handler)
     }
     handler->clear();
 
-    PTMutexLocker locker(o_handlers_mutex);
+    std::unique_lock<std::mutex> locker(o_handlers_mutex);
 
     LOGDEB("returnMimeHandler: returning filter for "  << (handler->get_mime_type()) << " cache size "  << (o_handlers.size()) << "\n" );
 
@@ -124,7 +124,7 @@ void clearMimeHandlerCache()
 {
     LOGDEB("clearMimeHandlerCache()\n" );
     multimap<string, RecollFilter *>::iterator it;
-    PTMutexLocker locker(o_handlers_mutex);
+    std::unique_lock<std::mutex> locker(o_handlers_mutex);
     for (it = o_handlers.begin(); it != o_handlers.end(); it++) {
 	delete it->second;
     }

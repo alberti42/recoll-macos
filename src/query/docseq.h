@@ -22,11 +22,11 @@
 #include <string>
 #include <list>
 #include <vector>
-#include MEMORY_INCLUDE
+#include <mutex>
+#include <memory>
 
 #include "rcldoc.h"
 #include "hldata.h"
-#include "ptmutex.h"
 
 // Need this for the "Snippet" class def.
 #include "rclquery.h"
@@ -167,7 +167,7 @@ class DocSequence {
 protected:
     friend class DocSeqModifier;
     virtual Rcl::Db *getDb() = 0;
-    static PTMutexInit o_dblock;
+    static std::mutex o_dblock;
     static std::string o_sort_trans;
     static std::string o_filt_trans;
     std::string          m_reason;

@@ -50,14 +50,14 @@
 
 extern RclConfig *theconfig;
 
-PTMutexInit thetempfileslock;
+std::mutex thetempfileslock;
 static vector<TempFile>  o_tempfiles;
 /* Keep an array of temporary files for deletion at exit. It happens that we
    erase some of them before exiting (ie: when closing a preview tab), we don't 
    reuse the array holes for now */
 void rememberTempFile(TempFile temp)
 {
-    PTMutexLocker locker(thetempfileslock);
+    std::unique_lock<std::mutex> locker(thetempfileslock);
     o_tempfiles.push_back(temp);
 }    
 
@@ -65,7 +65,7 @@ void forgetTempFile(string &fn)
 {
     if (fn.empty())
 	return;
-    PTMutexLocker locker(thetempfileslock);
+    std::unique_lock<std::mutex> locker(thetempfileslock);
     for (vector<TempFile>::iterator it = o_tempfiles.begin();
 	 it != o_tempfiles.end(); it++) {
 	if ((*it) && !fn.compare((*it)->filename())) {
@@ -77,7 +77,7 @@ void forgetTempFile(string &fn)
 
 void deleteAllTempFiles()
 {
-    PTMutexLocker locker(thetempfileslock);
+    std::unique_lock<std::mutex> locker(thetempfileslock);
     o_tempfiles.clear();
 }
 

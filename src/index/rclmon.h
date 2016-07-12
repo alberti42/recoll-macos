@@ -32,6 +32,7 @@
 #include <time.h>
 #include <string>
 #include <map>
+#include <mutex>
 
 #include "rclconfig.h"
 
@@ -78,16 +79,12 @@ class RclMonEventQueue {
  public:
     RclMonEventQueue();
     ~RclMonEventQueue();
-    /** Unlock queue and wait until there are new events. 
-     *  Returns with the queue locked */
-    bool wait(int secs = -1, bool *timedout = 0);
-    /** Unlock queue */
-    bool unlock();
-    /** Lock queue. */
-    bool lock();
-    /** Lock queue and add event. */
+    /** Wait for event or timeout. Returns with the queue locked */
+    std::unique_lock<std::mutex> wait(int secs = -1, bool *timedout = 0);
+    /** Add event. */
     bool pushEvent(const RclMonEvent &ev);
-    void setTerminate(); /* To all threads: end processing */
+    /** To all threads: end processing */
+    void setTerminate(); 
     bool ok();
     bool empty();
     RclMonEvent pop();

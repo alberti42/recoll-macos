@@ -30,13 +30,13 @@
 #include <string>
 #include <algorithm>
 #include <iostream>
-#include UNORDERED_MAP_INCLUDE
-
-
-#include "smallut.h"
+#include <unordered_map>
+#include <mutex>
 
 using std::string;
 using std::vector;
+
+#include "smallut.h"
 
 /* 
    Storage for the exception translations. These are chars which
@@ -44,11 +44,10 @@ using std::vector;
    instead according to some local rule. There will usually be very
    few of them, but they must be looked up for every translated char.
  */
-STD_UNORDERED_MAP<unsigned short, string> except_trans;
+std::unordered_map<unsigned short, string> except_trans;
 static inline bool is_except_char(unsigned short c, string& trans)
 {
-    STD_UNORDERED_MAP<unsigned short, string>::const_iterator it 
-	= except_trans.find(c);
+    auto it = except_trans.find(c);
     if (it == except_trans.end())
 	return false;
     trans = it->second;
@@ -76,7 +75,6 @@ static inline bool is_except_char(unsigned short c, string& trans)
 #include <stdio.h>
 #include <stdarg.h>
 #endif /* HAVE_VSNPRINTF */
-#include <pthread.h>
 
 #include "unac.h"
 #include "unac_version.h"
@@ -14314,14 +14312,7 @@ int fold_string_utf16(const char* in, size_t in_length,
 static const char *utf16be = "UTF-16BE";
 static iconv_t u8tou16_cd = (iconv_t)-1;
 static iconv_t u16tou8_cd = (iconv_t)-1;
-static pthread_mutex_t o_unac_mutex;
-static int unac_mutex_is_init;
-// Call this or take your chances with the auto init.
-void unac_init_mt()
-{
-    pthread_mutex_init(&o_unac_mutex, 0);
-    unac_mutex_is_init = 1;
-}
+static std::mutex o_unac_mutex;
 
 /*
  * Convert buffer <in> containing string encoded in charset <from> into
@@ -14343,14 +14334,7 @@ static int convert(const char* from, const char* to,
   int from_utf16, from_utf8, to_utf16, to_utf8, u8tou16, u16tou8;
   const char space[] = { 0x00, 0x20 };
 
-  /* Note: better call explicit unac_init_mt() before starting threads than
-     rely on this.
-   */
-  if (unac_mutex_is_init == 0) {
-      pthread_mutex_init(&o_unac_mutex, 0);
-      unac_mutex_is_init = 1;
-  }
-  pthread_mutex_lock(&o_unac_mutex);
+  std::unique_lock<std::mutex> lock(o_unac_mutex);
 
   if (!strcmp(utf16be, from)) {
       from_utf8 = 0;
@@ -14494,7 +14478,6 @@ static int convert(const char* from, const char* to,
 
   ret = 0;
 out:
-  pthread_mutex_unlock(&o_unac_mutex);
   return ret;
 }
 

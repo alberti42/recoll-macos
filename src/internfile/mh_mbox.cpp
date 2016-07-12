@@ -35,6 +35,7 @@
 
 #include <cstring>
 #include <map>
+#include <mutex>
 
 #include "cstr.h"
 #include "mimehandler.h"
@@ -45,7 +46,6 @@
 #include "rclconfig.h"
 #include "md5ut.h"
 #include "conftree.h"
-#include "ptmutex.h"
 
 using namespace std;
 
@@ -65,7 +65,7 @@ public:
 private: FILE **m_fpp;
 };
 
-static PTMutexInit o_mcache_mutex;
+static std::mutex o_mcache_mutex;
 
 /**
  * Handles a cache for message numbers to offset translations. Permits direct
@@ -105,7 +105,7 @@ public:
             LOGDEB0("MboxCache::get_offsets: init failed\n" );
             return -1;
         }
-	PTMutexLocker locker(o_mcache_mutex);
+        std::unique_lock<std::mutex> locker(o_mcache_mutex);
         string fn = makefilename(udi);
         FILE *fp = 0;
         if ((fp = fopen(fn.c_str(), "r")) == 0) {
@@ -149,7 +149,7 @@ public:
             return;
         if (fsize < m_minfsize)
             return;
-	PTMutexLocker locker(o_mcache_mutex);
+        std::unique_lock<std::mutex> locker(o_mcache_mutex);
         string fn = makefilename(udi);
         FILE *fp;
         if ((fp = fopen(fn.c_str(), "w")) == 0) {
@@ -179,7 +179,7 @@ public:
 
     // Check state, possibly initialize
     bool ok(RclConfig *config) {
-	PTMutexLocker locker(o_mcache_mutex);
+        std::unique_lock<std::mutex> locker(o_mcache_mutex);
         if (m_minfsize == -1)
             return false;
         if (!m_ok) {
@@ -393,11 +393,11 @@ basic_regex<char> minifromregex;
 #endif
 
 static bool regcompiled;
-static PTMutexInit o_regex_mutex;
+static std::mutex o_regex_mutex;
 
 static void compileregexes()
 {
-    PTMutexLocker locker(o_regex_mutex);
+    std::unique_lock<std::mutex> locker(o_regex_mutex);
     // As the initial test of regcompiled is unprotected the value may
     // have changed while we were waiting for the lock. Test again now
     // that we are alone.
