@@ -18,7 +18,7 @@
 
 #include <sstream>
 #include <set>
-#include MEMORY_INCLUDE
+#include <memory>
 
 #include <qapplication.h>
 #include <qinputdialog.h>
@@ -309,7 +309,7 @@ bool SSearch::startSimpleSearch(const string& u8, int maxexp)
     m_xml = xml.str();
     LOGDEB("SSearch::startSimpleSearch:xml:["  << (m_xml) << "]\n" );
 
-    STD_SHARED_PTR<Rcl::SearchData> rsdata(sdata);
+    std::shared_ptr<Rcl::SearchData> rsdata(sdata);
     emit startSearch(rsdata, true);
     return true;
 }

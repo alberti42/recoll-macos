@@ -46,7 +46,7 @@
 #include <qstring.h>
 #include <qwidget.h>
 
-#include MEMORY_INCLUDE
+#include <memory>
 
 class QHBoxLayout;
 class QLineEdit;
@@ -65,7 +65,7 @@ namespace confgui {
 	virtual bool set(const std::string& val) = 0;
 	virtual bool get(std::string& val) = 0;
     };
-    typedef STD_SHARED_PTR<ConfLinkRep> ConfLink;
+    typedef std::shared_ptr<ConfLinkRep> ConfLink;
 
     // Useful to store/manage data which has no direct representation in
     // the config, ie list of subkey directories

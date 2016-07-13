@@ -27,7 +27,7 @@ class QTimer;
 
 #include "recoll.h"
 #include "searchdata.h"
-#include MEMORY_INCLUDE
+#include <memory>
 
 #include "ui_ssearchb.h"
 
@@ -73,7 +73,7 @@ public slots:
     virtual void takeFocus();
 
 signals:
-    void startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool);
+    void startSearch(std::shared_ptr<Rcl::SearchData>, bool);
     void clearSearch();
  private:
     bool m_escape;

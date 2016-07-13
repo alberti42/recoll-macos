@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-#include MEMORY_INCLUDE
+#include <memory>
 #include "searchdata.h"
 
 #ifndef NO_NAMESPACES
@@ -92,7 +92,7 @@ class Query {
      * be called repeatedly on the same object which gets reinitialized each
      * time.
      */
-    bool setQuery(STD_SHARED_PTR<SearchData> q);
+    bool setQuery(std::shared_ptr<SearchData> q);
 
     /** Get results count for current query */
     int getResCnt();
@@ -117,7 +117,7 @@ class Query {
     int getFirstMatchPage(const Doc &doc, std::string& term);
 
     /** Retrieve a reference to the searchData we are using */
-    STD_SHARED_PTR<SearchData> getSD() 
+    std::shared_ptr<SearchData> getSD() 
     {
 	return m_sd;
     }
@@ -143,7 +143,7 @@ private:
     bool   m_sortAscending;
     bool   m_collapseDuplicates;     
     int    m_resCnt;
-    STD_SHARED_PTR<SearchData> m_sd;
+    std::shared_ptr<SearchData> m_sd;
     int    m_snipMaxPosWalk;
 
     /* Copyconst and assignement private and forbidden */

@@ -26,7 +26,7 @@
 
 #include <stdio.h>
 
-#include MEMORY_INCLUDE
+#include <memory>
 
 #include <QComboBox>
 #include <qvariant.h>
@@ -73,7 +73,7 @@ protected:
 
 private:
     Preview *m_preview;
-    STD_SHARED_PTR<PlainToRichQtPreview> m_plaintorich;
+    std::shared_ptr<PlainToRichQtPreview> m_plaintorich;
     
     bool   m_dspflds;
     string m_url; // filename for this tab

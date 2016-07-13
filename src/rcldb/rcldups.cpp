@@ -70,7 +70,7 @@ bool Db::docDups(const Doc& idoc, vector<Doc>& odocs)
     MD5HexPrint(digest, md5);
 
     SearchData *sdp = new SearchData();
-    STD_SHARED_PTR<SearchData> sd(sdp);
+    std::shared_ptr<SearchData> sd(sdp);
     SearchDataClauseSimple *sdc = 
 	new SearchDataClauseSimple(SCLT_AND, md5, "rclmd5");
     sdc->addModifier(SearchDataClause::SDCM_CASESENS);

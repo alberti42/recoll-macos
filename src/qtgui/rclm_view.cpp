@@ -66,9 +66,9 @@ void RclMain::viewUrl()
     // StartNativeViewer needs a db source to call getEnclosing() on.
     Rcl::Query *query = new Rcl::Query(rcldb);
     DocSequenceDb *src = 
-	new DocSequenceDb(STD_SHARED_PTR<Rcl::Query>(query), "", 
-			  STD_SHARED_PTR<Rcl::SearchData>(new Rcl::SearchData));
-    m_source = STD_SHARED_PTR<DocSequence>(src);
+	new DocSequenceDb(std::shared_ptr<Rcl::Query>(query), "", 
+			  std::shared_ptr<Rcl::SearchData>(new Rcl::SearchData));
+    m_source = std::shared_ptr<DocSequence>(src);
 
 
     // Start a native viewer if the mimetype has one defined, else a

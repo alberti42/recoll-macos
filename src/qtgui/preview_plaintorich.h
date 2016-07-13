@@ -21,7 +21,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include MEMORY_INCLUDE
+#include <memory>
 
 #include <QThread>
 #include <QStringList>
@@ -58,7 +58,7 @@ class ToRichThread : public QThread {
     
 public:
     ToRichThread(const string &i, const HighlightData& hd,
-                 STD_SHARED_PTR<PlainToRichQtPreview> ptr,
+                 std::shared_ptr<PlainToRichQtPreview> ptr,
                  QStringList& qrichlst, // Output
                  QObject *parent = 0);
     virtual void run();
@@ -66,7 +66,7 @@ public:
 private:
     const string &m_input;
     const HighlightData &m_hdata;
-    STD_SHARED_PTR<PlainToRichQtPreview> m_ptr;
+    std::shared_ptr<PlainToRichQtPreview> m_ptr;
     QStringList &m_output;
 };
 

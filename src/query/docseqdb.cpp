@@ -28,8 +28,8 @@
 
 using std::list;
 
-DocSequenceDb::DocSequenceDb(STD_SHARED_PTR<Rcl::Query> q, const string &t, 
-			     STD_SHARED_PTR<Rcl::SearchData> sdata) 
+DocSequenceDb::DocSequenceDb(std::shared_ptr<Rcl::Query> q, const string &t, 
+			     std::shared_ptr<Rcl::SearchData> sdata) 
     : DocSequence(t), m_q(q), m_sdata(sdata), m_fsdata(sdata),
       m_rescnt(-1), 
       m_queryBuildAbstract(true),
@@ -164,7 +164,7 @@ bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs)
     std::unique_lock<std::mutex> locker(o_dblock);
     if (fs.isNotNull()) {
 	// We build a search spec by adding a filtering layer to the base one.
-	m_fsdata = STD_SHARED_PTR<Rcl::SearchData>(
+	m_fsdata = std::shared_ptr<Rcl::SearchData>(
 	    new Rcl::SearchData(Rcl::SCLT_AND, m_sdata->getStemLang()));
 	Rcl::SearchDataClauseSub *cl = 
 	    new Rcl::SearchDataClauseSub(m_sdata);
@@ -188,7 +188,7 @@ bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs)
 		if (sd)  {
 		    Rcl::SearchDataClauseSub *cl1 = 
 			new Rcl::SearchDataClauseSub(
-			    STD_SHARED_PTR<Rcl::SearchData>(sd));
+			    std::shared_ptr<Rcl::SearchData>(sd));
 		    m_fsdata->addClause(cl1);
 		}
 	    }

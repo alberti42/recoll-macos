@@ -173,7 +173,7 @@ void Query::setSortBy(const string& fld, bool ascending) {
 #define ISNULL(X) !(X)
 
 // Prepare query out of user search data
-bool Query::setQuery(STD_SHARED_PTR<SearchData> sdata)
+bool Query::setQuery(std::shared_ptr<SearchData> sdata)
 {
     LOGDEB("Query::setQuery:\n" );
 

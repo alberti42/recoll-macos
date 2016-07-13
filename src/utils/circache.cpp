@@ -30,7 +30,7 @@
 #include <zlib.h>
 
 #include "chrono.h"
-#include MEMORY_INCLUDE
+#include <memory>
 
 
 #ifndef _WIN32
@@ -1353,8 +1353,8 @@ static bool inflateToDynBuf(void* inp, UINT inlen, void **outpp, UINT *outlenp)
 }
 
 // Copy all entries from occ to ncc. Both are already open.
-static bool copyall(STD_SHARED_PTR<CirCache> occ,
-                    STD_SHARED_PTR<CirCache> ncc, int& nentries,
+static bool copyall(std::shared_ptr<CirCache> occ,
+                    std::shared_ptr<CirCache> ncc, int& nentries,
     ostringstream& msg)
 {
     bool eof = false;
@@ -1399,7 +1399,7 @@ int CirCache::append(const string ddir, const string& sdir, string *reason)
 {
     ostringstream msg;
     // Open source file
-    STD_SHARED_PTR<CirCache> occ(new CirCache(sdir));
+    std::shared_ptr<CirCache> occ(new CirCache(sdir));
     if (!occ->open(CirCache::CC_OPREAD)) {
         if (reason) {
             msg << "Open failed in " << sdir << " : " <<
@@ -1409,7 +1409,7 @@ int CirCache::append(const string ddir, const string& sdir, string *reason)
         return -1;
     }
     // Open dest file
-    STD_SHARED_PTR<CirCache> ncc(new CirCache(ddir));
+    std::shared_ptr<CirCache> ncc(new CirCache(ddir));
     if (!ncc->open(CirCache::CC_OPWRITE)) {
         if (reason) {
             msg << "Open failed in " << ddir << " : " <<
@@ -1444,7 +1444,7 @@ int CirCache::append(const string ddir, const string& sdir, string *reason)
 
 #include <string>
 #include <iostream>
-#include MEMORY_INCLUDE
+#include <memory>
 
 #include "circache.h"
 #include "fileudi.h"

@@ -18,7 +18,7 @@
 #ifndef TEST_SUBTREELIST
 #include "autoconfig.h"
 
-#include MEMORY_INCLUDE
+#include <memory>
 
 #include "cstr.h"
 #include "rcldb.h"
@@ -38,7 +38,7 @@ bool subtreelist(RclConfig *config, const string& top,
     }
 
     Rcl::SearchData *sd = new Rcl::SearchData(Rcl::SCLT_OR, cstr_null);
-    STD_SHARED_PTR<Rcl::SearchData> rq(sd);
+    std::shared_ptr<Rcl::SearchData> rq(sd);
 
     sd->addClause(new Rcl::SearchDataClausePath(top, false));
 

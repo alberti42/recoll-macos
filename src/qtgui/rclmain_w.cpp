@@ -17,7 +17,7 @@
 #include "autoconfig.h"
 
 #include <utility>
-#include MEMORY_INCLUDE
+#include <memory>
 #include <stdlib.h>
 
 #include <qapplication.h>
@@ -67,20 +67,6 @@
 #include "rclmain_w.h"
 #include "rclhelp.h"
 #include "moc_rclmain_w.cpp"
-
-/* Qt5 moc expands macros when defining signals. The SIGNAL() macro is
-   a stringification, so it does not expand macros. We have signals
-   where one of the types is a #define (for the variations on
-   std::shared_ptr). In qt5, the connection does not work because the
-   signal string is different between the definition and the connect
-   call, because of the different macro expansion. We have to use
-   another level of macro in Qt5 to force macro expansion, but not in
-   Qt4, so we both define the XSIGNAL and XSLOT macros here, and have
-   ifdefs in the code. What a mess... */
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-#define XSIGNAL(X) SIGNAL(X)
-#define XSLOT(X) SLOT(X)
-#endif
 
 using std::pair;
 
@@ -307,15 +293,9 @@ void RclMain::init()
     connect(&m_watcher, SIGNAL(fileChanged(QString)),
             this, SLOT(updateIdxStatus()));
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     connect(sSearch,
-            XSIGNAL(startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool)), 
-	    this, XSLOT(startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool)));
-#else
-    connect(sSearch,
-            SIGNAL(startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool)), 
-	    this, SLOT(startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool)));
-#endif
+            SIGNAL(startSearch(std::shared_ptr<Rcl::SearchData>, bool)), 
+	    this, SLOT(startSearch(std::shared_ptr<Rcl::SearchData>, bool)));
     connect(sSearch, SIGNAL(clearSearch()), 
 	    this, SLOT(resetSearch()));
     connect(preferencesMenu, SIGNAL(triggered(QAction*)),
@@ -383,14 +363,8 @@ void RclMain::init()
     restable->setRclMain(this, true);
     connect(actionSaveResultsAsCSV, SIGNAL(triggered()), 
 	    restable, SLOT(saveAsCSV()));
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    connect(this, XSIGNAL(docSourceChanged(STD_SHARED_PTR<DocSequence>)),
-	    restable, XSLOT(setDocSource(STD_SHARED_PTR<DocSequence>)));
-#else
-    connect(this, SIGNAL(docSourceChanged(STD_SHARED_PTR<DocSequence>)),
-	    restable, SLOT(setDocSource(STD_SHARED_PTR<DocSequence>)));
-#endif
-   
+    connect(this, SIGNAL(docSourceChanged(std::shared_ptr<DocSequence>)),
+	    restable, SLOT(setDocSource(std::shared_ptr<DocSequence>)));
     connect(this, SIGNAL(searchReset()), 
 	    restable, SLOT(resetSource()));
     connect(this, SIGNAL(resultsReady()), 
@@ -419,13 +393,8 @@ void RclMain::init()
 	    this, SLOT(showSnippets(Rcl::Doc)));
 
     reslist->setRclMain(this, true);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-    connect(this, XSIGNAL(docSourceChanged(STD_SHARED_PTR<DocSequence>)),
-	    reslist, XSLOT(setDocSource(STD_SHARED_PTR<DocSequence>)));
-#else
-    connect(this, SIGNAL(docSourceChanged(STD_SHARED_PTR<DocSequence>)),
-	    reslist, SLOT(setDocSource(STD_SHARED_PTR<DocSequence>)));
-#endif
+    connect(this, SIGNAL(docSourceChanged(std::shared_ptr<DocSequence>)),
+	    reslist, SLOT(setDocSource(std::shared_ptr<DocSequence>)));
     connect(firstPageAction, SIGNAL(triggered()), 
 	    reslist, SLOT(resultPageFirst()));
     connect(prevPageAction, SIGNAL(triggered()), 
@@ -694,7 +663,7 @@ void RclMain::fileExit()
 }
 
 // Start a db query and set the reslist docsource
-void RclMain::startSearch(STD_SHARED_PTR<Rcl::SearchData> sdata, bool issimple)
+void RclMain::startSearch(std::shared_ptr<Rcl::SearchData> sdata, bool issimple)
 {
     LOGDEB("RclMain::startSearch. Indexing "  << (m_idxproc?"on":"off") << " Active "  << (m_queryActive) << "\n" );
     if (m_queryActive) {
@@ -703,7 +672,7 @@ void RclMain::startSearch(STD_SHARED_PTR<Rcl::SearchData> sdata, bool issimple)
     }
     m_queryActive = true;
     restable->setEnabled(false);
-    m_source = STD_SHARED_PTR<DocSequence>();
+    m_source = std::shared_ptr<DocSequence>();
 
     m_searchIsSimple = issimple;
 
@@ -733,11 +702,11 @@ void RclMain::startSearch(STD_SHARED_PTR<Rcl::SearchData> sdata, bool issimple)
 
     curPreview = 0;
     DocSequenceDb *src = 
-	new DocSequenceDb(STD_SHARED_PTR<Rcl::Query>(query), 
+	new DocSequenceDb(std::shared_ptr<Rcl::Query>(query), 
 			  string(tr("Query results").toUtf8()), sdata);
     src->setAbstractParams(prefs.queryBuildAbstract, 
                            prefs.queryReplaceAbstract);
-    m_source = STD_SHARED_PTR<DocSequence>(src);
+    m_source = std::shared_ptr<DocSequence>(src);
     m_source->setSortSpec(m_sortspec);
     m_source->setFiltSpec(m_filtspec);
 
@@ -747,9 +716,9 @@ void RclMain::startSearch(STD_SHARED_PTR<Rcl::SearchData> sdata, bool issimple)
 }
 
 class QueryThread : public QThread {
-    STD_SHARED_PTR<DocSequence> m_source;
+    std::shared_ptr<DocSequence> m_source;
  public: 
-    QueryThread(STD_SHARED_PTR<DocSequence> source)
+    QueryThread(std::shared_ptr<DocSequence> source)
 	: m_source(source)
     {
     }
@@ -961,8 +930,8 @@ void RclMain::showSubDocs(Rcl::Doc doc)
 	new DocSequenceDocs(rcldb, docs,
 			    qs2utf8s(tr("Sub-documents and attachments")));
     src->setDescription(qs2utf8s(tr("Sub-documents and attachments")));
-    STD_SHARED_PTR<DocSequence> 
-	source(new DocSource(theconfig, STD_SHARED_PTR<DocSequence>(src)));
+    std::shared_ptr<DocSequence> 
+	source(new DocSource(theconfig, std::shared_ptr<DocSequence>(src)));
 
     ResTable *res = new ResTable();
     res->setRclMain(this, false);
@@ -1003,7 +972,7 @@ void RclMain::showDocHistory()
 {
     LOGDEB("RclMain::showDocHistory\n" );
     emit searchReset();
-    m_source = STD_SHARED_PTR<DocSequence>();
+    m_source = std::shared_ptr<DocSequence>();
     curPreview = 0;
 
     string reason;
@@ -1012,8 +981,8 @@ void RclMain::showDocHistory()
 	return;
     }
     // Construct a bogus SearchData structure
-    STD_SHARED_PTR<Rcl::SearchData>searchdata = 
-	STD_SHARED_PTR<Rcl::SearchData>(new Rcl::SearchData(Rcl::SCLT_AND, cstr_null));
+    std::shared_ptr<Rcl::SearchData>searchdata = 
+	std::shared_ptr<Rcl::SearchData>(new Rcl::SearchData(Rcl::SCLT_AND, cstr_null));
     searchdata->setDescription((const char *)tr("History data").toUtf8());
 
 
@@ -1022,8 +991,8 @@ void RclMain::showDocHistory()
 	new DocSequenceHistory(rcldb, g_dynconf, 
 			       string(tr("Document history").toUtf8()));
     src->setDescription((const char *)tr("History data").toUtf8());
-    DocSource *source = new DocSource(theconfig, STD_SHARED_PTR<DocSequence>(src));
-    m_source = STD_SHARED_PTR<DocSequence>(source);
+    DocSource *source = new DocSource(theconfig, std::shared_ptr<DocSequence>(src));
+    m_source = std::shared_ptr<DocSequence>(source);
     m_source->setSortSpec(m_sortspec);
     m_source->setFiltSpec(m_filtspec);
     emit docSourceChanged(m_source);

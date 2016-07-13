@@ -21,7 +21,7 @@
 #include <vector>
 
 #include "recoll.h"
-#include MEMORY_INCLUDE
+#include <memory>
 #include "searchdata.h"
 
 /** Advanced search history. 
@@ -44,14 +44,14 @@ public:
     ~AdvSearchHist();
 
     // Add entry
-    bool push(STD_SHARED_PTR<Rcl::SearchData>);
+    bool push(std::shared_ptr<Rcl::SearchData>);
 
     // Get latest. does not change state
-    STD_SHARED_PTR<Rcl::SearchData> getnewest();
+    std::shared_ptr<Rcl::SearchData> getnewest();
 
     // Cursor
-    STD_SHARED_PTR<Rcl::SearchData> getolder();
-    STD_SHARED_PTR<Rcl::SearchData> getnewer();
+    std::shared_ptr<Rcl::SearchData> getolder();
+    std::shared_ptr<Rcl::SearchData> getnewer();
 
     void clear();
 
@@ -59,7 +59,7 @@ private:
     bool read();
 
     int m_current;
-    std::vector<STD_SHARED_PTR<Rcl::SearchData> > m_entries;
+    std::vector<std::shared_ptr<Rcl::SearchData> > m_entries;
 };
 
 #endif // _ADVSHIST_H_INCLUDED_

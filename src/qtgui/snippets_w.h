@@ -19,7 +19,7 @@
 
 #include "autoconfig.h"
 
-#include MEMORY_INCLUDE
+#include <memory>
 
 #include <QString>
 
@@ -33,7 +33,7 @@ class SnippetsW : public QWidget, public Ui::Snippets
 {
     Q_OBJECT
 public:
-    SnippetsW(Rcl::Doc doc, STD_SHARED_PTR<DocSequence> source, QWidget* parent = 0) 
+    SnippetsW(Rcl::Doc doc, std::shared_ptr<DocSequence> source, QWidget* parent = 0) 
 	: QWidget(parent), m_doc(doc), m_source(source)
     {
 	setupUi((QDialog*)this);
@@ -52,7 +52,7 @@ signals:
 private:
     void init();
     Rcl::Doc m_doc;
-    STD_SHARED_PTR<DocSequence> m_source;
+    std::shared_ptr<DocSequence> m_source;
 };
 
 #endif /* _SNIPPETS_W_H_INCLUDED_ */

@@ -20,7 +20,7 @@
 
 #include <vector>
 #include <string>
-#include MEMORY_INCLUDE
+#include <memory>
 
 #include "docseq.h"
 
@@ -32,7 +32,7 @@ class RclConfig;
  */
 class DocSeqFiltered : public DocSeqModifier {
 public:
-    DocSeqFiltered(RclConfig *conf, STD_SHARED_PTR<DocSequence> iseq, 
+    DocSeqFiltered(RclConfig *conf, std::shared_ptr<DocSequence> iseq, 
 		   DocSeqFiltSpec &filtspec);
     virtual ~DocSeqFiltered() {}
     virtual bool canFilter() {return true;}

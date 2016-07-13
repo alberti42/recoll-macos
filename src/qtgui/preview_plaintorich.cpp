@@ -156,7 +156,7 @@ QString  PlainToRichQtPreview::curAnchorName() const
 
 
 ToRichThread::ToRichThread(const string &i, const HighlightData& hd,
-                           STD_SHARED_PTR<PlainToRichQtPreview> ptr,
+                           std::shared_ptr<PlainToRichQtPreview> ptr,
                            QStringList& qrichlist,
                            QObject *parent)
     : QThread(parent), m_input(i), m_hdata(hd), m_ptr(ptr), m_output(qrichlist)

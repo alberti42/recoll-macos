@@ -20,7 +20,7 @@
 #include "autoconfig.h"
 
 #include <vector>
-#include MEMORY_INCLUDE
+#include <memory>
 
 #include "docseq.h"
 #include "hldata.h"
@@ -40,7 +40,7 @@ public:
     {
         m_hiliter = ptr;
     }
-    void setDocSource(STD_SHARED_PTR<DocSequence> src, int winfirst = -1)
+    void setDocSource(std::shared_ptr<DocSequence> src, int winfirst = -1)
     {
         m_pagesize = m_newpagesize;
 	m_winfirst = winfirst;
@@ -129,7 +129,7 @@ private:
     int                  m_winfirst;
     bool                 m_hasNext;
     PlainToRich         *m_hiliter;
-    STD_SHARED_PTR<DocSequence> m_docSource;
+    std::shared_ptr<DocSequence> m_docSource;
     std::vector<ResListEntry> m_respage;
 };
 

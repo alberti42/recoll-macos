@@ -155,7 +155,7 @@ class DocSequence {
     virtual bool canSort() {return false;}
     virtual bool setFiltSpec(const DocSeqFiltSpec &) {return false;}
     virtual bool setSortSpec(const DocSeqSortSpec &) {return false;}
-    virtual STD_SHARED_PTR<DocSequence> getSourceSeq() {return STD_SHARED_PTR<DocSequence>();}
+    virtual std::shared_ptr<DocSequence> getSourceSeq() {return std::shared_ptr<DocSequence>();}
 
     static void set_translations(const std::string& sort, const std::string& filt)
     {
@@ -181,7 +181,7 @@ protected:
  */
 class DocSeqModifier : public DocSequence {
 public:
-    DocSeqModifier(STD_SHARED_PTR<DocSequence> iseq) 
+    DocSeqModifier(std::shared_ptr<DocSequence> iseq) 
 	: DocSequence(""), m_seq(iseq) 
     {}
     virtual ~DocSeqModifier() {}
@@ -241,7 +241,7 @@ public:
     {
 	return m_seq->title();
     }
-    virtual STD_SHARED_PTR<DocSequence> getSourceSeq() 
+    virtual std::shared_ptr<DocSequence> getSourceSeq() 
     {
 	return m_seq;
     }
@@ -254,7 +254,7 @@ protected:
 	return m_seq->getDb();
     }
 
-    STD_SHARED_PTR<DocSequence>    m_seq;
+    std::shared_ptr<DocSequence>    m_seq;
 };
 
 class RclConfig;
@@ -263,7 +263,7 @@ class RclConfig;
 // sorting and filtering in ways depending on the base seqs capabilities
 class DocSource : public DocSeqModifier {
 public:
-    DocSource(RclConfig *config, STD_SHARED_PTR<DocSequence> iseq) 
+    DocSource(RclConfig *config, std::shared_ptr<DocSequence> iseq) 
 	: DocSeqModifier(iseq), m_config(config)
     {}
     virtual bool canFilter() {return true;}

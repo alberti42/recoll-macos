@@ -46,7 +46,7 @@ static bool filter(const DocSeqFiltSpec& fs, const Rcl::Doc *x)
     return false;
 } 
 
-DocSeqFiltered::DocSeqFiltered(RclConfig *conf, STD_SHARED_PTR<DocSequence> iseq, 
+DocSeqFiltered::DocSeqFiltered(RclConfig *conf, std::shared_ptr<DocSequence> iseq, 
 			       DocSeqFiltSpec &filtspec)
     :  DocSeqModifier(iseq), m_config(conf)
 {

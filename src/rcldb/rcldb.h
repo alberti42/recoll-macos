@@ -21,7 +21,7 @@
 
 #include <string>
 #include <vector>
-#include MEMORY_INCLUDE
+#include <memory>
 
 #include "cstr.h"
 #include "rcldoc.h"

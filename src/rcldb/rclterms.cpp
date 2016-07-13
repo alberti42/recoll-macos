@@ -185,11 +185,11 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
     XapComputableSynFamMember synac(xrdb, synFamDiCa, "all", &unacfoldtrans);
 
     if (matchtyp == ET_WILD || matchtyp == ET_REGEXP) {
-        STD_SHARED_PTR<StrMatcher> matcher;
+        std::shared_ptr<StrMatcher> matcher;
         if (matchtyp == ET_WILD) {
-            matcher = STD_SHARED_PTR<StrMatcher>(new StrWildMatcher(term));
+            matcher = std::shared_ptr<StrMatcher>(new StrWildMatcher(term));
         } else {
-            matcher = STD_SHARED_PTR<StrMatcher>(new StrRegexpMatcher(term));
+            matcher = std::shared_ptr<StrMatcher>(new StrRegexpMatcher(term));
         }
         if (!diac_sensitive || !case_sensitive) {
             // Perform case/diac expansion on the exp as appropriate and
@@ -355,15 +355,15 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
     }
     res.prefix = prefix;
 
-    STD_SHARED_PTR<StrMatcher> matcher;
+    std::shared_ptr<StrMatcher> matcher;
     if (typ == ET_REGEXP) {
-        matcher = STD_SHARED_PTR<StrMatcher>(new StrRegexpMatcher(root));
+        matcher = std::shared_ptr<StrMatcher>(new StrRegexpMatcher(root));
         if (!matcher->ok()) {
             LOGERR("termMatch: regcomp failed: "  << (matcher->getreason()));
                 return false;
         }
     } else if (typ == ET_WILD) {
-        matcher = STD_SHARED_PTR<StrMatcher>(new StrWildMatcher(root));
+        matcher = std::shared_ptr<StrMatcher>(new StrWildMatcher(root));
     }
 
     // Find the initial section before any special char

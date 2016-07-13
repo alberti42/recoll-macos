@@ -1,10 +1,3 @@
-#define UNORDERED_MAP_INCLUDE <unordered_map>
-#define UNORDERED_SET_INCLUDE <unordered_set>
-#define STD_UNORDERED_MAP std::unordered_map
-#define STD_UNORDERED_SET std::unordered_set
-#define MEMORY_INCLUDE <memory>
-#define STD_SHARED_PTR    std::shared_ptr
-
 
 #ifdef _WIN32
 #include "safewindows.h"

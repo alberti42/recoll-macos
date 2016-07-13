@@ -23,7 +23,7 @@
 
 #include <map>
 #include <string>
-#include MEMORY_INCLUDE
+#include <memory>
 
 
 extern void rclutil_init_mt();
@@ -70,7 +70,7 @@ private:
     bool m_noremove;
 };
 
-typedef STD_SHARED_PTR<TempFileInternal> TempFile;
+typedef std::shared_ptr<TempFileInternal> TempFile;
 
 /// Temporary directory class. Recursively deleted by destructor.
 class TempDir {

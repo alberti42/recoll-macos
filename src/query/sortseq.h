@@ -20,7 +20,7 @@
 
 #include <vector>
 #include <string>
-#include MEMORY_INCLUDE
+#include <memory>
 
 #include "docseq.h"
 
@@ -30,7 +30,7 @@
  */
 class DocSeqSorted : public DocSeqModifier {
  public:
-    DocSeqSorted(STD_SHARED_PTR<DocSequence> iseq, DocSeqSortSpec &sortspec)
+    DocSeqSorted(std::shared_ptr<DocSequence> iseq, DocSeqSortSpec &sortspec)
 	:  DocSeqModifier(iseq)
     {
 	setSortSpec(sortspec);

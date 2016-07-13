@@ -28,7 +28,7 @@
 #include "rcldb.h"
 #include "docseq.h"
 #include "reslistpager.h"
-#include MEMORY_INCLUDE
+#include <memory>
 
 class RecollProtocol;
 
@@ -191,7 +191,7 @@ private:
     // (one slave several konqueror windows) would be to have a small
     // cache of recent searches kept open.
     RecollKioPager m_pager;
-    STD_SHARED_PTR<DocSequence> m_source;
+    std::shared_ptr<DocSequence> m_source;
     // Note: page here is not used, current page always comes from m_pager.
     QueryDesc      m_query;
 };

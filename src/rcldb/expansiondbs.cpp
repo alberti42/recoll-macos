@@ -18,7 +18,7 @@
 
 #include "autoconfig.h"
 
-#include MEMORY_INCLUDE
+#include <memory>
 
 #include "log.h"
 #include "utf8iter.h"
@@ -57,9 +57,9 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
     vector<XapWritableComputableSynFamMember> stemdbs;
     // Note: tried to make this to work with stack-allocated objects, couldn't.
     // Looks like a bug in copy constructors somewhere, can't guess where
-    vector<STD_SHARED_PTR<SynTermTransStem> > stemmers;
+    vector<std::shared_ptr<SynTermTransStem> > stemmers;
     for (unsigned int i = 0; i < langs.size(); i++) {
-	stemmers.push_back(STD_SHARED_PTR<SynTermTransStem>
+	stemmers.push_back(std::shared_ptr<SynTermTransStem>
 			   (new SynTermTransStem(langs[i])));
 	stemdbs.push_back(
 	    XapWritableComputableSynFamMember(wdb, synFamStem, langs[i], 

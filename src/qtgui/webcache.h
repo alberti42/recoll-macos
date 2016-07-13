@@ -20,7 +20,7 @@
 
 #include <vector>
 #include <string>
-#include MEMORY_INCLUDE
+#include <memory>
 
 #include "ui_webcache.h"
 

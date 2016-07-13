@@ -47,7 +47,7 @@
 #include "pathut.h"
 #include "mimehandler.h"
 #include "plaintorich.h"
-#include MEMORY_INCLUDE
+#include <memory>
 #include "internfile.h"
 #include "indexer.h"
 #include "snippets_w.h"
@@ -421,10 +421,10 @@ int ResList::newListId()
 
 extern "C" int XFlush(void *);
 
-void ResList::setDocSource(STD_SHARED_PTR<DocSequence> nsource)
+void ResList::setDocSource(std::shared_ptr<DocSequence> nsource)
 {
     LOGDEB("ResList::setDocSource()\n" );
-    m_source = STD_SHARED_PTR<DocSequence>(new DocSource(theconfig, nsource));
+    m_source = std::shared_ptr<DocSequence>(new DocSource(theconfig, nsource));
 }
 
 // A query was executed, or the filtering/sorting parameters changed,
@@ -447,7 +447,7 @@ void ResList::readDocSource()
 void ResList::resetList() 
 {
     LOGDEB("ResList::resetList()\n" );
-    setDocSource(STD_SHARED_PTR<DocSequence>());
+    setDocSource(std::shared_ptr<DocSequence>());
     resetView();
 }
 
@@ -900,7 +900,7 @@ void ResList::linkWasClicked(const QUrl &url)
 	    LOGERR("ResList::linkWasClicked: can't get doc for "  << (i) << "\n" );
 	    return;
 	}
-        emit editRequested(ResultPopup::getParent(STD_SHARED_PTR<DocSequence>(),
+        emit editRequested(ResultPopup::getParent(std::shared_ptr<DocSequence>(),
                                                   doc));
     }
     break;

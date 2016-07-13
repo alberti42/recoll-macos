@@ -131,7 +131,7 @@ PHP_METHOD(Query, query)
 	RETURN_BOOL(false);
     }
 
-    STD_SHARED_PTR<Rcl::SearchData> rq(sd);
+    std::shared_ptr<Rcl::SearchData> rq(sd);
     Rcl::Query *pRclQuery = new Rcl::Query(pRclDb);
     pRclQuery->setQuery(rq);
 

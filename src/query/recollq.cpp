@@ -342,7 +342,7 @@ endopts:
 	return 1;
     }
 
-    STD_SHARED_PTR<Rcl::SearchData> rq(sd);
+    std::shared_ptr<Rcl::SearchData> rq(sd);
     Rcl::Query query(&rcldb);
     if (op_flags & OPT_S) {
 	query.setSortBy(sortfield, (op_flags & OPT_D) ? false : true);

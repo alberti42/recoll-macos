@@ -24,7 +24,7 @@
 #include <string>
 #include <algorithm>
 #include <cstring>
-#include UNORDERED_SET_INCLUDE
+#include <unordered_set>
 
 #include "textsplit.h"
 #include "log.h"
@@ -62,9 +62,9 @@ static int charclasses[charclasses_size];
 // management of Unicode properties, but seems to do the job well
 // enough in most common cases
 static vector<unsigned int> vpuncblocks;
-static STD_UNORDERED_SET<unsigned int> spunc;
-static STD_UNORDERED_SET<unsigned int> visiblewhite;
-static STD_UNORDERED_SET<unsigned int> sskip;
+static std::unordered_set<unsigned int> spunc;
+static std::unordered_set<unsigned int> visiblewhite;
+static std::unordered_set<unsigned int> sskip;
 
 class CharClassInit {
 public:

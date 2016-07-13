@@ -18,8 +18,8 @@
 
 #include <sstream>
 #include <iostream>
-#include MEMORY_INCLUDE
-#include UNORDERED_MAP_INCLUDE
+#include <memory>
+#include <unordered_map>
 
 #ifdef _WIN32
 #define USING_STD_REGEX
@@ -62,7 +62,7 @@ public:
 
 class WebcacheModelInternal {
 public:
-    STD_SHARED_PTR<BeagleQueueCache> cache;
+    std::shared_ptr<BeagleQueueCache> cache;
     vector<CEnt> all;
     vector<CEnt> disp;
 };
@@ -81,7 +81,7 @@ WebcacheModel::~WebcacheModel()
 void WebcacheModel::reload()
 {
     m->cache =
-        STD_SHARED_PTR<BeagleQueueCache>(new BeagleQueueCache(theconfig));
+        std::shared_ptr<BeagleQueueCache>(new BeagleQueueCache(theconfig));
     m->all.clear();
     m->disp.clear();
     

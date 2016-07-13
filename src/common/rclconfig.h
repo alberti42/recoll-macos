@@ -23,7 +23,7 @@
 #include <set>
 #include <utility>
 #include <map>
-#include UNORDERED_SET_INCLUDE
+#include <unordered_set>
 
 using std::string;
 using std::vector;
@@ -378,10 +378,10 @@ class RclConfig {
     static string o_localecharset;
     // Limiting set of mime types to be processed. Normally empty.
     ParamStale    m_rmtstate;
-    STD_UNORDERED_SET<string>   m_restrictMTypes; 
+    std::unordered_set<string>   m_restrictMTypes; 
     // Exclusion set of mime types. Normally empty
     ParamStale    m_xmtstate;
-    STD_UNORDERED_SET<string>   m_excludeMTypes; 
+    std::unordered_set<string>   m_excludeMTypes; 
 
     vector<pair<int, int> > m_thrConf;
 

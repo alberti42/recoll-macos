@@ -33,7 +33,7 @@
 #include "docseq.h"
 #include "sortseq.h"
 #include "filtseq.h"
-#include MEMORY_INCLUDE
+#include <memory>
 #include "rcldoc.h"
 #include "reslistpager.h"
 
@@ -66,7 +66,7 @@ class ResList : public RESLIST_PARENTCLASS
     void setRclMain(RclMain *m, bool ismain);
 
  public slots:
-    virtual void setDocSource(STD_SHARED_PTR<DocSequence> nsource);
+    virtual void setDocSource(std::shared_ptr<DocSequence> nsource);
     virtual void resetList();     // Erase current list
     virtual void resPageUpOrBack(); // Page up pressed
     virtual void resPageDownOrNext(); // Page down pressed
@@ -118,7 +118,7 @@ class ResList : public RESLIST_PARENTCLASS
 
  private:
     QtGuiResListPager  *m_pager;
-    STD_SHARED_PTR<DocSequence> m_source;
+    std::shared_ptr<DocSequence> m_source;
     int        m_popDoc; // Docnum for the popup menu.
     int        m_curPvDoc;// Docnum for current preview
     int        m_lstClckMod; // Last click modifier. 

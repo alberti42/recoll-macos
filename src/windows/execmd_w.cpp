@@ -23,7 +23,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
-#include UNORDERED_MAP_INCLUDE
+#include <unordered_map>
 
 #include "log.h"
 #include "safesysstat.h"
@@ -108,12 +108,12 @@ static string argvToCmdLine(const string& cmd, const vector<string>& args)
 }
 
 // Merge the father environment with the variable specified in m_env
-static char *mergeEnvironment(const STD_UNORDERED_MAP<string, string>& addenv)
+static char *mergeEnvironment(const std::unordered_map<string, string>& addenv)
 {
     // Parse existing environment.
     char *envir = GetEnvironmentStrings();
     char *cp0 = envir;
-    STD_UNORDERED_MAP<string, string> envirmap;
+    std::unordered_map<string, string> envirmap;
 
     string name, value;
     for (char *cp1 = cp0;;cp1++) {
@@ -277,7 +277,7 @@ public:
         reset();
     }
 
-    STD_UNORDERED_MAP<string, string>   m_env;
+    std::unordered_map<string, string>   m_env;
     ExecCmdAdvise   *m_advise;
     ExecCmdProvide  *m_provide;
     int              m_timeoutMs;

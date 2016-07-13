@@ -162,7 +162,7 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
     // an actual user-entered phrase
     slack += 1 + nwords / 3;
     
-    m_autophrase = STD_SHARED_PTR<SearchDataClauseDist>(
+    m_autophrase = std::shared_ptr<SearchDataClauseDist>(
         new SearchDataClauseDist(SCLT_PHRASE, swords, slack, field));
     return true;
 }

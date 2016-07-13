@@ -82,7 +82,7 @@ bool DocSource::buildStack()
     } else {
 	if (m_fspec.isNotNull()) {
 	    m_seq = 
-		STD_SHARED_PTR<DocSequence>(new DocSeqFiltered(m_config, m_seq, m_fspec));
+		std::shared_ptr<DocSequence>(new DocSeqFiltered(m_config, m_seq, m_fspec));
 	} 
     }
     
@@ -92,7 +92,7 @@ bool DocSource::buildStack()
 	}
     } else {
 	if (m_sspec.isNotNull()) {
-	    m_seq = STD_SHARED_PTR<DocSequence>(new DocSeqSorted(m_seq, m_sspec));
+	    m_seq = std::shared_ptr<DocSequence>(new DocSeqSorted(m_seq, m_sspec));
 	}
     }
     return true;

@@ -357,7 +357,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
     map<unsigned int, string> sparseDoc;
     // Also remember apart the search term positions so that we can list
     // them with their snippets.
-    STD_UNORDERED_SET<unsigned int> searchTermPositions;
+    std::unordered_set<unsigned int> searchTermPositions;
 
     // Remember max position. Used to stop walking positions lists while 
     // populating the adjacent slots.

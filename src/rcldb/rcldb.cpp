@@ -572,7 +572,7 @@ bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm,
     Chrono chron;
     std::unique_lock<std::mutex> lock(m_mutex);
 #endif
-    STD_SHARED_PTR<Xapian::Document> doc_cleaner(newdocument_ptr);
+    std::shared_ptr<Xapian::Document> doc_cleaner(newdocument_ptr);
 
     // Check file system full every mbyte of indexed text. It's a bit wasteful
     // to do this after having prepared the document, but it needs to be in

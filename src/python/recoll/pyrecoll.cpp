@@ -56,7 +56,7 @@ static RclConfig *rclconfig;
 typedef struct {
     PyObject_HEAD
     /* Type-specific fields go here. */
-    STD_SHARED_PTR<Rcl::SearchData> sd;
+    std::shared_ptr<Rcl::SearchData> sd;
 } recoll_SearchDataObject;
 
 static void 
@@ -108,7 +108,7 @@ SearchData_init(recoll_SearchDataObject *self, PyObject *args, PyObject *kwargs)
     } else {
 	stemlang = "english";
     }
-    self->sd = STD_SHARED_PTR<Rcl::SearchData>(new Rcl::SearchData(tp, stemlang));
+    self->sd = std::shared_ptr<Rcl::SearchData>(new Rcl::SearchData(tp, stemlang));
     return 0;
 }
 
@@ -953,7 +953,7 @@ Query_execute(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 	return 0;
     }
 
-    STD_SHARED_PTR<Rcl::SearchData> rq(sd);
+    std::shared_ptr<Rcl::SearchData> rq(sd);
     self->query->setSortBy(*self->sortfield, self->ascending);
     self->query->setQuery(rq);
     int cnt = self->query->getResCnt();
@@ -1221,7 +1221,7 @@ Query_highlight(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
 	return 0;
     }
 
-    STD_SHARED_PTR<Rcl::SearchData> sd = self->query->getSD();
+    std::shared_ptr<Rcl::SearchData> sd = self->query->getSD();
     if (!sd) {
 	PyErr_SetString(PyExc_ValueError, "Query not initialized");
 	return 0;
@@ -1272,7 +1272,7 @@ Query_makedocabstract(recoll_QueryObject* self, PyObject *args,PyObject *kwargs)
         PyErr_SetString(PyExc_AttributeError, "query");
         return 0;
     }
-    STD_SHARED_PTR<Rcl::SearchData> sd = self->query->getSD();
+    std::shared_ptr<Rcl::SearchData> sd = self->query->getSD();
     if (!sd) {
 	PyErr_SetString(PyExc_ValueError, "Query not initialized");
 	return 0;
@@ -1328,7 +1328,7 @@ Query_getxquery(recoll_QueryObject* self, PyObject *, PyObject *)
         PyErr_SetString(PyExc_AttributeError, "query");
 	return 0;
     }
-    STD_SHARED_PTR<Rcl::SearchData> sd = self->query->getSD();
+    std::shared_ptr<Rcl::SearchData> sd = self->query->getSD();
     if (!sd) {
 	PyErr_SetString(PyExc_ValueError, "Query not initialized");
 	return 0;
@@ -1356,7 +1356,7 @@ Query_getgroups(recoll_QueryObject* self, PyObject *, PyObject *)
         PyErr_SetString(PyExc_AttributeError, "query");
 	return 0;
     }
-    STD_SHARED_PTR<Rcl::SearchData> sd = self->query->getSD();
+    std::shared_ptr<Rcl::SearchData> sd = self->query->getSD();
     if (!sd) {
 	PyErr_SetString(PyExc_ValueError, "Query not initialized");
 	return 0;

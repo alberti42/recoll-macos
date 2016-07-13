@@ -49,8 +49,8 @@ void RclMain::showAdvSearchDialog()
 		this, SLOT (fileExit()));
 
 	connect(asearchform, 
-		SIGNAL(startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool)), 
-		this, SLOT(startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool)));
+		SIGNAL(startSearch(std::shared_ptr<Rcl::SearchData>, bool)), 
+		this, SLOT(startSearch(std::shared_ptr<Rcl::SearchData>, bool)));
 	asearchform->show();
     } else {
 	// Close and reopen, in hope that makes us visible...

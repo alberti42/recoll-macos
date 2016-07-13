@@ -20,7 +20,7 @@
 
 #include <iostream>
 #include <algorithm>
-#include MEMORY_INCLUDE
+#include <memory>
 
 #include "log.h"
 #include "cstr.h"
@@ -183,9 +183,9 @@ bool XapComputableSynFamMember::synKeyExpand(StrMatcher* inexp,
     LOGDEB("XapCompSynFam::synKeyExpand: ["  << (inexp->exp()) << "]\n" );
     
     // If set, compute filtering term (e.g.: only case-folded)
-    STD_SHARED_PTR<StrMatcher> filter_exp;
+    std::shared_ptr<StrMatcher> filter_exp;
     if (filtertrans) {
-	filter_exp = STD_SHARED_PTR<StrMatcher>(inexp->clone());
+	filter_exp = std::shared_ptr<StrMatcher>(inexp->clone());
 	filter_exp->setExp((*filtertrans)(inexp->exp()));
     }
 

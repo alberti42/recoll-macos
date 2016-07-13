@@ -23,7 +23,7 @@
 #include "smallut.h"
 
 #include <errno.h>
-#include UNORDERED_MAP_INCLUDE
+#include <unordered_map>
 #include <fstream>
 #include <iostream>
 #include <cstring>
@@ -46,7 +46,7 @@ public:
     }
     bool ok;
     // Term to group num 
-    STD_UNORDERED_MAP<string, unsigned int> terms;
+    std::unordered_map<string, unsigned int> terms;
     // Group num to group
     vector<vector<string> > groups;
 };
@@ -170,7 +170,7 @@ vector<string> SynGroups::getgroup(const string& term)
     if (!ok())
 	return ret;
 
-    STD_UNORDERED_MAP<string, unsigned int>::const_iterator it1 =
+    std::unordered_map<string, unsigned int>::const_iterator it1 =
         m->terms.find(term);
     if (it1 == m->terms.end()) {
 	LOGDEB1("SynGroups::getgroup: ["  << (term) << "] not found in direct map\n" );

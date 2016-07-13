@@ -35,7 +35,7 @@
 #include <QMessageBox>
 
 #include "recoll.h"
-#include MEMORY_INCLUDE
+#include <memory>
 #include "docseq.h"
 #include "log.h"
 #include "restable.h"
@@ -290,13 +290,13 @@ void RecollModel::readDocSource()
     endResetModel();
 }
 
-void RecollModel::setDocSource(STD_SHARED_PTR<DocSequence> nsource)
+void RecollModel::setDocSource(std::shared_ptr<DocSequence> nsource)
 {
     LOGDEB("RecollModel::setDocSource\n" );
     if (!nsource) {
-	m_source = STD_SHARED_PTR<DocSequence>();
+	m_source = std::shared_ptr<DocSequence>();
     } else {
-	m_source = STD_SHARED_PTR<DocSequence>(new DocSource(theconfig, nsource));
+	m_source = std::shared_ptr<DocSequence>(new DocSource(theconfig, nsource));
 	m_hdata.clear();
 	m_source->getTerms(m_hdata);
     }
@@ -661,7 +661,7 @@ void ResTable::takeFocus()
     tableView->setFocus(Qt::ShortcutFocusReason);
 }
 
-void ResTable::setDocSource(STD_SHARED_PTR<DocSequence> nsource)
+void ResTable::setDocSource(std::shared_ptr<DocSequence> nsource)
 {
     LOGDEB("ResTable::setDocSource\n" );
     if (m_model)
@@ -676,7 +676,7 @@ void ResTable::setDocSource(STD_SHARED_PTR<DocSequence> nsource)
 void ResTable::resetSource()
 {
     LOGDEB("ResTable::resetSource\n" );
-    setDocSource(STD_SHARED_PTR<DocSequence>());
+    setDocSource(std::shared_ptr<DocSequence>());
 }
 
 void ResTable::saveAsCSV()
@@ -777,7 +777,7 @@ void ResTable::linkWasClicked(const QUrl &url)
     // Open parent folder
     case 'F':
     {
-        emit editRequested(ResultPopup::getParent(STD_SHARED_PTR<DocSequence>(),
+        emit editRequested(ResultPopup::getParent(std::shared_ptr<DocSequence>(),
                                                   m_detaildoc));
     }
     break;

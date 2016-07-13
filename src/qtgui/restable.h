@@ -23,7 +23,7 @@
 #include <string>
 #include <map>
 #include <vector>
-#include MEMORY_INCLUDE
+#include <memory>
 
 #include "ui_restable.h"
 #include "docseq.h"
@@ -51,8 +51,8 @@ public:
     virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
     // Specific methods
     virtual void readDocSource();
-    virtual void setDocSource(STD_SHARED_PTR<DocSequence> nsource);
-    virtual STD_SHARED_PTR<DocSequence> getDocSource() {return m_source;}
+    virtual void setDocSource(std::shared_ptr<DocSequence> nsource);
+    virtual std::shared_ptr<DocSequence> getDocSource() {return m_source;}
     virtual void deleteColumn(int);
     virtual const std::vector<std::string>& getFields() {return m_fields;}
     virtual const std::map<std::string, QString>& getAllFields() 
@@ -73,7 +73,7 @@ signals:
     void sortDataChanged(DocSeqSortSpec);
 
 private:
-    mutable STD_SHARED_PTR<DocSequence> m_source;
+    mutable std::shared_ptr<DocSequence> m_source;
     std::vector<std::string> m_fields;
     std::vector<FieldGetter*> m_getters;
     static std::map<std::string, QString> o_displayableFields;
@@ -127,7 +127,7 @@ public:
 public slots:
     virtual void onTableView_currentChanged(const QModelIndex&);
     virtual void on_tableView_entered(const QModelIndex& index);
-    virtual void setDocSource(STD_SHARED_PTR<DocSequence> nsource);
+    virtual void setDocSource(std::shared_ptr<DocSequence> nsource);
     virtual void saveColState();
     virtual void resetSource();
     virtual void readDocSource(bool resetPos = true);

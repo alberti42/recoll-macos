@@ -65,7 +65,7 @@ static void addSubQuery(WasaParserDriver *d,
 {
     if (sd && sq)
         sd->addClause(
-            new Rcl::SearchDataClauseSub(STD_SHARED_PTR<Rcl::SearchData>(sq)));
+            new Rcl::SearchDataClauseSub(std::shared_ptr<Rcl::SearchData>(sq)));
 }
 
 

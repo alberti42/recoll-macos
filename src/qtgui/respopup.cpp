@@ -29,7 +29,7 @@
 
 namespace ResultPopup {
 
-QMenu *create(QWidget *me, int opts, STD_SHARED_PTR<DocSequence> source, Rcl::Doc& doc)
+QMenu *create(QWidget *me, int opts, std::shared_ptr<DocSequence> source, Rcl::Doc& doc)
 {
     QMenu *popup = new QMenu(me);
 
@@ -134,7 +134,7 @@ QMenu *create(QWidget *me, int opts, STD_SHARED_PTR<DocSequence> source, Rcl::Do
     return popup;
 }
 
-Rcl::Doc getParent(STD_SHARED_PTR<DocSequence> source, Rcl::Doc& doc)
+Rcl::Doc getParent(std::shared_ptr<DocSequence> source, Rcl::Doc& doc)
 {
     Rcl::Doc pdoc;
     if (!source || !source->getEnclosing(doc, pdoc)) {

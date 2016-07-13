@@ -30,7 +30,7 @@
 #include "rcldb.h"
 #include "searchdata.h"
 #include "spell_w.h"
-#include MEMORY_INCLUDE
+#include <memory>
 #include "pathut.h"
 #include "guiutils.h"
 
@@ -123,7 +123,7 @@ public slots:
     virtual void toggleIndexing();
     virtual void rebuildIndex();
     virtual void specialIndex();
-    virtual void startSearch(STD_SHARED_PTR<Rcl::SearchData> sdata,
+    virtual void startSearch(std::shared_ptr<Rcl::SearchData> sdata,
                              bool issimple);
     virtual void previewClosed(Preview *w);
     virtual void showAdvSearchDialog();
@@ -189,7 +189,7 @@ private slots:
     virtual void updateIdxStatus();
     virtual void onWebcacheDestroyed(QObject *);
 signals:
-    void docSourceChanged(STD_SHARED_PTR<DocSequence>);
+    void docSourceChanged(std::shared_ptr<DocSequence>);
     void stemLangChanged(const QString& lang);
     void sortDataChanged(DocSeqSortSpec);
     void resultsReady();
@@ -233,7 +233,7 @@ private:
     DocSeqFiltSpec    m_filtspec;
     bool              m_sortspecnochange;
     DocSeqSortSpec    m_sortspec;
-    STD_SHARED_PTR<DocSequence> m_source;
+    std::shared_ptr<DocSequence> m_source;
     IndexerState      m_indexerState;
     bool              m_queryActive;
     bool              m_firstIndexing;
