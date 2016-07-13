@@ -33,6 +33,7 @@ SOURCES += \
 ../../index/bglfetcher.cpp \
 ../../index/checkretryfailed.cpp \
 ../../index/fetcher.cpp \
+../../index/exefetcher.cpp \
 ../../index/fsfetcher.cpp \
 ../../index/fsindexer.cpp \
 ../../index/indexer.cpp \
@@ -85,7 +86,6 @@ SOURCES += \
 ../../utils/conftree.cpp \
 ../../utils/copyfile.cpp \
 ../../utils/cpuconf.cpp \
-../../utils/debuglog.cpp \
 ../../utils/ecrontab.cpp \
 ../../windows/execmd_w.cpp \
 ../../windows/fnmatch.c \
@@ -93,6 +93,7 @@ SOURCES += \
 ../../utils/fstreewalk.cpp \
 ../../utils/hldata.cpp \
 ../../utils/idfile.cpp \
+../../utils/log.cpp \
 ../../utils/md5.cpp \
 ../../utils/md5ut.cpp \
 ../../utils/mimeparse.cpp \
@@ -115,7 +116,7 @@ INCLUDEPATH += ../../common ../../index ../../internfile ../../query \
 windows {
     contains(QMAKE_CC, gcc){
         # MingW
-        QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
+        QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
     }
     contains(QMAKE_CC, cl){
         # Visual Studio

@@ -1240,9 +1240,9 @@ public:
                    ((flags&SRE_NOSUB) ? regex_constants::nosubs : 0)
                    )), ok(true), nmatch(nm) {
     }
-    bool ok;
     std::regex expr;
     std::smatch res;
+    bool ok;
     int nmatch;
 };
 

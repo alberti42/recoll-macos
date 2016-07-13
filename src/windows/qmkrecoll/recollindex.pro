@@ -25,7 +25,7 @@ INCLUDEPATH += ../../common ../../index ../../internfile ../../query \
 windows {
     contains(QMAKE_CC, gcc){
         # MingW
-        QMAKE_CXXFLAGS += -std=c++11 -Wno-unused-parameter
+        QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
     }
     contains(QMAKE_CC, cl){
         # Visual Studio

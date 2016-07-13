@@ -263,7 +263,7 @@ bool maketmpdir(string& tdir, string& reason)
     // mkdir. try to make sure that we at least don't shoot ourselves
     // in the foot
     static std::mutex mmutex;
-    std::unique_lock lock(mmutex);
+    std::unique_lock<std::mutex> lock(mmutex);
     tdir = path_wingettempfilename(TEXT("rcltmp"));
 #endif
 
