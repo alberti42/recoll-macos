@@ -4,7 +4,7 @@ include ../utils/utmkdefs.mk
 PROGS = pxattr trclosefrom trecrontab \
       trnetcon trcopyfile trcircache trmd5 trreadfile trfileudi \
       trconftree wipedir smallut  trfstreewalk trpathut transcode trbase64 \
-      trmimeparse trexecmd utf8iter idfile ptmutex workqueue trappformime
+      trmimeparse trexecmd utf8iter idfile workqueue trappformime
 
 all: $(PROGS)
 
@@ -19,12 +19,6 @@ trchrono:  $(CHRONOOBJS)
 	$(CXX) -o chrono $(CHRONOOBJS)
 trchrono.o : chrono.cpp
 	$(CXX) -c $(CXXFLAGS) -DTEST_CHRONO -o $@ chrono.cpp
-
-PTMUTEXOBJS = ptmutex.o
-ptmutex:  $(PTMUTEXOBJS)
-	$(CXX) -o ptmutex $(PTMUTEXOBJS)  $(LIBRECOLL)
-ptmutex.o : ptmutex.cpp
-	$(CXX) -c $(CXXFLAGS) -o $@ $<
 
 WORKQUEUEOBJS = workqueue.o
 workqueue:  $(WORKQUEUEOBJS)
