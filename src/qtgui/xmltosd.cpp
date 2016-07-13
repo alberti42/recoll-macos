@@ -51,7 +51,7 @@ public:
     }
 
     // The object we set up
-    STD_SHARED_PTR<SearchData> sd;
+    std::shared_ptr<SearchData> sd;
     bool isvalid;
 
 private:
@@ -82,13 +82,20 @@ bool SDHXMLHandler::startElement(const QString & /* namespaceURI */,
 				const QString &qName,
 				const QXmlAttributes &attrs)
 {
-    LOGDEB2("SDHXMLHandler::startElement: name ["  << ((const char *)qName.toUtf8()) << "]\n" );
+    LOGDEB2("SDHXMLHandler::startElement: name ["  << qs2utf8s(qName) << "]\n");
     if (qName == "SD") {
         // Advanced search history entries have no type. So we're good
         // either if type is absent, or if it's searchdata
         int idx = attrs.index("type");
         if (idx >= 0 && attrs.value(idx).compare("searchdata")) {
-            LOGDEB("XMLTOSD: bad type\n" );
+            LOGDEB("XMLTOSD: bad type\n");
+	    return false;
+	}
+	resetTemps();
+	// A new search descriptor. Allocate data structure
+        sd = std::shared_ptr<SearchData>(new SearchData);
+	if (!sd) {
+	    LOGERR("SDHXMLHandler::startElement: out of memory\n");
 	    return false;
 	}
     }	
@@ -99,7 +106,7 @@ bool SDHXMLHandler::endElement(const QString & /* namespaceURI */,
                                const QString & /* localName */,
                                const QString &qName)
 {
-    LOGDEB2("SDHXMLHandler::endElement: name ["  << ((const char *)qName.toUtf8()) << "]\n" );
+    LOGDEB2("SDHXMLHandler::endElement: name ["  << qs2utf8s(qName) << "]\n");
 
     if (qName == "CLT") {
 	if (currentText == "OR") {
@@ -138,7 +145,7 @@ bool SDHXMLHandler::endElement(const QString & /* namespaceURI */,
 	    c = new SearchDataClauseDist(SCLT_NEAR, text, slack, field);
 	    c->setexclude(exclude);
 	} else {
-	    LOGERR("Bad clause type ["  << (qs2utf8s(whatclause)) << "]\n" );
+	    LOGERR("Bad clause type ["  << qs2utf8s(whatclause) << "]\n");
 	    return false;
 	}
 	sd->addClause(c);
@@ -199,7 +206,7 @@ bool SDHXMLHandler::endElement(const QString & /* namespaceURI */,
 }
 
 
-STD_SHARED_PTR<Rcl::SearchData> xmlToSearchData(const string& xml)
+std::shared_ptr<Rcl::SearchData> xmlToSearchData(const string& xml)
 {
     SDHXMLHandler handler;
     QXmlSimpleReader reader;
@@ -210,8 +217,8 @@ STD_SHARED_PTR<Rcl::SearchData> xmlToSearchData(const string& xml)
     xmlInputSource.setData(QString::fromUtf8(xml.c_str()));
 
     if (!reader.parse(xmlInputSource) || !handler.isvalid) {
-        LOGERR("xmlToSearchData: parse failed for ["  << (xml) << "]\n" );
-        return STD_SHARED_PTR<SearchData>();
+        LOGERR("xmlToSearchData: parse failed for ["  << xml << "]\n");
+        return std::shared_ptr<SearchData>();
     }
     return handler.sd;
 }
@@ -260,12 +267,12 @@ bool SSHXMLHandler::startElement(const QString & /* namespaceURI */,
                                  const QString &qName,
                                  const QXmlAttributes &attrs)
 {
-    LOGDEB2("SSHXMLHandler::startElement: name ["  << ((const char *)qName.toUtf8()) << "]\n" );
+    LOGDEB2("SSHXMLHandler::startElement: name ["  << u8s2qs(qName) << "]\n");
     if (qName == "SD") {
         // Simple search saved data has a type='ssearch' attribute.
         int idx = attrs.index("type");
         if (idx < 0 && attrs.value(idx).compare("ssearch")) {
-            LOGDEB("XMLTOSSS: bad type\n" );
+            LOGDEB("XMLTOSSS: bad type\n");
             return false;
         }
 	resetTemps();
@@ -277,7 +284,7 @@ bool SSHXMLHandler::endElement(const QString & /* namespaceURI */,
                                const QString & /* localName */,
                                const QString &qName)
 {
-    LOGDEB2("SSHXMLHandler::endElement: name ["  << ((const char *)qName.toUtf8()) << "]\n" );
+    LOGDEB2("SSHXMLHandler::endElement: name ["  << u8s2qs(qName) << "]\n");
 
     currentText = currentText.trimmed();
 
@@ -297,7 +304,7 @@ bool SSHXMLHandler::endElement(const QString & /* namespaceURI */,
         } else if (!currentText.compare("AND")) {
             data.mode = SSearch::SST_ALL;
         } else {
-            LOGERR("BAD SEARCH MODE: ["  << (qs2utf8s(currentText)) << "]\n" );
+            LOGERR("BAD SEARCH MODE: [" << qs2utf8s(currentText) << "]\n");
             return false;
         }
     } else if (qName == "AS") {
@@ -324,7 +331,7 @@ bool xmlToSSearch(const string& xml, SSearchDef& data)
     xmlInputSource.setData(QString::fromUtf8(xml.c_str()));
 
     if (!reader.parse(xmlInputSource) || !handler.isvalid) {
-        LOGERR("xmlToSSearch: parse failed for ["  << (xml) << "]\n" );
+        LOGERR("xmlToSSearch: parse failed for ["  << xml << "]\n");
         return false;
     }
     data = handler.data;
