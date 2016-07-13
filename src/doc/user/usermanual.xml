@@ -1309,7 +1309,7 @@ fvwm
 # -- Change to:
 #
 fs.inotify.max_queued_events=32768
-fs.notify.max_user_instances=256
+fs.inotify.max_user_instances=256
 fs.inotify.max_user_watches=32768
 	  </programlisting>
     
