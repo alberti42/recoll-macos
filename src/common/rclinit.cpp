@@ -135,7 +135,7 @@ static HANDLE eWorkFinished = INVALID_HANDLE_VALUE;
 
 static BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
 {
-    LOGDEB(("CtrlHandler\n"));
+    LOGDEB("CtrlHandler\n" );
     if (l_sigcleanup == 0)
         return FALSE;
 
@@ -147,12 +147,12 @@ static BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
     case CTRL_SHUTDOWN_EVENT:
     {
         l_sigcleanup(SIGINT);
-        LOGDEB0(("CtrlHandler: waiting for exit ready\n"));
+        LOGDEB0("CtrlHandler: waiting for exit ready\n" );
 	DWORD res = WaitForSingleObject(eWorkFinished, INFINITE);
 	if (res != WAIT_OBJECT_0) {
-            LOGERR(("CtrlHandler: exit ack wait failed\n"));
+            LOGERR("CtrlHandler: exit ack wait failed\n" );
 	}
-        LOGDEB0(("CtrlHandler: got exit ready event, exiting\n"));
+        LOGDEB0("CtrlHandler: got exit ready event, exiting\n" );
         return TRUE;
     }
     default: 
@@ -170,12 +170,12 @@ LRESULT CALLBACK MainWndProc(HWND hwnd , UINT msg , WPARAM wParam,
     case WM_CLOSE:
     {
         l_sigcleanup(SIGINT);
-        LOGDEB(("MainWndProc: got end message, waiting for work finished\n"));
+        LOGDEB("MainWndProc: got end message, waiting for work finished\n" );
 	DWORD res = WaitForSingleObject(eWorkFinished, INFINITE);
 	if (res != WAIT_OBJECT_0) {
-            LOGERR(("MainWndProc: exit ack wait failed\n"));
+            LOGERR("MainWndProc: exit ack wait failed\n" );
 	}
-        LOGDEB(("MainWindowProc: got exit ready event, exiting\n"));
+        LOGDEB("MainWindowProc: got exit ready event, exiting\n" );
         return TRUE;
     }
     default:
@@ -235,14 +235,14 @@ void initAsyncSigs(void (*sigcleanup)(int))
     SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE);
     eWorkFinished = CreateEvent(NULL, TRUE, FALSE, NULL);
     if (eWorkFinished == INVALID_HANDLE_VALUE) {
-        LOGERR(("initAsyncSigs: error creating exitready event\n"));
+        LOGERR("initAsyncSigs: error creating exitready event\n" );
     }
 }
 void recoll_exitready()
 {
-    LOGDEB(("recoll_exitready()\n"));
+    LOGDEB("recoll_exitready()\n" );
     if (!SetEvent(eWorkFinished)) {
-        LOGERR(("recoll_exitready: SetEvent failed\n"));
+        LOGERR("recoll_exitready: SetEvent failed\n" );
     }
 }
 
@@ -340,18 +340,17 @@ RclConfig *recollinit(RclInitFlags flags,
     bool novfork;
     config->getConfParam("novfork", &novfork);
     if (novfork) {
-	LOGDEB0(("rclinit: will use fork() for starting commands\n"));
+	LOGDEB0("rclinit: will use fork() for starting commands\n" );
         ExecCmd::useVfork(false);
     } else {
-	LOGDEB0(("rclinit: will use vfork() for starting commands\n"));
+	LOGDEB0("rclinit: will use vfork() for starting commands\n" );
 	ExecCmd::useVfork(true);
     }
 #endif
 
     int flushmb;
     if (config->getConfParam("idxflushmb", &flushmb) && flushmb > 0) {
-	LOGDEB1(("rclinit: idxflushmb=%d, set XAPIAN_FLUSH_THRESHOLD to 10E6\n",
-		 flushmb));
+	LOGDEB1("rclinit: idxflushmb="  << (flushmb) << ", set XAPIAN_FLUSH_THRESHOLD to 10E6\n" );
 	static const char *cp = "XAPIAN_FLUSH_THRESHOLD=1000000";
 #ifdef PUTENV_ARG_CONST
 	::putenv(cp);
@@ -389,4 +388,5 @@ bool recoll_ismainthread()
 {
     return std::this_thread::get_id() == mainthread_id;
 }
+
 

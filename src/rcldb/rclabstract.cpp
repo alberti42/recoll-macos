@@ -127,8 +127,7 @@ void Query::Native::setDbWideQTermsFreqs()
     for (vector<string>::const_iterator qit = qterms.begin(); 
 	 qit != qterms.end(); qit++) {
 	termfreqs[*qit] = xrdb.get_termfreq(*qit) / doccnt;
-	LOGABS(("setDbWideQTermFreqs: [%s] db freq %.1e\n", qit->c_str(), 
-		termfreqs[*qit]));
+	LOGABS("setDbWideQTermFreqs: ["  << (qit) << "] db freq "  << (termfreqs[*qit]) << "\n" );
     }
 }
 
@@ -147,7 +146,7 @@ double Query::Native::qualityTerms(Xapian::docid docid,
 				   const vector<string>& terms,
 				   multimap<double, vector<string> >& byQ)
 {
-    LOGABS(("qualityTerms\n"));
+    LOGABS("qualityTerms\n" );
     setDbWideQTermsFreqs();
 
     map<string, double> termQcoefs;
@@ -166,7 +165,7 @@ double Query::Native::qualityTerms(Xapian::docid docid,
     {
 	string deb;
 	hld.toString(deb);
-	LOGABS(("qualityTerms: hld: %s\n", deb.c_str()));
+	LOGABS("qualityTerms: hld: "  << (deb) << "\n" );
     }
 #endif
 
@@ -195,7 +194,7 @@ double Query::Native::qualityTerms(Xapian::docid docid,
 	    }
 	    byRootstr.append("\n");
 	}
-	LOGABS(("\nqualityTerms: uterms to terms: %s\n", byRootstr.c_str()));
+	LOGABS("\nqualityTerms: uterms to terms: "  << (byRootstr) << "\n" );
     }
 #endif
 
@@ -243,10 +242,10 @@ double Query::Native::qualityTerms(Xapian::docid docid,
 #ifdef DEBUGABSTRACT
     for (multimap<double, vector<string> >::reverse_iterator mit= byQ.rbegin(); 
 	 mit != byQ.rend(); mit++) {
-	LOGABS(("qualityTerms: group\n"));
+	LOGABS("qualityTerms: group\n" );
 	for (vector<string>::const_iterator qit = mit->second.begin();
 	     qit != mit->second.end(); qit++) {
-	    LOGABS(("%.1e->[%s]\n", mit->first, qit->c_str()));
+	    LOGABS(""  << (mit->first) << "->["  << (qit) << "]\n" );
 	}
     }
 #endif
@@ -315,8 +314,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
 				int imaxoccs, int ictxwords)
 {
     Chrono chron;
-    LOGABS(("makeAbstract: docid %ld imaxoccs %d ictxwords %d\n", 
-	    long(docid), imaxoccs, ictxwords));
+    LOGABS("makeAbstract: docid "  << (long(docid)) << " imaxoccs "  << (imaxoccs) << " ictxwords "  << (ictxwords) << "\n" );
 
     // The (unprefixed) terms matched by this document
     vector<string> matchedTerms;
@@ -339,7 +337,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
     // aggregated by the qualityTerms() routine.
     multimap<double, vector<string> > byQ;
     double totalweight = qualityTerms(docid, matchedTerms, byQ);
-    LOGABS(("makeAbstract:%d: computed Qcoefs.\n", chron.ms()));
+    LOGABS("makeAbstract:"  << (chron.ms()) << ": computed Qcoefs.\n" );
     // This can't happen, but would crash us
     if (totalweight == 0.0) {
 	LOGERR("makeAbstract: totalweight == 0.0 !\n" );
@@ -376,8 +374,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
     const unsigned int maxtotaloccs = imaxoccs > 0 ? imaxoccs :
 	m_q->m_db->getAbsLen() /(7 * (m_q->m_db->getAbsCtxLen() + 1));
     int ctxwords = ictxwords == -1 ? m_q->m_db->getAbsCtxLen() : ictxwords;
-    LOGABS(("makeAbstract:%d: mxttloccs %d ctxwords %d\n", 
-	    chron.ms(), maxtotaloccs, ctxwords));
+    LOGABS("makeAbstract:"  << (chron.ms()) << ": mxttloccs "  << (maxtotaloccs) << " ctxwords "  << (ctxwords) << "\n" );
 
     int ret = ABSRES_OK;
 
@@ -405,8 +402,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
 
 	    string qterm = *qit;
 
-	    LOGABS(("makeAbstract: [%s] %d max grp occs (coef %.2f)\n", 
-		    qterm.c_str(), maxgrpoccs, q));
+	    LOGABS("makeAbstract: ["  << (qterm) << "] "  << (maxgrpoccs) << " max grp occs (coef "  << (q) << ")\n" );
 
 	    // The match term may span several words
 	    int qtrmwrdcnt = 
@@ -425,8 +421,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
 		    int ipos = *pos;
 		    if (ipos < int(baseTextPosition)) // Not in text body
 			continue;
-		    LOGABS(("makeAbstract: [%s] at pos %d grpoccs %d maxgrpoccs"
-			    " %d\n", qterm.c_str(), ipos, grpoccs, maxgrpoccs));
+		    LOGABS("makeAbstract: ["  << (qterm) << "] at pos "  << (ipos) << " grpoccs "  << (grpoccs) << " maxgrpoccs "  << (maxgrpoccs) << "\n" );
 
 		    totaloccs++;
 		    grpoccs++;
@@ -466,13 +461,13 @@ int Query::Native::makeAbstract(Xapian::docid docid,
 		    // Group done ?
 		    if (grpoccs >= maxgrpoccs) {
 			ret |= ABSRES_TRUNC;
-			LOGABS(("Db::makeAbstract: max group occs cutoff\n"));
+			LOGABS("Db::makeAbstract: max group occs cutoff\n" );
 			break;
 		    }
 		    // Global done ?
 		    if (totaloccs >= maxtotaloccs) {
 			ret |= ABSRES_TRUNC;
-			LOGABS(("Db::makeAbstract: max occurrences cutoff\n"));
+			LOGABS("Db::makeAbstract: max occurrences cutoff\n" );
 			break;
 		    }
 		}
@@ -482,15 +477,14 @@ int Query::Native::makeAbstract(Xapian::docid docid,
 
 	    if (totaloccs >= maxtotaloccs) {
 		ret |= ABSRES_TRUNC;
-		LOGABS(("Db::makeAbstract: max1 occurrences cutoff\n"));
+		LOGABS("Db::makeAbstract: max1 occurrences cutoff\n" );
 		break;
 	    }
 	}
     }
     maxpos += ctxwords + 1;
 
-    LOGABS(("makeAbstract:%d:chosen number of positions %d\n", 
-	    chron.millis(), totaloccs));
+    LOGABS("makeAbstract:"  << (chron.millis()) << ":chosen number of positions "  << (totaloccs) << "\n" );
     // This can happen if there are term occurences in the keywords
     // etc. but not elsewhere ?
     if (totaloccs == 0) {
@@ -566,8 +560,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
     vector<int> vpbreaks;
     ndb->getPagePositions(docid, vpbreaks);
 
-    LOGABS(("makeAbstract:%d: extracting. Got %u pages\n", chron.millis(),
-	    vpbreaks.size()));
+    LOGABS("makeAbstract:"  << (chron.millis()) << ": extracting. Got "  << (vpbreaks.size()) << " pages\n" );
     // Finally build the abstract by walking the map (in order of position)
     vabs.clear();
     string chunk;
@@ -614,4 +607,6 @@ int Query::Native::makeAbstract(Xapian::docid docid,
 
 
 }
+
+
 

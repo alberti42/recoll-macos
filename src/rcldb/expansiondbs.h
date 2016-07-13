@@ -55,8 +55,7 @@ public:
     {
 	string out;
 	unacmaybefold(in, out, "UTF-8", m_op);
-	LOGDEB2(("SynTermTransUnac(%d): in [%s] out [%s]\n", int(m_op),
-		 in.c_str(), out.c_str()));
+	LOGDEB2("SynTermTransUnac("  << (int(m_op)) << "): in ["  << (in) << "] out ["  << (out) << "]\n" );
 	return out;
     }
     UnacOp m_op;
@@ -68,3 +67,4 @@ extern bool createExpansionDbs(Xapian::WritableDatabase& wdb,
 }
 
 #endif /* _EXPANSIONDBS_H_INCLUDED_ */
+

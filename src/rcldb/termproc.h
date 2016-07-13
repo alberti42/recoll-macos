@@ -129,15 +129,14 @@ public:
         m_totalterms++;
         string otrm;
         if (!unacmaybefold(itrm, otrm, "UTF-8", UNACOP_UNACFOLD)) {
-            LOGDEB(("splitter::takeword: unac [%s] failed\n", itrm.c_str()));
+            LOGDEB("splitter::takeword: unac ["  << (itrm) << "] failed\n" );
             m_unacerrors++;
             // We don't generate a fatal error because of a bad term,
             // but one has to put the limit somewhere
             if (m_unacerrors > 500 &&
                     (double(m_totalterms) / double(m_unacerrors)) < 2.0) {
                 // More than 1 error for every other term
-                LOGERR(("splitter::takeword: too many unac errors %d/%d\n",
-                        m_unacerrors, m_totalterms));
+                LOGERR("splitter::takeword: too many unac errors "  << (m_unacerrors) << "/"  << (m_totalterms) << "\n" );
                 return false;
             }
             return true;
@@ -227,8 +226,7 @@ public:
 
     virtual bool takeword(const string& term, int pos, int bs, int be)
     {
-        LOGDEB1(("TermProcCom::takeword: pos %d %d %d [%s]\n",
-                 pos, bs, be, term.c_str()));
+        LOGDEB1("TermProcCom::takeword: pos "  << (pos) << " "  << (bs) << " "  << (be) << " ["  << (term) << "]\n" );
         bool isstop = m_stops.isStop(term);
         bool twogramemit = false;
 
@@ -300,3 +298,4 @@ private:
 } // End namespace Rcl
 
 #endif /* _TERMPROC_H_INCLUDED_ */
+
