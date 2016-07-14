@@ -23,9 +23,10 @@ https://bitbucket.org/medoc/recoll/issues[BitBucket Recoll issues tracker].
 NOTE: Especially, I would like information about system compatibility. It
 seems that Recoll does not work on Windows XP, and there is little I can do
 about it. I know that it runs on Windows 7 32 bits, and Windows 10 64 bits
-(my two Virtualbox instances). I have a report that the installer crashes
-on Windows 7 64 bits, but I would really like more data points. Please send
-me news of your success or failure.
+(my two Virtualbox instances). I have a report that the installer sometimes
+crashes on Windows 7 64 bits (not always, I also have success reports). I
+would really like more data points. Please send me news of your success or
+failure.
 
 NOTE: About the installer: this needs administrator rights, in order to
 install to `C:\Program Files`. If you want to install on a machine where
