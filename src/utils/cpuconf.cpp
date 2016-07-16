@@ -17,91 +17,19 @@
 #ifndef TEST_CPUCONF
 
 #include "autoconfig.h"
+
+
 #include "cpuconf.h"
 
-#if defined(__gnu_linux__) 
-
-#include <stdlib.h>
-#include "execmd.h"
-#include "smallut.h"
-
-using std::string;
-using std::vector;
-
-// It seems that we could use sysconf as on macosx actually
-bool getCpuConf(CpuConf& conf)
-{
-    vector<string> cmdv = create_vector<string>("sh")("-c")
-	("egrep ^processor /proc/cpuinfo | wc -l");
-
-    string result;
-    if (!ExecCmd::backtick(cmdv, result))
-	return false;
-    conf.ncpus = atoi(result.c_str());
-    if (conf.ncpus < 1 || conf.ncpus > 100)
-	conf.ncpus = 1;
-    return true;
-}
-
-#elif defined(__FreeBSD__) 
-
-#include <stdlib.h>
-#include "execmd.h"
-#include "smallut.h"
-
-using std::string;
-using std::vector;
-
-bool getCpuConf(CpuConf& conf)
-{
-    vector<string> cmdv = create_vector<string>("sysctl")("hw.ncpu");
-
-    string result;
-    if (!ExecCmd::backtick(cmdv, result))
-	return false;
-    conf.ncpus = atoi(result.c_str());
-    if (conf.ncpus < 1 || conf.ncpus > 100)
-	conf.ncpus = 1;
-    return true;
-}
-
-#elif 0 && defined(_WIN32)
-// On windows, indexing is actually twice slower with threads enabled +
-// there is a bug and the process does not exit at the end of indexing.
-// Until these are solved, pretend there is only 1 cpu
 #include <thread>
+
+// Go c++11 !
 bool getCpuConf(CpuConf& cpus)
 {
-#if 0
-    // Native way
-    SYSTEM_INFO sysinfo;
-    GetSystemInfo( &sysinfo );
-    cpus.ncpus = sysinfo.dwNumberOfProcessors;
-#else
     // c++11
     cpus.ncpus = std::thread::hardware_concurrency();
-#endif
     return true;
 }
-
-#elif defined(__APPLE__)
-
-#include <unistd.h>
-bool getCpuConf(CpuConf& cpus)
-{
-    cpus.ncpus = sysconf( _SC_NPROCESSORS_ONLN );
-    return true;
-}
-        
-#else // Any other system
-
-// Generic, pretend there is one
-bool getCpuConf(CpuConf& cpus)
-{
-    cpus.ncpus = 1;
-    return true;
-}
-#endif
 
 #else // TEST_CPUCONF
 
