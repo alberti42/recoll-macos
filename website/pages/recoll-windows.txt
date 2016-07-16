@@ -38,6 +38,7 @@ you are in this case, you can ignore the setup-related steps of the
 procedure of course.
 
 
+I have started a small link:recoll-windows-faq.html[Recoll on MS-Windows FAQ].
 
 Procedure: 
 
