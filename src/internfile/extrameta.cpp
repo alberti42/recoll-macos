@@ -99,7 +99,7 @@ void reapMetaCmds(RclConfig* cfg, const string& path,
     const vector<MDReaper>& reapers = cfg->getMDReapers();
     if (reapers.empty())
 	return;
-    map<char,string> smap = create_map<char, string>('f', path);
+    map<char,string> smap = {{'f', path}};
     for (vector<MDReaper>::const_iterator rp = reapers.begin();
 	 rp != reapers.end(); rp++) {
 	vector<string> cmd;

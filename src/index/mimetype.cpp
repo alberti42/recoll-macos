@@ -58,8 +58,7 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
 
         // 'file' fallback if the configured command (default:
         // xdg-mime) is not found
-	static const vector<string> tradfilecmd =
-            create_vector<string>(FILE_PROG) ("-i") (fn);
+	static const vector<string> tradfilecmd = {{FILE_PROG}, {"-i"}, {fn}};
 
         vector<string> cmd;
         string scommand;

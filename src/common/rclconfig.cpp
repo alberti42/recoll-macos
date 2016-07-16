@@ -52,8 +52,6 @@
 
 using namespace std;
 
-typedef pair<int,int> RclPII;
-
 // Static, logically const, RclConfig members are initialized once from the
 // first object build during process initialization.
 
@@ -268,8 +266,7 @@ RclConfig::RclConfig(const string *argcnf)
 	return;
 
     // Default is no threading
-    m_thrConf = create_vector<RclPII>
-	(RclPII(-1, 0))(RclPII(-1, 0))(RclPII(-1, 0));
+    m_thrConf = {{-1, 0}, {-1, 0}, {-1, 0}};
 
     m_ptrans = new ConfSimple(path_cat(m_confdir, "ptrans").c_str());
 
@@ -432,8 +429,7 @@ bool RclConfig::getConfParam(const string &name, vector<int> *vip,
 void RclConfig::initThrConf()
 {
     // Default is no threading
-    m_thrConf = create_vector<RclPII>
-	(RclPII(-1, 0))(RclPII(-1, 0))(RclPII(-1, 0));
+    m_thrConf = {{-1, 0}, {-1, 0}, {-1, 0}};
 
     vector<int> vq;
     vector<int> vt;
@@ -444,12 +440,16 @@ void RclConfig::initThrConf()
 
     // If the first queue size is 0, autoconf is requested.
     if (vq.size() > 0 && vq[0] == 0) {
-	LOGDEB("RclConfig::initThrConf: autoconf requested\n" );
 	CpuConf cpus;
 	if (!getCpuConf(cpus) || cpus.ncpus < 1) {
 	    LOGERR("RclConfig::initThrConf: could not retrieve cpu conf\n" );
 	    cpus.ncpus = 1;
 	}
+        if (cpus.ncpus != 1) {
+            LOGDEB("RclConfig::initThrConf: autoconf requested. " <<
+                   cpus.ncpus << " concurrent threads available.\n");
+        }
+
 	// Arbitrarily set threads config based on number of CPUS. This also
 	// depends on the IO setup actually, so we're bound to be wrong...
 	if (cpus.ncpus == 1) {
@@ -457,14 +457,11 @@ void RclConfig::initThrConf()
 	    // it seems that the best config here is no threading
 	} else if (cpus.ncpus < 4) {
 	    // Untested so let's guess...
-	    m_thrConf = create_vector<RclPII>
-		(RclPII(2, 2))(RclPII(2, 2))(RclPII(2, 1));
+            m_thrConf = {{2, 2}, {2, 2}, {2, 1}};
 	} else if (cpus.ncpus < 6) {
-	    m_thrConf = create_vector<RclPII>
-		(RclPII(2, 4))(RclPII(2, 2))(RclPII(2, 1));
+	    m_thrConf = {{2, 4}, {2, 2}, {2, 1}};
 	} else {
-	    m_thrConf = create_vector<RclPII>
-		(RclPII(2, 5))(RclPII(2, 3))(RclPII(2, 1));
+	    m_thrConf = {{2, 5}, {2, 3}, {2, 1}};
 	}
 	goto out;
     } else if (vq.size() > 0 && vq[0] < 0) {
@@ -485,7 +482,7 @@ void RclConfig::initThrConf()
     // Normal case: record info from config
     m_thrConf.clear();
     for (unsigned int i = 0; i < 3; i++) {
-	m_thrConf.push_back(RclPII(vq[i], vt[i]));
+	m_thrConf.push_back({vq[i], vt[i]});
     }
 
 out:
