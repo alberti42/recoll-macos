@@ -179,22 +179,14 @@ void RclMain::periodic100()
 
 bool RclMain::checkIdxPaths()
 {
-    vector<string> args;
-
     string badpaths;
-    args.push_back("recollindex");
-    args.push_back("-E");
-    args.push_back("-c");
-    args.push_back(theconfig->getConfDir());
+    vector<string> args {"recollindex", "-c", theconfig->getConfDir(), "-E"};
     ExecCmd::backtick(args, badpaths);
     if (!badpaths.empty()) {
-        int rep = 
-            QMessageBox::warning(0, tr("Bad paths"), 
-                                 tr("Bad paths in configuration file:\n") +
-                                 QString::fromLocal8Bit(badpaths.c_str()),
-                                 QMessageBox::Ok,
-                                 QMessageBox::Cancel,
-                                 QMessageBox::NoButton);
+        int rep = QMessageBox::warning(
+            0, tr("Bad paths"), tr("Bad paths in configuration file:\n") +
+            QString::fromLocal8Bit(badpaths.c_str()),
+            QMessageBox::Ok, QMessageBox::Cancel, QMessageBox::NoButton);
         if (rep == QMessageBox::Cancel)
             return false;
     }
@@ -223,18 +215,15 @@ void RclMain::toggleIndexing()
                              tr("The current indexing process "
                                 "was not started from this "
                                 "interface, can't kill it"),
-                             QMessageBox::Ok,
-                             QMessageBox::NoButton);
+                             QMessageBox::Ok, QMessageBox::NoButton);
 #else
 	int rep = 
-	    QMessageBox::information(0, tr("Warning"), 
-				     tr("The current indexing process "
-					"was not started from this "
-					"interface. Click Ok to kill it "
-					"anyway, or Cancel to leave it alone"),
-					 QMessageBox::Ok,
-					 QMessageBox::Cancel,
-					 QMessageBox::NoButton);
+	    QMessageBox::information(
+                0, tr("Warning"), 
+                tr("The current indexing process was not started from this "
+                   "interface. Click Ok to kill it "
+                   "anyway, or Cancel to leave it alone"),
+                QMessageBox::Ok, QMessageBox::Cancel, QMessageBox::NoButton);
 	if (rep == QMessageBox::Ok) {
 	    Pidfile pidfile(theconfig->getPidfile());
 	    pid_t pid = pidfile.open();
@@ -255,9 +244,7 @@ void RclMain::toggleIndexing()
         if (!checkIdxPaths()) {
             return;
         }
-        vector<string> args;
-	args.push_back("-c");
-	args.push_back(theconfig->getConfDir());
+        vector<string> args{"-c", theconfig->getConfDir()};
 	m_idxproc = new ExecCmd;
 	m_idxproc->startExec("recollindex", args, false, false);
     }
@@ -306,10 +293,7 @@ void RclMain::rebuildIndex()
                 return;
             }
             
-	    vector<string> args;
-	    args.push_back("-c");
-	    args.push_back(theconfig->getConfDir());
-	    args.push_back("-z");
+	    vector<string> args{"-c", theconfig->getConfDir(), "-z"};
 	    m_idxproc = new ExecCmd;
 	    m_idxproc->startExec("recollindex", args, false, false);
 	}
@@ -386,9 +370,7 @@ void RclMain::specialIndex()
     if (!specidx) // ??
         return;
 
-    vector<string> args;
-    args.push_back("-c");
-    args.push_back(theconfig->getConfDir());
+    vector<string> args{"-c", theconfig->getConfDir()};
 
     string top = specidx->toptarg();
     if (!top.empty()) {
@@ -419,8 +401,7 @@ void RclMain::specialIndex()
         QMessageBox::warning(0, tr("Selection patterns need topdir"), 
                              tr("Selection patterns can only be used with a "
                                 "start directory"),
-                                     QMessageBox::Ok,
-                                     QMessageBox::NoButton);
+                             QMessageBox::Ok, QMessageBox::NoButton);
         return;
     }
 
@@ -442,18 +423,13 @@ void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
     if (m_idxproc) {
 	QMessageBox::warning(0, tr("Warning"), 
 			     tr("Can't update index: indexer running"),
-			     QMessageBox::Ok, 
-			     QMessageBox::NoButton);
+			     QMessageBox::Ok, QMessageBox::NoButton);
 	return;
     }
 	
     vector<string> paths;
     if (ConfIndexer::docsToPaths(docs, paths)) {
-	vector<string> args;
-	args.push_back("-c");
-	args.push_back(theconfig->getConfDir());
-	args.push_back("-e");
-	args.push_back("-i");
+	vector<string> args{"-c", theconfig->getConfDir(), "-e", "-i"};
 	args.insert(args.end(), paths.begin(), paths.end());
 	m_idxproc = new ExecCmd;
 	m_idxproc->startExec("recollindex", args, false, false);
@@ -462,5 +438,3 @@ void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
     fileToggleIndexingAction->setEnabled(false);
     actionSpecial_Indexing->setEnabled(false);
 }
-
-
