@@ -804,7 +804,7 @@ indexedmimetypes = application/pdf
 
 
       <sect2 id="RCL.INDEXING.CONFIG.THREADS">
-        <title>Indexing thread usage configuration GUI</title>
+        <title>Indexing threads configuration</title>
 
         <para>The &RCL; indexing process 
           <command>recollindex</command> can use multiple threads to
@@ -858,6 +858,9 @@ indexedmimetypes = application/pdf
 
          </variablelist>
 
+         <note><para>If the first value in <varname>thrQSizes</varname> is
+         0, <varname>thrTCounts</varname> is ignored.</para></note>
+         
          <para>The following example would use three queues (of depth 2),
          and 4 threads for converting source documents, 2 for
          processing their text, and one to update the index. This was

@@ -20,8 +20,8 @@ alink="#0000FF">
     <div class="titlepage">
       <div>
         <div>
-          <h1 class="title"><a name="idp61482576" id=
-          "idp61482576"></a>Recoll user manual</h1>
+          <h1 class="title"><a name="idp41214976" id=
+          "idp41214976"></a>Recoll user manual</h1>
         </div>
 
         <div>
@@ -109,13 +109,13 @@ alink="#0000FF">
                 multiple indexes</a></span></dt>
 
                 <dt><span class="sect2">2.1.3. <a href=
-                "#idp67105136">Document types</a></span></dt>
+                "#idp46788704">Document types</a></span></dt>
 
                 <dt><span class="sect2">2.1.4. <a href=
-                "#idp67124816">Indexing failures</a></span></dt>
+                "#idp46808384">Indexing failures</a></span></dt>
 
                 <dt><span class="sect2">2.1.5. <a href=
-                "#idp67132272">Recovery</a></span></dt>
+                "#idp46815840">Recovery</a></span></dt>
               </dl>
             </dd>
 
@@ -150,8 +150,8 @@ alink="#0000FF">
                 diacritics sensitivity</a></span></dt>
 
                 <dt><span class="sect2">2.3.3. <a href=
-                "#RCL.INDEXING.CONFIG.THREADS">Indexing thread
-                usage configuration GUI</a></span></dt>
+                "#RCL.INDEXING.CONFIG.THREADS">Indexing threads
+                configuration</a></span></dt>
 
                 <dt><span class="sect2">2.3.4. <a href=
                 "#RCL.INDEXING.CONFIG.GUI">The index configuration
@@ -997,8 +997,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp67105136" id=
-                "idp67105136"></a>2.1.3.&nbsp;Document types</h3>
+                <h3 class="title"><a name="idp46788704" id=
+                "idp46788704"></a>2.1.3.&nbsp;Document types</h3>
               </div>
             </div>
           </div>
@@ -1091,8 +1091,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp67124816" id=
-                "idp67124816"></a>2.1.4.&nbsp;Indexing
+                <h3 class="title"><a name="idp46808384" id=
+                "idp46808384"></a>2.1.4.&nbsp;Indexing
                 failures</h3>
               </div>
             </div>
@@ -1132,8 +1132,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp67132272" id=
-                "idp67132272"></a>2.1.5.&nbsp;Recovery</h3>
+                <h3 class="title"><a name="idp46815840" id=
+                "idp46815840"></a>2.1.5.&nbsp;Recovery</h3>
               </div>
             </div>
           </div>
@@ -1528,7 +1528,7 @@ recoll -c ~/.indexes-email
                 <h3 class="title"><a name=
                 "RCL.INDEXING.CONFIG.THREADS" id=
                 "RCL.INDEXING.CONFIG.THREADS"></a>2.3.3.&nbsp;Indexing
-                thread usage configuration GUI</h3>
+                threads configuration</h3>
               </div>
             </div>
           </div>
@@ -1601,6 +1601,15 @@ recoll -c ~/.indexes-email
                 mutex).</p>
               </dd>
             </dl>
+          </div>
+
+          <div class="note" style=
+          "margin-left: 0.5in; margin-right: 0.5in;">
+            <h3 class="title">Note</h3>
+
+            <p>If the first value in <code class=
+            "varname">thrQSizes</code> is 0, <code class=
+            "varname">thrTCounts</code> is ignored.</p>
           </div>
 
           <p>The following example would use three queues (of depth
