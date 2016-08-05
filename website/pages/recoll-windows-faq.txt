@@ -2,6 +2,22 @@
 Jean-Francois Dockes <jf@dockes.org>
 :toc:
 
+== File name character case sensitivity
+
+Recoll was born on Unix, on which file names are case-sensitive. At the
+moment this is also the case for path-related queries on Windows, including
+the drive letters.
+
+When filtering results on location (e.g. with a 'dir:' clause), you need to
+enter all path elements as they appear in the URLs in result lists (and use
+forward slashes).
+
+It is also advisable to enter configuration filenames with their actual
+case (e.g. _topdirs_).
+
+I am looking into fixing this, but this made a bit complicated by non ASCII
+character sets issues.
+
 == Using an alternate configuration directory
 
 This tip is useful if you want to manage several configurations, or if you

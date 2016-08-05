@@ -29,7 +29,25 @@
 	came with them.</p>
 
       <dl>
-	<dt><a href="release-1.22.html">Release 1.22</a>: Windows
+
+	<dt><a href="release-1.23.html">Release 1.23</a>: C++11</dt> 
+        <dd>
+          <ul>
+            <li>Replace a bunch of locally grown hacks with c++11
+              standard features, esp. std::thread, std::mutex etc. As
+              c++11 support is now mandatory, get rid of compatibility
+              code (e.g. switches to use c++11 smart pointers or the
+              local version).</li>
+            <li>Convert the logging facility to use c++ streams
+              instead of stdio.</li>
+            <li>Allow execm input handlers to set arbitrary data
+              fields. Previously, the only way for handlers to provide
+              metadata was through HTML <i>meta</i> fields.</li>
+            <li>fn and cfn queryaliases enabled by default.</li>
+          </ul>
+
+
+        <dt><a href="release-1.22.html">Release 1.22</a>: Windows
 	  port, autotools-based Unix/Linux build system.</dt> 
 	<dd>
 	  <ul>
@@ -40,9 +58,8 @@
             <li>New synonyms expansion feature.</li>
 	  </ul>
 	</dd>
-
       
-      <dl>
+
 	<dt><a href="release-1.21.html">Release 1.21</a>: new
 	  query parser</dt> 
 	<dd>
