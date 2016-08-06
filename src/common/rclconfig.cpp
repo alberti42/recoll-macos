@@ -22,6 +22,8 @@
 #ifndef _WIN32
 #include <langinfo.h>
 #include <sys/param.h>
+#else
+#include "wincodepages.h"
 #endif
 #include <limits.h>
 #include "safesysstat.h"
@@ -208,11 +210,10 @@ RclConfig::RclConfig(const string *argcnf)
 	    o_localecharset = string(cstr_cp1252);
 	}
 #else
-        // This is quite incorrect, when using the non-unicode (utf16)
-        // interface, Windows will never use utf-8
-        o_localecharset = "UTF-8";
+        o_localecharset = winACPName();
 #endif
-	LOGDEB1("RclConfig::getDefCharset: localecharset ["  << (o_localecharset) << "]\n" );
+	LOGDEB1("RclConfig::getDefCharset: localecharset ["  <<
+                o_localecharset << "]\n");
     }
 
     const char *cp;

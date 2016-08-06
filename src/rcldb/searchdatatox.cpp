@@ -937,11 +937,20 @@ bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p)
 // Translate a dir: path filtering clause. See comments in .h
 bool SearchDataClausePath::toNativeQuery(Rcl::Db &db, void *p)
 {
-    LOGDEB("SearchDataClausePath::toNativeQuery: ["  << (m_text) << "]\n" );
+    LOGDEB("SearchDataClausePath::toNativeQuery: [" << m_text << "]\n");
     Xapian::Query *qp = (Xapian::Query *)p;
     *qp = Xapian::Query();
 
-    if (m_text.empty()) {
+    string ltext;
+#ifdef _WIN32
+    // Windows file names are case-insensitive, so we lowercase (same
+    // as when indexing)
+    unacmaybefold(m_text, ltext, "UTF-8", UNACOP_FOLD);
+#else
+    ltext = m_text;
+#endif
+
+    if (ltext.empty()) {
 	LOGERR("SearchDataClausePath: empty path??\n" );
 	m_reason = "Empty path ?";
 	return false;
@@ -949,13 +958,13 @@ bool SearchDataClausePath::toNativeQuery(Rcl::Db &db, void *p)
 
     vector<Xapian::Query> orqueries;
 
-    if (path_isabsolute(m_text))
+    if (path_isabsolute(ltext))
 	orqueries.push_back(Xapian::Query(wrap_prefix(pathelt_prefix)));
     else
-        m_text = path_tildexpand(m_text);
+        ltext = path_tildexpand(ltext);
 
     vector<string> vpath;
-    stringToTokens(m_text, vpath, "/");
+    stringToTokens(ltext, vpath, "/");
 
     for (vector<string>::const_iterator pit = vpath.begin(); 
 	 pit != vpath.end(); pit++){
@@ -967,7 +976,8 @@ bool SearchDataClausePath::toNativeQuery(Rcl::Db &db, void *p)
 			*pit, exp, sterm, wrap_prefix(pathelt_prefix))) {
 	    return false;
 	}
-	LOGDEB0("SDataPath::toNative: exp size "  << (exp.size()) << ". Exp: "  << (stringsToString(exp)) << "\n" );
+	LOGDEB0("SDataPath::toNative: exp size " << exp.size() << ". Exp: " <<
+                stringsToString(exp) << "\n");
 	if (exp.size() == 1)
 	    orqueries.push_back(Xapian::Query(exp[0]));
 	else 

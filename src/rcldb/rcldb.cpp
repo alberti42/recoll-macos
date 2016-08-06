@@ -56,6 +56,7 @@ using namespace std;
 #include "expansiondbs.h"
 #include "rclinit.h"
 #include "internfile.h"
+#include "utf8fn.h"
 
 // Recoll index format version is stored in user metadata. When this change,
 // we can't open the db and will have to reindex.
@@ -159,7 +160,9 @@ Db::Native::~Native()
 #ifdef IDX_THREADS
     if (m_havewriteq) {
 	void *status = m_wqueue.setTerminateAndWait();
-	LOGDEB2("Native::~Native: worker status "  << (long(status)) << "\n" );
+        if (status) {
+            LOGDEB1("Native::~Native: worker status "  << status << "\n");
+        }
     }
 #endif // IDX_THREADS
 }
@@ -1060,7 +1063,6 @@ class TextSplitDb : public TextSplitP {
     // Reimplement text_to_words to insert the begin and end anchor terms.
     virtual bool text_to_words(const string &in) 
     {
-	bool ret = false;
 	string ermsg;
 
 	try {
@@ -1088,8 +1090,6 @@ class TextSplitDb : public TextSplitP {
 	    LOGERR("Db: xapian add_posting error "  << (ermsg) << "\n" );
 	    goto out;
 	}
-
-	ret = true;
 
     out:
 	basepos += curpos + 100;
@@ -1296,6 +1296,14 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	// Split and index the path from the url for path-based filtering
 	{
 	    string path = url_gpathS(doc.url);
+
+#ifdef _WIN32
+            // Windows file names are case-insensitive, so we
+            // translate to UTF-8 and lowercase
+            string upath = compute_utf8fn(m_config, path, false);            
+            unacmaybefold(upath, path, "UTF-8", UNACOP_FOLD);
+#endif
+
 	    vector<string> vpath;
 	    stringToTokens(path, vpath, "/");
 	    // If vpath is not /, the last elt is the file/dir name, not a

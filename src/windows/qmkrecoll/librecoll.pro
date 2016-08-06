@@ -29,6 +29,7 @@ SOURCES += \
 ../../common/syngroups.cpp \
 ../../common/textsplit.cpp \
 ../../common/unacpp.cpp \
+../../common/utf8fn.cpp \
 ../../index/beaglequeue.cpp \
 ../../index/bglfetcher.cpp \
 ../../index/checkretryfailed.cpp \
@@ -89,6 +90,7 @@ SOURCES += \
 ../../utils/ecrontab.cpp \
 ../../windows/execmd_w.cpp \
 ../../windows/fnmatch.c \
+../../windows/wincodepages.cpp \
 ../../utils/fileudi.cpp \
 ../../utils/fstreewalk.cpp \
 ../../utils/hldata.cpp \

@@ -46,6 +46,7 @@
 #include "cancelcheck.h"
 #include "rclinit.h"
 #include "extrameta.h"
+#include "utf8fn.h"
 
 using namespace std;
 
@@ -592,24 +593,6 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
     return processonefile(m_config, fn, stp, m_localfields);
 }
 
-// File name transcoded to utf8 for indexing.  If this fails, the file
-// name won't be indexed, no big deal Note that we used to do the full
-// path here, but I ended up believing that it made more sense to use
-// only the file name The charset is used is the one from the locale.
-static string compute_utf8fn(RclConfig *config, const string& fn)
-{
-    string charset = config->getDefCharset(true);
-    string utf8fn; 
-    int ercnt;
-    if (!transcode(path_getsimple(fn), utf8fn, charset, "UTF-8", &ercnt)) {
-	LOGERR("processone: fn transcode failure from ["  << (charset) << "] to UTF-8: "  << (path_getsimple(fn)) << "\n" );
-    } else if (ercnt) {
-	LOGDEB("processone: fn transcode "  << (ercnt) << " errors from ["  << (charset) << "] to UTF-8: "  << (path_getsimple(fn)) << "\n" );
-    }
-    LOGDEB2("processone: fn transcoded from ["  << (path_getsimple(fn)) << "] to ["  << (utf8fn) << "] ("  << (charset) << "->"  << ("UTF-8") << ")\n" );
-    return utf8fn;
-}
-
 FsTreeWalker::Status 
 FsIndexer::processonefile(RclConfig *config, 
 			  const std::string &fn, const struct stat *stp,
@@ -680,9 +663,12 @@ FsIndexer::processonefile(RclConfig *config,
 	return FsTreeWalker::FtwOk;
     }
 
-    LOGDEB0("processone: processing: ["  << (displayableBytes(off_t(stp->st_size))) << "] "  << (fn) << "\n" );
+    LOGDEB0("processone: processing: ["  <<
+            displayableBytes(off_t(stp->st_size)) << "] "  << fn << "\n");
 
-    string utf8fn = compute_utf8fn(config, fn);
+    // Note that we used to do the full path here, but I ended up
+    // believing that it made more sense to use only the file name
+    string utf8fn = compute_utf8fn(config, fn, true);
 
     // parent_udi is initially the same as udi, it will be used if there 
     // are subdocs.
