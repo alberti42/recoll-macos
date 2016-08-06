@@ -26,8 +26,17 @@
 // Go c++11 !
 bool getCpuConf(CpuConf& cpus)
 {
+#if defined(_WIN32)
+    // On windows, indexing is actually twice slower with threads
+    // enabled + there is a bug and the process does not exit at the
+    // end of indexing. Until these are solved, pretend there is only
+    // 1 cpu
+    cpus.ncpus = 1;
+#else
     // c++11
     cpus.ncpus = std::thread::hardware_concurrency();
+#endif
+    
     return true;
 }
 
