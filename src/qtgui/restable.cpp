@@ -49,6 +49,7 @@
 #include "rclmain_w.h"
 #include "multisave.h"
 #include "appformime.h"
+#include "transcode.h"
 
 static const QKeySequence quitKeySeq("Ctrl+q");
 static const QKeySequence closeKeySeq("Ctrl+w");
@@ -177,15 +178,17 @@ static string sizegetter(const string& fld, const Rcl::Doc& doc)
 
 static string dategetter(const string&, const Rcl::Doc& doc)
 {
-    char datebuf[100];
-    datebuf[0] = 0;
+    string sdate;
     if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
+        char datebuf[100];
+        datebuf[0] = 0;
 	time_t mtime = doc.dmtime.empty() ?
 	    atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
 	struct tm *tm = localtime(&mtime);
 	strftime(datebuf, 99, "%Y-%m-%d", tm);
+        transcode(datebuf, sdate, RclConfig::getLocaleCharset(), "UTF-8");
     }
-    return datebuf;
+    return sdate;
 }
 
 static string datetimegetter(const string&, const Rcl::Doc& doc)
@@ -196,7 +199,7 @@ static string datetimegetter(const string&, const Rcl::Doc& doc)
 	time_t mtime = doc.dmtime.empty() ?
 	    atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
 	struct tm *tm = localtime(&mtime);
-	strftime(datebuf, 99, "%Y-%m-%d %H:%M:%S %z", tm);
+	strftime(datebuf, 99, prefs.creslistdateformat.c_str(), tm);
     }
     return datebuf;
 }

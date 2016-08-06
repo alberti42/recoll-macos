@@ -37,6 +37,7 @@ using std::list;
 #include "rclutil.h"
 #include "plaintorich.h"
 #include "mimehandler.h"
+#include "transcode.h"
 
 // Default highlighter. No need for locking, this is query-only.
 static const string cstr_hlfontcolor("<span style='color: blue;'>");
@@ -191,14 +192,16 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     int docnumforlinks = m_winfirst + 1 + i;
     sprintf(numbuf, "%d", docnumforlinks);
 
-    // Document date: either doc or file modification time
-    char datebuf[100];
-    datebuf[0] = 0;
+    // Document date: either doc or file modification times
+    string datebuf;
     if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
+        char cdate[100];
+        cdate[0] = 0;
 	time_t mtime = doc.dmtime.empty() ?
 	    atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
 	struct tm *tm = localtime(&mtime);
-	strftime(datebuf, 99, dateFormat().c_str(), tm);
+	strftime(cdate, 99, dateFormat().c_str(), tm);
+        transcode(cdate, datebuf, RclConfig::getLocaleCharset(), "UTF-8");
     }
 
     // Size information. We print both doc and file if they differ a lot

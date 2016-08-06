@@ -239,6 +239,9 @@ class RclConfig {
     static bool valueSplitAttributes(const string& whole, string& value, 
 				     ConfSimple& attrs) ;
 
+    /** Return the locale's character set */
+    static const std::string& getLocaleCharset();
+    
     /** Return icon path for mime type and tag */
     string getMimeIconPath(const string &mt, const string& apptag) const;
 

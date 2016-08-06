@@ -520,6 +520,11 @@ vector<string> RclConfig::getTopdirs() const
     return tdl;
 }
 
+const string& RclConfig::getLocaleCharset()
+{
+    return o_localecharset;
+}
+
 // Get charset to be used for transcoding to utf-8 if unspecified by doc
 // For document contents:
 //  If defcharset was set (from the config or a previous call, this
