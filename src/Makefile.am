@@ -75,6 +75,8 @@ common/textsplit.h \
 common/unacpp.cpp \
 common/unacpp.h \
 common/uproplist.h \
+common/utf8fn.cpp \
+common/utf8fn.h \
 index/beaglequeue.cpp \
 index/beaglequeue.h \
 index/bglfetcher.cpp \
