@@ -4489,7 +4489,7 @@ for doc in results:
 
       <variablelist>
 
-        <varlistentry id="RCL.PROGRAM.PYTHONAPI.ELEMENTS.UDI">> 
+        <varlistentry id="RCL.PROGRAM.PYTHONAPI.ELEMENTS.IPATH">> 
           <term>ipath</term> 
           
           <listitem><para>This data value (set as a field in the Doc

@@ -18,10 +18,10 @@ names.  The list in the default configuration does not exclude hidden
 directories (names beginning with a dot), which means that it may index
 quite a few things that you do not want. On the other hand, email user
 agents like Thunderbird usually store messages in hidden directories, and
-you probably want this indexed. One possible solution is to have '.*' in
-'skippedNames', and add things like '~/.thunderbird' '~/.evolution' to
-'topdirs'.  Not even the file names are indexed for patterns in this
-list, see the 'noContentSuffixes' variable for an alternative approach
+you probably want this indexed. One possible solution is to have ".*" in
+"skippedNames", and add things like "~/.thunderbird" "~/.evolution" to
+"topdirs".  Not even the file names are indexed for patterns in this
+list, see the "noContentSuffixes" variable for an alternative approach
 which indexes the file names. Can be redefined for any
 subtree.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES">
@@ -366,10 +366,11 @@ which lets Xapian perform its own thing, meaning flushing every
 $XAPIAN_FLUSH_THRESHOLD documents created, modified or deleted: as memory
 usage depends on average document size, not only document count, the
 Xapian approach is is not very useful, and you should let Recoll manage
-the flushes.  The default value of idxflushmb is 10 MB, and may be a bit
-low. If you are looking for maximum speed, you may want to experiment
-with values between 20 and
-80. In my experience, values beyond 100 are always counterproductive. If
+the flushes. The program compiled value is 0. The configured default
+value (from this file) is 10 MB, and will be too low in many cases (it is
+chosen to conserve memory). If you are looking
+for maximum speed, you may want to experiment with values between 20 and
+200. In my experience, values beyond this are always counterproductive. If
 you find otherwise, please drop me a note.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.FILTERMAXSECONDS">
 <term><varname>filtermaxseconds</varname></term>

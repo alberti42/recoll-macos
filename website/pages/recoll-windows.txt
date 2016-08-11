@@ -73,6 +73,12 @@ improving the Windows version, the link:recoll-mingw.html[build instructions].
 
 == Known problems:
 
+- Indexing is very slow, especially when using external commands (e.g. for
+  PDF files). I don't know if this is a case of my doing something stupid,
+  or if the general architecture is really bad fitted for windows. If
+  someone with good Windows programming knowledge reads this, I'd be very
+  interested by a discussion.
+
 - Filtering by directory location ('dir:' clauses) is currently
   case-sensitive, including drive letters. This will hopefully be fixed in
   a future version.

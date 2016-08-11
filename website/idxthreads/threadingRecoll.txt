@@ -206,6 +206,7 @@ when working on HTML or plain text.
 In practice, very modest indexing time improvements from 5% to 15% were
 achieved with this method.
 
+[[recoll.idxthreads.multistage]]
 == The next step: multi-stage parallelism
 
 image::multipara.png["Multi-stage parallelism", float="right"]

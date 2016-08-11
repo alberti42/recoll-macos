@@ -2,8 +2,7 @@
 
 <html>
   <head>
-    <title>RECOLL: a personal text search system for
-    Unix/Linux</title>
+    <title>RECOLL indexing performance and index sizes</title>
     <meta name="generator" content="HTML Tidy, see www.w3.org">
     <meta name="Author" content="Jean-Francois Dockes">
     <meta name="Description" content=
@@ -33,20 +32,323 @@
       <h1>Recoll: Indexing performance and index sizes</h1>
 
       <p>The time needed to index a given set of documents, and the
-	resulting index size depend of many factors, such as file size
-	and proportion of actual text content for the index size, cpu
-	speed, available memory, average file size and format for the
-	speed of indexing.</p>
+	resulting index size depend of many factors.
 
-      <p>We try here to give a number of reference points which can
-	be used to roughly estimate the resources needed to create and
-	store an index. Obviously, your data set will never fit one of
-	the samples, so the results cannot be exactly predicted.</p>
+      <p>The index size depends almost only on the size of the
+        uncompressed input text, and you can expect it to be roughly
+        of the same order of magnitude. Depending on the type of file,
+        the proportion of text to file size varies very widely, going
+        from close to 1 for pure text files to a very small factor
+        for, e.g., metadata tags in mp3 files.</p>
 
-      <p>The following very old data was obtained on a machine with a
-        1800 Mhz
-	AMD Duron CPU, 768Mb of Ram, and a 7200 RPM 160 GBytes IDE
-	disk, running Suse 10.1. More recent data follows.</p>
+      <p>Estimating indexing time is a much more complicated issue,
+        depending on the type and size of input and on system
+        performance. There is no general way to determine what part of
+        the hardware should be optimized. Depending on the type of
+        input, performance may be bound by I/O read or write
+        performance, CPU single-processing speed, or combined
+        multi-processing speed.</p>
+
+      <p>It should be noted that Recoll performance will not be an
+        issue for most people. The indexer can process 1000 typical
+        PDF files per minute, or 500 Wikipedia HTML pages per second
+        on medium-range hardware, meaning that the initial indexing of
+        a typical dataset will need a few dozen minutes at
+        most. Further incremental index updates will be much faster
+        because most files will not need to be processed again.</p>
+
+      <p>However, there are Recoll installations with
+        terabyte-sized datasets, on which indexing can take days. For
+        such operations (or even much smaller ones), it is very
+        important to know what kind of performance can be expected,
+        and what aspects of the hardware should be optimized.</p>
+
+      <p>In order to provide some reference points, I have run a
+        number of benchs on medium-sized datasets, using typical
+        mid-range desktop hardware, and varying the indexing
+        configuration parameters to show how they affect the results.</p>
+
+      <p>The following may help you check that you are getting typical
+        performance for your indexing, and give some indications about
+        what to adjust to improve it.</p>
+        
+      <p>From time to time, I receive a report about a system becoming
+        unusable during indexing. As far as I know, with the default
+        Recoll configuration, and barring an exceptional issue (bug),
+        this is always due to a system problem (typically bad hardware
+        such as a disk doing retries). The tests below were mostly run
+        while I was using the desktop, which never became
+        unusable. However, some tests rendered it less responsive and
+        this is noted with the results.</p>
+
+      <p>The following text refers to the indexing parameters without
+        further explanation. Here follow links to more explanation about the
+        <a href="http://www.lesbonscomptes.com/recoll/idxthreads/threadingRecoll.html#recoll.idxthreads.multistage">processing
+        model</a> and
+        <a href="https://www.lesbonscomptes.com/recoll/usermanual/webhelp/docs/RCL.INSTALL.CONFIG.RECOLLCONF.PERFS.html">configuration
+          parameters</a>.</p>
+      
+
+      <p>All text were run without generating the stemming database or
+        aspell dictionary. These phases are relatively short and there
+        is nothing which can be optimized about them.</p>
+      
+      <h2>Hardware</h2>
+
+      <p>The tests were run on what could be considered a mid-range
+        desktop PC:
+        <ul>
+          <li>Intel Core I7-4770T CPU: 2.5 Ghz, 4 physical cores, and
+            hyper-threading for a total of 8 hardware threads</li>
+          <li>8 GBytes of RAM</li>
+          <li>Asus H87I-Plus motherboard, Samsung 850 EVO SSD storage</li>
+        </ul>
+      </p>
+
+      <p>This is usually a fanless PC, but I did run a fan on the
+        external case fins during some of the tests (esp. PDF
+        indexing), because the CPU was running a bit too hot.</p>
+
+
+      <h2>Indexing PDF files</h2>
+      
+
+      <p>The tests were run on 18000 random PDFs harvested on
+        Google, with a total size of around 30 GB, using Recoll 1.22.3
+        and Xapian 1.2.22. The resulting index size was 1.2 GB.</p>
+
+      <h3>PDF: storage</h3>
+
+      <p>Typical PDF files have a low text to file size ratio, and a
+        lot of data needs to be read for indexing. With the test
+        configuration, the indexer needs to read around 45 MBytes / S
+        from multiple files. This means that input storage makes a
+        difference and that you need an SSD or a fast array for
+        optimal performance.</p>
+
+      <table border=1>
+	<thead>
+	  <tr>
+	    <th>Storage</th>
+	    <th>idxflushmb</th>
+	    <th>thrTCounts</th>
+	    <th>Real Time</th>
+	  </tr>
+	<tbody>
+	  <tr>
+	    <td>NFS drive (gigabit)</td>
+	    <td>200</td>
+	    <td>6/4/1</td>
+	    <td>24m40</td>
+	  </tr>
+	  <tr>
+	    <td>local SSD</td>
+	    <td>200</td>
+	    <td>6/4/1</td>
+	    <td>11m40</td>
+	  </tr>
+	</tbody>
+      </table>
+        
+
+      <h3>PDF: threading</h3>
+
+      <p>Because PDF files are bulky and complicated to process, the
+        dominant step for indexing them is input processing. PDF text
+        extraction is performed by multiple instances
+        the <i>pdftotext</i> program, and parallelisation works very
+        well.</p>
+
+      <p>The following table shows the indexing times with a variety
+        of threading parameters.</p>
+
+      <table border=1>
+	<thead>
+	  <tr>
+	    <th>idxflushmb</th>
+	    <th>thrQSizes</th>
+	    <th>thrTCounts</th>
+	    <th>Time R/U/S</th>
+	  </tr>
+          <tbody>
+	  <tr>
+	    <td>200</td>
+	    <td>2/2/2</td>
+	    <td>2/1/1</td>
+	    <td>19m21</td>
+	  </tr>
+	  <tr>
+	    <td>200</td>
+	    <td>2/2/2</td>
+	    <td>10/10/1</td>
+	    <td>10m38</td>
+	  </tr>
+	  <tr>
+	    <td>200</td>
+	    <td>2/2/2</td>
+	    <td>100/10/1</td>
+	    <td>11m</td>
+	  </tr>
+          </tbody>
+      </table>
+
+      <p>10/10/1 was the best value for thrTCounts for this test. The
+        total CPU time was around 78 mn.</p>
+
+      <p>The last line shows the effect of a ridiculously high thread
+        count value for the input step, which is not much. Using
+        sligthly lower values than the optimum has not much impact
+        either. The only thing which really degrades performance is
+        configuring less threads than available from the hardware.</p>
+
+      <p>With the optimal parameters above, the peak recollindex
+        resident memory size is around 930 MB, to which we should add
+        ten instances of pdftotext (10MB typical), and of the
+        rclpdf.py Python input handler (around 15 MB each). This means
+        that the total resident memory used by indexing is around 1200
+        MB, quite a modest value in 2016.</p>
+
+
+      <h3>PDF: Xapian flushes</h3>
+
+      <p>idxflushmb has practically no influence on the indexing time
+        (tested from 40 to 1000), which is not too surprising because
+        the Xapian index size is very small relatively to the input
+        size, so that the cost of Xapian flushes to disk is not very
+        significant. The value of 200 used for the threading tests
+        could be lowered in practise, which would decrease memory
+        usage and not change the indexing time significantly.</p>
+
+      <h3>PDF: conclusion</h3>
+
+      <p>For indexing PDF files, you need many cores and a fast
+        input storage system. Neither single-thread performance nor
+        amount of memory will be critical aspects.</p>
+
+      <p>Running the PDF indexing tests had no influence on the system
+        "feel", I could work on it just as if it were quiescent.</p>
+
+
+      <h2>Indexing HTML files</h2>
+
+      <p>The tests were run on an (old) French Wikipedia dump: 2.9
+        million HTML files stored in 42000 directories, for an
+        approximate total size of 41 GB (average file size
+        14 KB).
+
+        <p>The files are stored on a local SSD. Just reading them with
+          find+cpio takes close to 8 mn.</p>
+
+        <p>The resulting index has a size of around 30 GB.</p>
+
+        <p>I was too lazy to extract 3 million entries tar file on a
+          spinning disk, so all tests were performed with the data
+          stored on a local SSD.</p>
+
+        <p>For this test, the indexing time is dominated by the Xapian
+          index updates. As these are single threaded, only the flush
+          interval has a real influence.</p>
+
+      <table border=1>
+	<thead>
+	  <tr>
+	    <th>idxflushmb</th>
+	    <th>thrQSizes</th>
+	    <th>thrTCounts</th>
+	    <th>Time R/U/S</th>
+	  </tr>
+          <tbody>
+	  <tr>
+	    <td>200</td>
+	    <td>2/2/2</td>
+	    <td>2/1/1</td>
+	    <td>88m</td>
+	  </tr>
+	  <tr>
+	    <td>200</td>
+	    <td>2/2/2</td>
+	    <td>6/4/1</td>
+	    <td>91m</td>
+	  </tr>
+	  <tr>
+	    <td>200</td>
+	    <td>2/2/2</td>
+	    <td>1/1/1</td>
+	    <td>96m</td>
+	  </tr>
+	  <tr>
+	    <td>100</td>
+	    <td>2/2/2</td>
+	    <td>1/2/1</td>
+	    <td>120m</td>
+	  </tr>
+	  <tr>
+	    <td>100</td>
+	    <td>2/2/2</td>
+	    <td>6/4/1</td>
+	    <td>121m</td>
+	  </tr>
+	  <tr>
+	    <td>40</td>
+	    <td>2/2/2</td>
+	    <td>1/2/1</td>
+	    <td>173m</td>
+	  </tr>
+          </tbody>
+      </table>
+
+
+      <p>The indexing process becomes quite big (resident size around
+        4GB), and the combination of high I/O load and high memory
+        usage makes the system less responsive at times (but not
+        unusable). As this happens principally when switching
+        applications, my guess would be that some program pages
+        (e.g. from the window manager and X) get flushed out, and take
+        time being read in, during which time the display appears
+        frozen.</p>
+
+      <p>For this kind of data, single-threaded CPU performance and
+        storage write speed can make a difference. Multithreading does
+        not help.</p>
+
+      <h2>Adjusting hardware to improve indexing performance</h2>
+
+      <p>I think that the following multi-step approach has a good
+        chance to improve performance:
+        <ul>
+          <li>Check that multithreading is enabled (it is, by default
+            with recent Recoll versions).</li>
+          <li>Increase the flush threshold until the machine begins to
+            have memory issues. Maybe add memory.</li>
+          <li>Store the index on an SSD. If possible, also store the
+            data on an SSD. Actually, when using many threads, it is
+            probably almost more important to have the data on an
+            SSD.</li>
+          <li>If you have many files which will need temporary copies
+            (email attachments, archive members, compressed files): use
+            a memory temporary directory. Add memory.</li>
+          <li>More CPUs...</li>
+        </ul>
+      </p>
+
+      <p>At some point, the index updating and writing may become the
+        bottleneck (this depends on the data mix, very quickly with
+        HTML or text files). As far as I can think, the only possible
+        approach is then to partition the index. You can query the
+        multiple Xapian indices either by using the Recoll external
+        index capability, or by actually merging the results with
+        xapian-compact.</p>
+
+
+
+      <h5>Old benchmarks</h5>
+
+      <p>To provide a point of comparison for the evolution of
+        hardware and software...</p>
+      
+      <p>The following very old data was obtained (around 2007?) on a
+        machine with a 1800 Mhz AMD Duron CPU, 768Mb of Ram, and a
+        7200 RPM 160 GBytes IDE disk, running Suse 10.1.</p>
 
       <p><b>recollindex</b> (version 1.8.2 with xapian 1.0.0) is
 	executed with the default flush threshold value. 
@@ -108,73 +410,6 @@
 	the exact reason is not known to me, possibly because of
 	additional fragmentation </p>
 
-      <p>There is more recent performance data (2012) at the end of
-        the <a href="idxthreads/threadingRecoll.html">article about
-          converting Recoll indexing to multithreading</a></p>
-
-      <p>Update, March 2016: I took another sample of PDF performance
-        data on a more modern machine, with Recoll multithreading turned
-        on. The machine has an Intel Core I7-4770T Cpu, which has 4
-        physical cores, and supports hyper-threading for a total of 8
-        threads, 8 GBytes of RAM, and SSD storage (incidentally the PC is
-        fanless, this is not a "beast" computer).</p>
-        
-      <table border=1>
-	<thead>
-	  <tr>
-	    <th>Data</th>
-	    <th>Data size</th>
-	    <th>Indexing time</th>
-	    <th>Index size</th>
-	    <th>Peak process memory usage</th>
-	  </tr>
-	<tbody>
-	  <tr>
-	    <td>Random pdfs harvested on Google<br>
-	    Recoll 1.21.5, <em>idxflushmb</em> set to 200, thread
-	    parameters 6/4/1</td>
-	    <td>11 GB, 5320 files</td>
-	    <td>3 mn 15 S</td>
-	    <td>400 MB</td>
-	    <td>545 MB</td>
-	  </tr>
-	</tbody>
-      </table>
-        
-      <p>The indexing process used 21 mn of CPU during these 3mn15 of
-        real time, we are not letting these cores stay idle
-        much... The improvement compared to the numbers above is quite
-        spectacular (a factor of 11, approximately), mostly due to the
-        multiprocessing, but also to the faster CPU and the SSD
-        storage. Note that the peak memory value is for the
-        recollindex process, and does not take into account the
-        multiple Python and pdftotext instances (which are relatively
-        small but things add up...).</p>
-      
-      <h5>Improving indexing performance with hardware:</h5>
-      <p>I think
-      that the following multi-step approach has a good chance to
-        improve performance:
-        <ul>
-          <li>Check that multithreading is enabled (it is, by default
-            with recent Recoll versions).</li>
-          <li>Increase the flush threshold until the machine begins to
-            have memory issues. Maybe add memory.</li>
-          <li>Store the index on an SSD. If possible, also store the
-            data on an SSD. Actually, when using many threads, it is
-            probably almost more important to have the data on an
-            SSD.</li>
-          <li>If you have many files which will need temporary copies
-            (email attachments, archive members, compressed files): use
-            a memory temporary directory. Add memory.</li>
-          <li>More CPUs...</li>
-        </ul>
-      </p>
-
-      <p>At some point, the index writing may become the
-        bottleneck. As far as I can think, the only possible approach
-        then is to partition the index.</p>
-      
     </div>
   </body>
 </html>
