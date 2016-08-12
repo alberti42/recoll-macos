@@ -38,6 +38,7 @@ using namespace std;
 #include "pathut.h"
 #include "plaintorich.h"
 #include "hldata.h"
+#include "smallut.h"
 
 #include "pyrecoll.h"
 
@@ -428,19 +429,82 @@ Doc_items(recoll_DocObject *self)
     return pdict;
 }
 
-static bool docget(recoll_DocObject *self, const string& key, string& value)
+static bool idocget(recoll_DocObject *self, const string& key, string& value)
 {
-    // 
-    if (!key.compare("xdocid")) {
-        char cid[30];
-        sprintf(cid, "%lu", (unsigned long)self->doc->xdocid);
-        value = cid;
-        return true;
-    } else {
-        if (self->doc->getmeta(key, 0)) {
-            value = self->doc->meta[key];
+    switch (key.at(0)) {
+    case 'u':
+	if (!key.compare(Rcl::Doc::keyurl)) {
+	    value = self->doc->url;
+            return true;
+	}
+	break;
+    case 'f':
+	if (!key.compare(Rcl::Doc::keyfs)) {
+	    value = self->doc->fbytes;
+            return true;
+	} else if (!key.compare(Rcl::Doc::keyfmt)) {
+	    value = self->doc->fmtime;
+            return true;
+	}
+	break;
+    case 'd':
+	if (!key.compare(Rcl::Doc::keyds)) {
+	    value = self->doc->dbytes;
+            return true;
+	} else if (!key.compare(Rcl::Doc::keydmt)) {
+	    value = self->doc->dmtime;
+            return true;
+	}
+	break;
+    case 'i':
+	if (!key.compare(Rcl::Doc::keyipt)) {
+	    value = self->doc->ipath;
+            return true;
+	}
+	break;
+    case 'm':
+	if (!key.compare(Rcl::Doc::keytp)) {
+	    value = self->doc->mimetype;
+            return true;
+	} else if (!key.compare(Rcl::Doc::keymt)) {
+	    value = self->doc->dmtime.empty() ? self->doc->fmtime : 
+		self->doc->dmtime;
+            return true;
+	}
+	break;
+    case 'o':
+	if (!key.compare(Rcl::Doc::keyoc)) {
+	    value = self->doc->origcharset;
+            return true;
+	}
+	break;
+    case 's':
+	if (!key.compare(Rcl::Doc::keysig)) {
+	    value = self->doc->sig;
+            return true;
+	} else 	if (!key.compare(Rcl::Doc::keysz)) {
+	    value = self->doc->dbytes.empty() ? self->doc->fbytes : 
+		self->doc->dbytes;
+            return true;
+	}
+	break;
+    case 't':
+	if (!key.compare("text")) {
+	    value = self->doc->text;
+            return true;
+	}
+	break;
+    case 'x':
+        if (!key.compare("xdocid")) {
+            ulltodecstr(self->doc->xdocid, value);
             return true;
         }
+        break;
+    }
+
+    if (self->doc->getmeta(key, 0)) {
+        value = self->doc->meta[key];
+        return true;
     }
     return false;
 }
@@ -452,7 +516,7 @@ PyDoc_STRVAR(doc_Doc_get,
 static PyObject *
 Doc_get(recoll_DocObject *self, PyObject *args)
 {
-    LOGDEB0("Doc_get\n" );
+    LOGDEB1("Doc_get\n" );
     if (self->doc == 0 || the_docs.find(self->doc) == the_docs.end()) {
         PyErr_SetString(PyExc_AttributeError, "doc??");
 	return 0;
@@ -465,10 +529,8 @@ Doc_get(recoll_DocObject *self, PyObject *args)
     PyMem_Free(sutf8);
 
     string value;
-    bool found = docget(self, key, value);
-
-    if (found) {
-	return PyUnicode_Decode(value.c_str(), value.size(), "UTF-8", "replace");
+    if (idocget(self, key, value)) {
+	return PyUnicode_Decode(value.c_str(), value.size(), "UTF-8","replace");
     }
 
     Py_RETURN_NONE;
@@ -495,14 +557,15 @@ Doc_getattro(recoll_DocObject *self, PyObject *nameobj)
 	return 0;
     }
 
-    bool found = false;
-    string value;
-    string key;
+    PyObject *meth = PyObject_GenericGetAttr((PyObject*)self, nameobj);
+    if (meth) {
+        return meth;
+    }
+    PyErr_Clear();
+    
     char *name = 0;
-    PyObject* utf8o = 0;
-
     if (PyUnicode_Check(nameobj)) {
-	utf8o = PyUnicode_AsUTF8String(nameobj);
+	PyObject* utf8o = PyUnicode_AsUTF8String(nameobj);
 	if (utf8o == 0) {
 	    LOGERR("Doc_getattro: encoding name to utf8 failed\n" );
 	    PyErr_SetString(PyExc_AttributeError, "name??");
@@ -517,90 +580,12 @@ Doc_getattro(recoll_DocObject *self, PyObject *nameobj)
 	Py_RETURN_NONE;
     }
 
-    key = rclconfig->fieldQCanon(string(name));
-    LOGDEB1("Doc_getattro: key: " << key << endl);
-
-    switch (key.at(0)) {
-    case 'u':
-	if (!key.compare(Rcl::Doc::keyurl)) {
-	    value = self->doc->url; found = true;
-	}
-	break;
-    case 'f':
-	if (!key.compare(Rcl::Doc::keyfs)) {
-	    value = self->doc->fbytes; found = true;
-	} else if (!key.compare(Rcl::Doc::keyfmt)) {
-	    value = self->doc->fmtime; found = true;
-	}
-	break;
-    case 'd':
-	if (!key.compare(Rcl::Doc::keyds)) {
-	    value = self->doc->dbytes; found = true;
-	} else if (!key.compare(Rcl::Doc::keydmt)) {
-	    value = self->doc->dmtime; found = true;
-	}
-	break;
-    case 'i':
-	if (!key.compare(Rcl::Doc::keyipt)) {
-	    value = self->doc->ipath; found = true;
-	}
-	break;
-    case 'm':
-	if (!key.compare(Rcl::Doc::keytp)) {
-	    value = self->doc->mimetype; found = true;
-	} else if (!key.compare(Rcl::Doc::keymt)) {
-	    value = self->doc->dmtime.empty() ? self->doc->fmtime : 
-		self->doc->dmtime; found = true;
-	}
-	break;
-    case 'o':
-	if (!key.compare(Rcl::Doc::keyoc)) {
-	    value = self->doc->origcharset; found = true;
-	}
-	break;
-    case 's':
-	if (!key.compare(Rcl::Doc::keysig)) {
-	    value = self->doc->sig; found = true;
-	} else 	if (!key.compare(Rcl::Doc::keysz)) {
-	    value = self->doc->dbytes.empty() ? self->doc->fbytes : 
-		self->doc->dbytes; found = true;
-	}
-	break;
-    case 't':
-	if (!key.compare("text")) {
-	    value = self->doc->text; found = true;
-	}
-	break;
-    case 'x':
-        if (!key.compare("xdocid")) {
-            char cid[30];
-            sprintf(cid, "%lu", (unsigned long)self->doc->xdocid);
-            value = cid;
-            found = true;
-        }
-        break;
-    }
-
-    if (!found) {
-	// This will look up a method name (we have no other standard
-	// attributes)
-	PyObject *meth = PyObject_GenericGetAttr((PyObject*)self, nameobj);
-	if (meth) {
-	    return meth;
-	}
-	PyErr_Clear();
-	// Else look for another attribute
-	if (self->doc->getmeta(key, 0)) {
-	    value = self->doc->meta[key];
-	    found = true;
-	}
-    }
-
-    if (found) {
+    string key = rclconfig->fieldQCanon(string(name));
+    string value;
+    if (idocget(self, key, value)) {
 	LOGDEB1("Doc_getattro: ["  << key << "] -> ["  << value << "]\n");
 	// Return a python unicode object
-	return PyUnicode_Decode(value.c_str(), value.size(), "utf-8",
-				"replace");
+	return PyUnicode_Decode(value.c_str(), value.size(), "utf-8","replace");
     }
     
     Py_RETURN_NONE;
@@ -739,10 +724,8 @@ Doc_subscript(recoll_DocObject *self, PyObject *key)
 
     string skey = rclconfig->fieldQCanon(string(name));
     string value;
-    bool found = docget(self, skey, value);
-
-    if (found) {
-	return PyUnicode_Decode(value.c_str(), value.size(), "UTF-8", "replace");
+    if (idocget(self, skey, value)) {
+	return PyUnicode_Decode(value.c_str(), value.size(), "UTF-8","replace");
     }
 
     Py_RETURN_NONE;
