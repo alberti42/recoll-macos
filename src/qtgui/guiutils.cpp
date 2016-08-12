@@ -130,9 +130,24 @@ void rwSettings(bool writing)
 
     SETTING_RW(prefs.previewPlainPre, 
 	       "/Recoll/prefs/preview/plainPre", Int, PrefsPack::PP_PREWRAP);
-    SETTING_RW(prefs.qtermcolor, "/Recoll/prefs/qtermcolor", String, "blue");
-    if (!writing && prefs.qtermcolor == "")
-	prefs.qtermcolor = "blue";
+
+    // History: used to be able to only set a bare color name. Can now
+    // set any CSS style. Hack on ':' presence to keep compat with old
+    // values
+    SETTING_RW(prefs.qtermstyle, "/Recoll/prefs/qtermcolor", String,
+               "color: blue");
+    if (!writing && prefs.qtermstyle == "")
+	prefs.qtermstyle = "color: blue";
+    { // histo compatibility hack
+        int colon = prefs.qtermstyle.indexOf(":");
+        int semi = prefs.qtermstyle.indexOf(";");
+        // The 2nd part of the test is to keep compat with the
+        // injection hack of the 1st user who suggested this (had
+        // #ff5000;font-size:110%;... in 'qtermcolor')
+        if (colon == -1 || (colon != -1 && semi != -1 && semi < colon)) {
+            prefs.qtermstyle = QString::fromUtf8("color: ") + prefs.qtermstyle;
+        }
+    }
 
     // Abstract snippet separator
     SETTING_RW(prefs.abssep, "/Recoll/prefs/reslist/abssep", String,"&hellip;");

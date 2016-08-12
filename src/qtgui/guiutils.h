@@ -54,7 +54,7 @@ class PrefsPack {
     // set main character color for webkit/textbrowser reslist and
     // snippets window.
     QString fontcolor; 
-    QString qtermcolor; // Color for query terms in reslist and preview
+    QString qtermstyle; // CSS style for query terms in reslist and other places
     int reslistfontsize;
     // Result list format string
     QString reslistformat;

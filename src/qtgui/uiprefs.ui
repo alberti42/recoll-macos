@@ -36,7 +36,7 @@
              <item>
               <widget class="QLabel" name="textLabelqtc">
                <property name="text">
-                <string>Highlight color for query terms</string>
+                <string>Highlight CSS style for query terms</string>
                </property>
                <property name="wordWrap">
                 <bool>false</bool>
@@ -44,7 +44,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="qtermColorLE">
+              <widget class="QLineEdit" name="qtermStyleLE">
                <property name="minimumSize">
                 <size>
                  <width>50</width>

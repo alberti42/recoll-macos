@@ -286,8 +286,8 @@ public:
 	    LOGDEB("Reslist startmatch: group "  << (s1) << " user group "  << (s2) << "\n" );
 	}
 		
-	return string("<span class='rclmatch' style='color: ")
-	    + qs2utf8s(prefs.qtermcolor) + string("'>");
+	return string("<span class='rclmatch' style='")
+	    + qs2utf8s(prefs.qtermstyle) + string("'>");
     }
     virtual string endMatch() 
     {

@@ -76,9 +76,8 @@ string PlainToRichQtPreview::startMatch(unsigned int grpidx)
     LOGDEB2("startMatch, ugrpidx "  << (grpidx) << "\n" );
     m_groupanchors[grpidx].push_back(++m_lastanchor);
     m_groupcuranchors[grpidx] = 0; 
-    return string("<span style='color: ").
-        append((const char *)(prefs.qtermcolor.toUtf8())).
-        append(";font-weight: bold;").
+    return string("<span style='").
+        append(qs2utf8s(prefs.qtermstyle)).
         append("'>").
         append("<a name=\"").
         append(termAnchorName(m_lastanchor)).
