@@ -517,9 +517,9 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 		// point if the last container filter is directly
 		// returning text/plain content, so that there is no
 		// ipath-less filter at the top
-		char cbuf[30];
-		sprintf(cbuf, "%d", int(doc.text.length()));
-		doc.fbytes = cbuf;
+                lltodecstr(doc.text.length(), doc.fbytes);
+                LOGDEB("FileInterner::dijontorcl: fbytes->" << doc.fbytes <<
+                       endl);
 	    }
 	} else if (it->first == cstr_dj_keymd) {
 	    doc.dmtime = it->second;
@@ -584,23 +584,21 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
     for (vector<RecollFilter*>::const_iterator hit = m_handlers.begin();
 	 hit != m_handlers.end(); hit++) {
 	const map<string, string>& docdata = (*hit)->get_meta_data();
-	if (getKeyValue(docdata, cstr_dj_keyipath, ipathel)) {
-	    if (!ipathel.empty()) {
-		// Non-empty ipath. This stack element is for an
-		// actual embedded document, not a format translation.
-		hasipath = true;
-		getKeyValue(docdata, cstr_dj_keymt, doc.mimetype);
-		getKeyValue(docdata, cstr_dj_keyfn, doc.meta[Rcl::Doc::keyfn]);
-	    } else {
-		if (doc.fbytes.empty())
-		    getKeyValue(docdata, cstr_dj_keydocsize, doc.fbytes);
-	    }
-	    doc.ipath += colon_hide(ipathel) + cstr_isep;
-	} else {
-	    if (doc.fbytes.empty())
-		getKeyValue(docdata, cstr_dj_keydocsize, doc.fbytes);
-	    doc.ipath += cstr_isep;
-	}
+        ipathel.clear();
+	getKeyValue(docdata, cstr_dj_keyipath, ipathel);
+        if (!ipathel.empty()) {
+            // Non-empty ipath. This stack element is for an
+            // actual embedded document, not a format translation.
+            hasipath = true;
+            getKeyValue(docdata, cstr_dj_keymt, doc.mimetype);
+            getKeyValue(docdata, cstr_dj_keyfn, doc.meta[Rcl::Doc::keyfn]);
+        } else {
+            if (doc.fbytes.empty()) {
+                lltodecstr((*hit)->get_docsize(), doc.fbytes);
+                LOGDEB("collectIpath..: fbytes->" << doc.fbytes << endl);
+            }
+        }
+        doc.ipath += colon_hide(ipathel) + cstr_isep;
         // We set the author field from the innermost doc which has
         // one: allows finding, e.g. an image attachment having no
         // metadata by a search on the sender name. Only do this for

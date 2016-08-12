@@ -92,9 +92,11 @@ public:
 	return set_document_string(mtype, std::string(cp, sz));
     }
 
-    virtual void set_docsize(off_t size)
-    {
-	m_metaData[cstr_dj_keydocsize] = ulltodecstr(size);
+    virtual void set_docsize(off_t size) {
+	m_docsize = size;
+    }
+    virtual off_t get_docsize() const {
+	return m_docsize;
     }
 
     virtual bool has_documents() const {return m_havedoc;}
@@ -146,6 +148,7 @@ protected:
     // m_id is and md5 of the filter definition line (from mimeconf) and
     // is used when fetching/returning filters to / from the cache.
     std::string m_id;
+    off_t m_docsize; // Size of the top document
 };
 
 /**

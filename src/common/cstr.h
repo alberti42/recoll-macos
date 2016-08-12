@@ -80,7 +80,6 @@ DEF_CSTR(dj_keycontent, "content");
 DEF_CSTR(dj_keyipath, "ipath");
 DEF_CSTR(dj_keymd5, "md5");
 DEF_CSTR(dj_keymt, "mimetype");
-DEF_CSTR(dj_keydocsize, "docsize");
 DEF_CSTR(dj_keyanc, "rclanc");
 
 #endif /* _CSTR_H_INCLUDED_ */
