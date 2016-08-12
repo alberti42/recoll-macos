@@ -428,6 +428,23 @@ Doc_items(recoll_DocObject *self)
     return pdict;
 }
 
+static bool docget(recoll_DocObject *self, const string& key, string& value)
+{
+    // 
+    if (!key.compare("xdocid")) {
+        char cid[30];
+        sprintf(cid, "%lu", (unsigned long)self->doc->xdocid);
+        value = cid;
+        return true;
+    } else {
+        if (self->doc->getmeta(key, 0)) {
+            value = self->doc->meta[key];
+            return true;
+        }
+    }
+    return false;
+}
+
 PyDoc_STRVAR(doc_Doc_get,
 "get(key) -> value\n"
 "Retrieve the named doc attribute\n"
@@ -436,39 +453,22 @@ static PyObject *
 Doc_get(recoll_DocObject *self, PyObject *args)
 {
     LOGDEB0("Doc_get\n" );
+    if (self->doc == 0 || the_docs.find(self->doc) == the_docs.end()) {
+        PyErr_SetString(PyExc_AttributeError, "doc??");
+	return 0;
+    }
     char *sutf8 = 0; // needs freeing
-    if (!PyArg_ParseTuple(args, "es:Doc_get",
-			  "utf-8", &sutf8)) {
+    if (!PyArg_ParseTuple(args, "es:Doc_get", "utf-8", &sutf8)) {
 	return 0;
     }
     string key(sutf8);
     PyMem_Free(sutf8);
 
-    if (self->doc == 0 || 
-	the_docs.find(self->doc) == the_docs.end()) {
-        PyErr_SetString(PyExc_AttributeError, "doc??");
-	return 0;
-    }
     string value;
-    bool found = false;
-
-    // 
-    if (!key.compare("xdocid")) {
-        char cid[30];
-        sprintf(cid, "%lu", (unsigned long)self->doc->xdocid);
-        value = cid;
-        found = true;
-    } else {
-        if (self->doc->getmeta(key, 0)) {
-            value = self->doc->meta[key];
-            found = true;
-        }
-    }
+    bool found = docget(self, key, value);
 
     if (found) {
-	return PyUnicode_Decode(value.c_str(), 
-				value.size(), 
-				"UTF-8", "replace");
+	return PyUnicode_Decode(value.c_str(), value.size(), "UTF-8", "replace");
     }
 
     Py_RETURN_NONE;
@@ -480,6 +480,7 @@ static PyMethodDef Doc_methods[] = {
     {"keys", (PyCFunction)Doc_keys, METH_NOARGS, doc_Doc_keys},
     {"items", (PyCFunction)Doc_items, METH_NOARGS, doc_Doc_items},
     {"get", (PyCFunction)Doc_get, METH_VARARGS, doc_Doc_get},
+        
     {NULL}  /* Sentinel */
 };
 
@@ -489,7 +490,6 @@ static PyMethodDef Doc_methods[] = {
 static PyObject *
 Doc_getattro(recoll_DocObject *self, PyObject *nameobj)
 {
-    LOGDEB0("Doc_getattro\n" );
     if (self->doc == 0 || the_docs.find(self->doc) == the_docs.end()) {
         PyErr_SetString(PyExc_AttributeError, "doc");
 	return 0;
@@ -518,6 +518,7 @@ Doc_getattro(recoll_DocObject *self, PyObject *nameobj)
     }
 
     key = rclconfig->fieldQCanon(string(name));
+    LOGDEB1("Doc_getattro: key: " << key << endl);
 
     switch (key.at(0)) {
     case 'u':
@@ -596,7 +597,7 @@ Doc_getattro(recoll_DocObject *self, PyObject *nameobj)
     }
 
     if (found) {
-	LOGDEB1("Doc_getattro: ["  << (key) << "] -> ["  << (value) << "]\n" );
+	LOGDEB1("Doc_getattro: ["  << key << "] -> ["  << value << "]\n");
 	// Return a python unicode object
 	return PyUnicode_Decode(value.c_str(), value.size(), "utf-8",
 				"replace");
@@ -642,7 +643,8 @@ Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
     char* uvalue = PyBytes_AsString(putf8);
     string key = rclconfig->fieldQCanon(string(name));
 
-    LOGDEB0("Doc_setattr: doc "  << (self->doc) << " ["  << (key) << "] ("  << (name) << ") -> ["  << (uvalue) << "]\n" );
+    LOGDEB0("Doc_setattr: doc " << self->doc << " [" << key << "] (" << name <<
+            ") -> [" << uvalue << "]\n");
 
     // We set the value in the meta array in all cases. Good idea ? or do it
     // only for fields without a dedicated Doc:: entry?
@@ -701,6 +703,57 @@ Doc_setattr(recoll_DocObject *self, char *name, PyObject *value)
     return 0;
 }
 
+static Py_ssize_t
+Doc_length(recoll_DocObject *self)
+{
+    if (self->doc == 0 || the_docs.find(self->doc) == the_docs.end()) {
+        PyErr_SetString(PyExc_AttributeError, "doc??");
+	return -1;
+    }
+    return self->doc->meta.size();
+}
+
+static PyObject *
+Doc_subscript(recoll_DocObject *self, PyObject *key)
+{
+    if (self->doc == 0 || the_docs.find(self->doc) == the_docs.end()) {
+        PyErr_SetString(PyExc_AttributeError, "doc??");
+	return NULL;
+    }
+    char *name = 0;
+    if (PyUnicode_Check(key)) {
+        PyObject* utf8o = PyUnicode_AsUTF8String(key);
+	if (utf8o == 0) {
+	    LOGERR("Doc_getitemo: encoding name to utf8 failed\n" );
+	    PyErr_SetString(PyExc_AttributeError, "name??");
+	    Py_RETURN_NONE;
+	}
+	name = PyBytes_AsString(utf8o);
+	Py_DECREF(utf8o);
+    }  else if (PyBytes_Check(key)) {
+	name = PyBytes_AsString(key);
+    } else {
+	PyErr_SetString(PyExc_AttributeError, "key not unicode nor string??");
+	Py_RETURN_NONE;
+    }
+
+    string skey = rclconfig->fieldQCanon(string(name));
+    string value;
+    bool found = docget(self, skey, value);
+
+    if (found) {
+	return PyUnicode_Decode(value.c_str(), value.size(), "UTF-8", "replace");
+    }
+
+    Py_RETURN_NONE;
+}
+
+static PyMappingMethods doc_as_mapping = {
+    (lenfunc)Doc_length, /*mp_length*/
+    (binaryfunc)Doc_subscript, /*mp_subscript*/
+    (objobjargproc)0, /*mp_ass_subscript*/
+};
+
 
 PyDoc_STRVAR(doc_DocObject,
 "Doc()\n"
@@ -745,20 +798,20 @@ static PyTypeObject recoll_DocType = {
     0,                         /*tp_itemsize*/
     (destructor)Doc_dealloc,    /*tp_dealloc*/
     0,                         /*tp_print*/
-    0,  /*tp_getattr*/
-    (setattrfunc)Doc_setattr, /*tp_setattr*/
+    0,                         /*tp_getattr*/
+    (setattrfunc)Doc_setattr,  /*tp_setattr*/
     0,                         /*tp_compare*/
     0,                         /*tp_repr*/
     0,                         /*tp_as_number*/
     0,                         /*tp_as_sequence*/
-    0,                         /*tp_as_mapping*/
+    &doc_as_mapping,          /*tp_as_mapping */
     0,                         /*tp_hash */
     0,                         /*tp_call*/
     0,                         /*tp_str*/
     (getattrofunc)Doc_getattro,/*tp_getattro*/
     0,                         /*tp_setattro*/
     0,                         /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,        /*tp_flags*/
+    Py_TPFLAGS_DEFAULT,        /*tp_flags*/
     doc_DocObject,             /* tp_doc */
     0,		               /* tp_traverse */
     0,		               /* tp_clear */
