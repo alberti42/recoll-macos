@@ -76,15 +76,13 @@ public:
         FsTreeWalker& walker)
 	: m_config(conf), m_mon(mon), m_queue(queue), m_walker(walker)
     {}
-    virtual ~WalkCB() 
-    {}
+    virtual ~WalkCB() {}
 
     virtual FsTreeWalker::Status 
     processone(const string &fn, const struct stat *st, 
-               FsTreeWalker::CbFlag flg)
-    {
-	MONDEB(("rclMonRcvRun: processone %s m_mon %p m_mon->ok %d\n", 
-		 fn.c_str(), m_mon, m_mon?m_mon->ok():0));
+               FsTreeWalker::CbFlag flg) {
+	MONDEB("rclMonRcvRun: processone " << fn <<  " m_mon " << m_mon <<
+               " m_mon->ok " << (m_mon ? m_mon->ok() : false) << std::endl);
 
         if (flg == FsTreeWalker::FtwDirEnter || 
             flg == FsTreeWalker::FtwDirReturn) {
@@ -143,12 +141,12 @@ private:
     FsTreeWalker&      m_walker;
 };
 
-/** Main thread routine: create watches, then forever wait for and queue events */
+// Main thread routine: create watches, then forever wait for and queue events
 void *rclMonRcvRun(void *q)
 {
     RclMonEventQueue *queue = (RclMonEventQueue *)q;
 
-    LOGDEB("rclMonRcvRun: running\n" );
+    LOGDEB("rclMonRcvRun: running\n");
     recoll_threadinit();
     // Make a local copy of the configuration as it doesn't like
     // concurrent accesses. It's ok to copy it here as the other
@@ -158,16 +156,16 @@ void *rclMonRcvRun(void *q)
     // Create the fam/whatever interface object
     RclMonitor *mon;
     if ((mon = makeMonitor()) == 0) {
-	LOGERR("rclMonRcvRun: makeMonitor failed\n" );
+	LOGERR("rclMonRcvRun: makeMonitor failed\n");
 	queue->setTerminate();
 	return 0;
     }
 
-
     // Get top directories from config 
     vector<string> tdl = lconfig.getTopdirs();
     if (tdl.empty()) {
-	LOGERR("rclMonRcvRun:: top directory list (topdirs param.) notfound in config or Directory list parse error" );
+	LOGERR("rclMonRcvRun:: top directory list (topdirs param.) not found "
+               "in configuration or topdirs list parse error");
 	queue->setTerminate();
 	return 0;
     }
@@ -176,7 +174,7 @@ void *rclMonRcvRun(void *q)
     FsTreeWalker walker;
     walker.setSkippedPaths(lconfig.getDaemSkippedPaths());
     WalkCB walkcb(&lconfig, mon, queue, walker);
-    for (vector<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
+    for (auto it = tdl.begin(); it != tdl.end(); it++) {
 	lconfig.setKeyDir(*it);
 	// Adjust the follow symlinks options
 	bool follow;
@@ -186,14 +184,29 @@ void *rclMonRcvRun(void *q)
 	} else {
 	    walker.setOpts(FsTreeWalker::FtwOptNone);
 	}
-	LOGDEB("rclMonRcvRun: walking "  << *it << "\n" );
-	if (walker.walk(*it, walkcb) != FsTreeWalker::FtwOk) {
-	    LOGERR("rclMonRcvRun: tree walk failed\n" );
-	    goto terminate;
-	}
-	if (walker.getErrCnt() > 0) {
-	    LOGINFO("rclMonRcvRun: fs walker errors: "  << (walker.getReason()) << "\n" );
-	}
+        // We have to special-case regular files which are part of the topdirs
+        // list because we the tree walker only adds watches for directories
+        struct stat st;
+        if (path_fileprops(*it, &st, follow) != 0) {
+            LOGERR("rclMonRcvRun: stat failed for "  << *it << "\n");
+            continue;
+        }
+        if (S_ISDIR(st.st_mode)) {
+            LOGDEB("rclMonRcvRun: walking "  << *it << "\n");
+            if (walker.walk(*it, walkcb) != FsTreeWalker::FtwOk) {
+                LOGERR("rclMonRcvRun: tree walk failed\n");
+                goto terminate;
+            }
+            if (walker.getErrCnt() > 0) {
+                LOGINFO("rclMonRcvRun: fs walker errors: " <<
+                        walker.getReason() << "\n");
+            }
+        } else {
+            if (!mon->addWatch(*it, false)) {
+                LOGERR("rclMonRcvRun: addWatch failed for " << *it <<
+                       " errno " << mon->saved_errno << std::endl);
+	    }
+        }
     }
 
     {
@@ -202,7 +215,7 @@ void *rclMonRcvRun(void *q)
 	if (doweb) {
 	    string webqueuedir = lconfig.getWebQueueDir();
 	    if (!mon->addWatch(webqueuedir, true)) {
-		LOGERR("rclMonRcvRun: addwatch (webqueuedir) failed\n" );
+		LOGERR("rclMonRcvRun: addwatch (webqueuedir) failed\n");
 		if (mon->saved_errno != EACCES && mon->saved_errno != ENOENT)
 		    goto terminate;
 	    }
@@ -239,13 +252,15 @@ void *rclMonRcvRun(void *q)
 		// it seems that fam/gamin is doing the job for us so
 		// that we are generating double events here (no big
 		// deal as prc will sort/merge).
-		LOGDEB("rclMonRcvRun: walking new dir "  << (ev.m_path) << "\n" );
+		LOGDEB("rclMonRcvRun: walking new dir " << ev.m_path << "\n");
 		if (walker.walk(ev.m_path, walkcb) != FsTreeWalker::FtwOk) {
-		    LOGERR("rclMonRcvRun: walking new dir "  << (ev.m_path) << ": "  << (walker.getReason()) << "\n" );
+		    LOGERR("rclMonRcvRun: walking new dir " << ev.m_path <<
+                           " : "  << walker.getReason() << "\n");
 		    goto terminate;
 		}
 		if (walker.getErrCnt() > 0) {
-		    LOGINFO("rclMonRcvRun: fs walker errors: "  << (walker.getReason()) << "\n" );
+		    LOGINFO("rclMonRcvRun: fs walker errors: " <<
+                            walker.getReason() << "\n");
 		}
 	    }
 
@@ -256,7 +271,7 @@ void *rclMonRcvRun(void *q)
 
 terminate:
     queue->setTerminate();
-    LOGINFO("rclMonRcvRun: monrcv thread routine returning\n" );
+    LOGINFO("rclMonRcvRun: monrcv thread routine returning\n");
     return 0;
 }
 
@@ -340,7 +355,7 @@ RclFAM::RclFAM()
     : m_ok(false)
 {
     if (FAMOpen2(&m_conn, "Recoll")) {
-	LOGERR("RclFAM::RclFAM: FAMOpen2 failed, errno "  << (errno) << "\n" );
+	LOGERR("RclFAM::RclFAM: FAMOpen2 failed, errno " << errno << "\n");
 	return;
     }
     m_ok = true;
@@ -371,7 +386,7 @@ bool RclFAM::addWatch(const string& path, bool isdir)
     // to unblock signals. SIGALRM is not used by the main thread, so at least
     // ensure that we exit after gamin gets stuck.
     if (setjmp(jbuf)) {
-	LOGERR("RclFAM::addWatch: timeout talking to FAM\n" );
+	LOGERR("RclFAM::addWatch: timeout talking to FAM\n");
 	return false;
     }
     signal(SIGALRM, onalrm);
@@ -379,12 +394,12 @@ bool RclFAM::addWatch(const string& path, bool isdir)
     FAMRequest req;
     if (isdir) {
 	if (FAMMonitorDirectory(&m_conn, path.c_str(), &req, 0) != 0) {
-	    LOGERR("RclFAM::addWatch: FAMMonitorDirectory failed\n" );
+	    LOGERR("RclFAM::addWatch: FAMMonitorDirectory failed\n");
 	    goto out;
 	}
     } else {
 	if (FAMMonitorFile(&m_conn, path.c_str(), &req, 0) != 0) {
-	    LOGERR("RclFAM::addWatch: FAMMonitorFile failed\n" );
+	    LOGERR("RclFAM::addWatch: FAMMonitorFile failed\n");
 	    goto out;
 	}
     }
@@ -422,7 +437,7 @@ bool RclFAM::getEvent(RclMonEvent& ev, int msecs)
     }
     int ret;
     if ((ret=select(fam_fd+1, &readfds, 0, 0, msecs >= 0 ? &timeout : 0)) < 0) {
-	LOGERR("RclFAM::getEvent: select failed, errno "  << (errno) << "\n" );
+	LOGERR("RclFAM::getEvent: select failed, errno " << errno << "\n");
 	close();
 	return false;
     } else if (ret == 0) {
@@ -449,7 +464,7 @@ bool RclFAM::getEvent(RclMonEvent& ev, int msecs)
     MONDEB("RclFAM::getEvent: call FAMNextEvent\n");
     FAMEvent fe;
     if (FAMNextEvent(&m_conn, &fe) < 0) {
-	LOGERR("RclFAM::getEvent: FAMNextEvent failed, errno "  << (errno) << "\n" );
+	LOGERR("RclFAM::getEvent: FAMNextEvent: errno " << errno << "\n");
 	close();
 	return false;
     }
@@ -498,7 +513,7 @@ bool RclFAM::getEvent(RclMonEvent& ev, int msecs)
 	// Have to return something, this is different from an empty queue,
 	// esp if we are trying to empty it...
 	if (fe.code != FAMEndExist)
-	    LOGDEB("RclFAM::getEvent: got other event "  << (fe.code) << "!\n" );
+	    LOGDEB("RclFAM::getEvent: got other event " << fe.code << "!\n");
 	ev.m_etyp = RclMonEvent::RCLEVT_NONE;
 	break;
     }
@@ -519,7 +534,7 @@ public:
 	: m_ok(false), m_fd(-1), m_evp(0), m_ep(0)
     {
 	if ((m_fd = inotify_init()) < 0) {
-	    LOGERR("RclIntf:: inotify_init failed, errno "  << (errno) << "\n" );
+	    LOGERR("RclIntf:: inotify_init failed, errno " << errno << "\n");
 	    return;
 	}
 	m_ok = true;
@@ -603,9 +618,11 @@ bool RclIntf::addWatch(const string& path, bool)
     int wd;
     if ((wd = inotify_add_watch(m_fd, path.c_str(), mask)) < 0) {
 	saved_errno = errno;
-        LOGERR("RclIntf::addWatch: inotify_add_watch failed. errno "  << (saved_errno) << "\n" );
+        LOGERR("RclIntf::addWatch: inotify_add_watch failed. errno " <<
+               saved_errno << "\n");
         if (errno == ENOSPC) {
-            LOGERR("RclIntf::addWatch: ENOSPC error may mean that you needincrease the inotify kernel constants. See inotify(7)\n" );
+            LOGERR("RclIntf::addWatch: ENOSPC error may mean that you should "
+                   "increase the inotify kernel constants. See inotify(7)\n");
         }
 	return false;
     }
@@ -633,8 +650,9 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
 	}
 	int ret;
 	MONDEB("RclIntf::getEvent: select\n");
-	if ((ret=select(m_fd + 1, &readfds, 0, 0, msecs >= 0 ? &timeout : 0)) < 0) {
-	    LOGERR("RclIntf::getEvent: select failed, errno "  << (errno) << "\n" );
+	if ((ret = select(m_fd + 1, &readfds, 0, 0, msecs >= 0 ? &timeout : 0))
+            < 0) {
+	    LOGERR("RclIntf::getEvent: select failed, errno " << errno << "\n");
 	    close();
 	    return false;
 	} else if (ret == 0) {
@@ -666,7 +684,7 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
     
     map<int,string>::const_iterator it;
     if ((it = m_idtopath.find(evp->wd)) == m_idtopath.end()) {
-	LOGERR("RclIntf::getEvent: unknown wd "  << (evp->wd) << "\n" );
+	LOGERR("RclIntf::getEvent: unknown wd " << evp->wd << "\n");
 	return true;
     }
     ev.m_path = it->second;
@@ -706,12 +724,13 @@ bool RclIntf::getEvent(RclMonEvent& ev, int msecs)
 	}
     } else if (evp->mask & (IN_IGNORED)) {
 	if (!m_idtopath.erase(evp->wd)) {
-	    LOGDEB0("Got IGNORE event for unknown watch\n" );
+	    LOGDEB0("Got IGNORE event for unknown watch\n");
 	} else {
 	    eraseWatchSubTree(m_idtopath, ev.m_path);
 	}
     } else {
-	LOGDEB("RclIntf::getEvent: unhandled event "  << (event_name(evp->mask)) << " 0x"  << (evp->mask) << " "  << (ev.m_path) << "\n" );
+	LOGDEB("RclIntf::getEvent: unhandled event " << event_name(evp->mask) <<
+               " " << evp->mask << " " << ev.m_path << "\n");
 	return true;
     }
     return true;
@@ -732,7 +751,8 @@ static RclMonitor *makeMonitor()
     return new RclFAM;
 #endif
 #endif
-    LOGINFO("RclMonitor: neither Inotify nor Fam was compiled as file system change notification interface\n" );
+    LOGINFO("RclMonitor: neither Inotify nor Fam was compiled as file system "
+            "change notification interface\n");
     return 0;
 }
 #endif // RCL_MONITOR
