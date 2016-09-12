@@ -474,7 +474,8 @@ indexedmimetypes = application/pdf
           </programlisting>
           (When using sections like this, don't forget that they remain
           in effect until the end of the file or another section
-          indicator).</para>
+          indicator).
+          </para>
 
           <para><literal>excludedmimetypes</literal> or
           <literal>indexedmimetypes</literal>, can be set either by
@@ -483,6 +484,11 @@ indexedmimetypes = application/pdf
           (<filename>recoll.conf</filename>)</link>, or from the GUI
           index configuration tool.</para>
 
+          <note><para>When editing the <literal>indexedmimetypes</literal>
+          or <literal>excludedmimetypes</literal> lists, you should use the
+          MIME values listed in the <filename>mimemap</filename> file
+          or in Recoll result lists in preference to <literal>file -i</literal>
+          output: there are a number of differences.</para></note>
 
       </sect2>
 
@@ -3091,7 +3097,8 @@ MimeType=*/*
     stream, without a graphical interface:</para>
     <itemizedlist>
       <listitem><para>By passing option <option>-t</option> to the
-      <command>recoll</command> program.</para>
+      <command>recoll</command> program, or by calling it as
+      <command>recollq</command> (through a link).</para>
       </listitem>
       <listitem><para>By using the <command>recollq</command> program.</para>
       </listitem>
