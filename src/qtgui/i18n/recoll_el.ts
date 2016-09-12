@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="el">
+<TS version="2.1" language="el">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>messages</source>
-        <translation type="obsolete">μηνύματα</translation>
+        <translation type="obsolete">Μηνύματα</translation>
     </message>
     <message>
         <source>other</source>
@@ -372,16 +372,17 @@ p, li { white-space: pre-wrap; }
     <name>FragButs</name>
     <message>
         <source>%1 not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Δεν βρέθηκε το %1.</translation>
     </message>
     <message>
         <source>%1:
  %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1:
+ %2</translation>
     </message>
     <message>
         <source>Query Fragments</source>
-        <translation type="unfinished"></translation>
+        <translation>Θραύσματα ερωτήματος</translation>
     </message>
 </context>
 <context>
@@ -440,7 +441,7 @@ p, li { white-space: pre-wrap; }
     <name>Main</name>
     <message>
         <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
-        <translation>Το αρχείο ιστορικού δεν είναι αναγνώσιμο, ελέγξτε το ή διαγράψτε το:</translation>
+        <translation>Το αρχείο ιστορικού είτε είναι κατεστραμμένο είτε δεν είναι αναγνώσιμο/εγγράψιμο, παρακαλώ ελέγξτε το ή διαγράψτε το:</translation>
     </message>
     <message>
         <source>No db directory in configuration</source>
@@ -581,7 +582,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Default character set</source>
-        <translation type="obsolete">Προκαθορισμένο σύνολο χαρακτήρων</translation>
+        <translation type="obsolete">Σύνολο χαρακτήρων&lt;br&gt;εξ ορισμού</translation>
     </message>
     <message>
         <source>This is the character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
@@ -613,102 +614,95 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Default&lt;br&gt;character set</source>
-        <translation type="unfinished"></translation>
+        <translation>Σύνολο χαρακτήρων&lt;br&gt;εξ ορισμού</translation>
     </message>
     <message>
         <source>Character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
-        <translation type="unfinished"></translation>
+        <translation>Το σύνολο των χαρακτήρων που χρησιμοποιείται για την ανάγνωση των αρχείων που δεν έχουν εσωτερικό αναγνωριστικό των χαρακτήρων, για παράδειγμα αρχεία απλού κειμένου: &lt;br&gt;Η τιμή εξ ορισμού είναι κενή, και χρησιμοποιείται η τιμή του περιβάλλοντος NLS.</translation>
     </message>
     <message>
         <source>Ignored endings</source>
-        <translation type="unfinished"></translation>
+        <translation>Αγνοημένες καταλήξεις</translation>
     </message>
     <message>
         <source>These are file name endings for files which will be indexed by name only 
 (no MIME type identification attempt, no decompression, no content indexing).</source>
-        <translation type="unfinished"></translation>
+        <translation>Αυτές είναι καταλήξεις αρχείων στα οποία η ευρετηρίαση θα γίνει μόνο βάσει του ονόματος (χωρίς προσπάθεια αναγνώρισης του τύπου MIME, χωρίς αποσυμπίεση, χωρίς δεικτοδότηση του περιεχομένου).</translation>
     </message>
 </context>
 <context>
     <name>QWidget</name>
     <message>
         <source>Create or choose save directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Δημιουργία ή επιλογή του καταλόγου αποθήκευσης</translation>
     </message>
     <message>
         <source>Choose exactly one directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Επιλέξτε μόνο έναν κατάλογο</translation>
     </message>
     <message>
         <source>Could not read directory: </source>
-        <translation type="unfinished"></translation>
+        <translation>Αδύνατη η ανάγνωση του καταλόγου: </translation>
     </message>
     <message>
         <source>Unexpected file name collision, cancelling.</source>
-        <translation type="unfinished"></translation>
+        <translation>Απροσδόκητη σύγκρουση ονομάτων αρχείων, ακύρωση.</translation>
     </message>
     <message>
         <source>Cannot extract document: </source>
-        <translation type="unfinished"></translation>
+        <translation>Αδύνατη η εξαγωγή του εγγράφου: </translation>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Προεπισκόπηση</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Ά&amp;νοιγμα</translation>
     </message>
     <message>
         <source>Open With</source>
-        <translation type="unfinished"></translation>
+        <translation>Άνοιγμα με</translation>
     </message>
     <message>
         <source>Run Script</source>
-        <translation type="unfinished"></translation>
+        <translation>Εκτέλεση μακροεντολής</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Αντιγραφή του ονόματος του α&amp;ρχείου</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="unfinished">Αντιγραφή του &amp;URL</translation>
+        <translation>Αντιγραφή του &amp;URL</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation type="unfinished">Απο&amp;θήκευση σε</translation>
+        <translation>&amp;Εγγραφή σε αρχείο</translation>
     </message>
     <message>
         <source>Save selection to files</source>
-        <translation type="unfinished">Αποθήκευση της επιλογής σε αρχεία</translation>
+        <translation>Αποθήκευση της επιλογής σε αρχεία</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Προεπισκόπηση του &amp;γονικού εγγράφου/καταλόγου</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Άνοιγμα του γονικού εγγράφου/καταλόγου</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="unfinished">Αναζήτηση παρό&amp;μοιων εγγράφων</translation>
+        <translation>Αναζήτηση παρό&amp;μοιων εγγράφων</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation type="unfinished">Άνοιγμα του παραθύρου απο&amp;σπασμάτων</translation>
+        <translation>Άνοιγμα του παραθύρου απο&amp;σπασμάτων</translation>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
-        <translation type="unfinished">Εμφάνιση των υπο-εγγράφων / συνημμένων</translation>
-    </message>
-</context>
-<context>
-    <name>QxtConfirmationMessage</name>
-    <message>
-        <source>Do not show again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Εμφάνιση των υπο-εγγράφων / συνημμένων</translation>
     </message>
 </context>
 <context>
@@ -1062,145 +1056,45 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Document filter</source>
-        <translation type="unfinished"></translation>
+        <translation>Φίλτρο εγγράφου</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. </source>
-        <translation type="unfinished"></translation>
+        <translation>Το ευρετήριο δεν είναι ενημερωμένο για αυτό το αρχείο. Άρνηση της διακινδυνευμένης εμφάνισης μιας λανθασμένης καταχώρησης. </translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then you will need to re-run the query when indexing is done. </source>
-        <translation type="unfinished"></translation>
+        <translation>Κάντε κλικ στο Εντάξει για να ενημερώσετε το ευρετήριο για αυτό το αρχείο, στη συνέχεια θα πρέπει να εκτελέσετε εκ νέου το ερώτημα μετ το πέρας της δεικτοδότησης.</translation>
     </message>
     <message>
         <source>The indexer is running so things should improve when it&apos;s done. </source>
-        <translation type="unfinished"></translation>
+        <translation>Τα πράγματα θα βελτιωθούν μετά το πέρας της δεικτοδότησης.</translation>
+    </message>
+    <message>
+        <source>The document belongs to an external indexwhich I can&apos;t update. </source>
+        <translation>Το έγγραφο ανήκει σε ένα εξωτερικό ευρετήριο το οποίο δεν μπορώ να ενημερώσω.</translation>
+    </message>
+    <message>
+        <source>Click Cancel to return to the list. Click Ignore to show the preview anyway. </source>
+        <translation>Κάντε κλικ στο Ακύρωση για να επιστρέψετε στον κατάλογο. Κάντε κλικ στο Αγνόηση για την εμφάνιση της προεπισκόπησης ούτως ή άλλως.</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation type="unfinished">Διπλότυπα έγγραφα</translation>
+        <translation>Διπλότυπα έγγραφα</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation type="unfinished">Αυτά τα URL (| ipath) μοιράζονται το ίδιο περιεχόμενο:</translation>
+        <translation>Αυτά τα Url (| ipath) μοιράζονται το ίδιο περιεχόμενο:</translation>
     </message>
     <message>
         <source>Bad desktop app spec for %1: [%2]
 Please check the desktop file</source>
-        <translation type="unfinished"></translation>
+        <translation>Κακοδιατυπωμένος προσδιορισμός εφαρμογής επιφάνειας εργασίας για το %1: [%2]
+Παρακαλώ ελέγξτε το αρχείο της επιφάνειας εργασίας</translation>
     </message>
     <message>
         <source>Indexing interrupted</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The current indexing process was not started from this interface, can&apos;t kill it</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bad paths</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Bad paths in configuration file:
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Selection patterns need topdir</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Selection patterns can only be used with a start directory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>No preserved previous search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Choose file to save</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Saved Queries (*.rclq)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Write failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Could not write to file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Read failed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Could not open file: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Load error</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Could not load saved query</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Index scheduling</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sorry, not available under Windows for now, use the File menu entries to update the index</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Disabled because the real time indexer was not compiled in.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This configuration tool only works for the main index.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Can&apos;t set synonyms file (parse error?)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>The document belongs to an external index which I can&apos;t update. </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Click Cancel to return to the list. &lt;br&gt;Click Ignore to show the preview anyway (and remember for this session).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Opening a temporary copy. Edits will be lost if you don&apos;t save&lt;br/&gt;them to a permanent location.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Do not show this warning next time (use GUI preferences to restore).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Index locked</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unknown indexer state. Can&apos;t access webcache file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indexer is running. Can&apos;t access webcache file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Η ευρετηρίαση διεκόπη</translation>
     </message>
 </context>
 <context>
@@ -1263,11 +1157,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>&amp;Show missing helpers</source>
-        <translation type="obsolete">Ε&amp;μφάνιση των ελλειπουσών εφαρμογών</translation>
+        <translation>Ε&amp;μφάνιση των ελλειπουσών εφαρμογών</translation>
     </message>
     <message>
         <source>&amp;Show indexed types</source>
-        <translation type="obsolete">Εμ&amp;φάνιση των τύπων με ευρετήριο</translation>
+        <translation>Εμ&amp;φάνιση των τύπων με ευρετήριο</translation>
     </message>
     <message>
         <source>&amp;About Recoll</source>
@@ -1347,11 +1241,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>&amp;Indexing configuration</source>
-        <translation type="obsolete">&amp;Διαμόρφωση της ευρετηρίασης</translation>
+        <translation type="obsolete">Διαμόρφωση ευρετηρίασης</translation>
     </message>
     <message>
         <source>&amp;Indexing schedule</source>
-        <translation type="obsolete">&amp;Προγραμματισμός της ευρετηρίασης</translation>
+        <translation>&amp;Προγραμματισμός της ευρετηρίασης</translation>
     </message>
     <message>
         <source>&amp;Query configuration</source>
@@ -1451,70 +1345,26 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Query Fragments</source>
-        <translation type="unfinished"></translation>
+        <translation>Θραύσματα ερωτήματος</translation>
     </message>
     <message>
         <source>    With failed files retrying</source>
-        <translation type="unfinished"></translation>
+        <translation>    Προσπάθεια εκ νέου με αποτυχημένα αρχεία</translation>
     </message>
     <message>
         <source>Next update will retry previously failed files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indexing &amp;schedule</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enable synonyms</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Save last query</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Load saved query</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Special Indexing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indexing with special options</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;View</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Missing &amp;helpers</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indexed &amp;MIME types</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Index &amp;statistics</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Webcache Editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Η επόμενη ενημέρωση θα επιχειρήσει ξανά με τα αποτυχημένα αρχεία</translation>
     </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
     <message>
         <source>Restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Επαναφορά</translation>
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Έξοδος</translation>
     </message>
 </context>
 <context>
@@ -1648,15 +1498,15 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="obsolete">&amp;Άνοιγμα</translation>
+        <translation type="obsolete">Ά&amp;νοιγμα</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="obsolete">Αντιγραφή του ονόματος του &amp;αρχείου</translation>
+        <translation type="obsolete">Αντιγραφή του ονόματος του α&amp;ρχείου</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="obsolete">Αντιγραφή του &amp;URL</translation>
+        <translation type="obsolete">Αντιγραφή URL</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
@@ -1668,11 +1518,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="obsolete">Προεπισκόπηση του &amp;γονικού εγγράφου/φακέλου</translation>
+        <translation type="obsolete">Προεπισκόπηση του &amp;γονικού εγγράφου/καταλόγου</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="obsolete">Άνοιγμα του &amp;γονικού εγγράφου/φακέλου</translation>
+        <translation type="obsolete">&amp;Άνοιγμα του γονικού εγγράφου/καταλόγου</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;i&gt;Alternate spellings: &lt;/i&gt;</source>
@@ -1696,7 +1546,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Snippets</source>
-        <translation type="unfinished">Αποσπάσματα</translation>
+        <translation>Αποσπάσματα</translation>
     </message>
 </context>
 <context>
@@ -1711,7 +1561,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation type="obsolete">Π&amp;ροεπισκόπηση</translation>
+        <translation type="obsolete">&amp;Προεπισκόπηση</translation>
     </message>
     <message>
         <source>&amp;Open</source>
@@ -1719,11 +1569,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="obsolete">Αντιγραφή του &amp;ονόματος του αρχείου</translation>
+        <translation type="obsolete">Αντιγραφή του ονόματος του α&amp;ρχείου</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="obsolete">Αντιγραφή του &amp;URL</translation>
+        <translation type="obsolete">Αντιγραφή URL</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
@@ -1735,11 +1585,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="obsolete">Προεπισκόπηση του &amp;γονικού εγγράφου</translation>
+        <translation type="obsolete">Προεπισκόπηση του &amp;γονικού εγγράφου/καταλόγου</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="obsolete">Άνοιγμα του &amp;γονικού εγγράφου/φακέλου</translation>
+        <translation type="obsolete">&amp;Άνοιγμα του γονικού εγγράφου/καταλόγου</translation>
     </message>
     <message>
         <source>&amp;Reset sort</source>
@@ -1766,15 +1616,15 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="obsolete">&amp;Άνοιγμα</translation>
+        <translation type="obsolete">Ά&amp;νοιγμα</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="obsolete">Αντιγραφή του ονόματος του &amp;αρχείου</translation>
+        <translation type="obsolete">Αντιγραφή του ονόματος του α&amp;ρχείου</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="obsolete">Αντιγραφή του &amp;URL</translation>
+        <translation type="obsolete">Αντιγραφή URL</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
@@ -1786,11 +1636,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="obsolete">Προεπισκόπηση του &amp;γονικού εγγράφου/φακέλου</translation>
+        <translation type="obsolete">Προεπισκόπηση του &amp;γονικού εγγράφου/καταλόγου</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="obsolete">Άνοιγμα του &amp;γονικού εγγράφου/φακέλου</translation>
+        <translation type="obsolete">&amp;Άνοιγμα του γονικού εγγράφου/καταλόγου</translation>
     </message>
 </context>
 <context>
@@ -1805,11 +1655,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="obsolete">Αντιγραφή ο&amp;νόματος αρχείου</translation>
+        <translation type="obsolete">Αντιγραφή του ονόματος του α&amp;ρχείου</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="obsolete">Αντιγραφή του &amp;URL</translation>
+        <translation type="obsolete">Αντιγραφή URL</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
@@ -1821,11 +1671,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="obsolete">Προεπισκόπηση του &amp;γονικού εγγράφου/αρχείου</translation>
+        <translation type="obsolete">Προεπισκόπηση του &amp;γονικού εγγράφου/καταλόγου</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="obsolete">Άνοιγμα του γο&amp;νικού εγγράφου/φακέλου</translation>
+        <translation type="obsolete">&amp;Άνοιγμα του γονικού εγγράφου/καταλόγου</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
@@ -1928,31 +1778,19 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
 Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
 </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Stemming languages for stored query: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> differ from current preferences (kept)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Auto suffixes for stored query: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>External indexes for stored query: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Autophrase is set but it was unset for stored query</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Autophrase is unset but it was set for stored query</source>
-        <translation type="unfinished"></translation>
+        <translation>Εισαγωγή έκφρασης γλώσσας ερωτήματος. «Σκονάκι»:&lt;br&gt;
+&lt;i&gt;όρος1 όρος2&lt;/i&gt; : &apos;όρος1&apos; και &apos;όρος2&apos; σε οποιοδήποτε πεδίο.&lt;br&gt;
+&lt;i&gt;πεδίο:όρος1&lt;/i&gt; : &apos;όρος1&apos; στο πεδίο &apos;πεδίο&apos;.&lt;br&gt;
+ Τυπικό πεδίο ονόματα/συνώνυμα:&lt;br&gt;
+  τίτλος/θέμα/υπόμνημα, συγγραφέας/από, παραλήπτης/προς, όνομα αρχείου, επέκταση.&lt;br&gt;
+ Ψευδο-πεδία: κατάλογος, mime/μορφή, τύπος/rclcat, ημερομηνία, μέγεθος.&lt;br&gt;
+ Παραδείγματα δυο διαστημάτων ημερομηνιών: 2009-03-01/2009-05-20  2009-03-01/Π2Μ.&lt;br&gt;
+&lt;i&gt;όρος1 όρος2 OR όρος3&lt;/i&gt; : όρος1 AND (όρος2 OR όρος3).&lt;br&gt;
+  Μπορείτε να χρησιμοποιείτε παρενθέσεις για πιο ευανάγνωστες εκφράσεις.&lt;br&gt;
+&lt;i&gt;&quot;όρος1 όρος2&quot;&lt;/i&gt; : φράση (πρέπει να αντιστοιχεί ακριβώς). Πιθανοί τροποποιητές:&lt;br&gt;
+&lt;i&gt;&quot;όρος1 όρος2&quot;p&lt;/i&gt; : αταξινόμητη και κατά προσέγγιση αναζήτηση με προκαθορισμένη απόσταση.&lt;br&gt;
+Χρησιμοποιήστε τον δεσμό &lt;b&gt;Εμφάνιση ερωτήματος&lt;/b&gt; σε περίπτωση αμφιβολίας σχετικά με το αποτέλεσμα και ανατρέξτε στο εγχειρίδιο χρήσης (&amp;lt;F1&gt;) για περισσότερες λεπτομέρειες.
+</translation>
     </message>
 </context>
 <context>
@@ -2056,50 +1894,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>&lt;p&gt;Sorry, no exact match was found within limits. Probably the document is very big and the snippets generator got lost in a maze...&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>SpecIdxW</name>
-    <message>
-        <source>Special Indexing</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Do not retry previously failed files.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Else only modified or failed files will be processed.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Erase selected files data before indexing.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Directory to recursively index. This must be inside the regular indexed area&lt;br&gt; as defined in the configuration file (topdirs).</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Browse</source>
-        <translation type="unfinished">Περιήγηση</translation>
-    </message>
-    <message>
-        <source>Start directory (else use regular topdirs):</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Leave empty to select all files. You can use multiple space-separated shell-type patterns.&lt;br&gt;Patterns with embedded spaces should be quoted with double quotes.&lt;br&gt;Can only be used if the start target is set.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Selection patterns:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Top indexed entity</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Λυπάμαι, δεν βρέθηκε μια ακριβής αντιστοιχία εντός ορίων. Πιθανώς το έγγραφο να είναι ογκώδες και ο δημιουργός αποσπασμάτων χάθηκε σε έναν λαβύρινθο...&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
@@ -2217,11 +2012,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Smallest document length</source>
-        <translation type="obsolete">Μικρότερο μήκος εγγράφου</translation>
+        <translation>Μικρότερο μήκος εγγράφου</translation>
     </message>
     <message>
         <source>Longest document length</source>
-        <translation type="obsolete">Μεγαλύτερο μήκος εγγράφου</translation>
+        <translation>Μεγαλύτερο μήκος εγγράφου</translation>
     </message>
     <message>
         <source>Database directory size</source>
@@ -2238,30 +2033,6 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Value</source>
         <translation>Τιμή</translation>
-    </message>
-    <message>
-        <source>Smallest document length (terms)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Longest document length (terms)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Results from last indexing:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>  Documents created/updated</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>  Files tested</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>  Unindexed files</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2316,27 +2087,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Default QtWebkit font</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Any term</source>
-        <translation type="unfinished">Οποιοσδήποτε όρος</translation>
-    </message>
-    <message>
-        <source>All terms</source>
-        <translation type="unfinished">Όλοι οι όροι</translation>
-    </message>
-    <message>
-        <source>File name</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Query language</source>
-        <translation type="unfinished">Γλώσσα ερωτημάτων</translation>
-    </message>
-    <message>
-        <source>Value from previous program exit</source>
-        <translation type="unfinished"></translation>
+        <translation>Γραμματοσειρά εξ ορισμού QtWebkit</translation>
     </message>
 </context>
 <context>
@@ -2426,51 +2177,6 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
 </context>
 <context>
-    <name>Webcache</name>
-    <message>
-        <source>Webcache editor</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Search regexp</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>WebcacheEdit</name>
-    <message>
-        <source>Copy URL</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Unknown indexer state. Can&apos;t edit webcache file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Indexer is running. Can&apos;t edit webcache file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Delete selection</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Webcache was modified, you will need to run the indexer after closing this window.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>WebcacheModel</name>
-    <message>
-        <source>MIME</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Url</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>confgui::ConfBeaglePanelW</name>
     <message>
         <source>Steal Beagle indexing queue</source>
@@ -2494,7 +2200,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Entries will be recycled once the size is reached</source>
-        <translation type="obsolete">Θα γίνεται αντικατάσταση των καταχωρήσεων όταν επιτευχθεί το καθορισμένο μέγεθος</translation>
+        <translation>Θα γίνεται αντικατάσταση των καταχωρήσεων όταν επιτευχθεί το καθορισμένο μέγεθος</translation>
     </message>
     <message>
         <source>Process the WEB history queue</source>
@@ -2503,10 +2209,6 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
         <translation>Ενεργοποιεί τη δεικτοδότηση των επισκεπτόμενων σελίδων στον Firefox.&lt;br&gt;(θα πρέπει να εγκαταστήσετε και το πρόσθετο Firefox Recoll)</translation>
-    </message>
-    <message>
-        <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2619,19 +2321,19 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Only mime types</source>
-        <translation type="unfinished"></translation>
+        <translation>Μόνο οι τύποι MIME</translation>
     </message>
     <message>
         <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
-        <translation type="unfinished"></translation>
+        <translation>Μια αποκλειστική λίστα δεικτοδοτημένων τύπων mime.&lt;br&gt;Δεν θα δεικτοδοτηθεί τίποτα άλλο. Φυσιολογικά κενό και αδρανές</translation>
     </message>
     <message>
         <source>Exclude mime types</source>
-        <translation type="unfinished"></translation>
+        <translation>Αποκλεισμός τύπων αρχείων</translation>
     </message>
     <message>
         <source>Mime types not to be indexed</source>
-        <translation type="unfinished"></translation>
+        <translation>Οι τύποι Mime που δεν θα δεικτοδοτηθούν</translation>
     </message>
 </context>
 <context>
@@ -2714,7 +2416,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="obsolete">Η γλώσσα του λεξικού του aspell. Μια σωστή τιμή μοιάζει με &apos;en&apos; ή &apos;el&apos;...&lt;br&gt;Αν αυτή η τιμή δεν έχει οριστεί, θα χρησιμοποιηθεί το περιβάλλον για τον υπολογισμό της, κάτι που συνήθως δουλεύει καλά. Για να πάρετε μια ιδέα για το τι είναι εγκατεστημένο στο σύστημά σας, πληκτρολογήστε &apos;aspell config&apos; και αναζητήστε τα αρχεία .dat μέσα στον κατάλογο &apos;data-dir&apos;.</translation>
+        <translation type="obsolete">Η γλώσσα για το λεξικό aspell. Αυτό θα πρέπει να είναι του τύπου «en» ή «el» ...&lt;br&gt; Αν αυτή η τιμή δεν οριστεί, χρησιμοποιείται το εθνικό περιβάλλον NLS για να την υπολογίσει, που συνήθως δουλεύει. Για να πάρετε μια ιδέα του τι είναι εγκατεστημένο στο σύστημά σας, πληκτρολογήστε «aspell config» και παρατηρήστε τα αρχεία .dat στον κατάλογο «data-dir». </translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -2722,7 +2424,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation type="obsolete">Το όνομα του καταλόγου αποθήκευσης του ευρετηρίου.&lt;br&gt;Μια σχετική διαδρομή αναφερόμενη στη διαδρομή διαμόρφωσης. Η προεπιλογή είναι &apos;xapiandb&apos;.</translation>
+        <translation type="obsolete">Το όνομα του καταλόγου αποθήκευσης του ευρετηρίου&lt;br&gt;Μια σχετική διαδρομή αναφερόμενη στη διαδρομή διαμόρφωσης. Η εξ&apos; ορισμού είναι «xapiandb». </translation>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
@@ -3035,47 +2737,31 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Decide if document filters are shown as radio buttons, toolbar combobox, or menu.</source>
-        <translation type="unfinished"></translation>
+        <translation>Καθορίζει αν τα φίλτρα των εγγράφων θα εμφανίζονται ως κουμπιά επιλογών, γραμμή εργαλείων πλαισίων συνδυασμών, ή μενού.</translation>
     </message>
     <message>
         <source>Document filter choice style:</source>
-        <translation type="unfinished"></translation>
+        <translation>Τεχνοτροπία επιλογής φίλτρου εγγράφων:</translation>
     </message>
     <message>
         <source>Buttons Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Πίνακας κουμπιών</translation>
     </message>
     <message>
         <source>Toolbar Combobox</source>
-        <translation type="unfinished"></translation>
+        <translation>Γραμμή εργαλείων πλαισίων συνδυασμών</translation>
     </message>
     <message>
         <source>Menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Μενού</translation>
     </message>
     <message>
         <source>Show system tray icon.</source>
-        <translation type="unfinished"></translation>
+        <translation>Εμφάνιση του εικονιδίου πλαισίου συστήματος.</translation>
     </message>
     <message>
         <source>Close to tray instead of exiting.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Start with simple search mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>User style to apply to the snippets window.&lt;br&gt; Note: the result page header insert is also included in the snippets window header.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Synonyms file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show warning when opening temporary file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Αντί για έξοδο, καταχώνιασμα στο πλαίσιο συστήματος.</translation>
     </message>
 </context>
 </TS>
