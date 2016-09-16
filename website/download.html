@@ -236,17 +236,19 @@
         <p>The Debian Recoll packages are usually fairly up to date, just use
           the appropriate Debian repository.</p>
 
-        <p><i>Except they're not at the moment (2016-10)...</i>. So
-          I am maintaining a repository for packages built for Debian Wheezy,
-          and Jessie. This currently has recoll 1.21.x (the
-          standard repos have 1.17...) To add the repository to your
-          sources:</p>
+        <p><i>Except they're not at the moment
+        (2016-09)...</i>. Debian stable has Recoll 1.17.3. Debian
+          testing has 1.22.3, and it may work on Jessie (or not...).
+          In any case, I am maintaining a repository for packages
+          built for Debian Wheezy, and Jessie. The repository
+          currently has recoll 1.22.x for Intel and 1.21 for armhf. To
+          add it to your sources:</p>
 
         <ul>
 
           <li>Download the public key used to validate the repositories:
             <div class="code">
-wget -O - http://www.lesbonscomptes.com/key/jf@dockes.org.gpg.key | sudo apt-key add -
+wget -O - https://www.lesbonscomptes.com/key/jf@dockes.org.gpg.key | sudo apt-key add -
             </div>
           </li>
           
@@ -404,21 +406,29 @@ sudo apt-get install recoll
         <p>You can use the <em>.ts</em> file to alter the translations
           if you wish (use Qt's <em>linguist</em> tool to edit the
           source file, then <em>lrelease</em> to produce
-          the <em>.qm</em> file.). The <em>.qm</em>file
-          should be copied
+          the <em>.qm</em> file.). The <em>.qm</em> file should be copied
           to <span class="filename">/usr/[local/]share/recoll/translations</span>
         </p>
 
         <p><a href="translations/recoll_xx.ts">recoll_xx.ts</a> is a blank
           Recoll 1.22 message file, handy to work on a new translation. You can
           also <a href="translations/">list the directory</a> to see all the
-          translation files (same as those in the 1.20 source branch on
+          translation files (same as those in the maintenance source branch on
           Bitbucket).</p>
 
         <h3>Updated 1.22 translations that became available after the
         release:</h3> 
 
-        <p>A Danish translation by Morten Langlo:
+        <p>Greek translation by  Dimitrios Glentadakis:
+          <a href="translations/recoll_el.ts">recoll_el.ts</a>
+          <a href="translations/recoll_el.qm">recoll_el.qm</a><br/>
+        </p>
+        <p>Dutch translation by Leslie Scheelings:
+          <a href="translations/recoll_nl.ts">recoll_nl.ts</a>
+          <a href="translations/recoll_nl.qm">recoll_nl.qm</a><br/>
+        </p>
+
+        <p>Danish translation by Morten Langlo:
           <a href="translations/recoll_da.ts">recoll_da.ts</a>
           <a href="translations/recoll_da.qm">recoll_da.qm</a><br/>
         </p>
