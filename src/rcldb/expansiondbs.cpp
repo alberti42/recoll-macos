@@ -53,40 +53,40 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
 	    return true;
     }
 
-    // Stem dbs
-    vector<XapWritableComputableSynFamMember> stemdbs;
-    // Note: tried to make this to work with stack-allocated objects, couldn't.
-    // Looks like a bug in copy constructors somewhere, can't guess where
-    vector<std::shared_ptr<SynTermTransStem> > stemmers;
-    for (unsigned int i = 0; i < langs.size(); i++) {
-	stemmers.push_back(std::shared_ptr<SynTermTransStem>
-			   (new SynTermTransStem(langs[i])));
-	stemdbs.push_back(
-	    XapWritableComputableSynFamMember(wdb, synFamStem, langs[i], 
-					      stemmers.back().get()));
-	stemdbs.back().recreate();
-    }
-
-    // Unaccented stem dbs
-    vector<XapWritableComputableSynFamMember> unacstemdbs;
-    // We can reuse the same stemmer pointers, the objects are stateless.
-    if (!o_index_stripchars) {
-	for (unsigned int i = 0; i < langs.size(); i++) {
-	    unacstemdbs.push_back(
-		XapWritableComputableSynFamMember(wdb, synFamStemUnac, langs[i], 
-						  stemmers.back().get()));
-	    unacstemdbs.back().recreate();
-	}
-    }
-    SynTermTransUnac transunac(UNACOP_UNACFOLD);
-    XapWritableComputableSynFamMember 
-	diacasedb(wdb, synFamDiCa, "all", &transunac);
-    if (!o_index_stripchars)
-	diacasedb.recreate();
-
     // Walk the list of all terms, and stem/unac each.
     string ermsg;
     try {
+	// Stem dbs
+	vector<XapWritableComputableSynFamMember> stemdbs;
+	// Note: tried to make this to work with stack-allocated objects, couldn't.
+	// Looks like a bug in copy constructors somewhere, can't guess where
+	vector<std::shared_ptr<SynTermTransStem> > stemmers;
+	for (unsigned int i = 0; i < langs.size(); i++) {
+	    stemmers.push_back(std::shared_ptr<SynTermTransStem>
+			       (new SynTermTransStem(langs[i])));
+	    stemdbs.push_back(
+		XapWritableComputableSynFamMember(wdb, synFamStem, langs[i], 
+						  stemmers.back().get()));
+	    stemdbs.back().recreate();
+	}
+
+	// Unaccented stem dbs
+	vector<XapWritableComputableSynFamMember> unacstemdbs;
+	// We can reuse the same stemmer pointers, the objects are stateless.
+	if (!o_index_stripchars) {
+	    for (unsigned int i = 0; i < langs.size(); i++) {
+		unacstemdbs.push_back(
+		    XapWritableComputableSynFamMember(wdb, synFamStemUnac, langs[i], 
+						      stemmers.back().get()));
+		unacstemdbs.back().recreate();
+	    }
+	}
+	SynTermTransUnac transunac(UNACOP_UNACFOLD);
+	XapWritableComputableSynFamMember 
+	    diacasedb(wdb, synFamDiCa, "all", &transunac);
+	if (!o_index_stripchars)
+	    diacasedb.recreate();
+
 	Xapian::TermIterator it = wdb.allterms_begin();
 	// We'd want to skip to the first non-prefixed term, but this is a bit
 	// complicated, so we just jump over most of the prefixed term and then 

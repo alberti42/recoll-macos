@@ -140,14 +140,17 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
 
     if (m_updater && !m_updater->update(DbIxStatus::DBIXS_CLOSING, string()))
 	return false;
-    createStemmingDatabases();
+    bool ret = true;
+    if (!createStemmingDatabases()) {
+	ret = false;
+    }
     if (m_updater && !m_updater->update(DbIxStatus::DBIXS_CLOSING, string()))
 	return false;
-    createAspellDict();
+    ret = ret && createAspellDict();
     clearMimeHandlerCache();
     if (m_updater)
 	m_updater->update(DbIxStatus::DBIXS_DONE, string());
-    return true;
+    return ret;
 }
 
 bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
@@ -276,6 +279,7 @@ bool ConfIndexer::purgeFiles(std::list<string> &files, int flag)
 bool ConfIndexer::createStemmingDatabases()
 {
     string slangs;
+    bool ret = true;
     if (m_config->getConfParam("indexstemminglanguages", slangs)) {
         if (!m_db.open(Rcl::Db::DbUpd)) {
             LOGERR("ConfIndexer::createStemmingDb: could not open db\n" );
@@ -292,10 +296,10 @@ bool ConfIndexer::createStemmingDatabases()
 	    if (find(langs.begin(), langs.end(), *it) == langs.end())
 		m_db.deleteStemDb(*it);
 	}
-	m_db.createStemDbs(langs);
+	ret = ret && m_db.createStemDbs(langs);
     }
     m_db.close();
-    return true;
+    return ret;
 }
 
 bool ConfIndexer::createStemDb(const string &lang)
