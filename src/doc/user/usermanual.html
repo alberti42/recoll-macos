@@ -20,8 +20,8 @@ alink="#0000FF">
     <div class="titlepage">
       <div>
         <div>
-          <h1 class="title"><a name="idp48022000" id=
-          "idp48022000"></a>Recoll user manual</h1>
+          <h1 class="title"><a name="idp55872064" id=
+          "idp55872064"></a>Recoll user manual</h1>
         </div>
 
         <div>
@@ -109,13 +109,13 @@ alink="#0000FF">
                 multiple indexes</a></span></dt>
 
                 <dt><span class="sect2">2.1.3. <a href=
-                "#idp53527712">Document types</a></span></dt>
+                "#idp58917632">Document types</a></span></dt>
 
                 <dt><span class="sect2">2.1.4. <a href=
-                "#idp53547392">Indexing failures</a></span></dt>
+                "#idp59454368">Indexing failures</a></span></dt>
 
                 <dt><span class="sect2">2.1.5. <a href=
-                "#idp53554848">Recovery</a></span></dt>
+                "#idp60727408">Recovery</a></span></dt>
               </dl>
             </dd>
 
@@ -997,8 +997,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp53527712" id=
-                "idp53527712"></a>2.1.3.&nbsp;Document types</h3>
+                <h3 class="title"><a name="idp58917632" id=
+                "idp58917632"></a>2.1.3.&nbsp;Document types</h3>
               </div>
             </div>
           </div>
@@ -1085,14 +1085,28 @@ indexedmimetypes = application/pdf
           main configuration file (<code class=
           "filename">recoll.conf</code>)</a>, or from the GUI index
           configuration tool.</p>
+
+          <div class="note" style=
+          "margin-left: 0.5in; margin-right: 0.5in;">
+            <h3 class="title">Note</h3>
+
+            <p>When editing the <code class=
+            "literal">indexedmimetypes</code> or <code class=
+            "literal">excludedmimetypes</code> lists, you should
+            use the MIME values listed in the <code class=
+            "filename">mimemap</code> file or in Recoll result
+            lists in preference to <code class="literal">file
+            -i</code> output: there are a number of
+            differences.</p>
+          </div>
         </div>
 
         <div class="sect2">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp53547392" id=
-                "idp53547392"></a>2.1.4.&nbsp;Indexing
+                <h3 class="title"><a name="idp59454368" id=
+                "idp59454368"></a>2.1.4.&nbsp;Indexing
                 failures</h3>
               </div>
             </div>
@@ -1132,8 +1146,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp53554848" id=
-                "idp53554848"></a>2.1.5.&nbsp;Recovery</h3>
+                <h3 class="title"><a name="idp60727408" id=
+                "idp60727408"></a>2.1.5.&nbsp;Recovery</h3>
               </div>
             </div>
           </div>
@@ -4614,7 +4628,10 @@ export RECOLL_EXTRA_DBS=/some/place/xapiandb:/some/other/db
             <li class="listitem">
               <p>By passing option <code class="option">-t</code>
               to the <span class=
-              "command"><strong>recoll</strong></span> program.</p>
+              "command"><strong>recoll</strong></span> program, or
+              by calling it as <span class=
+              "command"><strong>recollq</strong></span> (through a
+              link).</p>
             </li>
 
             <li class="listitem">
