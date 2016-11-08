@@ -18,7 +18,9 @@
 #define _WORKQUEUE_H_INCLUDED_
 
 #include <thread>
+#if HAVE_STD_FUTURE
 #include <future>
+#endif
 #include <string>
 #include <queue>
 #include <list>
@@ -76,10 +78,14 @@ public:
     bool start(int nworkers, void *(workproc)(void *), void *arg) {
         std::unique_lock<std::mutex> lock(m_mutex);
         for (int i = 0; i < nworkers; i++) {
-            std::packaged_task<void *(void *)> task(workproc);
             Worker w;
+#if HAVE_STD_FUTURE
+            std::packaged_task<void *(void *)> task(workproc);
             w.res = task.get_future();
             w.thr = std::thread(std::move(task), arg);
+#else
+            w.thr = std::thread(workproc, arg);
+#endif
             m_worker_threads.push_back(std::move(w));
         }
         return true;
@@ -189,7 +195,11 @@ public:
         // Workers return (void*)1 if ok
         void *statusall = (void*)1;
         while (!m_worker_threads.empty()) {
+#if HAVE_STD_FUTURE
             void *status = m_worker_threads.front().res.get();
+#else
+            void *status = (void*) 1;
+#endif
             m_worker_threads.front().thr.join();
             if (status == (void *)0) {
                 statusall = status;
@@ -305,7 +315,9 @@ private:
 
     struct Worker {
         std::thread         thr;
+#if HAVE_STD_FUTURE
         std::future<void *> res;
+#endif
     };
     
     // Configuration
