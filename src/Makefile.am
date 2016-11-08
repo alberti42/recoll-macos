@@ -212,6 +212,8 @@ utils/hldata.h \
 utils/hldata.cpp \
 utils/idfile.cpp \
 utils/idfile.h \
+utils/listmem.cpp \
+utils/listmem.h \
 utils/log.cpp \
 utils/log.h \
 utils/md5.cpp \
