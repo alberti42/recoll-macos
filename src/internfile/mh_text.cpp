@@ -42,7 +42,8 @@ const int KB = 1024;
 // Process a plain text file
 bool MimeHandlerText::set_document_file(const string& mt, const string &fn)
 {
-    LOGDEB("MimeHandlerText::set_document_file: ["  << (fn) << "] offs "  << (lltodecstr(m_offs)) << "\n" );
+    LOGDEB("MimeHandlerText::set_document_file: ["  << fn << "] offs " <<
+           m_offs << "\n");
 
     RecollFilter::set_document_file(mt, fn);
 
@@ -54,7 +55,8 @@ bool MimeHandlerText::set_document_file(const string& mt, const string &fn)
     // file size for oversize check
     long long fsize = path_filesize(m_fn);
     if (fsize < 0) {
-        LOGERR("MimeHandlerText::set_document_file: stat "  << (m_fn) << " errno "  << (errno) << "\n" );
+        LOGERR("MimeHandlerText::set_document_file: stat " << m_fn <<
+               " errno " << errno << "\n");
         return false;
     }
 
@@ -109,7 +111,8 @@ bool MimeHandlerText::skip_to_document(const string& ipath)
     char *endptr;
     long long t = strtoll(ipath.c_str(), &endptr, 10);
     if (endptr == ipath.c_str()) {
-	LOGERR("MimeHandlerText::skip_to_document: bad ipath offs ["  << (ipath) << "]\n" );
+	LOGERR("MimeHandlerText::skip_to_document: bad ipath offs ["  <<
+               ipath << "]\n");
 	return false;
     }
     m_offs = (off_t)t;
@@ -119,7 +122,7 @@ bool MimeHandlerText::skip_to_document(const string& ipath)
 
 bool MimeHandlerText::next_document()
 {
-    LOGDEB("MimeHandlerText::next_document: m_havedoc "  << (int(m_havedoc)) << "\n" );
+    LOGDEB("MimeHandlerText::next_document: m_havedoc "  << m_havedoc << "\n");
 
     if (m_havedoc == false)
 	return false;
