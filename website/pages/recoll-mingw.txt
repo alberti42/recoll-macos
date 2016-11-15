@@ -65,7 +65,7 @@ Then, from an MSYS command window (see above):
 == Xapian
 
 Download from:
-http://oligarchy.co.uk/xapian/1.2.21/xapian-core-1.2.21.tar.xz
+http://oligarchy.co.uk/xapian/1.4.1/xapian-core-1.4.1.tar.xz
 
 Don't forget the PATH update if not done yet:
 
@@ -75,7 +75,7 @@ Then:
 
     cd c:/recolldeps
     tar xf path-to-tar-file
-    cd xapian-core-1.2.21
+    cd xapian-core-1.4.1
 
 - Edit common/safeunistd.h to neutralize the sleep() function definition as
   this conflicts with the definition which is part of recent mingw

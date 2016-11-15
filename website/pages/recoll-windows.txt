@@ -1,23 +1,28 @@
 = Recoll on Windows
 Jean-Francois Dockes <jf at dockes.org>
+:date:
 
-:recollversion: 1.22.0-20160414
+:recollversion: 1.23.0-2477ad-20161115
 
 image:recoll-windows10-thumb.png[link="recoll-windows10.png"]
 
 Recoll for Windows was built on Windows 7, and tried on Windows 7 and
-10. It now seems quite stable (14 April 2016)
+10. It now seems quite stable (15  2016)
 
 Recoll is free and licensed under the GPL. You will be asked to accept the
 license during the installation. For a regular user, and in a nutshell, the
 license means that you are free to do what you want with the program (use,
 copy, share, etc.). If you are a developper and intend to modify and
 distribute the program, you probably know the GPL. Else you should read it.
-  
-I would very much like to get some feedback from actual Windows users (I am
-only a visitor to Windows...). Is this useful at all ? What would make it
-more useful ? You can use the Disqus comments section at the bottom of this
-page, send an email, or use the
+
+If you like Recoll on Windows, please help with maintaining the application:
+
+image:/donations/btn_donate_LG.gif[link="/donations/index.html"]
+
+Also, I would very much like to get some feedback from actual Windows users
+(I am only a visitor to Windows...). Is this useful at all{nbsp}? What would
+make it more useful{nbsp}? You can use the Disqus comments section at the bottom
+of this page, send an email, or use the
 https://bitbucket.org/medoc/recoll/issues[BitBucket Recoll issues tracker].
 
 NOTE: Especially, I would like information about system compatibility. It
