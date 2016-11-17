@@ -2,51 +2,6 @@
 Jean-Francois Dockes <jf@dockes.org>
 :toc:
 
-== File name character case sensitivity
-
-Recoll was born on Unix, on which file names are case-sensitive. At the
-moment this is also the case for path-related queries on Windows, including
-the drive letters.
-
-When filtering results on location (e.g. with a 'dir:' clause), you need to
-enter all path elements as they appear in the URLs in result lists (and use
-forward slashes).
-
-It is also advisable to enter configuration filenames with their actual
-case (e.g. _topdirs_).
-
-I am looking into fixing this, but this made a bit complicated by non ASCII
-character sets issues.
-
-== Using an alternate configuration directory
-
-This tip is useful if you want to manage several configurations, or if you
-really have some reason to not let the configuration directory stay in its
-default location ($HOMEDIR/AppData/Local/Recoll). If you just have a
-storage issue and do not actually want to manage multiple configuration
-directories, you can more simply change the index storage location from the
-GUI 'Index Configuration' panel.
-
-The easiest approach is to create a shortcut on the desktop and have it
-start the GUI with a '-c' option. For example, set the shortcut's 'Target'
-to something like:
-
-----
-"C:\Program Files (x86)\Recoll\recoll.exe" -c c:/path/to/my/configdir
-----
-
-_Do use forward slashes for the configuration directory path_. This will
-hopefully be fixed some day.
-
-You will need to create the configuration directory, Recoll will not do it
-by itself. You can just leave it empty, Recoll will then propose to start
-the configuration editor.
-
-You can find a more complete and general explanation about using shortcuts,
-for example http://www.rjlsoftware.com/support/faq/sa.cfm?q=6&n=61[on this
-page].
-
-
 == Checking that Python is in the PATH
 
 Recoll input handlers are the programs which extract the documents text
@@ -84,6 +39,50 @@ You can also edit the environment variable directly:
  - Edit 'Path' inside 'System variables' and add:
    `C:\Python27\;C:\Python27\Scripts;` to it.
 
+== Using an alternate configuration directory
+
+This tip is useful if you want to manage several configurations, or if you
+really have some reason to not let the configuration directory stay in its
+default location ($HOMEDIR/AppData/Local/Recoll). If your concerns are only
+a bout storage space, and do not actually want to manage multiple
+configuration directories, you can more simply change the index storage
+location from the GUI 'Index Configuration' panel.
+
+The easiest approach is to create a shortcut on the desktop and have it
+start the GUI with a '-c' option. For example, set the shortcut's 'Target'
+to something like:
+
+----
+"C:\Program Files (x86)\Recoll\recoll.exe" -c c:/path/to/my/configdir
+----
+
+_Do use forward slashes for the configuration directory path_. This will
+hopefully be fixed some day.
+
+You will need to create the configuration directory, Recoll will not do it
+by itself. You can just leave it empty, Recoll will then propose to start
+the configuration editor.
+
+You can find a more complete and general explanation about using shortcuts,
+for example http://www.rjlsoftware.com/support/faq/sa.cfm?q=6&n=61[on this
+page].
 
 
+== File name character case sensitivity
 
+_This should be fixed as of the the November 2016 version. Please report
+the problem if you still see case sensitivity issues_
+
+Recoll was born on Unix, on which file names are case-sensitive. At the
+moment this is also the case for path-related queries on Windows, including
+the drive letters.
+
+When filtering results on location (e.g. with a 'dir:' clause), you need to
+enter all path elements as they appear in the URLs in result lists (and use
+forward slashes).
+
+It is also advisable to enter configuration filenames with their actual
+case (e.g. _topdirs_).
+
+I am looking into fixing this, but this made a bit complicated by non ASCII
+character sets issues.
