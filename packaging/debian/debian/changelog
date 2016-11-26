@@ -1,8 +1,20 @@
+recoll (1.22.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * Fix advanced search 'start search' not doing anything with qt5
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 25 Nov 2016 11:38:00 +0100
+
+recoll (1.22.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * 
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 21 Jun 2016 15:11:00 +0200
+
 recoll (1.22.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * Packaging fixes.
 
- -- Jean-Francois Dockes <jf@dockes.org>  Tue, 16 Jun 2016 09:11:00 +0200
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 16 Jun 2016 09:11:00 +0200
 
 recoll (1.22.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 

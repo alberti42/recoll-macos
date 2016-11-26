@@ -7,21 +7,18 @@ Build-Depends: cdbs,
                libtool,
                debhelper (>= 7), 
                bison,
-               kdelibs5-dev (>= 4:4.2.2),
-               qtbase5-dev,
-               extra-cmake-modules,
-               kio-dev,
+               kdelibs5-dev (>= 4:4.2.2), 
                pkg-kde-tools (>= 0.4.0), 
                libxapian-dev, 
                libz-dev
-Standards-Version: 3.9.7
+Standards-Version: 3.9.5
 Homepage: http://www.recoll.org/
 
 Package: kio-recoll
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}, recoll
-Description: Recoll KIO slave for KDE 4
- Recoll KIO slave for KDE 4, allows performing a Recoll search by
+Description: A Recoll KIO slave for KDE 4
+ A Recoll KIO slave for KDE 4, allows performing a Recoll search by
  entering an appropriate URL in a KDE open dialog, or with an HTML-based
  interface displayed in Konqueror.  
  The HTML-based interface is similar to the Recoll GUI QT-based interface,

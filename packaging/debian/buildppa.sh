@@ -4,7 +4,7 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.22.2
+RCLVERS=1.22.4
 LENSVERS=1.19.10.3543
 SCOPEVERS=1.20.2.4
 PPAVERS=1
@@ -43,8 +43,8 @@ check_recoll_orig()
 ####### QT
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
-series="trusty vivid wily xenial"
-#series=trusty
+series="trusty xenial yakkety"
+series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -72,8 +72,8 @@ for series in $series ; do
 done
 
 ### KIO
-series="trusty vivid wily xenial"
-series=
+series="trusty xenial yakkety"
+series="xenial yakkety"
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -91,18 +91,23 @@ if test "X$series" != X ; then
         cd ..
     fi
 fi
-for series in $series ; do
+for svers in $series ; do
 
   rm -rf $topdir/debian
   cp -rp ${debdir}/ $topdir/debian || exit 1
 
-  sed -e s/SERIES/$series/g \
+  sed -e s/SERIES/$svers/g \
       -e s/PPAVERS/${PPAVERS}/g \
           < ${debdir}/changelog > $topdir/debian/changelog ;
-
+  if test $svers = "trusty" ; then
+      mv -f $topdir/debian/control-4 $topdir/debian/control
+      mv -f $topdir/debian/rules-4 $topdir/debian/rules
+  else
+      rm -f $topdir/debian/control-4 $topdir/debian/rules-4
+  fi
   (cd $topdir;debuild -S -sa) || exit 1
 
-  dput $PPANAME kio-recoll_${RCLVERS}-0~ppa${PPAVERS}~${series}1_source.changes
+  dput $PPANAME kio-recoll_${RCLVERS}-0~ppa${PPAVERS}~${svers}1_source.changes
 
 done
 
@@ -142,7 +147,7 @@ for series in $series ; do
 done
 
 ### Unity Scope
-series="trusty vivid wily xenial"
+series="trusty xenial yakkety"
 series=
 
 debdir=debianunityscope
