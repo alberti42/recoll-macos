@@ -1,4 +1,6 @@
-= Recoll WebUI Apache installation from scratch 
+= Recoll WebUI Apache and nginx installation from scratch 
+
+NOTE: thanks to Michael L. Wilson for the `nginx` part.
 
 The https://github.com/koniu/recoll-webui[Recoll WebUI] offers an
 alternative, WEB-based, interface for querying a Recoll index.
@@ -22,7 +24,7 @@ and, especially can't efficiently leverage the now ubiquitous
 multiprocessors.
 
 In multi-user situations, you can get better performance and ease of use
-from the Recoll WebUI by running it under Apache rather than as a
+from the Recoll WebUI by running it under Apache or Nginx rather than as a
 standalone process. With this approach, a few requests per second can
 easily be handled even in the presence of long-running ones.
 
@@ -34,20 +36,24 @@ The instructions about using the WebUI under Apache as given in the
 repository README are a bit terse, and are missing a few details,
 especially ones which impact performance.
 
-Here follows the synopsis of two WebUI installations on initially
-Apache-less Ubuntu (14.04) and DragonFly BSD systems. The first should
-extend easily to other Debian-based systems, the second at least to
-FreeBSD. rpm-based systems are left as an exercise to the reader, at least
-for now...
+Here follows the synopsis of three WebUI installations on initially
+Apache-less Ubuntu (14.04) and DragonFly BSD systems, and for
+Nginx/BSD. The first should extend easily to other Debian-based systems,
+the second at least to FreeBSD. rpm-based systems are left as an exercise
+to the reader, at least for now...
 
 
 CAUTION: THE CONFIGURATIONS DESCRIBED HAVE NO ACCESS CONTROL. ANYONE WITH
 ACCESS TO THE NETWORK WHERE THE SERVER IS LOCATED CAN RETRIEVE ANY
 DOCUMENT.
 
-== On a Debian/Ubuntu system
+link:#nginx[Jump to the nginx section].
 
-=== Install recoll 
+[[apache]]
+== Apache
+=== On a Debian/Ubuntu system
+
+==== Install recoll 
 
     sudo apt-get install recoll python-recoll
 
@@ -60,13 +66,13 @@ Take care to be logged in as the user you want to run the web search as
 while you do this.
 
 
-=== Install the WebUI
+==== Install the WebUI
 
 Clone the github repository, or extract the master tar installation, and
 move it to '/var/www/recoll-webui-master/'. Take care that it is read/execute
 accessible by your user.
 
-=== Install Apache and mod-wsgi
+==== Install Apache and mod-wsgi
 
 
     sudo apt-get install apache2 libapache2-mod-wsgi
@@ -75,7 +81,7 @@ I then got the following message:
 
     AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 127.0.1.1. Set the 'ServerName' directive globally to suppress this message
 
-To clear it, I added a ServerName directive to the apache config, maybe you
+To clear it, I added a ServerName directive to the Apache config, maybe you
 won't need it. Edit '/etc/apache2/sites-available/000-default.conf' and add
 the following at the top (globally). Things work without this fix anyway,
 this is just to suppress the error message. You probably need to adjust the
@@ -106,7 +112,7 @@ specify multiple threads on the WSGIDaemonProcess line. Specify multiple
 processes instead to put multiple CPUs to work on simultaneous requests.
 
 
-Then run the following to restart apache:
+Then run the following to restart Apache:
 
     sudo apachectl restart
 
@@ -120,9 +126,9 @@ not found (the page looks weird and the search does not work).
 CAUTION: THERE IS NO ACCESS CONTROL. ANYONE WITH ACCESS TO THE NETWORK
 WHERE THE SERVER IS LOCATED CAN RETRIEVE ANY DOCUMENT.
 
-== Variant for BSD/ports
+=== Apache Variant for BSD/ports
 
-=== Packages
+==== Packages
 
 As root:
 
@@ -142,7 +148,7 @@ Add apache24_enable="YES" in /etc/rc.conf
     pkg install ap24-mod_wsgi4
     pkg install git
 
-=== Clone the webui repository
+==== Clone the webui repository
 
     cd /usr/local/www/apache24/
     git clone https://github.com/koniu/recoll-webui.git recoll-webui-master
@@ -159,7 +165,7 @@ the 'import os' line:
 
 
 
-=== Configure apache
+==== Configure Apache
 
 Edit /usr/local/etc/apache24/modules.d/270_mod_wsgi.conf
 
@@ -191,10 +197,84 @@ Contents of the file:
             Require all granted
     </Directory>
 
-=== Restart apache
+==== Restart Apache
 
 As root:
 
     apachectl restart
 
 
+[[nginx]]
+== Nginx
+=== Nginx for BSD/ports
+
+As root:
+
+     pkg install recoll
+
+Do what you need to do to configure the indexing and check that the normal
+search works. Take care to be logged in as the user you want to run the web
+search as while you do this.
+
+Install required packages:
+
+     pkg install nginx uwsgi git
+
+=== Nginx: clone the webui repository
+
+     rm /usr/local/www/nginx
+     mkdir /usr/local/www/nginx
+     cd /usr/local/www/nginx
+     git clone https://github.com/koniu/recoll-webui.git recoll-webui-master
+
+Important: most input handler helper applications (e.g. 'pdftotext') are
+installed in '/usr/local/bin' which is not in the PATH as seen by Nginx
+(at least on DragonFly). The simplest way to fix this is to modify the
+launcher module for the webui app so that it fixes the PATH.
+
+Edit 'recoll-webui-master/webui-wsgi.py' and add the following line after
+the 'import os' line:
+
+     os.environ['PATH'] = os.environ['PATH'] + ':' + '/usr/local/bin'
+
+Also change the following to find the correct path:
+
+     #os.chdir(os.path.dirname(__file__))
+     os.chdir('/usr/local/www/nginx/recoll-webui-master')
+
+
+=== Nginx: configure uWSGI
+
+Assuming the user running the search is "dockes" (change it to your user),
+
+sysrc uwsgi_uid=$(id -u dockes)
+sysrc uwsgi_gid=$(id -g dockes)
+sysrc uwsgi_flags="-M -L --wsgi-file /usr/local/www/nginx/recoll-webui-master/webui-wsgi.py"
+
+(ALTERNATIVELY)
+
+Add the following to rc.conf
+
+uwsgi_uid="dockes"			
+uwsgi_gid="dockes"
+uwsgi_flags="-M -L --wsgi-file /usr/local/www/nginx/recoll-webui-master/webui-wsgi.py"
+
+
+=== Configure nginx
+
+Edit /usr/local/etc/nginx/nginx.conf and set up a proxy to uwsgi service:
+
+     location / {
+         include uwsgi_params;
+         uwsgi_pass unix:///tmp/uwsgi.sock;
+     }
+
+=== Enable and start both services
+
+As root:
+
+     sysrc uwsgi_enable=YES	#Or uwsgi_enable="YES" (in rc.conf)
+     sysrc nginx_enable=YES	#Or nginx_enable="YES" (in rc.conf)
+
+     service uwsgi start
+     service nginx start

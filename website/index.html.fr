@@ -106,7 +106,7 @@
       <h2>Nouvelles: </h2>
 
       <dl>
-
+        <td>2016-11-23</td><dd>Version 1.22.4.</dd>
         <dt>2016-06-15</dt><dd>La version 1.22.3 est disponible et va
           progressivement remplacer 1.21 comme version
           principale. <a href="release-1.22.html">Notes de version</a>
