@@ -27,30 +27,53 @@ using namespace std;
 // cygstart, which uses ShellExecute() did work... So this is just a
 // simpler cygstart
 static char *thisprog;
-static char usage [] ="rclstartw <fn>\n" 
-    "   Will use ShellExecute to open the arg with the default app\n";
+static char usage [] ="rclstartw [-m] <fn>\n" 
+    "   Will use ShellExecute to open the arg with the default app\n"
+    "    -m 1 start maximized\n";
 
 static void Usage(FILE *fp = stderr)
 {
     fprintf(fp, "%s: usage:\n%s", thisprog, usage);
     exit(1);
 }
+int op_flags;
+#define OPT_m 0x1
 
 int main(int argc, char *argv[])
 {
     thisprog = argv[0];
     argc--; argv++;
+    int imode = 0;
+    while (argc > 0 && **argv == '-') {
+	(*argv)++;
+	if (!(**argv))
+	    Usage();
+	while (**argv)
+	    switch (*(*argv)++) {
+	    case 'm':	op_flags |= OPT_m; if (argc < 2)  Usage();
+		if ((sscanf(*(++argv), "%d", &imode)) != 1) 
+		    Usage(); 
+		argc--; goto b1;
+	    default: Usage(); break;
+	    }
+    b1: argc--; argv++;
+    }
 
     if (argc != 1) {
         Usage();
     }
     char *fn = strdup(argv[0]);
-
     // Do we need this ?
     //https://msdn.microsoft.com/en-us/library/windows/desktop/bb762153%28v=vs.85%29.aspx
     //CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+
+    int wmode = SW_SHOWNORMAL;
+    switch (imode) {
+    case 1: wmode = SW_SHOWMAXIMIZED;break;
+    default: wmode = SW_SHOWNORMAL;  break;
+    }
     
-    int ret = (int)ShellExecute(NULL, "open", fn, NULL, NULL, SW_SHOWNORMAL);
+    int ret = (int)ShellExecute(NULL, "open", fn, NULL, NULL, wmode);
     if (ret) {
         fprintf(stderr, "ShellExecute returned %d\n", ret);
     }
