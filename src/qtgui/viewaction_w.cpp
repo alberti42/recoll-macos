@@ -213,6 +213,9 @@ void ViewAction::editActions()
 
     string sact = (const char *)newActionLE->text().toLocal8Bit();
     trimstring(sact);
+#ifdef _WIN32
+    path_slashize(sact);
+#endif
     for (list<string>::const_iterator mit = mtypes.begin(); 
 	 mit != mtypes.end(); mit++) {
 	set<string>::iterator xit = viewerXs.find(*mit);
