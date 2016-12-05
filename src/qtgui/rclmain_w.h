@@ -252,9 +252,10 @@ private:
     virtual void setupResTB(bool combo);
     virtual void previewPrevOrNextInTab(Preview *, int sid, int docnum,
                                         bool next);
+    // flags may contain ExecCmd::EXF_xx values
     virtual void execViewer(const map<string, string>& subs, bool enterHistory,
                             const string& execpath, const vector<string>& lcmd,
-                            const string& cmd, Rcl::Doc doc);
+                            const string& cmd, Rcl::Doc doc, int flags=0);
     virtual void setStemLang(const QString& lang);
     virtual void onSortCtlChanged();
     virtual void showIndexConfig(bool modal);

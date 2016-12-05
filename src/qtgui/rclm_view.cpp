@@ -157,7 +157,10 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 {
     string apptag;
     doc.getmeta(Rcl::Doc::keyapptg, &apptag);
-    LOGDEB("RclMain::startNativeViewer: mtype ["  << (doc.mimetype) << "] apptag ["  << (apptag) << "] page "  << (pagenum) << " term ["  << ((const char *)(term.toUtf8())) << "] url ["  << (doc.url) << "] ipath ["  << (doc.ipath) << "]\n" );
+    LOGDEB("RclMain::startNativeViewer: mtype [" << doc.mimetype <<
+           "] apptag ["  << apptag << "] page "  << pagenum << " term ["  <<
+           qs2utf8s(term) << "] url ["  << doc.url << "] ipath [" <<
+           doc.ipath << "]\n");
 
     // Look for appropriate viewer
     string cmdplusattr = theconfig->getMimeViewerDef(doc.mimetype, apptag, 
@@ -174,9 +177,15 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     string cmd;
     theconfig->valueSplitAttributes(cmdplusattr, cmd, viewerattrs);
     bool ignoreipath = false;
+    int execwflags = 0;
     if (viewerattrs.get("ignoreipath", cmdplusattr))
         ignoreipath = stringToBool(cmdplusattr);
-
+    if (viewerattrs.get("maximize", cmdplusattr)) {
+        if (stringToBool(cmdplusattr)) {
+            execwflags |= ExecCmd::EXF_MAXIMIZED;
+        }
+    }
+    
     // Split the command line
     vector<string> lcmd;
     if (!stringToStrings(cmd, lcmd)) {
@@ -389,13 +398,13 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
          it != doc.meta.end(); it++) {
         subs[it->first] = it->second;
     }
-    execViewer(subs, enterHistory, execpath, lcmd, cmd, doc);
+    execViewer(subs, enterHistory, execpath, lcmd, cmd, doc, execwflags);
 }
 
 void RclMain::execViewer(const map<string, string>& subs, bool enterHistory,
                          const string& execpath,
                          const vector<string>& _lcmd, const string& cmd,
-                         Rcl::Doc doc)
+                         Rcl::Doc doc, int flags)
 {
     string ncmd;
     vector<string> lcmd;
@@ -429,7 +438,7 @@ void RclMain::execViewer(const map<string, string>& subs, bool enterHistory,
     zg_send_event(ZGSEND_OPEN, doc);
 
     // We keep pushing back and never deleting. This can't be good...
-    ExecCmd *ecmd = new ExecCmd(ExecCmd::EXF_SHOWWINDOW);
+    ExecCmd *ecmd = new ExecCmd(ExecCmd::EXF_SHOWWINDOW | flags);
     m_viewers.push_back(ecmd);
     ecmd->startExec(execpath, lcmd, false, false);
 }

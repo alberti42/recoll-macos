@@ -764,15 +764,19 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
     siStartInfo.cb = sizeof(STARTUPINFO);
     if (m->m_flags & EXF_SHOWWINDOW) {
         siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
+        if (m->m_flags & EXF_MAXIMIZED) {
+            siStartInfo.dwFlags |= STARTF_USESHOWWINDOW;
+            siStartInfo.wShowWindow = SW_SHOWMAXIMIZED;
+        }
     } else {
         siStartInfo.dwFlags |= STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+        // This is to hide the console when starting a cmd line command from
+        // the GUI. Also note STARTF_USESHOWWINDOW above
+        siStartInfo.wShowWindow = SW_HIDE;
     }
     siStartInfo.hStdOutput = hOutputWrite;
     siStartInfo.hStdInput = hInputRead;
     siStartInfo.hStdError = hErrorWrite;
-    // This is to hide the console when starting a cmd line command from
-    // the GUI. Also note STARTF_USESHOWWINDOW above
-    siStartInfo.wShowWindow = SW_HIDE;
 
     char *envir = mergeEnvironment(m->m_env);
 
