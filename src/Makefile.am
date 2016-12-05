@@ -581,6 +581,7 @@ filters/rcldjvu.py \
 filters/rcldoc.py \
 filters/rcldvi \
 filters/rclepub \
+filters/rclepub1 \
 filters/rclexec1.py \
 filters/rclexecm.py \
 filters/rclfb2 \

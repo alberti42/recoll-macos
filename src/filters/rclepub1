@@ -1,0 +1,106 @@
+#!/usr/bin/env python
+"""Extract Html content from an EPUB file (.chm), concatenating all sections"""
+from __future__ import print_function
+
+import sys
+import os
+import re
+
+import rclexecm
+
+try:
+    import epub
+except:
+    print("RECFILTERROR HELPERNOTFOUND python:epub")
+    sys.exit(1);
+
+class rclEPUB:
+    """RclExecM slave worker for extracting all text from an EPUB
+    file. This version concatenates all nodes."""
+
+    def __init__(self, em):
+        self.em = em
+        self.em.setmimetype("text/html")
+        self.currentindex = 0
+
+    def _header(self):
+        meta = self.book.opf.metadata
+        title = ""
+        for tt, lang in meta.titles:
+            title += tt + " "
+        author = ""
+        for name, role, fileas in meta.creators:
+            author += name + " "
+        data = "<html>\n<head>\n"
+        if title:
+            data += "<title>" + self.em.htmlescape(title) + "</title>\n"
+        if author:
+            data += '<meta name="author" content="' + \
+                self.em.htmlescape(author).strip() + '">\n'
+        if meta.description:
+            data += '<meta name="description" content="' + \
+                self.em.htmlescape(meta.description) + '">\n'
+        data += "</head><body>"
+        data = data.encode('UTF-8')
+
+        return data
+
+    def extractone(self, params):
+        """Extract EPUB data as concatenated HTML"""
+
+        ok = True
+        data = self._header()
+        ids = []
+        if self.book.opf.spine:
+            for id, linear in self.book.opf.spine.itemrefs:
+                ids.append(id)
+        else:
+            for id, item in self.book.opf.manifest.items():
+                ids.append(id)
+
+        for id in ids:
+            item = self.book.get_item(id)
+            if item is None or item.media_type != 'application/xhtml+xml':
+                continue
+            doc = self.book.read_item(item)
+            doc = re.sub(b'''<\?.*\?>''', b'', doc)
+            doc = re.sub(b'''<[hH][tT][mM][lL].*<[bB][oO][dD][yY][^>]*>''',
+                         b'', doc, 1, re.DOTALL)
+            doc = re.sub(b'''</[bB][oO][dD][yY]>''', b'', doc)
+            doc = re.sub(b'''</[hH][tT][mM][lL]>''', b'', doc)
+            data += doc
+
+        data += b'</body></html>'
+        if ok:
+            return (ok, data, "", rclexecm.RclExecM.eofnext)
+        else:
+            return (ok, "", "", rclexecm.RclExecM.eofnow)
+
+    def openfile(self, params):
+        """Open the EPUB file"""
+        self.currentindex = 0
+        if not "filename:" in params:
+            self.em.rclog("openfile: no file name")
+            return (ok, "", "", rclexecm.RclExecM.eofnow)
+
+        try:
+            self.book = epub.open_epub(params["filename:"].decode('UTF-8'))
+        except Exception as err:
+            self.em.rclog("openfile: epub.open failed: [%s]" % err)
+            return False
+        return True
+
+    def getipath(self, params):
+        return self.extractone(params)
+
+    def getnext(self, params):
+        if self.currentindex >= 1:
+            return (False, "", "", rclexecm.RclExecM.eofnow)
+        else:
+            ret= self.extractone(params)
+            self.currentindex += 1
+            return ret
+
+proto = rclexecm.RclExecM()
+extract = rclEPUB(proto)
+rclexecm.main(proto, extract)
