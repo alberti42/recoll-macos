@@ -33,6 +33,7 @@
 #include "internfile.h"
 #include "rclmain_w.h"
 #include "rclzg.h"
+#include "pathut.h"
 
 using namespace std;
 
@@ -145,6 +146,9 @@ void RclMain::openWith(Rcl::Doc doc, string cmdspec)
     // Try to keep the letters used more or less consistent with the reslist
     // paragraph format.
     map<string, string> subs;
+#ifdef _WIN32
+    path_backslashize(fn);
+#endif
     subs["F"] = fn;
     subs["f"] = fn;
     subs["U"] = url_encode(url);
@@ -385,6 +389,9 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     // paragraph format.
     map<string, string> subs;
     subs["D"] = efftime;
+#ifdef _WIN32
+    path_backslashize(fn);
+#endif
     subs["f"] = fn;
     subs["F"] = fn;
     subs["i"] = FileInterner::getLastIpathElt(doc.ipath);

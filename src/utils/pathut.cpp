@@ -69,6 +69,14 @@ void path_slashize(string& s)
         }
     }
 }
+void path_backslashize(string& s)
+{
+    for (string::size_type i = 0; i < s.size(); i++) {
+        if (s[i] == '/') {
+            s[i] = '\\';
+        }
+    }
+}
 static bool path_strlookslikedrive(const string& s)
 {
     return s.size() == 2 && isalpha(s[0]) && s[1] == ':';
