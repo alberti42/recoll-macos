@@ -73,7 +73,7 @@ public:
     }
 
 #if LOGGER_THREADSAFE
-    std::mutex& getmutex() {
+    std::recursive_mutex& getmutex() {
         return m_mutex;
     }
 #endif
@@ -84,7 +84,7 @@ private:
     std::string m_fn;
     std::ofstream m_stream;
 #if LOGGER_THREADSAFE
-    std::mutex m_mutex;
+    std::recursive_mutex m_mutex;
 #endif
 
     Logger(const std::string& fn);
@@ -96,7 +96,7 @@ private:
 
 #if LOGGER_THREADSAFE
 #define LOGGER_LOCK \
-    std::unique_lock<std::mutex> lock(Logger::getTheLog("")->getmutex())
+    std::unique_lock<std::recursive_mutex> lock(Logger::getTheLog("")->getmutex())
 #else
 #define LOGGER_LOCK
 #endif

@@ -31,7 +31,7 @@ Logger::Logger(const std::string& fn)
 bool Logger::reopen(const std::string& fn)
 {
 #if LOGGER_THREADSAFE
-    std::unique_lock<std::mutex> lock(m_mutex);
+    std::unique_lock<std::recursive_mutex> lock(m_mutex);
 #endif
     if (!fn.empty()) {
         m_fn = fn;
