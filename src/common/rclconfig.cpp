@@ -844,7 +844,8 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 	ConfSimple attrs;
 	FieldTraits ft;
 	if (!valueSplitAttributes(val, ft.pfx, attrs)) {
-	    LOGERR("readFieldsConfig: bad config line for ["  << *it << "]: ["  << (val) << "]\n" );
+	    LOGERR("readFieldsConfig: bad config line for ["  << *it <<
+                   "]: [" << val << "]\n");
 	    return 0;
 	}
 	string tval;
@@ -857,7 +858,8 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 	if (attrs.get("noterms", tval))
 	    ft.noterms = stringToBool(tval);
 	m_fldtotraits[stringtolower(*it)] = ft;
-	LOGDEB2("readFieldsConfig: ["  << *it << "] -> ["  << (ft.pfx) << "] "  << (ft.wdfinc) << " "  << (ft.boost) << "\n" );
+	LOGDEB2("readFieldsConfig: ["  << *it << "] -> ["  << ft.pfx <<
+                "] " << ft.wdfinc << " " << ft.boost << "\n");
     }
 
     // Add prefixes for aliases and build alias-to-canonic map while
@@ -903,7 +905,8 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 #if 0
     for (map<string, FieldTraits>::const_iterator it = m_fldtotraits.begin();
 	 it != m_fldtotraits.end(); it++) {
-	LOGDEB("readFieldsConfig: ["  << *it << "] -> ["  << (it->second.pfx) << "] "  << (it->second.wdfinc) << " "  << (it->second.boost) << "\n" );
+	LOGDEB("readFieldsConfig: ["  << *it << "] -> ["  << it->second.pfx <<
+               "] " << it->second.wdfinc << " "  << it->second.boost << "\n");
     }
 #endif
 
