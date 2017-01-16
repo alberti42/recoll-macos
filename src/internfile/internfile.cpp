@@ -536,6 +536,8 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 		   it->first == cstr_dj_keycharset) {
 	    // don't need/want these.
 	} else {
+            LOGDEB2("dijontorcl: " << m_cfg->fieldCanon(it->first) << " -> " <<
+                    it->second << endl);
 	    doc.addmeta(m_cfg->fieldCanon(it->first), it->second);
 	}
     }
