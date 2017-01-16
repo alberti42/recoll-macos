@@ -259,15 +259,15 @@ string QtGuiResListPager::iconUrl(RclConfig *config, Rcl::Doc& doc)
 	ConfIndexer::docsToPaths(docs, paths);
 	if (!paths.empty()) {
 	    string path;
-	    LOGDEB0("ResList::iconUrl: source path ["  << (paths[0]) << "]\n" );
+	    LOGDEB2("ResList::iconUrl: source path [" << paths[0] << "]\n");
 	    if (thumbPathForUrl(cstr_fileu + paths[0], 128, path)) {
-		LOGDEB0("ResList::iconUrl: icon path ["  << (path) << "]\n" );
+		LOGDEB2("ResList::iconUrl: icon path [" << path << "]\n");
 		return cstr_fileu + path;
 	    } else {
-		LOGDEB0("ResList::iconUrl: no icon: path ["  << (path) << "]\n" );
+		LOGDEB2("ResList::iconUrl: no icon: path [" << path << "]\n");
 	    }
 	} else {
-	    LOGDEB("ResList::iconUrl: docsToPaths failed\n" );
+	    LOGDEB("ResList::iconUrl: docsToPaths failed\n");
 	}
     }
     return ResListPager::iconUrl(config, doc);
@@ -283,7 +283,8 @@ public:
 	    string s1, s2;
 	    stringsToString<vector<string> >(m_hdata->groups[idx], s1); 
 	    stringsToString<vector<string> >(m_hdata->ugroups[m_hdata->grpsugidx[idx]], s2);
-	    LOGDEB("Reslist startmatch: group "  << (s1) << " user group "  << (s2) << "\n" );
+	    LOGDEB2("Reslist startmatch: group "  << s1 << " user group "  <<
+                    s2 << "\n");
 	}
 		
 	return string("<span class='rclmatch' style='")
@@ -732,7 +733,7 @@ void ResList::resultPageFor(int docnum)
 
 void ResList::append(const QString &text)
 {
-    LOGDEB2("QtGuiReslistPager::appendQString  : "  << ((const char*)text.toUtf8()) << "\n" );
+    LOGDEB2("QtGuiReslistPager::appendQString : "  << qs2utf8s(text) << "\n");
 #ifdef RESLIST_TEXTBROWSER
     QTextBrowser::append(text);
 #else
@@ -750,7 +751,9 @@ void ResList::displayPage()
     setHtml(m_text);
 #endif
 
-    LOGDEB0("ResList::displayPg: hasNext "  << (m_pager->hasPrev()) << " atBot "  << (scrollIsAtBottom()) << " hasPrev "  << (m_pager->hasNext()) << " at Top "  << (scrollIsAtTop()) << " \n" );
+    LOGDEB0("ResList::displayPg: hasNext " << m_pager->hasNext() <<
+            " atBot " << scrollIsAtBottom() << " hasPrev "  <<
+            m_pager->hasPrev() << " at Top " << scrollIsAtTop() << " \n");
     setupArrows();
 
     // Possibly color paragraph of current preview if any

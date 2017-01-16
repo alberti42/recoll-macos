@@ -554,7 +554,7 @@ void RclMain::initDbOpen()
 
 void RclMain::setStemLang(QAction *id)
 {
-    LOGDEB("RclMain::setStemLang("  << (id) << ")\n" );
+    LOGDEB("RclMain::setStemLang(" << id << ")\n");
     // Check that the menu entry is for a stemming language change
     // (might also be "show prefs" etc.
     bool isLangId = false;
@@ -584,7 +584,8 @@ void RclMain::setStemLang(QAction *id)
 	lang = id->text();
     }
     prefs.queryStemLang = lang;
-    LOGDEB("RclMain::setStemLang("  << (id) << "): lang ["  << ((const char *)prefs.queryStemLang.toUtf8()) << "]\n" );
+    LOGDEB("RclMain::setStemLang(" << id << "): lang [" <<
+           qs2utf8s(prefs.queryStemLang) << "]\n");
     rwSettings(true);
     emit stemLangChanged(lang);
 }
@@ -592,7 +593,7 @@ void RclMain::setStemLang(QAction *id)
 // Set the checked stemming language item before showing the prefs menu
 void RclMain::setStemLang(const QString& lang)
 {
-    LOGDEB("RclMain::setStemLang("  << ((const char *)lang.toUtf8()) << ")\n" );
+    LOGDEB("RclMain::setStemLang(" << qs2utf8s(lang) << ")\n");
     QAction *id;
     if (lang == "") {
 	id = m_idNoStem;
@@ -626,7 +627,7 @@ void RclMain::showTrayMessage(const QString& text)
 
 void RclMain::closeEvent(QCloseEvent *ev)
 {
-    LOGDEB("RclMain::closeEvent\n" );
+    LOGDEB("RclMain::closeEvent\n");
     if (prefs.closeToTray && m_trayicon && m_trayicon->isVisible()) {
         hide();
         ev->ignore();
@@ -637,7 +638,7 @@ void RclMain::closeEvent(QCloseEvent *ev)
 
 void RclMain::fileExit()
 {
-    LOGDEB("RclMain: fileExit\n" );
+    LOGDEB("RclMain: fileExit\n");
     // Don't save geometry if we're currently fullscreened
     if (!isFullScreen()) {
         prefs.mainwidth = width();
@@ -665,9 +666,10 @@ void RclMain::fileExit()
 // Start a db query and set the reslist docsource
 void RclMain::startSearch(std::shared_ptr<Rcl::SearchData> sdata, bool issimple)
 {
-    LOGDEB("RclMain::startSearch. Indexing "  << (m_idxproc?"on":"off") << " Active "  << (m_queryActive) << "\n" );
+    LOGDEB("RclMain::startSearch. Indexing " << (m_idxproc?"on":"off") <<
+           " Active " << m_queryActive << "\n");
     if (m_queryActive) {
-	LOGDEB("startSearch: already active\n" );
+	LOGDEB("startSearch: already active\n");
 	return;
     }
     m_queryActive = true;
@@ -794,7 +796,7 @@ void RclMain::onSortCtlChanged()
     if (m_sortspecnochange)
 	return;
 
-    LOGDEB("RclMain::onSortCtlChanged()\n" );
+    LOGDEB("RclMain::onSortCtlChanged()\n");
     m_sortspec.reset();
     if (actionSortByDateAsc->isChecked()) {
 	m_sortspec.field = "mtime";
@@ -820,7 +822,7 @@ void RclMain::onSortCtlChanged()
 
 void RclMain::onSortDataChanged(DocSeqSortSpec spec)
 {
-    LOGDEB("RclMain::onSortDataChanged\n" );
+    LOGDEB("RclMain::onSortDataChanged\n");
     m_sortspecnochange = true;
     if (spec.field.compare("mtime")) {
 	actionSortByDateDesc->setChecked(false);
@@ -843,7 +845,7 @@ void RclMain::onSortDataChanged(DocSeqSortSpec spec)
 
 void RclMain::on_actionShowResultsAsTable_toggled(bool on)
 {
-    LOGDEB("RclMain::on_actionShowResultsAsTable_toggled("  << (int(on)) << ")\n" );
+    LOGDEB("RclMain::on_actionShowResultsAsTable_toggled(" << on << ")\n");
     prefs.showResultsAsTable = on;
     displayingTable = on;
     restable->setVisible(on);
@@ -852,8 +854,9 @@ void RclMain::on_actionShowResultsAsTable_toggled(bool on)
     static QShortcut tablefocseq(QKeySequence("Ctrl+r"), this);
     if (!on) {
 	int docnum = restable->getDetailDocNumOrTopRow();
-	if (docnum >= 0)
-	    reslist->resultPageFor(docnum);
+	if (docnum >= 0) {
+            reslist->resultPageFor(docnum);
+        }
         disconnect(&tablefocseq, SIGNAL(activated()),
                    restable, SLOT(takeFocus()));
         sSearch->takeFocus();
@@ -872,7 +875,7 @@ void RclMain::on_actionShowResultsAsTable_toggled(bool on)
 
 void RclMain::on_actionSortByDateAsc_toggled(bool on)
 {
-    LOGDEB("RclMain::on_actionSortByDateAsc_toggled("  << (int(on)) << ")\n" );
+    LOGDEB("RclMain::on_actionSortByDateAsc_toggled(" << on << ")\n");
     if (on) {
 	if (actionSortByDateDesc->isChecked()) {
 	    actionSortByDateDesc->setChecked(false);
@@ -885,7 +888,7 @@ void RclMain::on_actionSortByDateAsc_toggled(bool on)
 
 void RclMain::on_actionSortByDateDesc_toggled(bool on)
 {
-    LOGDEB("RclMain::on_actionSortByDateDesc_toggled("  << (int(on)) << ")\n" );
+    LOGDEB("RclMain::on_actionSortByDateDesc_toggled(" << on << ")\n");
     if (on) {
 	if (actionSortByDateAsc->isChecked()) {
 	    actionSortByDateAsc->setChecked(false);
@@ -915,7 +918,7 @@ void RclMain::saveDocToFile(Rcl::Doc doc)
 
 void RclMain::showSubDocs(Rcl::Doc doc)
 {
-    LOGDEB("RclMain::showSubDocs\n" );
+    LOGDEB("RclMain::showSubDocs\n");
     string reason;
     if (!maybeOpenDb(reason)) {
 	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
@@ -944,14 +947,14 @@ void RclMain::showSubDocs(Rcl::Doc doc)
 // significant terms, and add them to the simple search entry.
 void RclMain::docExpand(Rcl::Doc doc)
 {
-    LOGDEB("RclMain::docExpand()\n" );
+    LOGDEB("RclMain::docExpand()\n");
     if (!rcldb)
 	return;
     list<string> terms;
 
     terms = m_source->expand(doc);
     if (terms.empty()) {
-	LOGDEB("RclMain::docExpand: no terms\n" );
+	LOGDEB("RclMain::docExpand: no terms\n");
 	return;
     }
     // Do we keep the original query. I think we'd better not.
@@ -970,7 +973,7 @@ void RclMain::docExpand(Rcl::Doc doc)
 
 void RclMain::showDocHistory()
 {
-    LOGDEB("RclMain::showDocHistory\n" );
+    LOGDEB("RclMain::showDocHistory\n");
     emit searchReset();
     m_source = std::shared_ptr<DocSequence>();
     curPreview = 0;
@@ -1026,7 +1029,7 @@ void RclMain::setUIPrefs()
 {
     if (!uiprefs)
 	return;
-    LOGDEB("Recollmain::setUIPrefs\n" );
+    LOGDEB("Recollmain::setUIPrefs\n");
     reslist->setFont();
     sSearch->setPrefs();
     enbSynAction->setDisabled(prefs.synFile.isEmpty());
@@ -1064,7 +1067,7 @@ void RclMain::catgFilter(QAction *act)
 // User pressed a filter button: set filter params in reslist
 void RclMain::catgFilter(int id)
 {
-    LOGDEB("RclMain::catgFilter: id "  << (id) << "\n" );
+    LOGDEB("RclMain::catgFilter: id " << id << "\n");
     if (id < 0 || id >= int(m_catgbutvec.size()))
 	return; 
 
