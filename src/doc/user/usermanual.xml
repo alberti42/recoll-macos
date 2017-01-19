@@ -6021,12 +6021,17 @@ x-my-tag = mailmytag
 
         <para><filename>mimemap</filename> specifies the
         file name extension to MIME type mappings.</para> 
-
+      
         <para>For file names without an extension, or with an unknown one,
         a system command (<command>file</command> <option>-i</option>, or
         <command>xdg-mime</command>) will be executed to determine the MIME
         type (this can be switched off, or the command changed inside the
         main configuration file).</para>
+
+        <para>All extension values in <filename>mimemap</filename> must be
+        entered in lower case. File names extensions are lower-cased for
+        comparison during indexing, meaning that an upper case
+        <filename>mimemap</filename> entry will never be matched.</para>
 
         <para>The mappings can be specified on a per-subtree basis,
         which may be useful in some cases. Example:

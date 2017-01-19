@@ -1,5 +1,9 @@
 # (C) 2004 J.F.Dockes
 # Associations of file name extensions to mime types
+#
+# All entries must be in lower case characters. File name extensions are
+# lower-cased for comparison during indexing, meaning that an upper or
+# mixed case entry will never be matched.
 
 .txt = text/plain
 .text = text/plain
