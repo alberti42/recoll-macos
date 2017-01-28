@@ -266,9 +266,9 @@ bool MimeHandlerExecMultiple::next_document()
             LOGDEB("MHExecMultiple: got [" << nm << "] -> [" << data << "]\n");
             m_metaData[nm] += data;
         }
-        if (loop == 20) {
+        if (loop == 200) {
             // ?? 
-            LOGERR("MHExecMultiple: filter sent too many parameters\n");
+            LOGERR("MHExecMultiple: handler sent more than 200 attributes\n");
             return false;
         }
     }
