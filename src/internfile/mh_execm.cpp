@@ -36,10 +36,10 @@ using namespace std;
 
 bool MimeHandlerExecMultiple::startCmd()
 {
-    LOGDEB("MimeHandlerExecMultiple::startCmd\n" );
+    LOGDEB("MimeHandlerExecMultiple::startCmd\n");
     if (params.empty()) {
 	// Hu ho
-	LOGERR("MHExecMultiple::startCmd: empty params\n" );
+	LOGERR("MHExecMultiple::startCmd: empty params\n");
 	m_reason = "RECFILTERROR BADCONFIG";
 	return false;
     }
@@ -86,15 +86,15 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
 
     // Read name and length
     if (m_cmd.getline(ibuf) <= 0) {
-        LOGERR("MHExecMultiple: getline error\n" );
+        LOGERR("MHExecMultiple: getline error\n");
         return false;
     }
     
-    LOGDEB1("MHEM:rde: line ["  << (ibuf) << "]\n" );
+    LOGDEB1("MHEM:rde: line [" << ibuf << "]\n");
 
     // Empty line (end of message) ?
     if (!ibuf.compare("\n")) {
-        LOGDEB("MHExecMultiple: Got empty line\n" );
+        LOGDEB("MHExecMultiple: Got empty line\n");
         name.clear();
         return true;
     }
@@ -112,7 +112,7 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
     vector<string> tokens;
     stringToTokens(ibuf, tokens);
     if (tokens.size() != 2) {
-        LOGERR("MHExecMultiple: bad line in filter output: ["  << (ibuf) << "]\n" );
+        LOGERR("MHExecMultiple: bad line in filter output: [" << ibuf << "]\n");
         return false;
     }
     vector<string>::iterator it = tokens.begin();
@@ -120,12 +120,12 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
     string& slen = *it;
     int len;
     if (sscanf(slen.c_str(), "%d", &len) != 1) {
-        LOGERR("MHExecMultiple: bad line in filter output: ["  << (ibuf) << "]\n" );
+        LOGERR("MHExecMultiple: bad line in filter output: [" << ibuf << "]\n");
         return false;
     }
 
     if (len / 1024 > m_maxmemberkb) {
-        LOGERR("MHExecMultiple: data len > maxmemberkb\n" );
+        LOGERR("MHExecMultiple: data len > maxmemberkb\n");
         return false;
     }
     
@@ -142,7 +142,8 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
     // Read element data
     datap->erase();
     if (len > 0 && m_cmd.receive(*datap, len) != len) {
-        LOGERR("MHExecMultiple: expected "  << (len) << " bytes of data, got "  << (datap->length()) << "\n" );
+        LOGERR("MHExecMultiple: expected " << len << " bytes of data, got " <<
+               datap->length() << "\n");
         return false;
     }
     LOGDEB1("MHExecMe:rdDtElt got: name [" << name << "] len " << len <<
@@ -153,12 +154,12 @@ bool MimeHandlerExecMultiple::readDataElement(string& name, string &data)
 
 bool MimeHandlerExecMultiple::next_document()
 {
-    LOGDEB("MimeHandlerExecMultiple::next_document(): ["  << (m_fn) << "]\n" );
+    LOGDEB("MimeHandlerExecMultiple::next_document(): [" << m_fn << "]\n");
     if (m_havedoc == false)
 	return false;
 
     if (missingHelper) {
-	LOGDEB("MHExecMultiple::next_document(): helper known missing\n" );
+	LOGDEB("MHExecMultiple::next_document(): helper known missing\n");
 	return false;
     }
 
@@ -173,7 +174,7 @@ bool MimeHandlerExecMultiple::next_document()
     // empty file name in the latter case.
     // We also compute the file md5 before starting the extraction:
     // under Windows, we may not be able to do it while the file
-    // is opened by the filter
+    // is opened by the filter.
     ostringstream obuf;
     string file_md5;
     if (m_filefirst) {
@@ -182,7 +183,8 @@ bool MimeHandlerExecMultiple::next_document()
 	    if (MD5File(m_fn, md5, &reason)) {
 		file_md5 = MD5HexPrint(md5, xmd5);
 	    } else {
-		LOGERR("MimeHandlerExecM: cant compute md5 for ["  << (m_fn) << "]: "  << (reason) << "\n" );
+		LOGERR("MimeHandlerExecM: cant compute md5 for [" << m_fn <<
+                       "]: " << reason << "\n");
 	    }
 	}
         obuf << "FileName: " << m_fn.length() << "\n" << m_fn;
@@ -192,7 +194,8 @@ bool MimeHandlerExecMultiple::next_document()
         obuf << "Filename: " << 0 << "\n";
     }
     if (!m_ipath.empty()) {
-	LOGDEB("next_doc: sending len "  << (m_ipath.length()) << " val ["  << (m_ipath) << "]\n" );
+	LOGDEB("next_doc: sending ipath " << m_ipath.length() << " val [" <<
+               m_ipath << "]\n");
         obuf << "Ipath: " << m_ipath.length() << "\n" << m_ipath;
     }
     if (!m_dfltInputCharset.empty()) {
@@ -203,14 +206,14 @@ bool MimeHandlerExecMultiple::next_document()
     obuf << "\n";
     if (m_cmd.send(obuf.str()) < 0) {
         m_cmd.zapChild();
-        LOGERR("MHExecMultiple: send error\n" );
+        LOGERR("MHExecMultiple: send error\n");
         return false;
     }
 
     m_adv.reset();
 
     // Read answer (multiple elements)
-    LOGDEB1("MHExecMultiple: reading answer\n" );
+    LOGDEB1("MHExecMultiple: reading answer\n");
     bool eofnext_received = false;
     bool eofnow_received = false;
     bool fileerror_received = false;
@@ -226,46 +229,46 @@ bool MimeHandlerExecMultiple::next_document()
                 return false;
             }
         } catch (HandlerTimeout) {
-            LOGINFO("MHExecMultiple: timeout\n" );
+            LOGINFO("MHExecMultiple: timeout\n");
             m_cmd.zapChild();
             return false;
         } catch (CancelExcept) {
-            LOGINFO("MHExecMultiple: interrupt\n" );
+            LOGINFO("MHExecMultiple: interrupt\n");
             m_cmd.zapChild();
             return false;
         }
         if (name.empty())
             break;
         if (!stringlowercmp("eofnext:", name)) {
-            LOGDEB("MHExecMultiple: got EOFNEXT\n" );
+            LOGDEB("MHExecMultiple: got EOFNEXT\n");
             eofnext_received = true;
         } else if (!stringlowercmp("eofnow:", name)) {
-            LOGDEB("MHExecMultiple: got EOFNOW\n" );
+            LOGDEB("MHExecMultiple: got EOFNOW\n");
             eofnow_received = true;
         } else if (!stringlowercmp("fileerror:", name)) {
-            LOGDEB("MHExecMultiple: got FILEERROR\n" );
+            LOGDEB("MHExecMultiple: got FILEERROR\n");
 	    fileerror_received = true;
         } else if (!stringlowercmp("subdocerror:", name)) {
-            LOGDEB("MHExecMultiple: got SUBDOCERROR\n" );
+            LOGDEB("MHExecMultiple: got SUBDOCERROR\n");
 	    subdocerror_received = true;
         } else if (!stringlowercmp("ipath:", name)) {
             ipath = data;
-            LOGDEB("MHExecMultiple: got ipath ["  << (data) << "]\n" );
+            LOGDEB("MHExecMultiple: got ipath [" << data << "]\n");
         } else if (!stringlowercmp("charset:", name)) {
             charset = data;
-            LOGDEB("MHExecMultiple: got charset ["  << (data) << "]\n" );
+            LOGDEB("MHExecMultiple: got charset [" << data << "]\n");
         } else if (!stringlowercmp("mimetype:", name)) {
             mtype = data;
-            LOGDEB("MHExecMultiple: got mimetype ["  << (data) << "]\n" );
+            LOGDEB("MHExecMultiple: got mimetype [" << data << "]\n");
         } else {
             string nm = stringtolower((const string&)name);
             trimstring(nm, ":");
-            LOGDEB("MHExecMultiple: got ["  << (nm) << "] -> ["  << (data) << "]\n" );
+            LOGDEB("MHExecMultiple: got [" << nm << "] -> [" << data << "]\n");
             m_metaData[nm] += data;
         }
         if (loop == 20) {
             // ?? 
-            LOGERR("MHExecMultiple: filter sent too many parameters\n" );
+            LOGERR("MHExecMultiple: filter sent too many parameters\n");
             return false;
         }
     }
@@ -283,7 +286,8 @@ bool MimeHandlerExecMultiple::next_document()
     // this was wrong. Empty documents can be found ie in zip files and should 
     // not be interpreted as eof.
     if (m_metaData[cstr_dj_keycontent].empty()) {
-        LOGDEB0("MHExecMultiple: got empty document inside ["  << (m_fn) << "]: ["  << (ipath) << "]\n" );
+        LOGDEB0("MHExecMultiple: got empty document inside [" << m_fn <<
+                "]: [" << ipath << "]\n");
     }
 
     if (!ipath.empty()) {
@@ -293,7 +297,8 @@ bool MimeHandlerExecMultiple::next_document()
 	// string which we can use to compute a mime type
         m_metaData[cstr_dj_keyipath] = ipath;
         if (mtype.empty()) {
-	    LOGDEB0("MHExecMultiple: no mime type from filter, using ipath for a guess\n" );
+	    LOGDEB0("MHExecMultiple: no mime type from filter, using ipath "
+                    "for a guess\n");
             mtype = mimetype(ipath, 0, m_config, false);
             if (mtype.empty()) {
                 // mimetype() won't call idFile when there is no file. Do it
@@ -302,7 +307,7 @@ bool MimeHandlerExecMultiple::next_document()
                     // Note this happens for example for directory zip members
                     // We could recognize them by the end /, but wouldn't know
                     // what to do with them anyway.
-                    LOGINFO("MHExecMultiple: cant guess mime type\n" );
+                    LOGINFO("MHExecMultiple: cant guess mime type\n");
                     mtype = "application/octet-stream";
                 }
             }
@@ -327,7 +332,10 @@ bool MimeHandlerExecMultiple::next_document()
     if (eofnext_received)
         m_havedoc = false;
 
-    LOGDEB0("MHExecMultiple: returning "  << (m_metaData[cstr_dj_keycontent].size()) << " bytes of content, mtype ["  << (m_metaData[cstr_dj_keymt]) << "] charset ["  << (m_metaData[cstr_dj_keycharset]) << "]\n" );
+    LOGDEB0("MHExecMultiple: returning " <<
+            m_metaData[cstr_dj_keycontent].size() <<
+            " bytes of content, mtype [" << m_metaData[cstr_dj_keymt] <<
+            "] charset [" << m_metaData[cstr_dj_keycharset] << "]\n");
     return true;
 }
 
