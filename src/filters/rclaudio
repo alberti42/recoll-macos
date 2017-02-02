@@ -7,28 +7,10 @@ import os
 import rclexecm
 
 try:
-    from mutagen.mp3 import MP3
-    from mutagen.easyid3 import EasyID3
-    from mutagen.flac import FLAC
-    from mutagen.oggvorbis import OggVorbis
+    from mutagen import File
 except:
     print("RECFILTERROR HELPERNOTFOUND python:mutagen")
     sys.exit(1);
-
-# prototype for the html document we're returning
-htmltemplate = '''
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-      <meta name="album" content="%s">
-      <meta name="author" content="%s">
-      <meta name="title" content="%s">
-   </head>
-   <body>
-   %s
-   </body>
-</html>
-'''
 
 # mp3:      album, title, artist, genre, date, tracknumber
 # flac:     album, title, artist, genre, xxx, tracknumber
@@ -48,41 +30,49 @@ class AudioTagExtractor:
         filename = params["filename:"]
         mimetype = params["mimetype:"]
         try:
-            if mimetype == b'audio/mpeg':
-                tags = MP3(filename, ID3=EasyID3)
-            elif mimetype == b'application/ogg' or \
-                     mimetype == b'audio/x-vorbis+ogg':
-                tags = OggVorbis(filename)
-            elif mimetype == b'application/x-flac' or \
-                     mimetype == 'audio/x-flac' or \
-                     mimetype == b'audio/flac':
-                tags = FLAC(filename)
-            else:
-                raise Exception("Bad mime type %s" % mimetype)
+            mutf = File(filename, easy=True)
         except Exception as err:
             self.em.rclog("extractone: extract failed: [%s]" % err)
             return (ok, docdata, "", rclexecm.RclExecM.eofnow)
 
-        album = ""
-        artist = ""
-        title = ""
-        try:
-            album = self.em.htmlescape(tags["album"][0])
-        except:
-            pass
-        try:
-            artist = self.em.htmlescape(tags["artist"][0])
-        except:
-            pass
-        try:
-            title = self.em.htmlescape(tags["title"][0])
-        except:
-            pass
-        self.em.setmimetype("text/html")
-        alldata = self.em.htmlescape(tags.pprint())
-        alldata = alldata.replace("\n", "<br>")
-        docdata = (htmltemplate % (album, artist, title, alldata))\
-                  .encode('UTF-8')
+        minf = {}
+        for prop,dflt in [('sample_rate', 44100), ('channels', 2),
+                          ('bits_per_sample', 16), ('length', 0),
+                          ('bitrate', 0)]:
+            try:
+                minf[prop] = getattr(mutf.info, prop)
+            except Exception as e:
+                #self.em.rclog("NO %s prop: %s" % (prop, e))
+                minf[prop] = dflt
+
+        if minf['bitrate'] == 0 and minf['length'] > 0:
+            br = int(os.path.getsize(filename)* 8 / minf['length'])
+            minf['bitrate'] = str(br)
+
+        minf['duration'] = minf['length']
+        del minf['length']
+        for tag,val in minf.iteritems():
+            minf[tag] = str(val)
+
+        for tag,val in mutf.iteritems():
+            try:
+                val0 = val[0]
+                if val0:
+                    minf[tag.lower()] = val0
+            except:
+                pass
+            
+        self.em.setmimetype("text/plain")
+        self.em.setfield("charset", 'utf-8')
+        for tag,val in minf.iteritems():
+            #self.em.rclog("%s -> %s" % (tag, val))
+            self.em.setfield(tag, val)
+            # Compat with old version
+            if tag == 'artist':
+                self.em.setfield('author', val)    
+
+        docdata = mutf.pprint().encode('utf-8')
+
         ok = True
         return (ok, docdata, "", rclexecm.RclExecM.eofnext)
 
