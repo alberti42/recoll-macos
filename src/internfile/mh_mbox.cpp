@@ -100,43 +100,43 @@ public:
     ~MboxCache() {}
     mbhoff_type get_offset(RclConfig *config, const string& udi, int msgnum)
     {
-        LOGDEB0("MboxCache::get_offsets: udi ["  << (udi) << "] msgnum "  << (msgnum) << "\n" );
+        LOGDEB0("MboxCache::get_offsets: udi [" << (udi) << "] msgnum " << (msgnum) << "\n");
         if (!ok(config)) {
-            LOGDEB0("MboxCache::get_offsets: init failed\n" );
+            LOGDEB0("MboxCache::get_offsets: init failed\n");
             return -1;
         }
         std::unique_lock<std::mutex> locker(o_mcache_mutex);
         string fn = makefilename(udi);
         FILE *fp = 0;
         if ((fp = fopen(fn.c_str(), "r")) == 0) {
-            LOGDEB("MboxCache::get_offsets: open failed, errno "  << (errno) << "\n" );
+            LOGDEB("MboxCache::get_offsets: open failed, errno " << (errno) << "\n");
             return -1;
         }
         FpKeeper keeper(&fp);
 
         char blk1[M_o_b1size];
         if (fread(blk1, 1, o_b1size, fp) != o_b1size) {
-            LOGDEB0("MboxCache::get_offsets: read blk1 errno "  << (errno) << "\n" );
+            LOGDEB0("MboxCache::get_offsets: read blk1 errno " << (errno) << "\n");
             return -1;
         }
         ConfSimple cf(string(blk1, o_b1size));
         string fudi;
         if (!cf.get("udi", fudi) || fudi.compare(udi)) {
-            LOGINFO("MboxCache::get_offset:badudi fn "  << (fn) << " udi ["  << (udi) << "], fudi ["  << (fudi) << "]\n" );
+            LOGINFO("MboxCache::get_offset:badudi fn " << (fn) << " udi [" << (udi) << "], fudi [" << (fudi) << "]\n");
             return -1;
         }
         if (fseeko(fp, cacheoffset(msgnum), SEEK_SET) != 0) {
-            LOGDEB0("MboxCache::get_offsets: seek "  << (lltodecstr(cacheoffset(msgnum))) << " errno "  << (errno) << "\n" );
+            LOGDEB0("MboxCache::get_offsets: seek " << (lltodecstr(cacheoffset(msgnum))) << " errno " << (errno) << "\n");
             return -1;
         }
         mbhoff_type offset = -1;
         size_t ret;
         if ((ret = fread(&offset, 1, sizeof(mbhoff_type), fp))
             != sizeof(mbhoff_type)) {
-            LOGDEB0("MboxCache::get_offsets: read ret "  << (ret) << " errno "  << (errno) << "\n" );
+            LOGDEB0("MboxCache::get_offsets: read ret " << (ret) << " errno " << (errno) << "\n");
             return -1;
         }
-        LOGDEB0("MboxCache::get_offsets: ret "  << (lltodecstr(offset)) << "\n" );
+        LOGDEB0("MboxCache::get_offsets: ret " << (lltodecstr(offset)) << "\n");
         return offset;
     }
 
@@ -144,7 +144,7 @@ public:
     void put_offsets(RclConfig *config, const string& udi, mbhoff_type fsize,
                      vector<mbhoff_type>& offs)
     {
-        LOGDEB0("MboxCache::put_offsets: "  << (offs.size()) << " offsets\n" );
+        LOGDEB0("MboxCache::put_offsets: " << (offs.size()) << " offsets\n");
         if (!ok(config) || !maybemakedir())
             return;
         if (fsize < m_minfsize)
@@ -153,7 +153,7 @@ public:
         string fn = makefilename(udi);
         FILE *fp;
         if ((fp = fopen(fn.c_str(), "w")) == 0) {
-            LOGDEB("MboxCache::put_offsets: fopen errno "  << (errno) << "\n" );
+            LOGDEB("MboxCache::put_offsets: fopen errno " << (errno) << "\n");
             return;
         }
         FpKeeper keeper(&fp);
@@ -163,7 +163,7 @@ public:
         blk1.append(cstr_newline);
         blk1.resize(o_b1size, 0);
         if (fwrite(blk1.c_str(), 1, o_b1size, fp) != o_b1size) {
-            LOGDEB("MboxCache::put_offsets: fwrite errno "  << (errno) << "\n" );
+            LOGDEB("MboxCache::put_offsets: fwrite errno " << (errno) << "\n");
             return;
         }
 
@@ -255,10 +255,9 @@ void MimeHandlerMbox::clear()
     RecollFilter::clear();
 }
 
-bool MimeHandlerMbox::set_document_file(const string& mt, const string &fn)
+bool MimeHandlerMbox::set_document_file_impl(const string& mt, const string &fn)
 {
-    LOGDEB("MimeHandlerMbox::set_document_file("  << (fn) << ")\n" );
-    RecollFilter::set_document_file(mt, fn);
+    LOGDEB("MimeHandlerMbox::set_document_file(" << fn << ")\n");
     m_fn = fn;
     if (m_vfp) {
 	fclose((FILE *)m_vfp);
@@ -267,7 +266,8 @@ bool MimeHandlerMbox::set_document_file(const string& mt, const string &fn)
 
     m_vfp = fopen(fn.c_str(), "r");
     if (m_vfp == 0) {
-	LOGERR("MimeHandlerMail::set_document_file: error opening "  << (fn) << "\n" );
+	LOGERR("MimeHandlerMail::set_document_file: error opening " << fn <<
+               "\n");
 	return false;
     }
 #if defined O_NOATIME && O_NOATIME != 0
@@ -278,7 +278,8 @@ bool MimeHandlerMbox::set_document_file(const string& mt, const string &fn)
     // Used to use ftell() here: no good beyond 2GB
     {struct stat st;
 	if (fstat(fileno((FILE*)m_vfp), &st) < 0) {
-	    LOGERR("MimeHandlerMbox:setdocfile: fstat("  << (fn) << ") failed errno "  << (errno) << "\n" );
+	    LOGERR("MimeHandlerMbox:setdocfile: fstat(" << fn <<
+                   ") failed errno " << errno << "\n");
 	    return false;
 	}
 	m_fsize = st.st_size;
@@ -291,7 +292,7 @@ bool MimeHandlerMbox::set_document_file(const string& mt, const string &fn)
     string quirks;
     if (m_config && m_config->getConfParam(cstr_keyquirks, quirks)) {
 	if (quirks == "tbird") {
-	    LOGDEB("MimeHandlerMbox: setting quirks TBIRD\n" );
+	    LOGDEB("MimeHandlerMbox: setting quirks TBIRD\n");
 	    m_quirks |= MBOXQUIRK_TBIRD;
 	}
     }
@@ -299,7 +300,7 @@ bool MimeHandlerMbox::set_document_file(const string& mt, const string &fn)
     // And double check for thunderbird 
     string tbirdmsf = fn + ".msf";
     if ((m_quirks&MBOXQUIRK_TBIRD) == 0 && path_exists(tbirdmsf)) {
-	LOGDEB("MimeHandlerMbox: detected unconfigured tbird mbox in "  << (fn) << "\n" );
+	LOGDEB("MimeHandlerMbox: detected unconfigured tbird mbox in " << (fn) << "\n");
 	m_quirks |= MBOXQUIRK_TBIRD;
     }
 
@@ -416,7 +417,7 @@ static void compileregexes()
 bool MimeHandlerMbox::next_document()
 {
     if (m_vfp == 0) {
-	LOGERR("MimeHandlerMbox::next_document: not open\n" );
+	LOGERR("MimeHandlerMbox::next_document: not open\n");
 	return false;
     }
     if (!m_havedoc) {
@@ -428,10 +429,10 @@ bool MimeHandlerMbox::next_document()
 	sscanf(m_ipath.c_str(), "%d", &mtarg);
     } else if (m_forPreview) {
 	// Can't preview an mbox. 
-	LOGDEB("MimeHandlerMbox::next_document: can't preview folders!\n" );
+	LOGDEB("MimeHandlerMbox::next_document: can't preview folders!\n");
 	return false;
     }
-    LOGDEB0("MimeHandlerMbox::next_document: fn "  << (m_fn) << ", msgnum "  << (m_msgnum) << " mtarg "  << (mtarg) << " \n" );
+    LOGDEB0("MimeHandlerMbox::next_document: fn " << (m_fn) << ", msgnum " << (m_msgnum) << " mtarg " << (mtarg) << " \n");
     if (mtarg == 0)
 	mtarg = -1;
 
@@ -451,7 +452,7 @@ bool MimeHandlerMbox::next_document()
     if (mtarg > 0) {
         mbhoff_type off;
         line_type line;
-        LOGDEB0("MimeHandlerMbox::next_doc: mtarg "  << (mtarg) << " m_udi["  << (m_udi) << "]\n" );
+        LOGDEB0("MimeHandlerMbox::next_doc: mtarg " << (mtarg) << " m_udi[" << (m_udi) << "]\n");
         if (!m_udi.empty() && 
             (off = o_mcache.get_offset(m_config, m_udi, mtarg)) >= 0 && 
             fseeko(fp, (off_t)off, SEEK_SET) >= 0 && 
@@ -459,7 +460,7 @@ bool MimeHandlerMbox::next_document()
             (!M_regexec(fromregex, line, 0, 0, 0) || 
 	     ((m_quirks & MBOXQUIRK_TBIRD) && 
 	      !M_regexec(minifromregex, line, 0, 0, 0)))	) {
-                LOGDEB0("MimeHandlerMbox: Cache: From_ Ok\n" );
+                LOGDEB0("MimeHandlerMbox: Cache: From_ Ok\n");
                 fseeko(fp, (off_t)off, SEEK_SET);
                 m_msgnum = mtarg -1;
 		storeoffsets = false;
@@ -478,7 +479,7 @@ bool MimeHandlerMbox::next_document()
     for (;;) {
 	message_end = ftello(fp);
 	if (!fgets(line, LL, fp)) {
-	    LOGDEB2("MimeHandlerMbox:next: eof\n" );
+	    LOGDEB2("MimeHandlerMbox:next: eof\n");
 	    iseof = true;
 	    m_msgnum++;
 	    break;
@@ -486,7 +487,7 @@ bool MimeHandlerMbox::next_document()
 	m_lineno++;
 	int ll;
 	stripendnl(line, ll);
-	LOGDEB2("mhmbox:next: hadempty "  << (hademptyline) << " lineno "  << (m_lineno) << " ll "  << (ll) << " Line: ["  << (line) << "]\n" );
+	LOGDEB2("mhmbox:next: hadempty " << (hademptyline) << " lineno " << (m_lineno) << " ll " << (ll) << " Line: [" << (line) << "]\n");
 	if (hademptyline) {
 	    if (ll > 0) {
 		// Non-empty line with empty line flag set, reset flag
@@ -504,7 +505,7 @@ bool MimeHandlerMbox::next_document()
 		    ((m_quirks & MBOXQUIRK_TBIRD) && 
 		     !M_regexec(minifromregex, line, 0, 0, 0)))
 		    ) {
-		    LOGDEB0("MimeHandlerMbox: msgnum "  << (m_msgnum) << ", From_ at line "  << (m_lineno) << ": ["  << (line) << "]\n" );
+		    LOGDEB0("MimeHandlerMbox: msgnum " << (m_msgnum) << ", From_ at line " << (m_lineno) << ": [" << (line) << "]\n");
 		    if (storeoffsets)
 			m_offsets.push_back(message_end);
 		    m_msgnum++;
@@ -527,13 +528,13 @@ bool MimeHandlerMbox::next_document()
 	    line[ll+1] = 0;
 	    msgtxt += line;
 	    if (msgtxt.size() > max_mbox_member_size) {
-		LOGERR("mh_mbox: huge message (more than "  << (max_mbox_member_size/(1024*1024)) << " MB) inside "  << (m_fn) << ", giving up\n" );
+		LOGERR("mh_mbox: huge message (more than " << (max_mbox_member_size/(1024*1024)) << " MB) inside " << (m_fn) << ", giving up\n");
 		return false;
 	    }
 	}
     }
-    LOGDEB2("Message text length "  << (msgtxt.size()) << "\n" );
-    LOGDEB2("Message text: ["  << (msgtxt) << "]\n" );
+    LOGDEB2("Message text length " << (msgtxt.size()) << "\n");
+    LOGDEB2("Message text: [" << (msgtxt) << "]\n");
     char buf[20];
     // m_msgnum was incremented when hitting the next From_ or eof, so the data
     // is for m_msgnum - 1
@@ -541,7 +542,7 @@ bool MimeHandlerMbox::next_document()
     m_metaData[cstr_dj_keyipath] = buf;
     m_metaData[cstr_dj_keymt] = "message/rfc822";
     if (iseof) {
-	LOGDEB2("MimeHandlerMbox::next: eof hit\n" );
+	LOGDEB2("MimeHandlerMbox::next: eof hit\n");
 	m_havedoc = false;
 	if (!m_udi.empty() && storeoffsets) {
 	    o_mcache.put_offsets(m_config, m_udi, m_fsize, m_offsets);
@@ -658,7 +659,7 @@ int main(int argc, char **argv)
 	} else {
 	    size = it->second.length();
 	}
-	cout << "Doc " << docnt << " size " << size  << endl;
+	cout << "Doc " << docnt << " size " << size << endl;
     }
     cout << docnt << " documents found in " << filename << endl;
     exit(0);

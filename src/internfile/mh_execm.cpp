@@ -178,7 +178,7 @@ bool MimeHandlerExecMultiple::next_document()
     ostringstream obuf;
     string file_md5;
     if (m_filefirst) {
-	if (!m_forPreview) {
+	if (!m_forPreview && !m_nomd5) {
 	    string md5, xmd5, reason;
 	    if (MD5File(m_fn, md5, &reason)) {
 		file_md5 = MD5HexPrint(md5, xmd5);

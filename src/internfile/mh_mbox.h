@@ -19,8 +19,6 @@
 
 #include <string>
 #include <vector>
-using std::string;
-using std::vector;
 
 #include "mimehandler.h"
 
@@ -30,28 +28,32 @@ using std::vector;
  * file. 
  */
 class MimeHandlerMbox : public RecollFilter {
- public:
-    MimeHandlerMbox(RclConfig *cnf, const string& id) 
+public:
+    MimeHandlerMbox(RclConfig *cnf, const std::string& id) 
 	: RecollFilter(cnf, id), m_vfp(0), m_msgnum(0), 
-	  m_lineno(0), m_fsize(0)
-    {}
+	  m_lineno(0), m_fsize(0) {
+    }
     virtual ~MimeHandlerMbox();
-    virtual bool set_document_file(const string& mt, const string &file_path);
     virtual bool next_document();
-    virtual bool skip_to_document(const string& ipath) {
+    virtual bool skip_to_document(const std::string& ipath) {
 	m_ipath = ipath;
 	return true;
     }
     virtual void clear();
     typedef long long mbhoff_type;
- private:
-    string     m_fn;     // File name
+
+protected:
+    virtual bool set_document_file_impl(const std::string&,
+                                        const std::string&);
+
+private:
+    std::string m_fn;     // File name
     void      *m_vfp;    // File pointer for folder
     int        m_msgnum; // Current message number in folder. Starts at 1
-    string     m_ipath;
+    std::string m_ipath;
     int        m_lineno; // debug 
     mbhoff_type m_fsize;
-    vector<mbhoff_type> m_offsets;
+    std::vector<mbhoff_type> m_offsets;
     enum Quirks {MBOXQUIRK_TBIRD=1};
     int        m_quirks;
 };

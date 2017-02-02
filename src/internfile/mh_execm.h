@@ -102,22 +102,27 @@ class MimeHandlerExecMultiple : public MimeHandlerExec {
     /////// End un-cleared stuff.
 
  public:
-    MimeHandlerExecMultiple(RclConfig *cnf, const string& id) 
-        : MimeHandlerExec(cnf, id)
-    {}
+    MimeHandlerExecMultiple(RclConfig *cnf, const std::string& id) 
+        : MimeHandlerExec(cnf, id) {
+    }
     // No resources to clean up, the ExecCmd destructor does it.
     virtual ~MimeHandlerExecMultiple() {}
-    virtual bool set_document_file(const string& mt, const string &file_path) {
-        m_filefirst = true;
-        return MimeHandlerExec::set_document_file(mt, file_path);
-    }
+
     virtual bool next_document();
 
     // skip_to and clear inherited from MimeHandlerExec
 
+protected:
+        // This is the only 2nd-level derived handler class. Use call-super.
+    virtual bool set_document_file_impl(const std::string& mt,
+                                        const std::string &file_path) {
+        m_filefirst = true;
+        return MimeHandlerExec::set_document_file_impl(mt, file_path);
+    }
+
 private:
     bool startCmd();
-    bool readDataElement(string& name, string& data);
+    bool readDataElement(std::string& name, std::string& data);
     bool m_filefirst;
     int  m_maxmemberkb;
     MEAdv m_adv;

@@ -60,7 +60,8 @@ static RecollFilter *getMimeHandlerFromCache(const string& key)
     std::unique_lock<std::mutex> locker(o_handlers_mutex);
     string xdigest;
     MD5HexPrint(key, xdigest);
-    LOGDEB("getMimeHandlerFromCache: "  << (xdigest) << " cache size "  << (o_handlers.size()) << "\n" );
+    LOGDEB("getMimeHandlerFromCache: " << xdigest << " cache size " <<
+           o_handlers.size() << "\n");
 
     multimap<string, RecollFilter *>::iterator it = o_handlers.find(key);
     if (it != o_handlers.end()) {
@@ -69,13 +70,14 @@ static RecollFilter *getMimeHandlerFromCache(const string& key)
 	if (it1 != o_hlru.end()) {
 	    o_hlru.erase(it1);
 	} else {
-	    LOGERR("getMimeHandlerFromCache: lru position not found\n" );
+	    LOGERR("getMimeHandlerFromCache: lru position not found\n");
 	}
 	o_handlers.erase(it);
-	LOGDEB("getMimeHandlerFromCache: "  << (xdigest) << " found size "  << (o_handlers.size()) << "\n" );
+	LOGDEB("getMimeHandlerFromCache: " << xdigest << " found size " <<
+               o_handlers.size() << "\n");
 	return h;
     }
-    LOGDEB("getMimeHandlerFromCache: "  << (xdigest) << " not found\n" );
+    LOGDEB("getMimeHandlerFromCache: " << xdigest << " not found\n");
     return 0;
 }
 
@@ -85,14 +87,16 @@ void returnMimeHandler(RecollFilter *handler)
     typedef multimap<string, RecollFilter*>::value_type value_type;
 
     if (handler == 0) {
-	LOGERR("returnMimeHandler: bad parameter\n" );
+	LOGERR("returnMimeHandler: bad parameter\n");
 	return;
     }
     handler->clear();
 
     std::unique_lock<std::mutex> locker(o_handlers_mutex);
 
-    LOGDEB("returnMimeHandler: returning filter for "  << (handler->get_mime_type()) << " cache size "  << (o_handlers.size()) << "\n" );
+    LOGDEB("returnMimeHandler: returning filter for " <<
+           handler->get_mime_type() << " cache size " << o_handlers.size() <<
+           "\n");
 
     // Limit pool size. The pool can grow quite big because there are
     // many filter types, each of which can be used in several copies
@@ -105,9 +109,9 @@ void returnMimeHandler(RecollFilter *handler)
 	if (once) {
 	    once = 0;
 	    for (it = o_handlers.begin(); it != o_handlers.end(); it++) {
-		LOGDEB1("Cache full. key: "  << (it->first) << "\n" );
+		LOGDEB1("Cache full. key: " << it->first << "\n");
 	    }
-	    LOGDEB1("Cache LRU size: "  << (o_hlru.size()) << "\n" );
+	    LOGDEB1("Cache LRU size: " << o_hlru.size() << "\n");
 	}
 	if (o_hlru.size() > 0) {
 	    it = o_hlru.back();
@@ -122,7 +126,7 @@ void returnMimeHandler(RecollFilter *handler)
 
 void clearMimeHandlerCache()
 {
-    LOGDEB("clearMimeHandlerCache()\n" );
+    LOGDEB("clearMimeHandlerCache()\n");
     multimap<string, RecollFilter *>::iterator it;
     std::unique_lock<std::mutex> locker(o_handlers_mutex);
     for (it = o_handlers.begin(); it != o_handlers.end(); it++) {
@@ -136,31 +140,31 @@ void clearMimeHandlerCache()
 static RecollFilter *mhFactory(RclConfig *config, const string &mime,
 				bool nobuild, string& id)
 {
-    LOGDEB2("mhFactory("  << (mime) << ")\n" );
+    LOGDEB2("mhFactory(" << mime << ")\n");
     string lmime(mime);
     stringtolower(lmime);
     if (cstr_textplain == lmime) {
-	LOGDEB2("mhFactory("  << (mime) << "): returning MimeHandlerText\n" );
+	LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerText\n");
 	MD5String("MimeHandlerText", id);
 	return nobuild ? 0 : new MimeHandlerText(config, id);
     } else if ("text/html" == lmime) {
-	LOGDEB2("mhFactory("  << (mime) << "): returning MimeHandlerHtml\n" );
+	LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerHtml\n");
 	MD5String("MimeHandlerHtml", id);
 	return nobuild ? 0 : new MimeHandlerHtml(config, id);
     } else if ("text/x-mail" == lmime) {
-	LOGDEB2("mhFactory("  << (mime) << "): returning MimeHandlerMbox\n" );
+	LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerMbox\n");
 	MD5String("MimeHandlerMbox", id);
 	return nobuild ? 0 : new MimeHandlerMbox(config, id);
     } else if ("message/rfc822" == lmime) {
-	LOGDEB2("mhFactory("  << (mime) << "): returning MimeHandlerMail\n" );
+	LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerMail\n");
 	MD5String("MimeHandlerMail", id);
 	return nobuild ? 0 : new MimeHandlerMail(config, id);
     } else if ("inode/symlink" == lmime) {
-	LOGDEB2("mhFactory("  << (mime) << "): ret MimeHandlerSymlink\n" );
+	LOGDEB2("mhFactory(" << mime << "): ret MimeHandlerSymlink\n");
 	MD5String("MimeHandlerSymlink", id);
 	return nobuild ? 0 : new MimeHandlerSymlink(config, id);
     } else if ("application/x-zerosize" == lmime) {
-	LOGDEB("mhFactory("  << (mime) << "): ret MimeHandlerNull\n" );
+	LOGDEB("mhFactory(" << mime << "): ret MimeHandlerNull\n");
 	MD5String("MimeHandlerNull", id);
 	return nobuild ? 0 : new MimeHandlerNull(config, id);
     } else if (lmime.find("text/") == 0) {
@@ -169,14 +173,15 @@ static RecollFilter *mhFactory(RclConfig *config, const string &mime,
         // mimeconf, not at random. For programs, for example this
         // allows indexing and previewing as text/plain (no filter
         // exec) but still opening with a specific editor.
-	LOGDEB2("mhFactory("  << (mime) << "): returning MimeHandlerText(x)\n" );
+	LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerText(x)\n");
 	MD5String("MimeHandlerText", id);
         return nobuild ? 0 : new MimeHandlerText(config, id); 
     } else {
 	// We should not get there. It means that "internal" was set
 	// as a handler in mimeconf for a mime type we actually can't
 	// handle.
-	LOGERR("mhFactory: mime type ["  << (lmime) << "] set as internal but unknown\n" );
+	LOGERR("mhFactory: mime type [" << lmime <<
+               "] set as internal but unknown\n");
 	MD5String("MimeHandlerUnknown", id);
 	return nobuild ? 0 : new MimeHandlerUnknown(config, id);
     }
@@ -199,7 +204,8 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
     string cmdstr;
 
     if (!cfg->valueSplitAttributes(hs, cmdstr, attrs)) {
-	LOGERR("mhExecFactory: bad config line for ["  << (mtype) << "]: ["  << (hs) << "]\n" );
+	LOGERR("mhExecFactory: bad config line for [" <<
+               mtype << "]: [" << hs << "]\n");
         return 0;
     }
 
@@ -207,7 +213,8 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
     vector<string> cmdtoks;
     stringToStrings(cmdstr, cmdtoks);
     if (cmdtoks.empty()) {
-	LOGERR("mhExecFactory: bad config line for ["  << (mtype) << "]: ["  << (hs) << "]\n" );
+	LOGERR("mhExecFactory: bad config line for [" << mtype <<
+               "]: [" << hs << "]\n");
 	return 0;
     }
     MimeHandlerExec *h = multiple ? 
@@ -221,7 +228,8 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
     // the same change if we ever want to use the same cmdling as windows
     if (!stringlowercmp("python", *it) || !stringlowercmp("perl", *it)) {
         if (cmdtoks.size() < 2) {
-            LOGERR("mhExecFactory: python/perl cmd: no script?. ["  << (mtype) << "]: ["  << (hs) << "]\n" );
+            LOGERR("mhExecFactory: python/perl cmd: no script?. [" <<
+                   mtype << "]: [" << hs << "]\n");
         }
         vector<string>::iterator it1(it);
         it1++;
@@ -244,7 +252,9 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
     for (it = h->params.begin(); it != h->params.end(); it++) {
 	scmd += string("[") + *it + "] ";
     }
-    LOGDEB("mhExecFactory:mt ["  << (mtype) << "] cfgmt ["  << (h->cfgFilterOutputMtype) << "] cfgcs ["  << (h->cfgFilterOutputCharset) << "] cmd: ["  << (scmd) << "]\n" );
+    LOGDEB("mhExecFactory:mt [" << mtype << "] cfgmt [" <<
+           h->cfgFilterOutputMtype << "] cfgcs [" <<
+           h->cfgFilterOutputCharset << "] cmd: [" << scmd << "]\n");
 #endif
 
     return h;
@@ -254,7 +264,8 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
 RecollFilter *getMimeHandler(const string &mtype, RclConfig *cfg, 
 			      bool filtertypes)
 {
-    LOGDEB("getMimeHandler: mtype ["  << (mtype) << "] filtertypes "  << (filtertypes) << "\n" );
+    LOGDEB("getMimeHandler: mtype [" << mtype << "] filtertypes " <<
+           filtertypes << "\n");
     RecollFilter *h = 0;
 
     // Get handler definition for mime type. We do this even if an
@@ -292,7 +303,7 @@ RecollFilter *getMimeHandler(const string &mtype, RclConfig *cfg,
 	if (h != 0)
 	    goto out;
 
-	LOGDEB2("getMimeHandler: "  << (mtype) << " not in cache\n" );
+	LOGDEB2("getMimeHandler: " << mtype << " not in cache\n");
 
 	// Not in cache. 
 	if (internal) {
@@ -303,13 +314,14 @@ RecollFilter *getMimeHandler(const string &mtype, RclConfig *cfg,
 	    // partly redundant with the localfields/rclaptg, but
 	    // better and the latter will probably go away at some
 	    // point in the future.
-	    LOGDEB2("handlertype internal, cmdstr ["  << (cmdstr) << "]\n" );
+	    LOGDEB2("handlertype internal, cmdstr [" << cmdstr << "]\n");
 	    h = mhFactory(cfg, cmdstr.empty() ? mtype : cmdstr, false, id);
 	    goto out;
 	} else if (!stringlowercmp("dll", handlertype)) {
 	} else {
             if (cmdstr.empty()) {
-		LOGERR("getMimeHandler: bad line for "  << (mtype) << ": "  << (hs) << "\n" );
+		LOGERR("getMimeHandler: bad line for " << mtype << ": " <<
+                       hs << "\n");
 		goto out;
 	    }
             if (!stringlowercmp("exec", handlertype)) {
@@ -319,7 +331,8 @@ RecollFilter *getMimeHandler(const string &mtype, RclConfig *cfg,
                 h = mhExecFactory(cfg, mtype, cmdstr, true, id);
 		goto out;
             } else {
-		LOGERR("getMimeHandler: bad line for "  << (mtype) << ": "  << (hs) << "\n" );
+		LOGERR("getMimeHandler: bad line for " << mtype << ": " <<
+                       hs << "\n");
 		goto out;
             }
 	}

@@ -34,14 +34,6 @@
 
 using namespace std;
 
-MimeHandlerExec::MimeHandlerExec(RclConfig *cnf, const std::string& id)
-    : RecollFilter(cnf, id), missingHelper(false), m_filtermaxseconds(900),
-      m_filtermaxmbytes(0) 
-{
-    m_config->getConfParam("filtermaxseconds", &m_filtermaxseconds);
-    m_config->getConfParam("filtermaxmbytes", &m_filtermaxmbytes);
-}
-
 MEAdv::MEAdv(int maxsecs) 
   : m_filtermaxseconds(maxsecs) 
 {
@@ -55,10 +47,11 @@ void MEAdv::reset()
 
 void MEAdv::newData(int n) 
 {
-    LOGDEB2("MHExec:newData("  << (n) << ")\n" );
+    LOGDEB2("MHExec:newData(" << n << ")\n");
     if (m_filtermaxseconds > 0 && 
         time(0L) - m_start > m_filtermaxseconds) {
-        LOGERR("MimeHandlerExec: filter timeout ("  << (m_filtermaxseconds) << " S)\n" );
+        LOGERR("MimeHandlerExec: filter timeout (" << m_filtermaxseconds <<
+               " S)\n");
         throw HandlerTimeout();
     }
     // If a cancel request was set by the signal handler (or by us
@@ -67,9 +60,65 @@ void MEAdv::newData(int n)
     CancelCheck::instance().checkCancel();
 }
 
+
+MimeHandlerExec::MimeHandlerExec(RclConfig *cnf, const std::string& id)
+    : RecollFilter(cnf, id), missingHelper(false), m_filtermaxseconds(900),
+      m_filtermaxmbytes(0), m_handlernomd5(false), m_hnomd5init(false),
+      m_nomd5(false)
+{
+    m_config->getConfParam("filtermaxseconds", &m_filtermaxseconds);
+    m_config->getConfParam("filtermaxmbytes", &m_filtermaxmbytes);
+}
+
+bool MimeHandlerExec::set_document_file_impl(const std::string& mt, 
+                                             const std::string &file_path)
+{
+    // Can't do this in constructor as script name not set yet. Do it
+    // once on first call
+    unordered_set<string> nomd5tps;
+    bool tpsread(false);
+    
+    if (false == m_hnomd5init) {
+        m_hnomd5init = true;
+        if (m_config->getConfParam("nomd5types", &nomd5tps)) {
+            tpsread = true;
+            if (!nomd5tps.empty()) {
+                if (params.size() &&
+                    nomd5tps.find(path_getsimple(params[0])) !=
+                    nomd5tps.end()) {
+                    m_handlernomd5 = true;
+                }
+                // On windows the 1st param is often a script interp
+                // name (e.g. "python", and the script name is 2nd
+                if (params.size() > 1 &&
+                    nomd5tps.find(path_getsimple(params[1])) !=
+                    nomd5tps.end()) {
+                    m_handlernomd5 = true;
+                }
+            }
+        }
+    }
+
+    m_nomd5 = m_handlernomd5;
+
+    if (!m_nomd5) {
+        // Check for MIME type based md5 suppression
+        if (!tpsread) {
+            m_config->getConfParam("nomd5types", &nomd5tps);
+        }
+        if (nomd5tps.find(mt) != nomd5tps.end()) {
+            m_nomd5 = true;
+        }
+    }
+    
+    m_fn = file_path;
+    m_havedoc = true;
+    return true;
+}
+
 bool MimeHandlerExec::skip_to_document(const string& ipath) 
 {
-    LOGDEB("MimeHandlerExec:skip_to_document: ["  << (ipath) << "]\n" );
+    LOGDEB("MimeHandlerExec:skip_to_document: [" << ipath << "]\n");
     m_ipath = ipath;
     return true;
 }
@@ -82,13 +131,13 @@ bool MimeHandlerExec::next_document()
 	return false;
     m_havedoc = false;
     if (missingHelper) {
-	LOGDEB("MimeHandlerExec::next_document(): helper known missing\n" );
+	LOGDEB("MimeHandlerExec::next_document(): helper known missing\n");
 	return false;
     }
 
     if (params.empty()) {
 	// Hu ho
-	LOGERR("MimeHandlerExec::mkDoc: empty params\n" );
+	LOGERR("MimeHandlerExec::next_document: empty params\n");
 	m_reason = "RECFILTERROR BADCONFIG";
 	return false;
     }
@@ -110,7 +159,7 @@ bool MimeHandlerExec::next_document()
     mexec.setAdvise(&adv);
     mexec.putenv("RECOLL_CONFDIR", m_config->getConfDir());
     mexec.putenv(m_forPreview ? "RECOLL_FILTER_FORPREVIEW=yes" :
-		"RECOLL_FILTER_FORPREVIEW=no");
+                 "RECOLL_FILTER_FORPREVIEW=no");
     mexec.setrlimit_as(m_filtermaxmbytes);
 
     int status;
@@ -125,7 +174,8 @@ bool MimeHandlerExec::next_document()
     }
 
     if (status) {
-	LOGERR("MimeHandlerExec: command status 0x"  << (status) << " for "  << (cmd) << "\n" );
+	LOGERR("MimeHandlerExec: command status 0x" << status << " for " <<
+               cmd << "\n");
 	if (WIFEXITED(status) && WEXITSTATUS(status) == 127) {
 	    // That's how execmd signals a failed exec (most probably
 	    // a missing command). Let'hope no filter uses the same value as
@@ -188,12 +238,13 @@ void MimeHandlerExec::finaldetails()
     m_metaData[cstr_dj_keymt] = cfgFilterOutputMtype.empty() ? "text/html" : 
 	cfgFilterOutputMtype;
 
-    if (!m_forPreview) {
+    if (!m_forPreview && !m_nomd5) {
 	string md5, xmd5, reason;
 	if (MD5File(m_fn, md5, &reason)) {
 	    m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
 	} else {
-	    LOGERR("MimeHandlerExec: cant compute md5 for ["  << (m_fn) << "]: "  << (reason) << "\n" );
+	    LOGERR("MimeHandlerExec: cant compute md5 for [" << m_fn << "]: " <<
+                   reason << "\n");
 	}
     }
 

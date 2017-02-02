@@ -17,34 +17,28 @@
 #ifndef _MH_NULL_H_INCLUDED_
 #define _MH_NULL_H_INCLUDED_
 
-// It may make sense in some cases to set this null filter (no output)
-// instead of using recoll_noindex or leaving the default filter in
-// case one doesn't want to install it: this will avoid endless retries
-// to reindex the affected files, as recoll will think it has succeeded
-// indexing them. Downside: the files won't be indexed when one
-// actually installs the real filter, will need a -z
-// Actually used for empty files
-// Associated to application/x-zerosize, so use 
-// <mimetype> = internal application/x-zerosize
-// in mimeconf
 #include <string>
 #include "cstr.h"
 #include "mimehandler.h"
 
+/// Null input handler always returning empty data.
+///
+/// It may make sense in some cases to set this null filter (no output)
+/// instead of using recoll_noindex or leaving the default filter in
+/// case one doesn't want to install it: this will avoid endless retries
+/// to reindex the affected files, as recoll will think it has succeeded
+/// indexing them. Downside: the files won't be indexed when one
+/// actually installs the real filter, will need a -z
+/// Actually used for empty files.
+/// Associated to application/x-zerosize, so use the following in mimeconf:
+///    <mimetype> = internal application/x-zerosize
 class MimeHandlerNull : public RecollFilter {
  public:
     MimeHandlerNull(RclConfig *cnf, const std::string& id) 
-	: RecollFilter(cnf, id) 
-    {
+	: RecollFilter(cnf, id) {
     }
-    virtual ~MimeHandlerNull() 
-    {
-    }
-    virtual bool set_document_file(const string& mt, const string& fn) 
-    {
-	RecollFilter::set_document_file(mt, fn);
-	return m_havedoc = true;
-    }
+    virtual ~MimeHandlerNull() {}
+
     virtual bool next_document() 
     {
 	if (m_havedoc == false)

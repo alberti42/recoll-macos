@@ -26,22 +26,18 @@
  */
 class MimeHandlerHtml : public RecollFilter {
  public:
-    MimeHandlerHtml(RclConfig *cnf, const string& id) 
-	: RecollFilter(cnf, id) 
-    {
+    MimeHandlerHtml(RclConfig *cnf, const std::string& id) 
+	: RecollFilter(cnf, id) {
     }
-    virtual ~MimeHandlerHtml() 
-    {
-    }
-    virtual bool set_document_file(const string& mt, const string &file_path);
-    virtual bool set_document_string(const string& mt, const string &data);
+    virtual ~MimeHandlerHtml() {}
+
     virtual bool is_data_input_ok(DataInput input) const {
 	if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)
 	    return true;
 	return false;
     }
     virtual bool next_document();
-    const string& get_html() 
+    const std::string& get_html() 
     {
 	return m_html;
     }
@@ -50,9 +46,15 @@ class MimeHandlerHtml : public RecollFilter {
 	m_html.erase();
 	RecollFilter::clear(); 
     }
+protected:
+    virtual bool set_document_file_impl(const std::string& mt,
+                                        const std::string &file_path);
+    virtual bool set_document_string_impl(const std::string& mt,
+                                          const std::string &data);
+
 private:
-    string m_filename;
-    string m_html;
+    std::string m_filename;
+    std::string m_html;
 };
 
 #endif /* _HTML_H_INCLUDED_ */

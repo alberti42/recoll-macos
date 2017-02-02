@@ -20,8 +20,6 @@
 #include <sstream>
 #include <vector>
 #include <map>
-using std::vector;
-using std::map;
 
 #include "mimehandler.h"
 
@@ -39,18 +37,22 @@ class MHMailAttach;
  */
 class MimeHandlerMail : public RecollFilter {
 public:
-    MimeHandlerMail(RclConfig *cnf, const string &id);
+    MimeHandlerMail(RclConfig *cnf, const std::string &id);
     virtual ~MimeHandlerMail();
-    virtual bool set_document_file(const string& mt, const string& file_path);
-    virtual bool set_document_string(const string& mt, const string& data);
     virtual bool is_data_input_ok(DataInput input) const {
 	if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)
 	    return true;
 	return false;
     }
     virtual bool next_document();
-    virtual bool skip_to_document(const string& ipath);
+    virtual bool skip_to_document(const std::string& ipath);
     virtual void clear();
+
+protected:
+    virtual bool set_document_file_impl(const std::string& mt,
+                                        const std::string& file_path);
+    virtual bool set_document_string_impl(const std::string& mt,
+                                          const std::string& data);
 
 private:
     bool processMsg(Binc::MimePart *doc, int depth);
@@ -65,19 +67,19 @@ private:
     int                     m_idx; 
     // Start of actual text (after the reprinted headers. This is for 
     // generating a semi-meaningful "abstract")
-    string::size_type       m_startoftext; 
-    string                  m_subject; 
-    vector<MHMailAttach *>  m_attachments;
+    std::string::size_type       m_startoftext; 
+    std::string                  m_subject; 
+    std::vector<MHMailAttach *>  m_attachments;
     // Additional headers to be process as per config + field name translation
-    map<string,string>      m_addProcdHdrs; 
+    std::map<std::string, std::string>      m_addProcdHdrs; 
 };
 
 class MHMailAttach {
 public:
-    string          m_contentType;
-    string          m_filename;
-    string          m_charset;
-    string          m_contentTransferEncoding;
+    std::string          m_contentType;
+    std::string          m_filename;
+    std::string          m_charset;
+    std::string          m_contentTransferEncoding;
     Binc::MimePart *m_part;
 };
 

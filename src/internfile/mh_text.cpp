@@ -40,12 +40,10 @@ const int MB = 1024*1024;
 const int KB = 1024;
 
 // Process a plain text file
-bool MimeHandlerText::set_document_file(const string& mt, const string &fn)
+bool MimeHandlerText::set_document_file_impl(const string& mt, const string &fn)
 {
-    LOGDEB("MimeHandlerText::set_document_file: ["  << fn << "] offs " <<
+    LOGDEB("MimeHandlerText::set_document_file: [" << fn << "] offs " <<
            m_offs << "\n");
-
-    RecollFilter::set_document_file(mt, fn);
 
     m_fn = fn;
     // This should not be necessary, but it happens on msw that offset is large
@@ -93,9 +91,9 @@ bool MimeHandlerText::set_document_file(const string& mt, const string &fn)
     return true;
 }
 
-bool MimeHandlerText::set_document_string(const string& mt, const string& otext)
+bool MimeHandlerText::set_document_string_impl(const string& mt,
+                                               const string& otext)
 {
-    RecollFilter::set_document_string(mt, otext);
     m_text = otext;
     if (!m_forPreview) {
 	string md5, xmd5;
@@ -175,7 +173,7 @@ bool MimeHandlerText::readnext()
     string reason;
     m_text.clear();
     if (!file_to_string(m_fn, m_text, m_offs, m_pagesz, &reason)) {
-        LOGERR("MimeHandlerText: can't read file: "  << (reason) << "\n" );
+        LOGERR("MimeHandlerText: can't read file: "  << reason << "\n" );
         m_havedoc = false;
         return false;
     }

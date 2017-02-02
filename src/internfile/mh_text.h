@@ -30,14 +30,10 @@
 class MimeHandlerText : public RecollFilter {
  public:
     MimeHandlerText(RclConfig *cnf, const std::string& id) 
-        : RecollFilter(cnf, id), m_paging(false), m_offs(0), m_pagesz(0)
-    {
+        : RecollFilter(cnf, id), m_paging(false), m_offs(0), m_pagesz(0) {
     }
-    virtual ~MimeHandlerText() 
-    {
-    }
-    virtual bool set_document_file(const std::string& mt, const std::string &file_path);
-    virtual bool set_document_string(const std::string&, const std::string&);
+    virtual ~MimeHandlerText() {}
+
     virtual bool is_data_input_ok(DataInput input) const {
 	if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)
 	    return true;
@@ -45,14 +41,20 @@ class MimeHandlerText : public RecollFilter {
     }
     virtual bool next_document();
     virtual bool skip_to_document(const std::string& s);
-    virtual void clear() 
-    {
+    virtual void clear() {
         m_paging = false;
 	m_text.erase(); 
         m_fn.erase();
         m_offs = 0;
 	RecollFilter::clear();
     }
+    
+protected:
+    virtual bool set_document_file_impl(const std::string& mt,
+                                        const std::string &file_path);
+    virtual bool set_document_string_impl(const std::string&,
+                                          const std::string&);
+
 private:
     bool   m_paging;
     std::string m_text;

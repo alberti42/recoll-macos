@@ -62,14 +62,6 @@ class MimeHandlerExec : public RecollFilter {
 
     MimeHandlerExec(RclConfig *cnf, const std::string& id);
 
-    virtual bool set_document_file(const std::string& mt, 
-                                   const std::string &file_path) {
-	RecollFilter::set_document_file(mt, file_path);
-	m_fn = file_path;
-	m_havedoc = true;
-	return true;
-    }
-
     virtual bool next_document();
     virtual bool skip_to_document(const std::string& ipath); 
 
@@ -80,9 +72,17 @@ class MimeHandlerExec : public RecollFilter {
     }
 
 protected:
+    virtual bool set_document_file_impl(const std::string& mt, 
+                                        const std::string& file_path);
+
     std::string m_fn;
     std::string m_ipath;
-
+    // md5 computation excluded by handler name: can't change after init
+    bool m_handlernomd5;
+    bool m_hnomd5init;
+    // If md5 not excluded by handler name, allow/forbid depending on mime
+    bool m_nomd5;
+    
     // Set up the character set metadata fields and possibly transcode
     // text/plain output. 
     // @param charset when called from mh_execm, a possible explicit

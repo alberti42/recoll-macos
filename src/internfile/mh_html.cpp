@@ -34,23 +34,21 @@ using namespace std;
 #endif /* NO_NAMESPACES */
 
 
-bool MimeHandlerHtml::set_document_file(const string& mt, const string &fn)
+bool MimeHandlerHtml::set_document_file_impl(const string& mt, const string &fn)
 {
-    LOGDEB0("textHtmlToDoc: "  << (fn) << "\n" );
-    RecollFilter::set_document_file(mt, fn);
+    LOGDEB0("textHtmlToDoc: " << fn << "\n");
     string otext;
     if (!file_to_string(fn, otext)) {
-	LOGINFO("textHtmlToDoc: cant read: "  << (fn) << "\n" );
+	LOGINFO("textHtmlToDoc: cant read: " << fn << "\n");
 	return false;
     }
     m_filename = fn;
     return set_document_string(mt, otext);
 }
 
-bool MimeHandlerHtml::set_document_string(const string& mt, 
-					  const string& htext) 
+bool MimeHandlerHtml::set_document_string_impl(const string& mt, 
+                                               const string& htext) 
 {
-    RecollFilter::set_document_string(mt, htext);
     m_html = htext;
     m_havedoc = true;
 
@@ -73,12 +71,14 @@ bool MimeHandlerHtml::next_document()
     m_filename.erase();
 
     string charset = m_dfltInputCharset;
-    LOGDEB("MHHtml::next_doc.: default supposed input charset: ["  << (charset) << "]\n" );
+    LOGDEB("MHHtml::next_doc.: default supposed input charset: [" << charset
+          << "]\n");
     // Override default input charset if someone took care to set one:
     map<string,string>::const_iterator it = m_metaData.find(cstr_dj_keycharset);
     if (it != m_metaData.end() && !it->second.empty()) {
 	charset = it->second;
-	LOGDEB("MHHtml: next_doc.: input charset from ext. metadata: ["  << (charset) << "]\n" );
+	LOGDEB("MHHtml: next_doc.: input charset from ext. metadata: [" <<
+               charset << "]\n");
     }
 
     // - We first try to convert from the supposed charset
@@ -91,13 +91,15 @@ bool MimeHandlerHtml::next_document()
     MyHtmlParser result;
     for (int pass = 0; pass < 2; pass++) {
 	string transcoded;
-	LOGDEB("Html::mkDoc: pass "  << (pass) << "\n" );
+	LOGDEB("Html::mkDoc: pass " << pass << "\n");
 	MyHtmlParser p;
 
 	// Try transcoding. If it fails, use original text.
 	int ecnt;
 	if (!transcode(m_html, transcoded, charset, "UTF-8", &ecnt)) {
-	    LOGDEB("textHtmlToDoc: transcode failed from cs '"  << (charset) << "' to UTF-8 for["  << (fn.empty()?"unknown":fn) << "]" );
+	    LOGDEB("textHtmlToDoc: transcode failed from cs '" <<
+                   charset << "' to UTF-8 for[" << (fn.empty()?"unknown":fn) <<
+                   "]");
 	    transcoded = m_html;
 	    // We don't know the charset, at all
 	    p.reset_charsets();
@@ -105,9 +107,11 @@ bool MimeHandlerHtml::next_document()
 	} else {
 	    if (ecnt) {
 		if (pass == 0) {
-		    LOGDEB("textHtmlToDoc: init transcode had "  << (ecnt) << " errors for ["  << (fn.empty()?"unknown":fn) << "]\n" );
+		    LOGDEB("textHtmlToDoc: init transcode had " << ecnt <<
+                           " errors for ["<<(fn.empty()?"unknown":fn)<< "]\n");
 		} else {
-		    LOGERR("textHtmlToDoc: final transcode had "  << (ecnt) << " errors for ["  << (fn.empty()?"unknown":fn) << "]\n" );
+		    LOGERR("textHtmlToDoc: final transcode had " << ecnt <<
+                           " errors for ["<< (fn.empty()?"unknown":fn)<< "]\n");
 		}
 	    }
 	    // charset has the putative source charset, transcoded is now
@@ -145,15 +149,16 @@ bool MimeHandlerHtml::next_document()
 		break;
 	    }
 
-	    LOGDEB("textHtmlToDoc: charset ["  << (charset) << "] doc charset ["  << (result.get_charset()) << "]\n" );
+	    LOGDEB("textHtmlToDoc: charset [" << charset << "] doc charset ["<<
+                   result.get_charset() << "]\n");
 	    if (!result.get_charset().empty() && 
 		!samecharset(result.get_charset(), result.fromcharset)) {
-		LOGDEB("textHtmlToDoc: reparse for charsets\n" );
+		LOGDEB("textHtmlToDoc: reparse for charsets\n");
 		// Set the origin charset as specified in document before
 		// transcoding again
 		charset = result.get_charset();
 	    } else {
-		LOGERR("textHtmlToDoc:: error: non charset exception\n" );
+		LOGERR("textHtmlToDoc:: error: non charset exception\n");
 		return false;
 	    }
 	}

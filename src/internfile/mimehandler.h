@@ -31,13 +31,14 @@ class RclConfig;
 class RecollFilter : public Dijon::Filter {
 public:
     RecollFilter(RclConfig *config, const std::string& id)
-	: m_config(config), m_forPreview(false), m_havedoc(false), m_id(id)
-    {}
+	: m_config(config), m_forPreview(false), m_havedoc(false), m_id(id) {
+    }
     virtual ~RecollFilter() {}
-    virtual void setConfig(RclConfig *config)
-    {
+
+    virtual void setConfig(RclConfig *config) {
 	m_config = config;
     }
+
     virtual bool set_property(Properties p, const std::string &v) {
 	switch (p) {
 	case DJF_UDI: 
@@ -58,34 +59,23 @@ public:
 
     // We don't use this for now
     virtual bool set_document_uri(const std::string& mtype, 
-				  const std::string &) 
-    {
+				  const std::string &) {
 	m_mimeType = mtype;
 	return false;
     }
 
-    // This does nothing right now but should be called from the
-    // subclass method in case we need some common processing one day
-    // (was used for xattrs at some point).  Yes this is the "call
-    // super" anti-pattern, bad, but we have several layers of derived
-    // classes, so that implementing the template method approach (by
-    // having a pure virtual called from here and implemented in the
-    // subclass) would have to be repeated in each derived class. It's
-    // just simpler this way.
     virtual bool set_document_file(const std::string& mtype, 
-				   const std::string & /*file_path*/) 
-    {
+				   const std::string &file_path) {
 	m_mimeType = mtype;
-	return true;
+	return set_document_file_impl(mtype, file_path);
     }
 
-    // Default implementations
     virtual bool set_document_string(const std::string& mtype, 
-				     const std::string &) 
-    {
+				     const std::string &contents) {
 	m_mimeType = mtype;
-	return false;
+	return set_document_string_impl(mtype, contents);
     }
+    
     virtual bool set_document_data(const std::string& mtype, 
 				   const char *cp, size_t sz) 
     {
@@ -95,11 +85,14 @@ public:
     virtual void set_docsize(off_t size) {
 	m_docsize = size;
     }
+
     virtual off_t get_docsize() const {
 	return m_docsize;
     }
 
-    virtual bool has_documents() const {return m_havedoc;}
+    virtual bool has_documents() const {
+        return m_havedoc;
+    }
 
     // Most doc types are single-doc
     virtual bool skip_to_document(const std::string& s) {
@@ -118,8 +111,7 @@ public:
 	return m_reason;
     }
 
-    virtual const std::string& get_id() const
-    {
+    virtual const std::string& get_id() const {
 	return m_id;
     }
 
@@ -137,7 +129,21 @@ public:
     bool txtdcode(const std::string& who);
 
 protected:
-    bool preview() {return m_forPreview;}
+
+    // We provide default implementation as not all handlers need both methods
+    virtual bool set_document_file_impl(const std::string&,
+                                        const std::string&) {
+        return m_havedoc = true;
+    }
+
+    virtual bool set_document_string_impl(const std::string&,
+                                          const std::string&) {
+        return m_havedoc = true;
+    }
+    
+    bool preview() {
+        return m_forPreview;
+    }
 
     RclConfig *m_config;
     bool   m_forPreview;

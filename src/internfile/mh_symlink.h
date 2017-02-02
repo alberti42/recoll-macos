@@ -36,18 +36,10 @@
 class MimeHandlerSymlink : public RecollFilter {
  public:
     MimeHandlerSymlink(RclConfig *cnf, const std::string& id) 
-	: RecollFilter(cnf, id) 
-    {
+	: RecollFilter(cnf, id) {
     }
-    virtual ~MimeHandlerSymlink() 
-    {
-    }
-    virtual bool set_document_file(const string& mt, const string& fn) 
-    {
-	RecollFilter::set_document_file(mt, fn);
-	m_fn = fn;
-	return m_havedoc = true;
-    }
+    virtual ~MimeHandlerSymlink() {}
+
     virtual bool next_document() 
     {
 	if (m_havedoc == false)
@@ -61,11 +53,18 @@ class MimeHandlerSymlink : public RecollFilter {
 	    transcode(path_getsimple(slc), m_metaData[cstr_dj_keycontent], 
 		      m_config->getDefCharset(true), "UTF-8");
 	} else {
-	    LOGDEB("Symlink: readlink ["  << (m_fn) << "] failed, errno "  << (errno) << "\n" );
+	    LOGDEB("Symlink: readlink [" << m_fn << "] failed, errno " <<
+                   errno << "\n");
 	}
 	m_metaData[cstr_dj_keymt] = cstr_textplain;
 	return true;
     }
+protected:
+    virtual bool set_document_file_impl(const string& mt, const string& fn) {
+	m_fn = fn;
+	return m_havedoc = true;
+    }
+
 private:
     std::string m_fn;
 };

@@ -29,21 +29,9 @@
 class MimeHandlerUnknown : public RecollFilter {
  public:
     MimeHandlerUnknown(RclConfig *cnf, const string& id) 
-	: RecollFilter(cnf, id) 
-    {
+	: RecollFilter(cnf, id) {
     }
-    virtual ~MimeHandlerUnknown() 
-    {
-    }
-    virtual bool set_document_file(const string& mt, const string& fn) 
-    {
-	RecollFilter::set_document_file(mt, fn);
-	return m_havedoc = true;
-    }
-    virtual bool set_document_string(const string& mt, const string& s) {
-	RecollFilter::set_document_string(mt, s);
-	return m_havedoc = true;
-    }
+    virtual ~MimeHandlerUnknown() {}
     virtual bool next_document() {
 	if (m_havedoc == false)
 	    return false;
