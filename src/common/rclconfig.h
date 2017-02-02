@@ -140,6 +140,10 @@ class RclConfig {
      *  (stringToStrings). Can fail if the string is malformed. */
     bool getConfParam(const string &name, vector<string> *value, 
                       bool shallow=false) const;
+    /** Variant with conversion to unordered_set<string>
+     *  (stringToStrings). Can fail if the string is malformed. */
+    bool getConfParam(const string &name, std::unordered_set<std::string> *v, 
+                      bool shallow=false) const;
     /** Variant with conversion to vector<int> */
     bool getConfParam(const string &name, vector<int> *value, 
                       bool shallow=false) const;
@@ -189,8 +193,7 @@ class RclConfig {
     string getIdxStatusFile() const;
     /** Do path translation according to the ptrans table */
     void urlrewrite(const string& dbdir, string& url) const;
-    ConfSimple *getPTrans()
-    {
+    ConfSimple *getPTrans() {
 	return m_ptrans;
     }
     /** Get Web Queue directory name */

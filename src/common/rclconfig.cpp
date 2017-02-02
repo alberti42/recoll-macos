@@ -395,7 +395,7 @@ bool RclConfig::getConfParam(const string &name, bool *bvp, bool shallow) const
 }
 
 bool RclConfig::getConfParam(const string &name, vector<string> *svvp,
-    bool shallow) const
+                             bool shallow) const
 {
     if (!svvp) 
 	return false;
@@ -406,8 +406,20 @@ bool RclConfig::getConfParam(const string &name, vector<string> *svvp,
     return stringToStrings(s, *svvp);
 }
 
+bool RclConfig::getConfParam(const string &name, unordered_set<string> *out,
+                             bool shallow) const
+{
+    vector<string> v;
+    if (!out || !getConfParam(name, &v, shallow)) {
+	return false;
+    }
+    out->clear();
+    out->insert(v.begin(), v.end());
+    return true;
+}
+
 bool RclConfig::getConfParam(const string &name, vector<int> *vip,
-    bool shallow) const
+                             bool shallow) const
 {
     if (!vip) 
 	return false;
@@ -420,7 +432,8 @@ bool RclConfig::getConfParam(const string &name, vector<int> *vip,
 	char *ep;
 	vip->push_back(strtol(vs[i].c_str(), &ep, 0));
 	if (ep == vs[i].c_str()) {
-	    LOGDEB("RclConfig::getConfParam: bad int value in ["  << (name) << "]\n" );
+	    LOGDEB("RclConfig::getConfParam: bad int value in [" << name <<
+                   "]\n");
 	    return false;
 	}
     }
