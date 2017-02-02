@@ -82,6 +82,9 @@ for reporting problems, or contact me by email: jfd at recoll.org.
 
 == Known problems:
 
+- Setting the log level to 4 or higher can cause the GUI to deadlock while
+  displaying results. This will be fixed shortly.
+  
 - Indexing is very slow, especially when using external commands (e.g. for
   PDF files). I don't know if this is a case of my doing something stupid,
   or if the general architecture is really bad fitted for Windows. If
