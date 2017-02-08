@@ -444,6 +444,14 @@ string path_canon(const string& is, const string* cwd)
     } else {
         ret = "/";
     }
+
+#ifdef _WIN32
+    // Raw drive needs a final /
+    if (path_strlookslikedrive(ret)) {
+        path_catslash(ret);
+    }
+#endif
+
     return ret;
 }
 
