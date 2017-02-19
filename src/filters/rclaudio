@@ -8,9 +8,144 @@ import rclexecm
 
 try:
     from mutagen import File
+    from mutagen.id3 import ID3TimeStamp
 except:
     print("RECFILTERROR HELPERNOTFOUND python:mutagen")
     sys.exit(1);
+
+
+# The 'Easy' mutagen tags conversions are incomplete. We do it ourselves.
+# TPA,TPOS,disc DISCNUMBER/TOTALDISCS
+# TRCK,TRK,trkn TRACKNUMBER/TOTALTRACKS
+tagdict = {
+    'COM' : 'COMMENT',
+    'COMM' : 'COMMENT',
+    'TAL' : 'ALBUM',
+    'TALB' : 'ALBUM',
+    'TBP' : 'BPM',
+    'TBPM' : 'BPM',
+    'TCM' : 'COMPOSER',
+    'TCMP' : 'COMPILATION',
+    'TCO' : 'GENRE',
+    'TCOM' : 'COMPOSER',
+    'TCON' : 'GENRE',
+    'TCOP' : 'COPYRIGHT',
+    'TCP' : 'COMPILATION',
+    'TCR' : 'COPYRIGHT',
+    'TDA' : 'DATE',
+    'TDAT' : 'DATE',
+    'TDOR' : 'ORIGINALDATE',
+    'TDRC' : 'DATE',
+    'TDRL' : 'RELEASEDATE',
+    'TEN' : 'ENCODEDBY',
+    'TENC' : 'ENCODEDBY',
+    'TEXT' : 'LYRICIST',
+    'TIT1' : 'CONTENTGROUP',
+    'TIT2' : 'TITLE',
+    'TIT3' : 'SUBTITLE',
+    'TLA' : 'LANGUAGE',
+    'TLAN' : 'LANGUAGE',
+    'TMOO' : 'MOOD',
+    'TOA' : 'ORIGINALARTIST',
+    'TOPE' : 'ORIGINALARTIST',
+    'TOR' : 'ORIGINALDATE',
+    'TORY' : 'ORIGINALDATE',
+    'TP1' : 'ARTIST',
+    'TP2' : 'ALBUMARTIST',
+    'TP3' : 'CONDUCTOR',
+    'TP4' : 'REMIXER',
+    'TPA' : 'DISCNUMBER',
+    'TPB' : 'LABEL',
+    'TPE1' : 'ARTIST',
+    'TPE2' : 'ALBUMARTIST',
+    'TPE3' : 'CONDUCTOR',
+    'TPE4' : 'REMIXER',
+    'TPOS' : 'DISCNUMBER',
+    'TPUB' : 'LABEL',
+    'TXXX:ORCHESTRA' : 'ORCHESTRA',
+    'TRC' : 'ISRC',
+    'TRCK' : 'TRACKNUMBER',
+    'TRK' : 'TRACKNUMBER',
+    'TS2' : 'ALBUMARTISTSORT',
+    'TSA' : 'ALBUMSORT',
+    'TSC' : 'COMPOSERSORT',
+    'TSO2' : 'ALBUMARTISTSORT',
+    'TSOA' : 'ALBUMSORT',
+    'TSOC' : 'COMPOSERSORT',
+    'TSOP' : 'ARTISTSORT',
+    'TSOT' : 'TITLESORT',
+    'TSP' : 'ARTISTSORT',
+    'TSRC' : 'ISRC',
+    'TSST' : 'DISCSUBTITLE',
+    'TST' : 'TITLESORT',
+    'TT1' : 'CONTENTGROUP',
+    'TT2' : 'TITLE',
+    'TT3' : 'SUBTITLE',
+    'TXT' : 'LYRICIST',
+    'TYE' : 'DATE',
+    'TYER' : 'DATE',
+    'ULT' : 'LYRICS',
+    'USLT' : 'LYRICS',
+    'aART' : 'ALBUMARTIST',
+    'cpil' : 'COMPILATION',
+    'cprt' : 'COPYRIGHT',
+    'disk' : 'DISCNUMBER',
+    'gnre' : 'GENRE',
+    'soaa' : 'ALBUMARTISTSORT',
+    'soal' : 'ALBUMSORT',
+    'soar' : 'ARTISTSORT',
+    'soco' : 'COMPOSERSORT',
+    'sonm' : 'TITLESORT',
+    'tmpo' : 'BPM',
+    'trkn' : 'TRACKNUMBER',
+    '\xa9ART' : 'ARTIST',
+    '\xa9alb' : 'ALBUM',
+    '\xa9cmt' : 'COMMENT',
+    '\xa9con' : 'CONDUCTOR',
+    '\xa9day' : 'DATE',
+    '\xa9gen' : 'GENRE',
+    '\xa9grp' : 'CONTENTGROUP',
+    '\xa9lyr' : 'LYRICS',
+    '\xa9nam' : 'TITLE',
+    '\xa9ope' : 'ORIGINALARTIST',
+    '\xa9too' : 'ENCODEDBY',
+    '\xa9wrt' : 'COMPOSER',
+    'ALBUM' : 'ALBUM', 
+    'ALBUMARTIST' : 'ALBUMARTIST', 
+    'ALBUMARTISTSORT' : 'ALBUMARTISTSORT', 
+    'ALBUMSORT' : 'ALBUMSORT', 
+    'ARTIST' : 'ARTIST', 
+    'ARTISTSORT' : 'ARTISTSORT', 
+    'BPM' : 'BPM', 
+    'COMMENT' : 'COMMENT', 
+    'COMPILATION' : 'COMPILATION', 
+    'COMPOSER' : 'COMPOSER', 
+    'COMPOSERSORT' : 'COMPOSERSORT', 
+    'CONDUCTOR' : 'CONDUCTOR', 
+    'CONTENTGROUP' : 'CONTENTGROUP', 
+    'COPYRIGHT' : 'COPYRIGHT', 
+    'DATE' : 'DATE', 
+    'DISCNUMBER' : 'DISCNUMBER', 
+    'DISCSUBTITLE' : 'DISCSUBTITLE', 
+    'ENCODEDBY' : 'ENCODEDBY', 
+    'GENRE' : 'GENRE', 
+    'ISRC' : 'ISRC', 
+    'LABEL' : 'LABEL', 
+    'LANGUAGE' : 'LANGUAGE', 
+    'LYRICIST' : 'LYRICIST', 
+    'LYRICS' : 'LYRICS', 
+    'MOOD' : 'MOOD', 
+    'ORIGINALARTIST' : 'ORIGINALARTIST', 
+    'ORIGINALDATE' : 'ORIGINALDATE', 
+    'RELEASEDATE' : 'RELEASEDATE', 
+    'REMIXER' : 'REMIXER', 
+    'SUBTITLE' : 'SUBTITLE', 
+    'TOTALDISCS' : 'TOTALDISCS', 
+    'TOTALTRACKS' : 'TOTALTRACKS', 
+    'TRACKNUMBER' : 'TRACKNUMBER', 
+    'TITLE' : 'TITLE', 
+    'TITLESORT' : 'TITLESORT',
+    }
 
 # mp3:      album, title, artist, genre, date, tracknumber
 # flac:     album, title, artist, genre, xxx, tracknumber
@@ -20,8 +155,16 @@ class AudioTagExtractor:
         self.em = em
         self.currentindex = 0
 
+    def _showMutaInfo(self, mutf):
+        self.em.rclog("%s" % mutf.info.pprint())
+        for prop in dir(mutf.info):
+            self.em.rclog("mutinfo: %s -> %s" %
+                          (prop, getattr( mutf.info, prop)))
+            
+
     def extractone(self, params):
-        #self.em.rclog("extractone %s %s" % (params["filename:"], params["mimetype:"]))
+        #self.em.rclog("extractone %s %s" % (params["filename:"],
+        #              params["mimetype:"]))
         docdata = ""
         ok = False
         if not "mimetype:" in params or not "filename:" in params:
@@ -30,15 +173,19 @@ class AudioTagExtractor:
         filename = params["filename:"]
         mimetype = params["mimetype:"]
         try:
-            mutf = File(filename, easy=True)
+            mutf = File(filename)
         except Exception as err:
             self.em.rclog("extractone: extract failed: [%s]" % err)
             return (ok, docdata, "", rclexecm.RclExecM.eofnow)
 
+        #self._showMutaInfo(mutf)
+
+        ###################
+        # Extract audio parameters. Not all file types supply all or
+        # even use the same property names...
         minf = {}
         for prop,dflt in [('sample_rate', 44100), ('channels', 2),
-                          ('bits_per_sample', 16), ('length', 0),
-                          ('bitrate', 0)]:
+                          ('length', 0), ('bitrate', 0)]:
             try:
                 minf[prop] = getattr(mutf.info, prop)
             except Exception as e:
@@ -51,16 +198,61 @@ class AudioTagExtractor:
 
         minf['duration'] = minf['length']
         del minf['length']
+
+        # Bits/samp is named sample_size or bits_per_sample (depend on file tp)
+        try:
+            minf['bits_per_sample'] = getattr(mutf.info, 'bits_per_sample')
+        except:
+            try:
+                minf['bits_per_sample'] = getattr(mutf.info, 'sample_size')
+            except:
+                #self.em.rclog("using default bits_per_sample")
+                minf['bits_per_sample'] = 16
+
         for tag,val in minf.iteritems():
             minf[tag] = str(val)
 
+        #self.em.rclog("minf after audio %s\n" % minf)
+        
+        ####################
+        # Metadata tags. The names vary depending on the file type. We
+        # just have a big translation dictionary for all
         for tag,val in mutf.iteritems():
-            try:
-                val0 = val[0]
-                if val0:
-                    minf[tag.lower()] = val0
-            except:
-                pass
+            #self.em.rclog("Original tag: <%s>, val <%s>" % (tag, val))
+            if tag in tagdict:
+                ntag = tagdict[tag].lower()
+                #self.em.rclog("New tag: %s" % ntag)
+                try:
+                    if isinstance(val, bool):
+                        val0 = str(val)
+                    else:
+                        val0 = val[0]
+                    if val0:
+                        if isinstance(val0, ID3TimeStamp):
+                            val0 = str(val0)
+                        minf[ntag] = val0
+                        #self.em.rclog("Tag %s -> %s" % (ntag, val0))
+                except Exception as err:
+                    self.em.rclog("Error while extracting tag: %s"%err)
+
+        # TPA,TPOS,disc DISCNUMBER/TOTALDISCS
+        # TRCK,TRK,trkn TRACKNUMBER/TOTALTRACKS
+        for what in ('disc', 'track'):
+            k = what + 'number'
+            if k in minf:
+                l = minf[k]
+                if not isinstance(l, tuple):
+                    l = l.split('/')
+                if len(l) == 2:
+                    minf[k] = str(l[0])
+                    minf['total' + what + 's'] = str(l[1])
+
+        if 'orchestra' in minf:
+            val = minf['orchestra']
+            if val.startswith('orchestra='):
+                minf['orchestra'] = val[10:]
+                
+        #self.em.rclog("minf after tags %s\n" % minf)
             
         self.em.setmimetype("text/plain")
         self.em.setfield("charset", 'utf-8')
@@ -71,7 +263,11 @@ class AudioTagExtractor:
             if tag == 'artist':
                 self.em.setfield('author', val)    
 
-        docdata = mutf.pprint().encode('utf-8')
+
+        try:
+            docdata = mutf.pprint().encode('utf-8', errors='replace')
+        except Exception as err:
+            self.em.rclog("Doc pprint error: %s" % err)
 
         ok = True
         return (ok, docdata, "", rclexecm.RclExecM.eofnext)
