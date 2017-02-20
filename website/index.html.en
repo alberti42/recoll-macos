@@ -43,6 +43,8 @@
       <p><span class="application">Recoll</span> finds keywords
         inside documents as well as file names.</p>
       <ul>
+        <li>Versions are available for <a href="download.html">Linux</a>
+          and <a href="pages/recoll-windows.html">MS Windows</a>.</li> 
         <li>It can search
           most <span class="important"><a href="features.html#doctypes">document
           formats</a></span>. <a href="features.html#doctypes">You may
@@ -61,8 +63,8 @@
       <p>The current <span class="application">Recoll</span> version is
 	<a href="download.html">1.22.4</a> 
 	(<a href="release-1.22.html">Release notes</a>,
-        <a href="BUGS.html">known
-          bugs</a>, <a href="release-history.html">Release history</a>).</p>
+        <a href="BUGS.html">known bugs</a>,
+        <a href="release-history.html">Release history</a>).</p>
 
 
       <p><span class="application">Recoll</span> is based on the very
