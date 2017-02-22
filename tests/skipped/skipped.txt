@@ -1,2 +1,5 @@
-1 results 
+1 results
 text/plain	[file:///home/dockes/projets/fulltext/testrecoll/skipped/rlyskipped/shouldnotbeskipped.txt]	[shouldnotbeskipped.txt]	48	bytes	
+1 results
+text/plain	[file:///home/dockes/projets/fulltext/testrecoll/skipped/recollrc]	[recollrc]	15	bytes	
+0 results

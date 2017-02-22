@@ -5,9 +5,17 @@ topdir=`dirname $0`/..
 
 initvariables $0
 
-# Data in text files with skipped suffixes should not be indexed
-recollq Badsuffixes_unique 2> $mystderr | 
-	egrep -v '^Recoll query: ' > $mystdout
+(
+    # Data in text files with skipped suffixes should not be indexed,
+    # except that .md5 is in noContentSuffixes- -> 1 result,
+    # badsuffilename.md5
+    recollq Badsuffixes_unique
+
+    # .nosuff is added by noContentSuffixes+. No result for you
+    # notreallybad.nosuff
+    recollq nosuffUnique
+    
+) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
 

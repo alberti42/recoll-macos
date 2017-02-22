@@ -5,8 +5,27 @@ topdir=`dirname $0`/..
 
 initvariables $0
 
-recollq ShouldbeSkippedUnique 2> $mystderr | 
-	egrep -v '^Recoll query: ' > $mystdout
+(
+    # skippedPaths:
+    # shouldbeskipped.txt should be skipped because
+    # skipped/reallyskipped/ is in skippedPaths, but the query gets 1
+    # result because of rlyskipped/shouldnotbeskipped.txt
+    # 1 res: shouldnotbeskipped.txt
+    recollq ShouldbeSkippedUnique
+
+    # skippedNames
+    # recollrc is in the default skippedNames list, but should be the
+    # result here because 'recollrc' is in the local config
+    # skippedNames-
+    # 1 res: skipped/recollrc
+    recollq recollrcUnique
+
+    # skippedNames
+    # Should be skipped because notinskippednames is in skippedNames+
+    # 0 res for skipped/notinskippednames
+    recollq -q notinskippedNamesUnique
+    
+)  2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
 
