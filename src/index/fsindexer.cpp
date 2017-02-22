@@ -605,6 +605,11 @@ FsIndexer::processonefile(RclConfig *config,
     // without mime type will not be purged from the db, resulting
     // in possible 'cannot intern file' messages at query time...
 
+    // This is needed if we are in a separate thread than processone()
+    // (mostly always when multithreading). Needed esp. for
+    // excludedmimetypes, etc.
+    config->setKeyDir(path_getfather(fn));
+    
     // Document signature. This is based on m/ctime and size and used
     // for the uptodate check (the value computed here is checked
     // against the stored one). Changing the computation forces a full
