@@ -36,22 +36,38 @@ using std::map;
 
 class RclConfig;
 
-// A small class used for parameters that need to be computed from the
-// config string, and which can change with the keydir. Minimize work
-// by using the keydirgen and a saved string to avoid unneeded
-// recomputations
+// Cache parameter string values for params which need computation and
+// which can change with the keydir. Minimize work by using the
+// keydirgen and a saved string to avoid unneeded recomputations:
+// keydirgen is incremented in RclConfig with each setKeyDir(). We
+// compare our saved value with the current one. If it did not change
+// no get() is needed. If it did change, but the resulting param get()
+// string value is identical, no recomputation is needed.
 class ParamStale {
 public:
-    RclConfig *parent;
-    ConfNull  *conffile;
-    string    paramname;
-    bool      active; // Check at init if config defines name at all
-    int       savedkeydirgen;
-    string    savedvalue;
-
-    ParamStale(RclConfig *rconf, const string& nm);
+    ParamStale() {}
+    ParamStale(RclConfig *rconf, const string& nm)
+        : parent(rconf), paramnames(vector<string>(1, nm)), savedvalues(1) {
+    }
+    ParamStale(RclConfig *rconf, const vector<string>& nms)
+        : parent(rconf), paramnames(nms), savedvalues(nms.size()) {
+    }
     void init(ConfNull *cnf);
     bool needrecompute();
+    const string& getvalue(unsigned int i = 0) const;
+
+private:
+    // The config we belong to. 
+    RclConfig *parent{0};
+    // The configuration file we search for values. This is a borrowed
+    // pointer belonging to the parent, we do not manage it.
+    ConfNull  *conffile{0};
+    vector<string>    paramnames;
+    vector<string>    savedvalues;
+    // Check at init if the configuration defines our vars at all. No
+    // further processing is needed if it does not.
+    bool      active{false}; 
+    int       savedkeydirgen{-1};
 };
 
 // Hold the description for an external metadata-gathering command
@@ -63,13 +79,10 @@ struct MDReaper {
 // Data associated to a indexed field name: 
 struct FieldTraits {
     string pfx; // indexing prefix, 
-    int    wdfinc; // Index time term frequency increment (default 1)
-    double boost; // Query time boost (default 1.0)
-    bool   pfxonly; // Suppress prefix-less indexing
-    bool   noterms; // Don't add term to highlight data (e.g.: rclbes)
-    FieldTraits() 
-        : wdfinc(1), boost(1.0), pfxonly(false), noterms(false)
-        {}
+    int    wdfinc{1}; // Index time term frequency increment (default 1)
+    double boost{1.0}; // Query time boost (default 1.0)
+    bool   pfxonly{false}; // Suppress prefix-less indexing
+    bool   noterms{false}; // Don't add term to highlight data (e.g.: rclbes)
 };
 
 class RclConfig {
@@ -80,15 +93,7 @@ class RclConfig {
     // argcnf
     RclConfig(const string *argcnf = 0);
 
-    RclConfig(const RclConfig &r) 
-    : m_oldstpsuffstate(this, "recoll_noindex"),
-      m_stpsuffstate(this, "noContentSuffixes"),
-      m_skpnstate(this, "skippedNames"),
-      m_rmtstate(this, "indexedmimetypes"),
-      m_xmtstate(this, "excludedmimetypes"),
-      m_mdrstate(this, "metadatacmds") {
-        initFrom(r);
-    }
+    RclConfig(const RclConfig &r);
 
     ~RclConfig() {
 	freeAll();
@@ -289,8 +294,8 @@ class RclConfig {
     /** mimeview: get/set external viewer exec string(s) for mimetype(s) */
     string getMimeViewerDef(const string &mimetype, const string& apptag, 
 			    bool useall) const;
-    string getMimeViewerAllEx() const;
-    bool setMimeViewerAllEx(const string& allex);
+    set<string> getMimeViewerAllEx() const;
+    bool setMimeViewerAllEx(const set<string>& allex);
     bool getMimeViewerDefs(vector<pair<string, string> >&) const;
     bool setMimeViewerDef(const string& mimetype, const string& cmd);
     /** Check if mime type is designated as needing no uncompress before view
@@ -355,19 +360,12 @@ class RclConfig {
 
     vector<string> m_cdirs; // directory stack for the confstacks
 
-    ConfStack<ConfTree> *m_conf;   // Parsed configuration files
-    ConfStack<ConfTree> *mimemap;  // The files don't change with keydir, 
-    ConfStack<ConfSimple> *mimeconf; // but their content may depend on it.
-    ConfStack<ConfSimple> *mimeview; // 
-    ConfStack<ConfSimple> *m_fields;
-    ConfSimple            *m_ptrans; // Paths translations
     map<string, FieldTraits>  m_fldtotraits; // Field to field params
     map<string, string>  m_aliastocanon;
     map<string, string>  m_aliastoqcanon;
     set<string>          m_storedFields;
     map<string, string>  m_xattrtofld;
 
-    void        *m_stopsuffixes;
     unsigned int m_maxsufflen;
     ParamStale   m_oldstpsuffstate; // Values from user mimemap, now obsolete
     ParamStale   m_stpsuffstate;
@@ -396,7 +394,18 @@ class RclConfig {
     ParamStale    m_mdrstate;
     vector<MDReaper> m_mdreapers;
 
-    /** Create initial user configuration */
+    //////////////////
+    // Members needing explicit processing when copying 
+    void        *m_stopsuffixes;
+    ConfStack<ConfTree> *m_conf;   // Parsed configuration files
+    ConfStack<ConfTree> *mimemap;  // The files don't change with keydir, 
+    ConfStack<ConfSimple> *mimeconf; // but their content may depend on it.
+    ConfStack<ConfSimple> *mimeview; // 
+    ConfStack<ConfSimple> *m_fields;
+    ConfSimple            *m_ptrans; // Paths translations
+    ///////////////////
+
+/** Create initial user configuration */
     bool initUserConfig();
     /** Init all ParamStale members */
     void initParamStale(ConfNull *cnf, ConfNull *mimemap);

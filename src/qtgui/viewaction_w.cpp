@@ -83,8 +83,7 @@ void ViewAction::fillLists()
 
     set<string> viewerXs;
     if (prefs.useDesktopOpen) {
-	string s = theconfig->getMimeViewerAllEx();
-	stringToStrings(s, viewerXs);
+	viewerXs = theconfig->getMimeViewerAllEx();
     }
     for (vector<pair<string, string> >::const_iterator it = defs.begin();
 	 it != defs.end(); it++) {
@@ -176,9 +175,7 @@ void ViewAction::editActions()
     QString action0;
     int except0 = -1;
 
-    set<string> viewerXs;
-    string s = theconfig->getMimeViewerAllEx();
-    stringToStrings(s, viewerXs);
+    set<string> viewerXs = theconfig->getMimeViewerAllEx();
 
     list<string> mtypes;
     bool dowarnmultiple = true;
@@ -233,8 +230,6 @@ void ViewAction::editActions()
 	theconfig->setMimeViewerDef(*mit, sact);
     }
 
-    s = stringsToString(viewerXs);
-    theconfig->setMimeViewerAllEx(s);
+    theconfig->setMimeViewerAllEx(viewerXs);
     fillLists();
 }
-
