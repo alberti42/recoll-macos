@@ -305,7 +305,7 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 
     w = new ConfParamIntW(this, 
                           ConfLink(new ConfLinkRclRep(config, "maxfsoccuppc")),
-                          tr("Max disk occupation (%)"),
+                          tr("Max disk occupation (%, 0 means no limit)"),
                           tr("This is the percentage of disk usage "
                              "- total disk usage, not index size - at which "
                              "indexing will fail and stop.<br>"
