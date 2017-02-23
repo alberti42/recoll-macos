@@ -250,11 +250,12 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
 	ConfParamSLW(this, 
                      ConfLink(new ConfLinkRclRep(config, "skippedPaths")), 
                      tr("Skipped paths"),
-		     tr("These are names of directories which indexing "
-			"will not enter.<br> May contain wildcards. "
-			"Must match "
-			"the paths seen by the indexer (ie: if topdirs "
-			"includes '/home/me' and '/home' is actually a link "
+		     tr("These are pathnames of directories which indexing "
+			"will not enter.<br>"
+                        "Path elements may contain wildcards. "
+			"The entries must match the paths seen by the indexer "
+                        "(e.g.: if topdirs includes '/home/me' and '/home' is "
+                        "actually a link "
 			"to '/usr/home', a correct skippedPath entry "
 			"would be '/home/me/tmp*', not '/usr/home/me/tmp*')"));
     eskp->setFsEncoding(true);
