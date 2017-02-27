@@ -24,6 +24,14 @@ you probably want this indexed. One possible solution is to have ".*" in
 list, see the "noContentSuffixes" variable for an alternative approach
 which indexes the file names. Can be redefined for any
 subtree.</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES-">
+<term><varname>skippedNames-</varname></term>
+<listitem><para>List of name endings to remove from the default skippedNames
+list. </para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES+">
+<term><varname>skippedNames+</varname></term>
+<listitem><para>List of name endings to add to the default skippedNames
+list. </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES">
 <term><varname>noContentSuffixes</varname></term>
 <listitem><para>List of name endings (not necessarily dot-separated suffixes) for
@@ -35,6 +43,14 @@ recoll.conf allows editing the list through the GUI). This is different
 from skippedNames because these are name ending matches only (not
 wildcard patterns), and the file name itself gets indexed normally. This
 can be redefined for subdirectories.</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES-">
+<term><varname>noContentSuffixes-</varname></term>
+<listitem><para>List of name endings to remove from the default noContentSuffixes
+list. </para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES+">
+<term><varname>noContentSuffixes+</varname></term>
+<listitem><para>List of name endings to add to the default noContentSuffixes
+list. </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDPATHS">
 <term><varname>skippedPaths</varname></term>
 <listitem><para>Paths we should not go into. Space-separated list of
@@ -92,6 +108,16 @@ subtrees.</para></listitem></varlistentry>
 <listitem><para>List of excluded MIME
 types. Lets you exclude some types from indexing. Can be
 redefined for subtrees.</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.NOMD5MIMETYPES">
+<term><varname>nomd5mimetypes</varname></term>
+<listitem><para>Don't compute md5 for
+these types. md5 checksums are used only for deduplicating
+results, and can be very expensive to compute on multimedia or other big
+files. This list lets you turn off md5 computation for selected types. It
+is global (no redefinition for subtrees). At the moment, it only has an
+effect for external handlers (exec and execm). The file types can be
+specified by listing either MIME types (e.g. audio/mpeg) or handler names
+(e.g. rclaudio).</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.COMPRESSEDFILEMAXKBS">
 <term><varname>compressedfilemaxkbs</varname></term>
 <listitem><para>Size limit for compressed

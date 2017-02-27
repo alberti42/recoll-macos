@@ -20,8 +20,8 @@ alink="#0000FF">
     <div class="titlepage">
       <div>
         <div>
-          <h1 class="title"><a name="idp55872064" id=
-          "idp55872064"></a>Recoll user manual</h1>
+          <h1 class="title"><a name="idp7068352" id=
+          "idp7068352"></a>Recoll user manual</h1>
         </div>
 
         <div>
@@ -109,13 +109,13 @@ alink="#0000FF">
                 multiple indexes</a></span></dt>
 
                 <dt><span class="sect2">2.1.3. <a href=
-                "#idp58917632">Document types</a></span></dt>
+                "#idp39073168">Document types</a></span></dt>
 
                 <dt><span class="sect2">2.1.4. <a href=
-                "#idp59454368">Indexing failures</a></span></dt>
+                "#idp39095632">Indexing failures</a></span></dt>
 
                 <dt><span class="sect2">2.1.5. <a href=
-                "#idp60727408">Recovery</a></span></dt>
+                "#idp39102640">Recovery</a></span></dt>
               </dl>
             </dd>
 
@@ -376,7 +376,7 @@ alink="#0000FF">
                 handler</a></span></dt>
 
                 <dt><span class="sect2">4.1.4. <a href=
-                "#RCL.PROGRAM.FILTERS.HTML">Input handler HTML
+                "#RCL.PROGRAM.FILTERS.HTML">Input handler
                 output</a></span></dt>
 
                 <dt><span class="sect2">4.1.5. <a href=
@@ -997,8 +997,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp58917632" id=
-                "idp58917632"></a>2.1.3.&nbsp;Document types</h3>
+                <h3 class="title"><a name="idp39073168" id=
+                "idp39073168"></a>2.1.3.&nbsp;Document types</h3>
               </div>
             </div>
           </div>
@@ -1105,8 +1105,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp59454368" id=
-                "idp59454368"></a>2.1.4.&nbsp;Indexing
+                <h3 class="title"><a name="idp39095632" id=
+                "idp39095632"></a>2.1.4.&nbsp;Indexing
                 failures</h3>
               </div>
             </div>
@@ -1146,8 +1146,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp60727408" id=
-                "idp60727408"></a>2.1.5.&nbsp;Recovery</h3>
+                <h3 class="title"><a name="idp39102640" id=
+                "idp39102640"></a>2.1.5.&nbsp;Recovery</h3>
               </div>
             </div>
           </div>
@@ -5987,9 +5987,8 @@ dir:recoll dir:src -dir:utils -dir:common
           deciding factor is metadata: <span class=
           "application">Recoll</span> has a way to <a class="link"
           href="#RCL.PROGRAM.FILTERS.HTML" title=
-          "4.1.4.&nbsp;Input handler HTML output">extract metadata
-          from the HTML header and use it for field
-          searches.</a>.</p>
+          "4.1.4.&nbsp;Input handler output">extract metadata from
+          the HTML header and use it for field searches.</a>.</p>
 
           <p>The <code class=
           "envar">RECOLL_FILTER_FORPREVIEW</code> environment
@@ -6196,13 +6195,32 @@ application/x-chm = execm rclchm
                 <h3 class="title"><a name=
                 "RCL.PROGRAM.FILTERS.HTML" id=
                 "RCL.PROGRAM.FILTERS.HTML"></a>4.1.4.&nbsp;Input
-                handler HTML output</h3>
+                handler output</h3>
               </div>
             </div>
           </div>
 
-          <p>The output HTML could be very minimal like the
-          following example:</p>
+          <p>Both the simple and persistent input handlers can
+          return any MIME type to Recoll, which will further
+          process the data according to the MIME configuration.</p>
+
+          <p>Most input filters filters produce either <code class=
+          "literal">text/plain</code> or <code class=
+          "literal">text/html</code> data. There are exceptions,
+          for example, filters which process archive file
+          (<code class="literal">zip</code>, <code class=
+          "literal">tar</code>, etc.) will usually return the
+          documents as they are found, without processing them
+          further.</p>
+
+          <p>There is nothing to say about <code class=
+          "literal">text/plain</code> output, except that its
+          character encoding should be consistent with what is
+          specified in the <code class="filename">mimeconf</code>
+          file.</p>
+
+          <p>For filters producing HTML, the output could be very
+          minimal like the following example:</p>
           <pre class="programlisting">
 &lt;html&gt;
   &lt;head&gt;
@@ -6222,9 +6240,9 @@ application/x-chm = execm rclchm
           "literal">&amp;amp;</code>", "<code class=
           "literal">&lt;</code>" should be transformed into
           "<code class="literal">&amp;lt;</code>". This is not
-          always properly done by translating programs which output
-          HTML, and of course never by those which output plain
-          text.</p>
+          always properly done by external helper programs which
+          output HTML, and of course never by those which output
+          plain text.</p>
 
           <p>When encapsulating plain text in an HTML body, the
           display of a preview may be improved by enclosing the
@@ -6293,6 +6311,17 @@ or
           described in a <a class="link" href="#RCL.PROGRAM.FIELDS"
           title="4.2.&nbsp;Field data processing">further
           section</a>.</p>
+
+          <p>Persistent filters can use another, probably simpler,
+          method to produce metadata, by calling the <code class=
+          "literal">setfield()</code> helper method. This avoids
+          the necessity to produce HTML, and any issue with HTML
+          quoting. See, for example, <code class=
+          "filename">rclaudio</code> in <span class=
+          "application">Recoll</span> 1.23 and later for an example
+          of handler which outputs <code class=
+          "literal">text/plain</code> and uses <code class=
+          "literal">setfield()</code> to produce metadata.</p>
         </div>
 
         <div class="sect2">
@@ -8677,6 +8706,23 @@ thesame = "some string with spaces"
               </dd>
 
               <dt><a name=
+              "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES-" id=
+              "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES-"></a><span class="term"><code class="varname">skippedNames-</code></span></dt>
+
+              <dd>
+                <p>List of name endings to remove from the default
+                skippedNames list.</p>
+              </dd>
+
+              <dt><a name=
+              "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES+"></a><span class="term"><code class="varname">skippedNames+</code></span></dt>
+
+              <dd>
+                <p>List of name endings to add to the default
+                skippedNames list.</p>
+              </dd>
+
+              <dt><a name=
               "RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES" id=
               "RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES"></a><span class="term"><code class="varname">noContentSuffixes</code></span></dt>
 
@@ -8694,6 +8740,25 @@ thesame = "some string with spaces"
                 patterns), and the file name itself gets indexed
                 normally. This can be redefined for
                 subdirectories.</p>
+              </dd>
+
+              <dt><a name=
+              "RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES-"
+              id="RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES-">
+              </a><span class="term"><code class=
+              "varname">noContentSuffixes-</code></span></dt>
+
+              <dd>
+                <p>List of name endings to remove from the default
+                noContentSuffixes list.</p>
+              </dd>
+
+              <dt><a name=
+              "RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES+"></a><span class="term"><code class="varname">noContentSuffixes+</code></span></dt>
+
+              <dd>
+                <p>List of name endings to add to the default
+                noContentSuffixes list.</p>
               </dd>
 
               <dt><a name=
@@ -8796,6 +8861,23 @@ thesame = "some string with spaces"
                 <p>List of excluded MIME types. Lets you exclude
                 some types from indexing. Can be redefined for
                 subtrees.</p>
+              </dd>
+
+              <dt><a name=
+              "RCL.INSTALL.CONFIG.RECOLLCONF.NOMD5MIMETYPES" id=
+              "RCL.INSTALL.CONFIG.RECOLLCONF.NOMD5MIMETYPES"></a><span class="term"><code class="varname">nomd5mimetypes</code></span></dt>
+
+              <dd>
+                <p>Don't compute md5 for these types. md5 checksums
+                are used only for deduplicating results, and can be
+                very expensive to compute on multimedia or other
+                big files. This list lets you turn off md5
+                computation for selected types. It is global (no
+                redefinition for subtrees). At the moment, it only
+                has an effect for external handlers (exec and
+                execm). The file types can be specified by listing
+                either MIME types (e.g. audio/mpeg) or handler
+                names (e.g. rclaudio).</p>
               </dd>
 
               <dt><a name=
@@ -9966,6 +10048,13 @@ x-my-tag = mailmytag
           executed to determine the MIME type (this can be switched
           off, or the command changed inside the main configuration
           file).</p>
+
+          <p>All extension values in <code class=
+          "filename">mimemap</code> must be entered in lower case.
+          File names extensions are lower-cased for comparison
+          during indexing, meaning that an upper case <code class=
+          "filename">mimemap</code> entry will never be
+          matched.</p>
 
           <p>The mappings can be specified on a per-subtree basis,
           which may be useful in some cases. Example: <span class=

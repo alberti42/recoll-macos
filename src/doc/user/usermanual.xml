@@ -4211,10 +4211,26 @@ application/x-chm = execm rclchm
       </sect2>
 
     <sect2 id="RCL.PROGRAM.FILTERS.HTML">
-        <title>Input handler HTML output</title>
+        <title>Input handler output</title>
 
-        <para>The output HTML could be very minimal like the following
-        example:
+        <para>Both the simple and persistent input handlers can return any
+        MIME type to Recoll, which will further process the data according
+        to the MIME configuration.</para>
+
+        <para>Most input filters filters produce either
+        <literal>text/plain</literal> or <literal>text/html</literal>
+        data. There are exceptions, for example, filters which process
+        archive file (<literal>zip</literal>, <literal>tar</literal>, etc.)
+        will usually return the documents as they are found, without
+        processing them further.</para>
+
+        <para>There is nothing to say about <literal>text/plain</literal>
+        output, except that its character encoding should be consistent
+        with what is specified in the <filename>mimeconf</filename>
+        file.</para>
+        
+        <para>For filters producing HTML, the output could be very minimal
+        like the following example:
           <programlisting>
 &lt;html>
   &lt;head>
@@ -4234,7 +4250,7 @@ application/x-chm = execm rclchm
           "<literal>&amp;amp;</literal>", "<literal>&lt;</literal>"
           should be transformed into
           "<literal>&amp;lt;</literal>". This is not always properly
-          done by translating programs which output HTML, and of
+          done by external helper programs which output HTML, and of
           course never by those which output plain text. </para>
 
         <para>When encapsulating plain text in an HTML body, 
@@ -4298,6 +4314,16 @@ or
           in a <link linkend="RCL.PROGRAM.FIELDS">further
           section</link>.</para> 
 
+
+          <para>Persistent filters can use another, probably simpler,
+          method to produce metadata, by calling the
+          <literal>setfield()</literal> helper method. This avoids the
+          necessity to produce HTML, and any issue with HTML quoting. See,
+          for example, <filename>rclaudio</filename> in &RCL; 1.23 and
+          later for an example of handler which outputs
+          <literal>text/plain</literal> and uses
+          <literal>setfield()</literal> to produce metadata.</para>
+          
       </sect2>
 
     <sect2 id="RCL.PROGRAM.FILTERS.PAGES">
