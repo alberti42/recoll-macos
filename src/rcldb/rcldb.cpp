@@ -1216,7 +1216,7 @@ string Db::getSpellingSuggestion(const string& word)
 void Db::setAbstractParams(int idxtrunc, int syntlen, int syntctxlen)
 {
     LOGDEB1("Db::setAbstractParams: trunc "  << (idxtrunc) << " syntlen "  << (syntlen) << " ctxlen "  << (syntctxlen) << "\n" );
-    if (idxtrunc > 0)
+    if (idxtrunc >= 0)
 	m_idxAbsTruncLen = idxtrunc;
     if (syntlen > 0)
 	m_synthAbsLen = syntlen;
@@ -1494,24 +1494,26 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	// original file.
 	// Note that the map accesses by operator[] create empty entries if they
 	// don't exist yet.
-        string& absref = doc.meta[Doc::keyabs];
-	trimstring(absref, " \t\r\n");
-	if (absref.empty()) {
-	    if (!doc.text.empty())
-		absref = cstr_syntAbs + 
-		    neutchars(truncate_to_word(doc.text, m_idxAbsTruncLen), 
-                              cstr_nc);
-	} else {
-	    absref = neutchars(truncate_to_word(absref, m_idxAbsTruncLen), 
-                               cstr_nc);
-	}
-        // Do the append here to avoid the different truncation done
-        // in the regular "stored" loop
-        if (!absref.empty()) {
-            RECORD_APPEND(record, Doc::keyabs, absref);
-            absref.clear();
+        if (m_idxAbsTruncLen > 0) {
+            string& absref = doc.meta[Doc::keyabs];
+            trimstring(absref, " \t\r\n");
+            if (absref.empty()) {
+                if (!doc.text.empty())
+                    absref = cstr_syntAbs + 
+                        neutchars(truncate_to_word(doc.text, m_idxAbsTruncLen), 
+                                  cstr_nc);
+            } else {
+                absref = neutchars(truncate_to_word(absref, m_idxAbsTruncLen), 
+                                   cstr_nc);
+            }
+            // Do the append here to avoid the different truncation done
+            // in the regular "stored" loop
+            if (!absref.empty()) {
+                RECORD_APPEND(record, Doc::keyabs, absref);
+                absref.clear();
+            }
         }
-
+        
         // Append all regular "stored" meta fields
 	const set<string>& stored = m_config->getStoredFields();
 	for (set<string>::const_iterator it = stored.begin();
