@@ -16,9 +16,13 @@
 #    search string
 #  - For pages of CHM and EPUB documents where we can choose to open the 
 #    parent document instead of a temporary html file.
+# Use xallexcepts- and xallexcepts+ in a user file to add or remove from
+# the default xallexcepts list
+
 xallexcepts = application/pdf application/postscript application/x-dvi \
  text/html|gnuinfo text/html|chm text/html|epub \
  application/x-fsdirectory|parentopen inode/directory|parentopen
+
 
 [view]
 # Pseudo entry used if the 'use desktop' preference is set in the GUI
