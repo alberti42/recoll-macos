@@ -1,3 +1,9 @@
+recoll (1.23.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * Misc changes, mostly internal
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 27 Feb 2017 18:53:00 +0100
+
 recoll (1.22.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * Fix advanced search 'start search' not doing anything with qt5
