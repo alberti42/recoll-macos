@@ -49,7 +49,6 @@ librecoll_la_SOURCES = \
 aspell/aspell-local.h \
 aspell/rclaspell.cpp \
 aspell/rclaspell.h \
-bincimapmime/config.h \
 bincimapmime/convert.cc \
 bincimapmime/convert.h \
 bincimapmime/mime-inputsource.h \
