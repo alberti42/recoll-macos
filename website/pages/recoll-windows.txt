@@ -2,7 +2,7 @@
 Jean-Francois Dockes <jf at dockes.org>
 :date:
 
-:recollversion: 1.23.0-20170107-78b8ad
+:recollversion: 1.23.0-2017-01-07-78b8ad
 
 image:recoll-windows10-thumb.png[link="recoll-windows10.png"]
 
@@ -24,7 +24,7 @@ its availability: image:/donations/btn_donate_LG.gif[link="/donations/index.html
 Recoll versions 1.23.0-9c5e32-20161216 and 1.23.0-2bfd80-20161115 had been
 switched to using Xapian 1.4 which has a new and different index
 format. Due to issues in Xapian 1.4, I have switched back to using Xapian
-1.2 as of Recoll 1.23.0-20170107-78b8ad.
+1.2 as of Recoll 1.23.0-2017-01-07-78b8ad.
 
 This simply means that, if your index was created by one of the above
 versions, it will have to be recreated from scratch after installing the
