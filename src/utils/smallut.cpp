@@ -670,7 +670,7 @@ bool pcSubst(const string& in, string& out, const map<string, string>& subs)
     }
     return true;
 }
-inline static int ulltorbuf(unsigned long long val, char *rbuf)
+inline static int ulltorbuf(uint64_t val, char *rbuf)
 {
     int idx;
     for (idx = 0; val; idx++) {
@@ -690,7 +690,7 @@ inline static void ullcopyreverse(const char *rbuf, string& buf, int idx)
     }
 }
 
-void ulltodecstr(unsigned long long val, string& buf)
+void ulltodecstr(uint64_t val, string& buf)
 {
     buf.clear();
     if (val == 0) {
@@ -705,7 +705,7 @@ void ulltodecstr(unsigned long long val, string& buf)
     return;
 }
 
-void lltodecstr(long long val, string& buf)
+void lltodecstr(int64_t val, string& buf)
 {
     buf.clear();
     if (val == 0) {
@@ -730,14 +730,14 @@ void lltodecstr(long long val, string& buf)
     return;
 }
 
-string lltodecstr(long long val)
+string lltodecstr(int64_t val)
 {
     string buf;
     lltodecstr(val, buf);
     return buf;
 }
 
-string ulltodecstr(unsigned long long val)
+string ulltodecstr(uint64_t val)
 {
     string buf;
     ulltodecstr(val, buf);
@@ -745,7 +745,7 @@ string ulltodecstr(unsigned long long val)
 }
 
 // Convert byte count into unit (KB/MB...) appropriate for display
-string displayableBytes(off_t size)
+string displayableBytes(int64_t size)
 {
     const char *unit;
 
