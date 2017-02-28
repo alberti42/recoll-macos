@@ -19,6 +19,7 @@
 
 #include "autoconfig.h"
 
+#include <stdint.h>
 #include <string>
 #include <vector>
 #include <memory>
@@ -535,7 +536,7 @@ private:
 		      const string& field = cstr_null);
 
     // Flush when idxflushmb is reached
-    bool maybeflush(off_t moretext);
+    bool maybeflush(int64_t moretext);
     bool docExists(const string& uniterm);
 
     /* Copyconst and assignement private and forbidden */

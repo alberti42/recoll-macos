@@ -16,7 +16,9 @@
  */
 #ifndef _MH_TEXT_H_INCLUDED_
 #define _MH_TEXT_H_INCLUDED_
+
 #include <sys/types.h>
+#include <stdint.h>
 
 #include <string>
 
@@ -59,7 +61,7 @@ private:
     bool   m_paging;
     std::string m_text;
     std::string m_fn;
-    off_t  m_offs; // Offset of next read in file if we're paging
+    int64_t  m_offs; // Offset of next read in file if we're paging
     size_t m_pagesz;
     std::string m_charsetfromxattr; 
 

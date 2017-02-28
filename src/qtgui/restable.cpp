@@ -18,6 +18,7 @@
 
 #include <stdlib.h>
 #include <time.h>
+#include <stdint.h>
 
 #include <algorithm>
 
@@ -172,7 +173,7 @@ static string sizegetter(const string& fld, const Rcl::Doc& doc)
     if (it == doc.meta.end()) {
 	return string();
     }
-    off_t size = atoll(it->second.c_str());
+    int64_t size = atoll(it->second.c_str());
     return displayableBytes(size) + " (" + it->second + ")";
 }
 

@@ -17,6 +17,8 @@
 
 #include "autoconfig.h"
 
+#include <stdint.h>
+
 #include "cstr.h"
 #include "beaglequeuecache.h"
 #include "circache.h"
@@ -37,7 +39,7 @@ BeagleQueueCache::BeagleQueueCache(RclConfig *cnf)
 	LOGERR("BeagleQueueCache: cant create CirCache object\n" );
 	return;
     }
-    if (!m_cache->create(off_t(maxmbs)*1000*1024, CirCache::CC_CRUNIQUE)) {
+    if (!m_cache->create(int64_t(maxmbs)*1000*1024, CirCache::CC_CRUNIQUE)) {
 	LOGERR("BeagleQueueCache: cache file creation failed: "  << (m_cache->getReason()) << "\n" );
 	delete m_cache;
 	m_cache = 0;

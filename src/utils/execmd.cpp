@@ -298,15 +298,18 @@ public:
         m_parent->reset();
     }
 private:
-    ExecCmd::Internal *m_parent;
-    bool    m_active;
+    ExecCmd::Internal *m_parent{nullptr};
+    bool    m_active{false};
 };
 
 ExecCmd::~ExecCmd()
 {
-    ExecCmdRsrc(this->m);
+    if (m) {
+        ExecCmdRsrc r(m);
+    }
     if (m) {
         delete m;
+        m = nullptr;
     }
 }
 
@@ -455,7 +458,7 @@ int ExecCmd::startExec(const string& cmd, const vector<string>& args,
     }
 
     // The resource manager ensures resources are freed if we return early
-    ExecCmdRsrc e(this->m);
+    ExecCmdRsrc e(m);
 
     if (has_input && pipe(m->m_pipein) < 0) {
         LOGERR("ExecCmd::startExec: pipe(2) failed. errno " << errno << "\n" );
@@ -746,7 +749,7 @@ int ExecCmd::doexec(const string& cmd, const vector<string>& args,
     }
 
     // Cleanup in case we return early
-    ExecCmdRsrc e(this->m);
+    ExecCmdRsrc e(m);
     SelectLoop myloop;
     int ret = 0;
     if (input || output) {
@@ -948,7 +951,7 @@ int ExecCmd::getline(string& data, int timeosecs)
 // overhead.
 int ExecCmd::wait()
 {
-    ExecCmdRsrc e(this->m);
+    ExecCmdRsrc e(m);
     int status = -1;
     if (!m->m_killRequest && m->m_pid > 0) {
         if (waitpid(m->m_pid, &status, 0) < 0) {
@@ -964,7 +967,7 @@ int ExecCmd::wait()
 
 bool ExecCmd::maybereap(int *status)
 {
-    ExecCmdRsrc e(this->m);
+    ExecCmdRsrc e(m);
     *status = -1;
 
     if (m->m_pid <= 0) {

@@ -19,7 +19,7 @@
 #include "autoconfig.h"
 
 #include <stdio.h>
-
+#include <stdint.h>
 #include <string>
 
 #include "Filter.h"
@@ -31,7 +31,7 @@ class RclConfig;
 class RecollFilter : public Dijon::Filter {
 public:
     RecollFilter(RclConfig *config, const std::string& id)
-	: m_config(config), m_forPreview(false), m_havedoc(false), m_id(id) {
+	: m_config(config), m_id(id) {
     }
     virtual ~RecollFilter() {}
 
@@ -82,11 +82,11 @@ public:
 	return set_document_string(mtype, std::string(cp, sz));
     }
 
-    virtual void set_docsize(off_t size) {
+    virtual void set_docsize(int64_t size) {
 	m_docsize = size;
     }
 
-    virtual off_t get_docsize() const {
+    virtual int64_t get_docsize() const {
 	return m_docsize;
     }
 
@@ -146,15 +146,15 @@ protected:
     }
 
     RclConfig *m_config;
-    bool   m_forPreview;
+    bool   m_forPreview{false};
     std::string m_dfltInputCharset;
     std::string m_reason;
-    bool   m_havedoc;
+    bool   m_havedoc{false};
     std::string m_udi; // May be set by creator as a hint
     // m_id is and md5 of the filter definition line (from mimeconf) and
     // is used when fetching/returning filters to / from the cache.
     std::string m_id;
-    off_t m_docsize; // Size of the top document
+    int64_t m_docsize{0}; // Size of the top document
 };
 
 /**

@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <stdint.h>
 
 #include <sstream>
 #include <list>
@@ -205,11 +206,11 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     }
 
     // Size information. We print both doc and file if they differ a lot
-    off_t fsize = -1, dsize = -1;
+    int64_t fsize = -1, dsize = -1;
     if (!doc.dbytes.empty())
-	dsize = static_cast<off_t>(atoll(doc.dbytes.c_str()));
+	dsize = static_cast<int64_t>(atoll(doc.dbytes.c_str()));
     if (!doc.fbytes.empty())
-	fsize =  static_cast<off_t>(atoll(doc.fbytes.c_str()));
+	fsize =  static_cast<int64_t>(atoll(doc.fbytes.c_str()));
     string sizebuf;
     if (dsize > 0) {
 	sizebuf = displayableBytes(dsize);

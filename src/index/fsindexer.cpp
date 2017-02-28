@@ -669,7 +669,7 @@ FsIndexer::processonefile(RclConfig *config,
     }
 
     LOGDEB0("processone: processing: ["  <<
-            displayableBytes(off_t(stp->st_size)) << "] "  << fn << "\n");
+            displayableBytes(stp->st_size) << "] "  << fn << "\n");
 
     // Note that we used to do the full path here, but I ended up
     // believing that it made more sense to use only the file name

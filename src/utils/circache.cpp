@@ -145,7 +145,7 @@ class CCScanHook {
 public:
     virtual ~CCScanHook() {}
     enum status {Stop, Continue, Error, Eof};
-    virtual status takeone(off_t offs, const string& udi,
+    virtual status takeone(int64_t offs, const string& udi,
                            const EntryHeaderData& d) = 0;
 };
 
@@ -197,22 +197,22 @@ public:
         return false;
     }
 };
-typedef multimap<UdiH, off_t> kh_type;
-typedef multimap<UdiH, off_t>::value_type kh_value_type;
+typedef multimap<UdiH, int64_t> kh_type;
+typedef multimap<UdiH, int64_t>::value_type kh_value_type;
 
 class CirCacheInternal {
 public:
     int m_fd;
     ////// These are cache persistent state and written to the first block:
     // Maximum file size, after which we begin reusing old space
-    off_t m_maxsize;
+    int64_t m_maxsize;
     // Offset of the oldest header, or max file offset (file size)
     // while the file is growing. This is the next write position.
-    off_t m_oheadoffs;
+    int64_t m_oheadoffs;
     // Offset of last write (newest header)
-    off_t m_nheadoffs;
+    int64_t m_nheadoffs;
     // Pad size for newest entry.
-    off_t m_npadsize;
+    int64_t m_npadsize;
     // Keep history or only last entry
     bool  m_uniquentries;
     ///////////////////// End header entries
@@ -226,7 +226,7 @@ public:
 
     // State for rewind/next/getcurrent operation. This could/should
     // be moved to a separate iterator.
-    off_t  m_itoffs;
+    int64_t  m_itoffs;
     EntryHeaderData m_ithd;
 
     // Offset cache
@@ -234,7 +234,7 @@ public:
     bool    m_ofskhcplt; // Has cache been fully read since open?
 
     // Add udi->offset translation to map
-    bool khEnter(const string& udi, off_t ofs) {
+    bool khEnter(const string& udi, int64_t ofs) {
         UdiH h(udi);
 
         LOGDEB2("Circache::khEnter: h "  << (h.asHexString()) << " offs "  << ((ULONG)ofs) << " udi ["  << (udi) << "]\n" );
@@ -265,7 +265,7 @@ public:
     // Return vector of candidate offsets for udi (possibly several
     // because there may be hash collisions, and also multiple
     // instances).
-    bool khFind(const string& udi, vector<off_t>& ofss) {
+    bool khFind(const string& udi, vector<int64_t>& ofss) {
         ofss.clear();
 
         UdiH h(udi);
@@ -295,7 +295,7 @@ public:
         return true;
     }
     // Clear entry for udi/offs
-    bool khClear(const pair<string, off_t>& ref) {
+    bool khClear(const pair<string, int64_t>& ref) {
         UdiH h(ref.first);
         pair<kh_type::iterator, kh_type::iterator> p = m_ofskh.equal_range(h);
         if (p.first != m_ofskh.end() && (p.first->first == h)) {
@@ -309,8 +309,8 @@ public:
         return true;
     }
     // Clear entries for vector of udi/offs
-    bool khClear(const vector<pair<string, off_t> >& udis) {
-        for (vector<pair<string, off_t> >::const_iterator it = udis.begin();
+    bool khClear(const vector<pair<string, int64_t> >& udis) {
+        for (vector<pair<string, int64_t> >::const_iterator it = udis.begin();
                 it != udis.end(); it++) {
             khClear(*it);
         }
@@ -434,7 +434,7 @@ public:
         return true;
     }
 
-    bool writeEntryHeader(off_t offset, const EntryHeaderData& d,
+    bool writeEntryHeader(int64_t offset, const EntryHeaderData& d,
                           bool eraseData = false) {
         if (m_fd < 0) {
             m_reason << "writeEntryHeader: not open ";
@@ -467,7 +467,7 @@ public:
         return true;
     }
 
-    CCScanHook::status readEntryHeader(off_t offset, EntryHeaderData& d) {
+    CCScanHook::status readEntryHeader(int64_t offset, EntryHeaderData& d) {
         if (m_fd < 0) {
             m_reason << "readEntryHeader: not open ";
             return CCScanHook::Error;
@@ -500,14 +500,14 @@ public:
         return CCScanHook::Continue;
     }
 
-    CCScanHook::status scan(off_t startoffset, CCScanHook *user,
+    CCScanHook::status scan(int64_t startoffset, CCScanHook *user,
                             bool fold = false) {
         if (m_fd < 0) {
             m_reason << "scan: not open ";
             return CCScanHook::Error;
         }
 
-        off_t so0 = startoffset;
+        int64_t so0 = startoffset;
         bool already_folded = false;
 
         while (true) {
@@ -569,7 +569,7 @@ public:
         }
     }
 
-    bool readHUdi(off_t hoffs, EntryHeaderData& d, string& udi) {
+    bool readHUdi(int64_t hoffs, EntryHeaderData& d, string& udi) {
         if (readEntryHeader(hoffs, d) != CCScanHook::Continue) {
             return false;
         }
@@ -590,9 +590,9 @@ public:
         return true;
     }
 
-    bool readDicData(off_t hoffs, EntryHeaderData& hd, string& dic,
+    bool readDicData(int64_t hoffs, EntryHeaderData& hd, string& dic,
                      string* data) {
-        off_t offs = hoffs + CIRCACHE_HEADER_SIZE;
+        int64_t offs = hoffs + CIRCACHE_HEADER_SIZE;
         // This syscall could be avoided in some cases if we saved the offset
         // at each seek. In most cases, we just read the header and we are
         // at the right position
@@ -674,12 +674,12 @@ string CirCache::getReason()
 // physical record in the file
 class CCScanHookRecord : public  CCScanHook {
 public:
-    off_t headoffs;
-    off_t padsize;
+    int64_t headoffs;
+    int64_t padsize;
     CCScanHookRecord()
         : headoffs(0), padsize(0) {
     }
-    virtual status takeone(off_t offs, const string& udi,
+    virtual status takeone(int64_t offs, const string& udi,
                            const EntryHeaderData& d) {
         headoffs = offs;
         padsize = d.padsize;
@@ -693,7 +693,7 @@ string CirCache::getpath()
     return m_d->datafn(m_dir);
 }
 
-bool CirCache::create(off_t maxsize, int flags)
+bool CirCache::create(int64_t maxsize, int flags)
 {
     LOGDEB("CirCache::create: ["  << (m_dir) << "] maxsz "  << (lltodecstr((long long)maxsize)) << " flags 0x"  << (flags) << "\n" );
     if (m_d == 0) {
@@ -787,7 +787,7 @@ bool CirCache::open(OpMode mode)
 
 class CCScanHookDump : public  CCScanHook {
 public:
-    virtual status takeone(off_t offs, const string& udi,
+    virtual status takeone(int64_t offs, const string& udi,
                            const EntryHeaderData& d) {
         cout << "Scan: offs " << offs << " dicsize " << d.dicsize
              << " datasize " << d.datasize << " padsize " << d.padsize <<
@@ -803,7 +803,7 @@ bool CirCache::dump()
 
     // Start at oldest header. This is eof while the file is growing, scan will
     // fold to bot at once.
-    off_t start = m_d->m_oheadoffs;
+    int64_t start = m_d->m_oheadoffs;
 
     switch (m_d->scan(start, &dumper, true)) {
     case CCScanHook::Stop:
@@ -830,13 +830,13 @@ public:
     string  m_udi;
     int     m_targinstance;
     int     m_instance;
-    off_t   m_offs;
+    int64_t   m_offs;
     EntryHeaderData m_hd;
 
     CCScanHookGetter(const string& udi, int ti)
         : m_udi(udi), m_targinstance(ti), m_instance(0), m_offs(0) {}
 
-    virtual status takeone(off_t offs, const string& udi,
+    virtual status takeone(int64_t offs, const string& udi,
                            const EntryHeaderData& d) {
         LOGDEB2("Circache:Scan: off "  << (long(offs)) << " udi ["  << (udi) << "] dcsz "  << ((UINT)d.dicsize) << " dtsz "  << ((UINT)d.datasize) << " pdsz "  << ((UINT)d.padsize) << "  flgs "  << (d.flags) << "\n" );
         if (!m_udi.compare(udi)) {
@@ -866,13 +866,13 @@ bool CirCache::get(const string& udi, string& dic, string *data, int instance)
     if (m_d->m_ofskhcplt) {
         LOGDEB1("CirCache::get: using ofskh\n" );
         //m_d->khDump();
-        vector<off_t> ofss;
+        vector<int64_t> ofss;
         if (m_d->khFind(udi, ofss)) {
             LOGDEB1("Circache::get: h found, colls "  << (ofss.size()) << "\n" );
             int finst = 1;
             EntryHeaderData d_good;
-            off_t           o_good = 0;
-            for (vector<off_t>::iterator it = ofss.begin();
+            int64_t           o_good = 0;
+            for (vector<int64_t>::iterator it = ofss.begin();
                     it != ofss.end(); it++) {
                 LOGDEB1("Circache::get: trying offs "  << ((ULONG)*it) << "\n" );
                 EntryHeaderData d;
@@ -904,7 +904,7 @@ bool CirCache::get(const string& udi, string& dic, string *data, int instance)
     }
 
     CCScanHookGetter getter(udi, instance);
-    off_t start = m_d->m_oheadoffs;
+    int64_t start = m_d->m_oheadoffs;
 
     CCScanHook::status ret = m_d->scan(start, &getter, true);
     if (ret == CCScanHook::Eof) {
@@ -944,14 +944,14 @@ bool CirCache::erase(const string& udi, bool reallyclear)
         }
     }
 
-    vector<off_t> ofss;
+    vector<int64_t> ofss;
     if (!m_d->khFind(udi, ofss)) {
         // Udi not in there,  erase ok
         LOGDEB("CirCache::erase: khFind returns none\n" );
         return true;
     }
 
-    for (vector<off_t>::iterator it = ofss.begin(); it != ofss.end(); it++) {
+    for (vector<int64_t>::iterator it = ofss.begin(); it != ofss.end(); it++) {
         LOGDEB2("CirCache::erase: reading at "  << ((unsigned long)*it) << "\n" );
         EntryHeaderData d;
         string fudi;
@@ -980,15 +980,15 @@ bool CirCache::erase(const string& udi, bool reallyclear)
 // entry.
 class CCScanHookSpacer : public  CCScanHook {
 public:
-    off_t sizewanted;
-    off_t sizeseen;
-    vector<pair<string, off_t> > squashed_udis;
-    CCScanHookSpacer(off_t sz)
+    int64_t sizewanted;
+    int64_t sizeseen;
+    vector<pair<string, int64_t> > squashed_udis;
+    CCScanHookSpacer(int64_t sz)
         : sizewanted(sz), sizeseen(0) {
         assert(sz > 0);
     }
 
-    virtual status takeone(off_t offs, const string& udi,
+    virtual status takeone(int64_t offs, const string& udi,
                            const EntryHeaderData& d) {
         LOGDEB2("Circache:ScanSpacer:off "  << ((UINT)offs) << " dcsz "  << (d.dicsize) << " dtsz "  << (d.datasize) << " pdsz "  << (d.padsize) << " udi["  << (udi) << "]\n" );
         sizeseen += CIRCACHE_HEADER_SIZE + d.dicsize + d.datasize + d.padsize;
@@ -1058,16 +1058,16 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
     }
 
     // Characteristics for the new entry.
-    off_t nsize = CIRCACHE_HEADER_SIZE + dic.size() + datalen;
-    off_t nwriteoffs = m_d->m_oheadoffs;
-    off_t npadsize = 0;
+    int64_t nsize = CIRCACHE_HEADER_SIZE + dic.size() + datalen;
+    int64_t nwriteoffs = m_d->m_oheadoffs;
+    int64_t npadsize = 0;
     bool extending = false;
 
     LOGDEB("CirCache::put: nsz "  << (nsize) << " oheadoffs "  << (m_d->m_oheadoffs) << "\n" );
 
     // Check if we can recover some pad space from the (physically) previous
     // entry.
-    off_t recovpadsize = m_d->m_oheadoffs == CIRCACHE_FIRSTBLOCK_SIZE ?
+    int64_t recovpadsize = m_d->m_oheadoffs == CIRCACHE_FIRSTBLOCK_SIZE ?
                          0 : m_d->m_npadsize;
     if (recovpadsize != 0) {
         // Need to read the latest entry's header, to rewrite it with a
@@ -1107,7 +1107,7 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
     } else {
         // Scan the file until we have enough space for the new entry,
         // and determine the pad size up to the 1st preserved entry
-        off_t scansize = nsize - recovpadsize;
+        int64_t scansize = nsize - recovpadsize;
         LOGDEB("CirCache::put: scanning for size "  << (scansize) << " from offs "  << ((UINT)m_d->m_oheadoffs) << "\n" );
         CCScanHookSpacer spacer(scansize);
         switch (m_d->scan(m_d->m_oheadoffs, &spacer)) {
@@ -1177,8 +1177,8 @@ bool CirCache::rewind(bool& eof)
 
     eof = false;
 
-    off_t fsize = lseek(m_d->m_fd, 0, SEEK_END);
-    if (fsize == (off_t) - 1) {
+    int64_t fsize = lseek(m_d->m_fd, 0, SEEK_END);
+    if (fsize == (int64_t) - 1) {
         LOGERR("CirCache::rewind: seek to EOF failed\n" );
         return false;
     }
@@ -1564,7 +1564,7 @@ b1:
         if (argc != 1) {
             Usage();
         }
-        off_t sizekb = atoi(*argv++);
+        int64_t sizekb = atoi(*argv++);
         argc--;
         int flags = 0;
         if (op_flags & OPT_u) {

@@ -1684,7 +1684,7 @@ void Db::waitUpdIdle()
 #endif
 
 // Flush when idxflushmbs is reached
-bool Db::maybeflush(off_t moretext)
+bool Db::maybeflush(int64_t moretext)
 {
     if (m_flushMb > 0) {
 	m_curtxtsz += moretext;

@@ -37,6 +37,7 @@
  */
 
 #include <sys/types.h>
+#include <stdint.h>
 
 #include <string>
 
@@ -57,7 +58,7 @@ public:
                       // Truncate file (restart from scratch).
                       CC_CRTRUNCATE = 2
                      };
-    virtual bool create(off_t maxsize, int flags);
+    virtual bool create(int64_t maxsize, int flags);
 
     enum OpMode {CC_OPREAD, CC_OPWRITE};
     virtual bool open(OpMode mode);

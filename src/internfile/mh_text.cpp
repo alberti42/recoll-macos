@@ -107,13 +107,13 @@ bool MimeHandlerText::set_document_string_impl(const string& mt,
 bool MimeHandlerText::skip_to_document(const string& ipath)
 {
     char *endptr;
-    long long t = strtoll(ipath.c_str(), &endptr, 10);
+    int64_t t = strtoll(ipath.c_str(), &endptr, 10);
     if (endptr == ipath.c_str()) {
 	LOGERR("MimeHandlerText::skip_to_document: bad ipath offs ["  <<
                ipath << "]\n");
 	return false;
     }
-    m_offs = (off_t)t;
+    m_offs = t;
     readnext();
     return true;
 }
