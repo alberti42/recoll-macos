@@ -5455,19 +5455,22 @@ except:
           big piece of software, but you will most probably be able to
           find a binary package.</para>
 
-        <para>You may have to compile &XAP; but this is easy.</para>
-
+          <para>If you are building for an exotic or older system, it may
+          be useful to note that functional improvements in &RCL;
+          have been relatively marginal in recent versions,
+          and that you may make your life easier by using an older
+          release, without losing major function.</para>
+          
         <para>The shopping list:</para>
         <itemizedlist>
 
           <listitem><para>The <literal>autoconf</literal>,
           <literal>automake</literal> and <literal>libtool</literal>
-          triad. Only <literal>autoconf</literal> is needed up to &RCL;
-          1.21.</para></listitem>
+          triad. Only <literal>autoconf</literal> is needed before &RCL;
+          and including 1.21.</para></listitem>
 
-          <listitem><para>C++ compiler. Up to &RCL; version 1.13.04,
-              its absence can manifest itself by strange messages
-              about a missing iconv_open.</para>
+          <listitem><para>C++ compiler. Recent versions require C++11
+          compatibility (1.23 and later).</para>
           </listitem>
 
           <listitem><para><command>bison</command> command (for &RCL; 1.21
@@ -5497,12 +5500,11 @@ except:
 
           <listitem>
 	    <para>Development files for 
-              <ulink url="http://qt-project.org/downloads">
-                <application>Qt 4</application> </ulink>. &RCL; has not been
-              tested with <application>Qt 5</application> yet. &RCL; 1.15.9
+            <ulink url="http://qt-project.org/downloads">
+              <application>Qt 4 or Qt 5</application> </ulink>. &RCL; 1.15.9
               was the last version to support <application>Qt 3</application>.
-              If you do not want to install or build
-              the <application>Qt Webkit</application> module, &RCL;
+              If you do not want to install or build the
+              <application>Qt Webkit</application> module, &RCL;
               has a configuration option to disable its use (see further).
             </para> 
           </listitem>
@@ -5673,27 +5675,14 @@ except:
       <sect2 id="RCL.INSTALL.BUILDING.INSTALL">
         <title>Installation</title>
       
-      <para>Either type <userinput>make install</userinput> or execute
-      <userinput>recollinstall
-      <replaceable>prefix</replaceable></userinput>, in the root 
-        of the source tree. This will copy the commands to
-        <filename><replaceable>prefix</replaceable>/bin</filename>
-        and the sample configuration files, scripts and other shared
-        data to
-        <filename><replaceable>prefix</replaceable>/share/recoll</filename>.</para>
-        <para>If the installation prefix given to
-        <command>recollinstall</command> is different from either the 
-	system default or the value which was
-        specified when executing <command>configure</command> (as in 
-	<userinput>configure --prefix /some/path</userinput>), you
-        will have to set the <envar>RECOLL_DATADIR</envar>
-        environment variable to indicate where the shared data is to
-        be found (ie for (ba)sh: 
-	<userinput>export RECOLL_DATADIR=/some/path/share/recoll</userinput>).
-	</para> 
-
-        <para>You can then proceed to <link
-       linkend="RCL.INSTALL.CONFIG">configuration</link>. </para>
+      <para>Use <userinput>make install</userinput>
+      in the root 
+      of the source tree. This will copy the commands to
+      <filename><replaceable>prefix</replaceable>/bin</filename>
+      and the sample configuration files, scripts and other shared
+      data to
+      <filename><replaceable>prefix</replaceable>/share/recoll</filename>.
+      </para>
 
       </sect2>
     </sect1>

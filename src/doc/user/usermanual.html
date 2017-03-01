@@ -20,8 +20,8 @@ alink="#0000FF">
     <div class="titlepage">
       <div>
         <div>
-          <h1 class="title"><a name="idp7068352" id=
-          "idp7068352"></a>Recoll user manual</h1>
+          <h1 class="title"><a name="idp37843648" id=
+          "idp37843648"></a>Recoll user manual</h1>
         </div>
 
         <div>
@@ -109,13 +109,13 @@ alink="#0000FF">
                 multiple indexes</a></span></dt>
 
                 <dt><span class="sect2">2.1.3. <a href=
-                "#idp39073168">Document types</a></span></dt>
+                "#idp69806816">Document types</a></span></dt>
 
                 <dt><span class="sect2">2.1.4. <a href=
-                "#idp39095632">Indexing failures</a></span></dt>
+                "#idp69829680">Indexing failures</a></span></dt>
 
                 <dt><span class="sect2">2.1.5. <a href=
-                "#idp39102640">Recovery</a></span></dt>
+                "#idp69836688">Recovery</a></span></dt>
               </dl>
             </dd>
 
@@ -997,8 +997,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp39073168" id=
-                "idp39073168"></a>2.1.3.&nbsp;Document types</h3>
+                <h3 class="title"><a name="idp69806816" id=
+                "idp69806816"></a>2.1.3.&nbsp;Document types</h3>
               </div>
             </div>
           </div>
@@ -1105,8 +1105,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp39095632" id=
-                "idp39095632"></a>2.1.4.&nbsp;Indexing
+                <h3 class="title"><a name="idp69829680" id=
+                "idp69829680"></a>2.1.4.&nbsp;Indexing
                 failures</h3>
               </div>
             </div>
@@ -1146,8 +1146,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp39102640" id=
-                "idp39102640"></a>2.1.5.&nbsp;Recovery</h3>
+                <h3 class="title"><a name="idp69836688" id=
+                "idp69836688"></a>2.1.5.&nbsp;Recovery</h3>
               </div>
             </div>
           </div>
@@ -8013,8 +8013,12 @@ except:
           big piece of software, but you will most probably be able
           to find a binary package.</p>
 
-          <p>You may have to compile <span class=
-          "application">Xapian</span> but this is easy.</p>
+          <p>If you are building for an exotic or older system, it
+          may be useful to note that functional improvements in
+          <span class="application">Recoll</span> have been
+          relatively marginal in recent versions, and that you may
+          make your life easier by using an older release, without
+          losing major function.</p>
 
           <p>The shopping list:</p>
 
@@ -8025,16 +8029,14 @@ except:
                 <p>The <code class="literal">autoconf</code>,
                 <code class="literal">automake</code> and
                 <code class="literal">libtool</code> triad. Only
-                <code class="literal">autoconf</code> is needed up
-                to <span class="application">Recoll</span>
-                1.21.</p>
+                <code class="literal">autoconf</code> is needed
+                before <span class="application">Recoll</span> and
+                including 1.21.</p>
               </li>
 
               <li class="listitem">
-                <p>C++ compiler. Up to <span class=
-                "application">Recoll</span> version 1.13.04, its
-                absence can manifest itself by strange messages
-                about a missing iconv_open.</p>
+                <p>C++ compiler. Recent versions require C++11
+                compatibility (1.23 and later).</p>
               </li>
 
               <li class="listitem">
@@ -8075,10 +8077,8 @@ except:
               <li class="listitem">
                 <p>Development files for <a class="ulink" href=
                 "http://qt-project.org/downloads" target=
-                "_top"><span class="application">Qt 4</span></a> .
-                <span class="application">Recoll</span> has not
-                been tested with <span class="application">Qt
-                5</span> yet. <span class=
+                "_top"><span class="application">Qt 4 or Qt
+                5</span></a> . <span class=
                 "application">Recoll</span> 1.15.9 was the last
                 version to support <span class="application">Qt
                 3</span>. If you do not want to install or build
@@ -8330,32 +8330,14 @@ except:
             </div>
           </div>
 
-          <p>Either type <strong class="userinput"><code>make
-          install</code></strong> or execute <strong class=
-          "userinput"><code>recollinstall <em class=
-          "replaceable"><code>prefix</code></em></code></strong>,
-          in the root of the source tree. This will copy the
-          commands to <code class="filename"><em class=
+          <p>Use <strong class="userinput"><code>make
+          install</code></strong> in the root of the source tree.
+          This will copy the commands to <code class=
+          "filename"><em class=
           "replaceable"><code>prefix</code></em>/bin</code> and the
           sample configuration files, scripts and other shared data
           to <code class="filename"><em class=
           "replaceable"><code>prefix</code></em>/share/recoll</code>.</p>
-
-          <p>If the installation prefix given to <span class=
-          "command"><strong>recollinstall</strong></span> is
-          different from either the system default or the value
-          which was specified when executing <span class=
-          "command"><strong>configure</strong></span> (as in
-          <strong class="userinput"><code>configure --prefix
-          /some/path</code></strong>), you will have to set the
-          <code class="envar">RECOLL_DATADIR</code> environment
-          variable to indicate where the shared data is to be found
-          (ie for (ba)sh: <strong class="userinput"><code>export
-          RECOLL_DATADIR=/some/path/share/recoll</code></strong>).</p>
-
-          <p>You can then proceed to <a class="link" href=
-          "#RCL.INSTALL.CONFIG" title=
-          "5.4.&nbsp;Configuration overview">configuration</a>.</p>
         </div>
       </div>
 
