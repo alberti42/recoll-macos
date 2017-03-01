@@ -23,7 +23,6 @@
 #include <ctype.h>
 #include <string>
 #include <list>
-using namespace std;
 
 #include "mimetype.h"
 #include "log.h"
@@ -32,6 +31,8 @@ using namespace std;
 #include "smallut.h"
 #include "idfile.h"
 #include "pxattr.h"
+
+using namespace std;
 
 /// Identification of file from contents. This is called for files with
 /// unrecognized extensions.
@@ -49,6 +50,7 @@ using namespace std;
 
 static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
 {
+    LOGDEB1("mimetypefromdata: fn [" << fn << "]\n");
     // First try the internal identifying routine
     string mime = idFile(fn.c_str());
 
@@ -58,12 +60,12 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
 
         // 'file' fallback if the configured command (default:
         // xdg-mime) is not found
-	static const vector<string> tradfilecmd = {{FILE_PROG}, {"-i"}, {fn}};
+	static const vector<string> tradfilecmd = {{FILE_PROG}, {"-i"}};
 
         vector<string> cmd;
         string scommand;
         if (cfg->getConfParam("systemfilecommand", scommand)) {
-            LOGDEB2("mimetype: syscmd from config: "  << (scommand) << "\n" );
+            LOGDEB2("mimetype: syscmd from config: " << scommand << "\n");
             stringToStrings(scommand, cmd);
             string exe;
             if (cmd.empty()) {
@@ -75,17 +77,20 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
             }
             cmd.push_back(fn);
         } else {
-            LOGDEB("mimetype:systemfilecommand not found, using "  << (stringsToString(tradfilecmd)) << "\n" );
+            LOGDEB("mimetype:systemfilecommand not found, using " <<
+                   stringsToString(tradfilecmd) << "\n");
             cmd = tradfilecmd;
         }
 
 	string result;
+        LOGDEB2("mimetype: executing: [" << stringsToString(cmd) << "]\n");
 	if (!ExecCmd::backtick(cmd, result)) {
-	    LOGERR("mimetypefromdata: exec "  << (stringsToString(cmd)) << " failed\n" );
+	    LOGERR("mimetypefromdata: exec " <<
+                   stringsToString(cmd) << " failed\n");
 	    return string();
 	}
 	trimstring(result, " \t\n\r");
-	LOGDEB2("mimetype: systemfilecommand output ["  << (result) << "]\n" );
+	LOGDEB2("mimetype: systemfilecommand output [" << result << "]\n");
 	
 	// The normal output from "file -i" looks like the following:
 	//   thefilename.xxx: text/plain; charset=us-ascii
@@ -106,7 +111,8 @@ static string mimetypefromdata(RclConfig *cfg, const string &fn, bool usfc)
 	if (result.find(fn) != 0) {
 	    // Garbage "file" output. Maybe the result of a charset
 	    // conversion attempt?
-	    LOGERR("mimetype: can't interpret 'file' output: ["  << (result) << "]\n" );
+	    LOGERR("mimetype: can't interpret output from [" <<
+                   stringsToString(cmd) << "] : [" << result << "]\n");
 	    return string();
 	}
 	result = result.substr(fn.size());
@@ -160,9 +166,9 @@ string mimetype(const string &fn, const struct stat *stp,
     // Extended attribute has priority on everything, as per:
     // http://freedesktop.org/wiki/CommonExtendedAttributes
     if (pxattr::get(fn, "mime_type", &mtype)) {
-	LOGDEB0("Mimetype: 'mime_type' xattr : ["  << (mtype) << "]\n" );
+	LOGDEB0("Mimetype: 'mime_type' xattr : [" << mtype << "]\n");
 	if (mtype.empty()) {
-	    LOGDEB0("Mimetype: getxattr() returned empty mime type !\n" );
+	    LOGDEB0("Mimetype: getxattr() returned empty mime type !\n");
 	} else {
 	    return mtype;
 	}
@@ -170,12 +176,12 @@ string mimetype(const string &fn, const struct stat *stp,
 #endif
 
     if (cfg == 0)  {
-	LOGERR("Mimetype: null config ??\n" );
+	LOGERR("Mimetype: null config ??\n");
 	return mtype;
     }
 
     if (cfg->inStopSuffixes(fn)) {
-	LOGDEB("mimetype: fn ["  << (fn) << "] in stopsuffixes\n" );
+	LOGDEB("mimetype: fn [" << fn << "] in stopsuffixes\n");
 	return mtype;
     }
 

@@ -32,8 +32,8 @@ class RclConfig;
  * @param cfg recoll config
  * @param usfc Use system's 'file' command as last resort (or not)
  */
-string mimetype(const std::string &filename, const struct stat *stp,
-		RclConfig *cfg, bool usfc);
+std::string mimetype(const std::string &filename, const struct stat *stp,
+                     RclConfig *cfg, bool usfc);
 
 
 #endif /* _MIMETYPE_H_INCLUDED_ */
