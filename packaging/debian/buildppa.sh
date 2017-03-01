@@ -7,7 +7,7 @@
 RCLVERS=1.23.0
 LENSVERS=1.19.10.3543
 SCOPEVERS=1.20.2.4
-PPAVERS=1
+PPAVERS=3
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
@@ -44,7 +44,7 @@ check_recoll_orig()
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
 series="trusty xenial yakkety"
-#series=
+# series=yakkety
 
 if test "X$series" != X ; then
     check_recoll_orig
