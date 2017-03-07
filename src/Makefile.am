@@ -609,6 +609,7 @@ filters/rclscribus \
 filters/rclshowinfo \
 filters/rclsiduxman \
 filters/rclsoff.py \
+filters/rclsoff-flat.py \
 filters/rclsvg.py \
 filters/rcltar \
 filters/rcltex \
