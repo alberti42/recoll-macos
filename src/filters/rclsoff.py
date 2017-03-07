@@ -143,8 +143,8 @@ class OOExtractor:
             self.em.rclog("unzip failed: %s" % err)
             return (False, "", "", rclexecm.RclExecM.eofnow)
 
-        docdata = b'<html><head><meta http-equiv="Content-Type"' \
-                  b'content="text/html; charset=UTF-8"></head><body>'
+        docdata = b'<html>\n<head>\n<meta http-equiv="Content-Type"' \
+                  b'content="text/html; charset=UTF-8">'
 
         try:
             metadata = zip.read("meta.xml")
@@ -156,6 +156,8 @@ class OOExtractor:
             # nothing matches?
             #self.em.rclog("no/bad metadata in %s" % fn)
             pass
+
+        docdata += b'</head>\n<body>\n'
 
         try:
             content = zip.read("content.xml")
