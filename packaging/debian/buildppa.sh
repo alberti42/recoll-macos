@@ -44,7 +44,7 @@ check_recoll_orig()
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
 series="trusty xenial yakkety"
-# series=yakkety
+series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -71,9 +71,12 @@ for series in $series ; do
   dput $PPANAME recoll_${RCLVERS}-1~ppa${PPAVERS}~${series}1_source.changes
 done
 
-### KIO
-series="trusty xenial yakkety"
-series=
+
+
+### KIO. Does not build on trusty from recoll 1.23 because of the need
+### for c++11
+series="xenial yakkety"
+#series=xenial
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -99,12 +102,6 @@ for svers in $series ; do
   sed -e s/SERIES/$svers/g \
       -e s/PPAVERS/${PPAVERS}/g \
           < ${debdir}/changelog > $topdir/debian/changelog ;
-  if test $svers = "trusty" ; then
-      mv -f $topdir/debian/control-4 $topdir/debian/control
-      mv -f $topdir/debian/rules-4 $topdir/debian/rules
-  else
-      rm -f $topdir/debian/control-4 $topdir/debian/rules-4
-  fi
   (cd $topdir;debuild -S -sa) || exit 1
 
   dput $PPANAME kio-recoll_${RCLVERS}-0~ppa${PPAVERS}~${svers}1_source.changes

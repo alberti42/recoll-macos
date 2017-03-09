@@ -240,7 +240,7 @@ void RecollProtocol::showPreview(const Rcl::Doc& idoc)
     string ipath = idoc.ipath;
     if (!interner.internfile(fdoc, ipath)) {
         error(KIO::ERR_SLAVE_DEFINED,
-              u8s2qs("Cannot convert file to internal format"));
+              QString::fromUtf8("Cannot convert file to internal format"));
         return;
     }
     if (!interner.get_html().empty()) {

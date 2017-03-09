@@ -305,7 +305,8 @@ void RecollProtocol::listDir(const QUrl& url)
         // which offers an opportunity to not perform it.
         if (ingest.endSlashQuery()) {
             qDebug() << "RecollProtocol::listDir: Ends With /";
-            error(ERR_SLAVE_DEFINED, u8s2qs("Autocompletion search aborted"));
+            error(ERR_SLAVE_DEFINED,
+                  QString::fromUtf8("Autocompletion search aborted"));
             return;
         }
         if (!syncSearch(qd)) {
@@ -335,7 +336,7 @@ void RecollProtocol::listDir(const QUrl& url)
         int pagelen = m_source->getSeqSlice(pagebase, pagesize, page);
         UDSEntry entry;
         if (pagelen < 0) {
-            error(ERR_SLAVE_DEFINED, u8s2qs("Internal error"));
+            error(ERR_SLAVE_DEFINED, QString::fromUtf8("Internal error"));
             break;
         }
         UDSEntryList entries;

@@ -74,7 +74,7 @@ ${rcltop}/qtgui/guiutils.cpp)
 add_library(kio_recoll MODULE ${kio_recoll_SRCS})
 
 add_custom_target(rcllib
-                 COMMAND make -j 6 PicStatic
+                 COMMAND make -j 3 PicStatic
                  WORKING_DIRECTORY ${rcltop}
 )
 add_dependencies(kio_recoll rcllib)

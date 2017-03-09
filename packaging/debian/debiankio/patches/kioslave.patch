@@ -1,0 +1,77 @@
+diff --git a/Makefile.am b/Makefile.am
+index 892ed4f..b50345e 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -274,7 +274,7 @@ librecoll_la_LIBADD = $(LIBXAPIAN) $(LIBICONV) $(LIBTHREADS)
+ PicStatic: $(librecoll_la_OBJECTS)
+ 	rm -f .libs/librecoll.a
+ 	rm -f .libs/librecoll.so
+-	libtool --tag=LD --mode=link gcc -g -O -o librecoll.la \
++	$(LIBTOOL) --tag=LD --mode=link gcc -g -O -o librecoll.la \
+ 		$(librecoll_la_OBJECTS)
+ 
+ bin_PROGRAMS = recollindex
+diff --git a/Makefile.in b/Makefile.in
+index 9fc916d..7eb90d9 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -2160,7 +2160,7 @@ CXXFLAGS ?= @CXXFLAGS@
+ PicStatic: $(librecoll_la_OBJECTS)
+ 	rm -f .libs/librecoll.a
+ 	rm -f .libs/librecoll.so
+-	libtool --tag=LD --mode=link gcc -g -O -o librecoll.la \
++	$(LIBTOOL) --tag=LD --mode=link gcc -g -O -o librecoll.la \
+ 		$(librecoll_la_OBJECTS)
+ 
+ # EXTRA_DIST: The Php Code does not build anymore. No need to ship it until
+diff --git a/kde/kioslave/kio_recoll/dirif.cpp b/kde/kioslave/kio_recoll/dirif.cpp
+index 3a96891..9d0a5f8 100644
+--- a/kde/kioslave/kio_recoll/dirif.cpp
++++ b/kde/kioslave/kio_recoll/dirif.cpp
+@@ -305,7 +305,8 @@ void RecollProtocol::listDir(const QUrl& url)
+         // which offers an opportunity to not perform it.
+         if (ingest.endSlashQuery()) {
+             qDebug() << "RecollProtocol::listDir: Ends With /";
+-            error(ERR_SLAVE_DEFINED, u8s2qs("Autocompletion search aborted"));
++            error(ERR_SLAVE_DEFINED,
++                  QString::fromUtf8("Autocompletion search aborted"));
+             return;
+         }
+         if (!syncSearch(qd)) {
+@@ -335,7 +336,7 @@ void RecollProtocol::listDir(const QUrl& url)
+         int pagelen = m_source->getSeqSlice(pagebase, pagesize, page);
+         UDSEntry entry;
+         if (pagelen < 0) {
+-            error(ERR_SLAVE_DEFINED, u8s2qs("Internal error"));
++            error(ERR_SLAVE_DEFINED, QString::fromUtf8("Internal error"));
+             break;
+         }
+         UDSEntryList entries;
+diff --git a/kde/kioslave/kio_recoll/htmlif.cpp b/kde/kioslave/kio_recoll/htmlif.cpp
+index 3e79038..cb396c3 100644
+--- a/kde/kioslave/kio_recoll/htmlif.cpp
++++ b/kde/kioslave/kio_recoll/htmlif.cpp
+@@ -240,7 +240,7 @@ void RecollProtocol::showPreview(const Rcl::Doc& idoc)
+     string ipath = idoc.ipath;
+     if (!interner.internfile(fdoc, ipath)) {
+         error(KIO::ERR_SLAVE_DEFINED,
+-              u8s2qs("Cannot convert file to internal format"));
++              QString::fromUtf8("Cannot convert file to internal format"));
+         return;
+     }
+     if (!interner.get_html().empty()) {
+diff --git a/kde/kioslave/kio_recoll/kio_recoll.h b/kde/kioslave/kio_recoll/kio_recoll.h
+index 6529f91..970019e 100644
+--- a/kde/kioslave/kio_recoll/kio_recoll.h
++++ b/kde/kioslave/kio_recoll/kio_recoll.h
+@@ -201,10 +201,5 @@ extern "C" {
+     kdemain(int argc, char **argv);
+ }
+ 
+-inline QString u8s2qs(const string& s)
+-{
+-    return QString::fromUtf8(s.c_str());
+-}
+-
+ 
+ #endif // _RECOLL_H

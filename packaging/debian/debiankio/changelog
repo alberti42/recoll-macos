@@ -1,3 +1,9 @@
+kio-recoll (1.23.0-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * Misc changes, mostly internal
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 27 Feb 2017 18:53:00 +0100
+
 kio-recoll (1.22.4-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Switch to kf5 for appropriate series. Update to 1.22.4 (same as .3)
