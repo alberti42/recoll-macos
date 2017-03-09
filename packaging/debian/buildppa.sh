@@ -7,7 +7,7 @@
 RCLVERS=1.23.0
 LENSVERS=1.19.10.3543
 SCOPEVERS=1.20.2.4
-PPAVERS=3
+PPAVERS=1
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
