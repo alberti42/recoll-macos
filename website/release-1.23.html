@@ -62,19 +62,15 @@
 
       <h2>Changes in Recoll 1.23.0</h2>
 
-      <p>Recoll 1.23 has few user-visible changes. The relase was
+      <p>Recoll 1.23 has few user-visible changes. The release was
         created mostly because some of the minor feature changes are
         critical from some niche Recoll uses (e.g.: the improved audio
         file properties indexing), and because the changes to the
         logging system were too extensive for a minor version.</p>
 
       <ul>
-
-        <li>Internal only: the code now uses some C++11 features
-          (e.g. std::threads, std::mutex) to replace home-grown
-          hacks. In consequence, a C++11 compiler is now required for
-          building.</li>
-          
+        <li>Input handler for ODF flat XML file formats.</li>
+        
         <li>Configuration: some list configuration variables,
           namely <tt>skippedNames</tt>, <tt>noContentSuffixes</tt>,
           and <tt>xallexcepts</tt>, have acquired variants suffixed
@@ -93,54 +89,15 @@
         <li>Allow using full CSS style for term highlighting, not just
           color.</li>
 
+        <li>Internal only: the code now uses some C++11 features
+          (e.g. std::threads, std::mutex) to replace home-grown
+          hacks. In consequence, a C++11 compiler is now required for
+          building. Also C++ streams are used for logging.</li>
+
         <li><em>execm</em> input handlers now have an alternate method
           to set metadata fields, easier than HTML meta fields.</li>
       </ul>
 
-      <h2>Minor releases</h2>
-      <ul>
-        <li>1.22.4:
-          <ul>
-            <li>Fix advanced search 'start search' button doing
-              nothing under qt5.</li>
-            <li>Fix html escaping with newer versions of
-              pdftotext.</li>
-            <li>New Danish and Dutch messages.</li>
-          </ul>
-        </li>
-        <li>1.22.3:
-          <ul>
-            <li>Python module: do not limit result fetches to initial
-              Xapian result count, which is often underestimated.</li>
-            <li>Small bug fix in the text splitter: which resulted in
-              missing results when matching a file name extension
-              using, e.g. filename:doc$ instead of ext:doc.</li>
-            <li>Added suffix associations for .java and .sql, to fix
-              problems caused by the switch from 'file' to 'xdg-mime'.</li>
-          </ul>
-        </li>
-        <li>1.22.2:
-          <ul>
-            <li>Small fixes for building the KIO</li>
-            <li>Fixed debian packaging issues.</li>
-          </ul>
-        </li>
-        <li>1.22.1:
-          <ul>
-            <li>Sidestep bus error in qt exit code by calling _exit()
-              instead of exit() in GUI exit code.</li>
-            <li>Eliminate the dependance of librecoll.so on libX11.</li>
-            <li>Hungarian translation.</li>
-            <li>GUI: enable displaying the Xapian docid in the result
-              list with %x.</li>
-            <li>GUI, advanced search: fix crash which occurred when
-              restoring clause list bigger than the default size (6
-              clauses).</li>
-            <li>The documentation (user manual and man page) for
-              recoll.conf is now generated from the structured
-              comments in the sample file.</li>
-          </ul>
-        </li>
 
     </div>
   </body>

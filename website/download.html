@@ -69,11 +69,11 @@
       <div id="general">
         <h2><a name="general">General information</a></h2>
 
-        <p>The current version is 1.22.4. <a href="release-1.22.html">Release
+        <p>The current version is 1.23.0. <a href="release-1.23.html">Release
             notes</a>.</p>
 
-        <p>Recoll <a href="usermanual/usermanual.html#RCL.INSTALL">Installation / building
-            manual</a>.</p>
+        <p>Recoll <a href="usermanual/usermanual.html#RCL.INSTALL">Installation
+            / building manual</a>.</p>
 
         <p>The indexing filters used for some document types may need external
           packages not installed on your system by default, and not installed
@@ -81,27 +81,31 @@
             look at the list</a> and decide what you need to install.</p>
 
         <p>The Recoll term explorer tool in phonetic mode (marginally useful and
-          optional) uses the <b>aspell</b> package, version 0.60 (utf-8 support) or
-          newer.</p>
+          optional) uses the <b>aspell</b> package, version 0.60
+          (utf-8 support) or newer.</p>
 
-        <p>If you find problems with this page, the package or its installation,
-          <em>please</em> <a href="mailto:jfd@recoll.org">report them</a>.</p>
+        <p>If you find problems with this page, the package or its
+          installation, <em>please</em> <a href="mailto:jfd@recoll.org">report
+          them</a>.</p> 
 
         <h4>What do the release numbers mean?</h4>
 
-        <p>The Recoll releases are numbered X.Y.Z. The X would only change for really
-          major modifications like a big change in the index format, and possibly won't
-          ever reach 2.</p>
+        <p>The Recoll releases are numbered X.Y.Z. The X would only
+          change for really major modifications like a big change in
+          the index format, and possibly won't ever reach 2.</p>
 
-        <p>Y is for functional modifications. These may bring bugs, so if you don't
-          need the new features, you may want to wait a little, and especially skip the
-          first release (X.Y.0), at least for a few weeks.</p>
+        <p>Y is for functional modifications. These may bring bugs, so
+          if you don't need the new features, you may want to wait a
+          little, and especially skip the first release (X.Y.0), at
+          least for a few weeks.</p>
 
-        <p>Z changes for <a href="BUGS.html">bug fixes</a> only, and moving from X.Y.Z
-          to X.Y.Z+u should in general involve little risk of regression. But,
-          <em>any</em> change can bring problems, if you are not affected by the
-          corrected bugs (check the <a href="release-1.21.html">release file</a>), there
-          is probably no necessity to upgrade anyway.</p>
+        <p>Z changes for <a href="BUGS.html">bug fixes</a> only, and
+          moving from X.Y.Z to X.Y.Z+u should in general involve
+          little risk of regression. But, <em>any</em> change can
+          bring problems, if you are not affected by the corrected
+          bugs (check the <a href="release-1.21.html">release
+          file</a>), there is probably no necessity to upgrade
+          anyway.</p>
       </div>
 
       <div id="bugs">
@@ -116,18 +120,17 @@
       <div id="source">
         <h2><a name="source">Source</a></h2>
 
-        <h3>Current release distribution: 1.22.4:</h3>
+        <h3>Current release distribution: 1.23.0:</h3>
         <!-- Attention: source packages must remain here, not in a
         subdirectory, because of all the places they're referred from
         (package watches) -->
 
+        <p><a href="recoll-1.23.0.tar.gz">recoll-1.23.0.tar.gz</a>.</p>
+        <p><a href="release-1.23.html">Release notes</a>.</p>
+
+        <h3>Previous release: 1.22.4:</h3>
         <p><a href="recoll-1.22.4.tar.gz">recoll-1.22.4.tar.gz</a>.</p>
-        <p><a href="release-1.22.html">The release notes</a>.</p>
-
-        <h3>Previous production release 1.21.7:</h3>
-
-        <p><a href="recoll-1.21.7.tar.gz">recoll-1.21.7.tar.gz</a>.</p>
-        <p><a href="release-1.21.html">The release notes</a>.</p>
+        <p><a href="release-1.22.html">Release notes</a>.</p>
 
 
         <!--
@@ -237,12 +240,16 @@
           the appropriate Debian repository.</p>
 
         <p><i>Except they're not at the moment
-        (2016-09)...</i>. Debian stable has Recoll 1.17.3. Debian
-          testing has 1.22.3, and it may work on Jessie (or not...).
+        (2017-01)...</i>. Debian stable (Jessie) has Recoll 1.17.3. Debian
+          testing has 1.22.4, and it may work on Jessie (or not...).
           In any case, I am maintaining a repository for packages
-          built for Debian Wheezy, and Jessie. The repository
-          currently has recoll 1.22.x for Intel and 1.21 for armhf. To
-          add it to your sources:</p>
+          built for Debian Jessie (it also has older 1.22 packages for
+          Wheezy). The repository currently has recoll 1.23.x for
+          Debian Intel 32 and 64 bits, and armhf. There is a separate
+          repository for Raspbian Jessie, which is <em>not</em>
+          compatible with vanilla Debian (!).</p>
+
+        <p>To add the Debian or Raspbian repository to your sources:</p>
 
         <ul>
 
@@ -255,15 +262,20 @@ wget -O - https://www.lesbonscomptes.com/key/jf@dockes.org.gpg.key | sudo apt-ke
           <li>Create and edit <span class="filename">
               /etc/apt/sources.list.d/recoll.list</span>
             and add the following lines:<br>
-            for wheezy (debian 7.x):<br>
+            for Debian wheezy (debian 7.x, recoll 1.22.3):<br>
             <div class="code">
 deb http://www.lesbonscomptes.com/recoll/debian/ wheezy main
 deb-src http://www.lesbonscomptes.com/recoll/debian/ wheezy main
             </div>
-            for jessie (debian 8.x):<br>
+            for Debian jessie (debian 8.x):<br>
             <div class="code">
 deb http://www.lesbonscomptes.com/recoll/debian/ jessie main
 deb-src http://www.lesbonscomptes.com/recoll/debian/ jessie main
+            </div>
+            for Raspbian jessie (raspbian 8.x):<br>
+            <div class="code">
+deb http://www.lesbonscomptes.com/recoll/raspbian/ jessie main
+deb-src http://www.lesbonscomptes.com/recoll/raspbian/ jessie main
             </div>
           <li>Then:
             <div class="code">
@@ -395,7 +407,7 @@ sudo apt-get install recoll
       <div id="translations">
         <h2><a name="translations">Translations</a></h2>
 
-        <p>Most of the translations for 1.22 are incomplete The source
+        <p>Most of the translations for 1.22/23 are incomplete The source
           translation files are included in the source release. If
           your language has some english messages left and you want to
           take a shot at fixing the problem, you can send the results

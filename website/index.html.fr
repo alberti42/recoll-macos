@@ -49,8 +49,8 @@
       <p><span class="application">Recoll</span> est un logiciel libre
 	gratuit, dont le code source est disponible sous licence GPL.
 	La dernière version est 
-        <a class="important" href="download.html">1.22.3</a>
-	(<a href="release-1.22.html">notes sur la version, en
+        <a class="important" href="download.html">1.23.0</a>
+	(<a href="release-1.23.html">notes sur la version, en
 	anglais</a>)</p> 
 
       <p>L'interface utilisateur de 
@@ -72,7 +72,7 @@
 	  Unix.</li> 
 
         <li>Interface conçue avec <a href="http://www.trolltech.com">
-	    Qt 4</a>. (Qt 3 est supporté jusqu'aux versions 1.14.x).</li> 
+	    Qt 4 ou 5 selon les plateformes.</a></li> 
 
         <li>Traite la plupart des <a href="fr/features.html#doctypes">
 	    types de documents</a> courants, les messages et leurs fichiers
@@ -106,6 +106,10 @@
       <h2>Nouvelles: </h2>
 
       <dl>
+          <dt>2017-03-09</dt><dd>Version 1.23.0. 
+            the <a href="release-1.23.html">Release notes (en
+            anglais).</a></dd>
+          
         <td>2016-11-23</td><dd>Version 1.22.4.</dd>
         <dt>2016-06-15</dt><dd>La version 1.22.3 est disponible et va
           progressivement remplacer 1.21 comme version
