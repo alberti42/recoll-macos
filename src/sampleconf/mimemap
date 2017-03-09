@@ -112,8 +112,8 @@
 .sxg = application/vnd.sun.xml.writer.global
 .stw = application/vnd.sun.xml.writer.template
 
-.fods = application/vnd.oasis.opendocument.spreadsheet-flat-xml
 .fodp = application/vnd.oasis.opendocument.presentation-flat-xml
+.fodt = application/vnd.oasis.opendocument.text-flat-xml
 .fods = application/vnd.oasis.opendocument.spreadsheet-flat-xml
 
 # ms openxml 

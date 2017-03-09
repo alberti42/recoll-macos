@@ -72,8 +72,8 @@ application/vnd.oasis.opendocument.text-template = execm rclsoff.py
 application/vnd.oasis.opendocument.presentation = execm rclsoff.py 
 application/vnd.oasis.opendocument.spreadsheet = execm rclsoff.py
 application/vnd.oasis.opendocument.graphics = execm rclsoff.py
-application/vnd.oasis.opendocument.spreadsheet-flat-xml = execm rclsoff-flat.py
 application/vnd.oasis.opendocument.presentation-flat-xml = execm rclsoff-flat.py
+application/vnd.oasis.opendocument.text-flat-xml = execm rclsoff-flat.py
 application/vnd.oasis.opendocument.spreadsheet-flat-xml = execm rclsoff-flat.py
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
  execm rclopxml.py

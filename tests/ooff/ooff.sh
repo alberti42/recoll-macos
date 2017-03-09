@@ -9,6 +9,7 @@ initvariables $0
 
 recollq OpenofficeWriter_uniqueterm 
 recollq SoffTabsUnique
+recollq FirstSlideUnique
 
 ) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
