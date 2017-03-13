@@ -17,7 +17,20 @@ distribute the program, you probably know the GPL, else you should read it.
 
 NOTE: As much as I have fun writing software, producing the Windows version is
 just tedious. If you use Recoll on Windows, please consider contributing to
-its availability: image:/donations/btn_donate_LG.gif[link="/donations/index.html"]
+its availability: image:/donations/btn_donate_LG.gif
+
+////
+
+[link="/donations/index.html"]
+
+////
+
+_Ok, so, in the last months, there have been hundreds of downloads of the
+recoll-for-windows installer, and nobody used the donate button. I
+certainly did not expect more than a small proportion of users to donate,
+but *none* is sort of disturbing. The download files are gone while I
+ponder if I'll just scrap the build or find a way to entice more
+donations._
 
 == Note for updating
 

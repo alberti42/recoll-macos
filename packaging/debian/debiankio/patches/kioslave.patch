@@ -24,6 +24,1899 @@ index 9fc916d..7eb90d9 100644
  		$(librecoll_la_OBJECTS)
  
  # EXTRA_DIST: The Php Code does not build anymore. No need to ship it until
+diff --git a/kde/kioslave/kio_recoll-kde4/00README.txt b/kde/kioslave/kio_recoll-kde4/00README.txt
+new file mode 100644
+index 0000000..933b73b
+--- /dev/null
++++ b/kde/kioslave/kio_recoll-kde4/00README.txt
+@@ -0,0 +1,94 @@
++Recoll KIO slave
++================
++
++An experiment with a recoll KIO slave.
++
++Caveat: I am only currently testing this with a production, but very
++recent, version of KDE 4.1, and I don't intend to really support
++older versions. The most usable aspects work under KDE 4.0 though. As
++a reference, my test system is an up to date (2009-01) Kubuntu 8.10.
++
++Usage
++=====
++
++Depending on the protocol name used, the search results will be
++returned either as HTML pages (looking quite like a normal Recoll
++result list), or as directory entries.
++
++The HTML mode only works with Konqueror, not Dolphin. The directory
++mode is available with both browsers, and also application open dialog
++(ie Kate).
++
++The HTML mode is much more usable than the directory mode at this point
++
++More detailed help/explanations can be found a document accessible
++from the slave:
++
++To try things out, after building and installing, enter "recoll:/" in
++a Konqueror URL entry. Depending on the KDE version, this will bring
++you either to an HTML search form, or to a directory listing, where
++you should READ THE HELP FILE.
++
++Building and installing:
++=======================
++
++Only tested with KDE 4.1 and later.
++
++The main Recoll installation shares its prefix with the KIO slave,
++which needs to use the KDE one. This means that, if KDE lives in /usr,
++Recoll must be configured with --prefix=/usr, not /usr/local. Else
++you'll have run-time problems, the slave will not be able to find the
++Recoll configuration.
++
++!!*Notice: You cannot share a build directory between recoll and kio_recoll
++because they use different configure options for the main lib, but build it
++in the same place. The main lib "configure" is run at "cmake" time for
++kio_recoll, the build is done at "make" time.
++
++
++Recipe:
++ - Make sure the KDE4 core devel packages and cmake are installed.
++
++ - Extract the Recoll source.
++
++ - IF Recoll is not installed yet: configure recoll with 
++   --prefix=/usr (or wherever KDE lives), build and install 
++   Recoll.
++
++ - In the Recoll source, go to kde/kioslave/recoll, then build and
++   install the kio slave:
++
++mkdir builddir
++cd builddir
++cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DQT_QMAKE_EXECUTABLE=/usr/bin/qmake-qt4
++make
++sudo make install
++
++ - You should have a look at where "make install" copies things,
++   because misconfigured distribution, generating wrong targets, are
++   frequent. Especially, you should check that kio_recoll.so is copied
++   to the right place, meaning among the output of "kde4-config --path
++   module". As an additional check, there should be many other
++   kio_[xxx].so in there. Same for the protocol file, check that it's
++   not alone in its directory (really, this sounds strange, but, to
++   this point, I've seen more systems with broken cmake/KDE configs
++   than correct ones).
++
++You need to build/update the index with recollindex, the KIO slave
++doesn't deal with indexing for now.
++
++
++Misc build problems:
++===================
++
++KUBUNTU 8.10 (updated to 2008-27-11)
++------------------------------------
++cmake generates a bad dependancy on
++      /build/buildd/kde4libs-4.1.2/obj-i486-linux-gnu/lib/libkdecore.so 
++inside CMakeFiles/kio_recoll.dir/build.make 
++
++Found no way to fix this. You need to edit the line and replace the
++/build/[...]/lib with /usr/lib. This manifests itself with the
++following error message:
++
++   make[2]: *** No rule to make target `/build/buildd/kde4libs-4.1.2/obj-i486-linux-gnu/lib/libkdecore.so', needed by `lib/kio_recoll.so'.  Stop.
+diff --git a/kde/kioslave/kio_recoll-kde4/CMakeLists.txt b/kde/kioslave/kio_recoll-kde4/CMakeLists.txt
+new file mode 100644
+index 0000000..c8dbd24
+--- /dev/null
++++ b/kde/kioslave/kio_recoll-kde4/CMakeLists.txt
+@@ -0,0 +1,75 @@
++cmake_minimum_required(VERSION 2.6)
++
++project(kio_recoll)
++
++find_package(KDE4 REQUIRED)
++
++add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
++add_definitions(-DKDE_DEFAULT_DEBUG_AREA=7130
++    -DRECOLL_DATADIR=\\"${CMAKE_INSTALL_PREFIX}/share/recoll\\"
++    -DLIBDIR=\\"${CMAKE_INSTALL_PREFIX}/lib\\"
++    -DHAVE_CONFIG_H
++)
++set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}") 
++
++set(rcltop ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
++
++# Execute recoll configuration to create autoconfig.h and version.h and
++# generate a PIC lib
++execute_process(COMMAND ${rcltop}/configure --disable-static --disable-qtgui --disable-x11mon --prefix=${CMAKE_INSTALL_PREFIX} --mandir=${CMAKE_INSTALL_PREFIX}/share/man
++		WORKING_DIRECTORY ${rcltop}
++)
++
++link_directories(${rcltop}/.libs ${CMAKE_INSTALL_PREFIX}/lib)
++
++include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES}
++  ${rcltop}/aspell 
++  ${rcltop}/bincimapmime
++  ${rcltop}/common 
++  ${rcltop}/index 
++  ${rcltop}/internfile 
++  ${rcltop}/query 
++  ${rcltop}/rcldb 
++  ${rcltop}/unac
++  ${rcltop}/utils 
++  ${rcltop}/qtgui
++)
++
++set(kio_recoll_SRCS  kio_recoll.cpp htmlif.cpp dirif.cpp ${rcltop}/qtgui/guiutils.cpp)
++
++CHECK_LIBRARY_EXISTS(dl dlopen "" DLOPEN_IN_LIBDL)
++IF(DLOPEN_IN_LIBDL)
++	LIST(APPEND EXTRA_LIBS dl)
++ENDIF(DLOPEN_IN_LIBDL)
++CHECK_LIBRARY_EXISTS(pthread pthread_sigmask "" PTHREAD_IN_LIBPTHREAD)
++IF(PTHREAD_IN_LIBPTHREAD)
++	LIST(APPEND EXTRA_LIBS pthread)
++ENDIF(PTHREAD_IN_LIBPTHREAD)
++
++# Had the idea to add e.g. /usr/lib/recoll to the rpath so that the dyn lib 
++# will be found at run time. But this does not seem to work with debian 
++# which strips RPATH by default (I think there is a way for libs in app-specific
++# paths but I did not find it). Link with the .a instead.
++#SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib/recoll")
++
++kde4_add_plugin(kio_recoll ${kio_recoll_SRCS})
++
++add_custom_target(rcllib
++                 COMMAND make PicStatic
++                 WORKING_DIRECTORY ${rcltop}
++)
++add_dependencies(kio_recoll rcllib)
++
++target_link_libraries(kio_recoll recoll xapian z ${EXTRA_LIBS} ${KDE4_KIO_LIBS})
++
++install(TARGETS kio_recoll DESTINATION ${PLUGIN_INSTALL_DIR})
++
++IF ("${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}" GREATER 4.0)
++     install(FILES recoll.protocol recollf.protocol DESTINATION ${SERVICES_INSTALL_DIR})
++ELSE ("${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}" GREATER 4.0)
++   install(FILES recollnolist.protocol DESTINATION ${SERVICES_INSTALL_DIR}
++   		 RENAME recoll.protocol)
++ENDIF ("${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}" GREATER 4.0)
++
++install(FILES data/welcome.html	data/help.html
++	      DESTINATION  ${DATA_INSTALL_DIR}/kio_recoll)
+diff --git a/kde/kioslave/kio_recoll-kde4/Makefile.kde3 b/kde/kioslave/kio_recoll-kde4/Makefile.kde3
+new file mode 100644
+index 0000000..634087f
+--- /dev/null
++++ b/kde/kioslave/kio_recoll-kde4/Makefile.kde3
+@@ -0,0 +1,59 @@
++depth=../../..
++include $(depth)/mk/sysconf
++
++# Need to set this by hand until we decide how to autoconf this without
++# bringing 2mbytes of kde config files.
++# May also need to adjust stuff such as the --rpath's below
++#
++KDE_INCLUDES=/usr/include/kde
++QT_INCLUDES=/usr/include/qt3
++
++
++all: kio_recoll.so 
++
++DEPS_CXXFLAGS =  -MT pop3.lo -MD -MP -MF .deps/pop3.Tpo
++
++INC_CXXFLAGS = -I. \
++	-I$(KDE_INCLUDES) -I$(QT_INCLUDES) \
++	     -I$(depth)/common -I$(depth)/query -I$(depth)/utils \
++	     -I$(depth)/qtgui -I$(depth)/rcldb
++
++PIC_CXXFLAGS = -fPIC -DPIC
++DEBUG_CXXFLAGS = -DNDEBUG -DNO_DEBUG -O2 -O
++LANG_CXXFLAGS = -fno-exceptions -fno-check-new -fno-common
++QT_CXXFLAGS = -DQT_CLEAN_NAMESPACE -DQT_NO_ASCII_CAST -DQT_NO_STL \
++	    -DQT_NO_COMPAT -DQT_NO_TRANSLATION -DQT_THREAD_SUPPORT
++SYS_CXXFLAGS = -D_GNU_SOURCE 
++THREAD_CXXFLAGS = -D_THREAD_SAFE -pthread -D_THREAD_SAFE -pthread
++
++
++# -rpath=/usr/lib:/usr/local/lib \
++
++LDFLAGS = \
++	 -Wl,--rpath -Wl,/usr/local/lib \
++	-Wl,--rpath -Wl,/usr/X11R6/lib \
++	-Wl,-export-dynamic -Wl,-soname -Wl,kio_recoll.so
++THREAD_LDFLAGS = -pthread
++
++kio_recoll.so : kio_recoll.o libpic
++	c++ -shared $(LDFLAGS) $(THREAD_LDFLAGS) \
++	    -Wl,--no-undefined \
++	    kio_recoll.o piclib/librcl.a \
++	    $(LIBXAPIAN) $(LIBICONV) \
++	    -L/opt/kde3/lib -L/usr/local/lib -L/usr/X11R6/lib -lkio -lkdecore \
++	    -L/usr/lib/qt3/lib -lqt-mt \
++	    -L/usr/lib -lstdc++ -lm -lc \
++	    -o kio_recoll.so 
++
++kio_recoll.o : kio_recoll.cpp kio_recoll.h
++	$(CXX) -c -pipe kio_recoll.cpp  $(INC_CXXFLAGS) $(PIC_CXXFLAGS) \
++	$(DEBUG_CXXFLAGS) $(LANG_CXXFLAGS) $(QT_CXXFLAGS) $(SYS_CXXFLAGS) \
++	$(THREAD_CXXFLAGS) \
++	-o kio_recoll.o
++
++libpic:
++	cd piclib;test -f Makefile || depth=$(depth)/.. sh $(depth)/../lib/mkMake
++	cd piclib;$(MAKE) CXXFLAGS="$(CXXFLAGS) $(PIC_CXXFLAGS)" \
++	   CFLAGS="$(CFLAGS) $(PIC_CXXFLAGS)"
++
++.PHONY: all libpic
+diff --git a/kde/kioslave/kio_recoll-kde4/cleancmakestuff.sh b/kde/kioslave/kio_recoll-kde4/cleancmakestuff.sh
+new file mode 100644
+index 0000000..52176af
+--- /dev/null
++++ b/kde/kioslave/kio_recoll-kde4/cleancmakestuff.sh
+@@ -0,0 +1,6 @@
++#!/bin/sh
++rm -rf CMakeCache.txt CMakeFiles CTestTestfile.cmake \
++    cmake_install.cmake CMakeTmp cmake_uninstall.cmake \
++    CPackConfig.cmake CPackSourceConfig.cmake DartTestfile.txt \
++    install_manifest.txt kio_recoll_automoc.cpp \
++    kio_recoll_automoc.cpp.files kio_recoll.so lib Makefile
+diff --git a/kde/kioslave/kio_recoll-kde4/data/help.html b/kde/kioslave/kio_recoll-kde4/data/help.html
+new file mode 100644
+index 0000000..689cbdf
+--- /dev/null
++++ b/kde/kioslave/kio_recoll-kde4/data/help.html
+@@ -0,0 +1,100 @@
++<html>
++<head>
++  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
++  <title>Recoll Kio Slave</title>
++</head>
++<body>
++  <a href="recoll:///search.html">Recoll search</a>
++  <h2>Recoll kio slave</h2>
++
++  <p>Use this module to perform Recoll searches from any program with
++    a KIO interface.</p>
++
++  <p>The module can work in two modes:</p>
++  <ul>
++    <li><b>Html interface</b>, close to a simplified QT Recoll
++      interface.</li>
++    <li><b>File manager interface</b>, <em>Only with KDE 4.1 and
++	newer</em>, which presents results as directory entries</li>
++  </ul>
++
++  <p>The module is still in its infancy. You will undoubtedly obtain
++    strange effects from time to time. If you have any remarks or
++    ideas about improving kio_recoll, or observe an interesting and
++    reproducible sequence, please <a href="mailto:jfd@recoll.org">
++    report it</a>.</p>
++  <p><b>kio_recoll</b> is primarily
++    designed and tested with <b>konqueror</b>, and you will
++    undoubtedly get <i>even</i> more surprising effects with other tools.</p>
++
++  <p>The Html interface is currently much more usable. The directory
++    interface is extremely quirky.</p>
++
++  <p>The module is particularly unhelpful with search hits inside
++    email folders, which Konqueror has no way to access.</p>
++
++
++  <h3>HTML interface</h3>
++
++  <p>This works more or less like the Recoll QT GUI, much simplified. The 
++    <a href="http://www.recoll.org/usermanual/rcl.search.lang.html">
++      Recoll manual</a> describes the queries that can be performed.</p> 
++
++  <p>Most pages in the interface should quite self-explanatory.</p>
++
++  <p>You normally enter this interface by entering "recoll:" or
++    "recoll:/" in the Konqueror URL entry, and following the "search"
++    link. You can also directly enter "recoll:/search.html".<br>  
++
++    In most circumstances, entering a link like
++    <a href="recoll:/john smith">recoll:/john smith</a> will also
++    yield an HTML result list.</p>
++
++  <p>Compared to QT Recoll, the nice point is that you can click or
++    drag/drop the icons to access the results in the standard desktop
++    way.</p>
++
++  <h3>File manager interface</h3>
++
++  <p>The <i>path</i> part of the URI is taken as a Recoll query
++    language string and executed. The results are displayed as
++    directory entries.</p>
++
++  <p>There are several ways to enter this interface:</p>
++  <ul>
++    <li>Using "recollf" as protocol name instead of "recoll". This is
++      probably the easiest option inside open dialogs.</li>
++
++    <li>Using an URL ending with a&nbsp;'/', ie:
++      <blockquote>
++	<a href="recoll:/red apples ext:html/">
++	  recoll:/red apples ext:html/</a>
++      </blockquote>
++    </li>
++    <li>Users who will want to use the file manager view most of the
++      time can set the <code>RECOLL_KIO_ALWAYS_DIR</code> environment
++      variable or the <code>kio_always_dir</code> recoll.conf variable
++      to&nbsp;1. The HTML interface will then only be accessible
++      through the search link in the top "recoll:" view.</li>
++  </ul>
++
++  <p>No search result details (samples, relevance etc.) are available,
++    but this interface allows multiple selections and copies, usage
++    inside any KDE open dialog, etc.</p>
++
++  <p>To avoid swamping the interface with thousands of results, the
++    result count is limited to 100 by default. You can change this value
++    by setting the <code>kio_max_direntries</code> parameter in your recoll
++    configuration file (typically ~/.recoll/recoll.conf)</p>
++
++  <p>Because of limitations in the current KIO slave usage, the actual
++    entry names are not those displayed but synthetic ones like
++    "recollResultxxx". This has unfortunate side-effects when
++    dragging/dropping the entries to some other application, or when
++    using an open dialog (the opened file doesn't have the correct path
++    to the original file).</p>
++
++  <p><a href="recoll:///search.html">Recoll Search</a></p>
++
++</body>
++</html>
+diff --git a/kde/kioslave/kio_recoll-kde4/data/searchable.html b/kde/kioslave/kio_recoll-kde4/data/searchable.html
+new file mode 100644
+index 0000000..6e44f26
+--- /dev/null
++++ b/kde/kioslave/kio_recoll-kde4/data/searchable.html
+@@ -0,0 +1,28 @@
++<html>
++  <head>
++    <title>Recoll searchable HTML</title>
++
++    <script language="JavaScript">
++      function recollsearch() {
++          var t = document.getSelection();
++          window.location.href = 'recoll://search/query?qtp=a&p=0&q=' +
++              encodeURIComponent(t);
++      }   
++   </script>
++
++  </head>
++
++  <body ondblclick="recollsearch()">
++
++    <h2>A <b>Recoll</b>-searchable HTML page </h2>
++
++    <p>This is a text sample in which links have been inserted for
++      words, such as <a href="recoll:/system installation">system installation</a>, 
++      which can be searched for in the whole document set by
++      using <a href="recoll:/recoll">recoll</a></p>
++    
++    <p>Also a little bit of javascript magic can make
++      all words searchable (try double-clicking any word).</p>
++
++</body>
++</html>
+diff --git a/kde/kioslave/kio_recoll-kde4/data/welcome.html b/kde/kioslave/kio_recoll-kde4/data/welcome.html
+new file mode 100644
+index 0000000..0f13d42
+--- /dev/null
++++ b/kde/kioslave/kio_recoll-kde4/data/welcome.html
+@@ -0,0 +1,29 @@
++<html>
++<head>
++  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
++  <title>Recoll Search</title>
++</head>
++<body>
++
++  <h3>Recoll search</h3>
++
++  <p>
++    <form method="get" action="recoll://search/query">
++      Query type:<br>
++      <input type="radio" name="qtp" value="l" checked>Query language<br>
++      <input type="radio" name="qtp" value="a">All terms<br>
++      <input type="radio" name="qtp" value="o">Any term<br>
++      <input type="radio" name="qtp" value="f">File name<br>
++
++      <input type="hidden" name="p" value="0">
++      Enter search string: <input type="text" name="q" size="40" value="%Q">
++      <input type="submit" value="Search">
++
++      <!-- This resets to the preset value. We'd like a real clear
++	   <input type="reset" value="Clear"> -->
++
++    </form>
++</p>
++
++</body>
++</html>
+diff --git a/kde/kioslave/kio_recoll-kde4/dirif.cpp b/kde/kioslave/kio_recoll-kde4/dirif.cpp
+new file mode 100644
+index 0000000..4dee924
+--- /dev/null
++++ b/kde/kioslave/kio_recoll-kde4/dirif.cpp
+@@ -0,0 +1,318 @@
++/* Copyright (C) 2008 J.F.Dockes
++ *   This program is free software; you can redistribute it and/or modify
++ *   it under the terms of the GNU General Public License as published by
++ *   the Free Software Foundation; either version 2 of the License, or
++ *   (at your option) any later version.
++ *
++ *   This program is distributed in the hope that it will be useful,
++ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *   GNU General Public License for more details.
++ *
++ *   You should have received a copy of the GNU General Public License
++ *   along with this program; if not, write to the
++ *   Free Software Foundation, Inc.,
++ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
++ */
++
++/*
++ * A lot of code in this file was copied from kio_beagle 0.4.0,
++ * which is a GPL program. The authors listed are:
++ * Debajyoti Bera <dbera.web@gmail.com>
++ * 
++ * KDE4 port:
++ * Stephan Binner <binner@kde.org>
++ */
++
++#include "autoconfig.h"
++
++#include <kdeversion.h>
++
++#if KDE_IS_VERSION(4,1,0)
++// Couldn't get listDir() to work with kde 4.0, konqueror keeps
++// crashing because of kdirmodel, couldn't find a workaround (not
++// saying it's impossible)...
++
++#include <sys/stat.h>
++
++#include <kurl.h>
++#include <kio/global.h>
++#include <kstandarddirs.h>
++#include <kdebug.h>
++
++#include "kio_recoll.h"
++#include "pathut.h"
++
++using namespace KIO;
++
++static const QString resultBaseName("recollResult");
++
++// Check if the input URL is of the form that konqueror builds by
++// appending one of our result file names to the directory name (which
++// is the search string). If it is, extract return the result document
++// number. Possibly restart the search if the search string does not
++// match the current one
++bool RecollProtocol::isRecollResult(const KUrl &url, int *num, QString *q)
++{
++    *num = -1;
++    kDebug() << "url" << url;
++
++    // Basic checks
++    if (!url.host().isEmpty() || url.path().isEmpty() || 
++        (url.protocol().compare("recoll") && url.protocol().compare("recollf")))
++        return false;
++    QString path = url.path();
++    if (!path.startsWith("/")) 
++        return false;
++
++    // Look for the last '/' and check if it is followed by
++    // resultBaseName (riiiight...)
++    int slashpos = path.lastIndexOf("/");
++    if (slashpos == -1 || slashpos == 0 || slashpos == path.length() -1)
++        return false;
++    slashpos++;
++    //kDebug() << "Comparing " << path.mid(slashpos, resultBaseName.length()) <<
++    //  "and " << resultBaseName;
++    if (path.mid(slashpos, resultBaseName.length()).compare(resultBaseName))
++        return false;
++
++    // Extract the result number
++    QString snum = path.mid(slashpos + resultBaseName.length());
++    sscanf(snum.toAscii(), "%d", num);
++    if (*num == -1)
++        return false;
++
++    //kDebug() << "URL analysis ok, num:" << *num;
++
++    // We do have something that ressembles a recoll result locator. Check if
++    // this matches the current search, else have to run the requested one
++    *q = path.mid(1, slashpos-2);
++    return true;
++}
++
++// Translate rcldoc result into directory entry
++static const UDSEntry resultToUDSEntry(const Rcl::Doc& doc, int num)
++{
++    UDSEntry entry;
++    
++    KUrl url(doc.url.c_str());
++//    kDebug() << doc.url.c_str();
++
++    entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, url.fileName());
++    char cnum[30];sprintf(cnum, "%04d", num);
++    entry.insert(KIO::UDSEntry::UDS_NAME, resultBaseName + cnum);
++
++    if (!doc.mimetype.compare("application/x-fsdirectory") || 
++        !doc.mimetype.compare("inode/directory")) {
++        entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
++        entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
++    } else {
++        entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, doc.mimetype.c_str());
++        entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
++    }
++    entry.insert(KIO::UDSEntry::UDS_LOCAL_PATH, url.path());
++    // For local files, supply the usual file stat information
++    struct stat info;
++    if (lstat(url.path().toAscii(), &info) >= 0) {
++        entry.insert( KIO::UDSEntry::UDS_SIZE, info.st_size);
++        entry.insert( KIO::UDSEntry::UDS_ACCESS, info.st_mode);
++        entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, info.st_mtime);
++        entry.insert( KIO::UDSEntry::UDS_ACCESS_TIME, info.st_atime);
++        entry.insert( KIO::UDSEntry::UDS_CREATION_TIME, info.st_ctime);
++    }
++    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, doc.url.c_str());
++
++    return entry;
++}
++
++
++// From kio_beagle
++static void createRootEntry(KIO::UDSEntry& entry)
++{
++    entry.clear();
++    entry.insert( KIO::UDSEntry::UDS_NAME, ".");
++    entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
++    entry.insert( KIO::UDSEntry::UDS_ACCESS, 0700);
++    entry.insert( KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
++}
++
++// Points to html query screen
++static void createGoHomeEntry(KIO::UDSEntry& entry)
++{
++    entry.clear();
++    entry.insert(KIO::UDSEntry::UDS_NAME, "search.html");
++    entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, "Recoll search (click me)");
++    entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
++    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, "recoll:///search.html");
++    entry.insert(KIO::UDSEntry::UDS_ACCESS, 0500);
++    entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "text/html");
++    entry.insert(KIO::UDSEntry::UDS_ICON_NAME, "recoll");
++}
++
++// Points to help file
++static void createGoHelpEntry(KIO::UDSEntry& entry)
++{
++    QString location = 
++        KStandardDirs::locate("data", "kio_recoll/help.html");
++    entry.clear();
++    entry.insert(KIO::UDSEntry::UDS_NAME, "help");
++    entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, "Recoll help (click me first)");
++    entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
++    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, QString("file://") +
++                 location);
++    entry.insert(KIO::UDSEntry::UDS_ACCESS, 0500);
++    entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "text/html");
++    entry.insert(KIO::UDSEntry::UDS_ICON_NAME, "help");
++}
++
++void RecollProtocol::stat(const KUrl & url)
++{
++    kDebug() << url << endl ;
++
++    UrlIngester ingest(this, url);
++
++    KIO::UDSEntry entry;
++    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, url.url());
++    UrlIngester::RootEntryType rettp;
++    QueryDesc qd;
++    int num;
++    if (ingest.isRootEntry(&rettp)) {
++        switch(rettp) {
++        case UrlIngester::UIRET_ROOT:
++            createRootEntry(entry);
++            break;
++        case UrlIngester::UIRET_HELP: 
++            createGoHelpEntry(entry);
++            break;
++        case UrlIngester::UIRET_SEARCH:
++            createGoHomeEntry(entry);
++            break;
++        default: 
++            error(ERR_DOES_NOT_EXIST, "");
++            break;
++        }
++    } else if (ingest.isResult(&qd, &num)) {
++        if (syncSearch(qd)) {
++            Rcl::Doc doc;
++            if (num >= 0 && m_source && 
++                m_source->getDoc(num, doc)) {
++                entry = resultToUDSEntry(doc, num);
++            } else {
++                error(ERR_DOES_NOT_EXIST, "");
++            }
++        } else {
++            // hopefully syncSearch() set the error?
++        }
++    } else if (ingest.isQuery(&qd)) {
++        // ie "recoll:/some string" or "recoll:/some string/" 
++        //
++        // We have a problem here. We'd like to let the user enter
++        // either form and get an html or a dir contents result,
++        // depending on the ending /. Otoh this makes the name space
++        // inconsistent, because /toto can't be a file (the html
++        // result page) while /toto/ would be a directory ? or can it
++        //
++        // Another approach would be to use different protocol names
++        // to avoid any possibility of mixups
++        if (m_alwaysdir || ingest.alwaysDir() || ingest.endSlashQuery()) {
++            kDebug() << "Directory type";
++            entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
++            entry.insert(KIO::UDSEntry::UDS_ACCESS, 0700);
++            entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
++            entry.insert(KIO::UDSEntry::UDS_NAME, qd.query);
++            entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, time(0));
++            entry.insert( KIO::UDSEntry::UDS_CREATION_TIME, time(0));
++        }
++    }
++    statEntry(entry);
++    finished();
++}
++
++void RecollProtocol::listDir(const KUrl& url)
++{
++    kDebug() << url << endl;
++
++    UrlIngester ingest(this, url);
++    UrlIngester::RootEntryType rettp;
++    QueryDesc qd;
++
++    if (ingest.isRootEntry(&rettp)) {
++        switch(rettp) {
++        case UrlIngester::UIRET_ROOT:
++            {
++                kDebug() << "list /" << endl;
++                UDSEntryList entries;
++                KIO::UDSEntry entry;
++                createRootEntry(entry);
++                entries.append(entry);
++                createGoHomeEntry(entry);
++                entries.append(entry);
++                createGoHelpEntry(entry);
++                entries.append(entry);
++                listEntries(entries);
++                finished();
++            }
++            return;
++        default:
++            error(ERR_CANNOT_ENTER_DIRECTORY, "");
++            return;
++        }
++    } else if (ingest.isQuery(&qd)) {
++        // At this point, it seems that when the request is from
++        // konqueror autocompletion it comes with a / at the end,
++        // which offers an opportunity to not perform it.
++        if (ingest.endSlashQuery()) {
++            kDebug() << "Ends With /" << endl;
++            error(ERR_SLAVE_DEFINED, "Autocompletion search aborted");
++            return;
++        }
++        if (!syncSearch(qd)) {
++            // syncSearch did the error thing
++            return;
++        }
++        // Fallthrough to actually listing the directory
++    } else {
++        kDebug() << "Cant grok input url";
++        error(ERR_CANNOT_ENTER_DIRECTORY, "");
++        return;
++    }
++
++    static int maxentries = -1;
++    if (maxentries == -1) {
++        if (o_rclconfig)
++            o_rclconfig->getConfParam("kio_max_direntries", &maxentries);
++        if (maxentries == -1)
++            maxentries = 10000;
++    }
++    static const int pagesize = 200;
++    int pagebase = 0;
++    while (pagebase < maxentries) {
++        vector<ResListEntry> page;
++        int pagelen = m_source->getSeqSlice(pagebase, pagesize, page);
++        UDSEntry entry;
++        if (pagelen < 0) {
++            error(ERR_SLAVE_DEFINED, "Internal error");
++            listEntry(entry, true);
++            break;
++        }
++        for (int i = 0; i < pagelen; i++) {
++            listEntry(resultToUDSEntry(page[i].doc, i), false);
++        }
++        if (pagelen != pagesize) {
++            listEntry(entry, true);
++            break;
++        }
++        pagebase += pagelen;
++    }
++    finished();
++}
++
++#else // <--- KDE 4.1+ 
++
++#include <kurl.h>
++#include "kio_recoll.h"
++bool RecollProtocol::isRecollResult(const KUrl &, int *, QString *)
++{
++    return false;
++}
++#endif 
+diff --git a/kde/kioslave/kio_recoll-kde4/htmlif.cpp b/kde/kioslave/kio_recoll-kde4/htmlif.cpp
+new file mode 100644
+index 0000000..4804364
+--- /dev/null
++++ b/kde/kioslave/kio_recoll-kde4/htmlif.cpp
+@@ -0,0 +1,301 @@
++/* Copyright (C) 2005 J.F.Dockes
++ *   This program is free software; you can redistribute it and/or modify
++ *   it under the terms of the GNU General Public License as published by
++ *   the Free Software Foundation; either version 2 of the License, or
++ *   (at your option) any later version.
++ *
++ *   This program is distributed in the hope that it will be useful,
++ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *   GNU General Public License for more details.
++ *
++ *   You should have received a copy of the GNU General Public License
++ *   along with this program; if not, write to the
++ *   Free Software Foundation, Inc.,
++ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
++ */
++
++#include <stdio.h>
++#include <stdlib.h>
++#include <unistd.h>
++#include <errno.h> 
++#include <sys/stat.h>
++
++#include <string>
++
++using namespace std;
++
++#include <kdebug.h>
++#include <kstandarddirs.h>
++
++#include "rclconfig.h"
++#include "rcldb.h"
++#include "rclinit.h"
++#include "pathut.h"
++#include "searchdata.h"
++#include "rclquery.h"
++#include "wasatorcl.h"
++#include "kio_recoll.h"
++#include "docseqdb.h"
++#include "readfile.h"
++#include "smallut.h"
++#include "plaintorich.h"
++#include "internfile.h"
++#include "wipedir.h"
++#include "hldata.h"
++
++using namespace KIO;
++
++bool RecollKioPager::append(const string& data)
++{
++    if (!m_parent) 
++	return false;
++    m_parent->data(QByteArray(data.c_str()));
++    return true;
++}
++#include <sstream>
++string RecollProtocol::makeQueryUrl(int page, bool isdet)
++{
++    ostringstream str;
++    str << "recoll://search/query?q=" << 
++	url_encode((const char*)m_query.query.toUtf8()) <<
++	"&qtp=" << (const char*)m_query.opt.toUtf8();
++    if (page >= 0)
++	str << "&p=" << page;
++    if (isdet)
++	str << "&det=1";
++    return str.str();
++}
++
++string RecollKioPager::detailsLink()
++{
++    string chunk = string("<a href=\"") + 
++	m_parent->makeQueryUrl(m_parent->m_pager.pageNumber(), true) + "\">"
++	+ "(show query)" + "</a>";
++    return chunk;
++}
++
++static string parformat;
++const string& RecollKioPager::parFormat()
++{
++    // Need to escape the % inside the query url
++    string qurl = m_parent->makeQueryUrl(-1, false), escurl;
++    for (string::size_type pos = 0; pos < qurl.length(); pos++) {
++	switch(qurl.at(pos)) {
++	case '%':
++	    escurl += "%%";
++	    break;
++	default:
++	    escurl += qurl.at(pos);
++	}
++    }
++
++    ostringstream str;
++    str << 
++	"<a href=\"%U\"><img src=\"%I\" align=\"left\"></a>" 
++	"%R %S "
++	"<a href=\"" << escurl << "&cmd=pv&dn=%N\">Preview</a>&nbsp;&nbsp;" <<
++	"<a href=\"%U\">Open</a> " <<
++	"<b>%T</b><br>"
++	"%M&nbsp;%D&nbsp;&nbsp; <i>%U</i>&nbsp;&nbsp;%i<br>"
++	"%A %K";
++    return parformat = str.str();
++}
++
++string RecollKioPager::pageTop()
++{
++    string pt = "<p align=\"center\"> <a href=\"recoll:///search.html?q=";
++    pt += url_encode(string(m_parent->m_query.query.toUtf8()));
++    pt += "\">New Search</a>";
++    return pt;
++// Would be nice to have but doesnt work because the query may be executed
++// by another kio instance which has no idea of the current page o
++#if 0 && KDE_IS_VERSION(4,1,0)
++	" &nbsp;&nbsp;&nbsp;<a href=\"recoll:///" + 
++	url_encode(string(m_parent->m_query.query.toUtf8())) +
++	"/\">Directory view</a> (you may need to reload the page)"
++#endif
++}
++
++string RecollKioPager::nextUrl()
++{
++    int pagenum = pageNumber();
++    if (pagenum < 0)
++	pagenum = 0;
++    else
++	pagenum++;
++    return m_parent->makeQueryUrl(pagenum);
++}
++
++string RecollKioPager::prevUrl()
++{
++    int pagenum = pageNumber();
++    if (pagenum <= 0)
++	pagenum = 0;
++    else
++	pagenum--;
++    return m_parent->makeQueryUrl(pagenum);
++}
++
++static string welcomedata;
++
++void RecollProtocol::searchPage()
++{
++    mimeType("text/html");
++    if (welcomedata.empty()) {
++	QString location = 
++	    KStandardDirs::locate("data", "kio_recoll/welcome.html");
++	string reason;
++	if (location.isEmpty() || 
++	    !file_to_string((const char *)location.toUtf8(), 
++			    welcomedata, &reason)) {
++	    welcomedata = "<html><head><title>Recoll Error</title></head>"
++		"<body><p>Could not locate Recoll welcome.html file: ";
++	    welcomedata += reason;
++	    welcomedata += "</p></body></html>";
++	}
++    }    
++
++    string catgq;
++#if 0
++    // Catg filtering. A bit complicated to do because of the
++    // stateless thing (one more thing to compare to check if same
++    // query) right now. Would be easy by adding to the query
++    // language, but not too useful in this case, so scrap it for now.
++    list<string> cats;
++    if (o_rclconfig->getMimeCategories(cats) && !cats.empty()) {
++	catgq = "<p>Filter on types: "
++	    "<input type=\"radio\" name=\"ct\" value=\"All\" checked>All";
++	for (list<string>::iterator it = cats.begin(); it != cats.end();it++) {
++	    catgq += "\n<input type=\"radio\" name=\"ct\" value=\"" +
++		*it + "\">" + *it ;
++	}
++    }
++#endif 
++
++    string tmp;
++    map<char, string> subs;
++    subs['Q'] = (const char *)m_query.query.toUtf8();
++    subs['C'] = catgq;
++    subs['S'] = "";
++    pcSubst(welcomedata, tmp, subs);
++    data(tmp.c_str());
++}
++
++void RecollProtocol::queryDetails()
++{
++    mimeType("text/html");
++    QByteArray array;
++    QTextStream os(&array, QIODevice::WriteOnly);
++
++    os << "<html><head>" << endl;
++    os << "<meta http-equiv=\"Content-Type\" content=\"text/html;"
++	"charset=utf-8\">" << endl;
++    os << "<title>" << "Recoll query details" << "</title>\n" << endl;
++    os << "</head>" << endl;
++    os << "<body><h3>Query details:</h3>" << endl;
++    os << "<p>" << m_pager.queryDescription().c_str() <<"</p>"<< endl;
++    os << "<p><a href=\"" << makeQueryUrl(m_pager.pageNumber()).c_str() << 
++	"\">Return to results</a>" << endl;
++    os << "</body></html>" << endl;
++    data(array);
++}
++
++class PlainToRichKio : public PlainToRich {
++public:
++    PlainToRichKio(const string& nm) 
++    : m_name(nm)
++    {
++    }    
++
++    virtual string header() {
++	if (m_inputhtml) {
++	    return cstr_null;
++	} else {
++	    return string("<html><head>"
++			  "<META http-equiv=\"Content-Type\""
++			  "content=\"text/html;charset=UTF-8\"><title>").
++		append(m_name).
++		append("</title></head><body><pre>");
++	}
++    }
++
++    virtual string startMatch(unsigned int)
++    {
++	return string("<font color=\"blue\">");
++    }
++
++    virtual string endMatch() 
++    {
++	return string("</font>");
++    }
++
++    const string &m_name;
++};
++
++void RecollProtocol::showPreview(const Rcl::Doc& idoc)
++{
++    FileInterner interner(idoc, o_rclconfig, FileInterner::FIF_forPreview);
++    Rcl::Doc fdoc;
++    string ipath = idoc.ipath;
++    if (!interner.internfile(fdoc, ipath)) {
++	error(KIO::ERR_SLAVE_DEFINED, "Cannot convert file to internal format");
++	return;
++    }
++    if (!interner.get_html().empty()) {
++	fdoc.text = interner.get_html();
++	fdoc.mimetype = "text/html";
++    }
++
++    mimeType("text/html");
++
++    string fname =  path_getsimple(fdoc.url).c_str();
++    PlainToRichKio ptr(fname);
++    ptr.set_inputhtml(!fdoc.mimetype.compare("text/html"));
++    list<string> otextlist;
++    HighlightData hdata;
++    if (m_source)
++	m_source->getTerms(hdata);
++    ptr.plaintorich(fdoc.text, otextlist, hdata);
++
++    QByteArray array;
++    QTextStream os(&array, QIODevice::WriteOnly);
++    for (list<string>::iterator it = otextlist.begin(); 
++	 it != otextlist.end(); it++) {
++	os << (*it).c_str();
++    }
++    os << "</body></html>" << endl;
++    data(array);
++}
++
++void RecollProtocol::htmlDoSearch(const QueryDesc& qd)
++{
++    kDebug() << "q" << qd.query << "option" << qd.opt << "page" << qd.page <<
++	"isdet" << qd.isDetReq << endl;
++ 
++    mimeType("text/html");
++
++    if (!syncSearch(qd))
++	return;
++    // syncSearch/doSearch do the setDocSource when needed
++    if (m_pager.pageNumber() < 0) {
++	m_pager.resultPageNext();
++    }
++    if (qd.isDetReq) {
++	queryDetails();
++	return;
++    }
++
++    // Check / adjust page number
++    if (qd.page > m_pager.pageNumber()) {
++	int npages = qd.page - m_pager.pageNumber();
++	for (int i = 0; i < npages; i++)
++	    m_pager.resultPageNext();
++    } else if (qd.page < m_pager.pageNumber()) {
++	int npages = m_pager.pageNumber() - qd.page;
++	for (int i = 0; i < npages; i++) 
++	    m_pager.resultPageBack();
++    }
++    // Display
++    m_pager.displayPage(o_rclconfig);
++}
+diff --git a/kde/kioslave/kio_recoll-kde4/kio_recoll.cpp b/kde/kioslave/kio_recoll-kde4/kio_recoll.cpp
+new file mode 100644
+index 0000000..a7db617
+--- /dev/null
++++ b/kde/kioslave/kio_recoll-kde4/kio_recoll.cpp
+@@ -0,0 +1,381 @@
++/* Copyright (C) 2005 J.F.Dockes
++ *   This program is free software; you can redistribute it and/or modify
++ *   it under the terms of the GNU General Public License as published by
++ *   the Free Software Foundation; either version 2 of the License, or
++ *   (at your option) any later version.
++ *
++ *   This program is distributed in the hope that it will be useful,
++ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *   GNU General Public License for more details.
++ *
++ *   You should have received a copy of the GNU General Public License
++ *   along with this program; if not, write to the
++ *   Free Software Foundation, Inc.,
++ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
++ */
++
++#include <stdio.h>
++#include <stdlib.h>
++#include <unistd.h>
++#include <errno.h> 
++
++#include <string>
++using namespace std;
++
++#include <qglobal.h>
++#include <qfile.h>
++#include <qtextstream.h>
++#include <qstring.h>
++
++#include <kdebug.h>
++#include <kcomponentdata.h>
++#include <kstandarddirs.h>
++
++#include "rclconfig.h"
++#include "rcldb.h"
++#include "rclinit.h"
++#include "pathut.h"
++#include "searchdata.h"
++#include "rclquery.h"
++#include "wasatorcl.h"
++#include "kio_recoll.h"
++#include "docseqdb.h"
++#include "readfile.h"
++#include "smallut.h"
++#include "textsplit.h"
++#include "guiutils.h"
++
++using namespace KIO;
++
++RclConfig *RecollProtocol::o_rclconfig;
++
++RecollProtocol::RecollProtocol(const QByteArray &pool, const QByteArray &app) 
++    : SlaveBase("recoll", pool, app), m_initok(false), m_rcldb(0),
++      m_alwaysdir(false)
++{
++    kDebug() << endl;
++    if (o_rclconfig == 0) {
++	o_rclconfig = recollinit(0, 0, m_reason);
++	if (!o_rclconfig || !o_rclconfig->ok()) {
++	    m_reason = string("Configuration problem: ") + m_reason;
++	    return;
++	}
++    }
++    if (o_rclconfig->getDbDir().empty()) {
++	// Note: this will have to be replaced by a call to a
++	// configuration building dialog for initial configuration? Or
++	// do we assume that the QT GUO is always used for this ?
++	m_reason = "No db directory in configuration ??";
++	return;
++    }
++    rwSettings(false);
++
++    m_rcldb = new Rcl::Db(o_rclconfig);
++    if (!m_rcldb) {
++	m_reason = "Could not build database object. (out of memory ?)";
++	return;
++    }
++
++    // Decide if we allow switching between html and file manager
++    // presentation by using an end slash or not. Can also be done dynamically 
++    // by switching proto names.
++    const char *cp = getenv("RECOLL_KIO_ALWAYS_DIR");
++    if (cp) {
++	m_alwaysdir = stringToBool(cp);
++    } else {
++	o_rclconfig->getConfParam("kio_always_dir", &m_alwaysdir);
++    }
++
++    cp = getenv("RECOLL_KIO_STEMLANG");
++    if (cp) {
++        m_stemlang = cp;
++    } else {
++        m_stemlang = "english";
++    }
++    m_pager.setParent(this);
++    m_initok = true;
++    return;
++}
++
++// There should be an object counter somewhere to delete the config when done.
++// Doesn't seem needed in the kio context.
++RecollProtocol::~RecollProtocol()
++{
++    kDebug();
++    delete m_rcldb;
++}
++
++bool RecollProtocol::maybeOpenDb(string &reason)
++{
++    if (!m_rcldb) {
++	reason = "Internal error: initialization error";
++	return false;
++    }
++    if (!m_rcldb->isopen() && !m_rcldb->open(Rcl::Db::DbRO)) {
++	reason = "Could not open database in " + o_rclconfig->getDbDir();
++	return false;
++    }
++    return true;
++}
++
++// This is never called afaik
++void RecollProtocol::mimetype(const KUrl &url)
++{
++    kDebug() << url << endl;
++    mimeType("text/html");
++    finished();
++}
++
++UrlIngester::UrlIngester(RecollProtocol *p, const KUrl& url)
++    : m_parent(p), m_slashend(false), m_alwaysdir(false),
++      m_retType(UIRET_NONE), m_resnum(0), m_type(UIMT_NONE)
++{
++    kDebug() << "Url" << url;
++    m_alwaysdir = !url.protocol().compare("recollf");
++    QString path = url.path();
++    if (url.host().isEmpty()) {
++	if (path.isEmpty() || !path.compare("/")) {
++	    m_type = UIMT_ROOTENTRY;
++	    m_retType = UIRET_ROOT;
++	    return;
++	} else if (!path.compare("/help.html")) {
++	    m_type = UIMT_ROOTENTRY;
++	    m_retType = UIRET_HELP;
++	    return;
++	} else if (!path.compare("/search.html")) {
++	    m_type = UIMT_ROOTENTRY;
++	    m_retType = UIRET_SEARCH;
++	    // Retrieve the query value for preloading the form
++	    m_query.query = url.queryItem("q");
++	    return;
++	} else if (m_parent->isRecollResult(url, &m_resnum, &m_query.query)) {
++	    m_type = UIMT_QUERYRESULT;
++	    m_query.opt = "l";
++	    m_query.page = 0;
++	} else {
++	    // Have to think this is some search string
++	    m_type = UIMT_QUERY;
++	    m_query.query = url.path();
++	    m_query.opt = "l";
++	    m_query.page = 0;
++	}
++    } else {
++	// Non empty host, url must be something like :
++	//      //search/query?q=query&param=value...
++	kDebug() << "host" << url.host() << "path" << url.path();
++	if (url.host().compare("search") || url.path().compare("/query")) {
++	    return;
++	}
++	m_type = UIMT_QUERY;
++	// Decode the forms' arguments
++	m_query.query = url.queryItem("q");
++
++	m_query.opt = url.queryItem("qtp");
++	if (m_query.opt.isEmpty()) {
++	    m_query.opt = "l";
++	} 
++	QString p = url.queryItem("p");
++	if (p.isEmpty()) {
++	    m_query.page = 0;
++	} else {
++	    sscanf(p.toAscii(), "%d", &m_query.page);
++	}
++	p = url.queryItem("det");
++	m_query.isDetReq = !p.isEmpty();
++	
++	p = url.queryItem("cmd");
++	if (!p.isEmpty() && !p.compare("pv")) {
++	    p = url.queryItem("dn");
++	    if (!p.isEmpty()) {
++		// Preview and no docnum ??
++		m_resnum = atoi((const char *)p.toUtf8());
++		// Result in page is 1+
++		m_resnum--;
++		m_type = UIMT_PREVIEW;
++	    }
++	}
++    }
++    if (m_query.query.startsWith("/"))
++	m_query.query.remove(0,1);
++    if (m_query.query.endsWith("/")) {
++	kDebug() << "Ends with /";
++	m_slashend = true;
++	m_query.query.chop(1);
++    } else {
++	m_slashend = false;
++    }
++    return;
++}
++
++bool RecollProtocol::syncSearch(const QueryDesc &qd)
++{
++    kDebug();
++    if (!m_initok || !maybeOpenDb(m_reason)) {
++	string reason = "RecollProtocol::listDir: Init error:" + m_reason;
++	error(KIO::ERR_SLAVE_DEFINED, reason.c_str());
++	return false;
++    }
++    if (qd.sameQuery(m_query)) {
++	return true;
++    }
++    // doSearch() calls error() if appropriate.
++    return doSearch(qd);
++}
++
++// This is used by the html interface, but also by the directory one
++// when doing file copies for exemple. This is the central dispatcher
++// for requests, it has to know a little about both models.
++void RecollProtocol::get(const KUrl& url)
++{
++    kDebug() << url << endl;
++
++    if (!m_initok || !maybeOpenDb(m_reason)) {
++	string reason = "Recoll: init error: " + m_reason;
++	error(KIO::ERR_SLAVE_DEFINED, reason.c_str());
++	return;
++    }
++
++    UrlIngester ingest(this, url);
++    UrlIngester::RootEntryType rettp;
++    QueryDesc qd;
++    int resnum;
++    if (ingest.isRootEntry(&rettp)) {
++	switch(rettp) {
++	case UrlIngester::UIRET_HELP: 
++	    {
++		QString location = 
++		    KStandardDirs::locate("data", "kio_recoll/help.html");
++		redirection(location);
++	    }
++	    goto out;
++	default:
++	    searchPage();
++	    goto out;
++	}
++    } else if (ingest.isResult(&qd, &resnum)) {
++	// Url matched one generated by konqueror/Dolphin out of a
++	// search directory listing: ie: 
++        // recoll:/some search string/recollResultxx
++	//
++	// This happens when the user drags/drop the result to another
++	// app, or with the "open-with" right-click. Does not happen
++	// if the entry itself is clicked (the UDS_URL is apparently
++	// used in this case
++	//
++	// Redirect to the result document URL
++	if (!syncSearch(qd)) {
++	    return;
++	}
++	Rcl::Doc doc;
++	if (resnum >= 0 && m_source && m_source->getDoc(resnum, doc)) {
++	    mimeType(doc.mimetype.c_str());
++	    redirection(KUrl::fromLocalFile((const char *)(doc.url.c_str()+7)));
++	    goto out;
++	}
++    } else if (ingest.isPreview(&qd, &resnum)) {
++	if (!syncSearch(qd)) {
++	    return;
++	}
++	Rcl::Doc doc;
++	if (resnum >= 0 && m_source && m_source->getDoc(resnum, doc)) {
++	    showPreview(doc);
++	    goto out;
++	}
++    } else if (ingest.isQuery(&qd)) {
++#if 0 
++// Do we need this ?
++	if (host.isEmpty()) {
++	    char cpage[20];sprintf(cpage, "%d", page);
++	    QString nurl = QString::fromAscii("recoll://search/query?q=") +
++		query + "&qtp=" + opt + "&p=" + cpage;
++	    redirection(KUrl(nurl));
++	    goto out;
++	}
++#endif
++	// htmlDoSearch does the search syncing (needs to know about changes).
++	htmlDoSearch(qd);
++	goto out;
++    }
++
++    error(KIO::ERR_SLAVE_DEFINED, "Unrecognized URL or internal error");
++ out:
++    finished();
++}
++
++// Execute Recoll search, and set the docsource
++bool RecollProtocol::doSearch(const QueryDesc& qd)
++{
++    kDebug() << "query" << qd.query << "opt" << qd.opt;
++    m_query = qd;
++
++    char opt = qd.opt.isEmpty() ? 'l' : qd.opt.toUtf8().at(0);
++    string qs = (const char *)qd.query.toUtf8();
++    Rcl::SearchData *sd = 0;
++    if (opt != 'l') {
++	Rcl::SearchDataClause *clp = 0;
++	if (opt == 'f') {
++	    clp = new Rcl::SearchDataClauseFilename(qs);
++	} else {
++            clp = new Rcl::SearchDataClauseSimple(opt == 'o' ? Rcl::SCLT_OR : 
++                                                  Rcl::SCLT_AND, qs);
++	}
++	sd = new Rcl::SearchData(Rcl::SCLT_OR, m_stemlang);
++	if (sd && clp)
++	    sd->addClause(clp);
++    } else {
++	sd = wasaStringToRcl(o_rclconfig, m_stemlang, qs, m_reason);
++    }
++    if (!sd) {
++	m_reason = "Internal Error: cant build search";
++	error(KIO::ERR_SLAVE_DEFINED, m_reason.c_str());
++	return false;
++    }
++
++    std::shared_ptr<Rcl::SearchData> sdata(sd);
++    std::shared_ptr<Rcl::Query>query(new Rcl::Query(m_rcldb));
++    query->setCollapseDuplicates(prefs.collapseDuplicates);
++    if (!query->setQuery(sdata)) {
++	m_reason = "Query execute failed. Invalid query or syntax error?";
++	error(KIO::ERR_SLAVE_DEFINED, m_reason.c_str());
++	return false;
++    }
++
++    DocSequenceDb *src = 
++	new DocSequenceDb(std::shared_ptr<Rcl::Query>(query), "Query results", sdata);
++    if (src == 0) {
++	error(KIO::ERR_SLAVE_DEFINED, "Can't build result sequence");
++	return false;
++    }
++    m_source = std::shared_ptr<DocSequence>(src);
++    // Reset pager in all cases. Costs nothing, stays at page -1 initially
++    // htmldosearch will fetch the first page if needed.
++    m_pager.setDocSource(m_source);
++    return true;
++}
++
++// Note: KDE_EXPORT is actually needed on Unix when building with
++// cmake. Says something like __attribute__(visibility(defautl))
++// (cmake apparently sets all symbols to not exported)
++extern "C" {KDE_EXPORT int kdemain(int argc, char **argv);}
++
++int kdemain(int argc, char **argv)
++{
++#ifdef KDE_VERSION_3
++    KInstance instance("kio_recoll");
++#else
++    KComponentData instance("kio_recoll");
++#endif
++    kDebug() << "*** starting kio_recoll " << endl;
++
++    if (argc != 4)  {
++	kDebug() << "Usage: kio_recoll proto dom-socket1 dom-socket2\n" << endl;
++	exit(-1);
++    }
++
++    RecollProtocol slave(argv[2], argv[3]);
++    slave.dispatchLoop();
++
++    kDebug() << "kio_recoll Done" << endl;
++    return 0;
++}
+diff --git a/kde/kioslave/kio_recoll-kde4/kio_recoll.h b/kde/kioslave/kio_recoll-kde4/kio_recoll.h
+new file mode 100644
+index 0000000..c2da557
+--- /dev/null
++++ b/kde/kioslave/kio_recoll-kde4/kio_recoll.h
+@@ -0,0 +1,191 @@
++#ifndef _RECOLL_H
++#define _RECOLL_H
++/* Copyright (C) 2005 J.F.Dockes
++ *   This program is free software; you can redistribute it and/or modify
++ *   it under the terms of the GNU General Public License as published by
++ *   the Free Software Foundation; either version 2 of the License, or
++ *   (at your option) any later version.
++ *
++ *   This program is distributed in the hope that it will be useful,
++ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *   GNU General Public License for more details.
++ *
++ *   You should have received a copy of the GNU General Public License
++ *   along with this program; if not, write to the
++ *   Free Software Foundation, Inc.,
++ *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
++ */
++
++#include <string>
++using std::string;
++
++#include <qglobal.h>
++#include <qstring.h>
++
++#include <kurl.h>
++#include <kio/global.h>
++#include <kio/slavebase.h>
++#include <kdeversion.h>
++
++#include "rclconfig.h"
++#include "rcldb.h"
++#include "reslistpager.h"
++#include "docseq.h"
++#include <memory>
++
++class RecollProtocol;
++
++/** Specialize the recoll html pager for the kind of links we use etc. */
++class RecollKioPager : public ResListPager {
++public:
++    RecollKioPager() : m_parent(0) {}
++    void setParent(RecollProtocol *proto) {m_parent = proto;}
++
++    virtual bool append(const string& data);
++    virtual bool append(const string& data, int, const Rcl::Doc&)
++    {return append(data);}
++    virtual string detailsLink();
++    virtual const string &parFormat();
++    virtual string nextUrl();
++    virtual string prevUrl();
++    virtual string pageTop();
++
++private:
++    RecollProtocol *m_parent;
++};
++
++class QueryDesc {
++public:
++    QueryDesc() : opt("l"), page(0), isDetReq(false) {}
++    QString query;
++    QString opt;
++    int page;
++    bool isDetReq;
++    bool sameQuery(const QueryDesc& o) const {
++	return !opt.compare(o.opt) && !query.compare(o.query);
++    }
++};
++
++// Our virtual tree is a bit complicated. We need a class to analyse an URL
++// and tell what we should do with it
++class UrlIngester {
++public:
++    UrlIngester(RecollProtocol *p, const KUrl& url);
++    enum RootEntryType {UIRET_NONE, UIRET_ROOT, UIRET_HELP, UIRET_SEARCH};
++    bool isRootEntry(RootEntryType *tp) {
++	if (m_type != UIMT_ROOTENTRY) return false;
++	*tp = m_retType;
++	return true;
++    }
++    bool isQuery(QueryDesc *q) {
++	if (m_type != UIMT_QUERY) return false;
++	*q = m_query;
++	return true;
++    }
++    bool isResult(QueryDesc *q, int *num) {
++	if (m_type != UIMT_QUERYRESULT) return false;
++	*q = m_query;
++	*num = m_resnum;
++	return true;
++    }
++    bool isPreview(QueryDesc *q, int *num) {
++	if (m_type != UIMT_PREVIEW) return false;
++	*q = m_query;
++	*num = m_resnum;
++	return true;
++    }
++    bool endSlashQuery() {return m_slashend;}
++    bool alwaysDir() {return m_alwaysdir;}
++
++private:
++    RecollProtocol *m_parent;
++    QueryDesc       m_query;
++    bool            m_slashend;
++    bool            m_alwaysdir;
++    RootEntryType   m_retType;
++    int             m_resnum;
++    enum MyType {UIMT_NONE, UIMT_ROOTENTRY, UIMT_QUERY, UIMT_QUERYRESULT,
++		 UIMT_PREVIEW};
++    MyType           m_type;
++};
++
++
++/**
++ * A KIO slave to execute and display Recoll searches.
++ *
++ * Things are made a little complicated because KIO slaves can't hope
++ * that their internal state will remain consistent with their user
++ * application state: slaves die, are restarted, reused, at random
++ * between requests. 
++ * In our case, this means that any request has to be processed
++ * without reference to the last operation performed. Ie, if the
++ * search parameters are not those from the last request, the search
++ * must be restarted anew. This happens for example with different
++ * searches in 2 konqueror screens: typically only one kio_slave will
++ * be used.
++ * The fact that we check if the search is the same as the last one,
++ * to avoid restarting is an optimization, not the base mechanism
++ * (contrary to what was initially assumed, and may have left a few
++ * crumbs around).
++ *
++ * We have two modes of operation, one based on html forms and result
++ * pages, which can potentially be developped to the full Recoll
++ * functionality, and one based on a directory listing model, which
++ * will always be more limited, but may be useful in some cases to
++ * allow easy copying of files etc. Which one is in use is decided by
++ * the form of the URL. 
++ */
++class RecollProtocol : public KIO::SlaveBase {
++ public:
++    RecollProtocol(const QByteArray &pool, const QByteArray &app );
++    virtual ~RecollProtocol();
++    virtual void mimetype(const KUrl& url);
++    virtual void get(const KUrl& url);
++    // The directory mode is not available with KDE 4.0, I could find
++    // no way to avoid crashing kdirmodel
++#if KDE_IS_VERSION(4,1,0)
++    virtual void stat(const KUrl & url);
++    virtual void listDir(const KUrl& url);
++#endif
++
++    static RclConfig  *o_rclconfig;
++
++    friend class RecollKioPager;
++    friend class UrlIngester;
++
++ private:
++    bool maybeOpenDb(string& reason);
++    bool URLToQuery(const KUrl &url, QString& q, QString& opt, int *page=0);
++    bool doSearch(const QueryDesc& qd);
++
++    void searchPage();
++    void queryDetails();
++    string makeQueryUrl(int page, bool isdet = false);
++    bool syncSearch(const QueryDesc& qd);
++    void htmlDoSearch(const QueryDesc& qd);
++    void showPreview(const Rcl::Doc& doc);
++    bool isRecollResult(const KUrl &url, int *num, QString* q);
++
++    bool        m_initok;
++    Rcl::Db    *m_rcldb;
++    string      m_reason;
++    bool        m_alwaysdir;
++    string      m_stemlang; // english by default else env[RECOLL_KIO_STEMLANG]
++
++    // Search state: because of how the KIO slaves are used / reused,
++    // we can't be sure that the next request will be for the same
++    // search, and we need to check and restart one if the data
++    // changes. This is very wasteful but hopefully won't happen too
++    // much in actual use. One possible workaround for some scenarios
++    // (one slave several konqueror windows) would be to have a small
++    // cache of recent searches kept open.
++    RecollKioPager m_pager;
++    std::shared_ptr<DocSequence> m_source;
++    // Note: page here is not used, current page always comes from m_pager.
++    QueryDesc      m_query;
++};
++
++extern "C" {int kdemain(int, char**);}
++
++#endif // _RECOLL_H
+diff --git a/kde/kioslave/kio_recoll-kde4/notes.txt b/kde/kioslave/kio_recoll-kde4/notes.txt
+new file mode 100644
+index 0000000..8b8127f
+--- /dev/null
++++ b/kde/kioslave/kio_recoll-kde4/notes.txt
+@@ -0,0 +1,188 @@
++Recoll KIO Slave notes/todoes/etc.
++
++Goal: access Recoll search from other applications. 
++
++We want to allow URLs like recoll:/?? to be used inside
++Konqueror/Dolphin and open dialogs, to start a search with results
++displayed/used inside the application.
++
++
++Todoes
++======
++
++
++Implementation notes:
++====================
++
++- There are two main ways to do this: 
++  - a-la kio_beagle, using listDir() to list entries pointing to the
++    different operations or objects (help, status, search result
++    entries, bookmarks, whatever...). The nice thing is that the
++    results really look like file object in a directory (probably,
++    didn't try it actually), no need for look and feel, it's provided by
++    KDE 
++
++  - Or a la strigi: all interactions are through html pages and get()
++    operations.  Much simpler, but does not allow file management
++    operations (except by drag/drop from the result list), and can't
++    use it inside other application's Open dialogs.
++
++Recoll is currently doing both things on KDE4.1 (only html for KDE4.0). 
++
++
++Virtual tree:
++=============
++
++recoll: 
++recoll:/
++recoll:/help.html
++recoll:/search.html
++    Purely synthetic top level entries. Yes, given the following, this means
++    that you can't search for 'help.html' directly (but you can do it through 
++    the html interface). These have to exist in the top level directory
++
++recoll:/some search string
++recoll:/some search string/
++ We have a 'mode' determined by the protocol name:
++  	 recoll -> mixed
++	 recollf -> file manager
++  - html mode: these redirect to recoll://search/query?q="some search string"
++  - file manager mode: do the search and display results.
++  - mixed mode: what mode is entered depends on ending /
++
++recoll://search/query?q=...
++  html mode search  
++
++recoll:/some search string/recollResultxyz
++xyz is the index in result list.
++
++When generating a directory, with use bogus names for the result
++entries (the displayed ones are from UDS_DISPLAY_NAME and are the real
++names). When doing drag/drop or "open with" Konqueror/Dolphin builds
++an url by concatenating the current directory name and the UDS_NAME,
++instead of using UDS_TARGET_URL as when the entry is clicked. This
++forces us to use identifying names including the result number, which
++has many ennoying side effects (such as the target app not knowing the
++real file path...
++
++
++KIO notes:
++=========
++
++- Slaves are reused seemingly at random. Even with connection-oriented
++  ones (ie ftp), you can have 2 konqueror windows on different hosts
++  with only one slave which will have to close/reopen the connection at
++  each switch.
++   For slaves with really expensive internal state, this is very wasteful.
++
++- Use cases for father_url+name or target_url are ill defined.
++- Need a way to block autocompletion queries !
++- No way to display the target URL in konqueror
++
++Todoes
++======
++- Improve the html interface to support more functions
++ - Category filtering
++ - Sorting
++
++- Find a way to use the html form to enter the query and get the
++  results as a directory ?  - Would it be possible to use a redirect
++  to switch to the directory-oriented results for a query from the
++  html form ? 
++  -> No, even a redirect to a form that would initially trigger a
++     listDir() triggers a get() when performed from a get()
++
++KDE misc notes
++==================
++Debug areas: /usr/share/kde4/config/kdebug.areas
++kdebugdialog [--fullmode] pour configurer
++./.kde/share/config/kdebugrc
++Output to ~/.xession-errors by default. How to change ?
++
++kio_recoll misc notes:
++===========================
++Probleme quand l'url se termine par un / et qu'on edite le mot,
++konqueror lance une recherche a chaque lettre.
++
++Apparemment c'est l'entree "listing" du .protocol qui decide si le plugin
++est traité plutot comme un dirlister ou comme un htmlgetter. Curieusement,
++le changement ne s'opere pas toujours immediatement quand on change le
++fichier .proto, y compris apres avoir tue tous les process kde (changement
++à la deuxieme execution de konqueror sur kde4.0). Sur kde4.0 il faut que le
++.proto soit sans entree "listing"
++
++Problemes de gestion de l'etat
++===============================
++Les KIO slaves ne sont pas associes a une fenetre ! ils sont
++reutilises au hasard, et leur etat n'a aucune raison de correspondre a
++celui de l'affichage. On peut tres bien avoir 1 fenetre 2 kio ou 1 kio
++deux fenetres, et le next d'un search peut arriver au kio qui a
++l'autre search, donc n'importenaouak. Il faudrait que l'etat soit
++partage et accede par un identifiant uniquement determine par l'url de
++la fenetre.
++
++Meme pour une fenetre unique, au bout d'un moment le kio timeout et exite.
++
++En fait les slaves ne peuvent pas stocker d'etat du tout. Donc:
++ - soit un serveur central auquel ils parlent
++ - soit ils relancent dynamiquement les recherches si pas de match
++C'est vrai aussi bien pour les dirlists que pour la version html. 
++
++J'ai essaye de mettre une boucle timeout callback callspecial() mais
++ca ne sert a rien, c'est gere dans le process kio_slave, ca ne
++maintient pas l'association avec un konqueror.
++
++KDE_FORK_SLAVES sort of solves the problem in a limited way: 
++ - It applies to an application instance, not a KIO slave type, so it
++   affects other KIO usages.  
++ - If the application has 2 sessions with the same KIO there are no 
++   warranties that 1 kio per session will be used ?
++
++
++
++Old KDE3 notes, 
++===============
++
++kio_recoll has not been checked or worked under KDE3 for eons, no
++reason to believe it works.
++
++- Not using libtool. Probably should. compilation flags in the Makefile
++  were copy-pasted from a kdebase compilation tree on FreeBSD (kio/man).
++- You MUST install a kio_recoll.la in lib/kde3 along with kio_recoll.so,
++  else kdeinit won't be able to load the lib (probably uses the libltdl
++  thingy?). The one in this directory was duplicated/adjusted from
++  kio_man.la. The contents don't seem too critical, just needs to exist.
++- If you want to try, compile, then install kio_recoll.la kio_recoll.so
++  wherever kde keeps its plugins (ie: lib/kde3), and recoll.protocol in the
++  services directory (share/services ? look for other .protocol file).
++- I saw after doing the build/config mockup that kdevelop can generate a
++  kio_slave project. This might be the next thing to do. otoh would need to
++  separate the kio from the main source to avoid having to distribute 2megs
++  of kde build config files.
++
++
++
++Connected mode
++==============
++Tried to add bogus connection status to see if this would prevent switching between apps/slaves, doesnt... checked that's the same for kio_ftp
++
++void RecollProtocol::openConnection() 
++{
++    kDebug();
++    connected();
++}
++void RecollProtocol::closeConnection() 
++{
++    kDebug();
++}
++void RecollProtocol::setHost(const QString& host, quint16, 
++			     const QString&, const QString&)
++{
++    kDebug() << host;
++}
++void RecollProtocol::slave_status()
++{
++    kDebug();
++    slaveStatus("search", true);
++}
+++    connected(); call in maybeopendb()
+diff --git a/kde/kioslave/kio_recoll-kde4/recoll.protocol b/kde/kioslave/kio_recoll-kde4/recoll.protocol
+new file mode 100644
+index 0000000..c69fc77
+--- /dev/null
++++ b/kde/kioslave/kio_recoll-kde4/recoll.protocol
+@@ -0,0 +1,11 @@
++[Protocol]
++exec=kio_recoll
++protocol=recoll
++input=none
++output=filesystem
++listing=Name,Type, URL
++reading=true
++defaultMimeType=text/html
++Icon=recoll
++Class=:local
++URIMode=rawuri
+diff --git a/kde/kioslave/kio_recoll-kde4/recollf.protocol b/kde/kioslave/kio_recoll-kde4/recollf.protocol
+new file mode 100644
+index 0000000..fb150ec
+--- /dev/null
++++ b/kde/kioslave/kio_recoll-kde4/recollf.protocol
+@@ -0,0 +1,11 @@
++[Protocol]
++exec=kio_recoll
++protocol=recollf
++input=none
++output=filesystem
++listing=Name,Type, URL
++reading=true
++defaultMimeType=text/html
++Icon=recoll
++Class=:local
++URIMode=rawuri
+diff --git a/kde/kioslave/kio_recoll-kde4/recollnolist.protocol b/kde/kioslave/kio_recoll-kde4/recollnolist.protocol
+new file mode 100644
+index 0000000..cb5d55e
+--- /dev/null
++++ b/kde/kioslave/kio_recoll-kde4/recollnolist.protocol
+@@ -0,0 +1,11 @@
++[Protocol]
++exec=kio_recoll
++protocol=recoll
++input=none
++output=filesystem
++# Version for kde4.0: no "listing" entry
++reading=true
++defaultMimeType=text/html
++Icon=recoll
++Class=:local
++URIMode=rawuri
 diff --git a/kde/kioslave/kio_recoll/dirif.cpp b/kde/kioslave/kio_recoll/dirif.cpp
 index 3a96891..9d0a5f8 100644
 --- a/kde/kioslave/kio_recoll/dirif.cpp
