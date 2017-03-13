@@ -201,10 +201,5 @@ extern "C" {
     kdemain(int argc, char **argv);
 }
 
-inline QString u8s2qs(const string& s)
-{
-    return QString::fromUtf8(s.c_str());
-}
-
 
 #endif // _RECOLL_H
