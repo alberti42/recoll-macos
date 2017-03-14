@@ -39,7 +39,7 @@ PROFILE.VALUE = ""
 # to the xsltproc pass that generates DocBook output.
 # For example:
 # OTHER_XSLTPROC_ARGS = --stringparam example.param ""
-OTHER_XSLTPROC_ARGS = 
+OTHER_XSLTPROC_ARGS = --param webhelp.include.search.tab false
 
 # Path to the DocBook Distribution that 
 # contains the xslts etc.
