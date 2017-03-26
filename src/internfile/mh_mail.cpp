@@ -465,12 +465,13 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 		else if (!stringlowercmp("text/html", content_type.value)) 
 		    ithtml = it;
 	    }
-	    if (ittxt != doc->members.end()) {
-		LOGDEB2("walkmime: alternative: chose text/plain part\n");
-		    walkmime(&(*ittxt), depth);
+	    if (ittxt != doc->members.end() && ittxt->bodylength) {
+		LOGDEB2("walkmime: alternative: choose text/plain. Size: " <<
+                        ittxt->bodylength << endl);
+                walkmime(&(*ittxt), depth);
 	    } else if (ithtml != doc->members.end()) {
-		LOGDEB2("walkmime: alternative: chose text/html part\n");
-		    walkmime(&(*ithtml), depth);
+		LOGDEB2("walkmime: alternative: choose text/html.\n");
+                walkmime(&(*ithtml), depth);
 	    }
 	}
 	return;
