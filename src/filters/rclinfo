@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 # Read a file in GNU info format and output its nodes as subdocs,
 # interfacing with recoll execm

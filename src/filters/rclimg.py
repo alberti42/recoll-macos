@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 # Python-based Image Tag extractor for Recoll. This is less thorough
 # than the Perl-based rclimg script, but useful if you don't want to

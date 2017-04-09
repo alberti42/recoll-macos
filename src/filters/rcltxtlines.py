@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 """Index text lines as document (execm handler sample). This exists
 to demonstrate the execm interface and is not meant to be useful or
 efficient"""
