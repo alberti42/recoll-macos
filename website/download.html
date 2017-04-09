@@ -253,11 +253,11 @@
 
         <ul>
 
-          <li>Download the public key used to validate the repositories:
-            <div class="code">
-wget -O - https://www.lesbonscomptes.com/key/jf@dockes.org.gpg.key | sudo apt-key add -
-            </div>
-          </li>
+          <li>See <a href="../pages/signatures.html">here</a> for the
+            keys used to signed the repository. You will need to import
+            them to suppress <b>apt-get</b> messages about unverified
+            signatures (the method is described on the
+            <a href="../pages/signatures.html">same page</a>).</li>
           
           <li>Create and edit <span class="filename">
               /etc/apt/sources.list.d/recoll.list</span>

@@ -29,8 +29,18 @@
 later versions. Bugs listed in the topmost section may also exist in older
 versions.</i></p>
 
-<h2><a name="b_latest">recoll 1.21.7, 1.22.3</a></h2>
+<h2><a name="b_latest">recoll 1.21.7, 1.22.3, 1.23.1</a></h2>
 <ul>
+
+  <li>The Recoll GUI configuration (things set from the <tt>GUI
+      Configuration</tt> menu) is stored in a file
+      named <tt>~/.config/Recoll.org/recoll.conf</tt>, which is
+      completely distinct from the indexing configuration. There have
+      been several instances of problems leading to corruption of the
+      file in the past. If the Recoll GUI behaves strangely in any way
+      when starting up (crashes, starts slowly, uses a lot of
+      memory...), it may be worth it trying to move this file aside
+      and re-try starting the GUI.</li>
 
  <li>There have been multiple occurrences of an indexing problem
    resulting in a damaged index. The cause is not completely determined,
