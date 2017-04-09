@@ -4,7 +4,7 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.23.0
+RCLVERS=1.23.1
 LENSVERS=1.19.10.3543
 SCOPEVERS=1.20.2.4
 PPAVERS=1
@@ -43,8 +43,10 @@ check_recoll_orig()
 ####### QT
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
-series="trusty xenial yakkety"
-#series=
+# No new releases for trusty either because of risk of kio compat (kio
+# wont build)
+series="xenial yakkety zesty"
+#series=zesty
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -75,8 +77,8 @@ done
 
 ### KIO. Does not build on trusty from recoll 1.23 because of the need
 ### for c++11
-series="xenial yakkety"
-#series=xenial
+#series="xenial yakkety zesty"
+series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
