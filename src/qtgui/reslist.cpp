@@ -55,9 +55,6 @@
 #include "reslist.h"
 #include "moc_reslist.cpp"
 #include "rclhelp.h"
-#ifdef RCL_USE_ASPELL
-#include "rclaspell.h"
-#endif
 #include "appformime.h"
 #include "respopup.h"
 
@@ -201,53 +198,36 @@ void QtGuiResListPager::suggest(const vector<string>uterms,
 				map<string, vector<string> >& sugg)
 {
     sugg.clear();
-#ifdef RCL_USE_ASPELL
-    bool noaspell = false;
-    theconfig->getConfParam("noaspell", &noaspell);
-    if (noaspell)
-        return;
-    if (!aspell) {
-        LOGERR("QtGuiResListPager:: aspell not initialized\n" );
-        return;
-    }
-
     bool issimple = m_reslist && m_reslist->m_rclmain && 
 	m_reslist->m_rclmain->lastSearchSimple();
 
-    for (vector<string>::const_iterator uit = uterms.begin();
-         uit != uterms.end(); uit++) {
-        list<string> asuggs;
-        string reason;
+    for (const auto& uit : uterms) {
+        vector<string> tsuggs;
 
 	// If the term is in the dictionary, Aspell::suggest won't
 	// list alternatives. In fact we may want to check the
 	// frequencies and propose something anyway if a possible
 	// variation is much more common (as google does) ?
-        if (!aspell->suggest(*rcldb, *uit, asuggs, reason)) {
-            LOGERR("QtGuiResListPager::suggest: aspell failed: "  << (reason) << "\n" );
+        if (!rcldb->getSpellingSuggestions(uit, tsuggs)) {
             continue;
         }
-
 	// We should check that the term stems differently from the
 	// base word (else it's not useful to expand the search). Or
 	// is it ? This should depend if stemming is turned on or not
 
-        if (!asuggs.empty()) {
-            sugg[*uit] = vector<string>(asuggs.begin(), asuggs.end());
-	    if (sugg[*uit].size() > 5)
-		sugg[*uit].resize(5);
+        if (!tsuggs.empty()) {
+            sugg[uit] = vector<string>(tsuggs.begin(), tsuggs.end());
+	    if (sugg[uit].size() > 5)
+		sugg[uit].resize(5);
 	    // Set up the links as a <href="Sold|new">. 
-	    for (vector<string>::iterator it = sugg[*uit].begin();
-		 it != sugg[*uit].end(); it++) {
+	    for (auto& it : sugg[uit]) {
 		if (issimple) {
-		    *it = string("<a href=\"S") + *uit + "|" + *it + "\">" +
-			*it + "</a>";
+		    it = string("<a href=\"S") + uit + "|" + it + "\">" +
+			it + "</a>";
 		}
 	    }
         }
     }
-#endif
-
 }
 
 string QtGuiResListPager::iconUrl(RclConfig *config, Rcl::Doc& doc)

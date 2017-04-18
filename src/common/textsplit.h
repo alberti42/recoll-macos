@@ -92,8 +92,7 @@ public:
     /** Called when we encounter formfeed \f 0x0c. Override to use the event.
      * Mostly or exclusively used with pdftoxx output. Other filters mostly 
      * just don't know about pages. */
-    virtual void newpage(int /*pos*/)
-    {
+    virtual void newpage(int /*pos*/) {
     }
 
     // Static utility functions:
@@ -111,10 +110,12 @@ public:
      * non-utf-8 input (iso-8859 config files work ok). This hopefully
      * handles all Unicode whitespace, but needs correct utf-8 input
      */
-    static bool stringToStrings(const std::string &s, std::vector<std::string> &tokens);
+    static bool stringToStrings(const std::string &s,
+                                std::vector<std::string> &tokens);
 
-    /** Is char CJK ? */
+    /** Is char CJK ? (excluding Katakana) */
     static bool isCJK(int c);
+    static bool isKATAKANA(int c);
 
     /** Statistics about word length (average and dispersion) can
      * detect bad data like undecoded base64 or other mis-identified

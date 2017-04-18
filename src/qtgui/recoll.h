@@ -46,11 +46,6 @@ extern void startManual(const string& helpindex);
 
 extern void applyStyleSheet(const QString&);
 
-#ifdef RCL_USE_ASPELL
-class Aspell;
-extern Aspell *aspell;
-#endif
-
 inline std::string qs2utf8s(const QString& qs)
 {
     return std::string((const char *)qs.toUtf8());

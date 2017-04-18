@@ -40,9 +40,6 @@
 #include "rclmain_w.h"
 #include "ssearch_w.h"
 #include "guiutils.h"
-#ifdef RCL_USE_ASPELL
-#include "rclaspell.h"
-#endif
 #include "smallut.h"
 #include "readfile.h"
 
@@ -83,9 +80,6 @@ void deleteAllTempFiles()
 
 Rcl::Db *rcldb;
 
-#ifdef RCL_USE_ASPELL
-Aspell *aspell;
-#endif
 
 int recollNeedsExit;
 RclMain *mainWindow;
@@ -158,10 +152,6 @@ static void recollCleanup()
 
     deleteAllTempFiles();
     
-#ifdef RCL_USE_ASPELL
-    deleteZ(aspell);
-#endif
-
     LOGDEB2("recollCleanup: done\n" );
 }
 
@@ -321,15 +311,6 @@ int main(int argc, char **argv)
     app.installTranslator( &translator );
 
     //    fprintf(stderr, "Translations installed\n");
-
-#ifdef RCL_USE_ASPELL
-    aspell = new Aspell(theconfig);
-    aspell->init(reason);
-    if (!aspell || !aspell->ok()) {
-	LOGDEB("Aspell speller creation failed "  << (reason) << "\n" );
-	aspell = 0;
-    }
-#endif
 
     string historyfile = path_cat(theconfig->getConfDir(), "history");
     g_dynconf = new RclDynConf(historyfile);

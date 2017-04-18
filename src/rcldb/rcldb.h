@@ -54,6 +54,7 @@ using std::vector;
 // reasonable)
 
 class RclConfig;
+class Aspell;
 
 namespace Rcl {
 
@@ -200,26 +201,30 @@ class Db {
 
     /** Test word for spelling correction candidate: not too long, no 
 	special chars... */
-    static bool isSpellingCandidate(const string& term)
+    static bool isSpellingCandidate(const string& term, bool aspell=true)
     {
 	if (term.empty() || term.length() > 50)
 	    return false;
 	if (has_prefix(term))
 	    return false;
 	Utf8Iter u8i(term);
-	if (TextSplit::isCJK(*u8i)) 
-	    return false;
+        if (aspell) {
+            if (TextSplit::isCJK(*u8i) || TextSplit::isKATAKANA(*u8i))
+                return false;
+        } else {
+            if (!TextSplit::isKATAKANA(*u8i)) {
+                return false;
+            }
+        }
 	if (term.find_first_of(" !\"#$%&()*+,-./0123456789:;<=>?@[\\]^_`{|}~") 
 	    != string::npos)
 	    return false;
 	return true;
     }
 
-
-#ifdef TESTING_XAPIAN_SPELL
     /** Return spelling suggestion */
-    string getSpellingSuggestion(const string& word);
-#endif
+    bool getSpellingSuggestions(const string& word,
+                                std::vector<std::string>& suggs);
 
     /* The next two, only for searchdata, should be somehow hidden */
     /* Return configured stop words */
@@ -490,6 +495,9 @@ private:
     // place for this.
     SynGroups m_syngroups;
 
+    // Aspell object if needed
+    Aspell *m_aspell = nullptr;
+    
     /***************
      * Parameters cached out of the configuration files. Logically const 
      * after init */

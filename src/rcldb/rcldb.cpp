@@ -57,6 +57,9 @@ using namespace std;
 #include "rclinit.h"
 #include "internfile.h"
 #include "utf8fn.h"
+#ifdef RCL_USE_ASPELL
+#include "rclaspell.h"
+#endif
 
 // Recoll index format version is stored in user metadata. When this change,
 // we can't open the db and will have to reindex.
@@ -731,11 +734,13 @@ Db::Db(const RclConfig *cfp)
 
 Db::~Db()
 {
-    LOGDEB2("Db::~Db\n" );
+    LOGDEB2("Db::~Db\n");
     if (m_ndb == 0)
 	return;
-    LOGDEB("Db::~Db: isopen "  << (m_ndb->m_isopen) << " m_iswritable "  << (m_ndb->m_iswritable) << "\n" );
+    LOGDEB("Db::~Db: isopen " << m_ndb->m_isopen << " m_iswritable " <<
+           m_ndb->m_iswritable << "\n");
     i_close(true);
+    delete m_aspell;
     delete m_config;
 }
 
@@ -1055,9 +1060,11 @@ class TextSplitDb : public TextSplitP {
     // gets added to basepos in addition to the inter-section increment
     // to compute the first position of the next section.
     Xapian::termpos curpos;
+    Xapian::WritableDatabase& wdb;
 
-    TextSplitDb(Xapian::Document &d, TermProc *prc)
-	: TextSplitP(prc), doc(d), basepos(1), curpos(0)
+    TextSplitDb(Xapian::WritableDatabase& _wdb, Xapian::Document &d,
+                TermProc *prc)
+	: TextSplitP(prc), doc(d), basepos(1), curpos(0), wdb(_wdb)
     {}
 
     // Reimplement text_to_words to insert the begin and end anchor terms.
@@ -1132,8 +1139,8 @@ public:
                 m_ts->doc.add_posting(term, pos, m_ts->ft.wdfinc);
 
 #ifdef TESTING_XAPIAN_SPELL
-	    if (Db::isSpellingCandidate(term)) {
-		m_ts->db.add_spelling(term);
+	    if (Db::isSpellingCandidate(term, false)) {
+		m_ts->wdb.add_spelling(term);
 	    }
 #endif
 	    // Index the prefixed term.
@@ -1192,30 +1199,80 @@ public:
 };
 
 
-#ifdef TESTING_XAPIAN_SPELL
-string Db::getSpellingSuggestion(const string& word)
+// At the moment, we normally use the Xapian speller for Katakana and
+// aspell for everything else
+bool Db::getSpellingSuggestions(const string& word, vector<string>& suggs)
 {
-    if (m_ndb == 0)
-	return string();
+    LOGDEB("Db::getSpellingSuggestions:[" << word << "]\n" );
+    suggs.clear();
+    if (nullptr == m_ndb) {
+	return false;
+    }
 
     string term = word;
 
-    if (o_index_stripchars)
-	if (!unacmaybefold(word, term, "UTF-8", UNACOP_UNACFOLD)) {
-	    LOGINFO("Db::getSpelling: unac failed for ["  << (word) << "]\n" );
-	    return string();
-	}
+    if (isSpellingCandidate(term, true)) {
+        // Term is candidate for aspell processing
+#ifdef RCL_USE_ASPELL
+        bool noaspell = false;
+        m_config->getConfParam("noaspell", &noaspell);
+        if (noaspell) {
+            return false;
+        }
+        if (nullptr == m_aspell) {
+            m_aspell = new Aspell(m_config);
+            if (m_aspell) {
+                string reason;
+                m_aspell->init(reason);
+                if (!m_aspell->ok()) {
+                    LOGDEB(("Aspell speller init failed %s\n", reason.c_str()));
+                    delete m_aspell;
+                    m_aspell = 0;
+                }
+            }
+        }
 
-    if (!isSpellingCandidate(term))
-	return string();
-    return m_ndb->xrdb.get_spelling_suggestion(term);
-}
+        if (nullptr == m_aspell) {
+            LOGERR("Db::getSpellingSuggestions: aspell not initialized\n");
+            return false;
+        }
+
+        list<string> asuggs;
+        string reason;
+        if (!m_aspell->suggest(*this, term, asuggs, reason)) {
+            LOGERR("Db::getSpellingSuggestions: aspell failed: " << reason <<
+                   "\n");
+            return false;
+        }
+        suggs = vector<string>(asuggs.begin(), asuggs.end());
 #endif
+    } else {
+#ifdef TESTING_XAPIAN_SPELL
+        // Was not aspell candidate (e.g.: katakana). Maybe use Xapian
+        // speller?
+        if (isSpellingCandidate(term, false)) {
+            if (!o_index_stripchars) {
+                if (!unacmaybefold(word, term, "UTF-8", UNACOP_UNACFOLD)) {
+                    LOGINFO("Db::getSpelling: unac failed for [" << word <<
+                            "]\n");
+                    return false;
+                }
+            }
+            string sugg = m_ndb->xrdb.get_spelling_suggestion(term);
+            if (!sugg.empty()) {
+                suggs.push_back(sugg);
+            }
+        }
+#endif
+    }
+    return true;
+}
 
 // Let our user set the parameters for abstract processing
 void Db::setAbstractParams(int idxtrunc, int syntlen, int syntctxlen)
 {
-    LOGDEB1("Db::setAbstractParams: trunc "  << (idxtrunc) << " syntlen "  << (syntlen) << " ctxlen "  << (syntctxlen) << "\n" );
+    LOGDEB1("Db::setAbstractParams: trunc " << idxtrunc << " syntlen " <<
+            syntlen << " ctxlen " << syntctxlen << "\n");
     if (idxtrunc >= 0)
 	m_idxAbsTruncLen = idxtrunc;
     if (syntlen > 0)
@@ -1238,7 +1295,7 @@ static const string cstr_nc("\n\r\x0c\\");
 // metadata), and update database
 bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 {
-    LOGDEB("Db::add: udi ["  << (udi) << "] parent ["  << (parent_udi) << "]\n" );
+    LOGDEB("Db::add: udi [" << udi << "] parent [" << parent_udi << "]\n");
     if (m_ndb == 0)
 	return false;
 
@@ -1259,7 +1316,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
     if (o_index_stripchars)
 	nxt = &tpprep;
 
-    TextSplitDb splitter(newdocument, nxt);
+    TextSplitDb splitter(m_ndb->xwdb, newdocument, nxt);
     tpidx.setTSD(&splitter);
 
     // Udi unique term: this is used for file existence/uptodate

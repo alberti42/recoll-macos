@@ -14,8 +14,8 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifndef _ASPELL_W_H_INCLUDED_
-#define _ASPELL_W_H_INCLUDED_
+#ifndef _SPELL_W_H_INCLUDED_
+#define _SPELL_W_H_INCLUDED_
 
 #include <vector>
 
@@ -36,7 +36,7 @@ public:
     virtual bool eventFilter(QObject *target, QEvent *event );
 
     enum comboboxchoice {TYPECMB_NONE, TYPECMB_WILD, TYPECMB_REG, TYPECMB_STEM, 
-			 TYPECMB_ASPELL, TYPECMB_STATS};
+			 TYPECMB_SPELL, TYPECMB_STATS};
 public slots:
     virtual void doExpand();
     virtual void wordChanged(const QString&);
@@ -62,4 +62,4 @@ private:
     void setModeCommon(comboboxchoice mode);
 };
 
-#endif /* _ASPELL_W_H_INCLUDED_ */
+#endif /* _SPELL_W_H_INCLUDED_ */

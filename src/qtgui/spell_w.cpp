@@ -47,10 +47,6 @@
 #include "execmd.h"
 #include "indexer.h"
 
-#ifdef RCL_USE_ASPELL
-#include "rclaspell.h"
-#endif
-
 using std::list;
 using std::multimap;
 using std::string;
@@ -64,14 +60,8 @@ void SpellW::init()
     m_c2t.push_back(TYPECMB_REG);
     expTypeCMB->addItem(tr("Stem expansion"));
     m_c2t.push_back(TYPECMB_STEM);
-#ifdef RCL_USE_ASPELL
-    bool noaspell = false;
-    theconfig->getConfParam("noaspell", &noaspell);
-    if (!noaspell) {
-	expTypeCMB->addItem(tr("Spelling/Phonetic"));
-	m_c2t.push_back(TYPECMB_ASPELL);
-    }
-#endif
+    expTypeCMB->addItem(tr("Spelling/Phonetic"));
+    m_c2t.push_back(TYPECMB_SPELL);
     expTypeCMB->addItem(tr("Show index statistics"));
     m_c2t.push_back(TYPECMB_STATS);
 
@@ -189,37 +179,19 @@ void SpellW::doExpand()
         
     break;
 
-#ifdef RCL_USE_ASPELL
-    case TYPECMB_ASPELL: 
+    case TYPECMB_SPELL: 
     {
-	LOGDEB("SpellW::doExpand: aspelling\n" );
-	if (!aspell) {
-	    QMessageBox::warning(0, "Recoll",
-				 tr("Aspell init failed. "
-				    "Aspell not installed?"));
-	    LOGDEB("SpellW::doExpand: aspell init error\n" );
-	    return;
+	LOGDEB("SpellW::doExpand: spelling [" << expr << "]\n" );
+	vector<string> suggs;
+	if (!rcldb->getSpellingSuggestions(expr, suggs)) {
+	    QMessageBox::warning(0, "Recoll", tr("Spell expansion error. "));
 	}
-	list<string> suggs;
-	if (!aspell->suggest(*rcldb, expr, suggs, reason)) {
-	    QMessageBox::warning(0, "Recoll",
-				 tr("Aspell expansion error. "));
-	    LOGERR("SpellW::doExpand:suggest failed: "  << (reason) << "\n" );
-	}
-	for (list<string>::const_iterator it = suggs.begin(); 
-	     it != suggs.end(); it++) 
-	    res.entries.push_back(Rcl::TermMatchEntry(*it));
-#ifdef TESTING_XAPIAN_SPELL
-	string rclsugg = rcldb->getSpellingSuggestion(expr);
-	if (!rclsugg.empty()) {
-	    res.entries.push_back(Rcl::TermMatchEntry("Xapian spelling:"));
-	    res.entries.push_back(Rcl::TermMatchEntry(rclsugg));
-	}
-#endif // TESTING_XAPIAN_SPELL
+	for (const auto& it : suggs) {
+	    res.entries.push_back(Rcl::TermMatchEntry(it));
+        }
         statsLBL->setText(tr("%1 results").arg(res.entries.size()));
     }
     break;
-#endif // RCL_USE_ASPELL
 
     case TYPECMB_STATS: 
     {
@@ -228,7 +200,6 @@ void SpellW::doExpand()
     }
     break;
     }
-
 
     if (res.entries.empty()) {
         resTW->setItem(0, 0, new QTableWidgetItem(tr("No expansion found")));

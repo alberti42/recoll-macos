@@ -197,7 +197,9 @@ static inline int whatcc(unsigned int c)
 #define UNICODE_IS_CJK(p)						\
     ((p) > 127 &&							\
      (((p) >= 0x2E80 && (p) <= 0x2EFF) ||				\
-      ((p) >= 0x3000 && (p) <= 0x9FFF) ||				\
+      ((p) >= 0x3000 && (p) <= 0x309F) ||				\
+      ((p) >= 0x3100 && (p) <= 0x31EF) ||				\
+      ((p) >= 0x3200 && (p) <= 0x9FFF) ||				\
       ((p) >= 0xA700 && (p) <= 0xA71F) ||				\
       ((p) >= 0xAC00 && (p) <= 0xD7AF) ||				\
       ((p) >= 0xF900 && (p) <= 0xFAFF) ||				\
@@ -206,9 +208,18 @@ static inline int whatcc(unsigned int c)
       ((p) >= 0x20000 && (p) <= 0x2A6DF) ||				\
       ((p) >= 0x2F800 && (p) <= 0x2FA1F)))
 
+#define UNICODE_IS_KATAKANA(p)                                          \
+    ((p) > 127 &&							\
+     (((p) >= 0x30A0 && (p) <= 0x30FF) ||				\
+      ((p) >= 0x31F0 && (p) <= 0x31FF)))
+    
 bool TextSplit::isCJK(int c)
 {
     return UNICODE_IS_CJK(c);
+}
+bool TextSplit::isKATAKANA(int c)
+{
+    return UNICODE_IS_KATAKANA(c);
 }
 
 bool          TextSplit::o_processCJK = true;
