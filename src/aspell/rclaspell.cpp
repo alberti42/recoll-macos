@@ -230,7 +230,9 @@ string Aspell::dicPath()
 // the term list, filtering out things that are probably not words.
 // Note that the manual for the current version (0.60) of aspell
 // states that utf-8 is not well supported, so that we should maybe
-// also filter all 8bit chars.
+// also filter all 8bit chars. Info is contradictory, so we only
+// filter out CJK which is definitely not supported (katakana would
+// make sense though, but currently no support).
 class AspExecPv : public ExecCmdProvide {
 public:
     string *m_input; // pointer to string used as input buffer to command
@@ -371,9 +373,14 @@ bool Aspell::make_speller(string& reason)
 
 bool Aspell::check(const string &iterm, string& reason)
 {
-    LOGDEB2("Aspell::check ["  << (iterm) << "]\n" );
+    LOGDEB("Aspell::check [" << iterm << "]\n");
     string mterm(iterm);
 
+    if (!Rcl::Db::isSpellingCandidate(mterm)) {
+        LOGDEB0("Aspell::check: [" << mterm <<
+                " not spelling candidate, return true\n");
+        return true;
+    }
     if (!ok() || !make_speller(reason))
 	return false;
     if (iterm.empty())
@@ -382,7 +389,7 @@ bool Aspell::check(const string &iterm, string& reason)
     if (!o_index_stripchars) {
 	string lower;
 	if (!unacmaybefold(mterm, lower, "UTF-8", UNACOP_FOLD)) {
-	    LOGERR("Aspell::check : cant lowercase input\n" );
+	    LOGERR("Aspell::check: cant lowercase input\n");
 	    return false;
 	}
 	mterm.swap(lower);
@@ -405,16 +412,23 @@ bool Aspell::check(const string &iterm, string& reason)
 bool Aspell::suggest(Rcl::Db &db, const string &_term, 
                      list<string>& suggestions, string& reason)
 {
+    LOGDEB("Aspell::suggest: term [" << _term << "]\n");
     if (!ok() || !make_speller(reason))
 	return false;
     string mterm(_term);
     if (mterm.empty())
         return true; //??
 
+    if (!Rcl::Db::isSpellingCandidate(mterm)) {
+        LOGDEB0("Aspell::suggest: [" << mterm <<
+                " not spelling candidate, return empty/true\n");
+        return true;
+    }
+
     if (!o_index_stripchars) {
 	string lower;
 	if (!unacmaybefold(mterm, lower, "UTF-8", UNACOP_FOLD)) {
-	    LOGERR("Aspell::check : cant lowercase input\n" );
+	    LOGERR("Aspell::check : cant lowercase input\n");
 	    return false;
 	}
 	mterm.swap(lower);
@@ -432,6 +446,7 @@ bool Aspell::suggest(Rcl::Db &db, const string &_term,
     AspellStringEnumeration *els = aapi.aspell_word_list_elements(wl);
     const char *word;
     while ((word = aapi.aspell_string_enumeration_next(els)) != 0) {
+        LOGDEB0("Aspell::suggest: got [" << word << "]\n");
 	// Check that the word exists in the index (we don't want
 	// aspell computed stuff, only exact terms from the
 	// dictionary).  We used to also check that it stems
