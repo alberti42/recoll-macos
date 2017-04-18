@@ -4,7 +4,7 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.23.1
+RCLVERS=1.23.2
 LENSVERS=1.19.10.3543
 SCOPEVERS=1.20.2.4
 PPAVERS=1
@@ -46,7 +46,7 @@ debdir=debian
 # No new releases for trusty either because of risk of kio compat (kio
 # wont build)
 series="xenial yakkety zesty"
-#series=zesty
+series=xenial
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -147,7 +147,7 @@ done
 
 ### Unity Scope
 series="trusty xenial yakkety"
-series=
+series=zesty
 
 debdir=debianunityscope
 if test ! -d ${debdir}/ ; then
