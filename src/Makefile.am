@@ -666,3 +666,4 @@ dist-hook:
 	if test ! -z "$$modified"; then \
             echo Local directory is modified: $$modified ; exit 1; fi
 	hg tag -f -m "Release $(VERSION) tagged" RECOLL-$(VERSION)
+
