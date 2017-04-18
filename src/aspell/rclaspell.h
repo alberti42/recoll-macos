@@ -41,7 +41,7 @@ class AspellData;
 
 class Aspell {
  public:
-    Aspell(RclConfig *cnf);
+    Aspell(const RclConfig *cnf);
     ~Aspell();
 
     /** Check health */
@@ -68,7 +68,7 @@ class Aspell {
 
  private:
     std::string dicPath();
-    RclConfig  *m_config;
+    const RclConfig  *m_config;
     std::string      m_lang;
     AspellData *m_data;
 

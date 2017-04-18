@@ -103,7 +103,7 @@ public:
     AspellSpeller *m_speller;    
 };
 
-Aspell::Aspell(RclConfig *cnf)
+Aspell::Aspell(const RclConfig *cnf)
     : m_config(cnf), m_data(0) 
 {
 }
