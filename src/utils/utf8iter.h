@@ -32,12 +32,12 @@
 class Utf8Iter {
 public:
     Utf8Iter(const std::string &in) 
-	: m_s(in), m_cl(0), m_pos(0), m_charpos(0)
+	: m_sp(&in), m_cl(0), m_pos(0), m_charpos(0)
     {
 	update_cl();
     }
 
-    const std::string& buffer() const {return m_s;}
+    const std::string& buffer() const {return (*m_sp);}
 
     void rewind() 
     {
@@ -59,14 +59,14 @@ public:
 	    mycp = m_charpos;
 	}
 	int l;
-	while (mypos < m_s.length() && mycp != charpos) {
+	while (mypos < m_sp->length() && mycp != charpos) {
 	    l = get_cl(mypos);
 	    if (l <= 0 || !poslok(mypos, l) || !checkvalidat(mypos, l))
 		return (unsigned int)-1;
 	    mypos += l;
 	    ++mycp;
 	}
-	if (mypos < m_s.length() && mycp == charpos) {
+	if (mypos < m_sp->length() && mycp == charpos) {
 	    l = get_cl(mypos);
 	    if (poslok(mypos, l) && checkvalidat(mypos, l))
 		return getvalueat(mypos, l);
@@ -106,7 +106,7 @@ public:
 #ifdef UTF8ITER_CHECK
 	assert(m_cl != 0);
 #endif
-	out.append(&m_s[m_pos], m_cl);
+	out.append(&(*m_sp)[m_pos], m_cl);
 	return m_cl;
     }
 
@@ -115,11 +115,11 @@ public:
 #ifdef UTF8ITER_CHECK
 	assert(m_cl != 0);
 #endif
-	return m_cl > 0 ? m_s.substr(m_pos, m_cl) : std::string();
+	return m_cl > 0 ? m_sp->substr(m_pos, m_cl) : std::string();
     }
 
     bool eof() const {
-	return m_pos == m_s.length();
+	return m_pos == m_sp->length();
     }
 
     bool error() const {
@@ -143,7 +143,7 @@ public:
 
 private:
     // String we're working with
-    const std::string&     m_s; 
+    const std::string*     m_sp; 
     // Character length at current position. A value of zero indicates
     // an error.
     unsigned int m_cl;
@@ -155,9 +155,9 @@ private:
     // Check position and cl against string length
     bool poslok(std::string::size_type p, int l) const {
 #ifdef UTF8ITER_CHECK
-	assert(p != std::string::npos && l > 0 && p + l <= m_s.length());
+	assert(p != std::string::npos && l > 0 && p + l <= m_sp->length());
 #endif
-	return p != std::string::npos && l > 0 && p + l <= m_s.length();
+	return p != std::string::npos && l > 0 && p + l <= m_sp->length();
     }
 
     // Update current char length in object state, check
@@ -165,13 +165,13 @@ private:
     inline void update_cl() 
     {
 	m_cl = 0;
-	if (m_pos >= m_s.length())
+	if (m_pos >= m_sp->length())
 	    return;
 	m_cl = get_cl(m_pos);
 	if (!poslok(m_pos, m_cl)) {
 	    // Used to set eof here for safety, but this is bad because it
 	    // basically prevents the caller to discriminate error and eof.
-	    //	    m_pos = m_s.length();
+	    //	    m_pos = m_sp->length();
 	    m_cl = 0;
 	    return;
 	}
@@ -184,20 +184,20 @@ private:
     {
 	switch (l) {
 	case 1: 
-	    return (unsigned char)m_s[p] < 128;
+	    return (unsigned char)(*m_sp)[p] < 128;
 	case 2: 
-	    return (((unsigned char)m_s[p]) & 224) == 192
-		&& (((unsigned char)m_s[p+1]) & 192) == 128;
+	    return (((unsigned char)(*m_sp)[p]) & 224) == 192
+		&& (((unsigned char)(*m_sp)[p+1]) & 192) == 128;
 	case 3: 
-	    return (((unsigned char)m_s[p]) & 240) == 224
-		   && (((unsigned char)m_s[p+1]) & 192) ==  128
-		   && (((unsigned char)m_s[p+2]) & 192) ==  128
+	    return (((unsigned char)(*m_sp)[p]) & 240) == 224
+		   && (((unsigned char)(*m_sp)[p+1]) & 192) ==  128
+		   && (((unsigned char)(*m_sp)[p+2]) & 192) ==  128
 		   ;
 	case 4: 
-	    return (((unsigned char)m_s[p]) & 248) == 240
-		   && (((unsigned char)m_s[p+1]) & 192) ==  128
-		   && (((unsigned char)m_s[p+2]) & 192) ==  128
-		   && (((unsigned char)m_s[p+3]) & 192) ==  128
+	    return (((unsigned char)(*m_sp)[p]) & 248) == 240
+		   && (((unsigned char)(*m_sp)[p+1]) & 192) ==  128
+		   && (((unsigned char)(*m_sp)[p+2]) & 192) ==  128
+		   && (((unsigned char)(*m_sp)[p+3]) & 192) ==  128
 		;
 	default:
 	    return false;
@@ -207,7 +207,7 @@ private:
     // Get character byte length at specified position. Returns 0 for error.
     inline int get_cl(std::string::size_type p) const 
     {
-	unsigned int z = (unsigned char)m_s[p];
+	unsigned int z = (unsigned char)(*m_sp)[p];
 	if (z <= 127) {
 	    return 1;
 	} else if ((z & 224) == 192) {
@@ -230,44 +230,44 @@ private:
 	switch (l) {
 	case 1: 
 #ifdef UTF8ITER_CHECK
-	    assert((unsigned char)m_s[p] < 128);
+	    assert((unsigned char)(*m_sp)[p] < 128);
 #endif
-	    return (unsigned char)m_s[p];
+	    return (unsigned char)(*m_sp)[p];
 	case 2: 
 #ifdef UTF8ITER_CHECK
 	    assert(
-		   ((unsigned char)m_s[p] & 224) == 192
-		   && ((unsigned char)m_s[p+1] & 192) ==  128
+		   ((unsigned char)(*m_sp)[p] & 224) == 192
+		   && ((unsigned char)(*m_sp)[p+1] & 192) ==  128
 		   );
 #endif
-	    return ((unsigned char)m_s[p] - 192) * 64 + 
-		(unsigned char)m_s[p+1] - 128 ;
+	    return ((unsigned char)(*m_sp)[p] - 192) * 64 + 
+		(unsigned char)(*m_sp)[p+1] - 128 ;
 	case 3: 
 #ifdef UTF8ITER_CHECK
 	    assert(
-		   (((unsigned char)m_s[p]) & 240) == 224
-		   && (((unsigned char)m_s[p+1]) & 192) ==  128
-		   && (((unsigned char)m_s[p+2]) & 192) ==  128
+		   (((unsigned char)(*m_sp)[p]) & 240) == 224
+		   && (((unsigned char)(*m_sp)[p+1]) & 192) ==  128
+		   && (((unsigned char)(*m_sp)[p+2]) & 192) ==  128
 		   );
 #endif
 
-	    return ((unsigned char)m_s[p] - 224) * 4096 + 
-		((unsigned char)m_s[p+1] - 128) * 64 + 
-		(unsigned char)m_s[p+2] - 128;
+	    return ((unsigned char)(*m_sp)[p] - 224) * 4096 + 
+		((unsigned char)(*m_sp)[p+1] - 128) * 64 + 
+		(unsigned char)(*m_sp)[p+2] - 128;
 	case 4: 
 #ifdef UTF8ITER_CHECK
 	    assert(
-		   (((unsigned char)m_s[p]) & 248) == 240
-		   && (((unsigned char)m_s[p+1]) & 192) ==  128
-		   && (((unsigned char)m_s[p+2]) & 192) ==  128
-		   && (((unsigned char)m_s[p+3]) & 192) ==  128
+		   (((unsigned char)(*m_sp)[p]) & 248) == 240
+		   && (((unsigned char)(*m_sp)[p+1]) & 192) ==  128
+		   && (((unsigned char)(*m_sp)[p+2]) & 192) ==  128
+		   && (((unsigned char)(*m_sp)[p+3]) & 192) ==  128
 		   );
 #endif
 
-	    return ((unsigned char)m_s[p]-240)*262144 + 
-		((unsigned char)m_s[p+1]-128)*4096 + 
-		((unsigned char)m_s[p+2]-128)*64 + 
-		(unsigned char)m_s[p+3]-128;
+	    return ((unsigned char)(*m_sp)[p]-240)*262144 + 
+		((unsigned char)(*m_sp)[p+1]-128)*4096 + 
+		((unsigned char)(*m_sp)[p+2]-128)*64 + 
+		(unsigned char)(*m_sp)[p+3]-128;
 
 	default:
 #ifdef UTF8ITER_CHECK
