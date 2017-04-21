@@ -23,6 +23,7 @@
 #include "textsplit.h"
 #include "stoplist.h"
 #include "smallut.h"
+#include "utf8iter.h"
 
 namespace Rcl {
 
@@ -128,15 +129,17 @@ public:
     {
         m_totalterms++;
         string otrm;
+
         if (!unacmaybefold(itrm, otrm, "UTF-8", UNACOP_UNACFOLD)) {
-            LOGDEB("splitter::takeword: unac ["  << (itrm) << "] failed\n" );
+            LOGDEB("splitter::takeword: unac [" << itrm << "] failed\n");
             m_unacerrors++;
             // We don't generate a fatal error because of a bad term,
             // but one has to put the limit somewhere
             if (m_unacerrors > 500 &&
                     (double(m_totalterms) / double(m_unacerrors)) < 2.0) {
                 // More than 1 error for every other term
-                LOGERR("splitter::takeword: too many unac errors "  << (m_unacerrors) << "/"  << (m_totalterms) << "\n" );
+                LOGERR("splitter::takeword: too many unac errors " <<
+                       m_unacerrors << "/"  << m_totalterms << "\n");
                 return false;
             }
             return true;
@@ -150,6 +153,26 @@ public:
             return true;
 	}
 
+        // We should have a Japanese stemmer to handle this, but for
+        // experimenting, let's do it here: remove 'prolounged sound
+        // mark' and its halfwidth variant from the end of terms.
+        if ((unsigned int)otrm[0] > 127) {
+            Utf8Iter it(otrm);
+            if (TextSplit::isKATAKANA(*it)) {
+                Utf8Iter itprev = it;
+                while (*it != (unsigned int)-1) {
+                    itprev = it;
+                    it++;
+                }
+                if (*itprev == 0x30fc || *itprev == 0xff70) {
+                    otrm = otrm.substr(0, itprev.getBpos());
+                }
+            }
+        }
+        if (otrm.empty()) {
+            return true;
+        }
+        
 	// It may also occur that unac introduces spaces in the string
 	// (when removing isolated accents, may happen for Greek
 	// for example). This is a pathological situation. We
