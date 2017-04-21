@@ -31,6 +31,7 @@
 //#define UTF8ITER_CHECK
 #include "utf8iter.h"
 #include "uproplist.h"
+#include "smallut.h"
 
 using namespace std;
 
@@ -193,34 +194,40 @@ static inline int whatcc(unsigned int c)
 // FF00..FFEF; Halfwidth and Fullwidth Forms
 // 20000..2A6DF; CJK Unified Ideographs Extension B
 // 2F800..2FA1F; CJK Compatibility Ideographs Supplement
-// Note: the p > 127 test is not necessary, but optimizes away the ascii case
 #define UNICODE_IS_CJK(p)						\
-    ((p) > 127 &&							\
-     (((p) >= 0x2E80 && (p) <= 0x2EFF) ||				\
-      ((p) >= 0x3000 && (p) <= 0x309F) ||				\
-      ((p) >= 0x3100 && (p) <= 0x31EF) ||				\
-      ((p) >= 0x3200 && (p) <= 0x9FFF) ||				\
-      ((p) >= 0xA700 && (p) <= 0xA71F) ||				\
-      ((p) >= 0xAC00 && (p) <= 0xD7AF) ||				\
-      ((p) >= 0xF900 && (p) <= 0xFAFF) ||				\
-      ((p) >= 0xFE30 && (p) <= 0xFE4F) ||				\
-      ((p) >= 0xFF00 && (p) <= 0xFFEF) ||				\
-      ((p) >= 0x20000 && (p) <= 0x2A6DF) ||				\
-      ((p) >= 0x2F800 && (p) <= 0x2FA1F)))
+    (((p) >= 0x2E80 && (p) <= 0x2EFF) ||				\
+     ((p) >= 0x3000 && (p) <= 0x9FFF) ||				\
+     ((p) >= 0xA700 && (p) <= 0xA71F) ||				\
+     ((p) >= 0xAC00 && (p) <= 0xD7AF) ||				\
+     ((p) >= 0xF900 && (p) <= 0xFAFF) ||				\
+     ((p) >= 0xFE30 && (p) <= 0xFE4F) ||				\
+     ((p) >= 0xFF00 && (p) <= 0xFFEF) ||				\
+     ((p) >= 0x20000 && (p) <= 0x2A6DF) ||				\
+     ((p) >= 0x2F800 && (p) <= 0x2FA1F))
 
+// We should probably map 'fullwidth ascii variants' and 'halfwidth
+// katakana variants' to something else.  Look up "Kuromoji" Lucene
+// filter, KuromojiNormalizeFilter.java
+// 309F is Hiragana.
 #define UNICODE_IS_KATAKANA(p)                                          \
-    ((p) > 127 &&							\
-     (((p) >= 0x30A0 && (p) <= 0x30FF) ||				\
+    ((p) != 0x309F &&                                                   \
+     (((p) >= 0x3099 && (p) <= 0x30FF) ||                               \
       ((p) >= 0x31F0 && (p) <= 0x31FF)))
     
 bool TextSplit::isCJK(int c)
 {
-    return UNICODE_IS_CJK(c);
+    return UNICODE_IS_CJK(c) && !UNICODE_IS_KATAKANA(c);
 }
 bool TextSplit::isKATAKANA(int c)
 {
     return UNICODE_IS_KATAKANA(c);
 }
+
+// This is used to detect katakana/other transitions, which must
+// trigger a word split (there is not always a separator, and katakana
+// is otherwise treated like other, in the same routine, unless cjk
+// which has its span reader causing a word break)
+enum CharSpanClass {CSC_CJK, CSC_KATAKANA, CSC_OTHER};
 
 bool          TextSplit::o_processCJK = true;
 unsigned int  TextSplit::o_CJKNgramLen = 2;
@@ -232,7 +239,7 @@ bool          TextSplit::o_deHyphenate = false;
 inline bool TextSplit::emitterm(bool isspan, string &w, int pos, 
 				size_t btstart, size_t btend)
 {
-    LOGDEB2("TextSplit::emitterm: ["  << (w) << "] pos "  << (pos) << "\n" );
+    LOGDEB2("TextSplit::emitterm: [" << w << "] pos " << pos << "\n");
 
     int l = int(w.length());
 
@@ -263,7 +270,7 @@ inline bool TextSplit::emitterm(bool isspan, string &w, int pos,
 	    m_prevlen = int(w.length());
 	    return ret;
 	}
-	LOGDEB2("TextSplit::emitterm:dup: ["  << (w) << "] pos "  << (pos) << "\n" );
+	LOGDEB2("TextSplit::emitterm:dup: [" << w << "] pos " << pos << "\n");
     }
     return true;
 }
@@ -380,7 +387,10 @@ bool TextSplit::words_from_span(size_t bp)
 inline bool TextSplit::doemit(bool spanerase, size_t _bp)
 {
     int bp = int(_bp);
-    LOGDEB2("TextSplit::doemit: sper "  << (spanerase) << " bp "  << (bp) << " spp "  << (m_spanpos) << " spanwords "  << (m_words_in_span.size()) << " wS "  << (m_wordStart) << " wL "  << (m_wordLen) << " inn "  << (m_inNumber) << " span ["  << (m_span) << "]\n" );
+    LOGDEB2("TextSplit::doemit: sper " << spanerase << " bp " << bp <<
+            " spp " << m_spanpos << " spanwords " << m_words_in_span.size() <<
+            " wS " << m_wordStart << " wL " << m_wordLen << " inn " <<
+            m_inNumber << " span [" << m_span << "]\n");
 
     if (m_wordLen) {
         // We have a current word. Remember it
@@ -468,6 +478,12 @@ static inline bool isdigit(int what, unsigned int flgs)
 #define STATS_INC_WORDCHARS
 #endif
 
+vector<CharFlags> splitFlags = {
+    {TextSplit::TXTS_NOSPANS, "nospans"},
+    {TextSplit::TXTS_ONLYSPANS, "onlyspans"},
+    {TextSplit::TXTS_KEEPWILD, "keepwild"}
+};
+
 /** 
  * Splitting a text into terms to be indexed.
  * We basically emit a word every time we see a separator, but some chars are
@@ -477,11 +493,8 @@ static inline bool isdigit(int what, unsigned int flgs)
 bool TextSplit::text_to_words(const string &in)
 {
     LOGDEB1("TextSplit::text_to_words: docjk " << o_processCJK << "(" <<
-            o_CJKNgramLen <<  ")" << 
-            (m_flags & TXTS_NOSPANS ? " nospans" : "") << 
-            (m_flags & TXTS_ONLYSPANS ? " onlyspans" : "") << 
-            (m_flags & TXTS_KEEPWILD ? " keepwild" : "") << 
-            "[" << in.substr(0,50) << "]\n");
+            o_CJKNgramLen <<  ") " << flagsToString(splitFlags, m_flags) <<
+            " [" << in.substr(0,50) << "]\n");
 
     if (in.empty())
 	return true;
@@ -497,18 +510,26 @@ bool TextSplit::text_to_words(const string &in)
     int nonalnumcnt = 0;
 
     Utf8Iter it(in);
+    int prev_csc = -1;
 
     for (; !it.eof(); it++) {
 	unsigned int c = *it;
 	nonalnumcnt++;
 
 	if (c == (unsigned int)-1) {
-	    LOGERR("Textsplit: error occured while scanning UTF-8 string\n" );
+	    LOGERR("Textsplit: error occured while scanning UTF-8 string\n");
 	    return false;
 	}
-
-	if (o_processCJK && UNICODE_IS_CJK(c)) {
-	    // CJK character hit. 
+        CharSpanClass csc;
+        if (UNICODE_IS_KATAKANA(c)) {
+            csc = CSC_KATAKANA;
+        } else if (UNICODE_IS_CJK(c)) {
+            csc = CSC_CJK;
+        } else {
+            csc = CSC_OTHER;
+        }
+	if (o_processCJK && csc == CSC_CJK) {
+	    // CJK excluding Katakana character hit. 
 	    // Do like at EOF with the current non-cjk data.
 	    if (m_wordLen || m_span.length()) {
 		if (!doemit(true, it.getBpos()))
@@ -517,7 +538,7 @@ bool TextSplit::text_to_words(const string &in)
 
 	    // Hand off situation to the cjk routine.
 	    if (!cjk_to_words(&it, &c)) {
-		LOGERR("Textsplit: scan error in cjk handler\n" );
+		LOGERR("Textsplit: scan error in cjk handler\n");
 		return false;
 	    }
 
@@ -527,6 +548,15 @@ bool TextSplit::text_to_words(const string &in)
 		break;
 	}
 
+        if (csc != prev_csc && (m_wordLen || m_span.length())) {
+            LOGDEB("csc " << csc << " pcsc " << prev_csc << " wl " <<
+                   m_wordLen << " spl " << m_span.length() << endl);
+            if (!doemit(true, it.getBpos())) {
+                return false;
+            }
+        }
+        prev_csc = csc;
+        
 	int cc = whatcc(c);
 
 	switch (cc) {
@@ -813,7 +843,7 @@ bool TextSplit::text_to_words(const string &in)
 // be better off converting the whole buffer to utf32 on entry...
 bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
 {
-    LOGDEB1("cjk_to_words: m_wordpos "  << (m_wordpos) << "\n" );
+    LOGDEB1("cjk_to_words: m_wordpos " << m_wordpos << "\n");
     Utf8Iter &it = *itp;
 
     // We use an offset buffer to remember the starts of the utf-8
@@ -917,7 +947,7 @@ bool TextSplit::hasVisibleWhite(const string &in)
     for (; !it.eof(); it++) {
 	unsigned int c = (unsigned char)*it;
 	if (c == (unsigned int)-1) {
-	    LOGERR("hasVisibleWhite: error while scanning UTF-8 string\n" );
+	    LOGERR("hasVisibleWhite: error while scanning UTF-8 string\n");
 	    return false;
 	}
 	if (visiblewhite.find(c) != visiblewhite.end())
@@ -939,7 +969,8 @@ template <class T> bool u8stringToStrings(const string &s, T &tokens)
 	if (visiblewhite.find(c) != visiblewhite.end()) 
 	    c = ' ';
 	if (c == (unsigned int)-1) {
-	    LOGERR("TextSplit::stringToStrings: error while scanning UTF-8 string\n" );
+	    LOGERR("TextSplit::stringToStrings: error while scanning UTF-8 "
+                   "string\n");
 	    return false;
 	}
 
