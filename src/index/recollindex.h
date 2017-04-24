@@ -16,14 +16,20 @@
  */
 #ifndef _recollindex_h_included_
 #define _recollindex_h_included_
+#include <list>
+#include <string>
 
 /** Helper methods in recollindex.cpp for initial checks/setup to index 
  * a list of files (either from the monitor or the command line) */
-extern bool indexfiles(RclConfig *config, list<string> &filenames);
-extern bool purgefiles(RclConfig *config, list<string> &filenames);
+class RclConfig;
+extern bool indexfiles(RclConfig *config, std::list<std::string> &filenames);
+extern bool purgefiles(RclConfig *config, std::list<std::string> &filenames);
 extern bool createAuxDbs(RclConfig *config);
 
 extern int stopindexing;
+
+// Try to explain what went wrong...
+extern void addIdxReason(std::string who, std::string reason);
 
 class ReExec;
 extern ReExec *o_reexec;

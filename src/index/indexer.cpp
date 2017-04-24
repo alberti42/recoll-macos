@@ -23,6 +23,7 @@
 
 #include "cstr.h"
 #include "log.h"
+#include "recollindex.h"
 #include "indexer.h"
 #include "fsindexer.h"
 #ifndef DISABLE_WEB_INDEXER
@@ -60,13 +61,13 @@ bool ConfIndexer::runFirstIndexing()
 {
     // Indexing status file existing and not empty ?
     if (path_filesize(m_config->getIdxStatusFile()) > 0) {
-	LOGDEB0("ConfIndexer::runFirstIndexing: no: status file not empty\n" );
+	LOGDEB0("ConfIndexer::runFirstIndexing: no: status file not empty\n");
 	return false;
     }
     // And only do this if the user has kept the default topdirs (~). 
     vector<string> tdl = m_config->getTopdirs();
     if (tdl.size() != 1 || tdl[0].compare(path_canon(path_tildexpand("~")))) {
-	LOGDEB0("ConfIndexer::runFirstIndexing: no: not home only\n" );
+	LOGDEB0("ConfIndexer::runFirstIndexing: no: not home only\n");
 	return false;
     }
     return true;
@@ -74,7 +75,7 @@ bool ConfIndexer::runFirstIndexing()
 
 bool ConfIndexer::firstFsIndexingSequence()
 {
-    LOGDEB("ConfIndexer::firstFsIndexingSequence\n" );
+    LOGDEB("ConfIndexer::firstFsIndexingSequence\n");
     deleteZ(m_fsindexer);
     m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
     if (!m_fsindexer) {
@@ -92,7 +93,9 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
 {
     Rcl::Db::OpenMode mode = resetbefore ? Rcl::Db::DbTrunc : Rcl::Db::DbUpd;
     if (!m_db.open(mode)) {
-	LOGERR("ConfIndexer: error opening database "  << (m_config->getDbDir()) << " : "  << (m_db.getReason()) << "\n" );
+	LOGERR("ConfIndexer: error opening database " << m_config->getDbDir() <<
+               " : " << m_db.getReason() << "\n");
+        addIdxReason("indexer", m_db.getReason());
 	return false;
     }
 
@@ -104,6 +107,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
         deleteZ(m_fsindexer);
         m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
         if (!m_fsindexer || !m_fsindexer->index(flags)) {
+            addIdxReason("indexer", "Index creation failed. See log");
 	    m_db.close();
             return false;
         }
@@ -114,6 +118,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
         m_beagler = new BeagleQueueIndexer(m_config, &m_db, m_updater);
         if (!m_beagler || !m_beagler->index()) {
 	    m_db.close();
+            addIdxReason("indexer", "Web index creation failed. See log");
             return false;
         }
     }
@@ -123,6 +128,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
         // filesystem anymore. Only if all *configured* indexers ran.
         if (m_updater && !m_updater->update(DbIxStatus::DBIXS_PURGE, string())) {
 	    m_db.close();
+            addIdxReason("indexer", "Index purge failed. See log");
 	    return false;
 	}
         m_db.purge();
@@ -134,7 +140,9 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
     if (m_updater)
 	m_updater->update(DbIxStatus::DBIXS_CLOSING, string());
     if (!m_db.close()) {
-	LOGERR("ConfIndexer::index: error closing database in "  << (m_config->getDbDir()) << "\n" );
+	LOGERR("ConfIndexer::index: error closing database in " <<
+               m_config->getDbDir() << "\n");
+        addIdxReason("indexer", "Index close/flush failed. See log");
 	return false;
     }
 
@@ -146,7 +154,11 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
     }
     if (m_updater && !m_updater->update(DbIxStatus::DBIXS_CLOSING, string()))
 	return false;
-    ret = ret && createAspellDict();
+
+    // Don't fail indexing because of an aspell issue: we ignore the status.
+    // Messages were written to the reasons output
+    (void)createAspellDict();
+    
     clearMimeHandlerCache();
     if (m_updater)
 	m_updater->update(DbIxStatus::DBIXS_DONE, string());
@@ -164,7 +176,8 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
     myfiles.sort();
 
     if (!m_db.open(Rcl::Db::DbUpd)) {
-	LOGERR("ConfIndexer: indexFiles error opening database "  << (m_config->getDbDir()) << "\n" );
+	LOGERR("ConfIndexer: indexFiles error opening database " <<
+               m_config->getDbDir() << "\n");
 	return false;
     }
     m_config->setKeyDir(cstr_null);
@@ -173,7 +186,8 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
         m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
     if (m_fsindexer)
         ret = m_fsindexer->indexFiles(myfiles, flag);
-    LOGDEB2("ConfIndexer::indexFiles: fsindexer returned "  << (ret) << ", "  << (myfiles.size()) << " files remainining\n" );
+    LOGDEB2("ConfIndexer::indexFiles: fsindexer returned " << ret << ", " <<
+            myfiles.size() << " files remainining\n");
 #ifndef DISABLE_WEB_INDEXER
 
     if (m_dobeagle && !myfiles.empty() && !(flag & IxFNoWeb)) {
@@ -188,7 +202,8 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
 #endif
     // The close would be done in our destructor, but we want status here
     if (!m_db.close()) {
-	LOGERR("ConfIndexer::index: error closing database in "  << (m_config->getDbDir()) << "\n" );
+	LOGERR("ConfIndexer::index: error closing database in " <<
+               m_config->getDbDir() << "\n");
 	return false;
     }
     ifiles = myfiles;
@@ -212,7 +227,8 @@ bool ConfIndexer::docsToPaths(vector<Rcl::Doc> &docs, vector<string> &paths)
 
 	// Filesystem document. The url has to be like file://
 	if (idoc.url.find(cstr_fileu) != 0) {
-	    LOGERR("idx::docsToPaths: FS backend and non fs url: ["  << (idoc.url) << "]\n" );
+	    LOGERR("idx::docsToPaths: FS backend and non fs url: [" <<
+                   idoc.url << "]\n");
 	    continue;
 	}
 	paths.push_back(idoc.url.substr(7, string::npos));
@@ -244,7 +260,8 @@ bool ConfIndexer::purgeFiles(std::list<string> &files, int flag)
     myfiles.sort();
 
     if (!m_db.open(Rcl::Db::DbUpd)) {
-	LOGERR("ConfIndexer: purgeFiles error opening database "  << (m_config->getDbDir()) << "\n" );
+	LOGERR("ConfIndexer: purgeFiles error opening database " <<
+               m_config->getDbDir() << "\n");
 	return false;
     }
     bool ret = false;
@@ -268,7 +285,8 @@ bool ConfIndexer::purgeFiles(std::list<string> &files, int flag)
 
     // The close would be done in our destructor, but we want status here
     if (!m_db.close()) {
-	LOGERR("ConfIndexer::purgefiles: error closing database in "  << (m_config->getDbDir()) << "\n" );
+	LOGERR("ConfIndexer::purgefiles: error closing database in " <<
+               m_config->getDbDir() << "\n");
 	return false;
     }
     return ret;
@@ -282,7 +300,8 @@ bool ConfIndexer::createStemmingDatabases()
     bool ret = true;
     if (m_config->getConfParam("indexstemminglanguages", slangs)) {
         if (!m_db.open(Rcl::Db::DbUpd)) {
-            LOGERR("ConfIndexer::createStemmingDb: could not open db\n" );
+            LOGERR("ConfIndexer::createStemmingDb: could not open db\n");
+            addIdxReason("stemming", "could not open db");
             return false;
         }
 	vector<string> langs;
@@ -297,6 +316,9 @@ bool ConfIndexer::createStemmingDatabases()
 		m_db.deleteStemDb(*it);
 	}
 	ret = ret && m_db.createStemDbs(langs);
+        if (!ret) {
+            addIdxReason("stemming", "stem db creation failed");
+        }
     }
     m_db.close();
     return ret;
@@ -315,7 +337,7 @@ bool ConfIndexer::createStemDb(const string &lang)
 // module, either from a configuration variable or the NLS environment.
 bool ConfIndexer::createAspellDict()
 {
-    LOGDEB2("ConfIndexer::createAspellDict()\n" );
+    LOGDEB2("ConfIndexer::createAspellDict()\n");
 #ifdef RCL_USE_ASPELL
     // For the benefit of the real-time indexer, we only initialize
     // noaspell from the configuration once. It can then be set to
@@ -330,20 +352,23 @@ bool ConfIndexer::createAspellDict()
 	return true;
 
     if (!m_db.open(Rcl::Db::DbRO)) {
-        LOGERR("ConfIndexer::createAspellDict: could not open db\n" );
+        LOGERR("ConfIndexer::createAspellDict: could not open db\n");
 	return false;
     }
 
     Aspell aspell(m_config);
     string reason;
     if (!aspell.init(reason)) {
-	LOGERR("ConfIndexer::createAspellDict: aspell init failed: "  << (reason) << "\n" );
+	LOGERR("ConfIndexer::createAspellDict: aspell init failed: " <<
+               reason << "\n");
 	noaspell = true;
 	return false;
     }
-    LOGDEB("ConfIndexer::createAspellDict: creating dictionary\n" );
+    LOGDEB("ConfIndexer::createAspellDict: creating dictionary\n");
     if (!aspell.buildDict(m_db, reason)) {
-	LOGERR("ConfIndexer::createAspellDict: aspell buildDict failed: "  << (reason) << "\n" );
+	LOGERR("ConfIndexer::createAspellDict: aspell buildDict failed: " <<
+               reason << "\n");
+        addIdxReason("aspell", reason);
 	noaspell = true;
 	return false;
     }
