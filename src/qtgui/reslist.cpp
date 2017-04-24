@@ -236,7 +236,7 @@ string QtGuiResListPager::iconUrl(RclConfig *config, Rcl::Doc& doc)
 	vector<Rcl::Doc> docs;
 	docs.push_back(doc);
 	vector<string> paths;
-	ConfIndexer::docsToPaths(docs, paths);
+	Rcl::docsToPaths(docs, paths);
 	if (!paths.empty()) {
 	    string path;
 	    LOGDEB2("ResList::iconUrl: source path [" << paths[0] << "]\n");

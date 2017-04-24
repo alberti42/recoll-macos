@@ -117,7 +117,7 @@ string ResTablePager::iconUrl(RclConfig *config, Rcl::Doc& doc)
 	vector<Rcl::Doc> docs;
 	docs.push_back(doc);
 	vector<string> paths;
-	ConfIndexer::docsToPaths(docs, paths);
+        Rcl::docsToPaths(docs, paths);
 	if (!paths.empty()) {
 	    string path;
 	    if (thumbPathForUrl(cstr_fileu + paths[0], 128, path)) {

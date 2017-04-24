@@ -428,7 +428,7 @@ void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
     }
 	
     vector<string> paths;
-    if (ConfIndexer::docsToPaths(docs, paths)) {
+    if (Rcl::docsToPaths(docs, paths)) {
 	vector<string> args{"-c", theconfig->getConfDir(), "-e", "-i"};
 	args.insert(args.end(), paths.begin(), paths.end());
 	m_idxproc = new ExecCmd;

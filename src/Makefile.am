@@ -91,8 +91,6 @@ index/fsfetcher.cpp \
 index/fsfetcher.h \
 index/fsindexer.cpp \
 index/fsindexer.h \
-index/indexer.cpp \
-index/indexer.h \
 index/mimetype.cpp \
 index/mimetype.h \
 index/rclmon.h \
@@ -289,6 +287,8 @@ endif
 
 recollindex_SOURCES = \
                     index/recollindex.cpp \
+                    index/indexer.cpp \
+                    index/indexer.h \
                     index/rclmonprc.cpp \
                     index/rclmonrcv.cpp \
                     utils/x11mon.cpp \

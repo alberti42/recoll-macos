@@ -20,6 +20,8 @@
 #include "log.h"
 #include "rclutil.h"
 
+using namespace std;
+
 namespace Rcl {
     const string Doc::keyabs("abstract");
     const string Doc::keyapptg("rclaptg");
@@ -97,6 +99,33 @@ namespace Rcl {
 	d->haschildren = haschildren;
 	d->onlyxattr = onlyxattr;
     }
+
+static const string cstr_fileu("file://");
+bool docsToPaths(vector<Rcl::Doc> &docs, vector<string> &paths)
+{
+    for (vector<Rcl::Doc>::iterator it = docs.begin(); it != docs.end(); it++) {
+	Rcl::Doc &idoc = *it;
+	string backend;
+	idoc.getmeta(Rcl::Doc::keybcknd, &backend);
+
+	// This only makes sense for file system files: beagle docs are
+	// always up to date because they can't be updated in the cache,
+	// only added/removed. Same remark as made inside internfile, we
+	// need a generic way to handle backends.
+	if (!backend.empty() && backend.compare("FS"))
+	    continue;
+
+	// Filesystem document. The url has to be like file://
+	if (idoc.url.find(cstr_fileu) != 0) {
+	    LOGERR("idx::docsToPaths: FS backend and non fs url: [" <<
+                   idoc.url << "]\n");
+	    continue;
+	}
+	paths.push_back(idoc.url.substr(7, string::npos));
+    }
+    return true;
+}
+
 }
 
 

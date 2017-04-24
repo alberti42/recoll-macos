@@ -132,7 +132,7 @@ class ConfIndexer {
     /** Update index for list of documents given as list of docs (out of query)
      */
     bool updateDocs(vector<Rcl::Doc> &docs, IxFlag f = IxFNone);
-    static bool docsToPaths(vector<Rcl::Doc> &docs, vector<string> &paths);
+
     /** Purge a list of files. */
     bool purgeFiles(list<string> &files, int f = IxFNone);
 

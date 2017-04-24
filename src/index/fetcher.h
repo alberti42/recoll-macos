@@ -66,7 +66,8 @@ public:
      * @param idoc the data gathered from the index for this doc (udi/ipath)
      * @param sig output. 
      */
-    virtual bool makesig(RclConfig* cnf, const Rcl::Doc& idoc, string& sig) = 0;
+    virtual bool makesig(RclConfig* cnf, const Rcl::Doc& idoc,
+                         std::string& sig) = 0;
     virtual ~DocFetcher() {}
 };
 

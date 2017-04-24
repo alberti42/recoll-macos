@@ -23,7 +23,8 @@
  */
 class BGLDocFetcher : public DocFetcher{
     virtual bool fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out);
-    virtual bool makesig(RclConfig* cnf, const Rcl::Doc& idoc, string& sig);
+    virtual bool makesig(RclConfig* cnf, const Rcl::Doc& idoc,
+                         std::string& sig);
     virtual ~BGLDocFetcher() {}
 };
 
