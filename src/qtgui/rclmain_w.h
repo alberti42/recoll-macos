@@ -33,6 +33,7 @@
 #include <memory>
 #include "pathut.h"
 #include "guiutils.h"
+#include "rclutil.h"
 
 class IdxSchedW;
 class ExecCmd;
@@ -227,6 +228,7 @@ private:
     vector<ExecCmd*>  m_viewers;
     ExecCmd          *m_idxproc; // Indexing process
     bool             m_idxkilled; // Killed my process
+    TempFileInternal *m_idxreasontmp{nullptr};
     map<QString, QAction*> m_stemLangToId;
     vector<string>    m_catgbutvec;
     int               m_catgbutvecidx;

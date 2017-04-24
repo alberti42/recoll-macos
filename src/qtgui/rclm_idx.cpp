@@ -28,6 +28,7 @@
 #include "indexer.h"
 #include "rclmain_w.h"
 #include "specialindex.h"
+#include "readfile.h"
 
 using namespace std;
 
@@ -89,6 +90,22 @@ void RclMain::periodic100()
 	int status;
 	bool exited = m_idxproc->maybereap(&status);
 	if (exited) {
+            QString reasonmsg;
+            if (m_idxreasontmp) {
+                string reasons;
+                file_to_string(m_idxreasontmp->filename(), reasons);
+                if (!reasons.empty()) {
+                    ConfSimple rsn(reasons);
+                    vector<string> sects = rsn.getNames("");
+                    for (const auto& nm : sects) {
+                        string val;
+                        if (rsn.get(nm, val)) {
+                            reasonmsg.append(u8s2qs(string("<br>") +
+                                                    nm + " : " + val));
+                        }
+                    }
+                }
+            }
 	    deleteZ(m_idxproc);
 	    if (status) {
                 if (m_idxkilled) {
@@ -96,13 +113,22 @@ void RclMain::periodic100()
                                          tr("Indexing interrupted"));
                     m_idxkilled = false;
                 } else {
-                    QMessageBox::warning(0, "Recoll", 
-                                         tr("Indexing failed"));
+                    QString msg(tr("Indexing failed"));
+                    if (!reasonmsg.isEmpty()) {
+                        msg.append(tr(" with additional message: "));
+                        msg.append(reasonmsg);
+                    }
+                    QMessageBox::warning(0, "Recoll", msg);
                 }
 	    } else {
 		// On the first run, show missing helpers. We only do this once
 		if (m_firstIndexing)
 		    showMissingHelpers();
+                if (!reasonmsg.isEmpty()) {
+                    QString msg = tr("Non-fatal indexing message: ");
+                    msg.append(reasonmsg);
+                    QMessageBox::warning(0, "Recoll", msg);
+                }
 	    }
 	    string reason;
 	    maybeOpenDb(reason, 1);
@@ -198,6 +224,13 @@ bool RclMain::checkIdxPaths()
 // re-enabled by the indexing status check
 void RclMain::toggleIndexing()
 {
+    if (!m_idxreasontmp) {
+        // We just store the pointer and let the tempfile cleaner deal
+        // with delete on exiting
+        m_idxreasontmp = new TempFileInternal(".txt");
+        rememberTempFile(TempFile(m_idxreasontmp));
+    }
+    
     switch (m_indexerState) {
     case IXST_RUNNINGMINE:
 	if (m_idxproc) {
@@ -245,6 +278,10 @@ void RclMain::toggleIndexing()
             return;
         }
         vector<string> args{"-c", theconfig->getConfDir()};
+        if (m_idxreasontmp) {
+            args.push_back("-R");
+            args.push_back(m_idxreasontmp->filename());
+        }
 	m_idxproc = new ExecCmd;
 	m_idxproc->startExec("recollindex", args, false, false);
     }
@@ -294,6 +331,10 @@ void RclMain::rebuildIndex()
             }
             
 	    vector<string> args{"-c", theconfig->getConfDir(), "-z"};
+            if (m_idxreasontmp) {
+                args.push_back("-R");
+                args.push_back(m_idxreasontmp->filename());
+            }
 	    m_idxproc = new ExecCmd;
 	    m_idxproc->startExec("recollindex", args, false, false);
 	}
@@ -371,6 +412,10 @@ void RclMain::specialIndex()
         return;
 
     vector<string> args{"-c", theconfig->getConfDir()};
+    if (m_idxreasontmp) {
+        args.push_back("-R");
+        args.push_back(m_idxreasontmp->filename());
+    }
 
     string top = specidx->toptarg();
     if (!top.empty()) {
@@ -430,6 +475,10 @@ void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
     vector<string> paths;
     if (Rcl::docsToPaths(docs, paths)) {
 	vector<string> args{"-c", theconfig->getConfDir(), "-e", "-i"};
+        if (m_idxreasontmp) {
+            args.push_back("-R");
+            args.push_back(m_idxreasontmp->filename());
+        }
 	args.insert(args.end(), paths.begin(), paths.end());
 	m_idxproc = new ExecCmd;
 	m_idxproc->startExec("recollindex", args, false, false);
