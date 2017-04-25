@@ -131,6 +131,14 @@ bool Aspell::init(string &reason)
 	if (!lang.compare("C"))
 	    lang = "en";
 	m_lang = lang.substr(0, lang.find_first_of("_"));
+        if (!m_lang.compare("ja")) {
+            // Aspell has no support for Japanese. We substitute
+            // english, as Japanese users often have texts with
+            // interspersed english words or english texts. Japanese
+            // parts of the text won't be sent to aspell (check
+            // Rcl::Db::isSpellingCandidate())
+            m_lang = "en";
+        }
     }
 
     m_data = new AspellData;
