@@ -33,6 +33,16 @@
 #include "uproplist.h"
 #include "smallut.h"
 
+// Decide if we treat katakana as western scripts, splitting into
+// words instead of n-grams. This is not absurd (katakana is a kind of
+// alphabet, albeit phonetic and syllabic and is mostly used to
+// transcribe western words), but it does not work well because
+// japanese uses separator-less compound katakana words, and because
+// the plural terminaisons are irregular and would need a specialized
+// stemmer. So we for now process katakana as the rest of cjk, using
+// ngrams
+#undef KATAKANA_AS_WORDS
+
 using namespace std;
 
 /**
@@ -209,11 +219,15 @@ static inline int whatcc(unsigned int c)
 // katakana variants' to something else.  Look up "Kuromoji" Lucene
 // filter, KuromojiNormalizeFilter.java
 // 309F is Hiragana.
+#ifdef KATAKANA_AS_WORDS
 #define UNICODE_IS_KATAKANA(p)                                          \
     ((p) != 0x309F &&                                                   \
      (((p) >= 0x3099 && (p) <= 0x30FF) ||                               \
       ((p) >= 0x31F0 && (p) <= 0x31FF)))
-    
+#else
+#define UNICODE_IS_KATAKANA(p) false
+#endif
+
 bool TextSplit::isCJK(int c)
 {
     return UNICODE_IS_CJK(c) && !UNICODE_IS_KATAKANA(c);
@@ -520,6 +534,7 @@ bool TextSplit::text_to_words(const string &in)
 	    LOGERR("Textsplit: error occured while scanning UTF-8 string\n");
 	    return false;
 	}
+
         CharSpanClass csc;
         if (UNICODE_IS_KATAKANA(c)) {
             csc = CSC_KATAKANA;
@@ -528,6 +543,7 @@ bool TextSplit::text_to_words(const string &in)
         } else {
             csc = CSC_OTHER;
         }
+
 	if (o_processCJK && csc == CSC_CJK) {
 	    // CJK excluding Katakana character hit. 
 	    // Do like at EOF with the current non-cjk data.
@@ -548,6 +564,9 @@ bool TextSplit::text_to_words(const string &in)
 		break;
 	}
 
+#ifdef KATAKANA_AS_WORDS
+        // Only needed if we have script transitions inside this
+        // routine, else the call to cjk_to_words does the job.
         if (csc != prev_csc && (m_wordLen || m_span.length())) {
             LOGDEB("csc " << csc << " pcsc " << prev_csc << " wl " <<
                    m_wordLen << " spl " << m_span.length() << endl);
@@ -555,8 +574,9 @@ bool TextSplit::text_to_words(const string &in)
                 return false;
             }
         }
+#endif
+
         prev_csc = csc;
-        
 	int cc = whatcc(c);
 
 	switch (cc) {

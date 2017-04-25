@@ -32,7 +32,6 @@ AM_CPPFLAGS = -Wall -Wno-unused -std=c++11 \
     $(X_CFLAGS) \
     -DRECOLL_DATADIR=\"${pkgdatadir}\" \
     -D_GNU_SOURCE \
-    -DTESTING_XAPIAN_SPELL \
     $(DEFS)
 
 ACLOCAL_AMFLAGS = -I m4

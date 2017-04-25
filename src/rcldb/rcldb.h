@@ -200,21 +200,37 @@ class Db {
     vector<string> getStemLangs();
 
     /** Test word for spelling correction candidate: not too long, no 
-	special chars... */
-    static bool isSpellingCandidate(const string& term, bool aspell=true)
+     * special chars... 
+     * @param with_aspell test for use with aspell, else for xapian speller
+     */
+    static bool isSpellingCandidate(const string& term, bool with_aspell=true)
     {
 	if (term.empty() || term.length() > 50)
 	    return false;
 	if (has_prefix(term))
 	    return false;
 	Utf8Iter u8i(term);
-        if (aspell) {
+        if (with_aspell) {
+            // If spelling with aspell, neither katakana nor other cjk
+            // scripts are candidates
             if (TextSplit::isCJK(*u8i) || TextSplit::isKATAKANA(*u8i))
                 return false;
         } else {
+#ifdef TESTING_XAPIAN_SPELL
+            // The Xapian speller (purely proximity-based) can be used
+            // for Katakana (when split as words which is not always
+            // completely feasible because of separator-less
+            // compounds). Currently we don't try to use the Xapian
+            // speller with other scripts with which it would be usable
+            // in the absence of aspell (it would indeed be better
+            // than nothing with e.g. european languages). This would
+            // require a few more config variables, maybe one day.
             if (!TextSplit::isKATAKANA(*u8i)) {
                 return false;
             }
+#else
+            return false;
+#endif
         }
 	if (term.find_first_of(" !\"#$%&()*+,-./0123456789:;<=>?@[\\]^_`{|}~") 
 	    != string::npos)
