@@ -5,6 +5,8 @@
 import sys
 import os
 import rclexecm
+import time
+import datetime
 
 try:
     import mutagen
@@ -19,8 +21,43 @@ except:
 # TPA,TPOS,disc DISCNUMBER/TOTALDISCS
 # TRCK,TRK,trkn TRACKNUMBER/TOTALTRACKS
 tagdict = {
+    'ALBUM ARTIST': 'ALBUMARTIST', 
+    'ALBUM' : 'ALBUM',
+    'ALBUMARTIST' : 'ALBUMARTIST', 
+    'ALBUMARTISTSORT' : 'ALBUMARTISTSORT', 
+    'ALBUMSORT' : 'ALBUMSORT', 
+    'ARTIST' : 'ARTIST', 
+    'ARTISTSORT' : 'ARTISTSORT', 
+    'BPM' : 'BPM', 
     'COM' : 'COMMENT',
     'COMM' : 'COMMENT',
+    'COMMENT' : 'COMMENT', 
+    'COMPILATION' : 'COMPILATION', 
+    'COMPOSER' : 'COMPOSER', 
+    'COMPOSERSORT' : 'COMPOSERSORT', 
+    'CONDUCTOR' : 'CONDUCTOR', 
+    'CONTENTGROUP' : 'CONTENTGROUP', 
+    'COPYRIGHT' : 'COPYRIGHT', 
+    'DATE' : 'DATE', 
+    'DISCNUMBER' : 'DISCNUMBER', 
+    'DISCSUBTITLE' : 'DISCSUBTITLE', 
+    'DISCTOTAL' : 'TOTALDISCS', 
+    'ENCODEDBY' : 'ENCODEDBY', 
+    'ENSEMBLE' : 'ORCHESTRA',
+    'GENRE' : 'GENRE', 
+    'ISRC' : 'ISRC', 
+    'LABEL' : 'LABEL', 
+    'LANGUAGE' : 'LANGUAGE', 
+    'LYRICIST' : 'LYRICIST', 
+    'LYRICS' : 'LYRICS', 
+    'MOOD' : 'MOOD', 
+    'ORCHESTRA' : 'ORCHESTRA',
+    'PERFORMER' : 'PERFORMER',
+    'ORIGINALARTIST' : 'ORIGINALARTIST', 
+    'ORIGINALDATE' : 'ORIGINALDATE', 
+    'RELEASEDATE' : 'RELEASEDATE', 
+    'REMIXER' : 'REMIXER', 
+    'SUBTITLE' : 'SUBTITLE', 
     'TAL' : 'ALBUM',
     'TALB' : 'ALBUM',
     'TBP' : 'BPM',
@@ -44,6 +81,8 @@ tagdict = {
     'TIT1' : 'CONTENTGROUP',
     'TIT2' : 'TITLE',
     'TIT3' : 'SUBTITLE',
+    'TITLE' : 'TITLE', 
+    'TITLESORT' : 'TITLESORT',
     'TLA' : 'LANGUAGE',
     'TLAN' : 'LANGUAGE',
     'TMOO' : 'MOOD',
@@ -51,6 +90,8 @@ tagdict = {
     'TOPE' : 'ORIGINALARTIST',
     'TOR' : 'ORIGINALDATE',
     'TORY' : 'ORIGINALDATE',
+    'TOTALDISCS' : 'TOTALDISCS', 
+    'TOTALTRACKS' : 'TOTALTRACKS', 
     'TP1' : 'ARTIST',
     'TP2' : 'ALBUMARTIST',
     'TP3' : 'CONDUCTOR',
@@ -63,9 +104,10 @@ tagdict = {
     'TPE4' : 'REMIXER',
     'TPOS' : 'DISCNUMBER',
     'TPUB' : 'LABEL',
-    'TXXX:ORCHESTRA' : 'ORCHESTRA',
-    'ORCHESTRA' : 'ORCHESTRA',
-    'ENSEMBLE' : 'ORCHESTRA',
+    'TRACK' : 'TRACKNUMBER', 
+    'TRACKNUM' : 'TRACKNUMBER', 
+    'TRACKNUMBER' : 'TRACKNUMBER', 
+    'TRACKTOTAL' : 'TOTALTRACKS', 
     'TRC' : 'ISRC',
     'TRCK' : 'TRACKNUMBER',
     'TRK' : 'TRACKNUMBER',
@@ -85,11 +127,12 @@ tagdict = {
     'TT2' : 'TITLE',
     'TT3' : 'SUBTITLE',
     'TXT' : 'LYRICIST',
+    'TXXX:ORCHESTRA' : 'ORCHESTRA',
     'TYE' : 'DATE',
     'TYER' : 'DATE',
-    'YEAR' : 'DATE',
     'ULT' : 'LYRICS',
     'USLT' : 'LYRICS',
+    'YEAR' : 'DATE',
     'aART' : 'ALBUMARTIST',
     'cpil' : 'COMPILATION',
     'cprt' : 'COPYRIGHT',
@@ -114,46 +157,6 @@ tagdict = {
     '\xa9ope' : 'ORIGINALARTIST',
     '\xa9too' : 'ENCODEDBY',
     '\xa9wrt' : 'COMPOSER',
-    'ALBUM' : 'ALBUM',
-    'ALBUM ARTIST': 'ALBUMARTIST', 
-    'ALBUMARTIST' : 'ALBUMARTIST', 
-    'ALBUMARTISTSORT' : 'ALBUMARTISTSORT', 
-    'ALBUMSORT' : 'ALBUMSORT', 
-    'ARTIST' : 'ARTIST', 
-    'ARTISTSORT' : 'ARTISTSORT', 
-    'BPM' : 'BPM', 
-    'COMMENT' : 'COMMENT', 
-    'COMPILATION' : 'COMPILATION', 
-    'COMPOSER' : 'COMPOSER', 
-    'COMPOSERSORT' : 'COMPOSERSORT', 
-    'CONDUCTOR' : 'CONDUCTOR', 
-    'CONTENTGROUP' : 'CONTENTGROUP', 
-    'COPYRIGHT' : 'COPYRIGHT', 
-    'DATE' : 'DATE', 
-    'DISCNUMBER' : 'DISCNUMBER', 
-    'DISCSUBTITLE' : 'DISCSUBTITLE', 
-    'ENCODEDBY' : 'ENCODEDBY', 
-    'GENRE' : 'GENRE', 
-    'ISRC' : 'ISRC', 
-    'LABEL' : 'LABEL', 
-    'LANGUAGE' : 'LANGUAGE', 
-    'LYRICIST' : 'LYRICIST', 
-    'LYRICS' : 'LYRICS', 
-    'MOOD' : 'MOOD', 
-    'ORIGINALARTIST' : 'ORIGINALARTIST', 
-    'ORIGINALDATE' : 'ORIGINALDATE', 
-    'RELEASEDATE' : 'RELEASEDATE', 
-    'REMIXER' : 'REMIXER', 
-    'SUBTITLE' : 'SUBTITLE', 
-    'DISCTOTAL' : 'TOTALDISCS', 
-    'TOTALDISCS' : 'TOTALDISCS', 
-    'TOTALTRACKS' : 'TOTALTRACKS', 
-    'TRACKTOTAL' : 'TOTALTRACKS', 
-    'TRACKNUMBER' : 'TRACKNUMBER', 
-    'TRACKNUM' : 'TRACKNUMBER', 
-    'TRACK' : 'TRACKNUMBER', 
-    'TITLE' : 'TITLE', 
-    'TITLESORT' : 'TITLESORT',
     }
 
 # mp3:      album, title, artist, genre, date, tracknumber
@@ -193,7 +196,29 @@ class AudioTagExtractor:
                 else:
                     return 'png'
         return ''
-    
+
+    # Date formats found in actual files (any date field): [1961] [1967-01-01]
+    #  [1996-11-04T08:00:00Z] [] [0000]  [1994-08-08 07:00]
+    # We don't try to process the time part.
+    # The method translates the date into a Unix timestamp
+    # which means possible trouble for pre-1970 recordings (negative time).
+    # Oldest possible date with 32 bits time stamp is 1901, which is ok though.
+    #
+    # This is not used as we don't try to set dmtime (which would not
+    # be used by the current indexer anyway). We instead set a 'date'
+    # metadata entry.
+    def parsedate(self, dt):
+        if len(dt) > 10:
+            dt = dt[0:10]
+        l = dt.split('-')
+        if len(l) > 3 or len(l) == 2 or len(l[0]) != 4 or l[0] == '0000':
+            return ''
+        if len(l) == 1:
+            pdt = datetime.datetime.strptime(dt, "%Y")
+        elif len(l) == 3:
+            pdt = datetime.datetime.strptime(dt, "%Y-%m-%d")
+        val = time.mktime(pdt.timetuple())
+        return "%d" % val
 
     def extractone(self, params):
         #self.em.rclog("extractone %s %s" % (params["filename:"],
@@ -262,10 +287,11 @@ class AudioTagExtractor:
                     if isinstance(val, bool):
                         val0 = str(val)
                     else:
-                        val0 = val[0]
+                        try:
+                            val0 = str(val[0])
+                        except:
+                            val0 = str(val)
                     if val0:
-                        if isinstance(val0, ID3TimeStamp):
-                            val0 = str(val0)
                         minf[ntag] = val0
                         #self.em.rclog("Tag %s -> %s" % (ntag, val0))
                 except Exception as err:
