@@ -98,16 +98,18 @@ followed.</para></listitem></varlistentry>
 <term><varname>indexedmimetypes</varname></term>
 <listitem><para>Restrictive list of
 indexed mime types. Normally not set (in which case all
-supported types are indexed). If it is set,
-only the types from the list will have their contents indexed. The names
-will be indexed anyway if indexallfilenames is set (default). MIME
-type names should be taken from the mimemap file. Can be redefined for
-subtrees.</para></listitem></varlistentry>
+supported types are indexed). If it is set, only the types from the list
+will have their contents indexed. The names will be indexed anyway if
+indexallfilenames is set (default). MIME type names should be taken from
+the mimemap file (the values may be different from xdg-mime or file -i
+output in some cases). Can be redefined for subtrees.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.EXCLUDEDMIMETYPES">
 <term><varname>excludedmimetypes</varname></term>
 <listitem><para>List of excluded MIME
-types. Lets you exclude some types from indexing. Can be
-redefined for subtrees.</para></listitem></varlistentry>
+types. Lets you exclude some types from indexing. MIME type
+names should be taken from the mimemap file (the values may be different
+from xdg-mime or file -i output in some cases) Can be redefined for
+subtrees.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.NOMD5MIMETYPES">
 <term><varname>nomd5mimetypes</varname></term>
 <listitem><para>Don't compute md5 for

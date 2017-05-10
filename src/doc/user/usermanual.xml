@@ -454,17 +454,30 @@
           indexed. In the latter case, any type not in the list will
           be ignored.</para>
 
-        <para>Excluding types can be done by adding wildcard name
-          patterns to the <literal>skippedNames</literal> list, which
+          <note><title>Note about MIME types</title>
+          <para>When editing the <literal>indexedmimetypes</literal>
+          or <literal>excludedmimetypes</literal> lists, you should use the
+          MIME values listed in the <filename>mimemap</filename> file
+          or in Recoll result lists in preference to <literal>file -i</literal>
+          output: there are a number of differences. The
+          <literal>file -i</literal> output should only be used for files
+          without extensions, or for which the extension is not listed in
+          <filename>mimemap</filename></para></note> 
+
+          <para>Excluding types can be done by adding wildcard name
+        patterns to the
+        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES">
+          skippedNames</link> list, which
           can be done from the GUI Index configuration menu. For
           versions 1.20 and later, you can alternatively set the
-          <literal>excludedmimetypes</literal> list in the
-          configuration file. This can be redefined for
-          subdirectories.</para>
+          <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.EXCLUDEDMIMETYPES">
+            excludedmimetypes</link> list in the configuration file. This
+            can be redefined for subdirectories.</para>
 
-        <para>You can also define an exclusive list of MIME types to be indexed (no others will be indexed), by settting
-            the <literal>indexedmimetypes</literal> configuration
-            variable. Example:<programlisting>
+        <para>You can also define an exclusive list of MIME types to be
+        indexed (no others will be indexed), by settting 
+        the <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.INDEXEDMIMETYPES">
+        indexedmimetypes</link> configuration variable. Example:<programlisting>
 indexedmimetypes = text/html application/pdf
           </programlisting>
           It is possible to redefine this parameter for
@@ -484,11 +497,6 @@ indexedmimetypes = application/pdf
           (<filename>recoll.conf</filename>)</link>, or from the GUI
           index configuration tool.</para>
 
-          <note><para>When editing the <literal>indexedmimetypes</literal>
-          or <literal>excludedmimetypes</literal> lists, you should use the
-          MIME values listed in the <filename>mimemap</filename> file
-          or in Recoll result lists in preference to <literal>file -i</literal>
-          output: there are a number of differences.</para></note>
 
       </sect2>
 
