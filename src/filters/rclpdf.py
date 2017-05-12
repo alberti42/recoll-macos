@@ -78,15 +78,27 @@ class PDFExtractor:
     def __init__(self, em):
         self.currentindex = 0
         self.pdftotext = None
+        self.pdfinfo = None
+        self.pdftk = None
         self.em = em
-
-        self.confdir = rclconfig.RclConfig().getConfDir()
-        cf_doocr = rclconfig.RclConfig().getConfParam("pdfocr")
-        cf_attach = rclconfig.RclConfig().getConfParam("pdfattach")
+        self.tesseract = None
         
         self.pdftotext = rclexecm.which("pdftotext")
         if not self.pdftotext:
             self.pdftotext = rclexecm.which("poppler/pdftotext")
+            # No need for anything else. openfile() will return an
+            # error at once
+            return
+
+        cf = rclconfig.RclConfig()
+        self.confdir = cf.getConfDir()
+
+        # The user can set a list of meta tags to be extracted from
+        # the XMP metadata packet. These are specified as
+        # (xmltag,rcltag) pairs
+        self.extrameta = cf.getConfParam("pdfextrameta")
+        if self.extrameta:
+            self._initextrameta()
 
         # Check if we need to escape portions of text where old
         # versions of pdftotext output raw HTML special characters.
@@ -106,6 +118,7 @@ class PDFExtractor:
         # either the presence of a file in the config dir (historical)
         # or a set config variable.
         self.ocrpossible = False
+        cf_doocr = cf.getConfParam("pdfocr")
         if cf_doocr or os.path.isfile(os.path.join(self.confdir, "ocrpdf")):
             self.tesseract = rclexecm.which("tesseract")
             if self.tesseract:
@@ -116,17 +129,56 @@ class PDFExtractor:
         # self.em.rclog("OCRPOSSIBLE: %d" % self.ocrpossible)
 
         # Pdftk is optionally used to extract attachments. This takes
-        # a hit on perfmance even in the absence of any attachments,
+        # a hit on performance even in the absence of any attachments,
         # so it can be disabled in the configuration.
         self.attextractdone = False
         self.attachlist = []
+        cf_attach = cf.getConfParam("pdfattach")
         if cf_attach:
             self.pdftk = rclexecm.which("pdftk")
-        else:
-            self.pdftk = None
         if self.pdftk:
             self.maybemaketmpdir()
-        
+
+    def _initextrameta(self):
+        self.pdfinfo = rclexecm.which("pdfinfo")
+        if not self.pdfinfo:
+            self.pdfinfo = rclexecm.which("poppler/pdfinfo")
+        if not self.pdfinfo:
+            self.extrameta = None
+            return
+
+        # extrameta is like "samename metanm|rclnm ..."
+        # we turn it into a list of pairs
+        l = self.extrameta.split()
+        self.extrameta = []
+        for e in l:
+            l1 = e.split('|')
+            if len(l1) == 1:
+                l1.append(l1[0])
+            self.extrameta.append(l1)
+
+        # Using lxml because it is better with
+        # namespaces. With xml, we'd have to walk the XML tree
+        # first, extracting all xmlns attributes and
+        # constructing a tree (I tried and did not succeed in
+        # doing this actually). lxml does it partially for
+        # us. See http://stackoverflow.com/questions/14853243/
+        #    parsing-xml-with-namespace-in-python-via-elementtree
+        global ET
+        #import xml.etree.ElementTree as ET
+        try:
+            import lxml.etree as ET
+        except Exception as err:
+            self.em.rclog("Can't import lxml etree: %s" % err)
+            self.extrameta = None
+            self.pdfinfo = None
+            return
+
+        self.re_head = re.compile(r'<head>', re.IGNORECASE)
+        self.re_xmlpacket = re.compile(r'<\?xpacket[ 	]+begin.*\?>' +
+                                       r'(.*)' + r'<\?xpacket[ 	]+end',
+                                       flags = re.DOTALL)
+
     # Extract all attachments if any into temporary directory
     def extractAttach(self):
         if self.attextractdone:
@@ -244,9 +296,12 @@ class PDFExtractor:
 
         if not data:
             return ""
-        return '''<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"></head><body><pre>''' + \
+        return '''<html><head>
+        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">
+        </head><body><pre>''' + \
         self.em.htmlescape(data) + \
         '''</pre></body></html>'''
+
 
     # pdftotext (used to?) badly escape text inside the header
     # fields. We do it here. This is not an html parser, and depends a
@@ -299,8 +354,81 @@ class PDFExtractor:
             output += line + b'\n'
 
         return output, isempty
-            
+
+    def _metatag(self, nm, val):
+        return "<meta name=\"" + nm + "\" content=\"" + \
+               self.em.htmlescape(val) + "\">"
+
+    # metaheaders is a list of (nm, value) pairs
+    def _injectmeta(self, html, metaheaders):
+        metatxt = ''
+        for nm, val in metaheaders:
+            metatxt += self._metatag(nm, val) + '\n'
+        if not metatxt:
+            return html
+        res = self.re_head.sub('<head>\n' + metatxt, html)
+        #self.em.rclog("Substituted html: [%s]"%res)
+        if res:
+            return res
+        else:
+            return html
+    
+    def _xmltreetext(self, elt):
+        '''Extract all text content from subtree'''
+        text = ''
+        for e in elt.iter():
+            if e.text:
+                text += e.text + " "
+        return text.strip()
+        # or: return reduce((lambda t,p : t+p+' '),
+        #       [e.text for e in elt.iter() if e.text]).strip()
+        
+    def _setextrameta(self, html):
+        if not self.pdfinfo:
+            return
+
+        all = subprocess.check_output([self.pdfinfo, "-meta", self.filename])
+
+        # Extract the XML packet
+        res = self.re_xmlpacket.search(all)
+        xml = ''
+        if res:
+            xml = res.group(1)
+        # self.em.rclog("extrameta: XML: [%s]" % xml)
+        if not xml:
+            return html
+
+        metaheaders = []
+        # The namespace thing is a drag. Can't do it from the top. See
+        # the stackoverflow ref above. Maybe we'd be better off just
+        # walking the full tree and building the namespaces dict.
+        root = ET.fromstring(xml)
+        #self.em.rclog("NSMAP: %s"% root.nsmap)
+        namespaces = {'rdf' : "http://www.w3.org/1999/02/22-rdf-syntax-ns#"}
+        rdf = root.find("rdf:RDF", namespaces)
+        #self.em.rclog("RDF NSMAP: %s"% rdf.nsmap)
+        rdfdesclist = rdf.findall("rdf:Description", rdf.nsmap)
+        #self.em.rclog("RDFDESC NSMAP: %s"% rdfdesc.nsmap)
+        for metanm,rclnm in self.extrameta:
+            for rdfdesc in rdfdesclist:
+                try:
+                    elt = rdfdesc.find(metanm, rdfdesc.nsmap)
+                except:
+                    # We get an exception when this rdf:Description does not
+                    # define the required namespace.
+                    continue
+                if elt is not None:
+                    text = self._xmltreetext(elt)
+                    if text:
+                        # Should we set empty values ?
+                        # Can't use setfield as it only works for
+                        # text/plain output at the moment.
+                        metaheaders.append((rclnm, text))
+        if metaheaders:
+            return self._injectmeta(html, metaheaders)
+    
     def _selfdoc(self):
+        '''Extract the text from the pdf doc (as opposed to attachment)'''
         self.em.setmimetype('text/html')
 
         if self.attextractdone and len(self.attachlist) == 0:
@@ -308,15 +436,23 @@ class PDFExtractor:
         else:
             eof = rclexecm.RclExecM.noteof
             
-        data = subprocess.check_output([self.pdftotext, "-htmlmeta", "-enc",
+        html = subprocess.check_output([self.pdftotext, "-htmlmeta", "-enc",
                                         "UTF-8", "-eol", "unix", "-q",
                                         self.filename, "-"])
 
-        data, isempty = self._fixhtml(data)
-        #self.em.rclog("ISEMPTY: %d : data: \n%s" % (isempty, data))
+        html, isempty = self._fixhtml(html)
+        #self.em.rclog("ISEMPTY: %d : data: \n%s" % (isempty, html))
+
         if isempty and self.ocrpossible:
-            data = self.ocrpdf()
-        return (True, data, "", eof)
+            html = self.ocrpdf()
+
+        if self.extrameta:
+            try:
+                html = self._setextrameta(html)
+            except Exception as err:
+                self.em.rclog("Metadata extraction failed: %s" % err)
+
+        return (True, html, "", eof)
 
     def maybemaketmpdir(self):
         global tmpdir
@@ -329,14 +465,14 @@ class PDFExtractor:
         
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
+        if not self.pdftotext:
+            print("RECFILTERROR HELPERNOTFOUND pdftotext")
+            sys.exit(1);
+
         self.filename = params["filename:"]
         #self.em.rclog("openfile: [%s]" % self.filename)
         self.currentindex = -1
         self.attextractdone = False
-
-        if not self.pdftotext:
-            print("RECFILTERROR HELPERNOTFOUND pdftotext")
-            sys.exit(1);
 
         if self.pdftk:
             preview = os.environ.get("RECOLL_FILTER_FORPREVIEW", "no")
