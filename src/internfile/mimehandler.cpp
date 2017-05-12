@@ -376,3 +376,13 @@ bool canIntern(const std::string mtype, RclConfig *cfg)
     return true;
 }
 
+string RecollFilter::metadataAsString()
+{
+    string s;
+    for (const auto& ent : m_metaData) {
+        if (ent.first == "content")
+            continue;
+        s += ent.first + "->" + ent.second + "\n";
+    }
+    return s;
+}

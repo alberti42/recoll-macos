@@ -128,6 +128,7 @@ public:
     // It converts from keyorigcharset to UTF-8 and sets keycharset.
     bool txtdcode(const std::string& who);
 
+    std::string metadataAsString();
 protected:
 
     // We provide default implementation as not all handlers need both methods

@@ -336,6 +336,7 @@ bool MimeHandlerExecMultiple::next_document()
             m_metaData[cstr_dj_keycontent].size() <<
             " bytes of content, mtype [" << m_metaData[cstr_dj_keymt] <<
             "] charset [" << m_metaData[cstr_dj_keycharset] << "]\n");
+    LOGDEB2("MHExecMultiple: metadata: \n" << metadataAsString());
     return true;
 }
 
