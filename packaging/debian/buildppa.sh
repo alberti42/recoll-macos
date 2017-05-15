@@ -19,7 +19,7 @@ case $RCLVERS in
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-#PPANAME=recollexp-ppa
+PPANAME=recollexp-ppa
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
@@ -147,7 +147,7 @@ done
 
 ### Unity Scope
 series="trusty xenial yakkety"
-series=zesty
+series=
 
 debdir=debianunityscope
 if test ! -d ${debdir}/ ; then

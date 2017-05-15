@@ -1,8 +1,11 @@
 recoll (1.23.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
-  * Bogus release for testing katakana spellcheck
-
- -- Jean-Francois Dockes <jf@dockes.org>  Tue, 18 Apr 2017 14:49:00 +0100
+  * Fix issue with advanced search clause list growth explosion
+  * Fix crash in text splitter
+  * Updated pdf handler with XML metadata capability
+  * Small improvement for Japanese handling
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 15 May 2017 12:39:00 +0100
 
 recoll (1.23.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
