@@ -382,7 +382,25 @@ class PDFExtractor:
         return text.strip()
         # or: return reduce((lambda t,p : t+p+' '),
         #       [e.text for e in elt.iter() if e.text]).strip()
+
+
+    # This can be used for local field editing. For now you need to
+    # change the program source. maybe we'll make it more dynamic one
+    # day. The method receives an (original) field name, and the text
+    # value, and should return the possibly modified text.
+    def _extrametafix(self, nm, txt):
+        if nm == 'bibtex:pages':
+            txt = re.sub(r'--', '-', txt)
+        elif nm == 'someothername':
+            # do something else
+            pass
+        elif nm == 'stillanother':
+            # etc.
+            pass
         
+        return txt
+
+
     def _setextrameta(self, html):
         if not self.pdfinfo:
             return html
@@ -419,8 +437,9 @@ class PDFExtractor:
                     continue
                 if elt is not None:
                     text = self._xmltreetext(elt).encode('UTF-8')
+                    # Should we set empty values ?
                     if text:
-                        # Should we set empty values ?
+                        text = self._extrametafix(metanm, text)
                         # Can't use setfield as it only works for
                         # text/plain output at the moment.
                         metaheaders.append((rclnm, text))
