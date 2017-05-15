@@ -83,6 +83,7 @@ target_link_libraries(kio_recoll
 recoll 
 xapian 
 KF5::KIOCore
+dl
 z 
 pthread
 )
