@@ -87,26 +87,40 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.ssearchTyp, "/Recoll/prefs/simpleSearchTyp", Int, 3);
     SETTING_RW(prefs.startWithAdvSearchOpen, 
 	       "/Recoll/prefs/startWithAdvSearchOpen", Bool, false);
-    SETTING_RW(prefs.previewHtml, 
-	       "/Recoll/prefs/previewHtml", Bool, true);
+    SETTING_RW(prefs.previewHtml, "/Recoll/prefs/previewHtml", Bool, true);
 
     QString advSearchClauses;
-    QString ascdflt;
+    const int maxclauselistsize = 20;
     if (writing) {
-	for (vector<int>::iterator it = prefs.advSearchClauses.begin();
-	     it != prefs.advSearchClauses.end(); it++) {
+        // Limit clause list size to non-absurd size
+        if (prefs.advSearchClauses.size() > maxclauselistsize) {
+            prefs.advSearchClauses.resize(maxclauselistsize);
+        }
+	for (auto clause : prefs.advSearchClauses) {
 	    char buf[20];
-	    sprintf(buf, "%d ", *it);
+	    sprintf(buf, "%d ", clause);
 	    advSearchClauses += QString::fromUtf8(buf);
 	}
     }
+    QString ascdflt;
     SETTING_RW(advSearchClauses, "/Recoll/prefs/adv/clauseList", String, ascdflt);
     if (!writing) {
-	list<string> clauses;
-	stringToStrings((const char *)advSearchClauses.toUtf8(), clauses);
-	for (list<string>::iterator it = clauses.begin(); 
-	     it != clauses.end(); it++) {
-	    prefs.advSearchClauses.push_back(atoi(it->c_str()));
+	vector<string> clauses;
+	stringToStrings(qs2utf8s(advSearchClauses), clauses);
+        // There was a long-lurking bug where the clause list was
+        // growing to absurd sizes. The prefs.advSearchClauses clear()
+        // call was missing (ok with the now false initial assumption
+        // that the prefs were read once per session), which was
+        // causing a doubling of the size each time the prefs were
+        // read. Should be fixed, but in any case, limit the clause
+        // list to a non-absurd size.
+        if (clauses.size() > maxclauselistsize) {
+            clauses.resize(maxclauselistsize);
+        }
+        prefs.advSearchClauses.clear();
+        prefs.advSearchClauses.reserve(clauses.size());
+	for (auto clause : clauses) {
+	    prefs.advSearchClauses.push_back(atoi(clause.c_str()));
 	}
     }
 
