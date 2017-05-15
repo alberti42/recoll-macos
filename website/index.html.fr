@@ -106,6 +106,9 @@
       <h2>Nouvelles: </h2>
 
       <dl>
+          <dt>2017-05-15</dt><dd>Version 1.23.2. Corrige quelques bugs
+          sérieux. Voir les <a href="release-1.23.html">Release notes (en
+            anglais).</a></dd>
           <dt>2017-03-09</dt><dd>Version 1.23.1. 
             the <a href="release-1.23.html">Release notes (en
             anglais).</a></dd>

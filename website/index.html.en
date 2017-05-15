@@ -66,7 +66,7 @@
       </ul>
 
       <p>The current <span class="application">Recoll</span> version is
-	<a href="download.html">1.23.1</a> 
+	<a href="download.html">1.23.2</a> 
 	(<a href="release-1.23.html">Release notes</a>,
         <a href="BUGS.html">known bugs</a>,
         <a href="release-history.html">Release history</a>).</p>
@@ -105,6 +105,10 @@
       <div class="news">
       
         <dl>
+          <dt>2017-05-15</dt><dd>Release 1.23.2. This fixes a couple
+            of quite serious bugs. See
+            the <a href="release-1.23.html">Release notes</a></dd>
+
           <dt>2017-03-09</dt><dd>Release 1.23.1. See
             the <a href="release-1.23.html">Release notes</a></dd>
 
