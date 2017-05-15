@@ -356,17 +356,17 @@ class PDFExtractor:
         return output, isempty
 
     def _metatag(self, nm, val):
-        return "<meta name=\"" + nm + "\" content=\"" + \
+        return b"<meta name=\"" + nm + "\" content=\"" + \
                self.em.htmlescape(val) + "\">"
 
     # metaheaders is a list of (nm, value) pairs
     def _injectmeta(self, html, metaheaders):
-        metatxt = ''
+        metatxt = b''
         for nm, val in metaheaders:
-            metatxt += self._metatag(nm, val) + '\n'
+            metatxt += self._metatag(nm, val) + b'\n'
         if not metatxt:
             return html
-        res = self.re_head.sub('<head>\n' + metatxt, html)
+        res = self.re_head.sub(b'<head>\n' + metatxt, html)
         #self.em.rclog("Substituted html: [%s]"%res)
         if res:
             return res
@@ -385,7 +385,7 @@ class PDFExtractor:
         
     def _setextrameta(self, html):
         if not self.pdfinfo:
-            return
+            return html
 
         all = subprocess.check_output([self.pdfinfo, "-meta", self.filename])
 
@@ -418,7 +418,7 @@ class PDFExtractor:
                     # define the required namespace.
                     continue
                 if elt is not None:
-                    text = self._xmltreetext(elt)
+                    text = self._xmltreetext(elt).encode('UTF-8')
                     if text:
                         # Should we set empty values ?
                         # Can't use setfield as it only works for
@@ -426,7 +426,9 @@ class PDFExtractor:
                         metaheaders.append((rclnm, text))
         if metaheaders:
             return self._injectmeta(html, metaheaders)
-    
+        else:
+            return html
+        
     def _selfdoc(self):
         '''Extract the text from the pdf doc (as opposed to attachment)'''
         self.em.setmimetype('text/html')
@@ -435,13 +437,13 @@ class PDFExtractor:
             eof = rclexecm.RclExecM.eofnext
         else:
             eof = rclexecm.RclExecM.noteof
-            
+        
         html = subprocess.check_output([self.pdftotext, "-htmlmeta", "-enc",
                                         "UTF-8", "-eol", "unix", "-q",
                                         self.filename, "-"])
 
         html, isempty = self._fixhtml(html)
-        #self.em.rclog("ISEMPTY: %d : data: \n%s" % (isempty, html))
+        #self.em.rclog("after _fixhtml: isempty %d html: \n%s" % (isempty, html))
 
         if isempty and self.ocrpossible:
             html = self.ocrpdf()
