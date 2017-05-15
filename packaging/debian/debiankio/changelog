@@ -1,11 +1,11 @@
-recoll (1.23.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+kio-recoll (1.23.2-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * Fix crash in text splitter
   * Small improvement for Japanese handling
   
  -- Jean-Francois Dockes <jf@dockes.org>  Mon, 15 May 2017 12:39:00 +0100
 
-kio-recoll (1.23.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+kio-recoll (1.23.1-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * Small fixes to kio build
 

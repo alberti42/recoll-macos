@@ -7,7 +7,7 @@
 RCLVERS=1.23.2
 LENSVERS=1.19.10.3543
 SCOPEVERS=1.20.2.4
-PPAVERS=1
+PPAVERS=2
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
@@ -19,7 +19,7 @@ case $RCLVERS in
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-PPANAME=recollexp-ppa
+#PPANAME=recollexp-ppa
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
@@ -46,7 +46,7 @@ debdir=debian
 # No new releases for trusty either because of risk of kio compat (kio
 # wont build)
 series="xenial yakkety zesty"
-series=xenial
+series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -77,8 +77,8 @@ done
 
 ### KIO. Does not build on trusty from recoll 1.23 because of the need
 ### for c++11
-#series="xenial yakkety zesty"
-series=
+series="xenial yakkety zesty"
+#series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
