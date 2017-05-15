@@ -213,6 +213,14 @@ private:
     // Word length in characters. Declared but not updated if !TEXTSPLIT_STATS
     unsigned int  m_wordChars;
 
+    void clearsplitstate() {
+        m_span.clear();
+        m_words_in_span.clear();
+        m_inNumber = false;
+        m_wordStart = m_wordLen = m_wordpos = m_spanpos = m_prevpos =
+            m_prevlen = m_wordChars = 0;
+    }
+
     // This processes cjk text:
     bool cjk_to_words(Utf8Iter *it, unsigned int *cp);
 

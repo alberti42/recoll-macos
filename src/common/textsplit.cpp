@@ -468,8 +468,8 @@ inline bool TextSplit::doemit(bool spanerase, size_t _bp)
 
 void TextSplit::discardspan()
 {
+    m_span.clear();
     m_words_in_span.clear();
-    m_span.erase();
     m_spanpos = m_wordpos;
     m_wordStart = 0;
     m_wordLen = m_wordChars = 0;
@@ -513,10 +513,9 @@ bool TextSplit::text_to_words(const string &in)
     if (in.empty())
 	return true;
 
-    m_span.erase();
-    m_inNumber = false;
-    m_wordStart = m_wordLen = m_wordChars = m_prevpos = m_prevlen = m_wordpos 
-	= m_spanpos = 0;
+    // Reset the data members relative to splitting state
+    clearsplitstate();
+    
     bool pagepending = false;
     bool softhyphenpending = false;
 
@@ -935,10 +934,12 @@ bool TextSplit::cjk_to_words(Utf8Iter *itp, unsigned int *cp)
 	}
     }
 
-    m_span.erase();
-    m_inNumber = false;
-    m_wordStart = m_wordLen = m_wordChars = m_prevpos = m_prevlen = 0;
-    m_spanpos = m_wordpos;
+    // Reset state, saving term position, and return the found non-cjk
+    // unicode character value. The current input byte offset is kept
+    // in the utf8Iter
+    int pos = m_wordpos;
+    clearsplitstate();
+    m_spanpos = m_wordpos = pos;
     *cp = c;
     return true;
 }
