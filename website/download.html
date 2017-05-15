@@ -327,14 +327,26 @@ sudo apt-get install recoll
 
         <h3>CentOS 7.1</h3>
 
-        <p>CentOS ships neither Xapian nor
-          Recoll. <a href="downloads/centos71">Here are some
-          packages.</a>. There are only x86_64 binaries for now, use
-          the source rpm for other archs. As far as I know, the only
-          specific issue is that CentOS does not seem to have the Qt
-          WebKit module. The Recoll build uses QTextBrowser instead of
-          a WebKit QWebView, so no Javascript or advanced CSS in the
-          result list or snippets window for you.</p>
+        <p><a href="https://fedoraproject.org/wiki/EPEL">EPEL</a> now
+          has a package for Recoll. It is in currently in
+          the <a href="https://fedoraproject.org/wiki/EPEL/testing">testing
+          section</a>, but it should hopefully move on 
+          shortly. If you install the test package (which runs just
+          fine as far as I can see), please add feedback to
+          the
+          <a href="https://bodhi.fedoraproject.org/updates/FEDORA-EPEL-2017-ede90eda56">
+            package page</a>.
+
+          <p>If EPEL does not work for you, there are still a few
+            <a href="downloads/centos71">pre-EPEL packages
+            here</a>. They will be deleted shortly, except if someone
+            provides me with a good reason to keep them.  There are
+            only x86_64 binaries, use the source rpm for other
+            archs. As base CentOS does not seem to have the Qt WebKit
+            module, the Recoll build uses QTextBrowser instead of a
+            WebKit QWebView, so no Javascript or advanced CSS in the
+            result list or snippets window for you (the EPEL package
+            uses WebKit, so this is another way it is better).</p>
 
 
         <h3>OpenSUSE</h3>

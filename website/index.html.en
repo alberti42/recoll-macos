@@ -44,7 +44,12 @@
         inside documents as well as file names.</p>
       <ul>
         <li>Versions are available for <a href="download.html">Linux</a>
-          and <a href="pages/recoll-windows.html">MS Windows</a>.</li> 
+          and <a href="pages/recoll-windows.html">MS Windows</a>.</li>
+        <li>A
+          <a href="https://github.com/koniu/recoll-webui">WEB
+            front-end</a> with preview and download features can
+            replace or supplement the GUI for remote
+          use.</li>
         <li>It can search
           most <span class="important"><a href="features.html#doctypes">document
           formats</a></span>. <a href="features.html#doctypes">You may
