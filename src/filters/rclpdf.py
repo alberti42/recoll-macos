@@ -412,18 +412,26 @@ class PDFExtractor:
         xml = ''
         if res:
             xml = res.group(1)
-        # self.em.rclog("extrameta: XML: [%s]" % xml)
+        #self.em.rclog("extrameta: XML: [%s]" % xml)
         if not xml:
             return html
 
-        metaheaders = []
         # The namespace thing is a drag. Can't do it from the top. See
         # the stackoverflow ref above. Maybe we'd be better off just
         # walking the full tree and building the namespaces dict.
         root = ET.fromstring(xml)
-        #self.em.rclog("NSMAP: %s"% root.nsmap)
-        namespaces = {'rdf' : "http://www.w3.org/1999/02/22-rdf-syntax-ns#"}
-        rdf = root.find("rdf:RDF", namespaces)
+
+        # Sometimes the root tag is <x:xmpmeta>, sometimes <rdf:RDF>
+        if root.tag.endswith('RDF'):
+            rdf = root
+        else:
+            namespaces = {'rdf' : "http://www.w3.org/1999/02/22-rdf-syntax-ns#"}
+            rdf = root.find("rdf:RDF", namespaces)
+        if rdf is None:
+            self.em.rclog("No rdf:RDF node");
+            return html
+
+        metaheaders = []
         #self.em.rclog("RDF NSMAP: %s"% rdf.nsmap)
         rdfdesclist = rdf.findall("rdf:Description", rdf.nsmap)
         #self.em.rclog("RDFDESC NSMAP: %s"% rdfdesc.nsmap)
