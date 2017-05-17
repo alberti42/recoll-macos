@@ -1,125 +1,990 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-<title>Indexing PDF XMP-metadata</title>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 8.6.9" />
+<title>Indexing PDF XMP-metadata with Recoll</title>
+<style type="text/css">
+/* Shared CSS for AsciiDoc xhtml11 and html5 backends */
+
+/* Default font. */
+body {
+  font-family: Georgia,serif;
+}
+
+/* Title font. */
+h1, h2, h3, h4, h5, h6,
+div.title, caption.title,
+thead, p.table.header,
+#toctitle,
+#author, #revnumber, #revdate, #revremark,
+#footer {
+  font-family: Arial,Helvetica,sans-serif;
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+h5 {
+  font-size: 1.0em;
+}
+
+div.sectionbody {
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+ul > li     { color: #aaa; }
+ul > li > * { color: black; }
+
+.monospaced, code, pre {
+  font-family: "Courier New", Courier, monospace;
+  font-size: inherit;
+  color: navy;
+  padding: 0;
+  margin: 0;
+}
+pre {
+  white-space: pre-wrap;
+}
+
+#author {
+  color: #527bbd;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+#email {
+}
+#revnumber, #revdate, #revremark {
+}
+
+#footer {
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.0em;
+  margin-bottom: 2.0em;
+  margin-right: 10%;
+  color: #606060;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid #dddddd;
+  border-left: 4px solid #f0f0f0;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid #dddddd;
+  border-left: 5px solid #f0f0f0;
+  background: #f8f8f8;
+  padding: 0.5em;
+}
+
+div.quoteblock, div.verseblock {
+  padding-left: 1.0em;
+  margin-left: 1.0em;
+  margin-right: 10%;
+  border-left: 5px solid #f0f0f0;
+  color: #888;
+}
+
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock > pre.content {
+  font-family: inherit;
+  font-size: inherit;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 3px solid #dddddd;
+}
+
+div.exampleblock > div.content {
+  border-left: 3px solid #dddddd;
+  padding-left: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+span.image img { border-style: none; vertical-align: text-bottom; }
+a.image:visited { color: white; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+.footnote, .footnoteref {
+  font-size: 0.8em;
+}
+
+span.footnote, span.footnoteref {
+  vertical-align: super;
+}
+
+#footnotes {
+  margin: 20px 0 20px 0;
+  padding: 7px 0 0 0;
+}
+
+#footnotes div.footnote {
+  margin: 0 0 5px 0;
+}
+
+#footnotes hr {
+  border: none;
+  border-top: 1px solid silver;
+  height: 1px;
+  text-align: left;
+  margin-left: 0;
+  width: 20%;
+  min-width: 100px;
+}
+
+div.colist td {
+  padding-right: 0.5em;
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+div.colist td img {
+  margin-top: 0.3em;
+}
+
+@media print {
+  #footer-badges { display: none; }
+}
+
+#toc {
+  margin-bottom: 2.5em;
+}
+
+#toctitle {
+  color: #527bbd;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel0, div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+
+span.aqua { color: aqua; }
+span.black { color: black; }
+span.blue { color: blue; }
+span.fuchsia { color: fuchsia; }
+span.gray { color: gray; }
+span.green { color: green; }
+span.lime { color: lime; }
+span.maroon { color: maroon; }
+span.navy { color: navy; }
+span.olive { color: olive; }
+span.purple { color: purple; }
+span.red { color: red; }
+span.silver { color: silver; }
+span.teal { color: teal; }
+span.white { color: white; }
+span.yellow { color: yellow; }
+
+span.aqua-background { background: aqua; }
+span.black-background { background: black; }
+span.blue-background { background: blue; }
+span.fuchsia-background { background: fuchsia; }
+span.gray-background { background: gray; }
+span.green-background { background: green; }
+span.lime-background { background: lime; }
+span.maroon-background { background: maroon; }
+span.navy-background { background: navy; }
+span.olive-background { background: olive; }
+span.purple-background { background: purple; }
+span.red-background { background: red; }
+span.silver-background { background: silver; }
+span.teal-background { background: teal; }
+span.white-background { background: white; }
+span.yellow-background { background: yellow; }
+
+span.big { font-size: 2em; }
+span.small { font-size: 0.6em; }
+
+span.underline { text-decoration: underline; }
+span.overline { text-decoration: overline; }
+span.line-through { text-decoration: line-through; }
+
+div.unbreakable { page-break-inside: avoid; }
+
+
+/*
+ * xhtml11 specific
+ *
+ * */
+
+div.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead, p.table.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+/*
+ * html5 specific
+ *
+ * */
+
+table.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+thead, p.tableblock.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.tableblock {
+  margin-top: 0;
+}
+table.tableblock {
+  border-width: 3px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: #527bbd;
+  border-collapse: collapse;
+}
+th.tableblock, td.tableblock {
+  border-width: 1px;
+  padding: 4px;
+  border-style: solid;
+  border-color: #527bbd;
+}
+
+table.tableblock.frame-topbot {
+  border-left-style: hidden;
+  border-right-style: hidden;
+}
+table.tableblock.frame-sides {
+  border-top-style: hidden;
+  border-bottom-style: hidden;
+}
+table.tableblock.frame-none {
+  border-style: hidden;
+}
+
+th.tableblock.halign-left, td.tableblock.halign-left {
+  text-align: left;
+}
+th.tableblock.halign-center, td.tableblock.halign-center {
+  text-align: center;
+}
+th.tableblock.halign-right, td.tableblock.halign-right {
+  text-align: right;
+}
+
+th.tableblock.valign-top, td.tableblock.valign-top {
+  vertical-align: top;
+}
+th.tableblock.valign-middle, td.tableblock.valign-middle {
+  vertical-align: middle;
+}
+th.tableblock.valign-bottom, td.tableblock.valign-bottom {
+  vertical-align: bottom;
+}
+
+
+/*
+ * manpage specific
+ *
+ * */
+
+body.manpage h1 {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-top: 2px solid silver;
+  border-bottom: 2px solid silver;
+}
+body.manpage h2 {
+  border-style: none;
+}
+body.manpage div.sectionbody {
+  margin-left: 3em;
+}
+
+@media print {
+  body.manpage div#toc { display: none; }
+}
+
+
+</style>
+<script type="text/javascript">
+/*<![CDATA[*/
+var asciidoc = {  // Namespace.
+
+/////////////////////////////////////////////////////////////////////
+// Table Of Contents generator
+/////////////////////////////////////////////////////////////////////
+
+/* Author: Mihai Bazon, September 2002
+ * http://students.infoiasi.ro/~mishoo
+ *
+ * Table Of Content generator
+ * Version: 0.4
+ *
+ * Feel free to use this script under the terms of the GNU General Public
+ * License, as long as you do not remove or alter this notice.
+ */
+
+ /* modified by Troy D. Hanson, September 2006. License: GPL */
+ /* modified by Stuart Rackham, 2006, 2009. License: GPL */
+
+// toclevels = 1..4.
+toc: function (toclevels) {
+
+  function getText(el) {
+    var text = "";
+    for (var i = el.firstChild; i != null; i = i.nextSibling) {
+      if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+        text += i.data;
+      else if (i.firstChild != null)
+        text += getText(i);
+    }
+    return text;
+  }
+
+  function TocEntry(el, text, toclevel) {
+    this.element = el;
+    this.text = text;
+    this.toclevel = toclevel;
+  }
+
+  function tocEntries(el, toclevels) {
+    var result = new Array;
+    var re = new RegExp('[hH]([1-'+(toclevels+1)+'])');
+    // Function that scans the DOM tree for header elements (the DOM2
+    // nodeIterator API would be a better technique but not supported by all
+    // browsers).
+    var iterate = function (el) {
+      for (var i = el.firstChild; i != null; i = i.nextSibling) {
+        if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+          var mo = re.exec(i.tagName);
+          if (mo && (i.getAttribute("class") || i.getAttribute("className")) != "float") {
+            result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
+          }
+          iterate(i);
+        }
+      }
+    }
+    iterate(el);
+    return result;
+  }
+
+  var toc = document.getElementById("toc");
+  if (!toc) {
+    return;
+  }
+
+  // Delete existing TOC entries in case we're reloading the TOC.
+  var tocEntriesToRemove = [];
+  var i;
+  for (i = 0; i < toc.childNodes.length; i++) {
+    var entry = toc.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div'
+     && entry.getAttribute("class")
+     && entry.getAttribute("class").match(/^toclevel/))
+      tocEntriesToRemove.push(entry);
+  }
+  for (i = 0; i < tocEntriesToRemove.length; i++) {
+    toc.removeChild(tocEntriesToRemove[i]);
+  }
+
+  // Rebuild TOC entries.
+  var entries = tocEntries(document.getElementById("content"), toclevels);
+  for (var i = 0; i < entries.length; ++i) {
+    var entry = entries[i];
+    if (entry.element.id == "")
+      entry.element.id = "_toc_" + i;
+    var a = document.createElement("a");
+    a.href = "#" + entry.element.id;
+    a.appendChild(document.createTextNode(entry.text));
+    var div = document.createElement("div");
+    div.appendChild(a);
+    div.className = "toclevel" + entry.toclevel;
+    toc.appendChild(div);
+  }
+  if (entries.length == 0)
+    toc.parentNode.removeChild(toc);
+},
+
+
+/////////////////////////////////////////////////////////////////////
+// Footnotes generator
+/////////////////////////////////////////////////////////////////////
+
+/* Based on footnote generation code from:
+ * http://www.brandspankingnew.net/archive/2005/07/format_footnote.html
+ */
+
+footnotes: function () {
+  // Delete existing footnote entries in case we're reloading the footnodes.
+  var i;
+  var noteholder = document.getElementById("footnotes");
+  if (!noteholder) {
+    return;
+  }
+  var entriesToRemove = [];
+  for (i = 0; i < noteholder.childNodes.length; i++) {
+    var entry = noteholder.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div' && entry.getAttribute("class") == "footnote")
+      entriesToRemove.push(entry);
+  }
+  for (i = 0; i < entriesToRemove.length; i++) {
+    noteholder.removeChild(entriesToRemove[i]);
+  }
+
+  // Rebuild footnote entries.
+  var cont = document.getElementById("content");
+  var spans = cont.getElementsByTagName("span");
+  var refs = {};
+  var n = 0;
+  for (i=0; i<spans.length; i++) {
+    if (spans[i].className == "footnote") {
+      n++;
+      var note = spans[i].getAttribute("data-note");
+      if (!note) {
+        // Use [\s\S] in place of . so multi-line matches work.
+        // Because JavaScript has no s (dotall) regex flag.
+        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+        spans[i].innerHTML =
+          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+        spans[i].setAttribute("data-note", note);
+      }
+      noteholder.innerHTML +=
+        "<div class='footnote' id='_footnote_" + n + "'>" +
+        "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
+        n + "</a>. " + note + "</div>";
+      var id =spans[i].getAttribute("id");
+      if (id != null) refs["#"+id] = n;
+    }
+  }
+  if (n == 0)
+    noteholder.parentNode.removeChild(noteholder);
+  else {
+    // Process footnoterefs.
+    for (i=0; i<spans.length; i++) {
+      if (spans[i].className == "footnoteref") {
+        var href = spans[i].getElementsByTagName("a")[0].getAttribute("href");
+        href = href.match(/#.*/)[0];  // Because IE return full URL.
+        n = refs[href];
+        spans[i].innerHTML =
+          "[<a href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+      }
+    }
+  }
+},
+
+install: function(toclevels) {
+  var timerId;
+
+  function reinstall() {
+    asciidoc.footnotes();
+    if (toclevels) {
+      asciidoc.toc(toclevels);
+    }
+  }
+
+  function reinstallAndRemoveTimer() {
+    clearInterval(timerId);
+    reinstall();
+  }
+
+  timerId = setInterval(reinstall, 500);
+  if (document.addEventListener)
+    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
+  else
+    window.onload = reinstallAndRemoveTimer;
+}
+
+}
+asciidoc.install();
+/*]]>*/
+</script>
 </head>
-
-<body>
-
-<h2>Introduction</h2>
-<p>Organizing and searching a large collection of PDFs as part of a research project can be a demanding task.
-<a href="http://en.wikipedia.org/wiki/Extensible_Metadata_Platform">XMP metadata</a> stored in a PDF, such as journal title, publication year, and user-added keywords, are often useful when searching for a publication.
-Here, we describe the use of a custom Recoll filter to retrieve this metadata, an indexing configuration to store it, and result paragraph format to display it. See also a related wiki entry, <a href="https://bitbucket.org/medoc/recoll/wiki/HandleCustomField.wiki">Generating a custom field and using it to sort results</a>, for sorting results on PDF page count.
-
-<h2>Saving metadata to PDFs</h2>
-<p>Bibliographic metadata can be saved in the PDF file itself. In the <a href="http://jabref.sourceforge.net">JabRef</a> bibliography manager, this is done with the "Write XMP-metadata to PDFs" menu item. Note the presence of the keywords in the screenshot below; this field is a good place to tag the PDF with any words of your choosing to describe genre, topic, etc.
-<p><img src="jabref_metadata.png">
-
-<h2>Custom indexing (fields file)</h2>
-<p>Let's create two fields named "year" and "journal". The prefixes starting with "XY" are extension prefixes that are added to the terms in the Xapian database (Recoll internally does not use prefixes starting with XY). Additionally, the year and journal are stored so they can be displayed in the results list. Some other types of metadata, such as title, author and keywords, are already indexed by Recoll (the default rclpdf finds them using the <b>pdftotext</b> command) so there is no need to add those to the [prefixes] section.
-<p>Add this text to the fields file in your Recoll configuration directory (<tt>~/.recoll/fields</tt>).
-<pre>
-[prefixes]
+<body class="article">
+<div id="header">
+<h1>Indexing PDF XMP-metadata with Recoll</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph"><p>The original document describing XMP metadata usage with Recoll was
+written by Jeffrey Dick and is <a href="original-text.html">still available
+here</a>. However it described using the old shell-based PDF Recoll input
+handler, which differs a lot from doing something equivalent with the
+current Python-based one (for which XMP capability is available from
+recoll 1.23.2, but the new handler can be used with previous Recoll
+versions).</p></div>
+<div class="paragraph"><p>This page was adapted from the text by Jeffrey Dick, using input from
+Johannes Menzel, (especially the result list paragraph format),
+adapting things for the new handler. The discussion which led to the
+updated handler is a
+<a href="https://bitbucket.org/medoc/recoll/issues/300/extracting-xmp-metadata-and-tmsu-tags">Bitbucket
+Recoll issue</a>.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_introduction">Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Organizing and searching a large collection of PDFs as part of a
+research project can be a demanding task.
+<a href="http://en.wikipedia.org/wiki/Extensible_Metadata_Platform">XMP
+metadata</a> stored in a PDF, such as journal title, publication year,
+and user-added keywords, are often useful when searching for a
+publication.</p></div>
+<div class="paragraph"><p>Here, we describe customizing Recoll to retrieve this metadata, store it,
+and defining a result paragraph format to display it. See also a related
+wiki entry,
+<a href="https://bitbucket.org/medoc/recoll/wiki/HandleCustomField.wiki">Generating
+a custom field and using it to sort results</a>, for sorting results on PDF
+page count.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_saving_metadata_to_pdfs">Saving metadata to PDFs</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Bibliographic metadata can be saved in the PDF file itself. In
+the <a href="http://jabref.sourceforge.net">JabRef</a> bibliography
+manager, this is done with the "Write XMP-metadata to PDFs" menu
+item. Note the presence of the keywords in the screenshot below; this
+field is a good place to tag the PDF with any words of your choosing
+to describe genre, topic, etc.</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="jabref_metadata.png" alt="Editing metadata with jabref" />
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_custom_indexing_fields_file">Custom indexing (fields file)</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Let&#8217;s create two fields named "year" and "journal". The prefixes
+starting with "XY" are extension prefixes that are added to the terms
+in the Xapian database (Recoll internally does not use prefixes
+starting with XY). Additionally, the year and journal are stored so
+they can be displayed in the results list. Some other types of
+metadata, such as title, author and keywords, are already indexed by
+Recoll (the default rclpdf finds them using the <strong>pdftotext</strong>
+command) so there is no need to add those to the [prefixes] section.</p></div>
+<div class="paragraph"><p>Add this text to the fields file in your Recoll configuration
+directory (<em>~/.recoll/fields</em>).</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>[prefixes]
 year = XYEAR
 journal = XYJOUR
 
 [stored]
-year =
-journal =
-</pre>
+bibtex:year =
+bibtex:journal =</code></pre>
+</div></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_telling_the_handler_what_fields_to_extract">Telling the handler what fields to extract</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>As of Recoll 1.23.2, the PDF handler has the capability to use
+<strong>pdfinfo</strong> for extracting XMP metadata. The switch for executing <strong>pdfinfo</strong>
+is the <em>pdfextrameta</em> configuration parameter, and the value of the
+parameter is a list of XMP tags to extract, with optional conversion
+to Recoll field names (the XMP qualified tag name is kept by
+default). Example:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>pdfextrameta =  bibtex:year bibtex:journal bibtex:booktitle|title</code></pre>
+</div></div>
+<div class="paragraph"><p>Here, <em>bibtex:year</em> and <em>bibtex:journal</em> are used directly, and
+<em>bibtex:booktitle</em> is translated to <em>title</em> (the example is not
+supposed to make sense)</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_editing_the_field_values">Editing the field values</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Shortly after the 1.23.2 release, the new rclpdf.py was modified to
+enable calling external Python code for editing the values of the XMP
+metadata fields. The name of the external script is defined by the
+<em>pdfextrametafix</em> configuration variable, and it should define a
+<em>MetaFixer</em> class, with a <em>metafix()</em> method.</p></div>
+<div class="paragraph"><p>In practise, add the following to recoll.conf:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>pdfextrametafix = /path/to/my/script.py</code></pre>
+</div></div>
+<div class="paragraph"><p>The Python script could look like the following:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>import sys
+import re
 
-<h2>Custom filter (rclpdf file)</h2>
-<p>This is where the heavy lifting happens. The filter should create HTML meta elements for each of the named index fields. Below is a diff between the default rclpdf and a customized one. The PDF metadata is gathered using the <b>pdfinfo</b> command. Then, <b>grep</b> and <b>sed</b> are used to extract the publication year and journal name from metadata fields beginning with "bibtex:" (part of the XMP metadata written by JabRef, in XML format). That information is fed to <b>awk</b>, which puts together the output. The crucial part in the customized awk script is the inclusion of the HTML meta elements with the names "year" and "journal".
-<p>There is some additional processing carried out by the l2html function. This replaces some LaTeX-style accents (stored in the PDF metadata if the BibTeX file contains them) with HTML entities. Only a few examples are shown here; other LaTeX accents could be processed in a similar manner. If desired, the sed commands could be modified to give UTF-8 characters instead of the HTML entities.
-<p>The l2html function also converts the LaTeX \emph{...} (emphasized text) to HTML markup for italics, &lt;i&gt;...&lt;/i&gt;. With this, and the markup="html" attribute in the HTML meta elements (given in the awk script for the title and at the end of the filter for the author), italicized text and accented characters represented by HTML entities will be shown in the results.
-<p>One other thing to note: the filter changes the "Subject" HTML meta tag (created by pdftotext) to "Abstract"; this is so that the actual abstract - of the journal article, stored in the BibTeX database and written as metadata to the PDF, and reported by pdftotext as the "Subject" - is indexed independently of the title. Otherwise, terms in the "Subject" and "title" meta tags by default get indexed together by Recoll, so a title: query would actually match words appearing in the abstract.
-<p>Grab the default rclpdf for Recoll 1.18.1 (most likely <tt>/usr/share/recoll/filters/rclpdf</tt>) then apply this patch and save the result in <tt>~/.recoll/filters/rclpdf</tt> .
-<pre>
-104a105,126
-> 
-> l2html() 
-> {
->   # redirect the stdin so the function can be used in a pipe
->   cat |
->   # use sed to replace some accented (LaTeX format) characters
->   sed -e 's/\\"a/\&amp;auml;/g' |      # a umlaut
->   sed -e "s/\\\'a/\&amp;aacute;/g" |   # a acute
->   sed -e "s/\\\\\`a/\&amp;agrave;/g" | # a grave
->   sed -e 's/\\u{a}/\&amp;#x103;/g' |   # a breve
->   # linebreak so multiple \emph{.*} can be replaced
->   sed -e 's/\\emph{/\n&amp;/g' |          
->   # \emph{.*} to &lt;i>.*&lt;/i> 
->   sed -e 's/\\emph{\(.*\)}/\&amp;lt;i\&amp;gt;\1\&amp;lt;\/i\&amp;gt;/g'
-> }
-> 
-> # get PDF metadata
-> PDFINFO=`pdfinfo -meta "$infile" 2>/dev/null`
-> # need grep -a (--text) becuase sometimes it treats input as binary
-> YEAR=`echo "$PDFINFO" | grep -a bibtex:year | sed -e 's/&lt;\/.*>//g' | sed -e 's/&lt;.*>//g'`
-> JOURNAL=`echo "$PDFINFO" | grep -a bibtex:journal | sed -e 's/&lt;\/.*>//g' | sed -e 's/&lt;.*>//g'`
-> 
-107c129
-&lt; awk 'BEGIN'\
----
-> awk -v year="$YEAR" -v journal="$JOURNAL" 'BEGIN'\
-111a134,136
->   yearmeta = "&lt;meta name=\"year\" content=\""
->   journalmeta = "&lt;meta name=\"journal\" content=\""
->   endmeta = "\">\n"
-115a141,146
->   if(doescape == 0 &amp;&amp; $0 ~ /&lt;\/head>/) {
->     match($0, /&lt;\/head>/)
->     part1 = substr($0, 0, RSTART-1)
->     part2 = substr($0, RSTART, length($0))
->     $0 =  part1 yearmeta year endmeta journalmeta journal endmeta part2
->   }
-133c164
-&lt;     mid = "&lt;title>" mid "&lt;/title>"
----
->     mid = "&lt;meta name=\"title\" markup=\"html\" content=\"" mid "\">"
-167c198
-&lt; ' 
----
-> ' | 
-168a200,205
-> # replace latex with html markup
-> l2html |
-> # replace "Subject" with "Abstract"
-> sed -e s/\&lt;meta\ name=\"Subject\"/\&lt;meta\ name=\"Abstract\"/g |
-> # add markup="html" to author meta element
-> sed -e s/\&lt;meta\ name=\"Author\"/\&lt;meta\ name=\"Author\"\ markup=\"html\"/g
-</pre>
+# This can be used for local XMP field editing.
+#
+# A new instance is created for each PDF document (so the object could
+# keep state to avoid, e.g. duplicate values)
+#
+# The metafix method receives an (original) field name, and the text
+# value, and should return the possibly modified text.
+class MetaFixer(object):
+    def __init__(self):
+        pass
 
-<h2>Use the source (mimeconf file)</h2>
-<p>Recoll needs to know about your custom rclpdf. Make sure the rclpdf is executable, and add this to <tt>~/.recoll/mimeconf</tt> (replace &lt;username> with your username).
-<pre>
-[index]
-application/pdf = exec /home/&lt;username>/.recoll/filters/rclpdf
-</pre>
-<p>Then index away!
-<p>Note that you can also run the rclpdf script manually, e.g. <tt>rclpdf /path/to/some.pdf</tt>, to inspect the output. If things are working correctly, the &lt;head> consists of the HTML meta elements, and the &lt;body> contains the text of the PDF.
+    def metafix(self, nm, txt):
+        if nm == 'bibtex:pages':
+            txt = re.sub(r'--', '-', txt)
+        elif nm == 'someothername':
+            # do something else
+            pass
+        elif nm == 'stillanother':
+            # etc.
+            pass
 
-<h2>Result paragraph format</h2>
-<p>Here, the result is formatted to show the title, which is a link to open the document, in blue with underlining turned off. The next two lines contain the authors, then the journal title in green italicized text followed by year (in parentheses). The keywords are listed in red after the abstract/text snippet.
-<p>Edit this using the Recoll GUI: Preferences > GUI configuration > Result List > Edit result paragraph format string.
-<pre>
-&lt;a href="P%N">&lt;img src="%I" align="left">&lt;/a>
-&amp;nbsp;&lt;span style=font-size:1.15em>&lt;a style=text-decoration:none href="E%N">%(title)&lt;/a>&lt;/span>&lt;br>
-&amp;nbsp;%(author)&lt;br>
-&amp;nbsp;&lt;font color="#009000">&lt;i>%(journal)&lt;/i>&lt;/font>&amp;nbsp;(%(year))
-&amp;nbsp;&lt;table bgcolor="#e0e0e0"> &lt;tr>&lt;td>&lt;div>%A&lt;/div>&lt;/td>&lt;/tr>
-&lt;/table>&lt;font color="#900000">%K&lt;/font>
-&lt;br>&lt;br>
-</pre>
-The screenshot below also has the "Highlight color for query terms" set to <tt>black; font-weight:bold;</tt> for bold, black text (instead of the blue default). There are <a href="https://bitbucket.org/medoc/recoll/wiki/ResultsThumbnails">various methods for creating the thumbnails</a>; the ones here were made by opening the directory containing the PDFs in the Dolphin file manager (part of KDE) and selecting the Preview option.
+        return txt</code></pre>
+</div></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_indexing">Indexing</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Then index away!</p></div>
+<div class="paragraph"><p>Note that you can also run the rclpdf.py script manually,
+e.g. <code>rclpdf.py -d /path/to/some.pdf</code>, to inspect the
+output. If things are working correctly, the &lt;head&gt; consists of the
+HTML meta elements, and the &lt;body&gt; contains the text of the PDF.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_result_paragraph_format">Result paragraph format</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Here, the result is formatted to show the title, which is a link
+to open the document, in blue with underlining turned off. The next
+two lines contain the authors, then the journal title in green
+italicized text followed by year (in parentheses). The keywords are
+listed in red after the abstract/text snippet.</p></div>
+<div class="paragraph"><p>Edit this using the Recoll GUI: Preferences &gt; GUI configuration &gt;
+    Result List &gt; Edit result paragraph format string.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>&lt;table class="respar" style="padding-bottom: 10px;" cellspacing="5" cellpadding="5"&gt;
 
-<h2>A search example</h2>
-<p>The simple query is <tt>cerevisiae keyword:protein</tt>. This returns only PDFs that have the text "cerevisiae" and have been tagged with the "protein" keyword. The LaTeX-style formatting from the BibTeX database is displayed as HTML (note the italicized words in article title, and umlaut in author's name). Other queries could be made based on the PDF metadata, e.g. <tt>journal:plos</tt> or <tt>year:2013</tt> .
-<p><img src="recoll_query.png">
+&lt;thead style="vertical-align: top;"&gt;
+&lt;tr&gt;
+&lt;td colspan="3" style="border-bottom: 1pt dotted #004070; font-size: smaller;"&gt;&lt;a href="E%N"&gt;%u&lt;/a&gt; | %S | Relevanz: %R&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
 
-<h2>More possibilities</h2>
-<ul>
-  <li>The sort buttons (up- and down-arrows) in Recoll sort the results by the modified date on the file at the time of indexing. If you want this sorting to reflect the publication year, then the timestamp should be set accordingly. If names of the PDFs contain the year (e.g. BZS2007.pdf, CKE+2011.pdf), the following one-liner would set the modified date to January 1st of the year: <tt>for i in `ls *.pdf`; do touch -d `echo $i | sed 's/[^0-9]*//g'`-01-01 $i; done</tt> . Note that the publication year could then be shown in the result list using the stored date of the file (using "%D" in the result paragraph format, and date format "%Y") instead of having to add the year to the index as shown above.
-  <li>The filter can be modified to fill in the "journal" field for BibTex entries that aren't journal articles (e.g. bibtex:booktitle for "InCollection" entries).
-</ul>
+&lt;tbody style="vertical-align: top;"&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;a href="P%N"&gt;&lt;img src="%I" alt="" width="64" height="auto" /&gt;&lt;/a&gt;&lt;/td&gt;
+&lt;td style="width: 250px;"&gt;&lt;span style="color: #004070;"&gt;
+  &lt;div style="font-style: italic;"&gt;%(author)&lt;/div&gt;
+  &lt;div style="font-weight: bold;"&gt;&lt;a href="E%N"&gt;&amp;raquo;%T&amp;laquo;&lt;/a&gt;&lt;/div&gt;
+  &lt;div style="text-transform: uppercase; margin-top: 5pt"&gt;%(reftype)&lt;/div&gt;&lt;/td&gt;
+&lt;td&gt;
+  &lt;div style="font-size: smaller;"&gt;
+    %(refauthor)%(refchapter) %(reftitle)%(refeditor)%(refbooktitle)%(refjournal)%(refvolume)%(refnumber)%(refaddress)%(reflocation)%(refpublisher)%(refyear)%(refpages).&lt;/div&gt;
+  &lt;div style="text-align: justify; font-family: serif; margin-top: 5pt; margin-bottom: 5pt"&gt;&amp;raquo;&lt;a href="A%N"&gt;%A&lt;/a&gt;&amp;laquo;&lt;/div&gt;
+  &lt;div&gt;%(refkeywords)&lt;/div&gt;
+  &lt;div style="font-size: smaller;"&gt;&lt;a href="%(refurl)"&gt;%(refurl)&lt;/a&gt;&lt;/div&gt;
+  &lt;div style="font-size: smaller"&gt; %(refkey) %(refisbn) %(refissn) %(refdoi)&lt;/div&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
 
+&lt;/table&gt;</code></pre>
+</div></div>
+<div class="paragraph"><p>The screenshot below also has the <em>Highlight color for query terms</em>
+set to <code>black; font-weight:bold;</code> for bold, black text (instead
+of the blue default). There
+are linkhttps://bitbucket.org/medoc/recoll/wiki/ResultsThumbnails[various
+methods for creating the thumbnails]; the ones here were made by
+opening the directory containing the PDFs in the Dolphin file manager
+(part of KDE) and selecting the Preview option.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_a_search_example">A search example</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>The simple query is <code>cerevisiae keyword:protein</code>. This
+returns only PDFs that have the text "cerevisiae" and have been
+tagged with the "protein" keyword. The LaTeX-style formatting from
+the BibTeX database is displayed as HTML (note the italicized words
+in article title, and umlaut in author&#8217;s name). Other queries could
+be made based on the PDF metadata, e.g. <em>journal:plos</em>
+r <em>year:2013</em>.</p></div>
+<div class="paragraph"><p>image::recoll_query.png</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_more_possibilities">More possibilities</h2>
+<div class="sectionbody">
+<div class="ulist"><ul>
+<li>
+<p>
+The sort buttons (up- and down-arrows) in Recoll sort the
+  results by the modified date on the file at the time of indexing. If
+  you want this sorting to reflect the publication year, then the
+  timestamp should be set accordingly. If names of the PDFs contain
+  the year (e.g. BZS2007.pdf, CKE+2011.pdf), the following one-liner
+  would set the modified date to January 1st of the year:
+</p>
+</li>
+</ul></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>for i in `ls *.pdf`; do touch -d `echo $i | sed 's/[^0-9]*//g'`-01-01 $i; done</code></pre>
+</div></div>
+<div class="paragraph"><p>Note that the publication year could then be shown in
+the result list using the stored date of the file (using "%D" in the
+result paragraph format, and date format "%Y") instead of having to
+add the year to the index as shown above.</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+The filter can be modified to fill in the "journal" field for
+  BibTex entries that aren&#8217;t journal articles (e.g. bibtex:booktitle
+  for "InCollection" entries).
+</p>
+</li>
+</ul></div>
+</div>
+</div>
+</div>
+<div id="footnotes"><hr /></div>
+<div id="footer">
+<div id="footer-text">
+Last updated
+ 2017-05-17 07:27:42 CEST
+</div>
+</div>
 </body>
+</html>

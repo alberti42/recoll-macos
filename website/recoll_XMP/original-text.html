@@ -1,0 +1,125 @@
+<html>
+<head>
+<title>Indexing PDF XMP-metadata</title>
+</head>
+
+<body>
+
+<h2>Introduction</h2>
+<p>Organizing and searching a large collection of PDFs as part of a research project can be a demanding task.
+<a href="http://en.wikipedia.org/wiki/Extensible_Metadata_Platform">XMP metadata</a> stored in a PDF, such as journal title, publication year, and user-added keywords, are often useful when searching for a publication.
+Here, we describe the use of a custom Recoll filter to retrieve this metadata, an indexing configuration to store it, and result paragraph format to display it. See also a related wiki entry, <a href="https://bitbucket.org/medoc/recoll/wiki/HandleCustomField.wiki">Generating a custom field and using it to sort results</a>, for sorting results on PDF page count.
+
+<h2>Saving metadata to PDFs</h2>
+<p>Bibliographic metadata can be saved in the PDF file itself. In the <a href="http://jabref.sourceforge.net">JabRef</a> bibliography manager, this is done with the "Write XMP-metadata to PDFs" menu item. Note the presence of the keywords in the screenshot below; this field is a good place to tag the PDF with any words of your choosing to describe genre, topic, etc.
+<p><img src="jabref_metadata.png">
+
+<h2>Custom indexing (fields file)</h2>
+<p>Let's create two fields named "year" and "journal". The prefixes starting with "XY" are extension prefixes that are added to the terms in the Xapian database (Recoll internally does not use prefixes starting with XY). Additionally, the year and journal are stored so they can be displayed in the results list. Some other types of metadata, such as title, author and keywords, are already indexed by Recoll (the default rclpdf finds them using the <b>pdftotext</b> command) so there is no need to add those to the [prefixes] section.
+<p>Add this text to the fields file in your Recoll configuration directory (<tt>~/.recoll/fields</tt>).
+<pre>
+[prefixes]
+year = XYEAR
+journal = XYJOUR
+
+[stored]
+year =
+journal =
+</pre>
+
+<h2>Custom filter (rclpdf file)</h2>
+<p>This is where the heavy lifting happens. The filter should create HTML meta elements for each of the named index fields. Below is a diff between the default rclpdf and a customized one. The PDF metadata is gathered using the <b>pdfinfo</b> command. Then, <b>grep</b> and <b>sed</b> are used to extract the publication year and journal name from metadata fields beginning with "bibtex:" (part of the XMP metadata written by JabRef, in XML format). That information is fed to <b>awk</b>, which puts together the output. The crucial part in the customized awk script is the inclusion of the HTML meta elements with the names "year" and "journal".
+<p>There is some additional processing carried out by the l2html function. This replaces some LaTeX-style accents (stored in the PDF metadata if the BibTeX file contains them) with HTML entities. Only a few examples are shown here; other LaTeX accents could be processed in a similar manner. If desired, the sed commands could be modified to give UTF-8 characters instead of the HTML entities.
+<p>The l2html function also converts the LaTeX \emph{...} (emphasized text) to HTML markup for italics, &lt;i&gt;...&lt;/i&gt;. With this, and the markup="html" attribute in the HTML meta elements (given in the awk script for the title and at the end of the filter for the author), italicized text and accented characters represented by HTML entities will be shown in the results.
+<p>One other thing to note: the filter changes the "Subject" HTML meta tag (created by pdftotext) to "Abstract"; this is so that the actual abstract - of the journal article, stored in the BibTeX database and written as metadata to the PDF, and reported by pdftotext as the "Subject" - is indexed independently of the title. Otherwise, terms in the "Subject" and "title" meta tags by default get indexed together by Recoll, so a title: query would actually match words appearing in the abstract.
+<p>Grab the default rclpdf for Recoll 1.18.1 (most likely <tt>/usr/share/recoll/filters/rclpdf</tt>) then apply this patch and save the result in <tt>~/.recoll/filters/rclpdf</tt> .
+<pre>
+104a105,126
+> 
+> l2html() 
+> {
+>   # redirect the stdin so the function can be used in a pipe
+>   cat |
+>   # use sed to replace some accented (LaTeX format) characters
+>   sed -e 's/\\"a/\&amp;auml;/g' |      # a umlaut
+>   sed -e "s/\\\'a/\&amp;aacute;/g" |   # a acute
+>   sed -e "s/\\\\\`a/\&amp;agrave;/g" | # a grave
+>   sed -e 's/\\u{a}/\&amp;#x103;/g' |   # a breve
+>   # linebreak so multiple \emph{.*} can be replaced
+>   sed -e 's/\\emph{/\n&amp;/g' |          
+>   # \emph{.*} to &lt;i>.*&lt;/i> 
+>   sed -e 's/\\emph{\(.*\)}/\&amp;lt;i\&amp;gt;\1\&amp;lt;\/i\&amp;gt;/g'
+> }
+> 
+> # get PDF metadata
+> PDFINFO=`pdfinfo -meta "$infile" 2>/dev/null`
+> # need grep -a (--text) becuase sometimes it treats input as binary
+> YEAR=`echo "$PDFINFO" | grep -a bibtex:year | sed -e 's/&lt;\/.*>//g' | sed -e 's/&lt;.*>//g'`
+> JOURNAL=`echo "$PDFINFO" | grep -a bibtex:journal | sed -e 's/&lt;\/.*>//g' | sed -e 's/&lt;.*>//g'`
+> 
+107c129
+&lt; awk 'BEGIN'\
+---
+> awk -v year="$YEAR" -v journal="$JOURNAL" 'BEGIN'\
+111a134,136
+>   yearmeta = "&lt;meta name=\"year\" content=\""
+>   journalmeta = "&lt;meta name=\"journal\" content=\""
+>   endmeta = "\">\n"
+115a141,146
+>   if(doescape == 0 &amp;&amp; $0 ~ /&lt;\/head>/) {
+>     match($0, /&lt;\/head>/)
+>     part1 = substr($0, 0, RSTART-1)
+>     part2 = substr($0, RSTART, length($0))
+>     $0 =  part1 yearmeta year endmeta journalmeta journal endmeta part2
+>   }
+133c164
+&lt;     mid = "&lt;title>" mid "&lt;/title>"
+---
+>     mid = "&lt;meta name=\"title\" markup=\"html\" content=\"" mid "\">"
+167c198
+&lt; ' 
+---
+> ' | 
+168a200,205
+> # replace latex with html markup
+> l2html |
+> # replace "Subject" with "Abstract"
+> sed -e s/\&lt;meta\ name=\"Subject\"/\&lt;meta\ name=\"Abstract\"/g |
+> # add markup="html" to author meta element
+> sed -e s/\&lt;meta\ name=\"Author\"/\&lt;meta\ name=\"Author\"\ markup=\"html\"/g
+</pre>
+
+<h2>Use the source (mimeconf file)</h2>
+<p>Recoll needs to know about your custom rclpdf. Make sure the rclpdf is executable, and add this to <tt>~/.recoll/mimeconf</tt> (replace &lt;username> with your username).
+<pre>
+[index]
+application/pdf = exec /home/&lt;username>/.recoll/filters/rclpdf
+</pre>
+<p>Then index away!
+<p>Note that you can also run the rclpdf script manually, e.g. <tt>rclpdf /path/to/some.pdf</tt>, to inspect the output. If things are working correctly, the &lt;head> consists of the HTML meta elements, and the &lt;body> contains the text of the PDF.
+
+<h2>Result paragraph format</h2>
+<p>Here, the result is formatted to show the title, which is a link to open the document, in blue with underlining turned off. The next two lines contain the authors, then the journal title in green italicized text followed by year (in parentheses). The keywords are listed in red after the abstract/text snippet.
+<p>Edit this using the Recoll GUI: Preferences > GUI configuration > Result List > Edit result paragraph format string.
+<pre>
+&lt;a href="P%N">&lt;img src="%I" align="left">&lt;/a>
+&amp;nbsp;&lt;span style=font-size:1.15em>&lt;a style=text-decoration:none href="E%N">%(title)&lt;/a>&lt;/span>&lt;br>
+&amp;nbsp;%(author)&lt;br>
+&amp;nbsp;&lt;font color="#009000">&lt;i>%(journal)&lt;/i>&lt;/font>&amp;nbsp;(%(year))
+&amp;nbsp;&lt;table bgcolor="#e0e0e0"> &lt;tr>&lt;td>&lt;div>%A&lt;/div>&lt;/td>&lt;/tr>
+&lt;/table>&lt;font color="#900000">%K&lt;/font>
+&lt;br>&lt;br>
+</pre>
+The screenshot below also has the "Highlight color for query terms" set to <tt>black; font-weight:bold;</tt> for bold, black text (instead of the blue default). There are <a href="https://bitbucket.org/medoc/recoll/wiki/ResultsThumbnails">various methods for creating the thumbnails</a>; the ones here were made by opening the directory containing the PDFs in the Dolphin file manager (part of KDE) and selecting the Preview option.
+
+<h2>A search example</h2>
+<p>The simple query is <tt>cerevisiae keyword:protein</tt>. This returns only PDFs that have the text "cerevisiae" and have been tagged with the "protein" keyword. The LaTeX-style formatting from the BibTeX database is displayed as HTML (note the italicized words in article title, and umlaut in author's name). Other queries could be made based on the PDF metadata, e.g. <tt>journal:plos</tt> or <tt>year:2013</tt> .
+<p><img src="recoll_query.png">
+
+<h2>More possibilities</h2>
+<ul>
+  <li>The sort buttons (up- and down-arrows) in Recoll sort the results by the modified date on the file at the time of indexing. If you want this sorting to reflect the publication year, then the timestamp should be set accordingly. If names of the PDFs contain the year (e.g. BZS2007.pdf, CKE+2011.pdf), the following one-liner would set the modified date to January 1st of the year: <tt>for i in `ls *.pdf`; do touch -d `echo $i | sed 's/[^0-9]*//g'`-01-01 $i; done</tt> . Note that the publication year could then be shown in the result list using the stored date of the file (using "%D" in the result paragraph format, and date format "%Y") instead of having to add the year to the index as shown above.
+  <li>The filter can be modified to fill in the "journal" field for BibTex entries that aren't journal articles (e.g. bibtex:booktitle for "InCollection" entries).
+</ul>
+
+</body>
