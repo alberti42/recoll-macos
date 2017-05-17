@@ -1098,6 +1098,108 @@ metadatacmds = ; tags = tmsu tags %f
 </sect1>
 
 
+    <sect1 id="RCL.INDEXING.PDF">
+      <title>The PDF input handler</title>
+
+      <para>The PDF format is very important for scientific and technical
+      documentation, and document archival. It has extensive
+      facilities for storing metadata along with the document, and these
+      facilities are actually used in the real world.</para>
+
+      <para>In consequence, the <filename>rclpdf.py</filename> PDF input
+      handler has more complex capabilities than most others, and it is
+      also more configurable. Specifically, <filename>rclpdf.py</filename>
+      can automatically use <application>tesseract</application> to perform
+      OCR if the document text is empty, it can be configured to extract
+      specific metadata tags from an XMP packet, and to extract PDF
+      attachments.</para>
+
+      <sect2 id="RCL.INDEXING.PDF.OCR">
+        <title>OCR with Tesseract</title>
+
+        <para>If both <application>tesseract</application> and
+        <command>pdftoppm</command> (generally from the
+        <application>poppler-utils</application> package) are installed,
+        the PDF handler may attempt OCR on PDF files with no text
+        content. This is controlled by the <link
+        linkend="RCL.INSTALL.CONFIG.RECOLLCONF.PDFOCR">pdfocr</link>
+        configuration variable, which is false by default because
+        OCR is very slow.</para>
+
+        <para>The choice of language is very important for successfull
+        OCR. Recoll has currently no way to determine this from the
+        document itself. You can set the language to use through the
+        contents of a <filename>.ocrpdflang</filename> text file in the
+        same directory as the PDF document, or through the
+        <envar>RECOLL_TESSERACT_LANG</envar> environment variable, or
+        through the contents of an <filename>ocrpdf</filename> text file
+        inside the configuration directory. If none of the above are used,
+        &RCL; will try to guess the language from the NLS
+        environment.</para>
+
+      </sect2>
+      
+      <sect2 id="RCL.INDEXING.PDF.XMP">
+        <title>XMP fields extraction</title>
+
+        <para>The <filename>rclpdf.py</filename> script in &RCL; version
+        1.23.2 and later can extract XMP metadata fields by executing the
+        <command>pdfinfo</command> command (usually found with
+        <application>poppler-utils</application>). This is controlled by
+        the <link
+        linkend="RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETA">pdfextrameta</link>
+        configuration variable, which specifies which tags to extract and,
+        possibly, how to rename them.</para>
+
+        <para>The <link
+        linkend="RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETAFIX">pdfextrametafix</link>
+        variable can be used to designate a file with Python code to edit
+        the metadata fields (available for &RCL; 1.23.3 and later. 1.23.2
+        has equivalent code inside the handler script). Example:</para>
+        <programlisting>import sys
+import re
+
+class MetaFixer(object):
+    def __init__(self):
+        pass
+
+    def metafix(self, nm, txt):
+        if nm == 'bibtex:pages':
+            txt = re.sub(r'--', '-', txt)
+        elif nm == 'someothername':
+            # do something else
+            pass
+        elif nm == 'stillanother':
+            # etc.
+            pass
+    
+        return txt
+        </programlisting>
+
+        
+        <!-- <para> There is a <ulink url="&WIKI;PDFXMP.wiki">complete example of XMP
+        tags setup</ulink>, including a  nice result list paragraph format in the 
+        &RCL; Wiki </para> -->
+      
+
+      </sect2>
+
+      <sect2 id="RCL.INDEXING.PDF.ATTACH">
+        <title>PDF attachment indexing</title>
+
+        <para>If <application>pdftk</application> is installed, and if the
+        the <link
+        linkend="RCL.INSTALL.CONFIG.RECOLLCONF.PDFATTACH">pdfattach</link>
+        configuration variable is set, the PDF input handler will try to
+        extract PDF attachements for indexing as sub-documents of the PDF
+        file. This is disabled by default, because it slows down PDF
+        indexing a bit even if not one attachment is ever found (PDF
+        attachments are uncommon in my experience).</para>
+
+      </sect2>
+      
+    </sect1>
+
     <sect1 id="RCL.INDEXING.PERIODIC">
       <title>Periodic indexing</title>
 

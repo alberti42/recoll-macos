@@ -20,8 +20,8 @@ alink="#0000FF">
     <div class="titlepage">
       <div>
         <div>
-          <h1 class="title"><a name="idp37528496" id=
-          "idp37528496"></a>Recoll user manual</h1>
+          <h1 class="title"><a name="idp35245072" id=
+          "idp35245072"></a>Recoll user manual</h1>
         </div>
 
         <div>
@@ -109,13 +109,13 @@ alink="#0000FF">
                 multiple indexes</a></span></dt>
 
                 <dt><span class="sect2">2.1.3. <a href=
-                "#idp43099712">Document types</a></span></dt>
+                "#idp40818624">Document types</a></span></dt>
 
                 <dt><span class="sect2">2.1.4. <a href=
-                "#idp43124208">Indexing failures</a></span></dt>
+                "#idp40843200">Indexing failures</a></span></dt>
 
                 <dt><span class="sect2">2.1.5. <a href=
-                "#idp43131216">Recovery</a></span></dt>
+                "#idp40850208">Recovery</a></span></dt>
               </dl>
             </dd>
 
@@ -172,29 +172,49 @@ alink="#0000FF">
             tags</a></span></dt>
 
             <dt><span class="sect1">2.7. <a href=
+            "#RCL.INDEXING.PDF">The PDF input
+            handler</a></span></dt>
+
+            <dd>
+              <dl>
+                <dt><span class="sect2">2.7.1. <a href=
+                "#RCL.INDEXING.PDF.OCR">OCR with
+                Tesseract</a></span></dt>
+
+                <dt><span class="sect2">2.7.2. <a href=
+                "#RCL.INDEXING.PDF.XMP">XMP fields
+                extraction</a></span></dt>
+
+                <dt><span class="sect2">2.7.3. <a href=
+                "#RCL.INDEXING.PDF.ATTACH">PDF attachment
+                indexing</a></span></dt>
+              </dl>
+            </dd>
+
+            <dt><span class="sect1">2.8. <a href=
             "#RCL.INDEXING.PERIODIC">Periodic
             indexing</a></span></dt>
 
             <dd>
               <dl>
-                <dt><span class="sect2">2.7.1. <a href=
+                <dt><span class="sect2">2.8.1. <a href=
                 "#RCL.INDEXING.PERIODIC.EXEC">Running
                 indexing</a></span></dt>
 
-                <dt><span class="sect2">2.7.2. <a href=
+                <dt><span class="sect2">2.8.2. <a href=
                 "#RCL.INDEXING.PERIODIC.AUTOMAT">Using <span class=
                 "command"><strong>cron</strong></span> to automate
                 indexing</a></span></dt>
               </dl>
             </dd>
 
-            <dt><span class="sect1">2.8. <a href=
+            <dt><span class="sect1">2.9. <a href=
             "#RCL.INDEXING.MONITOR">Real time
             indexing</a></span></dt>
 
             <dd>
               <dl>
-                <dt><span class="sect2">2.8.1. <a href=
+                <dt><span class="sect2">2.9.1. <a href=
                 "#RCL.INDEXING.MONITOR.FASTFILES">Slowing down the
                 reindexing rate for fast changing
                 files</a></span></dt>
@@ -768,7 +788,7 @@ alink="#0000FF">
         "application">Qt</span>.</p>
 
         <p>The <a class="link" href="#RCL.INDEXING.PERIODIC.EXEC"
-        title="2.7.1.&nbsp;Running indexing">indexing process</a>
+        title="2.8.1.&nbsp;Running indexing">indexing process</a>
         is started automatically the first time you execute the
         <span class="command"><strong>recoll</strong></span> GUI.
         Indexing can also be performed by executing the
@@ -879,21 +899,21 @@ alink="#0000FF">
             "list-style-type: disc;">
               <li class="listitem">
                 <p><b><a class="link" href="#RCL.INDEXING.PERIODIC"
-                title="2.7.&nbsp;Periodic indexing">Periodic (or
+                title="2.8.&nbsp;Periodic indexing">Periodic (or
                 batch) indexing:</a>&nbsp;</b>indexing takes place
                 at discrete times, by executing the <span class=
                 "command"><strong>recollindex</strong></span>
                 command. The typical usage is to have a nightly
                 indexing run <a class="link" href=
                 "#RCL.INDEXING.PERIODIC.AUTOMAT" title=
-                "2.7.2.&nbsp;Using cron to automate indexing">programmed</a>
+                "2.8.2.&nbsp;Using cron to automate indexing">programmed</a>
                 into your <span class=
                 "command"><strong>cron</strong></span> file.</p>
               </li>
 
               <li class="listitem">
                 <p><b><a class="link" href="#RCL.INDEXING.MONITOR"
-                title="2.8.&nbsp;Real time indexing">Real time
+                title="2.9.&nbsp;Real time indexing">Real time
                 indexing:</a>&nbsp;</b>indexing takes place as soon
                 as a file is created or changed. <span class=
                 "command"><strong>recollindex</strong></span> runs
@@ -997,8 +1017,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp43099712" id=
-                "idp43099712"></a>2.1.3.&nbsp;Document types</h3>
+                <h3 class="title"><a name="idp40818624" id=
+                "idp40818624"></a>2.1.3.&nbsp;Document types</h3>
               </div>
             </div>
           </div>
@@ -1111,8 +1131,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp43124208" id=
-                "idp43124208"></a>2.1.4.&nbsp;Indexing
+                <h3 class="title"><a name="idp40843200" id=
+                "idp40843200"></a>2.1.4.&nbsp;Indexing
                 failures</h3>
               </div>
             </div>
@@ -1152,8 +1172,8 @@ indexedmimetypes = application/pdf
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idp43131216" id=
-                "idp43131216"></a>2.1.5.&nbsp;Recovery</h3>
+                <h3 class="title"><a name="idp40850208" id=
+                "idp40850208"></a>2.1.5.&nbsp;Recovery</h3>
               </div>
             </div>
           </div>
@@ -1916,8 +1936,146 @@ metadatacmds = ; tags = tmsu tags %f
           <div>
             <div>
               <h2 class="title" style="clear: both"><a name=
+              "RCL.INDEXING.PDF" id=
+              "RCL.INDEXING.PDF"></a>2.7.&nbsp;The PDF input
+              handler</h2>
+            </div>
+          </div>
+        </div>
+
+        <p>The PDF format is very important for scientific and
+        technical documentation, and document archival. It has
+        extensive facilities for storing metadata along with the
+        document, and these facilities are actually used in the
+        real world.</p>
+
+        <p>In consequence, the <code class=
+        "filename">rclpdf.py</code> PDF input handler has more
+        complex capabilities than most others, and it is also more
+        configurable. Specifically, <code class=
+        "filename">rclpdf.py</code> can automatically use
+        <span class="application">tesseract</span> to perform OCR
+        if the document text is empty, it can be configured to
+        extract specific metadata tags from an XMP packet, and to
+        extract PDF attachments.</p>
+
+        <div class="sect2">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a name="RCL.INDEXING.PDF.OCR"
+                id="RCL.INDEXING.PDF.OCR"></a>2.7.1.&nbsp;OCR with
+                Tesseract</h3>
+              </div>
+            </div>
+          </div>
+
+          <p>If both <span class="application">tesseract</span> and
+          <span class="command"><strong>pdftoppm</strong></span>
+          (generally from the <span class=
+          "application">poppler-utils</span> package) are
+          installed, the PDF handler may attempt OCR on PDF files
+          with no text content. This is controlled by the <a class=
+          "link" href=
+          "#RCL.INSTALL.CONFIG.RECOLLCONF.PDFOCR">pdfocr</a>
+          configuration variable, which is false by default because
+          OCR is very slow.</p>
+
+          <p>The choice of language is very important for
+          successfull OCR. Recoll has currently no way to determine
+          this from the document itself. You can set the language
+          to use through the contents of a <code class=
+          "filename">.ocrpdflang</code> text file in the same
+          directory as the PDF document, or through the
+          <code class="envar">RECOLL_TESSERACT_LANG</code>
+          environment variable, or through the contents of an
+          <code class="filename">ocrpdf</code> text file inside the
+          configuration directory. If none of the above are used,
+          <span class="application">Recoll</span> will try to guess
+          the language from the NLS environment.</p>
+        </div>
+
+        <div class="sect2">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a name="RCL.INDEXING.PDF.XMP"
+                id="RCL.INDEXING.PDF.XMP"></a>2.7.2.&nbsp;XMP
+                fields extraction</h3>
+              </div>
+            </div>
+          </div>
+
+          <p>The <code class="filename">rclpdf.py</code> script in
+          <span class="application">Recoll</span> version 1.23.2
+          and later can extract XMP metadata fields by executing
+          the <span class="command"><strong>pdfinfo</strong></span>
+          command (usually found with <span class=
+          "application">poppler-utils</span>). This is controlled
+          by the <a class="link" href=
+          "#RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETA">pdfextrameta</a>
+          configuration variable, which specifies which tags to
+          extract and, possibly, how to rename them.</p>
+
+          <p>The <a class="link" href=
+          "#RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETAFIX">pdfextrametafix</a>
+          variable can be used to designate a file with Python code
+          to edit the metadata fields (available for <span class=
+          "application">Recoll</span> 1.23.3 and later. 1.23.2 has
+          equivalent code inside the handler script). Example:</p>
+          <pre class="programlisting">
+import sys
+import re
+
+class MetaFixer(object):
+    def __init__(self):
+        pass
+
+    def metafix(self, nm, txt):
+        if nm == 'bibtex:pages':
+            txt = re.sub(r'--', '-', txt)
+        elif nm == 'someothername':
+            # do something else
+            pass
+        elif nm == 'stillanother':
+            # etc.
+            pass
+    
+        return txt
+        
+</pre>
+        </div>
+
+        <div class="sect2">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a name="RCL.INDEXING.PDF.ATTACH"
+                id="RCL.INDEXING.PDF.ATTACH"></a>2.7.3.&nbsp;PDF
+                attachment indexing</h3>
+              </div>
+            </div>
+          </div>
+
+          <p>If <span class="application">pdftk</span> is
+          installed, and if the the <a class="link" href=
+          "#RCL.INSTALL.CONFIG.RECOLLCONF.PDFATTACH">pdfattach</a>
+          configuration variable is set, the PDF input handler will
+          try to extract PDF attachements for indexing as
+          sub-documents of the PDF file. This is disabled by
+          default, because it slows down PDF indexing a bit even if
+          not one attachment is ever found (PDF attachments are
+          uncommon in my experience).</p>
+        </div>
+      </div>
+
+      <div class="sect1">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a name=
               "RCL.INDEXING.PERIODIC" id=
-              "RCL.INDEXING.PERIODIC"></a>2.7.&nbsp;Periodic
+              "RCL.INDEXING.PERIODIC"></a>2.8.&nbsp;Periodic
               indexing</h2>
             </div>
           </div>
@@ -1929,7 +2087,7 @@ metadatacmds = ; tags = tmsu tags %f
               <div>
                 <h3 class="title"><a name=
                 "RCL.INDEXING.PERIODIC.EXEC" id=
-                "RCL.INDEXING.PERIODIC.EXEC"></a>2.7.1.&nbsp;Running
+                "RCL.INDEXING.PERIODIC.EXEC"></a>2.8.1.&nbsp;Running
                 indexing</h3>
               </div>
             </div>
@@ -2037,7 +2195,7 @@ metadatacmds = ; tags = tmsu tags %f
               <div>
                 <h3 class="title"><a name=
                 "RCL.INDEXING.PERIODIC.AUTOMAT" id=
-                "RCL.INDEXING.PERIODIC.AUTOMAT"></a>2.7.2.&nbsp;Using
+                "RCL.INDEXING.PERIODIC.AUTOMAT"></a>2.8.2.&nbsp;Using
                 <span class="command"><strong>cron</strong></span>
                 to automate indexing</h3>
               </div>
@@ -2095,7 +2253,7 @@ metadatacmds = ; tags = tmsu tags %f
             <div>
               <h2 class="title" style="clear: both"><a name=
               "RCL.INDEXING.MONITOR" id=
-              "RCL.INDEXING.MONITOR"></a>2.8.&nbsp;Real time
+              "RCL.INDEXING.MONITOR"></a>2.9.&nbsp;Real time
               indexing</h2>
             </div>
           </div>
@@ -2225,7 +2383,7 @@ fs.inotify.max_user_watches=32768
               <div>
                 <h3 class="title"><a name=
                 "RCL.INDEXING.MONITOR.FASTFILES" id=
-                "RCL.INDEXING.MONITOR.FASTFILES"></a>2.8.1.&nbsp;Slowing
+                "RCL.INDEXING.MONITOR.FASTFILES"></a>2.9.1.&nbsp;Slowing
                 down the reindexing rate for fast changing
                 files</h3>
               </div>
@@ -9847,6 +10005,38 @@ thesame = "some string with spaces"
                 pdftk (if available). This is normally disabled,
                 because it does slow down PDF indexing a bit even
                 if not one attachment is ever found.</p>
+              </dd>
+
+              <dt><a name=
+              "RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETA" id=
+              "RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETA"></a><span class="term"><code class="varname">pdfextrameta</code></span></dt>
+
+              <dd>
+                <p>Extract text from selected XMP metadata tags.
+                This is a space-separated list of qualified XMP tag
+                names. Each element can also include a translation
+                to a Recoll field name, separated by a '|'
+                character. If the second element is absent, the tag
+                name is used as the Recoll field names. You will
+                also need to add specifications to the 'fields'
+                file to direct processing of the extracted
+                data.</p>
+              </dd>
+
+              <dt><a name=
+              "RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETAFIX" id=
+              "RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETAFIX"></a><span class="term"><code class="varname">pdfextrametafix</code></span></dt>
+
+              <dd>
+                <p>Define name of XMP field editing script. This
+                defines the name of a script to be loaded for
+                editing XMP field values. The script should define
+                a 'MetaFixer' class with a metafix() method which
+                will be called with the qualified tag name and
+                value of each selected field, for editing or
+                erasing. A new instance is created for each
+                document, so that the object can keep state for,
+                e.g. eliminating duplicate values.</p>
               </dd>
             </dl>
           </div>

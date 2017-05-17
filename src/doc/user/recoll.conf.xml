@@ -606,6 +606,23 @@ very slow.</para></listitem></varlistentry>
 available). This is
 normally disabled, because it does slow down PDF indexing a bit even if
 not one attachment is ever found.</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETA">
+<term><varname>pdfextrameta</varname></term>
+<listitem><para>Extract text from selected XMP metadata tags. This
+is a space-separated list of qualified XMP tag names. Each element can also
+include a translation to a Recoll field name, separated by a '|'
+character. If the second element is absent, the tag name is used as the
+Recoll field names. You will also need to add specifications to the
+'fields' file to direct processing of the extracted data.</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETAFIX">
+<term><varname>pdfextrametafix</varname></term>
+<listitem><para>Define name of XMP field editing script. This
+defines the name of a script to be loaded for editing XMP field
+values. The script should define a 'MetaFixer' class with a metafix()
+method which will be called with the qualified tag name and value of each
+selected field, for editing or erasing. A new instance is created for
+each document, so that the object can keep state for, e.g. eliminating
+duplicate values.</para></listitem></varlistentry>
 </sect3>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.SPECLOCATIONS">
 <title>Parameters set for specific locations </title>

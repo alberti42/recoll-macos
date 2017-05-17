@@ -98,6 +98,7 @@ class PDFExtractor:
         # (xmltag,rcltag) pairs
         self.extrameta = cf.getConfParam("pdfextrameta")
         if self.extrameta:
+            self.extrametafix = cf.getConfParam("pdfextrametafix")
             self._initextrameta()
 
         # Check if we need to escape portions of text where old
@@ -178,7 +179,16 @@ class PDFExtractor:
         self.re_xmlpacket = re.compile(r'<\?xpacket[ 	]+begin.*\?>' +
                                        r'(.*)' + r'<\?xpacket[ 	]+end',
                                        flags = re.DOTALL)
-
+        global EMF
+        EMF = None
+        if self.extrametafix:
+            try:
+                import imp
+                EMF = imp.load_source('pdfextrametafix', self.extrametafix)
+            except Exception as err:
+                self.em.rclog("Import extrametafix failed: %s" % err)
+                pass
+                
     # Extract all attachments if any into temporary directory
     def extractAttach(self):
         if self.attextractdone:
@@ -384,26 +394,11 @@ class PDFExtractor:
         #       [e.text for e in elt.iter() if e.text]).strip()
 
 
-    # This can be used for local field editing. For now you need to
-    # change the program source. maybe we'll make it more dynamic one
-    # day. The method receives an (original) field name, and the text
-    # value, and should return the possibly modified text.
-    def _extrametafix(self, nm, txt):
-        if nm == 'bibtex:pages':
-            txt = re.sub(r'--', '-', txt)
-        elif nm == 'someothername':
-            # do something else
-            pass
-        elif nm == 'stillanother':
-            # etc.
-            pass
-        
-        return txt
-
-
     def _setextrameta(self, html):
         if not self.pdfinfo:
             return html
+
+        emf = EMF.MetaFixer() if EMF else None
 
         all = subprocess.check_output([self.pdfinfo, "-meta", self.filename])
 
@@ -445,9 +440,10 @@ class PDFExtractor:
                     continue
                 if elt is not None:
                     text = self._xmltreetext(elt).encode('UTF-8')
+                    if emf:
+                        text = emf.metafix(metanm, text)
                     # Should we set empty values ?
                     if text:
-                        text = self._extrametafix(metanm, text)
                         # Can't use setfield as it only works for
                         # text/plain output at the moment.
                         metaheaders.append((rclnm, text))
