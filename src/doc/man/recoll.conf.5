@@ -28,7 +28,7 @@ defaultcharset = utf-8
 
 .fi
 .LP
-There are three kinds of lines: 
+There are three kinds of lines:
 .RS
 .IP \(bu
 Comment or empty
@@ -58,19 +58,19 @@ embedded spaces can be quoted with double-quotes.
 Space-separated list of files or
 directories to recursively index. Default to ~ (indexes
 $HOME). You can use symbolic links in the list, they will be followed,
-independantly of the value of the followLinks variable.
+independently of the value of the followLinks variable.
 .TP
 .BI "skippedNames = "string
-Files and directories which should be ignored. 
+Files and directories which should be ignored.
 White space separated list of wildcard patterns (simple ones, not paths,
 must contain no / ), which will be tested against file and directory
 names.  The list in the default configuration does not exclude hidden
 directories (names beginning with a dot), which means that it may index
 quite a few things that you do not want. On the other hand, email user
 agents like Thunderbird usually store messages in hidden directories, and
-you probably want this indexed. One possible solution is to have '.*' in
-'skippedNames', and add things like '~/.thunderbird' '~/.evolution' to
-'topdirs'.  Not even the file names are indexed for patterns in this
+you probably want this indexed. One possible solution is to have '.*'
+in 'skippedNames', and add things like '~/.thunderbird' '~/.evolution'
+to 'topdirs'.  Not even the file names are indexed for patterns in this
 list, see the 'noContentSuffixes' variable for an alternative approach
 which indexes the file names. Can be redefined for any
 subtree.
@@ -92,18 +92,18 @@ wildcard expressions for filesystem paths. Can contain files and
 directories. The database and configuration directories will
 automatically be added. The expressions are matched using 'fnmatch(3)'
 with the FNM_PATHNAME flag set by default. This means that '/' characters
-must be matched explicitely. You can set 'skippedPathsFnmPathname' to 0
-to disable the use of FNM_PATHNAME (meaning that '/*/dir3' will match
-'/dir1/dir2/dir3').  The default value contains the usual mount point for
-removable media to remind you that it is a bad idea to have Recoll work
+must be matched explicitly. You can set 'skippedPathsFnmPathname' to 0
+to disable the use of FNM_PATHNAME (meaning that '/*/dir3' will
+match '/dir1/dir2/dir3').  The default value contains the usual mount point
+for removable media to remind you that it is a bad idea to have Recoll work
 on these (esp. with the monitor: media gets indexed on mount, all data
-gets erased on unmount).  Explicitely adding '/media/xxx' to the topdirs
+gets erased on unmount).  Explicitly adding '/media/xxx' to the topdirs
 will override this.
 .TP
 .BI "skippedPathsFnmPathname = "bool
 Set to 0 to
 override use of FNM_PATHNAME for matching skipped
-paths. 
+paths.
 .TP
 .BI "daemSkippedPaths = "string
 skippedPaths equivalent specific to
@@ -115,7 +115,7 @@ not set, the daemon uses skippedPaths.
 Space-separated list of wildcard expressions for names that should
 be ignored inside zip archives. This is used directly by
 the zip handler, and has a function similar to skippedNames, but works
-independantly. Can be redefined for subdirectories. Supported by recoll
+independently. Can be redefined for subdirectories. Supported by recoll
 1.20 and newer. See
 https://bitbucket.org/medoc/recoll/wiki/Filtering%20out%20Zip%20archive%20members
 
@@ -173,8 +173,8 @@ Command used to guess
 MIME types if the internal methods fails This should be a
 "file -i" workalike.  The file path will be added as a last parameter to
 the command line. 'xdg-mime' works better than the traditional 'file'
-command, and is now the configured default (with a hard-coded fallback to
-'file')
+command, and is now the configured default (with a hard-coded fallback
+to 'file')
 .TP
 .BI "processwebqueue = "bool
 Decide if we process the
@@ -215,10 +215,9 @@ will reduce the index size. This can only be set for a whole index, not
 for a subtree.
 .TP
 .BI "dehyphenate = "bool
-Determines if we index
-'coworker' also when the input is 'co-worker'. This is new
-in version 1.22, and on by default. Setting the variable to off allows
-restoring the previous behaviour.
+Determines if we index 'coworker' also when the input is 'co-worker'.
+This is new in version 1.22, and on by default. Setting the variable to off
+allows restoring the previous behaviour.
 .TP
 .BI "nocjk = "bool
 Decides if specific East Asian
@@ -313,7 +312,7 @@ set if testmodifusemtime is set.
 .TP
 .BI "metadatacmds = "string
 Define commands to
-gather external metadata, e.g. tmsu tags. 
+gather external metadata, e.g. tmsu tags.
 There can be several entries, separated by semi-colons, each defining
 which field name the data goes into and the command to use. Don't forget the
 initial semi-colon. All the field names must be different. You can use
@@ -455,13 +454,13 @@ only errors and warnings. 3 will print information like document updates,
 .TP
 .BI "logfilename = "fn
 Log file destination. Use 'stderr' (default) to write to the
-console. 
+console.
 .TP
 .BI "idxloglevel = "int
-Override loglevel for the indexer. 
+Override loglevel for the indexer.
 .TP
 .BI "idxlogfilename = "fn
-Override logfilename for the indexer. 
+Override logfilename for the indexer.
 .TP
 .BI "daemloglevel = "int
 Override loglevel for the indexer in real time
@@ -615,5 +614,5 @@ Enable thunderbird/mozilla-seamonkey mbox format quirks Set this for the directo
 stored.
 
 .SH SEE ALSO
-.PP 
+.PP
 recollindex(1) recoll(1)

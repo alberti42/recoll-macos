@@ -661,9 +661,10 @@ dist_man1_MANS = doc/man/recoll.1 doc/man/recollq.1 doc/man/recollindex.1
 dist_man5_MANS = doc/man/recoll.conf.5
 
 dist-hook:
+	(cd $(top_srcdir); find . \
+            \( -name '*.pyc' -o -name '#*' -o -name '*~' \) -delete)
 	modified=`hg status | \
         grep -v /$(distdir)/|egrep -v 'debianunitysco|packaging|website'`; \
 	if test ! -z "$$modified"; then \
             echo Local directory is modified: $$modified ; exit 1; fi
 	hg tag -f -m "Release $(VERSION) tagged" RECOLL-$(VERSION)
-
