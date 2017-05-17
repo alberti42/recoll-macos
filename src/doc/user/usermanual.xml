@@ -1174,8 +1174,17 @@ class MetaFixer(object):
             pass
     
         return txt
+    def wrapup(self, metaheaders):
+        pass
         </programlisting>
 
+        <para>If the 'metafix()' method is defined, it is called for each
+        metadata field. A new MetaFixer object is created for each PDF
+        document (so the object can keep state for, for example,
+        eliminating duplicate values). If the 'wrapup()' method is defined, it
+        is called at the end of XMP fields processing with the whole
+        metadata as parameter, as an array of '(nm, val)' pairs, allowing
+        an alternate approach for editing or adding/deleting fields.</para>
         
         <!-- <para> There is a <ulink url="&WIKI;PDFXMP.wiki">complete example of XMP
         tags setup</ulink>, including a  nice result list paragraph format in the 

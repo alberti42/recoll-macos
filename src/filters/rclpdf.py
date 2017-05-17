@@ -400,23 +400,20 @@ class PDFExtractor:
 
         emf = EMF.MetaFixer() if EMF else None
 
+        # Execute pdfinfo and extract the XML packet
         all = subprocess.check_output([self.pdfinfo, "-meta", self.filename])
-
-        # Extract the XML packet
         res = self.re_xmlpacket.search(all)
-        xml = ''
-        if res:
-            xml = res.group(1)
+        xml = res.group(1) if res else ''
         #self.em.rclog("extrameta: XML: [%s]" % xml)
         if not xml:
             return html
 
+        # Process the XML data
+        root = ET.fromstring(xml)
+        # Sometimes the root tag is <x:xmpmeta>, sometimes <rdf:RDF>
         # The namespace thing is a drag. Can't do it from the top. See
         # the stackoverflow ref above. Maybe we'd be better off just
         # walking the full tree and building the namespaces dict.
-        root = ET.fromstring(xml)
-
-        # Sometimes the root tag is <x:xmpmeta>, sometimes <rdf:RDF>
         if root.tag.endswith('RDF'):
             rdf = root
         else:
@@ -441,13 +438,21 @@ class PDFExtractor:
                 if elt is not None:
                     text = self._xmltreetext(elt).encode('UTF-8')
                     if emf:
-                        text = emf.metafix(metanm, text)
+                        try:
+                            text = emf.metafix(metanm, text)
+                        except:
+                            pass
                     # Should we set empty values ?
                     if text:
                         # Can't use setfield as it only works for
                         # text/plain output at the moment.
                         metaheaders.append((rclnm, text))
         if metaheaders:
+            if emf:
+                try:
+                    emf.wrapup(metaheaders)
+                except:
+                    pass
             return self._injectmeta(html, metaheaders)
         else:
             return html
