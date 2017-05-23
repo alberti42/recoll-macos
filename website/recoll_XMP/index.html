@@ -745,10 +745,9 @@ handler, which differs a lot from doing something equivalent with the
 current Python-based one (for which XMP capability is available from
 recoll 1.23.2, but the new handler can be used with previous Recoll
 versions).</p></div>
-<div class="paragraph"><p>This page was adapted from the text by Jeffrey Dick, using input from
-Johannes Menzel, (especially the result list paragraph format),
-adapting things for the new handler. The discussion which led to the
-updated handler is a
+<div class="paragraph"><p>I based this page on the text by Jeffrey Dick, using input from Johannes
+Menzel for all examples about the new features. The discussion which led to
+the updated handler is a
 <a href="https://bitbucket.org/medoc/recoll/issues/300/extracting-xmp-metadata-and-tmsu-tags">Bitbucket
 Recoll issue</a>.</p></div>
 </div>
@@ -787,46 +786,49 @@ to describe genre, topic, etc.</p></div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_custom_indexing_fields_file">Custom indexing (fields file)</h2>
+<h2 id="_custom_indexing_short_example_fields_file">Custom indexing short example (fields file)</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Let&#8217;s create two fields named "year" and "journal". The prefixes
-starting with "XY" are extension prefixes that are added to the terms
-in the Xapian database (Recoll internally does not use prefixes
-starting with XY). Additionally, the year and journal are stored so
-they can be displayed in the results list. Some other types of
-metadata, such as title, author and keywords, are already indexed by
-Recoll (the default rclpdf finds them using the <strong>pdftotext</strong>
-command) so there is no need to add those to the [prefixes] section.</p></div>
-<div class="paragraph"><p>Add this text to the fields file in your Recoll configuration
-directory (<em>~/.recoll/fields</em>).</p></div>
+<div class="paragraph"><p>The following example (extract from a complete configuration shown later)
+creates two fields named "refjournal" and "refpages", which are both stored
+(so they can be displayed in result list entries), and indexed (you can
+specifically search them).</p></div>
+<div class="paragraph"><p>Some other types of metadata, such as title, author and keywords, are
+already indexed by Recoll (the default rclpdf finds them using the
+<strong>pdftotext</strong> command) so there is no need to add those to the [prefixes]
+section.</p></div>
+<div class="paragraph"><p>This is taken from the <code>fields</code> file inside the configuration
+(e.g. <em>~/.recoll/fields</em>).</p></div>
 <div class="listingblock">
 <div class="content">
 <pre><code>[prefixes]
-year = XYEAR
-journal = XYJOUR
+refjournal=RFJOURNAL
+refpages=RFPAGES
 
 [stored]
-bibtex:year =
-bibtex:journal =</code></pre>
+refjournal =
+refpages =
+
+[aliases]
+refjournal = bibtex:journal bibtex:journaltitle
+refpages = bibtex:pages</code></pre>
 </div></div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_telling_the_handler_what_fields_to_extract">Telling the handler what fields to extract</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>As of Recoll 1.23.2, the PDF handler has the capability to use
-<strong>pdfinfo</strong> for extracting XMP metadata. The switch for executing <strong>pdfinfo</strong>
-is the <em>pdfextrameta</em> configuration parameter, and the value of the
-parameter is a list of XMP tags to extract, with optional conversion
-to Recoll field names (the XMP qualified tag name is kept by
-default). Example:</p></div>
+<div class="paragraph"><p>As of Recoll 1.23.2, the PDF handler has the capability to use <strong>pdfinfo</strong>
+for extracting XMP metadata. The switch for executing <strong>pdfinfo</strong> is the
+<em>pdfextrameta</em> configuration parameter, and the value of the parameter is a
+list of XMP tags to extract, with optional conversion to Recoll field names
+(the XMP qualified tag name is kept by default, the translation is
+separated by a <em>|</em> character). Example (without translations):</p></div>
 <div class="listingblock">
 <div class="content">
-<pre><code>pdfextrameta =  bibtex:year bibtex:journal bibtex:booktitle|title</code></pre>
+<pre><code>pdfextrameta =  bibtex:year bibtex:journal bibtex:journaltitle</code></pre>
 </div></div>
-<div class="paragraph"><p>Here, <em>bibtex:year</em> and <em>bibtex:journal</em> are used directly, and
-<em>bibtex:booktitle</em> is translated to <em>title</em> (the example is not
-supposed to make sense)</p></div>
+<div class="paragraph"><p>Note that it is quite equivalent to translate a field name inside
+<em>pdfextrameta</em> or to uses aliases inside the <em>fields</em> file.</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -871,6 +873,11 @@ class MetaFixer(object):
 
         return txt</code></pre>
 </div></div>
+<div class="paragraph"><p>The metadata-editing script can be modified to fill in the "journal" field for
+BibTex entries that aren&#8217;t journal articles (e.g. bibtex:booktitle
+for "InCollection" entries), by defining a <em>wrapup()</em> method which will
+be called with the whole metadata array (an array of <em>(nm,value)</em>
+pairs) for global editing/removing/addition.</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -886,11 +893,8 @@ HTML meta elements, and the &lt;body&gt; contains the text of the PDF.</p></div>
 <div class="sect1">
 <h2 id="_result_paragraph_format">Result paragraph format</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>Here, the result is formatted to show the title, which is a link
-to open the document, in blue with underlining turned off. The next
-two lines contain the authors, then the journal title in green
-italicized text followed by year (in parentheses). The keywords are
-listed in red after the abstract/text snippet.</p></div>
+<div class="paragraph"><p>The result paragraph format defines what fields are displayed inside Recoll
+result list, and how they are formatted.</p></div>
 <div class="paragraph"><p>Edit this using the Recoll GUI: Preferences &gt; GUI configuration &gt;
     Result List &gt; Edit result paragraph format string.</p></div>
 <div class="listingblock">
@@ -922,26 +926,17 @@ listed in red after the abstract/text snippet.</p></div>
 
 &lt;/table&gt;</code></pre>
 </div></div>
-<div class="paragraph"><p>The screenshot below also has the <em>Highlight color for query terms</em>
-set to <code>black; font-weight:bold;</code> for bold, black text (instead
-of the blue default). There
-are linkhttps://bitbucket.org/medoc/recoll/wiki/ResultsThumbnails[various
-methods for creating the thumbnails]; the ones here were made by
-opening the directory containing the PDFs in the Dolphin file manager
-(part of KDE) and selecting the Preview option.</p></div>
+<div class="paragraph"><p>There are
+<a href="https://bitbucket.org/medoc/recoll/wiki/ResultsThumbnails">various
+methods for creating the thumbnails</a>; the ones here were made by opening
+the directory containing the PDFs in the Dolphin file manager (part of KDE)
+and selecting the Preview option.</p></div>
+<div class="paragraph"><p>And the result:</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="recoll_query.png" alt="Result list display" />
 </div>
 </div>
-<div class="sect1">
-<h2 id="_a_search_example">A search example</h2>
-<div class="sectionbody">
-<div class="paragraph"><p>The simple query is <code>cerevisiae keyword:protein</code>. This
-returns only PDFs that have the text "cerevisiae" and have been
-tagged with the "protein" keyword. The LaTeX-style formatting from
-the BibTeX database is displayed as HTML (note the italicized words
-in article title, and umlaut in author&#8217;s name). Other queries could
-be made based on the PDF metadata, e.g. <em>journal:plos</em>
-r <em>year:2013</em>.</p></div>
-<div class="paragraph"><p>image::recoll_query.png</p></div>
 </div>
 </div>
 <div class="sect1">
@@ -967,15 +962,194 @@ The sort buttons (up- and down-arrows) in Recoll sort the
 the result list using the stored date of the file (using "%D" in the
 result paragraph format, and date format "%Y") instead of having to
 add the year to the index as shown above.</p></div>
-<div class="ulist"><ul>
-<li>
-<p>
-The filter can be modified to fill in the "journal" field for
-  BibTex entries that aren&#8217;t journal articles (e.g. bibtex:booktitle
-  for "InCollection" entries).
-</p>
-</li>
-</ul></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_complete_example">Complete example</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>This was designed by Johannes Menzel, who kindly provided the data when we
+worked on improving PDF XMP data extraction. The originals are listed in
+this
+<a href="https://bitbucket.org/medoc/recoll/issues/300/extracting-xmp-metadata-and-tmsu-tags">BitBucket issue</a></p></div>
+<div class="paragraph"><p>The paragraph format is listed above.</p></div>
+<div class="sect2">
+<h3 id="_em_recoll_conf_em_additions"><em>recoll.conf</em> additions:</h3>
+<div class="listingblock">
+<div class="content">
+<pre><code>pdfextrameta = bibtex:journal bibtex:journaltitle bibtex:pages \
+  bibtex:volume bibtex:number bibtex:booktitle bibtex:year bibtex:author \
+  bibtex:title bibtex:isbn bibtex:issn bibtex:editor bibtex:address \
+  bibtex:location bibtex:doi bibtex:chapter bibtex:url bibtex:entrytype \
+  bibtex:bibtexkey bibtex:abstract bibtex:date bibtex:keywords \
+  bibtex:comment bibtex:language bibtex:edition bibtex:totalpages \
+  dc:creator dc:relation dc:publisher dc:title dc:type dc:identifier
+
+defaultcharset = UTF-8//
+
+pdfextrametafix = /home/hannes/.recoll/metafix.py</code></pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_em_metafix_py_em_script"><em>metafix.py</em> script:</h3>
+<div class="listingblock">
+<div class="content">
+<pre><code>import sys
+import re
+
+# This can be used for local XMP field editing.
+#
+# A new instance is created for each PDF document (so the object could
+# keep state to avoid, e.g. duplicate values)
+#
+# The metafix method receives an (original) field name, and the text
+# value, and should return the possibly modified text.
+class MetaFixer(object):
+    def __init__(self):
+        pass
+
+    def metafix(self, nm, txt):
+        if nm == 'bibtex:pages':
+            txt = re.sub(r'--', '-', txt)
+            txt = re.sub(r'^', ', p. ', txt)
+        elif nm == 'bibtex:author':
+            txt = re.sub(r'$', ':\ ', txt)
+            pass
+        elif nm == 'bibtex:chapter':
+            txt = re.sub(r'^', ', in: id.: ', txt)
+            pass
+        elif nm == 'bibtex:editor':
+            txt = re.sub(r'^', ', in: ', txt)
+            txt = re.sub(r'$', ' (ed.):\ ', txt)
+            pass
+        elif nm == 'bibtex:year':
+            txt = re.sub(r'^', ', ', txt)
+            pass
+        elif nm == 'bibtex:date':
+            txt = re.sub(r'^', ', ', txt)
+            pass
+        elif nm == 'bibtex:volume':
+            txt = re.sub(r'^', ', vol. ', txt)
+            pass
+        elif nm == 'bibtex:number':
+            txt = re.sub(r'^', ', no. ', txt)
+            pass
+        elif nm == 'bibtex:journaltitle':
+            txt = re.sub(r'^', ', in: ', txt)
+            pass
+        elif nm == 'bibtex:journal':
+            txt = re.sub(r'^', ', in: ', txt)
+            pass
+        elif nm == 'bibtex:title':
+            txt = re.sub(r'^', '"', txt)
+            txt = re.sub(r'$', '"', txt)
+            pass
+        elif nm == 'bibtex:location':
+            txt = re.sub(r'^', ', ', txt)
+            txt = re.sub(r'$', ':\ ', txt)
+            pass
+        elif nm == 'bibtex:address':
+            txt = re.sub(r'^', ', ', txt)
+            txt = re.sub(r'$', ':\ ', txt)
+            pass
+        elif nm == 'bibtex:isbn':
+            txt = re.sub(r'^', 'ISBN: ', txt)
+            pass
+        elif nm == 'bibtex:issn':
+            txt = re.sub(r'^', 'ISSN: ', txt)
+            pass
+        elif nm == 'bibtex:doi':
+            txt = re.sub(r'^', 'DOI: ', txt)
+            pass
+        elif nm == 'bibtex:bibtexkey':
+            txt = re.sub(r'^', 'Key: ', txt)
+            pass
+
+        return txt</code></pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_em_fields_em_file"><em>fields</em> file:</h3>
+<div class="listingblock">
+<div class="content">
+<pre><code>[prefixes]
+
+refjournal=RFJOURNAL
+refpages=RFPAGES
+reftitle=RFTTITLE
+refvolume=RFVOLUME
+refauthor=RFAUTHOR
+refyear=RFYYEAR
+refisbn=RFISBN
+refissn=RFISSN
+refdoi=RFDOI
+refeditor=RFEDITOR
+refpublisher=RFPUBLISHER
+refaddress=RFADDRESS
+reflocation=RFLOCATION
+refbooktitle=RFBOOKTITLE
+refurl=RFURL
+reftype=RFTYPE
+refkey=RFKEY
+refabstract=RFABSTRACT
+refkeywords=RFKEYWORDS
+refcomment=RFCOMMENT
+refedition=RFEDITION
+reflanguage=RFLANGUAGE
+
+[stored]
+
+refjournal=
+refpages=
+reftitle=
+refvolume=
+refauthor=
+refyear=
+refisbn=
+refissn=
+refdoi=
+refeditor=
+refpublisher=
+refaddress=
+reflocation=
+refbooktitle=
+refurl=
+reftype=
+refkey=
+refabstract=
+refkeywords=
+refcomment=
+refedition=
+reflanguage=
+refid=
+
+[aliases]
+
+refjournal = bibtex:journal bibtex:journaltitle
+refpages = bibtex:pages
+reftitle = bibtex:title
+refvolume = bibtex:volume
+refauthor = bibtex:author
+refyear = bibtex:year bibtex:date
+refid = dc:identifier bibtex:isbn bibtex:issn
+refisbn = bibtex:isbn
+refissn = bibtex:issn
+refdoi = bibtex:doi
+refeditor = bibtex:editor
+refpublisher = bibtex:publisher
+refaddress = bibtex:address
+reflocation = bibtex:location
+refbooktitle = bibtex:booktitle
+refurl = bibtex:url
+reftype = bibtex:entrytype bibtex:type
+refkey = bibtex:bibtexkey
+refabstract = bibtex:abstract
+refkeywords = bibtex:keywords
+refcomment = bibtex:comment
+refedition = bibtex:edition
+reflanguage = bibtex:language
+author = xesam:author</code></pre>
+</div></div>
+</div>
 </div>
 </div>
 </div>
@@ -983,7 +1157,7 @@ The filter can be modified to fill in the "journal" field for
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-05-17 07:27:42 CEST
+ 2017-05-23 09:26:52 CEST
 </div>
 </div>
 </body>
