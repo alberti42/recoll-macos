@@ -105,6 +105,10 @@
       <div class="news">
       
         <dl>
+          <dt>2017-05-23</dt><dd>Releaase 1.23.2 has gotten much
+            better at <a href="recoll_XMP">processing PDF XMP
+              data</a>.</dd>
+          
           <dt>2017-05-15</dt><dd>Release 1.23.2. This fixes a couple
             of quite serious bugs. See
             the <a href="release-1.23.html">Release notes</a></dd>

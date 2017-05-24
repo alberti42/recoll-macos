@@ -926,6 +926,46 @@ result list, and how they are formatted.</p></div>
 
 &lt;/table&gt;</code></pre>
 </div></div>
+<div class="paragraph"><p>And the result list header (Preferences &gt; GUI configuration &gt;
+Result List &gt; Result Page HTML header insert):</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><code>&lt;!-- Custom Header --&gt;
+
+&lt;script type="text/javascript"&gt;
+  function altRows() {
+      var rows = document.getElementsByClassName("rclresult");
+      for (i = 0; i &lt; rows.length; i++) {
+          if (i % 2 == 0) {
+              rows[i].style.backgroundColor = "#f0f0f0";
+          }
+      }
+  }
+  window.onload = function() {
+      altRows();
+  }
+&lt;/script&gt;
+
+&lt;style type="text/css"&gt;
+a:link {
+    color: #004070;
+    text-decoration: none;
+}
+a:visited {
+    color: #004070;
+    text-decoration: none;
+}
+a:hover {
+    color: #0050a0;
+    text-decoration: none;
+}
+a:active {
+    color: #005080;
+    text-decoration: none;
+}
+&lt;/style&gt;
+&lt;!-- End of Custom Header --&gt;</code></pre>
+</div></div>
 <div class="paragraph"><p>There are
 <a href="https://bitbucket.org/medoc/recoll/wiki/ResultsThumbnails">various
 methods for creating the thumbnails</a>; the ones here were made by opening
@@ -1157,7 +1197,7 @@ author = xesam:author</code></pre>
 <div id="footer">
 <div id="footer-text">
 Last updated
- 2017-05-23 09:26:52 CEST
+ 2017-05-24 11:10:15 CEST
 </div>
 </div>
 </body>
