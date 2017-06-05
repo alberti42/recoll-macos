@@ -95,3 +95,4 @@ website/pages/recoll-mingw.html
 website/pages/recoll-webui-install-wsgi.html
 website/pages/recoll-windows.html
 website/pages/recoll-windows-faq.html
+website/faqsandhowtos/*.html
