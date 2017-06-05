@@ -1,5 +1,7 @@
 == Faqs and Howtos
 
+link:faqsindex.html[Full file index]
+
 === Indexing
 * link:WhyIsMyFileNotIndexed.html[Why is this file not indexed ? Investigating indexing issues]
 * link:PreventIndexingDir.html[Preventing the indexing of a directory]
@@ -28,7 +30,7 @@
 
 === Administration and miscellaneous
 * link:http://www.recoll.org/pages/recoll-webui-install-wsgi.html.html[Installation of the Recoll WebUI with Apache]
-* link:FilterRetrofit.wiki.html[//Installing a filter for a new document type//]
+* link:FilterRetrofit.wiki.html[Installing a filter for a new document type]
 * link:UnityLens.html[Building and Installing the Ubuntu Unity Recoll Lens]
 * link:SavingConfig.wiki.html[Recoll configuration backup]
 * link:XDGBase.wiki.html[Tidying Recoll data storage]

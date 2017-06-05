@@ -1,7 +1,7 @@
 #!/bin/sh
-WIDX=WikiIndex.txt
+WIDX=faqsindex.txt
 
-echo "== Recoll Wiki file index" > $WIDX
+echo "== Recoll Faqs and Howtos file index" > $WIDX
 for f in *.txt; do
  if test "$f" = $WIDX ; then continue; fi
  h="`basename $f .txt`.html"
