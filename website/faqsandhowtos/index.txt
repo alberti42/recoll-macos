@@ -1,5 +1,7 @@
 == Faqs and Howtos
 
+link:..[Back to recoll.org top page]
+
 link:faqsindex.html[Full file index]
 
 === Indexing
