@@ -154,17 +154,17 @@ Db::Native::Native(Db *db)
       m_totalworkns(0LL), m_havewriteq(false)
 #endif // IDX_THREADS
 { 
-    LOGDEB1("Native::Native: me "  << (this) << "\n" );
+    LOGDEB1("Native::Native: me " << this << "\n");
 }
 
 Db::Native::~Native() 
 { 
-    LOGDEB1("Native::~Native: me "  << (this) << "\n" );
+    LOGDEB1("Native::~Native: me " << this << "\n");
 #ifdef IDX_THREADS
     if (m_havewriteq) {
 	void *status = m_wqueue.setTerminateAndWait();
         if (status) {
-            LOGDEB1("Native::~Native: worker status "  << status << "\n");
+            LOGDEB1("Native::~Native: worker status " << status << "\n");
         }
     }
 #endif // IDX_THREADS
@@ -187,24 +187,24 @@ void *DbUpdWorker(void* vdbp)
 	bool status = false;
 	switch (tsk->op) {
 	case DbUpdTask::AddOrUpdate:
-	    LOGDEB("DbUpdWorker: got add/update task, ql "  << (int(qsz)) << "\n" );
+	    LOGDEB("DbUpdWorker: got add/update task, ql " << qsz << "\n");
 	    status = ndbp->addOrUpdateWrite(tsk->udi, tsk->uniterm, 
 					    tsk->doc, tsk->txtlen);
 	    break;
 	case DbUpdTask::Delete:
-	    LOGDEB("DbUpdWorker: got delete task, ql "  << (int(qsz)) << "\n" );
+	    LOGDEB("DbUpdWorker: got delete task, ql " << qsz << "\n");
 	    status = ndbp->purgeFileWrite(false, tsk->udi, tsk->uniterm);
 	    break;
 	case DbUpdTask::PurgeOrphans:
-	    LOGDEB("DbUpdWorker: got orphans purge task, ql "  << (int(qsz)) << "\n" );
+	    LOGDEB("DbUpdWorker: got orphans purge task, ql " << qsz << "\n");
 	    status = ndbp->purgeFileWrite(true, tsk->udi, tsk->uniterm);
 	    break;
 	default:
-	    LOGERR("DbUpdWorker: unknown op "  << (tsk->op) << " !!\n" );
+	    LOGERR("DbUpdWorker: unknown op " << tsk->op << " !!\n");
 	    break;
 	}
 	if (!status) {
-	    LOGERR("DbUpdWorker: xxWrite failed\n" );
+	    LOGERR("DbUpdWorker: xxWrite failed\n");
 	    tqp->workerExit();
 	    delete tsk;
 	    return (void*)0;
@@ -220,17 +220,18 @@ void Db::Native::maybeStartThreads()
     int writeqlen = cnf->getThrConf(RclConfig::ThrDbWrite).first;
     int writethreads = cnf->getThrConf(RclConfig::ThrDbWrite).second;
     if (writethreads > 1) {
-	LOGINFO("RclDb: write threads count was forced down to 1\n" );
+	LOGINFO("RclDb: write threads count was forced down to 1\n");
 	writethreads = 1;
     }
     if (writeqlen >= 0 && writethreads > 0) {
 	if (!m_wqueue.start(writethreads, DbUpdWorker, this)) {
-	    LOGERR("Db::Db: Worker start failed\n" );
+	    LOGERR("Db::Db: Worker start failed\n");
 	    return;
 	}
 	m_havewriteq = true;
     }
-    LOGDEB("RclDb:: threads: haveWriteQ "  << (m_havewriteq) << ", wqlen "  << (writeqlen) << " wqts "  << (writethreads) << "\n" );
+    LOGDEB("RclDb:: threads: haveWriteQ " << m_havewriteq << ", wqlen " <<
+           writeqlen << " wqts " << writethreads << "\n");
 }
 
 #endif // IDX_THREADS
@@ -241,7 +242,7 @@ void Db::Native::maybeStartThreads()
 bool Db::Native::subDocs(const string &udi, int idxi, 
 			 vector<Xapian::docid>& docids) 
 {
-    LOGDEB2("subDocs: ["  << (uniterm) << "]\n" );
+    LOGDEB2("subDocs: [" << uniterm << "]\n");
     string pterm = make_parentterm(udi);
     vector<Xapian::docid> candidates;
     XAPTRY(docids.clear();
@@ -249,7 +250,7 @@ bool Db::Native::subDocs(const string &udi, int idxi,
 			     xrdb.postlist_end(pterm)),
            xrdb, m_rcldb->m_reason);
     if (!m_rcldb->m_reason.empty()) {
-        LOGERR("Rcl::Db::subDocs: "  << (m_rcldb->m_reason) << "\n" );
+        LOGERR("Rcl::Db::subDocs: " << m_rcldb->m_reason << "\n");
         return false;
     } else {
 	for (unsigned int i = 0; i < candidates.size(); i++) {
@@ -257,7 +258,7 @@ bool Db::Native::subDocs(const string &udi, int idxi,
 		docids.push_back(candidates[i]);
 	    }
 	}
-        LOGDEB0("Db::Native::subDocs: returning "  << (docids.size()) << " ids\n" );
+        LOGDEB0("Db::Native::subDocs: returning " << docids.size() << " ids\n");
         return true;
     }
 }
@@ -269,7 +270,7 @@ bool Db::Native::xdocToUdi(Xapian::Document& xdoc, string &udi)
 	   xit.skip_to(wrap_prefix(udi_prefix)),
            xrdb, m_rcldb->m_reason);
     if (!m_rcldb->m_reason.empty()) {
-	LOGERR("xdocToUdi: xapian error: "  << (m_rcldb->m_reason) << "\n" );
+	LOGERR("xdocToUdi: xapian error: " << m_rcldb->m_reason << "\n");
 	return false;
     }
     if (xit != xdoc.termlist_end()) {
@@ -287,27 +288,31 @@ bool Db::Native::xdocToUdi(Xapian::Document& xdoc, string &udi)
 // posting, but we have to do it ourselves
 bool Db::Native::clearDocTermIfWdf0(Xapian::Document& xdoc, const string& term)
 {
-    LOGDEB1("Db::clearDocTermIfWdf0: ["  << (term) << "]\n" );
+    LOGDEB1("Db::clearDocTermIfWdf0: [" << term << "]\n");
 
     // Find the term
     Xapian::TermIterator xit;
     XAPTRY(xit = xdoc.termlist_begin(); xit.skip_to(term);,
 	   xrdb, m_rcldb->m_reason);
     if (!m_rcldb->m_reason.empty()) {
-	LOGERR("Db::clearDocTerm...: ["  << (term) << "] skip failed: "  << (m_rcldb->m_reason) << "\n" );
+	LOGERR("Db::clearDocTerm...: [" << term << "] skip failed: " <<
+               m_rcldb->m_reason << "\n");
 	return false;
     }
     if (xit == xdoc.termlist_end() || term.compare(*xit)) {
-	LOGDEB0("Db::clearDocTermIFWdf0: term ["  << (term) << "] not found. xit: ["  << (xit == xdoc.termlist_end() ? "EOL":(*xit)) << "]\n" );
+	LOGDEB0("Db::clearDocTermIFWdf0: term [" << term <<
+                "] not found. xit: [" <<
+                (xit == xdoc.termlist_end() ? "EOL": *xit) << "]\n");
 	return false;
     }
 
     // Clear the term if its frequency is 0
     if (xit.get_wdf() == 0) {
-	LOGDEB1("Db::clearDocTermIfWdf0: clearing ["  << (term) << "]\n" );
+	LOGDEB1("Db::clearDocTermIfWdf0: clearing [" << term << "]\n");
 	XAPTRY(xdoc.remove_term(term), xwdb, m_rcldb->m_reason);
 	if (!m_rcldb->m_reason.empty()) {
-	    LOGDEB0("Db::clearDocTermIfWdf0: failed ["  << (term) << "]: "  << (m_rcldb->m_reason) << "\n" );
+	    LOGDEB0("Db::clearDocTermIfWdf0: failed [" << term << "]: " <<
+                    m_rcldb->m_reason << "\n");
 	}
     }
     return true;
@@ -328,7 +333,8 @@ struct DocPosting {
 bool Db::Native::clearField(Xapian::Document& xdoc, const string& pfx,
 			    Xapian::termcount wdfdec)
 {
-    LOGDEB1("Db::clearField: clearing prefix ["  << (pfx) << "] for docid "  << (unsigned(xdoc.get_docid())) << "\n" );
+    LOGDEB1("Db::clearField: clearing prefix [" << pfx << "] for docid " <<
+            xdoc.get_docid() << "\n");
 
     vector<DocPosting> eraselist;
 
@@ -342,7 +348,7 @@ bool Db::Native::clearField(Xapian::Document& xdoc, const string& pfx,
 	    xit.skip_to(wrapd);
 	    while (xit != xdoc.termlist_end() && 
 		!(*xit).compare(0, wrapd.size(), wrapd)) {
-		LOGDEB1("Db::clearfield: erasing for ["  << ((*xit)) << "]\n" );
+		LOGDEB1("Db::clearfield: erasing for [" << *xit << "]\n");
 		Xapian::PositionIterator posit;
 		for (posit = xit.positionlist_begin();
 		     posit != xit.positionlist_end(); posit++) {
@@ -359,20 +365,23 @@ bool Db::Native::clearField(Xapian::Document& xdoc, const string& pfx,
 	break;
     }
     if (!m_rcldb->m_reason.empty()) {
-	LOGERR("Db::clearField: failed building erase list: "  << (m_rcldb->m_reason) << "\n" );
+	LOGERR("Db::clearField: failed building erase list: " <<
+               m_rcldb->m_reason << "\n");
 	return false;
     }
 
     // Now remove the found positions, and the terms if the wdf is 0
     for (vector<DocPosting>::const_iterator it = eraselist.begin();
 	 it != eraselist.end(); it++) {
-	LOGDEB1("Db::clearField: remove posting: ["  << (it->term) << "] pos ["  << (int(it->pos)) << "]\n" );
+	LOGDEB1("Db::clearField: remove posting: [" << it->term << "] pos [" <<
+                it->pos << "]\n");
 	XAPTRY(xdoc.remove_posting(it->term, it->pos, wdfdec);, 
 	       xwdb,m_rcldb->m_reason);
 	if (!m_rcldb->m_reason.empty()) {
 	    // Not that this normally fails for non-prefixed XXST and
 	    // ND, don't make a fuss
-	    LOGDEB1("Db::clearFiedl: remove_posting failed for ["  << (it->term) << "],"  << (int(it->pos)) << ": "  << (m_rcldb->m_reason) << "\n" );
+	    LOGDEB1("Db::clearFiedl: remove_posting failed for [" << it->term <<
+                    "]," << it->pos << ": " << m_rcldb->m_reason << "\n");
 	}
 	clearDocTermIfWdf0(xdoc, it->term);
     }
@@ -382,7 +391,7 @@ bool Db::Native::clearField(Xapian::Document& xdoc, const string& pfx,
 // Check if doc given by udi is indexed by term
 bool Db::Native::hasTerm(const string& udi, int idxi, const string& term)
 {
-    LOGDEB2("Native::hasTerm: udi ["  << (udi) << "] term ["  << (term) << "]\n" );
+    LOGDEB2("Native::hasTerm: udi [" << udi << "] term [" << term << "]\n");
     Xapian::Document xdoc;
     if (getDoc(udi, idxi, xdoc)) {
 	Xapian::TermIterator xit;
@@ -390,7 +399,7 @@ bool Db::Native::hasTerm(const string& udi, int idxi, const string& term)
 	       xit.skip_to(term);,
 	       xrdb, m_rcldb->m_reason);
 	if (!m_rcldb->m_reason.empty()) {
-	    LOGERR("Rcl::Native::hasTerm: "  << (m_rcldb->m_reason) << "\n" );
+	    LOGERR("Rcl::Native::hasTerm: " << m_rcldb->m_reason << "\n");
 	    return false;
 	}
 	if (xit != xdoc.termlist_end() && !term.compare(*xit)) {
@@ -424,7 +433,7 @@ Xapian::docid Db::Native::getDoc(const string& udi, int idxi,
 	} XCATCHERROR(m_rcldb->m_reason);
         break;
     }
-    LOGERR("Db::Native::getDoc: Xapian error: "  << (m_rcldb->m_reason) << "\n" );
+    LOGERR("Db::Native::getDoc: Xapian error: " << m_rcldb->m_reason << "\n");
     return 0;
 }
 
@@ -432,7 +441,7 @@ Xapian::docid Db::Native::getDoc(const string& udi, int idxi,
 bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, 
 				Doc &doc)
 {
-    LOGDEB2("Db::dbDataToRclDoc: data:\n"  << (data) << "\n" );
+    LOGDEB2("Db::dbDataToRclDoc: data:\n" << data << "\n");
     ConfSimple parms(data);
     if (!parms.ok())
 	return false;
@@ -503,7 +512,7 @@ bool Db::Native::hasPages(Xapian::docid docid)
 	   },
 	   xrdb, ermsg);
     if (!ermsg.empty()) {
-	LOGERR("Db::Native::hasPages: xapian error: "  << (ermsg) << "\n" );
+	LOGERR("Db::Native::hasPages: xapian error: " << ermsg << "\n");
     }
     return false;
 }
@@ -540,13 +549,15 @@ bool Db::Native::getPagePositions(Xapian::docid docid, vector<int>& vpos)
 	     pos != xrdb.positionlist_end(docid, qterm); pos++) {
 	    int ipos = *pos;
 	    if (ipos < int(baseTextPosition)) {
-		LOGDEB("getPagePositions: got page position "  << (ipos) << " not in body\n" );
+		LOGDEB("getPagePositions: got page position " << ipos
+                       << " not in body\n");
 		// Not in text body. Strange...
 		continue;
 	    }
 	    map<int, int>::iterator it = mbreaksmap.find(ipos);
 	    if (it != mbreaksmap.end()) {
-		LOGDEB1("getPagePositions: found multibreak at "  << (ipos) << " incr "  << (it->second) << "\n" );
+		LOGDEB1("getPagePositions: found multibreak at " << ipos <<
+                        " incr " << it->second << "\n");
 		for (int i = 0 ; i < it->second; i++) 
 		    vpos.push_back(ipos);
 	    }
@@ -586,12 +597,12 @@ bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm,
     if (m_rcldb->m_maxFsOccupPc > 0 && 
 	(m_rcldb->m_occFirstCheck || 
 	 (m_rcldb->m_curtxtsz - m_rcldb->m_occtxtsz) / MB >= 1)) {
-	LOGDEB("Db::add: checking file system usage\n" );
+	LOGDEB("Db::add: checking file system usage\n");
 	int pc;
 	m_rcldb->m_occFirstCheck = 0;
 	if (fsocc(m_rcldb->m_basedir, &pc) && pc >= m_rcldb->m_maxFsOccupPc) {
-	    LOGERR("Db::add: stop indexing: file system "  << pc << " %" <<
-                   " full > max "  << m_rcldb->m_maxFsOccupPc << " %" << "\n");
+	    LOGERR("Db::add: stop indexing: file system " << pc << " %" <<
+                   " full > max " << m_rcldb->m_maxFsOccupPc << " %" << "\n");
 	    return false;
 	}
 	m_rcldb->m_occtxtsz = m_rcldb->m_curtxtsz;
@@ -609,22 +620,23 @@ bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm,
             // by needUpdate(), so the subdocs existence flags are only set
             // here.
 	    m_rcldb->updated[did] = true;
-	    LOGINFO("Db::add: docid "  << (did) << " updated ["  << (fnc) << "]\n" );
+	    LOGINFO("Db::add: docid " << did << " updated [" << fnc << "]\n");
 	} else {
-	    LOGINFO("Db::add: docid "  << (did) << " added ["  << (fnc) << "]\n" );
+	    LOGINFO("Db::add: docid " << did << " added [" << fnc << "]\n");
 	}
     } XCATCHERROR(ermsg);
 
     if (!ermsg.empty()) {
-	LOGERR("Db::add: replace_document failed: "  << (ermsg) << "\n" );
+	LOGERR("Db::add: replace_document failed: " << ermsg << "\n");
 	ermsg.erase();
 	// FIXME: is this ever actually needed?
 	try {
 	    xwdb.add_document(*newdocument_ptr);
-	    LOGDEB("Db::add: "  << (fnc) << " added (failed re-seek for duplicate)\n" );
+	    LOGDEB("Db::add: " << fnc <<
+                   " added (failed re-seek for duplicate)\n");
 	} XCATCHERROR(ermsg);
 	if (!ermsg.empty()) {
-	    LOGERR("Db::add: add_document failed: "  << (ermsg) << "\n" );
+	    LOGERR("Db::add: add_document failed: " << ermsg << "\n");
 	    return false;
 	}
     }
@@ -663,16 +675,16 @@ bool Db::Native::purgeFileWrite(bool orphansOnly, const string& udi,
 	    Xapian::Document doc = xwdb.get_document(*docid);
 	    sig = doc.get_value(VALUE_SIG);
 	    if (sig.empty()) {
-		LOGINFO("purgeFileWrite: got empty sig\n" );
+		LOGINFO("purgeFileWrite: got empty sig\n");
 		return false;
 	    }
 	} else {
-	    LOGDEB("purgeFile: delete docid "  << (*docid) << "\n" );
+	    LOGDEB("purgeFile: delete docid " << *docid << "\n");
 	    xwdb.delete_document(*docid);
 	}
 	vector<Xapian::docid> docids;
 	subDocs(udi, 0, docids);
-	LOGDEB("purgeFile: subdocs cnt "  << (docids.size()) << "\n" );
+	LOGDEB("purgeFile: subdocs cnt " << docids.size() << "\n");
 	for (vector<Xapian::docid>::iterator it = docids.begin();
 	     it != docids.end(); it++) {
 	    if (m_rcldb->m_flushMb > 0) {
@@ -684,20 +696,20 @@ bool Db::Native::purgeFileWrite(bool orphansOnly, const string& udi,
 		Xapian::Document doc = xwdb.get_document(*it);
 		subdocsig = doc.get_value(VALUE_SIG);
 		if (subdocsig.empty()) {
-		    LOGINFO("purgeFileWrite: got empty sig for subdoc??\n" );
+		    LOGINFO("purgeFileWrite: got empty sig for subdoc??\n");
 		    continue;
 		}
 	    }
 		
 	    if (!orphansOnly || sig != subdocsig) {
-		LOGDEB("Db::purgeFile: delete subdoc "  << (*it) << "\n" );
+		LOGDEB("Db::purgeFile: delete subdoc " << *it << "\n");
 		xwdb.delete_document(*it);
 	    }
 	}
 	return true;
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
-	LOGERR("Db::purgeFileWrite: "  << (ermsg) << "\n" );
+	LOGERR("Db::purgeFileWrite: " << ermsg << "\n");
     }
     return false;
 }
@@ -760,7 +772,8 @@ bool Db::open(OpenMode mode, OpenError *error)
 	m_reason = "Null configuration or Xapian Db";
 	return false;
     }
-    LOGDEB("Db::open: m_isopen "  << (m_ndb->m_isopen) << " m_iswritable "  << (m_ndb->m_iswritable) << " mode "  << (mode) << "\n" );
+    LOGDEB("Db::open: m_isopen " << m_ndb->m_isopen << " m_iswritable " <<
+           m_ndb->m_iswritable << " mode " << mode << "\n");
 
     if (m_ndb->m_isopen) {
 	// We used to return an error here but I see no reason to
@@ -798,8 +811,9 @@ bool Db::open(OpenMode mode, OpenError *error)
                 // trigger other Xapian issues, so the query db is now
                 // a clone of the update one.
 		m_ndb->xrdb = m_ndb->xwdb;
-		LOGDEB("Db::open: lastdocid: "  << (m_ndb->xwdb.get_lastdocid()) << "\n" );
-                LOGDEB2("Db::open: resetting updated\n" );
+		LOGDEB("Db::open: lastdocid: " << m_ndb->xwdb.get_lastdocid() <<
+                       "\n");
+                LOGDEB2("Db::open: resetting updated\n");
                 updated.resize(m_ndb->xwdb.get_lastdocid() + 1);
                 for (unsigned int i = 0; i < updated.size(); i++)
                     updated[i] = false;
@@ -813,7 +827,7 @@ bool Db::open(OpenMode mode, OpenError *error)
 		 it != m_extraDbs.end(); it++) {
 		if (error)
 		    *error = DbOpenExtraDb;
-		LOGDEB("Db::Open: adding query db ["  << &(*it) << "]\n" );
+		LOGDEB("Db::Open: adding query db [" << &(*it) << "]\n");
                 // An error here used to be non-fatal (1.13 and older)
                 // but I can't see why
                 m_ndb->xrdb.add_database(Xapian::Database(*it));
@@ -829,7 +843,8 @@ bool Db::open(OpenMode mode, OpenError *error)
 	    string version = m_ndb->xrdb.get_metadata(cstr_RCL_IDX_VERSION_KEY);
 	    if (version.compare(cstr_RCL_IDX_VERSION)) {
 		m_ndb->m_noversionwrite = true;
-		LOGERR("Rcl::Db::open: file index ["  << (version) << "], software ["  << (cstr_RCL_IDX_VERSION) << "]\n" );
+		LOGERR("Rcl::Db::open: file index [" << version <<
+                       "], software [" << cstr_RCL_IDX_VERSION << "]\n");
 		throw Xapian::DatabaseError("Recoll index version mismatch",
 					    "", "");
 	    }
@@ -843,21 +858,22 @@ bool Db::open(OpenMode mode, OpenError *error)
     } XCATCHERROR(ermsg);
 
     m_reason = ermsg;
-    LOGERR("Db::open: exception while opening ["  << (dir) << "]: "  << (ermsg) << "\n" );
+    LOGERR("Db::open: exception while opening [" <<dir<< "]: " << ermsg << "\n");
     return false;
 }
 
 // Note: xapian has no close call, we delete and recreate the db
 bool Db::close()
 {
-    LOGDEB1("Db::close()\n" );
+    LOGDEB1("Db::close()\n");
     return i_close(false);
 }
 bool Db::i_close(bool final)
 {
     if (m_ndb == 0)
 	return false;
-    LOGDEB("Db::i_close("  << (final) << "): m_isopen "  << (m_ndb->m_isopen) << " m_iswritable "  << (m_ndb->m_iswritable) << "\n" );
+    LOGDEB("Db::i_close(" << final << "): m_isopen " << m_ndb->m_isopen <<
+           " m_iswritable " << m_ndb->m_iswritable << "\n");
     if (m_ndb->m_isopen == false && !final) 
 	return true;
 
@@ -871,11 +887,11 @@ bool Db::i_close(bool final)
 	    if (!m_ndb->m_noversionwrite)
 		m_ndb->xwdb.set_metadata(cstr_RCL_IDX_VERSION_KEY, 
 					 cstr_RCL_IDX_VERSION);
-	    LOGDEB("Rcl::Db:close: xapian will close. May take some time\n" );
+	    LOGDEB("Rcl::Db:close: xapian will close. May take some time\n");
 	}
 	deleteZ(m_ndb);
 	if (w)
-	    LOGDEB("Rcl::Db:close() xapian close done.\n" );
+	    LOGDEB("Rcl::Db:close() xapian close done.\n");
 	if (final) {
 	    return true;
 	}
@@ -883,10 +899,10 @@ bool Db::i_close(bool final)
 	if (m_ndb) {
 	    return true;
 	}
-	LOGERR("Rcl::Db::close(): cant recreate db object\n" );
+	LOGERR("Rcl::Db::close(): cant recreate db object\n");
 	return false;
     } XCATCHERROR(ermsg);
-    LOGERR("Db:close: exception while deleting db: "  << (ermsg) << "\n" );
+    LOGERR("Db:close: exception while deleting db: " << ermsg << "\n");
     return false;
 }
 
@@ -894,7 +910,7 @@ bool Db::i_close(bool final)
 bool Db::adjustdbs()
 {
     if (m_mode != DbRO) {
-        LOGERR("Db::adjustdbs: mode not RO\n" );
+        LOGERR("Db::adjustdbs: mode not RO\n");
         return false;
     }
     if (m_ndb && m_ndb->m_isopen) {
@@ -916,7 +932,7 @@ int Db::docCnt()
     XAPTRY(res = m_ndb->xrdb.get_doccount(), m_ndb->xrdb, m_reason);
 
     if (!m_reason.empty()) {
-        LOGERR("Db::docCnt: got error: "  << (m_reason) << "\n" );
+        LOGERR("Db::docCnt: got error: " << m_reason << "\n");
         return -1;
     }
     return res;
@@ -931,19 +947,19 @@ int Db::termDocCnt(const string& _term)
     string term = _term;
     if (o_index_stripchars)
 	if (!unacmaybefold(_term, term, "UTF-8", UNACOP_UNACFOLD)) {
-	    LOGINFO("Db::termDocCnt: unac failed for ["  << (_term) << "]\n" );
+	    LOGINFO("Db::termDocCnt: unac failed for [" << _term << "]\n");
 	    return 0;
 	}
 
     if (m_stops.isStop(term)) {
-	LOGDEB1("Db::termDocCnt ["  << (term) << "] in stop list\n" );
+	LOGDEB1("Db::termDocCnt [" << term << "] in stop list\n");
 	return 0;
     }
 
     XAPTRY(res = m_ndb->xrdb.get_termfreq(term), m_ndb->xrdb, m_reason);
 
     if (!m_reason.empty()) {
-        LOGERR("Db::termDocCnt: got error: "  << (m_reason) << "\n" );
+        LOGERR("Db::termDocCnt: got error: " << m_reason << "\n");
         return -1;
     }
     return res;
@@ -952,7 +968,8 @@ int Db::termDocCnt(const string& _term)
 bool Db::addQueryDb(const string &_dir) 
 {
     string dir = _dir;
-    LOGDEB0("Db::addQueryDb: ndb "  << (m_ndb) << " iswritable "  << ((m_ndb)?m_ndb->m_iswritable:0) << " db ["  << (dir) << "]\n" );
+    LOGDEB0("Db::addQueryDb: ndb " << m_ndb << " iswritable " <<
+            ((m_ndb)?m_ndb->m_iswritable:0) << " db [" << dir << "]\n");
     if (!m_ndb)
 	return false;
     if (m_ndb->m_iswritable)
@@ -992,8 +1009,8 @@ size_t Db::whatDbIdx(const Doc& doc)
 
 size_t Db::Native::whatDbIdx(Xapian::docid id)
 {
-    LOGDEB1("Db::whatDbIdx: xdocid "  << ((unsigned long)id) << ", "  <<
-            (m_rcldb->m_extraDbs.size()) << " extraDbs\n" );
+    LOGDEB1("Db::whatDbIdx: xdocid " << id << ", " <<
+            m_rcldb->m_extraDbs.size() << " extraDbs\n");
     if (id == 0) 
 	return (size_t)-1;
     if (m_rcldb->m_extraDbs.size() == 0)
@@ -1005,7 +1022,7 @@ bool Db::testDbDir(const string &dir, bool *stripped_p)
 {
     string aerr;
     bool mstripped = true;
-    LOGDEB("Db::testDbDir: ["  << (dir) << "]\n" );
+    LOGDEB("Db::testDbDir: [" << dir << "]\n");
     try {
 	Xapian::Database db(dir);
 	// If we have terms with a leading ':' it's an
@@ -1017,7 +1034,8 @@ bool Db::testDbDir(const string &dir, bool *stripped_p)
 	    mstripped = false;
     } XCATCHERROR(aerr);
     if (!aerr.empty()) {
-	LOGERR("Db::Open: error while trying to open database from ["  << (dir) << "]: "  << (aerr) << "\n" );
+	LOGERR("Db::Open: error while trying to open database from [" <<
+               dir << "]: " << aerr << "\n");
 	return false;
     }
     if (stripped_p) 
@@ -1078,12 +1096,12 @@ class TextSplitDb : public TextSplitP {
 	    ++basepos;
 	} XCATCHERROR(ermsg);
 	if (!ermsg.empty()) {
-	    LOGERR("Db: xapian add_posting error "  << (ermsg) << "\n" );
+	    LOGERR("Db: xapian add_posting error " << ermsg << "\n");
 	    goto out;
 	}
 
 	if (!TextSplitP::text_to_words(in)) {
-	    LOGDEB("TextSplitDb: TextSplit::text_to_words failed\n" );
+	    LOGDEB("TextSplitDb: TextSplit::text_to_words failed\n");
 	    goto out;
 	}
 
@@ -1094,7 +1112,7 @@ class TextSplitDb : public TextSplitP {
 	    ++basepos;
 	} XCATCHERROR(ermsg);
 	if (!ermsg.empty()) {
-	    LOGERR("Db: xapian add_posting error "  << (ermsg) << "\n" );
+	    LOGERR("Db: xapian add_posting error " << ermsg << "\n");
 	    goto out;
 	}
 
@@ -1134,7 +1152,7 @@ public:
 	string ermsg;
 	try {
 	    // Index without prefix, using the field-specific weighting
-	    LOGDEB1("Emitting term at "  << pos << " : ["  << term << "]\n" );
+	    LOGDEB1("Emitting term at " << pos << " : [" << term << "]\n");
             if (!m_ts->ft.pfxonly)
                 m_ts->doc.add_posting(term, pos, m_ts->ft.wdfinc);
 
@@ -1150,27 +1168,30 @@ public:
 	    }
 	    return true;
 	} XCATCHERROR(ermsg);
-	LOGERR("Db: xapian add_posting error "  << (ermsg) << "\n" );
+	LOGERR("Db: xapian add_posting error " << ermsg << "\n");
 	return false;
     }
     void newpage(int pos)
     {
 	pos += m_ts->basepos;
 	if (pos < int(baseTextPosition)) {
-	    LOGDEB("newpage: not in body: "  << (pos) << "\n" );
+	    LOGDEB("newpage: not in body: " << pos << "\n");
 	    return;
 	}
 
 	m_ts->doc.add_posting(m_ts->ft.pfx + page_break_term, pos);
 	if (pos == m_lastpagepos) {
 	    m_pageincr++;
-	    LOGDEB2("newpage: same pos, pageincr "  << (m_pageincr) << " lastpagepos "  << (m_lastpagepos) << "\n" );
+	    LOGDEB2("newpage: same pos, pageincr " << m_pageincr <<
+                    " lastpagepos " << m_lastpagepos << "\n");
 	} else {
-	    LOGDEB2("newpage: pos change, pageincr "  << (m_pageincr) << " lastpagepos "  << (m_lastpagepos) << "\n" );
+	    LOGDEB2("newpage: pos change, pageincr " << m_pageincr <<
+                    " lastpagepos " << m_lastpagepos << "\n");
 	    if (m_pageincr > 0) {
 		// Remember the multiple page break at this position
 		unsigned int relpos = m_lastpagepos - baseTextPosition;
-		LOGDEB2("Remembering multiple page break. Relpos "  << (relpos) << " cnt "  << (m_pageincr) << "\n" );
+		LOGDEB2("Remembering multiple page break. Relpos " << relpos <<
+                        " cnt " << m_pageincr << "\n");
 		m_pageincrvec.push_back(pair<int, int>(relpos, m_pageincr));
 	    }
 	    m_pageincr = 0;
@@ -1182,7 +1203,8 @@ public:
     {
 	if (m_pageincr > 0) {
 	    unsigned int relpos = m_lastpagepos - baseTextPosition;
-	    LOGDEB2("Remembering multiple page break. Position "  << (relpos) << " cnt "  << (m_pageincr) << "\n" );
+	    LOGDEB2("Remembering multiple page break. Position " << relpos <<
+                    " cnt " << m_pageincr << "\n");
 	    m_pageincrvec.push_back(pair<int, int>(relpos, m_pageincr));
 	    m_pageincr = 0;
 	}
@@ -1203,7 +1225,7 @@ public:
 // aspell for everything else
 bool Db::getSpellingSuggestions(const string& word, vector<string>& suggs)
 {
-    LOGDEB("Db::getSpellingSuggestions:[" << word << "]\n" );
+    LOGDEB("Db::getSpellingSuggestions:[" << word << "]\n");
     suggs.clear();
     if (nullptr == m_ndb) {
 	return false;
@@ -1225,7 +1247,7 @@ bool Db::getSpellingSuggestions(const string& word, vector<string>& suggs)
                 string reason;
                 m_aspell->init(reason);
                 if (!m_aspell->ok()) {
-                    LOGDEB(("Aspell speller init failed %s\n", reason.c_str()));
+                    LOGDEB("Aspell speller init failed: " << reason << endl);
                     delete m_aspell;
                     m_aspell = 0;
                 }
@@ -1395,13 +1417,18 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 		// We don't test for an empty prefix here. Some fields are part
 		// of the internal conf with an empty prefix (ie: abstract).
 		if (!fieldToTraits(meta_it->first, &ftp)) {
-		    LOGDEB0("Db::add: no prefix for field ["  << (meta_it->first) << "], no indexing\n" );
+		    LOGDEB0("Db::add: no prefix for field [" <<
+                            meta_it->first << "], no indexing\n");
 		    continue;
 		}
-		LOGDEB0("Db::add: field ["  << (meta_it->first) << "] pfx ["  << (ftp->pfx) << "] inc "  << (ftp->wdfinc) << ": ["  << (meta_it->second) << "]\n" );
+		LOGDEB0("Db::add: field [" << meta_it->first << "] pfx [" <<
+                        ftp->pfx << "] inc " << ftp->wdfinc << ": [" <<
+                        meta_it->second << "]\n");
                 splitter.setTraits(*ftp);
-		if (!splitter.text_to_words(meta_it->second))
-		    LOGDEB("Db::addOrUpdate: split failed for "  << (meta_it->first) << "\n" );
+		if (!splitter.text_to_words(meta_it->second)) {
+		    LOGDEB("Db::addOrUpdate: split failed for " <<
+                           meta_it->first << "\n");
+                }
 	    }
 	}
 
@@ -1412,13 +1439,13 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	    splitter.basepos = baseTextPosition;
 
 	// Split and index body text
-	LOGDEB2("Db::add: split body: ["  << (doc.text) << "]\n" );
+	LOGDEB2("Db::add: split body: [" << doc.text << "]\n");
 
 #ifdef TEXTSPLIT_STATS
 	splitter.resetStats();
 #endif
 	if (!splitter.text_to_words(doc.text))
-	    LOGDEB("Db::addOrUpdate: split failed for main text\n" );
+	    LOGDEB("Db::addOrUpdate: split failed for main text\n");
 
 #ifdef TEXTSPLIT_STATS
 	// Reject bad data. unrecognized base64 text is characterized by
@@ -1427,7 +1454,10 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	TextSplit::Stats::Values v = splitter.getStats();
 	// v.avglen > 15 && v.sigma > 12 
 	if (v.count > 200 && (v.avglen > 10 && v.sigma / v.avglen > 0.8)) {
-	    LOGINFO("RclDb::addOrUpdate: rejecting doc for bad stats count "  << (v.count) << " avglen "  << (v.avglen) << " sigma "  << (v.sigma) << " url ["  << (doc.url) << "] ipath ["  << (doc.ipath) << "] text "  << (doc.text) << "\n" );
+	    LOGINFO("RclDb::addOrUpdate: rejecting doc for bad stats count " <<
+                    v.count << " avglen " << v.avglen << " sigma " << v.sigma <<
+                    " url [" << doc.url << "] ipath [" << doc.ipath <<
+                    "] text " << doc.text << "\n");
             delete newdocument_ptr;
 	    return true;
 	}
@@ -1626,7 +1656,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	    newdocument.add_boolean_term(wrap_prefix("XM") + *md5);
 	}
 
-	LOGDEB0("Rcl::Db::add: new doc record:\n"  << (record) << "\n" );
+	LOGDEB0("Rcl::Db::add: new doc record:\n" << record << "\n");
 	newdocument.set_data(record);
     }
 #ifdef IDX_THREADS
@@ -1634,7 +1664,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	DbUpdTask *tp = new DbUpdTask(DbUpdTask::AddOrUpdate, udi, uniterm, 
 				      newdocument_ptr, doc.text.length());
 	if (!m_ndb->m_wqueue.put(tp)) {
-	    LOGERR("Db::addOrUpdate:Cant queue task\n" );
+	    LOGERR("Db::addOrUpdate:Cant queue task\n");
             delete newdocument_ptr;
 	    return false;
 	} else {
@@ -1650,20 +1680,20 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 bool Db::Native::docToXdocXattrOnly(TextSplitDb *splitter, const string &udi, 
 				    Doc &doc, Xapian::Document& xdoc)
 {
-    LOGDEB0("Db::docToXdocXattrOnly\n" );
+    LOGDEB0("Db::docToXdocXattrOnly\n");
 #ifdef IDX_THREADS
     std::unique_lock<std::mutex> lock(m_mutex);
 #endif
 
     // Read existing document and its data record
     if (getDoc(udi, 0, xdoc) == 0) {
-	LOGERR("docToXdocXattrOnly: existing doc not found\n" );
+	LOGERR("docToXdocXattrOnly: existing doc not found\n");
 	return false;
     }
     string data;
     XAPTRY(data = xdoc.get_data(), xrdb, m_rcldb->m_reason);
     if (!m_rcldb->m_reason.empty()) {
-        LOGERR("Db::xattrOnly: got error: "  << (m_rcldb->m_reason) << "\n" );
+        LOGERR("Db::xattrOnly: got error: " << m_rcldb->m_reason << "\n");
         return false;
     }
 
@@ -1672,22 +1702,26 @@ bool Db::Native::docToXdocXattrOnly(TextSplitDb *splitter, const string &udi,
     for (meta_it = doc.meta.begin(); meta_it != doc.meta.end(); meta_it++) {
 	const FieldTraits *ftp;
 	if (!m_rcldb->fieldToTraits(meta_it->first, &ftp) || ftp->pfx.empty()) {
-	    LOGDEB0("Db::xattrOnly: no prefix for field ["  << (meta_it->first) << "], skipped\n" );
+	    LOGDEB0("Db::xattrOnly: no prefix for field [" <<
+                    meta_it->first << "], skipped\n");
 	    continue;
 	}
 	// Clear the previous terms for the field
 	clearField(xdoc, ftp->pfx, ftp->wdfinc);
-	LOGDEB0("Db::xattrOnly: field ["  << (meta_it->first) << "] pfx ["  << (ftp->pfx) << "] inc "  << (ftp->wdfinc) << ": ["  << (meta_it->second) << "]\n" );
+	LOGDEB0("Db::xattrOnly: field [" << meta_it->first << "] pfx [" <<
+                ftp->pfx << "] inc " << ftp->wdfinc << ": [" <<
+                meta_it->second << "]\n");
 	splitter->setTraits(*ftp);
-	if (!splitter->text_to_words(meta_it->second))
-	    LOGDEB("Db::xattrOnly: split failed for "  << (meta_it->first) << "\n" );
+	if (!splitter->text_to_words(meta_it->second)) {
+	    LOGDEB("Db::xattrOnly: split failed for " << meta_it->first << "\n");
+        }
     }
     xdoc.add_value(VALUE_SIG, doc.sig);
 
     // Parse current data record into a dict for ease of processing
     ConfSimple datadic(data);
     if (!datadic.ok()) {
-	LOGERR("db::docToXdocXattrOnly: failed turning data rec to dict\n" );
+	LOGERR("db::docToXdocXattrOnly: failed turning data rec to dict\n");
 	return false;
     }
 
@@ -1732,10 +1766,11 @@ void Db::waitUpdIdle()
 	    m_ndb->xwdb.commit();
 	} XCATCHERROR(ermsg);
 	if (!ermsg.empty()) {
-	    LOGERR("Db::waitUpdIdle: flush() failed: "  << (ermsg) << "\n" );
+	    LOGERR("Db::waitUpdIdle: flush() failed: " << ermsg << "\n");
 	}
 	m_ndb->m_totalworkns += chron.nanos();
-	LOGINFO("Db::waitUpdIdle: total xapian work "  << (lltodecstr(m_ndb->m_totalworkns/1000000)) << " mS\n" );
+	LOGINFO("Db::waitUpdIdle: total xapian work " <<
+                lltodecstr(m_ndb->m_totalworkns/1000000) << " mS\n");
     }
 }
 #endif
@@ -1746,7 +1781,8 @@ bool Db::maybeflush(int64_t moretext)
     if (m_flushMb > 0) {
 	m_curtxtsz += moretext;
 	if ((m_curtxtsz - m_flushtxtsz) / MB >= m_flushMb) {
-	    LOGDEB("Db::add/delete: txt size >= "  << (m_flushMb) << " Mb, flushing\n" );
+	    LOGDEB("Db::add/delete: txt size >= " << m_flushMb <<
+                   " Mb, flushing\n");
 	    return doFlush();
 	}
     }
@@ -1756,7 +1792,7 @@ bool Db::maybeflush(int64_t moretext)
 bool Db::doFlush()
 {
     if (!m_ndb) {
-	LOGERR("Db::doFLush: no ndb??\n" );
+	LOGERR("Db::doFLush: no ndb??\n");
 	return false;
     }
     string ermsg;
@@ -1764,7 +1800,7 @@ bool Db::doFlush()
 	m_ndb->xwdb.commit();
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
-	LOGERR("Db::doFlush: flush() failed: "  << (ermsg) << "\n" );
+	LOGERR("Db::doFlush: flush() failed: " << ermsg << "\n");
 	return false;
     }
     m_flushtxtsz = m_curtxtsz;
@@ -1776,7 +1812,7 @@ void Db::setExistingFlags(const string& udi, unsigned int docid)
     if (m_mode == DbRO)
         return;
     if (docid == (unsigned int)-1) {
-        LOGERR("Db::setExistingFlags: called with bogus docid !!\n" );
+        LOGERR("Db::setExistingFlags: called with bogus docid !!\n");
         return;
     }
 #ifdef IDX_THREADS
@@ -1789,7 +1825,9 @@ void Db::i_setExistingFlags(const string& udi, unsigned int docid)
 {
     // Set the up to date flag for the document and its subdocs
     if (docid >= updated.size()) {
-        LOGERR("needUpdate: existing docid beyond updated.size(). Udi ["  << (udi) << "], docid "  << (unsigned(docid)) << ", updated.size() "  << ((unsigned)updated.size()) << "\n" );
+        LOGERR("needUpdate: existing docid beyond updated.size(). Udi [" <<
+               udi << "], docid " << docid << ", updated.size() " <<
+               updated.size() << "\n");
         return;
     } else {
         updated[docid] = true;
@@ -1798,13 +1836,13 @@ void Db::i_setExistingFlags(const string& udi, unsigned int docid)
     // Set the existence flag for all the subdocs (if any)
     vector<Xapian::docid> docids;
     if (!m_ndb->subDocs(udi, 0, docids)) {
-        LOGERR("Rcl::Db::needUpdate: can't get subdocs\n" );
+        LOGERR("Rcl::Db::needUpdate: can't get subdocs\n");
         return;
     }
     for (vector<Xapian::docid>::iterator it = docids.begin();
          it != docids.end(); it++) {
         if (*it < updated.size()) {
-            LOGDEB2("Db::needUpdate: docid "  << (*it) << " set\n" );
+            LOGDEB2("Db::needUpdate: docid " << (*it) << " set\n");
             updated[*it] = true;
         }
     }
@@ -1847,18 +1885,19 @@ bool Db::needUpdate(const string &udi, const string& sig,
     Xapian::PostingIterator docid;
     XAPTRY(docid = m_ndb->xrdb.postlist_begin(uniterm), m_ndb->xrdb, m_reason);
     if (!m_reason.empty()) {
-        LOGERR("Db::needUpdate: xapian::postlist_begin failed: "  << (m_reason) << "\n" );
+        LOGERR("Db::needUpdate: xapian::postlist_begin failed: " <<
+               m_reason << "\n");
         return false;
     }
     if (docid == m_ndb->xrdb.postlist_end(uniterm)) {
         // No document exists with this path: we do need update
-        LOGDEB("Db::needUpdate:yes (new): ["  << (uniterm) << "]\n" );
+        LOGDEB("Db::needUpdate:yes (new): [" << uniterm << "]\n");
         return true;
     }
     Xapian::Document xdoc;
     XAPTRY(xdoc = m_ndb->xrdb.get_document(*docid), m_ndb->xrdb, m_reason);
     if (!m_reason.empty()) {
-        LOGERR("Db::needUpdate: get_document error: "  << (m_reason) << "\n" );
+        LOGERR("Db::needUpdate: get_document error: " << m_reason << "\n");
         return true;
     }
 
@@ -1870,10 +1909,10 @@ bool Db::needUpdate(const string &udi, const string& sig,
     string osig;
     XAPTRY(osig = xdoc.get_value(VALUE_SIG), m_ndb->xrdb, m_reason);
     if (!m_reason.empty()) {
-        LOGERR("Db::needUpdate: get_value error: "  << (m_reason) << "\n" );
+        LOGERR("Db::needUpdate: get_value error: " << m_reason << "\n");
         return true;
     }
-    LOGDEB2("Db::needUpdate: oldsig ["  << (osig) << "] new ["  << (sig) << "]\n" );
+    LOGDEB2("Db::needUpdate: oldsig [" << osig << "] new [" << sig << "]\n");
 
     if (osigp) {
         *osigp = osig;
@@ -1881,14 +1920,15 @@ bool Db::needUpdate(const string &udi, const string& sig,
 
     // Compare new/old sig
     if (sig != osig) {
-        LOGDEB("Db::needUpdate:yes: olsig ["  << (osig) << "] new ["  << (sig) << "] ["  << (uniterm) << "]\n" );
+        LOGDEB("Db::needUpdate:yes: olsig [" << osig << "] new [" << sig <<
+               "] [" << uniterm << "]\n");
         // Db is not up to date. Let's index the file
         return true;
     }
 
     // Up to date. Set the existance flags in the map for the doc and
     // its subdocs.
-    LOGDEB("Db::needUpdate:no: ["  << (uniterm) << "]\n" );
+    LOGDEB("Db::needUpdate:no: [" << uniterm << "]\n");
     i_setExistingFlags(udi, *docid);
     return false;
 }
@@ -1896,7 +1936,7 @@ bool Db::needUpdate(const string &udi, const string& sig,
 // Return existing stem db languages
 vector<string> Db::getStemLangs()
 {
-    LOGDEB("Db::getStemLang\n" );
+    LOGDEB("Db::getStemLang\n");
     vector<string> langs;
     if (m_ndb == 0 || m_ndb->m_isopen == false)
 	return langs;
@@ -1910,7 +1950,7 @@ vector<string> Db::getStemLangs()
  */
 bool Db::deleteStemDb(const string& lang)
 {
-    LOGDEB("Db::deleteStemDb("  << (lang) << ")\n" );
+    LOGDEB("Db::deleteStemDb(" << lang << ")\n");
     if (m_ndb == 0 || m_ndb->m_isopen == false || !m_ndb->m_iswritable)
 	return false;
     XapWritableSynFamily db(m_ndb->xwdb, synFamStem);
@@ -1925,9 +1965,9 @@ bool Db::deleteStemDb(const string& lang)
  */
 bool Db::createStemDbs(const vector<string>& langs)
 {
-    LOGDEB("Db::createStemDbs\n" );
+    LOGDEB("Db::createStemDbs\n");
     if (m_ndb == 0 || m_ndb->m_isopen == false || !m_ndb->m_iswritable) {
-	LOGERR("createStemDb: db not open or not writable\n" );
+	LOGERR("createStemDb: db not open or not writable\n");
 	return false;
     }
 
@@ -1942,10 +1982,11 @@ bool Db::createStemDbs(const vector<string>& langs)
  */
 bool Db::purge()
 {
-    LOGDEB("Db::purge\n" );
+    LOGDEB("Db::purge\n");
     if (m_ndb == 0)
 	return false;
-    LOGDEB("Db::purge: m_isopen "  << (m_ndb->m_isopen) << " m_iswritable "  << (m_ndb->m_iswritable) << "\n" );
+    LOGDEB("Db::purge: m_isopen " << m_ndb->m_isopen << " m_iswritable " <<
+           m_ndb->m_iswritable << "\n");
     if (m_ndb->m_isopen == false || m_ndb->m_iswritable == false) 
 	return false;
 
@@ -1968,7 +2009,7 @@ bool Db::purge()
     try {
 	m_ndb->xwdb.commit();
     } catch (...) {
-	LOGERR("Db::purge: 1st flush failed\n" );
+	LOGERR("Db::purge: 1st flush failed\n");
 
     }
 
@@ -1981,7 +2022,7 @@ bool Db::purge()
 		try {
 		    CancelCheck::instance().checkCancel();
 		} catch(CancelExcept) {
-		    LOGINFO("Db::purge: partially cancelled\n" );
+		    LOGINFO("Db::purge: partially cancelled\n");
 		    break;
 		}
 	    }
@@ -1998,13 +2039,14 @@ bool Db::purge()
 		    maybeflush(trms * 5);
 		}
 		m_ndb->xwdb.delete_document(docid);
-		LOGDEB("Db::purge: deleted document #"  << (docid) << "\n" );
+		LOGDEB("Db::purge: deleted document #" << docid << "\n");
 	    } catch (const Xapian::DocNotFoundError &) {
-		LOGDEB0("Db::purge: document #"  << (docid) << " not found\n" );
+		LOGDEB0("Db::purge: document #" << docid << " not found\n");
 	    } catch (const Xapian::Error &e) {
-		LOGERR("Db::purge: document #"  << (docid) << ": "  << (e.get_msg()) << "\n" );
+		LOGERR("Db::purge: document #" << docid << ": " <<
+                       e.get_msg() << "\n");
 	    } catch (...) {
-		LOGERR("Db::purge: document #"  << (docid) << ": unknown error\n" );
+		LOGERR("Db::purge: document #" << docid << ": unknown error\n");
 	    }
 	    purgecount++;
 	}
@@ -2013,7 +2055,7 @@ bool Db::purge()
     try {
 	m_ndb->xwdb.commit();
     } catch (...) {
-	LOGERR("Db::purge: 2nd flush failed\n" );
+	LOGERR("Db::purge: 2nd flush failed\n");
     }
     return true;
 }
@@ -2036,7 +2078,7 @@ bool Db::docExists(const string& uniterm)
 	}
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
-	LOGERR("Db::docExists("  << (uniterm) << ") "  << (ermsg) << "\n" );
+	LOGERR("Db::docExists(" << uniterm << ") " << ermsg << "\n");
     }
     return false;
 }
@@ -2044,7 +2086,7 @@ bool Db::docExists(const string& uniterm)
 /* Delete document(s) for given unique identifier (doc and descendents) */
 bool Db::purgeFile(const string &udi, bool *existed)
 {
-    LOGDEB("Db:purgeFile: ["  << (udi) << "]\n" );
+    LOGDEB("Db:purgeFile: [" << udi << "]\n");
     if (m_ndb == 0 || !m_ndb->m_iswritable)
 	return false;
 
@@ -2060,7 +2102,7 @@ bool Db::purgeFile(const string &udi, bool *existed)
 	DbUpdTask *tp = new DbUpdTask(DbUpdTask::Delete, udi, uniterm, 
 				      0, (size_t)-1);
 	if (!m_ndb->m_wqueue.put(tp)) {
-	    LOGERR("Db::purgeFile:Cant queue task\n" );
+	    LOGERR("Db::purgeFile:Cant queue task\n");
 	    return false;
 	} else {
 	    return true;
@@ -2076,7 +2118,7 @@ bool Db::purgeFile(const string &udi, bool *existed)
    will be done */
 bool Db::purgeOrphans(const string &udi)
 {
-    LOGDEB("Db:purgeOrphans: ["  << (udi) << "]\n" );
+    LOGDEB("Db:purgeOrphans: [" << udi << "]\n");
     if (m_ndb == 0 || !m_ndb->m_iswritable)
 	return false;
 
@@ -2087,7 +2129,7 @@ bool Db::purgeOrphans(const string &udi)
 	DbUpdTask *tp = new DbUpdTask(DbUpdTask::PurgeOrphans, udi, uniterm, 
 				      0, (size_t)-1);
 	if (!m_ndb->m_wqueue.put(tp)) {
-	    LOGERR("Db::purgeFile:Cant queue task\n" );
+	    LOGERR("Db::purgeFile:Cant queue task\n");
 	    return false;
 	} else {
 	    return true;
@@ -2120,7 +2162,7 @@ bool Db::dbStats(DbStats& res)
 //  existence should be tested by looking at doc.pc
 bool Db::getDoc(const string &udi, const Doc& idxdoc, Doc &doc)
 {
-    LOGDEB("Db:getDoc: ["  << (udi) << "]\n" );
+    LOGDEB("Db:getDoc: [" << udi << "]\n");
     if (m_ndb == 0)
 	return false;
 
@@ -2141,7 +2183,7 @@ bool Db::getDoc(const string &udi, const Doc& idxdoc, Doc &doc)
 	// other ok docs further) but indicate the error with
 	// pc = -1
 	doc.pc = -1;
-	LOGINFO("Db:getDoc: no such doc in index: ["  << (udi) << "]\n" );
+	LOGINFO("Db:getDoc: no such doc in index: [" << udi << "]\n");
 	return true;
     }
 }
@@ -2152,10 +2194,10 @@ bool Db::hasSubDocs(const Doc &idoc)
 	return false;
     string inudi;
     if (!idoc.getmeta(Doc::keyudi, &inudi) || inudi.empty()) {
-	LOGERR("Db::hasSubDocs: no input udi or empty\n" );
+	LOGERR("Db::hasSubDocs: no input udi or empty\n");
 	return false;
     }
-    LOGDEB1("Db::hasSubDocs: idxi "  << (idoc.idxi) << " inudi ["  << (inudi) << "]\n" );
+    LOGDEB1("Db::hasSubDocs: idxi " << idoc.idxi << " inudi [" <<inudi << "]\n");
 
     // Not sure why we perform both the subDocs() call and the test on
     // has_children. The former will return docs if the input is a
@@ -2165,7 +2207,7 @@ bool Db::hasSubDocs(const Doc &idoc)
     // checked one day.
     vector<Xapian::docid> docids;
     if (!m_ndb->subDocs(inudi, idoc.idxi, docids)) {
-	LOGDEB("Db::hasSubDocs: lower level subdocs failed\n" );
+	LOGDEB("Db::hasSubDocs: lower level subdocs failed\n");
 	return false;
     }
     if (!docids.empty())
@@ -2186,13 +2228,14 @@ bool Db::getSubDocs(const Doc &idoc, vector<Doc>& subdocs)
 
     string inudi;
     if (!idoc.getmeta(Doc::keyudi, &inudi) || inudi.empty()) {
-	LOGERR("Db::getSubDocs: no input udi or empty\n" );
+	LOGERR("Db::getSubDocs: no input udi or empty\n");
 	return false;
     }
 
     string rootudi;
     string ipath = idoc.ipath;
-    LOGDEB0("Db::getSubDocs: idxi "  << (idoc.idxi) << " inudi ["  << (inudi) << "] ipath ["  << (ipath) << "]\n" );
+    LOGDEB0("Db::getSubDocs: idxi " << idoc.idxi << " inudi [" << inudi <<
+            "] ipath [" << ipath << "]\n");
     if (ipath.empty()) {
 	// File-level doc. Use it as root
 	rootudi = inudi;
@@ -2200,7 +2243,7 @@ bool Db::getSubDocs(const Doc &idoc, vector<Doc>& subdocs)
 	// See if we have a parent term
 	Xapian::Document xdoc;
 	if (!m_ndb->getDoc(inudi, idoc.idxi, xdoc)) {
-	    LOGERR("Db::getSubDocs: can't get Xapian document\n" );
+	    LOGERR("Db::getSubDocs: can't get Xapian document\n");
 	    return false;
 	}
 	Xapian::TermIterator xit;
@@ -2208,22 +2251,22 @@ bool Db::getSubDocs(const Doc &idoc, vector<Doc>& subdocs)
 	       xit.skip_to(wrap_prefix(parent_prefix)),
 	       m_ndb->xrdb, m_reason);
 	if (!m_reason.empty()) {
-	    LOGERR("Db::getSubDocs: xapian error: "  << (m_reason) << "\n" );
+	    LOGERR("Db::getSubDocs: xapian error: " << m_reason << "\n");
 	    return false;
 	}
 	if (xit == xdoc.termlist_end()) {
-	    LOGERR("Db::getSubDocs: parent term not found\n" );
+	    LOGERR("Db::getSubDocs: parent term not found\n");
 	    return false;
 	}
 	rootudi = strip_prefix(*xit);
     }
 
-    LOGDEB("Db::getSubDocs: root: ["  << (rootudi) << "]\n" );
+    LOGDEB("Db::getSubDocs: root: [" << rootudi << "]\n");
 
     // Retrieve all subdoc xapian ids for the root
     vector<Xapian::docid> docids;
     if (!m_ndb->subDocs(rootudi, idoc.idxi, docids)) {
-	LOGDEB("Db::getSubDocs: lower level subdocs failed\n" );
+	LOGDEB("Db::getSubDocs: lower level subdocs failed\n");
 	return false;
     }
 
@@ -2241,7 +2284,7 @@ bool Db::getSubDocs(const Doc &idoc, vector<Doc>& subdocs)
 		doc.meta[Doc::keyrr] = "100%";
 		doc.pc = 100;
 		if (!m_ndb->dbDataToRclDoc(*it, data, doc)) {
-		    LOGERR("Db::getSubDocs: doc conversion error\n" );
+		    LOGERR("Db::getSubDocs: doc conversion error\n");
 		    return false;
 		}
                 if (ipath.empty() ||
@@ -2258,7 +2301,7 @@ bool Db::getSubDocs(const Doc &idoc, vector<Doc>& subdocs)
         break;
     }
 
-    LOGERR("Db::getSubDocs: Xapian error: "  << (m_reason) << "\n" );
+    LOGERR("Db::getSubDocs: Xapian error: " << m_reason << "\n");
     return false;
 }
 
