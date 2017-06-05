@@ -1,0 +1,60 @@
+== Recoll GUI keyboard navigation
+
+Using Recoll without the mouse is not completely straightforward, but it is
+mostly feasible. Here follows a description of the usable shortcuts. 
+
+=== Anywhere
+
+`Ctrl+q` should exit Recoll from anywhere.
+
+=== Main window and result list ===
+
+When Recoll starts up, the focus is in the simple search entry. The main
+window tab order is as follows: 
+
+* Clear
+* Search
+* Search type combo
+* Search entry  (Initial focus)
+* Result list (scrolling etc)
+* Result list 1st link
+* Result list next links...
+* Back to Clear
+
+Each result list entry has 3 links: the icon link is not active, but its
+value is the URL, so that it can be dragged and dropped to another
+application. The 2 other links are _Preview_ and _Open_ and can be
+activated by typing _Enter_. 
+
+Typing _Ctrl+Shift+s_ anywhere in the main window should return the focus to the search entry. So will _Ctrl+l_ in future versions (for compatibility with WEB browser usage).
+
+For pure keyboard usage, you can improve this by:
+
+- Disabling the icon link: use _Preferences->GUI configuration->Result
+  List->Edit result paragraph_ and remove the `<a href='%U'>` and `</a>`
+  around the `<img...>` tag. 
+- Making the active link more visible by adding the following code to the
+  result page HTML header insert (same preferences tab). Feel free to
+  adjust the color :=) : 
+
+----
+<style type="text/css">
+a:focus {background-color: red;}
+</style>
+----
+
+=== Result table
+
+The same _Ctrl+Shift+s_ will return the focus to the search entry when
+working with the result table. 
+
+_Ctrl+r_ will move the focus from the entry to the spreadsheet. When in
+there the arrow keys will navigate the lines.  
+
+When a line is selected:
+
+* _Ctrl+o_ will _Open_ the document.
+* _Ctrl+Shift+o_ will _Open_ the document and exit Recoll.
+* _Ctrl+d_ (detail) will start a _Preview_
+
+_Esc_ will deselect the current line so that mouse hovering will work again.

@@ -1,0 +1,34 @@
+== Filtering out Zip archive members ==
+
+The *rclzip* Zip archive extraction input handler does not use the general
+configuration variables which define what file system objects should be
+skipped, but it has an equivalent internal function. 
+
+The name-skipping code depends on a recent member of the the Recoll Python
+package. This will become standard for release 1.20, but for earlier
+releases, you need to do two things to use this function: 
+
+- Fetch 'python/recoll/recoll/rclconfig.py' and 'filters/rclzip' from the
+  source repository. 
+- Copy both to '/usr/share/recoll/filters' and make 'rclzip' executable.
+
+You can then set a variable named +zipSkippedNames+ inside
+'recoll.conf'. +zipSkippedNames+ should be a space-separated list of
+patterns which will be passed to the Python fnmatch() function. The +/+
+characters are not special (matched as any character). 
+
+You can't use embedded spaces in patterns (no double-quote quoting for now)
+
+This can be redefined for file system directories using the usual section
+indicators (Zip archives in different file-system directories can have
+different skip lists). 
+
+Example:
+
+----
+zipSkippedNames = *.txt
+[/path/to/the/dir]
+zipSkippedNames = somedir/*/*.html
+----
+
+

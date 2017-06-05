@@ -1,0 +1,68 @@
+== Using the _Open With_ context menu in recoll 1.20 and newer
+
+Recoll versions and newer have an _Open With_ entry in the result list
+context menu (the thing which pops up on a right click).
+
+This allows choosing the application used to edit the document, instead of
+using the default one.
+
+The list of applications is built from the desktop files found inside
+'/usr/share/applications'. For each application on the system, these
+files lists the mime types that the application can process.
+
+If the application which you would want listed does not appear, the most
+probable cause is that it has no desktop file, which could happen due to a
+number of reasons.
+
+This can be fixed very easily: just add a +.desktop+ file to
+'/usr/share/applications', starting from an existing one as a template.
+
+As an example, based on an original idea from Recoll user +florianbw+,
+the following describes setting up a script for editing a PDF document
+title found in the recoll result list.
+
+The script uses the *zenity* shell script dialog box tool to let you
+enter the new title, and then executes *exiftool* to actually change
+the document.
+
+----
+#!/bin/sh
+
+PDF=$1
+TITLE=`exiftool -Title -s3 "$PDF"`
+
+RES=`zenity --entry \
+  --title="Change PDF Title" \
+  --text="Enter the Title:" \
+  --entry-text "$TITLE"`
+
+if [ "$RES" != "" ]; then 
+    echo -n "Changing title to $RES ... " && \
+        exiftool -Title="$RES" "$PDF" && \
+        recollindex -i "$PDF" && echo "Done!"
+else 
+     echo "No title entered"
+fi
+----
+
+Name it, for example, 'pdf-edit-title.sh', and make it executable 
+(`chmod a+x pdf-edit-title.sh`).
+
+Then create a file named 'pdf-edit-title.desktop' inside
+'/usr/share/applications'. The file name does not need to be the same as the
+script's, this is just to make things clearer:
+
+----
+[Desktop Entry]
+Name=PDF Title Editor
+Comment=Small script based on exiftool used to edit a pdf document title
+Exec=/home/dockes/bin/pdf-edit-title.sh %F
+Type=Application
+MimeType=application/pdf;
+----
+
+You're done ! Restart Recoll, perform a search and right-click on a PDF
+result: you should see an entry named _PDF Title Editor_ in the _Open
+With_ list. Click on it, and you will be able to edit the title.
+
+

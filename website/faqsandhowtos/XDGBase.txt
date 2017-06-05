@@ -1,0 +1,42 @@
+== XDG: Tidying Recoll data storage ==
+
+The default storage structure of Recoll configuration and index data is
+quite at odds with what recommends the 
+link:http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html[XDG
+Base Directory Specification], the reason being that it predates said spec.
+
+By default, Recoll stores all its data in a single directory: '$HOME/.recoll'
+
+This is not going to change, because it would be quite disturbing for
+current users.
+
+However, the location of this directory can be modified using the
++$RECOLL_CONFDIR+ environment variable.
+
+Furthermore all significant Recoll data categories can be moved away from
+the configuration directory (maybe to '$HOME/.cache'), by setting
+configuration variables:
+
+* _dbdir_ defines the location for storing the Xapian
+  index. This could be set to, e.g., '$HOME/.cache/recoll/xapiandb'. It is
+  quite recommended that 
+  this directory be dedicated to Xapian (don't store other things in
+  there).
+* _mboxcachedir_ defines the location for caching access speedup information
+  about mail folders in mbox format. e.g. '$HOME/.cache/recoll/mboxcache'
+* New in 1.22: you can use _aspellDictDir_ to define the storage
+  location for the aspell spelling approximation
+  dictionary. E.g. '$HOME/.cache/recoll'
+* _webcachedir_ may be used to define where the visited web pages
+  archive is stored. E.g. '$HOME/.cache/recoll/webcache'. This is only used
+  if you activate the Firefox plugin and web history indexing. You may
+  want to think a bit more about where to store it, because, contrary to
+  the above, this is not discardable data: your Recoll Web history goes
+  away if you delete it.
+
+If you use multiple Recoll configurations, each will have to be customized.
+
+Once these are put away, there are still a few modifyiable files in the
+configuration directory, for example the 'recoll.pid' and 'history'
+files, but these are small files. Moving 'recoll.pid' away would be a
+serious headache because it is used by scripts. 

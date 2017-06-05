@@ -1,0 +1,33 @@
+== Indexing arbitrary mail headers
+
+By default the Recoll mail handler only processes a subset of email headers
+(+From+, +To+, +Cc+, +Date+, +Subject+). It is possible to index additional
+headers by specifying them inside the 'fields' configuration file, inside
+the configuration directory (typically '~/.recoll/').
+
+Lengthy explanations are not really needed here, and I'll just show an
+example (duplicated from the configuration section of the manual):
+
+----
+[prefixes]
+# Index mailmytag contents (with the given prefix)
+mailmytag = XMTAG
+
+[stored]
+# Store mailmytag inside the document data record (so that it can be
+# displayed - as %(mailmytag) - in result lists).
+mailmytag = 
+
+[mail]
+# Extract the X-My-Tag mail header, and use it internally with the
+# mailmytag field name
+x-my-tag = mailmytag
+
+----
+
+Limitations:
+
+- The mail filter will only process the first instance for a header
+  occurring several times.
+- No decoding will take place (ie for non-ascii headers which would have
+  some kind of encoding). 

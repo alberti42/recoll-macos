@@ -1,0 +1,13 @@
+== Welcome to the Recoll Faqs and Recipees
+
+link:FaqsAndHowTos.html[FAQs and Howtos] are stored here, but 
+the main source for Recoll user documentation is 
+link:https://www.recoll.org/doc.html[the _Recoll user manual_] on the
+link:https://www.recoll.org/[Recoll Web site] where you will also find a
+lot of other Recoll information, source code tarballs and contact
+information.
+
+If you want to make your problem report as useful as possible, you may want
+to take a look at link:ProblemSolvingData.html[this page]. 
+
+link:WikiIndex.html[Full file index]

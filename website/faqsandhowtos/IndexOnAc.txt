@@ -1,0 +1,24 @@
+== Laptops: starting or stopping indexing according to AC power status
+
+For people using real time indexing on a laptop, kind user "The Doctor"
+contributed a script to automatically start and stop indexing according to
+power status. The script can be found here:
+link:https://bitbucket.org/medoc/recoll/src/tip/src/desktop/recoll_index_on_ac.sh[recoll_index_on_ac.sh]
+
+To use it, you need to copy it somewhere (e.g.: '/usr/bin', but any place
+will do), make it executable (`chmod a+x recoll_index_on_ac.sh`), and edit
+'~/.config/autostart/recollindex.desktop'
+
+Change the following line:
+
+    Exec=recollindex -w 60 -m
+
+to something like the following (depending where you copied the script):
+
+    Exec=/usr/bin/recoll_index_on_ac.sh
+
+You may also want to change
+'/usr/share/recoll/examples/recollindex.desktop', otherwise your change
+will be reverted the next time you toggle real time indexing through the
+GUI. And, yes, sorry about it, _this_ change will be lost on the next
+Recoll update, so save a copy.

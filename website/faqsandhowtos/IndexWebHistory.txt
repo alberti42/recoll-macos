@@ -1,0 +1,29 @@
+== Indexing Web history with the Firefox extension ==
+
+Note: this document is valid for Recoll versions from 1.18.
+
+The link:http://sourceforge.net/projects/recollfirefox/[Recoll Firefox
+extension] 
+works together with Recoll to index the Web pages that you visit. The
+extension is based on an older one which was initially written for the
+Beagle indexer.
+
+The extension works by copying the data for the visited pages to a queue
+directory ('~/.recollweb/ToIndex' by default), from which they are
+indexed and removed by Recoll, and then stored in a local cache.
+
+The extension is now hosted on the Mozilla add-ons site, so you can install
+it very simply in Firefox: link:https://addons.mozilla.org/fr/firefox/addon/recoll-indexer-1/[Recoll Firefox add-on page].
+
+This feature can be enabled in the Recoll GUI index configuration panel
+(Web history section), or by editing the configuration file (set
++processwebqueue+ to 1).
+
+Please remember that Recoll only stores a limited amount of cached web data
+(adjustable from the GUI Index Configuration section), and that old pages
+will be purged from the index. Pages that you want to archive permanently
+need to be saved elsewhere, as they will otherwise eventually disappear
+from the Recoll results.
+
+Recoll will index +.maff+ files, which may be a better choice for archival
+usage. 

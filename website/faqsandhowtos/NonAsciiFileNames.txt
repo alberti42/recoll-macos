@@ -1,0 +1,85 @@
+== Unix and non-ASCII file names, a summary of issues
+
+Unix/Linux file and directory names are binary byte C strings. Only the
+null byte and the slash character (/) are forbidden inside a name,
+nowhere does the kernel interpret the strings as meaningful or
+printable.  
+
+In the old times, all utilities that would display to the user were
+ASCII-based, and people would use pure printable ASCII file names (even
+using space characters inside names was a cause for trouble). Non
+alphanumeric characters were exclusively used for playing tricks on
+colleagues. And all was well. 
+
+Then the devil came under the guise of accented 8 bit characters. The
+system has no problem with them, file names are still binary C strings, but
+the utilities have to display them or take them as input, and, because
+there is no encoding specification stored with the file names, they can
+only do this according to the character encoding taken from the user's
+current locale.
+
+For example fr_FR.UTF-8, and fr_FR.ISO8859-1 could be used simultaneously
+on the same system (by different users), but they are completely
+uncompatible: ISO-8859-1 strings are illegal when viewed in an UTF-8 locale
+(will display as interrogation points or some other conventional error
+marker). UTF-8 strings will display as gibberish in an ISO-8859-1 locale.
+
+This means that the file names created by an UTF-8 user are displayed as
+garbage to the ISO-8859 one...
+
+If you ever change your locale, your old files are still there and named
+the same (in the binary sense), but the names display badly and you have
+great trouble inputing them. If you add distributed (NFS) file system
+issues, things become totally unmanageable. Also think about archives sent
+from another system with a different encoding.
+
+For what concerns Recoll:
+
+- The file names inside recoll.conf are not transcoded, they are taken as
+  binary strings (mostly, only +\n+ and +space+ are a bit special), and
+  passed as is to the system. So if you edit 'recoll.conf' with a text
+  editor, inside the same locale that is or has been used for file names,
+  you'll be fine.
+- There was a bug in the GUI configuration tool, up to 1.12, it should
+  transcode between the internal Qt format and locale-dependant strings,
+  but it doesn't or does it badly.  
+- There is also an exception for the +unac_except_trans+ variable, this
+  *has* to be UTF-8, so if the rest of the file uses another encoding,
+  you'll need to edit two separate files and concatenate them.
+
+As of version 1.13, Recoll uses local8Bit()/fromLocal8Bit() to convert
+recoll.conf file names from/to QStrings (it uses UTF-8 for all string
+values which are not file names).
+
+The Qt file dialog is broken (at least was, I have not checked this on
+recent versions). It should consider file paths as almost-binary data, not
+QStrings, but doesn't. In consequence, things are even more broken than
+necessary as seen from there:
+
+With LANG="C", no non-ASCII paths can't be used at all:
+
+- Strings read from recoll.conf are stripped of 8bit characters before display.
+- Directory entries with 8bit characters are not displayed at all in the
+  selection dialog.
+
+With LANG="fr_FR.UTF-8", only UTF-8 paths can be used:
+
+- Strings read from recoll.conf are damaged when converted to QString
+  (except those that were actually UTF-8) 
+- Only the UTF-8 directory entries are displayed in the selection dialog.
+
+
+With LANG="fr_FR.iso8859-1", everything works ok.
+
+- Strings read from recoll.conf are displayed with weird characters if
+  they use another encoding such as UTF-8, but are correctly maintained
+  and can be read back from the dialogs and rewritten without damage. 
+- Directory entries with 8 bit characters are displayed weirdly (normal),
+  but can be manipulated without trouble (this includes utf-8 names of
+  course). 
+
+In conclusion, only the iso-8859 locales can be used for handling mixed
+encoding situations. This is a possible workaround for people who need it. 
+
+More data about path encoding issues:
+http://www.dwheeler.com/essays/fixing-unix-linux-filenames.html 

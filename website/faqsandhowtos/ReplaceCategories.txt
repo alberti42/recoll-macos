@@ -1,0 +1,58 @@
+== Replacing the Category filter controls
+
+The document category filter controls normally appear at the top of the
+*recoll* GUI, either as checkboxes just above the result list, or as a
+dropbox in the tool area.
+
+By default, they are labeled _Media_, _Message_, _Spreadsheet_, _Text_,
+etc. and each map to a document category.
+
+The mapping used to be fixed. You could change the number and composition
+of categories by redefining them inside the {{{mimeconf}}} configuration
+file (you still can), but the filters always used document categories.
+
+Categories can also be selected from the query language by using an
++rclcat:+ selector. E.g.: _rclcat:message_.
+
+As of Recoll release 1.17, the filters are not hard-wired any more. They
+map to query language fragments. This means that you can freely redefine
+what they do. 
+
+The associations are configured inside the 'mimeconf' file, in the
++[guifilters]+ section. Most GUI parameters are stored in the *Qt*
+configuration file, so this is not entirely consistent, and you will have
+to bear with my lazyness here.
+
+A simple exemple will hopefuly make things clearer. If you add the 
+following to your '~/.recoll/mimeconf' file:
+
+----
+[guifilters]
+
+Big Books = dir:"~/My Books" size>10K
+My Docs = dir:"~/My Documents"
+Small Books = dir:"~/My Books" size<10K
+System Docs = dir:/usr/share/doc
+
+----
+
+You will have four filter checkboxes, labelled _Big Books_, _My Docs_, etc.
+
+The text after the equal sign must be a valid query language fragment, and
+will be translated to a *Recoll* query and combined with the rest of the
+query with an AND conjunction.
+
+Any name text before a colon character will be erased in the display, but
+used for sorting. You can use this to display the checkboxes in any order
+you like. For exemple, the following would do exactly the same as above,
+but ordering the checkboxes in the reverse order.
+
+----
+[guifilters]
+
+d:Big Books = dir:"~/My Books" size>10K
+c:My Docs = dir:"~/My Documents"
+b:Small Books = dir:"~/My Books" size<10K
+a:System Docs = dir:/usr/share/doc
+
+----

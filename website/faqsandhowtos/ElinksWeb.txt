@@ -1,0 +1,35 @@
+== Extending the Recoll Firefox visited web page indexing mechanism to other browsers
+
+The *Recoll* _Web Queue_ function allows using WEB browser plug-ins
+originally designed for indexing visited WEB pages with *Beagle* (rip). The
+browser plug-ins works very simply by creating copies of the visited pages
+in a designated directory. Two files are created for each page, one for the
+contents, the other for the metadata. 
+
+When activated, *Recoll* will visit the queue directory and index each HTML
+page and its associated metadata. There is more detail about the mechanism
+on the [[IndexWebHistory|page about the Recoll Web queue]], but mostly, you
+just need to go to the _Indexing Preferences_ in the *recoll* GUI, open the
+_Web history_ panel and check the top button. 
+
+Franck, a *Recoll* and *Elinks* user from New Zealand, designed a method
+and wrote a script to index the *Elinks* WEB history in this fashion.  
+
+The script works by using *wget* to fetch the visited page into the queue
+directory. This means that it would be reusable to index arbitrary WEB
+pages in contexts other than *Elinks* visits. 
+
+Recipee for *Elinks* and Recoll 1.18 and later:
+
+* Retrieve the 
+  link:https://www.recoll.org/files/elinks_recoll.sh[elinks_recoll.sh] shell
+  script and make it executable (`chmod a+x elinks_recoll.sh`).
+* In the Elinks Keyboard shortcut manager (k)/Main, add a shortcut to pass
+  the current URL to an external commande, e.g. _Ctrl-P_.
+* In the Options manager (o) /Document/Uri Passing, add an action named for
+  example _ToIndex_
+* Modify the ToIndex action to execute `/path/to/the/script/elinks_recoll.sh %c`
+* Save, you are done
+
+For Recoll 1.17, the method is analog, but the script is named
+link:https://www.recoll.org/files/elinks_recoll.sh[elinks_beagle.sh].

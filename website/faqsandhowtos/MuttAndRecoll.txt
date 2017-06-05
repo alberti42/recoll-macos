@@ -1,0 +1,77 @@
+== Interfacing Recoll and Mutt
+
+It is possible to either use Mutt as a Recoll search result viewer, or
+start Recoll from the Mutt search.
+
+=== Starting Mutt to view Recoll search results
+
+This method and the associated 
+link:http://www.recoll.org/files/recoll2mutt[recoll2mutt script] were kindly
+contributed by Morten Langlo.
+
+This allows finding mail messages in recoll and then calling *mutt*
+or *mutt-kz* to read or process the mail. 
+
+Installation:
+
+- Copy the [[http://www.recoll.org/files/recoll2mutt|recoll2mutt script]]
+  somewhere in your PATH, and make it executable.
+- In the **recoll** GUI menus: 
+_Preferences->GUI configuration->User interface->Choose editor applications_
+change the entry for "message/rfc822" to: +recoll2mutt %f+
+
+The script has options for setting a number of parameters, you may not need
+to set any of them, the defaults are:
+
+- -c mutt
+- -F .muttrc
+- -m Mail
+- -x "-fn 10*20 -geometry 115x40"
+
+Example:
+
+----
+recoll2mutt -c mutt-kz -F .mutt_kzrc -m Mail -x "-fn 10*20 -geometry 115x40"  %f
+----
+
+The option +-x+ is passed to *xterm*, which is used to call *mutt* or
+*mutt-kz*.
+
+The script works for both _mbox_ and _maildir_ mail boxes, and it
+expects the configuration file for mutt and the mail directory to reside in
+your $HOME and the spool file to be '/var/spool/mail/$USER' if it is
+not in your mail directory. But it is easy to change the values in the
+script if you need to.
+
+*mutt* is opened with the right mailbox and limit set to _Date_ and
+_Sender_.  In theory you could set limit to _Message-Id_, but very often
+*mutt* reports, that there are invalid patterns in _Message-Id_, so do it
+safe, even though all emails in the opened mail box with the same date from
+the sender are shown.
+
+
+=== Starting Recoll from the Mutt search
+
+This will work only when using maildir storage (messages in individual
+files). It will not work with mailbox files. The latter would probably be
+possible by extracting the individual result messages using the Python
+interface, but I did not try.
+
+The classic way to interface Mutt and a search application is to create a
+shortcut to an external command which creates a temporary Maildir
+containing the search results.
+
+There is such a script for Recoll, you will find it link:https://bitbucket.org/medoc/recoll/raw/41d41799dbac4c69a34db985b3ab9f1597c9c742/src/python/samples/mutt-recoll.py[here].
+
+Copy the script somewhere in your PATH, and make it executable, then add
+the following line to your '.muttrc':
+
+
+----
+
+macro index S "<enter-command>unset wait_key<enter><shell-escape>mutt-recoll.py -G<enter><change-folder-readonly>~/.cache/mutt_results<enter>" \
+          "search mail (using recoll)"
+
+----
+
+Obviously, you can replace the 'S' letter with whatever will suit you (e.g:/)

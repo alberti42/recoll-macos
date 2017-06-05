@@ -1,0 +1,11 @@
+== Indexing Outlook archives ==
+
+Recoll has no direct support for indexing Microsoft Outlook data, because,
+if you are a Windows user, you probably are not a good customer for Linux
+desktop indexing...
+
+However, if you have a need to index Outlook data at some point, I can
+recommend the excellent link:http://www.five-ten-sg.com/libpst/[libpst]
+library and its link:http://www.five-ten-sg.com/libpst/rn01re01.html[readpst]
+utility. Using this you can very easily convert the Outlook data into MH or
+mbox format, and then index the result with Recoll.

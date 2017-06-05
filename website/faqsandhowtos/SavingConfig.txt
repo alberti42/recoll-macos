@@ -1,0 +1,61 @@
+== User configuration backup
+
+=== Why you would want to do this
+
+If you are going to reinstall your system, and have some custom
+configuration, you may save some time by making a backup of your
+configuration and restoring it on the new system, rather than going through
+the menus to recreate it.
+
+=== How to do it
+
+==== Index/search configuration
+
+The main recoll configuration data is normally kept inside '~/.recoll' or
+whatever *$RECOLL_CONFDIR* is set to.
+
+This directory contains both configuration files and generated index
+data.In a standard configuration, the following files and directories
+contain generated data: 
+
+- 'xapiandb' contains the Xapian index, which normally consumes most of the
+  total space. 
+- 'aspdict.en.rws' contains the aspell dictionary used for spelling
+  corrections. 
+- 'mboxcache' contains cached offset data for email messages inside mbox
+  folders. 
+- 'webcache' contains saved web pages. This is more than a cache as
+  destroying it will purge the corresponding data during the next
+  indexing. 
+
+The other files are either very small or contain configuration data.
+
+If you want to only save configuration, using minimum space, you can
+destroy the above files and directories (with the possible exception of
+'webcache'). Then taking a copy of the '.recoll' directory and adding the
+GUI configuration data described in the next will get you a full
+configuration data backup. 
+
+==== GUI configuration
+
+The parameters set from the _Query configuration_ Qt menus are stored in
+Qt standard places:
+
+- '~/.qt/recollrc' for Qt 3.x
+- '~/.config/Recoll.org/recoll.conf' for Qt 4 and later
+
+
+==== Other data
+
+If you wish to save index data in addition to the customisation files,
+which only makes sense if the document access paths do not change after
+reinstallation, you can just take a backup of the full '.recoll'
+directory, taking care that the storage locations for some data elements
+can be changed (not be inside '.recoll'): 
+
+- The index data is normally kept inside '~/.recoll/xapiandb', but the
+  location of this directory can be modified by the +dbdir+
+  configuration parameter if it is set (check 'recoll.conf'). 
+- If you use the Firefox Recoll plugin, the WEB history cache is normally
+  kept inside '~/.recoll/webcache', but the location can be modified by
+  the +webcachedir+ configuration parameter. 
