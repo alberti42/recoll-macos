@@ -39,6 +39,10 @@ class MimeHandlerNull : public RecollFilter {
     }
     virtual ~MimeHandlerNull() {}
 
+    virtual bool is_data_input_ok(DataInput input) const {
+        return true;
+    }
+    
     virtual bool next_document() 
     {
 	if (m_havedoc == false)

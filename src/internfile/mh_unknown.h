@@ -32,6 +32,10 @@ class MimeHandlerUnknown : public RecollFilter {
 	: RecollFilter(cnf, id) {
     }
     virtual ~MimeHandlerUnknown() {}
+    virtual bool is_data_input_ok(DataInput input) const {
+        return true;
+    }
+    
     virtual bool next_document() {
 	if (m_havedoc == false)
 	    return false;
