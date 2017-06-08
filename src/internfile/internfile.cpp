@@ -654,7 +654,8 @@ int FileInterner::addHandler()
     getKeyValue(docdata, cstr_dj_keycharset, charset);
     getKeyValue(docdata, cstr_dj_keymt, mimetype);
 
-    LOGDEB("FileInterner::addHandler: next_doc is "  << (mimetype) << " target ["  << (m_targetMType) << "]\n" );
+    LOGDEB("FileInterner::addHandler: next_doc is " << mimetype <<
+           " target ["  << m_targetMType << "]\n");
 
     // If we find a document of the target type (text/plain in
     // general), we're done decoding. If we hit text/plain, we're done
@@ -662,7 +663,7 @@ int FileInterner::addHandler()
     if (!stringicmp(mimetype, m_targetMType) || 
 	!stringicmp(mimetype, cstr_textplain)) {
 	m_reachedMType = mimetype;
-	LOGDEB1("FileInterner::addHandler: target reached\n" );
+	LOGDEB1("FileInterner::addHandler: target reached\n");
 	return ADD_BREAK;
     }
 
@@ -670,15 +671,26 @@ int FileInterner::addHandler()
     if (m_handlers.size() >= MAXHANDLERS) {
 	// Stack too big. Skip this and go on to check if there is
 	// something else in the current back()
-	LOGERR("FileInterner::addHandler: stack too high\n" );
+	LOGERR("FileInterner::addHandler: stack too high\n");
 	return ADD_CONTINUE;
     }
 
-    RecollFilter *newflt = getMimeHandler(mimetype, m_cfg, !m_forPreview);
+    // We must not filter out HTML when it is an intermediate
+    // conversion format. We discriminate between e.g. an HTML email
+    // attachment (needs filtering) and a result of pdf conversion
+    // (must process) by looking at the last ipath element: a
+    // conversion will have an empty one (same test as in
+    // collectIpathAndMT).
+    string ipathel;
+    getKeyValue(docdata, cstr_dj_keyipath, ipathel);
+    bool dofilter = !m_forPreview &&
+        (mimetype.compare(cstr_texthtml) || !ipathel.empty());
+    RecollFilter *newflt = getMimeHandler(mimetype, m_cfg, dofilter);
     if (!newflt) {
 	// If we can't find a handler, this doc can't be handled
 	// but there can be other ones so we go on
-	LOGINFO("FileInterner::addHandler: no filter for ["  << (mimetype) << "]\n" );
+	LOGINFO("FileInterner::addHandler: no filter for ["  << mimetype <<
+                "]\n");
 	return ADD_CONTINUE;
     }
     newflt->set_property(Dijon::Filter::OPERATING_MODE, 
@@ -717,7 +729,8 @@ int FileInterner::addHandler()
 	}
     }
     if (!setres) {
-	LOGINFO("FileInterner::addHandler: set_doc failed inside "  << (m_fn) << "  for mtype "  << (mimetype) << "\n" );
+	LOGINFO("FileInterner::addHandler: set_doc failed inside " << m_fn <<
+                "  for mtype " << mimetype << "\n");
 	delete newflt;
 	if (m_forPreview)
 	    return ADD_ERROR;
@@ -725,7 +738,7 @@ int FileInterner::addHandler()
     }
     // add handler and go on, maybe this one will give us text...
     m_handlers.push_back(newflt);
-    LOGDEB1("FileInterner::addHandler: added\n" );
+    LOGDEB1("FileInterner::addHandler: added\n");
     return ADD_OK;
 }
 
@@ -1003,9 +1016,9 @@ bool FileInterner::interntofile(TempFile& otemp, const string& tofile,
     // performed. A common case would be an "Open" on an html file
     // (we'd end up with text/plain content). As the html version is
     // saved in this case, use it.  
-    if (!stringlowercmp("text/html", mimetype) && !get_html().empty()) {
+    if (!stringlowercmp(cstr_texthtml, mimetype) && !get_html().empty()) {
         doc.text = get_html();
-        doc.mimetype = "text/html";
+        doc.mimetype = cstr_texthtml;
     }
 
     const char *filename;

@@ -147,7 +147,7 @@ static RecollFilter *mhFactory(RclConfig *config, const string &mime,
 	LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerText\n");
 	MD5String("MimeHandlerText", id);
 	return nobuild ? 0 : new MimeHandlerText(config, id);
-    } else if ("text/html" == lmime) {
+    } else if (cstr_texthtml == lmime) {
 	LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerHtml\n");
 	MD5String("MimeHandlerHtml", id);
 	return nobuild ? 0 : new MimeHandlerHtml(config, id);

@@ -320,7 +320,7 @@ bool MimeHandlerExecMultiple::next_document()
 	}
     } else {
 	// "Self" document.
-        m_metaData[cstr_dj_keymt] = mtype.empty() ? "text/html" : mtype;
+        m_metaData[cstr_dj_keymt] = mtype.empty() ? cstr_texthtml : mtype;
         m_metaData.erase(cstr_dj_keyipath);
 	if (!m_forPreview) {
             m_metaData[cstr_dj_keymd5] = file_md5;

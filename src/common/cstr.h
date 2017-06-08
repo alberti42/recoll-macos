@@ -55,6 +55,7 @@ DEF_CSTR(newline, "\n");
 DEF_CSTR(null, "");
 DEF_CSTR(plus, "+");
 DEF_CSTR(textplain, "text/plain");
+DEF_CSTR(texthtml, "text/html");
 DEF_CSTR(url, "url");
 // Marker for HTML format fields
 DEF_CSTR(fldhtm, "\007");

@@ -235,7 +235,7 @@ void MimeHandlerExec::finaldetails()
 {
     // The default output mime type is html, but it may be defined
     // otherwise in the filter definition.
-    m_metaData[cstr_dj_keymt] = cfgFilterOutputMtype.empty() ? "text/html" : 
+    m_metaData[cstr_dj_keymt] = cfgFilterOutputMtype.empty() ? cstr_texthtml : 
 	cfgFilterOutputMtype;
 
     if (!m_forPreview && !m_nomd5) {

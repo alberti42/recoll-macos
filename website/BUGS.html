@@ -32,6 +32,14 @@ versions.</i></p>
 <h2><a name="b_latest">recoll 1.23.2</a></h2>
 <ul>
 
+  <li>When indexedmimetypes is set and does not include text/html (or
+    if text/html is excluded by excludedmimetypes), PDF (and other)
+    contents will not be indexed because the file handler initially
+    produces text/html. The workaround is to include text/html in the
+    processed types, and maybe use suffix exclusion if you really
+    don't want to index html files. This is fixed in development code,
+    will be in the next release.</li>
+  
   <li>The Recoll GUI configuration (things set from the <tt>GUI
       Configuration</tt> menu) is stored in a file
       named <tt>~/.config/Recoll.org/recoll.conf</tt>, which is
