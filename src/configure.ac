@@ -10,9 +10,17 @@ LT_INIT
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_PROG_CXX
+# AC_PROG_CXX used to set CXX to C when no compiler was found, but now it's
+# g++. So actually try to build a program to verify the compiler.
 if test C$CXX = C ; then
    AC_MSG_ERROR([C++ compiler needed. Please install one (ie: gnu g++)])
 fi
+AC_LANG_PUSH([C++])
+AC_TRY_LINK([],[], rcl_link_ok=yes, rcl_link_ok=no)
+if test "$rcl_link_ok" = "no" ; then
+   AC_MSG_ERROR([No working C++ compiler was found])
+fi
+AC_LANG_POP([C++])
 
 AC_PROG_YACC
 
