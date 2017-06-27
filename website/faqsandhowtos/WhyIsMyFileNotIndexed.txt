@@ -68,7 +68,7 @@ full *recollindex* even for a specific file, but this will produce a
 big log file. 
 
 When you are done, it is  better to reset the verbosity to a reasonable
-level (e.g.: +2+ : just errors, +4+ : basic traces). 
+level (e.g.: +2+ : just errors, +3+ : information, listing indexed files). 
 
 === Note: the path gotcha
 

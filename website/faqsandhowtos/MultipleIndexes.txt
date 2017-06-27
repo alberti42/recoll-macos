@@ -17,7 +17,7 @@
 
 As an example we'll suppose that you have Recoll installed and indexing
 your home directory, and that you would like to have a separate index for
-/usr/shared/doc. 
+'/usr/share/doc'. 
 
 You need to create a separate configuration for the new index, then add it
 to the external indexes list in the user interface, and activate it as
@@ -92,5 +92,6 @@ As of release 1.19 **Recoll** has a facility to perform index-dependant
 path translations. This facility is accessible from the _external index
 dialog_ in the GUI preferences. Paths translations can be set for the main
 index if no index is selected (rarely useful), or for the selected
-additional index.
-
+additional index. 
+link:../usermanual/webhelp/docs/RCL.SEARCH.PTRANS.html[See
+the manual] for more detail.

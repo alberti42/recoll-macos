@@ -16,12 +16,15 @@ lists, speed up indexing times and make the index smaller.
 There are two ways to block indexing at certain points: either by listing
 specific paths, or by directory name pattern matches. 
 
-- Blocking specific paths: this is controlled by the skippedPaths variable
-  in the main configuration file. You can adjust the value either by
-  editing the file or by using the indexing configuration dialog:
+- Blocking specific paths: this is controlled by the 'skippedPaths'
+  variable in the main configuration file. You can adjust the value either
+  by editing the file or by using the indexing configuration dialog:
   _Preferences->Indexing configuration->Global parameters->Skipped paths_
 - Using pattern matches: these are listed in the skippedNames variable in
   the main configuration file. You can adjust the value either by editing
   the file or by using the GUI: _Preferences->Indexing configuration->Local
   parameters->Skipped names_
 
+The
+link:../usermanual/webhelp/docs/RCL.INSTALL.CONFIG.RECOLLCONF.WHATDOCS.html[configuration
+section] of the manual has a bit more detail about the two variables.

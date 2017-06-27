@@ -236,18 +236,17 @@
 
         <h3><a name="debian">Debian</a></h3>
 
-        <p>The Debian Recoll packages are usually fairly up to date, just use
-          the appropriate Debian repository.</p>
-
-        <p><i>Except they're not at the moment
-        (2017-01)...</i>. Debian stable (Jessie) has Recoll 1.17.3. Debian
-          testing has 1.22.4, and it may work on Jessie (or not...).
-          In any case, I am maintaining a repository for packages
-          built for Debian Jessie (it also has older 1.22 packages for
-          Wheezy). The repository currently has recoll 1.23.x for
-          Debian Intel 32 and 64 bits, and armhf. There is a separate
+        <p>The Debian Recoll packages are not always up to date in
+          stable distributions. Debian Wheezy and Jessie have Recoll
+          1.17.3. which is ancient (it was an accident for
+          Jessie). Stretch has 1.22.4 which is largely ok.</p>
+        
+        <p>I am maintaining a repository for newer versions of the packages.
+          The repository currently has recoll 1.23.x for Jessie and
+          Stretch, Intel 32 and 64 bits, and armhf, and slightly older
+          1.22 packages for Wheezy. There is a separate
           repository for Raspbian Jessie, which is <em>not</em>
-          compatible with vanilla Debian (!).</p>
+          compatible with vanilla Debian.</p>
 
         <p>To add the Debian or Raspbian repository to your sources:</p>
 
@@ -271,6 +270,11 @@ deb-src http://www.lesbonscomptes.com/recoll/debian/ wheezy main
             <div class="code">
 deb http://www.lesbonscomptes.com/recoll/debian/ jessie main
 deb-src http://www.lesbonscomptes.com/recoll/debian/ jessie main
+            </div>
+            for Debian stretch (debian 9.x):<br>
+            <div class="code">
+deb http://www.lesbonscomptes.com/recoll/debian/ stretch main
+deb-src http://www.lesbonscomptes.com/recoll/debian/ stretch main
             </div>
             for Raspbian jessie (raspbian 8.x):<br>
             <div class="code">

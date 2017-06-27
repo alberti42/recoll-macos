@@ -98,10 +98,9 @@
 	d'oeil rapide sur la page des <a
         href="usermanual/RCL.SEARCH.html#RCL.SEARCH.GUI.TIPS"> petites
         recettes de recherche</a> (en anglais) pourrait s'avérer
-        fructueux ! Également, en anglais, la 
-        <a href="http://bitbucket.org/medoc/recoll/wiki/FaqsAndHowTos">
-          page des questions fréquentes et trucs divers</a> sur
-          bitbucket.org</p> 
+        fructueux ! Également, en anglais,
+        la <a href="faqsandhowtos/index.html">section des questions
+          fréquentes et trucs divers</a>.</p>
 
       <h2>Nouvelles: </h2>
 

@@ -3,7 +3,7 @@ Jean-Francois Dockes <jf at dockes.org>
 :date:
 
 :recollversion: 1.23.0-2017-01-07-78b8ad
-:windir: downwin-c67b5
+:windir: downwin-7c1df
 
 image:recoll-windows10-thumb.png[link="recoll-windows10.png"]
 
@@ -83,8 +83,12 @@ for reporting problems, or contact me by email: jfd at recoll.org.
 
 == Known problems:
 
+- Having a drive root (e.g.: c:/) in the topdirs (things to index) list
+  does not work (it indexes nothing). You need to list the sub-directories
+  to index. This will be fixed in a future release.
+  
 - Setting the log level to 4 or higher can cause the GUI to deadlock while
-  displaying results. This will be fixed shortly.
+  displaying results. This will be fixed in a future release.
   
 - Indexing is very slow, especially when using external commands (e.g. for
   PDF files). I don't know if this is a case of my doing something stupid,
