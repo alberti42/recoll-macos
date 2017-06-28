@@ -454,17 +454,26 @@ bool stringToBool(const string& s)
 
 void trimstring(string& s, const char *ws)
 {
+    rtrimstring(s, ws);
+    ltrimstring(s, ws);
+}
+
+void rtrimstring(string& s, const char *ws)
+{
+    string::size_type pos = s.find_last_not_of(ws);
+    if (pos != string::npos && pos != s.length() - 1) {
+        s.replace(pos + 1, string::npos, string());
+    }
+}
+
+void ltrimstring(string& s, const char *ws)
+{
     string::size_type pos = s.find_first_not_of(ws);
     if (pos == string::npos) {
         s.clear();
         return;
     }
     s.replace(0, pos, string());
-
-    pos = s.find_last_not_of(ws);
-    if (pos != string::npos && pos != s.length() - 1) {
-        s.replace(pos + 1, string::npos, string());
-    }
 }
 
 // Remove some chars and replace them with spaces
