@@ -40,11 +40,16 @@ OTHER DEALINGS IN THE SOFTWARE.
 // the software is not actually calling us. If it does call us, this
 // will bring attention to the necessity of a port.
 //
-// If the platform is known not supporting extattrs (e.g.__OpenBSD__),
+// If the platform is known not to support extattrs (e.g.__OpenBSD__),
 // just let the methods return errors (like they would on a non-xattr
 // fs on e.g. linux)
+
+#if defined(__DragonFly__) || defined(__OpenBSD__)
+#define HAS_NO_XATTR
+#endif
+
 #if defined(__FreeBSD__) || defined(PXALINUX) || defined(__APPLE__) \
-    || defined(__OpenBSD__)
+    || defined(HAS_NO_XATTR)
 
 
 #ifndef TEST_PXATTR
@@ -60,7 +65,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <sys/xattr.h>
 #elif defined(__APPLE__)
 #include <sys/xattr.h>
-#elif defined(__OpenBSD__)
+#elif defined(HAS_NO_XATTR)
 #else
 #error "Unknown system can't compile"
 #endif
