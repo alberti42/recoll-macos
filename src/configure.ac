@@ -259,6 +259,10 @@ AC_LANG(C++)
 LIBICONV=""
 S_LIBS=$LIBS
 S_CPPFLAGS=$CPPFLAGS
+# On systems which both have iconv in libc and libiconv in /usr/local this
+# will not work: the iconv.h in /usr/local will be found at compile time,
+# and redefine iconv_open to libiconv_open, but the link will not have
+# -liconv. Have to remove ${libdir} or move /usr/local/lib first.
 for dir in ${libdir} /opt/local/lib /usr/local/lib;do
   CPPFLAGS="$S_CPPFLAGS -I$dir/../include"
 
