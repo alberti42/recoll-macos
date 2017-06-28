@@ -44,9 +44,9 @@
  *   getting-the-highest-allocated-file-descriptor
  *
  * System interfaces:
- *  FreeBSD:
- *   - Has a closefrom() system call as of release 7.x around Sep 2009
- *   - Has a /dev/fd, directory which shows the current process' open
+ *  FreeBSD/DragonFly:
+ *   - Have a closefrom() system call as of release 7.x around Sep 2009
+ *   - Have a /dev/fd, directory which shows the current process' open
  *     descriptors. Only descriptors 0, 1, 2 are shown except if
  *     fdescfs is mounted which it is not by default
  *
@@ -69,6 +69,9 @@
  *  @return 0 for success, -1 for error.
  */
 #ifndef TEST_CLOSEFROM
+
+#include "closefrom.h"
+
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -77,7 +80,6 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 
-#include "closefrom.h"
 
 /* #define DEBUG_CLOSEFROM */
 #ifdef DEBUG_CLOSEFROM
@@ -93,7 +95,8 @@
 
 /* closefrom() exists on Solaris, netbsd and openbsd, but someone will
  * have to provide me the appropriate macro to test */
-#if (defined(__FreeBSD__) && __FreeBSD_version >= 702104)
+#if ((defined(__FreeBSD__) && __FreeBSD_version >= 702104)) || \
+    defined(__DragonFly__)
 /* Use closefrom() system call */
 int libclf_closefrom(int fd0)
 {
