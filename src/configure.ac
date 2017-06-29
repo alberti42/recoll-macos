@@ -9,6 +9,11 @@ AC_DISABLE_STATIC
 LT_INIT
 AC_CONFIG_MACRO_DIR([m4])
 
+m4_include([m4/iconv.m4])
+AM_ICONV
+INCICONV=$CPPFLAGS
+LIBICONV=$LTLIBICONV
+
 AC_PROG_CXX
 # AC_PROG_CXX used to set CXX to C when no compiler was found, but now it's
 # g++. So actually try to build a program to verify the compiler.
@@ -252,66 +257,6 @@ AC_CHECK_FUNCS(mkdtemp)
 AC_CHECK_LIB([pthread], [pthread_create], [], [])
 AC_CHECK_LIB([dl], [dlopen], [], [])
 AC_CHECK_LIB([z], [zlibVersion], [], [])
-
-##### Look for iconv. This can exist in either libc (ie: Linux, solaris) or
-##### libiconv. We'd need a --with-libiconv= option
-AC_LANG(C++)
-LIBICONV=""
-S_LIBS=$LIBS
-S_CPPFLAGS=$CPPFLAGS
-# On systems which both have iconv in libc and libiconv in /usr/local this
-# will not work: the iconv.h in /usr/local will be found at compile time,
-# and redefine iconv_open to libiconv_open, but the link will not have
-# -liconv. Have to remove ${libdir} or move /usr/local/lib first.
-for dir in ${libdir} /opt/local/lib /usr/local/lib;do
-  CPPFLAGS="$S_CPPFLAGS -I$dir/../include"
-
-  LIBS="$S_LIBS -L$dir"
-  AC_TRY_LINK([#include <stdlib.h>
-#include <iconv.h>],
-      [iconv_t cd = iconv_open("","");
-       iconv(cd,NULL,NULL,NULL,NULL);
-       iconv_close(cd);],
-      LIBICONV="-L$dir";INCICONV=-I$dir/../include)
-  if test A"$LIBICONV" != A ; then
-     break
-  fi
-
-  LIBS="$S_LIBS -L$dir -liconv"
-  AC_TRY_LINK([#include <stdlib.h>
-#include <iconv.h>],
-      [iconv_t cd = iconv_open("","");
-       iconv(cd,NULL,NULL,NULL,NULL);
-       iconv_close(cd);],
-      LIBICONV="-L$dir -liconv";INCICONV=-I$dir/../include)
-  if test A"$LIBICONV" != A ; then
-     break
-  fi
-
-done
-
-LIBS=$S_LIBS
-CPPFLAGS=$S_CPPFLAGS
-
-if test A"$LIBICONV" = A ; then
-   AC_MSG_ERROR([Cannot find iconv_open anywhere. Please install iconv])
-   exit 1
-fi
-#echo LIBICONV $LIBICONV
-#echo INCICONV $INCICONV
-
-CPPFLAGS="$CPPFLAGS $INCICONV"
-AC_MSG_CHECKING(for type of inbuf parameter to iconv)
-AC_TRY_COMPILE([
-    #include <stddef.h>
-    #include <iconv.h>
-  ],[
-    iconv(0,(const char **)0,(size_t *)0,(char **)0,(size_t *)0);
-  ], rcl_iconv_inbuf_const="1", rcl_iconv_inbuf_const="0")
-if test X$rcl_iconv_inbuf_const = X1 ; then
-  AC_DEFINE(RCL_ICONV_INBUF_CONST, 1, [iconv parameter 2 is const char**])
-fi
-
 
 ############# Putenv
 AC_MSG_CHECKING(for type of string parameter to putenv)

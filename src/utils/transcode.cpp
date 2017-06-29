@@ -29,12 +29,6 @@ using std::string;
 #include "transcode.h"
 #include "log.h"
 
-#ifdef RCL_ICONV_INBUF_CONST
-#define ICV_P2_TYPE const char**
-#else
-#define ICV_P2_TYPE char**
-#endif
-
 // We gain approximately 25% exec time for word at a time conversions by
 // caching the iconv_open thing. 
 //
@@ -98,8 +92,8 @@ bool transcode(const string &in, string &out, const string &icode,
 	op = obuf;
 	osiz = OBSIZ;
 
-	if(iconv(ic, (ICV_P2_TYPE)&ip, &isiz, &op, &osiz) == (size_t)-1 && 
-	   errno != E2BIG) {
+	if(iconv(ic, (ICONV_CONST char **)&ip, &isiz, &op, &osiz) == (size_t)-1
+           && errno != E2BIG) {
 #if 0
 	    out.erase();
 	    out = string("iconv failed for ") + icode + " -> " + ocode +
