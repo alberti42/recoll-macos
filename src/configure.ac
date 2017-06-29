@@ -260,6 +260,7 @@ AC_CHECK_LIB([z], [zlibVersion], [], [])
 
 ############# Putenv
 AC_MSG_CHECKING(for type of string parameter to putenv)
+AC_LANG_PUSH([C++])
 AC_TRY_COMPILE([
     #include <stdlib.h>
   ],[
@@ -268,6 +269,7 @@ AC_TRY_COMPILE([
 if test X$rcl_putenv_string_const = X1 ; then
   AC_DEFINE(PUTENV_ARG_CONST, 1, [putenv parameter is const])
 fi
+AC_LANG_POP([C++])
 
 
 #### Look for Xapian. Done in a strange way to work around autoconf
