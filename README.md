@@ -14,6 +14,7 @@ documents as well as file names.
   even quicker text preview. 
 * The software is free, open source, and licensed under the GPL.
 
+For more detail, see the [web site](http://www.recoll.org/features.html) or the [online documentation](http://www.recoll.org/doc.html).
 
 Most distributions feature prebuilt packages for Recoll. In any case, [the instructions for building and
-installing are here.](http://www.lesbonscomptes.com/recoll/usermanual/webhelp/docs/RCL.INSTALL.BUILDING.html)
+installing are here](http://www.recoll.org/usermanual/webhelp/docs/RCL.INSTALL.BUILDING.html).
