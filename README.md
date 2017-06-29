@@ -15,6 +15,5 @@ documents as well as file names.
 * The software is free, open source, and licensed under the GPL.
 
 
-Most distributions feature prebuilt packages for Recoll. In any case, [here
-are the instructions for building and
-installing.](http://www.lesbonscomptes.com/recoll/usermanual/webhelp/docs/RCL.INSTALL.BUILDING.html)
+Most distributions feature prebuilt packages for Recoll. In any case, [the instructions for building and
+installing are here.](http://www.lesbonscomptes.com/recoll/usermanual/webhelp/docs/RCL.INSTALL.BUILDING.html)
