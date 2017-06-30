@@ -167,8 +167,8 @@ static MyUpdater *updater;
 
 static void sigcleanup(int sig)
 {
-    fprintf(stderr, "Got signal, registering stop request\n");
-    LOGDEB("Got signal, registering stop request\n");
+    cerr << "Recollindex: got signal " << sig << ", registering stop request\n";
+    LOGDEB("Got signal " << sig << ", registering stop request\n");
     CancelCheck::instance().setCancel();
     stopindexing = 1;
 }
