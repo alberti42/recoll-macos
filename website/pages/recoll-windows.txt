@@ -3,7 +3,7 @@ Jean-Francois Dockes <jf at dockes.org>
 :date:
 
 :recollversion: 1.23.0-2017-01-07-78b8ad
-:windir: downwin-8ed9a
+:windir: downwin-f2f10
 
 image:recoll-windows10-thumb.png[link="recoll-windows10.png"]
 
