@@ -77,7 +77,7 @@ manual] !
 == Support
 
 Please use the 
-https://bitbucket.org/medoc/recoll/issues[BitBucket Recoll issues tracker]
+https://opensourceprojects.eu/p/recoll1/tickets/new/[Recoll issues tracker]
 for reporting problems, or contact me by email: jfd at recoll.org.
 
 

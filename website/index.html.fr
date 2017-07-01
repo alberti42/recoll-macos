@@ -156,7 +156,7 @@
 
         <dt>2010-11-20</dt><dd>Un petit script pour activer/cacher recoll sur un
           bureau gnome d'un seul coup de clavier: 
-          <a href="http://bitbucket.org/medoc/recoll/wiki/HotRecoll">
+          <a href="http://www.recoll.org/faqsandhowtos/HotRecoll.html">
             recette d'installation</a>.</dd>
 
       </ul>

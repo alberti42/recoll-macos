@@ -58,8 +58,9 @@ In case of indexer misbehaviour (e.g. using too much memory, you should run
 _tail -f_ on the log to see what is going on. 
 
 If this is not enough, please
-link:http://bitbucket.org/medoc/recoll/issues/new[open a tracker issue] and
-attach or link to the log data, or just email me (jfd at recoll.org). 
+link:https://opensourceprojects.eu/p/recoll1/tickets/new/[open a tracker
+issue] and attach or link to the log data, or just email me (jfd at
+recoll.org).  
 
 *recollindex* and *recollindex -i* usually have the same criteria to
 include a file or not (but see the _Path gotcha_ note below). It may

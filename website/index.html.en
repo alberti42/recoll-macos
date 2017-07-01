@@ -302,7 +302,7 @@
         </dd>
 
         <dt>2014-02-27</dt><dd>While working on a 
-          <a href="https://bitbucket.org/medoc/recoll/wiki/MuttAndRecoll">
+          <a href="http://www.recoll.org/faqsandhowtos/MuttAndRecoll.html">
             Recoll-Mutt interface</a> I discovered incidentally that
             the <a href="https://github.com/koniu/recoll-webui">Recoll
             Webui Web interface</a> works quite well with the 
@@ -354,7 +354,7 @@
         <dt>2012-09-11</dt> <dd>A new user-contributed script for those who use
           real-time indexing on laptops: stop or start indexing
           according to AC power status. See the details on
-          the <a href="https://bitbucket.org/medoc/recoll/wiki/IndexOnAc.wiki">
+          the <a href="http://www.recoll.org/faqsandhowtos/IndexOnAc.html">
             Wiki</a>. </dd>
 
         <dt>2012-04-07</dt><dd>We now have a Chinese user manual:

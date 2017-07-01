@@ -26,7 +26,7 @@ publication.
 Here, we describe customizing Recoll to retrieve this metadata, store it,
 and defining a result paragraph format to display it. See also a related
 wiki entry,
-link:https://bitbucket.org/medoc/recoll/wiki/HandleCustomField.wiki[Generating
+link:http://www.recoll.org/faqsandhowtos/HandleCustomField.html[Generating
 a custom field and using it to sort results], for sorting results on PDF
 page count.
 
@@ -229,7 +229,7 @@ a:active {
 ----
 
 There are
-link:https://bitbucket.org/medoc/recoll/wiki/ResultsThumbnails[various
+link:http://www.recoll.org/faqsandhowtos/ResultsThumbnails.html[various
 methods for creating the thumbnails]; the ones here were made by opening
 the directory containing the PDFs in the Dolphin file manager (part of KDE)
 and selecting the Preview option.

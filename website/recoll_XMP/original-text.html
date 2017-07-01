@@ -6,9 +6,17 @@
 <body>
 
 <h2>Introduction</h2>
+
 <p>Organizing and searching a large collection of PDFs as part of a research project can be a demanding task.
-<a href="http://en.wikipedia.org/wiki/Extensible_Metadata_Platform">XMP metadata</a> stored in a PDF, such as journal title, publication year, and user-added keywords, are often useful when searching for a publication.
-Here, we describe the use of a custom Recoll filter to retrieve this metadata, an indexing configuration to store it, and result paragraph format to display it. See also a related wiki entry, <a href="https://bitbucket.org/medoc/recoll/wiki/HandleCustomField.wiki">Generating a custom field and using it to sort results</a>, for sorting results on PDF page count.
+<a href="http://en.wikipedia.org/wiki/Extensible_Metadata_Platform">XMP
+metadata</a> stored in a PDF, such as journal title, publication year,
+and user-added keywords, are often useful when searching for a
+publication.  Here, we describe the use of a custom Recoll filter to
+retrieve this metadata, an indexing configuration to store it, and
+result paragraph format to display it. See also a related wiki
+entry, <a href="http://www.recoll.org/faqsandhowtos/HandleCustomField.html">
+  Generating a custom field and using it to sort results</a>, for
+sorting results on PDF page count. </p>
 
 <h2>Saving metadata to PDFs</h2>
 <p>Bibliographic metadata can be saved in the PDF file itself. In the <a href="http://jabref.sourceforge.net">JabRef</a> bibliography manager, this is done with the "Write XMP-metadata to PDFs" menu item. Note the presence of the keywords in the screenshot below; this field is a good place to tag the PDF with any words of your choosing to describe genre, topic, etc.
@@ -110,16 +118,43 @@ application/pdf = exec /home/&lt;username>/.recoll/filters/rclpdf
 &lt;/table>&lt;font color="#900000">%K&lt;/font>
 &lt;br>&lt;br>
 </pre>
-The screenshot below also has the "Highlight color for query terms" set to <tt>black; font-weight:bold;</tt> for bold, black text (instead of the blue default). There are <a href="https://bitbucket.org/medoc/recoll/wiki/ResultsThumbnails">various methods for creating the thumbnails</a>; the ones here were made by opening the directory containing the PDFs in the Dolphin file manager (part of KDE) and selecting the Preview option.
+The screenshot below also has the "Highlight color for query terms"
+set to <tt>black; font-weight:bold;</tt> for bold, black text (instead
+of the blue default). There
+are <a href="http://www.recoll.org/faqsandhowtos/ResultsThumbnails.html">
+  various methods for creating the thumbnails</a>; the ones here were
+made by opening the directory containing the PDFs in the Dolphin file manager
+(part of KDE) and selecting the Preview option. 
 
 <h2>A search example</h2>
-<p>The simple query is <tt>cerevisiae keyword:protein</tt>. This returns only PDFs that have the text "cerevisiae" and have been tagged with the "protein" keyword. The LaTeX-style formatting from the BibTeX database is displayed as HTML (note the italicized words in article title, and umlaut in author's name). Other queries could be made based on the PDF metadata, e.g. <tt>journal:plos</tt> or <tt>year:2013</tt> .
-<p><img src="recoll_query.png">
+
+<p>The simple query is <tt>cerevisiae keyword:protein</tt>. This
+returns only PDFs that have the text "cerevisiae" and have been tagged
+with the "protein" keyword. The LaTeX-style formatting from the BibTeX
+database is displayed as HTML (note the italicized words in article
+title, and umlaut in author's name). Other queries could be made based
+  on the PDF metadata, e.g. <tt>journal:plos</tt> or <tt>year:2013</tt>.</p>
+<p><img src="recoll_query.png"></p>
 
 <h2>More possibilities</h2>
+
 <ul>
-  <li>The sort buttons (up- and down-arrows) in Recoll sort the results by the modified date on the file at the time of indexing. If you want this sorting to reflect the publication year, then the timestamp should be set accordingly. If names of the PDFs contain the year (e.g. BZS2007.pdf, CKE+2011.pdf), the following one-liner would set the modified date to January 1st of the year: <tt>for i in `ls *.pdf`; do touch -d `echo $i | sed 's/[^0-9]*//g'`-01-01 $i; done</tt> . Note that the publication year could then be shown in the result list using the stored date of the file (using "%D" in the result paragraph format, and date format "%Y") instead of having to add the year to the index as shown above.
-  <li>The filter can be modified to fill in the "journal" field for BibTex entries that aren't journal articles (e.g. bibtex:booktitle for "InCollection" entries).
+  <li>The sort buttons (up- and down-arrows) in Recoll sort the
+  results by the modified date on the file at the time of indexing. If
+  you want this sorting to reflect the publication year, then the
+  timestamp should be set accordingly. If names of the PDFs contain
+  the year (e.g. BZS2007.pdf, CKE+2011.pdf), the following one-liner
+  would set the modified date to January 1st of the year: <tt>for i in
+  `ls *.pdf`; do touch -d `echo $i | sed 's/[^0-9]*//g'`-01-01 $i;
+  done</tt> . Note that the publication year could then be shown in
+  the result list using the stored date of the file (using "%D" in the
+  result paragraph format, and date format "%Y") instead of having to
+  add the year to the index as shown above. 
+
+  <li>The filter can be modified to fill in the "journal" field for
+  BibTex entries that aren't journal articles (e.g. bibtex:booktitle
+  for "InCollection" entries). 
+
 </ul>
 
 </body>

@@ -232,15 +232,17 @@ Configuration</em> menu.</p>
     <pre>            localfields = ; attr1 = val1 ; attr2 = val2
     </pre>
   </li>
+
   <li>Extended file attributes are now indexed by default. As a side effect,
     recoll now uses st_ctime, not st_mtime to detect file changes. This means
     that installing 1.19 will reindex many files (all those that were modified
     since created). Recoll also now processes the <tt>charset</tt> and
     <tt>mime_type</tt> standardized extended attributes.</li>
+
   <li>The Python module has been expanded to include the interface for
     extracting data. This means that you could now write most of the Recoll GUI
     in Python if you wished. There is a <a
-    href="https://bitbucket.org/medoc/recoll/src/5b4bd9ef26a1/src/python/samples/recollgui/qrecoll.py?at=default">bit
+    href="https://opensourceprojects.eu/p/recoll1/code/ci/144da4a5caa2b39d23d9d7cf262f03b6d80a4739/tree/src/python/samples/recollgui/qrecoll.py">bit
     of sample code</a> in the source package doing just this. A few
     incompatible changes had to be made to the Python module. Especially the
     "Query.next" field is gone and the module structure has been changed
