@@ -101,10 +101,21 @@
 	  Faqs and Howtos section</a>, and some contributed
         <a href="custom.html">result list formats</a>.</p>
 
+      <h2>Thanks</h2>
+      <p>Recoll borrows a lot of code
+	from other packages, and welcomes code and ideas from
+	contributors, see some of the 
+	<a class="important" href="credits.html">Credits</a>.</p>
+
       <h2>News</h2>
       <div class="news">
       
         <dl>
+          <dt>2017-07-02</dt><dd>The source code repository and issue
+            tracker are moving to a
+            <a href="https://opensourceprojects.eu/p/recoll1/">
+              new place</a>.<br clear="all"></dd>
+
           <dt>2017-05-23</dt><dd>Release 1.23.2 has gotten much
             better at <a href="recoll_XMP">processing PDF XMP
               data</a>.</dd>
@@ -366,12 +377,6 @@
       </dl>
       </div>
 	
-      <h2>Thanks</h2>
-      <p>Recoll borrows a lot of code
-	from other packages, and welcomes code and ideas from
-	contributors, see some of the 
-	<a class="important" href="credits.html">Credits</a>.</p>
-
       <h2>On the side</h2>
 
       <div class="news">

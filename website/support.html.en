@@ -41,9 +41,12 @@
   	improvement, <em>please</em> provide feedback. There are three
   	possible channels, depending on your preferences:
 	<ul>
-          <li>The
-            <a href="https://opensourceprojects.eu/p/recoll1/tickets/new/"> 
-	      Recoll issues tracking system</a>.</li>
+          <li><a href="https://opensourceprojects.eu/p/recoll1/tickets/new/"> 
+	      Problem reports</a>. Please report any problem there, even
+	    if you suspect that it may be a user issue (which may
+	    lead to a documentation improvement). <em>Note that this
+	      was recently moved from its precedent location, which
+	      explains the current absence of issues. Be the first :) </em></li>
            <li>The <a href="http://www.freelists.org/list/recoll-user">
 	       recoll-user</a> mailing list.</li>
           <li>Direct <a href="mailto:jfd@recoll.org">email</a>.</li>

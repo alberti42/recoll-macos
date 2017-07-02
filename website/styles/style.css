@@ -86,6 +86,13 @@ div.news {
     font-size: 90%;
     margin-right: 5em;
 }
+
+.news dt, dd { display: block; float: left; margin-top: 2px; }
+.news dt {margin-right: 0;}
+.news dd {margin-left: 1em;}
+.news dt { clear: both; }
+.news dl { overflow: hidden; } 
+
 .application {
     font-weight: bold;
 }
