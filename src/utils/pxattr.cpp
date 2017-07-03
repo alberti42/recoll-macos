@@ -509,6 +509,8 @@ bool pxname(nspace dom, const string& sname, string* pname)
 
 #else // TEST_PXATTR Testing / driver ->
 
+#include "pxattr.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -516,16 +518,34 @@ bool pxname(nspace dom, const string& sname, string* pname)
 #include <errno.h>
 #include <string.h>
 #include <ftw.h>
+#include <sys/types.h>
+#include <regex.h>
 
 #include <iostream>
 #include <fstream>
 #include <map>
 #include <algorithm>
 #include <string>
+
 using namespace std;
 
-#include "pxattr.h"
 
+static int antiverbose;
+
+static void printsyserr(const string& msg)
+{
+    if (antiverbose >= 2)
+        return;
+    cerr << msg << " " << strerror(errno) << endl;
+}
+
+#define message(X)                              \
+    {                                           \
+        if (antiverbose == 0) {                 \
+            cout << X;                          \
+        }                                       \
+    }
+    
 static void dotests();
 
 // \-quote character c in input \ -> \\, nl -> \n cr -> \rc -> \c
@@ -590,19 +610,21 @@ string::size_type find_first_unquoted(const string& in, int c)
     }
     return string::npos;
 }
+
 static const string PATH_START("Path: ");
-static void listattrs(const string& path)
+static bool listattrs(const string& path)
 {
     vector<string> names;
     if (!pxattr::list(path, &names)) {
 	if (errno == ENOENT) {
-	    return;
+	    return false;
 	}
-	perror("pxattr::list");
+	printsyserr("pxattr::list");
 	exit(1);
     }
-    if (names.empty())
-	return;
+    if (names.empty()) {
+        return true;
+    }
 
     // Sorting the names would not be necessary but it makes easier comparing
     // backups
@@ -610,30 +632,56 @@ static void listattrs(const string& path)
 
     string quoted;
     quote(path, quoted, 0);
-    cout << PATH_START << quoted << endl;
+    message(PATH_START << quoted << endl);
     for (vector<string>::const_iterator it = names.begin(); 
 	 it != names.end(); it++) {
 	string value;
 	if (!pxattr::get(path, *it, &value)) {
 	    if (errno == ENOENT) {
-		return;
+		return false;
 	    }
-	    perror("pxattr::get");
+	    printsyserr("pxattr::get");
 	    exit(1);
 	}
 	quote(*it, quoted, '=');
-	cout << " " << quoted << "=";
+	message(" " << quoted << "=");
 	quote(value, quoted, 0);
-	cout << quoted << endl;
+	message(quoted << endl);
     }
+    return true;
 }
 
-void setxattr(const string& path, const string& name, const string& value)
+bool setxattr(const string& path, const string& name, const string& value)
 {
     if (!pxattr::set(path, name, value)) {
-	perror("pxattr::set");
-	exit(1);
+	printsyserr("pxattr::set");
+	return false;
     }
+    return true;
+}
+
+bool printxattr(const string &path, const string& name)
+{
+    string value;
+    if (!pxattr::get(path, name, &value)) {
+	if (errno == ENOENT) {
+	    return false;
+	}
+	printsyserr("pxattr::get");
+        return false;
+    }
+    message(PATH_START << path << endl);
+    message(" " << name << " => " << value << endl);
+    return true;
+}
+
+bool delxattr(const string &path, const string& name) 
+{
+    if (pxattr::del(path, name) < 0) {
+	printsyserr("pxattr::del");
+        return false;
+    }
+    return true;
 }
 
 // Restore xattrs stored in file created by pxattr -lR output
@@ -665,8 +713,8 @@ static void restore(const char *backupnm)
 	    linenum++;
 	}
 
-	// cout << "Got line " << linenum << " : [" << line << "] done " << 
-	// done << endl;
+	// message("Got line " << linenum << " : [" << line << "] done " << 
+	// done << endl);
 
 	if (line.find(PATH_START) == 0 || done) {
 	    if (!path.empty() && !attrs.empty()) {
@@ -702,38 +750,18 @@ static void restore(const char *backupnm)
     }
 }
 
-void  printxattr(const string &path, const string& name)
-{
-    cout << "Path: " << path << endl;
-    string value;
-    if (!pxattr::get(path, name, &value)) {
-	if (errno == ENOENT) {
-	    return;
-	}
-	perror("pxattr::get");
-	exit(1);
-    }
-    cout << " " << name << " => " << value << endl;
-}
-
-void delxattr(const string &path, const string& name) 
-{
-    if (pxattr::del(path, name) < 0) {
-	perror("pxattr::del");
-	exit(1);
-    }
-}
-
 static char *thisprog;
 static char usage [] =
-"pxattr [-h] -n name pathname [...] : show value for name\n"
-"pxattr [-h] -n name -v value pathname [...] : add/replace attribute\n"
-"pxattr [-h] -x name pathname [...] : delete attribute\n"
-"pxattr [-h] [-l] [-R] pathname [...] : list attribute names and values\n"
-" [-h] : don't follow symbolic links (act on link itself)\n"
-" [-R] : recursive listing. Args should be directory(ies)\n"
+"pxattr [-hs] -n name pathname [...] : show value for name\n"
+"pxattr [-hs] -n name -r regexp pathname [...] : test value against regexp\n"
+"pxattr [-hs] -n name -v value pathname [...] : add/replace attribute\n"
+"pxattr [-hs] -x name pathname [...] : delete attribute\n"
+"pxattr [-hs] [-l] [-R] pathname [...] : list attribute names and values\n"
 "  For all the options above, if no pathname arguments are given, pxattr\n"
 "  will read file names on stdin, one per line.\n"
+" [-h] : don't follow symbolic links (act on link itself)\n"
+" [-R] : recursive listing. Args should be directory(ies)\n"
+" [-s] : be silent. With one option stdout is suppressed, with 2 stderr too\n"
 "pxattr -S <backupfile> Restore xattrs from file created by pxattr -lR output\n"
 "               if backupfile is 'stdin', reads from stdin\n"
 "pxattr -T: run tests on temp file in current directory" 
@@ -748,40 +776,76 @@ Usage(void)
 
 static int     op_flags;
 #define OPT_MOINS 0x1
-#define OPT_n	  0x2 
-#define OPT_v	  0x4 
-#define OPT_h     0x8
-#define OPT_x     0x10
-#define OPT_l     0x20
-#define OPT_T     0x40
-#define OPT_R     0x80
-#define OPT_S     0x100
+#define OPT_h     0x2
+#define OPT_l     0x4
+#define OPT_n	  0x8
+#define OPT_r     0x10
+#define OPT_R     0x20
+#define OPT_S     0x40
+#define OPT_T     0x80
+#define OPT_s     0x100
+#define OPT_v	  0x200
+#define OPT_x     0x400
 
+// Static values for ftw
 static string name, value;
 
-int processfile(const char* fn, const struct stat *sb, int typeflag)
+bool regex_test(const char *path, regex_t *preg)
 {
-    //cout << "processfile " << fn << " opflags " << op_flags << endl;
+    string value;
+    if (!pxattr::get(path, name, &value)) {
+	if (errno == ENOENT) {
+	    return false;
+	}
+	printsyserr("pxattr::get");
+        return false;
+    }
+
+    int ret = regexec(preg, value.c_str(), 0, 0, 0);
+    if (ret == 0) {
+        message(path << endl);
+        return true;
+    } else if (ret == REG_NOMATCH) {
+        return false;
+    } else {
+        char errmsg[200];
+        regerror(ret, preg, errmsg, 200);
+        errno = 0;
+        printsyserr("regexec");
+        return false;
+    }
+}
+
+bool processfile(const char* fn, const struct stat *, int)
+{
+    //message("processfile " << fn << " opflags " << op_flags << endl);
 
     if (op_flags & OPT_l) {
-	listattrs(fn);
+	return listattrs(fn);
     } else if (op_flags & OPT_n) {
 	if (op_flags & OPT_v) {
-	    setxattr(fn, name, value);
+	    return setxattr(fn, name, value);
 	} else {
-	    printxattr(fn, name);
+	    return printxattr(fn, name);
 	} 
     } else if (op_flags & OPT_x) {
-	delxattr(fn, name);
-    } 
+	return delxattr(fn, name);
+    }
+    Usage();
+}
+
+int ftwprocessfile(const char* fn, const struct stat *sb, int typeflag)
+{
+    processfile(fn, sb, typeflag);
     return 0;
 }
 
 int main(int argc, char **argv)
 {
+    const char *regexp_string;
     thisprog = argv[0];
     argc--; argv++;
-
+    
     while (argc > 0 && **argv == '-') {
 	(*argv)++;
 	if (!(**argv))
@@ -794,6 +858,10 @@ int main(int argc, char **argv)
 		name = *(++argv); argc--; 
 		goto b1;
 	    case 'R':	op_flags |= OPT_R; break;
+	    case 'r':	op_flags |= OPT_r; if (argc < 2)  Usage();
+		regexp_string = *(++argv); argc--; 
+		goto b1;
+	    case 's':	antiverbose++; break;
 	    case 'S':	op_flags |= OPT_S; break;
 	    case 'T':	op_flags |= OPT_T; break;
 	    case 'v':	op_flags |= OPT_v; if (argc < 2)  Usage();
@@ -813,14 +881,28 @@ int main(int argc, char **argv)
 	dotests();
 	exit(0);
     }
-
+    if ((op_flags & OPT_r) && !(op_flags & OPT_n)) {
+        Usage();
+    }
+    
     if (op_flags & OPT_S)  {
 	if (argc != 1)
 	    Usage();
 	restore(argv[0]);
 	exit(0);
     }
-
+    regex_t regexp;
+    if (op_flags & OPT_r) {
+        int err = regcomp(&regexp, regexp_string, REG_NOSUB|REG_EXTENDED);
+        if (err) {
+            char errmsg[200];
+            regerror(err, &regexp, errmsg, 200);
+            cerr << "regcomp(" << regexp_string << ") error: " << errmsg <<
+                endl;
+            exit(1);
+        }
+    }
+    
     // Default option is 'list'
     if ((op_flags&(OPT_l|OPT_n|OPT_x)) == 0)
 	op_flags |= OPT_l;
@@ -829,6 +911,7 @@ int main(int argc, char **argv)
     if (argc == 0)
 	readstdin = true;
 
+    int exitvalue = 0;
     for (;;) {
 	const char *fn = 0;
 	if (argc > 0) {
@@ -844,19 +927,25 @@ int main(int argc, char **argv)
 	    break;
 
 	if (op_flags & OPT_R) {
-	    if (ftw(fn, processfile, 20))
+	    if (ftw(fn, ftwprocessfile, 20))
 		exit(1);
-	} else {
-	    processfile(fn, 0, 0);
+	} else if (op_flags & OPT_r) {
+            if (!regex_test(fn, &regexp)) {
+                exitvalue = 1;
+            }
+        } else {
+	    if (!processfile(fn, 0, 0)) {
+                exitvalue = 1;
+            }
 	}
     } 
 
-    exit(0);
+    exit(exitvalue);
 }
 
 static void fatal(const string& s)
 {
-    perror(s.c_str());
+    printsyserr(s.c_str());
     exit(1);
 }
 
@@ -957,115 +1046,113 @@ static void dotests()
     static const char *NAMES[] = {"ORG.PXATTR.NAME1", "ORG.PXATTR.N2", 
 				  "ORG.PXATTR.LONGGGGGGGGisSSSHHHHHHHHHNAME3"};
     static const char *VALUES[] = {"VALUE1", "VALUE2", "VALUE3"};
-    static bool verbose = true;
 
     /* Create test file if it doesn't exist, remove all attributes */
     int fd = open(tfn, O_RDWR|O_CREAT, 0755);
     if (fd < 0) {
-	perror("open/create");
+	printsyserr("open/create");
 	exit(1);
     }
 
-    if (verbose)
-	fprintf(stdout, "Cleanup old attrs\n");
+    if (!antiverbose)
+	message("Cleanup old attrs\n");
     vector<string> names;
     if (!pxattr::list(tfn, &names)) {
-	perror("pxattr::list");
+	printsyserr("pxattr::list");
 	exit(1);
     }
     for (vector<string>::const_iterator it = names.begin(); 
 	 it != names.end(); it++) {
 	string value;
 	if (!pxattr::del(fd, *it)) {
-	    perror("pxattr::del");
+	    printsyserr("pxattr::del");
 	    exit(1);
 	}
     }
     /* Check that there are no attributes left */
     names.clear();
     if (!pxattr::list(tfn, &names)) {
-	perror("pxattr::list");
+	printsyserr("pxattr::list");
 	exit(1);
     }
     if (names.size() != 0) {
-	fprintf(stderr, "Attributes remain after initial cleanup !\n");
+	errno=0;printsyserr("Attributes remain after initial cleanup !\n");
 	for (vector<string>::const_iterator it = names.begin();
 	     it != names.end(); it++) {
-	    fprintf(stderr, "%s\n", (*it).c_str());
+            if (antiverbose < 2)
+                cerr << *it << endl;
 	}
 	exit(1);
     }
 
     /* Create attributes, check existence and value */
-    if (verbose)
-	fprintf(stdout, "Creating extended attributes\n");
+    message("Creating extended attributes\n");
     for (int i = 0; i < 3; i++) {
 	if (!pxattr::set(fd, NAMES[i], VALUES[i])) {
-	    perror("pxattr::set");
+	    printsyserr("pxattr::set");
 	    exit(1);
 	}
     }
-    if (verbose)
-	fprintf(stdout, "Checking creation\n");
+    message("Checking creation\n");
     for (int i = 0; i < 3; i++) {
 	string value;
 	if (!pxattr::get(tfn, NAMES[i], &value)) {
-	    perror("pxattr::get");
+	    printsyserr("pxattr::get");
 	    exit(1);
 	}
 	if (value.compare(VALUES[i])) {
-	    fprintf(stderr, "Wrong value after create !\n");
+            errno = 0;
+	    printsyserr("Wrong value after create !");
 	    exit(1);
 	}
     }
 
     /* Delete one, check list */
-    if (verbose)
-	fprintf(stdout, "Delete one\n");
+    message("Delete one\n");
     if (!pxattr::del(tfn, NAMES[1])) {
-	perror("pxattr::del one name");
+	printsyserr("pxattr::del one name");
 	exit(1);
     }
-    if (verbose)
-	fprintf(stdout, "Check list\n");
+    message("Check list\n");
     for (int i = 0; i < 3; i++) {
 	string value;
 	if (!pxattr::get(fd, NAMES[i], &value)) {
 	    if (i == 1)
 		continue;
-	    perror("pxattr::get");
+	    printsyserr("pxattr::get");
 	    exit(1);
 	} else if (i == 1) {
-	    fprintf(stderr, "Name at index 1 still exists after deletion\n");
+	    errno=0;
+            printsyserr("Name at index 1 still exists after deletion\n");
 	    exit(1);
 	}
 	if (value.compare(VALUES[i])) {
-	    fprintf(stderr, "Wrong value after delete 1 !\n");
+            errno = 0;
+	    printsyserr("Wrong value after delete 1 !");
 	    exit(1);
 	}
     }
 
     /* Test the CREATE/REPLACE flags */
     // Set existing with flag CREATE should fail
-    if (verbose)
-	fprintf(stdout, "Testing CREATE/REPLACE flags use\n");
+    message("Testing CREATE/REPLACE flags use\n");
     if (pxattr::set(tfn, NAMES[0], VALUES[0], pxattr::PXATTR_CREATE)) {
-	fprintf(stderr, "Create existing with flag CREATE succeeded !\n");
+	errno=0;printsyserr("Create existing with flag CREATE succeeded !\n");
 	exit(1);
     }
     // Set new with flag REPLACE should fail
     if (pxattr::set(tfn, NAMES[1], VALUES[1], pxattr::PXATTR_REPLACE)) {
-	fprintf(stderr, "Create new with flag REPLACE succeeded !\n");
+	errno=0;printsyserr("Create new with flag REPLACE succeeded !\n");
 	exit(1);
     }
     // Set new with flag CREATE should succeed
     if (!pxattr::set(fd, NAMES[1], VALUES[1], pxattr::PXATTR_CREATE)) {
-	fprintf(stderr, "Create new with flag CREATE failed !\n");
+	errno=0;printsyserr("Create new with flag CREATE failed !\n");
 	exit(1);
     }
     // Set existing with flag REPLACE should succeed
     if (!pxattr::set(fd, NAMES[0], VALUES[0], pxattr::PXATTR_REPLACE)) {
-	fprintf(stderr, "Create existing with flag REPLACE failed !\n");
+	errno=0;printsyserr("Create existing with flag REPLACE failed !\n");
 	exit(1);
     }
     close(fd);
