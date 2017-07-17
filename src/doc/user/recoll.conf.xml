@@ -83,7 +83,7 @@ be ignored inside zip archives. This is used directly by
 the zip handler, and has a function similar to skippedNames, but works
 independantly. Can be redefined for subdirectories. Supported by recoll
 1.20 and newer. See
-https://bitbucket.org/medoc/recoll/wiki/Filtering%20out%20Zip%20archive%20members
+https://www.lesbonscomptes.com/recoll/faqsandhowtos/Filtering%20out%20Zip%20archive%20members
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.FOLLOWLINKS">
 <term><varname>followLinks</varname></term>

@@ -108,9 +108,9 @@ control object: the 'WorkQueue'.
 The _WorkQueue_ object is implemented by a reasonably simple class, which
 manages an input queue on which client append jobs, and a set of worker
 threads, which retrieve and perform the jobs, and whose lifetime are
-managed by the _WorkQueue_ object. The 
-https://bitbucket.org/medoc/recoll/src/f06f3aba912045d6ad52e9a0fd930b95e363fd10/src/utils/workqueue.h?at=default[implementation] is straightforward with
-*POSIX* threads synchronization functions and C++ *STL* data structures.
+managed by the _WorkQueue_ object. The implementation is straightforward
+with *POSIX* threads synchronization functions and C++ *STL* data
+structures.
 
 In practise it proved quite simple to modify existing code to create a job
 object and put it on the queue, instead of calling the downstream routine
@@ -175,9 +175,8 @@ Once found, there are mostly three types of static/global data:
    to protect the access with a mutex lock. It is trivial to encapsulate
    the locks in C++ objects to use the "Resource Acquisition is
    Initialization" idiom, easily making sure that locks are freed when
-   exiting the critical section. A very basic
-   https://bitbucket.org/medoc/recoll/src/f06f3aba9120/src/utils/ptmutex.h?at=default[example of implementation] 
-   can be found in the *Recoll* source code.
+   exiting the critical section. Recoll used to include a basic home-made
+   implementation, but now lets C++11 work for it.
  * Things which can stay: this is mostly initialization data such as value
    tables which are computed once, and then stay logically constant during
    program execution. In order to be sure of a correct single-threaded
@@ -377,9 +376,8 @@ configuration structure. This belonged to the thread which initially
 created the filter. But the filter would often be reused by a different
 thread, with the consequence that the configuration object was now accessed
 and modified by two unsynchronized threads... Resetting the config pointer
-at the time of filter reuse was the
-https://bitbucket.org/medoc/recoll/commits/943de4b78818079b0eb6ffd0fcbdfdd0746b4a40[ridiculously
-simple (almost)single-line fix] to this evasive problem.
+at the time of filter reuse was a very simple (almost)single-line fix to
+this evasive problem. 
 
 Looking at multi-threaded stack dumps is mostly fun for people with several
 heads, which is unfortunately not my case, so I was quite elated when this

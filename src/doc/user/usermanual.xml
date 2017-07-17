@@ -6,7 +6,7 @@
 <!ENTITY RCLVERSION "1.22">
 <!ENTITY XAP "<application>Xapian</application>">
 <!ENTITY WIN "<application>Windows</application>">
-<!ENTITY WIKI "http://bitbucket.org/medoc/recoll/wiki/">
+<!ENTITY FAQS "https://www.lesbonscomptes.com/recoll/faqsandhowtos/">
 ]>
 
 <book lang="en">
@@ -985,7 +985,7 @@ thrQSizes = -1 -1 -1
 
       <para>A current pointer to the extension can be found, along with
         up-to-date instructions, on the
-        <ulink url="&WIKI;IndexWebHistory">Recoll wiki</ulink>.</para>
+        <ulink url="&FAQS;IndexWebHistory">Recoll wiki</ulink>.</para>
 
       <para>A copy of the indexed WEB pages is retained by Recoll in a
       local cache (from which previews can be fetched). The cache size can
@@ -1186,7 +1186,7 @@ class MetaFixer(object):
         metadata as parameter, as an array of '(nm, val)' pairs, allowing
         an alternate approach for editing or adding/deleting fields.</para>
         
-        <!-- <para> There is a <ulink url="&WIKI;PDFXMP.wiki">complete example of XMP
+        <!-- <para> There is a <ulink url="&FAQS;PDFXMP.wiki">complete example of XMP
         tags setup</ulink>, including a  nice result list paragraph format in the 
         &RCL; Wiki </para> -->
       
@@ -1898,7 +1898,7 @@ MimeType=*/*
         your settings). Restarting the search should then display the
         thumbnails.</para>
         
-        <para>There are also <ulink url="&WIKI;ResultsThumbnails.wiki">some
+        <para>There are also <ulink url="&FAQS;ResultsThumbnails.wiki">some
           pointers about  thumbnail generation</ulink> on the &RCL; wiki.
           </para>
 
@@ -4002,7 +4002,7 @@ dir:recoll dir:src -dir:utils -dir:common
           </listitem>
         <listitem>
             <para>If you use a recent version of Ubuntu Linux, you may
-             find the <ulink url="&WIKI;UnityLens">Ubuntu Unity
+             find the <ulink url="&FAQS;UnityLens">Ubuntu Unity
            Lens</ulink> module useful.</para>
           </listitem>
           <listitem>
@@ -4024,7 +4024,7 @@ dir:recoll dir:src -dir:utils -dir:common
           Python script, based on the <application>libwnck</application> window
           manager interface library, which will allow you to do just
           this. The detailed instructions are on
-          <ulink url="&WIKI;HotRecoll">this wiki page</ulink>.</para>
+          <ulink url="&FAQS;HotRecoll">this wiki page</ulink>.</para>
 
       </sect2>
 
@@ -4540,7 +4540,7 @@ or
       file.</para> 
 
       <para>You can also have a look at the 
-       <ulink url="&WIKI;HandleCustomField">example on the Wiki</ulink>, 
+       <ulink url="&FAQS;HandleCustomField">example in the FAQs area</ulink>, 
       detailing how one could add a <emphasis>page count</emphasis> field
       to pdf documents for displaying inside result lists.</para>
 
