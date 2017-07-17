@@ -43,6 +43,7 @@
 QComboBox[editable="true"], QTextEdit, QLineEdit, QTextBrowser, QTableView,
 QWebView, QPlainTextEdit { 
     background: #ffffee;
+    color: black;
 }
 
 /* Keep a white background for the QTextEdit inside the Preview window 
@@ -50,6 +51,7 @@ QWebView, QPlainTextEdit {
 */
 Preview QTextEdit { 
     background: white;
+    color: black;
     font-family: Serif;
     font-size: 12pt;
 }
