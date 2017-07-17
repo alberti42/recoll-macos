@@ -72,6 +72,7 @@
 .zip = application/zip
 .7z = application/x-7z-compressed
 .maff = application/zip
+.zst = application/x-zstd
 
 # The rcltar module can handle compressed tar formats internally so we
 # use application/x-tar for all tar files compressed or not. Note that tar

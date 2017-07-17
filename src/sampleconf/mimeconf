@@ -16,22 +16,34 @@
 # work with. We use a script because uncompress utilities usually work in
 # place, which is not suitable. 
 #
-# Obviously this should be in a [decompress] section or such, but it was once
-# forgotten and remained global for compatibility...
-#
+# Obviously this should be in a [decompress] section or such, but it was
+# once forgotten and remained global for compatibility. The first word
+# 'uncompress' should have been the section name and has no other meaning.
+# 
+# The second word is the name of a script or program to execute to
+# produce an uncompressed copy (e.g.: rcluncomp). It must output the
+# uncompressed file name on stdout, and produce no data out of the
+# temporary directory given as parameter. The uncompressed file name should
+# preserve the original file extension (i.e. use gunzip myfile.doc.gz not
+# gunzip < myfile.doc.gz > myfile.whateverwrongextension)
+# 
 # The %t parameter will be substituted to the name of a temporary directory
-# by recoll. This directory is guaranteed empty when calling the filter
+# by recoll. This directory is guaranteed empty when calling the filter.
 #
 # The %f parameter will be substituted with the input file. 
 #
-# The script (ie: rcluncomp) must output the uncompressed file name on
-# stdout. 
+# Note that it should be possible to improve performance a lot by writing a
+# compressor-specific script instead of the generic rcluncomp which will
+# copy the compressed file into the temporary directory as a first step in
+# all cases.
+#
 application/gzip  =  uncompress rcluncomp gunzip %f %t
-application/x-gzip  =  uncompress rcluncomp gunzip %f %t
-application/x-compress = uncompress rcluncomp gunzip %f %t
 application/x-bzip2 =  uncompress rcluncomp bunzip2 %f %t
-application/x-xz = uncompress rcluncomp unxz %f %t
+application/x-compress = uncompress rcluncomp gunzip %f %t
+application/x-gzip  =  uncompress rcluncomp gunzip %f %t
 application/x-lzma = uncompress rcluncomp unxz %f %t
+application/x-xz = uncompress rcluncomp unxz %f %t
+application/x-zstd = uncompress rcluncomp "unzstd --rm -q" %f %t
 
 ## ###################################
 # Filters for indexing and internal preview. 
