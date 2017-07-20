@@ -42,7 +42,7 @@ DocFetcher *docFetcherMake(RclConfig *config, const Rcl::Doc& idoc)
     } else {
         DocFetcher *f = exeDocFetcherMake(config, backend);
         if (!f) {
-            LOGERR("DocFetcherFactory: unknown backend ["  << (backend) << "]\n" );
+            LOGERR("DocFetcherFactory: unknown backend [" << backend << "]\n");
         }
 	return f;
     }

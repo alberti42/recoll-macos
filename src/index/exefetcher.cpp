@@ -47,10 +47,12 @@ public:
         args.push_back(idoc.ipath);
         int status = ecmd.doexec1(args, 0, &out);
         if (status == 0) {
-            LOGDEB("EXEDocFetcher::Internal: got ["  << (out) << "]\n" );
+            LOGDEB("EXEDocFetcher::Internal: got [" << out << "]\n");
             return true;
         } else {
-            LOGERR("EXEDOcFetcher::fetch: "  << (bckid) << ": "  << (stringsToString(cmd)) << " failed for "  << (udi) << " "  << (idoc.url) << " "  << (idoc.ipath) << "\n" );
+            LOGERR("EXEDOcFetcher::fetch: " << bckid << ": " <<
+                   stringsToString(cmd) << " failed for " << udi << " " <<
+                   idoc.url << " " << idoc.ipath << "\n");
             return false;
         }
     }
@@ -59,7 +61,8 @@ public:
 EXEDocFetcher::EXEDocFetcher(const EXEDocFetcher::Internal& _m)
 {
     m = new Internal(_m);
-    LOGDEB("EXEDocFetcher::EXEDocFetcher: fetch is "  << (stringsToString(m->sfetch)) << "\n" );
+    LOGDEB("EXEDocFetcher::EXEDocFetcher: fetch is " <<
+           stringsToString(m->sfetch) << "\n");
 }
 
 bool EXEDocFetcher::fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out)
@@ -82,12 +85,12 @@ EXEDocFetcher *exeDocFetcherMake(RclConfig *config, const string& bckid)
     static ConfSimple *bconf;
     if (!bconf) {
         string bconfname = path_cat(config->getConfDir(), "backends");
-        LOGDEB("exeDocFetcherMake: using config in "  << (bconfname) << "\n" );
+        LOGDEB("exeDocFetcherMake: using config in " << bconfname << "\n");
         bconf = new ConfSimple(bconfname.c_str(), true);
         if (!bconf->ok()) {
             delete bconf;
             bconf = 0;
-            LOGDEB("exeDocFetcherMake: bad/no config: "  << (bconfname) << "\n" );
+            LOGDEB("exeDocFetcherMake: bad/no config: " << bconfname << "\n");
             return 0;
         }
     }
@@ -97,28 +100,29 @@ EXEDocFetcher *exeDocFetcherMake(RclConfig *config, const string& bckid)
 
     string sfetch;
     if (!bconf->get("fetch", sfetch, bckid) || sfetch.empty()) {
-        LOGERR("exeDocFetcherMake: no 'fetch' for ["  << (bckid) << "]\n" );
+        LOGERR("exeDocFetcherMake: no 'fetch' for [" << bckid << "]\n");
         return 0;
     }
     stringToStrings(sfetch, m.sfetch);
     // We look up the command as we do for filters for now
     m.sfetch[0] = config->findFilter(m.sfetch[0]);
     if (!path_isabsolute(m.sfetch[0])) {
-        LOGERR("exeDocFetcherMake: "  << (m.sfetch[0]) << " not found in exec path or filters dir\n" );
+        LOGERR("exeDocFetcherMake: " << m.sfetch[0] <<
+               " not found in exec path or filters dir\n");
         return 0;
     }
 
     string smkid;
     if (!bconf->get("makesig", smkid, bckid) || smkid.empty()) {
-        LOGDEB("exeDocFetcherMake: no 'makesig' for ["  << (bckid) << "]\n" );
+        LOGDEB("exeDocFetcherMake: no 'makesig' for [" << bckid << "]\n");
         return 0;
     }
     stringToStrings(smkid, m.smkid);
     m.smkid[0] = config->findFilter(m.smkid[0]);
     if (!path_isabsolute(m.smkid[0])) {
-        LOGERR("exeDocFetcherMake: "  << (m.smkid[0]) << " not found in exec path or filters dir\n" );
+        LOGERR("exeDocFetcherMake: " << m.smkid[0] <<
+               " not found in exec path or filters dir\n");
         return 0;
     }
     return new EXEDocFetcher(m);
 }
-

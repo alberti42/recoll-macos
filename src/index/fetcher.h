@@ -28,14 +28,19 @@ class RclConfig;
  * Generic interface to retrieve the data for a document designated by
  * its index data (udi/ipath/url).  This is used to retrieve the data
  * for previewing. The actual implementation is specific to the kind
- * of backend (file system, beagle cache, others?...), and the
- * implementation may of course may share code with the indexing-time
+ * of backend (file system, web cache, others?...), and the
+ * implementation may of course share code with the indexing-time
  * functions from the specific backend.
  *
- * This is used to give access the raw document container (either as a
+ * This normally gives access the raw document container (either as a
  * file or as a memory block). The Internfile code will then further
  * process it to get to the actual document, especially if
  * de-embedding is involved.
+ *
+ * The DATADIRECT document kind, which holds final extracted data, is only 
+ * returned when using an external indexer (only the python demo sample at 
+ * this point), in which case the whole extraction is performed by the 
+ * external code.
  */
 class DocFetcher {
 public:
@@ -71,7 +76,8 @@ public:
     virtual ~DocFetcher() {}
 };
 
-/** Return an appropriate fetcher object given the backend string identifier */
+/** Return an appropriate fetcher object given the backend string 
+ * identifier inside idoc*/
 DocFetcher *docFetcherMake(RclConfig *config, const Rcl::Doc& idoc);
 
 #endif /* _FETCHER_H_INCLUDED_ */

@@ -23,7 +23,16 @@ class RclConfig;
 
 /** 
  * A fetcher which works by executing external programs, defined in a
- * configuration file:
+ * configuration file.
+ * At this point this is only used with the sample python mbox indexer,
+ * to show how recoll can work with completely external data extraction code.
+ *
+ * Configuration: The external indexer sets the 'rclbes' recoll field
+ * (backend definition, can be FS or BGL -web- in standard recoll) to
+ * a unique value (e.g. MBOX for the python sample). A 'backends' file
+ * in the configuration directory then links the 'rclbes' value with
+ * commands to execute for fetching the data, which recoll uses at
+ * query time for previewing and opening the document.
  */
 class EXEDocFetcher : public DocFetcher {
     class Internal;
@@ -32,7 +41,7 @@ class EXEDocFetcher : public DocFetcher {
 
     virtual bool fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out);
     /** Calls stat to retrieve file signature data */
-    virtual bool makesig(RclConfig* cnf, const Rcl::Doc& idoc, std::string& sig);
+    virtual bool makesig(RclConfig* cnf, const Rcl::Doc& idoc,std::string& sig);
     friend EXEDocFetcher *exeDocFetcherMake(RclConfig *, const std::string&);
 private:
     Internal *m;

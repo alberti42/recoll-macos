@@ -33,7 +33,8 @@ static void docfieldfrommeta(RclConfig* cfg, const string& name,
 			     const string &value, Rcl::Doc& doc)
 {
     string fieldname = cfg->fieldCanon(name);
-    LOGDEB0("Internfile:: setting ["  << (fieldname) << "] from cmd/xattr value ["  << (value) << "]\n" );
+    LOGDEB0("Internfile:: setting [" << fieldname <<
+            "] from cmd/xattr value [" << value << "]\n");
     if (fieldname == cstr_dj_keymd) {
 	doc.dmtime = value;
     } else {
@@ -44,15 +45,17 @@ static void docfieldfrommeta(RclConfig* cfg, const string& name,
 void reapXAttrs(const RclConfig* cfg, const string& path, 
 		map<string, string>& xfields)
 {
-    LOGDEB2("reapXAttrs: ["  << (path) << "]\n" );
+    LOGDEB2("reapXAttrs: [" << path << "]\n");
 #ifndef _WIN32
     // Retrieve xattrs names from files and mapping table from config
     vector<string> xnames;
     if (!pxattr::list(path, &xnames)) {
         if (errno == ENOTSUP) {
-            LOGDEB("FileInterner::reapXattrs: pxattr::list: errno "  << (errno) << "\n" );
+            LOGDEB("FileInterner::reapXattrs: pxattr::list: errno " <<
+                   errno << "\n");
         } else {
-            LOGERR("FileInterner::reapXattrs: pxattr::list: errno "  << (errno) << "\n" );
+            LOGERR("FileInterner::reapXattrs: pxattr::list: errno " <<
+                   errno << "\n");
         }
 	return;
     }
@@ -74,12 +77,13 @@ void reapXAttrs(const RclConfig* cfg, const string& path,
 	}
 	string value;
 	if (!pxattr::get(path, *it, &value, pxattr::PXATTR_NOFOLLOW)) {
-	    LOGERR("FileInterner::reapXattrs: pxattr::get failedfor "  << ((*it)) << ", errno "  << (errno) << "\n" );
+	    LOGERR("FileInterner::reapXattrs: pxattr::get failed for " << *it
+                   << ", errno " << errno << "\n");
 	    continue;
 	}
 	// Encode should we ?
 	xfields[key] = value;
-	LOGDEB2("reapXAttrs: ["  << (key) << "] -> ["  << (value) << "]\n" );
+	LOGDEB2("reapXAttrs: [" << key << "] -> [" << value << "]\n");
     }
 #endif
 }
