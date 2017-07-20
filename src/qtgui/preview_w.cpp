@@ -819,14 +819,14 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     // If this is an image, display it instead of the text.
     if (!idoc.mimetype.compare(0, 6, "image/")) {
         string fn = fileurltolocalpath(idoc.url);
-
-        // If the command wants a file but this is not a file url, or
-        // there is an ipath that it won't understand, we need a temp file:
         theconfig->setKeyDir(fn.empty() ? "" : path_getfather(fn));
+
+        // We want a real file, so if this comes from data or we have
+        // an ipath, create it.
         if (fn.empty() || !idoc.ipath.empty()) {
             TempFile temp = lthr.tmpimg;
             if (temp) {
-                LOGDEB1("Preview: load: got temp file from internfile\n" );
+                LOGDEB1("Preview: load: got temp file from internfile\n");
             } else if (!FileInterner::idocToFile(temp, string(), 
                                                  theconfig, idoc)) {
                 temp.reset(); // just in case.

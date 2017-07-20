@@ -118,21 +118,20 @@ class FileInterner {
     
     /** 
      * Alternate constructor for the case where the data is in memory.
-     * This is mainly for data extracted from the web cache. The mime type
-     * must be set, input must be already uncompressed.
+     * This is mainly for data extracted from the web cache. 
+     * The MIME type must be set, and the data must be uncompressed.
      */
     FileInterner(const string &data, RclConfig *cnf, 
                  int flags, const string& mtype);
 
     /**
      * Alternate constructor used at query time. We don't know where
-     * the data was stored, this is determined from the Rcl::Doc data
+     * the data was stored, and use the fetcher interface to reach it.
      * 
      * @param idoc Rcl::Doc object built from index data. The back-end
-     *   storage identifier (rclbes field) is used to build the
-     *   appropriate fetcher which uses the rest of the Doc fields (url,
-     *   ipath...) to retrieve the file or a file reference, which we
-     *   then process normally.
+     *   storage identifier (rclbes field) is used by the fetcher factory 
+     *   to build the appropriate object to return a file name or data which 
+     *   is then used with the appropriate init method.
      */
     FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, int flags);
 
@@ -214,10 +213,15 @@ class FileInterner {
      * to query the right backend. Used to check up-to-dateness at query time */
     static bool makesig(RclConfig *cnf, const Rcl::Doc& idoc, string& sig);
 
-    /** Extract internal document into temporary file. 
-     *  This is used mainly for starting an external viewer for a
-     *  subdocument (ie: mail attachment). This really would not need to be
-     *  a member. It creates a FileInterner object to do the actual work
+    /** Extract internal document into temporary file, without converting the 
+     * data.
+     *
+     * This is used mainly for starting an external viewer for a
+     * subdocument (ie: mail attachment), but, for consistency, it also 
+     * works with a top level (null ipath) document. 
+     * This would not actually need to be a member method, it creates a 
+     * FileInterner object to do the actual work.
+     *
      * @return true for success.
      * @param temp output reference-counted temp file object (goes
      *   away magically). Only used if tofile.empty()
@@ -225,13 +229,14 @@ class FileInterner {
      * @param cnf The recoll config
      * @param doc Doc data taken from the index. We use it to construct a
      *    FileInterner object.
+     * @param uncompress if true, uncompress compressed original doc. Only does
+     *      anything for a top level document.
      */
     static bool idocToFile(TempFile& temp, const string& tofile, 
-			   RclConfig *cnf, const Rcl::Doc& doc);
+			   RclConfig *cnf, const Rcl::Doc& doc,
+                           bool uncompress = true);
 
-    /** 
-     * Does file appear to be the compressed version of a document?
-     */
+    /** Does file appear to be the compressed version of a document? */
     static bool isCompressed(const string& fn, RclConfig *cnf);
 
     /** 
@@ -253,7 +258,7 @@ class FileInterner {
     string                 m_targetMType;
     string                 m_reachedMType; // target or text/plain
     string                 m_tfile;
-    bool                   m_ok; // Set after construction if ok
+    bool                   m_ok{false}; // Set after construction if ok
     // Fields found in file extended attributes. This is kept here,
     // not in the file-level handler because we are only interested in
     // the top-level file, not any temp file necessitated by
@@ -270,7 +275,7 @@ class FileInterner {
     vector<TempFile>       m_tempfiles;
     // Error data if any
     string                 m_reason;
-    FIMissingStore        *m_missingdatap;
+    FIMissingStore        *m_missingdatap{nullptr};
 
     Uncomp                 m_uncomp;
 
@@ -294,7 +299,8 @@ class FileInterner {
     static bool tempFileForMT(TempFile& otemp, RclConfig *cnf, 
                        const std::string& mimetype);
     static bool topdocToFile(TempFile& otemp, const std::string& tofile,
-                             RclConfig *cnf, const Rcl::Doc& idoc);
+                             RclConfig *cnf, const Rcl::Doc& idoc,
+                             bool uncompress);
 };
 
  

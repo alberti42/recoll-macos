@@ -44,12 +44,16 @@ typedef struct {
     /* Type-specific fields go here. */
     FileInterner *xtr;
     RclConfig *rclconfig;
+    recoll_DocObject *docobject;
 } rclx_ExtractorObject;
 
 static void 
 Extractor_dealloc(rclx_ExtractorObject *self)
 {
     LOGDEB("Extractor_dealloc\n" );
+    if (self->docobject) {
+        Py_DECREF(&self->docobject);
+    }
     delete self->xtr;
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
@@ -64,6 +68,7 @@ Extractor_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 	return 0;
     self->xtr = 0;
     self->rclconfig = 0;
+    self->docobject = 0;
     return (PyObject *)self;
 }
 
@@ -82,6 +87,9 @@ Extractor_init(rclx_ExtractorObject *self, PyObject *args, PyObject *kwargs)
         PyErr_SetString(PyExc_AttributeError, "Null Doc ?");
 	return -1;
     }
+    self->docobject = dobj;
+    Py_INCREF(dobj);
+
     self->rclconfig = dobj->rclconfig;
     self->xtr = new FileInterner(*dobj->doc, self->rclconfig, 
 				 FileInterner::FIF_forPreview);
@@ -177,17 +185,29 @@ Extractor_idoctofile(rclx_ExtractorObject* self, PyObject *args,
         PyErr_SetString(PyExc_AttributeError, "idoctofile: null object");
 	return 0;
     }
-    if (ipath.empty()) {
-        PyErr_SetString(PyExc_ValueError, "idoctofile: null ipath");
-	return 0;
-    }
-	
-    self->xtr->setTargetMType(mimetype);
+
+    // If ipath is empty and we want the original mimetype, we can't
+    // use FileInterner::internToFile() because the first conversion
+    // was performed by the FileInterner constructor, so that we can't
+    // reach the original object this way. Instead, if the data comes
+    // from a file (m_fn set), we just copy it, else, we call
+    // idoctofile, which will call topdoctofile (and re-fetch the
+    // data, yes, wastefull)
     TempFile temp;
-    bool status = self->xtr->interntofile(temp, outfile, ipath, mimetype);
+    bool status = false;
+    LOGDEB("Extractor_idoctofile: ipath [" << ipath << "] mimetype [" <<
+           mimetype << "] doc mimetype [" << self->docobject->doc->mimetype <<
+           "\n");
+    if (ipath.empty() && !mimetype.compare(self->docobject->doc->mimetype)) {
+        status = FileInterner::idocToFile(temp, outfile, self->rclconfig,
+                                               *self->docobject->doc);
+    } else {
+        self->xtr->setTargetMType(mimetype);
+        status = self->xtr->interntofile(temp, outfile, ipath, mimetype);
+    }
     if (!status) {
         PyErr_SetString(PyExc_AttributeError, "interntofile failure");
-	return 0;
+        return 0;
     }
     if (outfile.empty())
 	temp->setnoremove(1);

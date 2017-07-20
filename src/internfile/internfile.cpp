@@ -118,7 +118,6 @@ bool FileInterner::ipathContains(const string& parent, const string& child)
 // Split into "constructor calls init()" to allow use from other constructor
 FileInterner::FileInterner(const string &fn, const struct stat *stp,
 			   RclConfig *cnf, int flags, const string *imime)
-    : m_ok(false), m_missingdatap(0), m_uncomp((flags & FIF_forPreview) != 0)
 {
     LOGDEB0("FileInterner::FileInterner(fn=" << fn << ")\n");
     if (fn.empty()) {
@@ -219,8 +218,18 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 	LOGDEB0("FileInterner:: no mime: [" << m_fn << "]\n");
     }
 
-    // Look for appropriate handler (might still return empty)
+    // Get fields computed from extended attributes. We use the
+    // original file, not the m_fn which may be the uncompressed temp
+    // file
+    if (!m_noxattrs)
+	reapXAttrs(m_cfg, f, m_XAttrsFields);
+
+    // Gather metadata from external commands as configured.
+    reapMetaCmds(m_cfg, f, m_cmdFields);
+
     m_mimetype = l_mime;
+
+    // Look for appropriate handler (might still return empty)
     RecollFilter *df = getMimeHandler(l_mime, m_cfg, !m_forPreview);
 
     if (!df || df->is_unknown()) {
@@ -233,15 +242,6 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
     df->set_property(Dijon::Filter::OPERATING_MODE, 
 		     m_forPreview ? "view" : "index");
     df->set_property(Dijon::Filter::DJF_UDI, udi);
-
-    // Get fields computed from extended attributes. We use the
-    // original file, not the m_fn which may be the uncompressed temp
-    // file
-    if (!m_noxattrs)
-	reapXAttrs(m_cfg, f, m_XAttrsFields);
-
-    // Gather metadata from external commands as configured.
-    reapMetaCmds(m_cfg, f, m_cmdFields);
 
     df->set_docsize(docsize);
     if (!df->set_document_file(l_mime, m_fn)) {
@@ -258,7 +258,6 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
 // Setup from memory data (ie: out of the web cache). imime needs to be set.
 FileInterner::FileInterner(const string &data, RclConfig *cnf, 
                            int flags, const string& imime)
-    : m_ok(false), m_missingdatap(0), m_uncomp((flags & FIF_forPreview) != 0)
 {
     LOGDEB0("FileInterner::FileInterner(data)\n");
     initcommon(cnf, flags);
@@ -313,7 +312,7 @@ void FileInterner::init(const string &data, RclConfig *cnf,
 void FileInterner::initcommon(RclConfig *cnf, int flags)
 {
     m_cfg = cnf;
-    m_forPreview = ((flags & FIF_forPreview) != 0);
+    m_uncomp = m_forPreview = ((flags & FIF_forPreview) != 0);
     // Initialize handler stack.
     m_handlers.reserve(MAXHANDLERS);
     for (unsigned int i = 0; i < MAXHANDLERS; i++)
@@ -324,7 +323,6 @@ void FileInterner::initcommon(RclConfig *cnf, int flags)
 }
 
 FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, int flags)
-    : m_ok(false), m_missingdatap(0), m_uncomp(((flags & FIF_forPreview) != 0))
 {
     LOGDEB0("FileInterner::FileInterner(idoc)\n");
     initcommon(cnf, flags);
@@ -347,6 +345,9 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, int flags)
         init(rawdoc.data, cnf, flags, idoc.mimetype);
 	break;
     case DocFetcher::RawDoc::RDK_DATADIRECT:
+        // Note: only used for demo with the sample python external
+        // mbox indexer at this point. The external program is
+        // responsible for all the extraction process.
         init(rawdoc.data, cnf, flags, idoc.mimetype);
         m_direct = true;
         break;
@@ -735,8 +736,8 @@ int FileInterner::addHandler()
 	}
     }
     if (!setres) {
-	LOGINFO("FileInterner::addHandler: set_doc failed inside " << m_fn <<
-                "  for mtype " << mimetype << "\n");
+	LOGINFO("FileInterner::addHandler: set_doc failed inside [" << m_fn <<
+                "]  for mtype " << mimetype << "\n");
 	delete newflt;
 	if (m_forPreview)
 	    return ADD_ERROR;
@@ -918,36 +919,24 @@ bool FileInterner::tempFileForMT(TempFile& otemp, RclConfig* cnf,
     TempFile temp(new TempFileInternal(
                       cnf->getSuffixFromMimeType(mimetype)));
     if (!temp->ok()) {
-        LOGERR("FileInterner::interntofile: can't create temp file\n");
+        LOGERR("FileInterner::tempFileForMT: can't create temp file\n");
         return false;
     }
     otemp = temp;
     return true;
 }
 
-// Extract document (typically subdoc of multidoc) into temporary file. 
-// We do the usual internfile stuff: create a temporary directory,
-// then create an interner and call internfile. The target mtype is set to
-// the input mtype, so that no data conversion is performed.
-// We then write the data out of the resulting document into the output file.
-// There are two temporary objects:
-// - The internfile temporary directory gets destroyed by its destructor
-// - The output temporary file which is held in a reference-counted
-//   object and will be deleted when done with.
-//
-// If the ipath is null, maybe we're called because the file is not
-// stored in the regular file system. We use the docfetcher to get a
-// copy (in topdocToFile())
-// 
-// We currently don't handle the case of an internal doc of a non-fs document.
-
-bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
-			      RclConfig *cnf, const Rcl::Doc& idoc)
+// Static method, creates a FileInterner object to do the job.
+bool FileInterner::idocToFile(
+    TempFile& otemp, const string& tofile, RclConfig *cnf,
+    const Rcl::Doc& idoc, bool uncompress)
 {
     LOGDEB("FileInterner::idocToFile\n");
 
     if (idoc.ipath.empty()) {
-	return topdocToFile(otemp, tofile, cnf, idoc);
+        // Because of the mandatory first conversion in the
+        // FileInterner constructor, need to use a specific method.
+	return topdocToFile(otemp, tofile, cnf, idoc, uncompress);
     }
 
     // We set FIF_forPreview for consistency with the previous version
@@ -958,17 +947,21 @@ bool FileInterner::idocToFile(TempFile& otemp, const string& tofile,
     return interner.interntofile(otemp, tofile, idoc.ipath, idoc.mimetype);
 }
 
-bool FileInterner::topdocToFile(TempFile& otemp, const string& tofile,
-                                RclConfig *cnf, const Rcl::Doc& idoc)
+// This is only needed because the FileInterner constructor always performs
+// the first conversion, so that we need another approach for accessing the
+// original document (targetmtype won't do).
+bool FileInterner::topdocToFile(
+    TempFile& otemp, const string& tofile,
+    RclConfig *cnf, const Rcl::Doc& idoc, bool uncompress)
 {
     DocFetcher *fetcher = docFetcherMake(cnf, idoc);
     if (fetcher == 0) {
-        LOGERR("FileInterner::idocToFile no backend\n");
+        LOGERR("FileInterner::topdocToFile no backend\n");
         return false;
     }
     DocFetcher::RawDoc rawdoc;
     if (!fetcher->fetch(cnf, idoc, rawdoc)) {
-        LOGERR("FileInterner::idocToFile fetcher failed\n");
+        LOGERR("FileInterner::topdocToFile fetcher failed\n");
         return false;
     }
     const char *filename = "";
@@ -983,13 +976,24 @@ bool FileInterner::topdocToFile(TempFile& otemp, const string& tofile,
     }
     string reason;
     switch (rawdoc.kind) {
-    case DocFetcher::RawDoc::RDK_FILENAME:
-        if (!copyfile(rawdoc.data.c_str(), filename, reason)) {
+    case DocFetcher::RawDoc::RDK_FILENAME: {
+        string fn(rawdoc.data);
+        TempFile temp;
+        if (uncompress && isCompressed(fn, cnf)) {
+            if (!maybeUncompressToTemp(temp, fn, cnf, idoc)) {
+                LOGERR("FileInterner::idocToFile: uncompress failed\n");
+                return false;
+            }
+        }
+        fn = temp ? temp->filename() : rawdoc.data;
+        if (!copyfile(fn.c_str(), filename, reason)) {
             LOGERR("FileInterner::idocToFile: copyfile: " << reason << "\n");
             return false;
         }
+    }
         break;
     case DocFetcher::RawDoc::RDK_DATA:
+    case DocFetcher::RawDoc::RDK_DATADIRECT:
         if (!stringtofile(rawdoc.data, filename, reason)) {
             LOGERR("FileInterner::idocToFile: stringtofile: " << reason <<"\n");
             return false;
@@ -1019,11 +1023,12 @@ bool FileInterner::interntofile(TempFile& otemp, const string& tofile,
     }
 
     // Specialcase text/html. This is to work around a bug that will
-    // get fixed some day: internfile initialisation does not check
-    // targetmtype, so that at least one conversion is always
-    // performed. A common case would be an "Open" on an html file
-    // (we'd end up with text/plain content). As the html version is
-    // saved in this case, use it.  
+    // get fixed some day: the internfile constructor always loads the
+    // first handler so that at least one conversion is always
+    // performed (and the access to the original data may be lost). A
+    // common case is an "Open" on an HTML file (we end up
+    // with text/plain content). As the HTML version is saved in this
+    // case, use it.
     if (!stringlowercmp(cstr_texthtml, mimetype) && !get_html().empty()) {
         doc.text = get_html();
         doc.mimetype = cstr_texthtml;

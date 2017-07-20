@@ -55,8 +55,8 @@ void multiSave(QWidget *p, vector<Rcl::Doc>& docs)
     LOGDEB2("multiSave: got dir "  << (dir) << "\n" );
 
     /* Save doc to files in target directory. Issues:
-       - It is quite common to have docs in the array with the save
-         file names, e.g. all messages in a folder have the save file
+       - It is quite common to have docs in the array with the same
+         file names, e.g. all messages in a folder have the same file
          name (the folder's).
        - There is no warranty that the ipath is going to be acceptable
          as a file name or interesting at all. We don't use it. 
@@ -131,7 +131,7 @@ void multiSave(QWidget *p, vector<Rcl::Doc>& docs)
 	}
 	// There is still a race condition here, should we care ?
 	TempFile temp;// not used
-	if (!FileInterner::idocToFile(temp, fn, theconfig, docs[i])) {
+	if (!FileInterner::idocToFile(temp, fn, theconfig, docs[i], false)) {
 	    QMessageBox::warning(0, "Recoll",
 				 QWidget::tr("Cannot extract document: ") +
 				 QString::fromLocal8Bit(docs[i].url.c_str()) +

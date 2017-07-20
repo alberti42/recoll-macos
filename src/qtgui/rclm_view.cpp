@@ -300,7 +300,8 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     bool enterHistory = false;
     bool istempfile = false;
     
-    LOGDEB("RclMain::startNV: groksipath "  << (groksipath) << " wantsf "  << (wantsfile) << " wantsparentf "  << (wantsparentfile) << "\n" );
+    LOGDEB("RclMain::startNV: groksipath " << groksipath << " wantsf " <<
+           wantsfile << " wantsparentf " << wantsparentfile << "\n");
 
     // If the command wants a file but this is not a file url, or
     // there is an ipath that it won't understand, we need a temp file:
@@ -328,8 +329,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     if (!fn.empty() && theconfig->mimeViewerNeedsUncomp(doc.mimetype)) {
         if (access(fn.c_str(), R_OK) != 0) {
             QMessageBox::warning(0, "Recoll", 
-                                 tr("Can't access file: ") + 
-                                 QString::fromLocal8Bit(fn.c_str()));
+                                 tr("Can't access file: ") + u8s2qs(fn));
             return;
         }
         TempFile temp;
