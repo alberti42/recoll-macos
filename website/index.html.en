@@ -111,6 +111,11 @@
       <div class="news">
       
         <dl>
+          <dt>2017-07-31</dt><dd>Finalizing the move to the new site,
+            I am closing the old BitBucket project. The existing
+            BitBucket issues <a href="bitbucket-issues-recoll/index.html">
+              have been archived</a>.</dd>
+          
           <dt>2017-07-02</dt><dd>The source code repository and issue
             tracker are moving to a
             <a href="https://opensourceprojects.eu/p/recoll1/">
@@ -292,7 +297,7 @@
           indexing.</dd>
 
         <dt>2014-04-03</dt> <dd>I have separated the code for the 
-          <a href="https://bitbucket.org/medoc/unity-scope-recoll">Recoll
+          <a href="https://opensourceprojects.eu/p/unityscoperecol/">Recoll
             Unity Scope</a> from the main body of code, in hope that it may
           interest someone to work on it. It's Python and simple,
           mostly depending on the Unity API. The Ubuntu Unity API is
