@@ -45,8 +45,8 @@ debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
 # No new releases for trusty either because of risk of kio compat (kio
 # wont build)
-series="xenial yakkety zesty"
-series=
+series="xenial yakkety zesty artful"
+series=artful
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -77,8 +77,8 @@ done
 
 ### KIO. Does not build on trusty from recoll 1.23 because of the need
 ### for c++11
-series="xenial yakkety zesty"
-#series=
+series="xenial yakkety zesty artful"
+series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -146,8 +146,8 @@ for series in $series ; do
 done
 
 ### Unity Scope
-series="trusty xenial yakkety"
-series=
+series="trusty xenial yakkety zesty artful"
+#series=
 
 debdir=debianunityscope
 if test ! -d ${debdir}/ ; then

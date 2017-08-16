@@ -1,9 +1,0 @@
-recoll0.png 
-result-table.png
-recoll1.png
-recoll2.png
-recoll3.png
-recoll4.png
-recoll5.png
-recoll_chinese.png
-recoll-HTML_search_results.png 

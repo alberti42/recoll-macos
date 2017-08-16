@@ -1,5 +1,0 @@
-Result list with Snippets window open. With some document types (here PDF),
-we can retrieve the page numbers where the matches occur. The snippets
-window lists all the matches and pages. Clicking on a page link would open
-the PDF viewer at the right page.
- 

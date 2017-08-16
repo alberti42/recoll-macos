@@ -1,2 +1,0 @@
-A result list from which the native application (firefox)
-was started by clicking the Edit link.
