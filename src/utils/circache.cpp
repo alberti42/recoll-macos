@@ -1549,8 +1549,7 @@ b1:
         argv++;
     }
 
-    DebugLog::getdbl()->setloglevel(DEBERR);
-    DebugLog::setfilename("stderr");
+    Logger::getTheLog("")->setLogLevel(Logger::LLDEB1);
 
     if (argc < 1) {
         Usage();
