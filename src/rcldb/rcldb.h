@@ -124,14 +124,13 @@ public:
 class DbStats {
 public:
     DbStats()
-	:dbdoccount(0), dbavgdoclen(0), mindoclen(0), maxdoclen(0)
-    {
-    }
+	:dbdoccount(0), dbavgdoclen(0), mindoclen(0), maxdoclen(0) { }
     // Index-wide stats
     unsigned int dbdoccount;
     double       dbavgdoclen;
     size_t       mindoclen;
     size_t       maxdoclen;
+    vector<string> failedurls; /* Only set if requested */
 };
 
 inline bool has_prefix(const string& trm)
@@ -385,7 +384,7 @@ class Db {
     bool termMatch(int typ_sens, const string &lang, const string &term, 
 		   TermMatchResult& result, int max = -1,
 		   const string& field = "", vector<string> *multiwords = 0);
-    bool dbStats(DbStats& stats);
+    bool dbStats(DbStats& stats, bool listFailed);
     /** Return min and max years for doc mod times in db */
     bool maxYearSpan(int *minyear, int *maxyear);
     /** Return all mime types in index. This can be different from the

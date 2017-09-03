@@ -51,6 +51,11 @@ using std::list;
 using std::multimap;
 using std::string;
 
+inline bool wordlessMode(SpellW::comboboxchoice v)
+{
+    return (v == SpellW::TYPECMB_STATS || v == SpellW::TYPECMB_FAILED);
+}
+
 void SpellW::init()
 {
     m_c2t.clear();
@@ -64,6 +69,8 @@ void SpellW::init()
     m_c2t.push_back(TYPECMB_SPELL);
     expTypeCMB->addItem(tr("Show index statistics"));
     m_c2t.push_back(TYPECMB_STATS);
+    expTypeCMB->addItem(tr("List files which could not be indexed (slow)"));
+    m_c2t.push_back(TYPECMB_FAILED);
 
     // Stemming language combobox
     stemLangCMB->clear();
@@ -74,8 +81,7 @@ void SpellW::init()
     }
     for (vector<string>::const_iterator it = langs.begin(); 
 	 it != langs.end(); it++) {
-	stemLangCMB->
-	    addItem(QString::fromUtf8(it->c_str(), it->length()));
+	stemLangCMB->addItem(u8s2qs(*it));
     }
 
     (void)new HelpClient(this);
@@ -131,7 +137,7 @@ void SpellW::doExpand()
 
     // Can't clear qt4 table widget: resets column headers too
     resTW->setRowCount(0);
-    if (baseWordLE->text().isEmpty() && mode != TYPECMB_STATS) 
+    if (baseWordLE->text().isEmpty() && !wordlessMode(mode)) 
 	return;
 
     string reason;
@@ -157,7 +163,7 @@ void SpellW::doExpand()
     Rcl::TermMatchResult res;
     string expr = string((const char *)baseWordLE->text().toUtf8());
     Rcl::DbStats dbs;
-    rcldb->dbStats(dbs);
+    rcldb->dbStats(dbs, false);
 
     switch (mode) {
     case TYPECMB_WILD: 
@@ -199,6 +205,12 @@ void SpellW::doExpand()
 	return;
     }
     break;
+    case TYPECMB_FAILED:
+    {
+	showFailed();
+	return;
+    }
+    break;
     }
 
     if (res.entries.empty()) {
@@ -224,15 +236,14 @@ void SpellW::doExpand()
 
 	for (vector<Rcl::TermMatchEntry>::iterator it = res.entries.begin(); 
 	     it != res.entries.end(); it++) {
-	    LOGDEB2("SpellW::expand: "  << (it->wcf) << " ["  << (it->term) << "]\n" );
+	    LOGDEB2("SpellW::expand: " << it->wcf << " [" << it->term << "]\n");
 	    char num[30];
 	    if (it->wcf)
 		sprintf(num, "%d / %d",  it->docs, it->wcf);
 	    else
 		num[0] = 0;
 	    resTW->setRowCount(row+1);
-            resTW->setItem(row, 0, 
-                    new QTableWidgetItem(QString::fromUtf8(it->term.c_str()))); 
+            resTW->setItem(row, 0, new QTableWidgetItem(u8s2qs(it->term)));
             resTW->setItem(row++, 1, 
                              new QTableWidgetItem(QString::fromUtf8(num)));
 	}
@@ -245,7 +256,7 @@ void SpellW::showStats()
     int row = 0;
 
     Rcl::DbStats res;
-    if (!rcldb->dbStats(res)) {
+    if (!rcldb->dbStats(res, false)) {
 	LOGERR("SpellW::doExpand:rcldb::dbStats failed\n" );
 	return;
     }
@@ -323,8 +334,7 @@ void SpellW::showStats()
     resTW->setItem(row, 0,
 		   new QTableWidgetItem(tr("Database directory size")));
     resTW->setItem(row++, 1, new QTableWidgetItem(
-		       QString::fromUtf8(
-			   displayableBytes(dbkbytes*1024).c_str())));
+		       u8s2qs(displayableBytes(dbkbytes*1024))));
 
     vector<string> allmimetypes = theconfig->getAllMimeTypes();
     multimap<int, string> mtbycnt;
@@ -350,9 +360,26 @@ void SpellW::showStats()
 	 it != mtbycnt.rend(); it++) {
 	resTW->setRowCount(row+1);
 	resTW->setItem(row, 0, new QTableWidgetItem(QString("    ") +
-			   QString::fromUtf8(it->second.c_str())));
+                                                    u8s2qs(it->second)));
 	resTW->setItem(row++, 1, new QTableWidgetItem(
 			   QString::number(it->first)));
+    }
+}
+
+void SpellW::showFailed()
+{
+    statsLBL->setText("");
+    int row = 0;
+
+    Rcl::DbStats res;
+    if (!rcldb->dbStats(res, true)) {
+	LOGERR("SpellW::doExpand:rcldb::dbStats failed\n" );
+	return;
+    }
+    for (auto entry : res.failedurls) {
+	resTW->setRowCount(row+1);
+	resTW->setItem(row, 0, new QTableWidgetItem(u8s2qs(entry)));
+	resTW->setItem(row++, 1, new QTableWidgetItem(""));
     }
 }
 
@@ -390,7 +417,7 @@ void SpellW::setMode(comboboxchoice mode)
 
 void SpellW::setModeCommon(comboboxchoice mode)
 {
-    if (m_prevmode == TYPECMB_STATS) {
+    if (wordlessMode(m_prevmode)) {
         baseWordLE->setText("");
     }
     m_prevmode = mode;
@@ -412,13 +439,9 @@ void SpellW::setModeCommon(comboboxchoice mode)
     } else {
 	stemLangCMB->setEnabled(false);
     }
-    if (mode == TYPECMB_STATS)
+
+    if (wordlessMode(mode)) {
 	baseWordLE->setEnabled(false);
-    else
-	baseWordLE->setEnabled(true);
-
-
-    if (mode == TYPECMB_STATS) {
 	QStringList labels(tr("Item"));
 	labels.push_back(tr("Value"));
 	resTW->setHorizontalHeaderLabels(labels);
@@ -426,6 +449,7 @@ void SpellW::setModeCommon(comboboxchoice mode)
 	caseSensCB->setEnabled(false);
 	doExpand();
     } else {
+	baseWordLE->setEnabled(true);
 	QStringList labels(tr("Term"));
 	labels.push_back(tr("Doc. / Tot."));
 	resTW->setHorizontalHeaderLabels(labels);

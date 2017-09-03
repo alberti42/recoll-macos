@@ -36,7 +36,7 @@ public:
     virtual bool eventFilter(QObject *target, QEvent *event );
 
     enum comboboxchoice {TYPECMB_NONE, TYPECMB_WILD, TYPECMB_REG, TYPECMB_STEM, 
-			 TYPECMB_SPELL, TYPECMB_STATS};
+			 TYPECMB_SPELL, TYPECMB_STATS, TYPECMB_FAILED};
 public slots:
     virtual void doExpand();
     virtual void wordChanged(const QString&);
@@ -58,6 +58,7 @@ private:
     void init();
     void copy();
     void showStats();
+    void showFailed();
     int cmbIdx(comboboxchoice mode);
     void setModeCommon(comboboxchoice mode);
 };

@@ -2140,7 +2140,7 @@ bool Db::purgeOrphans(const string &udi)
     return m_ndb->purgeFileWrite(true, udi, uniterm);
 }
 
-bool Db::dbStats(DbStats& res)
+bool Db::dbStats(DbStats& res, bool listfailed)
 {
     if (!m_ndb || !m_ndb->m_isopen)
 	return false;
@@ -2153,6 +2153,45 @@ bool Db::dbStats(DbStats& res)
 	   , xdb, m_reason);
     if (!m_reason.empty())
         return false;
+    if (!listfailed) {
+        return true;
+    }
+
+    // listfailed is set : look for failed docs
+    string ermsg;
+    try {
+        for (unsigned int docid = 1; docid < xdb.get_lastdocid(); docid++) {
+            try {
+                Xapian::Document doc = xdb.get_document(docid);
+                string sig = doc.get_value(VALUE_SIG);
+                if (sig.empty() || sig[sig.size()-1] != '+') {
+                    continue;
+                }
+                string data = doc.get_data();
+                ConfSimple parms(data);
+                if (!parms.ok()) {
+                } else {
+                    string url, ipath;
+                    parms.get(Doc::keyipt, ipath);
+                    parms.get(Doc::keyurl, url);
+                    // Turn to local url or not? It seems to make more
+                    // sense to keep the original urls as seen by the
+                    // indexer.
+                    // m_config->urlrewrite(dbdir, url);
+                    if (!ipath.empty()) {
+                        url += " | " + ipath;
+                    }
+                    res.failedurls.push_back(url);
+                }
+            } catch (Xapian::DocNotFoundError) {
+                continue;
+            }
+        }
+    } XCATCHERROR(ermsg);
+    if (!ermsg.empty()) {
+	LOGERR("Db::dbStats: " << ermsg << "\n");
+        return false;
+    }
     return true;
 }
 
