@@ -1,12 +1,11 @@
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.23.1
+Version:        1.23.3
 Release:        1%{?dist}
 Group:          Applications/Databases
 License:        GPLv2+
 URL:            http://www.lesbonscomptes.com/recoll/
 Source0:        http://www.lesbonscomptes.com/recoll/recoll-%{version}.tar.gz
-Source10:       qmake-qt5.sh
 BuildRequires:  aspell-devel
 BuildRequires:  bison
 BuildRequires:  desktop-file-utils
@@ -46,7 +45,6 @@ CXXFLAGS="%{optflags}"; export CXXFLAGS
 LDFLAGS="%{?__global_ldflags}"; export LDFLAGS
 
 # force use of custom/local qmake, to inject proper build flags (above)
-install -m755 -D %{SOURCE10} qmake-qt5.sh
 export QMAKE=qmake-qt5
 
 %configure
@@ -138,6 +136,9 @@ exit 0
 %{_datadir}/kservices5/recollf.protocol
 
 %changelog
+* Mon Sep 04 2017 J.F. Dockes <jfd@recoll.org> - 1.23.3-1
+- 1.23.3: misc small fixes
+
 * Sat Mar 11 2017 Terje Rosten <terje.rosten@ntnu.no> - 1.23.0-1
 - 1.23.0
 
