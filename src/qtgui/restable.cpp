@@ -785,6 +785,8 @@ void ResTable::linkWasClicked(const QUrl &url)
 		m_rclmain->newDupsW(m_detaildoc, dups);
 	    }
 	}
+        break;
+
     // Open parent folder
     case 'F':
     {
