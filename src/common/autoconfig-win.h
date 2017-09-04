@@ -32,6 +32,9 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 /* Define to 1 if you have the `dl' library (-ldl). */
 #define HAVE_LIBDL 1
 
+/* Define to 1 if you have the `pthread' library (-lpthread). */
+#define HAVE_LIBPTHREAD 1
+
 /* Define to 1 if you have the `z' library (-lz). */
 #define HAVE_LIBZ 1
 
@@ -109,7 +112,7 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 #define PACKAGE_NAME "Recoll"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Recoll 1.23.1-x"
+#define PACKAGE_STRING "Recoll 1.23.3"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "recoll"
@@ -118,13 +121,13 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.23.1-x"
+#define PACKAGE_VERSION "1.23.3"
 
 /* putenv parameter is const */
 /* #undef PUTENV_ARG_CONST */
 
-/* iconv parameter 2 is const char** */
-#define RCL_ICONV_INBUF_CONST 1
+/* Define as const if the declaration of iconv() needs const. */
+#define ICONV_CONST
 
 /* Real time monitoring option */
 #undef RCL_MONITOR

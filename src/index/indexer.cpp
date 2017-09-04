@@ -36,6 +36,17 @@
 #include "rclaspell.h"
 #endif
 
+// This would more logically live in recollindex.cpp, but then librecoll would
+// have an undefined symbol
+ConfSimple idxreasons;
+void addIdxReason(string who, string reason)
+{
+    reason = neutchars(reason, "\r\n");
+    if (!idxreasons.set(who, reason)) {
+        std::cerr << "addIdxReason: confsimple set failed\n";
+    }
+}
+
 ConfIndexer::ConfIndexer(RclConfig *cnf, DbIxStatusUpdater *updfunc)
     : m_config(cnf), m_db(cnf), m_fsindexer(0), 
       m_dobeagle(false), m_beagler(0),

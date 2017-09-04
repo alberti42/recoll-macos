@@ -405,31 +405,24 @@ void lockorexit(Pidfile *pidfile)
     }
 }
 
-static ConfSimple reasons;
 static string reasonsfile;
-void addIdxReason(string who, string reason)
-{
-    reason = neutchars(reason, "\r\n");
-    if (!reasons.set(who, reason)) {
-        cerr << "addIdxReason: confsimple set failed\n";
-    }
-}
+extern ConfSimple idxreasons;
 static void flushIdxReasons()
 {
     if (reasonsfile.empty())
         return;
     if (reasonsfile == "stdout") {
-        reasons.write(cout);
+        idxreasons.write(cout);
     } else if (reasonsfile == "stderr") {
-        reasons.write(cerr);
+        idxreasons.write(std::cerr);
     } else {
         ofstream out;
         try {
             out.open(reasonsfile, ofstream::out|ofstream::trunc);
-            reasons.write(out);
+            idxreasons.write(out);
         } catch (...) {
             cerr << "Could not write reasons file " << reasonsfile << endl;
-            reasons.write(cerr);
+            idxreasons.write(cerr);
         }
     }
 }
