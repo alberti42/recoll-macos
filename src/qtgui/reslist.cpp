@@ -289,9 +289,9 @@ ResList::ResList(QWidget* parent, const char* name)
 	setObjectName(name);
 #ifdef RESLIST_TEXTBROWSER
     LOGDEB("Reslist: using QTextBrowser\n" );
-    setReadOnly(TRUE);
-    setUndoRedoEnabled(FALSE);
-    setOpenLinks(FALSE);
+    setReadOnly(true);
+    setUndoRedoEnabled(false);
+    setOpenLinks(false);
     setTabChangesFocus(true);
     // signals and slots connections
     connect(this, SIGNAL(anchorClicked(const QUrl &)), 

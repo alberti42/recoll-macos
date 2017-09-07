@@ -97,9 +97,9 @@ void SnippetsW::init()
     verticalLayout->insertWidget(0, browserw);
     connect(browser, SIGNAL(anchorClicked(const QUrl &)), 
 	    this, SLOT(linkWasClicked(const QUrl &)));
-    browser->setReadOnly(TRUE);
-    browser->setUndoRedoEnabled(FALSE);
-    browser->setOpenLinks(FALSE);
+    browser->setReadOnly(true);
+    browser->setUndoRedoEnabled(false);
+    browser->setOpenLinks(false);
     browser->setTabChangesFocus(true);
     if (prefs.reslistfontfamily.length()) {
 	QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
