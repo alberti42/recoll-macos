@@ -14,7 +14,9 @@ QMAKE_CXXFLAGS += -std=c++11
 @QMAKE_ENABLE_ZEITGEIST@ QMAKE_CXXFLAGS += -DUSE_ZEITGEIST
 
 QT += xml
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets webkitwidgets printsupport
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
+
+@QMAKE_ENABLE_WEBKIT@ greaterThan(QT_MAJOR_VERSION, 4): QT += webkitwidgets
 
 CONFIG  += qt warn_on thread release 
 
