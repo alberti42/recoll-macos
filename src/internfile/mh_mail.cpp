@@ -53,8 +53,7 @@ MimeHandlerMail::MimeHandlerMail(RclConfig *cnf, const string &id)
 {
 
     // Look for additional headers to be processed as per config:
-    vector<string> hdrnames = 
-        m_config->getFieldSectNames("mail");
+    vector<string> hdrnames = m_config->getFieldSectNames("mail");
     if (hdrnames.empty())
         return;
     for (vector<string>::const_iterator it = hdrnames.begin();
@@ -83,7 +82,6 @@ void MimeHandlerMail::clear()
 	delete *it;
     }
     m_attachments.clear();
-    m_addProcdHdrs.clear();
     RecollFilter::clear();
 }
 
