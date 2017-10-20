@@ -385,13 +385,12 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
     // Check for the presence of configured additional headers and possibly
     // add them to the metadata (with appropriate field name).
     if (!m_addProcdHdrs.empty()) {
-        for (map<string, string>::const_iterator it = m_addProcdHdrs.begin();
-             it != m_addProcdHdrs.end(); it++) {
-            if (!it->second.empty()) {
-                string hval;
-                if (doc->h.getFirstHeader(it->first, hi)) {
-                    m_metaData[it->second] = hi.getValue();
-                }
+        for (auto& it : m_addProcdHdrs) {
+            if (!it.second.empty() && doc->h.getFirstHeader(it.first, hi)) {
+                // Email headers are supposedly ASCII, but we force
+                // transcode to UTF-8 anyway so that at least partial
+                // indexing can be done if there are 8bit chars in there.
+                transcode(hi.getValue(), m_metaData[it.second], "CP1252", "UTF-8");
             }
         }
     }
