@@ -6063,7 +6063,10 @@ thesame = "some string with spaces"
           <varlistentry>
             <term>[prefixes]</term>
             <listitem><para>A field becomes indexed (searchable) by having
-            a prefix defined in this section.</para>
+            a prefix defined in this section. There is a more complete
+            explanation of what prefixes are in used by a standard recoll
+            installation. In a nutshell: extension prefixes should be all
+            caps, begin with XY, and short. E.g. XYMFLD.</para>
             </listitem>
           </varlistentry>
           <varlistentry>
