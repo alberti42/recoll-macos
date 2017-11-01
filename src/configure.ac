@@ -410,7 +410,7 @@ if test X$enableQT = Xyes ; then
   v4=`expr "$qmakevers" : '.*Qt[ ][ ]*version[ ][ ]*4.*'`
   v5=`expr "$qmakevers" : '.*Qt[ ][ ]*version[ ][ ]*5.*'`
   if test X$v4 = X0 -a X$v5 = X0; then 
-     AC_MSG_ERROR([qmake seems to be using Qt version 3 which is not supported any more])
+     AC_MSG_ERROR([Bad qt/qmake version string (not 4 or 5?): $qmakevers])
   else
     if test X$v4 != X0 ; then
        AC_MSG_NOTICE([using qt version 4 user interface])
