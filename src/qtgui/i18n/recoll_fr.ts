@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="fr">
+<TS version="2.1" language="fr">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -13,11 +13,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="obsolete">textes</translation>
+        <translation type="unfinished">textes</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="obsolete">feuilles de calcul</translation>
+        <translation type="unfinished">feuilles de calcul</translation>
     </message>
     <message>
         <source>presentations</source>
@@ -1053,7 +1053,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>Index not open</source>
-        <translation>Index pas ouvert</translation>
+        <translation type="vanished">Index pas ouvert</translation>
     </message>
     <message>
         <source>Index query error</source>
@@ -1262,6 +1262,18 @@ Merci de vérifier le fichier desktop </translation>
     <message>
         <source>Indexer is running. Can&apos;t access webcache file.</source>
         <translation>L&apos;indexeur est actif. Impossible d&apos;accéder au fichier webcache.</translation>
+    </message>
+    <message>
+        <source> with additional message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Non-fatal indexing message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Types list empty: maybe wait for indexing to progress?</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2356,11 +2368,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Aspell init failed. Aspell not installed?</source>
-        <translation>Erreur d&apos;initialisation aspell. Il n&apos;est peut-être pas installé?</translation>
+        <translation type="vanished">Erreur d&apos;initialisation aspell. Il n&apos;est peut-être pas installé?</translation>
     </message>
     <message>
         <source>Aspell expansion error. </source>
-        <translation>Erreur aspell.</translation>
+        <translation type="vanished">Erreur aspell.</translation>
     </message>
     <message>
         <source>Stem expansion</source>
@@ -2461,6 +2473,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>  Unindexed files</source>
         <translation>  Fichiers non indexés</translation>
+    </message>
+    <message>
+        <source>List files which could not be indexed (slow)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Spell expansion error. </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3084,7 +3104,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation>Ce sont des noms de répertoires où l&apos;indexation n&apos;entrera pas.&lt;br&gt;Ils peuvent contenir des caractères jokers. Les chemins doivent correspondre à ceux vus par l&apos;indexeur (par exemple: si un des répertoires de départ est &apos;/home/me&apos; et que &apos;/home&apos; est un lien sur &apos;/usr/home&apos;, une entrée correcte ici serait &apos;/home/me/tmp*&apos; , pas &apos;/usr/home/me/tmp*&apos;)</translation>
+        <translation type="vanished">Ce sont des noms de répertoires où l&apos;indexation n&apos;entrera pas.&lt;br&gt;Ils peuvent contenir des caractères jokers. Les chemins doivent correspondre à ceux vus par l&apos;indexeur (par exemple: si un des répertoires de départ est &apos;/home/me&apos; et que &apos;/home&apos; est un lien sur &apos;/usr/home&apos;, une entrée correcte ici serait &apos;/home/me/tmp*&apos; , pas &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
@@ -3120,11 +3140,11 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Max disk occupation (%)</source>
-        <translation>Occupation disque maximum (%)</translation>
+        <translation type="vanished">Occupation disque maximum (%)</translation>
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
-        <translation>Niveau d&apos;occupation du disque ou l&apos;indexation s&apos;arrete (pour eviter un remplissage excessif).&lt;br&gt;0 signifie pas de limite (defaut).</translation>
+        <translation type="vanished">Niveau d&apos;occupation du disque ou l&apos;indexation s&apos;arrete (pour eviter un remplissage excessif).&lt;br&gt;0 signifie pas de limite (defaut).</translation>
     </message>
     <message>
         <source>No aspell usage</source>
@@ -3174,6 +3194,18 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
         <translation>&lt;p&gt;Ce sont les exceptions au mécanisme de suppression des accents, qui, par défaut et en fonction de la configuration de l&apos;index, supprime tous les accents et effectue une décomposition canonique Unicode. Vous pouvez inhiber la suppression des accents pour certains caractères, en fonction de votre langue, et préciser d&apos;autres décompositions, par exemple pour des ligatures. Dans la liste séparée par des espaces, le premier caractères d&apos;un élément est la source, le reste est la traduction.</translation>
     </message>
+    <message>
+        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max disk occupation (%, 0 means no limit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>uiPrefsDialogBase</name>
@@ -3199,7 +3231,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation>Couleur de mise en relief des termes recherchés</translation>
+        <translation type="vanished">Couleur de mise en relief des termes recherchés</translation>
     </message>
     <message>
         <source>Result list font</source>
@@ -3538,6 +3570,10 @@ La valeur par défaut est 2%</translation>
     <message>
         <source>Synonyms file</source>
         <translation>Fichier de synonymes</translation>
+    </message>
+    <message>
+        <source>Highlight CSS style for query terms</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

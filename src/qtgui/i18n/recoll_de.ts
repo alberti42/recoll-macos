@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="de">
+<TS version="2.1" language="de">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -13,11 +13,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="obsolete">Texte</translation>
+        <translation type="unfinished">Texte</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="obsolete">Tabellen</translation>
+        <translation type="unfinished">Tabellen</translation>
     </message>
     <message>
         <source>presentations</source>
@@ -1033,7 +1033,7 @@ Wollen Sie den Einstellungs-Dialog starten?</translation>
     </message>
     <message>
         <source>Index not open</source>
-        <translation>Index nicht geöffnet</translation>
+        <translation type="vanished">Index nicht geöffnet</translation>
     </message>
     <message>
         <source>Index query error</source>
@@ -1234,6 +1234,18 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Indexer is running. Can&apos;t access webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> with additional message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Non-fatal indexing message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Types list empty: maybe wait for indexing to progress?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2280,11 +2292,11 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Aspell init failed. Aspell not installed?</source>
-        <translation>Fehler bei der Initialisierung von Aspell. Ist Aspell nicht installiert?</translation>
+        <translation type="vanished">Fehler bei der Initialisierung von Aspell. Ist Aspell nicht installiert?</translation>
     </message>
     <message>
         <source>Aspell expansion error. </source>
-        <translation>Aspell Vervollständigungsfehler</translation>
+        <translation type="vanished">Aspell Vervollständigungsfehler</translation>
     </message>
     <message>
         <source>Stem expansion</source>
@@ -2384,6 +2396,14 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>  Unindexed files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List files which could not be indexed (slow)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Spell expansion error. </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2951,7 +2971,7 @@ Auf -1 setzen, um keine Obergrenze zu haben.</translation>
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation>Die Namen der Verzeichnisse, die nicht indiziert werden.&lt;br&gt;Kann Wildcards enthalten. Muss den Pfaden entsprechen, die der Indizierer sieht (d.h.. wenn &apos;/home/me&apos; in den Start-Verzeichnissen steht und &apos;/home&apos; eigentlich ein Link zu &apos;/usr/home&apos; ist, dann wäre ein korrekter Eintrag &apos;/home/me/tmp*&apos; und nicht &apos;/usr/home/me/tmp*&apos;)</translation>
+        <translation type="vanished">Die Namen der Verzeichnisse, die nicht indiziert werden.&lt;br&gt;Kann Wildcards enthalten. Muss den Pfaden entsprechen, die der Indizierer sieht (d.h.. wenn &apos;/home/me&apos; in den Start-Verzeichnissen steht und &apos;/home&apos; eigentlich ein Link zu &apos;/usr/home&apos; ist, dann wäre ein korrekter Eintrag &apos;/home/me/tmp*&apos; und nicht &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
@@ -2987,11 +3007,11 @@ Auf -1 setzen, um keine Obergrenze zu haben.</translation>
     </message>
     <message>
         <source>Max disk occupation (%)</source>
-        <translation>Max. Festplattenbelegung (%)</translation>
+        <translation type="vanished">Max. Festplattenbelegung (%)</translation>
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
-        <translation>Dies ist der Prozentsatz der Festplattenbelegung, ab dem die Indizierung gestoppt wird (um das Füllen der Festplatte zu vermeiden).&lt;br&gt;0 bedeutet keine Begrenzung (das ist der Standardwert).</translation>
+        <translation type="vanished">Dies ist der Prozentsatz der Festplattenbelegung, ab dem die Indizierung gestoppt wird (um das Füllen der Festplatte zu vermeiden).&lt;br&gt;0 bedeutet keine Begrenzung (das ist der Standardwert).</translation>
     </message>
     <message>
         <source>No aspell usage</source>
@@ -3041,6 +3061,18 @@ Auf -1 setzen, um keine Obergrenze zu haben.</translation>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
         <translation>&lt;p&gt;Dies sind Ausnahmen für den unac Mechanismus, der standardmäßig alle diakritischen Zeichen entfernt und sie durch kanonische Entsprechungen ersetzt. Sie können (abhängig von Ihrer Sprache) dieses Entfernen von Akzenten für einige Zeichen übersteuern und zusätzliche Ersetzungen angeben, z.B. für Ligaturen. Bei jedem durch Leerzeichen getrennten Eintrag ist das erste Zeichen das Ausgangszeichen und der Rest die Ersetzung.</translation>
     </message>
+    <message>
+        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max disk occupation (%, 0 means no limit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>uiPrefsDialogBase</name>
@@ -3066,7 +3098,7 @@ Auf -1 setzen, um keine Obergrenze zu haben.</translation>
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation>Farbe zur Hervorhebung von Suchbegriffen</translation>
+        <translation type="vanished">Farbe zur Hervorhebung von Suchbegriffen</translation>
     </message>
     <message>
         <source>Result list font</source>
@@ -3393,6 +3425,10 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     </message>
     <message>
         <source>Show warning when opening temporary file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Highlight CSS style for query terms</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

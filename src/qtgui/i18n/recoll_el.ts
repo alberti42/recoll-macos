@@ -13,11 +13,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="obsolete">κείμενα</translation>
+        <translation type="unfinished">κείμενα</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="obsolete">φύλλα εργασίας</translation>
+        <translation type="unfinished">φύλλα εργασίας</translation>
     </message>
     <message>
         <source>presentations</source>
@@ -706,6 +706,13 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>QxtConfirmationMessage</name>
+    <message>
+        <source>Do not show again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>RTIToolW</name>
     <message>
         <source>Real time indexing automatic start</source>
@@ -934,7 +941,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Index not open</source>
-        <translation>Το ευρετήριο δεν είναι ανοιχτό</translation>
+        <translation type="vanished">Το ευρετήριο δεν είναι ανοιχτό</translation>
     </message>
     <message>
         <source>Index query error</source>
@@ -1072,11 +1079,11 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>The document belongs to an external indexwhich I can&apos;t update. </source>
-        <translation>Το έγγραφο ανήκει σε ένα εξωτερικό ευρετήριο το οποίο δεν μπορώ να ενημερώσω.</translation>
+        <translation type="vanished">Το έγγραφο ανήκει σε ένα εξωτερικό ευρετήριο το οποίο δεν μπορώ να ενημερώσω.</translation>
     </message>
     <message>
         <source>Click Cancel to return to the list. Click Ignore to show the preview anyway. </source>
-        <translation>Κάντε κλικ στο Ακύρωση για να επιστρέψετε στον κατάλογο. Κάντε κλικ στο Αγνόηση για την εμφάνιση της προεπισκόπησης ούτως ή άλλως.</translation>
+        <translation type="vanished">Κάντε κλικ στο Ακύρωση για να επιστρέψετε στον κατάλογο. Κάντε κλικ στο Αγνόηση για την εμφάνιση της προεπισκόπησης ούτως ή άλλως.</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
@@ -1095,6 +1102,127 @@ Please check the desktop file</source>
     <message>
         <source>Indexing interrupted</source>
         <translation>Η ευρετηρίαση διεκόπη</translation>
+    </message>
+    <message>
+        <source> with additional message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Non-fatal indexing message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index locked</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bad paths</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Bad paths in configuration file:
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The current indexing process was not started from this interface, can&apos;t kill it</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Selection patterns need topdir</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Selection patterns can only be used with a start directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The document belongs to an external index which I can&apos;t update. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Click Cancel to return to the list. &lt;br&gt;Click Ignore to show the preview anyway (and remember for this session).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No preserved previous search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose file to save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saved Queries (*.rclq)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Write failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not write to file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Read failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not open file: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Load error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not load saved query</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opening a temporary copy. Edits will be lost if you don&apos;t save&lt;br/&gt;them to a permanent location.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do not show this warning next time (use GUI preferences to restore).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown indexer state. Can&apos;t access webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexer is running. Can&apos;t access webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index scheduling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sorry, not available under Windows for now, use the File menu entries to update the index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disabled because the real time indexer was not compiled in.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This configuration tool only works for the main index.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Types list empty: maybe wait for indexing to progress?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Can&apos;t set synonyms file (parse error?)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1157,11 +1285,11 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>&amp;Show missing helpers</source>
-        <translation>Ε&amp;μφάνιση των ελλειπουσών εφαρμογών</translation>
+        <translation type="vanished">Ε&amp;μφάνιση των ελλειπουσών εφαρμογών</translation>
     </message>
     <message>
         <source>&amp;Show indexed types</source>
-        <translation>Εμ&amp;φάνιση των τύπων με ευρετήριο</translation>
+        <translation type="vanished">Εμ&amp;φάνιση των τύπων με ευρετήριο</translation>
     </message>
     <message>
         <source>&amp;About Recoll</source>
@@ -1245,7 +1373,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>&amp;Indexing schedule</source>
-        <translation>&amp;Προγραμματισμός της ευρετηρίασης</translation>
+        <translation type="vanished">&amp;Προγραμματισμός της ευρετηρίασης</translation>
     </message>
     <message>
         <source>&amp;Query configuration</source>
@@ -1354,6 +1482,50 @@ Please check the desktop file</source>
     <message>
         <source>Next update will retry previously failed files</source>
         <translation>Η επόμενη ενημέρωση θα επιχειρήσει ξανά με τα αποτυχημένα αρχεία</translation>
+    </message>
+    <message>
+        <source>&amp;View</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Missing &amp;helpers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexed &amp;MIME types</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexing &amp;schedule</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enable synonyms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save last query</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Load saved query</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Special Indexing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexing with special options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Index &amp;statistics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Webcache Editor</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1792,6 +1964,30 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
 Χρησιμοποιήστε τον δεσμό &lt;b&gt;Εμφάνιση ερωτήματος&lt;/b&gt; σε περίπτωση αμφιβολίας σχετικά με το αποτέλεσμα και ανατρέξτε στο εγχειρίδιο χρήσης (&amp;lt;F1&gt;) για περισσότερες λεπτομέρειες.
 </translation>
     </message>
+    <message>
+        <source>Stemming languages for stored query: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> differ from current preferences (kept)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Auto suffixes for stored query: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>External indexes for stored query: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Autophrase is set but it was unset for stored query</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Autophrase is unset but it was set for stored query</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SSearchBase</name>
@@ -1898,6 +2094,49 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
 </context>
 <context>
+    <name>SpecIdxW</name>
+    <message>
+        <source>Special Indexing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do not retry previously failed files.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Else only modified or failed files will be processed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Erase selected files data before indexing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Directory to recursively index. This must be inside the regular indexed area&lt;br&gt; as defined in the configuration file (topdirs).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Browse</source>
+        <translation type="unfinished">Περιήγηση</translation>
+    </message>
+    <message>
+        <source>Start directory (else use regular topdirs):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Leave empty to select all files. You can use multiple space-separated shell-type patterns.&lt;br&gt;Patterns with embedded spaces should be quoted with double quotes.&lt;br&gt;Can only be used if the start target is set.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Selection patterns:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Top indexed entity</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SpellBase</name>
     <message>
         <source>Term Explorer</source>
@@ -1972,11 +2211,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Aspell init failed. Aspell not installed?</source>
-        <translation>Σφάλμα στην αρχικοποίηση του aspell. Μήπως δεν είναι εγκατεστημένο;</translation>
+        <translation type="vanished">Σφάλμα στην αρχικοποίηση του aspell. Μήπως δεν είναι εγκατεστημένο;</translation>
     </message>
     <message>
         <source>Aspell expansion error. </source>
-        <translation>Σφάλμα επέκτασης του aspell.</translation>
+        <translation type="vanished">Σφάλμα επέκτασης του aspell.</translation>
     </message>
     <message>
         <source>No expansion found</source>
@@ -2012,11 +2251,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Smallest document length</source>
-        <translation>Μικρότερο μήκος εγγράφου</translation>
+        <translation type="vanished">Μικρότερο μήκος εγγράφου</translation>
     </message>
     <message>
         <source>Longest document length</source>
-        <translation>Μεγαλύτερο μήκος εγγράφου</translation>
+        <translation type="vanished">Μεγαλύτερο μήκος εγγράφου</translation>
     </message>
     <message>
         <source>Database directory size</source>
@@ -2033,6 +2272,38 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Value</source>
         <translation>Τιμή</translation>
+    </message>
+    <message>
+        <source>List files which could not be indexed (slow)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Spell expansion error. </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Smallest document length (terms)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Longest document length (terms)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Results from last indexing:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Documents created/updated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Files tested</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>  Unindexed files</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2088,6 +2359,26 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Default QtWebkit font</source>
         <translation>Γραμματοσειρά εξ ορισμού QtWebkit</translation>
+    </message>
+    <message>
+        <source>Any term</source>
+        <translation type="unfinished">Οποιοσδήποτε όρος</translation>
+    </message>
+    <message>
+        <source>All terms</source>
+        <translation type="unfinished">Όλοι οι όροι</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query language</source>
+        <translation type="unfinished">Γλώσσα ερωτημάτων</translation>
+    </message>
+    <message>
+        <source>Value from previous program exit</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2177,6 +2468,51 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
 </context>
 <context>
+    <name>Webcache</name>
+    <message>
+        <source>Webcache editor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search regexp</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>WebcacheEdit</name>
+    <message>
+        <source>Copy URL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unknown indexer state. Can&apos;t edit webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexer is running. Can&apos;t edit webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Delete selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Webcache was modified, you will need to run the indexer after closing this window.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>WebcacheModel</name>
+    <message>
+        <source>MIME</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Url</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>confgui::ConfBeaglePanelW</name>
     <message>
         <source>Steal Beagle indexing queue</source>
@@ -2200,7 +2536,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Entries will be recycled once the size is reached</source>
-        <translation>Θα γίνεται αντικατάσταση των καταχωρήσεων όταν επιτευχθεί το καθορισμένο μέγεθος</translation>
+        <translation type="vanished">Θα γίνεται αντικατάσταση των καταχωρήσεων όταν επιτευχθεί το καθορισμένο μέγεθος</translation>
     </message>
     <message>
         <source>Process the WEB history queue</source>
@@ -2209,6 +2545,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
         <translation>Ενεργοποιεί τη δεικτοδότηση των επισκεπτόμενων σελίδων στον Firefox.&lt;br&gt;(θα πρέπει να εγκαταστήσετε και το πρόσθετο Firefox Recoll)</translation>
+    </message>
+    <message>
+        <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2352,7 +2692,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation>Πρόκειται για ονόματα καταλόγων που δεν θα δεικτοδοτηθούν.&lt;br&gt;Μπορούν να περιέχουν χαρακτήρες υποκατάστασης. Οι διαδρομές πρέπει να αντιστοιχούν με αυτές που είδε ο δεικτοδότης (π.χ: αν ένας κατάλογος έναρξης είναι &apos;/home/me&apos; και το &apos;/home&apos; είναι ένας δεσμός στο &apos;/usr/home&apos;, μια σωστή διαδρομή εδώ θα ήταν &apos;/home/me/tmp*&apos; , όχι &apos;/usr/home/me/tmp*&apos;)</translation>
+        <translation type="vanished">Πρόκειται για ονόματα καταλόγων που δεν θα δεικτοδοτηθούν.&lt;br&gt;Μπορούν να περιέχουν χαρακτήρες υποκατάστασης. Οι διαδρομές πρέπει να αντιστοιχούν με αυτές που είδε ο δεικτοδότης (π.χ: αν ένας κατάλογος έναρξης είναι &apos;/home/me&apos; και το &apos;/home&apos; είναι ένας δεσμός στο &apos;/usr/home&apos;, μια σωστή διαδρομή εδώ θα ήταν &apos;/home/me/tmp*&apos; , όχι &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
@@ -2388,11 +2728,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Max disk occupation (%)</source>
-        <translation>Μεγ. χρήση του δίσκου (%)</translation>
+        <translation type="vanished">Μεγ. χρήση του δίσκου (%)</translation>
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
-        <translation>Το ποσοστό χρήσης του δίσκου που θα σταματήσει η ευρετηρίαση (για να αποφευχθεί η υπερβολική πλήρωση).&lt;br&gt;0 σημαίνει χωρίς όριο (προεπιλογή).</translation>
+        <translation type="vanished">Το ποσοστό χρήσης του δίσκου που θα σταματήσει η ευρετηρίαση (για να αποφευχθεί η υπερβολική πλήρωση).&lt;br&gt;0 σημαίνει χωρίς όριο (προεπιλογή).</translation>
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
@@ -2442,6 +2782,18 @@ This will help searching very big text  files (ie: log files).</source>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
         <translation>&lt;p&gt;Αυτές είναι εξαιρέσεις για τον μηχανισμό unac, ο οποίος εξ&apos; ορισμού, αφαιρεί όλους τους τονισμούς, και πραγματοποιεί κανονική αποσύνθεση. Μπορείτε να αναιρέσετε την αφαίρεση των τονισμών  για ορισμένους χαρακτήρες, ανάλογα με τη γλώσσα σας, και διευκρινίστε άλλους αποσυνθέσεις, για παράδειγμα συμπλεγμένους χαρακτήρες. Στη λίστα διαχωρισμένη με κενά, ο πρώτος χαρακτήρας ενός αντικειμένου είναι η πηγή, το υπόλοιπο είναι η μετάφραση.</translation>
     </message>
+    <message>
+        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max disk occupation (%, 0 means no limit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>uiPrefsDialogBase</name>
@@ -2455,7 +2807,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation>Χρώμα τονισμού των όρων αναζήτησης</translation>
+        <translation type="vanished">Χρώμα τονισμού των όρων αναζήτησης</translation>
     </message>
     <message>
         <source>Style sheet</source>
@@ -2762,6 +3114,26 @@ May be slow for big documents.</source>
     <message>
         <source>Close to tray instead of exiting.</source>
         <translation>Αντί για έξοδο, καταχώνιασμα στο πλαίσιο συστήματος.</translation>
+    </message>
+    <message>
+        <source>Highlight CSS style for query terms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start with simple search mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show warning when opening temporary file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>User style to apply to the snippets window.&lt;br&gt; Note: the result page header insert is also included in the snippets window header.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Synonyms file</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

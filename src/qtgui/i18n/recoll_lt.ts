@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0">
+<TS version="2.1">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -13,11 +13,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="obsolete">tekstai</translation>
+        <translation type="unfinished">tekstai</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="obsolete">skaičiuoklės</translation>
+        <translation type="unfinished">skaičiuoklės</translation>
     </message>
     <message>
         <source>presentations</source>
@@ -994,10 +994,6 @@ Ar norėtumete iššaukti nustatymų langą?</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Index not open</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Index query error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1174,6 +1170,18 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Indexer is running. Can&apos;t access webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> with additional message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Non-fatal indexing message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Types list empty: maybe wait for indexing to progress?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2137,11 +2145,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Aspell init failed. Aspell not installed?</source>
-        <translation>Aspell iššaukimas nepavyko. Aspell programa neįdiegta?</translation>
+        <translation type="vanished">Aspell iššaukimas nepavyko. Aspell programa neįdiegta?</translation>
     </message>
     <message>
         <source>Aspell expansion error. </source>
-        <translation>Aspell praplėtimų klaida.</translation>
+        <translation type="vanished">Aspell praplėtimų klaida.</translation>
     </message>
     <message>
         <source>No expansion found</source>
@@ -2221,6 +2229,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>  Unindexed files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List files which could not be indexed (slow)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Spell expansion error. </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2830,7 +2846,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation>Direktorijų, kurių turinys nebus indeksuojamas, vardai.&lt;br&gt; Vardo dalis gali būti wildcards. Turi atitikti programos matomus kelius iki direktorijų (pav. jei indeksuoti pradedama nuo &apos;/home/me&apos;, o &apos;/home&apos; yra nuoroda į &apos;/usr/home&apos;, teisinga vertė bus &apos;/home/me/tmp*&apos;, o ne &apos;/usr/home/me/tm*&apos;)</translation>
+        <translation type="vanished">Direktorijų, kurių turinys nebus indeksuojamas, vardai.&lt;br&gt; Vardo dalis gali būti wildcards. Turi atitikti programos matomus kelius iki direktorijų (pav. jei indeksuoti pradedama nuo &apos;/home/me&apos;, o &apos;/home&apos; yra nuoroda į &apos;/usr/home&apos;, teisinga vertė bus &apos;/home/me/tmp*&apos;, o ne &apos;/usr/home/me/tm*&apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
@@ -2866,11 +2882,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Max disk occupation (%)</source>
-        <translation>Didžiausia disko atminties naudojimo dalis (%)</translation>
+        <translation type="vanished">Didžiausia disko atminties naudojimo dalis (%)</translation>
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
-        <translation>Viršijus (procentine išraiška) disko atminties panaudojimą indeksavimas bus sustabdytas (vengiant pilnai užpildyti diską).&lt;br&gt;0 reiškia, jog ribos nėra (numatytoji vertė).</translation>
+        <translation type="vanished">Viršijus (procentine išraiška) disko atminties panaudojimą indeksavimas bus sustabdytas (vengiant pilnai užpildyti diską).&lt;br&gt;0 reiškia, jog ribos nėra (numatytoji vertė).</translation>
     </message>
     <message>
         <source>No aspell usage</source>
@@ -2920,6 +2936,18 @@ This will help searching very big text  files (ie: log files).</source>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max disk occupation (%, 0 means no limit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>uiPrefsDialogBase</name>
@@ -2945,7 +2973,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation>Užklausų raktinių žodžių žymėjimo spalvos</translation>
+        <translation type="vanished">Užklausų raktinių žodžių žymėjimo spalvos</translation>
     </message>
     <message>
         <source>Result list font</source>
@@ -3251,6 +3279,10 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Show warning when opening temporary file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Highlight CSS style for query terms</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

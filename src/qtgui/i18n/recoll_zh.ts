@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0">
+<TS version="2.1">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -13,11 +13,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="obsolete">文本</translation>
+        <translation type="unfinished">文本</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="obsolete">电子表格</translation>
+        <translation type="unfinished">电子表格</translation>
     </message>
     <message>
         <source>presentations</source>
@@ -1065,7 +1065,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Index not open</source>
-        <translation>索引未打开</translation>
+        <translation type="vanished">索引未打开</translation>
     </message>
     <message>
         <source>Index query error</source>
@@ -1252,6 +1252,18 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Indexer is running. Can&apos;t access webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> with additional message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Non-fatal indexing message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Types list empty: maybe wait for indexing to progress?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2206,11 +2218,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Aspell init failed. Aspell not installed?</source>
-        <translation>Aspell初始化失败。是否未安装Aspell？</translation>
+        <translation type="vanished">Aspell初始化失败。是否未安装Aspell？</translation>
     </message>
     <message>
         <source>Aspell expansion error. </source>
-        <translation>Aspell扩展出错。</translation>
+        <translation type="vanished">Aspell扩展出错。</translation>
     </message>
     <message>
         <source>No expansion found</source>
@@ -2294,6 +2306,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>  Unindexed files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List files which could not be indexed (slow)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Spell expansion error. </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2684,7 +2704,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation>索引进程不会进入具有这些名字的目录。&lt;br&gt;可以包含通配符。必须匹配索引进程自身所见到的路径（例如：如果topdirs包含&apos;/home/me&apos;，而实际上&apos;/home&apos;是到&apos;/usr/home&apos;的链接，则正确的skippedPath条目应当是&apos;/home/me/tmp*&apos;，而不是&apos;/usr/home/me/tmp*&apos;）</translation>
+        <translation type="vanished">索引进程不会进入具有这些名字的目录。&lt;br&gt;可以包含通配符。必须匹配索引进程自身所见到的路径（例如：如果topdirs包含&apos;/home/me&apos;，而实际上&apos;/home&apos;是到&apos;/usr/home&apos;的链接，则正确的skippedPath条目应当是&apos;/home/me/tmp*&apos;，而不是&apos;/usr/home/me/tmp*&apos;）</translation>
     </message>
     <message>
         <source>Stemming languages</source>
@@ -2720,11 +2740,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Max disk occupation (%)</source>
-        <translation>最大硬盘占用率（%）</translation>
+        <translation type="vanished">最大硬盘占用率（%）</translation>
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
-        <translation>当硬盘的占用率达到这个数时，索引会失败并且停止（以避免塞满你的硬盘）。&lt;br&gt;设为0则表示不加限制（这是默认值）。</translation>
+        <translation type="vanished">当硬盘的占用率达到这个数时，索引会失败并且停止（以避免塞满你的硬盘）。&lt;br&gt;设为0则表示不加限制（这是默认值）。</translation>
     </message>
     <message>
         <source>No aspell usage</source>
@@ -2774,6 +2794,18 @@ This will help searching very big text  files (ie: log files).</source>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max disk occupation (%, 0 means no limit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>uiPrefsDialogBase</name>
@@ -2799,7 +2831,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation>查询词语的高亮颜色</translation>
+        <translation type="vanished">查询词语的高亮颜色</translation>
     </message>
     <message>
         <source>Result list font</source>
@@ -3109,6 +3141,10 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Show warning when opening temporary file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Highlight CSS style for query terms</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

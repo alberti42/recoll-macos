@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0">
+<TS version="2.1">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -13,11 +13,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="obsolete">metinler</translation>
+        <translation type="unfinished">metinler</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="obsolete">hesap tabloları</translation>
+        <translation type="unfinished">hesap tabloları</translation>
     </message>
     <message>
         <source>presentations</source>
@@ -971,10 +971,6 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Index not open</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Index query error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1155,6 +1151,18 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Indexer is running. Can&apos;t access webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> with additional message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Non-fatal indexing message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Types list empty: maybe wait for indexing to progress?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2054,11 +2062,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Aspell init failed. Aspell not installed?</source>
-        <translation>Aspell başlatılamadı. Yüklenmemiş olabilir mi?</translation>
+        <translation type="vanished">Aspell başlatılamadı. Yüklenmemiş olabilir mi?</translation>
     </message>
     <message>
         <source>Aspell expansion error. </source>
-        <translation>Aspell heceleme genişlemesi hatası. </translation>
+        <translation type="vanished">Aspell heceleme genişlemesi hatası. </translation>
     </message>
     <message>
         <source>No expansion found</source>
@@ -2138,6 +2146,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>  Unindexed files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List files which could not be indexed (slow)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Spell expansion error. </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2691,7 +2707,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation>Bunlar indekslemenin girmeyeceği dizinlerin adlarıdır.&lt;br&gt; * gibi özel karakterler içerebilir. İndeksleyici tarafından görülen yollar ile eşleşmelidir (örneğin: eğer en üst dizinler &apos;/home/ben&apos; ve &apos;/home&apos; içeriyorsa ve home &apos;/usr/home&apos; dizinine bağlantılı ise atlanacak dizin yolu &apos;/home/me/tmp*&apos; olmalıdır, &apos;/usr/home/me/tmp*&apos; değil)</translation>
+        <translation type="vanished">Bunlar indekslemenin girmeyeceği dizinlerin adlarıdır.&lt;br&gt; * gibi özel karakterler içerebilir. İndeksleyici tarafından görülen yollar ile eşleşmelidir (örneğin: eğer en üst dizinler &apos;/home/ben&apos; ve &apos;/home&apos; içeriyorsa ve home &apos;/usr/home&apos; dizinine bağlantılı ise atlanacak dizin yolu &apos;/home/me/tmp*&apos; olmalıdır, &apos;/usr/home/me/tmp*&apos; değil)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
@@ -2727,11 +2743,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Max disk occupation (%)</source>
-        <translation>En yüksek disk kullanımı (%)</translation>
+        <translation type="vanished">En yüksek disk kullanımı (%)</translation>
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
-        <translation>Bu disk kullanımının yüzdesidir ki bu orana erişildiğinde indeksleme durdurulur (diskin doldurulmasını engellemek için).&lt;br&gt;0 kısıtlama yok demektir (Öntanımlı).</translation>
+        <translation type="vanished">Bu disk kullanımının yüzdesidir ki bu orana erişildiğinde indeksleme durdurulur (diskin doldurulmasını engellemek için).&lt;br&gt;0 kısıtlama yok demektir (Öntanımlı).</translation>
     </message>
     <message>
         <source>No aspell usage</source>
@@ -2781,6 +2797,18 @@ This will help searching very big text  files (ie: log files).</source>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max disk occupation (%, 0 means no limit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>uiPrefsDialogBase</name>
@@ -2802,10 +2830,6 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Hide duplicate results.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Highlight color for query terms</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3109,6 +3133,10 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Show warning when opening temporary file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Highlight CSS style for query terms</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

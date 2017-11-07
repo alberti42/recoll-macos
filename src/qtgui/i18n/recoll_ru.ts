@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0">
+<TS version="2.1">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -13,11 +13,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="obsolete">тексты</translation>
+        <translation type="unfinished">тексты</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="obsolete">таблицы</translation>
+        <translation type="unfinished">таблицы</translation>
     </message>
     <message>
         <source>presentations</source>
@@ -1038,7 +1038,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Index not open</source>
-        <translation>Индекс не открыт</translation>
+        <translation type="vanished">Индекс не открыт</translation>
     </message>
     <message>
         <source>Index query error</source>
@@ -1238,6 +1238,18 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Indexer is running. Can&apos;t access webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> with additional message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Non-fatal indexing message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Types list empty: maybe wait for indexing to progress?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2285,11 +2297,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Aspell init failed. Aspell not installed?</source>
-        <translation>Не получилось инициализировать Aspell.  Он установлен?</translation>
+        <translation type="vanished">Не получилось инициализировать Aspell.  Он установлен?</translation>
     </message>
     <message>
         <source>Aspell expansion error. </source>
-        <translation>Ошибка раскрывания aspell. </translation>
+        <translation type="vanished">Ошибка раскрывания aspell. </translation>
     </message>
     <message>
         <source>Stem expansion</source>
@@ -2389,6 +2401,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>  Unindexed files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List files which could not be indexed (slow)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Spell expansion error. </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3030,11 +3050,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Max disk occupation (%)</source>
-        <translation>Максимальное использование диска (%)</translation>
+        <translation type="vanished">Максимальное использование диска (%)</translation>
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
-        <translation>Процент занятости диска, при котором индексирование будет прервано (во избежание заполнения доступного места).&lt;br&gt;Обычно: 0 (отключает проверку).</translation>
+        <translation type="vanished">Процент занятости диска, при котором индексирование будет прервано (во избежание заполнения доступного места).&lt;br&gt;Обычно: 0 (отключает проверку).</translation>
     </message>
     <message>
         <source>No aspell usage</source>
@@ -3066,7 +3086,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation>Имена каталогов, которые индексирование обойдёт.&lt;br&gt;Может содержать шаблоны.  Обязано подходить к путям, которые видит индексатор (например, если topdirs включает &apos;/home/me&apos; и &apos;/home&apos; является ссылкой на &apos;/usr/home&apos;, то правильная запись должна быть &apos;/home/me/tmp*&apos;, а не &apos;/usr/home/me/tmp*&apos;)</translation>
+        <translation type="vanished">Имена каталогов, которые индексирование обойдёт.&lt;br&gt;Может содержать шаблоны.  Обязано подходить к путям, которые видит индексатор (например, если topdirs включает &apos;/home/me&apos; и &apos;/home&apos; является ссылкой на &apos;/usr/home&apos;, то правильная запись должна быть &apos;/home/me/tmp*&apos;, а не &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
@@ -3091,6 +3111,18 @@ This will help searching very big text  files (ie: log files).</source>
     <message>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
         <translation>&lt;p&gt;Это исключения для механизма Unac, который удаляет всю диакритику и выполняет каноническую декомпозицию. Можно переопределить механизм удаления для вашего языка или добавить декомпозиции (напр., для лигатур). Каждая запись отделяется пробелами и состоит из исходного символа и интерпретации.</translation>
+    </message>
+    <message>
+        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max disk occupation (%, 0 means no limit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3117,7 +3149,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation>Цвет выделения ключевых слов</translation>
+        <translation type="vanished">Цвет выделения ключевых слов</translation>
     </message>
     <message>
         <source>Result list font</source>
@@ -3447,6 +3479,10 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Show warning when opening temporary file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Highlight CSS style for query terms</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="cs_CZ">
+<TS version="2.1" language="cs_CZ">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -13,11 +13,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="obsolete">Texty</translation>
+        <translation type="unfinished">Texty</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="obsolete">Tabulky</translation>
+        <translation type="unfinished">Tabulky</translation>
     </message>
     <message>
         <source>presentations</source>
@@ -1036,7 +1036,7 @@ Chcete spustit dialog s nastavením?</translation>
     </message>
     <message>
         <source>Index not open</source>
-        <translation>Rejstřík neotevřen</translation>
+        <translation type="vanished">Rejstřík neotevřen</translation>
     </message>
     <message>
         <source>Index query error</source>
@@ -1245,6 +1245,18 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>Can&apos;t set synonyms file (parse error?)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> with additional message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Non-fatal indexing message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Types list empty: maybe wait for indexing to progress?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2316,11 +2328,11 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Aspell init failed. Aspell not installed?</source>
-        <translation>Chyba při spuštění Aspellu. Aspell není nainstalován?</translation>
+        <translation type="vanished">Chyba při spuštění Aspellu. Aspell není nainstalován?</translation>
     </message>
     <message>
         <source>Aspell expansion error. </source>
-        <translation>Chyba rozšíření Aspell. </translation>
+        <translation type="vanished">Chyba rozšíření Aspell. </translation>
     </message>
     <message>
         <source>Stem expansion</source>
@@ -2420,6 +2432,14 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>  Unindexed files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List files which could not be indexed (slow)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Spell expansion error. </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2982,7 +3002,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation>Názvy adresářů, které se nebudou rejstříkovat.&lt;br&gt;Může obsahovat zástupné symboly (žolíky). Musí odpovídat cestám, které rejstříkovač vidí (např. pokud v pačátečních adresářích stojí &apos;/home/me&apos; a &apos;/home&apos; je ve skutečnosti odkazem na &apos;/usr/home&apos;, potom by byl správným zápisem skippedPath &apos;/home/me/tmp*&apos; a ne &apos;/usr/home/me/tmp*&apos;)</translation>
+        <translation type="vanished">Názvy adresářů, které se nebudou rejstříkovat.&lt;br&gt;Může obsahovat zástupné symboly (žolíky). Musí odpovídat cestám, které rejstříkovač vidí (např. pokud v pačátečních adresářích stojí &apos;/home/me&apos; a &apos;/home&apos; je ve skutečnosti odkazem na &apos;/usr/home&apos;, potom by byl správným zápisem skippedPath &apos;/home/me/tmp*&apos; a ne &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
@@ -3018,11 +3038,11 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Max disk occupation (%)</source>
-        <translation>Největší obsazení disku (%)</translation>
+        <translation type="vanished">Největší obsazení disku (%)</translation>
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
-        <translation>Jde o procentní podíl využívání disku, kdy rejstříkování selže a zastaví se (kvůli vyhnutí se zaplnění vašeho disku).&lt;br&gt;0 znamená žádné omezení (tato hodnota je nastavena jako výchozí).</translation>
+        <translation type="vanished">Jde o procentní podíl využívání disku, kdy rejstříkování selže a zastaví se (kvůli vyhnutí se zaplnění vašeho disku).&lt;br&gt;0 znamená žádné omezení (tato hodnota je nastavena jako výchozí).</translation>
     </message>
     <message>
         <source>No aspell usage</source>
@@ -3072,6 +3092,18 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
         <translation>&lt;p&gt;Toto jsou výjimky pro mechanismus unac, který ve výchozím nastavení odstraňuje všechny diakritické znaky a nahrazuje je kanonickými obdobami. Toto odstraňování akcentů můžete (v závislosti na vaší řeči) pro některé znaky potlačit a zadat dodatečná nahrazení, např. pro ligatury. V každém mezerou odděleném záznamu je první znak zdrojovým (výchozím) a zbytek je nahrazení.</translation>
     </message>
+    <message>
+        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max disk occupation (%, 0 means no limit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>uiPrefsDialogBase</name>
@@ -3097,7 +3129,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation>Zvýraznit barvu výrazů hledání</translation>
+        <translation type="vanished">Zvýraznit barvu výrazů hledání</translation>
     </message>
     <message>
         <source>Result list font</source>
@@ -3435,6 +3467,10 @@ Výchozí hodnota je 2 (procenta).</translation>
     </message>
     <message>
         <source>Synonyms file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Highlight CSS style for query terms</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

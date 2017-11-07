@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="es">
+<TS version="2.1" language="es">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -13,11 +13,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="obsolete">textos</translation>
+        <translation type="unfinished">textos</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="obsolete">hojas de cálculo</translation>
+        <translation type="unfinished">hojas de cálculo</translation>
     </message>
     <message>
         <source>presentations</source>
@@ -1024,7 +1024,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Index not open</source>
-        <translation>Índice no está abierto</translation>
+        <translation type="vanished">Índice no está abierto</translation>
     </message>
     <message>
         <source>Index query error</source>
@@ -1224,6 +1224,18 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Indexer is running. Can&apos;t access webcache file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> with additional message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Non-fatal indexing message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Types list empty: maybe wait for indexing to progress?</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2238,11 +2250,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Aspell init failed. Aspell not installed?</source>
-        <translation>Inicialización de Aspell falló. Está instalado Aspell?</translation>
+        <translation type="vanished">Inicialización de Aspell falló. Está instalado Aspell?</translation>
     </message>
     <message>
         <source>Aspell expansion error. </source>
-        <translation>Error de expansión de Aspell.</translation>
+        <translation type="vanished">Error de expansión de Aspell.</translation>
     </message>
     <message>
         <source>No expansion found</source>
@@ -2334,6 +2346,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>  Unindexed files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>List files which could not be indexed (slow)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Spell expansion error. </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2726,7 +2746,7 @@ Esto ayuda con las búsquedas de archivos de texto muy grandes (ej: archivos de 
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation>Estos son los nombres de directorios los cuales no se indexan.&lt;br&gt;Puede contener comodines. Debe corresponder a las rutas vistas por el indexador (ej: si los directorios primarios incluyen &apos;/home/me&apos; y &apos;/home&apos; es en realidad un enlace a &apos;/usr/home&apos;, la entrada correcta para directorios omitidos sería &apos;/home/me/tmp*&apos;, no &apos;/usr/home/me/tmp*&apos;)</translation>
+        <translation type="vanished">Estos son los nombres de directorios los cuales no se indexan.&lt;br&gt;Puede contener comodines. Debe corresponder a las rutas vistas por el indexador (ej: si los directorios primarios incluyen &apos;/home/me&apos; y &apos;/home&apos; es en realidad un enlace a &apos;/usr/home&apos;, la entrada correcta para directorios omitidos sería &apos;/home/me/tmp*&apos;, no &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
@@ -2762,11 +2782,11 @@ Esto ayuda con las búsquedas de archivos de texto muy grandes (ej: archivos de 
     </message>
     <message>
         <source>Max disk occupation (%)</source>
-        <translation>Utilización máxima de disco (%)</translation>
+        <translation type="vanished">Utilización máxima de disco (%)</translation>
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
-        <translation>Este es el porcentaje de utilización de disco donde la indexación fallará y se detendrá (para evitar llenarle el disco).&lt;br&gt;0 significa sin límites (valor por defecto).</translation>
+        <translation type="vanished">Este es el porcentaje de utilización de disco donde la indexación fallará y se detendrá (para evitar llenarle el disco).&lt;br&gt;0 significa sin límites (valor por defecto).</translation>
     </message>
     <message>
         <source>No aspell usage</source>
@@ -2816,6 +2836,18 @@ Esto ayuda con las búsquedas de archivos de texto muy grandes (ej: archivos de 
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
         <translation>&lt;p&gt;Estas son excepciones al mecanismo unac, el cual, de forma predeterminada, elimina todos los diacríticos, y realiza una descomposición canónica. Es posible prevenir la eliminación de acentos para algunos caracteres, dependiendo de su lenguaje, y especificar descomposiciones adicionales, por ejemplo, para ligaturas. En cada entrada separada por espacios, el primer caracter es el origen, y el resto es la traducción.</translation>
     </message>
+    <message>
+        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max disk occupation (%, 0 means no limit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>uiPrefsDialogBase</name>
@@ -2841,7 +2873,7 @@ Esto ayuda con las búsquedas de archivos de texto muy grandes (ej: archivos de 
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation>Color de resaltado para términos de búsqueda</translation>
+        <translation type="vanished">Color de resaltado para términos de búsqueda</translation>
     </message>
     <message>
         <source>Result list font</source>
@@ -3167,6 +3199,10 @@ El valor por defecto es 2 (por ciento).</translation>
     </message>
     <message>
         <source>Show warning when opening temporary file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Highlight CSS style for query terms</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

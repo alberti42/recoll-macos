@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="da">
+<TS version="2.1" language="da">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -41,11 +41,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="obsolete">tekster</translation>
+        <translation type="unfinished">tekster</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="obsolete">regneark</translation>
+        <translation type="unfinished">regneark</translation>
     </message>
 </context>
 <context>
@@ -960,7 +960,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Index not open</source>
-        <translation>Indeks ikke åben</translation>
+        <translation type="vanished">Indeks ikke åben</translation>
     </message>
     <message>
         <source>Index query error</source>
@@ -1154,6 +1154,18 @@ Tjek venligst desktopfilen</translation>
     <message>
         <source>Indexer is running. Can&apos;t access webcache file.</source>
         <translation>Indeksering kører. Kan ikke tilgå webcachefil.</translation>
+    </message>
+    <message>
+        <source> with additional message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Non-fatal indexing message: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Types list empty: maybe wait for indexing to progress?</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1985,11 +1997,11 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Aspell init failed. Aspell not installed?</source>
-        <translation>Aspell init mislykkedes. Aspell ikke installeret?</translation>
+        <translation type="vanished">Aspell init mislykkedes. Aspell ikke installeret?</translation>
     </message>
     <message>
         <source>Aspell expansion error. </source>
-        <translation>Aspell udvidelsesfejl. </translation>
+        <translation type="vanished">Aspell udvidelsesfejl. </translation>
     </message>
     <message>
         <source>No expansion found</source>
@@ -2078,6 +2090,14 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     <message>
         <source>  Unindexed files</source>
         <translation>  ikke-indekserede filer</translation>
+    </message>
+    <message>
+        <source>List files which could not be indexed (slow)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Spell expansion error. </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2433,7 +2453,7 @@ Dette vil hjælpe søgning i meget store tekstfiler (dvs.: log-filer).</translat
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation>Dette er navne på mapper, som indeksering ikke går ind i.&lt;br&gt;Kan indeholde jokertegn. Skal stemme overens med stierne, som de ses af indekseringsprogrammet (dvs. hvis de øverste mapper omfatter &apos;/home/mig&apos; og &apos;/home&apos; er et link til &apos;/usr/home&apos;, en korrekt udeladtSti indgang ville være &apos;/home/mig/tmp * &apos;, ikke &apos;/usr/home/mig/tmp * &apos;)</translation>
+        <translation type="vanished">Dette er navne på mapper, som indeksering ikke går ind i.&lt;br&gt;Kan indeholde jokertegn. Skal stemme overens med stierne, som de ses af indekseringsprogrammet (dvs. hvis de øverste mapper omfatter &apos;/home/mig&apos; og &apos;/home&apos; er et link til &apos;/usr/home&apos;, en korrekt udeladtSti indgang ville være &apos;/home/mig/tmp * &apos;, ikke &apos;/usr/home/mig/tmp * &apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
@@ -2469,11 +2489,11 @@ Dette vil hjælpe søgning i meget store tekstfiler (dvs.: log-filer).</translat
     </message>
     <message>
         <source>Max disk occupation (%)</source>
-        <translation>Maks brug af disk (%)</translation>
+        <translation type="vanished">Maks brug af disk (%)</translation>
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
-        <translation>Dette er den procentdel af diskforbrug hvor indeksering vil mislykkes, og stoppe (for at undgå at fylde dit disk).&lt;br&gt;0 betyder ingen grænse (dette er standard).</translation>
+        <translation type="vanished">Dette er den procentdel af diskforbrug hvor indeksering vil mislykkes, og stoppe (for at undgå at fylde dit disk).&lt;br&gt;0 betyder ingen grænse (dette er standard).</translation>
     </message>
     <message>
         <source>No aspell usage</source>
@@ -2507,6 +2527,18 @@ Dette vil hjælpe søgning i meget store tekstfiler (dvs.: log-filer).</translat
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
         <translation>&lt;p&gt;Disse er undtagelser fra unac mekanismen, der, som standard, fjerner alle diakritiske tegn, og udfører kanonisk nedbrydning. Du kan tilsidesætte fjernelse af accent for nogle tegn, afhængigt af dit sprog, og angive yderligere nedbrydninger, f.eks. for ligaturer. I hver indgang adskilt af mellemrum, er det første tegn kildedelen, og resten er oversættelsen.</translation>
     </message>
+    <message>
+        <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Max disk occupation (%, 0 means no limit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>uiPrefsDialogBase</name>
@@ -2532,7 +2564,7 @@ Dette vil hjælpe søgning i meget store tekstfiler (dvs.: log-filer).</translat
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation>Farve for fremhævning af søgeord</translation>
+        <translation type="vanished">Farve for fremhævning af søgeord</translation>
     </message>
     <message>
         <source>Result list font</source>
@@ -2823,6 +2855,10 @@ Standardværdien er 2 (procent).</translation>
     <message>
         <source>Show warning when opening temporary file.</source>
         <translation>Vis advarsel, når der åbnes en midlertidig fil.</translation>
+    </message>
+    <message>
+        <source>Highlight CSS style for query terms</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
