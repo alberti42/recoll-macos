@@ -13,11 +13,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="unfinished">textes</translation>
+        <translation>textes</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="unfinished">feuilles de calcul</translation>
+        <translation>feuilles de calcul</translation>
     </message>
     <message>
         <source>presentations</source>
@@ -1265,15 +1265,15 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source> with additional message: </source>
-        <translation type="unfinished"></translation>
+        <translation>avec le message complémentaire:</translation>
     </message>
     <message>
         <source>Non-fatal indexing message: </source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur d&apos;indexation non fatale:</translation>
     </message>
     <message>
         <source>Types list empty: maybe wait for indexing to progress?</source>
-        <translation type="unfinished"></translation>
+        <translation>Liste vide: attendre que l&apos;indexation progresse ?</translation>
     </message>
 </context>
 <context>
@@ -2476,11 +2476,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>List files which could not be indexed (slow)</source>
-        <translation type="unfinished"></translation>
+        <translation>Lister les fichiers qui n&apos;ont pas pu être traités (lent)</translation>
     </message>
     <message>
         <source>Spell expansion error. </source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur dans les suggestions orthographiques.</translation>
     </message>
 </context>
 <context>
@@ -3196,15 +3196,15 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation type="unfinished"></translation>
+        <translation>Ce sont les chemins des répertoires où l&apos;indexation n&apos;ira pas.&lt;br&gt;Les éléments peuvent contenir des caractères joker. Les entrés doivent correspondre aux chemins vus par l&apos;indexeur (ex.: si topdirs comprend &apos;/home/me&apos; et que &apos;/home&apos; est en fait un lien vers &apos;/usr/home&apos;, un élément correct pour skippedPaths serait &apos;/home/me/tmp*&apos;, et non &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Max disk occupation (%, 0 means no limit)</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilisation disque maximale (%, 0 signifie pas de limite)</translation>
     </message>
     <message>
         <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
-        <translation type="unfinished"></translation>
+        <translation>C&apos;est le pourcentage d&apos;utilisation disque - utilisation totale, et non taille de l&apos;index - où l&apos;indexation s&apos;arretera en erreur.&lt;br&gt;La valeur par défaut de 0 désactive ce test.</translation>
     </message>
 </context>
 <context>
@@ -3573,7 +3573,7 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Highlight CSS style for query terms</source>
-        <translation type="unfinished"></translation>
+        <translation>Style CSS de mise en avant pour les termes de la recherche</translation>
     </message>
 </context>
 </TS>
