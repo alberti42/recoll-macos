@@ -4,14 +4,14 @@ Upstream-Contact: Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr>
 Source: http://www.lesbonscomptes.com/recoll/
 
 Files: *
-Copyright: 2005-2012, Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr>
+Copyright: 2005-2014, Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr>
 License: GPL-2+
 
-Files: Binc IMAP project (bincimapmime/*)
+Files: bincimapmime/*
 Copyright: 2002-2005, Andreas Aardal Hanssen <andreas-binc@bincimap.org>
 License: GPL-2+
 
-Files: filters/rcl* files index/csguess.cpp internfile/htmlparse.cpp
+Files: filters/rcl* internfile/htmlparse.cpp
 Copyright: 2000-2004, Mikio Hirabayashi
 License: GPL-2+
 
@@ -20,7 +20,7 @@ Copyright: J\xfcrgen Hermann, Mike Brown, Christopher Arndt
  <http://chrisarndt.de/en/software/python/colorize.html>
 License: GPL-2+
 
-Files: internfile/htmlparse.cpp mh_html.cpp
+Files: internfile/htmlparse.cpp internfile/mh_html.cpp
 Copyright: 1999-2001, BrightStation PLC,
            2001, Ananova Ltd,
            2002-2004, Olly Betts.
@@ -35,7 +35,7 @@ Copyright: 2004-2005, J.F.Dockes
 License: GPL-2+
 
 Files: debian/*
-Copyright: 2007-2012, Kartik Mistry <kartik@debian.org>
+Copyright: 2007-2014, Kartik Mistry <kartik@debian.org>
 License: GPL-2+
 
 License: GPL-2+
@@ -58,10 +58,6 @@ License: GPL-2+
 
 Files: aspell/*
 Copyright: 2001-2002, by Kevin Atkinson
-License: LGPL-2+
-
-Files: images/text-x-python.png
-Copyright: David Vignoni <http://www.oxygen-icons.org/>
 License: LGPL-2+
 
 License: LGPL-2+
@@ -124,7 +120,7 @@ Files: utils/md5.*
 Copyright: 1991-1992, RSA Data Security, Inc. All rights reserved.
 License: RSA
 
-License:RSA
+License: RSA
  MD5C.C - RSA Data Security, Inc., MD5 message-digest algorithm
  .
  License to copy and use this software is granted provided that it is
@@ -143,52 +139,3 @@ License:RSA
  .
  These notices must be retained in any copies of any part of this documentation
  and/or software.
-
-Files: desktop/xdg-utils-1.0.1/*
-Copyright: 2006, Kevin Krammer <kevin.krammer@gmx.at>,
-                 Jeremy White <jwhite@codeweavers.com>.
-License: MIT
-
-License: MIT
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- .
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
- .
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
-
-Files: index/csguess.cpp
-Copyright: 2000-2004, Mikio Hirabayashi
-License: LGPL-2.1+
-
-License: LGPL-2.1+
- This file is part of QDBM, Quick Database Manager.
- .
- QDBM is free software; you can redistribute it and/or modify it under
- the terms of the GNU Lesser General Public License as published by the
- Free Software Foundation; either version 2.1 of the License or any later
- version.
- .
- QDBM is distributed in the hope that it will be useful, but WITHOUT ANY
- WARRANTY; without even the implied warranty of MERCHANTABILITY or
- FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
- License for more details.
- .
- You should have received a copy of the GNU Lesser General Public License
- along with QDBM; if not, write to the Free Software Foundation, Inc.,
- 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
- .
- On Debian systems, the complete text of the GNU Lesser General Public License
- can be found in `/usr/share/common-licenses/LGPL-2.1' and
- `/usr/share/common-licenses/LGPL-3'.
