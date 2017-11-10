@@ -1,3 +1,17 @@
+recoll (1.23.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * Added function to list files which we failed to index (accessible from
+    the GUI term explorer).
+  * Always process text/html when resulting from a conversion even if the
+    type is excluded by indexedmimetypes or excludedmimetypes.
+  * Small fixes to pdf XMP metadata handling.
+  * Small fixes for supporting Dragonfly BSD.
+  * GUI qss file: force text color to black to avoid white on white text
+    problem with some KDE themes.
+  * Fixed issue on Windows which prevented adding a drive root (e.g. d:/)
+    to topdirs.
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 10 Nov 2017 09:24:00 +0100
+
 recoll (1.23.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * Fix issue with advanced search clause list growth explosion

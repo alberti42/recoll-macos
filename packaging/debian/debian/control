@@ -13,7 +13,6 @@ Build-Depends: autotools-dev,
                libz-dev,
                python-dev (>= 2.6.6-3~),
                python3-all-dev,
-               qt5-default,
                qt5-qmake,
                qtbase5-dev
 X-Python-Version: >= 2.7
@@ -95,9 +94,9 @@ Depends: recollcmd (= ${binary:Version}),
          ${misc:Depends},
          ${python3:Depends},
          ${shlibs:Depends}
-Description: Python extension for recoll
+Description: Python extension for recoll (Python3)
  Personal full text search package which is based on a very strong backend
  (Xapian), for which it provides an easy to use and feature-rich interface.
  .
- This package provides Python extension module for recoll which can be use to
+ This package provides Python3 extension module for recoll which can be use to
  extend recoll such as an Ubuntu Unity Lens.
