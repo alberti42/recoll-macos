@@ -61,13 +61,13 @@ void rememberTempFile(TempFile temp)
 void forgetTempFile(string &fn)
 {
     if (fn.empty())
-	return;
+        return;
     std::unique_lock<std::mutex> locker(thetempfileslock);
     for (vector<TempFile>::iterator it = o_tempfiles.begin();
-	 it != o_tempfiles.end(); it++) {
-	if ((*it) && !fn.compare((*it)->filename())) {
-	    it->reset();
-	}
+         it != o_tempfiles.end(); it++) {
+        if ((*it) && !fn.compare((*it)->filename())) {
+            it->reset();
+        }
     }
     fn.erase();
 }    
@@ -87,34 +87,34 @@ RclMain *mainWindow;
 void startManual(const string& helpindex)
 {
     if (mainWindow)
-	mainWindow->startManual(helpindex);
+        mainWindow->startManual(helpindex);
 }
 
 bool maybeOpenDb(string &reason, bool force, bool *maindberror)
 {
     LOGDEB2("maybeOpenDb: force "  << (force) << "\n" );
     if (!rcldb) {
-	reason = "Internal error: db not created";
-	return false;
+        reason = "Internal error: db not created";
+        return false;
     }
 
     if (force)
-	rcldb->close();
+        rcldb->close();
     rcldb->rmQueryDb("");
     for (list<string>::const_iterator it = prefs.activeExtraDbs.begin();
-	 it != prefs.activeExtraDbs.end(); it++) {
-	LOGDEB("main: adding ["  << *it << "]\n" );
-	rcldb->addQueryDb(*it);
+         it != prefs.activeExtraDbs.end(); it++) {
+        LOGDEB("main: adding ["  << *it << "]\n" );
+        rcldb->addQueryDb(*it);
     }
     Rcl::Db::OpenError error;
     if (!rcldb->isopen() && !rcldb->open(Rcl::Db::DbRO, &error)) {
-	reason = "Could not open database";
-	if (maindberror) {
-	    reason +=  " in " +  theconfig->getDbDir() + 
-		" wait for indexing to complete?";	    
-	    *maindberror = (error == Rcl::Db::DbOpenMainDb) ? true : false;
-	}
-	return false;
+        reason = "Could not open database";
+        if (maindberror) {
+            reason +=  " in " +  theconfig->getDbDir() + 
+                " wait for indexing to complete?";          
+            *maindberror = (error == Rcl::Db::DbOpenMainDb) ? true : false;
+        }
+        return false;
     }
     rcldb->setAbstractParams(-1, prefs.syntAbsLen, prefs.syntAbsCtx);
     return true;
@@ -129,18 +129,18 @@ bool getStemLangs(vector<string>& vlangs)
     // Try from db
     string reason;
     if (maybeOpenDb(reason)) {
-	vlangs = rcldb->getStemLangs();
-	LOGDEB0("getStemLangs: from index: "  << (stringsToString(vlangs)) << "\n" );
-	return true;
+        vlangs = rcldb->getStemLangs();
+        LOGDEB0("getStemLangs: from index: "  << (stringsToString(vlangs)) << "\n" );
+        return true;
     } else {
-	// Cant get the langs from the index. Maybe it just does not
-	// exist yet. So get them from the config
-	string slangs;
-	if (theconfig->getConfParam("indexstemminglanguages", slangs)) {
-	    stringToStrings(slangs, vlangs);
-	    return true;
-	}
-	return false;
+        // Cant get the langs from the index. Maybe it just does not
+        // exist yet. So get them from the config
+        string slangs;
+        if (theconfig->getConfParam("indexstemminglanguages", slangs)) {
+            stringToStrings(slangs, vlangs);
+            return true;
+        }
+        return false;
     }
 }
 
@@ -160,11 +160,11 @@ void applyStyleSheet(const QString& ssfname)
     const char *cfname = (const char *)ssfname.toLocal8Bit();
     LOGDEB0("Applying style sheet: ["  << (cfname) << "]\n" );
     if (cfname && *cfname) {
-	string stylesheet;
-	file_to_string(cfname, stylesheet);
-	qApp->setStyleSheet(QString::fromUtf8(stylesheet.c_str()));
+        string stylesheet;
+        file_to_string(cfname, stylesheet);
+        qApp->setStyleSheet(QString::fromUtf8(stylesheet.c_str()));
     } else {
-	qApp->setStyleSheet(QString());
+        qApp->setStyleSheet(QString());
     }
 }
 
@@ -172,41 +172,43 @@ extern void qInitImages_recoll();
 
 static const char *thisprog;
 
-// ATTENTION A LA COMPATIBILITE AVEC LES OPTIONS DE recollq
+// BEWARE COMPATIBILITY WITH recollq OPTIONS letters
 static int    op_flags;
-#define OPT_h     0x4 
-#define OPT_c     0x20
-#define OPT_q     0x40
-#define OPT_o     0x80
-#define OPT_l     0x100
-#define OPT_f     0x200
-#define OPT_a     0x400
-#define OPT_t     0x800
-#define OPT_v     0x1000
+#define OPT_a 0x1   
+#define OPT_c 0x2       
+#define OPT_f 0x4       
+#define OPT_h 0x8       
+#define OPT_L 0x10      
+#define OPT_l 0x20      
+#define OPT_o 0x40      
+#define OPT_q 0x80      
+#define OPT_t 0x100      
+#define OPT_v 0x200     
 
 static const char usage [] =
-"\n"
-"recoll [-h] [-c <configdir>] [-q query]\n"
-"  -h : Print help and exit\n"
-"  -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
-"  [-o|l|f|a] [-t] -q 'query' : search query to be executed as if entered\n"
-"      into simple search. The default is to interpret the argument as a \n"
-"      query language string (but see modifier options)\n"
-"      In most cases, the query string should be quoted with single-quotes to\n"
-"      avoid shell interpretation\n"
-"     -a : the query will be interpreted as an AND query.\n"
-"     -o : the query will be interpreted as an OR query.\n"
-"     -f : the query will be interpreted as a filename search\n"
-"     -l : the query will be interpreted as a query language string (default)\n"
-"  -t : terminal display: no gui. Results go to stdout. MUST be given\n"
-"       explicitly as -t (not ie, -at), and -q <query> MUST\n"
-"       be last on the command line if this is used.\n"
-"       Use -t -h to see the additional non-gui options\n"
-"recoll -v : print version\n"
-"recoll <url>\n"
-"   This is used to open a recoll url (including an ipath), and called\n"
-"   typically from another search interface like the Unity Dash\n"
-;
+    "\n"
+    "recoll [-h] [-c <configdir>] [-q query]\n"
+    "  -h : Print help and exit\n"
+    "  -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR\n"
+    "  -L <lang> : force language for GUI messages (e.g. -L fr)\n"
+    "  [-o|l|f|a] [-t] -q 'query' : search query to be executed as if entered\n"
+    "      into simple search. The default is to interpret the argument as a \n"
+    "      query language string (but see modifier options)\n"
+    "      In most cases, the query string should be quoted with single-quotes to\n"
+    "      avoid shell interpretation\n"
+    "     -a : the query will be interpreted as an AND query.\n"
+    "     -o : the query will be interpreted as an OR query.\n"
+    "     -f : the query will be interpreted as a filename search\n"
+    "     -l : the query will be interpreted as a query language string (default)\n"
+    "  -t : terminal display: no gui. Results go to stdout. MUST be given\n"
+    "       explicitly as -t (not ie, -at), and -q <query> MUST\n"
+    "       be last on the command line if this is used.\n"
+    "       Use -t -h to see the additional non-gui options\n"
+    "recoll -v : print version\n"
+    "recoll <url>\n"
+    "   This is used to open a recoll url (including an ipath), and called\n"
+    "   typically from another search interface like the Unity Dash\n"
+    ;
 static void
 Usage(void)
 {
@@ -222,11 +224,11 @@ int main(int argc, char **argv)
     // don't do the GUI thing and pass the whole to recollq for
     // command line / pipe usage.
     if (!strcmp(argv[0], "recollq"))
-	    exit(recollq(&theconfig, argc, argv));
+        exit(recollq(&theconfig, argc, argv));
     for (int i = 0; i < argc; i++) {
-	if (!strcmp(argv[i], "-t")) {
-	    exit(recollq(&theconfig, argc, argv));
-	}
+        if (!strcmp(argv[i], "-t")) {
+            exit(recollq(&theconfig, argc, argv));
+        }
     }
 
     QApplication app(argc, argv);
@@ -235,35 +237,39 @@ int main(int argc, char **argv)
     QCoreApplication::setApplicationName("recoll");
 
     string a_config;
+    string a_lang;
     string question;
     string urltoview;
-
+    
     thisprog = argv[0];
     argc--; argv++;
 
     while (argc > 0 && **argv == '-') {
-	(*argv)++;
-	if (!(**argv))
-	    Usage();
-	while (**argv)
-	    switch (*(*argv)++) {
-	    case 'a': op_flags |= OPT_a; break;
-	    case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
-		a_config = *(++argv);
-		argc--; goto b1;
-	    case 'f': op_flags |= OPT_f; break;
-	    case 'h': op_flags |= OPT_h; Usage();break;
-	    case 'l': op_flags |= OPT_l; break;
-	    case 'o': op_flags |= OPT_o; break;
-	    case 'q':	op_flags |= OPT_q; if (argc < 2)  Usage();
-		question = *(++argv);
-		argc--; goto b1;
+        (*argv)++;
+        if (!(**argv))
+            Usage();
+        while (**argv)
+            switch (*(*argv)++) {
+            case 'a': op_flags |= OPT_a; break;
+            case 'c':   op_flags |= OPT_c; if (argc < 2)  Usage();
+                a_config = *(++argv);
+                argc--; goto b1;
+            case 'f': op_flags |= OPT_f; break;
+            case 'h': op_flags |= OPT_h; Usage();break;
+            case 'L':   op_flags |= OPT_L; if (argc < 2)  Usage();
+                a_lang = *(++argv);
+                argc--; goto b1;
+            case 'l': op_flags |= OPT_l; break;
+            case 'o': op_flags |= OPT_o; break;
+            case 'q':   op_flags |= OPT_q; if (argc < 2)  Usage();
+                question = *(++argv);
+                argc--; goto b1;
             case 'v': op_flags |= OPT_v;
                 fprintf(stdout, "%s\n", Rcl::version_string().c_str());
                 return 0;
-	    case 't': op_flags |= OPT_t; break;
-	    default: Usage();
-	    }
+            case 't': op_flags |= OPT_t; break;
+            default: Usage();
+            }
     b1: argc--; argv++;
     }
 
@@ -271,37 +277,42 @@ int main(int argc, char **argv)
     // to the query. This is for the common case recoll -q x y z to
     // avoid needing quoting "x y z"
     if (op_flags & OPT_q)
-	while (argc > 0) {
-	    question += " ";
-	    question += *argv++;
-	    argc--;
-	}
+        while (argc > 0) {
+            question += " ";
+            question += *argv++;
+            argc--;
+        }
 
     // Else the remaining argument should be an URL to be opened
     if (argc == 1) {
-	urltoview = *argv++;argc--;
-	if (urltoview.compare(0, 7, cstr_fileu)) {
-	    Usage();
-	}
+        urltoview = *argv++;argc--;
+        if (urltoview.compare(0, 7, cstr_fileu)) {
+            Usage();
+        }
     } else if (argc > 0)
-	Usage();
+        Usage();
 
 
     string reason;
     theconfig = recollinit(recollCleanup, 0, reason, &a_config);
     if (!theconfig || !theconfig->ok()) {
-	QString msg = "Configuration problem: ";
-	msg += QString::fromUtf8(reason.c_str());
-	QMessageBox::critical(0, "Recoll",  msg);
-	exit(1);
+        QString msg = "Configuration problem: ";
+        msg += QString::fromUtf8(reason.c_str());
+        QMessageBox::critical(0, "Recoll",  msg);
+        exit(1);
     }
     //    fprintf(stderr, "recollinit done\n");
 
     // Translations for Qt standard widgets
-    QString slang = QLocale::system().name().left(2);
+    QString slang;
+    if (op_flags & OPT_L) {
+        slang = u8s2qs(a_lang);
+    } else {
+        slang = QLocale::system().name().left(2);
+    }
     QTranslator qt_trans(0);
     qt_trans.load(QString("qt_%1").arg(slang), 
-		  QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+                  QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     app.installTranslator(&qt_trans);
 
     // Translations for Recoll
@@ -315,9 +326,12 @@ int main(int argc, char **argv)
     string historyfile = path_cat(theconfig->getConfDir(), "history");
     g_dynconf = new RclDynConf(historyfile);
     if (!g_dynconf || !g_dynconf->ok()) {
-	QString msg = app.translate("Main", "\"history\" file is damaged or un(read)writeable, please check or remove it: ") + QString::fromLocal8Bit(historyfile.c_str());
-	QMessageBox::critical(0, "Recoll",  msg);
-	exit(1);
+        QString msg = app.translate
+            ("Main",
+             "\"history\" file is damaged or un(read)writeable, please check "
+             "or remove it: ") + QString::fromLocal8Bit(historyfile.c_str());
+        QMessageBox::critical(0, "Recoll",  msg);
+        exit(1);
     }
     g_advshistory = new AdvSearchHist;
 
@@ -326,7 +340,7 @@ int main(int argc, char **argv)
     //    fprintf(stderr, "Settings done\n");
 
     if (!prefs.qssFile.isEmpty()) {
-	applyStyleSheet(prefs.qssFile);
+        applyStyleSheet(prefs.qssFile);
     }
     QIcon icon;
     icon.addFile(QString::fromUtf8(":/images/recoll.png"));
@@ -337,16 +351,16 @@ int main(int argc, char **argv)
     mainWindow = &w;
 
     if (prefs.mainwidth > 100) {
-	QSize s(prefs.mainwidth, prefs.mainheight);
-	mainWindow->resize(s);
+        QSize s(prefs.mainwidth, prefs.mainheight);
+        mainWindow->resize(s);
     }
 
     string dbdir = theconfig->getDbDir();
     if (dbdir.empty()) {
-	QMessageBox::critical(0, "Recoll",
-			      app.translate("Main", 
-					  "No db directory in configuration"));
-	exit(1);
+        QMessageBox::critical(
+            0, "Recoll",
+            app.translate("Main", "No db directory in configuration"));
+        exit(1);
     }
 
     rcldb = new Rcl::Db(theconfig);
@@ -362,22 +376,22 @@ int main(int argc, char **argv)
     mainWindow->sSearch->searchTypCMB->setCurrentIndex(prefs.ssearchTyp);
     mainWindow->sSearch->searchTypeChanged(prefs.ssearchTyp);
     if (op_flags & OPT_q) {
-	SSearch::SSearchType stype;
-	if (op_flags & OPT_o) {
-	    stype = SSearch::SST_ANY;
-	} else if (op_flags & OPT_f) {
-	    stype = SSearch::SST_FNM;
-	} else if (op_flags & OPT_a) {
-	    stype = SSearch::SST_ALL;
-	} else {
-	    stype = SSearch::SST_LANG;
-	}
-	mainWindow->sSearch->searchTypCMB->setCurrentIndex(int(stype));
-	mainWindow->
-	    sSearch->setSearchString(QString::fromLocal8Bit(question.c_str()));
+        SSearch::SSearchType stype;
+        if (op_flags & OPT_o) {
+            stype = SSearch::SST_ANY;
+        } else if (op_flags & OPT_f) {
+            stype = SSearch::SST_FNM;
+        } else if (op_flags & OPT_a) {
+            stype = SSearch::SST_ALL;
+        } else {
+            stype = SSearch::SST_LANG;
+        }
+        mainWindow->sSearch->searchTypCMB->setCurrentIndex(int(stype));
+        mainWindow->
+            sSearch->setSearchString(QString::fromLocal8Bit(question.c_str()));
     } else if (!urltoview.empty()) {
-	LOGDEB("MAIN: got urltoview ["  << (urltoview) << "]\n" );
-	mainWindow->setUrlToView(QString::fromLocal8Bit(urltoview.c_str()));
+        LOGDEB("MAIN: got urltoview ["  << (urltoview) << "]\n" );
+        mainWindow->setUrlToView(QString::fromLocal8Bit(urltoview.c_str()));
     }
     return app.exec();
 }
@@ -388,21 +402,21 @@ QString myGetFileName(bool isdir, QString caption, bool filenosave)
     QFileDialog dialog(0, caption);
 
     if (isdir) {
-	dialog.setFileMode(QFileDialog::Directory);
-	dialog.setOptions(QFileDialog::ShowDirsOnly);
+        dialog.setFileMode(QFileDialog::Directory);
+        dialog.setOptions(QFileDialog::ShowDirsOnly);
     } else {
-	dialog.setFileMode(QFileDialog::AnyFile);
-	if (filenosave)
-	    dialog.setAcceptMode(QFileDialog::AcceptOpen);
-	else
-	    dialog.setAcceptMode(QFileDialog::AcceptSave);
+        dialog.setFileMode(QFileDialog::AnyFile);
+        if (filenosave)
+            dialog.setAcceptMode(QFileDialog::AcceptOpen);
+        else
+            dialog.setAcceptMode(QFileDialog::AcceptSave);
     }
     dialog.setViewMode(QFileDialog::List);
     QFlags<QDir::Filter> flags = QDir::NoDotAndDotDot | QDir::Hidden; 
     if (isdir)
-	flags |= QDir::Dirs;
+        flags |= QDir::Dirs;
     else 
-	flags |= QDir::Dirs | QDir::Files;
+        flags |= QDir::Dirs | QDir::Files;
     dialog.setFilter(flags);
 
     if (dialog.exec() == QDialog::Accepted) {

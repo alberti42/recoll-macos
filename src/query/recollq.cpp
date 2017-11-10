@@ -137,10 +137,10 @@ Usage(void)
     exit(1);
 }
 
-// ATTENTION A LA COMPATIBILITE AVEC LES OPTIONS DE recoll
+// BEWARE COMPATIBILITy WITH recoll OPTIONS letters
 // -q, -t and -l are accepted and ignored
 // -a/f/o -c have the same meaning
-// -h is not used
+// -h and -v -> Usage()
 
 static int     op_flags;
 #define OPT_A     0x1
