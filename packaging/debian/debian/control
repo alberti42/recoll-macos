@@ -23,7 +23,7 @@ Standards-Version: 3.9.8
 
 Package: recoll
 Architecture: any
-Depends: recollgui, recollcmd
+Depends: recollgui, recollcmd, ${misc:Depends}
 Description: Personal full text search package with a Qt GUI
  This package is a personal full text search package is based on a very strong
  backend (Xapian), for which it provides an easy to use and feature-rich

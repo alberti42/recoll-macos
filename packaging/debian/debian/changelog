@@ -10,7 +10,7 @@ recoll (1.23.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
     problem with some KDE themes.
   * Fixed issue on Windows which prevented adding a drive root (e.g. d:/)
     to topdirs.
- -- Jean-Francois Dockes <jf@dockes.org>  Mon, 10 Nov 2017 09:24:00 +0100
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 10 Nov 2017 09:24:00 +0100
 
 recoll (1.23.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 

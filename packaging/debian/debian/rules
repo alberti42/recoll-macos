@@ -74,7 +74,6 @@ binary-arch: build install
 	dh_testroot
 	dh_installchangelogs ChangeLog
 	dh_installdocs README
-	dh_installmenu
 	dh_installman
 	dh_install --sourcedir=debian/tmp
 	dh_makeshlibs
