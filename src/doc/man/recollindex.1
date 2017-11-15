@@ -40,40 +40,25 @@ recollindex \- indexing command for the Recoll full text search system
 .B \-n|-k
 ]
 .br
-.B recollindex 
+.B recollindex
 [
 .B \-c
 <cd>
 ]
-.B \-i 
+.B \-i
 [
-.B \-Z
-]
-[
-.B \-k
-]
-[
-.B \-f
+.B \-Z \-k \-f \-P
 ]
 [<path [path ...]>]
 .br
 .B recollindex 
 [
 .B \-c
-<configdir>
+<cd>
 ]
 .B \-r
 [
-.B \-Z
-]
-[
-.B \-K
-]
-[
-.B \-e
-]
-[
-.B \-f
+.B \-Z \-K \-e \-f
 ]
 [
 .B \-p 
@@ -121,8 +106,7 @@ pattern
 .SH DESCRIPTION
 The
 .B recollindex
-utility allows you to perform indexing operations for the Recoll text
-search system.
+command is the Recoll indexer.
 .PP
 As indexing can sometimes take a long time, the command can be interrupted
 by sending an interrupt (Ctrl-C, SIGINT) or terminate (SIGTERM)
@@ -207,12 +191,14 @@ configuration variables will be used, so that some files may be
 skipped. You can tell recollindex to ignore skippedPaths and skippedNames
 by setting the 
 .B
-\-f 
-option. This allows fully custom file selection for a given subtree,
+\-f option. This allows fully custom file selection for a given subtree,
 for which you would add the top directory to skippedPaths, and use any
 custom tool to generate the file list (ie: a tool from a source code
-control system). 
-.PP
+control system). When run this way, the indexer normally does not perform
+the deleted files purge pass, because it cannot be sure to have seen all
+the existing files. You can force a purge pass with
+.B
+\-P.
 .PP
 .B recollindex \-e
 will erase data for individual files from the database. The stem expansion

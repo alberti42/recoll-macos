@@ -211,6 +211,9 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
         }
     }
 #endif
+    if (flag & IxFDoPurge) {
+        m_db.purge();
+    }
     // The close would be done in our destructor, but we want status here
     if (!m_db.close()) {
 	LOGERR("ConfIndexer::index: error closing database in " <<
