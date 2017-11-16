@@ -1,3 +1,15 @@
+recoll (1.23.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * Restore search mode when loading saved simple search.
+  * Add option -P to recollindex to force purge with -i.
+  * Split package into non-gui/gui subpackages.
+  * Add -L option to GUI for forcing messages language.
+  * Removed 'bin' from default skippedNames.
+  * Improve robustness of email header parser against encoding errors.
+  * email: fix additional header indexing.
+  * Restable: fix popup menu (show dups would open parent folder).
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 16 Nov 2017 09:33:00 +0100
+
 recoll (1.23.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * Added function to list files which we failed to index (accessible from

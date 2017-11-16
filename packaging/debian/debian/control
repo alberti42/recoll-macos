@@ -49,6 +49,8 @@ Description: Personal full text search package with a Qt GUI
 
 Package: recollcmd
 Architecture: any
+Breaks: recoll (<< 1.23.4)
+Replaces: recoll (<< 1.23.4)
 Depends: python, ${misc:Depends}, ${shlibs:Depends}
 Recommends: python-recoll, aspell, xdg-utils, xsltproc,
             python-libxml2, python-libxslt1
@@ -67,6 +69,8 @@ Description: Command line programs for recoll
  
 Package: recollgui
 Architecture: any
+Breaks: recoll (<< 1.23.4)
+Replaces: recoll (<< 1.23.4)
 Depends: recollcmd (= ${binary:Version}),
          ${misc:Depends},
          ${shlibs:Depends}

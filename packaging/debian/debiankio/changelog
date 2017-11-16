@@ -1,3 +1,9 @@
+kio-recoll (1.23.4-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * Follow main package
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 16 Nov 2017 15:41:00 +0100
+
 kio-recoll (1.23.2-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * Fix crash in text splitter

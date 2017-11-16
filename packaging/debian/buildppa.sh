@@ -4,10 +4,11 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.23.2
-LENSVERS=1.19.10.3543
+PPA_KEYID=D38B9201
+
+RCLVERS=1.23.4
 SCOPEVERS=1.20.2.4
-PPAVERS=2
+PPAVERS=3
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
@@ -19,7 +20,7 @@ case $RCLVERS in
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-#PPANAME=recollexp-ppa
+# PPANAME=recollexp-ppa
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
@@ -45,8 +46,8 @@ debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
 # No new releases for trusty either because of risk of kio compat (kio
 # wont build)
-series="xenial yakkety zesty artful"
-series=artful
+series="xenial zesty artful bionic"
+series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -68,7 +69,7 @@ for series in $series ; do
       -e s/PPAVERS/${PPAVERS}/g \
       < ${debdir}/changelog > recoll-${RCLVERS}/debian/changelog
 
-  (cd recoll-${RCLVERS};debuild -S -sa)  || break
+  (cd recoll-${RCLVERS};debuild -k$PPA_KEYID -S -sa)  || break
 
   dput $PPANAME recoll_${RCLVERS}-1~ppa${PPAVERS}~${series}1_source.changes
 done
@@ -77,8 +78,8 @@ done
 
 ### KIO. Does not build on trusty from recoll 1.23 because of the need
 ### for c++11
-series="xenial yakkety zesty artful"
-series=
+series="xenial zesty artful bionic"
+#series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -104,50 +105,16 @@ for svers in $series ; do
   sed -e s/SERIES/$svers/g \
       -e s/PPAVERS/${PPAVERS}/g \
           < ${debdir}/changelog > $topdir/debian/changelog ;
-  (cd $topdir;debuild -S -sa) || exit 1
+  (cd $topdir;debuild -k$PPA_KEYID -S -sa) || exit 1
 
   dput $PPANAME kio-recoll_${RCLVERS}-0~ppa${PPAVERS}~${svers}1_source.changes
 
 done
 
-### Unity Lens
-series="precise"
-series=
-
-debdir=debianunitylens
-topdir=recoll-lens-${LENSVERS}
-if test "X$series" != X ; then
-    if test ! -f recoll-lens_${LENSVERS}.orig.tar.gz ; then 
-        if test -f recoll-lens-${LENSVERS}.tar.gz ; then
-            mv recoll-lens-${LENSVERS}.tar.gz \
-                recoll-lens_${LENSVERS}.orig.tar.gz
-        else
-            fatal "Can find neither recoll-lens_${LENSVERS}.orig.tar.gz nor " \
-                "recoll-lens-${LENSVERS}.tar.gz"
-        fi
-    fi
-    test -d $topdir ||  tar xvzf recoll-lens_${LENSVERS}.orig.tar.gz || exit 1
-fi
-
-for series in $series ; do
-
-   rm -rf $topdir/debian
-   cp -rp ${debdir}/ $topdir/debian || exit 1
-
-  sed -e s/SERIES/$series/g \
-      -e s/PPAVERS/${PPAVERS}/g \
-          < ${debdir}/changelog > $topdir/debian/changelog ;
-
-  (cd $topdir;debuild -S -sa) || break
-
-  dput $PPANAME \
-      recoll-lens_${LENSVERS}-1~ppa${PPAVERS}~${series}1_source.changes
-
-done
 
 ### Unity Scope
-series="trusty xenial yakkety zesty artful"
-#series=
+series="trusty xenial  zesty artful bionic"
+series=
 
 debdir=debianunityscope
 if test ! -d ${debdir}/ ; then
@@ -183,7 +150,7 @@ for series in $series ; do
       -e s/PPAVERS/${PPAVERS}/g \
           < ${debdir}/changelog > $topdir/debian/changelog ;
 
-  (cd $topdir;debuild -S -sa) || break
+  (cd $topdir;debuild -k$PPA_KEYID -S -sa) || break
 
   dput $PPANAME \
       unity-scope-recoll_${SCOPEVERS}-1~ppa${PPAVERS}~${series}1_source.changes
