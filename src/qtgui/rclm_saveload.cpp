@@ -115,14 +115,14 @@ void RclMain::loadSavedQuery()
         return;
     }
 
-    // Try to parse as SearchData
-    std::shared_ptr<SearchData> sd = xmlToSearchData(xml);
+    // Try to parse as advanced search SearchData
+    std::shared_ptr<SearchData> sd = xmlToSearchData(xml, false);
     if (sd) {
         showAdvSearchDialog();
         asearchform->fromSearch(sd);
         return;
     }
-
+    LOGDEB("loadSavedQuery: Not advanced search. Parsing as simple search\n");
     // Try to parse as Simple Search
     SSearchDef sdef;
     if (xmlToSSearch(xml, sdef)) {

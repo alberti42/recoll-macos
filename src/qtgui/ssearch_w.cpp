@@ -364,7 +364,10 @@ bool SSearch::fromXML(const SSearchDef& fxml)
             tr("Autophrase is unset but it was set for stored query"));
     }
     setSearchString(QString::fromUtf8(fxml.text.c_str()));
-    searchTypCMB->setCurrentIndex(prefs.ssearchTyp);
+    // We used to use prefs.ssearchTyp here. Not too sure why?
+    // Minimize user surprise factor ? Anyway it seems cleaner to
+    // restore the saved search type
+    searchTypCMB->setCurrentIndex(fxml.mode);
     return true;
 }
 

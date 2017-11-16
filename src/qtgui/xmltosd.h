@@ -63,9 +63,10 @@
 #include <memory>
 #include "searchdata.h"
 
-// Parsing XML from advanced search history or saved advanced search to to
-// SearchData structure:
-std::shared_ptr<Rcl::SearchData> xmlToSearchData(const string& xml);
+// Parsing XML from advanced search history or saved advanced search into
+// a SearchData structure:
+std::shared_ptr<Rcl::SearchData> xmlToSearchData(const string& xml,
+                                                 bool complain = true);
 
 // Parsing XML from saved simple search to ssearch parameters
 struct SSearchDef {

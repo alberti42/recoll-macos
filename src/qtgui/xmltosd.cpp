@@ -88,7 +88,7 @@ bool SDHXMLHandler::startElement(const QString & /* namespaceURI */,
         // either if type is absent, or if it's searchdata
         int idx = attrs.index("type");
         if (idx >= 0 && attrs.value(idx).compare("searchdata")) {
-            LOGDEB("XMLTOSD: bad type\n");
+            LOGDEB("XMLTOSD: bad type: " << qs2utf8s(attrs.value(idx)) << endl);
 	    return false;
 	}
 	resetTemps();
@@ -206,7 +206,8 @@ bool SDHXMLHandler::endElement(const QString & /* namespaceURI */,
 }
 
 
-std::shared_ptr<Rcl::SearchData> xmlToSearchData(const string& xml)
+std::shared_ptr<Rcl::SearchData> xmlToSearchData(const string& xml,
+                                                 bool verbose)
 {
     SDHXMLHandler handler;
     QXmlSimpleReader reader;
@@ -217,7 +218,9 @@ std::shared_ptr<Rcl::SearchData> xmlToSearchData(const string& xml)
     xmlInputSource.setData(QString::fromUtf8(xml.c_str()));
 
     if (!reader.parse(xmlInputSource) || !handler.isvalid) {
-        LOGERR("xmlToSearchData: parse failed for ["  << xml << "]\n");
+        if (verbose) {
+            LOGERR("xmlToSearchData: parse failed for ["  << xml << "]\n");
+        }
         return std::shared_ptr<SearchData>();
     }
     return handler.sd;
@@ -271,8 +274,13 @@ bool SSHXMLHandler::startElement(const QString & /* namespaceURI */,
     if (qName == "SD") {
         // Simple search saved data has a type='ssearch' attribute.
         int idx = attrs.index("type");
-        if (idx < 0 && attrs.value(idx).compare("ssearch")) {
-            LOGDEB("XMLTOSSS: bad type\n");
+        if (idx < 0 || attrs.value(idx).compare("ssearch")) {
+            if (idx < 0) {
+                LOGDEB("XMLTOSSS: bad type\n");
+            } else {
+                LOGDEB("XMLTOSSS: bad type: " << qs2utf8s(attrs.value(idx))
+                       << endl);
+            }
             return false;
         }
 	resetTemps();
