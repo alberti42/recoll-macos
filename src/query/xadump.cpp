@@ -43,7 +43,6 @@ static string usage =
     "-e <output encoding>\n"
     " -i docid -D : get document data for docid\n"
     " -i docid -X : delete document docid\n"
-    " -i docid -b : 'rebuild' document from term positions\n"
     " -i docid -T : term list for doc docid\n"
     " -i docid -r : reconstructed text for docid\n"
     " -t term -E  : term existence test\n"
@@ -73,14 +72,12 @@ static int        op_flags;
 #define OPT_P     0x8
 #define OPT_T     0x10
 #define OPT_X     0x20
-#define OPT_b     0x40
 #define OPT_d	  0x80 
 #define OPT_e     0x100
 #define OPT_f     0x200
 #define OPT_i     0x400
 #define OPT_n     0x800
 #define OPT_q     0x1000
-#define OPT_s     0x2000
 #define OPT_t     0x4000
 #define OPT_x     0x8000
 #define OPT_l     0x10000
@@ -141,7 +138,7 @@ void wholedoc(Xapian::Database* db, int docid)
              pos != db->positionlist_end(docid, *term); pos++) {
             if (buf.size() < *pos)
                 buf.resize(2*((*pos)+1));
-            buf[(*pos)] = *term;
+            buf[(*pos)] = detailstring(*term);
         }
     }
     for (vector<string>::iterator it = buf.begin(); it != buf.end(); it++) {
@@ -167,7 +164,6 @@ int main(int argc, char **argv)
 	    Usage();
 	while (**argv)
 	    switch (*(*argv)++) {
-	    case 'b':   op_flags |= OPT_b; break;
 	    case 'D':	op_flags |= OPT_D; break;
 	    case 'd':	op_flags |= OPT_d; if (argc < 2)  Usage();
 		dbdir = *(++argv);
@@ -188,8 +184,7 @@ int main(int argc, char **argv)
 	    case 'n':	op_flags |= OPT_n; break;
 	    case 'P':	op_flags |= OPT_P; break;
 	    case 'q':	op_flags |= OPT_q; break;
-	    case 'r':	op_flags |= OPT_r; break;
-	    case 's':	op_flags |= OPT_s; break;
+	    case 'r':	case 'b': op_flags |= OPT_r; break;
 	    case 'T':	op_flags |= OPT_T; break;
 	    case 't':	op_flags |= OPT_t; if (argc < 2)  Usage();
 		aterm = *(++argv);
@@ -266,19 +261,6 @@ int main(int argc, char **argv)
 		    cout << op << detailstring(s) << cl << endl;
 		}
 	    }
-	} else if (op_flags & OPT_s) {
-	    for (unsigned int docid = 1;
-		 docid < db->get_lastdocid(); docid++) {
-		// cout << docid << ": ";
-		Xapian::TermIterator term;
-		for (term = db->termlist_begin(docid); 
-		     term != db->termlist_end(docid);term++) {
-		    cout << detailstring(*term) << " ";
-		    Xapian::Document doc = db->get_document(docid);
-		    string data = doc.get_data();
-		    cout << data;
-		}
-	    }
 	} else if (op_flags & OPT_D) {
 	    Xapian::Document doc = db->get_document(docid);
 	    string data = doc.get_data();
@@ -296,25 +278,6 @@ int main(int argc, char **argv)
 		Xapian::WritableDatabase wdb(dbdir,  Xapian::DB_OPEN);
 		cout << "Deleting" << endl;
 		wdb.delete_document(docid);
-	    }
-	} else if (op_flags & OPT_b) {
-	    if (!(op_flags & OPT_i))
-		Usage();
-	    vector<string> buf;
-	    Xapian::TermIterator term;
-	    for (term = db->termlist_begin(docid);
-		 term != db->termlist_end(docid); term++) {
-		Xapian::PositionIterator pos;
-		for (pos = db->positionlist_begin(docid, *term); 
-		     pos != db->positionlist_end(docid, *term); pos++) {
-		    if (buf.size() <= *pos)
-			buf.resize((*pos)+100);
-		    buf[(*pos)] = detailstring(*term);
-		}
-	    }
-	    for (vector<string>::iterator it = buf.begin(); it != buf.end();
-		 it++) {
-		cout << *it << " ";
 	    }
 	} else if (op_flags & OPT_P) {
 	    Xapian::PostingIterator doc;
