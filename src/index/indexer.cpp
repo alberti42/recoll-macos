@@ -125,6 +125,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
     }
 #ifndef DISABLE_WEB_INDEXER
     if (m_doweb && (typestorun & IxTWebQueue)) {
+        runWebFilesMoverScript(m_config);
         deleteZ(m_webindexer);
         m_webindexer = new BeagleQueueIndexer(m_config, &m_db, m_updater);
         if (!m_webindexer || !m_webindexer->index()) {

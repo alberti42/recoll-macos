@@ -464,15 +464,22 @@ bool startMonitor(RclConfig *conf, int opts)
     bool timedout;
     time_t lastauxtime = time(0);
     time_t lastixtime = lastauxtime;
+    time_t lastmovetime = 0;
     bool didsomething = false;
     list<string> modified;
     list<string> deleted;
 
-    ;
-    
-    // Set a relatively short timeout for better monitoring of exit requests
     while (true) {
+        time_t now = time(0);
+        if (now - lastmovetime > ixinterval) {
+            lastmovetime = now;
+            runWebFilesMoverScript(conf);
+        }
+
         {
+            // Wait for event or timeout.
+            // Set a relatively short timeout for better monitoring of
+            // exit requests.
             std::unique_lock<std::mutex> lock = rclEQ.wait(2, &timedout);
 
             // x11IsAlive() can't be called from ok() because both
@@ -525,9 +532,9 @@ bool startMonitor(RclConfig *conf, int opts)
             }
         }
 
+        now = time(0);
 	// Process. We don't do this every time but let the lists accumulate
         // a little, this saves processing. Start at once if list is big.
-        time_t now = time(0);
         if (expeditedIndexingRequested(conf) ||
 	    (now - lastixtime > ixinterval) || 
 	    (deleted.size() + modified.size() > 20)) {
@@ -553,8 +560,9 @@ bool startMonitor(RclConfig *conf, int opts)
         }
 
 	// Recreate the auxiliary dbs every hour at most.
-	if (didsomething && time(0) - lastauxtime > auxinterval) {
-	    lastauxtime = time(0);
+        now = time(0);
+	if (didsomething && now - lastauxtime > auxinterval) {
+	    lastauxtime = now;
 	    didsomething = false;
 	    if (!createAuxDbs(conf)) {
 		// We used to bail out on error here. Not anymore,

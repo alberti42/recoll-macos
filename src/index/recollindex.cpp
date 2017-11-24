@@ -337,6 +337,48 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
     return true;
 }
 
+bool runWebFilesMoverScript(RclConfig *config)
+{
+    static string downloadsdir;
+    if (downloadsdir.empty()) {
+        if (!config->getConfParam("downloadsdir", downloadsdir)) {
+            downloadsdir = path_tildexpand("~/Downloads");
+        }
+    }
+    static string cmdpath;
+    if (cmdpath.empty()) {
+        cmdpath = config->findFilter("recoll-we-move-files.py");
+        if (cmdpath.empty()) {
+            LOGERR("runWFMoverScript: recoll-we-move-files.py not found\n");
+            return false;
+        }
+    }
+
+    /* Arrange to not actually run the script if the directory did not change */
+    static time_t dirmtime;
+    time_t ndirmtime = 0;
+    struct stat st;
+    if (::stat(downloadsdir.c_str(), &st) == 0) {
+        ndirmtime = st.st_mtime;
+    }
+    /* If stat fails, presumably Downloads does not exist or is not
+       accessible, dirmtime and mdirmtime stay at 0, and we never
+       execute the script, which is the right thing. */
+    if (dirmtime != ndirmtime) {
+        /* The script is going to change the directory, so updating
+           dirmtime before it runs means that we are going to execute
+           it one time too many (it will run without doing anything),
+           but we can't set the mtime to after the run in case files
+           are created during the run. */
+        dirmtime = ndirmtime;
+        ExecCmd cmd;
+        int status = cmd.doexec(cmdpath, {});
+        return status == 0;
+    }
+    return true;
+}
+
+
 static const char *thisprog;
 
 static const char usage [] =

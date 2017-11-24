@@ -965,27 +965,46 @@ thrQSizes = -1 -1 -1
     </sect1>
 
     <sect1 id="RCL.INDEXING.WEBQUEUE">
-      <title>Indexing WEB pages you wisit</title>
+      <title>Indexing the WEB pages which you wisit.</title>
 
       <para>With the help of a <application>Firefox</application>
       extension, &RCL; can index the Internet pages that you visit. The
-      extension was initially designed for the
-      <application>Beagle</application> indexer, but it has recently be
-      renamed and better adapted to &RCL;.</para>
+      extension has a long history: it was initially designed for the
+      <application>Beagle</application> indexer, then adapted to &RCL; and
+      the <application>Firefox</application> <application>XUL</application>
+      API. A new version of the addon has been written to work with the
+      <application>WebExtensions</application> API, which is the only one
+      supported after <application>Firefox</application> version 57.</para>
 
       <para>The extension works by copying visited WEB pages to an indexing
-         queue directory, which &RCL; then processes, indexing the data,
-         storing it into a local cache, then removing the file from the
-         queue.</para>
+      queue directory, which &RCL; then processes, indexing the data,
+      storing it into a local cache, then removing the file from the
+      queue.</para>
 
-      <para>This feature can be enabled in the GUI 
-        <guilabel>Index configuration</guilabel>
-	panel, or by editing the configuration file (set
-	<varname>processwebqueue</varname> to 1).</para>
+      <para>Because the WebExtensions API introduces more constraints to
+      what extensions can do, the new version works with one
+      more step: the files are first created in the browser default
+      downloads location (typically <filename>$HOME/Downloads</filename> ),
+      then moved by a script in the old queue location. The script is
+      automatically executed by the &RCL; indexer versions 1.23.5 and
+      newer. It could conceivably be executed independantly to make the new
+      browser extension compatible with an older &RCL; version (the script
+      is named <command>recoll-we-move-files.py</command>).</para>
+
+      <note><para>For the WebExtensions-based version to work, it is
+      necessary to set the <literal>webdownloadsdir</literal> value in the
+      configuration if it was changed from the default
+      <filename>$HOME/Downloads</filename> in the browser
+      preferences.</para></note>
+      
+      <para>The visited WEB pages indexing feature can be enabled in the
+      GUI <guilabel>Index configuration</guilabel> panel, or by editing the
+      configuration file (set <varname>processwebqueue</varname> to
+      1).</para> 
 
       <para>A current pointer to the extension can be found, along with
-        up-to-date instructions, on the
-        <ulink url="&FAQS;IndexWebHistory">Recoll wiki</ulink>.</para>
+      up-to-date instructions, on the
+      <ulink url="&FAQS;IndexWebHistory">Recoll wiki</ulink>.</para>
 
       <para>A copy of the indexed WEB pages is retained by Recoll in a
       local cache (from which previews can be fetched). The cache size can
@@ -1020,8 +1039,8 @@ thrQSizes = -1 -1 -1
           </varlistentry>
           <varlistentry>
             <term>charset</term>
-            <listitem>If set, this defines the file character set
-              (mostly useful for plain text files).</listitem>
+            <listitem><para>If set, this defines the file character set
+              (mostly useful for plain text files).</para></listitem>
           </varlistentry>
         </variablelist>
       </para>

@@ -636,6 +636,7 @@ filters/rclxml.py \
 filters/rclxmp.py \
 filters/rclxslt.py \
 filters/rclzip \
+filters/recoll-we-move-files.py \
 filters/ppt-dump.py \
 filters/xls-dump.py \
 filters/xlsxmltocsv.py \
@@ -645,6 +646,7 @@ python/recoll/recoll/rclconfig.py
 install-data-hook: 
 	(cd $(DESTDIR)/$(filterdir); \
 	chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py hotrecoll.py; \
+	chmod a+x recoll-we-move-files.py; \
 	chmod 0644 msodump.zip rclexecm.py rcllatinstops.zip rclconfig.py) 
 
 if MAKEUSERDOC

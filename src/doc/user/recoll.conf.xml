@@ -83,7 +83,7 @@ be ignored inside zip archives. This is used directly by
 the zip handler, and has a function similar to skippedNames, but works
 independantly. Can be redefined for subdirectories. Supported by recoll
 1.20 and newer. See
-https://www.lesbonscomptes.com/recoll/faqsandhowtos/Filtering%20out%20Zip%20archive%20members
+https://www.lesbonscomptes.com/recoll/faqsandhowtos/FilteringOutZipArchiveMembers.html
 </para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.FOLLOWLINKS">
 <term><varname>followLinks</varname></term>
@@ -362,9 +362,17 @@ Default: 40 MB.
 Reducing the size will not physically truncate the file.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.WEBQUEUEDIR">
 <term><varname>webqueuedir</varname></term>
-<listitem><para>The path to the Web indexing queue. This is
-hard-coded in the plugin as ~/.recollweb/ToIndex so there should be no
-need or possibility to change it.</para></listitem></varlistentry>
+<listitem><para>The path to the Web indexing queue. This used to be
+hard-coded in the old plugin as ~/.recollweb/ToIndex so there would be no
+need or possibility to change it, but the WebExtensions plugin now downloads
+the files to the user Downloads directory, and a script moves them to
+webqueuedir. The script reads this value from the config so it has become
+possible to change it.</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.WEBDOWNLOADSDIR">
+<term><varname>webdownloadsdir</varname></term>
+<listitem><para>The path to browser downloads directory. This is
+where the new browser add-on extension has to create the files. They are
+then moved by a script to webqueuedir.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLDICDIR">
 <term><varname>aspellDicDir</varname></term>
 <listitem><para>Aspell dictionary storage directory location. The

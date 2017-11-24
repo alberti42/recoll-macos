@@ -131,8 +131,8 @@ alink="#0000FF">
               </dl>
             </dd>
             <dt><span class="sect1">2.4. <a href=
-            "#RCL.INDEXING.WEBQUEUE">Indexing WEB pages you
-            wisit</a></span></dt>
+            "#RCL.INDEXING.WEBQUEUE">Indexing the WEB pages which
+            you wisit.</a></span></dt>
             <dt><span class="sect1">2.5. <a href=
             "#RCL.INDEXING.EXTATTR">Extended attributes
             data</a></span></dt>
@@ -1505,27 +1505,56 @@ thrQSizes = -1 -1 -1
             <div>
               <h2 class="title" style="clear: both"><a name=
               "RCL.INDEXING.WEBQUEUE" id=
-              "RCL.INDEXING.WEBQUEUE"></a>2.4.�Indexing WEB pages
-              you wisit</h2>
+              "RCL.INDEXING.WEBQUEUE"></a>2.4.�Indexing the WEB
+              pages which you wisit.</h2>
             </div>
           </div>
         </div>
         <p>With the help of a <span class=
         "application">Firefox</span> extension, <span class=
         "application">Recoll</span> can index the Internet pages
-        that you visit. The extension was initially designed for
-        the <span class="application">Beagle</span> indexer, but it
-        has recently be renamed and better adapted to <span class=
-        "application">Recoll</span>.</p>
+        that you visit. The extension has a long history: it was
+        initially designed for the <span class=
+        "application">Beagle</span> indexer, then adapted to
+        <span class="application">Recoll</span> and the
+        <span class="application">Firefox</span> <span class=
+        "application">XUL</span> API. A new version of the addon
+        has been written to work with the <span class=
+        "application">WebExtensions</span> API, which is the only
+        one supported after <span class=
+        "application">Firefox</span> version 57.</p>
         <p>The extension works by copying visited WEB pages to an
         indexing queue directory, which <span class=
         "application">Recoll</span> then processes, indexing the
         data, storing it into a local cache, then removing the file
         from the queue.</p>
-        <p>This feature can be enabled in the GUI <span class=
-        "guilabel">Index configuration</span> panel, or by editing
-        the configuration file (set <code class=
-        "varname">processwebqueue</code> to 1).</p>
+        <p>Because the WebExtensions API introduces more
+        constraints to what extensions can do, the new version
+        works with one more step: the files are first created in
+        the browser default downloads location (typically
+        <code class="filename">$HOME/Downloads</code> ), then moved
+        by a script in the old queue location. The script is
+        automatically executed by the <span class=
+        "application">Recoll</span> indexer versions 1.23.5 and
+        newer. It could conceivably be executed independantly to
+        make the new browser extension compatible with an older
+        <span class="application">Recoll</span> version (the script
+        is named <span class=
+        "command"><strong>recoll-we-move-files.py</strong></span>).</p>
+        <div class="note" style=
+        "margin-left: 0.5in; margin-right: 0.5in;">
+          <h3 class="title">Note</h3>
+          <p>For the WebExtensions-based version to work, it is
+          necessary to set the <code class=
+          "literal">webdownloadsdir</code> value in the
+          configuration if it was changed from the default
+          <code class="filename">$HOME/Downloads</code> in the
+          browser preferences.</p>
+        </div>
+        <p>The visited WEB pages indexing feature can be enabled in
+        the GUI <span class="guilabel">Index configuration</span>
+        panel, or by editing the configuration file (set
+        <code class="varname">processwebqueue</code> to 1).</p>
         <p>A current pointer to the extension can be found, along
         with up-to-date instructions, on the <a class="ulink" href=
         "https://www.lesbonscomptes.com/recoll/faqsandhowtos/IndexWebHistory"
@@ -1570,8 +1599,10 @@ thrQSizes = -1 -1 -1
               the file MIME type.</p>
             </dd>
             <dt><span class="term">charset</span></dt>
-            <dd>If set, this defines the file character set (mostly
-            useful for plain text files).</dd>
+            <dd>
+              <p>If set, this defines the file character set
+              (mostly useful for plain text files).</p>
+            </dd>
           </dl>
         </div>
         <p>By default, other attributes are handled as <span class=
@@ -7854,7 +7885,7 @@ thesame = "some string with spaces"
                 function similar to skippedNames, but works
                 independantly. Can be redefined for subdirectories.
                 Supported by recoll 1.20 and newer. See
-                https://www.lesbonscomptes.com/recoll/faqsandhowtos/Filtering%20out%20Zip%20archive%20members</p>
+                https://www.lesbonscomptes.com/recoll/faqsandhowtos/FilteringOutZipArchiveMembers.html</p>
               </dd>
               <dt>
                 <a name="RCL.INSTALL.CONFIG.RECOLLCONF.FOLLOWLINKS"
@@ -8370,10 +8401,25 @@ thesame = "some string with spaces"
                 "RCL.INSTALL.CONFIG.RECOLLCONF.WEBQUEUEDIR"></a><span class="term"><code class="varname">webqueuedir</code></span>
               </dt>
               <dd>
-                <p>The path to the Web indexing queue. This is
-                hard-coded in the plugin as ~/.recollweb/ToIndex so
-                there should be no need or possibility to change
-                it.</p>
+                <p>The path to the Web indexing queue. This used to
+                be hard-coded in the old plugin as
+                ~/.recollweb/ToIndex so there would be no need or
+                possibility to change it, but the WebExtensions
+                plugin now downloads the files to the user
+                Downloads directory, and a script moves them to
+                webqueuedir. The script reads this value from the
+                config so it has become possible to change it.</p>
+              </dd>
+              <dt>
+                <a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.WEBDOWNLOADSDIR" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.WEBDOWNLOADSDIR"></a><span class="term"><code class="varname">webdownloadsdir</code></span>
+              </dt>
+              <dd>
+                <p>The path to browser downloads directory. This is
+                where the new browser add-on extension has to
+                create the files. They are then moved by a script
+                to webqueuedir.</p>
               </dd>
               <dt>
                 <a name=

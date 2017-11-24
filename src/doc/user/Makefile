@@ -39,7 +39,7 @@ index.html: usermanual.xml
 usermanual.pdf: usermanual.xml
 	dblatex $<
 
-UTILBUILDS=/home/dockes/projets/builds/medocutils/
+UTILBUILDS=/home/dockes/tmp/builds/medocutils/
 recoll-conf-xml:
 	$(UTILBUILDS)/confxml --docbook \
         --idprefix=RCL.INSTALL.CONFIG.RECOLLCONF  \

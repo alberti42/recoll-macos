@@ -26,6 +26,16 @@ extern bool indexfiles(RclConfig *config, std::list<std::string> &filenames);
 extern bool purgefiles(RclConfig *config, std::list<std::string> &filenames);
 extern bool createAuxDbs(RclConfig *config);
 
+/** 
+ * Helper method for executing the recoll-we (new WebExtensions plugin) helper
+ * script. This moves files from the browser download directory (only
+ * place where the browser accepts to create them), to the web queue
+ * dir). This keeps the c++ code compatible with old and new addon.
+ * The script is executed before a batch pass, or from time to time in
+ *  the monitor, if web processing is enabled.
+ */
+extern bool runWebFilesMoverScript(RclConfig *);
+
 extern int stopindexing;
 
 // Try to explain what went wrong...

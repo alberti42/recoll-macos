@@ -42,8 +42,10 @@ try:
 except:
     import rclconfig
 
+verbosity = 0
 def logdeb(s):
-    print("%s"%s, file=sys.stderr)
+    if verbosity >= 4:
+        print("%s"%s, file=sys.stderr)
 
 # # wnloaded instances of the same page are suffixed with (nn) by the
 # browser.  We are passed a list of (hash, instancenum, filename)
@@ -94,8 +96,12 @@ def usage():
     print("Usage: recoll-we-move-files.py [<downloaddir>]", file=sys.stderr)
     sys.exit(1)
 
-# Source dir is parameter, else default Downloads directory
-downloadsdir = os.path.expanduser("~/Downloads")
+config = rclconfig.RclConfig()
+
+# Source dir is parameter, else from config else default Downloads directory
+downloadsdir = config.getConfParam("webdownloadsdir")
+if not downloadsdir:
+    downloadsdir = os.path.expanduser("~/Downloads")
 if len(sys.argv) == 2:
     mydir = sys.argv[1]
 elif len(sys.argv) == 1:
@@ -106,12 +112,13 @@ if not os.path.isdir(mydir):
     usage()
 
 # Get target webqueue recoll directory from recoll configuration
-config = rclconfig.RclConfig()
 webqueuedir = config.getConfParam("webqueuedir")
 if not webqueuedir:
     webqueuedir = "~/.recollweb/ToIndex"
 webqueuedir = os.path.expanduser(webqueuedir)
-logdeb("webqueuedir is %s" % webqueuedir)
+os.makedirs(webqueuedir, exist_ok = True)
+
+# logdeb("webqueuedir is %s" % webqueuedir)
 
 # Get the lists of all files created by the browser addon
 mfiles, cfiles = list_all_files(mydir)
@@ -130,7 +137,9 @@ cfiles = delete_previous_instances(cfiles, downloadsdir)
 for hash in cfiles.keys():
     if hash in mfiles.keys():
         newname = "firefox-recoll-web-"+hash
-        shutil.move(cfiles[hash], os.path.join(webqueuedir, newname))
-        shutil.move(mfiles[hash], os.path.join(webqueuedir, "." + newname))
+        shutil.move(os.path.join(downloadsdir, cfiles[hash]),
+                    os.path.join(webqueuedir, newname))
+        shutil.move(os.path.join(downloadsdir, mfiles[hash]),
+                    os.path.join(webqueuedir, "." + newname))
 
 
