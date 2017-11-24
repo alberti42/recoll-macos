@@ -96,8 +96,8 @@ class ConfIndexer {
     virtual ~ConfIndexer();
 
     // Indexer types. Maybe we'll have something more dynamic one day
-    enum ixType {IxTNone, IxTFs=1, IxTBeagleQueue=2, 
-                 IxTAll = IxTFs | IxTBeagleQueue};
+    enum ixType {IxTNone, IxTFs=1, IxTWebQueue=2, 
+                 IxTAll = IxTFs | IxTWebQueue};
     // Misc indexing flags
     enum IxFlag {IxFNone = 0, 
                  IxFIgnoreSkip = 1, // Ignore skipped lists
@@ -145,8 +145,8 @@ class ConfIndexer {
     RclConfig *m_config;
     Rcl::Db    m_db;
     FsIndexer *m_fsindexer; 
-    bool                m_dobeagle;
-    BeagleQueueIndexer *m_beagler; 
+    bool                m_doweb;
+    BeagleQueueIndexer *m_webindexer; 
     DbIxStatusUpdater  *m_updater;
     string              m_reason;
 

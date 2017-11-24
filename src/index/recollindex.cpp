@@ -26,6 +26,7 @@
 #else
 #include <direct.h>
 #endif
+#include "safesysstat.h"
 #include "safefcntl.h"
 #include "safeunistd.h"
 
@@ -330,7 +331,8 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
         }
     }
 
-    // We'd like to check skippedPaths too, but these are wildcard exprs, so reasonably can't
+    // We'd like to check skippedPaths too, but these are wildcard
+    // exprs, so reasonably can't
 
     return true;
 }

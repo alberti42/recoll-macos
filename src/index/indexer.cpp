@@ -49,17 +49,17 @@ void addIdxReason(string who, string reason)
 
 ConfIndexer::ConfIndexer(RclConfig *cnf, DbIxStatusUpdater *updfunc)
     : m_config(cnf), m_db(cnf), m_fsindexer(0), 
-      m_dobeagle(false), m_beagler(0),
+      m_doweb(false), m_webindexer(0),
       m_updater(updfunc)
 {
-    m_config->getConfParam("processwebqueue", &m_dobeagle);
+    m_config->getConfParam("processwebqueue", &m_doweb);
 }
 
 ConfIndexer::~ConfIndexer()
 {
      deleteZ(m_fsindexer);
 #ifndef DISABLE_WEB_INDEXER
-     deleteZ(m_beagler);
+     deleteZ(m_webindexer);
 #endif
 }
 
@@ -124,10 +124,10 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
         }
     }
 #ifndef DISABLE_WEB_INDEXER
-    if (m_dobeagle && (typestorun & IxTBeagleQueue)) {
-        deleteZ(m_beagler);
-        m_beagler = new BeagleQueueIndexer(m_config, &m_db, m_updater);
-        if (!m_beagler || !m_beagler->index()) {
+    if (m_doweb && (typestorun & IxTWebQueue)) {
+        deleteZ(m_webindexer);
+        m_webindexer = new BeagleQueueIndexer(m_config, &m_db, m_updater);
+        if (!m_webindexer || !m_webindexer->index()) {
 	    m_db.close();
             addIdxReason("indexer", "Web index creation failed. See log");
             return false;
@@ -137,7 +137,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
     if (typestorun == IxTAll) {
         // Get rid of all database entries that don't exist in the
         // filesystem anymore. Only if all *configured* indexers ran.
-        if (m_updater && !m_updater->update(DbIxStatus::DBIXS_PURGE, string())) {
+        if (m_updater && !m_updater->update(DbIxStatus::DBIXS_PURGE, "")) {
 	    m_db.close();
             addIdxReason("indexer", "Index purge failed. See log");
 	    return false;
@@ -201,11 +201,11 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
             myfiles.size() << " files remainining\n");
 #ifndef DISABLE_WEB_INDEXER
 
-    if (m_dobeagle && !myfiles.empty() && !(flag & IxFNoWeb)) {
-        if (!m_beagler)
-            m_beagler = new BeagleQueueIndexer(m_config, &m_db, m_updater);
-        if (m_beagler) {
-            ret = ret && m_beagler->indexFiles(myfiles);
+    if (m_doweb && !myfiles.empty() && !(flag & IxFNoWeb)) {
+        if (!m_webindexer)
+            m_webindexer = new BeagleQueueIndexer(m_config, &m_db, m_updater);
+        if (m_webindexer) {
+            ret = ret && m_webindexer->indexFiles(myfiles);
         } else {
             ret = false;
         }
@@ -261,11 +261,11 @@ bool ConfIndexer::purgeFiles(std::list<string> &files, int flag)
         ret = m_fsindexer->purgeFiles(myfiles);
 
 #ifndef DISABLE_WEB_INDEXER
-    if (m_dobeagle && !myfiles.empty() && !(flag & IxFNoWeb)) {
-        if (!m_beagler)
-            m_beagler = new BeagleQueueIndexer(m_config, &m_db, m_updater);
-        if (m_beagler) {
-            ret = ret && m_beagler->purgeFiles(myfiles);
+    if (m_doweb && !myfiles.empty() && !(flag & IxFNoWeb)) {
+        if (!m_webindexer)
+            m_webindexer = new BeagleQueueIndexer(m_config, &m_db, m_updater);
+        if (m_webindexer) {
+            ret = ret && m_webindexer->purgeFiles(myfiles);
         } else {
             ret = false;
         }
