@@ -160,6 +160,7 @@
 .aac = audio/aac
 .m4a = audio/mp4
 .wv = audio/x-wavpack
+.mpc = audio/x-musepack
 
 .mkv = video/x-matroska
 .ogv = video/ogg
