@@ -159,6 +159,7 @@
 .mid = audio/x-karaoke
 .aac = audio/aac
 .m4a = audio/mp4
+.wv = audio/x-wavpack
 
 .mkv = video/x-matroska
 .ogv = video/ogg
