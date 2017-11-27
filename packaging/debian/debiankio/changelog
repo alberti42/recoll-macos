@@ -1,3 +1,9 @@
+kio-recoll (1.23.5-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * Follow main package
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 24 Nov 2017 17:11:00 +0100
+
 kio-recoll (1.23.4-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * Follow main package

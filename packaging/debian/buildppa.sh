@@ -6,9 +6,9 @@
 
 PPA_KEYID=D38B9201
 
-RCLVERS=1.23.4
+RCLVERS=1.23.5
 SCOPEVERS=1.20.2.4
-PPAVERS=3
+PPAVERS=4
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
@@ -20,7 +20,7 @@ case $RCLVERS in
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-# PPANAME=recollexp-ppa
+ PPANAME=recollexp-ppa
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
@@ -47,7 +47,7 @@ debdir=debian
 # No new releases for trusty either because of risk of kio compat (kio
 # wont build)
 series="xenial zesty artful bionic"
-series=
+series=trusty
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -79,7 +79,7 @@ done
 ### KIO. Does not build on trusty from recoll 1.23 because of the need
 ### for c++11
 series="xenial zesty artful bionic"
-#series=
+series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}

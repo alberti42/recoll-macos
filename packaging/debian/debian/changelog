@@ -1,3 +1,8 @@
+recoll (1.23.5-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * Support the new browser plugin based on WebExtensions.
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 24 Nov 2017 17:06:00 +0100
+
 recoll (1.23.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * Restore search mode when loading saved simple search.

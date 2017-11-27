@@ -80,7 +80,7 @@ binary-arch: build install
 	dh_python2 -p python-recoll
 	dh_python3 -p python3-recoll
 	dh_link
-	dh_strip --no-automatic-dbgsym
+	dh_strip
 	dh_compress
 	dh_fixperms
 	dh_lintian
