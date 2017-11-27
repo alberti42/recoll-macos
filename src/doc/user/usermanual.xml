@@ -997,10 +997,10 @@ thrQSizes = -1 -1 -1
       <filename>$HOME/Downloads</filename> in the browser
       preferences.</para></note>
       
-      <para>The visited WEB pages indexing feature can be enabled in the
-      GUI <guilabel>Index configuration</guilabel> panel, or by editing the
-      configuration file (set <varname>processwebqueue</varname> to
-      1).</para> 
+      <para>The visited WEB pages indexing feature can be enabled on the
+      &RCL; side from the GUI <guilabel>Index configuration</guilabel>
+      panel, or by editing the configuration file (set
+      <varname>processwebqueue</varname> to 1).</para>
 
       <para>A current pointer to the extension can be found, along with
       up-to-date instructions, on the
