@@ -13,8 +13,10 @@ except:
 import rclmain
 from getopt import getopt
 
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import pyqtSlot
+from PyQt5 import QtCore
+from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtGui import QKeySequence
+from PyQt5.QtWidgets import *
 
 ####################
 # Highlighting methods. Just for showing the groups usage, we add the
@@ -146,15 +148,15 @@ class RecollQuery(QtCore.QAbstractTableModel):
 
 ###
 #  UI interaction code
-class RclGui_Main(QtGui.QMainWindow):
+class RclGui_Main(QMainWindow):
     def __init__(self, db, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+        QMainWindow.__init__(self, parent)
         self.ui = rclmain.Ui_MainWindow()
         self.ui.setupUi(self)
         self.db = db
         self.qmodel = RecollQuery()
-        scq = QtGui.QShortcut(QtGui.QKeySequence("Ctrl+Q"), self);
-        self.connect(scq, QtCore.SIGNAL("activated()"), self.onexit)
+        scq = QShortcut(QKeySequence("Ctrl+Q"), self);
+        scq.activated.connect(self.onexit)
         header = self.ui.resTable.horizontalHeader();
 	header.setSortIndicatorShown(True);
 	header.setSortIndicator(-1, QtCore.Qt.AscendingOrder);
@@ -213,7 +215,7 @@ class RclGui_Main(QtGui.QMainWindow):
         ipath = doc.ipath
         if not ipath:
             return
-        fn = QtGui.QFileDialog.getSaveFileName(self)
+        fn = QFileDialog.getSaveFileName(self)
         if fn:
             docitems = doc.items()
             fn = extractofile(doc, str(fn.toLocal8Bit()))
@@ -236,7 +238,7 @@ def Usage():
 
 def main(args):
 
-    app = QtGui.QApplication(args)
+    app = QApplication(args)
 
     confdir=""
     extra_dbs = []
