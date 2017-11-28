@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="cs_CZ">
+<TS version="2.0" language="cs_CZ">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -13,11 +13,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="unfinished">Texty</translation>
+        <translation>Texty</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="unfinished">Tabulky</translation>
+        <translation>Tabulky</translation>
     </message>
     <message>
         <source>presentations</source>
@@ -732,7 +732,7 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     <name>QxtConfirmationMessage</name>
     <message>
         <source>Do not show again.</source>
-        <translation type="unfinished"></translation>
+        <translation>Neukazovat znovu.</translation>
     </message>
 </context>
 <context>
@@ -824,7 +824,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Query results</source>
-        <translation>Výsledky</translation>
+        <translation>Výsledky hledání</translation>
     </message>
     <message>
         <source>Document history</source>
@@ -886,7 +886,7 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>error retrieving stemming languages</source>
-        <translation>Chyba při vyhledání jazyka kmene slova</translation>
+        <translation>Chyba při vyhledání jazyků s kmeny slov</translation>
     </message>
     <message>
         <source>Update &amp;Index</source>
@@ -1036,11 +1036,11 @@ Chcete spustit dialog s nastavením?</translation>
     </message>
     <message>
         <source>Index not open</source>
-        <translation type="vanished">Rejstřík neotevřen</translation>
+        <translation>Rejstřík neotevřen</translation>
     </message>
     <message>
         <source>Index query error</source>
-        <translation>Chyba při dotazu na rejstřík</translation>
+        <translation>Chyba při hledání v rejstříku</translation>
     </message>
     <message>
         <source>Indexed Mime Types</source>
@@ -1110,7 +1110,7 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then you will need to re-run the query when indexing is done. </source>
-        <translation>Klepněte na tlačítko pro aktualizaci rejstříku pro tento soubor, potom dotaz, až bude rejstříkování hotovo, spusťte znovu. </translation>
+        <translation>Klepněte na tlačítko pro aktualizaci rejstříku pro tento soubor, potom hledání, až bude rejstříkování hotovo, spusťte znovu. </translation>
     </message>
     <message>
         <source>The indexer is running so things should improve when it&apos;s done. </source>
@@ -1140,124 +1140,124 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>Index locked</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejstřík uzamknut</translation>
     </message>
     <message>
         <source>The current indexing process was not started from this interface, can&apos;t kill it</source>
-        <translation type="unfinished"></translation>
+        <translation>Nynější rejstříkovací proces nebyl spuštěn z tohoto rozhraní. Nelze jej ukončit</translation>
     </message>
     <message>
         <source>Bad paths</source>
-        <translation type="unfinished"></translation>
+        <translation>Špatné cesty</translation>
     </message>
     <message>
         <source>Bad paths in configuration file:
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Špatné cesty v souboru s nastavením:</translation>
     </message>
     <message>
         <source>Selection patterns need topdir</source>
-        <translation type="unfinished"></translation>
+        <translation>Výběrové vzory potřebují počáteční adresář</translation>
     </message>
     <message>
         <source>Selection patterns can only be used with a start directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Výběrové vzory lze použít jen s počátečním adresářem</translation>
     </message>
     <message>
         <source>The document belongs to an external index which I can&apos;t update. </source>
-        <translation type="unfinished"></translation>
+        <translation>Dokument je součástí vnějšího rejstříku, který nelze aktualizovat. </translation>
     </message>
     <message>
         <source>Click Cancel to return to the list. &lt;br&gt;Click Ignore to show the preview anyway (and remember for this session).</source>
-        <translation type="unfinished"></translation>
+        <translation>Klepněte na tlačítko Zrušit pro návrat do seznamu. &lt;br&gt;Klepněte na tlačítko Přehlížet pro ukázání náhledu tak jako tak (zapamatovat si pro toto sezení).</translation>
     </message>
     <message>
         <source>No search</source>
-        <translation type="unfinished"></translation>
+        <translation>Žádné hledání</translation>
     </message>
     <message>
         <source>No preserved previous search</source>
-        <translation type="unfinished"></translation>
+        <translation>Žádné zachované předchozí hledání</translation>
     </message>
     <message>
         <source>Choose file to save</source>
-        <translation type="unfinished"></translation>
+        <translation>Vybrat soubor k uložení</translation>
     </message>
     <message>
         <source>Saved Queries (*.rclq)</source>
-        <translation type="unfinished"></translation>
+        <translation>Uložené dotazy (*.rclq)</translation>
     </message>
     <message>
         <source>Write failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se zapsat</translation>
     </message>
     <message>
         <source>Could not write to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se zapsat do souboru</translation>
     </message>
     <message>
         <source>Read failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se přečíst</translation>
     </message>
     <message>
         <source>Could not open file: </source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se otevřít soubor: </translation>
     </message>
     <message>
         <source>Load error</source>
-        <translation type="unfinished"></translation>
+        <translation>Chyba při nahrávání</translation>
     </message>
     <message>
         <source>Could not load saved query</source>
-        <translation type="unfinished"></translation>
+        <translation>Nepodařilo se nahrát uložené hledání</translation>
     </message>
     <message>
         <source>Opening a temporary copy. Edits will be lost if you don&apos;t save&lt;br/&gt;them to a permanent location.</source>
-        <translation type="unfinished"></translation>
+        <translation>Otevírá se dočasná kopie. Úpravy budou ztraceny, pokud je neuložíte&lt;br/&gt;do trvalého umístění.</translation>
     </message>
     <message>
         <source>Do not show this warning next time (use GUI preferences to restore).</source>
-        <translation type="unfinished"></translation>
+        <translation>Neukazovat toto varování příště (použít nastavení uživatelského rozhraní pro obnovení).</translation>
     </message>
     <message>
         <source>Unknown indexer state. Can&apos;t access webcache file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Neznámý stav rejstříkovače. Nelze přistupovat k souboru s internetovou vyrovnávací pamětí.</translation>
     </message>
     <message>
         <source>Indexer is running. Can&apos;t access webcache file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejstříkovač běží. Nelze přistupovat k souboru s internetovou vyrovnávací pamětí.</translation>
     </message>
     <message>
         <source>Index scheduling</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozvržení rejstříkování</translation>
     </message>
     <message>
         <source>Sorry, not available under Windows for now, use the File menu entries to update the index</source>
-        <translation type="unfinished"></translation>
+        <translation>Promiňte. Není nyní dostupné pod OS Windows. Použijte položek v nabídce Soubor k aktualizaci rejstříku</translation>
     </message>
     <message>
         <source>Disabled because the real time indexer was not compiled in.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zakázáno protože rejstříkovač ve skutečném čase nebyl sestaven.</translation>
     </message>
     <message>
         <source>This configuration tool only works for the main index.</source>
-        <translation type="unfinished"></translation>
+        <translation>Tento nastavovací nástroj pracuje jen pro hlavní rejstřík.</translation>
     </message>
     <message>
         <source>Can&apos;t set synonyms file (parse error?)</source>
-        <translation type="unfinished"></translation>
+        <translation>Nelze nastavit soubor se slovy majícími stejný význam (synonyma). Chyba při zpracování?</translation>
     </message>
     <message>
         <source> with additional message: </source>
-        <translation type="unfinished"></translation>
+        <translation> s dodatečnou zprávou: </translation>
     </message>
     <message>
         <source>Non-fatal indexing message: </source>
-        <translation type="unfinished"></translation>
+        <translation>Nekritická zpráva o rejstříkování: </translation>
     </message>
     <message>
         <source>Types list empty: maybe wait for indexing to progress?</source>
-        <translation type="unfinished"></translation>
+        <translation>Píše seznam prázdný: Možná počkat na pokračování rejstříkování?</translation>
     </message>
 </context>
 <context>
@@ -1524,47 +1524,47 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Pohled</translation>
     </message>
     <message>
         <source>Missing &amp;helpers</source>
-        <translation type="unfinished"></translation>
+        <translation>Chybějící &amp;pomocné programy</translation>
     </message>
     <message>
         <source>Indexed &amp;MIME types</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejstříkované &amp;MIME typy</translation>
     </message>
     <message>
         <source>Indexing &amp;schedule</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Rozvrh rejstříkování</translation>
     </message>
     <message>
         <source>Enable synonyms</source>
-        <translation type="unfinished"></translation>
+        <translation>Povolit slova mající stejný význam</translation>
     </message>
     <message>
         <source>Save last query</source>
-        <translation type="unfinished"></translation>
+        <translation>Uložit poslední hledání</translation>
     </message>
     <message>
         <source>Load saved query</source>
-        <translation type="unfinished"></translation>
+        <translation>Nahrát uložené hledání</translation>
     </message>
     <message>
         <source>Special Indexing</source>
-        <translation type="unfinished"></translation>
+        <translation>Zvláštní rejstříkování</translation>
     </message>
     <message>
         <source>Indexing with special options</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejstříkování se zvláštními volbami</translation>
     </message>
     <message>
         <source>Index &amp;statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Statistika rejstříku</translation>
     </message>
     <message>
         <source>Webcache Editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Editor internetové vyrovnávací paměti</translation>
     </message>
 </context>
 <context>
@@ -2025,27 +2025,27 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Stemming languages for stored query: </source>
-        <translation type="unfinished"></translation>
+        <translation>Jazyky s kmeny slov pro uložená hledání: </translation>
     </message>
     <message>
         <source> differ from current preferences (kept)</source>
-        <translation type="unfinished"></translation>
+        <translation> liší se od nynějšího nastavení (ponecháno)</translation>
     </message>
     <message>
         <source>Auto suffixes for stored query: </source>
-        <translation type="unfinished"></translation>
+        <translation>Automatické přípony pro uložená hledání: </translation>
     </message>
     <message>
         <source>External indexes for stored query: </source>
-        <translation type="unfinished"></translation>
+        <translation>Vnější rejstříky pro uložená hledání: </translation>
     </message>
     <message>
         <source>Autophrase is set but it was unset for stored query</source>
-        <translation type="unfinished"></translation>
+        <translation>Automatické tvoření slovních obratů je nastaveno, ale bylo zrušeno pro uložené hledání</translation>
     </message>
     <message>
         <source>Autophrase is unset but it was set for stored query</source>
-        <translation type="unfinished"></translation>
+        <translation>Automatické tvoření slovních obratů je zrušeno, ale bylo nastaveno pro uložené hledání</translation>
     </message>
 </context>
 <context>
@@ -2230,43 +2230,43 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     <name>SpecIdxW</name>
     <message>
         <source>Special Indexing</source>
-        <translation type="unfinished"></translation>
+        <translation>Zvláštní rejstříkování</translation>
     </message>
     <message>
         <source>Do not retry previously failed files.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nezkoušet znovu soubory, které předtím selhaly.</translation>
     </message>
     <message>
         <source>Else only modified or failed files will be processed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Jinak jen změněné nebo selhavší soubory budou zpracovány.</translation>
     </message>
     <message>
         <source>Erase selected files data before indexing.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vymazat před rejstříkováním data vybraných souborů.</translation>
     </message>
     <message>
         <source>Directory to recursively index. This must be inside the regular indexed area&lt;br&gt; as defined in the configuration file (topdirs).</source>
-        <translation type="unfinished"></translation>
+        <translation>Adresář k rejstříkování včetně podadresářů. Musí být uvnitř rejstříkované oblasti&lt;br&gt;, jak je stanovena v souboru s nastavením (počáteční adresáře).</translation>
     </message>
     <message>
         <source>Browse</source>
-        <translation type="unfinished"></translation>
+        <translation>Procházet</translation>
     </message>
     <message>
         <source>Start directory (else use regular topdirs):</source>
-        <translation type="unfinished"></translation>
+        <translation>Začáteční adresář (jinak použít počáteční adresáře):</translation>
     </message>
     <message>
         <source>Leave empty to select all files. You can use multiple space-separated shell-type patterns.&lt;br&gt;Patterns with embedded spaces should be quoted with double quotes.&lt;br&gt;Can only be used if the start target is set.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ponechat prázdné pro vybrání všech souborů. Můžete použít více vzorů oddělených mezerami.&lt;br&gt;Vzory s vloženými mezerami musejí být uzavřeny ve dvojitých uvozovkách.&lt;br&gt;Lze použít, jen když je nastaven začáteční cíl.</translation>
     </message>
     <message>
         <source>Selection patterns:</source>
-        <translation type="unfinished"></translation>
+        <translation>Výběrové vzory:</translation>
     </message>
     <message>
         <source>Top indexed entity</source>
-        <translation type="unfinished"></translation>
+        <translation>Předmět rejstříkovaný od spuštění</translation>
     </message>
 </context>
 <context>
@@ -2328,11 +2328,11 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Aspell init failed. Aspell not installed?</source>
-        <translation type="vanished">Chyba při spuštění Aspellu. Aspell není nainstalován?</translation>
+        <translation>Chyba při spuštění Aspellu. Aspell není nainstalován?</translation>
     </message>
     <message>
         <source>Aspell expansion error. </source>
-        <translation type="vanished">Chyba rozšíření Aspell. </translation>
+        <translation>Chyba rozšíření Aspell. </translation>
     </message>
     <message>
         <source>Stem expansion</source>
@@ -2340,7 +2340,7 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>error retrieving stemming languages</source>
-        <translation>Chyba při vyhledání jazyka kmene slova</translation>
+        <translation>Chyba při vyhledání jazyka s kmeny slov</translation>
     </message>
     <message>
         <source>No expansion found</source>
@@ -2412,35 +2412,35 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Smallest document length (terms)</source>
-        <translation type="unfinished"></translation>
+        <translation>Nejmenší délka dokumentu (mez)</translation>
     </message>
     <message>
         <source>Longest document length (terms)</source>
-        <translation type="unfinished"></translation>
+        <translation>Největší délka dokumentu (mez)</translation>
     </message>
     <message>
         <source>Results from last indexing:</source>
-        <translation type="unfinished"></translation>
+        <translation>Výsledky posledního rejstříkování:</translation>
     </message>
     <message>
         <source>  Documents created/updated</source>
-        <translation type="unfinished"></translation>
+        <translation>Dokumenty vytvořené nebo aktualizované</translation>
     </message>
     <message>
         <source>  Files tested</source>
-        <translation type="unfinished"></translation>
+        <translation>Vyzkoušené soubory</translation>
     </message>
     <message>
         <source>  Unindexed files</source>
-        <translation type="unfinished"></translation>
+        <translation>Nezrejstříkované soubory</translation>
     </message>
     <message>
         <source>List files which could not be indexed (slow)</source>
-        <translation type="unfinished"></translation>
+        <translation>Vypsat soubory, které se nepodařilo zrejstříkovat (pomalé)</translation>
     </message>
     <message>
         <source>Spell expansion error. </source>
-        <translation type="unfinished"></translation>
+        <translation>Chyba v pravopisných návrzích. </translation>
     </message>
 </context>
 <context>
@@ -2463,7 +2463,7 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>error retrieving stemming languages</source>
-        <translation>Chyba při vyhledání jazyka kmene slova</translation>
+        <translation>Chyba při vyhledání jazyka s kmeny slov</translation>
     </message>
     <message>
         <source>Choose</source>
@@ -2499,23 +2499,23 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Any term</source>
-        <translation type="unfinished">Jakýkoli výraz</translation>
+        <translation>Jakýkoli výraz</translation>
     </message>
     <message>
         <source>All terms</source>
-        <translation type="unfinished">Všechny výrazy</translation>
+        <translation>Všechny výrazy</translation>
     </message>
     <message>
         <source>File name</source>
-        <translation type="unfinished">Název souboru</translation>
+        <translation>Název souboru</translation>
     </message>
     <message>
         <source>Query language</source>
-        <translation type="unfinished">Jazyk hledání</translation>
+        <translation>Jazyk hledání</translation>
     </message>
     <message>
         <source>Value from previous program exit</source>
-        <translation type="unfinished"></translation>
+        <translation>Hodnota obdržená z posledního ukončení programu</translation>
     </message>
 </context>
 <context>
@@ -2779,45 +2779,45 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     <name>Webcache</name>
     <message>
         <source>Webcache editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Editor internetové vyrovnávací paměti</translation>
     </message>
     <message>
         <source>Search regexp</source>
-        <translation type="unfinished"></translation>
+        <translation>Hledat regulární výraz</translation>
     </message>
 </context>
 <context>
     <name>WebcacheEdit</name>
     <message>
         <source>Copy URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopírovat adresu (URL)</translation>
     </message>
     <message>
         <source>Unknown indexer state. Can&apos;t edit webcache file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Neznámý stav rejstříkovače. Nelze upravovat soubor s internetovou vyrovnávací pamětí.</translation>
     </message>
     <message>
         <source>Indexer is running. Can&apos;t edit webcache file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Rejstříkovač běží. Nelze upravovat soubor s internetovou vyrovnávací pamětí.</translation>
     </message>
     <message>
         <source>Delete selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Smazat výběr</translation>
     </message>
     <message>
         <source>Webcache was modified, you will need to run the indexer after closing this window.</source>
-        <translation type="unfinished"></translation>
+        <translation>Internetová vyrovnávací paměť byla změněna. Po zavření tohoto okna budete muset spustit rejstříkovač.</translation>
     </message>
 </context>
 <context>
     <name>WebcacheModel</name>
     <message>
         <source>MIME</source>
-        <translation type="unfinished"></translation>
+        <translation>MIME</translation>
     </message>
     <message>
         <source>Url</source>
-        <translation type="unfinished"></translation>
+        <translation>URL</translation>
     </message>
 </context>
 <context>
@@ -2856,7 +2856,7 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
-        <translation type="unfinished"></translation>
+        <translation>Záznamy budou po dosažení velikosti vráceny do původního stavu.&lt;br&gt;Skutečně dává smysl jen zvětšení velikosti, protože zmenšení hodnoty neoseká stávající soubor (na konci jen plýtvání místem).</translation>
     </message>
 </context>
 <context>
@@ -3002,11 +3002,11 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation type="vanished">Názvy adresářů, které se nebudou rejstříkovat.&lt;br&gt;Může obsahovat zástupné symboly (žolíky). Musí odpovídat cestám, které rejstříkovač vidí (např. pokud v pačátečních adresářích stojí &apos;/home/me&apos; a &apos;/home&apos; je ve skutečnosti odkazem na &apos;/usr/home&apos;, potom by byl správným zápisem skippedPath &apos;/home/me/tmp*&apos; a ne &apos;/usr/home/me/tmp*&apos;)</translation>
+        <translation>Názvy adresářů, které se nebudou rejstříkovat.&lt;br&gt;Může obsahovat zástupné symboly (žolíky). Musí odpovídat cestám, které rejstříkovač vidí (např. pokud v počátečních adresářích stojí &apos;/home/me&apos; a &apos;/home&apos; je ve skutečnosti odkazem na &apos;/usr/home&apos;, potom by byl správným zápisem skippedPath &apos;/home/me/tmp*&apos; a ne &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
-        <translation>Jazyky rozšíření kmenů slov</translation>
+        <translation>Jazyky s kmeny slov</translation>
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
@@ -3038,11 +3038,11 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Max disk occupation (%)</source>
-        <translation type="vanished">Největší obsazení disku (%)</translation>
+        <translation>Největší obsazení disku (%)</translation>
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
-        <translation type="vanished">Jde o procentní podíl využívání disku, kdy rejstříkování selže a zastaví se (kvůli vyhnutí se zaplnění vašeho disku).&lt;br&gt;0 znamená žádné omezení (tato hodnota je nastavena jako výchozí).</translation>
+        <translation>Jde o procentní podíl využívání disku, kdy rejstříkování selže a zastaví se (kvůli vyhnutí se zaplnění vašeho disku).&lt;br&gt;0 znamená žádné omezení (tato hodnota je nastavena jako výchozí).</translation>
     </message>
     <message>
         <source>No aspell usage</source>
@@ -3094,15 +3094,15 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>These are pathnames of directories which indexing will not enter.&lt;br&gt;Path elements may contain wildcards. The entries must match the paths seen by the indexer (e.g.: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation type="unfinished"></translation>
+        <translation>Názvy názvy cest adresářů, které se nebudou rejstříkovat.&lt;br&gt;Může obsahovat zástupné symboly (žolíky). Musí odpovídat cestám, které rejstříkovač vidí (např. pokud v počátečních adresářích stojí &apos;/home/me&apos; a &apos;/home&apos; je ve skutečnosti odkazem na &apos;/usr/home&apos;, potom by byl správným zápisem skippedPath &apos;/home/me/tmp*&apos; a ne &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Max disk occupation (%, 0 means no limit)</source>
-        <translation type="unfinished"></translation>
+        <translation>Největší obsazení disku (%, 0 znamená bez omezení)</translation>
     </message>
     <message>
         <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
-        <translation type="unfinished"></translation>
+        <translation>Toto je procentní podíl využívání disku - celkové využití disku, ne velikost rejstříku , kdy rejstříkování selže a zastaví se (kvůli vyhnutí se zaplnění vašeho disku).&lt;br&gt;Výchozí hodnota 0 odstraní všechna omezení, znamená žádné omezení.</translation>
     </message>
 </context>
 <context>
@@ -3129,7 +3129,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation type="vanished">Zvýraznit barvu výrazů hledání</translation>
+        <translation>Zvýraznit barvu výrazů hledání</translation>
     </message>
     <message>
         <source>Result list font</source>
@@ -3205,7 +3205,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Stemming language</source>
-        <translation>Jazyk kmene slova</translation>
+        <translation>Jazyk s kmeny slov</translation>
     </message>
     <message>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
@@ -3305,7 +3305,7 @@ U velkých dokumentů může být pomalé.</translation>
     </message>
     <message>
         <source>Abstract snippet separator</source>
-        <translation>Oddělovač kousku přehledu</translation>
+        <translation>Oddělovač úryvků</translation>
     </message>
     <message>
         <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html.</source>
@@ -3455,23 +3455,23 @@ Výchozí hodnota je 2 (procenta).</translation>
     </message>
     <message>
         <source>Start with simple search mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Spustit v jednoduchém vyhledávacím režimu</translation>
     </message>
     <message>
         <source>Show warning when opening temporary file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ukázat varování při otevírání dočasného souboru.</translation>
     </message>
     <message>
         <source>User style to apply to the snippets window.&lt;br&gt; Note: the result page header insert is also included in the snippets window header.</source>
-        <translation type="unfinished"></translation>
+        <translation>Uživatelský styl k použití v okně s úryvky.&lt;br&gt;Poznámka: Záhlaví stránky s výsledky je zahrnuto i v záhlaví okna s úryvky.</translation>
     </message>
     <message>
         <source>Synonyms file</source>
-        <translation type="unfinished"></translation>
+        <translation>Soubor se slovy majícími stejný význam</translation>
     </message>
     <message>
         <source>Highlight CSS style for query terms</source>
-        <translation type="unfinished"></translation>
+        <translation>Zvýraznit styl CSS výrazů hledání</translation>
     </message>
 </context>
 </TS>
