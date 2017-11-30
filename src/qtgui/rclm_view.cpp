@@ -48,7 +48,9 @@ void RclMain::viewUrl()
 	return;
 
     QUrl qurl(m_urltoview);
-    LOGDEB("RclMain::viewUrl: Path ["  << ((const char *)qurl.path().toLocal8Bit()) << "] fragment ["  << ((const char *)qurl.fragment().toLocal8Bit()) << "]\n" );
+    LOGDEB("RclMain::viewUrl: Path [" <<
+           ((const char *)qurl.path().toLocal8Bit()) << "] fragment ["
+           << ((const char *)qurl.fragment().toLocal8Bit()) << "]\n");
 
     /* In theory, the url might not be for a file managed by the fs
        indexer so that the make_udi() call here would be
@@ -101,20 +103,16 @@ void RclMain::viewUrl()
  * (xdg-open etc.) failed */
 static bool lookForHtmlBrowser(string &exefile)
 {
-    static const char *htmlbrowserlist = 
-	"opera google-chrome chromium-browser konqueror iceweasel firefox "
-        "mozilla netscape epiphany";
-    vector<string> blist;
-    stringToTokens(htmlbrowserlist, blist, " ");
+    vector<string> blist{"opera", "google-chrome", "chromium-browser",
+            "palemoon", "iceweasel", "firefox", "konqueror", "epiphany"};
 
     const char *path = getenv("PATH");
-    if (path == 0)
-	path = "/bin:/usr/bin:/usr/bin/X11:/usr/X11R6/bin:/usr/local/bin";
-
+    if (path == 0) {
+	path = "/usr/local/bin:/usr/bin:/bin";
+    }
     // Look for each browser 
-    for (vector<string>::const_iterator bit = blist.begin(); 
-	 bit != blist.end(); bit++) {
-	if (ExecCmd::which(*bit, exefile, path)) 
+    for (const auto& entry : blist) {
+	if (ExecCmd::which(entry, exefile, path)) 
 	    return true;
     }
     exefile.clear();
@@ -123,7 +121,7 @@ static bool lookForHtmlBrowser(string &exefile)
 
 void RclMain::openWith(Rcl::Doc doc, string cmdspec)
 {
-    LOGDEB("RclMain::openWith: "  << (cmdspec) << "\n" );
+    LOGDEB("RclMain::openWith: " << cmdspec << "\n");
 
     // Split the command line
     vector<string> lcmd;
@@ -175,6 +173,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 			     + doc.mimetype.c_str() + "]");
 	return;
     }
+    LOGDEB("StartNativeViewer: viewerdef from config: " << cmdplusattr << endl);
 
     // Separate command string and viewer attributes (if any)
     ConfSimple viewerattrs;
@@ -259,12 +258,25 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     // This can be overridden with the "ignoreipath" attribute
     bool groksipath = (cmd.find("%i") != string::npos) || ignoreipath;
 
-    // wantsfile: do we actually need a local file ? The only other
-    // case here is an url %u (ie: for web history).
-    bool wantsfile = cmd.find("%f") != string::npos && urlisfileurl(doc.url);
-    bool wantsparentfile = cmd.find("%F") != string::npos && 
-	urlisfileurl(doc.url);
+    // We used to try being clever here, but actually, the only case
+    // where we don't need a local file copy of the document (or
+    // parent document) is the case of an HTML page with a non-file
+    // URL (http or https). Trying to guess based on %u or %f is
+    // doomed because we pass %u to xdg-open.
+    bool wantsfile = false;
+    if (cmd.find("%f") != string::npos || urlisfileurl(doc.url) ||
+        doc.mimetype.compare("text/html")) {
+        wantsfile = true;
+    } 
+    bool wantsparentfile = cmd.find("%F") != string::npos;
 
+    if (wantsparentfile && !urlisfileurl(doc.url)) {
+	QMessageBox::warning(0, "Recoll", 
+			     tr("Viewer command line for %1 specifies both "
+				"parent file but URL is http[s]: unsupported")
+			     .arg(QString::fromUtf8(doc.mimetype.c_str())));
+	return;
+    }
     if (wantsfile && wantsparentfile) {
 	QMessageBox::warning(0, "Recoll", 
 			     tr("Viewer command line for %1 specifies both "
@@ -306,8 +318,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     // If the command wants a file but this is not a file url, or
     // there is an ipath that it won't understand, we need a temp file:
     theconfig->setKeyDir(fn.empty() ? "" : path_getfather(fn));
-    if (!doc.isFsFile() || 
-        ((wantsfile || wantsparentfile) && fn.empty()) ||
+    if (((wantsfile || wantsparentfile) && fn.empty()) ||
 	(!groksipath && !doc.ipath.empty()) ) {
 	TempFile temp;
 	Rcl::Doc& thedoc = wantsparentfile ? pdoc : doc;
@@ -356,7 +367,8 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
             "Recoll",
             tr("Opening a temporary copy. Edits will be lost if you don't save"
                "<br/>them to a permanent location."),
-            tr("Do not show this warning next time (use GUI preferences to restore)."));
+            tr("Do not show this warning next time (use GUI preferences "
+               "to restore)."));
         confirm.setSettingsPath("Recoll/prefs");
         confirm.setOverrideSettingsKey("showTempFileWarning");
         confirm.exec();
