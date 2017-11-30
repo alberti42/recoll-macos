@@ -305,6 +305,7 @@ RclConfig *recollinit(RclInitFlags flags,
 	int lev = atoi(loglevel.c_str());
         Logger::getTheLog("")->setLogLevel(Logger::LogLevel(lev));
     }
+    LOGINF("Configuration directory: " << config->getConfDir() << std::endl);
 
     // Make sure the locale charset is initialized (so that multiple
     // threads don't try to do it at once).
