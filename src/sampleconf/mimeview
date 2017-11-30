@@ -40,6 +40,7 @@ application/x-mobipocket-ebook = ebook-viewer %f
 application/x-kword = kword %f
 application/x-abiword = abiword %f
 
+# Note: the Linux Mint evince clones, atril and xread, have the same options
 application/pdf  = evince --page-index=%p --find=%s %f
 # Or:
 #application/pdf  = qpdfview --search %s %f#%p
