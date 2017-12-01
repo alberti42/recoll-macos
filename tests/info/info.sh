@@ -12,6 +12,8 @@ initvariables $0
 # text/plain files. Previous versions only returned the info file,
 # which was better, but I'm not sure that we can do something about
 # it.
+# It seems that later versions of xdg-mime return octet-stream so all back
+# to normal
 
 recollq '"GPGME is compiled with largefile support by default"' 2> $mystderr | 
 	egrep -v '^Recoll query: ' > $mystdout
