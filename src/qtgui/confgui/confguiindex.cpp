@@ -29,7 +29,11 @@
 #include <QListWidget>
 
 #include <list>
+#include <set>
+#include <string>
 using std::list;
+using std::set;
+using std::string;
 
 #include "confgui.h"
 #include "recoll.h"
@@ -37,13 +41,116 @@ using std::list;
 #include "smallut.h"
 #include "log.h"
 #include "rcldb.h"
-#include "conflinkrcl.h"
 #include "execmd.h"
 #include "rclconfig.h"
 
 namespace confgui {
 static const int spacing = 3;
 static const int margin = 3;
+
+/** 
+ * A Gui-to-Data link class for ConfTree
+ * Has a subkey pointer member which makes it easy to change the
+ * current subkey for a number at a time.
+ */
+class ConfLinkRclRep : public ConfLinkRep {
+public:
+    ConfLinkRclRep(ConfNull *conf, const string& nm, 
+		   string *sk = 0)
+	: m_conf(conf), m_nm(nm), m_sk(sk) /* KEEP THE POINTER, shared data */
+    {
+    }
+    virtual ~ConfLinkRclRep() {}
+
+    virtual bool set(const string& val) 
+    {
+	if (!m_conf)
+	    return false;
+	LOGDEB1("Setting [" << m_nm << "] value to ["  << val << "]\n");
+	bool ret = m_conf->set(m_nm, val, getSk());
+	if (!ret)
+	    LOGERR("Value set failed\n" );
+	return ret;
+    }
+    virtual bool get(string& val) 
+    {
+	if (!m_conf)
+	    return false;
+	bool ret = m_conf->get(m_nm, val, getSk());
+	LOGDEB1("ConfLinkRcl::get: [" << m_nm << "] sk [" <<
+                getSk() << "] -> ["  << (ret ? val : "no value") << "]\n" );
+	return ret;
+    }
+private:
+    string getSk() {
+        return m_sk ? *m_sk : string();
+    }
+    ConfNull     *m_conf;
+    const string  m_nm;
+    const string *m_sk;
+};
+
+
+typedef std::function<vector<string>()> RclConfVecValueGetter;
+
+/* Special link for skippedNames and noContentSuffixes which are
+   computed as set differences */
+class ConfLinkPlusMinus : public ConfLinkRep {
+public:
+    ConfLinkPlusMinus(RclConfig *rclconf, ConfNull *conf,
+                 const string& basename, RclConfVecValueGetter getter,
+                 string *sk = 0)
+	: m_rclconf(rclconf), m_conf(conf),
+          m_basename(basename), m_getter(getter),
+          m_sk(sk) /* KEEP THE POINTER, shared data */
+    {
+    }
+    virtual ~ConfLinkPlusMinus() {}
+
+    virtual bool set(const string& snval) {
+	if (!m_conf || !m_rclconf)
+	    return false;
+
+        string sbase;
+        m_conf->get(m_basename, sbase, getSk());
+        std::set<string> nval;
+        stringToStrings(snval, nval);
+        string splus, sminus;
+        RclConfig::setPlusMinus(sbase, nval, splus, sminus);
+        LOGDEB1("ConfLinkPlusMinus: base [" << sbase << "] nvalue [" << snval <<
+                "] splus [" << splus << "] sminus [" << sminus << "]\n");
+        if (!m_conf->set(m_basename + "-", sminus, getSk())) {
+            return false;
+        }
+        if (!m_conf->set(m_basename + "+", splus, getSk())) {
+            return false;
+        }
+        return true;
+    }
+
+    virtual bool get(string& val) {
+	if (!m_conf || !m_rclconf)
+	    return false;
+
+        m_rclconf->setKeyDir(getSk());
+        vector<string> vval = m_getter();
+        val = stringsToString(vval);
+        LOGDEB1("ConfLinkPlusMinus: "<<m_basename<<" -> " << val <<std::endl);
+	return true;
+    }
+
+private:
+    string getSk() {
+        return m_sk ? *m_sk : string();
+    }
+      
+    RclConfig    *m_rclconf;
+    ConfNull     *m_conf;
+    string        m_basename;
+    RclConfVecValueGetter m_getter;
+    const string *m_sk;
+};
+
 
 ConfIndexW::ConfIndexW(QWidget *parent, RclConfig *config)
     : QDialog(parent), m_rclconf(config)
@@ -429,7 +536,9 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config,
 
     ConfParamSLW *eskn = new ConfParamSLW(
         m_groupbox, 
-        ConfLink(new ConfLinkRclRep(config, "skippedNames", &m_sk)),
+        ConfLink(new ConfLinkPlusMinus(
+                     rclconf, config, "skippedNames",
+                     std::bind(&RclConfig::getSkippedNames, rclconf), &m_sk)),
         QObject::tr("Skipped names"),
         QObject::tr("These are patterns for file or directory "
                     " names which should not be indexed."));
@@ -463,7 +572,9 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull *config,
 
     ConfParamSLW *encs = new ConfParamSLW(
         m_groupbox, 
-        ConfLink(new ConfLinkRclRep(config, "noContentSuffixes", &m_sk)),
+        ConfLink(new ConfLinkPlusMinus(
+                     rclconf, config, "noContentSuffixes",
+                     std::bind(&RclConfig::getStopSuffixes, rclconf), &m_sk)),
         QObject::tr("Ignored endings"),
         QObject::tr("These are file name endings for files which will be "
                     "indexed by name only \n(no MIME type identification "

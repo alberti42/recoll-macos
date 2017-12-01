@@ -65,27 +65,34 @@ bool o_uptodate_test_use_mtime = false;
 string RclConfig::o_localecharset; 
 string RclConfig::o_origcwd; 
 
-// Compute the difference of 1st to 2nd set<string> and return as
-// plus/minus strings
-static void setPlusMinus(const set<string>& base, const set<string>& upd,
-                         string& plus, string& minus)
+// Compute the difference of 1st to 2nd sets and return as plus/minus
+// sets. Some args are std::set and some others stringToString()
+// strings for convenience
+void RclConfig::setPlusMinus(const string& sbase, const set<string>& upd,
+                             string& splus, string& sminus)
 {
+    set<string> base;
+    stringToStrings(sbase, base);
+
     vector<string> diff;
     auto it =
         set_difference(base.begin(), base.end(), upd.begin(), upd.end(),
                        std::inserter(diff, diff.begin()));
-    minus = stringsToString(diff);
+    sminus = stringsToString(diff);
 
     diff.clear();
     it = set_difference(upd.begin(), upd.end(), base.begin(), base.end(),
                         std::inserter(diff, diff.begin()));
-    plus = stringsToString(diff);
+    splus = stringsToString(diff);
 }
 
+/* Compute result of substracting strminus and adding strplus to base string.
+   All string represent sets of values to be computed with stringToStrings() */
 static void computeBasePlusMinus(set<string>& res, const string& strbase,
                                  const string& strplus, const string& strminus)
 {
     set<string> plus, minus;
+    res.clear();
     stringToStrings(strbase, res);
     stringToStrings(strplus, plus);
     stringToStrings(strminus, minus);
@@ -660,41 +667,54 @@ public:
 	return 0;
     }
 };
-typedef multiset<SfString, SuffCmp> SuffixStore;
 
+typedef multiset<SfString, SuffCmp> SuffixStore;
 #define STOPSUFFIXES ((SuffixStore *)m_stopsuffixes)
+
+vector<string>& RclConfig::getStopSuffixes()
+{
+    bool needrecompute = m_stpsuffstate.needrecompute();
+    needrecompute = m_oldstpsuffstate.needrecompute() || needrecompute;
+    if (needrecompute || m_stopsuffixes == 0) {
+        // Need to initialize the suffixes
+
+        // Let the old customisation have priority: if recoll_noindex from
+        // mimemap is set, it the user's (the default value is gone). Else
+        // use the new variable
+        if (!m_oldstpsuffstate.getvalue(0).empty()) {
+            stringToStrings(m_oldstpsuffstate.getvalue(0), m_stopsuffvec);
+        } else {
+            std::set<string> ss;
+            computeBasePlusMinus(ss, m_stpsuffstate.getvalue(0), 
+                                 m_stpsuffstate.getvalue(1), 
+                                 m_stpsuffstate.getvalue(2));
+            m_stopsuffvec = vector<string>(ss.begin(), ss.end());
+        }
+
+        // Compute the special suffixes store
+        delete STOPSUFFIXES;
+        if ((m_stopsuffixes = new SuffixStore) == 0) {
+            LOGERR("RclConfig::inStopSuffixes: out of memory\n");
+            return m_stopsuffvec;
+        }
+        m_maxsufflen = 0;
+        for (const auto& entry : m_stopsuffvec) {
+            STOPSUFFIXES->insert(SfString(stringtolower(entry)));
+            if (m_maxsufflen < entry.length())
+                m_maxsufflen = int(entry.length());
+        }
+    }
+    LOGDEB1("RclConfig::getStopSuffixes: ->" <<
+            stringsToString(m_stopsuffvec) << endl);
+    return m_stopsuffvec;
+}
 
 bool RclConfig::inStopSuffixes(const string& fni)
 {
     LOGDEB2("RclConfig::inStopSuffixes(" << fni << ")\n");
-    // Beware: both needrecompute() need to be called always hence the
-    // bizarre way we do things
-    bool needrecompute = m_stpsuffstate.needrecompute();
-    needrecompute = m_oldstpsuffstate.needrecompute() || needrecompute;
-    if (needrecompute || m_stopsuffixes == 0) {
-	// Need to initialize the suffixes
-        delete STOPSUFFIXES;
-	if ((m_stopsuffixes = new SuffixStore) == 0) {
-	    LOGERR("RclConfig::inStopSuffixes: out of memory\n");
-	    return false;
-	}
-        // Let the old customisation have priority: if recoll_noindex
-        // from mimemap is set, it the user's (the default value is
-        // gone). Else use the new variable
-	set<string> stoplist;
-        if (!m_oldstpsuffstate.getvalue(0).empty()) {
-            stringToStrings(m_oldstpsuffstate.getvalue(0), stoplist);
-        } else {
-            computeBasePlusMinus(stoplist, m_stpsuffstate.getvalue(0), 
-                                 m_stpsuffstate.getvalue(1), 
-                                 m_stpsuffstate.getvalue(2));
-        }
-	for (auto& it : stoplist) {
-	    STOPSUFFIXES->insert(SfString(stringtolower(it)));
-	    if (m_maxsufflen < it.length())
-		m_maxsufflen = int(it.length());
-	}
-    }
+
+    // Call getStopSuffixes() to possibly update state, ignore result
+    getStopSuffixes();
 
     // Only need a tail as long as the longest suffix.
     int pos = MAX(0, int(fni.length() - m_maxsufflen));
@@ -1097,13 +1117,11 @@ bool RclConfig::setMimeViewerAllEx(const set<string>& allex)
     if (mimeview == 0)
         return false;
 
-    string s;
-    mimeview->get("xallexcepts", s, "");
-    set<string> base;
-    stringToStrings(s, base);
+    string sbase;
+    mimeview->get("xallexcepts", sbase, "");
 
     string splus, sminus;
-    setPlusMinus(base, allex, splus, sminus);
+    setPlusMinus(sbase, allex, splus, sminus);
 
     if (!mimeview->set("xallexcepts-", sminus, "")) {
 	m_reason = string("RclConfig:: cant set value. Readonly?");
@@ -1619,6 +1637,7 @@ void RclConfig::initFrom(const RclConfig& r)
     m_xattrtofld = r.m_xattrtofld;
     m_maxsufflen = r.m_maxsufflen;
     m_skpnlist = r.m_skpnlist;
+    m_stopsuffixes = r.m_stopsuffixes;
     m_defcharset = r.m_defcharset;
     m_restrictMTypes  = r.m_restrictMTypes;
     m_excludeMTypes = r.m_excludeMTypes;

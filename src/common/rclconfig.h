@@ -213,6 +213,10 @@ class RclConfig {
 	Doesn't depend on the keydir */
     vector<string> getDaemSkippedPaths() const;
 
+    /** Return list of no content suffixes. Used by confgui, indexing uses
+        inStopSuffixes() for testing suffixes */
+    std::vector<std::string>& getStopSuffixes();
+
     /** 
      * mimemap: Check if file name should be ignored because of suffix
      *
@@ -246,6 +250,13 @@ class RclConfig {
      */
     static bool valueSplitAttributes(const string& whole, string& value, 
 				     ConfSimple& attrs) ;
+
+    /** Compute difference between 'base' and 'changed', as elements to be
+     * added and substracted from base. Input and output strings are in
+     * stringToStrings() format. */
+    static void setPlusMinus(
+        const std::string& base, const std::set<std::string>& changed,
+        std::string& plus, std::string& minus);
 
     /** Return the locale's character set */
     static const std::string& getLocaleCharset();
@@ -369,6 +380,7 @@ class RclConfig {
     unsigned int m_maxsufflen;
     ParamStale   m_oldstpsuffstate; // Values from user mimemap, now obsolete
     ParamStale   m_stpsuffstate;
+    vector<string> m_stopsuffvec;
 
     ParamStale   m_skpnstate;
     vector<string> m_skpnlist;
