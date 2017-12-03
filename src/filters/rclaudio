@@ -7,6 +7,7 @@ import os
 import rclexecm
 import time
 import datetime
+import re
 
 try:
     import mutagen
@@ -16,6 +17,8 @@ except:
     print("RECFILTERROR HELPERNOTFOUND python:mutagen")
     sys.exit(1);
 
+
+re_pairnum = re.compile(r'\(([0-9]+),\s*([0-9]+)\)')
 
 # The 'Easy' mutagen tags conversions are incomplete. We do it ourselves.
 # TPA,TPOS,disc DISCNUMBER/TOTALDISCS
@@ -134,10 +137,12 @@ tagdict = {
     'USLT' : 'LYRICS',
     'YEAR' : 'DATE',
     'aART' : 'ALBUMARTIST',
+    'cond' : 'CONDUCTOR',
     'cpil' : 'COMPILATION',
     'cprt' : 'COPYRIGHT',
     'disk' : 'DISCNUMBER',
     'gnre' : 'GENRE',
+    'labl' : 'LABEL',
     'soaa' : 'ALBUMARTISTSORT',
     'soal' : 'ALBUMSORT',
     'soar' : 'ARTISTSORT',
@@ -297,8 +302,8 @@ class AudioTagExtractor:
                 except Exception as err:
                     self.em.rclog("Error while extracting tag: %s"%err)
             else:
-                pass
                 #self.em.rclog("Unprocessed tag: %s, value %s"%(tag,val))
+                pass
 
         # TPA,TPOS,disc DISCNUMBER/TOTALDISCS
         # TRCK,TRK,trkn TRACKNUMBER/TOTALTRACKS
@@ -307,10 +312,18 @@ class AudioTagExtractor:
             if k in minf:
                 l = minf[k]
                 if not isinstance(l, tuple):
-                    l = l.split('/')
+                    mo = re_pairnum.match(l)
+                    if mo:
+                        l = (mo.group(1), mo.group(2))
+                    else:
+                        l = l.split('/')
+                else:
+                    self.em.rclog("l is tuple: %s" %l)
                 if len(l) == 2:
                     minf[k] = str(l[0])
-                    minf['total' + what + 's'] = str(l[1])
+                    #self.em.rclog("minf[%s] = %s" % (k, minf[k]))
+                    if l[1] != 0:
+                        minf['total' + what + 's'] = str(l[1])
 
         if 'orchestra' in minf:
             val = minf['orchestra']
