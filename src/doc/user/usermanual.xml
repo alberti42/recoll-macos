@@ -1,9 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 	"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
 
 <!ENTITY RCL "<application>Recoll</application>">
 <!ENTITY RCLAPPS "<ulink url='http://www.recoll.org/features.html#doctypes'>http://www.recoll.org/features.html</ulink>">
-<!ENTITY RCLVERSION "1.22">
+<!ENTITY RCLVERSION "1.23">
 <!ENTITY XAP "<application>Xapian</application>">
 <!ENTITY WIN "<application>Windows</application>">
 <!ENTITY FAQS "https://www.lesbonscomptes.com/recoll/faqsandhowtos/">
@@ -50,16 +52,16 @@
 
       <para>This document introduces full text search notions
       and describes the installation and use of the &RCL;
-      application. This version describes &RCL; &RCLVERSION;.</para>
+      application. It is updated for &RCL; &RCLVERSION;.</para>
 
       <para>&RCL; was for a long time dedicated to Unix-like systems. It
       was only lately (2015) ported to
       <application>MS-Windows</application>. Many references in this
       manual, especially file locations, are specific to Unix, and not
-      valid on &WIN;. Some described features are also not available on
-      &WIN;. The manual will be progressively updated. Until this happens,
-      most references to shared files can be translated by looking under
-      the Recoll installation directory (esp. the
+      valid on &WIN;, where some described features are also not available.
+      The manual will be progressively updated. Until this happens, on
+      &WIN;, most references to shared files can be translated by looking
+      under the Recoll installation directory (esp. the
       <filename>Share</filename> subdirectory). The user configuration is
       stored by default under <filename>AppData/Local/Recoll</filename>
       inside the user directory, along with the index itself.</para>
@@ -68,32 +70,34 @@
       <title>Giving it a try</title>
       
       <para>If you do not like reading manuals (who does?) but 
-        wish to give &RCL; a try, just <link
-        linkend="RCL.INSTALL.BINARY">install</link> the application
-        and start the <command>recoll</command> graphical user
-        interface (GUI), which will ask permission to index your home
-        directory by default, allowing you to search immediately after
-        indexing completes.</para>
+      wish to give &RCL; a try, just <link
+      linkend="RCL.INSTALL.BINARY">install</link> the application
+      and start the <command>recoll</command> graphical user
+      interface (GUI), which will ask permission to index your home
+      directory by default, allowing you to search immediately after
+      indexing completes.</para>
 
       <para>Do not do this if your home directory contains a huge
-        number of documents and you do not want to wait or are very
-        short on disk space. In this case, you may first want to customize
-        the <link linkend="RCL.INDEXING.CONFIG">configuration</link>
-        to restrict the indexed area (for the very impatient with a completed package install, from the <command>recoll</command> GUI: <menuchoice>
-	    <guimenu>Preferences</guimenu>
-	    <guimenuitem>Indexing configuration</guimenuitem>
-          </menuchoice>, then adjust the <guilabel>Top
-          directories</guilabel> section).</para>
+      number of documents and you do not want to wait or are very
+      short on disk space. In this case, you may first want to customize
+      the <link linkend="RCL.INDEXING.CONFIG">configuration</link>
+      to restrict the indexed area (for the very impatient with a
+      completed package install, from the <command>recoll</command> GUI:
+      <menuchoice> 
+	<guimenu>Preferences</guimenu>
+	<guimenuitem>Indexing configuration</guimenuitem>
+        </menuchoice>, then adjust the <guilabel>Top
+      directories</guilabel> section).</para>
 
       <para>Also be aware that, on Unix/Linux, you may need to install the
-        appropriate <link linkend="RCL.INSTALL.EXTERNAL"> supporting
-        applications</link> for document types that need them (for
-        example <application>antiword</application> for
+      appropriate <link linkend="RCL.INSTALL.EXTERNAL"> supporting
+      applications</link> for document types that need them (for
+      example <application>antiword</application> for
       <application>Microsoft Word</application> files).</para>
 
-      <para>The &RCL; installation for &WIN; is self-contained and includes
-      most useful auxiliary programs. You will just need to install Python
-      2.7.</para>
+      <para>The &RCL; for &WIN; package is self-contained and includes
+      most useful auxiliary programs. You will just need to install
+      <application>Python</application> 2.7.</para>
 
     </sect1>
 
@@ -101,44 +105,47 @@
       <title>Full text search</title>
 
       <para>&RCL; is a full text search application, which means that it
-        finds your data by content rather than by external attributes
-        (like the file name). You specify words
-        (terms) which should or should not appear in the text you are
-        looking for, and receive in return a list of matching
-        documents, ordered so that the most
-        <emphasis>relevant</emphasis> documents will appear
-        first.</para>
+      finds your data by content rather than by external attributes
+      (like the file name). You specify words
+      (terms) which should or should not appear in the text you are
+      looking for, and receive in return a list of matching
+      documents, ordered so that the most
+      <emphasis>relevant</emphasis> documents will appear
+      first.</para>
 
       <para>You do not need to remember in what file or email message you
-        stored a given piece of information. You just ask for related
-        terms, and the tool will return a list of documents where
-        these terms are prominent, in a similar way to Internet search
-        engines.</para>
+      stored a given piece of information. You just ask for related
+      terms, and the tool will return a list of documents where
+      these terms are prominent, in a similar way to Internet search
+      engines.</para>
 
       <para>Full text search applications try to determine which
-        documents are most relevant to the search terms you
-        provide. Computer algorithms for determining relevance can be
-        very complex, and in general are inferior to the power of the
-        human mind to rapidly determine relevance. The quality of
-        relevance guessing is probably the most important aspect when
-        evaluating a search application.</para>
+      documents are most relevant to the search terms you
+      provide. Computer algorithms for determining relevance can be
+      very complex, and in general are inferior to the power of the
+      human mind to rapidly determine relevance. The quality of
+      relevance guessing is probably the most important aspect when
+      evaluating a search application. &RCL; relies on the &XAP;
+      probabilistic information retrieval library to determine
+      relevance.</para> 
 
-        <para>In many cases, you are looking for all the forms of a
-        word, including plurals, different tenses for a verb, or terms
-        derived from the same root or <emphasis>stem</emphasis>
-        (example: <replaceable>floor, floors, floored,
-        flooring...</replaceable>). Queries are usually automatically
-        expanded to all such related terms (words that reduce to the
-        same stem). This can be prevented for searching for a specific
-        form.</para>
+      <para>In many cases, you are looking for all the forms of a
+      word, including plurals, different tenses for a verb, or terms
+      derived from the same root or <emphasis>stem</emphasis>
+      (example: <replaceable>floor, floors, floored,
+      flooring...</replaceable>). Queries are usually automatically
+      expanded to all such related terms (words that reduce to the
+      same stem). This can be prevented for searching for a specific
+      form.</para>
 
-        <para>Stemming, by itself, does not accommodate for misspellings
-        or phonetic searches. A full text search application may also
-        support this form of approximation. For example, a search for
-        <replaceable>aliterattion</replaceable> returning no result may
-        propose, depending on index contents, <replaceable>alliteration
-        alteration alterations altercation</replaceable> as possible
-        replacement terms. </para>
+      <para>Stemming, by itself, does not accommodate for misspellings or
+      phonetic searches. A full text search application may also support
+      this form of approximation. For example, a search for
+      <replaceable>aliterattion</replaceable> returning no result might
+      propose <replaceable>alliteration, alteration, alterations, or
+      altercation</replaceable> as possible replacement terms. &RCL; bases
+      its suggestions on the actual index contents, so that suggestions may
+      be made for words which would not appear in a standard dictionary.</para>
 
     </sect1>
 
@@ -248,29 +255,36 @@
         location defined by <application>Qt</application>.</para>
 
       <para>The <link linkend="RCL.INDEXING.PERIODIC.EXEC">indexing
-          process</link> is started automatically the first time you
-        execute the <command>recoll</command> GUI. Indexing can also
-        be performed by executing the <command>recollindex</command>
-        command. &RCL; indexing is multithreaded by default when
-        appropriate hardware resources are available, and can perform
-        in parallel multiple tasks among text extraction, segmentation
-        and index updates.</para>
+      process</link> is started automatically (after asking permission), the
+      first time you execute the <command>recoll</command> GUI. Indexing
+      can also be performed by executing the <command>recollindex</command>
+      command. &RCL; indexing is multithreaded by default when appropriate
+      hardware resources are available, and can perform in parallel
+      multiple tasks for text extraction, segmentation and index
+      updates.</para>
 
       <para><link linkend="RCL.SEARCH">Searches</link> are usually
         performed inside the <command>recoll</command> GUI, which has many
         options to help you find what you are looking for. However, there
-        are other ways to perform &RCL; searches: mostly a <link
-        linkend="RCL.SEARCH.COMMANDLINE">
-          command line interface</link>, a 
-        <link linkend="RCL.PROGRAM.PYTHONAPI">
+        are other ways to perform &RCL; searches:
+        <itemizedlist>
+          <listitem><para>A <link linkend="RCL.SEARCH.COMMANDLINE">
+          command line interface</link>.</para></listitem>
+          <listitem><para>A <link linkend="RCL.PROGRAM.PYTHONAPI">
           <application>Python</application>
-          programming interface</link>, a <link linkend="RCL.SEARCH.KIO">
-          <application>KDE</application> KIO slave module</link>, and
-        Ubuntu Unity <ulink url="https://bitbucket.org/medoc/unity-lens-recoll">
-        Lens</ulink> (for older versions) or 
-        <ulink url="https://bitbucket.org/medoc/unity-scope-recoll">
-          Scope</ulink> (for current versions) modules.
-        </para>
+          programming interface</link></para></listitem>
+          <listitem><para>A <link linkend="RCL.SEARCH.KIO">
+          <application>KDE</application> KIO slave
+          module</link>.</para></listitem> 
+          <listitem><para>A Ubuntu Unity <ulink
+          url="https://bitbucket.org/medoc/unity-scope-recoll">Scope</ulink>
+          module.</para></listitem>
+          <listitem><para>A <ulink
+          url="https://github.com/koniu/recoll-webui">WEB
+          interface</ulink>.
+          </para></listitem>
+        </itemizedlist>
+      </para>
 
     </sect1>
   </chapter>
@@ -283,32 +297,32 @@
       <title>Introduction</title>
 
       <para>Indexing is the process by which the set of documents is
-	analyzed and the data entered into the database. &RCL;
-	indexing is normally incremental: documents will only be
-	processed if they have been modified since the last run. On
-	the first execution, all documents will need processing. A
-	full index build can be forced later by specifying an option
-	to the indexing command (<command>recollindex</command>
-	<option>-z</option> or <option>-Z</option>).</para>
+      analyzed and the data entered into the database. &RCL;
+      indexing is normally incremental: documents will only be
+      processed if they have been modified since the last run. On
+      the first execution, all documents will need processing. A
+      full index build can be forced later by specifying an option
+      to the indexing command (<command>recollindex</command>
+      <option>-z</option> or <option>-Z</option>).</para>
 
       <para><command>recollindex</command> skips files which caused an
       error during a previous pass. This is a performance
       optimization, and a new behaviour in version 1.21 (failed files
       were always retried by previous versions). The command line
       option <option>-k</option> can be set to retry failed files, for
-      example after updating a filter.</para>
+      example after updating an input handler.</para>
 
       <para>The following sections give an overview of different
-	aspects of the indexing processes and configuration, with links
-	to detailed sections.</para>
+      aspects of the indexing processes and configuration, with links
+      to detailed sections.</para>
 
-	<para>Depending on your data, temporary files may be needed during
-	indexing, some of them possibly quite big. You can use the
-	<envar>RECOLL_TMPDIR</envar> or <envar>TMPDIR</envar> environment
-	variables to determine where they are created (the default is to
-	use <filename>/tmp</filename>). Using <envar>TMPDIR</envar> has
-	the nice property that it may also be taken into account by 
-	auxiliary commands executed by <command>recollindex</command>.</para>
+      <para>Depending on your data, temporary files may be needed during
+      indexing, some of them possibly quite big. You can use the
+      <envar>RECOLL_TMPDIR</envar> or <envar>TMPDIR</envar> environment
+      variables to determine where they are created (the default is to
+      use <filename>/tmp</filename>). Using <envar>TMPDIR</envar> has
+      the nice property that it may also be taken into account by 
+      auxiliary commands executed by <command>recollindex</command>.</para>
 
       <sect2 id="RCL.INDEXING.INTRODUCTION.MODES">
 	<title>Indexing modes</title> 
@@ -374,43 +388,59 @@
 
       <sect2 id="RCL.INDEXING.INTRODUCTION.CONFIG">
 	<title>Configurations, multiple indexes</title>
-	
-	<para>The parameters describing what is to be indexed and
-	  local preferences are defined in text files contained in a
-	  <link linkend="RCL.INDEXING.CONFIG">configuration
-	  directory</link>.</para>
 
-	<para>All parameters have defaults, defined in system-wide
-	  files.</para> 
-
-	<para>Without further configuration, &RCL; will index all
-          appropriate files from your home directory, with a reasonable
-          set of defaults.</para>
+        <para>&RCL; supports defining multiple indexes.</para>
+        
+	<para>Each index is defined by its own <link
+        linkend="RCL.INDEXING.CONFIG">configuration directory</link>, in
+        which several configuration files describe what should be indexed
+        and how.</para>
 
 	<para>A default personal configuration directory
-	  (<filename>$HOME/.recoll/</filename>) is created
-	  when a &RCL; program is first executed. It is possible to
-	  create other configuration directories, and use them by
-	  setting the <envar>RECOLL_CONFDIR</envar> environment
-	  variable, or giving the <option>-c</option> option to any of
-	  the &RCL; commands.</para>
+	(<filename>$HOME/.recoll/</filename>) is created
+	when a &RCL; program is first executed. This configuration is
+        the one used for indexing and querying when no specific
+        configuration is specified.</para>
 
-	<para>In some cases, it may be interesting to index different
-	  areas of the file system to separate databases. You can do this
-	  by using multiple configuration directories, each indexing a
-	  file system area to a specific database. Typically, this
-	  would be done to separate personal and shared
-          indexes, or to take advantage of the organization of your data
-          to improve search precision.</para>
+	<para>All configuration parameters have defaults, defined in
+        system-wide files. Without further customisation, the default
+        configuration will process your complete home directory, with a
+        reasonable set of defaults. It can be changed to process a
+        different area of the file system, select files in different ways,
+        and many other things.</para>
 
-	<para>The generated indexes can
-          be queried concurrently in a transparent manner.</para>
+	<para>In some cases, it may be interesting, for example, to index
+	different areas of the file system into separate indexes, or use
+	different options. You can do this by creating additional
+	configuration directories.</para>
 
-	<para>For index generation, multiple configurations are
-          totally independant from each other. When multiple indexes need
-          to be used for a single search,
-	  <link linkend="RCL.INDEXING.CONFIG.MULTIPLE">some parameters
-          should be consistent among the configurations</link>.</para>
+        <para>Examples of usage would be to separate personal and shared
+        indexes, or to take advantage of the organization of your data
+        to improve search precision.</para>
+
+        <para>A specific configuration can be selected by setting the
+	<envar>RECOLL_CONFDIR</envar> environment variable, or giving the
+	<option>-c</option> option to any of the &RCL; commands.</para>
+
+	<para>When generating indexes, the different configurations are
+        entirely independant (no parameters are ever shared between
+        configurations when indexing).</para>
+
+        <para>Multiple indexes can queryied concurrently, either from the
+        GUI or the command line. When doing this, there is always a main
+        configuration, from which both configuration and index data are
+        used. Only the index data from the additional indexes is used
+        (their configuration parameters are ignored).</para>
+
+	<para>This is important and sometimes confusing, so it will be
+        rephrased here: for index generation, multiple configurations are
+        totally independant from each other. When querying, configuration
+        and data are used from the main index (the one designated by
+        <literal>-c</literal> or <envar>RECOLL_CONFDIR</envar>), and only
+        the data from the additional indexes is used. This also implies
+        that <link linkend="RCL.INDEXING.CONFIG.MULTIPLE">some parameters
+        should be consistent among the configurations</link> for indexes
+        which are to be used together.</para>
 
       </sect2>
 
@@ -421,7 +451,7 @@
           processing are set in 
           <link linkend="RCL.INDEXING.CONFIG">configuration files</link>.</para>
 
-	<para>Most file types, like HTML or word processing files, only hold
+	  <para>Most file types, like HTML or word processing files, only hold
           one document. Some file types, like email folders or zip
           archives, can hold many individually indexed documents, which may
           themselves be compound ones. Such hierarchies can go quite
@@ -430,10 +460,10 @@
           document stored as an attachment to an email message inside an
           email folder archived in a zip file...</para>
 
-	<para>&RCL; indexing processes plain text, HTML, OpenDocument
+	  <para>&RCL; indexing processes plain text, HTML, OpenDocument
           (Open/LibreOffice), email formats, and a few others internally.</para>
 
-	<para>Other file types (ie: postscript, pdf, ms-word, rtf ...) 
+	  <para>Other file types (ie: postscript, pdf, ms-word, rtf ...) 
           need external applications for preprocessing. The list is in the
           <link linkend="RCL.INSTALL.EXTERNAL"> installation</link>
           section. After every indexing operation, &RCL; updates a list of
@@ -447,34 +477,24 @@
           <filename>missing</filename> text file inside the configuration
           directory.</para>
 
-        <para>By default, &RCL; will try to index any file type that
+          <para>By default, &RCL; will try to index any file type that
           it has a way to read. This is sometimes not desirable, and
           there are ways to either exclude some types, or on the
-          contrary to define a positive list of types to be
+          contrary define a positive list of types to be
           indexed. In the latter case, any type not in the list will
           be ignored.</para>
 
-          <note><title>Note about MIME types</title>
-          <para>When editing the <literal>indexedmimetypes</literal>
-          or <literal>excludedmimetypes</literal> lists, you should use the
-          MIME values listed in the <filename>mimemap</filename> file
-          or in Recoll result lists in preference to <literal>file -i</literal>
-          output: there are a number of differences. The
-          <literal>file -i</literal> output should only be used for files
-          without extensions, or for which the extension is not listed in
-          <filename>mimemap</filename></para></note> 
+          <para>Excluding file types can be done by adding wildcard name
+          patterns to the
+          <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES">
+            skippedNames</link> list, which
+            can be done from the GUI Index configuration menu. For
+            versions 1.20 and later, you can alternatively set the
+            <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.EXCLUDEDMIMETYPES">
+              excludedmimetypes</link> list in the configuration file. This
+          can be redefined for subdirectories.</para>
 
-          <para>Excluding types can be done by adding wildcard name
-        patterns to the
-        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES">
-          skippedNames</link> list, which
-          can be done from the GUI Index configuration menu. For
-          versions 1.20 and later, you can alternatively set the
-          <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.EXCLUDEDMIMETYPES">
-            excludedmimetypes</link> list in the configuration file. This
-            can be redefined for subdirectories.</para>
-
-        <para>You can also define an exclusive list of MIME types to be
+          <para>You can also define an exclusive list of MIME types to be
         indexed (no others will be indexed), by settting 
         the <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.INDEXEDMIMETYPES">
         indexedmimetypes</link> configuration variable. Example:<programlisting>
@@ -491,14 +511,23 @@ indexedmimetypes = application/pdf
           </para>
 
           <para><literal>excludedmimetypes</literal> or
-          <literal>indexedmimetypes</literal>, can be set either by
-          editing the <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF">
-          main configuration file
-          (<filename>recoll.conf</filename>)</link>, or from the GUI
-          index configuration tool.</para>
+          <literal>indexedmimetypes</literal>, can be set either by editing
+          the <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF">configuration
+          file (<filename>recoll.conf</filename>)</link> for 
+          the index, or by using the GUI index configuration tool.</para>
 
+          <note><title>Note about MIME types</title>
+          <para>When editing the <literal>indexedmimetypes</literal>
+          or <literal>excludedmimetypes</literal> lists, you should use the
+          MIME values listed in the <filename>mimemap</filename> file
+          or in Recoll result lists in preference to <literal>file -i</literal>
+          output: there are a number of differences. The
+          <literal>file -i</literal> output should only be used for files
+          without extensions, or for which the extension is not listed in
+          <filename>mimemap</filename></para></note> 
 
       </sect2>
+
 
       <sect2>
 	<title>Indexing failures</title>
@@ -531,14 +560,19 @@ indexedmimetypes = application/pdf
 
       <sect2>
 	<title>Recovery</title>
+
 	<para>In the rare case where the index becomes corrupted (which can
-	  signal itself by weird search results or crashes), the index files
-	  need to be erased before restarting a clean indexing pass. Just delete
-	  the <filename>xapiandb</filename> directory (see 
-	  <link linkend="RCL.INDEXING.STORAGE">next section</link>), or, 
-	  alternatively, start the next <command>recollindex</command> with the 
-	  <option>-z</option> option, which will reset the database before
-	  indexing.</para>
+	signal itself by weird search results or crashes), the index files
+	need to be erased before restarting a clean indexing pass. Just delete
+	the <filename>xapiandb</filename> directory (see 
+	<link linkend="RCL.INDEXING.STORAGE">next section</link>), or, 
+	alternatively, start the next <command>recollindex</command> with the 
+	<option>-z</option> option, which will reset the database before
+	indexing. The difference between the two methods is that the
+        second will not change the current index format, which may be
+        undesirable if a newer format is supported by the &XAP;
+        version.</para>
+
       </sect2>
 
     </sect1>
@@ -585,50 +619,46 @@ indexedmimetypes = application/pdf
           desired another location for the index, typically out of disk
           occupation concerns.</para>
           </listitem>
-
         </itemizedlist>
       </para>
 
       <para>The size of the index is determined by the size of the set
-        of documents, but the ratio can vary a lot. For a typical
-        mixed set of documents, the index size will often be close to
-        the data set size. In specific cases (a set of compressed mbox
-        files for example), the index can become much bigger than the
-        documents. It may also be much smaller if the documents
-        contain a lot of images or other non-indexed data (an extreme
-        example being a set of mp3 files where only the tags would be
-        indexed).</para>
+      of documents, but the ratio can vary a lot. For a typical
+      mixed set of documents, the index size will often be close to
+      the data set size. In specific cases (a set of compressed mbox
+      files for example), the index can become much bigger than the
+      documents. It may also be much smaller if the documents
+      contain a lot of images or other non-indexed data (an extreme
+      example being a set of mp3 files where only the tags would be
+      indexed).</para>
 
       <para>Of course, images, sound and video do not increase the
-        index size, which means that nowadays (2012), typically, even a big
-        index will be negligible against the total amount of data on the
-        computer.</para>
+      index size, which means that nowadays, typically, even a big
+      index will be negligible against the total amount of data on the
+      computer.</para>
       
       <para>The index data directory (<filename>xapiandb</filename>)
-	only contains data that can be completely rebuilt by an index run
-	(as long as the original documents exist), and it can always be
-	destroyed safely.</para>
-
+      only contains data that can be completely rebuilt by an index run
+      (as long as the original documents exist), and it can always be
+      destroyed safely.</para>
+      
       <sect2 id="RCL.INDEXING.STORAGE.FORMAT">
         <title>&XAP; index formats</title>
 
         <para>&XAP; versions usually support several formats for index
-          storage. A given major &XAP; version will have a current format,
-          used to create new indexes, and will also support the format from
-          the previous major version.</para>
+        storage. A given major &XAP; version will have a current format,
+        used to create new indexes, and will also support the format from
+        the previous major version.</para>
 
-        <para>&XAP; will not convert automatically an existing index
-          from the older format to the newer one. If you want to upgrade to
-          the new format, or if a very old index needs to be converted
-          because its format is not supported any more, you will have to
-          explicitly delete the old index, then run a normal indexing
-          process.</para>
+        <para>&XAP; will not convert automatically an existing index from
+        the older format to the newer one. If you want to upgrade to the
+        new format, or if a very old index needs to be converted because
+        its format is not supported any more, you will have to explicitly
+        delete the old index (typically
+        <filename>~/.recoll/xapiandb</filename>), then run a normal
+        indexing command. Using option <option>-z</option> would not work
+        in this situation.</para>
 
-        <para>Using the <option>-z</option> option to
-          <command>recollindex</command> is not sufficient to change the
-          format, you will have to delete all files inside the index
-          directory (typically <filename>~/.recoll/xapiandb</filename>)
-          before starting the indexing.</para>
 
       </sect2>
 
@@ -682,31 +712,31 @@ indexedmimetypes = application/pdf
             <refentrytitle>recoll.conf</refentrytitle>
 	    <manvolnum>5</manvolnum>
        </citerefentry>
-        man page, but the most
-        current information will most likely be the comments inside the
-        sample file. The most immediately useful variable you may
-        interested in is probably 
-        <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.TOPDIRS">
-	<varname>topdirs</varname></link>, 
-        which determines what subtrees get indexed.</para>
+       man page, but the most
+       current information will most likely be the comments inside the
+       sample file. The most immediately useful variable you may
+       interested in is probably 
+       <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.TOPDIRS">
+	 <varname>topdirs</varname></link>, 
+      which determines what subtrees get indexed.</para>
 
       <para>The applications needed to index file types other than
-        text, HTML or email (ie: pdf, postscript, ms-word...) are
-        described in the <link linkend="RCL.INSTALL.EXTERNAL">external
-          packages section.</link></para>
+      text, HTML or email (ie: pdf, postscript, ms-word...) are
+      described in the <link linkend="RCL.INSTALL.EXTERNAL">external
+      packages section.</link></para>
 
       <para>As of Recoll 1.18 there are two incompatible types of Recoll
       indexes, depending on the treatment of character case and
-      diacritics. The next section describes the two types in more
-      detail.</para>
+      diacritics. A <link linkend="RCL.INDEXING.CONFIG.SENS">a further
+      section</link> describes the two types in more detail.</para>
 
       <sect2 id="RCL.INDEXING.CONFIG.MULTIPLE">
         <title>Multiple indexes</title>
 
-        <para>Multiple &RCL; indexes can be created by
-	using several configuration directories which are usually set to
-	index different areas of the file system. A specific index can
-	be selected for updating or searching, using the
+        <para>Multiple &RCL; indexes can be created by using several
+	configuration directories which are typically set to index
+	different areas of the file system. A specific index can be
+	selected for updating or searching, using the
 	<envar>RECOLL_CONFDIR</envar> environment variable or the
 	<option>-c</option> option to <command>recoll</command> and
 	<command>recollindex</command>.</para>
@@ -717,7 +747,7 @@ indexedmimetypes = application/pdf
         <envar>RECOLL_CONFDIR</envar> or the <option>-c</option> parameter,
         and there is no way to switch configurations within the GUI.</para>
 
-        <para>Additional configuration directory (beyond
+        <para>Additional configuration directories (beyond
         <filename>~/.recoll</filename>) must be created by hand
         (<command>mkdir</command> or such), the GUI will not do it. This is
         to avoid mistakenly creating additional directories when an
@@ -735,16 +765,20 @@ indexedmimetypes = application/pdf
 	worth the trouble.</para>
 
         <para>A <command>recollindex</command> program instance can only
-	update one specific index.</para>
+	update one specific index, and it will only use parameters from a
+        single configuration (no parameters are ever shared between
+        configurations when indexing).</para>
 
-        <para>The main index (defined by
-	<envar>RECOLL_CONFDIR</envar> or <option>-c</option>) is
-	always active. If this is undesirable, you can set up your
-	base configuration to index an empty directory.</para>
+        <para>Multiple indexes can queryied concurrently, either from the
+        GUI or the command line. When doing this, there is always a main
+        configuration, from which both configuration and index data are
+        used. Only the index data from the additional indexes is used
+        (their configuration parameters are ignored).</para>
 
-        <para>The different search interfaces (GUI, command line, ...)
-	have different methods to define the set of indexes to be
-	used, see the appropriate section.</para>
+        <para>When searching, the current main index (defined by
+        <envar>RECOLL_CONFDIR</envar> or <option>-c</option>) is always
+        active. If this is undesirable, you can set up your base
+        configuration to index an empty directory.</para>
 
         <para>If a set of multiple indexes are to be used together for
 	searches, some configuration parameters must be consistent
@@ -760,6 +794,11 @@ indexedmimetypes = application/pdf
 	relevant parameters are described in the 
 	<link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.TERMS">linked
 	section</link>.</para>
+
+        <para>The different search interfaces (GUI, command line, ...)
+	have different methods to define the set of indexes to be
+	used, see the appropriate section.</para>
+
 
       </sect2>
 
@@ -2356,61 +2395,60 @@ MimeType=*/*
       <title>Multiple indexes</title>
 
       <para>See the <link linkend="RCL.INDEXING.CONFIG.MULTIPLE">section
-	  describing the use of multiple indexes</link> for
-	generalities. Only the aspects concerning
-	the <command>recoll</command> GUI are described here.</para>
+      describing the use of multiple indexes</link> for
+      generalities. Only the aspects concerning the
+      <command>recoll</command> GUI are described here.</para>
 
       <para>A <command>recoll</command> program instance is always
-	associated with a specific index, which is the one to be updated
-	when requested from the <guimenu>File</guimenu> menu, but it can
-	use any number of &RCL; indexes for searching. The external
-	indexes can be selected through the <guilabel>external
-	  indexes</guilabel> tab in the preferences dialog.</para>
+      associated with a specific index, which is the one to be updated
+      when requested from the <guimenu>File</guimenu> menu, but it can
+      use any number of &RCL; indexes for searching. The external
+      indexes can be selected through the <guilabel>external
+      indexes</guilabel> tab in the preferences dialog.</para>
 
-      <para>Index selection is performed in two phases. A set of all
-	usable indexes must first be defined, and then the subset of
-	indexes to be used for searching. These parameters
-	are retained across program executions (there are kept
-	separately for each &RCL; configuration). The set of all indexes
-	is usually quite stable, while the active ones might typically
-	be adjusted quite frequently.</para>
+      <para>Index selection is performed in two phases. A set of all usable
+      indexes must first be defined, and then the subset of indexes to be
+      used for searching. These parameters are retained across program
+      executions (there are kept separately for each &RCL;
+      configuration). The set of all indexes is usually quite stable, while
+      the active ones might typically be adjusted quite frequently.</para>
 
       <para>The main index (defined by
-	<envar>RECOLL_CONFDIR</envar>) is always active. If this is
-	undesirable, you can set up your base configuration to index
-	an empty directory.</para>
+      <envar>RECOLL_CONFDIR</envar>) is always active. If this is
+      undesirable, you can set up your base configuration to index
+      an empty directory.</para>
 
       <para>When adding a new index to the set, you can select either
-        a &RCL; configuration directory, or directly a &XAP; index
-        directory. In the first case, the &XAP; index directory will
-        be obtained from the selected configuration.</para>
+      a &RCL; configuration directory, or directly a &XAP; index
+      directory. In the first case, the &XAP; index directory will
+      be obtained from the selected configuration.</para>
 
       <para>As building the set of all indexes can be a little tedious
-	when done through the user interface, you can use the
-	<envar>RECOLL_EXTRA_DBS</envar> environment
-	variable to provide an initial set. This might typically be
-	set up by a system administrator so that every user does not
-	have to do it. The variable should define a colon-separated list
-	of index  directories, ie: 
+      when done through the user interface, you can use the
+      <envar>RECOLL_EXTRA_DBS</envar> environment
+      variable to provide an initial set. This might typically be
+      set up by a system administrator so that every user does not
+      have to do it. The variable should define a colon-separated list
+      of index  directories, ie: 
       </para>
       <screen>export RECOLL_EXTRA_DBS=/some/place/xapiandb:/some/other/db</screen> 
 
       <para>Another environment variable, 
-        <envar>RECOLL_ACTIVE_EXTRA_DBS</envar> allows adding to the active
-        list of indexes. This variable was suggested and implemented by a
-        &RCL; user. It is mostly useful if you use scripts to mount
-        external volumes with &RCL; indexes. By using
-        <envar>RECOLL_EXTRA_DBS</envar> and
-        <envar>RECOLL_ACTIVE_EXTRA_DBS</envar>, you can add and activate
-        the index for the mounted volume when starting
-        <command>recoll</command>.
+      <envar>RECOLL_ACTIVE_EXTRA_DBS</envar> allows adding to the active
+      list of indexes. This variable was suggested and implemented by a
+      &RCL; user. It is mostly useful if you use scripts to mount
+      external volumes with &RCL; indexes. By using
+      <envar>RECOLL_EXTRA_DBS</envar> and
+      <envar>RECOLL_ACTIVE_EXTRA_DBS</envar>, you can add and activate
+      the index for the mounted volume when starting
+      <command>recoll</command>.
       </para>
       
       <para><envar>RECOLL_ACTIVE_EXTRA_DBS</envar> is available for
-        &RCL; versions 1.17.2 and later. A change was made in the same
-        update so that <command>recoll</command> will
-        automatically deactivate unreachable indexes when starting
-        up.</para>
+      &RCL; versions 1.17.2 and later. A change was made in the same
+      update so that <command>recoll</command> will
+      automatically deactivate unreachable indexes when starting
+      up.</para>
 
     </sect2>
 

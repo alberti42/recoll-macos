@@ -1,4 +1,12 @@
-# Wherever docbook.xsl and chunk.xsl live
+
+
+
+# Wherever docbook.xsl and chunk.xsl live.
+# NOTE: THIS IS HARDCODED inside custom.xsl (for changing the output
+# charset), which needs to change if the stylesheet location changes.
+# Necessity of custom.xsl:
+#   http://www.sagehill.net/docbookxsl/OutputEncoding.html
+
 # Fbsd
 #XSLDIR="/usr/local/share/xsl/docbook/"
 # Mac
@@ -26,7 +34,7 @@ webh:
         
 usermanual.html: usermanual.xml
 	xsltproc --xinclude ${commonoptions} \
-            -o tmpfile.html "${XSLDIR}/html/docbook.xsl" $<
+            -o tmpfile.html custom.xsl $<
 	-tidy -indent tmpfile.html > usermanual.html
 	rm -f tmpfile.html
 
