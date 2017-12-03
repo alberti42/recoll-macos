@@ -293,10 +293,14 @@ class AudioTagExtractor:
                         val0 = str(val)
                     else:
                         try:
-                            val0 = str(val[0])
+                            val0 = val[0]
                         except:
-                            val0 = str(val)
+                            val0 = val
                     if val0:
+                        if isinstance(val0, unicode):
+                            val0 = val0.encode('utf-8', errors='replace')
+                        else:
+                            val0 = str(val0)
                         minf[ntag] = val0
                         #self.em.rclog("Tag %s -> %s" % (ntag, val0))
                 except Exception as err:
