@@ -865,12 +865,13 @@ indexedmimetypes = application/pdf
           to index files is divided in several stages and some of the
           stages can be executed by multiple threads. The stages are:
           <orderedlist>
-            <listitem>File system walking: this is always performed by
-              the main thread.</listitem>
-            <listitem>File conversion and data extraction.</listitem>
-            <listitem>Text processing (splitting, stemming,
-            etc.)</listitem>
-            <listitem>&XAP; index update.</listitem>
+            <listitem><para>File system walking: this is always performed by
+              the main thread.</para></listitem>
+            <listitem><para>File conversion and data
+            extraction.</para></listitem>
+            <listitem><para>Text processing (splitting, stemming,
+            etc.).</para></listitem>
+            <listitem><para>&XAP; index update.</para></listitem>
           </orderedlist>
         </para>
         <para>You can also read a 
@@ -2350,8 +2351,8 @@ MimeType=*/*
             scan, which can be quite long.</para>
           </listitem>
           </varlistentry>
-          <varlistentry>
 
+          <varlistentry>
           <term>Stem expansion</term>
           <listitem><para>This mode will perform the usual stem expansion
           normally done as part user input processing. As such it is
@@ -4698,9 +4699,8 @@ for doc in results:
 
       <variablelist>
 
-        <varlistentry id="RCL.PROGRAM.PYTHONAPI.ELEMENTS.IPATH">> 
+        <varlistentry id="RCL.PROGRAM.PYTHONAPI.ELEMENTS.IPATH">
           <term>ipath</term> 
-          
           <listitem><para>This data value (set as a field in the Doc
           object) is stored, along with the URL, but not indexed by
           &RCL;. Its contents are not interpreted by the index layer, and
@@ -4725,7 +4725,6 @@ for doc in results:
 
         <varlistentry id="RCL.PROGRAM.PYTHONAPI.ELEMENTS.UDI">
           <term>udi</term>
-
           <listitem><para>An <literal>udi</literal> (unique document
           identifier) identifies a document. Because of limitations inside
           the index engine, it is restricted in length (to 200 bytes),
@@ -4742,7 +4741,6 @@ for doc in results:
 
         <varlistentry id="RCL.PROGRAM.PYTHONAPI.ELEMENTS.PARENTUDI">
           <term>parent_udi</term>
-
           <listitem><para>If this attribute is set on a document when
           entering it in the index, it designates its physical container
           document. In a multilevel hierarchy, this may not be the
@@ -4765,7 +4763,6 @@ for doc in results:
 
         <varlistentry> 
           <term>Stored and indexed fields</term> 
-          
           <listitem><para>The <filename>fields</filename> file inside
           the &RCL; configuration defines which document fields are
           either "indexed" (searchable), "stored" (retrievable with
@@ -6021,7 +6018,7 @@ thesame = "some string with spaces"
         </listitem>
       </itemizedlist>
       </para>
-
+    
 	  <sect2 id="RCL.INSTALL.CONFIG.ENVIR">
 	  <title>Environment variables</title>
 
@@ -6091,7 +6088,7 @@ thesame = "some string with spaces"
 
       <!-- <sect2 id="RCL.INSTALL.CONFIG.RECOLLCONF"> -->
       <xi:include xmlns:xi="http://www.w3.org/2001/XInclude"
-        href="recoll.conf.xml" /> 
+                  href="recoll.conf.xml" /> 
 
 
       <sect2 id="RCL.INSTALL.CONFIG.FIELDS">
@@ -6488,12 +6485,8 @@ application/x-blobapp = exec rclblob
               to write an input handler.</para> 
 
         </sect3>
-
       </sect2>
-
     </sect1>
-
   </chapter>
-
 </book>
 

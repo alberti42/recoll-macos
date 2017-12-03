@@ -1416,14 +1416,20 @@ indexedmimetypes = application/pdf
           multiple threads. The stages are:</p>
           <div class="orderedlist">
             <ol class="orderedlist" type="1">
-              <li class="listitem">File system walking: this is
-              always performed by the main thread.</li>
-              <li class="listitem">File conversion and data
-              extraction.</li>
-              <li class="listitem">Text processing (splitting,
-              stemming, etc.)</li>
-              <li class="listitem"><span class=
-              "application">Xapian</span> index update.</li>
+              <li class="listitem">
+                <p>File system walking: this is always performed by
+                the main thread.</p>
+              </li>
+              <li class="listitem">
+                <p>File conversion and data extraction.</p>
+              </li>
+              <li class="listitem">
+                <p>Text processing (splitting, stemming, etc.).</p>
+              </li>
+              <li class="listitem">
+                <p><span class="application">Xapian</span> index
+                update.</p>
+              </li>
             </ol>
           </div>
           <p>You can also read a <a class="ulink" href=
@@ -7794,277 +7800,293 @@ thesame = "some string with spaces"
                 </div>
               </div>
             </div>
-            <dl>
-              <dt><a name="RCL.INSTALL.CONFIG.RECOLLCONF.TOPDIRS"
-              id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.TOPDIRS"></a><span class="term"><code class="varname">topdirs</code></span></dt>
-              <dd>
-                <p>Space-separated list of files or directories to
-                recursively index. Default to ~ (indexes $HOME).
-                You can use symbolic links in the list, they will
-                be followed, independantly of the value of the
-                followLinks variable.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES"></a><span class="term"><code class="varname">skippedNames</code></span></dt>
-              <dd>
-                <p>Files and directories which should be ignored.
-                White space separated list of wildcard patterns
-                (simple ones, not paths, must contain no / ), which
-                will be tested against file and directory names.
-                The list in the default configuration does not
-                exclude hidden directories (names beginning with a
-                dot), which means that it may index quite a few
-                things that you do not want. On the other hand,
-                email user agents like Thunderbird usually store
-                messages in hidden directories, and you probably
-                want this indexed. One possible solution is to have
-                ".*" in "skippedNames", and add things like
-                "~/.thunderbird" "~/.evolution" to "topdirs". Not
-                even the file names are indexed for patterns in
-                this list, see the "noContentSuffixes" variable for
-                an alternative approach which indexes the file
-                names. Can be redefined for any subtree.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES-" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES-"></a><span class="term"><code class="varname">skippedNames-</code></span></dt>
-              <dd>
-                <p>List of name endings to remove from the default
-                skippedNames list.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES+" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES+"></a><span class="term"><code class="varname">skippedNames+</code></span></dt>
-              <dd>
-                <p>List of name endings to add to the default
-                skippedNames list.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES"></a><span class="term"><code class="varname">noContentSuffixes</code></span></dt>
-              <dd>
-                <p>List of name endings (not necessarily
-                dot-separated suffixes) for which we don't try MIME
-                type identification, and don't uncompress or index
-                content. Only the names will be indexed. This
-                complements the now obsoleted recoll_noindex list
-                from the mimemap file, which will go away in a
-                future release (the move from mimemap to
-                recoll.conf allows editing the list through the
-                GUI). This is different from skippedNames because
-                these are name ending matches only (not wildcard
-                patterns), and the file name itself gets indexed
-                normally. This can be redefined for
-                subdirectories.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES-"
-              id="RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES-">
-              </a><span class="term"><code class=
-              "varname">noContentSuffixes-</code></span></dt>
-              <dd>
-                <p>List of name endings to remove from the default
-                noContentSuffixes list.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES+"
-              id="RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES+">
-              </a><span class="term"><code class=
-              "varname">noContentSuffixes+</code></span></dt>
-              <dd>
-                <p>List of name endings to add to the default
-                noContentSuffixes list.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDPATHS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDPATHS"></a><span class="term"><code class="varname">skippedPaths</code></span></dt>
-              <dd>
-                <p>Paths we should not go into. Space-separated
-                list of wildcard expressions for filesystem paths.
-                Can contain files and directories. The database and
-                configuration directories will automatically be
-                added. The expressions are matched using
-                'fnmatch(3)' with the FNM_PATHNAME flag set by
-                default. This means that '/' characters must be
-                matched explicitely. You can set
-                'skippedPathsFnmPathname' to 0 to disable the use
-                of FNM_PATHNAME (meaning that '/*/dir3' will match
-                '/dir1/dir2/dir3'). The default value contains the
-                usual mount point for removable media to remind you
-                that it is a bad idea to have Recoll work on these
-                (esp. with the monitor: media gets indexed on
-                mount, all data gets erased on unmount).
-                Explicitely adding '/media/xxx' to the topdirs will
-                override this.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDPATHSFNMPATHNAME"
-              id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDPATHSFNMPATHNAME">
-              </a><span class="term"><code class=
-              "varname">skippedPathsFnmPathname</code></span></dt>
-              <dd>
-                <p>Set to 0 to override use of FNM_PATHNAME for
-                matching skipped paths.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.DAEMSKIPPEDPATHS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.DAEMSKIPPEDPATHS"></a><span class="term"><code class="varname">daemSkippedPaths</code></span></dt>
-              <dd>
-                <p>skippedPaths equivalent specific to real time
-                indexing. This enables having parts of the tree
-                which are initially indexed but not monitored. If
-                daemSkippedPaths is not set, the daemon uses
-                skippedPaths.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.ZIPSKIPPEDNAMES" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.ZIPSKIPPEDNAMES"></a><span class="term"><code class="varname">zipSkippedNames</code></span></dt>
-              <dd>
-                <p>Space-separated list of wildcard expressions for
-                names that should be ignored inside zip archives.
-                This is used directly by the zip handler, and has a
-                function similar to skippedNames, but works
-                independantly. Can be redefined for subdirectories.
-                Supported by recoll 1.20 and newer. See
-                https://www.lesbonscomptes.com/recoll/faqsandhowtos/FilteringOutZipArchiveMembers.html</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.FOLLOWLINKS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.FOLLOWLINKS"></a><span class="term"><code class="varname">followLinks</code></span></dt>
-              <dd>
-                <p>Follow symbolic links during indexing. The
-                default is to ignore symbolic links to avoid
-                multiple indexing of linked files. No effort is
-                made to avoid duplication when this option is set
-                to true. This option can be set individually for
-                each of the 'topdirs' members by using sections. It
-                can not be changed below the 'topdirs' level. Links
-                in the 'topdirs' list itself are always
-                followed.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.INDEXEDMIMETYPES" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.INDEXEDMIMETYPES"></a><span class="term"><code class="varname">indexedmimetypes</code></span></dt>
-              <dd>
-                <p>Restrictive list of indexed mime types. Normally
-                not set (in which case all supported types are
-                indexed). If it is set, only the types from the
-                list will have their contents indexed. The names
-                will be indexed anyway if indexallfilenames is set
-                (default). MIME type names should be taken from the
-                mimemap file (the values may be different from
-                xdg-mime or file -i output in some cases). Can be
-                redefined for subtrees.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.EXCLUDEDMIMETYPES" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.EXCLUDEDMIMETYPES"></a><span class="term"><code class="varname">excludedmimetypes</code></span></dt>
-              <dd>
-                <p>List of excluded MIME types. Lets you exclude
-                some types from indexing. MIME type names should be
-                taken from the mimemap file (the values may be
-                different from xdg-mime or file -i output in some
-                cases) Can be redefined for subtrees.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.NOMD5MIMETYPES" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.NOMD5MIMETYPES"></a><span class="term"><code class="varname">nomd5mimetypes</code></span></dt>
-              <dd>
-                <p>Don't compute md5 for these types. md5 checksums
-                are used only for deduplicating results, and can be
-                very expensive to compute on multimedia or other
-                big files. This list lets you turn off md5
-                computation for selected types. It is global (no
-                redefinition for subtrees). At the moment, it only
-                has an effect for external handlers (exec and
-                execm). The file types can be specified by listing
-                either MIME types (e.g. audio/mpeg) or handler
-                names (e.g. rclaudio).</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.COMPRESSEDFILEMAXKBS"
-              id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.COMPRESSEDFILEMAXKBS"></a><span class="term"><code class="varname">compressedfilemaxkbs</code></span></dt>
-              <dd>
-                <p>Size limit for compressed files. We need to
-                decompress these in a temporary directory for
-                identification, which can be wasteful in some
-                cases. Limit the waste. Negative means no limit. 0
-                results in no processing of any compressed file.
-                Default 50 MB.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.TEXTFILEMAXMBS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.TEXTFILEMAXMBS"></a><span class="term"><code class="varname">textfilemaxmbs</code></span></dt>
-              <dd>
-                <p>Size limit for text files. Mostly for skipping
-                monster logs. Default 20 MB.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.INDEXALLFILENAMES" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.INDEXALLFILENAMES"></a><span class="term"><code class="varname">indexallfilenames</code></span></dt>
-              <dd>
-                <p>Index the file names of unprocessed files Index
-                the names of files the contents of which we don't
-                index because of an excluded or unsupported MIME
-                type.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.USESYSTEMFILECOMMAND"
-              id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.USESYSTEMFILECOMMAND"></a><span class="term"><code class="varname">usesystemfilecommand</code></span></dt>
-              <dd>
-                <p>Use a system command for file MIME type guessing
-                as a final step in file type identification This is
-                generally useful, but will usually cause the
-                indexing of many bogus 'text' files. See
-                'systemfilecommand' for the command used.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.SYSTEMFILECOMMAND" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.SYSTEMFILECOMMAND"></a><span class="term"><code class="varname">systemfilecommand</code></span></dt>
-              <dd>
-                <p>Command used to guess MIME types if the internal
-                methods fails This should be a "file -i" workalike.
-                The file path will be added as a last parameter to
-                the command line. 'xdg-mime' works better than the
-                traditional 'file' command, and is now the
-                configured default (with a hard-coded fallback to
-                'file')</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.PROCESSWEBQUEUE" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.PROCESSWEBQUEUE"></a><span class="term"><code class="varname">processwebqueue</code></span></dt>
-              <dd>
-                <p>Decide if we process the Web queue. The queue is
-                a directory where the Recoll Web browser plugins
-                create the copies of visited pages.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.TEXTFILEPAGEKBS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.TEXTFILEPAGEKBS"></a><span class="term"><code class="varname">textfilepagekbs</code></span></dt>
-              <dd>
-                <p>Page size for text files. If this is set,
-                text/plain files will be divided into documents of
-                approximately this size. Will reduce memory usage
-                at index time and help with loading data in the
-                preview window at query time. Particularly useful
-                with very big files, such as application or system
-                logs. Also see textfilemaxmbs and
-                compressedfilemaxkbs.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MEMBERMAXKBS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MEMBERMAXKBS"></a><span class="term"><code class="varname">membermaxkbs</code></span></dt>
-              <dd>
-                <p>Size limit for archive members. This is passed
-                to the filters in the environment as
-                RECOLL_FILTER_MAXMEMBERKB.</p>
-              </dd>
-            </dl>
+            <div class="variablelist">
+              <dl class="variablelist">
+                <dt><a name="RCL.INSTALL.CONFIG.RECOLLCONF.TOPDIRS"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.TOPDIRS"></a><span class="term"><code class="varname">topdirs</code></span></dt>
+                <dd>
+                  <p>Space-separated list of files or directories
+                  to recursively index. Default to ~ (indexes
+                  $HOME). You can use symbolic links in the list,
+                  they will be followed, independantly of the value
+                  of the followLinks variable.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES"></a><span class="term"><code class="varname">skippedNames</code></span></dt>
+                <dd>
+                  <p>Files and directories which should be ignored.
+                  White space separated list of wildcard patterns
+                  (simple ones, not paths, must contain no / ),
+                  which will be tested against file and directory
+                  names. The list in the default configuration does
+                  not exclude hidden directories (names beginning
+                  with a dot), which means that it may index quite
+                  a few things that you do not want. On the other
+                  hand, email user agents like Thunderbird usually
+                  store messages in hidden directories, and you
+                  probably want this indexed. One possible solution
+                  is to have ".*" in "skippedNames", and add things
+                  like "~/.thunderbird" "~/.evolution" to
+                  "topdirs". Not even the file names are indexed
+                  for patterns in this list, see the
+                  "noContentSuffixes" variable for an alternative
+                  approach which indexes the file names. Can be
+                  redefined for any subtree.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES-" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES-"></a><span class="term"><code class="varname">skippedNames-</code></span></dt>
+                <dd>
+                  <p>List of name endings to remove from the
+                  default skippedNames list.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES+" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES+"></a><span class="term"><code class="varname">skippedNames+</code></span></dt>
+                <dd>
+                  <p>List of name endings to add to the default
+                  skippedNames list.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES"></a><span class="term"><code class="varname">noContentSuffixes</code></span></dt>
+                <dd>
+                  <p>List of name endings (not necessarily
+                  dot-separated suffixes) for which we don't try
+                  MIME type identification, and don't uncompress or
+                  index content. Only the names will be indexed.
+                  This complements the now obsoleted recoll_noindex
+                  list from the mimemap file, which will go away in
+                  a future release (the move from mimemap to
+                  recoll.conf allows editing the list through the
+                  GUI). This is different from skippedNames because
+                  these are name ending matches only (not wildcard
+                  patterns), and the file name itself gets indexed
+                  normally. This can be redefined for
+                  subdirectories.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES-"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES-"></a><span class="term"><code class="varname">noContentSuffixes-</code></span></dt>
+                <dd>
+                  <p>List of name endings to remove from the
+                  default noContentSuffixes list.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES+"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOCONTENTSUFFIXES+"></a><span class="term"><code class="varname">noContentSuffixes+</code></span></dt>
+                <dd>
+                  <p>List of name endings to add to the default
+                  noContentSuffixes list.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDPATHS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDPATHS"></a><span class="term"><code class="varname">skippedPaths</code></span></dt>
+                <dd>
+                  <p>Paths we should not go into. Space-separated
+                  list of wildcard expressions for filesystem
+                  paths. Can contain files and directories. The
+                  database and configuration directories will
+                  automatically be added. The expressions are
+                  matched using 'fnmatch(3)' with the FNM_PATHNAME
+                  flag set by default. This means that '/'
+                  characters must be matched explicitely. You can
+                  set 'skippedPathsFnmPathname' to 0 to disable the
+                  use of FNM_PATHNAME (meaning that '/*/dir3' will
+                  match '/dir1/dir2/dir3'). The default value
+                  contains the usual mount point for removable
+                  media to remind you that it is a bad idea to have
+                  Recoll work on these (esp. with the monitor:
+                  media gets indexed on mount, all data gets erased
+                  on unmount). Explicitely adding '/media/xxx' to
+                  the topdirs will override this.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDPATHSFNMPATHNAME"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDPATHSFNMPATHNAME">
+                </a><span class="term"><code class=
+                "varname">skippedPathsFnmPathname</code></span></dt>
+                <dd>
+                  <p>Set to 0 to override use of FNM_PATHNAME for
+                  matching skipped paths.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.DAEMSKIPPEDPATHS"
+                id="RCL.INSTALL.CONFIG.RECOLLCONF.DAEMSKIPPEDPATHS">
+                </a><span class="term"><code class=
+                "varname">daemSkippedPaths</code></span></dt>
+                <dd>
+                  <p>skippedPaths equivalent specific to real time
+                  indexing. This enables having parts of the tree
+                  which are initially indexed but not monitored. If
+                  daemSkippedPaths is not set, the daemon uses
+                  skippedPaths.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.ZIPSKIPPEDNAMES" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.ZIPSKIPPEDNAMES"></a><span class="term"><code class="varname">zipSkippedNames</code></span></dt>
+                <dd>
+                  <p>Space-separated list of wildcard expressions
+                  for names that should be ignored inside zip
+                  archives. This is used directly by the zip
+                  handler, and has a function similar to
+                  skippedNames, but works independantly. Can be
+                  redefined for subdirectories. Supported by recoll
+                  1.20 and newer. See
+                  https://www.lesbonscomptes.com/recoll/faqsandhowtos/FilteringOutZipArchiveMembers.html</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.FOLLOWLINKS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.FOLLOWLINKS"></a><span class="term"><code class="varname">followLinks</code></span></dt>
+                <dd>
+                  <p>Follow symbolic links during indexing. The
+                  default is to ignore symbolic links to avoid
+                  multiple indexing of linked files. No effort is
+                  made to avoid duplication when this option is set
+                  to true. This option can be set individually for
+                  each of the 'topdirs' members by using sections.
+                  It can not be changed below the 'topdirs' level.
+                  Links in the 'topdirs' list itself are always
+                  followed.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.INDEXEDMIMETYPES"
+                id="RCL.INSTALL.CONFIG.RECOLLCONF.INDEXEDMIMETYPES">
+                </a><span class="term"><code class=
+                "varname">indexedmimetypes</code></span></dt>
+                <dd>
+                  <p>Restrictive list of indexed mime types.
+                  Normally not set (in which case all supported
+                  types are indexed). If it is set, only the types
+                  from the list will have their contents indexed.
+                  The names will be indexed anyway if
+                  indexallfilenames is set (default). MIME type
+                  names should be taken from the mimemap file (the
+                  values may be different from xdg-mime or file -i
+                  output in some cases). Can be redefined for
+                  subtrees.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.EXCLUDEDMIMETYPES"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.EXCLUDEDMIMETYPES"></a><span class="term"><code class="varname">excludedmimetypes</code></span></dt>
+                <dd>
+                  <p>List of excluded MIME types. Lets you exclude
+                  some types from indexing. MIME type names should
+                  be taken from the mimemap file (the values may be
+                  different from xdg-mime or file -i output in some
+                  cases) Can be redefined for subtrees.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOMD5MIMETYPES" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOMD5MIMETYPES"></a><span class="term"><code class="varname">nomd5mimetypes</code></span></dt>
+                <dd>
+                  <p>Don't compute md5 for these types. md5
+                  checksums are used only for deduplicating
+                  results, and can be very expensive to compute on
+                  multimedia or other big files. This list lets you
+                  turn off md5 computation for selected types. It
+                  is global (no redefinition for subtrees). At the
+                  moment, it only has an effect for external
+                  handlers (exec and execm). The file types can be
+                  specified by listing either MIME types (e.g.
+                  audio/mpeg) or handler names (e.g. rclaudio).</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.COMPRESSEDFILEMAXKBS"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.COMPRESSEDFILEMAXKBS">
+                </a><span class="term"><code class=
+                "varname">compressedfilemaxkbs</code></span></dt>
+                <dd>
+                  <p>Size limit for compressed files. We need to
+                  decompress these in a temporary directory for
+                  identification, which can be wasteful in some
+                  cases. Limit the waste. Negative means no limit.
+                  0 results in no processing of any compressed
+                  file. Default 50 MB.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.TEXTFILEMAXMBS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.TEXTFILEMAXMBS"></a><span class="term"><code class="varname">textfilemaxmbs</code></span></dt>
+                <dd>
+                  <p>Size limit for text files. Mostly for skipping
+                  monster logs. Default 20 MB.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.INDEXALLFILENAMES"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.INDEXALLFILENAMES"></a><span class="term"><code class="varname">indexallfilenames</code></span></dt>
+                <dd>
+                  <p>Index the file names of unprocessed files
+                  Index the names of files the contents of which we
+                  don't index because of an excluded or unsupported
+                  MIME type.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.USESYSTEMFILECOMMAND"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.USESYSTEMFILECOMMAND">
+                </a><span class="term"><code class=
+                "varname">usesystemfilecommand</code></span></dt>
+                <dd>
+                  <p>Use a system command for file MIME type
+                  guessing as a final step in file type
+                  identification This is generally useful, but will
+                  usually cause the indexing of many bogus 'text'
+                  files. See 'systemfilecommand' for the command
+                  used.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.SYSTEMFILECOMMAND"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.SYSTEMFILECOMMAND"></a><span class="term"><code class="varname">systemfilecommand</code></span></dt>
+                <dd>
+                  <p>Command used to guess MIME types if the
+                  internal methods fails This should be a "file -i"
+                  workalike. The file path will be added as a last
+                  parameter to the command line. 'xdg-mime' works
+                  better than the traditional 'file' command, and
+                  is now the configured default (with a hard-coded
+                  fallback to 'file')</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.PROCESSWEBQUEUE" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.PROCESSWEBQUEUE"></a><span class="term"><code class="varname">processwebqueue</code></span></dt>
+                <dd>
+                  <p>Decide if we process the Web queue. The queue
+                  is a directory where the Recoll Web browser
+                  plugins create the copies of visited pages.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.TEXTFILEPAGEKBS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.TEXTFILEPAGEKBS"></a><span class="term"><code class="varname">textfilepagekbs</code></span></dt>
+                <dd>
+                  <p>Page size for text files. If this is set,
+                  text/plain files will be divided into documents
+                  of approximately this size. Will reduce memory
+                  usage at index time and help with loading data in
+                  the preview window at query time. Particularly
+                  useful with very big files, such as application
+                  or system logs. Also see textfilemaxmbs and
+                  compressedfilemaxkbs.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MEMBERMAXKBS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MEMBERMAXKBS"></a><span class="term"><code class="varname">membermaxkbs</code></span></dt>
+                <dd>
+                  <p>Size limit for archive members. This is passed
+                  to the filters in the environment as
+                  RECOLL_FILTER_MAXMEMBERKB.</p>
+                </dd>
+              </dl>
+            </div>
           </div>
           <div class="sect3">
             <div class="titlepage">
@@ -8077,195 +8099,205 @@ thesame = "some string with spaces"
                 </div>
               </div>
             </div>
-            <dl>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.INDEXSTRIPCHARS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.INDEXSTRIPCHARS"></a><span class="term"><code class="varname">indexStripChars</code></span></dt>
-              <dd>
-                <p>Decide if we store character case and diacritics
-                in the index. If we do, searches sensitive to case
-                and diacritics can be performed, but the index will
-                be bigger, and some marginal weirdness may
-                sometimes occur. The default is a stripped index.
-                When using multiple indexes for a search, this
-                parameter must be defined identically for all.
-                Changing the value implies an index reset.</p>
-              </dd>
-              <dt><a name="RCL.INSTALL.CONFIG.RECOLLCONF.NONUMBERS"
-              id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.NONUMBERS"></a><span class="term"><code class="varname">nonumbers</code></span></dt>
-              <dd>
-                <p>Decides if terms will be generated for numbers.
-                For example "123", "1.5e6", 192.168.1.4, would not
-                be indexed if nonumbers is set ("value123" would
-                still be). Numbers are often quite interesting to
-                search for, and this should probably not be set
-                except for special situations, ie, scientific
-                documents with huge amounts of numbers in them,
-                where setting nonumbers will reduce the index size.
-                This can only be set for a whole index, not for a
-                subtree.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.DEHYPHENATE" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.DEHYPHENATE"></a><span class="term"><code class="varname">dehyphenate</code></span></dt>
-              <dd>
-                <p>Determines if we index 'coworker' also when the
-                input is 'co-worker'. This is new in version 1.22,
-                and on by default. Setting the variable to off
-                allows restoring the previous behaviour.</p>
-              </dd>
-              <dt><a name="RCL.INSTALL.CONFIG.RECOLLCONF.NOCJK" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.NOCJK"></a><span class="term"><code class="varname">nocjk</code></span></dt>
-              <dd>
-                <p>Decides if specific East Asian (Chinese Korean
-                Japanese) characters/word splitting is turned off.
-                This will save a small amount of CPU if you have no
-                CJK documents. If your document base does include
-                such text but you are not interested in searching
-                it, setting nocjk may be a significant time and
-                space saver.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.CJKNGRAMLEN" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.CJKNGRAMLEN"></a><span class="term"><code class="varname">cjkngramlen</code></span></dt>
-              <dd>
-                <p>This lets you adjust the size of n-grams used
-                for indexing CJK text. The default value of 2 is
-                probably appropriate in most cases. A value of 3
-                would allow more precision and efficiency on longer
-                words, but the index will be approximately twice as
-                large.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.INDEXSTEMMINGLANGUAGES"
-              id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.INDEXSTEMMINGLANGUAGES">
-              </a><span class="term"><code class=
-              "varname">indexstemminglanguages</code></span></dt>
-              <dd>
-                <p>Languages for which to create stemming expansion
-                data. Stemmer names can be found by executing
-                'recollindex -l', or this can also be set from a
-                list in the GUI.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.DEFAULTCHARSET" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.DEFAULTCHARSET"></a><span class="term"><code class="varname">defaultcharset</code></span></dt>
-              <dd>
-                <p>Default character set. This is used for files
-                which do not contain a character set definition
-                (e.g.: text/plain). Values found inside files, e.g.
-                a 'charset' tag in HTML documents, will override
-                it. If this is not set, the default character set
-                is the one defined by the NLS environment ($LC_ALL,
-                $LC_CTYPE, $LANG), or ultimately iso-8859-1
-                (cp-1252 in fact). If for some reason you want a
-                general default which does not match your LANG and
-                is not 8859-1, use this variable. This can be
-                redefined for any sub-directory.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.UNAC_EXCEPT_TRANS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.UNAC_EXCEPT_TRANS"></a><span class="term"><code class="varname">unac_except_trans</code></span></dt>
-              <dd>
-                <p>A list of characters, encoded in UTF-8, which
-                should be handled specially when converting text to
-                unaccented lowercase. For example, in Swedish, the
-                letter a with diaeresis has full alphabet
-                citizenship and should not be turned into an a.
-                Each element in the space-separated list has the
-                special character as first element and the
-                translation following. The handling of both the
-                lowercase and upper-case versions of a character
-                should be specified, as appartenance to the list
-                will turn-off both standard accent and case
-                processing. The value is global and affects both
-                indexing and querying. Examples: Swedish:
-                unac_except_trans = ää Ää öö Öö üü Üü ßss œoe Œoe
-                æae Æae ﬀff ﬁfi ﬂfl åå Åå . German:
-                unac_except_trans = ää Ää öö Öö üü Üü ßss œoe Œoe
-                æae Æae ﬀff ﬁfi ﬂfl In French, you probably want to
-                decompose oe and ae and nobody would type a German
-                ß unac_except_trans = ßss œoe Œoe æae Æae ﬀff ﬁfi
-                ﬂfl . The default for all until someone protests
-                follows. These decompositions are not performed by
-                unac, but it is unlikely that someone would type
-                the composed forms in a search. unac_except_trans =
-                ßss œoe Œoe æae Æae ﬀff ﬁfi ﬂfl</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MAILDEFCHARSET" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MAILDEFCHARSET"></a><span class="term"><code class="varname">maildefcharset</code></span></dt>
-              <dd>
-                <p>Overrides the default character set for email
-                messages which don't specify one. This is mainly
-                useful for readpst (libpst) dumps, which are utf-8
-                but do not say so.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.LOCALFIELDS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.LOCALFIELDS"></a><span class="term"><code class="varname">localfields</code></span></dt>
-              <dd>
-                <p>Set fields on all files (usually of a specific
-                fs area). Syntax is the usual: name = value ; attr1
-                = val1 ; [...] value is empty so this needs an
-                initial semi-colon. This is useful, e.g., for
-                setting the rclaptg field for application selection
-                inside mimeview.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.TESTMODIFUSEMTIME" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.TESTMODIFUSEMTIME"></a><span class="term"><code class="varname">testmodifusemtime</code></span></dt>
-              <dd>
-                <p>Use mtime instead of ctime to test if a file has
-                been modified. The time is used in addition to the
-                size, which is always used. Setting this can reduce
-                re-indexing on systems where extended attributes
-                are used (by some other application), but not
-                indexed, because changing extended attributes only
-                affects ctime. Notes: - This may prevent detection
-                of change in some marginal file rename cases (the
-                target would need to have the same size and mtime).
-                - You should probably also set noxattrfields to 1
-                in this case, except if you still prefer to perform
-                xattr indexing, for example if the local file
-                update pattern makes it of value (as in general,
-                there is a risk for pure extended attributes
-                updates without file modification to go
-                undetected). Perform a full index reset after
-                changing this.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.NOXATTRFIELDS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.NOXATTRFIELDS"></a><span class="term"><code class="varname">noxattrfields</code></span></dt>
-              <dd>
-                <p>Disable extended attributes conversion to
-                metadata fields. This probably needs to be set if
-                testmodifusemtime is set.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.METADATACMDS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.METADATACMDS"></a><span class="term"><code class="varname">metadatacmds</code></span></dt>
-              <dd>
-                <p>Define commands to gather external metadata,
-                e.g. tmsu tags. There can be several entries,
-                separated by semi-colons, each defining which field
-                name the data goes into and the command to use.
-                Don't forget the initial semi-colon. All the field
-                names must be different. You can use aliases in the
-                "field" file if necessary. As a not too pretty hack
-                conceded to convenience, any field name beginning
-                with "rclmulti" will be taken as an indication that
-                the command returns multiple field values inside a
-                text blob formatted as a recoll configuration file
-                ("fieldname = fieldvalue" lines). The rclmultixx
-                name will be ignored, and field names and values
-                will be parsed from the data. Example: metadatacmds
-                = ; tags = tmsu tags %f; rclmulti1 = cmdOutputsConf
-                %f</p>
-              </dd>
-            </dl>
+            <div class="variablelist">
+              <dl class="variablelist">
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.INDEXSTRIPCHARS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.INDEXSTRIPCHARS"></a><span class="term"><code class="varname">indexStripChars</code></span></dt>
+                <dd>
+                  <p>Decide if we store character case and
+                  diacritics in the index. If we do, searches
+                  sensitive to case and diacritics can be
+                  performed, but the index will be bigger, and some
+                  marginal weirdness may sometimes occur. The
+                  default is a stripped index. When using multiple
+                  indexes for a search, this parameter must be
+                  defined identically for all. Changing the value
+                  implies an index reset.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NONUMBERS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NONUMBERS"></a><span class="term"><code class="varname">nonumbers</code></span></dt>
+                <dd>
+                  <p>Decides if terms will be generated for
+                  numbers. For example "123", "1.5e6", 192.168.1.4,
+                  would not be indexed if nonumbers is set
+                  ("value123" would still be). Numbers are often
+                  quite interesting to search for, and this should
+                  probably not be set except for special
+                  situations, ie, scientific documents with huge
+                  amounts of numbers in them, where setting
+                  nonumbers will reduce the index size. This can
+                  only be set for a whole index, not for a
+                  subtree.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.DEHYPHENATE" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.DEHYPHENATE"></a><span class="term"><code class="varname">dehyphenate</code></span></dt>
+                <dd>
+                  <p>Determines if we index 'coworker' also when
+                  the input is 'co-worker'. This is new in version
+                  1.22, and on by default. Setting the variable to
+                  off allows restoring the previous behaviour.</p>
+                </dd>
+                <dt><a name="RCL.INSTALL.CONFIG.RECOLLCONF.NOCJK"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOCJK"></a><span class="term"><code class="varname">nocjk</code></span></dt>
+                <dd>
+                  <p>Decides if specific East Asian (Chinese Korean
+                  Japanese) characters/word splitting is turned
+                  off. This will save a small amount of CPU if you
+                  have no CJK documents. If your document base does
+                  include such text but you are not interested in
+                  searching it, setting nocjk may be a significant
+                  time and space saver.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.CJKNGRAMLEN" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.CJKNGRAMLEN"></a><span class="term"><code class="varname">cjkngramlen</code></span></dt>
+                <dd>
+                  <p>This lets you adjust the size of n-grams used
+                  for indexing CJK text. The default value of 2 is
+                  probably appropriate in most cases. A value of 3
+                  would allow more precision and efficiency on
+                  longer words, but the index will be approximately
+                  twice as large.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.INDEXSTEMMINGLANGUAGES"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.INDEXSTEMMINGLANGUAGES">
+                </a><span class="term"><code class=
+                "varname">indexstemminglanguages</code></span></dt>
+                <dd>
+                  <p>Languages for which to create stemming
+                  expansion data. Stemmer names can be found by
+                  executing 'recollindex -l', or this can also be
+                  set from a list in the GUI.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.DEFAULTCHARSET" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.DEFAULTCHARSET"></a><span class="term"><code class="varname">defaultcharset</code></span></dt>
+                <dd>
+                  <p>Default character set. This is used for files
+                  which do not contain a character set definition
+                  (e.g.: text/plain). Values found inside files,
+                  e.g. a 'charset' tag in HTML documents, will
+                  override it. If this is not set, the default
+                  character set is the one defined by the NLS
+                  environment ($LC_ALL, $LC_CTYPE, $LANG), or
+                  ultimately iso-8859-1 (cp-1252 in fact). If for
+                  some reason you want a general default which does
+                  not match your LANG and is not 8859-1, use this
+                  variable. This can be redefined for any
+                  sub-directory.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.UNAC_EXCEPT_TRANS"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.UNAC_EXCEPT_TRANS"></a><span class="term"><code class="varname">unac_except_trans</code></span></dt>
+                <dd>
+                  <p>A list of characters, encoded in UTF-8, which
+                  should be handled specially when converting text
+                  to unaccented lowercase. For example, in Swedish,
+                  the letter a with diaeresis has full alphabet
+                  citizenship and should not be turned into an a.
+                  Each element in the space-separated list has the
+                  special character as first element and the
+                  translation following. The handling of both the
+                  lowercase and upper-case versions of a character
+                  should be specified, as appartenance to the list
+                  will turn-off both standard accent and case
+                  processing. The value is global and affects both
+                  indexing and querying. Examples: Swedish:
+                  unac_except_trans = ää Ää öö Öö üü Üü ßss œoe Œoe
+                  æae Æae ﬀff ﬁfi ﬂfl åå Åå . German:
+                  unac_except_trans = ää Ää öö Öö üü Üü ßss œoe Œoe
+                  æae Æae ﬀff ﬁfi ﬂfl In French, you probably want
+                  to decompose oe and ae and nobody would type a
+                  German ß unac_except_trans = ßss œoe Œoe æae Æae
+                  ﬀff ﬁfi ﬂfl . The default for all until someone
+                  protests follows. These decompositions are not
+                  performed by unac, but it is unlikely that
+                  someone would type the composed forms in a
+                  search. unac_except_trans = ßss œoe Œoe æae Æae
+                  ﬀff ﬁfi ﬂfl</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MAILDEFCHARSET" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MAILDEFCHARSET"></a><span class="term"><code class="varname">maildefcharset</code></span></dt>
+                <dd>
+                  <p>Overrides the default character set for email
+                  messages which don't specify one. This is mainly
+                  useful for readpst (libpst) dumps, which are
+                  utf-8 but do not say so.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.LOCALFIELDS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.LOCALFIELDS"></a><span class="term"><code class="varname">localfields</code></span></dt>
+                <dd>
+                  <p>Set fields on all files (usually of a specific
+                  fs area). Syntax is the usual: name = value ;
+                  attr1 = val1 ; [...] value is empty so this needs
+                  an initial semi-colon. This is useful, e.g., for
+                  setting the rclaptg field for application
+                  selection inside mimeview.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.TESTMODIFUSEMTIME"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.TESTMODIFUSEMTIME"></a><span class="term"><code class="varname">testmodifusemtime</code></span></dt>
+                <dd>
+                  <p>Use mtime instead of ctime to test if a file
+                  has been modified. The time is used in addition
+                  to the size, which is always used. Setting this
+                  can reduce re-indexing on systems where extended
+                  attributes are used (by some other application),
+                  but not indexed, because changing extended
+                  attributes only affects ctime. Notes: - This may
+                  prevent detection of change in some marginal file
+                  rename cases (the target would need to have the
+                  same size and mtime). - You should probably also
+                  set noxattrfields to 1 in this case, except if
+                  you still prefer to perform xattr indexing, for
+                  example if the local file update pattern makes it
+                  of value (as in general, there is a risk for pure
+                  extended attributes updates without file
+                  modification to go undetected). Perform a full
+                  index reset after changing this.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOXATTRFIELDS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOXATTRFIELDS"></a><span class="term"><code class="varname">noxattrfields</code></span></dt>
+                <dd>
+                  <p>Disable extended attributes conversion to
+                  metadata fields. This probably needs to be set if
+                  testmodifusemtime is set.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.METADATACMDS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.METADATACMDS"></a><span class="term"><code class="varname">metadatacmds</code></span></dt>
+                <dd>
+                  <p>Define commands to gather external metadata,
+                  e.g. tmsu tags. There can be several entries,
+                  separated by semi-colons, each defining which
+                  field name the data goes into and the command to
+                  use. Don't forget the initial semi-colon. All the
+                  field names must be different. You can use
+                  aliases in the "field" file if necessary. As a
+                  not too pretty hack conceded to convenience, any
+                  field name beginning with "rclmulti" will be
+                  taken as an indication that the command returns
+                  multiple field values inside a text blob
+                  formatted as a recoll configuration file
+                  ("fieldname = fieldvalue" lines). The rclmultixx
+                  name will be ignored, and field names and values
+                  will be parsed from the data. Example:
+                  metadatacmds = ; tags = tmsu tags %f; rclmulti1 =
+                  cmdOutputsConf %f</p>
+                </dd>
+              </dl>
+            </div>
           </div>
           <div class="sect3">
             <div class="titlepage">
@@ -8278,144 +8310,149 @@ thesame = "some string with spaces"
                 </div>
               </div>
             </div>
-            <dl>
-              <dt><a name="RCL.INSTALL.CONFIG.RECOLLCONF.CACHEDIR"
-              id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.CACHEDIR"></a><span class="term"><code class="varname">cachedir</code></span></dt>
-              <dd>
-                <p>Top directory for Recoll data. Recoll data
-                directories are normally located relative to the
-                configuration directory (e.g. ~/.recoll/xapiandb,
-                ~/.recoll/mboxcache). If 'cachedir' is set, the
-                directories are stored under the specified value
-                instead (e.g. if cachedir is ~/.cache/recoll, the
-                default dbdir would be ~/.cache/recoll/xapiandb).
-                This affects dbdir, webcachedir, mboxcachedir,
-                aspellDicDir, which can still be individually
-                specified to override cachedir. Note that if you
-                have multiple configurations, each must have a
-                different cachedir, there is no automatic
-                computation of a subpath under cachedir.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MAXFSOCCUPPC" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MAXFSOCCUPPC"></a><span class="term"><code class="varname">maxfsoccuppc</code></span></dt>
-              <dd>
-                <p>Maximum file system occupation over which we
-                stop indexing. The value is a percentage,
-                corresponding to what the "Capacity" df output
-                column shows. The default value is 0, meaning no
-                checking.</p>
-              </dd>
-              <dt><a name="RCL.INSTALL.CONFIG.RECOLLCONF.XAPIANDB"
-              id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.XAPIANDB"></a><span class="term"><code class="varname">xapiandb</code></span></dt>
-              <dd>
-                <p>Xapian database directory location. This will be
-                created on first indexing. If the value is not an
-                absolute path, it will be interpreted as relative
-                to cachedir if set, or the configuration directory
-                (-c argument or $RECOLL_CONFDIR). If nothing is
-                specified, the default is then
-                ~/.recoll/xapiandb/</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.IDXSTATUSFILE" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.IDXSTATUSFILE"></a><span class="term"><code class="varname">idxstatusfile</code></span></dt>
-              <dd>
-                <p>Name of the scratch file where the indexer
-                process updates its status. Default: idxstatus.txt
-                inside the configuration directory.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MBOXCACHEDIR" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MBOXCACHEDIR"></a><span class="term"><code class="varname">mboxcachedir</code></span></dt>
-              <dd>
-                <p>Directory location for storing mbox message
-                offsets cache files. This is normally 'mboxcache'
-                under cachedir if set, or else under the
-                configuration directory, but it may be useful to
-                share a directory between different
-                configurations.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MBOXCACHEMINMBS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MBOXCACHEMINMBS"></a><span class="term"><code class="varname">mboxcacheminmbs</code></span></dt>
-              <dd>
-                <p>Minimum mbox file size over which we cache the
-                offsets. There is really no sense in caching
-                offsets for small files. The default is 5 MB.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.WEBCACHEDIR" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.WEBCACHEDIR"></a><span class="term"><code class="varname">webcachedir</code></span></dt>
-              <dd>
-                <p>Directory where we store the archived web pages.
-                This is only used by the web history indexing code
-                Default: cachedir/webcache if cachedir is set, else
-                $RECOLL_CONFDIR/webcache</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.WEBCACHEMAXMBS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.WEBCACHEMAXMBS"></a><span class="term"><code class="varname">webcachemaxmbs</code></span></dt>
-              <dd>
-                <p>Maximum size in MB of the Web archive. This is
-                only used by the web history indexing code.
-                Default: 40 MB. Reducing the size will not
-                physically truncate the file.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.WEBQUEUEDIR" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.WEBQUEUEDIR"></a><span class="term"><code class="varname">webqueuedir</code></span></dt>
-              <dd>
-                <p>The path to the Web indexing queue. This used to
-                be hard-coded in the old plugin as
-                ~/.recollweb/ToIndex so there would be no need or
-                possibility to change it, but the WebExtensions
-                plugin now downloads the files to the user
-                Downloads directory, and a script moves them to
-                webqueuedir. The script reads this value from the
-                config so it has become possible to change it.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.WEBDOWNLOADSDIR" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.WEBDOWNLOADSDIR"></a><span class="term"><code class="varname">webdownloadsdir</code></span></dt>
-              <dd>
-                <p>The path to browser downloads directory. This is
-                where the new browser add-on extension has to
-                create the files. They are then moved by a script
-                to webqueuedir.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLDICDIR" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLDICDIR"></a><span class="term"><code class="varname">aspellDicDir</code></span></dt>
-              <dd>
-                <p>Aspell dictionary storage directory location.
-                The aspell dictionary (aspdict.(lang).rws) is
-                normally stored in the directory specified by
-                cachedir if set, or under the configuration
-                directory.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.FILTERSDIR" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.FILTERSDIR"></a><span class="term"><code class="varname">filtersdir</code></span></dt>
-              <dd>
-                <p>Directory location for executable input
-                handlers. If RECOLL_FILTERSDIR is set in the
-                environment, we use it instead. Defaults to
-                $prefix/share/recoll/filters. Can be redefined for
-                subdirectories.</p>
-              </dd>
-              <dt><a name="RCL.INSTALL.CONFIG.RECOLLCONF.ICONSDIR"
-              id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.ICONSDIR"></a><span class="term"><code class="varname">iconsdir</code></span></dt>
-              <dd>
-                <p>Directory location for icons. The only reason to
-                change this would be if you want to change the
-                icons displayed in the result list. Defaults to
-                $prefix/share/recoll/images</p>
-              </dd>
-            </dl>
+            <div class="variablelist">
+              <dl class="variablelist">
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.CACHEDIR" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.CACHEDIR"></a><span class="term"><code class="varname">cachedir</code></span></dt>
+                <dd>
+                  <p>Top directory for Recoll data. Recoll data
+                  directories are normally located relative to the
+                  configuration directory (e.g. ~/.recoll/xapiandb,
+                  ~/.recoll/mboxcache). If 'cachedir' is set, the
+                  directories are stored under the specified value
+                  instead (e.g. if cachedir is ~/.cache/recoll, the
+                  default dbdir would be ~/.cache/recoll/xapiandb).
+                  This affects dbdir, webcachedir, mboxcachedir,
+                  aspellDicDir, which can still be individually
+                  specified to override cachedir. Note that if you
+                  have multiple configurations, each must have a
+                  different cachedir, there is no automatic
+                  computation of a subpath under cachedir.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MAXFSOCCUPPC" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MAXFSOCCUPPC"></a><span class="term"><code class="varname">maxfsoccuppc</code></span></dt>
+                <dd>
+                  <p>Maximum file system occupation over which we
+                  stop indexing. The value is a percentage,
+                  corresponding to what the "Capacity" df output
+                  column shows. The default value is 0, meaning no
+                  checking.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.XAPIANDB" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.XAPIANDB"></a><span class="term"><code class="varname">xapiandb</code></span></dt>
+                <dd>
+                  <p>Xapian database directory location. This will
+                  be created on first indexing. If the value is not
+                  an absolute path, it will be interpreted as
+                  relative to cachedir if set, or the configuration
+                  directory (-c argument or $RECOLL_CONFDIR). If
+                  nothing is specified, the default is then
+                  ~/.recoll/xapiandb/</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXSTATUSFILE" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXSTATUSFILE"></a><span class="term"><code class="varname">idxstatusfile</code></span></dt>
+                <dd>
+                  <p>Name of the scratch file where the indexer
+                  process updates its status. Default:
+                  idxstatus.txt inside the configuration
+                  directory.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MBOXCACHEDIR" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MBOXCACHEDIR"></a><span class="term"><code class="varname">mboxcachedir</code></span></dt>
+                <dd>
+                  <p>Directory location for storing mbox message
+                  offsets cache files. This is normally 'mboxcache'
+                  under cachedir if set, or else under the
+                  configuration directory, but it may be useful to
+                  share a directory between different
+                  configurations.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MBOXCACHEMINMBS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MBOXCACHEMINMBS"></a><span class="term"><code class="varname">mboxcacheminmbs</code></span></dt>
+                <dd>
+                  <p>Minimum mbox file size over which we cache the
+                  offsets. There is really no sense in caching
+                  offsets for small files. The default is 5 MB.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.WEBCACHEDIR" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.WEBCACHEDIR"></a><span class="term"><code class="varname">webcachedir</code></span></dt>
+                <dd>
+                  <p>Directory where we store the archived web
+                  pages. This is only used by the web history
+                  indexing code Default: cachedir/webcache if
+                  cachedir is set, else
+                  $RECOLL_CONFDIR/webcache</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.WEBCACHEMAXMBS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.WEBCACHEMAXMBS"></a><span class="term"><code class="varname">webcachemaxmbs</code></span></dt>
+                <dd>
+                  <p>Maximum size in MB of the Web archive. This is
+                  only used by the web history indexing code.
+                  Default: 40 MB. Reducing the size will not
+                  physically truncate the file.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.WEBQUEUEDIR" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.WEBQUEUEDIR"></a><span class="term"><code class="varname">webqueuedir</code></span></dt>
+                <dd>
+                  <p>The path to the Web indexing queue. This used
+                  to be hard-coded in the old plugin as
+                  ~/.recollweb/ToIndex so there would be no need or
+                  possibility to change it, but the WebExtensions
+                  plugin now downloads the files to the user
+                  Downloads directory, and a script moves them to
+                  webqueuedir. The script reads this value from the
+                  config so it has become possible to change
+                  it.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.WEBDOWNLOADSDIR" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.WEBDOWNLOADSDIR"></a><span class="term"><code class="varname">webdownloadsdir</code></span></dt>
+                <dd>
+                  <p>The path to browser downloads directory. This
+                  is where the new browser add-on extension has to
+                  create the files. They are then moved by a script
+                  to webqueuedir.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLDICDIR" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLDICDIR"></a><span class="term"><code class="varname">aspellDicDir</code></span></dt>
+                <dd>
+                  <p>Aspell dictionary storage directory location.
+                  The aspell dictionary (aspdict.(lang).rws) is
+                  normally stored in the directory specified by
+                  cachedir if set, or under the configuration
+                  directory.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.FILTERSDIR" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.FILTERSDIR"></a><span class="term"><code class="varname">filtersdir</code></span></dt>
+                <dd>
+                  <p>Directory location for executable input
+                  handlers. If RECOLL_FILTERSDIR is set in the
+                  environment, we use it instead. Defaults to
+                  $prefix/share/recoll/filters. Can be redefined
+                  for subdirectories.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.ICONSDIR" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.ICONSDIR"></a><span class="term"><code class="varname">iconsdir</code></span></dt>
+                <dd>
+                  <p>Directory location for icons. The only reason
+                  to change this would be if you want to change the
+                  icons displayed in the result list. Defaults to
+                  $prefix/share/recoll/images</p>
+                </dd>
+              </dl>
+            </div>
           </div>
           <div class="sect3">
             <div class="titlepage">
@@ -8429,87 +8466,94 @@ thesame = "some string with spaces"
                 </div>
               </div>
             </div>
-            <dl>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.IDXFLUSHMB" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.IDXFLUSHMB"></a><span class="term"><code class="varname">idxflushmb</code></span></dt>
-              <dd>
-                <p>Threshold (megabytes of new data) where we flush
-                from memory to disk index. Setting this allows some
-                control over memory usage by the indexer process. A
-                value of 0 means no explicit flushing, which lets
-                Xapian perform its own thing, meaning flushing
-                every $XAPIAN_FLUSH_THRESHOLD documents created,
-                modified or deleted: as memory usage depends on
-                average document size, not only document count, the
-                Xapian approach is is not very useful, and you
-                should let Recoll manage the flushes. The program
-                compiled value is 0. The configured default value
-                (from this file) is 10 MB, and will be too low in
-                many cases (it is chosen to conserve memory). If
-                you are looking for maximum speed, you may want to
-                experiment with values between 20 and 200. In my
-                experience, values beyond this are always
-                counterproductive. If you find otherwise, please
-                drop me a note.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.FILTERMAXSECONDS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.FILTERMAXSECONDS"></a><span class="term"><code class="varname">filtermaxseconds</code></span></dt>
-              <dd>
-                <p>Maximum external filter execution time in
-                seconds. Default 1200 (20mn). Set to 0 for no
-                limit. This is mainly to avoid infinite loops in
-                postscript files (loop.ps)</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.FILTERMAXMBYTES" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.FILTERMAXMBYTES"></a><span class="term"><code class="varname">filtermaxmbytes</code></span></dt>
-              <dd>
-                <p>Maximum virtual memory space for filter
-                processes (setrlimit(RLIMIT_AS)), in megabytes.
-                Note that this includes any mapped libs (there is
-                no reliable Linux way to limit the data space
-                only), so we need to be a bit generous here.
-                Anything over 2000 will be ignored on 32 bits
-                machines.</p>
-              </dd>
-              <dt><a name="RCL.INSTALL.CONFIG.RECOLLCONF.THRQSIZES"
-              id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.THRQSIZES"></a><span class="term"><code class="varname">thrQSizes</code></span></dt>
-              <dd>
-                <p>Stage input queues configuration. There are
-                three internal queues in the indexing pipeline
-                stages (file data extraction, terms generation,
-                index update). This parameter defines the queue
-                depths for each stage (three integer values). If a
-                value of -1 is given for a given stage, no queue is
-                used, and the thread will go on performing the next
-                stage. In practise, deep queues have not been shown
-                to increase performance. Default: a value of 0 for
-                the first queue tells Recoll to perform
-                autoconfiguration based on the detected number of
-                CPUs (no need for the two other values in this
-                case). Use thrQSizes = -1 -1 -1 to disable
-                multithreading entirely.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.THRTCOUNTS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.THRTCOUNTS"></a><span class="term"><code class="varname">thrTCounts</code></span></dt>
-              <dd>
-                <p>Number of threads used for each indexing stage.
-                The three stages are: file data extraction, terms
-                generation, index update). The use of the counts is
-                also controlled by some special values in
-                thrQSizes: if the first queue depth is 0, all
-                counts are ignored (autoconfigured); if a value of
-                -1 is used for a queue depth, the corresponding
-                thread count is ignored. It makes no sense to use a
-                value other than 1 for the last stage because
-                updating the Xapian index is necessarily
-                single-threaded (and protected by a mutex).</p>
-              </dd>
-            </dl>
+            <div class="variablelist">
+              <dl class="variablelist">
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXFLUSHMB" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXFLUSHMB"></a><span class="term"><code class="varname">idxflushmb</code></span></dt>
+                <dd>
+                  <p>Threshold (megabytes of new data) where we
+                  flush from memory to disk index. Setting this
+                  allows some control over memory usage by the
+                  indexer process. A value of 0 means no explicit
+                  flushing, which lets Xapian perform its own
+                  thing, meaning flushing every
+                  $XAPIAN_FLUSH_THRESHOLD documents created,
+                  modified or deleted: as memory usage depends on
+                  average document size, not only document count,
+                  the Xapian approach is is not very useful, and
+                  you should let Recoll manage the flushes. The
+                  program compiled value is 0. The configured
+                  default value (from this file) is 10 MB, and will
+                  be too low in many cases (it is chosen to
+                  conserve memory). If you are looking for maximum
+                  speed, you may want to experiment with values
+                  between 20 and 200. In my experience, values
+                  beyond this are always counterproductive. If you
+                  find otherwise, please drop me a note.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.FILTERMAXSECONDS"
+                id="RCL.INSTALL.CONFIG.RECOLLCONF.FILTERMAXSECONDS">
+                </a><span class="term"><code class=
+                "varname">filtermaxseconds</code></span></dt>
+                <dd>
+                  <p>Maximum external filter execution time in
+                  seconds. Default 1200 (20mn). Set to 0 for no
+                  limit. This is mainly to avoid infinite loops in
+                  postscript files (loop.ps)</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.FILTERMAXMBYTES" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.FILTERMAXMBYTES"></a><span class="term"><code class="varname">filtermaxmbytes</code></span></dt>
+                <dd>
+                  <p>Maximum virtual memory space for filter
+                  processes (setrlimit(RLIMIT_AS)), in megabytes.
+                  Note that this includes any mapped libs (there is
+                  no reliable Linux way to limit the data space
+                  only), so we need to be a bit generous here.
+                  Anything over 2000 will be ignored on 32 bits
+                  machines.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.THRQSIZES" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.THRQSIZES"></a><span class="term"><code class="varname">thrQSizes</code></span></dt>
+                <dd>
+                  <p>Stage input queues configuration. There are
+                  three internal queues in the indexing pipeline
+                  stages (file data extraction, terms generation,
+                  index update). This parameter defines the queue
+                  depths for each stage (three integer values). If
+                  a value of -1 is given for a given stage, no
+                  queue is used, and the thread will go on
+                  performing the next stage. In practise, deep
+                  queues have not been shown to increase
+                  performance. Default: a value of 0 for the first
+                  queue tells Recoll to perform autoconfiguration
+                  based on the detected number of CPUs (no need for
+                  the two other values in this case). Use thrQSizes
+                  = -1 -1 -1 to disable multithreading
+                  entirely.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.THRTCOUNTS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.THRTCOUNTS"></a><span class="term"><code class="varname">thrTCounts</code></span></dt>
+                <dd>
+                  <p>Number of threads used for each indexing
+                  stage. The three stages are: file data
+                  extraction, terms generation, index update). The
+                  use of the counts is also controlled by some
+                  special values in thrQSizes: if the first queue
+                  depth is 0, all counts are ignored
+                  (autoconfigured); if a value of -1 is used for a
+                  queue depth, the corresponding thread count is
+                  ignored. It makes no sense to use a value other
+                  than 1 for the last stage because updating the
+                  Xapian index is necessarily single-threaded (and
+                  protected by a mutex).</p>
+                </dd>
+              </dl>
+            </div>
           </div>
           <div class="sect3">
             <div class="titlepage">
@@ -8522,215 +8566,227 @@ thesame = "some string with spaces"
                 </div>
               </div>
             </div>
-            <dl>
-              <dt><a name="RCL.INSTALL.CONFIG.RECOLLCONF.LOGLEVEL"
-              id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.LOGLEVEL"></a><span class="term"><code class="varname">loglevel</code></span></dt>
-              <dd>
-                <p>Log file verbosity 1-6. A value of 2 will print
-                only errors and warnings. 3 will print information
-                like document updates, 4 is quite verbose and 6
-                very verbose.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.LOGFILENAME" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.LOGFILENAME"></a><span class="term"><code class="varname">logfilename</code></span></dt>
-              <dd>
-                <p>Log file destination. Use 'stderr' (default) to
-                write to the console.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.IDXLOGLEVEL" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.IDXLOGLEVEL"></a><span class="term"><code class="varname">idxloglevel</code></span></dt>
-              <dd>
-                <p>Override loglevel for the indexer.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.IDXLOGFILENAME" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.IDXLOGFILENAME"></a><span class="term"><code class="varname">idxlogfilename</code></span></dt>
-              <dd>
-                <p>Override logfilename for the indexer.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.DAEMLOGLEVEL" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.DAEMLOGLEVEL"></a><span class="term"><code class="varname">daemloglevel</code></span></dt>
-              <dd>
-                <p>Override loglevel for the indexer in real time
-                mode. The default is to use the idx... values if
-                set, else the log... values.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.DAEMLOGFILENAME" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.DAEMLOGFILENAME"></a><span class="term"><code class="varname">daemlogfilename</code></span></dt>
-              <dd>
-                <p>Override logfilename for the indexer in real
-                time mode. The default is to use the idx... values
-                if set, else the log... values.</p>
-              </dd>
-              <dt><a name="RCL.INSTALL.CONFIG.RECOLLCONF.IDXRUNDIR"
-              id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.IDXRUNDIR"></a><span class="term"><code class="varname">idxrundir</code></span></dt>
-              <dd>
-                <p>Indexing process current directory. The input
-                handlers sometimes leave temporary files in the
-                current directory, so it makes sense to have
-                recollindex chdir to some temporary directory. If
-                the value is empty, the current directory is not
-                changed. If the value is (literal) tmp, we use the
-                temporary directory as set by the environment
-                (RECOLL_TMPDIR else TMPDIR else /tmp). If the value
-                is an absolute path to a directory, we go
-                there.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.CHECKNEEDRETRYINDEXSCRIPT"
-              id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.CHECKNEEDRETRYINDEXSCRIPT">
-              </a><span class="term"><code class=
-              "varname">checkneedretryindexscript</code></span></dt>
-              <dd>
-                <p>Script used to heuristically check if we need to
-                retry indexing files which previously failed. The
-                default script checks the modified dates on
-                /usr/bin and /usr/local/bin. A relative path will
-                be looked up in the filters dirs, then in the path.
-                Use an absolute path to do otherwise.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.RECOLLHELPERPATH" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.RECOLLHELPERPATH"></a><span class="term"><code class="varname">recollhelperpath</code></span></dt>
-              <dd>
-                <p>Additional places to search for helper
-                executables. This is only used on Windows for
-                now.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.IDXABSMLEN" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.IDXABSMLEN"></a><span class="term"><code class="varname">idxabsmlen</code></span></dt>
-              <dd>
-                <p>Length of abstracts we store while indexing.
-                Recoll stores an abstract for each indexed file.
-                The text can come from an actual 'abstract' section
-                in the document or will just be the beginning of
-                the document. It is stored in the index so that it
-                can be displayed inside the result lists without
-                decoding the original file. The idxabsmlen
-                parameter defines the size of the stored abstract.
-                The default value is 250 bytes. The search
-                interface gives you the choice to display this
-                stored text or a synthetic abstract built by
-                extracting text around the search terms. If you
-                always prefer the synthetic abstract, you can
-                reduce this value and save a little space.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.IDXMETASTOREDLEN" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.IDXMETASTOREDLEN"></a><span class="term"><code class="varname">idxmetastoredlen</code></span></dt>
-              <dd>
-                <p>Truncation length of stored metadata fields.
-                This does not affect indexing (the whole field is
-                processed anyway), just the amount of data stored
-                in the index for the purpose of displaying fields
-                inside result lists or previews. The default value
-                is 150 bytes which may be too low if you have
-                custom fields.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLLANGUAGE" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLLANGUAGE"></a><span class="term"><code class="varname">aspellLanguage</code></span></dt>
-              <dd>
-                <p>Language definitions to use when creating the
-                aspell dictionary. The value must match a set of
-                aspell language definition files. You can type
-                "aspell dicts" to see a list The default if this is
-                not set is to use the NLS environment to guess the
-                value.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLADDCREATEPARAM"
-              id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLADDCREATEPARAM"></a><span class="term"><code class="varname">aspellAddCreateParam</code></span></dt>
-              <dd>
-                <p>Additional option and parameter to aspell
-                dictionary creation command. Some aspell packages
-                may need an additional option (e.g. on Debian
-                Jessie: --local-data-dir=/usr/lib/aspell). See
-                Debian bug 772415.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLKEEPSTDERR" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLKEEPSTDERR"></a><span class="term"><code class="varname">aspellKeepStderr</code></span></dt>
-              <dd>
-                <p>Set this to have a look at aspell dictionary
-                creation errors. There are always many, so this is
-                mostly for debugging.</p>
-              </dd>
-              <dt><a name="RCL.INSTALL.CONFIG.RECOLLCONF.NOASPELL"
-              id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.NOASPELL"></a><span class="term"><code class="varname">noaspell</code></span></dt>
-              <dd>
-                <p>Disable aspell use. The aspell dictionary
-                generation takes time, and some combinations of
-                aspell version, language, and local terms, result
-                in aspell crashing, so it sometimes makes sense to
-                just disable the thing.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MONAUXINTERVAL" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MONAUXINTERVAL"></a><span class="term"><code class="varname">monauxinterval</code></span></dt>
-              <dd>
-                <p>Auxiliary database update interval. The real
-                time indexer only updates the auxiliary databases
-                (stemdb, aspell) periodically, because it would be
-                too costly to do it for every document change. The
-                default period is one hour.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MONIXINTERVAL" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MONIXINTERVAL"></a><span class="term"><code class="varname">monixinterval</code></span></dt>
-              <dd>
-                <p>Minimum interval (seconds) between processings
-                of the indexing queue. The real time indexer does
-                not process each event when it comes in, but lets
-                the queue accumulate, to diminish overhead and to
-                aggregate multiple events affecting the same file.
-                Default 30 S.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MONDELAYPATTERNS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MONDELAYPATTERNS"></a><span class="term"><code class="varname">mondelaypatterns</code></span></dt>
-              <dd>
-                <p>Timing parameters for the real time indexing.
-                Definitions for files which get a longer delay
-                before reindexing is allowed. This is for
-                fast-changing files, that should only be reindexed
-                once in a while. A list of wildcardPattern:seconds
-                pairs. The patterns are matched with
-                fnmatch(pattern, path, 0) You can quote entries
-                containing white space with double quotes (quote
-                the whole entry, not the pattern). The default is
-                empty. Example: mondelaypatterns = *.log:20 "*with
-                spaces.*:30"</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MONIONICECLASS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MONIONICECLASS"></a><span class="term"><code class="varname">monioniceclass</code></span></dt>
-              <dd>
-                <p>ionice class for the real time indexing process
-                On platforms where this is supported. The default
-                value is 3.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MONIONICECLASSDATA"
-              id="RCL.INSTALL.CONFIG.RECOLLCONF.MONIONICECLASSDATA">
-              </a><span class="term"><code class=
-              "varname">monioniceclassdata</code></span></dt>
-              <dd>
-                <p>ionice class parameter for the real time
-                indexing process. On platforms where this is
-                supported. The default is empty.</p>
-              </dd>
-            </dl>
+            <div class="variablelist">
+              <dl class="variablelist">
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.LOGLEVEL" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.LOGLEVEL"></a><span class="term"><code class="varname">loglevel</code></span></dt>
+                <dd>
+                  <p>Log file verbosity 1-6. A value of 2 will
+                  print only errors and warnings. 3 will print
+                  information like document updates, 4 is quite
+                  verbose and 6 very verbose.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.LOGFILENAME" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.LOGFILENAME"></a><span class="term"><code class="varname">logfilename</code></span></dt>
+                <dd>
+                  <p>Log file destination. Use 'stderr' (default)
+                  to write to the console.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXLOGLEVEL" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXLOGLEVEL"></a><span class="term"><code class="varname">idxloglevel</code></span></dt>
+                <dd>
+                  <p>Override loglevel for the indexer.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXLOGFILENAME" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXLOGFILENAME"></a><span class="term"><code class="varname">idxlogfilename</code></span></dt>
+                <dd>
+                  <p>Override logfilename for the indexer.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.DAEMLOGLEVEL" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.DAEMLOGLEVEL"></a><span class="term"><code class="varname">daemloglevel</code></span></dt>
+                <dd>
+                  <p>Override loglevel for the indexer in real time
+                  mode. The default is to use the idx... values if
+                  set, else the log... values.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.DAEMLOGFILENAME" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.DAEMLOGFILENAME"></a><span class="term"><code class="varname">daemlogfilename</code></span></dt>
+                <dd>
+                  <p>Override logfilename for the indexer in real
+                  time mode. The default is to use the idx...
+                  values if set, else the log... values.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXRUNDIR" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXRUNDIR"></a><span class="term"><code class="varname">idxrundir</code></span></dt>
+                <dd>
+                  <p>Indexing process current directory. The input
+                  handlers sometimes leave temporary files in the
+                  current directory, so it makes sense to have
+                  recollindex chdir to some temporary directory. If
+                  the value is empty, the current directory is not
+                  changed. If the value is (literal) tmp, we use
+                  the temporary directory as set by the environment
+                  (RECOLL_TMPDIR else TMPDIR else /tmp). If the
+                  value is an absolute path to a directory, we go
+                  there.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.CHECKNEEDRETRYINDEXSCRIPT"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.CHECKNEEDRETRYINDEXSCRIPT">
+                </a><span class="term"><code class=
+                "varname">checkneedretryindexscript</code></span></dt>
+                <dd>
+                  <p>Script used to heuristically check if we need
+                  to retry indexing files which previously failed.
+                  The default script checks the modified dates on
+                  /usr/bin and /usr/local/bin. A relative path will
+                  be looked up in the filters dirs, then in the
+                  path. Use an absolute path to do otherwise.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.RECOLLHELPERPATH"
+                id="RCL.INSTALL.CONFIG.RECOLLCONF.RECOLLHELPERPATH">
+                </a><span class="term"><code class=
+                "varname">recollhelperpath</code></span></dt>
+                <dd>
+                  <p>Additional places to search for helper
+                  executables. This is only used on Windows for
+                  now.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXABSMLEN" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXABSMLEN"></a><span class="term"><code class="varname">idxabsmlen</code></span></dt>
+                <dd>
+                  <p>Length of abstracts we store while indexing.
+                  Recoll stores an abstract for each indexed file.
+                  The text can come from an actual 'abstract'
+                  section in the document or will just be the
+                  beginning of the document. It is stored in the
+                  index so that it can be displayed inside the
+                  result lists without decoding the original file.
+                  The idxabsmlen parameter defines the size of the
+                  stored abstract. The default value is 250 bytes.
+                  The search interface gives you the choice to
+                  display this stored text or a synthetic abstract
+                  built by extracting text around the search terms.
+                  If you always prefer the synthetic abstract, you
+                  can reduce this value and save a little
+                  space.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXMETASTOREDLEN"
+                id="RCL.INSTALL.CONFIG.RECOLLCONF.IDXMETASTOREDLEN">
+                </a><span class="term"><code class=
+                "varname">idxmetastoredlen</code></span></dt>
+                <dd>
+                  <p>Truncation length of stored metadata fields.
+                  This does not affect indexing (the whole field is
+                  processed anyway), just the amount of data stored
+                  in the index for the purpose of displaying fields
+                  inside result lists or previews. The default
+                  value is 150 bytes which may be too low if you
+                  have custom fields.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLLANGUAGE" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLLANGUAGE"></a><span class="term"><code class="varname">aspellLanguage</code></span></dt>
+                <dd>
+                  <p>Language definitions to use when creating the
+                  aspell dictionary. The value must match a set of
+                  aspell language definition files. You can type
+                  "aspell dicts" to see a list The default if this
+                  is not set is to use the NLS environment to guess
+                  the value.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLADDCREATEPARAM"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLADDCREATEPARAM">
+                </a><span class="term"><code class=
+                "varname">aspellAddCreateParam</code></span></dt>
+                <dd>
+                  <p>Additional option and parameter to aspell
+                  dictionary creation command. Some aspell packages
+                  may need an additional option (e.g. on Debian
+                  Jessie: --local-data-dir=/usr/lib/aspell). See
+                  Debian bug 772415.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLKEEPSTDERR"
+                id="RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLKEEPSTDERR">
+                </a><span class="term"><code class=
+                "varname">aspellKeepStderr</code></span></dt>
+                <dd>
+                  <p>Set this to have a look at aspell dictionary
+                  creation errors. There are always many, so this
+                  is mostly for debugging.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOASPELL" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.NOASPELL"></a><span class="term"><code class="varname">noaspell</code></span></dt>
+                <dd>
+                  <p>Disable aspell use. The aspell dictionary
+                  generation takes time, and some combinations of
+                  aspell version, language, and local terms, result
+                  in aspell crashing, so it sometimes makes sense
+                  to just disable the thing.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MONAUXINTERVAL" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MONAUXINTERVAL"></a><span class="term"><code class="varname">monauxinterval</code></span></dt>
+                <dd>
+                  <p>Auxiliary database update interval. The real
+                  time indexer only updates the auxiliary databases
+                  (stemdb, aspell) periodically, because it would
+                  be too costly to do it for every document change.
+                  The default period is one hour.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MONIXINTERVAL" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MONIXINTERVAL"></a><span class="term"><code class="varname">monixinterval</code></span></dt>
+                <dd>
+                  <p>Minimum interval (seconds) between processings
+                  of the indexing queue. The real time indexer does
+                  not process each event when it comes in, but lets
+                  the queue accumulate, to diminish overhead and to
+                  aggregate multiple events affecting the same
+                  file. Default 30 S.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MONDELAYPATTERNS"
+                id="RCL.INSTALL.CONFIG.RECOLLCONF.MONDELAYPATTERNS">
+                </a><span class="term"><code class=
+                "varname">mondelaypatterns</code></span></dt>
+                <dd>
+                  <p>Timing parameters for the real time indexing.
+                  Definitions for files which get a longer delay
+                  before reindexing is allowed. This is for
+                  fast-changing files, that should only be
+                  reindexed once in a while. A list of
+                  wildcardPattern:seconds pairs. The patterns are
+                  matched with fnmatch(pattern, path, 0) You can
+                  quote entries containing white space with double
+                  quotes (quote the whole entry, not the pattern).
+                  The default is empty. Example: mondelaypatterns =
+                  *.log:20 "*with spaces.*:30"</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MONIONICECLASS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MONIONICECLASS"></a><span class="term"><code class="varname">monioniceclass</code></span></dt>
+                <dd>
+                  <p>ionice class for the real time indexing
+                  process On platforms where this is supported. The
+                  default value is 3.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MONIONICECLASSDATA"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MONIONICECLASSDATA"></a><span class="term"><code class="varname">monioniceclassdata</code></span></dt>
+                <dd>
+                  <p>ionice class parameter for the real time
+                  indexing process. On platforms where this is
+                  supported. The default is empty.</p>
+                </dd>
+              </dl>
+            </div>
           </div>
           <div class="sect3">
             <div class="titlepage">
@@ -8743,64 +8799,69 @@ thesame = "some string with spaces"
                 </div>
               </div>
             </div>
-            <dl>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.AUTODIACSENS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.AUTODIACSENS"></a><span class="term"><code class="varname">autodiacsens</code></span></dt>
-              <dd>
-                <p>auto-trigger diacritics sensitivity (raw index
-                only). IF the index is not stripped, decide if we
-                automatically trigger diacritics sensitivity if the
-                search term has accented characters (not in
-                unac_except_trans). Else you need to use the query
-                language and the "D" modifier to specify diacritics
-                sensitivity. Default is no.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.AUTOCASESENS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.AUTOCASESENS"></a><span class="term"><code class="varname">autocasesens</code></span></dt>
-              <dd>
-                <p>auto-trigger case sensitivity (raw index only).
-                IF the index is not stripped (see indexStripChars),
-                decide if we automatically trigger character case
-                sensitivity if the search term has upper-case
-                characters in any but the first position. Else you
-                need to use the query language and the "C" modifier
-                to specify character-case sensitivity. Default is
-                yes.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MAXTERMEXPAND" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MAXTERMEXPAND"></a><span class="term"><code class="varname">maxTermExpand</code></span></dt>
-              <dd>
-                <p>Maximum query expansion count for a single term
-                (e.g.: when using wildcards). This only affects
-                queries, not indexing. We used to not limit this at
-                all (except for filenames where the limit was too
-                low at 1000), but it is unreasonable with a big
-                index. Default 10000.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MAXXAPIANCLAUSES" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MAXXAPIANCLAUSES"></a><span class="term"><code class="varname">maxXapianClauses</code></span></dt>
-              <dd>
-                <p>Maximum number of clauses we add to a single
-                Xapian query. This only affects queries, not
-                indexing. In some cases, the result of term
-                expansion can be multiplicative, and we want to
-                avoid eating all the memory. Default 50000.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.SNIPPETMAXPOSWALK" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.SNIPPETMAXPOSWALK"></a><span class="term"><code class="varname">snippetMaxPosWalk</code></span></dt>
-              <dd>
-                <p>Maximum number of positions we walk while
-                populating a snippet for the result list. The
-                default of 1,000,000 may be insufficient for very
-                big documents, the consequence would be snippets
-                with possibly meaning-altering missing words.</p>
-              </dd>
-            </dl>
+            <div class="variablelist">
+              <dl class="variablelist">
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.AUTODIACSENS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.AUTODIACSENS"></a><span class="term"><code class="varname">autodiacsens</code></span></dt>
+                <dd>
+                  <p>auto-trigger diacritics sensitivity (raw index
+                  only). IF the index is not stripped, decide if we
+                  automatically trigger diacritics sensitivity if
+                  the search term has accented characters (not in
+                  unac_except_trans). Else you need to use the
+                  query language and the "D" modifier to specify
+                  diacritics sensitivity. Default is no.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.AUTOCASESENS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.AUTOCASESENS"></a><span class="term"><code class="varname">autocasesens</code></span></dt>
+                <dd>
+                  <p>auto-trigger case sensitivity (raw index
+                  only). IF the index is not stripped (see
+                  indexStripChars), decide if we automatically
+                  trigger character case sensitivity if the search
+                  term has upper-case characters in any but the
+                  first position. Else you need to use the query
+                  language and the "C" modifier to specify
+                  character-case sensitivity. Default is yes.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MAXTERMEXPAND" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MAXTERMEXPAND"></a><span class="term"><code class="varname">maxTermExpand</code></span></dt>
+                <dd>
+                  <p>Maximum query expansion count for a single
+                  term (e.g.: when using wildcards). This only
+                  affects queries, not indexing. We used to not
+                  limit this at all (except for filenames where the
+                  limit was too low at 1000), but it is
+                  unreasonable with a big index. Default 10000.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MAXXAPIANCLAUSES"
+                id="RCL.INSTALL.CONFIG.RECOLLCONF.MAXXAPIANCLAUSES">
+                </a><span class="term"><code class=
+                "varname">maxXapianClauses</code></span></dt>
+                <dd>
+                  <p>Maximum number of clauses we add to a single
+                  Xapian query. This only affects queries, not
+                  indexing. In some cases, the result of term
+                  expansion can be multiplicative, and we want to
+                  avoid eating all the memory. Default 50000.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.SNIPPETMAXPOSWALK"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.SNIPPETMAXPOSWALK"></a><span class="term"><code class="varname">snippetMaxPosWalk</code></span></dt>
+                <dd>
+                  <p>Maximum number of positions we walk while
+                  populating a snippet for the result list. The
+                  default of 1,000,000 may be insufficient for very
+                  big documents, the consequence would be snippets
+                  with possibly meaning-altering missing words.</p>
+                </dd>
+              </dl>
+            </div>
           </div>
           <div class="sect3">
             <div class="titlepage">
@@ -8813,52 +8874,55 @@ thesame = "some string with spaces"
                 </div>
               </div>
             </div>
-            <dl>
-              <dt><a name="RCL.INSTALL.CONFIG.RECOLLCONF.PDFOCR"
-              id="RCL.INSTALL.CONFIG.RECOLLCONF.PDFOCR"></a><span class="term"><code class="varname">pdfocr</code></span></dt>
-              <dd>
-                <p>Attempt OCR of PDF files with no text content if
-                both tesseract and pdftoppm are installed. The
-                default is off because OCR is so very slow.</p>
-              </dd>
-              <dt><a name="RCL.INSTALL.CONFIG.RECOLLCONF.PDFATTACH"
-              id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.PDFATTACH"></a><span class="term"><code class="varname">pdfattach</code></span></dt>
-              <dd>
-                <p>Enable PDF attachment extraction by executing
-                pdftk (if available). This is normally disabled,
-                because it does slow down PDF indexing a bit even
-                if not one attachment is ever found.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETA" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETA"></a><span class="term"><code class="varname">pdfextrameta</code></span></dt>
-              <dd>
-                <p>Extract text from selected XMP metadata tags.
-                This is a space-separated list of qualified XMP tag
-                names. Each element can also include a translation
-                to a Recoll field name, separated by a '|'
-                character. If the second element is absent, the tag
-                name is used as the Recoll field names. You will
-                also need to add specifications to the 'fields'
-                file to direct processing of the extracted
-                data.</p>
-              </dd>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETAFIX" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETAFIX"></a><span class="term"><code class="varname">pdfextrametafix</code></span></dt>
-              <dd>
-                <p>Define name of XMP field editing script. This
-                defines the name of a script to be loaded for
-                editing XMP field values. The script should define
-                a 'MetaFixer' class with a metafix() method which
-                will be called with the qualified tag name and
-                value of each selected field, for editing or
-                erasing. A new instance is created for each
-                document, so that the object can keep state for,
-                e.g. eliminating duplicate values.</p>
-              </dd>
-            </dl>
+            <div class="variablelist">
+              <dl class="variablelist">
+                <dt><a name="RCL.INSTALL.CONFIG.RECOLLCONF.PDFOCR"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.PDFOCR"></a><span class="term"><code class="varname">pdfocr</code></span></dt>
+                <dd>
+                  <p>Attempt OCR of PDF files with no text content
+                  if both tesseract and pdftoppm are installed. The
+                  default is off because OCR is so very slow.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.PDFATTACH" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.PDFATTACH"></a><span class="term"><code class="varname">pdfattach</code></span></dt>
+                <dd>
+                  <p>Enable PDF attachment extraction by executing
+                  pdftk (if available). This is normally disabled,
+                  because it does slow down PDF indexing a bit even
+                  if not one attachment is ever found.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETA" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETA"></a><span class="term"><code class="varname">pdfextrameta</code></span></dt>
+                <dd>
+                  <p>Extract text from selected XMP metadata tags.
+                  This is a space-separated list of qualified XMP
+                  tag names. Each element can also include a
+                  translation to a Recoll field name, separated by
+                  a '|' character. If the second element is absent,
+                  the tag name is used as the Recoll field names.
+                  You will also need to add specifications to the
+                  'fields' file to direct processing of the
+                  extracted data.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETAFIX" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.PDFEXTRAMETAFIX"></a><span class="term"><code class="varname">pdfextrametafix</code></span></dt>
+                <dd>
+                  <p>Define name of XMP field editing script. This
+                  defines the name of a script to be loaded for
+                  editing XMP field values. The script should
+                  define a 'MetaFixer' class with a metafix()
+                  method which will be called with the qualified
+                  tag name and value of each selected field, for
+                  editing or erasing. A new instance is created for
+                  each document, so that the object can keep state
+                  for, e.g. eliminating duplicate values.</p>
+                </dd>
+              </dl>
+            </div>
           </div>
           <div class="sect3">
             <div class="titlepage">
@@ -8871,16 +8935,18 @@ thesame = "some string with spaces"
                 </div>
               </div>
             </div>
-            <dl>
-              <dt><a name=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MHMBOXQUIRKS" id=
-              "RCL.INSTALL.CONFIG.RECOLLCONF.MHMBOXQUIRKS"></a><span class="term"><code class="varname">mhmboxquirks</code></span></dt>
-              <dd>
-                <p>Enable thunderbird/mozilla-seamonkey mbox format
-                quirks Set this for the directory where the email
-                mbox files are stored.</p>
-              </dd>
-            </dl>
+            <div class="variablelist">
+              <dl class="variablelist">
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MHMBOXQUIRKS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MHMBOXQUIRKS"></a><span class="term"><code class="varname">mhmboxquirks</code></span></dt>
+                <dd>
+                  <p>Enable thunderbird/mozilla-seamonkey mbox
+                  format quirks Set this for the directory where
+                  the email mbox files are stored.</p>
+                </dd>
+              </dl>
+            </div>
           </div>
         </div>
         <div class="sect2">

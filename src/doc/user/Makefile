@@ -45,7 +45,7 @@ index.html: usermanual.xml
             "${XSLDIR}/html/chunk.xsl" $<
 
 usermanual.pdf: usermanual.xml
-	dblatex $<
+	dblatex --xslt-opts="--xinclude" -tpdf $<
 
 UTILBUILDS=/home/dockes/tmp/builds/medocutils/
 recoll-conf-xml:

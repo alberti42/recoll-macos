@@ -2,7 +2,7 @@
 <sect2 id="RCL.INSTALL.CONFIG.RECOLLCONF">
 <title>Recoll main configuration file, recoll.conf </title>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.WHATDOCS">
-<title>Parameters affecting what documents we index </title>
+<title>Parameters affecting what documents we index </title><variablelist>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.TOPDIRS">
 <term><varname>topdirs</varname></term>
 <listitem><para>Space-separated list of files or
@@ -172,9 +172,9 @@ compressedfilemaxkbs.</para></listitem></varlistentry>
 <listitem><para>Size limit for archive
 members. This is passed to the filters in the environment
 as RECOLL_FILTER_MAXMEMBERKB.</para></listitem></varlistentry>
-</sect3>
+</variablelist></sect3>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.TERMS">
-<title>Parameters affecting how we generate terms </title>
+<title>Parameters affecting how we generate terms </title><variablelist>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.INDEXSTRIPCHARS">
 <term><varname>indexStripChars</varname></term>
 <listitem><para>Decide if we store
@@ -306,9 +306,9 @@ configuration file ("fieldname = fieldvalue" lines). The rclmultixx name
 will be ignored, and field names and values will be parsed from the data.
 Example: metadatacmds = ; tags = tmsu tags %f; rclmulti1 = cmdOutputsConf %f
 </para></listitem></varlistentry>
-</sect3>
+</variablelist></sect3>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.STORE">
-<title>Parameters affecting where and how we store things </title>
+<title>Parameters affecting where and how we store things </title><variablelist>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.CACHEDIR">
 <term><varname>cachedir</varname></term>
 <listitem><para>Top directory for Recoll data. Recoll data
@@ -390,9 +390,9 @@ subdirectories.</para></listitem></varlistentry>
 <listitem><para>Directory location for icons. The only reason to
 change this would be if you want to change the icons displayed in the
 result list. Defaults to $prefix/share/recoll/images</para></listitem></varlistentry>
-</sect3>
+</variablelist></sect3>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.PERFS">
-<title>Parameters affecting indexing performance and resource usage </title>
+<title>Parameters affecting indexing performance and resource usage </title><variablelist>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.IDXFLUSHMB">
 <term><varname>idxflushmb</varname></term>
 <listitem><para>Threshold (megabytes of new data) where we flush from memory to
@@ -443,9 +443,9 @@ in thrQSizes: if the first queue depth is 0, all counts are ignored
 corresponding thread count is ignored. It makes no sense to use a value
 other than 1 for the last stage because updating the Xapian index is
 necessarily single-threaded (and protected by a mutex).</para></listitem></varlistentry>
-</sect3>
+</variablelist></sect3>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.MISC">
-<title>Miscellaneous parameters </title>
+<title>Miscellaneous parameters </title><variablelist>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.LOGLEVEL">
 <term><varname>loglevel</varname></term>
 <listitem><para>Log file verbosity 1-6. A value of 2 will print
@@ -563,9 +563,9 @@ Example: mondelaypatterns = *.log:20 "*with spaces.*:30"</para></listitem></varl
 <term><varname>monioniceclassdata</varname></term>
 <listitem><para>ionice class parameter for the real time indexing process. On platforms where this is supported. The default is
 empty.</para></listitem></varlistentry>
-</sect3>
+</variablelist></sect3>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.QUERY">
-<title>Query-time parameters (no impact on the index) </title>
+<title>Query-time parameters (no impact on the index) </title><variablelist>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.AUTODIACSENS">
 <term><varname>autodiacsens</varname></term>
 <listitem><para>auto-trigger diacritics sensitivity (raw index only). IF the index is not stripped, decide if we automatically trigger
@@ -600,9 +600,9 @@ multiplicative, and we want to avoid eating all the memory. Default
 the result list. The default of 1,000,000 may be
 insufficient for very big documents, the consequence would be snippets
 with possibly meaning-altering missing words.</para></listitem></varlistentry>
-</sect3>
+</variablelist></sect3>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.PDF">
-<title>Parameters for the PDF input script </title>
+<title>Parameters for the PDF input script </title><variablelist>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.PDFOCR">
 <term><varname>pdfocr</varname></term>
 <listitem><para>Attempt OCR of PDF files with no text content if both tesseract and
@@ -631,12 +631,12 @@ method which will be called with the qualified tag name and value of each
 selected field, for editing or erasing. A new instance is created for
 each document, so that the object can keep state for, e.g. eliminating
 duplicate values.</para></listitem></varlistentry>
-</sect3>
+</variablelist></sect3>
 <sect3 id="RCL.INSTALL.CONFIG.RECOLLCONF.SPECLOCATIONS">
-<title>Parameters set for specific locations </title>
+<title>Parameters set for specific locations </title><variablelist>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.MHMBOXQUIRKS">
 <term><varname>mhmboxquirks</varname></term>
 <listitem><para>Enable thunderbird/mozilla-seamonkey mbox format quirks Set this for the directory where the email mbox files are
 stored.</para></listitem></varlistentry>
-</sect3>
+</variablelist></sect3>
 </sect2>
