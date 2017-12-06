@@ -16,9 +16,7 @@
  */
 
 #ifndef TEST_HISTORY
-#include <stdio.h>
-#include <time.h>
-#include <cstdlib>
+#include "safeunistd.h"
 
 #include "dynconf.h"
 #include "base64.h"
@@ -33,10 +31,28 @@ const string allEdbsSk = "allExtDbs";
 const string actEdbsSk = "actExtDbs";
 const string advSearchHistSk = "advSearchHist";
 
+RclDynConf::RclDynConf(const std::string &fn)
+    : m_data(fn.c_str())
+{
+    if (m_data.getStatus() != ConfSimple::STATUS_RW) {
+        // Maybe the config dir is readonly, in which case we try to
+        // open readonly, but we must also handle the case where the
+        // history file does not exist
+        if (access(fn.c_str(), 0) != 0) {
+            m_data = ConfSimple(string(), 1);
+        } else {
+            m_data = ConfSimple(fn.c_str(), 1);
+        }
+    }
+}
 
 bool RclDynConf::insertNew(const string &sk, DynConfEntry &n, DynConfEntry &s,
 			   int maxlen)
 {
+    if (!rw()) {
+        LOGDEB("RclDynConf::insertNew: not writable\n");
+        return false;
+    }
     // Is this doc already in list ? If it is we remove the old entry
     vector<string> names = m_data.getNames(sk);
     vector<string>::const_iterator it;
@@ -90,6 +106,10 @@ bool RclDynConf::insertNew(const string &sk, DynConfEntry &n, DynConfEntry &s,
 
 bool RclDynConf::eraseAll(const string &sk)
 {
+    if (!rw()) {
+        LOGDEB("RclDynConf::eraseAll: not writable\n");
+        return false;
+    }
     vector<string> names = m_data.getNames(sk);
     vector<string>::const_iterator it;
     for (it = names.begin(); it != names.end(); it++) {
@@ -103,6 +123,10 @@ bool RclDynConf::eraseAll(const string &sk)
 
 bool RclDynConf::enterString(const string sk, const string value, int maxlen)
 {
+    if (!rw()) {
+        LOGDEB("RclDynConf::enterString: not writable\n");
+        return false;
+    }
     RclSListEntry ne(value);
     RclSListEntry scratch;
     return insertNew(sk, ne, scratch, maxlen);

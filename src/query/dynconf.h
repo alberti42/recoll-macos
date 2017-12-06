@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes
+/* Copyright (C) 2004-2017 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -35,13 +35,12 @@
  * are sequential numeric, so this basically manages a set of lists.
  *
  * The code ensures that a a given value (as defined by the
- * DynConfEntry::equal() method is only stored once. If undesirable,
- * equal() should always return false.
+ * DynConfEntry::equal() method) is only stored once. If this is
+ * undesirable, equal() should always return false.
  */
 
 #include <string>
 #include <list>
-#include <utility>
 
 #include "conftree.h"
 #include "base64.h"
@@ -61,26 +60,20 @@ class DynConfEntry {
 /** Stored object specialization for generic string storage */
 class RclSListEntry : public DynConfEntry {
  public:
-    RclSListEntry() 
-    {
-    }
+    RclSListEntry() {}
     virtual ~RclSListEntry() {}
     RclSListEntry(const std::string& v) 
-    : value(v) 
-    {
+    : value(v) {
     }
-    virtual bool decode(const std::string &enc)
-    {
+    virtual bool decode(const std::string &enc) {
 	base64_decode(enc, value);
 	return true;
     }
-    virtual bool encode(std::string& enc)
-    {
+    virtual bool encode(std::string& enc) {
 	base64_encode(value, enc);
 	return true;
     }
-    virtual bool equal(const DynConfEntry& other)
-    {
+    virtual bool equal(const DynConfEntry& other) {
 	const RclSListEntry& e = dynamic_cast<const RclSListEntry&>(other);
 	return e.value == value;
     }
@@ -91,16 +84,18 @@ class RclSListEntry : public DynConfEntry {
 /** The dynamic configuration class */
 class RclDynConf {
  public:
-    RclDynConf(const std::string &fn)
-        : m_data(fn.c_str()) 
-    {
+    RclDynConf(const std::string &fn);
+
+    bool ro() {
+	return m_data.getStatus() == ConfSimple::STATUS_RO;
     }
-    bool ok() 
-    {
+    bool rw() {
 	return m_data.getStatus() == ConfSimple::STATUS_RW;
     }
-    std::string getFilename() 
-    {
+    bool ok() {
+	return m_data.getStatus() != ConfSimple::STATUS_ERROR;
+    }
+    std::string getFilename() {
 	return m_data.getFilename();
     }
 
@@ -119,7 +114,8 @@ class RclDynConf {
 
     // Specialized methods for simple string lists, designated by the
     // subkey value
-    bool enterString(const std::string sk, const std::string value, int maxlen = -1);
+    bool enterString(const std::string sk, const std::string value,
+                     int maxlen = -1);
     std::list<std::string> getStringList(const std::string sk);
 
  private:
