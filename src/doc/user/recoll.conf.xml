@@ -471,6 +471,25 @@ the log... values.</para></listitem></varlistentry>
 <listitem><para>Override logfilename for the indexer in real time
 mode. The default is to use the idx... values if set, else
 the log... values.</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ORGIDXCONFDIR">
+<term><varname>orgidxconfdir</varname></term>
+<listitem><para>Original location of the configuration directory. This is used exclusively for movable datasets. Locating the
+configuration directory inside the directory tree makes it possible to
+provide automatic query time path translations once the data set has
+moved (for example, because it has been mounted on another
+location).</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.CURIDXCONFDIR">
+<term><varname>curidxconfdir</varname></term>
+<listitem><para>Current location of the configuration directory. Complement orgidxconfdir for movable datasets. This should be used
+if the configuration directory has been copied from the dataset to
+another location, either because the dataset is readonly and an r/w copy
+is desired, or for performance reasons. This records the original moved
+location before copy, to allow path translation computations.  For
+example if a dataset originally indexed as '/home/me/mydata/config' has
+been mounted to '/media/me/mydata', and the GUI is running from a copied
+configuration, orgidxconfdir would be '/home/me/mydata/config', and
+curidxconfdir (as set in the copied configuration) would be
+'/media/me/mydata/config'.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.IDXRUNDIR">
 <term><varname>idxrundir</varname></term>
 <listitem><para>Indexing process current directory. The input

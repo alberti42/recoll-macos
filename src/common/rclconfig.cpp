@@ -1318,38 +1318,118 @@ string RclConfig::getPidfile() const
     return path_cat(getCacheDir(), "index.pid");
 }
 
+/* Eliminate the common leaf part of file paths p1 and p2. Example: 
+ * /mnt1/common/part /mnt2/common/part -> /mnt1 /mnt2. This is used
+ * for computing translations for paths when the dataset has been
+ * moved. Of course this could be done more efficiently than by splitting 
+ * into vectors, but we don't care.*/
+static string path_diffstems(const string& p1, const string& p2,
+                            string& r1, string& r2)
+{
+    string reason;
+    r1.clear();
+    r2.clear();
+    vector<string> v1, v2;
+    stringToTokens(p1, v1, "/");
+    stringToTokens(p2, v2, "/");
+    unsigned int l1 = v1.size();
+    unsigned int l2 = v2.size();
+        
+    // Search for common leaf part
+    unsigned int cl = 0;
+    for (; cl < MIN(l1, l2); cl++) {
+        if (v1[l1-cl-1] != v2[l2-cl-1]) {
+            break;
+        }
+    }
+    //cerr << "Common length = " << cl << endl;
+    if (cl == 0) {
+        reason = "Input paths are empty or have no common part";
+        return reason;
+    }
+    for (unsigned i = 0; i < l1 - cl; i++) {
+        r1 += "/" + v1[i];
+    }
+    for (unsigned i = 0; i < l2 - cl; i++) {
+        r2 += "/" + v2[i];
+    }
+        
+    return reason;
+}
+
 void RclConfig::urlrewrite(const string& dbdir, string& url) const
 {
-    LOGDEB2("RclConfig::urlrewrite: dbdir [" << dbdir << "] url [" << url <<
+    LOGDEB("RclConfig::urlrewrite: dbdir [" << dbdir << "] url [" << url <<
             "]\n");
 
+    // If orgidxconfdir is set, we assume that this index is for a
+    // movable dataset, with the configuration directory stored inside
+    // the dataset tree. This allows computing automatic path
+    // translations if the dataset has been moved.
+    string orig_confdir;
+    string cur_confdir;
+    string confstemorg, confstemrep;
+    if (m_conf->get("orgidxconfdir", orig_confdir, "")) {
+        if (!m_conf->get("curidxconfdir", cur_confdir, "")) {
+            cur_confdir = m_confdir;
+        }
+        LOGDEB("RclConfig::urlrewrite: orgidxconfdir: " << orig_confdir <<
+               " cur_confdir " << cur_confdir << endl);
+        string reason = path_diffstems(orig_confdir, cur_confdir,
+                                       confstemorg, confstemrep);
+        if (!reason.empty()) {
+            LOGERR("urlrewrite: path_diffstems failed: " << reason <<
+                   " : orig_confdir [" << orig_confdir <<
+                   "] cur_confdir [" << cur_confdir << endl);
+            confstemorg = confstemrep = "";
+        }
+    }
+    
     // Do path translations exist for this index ?
+    bool needptrans = true;
     if (m_ptrans == 0 || !m_ptrans->hasSubKey(dbdir)) {
 	LOGDEB2("RclConfig::urlrewrite: no paths translations (m_ptrans " <<
                 m_ptrans << ")\n");
-	return;
+        needptrans = false;
     }
 
+    if (!needptrans && confstemorg.empty()) {
+        return;
+    }
+    bool computeurl = false;
+    
     string path = fileurltolocalpath(url);
     if (path.empty()) {
 	LOGDEB2("RclConfig::urlrewrite: not file url\n");
 	return;
     }
+    
+    // Do the movable volume thing.
+    if (!confstemorg.empty() && confstemorg.size() <= path.size() &&
+        !path.compare(0, confstemorg.size(), confstemorg)) {
+        path = path.replace(0, confstemorg.size(), confstemrep);
+        computeurl = true;
+    }
 
-    // For each translation check if the prefix matches the input path,
-    // replace and return the result if it does.
-    vector<string> opaths = m_ptrans->getNames(dbdir);
-    for (vector<string>::const_iterator it = opaths.begin(); 
-	 it != opaths.end(); it++) {
-	if (it->size() <= path.size() && !path.compare(0, it->size(), *it)) {
-	    string npath;
-	    // This call always succeeds because the key comes from getNames()
-	    if (m_ptrans->get(*it, npath, dbdir)) { 
-		path = path.replace(0, it->size(), npath);
-		url = path_pathtofileurl(path);
-	    }
-	    break;
-	}
+    if (needptrans) {
+        // For each translation check if the prefix matches the input path,
+        // replace and return the result if it does.
+        vector<string> opaths = m_ptrans->getNames(dbdir);
+        for (const auto& opath: opaths) {
+            if (opath.size() <= path.size() &&
+                !path.compare(0, opath.size(), opath)) {
+                string npath;
+                // Key comes from getNames()=> call must succeed
+                if (m_ptrans->get(opath, npath, dbdir)) { 
+                    path = path.replace(0, opath.size(), npath);
+                    computeurl = true;
+                }
+                break;
+            }
+        }
+    }
+    if (computeurl) {
+        url = path_pathtofileurl(path);
     }
 }
 
