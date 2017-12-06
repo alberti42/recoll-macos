@@ -900,6 +900,9 @@ May be slow for big documents.</string>
                <property name="text">
                 <string>Paths translations</string>
                </property>
+               <property name="toolTip">
+                <string>Set path translations for the selected index or for the main one if no selection exists.</string>
+               </property>
               </widget>
              </item>
             </layout>
