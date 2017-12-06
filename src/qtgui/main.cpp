@@ -328,7 +328,7 @@ int main(int argc, char **argv)
     if (!g_dynconf || !g_dynconf->ok()) {
         QString msg = app.translate
             ("Main",
-             "\"history\" file is damaged or un(read)writeable, please check "
+             "\"history\" file is damaged, please check "
              "or remove it: ") + QString::fromLocal8Bit(historyfile.c_str());
         QMessageBox::critical(0, "Recoll",  msg);
         exit(1);
