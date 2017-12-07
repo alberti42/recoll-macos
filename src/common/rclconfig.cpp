@@ -1359,7 +1359,7 @@ static string path_diffstems(const string& p1, const string& p2,
 
 void RclConfig::urlrewrite(const string& dbdir, string& url) const
 {
-    LOGDEB("RclConfig::urlrewrite: dbdir [" << dbdir << "] url [" << url <<
+    LOGDEB1("RclConfig::urlrewrite: dbdir [" << dbdir << "] url [" << url <<
             "]\n");
 
     // If orgidxconfdir is set, we assume that this index is for a
@@ -1373,7 +1373,7 @@ void RclConfig::urlrewrite(const string& dbdir, string& url) const
         if (!m_conf->get("curidxconfdir", cur_confdir, "")) {
             cur_confdir = m_confdir;
         }
-        LOGDEB("RclConfig::urlrewrite: orgidxconfdir: " << orig_confdir <<
+        LOGDEB1("RclConfig::urlrewrite: orgidxconfdir: " << orig_confdir <<
                " cur_confdir " << cur_confdir << endl);
         string reason = path_diffstems(orig_confdir, cur_confdir,
                                        confstemorg, confstemrep);
