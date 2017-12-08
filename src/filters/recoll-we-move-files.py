@@ -15,7 +15,7 @@
 #  Free Software Foundation, Inc.,
 #  59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-""" Monitor download directory for pages created by the recoll-we extension.
+""" Move pages created by the recoll-we extension from the download directory to the recoll web queue.
 
 The files (content file and metadata side file) are then renamed and
 moved to the Recoll web queue directory.
