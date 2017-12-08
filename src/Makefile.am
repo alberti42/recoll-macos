@@ -357,7 +357,6 @@ qtgui/confgui/confgui.cpp \
 qtgui/confgui/confgui.h \
 qtgui/confgui/confguiindex.cpp \
 qtgui/confgui/confguiindex.h \
-qtgui/confgui/conflinkrcl.h \
 qtgui/confgui/main.cpp \
 qtgui/crontool.cpp \
 qtgui/crontool.h \
