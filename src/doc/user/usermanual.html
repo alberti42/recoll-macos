@@ -6667,10 +6667,11 @@ alink="#0000FF">
             show the snippets text). In order to access the actual
             document data, the data extraction part of the indexing
             process must be performed (subdocument access and
-            format translation). This is not trivial in general.
-            The <code class="literal">rclextract</code> module
-            currently provides a single class which can be used to
-            access the data content for result documents.</p>
+            format translation). This is not trivial in the case of
+            embedded documents. The <code class=
+            "literal">rclextract</code> module provides a single
+            class which can be used to access the data content for
+            result documents.</p>
             <div class="sect4">
               <div class="titlepage">
                 <div>
@@ -6709,16 +6710,24 @@ alink="#0000FF">
                       <p>Extract document defined by <em class=
                       "replaceable"><code>ipath</code></em> and
                       return a <code class="literal">Doc</code>
-                      object. The doc.text field has the document
-                      text converted to either text/plain or
-                      text/html according to doc.mimetype. The
-                      typical use would be as follows:</p>
+                      object. The <code class=
+                      "literal">doc.text</code> field has the
+                      document text converted to either text/plain
+                      or text/html according to <code class=
+                      "literal">doc.mimetype</code>. The typical
+                      use would be as follows:</p>
                       <pre class="programlisting">
-                    qdoc = query.fetchone()
-                    extractor = recoll.Extractor(qdoc)
-                    doc = extractor.textextract(qdoc.ipath)
-                    # use doc.text, e.g. for previewing
-                  </pre>
+qdoc = query.fetchone()
+extractor = recoll.Extractor(qdoc)
+doc = extractor.textextract(qdoc.ipath)
+# use doc.text, e.g. for previewing</pre>
+                      <p>Passing <code class=
+                      "literal">qdoc.ipath</code> to <code class=
+                      "literal">textextract()</code> is redundant,
+                      but reflects the fact that the <code class=
+                      "literal">Extractor</code> object actually
+                      has the capability to access the other
+                      entries in a compound document.</p>
                     </dd>
                     <dt><span class=
                     "term">Extractor.idoctofile(ipath, targetmtype,
@@ -6729,9 +6738,17 @@ alink="#0000FF">
                       created as a temporary file to be deleted by
                       the caller. Typical use:</p>
                       <pre class="programlisting">
-                    qdoc = query.fetchone()
-                    extractor = recoll.Extractor(qdoc)
-                  filename = extractor.idoctofile(qdoc.ipath, qdoc.mimetype)</pre>
+qdoc = query.fetchone()
+extractor = recoll.Extractor(qdoc)
+filename = extractor.idoctofile(qdoc.ipath, qdoc.mimetype)</pre>
+                      <p>In all cases the output is a copy, even if
+                      the requested document is a regular system
+                      file, which may be wasteful in some cases. If
+                      you want to avoid this, you can test for a
+                      simple file document as follows:</p>
+                      <pre class="programlisting">
+not doc.ipath and (not "rclbes" in doc.keys() or doc["rclbes"] == "FS")
+</pre>
                     </dd>
                   </dl>
                 </div>
@@ -6758,9 +6775,9 @@ alink="#0000FF">
             embryonic GUI which demonstrates the highlighting and
             data extraction functions.</p>
             <pre class="programlisting">
-            #!/usr/bin/env python
-            
-                     from recoll import recoll
+#!/usr/bin/env python
+
+from recoll import recoll
 
 db = recoll.connect()
 db.setAbstractParams(maxchars=80, contextwords=4)
@@ -6769,18 +6786,16 @@ query = db.query()
 nres = query.execute("some user question")
 print "Result count: ", nres
 if nres &gt; 5:
-nres = 5
+    nres = 5
 for i in range(nres):
-doc = query.fetchone()
-print "Result #%d" % (query.rownumber,)
-for k in ("title", "size"):
-print k, ":", getattr(doc, k).encode('utf-8')
-abs = db.makeDocAbstract(doc, query).encode('utf-8')
-print abs
-print
-
-            
-          </pre>
+    doc = query.fetchone()
+    print "Result #%d" % (query.rownumber,)
+    for k in ("title", "size"):
+        print k, ":", getattr(doc, k).encode('utf-8')
+    abs = db.makeDocAbstract(doc, query).encode('utf-8')
+    print abs
+    print
+</pre>
           </div>
         </div>
         <div class="sect2">

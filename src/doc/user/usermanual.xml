@@ -5196,13 +5196,13 @@
 
           <para>Index queries do not provide document content (only a
           partial and unprecise reconstruction is performed to show the
-          snippets text). In order to access the actual document data, 
-          the data extraction part of the indexing process
-          must be performed (subdocument access and format
-          translation). This is not trivial in
-          general. The <literal>rclextract</literal> module currently
-          provides a single class which can be used to access the data
-          content for result documents.</para>
+          snippets text). In order to access the actual document data, the
+          data extraction part of the indexing process must be performed
+          (subdocument access and format translation). This is not trivial
+          in the case of embedded documents. The
+          <literal>rclextract</literal> module provides a single class
+          which can be used to access the data content for result
+          documents.</para>
 
           <sect4 id="RCL.PROGRAM.PYTHONAPI.RCLEXTRACT.CLASSES">
             <title>Classes</title>
@@ -5220,30 +5220,43 @@
                 </varlistentry>
                 <varlistentry>
                   <term>Extractor.textextract(ipath)</term>
-                  <listitem><para>Extract document defined
-                  by <replaceable>ipath</replaceable> and return
-                  a <literal>Doc</literal> object. The doc.text field
-                  has the document text converted to either text/plain or
-                  text/html according to doc.mimetype. The typical use
-                  would be as follows:
-                  <programlisting>
-                    qdoc = query.fetchone()
-                    extractor = recoll.Extractor(qdoc)
-                    doc = extractor.textextract(qdoc.ipath)
-                    # use doc.text, e.g. for previewing
-                  </programlisting>
-                  </para></listitem>
+                  <listitem><para>Extract document defined by
+                  <replaceable>ipath</replaceable> and return a
+                  <literal>Doc</literal> object. The
+                  <literal>doc.text</literal> field has the document text
+                  converted to either text/plain or text/html according to
+                  <literal>doc.mimetype</literal>. The typical use would be
+                  as follows:</para>
+<programlisting>
+qdoc = query.fetchone()
+extractor = recoll.Extractor(qdoc)
+doc = extractor.textextract(qdoc.ipath)
+# use doc.text, e.g. for previewing</programlisting>
+                  <para>Passing <literal>qdoc.ipath</literal> to
+                  <literal>textextract()</literal> is redundant, but
+                  reflects the fact that the <literal>Extractor</literal>
+                  object actually has the capability to access the other
+                  entries in a compound document.</para>
+                  </listitem>
                 </varlistentry>
                 <varlistentry>
                   <term>Extractor.idoctofile(ipath, targetmtype, outfile='')</term>
                   <listitem><para>Extracts document into an output file,
                   which can be given explicitly or will be created as a
-                  temporary file to be deleted by the caller. Typical use:
-                  <programlisting>
-                    qdoc = query.fetchone()
-                    extractor = recoll.Extractor(qdoc)
-                  filename = extractor.idoctofile(qdoc.ipath, qdoc.mimetype)</programlisting>
-
+                  temporary file to be deleted by the caller. Typical
+                  use:</para> 
+<programlisting>
+qdoc = query.fetchone()
+extractor = recoll.Extractor(qdoc)
+filename = extractor.idoctofile(qdoc.ipath, qdoc.mimetype)</programlisting>
+ 
+                  <para>In all cases the output is a copy, even if the
+                  requested document is a regular system file, which may be
+                  wasteful in some cases. If you want to avoid this, you
+                  can test for a simple file document as follows:
+<programlisting>
+not doc.ipath and (not "rclbes" in doc.keys() or doc["rclbes"] == "FS")
+</programlisting>
                   </para></listitem>
                 </varlistentry>
 
@@ -5252,6 +5265,7 @@
             </sect5> <!-- Extractor class -->
           </sect4> <!-- rclextract classes -->
         </sect3> <!-- rclextract module -->
+
 
         <sect3 id="RCL.PROGRAM.PYTHONAPI.SEARCH.EXAMPLE">
           <title>Search API usage example</title>
@@ -5263,10 +5277,10 @@
           has a very embryonic GUI which demonstrates the
           highlighting and data extraction functions.</para>
 
-          <programlisting>
-            #!/usr/bin/env python
-            <![CDATA[
-                     from recoll import recoll
+<programlisting><![CDATA[
+#!/usr/bin/env python
+
+from recoll import recoll
 
 db = recoll.connect()
 db.setAbstractParams(maxchars=80, contextwords=4)
@@ -5275,18 +5289,16 @@ query = db.query()
 nres = query.execute("some user question")
 print "Result count: ", nres
 if nres > 5:
-nres = 5
+    nres = 5
 for i in range(nres):
-doc = query.fetchone()
-print "Result #%d" % (query.rownumber,)
-for k in ("title", "size"):
-print k, ":", getattr(doc, k).encode('utf-8')
-abs = db.makeDocAbstract(doc, query).encode('utf-8')
-print abs
-print
-
-            ]]>
-          </programlisting>
+    doc = query.fetchone()
+    print "Result #%d" % (query.rownumber,)
+    for k in ("title", "size"):
+        print k, ":", getattr(doc, k).encode('utf-8')
+    abs = db.makeDocAbstract(doc, query).encode('utf-8')
+    print abs
+    print
+]]></programlisting>
 
         </sect3>
       </sect2>
