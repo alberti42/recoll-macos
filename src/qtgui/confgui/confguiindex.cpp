@@ -31,6 +31,7 @@
 #include <list>
 #include <set>
 #include <string>
+#include <functional>
 using std::list;
 using std::set;
 using std::string;
