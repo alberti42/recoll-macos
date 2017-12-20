@@ -240,10 +240,16 @@ bool recursive_index(RclConfig *config, const string& top,
     MakeListWalkerCB cb(files, selpats);
     FsTreeWalker walker;
     walker.walk(top, cb);
+    bool ret = false;
     if (op_flags & OPT_e) {
-        purgefiles(config, files);
+        if (!(ret = purgefiles(config, files))) {
+            return ret;
+        }
     }
-    return indexfiles(config, files);
+    if (!(op_flags & OPT_e) || ((op_flags & OPT_e) &&(op_flags & OPT_i))) {
+        ret = indexfiles(config, files);
+    }
+    return ret;
 }
 
 // Index a list of files. We just call the top indexer method, which
