@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include <cstring>
+#include <exception>
 #include "safeunistd.h"
 #include <math.h>
 #include <time.h>
@@ -792,7 +793,20 @@ bool Db::open(OpenMode mode, OpenError *error)
 	    {
 		int action = (mode == DbUpd) ? Xapian::DB_CREATE_OR_OPEN :
 		    Xapian::DB_CREATE_OR_OVERWRITE;
-		m_ndb->xwdb = Xapian::WritableDatabase(dir, action);
+                if (::access(dir.c_str(), 0) != 0) {
+                    // New index. use a stub to force using Chert
+                    string stub = path_cat(m_config->getConfDir(),
+                                           "xapian.stub");
+                    FILE *fp = fopen(stub.c_str(), "w");
+                    if (nullptr == fp) {
+                        throw(string("Can't create ") + stub);
+                    }
+                    fprintf(fp, "chert %s\n", dir.c_str());
+                    fclose(fp);
+                    m_ndb->xwdb = Xapian::WritableDatabase(stub, action);
+                } else {
+                    m_ndb->xwdb = Xapian::WritableDatabase(dir, action);
+                }
                 // If db is empty, write the data format version at once
                 // to avoid stupid error messages:
                 if (m_ndb->xwdb.get_doccount() == 0)

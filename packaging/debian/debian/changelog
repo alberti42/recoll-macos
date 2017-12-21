@@ -1,3 +1,10 @@
+recoll (1.23.6-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * Make sure new indexes are created in Chert format, even with Xapian 1.4
+    This works around the Glass snippets generation issue (UI freezes).
+    
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 08 Dec 2017 15:18:00 +0100
+
 recoll (1.23.5-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * Support the new browser plugin based on WebExtensions.
