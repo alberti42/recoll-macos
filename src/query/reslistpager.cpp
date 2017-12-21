@@ -397,15 +397,13 @@ void ResListPager::displayPage(RclConfig *config)
 		    
 		    }
 
-		    for (map<string, vector<string> >::const_iterator it0 =
-			     spellings.begin(); it0 != spellings.end(); it0++) {
-			chunk << "<b>" << it0->first << "</b> : ";
-			for (vector<string>::const_iterator it = 
-				 it0->second.begin();
-			     it != it0->second.end(); it++) {
-			    chunk << *it << " ";
+		    for (const auto& entry: spellings) {
+			chunk << "<b>" << entry.first << "</b> : ";
+                        for (const auto& spelling : entry.second) {
+			    chunk << spelling << " ";
 			}
 			chunk << "<br />";
+                        std::cerr << chunk.str() << endl;
 		    }
 		    chunk << "</blockquote></p>";
 		}

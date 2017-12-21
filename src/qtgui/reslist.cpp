@@ -839,10 +839,14 @@ void ResList::showQueryDetails()
 
 void ResList::linkWasClicked(const QUrl &url)
 {
-    string ascurl = qs2utf8s(url.toString());
-    LOGDEB("ResList::linkWasClicked: [" << ascurl << "]\n");
+    // qt5: url.toString() does not accept FullyDecoded, but that's what we
+    // want. e.g. Suggestions links are like Sterm|spelling which we
+    // receive as Sterm%7CSpelling
+    string strurl = url_decode(qs2utf8s(url.toString()));
+    
+    LOGDEB("ResList::linkWasClicked: [" << strurl << "]\n");
 
-    int what = ascurl[0];
+    int what = strurl[0];
     switch (what) {
 
     // Open abstract/snippets window
@@ -850,7 +854,7 @@ void ResList::linkWasClicked(const QUrl &url)
     {
 	if (!m_source) 
 	    return;
-	int i = atoi(ascurl.c_str()+1) - 1;
+	int i = atoi(strurl.c_str()+1) - 1;
 	Rcl::Doc doc;
 	if (!getDoc(i, doc)) {
 	    LOGERR("ResList::linkWasClicked: can't get doc for " << i << "\n");
@@ -865,7 +869,7 @@ void ResList::linkWasClicked(const QUrl &url)
     {
 	if (!m_source) 
 	    return;
-	int i = atoi(ascurl.c_str()+1) - 1;
+	int i = atoi(strurl.c_str()+1) - 1;
 	Rcl::Doc doc;
 	if (!getDoc(i, doc)) {
 	    LOGERR("ResList::linkWasClicked: can't get doc for " << i << "\n");
@@ -881,7 +885,7 @@ void ResList::linkWasClicked(const QUrl &url)
     // Open parent folder
     case 'F':
     {
-	int i = atoi(ascurl.c_str()+1) - 1;
+	int i = atoi(strurl.c_str()+1) - 1;
 	Rcl::Doc doc;
 	if (!getDoc(i, doc)) {
 	    LOGERR("ResList::linkWasClicked: can't get doc for " << i << "\n");
@@ -903,7 +907,7 @@ void ResList::linkWasClicked(const QUrl &url)
     case 'P': 
     case 'E': 
     {
-	int i = atoi(ascurl.c_str()+1) - 1;
+	int i = atoi(strurl.c_str()+1) - 1;
 	Rcl::Doc doc;
 	if (!getDoc(i, doc)) {
 	    LOGERR("ResList::linkWasClicked: can't get doc for " << i << "\n");
@@ -932,7 +936,7 @@ void ResList::linkWasClicked(const QUrl &url)
 	// Run script. Link format Rnn|Script Name
     case 'R':
     {
-	int i = atoi(ascurl.c_str() + 1) - 1;
+	int i = atoi(strurl.c_str() + 1) - 1;
 	QString s = url.toString();
 	int bar = s.indexOf("|");
 	if (bar == -1 || bar >= s.size()-1)
@@ -953,20 +957,21 @@ void ResList::linkWasClicked(const QUrl &url)
 	// Spelling: replacement suggestion clicked
     case 'S':
     {
-	QString s = url.toString();
-	if (!s.isEmpty())
-	    s = s.right(s.size()-1);
-	int bar = s.indexOf("|");
-	if (bar != -1 && bar < s.size()-1) {
-	    QString o = s.left(bar);
-	    QString n = s.right(s.size() - (bar+1));
-	    emit wordReplace(o, n);
+        string s;
+	if (!strurl.empty())
+	    s = strurl.substr(1);
+        string::size_type bar = s.find_first_of("|");
+	if (bar != string::npos && bar < s.size() - 1) {
+	    string o = s.substr(0, bar);
+	    string n = s.substr(bar+1);
+            LOGDEB2("Emitting wordreplace " << o << " -> " << n << std::endl);
+	    emit wordReplace(u8s2qs(o), u8s2qs(n));
 	}
     }
     break;
 
     default: 
-	LOGERR("ResList::linkWasClicked: bad link [" << ascurl << "]\n");
+	LOGERR("ResList::linkWasClicked: bad link [" << strurl << "]\n");
 	break;// ?? 
     }
 }
