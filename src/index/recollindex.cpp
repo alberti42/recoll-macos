@@ -347,7 +347,7 @@ bool runWebFilesMoverScript(RclConfig *config)
 {
     static string downloadsdir;
     if (downloadsdir.empty()) {
-        if (!config->getConfParam("downloadsdir", downloadsdir)) {
+        if (!config->getConfParam("webdownloadsdir", downloadsdir)) {
             downloadsdir = path_tildexpand("~/Downloads");
         }
     }
