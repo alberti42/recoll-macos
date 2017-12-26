@@ -32,17 +32,13 @@
 class PlainToRich {
 public:
     PlainToRich() 
-	: m_inputhtml(false), m_eolbr(false), m_hdata(0)
-    {
+        : m_inputhtml(false), m_eolbr(false), m_hdata(0) {
     }
 
-    virtual ~PlainToRich() 
-    {
-    }
+    virtual ~PlainToRich() {}
 
-    void set_inputhtml(bool v) 
-    {
-	m_inputhtml = v;
+    void set_inputhtml(bool v) {
+        m_inputhtml = v;
     }
 
     /**
@@ -67,33 +63,29 @@ public:
      * @param chunksize max size of chunks in output list
      */
     virtual bool plaintorich(const std::string &in, std::list<std::string> &out,
-			     const HighlightData& hdata,
-			     int chunksize = 50000
-			     );
+                             const HighlightData& hdata,
+                             int chunksize = 50000
+        );
 
     /* Overridable output methods for headers, highlighting and marking tags */
 
-    virtual std::string header() 
-    {
-	return cstr_null;
+    virtual std::string header() {
+        return cstr_null;
     }
 
     /** Return match prefix (e.g.: <div class="match">). 
-	@param groupidx the index into hdata.groups */
-    virtual std::string startMatch(unsigned int) 
-    {
-	return cstr_null;
+        @param groupidx the index into hdata.groups */
+    virtual std::string startMatch(unsigned int) {
+        return cstr_null;
     }
 
     /** Return data for end of match area (e.g.: </div>). */
-    virtual std::string endMatch() 
-    {
-	return cstr_null;
+    virtual std::string endMatch() {
+        return cstr_null;
     }
 
-    virtual std::string startChunk() 
-    {
-	return cstr_null;
+    virtual std::string startChunk() {
+        return cstr_null;
     }
 
 protected:
