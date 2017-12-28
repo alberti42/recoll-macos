@@ -14,15 +14,12 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
 #ifndef _rclquery_p_h_included_
 #define _rclquery_p_h_included_
 
 #include <map>
 #include <vector>
-
-using std::map;
-using std::vector;
+#include <string>
 
 #include <xapian.h>
 #include "rclquery.h"
@@ -31,41 +28,36 @@ namespace Rcl {
 
 class Query::Native {
 public:
-    /** The query I belong to */
-    Query                *m_q;
-
-    /** query descriptor: terms and subqueries joined by operators
-     * (or/and etc...)
-     */
-    Xapian::Query    xquery; 
-
-    Xapian::Enquire      *xenquire; // Open query descriptor.
-    Xapian::MSet          xmset;    // Partial result set
+    // The query I belong to
+    Query *m_q;
+    // query descriptor: terms and subqueries joined by operators
+    // (or/and etc...)
+    Xapian::Query xquery; 
+    // Open query descriptor.
+    Xapian::Enquire *xenquire;
+    // Partial result set
+    Xapian::MSet xmset;    
     // Term frequencies for current query. See makeAbstract, setQuery
-    map<string, double>  termfreqs; 
+    std::map<std::string, double>  termfreqs; 
 
     Native(Query *q)
-	: m_q(q), xenquire(0)
-    { 
+        : m_q(q), xenquire(0) { }
+    ~Native() {
+        clear();
     }
-    ~Native() 
-    {
-	clear();
-    }
-    void clear() 
-    {
-	delete xenquire; xenquire = 0;
-	termfreqs.clear();
+    void clear() {
+        delete xenquire; xenquire = 0;
+        termfreqs.clear();
     }
     /** Return a list of terms which matched for a specific result document */
     bool getMatchTerms(unsigned long xdocid, std::vector<std::string>& terms);
-    int makeAbstract(Xapian::docid id, vector<Snippet>&,
-		     int maxoccs = -1, int ctxwords = -1);
+    int makeAbstract(Xapian::docid id, std::vector<Snippet>&,
+                     int maxoccs = -1, int ctxwords = -1);
     int getFirstMatchPage(Xapian::docid docid, std::string& term);
     void setDbWideQTermsFreqs();
     double qualityTerms(Xapian::docid docid, 
-			const std::vector<std::string>& terms,
-			std::multimap<double, std::vector<std::string> >& byQ);
+                        const std::vector<std::string>& terms,
+                        std::multimap<double, std::vector<std::string> >& byQ);
 };
 
 }
