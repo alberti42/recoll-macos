@@ -242,6 +242,8 @@ utils/utf8iter.h \
 utils/wipedir.cpp \
 utils/wipedir.h \
 utils/workqueue.h \
+utils/zlibut.cpp \
+utils/zlibut.h \
 xaposix/safefcntl.h \
 xaposix/safesysstat.h \
 xaposix/safesyswait.h \

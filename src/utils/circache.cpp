@@ -18,6 +18,8 @@
 #ifndef TEST_CIRCACHE
 #include "autoconfig.h"
 
+#include "circache.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -27,11 +29,11 @@
 #include "safeunistd.h"
 #include <assert.h>
 #include <memory.h>
-#include <zlib.h>
 
-#include "chrono.h"
 #include <memory>
 
+#include "chrono.h"
+#include "zlibut.h"
 
 #ifndef _WIN32
 #include <sys/uio.h>
@@ -95,8 +97,6 @@ struct TempBuf {
     }
     char *m_buf;
 };
-
-static bool inflateToDynBuf(void *inp, UINT inlen, void **outpp, UINT *outlenp);
 
 /*
  * File structure:
@@ -631,14 +631,12 @@ public:
 
             if (hd.flags & EFDataCompressed) {
                 LOGDEB1("Circache:readdicdata: data compressed\n" );
-                void *uncomp;
-                unsigned int uncompsize;
-                if (!inflateToDynBuf(bf, hd.datasize, &uncomp, &uncompsize)) {
+                ZLibUtBuf buf;
+                if (!inflateToBuf(bf, hd.datasize, buf)) {
                     m_reason << "CirCache: decompression failed ";
                     return false;
                 }
-                data->assign((char *)uncomp, uncompsize);
-                free(uncomp);
+                data->assign(buf.getBuf(), buf.getCnt());
             } else {
                 LOGDEB1("Circache:readdicdata: data NOT compressed\n" );
                 data->assign(bf, hd.datasize);
@@ -1035,17 +1033,14 @@ bool CirCache::put(const string& udi, const ConfSimple *iconf,
     const char *datap = data.c_str();
     size_t datalen = data.size();
     unsigned short flags = 0;
-    TempBuf compbuf;
+    ZLibUtBuf buf;
     if (!(iflags & NoCompHint)) {
-        uLong len = compressBound(static_cast<uLong>(data.size()));
-        char *bf = compbuf.setsize(len);
-        if (bf != 0 &&
-                compress((Bytef*)bf, &len, (Bytef*)data.c_str(),
-                         static_cast<uLong>(data.size())) == Z_OK) {
-            if (float(len) < 0.9 * float(data.size())) {
-                // bf is local but it's our static buffer address
-                datap = bf;
-                datalen = len;
+        if (deflateToBuf(data.c_str(), data.size(), buf)) {
+            // If compression succeeds, and the ratio makes sense,
+            // store compressed
+            if (float(buf.getCnt()) < 0.9 * float(data.size())) {
+                datap = buf.getBuf();
+                datalen = buf.getCnt();
                 flags |= EFDataCompressed;
             }
         }
@@ -1265,90 +1260,6 @@ bool CirCache::getCurrent(string& udi, string& dic, string *data)
 
     ConfSimple conf(dic, 1);
     conf.get("udi", udi, cstr_null);
-    return true;
-}
-
-static void *allocmem(
-    void *cp,   /* The array to grow. may be NULL */
-    int  sz,    /* Unit size in bytes */
-    int  *np,    /* Pointer to current allocation number */
-    int  min,   /* Number to allocate the first time */
-    int  maxinc) /* Maximum increment */
-{
-    if (cp == 0) {
-        cp = malloc(min * sz);
-        *np = cp ? min : 0;
-        return cp;
-    }
-
-    int inc = (*np > maxinc) ?  maxinc : *np;
-    if ((cp = realloc(cp, (*np + inc) * sz)) != 0) {
-        *np += inc;
-    }
-    return cp;
-}
-
-static bool inflateToDynBuf(void* inp, UINT inlen, void **outpp, UINT *outlenp)
-{
-    z_stream d_stream; /* decompression stream */
-
-    LOGDEB0("inflateToDynBuf: inlen "  << (inlen) << "\n" );
-
-    d_stream.zalloc = (alloc_func)0;
-    d_stream.zfree = (free_func)0;
-    d_stream.opaque = (voidpf)0;
-    // Compression works well on html files, 4-6 is quite common, Otoh we
-    // maybe passed a big, little if at all compressed image or pdf file,
-    // So we set the initial allocation at 3 times the input size
-    const int imul = 3;
-    const int mxinc = 20;
-    char *outp = 0;
-    int alloc = 0;
-    d_stream.next_in  = (Bytef*)inp;
-    d_stream.avail_in = inlen;
-    d_stream.next_out = 0;
-    d_stream.avail_out = 0;
-
-    int err;
-    if ((err = inflateInit(&d_stream)) != Z_OK) {
-        LOGERR("Inflate: inflateInit: err "  << (err) << " msg "  << (d_stream.msg) << "\n" );
-        free(outp);
-        return false;
-    }
-
-    for (;;) {
-        LOGDEB2("InflateToDynBuf: avail_in "  << (d_stream.avail_in) << " total_in "  << (d_stream.total_in) << " avail_out "  << (d_stream.avail_out) << " total_out "  << (d_stream.total_out) << "\n" );
-        if (d_stream.avail_out == 0) {
-            if ((outp = (char*)allocmem(outp, inlen, &alloc,
-                                        imul, mxinc)) == 0) {
-                LOGERR("Inflate: out of memory, current alloc "  << (alloc * inlen) << "\n" );
-                inflateEnd(&d_stream);
-                return false;
-            } else {
-                LOGDEB2("inflateToDynBuf: realloc("  << (alloc * inlen) << ") ok\n" );
-            }
-            d_stream.avail_out = alloc * inlen - d_stream.total_out;
-            d_stream.next_out = (Bytef*)(outp + d_stream.total_out);
-        }
-        err = inflate(&d_stream, Z_NO_FLUSH);
-        if (err == Z_STREAM_END) {
-            break;
-        }
-        if (err != Z_OK) {
-            LOGERR("Inflate: error "  << (err) << " msg "  << (d_stream.msg) << "\n" );
-            inflateEnd(&d_stream);
-            free(outp);
-            return false;
-        }
-    }
-    *outlenp = d_stream.total_out;
-    *outpp = (Bytef *)outp;
-
-    if ((err = inflateEnd(&d_stream)) != Z_OK) {
-        LOGERR("Inflate: inflateEnd error "  << (err) << " msg "  << (d_stream.msg) << "\n" );
-        return false;
-    }
-    LOGDEB0("inflateToDynBuf: ok, output size "  << (d_stream.total_out) << "\n" );
     return true;
 }
 
