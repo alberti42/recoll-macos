@@ -21,6 +21,8 @@
 
 #include "log.h"
 
+using namespace std;
+
 static void *allocmem(
     void *cp,    /* The array to grow. may be NULL */
     int  sz,     /* Unit size in bytes */
@@ -130,18 +132,19 @@ bool inflateToBuf(const void* inp, unsigned int inlen, ZLibUtBuf& buf)
             break;
         }
         if (err != Z_OK) {
-            LOGERR("Inflate: error " << err << " msg " << d_stream.msg << "\n");
+            LOGERR("Inflate: error " << err << " msg " <<
+                   (d_stream.msg ? d_stream.msg : "") << endl);
             inflateEnd(&d_stream);
             return false;
         }
     }
     if ((err = inflateEnd(&d_stream)) != Z_OK) {
-        LOGERR("Inflate: inflateEnd error " << err << " msg " << d_stream.msg
-               << "\n");
+        LOGERR("Inflate: inflateEnd error " << err << " msg " <<
+               (d_stream.msg ? d_stream.msg : "") << endl);
         return false;
     }
     buf.m->datacnt = d_stream.total_out;
-    LOGDEB1("inflateToBuf: ok, output size " << buf.getCnt() << "\n");
+    LOGDEB1("inflateToBuf: ok, output size " << buf.getCnt() << endl);
     return true;
 }
 
