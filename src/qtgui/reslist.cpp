@@ -260,7 +260,7 @@ class PlainToRichQtReslist : public PlainToRich {
 public:
     virtual string startMatch(unsigned int idx)
     {
-	if (m_hdata) {
+	if (0 && m_hdata) {
 	    string s1, s2;
 	    stringsToString<vector<string> >(m_hdata->groups[idx], s1); 
 	    stringsToString<vector<string> >(m_hdata->ugroups[m_hdata->grpsugidx[idx]], s2);
