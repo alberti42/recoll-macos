@@ -61,6 +61,7 @@ using namespace std;
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"
 #endif
+#include "zlibut.h"
 
 // Recoll index format version is stored in user metadata. When this change,
 // we can't open the db and will have to reindex.
@@ -1458,8 +1459,19 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 #ifdef TEXTSPLIT_STATS
 	splitter.resetStats();
 #endif
-	if (!splitter.text_to_words(doc.text))
+	if (!splitter.text_to_words(doc.text)) {
 	    LOGDEB("Db::addOrUpdate: split failed for main text\n");
+        } else {
+#ifdef RAWTEXT_IN_VALUE
+            if (o_index_storerawtext) {
+                ZLibUtBuf buf;
+                deflateToBuf(doc.text.c_str(), doc.text.size(), buf);
+                string tt;
+                tt.assign(buf.getBuf(), buf.getCnt());
+                newdocument.add_value(VALUE_RAWTEXT, tt);
+            }
+#endif
+        }
 
 #ifdef TEXTSPLIT_STATS
 	// Reject bad data. unrecognized base64 text is characterized by
@@ -1670,6 +1682,12 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	    newdocument.add_boolean_term(wrap_prefix("XM") + *md5);
 	}
 
+#ifdef RAWTEXT_IN_DATA
+        if (o_index_storerawtext) {
+            RECORD_APPEND(record, string("RAWTEXT"),
+                          neutchars(doc.text, cstr_nc));
+        }
+#endif
 	LOGDEB0("Rcl::Db::add: new doc record:\n" << record << "\n");
 	newdocument.set_data(record);
     }

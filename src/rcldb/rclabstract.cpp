@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes
+/* Copyright (C) 2004-2017 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +19,9 @@
 #include <math.h>
 
 #include <map>
+#include <unordered_map>
+#include <deque>
+#include <algorithm>
 
 #include "log.h"
 #include "rcldb.h"
@@ -33,30 +36,22 @@
 
 using namespace std;
 
+
 namespace Rcl {
+
 // This is used as a marker inside the abstract frag lists, but
 // normally doesn't remain in final output (which is built with a
 // custom sep. by our caller).
 static const string cstr_ellipsis("...");
+static const string emptys;
 // This is used to mark positions overlapped by a multi-word match term
 static const string occupiedmarker("?");
 
-#undef DEBUGABSTRACT  
+#define DEBUGABSTRACT  
 #ifdef DEBUGABSTRACT
 #define LOGABS LOGDEB
-static void listList(const string& what, const vector<string>&l)
-{
-    string a;
-    for (vector<string>::const_iterator it = l.begin(); it != l.end(); it++) {
-        a = a + *it + " ";
-    }
-    LOGDEB("" << what << ": " << a << "\n");
-}
 #else
 #define LOGABS LOGDEB2
-static void listList(const string&, const vector<string>&)
-{
-}
 #endif
 
 // Unprefix terms. Actually it's not completely clear if we should
@@ -66,13 +61,12 @@ static void listList(const string&, const vector<string>&)
 static const bool prune_prefixed_terms = true; 
 static void noPrefixList(const vector<string>& in, vector<string>& out) 
 {
-    for (vector<string>::const_iterator qit = in.begin(); 
-         qit != in.end(); qit++) {
+    for (const auto& term : in) {
         if (prune_prefixed_terms) {
-            if (has_prefix(*qit))
+            if (has_prefix(term))
                 continue;
         }
-        out.push_back(strip_prefix(*qit));
+        out.push_back(strip_prefix(term));
     }
     sort(out.begin(), out.end());
     vector<string>::iterator it = unique(out.begin(), out.end());
@@ -117,18 +111,17 @@ void Query::Native::setDbWideQTermsFreqs()
         m_q->getQueryTerms(iqterms);
         noPrefixList(iqterms, qterms);
     }
-    // listList("Query terms: ", qterms);
+    LOGDEB("Query terms: " << stringsToString(qterms) << endl);
     Xapian::Database &xrdb = m_q->m_db->m_ndb->xrdb;
 
     double doccnt = xrdb.get_doccount();
     if (doccnt == 0) 
         doccnt = 1;
 
-    for (vector<string>::const_iterator qit = qterms.begin(); 
-         qit != qterms.end(); qit++) {
-        termfreqs[*qit] = xrdb.get_termfreq(*qit) / doccnt;
-        LOGABS("setDbWideQTermFreqs: [" << *qit << "] db freq " <<
-               termfreqs[*qit] << "\n");
+    for (const auto& term : qterms) {
+        termfreqs[term] = xrdb.get_termfreq(term) / doccnt;
+        LOGABS("setDbWideQTermFreqs: [" << term << "] db freq " <<
+               termfreqs[term] << "\n");
     }
 }
 
@@ -162,36 +155,29 @@ double Query::Native::qualityTerms(Xapian::docid docid,
         m_q->m_sd->getTerms(hld);
     }
 
-#ifdef DEBUGABSTRACT
-    {
-        string deb;
-        hld.toString(deb);
-        LOGABS("qualityTerms: hld: " << deb << "\n");
-    }
-#endif
-
-    // Group the input terms by the user term they were possibly expanded from
+    // Group the input terms by the user term they were possibly
+    // expanded from (by stemming)
     map<string, vector<string> > byRoot;
-    for (vector<string>::const_iterator qit = terms.begin(); 
-         qit != terms.end(); qit++) {
-        map<string, string>::const_iterator eit = hld.terms.find(*qit);
+    for (const auto& term: terms) {
+        map<string, string>::const_iterator eit = hld.terms.find(term);
         if (eit != hld.terms.end()) {
-            byRoot[eit->second].push_back(*qit);
+            byRoot[eit->second].push_back(term);
         } else {
-            LOGDEB0("qualityTerms: [" << *qit << "] not found in hld\n");
-            byRoot[*qit].push_back(*qit);
+            LOGDEB0("qualityTerms: [" << term << "] not found in hld\n");
+            byRoot[term].push_back(term);
         }
     }
 
 #ifdef DEBUGABSTRACT
     {
+        string deb;
+        hld.toString(deb);
+        LOGABS("qualityTerms: hld: " << deb << "\n");
         string byRootstr;
-        for (map<string, vector<string> >::const_iterator debit = 
-                 byRoot.begin();  debit != byRoot.end(); debit++) {
-            byRootstr.append("[").append(debit->first).append("]->");
-            for (vector<string>::const_iterator it = debit->second.begin();
-                 it != debit->second.end(); it++) {
-                byRootstr.append("[").append(*it).append("] ");
+        for (const auto& entry : byRoot) {
+            byRootstr.append("[").append(entry.first).append("]->");
+            for (const auto& term : entry.second) {
+                byRootstr.append("[").append(term).append("] ");
             }
             byRootstr.append("\n");
         }
@@ -202,28 +188,25 @@ double Query::Native::qualityTerms(Xapian::docid docid,
     // Compute in-document and global frequencies for the groups.
     map<string, double> grpwdfs;
     map<string, double> grptfreqs;
-    for (map<string, vector<string> >::const_iterator git = byRoot.begin();
-         git != byRoot.end(); git++) {
-        for (vector<string>::const_iterator qit = git->second.begin(); 
-             qit != git->second.end(); qit++) {
-            Xapian::TermIterator term = xrdb.termlist_begin(docid);
-            term.skip_to(*qit);
-            if (term != xrdb.termlist_end(docid) && *term == *qit) {
-                if (grpwdfs.find(git->first) != grpwdfs.end()) {
-                    grpwdfs[git->first] = term.get_wdf() / doclen;
-                    grptfreqs[git->first] = termfreqs[*qit];
+    for (const auto& group : byRoot) {
+        for (const auto& term : group.second) {
+            Xapian::TermIterator xtermit = xrdb.termlist_begin(docid);
+            xtermit.skip_to(term);
+            if (xtermit != xrdb.termlist_end(docid) && *xtermit == term) {
+                if (grpwdfs.find(group.first) != grpwdfs.end()) {
+                    grpwdfs[group.first] = xtermit.get_wdf() / doclen;
+                    grptfreqs[group.first] = termfreqs[term];
                 } else {
-                    grpwdfs[git->first] += term.get_wdf() / doclen;
-                    grptfreqs[git->first] += termfreqs[*qit];
+                    grpwdfs[group.first] += xtermit.get_wdf() / doclen;
+                    grptfreqs[group.first] += termfreqs[term];
                 }
             }
         }    
     }
 
     // Build a sorted by quality container for the groups
-    for (map<string, vector<string> >::const_iterator git = byRoot.begin();
-         git != byRoot.end(); git++) {
-        double q = (grpwdfs[git->first]) * grptfreqs[git->first];
+    for (const auto& group : byRoot) {
+        double q = (grpwdfs[group.first]) * grptfreqs[group.first];
         q = -log10(q);
         if (q < 3) {
             q = 0.05;
@@ -237,21 +220,18 @@ double Query::Native::qualityTerms(Xapian::docid docid,
             q = 1;
         }
         totalweight += q;
-        byQ.insert(pair<double, vector<string> >(q, git->second));
+        byQ.insert(pair<double, vector<string> >(q, group.second));
     }
 
 #ifdef DEBUGABSTRACT
-    for (multimap<double, vector<string> >::reverse_iterator mit= byQ.rbegin(); 
-         mit != byQ.rend(); mit++) {
-        LOGABS("qualityTerms: group\n");
-        for (vector<string>::const_iterator qit = mit->second.begin();
-             qit != mit->second.end(); qit++) {
-            LOGABS("" << mit->first << "->[" << *qit << "]\n");
-        }
+    for (auto mit= byQ.rbegin(); mit != byQ.rend(); mit++) {
+        LOGABS("qualityTerms: coef: " << mit->first << " group: " <<
+               stringsToString(mit->second) << endl);
     }
 #endif
     return totalweight;
 }
+
 
 // Return page number for first match of "significant" term.
 int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
@@ -283,8 +263,7 @@ int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
     multimap<double, vector<string> > byQ;
     qualityTerms(docid, terms, byQ);
 
-    for (multimap<double, vector<string> >::reverse_iterator mit = byQ.rbegin(); 
-         mit != byQ.rend(); mit++) {
+    for (auto mit = byQ.rbegin(); mit != byQ.rend(); mit++) {
         for (vector<string>::const_iterator qit = mit->second.begin();
              qit != mit->second.end(); qit++) {
             string qterm = *qit;
@@ -307,55 +286,211 @@ int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
     return -1;
 }
 
-// Build a document abstract by extracting text chunks around the query terms
-// This uses the db termlists, not the original document.
-//
-// DatabaseModified and other general exceptions are catched and
-// possibly retried by our caller
-int Query::Native::makeAbstract(Xapian::docid docid,
-                                vector<Snippet>& vabs, 
-                                int imaxoccs, int ictxwords)
+// Creating the abstract from index position data: populate the sparse
+// array with the positions for a given query term, and mark the
+// neighboring positions.
+void Query::Native::abstractPopulateQTerm(
+    Xapian::Database& xrdb,
+    Xapian::docid docid,
+    const string& qterm,
+    int qtrmwrdcnt,
+    int ctxwords,
+    unsigned int maxgrpoccs,
+    unsigned int maxtotaloccs,
+    map<unsigned int, string>& sparseDoc,
+    unordered_set<unsigned int>& searchTermPositions,
+    unsigned int& maxpos,
+    unsigned int& totaloccs,
+    unsigned int& grpoccs,
+    int& ret
+    )
 {
-    Chrono chron;
-    LOGABS("makeAbstract: docid " << docid << " imaxoccs " <<
-           imaxoccs << " ictxwords " << ictxwords << "\n");
+    Xapian::PositionIterator pos;
 
-    // The (unprefixed) terms matched by this document
-    vector<string> matchedTerms;
-    getMatchTerms(docid, matchedTerms);
-    if (matchedTerms.empty()) {
-        LOGDEB("makeAbstract:"<<chron.millis()<<"mS:Empty term list\n");
-        return ABSRES_ERROR;
+    // Walk the position list for this term.
+    for (pos = xrdb.positionlist_begin(docid, qterm);
+         pos != xrdb.positionlist_end(docid, qterm); pos++) {
+        int ipos = *pos;
+        if (ipos < int(baseTextPosition)) // Not in text body
+            continue;
+        LOGABS("makeAbstract: [" << qterm << "] at pos " <<
+               ipos << " grpoccs " << grpoccs << " maxgrpoccs " <<
+               maxgrpoccs << "\n");
+
+        totaloccs++;
+        grpoccs++;
+
+        // Add adjacent slots to the set to populate at next
+        // step by inserting empty strings. Special provisions
+        // for adding ellipsis and for positions overlapped by
+        // the match term.
+        unsigned int sta = MAX(int(baseTextPosition), 
+                               ipos - ctxwords);
+        unsigned int sto = ipos + qtrmwrdcnt-1 + 
+            m_q->m_db->getAbsCtxLen();
+        for (unsigned int ii = sta; ii <= sto;  ii++) {
+            if (ii == (unsigned int)ipos) {
+                sparseDoc[ii] = qterm;
+                searchTermPositions.insert(ii);
+                if (ii > maxpos)
+                    maxpos = ii;
+            } else if (ii > (unsigned int)ipos && 
+                       ii < (unsigned int)ipos + qtrmwrdcnt) {
+                // Position for another word of the multi-word term
+                sparseDoc[ii] = occupiedmarker;
+            } else if (!sparseDoc[ii].compare(cstr_ellipsis)) {
+                // For an empty slot, the test above has a side
+                // effect of inserting an empty string which
+                // is what we want. Do it also if it was an ellipsis
+                sparseDoc[ii] = emptys;
+            }
+        }
+        // Add ellipsis at the end. This may be replaced later by
+        // an overlapping extract. Take care not to replace an
+        // empty string here, we really want an empty slot,
+        // use find()
+        if (sparseDoc.find(sto+1) == sparseDoc.end()) {
+            sparseDoc[sto+1] = cstr_ellipsis;
+        }
+
+        // Group done ?
+        if (grpoccs >= maxgrpoccs) {
+            ret |= ABSRES_TRUNC;
+            LOGABS("Db::makeAbstract: max group occs cutoff\n");
+            break;
+        }
+        // Global done ?
+        if (totaloccs >= maxtotaloccs) {
+            ret |= ABSRES_TRUNC;
+            LOGABS("Db::makeAbstract: max occurrences cutoff\n");
+            break;
+        }
     }
+}
 
-    listList("Match terms: ", matchedTerms);
+// Creating the abstract from index position data: after the query
+// terms have been inserted at their place in the sparse array, and
+// the neighboring positions marked, populate the neighbours: for each
+// term in the document, walk its position list and populate slots
+// around the query terms. We arbitrarily truncate the list to avoid
+// taking forever. If we do cutoff, the abstract may be inconsistant
+// (missing words, potentially altering meaning), which is bad.
+void Query::Native::abstractPopulateContextTerms(
+    Xapian::Database& xrdb,
+    Xapian::docid docid,
+    unsigned int maxpos,
+    map<unsigned int, string>& sparseDoc,
+    int& ret
+    )
+{
+    Xapian::TermIterator term;
+    int cutoff = m_q->m_snipMaxPosWalk;
+    for (term = xrdb.termlist_begin(docid);
+         term != xrdb.termlist_end(docid); term++) {
+        // Ignore prefixed terms
+        if (has_prefix(*term))
+            continue;
+        if (m_q->m_snipMaxPosWalk > 0 && cutoff-- < 0) {
+            ret |= ABSRES_TERMMISS;
+            LOGDEB0("makeAbstract: max term count cutoff " <<
+                    m_q->m_snipMaxPosWalk << "\n");
+            break;
+        }
 
-    // Retrieve the term frequencies for the query terms. This is
-    // actually computed only once for a query, and for all terms in
-    // the query (not only the matches for this doc)
-    setDbWideQTermsFreqs();
-
-    // Build a sorted by quality container for the match terms We are
-    // going to try and show text around the less common search terms.
-    // Terms issued from an original one by stem expansion are
-    // aggregated by the qualityTerms() routine.
-    multimap<double, vector<string> > byQ;
-    double totalweight = qualityTerms(docid, matchedTerms, byQ);
-    LOGABS("makeAbstract:" << chron.millis() << "mS: computed Qcoefs.\n");
-    // This can't happen, but would crash us
-    if (totalweight == 0.0) {
-        LOGERR("makeAbstract:"<<chron.millis()<<"mS: totalweight == 0.0 !\n");
-        return ABSRES_ERROR;
+        map<unsigned int, string>::iterator vit;
+        Xapian::PositionIterator pos;
+        for (pos = xrdb.positionlist_begin(docid, *term);
+             pos != xrdb.positionlist_end(docid, *term); pos++) {
+            if (m_q->m_snipMaxPosWalk > 0 && cutoff-- < 0) {
+                ret |= ABSRES_TERMMISS;
+                LOGDEB0("makeAbstract: max term count cutoff " <<
+                        m_q->m_snipMaxPosWalk << "\n");
+                break;
+            }
+            // If we are beyond the max possible position, stop
+            // for this term
+            if (*pos > maxpos) {
+                break;
+            }
+            if ((vit = sparseDoc.find(*pos)) != sparseDoc.end()) {
+                // Don't replace a term: the terms list is in
+                // alphabetic order, and we may have several terms
+                // at the same position, we want to keep only the
+                // first one (ie: dockes and dockes@wanadoo.fr)
+                if (vit->second.empty()) {
+                    LOGDEB2("makeAbstract: populating: [" << *term <<
+                            "] at " << *pos << "\n");
+                    sparseDoc[*pos] = *term;
+                }
+            }
+        }
     }
+}
 
-    Rcl::Db::Native *ndb(m_q->m_db->m_ndb);
+// Creating the abstract from position data: final phase: extract the
+// snippets from the sparse array.
+void Query::Native::abstractCreateSnippetsVector(
+    Rcl::Db::Native *ndb,
+    map<unsigned int, string>& sparseDoc,
+    unordered_set<unsigned int>& searchTermPositions,
+    vector<int>& vpbreaks,
+    vector<Snippet>& vabs)
+{
+    vabs.clear();
+    string chunk;
+    bool incjk = false;
+    int page = 0;
+    string term;
+
+    for (const auto& ent : sparseDoc) {
+        LOGDEB2("Abtract:output "<< ent.first <<" -> [" <<ent.second <<"]\n");
+        if (!occupiedmarker.compare(ent.second)) {
+            LOGDEB("Abstract: qtrm position not filled ??\n");
+            continue;
+        }
+        if (chunk.empty() && !vpbreaks.empty()) {
+            page =  ndb->getPageNumberForPosition(vpbreaks, ent.first);
+            if (page < 0) 
+                page = 0;
+            term.clear();
+        }
+        Utf8Iter uit(ent.second);
+        bool newcjk = false;
+        if (TextSplit::isCJK(*uit))
+            newcjk = true;
+        if (!incjk || (incjk && !newcjk))
+            chunk += " ";
+        incjk = newcjk;
+        if (searchTermPositions.find(ent.first) != searchTermPositions.end())
+            term = ent.second;
+        if (ent.second == cstr_ellipsis) {
+            vabs.push_back(Snippet(page, chunk).setTerm(term));
+            chunk.clear();
+        } else {
+            if (ent.second.compare(end_of_field_term) && 
+                ent.second.compare(start_of_field_term))
+                chunk += ent.second;
+        }
+    }
+    if (!chunk.empty())
+        vabs.push_back(Snippet(page, chunk).setTerm(term));
+}
+
+// Creating the abstract from index position data: top level routine
+int Query::Native::abstractFromIndex(
+    Rcl::Db::Native *ndb,
+    Xapian::docid docid,
+    const vector<string>& matchTerms,
+    const multimap<double, vector<string>> byQ,
+    double totalweight,
+    int ctxwords,
+    unsigned int maxtotaloccs,
+    vector<Snippet>& vabs,
+    Chrono& chron
+    )
+{
     Xapian::Database& xrdb(ndb->xrdb);
-
-    ///////////////////
-    // For each of the query terms, ask xapian for its positions list
-    // in the document. For each position entry, insert it and its
-    // neighbours in the set of 'interesting' positions
-
+    int ret = ABSRES_OK;
     // The terms 'array' that we partially populate with the document
     // terms, at their positions around the search terms positions:
     map<unsigned int, string> sparseDoc;
@@ -370,22 +505,12 @@ int Query::Native::makeAbstract(Xapian::docid docid,
     // Total number of occurences for all terms. We stop when we have too much
     unsigned int totaloccs = 0;
 
-    // Total number of slots we populate. The 7 is taken as
-    // average word size. It was a mistake to have the user max
-    // abstract size parameter in characters, we basically only deal
-    // with words. We used to limit the character size at the end, but
-    // this damaged our careful selection of terms
-    const unsigned int maxtotaloccs = imaxoccs > 0 ? imaxoccs :
-        m_q->m_db->getAbsLen() /(7 * (m_q->m_db->getAbsCtxLen() + 1));
-    int ctxwords = ictxwords == -1 ? m_q->m_db->getAbsCtxLen() : ictxwords;
-    LOGABS("makeAbstract:" << chron.millis() << "mS: mxttloccs " <<
-           maxtotaloccs << " ctxwords " << ctxwords << "\n");
-
-    int ret = ABSRES_OK;
-
-    // Let's go populate
-    for (multimap<double, vector<string> >::reverse_iterator mit = byQ.rbegin();
-         mit != byQ.rend(); mit++) {
+    // First pass to populate the sparse document: we walk the term
+    // groups, beginning with the better ones, and insert each term at
+    // its position. We also insert empty strings at the surrounding
+    // positions. These are markers showing where we should insert
+    // data during the next pass.
+    for (auto mit = byQ.rbegin(); mit != byQ.rend(); mit++) {
         unsigned int maxgrpoccs;
         double q;
         if (byQ.size() == 1) {
@@ -398,87 +523,30 @@ int Query::Native::makeAbstract(Xapian::docid docid,
         }
         unsigned int grpoccs = 0;
 
-        for (vector<string>::const_iterator qit = mit->second.begin();
-             qit != mit->second.end(); qit++) {
-
-            // Group done ?
+        // For each term in user term expansion group
+        for (const auto& qterm : mit->second) {
+            // Enough for this group ?
             if (grpoccs >= maxgrpoccs) 
                 break;
-
-            string qterm = *qit;
 
             LOGABS("makeAbstract: [" << qterm << "] " << maxgrpoccs <<
                    " max grp occs (coef " << q << ")\n");
 
-            // The match term may span several words
+            // The match term may span several words (more than one position)
             int qtrmwrdcnt = 
                 TextSplit::countWords(qterm, TextSplit::TXTS_NOSPANS);
 
-            Xapian::PositionIterator pos;
+            // Populate positions for this query term.
             // There may be query terms not in this doc. This raises an
             // exception when requesting the position list, we catch it ??
             // Not clear how this can happen because we are walking the
             // match list returned by Xapian. Maybe something with the
             // fields?
-            string emptys;
             try {
-                for (pos = xrdb.positionlist_begin(docid, qterm);
-                     pos != xrdb.positionlist_end(docid, qterm); pos++) {
-                    int ipos = *pos;
-                    if (ipos < int(baseTextPosition)) // Not in text body
-                        continue;
-                    LOGABS("makeAbstract: [" << qterm << "] at pos " <<
-                           ipos << " grpoccs " << grpoccs << " maxgrpoccs " <<
-                           maxgrpoccs << "\n");
-
-                    totaloccs++;
-                    grpoccs++;
-
-                    // Add adjacent slots to the set to populate at next
-                    // step by inserting empty strings. Special provisions
-                    // for adding ellipsis and for positions overlapped by
-                    // the match term.
-                    unsigned int sta = MAX(int(baseTextPosition), 
-                                           ipos - ctxwords);
-                    unsigned int sto = ipos + qtrmwrdcnt-1 + 
-                        m_q->m_db->getAbsCtxLen();
-                    for (unsigned int ii = sta; ii <= sto;  ii++) {
-                        if (ii == (unsigned int)ipos) {
-                            sparseDoc[ii] = qterm;
-                            searchTermPositions.insert(ii);
-                            if (ii > maxpos)
-                                maxpos = ii;
-                        } else if (ii > (unsigned int)ipos && 
-                                   ii < (unsigned int)ipos + qtrmwrdcnt) {
-                            sparseDoc[ii] = occupiedmarker;
-                        } else if (!sparseDoc[ii].compare(cstr_ellipsis)) {
-                            // For an empty slot, the test has a side
-                            // effect of inserting an empty string which
-                            // is what we want.
-                            sparseDoc[ii] = emptys;
-                        }
-                    }
-                    // Add ellipsis at the end. This may be replaced later by
-                    // an overlapping extract. Take care not to replace an
-                    // empty string here, we really want an empty slot,
-                    // use find()
-                    if (sparseDoc.find(sto+1) == sparseDoc.end()) {
-                        sparseDoc[sto+1] = cstr_ellipsis;
-                    }
-
-                    // Group done ?
-                    if (grpoccs >= maxgrpoccs) {
-                        ret |= ABSRES_TRUNC;
-                        LOGABS("Db::makeAbstract: max group occs cutoff\n");
-                        break;
-                    }
-                    // Global done ?
-                    if (totaloccs >= maxtotaloccs) {
-                        ret |= ABSRES_TRUNC;
-                        LOGABS("Db::makeAbstract: max occurrences cutoff\n");
-                        break;
-                    }
-                }
+                abstractPopulateQTerm(xrdb, docid, qterm, qtrmwrdcnt, ctxwords,
+                                      maxgrpoccs,maxtotaloccs, sparseDoc,
+                                      searchTermPositions, maxpos, totaloccs,
+                                      grpoccs, ret);
             } catch (...) {
                 // Term does not occur. No problem.
             }
@@ -494,6 +562,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
 
     LOGABS("makeAbstract:" << chron.millis() <<
            "mS:chosen number of positions " << totaloccs << "\n");
+
     // This can happen if there are term occurences in the keywords
     // etc. but not elsewhere ?
     if (totaloccs == 0) {
@@ -501,123 +570,94 @@ int Query::Native::makeAbstract(Xapian::docid docid,
         return ABSRES_OK;
     }
 
-    // Walk all document's terms position lists and populate slots
-    // around the query terms. We arbitrarily truncate the list to
-    // avoid taking forever. If we do cutoff, the abstract may be
-    // inconsistant (missing words, potentially altering meaning),
-    // which is bad. 
-    { 
-        Xapian::TermIterator term;
-        int cutoff = m_q->m_snipMaxPosWalk;
-        for (term = xrdb.termlist_begin(docid);
-             term != xrdb.termlist_end(docid); term++) {
-            // Ignore prefixed terms
-            if (has_prefix(*term))
-                continue;
-            if (m_q->m_snipMaxPosWalk > 0 && cutoff-- < 0) {
-                ret |= ABSRES_TERMMISS;
-                LOGDEB0("makeAbstract: max term count cutoff " <<
-                        m_q->m_snipMaxPosWalk << "\n");
-                break;
-            }
-
-            map<unsigned int, string>::iterator vit;
-            Xapian::PositionIterator pos;
-            for (pos = xrdb.positionlist_begin(docid, *term);
-                 pos != xrdb.positionlist_end(docid, *term); pos++) {
-                if (m_q->m_snipMaxPosWalk > 0 && cutoff-- < 0) {
-                    ret |= ABSRES_TERMMISS;
-                    LOGDEB0("makeAbstract: max term count cutoff " <<
-                            m_q->m_snipMaxPosWalk << "\n");
-                    break;
-                }
-                // If we are beyond the max possible position, stop
-                // for this term
-                if (*pos > maxpos) {
-                    break;
-                }
-                if ((vit = sparseDoc.find(*pos)) != sparseDoc.end()) {
-                    // Don't replace a term: the terms list is in
-                    // alphabetic order, and we may have several terms
-                    // at the same position, we want to keep only the
-                    // first one (ie: dockes and dockes@wanadoo.fr)
-                    if (vit->second.empty()) {
-                        LOGDEB2("makeAbstract: populating: [" << *term <<
-                                "] at " << *pos << "\n");
-                        sparseDoc[*pos] = *term;
-                    }
-                }
-            }
-        }
-    }
+    abstractPopulateContextTerms(xrdb, docid, maxpos, sparseDoc, ret);
+    
     LOGABS("makeAbstract:" << chron.millis() << "mS: all term poslist read\n");
-
-#if 0
-    // Debug only: output the full term[position] vector
-    bool epty = false;
-    int ipos = 0;
-    for (map<unsigned int, string>::iterator it = sparseDoc.begin(); 
-         it != sparseDoc.end();
-         it++, ipos++) {
-        if (it->empty()) {
-            if (!epty)
-                LOGDEB("makeAbstract:vec[" << ipos << "]: [" << it << "]\n");
-            epty=true;
-        } else {
-            epty = false;
-            LOGDEB("makeAbstract:vec[" << ipos << "]: [" << it << "]\n");
-        }
-    }
-#endif
 
     vector<int> vpbreaks;
     ndb->getPagePositions(docid, vpbreaks);
 
     LOGABS("makeAbstract:" << chron.millis() << "mS: extracting. Got " <<
            vpbreaks.size() << " pages\n");
-    // Finally build the abstract by walking the map (in order of position)
-    vabs.clear();
-    string chunk;
-    bool incjk = false;
-    int page = 0;
-    string term;
-    for (map<unsigned int, string>::const_iterator it = sparseDoc.begin();
-         it != sparseDoc.end(); it++) {
-        LOGDEB2("Abtract:output " << it->first << " -> [" << it->second <<
-                "]\n");
-        if (!occupiedmarker.compare(it->second)) {
-            LOGDEB("Abstract: qtrm position not filled ??\n");
-            continue;
-        }
-        if (chunk.empty() && !vpbreaks.empty()) {
-            page =  ndb->getPageNumberForPosition(vpbreaks, it->first);
-            if (page < 0) 
-                page = 0;
-            term.clear();
-        }
-        Utf8Iter uit(it->second);
-        bool newcjk = false;
-        if (TextSplit::isCJK(*uit))
-            newcjk = true;
-        if (!incjk || (incjk && !newcjk))
-            chunk += " ";
-        incjk = newcjk;
-        if (searchTermPositions.find(it->first) != searchTermPositions.end())
-            term = it->second;
-        if (it->second == cstr_ellipsis) {
-            vabs.push_back(Snippet(page, chunk).setTerm(term));
-            chunk.clear();
-        } else {
-            if (it->second.compare(end_of_field_term) && 
-                it->second.compare(start_of_field_term))
-                chunk += it->second;
-        }
-    }
-    if (!chunk.empty())
-        vabs.push_back(Snippet(page, chunk).setTerm(term));
 
+    // Finally build the abstract by walking the map (in order of position)
+    abstractCreateSnippetsVector(ndb, sparseDoc, searchTermPositions,
+                                 vpbreaks, vabs);
+    
     LOGABS("makeAbtract: done in " << chron.millis() << " mS\n");
     return ret;
+}
+
+
+// Build a document abstract by extracting text chunks around the
+// query terms.  This can either uses the index position lists, or the
+// stored document text, with very different implementations.
+//
+// DatabaseModified and other general exceptions are catched and
+// possibly retried by our caller.
+//
+// @param[out] vabs the abstract is returned as a vector of snippets.
+int Query::Native::makeAbstract(Xapian::docid docid,
+                                vector<Snippet>& vabs, 
+                                int imaxoccs, int ictxwords)
+{
+    Chrono chron;
+    LOGABS("makeAbstract: docid " << docid << " imaxoccs " <<
+           imaxoccs << " ictxwords " << ictxwords << "\n");
+
+    // The (unprefixed) terms matched by this document
+    vector<string> matchedTerms;
+    getMatchTerms(docid, matchedTerms);
+    if (matchedTerms.empty()) {
+        LOGDEB("makeAbstract:" << chron.millis() << "mS:Empty term list\n");
+        return ABSRES_ERROR;
+    }
+
+    LOGDEB("Match terms: " << stringsToString(matchedTerms) << endl);
+
+    // Retrieve the term frequencies for the query terms. This is
+    // actually computed only once for a query, and for all terms in
+    // the query (not only the matches for this doc)
+    setDbWideQTermsFreqs();
+
+    // Build a sorted by quality container for the match terms We are
+    // going to try and show text around the less common search terms.
+    // Terms issued from an original one by stem expansion are
+    // aggregated by the qualityTerms() routine (this is what we call
+    // 'term groups' in the following: index terms expanded from the
+    // same user term).
+    multimap<double, vector<string>> byQ;
+    double totalweight = qualityTerms(docid, matchedTerms, byQ);
+    LOGABS("makeAbstract:" << chron.millis() << "mS: computed Qcoefs.\n");
+    // This can't happen, but would crash us
+    if (totalweight == 0.0) {
+        LOGERR("makeAbstract:"<<chron.millis()<<"mS: totalweight == 0.0 !\n");
+        return ABSRES_ERROR;
+    }
+
+    Rcl::Db::Native *ndb(m_q->m_db->m_ndb);
+    Xapian::Database& xrdb(ndb->xrdb);
+
+    // Total number of slots we populate. The 7 is taken as
+    // average word size. It was a mistake to have the user max
+    // abstract size parameter in characters, we basically only deal
+    // with words. We used to limit the character size at the end, but
+    // this damaged our careful selection of terms
+    const unsigned int maxtotaloccs = imaxoccs > 0 ? imaxoccs :
+        m_q->m_db->getAbsLen() /(7 * (m_q->m_db->getAbsCtxLen() + 1));
+    int ctxwords = ictxwords == -1 ? m_q->m_db->getAbsCtxLen() : ictxwords;
+    LOGABS("makeAbstract:" << chron.millis() << "mS: mxttloccs " <<
+           maxtotaloccs << " ctxwords " << ctxwords << "\n");
+
+    if (o_index_storerawtext) {
+        return abstractFromText(ndb, docid, matchedTerms, byQ,
+                                totalweight, ctxwords, maxtotaloccs, vabs,
+                                chron);
+    } else {
+        return abstractFromIndex(ndb, docid, matchedTerms, byQ,
+                                 totalweight, ctxwords, maxtotaloccs, vabs,
+                                 chron);
+    }
 }
 
 

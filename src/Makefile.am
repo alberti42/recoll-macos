@@ -154,6 +154,7 @@ rcldb/daterange.h \
 rcldb/expansiondbs.cpp \
 rcldb/expansiondbs.h \
 rcldb/rclabstract.cpp \
+rcldb/rclabsfromtext.cpp \
 rcldb/rcldb.cpp \
 rcldb/rcldb.h \
 rcldb/rcldb_p.h \

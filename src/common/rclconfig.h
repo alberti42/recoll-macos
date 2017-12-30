@@ -438,6 +438,16 @@ class RclConfig {
 // reset. When using multiple indexes, all must have the same value
 extern bool o_index_stripchars;
 
+// Store document text in index. Allows extracting snippets from text
+// instead of building them from index position data. Has become
+// necessary for versions of Xapian 1.6, which have dropped support
+// for the chert index format, and adopted a setup which renders our
+// use of positions list unacceptably slow in cases. 'raw' text here
+// means that the text is not stripped of upper-case, diacritics, or
+// punctuation signs. It is still translated from its original format
+// to UTF-8 plain text.
+extern bool o_index_storerawtext;
+
 // This global variable defines if we use mtime instead of ctime for
 // up-to-date tests. This is mostly incompatible with xattr indexing,
 // in addition to other issues. See recoll.conf comments. 

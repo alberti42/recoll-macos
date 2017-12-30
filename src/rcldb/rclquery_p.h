@@ -20,9 +20,12 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <unordered_set>
 
 #include <xapian.h>
 #include "rclquery.h"
+
+class Chrono;
 
 namespace Rcl {
 
@@ -58,6 +61,56 @@ public:
     double qualityTerms(Xapian::docid docid, 
                         const std::vector<std::string>& terms,
                         std::multimap<double, std::vector<std::string> >& byQ);
+    void abstractPopulateQTerm(
+        Xapian::Database& xrdb,
+        Xapian::docid docid,
+        const string& qterm,
+        int qtrmwrdcnt,
+        int ctxwords,
+        unsigned int maxgrpoccs,
+        unsigned int maxtotaloccs,
+        std::map<unsigned int, std::string>& sparseDoc,
+        std::unordered_set<unsigned int>& searchTermPositions,
+        unsigned int& maxpos,
+        unsigned int& totaloccs,
+        unsigned int& grpoccs,
+        int& ret
+        );
+    void abstractPopulateContextTerms(
+        Xapian::Database& xrdb,
+        Xapian::docid docid,
+        unsigned int maxpos,
+        std::map<unsigned int, std::string>& sparseDoc,
+        int& ret
+        );
+    void abstractCreateSnippetsVector(
+        Db::Native *ndb,
+        std::map<unsigned int, std::string>& sparseDoc,
+        std::unordered_set<unsigned int>& searchTermPositions,
+        std::vector<int>& vpbreaks,
+        std::vector<Snippet>& vabs);
+    int abstractFromIndex(
+        Rcl::Db::Native *ndb,
+        Xapian::docid docid,
+        const std::vector<std::string>& matchTerms,
+        const std::multimap<double, std::vector<std::string>> byQ,
+        double totalweight,
+        int ctxwords,
+        unsigned int maxtotaloccs,
+        std::vector<Snippet>& vabs,
+        Chrono& chron
+        );
+    int abstractFromText(
+        Rcl::Db::Native *ndb,
+        Xapian::docid docid,
+        const std::vector<std::string>& matchTerms,
+        const std::multimap<double, std::vector<std::string>> byQ,
+        double totalweight,
+        int ctxwords,
+        unsigned int maxtotaloccs,
+        vector<Snippet>& vabs,
+        Chrono& chron
+        );
 };
 
 }

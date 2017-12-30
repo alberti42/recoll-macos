@@ -177,5 +177,12 @@ class Db::Native {
 // (abstract, keywords, etc.. are stored before this)
 static const unsigned int baseTextPosition = 100000;
 
+// Store raw doc text in data record or value slot ?
+#if 0
+#define RAWTEXT_IN_DATA 1
+#elif 1
+#define RAWTEXT_IN_VALUE 1
+#endif
+
 }
 #endif /* _rcldb_p_h_included_ */

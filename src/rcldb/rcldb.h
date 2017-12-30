@@ -67,8 +67,14 @@ enum value_slot {
     VALUE_MD5 = 1,	// 16 byte MD5 checksum of original document.
     VALUE_SIZE = 2,     // sortable_serialise(<file size in bytes>)
 
-    // Recoll only:
-    VALUE_SIG = 10      // Doc sig as chosen by app (ex: mtime+size
+    ////////// Recoll only:
+    // Doc sig as chosen by app (ex: mtime+size
+    VALUE_SIG = 10,
+    // Doc extracted text, with punctuation: splitter input. Used for
+    // generating snippets. This is only used if RAWTEXT_IN_VALUE is
+    // defined (else the text goes to the data record), but reserve
+    // the value in any case.
+    VALUE_RAWTEXT= 11,  
 };
 
 class SearchData;
