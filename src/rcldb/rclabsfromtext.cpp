@@ -242,9 +242,9 @@ int Query::Native::abstractFromText(
         return ABSRES_ERROR;
     }
 
-    // tryout the xapian internal method.
 #if 0 && ! (XAPIAN_MAJOR_VERSION <= 1 && XAPIAN_MINOR_VERSION <= 2)  && \
     (defined(RAWTEXT_IN_DATA) || defined(RAWTEXT_IN_VALUE))
+    // Tryout the Xapian internal method.
     string snippet = xmset.snippet(rawtext);
     LOGDEB("SNIPPET: [" << snippet << "] END SNIPPET\n");
 #endif

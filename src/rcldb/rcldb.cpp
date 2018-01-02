@@ -794,8 +794,10 @@ bool Db::open(OpenMode mode, OpenError *error)
 	    {
 		int action = (mode == DbUpd) ? Xapian::DB_CREATE_OR_OPEN :
 		    Xapian::DB_CREATE_OR_OVERWRITE;
-                if (::access(dir.c_str(), 0) != 0) {
-                    // New index. use a stub to force using Chert
+                if (!o_index_storedoctext && ::access(dir.c_str(), 0) != 0) {
+                    // New index. use a stub to force using Chert. No
+                    // sense in doing this if we are storing the text
+                    // anyway.
                     string stub = path_cat(m_config->getConfDir(),
                                            "xapian.stub");
                     FILE *fp = fopen(stub.c_str(), "w");
@@ -1463,7 +1465,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	    LOGDEB("Db::addOrUpdate: split failed for main text\n");
         } else {
 #ifdef RAWTEXT_IN_VALUE
-            if (o_index_storerawtext) {
+            if (o_index_storedoctext) {
                 ZLibUtBuf buf;
                 deflateToBuf(doc.text.c_str(), doc.text.size(), buf);
                 string tt;
@@ -1683,7 +1685,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	}
 
 #ifdef RAWTEXT_IN_DATA
-        if (o_index_storerawtext) {
+        if (o_index_storedoctext) {
             RECORD_APPEND(record, string("RAWTEXT"),
                           neutchars(doc.text, cstr_nc));
         }

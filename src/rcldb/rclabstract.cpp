@@ -649,7 +649,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
     LOGABS("makeAbstract:" << chron.millis() << "mS: mxttloccs " <<
            maxtotaloccs << " ctxwords " << ctxwords << "\n");
 
-    if (o_index_storerawtext) {
+    if (o_index_storedoctext) {
         return abstractFromText(ndb, docid, matchedTerms, byQ,
                                 totalweight, ctxwords, maxtotaloccs, vabs,
                                 chron);

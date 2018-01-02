@@ -64,11 +64,10 @@ bool o_index_stripchars = true;
 // instead of building them from index position data. Has become
 // necessary for versions of Xapian 1.6, which have dropped support
 // for the chert index format, and adopted a setup which renders our
-// use of positions list unacceptably slow in cases. 'raw' text here
-// means that the text is not stripped of upper-case, diacritics, or
-// punctuation signs. It is still translated from its original format
-// to UTF-8 plain text.
-bool o_index_storerawtext = false;
+// use of positions list unacceptably slow in cases. The text just
+// translated from its original format to UTF-8 plain text, and is not
+// stripped of upper-case, diacritics, or punctuation signs.
+bool o_index_storedoctext = false;
 
 bool o_uptodate_test_use_mtime = false;
 
@@ -401,7 +400,7 @@ bool RclConfig::updateMainConfig()
     static int m_index_stripchars_init = 0;
     if (!m_index_stripchars_init) {
 	getConfParam("indexStripChars", &o_index_stripchars);
-        getConfParam("indexStoreRawText", &o_index_storerawtext);
+        getConfParam("indexStoreDocText", &o_index_storedoctext);
         getConfParam("testmodifusemtime", &o_uptodate_test_use_mtime);
 	m_index_stripchars_init = 1;
     }

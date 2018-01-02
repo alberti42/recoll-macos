@@ -33,7 +33,9 @@ struct HighlightData {
     std::vector<std::vector<std::string> > ugroups;
 
     /** Processed/expanded terms and groups. Used for looking for
-     * regions to highlight. Terms are just groups with 1 entry. All
+     * regions to highlight. A group can be a PHRASE or NEAR entry (we
+     * process everything as NEAR to keep things reasonably
+     * simple. Terms are just groups with 1 entry. All
      * terms are transformed to be compatible with index content
      * (unaccented and lowercased as needed depending on
      * configuration), and the list may include values
@@ -45,7 +47,9 @@ struct HighlightData {
 
     /** Index into ugroups for each group. Parallel to groups. As a
      * user term or group may generate many processed/expanded terms
-     * or groups, this is how we relate an expansion to its source.
+     * or groups, this is how we relate an expansion to its source
+     * (used, e.g. for generating anchors for walking search matches
+     * in the preview window).
      */
     std::vector<size_t> grpsugidx;
 

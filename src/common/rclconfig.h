@@ -446,7 +446,7 @@ extern bool o_index_stripchars;
 // means that the text is not stripped of upper-case, diacritics, or
 // punctuation signs. It is still translated from its original format
 // to UTF-8 plain text.
-extern bool o_index_storerawtext;
+extern bool o_index_storedoctext;
 
 // This global variable defines if we use mtime instead of ctime for
 // up-to-date tests. This is mostly incompatible with xattr indexing,
