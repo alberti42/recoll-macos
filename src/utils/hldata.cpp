@@ -22,6 +22,7 @@
 #include <limits.h>
 
 #include "log.h"
+#include "smallut.h"
 
 using std::string;
 using std::map;
@@ -64,6 +65,13 @@ bool do_proximity_test(int window, vector<const vector<int>*>& plists,
     return false;
 }
 
+#define DEBUGGROUPS
+#ifdef DEBUGGROUPS
+#define LOGRP LOGDEB
+#else
+#define LOGRP LOGDEB1
+#endif
+
 // Find NEAR matches for one group of terms
 bool matchGroup(const HighlightData& hldata,
                 unsigned int grpidx,
@@ -75,7 +83,7 @@ bool matchGroup(const HighlightData& hldata,
     const vector<string>& terms = hldata.groups[grpidx];
     int window = int(hldata.groups[grpidx].size() + hldata.slacks[grpidx]);
 
-    LOGDEB1("TextSplitPTR::matchGroup:d " << window << ": " <<
+    LOGRP("TextSplitPTR::matchGroup:d " << window << ": " <<
             stringsToString(terms) << "\n");
 
     // The position lists we are going to work with. We extract them from the 
@@ -91,7 +99,7 @@ bool matchGroup(const HighlightData& hldata,
     for (const auto& term : terms) {
         map<string, vector<int> >::const_iterator pl = inplists.find(term);
         if (pl == inplists.end()) {
-            LOGDEB1("TextSplitPTR::matchGroup: [" << term <<
+            LOGRP("TextSplitPTR::matchGroup: [" << term <<
                     "] not found in plists\n");
             return false;
         }
@@ -101,7 +109,7 @@ bool matchGroup(const HighlightData& hldata,
     // I think this can't actually happen, was useful when we used to
     // prune the groups, but doesn't hurt.
     if (plists.size() < 2) {
-        LOGDEB1("TextSplitPTR::matchGroup: no actual groups found\n");
+        LOGRP("TextSplitPTR::matchGroup: no actual groups found\n");
         return false;
     }
     // Sort the positions lists so that the shorter is first
@@ -118,7 +126,7 @@ bool matchGroup(const HighlightData& hldata,
             LOGERR("matchGroup: term for first list not found !?!\n");
             return false;
         }
-        LOGDEB1("matchGroup: walking the shortest plist. Term [" <<
+        LOGRP("matchGroup: walking the shortest plist. Term [" <<
                 it->second << "], len " << plists[0]->size() << "\n");
     }
 
@@ -132,7 +140,7 @@ bool matchGroup(const HighlightData& hldata,
         int sta = INT_MAX, sto = 0;
         LOGDEB2("MatchGroup: Testing at pos " << pos << "\n");
         if (do_proximity_test(window,plists, 1, pos, pos, &sta, &sto, minpos)) {
-            LOGDEB1("TextSplitPTR::matchGroup: MATCH termpos [" << sta <<
+            LOGRP("TextSplitPTR::matchGroup: MATCH termpos [" << sta <<
                     "," << sto << "]\n"); 
             // Maybe extend the window by 1st term position, this was not
             // done by do_prox..
@@ -151,7 +159,7 @@ bool matchGroup(const HighlightData& hldata,
                         << sto << "\n");
             }
         } else {
-            LOGDEB1("matchGroup: no group match found at this position\n");
+            LOGRP("matchGroup: no group match found at this position\n");
         }
     }
 

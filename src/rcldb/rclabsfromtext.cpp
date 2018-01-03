@@ -261,13 +261,17 @@ public:
         // always start the search where we previously stopped).
         auto fragit = m_fragments.begin();
         for (const auto& grpmatch : tboffs) {
-            while (fragit->start > grpmatch.offs.first) {
+            LOGDEB2("LOOKING FOR FRAGMENT: group: " << grpmatch.offs.first <<
+                   "-" << grpmatch.offs.second << " curfrag " <<
+                   fragit->start << "-" << fragit->stop << endl);
+            while (fragit->stop < grpmatch.offs.first) {
                 fragit++;
                 if (fragit == m_fragments.end()) {
                     return;
                 }
             }
-            if (fragit->stop >= grpmatch.offs.second) {
+            if (fragit->start <= grpmatch.offs.first &&
+                fragit->stop >= grpmatch.offs.second) {
                 // grp in frag
                 fragit->coef += 10.0;
             }
