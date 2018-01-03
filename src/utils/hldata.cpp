@@ -16,12 +16,147 @@
  */
 #include "autoconfig.h"
 
-#include <stdio.h>
-
 #include "hldata.h"
+
+#include <algorithm>
+#include <limits.h>
+
+#include "log.h"
 
 using std::string;
 using std::map;
+using std::vector;
+using std::pair;
+
+bool do_proximity_test(int window, vector<const vector<int>*>& plists,
+                       unsigned int i, int min, int max, 
+                       int *sp, int *ep, int minpos)
+{
+    LOGDEB1("do_prox_test: win " << window << " i " << i << " min " <<
+            min << " max " << max << " minpos " << minpos << "\n");
+    int tmp = max + 1 - window;
+    if (tmp < minpos)
+        tmp = minpos;
+
+    // Find 1st position bigger than window start
+    auto it = plists[i]->begin();
+    while (it != plists[i]->end() && *it < tmp)
+        it++;
+
+    // Look for position inside window. If not found, no match. If
+    // found: if this is the last list we're done, else recurse on
+    // next list after adjusting the window
+    while (it != plists[i]->end()) {
+        int pos = *it;
+        if (pos > min + window - 1) 
+            return false;
+        if (i + 1 == plists.size()) {
+            setWinMinMax(pos, *sp, *ep);
+            return true;
+        }
+        setWinMinMax(pos, min, max);
+        if (do_proximity_test(window,plists, i + 1, min, max, sp, ep, minpos)) {
+            setWinMinMax(pos, *sp, *ep);
+            return true;
+        }
+        it++;
+    }
+    return false;
+}
+
+// Find NEAR matches for one group of terms
+bool matchGroup(const HighlightData& hldata,
+                unsigned int grpidx,
+                const map<string, vector<int>>& inplists,
+                const map<int, pair<int,int>>& gpostobytes,
+                vector<GroupMatchEntry>& tboffs
+    )
+{
+    const vector<string>& terms = hldata.groups[grpidx];
+    int window = int(hldata.groups[grpidx].size() + hldata.slacks[grpidx]);
+
+    LOGDEB1("TextSplitPTR::matchGroup:d " << window << ": " <<
+            stringsToString(terms) << "\n");
+
+    // The position lists we are going to work with. We extract them from the 
+    // (string->plist) map
+    vector<const vector<int>*> plists;
+    // A revert plist->term map. This is so that we can find who is who after
+    // sorting the plists by length.
+    map<const vector<int>*, string> plistToTerm;
+
+    // Find the position list for each term in the group. It is
+    // possible that this particular group was not actually matched by
+    // the search, so that some terms are not found.
+    for (const auto& term : terms) {
+        map<string, vector<int> >::const_iterator pl = inplists.find(term);
+        if (pl == inplists.end()) {
+            LOGDEB1("TextSplitPTR::matchGroup: [" << term <<
+                    "] not found in plists\n");
+            return false;
+        }
+        plists.push_back(&(pl->second));
+        plistToTerm[&(pl->second)] = term;
+    }
+    // I think this can't actually happen, was useful when we used to
+    // prune the groups, but doesn't hurt.
+    if (plists.size() < 2) {
+        LOGDEB1("TextSplitPTR::matchGroup: no actual groups found\n");
+        return false;
+    }
+    // Sort the positions lists so that the shorter is first
+    std::sort(plists.begin(), plists.end(),
+              [](const vector<int> *a, const vector<int> *b) -> bool {
+                  return a->size() < b->size();
+              }
+        );
+
+    if (0) { // Debug
+        auto it = plistToTerm.find(plists[0]);
+        if (it == plistToTerm.end()) {
+            // SuperWeird
+            LOGERR("matchGroup: term for first list not found !?!\n");
+            return false;
+        }
+        LOGDEB1("matchGroup: walking the shortest plist. Term [" <<
+                it->second << "], len " << plists[0]->size() << "\n");
+    }
+
+    // Minpos is the highest end of a found match. While looking for
+    // further matches, we don't want the search to extend before
+    // this, because it does not make sense for highlight regions to
+    // overlap
+    int minpos = 0;
+    // Walk the shortest plist and look for matches
+    for (int pos : *(plists[0])) {
+        int sta = INT_MAX, sto = 0;
+        LOGDEB2("MatchGroup: Testing at pos " << pos << "\n");
+        if (do_proximity_test(window,plists, 1, pos, pos, &sta, &sto, minpos)) {
+            LOGDEB1("TextSplitPTR::matchGroup: MATCH termpos [" << sta <<
+                    "," << sto << "]\n"); 
+            // Maybe extend the window by 1st term position, this was not
+            // done by do_prox..
+            setWinMinMax(pos, sta, sto);
+            minpos = sto + 1;
+            // Translate the position window into a byte offset window
+            auto i1 =  gpostobytes.find(sta);
+            auto i2 =  gpostobytes.find(sto);
+            if (i1 != gpostobytes.end() && i2 != gpostobytes.end()) {
+                LOGDEB2("TextSplitPTR::matchGroup: pushing bpos " <<
+                        i1->second.first << " " << i2->second.second << "\n");
+                tboffs.push_back(GroupMatchEntry(i1->second.first, 
+                                            i2->second.second, grpidx));
+            } else {
+                LOGDEB0("matchGroup: no bpos found for " << sta << " or "
+                        << sto << "\n");
+            }
+        } else {
+            LOGDEB1("matchGroup: no group match found at this position\n");
+        }
+    }
+
+    return true;
+}
 
 void HighlightData::toString(string& out)
 {

@@ -67,4 +67,62 @@ struct HighlightData {
     void toString(std::string& out);
 };
 
+inline void setWinMinMax(int pos, int& sta, int& sto)
+{
+    if (pos < sta) {
+        sta = pos;
+    }
+    if (pos > sto) {
+        sto = pos;
+    }
+}
+
+// Check that at least an entry from the first position list is inside
+// the window and recurse on next list. The window is readjusted as
+// the successive terms are found. Mostly copied from Xapian code.
+//
+// @param window the search window width
+// @param plists the position list vector
+// @param i the position list to process (we then recurse with the next list)
+// @param min the current minimum pos for a found term
+// @param max the current maximum pos for a found term
+// @param sp, ep output: the found area
+// @param minpos bottom of search: this is the highest point of
+//    any previous match. We don't look below this as overlapping matches 
+//    make no sense for highlighting.
+extern bool do_proximity_test(
+    int window, std::vector<const std::vector<int>*>& plists, 
+    unsigned int i, int min, int max, int *sp, int *ep, int minpos);
+
+
+/**** The following is used by plaintorich.cpp for finding zones to
+   highlight and by rclabsfromtext.cpp to choose fragments for the
+   abstract */
+
+struct GroupMatchEntry {
+    // Start/End byte offsets in the document text
+    std::pair<int, int> offs;
+    // Index of the search group this comes from: this is to relate a 
+    // match to the original user input.
+    size_t grpidx;
+    GroupMatchEntry(int sta, int sto, size_t idx) 
+        : offs(sta, sto), grpidx(idx) {
+    }
+};
+
+// Find NEAR matches for one group of terms.
+//
+// @param hldata Data about the user query
+// @param grpidx Index in hldata.groups for the group we process
+// @param inplists Position lists for the the group terms
+// @param gpostobytes Translation of term position to start/end byte offsets
+// @param[out] tboffs Found matches
+extern bool matchGroup(
+    const HighlightData& hldata,
+    unsigned int grpidx,
+    const std::map<std::string, std::vector<int>>& inplists,
+    const std::map<int, std::pair<int,int>>& gpostobytes,
+    std::vector<GroupMatchEntry>& tboffs
+    );
+
 #endif /* _hldata_h_included_ */

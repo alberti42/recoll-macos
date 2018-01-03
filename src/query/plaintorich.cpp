@@ -40,24 +40,13 @@ using std::set;
 #include "cancelcheck.h"
 #include "unacpp.h"
 
-struct MatchEntry {
-    // Start/End byte offsets in the document text
-    pair<int, int> offs;
-    // Index of the search group this comes from: this is to relate a 
-    // match to the original user input.
-    size_t grpidx;
-    MatchEntry(int sta, int sto, size_t idx) 
-        : offs(sta, sto), grpidx(idx) {
-    }
-};
-
 // Text splitter used to take note of the position of query terms
 // inside the result text. This is then used to insert highlight tags.
 class TextSplitPTR : public TextSplit {
 public:
 
     // Out: begin and end byte positions of query terms/groups in text
-    vector<MatchEntry> tboffs;  
+    vector<GroupMatchEntry> m_tboffs;
 
     TextSplitPTR(const HighlightData& hdata)
         :  m_wcount(0), m_hdata(hdata) {
@@ -96,7 +85,7 @@ public:
         // If this word is a search term, remember its byte-offset span. 
         map<string, size_t>::const_iterator it = m_terms.find(dumb);
         if (it != m_terms.end()) {
-            tboffs.push_back(MatchEntry(bts, bte, it->second));
+            m_tboffs.push_back(GroupMatchEntry(bts, bte, it->second));
         }
         
         // If word is part of a search group, update its positions list
@@ -119,8 +108,6 @@ public:
     virtual bool matchGroups();
 
 private:
-    virtual bool matchGroup(unsigned int idx);
-
     // Word count. Used to call checkCancel from time to time.
     int m_wcount;
 
@@ -138,166 +125,6 @@ private:
 };
 
 
-/** Sort by shorter comparison class */
-class VecIntCmpShorter {
-public:
-    /** Return true if and only if a is strictly shorter than b. */
-    bool operator()(const vector<int> *a, const vector<int> *b) {
-        return a->size() < b->size();
-    }
-};
-
-#define SETMINMAX(POS, STA, STO)  {if ((POS) < (STA)) (STA) = (POS);    \
-        if ((POS) > (STO)) (STO) = (POS);}
-
-// Check that at least an entry from the first position list is inside
-// the window and recurse on next list. The window is readjusted as
-// the successive terms are found.
-//
-// @param window the search window width
-// @param plists the position list vector
-// @param i the position list to process (we then recurse with the next list)
-// @param min the current minimum pos for a found term
-// @param max the current maximum pos for a found term
-// @param sp, ep output: the found area
-// @param minpos bottom of search: this is the highest point of
-//    any previous match. We don't look below this as overlapping matches 
-//    make no sense for highlighting.
-static bool do_proximity_test(int window, vector<vector<int>* >& plists, 
-                              unsigned int i, int min, int max, 
-                              int *sp, int *ep, int minpos)
-{
-    LOGDEB1("do_prox_test: win " << window << " i " << i << " min " <<
-            min << " max " << max << " minpos " << minpos << "\n");
-    int tmp = max + 1 - window;
-    if (tmp < minpos)
-        tmp = minpos;
-
-    // Find 1st position bigger than window start
-    vector<int>::iterator it = plists[i]->begin();
-    while (it != plists[i]->end() && *it < tmp)
-        it++;
-
-    // Look for position inside window. If not found, no match. If
-    // found: if this is the last list we're done, else recurse on
-    // next list after adjusting the window
-    while (it != plists[i]->end()) {
-        int pos = *it;
-        if (pos > min + window - 1) 
-            return false;
-        if (i + 1 == plists.size()) {
-            SETMINMAX(pos, *sp, *ep);
-            return true;
-        }
-        SETMINMAX(pos, min, max);
-        if (do_proximity_test(window,plists, i + 1, min, max, sp, ep, minpos)) {
-            SETMINMAX(pos, *sp, *ep);
-            return true;
-        }
-        it++;
-    }
-    return false;
-}
-
-// Find NEAR matches for one group of terms, update highlight map
-bool TextSplitPTR::matchGroup(unsigned int grpidx)
-{
-    const vector<string>& terms = m_hdata.groups[grpidx];
-    int window = int(m_hdata.groups[grpidx].size() + m_hdata.slacks[grpidx]);
-
-    LOGDEB1("TextSplitPTR::matchGroup:d " << window << ": " <<
-            stringsToString(terms) << "\n");
-
-    // The position lists we are going to work with. We extract them from the 
-    // (string->plist) map
-    vector<vector<int>* > plists;
-    // A revert plist->term map. This is so that we can find who is who after
-    // sorting the plists by length.
-    map<vector<int>*, string> plistToTerm;
-
-    // Find the position list for each term in the group. It is
-    // possible that this particular group was not actually matched by
-    // the search, so that some terms are not found.
-    for (vector<string>::const_iterator it = terms.begin(); 
-         it != terms.end(); it++) {
-        map<string, vector<int> >::iterator pl = m_plists.find(*it);
-        if (pl == m_plists.end()) {
-            LOGDEB1("TextSplitPTR::matchGroup: [" << *it <<
-                    "] not found in m_plists\n");
-            return false;
-        }
-        plists.push_back(&(pl->second));
-        plistToTerm[&(pl->second)] = *it;
-    }
-    // I think this can't actually happen, was useful when we used to
-    // prune the groups, but doesn't hurt.
-    if (plists.size() < 2) {
-        LOGDEB1("TextSplitPTR::matchGroup: no actual groups found\n");
-        return false;
-    }
-    // Sort the positions lists so that the shorter is first
-    std::sort(plists.begin(), plists.end(), VecIntCmpShorter());
-
-    { // Debug
-        map<vector<int>*, string>::iterator it;
-        it =  plistToTerm.find(plists[0]);
-        if (it == plistToTerm.end()) {
-            // SuperWeird
-            LOGERR("matchGroup: term for first list not found !?!\n");
-            return false;
-        }
-        LOGDEB1("matchGroup: walking the shortest plist. Term [" <<
-                it->second << "], len " << plists[0]->size() << "\n");
-    }
-
-    // Minpos is the highest end of a found match. While looking for
-    // further matches, we don't want the search to extend before
-    // this, because it does not make sense for highlight regions to
-    // overlap
-    int minpos = 0;
-    // Walk the shortest plist and look for matches
-    for (vector<int>::iterator it = plists[0]->begin(); 
-         it != plists[0]->end(); it++) {
-        int pos = *it;
-        int sta = INT_MAX, sto = 0;
-        LOGDEB2("MatchGroup: Testing at pos " << pos << "\n");
-        if (do_proximity_test(window,plists, 1, pos, pos, &sta, &sto, minpos)) {
-            LOGDEB1("TextSplitPTR::matchGroup: MATCH termpos [" << sta <<
-                    "," << sto << "]\n"); 
-            // Maybe extend the window by 1st term position, this was not
-            // done by do_prox..
-            SETMINMAX(pos, sta, sto);
-            minpos = sto+1;
-            // Translate the position window into a byte offset window
-            map<int, pair<int, int> >::iterator i1 =  m_gpostobytes.find(sta);
-            map<int, pair<int, int> >::iterator i2 =  m_gpostobytes.find(sto);
-            if (i1 != m_gpostobytes.end() && i2 != m_gpostobytes.end()) {
-                LOGDEB2("TextSplitPTR::matchGroup: pushing bpos " <<
-                        i1->second.first << " " << i2->second.second << "\n");
-                tboffs.push_back(MatchEntry(i1->second.first, 
-                                            i2->second.second, grpidx));
-            } else {
-                LOGDEB0("matchGroup: no bpos found for " << sta << " or "
-                        << sto << "\n");
-            }
-        } else {
-            LOGDEB1("matchGroup: no group match found at this position\n");
-        }
-    }
-
-    return true;
-}
-
-/** Sort integer pairs by increasing first value and decreasing width */
-class PairIntCmpFirst {
-public:
-    bool operator()(const MatchEntry& a, const MatchEntry& b) {
-        if (a.offs.first != b.offs.first)
-            return a.offs.first < b.offs.first;
-        return a.offs.second > b.offs.second;
-    }
-};
-
 // Look for matches to PHRASE and NEAR term groups and finalize the
 // matched regions list (sort it by increasing start then decreasing
 // length)
@@ -307,12 +134,18 @@ bool TextSplitPTR::matchGroups()
     for (unsigned int i = 0; i < m_hdata.groups.size(); i++) {
         if (m_hdata.groups[i].size() <= 1)
             continue;
-        matchGroup(i);
+        matchGroup(m_hdata, i, m_plists, m_gpostobytes, m_tboffs);
     }
 
     // Sort regions by increasing start and decreasing width.  
     // The output process will skip overlapping entries.
-    std::sort(tboffs.begin(), tboffs.end(), PairIntCmpFirst());
+    std::sort(m_tboffs.begin(), m_tboffs.end(),
+              [](const GroupMatchEntry& a, const GroupMatchEntry& b) -> bool {
+                  if (a.offs.first != b.offs.first)
+                      return a.offs.first < b.offs.first;
+                  return a.offs.second > b.offs.second;
+              }
+        );
     return true;
 }
 
@@ -357,7 +190,7 @@ bool PlainToRich::plaintorich(const string& in,
     // No term matches. Happens, for example on a snippet selected for
     // a term match when we are actually looking for a group match
     // (the snippet generator does this...).
-    if (splitter.tboffs.empty()) {
+    if (splitter.m_tboffs.empty()) {
         LOGDEB1("plaintorich: no term matches\n");
         ret = false;
     }
@@ -365,12 +198,12 @@ bool PlainToRich::plaintorich(const string& in,
     // Iterator for the list of input term positions. We use it to
     // output highlight tags and to compute term positions in the
     // output text
-    vector<MatchEntry>::iterator tPosIt = splitter.tboffs.begin();
-    vector<MatchEntry>::iterator tPosEnd = splitter.tboffs.end();
+    vector<GroupMatchEntry>::iterator tPosIt = splitter.m_tboffs.begin();
+    vector<GroupMatchEntry>::iterator tPosEnd = splitter.m_tboffs.end();
 
 #if 0
-    for (vector<pair<int, int> >::const_iterator it = splitter.tboffs.begin();
-         it != splitter.tboffs.end(); it++) {
+    for (vector<pair<int, int> >::const_iterator it = splitter.m_tboffs.begin();
+         it != splitter.m_tboffs.end(); it++) {
         LOGDEB2("plaintorich: region: " << it->first << " "<<it->second<< "\n");
     }
 #endif
@@ -420,7 +253,7 @@ bool PlainToRich::plaintorich(const string& in,
                 }
                 // Skip all highlight areas that would overlap this one
                 int crend = tPosIt->offs.second;
-                while (tPosIt != splitter.tboffs.end() && 
+                while (tPosIt != splitter.m_tboffs.end() && 
                        tPosIt->offs.first < crend)
                     tPosIt++;
                 inrcltag = 0;
