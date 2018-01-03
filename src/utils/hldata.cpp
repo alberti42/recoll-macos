@@ -65,7 +65,7 @@ bool do_proximity_test(int window, vector<const vector<int>*>& plists,
     return false;
 }
 
-#define DEBUGGROUPS
+#undef DEBUGGROUPS
 #ifdef DEBUGGROUPS
 #define LOGRP LOGDEB
 #else
