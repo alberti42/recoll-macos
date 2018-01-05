@@ -264,15 +264,16 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     // URL (http or https). Trying to guess based on %u or %f is
     // doomed because we pass %u to xdg-open.
     bool wantsfile = false;
-    if (cmd.find("%f") != string::npos || urlisfileurl(doc.url) ||
-        doc.mimetype.compare("text/html")) {
+    bool wantsparentfile = cmd.find("%F") != string::npos;
+    if (!wantsparentfile &&
+        (cmd.find("%f") != string::npos || urlisfileurl(doc.url) ||
+         doc.mimetype.compare("text/html"))) {
         wantsfile = true;
     } 
-    bool wantsparentfile = cmd.find("%F") != string::npos;
 
     if (wantsparentfile && !urlisfileurl(doc.url)) {
 	QMessageBox::warning(0, "Recoll", 
-			     tr("Viewer command line for %1 specifies both "
+			     tr("Viewer command line for %1 specifies "
 				"parent file but URL is http[s]: unsupported")
 			     .arg(QString::fromUtf8(doc.mimetype.c_str())));
 	return;
