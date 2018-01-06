@@ -430,7 +430,12 @@ int Query::Native::abstractFromText(
         }
 #endif
         LOGDEB("=== FRAGMENT: Coef: " << entry.coef << ": " << frag << endl);
-        int page = ndb->getPageNumberForPosition(vpbreaks, entry.hitpos);
+        int page = 0;
+        if (vpbreaks.size() > 1) {
+            page = ndb->getPageNumberForPosition(vpbreaks, entry.hitpos);
+            if (page < 0)
+                page = 0;
+        }
         vabs.push_back(Snippet(page, frag).setTerm(entry.term));
         if (count++ >= maxtotaloccs)
             break;
