@@ -30,6 +30,10 @@
 #endif // IDX_THREADS
 #include "xmacros.h"
 
+// Store raw doc text in data record or metadata ?
+#undef RAWTEXT_IN_DATA
+#define RAWTEXT_IN_METADATA
+
 namespace Rcl {
 
 class Query;
@@ -51,10 +55,16 @@ public:
     // available on the caller site.
     // Take some care to avoid sharing string data (if string impl is cow)
     DbUpdTask(Op _op, const string& ud, const string& un, 
-	      Xapian::Document *d, size_t tl)
-	: op(_op), udi(ud.begin(), ud.end()), uniterm(un.begin(), un.end()), 
-          doc(d), txtlen(tl)
-    {}
+	      Xapian::Document *d, size_t tl
+#ifdef RAWTEXT_IN_METADATA
+              , string& rztxt
+#endif
+        ) : op(_op), udi(ud.begin(), ud.end()), uniterm(un.begin(), un.end()), 
+            doc(d), txtlen(tl) {
+#ifdef RAWTEXT_IN_METADATA
+        rawztext.swap(rztxt);
+#endif
+    }
     // Udi and uniterm equivalently designate the doc
     Op op;
     string udi;
@@ -64,6 +74,9 @@ public:
     // purge because we actually don't know it, and the code fakes a
     // text length based on the term count.
     size_t txtlen;
+#ifdef RAWTEXT_IN_METADATA
+    string rawztext; // Compressed doc text
+#endif
 };
 #endif // IDX_THREADS
 
@@ -101,7 +114,11 @@ class Db::Native {
 
     // Final steps of doc update, part which need to be single-threaded
     bool addOrUpdateWrite(const string& udi, const string& uniterm, 
-			  Xapian::Document *doc, size_t txtlen);
+			  Xapian::Document *doc, size_t txtlen
+#ifdef RAWTEXT_IN_METADATA
+                          , const string& rawztext
+#endif
+        );
 
     /** Delete all documents which are contained in the input document, 
      * which must be a file-level one.
@@ -171,18 +188,39 @@ class Db::Native {
 
     /** Check if a page position list is defined */
     bool hasPages(Xapian::docid id);
+
+#ifdef RAWTEXT_IN_METADATA
+    std::string rawtextMetaKey(Xapian::docid did) {
+        // Xapian's Olly Betts avises to use a key which will
+        // sort the same as the docid (which we do), and to
+        // use Xapian's pack_uint_preserving_sort() which is
+        // efficient but hard to read. I'd wager that this
+        // does not make much of a difference. 10 ascii bytes
+        // gives us 10 billion docs, which is enough (says I).
+        char buf[30];
+        sprintf(buf, "%010d", did);
+        return buf;
+    }
+#endif
+
+    void deleteDocument(Xapian::docid docid) {
+#ifdef RAWTEXT_IN_METADATA
+        string metareason;
+        XAPTRY(xwdb.set_metadata(rawtextMetaKey(docid), string()),
+               xwdb, metareason);
+        if (!metareason.empty()) {
+            LOGERR("deleteDocument: set_metadata error: " <<
+                   metareason << "\n");
+            // not fatal
+        }
+#endif
+        xwdb.delete_document(docid);
+    }
 };
 
 // This is the word position offset at which we index the body text
 // (abstract, keywords, etc.. are stored before this)
 static const unsigned int baseTextPosition = 100000;
-
-// Store raw doc text in data record or value slot ?
-#if 0
-#define RAWTEXT_IN_DATA 1
-#elif 1
-#define RAWTEXT_IN_VALUE 1
-#endif
 
 }
 #endif /* _rcldb_p_h_included_ */

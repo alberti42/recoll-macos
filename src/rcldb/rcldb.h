@@ -70,11 +70,6 @@ enum value_slot {
     ////////// Recoll only:
     // Doc sig as chosen by app (ex: mtime+size
     VALUE_SIG = 10,
-    // Doc extracted text, with punctuation: splitter input. Used for
-    // generating snippets. This is only used if RAWTEXT_IN_VALUE is
-    // defined (else the text goes to the data record), but reserve
-    // the value in any case.
-    VALUE_RAWTEXT= 11,  
 };
 
 class SearchData;

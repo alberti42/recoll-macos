@@ -191,7 +191,11 @@ void *DbUpdWorker(void* vdbp)
 	case DbUpdTask::AddOrUpdate:
 	    LOGDEB("DbUpdWorker: got add/update task, ql " << qsz << "\n");
 	    status = ndbp->addOrUpdateWrite(tsk->udi, tsk->uniterm, 
-					    tsk->doc, tsk->txtlen);
+					    tsk->doc, tsk->txtlen
+#ifdef RAWTEXT_IN_METADATA
+                          , tsk->rawztext
+#endif
+                );
 	    break;
 	case DbUpdTask::Delete:
 	    LOGDEB("DbUpdWorker: got delete task, ql " << qsz << "\n");
@@ -585,13 +589,17 @@ int Db::Native::getPageNumberForPosition(const vector<int>& pbreaks, int pos)
 // to delete it before returning.
 bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm, 
 				  Xapian::Document *newdocument_ptr, 
-                                  size_t textlen)
+                                  size_t textlen
+#ifdef RAWTEXT_IN_METADATA
+                          , const string& rawztext
+#endif
+    )
 {
 #ifdef IDX_THREADS
     Chrono chron;
     std::unique_lock<std::mutex> lock(m_mutex);
 #endif
-    std::shared_ptr<Xapian::Document> doc_cleaner(newdocument_ptr);
+    std::unique_ptr<Xapian::Document> doc_cleaner(newdocument_ptr);
 
     // Check file system full every mbyte of indexed text. It's a bit wasteful
     // to do this after having prepared the document, but it needs to be in
@@ -614,9 +622,9 @@ bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm,
     string ermsg;
 
     // Add db entry or update existing entry:
+    Xapian::docid did = 0;
     try {
-	Xapian::docid did = 
-	    xwdb.replace_document(uniterm, *newdocument_ptr);
+	did = xwdb.replace_document(uniterm, *newdocument_ptr);
 	if (did < m_rcldb->updated.size()) {
             // This is necessary because only the file-level docs are tested
             // by needUpdate(), so the subdocs existence flags are only set
@@ -627,7 +635,6 @@ bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm,
 	    LOGINFO("Db::add: docid " << did << " added [" << fnc << "]\n");
 	}
     } XCATCHERROR(ermsg);
-
     if (!ermsg.empty()) {
 	LOGERR("Db::add: replace_document failed: " << ermsg << "\n");
 	ermsg.erase();
@@ -643,6 +650,16 @@ bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm,
 	}
     }
 
+#ifdef RAWTEXT_IN_METADATA
+    XAPTRY(xwdb.set_metadata(rawtextMetaKey(did), rawztext),
+           xwdb, m_rcldb->m_reason);
+    if (!m_rcldb->m_reason.empty()) {
+        LOGERR("Db::addOrUpdate: set_metadata error: " <<
+               m_rcldb->m_reason << "\n");
+        // This only affects snippets, so let's say not fatal
+    }
+#endif
+    
     // Test if we're over the flush threshold (limit memory usage):
     bool ret = m_rcldb->maybeflush(textlen);
 #ifdef IDX_THREADS
@@ -682,7 +699,7 @@ bool Db::Native::purgeFileWrite(bool orphansOnly, const string& udi,
 	    }
 	} else {
 	    LOGDEB("purgeFile: delete docid " << *docid << "\n");
-	    xwdb.delete_document(*docid);
+            deleteDocument(*docid);
 	}
 	vector<Xapian::docid> docids;
 	subDocs(udi, 0, docids);
@@ -705,7 +722,7 @@ bool Db::Native::purgeFileWrite(bool orphansOnly, const string& udi,
 		
 	    if (!orphansOnly || sig != subdocsig) {
 		LOGDEB("Db::purgeFile: delete subdoc " << *it << "\n");
-		xwdb.delete_document(*it);
+		deleteDocument(*it);
 	    }
 	}
 	return true;
@@ -1365,6 +1382,9 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
     // Udi unique term: this is used for file existence/uptodate
     // checks, and unique id for the replace_document() call.
     string uniterm = make_uniterm(udi);
+#if defined(RAWTEXT_IN_METADATA)
+        string rawztext; // Doc compressed text
+#endif
 
     if (doc.onlyxattr) {
 	// Only updating an existing doc with new extended attributes
@@ -1468,13 +1488,11 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	if (!splitter.text_to_words(doc.text)) {
 	    LOGDEB("Db::addOrUpdate: split failed for main text\n");
         } else {
-#ifdef RAWTEXT_IN_VALUE
+#if defined(RAWTEXT_IN_METADATA)
             if (o_index_storedoctext) {
                 ZLibUtBuf buf;
                 deflateToBuf(doc.text.c_str(), doc.text.size(), buf);
-                string tt;
-                tt.assign(buf.getBuf(), buf.getCnt());
-                newdocument.add_value(VALUE_RAWTEXT, tt);
+                rawztext.assign(buf.getBuf(), buf.getCnt());
             }
 #endif
         }
@@ -1700,7 +1718,11 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 #ifdef IDX_THREADS
     if (m_ndb->m_havewriteq) {
 	DbUpdTask *tp = new DbUpdTask(DbUpdTask::AddOrUpdate, udi, uniterm, 
-				      newdocument_ptr, doc.text.length());
+				      newdocument_ptr, doc.text.length()
+#ifdef RAWTEXT_IN_METADATA
+                                      , rawztext
+#endif
+            );
 	if (!m_ndb->m_wqueue.put(tp)) {
 	    LOGERR("Db::addOrUpdate:Cant queue task\n");
             delete newdocument_ptr;
@@ -1712,7 +1734,11 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 #endif
 
     return m_ndb->addOrUpdateWrite(udi, uniterm, newdocument_ptr,
-				   doc.text.length());
+				   doc.text.length()
+#ifdef RAWTEXT_IN_METADATA
+                                   , rawztext
+#endif
+        );
 }
 
 bool Db::Native::docToXdocXattrOnly(TextSplitDb *splitter, const string &udi, 
@@ -2076,7 +2102,7 @@ bool Db::purge()
 		    Xapian::termcount trms = m_ndb->xwdb.get_doclength(docid);
 		    maybeflush(trms * 5);
 		}
-		m_ndb->xwdb.delete_document(docid);
+		m_ndb->deleteDocument(docid);
 		LOGDEB("Db::purge: deleted document #" << docid << "\n");
 	    } catch (const Xapian::DocNotFoundError &) {
 		LOGDEB0("Db::purge: document #" << docid << " not found\n");
@@ -2137,8 +2163,13 @@ bool Db::purgeFile(const string &udi, bool *existed)
 
 #ifdef IDX_THREADS
     if (m_ndb->m_havewriteq) {
+        string rztxt;
 	DbUpdTask *tp = new DbUpdTask(DbUpdTask::Delete, udi, uniterm, 
-				      0, (size_t)-1);
+				      0, (size_t)-1,
+#if defined(RAWTEXT_IN_METADATA)
+                                      rztxt
+#endif
+            );
 	if (!m_ndb->m_wqueue.put(tp)) {
 	    LOGERR("Db::purgeFile:Cant queue task\n");
 	    return false;
@@ -2164,8 +2195,13 @@ bool Db::purgeOrphans(const string &udi)
 
 #ifdef IDX_THREADS
     if (m_ndb->m_havewriteq) {
+        string rztxt;
 	DbUpdTask *tp = new DbUpdTask(DbUpdTask::PurgeOrphans, udi, uniterm, 
-				      0, (size_t)-1);
+				      0, (size_t)-1,
+#ifdef RAWTEXT_IN_METADATA
+                                      rztxt
+#endif
+            );
 	if (!m_ndb->m_wqueue.put(tp)) {
 	    LOGERR("Db::purgeFile:Cant queue task\n");
 	    return false;

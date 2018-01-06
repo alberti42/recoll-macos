@@ -350,8 +350,9 @@ int Query::Native::abstractFromText(
         rawtext = doc.meta["RAWTEXT"];
     }
 #endif
-#ifdef RAWTEXT_IN_VALUE
-    XAPTRY(rawtext = xdoc.get_value(VALUE_RAWTEXT), xrdb, reason);
+#ifdef RAWTEXT_IN_METADATA
+    XAPTRY(rawtext = ndb->xrdb.get_metadata(ndb->rawtextMetaKey(docid)),
+           ndb->xrdb, reason);
     if (!reason.empty()) {
         LOGERR("abstractFromText: could not get value: " << reason << endl);
         return ABSRES_ERROR;
@@ -367,7 +368,7 @@ int Query::Native::abstractFromText(
     }
 
 #if 0 && ! (XAPIAN_MAJOR_VERSION <= 1 && XAPIAN_MINOR_VERSION <= 2)  && \
-    (defined(RAWTEXT_IN_DATA) || defined(RAWTEXT_IN_VALUE))
+    (defined(RAWTEXT_IN_DATA))
     // Tryout the Xapian internal method.
     string snippet = xmset.snippet(rawtext);
     LOGDEB("SNIPPET: [" << snippet << "] END SNIPPET\n");
