@@ -3109,8 +3109,8 @@ MimeType=*/*
           <listitem><formalpara><title>%T</title><para>Title or Filename if
           not set.</para></formalpara> 
           </listitem>
-          <listitem><formalpara><title>%t</title><para>Title or Filename if
-          not set.</para></formalpara> 
+          <listitem><formalpara><title>%t</title><para>Title.</para>
+          </formalpara> 
           </listitem>
           <listitem><formalpara><title>%U</title><para>Url</para></formalpara>
           </listitem>
