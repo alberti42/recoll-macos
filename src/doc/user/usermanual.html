@@ -7358,28 +7358,27 @@ for i in range(nres):
               </div>
             </div>
           </div>
-          <p>If you can install any or all of the following through
-          the package manager for your system, all the better.
-          Especially <span class="application">Qt</span> is a very
-          big piece of software, but you will most probably be able
-          to find a binary package.</p>
-          <p>If you are building for an exotic or older system, it
-          may be useful to note that functional improvements in
-          <span class="application">Recoll</span> have been
-          relatively marginal in recent versions, and that you may
-          make your life easier by using an older release, without
-          losing major function.</p>
+          <p>The following prerequisites are described in broad
+          terms and not as specific package names (which will
+          depend on the exact platform). The dependancies should be
+          available as packages on most common Unix derivatives,
+          and it should be quite uncommon that you would have to
+          build one of them.</p>
           <p>The shopping list:</p>
           <div class="itemizedlist">
             <ul class="itemizedlist" style=
             "list-style-type: disc;">
               <li class="listitem">
-                <p>The <code class="literal">autoconf</code>,
-                <code class="literal">automake</code> and
-                <code class="literal">libtool</code> triad. Only
-                <code class="literal">autoconf</code> is needed
-                before <span class="application">Recoll</span> and
-                including 1.21.</p>
+                <p>The <span class=
+                "command"><strong>autoconf</strong></span>,
+                <span class=
+                "command"><strong>automake</strong></span> and
+                <span class=
+                "command"><strong>libtool</strong></span> triad.
+                Only <span class=
+                "command"><strong>autoconf</strong></span> is
+                needed for <span class="application">Recoll</span>
+                1.21 and earlier.</p>
               </li>
               <li class="listitem">
                 <p>C++ compiler. Recent versions require C++11
@@ -7396,8 +7395,8 @@ for i in range(nres):
                 "command"><strong>xsltproc</strong></span> command.
                 For building the documentation (for <span class=
                 "application">Recoll</span> 1.21 and later). This
-                sometimes comes with the <code class=
-                "literal">libxslt</code> package. And also the
+                sometimes comes with the <span class=
+                "application">libxslt</span> package. And also the
                 Docbook XML and style sheet files.</p>
               </li>
               <li class="listitem">
@@ -7426,7 +7425,7 @@ for i in range(nres):
                 the <span class="application">Qt Webkit</span>
                 module, <span class="application">Recoll</span> has
                 a configuration option to disable its use (see
-                further).</p>
+                further in the configuration section).</p>
               </li>
               <li class="listitem">
                 <p>Development files for <span class=

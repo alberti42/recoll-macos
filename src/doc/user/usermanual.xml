@@ -5716,25 +5716,19 @@ for i in range(nres):
       <sect2 id="RCL.INSTALL.BUILDING.PREREQS">
         <title>Prerequisites</title>
 
-        <para>If you can install any or all of the following through
-        the package manager for your system, all the
-        better. Especially <application>Qt</application> is a very
-        big piece of software, but you will most probably be able to
-        find a binary package.</para>
+        <para>The following prerequisites are described in broad terms and
+        not as specific package names (which will depend on the exact
+        platform). The dependancies should be available as packages on most
+        common Unix derivatives, and it should be quite uncommon that you
+        would have to build one of them.</para>
 
-        <para>If you are building for an exotic or older system, it may
-        be useful to note that functional improvements in &RCL;
-        have been relatively marginal in recent versions,
-        and that you may make your life easier by using an older
-        release, without losing major function.</para>
-        
         <para>The shopping list:</para>
         <itemizedlist>
 
-          <listitem><para>The <literal>autoconf</literal>,
-          <literal>automake</literal> and <literal>libtool</literal>
-          triad. Only <literal>autoconf</literal> is needed before &RCL;
-          and including 1.21.</para></listitem>
+          <listitem><para>The <command>autoconf</command>,
+          <command>automake</command> and <command>libtool</command>
+          triad. Only <command>autoconf</command> is needed for &RCL;
+          1.21 and earlier.</para></listitem>
 
           <listitem><para>C++ compiler. Recent versions require C++11
           compatibility (1.23 and later).</para>
@@ -5745,11 +5739,9 @@ for i in range(nres):
           </listitem>
 
           <listitem><para><command>xsltproc</command> command. For building
-          the documentation (for &RCL; 1.21
-          and later). This sometimes comes with the
-          <literal>libxslt</literal> package. And also the Docbook XML and
-          style sheet files.</para>
-          </listitem>
+          the documentation (for &RCL; 1.21 and later). This sometimes
+          comes with the <application>libxslt</application> package. And
+          also the Docbook XML and style sheet files.</para> </listitem>
 
           
           <listitem><para>Development files
@@ -5772,7 +5764,8 @@ for i in range(nres):
               was the last version to support <application>Qt 3</application>.
               If you do not want to install or build the
               <application>Qt Webkit</application> module, &RCL;
-              has a configuration option to disable its use (see further).
+              has a configuration option to disable its use (see further in
+              the configuration section).
             </para> 
           </listitem>
 
