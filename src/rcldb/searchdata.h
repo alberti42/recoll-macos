@@ -232,6 +232,9 @@ public:
 		   SDCM_ANCHOREND=0x4, SDCM_CASESENS=0x8, SDCM_DIACSENS=0x10,
 		   SDCM_NOTERMS=0x20, // Don't include terms for highlighting
 		   SDCM_NOSYNS = 0x40, // Don't perform synonym expansion
+                   // Aargh special case. pathelts are case/diac-sensitive
+                   // even in a stripped index
+                   SDCM_PATHELT = 0x80, 
     };
     enum Relation {REL_CONTAINS, REL_EQUALS, REL_LT, REL_LTE, REL_GT, REL_GTE};
 

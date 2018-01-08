@@ -164,8 +164,17 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
 
     bool diac_sensitive = (typ_sens & ET_DIACSENS) != 0;
     bool case_sensitive = (typ_sens & ET_CASESENS) != 0;
-
-    LOGDEB0("Db::TermMatch: typ "  << (tmtptostr(matchtyp)) << " diacsens "  << (diac_sensitive) << " casesens "  << (case_sensitive) << " lang ["  << (lang) << "] term ["  << (_term) << "] max "  << (max) << " field ["  << (field) << "] stripped "  << (o_index_stripchars) << " init res.size "  << (res.entries.size()) << "\n" );
+    // Path elements (used for dir: filtering) are special because
+    // they are not unaccented or lowercased even if the index is
+    // otherwise stripped.
+    bool pathelt = (typ_sens & ET_PATHELT) != 0;
+    
+    LOGDEB0("Db::TermMatch: typ " << tmtptostr(matchtyp) << " diacsens " <<
+            diac_sensitive << " casesens " << case_sensitive << " pathelt " <<
+            pathelt << " lang ["  <<
+            lang << "] term [" << _term << "] max " << max << " field [" <<
+            field << "] stripped " << o_index_stripchars << " init res.size "
+            << res.entries.size() << "\n");
 
     // If index is stripped, no case or diac expansion can be needed:
     // for the processing inside this routine, everything looks like
@@ -174,8 +183,8 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
     string term = _term;
     if (o_index_stripchars) {
         diac_sensitive = case_sensitive = true;
-        if (!unacmaybefold(_term, term, "UTF-8", UNACOP_UNACFOLD)) {
-            LOGERR("Db::termMatch: unac failed for ["  << (_term) << "]\n" );
+        if (!pathelt && !unacmaybefold(_term, term, "UTF-8", UNACOP_UNACFOLD)) {
+            LOGERR("Db::termMatch: unac failed for [" << _term << "]\n");
             return false;
         }
     }

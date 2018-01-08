@@ -374,6 +374,16 @@ private:
     map<int, bool> m_nste;
 };
 
+static const vector<CharFlags> expandModStrings{
+    {SearchDataClause::SDCM_NOSTEMMING, "nostemming"},
+    {SearchDataClause::SDCM_ANCHORSTART, "anchorstart"},
+    {SearchDataClause::SDCM_ANCHOREND, "anchorend"},
+    {SearchDataClause::SDCM_CASESENS, "casesens"},
+    {SearchDataClause::SDCM_DIACSENS, "diacsens"},
+    {SearchDataClause::SDCM_NOTERMS, "noterms"},
+    {SearchDataClause::SDCM_NOSYNS, "nosyns"},
+    {SearchDataClause::SDCM_PATHELT, "pathelt"},
+        };
 
 /** Expand term into term list, using appropriate mode: stem, wildcards, 
  *  diacritics... 
@@ -396,11 +406,19 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 					vector<string>* multiwords
     )
 {
-    LOGDEB0("expandTerm: mods 0x"  << (mods) << " fld ["  << (m_field) << "] trm ["  << (term) << "] lang ["  << (getStemLang()) << "]\n" );
+    LOGDEB0("expandTerm: mods: [" << flagsToString(expandModStrings, mods) <<
+            "] fld [" << m_field << "] trm [" << term << "] lang [" <<
+            getStemLang() << "]\n");
     sterm.clear();
     oexp.clear();
     if (term.empty())
 	return true;
+
+    if (mods & SDCM_PATHELT) {
+        // Path element are so special. Only wildcards, and they are
+        // case-sensitive.
+        mods |= SDCM_NOSTEMMING|SDCM_CASESENS|SDCM_DIACSENS|SDCM_NOSYNS;
+    }
 
     bool maxexpissoft = false;
     int maxexpand = getSoftMaxExp();
@@ -420,14 +438,15 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
     // No stem expansion if there are wildcards or if prevented by caller
     bool nostemexp = (mods & SDCM_NOSTEMMING) != 0;
     if (haswild || getStemLang().empty()) {
-	LOGDEB2("expandTerm: found wildcards or stemlang empty: no exp\n" );
+	LOGDEB2("expandTerm: found wildcards or stemlang empty: no exp\n");
 	nostemexp = true;
     }
 
     bool diac_sensitive = (mods & SDCM_DIACSENS) != 0;
     bool case_sensitive = (mods & SDCM_CASESENS) != 0;
     bool synonyms = (mods & SDCM_NOSYNS) == 0;
-
+    bool pathelt = (mods & SDCM_PATHELT) != 0;
+    
     // noexpansion can be modified further down by possible case/diac expansion
     bool noexpansion = nostemexp && !haswild && !synonyms; 
 
@@ -442,7 +461,7 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 	// performed (conversion+comparison) will automatically ignore
 	// accented characters which are actually a separate letter
 	if (getAutoDiac() && unachasaccents(term)) {
-	    LOGDEB0("expandTerm: term has accents -> diac-sensitive\n" );
+	    LOGDEB0("expandTerm: term has accents -> diac-sensitive\n");
 	    diac_sensitive = true;
 	}
 
@@ -453,13 +472,14 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 	Utf8Iter it(term);
 	it++;
 	if (getAutoCase() && unachasuppercase(term.substr(it.getBpos()))) {
-	    LOGDEB0("expandTerm: term has uppercase -> case-sensitive\n" );
+	    LOGDEB0("expandTerm: term has uppercase -> case-sensitive\n");
 	    case_sensitive = true;
 	}
 
 	// If we are sensitive to case or diacritics turn stemming off
 	if (diac_sensitive || case_sensitive) {
-	    LOGDEB0("expandTerm: diac or case sens set -> stemexpand and synonyms off\n" );
+	    LOGDEB0("expandTerm: diac or case sens set -> stemexpand and "
+                    "synonyms off\n");
 	    nostemexp = true;
             synonyms = false;
 	}
@@ -472,7 +492,7 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
     if (noexpansion) {
 	oexp.push_back(prefix + term);
 	m_hldata.terms[term] = term;
-	LOGDEB("ExpandTerm: noexpansion: final: "  << (stringsToString(oexp)) << "\n" );
+	LOGDEB("ExpandTerm: noexpansion: final: "<<stringsToString(oexp)<< "\n");
 	return true;
     } 
 
@@ -483,7 +503,8 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 	termmatchsens |= Db::ET_DIACSENS;
     if (synonyms)
 	termmatchsens |= Db::ET_SYNEXP;
-	
+    if (pathelt) 
+	termmatchsens |= Db::ET_PATHELT;
     Db::MatchType mtyp = haswild ? Db::ET_WILD : 
 	nostemexp ? Db::ET_NONE : Db::ET_STEM;
     TermMatchResult res;
@@ -498,9 +519,8 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 	    " Maybe use case/diacritics sensitivity or increase maxTermExpand.";
 	return false;
     }
-    for (vector<TermMatchEntry>::const_iterator it = res.entries.begin(); 
-	 it != res.entries.end(); it++) {
-	oexp.push_back(it->term);
+    for (const auto& entry : res.entries) {
+	oexp.push_back(entry.term);
     }
     // If the term does not exist at all in the db, the return from
     // termMatch() is going to be empty, which is not what we want (we
@@ -509,11 +529,10 @@ bool SearchDataClauseSimple::expandTerm(Rcl::Db &db,
 	oexp.push_back(prefix + term);
 
     // Remember the uterm-to-expansion links
-    for (vector<string>::const_iterator it = oexp.begin(); 
-	 it != oexp.end(); it++) {
-	m_hldata.terms[strip_prefix(*it)] = term;
+    for (const auto& entry : oexp) {
+	m_hldata.terms[strip_prefix(entry)] = term;
     }
-    LOGDEB("ExpandTerm: final: "  << (stringsToString(oexp)) << "\n" );
+    LOGDEB("ExpandTerm: final: " << stringsToString(oexp) << "\n");
     return true;
 }
 
@@ -951,7 +970,7 @@ bool SearchDataClausePath::toNativeQuery(Rcl::Db &db, void *p)
 #endif
 
     if (ltext.empty()) {
-	LOGERR("SearchDataClausePath: empty path??\n" );
+	LOGERR("SearchDataClausePath: empty path??\n");
 	m_reason = "Empty path ?";
 	return false;
     }
@@ -971,8 +990,7 @@ bool SearchDataClausePath::toNativeQuery(Rcl::Db &db, void *p)
 
 	string sterm;
 	vector<string> exp;
-	if (!expandTerm(db, m_reason, 
-			SDCM_NOSTEMMING|SDCM_CASESENS|SDCM_DIACSENS,
+	if (!expandTerm(db, m_reason, SDCM_PATHELT,
 			*pit, exp, sterm, wrap_prefix(pathelt_prefix))) {
 	    return false;
 	}

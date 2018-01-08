@@ -376,7 +376,7 @@ class Db {
      *        in the TermMatchResult header
      */
     enum MatchType {ET_NONE=0, ET_WILD=1, ET_REGEXP=2, ET_STEM=3, 
-		    ET_DIACSENS=8, ET_CASESENS=16, ET_SYNEXP=32};
+		    ET_DIACSENS=8, ET_CASESENS=16, ET_SYNEXP=32, ET_PATHELT=64};
     int matchTypeTp(int tp) 
     {
 	return tp & 7;
