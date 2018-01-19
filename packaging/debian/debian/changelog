@@ -1,3 +1,9 @@
+recoll (1.23.7-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * Fix ennoying bug in dir filtering with upper-case names
+    
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 08 Jan 2018 22:18:00 +0100
+
 recoll (1.23.6-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * Make sure new indexes are created in Chert format, even with Xapian 1.4

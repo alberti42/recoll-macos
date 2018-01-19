@@ -6,7 +6,7 @@
 
 PPA_KEYID=D38B9201
 
-RCLVERS=1.23.6
+RCLVERS=1.23.7
 SCOPEVERS=1.20.2.4
 PPAVERS=1
 
@@ -47,7 +47,7 @@ debdir=debian
 # No new releases for trusty either because of risk of kio compat (kio
 # wont build)
 series="xenial zesty artful bionic"
-series="zesty artful bionic"
+series=
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -79,7 +79,7 @@ done
 ### KIO. Does not build on trusty from recoll 1.23 because of the need
 ### for c++11
 series="xenial zesty artful bionic"
-series="zesty artful bionic"
+#series="zesty artful bionic"
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -107,7 +107,7 @@ for svers in $series ; do
           < ${debdir}/changelog > $topdir/debian/changelog ;
   (cd $topdir;debuild -k$PPA_KEYID -S -sa) || exit 1
 
-  dput $PPANAME kio-recoll_${RCLVERS}-0~ppa${PPAVERS}~${svers}1_source.changes
+  dput $PPANAME kio-recoll_${RCLVERS}-1~ppa${PPAVERS}~${svers}1_source.changes
 
 done
 
