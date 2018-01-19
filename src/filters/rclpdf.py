@@ -86,9 +86,10 @@ class PDFExtractor:
         self.pdftotext = rclexecm.which("pdftotext")
         if not self.pdftotext:
             self.pdftotext = rclexecm.which("poppler/pdftotext")
-            # No need for anything else. openfile() will return an
-            # error at once
-            return
+            if not self.pdftotext:
+                # No need for anything else. openfile() will return an
+                # error at once
+                return
 
         cf = rclconfig.RclConfig()
         self.confdir = cf.getConfDir()
@@ -98,7 +99,6 @@ class PDFExtractor:
         # (xmltag,rcltag) pairs
         self.extrameta = cf.getConfParam("pdfextrameta")
         if self.extrameta:
-            self.extrametafix = cf.getConfParam("pdfextrametafix")
             self._initextrameta()
 
         # Check if we need to escape portions of text where old
@@ -179,16 +179,7 @@ class PDFExtractor:
         self.re_xmlpacket = re.compile(r'<\?xpacket[ 	]+begin.*\?>' +
                                        r'(.*)' + r'<\?xpacket[ 	]+end',
                                        flags = re.DOTALL)
-        global EMF
-        EMF = None
-        if self.extrametafix:
-            try:
-                import imp
-                EMF = imp.load_source('pdfextrametafix', self.extrametafix)
-            except Exception as err:
-                self.em.rclog("Import extrametafix failed: %s" % err)
-                pass
-                
+
     # Extract all attachments if any into temporary directory
     def extractAttach(self):
         if self.attextractdone:
@@ -366,17 +357,17 @@ class PDFExtractor:
         return output, isempty
 
     def _metatag(self, nm, val):
-        return b"<meta name=\"" + nm + "\" content=\"" + \
+        return "<meta name=\"" + nm + "\" content=\"" + \
                self.em.htmlescape(val) + "\">"
 
     # metaheaders is a list of (nm, value) pairs
     def _injectmeta(self, html, metaheaders):
-        metatxt = b''
+        metatxt = ''
         for nm, val in metaheaders:
-            metatxt += self._metatag(nm, val) + b'\n'
+            metatxt += self._metatag(nm, val) + '\n'
         if not metatxt:
             return html
-        res = self.re_head.sub(b'<head>\n' + metatxt, html)
+        res = self.re_head.sub('<head>\n' + metatxt, html)
         #self.em.rclog("Substituted html: [%s]"%res)
         if res:
             return res
@@ -392,38 +383,30 @@ class PDFExtractor:
         return text.strip()
         # or: return reduce((lambda t,p : t+p+' '),
         #       [e.text for e in elt.iter() if e.text]).strip()
-
-
+        
     def _setextrameta(self, html):
         if not self.pdfinfo:
-            return html
+            return
 
-        emf = EMF.MetaFixer() if EMF else None
-
-        # Execute pdfinfo and extract the XML packet
         all = subprocess.check_output([self.pdfinfo, "-meta", self.filename])
+
+        # Extract the XML packet
         res = self.re_xmlpacket.search(all)
-        xml = res.group(1) if res else ''
-        #self.em.rclog("extrameta: XML: [%s]" % xml)
+        xml = ''
+        if res:
+            xml = res.group(1)
+        # self.em.rclog("extrameta: XML: [%s]" % xml)
         if not xml:
             return html
 
-        # Process the XML data
-        root = ET.fromstring(xml)
-        # Sometimes the root tag is <x:xmpmeta>, sometimes <rdf:RDF>
+        metaheaders = []
         # The namespace thing is a drag. Can't do it from the top. See
         # the stackoverflow ref above. Maybe we'd be better off just
         # walking the full tree and building the namespaces dict.
-        if root.tag.endswith('RDF'):
-            rdf = root
-        else:
-            namespaces = {'rdf' : "http://www.w3.org/1999/02/22-rdf-syntax-ns#"}
-            rdf = root.find("rdf:RDF", namespaces)
-        if rdf is None:
-            self.em.rclog("No rdf:RDF node");
-            return html
-
-        metaheaders = []
+        root = ET.fromstring(xml)
+        #self.em.rclog("NSMAP: %s"% root.nsmap)
+        namespaces = {'rdf' : "http://www.w3.org/1999/02/22-rdf-syntax-ns#"}
+        rdf = root.find("rdf:RDF", namespaces)
         #self.em.rclog("RDF NSMAP: %s"% rdf.nsmap)
         rdfdesclist = rdf.findall("rdf:Description", rdf.nsmap)
         #self.em.rclog("RDFDESC NSMAP: %s"% rdfdesc.nsmap)
@@ -436,27 +419,15 @@ class PDFExtractor:
                     # define the required namespace.
                     continue
                 if elt is not None:
-                    text = self._xmltreetext(elt).encode('UTF-8')
-                    if emf:
-                        try:
-                            text = emf.metafix(metanm, text)
-                        except:
-                            pass
-                    # Should we set empty values ?
+                    text = self._xmltreetext(elt)
                     if text:
+                        # Should we set empty values ?
                         # Can't use setfield as it only works for
                         # text/plain output at the moment.
                         metaheaders.append((rclnm, text))
         if metaheaders:
-            if emf:
-                try:
-                    emf.wrapup(metaheaders)
-                except:
-                    pass
             return self._injectmeta(html, metaheaders)
-        else:
-            return html
-        
+    
     def _selfdoc(self):
         '''Extract the text from the pdf doc (as opposed to attachment)'''
         self.em.setmimetype('text/html')
@@ -465,13 +436,13 @@ class PDFExtractor:
             eof = rclexecm.RclExecM.eofnext
         else:
             eof = rclexecm.RclExecM.noteof
-        
+            
         html = subprocess.check_output([self.pdftotext, "-htmlmeta", "-enc",
                                         "UTF-8", "-eol", "unix", "-q",
                                         self.filename, "-"])
 
         html, isempty = self._fixhtml(html)
-        #self.em.rclog("after _fixhtml: isempty %d html: \n%s" % (isempty, html))
+        #self.em.rclog("ISEMPTY: %d : data: \n%s" % (isempty, html))
 
         if isempty and self.ocrpossible:
             html = self.ocrpdf()
