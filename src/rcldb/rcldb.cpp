@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes
+/* Copyright (C) 2004-2018 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -63,10 +63,21 @@ using namespace std;
 #endif
 #include "zlibut.h"
 
+#ifndef XAPIAN_AT_LEAST
+// Added in Xapian 1.4.2. Define it here for older versions
+#define XAPIAN_AT_LEAST(A,B,C) \
+ (XAPIAN_MAJOR_VERSION > (A) || \
+ (XAPIAN_MAJOR_VERSION == (A) && \
+ (XAPIAN_MINOR_VERSION > (B) || \
+ (XAPIAN_MINOR_VERSION == (B) && XAPIAN_REVISION >= (C)))))
+#endif
+
+
 // Recoll index format version is stored in user metadata. When this change,
 // we can't open the db and will have to reindex.
 static const string cstr_RCL_IDX_VERSION_KEY("RCL_IDX_VERSION_KEY");
 static const string cstr_RCL_IDX_VERSION("1");
+static const string cstr_RCL_IDX_DESCRIPTOR_KEY("RCL_IDX_DESCRIPTOR_KEY");
 
 static const string cstr_mbreaks("rclmbreaks");
 
@@ -242,9 +253,85 @@ void Db::Native::maybeStartThreads()
 
 #endif // IDX_THREADS
 
+void Db::Native::openWrite(const string& dir, Db::OpenMode mode)
+{
+    int action = (mode == Db::DbUpd) ? Xapian::DB_CREATE_OR_OPEN :
+        Xapian::DB_CREATE_OR_OVERWRITE;
+
+    if (::access(dir.c_str(), 0) == 0) {
+        // Existing index
+        xwdb = Xapian::WritableDatabase(dir, action);
+    } else {
+        // New index. If possible, and depending on config, use a stub
+        // to force using Chert. No sense in doing this if we are
+        // storing the text anyway.
+#if XAPIAN_AT_LEAST(1,3,0) && XAPIAN_HAS_CHERT_BACKEND
+        // New Xapian with Chert support. Use Chert and the old
+        // abstract generation method, except if told otherwise by the
+        // configuration.
+        if (o_index_storedoctext) {
+            xwdb = Xapian::WritableDatabase(dir, action);
+            m_storetext = true;
+        } else {
+            // Force Chert format, don't store the text.
+            string stub = path_cat(m_rcldb->m_config->getConfDir(),
+                                   "xapian.stub");
+            FILE *fp = fopen(stub.c_str(), "w");
+            if (nullptr == fp) {
+                throw(string("Can't create ") + stub);
+            }
+            fprintf(fp, "chert %s\n", dir.c_str());
+            fclose(fp);
+            xwdb = Xapian::WritableDatabase(stub, action);
+            m_storetext = false;
+        }
+#elif ! XAPIAN_AT_LEAST(1,3,0)
+        // Old Xapian. Use the default index format and let the user
+        // decide of the abstract generation method.
+        xwdb = Xapian::WritableDatabase(dir, action);
+        m_storetext = o_index_storedoctext;
+#else
+        // Newer Xapian with no Chert support. Store the text.
+        xwdb = Xapian::WritableDatabase(dir, action);
+        m_storetext = true;
+#endif
+        // Set the storetext value inside the index descriptor (new
+        // with recoll 1.24, maybe we'll have other stuff to store in
+        // there in the future).
+        string desc = string("storetext=") + (m_storetext ? "1" : "0") + "\n";
+        xwdb.set_metadata(cstr_RCL_IDX_DESCRIPTOR_KEY, desc);
+    }
+    
+    // If the index is empty, write the data format version at once
+    // to avoid stupid error messages:
+    if (xwdb.get_doccount() == 0) {
+        xwdb.set_metadata(cstr_RCL_IDX_VERSION_KEY, cstr_RCL_IDX_VERSION);
+    }
+
+    m_iswritable = true;
+
+#ifdef IDX_THREADS
+    maybeStartThreads();
+#endif
+}
+
+void Db::Native::openRead(const string& dir)
+{
+    m_iswritable = false;
+    xrdb = Xapian::Database(dir);
+    string desc = xrdb.get_metadata(cstr_RCL_IDX_DESCRIPTOR_KEY);
+    ConfSimple cf(desc, 1);
+    string val;
+    m_storetext = false;
+    if (cf.get("storetext", val) && stringToBool(val)) {
+        m_storetext = true;
+    }
+    LOGDEB("Db::openRead: index " << (m_storetext?"stores":"does not store") <<
+           " document text\n");
+}
+
 /* See comment in class declaration: return all subdocuments of a
- * document given by its unique id. 
-*/
+ * document given by its unique id. */
 bool Db::Native::subDocs(const string &udi, int idxi, 
 			 vector<Xapian::docid>& docids) 
 {
@@ -782,6 +869,7 @@ vector<string> Db::getStemmerNames()
     return res;
 }
 
+
 bool Db::open(OpenMode mode, OpenError *error)
 {
     if (error)
@@ -808,63 +896,28 @@ bool Db::open(OpenMode mode, OpenError *error)
 	switch (mode) {
 	case DbUpd:
 	case DbTrunc: 
-	    {
-		int action = (mode == DbUpd) ? Xapian::DB_CREATE_OR_OPEN :
-		    Xapian::DB_CREATE_OR_OVERWRITE;
-                if (!o_index_storedoctext && ::access(dir.c_str(), 0) != 0) {
-                    // New index. use a stub to force using Chert. No
-                    // sense in doing this if we are storing the text
-                    // anyway.
-                    string stub = path_cat(m_config->getConfDir(),
-                                           "xapian.stub");
-                    FILE *fp = fopen(stub.c_str(), "w");
-                    if (nullptr == fp) {
-                        throw(string("Can't create ") + stub);
-                    }
-                    fprintf(fp, "chert %s\n", dir.c_str());
-                    fclose(fp);
-                    m_ndb->xwdb = Xapian::WritableDatabase(stub, action);
-                } else {
-                    m_ndb->xwdb = Xapian::WritableDatabase(dir, action);
-                }
-                // If db is empty, write the data format version at once
-                // to avoid stupid error messages:
-                if (m_ndb->xwdb.get_doccount() == 0)
-                    m_ndb->xwdb.set_metadata(cstr_RCL_IDX_VERSION_KEY, 
-                                             cstr_RCL_IDX_VERSION);
-		m_ndb->m_iswritable = true;
-#ifdef IDX_THREADS
-		m_ndb->maybeStartThreads();
-#endif
-		// We used to open a readonly object in addition to
-		// the r/w one because some operations were faster
-		// when performed through a Database: no forced
-		// flushes on allterms_begin(), used in
-		// subDocs(). This issue has been gone for a long time
-                // (now: Xapian 1.2) and the separate objects seem to
-                // trigger other Xapian issues, so the query db is now
-                // a clone of the update one.
-		m_ndb->xrdb = m_ndb->xwdb;
-		LOGDEB("Db::open: lastdocid: " << m_ndb->xwdb.get_lastdocid() <<
-                       "\n");
-                LOGDEB2("Db::open: resetting updated\n");
-                updated.resize(m_ndb->xwdb.get_lastdocid() + 1);
-                for (unsigned int i = 0; i < updated.size(); i++)
-                    updated[i] = false;
-	    }
+            m_ndb->openWrite(dir, mode);
+            updated = vector<bool>(m_ndb->xwdb.get_lastdocid() + 1, false);
+            // We used to open a readonly object in addition to the
+            // r/w one because some operations were faster when
+            // performed through a Database: no forced flushes on
+            // allterms_begin(), used in subDocs(). This issue has
+            // been gone for a long time (now: Xapian 1.2) and the
+            // separate objects seem to trigger other Xapian issues,
+            // so the query db is now a clone of the update one.
+            m_ndb->xrdb = m_ndb->xwdb;
+            LOGDEB("Db::open: lastdocid: " <<m_ndb->xwdb.get_lastdocid()<<"\n");
 	    break;
 	case DbRO:
 	default:
-	    m_ndb->m_iswritable = false;
-	    m_ndb->xrdb = Xapian::Database(dir);
-	    for (vector<string>::iterator it = m_extraDbs.begin();
-		 it != m_extraDbs.end(); it++) {
+            m_ndb->openRead(dir);
+            for (auto& db : m_extraDbs) {
 		if (error)
 		    *error = DbOpenExtraDb;
-		LOGDEB("Db::Open: adding query db [" << &(*it) << "]\n");
+		LOGDEB("Db::Open: adding query db [" << &db << "]\n");
                 // An error here used to be non-fatal (1.13 and older)
                 // but I can't see why
-                m_ndb->xrdb.add_database(Xapian::Database(*it));
+                m_ndb->xrdb.add_database(Xapian::Database(db));
 	    }
 	    break;
 	}
@@ -1489,7 +1542,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	    LOGDEB("Db::addOrUpdate: split failed for main text\n");
         } else {
 #if defined(RAWTEXT_IN_METADATA)
-            if (o_index_storedoctext) {
+            if (m_ndb->m_storetext) {
                 ZLibUtBuf buf;
                 deflateToBuf(doc.text.c_str(), doc.text.size(), buf);
                 rawztext.assign(buf.getBuf(), buf.getCnt());
@@ -1707,7 +1760,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	}
 
 #ifdef RAWTEXT_IN_DATA
-        if (o_index_storedoctext) {
+        if (m_ndb->m_storetext) {
             RECORD_APPEND(record, string("RAWTEXT"),
                           neutchars(doc.text, cstr_nc));
         }

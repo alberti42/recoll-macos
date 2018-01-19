@@ -92,6 +92,7 @@ class Db::Native {
     bool m_isopen;
     bool m_iswritable;
     bool m_noversionwrite; //Set if open failed because of version mismatch!
+    bool m_storetext{false};
 #ifdef IDX_THREADS
     WorkQueue<DbUpdTask*> m_wqueue;
     std::mutex m_mutex;
@@ -112,6 +113,9 @@ class Db::Native {
     friend void *DbUpdWorker(void*);
 #endif // IDX_THREADS
 
+    void openWrite(const std::string& dir, Db::OpenMode mode);
+    void openRead(const string& dir);
+    
     // Final steps of doc update, part which need to be single-threaded
     bool addOrUpdateWrite(const string& udi, const string& uniterm, 
 			  Xapian::Document *doc, size_t txtlen
