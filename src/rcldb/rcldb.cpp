@@ -753,7 +753,9 @@ Db::~Db()
     LOGDEB("Db::~Db: isopen " << m_ndb->m_isopen << " m_iswritable " <<
            m_ndb->m_iswritable << "\n");
     i_close(true);
+#ifdef RCL_USE_ASPELL
     delete m_aspell;
+#endif
     delete m_config;
 }
 

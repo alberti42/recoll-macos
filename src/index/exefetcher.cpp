@@ -79,8 +79,6 @@ bool EXEDocFetcher::makesig(RclConfig* cnf, const Rcl::Doc& idoc, string& sig)
 // Lookup bckid in the config and create an appropriate fetcher.
 EXEDocFetcher *exeDocFetcherMake(RclConfig *config, const string& bckid)
 {
-    EXEDocFetcher *fetcher = 0;
-
     // The config we only read once, not gonna change.
     static ConfSimple *bconf;
     if (!bconf) {
