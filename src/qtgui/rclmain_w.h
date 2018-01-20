@@ -35,6 +35,7 @@
 #include "guiutils.h"
 #include "rclutil.h"
 
+class SnippetsW;
 class IdxSchedW;
 class ExecCmd;
 class Preview;
@@ -202,6 +203,7 @@ protected:
 
 
 private:
+    SnippetsW      *m_snippets{0};
     Preview        *curPreview;
     AdvSearch      *asearchform;
     UIPrefsDialog  *uiprefs;

@@ -58,6 +58,7 @@ using namespace std;
 #include "rclinit.h"
 #include "internfile.h"
 #include "utf8fn.h"
+#include "wipedir.h"
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"
 #endif
@@ -793,6 +794,15 @@ bool Db::open(OpenMode mode, OpenError *error)
 	case DbUpd:
 	case DbTrunc: 
 	    {
+                // Xapian is quite bad at erasing partial db which can
+                // occur because of open file deletion errors on
+                // Windows.
+                if (mode == DbTrunc) {
+                    if (path_exists(path_cat(dir, "iamchert"))) {
+                        wipedir(dir);
+                        unlink(dir.c_str());
+                    }
+                }
 		int action = (mode == DbUpd) ? Xapian::DB_CREATE_OR_OPEN :
 		    Xapian::DB_CREATE_OR_OVERWRITE;
                 if (::access(dir.c_str(), 0) != 0) {

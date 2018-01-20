@@ -29,6 +29,7 @@
 #include "rclmain_w.h"
 #include "specialindex.h"
 #include "readfile.h"
+#include "snippets_w.h"
 
 using namespace std;
 
@@ -291,8 +292,20 @@ void RclMain::toggleIndexing()
     }
 }
 
+static void delay(int millisecondsWait)
+{
+    QEventLoop loop;
+    QTimer t;
+    t.connect(&t, &QTimer::timeout, &loop, &QEventLoop::quit);
+    t.start(millisecondsWait);
+    loop.exec();
+}
+
 void RclMain::rebuildIndex()
 {
+    if (m_indexerState == IXST_UNKNOWN) {
+        delay(1500);
+    }
     switch (m_indexerState) {
     case IXST_UNKNOWN:
     case IXST_RUNNINGMINE:
@@ -313,12 +326,24 @@ void RclMain::rebuildIndex()
 					 QMessageBox::NoButton);
 	if (rep == QMessageBox::Ok) {
 #ifdef _WIN32
-            // Under windows, it's necessary to close the db here,
+            // Under windows, it is necessary to close the db here,
             // else Xapian won't be able to do what it wants with the
             // (open) files. Of course if there are several GUI
-            // instances, this won't work...
-            if (rcldb)
+            // instances, this won't work... Also it's quite difficult
+            // to make sure that there are no more references to the
+            // db because, for example of the Enquire objects inside
+            // Query inside Docsource etc.
+            //
+            // !! At this moment, this does not work if a preview has
+            // !! been opened. Could not find the reason (mysterious
+            // !! Xapian::Database reference somewhere?). The indexing
+            // !! fails, leaving a partial index directory. Then need
+            // !! to restart the GUI to succeed in reindexing.
+            if (rcldb) {
+                resetSearch();
+                deleteZ(m_snippets);
                 rcldb->close();
+            }
 #endif // _WIN32
 	    // Could also mean that no helpers are missing, but then we
 	    // won't try to show a message anyway (which is what

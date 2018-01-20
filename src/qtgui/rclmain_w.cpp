@@ -531,7 +531,7 @@ void RclMain::initDbOpen()
 	    connect(fidia.idxschedCLB, SIGNAL(clicked()), 
 		    this, SLOT(execIndexSched()));
 	    connect(fidia.runidxPB, SIGNAL(clicked()), 
-		    this, SLOT(toggleIndexing()));
+		    this, SLOT(rebuildIndex()));
 	    fidia.exec();
 	    // Don't open adv search or run cmd line search in this case.
 	    return;
@@ -788,6 +788,7 @@ void RclMain::initiateQuery()
 
 void RclMain::resetSearch()
 {
+    m_source = std::shared_ptr<DocSequence>();
     emit searchReset();
 }
 
@@ -974,8 +975,7 @@ void RclMain::docExpand(Rcl::Doc doc)
 void RclMain::showDocHistory()
 {
     LOGDEB("RclMain::showDocHistory\n");
-    emit searchReset();
-    m_source = std::shared_ptr<DocSequence>();
+    resetSearch();
     curPreview = 0;
 
     string reason;
