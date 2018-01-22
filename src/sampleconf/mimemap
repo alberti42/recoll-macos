@@ -179,6 +179,8 @@
 .xcf  = image/x-xcf
 .bmp = image/bmp
 .xpm = image/x-xpmi
+.nef = image/x-nikon-nef
+.nrw = image/x-nikon-nef
 
 .fb2 = text/x-fictionbook
 

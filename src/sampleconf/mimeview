@@ -115,6 +115,7 @@ image/x-xcf = gimp %f
 image/bmp = gwenview %f
 image/x-ms-bmp = gwenview %f
 image/x-xpmi = gwenview %f
+image/x-nikon-nef = ufraw %f
 
 # Opening mail messages not always works. 
 #  - Thunderbird will only open a single-message file if it has an .eml
