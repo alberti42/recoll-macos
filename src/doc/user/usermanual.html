@@ -265,6 +265,9 @@ alink="#0000FF">
             <dd>
               <dl>
                 <dt><span class="sect2">3.6.1. <a href=
+                "#RCL.SEARCH.LANG.RANGES">Range
+                clauses</a></span></dt>
+                <dt><span class="sect2">3.6.2. <a href=
                 "#RCL.SEARCH.LANG.MODIFIERS">Modifiers</a></span></dt>
               </dl>
             </dd>
@@ -4089,7 +4092,7 @@ alink="#0000FF">
                     set.</p>
                   </li>
                   <li class="listitem">
-                    <p><b>%t.&nbsp;</b>Title.</p>
+                    <p><b>%t.&nbsp;</b>Title or empty.</p>
                   </li>
                   <li class="listitem">
                     <p><b>%U.&nbsp;</b>Url</p>
@@ -4639,7 +4642,7 @@ alink="#0000FF">
         <p>Modifiers can be set on a double-quote value, for
         example to specify a proximity search (unordered). See
         <a class="link" href="#RCL.SEARCH.LANG.MODIFIERS" title=
-        "3.6.1.&nbsp;Modifiers">the modifier section</a>. No space
+        "3.6.2.&nbsp;Modifiers">the modifier section</a>. No space
         must separate the final double-quote and the modifiers
         value, e.g. <em class="replaceable"><code>"two
         one"po10</code></em></p>
@@ -4895,9 +4898,46 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
+                <h3 class="title"><a name="RCL.SEARCH.LANG.RANGES"
+                id="RCL.SEARCH.LANG.RANGES"></a>3.6.1.&nbsp;Range
+                clauses</h3>
+              </div>
+            </div>
+          </div>
+          <p><span class="application">Recoll</span> 1.24 and later
+          support range clauses on fields which have been
+          configured to support it. No default field uses them
+          currently, so this paragraph is only interesting if you
+          modified the fields configuration and possibly use a
+          custom input handler.</p>
+          <p>A range clause looks like one of the following:</p>
+          <pre class="programlisting"><em class=
+          "replaceable"><code>myfield</code></em>:<em class=
+          "replaceable"><code>small</code></em>..<em class=
+          "replaceable"><code>big</code></em>
+<em class="replaceable"><code>myfield</code></em>:<em class=
+"replaceable"><code>small</code></em>..
+<em class="replaceable"><code>myfield</code></em>:..<em class=
+"replaceable"><code>big</code></em>
+        </pre>
+          <p>The nature of the clause is indicated by the two dots
+          <code class="literal">..</code>, and the effect is to
+          filter the results for which the <em class=
+          "replaceable"><code>myfield</code></em> value is in the
+          possibly open-ended interval.</p>
+          <p>See the section about the <a class="link" href=
+          "#RCL.INSTALL.CONFIG.FIELDS" title=
+          "6.4.3.&nbsp;The fields file"><code class=
+          "filename">fields</code> configuration file</a> for the
+          details of configuring a field for range searches.</p>
+        </div>
+        <div class="sect2">
+          <div class="titlepage">
+            <div>
+              <div>
                 <h3 class="title"><a name=
                 "RCL.SEARCH.LANG.MODIFIERS" id=
-                "RCL.SEARCH.LANG.MODIFIERS"></a>3.6.1.&nbsp;Modifiers</h3>
+                "RCL.SEARCH.LANG.MODIFIERS"></a>3.6.2.&nbsp;Modifiers</h3>
               </div>
             </div>
           </div>
@@ -5937,6 +5977,12 @@ alink="#0000FF">
         and other aspects of fields handling is defined inside the
         <code class="filename">fields</code> configuration
         file.</p>
+        <p>Some fields may also designated as supporting range
+        queries, meaning that the results may be selected for an
+        interval of its values. See the <a class="link" href=
+        "#RCL.INSTALL.CONFIG.FIELDS" title=
+        "6.4.3.&nbsp;The fields file">configuration section</a> for
+        more details.</p>
         <p>The sequence of events for field processing is as
         follows:</p>
         <div class="itemizedlist">
@@ -9133,6 +9179,17 @@ for i in range(nres):
                 by a standard recoll installation. In a nutshell:
                 extension prefixes should be all caps, begin with
                 XY, and short. E.g. XYMFLD.</p>
+              </dd>
+              <dt><span class="term">[calues]</span></dt>
+              <dd>
+                <p>Fields listed in this section will be stored as
+                <span class="application">Xapian</span>
+                <code class="literal">values</code> inside the
+                index. This makes them available for range queries,
+                allowing to filter results according to the field
+                value. This feature currently supports string and
+                integer data. See the comments in the file for more
+                detail</p>
               </dd>
               <dt><span class="term">[stored]</span></dt>
               <dd>
