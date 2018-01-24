@@ -41,9 +41,8 @@ namespace Rcl {
 
 /** Search clause types */
 enum SClType {
-    SCLT_AND, 
-    SCLT_OR, SCLT_FILENAME, SCLT_PHRASE, SCLT_NEAR, SCLT_PATH,
-    SCLT_SUB
+    SCLT_AND, SCLT_OR, SCLT_FILENAME, SCLT_PHRASE, SCLT_NEAR,
+    SCLT_PATH, SCLT_RANGE, SCLT_SUB,
 };
 
 class SearchDataClause;
@@ -79,16 +78,14 @@ class SearchDataClauseDist;
 class SearchData {
 public:
     SearchData(SClType tp, const string& stemlang) 
-	: m_tp(tp), m_stemlang(stemlang)
-    {
-	if (m_tp != SCLT_OR && m_tp != SCLT_AND) 
-	    m_tp = SCLT_OR;
-	commoninit();
+        : m_tp(tp), m_stemlang(stemlang) {
+        if (m_tp != SCLT_OR && m_tp != SCLT_AND) 
+            m_tp = SCLT_OR;
+        commoninit();
     }
     SearchData() 
-	: m_tp(SCLT_AND)
-    {
-	commoninit();
+        : m_tp(SCLT_AND) {
+        commoninit();
     }
     
     ~SearchData();
@@ -110,7 +107,7 @@ public:
      * user terms in order will have higher relevance. This must be called 
      * before toNativeQuery().
      * @param threshold: don't use terms more frequent than the value 
-     *     (proportion of docs where they occur) 	
+     *     (proportion of docs where they occur)        
      */
     bool maybeAddAutoPhrase(Rcl::Db &db, double threshold);
 
@@ -142,21 +139,19 @@ public:
     void setDescription(const std::string& d) {m_description = d;}
 
     /** Return an XML version of the contents, for storage in search history
-	by the GUI */
+        by the GUI */
     string asXML();
 
-    void setTp(SClType tp) 
-    {
-	m_tp = tp;
+    void setTp(SClType tp) {
+        m_tp = tp;
     }
 
     SClType getTp() {
         return m_tp;
     }
     
-    void setMaxExpand(int max)
-    {
-	m_softmaxexpand = max;
+    void setMaxExpand(int max) {
+        m_softmaxexpand = max;
     }
     bool getAutoDiac() {return m_autodiacsens;}
     bool getAutoCase() {return m_autocasesens;}
@@ -217,8 +212,8 @@ private:
 
     bool expandFileTypes(Rcl::Db &db, std::vector<std::string>& exptps);
     bool clausesToQuery(Rcl::Db &db, SClType tp,     
-			std::vector<SearchDataClause*>& query,
-			string& reason, void *d);
+                        std::vector<SearchDataClause*>& query,
+                        string& reason, void *d);
     void commoninit();
 
     /* Copyconst and assignment private and forbidden */
@@ -229,9 +224,9 @@ private:
 class SearchDataClause {
 public:
     enum Modifier {SDCM_NONE=0, SDCM_NOSTEMMING=0x1, SDCM_ANCHORSTART=0x2,
-		   SDCM_ANCHOREND=0x4, SDCM_CASESENS=0x8, SDCM_DIACSENS=0x10,
-		   SDCM_NOTERMS=0x20, // Don't include terms for highlighting
-		   SDCM_NOSYNS = 0x40, // Don't perform synonym expansion
+                   SDCM_ANCHOREND=0x4, SDCM_CASESENS=0x8, SDCM_DIACSENS=0x10,
+                   SDCM_NOTERMS=0x20, // Don't include terms for highlighting
+                   SDCM_NOSYNS = 0x40, // Don't perform synonym expansion
                    // Aargh special case. pathelts are case/diac-sensitive
                    // even in a stripped index
                    SDCM_PATHELT = 0x80, 
@@ -239,70 +234,57 @@ public:
     enum Relation {REL_CONTAINS, REL_EQUALS, REL_LT, REL_LTE, REL_GT, REL_GTE};
 
     SearchDataClause(SClType tp) 
-    : m_tp(tp), m_parentSearch(0), m_haveWildCards(0), 
-      m_modifiers(SDCM_NONE), m_weight(1.0), m_exclude(false), 
-      m_rel(REL_CONTAINS)
-    {}
+        : m_tp(tp), m_parentSearch(0), m_haveWildCards(0), 
+          m_modifiers(SDCM_NONE), m_weight(1.0), m_exclude(false), 
+          m_rel(REL_CONTAINS) {}
     virtual ~SearchDataClause() {}
     virtual bool toNativeQuery(Rcl::Db &db, void *) = 0;
     bool isFileName() const {return m_tp == SCLT_FILENAME ? true: false;}
     virtual std::string getReason() const {return m_reason;}
     virtual void getTerms(HighlightData&) const {}
 
-    SClType getTp() const
-    {
-	return m_tp;
+    SClType getTp() const {
+        return m_tp;
     }
     void setTp(SClType tp) {
         m_tp = tp;
     }
-    void setParent(SearchData *p) 
-    {
-	m_parentSearch = p;
+    void setParent(SearchData *p) {
+        m_parentSearch = p;
     }
-    string getStemLang() 
-    {
-	return (m_modifiers & SDCM_NOSTEMMING) || m_parentSearch == 0 ? 
-	    cstr_null : m_parentSearch->getStemLang();
+    string getStemLang() {
+        return (m_modifiers & SDCM_NOSTEMMING) || m_parentSearch == 0 ? 
+            cstr_null : m_parentSearch->getStemLang();
     }
-    bool getAutoDiac()
-    {
-	return m_parentSearch ? m_parentSearch->getAutoDiac() : false;
+    bool getAutoDiac() {
+        return m_parentSearch ? m_parentSearch->getAutoDiac() : false;
     }
-    bool getAutoCase()
-    {
-	return m_parentSearch ? m_parentSearch->getAutoCase() : true;
+    bool getAutoCase() {
+        return m_parentSearch ? m_parentSearch->getAutoCase() : true;
     }
-    int getMaxExp() 
-    {
-	return m_parentSearch ? m_parentSearch->getMaxExp() : 10000;
+    int getMaxExp() {
+        return m_parentSearch ? m_parentSearch->getMaxExp() : 10000;
     }
-    size_t getMaxCl() 
-    {
-	return m_parentSearch ? m_parentSearch->getMaxCl() : 100000;
+    size_t getMaxCl() {
+        return m_parentSearch ? m_parentSearch->getMaxCl() : 100000;
     }
-    int getSoftMaxExp() 
-    {
-	return m_parentSearch ? m_parentSearch->getSoftMaxExp() : -1;
+    int getSoftMaxExp() {
+        return m_parentSearch ? m_parentSearch->getSoftMaxExp() : -1;
     }
-    virtual void addModifier(Modifier mod) 
-    {
-	m_modifiers = m_modifiers | mod;
+    virtual void addModifier(Modifier mod) {
+        m_modifiers = m_modifiers | mod;
     }
     virtual unsigned int getmodifiers() {
-	return m_modifiers;
+        return m_modifiers;
     }
-    virtual void setWeight(float w) 
-    {
-	m_weight = w;
+    virtual void setWeight(float w) {
+        m_weight = w;
     }
-    virtual bool getexclude() const
-    {
-	return m_exclude;
+    virtual bool getexclude() const {
+        return m_exclude;
     }
-    virtual void setexclude(bool onoff)
-    {
-	m_exclude = onoff;
+    virtual void setexclude(bool onoff) {
+        m_exclude = onoff;
     }
     virtual void setrel(Relation rel) {
         m_rel = rel;
@@ -322,15 +304,6 @@ protected:
     float       m_weight;
     bool        m_exclude;
     Relation    m_rel;
-
-private:
-    SearchDataClause(const SearchDataClause&) 
-    {
-    }
-    SearchDataClause& operator=(const SearchDataClause&) 
-    {
-	return *this;
-    }
 };
 
 /**
@@ -341,37 +314,30 @@ class TermProcQ;
 class SearchDataClauseSimple : public SearchDataClause {
 public:
     SearchDataClauseSimple(SClType tp, const std::string& txt, 
-			   const std::string& fld = std::string())
-	: SearchDataClause(tp), m_text(txt), m_field(fld), m_curcl(0)
-    {
-	m_haveWildCards = 
-	    (txt.find_first_of(cstr_minwilds) != std::string::npos);
+                           const std::string& fld = std::string())
+        : SearchDataClause(tp), m_text(txt), m_field(fld), m_curcl(0) {
+        m_haveWildCards = 
+            (txt.find_first_of(cstr_minwilds) != std::string::npos);
     }
     SearchDataClauseSimple(const std::string& txt, SClType tp)
-	: SearchDataClause(tp), m_text(txt), m_curcl(0)
-    {
-	m_haveWildCards = 
-	    (txt.find_first_of(cstr_minwilds) != std::string::npos);
+        : SearchDataClause(tp), m_text(txt), m_curcl(0) {
+        m_haveWildCards = 
+            (txt.find_first_of(cstr_minwilds) != std::string::npos);
     }
 
-    virtual ~SearchDataClauseSimple() 
-    {
-    }
+    virtual ~SearchDataClauseSimple() {}
 
     /** Translate to Xapian query */
     virtual bool toNativeQuery(Rcl::Db &, void *);
 
-    virtual void getTerms(HighlightData& hldata) const
-    {
-	hldata.append(m_hldata);
+    virtual void getTerms(HighlightData& hldata) const {
+        hldata.append(m_hldata);
     }
-    virtual const std::string& gettext() 
-    {
-	return m_text;
+    virtual const std::string& gettext() const {
+        return m_text;
     }
-    virtual const std::string& getfield() 
-    {
-	return m_field;
+    virtual const std::string& getfield() const {
+        return m_field;
     }
     virtual void setfield(const string& field) {
         m_field = field;
@@ -384,22 +350,49 @@ protected:
     HighlightData m_hldata;
     // Current count of Xapian clauses, to check against expansion limit
     size_t  m_curcl;
+
     bool processUserString(Rcl::Db &db, const string &iq,
-			   std::string &ermsg,
-			   void* pq, int slack = 0, bool useNear = false);
+                           std::string &ermsg,
+                           void* pq, int slack = 0, bool useNear = false);
     bool expandTerm(Rcl::Db &db, std::string& ermsg, int mods, 
-		    const std::string& term, 
-		    std::vector<std::string>& exp, 
+                    const std::string& term, 
+                    std::vector<std::string>& exp, 
                     std::string& sterm, const std::string& prefix,
-		    std::vector<std::string>* multiwords = 0);
+                    std::vector<std::string>* multiwords = 0);
     // After splitting entry on whitespace: process non-phrase element
     void processSimpleSpan(Rcl::Db &db, string& ermsg, const string& span, 
-			   int mods, void *pq);
+                           int mods, void *pq);
     // Process phrase/near element
     void processPhraseOrNear(Rcl::Db &db, string& ermsg, TermProcQ *splitData, 
-			     int mods, void *pq, bool useNear, int slack);
+                             int mods, void *pq, bool useNear, int slack);
 };
 
+class SearchDataClauseRange : public SearchDataClauseSimple {
+public:
+    SearchDataClauseRange(const std::string& t1, const std::string& t2, 
+                          const std::string& fld = std::string())
+        : SearchDataClauseSimple(SCLT_RANGE, t1, fld), m_t2(t2) {}
+
+    // This is for 'upgrading' a clauseSimple with eq/gt/lt... rel to
+    // a range. Either of t1 or t2 or both can be set to the original
+    // text, which is why they are passed as separate parameters
+    SearchDataClauseRange(const SearchDataClauseSimple& cl,
+                          const std::string& t1, const std::string& t2)
+        : SearchDataClauseSimple(cl) {
+        m_text = t1;
+        m_t2 = t2;
+    }
+    virtual ~SearchDataClauseRange() {}
+
+    virtual void dump(ostream& o) const;
+    virtual const std::string& gettext2() const {
+        return m_t2;
+    }
+    virtual bool toNativeQuery(Rcl::Db &db, void *);
+
+protected:
+    std::string  m_t2;
+};
 
 /** 
  * Filename search clause. This is special because term expansion is only
@@ -412,15 +405,12 @@ protected:
 class SearchDataClauseFilename : public SearchDataClauseSimple {
 public:
     SearchDataClauseFilename(const std::string& txt)
-	: SearchDataClauseSimple(txt, SCLT_FILENAME)
-    {
-	// File name searches don't count when looking for wild cards.
-	m_haveWildCards = false;
+        : SearchDataClauseSimple(txt, SCLT_FILENAME) {
+        // File name searches don't count when looking for wild cards.
+        m_haveWildCards = false;
     }
 
-    virtual ~SearchDataClauseFilename() 
-    {
-    }
+    virtual ~SearchDataClauseFilename() {}
 
     virtual bool toNativeQuery(Rcl::Db &, void *);
     virtual void dump(ostream& o) const;
@@ -450,15 +440,12 @@ public:
 class SearchDataClausePath : public SearchDataClauseSimple {
 public:
     SearchDataClausePath(const std::string& txt, bool excl = false)
-	: SearchDataClauseSimple(SCLT_PATH, txt, "dir")
-    {
-	m_exclude = excl;
-	m_haveWildCards = false;
+        : SearchDataClauseSimple(SCLT_PATH, txt, "dir") {
+        m_exclude = excl;
+        m_haveWildCards = false;
     }
 
-    virtual ~SearchDataClausePath() 
-    {
-    }
+    virtual ~SearchDataClausePath() {}
 
     virtual bool toNativeQuery(Rcl::Db &, void *);
     virtual void dump(ostream& o) const;
@@ -471,19 +458,14 @@ public:
 class SearchDataClauseDist : public SearchDataClauseSimple {
 public:
     SearchDataClauseDist(SClType tp, const std::string& txt, int slack, 
-			 const std::string& fld = std::string())
-	: SearchDataClauseSimple(tp, txt, fld), m_slack(slack)
-    {
-    }
+                         const std::string& fld = std::string())
+        : SearchDataClauseSimple(tp, txt, fld), m_slack(slack) {}
 
-    virtual ~SearchDataClauseDist() 
-    {
-    }
+    virtual ~SearchDataClauseDist() {}
 
     virtual bool toNativeQuery(Rcl::Db &, void *);
-    virtual int getslack() const
-    {
-	return m_slack;
+    virtual int getslack() const {
+        return m_slack;
     }
     virtual void setslack(int slack) {
         m_slack = slack;
@@ -497,20 +479,16 @@ private:
 class SearchDataClauseSub : public SearchDataClause {
 public:
     SearchDataClauseSub(std::shared_ptr<SearchData> sub) 
-	: SearchDataClause(SCLT_SUB), m_sub(sub) 
-    {
-    }
-    virtual bool toNativeQuery(Rcl::Db &db, void *p)
-    {
-	bool ret = m_sub->toNativeQuery(db, p);
-	if (!ret) 
-	    m_reason = m_sub->getReason();
-	return ret;
+        : SearchDataClause(SCLT_SUB), m_sub(sub) {}
+    virtual bool toNativeQuery(Rcl::Db &db, void *p) {
+        bool ret = m_sub->toNativeQuery(db, p);
+        if (!ret) 
+            m_reason = m_sub->getReason();
+        return ret;
     }
 
-    virtual void getTerms(HighlightData& hldata) const
-    {
-	m_sub.get()->getTerms(hldata);
+    virtual void getTerms(HighlightData& hldata) const {
+        m_sub.get()->getTerms(hldata);
     }
     virtual std::shared_ptr<SearchData> getSub() {
         return m_sub;

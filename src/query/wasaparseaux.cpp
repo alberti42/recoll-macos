@@ -182,7 +182,8 @@ bool WasaParserDriver::addClause(SearchData *sd,
             delete cl;
             return false;
         }
-        LOGDEB("addClause:: date span:  "  << (di.y1) << "-"  << (di.m1) << "-"  << (di.d1) << "/"  << (di.y2) << "-"  << (di.m2) << "-"  << (di.d2) << "\n" );
+        LOGDEB("addClause:: date span:  " << di.y1 << "-" << di.m1 << "-"
+               << di.d1 << "/" << di.y2 << "-" << di.m2 << "-" << di.d2 << "\n");
         m_haveDates = true;
         m_dates = di;
         delete cl;

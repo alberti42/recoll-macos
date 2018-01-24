@@ -13,7 +13,7 @@
 
 using namespace std;
 
-// #define LOG_PARSER
+//#define LOG_PARSER
 #ifdef LOG_PARSER
 #define LOGP(X) {cerr << X;}
 #else
@@ -45,6 +45,7 @@ static void addSubQuery(WasaParserDriver *d,
 
 %union {
     std::string *str;
+    Rcl::SearchDataClauseRange *rg;
     Rcl::SearchDataClauseSimple *cl;
     Rcl::SearchData *sd;
 }
@@ -52,6 +53,7 @@ static void addSubQuery(WasaParserDriver *d,
 
 %type <cl> qualquote
 %type <cl> fieldexpr
+%type <rg> range
 %type <cl> term
 %type <sd> query
 %type <str> complexfieldname
@@ -64,7 +66,7 @@ static void addSubQuery(WasaParserDriver *d,
 %left AND UCONCAT '(' '-'
 %left OR
 
-%token EQUALS CONTAINS SMALLEREQ SMALLER GREATEREQ GREATER
+%token EQUALS CONTAINS SMALLEREQ SMALLER GREATEREQ GREATER RANGE
 
 %%
 
@@ -154,9 +156,17 @@ fieldexpr: term
     $$ = $3;
     delete $1;
 }
+| complexfieldname CONTAINS range
+{
+    LOGP("fe: " << *$1 << " : " << $3->gettext() << endl);
+    $3->setfield(*$1);
+    $3->setrel(Rcl::SearchDataClause::REL_CONTAINS);
+    $$ = $3;
+    delete $1;
+}
 | complexfieldname SMALLER term 
 {
-    LOGP(cerr << "fe: " << *$1 << " < " << $3->gettext() << endl);
+    LOGP("fe: " << *$1 << " < " << $3->gettext() << endl);
     $3->setfield(*$1);
     $3->setrel(Rcl::SearchDataClause::REL_LT);
     $$ = $3;
@@ -209,6 +219,30 @@ complexfieldname CONTAINS WORD
     delete $1;
     delete $3;
 }
+
+range:
+WORD RANGE WORD
+{
+    LOGP("Range: " << *$1 << string(" .. ") << *$3 << endl);
+    $$ = new Rcl::SearchDataClauseRange(*$1, *$3);
+    delete $1;
+    delete $3;
+}
+|
+RANGE WORD
+{
+    LOGP("Range: " << "" << string(" .. ") << *$2 << endl);
+    $$ = new Rcl::SearchDataClauseRange("", *$2);
+    delete $2;
+}
+|
+WORD RANGE
+{
+    LOGP("Range: " << *$1 << string(" .. ") << "" << endl);
+    $$ = new Rcl::SearchDataClauseRange(*$1, "");
+    delete $1;
+}
+;
 
 term: 
 WORD
@@ -389,7 +423,7 @@ int yylex(yy::parser::semantic_type *yylval, yy::parser::location_type *,
         return c;
     }
 
-    // field-term relations
+    // field-term relations, and ranges
     switch (c) {
     case '=': return yy::parser::token::EQUALS;
     case ':': return yy::parser::token::CONTAINS;
@@ -400,6 +434,15 @@ int yylex(yy::parser::semantic_type *yylval, yy::parser::location_type *,
         } else {
             d->UNGETCHAR(c1);
             return yy::parser::token::SMALLER;
+        }
+    }
+    case '.': {
+        int c1 = d->GETCHAR();
+        if (c1 == '.') {
+            return yy::parser::token::RANGE;
+        } else {
+            d->UNGETCHAR(c1);
+            break;
         }
     }
     case '>': {
@@ -430,6 +473,16 @@ int yylex(yy::parser::semantic_type *yylval, yy::parser::location_type *,
             //cerr << "Word broken by special char" << endl;
             d->UNGETCHAR(c);
             break;
+        } else if (c == '.') {
+            int c1 = d->GETCHAR();
+            if (c1 == '.') {
+                d->UNGETCHAR(c1);
+                d->UNGETCHAR(c);
+                break;
+            } else {
+                d->UNGETCHAR(c1);
+                word->push_back(c);
+            }
         } else if (c == 0) {
             //cerr << "Word broken by EOF" << endl;
             break;

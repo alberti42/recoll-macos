@@ -348,6 +348,14 @@ void SearchDataClausePath::dump(ostream& o) const
     o << "[" << m_text << "]";
 }
 
+void SearchDataClauseRange::dump(ostream& o) const
+{
+    o << "ClauseRange: ";
+    if (m_exclude)
+        o << " - ";
+    o << "[" << gettext() << "]";
+}
+
 void SearchDataClauseDist::dump(ostream& o) const
 {
     if (m_tp == SCLT_NEAR)

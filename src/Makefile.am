@@ -165,6 +165,8 @@ rcldb/rclquery.cpp \
 rcldb/rclquery.h \
 rcldb/rclquery_p.h \
 rcldb/rclterms.cpp \
+rcldb/rclvalues.cpp \
+rcldb/rclvalues.h \
 rcldb/searchdata.cpp \
 rcldb/searchdata.h \
 rcldb/searchdatatox.cpp \

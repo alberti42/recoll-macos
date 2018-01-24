@@ -59,6 +59,7 @@ private:
     {
 	currentText = whatclause = "";
 	text.clear();
+        text2.clear();
 	field.clear();
 	slack = 0;
 	d = m = y = di.d1 = di.m1 = di.y1 = di.d2 = di.m2 = di.y2 = 0;
@@ -69,7 +70,7 @@ private:
     // Temporary data while parsing.
     QString currentText;
     QString whatclause;
-    string field, text;
+    string field, text, text2;
     int slack;
     int d, m, y;
     DateInterval di;
@@ -120,6 +121,8 @@ bool SDHXMLHandler::endElement(const QString & /* namespaceURI */,
 	field = base64_decode(qs2utf8s(currentText.trimmed()));
     } else if (qName == "T") {
 	text = base64_decode(qs2utf8s(currentText.trimmed()));
+    } else if (qName == "T2") {
+	text2 = base64_decode(qs2utf8s(currentText.trimmed()));
     } else if (qName == "S") {
 	slack = atoi((const char *)currentText.toUtf8());
     } else if (qName == "C") {
@@ -129,6 +132,9 @@ bool SDHXMLHandler::endElement(const QString & /* namespaceURI */,
 	    c->setexclude(exclude);
 	} else if (whatclause == "OR") {
 	    c = new SearchDataClauseSimple(SCLT_OR, text, field);
+	    c->setexclude(exclude);
+	} else if (whatclause == "RG") {
+	    c = new SearchDataClauseRange(text, text2, field);
 	    c->setexclude(exclude);
 	} else if (whatclause == "EX") {
 	    // Compat with old hist. We don't generete EX (SCLT_EXCL) anymore

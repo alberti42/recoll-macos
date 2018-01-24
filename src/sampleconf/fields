@@ -65,6 +65,20 @@ rclbes = XB ; noterms = 1
 # *** USE XY for beginning your local prefixes *** ie:
 # myfield = XYMYPREF
 
+[values]
+###########
+## Fields which will be stored in Xapian values, authorizing range query
+## processing.
+# Entries are specified as 'fieldname = valueslot;[px=val1;py=val2...]'.
+# Xapian value slots are 32 bits numbers. Numbers below 1000 are reserved
+# by Recoll or Xapian. Numbers above are available for user configuration
+# Values have types, which can be 'int' or 'string' at the moment. ints have
+# an additional 'len' attributes, which specifies the padding size used for
+# sorting (leading zeroes: all xapian sorting is text-based). 10 is fine
+# for an unsigned 32 bits integer.
+# myfield = 1001; type=int; len = 10
+# mystrfield = 1002; type = string
+
 [stored]
 ############################
 # Some fields are stored in the document data record inside the index and

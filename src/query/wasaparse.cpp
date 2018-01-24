@@ -1,8 +1,8 @@
-// A Bison parser, made by GNU Bison 3.0.2.
+// A Bison parser, made by GNU Bison 3.0.4.
 
 // Skeleton implementation for Bison LALR(1) parsers in C++
 
-// Copyright (C) 2002-2013 Free Software Foundation, Inc.
+// Copyright (C) 2002-2015 Free Software Foundation, Inc.
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@
 
 
 // First part of user declarations.
-#line 1 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:399
+#line 1 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:404
 
 #define YYDEBUG 1
 #include "autoconfig.h"
@@ -48,7 +48,7 @@
 
 using namespace std;
 
-// #define LOG_PARSER
+//#define LOG_PARSER
 #ifdef LOG_PARSER
 #define LOGP(X) {cerr << X;}
 #else
@@ -69,7 +69,7 @@ static void addSubQuery(WasaParserDriver *d,
 }
 
 
-#line 73 "y.tab.c" // lalr1.cc:399
+#line 73 "y.tab.c" // lalr1.cc:404
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -83,7 +83,7 @@ static void addSubQuery(WasaParserDriver *d,
 
 // User implementation prologue.
 
-#line 87 "y.tab.c" // lalr1.cc:407
+#line 87 "y.tab.c" // lalr1.cc:412
 
 
 #ifndef YY_
@@ -160,7 +160,7 @@ static void addSubQuery(WasaParserDriver *d,
 #endif // !YYDEBUG
 
 #define yyerrok         (yyerrstatus_ = 0)
-#define yyclearin       (yyempty = true)
+#define yyclearin       (yyla.clear ())
 
 #define YYACCEPT        goto yyacceptlab
 #define YYABORT         goto yyabortlab
@@ -169,7 +169,7 @@ static void addSubQuery(WasaParserDriver *d,
 
 
 namespace yy {
-#line 173 "y.tab.c" // lalr1.cc:474
+#line 173 "y.tab.c" // lalr1.cc:479
 
   /* Return YYSTR after stripping away unnecessary quotes and
      backslashes, so that it's suitable for yyerror.  The heuristic is
@@ -273,6 +273,23 @@ namespace yy {
   inline
   parser::basic_symbol<Base>::~basic_symbol ()
   {
+    clear ();
+  }
+
+  template <typename Base>
+  inline
+  void
+  parser::basic_symbol<Base>::clear ()
+  {
+    Base::clear ();
+  }
+
+  template <typename Base>
+  inline
+  bool
+  parser::basic_symbol<Base>::empty () const
+  {
+    return Base::type_get () == empty_symbol;
   }
 
   template <typename Base>
@@ -288,7 +305,7 @@ namespace yy {
   // by_type.
   inline
   parser::by_type::by_type ()
-     : type (empty)
+    : type (empty_symbol)
   {}
 
   inline
@@ -303,10 +320,17 @@ namespace yy {
 
   inline
   void
+  parser::by_type::clear ()
+  {
+    type = empty_symbol;
+  }
+
+  inline
+  void
   parser::by_type::move (by_type& that)
   {
     type = that.type;
-    that.type = empty;
+    that.clear ();
   }
 
   inline
@@ -320,7 +344,7 @@ namespace yy {
   // by_state.
   inline
   parser::by_state::by_state ()
-    : state (empty)
+    : state (empty_state)
   {}
 
   inline
@@ -330,10 +354,17 @@ namespace yy {
 
   inline
   void
+  parser::by_state::clear ()
+  {
+    state = empty_state;
+  }
+
+  inline
+  void
   parser::by_state::move (by_state& that)
   {
     state = that.state;
-    that.state = empty;
+    that.clear ();
   }
 
   inline
@@ -345,7 +376,10 @@ namespace yy {
   parser::symbol_number_type
   parser::by_state::type_get () const
   {
-    return state == empty ? 0 : yystos_[state];
+    if (state == empty_state)
+      return empty_symbol;
+    else
+      return yystos_[state];
   }
 
   inline
@@ -359,7 +393,7 @@ namespace yy {
   {
     value = that.value;
     // that is emptied.
-    that.type = empty;
+    that.type = empty_symbol;
   }
 
   inline
@@ -386,30 +420,30 @@ namespace yy {
     {
             case 3: // WORD
 
-#line 51 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:599
+#line 52 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:614
         {delete (yysym.value.str);}
-#line 392 "y.tab.c" // lalr1.cc:599
+#line 426 "y.tab.c" // lalr1.cc:614
         break;
 
       case 4: // QUOTED
 
-#line 51 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:599
+#line 52 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:614
         {delete (yysym.value.str);}
-#line 399 "y.tab.c" // lalr1.cc:599
+#line 433 "y.tab.c" // lalr1.cc:614
         break;
 
       case 5: // QUALIFIERS
 
-#line 51 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:599
+#line 52 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:614
         {delete (yysym.value.str);}
-#line 406 "y.tab.c" // lalr1.cc:599
+#line 440 "y.tab.c" // lalr1.cc:614
         break;
 
-      case 22: // complexfieldname
+      case 23: // complexfieldname
 
-#line 51 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:599
+#line 52 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:614
         {delete (yysym.value.str);}
-#line 413 "y.tab.c" // lalr1.cc:599
+#line 447 "y.tab.c" // lalr1.cc:614
         break;
 
 
@@ -427,6 +461,10 @@ namespace yy {
     std::ostream& yyoutput = yyo;
     YYUSE (yyoutput);
     symbol_number_type yytype = yysym.type_get ();
+    // Avoid a (spurious) G++ 4.8 warning about "array subscript is
+    // below array bounds".
+    if (yysym.empty ())
+      std::abort ();
     yyo << (yytype < yyntokens_ ? "token" : "nterm")
         << ' ' << yytname_[yytype] << " ("
         << yysym.location << ": ";
@@ -511,9 +549,6 @@ namespace yy {
   int
   parser::parse ()
   {
-    /// Whether yyla contains a lookahead.
-    bool yyempty = true;
-
     // State.
     int yyn;
     /// Length of the RHS of the rule being reduced.
@@ -565,7 +600,7 @@ namespace yy {
       goto yydefault;
 
     // Read a lookahead token.
-    if (yyempty)
+    if (yyla.empty ())
       {
         YYCDEBUG << "Reading a token: ";
         try
@@ -577,7 +612,6 @@ namespace yy {
             error (yyexc);
             goto yyerrlab1;
           }
-        yyempty = false;
       }
     YY_SYMBOL_PRINT ("Next token is", yyla);
 
@@ -596,9 +630,6 @@ namespace yy {
         yyn = -yyn;
         goto yyreduce;
       }
-
-    // Discard the token being shifted.
-    yyempty = true;
 
     // Count tokens shifted since error; after three, turn off error status.
     if (yyerrstatus_)
@@ -649,7 +680,7 @@ namespace yy {
           switch (yyn)
             {
   case 2:
-#line 72 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+#line 74 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
     // It's possible that we end up with no query (e.g.: because just a
     // date filter was set, no terms). Allocate an empty query so that we
@@ -660,11 +691,11 @@ namespace yy {
     else
         d->m_result = (yystack_[0].value.sd);
 }
-#line 664 "y.tab.c" // lalr1.cc:847
+#line 695 "y.tab.c" // lalr1.cc:859
     break;
 
   case 3:
-#line 85 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+#line 87 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
     LOGP("q: query query\n");
     Rcl::SearchData *sd = 0;
@@ -675,11 +706,11 @@ namespace yy {
     }
     (yylhs.value.sd) = sd;
 }
-#line 679 "y.tab.c" // lalr1.cc:847
+#line 710 "y.tab.c" // lalr1.cc:859
     break;
 
   case 4:
-#line 96 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+#line 98 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
     LOGP("q: query AND query\n");
     Rcl::SearchData *sd = 0;
@@ -690,11 +721,11 @@ namespace yy {
     }
     (yylhs.value.sd) = sd;
 }
-#line 694 "y.tab.c" // lalr1.cc:847
+#line 725 "y.tab.c" // lalr1.cc:859
     break;
 
   case 5:
-#line 107 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+#line 109 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
     LOGP("query: query OR query\n");
     Rcl::SearchData *top = 0;
@@ -705,20 +736,20 @@ namespace yy {
     }
     (yylhs.value.sd) = top;
 }
-#line 709 "y.tab.c" // lalr1.cc:847
+#line 740 "y.tab.c" // lalr1.cc:859
     break;
 
   case 6:
-#line 118 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+#line 120 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
     LOGP("q: ( query )\n");
     (yylhs.value.sd) = (yystack_[1].value.sd);
 }
-#line 718 "y.tab.c" // lalr1.cc:847
+#line 749 "y.tab.c" // lalr1.cc:859
     break;
 
   case 7:
-#line 124 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+#line 126 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
     LOGP("q: fieldexpr\n");
     Rcl::SearchData *sd = new Rcl::SearchData(Rcl::SCLT_AND, d->m_stemlang);
@@ -729,20 +760,20 @@ namespace yy {
         (yylhs.value.sd) = 0;
     }
 }
-#line 733 "y.tab.c" // lalr1.cc:847
+#line 764 "y.tab.c" // lalr1.cc:859
     break;
 
   case 8:
-#line 137 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+#line 139 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
     LOGP("fe: simple fieldexpr: " << (yystack_[0].value.cl)->gettext() << endl);
     (yylhs.value.cl) = (yystack_[0].value.cl);
 }
-#line 742 "y.tab.c" // lalr1.cc:847
+#line 773 "y.tab.c" // lalr1.cc:859
     break;
 
   case 9:
-#line 142 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+#line 144 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
     LOGP("fe: " << *(yystack_[2].value.str) << " = " << (yystack_[0].value.cl)->gettext() << endl);
     (yystack_[0].value.cl)->setfield(*(yystack_[2].value.str));
@@ -750,11 +781,11 @@ namespace yy {
     (yylhs.value.cl) = (yystack_[0].value.cl);
     delete (yystack_[2].value.str);
 }
-#line 754 "y.tab.c" // lalr1.cc:847
+#line 785 "y.tab.c" // lalr1.cc:859
     break;
 
   case 10:
-#line 150 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+#line 152 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
     LOGP("fe: " << *(yystack_[2].value.str) << " : " << (yystack_[0].value.cl)->gettext() << endl);
     (yystack_[0].value.cl)->setfield(*(yystack_[2].value.str));
@@ -762,23 +793,35 @@ namespace yy {
     (yylhs.value.cl) = (yystack_[0].value.cl);
     delete (yystack_[2].value.str);
 }
-#line 766 "y.tab.c" // lalr1.cc:847
+#line 797 "y.tab.c" // lalr1.cc:859
     break;
 
   case 11:
-#line 158 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+#line 160 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
-    LOGP(cerr << "fe: " << *(yystack_[2].value.str) << " < " << (yystack_[0].value.cl)->gettext() << endl);
+    LOGP("fe: " << *(yystack_[2].value.str) << " : " << (yystack_[0].value.rg)->gettext() << endl);
+    (yystack_[0].value.rg)->setfield(*(yystack_[2].value.str));
+    (yystack_[0].value.rg)->setrel(Rcl::SearchDataClause::REL_CONTAINS);
+    (yylhs.value.cl) = (yystack_[0].value.rg);
+    delete (yystack_[2].value.str);
+}
+#line 809 "y.tab.c" // lalr1.cc:859
+    break;
+
+  case 12:
+#line 168 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
+    {
+    LOGP("fe: " << *(yystack_[2].value.str) << " < " << (yystack_[0].value.cl)->gettext() << endl);
     (yystack_[0].value.cl)->setfield(*(yystack_[2].value.str));
     (yystack_[0].value.cl)->setrel(Rcl::SearchDataClause::REL_LT);
     (yylhs.value.cl) = (yystack_[0].value.cl);
     delete (yystack_[2].value.str);
 }
-#line 778 "y.tab.c" // lalr1.cc:847
+#line 821 "y.tab.c" // lalr1.cc:859
     break;
 
-  case 12:
-#line 166 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+  case 13:
+#line 176 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
     LOGP("fe: " << *(yystack_[2].value.str) << " <= " << (yystack_[0].value.cl)->gettext() << endl);
     (yystack_[0].value.cl)->setfield(*(yystack_[2].value.str));
@@ -786,11 +829,11 @@ namespace yy {
     (yylhs.value.cl) = (yystack_[0].value.cl);
     delete (yystack_[2].value.str);
 }
-#line 790 "y.tab.c" // lalr1.cc:847
+#line 833 "y.tab.c" // lalr1.cc:859
     break;
 
-  case 13:
-#line 174 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+  case 14:
+#line 184 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
     LOGP("fe: "  << *(yystack_[2].value.str) << " > " << (yystack_[0].value.cl)->gettext() << endl);
     (yystack_[0].value.cl)->setfield(*(yystack_[2].value.str));
@@ -798,11 +841,11 @@ namespace yy {
     (yylhs.value.cl) = (yystack_[0].value.cl);
     delete (yystack_[2].value.str);
 }
-#line 802 "y.tab.c" // lalr1.cc:847
+#line 845 "y.tab.c" // lalr1.cc:859
     break;
 
-  case 14:
-#line 182 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+  case 15:
+#line 192 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
     LOGP("fe: " << *(yystack_[2].value.str) << " >= " << (yystack_[0].value.cl)->gettext() << endl);
     (yystack_[0].value.cl)->setfield(*(yystack_[2].value.str));
@@ -810,69 +853,100 @@ namespace yy {
     (yylhs.value.cl) = (yystack_[0].value.cl);
     delete (yystack_[2].value.str);
 }
-#line 814 "y.tab.c" // lalr1.cc:847
+#line 857 "y.tab.c" // lalr1.cc:859
     break;
 
-  case 15:
-#line 190 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+  case 16:
+#line 200 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
     LOGP("fe: - fieldexpr[" << (yystack_[0].value.cl)->gettext() << "]" << endl);
     (yystack_[0].value.cl)->setexclude(true);
     (yylhs.value.cl) = (yystack_[0].value.cl);
 }
-#line 824 "y.tab.c" // lalr1.cc:847
+#line 867 "y.tab.c" // lalr1.cc:859
     break;
 
-  case 16:
-#line 200 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+  case 17:
+#line 210 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
     LOGP("cfn: WORD" << endl);
     (yylhs.value.str) = (yystack_[0].value.str);
 }
-#line 833 "y.tab.c" // lalr1.cc:847
+#line 876 "y.tab.c" // lalr1.cc:859
     break;
 
-  case 17:
-#line 206 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+  case 18:
+#line 216 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
     LOGP("cfn: complexfieldname ':' WORD" << endl);
     (yylhs.value.str) = new string(*(yystack_[2].value.str) + string(":") + *(yystack_[0].value.str));
     delete (yystack_[2].value.str);
     delete (yystack_[0].value.str);
 }
-#line 844 "y.tab.c" // lalr1.cc:847
+#line 887 "y.tab.c" // lalr1.cc:859
     break;
 
-  case 18:
-#line 215 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+  case 19:
+#line 225 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
+    {
+    LOGP("Range: " << *(yystack_[2].value.str) << string(" .. ") << *(yystack_[0].value.str) << endl);
+    (yylhs.value.rg) = new Rcl::SearchDataClauseRange(*(yystack_[2].value.str), *(yystack_[0].value.str));
+    delete (yystack_[2].value.str);
+    delete (yystack_[0].value.str);
+}
+#line 898 "y.tab.c" // lalr1.cc:859
+    break;
+
+  case 20:
+#line 233 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
+    {
+    LOGP("Range: " << "" << string(" .. ") << *(yystack_[0].value.str) << endl);
+    (yylhs.value.rg) = new Rcl::SearchDataClauseRange("", *(yystack_[0].value.str));
+    delete (yystack_[0].value.str);
+}
+#line 908 "y.tab.c" // lalr1.cc:859
+    break;
+
+  case 21:
+#line 240 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
+    {
+    LOGP("Range: " << *(yystack_[1].value.str) << string(" .. ") << "" << endl);
+    (yylhs.value.rg) = new Rcl::SearchDataClauseRange(*(yystack_[1].value.str), "");
+    delete (yystack_[1].value.str);
+}
+#line 918 "y.tab.c" // lalr1.cc:859
+    break;
+
+  case 22:
+#line 249 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
     LOGP("term[" << *(yystack_[0].value.str) << "]" << endl);
     (yylhs.value.cl) = new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, *(yystack_[0].value.str));
     delete (yystack_[0].value.str);
 }
-#line 854 "y.tab.c" // lalr1.cc:847
+#line 928 "y.tab.c" // lalr1.cc:859
     break;
 
-  case 19:
-#line 221 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+  case 23:
+#line 255 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
     (yylhs.value.cl) = (yystack_[0].value.cl);
 }
-#line 862 "y.tab.c" // lalr1.cc:847
+#line 936 "y.tab.c" // lalr1.cc:859
     break;
 
-  case 20:
-#line 227 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+  case 24:
+#line 261 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
     LOGP("QUOTED[" << *(yystack_[0].value.str) << "]" << endl);
     (yylhs.value.cl) = new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, *(yystack_[0].value.str), 0);
     delete (yystack_[0].value.str);
 }
-#line 872 "y.tab.c" // lalr1.cc:847
+#line 946 "y.tab.c" // lalr1.cc:859
     break;
 
-  case 21:
-#line 233 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:847
+  case 25:
+#line 267 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:859
     {
     LOGP("QUOTED[" << *(yystack_[1].value.str) << "] QUALIFIERS[" << *(yystack_[0].value.str) << "]" << endl);
     Rcl::SearchDataClauseDist *cl = 
@@ -882,11 +956,11 @@ namespace yy {
     delete (yystack_[1].value.str);
     delete (yystack_[0].value.str);
 }
-#line 886 "y.tab.c" // lalr1.cc:847
+#line 960 "y.tab.c" // lalr1.cc:859
     break;
 
 
-#line 890 "y.tab.c" // lalr1.cc:847
+#line 964 "y.tab.c" // lalr1.cc:859
             default:
               break;
             }
@@ -914,8 +988,7 @@ namespace yy {
     if (!yyerrstatus_)
       {
         ++yynerrs_;
-        error (yyla.location, yysyntax_error_ (yystack_[0].state,
-                                           yyempty ? yyempty_ : yyla.type_get ()));
+        error (yyla.location, yysyntax_error_ (yystack_[0].state, yyla));
       }
 
 
@@ -928,10 +1001,10 @@ namespace yy {
         // Return failure if at end of input.
         if (yyla.type_get () == yyeof_)
           YYABORT;
-        else if (!yyempty)
+        else if (!yyla.empty ())
           {
             yy_destroy_ ("Error: discarding", yyla);
-            yyempty = true;
+            yyla.clear ();
           }
       }
 
@@ -1007,7 +1080,7 @@ namespace yy {
     goto yyreturn;
 
   yyreturn:
-    if (!yyempty)
+    if (!yyla.empty ())
       yy_destroy_ ("Cleanup: discarding lookahead", yyla);
 
     /* Do not reclaim the symbols of the rule whose action triggered
@@ -1027,7 +1100,7 @@ namespace yy {
                  << std::endl;
         // Do not try to display the values of the reclaimed symbols,
         // as their printer might throw an exception.
-        if (!yyempty)
+        if (!yyla.empty ())
           yy_destroy_ (YY_NULLPTR, yyla);
 
         while (1 < yystack_.size ())
@@ -1047,9 +1120,8 @@ namespace yy {
 
   // Generate an error message.
   std::string
-  parser::yysyntax_error_ (state_type yystate, symbol_number_type yytoken) const
+  parser::yysyntax_error_ (state_type yystate, const symbol_type& yyla) const
   {
-    std::string yyres;
     // Number of reported tokens (one for the "unexpected", one per
     // "expected").
     size_t yycount = 0;
@@ -1063,7 +1135,7 @@ namespace yy {
          the only way this function was invoked is if the default action
          is an error action.  In that case, don't check for expected
          tokens because there are none.
-       - The only way there can be no lookahead present (in yytoken) is
+       - The only way there can be no lookahead present (in yyla) is
          if this state is a consistent state with a default action.
          Thus, detecting the absence of a lookahead is sufficient to
          determine that there is no unexpected or expected token to
@@ -1083,8 +1155,9 @@ namespace yy {
          token that will not be accepted due to an error action in a
          later state.
     */
-    if (yytoken != yyempty_)
+    if (!yyla.empty ())
       {
+        int yytoken = yyla.type_get ();
         yyarg[yycount++] = yytname_[yytoken];
         int yyn = yypact_[yystate];
         if (!yy_pact_value_is_default_ (yyn))
@@ -1127,6 +1200,7 @@ namespace yy {
 #undef YYCASE_
       }
 
+    std::string yyres;
     // Argument number.
     size_t yyi = 0;
     for (char const* yyp = yyformat; *yyp; ++yyp)
@@ -1143,83 +1217,85 @@ namespace yy {
 
   const signed char parser::yypact_ninf_ = -3;
 
-  const signed char parser::yytable_ninf_ = -18;
+  const signed char parser::yytable_ninf_ = -19;
 
   const signed char
   parser::yypact_[] =
   {
-      24,    25,     3,    24,    26,     6,    16,    -3,    31,    -3,
-      -3,    -3,     1,    -3,    -3,    24,    24,     4,    -2,     9,
-      -2,    -2,    -2,    -2,    -3,     4,    -3,    -3,    -3,    37,
-      -3,    -3,    -3,    -3,    -3
+      31,    32,     3,    31,    33,     6,    14,    -3,    38,    -3,
+      -3,    -3,     1,    -3,    -3,    31,    31,     4,    -2,     9,
+      -2,    -2,    -2,    -2,    -3,     4,    -3,    -3,    -3,    16,
+      18,    -3,    -3,    -3,    -3,    -3,    -3,    22,    -3,    -3
   };
 
   const unsigned char
   parser::yydefact_[] =
   {
-       0,    18,    20,     0,     0,     0,     2,     7,     0,     8,
-      19,    21,     0,    15,     1,     0,     0,     3,     0,     0,
-       0,     0,     0,     0,     6,     4,     5,    18,     9,    18,
-      10,    12,    11,    14,    13
+       0,    22,    24,     0,     0,     0,     2,     7,     0,     8,
+      23,    25,     0,    16,     1,     0,     0,     3,     0,     0,
+       0,     0,     0,     0,     6,     4,     5,    22,     9,    22,
+       0,    11,    10,    13,    12,    15,    14,    21,    20,    19
   };
 
   const signed char
   parser::yypgoto_[] =
   {
-      -3,    -3,     0,    13,    -3,    36,    -3
+      -3,    -3,     0,    34,    -3,    -3,    37,    -3
   };
 
   const signed char
   parser::yydefgoto_[] =
   {
-      -1,     5,    17,     7,     8,     9,    10
+      -1,     5,    17,     7,     8,    31,     9,    10
   };
 
   const signed char
   parser::yytable_[] =
   {
        6,    27,     2,    12,     1,     2,    14,    15,    11,     3,
-       4,    16,    29,     2,    16,    25,    26,    13,    24,     1,
-       2,     0,    15,     0,     3,     4,    16,     1,     2,     1,
-       2,     0,     3,     4,     0,     4,   -16,   -16,   -16,   -16,
-     -16,   -16,    18,    19,    20,    21,    22,    23,   -17,   -17,
-     -17,   -17,   -17,   -17,    28,    30,    31,    32,    33,    34
+       4,    16,    29,     2,    16,    25,    26,     1,     2,    24,
+      15,    38,     3,     4,    16,    39,    30,   -18,   -18,   -18,
+     -18,   -18,   -18,    37,     1,     2,     1,     2,    13,     3,
+       4,     0,     4,   -17,   -17,   -17,   -17,   -17,   -17,    18,
+      19,    20,    21,    22,    23,    28,    32,    33,    34,    35,
+      36
   };
 
   const signed char
   parser::yycheck_[] =
   {
        0,     3,     4,     3,     3,     4,     0,     6,     5,     8,
-       9,    10,     3,     4,    10,    15,    16,     4,    17,     3,
-       4,    -1,     6,    -1,     8,     9,    10,     3,     4,     3,
-       4,    -1,     8,     9,    -1,     9,    11,    12,    13,    14,
-      15,    16,    11,    12,    13,    14,    15,    16,    11,    12,
-      13,    14,    15,    16,    18,    19,    20,    21,    22,    23
+       9,    10,     3,     4,    10,    15,    16,     3,     4,    18,
+       6,     3,     8,     9,    10,     3,    17,    11,    12,    13,
+      14,    15,    16,    17,     3,     4,     3,     4,     4,     8,
+       9,    -1,     9,    11,    12,    13,    14,    15,    16,    11,
+      12,    13,    14,    15,    16,    18,    19,    20,    21,    22,
+      23
   };
 
   const unsigned char
   parser::yystos_[] =
   {
-       0,     3,     4,     8,     9,    19,    20,    21,    22,    23,
-      24,     5,    20,    21,     0,     6,    10,    20,    11,    12,
-      13,    14,    15,    16,    17,    20,    20,     3,    23,     3,
-      23,    23,    23,    23,    23
+       0,     3,     4,     8,     9,    20,    21,    22,    23,    25,
+      26,     5,    21,    22,     0,     6,    10,    21,    11,    12,
+      13,    14,    15,    16,    18,    21,    21,     3,    25,     3,
+      17,    24,    25,    25,    25,    25,    25,    17,     3,     3
   };
 
   const unsigned char
   parser::yyr1_[] =
   {
-       0,    18,    19,    20,    20,    20,    20,    20,    21,    21,
-      21,    21,    21,    21,    21,    21,    22,    22,    23,    23,
-      24,    24
+       0,    19,    20,    21,    21,    21,    21,    21,    22,    22,
+      22,    22,    22,    22,    22,    22,    22,    23,    23,    24,
+      24,    24,    25,    25,    26,    26
   };
 
   const unsigned char
   parser::yyr2_[] =
   {
        0,     2,     1,     2,     3,     3,     3,     1,     1,     3,
-       3,     3,     3,     3,     3,     2,     1,     3,     1,     1,
-       1,     2
+       3,     3,     3,     3,     3,     3,     2,     1,     3,     3,
+       2,     2,     1,     1,     1,     2
   };
 
 
@@ -1231,17 +1307,17 @@ namespace yy {
   {
   "$end", "error", "$undefined", "WORD", "QUOTED", "QUALIFIERS", "AND",
   "UCONCAT", "'('", "'-'", "OR", "EQUALS", "CONTAINS", "SMALLEREQ",
-  "SMALLER", "GREATEREQ", "GREATER", "')'", "$accept", "topquery", "query",
-  "fieldexpr", "complexfieldname", "term", "qualquote", YY_NULLPTR
+  "SMALLER", "GREATEREQ", "GREATER", "RANGE", "')'", "$accept", "topquery",
+  "query", "fieldexpr", "complexfieldname", "range", "term", "qualquote", YY_NULLPTR
   };
 
 #if YYDEBUG
-  const unsigned char
+  const unsigned short int
   parser::yyrline_[] =
   {
-       0,    71,    71,    84,    95,   106,   117,   123,   136,   141,
-     149,   157,   165,   173,   181,   189,   199,   205,   214,   220,
-     226,   232
+       0,    73,    73,    86,    97,   108,   119,   125,   138,   143,
+     151,   159,   167,   175,   183,   191,   199,   209,   215,   224,
+     232,   239,   248,   254,   260,   266
   };
 
   // Print the state stack on the debug stream.
@@ -1286,7 +1362,7 @@ namespace yy {
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       8,    17,     2,     2,     2,     9,     2,     2,     2,     2,
+       8,    18,     2,     2,     2,     9,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -1308,9 +1384,10 @@ namespace yy {
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,    10,    11,    12,    13,    14,    15,    16
+       5,     6,     7,    10,    11,    12,    13,    14,    15,    16,
+      17
     };
-    const unsigned int user_token_number_max_ = 269;
+    const unsigned int user_token_number_max_ = 270;
     const token_number_type undef_token_ = 2;
 
     if (static_cast<int>(t) <= yyeof_)
@@ -1323,8 +1400,8 @@ namespace yy {
 
 
 } // yy
-#line 1327 "y.tab.c" // lalr1.cc:1155
-#line 244 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:1156
+#line 1404 "y.tab.c" // lalr1.cc:1167
+#line 278 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:1168
 
 
 #include <ctype.h>
@@ -1473,7 +1550,7 @@ int yylex(yy::parser::semantic_type *yylval, yy::parser::location_type *,
         return c;
     }
 
-    // field-term relations
+    // field-term relations, and ranges
     switch (c) {
     case '=': return yy::parser::token::EQUALS;
     case ':': return yy::parser::token::CONTAINS;
@@ -1484,6 +1561,15 @@ int yylex(yy::parser::semantic_type *yylval, yy::parser::location_type *,
         } else {
             d->UNGETCHAR(c1);
             return yy::parser::token::SMALLER;
+        }
+    }
+    case '.': {
+        int c1 = d->GETCHAR();
+        if (c1 == '.') {
+            return yy::parser::token::RANGE;
+        } else {
+            d->UNGETCHAR(c1);
+            break;
         }
     }
     case '>': {
@@ -1514,6 +1600,16 @@ int yylex(yy::parser::semantic_type *yylval, yy::parser::location_type *,
             //cerr << "Word broken by special char" << endl;
             d->UNGETCHAR(c);
             break;
+        } else if (c == '.') {
+            int c1 = d->GETCHAR();
+            if (c1 == '.') {
+                d->UNGETCHAR(c1);
+                d->UNGETCHAR(c);
+                break;
+            } else {
+                d->UNGETCHAR(c1);
+                word->push_back(c);
+            }
         } else if (c == 0) {
             //cerr << "Word broken by EOF" << endl;
             break;

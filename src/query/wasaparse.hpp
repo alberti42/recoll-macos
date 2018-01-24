@@ -1,8 +1,8 @@
-// A Bison parser, made by GNU Bison 3.0.2.
+// A Bison parser, made by GNU Bison 3.0.4.
 
 // Skeleton interface for Bison LALR(1) parsers in C++
 
-// Copyright (C) 2002-2013 Free Software Foundation, Inc.
+// Copyright (C) 2002-2015 Free Software Foundation, Inc.
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -41,10 +41,11 @@
 # define YY_YY_Y_TAB_H_INCLUDED
 
 
-# include <vector>
+# include <cstdlib> // std::abort
 # include <iostream>
 # include <stdexcept>
 # include <string>
+# include <vector>
 # include "stack.hh"
 # include "location.hh"
 
@@ -109,7 +110,7 @@
 
 
 namespace yy {
-#line 113 "y.tab.h" // lalr1.cc:372
+#line 114 "y.tab.h" // lalr1.cc:377
 
 
 
@@ -123,13 +124,14 @@ namespace yy {
     /// Symbol semantic values.
     union semantic_type
     {
-    #line 46 "/y/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:372
+    #line 46 "/home/dockes/projets/fulltext/recoll/src/query/wasaparse.ypp" // lalr1.cc:377
 
     std::string *str;
+    Rcl::SearchDataClauseRange *rg;
     Rcl::SearchDataClauseSimple *cl;
     Rcl::SearchData *sd;
 
-#line 133 "y.tab.h" // lalr1.cc:372
+#line 135 "y.tab.h" // lalr1.cc:377
     };
 #else
     typedef YYSTYPE semantic_type;
@@ -160,15 +162,19 @@ namespace yy {
         SMALLEREQ = 266,
         SMALLER = 267,
         GREATEREQ = 268,
-        GREATER = 269
+        GREATER = 269,
+        RANGE = 270
       };
     };
 
     /// (External) token type, as returned by yylex.
     typedef token::yytokentype token_type;
 
-    /// Internal symbol number.
+    /// Symbol type: an internal symbol number.
     typedef int symbol_number_type;
+
+    /// The symbol type number to denote an empty symbol.
+    enum { empty_symbol = -2 };
 
     /// Internal symbol number for tokens (subsumed by symbol_number_type).
     typedef unsigned char token_number_type;
@@ -200,7 +206,14 @@ namespace yy {
                     const semantic_type& v,
                     const location_type& l);
 
+      /// Destroy the symbol.
       ~basic_symbol ();
+
+      /// Destroy contents, and record that is empty.
+      void clear ();
+
+      /// Whether empty.
+      bool empty () const;
 
       /// Destructive move, \a s is emptied into this.
       void move (basic_symbol& s);
@@ -231,21 +244,23 @@ namespace yy {
       /// Constructor from (external) token numbers.
       by_type (kind_type t);
 
+      /// Record that this symbol is empty.
+      void clear ();
+
       /// Steal the symbol type from \a that.
       void move (by_type& that);
 
       /// The (internal) type number (corresponding to \a type).
-      /// -1 when this symbol is empty.
+      /// \a empty when empty.
       symbol_number_type type_get () const;
 
       /// The token.
       token_type token () const;
 
-      enum { empty = 0 };
-
       /// The symbol type.
-      /// -1 when this symbol is empty.
-      token_number_type type;
+      /// \a empty_symbol when empty.
+      /// An int, not token_number_type, to be able to store empty_symbol.
+      int type;
     };
 
     /// "External" symbols: returned by the scanner.
@@ -292,9 +307,9 @@ namespace yy {
 
     /// Generate an error message.
     /// \param yystate   the state where the error occurred.
-    /// \param yytoken   the lookahead token type, or yyempty_.
+    /// \param yyla      the lookahead token.
     virtual std::string yysyntax_error_ (state_type yystate,
-                                         symbol_number_type yytoken) const;
+                                         const symbol_type& yyla) const;
 
     /// Compute post-reduction state.
     /// \param yystate   the current state
@@ -357,7 +372,7 @@ namespace yy {
     static const char* const yytname_[];
 #if YYDEBUG
   // YYRLINE[YYN] -- Source line where rule number YYN was defined.
-  static const unsigned char yyrline_[];
+  static const unsigned short int yyrline_[];
     /// Report on the debug stream that the rule \a r is going to be reduced.
     virtual void yy_reduce_print_ (int r);
     /// Print the state stack on the debug stream.
@@ -397,16 +412,21 @@ namespace yy {
       /// Copy constructor.
       by_state (const by_state& other);
 
+      /// Record that this symbol is empty.
+      void clear ();
+
       /// Steal the symbol type from \a that.
       void move (by_state& that);
 
       /// The (internal) type number (corresponding to \a state).
-      /// "empty" when empty.
+      /// \a empty_symbol when empty.
       symbol_number_type type_get () const;
 
-      enum { empty = 0 };
+      /// The state number used to denote an empty symbol.
+      enum { empty_state = -1 };
 
       /// The state.
+      /// \a empty when empty.
       state_type state;
     };
 
@@ -447,17 +467,16 @@ namespace yy {
     /// Pop \a n symbols the three stacks.
     void yypop_ (unsigned int n = 1);
 
-    // Constants.
+    /// Constants.
     enum
     {
       yyeof_ = 0,
-      yylast_ = 59,     ///< Last index in yytable_.
-      yynnts_ = 7,  ///< Number of nonterminal symbols.
-      yyempty_ = -2,
+      yylast_ = 60,     ///< Last index in yytable_.
+      yynnts_ = 8,  ///< Number of nonterminal symbols.
       yyfinal_ = 14, ///< Termination state number.
       yyterror_ = 1,
       yyerrcode_ = 256,
-      yyntokens_ = 18  ///< Number of tokens.
+      yyntokens_ = 19  ///< Number of tokens.
     };
 
 
@@ -468,7 +487,7 @@ namespace yy {
 
 
 } // yy
-#line 472 "y.tab.h" // lalr1.cc:372
+#line 491 "y.tab.h" // lalr1.cc:377
 
 
 

@@ -197,7 +197,7 @@ class Db::Native {
     std::string rawtextMetaKey(Xapian::docid did) {
         // Xapian's Olly Betts avises to use a key which will
         // sort the same as the docid (which we do), and to
-        // use Xapian's pack_uint_preserving_sort() which is
+        // use Xapian's pack.h:pack_uint_preserving_sort() which is
         // efficient but hard to read. I'd wager that this
         // does not make much of a difference. 10 ascii bytes
         // gives us 10 billion docs, which is enough (says I).

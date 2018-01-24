@@ -78,7 +78,11 @@ struct MDReaper {
 
 // Data associated to a indexed field name: 
 struct FieldTraits {
-    string pfx; // indexing prefix, 
+    string pfx; // indexing prefix,
+    uint32_t valueslot{0};
+    enum ValueType {STR, INT};
+    ValueType valuetype{STR};
+    int    valuelen{0};
     int    wdfinc{1}; // Index time term frequency increment (default 1)
     double boost{1.0}; // Query time boost (default 1.0)
     bool   pfxonly{false}; // Suppress prefix-less indexing

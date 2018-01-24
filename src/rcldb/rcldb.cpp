@@ -50,6 +50,7 @@ using namespace std;
 #include "searchdata.h"
 #include "rclquery.h"
 #include "rclquery_p.h"
+#include "rclvalues.h"
 #include "md5ut.h"
 #include "rclversion.h"
 #include "cancelcheck.h"
@@ -1489,7 +1490,8 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	    for (vector<string>::iterator it = vpath.begin(); 
 		 it != vpath.end(); it++){
 		if (it->length() > 230) {
-		    // Just truncate it. May still be useful because of wildcards
+		    // Just truncate it. May still be useful because
+		    // of wildcards
 		    *it = it->substr(0, 230);
 		}
 		newdocument.add_posting(wrap_prefix(pathelt_prefix) + *it, 
@@ -1504,26 +1506,36 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	//
 	// The order has no importance, and we set a position gap of 100
 	// between fields to avoid false proximity matches.
-	map<string, string>::iterator meta_it;
-	for (meta_it = doc.meta.begin(); meta_it != doc.meta.end(); meta_it++) {
-	    if (!meta_it->second.empty()) {
-		const FieldTraits *ftp;
-		// We don't test for an empty prefix here. Some fields are part
-		// of the internal conf with an empty prefix (ie: abstract).
-		if (!fieldToTraits(meta_it->first, &ftp)) {
-		    LOGDEB0("Db::add: no prefix for field [" <<
-                            meta_it->first << "], no indexing\n");
-		    continue;
-		}
-		LOGDEB0("Db::add: field [" << meta_it->first << "] pfx [" <<
+	for (const auto& entry: doc.meta) {
+	    if (entry.second.empty()) {
+                continue;
+            }
+            const FieldTraits *ftp{nullptr};
+            fieldToTraits(entry.first, &ftp);
+            if (ftp && ftp->valueslot) {
+                LOGDEB("Adding value: for field " << entry.first << " slot "
+                       << ftp->valueslot << endl);
+                add_field_value(newdocument, *ftp, entry.second);
+            }
+
+            // There was an old comment here about not testing for
+            // empty prefix, and we indeed did not test. I don't think
+            // that it makes sense any more (and was in disagreement
+            // with the LOG message. Really now: no prefix: no
+            // indexing.
+            if (ftp && !ftp->pfx.empty()) {
+                LOGDEB0("Db::add: field [" << entry.first << "] pfx [" <<
                         ftp->pfx << "] inc " << ftp->wdfinc << ": [" <<
-                        meta_it->second << "]\n");
+                        entry.second << "]\n");
                 splitter.setTraits(*ftp);
-		if (!splitter.text_to_words(meta_it->second)) {
-		    LOGDEB("Db::addOrUpdate: split failed for " <<
-                           meta_it->first << "\n");
+                if (!splitter.text_to_words(entry.second)) {
+                    LOGDEB("Db::addOrUpdate: split failed for " <<
+                           entry.first << "\n");
                 }
-	    }
+            } else {
+                LOGDEB0("Db::add: no prefix for field [" <<
+                        entry.first << "], no indexing\n");
+            }
 	}
 
         // Reset to no prefix and default params
@@ -1578,8 +1590,8 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	if (doc.getmeta(Doc::keyfn, &utf8fn) && !utf8fn.empty()) {
 	    string fn;
 	    if (unacmaybefold(utf8fn, fn, "UTF-8", UNACOP_UNACFOLD)) {
-		// We should truncate after extracting the extension, but this is
-		// a pathological case anyway
+		// We should truncate after extracting the extension,
+		// but this is a pathological case anyway
 		if (fn.size() > 230)
 		    utf8truncate(fn, 230);
 		string::size_type pos = fn.rfind('.');
@@ -1587,7 +1599,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 		    newdocument.add_boolean_term(wrap_prefix(fileext_prefix) + 
 						 fn.substr(pos + 1));
 		}
-		newdocument.add_term(wrap_prefix(unsplitfilename_prefix) + fn, 0);
+		newdocument.add_term(wrap_prefix(unsplitfilename_prefix) + fn,0);
 	    }
 	}
 

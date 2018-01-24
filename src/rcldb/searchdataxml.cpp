@@ -42,6 +42,7 @@ static string tpToString(SClType tp)
     case SCLT_FILENAME: return "FN";
     case SCLT_PHRASE: return "PH";
     case SCLT_NEAR: return "NE";
+    case SCLT_RANGE: return "RG";
     case SCLT_SUB: return "SU"; // Unsupported actually
     default: return "UN";
     }
@@ -101,6 +102,15 @@ string SearchData::asXML()
 			endl;
 		}
 		os << "<T>" << base64_encode(cl->gettext()) << "</T>" << endl;
+		if (cl->getTp() == SCLT_RANGE) {
+                    SearchDataClauseRange *clr =
+			dynamic_cast<SearchDataClauseRange*>(cl);
+                    const string& t = clr->gettext2();
+                    if (!t.empty()) {
+                        os << "<T2>" << base64_encode(clr->gettext2()) <<
+                            "</T2>" << endl;
+                    }
+                }
 		if (cl->getTp() == SCLT_NEAR || cl->getTp() == SCLT_PHRASE) {
 		    SearchDataClauseDist *cld = 
 			dynamic_cast<SearchDataClauseDist*>(cl);

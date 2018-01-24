@@ -936,15 +936,15 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
     // Build a direct map avoiding all indirections for field to
     // prefix translation
     // Add direct prefixes from the [prefixes] section
-    vector<string>tps = m_fields->getNames("prefixes");
-    for (vector<string>::const_iterator it = tps.begin(); 
-	 it != tps.end(); it++) {
+    vector<string> tps = m_fields->getNames("prefixes");
+    for (const auto& fieldname : tps) {
 	string val;
-	m_fields->get(*it, val, "prefixes");
+	m_fields->get(fieldname, val, "prefixes");
 	ConfSimple attrs;
 	FieldTraits ft;
+        // fieldname = prefix ; attr1=val;attr2=val...
 	if (!valueSplitAttributes(val, ft.pfx, attrs)) {
-	    LOGERR("readFieldsConfig: bad config line for ["  << *it <<
+	    LOGERR("readFieldsConfig: bad config line for ["  << fieldname <<
                    "]: [" << val << "]\n");
 	    return 0;
 	}
@@ -957,21 +957,67 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 	    ft.pfxonly = stringToBool(tval);
 	if (attrs.get("noterms", tval))
 	    ft.noterms = stringToBool(tval);
-	m_fldtotraits[stringtolower(*it)] = ft;
-	LOGDEB2("readFieldsConfig: ["  << *it << "] -> ["  << ft.pfx <<
+	m_fldtotraits[stringtolower(fieldname)] = ft;
+	LOGDEB2("readFieldsConfig: ["  << fieldname << "] -> ["  << ft.pfx <<
                 "] " << ft.wdfinc << " " << ft.boost << "\n");
     }
 
+    // Values section
+    tps = m_fields->getNames("values");
+    for (const auto& fieldname : tps) {
+	string canonic = stringtolower(fieldname); // canonic name
+	string val;
+	m_fields->get(fieldname, val, "values");
+	ConfSimple attrs;
+        string svslot;
+        // fieldname = valueslot ; attr1=val;attr2=val...
+	if (!valueSplitAttributes(val, svslot, attrs)) {
+	    LOGERR("readFieldsConfig: bad value line for ["  << fieldname <<
+                   "]: [" << val << "]\n");
+	    return 0;
+	}
+        uint32_t valueslot = uint32_t(atoi(svslot.c_str()));
+        if (valueslot == 0) {
+            LOGERR("readFieldsConfig: found 0 value slot for [" << fieldname <<
+                   "]: [" << val << "]\n");
+            continue;
+        }
+
+        string tval;
+        FieldTraits::ValueType valuetype{FieldTraits::STR};
+        if (attrs.get("type", tval)) {
+            if (tval == "string") {
+                valuetype = FieldTraits::STR;
+            } else if (tval == "int") {
+                valuetype = FieldTraits::INT;
+            } else {
+                LOGERR("readFieldsConfig: bad type for value for " <<
+                       fieldname << " : " << tval << endl);
+                return 0;
+            }
+        }
+        int valuelen{0};
+        if (attrs.get("len", tval)) {
+            valuelen = atoi(tval.c_str());
+        }
+        
+        // Find or insert traits entry
+	const auto pit =
+	    m_fldtotraits.insert(
+                pair<string, FieldTraits>(canonic, FieldTraits())).first;
+        pit->second.valueslot = valueslot;
+        pit->second.valuetype = valuetype;
+        pit->second.valuelen = valuelen;
+    }
+    
     // Add prefixes for aliases and build alias-to-canonic map while
     // we're at it. Having the aliases in the prefix map avoids an
     // additional indirection at index time.
     tps = m_fields->getNames("aliases");
-    for (vector<string>::const_iterator it = tps.begin(); 
-         it != tps.end(); it++){
-	string canonic = stringtolower(*it); // canonic name
+    for (const auto& fieldname : tps) {
+	string canonic = stringtolower(fieldname); // canonic name
 	FieldTraits ft;
-	map<string, FieldTraits>::const_iterator pit = 
-	    m_fldtotraits.find(canonic);
+	const auto pit = m_fldtotraits.find(canonic);
 	if (pit != m_fldtotraits.end()) {
 	    ft = pit->second;
 	}
@@ -979,53 +1025,45 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
 	m_fields->get(canonic, aliases, "aliases");
 	vector<string> l;
 	stringToStrings(aliases, l);
-	for (vector<string>::const_iterator ait = l.begin();
-	     ait != l.end(); ait++) {
+	for (const auto& alias : l) {
 	    if (pit != m_fldtotraits.end())
-		m_fldtotraits[stringtolower(*ait)] = ft;
-	    m_aliastocanon[stringtolower(*ait)] = canonic;
+		m_fldtotraits[stringtolower(alias)] = ft;
+	    m_aliastocanon[stringtolower(alias)] = canonic;
 	}
     }
 
     // Query aliases map
     tps = m_fields->getNames("queryaliases");
-    for (vector<string>::const_iterator it = tps.begin(); 
-         it != tps.end(); it++){
-	string canonic = stringtolower(*it); // canonic name
+    for (const auto& entry: tps) {
+	string canonic = stringtolower(entry); // canonic name
 	string aliases;
 	m_fields->get(canonic, aliases, "queryaliases");
 	vector<string> l;
 	stringToStrings(aliases, l);
-	for (vector<string>::const_iterator ait = l.begin();
-	     ait != l.end(); ait++) {
-	    m_aliastoqcanon[stringtolower(*ait)] = canonic;
+	for (const auto& alias : l) {
+	    m_aliastoqcanon[stringtolower(alias)] = canonic;
 	}
     }
 
 #if 0
     for (map<string, FieldTraits>::const_iterator it = m_fldtotraits.begin();
 	 it != m_fldtotraits.end(); it++) {
-	LOGDEB("readFieldsConfig: ["  << *it << "] -> ["  << it->second.pfx <<
+	LOGDEB("readFieldsConfig: ["  << entry << "] -> ["  << it->second.pfx <<
                "] " << it->second.wdfinc << " " << it->second.boost << "\n");
     }
 #endif
 
     vector<string> sl = m_fields->getNames("stored");
-    if (!sl.empty()) {
-	for (vector<string>::const_iterator it = sl.begin(); 
-	     it != sl.end(); it++) {
-	    string fld = fieldCanon(stringtolower(*it));
-	    m_storedFields.insert(fld);
-	}
+    for (const auto& fieldname : sl) {
+        m_storedFields.insert(fieldCanon(stringtolower(fieldname)));
     }
 
     // Extended file attribute to field translations
     vector<string>xattrs = m_fields->getNames("xattrtofields");
-    for (vector<string>::const_iterator it = xattrs.begin(); 
-	 it != xattrs.end(); it++) {
+    for (const auto& xattr : xattrs) {
 	string val;
-	m_fields->get(*it, val, "xattrtofields");
-	m_xattrtofld[*it] = val;
+	m_fields->get(xattr, val, "xattrtofields");
+	m_xattrtofld[xattr] = val;
     }
 
     return true;
