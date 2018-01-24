@@ -23,6 +23,7 @@
 #include "rclconfig.h"
 #include "smallut.h"
 #include "log.h"
+#include "unacpp.h"
 
 using namespace std;
 
@@ -31,13 +32,22 @@ namespace Rcl {
 void add_field_value(Xapian::Document& xdoc, const FieldTraits& ft,
                      const string& data)
 {
-    string ndata{data};
+    string ndata;
 
     switch (ft.valuetype) {
     case FieldTraits::STR:
+        if (o_index_stripchars) {
+            if (!unacmaybefold(data, ndata, "UTF-8", UNACOP_UNACFOLD)) {
+                LOGDEB("Rcl::add_field_value: unac failed for ["<<data<< "]\n");
+                ndata = data;
+            } 
+        } else {
+            ndata = data;
+        }
         break;
     case FieldTraits::INT:
     {
+        ndata = data;
         int len = ft.valuelen ? ft.valuelen : 10;
         leftzeropad(ndata, len);
     }
