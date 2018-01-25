@@ -1337,7 +1337,7 @@ alink="#0000FF">
           other constraints. Most of the relevant parameters are
           described in the <a class="link" href=
           "#RCL.INSTALL.CONFIG.RECOLLCONF.TERMS" title=
-          "6.4.2.2.&nbsp;Parameters affecting how we generate terms">
+          "6.4.2.2.&nbsp;Parameters affecting how we generate terms and organize the index">
           linked section</a>.</p>
           <p>The different search interfaces (GUI, command line,
           ...) have different methods to define the set of indexes
@@ -6462,18 +6462,28 @@ alink="#0000FF">
                     </dd>
                     <dt><span class=
                     "term">Query.execute(query_string, stemming=1,
-                    stemlang="english")</span></dt>
+                    stemlang="english",
+                    fetchtext=False)</span></dt>
                     <dd>
                       <p>Starts a search for <em class=
                       "replaceable"><code>query_string</code></em>,
                       a <span class="application">Recoll</span>
-                      search language string.</p>
+                      search language string. If the index stores
+                      the document texts and <code class=
+                      "literal">fetchtext</code> is True, store the
+                      document extracted text in <code class=
+                      "literal">doc.text</code>.</p>
                     </dd>
                     <dt><span class=
-                    "term">Query.executesd(SearchData)</span></dt>
+                    "term">Query.executesd(SearchData,
+                    fetchtext=False)</span></dt>
                     <dd>
                       <p>Starts a search for the query defined by
-                      the SearchData object.</p>
+                      the SearchData object. If the index stores
+                      the document texts and <code class=
+                      "literal">fetchtext</code> is True, store the
+                      document extracted text in <code class=
+                      "literal">doc.text</code>.</p>
                     </dd>
                     <dt><span class=
                     "term">Query.fetchmany(size=query.arraysize)</span></dt>
@@ -8256,7 +8266,8 @@ for i in range(nres):
                   <h4 class="title"><a name=
                   "RCL.INSTALL.CONFIG.RECOLLCONF.TERMS" id=
                   "RCL.INSTALL.CONFIG.RECOLLCONF.TERMS"></a>6.4.2.2.&nbsp;Parameters
-                  affecting how we generate terms</h4>
+                  affecting how we generate terms and organize the
+                  index</h4>
                 </div>
               </div>
             </div>
@@ -8275,6 +8286,45 @@ for i in range(nres):
                   indexes for a search, this parameter must be
                   defined identically for all. Changing the value
                   implies an index reset.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.INDEXSTOREDOCTEXT"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.INDEXSTOREDOCTEXT"></a><span class="term"><code class="varname">indexStoreDocText</code></span></dt>
+                <dd>
+                  <p>Decide if we store the documents' text content
+                  in the index. Storing the text allows extracting
+                  snippets from it at query time, instead of
+                  building them from index position data. Newer
+                  Xapian index formats have rendered our use of
+                  positions list unacceptably slow in some cases.
+                  The last Xapian index format with good
+                  performance for the old method is Chert, which is
+                  default for 1.2, still supported but not default
+                  in 1.4 and will be dropped in 1.6. The stored
+                  document text is translated from its original
+                  format to UTF-8 plain text, but not stripped of
+                  upper-case, diacritics, or punctuation signs.
+                  Storing it increases the index size by 10-20%
+                  typically, but also allows for nicer snippets, so
+                  it may be worth enabling it even if not strictly
+                  needed for performance if you can afford the
+                  space. The variable only has an effect when
+                  creating an index, meaning that the xapiandb
+                  directory must not exist yet. Its exact effect
+                  depends on the Xapian version. For Xapian 1.4, if
+                  the variable is set to 0, the Chert format will
+                  be used, and the text will not be stored. If the
+                  variable is 1, Glass will be used, and the text
+                  stored. For Xapian 1.2, and for versions after
+                  1.5 and newer, the index format is always the
+                  default, but the variable controls if the text is
+                  stored or not, and the abstract generation
+                  method. With Xapian 1.5 and later, and the
+                  variable set to 0, abstract generation may be
+                  very slow, but this setting may still be useful
+                  to save space if you do not use abstract
+                  generation at all.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.NONUMBERS" id=

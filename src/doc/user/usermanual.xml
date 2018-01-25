@@ -1847,7 +1847,8 @@
           current result. I can't remember a single instance where this
           function was actually useful to me...</para>
 
-          <para id="RCL.SEARCH.GUI.RESULTLIST.MENU.SNIPPETS">The <guilabel>Open Snippets Window</guilabel> entry will only
+          <para id="RCL.SEARCH.GUI.RESULTLIST.MENU.SNIPPETS">The
+          <guilabel>Open Snippets Window</guilabel> entry will only 
           appear for documents which support page breaks (typically
           PDF, Postscript, DVI). The snippets window lists extracts from
           the document, taken around search terms occurrences, along with the
@@ -5013,16 +5014,22 @@
                 
                 <varlistentry>
                   <term>Query.execute(query_string, stemming=1, 
-                  stemlang="english")</term>
+                  stemlang="english", fetchtext=False)</term>
                   <listitem><para>Starts a search
                   for <replaceable>query_string</replaceable>, a &RCL;
-                  search language string.</para></listitem>
+                  search language string. If the index stores the document
+                  texts and <literal>fetchtext</literal> is True, store the
+                  document extracted text in
+                  <literal>doc.text</literal>.</para></listitem> 
                 </varlistentry>
 
                 <varlistentry>
-                  <term>Query.executesd(SearchData)</term>
-                  <listitem><para>Starts a search for the query defined by the
-                  SearchData object.</para></listitem>
+                  <term>Query.executesd(SearchData, fetchtext=False)</term>
+                  <listitem><para>Starts a search for the query defined by
+                  the SearchData object. If the index stores the document
+                  texts and <literal>fetchtext</literal> is True, store the
+                  document extracted text in
+                  <literal>doc.text</literal>.</para></listitem>
                 </varlistentry>
 
                 <varlistentry>
