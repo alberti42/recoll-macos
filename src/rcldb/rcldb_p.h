@@ -30,9 +30,6 @@
 #endif // IDX_THREADS
 #include "xmacros.h"
 
-// Store raw doc text in data record or metadata ?
-#undef RAWTEXT_IN_DATA
-#define RAWTEXT_IN_METADATA
 
 namespace Rcl {
 
@@ -55,15 +52,10 @@ public:
     // available on the caller site.
     // Take some care to avoid sharing string data (if string impl is cow)
     DbUpdTask(Op _op, const string& ud, const string& un, 
-	      Xapian::Document *d, size_t tl
-#ifdef RAWTEXT_IN_METADATA
-              , string& rztxt
-#endif
+	      Xapian::Document *d, size_t tl, string& rztxt
         ) : op(_op), udi(ud.begin(), ud.end()), uniterm(un.begin(), un.end()), 
             doc(d), txtlen(tl) {
-#ifdef RAWTEXT_IN_METADATA
         rawztext.swap(rztxt);
-#endif
     }
     // Udi and uniterm equivalently designate the doc
     Op op;
@@ -74,9 +66,7 @@ public:
     // purge because we actually don't know it, and the code fakes a
     // text length based on the term count.
     size_t txtlen;
-#ifdef RAWTEXT_IN_METADATA
     string rawztext; // Compressed doc text
-#endif
 };
 #endif // IDX_THREADS
 
@@ -119,10 +109,7 @@ class Db::Native {
     // Final steps of doc update, part which need to be single-threaded
     bool addOrUpdateWrite(const string& udi, const string& uniterm, 
 			  Xapian::Document *doc, size_t txtlen
-#ifdef RAWTEXT_IN_METADATA
-                          , const string& rawztext
-#endif
-        );
+                          , const string& rawztext);
 
     /** Delete all documents which are contained in the input document, 
      * which must be a file-level one.
@@ -141,7 +128,8 @@ class Db::Native {
     bool getPagePositions(Xapian::docid docid, vector<int>& vpos);
     int getPageNumberForPosition(const vector<int>& pbreaks, int pos);
 
-    bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc);
+    bool dbDataToRclDoc(Xapian::docid docid, std::string &data, Doc &doc,
+                        bool fetchtext = false);
 
     size_t whatDbIdx(Xapian::docid id);
 
@@ -193,7 +181,6 @@ class Db::Native {
     /** Check if a page position list is defined */
     bool hasPages(Xapian::docid id);
 
-#ifdef RAWTEXT_IN_METADATA
     std::string rawtextMetaKey(Xapian::docid did) {
         // Xapian's Olly Betts avises to use a key which will
         // sort the same as the docid (which we do), and to
@@ -205,10 +192,10 @@ class Db::Native {
         sprintf(buf, "%010d", did);
         return buf;
     }
-#endif
+
+    bool getRawText(Xapian::docid docid, string& rawtext);
 
     void deleteDocument(Xapian::docid docid) {
-#ifdef RAWTEXT_IN_METADATA
         string metareason;
         XAPTRY(xwdb.set_metadata(rawtextMetaKey(docid), string()),
                xwdb, metareason);
@@ -217,7 +204,6 @@ class Db::Native {
                    metareason << "\n");
             // not fatal
         }
-#endif
         xwdb.delete_document(docid);
     }
 };

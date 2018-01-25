@@ -63,8 +63,8 @@ namespace Rcl {
 // is incompatible anyway.
 enum value_slot {
     // Omega-compatible values:
-    VALUE_LASTMOD = 0,	// 4 byte big endian value - seconds since 1970.
-    VALUE_MD5 = 1,	// 16 byte MD5 checksum of original document.
+    VALUE_LASTMOD = 0,  // 4 byte big endian value - seconds since 1970.
+    VALUE_MD5 = 1,      // 16 byte MD5 checksum of original document.
     VALUE_SIZE = 2,     // sortable_serialise(<file size in bytes>)
 
     ////////// Recoll only:
@@ -80,24 +80,16 @@ class Query;
 class TermMatchEntry {
 public:
     TermMatchEntry() 
-	: wcf(0) 
-    {
-    }
+        : wcf(0) {}
     TermMatchEntry(const string& t, int f, int d)
-	: term(t), wcf(f), docs(d) 
-    {
-    }
+        : term(t), wcf(f), docs(d) {}
     TermMatchEntry(const string& t)
-    : term(t), wcf(0) 
-    {
+        : term(t), wcf(0) {}
+    bool operator==(const TermMatchEntry &o) const { 
+        return term == o.term;
     }
-    bool operator==(const TermMatchEntry &o) const 
-    { 
-	return term == o.term;
-    }
-    bool operator<(const TermMatchEntry &o) const 
-    { 
-	return term < o.term;
+    bool operator<(const TermMatchEntry &o) const { 
+        return term < o.term;
     }
 
     string term;
@@ -108,13 +100,11 @@ public:
 /** Term match result list header: statistics and global info */
 class TermMatchResult {
 public:
-    TermMatchResult() 
-    {
-	clear();
+    TermMatchResult() {
+        clear();
     }
-    void clear() 
-    {
-	entries.clear(); 
+    void clear() {
+        entries.clear(); 
     }
     // Term expansion
     vector<TermMatchEntry> entries;
@@ -125,7 +115,7 @@ public:
 class DbStats {
 public:
     DbStats()
-	:dbdoccount(0), dbavgdoclen(0), mindoclen(0), maxdoclen(0) { }
+        :dbdoccount(0), dbavgdoclen(0), mindoclen(0), maxdoclen(0) {}
     // Index-wide stats
     unsigned int dbdoccount;
     double       dbavgdoclen;
@@ -137,27 +127,27 @@ public:
 inline bool has_prefix(const string& trm)
 {
     if (o_index_stripchars) {
-	return !trm.empty() && 'A' <= trm[0] && trm[0] <= 'Z';
+        return !trm.empty() && 'A' <= trm[0] && trm[0] <= 'Z';
     } else {
-	return !trm.empty() && trm[0] == ':';
+        return !trm.empty() && trm[0] == ':';
     }
 }
 
 inline string strip_prefix(const string& trm)
 {
     if (trm.empty())
-	return trm;
+        return trm;
     string::size_type st = 0;
     if (o_index_stripchars) {
-	st = trm.find_first_not_of("ABCDEFIJKLMNOPQRSTUVWXYZ");
-	if (st == string::npos)
-	    return string();
+        st = trm.find_first_not_of("ABCDEFIJKLMNOPQRSTUVWXYZ");
+        if (st == string::npos)
+            return string();
     } else {
-	if (has_prefix(trm)) {
-	    st = trm.find_last_of(":") + 1;
-	} else {
-	    return trm;
-	}
+        if (has_prefix(trm)) {
+            st = trm.find_last_of(":") + 1;
+        } else {
+            return trm;
+        }
     }
     return trm.substr(st);
 }
@@ -165,9 +155,9 @@ inline string strip_prefix(const string& trm)
 inline string wrap_prefix(const string& pfx) 
 {
     if (o_index_stripchars) {
-	return pfx;
+        return pfx;
     } else {
-	return cstr_colon + pfx + cstr_colon;
+        return cstr_colon + pfx + cstr_colon;
     }
 }
 
@@ -175,7 +165,7 @@ inline string wrap_prefix(const string& pfx)
  * Wrapper class for the native database.
  */
 class Db {
- public:
+public:
     // A place for things we don't want visible here.
     class Native;
     friend class Native;
@@ -203,13 +193,11 @@ class Db {
      * special chars... 
      * @param with_aspell test for use with aspell, else for xapian speller
      */
-    static bool isSpellingCandidate(const string& term, bool with_aspell=true)
-    {
-	if (term.empty() || term.length() > 50)
-	    return false;
-	if (has_prefix(term))
-	    return false;
-	Utf8Iter u8i(term);
+    static bool isSpellingCandidate(const string& term, bool with_aspell=true) {
+        if (term.empty() || term.length() > 50 || has_prefix(term))
+            return false;
+
+        Utf8Iter u8i(term);
         if (with_aspell) {
             // If spelling with aspell, neither katakana nor other cjk
             // scripts are candidates
@@ -232,10 +220,10 @@ class Db {
             return false;
 #endif
         }
-	if (term.find_first_of(" !\"#$%&()*+,-./0123456789:;<=>?@[\\]^_`{|}~") 
-	    != string::npos)
-	    return false;
-	return true;
+        if (term.find_first_of(" !\"#$%&()*+,-./0123456789:;<=>?@[\\]^_`{|}~") 
+            != string::npos)
+            return false;
+        return true;
     }
 
     /** Return spelling suggestion */
@@ -283,7 +271,7 @@ class Db {
     void setExistingFlags(const string& udi, unsigned int docid);
 
     /** Indicate if we are doing a systematic reindex. This complements
-	needUpdate() return */
+        needUpdate() return */
     bool inFullReset() {return o_inPlaceReset || m_mode == DbTrunc;}
 
     /** Add or update document identified by unique identifier.
@@ -305,8 +293,8 @@ class Db {
      *   much as possible depending on the document type. 
      *   ** doc will be modified in a destructive way **
      */
-    bool addOrUpdate(const string &udi, 
-		     const string &parent_udi, Doc &doc);
+    bool addOrUpdate(const string &udi, const string &parent_udi, Doc &doc);
+
 #ifdef IDX_THREADS
     void waitUpdIdle();
 #endif
@@ -314,8 +302,8 @@ class Db {
     /** Delete document(s) for given UDI, including subdocs */
     bool purgeFile(const string &udi, bool *existed = 0);
     /** Delete subdocs with an out of date sig. We do this to purge
-	obsolete subdocs during a partial update where no general purge
-	will be done */
+        obsolete subdocs during a partial update where no general purge
+        will be done */
     bool purgeOrphans(const string &udi);
 
     /** Remove documents that no longer exist in the file system. This
@@ -377,20 +365,19 @@ class Db {
      *        in the TermMatchResult header
      */
     enum MatchType {ET_NONE=0, ET_WILD=1, ET_REGEXP=2, ET_STEM=3, 
-		    ET_DIACSENS=8, ET_CASESENS=16, ET_SYNEXP=32, ET_PATHELT=64};
-    int matchTypeTp(int tp) 
-    {
-	return tp & 7;
+                    ET_DIACSENS=8, ET_CASESENS=16, ET_SYNEXP=32, ET_PATHELT=64};
+    int matchTypeTp(int tp) {
+        return tp & 7;
     }
     bool termMatch(int typ_sens, const string &lang, const string &term, 
-		   TermMatchResult& result, int max = -1,
-		   const string& field = "", vector<string> *multiwords = 0);
+                   TermMatchResult& result, int max = -1,
+                   const string& field = "", vector<string> *multiwords = 0);
     bool dbStats(DbStats& stats, bool listFailed);
     /** Return min and max years for doc mod times in db */
     bool maxYearSpan(int *minyear, int *maxyear);
     /** Return all mime types in index. This can be different from the
-	ones defined in the config because of 'file' command
-	usage. Inserts the types at the end of the parameter */
+        ones defined in the config because of 'file' command
+        usage. Inserts the types at the end of the parameter */
     bool getAllDbMimeTypes(std::vector<std::string>&);
 
     /** Wildcard expansion specific to file names. Internal/sdata use only */
@@ -398,13 +385,11 @@ class Db {
 
     /** Set parameters for synthetic abstract generation */
     void setAbstractParams(int idxTrunc, int synthLen, int syntCtxLen);
-    int getAbsCtxLen() const 
-    {
-	return m_synthAbsWordCtxLen;
+    int getAbsCtxLen() const {
+        return m_synthAbsWordCtxLen;
     }
-    int getAbsLen() const
-    {
-	return m_synthAbsLen;
+    int getAbsLen() const {
+        return m_synthAbsLen;
     }
     /** Get document for given udi
      *
@@ -453,28 +438,26 @@ class Db {
     bool termExists(const string& term);
     /** Test if terms stem to different roots. */
     bool stemDiffers(const string& lang, const string& term, 
-		     const string& base);
+                     const string& base);
 
     const RclConfig *getConf() {return m_config;}
 
     /** 
-	Activate the "in place reset" mode where all documents are
-	considered as needing update. This is a global/per-process
-	option, and can't be reset. It should be set at the start of
-	the indexing pass. 2012-10: no idea why this is done this way...
+        Activate the "in place reset" mode where all documents are
+        considered as needing update. This is a global/per-process
+        option, and can't be reset. It should be set at the start of
+        the indexing pass. 2012-10: no idea why this is done this way...
     */
     static void setInPlaceReset() {o_inPlaceReset = true;}
 
     /** Flush interval get/set. This is used by the first indexing
-	pass to override the config value and flush more rapidly
-	initially so that the user can quickly play with queries */
-    int getFlushMb() 
-    {
-	return  m_flushMb;
+        pass to override the config value and flush more rapidly
+        initially so that the user can quickly play with queries */
+    int getFlushMb() {
+        return  m_flushMb;
     }
-    void setFlushMb(int mb)
-    {
-	m_flushMb = mb;
+    void setFlushMb(int mb) {
+        m_flushMb = mb;
     }
     bool doFlush();
 
@@ -556,8 +539,8 @@ private:
     // Reinitialize when adding/removing additional dbs
     bool adjustdbs(); 
     bool idxTermMatch(int typ_sens, const string &lang, const string &term, 
-		      TermMatchResult& result, int max = -1, 
-		      const string& field = cstr_null);
+                      TermMatchResult& result, int max = -1, 
+                      const string& field = cstr_null);
 
     // Flush when idxflushmb is reached
     bool maybeflush(int64_t moretext);

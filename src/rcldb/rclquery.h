@@ -66,25 +66,21 @@ class Query {
     ~Query();
 
     /** Get explanation about last error */
-    std::string getReason() const
-    {
+    std::string getReason() const {
 	return m_reason;
     }
 
     /** Choose sort order. Must be called before setQuery */
     void setSortBy(const std::string& fld, bool ascending = true);
-    const std::string& getSortBy() const 
-    {
+    const std::string& getSortBy() const {
 	return m_sortField;
     }
-    bool getSortAscending() const 
-    {
+    bool getSortAscending() const {
 	return m_sortAscending;
     }
 
     /** Return or filter results with identical content checksum */
-    void setCollapseDuplicates(bool on) 
-    {
+    void setCollapseDuplicates(bool on) {
 	m_collapseDuplicates = on;
     }
 
@@ -98,7 +94,7 @@ class Query {
     int getResCnt();
 
     /** Get document at rank i in current query results. */
-    bool getDoc(int i, Doc &doc);
+    bool getDoc(int i, Doc &doc, bool fetchtext = false);
 
     /** Get possibly expanded list of query terms */
     bool getQueryTerms(std::vector<std::string>& terms);
@@ -117,8 +113,7 @@ class Query {
     int getFirstMatchPage(const Doc &doc, std::string& term);
 
     /** Retrieve a reference to the searchData we are using */
-    std::shared_ptr<SearchData> getSD() 
-    {
+    std::shared_ptr<SearchData> getSD() {
 	return m_sd;
     }
 
@@ -126,8 +121,7 @@ class Query {
     std::vector<std::string> expand(const Doc &doc);
 
     /** Return the Db we're set for */
-    Db *whatDb() const
-    {
+    Db *whatDb() const {
 	return m_db;
     }
 

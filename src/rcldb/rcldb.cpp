@@ -202,12 +202,8 @@ void *DbUpdWorker(void* vdbp)
 	switch (tsk->op) {
 	case DbUpdTask::AddOrUpdate:
 	    LOGDEB("DbUpdWorker: got add/update task, ql " << qsz << "\n");
-	    status = ndbp->addOrUpdateWrite(tsk->udi, tsk->uniterm, 
-					    tsk->doc, tsk->txtlen
-#ifdef RAWTEXT_IN_METADATA
-                          , tsk->rawztext
-#endif
-                );
+	    status = ndbp->addOrUpdateWrite(
+                tsk->udi, tsk->uniterm, tsk->doc, tsk->txtlen, tsk->rawztext);
 	    break;
 	case DbUpdTask::Delete:
 	    LOGDEB("DbUpdWorker: got delete task, ql " << qsz << "\n");
@@ -267,9 +263,12 @@ void Db::Native::openWrite(const string& dir, Db::OpenMode mode)
         // to force using Chert. No sense in doing this if we are
         // storing the text anyway.
 #if XAPIAN_AT_LEAST(1,3,0) && XAPIAN_HAS_CHERT_BACKEND
-        // New Xapian with Chert support. Use Chert and the old
-        // abstract generation method, except if told otherwise by the
-        // configuration.
+        // Xapian with Glass and Chert support. If storedoctext is
+        // specified in the configuration, use the default backend
+        // (Glass), else force Chert. There might be reasons why
+        // someone would want to use Chert and store text anyway, but
+        // it's an exotic case, and things are complicated enough
+        // already.
         if (o_index_storedoctext) {
             xwdb = Xapian::WritableDatabase(dir, action);
             m_storetext = true;
@@ -286,15 +285,13 @@ void Db::Native::openWrite(const string& dir, Db::OpenMode mode)
             xwdb = Xapian::WritableDatabase(stub, action);
             m_storetext = false;
         }
-#elif ! XAPIAN_AT_LEAST(1,3,0)
-        // Old Xapian. Use the default index format and let the user
-        // decide of the abstract generation method.
+#elif (! XAPIAN_AT_LEAST(1,3,0)) || XAPIAN_AT_LEAST(1,5,0)
+        // Old Xapian (chert only) or newer (no chert). Use the
+        // default index backend and let the user decide of the
+        // abstract generation method. The configured default is to
+        // store the text.
         xwdb = Xapian::WritableDatabase(dir, action);
         m_storetext = o_index_storedoctext;
-#else
-        // Newer Xapian with no Chert support. Store the text.
-        xwdb = Xapian::WritableDatabase(dir, action);
-        m_storetext = true;
 #endif
         // Set the storetext value inside the index descriptor (new
         // with recoll 1.24, maybe we'll have other stuff to store in
@@ -533,7 +530,7 @@ Xapian::docid Db::Native::getDoc(const string& udi, int idxi,
 
 // Turn data record from db into document fields
 bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data, 
-				Doc &doc)
+				Doc &doc, bool fetchtext)
 {
     LOGDEB2("Db::dbDataToRclDoc: data:\n" << data << "\n");
     ConfSimple parms(data);
@@ -593,6 +590,9 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     }
     doc.meta[Doc::keyurl] = doc.url;
     doc.meta[Doc::keymt] = doc.dmtime.empty() ? doc.fmtime : doc.dmtime;
+    if (fetchtext) {
+        getRawText(docid, doc.text);
+    }
     return true;
 }
 
@@ -672,16 +672,33 @@ int Db::Native::getPageNumberForPosition(const vector<int>& pbreaks, int pos)
     return int(it - pbreaks.begin() + 1);
 }
 
+bool Db::Native::getRawText(Xapian::docid docid, string& rawtext)
+{
+    if (!m_storetext) {
+        LOGDEB("Db::Native::getRawText: document text not stored in index\n");
+        return false;
+    }
+    string reason;
+    XAPTRY(rawtext = xrdb.get_metadata(rawtextMetaKey(docid)), xrdb, reason);
+    if (!reason.empty()) {
+        LOGERR("Rcl::Db::getRawText: could not get value: " << reason << endl);
+        return false;
+    }
+    if (rawtext.empty()) {
+        return true;
+    }
+    ZLibUtBuf cbuf;
+    inflateToBuf(rawtext.c_str(), rawtext.size(), cbuf);
+    rawtext.assign(cbuf.getBuf(), cbuf.getCnt());
+    return true;
+}
+
 // Note: we're passed a Xapian::Document* because Xapian
 // reference-counting is not mt-safe. We take ownership and need
 // to delete it before returning.
-bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm, 
-				  Xapian::Document *newdocument_ptr, 
-                                  size_t textlen
-#ifdef RAWTEXT_IN_METADATA
-                          , const string& rawztext
-#endif
-    )
+bool Db::Native::addOrUpdateWrite(
+    const string& udi, const string& uniterm, Xapian::Document *newdocument_ptr, 
+    size_t textlen, const string& rawztext)
 {
 #ifdef IDX_THREADS
     Chrono chron;
@@ -738,7 +755,6 @@ bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm,
 	}
     }
 
-#ifdef RAWTEXT_IN_METADATA
     XAPTRY(xwdb.set_metadata(rawtextMetaKey(did), rawztext),
            xwdb, m_rcldb->m_reason);
     if (!m_rcldb->m_reason.empty()) {
@@ -746,7 +762,6 @@ bool Db::Native::addOrUpdateWrite(const string& udi, const string& uniterm,
                m_rcldb->m_reason << "\n");
         // This only affects snippets, so let's say not fatal
     }
-#endif
     
     // Test if we're over the flush threshold (limit memory usage):
     bool ret = m_rcldb->maybeflush(textlen);
@@ -1436,9 +1451,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
     // Udi unique term: this is used for file existence/uptodate
     // checks, and unique id for the replace_document() call.
     string uniterm = make_uniterm(udi);
-#if defined(RAWTEXT_IN_METADATA)
-        string rawztext; // Doc compressed text
-#endif
+    string rawztext; // Doc compressed text
 
     if (doc.onlyxattr) {
 	// Only updating an existing doc with new extended attributes
@@ -1553,13 +1566,11 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	if (!splitter.text_to_words(doc.text)) {
 	    LOGDEB("Db::addOrUpdate: split failed for main text\n");
         } else {
-#if defined(RAWTEXT_IN_METADATA)
             if (m_ndb->m_storetext) {
                 ZLibUtBuf buf;
                 deflateToBuf(doc.text.c_str(), doc.text.size(), buf);
                 rawztext.assign(buf.getBuf(), buf.getCnt());
             }
-#endif
         }
 
 #ifdef TEXTSPLIT_STATS
@@ -1771,23 +1782,14 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	    newdocument.add_boolean_term(wrap_prefix("XM") + *md5);
 	}
 
-#ifdef RAWTEXT_IN_DATA
-        if (m_ndb->m_storetext) {
-            RECORD_APPEND(record, string("RAWTEXT"),
-                          neutchars(doc.text, cstr_nc));
-        }
-#endif
 	LOGDEB0("Rcl::Db::add: new doc record:\n" << record << "\n");
 	newdocument.set_data(record);
     }
 #ifdef IDX_THREADS
     if (m_ndb->m_havewriteq) {
-	DbUpdTask *tp = new DbUpdTask(DbUpdTask::AddOrUpdate, udi, uniterm, 
-				      newdocument_ptr, doc.text.length()
-#ifdef RAWTEXT_IN_METADATA
-                                      , rawztext
-#endif
-            );
+	DbUpdTask *tp = new DbUpdTask(
+            DbUpdTask::AddOrUpdate, udi, uniterm, newdocument_ptr,
+            doc.text.length(), rawztext);
 	if (!m_ndb->m_wqueue.put(tp)) {
 	    LOGERR("Db::addOrUpdate:Cant queue task\n");
             delete newdocument_ptr;
@@ -1799,11 +1801,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 #endif
 
     return m_ndb->addOrUpdateWrite(udi, uniterm, newdocument_ptr,
-				   doc.text.length()
-#ifdef RAWTEXT_IN_METADATA
-                                   , rawztext
-#endif
-        );
+				   doc.text.length(), rawztext);
 }
 
 bool Db::Native::docToXdocXattrOnly(TextSplitDb *splitter, const string &udi, 
@@ -2230,11 +2228,7 @@ bool Db::purgeFile(const string &udi, bool *existed)
     if (m_ndb->m_havewriteq) {
         string rztxt;
 	DbUpdTask *tp = new DbUpdTask(DbUpdTask::Delete, udi, uniterm, 
-				      0, (size_t)-1,
-#if defined(RAWTEXT_IN_METADATA)
-                                      rztxt
-#endif
-            );
+				      0, (size_t)-1, rztxt);
 	if (!m_ndb->m_wqueue.put(tp)) {
 	    LOGERR("Db::purgeFile:Cant queue task\n");
 	    return false;
@@ -2262,11 +2256,7 @@ bool Db::purgeOrphans(const string &udi)
     if (m_ndb->m_havewriteq) {
         string rztxt;
 	DbUpdTask *tp = new DbUpdTask(DbUpdTask::PurgeOrphans, udi, uniterm, 
-				      0, (size_t)-1,
-#ifdef RAWTEXT_IN_METADATA
-                                      rztxt
-#endif
-            );
+				      0, (size_t)-1, rztxt);
 	if (!m_ndb->m_wqueue.put(tp)) {
 	    LOGERR("Db::purgeFile:Cant queue task\n");
 	    return false;

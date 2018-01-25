@@ -329,41 +329,10 @@ int Query::Native::abstractFromText(
     )
 {
     Xapian::Database& xrdb(ndb->xrdb);
-    Xapian::Document xdoc;
 
-    string reason;
-    XAPTRY(xdoc = xrdb.get_document(docid), xrdb, reason);
-    if (!reason.empty()) {
-        LOGERR("abstractFromText: could not get doc: " << reason << endl);
-        return ABSRES_ERROR;
-    }
-
-    string rawtext, data;
-#ifdef RAWTEXT_IN_DATA
-    XAPTRY(data = xdoc.get_data(), xrdb, reason);
-    if (!reason.empty()) {
-        LOGERR("abstractFromText: could not get data: " << reason << endl);
-        return ABSRES_ERROR;
-    }
-    Doc doc;
-    if (ndb->dbDataToRclDoc(docid, data, doc)) {
-        rawtext = doc.meta["RAWTEXT"];
-    }
-#endif
-#ifdef RAWTEXT_IN_METADATA
-    XAPTRY(rawtext = ndb->xrdb.get_metadata(ndb->rawtextMetaKey(docid)),
-           ndb->xrdb, reason);
-    if (!reason.empty()) {
-        LOGERR("abstractFromText: could not get value: " << reason << endl);
-        return ABSRES_ERROR;
-    }
-    ZLibUtBuf cbuf;
-    inflateToBuf(rawtext.c_str(), rawtext.size(), cbuf);
-    rawtext.assign(cbuf.getBuf(), cbuf.getCnt());
-#endif
-
-    if (rawtext.empty()) {
-        LOGDEB0("abstractFromText: no text\n");
+    string rawtext;
+    if (!ndb->getRawText(docid, rawtext)) {
+        LOGDEB0("abstractFromText: can't fetch text\n");
         return ABSRES_ERROR;
     }
 

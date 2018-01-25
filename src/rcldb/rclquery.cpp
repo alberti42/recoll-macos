@@ -64,14 +64,14 @@ static const string& docfToDatf(const string& df)
 // custom field data will have to be processed before insertion to
 // achieve equivalent results.
 #if XAPIAN_MAJOR_VERSION == 1 && XAPIAN_MINOR_VERSION < 2
-class QSorter : public Xapian::Sorter {
+class QSorter : public Xapian::Sorter
 #else
-class QSorter : public Xapian::KeyMaker {
+class QSorter : public Xapian::KeyMaker
 #endif
+{
 public:
     QSorter(const string& f) 
-        : m_fld(docfToDatf(f) + "=") 
-    {
+        : m_fld(docfToDatf(f) + "=") {
         m_ismtime = !m_fld.compare("dmtime=");
         if (m_ismtime)
             m_issize = false;
@@ -80,8 +80,7 @@ public:
                 !m_fld.compare("pcbytes=");
     }
 
-    virtual std::string operator()(const Xapian::Document& xdoc) const 
-    {
+    virtual std::string operator()(const Xapian::Document& xdoc) const {
         string data = xdoc.get_data();
         // It would be simpler to do the record->Rcl::Doc thing, but
         // hand-doing this will be faster. It makes more assumptions
@@ -372,7 +371,7 @@ int Query::getResCnt()
 // Note that as stated by a Xapian developer, Enquire searches from
 // scratch each time get_mset() is called. So the better performance
 // on subsequent calls is probably only due to disk caching.
-bool Query::getDoc(int xapi, Doc &doc)
+bool Query::getDoc(int xapi, Doc &doc, bool fetchtext)
 {
     LOGDEB1("Query::getDoc: xapian enquire index " << xapi << "\n");
     if (ISNULL(m_nq) || !m_nq->xenquire) {
@@ -451,7 +450,7 @@ bool Query::getDoc(int xapi, Doc &doc)
     }
 
     // Parse xapian document's data and populate doc fields
-    return m_db->m_ndb->dbDataToRclDoc(docid, data, doc);
+    return m_db->m_ndb->dbDataToRclDoc(docid, data, doc, fetchtext);
 }
 
 vector<string> Query::expand(const Doc &doc)
