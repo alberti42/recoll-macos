@@ -492,7 +492,7 @@ static inline bool isdigit(int what, unsigned int flgs)
 #define STATS_INC_WORDCHARS
 #endif
 
-vector<CharFlags> splitFlags = {
+vector<CharFlags> splitFlags{
     {TextSplit::TXTS_NOSPANS, "nospans"},
     {TextSplit::TXTS_ONLYSPANS, "onlyspans"},
     {TextSplit::TXTS_KEEPWILD, "keepwild"}

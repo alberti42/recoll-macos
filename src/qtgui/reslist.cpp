@@ -407,6 +407,8 @@ void ResList::setDocSource(std::shared_ptr<DocSequence> nsource)
 {
     LOGDEB("ResList::setDocSource()\n");
     m_source = std::shared_ptr<DocSequence>(new DocSource(theconfig, nsource));
+    if (m_pager)
+        m_pager->setDocSource(m_source);
 }
 
 // A query was executed, or the filtering/sorting parameters changed,

@@ -59,6 +59,7 @@ using namespace std;
 #include "rclinit.h"
 #include "internfile.h"
 #include "utf8fn.h"
+#include "wipedir.h"
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"
 #endif
@@ -255,6 +256,18 @@ void Db::Native::openWrite(const string& dir, Db::OpenMode mode)
     int action = (mode == Db::DbUpd) ? Xapian::DB_CREATE_OR_OPEN :
         Xapian::DB_CREATE_OR_OVERWRITE;
 
+#ifdef _WIN32
+    // Xapian is quite bad at erasing partial db which can
+    // occur because of open file deletion errors on
+    // Windows. 
+    if (mode == DbTrunc) {
+        if (path_exists(path_cat(dir, "iamchert"))) {
+            wipedir(dir);
+            unlink(dir.c_str());
+        }
+    }
+#endif
+    
     if (::access(dir.c_str(), 0) == 0) {
         // Existing index
         xwdb = Xapian::WritableDatabase(dir, action);
@@ -874,7 +887,9 @@ Db::~Db()
     LOGDEB("Db::~Db: isopen " << m_ndb->m_isopen << " m_iswritable " <<
            m_ndb->m_iswritable << "\n");
     i_close(true);
+#ifdef RCL_USE_ASPELL
     delete m_aspell;
+#endif
     delete m_config;
 }
 

@@ -451,13 +451,16 @@ void RclMain::newDupsW(const Rcl::Doc, const vector<Rcl::Doc> dups)
 
 void RclMain::showSnippets(Rcl::Doc doc)
 {
-    SnippetsW *sp = new SnippetsW(doc, m_source);
-    connect(sp, SIGNAL(startNativeViewer(Rcl::Doc, int, QString)),
+    if (m_snippets) {
+        deleteZ(m_snippets);
+    }
+    m_snippets = new SnippetsW(doc, m_source);
+    connect(m_snippets, SIGNAL(startNativeViewer(Rcl::Doc, int, QString)),
 	    this, SLOT(startNativeViewer(Rcl::Doc, int, QString)));
-    connect(new QShortcut(quitKeySeq, sp), SIGNAL (activated()), 
+    connect(new QShortcut(quitKeySeq, m_snippets), SIGNAL (activated()), 
 	    this, SLOT (fileExit()));
-    connect(new QShortcut(closeKeySeq, sp), SIGNAL (activated()), 
-	    sp, SLOT (close()));
-    sp->show();
+    connect(new QShortcut(closeKeySeq, m_snippets), SIGNAL (activated()), 
+	    m_snippets, SLOT (close()));
+    m_snippets->show();
 }
 
