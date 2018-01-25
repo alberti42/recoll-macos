@@ -446,10 +446,9 @@ extern bool o_index_stripchars;
 // instead of building them from index position data. Has become
 // necessary for versions of Xapian 1.6, which have dropped support
 // for the chert index format, and adopted a setup which renders our
-// use of positions list unacceptably slow in cases. 'raw' text here
-// means that the text is not stripped of upper-case, diacritics, or
-// punctuation signs. It is still translated from its original format
-// to UTF-8 plain text.
+// use of positions list unacceptably slow in cases. The text just
+// translated from its original format to UTF-8 plain text, and is not
+// stripped of upper-case, diacritics, or punctuation signs. Defaults to true.
 extern bool o_index_storedoctext;
 
 // This global variable defines if we use mtime instead of ctime for

@@ -54,20 +54,16 @@
 
 using namespace std;
 
-// Static, logically const, RclConfig members are initialized once from the
-// first object build during process initialization.
+// Static, logically const, RclConfig members or module static
+// variables are initialized once from the first object build during
+// process initialization.
 
 // We default to a case- and diacritics-less index for now
 bool o_index_stripchars = true;
-
-// Store document text in index. Allows extracting snippets from text
-// instead of building them from index position data. Has become
-// necessary for versions of Xapian 1.6, which have dropped support
-// for the chert index format, and adopted a setup which renders our
-// use of positions list unacceptably slow in cases. The text just
-// translated from its original format to UTF-8 plain text, and is not
-// stripped of upper-case, diacritics, or punctuation signs.
-bool o_index_storedoctext = false;
+// Default to storing the text contents for generating snippets. This
+// is only an approximate 10% bigger index and produces nicer
+// snippets.
+bool o_index_storedoctext = true;
 
 bool o_uptodate_test_use_mtime = false;
 
