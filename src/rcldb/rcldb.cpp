@@ -298,7 +298,7 @@ void Db::Native::openWrite(const string& dir, Db::OpenMode mode)
             xwdb = Xapian::WritableDatabase(stub, action);
             m_storetext = false;
         }
-#elif (! XAPIAN_AT_LEAST(1,3,0)) || XAPIAN_AT_LEAST(1,5,0)
+#else
         // Old Xapian (chert only) or newer (no chert). Use the
         // default index backend and let the user decide of the
         // abstract generation method. The configured default is to
