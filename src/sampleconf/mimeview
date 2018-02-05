@@ -160,6 +160,7 @@ text/x-tex = emacsclient --no-wait  %f
 text/plain = emacsclient --no-wait  %f
 text/x-awk = emacsclient --no-wait  %f
 text/x-c = emacsclient --no-wait  %f
+text/x-lua = emacsclient --no-wait  %f
 text/x-c+ = emacsclient --no-wait  %f
 text/x-c++ = emacsclient --no-wait  %f
 text/x-csv = libreoffice %f
