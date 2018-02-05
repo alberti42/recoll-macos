@@ -54,7 +54,7 @@ recollq \- command line / standard output Recoll query command.
 ]
 [
 .B \-F
-<space separated field name list>
+<quoted space separated field name list>
 ]
 <query string>
 
@@ -130,7 +130,7 @@ adds the specified Xapian index to the set used for the query. Can be
 specified multiple times.
 .PP 
 .B \-F
-<space separated field list>
+<space separated field list> (one argument, e.g. "author title")
 should be used for piping the data to another program. After 2 initial
 lines showing the actual query and the estimated result counts, it will
 print one line for each result document. Each line will have 
