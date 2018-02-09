@@ -174,8 +174,8 @@ bool MimeHandlerExec::next_document()
     }
 
     if (status) {
-	LOGERR("MimeHandlerExec: command status 0x" << status << " for " <<
-               cmd << "\n");
+	LOGERR("MimeHandlerExec: command status 0x" <<
+               std::hex << status << std::dec << " for " << cmd << "\n");
 	if (WIFEXITED(status) && WEXITSTATUS(status) == 127) {
 	    // That's how execmd signals a failed exec (most probably
 	    // a missing command). Let'hope no filter uses the same value as
