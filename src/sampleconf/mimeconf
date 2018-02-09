@@ -166,6 +166,7 @@ text/x-c+ = internal
 text/x-csharp = internal text/plain
 text/css = internal text/plain
 application/javascript = internal text/plain
+text/x-bibtex = exec rclbibtex.sh ; mimetype = text/plain
 text/x-csv = internal text/plain
 text/x-fictionbook = exec rclfb2
 text/x-gaim-log = exec rclgaim
@@ -284,6 +285,7 @@ text/x-fictionbook = document
 text/x-html-aptosid-man = aptosid-book
 text/x-html-sidux-man = sidux-book
 text/x-ini = txt
+text/x-bibtex = txt
 text/x-lua = source
 text/x-java = source
 text/x-mail = message
@@ -348,6 +350,7 @@ text = \
       text/html \
       text/plain \
       text/rtf \
+      text/x-bibtex \
       text/x-c \
       text/x-c++ \
       text/x-c+ \

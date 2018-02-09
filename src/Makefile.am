@@ -589,6 +589,7 @@ filters/rcl7z \
 filters/rclabw \
 filters/rclaptosidman \
 filters/rclaudio \
+filters/rclbibtex.sh \
 filters/rclcheckneedretry.sh \
 filters/rclchm \
 filters/rcldia \

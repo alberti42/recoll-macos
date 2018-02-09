@@ -10,6 +10,7 @@
 .srt = text/x-srt
 .ini = text/x-ini
 .csv = text/x-csv
+.bib = text/x-bibtex
 
 # Source files. 
 # Defining them with specific types allows using a specific ext viewer (in 
