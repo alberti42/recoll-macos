@@ -540,10 +540,10 @@ int ExecCmd::startExec(const string& cmd, const vector<string>& args,
     // As we are going to use execve, not execvp, do the PATH thing.
     string exe;
     if (!which(cmd, exe)) {
-        LOGERR("ExecCmd::startExec: " << (cmd) << " not found\n");
+        LOGERR("ExecCmd::startExec: " << cmd << " not found\n");
         free(argv);
         free(envv);
-        return -1;
+        return 127 << 8;
     }
 //////////////////////////////// End vfork child prepare section.
 
@@ -765,9 +765,9 @@ private:
 int ExecCmd::doexec(const string& cmd, const vector<string>& args,
                     const string *input, string *output)
 {
-
-    if (startExec(cmd, args, input != 0, output != 0) < 0) {
-        return -1;
+    int status = startExec(cmd, args, input != 0, output != 0);
+    if (status) {
+        return status;
     }
 
     // Cleanup in case we return early
