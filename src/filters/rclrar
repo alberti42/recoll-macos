@@ -28,8 +28,13 @@ except:
     print("RECFILTERROR HELPERNOTFOUND python:rarfile")
     sys.exit(1);
 
-# Requires RarFile python module. Try "sudo pip install rarfile"
+# Requires RarFile python module. Try "sudo pip install rarfile" or
+# install it with the system package manager
 #
+# Also for many files, you will need the non-free version of unrar
+# (https://www.rarlab.com/rar_add.htm). The unrar-free version fails
+# with the message "Failed the read enough data"
+# 
 # This is identical to rclzip except I did a search/replace from zip
 # to rar, and changed this comment.
 class RarExtractor:
@@ -46,7 +51,7 @@ class RarExtractor:
             rarinfo = self.rar.getinfo(ipath)
             isdir = rarinfo.isdir()
         except Exception as err:
-            self.em.rclog("extractone: getinfo failed: [%s]" % err)
+            self.em.rclog("extractone: rar.getinfo failed: [%s]" % err)
             return (True, docdata, ipath, false)
 
         if not isdir:
@@ -59,7 +64,7 @@ class RarExtractor:
                     docdata = self.rar.read(ipath)
                 ok = True
             except Exception as err:
-                self.em.rclog("extractone: failed: [%s]" % err)
+                self.em.rclog("extractone: rar.read failed: [%s]" % err)
                 ok = False
         else:
             docdata = ""
