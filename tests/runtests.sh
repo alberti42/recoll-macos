@@ -42,6 +42,11 @@ checkcmds()
 
 checkcmds recollq recollindex pxattr xadump || exit 1
 
+# Unset DISPLAY because xdg-mime may be affected by the desktop
+# environment on the X server
+unset DISPLAY
+export LC_ALL=en_US.UTF-8
+
 makeindex() {
   echo "Zeroing Index" 
   rm -rf $RECOLL_CONFDIR/xapiandb $RECOLL_CONFDIR/aspdict.*.rws

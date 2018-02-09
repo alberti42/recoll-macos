@@ -6,7 +6,7 @@ topdir=`dirname $0`/..
 initvariables $0
 
 (
-    recollq author=gnumericAuthor 
+    recollq author:gnumericAuthor 
     recollq gnumerictext
     recollq gnumericcommentaire
 ) 2> $mystderr | egrep -v '^Recoll query: ' > $mystdout

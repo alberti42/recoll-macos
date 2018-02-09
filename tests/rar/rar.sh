@@ -6,7 +6,7 @@ topdir=`dirname $0`/..
 initvariables $0
 
 (
-  recollq -q sheetgen '"Are you sure you want to delete this sheet"' 
+  recollq -q dir:rar '"Are you sure you want to delete this sheet"' 
 
 )  2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
