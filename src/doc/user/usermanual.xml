@@ -6596,8 +6596,11 @@ for i in range(nres):
             section, add the following line (more about the
             <replaceable>rclblob</replaceable> indexing script
             later):<programlisting>
-            application/x-blobapp = exec rclblob
-          </programlisting></para>
+application/x-blobapp = exec rclblob</programlisting>
+          Or if the files are mostly text and you don't need to process them
+          for indexing:<programlisting>
+application/x-blobapp = internal text/plain</programlisting>
+          </para>
             </listitem>
             <listitem><para>Under the <literal>[icons]</literal>
             section, you should choose an icon to be displayed for the
@@ -6622,6 +6625,7 @@ for i in range(nres):
           programming</link> section describes in more detail how
           to write an input handler.</para> 
 
+          
         </sect3>
       </sect2>
     </sect1>

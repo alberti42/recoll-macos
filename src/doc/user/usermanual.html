@@ -9657,8 +9657,11 @@ for i in range(nres):
                   <em class="replaceable"><code>rclblob</code></em>
                   indexing script later):</p>
                   <pre class="programlisting">
-            application/x-blobapp = exec rclblob
-          </pre>
+application/x-blobapp = exec rclblob</pre>
+                  <p>Or if the files are mostly text and you don't
+                  need to process them for indexing:</p>
+                  <pre class="programlisting">
+application/x-blobapp = internal text/plain</pre>
                 </li>
                 <li class="listitem">
                   <p>Under the <code class="literal">[icons]</code>
