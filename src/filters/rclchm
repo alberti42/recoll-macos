@@ -13,8 +13,14 @@ import sys
 import os
 import re
 import posixpath
-import urlparse
-import urllib
+PY3 = sys.version > '3'
+if PY3:
+    from urllib.parse import unquote as urllib_unquote
+    from urllib.parse import urlparse as urlparse_urlparse
+else:
+    from urlparse import urlparse as urlparse_urlparse
+    from urllib import unquote as urllib_unquote
+    
 import subprocess
 
 import rclconfig
@@ -102,7 +108,7 @@ class ChmTopicsParser(HTMLParser):
             return
         # value may be url-encoded. Decode it. If there are no % in there, will
         # do nothing
-        value = urllib.unquote(value)
+        value = urllib_unquote(value)
         
         localpath = ""
         ll = value.split(":")
@@ -149,7 +155,7 @@ class ChmWalker(HTMLParser):
                 href = val
 
         path = ""
-        res = urlparse.urlparse(href)
+        res = urlparse_urlparse(href)
         if (not res.scheme or res.scheme.lower == "ms-its"):
             path = res.path
             lpath = path.split(':')
