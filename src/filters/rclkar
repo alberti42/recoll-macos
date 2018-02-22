@@ -43,6 +43,16 @@ htmltemplate = '''
 </html>
 '''
 
+PY3 = sys.version > '3'
+if PY3:
+    nlbytes = bytes('\n', encoding='iso-8859-1')
+    bsbytes = bytes('\\', encoding='iso-8859-1')
+    nullchar = 0
+else:
+    nlbytes = '\n'
+    bsbytes = '\\'
+    nullchar = chr(0)
+    
 class KarTextExtractor:
     # Afaik, the only charset encodings with null bytes are variations on
     # utf-16 and utf-32 and iso relatives. A hopefully comprehensive
@@ -91,11 +101,12 @@ class KarTextExtractor:
 
         if not data:
             return data
-
-        firstnull = data.find(chr(0))
-        if firstnull != -1:
+        try:
+            firstnull = data.index(nullchar)
             self.hadnulls = True
             data = data[0 : firstnull]
+        except:
+            pass
         return data
     
 
@@ -117,8 +128,7 @@ class KarTextExtractor:
                 self.em.rclog("Encode failed: " + str(err))
                 return ""
             
-            data = self.em.htmlescape(data).replace("\n", "<br>\n")
-
+            data = self.em.htmlescape(data).decode('utf-8').replace('\n', '<br>\n')
         return data
 
 
@@ -208,29 +218,29 @@ class KarTextExtractor:
         title = None
         author = None
         language = None
-        lyrics = ""
-        lyricsN = ""
+        lyrics = b""
+        lyricsN = b""
         self.hadnulls = False
         
         for event in stream.iterevents():
-            edata = ""
+            edata = b""
             if isinstance(event, midi.TextMetaEvent):
                 if not event.data:
                     continue
-                elif event.data[0] == '/' or event.data[0] == '\\':
-                    edata = "\n" + event.data[1:]
-                elif event.data[0] == '[' or event.data[0] == ']':
+                elif event.data[0] == b'/'[0] or event.data[0] == bsbytes[0]:
+                    edata = nlbytes + event.data[1:]
+                elif event.data[0] == b'['[0] or event.data[0] == b']'[0]:
                     edata = event.data[1:]
-                elif event.data[0] == '@':
+                elif event.data[0] == b'@'[0]:
                     if len(event.data) == 1:
                         continue
                     else:
-                        if event.data[1] == 'I':
-                            edata = event.data[2:] + '\n'
-                        elif event.data[1] == 'L':
+                        if event.data[1] == b'I'[0]:
+                            edata = event.data[2:] + nlbytes
+                        elif event.data[1] == b'L'[0]:
                             language = self.nulltrunc(event.data[2:])
                             languageN = event.data[2:]
-                        elif event.data[1] == 'T':
+                        elif event.data[1] == b'T'[0]:
                             if title is None:
                                 title = self.nulltrunc(event.data[2:])
                                 titleN = event.data[2:]
@@ -241,13 +251,13 @@ class KarTextExtractor:
                     edata = event.data
             elif isinstance(event, midi.LryricsEvent) or \
                      isinstance(event, midi.TrackNameEvent):
-                space = ""
+                space = b""
                 if isinstance(event, midi.TrackNameEvent):
-                    nl = "\n"
+                    nl = nlbytes
                 if not event.data:
                     continue
-                elif event.data[0] == '/' or event.data[0] == '\\':
-                    edata = "\n" + event.data[1:] + nl
+                elif event.data[0] == b'/'[0] or event.data[0] == bsbytes[0]:
+                    edata = nlbytes + event.data[1:] + nl
                 else:
                     edata = event.data + nl
 
@@ -295,7 +305,8 @@ class KarTextExtractor:
         title = self.reencode(title)
         author = self.reencode(author)
         lyrics = self.reencode(lyrics)
-
+        language = self.reencode(language)
+        
         self.em.setmimetype("text/html")
         docdata = htmltemplate % (title, author, language, lyrics)
 
