@@ -1,13 +1,34 @@
+# The MIT License (MIT)
+# Copyright (c) 2013 Giles F. Hall
+# https://github.com/vishnubob/python-midi/blob/master/LICENSE
+# Modifications: Copyright (c) 2012-2018 J.F. Dockes
+#
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation files
+# (the "Software"), to deal in the Software without restriction,
+# including without limitation the rights to use, copy, modify, merge,
+# publish, distribute, sublicense, and/or sell copies of the Software,
+# and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+# BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+# ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+# 
+
 from __future__ import print_function
 
 import sys
-import six
-
-import copy
-import time
-from io import BytesIO 
 from struct import unpack, pack
-from math import sqrt
+import six
 
 def debug(s):
     print("%s"%s, file=sys.stderr)
@@ -113,9 +134,6 @@ class Event(object):
         """ sort order """
         self.order      = None
 
-    def copy(self):
-        return copy.deepcopy(self)
-
     def is_event(cls, statusmsg):
         return (cls.statusmsg == (statusmsg & 0xF0))
     is_event = classmethod(is_event)
@@ -140,12 +158,6 @@ class Event(object):
         rtick = self.tick - tempo.tick
         self.msdelay = int((rtick * tempo.mpt) + tempo.msdelay)
      
-    def encode(self, delta=0, running=False):
-        encstr = ''
-        if not running:
-            encstr += chr((self.statusmsg & 0xF0) | (0x0F & self.channel))
-        return self.encode_tick(delta=delta) + encstr + self.encode_data()
-
     def decode(self, tick, statusmsg, track, runningstatus=b''):
         assert(self.is_event(statusmsg))
         self.tick = tick
@@ -159,14 +171,9 @@ class Event(object):
                                          for x in range(remainder)])
         self.decode_data()
 
-    def encode_tick(self, delta=0):
-        return write_varlen(self.tick + delta)
-
     def decode_data(self):
         pass
 
-    def encode_data(self):
-        return self.data
     
 """
 MetaEvent is a special subclass of Event that is not meant to
@@ -187,14 +194,6 @@ class MetaEvent(Event):
         return (cls.metacommand == metacmd)
     is_meta_event = classmethod(is_meta_event)
 
-    def encode(self, delta=0, running=False):
-        tick = self.encode_tick(delta=delta)
-        data = self.encode_data()
-        datalen = bytes([len(data)])
-        smsg = bytes([self.statusmsg])
-        mcmd = bytes([self.metacommand])
-        return bytes.join(b'', (tick, smsg, mcmd, datalen, data))
-
     def decode(self, tick, command, track):
         assert(self.is_meta_event(command))
         self.tick = tick
@@ -206,8 +205,6 @@ class MetaEvent(Event):
                                      for x in range(len)])
         self.decode_data()
 
-    def encode_data(self):
-        return self.data
 
 """
 EventFactory is a singleton that you should not instantiate.  It is
@@ -285,8 +282,6 @@ class NoteEvent(Event):
             self.pitch = ord(self.data[0])
             self.velocity = ord(self.data[1])
 
-    def encode_data(self):
-        return chr(self.pitch) + chr(self.velocity)
 
 class NoteOnEvent(NoteEvent):
     statusmsg = 0x90
@@ -326,8 +321,6 @@ class ControlChangeEvent(Event):
             self.control = ord(self.data[0])
             self.value = ord(self.data[1])
 
-    def encode_data(self):
-        return chr(self.contorl) + chr(self.value)
 
 class ProgramChangeEvent(Event):
     statusmsg = 0xC0
@@ -345,8 +338,6 @@ class ProgramChangeEvent(Event):
         else:
             self.value = ord(self.data[0])
 
-    def encode_data(self):
-        return chr(self.value)
 
 class ChannelAfterTouchEvent(Event):
     statusmsg = 0xD0
@@ -378,11 +369,6 @@ class PitchWheelEvent(Event):
             second = ord(self.data[1])
         self.value = ((second << 7) | first) - 0x2000
 
-    def encode_data(self):
-        value = self.value + 0x2000
-        first = chr(value & 0xFF)
-        second = chr((value >> 7) & 0xFF)
-        return first + second
 
 class SysExEvent(Event):
     statusmsg = 0xF0
@@ -526,11 +512,6 @@ class SetTempoEvent(MetaEvent):
 
         self.tempo = float(6e7) / self.mpqn
 
-    def encode_data(self):
-        self.mpqgn = int(float(6e7) / self.tempo)
-        return chr((self.mpqn & 0xFF0000) >> 16) + \
-                    chr((self.mpqn & 0xFF00) >> 8) + \
-                    chr((self.mpqn & 0xFF))
 
 class SmpteOffsetEvent(MetaEvent):
     name = 'SMPTE Offset'
@@ -563,12 +544,6 @@ class TimeSignatureEvent(MetaEvent):
             self.denominator = 2 ** ord(self.data[1])
             self.metronome = ord(self.data[2])
             self.thirtyseconds = ord(self.data[3])
-
-    def encode_data(self):
-        return chr(self.numerator) + \
-                    chr(int(sqrt(self.denominator))) + \
-                    chr(self.metronome) + \
-                    chr(self.thirtyseconds)
 
 
 class KeySignatureEvent(MetaEvent):
@@ -865,47 +840,6 @@ class EventStream(object):
             tempo = self.tempomap.get_tempo(self.endoftrack.tick)
             self.endoftrack.adjust_msdelay(tempo)
 
-class EventStreamWriter(object):
-    def __init__(self, midistream, output):
-        if isinstance(output, str):
-            output = open(output, 'w')
-        self.output = output
-        self.midistream = midistream
-        self.write_file_header()
-        for track in self.midistream:  
-            self.write_track(track)
-    
-    def write(cls, midistream, output):
-        cls(midistream, output)
-    write = classmethod(write)
-        
-    def write_file_header(self):
-        # First four bytes are MIDI header
-        packdata = pack(">LHHH", 6,    
-                            self.midistream.format, 
-                            self.midistream.trackcount, 
-                            self.midistream.resolution)
-        self.output.write('MThd%s' % packdata)
-            
-    def write_track_header(self, trklen):
-        self.output.write('MTrk%s' % pack(">L", trklen))
-
-    def write_track(self, track):
-        buf = ''
-        track = copy.copy(track)
-        track.sort()
-        last_tick = delta = 0
-        smsg = 0
-        chn = 0
-        for event in track:
-            running = ((smsg == event.statusmsg) and (chn == event.channel))
-            buf += event.encode(delta=-last_tick, running=running)
-            last_tick = event.tick
-            smsg = event.statusmsg 
-            chn = event.channel
-        self.write_track_header(len(buf))
-        self.output.write(buf)
-
 class EventStreamReader(object):
     def __init__(self, instream, outstream):
         self.eventfactory = None
@@ -989,46 +923,4 @@ def read_varlen(data):
         value += chr
     return value
 
-def write_varlen(value):
-    chr1 = chr(value & 0x7F)
-    value >>= 7
-    if value:
-        chr2 = chr((value & 0x7F) | 0x80)
-        value >>= 7
-        if value:
-            chr3 = chr((value & 0x7F) | 0x80)
-            value >>= 7
-            if value:
-                chr4 = chr((value & 0x7F) | 0x80)
-                res = chr4 + chr3 + chr2 + chr1
-            else:
-                res = chr3 + chr2 + chr1
-        else:
-            res = chr2 + chr1
-    else:
-        res = chr1
-    return res
-
-def test_varlen():
-    for value in range(0x0FFFFFFF):
-        if not (value % 0xFFFF):
-            print("%s" % hex(value))
-        datum = write_varlen(value)
-        newvalue = read_varlen(iter(datum))
-        if value != newvalue: 
-            hexstr = bytes.join(b'', map(hex, map(ord, datum)))
-            print("%s != %s (hex: %s)" % (value, newvalue, hexstr))
-
-def new_stream(tempo=120, resolution=480, format=1):
-    stream = EventStream()
-    stream.format = format
-    stream.resolution = resolution
-    stream.add_track()
-    tempoev = SetTempoEvent()
-    tempoev.tempo = tempo
-    tempoev.tick = 0
-    stream.add_event(tempoev)
-    return stream
-
 read_midifile = EventStreamReader.read
-write_midifile = EventStreamWriter.write

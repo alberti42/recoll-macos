@@ -17,7 +17,7 @@ except:
     pass
 
 try:
-    from midi import midi
+    import rclmidi as midi
 except:
     print("RECFILTERROR HELPERNOTFOUND python:midi")
     sys.exit(1);
