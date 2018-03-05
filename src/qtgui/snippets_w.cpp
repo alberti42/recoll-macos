@@ -133,7 +133,11 @@ void SnippetsW::init()
     if (titleOrFilename.empty()) {
 	titleOrFilename = utf8fn;
     }
-    setWindowTitle(QString::fromUtf8(titleOrFilename.c_str()));
+    QString title("Recoll - Snippets");
+    if (!titleOrFilename.empty()) {
+        title += QString(" : ") + QString::fromUtf8(titleOrFilename.c_str());
+    }
+    setWindowTitle(title);
 
     vector<Rcl::Snippet> vpabs;
     m_source->getAbstract(m_doc, vpabs);

@@ -156,7 +156,9 @@ private:
 ConfIndexW::ConfIndexW(QWidget *parent, RclConfig *config)
     : QDialog(parent), m_rclconf(config)
 {
-    setWindowTitle(QString::fromLocal8Bit(config->getConfDir().c_str()));
+    QString title("Recoll - Index Settings : ");
+    title += QString::fromLocal8Bit(config->getConfDir().c_str());
+    setWindowTitle(title);
     tabWidget = new QTabWidget;
     reloadPanels();
 

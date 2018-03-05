@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>User preferences</string>
+   <string>Recoll - User Preferences</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>true</bool>
