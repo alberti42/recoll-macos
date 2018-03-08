@@ -15,9 +15,9 @@ import xml.sax
 class XLSProcessData:
     def __init__(self, em, ishtml = False):
         self.em = em
-        self.out = ""
+        self.out = b""
         self.gotdata = 0
-        self.xmldata = ""
+        self.xmldata = b""
         self.ishtml = ishtml
         
     def takeLine(self, line):
@@ -25,10 +25,10 @@ class XLSProcessData:
             self.out += line + "\n"
             return
         if not self.gotdata:
-            self.out += '''<html><head>''' + \
-                        '''<meta http-equiv="Content-Type" ''' + \
-                        '''content="text/html;charset=UTF-8">''' + \
-                        '''</head><body><pre>'''
+            self.out += b'''<html><head>''' + \
+                        b'''<meta http-equiv="Content-Type" ''' + \
+                        b'''content="text/html;charset=UTF-8">''' + \
+                        b'''</head><body><pre>'''
             self.gotdata = True
         self.xmldata += line
 
@@ -36,9 +36,9 @@ class XLSProcessData:
         if self.ishtml:
             return self.out
         handler =  xlsxmltocsv.XlsXmlHandler()
-        data = xml.sax.parseString(self.xmldata, handler)
+        xml.sax.parseString(self.xmldata, handler)
         self.out += self.em.htmlescape(handler.output)
-        return self.out + '''</pre></body></html>'''
+        return self.out + b'''</pre></body></html>'''
 
 class XLSFilter:
     def __init__(self, em):
@@ -56,7 +56,7 @@ class XLSFilter:
         # Some HTML files masquerade as XLS
         try:
             data = open(fn, 'rb').read(512)
-            if data.find('html') != -1 or data.find('HTML') != -1:
+            if data.find(b'html') != -1 or data.find(b'HTML') != -1:
                 return ("cat", XLSProcessData(self.em, True))
         except Exception as err:
             self.em.rclog("Error reading %s:%s" % (fn, str(err)))

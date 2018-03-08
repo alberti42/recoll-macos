@@ -4,11 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-
-# mso-dumper is not compatible with python3
-
-from __future__ import print_function
-
+from builtins import range
 import sys, os.path, optparse
 sys.path.append(sys.path[0]+"/msodump.zip")
 
@@ -21,8 +17,8 @@ def equalsName (name, array):
     if len(name) != len(array):
         return False
 
-    for i in xrange(0, len(name)):
-        if ord(name[i]) != array[i]:
+    for i in range(0, len(name)):
+        if globals.indexbytes(name, i) != array[i]:
             return False
 
     return True
@@ -50,13 +46,13 @@ class XLDumper(object):
     def __printDirHeader (self, direntry, byteLen):
         dirname = direntry.Name
         dirname = globals.encodeName(dirname)
-        print("")
-        print("="*globals.OutputWidth)
+        globals.outputln("")
+        globals.outputln("="*globals.OutputWidth)
         if direntry.isStorage():
-            print("%s (storage)"%dirname)
+            globals.outputln("%s (storage)"%dirname)
         else:
-            print("%s (stream, size: %d bytes)"%(dirname, byteLen))
-        print("-"*globals.OutputWidth)
+            globals.outputln("%s (stream, size: %d bytes)"%(dirname, byteLen))
+        globals.outputln("-"*globals.OutputWidth)
 
     def __parseFile (self):
         file = open(self.filepath, 'rb')
@@ -71,38 +67,34 @@ class XLDumper(object):
         root = docroot.appendElement('xls-dump')
 
         for d in dirs:
-            if d.Name != "Workbook":
+            if d.Name != b"Workbook":
                 # for now, we only dump the Workbook directory stream.
                 continue
 
             dirstrm = self.strm.getDirectoryStream(d)
             data = self.__readSubStreamXML(dirstrm)
             self.__dumpDataAsXML(data, root)
-        node.prettyPrint(sys.stdout, docroot, utf8 = self.params.utf8)
+
+        node.prettyPrint(globals.utfwriter(), docroot, utf8 = self.params.utf8)
 
     def dumpCanonicalXML (self):
-        try:
-            self.__parseFile()
-            docroot = node.Root()
-            root = docroot.appendElement('xls-dump')
+        self.__parseFile()
+        docroot = node.Root()
+        root = docroot.appendElement('xls-dump')
 
-            dirEntries = self.strm.getDirectoryEntries()
-            for entry in dirEntries:
-                dirname = entry.Name
-                if dirname != "Workbook":
-                    # for now, we only dump the Workbook directory stream.
-                    continue
-                
-                dirstrm = self.strm.getDirectoryStream(entry)
-                wbmodel = self.__buildWorkbookModel(dirstrm)
-                wbmodel.encrypted = self.strmData.encrypted
-                root.appendChild(wbmodel.createDOM())
-                
-                node.prettyPrint(sys.stdout, docroot, utf8 = self.params.utf8)
+        dirEntries = self.strm.getDirectoryEntries()
+        for entry in dirEntries:
+            dirname = entry.Name
+            if dirname != b"Workbook":
+                # for now, we only dump the Workbook directory stream.
+                continue
 
-        except Exception as err:
-            print("xls-dump.py: error: %s" % err, file=sys.stderr)
-            sys.exit(1)
+            dirstrm = self.strm.getDirectoryStream(entry)
+            wbmodel = self.__buildWorkbookModel(dirstrm)
+            wbmodel.encrypted = self.strmData.encrypted
+            root.appendChild(wbmodel.createDOM())
+
+        node.prettyPrint(globals.utfwriter(), docroot, utf8 = self.params.utf8)
 
     def dump (self):
         self.__parseFile()
@@ -123,18 +115,18 @@ class XLDumper(object):
             if entry.isStorage():
                 continue
 
-            elif dirname == "Workbook":
+            elif dirname == b"Workbook":
                 success = True
                 while success:
                     success = self.__readSubStream(dirstrm)
 
-            elif dirname == "Revision Log":
+            elif dirname == b"Revision Log":
                 dirstrm.type = xlsstream.DirType.RevisionLog
                 self.__readSubStream(dirstrm)
 
-            elif dirname == "EncryptionInfo":
+            elif dirname == b"EncryptionInfo":
                 globals.dumpBytes(dirstrm.bytes, 512)
-                print("-"*globals.OutputWidth)
+                globals.outputln("-"*globals.OutputWidth)
                 info = msocrypto.EncryptionInfo(dirstrm.bytes)
                 info.read()
                 info.output()

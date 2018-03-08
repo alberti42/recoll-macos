@@ -15,20 +15,20 @@ import os
 class PPTProcessData:
     def __init__(self, em):
         self.em = em
-        self.out = ""
+        self.out = b""
         self.gotdata = 0
 
     def takeLine(self, line):
         if not self.gotdata:
-            self.out += '''<html><head>''' + \
-                        '''<meta http-equiv="Content-Type" ''' + \
-                        '''content="text/html;charset=UTF-8">''' + \
-                        '''</head><body><pre>'''
+            self.out += b'''<html><head>''' + \
+                        b'''<meta http-equiv="Content-Type" ''' + \
+                        b'''content="text/html;charset=UTF-8">''' + \
+                        b'''</head><body><pre>'''
             self.gotdata = True
-        self.out += self.em.htmlescape(line) + "<br>\n"
+        self.out += self.em.htmlescape(line) + b"<br>\n"
 
     def wrapData(self):
-        return self.out + '''</pre></body></html>'''
+        return self.out + b'''</pre></body></html>'''
 
 class PPTFilter:
     def __init__(self, em):

@@ -5,10 +5,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-# mso-dumper is not compatible with python3
-
-from __future__ import print_function
-
 import sys, os.path, getopt
 sys.path.append(sys.path[0]+"/msodump.zip")
 from msodumper import ole, pptstream, globals, olestream
@@ -51,25 +47,26 @@ class PPTDumper(object):
         dirnames = strm.getDirectoryNames()
         result = True
         for dirname in dirnames:
-            if len(dirname) == 0 or dirname == 'Root Entry':
+            sdirname = globals.nulltrunc(dirname)
+            if len(sdirname) == 0 or sdirname == b"Root Entry":
                 continue
 
             try:
                 dirstrm = strm.getDirectoryStreamByName(dirname)
             except Exception as err:
-                error("getDirectoryStreamByName(%s): %s - %s\n" % (dirname,str(err),self.filepath))
+                error("getDirectoryStreamByName(%s): %s\n" % (dirname,str(err)))
                 # The previous version was killed by the exception
                 # here, so the equivalent is to break, but maybe there
                 # is no reason to do so.
                 break
             self.__printDirHeader(dirname, len(dirstrm.bytes))
-            if  dirname == "PowerPoint Document":
+            if  sdirname == b"PowerPoint Document":
                 if not self.__readSubStream(dirstrm):
                     result = False
-            elif  dirname == "Current User":
+            elif  sdirname == b"Current User":
                 if not self.__readSubStream(dirstrm):
                     result = False
-            elif  dirname == "\x05DocumentSummaryInformation":
+            elif  sdirname == b"\x05DocumentSummaryInformation":
                 strm = olestream.PropertySetStream(dirstrm.bytes)
                 strm.read()
             else:
@@ -118,26 +115,15 @@ def main (args):
     except getopt.GetoptError:
         error("error parsing input options\n")
         usage(exname)
-        return false
+        return
 
-    status = True
-    try:
-        dumper = PPTDumper(args[0], globals.params)
-        if not dumper.dump():
-            error("ppt-dump: dump error " + args[0] + "\n")
-            status = False
-    except:
-        error("ppt-dump: FAILURE (bad format?) " + args[0] + "\n")
-        status = False
-
+    dumper = PPTDumper(args[0], globals.params)
+    if not dumper.dump():
+        error("FAILURE\n")
     if globals.params.dumpText:
-        print(globals.textdump.replace("\r", "\n"))
-    return(status)
-    
+        globals.dumptext()
+
 if __name__ == '__main__':
-    if main(sys.argv):
-        sys.exit(0)
-    else:
-        sys.exit(1)
+    main(sys.argv)
 
 # vim:set filetype=python shiftwidth=4 softtabstop=4 expandtab:
