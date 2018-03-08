@@ -85,28 +85,28 @@ class WordFilter:
         self.em = em
         self.ntry = 0
         self.execdir = td
-
+        self.rtfprolog = b'{\\rtf1'
+        self.docprolog = b'\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1'
+        
     def reset(self):
         self.ntry = 0
             
     def hasControlChars(self, data):
         for c in data:
-            if c < chr(32) and c != '\n' and c != '\t' and \
-                   c !=  '\f' and c != '\r':
+            if c < b' '[0] and c != b'\n'[0] and c != b'\t'[0] and \
+                   c !=  b'\f'[0] and c != b'\r'[0]:
                 return True
         return False
 
     def mimetype(self, fn):
-        rtfprolog = b'{\\rtf1'
-        docprolog = b'\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1'
         try:
             f = open(fn, "rb")
         except:
             return ""
         data = f.read(100)
-        if data[0:6] == rtfprolog:
+        if data[0:6] == self.rtfprolog:
             return "text/rtf"
-        elif data[0:8] == docprolog:
+        elif data[0:8] == self.docprolog:
             return "application/msword"
         elif self.hasControlChars(data):
             return "application/octet-stream"
