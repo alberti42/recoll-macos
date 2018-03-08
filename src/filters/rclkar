@@ -43,14 +43,12 @@ htmltemplate = '''
 </html>
 '''
 
+nlbytes = b'\n'
+bsbytes = b'\\'
 PY3 = sys.version > '3'
 if PY3:
-    nlbytes = bytes('\n', encoding='iso-8859-1')
-    bsbytes = bytes('\\', encoding='iso-8859-1')
     nullchar = 0
 else:
-    nlbytes = '\n'
-    bsbytes = '\\'
     nullchar = chr(0)
     
 class KarTextExtractor:

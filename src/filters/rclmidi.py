@@ -39,8 +39,7 @@ if PY3:
     def next_byte_as_int(data):
         return next(data)
     def next_byte_as_char(data):
-        ret = bytes([next(data)])
-        return ret
+        return bytes([next(data)])
 else:
     def next_byte_as_int(data):
         return ord(data.next())
