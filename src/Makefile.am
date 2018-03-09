@@ -613,6 +613,7 @@ filters/rcllatinclass.py \
 filters/rcllatinstops.zip \
 filters/rcllyx \
 filters/rclman \
+filters/rclmidi.py \
 filters/rclpdf.py \
 filters/rclokulnote \
 filters/rclopxml.py \

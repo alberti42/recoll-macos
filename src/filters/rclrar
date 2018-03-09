@@ -80,9 +80,15 @@ class RarExtractor:
     def openfile(self, params):
         self.currentindex = -1
         try:
-            self.rar = RarFile(params["filename:"])
+            # The previous versions passed the file name to
+            # RarFile. But the py3 version of this wants an str as
+            # input, which is wrong of course, as filenames are
+            # binary. Circumvented by passing the open file
+            f = open(params["filename:"], 'rb')
+            self.rar = RarFile(f)
             return True
-        except:
+        except Exception as err:
+            self.em.rclog("RarFile: %s"%err)
             return False
 
     def getipath(self, params):

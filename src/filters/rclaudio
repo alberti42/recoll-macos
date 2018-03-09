@@ -18,7 +18,7 @@ except:
     sys.exit(1);
 
 
-re_pairnum = re.compile(r'\(([0-9]+),\s*([0-9]+)\)')
+re_pairnum = re.compile(b'''\(([0-9]+),\s*([0-9]+)\)''')
 
 # The 'Easy' mutagen tags conversions are incomplete. We do it ourselves.
 # TPA,TPOS,disc DISCNUMBER/TOTALDISCS
@@ -186,7 +186,7 @@ class AudioTagExtractor:
     def _embeddedImageFormat(self, mutf):
         #self.em.rclog("_embeddedImage: MIME: %s"%mutf.mime)
         if 'audio/mp3' in mutf.mime:
-            for tagname in mutf.iterkeys():
+            for tagname in mutf.keys():
                 if tagname.startswith('APIC:'):
                     #self.em.rclog("mp3 img: %s" % mutf[tagname].mime)
                     return 'jpg' if mutf[tagname].mime == 'image/jpeg' else 'png'
@@ -194,7 +194,7 @@ class AudioTagExtractor:
             if mutf.pictures:
                 return 'jpg' if mutf.pictures[0].mime == 'image/jpeg' else 'png'
         elif 'audio/mp4' in mutf.mime:
-            if 'covr' in mutf.iterkeys():
+            if 'covr' in mutf.keys():
                 format = mutf['covr'][0].imageformat 
                 if format == mutagen.mp4.AtomDataType.JPEG:
                     return 'jpg'
@@ -273,7 +273,7 @@ class AudioTagExtractor:
                 #self.em.rclog("using default bits_per_sample")
                 minf['bits_per_sample'] = 16
 
-        for tag,val in minf.iteritems():
+        for tag,val in minf.items():
             minf[tag] = str(val)
 
         #self.em.rclog("minf after audio %s\n" % minf)
@@ -281,7 +281,7 @@ class AudioTagExtractor:
         ####################
         # Metadata tags. The names vary depending on the file type. We
         # just have a big translation dictionary for all
-        for tag,val in mutf.iteritems():
+        for tag,val in mutf.items():
             #self.em.rclog("Original tag: <%s>, val <%s>" % (tag, val))
             if tag.upper() in tagdict:
                 tag = tag.upper()
@@ -297,7 +297,7 @@ class AudioTagExtractor:
                         except:
                             val0 = val
                     if val0:
-                        if isinstance(val0, unicode):
+                        if type(val0) == type(u""):
                             val0 = val0.encode('utf-8', errors='replace')
                         else:
                             val0 = str(val0)
@@ -320,7 +320,7 @@ class AudioTagExtractor:
                     if mo:
                         l = (mo.group(1), mo.group(2))
                     else:
-                        l = l.split('/')
+                        l = l.split(b'/')
                 else:
                     self.em.rclog("l is tuple: %s" %l)
                 if len(l) == 2:
@@ -345,7 +345,7 @@ class AudioTagExtractor:
         self.em.setmimetype("text/plain")
         self.em.setfield("charset", 'utf-8')
 
-        for tag,val in minf.iteritems():
+        for tag,val in minf.items():
             #self.em.rclog("%s -> %s" % (tag, val))
             self.em.setfield(tag, val)
             # Compat with old version

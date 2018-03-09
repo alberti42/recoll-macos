@@ -854,12 +854,8 @@ class EventStreamReader(object):
     def parse(self, instream, outstream):
         self.midistream = outstream
         self.instream = instream
-        if PY3:
-            if type(instream) in (str, bytes):
-                self.instream = open(instream, 'rb')
-        else:
-            if type(instream) in (str, unicode):
-                self.instream = open(instream, 'rb')
+        if type(instream) in (type(b''), type(u'')):
+            self.instream = open(instream, 'rb')
         self.parse_file_header()
         for track in range(self.midistream.trackcount):  
             trksz = self.parse_track_header()

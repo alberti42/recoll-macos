@@ -69,6 +69,7 @@ class DiaExtractor:
             docdata = self.ExtractDiaText()
             ok = True
         except Exception as err:
+            self.em.rclog("Dia parse failed: %s"%err)
             ok = False
         iseof = rclexecm.RclExecM.eofnext
         self.em.setmimetype("text/plain")
@@ -77,7 +78,7 @@ class DiaExtractor:
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
         try:
-            self.dia = GzipFile(params["filename:"], 'r')
+            self.dia = GzipFile(params["filename:"], 'rb')
             # Dia files are sometimes not compressed. Quite weirdly,
             # GzipFile does not complain until we try to read. Have to do it
             # here to be able to retry an uncompressed open.
@@ -87,7 +88,7 @@ class DiaExtractor:
         except:
             # File not compressed ?
             try:
-                self.dia = open(params["filename:"], 'r')
+                self.dia = open(params["filename:"], 'rb')
             except:
                 return False
             return True

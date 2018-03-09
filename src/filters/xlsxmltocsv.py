@@ -17,12 +17,11 @@
 
 # Transform XML output from xls-dump.py into csv format.
 #
-# Note: this would be difficult to make compatible with python 3 <= 3.4
-# because of the use of % interpolation on what should be bytes.
-# The python2 restriction is not a big issue at this point because
-# msodumper is not compatible with python3 anyway
-# % interpolation for bytes is planned for python 3.5, at which point
-# porting this module will become trivial.
+# Note: this would be difficult to make compatible with python 3 <=
+# 3.4 because of the use of % interpolation on what should be bytes.
+# # % terpolation for bytes is available as of python 3.5, which is
+# the minimum version supported.
+
 
 from __future__ import print_function
 

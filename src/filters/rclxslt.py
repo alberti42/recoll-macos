@@ -61,10 +61,10 @@ else:
         styledoc = etree.fromstring(sheet)
         transform = etree.XSLT(styledoc)
         doc = etree.fromstring(data)
-        return etree.tostring(transform(doc))
+        return bytes(transform(doc))
     def apply_sheet_file(sheet, fn):
         styledoc = etree.fromstring(sheet)
         transform = etree.XSLT(styledoc)
         doc = etree.parse(fn)
-        return etree.tostring(transform(doc))
+        return bytes(transform(doc))
 

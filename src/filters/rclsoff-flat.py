@@ -151,7 +151,7 @@ class OOExtractor:
         fn = params["filename:"]
 
         try:
-            f = open(fn)
+            f = open(fn, 'rb')
             data = f.read()
             f.close()
         except Exception as err:

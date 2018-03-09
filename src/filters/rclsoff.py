@@ -154,7 +154,7 @@ class OOExtractor:
         except:
             # To be checked. I'm under the impression that I get this when
             # nothing matches?
-            #self.em.rclog("no/bad metadata in %s" % fn)
+            #self.em.rclog("No/bad metadata in %s" % fn)
             pass
 
         docdata += b'</head>\n<body>\n'

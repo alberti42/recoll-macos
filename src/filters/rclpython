@@ -39,18 +39,10 @@ else:
     import io
 import keyword, token, tokenize
 
-if PY2:
-    def makebytes(data):
-        if isinstance(data, unicode):
-            return data.encode("UTF-8")
-        else:
-            return data
-else:
-    def makebytes(data):
-        if isinstance(data, bytes):
-            return data
-        else:
-            return data.encode("UTF-8")
+def makebytes(data):
+    if type(data) == type(u''):
+        return data.encode("UTF-8")
+    return data
 
 #############################################################################
 ### Python Source Parser (does Hilighting)

@@ -124,7 +124,7 @@ class ZipExtractor:
 
         try:
             if rclexecm.PY3:
-                # Note: python3 ZipFile wants an str file name, which
+                # Note: py3 ZipFile wants an str file name, which
                 # is wrong: file names are binary. But it accepts an
                 # open file, and open() has no such restriction
                 f = open(filename, 'rb')

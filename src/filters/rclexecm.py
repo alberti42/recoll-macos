@@ -31,18 +31,10 @@ import rclconfig
 
 PY3 = sys.version > '3'
 
-if PY3:
-    def makebytes(data):
-        if isinstance(data, bytes):
-            return data
-        else:
-            return data.encode("UTF-8")
-else:
-    def makebytes(data):
-        if isinstance(data, unicode):
-            return data.encode("UTF-8")
-        else:
-            return data
+def makebytes(data):
+    if type(data) == type(u''):
+        return data.encode("UTF-8")
+    return data
 
 my_config = rclconfig.RclConfig()
 
@@ -189,7 +181,7 @@ class RclExecM:
             if len(self.mimetype):
                 self.senditem("Mimetype", self.mimetype)
 
-            for nm,value in self.fields.iteritems():
+            for nm,value in self.fields.items():
                 #self.rclog("Senditem: [%s] -> [%s]" % (nm, value))
                 self.senditem("%s:"%nm, value)
             self.fields = {}
@@ -412,7 +404,7 @@ def main(proto, extract):
         ok, data, ipath, eof = extract.getipath(params)
         if ok:
             debprint(ioout, "== Found entry for ipath %s (mimetype [%s]):" % \
-                  (ipath, proto.mimetype))
+                  (ipath, proto.mimetype.decode('cp1252')))
             bdata = makebytes(data)
             if debugDumpData or actAsSingle:
                 proto.breakwrite(ioout, bdata)
@@ -429,7 +421,7 @@ def main(proto, extract):
             ecnt = ecnt + 1
             bdata = makebytes(data)
             debprint(ioout, "== Entry %d dlen %d ipath %s (mimetype [%s]):" % \
-                  (ecnt, len(data), ipath, proto.mimetype))
+                  (ecnt, len(data), ipath, proto.mimetype.decode('cp1252')))
             if debugDumpData:
                 proto.breakwrite(ioout, bdata)
                 ioout.write(b'\n')

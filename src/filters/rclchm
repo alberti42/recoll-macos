@@ -4,8 +4,8 @@ Needs at least python 2.2 for HTMLParser (chmlib needs 2.2 too)"""
 
 from __future__ import print_function
 
-# Note: this is not converted to python3, libchm does not have a
-# python3 wrapper at this point (2015-11)
+# Note: this is not converted to Py3, libchm does not have a
+# Py3 wrapper at this point (2018-03)
 
 rclchm_html_mtype = "text/html"
 
