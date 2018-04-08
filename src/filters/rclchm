@@ -17,9 +17,11 @@ PY3 = sys.version > '3'
 if PY3:
     from urllib.parse import unquote as urllib_unquote
     from urllib.parse import urlparse as urlparse_urlparse
+    from html.parser import HTMLParser
 else:
     from urlparse import urlparse as urlparse_urlparse
     from urllib import unquote as urllib_unquote
+    from HTMLParser import HTMLParser
     
 import subprocess
 
@@ -32,15 +34,11 @@ except:
     print("RECFILTERROR HELPERNOTFOUND python:chm")
     sys.exit(1);
 
-try:
-    from HTMLParser import HTMLParser
-except:
-    print("RECFILTERROR HELPERNOTFOUND python:HTMLParser")
-    sys.exit(1);
-
 # Small helper routines
 def getfile(chmfile, path):
     """Extract internal file text from chm object, given path"""
+    if type(path) != type(b''):
+        raise Exception("Chm:getfile: must be called with path as bytes")
     res, ui = chmfile.ResolveObject(path)
     if res != chmlib.CHM_RESOLVE_SUCCESS:
         #print("ResolveObject failed: %s" % path, file=sys.stderr)
@@ -51,8 +49,10 @@ def getfile(chmfile, path):
         return ""
     return doc
 
-def peekfile(chmfile, path):
+def peekfile(chmfile, path, charset):
     """Check that path resolves in chm object"""
+    if type(path) == type(u''):
+        path = path.encode(charset)
     res, ui = chmfile.ResolveObject(path)
     if res != chmlib.CHM_RESOLVE_SUCCESS:
         return False
@@ -120,14 +120,14 @@ class ChmTopicsParser(HTMLParser):
             # not work if the file is renamed. Just check that the internal
             # path resolves. Old: if ll[-3] == self.rclchm.sfn:
             localpath = ll[-1]
-            if not peekfile(self.rclchm.chm, localpath):
+            if not peekfile(self.rclchm.chm, localpath, self.rclchm.charset):
                 #self.em.rclog("SKIPPING %s" % ll[-3])
                 localpath = ""
 
         if len(localpath) != 0 and  localpath.find("#") == -1:
             if localpath[0] != '/':
                 localpath = "/" + localpath
-            self.rclchm.contents.append(localpath)
+            self.rclchm.contents.append(localpath.encode(self.rclchm.charset))
 
 
 # Used when there is no Topics node. Walk the links tree
@@ -141,6 +141,8 @@ class ChmWalker(HTMLParser):
         self.rclchm = rclchm
         self.chm = rclchm.chm
         self.contents = contents
+        if type(path) == type(u''):
+            path = path.encode(self.rclchm.charset)
         self.path = posixpath.normpath(path)
         self.dir = posixpath.dirname(self.path)
         contents.append(self.path)
@@ -164,7 +166,7 @@ class ChmWalker(HTMLParser):
                 # know this never happens because there was a runtime error
                 # in this path
                 path = lpath[2]
-                if not peekfile(self.chm, path):
+                if not peekfile(self.chm, path, self.rclchm.charset):
                     path = ""
             elif len(lpath) == 1:
                 path = lpath[0]
@@ -173,10 +175,11 @@ class ChmWalker(HTMLParser):
 
         if path:
             #print "got path", path, "me", self.path, "dir", self.dir
-            if path[0] == "/":
-                npath = posixpath.normpath(path)
+            bpath = path.encode(self.rclchm.charset)
+            if path[0] == "/"[0]:
+                npath = posixpath.normpath(bpath)
             else:
-                npath = posixpath.normpath(posixpath.join(self.dir, path))
+                npath = posixpath.normpath(posixpath.join(self.dir, bpath))
             if not npath in self.contents:
                 #print("Going into [%s] paths [%s]\n" %
                 #(npath,str(self.contents)))
@@ -184,7 +187,8 @@ class ChmWalker(HTMLParser):
                 if text:
                     try:
                         newwalker = ChmWalker(self.rclchm, npath, self.contents)
-                        newwalker.feed(self.rclchm.fixencoding(text))
+                        t,c = self.rclchm.fixencoding(text)
+                        newwalker.feed(t)
                     except:
                         pass
         
@@ -204,15 +208,17 @@ class rclCHM:
             self.em.setmimetype("text/plain")
         else:
             self.em.setmimetype(rclchm_html_mtype)
-        expr = r'(<meta *http-equiv *= *"content-type".*charset *= *)((us-)?ascii)( *" *>)'
+        expr = b'''(<meta *http-equiv *= *"content-type".*charset *= *)((us-)?ascii)( *" *>)'''
         self.asciito1252re = re.compile(expr, re.IGNORECASE)
-        expr = r'<meta *http-equiv *= *"content-type".*charset *= *([a-z0-9-]+) *" *>'
+        expr = b'''<meta *http-equiv *= *"content-type".*charset *= *([a-z0-9-]+) *" *>'''
         self.findcharsetre = re.compile(expr, re.IGNORECASE)
 
     def extractone(self, path):
         """Extract one path-named internal file from the chm file"""
 
         #self.em.rclog("extractone: [%s]" % (path,))
+        if type(path) == type(u''):
+            path = path.encode(self.charset)
         iseof = rclexecm.RclExecM.noteof
         if self.currentindex >= len(self.contents) -1:
             iseof = rclexecm.RclExecM.eofnext
@@ -225,8 +231,8 @@ class rclCHM:
         res, doc = self.chm.RetrieveObject(ui)
         #self.em.rclog("extract: RetrieveObject: %d [%s]" % (res, doc))
         if res > 0:
-            doc = re.sub('''</[hH][eE][aA][dD]''',
-                         '''<meta name="rclaptg" content="chm"></head>''', doc)
+            doc = re.sub(b'''</[hH][eE][aA][dD]''',
+                         b'''<meta name="rclaptg" content="chm"></head>''', doc)
             self.em.setmimetype(rclchm_html_mtype)
             return (True, doc, path, iseof)
         return (False, "", path, iseof)
@@ -261,14 +267,17 @@ class rclCHM:
         # HTML5 charset tag ?
         #<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=US-ASCII">
 
-        if isinstance(text, str):
+        if type(text) == type(b''):
             # Fix an ascii charset decl to windows-1252
-            text = self.asciito1252re.sub(r"\1windows-1252\4", text, 1)
+            text = self.asciito1252re.sub(b'''\1windows-1252\4''', text, 1)
             # Convert to unicode according to charset decl
             m = self.findcharsetre.search(text)
             if m:
-                text = text.decode(m.group(1))
-        return text
+                charset = m.group(1).decode('cp1252')
+            else:
+                charset = 'cp1252'
+            text = text.decode(charset, errors='replace')
+        return text, charset
     
     def openfile(self, params):
         """Open the chm file and build the contents list by extracting and
@@ -286,11 +295,13 @@ class rclCHM:
         #              (self.chm.home, self.chm.topics, self.chm.title))
 
         self.topics = self.chm.GetTopicsTree()
+        self.charset = 'cp1252'
         if self.topics:
             # Parse Topics file and extract list of internal nodes
             #self.em.rclog("Got topics");
             tp = ChmTopicsParser(self)
-            tp.feed(self.fixencoding(self.topics))
+            text,self.charset = self.fixencoding(self.topics)
+            tp.feed(text)
             tp.close()
         else:
             # No topics. If there is a home, let's try to walk the tree
@@ -299,14 +310,15 @@ class rclCHM:
                 self.em.rclog("No topics and no home")
                 return False
             home = self.chm.home
-            if home[0] != '/':
-                home = "/" + home
+            if home[0] != b'/'[0]:
+                home = b"/" + home
             text = getfile(self.chm, home)
             if not text:
                 self.em.rclog("No topics and no home content")
                 return False
             walker = ChmWalker(self, self.chm.home, self.contents)
-            walker.feed(self.fixencoding(text))
+            text,self.charset = self.fixencoding(text)
+            walker.feed(text)
             walker.close()
 
         #self.em.rclog("Contents size %d" % len(self.contents))
