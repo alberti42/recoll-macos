@@ -117,13 +117,23 @@ image/x-ms-bmp = gwenview %f
 image/x-xpmi = gwenview %f
 image/x-nikon-nef = ufraw %f
 
-# Opening mail messages not always works. 
+# Opening mail messages:
 #  - Thunderbird will only open a single-message file if it has an .eml
 #    extension
 #  - "sylpheed %f" seems to work ok as of version 3.3
-#  - claws-mail: no can do apparently
 #  - "kmail --view %u" works
+#  - claws-mail: works using a small intermediary shell-script, which you
+#    set as the viewer here. You need to have at least one account inside
+#    claws-mail, so that it creates ~/Mail/inbox. Script contents example
+#    follows. Using 1 is probably not a good idea if this is a real account
+#    (here I am using a bogus one, so that I can overwrite anything inside
+#    inbox at will):
+#          #!/bin/bash
+#          cp $1 ~/Mail/inbox/1
+#          claws-mail --select ~/Mail/inbox/1
+#          rm ~/Mail/inbox/1
 message/rfc822 = thunderbird -file %f
+
 text/x-mail = thunderbird -file %f
 application/x-mimehtml = thunderbird -file %f
 
