@@ -509,6 +509,8 @@ private:
     // text when indexing. It only has an influence on the size of the
     // db as we are free to shorten it again when displaying
     int          m_idxAbsTruncLen;
+    // Document text truncation length
+    int          m_idxTextTruncateLen{0};
     // This is the size of the abstract that we synthetize out of query
     // term contexts at *query time*
     int          m_synthAbsLen;

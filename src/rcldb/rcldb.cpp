@@ -876,6 +876,7 @@ Db::Db(const RclConfig *cfp)
 	m_config->getConfParam("maxfsoccuppc", &m_maxFsOccupPc);
 	m_config->getConfParam("idxflushmb", &m_flushMb);
 	m_config->getConfParam("idxmetastoredlen", &m_idxMetaStoredLen);
+	m_config->getConfParam("idxtexttruncatelen", &m_idxTextTruncateLen);
     }
 }
 
@@ -1480,6 +1481,10 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
         }
     } else {
 
+        if (m_idxTextTruncateLen > 0) {
+            doc.text = truncate_to_word(doc.text, m_idxTextTruncateLen);
+        }
+        
 	// If the ipath is like a path, index the last element. This is
 	// for compound documents like zip and chm for which the filter
 	// uses the file path as ipath. 
