@@ -298,6 +298,8 @@ void Db::Native::openWrite(const string& dir, Db::OpenMode mode)
             xwdb = Xapian::WritableDatabase(stub, action);
             m_storetext = false;
         }
+        LOGINF("Rcl::Db::openWrite: new index will " << (m_storetext?"":"not ")
+               << "store document text\n");
 #else
         // Old Xapian (chert only) or newer (no chert). Use the
         // default index backend and let the user decide of the
