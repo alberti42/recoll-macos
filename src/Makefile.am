@@ -652,7 +652,7 @@ install-data-hook:
 	(cd $(DESTDIR)/$(filterdir); \
 	chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py hotrecoll.py; \
 	chmod a+x recoll-we-move-files.py; \
-	chmod 0644 msodump.zip rclexecm.py rcllatinstops.zip rclconfig.py) 
+	chmod 0644 msodump.zip rclexecm.py rcllatinstops.zip rclconfig.py rclmidi.py)
 
 if MAKEUSERDOC
 rdocdir = $(pkgdatadir)/doc
