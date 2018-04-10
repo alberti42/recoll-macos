@@ -3818,7 +3818,8 @@
         <para>See the section about the <link
         linkend="RCL.INSTALL.CONFIG.FIELDS"> 
         <filename>fields</filename> configuration file</link> for the
-        details of configuring a field for range searches.</para>
+        details of configuring a field for range searches (list them in the
+        [values] section).</para>
 
         
       </sect2>
@@ -6252,7 +6253,7 @@ for i in range(nres):
             </listitem>
           </varlistentry>
           <varlistentry>
-            <term>[calues]</term>
+            <term>[values]</term>
             <listitem><para>Fields listed in this section will be stored as
             &XAP; <literal>values</literal> inside the index. This makes
             them available for range queries, allowing to filter results

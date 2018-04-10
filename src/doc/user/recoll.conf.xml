@@ -556,6 +556,12 @@ does not affect indexing (the whole field is processed anyway), just the
 amount of data stored in the index for the purpose of displaying fields
 inside result lists or previews. The default value is 150 bytes which
 may be too low if you have custom fields.</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.IDXTEXTTRUNCATELEN">
+<term><varname>idxtexttruncatelen</varname></term>
+<listitem><para>Truncation length for all document texts. Only index
+the beginning of documents. This is not recommended except if you are
+sure that the interesting keywords are at the top and have severe disk
+space issues.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLLANGUAGE">
 <term><varname>aspellLanguage</varname></term>
 <listitem><para>Language definitions to use when creating the aspell
