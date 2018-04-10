@@ -22,6 +22,7 @@
 #include <unordered_map>
 #include <deque>
 #include <algorithm>
+#include <regex>
 
 #include "log.h"
 #include "rcldb.h"
@@ -45,8 +46,19 @@ using namespace std;
 
 namespace Rcl {
 
+//// Fragment cleanup
 // Chars we turn to spaces in the Snippets
 static const string cstr_nc("\n\r\x0c\\");
+// Things that we don't want to repeat in a displayed snippet.
+// e.g.  > > > > > >
+static const string punctcls("[<>.-_+,#*=]");
+static const string punctRE = "(" + punctcls +  " *)(" + punctcls + " *)+";
+static std::regex fixfrag_re(punctRE);
+static string fixfrag(const string& infrag)
+{
+    return std::regex_replace(neutchars(infrag, cstr_nc), fixfrag_re, "$2");
+}
+
 
 // Fragment descriptor. A fragment is a text area with one or several
 // matched terms and some context. It is ranked according to the
@@ -383,8 +395,8 @@ int Query::Native::abstractFromText(
     // main term and the page positions. 
     unsigned int count = 0;
     for (const auto& entry : result) {
-        string frag = neutchars(
-            rawtext.substr(entry.start, entry.stop - entry.start), cstr_nc);
+        string frag(
+            fixfrag(rawtext.substr(entry.start, entry.stop - entry.start)));
 
 #ifdef COMPUTE_HLZONES
         // This would need to be modified to take tag parameters
