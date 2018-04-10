@@ -453,7 +453,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
-        <translation>El archivo de historial esta dañado o no se puede leer, por favor revíselo o bórrelo:</translation>
+        <translation type="vanished">El archivo de historial esta dañado o no se puede leer, por favor revíselo o bórrelo:</translation>
+    </message>
+    <message>
+        <source>&quot;history&quot; file is damaged, please check or remove it: </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1236,6 +1240,18 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Types list empty: maybe wait for indexing to progress?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tools</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Results</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2853,7 +2869,7 @@ Esto ayuda con las búsquedas de archivos de texto muy grandes (ej: archivos de 
     <name>uiPrefsDialogBase</name>
     <message>
         <source>User preferences</source>
-        <translation>Preferencias de usuario</translation>
+        <translation type="vanished">Preferencias de usuario</translation>
     </message>
     <message>
         <source>User interface</source>
@@ -3203,6 +3219,14 @@ El valor por defecto es 2 (por ciento).</translation>
     </message>
     <message>
         <source>Highlight CSS style for query terms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recoll - User Preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set path translations for the selected index or for the main one if no selection exists.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

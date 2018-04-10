@@ -428,7 +428,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation type="obsolete">Problema di configurazione (dynconf</translation>
     </message>
     <message>
-        <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
+        <source>&quot;history&quot; file is damaged, please check or remove it: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1162,6 +1162,18 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Types list empty: maybe wait for indexing to progress?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tools</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Results</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2814,7 +2826,7 @@ This will help searching very big text  files (ie: log files).</source>
     <name>uiPrefsDialogBase</name>
     <message>
         <source>User preferences</source>
-        <translation>Preferenze utente</translation>
+        <translation type="vanished">Preferenze utente</translation>
     </message>
     <message>
         <source>User interface</source>
@@ -3137,6 +3149,14 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Highlight CSS style for query terms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recoll - User Preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set path translations for the selected index or for the main one if no selection exists.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

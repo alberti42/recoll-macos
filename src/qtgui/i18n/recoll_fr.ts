@@ -466,7 +466,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
-        <translation>Le fichier d&apos;historique est illisible, le verifier ou l&apos;effacer:</translation>
+        <translation type="vanished">Le fichier d&apos;historique est illisible, le verifier ou l&apos;effacer:</translation>
+    </message>
+    <message>
+        <source>&quot;history&quot; file is damaged, please check or remove it: </source>
+        <translation>Le fichier &quot;history&quot; est corrompu. Le detruire: </translation>
     </message>
 </context>
 <context>
@@ -1274,6 +1278,18 @@ Merci de vérifier le fichier desktop </translation>
     <message>
         <source>Types list empty: maybe wait for indexing to progress?</source>
         <translation>Liste vide: attendre que l&apos;indexation progresse ?</translation>
+    </message>
+    <message>
+        <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
+        <translation>La ligne de commande pour %1 specifie l&apos;utilisation du fichier parent, mais l&apos;URL est http[s]: ne peut pas marcher</translation>
+    </message>
+    <message>
+        <source>Tools</source>
+        <translation>Outils</translation>
+    </message>
+    <message>
+        <source>Results</source>
+        <translation>Résultats</translation>
     </message>
 </context>
 <context>
@@ -3211,7 +3227,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     <name>uiPrefsDialogBase</name>
     <message>
         <source>User preferences</source>
-        <translation>Préférences utilisateur</translation>
+        <translation type="vanished">Préférences utilisateur</translation>
     </message>
     <message>
         <source>User interface</source>
@@ -3574,6 +3590,14 @@ La valeur par défaut est 2%</translation>
     <message>
         <source>Highlight CSS style for query terms</source>
         <translation>Style CSS de mise en avant pour les termes de la recherche</translation>
+    </message>
+    <message>
+        <source>Recoll - User Preferences</source>
+        <translation>Recoll - Préférences utilisateur</translation>
+    </message>
+    <message>
+        <source>Set path translations for the selected index or for the main one if no selection exists.</source>
+        <translation>Créer les traductions de chemins d&apos;accès pour l&apos;index selectionné, ou pour l&apos;index principal si rien n&apos;est sélectionné.</translation>
     </message>
 </context>
 </TS>

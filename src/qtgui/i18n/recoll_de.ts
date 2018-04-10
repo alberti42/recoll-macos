@@ -459,7 +459,11 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     </message>
     <message>
         <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
-        <translation>&quot;history&quot; Datei ist beschädigt oder nicht les-/schreibbar, bitte überprüfen oder entfernen Sie sie: </translation>
+        <translation type="vanished">&quot;history&quot; Datei ist beschädigt oder nicht les-/schreibbar, bitte überprüfen oder entfernen Sie sie: </translation>
+    </message>
+    <message>
+        <source>&quot;history&quot; file is damaged, please check or remove it: </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1246,6 +1250,18 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Types list empty: maybe wait for indexing to progress?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tools</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Results</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3078,7 +3094,7 @@ Auf -1 setzen, um keine Obergrenze zu haben.</translation>
     <name>uiPrefsDialogBase</name>
     <message>
         <source>User preferences</source>
-        <translation>Benutzereinstellungen</translation>
+        <translation type="vanished">Benutzereinstellungen</translation>
     </message>
     <message>
         <source>User interface</source>
@@ -3429,6 +3445,14 @@ und vermindern den Nutzender automatischen Phrasen. Der Standardwert ist 2.</tra
     </message>
     <message>
         <source>Highlight CSS style for query terms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Recoll - User Preferences</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set path translations for the selected index or for the main one if no selection exists.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
