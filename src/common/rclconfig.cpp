@@ -585,18 +585,24 @@ pair<int,int> RclConfig::getThrConf(ThrStage who) const
     return m_thrConf[who];
 }
 
-vector<string> RclConfig::getTopdirs() const
+vector<string> RclConfig::getTopdirs(bool formonitor) const
 {
     vector<string> tdl;
-    if (!getConfParam("topdirs", &tdl)) {
-	LOGERR("RclConfig::getTopdirs: no top directories in config or "
-               "bad list format\n");
+    if (formonitor) {
+        if (!getConfParam("monitordirs", &tdl)) {
+            getConfParam("topdirs", &tdl);
+        }
+    } else {
+        getConfParam("topdirs", &tdl);
+    }
+    if (tdl.empty()) {
+	LOGERR("RclConfig::getTopdirs: nothing to index:  topdirs/monitordirs "
+               " are not set or have a bad list format\n");
 	return tdl;
     }
 
-    for (vector<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
-	*it = path_tildexpand(*it);
-	*it = path_canon(*it);
+    for (auto& dir : tdl) {
+	dir = path_canon(path_tildexpand(dir));
     }
     return tdl;
 }

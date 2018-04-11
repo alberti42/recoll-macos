@@ -353,6 +353,29 @@ bool path_isroot(const string& path)
     return false;
 }
 
+bool path_isdesc(const string& _top, const string& _sub)
+{
+    string top = path_canon(_top);
+    string sub = path_canon(_sub);
+    path_catslash(top);
+    path_catslash(sub);
+    for (;;) {
+        if (sub == top) {
+            return true;
+        }
+        string::size_type l = sub.size();
+        sub = path_getfather(sub);
+        if (sub.size() == l || sub.size() < top.size()) {
+            // At root or sub shorter than top: done
+            if (sub == top) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+}
+
 bool path_isabsolute(const string& path)
 {
     if (!path.empty() && (path[0] == '/'

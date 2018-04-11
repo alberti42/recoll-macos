@@ -161,8 +161,9 @@ void *rclMonRcvRun(void *q)
 	return 0;
     }
 
-    // Get top directories from config 
-    vector<string> tdl = lconfig.getTopdirs();
+    // Get top directories from config. Special monitor sublist if
+    // set, else full list.
+    vector<string> tdl = lconfig.getTopdirs(true);
     if (tdl.empty()) {
 	LOGERR("rclMonRcvRun:: top directory list (topdirs param.) not found "
                "in configuration or topdirs list parse error");

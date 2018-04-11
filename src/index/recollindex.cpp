@@ -201,6 +201,18 @@ void rclIxIonice(const RclConfig *config)
 #endif
 }
 
+static void setMyPriority(const RclConfig *config)
+{
+#ifndef _WIN32
+    if (setpriority(PRIO_PROCESS, 0, 20) != 0) {
+        LOGINFO("recollindex: can't setpriority(), errno " << errno << "\n");
+    }
+    // Try to ionice. This does not work on all platforms
+    rclIxIonice(config);
+#endif
+}
+
+
 class MakeListWalkerCB : public FsTreeWalkerCB {
 public:
     MakeListWalkerCB(list<string>& files, const vector<string>& selpats)
@@ -316,10 +328,33 @@ static bool checktopdirs(RclConfig *config, vector<string>& nonexist)
     vector<string> tdl;
     if (!config->getConfParam("topdirs", &tdl)) {
         cerr << "No 'topdirs' parameter in configuration\n";
-        LOGERR("recollindex:No 'topdirs' parameter in configuration\n");;
+        LOGERR("recollindex:No 'topdirs' parameter in configuration\n");
         return false;
     }
 
+    // If a restricted list for real-time monitoring exists check that
+    // all entries are descendants from a topdir
+    vector<string> mondirs;
+    if (config->getConfParam("monitordirs", &mondirs)) {
+        for (const auto& sub : mondirs) {
+            bool found{false};
+            for (const auto& top : tdl) {
+                if (path_isdesc(top, sub)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                string s("Real time monitoring directory entry " + sub +
+                         " is not part of the topdirs tree\n");
+                cerr << s;
+                LOGERR(s);
+                return false;
+            }
+        }
+    }
+
+    
     for (vector<string>::iterator it = tdl.begin(); it != tdl.end(); it++) {
 	*it = path_tildexpand(*it);
         if (!it->size() || !path_isabsolute(*it)) {
@@ -639,14 +674,8 @@ int main(int argc, char **argv)
     // Log something at LOGINFO to reset the trace file. Else at level
     // 3 it's not even truncated if all docs are up to date.
     LOGINFO("recollindex: starting up\n");
-#ifndef _WIN32
-    if (setpriority(PRIO_PROCESS, 0, 20) != 0) {
-        LOGINFO("recollindex: can't setpriority(), errno " << errno << "\n");
-    }
-    // Try to ionice. This does not work on all platforms
-    rclIxIonice(config);
-#endif
-
+    setMyPriority(config);
+    
     if (op_flags & OPT_r) {
 	if (argc != 1) 
 	    Usage();
@@ -732,15 +761,9 @@ int main(int argc, char **argv)
 	}
 	// Need to rewrite pid, it changed
 	pidfile.write_pid();
-#ifndef _WIN32
         // Not too sure if I have to redo the nice thing after daemon(),
         // can't hurt anyway (easier than testing on all platforms...)
-        if (setpriority(PRIO_PROCESS, 0, 20) != 0) {
-            LOGINFO("recollindex: can't setpriority(), errno " << errno<< "\n");
-        }
-	// Try to ionice. This does not work on all platforms
-	rclIxIonice(config);
-#endif
+        setMyPriority(config);
 
 	if (sleepsecs > 0) {
 	    LOGDEB("recollindex: sleeping " << sleepsecs << "\n");
@@ -753,6 +776,7 @@ int main(int argc, char **argv)
 	      }
 	    }
 	}
+
 	if (!(op_flags & OPT_n)) {
 	    makeIndexerOrExit(config, inPlaceReset);
 	    LOGDEB("Recollindex: initial indexing pass before monitoring\n");
@@ -776,10 +800,11 @@ int main(int argc, char **argv)
 	    // Note that -n will be inside the reexec when we come
 	    // back, but the monitor will explicitely strip it before
 	    // starting a config change exec to ensure that we do a
-	    // purging pass in this case.
+	    // purging pass in this latter case (full restart).
 	    o_reexec->reexec();
 #endif
 	}
+
         if (updater) {
 	    updater->status.phase = DbIxStatus::DBIXS_MONITOR;
 	    updater->status.fn.clear();

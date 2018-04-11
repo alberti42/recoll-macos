@@ -182,8 +182,11 @@ class RclConfig {
 
     /** Get list of top directories. This is needed from a number of places
      * and needs some cleaning-up code. An empty list is always an error, no
-     * need for other status */
-    vector<string> getTopdirs() const;
+     * need for other status 
+     * @param formonitor if set retrieve the list for real time monitoring 
+     *         (if the monitor list does not exist we return the normal one).
+     */
+    vector<string> getTopdirs(bool formonitor = false) const;
 
     string getConfdirPath(const char *varname, const char *dflt) const;
     string getCachedirPath(const char *varname, const char *dflt) const;
