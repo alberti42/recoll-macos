@@ -138,6 +138,10 @@ void UIPrefsDialog::setFromPrefs()
 
     keepSortCB->setChecked(prefs.keepSort);
     showTrayIconCB->setChecked(prefs.showTrayIcon);
+    if (!prefs.showTrayIcon) {
+        prefs.closeToTray = false;
+    }
+    closeToTrayCB->setEnabled(showTrayIconCB->checkState());
     closeToTrayCB->setChecked(prefs.closeToTray);
     showTempFileWarningCB->setChecked(prefs.showTempFileWarning == -1);
     previewHtmlCB->setChecked(prefs.previewHtml);
@@ -574,6 +578,9 @@ static bool samedir(const string& dir1, const string& dir2)
 
 void UIPrefsDialog::on_showTrayIconCB_clicked()
 {
+    if (!showTrayIconCB->checkState()) {
+        closeToTrayCB->setChecked(false);
+    }
     closeToTrayCB->setEnabled(showTrayIconCB->checkState());
 }
 
