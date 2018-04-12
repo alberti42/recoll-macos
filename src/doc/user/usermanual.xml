@@ -4176,6 +4176,42 @@
     updated in its original location. If an update is necessary in a
     different location, the index must be reset.</para></note>
 
+    <para>To make a long story short, here follows a script to create a
+    &RCL; configuration and index under a given directory (given as single
+    parameter). The resulting data set (files + recoll directory) can later
+    to be moved to a CDROM or thumb drive. Longer explanations come after
+    the script.</para>
+    
+    <programlisting>#!/bin/sh
+
+fatal()
+{
+    echo $*;exit 1
+}
+usage()
+{
+    fatal "Usage: init-recoll-volume.sh &lt;top-directory>"
+}
+
+test $# = 1 || usage
+topdir=$1
+test -d "$topdir" || fatal $topdir should be a directory
+
+confdir="$topdir/recoll-config"
+test ! -d "$confdir" || fatal $confdir should not exist
+
+mkdir "$confdir"
+cd "$topdir"
+topdir=`pwd`
+cd "$confdir"
+confdir=`pwd`
+
+(echo topdirs = '"'$topdir'"'; \
+ echo orgidxconfdir = $topdir/recoll-config) > "$confdir/recoll.conf"
+
+recollindex -c "$confdir"
+</programlisting>
+    
     <para>The examples below will assume that you have a dataset under
     <filename>/home/me/mydata/</filename>, with the index configuration and
     data stored inside
@@ -4243,7 +4279,7 @@
     possible to run queries from a readonly configuration directory (with
     slightly reduced function of course, such as not recording the query
     history).</para>
-
+      
   </chapter>
 
   <chapter id="RCL.PROGRAM">
