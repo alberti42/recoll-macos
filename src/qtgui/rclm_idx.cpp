@@ -30,24 +30,18 @@
 #include "specialindex.h"
 #include "readfile.h"
 #include "snippets_w.h"
+#include "idxstatus.h"
 
 using namespace std;
 
+
+// This is called from periodic100 if we started an indexer, or from
+// the rclmain idxstatus file watcher, every time the file changes.
 void RclMain::updateIdxStatus()
 {
-    ConfSimple cs(theconfig->getIdxStatusFile().c_str(), 1);
-    QString msg = tr("Indexing in progress: ");
     DbIxStatus status;
-    string val;
-    cs.get("phase", val);
-    status.phase = DbIxStatus::Phase(atoi(val.c_str()));
-    cs.get("fn", status.fn);
-    cs.get("docsdone", &status.docsdone);
-    cs.get("filesdone", &status.filesdone);
-    cs.get("fileerrors", &status.fileerrors);
-    cs.get("dbtotdocs", &status.dbtotdocs);
-    cs.get("totfiles", &status.totfiles);
-
+    readIdxStatus(theconfig, status);
+    QString msg = tr("Indexing in progress: ");
     QString phs;
     switch (status.phase) {
     case DbIxStatus::DBIXS_NONE:phs=tr("None");break;
@@ -153,6 +147,7 @@ void RclMain::periodic100()
     } else {
 	Pidfile pidfile(theconfig->getPidfile());
         pid_t pid = pidfile.open();
+        fileBumpIndexingAction->setEnabled(false);
         if (pid == getpid()) {
             // Locked by me
 	    m_indexerState = IXST_NOTRUNNING;
@@ -172,6 +167,13 @@ void RclMain::periodic100()
 	    // Real time or externally started batch indexer running
 	    m_indexerState = IXST_RUNNINGNOTMINE;
 	    fileToggleIndexingAction->setText(tr("Stop &Indexing"));
+            DbIxStatus status;
+            readIdxStatus(theconfig, status);
+            if (status.hasmonitor) {
+                // Real-time indexer running. We can trigger an
+                // incremental pass
+                fileBumpIndexingAction->setEnabled(true);
+            }
 	    fileToggleIndexingAction->setEnabled(true);
 	    fileRebuildIndexAction->setEnabled(false);
             actionSpecial_Indexing->setEnabled(false);
@@ -291,6 +293,20 @@ void RclMain::toggleIndexing()
         return;
     }
 }
+
+#ifndef _WIN32
+void RclMain::bumpIndexing()
+{
+    DbIxStatus status;
+    readIdxStatus(theconfig, status);
+    if (status.hasmonitor) {
+        string cmd("touch ");
+        string path = path_cat(theconfig->getConfDir(), "recoll.conf");
+        cmd += path;
+        system(cmd.c_str());
+    }
+}
+#endif
 
 static void delay(int millisecondsWait)
 {

@@ -31,6 +31,7 @@
 #endif
 #include "mimehandler.h"
 #include "pathut.h"
+#include "idxstatus.h"
 
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"

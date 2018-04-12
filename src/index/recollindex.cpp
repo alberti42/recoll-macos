@@ -58,6 +58,7 @@ using namespace std;
 #endif
 #include "execmd.h"
 #include "checkretryfailed.h"
+#include "idxstatus.h"
 
 // Command line options
 static int     op_flags;
@@ -141,6 +142,7 @@ class MyUpdater : public DbIxStatusUpdater {
 	    m_file.set("dbtotdocs", status.dbtotdocs);
 	    m_file.set("totfiles", status.totfiles);
 	    m_file.set("fn", status.fn);
+            m_file.set("hasmonitor", status.hasmonitor);
             m_file.holdWrites(false);
 	}
 
@@ -483,12 +485,32 @@ Usage(FILE *where = stderr)
 
 static RclConfig *config;
 
-void lockorexit(Pidfile *pidfile)
+static void lockorexit(Pidfile *pidfile, RclConfig *config)
 {
     pid_t pid;
     if ((pid = pidfile->open()) != 0) {
-	cerr << "Can't become exclusive indexer: " << pidfile->getreason() << 
-	    ". Return (other pid?): " << pid << endl;
+        if (pid > 0) {
+            cerr << "Can't become exclusive indexer: " << pidfile->getreason()
+                 << ". Return (other pid?): " << pid << endl;
+#ifndef _WIN32
+            // Have a look at the status file. If the other process is
+            // a monitor we can tell it to start an incremental pass
+            // by touching the configuration file
+            DbIxStatus status;
+            readIdxStatus(config, status);
+            if (status.hasmonitor) {
+                string cmd("touch ");
+                string path = path_cat(config->getConfDir(), "recoll.conf");
+                cmd += path;
+                system(cmd.c_str());
+                cerr << "Monitoring indexer process was notified of "
+                    "indexing request\n";
+            }
+#endif
+        } else {
+            cerr << "Can't become exclusive indexer: " << pidfile->getreason()
+                 << endl;
+        }            
 	exit(1);
     }
     if (pidfile->write_pid() != 0) {
@@ -688,7 +710,7 @@ int main(int argc, char **argv)
         flushIdxReasons();
         exit(status ? 0 : 1);
     } else if (op_flags & (OPT_i|OPT_e)) {
-	lockorexit(&pidfile);
+	lockorexit(&pidfile, config);
 
 	list<string> filenames;
 
@@ -746,7 +768,10 @@ int main(int argc, char **argv)
     } else if (op_flags & OPT_m) {
 	if (argc != 0) 
 	    Usage();
-	lockorexit(&pidfile);
+	lockorexit(&pidfile, config);
+        if (updater) {
+	    updater->status.hasmonitor = true;
+        }
 	if (!(op_flags&OPT_D)) {
 	    LOGDEB("recollindex: daemonizing\n");
 #ifndef _WIN32
@@ -826,7 +851,7 @@ int main(int argc, char **argv)
         cerr << "Not yet" << endl;
         return 1;
     } else {
-	lockorexit(&pidfile);
+	lockorexit(&pidfile, config);
 	makeIndexerOrExit(config, inPlaceReset);
 	bool status = confindexer->index(rezero, ConfIndexer::IxTAll, 
                                          indexerFlags);

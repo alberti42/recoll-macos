@@ -90,6 +90,8 @@ index/fsfetcher.cpp \
 index/fsfetcher.h \
 index/fsindexer.cpp \
 index/fsindexer.h \
+index/idxstatus.h \
+index/idxstatus.cpp \
 index/mimetype.cpp \
 index/mimetype.h \
 index/rclmon.h \

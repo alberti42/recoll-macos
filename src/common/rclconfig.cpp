@@ -1304,7 +1304,6 @@ string RclConfig::getConfdirPath(const char *varname, const char *dflt) const
 	}
     }
     return path_canon(result);
-
 }
 
 string RclConfig::getCacheDir() const

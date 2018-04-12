@@ -24,40 +24,12 @@
 #include <vector>
 #include <mutex>
 
-using std::string;
-using std::list;
-using std::map;
-using std::vector;
-
 #include "rcldb.h"
 #include "rcldoc.h"
+#include "idxstatus.h"
 
 class FsIndexer;
 class BeagleQueueIndexer;
-
-class DbIxStatus {
- public:
-    enum Phase {DBIXS_NONE,
-		DBIXS_FILES, DBIXS_PURGE, DBIXS_STEMDB, DBIXS_CLOSING, 
-		DBIXS_MONITOR,
-		DBIXS_DONE};
-    Phase phase;
-    string fn;   // Last file processed
-    int docsdone;  // Documents actually updated
-    int filesdone; // Files tested (updated or not)
-    int fileerrors; // Failed files (e.g.: missing input handler).
-    int dbtotdocs;  // Doc count in index at start
-    // Total files in index.This is actually difficult to compute from
-    // the index so it's preserved from last indexing
-    int totfiles;
-    
-    void reset() {
-	phase = DBIXS_FILES;
-	fn.erase();
-	docsdone = filesdone = fileerrors = dbtotdocs = totfiles = 0;
-    }
-    DbIxStatus() {reset();}
-};
 
 /** Callback to say what we're doing. If the update func returns false, we
  * stop as soon as possible without corrupting state */
@@ -130,14 +102,14 @@ class ConfIndexer {
     static vector<string> getStemmerNames();
 
     /** Index a list of files. No db cleaning or stemdb updating */
-    bool indexFiles(list<string> &files, int f = IxFNone);
+    bool indexFiles(std::list<std::string> &files, int f = IxFNone);
 
     /** Update index for list of documents given as list of docs (out of query)
      */
     bool updateDocs(vector<Rcl::Doc> &docs, IxFlag f = IxFNone);
 
     /** Purge a list of files. */
-    bool purgeFiles(list<string> &files, int f = IxFNone);
+    bool purgeFiles(std::list<std::string> &files, int f = IxFNone);
 
     /** Set in place reset mode */
     void setInPlaceReset() {m_db.setInPlaceReset();}

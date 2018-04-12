@@ -123,6 +123,9 @@ public slots:
     virtual void fileExit();
     virtual void periodic100();
     virtual void toggleIndexing();
+#ifndef _WIN32
+    virtual void bumpIndexing();
+#endif
     virtual void rebuildIndex();
     virtual void specialIndex();
     virtual void startSearch(std::shared_ptr<Rcl::SearchData> sdata,

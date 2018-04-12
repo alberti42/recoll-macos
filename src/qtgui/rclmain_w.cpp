@@ -282,6 +282,7 @@ void RclMain::init()
     // sc = new QShortcut(quitKeySeq, restable);
     // connect(sc, SIGNAL (activated()), this, SLOT (fileExit()));
 
+
     // A shortcut to get the focus back to the search entry. 
     QKeySequence seq("Ctrl+Shift+s");
     QShortcut *sc = new QShortcut(seq, this);
@@ -306,6 +307,11 @@ void RclMain::init()
 	    this, SLOT(fileExit() ) );
     connect(fileToggleIndexingAction, SIGNAL(triggered()), 
 	    this, SLOT(toggleIndexing()));
+#ifndef _WIN32
+    fileMenu->insertAction(fileRebuildIndexAction, fileBumpIndexingAction);
+    connect(fileBumpIndexingAction, SIGNAL(triggered()), 
+	    this, SLOT(bumpIndexing()));
+#endif
     connect(fileRebuildIndexAction, SIGNAL(triggered()), 
 	    this, SLOT(rebuildIndex()));
     connect(fileEraseDocHistoryAction, SIGNAL(triggered()), 

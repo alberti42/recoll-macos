@@ -170,6 +170,17 @@
     <cstring>fileToggleIndexingAction</cstring>
    </property>
   </action>
+  <action name="fileBumpIndexingAction">
+   <property name="text">
+    <string>Trigger incremental pass</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>fileBumpIndexingAction</cstring>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+  </action>
   <action name="fileRebuildIndexAction">
    <property name="text">
     <string>&amp;Rebuild index</string>
