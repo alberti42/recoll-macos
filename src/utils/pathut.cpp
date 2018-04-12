@@ -813,10 +813,7 @@ out:
 // alone.
 Pidfile::~Pidfile()
 {
-    if (m_fd >= 0) {
-        ::close(m_fd);
-    }
-    m_fd = -1;
+    this->close();
 }
 
 pid_t Pidfile::read_pid()
@@ -857,7 +854,7 @@ int Pidfile::flopen()
     lockdata.l_whence = SEEK_SET;
     if (fcntl(m_fd, F_SETLK,  &lockdata) != 0) {
         int serrno = errno;
-        (void)::close(m_fd);
+        this->close()
         errno = serrno;
         m_reason = "fcntl lock failed";
         return -1;
@@ -869,7 +866,7 @@ int Pidfile::flopen()
     int operation = LOCK_EX | LOCK_NB;
     if (flock(m_fd, operation) == -1) {
         int serrno = errno;
-        (void)::close(m_fd);
+        this->close();
         errno = serrno;
         m_reason = "flock failed";
         return -1;
@@ -880,7 +877,7 @@ int Pidfile::flopen()
     if (ftruncate(m_fd, 0) != 0) {
         /* can't happen [tm] */
         int serrno = errno;
-        (void)::close(m_fd);
+        this->close();
         errno = serrno;
         m_reason = "ftruncate failed";
         return -1;
@@ -915,7 +912,12 @@ int Pidfile::write_pid()
 
 int Pidfile::close()
 {
-    return ::close(m_fd);
+    int ret = -1;
+    if (m_fd >= 0) {
+        ret = ::close(m_fd);
+        m_fd = -1;
+    }
+    return ret;
 }
 
 int Pidfile::remove()
