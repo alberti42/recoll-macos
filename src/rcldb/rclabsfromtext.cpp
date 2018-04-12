@@ -51,7 +51,7 @@ namespace Rcl {
 static const string cstr_nc("\n\r\x0c\\");
 // Things that we don't want to repeat in a displayed snippet.
 // e.g.  > > > > > >
-static const string punctcls("[<>.-_+,#*=]");
+static const string punctcls("[-<>._+,#*=|]");
 static const string punctRE = "(" + punctcls +  " *)(" + punctcls + " *)+";
 static std::regex fixfrag_re(punctRE);
 static string fixfrag(const string& infrag)
