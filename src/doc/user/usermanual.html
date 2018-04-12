@@ -92,11 +92,11 @@ alink="#0000FF">
                 "#RCL.INDEXING.INTRODUCTION.CONFIG">Configurations,
                 multiple indexes</a></span></dt>
                 <dt><span class="sect2">2.1.3. <a href=
-                "#idm222">Document types</a></span></dt>
+                "#idm223">Document types</a></span></dt>
                 <dt><span class="sect2">2.1.4. <a href=
-                "#idm263">Indexing failures</a></span></dt>
+                "#idm264">Indexing failures</a></span></dt>
                 <dt><span class="sect2">2.1.5. <a href=
-                "#idm275">Recovery</a></span></dt>
+                "#idm276">Recovery</a></span></dt>
               </dl>
             </dd>
             <dt><span class="sect1">2.2. <a href=
@@ -637,12 +637,12 @@ alink="#0000FF">
         <code class="literal">saké</code>, <code class=
         "literal">mate</code> / <code class=
         "literal">maté</code>).</p>
-        <p><span class="application">Recoll</span> versions 1.18
-        and newer can optionally store the raw terms, without
-        accent stripping or case conversion. In this configuration,
-        default searches will behave as before, but it is possible
-        to perform searches sensitive to case and diacritics. This
-        is described in more detail in the <a class="link" href=
+        <p><span class="application">Recoll</span> can optionally
+        store the raw terms, without accent stripping or case
+        conversion. In this configuration, default searches will
+        behave as before, but it is possible to perform searches
+        sensitive to case and diacritics. This is described in more
+        detail in the <a class="link" href=
         "#RCL.INDEXING.CONFIG.SENS" title=
         "2.3.2.&nbsp;Index case and diacritics sensitivity">section
         about index case and diacritics sensitivity</a>.</p>
@@ -783,7 +783,7 @@ alink="#0000FF">
             </div>
           </div>
           <p><span class="application">Recoll</span> indexing can
-          be performed along two different modes:</p>
+          be performed along two main modes:</p>
           <div class="itemizedlist">
             <ul class="itemizedlist" style=
             "list-style-type: disc;">
@@ -807,10 +807,8 @@ alink="#0000FF">
                 as a file is created or changed. <span class=
                 "command"><strong>recollindex</strong></span> runs
                 as a daemon and uses a file system alteration
-                monitor such as <span class=
-                "application">inotify</span>, <span class=
-                "application">Fam</span> or <span class=
-                "application">Gamin</span> to detect file
+                monitor (e.g. <span class=
+                "application">inotify</span>) to detect file
                 changes.</p>
               </li>
             </ul>
@@ -821,6 +819,14 @@ alink="#0000FF">
           documentation directory, and real time indexing on a
           small home directory). Monitoring a big file system tree
           can consume significant system resources.</p>
+          <p>With <span class="application">Recoll</span> 1.25 and
+          newer, it is also possible to set up an index so that
+          only a subset of the tree will be monitored and the rest
+          will be covered by batch/incremental indexing. (See the
+          details in the <a class="link" href=
+          "#RCL.INDEXING.MONITOR" title=
+          "2.9.&nbsp;Real time indexing">Real time indexing</a>
+          section.</p>
           <p>The choice of method and the parameters used can be
           configured from the <span class=
           "command"><strong>recoll</strong></span> GUI:
@@ -834,12 +840,13 @@ alink="#0000FF">
           later restart of indexing will mostly resume from where
           things stopped (the file tree walk has to be restarted
           from the beginning).</p>
-          <p>When the real time indexer is running, only a stop
-          operation is available from the menu. When no indexing is
-          running, you have a choice of updating the index or
-          rebuilding it (the first choice only processes changed
-          files, the second one zeroes the index before starting so
-          that all files are processed).</p>
+          <p>When the real time indexer is running, two operations
+          are available from the menu: 'Stop' and 'Trigger
+          incremental pass'. When no indexing is running, you have
+          a choice of updating the index or rebuilding it (the
+          first choice only processes changed files, the second one
+          zeroes the index before starting so that all files are
+          processed).</p>
         </div>
         <div class="sect2">
           <div class="titlepage">
@@ -910,8 +917,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idm222" id=
-                "idm222"></a>2.1.3.&nbsp;Document types</h3>
+                <h3 class="title"><a name="idm223" id=
+                "idm223"></a>2.1.3.&nbsp;Document types</h3>
               </div>
             </div>
           </div>
@@ -1008,8 +1015,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idm263" id=
-                "idm263"></a>2.1.4.&nbsp;Indexing failures</h3>
+                <h3 class="title"><a name="idm264" id=
+                "idm264"></a>2.1.4.&nbsp;Indexing failures</h3>
               </div>
             </div>
           </div>
@@ -1044,8 +1051,8 @@ alink="#0000FF">
           <div class="titlepage">
             <div>
               <div>
-                <h3 class="title"><a name="idm275" id=
-                "idm275"></a>2.1.5.&nbsp;Recovery</h3>
+                <h3 class="title"><a name="idm276" id=
+                "idm276"></a>2.1.5.&nbsp;Recovery</h3>
               </div>
             </div>
           </div>
@@ -2111,7 +2118,7 @@ alink="#0000FF">
         "application">X11</span> session monitoring (else the
         daemon will not start).</p>
         <p>By default, the messages from the indexing daemon will
-        be setn to the same file as those from the interactive
+        be sent to the same file as those from the interactive
         commands (<code class="literal">logfilename</code>). You
         may want to change this by setting the <code class=
         "varname">daemlogfilename</code> and <code class=
@@ -2138,6 +2145,18 @@ alink="#0000FF">
         system resources. You probably do not want to enable it if
         your system is short on resources. Periodic indexing is
         adequate in most cases.</p>
+        <p>As of <span class="application">Recoll</span> 1.25, you
+        can set the <a class="link" href=
+        "#RCL.INSTALL.CONFIG.RECOLLCONF.MONITORDIRS">monitordirs</a>
+        configuration variable to specify that only a subset of
+        your indexed files will be monitored for instant indexing.
+        In this situation, an incremental pass on the full tree can
+        be triggered by either restarting the indexer, or just
+        running the <span class=
+        "command"><strong>recollindex</strong></span>, which will
+        notify the running process. The <span class=
+        "command"><strong>recoll</strong></span> GUI also has a
+        menu entry for this.</p>
         <div class="note" style=
         "margin-left: 0.5in; margin-right: 0.5in;">
           <h3 class="title">Increasing resources for inotify</h3>
@@ -7985,6 +8004,17 @@ for i in range(nres):
                   of the followLinks variable.</p>
                 </dd>
                 <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MONITORDIRS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MONITORDIRS"></a><span class="term"><code class="varname">monitordirs</code></span></dt>
+                <dd>
+                  <p>(1.25) Space-separated list of files or
+                  directories to monitor for updates. When running
+                  the real-time indexer, this allows monitoring
+                  only a subset of the whole indexed area. The
+                  elements must be included in the tree defined by
+                  the 'topdirs' members.</p>
+                </dd>
+                <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES" id=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDNAMES"></a><span class="term"><code class="varname">skippedNames</code></span></dt>
                 <dd>
@@ -8929,6 +8959,17 @@ for i in range(nres):
                   inside result lists or previews. The default
                   value is 150 bytes which may be too low if you
                   have custom fields.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXTEXTTRUNCATELEN"
+                id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.IDXTEXTTRUNCATELEN"></a><span class="term"><code class="varname">idxtexttruncatelen</code></span></dt>
+                <dd>
+                  <p>Truncation length for all document texts. Only
+                  index the beginning of documents. This is not
+                  recommended except if you are sure that the
+                  interesting keywords are at the top and have
+                  severe disk space issues.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.ASPELLLANGUAGE" id=
