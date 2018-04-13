@@ -50,6 +50,8 @@ static RclConfig *rclconfig;
 
 #if PY_MAJOR_VERSION >=3
 #  define Py_TPFLAGS_HAVE_ITER 0
+#else
+#define PyLong_FromLong PyInt_FromLong 
 #endif
 
 //////////////////////////////////////////////////////////////////////
@@ -1738,35 +1740,38 @@ Db_makeDocAbstract(recoll_DbObject* self, PyObject *args)
 
 PyDoc_STRVAR(doc_Db_termMatch,
 	     "termMatch(match_type='wildcard|regexp|stem', expr, field='', "
-	     "maxlen=-1, casesens=False, diacsens=False, lang='english')"
+	     "maxlen=-1, casesens=False, diacsens=False, lang='english', freqs=False)"
 	     " returns the expanded term list\n"
 "\n"
 "Expands the input expression according to the mode and parameters and "
-"returns the expanded term list.\n"
+"returns the expanded term list, as raw terms if freqs is False, or "
+"(term, totcnt, docnt) tuples if freqs is True.\n"
 );
 static PyObject *
 Db_termMatch(recoll_DbObject* self, PyObject *args, PyObject *kwargs)
 {
     LOGDEB0("Db_termMatch\n");
     static const char *kwlist[] = {"type", "expr", "field", "maxlen", 
-				   "casesens", "diacsens", "lang", NULL};
+				   "casesens", "diacsens", "freqs", "lang", NULL};
     char *tp = 0;
     char *expr = 0; // needs freeing
     char *field = 0; // needs freeing
     int maxlen = -1;
     PyObject *casesens = 0;
     PyObject *diacsens = 0;
+    PyObject *freqs = 0;
     char *lang = 0; // needs freeing
-
     PyObject *ret = 0;
     int typ_sens = 0;
     Rcl::TermMatchResult result;
+    bool showfreqs = false;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ses|esiOOes", 
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "ses|esiOOOes", 
 				     (char**)kwlist,
 				     &tp, "utf-8", &expr, "utf-8", &field, 
-				     &maxlen, &casesens,
-				     &diacsens, "utf-8", &lang))
+				     &maxlen,
+                                     &casesens, &diacsens, &freqs,
+                                     "utf-8", &lang))
 	return 0;
 
     if (self->db == 0 || the_dbs.find(self->db) == the_dbs.end()) {
@@ -1792,18 +1797,31 @@ Db_termMatch(recoll_DbObject* self, PyObject *args, PyObject *kwargs)
     if (diacsens != 0 && PyObject_IsTrue(diacsens)) {
 	typ_sens |= Rcl::Db::ET_DIACSENS;
     }
-
+    if (freqs != 0 && PyObject_IsTrue(freqs)) {
+        showfreqs = true;
+    }
     if (!self->db->termMatch(typ_sens, lang ? lang : "english", 
 			     expr, result, maxlen, field ? field : "")) {
 	LOGERR("Db_termMatch: db termMatch error\n");
         PyErr_SetString(PyExc_AttributeError, "rcldb termMatch error");
 	goto out;
     }
+
     ret = PyList_New(result.entries.size());
     for (unsigned int i = 0; i < result.entries.size(); i++) {
-	PyList_SetItem(ret, i, 
-		       PyUnicode_FromString(
-			   Rcl::strip_prefix(result.entries[i].term).c_str()));
+        PyObject *term = PyUnicode_FromString(
+            Rcl::strip_prefix(result.entries[i].term).c_str());
+        if (showfreqs) {
+            PyObject *totcnt = PyLong_FromLong(result.entries[i].wcf);
+            PyObject *doccnt = PyLong_FromLong(result.entries[i].docs);
+            PyObject *tup = PyTuple_New(3);
+            PyTuple_SetItem(tup, 0, term);
+            PyTuple_SetItem(tup, 1, totcnt);
+            PyTuple_SetItem(tup, 2, doccnt);
+            PyList_SetItem(ret, i, tup);
+        } else {
+            PyList_SetItem(ret, i, term);
+        }
     }
 
 out:
