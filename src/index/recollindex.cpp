@@ -624,8 +624,10 @@ int main(int argc, char **argv)
     }
 
     string reason;
-    RclInitFlags flags = (op_flags & OPT_m) && !(op_flags&OPT_D) ? 
-	RCLINIT_DAEMON : RCLINIT_IDX;
+    int flags = RCLINIT_IDX;
+    if ((op_flags & OPT_m) && !(op_flags&OPT_D)) {
+	flags |= RCLINIT_DAEMON;
+    }
     config = recollinit(flags, cleanup, sigcleanup, reason, &a_config);
     if (config == 0 || !config->ok()) {
         addIdxReason("init", reason);

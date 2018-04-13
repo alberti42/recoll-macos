@@ -248,7 +248,7 @@ void recoll_exitready()
 
 #endif
 
-RclConfig *recollinit(RclInitFlags flags, 
+RclConfig *recollinit(int flags, 
 		      void (*cleanup)(void), void (*sigcleanup)(int), 
 		      string &reason, const string *argcnf)
 {
@@ -281,10 +281,14 @@ RclConfig *recollinit(RclInitFlags flags,
 	config->getConfParam(string("daemlogfilename"), logfilename);
 	config->getConfParam(string("daemloglevel"), loglevel);
     }
-    if ((flags & RCLINIT_IDX) && logfilename.empty())
-	config->getConfParam(string("idxlogfilename"), logfilename);
-    if ((flags & RCLINIT_IDX) && loglevel.empty()) 
-	config->getConfParam(string("idxloglevel"), loglevel);
+    if (flags & RCLINIT_IDX) {
+        if (logfilename.empty()) {
+            config->getConfParam(string("idxlogfilename"), logfilename);
+        }
+        if (loglevel.empty()) {
+            config->getConfParam(string("idxloglevel"), loglevel);
+        }
+    }
 
     if (logfilename.empty())
 	config->getConfParam(string("logfilename"), logfilename);
