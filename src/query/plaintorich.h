@@ -31,14 +31,13 @@
  */
 class PlainToRich {
 public:
-    PlainToRich() 
-        : m_inputhtml(false), m_eolbr(false), m_hdata(0) {
-    }
-
     virtual ~PlainToRich() {}
 
     void set_inputhtml(bool v) {
         m_inputhtml = v;
+    }
+    void set_activatelinks(bool v) {
+        m_activatelinks = v;
     }
 
     /**
@@ -89,10 +88,11 @@ public:
     }
 
 protected:
-    bool m_inputhtml;
+    bool m_inputhtml{false};
     // Use <br> to break plain text lines (else caller has used a <pre> tag)
-    bool m_eolbr; 
-    const HighlightData *m_hdata;
+    bool m_eolbr{false}; 
+    const HighlightData *m_hdata{0};
+    bool m_activatelinks{false};
 };
 
 #endif /* _PLAINTORICH_H_INCLUDED_ */

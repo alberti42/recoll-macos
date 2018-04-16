@@ -23,6 +23,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <regex>
 
 using std::vector;
 using std::list;
@@ -149,6 +150,16 @@ bool TextSplitPTR::matchGroups()
     return true;
 }
 
+// Replace HTTP(s) urls in text/plain with proper HTML anchors so that
+// they become clickable in the preview. We don't make a lot of effort
+// for validating, or catching things which are probably urls but miss
+// a scheme (e.g. www.xxx.com/index.html), because complicated.
+static const string urlRE = "(https?://[[:alnum:]~_/.%?&=,#@]+)[[:space:]|]";
+static std::regex url_re(urlRE);
+static string activate_urls(const string& in)
+{
+    return std::regex_replace(in, url_re, "<a href=\"$1\">$1</a>");
+}
 
 // Fix result text for display inside the gui text window.
 //
@@ -186,7 +197,7 @@ bool PlainToRich::plaintorich(const string& in,
 
     // Rich text output
     *olit = header();
-
+    
     // No term matches. Happens, for example on a snippet selected for
     // a term match when we are actually looking for a group match
     // (the snippet generator does this...).
@@ -288,6 +299,9 @@ bool PlainToRich::plaintorich(const string& in,
             // chunks cut in the middle of <a></a> for example).
             if (!m_inputhtml && !inrcltag && 
                 olit->size() > (unsigned int)chunksize) {
+                if (m_activatelinks) {
+                    *olit = activate_urls(*olit);
+                }
                 out.push_back(string(startChunk()));
                 olit++;
             }
@@ -365,5 +379,8 @@ bool PlainToRich::plaintorich(const string& in,
     }
 #endif
     LOGDEB2("plaintorich: done " << chron.millis() << " mS\n");
+    if (!m_inputhtml && m_activatelinks) {
+        out.back() = activate_urls(out.back());
+    }
     return ret;
 }
