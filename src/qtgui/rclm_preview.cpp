@@ -150,7 +150,7 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
     if (curPreview == 0) {
 	HighlightData hdata;
 	m_source->getTerms(hdata);
-	curPreview = new Preview(reslist->listId(), hdata);
+	curPreview = new Preview(this, reslist->listId(), hdata);
 
 	if (curPreview == 0) {
 	    QMessageBox::warning(0, tr("Warning"), 
@@ -188,7 +188,7 @@ void RclMain::startPreview(int docnum, Rcl::Doc doc, int mod)
  */
 void RclMain::startPreview(Rcl::Doc doc)
 {
-    Preview *preview = new Preview(0, HighlightData());
+    Preview *preview = new Preview(this, 0, HighlightData());
     if (preview == 0) {
 	QMessageBox::warning(0, tr("Warning"), 
 			     tr("Can't create preview window"),

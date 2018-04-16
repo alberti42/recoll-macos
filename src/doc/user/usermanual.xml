@@ -2834,17 +2834,23 @@
               version instead. </para>
               </listitem>
 
-              <listitem><para><guilabel>Plain text to HTML line style</guilabel>:
-              when displaying plain text inside the preview window, &RCL;
-              tries to preserve some of the original text line breaks and
-              indentation. It can either use PRE HTML tags, which will
-              well preserve the indentation but will force horizontal
-              scrolling for long lines, or use BR tags to break at the
-              original line breaks, which will let the editor introduce
-              other line breaks according to the window width, but will
-              lose some of the original indentation. The third option has
-              been available in recent releases and is probably now the best
-              one: use PRE tags with line wrapping.</para>
+              <listitem><para><guilabel>Activate links in
+              preview</guilabel> if set, Recoll will turn HTTP links found
+              inside plain text into proper HTML anchors, and clicking a
+              link inside a preview window will start the default browser
+              on the link target.</para> </listitem>
+
+              <listitem><para><guilabel>Plain text to HTML line
+              style</guilabel>: when displaying plain text inside the
+              preview window, &RCL; tries to preserve some of the original
+              text line breaks and indentation. It can either use PRE HTML
+              tags, which will well preserve the indentation but will force
+              horizontal scrolling for long lines, or use BR tags to break
+              at the original line breaks, which will let the editor
+              introduce other line breaks according to the window width,
+              but will lose some of the original indentation. The third
+              option has been available in recent releases and is probably
+              now the best one: use PRE tags with line wrapping.</para>
               </listitem>
 
               <listitem><para><guilabel>Choose editor

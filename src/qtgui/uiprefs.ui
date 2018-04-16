@@ -133,6 +133,19 @@
             </widget>
            </item>
            <item>
+            <widget class="QCheckBox" name="previewActiveLinksCB">
+             <property name="text">
+              <string>Activate links in preview.</string>
+             </property>
+               <property name="toolTip">
+                <string>Make links inside the preview window clickable, and start an external browser when they are clicked.</string>
+               </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
             <layout class="QHBoxLayout" name="horizontalLayout">
              <item>
               <widget class="QLabel" name="label">

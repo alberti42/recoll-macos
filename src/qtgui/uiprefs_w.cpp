@@ -145,6 +145,7 @@ void UIPrefsDialog::setFromPrefs()
     closeToTrayCB->setChecked(prefs.closeToTray);
     showTempFileWarningCB->setChecked(prefs.showTempFileWarning == -1);
     previewHtmlCB->setChecked(prefs.previewHtml);
+    previewActiveLinksCB->setChecked(prefs.previewActiveLinks);
     switch (prefs.previewPlainPre) {
     case PrefsPack::PP_BR:
 	plainBRRB->setChecked(1);
@@ -330,6 +331,7 @@ void UIPrefsDialog::accept()
     prefs.showTempFileWarning = showTempFileWarningCB->isChecked() ?
         -1 : 1024;
     prefs.previewHtml = previewHtmlCB->isChecked();
+    prefs.previewActiveLinks = previewActiveLinksCB->isChecked();
 
     if (plainBRRB->isChecked()) {
 	prefs.previewPlainPre = PrefsPack::PP_BR;

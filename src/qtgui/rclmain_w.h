@@ -61,34 +61,7 @@ class RclMain : public QMainWindow, public Ui::RclMainBase {
 
 public:
     RclMain(QWidget * parent = 0)
-        : QMainWindow(parent),
-          curPreview(0),
-          asearchform(0),
-          uiprefs(0),
-          indexConfig(0),
-          indexSched(0),
-          cronTool(0),
-          rtiTool(0),
-          spellform(0),
-          fragbuts(0),
-          specidx(0),
-          periodictimer(0),
-          webcache(0),
-          restable(0),
-          displayingTable(0),
-          m_idNoStem(0),
-          m_idAllStem(0),
-          m_toolsTB(0), m_resTB(0),
-          m_filtFRM(0), m_filtCMB(0), m_filtBGRP(0), m_filtMN(0),
-          m_idxproc(0),
-          m_idxkilled(false),
-          m_catgbutvecidx(0),
-          m_sortspecnochange(false),
-          m_indexerState(IXST_UNKNOWN),
-          m_queryActive(false),
-          m_firstIndexing(false),
-          m_searchIsSimple(false),
-          m_pidfile(0) {
+        : QMainWindow(parent) {
         setupUi(this);
         init();
     }
@@ -163,7 +136,7 @@ public slots:
     virtual void startPreview(int docnum, Rcl::Doc doc, int keymods);
     virtual void startPreview(Rcl::Doc);
     virtual void startNativeViewer(Rcl::Doc, int pagenum = -1,
-                                   QString term = QString());
+                                  QString term = QString());
     virtual void openWith(Rcl::Doc, string);
     virtual void saveDocToFile(Rcl::Doc);
     virtual void previewNextInTab(Preview *, int sid, int docnum);
@@ -207,53 +180,51 @@ protected:
 
 private:
     SnippetsW      *m_snippets{0};
-    Preview        *curPreview;
-    AdvSearch      *asearchform;
-    UIPrefsDialog  *uiprefs;
-    ConfIndexW     *indexConfig;
-    IdxSchedW      *indexSched;
-    CronToolW      *cronTool;
-    RTIToolW       *rtiTool;
-    SpellW         *spellform;
-    FragButs       *fragbuts;
-    SpecIdxW       *specidx;
-    QTimer         *periodictimer;
-    WebcacheEdit   *webcache;
-    ResTable       *restable;
-    bool            displayingTable;
-    QAction        *m_idNoStem;
-    QAction        *m_idAllStem;
-    QToolBar       *m_toolsTB;
-    QToolBar       *m_resTB;
-    QFrame         *m_filtFRM;
-    QComboBox      *m_filtCMB;
-    QButtonGroup   *m_filtBGRP;
-    QMenu          *m_filtMN;
+    Preview        *curPreview{0};
+    AdvSearch      *asearchform{0};
+    UIPrefsDialog  *uiprefs{0};
+    ConfIndexW     *indexConfig{0};
+    IdxSchedW      *indexSched{0};
+    CronToolW      *cronTool{0};
+    RTIToolW       *rtiTool{0};
+    SpellW         *spellform{0};
+    FragButs       *fragbuts{0};
+    SpecIdxW       *specidx{0};
+    QTimer         *periodictimer{0};
+    WebcacheEdit   *webcache{0};
+    ResTable       *restable{0};
+    bool            displayingTable{false};
+    QAction        *m_idNoStem{0};
+    QAction        *m_idAllStem{0};
+    QToolBar       *m_toolsTB{0};
+    QToolBar       *m_resTB{0};
+    QFrame         *m_filtFRM{0};
+    QComboBox      *m_filtCMB{0};
+    QButtonGroup   *m_filtBGRP{0};
+    QMenu          *m_filtMN{0};
     QFileSystemWatcher m_watcher;
     vector<ExecCmd*>  m_viewers;
-    ExecCmd          *m_idxproc; // Indexing process
-    bool             m_idxkilled; // Killed my process
+    ExecCmd          *m_idxproc{0}; // Indexing process
+    bool             m_idxkilled{false}; // Killed my process
     TempFileInternal *m_idxreasontmp{nullptr};
     map<QString, QAction*> m_stemLangToId;
     vector<string>    m_catgbutvec;
-    int               m_catgbutvecidx;
+    int               m_catgbutvecidx{0};
     DocSeqFiltSpec    m_filtspec;
-    bool              m_sortspecnochange;
+    bool              m_sortspecnochange{false};
     DocSeqSortSpec    m_sortspec;
     std::shared_ptr<DocSequence> m_source;
-    IndexerState      m_indexerState;
-    bool              m_queryActive;
-    bool              m_firstIndexing;
-    bool              m_searchIsSimple; // Last search was started from simple
-
+    IndexerState      m_indexerState{IXST_UNKNOWN};
+    bool              m_queryActive{false};
+    bool              m_firstIndexing{false};
+    // Last search was started from simple
+    bool              m_searchIsSimple{false}; 
     // If set on init, will be displayed either through ext app, or
     // preview (if no ext app set)
     QString          m_urltoview;
-
-    RclTrayIcon     *m_trayicon;
-
+    RclTrayIcon     *m_trayicon{0};
     // We sometimes take the indexer lock (e.g.: when editing the webcache)
-    Pidfile         *m_pidfile;
+    Pidfile         *m_pidfile{0};
     
     virtual void init();
     virtual void setupResTB(bool combo);

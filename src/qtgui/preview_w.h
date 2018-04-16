@@ -51,6 +51,8 @@ class QPushButton;
 class QCheckBox;
 class Preview;
 class PlainToRichQtPreview;
+class QUrl;
+class RclMain;
 
 class PreviewTextEdit : public PREVIEW_PARENTCLASS {
     Q_OBJECT;
@@ -65,6 +67,7 @@ public slots:
     virtual void displayImage();
     virtual void print();
     virtual void createPopupMenu(const QPoint& pos);
+    void onAnchorClicked(const QUrl& url);
 
     friend class Preview;
 
@@ -104,20 +107,17 @@ private:
 
 
 class Preview : public QWidget {
+    Q_OBJECT;
+public:
 
-    Q_OBJECT
-
-    public:
-
-    Preview(int sid, // Search Id
+    Preview(RclMain *m, int sid, // Search Id
 	    const HighlightData& hdata) // Search terms etc. for highlighting
-	: QWidget(0), m_searchId(sid), m_searchTextFromIndex(-1), m_hData(hdata)
-    {
+	: QWidget(0), m_rclmain(m), m_searchId(sid), m_hData(hdata) {
 	init();
     }
 
-    virtual void closeEvent(QCloseEvent *e );
-    virtual bool eventFilter(QObject *target, QEvent *event );
+    virtual void closeEvent(QCloseEvent *e);
+    virtual bool eventFilter(QObject *target, QEvent *event);
 
     /** 
      * Arrange for the document to be displayed either by exposing the tab 
@@ -158,27 +158,28 @@ signals:
     void saveDocToFile(Rcl::Doc);
 
 private:
+    RclMain *m_rclmain{0};
     // Identifier of search in main window. This is used to check that
     // we make sense when requesting the next document when browsing
     // successive search results in a tab.
     int           m_searchId; 
 
-    bool          m_dynSearchActive;
+    bool          m_dynSearchActive{false};
     // Index value the search text comes from. -1 if text was edited
-    int           m_searchTextFromIndex;
+    int           m_searchTextFromIndex{-1};
 
-    bool          m_canBeep;
-    bool          m_loading;
+    bool          m_canBeep{true};
+    bool          m_loading{false};
     HighlightData m_hData;
-    bool          m_justCreated; // First tab create is different
+    bool          m_justCreated{true}; // First tab create is different
 
-    QTabWidget* pvTab;
-    QLabel* searchLabel;
-    QComboBox *searchTextCMB;
-    QPushButton* nextButton;
-    QPushButton* prevButton;
-    QPushButton* clearPB;
-    QCheckBox* matchCheck;
+    QTabWidget* pvTab{0};
+    QLabel* searchLabel{0};
+    QComboBox *searchTextCMB{0};
+    QPushButton* nextButton{0};
+    QPushButton* prevButton{0};
+    QPushButton* clearPB{0};
+    QCheckBox* matchCheck{0};
 
     void init();
     virtual void setCurTabProps(const Rcl::Doc& doc, int docnum);

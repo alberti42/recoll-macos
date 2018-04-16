@@ -59,6 +59,7 @@
 #include "rclhelp.h"
 #include "preview_load.h"
 #include "preview_plaintorich.h"
+#include "rclmain_w.h"
 
 static const QKeySequence closeKS(Qt::Key_Escape);
 static const QKeySequence nextDocInTabKS(Qt::ShiftModifier+Qt::Key_Down);
@@ -163,14 +164,10 @@ void Preview::init()
     connect(new QShortcut(printTabKS, this), SIGNAL (activated()), 
             this, SIGNAL (printCurrentPreviewRequest()));
 
-    m_dynSearchActive = false;
-    m_canBeep = true;
     if (prefs.pvwidth > 100) {
         resize(prefs.pvwidth, prefs.pvheight);
     }
-    m_loading = false;
     currentChanged(pvTab->currentIndex());
-    m_justCreated = true;
 }
 
 void Preview::emitShowNext()
@@ -195,7 +192,7 @@ void Preview::emitShowPrev()
 
 void Preview::closeEvent(QCloseEvent *e)
 {
-    LOGDEB("Preview::closeEvent. m_loading "  << (m_loading) << "\n" );
+    LOGDEB("Preview::closeEvent. m_loading " << m_loading << "\n");
     if (m_loading) {
         CancelCheck::instance().setCancel();
         e->ignore();
@@ -226,10 +223,12 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 {
     if (event->type() != QEvent::KeyPress) {
 #if 0
-        LOGDEB("Preview::eventFilter(): "  << (eventTypeToStr(event->type())) << "\n" );
+        LOGDEB("Preview::eventFilter(): " << eventTypeToStr(event->type()) <<
+               "\n");
         if (event->type() == QEvent::MouseButtonRelease) {
             QMouseEvent *mev = (QMouseEvent *)event;
-            LOGDEB("Mouse: GlobalY "  << (mev->globalY()) << " y "  << (mev->y()) << "\n" );
+            LOGDEB("Mouse: GlobalY " << mev->globalY() << " y " << mev->y() <<
+                   "\n");
         }
 #endif
         return false;
@@ -240,7 +239,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 
     if (m_dynSearchActive) {
         if (keyEvent->key() == Qt::Key_F3) {
-            LOGDEB2("Preview::eventFilter: got F3\n" );
+            LOGDEB2("Preview::eventFilter: got F3\n");
             doSearch(searchTextCMB->currentText(), true, 
                      (keyEvent->modifiers() & Qt::ShiftModifier) != 0);
             return true;
@@ -253,18 +252,18 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
             if (keyEvent->key() == Qt::Key_Slash ||
                 (keyEvent->key() == Qt::Key_F &&
                  (keyEvent->modifiers() & Qt::ControlModifier))) {
-                LOGDEB2("Preview::eventFilter: got / or C-F\n" );
+                LOGDEB2("Preview::eventFilter: got / or C-F\n");
                 searchTextCMB->setFocus();
                 m_dynSearchActive = true;
                 return true;
             } else if (keyEvent->key() == Qt::Key_Space) {
-                LOGDEB2("Preview::eventFilter: got Space\n" );
+                LOGDEB2("Preview::eventFilter: got Space\n");
                 int value = edit->verticalScrollBar()->value();
                 value += edit->verticalScrollBar()->pageStep();
                 edit->verticalScrollBar()->setValue(value);
                 return true;
             } else if (keyEvent->key() == Qt::Key_Backspace) {
-                LOGDEB2("Preview::eventFilter: got Backspace\n" );
+                LOGDEB2("Preview::eventFilter: got Backspace\n");
                 int value = edit->verticalScrollBar()->value();
                 value -= edit->verticalScrollBar()->pageStep();
                 edit->verticalScrollBar()->setValue(value);
@@ -278,7 +277,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 
 void Preview::searchTextChanged(const QString & text)
 {
-    LOGDEB1("Search line text changed. text: '"  << ((const char *)text.toUtf8()) << "'\n" );
+    LOGDEB1("Search line text changed. text: '" << qs2utf8s(text) << "'\n");
     m_searchTextFromIndex = -1;
     if (text.isEmpty()) {
         m_dynSearchActive = false;
@@ -292,13 +291,13 @@ void Preview::searchTextChanged(const QString & text)
 
 void Preview::searchTextFromIndex(int idx)
 {
-    LOGDEB1("search line from index "  << (idx) << "\n" );
+    LOGDEB1("search line from index " << idx << "\n");
     m_searchTextFromIndex = idx;
 }
 
 PreviewTextEdit *Preview::currentEditor()
 {
-    LOGDEB2("Preview::currentEditor()\n" );
+    LOGDEB2("Preview::currentEditor()\n");
     QWidget *tw = pvTab->currentWidget();
     PreviewTextEdit *edit = 0;
     if (tw) {
@@ -323,7 +322,9 @@ void Preview::emitSaveDocToFile()
 void Preview::doSearch(const QString &_text, bool next, bool reverse, 
                        bool wordOnly)
 {
-    LOGDEB("Preview::doSearch: text ["  << ((const char *)_text.toUtf8()) << "] idx "  << (m_searchTextFromIndex) << " next "  << (int(next)) << " rev "  << (int(reverse)) << " word "  << (int(wordOnly)) << "\n" );
+    LOGDEB("Preview::doSearch: text [" << qs2utf8s(_text) << "] idx " <<
+           m_searchTextFromIndex << " next " << next << " rev " << reverse <<
+           " word " << wordOnly << "\n");
     QString text = _text;
 
     bool matchCase = matchCheck->isChecked();
@@ -335,7 +336,7 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
 
     if (text.isEmpty() || m_searchTextFromIndex != -1) {
         if (!edit->m_plaintorich->haveAnchors()) {
-            LOGDEB("NO ANCHORS\n" );
+            LOGDEB("NO ANCHORS\n");
             return;
         }
         // The combobox indices are equal to the search ugroup indices
@@ -346,7 +347,7 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
             edit->m_plaintorich->nextAnchorNum(m_searchTextFromIndex);
         }
         QString aname = edit->m_plaintorich->curAnchorName();
-        LOGDEB("Calling scrollToAnchor("  << ((const char *)aname.toUtf8()) << ")\n" );
+        LOGDEB("Calling scrollToAnchor(" << qs2utf8s(aname) << ")\n");
         edit->scrollToAnchor(aname);
         // Position the cursor approximately at the anchor (top of
         // viewport) so that searches start from here
@@ -366,7 +367,7 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
         edit->setTextCursor(cursor);
     }
     Chrono chron;
-    LOGDEB("Preview::doSearch: first find call\n" );
+    LOGDEB("Preview::doSearch: first find call\n");
     QTextDocument::FindFlags flags = 0;
     if (reverse)
         flags |= QTextDocument::FindBackward;
@@ -375,19 +376,21 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
     if (matchCase)
         flags |= QTextDocument::FindCaseSensitively;
     bool found = edit->find(text, flags);
-    LOGDEB("Preview::doSearch: first find call return: found "  << (found) << " "  << (chron.secs()) << " S\n" );
+    LOGDEB("Preview::doSearch: first find call return: found " << found <<
+           " " << chron.secs() << " S\n");
     // If not found, try to wrap around. 
     if (!found) { 
-        LOGDEB("Preview::doSearch: wrapping around\n" );
+        LOGDEB("Preview::doSearch: wrapping around\n");
         if (reverse) {
             edit->moveCursor (QTextCursor::End);
         } else {
             edit->moveCursor (QTextCursor::Start);
         }
-        LOGDEB("Preview::doSearch: 2nd find call\n" );
+        LOGDEB("Preview::doSearch: 2nd find call\n");
         chron.restart();
         found = edit->find(text, flags);
-        LOGDEB("Preview::doSearch: 2nd find call return found "  << (found) << " "  << (chron.secs()) << " S\n" );
+        LOGDEB("Preview::doSearch: 2nd find call return found " << found <<
+               " " << chron.secs() << " S\n");
     }
 
     if (found) {
@@ -397,37 +400,37 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
             QApplication::beep();
         m_canBeep = false;
     }
-    LOGDEB("Preview::doSearch: return\n" );
+    LOGDEB("Preview::doSearch: return\n");
 }
 
 void Preview::nextPressed()
 {
-    LOGDEB2("Preview::nextPressed\n" );
+    LOGDEB2("Preview::nextPressed\n");
     doSearch(searchTextCMB->currentText(), true, false);
 }
 
 void Preview::prevPressed()
 {
-    LOGDEB2("Preview::prevPressed\n" );
+    LOGDEB2("Preview::prevPressed\n");
     doSearch(searchTextCMB->currentText(), true, true);
 }
 
 // Called when user clicks on tab
 void Preview::currentChanged(int index)
 {
-    LOGDEB2("PreviewTextEdit::currentChanged\n" );
+    LOGDEB2("PreviewTextEdit::currentChanged\n");
     QWidget *tw = pvTab->widget(index);
     PreviewTextEdit *edit = 
         tw->findChild<PreviewTextEdit*>("pvEdit");
-    LOGDEB1("Preview::currentChanged(). Editor: "  << (edit) << "\n" );
+    LOGDEB1("Preview::currentChanged(). Editor: " << edit << "\n");
     
     if (edit == 0) {
-        LOGERR("Editor child not found\n" );
+        LOGERR("Editor child not found\n");
         return;
     }
     edit->setFocus();
     // Disconnect the print signal and reconnect it to the current editor
-    LOGDEB("Disconnecting reconnecting print signal\n" );
+    LOGDEB("Disconnecting reconnecting print signal\n");
     disconnect(this, SIGNAL(printCurrentPreviewRequest()), 0, 0);
     connect(this, SIGNAL(printCurrentPreviewRequest()), edit, SLOT(print()));
     edit->installEventFilter(this);
@@ -438,7 +441,7 @@ void Preview::currentChanged(int index)
 
 void Preview::closeCurrentTab()
 {
-    LOGDEB1("Preview::closeCurrentTab: m_loading "  << (m_loading) << "\n" );
+    LOGDEB1("Preview::closeCurrentTab: m_loading " << m_loading << "\n");
     if (m_loading) {
         CancelCheck::instance().setCancel();
         return;
@@ -455,7 +458,7 @@ void Preview::closeCurrentTab()
 
 PreviewTextEdit *Preview::addEditorTab()
 {
-    LOGDEB1("PreviewTextEdit::addEditorTab()\n" );
+    LOGDEB1("PreviewTextEdit::addEditorTab()\n");
     QWidget *anon = new QWidget((QWidget *)pvTab);
     QVBoxLayout *anonLayout = new QVBoxLayout(anon); 
     PreviewTextEdit *editor = new PreviewTextEdit(anon, "pvEdit", this);
@@ -469,7 +472,7 @@ PreviewTextEdit *Preview::addEditorTab()
 
 void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
 {
-    LOGDEB1("Preview::setCurTabProps\n" );
+    LOGDEB1("Preview::setCurTabProps\n");
     QString title;
     string ctitle;
     if (doc.getmeta(Rcl::Doc::keytt, &ctitle) && !ctitle.empty()) {
@@ -491,7 +494,7 @@ void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
         struct tm *tm = localtime(&mtime);
         strftime(datebuf, 99, "%Y-%m-%d %H:%M:%S", tm);
     }
-    LOGDEB("Doc.url: ["  << (doc.url) << "]\n" );
+    LOGDEB("Doc.url: [" << doc.url << "]\n");
     string url;
     printableUrl(theconfig->getDefCharset(), doc.url, url);
     string tiptxt = url + string("\n");
@@ -511,10 +514,10 @@ void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
 
 bool Preview::makeDocCurrent(const Rcl::Doc& doc, int docnum, bool sametab)
 {
-    LOGDEB("Preview::makeDocCurrent: "  << (doc.url) << "\n" );
+    LOGDEB("Preview::makeDocCurrent: " << doc.url << "\n");
 
     if (m_loading) {
-        LOGERR("Already loading\n" );
+        LOGERR("Already loading\n");
         return false;
     }
 
@@ -603,7 +606,7 @@ public:
 
 bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 {
-    LOGDEB1("Preview::loadDocInCurrentTab()\n" );
+    LOGDEB1("Preview::loadDocInCurrentTab()\n");
 
     LoadGuard guard(&m_loading);
     CancelCheck::instance().setCancel(false);
@@ -641,7 +644,9 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
             progress.show();
     }
 
-    LOGDEB("loadDocInCurrentTab: after file load: cancel "  << (CancelCheck::instance().cancelState()) << " status "  << (lthr.status) << " text length "  << (lthr.fdoc.text.length()) << "\n" );
+    LOGDEB("loadDocInCurrentTab: after file load: cancel " <<
+           CancelCheck::instance().cancelState() << " status " << lthr.status <<
+           " text length " << lthr.fdoc.text.length() << "\n");
 
     if (CancelCheck::instance().cancelState())
         return false;
@@ -703,6 +708,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     editor->m_format = Qt::RichText;
     bool inputishtml = !lthr.fdoc.mimetype.compare("text/html");
     QStringList qrichlst;
+    editor->m_plaintorich->set_activatelinks(prefs.previewActiveLinks);
     
 #if 1
     if (highlightTerms) {
@@ -710,10 +716,10 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
         qApp->processEvents();
 
         if (inputishtml) {
-            LOGDEB1("Preview: got html "  << (lthr.fdoc.text) << "\n" );
+            LOGDEB1("Preview: got html " << lthr.fdoc.text << "\n");
             editor->m_plaintorich->set_inputhtml(true);
         } else {
-            LOGDEB1("Preview: got plain "  << (lthr.fdoc.text) << "\n" );
+            LOGDEB1("Preview: got plain " << lthr.fdoc.text << "\n");
             editor->m_plaintorich->set_inputhtml(false);
         }
 
@@ -744,7 +750,8 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
             }
         }
     } else {
-        LOGDEB("Preview: no hilighting, loading "  << (int(lthr.fdoc.text.size())) << " bytes\n" );
+        LOGDEB("Preview: no hilighting, loading " << lthr.fdoc.text.size() <<
+               " bytes\n");
         // No plaintorich() call.  In this case, either the text is
         // html and the html quoting is hopefully correct, or it's
         // plain-text and there is no need to escape special
@@ -794,7 +801,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
         if (progress.wasCanceled()) {
             editor->append("<b>Cancelled !</b>");
-            LOGDEB("loadDocInCurrentTab: cancelled in editor load\n" );
+            LOGDEB("loadDocInCurrentTab: cancelled in editor load\n");
             break;
         }
     }
@@ -858,7 +865,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
         // Position to the first query term
         if (editor->m_plaintorich->haveAnchors()) {
             QString aname = editor->m_plaintorich->curAnchorName();
-            LOGDEB2("Call movetoanchor("  << ((const char *)aname.toUtf8()) << ")\n" );
+            LOGDEB2("Call movetoanchor(" << qs2utf8s(aname) << ")\n");
             editor->scrollToAnchor(aname);
             // Position the cursor approximately at the anchor (top of
             // viewport) so that searches start from here
@@ -876,7 +883,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
     editor->setFocus();
     emit(previewExposed(this, m_searchId, docnum));
-    LOGDEB("loadDocInCurrentTab: returning true\n" );
+    LOGDEB("loadDocInCurrentTab: returning true\n");
     return true;
 }
 
@@ -889,13 +896,27 @@ PreviewTextEdit::PreviewTextEdit(QWidget* parent, const char* nm, Preview *pv)
     setObjectName(nm);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)),
             this, SLOT(createPopupMenu(const QPoint&)));
+    connect(this, SIGNAL(anchorClicked(const QUrl &)),
+            this, SLOT(onAnchorClicked(const QUrl&)));
     setOpenExternalLinks(false);
     setOpenLinks(false);
 }
 
+void PreviewTextEdit::onAnchorClicked(const QUrl& url)
+{
+    LOGDEB("PreviewTextEdit::onAnchorClicked: " << qs2utf8s(url.toString())
+          << std::endl);
+    if (prefs.previewActiveLinks && m_preview->m_rclmain) {
+        Rcl::Doc doc;
+        doc.url = qs2utf8s(url.toString()).c_str();
+        doc.mimetype = "text/html";
+        m_preview->m_rclmain->startNativeViewer(doc);
+    }
+}
+
 void PreviewTextEdit::createPopupMenu(const QPoint& pos)
 {
-    LOGDEB1("PreviewTextEdit::createPopupMenu()\n" );
+    LOGDEB1("PreviewTextEdit::createPopupMenu()\n");
     QMenu *popup = new QMenu(this);
     switch (m_curdsp) {
     case PTE_DSPTXT:
@@ -934,7 +955,7 @@ void PreviewTextEdit::createPopupMenu(const QPoint& pos)
 // Display main text
 void PreviewTextEdit::displayText()
 {
-    LOGDEB1("PreviewTextEdit::displayText()\n" );
+    LOGDEB1("PreviewTextEdit::displayText()\n");
     if (m_format == Qt::PlainText)
         setPlainText(m_richtxt);
     else
@@ -945,7 +966,7 @@ void PreviewTextEdit::displayText()
 // Display field values
 void PreviewTextEdit::displayFields()
 {
-    LOGDEB1("PreviewTextEdit::displayFields()\n" );
+    LOGDEB1("PreviewTextEdit::displayFields()\n");
 
     QString txt = "<html><head></head><body>\n";
     txt += "<b>" + QString::fromLocal8Bit(m_url.c_str());
@@ -967,7 +988,7 @@ void PreviewTextEdit::displayFields()
 
 void PreviewTextEdit::displayImage()
 {
-    LOGDEB1("PreviewTextEdit::displayImage()\n" );
+    LOGDEB1("PreviewTextEdit::displayImage()\n");
     if (m_image.isNull())
         displayText();
 
@@ -985,7 +1006,7 @@ void PreviewTextEdit::displayImage()
 
 void PreviewTextEdit::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    LOGDEB2("PreviewTextEdit::mouseDoubleClickEvent\n" );
+    LOGDEB2("PreviewTextEdit::mouseDoubleClickEvent\n");
     QTextEdit::mouseDoubleClickEvent(event);
     if (textCursor().hasSelection() && m_preview)
         m_preview->emitWordSelect(textCursor().selectedText());
@@ -993,7 +1014,7 @@ void PreviewTextEdit::mouseDoubleClickEvent(QMouseEvent *event)
 
 void PreviewTextEdit::print()
 {
-    LOGDEB("PreviewTextEdit::print\n" );
+    LOGDEB("PreviewTextEdit::print\n");
     if (!m_preview)
         return;
         

@@ -479,7 +479,8 @@ void RclMain::startManual(const string& index)
     webhelp = path_cat(webhelp, "index.html");
     bool has_wh = path_exists(webhelp);
     
-    LOGDEB("RclMain::startManual: help index is "  << (index.empty()?"(null)":index) << "\n" );
+    LOGDEB("RclMain::startManual: help index is " <<
+           (index.empty() ? "(null)" : index) << "\n");
     bool indexempty = index.empty();
 
 #ifdef _WIN32

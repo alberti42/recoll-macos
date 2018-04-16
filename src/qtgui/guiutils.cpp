@@ -88,6 +88,8 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.startWithAdvSearchOpen, 
 	       "/Recoll/prefs/startWithAdvSearchOpen", Bool, false);
     SETTING_RW(prefs.previewHtml, "/Recoll/prefs/previewHtml", Bool, true);
+    SETTING_RW(prefs.previewActiveLinks,
+               "/Recoll/prefs/previewActiveLinks", Bool, false);
 
     QString advSearchClauses;
     const int maxclauselistsize = 20;
