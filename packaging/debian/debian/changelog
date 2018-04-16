@@ -1,8 +1,8 @@
-recoll (1.24.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+recoll (1.23.8-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
-  * New release 1.24. Mostly to accommodate new Xapian 1.4 index format changes
+  * New release 1.23.8. Fixes "error 9 on netlink descriptor" GUI crash
     
- -- Jean-Francois Dockes <jf@dockes.org>  Tue, 10 Apr 2018 13:37:00 +0100
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 12 Apr 2018 14:13:00 +0100
 
 recoll (1.23.7-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
