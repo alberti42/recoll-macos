@@ -722,7 +722,7 @@
       interested in is probably 
       <link linkend="RCL.INSTALL.CONFIG.RECOLLCONF.TOPDIRS">
         <varname>topdirs</varname></link>, 
-      which determines what subtrees get indexed.</para>
+      which determines what subtrees and files get indexed.</para>
 
       <para>The applications needed to index file types other than
       text, HTML or email (ie: pdf, postscript, ms-word...) are
@@ -5095,9 +5095,10 @@ recollindex -c "$confdir"
                 </varlistentry>
 
                 <varlistentry>
-                  <term>Query.fetchone()</term>
-                  <listitem><para>Fetches the next <literal>Doc</literal> object
-                  from the current search results.</para></listitem>
+                  <term>Query.fetchone()</term> <listitem><para>Fetches the
+                  next <literal>Doc</literal> object from the current
+                  search results. Generates a StopIteration exception if
+                  there are no results left.</para></listitem>
                 </varlistentry>
 
                 <varlistentry>
@@ -6117,7 +6118,7 @@ for i in range(nres):
       example, a short extract of the main configuration file might
       look as follows:</para> 
       <programlisting>
-        # Space-separated list of directories to index.
+        # Space-separated list of files and directories to index.
         topdirs =  ~/docs /usr/share/doc
 
         [~/somedirectory-with-utf8-txt-files]

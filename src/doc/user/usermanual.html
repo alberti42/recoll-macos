@@ -1254,7 +1254,7 @@ alink="#0000FF">
         "link" href=
         "#RCL.INSTALL.CONFIG.RECOLLCONF.TOPDIRS"><code class=
         "varname">topdirs</code></a>, which determines what
-        subtrees get indexed.</p>
+        subtrees and files get indexed.</p>
         <p>The applications needed to index file types other than
         text, HTML or email (ie: pdf, postscript, ms-word...) are
         described in the <a class="link" href=
@@ -6555,7 +6555,8 @@ recollindex -c "$confdir"
                     <dd>
                       <p>Fetches the next <code class=
                       "literal">Doc</code> object from the current
-                      search results.</p>
+                      search results. Generates a StopIteration
+                      exception if there are no results left.</p>
                     </dd>
                     <dt><span class=
                     "term">Query.close()</span></dt>
@@ -7845,7 +7846,7 @@ for i in range(nres):
         example, a short extract of the main configuration file
         might look as follows:</p>
         <pre class="programlisting">
-        # Space-separated list of directories to index.
+        # Space-separated list of files and directories to index.
         topdirs =  ~/docs /usr/share/doc
 
         [~/somedirectory-with-utf8-txt-files]
