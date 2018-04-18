@@ -158,7 +158,7 @@ public:
     int getMaxExp() {return m_maxexp;}
     int getMaxCl() {return m_maxcl;}
     int getSoftMaxExp() {return m_softmaxexpand;}
-    void dump(ostream& o) const;
+    void dump(std::ostream& o) const;
 
     friend class ::AdvSearch;
 
@@ -292,7 +292,7 @@ public:
     virtual Relation getrel() {
         return m_rel;
     }
-    virtual void dump(ostream& o) const;
+    virtual void dump(std::ostream& o) const;
 
     friend class SearchData;
 protected:
@@ -342,7 +342,7 @@ public:
     virtual void setfield(const string& field) {
         m_field = field;
     }
-    virtual void dump(ostream& o) const;
+    virtual void dump(std::ostream& o) const;
 
 protected:
     std::string  m_text;  // Raw user entry text.
@@ -384,7 +384,7 @@ public:
     }
     virtual ~SearchDataClauseRange() {}
 
-    virtual void dump(ostream& o) const;
+    virtual void dump(std::ostream& o) const;
     virtual const std::string& gettext2() const {
         return m_t2;
     }
@@ -413,7 +413,7 @@ public:
     virtual ~SearchDataClauseFilename() {}
 
     virtual bool toNativeQuery(Rcl::Db &, void *);
-    virtual void dump(ostream& o) const;
+    virtual void dump(std::ostream& o) const;
 };
 
 
@@ -448,7 +448,7 @@ public:
     virtual ~SearchDataClausePath() {}
 
     virtual bool toNativeQuery(Rcl::Db &, void *);
-    virtual void dump(ostream& o) const;
+    virtual void dump(std::ostream& o) const;
 };
 
 /** 
@@ -470,7 +470,7 @@ public:
     virtual void setslack(int slack) {
         m_slack = slack;
     }
-    virtual void dump(ostream& o) const;
+    virtual void dump(std::ostream& o) const;
 private:
     int m_slack;
 };
@@ -493,7 +493,7 @@ public:
     virtual std::shared_ptr<SearchData> getSub() {
         return m_sub;
     }
-    virtual void dump(ostream& o) const;
+    virtual void dump(std::ostream& o) const;
 
 protected:
     std::shared_ptr<SearchData> m_sub;

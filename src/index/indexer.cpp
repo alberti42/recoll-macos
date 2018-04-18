@@ -37,6 +37,10 @@
 #include "rclaspell.h"
 #endif
 
+using std::list;
+using std::string;
+using std::vector;
+
 // This would more logically live in recollindex.cpp, but then librecoll would
 // have an undefined symbol
 ConfSimple idxreasons;
@@ -182,9 +186,8 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
 {
     list<string> myfiles;
     string origcwd = m_config->getOrigCwd();
-    for (list<string>::const_iterator it = ifiles.begin(); 
-	 it != ifiles.end(); it++) {
-	myfiles.push_back(path_canon(*it, &origcwd));
+    for (const auto& entry : ifiles) {
+	myfiles.push_back(path_canon(entry, &origcwd));
     }
     myfiles.sort();
 
@@ -229,7 +232,7 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
 
 // Update index for specific documents. The docs come from an index
 // query, so the udi, backend etc. fields are filled.
-bool ConfIndexer::updateDocs(std::vector<Rcl::Doc> &docs, IxFlag flag)
+bool ConfIndexer::updateDocs(vector<Rcl::Doc> &docs, IxFlag flag)
 {
     vector<string> paths;
     docsToPaths(docs, paths);
@@ -240,13 +243,12 @@ bool ConfIndexer::updateDocs(std::vector<Rcl::Doc> &docs, IxFlag flag)
     return true;
 }
 
-bool ConfIndexer::purgeFiles(std::list<string> &files, int flag)
+bool ConfIndexer::purgeFiles(list<string> &files, int flag)
 {
     list<string> myfiles;
     string origcwd = m_config->getOrigCwd();
-    for (list<string>::const_iterator it = files.begin(); 
-	 it != files.end(); it++) {
-	myfiles.push_back(path_canon(*it, &origcwd));
+    for (const auto& entry : files) {
+	myfiles.push_back(path_canon(entry, &origcwd));
     }
     myfiles.sort();
 
