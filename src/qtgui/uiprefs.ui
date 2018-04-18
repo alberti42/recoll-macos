@@ -802,7 +802,7 @@ May be slow for big documents.</string>
             </layout>
            </item>
            <item>
-            <widget class="Line" name="line3">
+            <widget class="Line" name="line31">
              <property name="frameShape">
               <enum>QFrame::HLine</enum>
              </property>

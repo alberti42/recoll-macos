@@ -306,6 +306,11 @@ void RclMain::bumpIndexing()
         system(cmd.c_str());
     }
 }
+#else
+// Because moc does not understand ifdefs, have to have this as an empty func
+void RclMain::bumpIndexing()
+{
+}
 #endif
 
 static void delay(int millisecondsWait)

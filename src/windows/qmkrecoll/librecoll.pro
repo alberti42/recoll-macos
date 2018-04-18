@@ -37,6 +37,7 @@ SOURCES += \
 ../../index/exefetcher.cpp \
 ../../index/fsfetcher.cpp \
 ../../index/fsindexer.cpp \
+../../index/idxstatus.cpp \
 ../../index/indexer.cpp \
 ../../index/mimetype.cpp \
 ../../index/subtreelist.cpp \
@@ -67,6 +68,7 @@ SOURCES += \
 ../../rcldb/daterange.cpp \
 ../../rcldb/expansiondbs.cpp \
 ../../rcldb/rclabstract.cpp \
+../../rcldb/rclabsfromtext.cpp \
 ../../rcldb/rcldb.cpp \
 ../../rcldb/rcldoc.cpp \
 ../../rcldb/rcldups.cpp \
@@ -78,6 +80,8 @@ SOURCES += \
 ../../rcldb/stemdb.cpp \
 ../../rcldb/stoplist.cpp \
 ../../rcldb/synfamily.cpp \
+../../rcldb/rclvalues.cpp \
+../../rcldb/rclvalues.h \
 ../../unac/unac.cpp \
 ../../utils/appformime.cpp \
 ../../utils/base64.cpp \
@@ -88,6 +92,8 @@ SOURCES += \
 ../../utils/copyfile.cpp \
 ../../utils/cpuconf.cpp \
 ../../utils/ecrontab.cpp \
+../../utils/zlibut.cpp \
+../../utils/zlibut.h \
 ../../windows/execmd_w.cpp \
 ../../windows/fnmatch.c \
 ../../windows/wincodepages.cpp \
