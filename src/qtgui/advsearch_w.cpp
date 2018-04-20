@@ -86,7 +86,7 @@ void AdvSearch::init()
 
     // Create preconfigured clauses
     for (unsigned int i = 0; i < iclausescnt; i++) {
-	addClause(initclausetypes[i]);
+	addClause(initclausetypes[i], false);
     }
     // Tune initial state according to last saved
     {
@@ -97,7 +97,7 @@ void AdvSearch::init()
 		(*cit)->tpChange(prefs.advSearchClauses[i]);
 		cit++;
 	    } else {
-		addClause(prefs.advSearchClauses[i]);
+		addClause(prefs.advSearchClauses[i], false);
 	    }
 	}
     }
@@ -158,18 +158,17 @@ void AdvSearch::saveCnf()
 {
     // Save my state
     prefs.advSearchClauses.clear(); 
-    for (vector<SearchClauseW *>::iterator cit = m_clauseWins.begin();
-	 cit != m_clauseWins.end(); cit++) {
-	prefs.advSearchClauses.push_back((*cit)->sTpCMB->currentIndex());
+    for (const auto& clause : m_clauseWins) {
+	prefs.advSearchClauses.push_back(clause->sTpCMB->currentIndex());
     }
 }
 
-void AdvSearch::addClause()
+void AdvSearch::addClause(bool updsaved)
 {
-    addClause(0);
+    addClause(0, updsaved);
 }
 
-void AdvSearch::addClause(int tp)
+void AdvSearch::addClause(int tp, bool updsaved)
 {
     SearchClauseW *w = new SearchClauseW(clauseFRM);
     m_clauseWins.push_back(w);
@@ -181,9 +180,12 @@ void AdvSearch::addClause(int tp)
     } else {
 	delClausePB->setEnabled(false);
     }
+    if (updsaved) {
+        saveCnf();
+    }
 }
 
-void AdvSearch::delClause()
+void AdvSearch::delClause(bool updsaved)
 {
     if (m_clauseWins.size() <= iclausescnt)
 	return;
@@ -193,6 +195,9 @@ void AdvSearch::delClause()
 	delClausePB->setEnabled(true);
     } else {
 	delClausePB->setEnabled(false);
+    }
+    if (updsaved) {
+        saveCnf();
     }
 }
 

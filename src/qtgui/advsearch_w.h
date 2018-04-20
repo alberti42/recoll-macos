@@ -59,9 +59,9 @@ public slots:
     virtual void fromSearch(std::shared_ptr<Rcl::SearchData> sdata);
     virtual void browsePB_clicked();
     virtual void saveFileTypes();
-    virtual void delClause();
-    virtual void addClause();
-    virtual void addClause(int);
+    virtual void delClause(bool updsaved=true);
+    virtual void addClause(bool updsaved=true);
+    virtual void addClause(int, bool updsaved=true);
     virtual void slotHistoryNext();
     virtual void slotHistoryPrev();
 
