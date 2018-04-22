@@ -1939,7 +1939,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Query language</source>
-        <translation>Suchsprache</translation>
+        <translation type="unfinished">Abfragesprache</translation>
     </message>
     <message>
         <source>Bad query string</source>
@@ -1963,7 +1963,7 @@ Please check the desktop file</source>
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
 Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
 </source>
-        <translation type="obsolete">Geben Sie einen Suchsprachen-Ausdruck ein. Spickzettel:&lt;br&gt;
+        <translation type="obsolete">Geben Sie einen Abfragesprachen-Ausdruck ein. Spickzettel:&lt;br&gt;
 &lt;i&gt;Begriff1 Begriff2&lt;/i&gt; : &apos;Begriff1&apos; und &apos;Begriff2&apos; in irgendeinem Feld.&lt;br&gt;
 &lt;i&gt;field:Begriff1&lt;/i&gt; : &apos;Begriff1&apos; im Feld &apos;field&apos;.&lt;br&gt;
  Standard-Feldnamen/Synonyme:&lt;br&gt;
@@ -2491,7 +2491,7 @@ Drücken Sie ESC+Leerzeichen für Vervollständigungen des aktuellen Begriffs.</
     </message>
     <message>
         <source>Query language</source>
-        <translation type="unfinished">Suchsprache</translation>
+        <translation type="unfinished">Abfragesprache</translation>
     </message>
     <message>
         <source>Value from previous program exit</source>
@@ -2873,7 +2873,7 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger diacritics sensitivity if the search term has accented characters (not in unac_except_trans). Else you need to use the query language and the &lt;i&gt;D&lt;/i&gt; modifier to specify diacritics sensitivity.</source>
-        <translation>&lt;p&gt; Automatisch die Beachtung von diakritischen Zeichen einschalten, wenn der Suchbegriff Zeichen mit Akzenten enthält (nicht in unac_except_trans). Ansonsten müssen Sie dafür die Suchsprache und den &lt;i&gt;D&lt;/i&gt; Modifikator verwenden.</translation>
+        <translation type="unfinished">&lt;p&gt; Automatisch die Beachtung von diakritischen Zeichen einschalten, wenn der Suchbegriff Zeichen mit Akzenten enthält (nicht in unac_except_trans). Ansonsten müssen Sie dafür die Abfrageprache und den &lt;i&gt;D&lt;/i&gt; Modifikator verwenden.</translation>
     </message>
     <message>
         <source>Automatic character case sensitivity</source>
@@ -2881,7 +2881,7 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
-        <translation>&lt;p&gt; Automatisch die Beachtung von Groß-/Kleinschreibung einschalten, wenn der Eintrag Großbuchstaben enthält (außer an erster Stelle). Ansonsten müssen Sie dafür die Suchsprache und den &lt;i&gt;C&lt;/i&gt; Modifikator verwenden.</translation>
+        <translation type="unfinished">&lt;p&gt; Automatisch die Beachtung von Groß-/Kleinschreibung einschalten, wenn der Eintrag Großbuchstaben enthält (außer an erster Stelle). Ansonsten müssen Sie dafür die Abfragesprache und den &lt;i&gt;C&lt;/i&gt; Modifikator verwenden.</translation>
     </message>
     <message>
         <source>Maximum term expansion count</source>
@@ -3227,11 +3227,11 @@ Dies kann bei großen Dokumenten langsam sein.</translation>
     </message>
     <message>
         <source>The words in the list will be automatically turned to ext:xxx clauses in the query language entry.</source>
-        <translation>Die Worte in dieser Liste werden automatisch zu ext:xxx Ausdrücken im Suchsprachen-Eintrag umgewandelt.</translation>
+        <translation type="unfinished">Die Worte in dieser Liste werden automatisch zu ext:xxx Ausdrücken im Abfragesprachen-Eintrag umgewandelt.</translation>
     </message>
     <message>
         <source>Query language magic file name suffixes.</source>
-        <translation>Magische Dateinamen-Erweiterungen für Suchsprache</translation>
+        <translation type="unfinished">Magische Dateinamen-Erweiterungen für Abfragesprache</translation>
     </message>
     <message>
         <source>Enable</source>
