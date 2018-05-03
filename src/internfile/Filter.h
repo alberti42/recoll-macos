@@ -105,7 +105,7 @@ namespace Dijon
 	 * Filter object is destroyed, as some filters may not need to
 	 * do a deep copy of the data.
 	 * Call next_document() to position the filter onto the first document.
-	 * Returns false if this input is not supported or an error occured.
+	 * Returns false if this input is not supported or an error occurred.
 	 */
 	virtual bool set_document_data(const std::string& mtype, 
 				       const char *data_ptr, 
@@ -113,21 +113,21 @@ namespace Dijon
 
 	/** (Re)initializes the filter with the given data.
 	 * Call next_document() to position the filter onto the first document.
-	 * Returns false if this input is not supported or an error occured.
+	 * Returns false if this input is not supported or an error occurred.
 	 */
 	virtual bool set_document_string(const std::string& mtype, 
 					 const std::string &data_str) = 0;
 
 	/** (Re)initializes the filter with the given file.
 	 * Call next_document() to position the filter onto the first document.
-	 * Returns false if this input is not supported or an error occured.
+	 * Returns false if this input is not supported or an error occurred.
 	 */
 	virtual bool set_document_file(const std::string& mtype, 
 				       const std::string &file_path) = 0;
 
 	/** (Re)initializes the filter with the given URI.
 	 * Call next_document() to position the filter onto the first document.
-	 * Returns false if this input is not supported or an error occured.
+	 * Returns false if this input is not supported or an error occurred.
 	 */
 	virtual bool set_document_uri(const std::string& mtype, 
 				      const std::string &uri) = 0;
@@ -147,7 +147,7 @@ namespace Dijon
 
 	/** Returns true if there are nested documents left to extract.
 	 * Returns false if the end of the parent document was reached
-	 * or an error occured.
+	 * or an error occurred.
 	 */
 	virtual bool has_documents(void) const = 0;
 
@@ -164,7 +164,7 @@ namespace Dijon
 
 	// Accessing documents' contents.
 
-	/// Returns the message for the most recent error that has occured.
+	/// Returns the message for the most recent error that has occurred.
 	virtual std::string get_error(void) const = 0;
 
 	/** Returns a dictionary of metadata extracted from the current document.

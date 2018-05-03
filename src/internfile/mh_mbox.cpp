@@ -493,7 +493,7 @@ bool MimeHandlerMbox::next_document()
 		// Non-empty line with empty line flag set, reset flag
 		// and check regex.
 		if (!(m_quirks & MBOXQUIRK_TBIRD)) {
-		    // Tbird sometimes omits the empty line, so avoid
+		    // Tbird sometimes ommits the empty line, so avoid
 		    // resetting state (initially true) and hope for
 		    // the best
 		    hademptyline = false;

@@ -26,7 +26,7 @@
  *
  * <SD>                         <!-- Search Data -->
  *  <CL>                        <!-- Clause List -->
- *    <CLT>AND|OR</CLT>         <!-- conjunction AND is default, omitted -->
+ *    <CLT>AND|OR</CLT>         <!-- conjunction AND is default, ommitted -->
  *    <C>                       <!-- Clause -->
  *     [<NEG/>]                 <!-- Possible negation -->
  *     <CT>AND|OR|FN|PH|NE</CT> <!-- Clause type -->

@@ -530,7 +530,7 @@ bool TextSplit::text_to_words(const string &in)
 	nonalnumcnt++;
 
 	if (c == (unsigned int)-1) {
-	    LOGERR("Textsplit: error occured while scanning UTF-8 string\n");
+	    LOGERR("Textsplit: error occurred while scanning UTF-8 string\n");
 	    return false;
 	}
 

@@ -750,7 +750,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
             }
         }
     } else {
-        LOGDEB("Preview: no hilighting, loading " << lthr.fdoc.text.size() <<
+        LOGDEB("Preview: no highlighting, loading " << lthr.fdoc.text.size() <<
                " bytes\n");
         // No plaintorich() call.  In this case, either the text is
         // html and the html quoting is hopefully correct, or it's
