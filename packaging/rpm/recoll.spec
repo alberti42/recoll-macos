@@ -1,11 +1,16 @@
+# Turn off the brp-python-bytecompile script
+%global __os_install_post %(echo '%{__os_install_post}' | sed -e 's!/usr/lib[^[:space:]]*/brp-python-bytecompile[[:space:]].*$!!g')
+
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.23.3
-Release:        1%{?dist}
+Version:        1.23.7
+Release:        2%{?dist}
 Group:          Applications/Databases
 License:        GPLv2+
 URL:            http://www.lesbonscomptes.com/recoll/
 Source0:        http://www.lesbonscomptes.com/recoll/recoll-%{version}.tar.gz
+Source10:       qmake-qt5.sh
+Patch0:         recoll-simpleregexp-vector-provision.patch
 BuildRequires:  aspell-devel
 BuildRequires:  bison
 BuildRequires:  desktop-file-utils
@@ -16,6 +21,7 @@ BuildRequires:  qt5-qtwebkit-devel
 BuildRequires:  extra-cmake-modules
 BuildRequires:  kf5-kio-devel
 BuildRequires:  python2-devel
+BuildRequires:  python3-devel
 BuildRequires:  xapian-core-devel
 BuildRequires:  zlib-devel
 Requires:       xdg-utils
@@ -38,6 +44,7 @@ displayed in Konqueror.
 
 %prep
 %setup -q -n %{name}-%{version}
+%patch0 -p2
 
 %build
 CFLAGS="%{optflags}"; export CFLAGS
@@ -45,6 +52,7 @@ CXXFLAGS="%{optflags}"; export CXXFLAGS
 LDFLAGS="%{?__global_ldflags}"; export LDFLAGS
 
 # force use of custom/local qmake, to inject proper build flags (above)
+install -m755 -D %{SOURCE10} qmake-qt5.sh
 export QMAKE=qmake-qt5
 
 %configure
@@ -81,6 +89,29 @@ popd
 
 mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d
 echo "%{_libdir}/recoll" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
+
+# Mix of Python 2 and 3, needs special care
+
+py2_byte_compile () {
+    bytecode_compilation_path="$1"
+    find $bytecode_compilation_path -type f -a -name "*.py" -print0 | xargs -0 %{__python2} -O -c 'import py_compile, sys; [ py_compile.compile(f, dfile=f.partition("%{buildroot}")[2]) for f in sys.argv[1:] ]' || :
+    find $bytecode_compilation_path -type f -a -name "*.py" -print0 | xargs -0 %{__python2} -c 'import py_compile, sys; [ py_compile.compile(f, dfile=f.partition("%{buildroot}")[2]) for f in sys.argv[1:] ]' || :
+}
+
+py3_byte_compile () {
+    bytecode_compilation_path="$1"
+    find $bytecode_compilation_path -type f -a -name "*.py" -print0 | xargs -0 %{__python3} -O -c 'import py_compile, sys; [py_compile.compile(f, dfile=f.partition("%{buildroot}")[2], optimize=opt) for opt in range(2) for f in sys.argv[1:] ]' || :
+}
+
+py2_byte_compile %{buildroot}%{python2_sitearch}/recoll
+
+for py in %{buildroot}%{_datadir}/%{name}/filters/*.py; do
+    if [ "$(basename $py)" = "recoll-we-move-files.py" ]; then
+	py3_byte_compile $py
+    else
+	py2_byte_compile $py
+    fi
+done
 
 %post
 touch --no-create %{_datadir}/icons/hicolor
@@ -136,11 +167,32 @@ exit 0
 %{_datadir}/kservices5/recollf.protocol
 
 %changelog
-* Mon Sep 04 2017 J.F. Dockes <jfd@recoll.org> - 1.23.3-1
-- 1.23.3: misc small fixes
+* Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 1.23.7-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
-* Sat Mar 11 2017 Terje Rosten <terje.rosten@ntnu.no> - 1.23.0-1
-- 1.23.0
+* Tue Jan 09 2018 Terje Rosten <terje.rosten@ntnu.no> - 1.23.7-1
+- 1.23.7
+
+* Sat Dec 09 2017 Terje Rosten <terje.rosten@ntnu.no> - 1.23.6-1
+- 1.23.6
+
+* Mon Sep 04 2017 Terje Rosten <terje.rosten@ntnu.no> - 1.23.3-1
+- 1.23.3
+
+* Thu Aug 03 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1.23.2-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
+
+* Thu Jul 27 2017 Fedora Release Engineering <releng@fedoraproject.org> - 1.23.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
+
+* Mon May 15 2017 Terje Rosten <terje.rosten@ntnu.no> - 1.23.2-1
+- 1.23.2
+
+* Mon May 15 2017 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.23.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_26_27_Mass_Rebuild
+
+* Mon Mar 13 2017 Terje Rosten <terje.rosten@ntnu.no> - 1.23.1-1
+- 1.23.1
 
 * Sat Feb 18 2017 Terje Rosten <terje.rosten@ntnu.no> - 1.22.4-1
 - 1.22.4
