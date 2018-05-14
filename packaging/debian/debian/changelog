@@ -1,3 +1,28 @@
+recoll (1.24.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * New release 1.24.1.
+  * New snippets generation method, using document text stored in the index
+    (default only for new indexes and Xapian 1.4, can be forced by setting
+    iindexStoreDocText and deleting the old index). 
+  * New range queries : fieldname:min..max, usable only if the field has
+    been appropriately configured. 
+  * Improved support for removable volumes.
+  * It is now  possible to use a readonly index directory for searches.
+  * CHM and EPUB indexing: add chmcatenate and epubcatenate to specify that
+    the contents should be indexed as a whole instead of broken up in
+    chapters (resulting in a single search result for the document). 
+  * Added -L option to recoll for forcing message language, overriding NLS
+    environment. 
+  * Fixed clicks on orthographic suggestions which did not work any more
+    with qt5. 
+  * All input handlers should now be compatible with Python3, but still use
+    Python2. 
+  * New idxtexttruncatelen configuration variable to only index the
+    beginning of documents. 
+  * Fixes "error 9 on netlink descriptor" GUI crash
+    
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 14 May 2018 08:55:00 +0100
+
 recoll (1.23.8-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * New release 1.23.8. Fixes "error 9 on netlink descriptor" GUI crash
