@@ -1582,6 +1582,10 @@ Prověřte soubor pracovní plochy</translation>
         <source>Webcache Editor</source>
         <translation>Editor internetové vyrovnávací paměti</translation>
     </message>
+    <message>
+        <source>Trigger incremental pass</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -3495,6 +3499,14 @@ Výchozí hodnota je 2 (procenta).</translation>
     </message>
     <message>
         <source>Set path translations for the selected index or for the main one if no selection exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Activate links in preview.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Make links inside the preview window clickable, and start an external browser when they are clicked.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

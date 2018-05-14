@@ -1598,6 +1598,10 @@ Merci de vérifier le fichier desktop </translation>
         <source>Webcache Editor</source>
         <translation>Editeur &amp;Webcache</translation>
     </message>
+    <message>
+        <source>Trigger incremental pass</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -3598,6 +3602,14 @@ La valeur par défaut est 2%</translation>
     <message>
         <source>Set path translations for the selected index or for the main one if no selection exists.</source>
         <translation>Créer les traductions de chemins d&apos;accès pour l&apos;index selectionné, ou pour l&apos;index principal si rien n&apos;est sélectionné.</translation>
+    </message>
+    <message>
+        <source>Activate links in preview.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Make links inside the preview window clickable, and start an external browser when they are clicked.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
