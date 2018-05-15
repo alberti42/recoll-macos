@@ -317,7 +317,7 @@ static void delay(int millisecondsWait)
 {
     QEventLoop loop;
     QTimer t;
-    t.connect(&t, &QTimer::timeout, &loop, &QEventLoop::quit);
+    t.connect(&t, SIGNAL(timeout()), &loop, SLOT(quit()));
     t.start(millisecondsWait);
     loop.exec();
 }
