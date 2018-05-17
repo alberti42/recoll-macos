@@ -4,6 +4,11 @@
 # All entries must be in lower case characters. File name extensions are
 # lower-cased for comparison during indexing, meaning that an upper or
 # mixed case entry will never be matched.
+#
+# When creating a temporary file for a MIME type (e.g. temp file for
+# display), the FIRST entry for the MIME type will be used to determine the
+# file suffix. This may be important if the app used does not grok all the
+# possible suffixes.
 
 .txt = text/plain
 .text = text/plain
@@ -101,18 +106,18 @@
 
 # OpenOffice / opendocument. We handle opendocument as old openoffice files
 # for now
-.sxc = application/vnd.sun.xml.calc
 .ods = application/vnd.sun.xml.calc
+.sxc = application/vnd.sun.xml.calc
 .stc = application/vnd.sun.xml.calc.template
-.sxd = application/vnd.sun.xml.draw
 .odg = application/vnd.sun.xml.draw
+.sxd = application/vnd.sun.xml.draw
 .std = application/vnd.sun.xml.draw.template
-.sxi = application/vnd.sun.xml.impress
 .odp = application/vnd.sun.xml.impress
+.sxi = application/vnd.sun.xml.impress
 .sti = application/vnd.sun.xml.impress.template
 .sxm = application/vnd.sun.xml.math
-.sxw = application/vnd.sun.xml.writer
 .odt = application/vnd.sun.xml.writer
+.sxw = application/vnd.sun.xml.writer
 .sxg = application/vnd.sun.xml.writer.global
 .stw = application/vnd.sun.xml.writer.template
 
