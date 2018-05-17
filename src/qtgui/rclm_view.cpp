@@ -313,7 +313,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
     bool enterHistory = false;
     bool istempfile = false;
     
-    LOGDEB("RclMain::startNV: groksipath " << groksipath << " wantsf " <<
+    LOGDEB("StartNativeViewer: groksipath " << groksipath << " wantsf " <<
            wantsfile << " wantsparentf " << wantsparentfile << "\n");
 
     // If the command wants a file but this is not a file url, or
@@ -332,7 +332,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 	enterHistory = true;
         istempfile = true;
 	rememberTempFile(temp);
-	fn = temp->filename();
+	fn = temp.filename();
 	url = path_pathtofileurl(fn);
     }
 
@@ -354,10 +354,10 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
                 return;
             }
         }
-        if (temp) {
+        if (temp.ok()) {
             istempfile = true;
 	    rememberTempFile(temp);
-            fn = temp->filename();
+            fn = temp.filename();
             url = path_pathtofileurl(fn);
         }
     }

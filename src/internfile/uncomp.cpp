@@ -35,6 +35,12 @@ using std::vector;
 
 Uncomp::UncompCache Uncomp::o_cache;
 
+Uncomp::Uncomp(bool docache)
+	: m_docache(docache)
+{
+    LOGDEB0("Uncomp::Uncomp: m_docache: " << m_docache << "\n");
+}
+
 bool Uncomp::uncompressfile(const string& ifn, 
 			    const vector<string>& cmdv, string& tfile)
 {
@@ -57,7 +63,8 @@ bool Uncomp::uncompressfile(const string& ifn,
     }
     // Make sure tmp dir is empty. we guarantee this to filters
     if (!m_dir || !m_dir->ok() || !m_dir->wipe()) {
-	LOGERR("uncompressfile: can't clear temp dir "  << (m_dir->dirname()) << "\n" );
+	LOGERR("uncompressfile: can't clear temp dir " << m_dir->dirname() <<
+               "\n");
 	return false;
     }
 
@@ -66,12 +73,14 @@ bool Uncomp::uncompressfile(const string& ifn,
     int pc;
     long long availmbs;
     if (!fsocc(m_dir->dirname(), &pc, &availmbs)) {
-        LOGERR("uncompressfile: can't retrieve avail space for "  << (m_dir->dirname()) << "\n" );
+        LOGERR("uncompressfile: can't retrieve avail space for " <<
+               m_dir->dirname() << "\n");
         // Hope for the best
     } else {
 	long long fsize = path_filesize(ifn);
         if (fsize < 0) {
-            LOGERR("uncompressfile: stat input file "  << (ifn) << " errno "  << (errno) << "\n" );
+            LOGERR("uncompressfile: stat input file " << ifn << " errno " <<
+                   errno << "\n");
             return false;
         }
         // We need at least twice the file size for the uncompressed
@@ -83,7 +92,9 @@ bool Uncomp::uncompressfile(const string& ifn,
         long long filembs = fsize / (1024 * 1024); 
         
         if (availmbs < 2 * filembs + 1) {
-            LOGERR("uncompressfile. "  << (lltodecstr(availmbs)) << " MBs available in "  << (m_dir->dirname()) << " not enough to uncompress "  << (ifn) << " of size "  << (lltodecstr(filembs)) << " mbs\n" );
+            LOGERR("uncompressfile. " << availmbs << " MBs available in " <<
+                   m_dir->dirname() << " not enough to uncompress " <<
+                   ifn << " of size "  << filembs << " MBs\n");
             return false;
         }
     }
@@ -107,9 +118,10 @@ bool Uncomp::uncompressfile(const string& ifn,
     ExecCmd ex;
     int status = ex.doexec(cmd, args, 0, &tfile);
     if (status || tfile.empty()) {
-	LOGERR("uncompressfile: doexec: failed for ["  << (ifn) << "] status 0x"  << (status) << "\n" );
+	LOGERR("uncompressfile: doexec: failed for [" << ifn << "] status 0x" <<
+               status << "\n");
 	if (!m_dir->wipe()) {
-	    LOGERR("uncompressfile: wipedir failed\n" );
+	    LOGERR("uncompressfile: wipedir failed\n");
 	}
 	return false;
     }
@@ -122,6 +134,8 @@ bool Uncomp::uncompressfile(const string& ifn,
 
 Uncomp::~Uncomp()
 {
+    LOGDEB0("Uncomp::~Uncomp: m_docache: " << m_docache << " m_dir " <<
+            (m_dir?m_dir->dirname():"(null)") << "\n");
     if (m_docache) {
         std::unique_lock<std::mutex> lock(o_cache.m_lock);
 	delete o_cache.m_dir;
@@ -133,4 +147,12 @@ Uncomp::~Uncomp()
     }
 }
 
-
+void Uncomp::clearcache()
+{
+    LOGDEB0("Uncomp::clearcache\n");
+    std::unique_lock<std::mutex> lock(o_cache.m_lock);
+    delete o_cache.m_dir;
+    o_cache.m_dir = 0;
+    o_cache.m_tfile.clear();
+    o_cache.m_srcpath.clear();
+}
