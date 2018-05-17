@@ -1238,8 +1238,8 @@ public:
     Internal(const string& exp, int flags, int nm)
         : expr(exp,
                basic_regex<char>::flag_type(regex_constants::extended |
-                   ((flags&SRE_ICASE) ? regex_constants::icase : 0) |
-                   ((flags&SRE_NOSUB) ? regex_constants::nosubs : 0)
+                                            ((flags&SRE_ICASE) ? int(regex_constants::icase) : 0) |
+                                            ((flags&SRE_NOSUB) ? int(regex_constants::nosubs) : 0)
                    )), ok(true), nmatch(nm) {
     }
     std::regex expr;
