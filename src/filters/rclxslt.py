@@ -31,40 +31,40 @@ if PY2:
     except:
         print("RECFILTERROR HELPERNOTFOUND python:libxml2/python:libxslt1")
         sys.exit(1);
+    def _apply_sheet_doc(sheet, doc):
+        styledoc = libxml2.parseMemory(sheet, len(sheet))
+        style = libxslt.parseStylesheetDoc(styledoc)
+        result = style.applyStylesheet(doc, None)
+        res = ""
+        try:
+            res = style.saveResultToString(result)
+        except Exception as err:
+            # print("saveResultToString got exception: %s"%err)
+            pass
+        style.freeStylesheet()
+        doc.freeDoc()
+        result.freeDoc()
+        return res
     def apply_sheet_data(sheet, data):
-        styledoc = libxml2.parseMemory(sheet, len(sheet))
-        style = libxslt.parseStylesheetDoc(styledoc)
         doc = libxml2.parseMemory(data, len(data))
-        result = style.applyStylesheet(doc, None)
-        res = style.saveResultToString(result)
-        style.freeStylesheet()
-        doc.freeDoc()
-        result.freeDoc()
-        return res
+        return _apply_sheet_doc(sheet, doc)
     def apply_sheet_file(sheet, fn):
-        styledoc = libxml2.parseMemory(sheet, len(sheet))
-        style = libxslt.parseStylesheetDoc(styledoc)
         doc = libxml2.parseFile(fn)
-        result = style.applyStylesheet(doc, None)
-        res = style.saveResultToString(result)
-        style.freeStylesheet()
-        doc.freeDoc()
-        result.freeDoc()
-        return res
+        return _apply_sheet_doc(sheet, doc)
 else:
     try:
         from lxml import etree
     except:
         print("RECFILTERROR HELPERNOTFOUND python3:lxml")
         sys.exit(1);
+    def _apply_sheet_doc(sheet, doc):
+        styledoc = etree.fromstring(sheet)
+        transform = etree.XSLT(styledoc)
+        return bytes(transform(doc))
     def apply_sheet_data(sheet, data):
-        styledoc = etree.fromstring(sheet)
-        transform = etree.XSLT(styledoc)
         doc = etree.fromstring(data)
-        return bytes(transform(doc))
+        return _apply_sheet_doc(sheet, doc)
     def apply_sheet_file(sheet, fn):
-        styledoc = etree.fromstring(sheet)
-        transform = etree.XSLT(styledoc)
         doc = etree.parse(fn)
-        return bytes(transform(doc))
+        return _apply_sheet_doc(sheet, doc)
 
