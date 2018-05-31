@@ -14,18 +14,19 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifndef _BGLFETCHER_H_INCLUDED_
-#define _BGLFETCHER_H_INCLUDED_
+#ifndef _WEBQUEUEFETCHER_H_INCLUDED_
+#define _WEBQUEUEFETCHER_H_INCLUDED_
+
 #include "fetcher.h"
 
 /** 
- * The Beagle cache fetcher: 
+ * The WEB queue cache fetcher: 
  */
-class BGLDocFetcher : public DocFetcher{
+class WQDocFetcher : public DocFetcher{
     virtual bool fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out);
     virtual bool makesig(RclConfig* cnf, const Rcl::Doc& idoc,
                          std::string& sig);
-    virtual ~BGLDocFetcher() {}
+    virtual ~WQDocFetcher() {}
 };
 
-#endif /* _BGLFETCHER_H_INCLUDED_ */
+#endif /* _WEBQUEUEFETCHER_H_INCLUDED_ */

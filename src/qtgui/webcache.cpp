@@ -43,7 +43,7 @@
 
 #include "recoll.h"
 #include "webcache.h"
-#include "beaglequeuecache.h"
+#include "webstore.h"
 #include "circache.h"
 #include "conftree.h"
 #include "rclmain_w.h"
@@ -62,7 +62,7 @@ public:
 
 class WebcacheModelInternal {
 public:
-    std::shared_ptr<BeagleQueueCache> cache;
+    std::shared_ptr<WebStore> cache;
     vector<CEnt> all;
     vector<CEnt> disp;
 };
@@ -81,7 +81,7 @@ WebcacheModel::~WebcacheModel()
 void WebcacheModel::reload()
 {
     m->cache =
-        std::shared_ptr<BeagleQueueCache>(new BeagleQueueCache(theconfig));
+        std::shared_ptr<WebStore>(new WebStore(theconfig));
     m->all.clear();
     m->disp.clear();
     

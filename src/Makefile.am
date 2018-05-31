@@ -58,8 +58,8 @@ bincimapmime/mime-printbody.cc \
 bincimapmime/mime-utils.h \
 bincimapmime/mime.cc \
 bincimapmime/mime.h \
-common/beaglequeuecache.cpp \
-common/beaglequeuecache.h \
+common/webstore.cpp \
+common/webstore.h \
 common/conf_post.h \
 common/cstr.cpp \
 common/cstr.h \
@@ -76,10 +76,10 @@ common/unacpp.h \
 common/uproplist.h \
 common/utf8fn.cpp \
 common/utf8fn.h \
-index/beaglequeue.cpp \
-index/beaglequeue.h \
-index/bglfetcher.cpp \
-index/bglfetcher.h \
+index/webqueue.cpp \
+index/webqueue.h \
+index/webqueuefetcher.cpp \
+index/webqueuefetcher.h \
 index/checkretryfailed.cpp \
 index/checkretryfailed.h \
 index/exefetcher.cpp \

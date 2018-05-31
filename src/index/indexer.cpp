@@ -27,7 +27,7 @@
 #include "indexer.h"
 #include "fsindexer.h"
 #ifndef DISABLE_WEB_INDEXER
-#include "beaglequeue.h"
+#include "webqueue.h"
 #endif
 #include "mimehandler.h"
 #include "pathut.h"
@@ -132,7 +132,7 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
     if (m_doweb && (typestorun & IxTWebQueue)) {
         runWebFilesMoverScript(m_config);
         deleteZ(m_webindexer);
-        m_webindexer = new BeagleQueueIndexer(m_config, &m_db, m_updater);
+        m_webindexer = new WebQueueIndexer(m_config, &m_db, m_updater);
         if (!m_webindexer || !m_webindexer->index()) {
 	    m_db.close();
             addIdxReason("indexer", "Web index creation failed. See log");
@@ -208,7 +208,7 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
 
     if (m_doweb && !myfiles.empty() && !(flag & IxFNoWeb)) {
         if (!m_webindexer)
-            m_webindexer = new BeagleQueueIndexer(m_config, &m_db, m_updater);
+            m_webindexer = new WebQueueIndexer(m_config, &m_db, m_updater);
         if (m_webindexer) {
             ret = ret && m_webindexer->indexFiles(myfiles);
         } else {
@@ -267,7 +267,7 @@ bool ConfIndexer::purgeFiles(list<string> &files, int flag)
 #ifndef DISABLE_WEB_INDEXER
     if (m_doweb && !myfiles.empty() && !(flag & IxFNoWeb)) {
         if (!m_webindexer)
-            m_webindexer = new BeagleQueueIndexer(m_config, &m_db, m_updater);
+            m_webindexer = new WebQueueIndexer(m_config, &m_db, m_updater);
         if (m_webindexer) {
             ret = ret && m_webindexer->purgeFiles(myfiles);
         } else {

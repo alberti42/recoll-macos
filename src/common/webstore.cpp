@@ -17,10 +17,11 @@
 
 #include "autoconfig.h"
 
+#include "webstore.h"
+
 #include <stdint.h>
 
 #include "cstr.h"
-#include "beaglequeuecache.h"
 #include "circache.h"
 #include "log.h"
 #include "rclconfig.h"
@@ -29,42 +30,43 @@
 
 const string cstr_bgc_mimetype("mimetype");
 
-BeagleQueueCache::BeagleQueueCache(RclConfig *cnf) 
+WebStore::WebStore(RclConfig *cnf) 
 {
     string ccdir = cnf->getWebcacheDir();
 
     int maxmbs = 40;
     cnf->getConfParam("webcachemaxmbs", &maxmbs);
     if ((m_cache = new CirCache(ccdir)) == 0) {
-	LOGERR("BeagleQueueCache: cant create CirCache object\n" );
+	LOGERR("WebStore: cant create CirCache object\n" );
 	return;
     }
     if (!m_cache->create(int64_t(maxmbs)*1000*1024, CirCache::CC_CRUNIQUE)) {
-	LOGERR("BeagleQueueCache: cache file creation failed: "  << (m_cache->getReason()) << "\n" );
+	LOGERR("WebStore: cache file creation failed: " <<
+               m_cache->getReason() << "\n");
 	delete m_cache;
 	m_cache = 0;
 	return;
     }
 }
 
-BeagleQueueCache::~BeagleQueueCache()
+WebStore::~WebStore()
 {
     delete m_cache;
 }
 
 // Read  document from cache. Return the metadata as an Rcl::Doc
-// @param htt Beagle Hit Type 
-bool BeagleQueueCache::getFromCache(const string& udi, Rcl::Doc &dotdoc, 
+// @param htt Web Hit Type 
+bool WebStore::getFromCache(const string& udi, Rcl::Doc &dotdoc, 
 				    string& data, string *htt)
 {
     string dict;
 
     if (m_cache == 0) {
-	LOGERR("BeagleQueueCache::getFromCache: cache is null\n" );
+	LOGERR("WebStore::getFromCache: cache is null\n");
 	return false;
     }
     if (!m_cache->get(udi, dict, &data)) {
-	LOGDEB("BeagleQueueCache::getFromCache: get failed\n" );
+	LOGDEB("WebStore::getFromCache: get failed\n");
 	return false;
     }
 

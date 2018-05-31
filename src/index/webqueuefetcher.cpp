@@ -16,23 +16,26 @@
  */
 #include "autoconfig.h"
 
+#include "webqueuefetcher.h"
+
 #include <mutex>
 
 #include "rcldoc.h"
 #include "fetcher.h"
-#include "bglfetcher.h"
 #include "log.h"
-#include "beaglequeuecache.h"
+#include "webstore.h"
 
-// We use a single beagle cache object to access beagle data. We protect it 
+using std::string;
+
+// We use a single WebStore object to access the data. We protect it
 // against multiple thread access.
 static std::mutex o_beagler_mutex;
 
-bool BGLDocFetcher::fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out)
+bool WQDocFetcher::fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out)
 {
     string udi;
     if (!idoc.getmeta(Rcl::Doc::keyudi, &udi) || udi.empty()) {
-	LOGERR("BGLDocFetcher:: no udi in idoc\n" );
+	LOGERR("WQDocFetcher:: no udi in idoc\n" );
 	return false;
     }
     Rcl::Doc dotdoc;
@@ -41,24 +44,23 @@ bool BGLDocFetcher::fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out)
 	// Retrieve from our webcache (beagle data). The beagler
 	// object is created at the first call of this routine and
 	// deleted when the program exits.
-	static BeagleQueueCache o_beagler(cnf);
+	static WebStore o_beagler(cnf);
 	if (!o_beagler.getFromCache(udi, dotdoc, out.data)) {
-	    LOGINFO("BGLDocFetcher::fetch: failed for ["  << (udi) << "]\n" );
+	    LOGINFO("WQDocFetcher::fetch: failed for [" << udi << "]\n");
 	    return false;
 	}
     }
     if (dotdoc.mimetype.compare(idoc.mimetype)) {
-	LOGINFO("BGLDocFetcher:: udi ["  << (udi) << "], mimetp mismatch: in: ["  << (idoc.mimetype) << "], bgl ["  << (dotdoc.mimetype) << "]\n" );
+	LOGINFO("WQDocFetcher:: udi [" << udi << "], mimetp mismatch: in: [" <<
+                idoc.mimetype << "], bgl [" << dotdoc.mimetype << "]\n");
     }
     out.kind = RawDoc::RDK_DATA;
     return true;
 }
     
-bool BGLDocFetcher::makesig(RclConfig* cnf, const Rcl::Doc& idoc, string& sig)
+bool WQDocFetcher::makesig(RclConfig* cnf, const Rcl::Doc& idoc, string& sig)
 {
-    // Bgl sigs are empty
+    // Web queue sigs are empty
     sig.clear();
     return true;
 }
-
-
